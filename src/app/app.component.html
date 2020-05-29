@@ -7,37 +7,71 @@
                 </mat-icon>
             </button>
             <button mat-buttom mat-icon-button (click)="drawer.toggle()">
-                <mat-icon class="example-icon" aria-hidden="false" aria-label="Swap Canvas">swap_horiz
+                <mat-icon aria-hidden="false" aria-label="Swap Canvas">swap_horiz
                 </mat-icon>
             </button>
             <button mat-buttom mat-icon-button [matMenuTriggerFor]="appMenu">
-                <mat-icon class="example-icon" aria-hidden="false" aria-label="More">more_vert
+                <mat-icon aria-hidden="false" aria-label="More">more_vert
                 </mat-icon>
             </button>
             <mat-menu #appMenu="matMenu">
                 <button mat-menu-item (click)="import()">
-                    <mat-icon class="example-icon" aria-hidden="false" aria-label="Import">get_app
+                    <mat-icon aria-hidden="false" aria-label="Import">get_app
                     </mat-icon>
                     Import
                     <input type="file" id="exampleInput" style="display: none" />
                 </button>
                 <button mat-menu-item (click)="export()">
-                    <mat-icon class="example-icon" aria-hidden="false" aria-label="Export">publish
+                    <mat-icon aria-hidden="false" aria-label="Export">publish
                     </mat-icon>
                     Export
                 </button>
+                <button mat-menu-item (click)="examples()" [matMenuTriggerFor]="social">
+                    <mat-icon aria-hidden="false" aria-label="Examples">forum
+                    </mat-icon>
+                    Community
+                </button>
                 <button mat-menu-item (click)="examples()">
-                    <mat-icon class="example-icon" aria-hidden="false" aria-label="Examples">library_books
+                    <mat-icon aria-hidden="false" aria-label="Examples">library_books
                     </mat-icon>
                     Examples
                 </button>
                 <button mat-menu-item (click)="about()">
-                    <mat-icon class="example-icon" aria-hidden="false" aria-label="About">help_outline
+                    <mat-icon aria-hidden="false" aria-label="About">help_outline
                     </mat-icon>
                     About
                 </button>
             </mat-menu>
-            <div class="version font">core<div>v0.01</div></div>
+
+            <mat-menu #social="matMenu">
+                <a mat-menu-item href="https://www.patreon.com/bitbybitdev" target="_blank">
+                    <img class="mat-icon" width="15px" src="../assets/logo-patreon.svg">
+                    Patreon
+                </a>
+                <a mat-menu-item href="https://discord.gg/GSe3VMe" target="_blank">
+                    <img class="mat-icon" width="20px" src="../assets/logo-discord.svg">
+                    Discord
+                </a>
+                <a mat-menu-item href="https://www.instagram.com/bitbybit.dev/" target="_blank">
+                    <img class="mat-icon" width="20px" src="../assets/logo-instagram.svg">
+                    Instagram
+                </a>
+                <a mat-menu-item href="https://www.linkedin.com/company/bitbybit-dev" target="_blank">
+                    <img class="mat-icon" width="20px" src="../assets/logo-linkedin.svg">
+                    LinkedIn
+                </a>
+                <a mat-menu-item href="https://fb.me/bitbybitdev" target="_blank">
+                    <img class="mat-icon" width="20px" src="../assets/logo-facebook.svg" />
+                    Facebook
+                </a>
+                <a mat-menu-item href="https://github.com/bitbybit-dev/bitbybit" target="_blank">
+                    <img class="mat-icon" width="20px" src="../assets/logo-github.svg" />
+                    Github
+                </a>
+            </mat-menu>
+
+            <div class="version font">core<div>v0.01</div>
+            </div>
         </div>
     </mat-drawer>
     <mat-drawer-content class="main-content">

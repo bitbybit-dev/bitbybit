@@ -18,6 +18,10 @@ img.logo {
     margin-left: 2px;
 }
 
+.mat-menu-item .mat-icon-no-color, .mat-menu-item-submenu-trigger {
+    color: black;
+}
+
 .main-container {
     height:100%;
 }
