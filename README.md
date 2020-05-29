@@ -1,5 +1,7 @@
 # BitByBit
-Platform for programming geometry on the browser
+Platform for programming geometry on the browser.
+
+Visit (https://bitbybit.dev) and start your journey.
 
 # About
 BitByBit is a geometric programming platform for innovators. Programming language that was implemented in BitByBit platform consists of basic building blocks that can compose various 3D shapes. Starting from simple points, lines and going into NURBS curves and surfaces. This model allows creators to learn by experimenting. 3D environment that is integrated in the platform provides instant feedback and gratification, which inspires users to grow and innovate.
