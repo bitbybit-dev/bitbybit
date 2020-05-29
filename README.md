@@ -1,4 +1,4 @@
-# bitbybit
+# BitByBit
 Platform for programming geometry on the browser
 
 # about
