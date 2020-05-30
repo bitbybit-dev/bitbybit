@@ -1,9 +1,9 @@
 import { Blocks, ALIGN_RIGHT } from "blockly";
 import * as JavaScript from 'blockly/javascript';
 
-export function createInterpolatedCurveBlock() {
+export function createCurveByPointsBlock() {
 
-    Blocks['geometry_interpolated_curve'] = {
+    Blocks['geometry_curve_by_points'] = {
         init: function () {
             this.appendValueInput("Points")
                 .setCheck("Array")
@@ -20,7 +20,7 @@ export function createInterpolatedCurveBlock() {
         }
     };
 
-    JavaScript['geometry_interpolated_curve'] = function (block) {
+    JavaScript['geometry_curve_by_points'] = function (block) {
         var value_points = JavaScript.valueToCode(block, 'Points', JavaScript.ORDER_ATOMIC);
         var value_degree = JavaScript.valueToCode(block, 'Degree', JavaScript.ORDER_ATOMIC);
 

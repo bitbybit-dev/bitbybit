@@ -273,12 +273,14 @@ export function toolboxDefinition() {
         </block>
     </category>
     <category name="Curves" categorystyle="geometry_category">
-        <block type="geometry_interpolated_curve">
+        <block type="geometry_curve_by_points">
             <value name="Degree">
                 <shadow type="math_number">
                     <field name="NUM">3</field>
                 </shadow>
             </value>
+        </block>
+        <block type="geometry_curve_by_knots_control_points_weights">
         </block>
         <block type="functions_draw_curve">
             <value name="Colour">
