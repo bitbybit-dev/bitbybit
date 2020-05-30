@@ -49,6 +49,20 @@ import { createPolylineGetPointsCountBlock } from './blocks/polyline-points-coun
 import { createCoreIntervalGetMaxBlock } from './blocks/core-interval-get-max';
 import { createCoreIntervalGetMinBlock } from './blocks/core-interval-get-min';
 import { createCurveDomainBlock } from './blocks/curve-domain';
+import { createCurveTransformBlock } from './blocks/curve-transform';
+import { createCoreMatrixBlock } from './blocks/core-matrix';
+import { createCoreVector3Block } from './blocks/core-vector';
+import { createCoreVectorAngleBetweenNormalized2dBlock } from './blocks/core-vector-angle-between-normalized-2d';
+import { createCoreVectorAngleBetweenBlock } from './blocks/core-vector-angle-between';
+import { createCoreVectorDistanceBlock } from './blocks/core-vector-distance';
+import { createCoreVectorDomainBlock } from './blocks/core-vector-domain';
+import { createCoreVectorMaxBlock } from './blocks/core-vector-max';
+import { createCoreVectorMinBlock } from './blocks/core-vector-min';
+import { createCoreVectorNegateBlock } from './blocks/core-vector-negate';
+import { createCoreVectorPositiveAngleBetweenBlock } from './blocks/core-vector-positive-angle-between';
+import { createCoreVectorRangeBlock } from './blocks/core-vector-range';
+import { createCoreVectorSignedAngleBetweenBlock } from './blocks/core-vector-signed-angle-between';
+import { createCoreVectorSpanBlock } from './blocks/core-vector-span';
 
 prepareBabylonForBlockly();
 
@@ -57,14 +71,17 @@ createPointDistanceBlock();
 createPointGetXBlock();
 createPointGetYBlock();
 createPointGetZBlock();
+
 createPolylineBlock();
 createPolylineLengthBlock();
 createPolylineGetPointsBlock();
 createPolylineGetPointsCountBlock();
+
 createLineBlock();
 createLineLengthBlock();
 createLineGetStartPointBlock();
 createLineGetEndPointBlock()
+
 createDrawPointBlock();
 createDrawPointsBlock();
 createDrawGridBlock();
@@ -73,6 +90,7 @@ createDrawLineBlock();
 createDrawLinesBlock();
 createDrawPolylineBlock();
 createDrawCurveBlock();
+
 createCurveByKnotsControlPointsWeightsBlock();
 createCurveByPointsBlock();
 createCurveDivideByArcLengthPointsBlock();
@@ -93,10 +111,25 @@ createCurveControlPointsBlock();
 createCurveWeightsBlock();
 createCurveCloneBlock();
 createCurveDomainBlock();
+createCurveTransformBlock();
+
+createCoreMatrixBlock();
 createCoreIntervalBlock();
 createCoreIntervalGetMaxBlock();
 createCoreIntervalGetMinBlock();
 
+createCoreVector3Block();
+createCoreVectorAngleBetweenBlock();
+createCoreVectorAngleBetweenNormalized2dBlock();
+createCoreVectorDistanceBlock();
+createCoreVectorDomainBlock();
+createCoreVectorMaxBlock();
+createCoreVectorMinBlock();
+createCoreVectorNegateBlock();
+createCoreVectorPositiveAngleBetweenBlock();
+createCoreVectorRangeBlock();
+createCoreVectorSignedAngleBetweenBlock();
+createCoreVectorSpanBlock();
 
 if (environment.production) {
     enableProdMode();

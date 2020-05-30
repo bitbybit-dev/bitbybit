@@ -1,6 +1,6 @@
 export function toolboxDefinition() {
     return `
-<xml id="toolbox" style="display: none">
+    <xml id="toolbox" style="display: none">
     <category name="Scene" categorystyle="scene_category">
         <block type="functions_activate_grid">
             <value name="width">
@@ -62,7 +62,7 @@ export function toolboxDefinition() {
             </value>
         </block>
     </category>
-    <category name="Core" categorystyle="core_category">
+    <category name="Core Interval" categorystyle="core_category">
         <block type="core_interval">
         </block>
         <block type="core_interval">
@@ -80,6 +80,32 @@ export function toolboxDefinition() {
         <block type="core_interval_get_min">
         </block>
         <block type="core_interval_get_max">
+        </block>
+    </category>
+    <category name="Core Vector" categorystyle="core_category">
+        <block type="core_vector">
+        </block>
+        <block type="core_vector_angle_between">
+        </block>
+        <block type="core_vector_angle_between_normalized_2d">
+        </block>
+        <block type="core_vector_positive_angle_between">
+        </block>
+        <block type="core_vector_signed_angle_between">
+        </block>
+        <block type="core_vector_distance">
+        </block>
+        <block type="core_vector_domain">
+        </block>
+        <block type="core_vector_min">
+        </block>
+        <block type="core_vector_max">
+        </block>
+        <block type="core_vector_negate">
+        </block>
+        <block type="core_vector_range">
+        </block>
+        <block type="core_vector_span">
         </block>
     </category>
     <category name="Point" categorystyle="geometry_category">
@@ -368,6 +394,8 @@ export function toolboxDefinition() {
         <block type="functions_curve_clone">
         </block>
         <block type="functions_curve_domain">
+        </block>
+        <block type="functions_curve_transform">
         </block>
     </category>
     <sep></sep>
