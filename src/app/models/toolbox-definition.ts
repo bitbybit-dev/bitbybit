@@ -122,6 +122,8 @@ export function toolboxDefinition() {
         </block>
         <block type="functions_drawpoints">
         </block>
+        <block type="geometry_point_distance">
+        </block>
     </category>
     <category name="Lines" categorystyle="geometry_category">
         <block type="geometry_line">

@@ -5,6 +5,7 @@ import { AppModule } from './app/app.module';
 import { environment } from './environments/environment';
 
 import { createPointBlock } from './blocks/point';
+import { createPointDistanceBlock } from './blocks/point-distance';
 import { createDrawPointBlock } from './blocks/draw-point';
 import { createDrawPointsBlock } from './blocks/draw-points';
 import { createDrawGridBlock } from './blocks/draw-grid';
@@ -33,6 +34,7 @@ import { createCurveParamAtLengthBlock } from './blocks/curve-param-at-length';
 prepareBabylonForBlockly();
 
 createPointBlock();
+createPointDistanceBlock();
 createPolylineBlock();
 createLineBlock();
 createInterpolatedCurveBlock();
