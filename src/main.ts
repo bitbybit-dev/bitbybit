@@ -44,6 +44,8 @@ import { createCurveCloneBlock } from './blocks/curve-clone';
 import { createCoreIntervalBlock } from './blocks/core-interval';
 import { createLineGetStartPointBlock } from './blocks/line-start-point';
 import { createLineGetEndPointBlock } from './blocks/line-end-point';
+import { createPolylineGetPointsBlock } from './blocks/polyline-points';
+import { createPolylineGetPointsCountBlock } from './blocks/polyline-points-count';
 
 prepareBabylonForBlockly();
 
@@ -54,6 +56,8 @@ createPointGetYBlock();
 createPointGetZBlock();
 createPolylineBlock();
 createPolylineLengthBlock();
+createPolylineGetPointsBlock();
+createPolylineGetPointsCountBlock();
 createLineBlock();
 createLineLengthBlock();
 createLineGetStartPointBlock();

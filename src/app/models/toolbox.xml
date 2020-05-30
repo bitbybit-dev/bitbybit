@@ -295,6 +295,10 @@
         </block>
         <block type="functions_polyline_length">
         </block>
+        <block type="functions_polyline_get_points">
+        </block>
+        <block type="functions_polyline_get_points_count">
+        </block>
     </category>
     <category name="Curve" categorystyle="geometry_category">
         <block type="geometry_curve_by_points">

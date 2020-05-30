@@ -1,6 +1,6 @@
 export function toolboxDefinition() {
     return `
-<xml id="toolbox" style="display: none">
+    <xml id="toolbox" style="display: none">
     <category name="Scene" categorystyle="scene_category">
         <block type="functions_activate_grid">
             <value name="width">
@@ -296,6 +296,10 @@ export function toolboxDefinition() {
             </value>
         </block>
         <block type="functions_polyline_length">
+        </block>
+        <block type="functions_polyline_get_points">
+        </block>
+        <block type="functions_polyline_get_points_count">
         </block>
     </category>
     <category name="Curve" categorystyle="geometry_category">
