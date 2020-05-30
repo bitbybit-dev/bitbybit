@@ -1,6 +1,6 @@
 export function toolboxDefinition() {
     return `
-    <xml id="toolbox" style="display: none">
+<xml id="toolbox" style="display: none">
     <category name="Scene" categorystyle="scene_category">
         <block type="functions_activate_grid">
             <value name="width">
@@ -78,7 +78,7 @@ export function toolboxDefinition() {
             </value>
         </block>
     </category>
-    <category name="Points" categorystyle="geometry_category">
+    <category name="Point" categorystyle="geometry_category">
         <block type="geometry_point">
         </block>
         <block type="geometry_point">
@@ -147,7 +147,7 @@ export function toolboxDefinition() {
         <block type="function_point_get_z">
         </block>
     </category>
-    <category name="Lines" categorystyle="geometry_category">
+    <category name="Line" categorystyle="geometry_category">
         <block type="geometry_line">
         </block>
         <block type="geometry_line">
@@ -270,6 +270,10 @@ export function toolboxDefinition() {
         </block>
         <block type="functions_line_length">
         </block>
+        <block type="functions_line_get_start_point">
+        </block>
+        <block type="functions_line_get_end_point">
+        </block>
     </category>
     <category name="Polyline" categorystyle="geometry_category">
         <block type="geometry_polyline">
@@ -294,7 +298,7 @@ export function toolboxDefinition() {
         <block type="functions_polyline_length">
         </block>
     </category>
-    <category name="Curves" categorystyle="geometry_category">
+    <category name="Curve" categorystyle="geometry_category">
         <block type="geometry_curve_by_points">
             <value name="Degree">
                 <shadow type="math_number">

@@ -42,6 +42,8 @@ import { createCurveControlPointsBlock } from './blocks/curve-control-points';
 import { createCurveWeightsBlock } from './blocks/curve-weights';
 import { createCurveCloneBlock } from './blocks/curve-clone';
 import { createCoreIntervalBlock } from './blocks/core-interval';
+import { createLineGetStartPointBlock } from './blocks/line-start-point';
+import { createLineGetEndPointBlock } from './blocks/line-end-point';
 
 prepareBabylonForBlockly();
 
@@ -54,6 +56,8 @@ createPolylineBlock();
 createPolylineLengthBlock();
 createLineBlock();
 createLineLengthBlock();
+createLineGetStartPointBlock();
+createLineGetEndPointBlock()
 createDrawPointBlock();
 createDrawPointsBlock();
 createDrawGridBlock();
