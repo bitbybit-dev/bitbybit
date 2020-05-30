@@ -269,6 +269,8 @@ export function toolboxDefinition() {
                 </shadow>
             </value>
         </block>
+        <block type="functions_polyline_length">
+        </block>
     </category>
     <category name="Curves" categorystyle="geometry_category">
         <block type="geometry_interpolated_curve">

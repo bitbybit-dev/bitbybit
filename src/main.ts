@@ -31,12 +31,14 @@ import { createCurveLengthBlock } from './blocks/curve-length';
 import { createCurveLengthAtParamBlock } from './blocks/curve-length-at-param';
 import { createCurveParamAtLengthBlock } from './blocks/curve-param-at-length';
 import { createLineLengthBlock } from './blocks/line-length';
+import { createPolylineLengthBlock } from './blocks/polyline-length';
 
 prepareBabylonForBlockly();
 
 createPointBlock();
 createPointDistanceBlock();
 createPolylineBlock();
+createPolylineLengthBlock();
 createLineBlock();
 createLineLengthBlock();
 createInterpolatedCurveBlock();
