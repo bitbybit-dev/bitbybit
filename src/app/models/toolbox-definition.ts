@@ -1,6 +1,6 @@
 export function toolboxDefinition() {
     return `
-<xml id="toolbox" style="display: none">
+    <xml id="toolbox" style="display: none">
     <category name="Scene" categorystyle="scene_category">
         <block type="functions_activate_grid">
             <value name="width">
@@ -58,6 +58,22 @@ export function toolboxDefinition() {
             <value name="colour">
                 <shadow type="colour_picker">
                     <field name="COLOUR">#eee</field>
+                </shadow>
+            </value>
+        </block>
+    </category>
+    <category name="Core" categorystyle="core_category">
+        <block type="core_interval">
+        </block>
+        <block type="core_interval">
+            <value name="Min">
+                <shadow type="math_number">
+                    <field name="NUM">0</field>
+                </shadow>
+            </value>
+            <value name="Max">
+                <shadow type="math_number">
+                    <field name="NUM">1</field>
                 </shadow>
             </value>
         </block>
@@ -123,6 +139,12 @@ export function toolboxDefinition() {
         <block type="functions_drawpoints">
         </block>
         <block type="geometry_point_distance">
+        </block>
+        <block type="function_point_get_x">
+        </block>
+        <block type="function_point_get_y">
+        </block>
+        <block type="function_point_get_z">
         </block>
     </category>
     <category name="Lines" categorystyle="geometry_category">
@@ -319,9 +341,19 @@ export function toolboxDefinition() {
         </block>
         <block type="functions_curve_length">
         </block>
+        <block type="functions_curve_degree">
+        </block>
+        <block type="functions_curve_knots">
+        </block>
+        <block type="functions_curve_weights">
+        </block>
+        <block type="functions_curve_control_points">
+        </block>
         <block type="functions_curve_length_at_param">
         </block>
         <block type="functions_curve_param_at_length">
+        </block>
+        <block type="functions_curve_clone">
         </block>
     </category>
     <sep></sep>

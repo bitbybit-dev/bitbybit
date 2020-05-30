@@ -6,6 +6,9 @@ import { environment } from './environments/environment';
 
 import { createPointBlock } from './blocks/point';
 import { createPointDistanceBlock } from './blocks/point-distance';
+import { createPointGetXBlock } from './blocks/point-get-x';
+import { createPointGetYBlock } from './blocks/point-get-y';
+import { createPointGetZBlock } from './blocks/point-get-z';
 import { createDrawPointBlock } from './blocks/draw-point';
 import { createDrawPointsBlock } from './blocks/draw-points';
 import { createDrawGridBlock } from './blocks/draw-grid';
@@ -33,11 +36,20 @@ import { createCurveParamAtLengthBlock } from './blocks/curve-param-at-length';
 import { createLineLengthBlock } from './blocks/line-length';
 import { createPolylineLengthBlock } from './blocks/polyline-length';
 import { createCurveByKnotsControlPointsWeightsBlock } from './blocks/curve-by-knots-control-points-weights';
+import { createCurveDegreeBlock } from './blocks/curve-degree';
+import { createCurveKnotsBlock } from './blocks/curve-knots';
+import { createCurveControlPointsBlock } from './blocks/curve-control-points';
+import { createCurveWeightsBlock } from './blocks/curve-weights';
+import { createCurveCloneBlock } from './blocks/curve-clone';
+import { createCoreIntervalBlock } from './blocks/core-interval';
 
 prepareBabylonForBlockly();
 
 createPointBlock();
 createPointDistanceBlock();
+createPointGetXBlock();
+createPointGetYBlock();
+createPointGetZBlock();
 createPolylineBlock();
 createPolylineLengthBlock();
 createLineBlock();
@@ -64,6 +76,12 @@ createCurveClosestParamsBlock();
 createCurveLengthBlock();
 createCurveLengthAtParamBlock();
 createCurveParamAtLengthBlock();
+createCurveDegreeBlock();
+createCurveKnotsBlock();
+createCurveControlPointsBlock();
+createCurveWeightsBlock();
+createCurveCloneBlock();
+createCoreIntervalBlock();
 
 if (environment.production) {
     enableProdMode();
