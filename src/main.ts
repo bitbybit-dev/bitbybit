@@ -30,6 +30,7 @@ import { createCurveClosestParamsBlock } from './blocks/curve-closest-params';
 import { createCurveLengthBlock } from './blocks/curve-length';
 import { createCurveLengthAtParamBlock } from './blocks/curve-length-at-param';
 import { createCurveParamAtLengthBlock } from './blocks/curve-param-at-length';
+import { createLineLengthBlock } from './blocks/line-length';
 
 prepareBabylonForBlockly();
 
@@ -37,6 +38,7 @@ createPointBlock();
 createPointDistanceBlock();
 createPolylineBlock();
 createLineBlock();
+createLineLengthBlock();
 createInterpolatedCurveBlock();
 createDrawPointBlock();
 createDrawPointsBlock();

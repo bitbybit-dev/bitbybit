@@ -246,6 +246,8 @@ export function toolboxDefinition() {
                 </shadow>
             </value>
         </block>
+        <block type="functions_line_length">
+        </block>
     </category>
     <category name="Polyline" categorystyle="geometry_category">
         <block type="geometry_polyline">
