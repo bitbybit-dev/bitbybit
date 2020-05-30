@@ -105,6 +105,22 @@
         </block>
         <block type="core_vector_span">
         </block>
+        <block type="core_vector_all">
+        </block>
+        <block type="core_vector_finite">
+        </block>
+        <block type="core_vector_sum">
+        </block>
+        <block type="core_vector_normalized">
+        </block>
+        <block type="core_vector_cross">
+        </block>
+        <block type="core_vector_on_ray">
+        </block>
+        <block type="core_vector_lerp">
+        </block>
+        <block type="core_vector_distance_squared">
+        </block>
     </category>
     <category name="Point" categorystyle="geometry_category">
         <block type="geometry_point">

@@ -1,6 +1,6 @@
 export function toolboxDefinition() {
     return `
-    <xml id="toolbox" style="display: none">
+<xml id="toolbox" style="display: none">
     <category name="Scene" categorystyle="scene_category">
         <block type="functions_activate_grid">
             <value name="width">
@@ -106,6 +106,22 @@ export function toolboxDefinition() {
         <block type="core_vector_range">
         </block>
         <block type="core_vector_span">
+        </block>
+        <block type="core_vector_all">
+        </block>
+        <block type="core_vector_finite">
+        </block>
+        <block type="core_vector_sum">
+        </block>
+        <block type="core_vector_normalized">
+        </block>
+        <block type="core_vector_cross">
+        </block>
+        <block type="core_vector_on_ray">
+        </block>
+        <block type="core_vector_lerp">
+        </block>
+        <block type="core_vector_distance_squared">
         </block>
     </category>
     <category name="Point" categorystyle="geometry_category">

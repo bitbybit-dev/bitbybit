@@ -63,6 +63,14 @@ import { createCoreVectorPositiveAngleBetweenBlock } from './blocks/core-vector-
 import { createCoreVectorRangeBlock } from './blocks/core-vector-range';
 import { createCoreVectorSignedAngleBetweenBlock } from './blocks/core-vector-signed-angle-between';
 import { createCoreVectorSpanBlock } from './blocks/core-vector-span';
+import { createCoreVectorAllBlock } from './blocks/core-vector-all';
+import { createCoreVectorFiniteBlock } from './blocks/core-vector-finite';
+import { createCoreVectorSumBlock } from './blocks/core-vector-sum';
+import { createCoreVectorCrossBlock } from './blocks/core-vector-cross';
+import { createCoreVectorNormalizedBlock } from './blocks/core-vector-normalized';
+import { createCoreVectorOnRayBlock } from './blocks/core-vector-on-ray';
+import { createCoreVectorLerpBlock } from './blocks/core-vector-lerp';
+import { createCoreVectorDistanceSquaredBlock } from './blocks/core-vector-distance-squared';
 
 prepareBabylonForBlockly();
 
@@ -130,6 +138,14 @@ createCoreVectorPositiveAngleBetweenBlock();
 createCoreVectorRangeBlock();
 createCoreVectorSignedAngleBetweenBlock();
 createCoreVectorSpanBlock();
+createCoreVectorAllBlock();
+createCoreVectorFiniteBlock();
+createCoreVectorSumBlock();
+createCoreVectorNormalizedBlock();
+createCoreVectorCrossBlock();
+createCoreVectorOnRayBlock();
+createCoreVectorLerpBlock();
+createCoreVectorDistanceSquaredBlock();
 
 if (environment.production) {
     enableProdMode();
