@@ -123,7 +123,7 @@ export function toolboxDefinition() {
         <block type="functions_drawpoints">
         </block>
     </category>
-    <category name="Curves" categorystyle="geometry_category">
+    <category name="Lines" categorystyle="geometry_category">
         <block type="geometry_line">
         </block>
         <block type="geometry_line">
@@ -244,6 +244,8 @@ export function toolboxDefinition() {
                 </shadow>
             </value>
         </block>
+    </category>
+    <category name="Polyline" categorystyle="geometry_category">
         <block type="geometry_polyline">
         </block>
         <block type="functions_draw_polyline">
@@ -263,6 +265,8 @@ export function toolboxDefinition() {
                 </shadow>
             </value>
         </block>
+    </category>
+    <category name="Curves" categorystyle="geometry_category">
         <block type="geometry_interpolated_curve">
             <value name="Degree">
                 <shadow type="math_number">
