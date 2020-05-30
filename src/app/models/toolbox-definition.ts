@@ -1,6 +1,6 @@
 export function toolboxDefinition() {
     return `
-    <xml id="toolbox" style="display: none">
+<xml id="toolbox" style="display: none">
     <category name="Scene" categorystyle="scene_category">
         <block type="functions_activate_grid">
             <value name="width">
@@ -76,6 +76,10 @@ export function toolboxDefinition() {
                     <field name="NUM">1</field>
                 </shadow>
             </value>
+        </block>
+        <block type="core_interval_get_min">
+        </block>
+        <block type="core_interval_get_max">
         </block>
     </category>
     <category name="Point" categorystyle="geometry_category">
@@ -362,6 +366,8 @@ export function toolboxDefinition() {
         <block type="functions_curve_param_at_length">
         </block>
         <block type="functions_curve_clone">
+        </block>
+        <block type="functions_curve_domain">
         </block>
     </category>
     <sep></sep>

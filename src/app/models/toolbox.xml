@@ -75,6 +75,10 @@
                 </shadow>
             </value>
         </block>
+        <block type="core_interval_get_min">
+        </block>
+        <block type="core_interval_get_max">
+        </block>
     </category>
     <category name="Point" categorystyle="geometry_category">
         <block type="geometry_point">
@@ -360,6 +364,8 @@
         <block type="functions_curve_param_at_length">
         </block>
         <block type="functions_curve_clone">
+        </block>
+        <block type="functions_curve_domain">
         </block>
     </category>
     <sep></sep>

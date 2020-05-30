@@ -46,6 +46,9 @@ import { createLineGetStartPointBlock } from './blocks/line-start-point';
 import { createLineGetEndPointBlock } from './blocks/line-end-point';
 import { createPolylineGetPointsBlock } from './blocks/polyline-points';
 import { createPolylineGetPointsCountBlock } from './blocks/polyline-points-count';
+import { createCoreIntervalGetMaxBlock } from './blocks/core-interval-get-max';
+import { createCoreIntervalGetMinBlock } from './blocks/core-interval-get-min';
+import { createCurveDomainBlock } from './blocks/curve-domain';
 
 prepareBabylonForBlockly();
 
@@ -89,7 +92,11 @@ createCurveKnotsBlock();
 createCurveControlPointsBlock();
 createCurveWeightsBlock();
 createCurveCloneBlock();
+createCurveDomainBlock();
 createCoreIntervalBlock();
+createCoreIntervalGetMaxBlock();
+createCoreIntervalGetMinBlock();
+
 
 if (environment.production) {
     enableProdMode();
