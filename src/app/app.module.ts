@@ -11,6 +11,7 @@ import { MatGridListModule } from '@angular/material/grid-list';
 import { MatButtonModule } from '@angular/material/button';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatMenuModule } from '@angular/material/menu';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { ExamplesDialogComponent } from './components/examples-dialog/examples-dialog.component';
 import { MatDialogModule } from '@angular/material/dialog';
 
@@ -26,6 +27,7 @@ import { MatDialogModule } from '@angular/material/dialog';
         AppRoutingModule,
         MatTabsModule,
         BrowserAnimationsModule,
+        MatTooltipModule,
         MatSidenavModule,
         MatToolbarModule,
         MatIconModule,

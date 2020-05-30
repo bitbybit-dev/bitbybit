@@ -1,16 +1,19 @@
 <mat-drawer-container class="main-container">
     <mat-drawer class="main-side" mode="side" opened>
-        <img class="logo" src="assets/logo-small.png">
+        <img class="logo" matTooltip="BitByBit" src="assets/logo-small.png">
         <div class="actions">
             <button mat-buttom mat-icon-button (click)="run()">
-                <mat-icon matTooltip="Run" aria-label="Run the code">play_arrow
+                <mat-icon matTooltip="Run the code" aria-label="Run the code">play_arrow
                 </mat-icon>
             </button>
             <button mat-buttom mat-icon-button (click)="drawer.toggle()">
-                <mat-icon aria-hidden="false" aria-label="Swap Canvas">swap_horiz
+                <mat-icon matTooltip="Swap canvas"  aria-label="Swap Canvas">swap_horiz
                 </mat-icon>
-            </button>
-            <button mat-buttom mat-icon-button [matMenuTriggerFor]="appMenu">
+            </button>               
+            <a matTooltip="Support us on Patreon" mat-icon-button href="https://www.patreon.com/bitbybitdev" target="_blank">
+                <img width="16px" src="../assets/logo-patreon.svg">
+            </a>
+            <button matTooltip="More" mat-buttom mat-icon-button [matMenuTriggerFor]="appMenu">
                 <mat-icon aria-hidden="false" aria-label="More">more_vert
                 </mat-icon>
             </button>
@@ -63,6 +66,10 @@
                 <a mat-menu-item href="https://fb.me/bitbybitdev" target="_blank">
                     <img class="mat-icon" width="20px" src="../assets/logo-facebook.svg" />
                     Facebook
+                </a>
+                <a mat-menu-item href="https://twitter.com/bitbybi80412891" target="_blank">
+                    <img class="mat-icon" width="20px" src="../assets/logo-twitter.svg" />
+                    Twitter
                 </a>
                 <a mat-menu-item href="https://github.com/bitbybit-dev/bitbybit" target="_blank">
                     <img class="mat-icon" width="20px" src="../assets/logo-github.svg" />
