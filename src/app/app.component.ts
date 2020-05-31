@@ -17,6 +17,7 @@ import { ArcRotateCamera } from '@babylonjs/core';
 import { MatDialog } from '@angular/material/dialog';
 import { ExamplesDialogComponent } from './components/examples-dialog/examples-dialog.component';
 import { AboutDialogComponent } from './components/about-dialog/about-dialog.component';
+import { SponsorsDialogComponent } from './components/sponsors-dialog/sponsors-dialog.component';
 
 @Component({
     selector: 'app-root',
@@ -154,6 +155,10 @@ export class AppComponent implements OnInit, AfterViewInit {
         this.openAboutDialog();
     }
 
+    sponsors(){
+        this.openSponsorsDialog();
+    }
+
     run() {
         try {
             this.scene.meshes.forEach(m => m.dispose());
@@ -201,6 +206,17 @@ ${code}
         const dialogRef = this.dialog.open(AboutDialogComponent, {
             width: '600px',
             height: '500px'
+        });
+
+        dialogRef.afterClosed().subscribe(result => {
+            const d = result;
+        });
+    }
+
+    private openSponsorsDialog(): void {
+        const dialogRef = this.dialog.open(SponsorsDialogComponent, {
+            width: '700px',
+            height: '700px'
         });
 
         dialogRef.afterClosed().subscribe(result => {

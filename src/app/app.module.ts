@@ -14,6 +14,7 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { ExamplesDialogComponent } from './components/examples-dialog/examples-dialog.component';
 import { MatDialogModule } from '@angular/material/dialog';
+import { SponsorsDialogComponent } from './components/sponsors-dialog/sponsors-dialog.component';
 
 
 
@@ -21,6 +22,7 @@ import { MatDialogModule } from '@angular/material/dialog';
     declarations: [
         AppComponent,
         ExamplesDialogComponent,
+        SponsorsDialogComponent,
     ],
     imports: [
         BrowserModule,
