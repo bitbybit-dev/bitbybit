@@ -1,0 +1,43 @@
+import { createCoreVector3Block } from './core-vector';
+import { createCoreVectorAngleBetweenBlock } from './core-vector-angle-between';
+import { createCoreVectorAngleBetweenNormalized2dBlock } from './core-vector-angle-between-normalized-2d';
+import { createCoreVectorDistanceBlock } from './core-vector-distance';
+import { createCoreVectorDomainBlock } from './core-vector-domain';
+import { createCoreVectorMaxBlock } from './core-vector-max';
+import { createCoreVectorMinBlock } from './core-vector-min';
+import { createCoreVectorNegateBlock } from './core-vector-negate';
+import { createCoreVectorPositiveAngleBetweenBlock } from './core-vector-positive-angle-between';
+import { createCoreVectorRangeBlock } from './core-vector-range';
+import { createCoreVectorSignedAngleBetweenBlock } from './core-vector-signed-angle-between';
+import { createCoreVectorSpanBlock } from './core-vector-span';
+import { createCoreVectorAllBlock } from './core-vector-all';
+import { createCoreVectorFiniteBlock } from './core-vector-finite';
+import { createCoreVectorSumBlock } from './core-vector-sum';
+import { createCoreVectorNormalizedBlock } from './core-vector-normalized';
+import { createCoreVectorCrossBlock } from './core-vector-cross';
+import { createCoreVectorOnRayBlock } from './core-vector-on-ray';
+import { createCoreVectorLerpBlock } from './core-vector-lerp';
+import { createCoreVectorDistanceSquaredBlock } from './core-vector-distance-squared';
+
+export function assembleVectorBlocks() {
+    createCoreVector3Block();
+    createCoreVectorAngleBetweenBlock();
+    createCoreVectorAngleBetweenNormalized2dBlock();
+    createCoreVectorDistanceBlock();
+    createCoreVectorDomainBlock();
+    createCoreVectorMaxBlock();
+    createCoreVectorMinBlock();
+    createCoreVectorNegateBlock();
+    createCoreVectorPositiveAngleBetweenBlock();
+    createCoreVectorRangeBlock();
+    createCoreVectorSignedAngleBetweenBlock();
+    createCoreVectorSpanBlock();
+    createCoreVectorAllBlock();
+    createCoreVectorFiniteBlock();
+    createCoreVectorSumBlock();
+    createCoreVectorNormalizedBlock();
+    createCoreVectorCrossBlock();
+    createCoreVectorOnRayBlock();
+    createCoreVectorLerpBlock();
+    createCoreVectorDistanceSquaredBlock();
+}
