@@ -18,6 +18,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { ExamplesDialogComponent } from './components/examples-dialog/examples-dialog.component';
 import { AboutDialogComponent } from './components/about-dialog/about-dialog.component';
 import { SponsorsDialogComponent } from './components/sponsors-dialog/sponsors-dialog.component';
+import { AlertDialogComponent } from './components/alert-dialog/alert-dialog.component';
 
 @Component({
     selector: 'app-root',
@@ -155,7 +156,7 @@ export class AppComponent implements OnInit, AfterViewInit {
         this.openAboutDialog();
     }
 
-    sponsors(){
+    sponsors() {
         this.openSponsorsDialog();
     }
 
@@ -173,7 +174,11 @@ let verb = window.verb;
 ${code}
             `);
         } catch (e) {
-            alert(e);
+            this.openAlertDialog({
+                title: 'Code execution failed',
+                details: `Something went wrong when running the code. Check if there are no disconnected or misconfigured components on your canvas`,
+                message: `Error Message: "${e}"`,
+            })
         }
     }
 
@@ -189,6 +194,18 @@ ${code}
         } catch (e) {
             alert(e);
         }
+    }
+
+    private openAlertDialog(error: { title: string, details: string, message: string }): void {
+        const dialogRef = this.dialog.open(AlertDialogComponent, {
+            width: '600px',
+            height: '300px',
+            data: error,
+        });
+
+        dialogRef.afterClosed().subscribe(result => {
+            const d = result;
+        });
     }
 
     private openExamplesDialog(): void {

@@ -11,10 +11,12 @@ import { MatGridListModule } from '@angular/material/grid-list';
 import { MatButtonModule } from '@angular/material/button';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatMenuModule } from '@angular/material/menu';
+import { MatCardModule } from '@angular/material/card';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { ExamplesDialogComponent } from './components/examples-dialog/examples-dialog.component';
 import { MatDialogModule } from '@angular/material/dialog';
 import { SponsorsDialogComponent } from './components/sponsors-dialog/sponsors-dialog.component';
+import { AlertDialogComponent } from './components/alert-dialog/alert-dialog.component';
 
 
 
@@ -23,6 +25,7 @@ import { SponsorsDialogComponent } from './components/sponsors-dialog/sponsors-d
         AppComponent,
         ExamplesDialogComponent,
         SponsorsDialogComponent,
+        AlertDialogComponent,
     ],
     imports: [
         BrowserModule,
@@ -37,7 +40,8 @@ import { SponsorsDialogComponent } from './components/sponsors-dialog/sponsors-d
         MatGridListModule,
         MatDialogModule,
         MatButtonModule,
-        MatMenuModule
+        MatMenuModule,
+        MatCardModule,
     ],
     providers: [],
     bootstrap: [AppComponent]
