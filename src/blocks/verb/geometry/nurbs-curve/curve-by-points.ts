@@ -3,7 +3,7 @@ import * as JavaScript from 'blockly/javascript';
 
 export function createCurveByPointsBlock() {
 
-    Blocks['geometry_curve_by_points'] = {
+    Blocks['verb_curve_by_points'] = {
         init: function () {
             this.appendValueInput("Points")
                 .setCheck("Array")
@@ -20,7 +20,7 @@ export function createCurveByPointsBlock() {
         }
     };
 
-    JavaScript['geometry_curve_by_points'] = function (block) {
+    JavaScript['verb_curve_by_points'] = function (block) {
         var value_points = JavaScript.valueToCode(block, 'Points', JavaScript.ORDER_ATOMIC);
         var value_degree = JavaScript.valueToCode(block, 'Degree', JavaScript.ORDER_ATOMIC);
 

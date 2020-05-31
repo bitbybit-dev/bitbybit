@@ -3,7 +3,7 @@ import * as JavaScript from 'blockly/javascript';
 
 export function createCoreIntervalGetMinBlock() {
 
-    Blocks['core_interval_get_min'] = {
+    Blocks['verb_core_interval_get_min'] = {
         init: function () {
             this.appendValueInput("Interval")
                 .setCheck("Interval")
@@ -16,7 +16,7 @@ export function createCoreIntervalGetMinBlock() {
         }
     };
 
-    JavaScript['core_interval_get_min'] = function (block) {
+    JavaScript['verb_core_interval_get_min'] = function (block) {
         var value_interval = JavaScript.valueToCode(block, 'Interval', JavaScript.ORDER_ATOMIC);
         
         var code = `${value_interval}.min`;

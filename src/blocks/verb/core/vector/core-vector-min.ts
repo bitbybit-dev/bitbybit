@@ -3,7 +3,7 @@ import * as JavaScript from 'blockly/javascript';
 
 export function createCoreVectorMinBlock() {
 
-    Blocks['core_vector_min'] = {
+    Blocks['verb_core_vector_min'] = {
         init: function () {
             this.appendValueInput("Vector")
                 .setCheck("Array")
@@ -16,7 +16,7 @@ export function createCoreVectorMinBlock() {
         }
     };
 
-    JavaScript['core_vector_min'] = function (block) {
+    JavaScript['verb_core_vector_min'] = function (block) {
         var value_vector = JavaScript.valueToCode(block, 'Vector', JavaScript.ORDER_ATOMIC);
         
         var code = `(() => verb.core.Vec.min(${value_vector}))()`;

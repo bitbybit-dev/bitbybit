@@ -3,7 +3,7 @@ import * as JavaScript from 'blockly/javascript';
 
 export function createPolylineGetPointsCountBlock() {
 
-    Blocks['functions_polyline_get_points_count'] = {
+    Blocks['base_geometry_polyline_points_count'] = {
         init: function () {
             this.appendValueInput("Polyline")
                 .setCheck("Polyline")
@@ -16,7 +16,7 @@ export function createPolylineGetPointsCountBlock() {
         }
     };
 
-    JavaScript['functions_polyline_get_points_count'] = function (block) {
+    JavaScript['base_geometry_polyline_points_count'] = function (block) {
         var value_polyline = JavaScript.valueToCode(block, 'Polyline', JavaScript.ORDER_ATOMIC);
 
         var code = `${value_polyline}.points.length`;

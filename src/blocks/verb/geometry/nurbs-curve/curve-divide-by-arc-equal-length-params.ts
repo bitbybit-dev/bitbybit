@@ -3,7 +3,7 @@ import * as JavaScript from 'blockly/javascript';
 
 export function createCurveDivideByEqualArcLengthParamsBlock() {
 
-    Blocks['functions_curve_divide_by_equal_arc_length_params'] = {
+    Blocks['verb_curve_divide_by_equal_arc_length_params'] = {
         init: function () {
             this.appendValueInput("Curve")
                 .setCheck("NurbsCurve")
@@ -20,7 +20,7 @@ export function createCurveDivideByEqualArcLengthParamsBlock() {
         }
     };
 
-    JavaScript['functions_curve_divide_by_equal_arc_length_params'] = function (block) {
+    JavaScript['verb_curve_divide_by_equal_arc_length_params'] = function (block) {
         var value_curve = JavaScript.valueToCode(block, 'Curve', JavaScript.ORDER_ATOMIC);
         var value_subdivision = JavaScript.valueToCode(block, 'Subdivision', JavaScript.ORDER_ATOMIC);
 

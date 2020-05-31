@@ -3,7 +3,7 @@ import * as JavaScript from 'blockly/javascript';
 
 export function createDrawCurveBlock() {
 
-    Blocks['functions_draw_curve'] = {
+    Blocks['babylon_draw_curve'] = {
         init: function () {
             this.appendValueInput("Curve")
                 .setCheck("NurbsCurve")
@@ -29,7 +29,7 @@ export function createDrawCurveBlock() {
         }
     };
 
-    JavaScript['functions_draw_curve'] = function (block) {
+    JavaScript['babylon_draw_curve'] = function (block) {
         var value_curve = JavaScript.valueToCode(block, 'Curve', JavaScript.ORDER_ATOMIC);
         var value_colour = JavaScript.valueToCode(block, 'Colour', JavaScript.ORDER_ATOMIC);
         var value_opacity = JavaScript.valueToCode(block, 'Opacity', JavaScript.ORDER_ATOMIC);

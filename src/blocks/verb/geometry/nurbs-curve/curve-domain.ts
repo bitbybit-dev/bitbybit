@@ -3,7 +3,7 @@ import * as JavaScript from 'blockly/javascript';
 
 export function createCurveDomainBlock() {
 
-    Blocks['functions_curve_domain'] = {
+    Blocks['verb_curve_domain'] = {
         init: function () {
             this.appendValueInput("Curve")
                 .setCheck("NurbsCurve")
@@ -16,7 +16,7 @@ export function createCurveDomainBlock() {
         }
     };
 
-    JavaScript['functions_curve_domain'] = function (block) {
+    JavaScript['verb_curve_domain'] = function (block) {
         var value_curve = JavaScript.valueToCode(block, 'Curve', JavaScript.ORDER_ATOMIC);
 
         var code = `

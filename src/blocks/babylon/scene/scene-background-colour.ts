@@ -2,7 +2,7 @@ import { Blocks } from "blockly";
 import * as JavaScript from 'blockly/javascript';
 
 export function createSceneBackgroundColourBlock() {
-    Blocks['functions_scene_colour'] = {
+    Blocks['babylon_scene_background_colour'] = {
         init: function () {
             this.appendValueInput("colour")
                 .setCheck("Colour")
@@ -15,7 +15,7 @@ export function createSceneBackgroundColourBlock() {
         }
     };
 
-    JavaScript['functions_scene_colour'] = function (block) {
+    JavaScript['babylon_scene_background_colour'] = function (block) {
         var value_colour = JavaScript.valueToCode(block, 'colour', JavaScript.ORDER_ATOMIC);
 
         var code = `

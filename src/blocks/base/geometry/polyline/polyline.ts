@@ -3,7 +3,7 @@ import * as JavaScript from 'blockly/javascript';
 
 export function createPolylineBlock() {
 
-    Blocks['geometry_polyline'] = {
+    Blocks['base_geometry_polyline'] = {
         init: function () {
             this.appendValueInput("points")
                 .setCheck("Array")
@@ -16,7 +16,7 @@ export function createPolylineBlock() {
         }
     };
 
-    JavaScript['geometry_polyline'] = function (block) {
+    JavaScript['base_geometry_polyline'] = function (block) {
         var value_points = JavaScript.valueToCode(block, 'points', JavaScript.ORDER_ATOMIC);
 
         var code = `{points: ${value_points}}`;

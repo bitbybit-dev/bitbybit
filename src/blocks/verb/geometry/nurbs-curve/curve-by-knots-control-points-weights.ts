@@ -3,7 +3,7 @@ import * as JavaScript from 'blockly/javascript';
 
 export function createCurveByKnotsControlPointsWeightsBlock() {
 
-    Blocks['geometry_curve_by_knots_control_points_weights'] = {
+    Blocks['verb_curve_by_knots_control_points_weights'] = {
         init: function () {
             this.appendValueInput("Knots")
                 .setCheck("Array")
@@ -28,7 +28,7 @@ export function createCurveByKnotsControlPointsWeightsBlock() {
         }
     };
 
-    JavaScript['geometry_curve_by_knots_control_points_weights'] = function (block) {
+    JavaScript['verb_curve_by_knots_control_points_weights'] = function (block) {
         var value_knots = JavaScript.valueToCode(block, 'Knots', JavaScript.ORDER_ATOMIC);
         var value_points = JavaScript.valueToCode(block, 'Points', JavaScript.ORDER_ATOMIC);
         var value_weights = JavaScript.valueToCode(block, 'Weights', JavaScript.ORDER_ATOMIC);

@@ -3,7 +3,7 @@ import * as JavaScript from 'blockly/javascript';
 
 export function createCoreVectorLerpBlock() {
 
-    Blocks['core_vector_lerp'] = {
+    Blocks['verb_core_vector_lerp'] = {
         init: function () {
             this.appendValueInput("Fraction")
                 .setCheck("Number")
@@ -24,7 +24,7 @@ export function createCoreVectorLerpBlock() {
         }
     };
 
-    JavaScript['core_vector_lerp'] = function (block) {
+    JavaScript['verb_core_vector_lerp'] = function (block) {
         var value_fraction = JavaScript.valueToCode(block, 'Fraction', JavaScript.ORDER_ATOMIC);
         var value_first = JavaScript.valueToCode(block, 'First', JavaScript.ORDER_ATOMIC);
         var value_second = JavaScript.valueToCode(block, 'Second', JavaScript.ORDER_ATOMIC);

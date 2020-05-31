@@ -3,7 +3,7 @@ import * as JavaScript from 'blockly/javascript';
 
 export function createCoreVectorAngleBetweenNormalized2dBlock() {
 
-    Blocks['core_vector_angle_between_normalized_2d'] = {
+    Blocks['verb_core_vector_angle_between_normalized_2d'] = {
         init: function () {
             this.appendValueInput("First")
                 .setCheck("Vector3")
@@ -20,7 +20,7 @@ export function createCoreVectorAngleBetweenNormalized2dBlock() {
         }
     };
 
-    JavaScript['core_vector_angle_between_normalized_2d'] = function (block) {
+    JavaScript['verb_core_vector_angle_between_normalized_2d'] = function (block) {
         var value_first = JavaScript.valueToCode(block, 'First', JavaScript.ORDER_ATOMIC);
         var value_second = JavaScript.valueToCode(block, 'Second', JavaScript.ORDER_ATOMIC);
         

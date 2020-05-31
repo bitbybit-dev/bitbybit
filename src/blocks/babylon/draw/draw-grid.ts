@@ -2,7 +2,7 @@ import { Blocks, ALIGN_RIGHT } from "blockly";
 import * as JavaScript from 'blockly/javascript';
 
 export function createDrawGridBlock() {
-    Blocks['functions_activate_grid'] = {
+    Blocks['babylon_draw_grid'] = {
         init: function () {
             this.appendValueInput("width")
                 .setCheck("Number")
@@ -52,7 +52,7 @@ export function createDrawGridBlock() {
         }
     };
 
-    JavaScript['functions_activate_grid'] = function (block) {
+    JavaScript['babylon_draw_grid'] = function (block) {
         var value_width = JavaScript.valueToCode(block, 'width', JavaScript.ORDER_ATOMIC);
         var value_height = JavaScript.valueToCode(block, 'height', JavaScript.ORDER_ATOMIC);
         var value_subdivisions = JavaScript.valueToCode(block, 'subdivisions', JavaScript.ORDER_ATOMIC);

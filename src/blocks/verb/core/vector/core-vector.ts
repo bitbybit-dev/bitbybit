@@ -3,7 +3,7 @@ import * as JavaScript from 'blockly/javascript';
 
 export function createCoreVector3Block() {
 
-    Blocks['core_vector'] = {
+    Blocks['verb_core_vector'] = {
         init: function() {
           this.appendValueInput("X")
               .setCheck("Number")
@@ -25,7 +25,7 @@ export function createCoreVector3Block() {
         }
       };
 
-    JavaScript['core_vector'] = function(block) {
+    JavaScript['verb_core_vector'] = function(block) {
         var value_x = JavaScript.valueToCode(block, 'X', JavaScript.ORDER_ATOMIC);
         var value_y = JavaScript.valueToCode(block, 'Y', JavaScript.ORDER_ATOMIC);
         var value_z = JavaScript.valueToCode(block, 'Z', JavaScript.ORDER_ATOMIC);

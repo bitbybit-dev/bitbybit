@@ -1,9 +1,9 @@
 import { Blocks, ALIGN_RIGHT } from "blockly";
 import * as JavaScript from 'blockly/javascript';
 
-export function createPointGetYBlock() {
+export function createPointYBlock() {
 
-    Blocks['function_point_get_y'] = {
+    Blocks['base_geometry_point_y'] = {
         init: function () {
             this.appendValueInput("Point")
                 .setCheck("Vector3")
@@ -16,7 +16,7 @@ export function createPointGetYBlock() {
         }
     };
 
-    JavaScript['function_point_get_y'] = function (block) {
+    JavaScript['base_geometry_point_y'] = function (block) {
         var value_point = JavaScript.valueToCode(block, 'Point', JavaScript.ORDER_ATOMIC);
         
         var code = `${value_point}[1]`;

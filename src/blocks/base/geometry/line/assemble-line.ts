@@ -1,11 +1,11 @@
 import { createLineBlock } from './line';
 import { createLineLengthBlock } from './line-length';
-import { createLineGetStartPointBlock } from './line-start-point';
-import { createLineGetEndPointBlock } from './line-end-point';
+import { createLineStartPointBlock } from './line-start-point';
+import { createLineEndPointBlock } from './line-end-point';
 
 export function assembleLineBlocks() {
     createLineBlock();
     createLineLengthBlock();
-    createLineGetStartPointBlock();
-    createLineGetEndPointBlock()
+    createLineStartPointBlock();
+    createLineEndPointBlock()
 }

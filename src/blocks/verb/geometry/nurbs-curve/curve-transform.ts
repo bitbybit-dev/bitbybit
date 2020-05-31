@@ -3,7 +3,7 @@ import * as JavaScript from 'blockly/javascript';
 
 export function createCurveTransformBlock() {
 
-    Blocks['functions_curve_transform'] = {
+    Blocks['verb_curve_transform'] = {
         init: function () {
             this.appendValueInput("Curve")
                 .setCheck("NurbsCurve")
@@ -20,7 +20,7 @@ export function createCurveTransformBlock() {
         }
     };
 
-    JavaScript['functions_curve_transform'] = function (block) {
+    JavaScript['verb_curve_transform'] = function (block) {
         var value_curve = JavaScript.valueToCode(block, 'Curve', JavaScript.ORDER_ATOMIC);
         var value_matrix = JavaScript.valueToCode(block, 'Matrix', JavaScript.ORDER_ATOMIC);
 

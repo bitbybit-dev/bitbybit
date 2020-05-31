@@ -3,7 +3,7 @@ import * as JavaScript from 'blockly/javascript';
 
 export function createCoreVectorDomainBlock() {
 
-    Blocks['core_vector_domain'] = {
+    Blocks['verb_core_vector_domain'] = {
         init: function () {
             this.appendValueInput("Vector")
                 .setCheck("Vector3")
@@ -16,7 +16,7 @@ export function createCoreVectorDomainBlock() {
         }
     };
 
-    JavaScript['core_vector_domain'] = function (block) {
+    JavaScript['verb_core_vector_domain'] = function (block) {
         var value_vector = JavaScript.valueToCode(block, 'Vector', JavaScript.ORDER_ATOMIC);
         
         var code = `(() => verb.core.Vec.domain(${value_vector}))()`;

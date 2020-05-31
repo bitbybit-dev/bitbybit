@@ -3,7 +3,7 @@ import * as JavaScript from 'blockly/javascript';
 
 export function createCoreVectorMaxBlock() {
 
-    Blocks['core_vector_max'] = {
+    Blocks['verb_core_vector_max'] = {
         init: function () {
             this.appendValueInput("Vector")
                 .setCheck("Array")
@@ -16,7 +16,7 @@ export function createCoreVectorMaxBlock() {
         }
     };
 
-    JavaScript['core_vector_max'] = function (block) {
+    JavaScript['verb_core_vector_max'] = function (block) {
         var value_vector = JavaScript.valueToCode(block, 'Vector', JavaScript.ORDER_ATOMIC);
         
         var code = `(() => verb.core.Vec.max(${value_vector}))()`;

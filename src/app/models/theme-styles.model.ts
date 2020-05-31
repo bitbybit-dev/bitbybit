@@ -54,7 +54,7 @@ export function themeStyle() {
             "functions_category": {
                 "colour": "#fff",
             },
-            "core_category": {
+            "verb_core_category": {
                 "colour": "#fff",
             },
             "geometry_category": {

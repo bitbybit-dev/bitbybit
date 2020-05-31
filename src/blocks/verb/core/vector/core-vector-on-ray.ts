@@ -3,7 +3,7 @@ import * as JavaScript from 'blockly/javascript';
 
 export function createCoreVectorOnRayBlock() {
 
-    Blocks['core_vector_on_ray'] = {
+    Blocks['verb_core_vector_on_ray'] = {
         init: function () {
             this.appendValueInput("Point")
                 .setCheck("Vector3")
@@ -24,7 +24,7 @@ export function createCoreVectorOnRayBlock() {
         }
     };
 
-    JavaScript['core_vector_on_ray'] = function (block) {
+    JavaScript['verb_core_vector_on_ray'] = function (block) {
         var value_point = JavaScript.valueToCode(block, 'Point', JavaScript.ORDER_ATOMIC);
         var value_vector = JavaScript.valueToCode(block, 'Vector', JavaScript.ORDER_ATOMIC);
         var value_distance = JavaScript.valueToCode(block, 'Distance', JavaScript.ORDER_ATOMIC);

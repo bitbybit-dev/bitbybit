@@ -3,7 +3,7 @@ import * as JavaScript from 'blockly/javascript';
 
 export function createCoreIntervalBlock() {
 
-    Blocks['core_interval'] = {
+    Blocks['verb_core_interval'] = {
         init: function () {
             this.appendValueInput("Min")
                 .setCheck("Number")
@@ -20,7 +20,7 @@ export function createCoreIntervalBlock() {
         }
     };
 
-    JavaScript['core_interval'] = function (block) {
+    JavaScript['verb_core_interval'] = function (block) {
         var value_min = JavaScript.valueToCode(block, 'Min', JavaScript.ORDER_ATOMIC);
         var value_max = JavaScript.valueToCode(block, 'Max', JavaScript.ORDER_ATOMIC);
         

@@ -2,7 +2,7 @@ export function toolboxDefinition() {
     return `
 <xml id="toolbox" style="display: none">
     <category name="Scene" categorystyle="scene_category">
-        <block type="functions_activate_grid">
+        <block type="babylon_draw_grid">
             <value name="width">
                 <shadow type="math_number">
                     <field name="NUM">400</field>
@@ -54,7 +54,7 @@ export function toolboxDefinition() {
                 </shadow>
             </value>
         </block>
-        <block type="functions_scene_colour">
+        <block type="babylon_scene_background_colour">
             <value name="colour">
                 <shadow type="colour_picker">
                     <field name="COLOUR">#eee</field>
@@ -62,10 +62,10 @@ export function toolboxDefinition() {
             </value>
         </block>
     </category>
-    <category name="Core Interval" categorystyle="core_category">
-        <block type="core_interval">
+    <category name="Core Interval" categorystyle="verb_core_category">
+        <block type="verb_core_interval">
         </block>
-        <block type="core_interval">
+        <block type="verb_core_interval">
             <value name="Min">
                 <shadow type="math_number">
                     <field name="NUM">0</field>
@@ -77,57 +77,57 @@ export function toolboxDefinition() {
                 </shadow>
             </value>
         </block>
-        <block type="core_interval_get_min">
+        <block type="verb_core_interval_get_min">
         </block>
-        <block type="core_interval_get_max">
+        <block type="verb_core_interval_get_max">
         </block>
     </category>
-    <category name="Core Vector" categorystyle="core_category">
-        <block type="core_vector">
+    <category name="Core Vector" categorystyle="verb_core_category">
+        <block type="verb_core_vector">
         </block>
-        <block type="core_vector_angle_between">
+        <block type="verb_core_vector_angle_between">
         </block>
-        <block type="core_vector_angle_between_normalized_2d">
+        <block type="verb_core_vector_angle_between_normalized_2d">
         </block>
-        <block type="core_vector_positive_angle_between">
+        <block type="verb_core_vector_positive_angle_between">
         </block>
-        <block type="core_vector_signed_angle_between">
+        <block type="verb_core_vector_signed_angle_between">
         </block>
-        <block type="core_vector_distance">
+        <block type="verb_core_vector_distance">
         </block>
-        <block type="core_vector_domain">
+        <block type="verb_core_vector_domain">
         </block>
-        <block type="core_vector_min">
+        <block type="verb_core_vector_min">
         </block>
-        <block type="core_vector_max">
+        <block type="verb_core_vector_max">
         </block>
-        <block type="core_vector_negate">
+        <block type="verb_core_vector_negate">
         </block>
-        <block type="core_vector_range">
+        <block type="verb_core_vector_range">
         </block>
-        <block type="core_vector_span">
+        <block type="verb_core_vector_span">
         </block>
-        <block type="core_vector_all">
+        <block type="verb_core_vector_all">
         </block>
-        <block type="core_vector_finite">
+        <block type="verb_core_vector_finite">
         </block>
-        <block type="core_vector_sum">
+        <block type="verb_core_vector_sum">
         </block>
-        <block type="core_vector_normalized">
+        <block type="verb_core_vector_normalized">
         </block>
-        <block type="core_vector_cross">
+        <block type="verb_core_vector_cross">
         </block>
-        <block type="core_vector_on_ray">
+        <block type="verb_core_vector_on_ray">
         </block>
-        <block type="core_vector_lerp">
+        <block type="verb_core_vector_lerp">
         </block>
-        <block type="core_vector_distance_squared">
+        <block type="verb_core_vector_distance_squared">
         </block>
     </category>
     <category name="Point" categorystyle="geometry_category">
-        <block type="geometry_point">
+        <block type="base_geometry_point">
         </block>
-        <block type="geometry_point">
+        <block type="base_geometry_point">
             <value name="X">
                 <shadow type="math_number">
                     <field name="NUM">0</field>
@@ -144,11 +144,11 @@ export function toolboxDefinition() {
                 </shadow>
             </value>
         </block>
-        <block type="functions_drawpoint">
+        <block type="babylon_draw_point">
         </block>
-        <block type="functions_drawpoint">
+        <block type="babylon_draw_point">
             <value name="Point">
-                <shadow type="geometry_point">
+                <shadow type="base_geometry_point">
                     <value name="X">
                         <shadow type="math_number">
                             <field name="NUM">0</field>
@@ -182,23 +182,23 @@ export function toolboxDefinition() {
                 </shadow>
             </value>
         </block>
-        <block type="functions_drawpoints">
+        <block type="babylon_draw_points">
         </block>
-        <block type="geometry_point_distance">
+        <block type="base_geometry_point_distance">
         </block>
-        <block type="function_point_get_x">
+        <block type="base_geometry_point_x">
         </block>
-        <block type="function_point_get_y">
+        <block type="base_geometry_point_y">
         </block>
-        <block type="function_point_get_z">
+        <block type="base_geometry_point_z">
         </block>
     </category>
     <category name="Line" categorystyle="geometry_category">
-        <block type="geometry_line">
+        <block type="base_geometry_line">
         </block>
-        <block type="geometry_line">
+        <block type="base_geometry_line">
             <value name="start_point">
-                <shadow type="geometry_point">
+                <shadow type="base_geometry_point">
                     <value name="X">
                         <shadow type="math_number">
                             <field name="NUM">-1</field>
@@ -217,7 +217,7 @@ export function toolboxDefinition() {
                 </shadow>
             </value>
             <value name="end_point">
-                <shadow type="geometry_point">
+                <shadow type="base_geometry_point">
                     <value name="X">
                         <shadow type="math_number">
                             <field name="NUM">1</field>
@@ -236,13 +236,13 @@ export function toolboxDefinition() {
                 </shadow>
             </value>
         </block>
-        <block type="functions_draw_line">
+        <block type="babylon_draw_line">
         </block>
-        <block type="functions_draw_line">
+        <block type="babylon_draw_line">
             <value name="Line">
-                <shadow type="geometry_line">
+                <shadow type="base_geometry_line">
                     <value name="start_point">
-                        <shadow type="geometry_point">
+                        <shadow type="base_geometry_point">
                             <value name="X">
                                 <shadow type="math_number">
                                     <field name="NUM">-1</field>
@@ -261,7 +261,7 @@ export function toolboxDefinition() {
                         </shadow>
                     </value>
                     <value name="end_point">
-                        <shadow type="geometry_point">
+                        <shadow type="base_geometry_point">
                             <value name="X">
                                 <shadow type="math_number">
                                     <field name="NUM">1</field>
@@ -297,7 +297,7 @@ export function toolboxDefinition() {
                 </shadow>
             </value>
         </block>
-        <block type="functions_draw_lines">
+        <block type="babylon_draw_lines">
             <value name="Colour">
                 <shadow type="colour_picker">
                     <field name="COLOUR">#555</field>
@@ -314,17 +314,17 @@ export function toolboxDefinition() {
                 </shadow>
             </value>
         </block>
-        <block type="functions_line_length">
+        <block type="base_geometry_line_length">
         </block>
-        <block type="functions_line_get_start_point">
+        <block type="base_geometry_line_start_point">
         </block>
-        <block type="functions_line_get_end_point">
+        <block type="base_geometry_line_end_point">
         </block>
     </category>
     <category name="Polyline" categorystyle="geometry_category">
-        <block type="geometry_polyline">
+        <block type="base_geometry_polyline">
         </block>
-        <block type="functions_draw_polyline">
+        <block type="babylon_draw_polyline">
             <value name="Colour">
                 <shadow type="colour_picker">
                     <field name="COLOUR">#555</field>
@@ -341,24 +341,24 @@ export function toolboxDefinition() {
                 </shadow>
             </value>
         </block>
-        <block type="functions_polyline_length">
+        <block type="base_geometry_polyline_length">
         </block>
-        <block type="functions_polyline_get_points">
+        <block type="base_geometry_polyline_points">
         </block>
-        <block type="functions_polyline_get_points_count">
+        <block type="base_geometry_polyline_points_count">
         </block>
     </category>
     <category name="Curve" categorystyle="geometry_category">
-        <block type="geometry_curve_by_points">
+        <block type="verb_curve_by_points">
             <value name="Degree">
                 <shadow type="math_number">
                     <field name="NUM">3</field>
                 </shadow>
             </value>
         </block>
-        <block type="geometry_curve_by_knots_control_points_weights">
+        <block type="verb_curve_by_knots_control_points_weights">
         </block>
-        <block type="functions_draw_curve">
+        <block type="babylon_draw_curve">
             <value name="Colour">
                 <shadow type="colour_picker">
                     <field name="COLOUR">#555</field>
@@ -375,43 +375,43 @@ export function toolboxDefinition() {
                 </shadow>
             </value>
         </block>
-        <block type="functions_curve_divide_by_arc_length_points">
+        <block type="verb_curve_divide_by_arc_length_points">
         </block>
-        <block type="functions_curve_divide_by_arc_length_params">
+        <block type="verb_curve_divide_by_arc_length_params">
         </block>
-        <block type="functions_curve_divide_by_equal_arc_length_points">
+        <block type="verb_curve_divide_by_equal_arc_length_points">
         </block>
-        <block type="functions_curve_divide_by_equal_arc_length_params">
+        <block type="verb_curve_divide_by_equal_arc_length_params">
         </block>
-        <block type="functions_curve_split">
+        <block type="verb_curve_split">
         </block>
-        <block type="functions_curve_closest_point">
+        <block type="verb_curve_closest_point">
         </block>
-        <block type="functions_curve_closest_points">
+        <block type="verb_curve_closest_points">
         </block>
-        <block type="functions_curve_closest_param">
+        <block type="verb_curve_closest_param">
         </block>
-        <block type="functions_curve_closest_params">
+        <block type="verb_curve_closest_params">
         </block>
-        <block type="functions_curve_length">
+        <block type="verb_curve_length">
         </block>
-        <block type="functions_curve_degree">
+        <block type="verb_curve_degree">
         </block>
-        <block type="functions_curve_knots">
+        <block type="verb_curve_knots">
         </block>
-        <block type="functions_curve_weights">
+        <block type="verb_curve_weights">
         </block>
-        <block type="functions_curve_control_points">
+        <block type="verb_curve_control_points">
         </block>
-        <block type="functions_curve_length_at_param">
+        <block type="verb_curve_length_at_param">
         </block>
-        <block type="functions_curve_param_at_length">
+        <block type="verb_curve_param_at_length">
         </block>
-        <block type="functions_curve_clone">
+        <block type="verb_curve_clone">
         </block>
-        <block type="functions_curve_domain">
+        <block type="verb_curve_domain">
         </block>
-        <block type="functions_curve_transform">
+        <block type="verb_curve_transform">
         </block>
     </category>
     <sep></sep>

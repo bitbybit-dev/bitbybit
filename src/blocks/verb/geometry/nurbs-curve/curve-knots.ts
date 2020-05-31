@@ -3,7 +3,7 @@ import * as JavaScript from 'blockly/javascript';
 
 export function createCurveKnotsBlock() {
 
-    Blocks['functions_curve_knots'] = {
+    Blocks['verb_curve_knots'] = {
         init: function () {
             this.appendValueInput("Curve")
                 .setCheck("NurbsCurve")
@@ -16,7 +16,7 @@ export function createCurveKnotsBlock() {
         }
     };
 
-    JavaScript['functions_curve_knots'] = function (block) {
+    JavaScript['verb_curve_knots'] = function (block) {
         var value_curve = JavaScript.valueToCode(block, 'Curve', JavaScript.ORDER_ATOMIC);
 
         var code = `

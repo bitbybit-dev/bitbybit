@@ -3,7 +3,7 @@ import * as JavaScript from 'blockly/javascript';
 
 export function createCoreVectorDistanceSquaredBlock() {
 
-    Blocks['core_vector_distance_squared'] = {
+    Blocks['verb_core_vector_distance_squared'] = {
         init: function () {
             this.appendValueInput("First")
                 .setCheck("Vector3")
@@ -20,7 +20,7 @@ export function createCoreVectorDistanceSquaredBlock() {
         }
     };
 
-    JavaScript['core_vector_distance_squared'] = function (block) {
+    JavaScript['verb_core_vector_distance_squared'] = function (block) {
         var value_first = JavaScript.valueToCode(block, 'First', JavaScript.ORDER_ATOMIC);
         var value_second = JavaScript.valueToCode(block, 'Second', JavaScript.ORDER_ATOMIC);
         

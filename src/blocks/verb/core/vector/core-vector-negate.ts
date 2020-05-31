@@ -3,7 +3,7 @@ import * as JavaScript from 'blockly/javascript';
 
 export function createCoreVectorNegateBlock() {
 
-    Blocks['core_vector_negate'] = {
+    Blocks['verb_core_vector_negate'] = {
         init: function () {
             this.appendValueInput("Vector")
                 .setCheck("Vector3")
@@ -16,7 +16,7 @@ export function createCoreVectorNegateBlock() {
         }
     };
 
-    JavaScript['core_vector_negate'] = function (block) {
+    JavaScript['verb_core_vector_negate'] = function (block) {
         var value_vector = JavaScript.valueToCode(block, 'Vector', JavaScript.ORDER_ATOMIC);
         
         var code = `(() => verb.core.Vec.neg(${value_vector}))()`;

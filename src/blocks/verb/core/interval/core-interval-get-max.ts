@@ -3,7 +3,7 @@ import * as JavaScript from 'blockly/javascript';
 
 export function createCoreIntervalGetMaxBlock() {
 
-    Blocks['core_interval_get_max'] = {
+    Blocks['verb_core_interval_get_max'] = {
         init: function () {
             this.appendValueInput("Interval")
                 .setCheck("Interval")
@@ -16,7 +16,7 @@ export function createCoreIntervalGetMaxBlock() {
         }
     };
 
-    JavaScript['core_interval_get_max'] = function (block) {
+    JavaScript['verb_core_interval_get_max'] = function (block) {
         var value_interval = JavaScript.valueToCode(block, 'Interval', JavaScript.ORDER_ATOMIC);
         
         var code = `${value_interval}.max`;

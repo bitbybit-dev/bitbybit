@@ -3,7 +3,7 @@ import * as JavaScript from 'blockly/javascript';
 
 export function createDrawPointsBlock() {
 
-    Blocks['functions_drawpoints'] = {
+    Blocks['babylon_draw_points'] = {
         init: function () {
             this.appendValueInput("Points")
                 .setCheck("Array")
@@ -30,7 +30,7 @@ export function createDrawPointsBlock() {
         }
     };
 
-    JavaScript['functions_drawpoints'] = function (block) {
+    JavaScript['babylon_draw_points'] = function (block) {
         var value_points = JavaScript.valueToCode(block, 'Points', JavaScript.ORDER_ATOMIC);
         var value_colour = JavaScript.valueToCode(block, 'Colour', JavaScript.ORDER_ATOMIC);
         var value_size = JavaScript.valueToCode(block, 'Size', JavaScript.ORDER_ATOMIC);

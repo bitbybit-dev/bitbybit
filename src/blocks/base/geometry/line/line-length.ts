@@ -3,7 +3,7 @@ import * as JavaScript from 'blockly/javascript';
 
 export function createLineLengthBlock() {
 
-    Blocks['functions_line_length'] = {
+    Blocks['base_geometry_line_length'] = {
         init: function () {
             this.appendValueInput("Line")
                 .setCheck("Line")
@@ -16,7 +16,7 @@ export function createLineLengthBlock() {
         }
     };
 
-    JavaScript['functions_line_length'] = function (block) {
+    JavaScript['base_geometry_line_length'] = function (block) {
         var value_line = JavaScript.valueToCode(block, 'Line', JavaScript.ORDER_ATOMIC);
 
         var code = `

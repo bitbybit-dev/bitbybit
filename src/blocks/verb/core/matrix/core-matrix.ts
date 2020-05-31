@@ -3,7 +3,7 @@ import * as JavaScript from 'blockly/javascript';
 
 export function createCoreMatrixBlock() {
 
-    Blocks['core_matrix'] = {
+    Blocks['verb_core_matrix'] = {
         init: function () {
             this.appendValueInput("Matrix")
                 .setCheck("Array")
@@ -16,7 +16,7 @@ export function createCoreMatrixBlock() {
         }
     };
 
-    JavaScript['core_matrix'] = function (block) {
+    JavaScript['verb_core_matrix'] = function (block) {
         var value_matrix = JavaScript.valueToCode(block, 'Matrix', JavaScript.ORDER_ATOMIC);
         
         var code = `${value_matrix}`;

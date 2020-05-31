@@ -3,7 +3,7 @@ import * as JavaScript from 'blockly/javascript';
 
 export function createDrawPolylineBlock() {
 
-    Blocks['functions_draw_polyline'] = {
+    Blocks['babylon_draw_polyline'] = {
         init: function () {
             this.appendValueInput("Polyline")
                 .setCheck("Polyline")
@@ -29,7 +29,7 @@ export function createDrawPolylineBlock() {
         }
     };
 
-    JavaScript['functions_draw_polyline'] = function (block) {
+    JavaScript['babylon_draw_polyline'] = function (block) {
         var value_polyline = JavaScript.valueToCode(block, 'Polyline', JavaScript.ORDER_ATOMIC);
         var value_colour = JavaScript.valueToCode(block, 'Colour', JavaScript.ORDER_ATOMIC);
         var value_opacity = JavaScript.valueToCode(block, 'Opacity', JavaScript.ORDER_ATOMIC);

@@ -3,7 +3,7 @@ import * as JavaScript from 'blockly/javascript';
 
 export function createCoreVectorSpanBlock() {
 
-    Blocks['core_vector_span'] = {
+    Blocks['verb_core_vector_span'] = {
         init: function () {
             this.appendValueInput("Min")
                 .setCheck("Number")
@@ -24,7 +24,7 @@ export function createCoreVectorSpanBlock() {
         }
     };
 
-    JavaScript['core_vector_range'] = function (block) {
+    JavaScript['verb_core_vector_range'] = function (block) {
         var value_min = JavaScript.valueToCode(block, 'Min', JavaScript.ORDER_ATOMIC);
         var value_max = JavaScript.valueToCode(block, 'Max', JavaScript.ORDER_ATOMIC);
         var value_step = JavaScript.valueToCode(block, 'Step', JavaScript.ORDER_ATOMIC);

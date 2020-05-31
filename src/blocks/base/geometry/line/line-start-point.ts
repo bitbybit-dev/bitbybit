@@ -1,9 +1,9 @@
 import { Blocks, ALIGN_RIGHT } from "blockly";
 import * as JavaScript from 'blockly/javascript';
 
-export function createLineGetStartPointBlock() {
+export function createLineStartPointBlock() {
 
-    Blocks['functions_line_get_start_point'] = {
+    Blocks['base_geometry_line_start_point'] = {
         init: function () {
             this.appendValueInput("Line")
                 .setCheck("Line")
@@ -16,7 +16,7 @@ export function createLineGetStartPointBlock() {
         }
     };
 
-    JavaScript['functions_line_get_start_point'] = function (block) {
+    JavaScript['base_geometry_line_start_point'] = function (block) {
         var value_line = JavaScript.valueToCode(block, 'Line', JavaScript.ORDER_ATOMIC);
 
         var code = `${value_line}.start`;

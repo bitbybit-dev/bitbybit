@@ -1,25 +1,25 @@
 import { Blocks, ALIGN_RIGHT } from "blockly";
 import * as JavaScript from 'blockly/javascript';
 
-export function createPointGetXBlock() {
+export function createPointZBlock() {
 
-    Blocks['function_point_get_x'] = {
+    Blocks['base_geometry_point_z'] = {
         init: function () {
             this.appendValueInput("Point")
                 .setCheck("Vector3")
                 .setAlign(ALIGN_RIGHT)
-                .appendField("X coordinate of the point");
+                .appendField("Z coordinate of the point");
             this.setOutput(true, "Number");
             this.setColour("#fff");
-            this.setTooltip("Gets X coordinate of the point.");
+            this.setTooltip("Gets Z coordinate of the point.");
             this.setHelpUrl("");
         }
     };
 
-    JavaScript['function_point_get_x'] = function (block) {
+    JavaScript['base_geometry_point_z'] = function (block) {
         var value_point = JavaScript.valueToCode(block, 'Point', JavaScript.ORDER_ATOMIC);
         
-        var code = `${value_point}[0]`;
+        var code = `${value_point}[2]`;
         return [code, JavaScript.ORDER_ATOMIC];
     };
 }

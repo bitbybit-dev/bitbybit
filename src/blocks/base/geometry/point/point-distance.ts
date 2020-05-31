@@ -3,7 +3,7 @@ import * as JavaScript from 'blockly/javascript';
 
 export function createPointDistanceBlock() {
 
-    Blocks['geometry_point_distance'] = {
+    Blocks['base_geometry_point_distance'] = {
         init: function () {
             this.appendValueInput("start_point")
                 .setCheck("Vector3")
@@ -20,7 +20,7 @@ export function createPointDistanceBlock() {
         }
     };
 
-    JavaScript['geometry_point_distance'] = function (block) {
+    JavaScript['base_geometry_point_distance'] = function (block) {
         var value_start_point = JavaScript.valueToCode(block, 'start_point', JavaScript.ORDER_ATOMIC);
         var value_end_point = JavaScript.valueToCode(block, 'end_point', JavaScript.ORDER_ATOMIC);
         
