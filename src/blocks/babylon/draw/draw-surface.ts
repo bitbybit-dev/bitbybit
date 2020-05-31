@@ -33,6 +33,41 @@ export function createDrawSurfaceBlock() {
         var code = `
 (() => {
     var meshData =  ${value_surface}.tessellate();
+    console.log(meshData);
+    var positions = [];
+    var indices = [];
+    var normals = [];
+    var uvs = [];
+
+    var count = 0;
+
+    meshData.faces.map(function(faceIndices){
+        faceIndices.map(function(x){
+            var vn = meshData.normals[x];
+            normals.push( vn[0], vn[1], vn[2] );
+
+            var pt = meshData.points[x];
+            positions.push( pt[0], pt[1], pt[2] );
+
+            indices.push(count);
+            count++;
+        });
+    });
+
+    var customMesh = new BABYLON.Mesh("custom${Math.random()}", scene);
+
+    var vertexData = new BABYLON.VertexData();
+
+    vertexData.positions = positions;
+    vertexData.indices = indices;    
+    vertexData.normals = normals;
+
+    vertexData.applyToMesh(customMesh);
+    customMesh.material = new BABYLON.StandardMaterial();
+    customMesh.material.diffuseColor = BABYLON.Color3.FromHexString(${value_colour});
+    customMesh.material.backFaceCulling = false;
+    customMesh.isPickable = false;
+   
 })();
         `;
         return code;
