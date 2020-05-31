@@ -9,7 +9,7 @@ export function createLineStartPointBlock() {
                 .setCheck("Line")
                 .setAlign(ALIGN_RIGHT)
                 .appendField("Start point of the line");
-            this.setOutput(true, "Vector3");
+            this.setOutput(true, "Array");
             this.setColour("#fff");
             this.setTooltip("Gets the start point of the line.");
             this.setHelpUrl("");

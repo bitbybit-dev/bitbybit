@@ -10,11 +10,11 @@ export function createCoreVectorLerpBlock() {
                 .setAlign(ALIGN_RIGHT)
                 .appendField("Point at parameter");
             this.appendValueInput("First")
-                .setCheck("Vector3")
+                .setCheck("Array")
                 .setAlign(ALIGN_RIGHT)
                 .appendField("in between vector");
             this.appendValueInput("Second")
-                .setCheck("Vector3")
+                .setCheck("Array")
                 .setAlign(ALIGN_RIGHT)
                 .appendField("and vector");
             this.setOutput(true, "Array");

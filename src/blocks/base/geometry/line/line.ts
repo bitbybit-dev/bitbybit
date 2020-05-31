@@ -6,11 +6,11 @@ export function createLineBlock() {
     Blocks['base_geometry_line'] = {
         init: function () {
             this.appendValueInput("start_point")
-                .setCheck("Vector3")
+                .setCheck("Array")
                 .setAlign(ALIGN_RIGHT)
                 .appendField("Line with start point");
             this.appendValueInput("end_point")
-                .setCheck("Vector3")
+                .setCheck("Array")
                 .setAlign(ALIGN_RIGHT)
                 .appendField("and an end point");
             this.setOutput(true, "Line");

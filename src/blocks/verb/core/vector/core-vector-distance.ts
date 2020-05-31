@@ -6,11 +6,11 @@ export function createCoreVectorDistanceBlock() {
     Blocks['verb_core_vector_distance'] = {
         init: function () {
             this.appendValueInput("First")
-                .setCheck("Vector3")
+                .setCheck("Array")
                 .setAlign(ALIGN_RIGHT)
                 .appendField("Distance between first vector");
             this.appendValueInput("Second")
-                .setCheck("Vector3")
+                .setCheck("Array")
                 .setAlign(ALIGN_RIGHT)
                 .appendField("and a second vector");
             this.setOutput(true, "Number");

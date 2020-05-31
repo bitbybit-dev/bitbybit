@@ -9,7 +9,7 @@ export function createLineEndPointBlock() {
                 .setCheck("Line")
                 .setAlign(ALIGN_RIGHT)
                 .appendField("End point of the line");
-            this.setOutput(true, "Vector3");
+            this.setOutput(true, "Array");
             this.setColour("#fff");
             this.setTooltip("Gets the end point of the line.");
             this.setHelpUrl("");

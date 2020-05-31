@@ -6,15 +6,15 @@ export function createCoreVectorSignedAngleBetweenBlock() {
     Blocks['verb_core_vector_signed_angle_between'] = {
         init: function () {
             this.appendValueInput("First")
-                .setCheck("Vector3")
+                .setCheck("Array")
                 .setAlign(ALIGN_RIGHT)
                 .appendField("Signed angle between first vector");
             this.appendValueInput("Second")
-                .setCheck("Vector3")
+                .setCheck("Array")
                 .setAlign(ALIGN_RIGHT)
                 .appendField("second vector");
             this.appendValueInput("Reference")
-                .setCheck("Vector3")
+                .setCheck("Array")
                 .setAlign(ALIGN_RIGHT)
                 .appendField("and a reference vector");
             this.setOutput(true, "Number");

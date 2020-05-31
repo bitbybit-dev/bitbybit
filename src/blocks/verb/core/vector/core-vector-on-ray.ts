@@ -6,18 +6,18 @@ export function createCoreVectorOnRayBlock() {
     Blocks['verb_core_vector_on_ray'] = {
         init: function () {
             this.appendValueInput("Point")
-                .setCheck("Vector3")
+                .setCheck("Array")
                 .setAlign(ALIGN_RIGHT)
                 .appendField("Move point");
             this.appendValueInput("Vector")
-                .setCheck("Vector3")
+                .setCheck("Array")
                 .setAlign(ALIGN_RIGHT)
                 .appendField("along direction vector");
             this.appendValueInput("Distance")
                 .setCheck("Number")
                 .setAlign(ALIGN_RIGHT)
                 .appendField("by distance");
-            this.setOutput(true, "Vector3");
+            this.setOutput(true, "Array");
             this.setColour("#fff");
             this.setTooltip("Moves point along vector by distance.");
             this.setHelpUrl("");

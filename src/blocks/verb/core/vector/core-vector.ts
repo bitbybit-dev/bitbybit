@@ -18,7 +18,7 @@ export function createCoreVector3Block() {
               .setAlign(ALIGN_RIGHT)
               .appendField("z");
           this.setInputsInline(true);
-          this.setOutput(true, "Vector3");
+          this.setOutput(true, "Array");
           this.setColour("#fff");
        this.setTooltip("Creates a 3 dimensional direction vector.");
        this.setHelpUrl("");

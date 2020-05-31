@@ -6,7 +6,7 @@ export function createPointZBlock() {
     Blocks['base_geometry_point_z'] = {
         init: function () {
             this.appendValueInput("Point")
-                .setCheck("Vector3")
+                .setCheck("Array")
                 .setAlign(ALIGN_RIGHT)
                 .appendField("Z coordinate of the point");
             this.setOutput(true, "Number");

@@ -10,7 +10,7 @@ export function createCurveClosestParamBlock() {
                 .setAlign(ALIGN_RIGHT)
                 .appendField("Curve");
             this.appendValueInput("Point")
-                .setCheck("Vector3")
+                .setCheck("Array")
                 .setAlign(ALIGN_RIGHT)
                 .appendField("closest parameter to point");
             this.setOutput(true, "Number");

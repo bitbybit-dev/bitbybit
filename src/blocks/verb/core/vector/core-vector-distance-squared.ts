@@ -6,11 +6,11 @@ export function createCoreVectorDistanceSquaredBlock() {
     Blocks['verb_core_vector_distance_squared'] = {
         init: function () {
             this.appendValueInput("First")
-                .setCheck("Vector3")
+                .setCheck("Array")
                 .setAlign(ALIGN_RIGHT)
                 .appendField("Squared distance between vector");
             this.appendValueInput("Second")
-                .setCheck("Vector3")
+                .setCheck("Array")
                 .setAlign(ALIGN_RIGHT)
                 .appendField("and a vector");
             this.setOutput(true, "Number");

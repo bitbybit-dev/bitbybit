@@ -18,6 +18,19 @@ import { createCoreVectorCrossBlock } from './core-vector-cross';
 import { createCoreVectorOnRayBlock } from './core-vector-on-ray';
 import { createCoreVectorLerpBlock } from './core-vector-lerp';
 import { createCoreVectorDistanceSquaredBlock } from './core-vector-distance-squared';
+import { createCoreVectorAddBlock } from './core-vector-add';
+import { createCoreVectorAddAllBlock } from './core-vector-add-all';
+import { createCoreVectorAddAllMutateBlock } from './core-vector-add-all-mutate';
+import { createCoreVectorAddMutateBlock } from './core-vector-add-mutate';
+import { createCoreVectorDivBlock } from './core-vector-div';
+import { createCoreVectorDotBlock } from './core-vector-dot';
+import { createCoreVectorIsZeroBlock } from './core-vector-is-zero';
+import { createCoreVectorMulBlock } from './core-vector-mul';
+import { createCoreVectorMulMutateBlock } from './core-vector-mul-mutate';
+import { createCoreVectorNormBlock } from './core-vector-norm';
+import { createCoreVectorNormSquaredBlock } from './core-vector-norm-squared';
+import { createCoreVectorSubBlock } from './core-vector-sub';
+import { createCoreVectorSubMutateBlock } from './core-vector-sub-mutate';
 
 export function assembleVectorBlocks() {
     createCoreVector3Block();
@@ -40,4 +53,17 @@ export function assembleVectorBlocks() {
     createCoreVectorOnRayBlock();
     createCoreVectorLerpBlock();
     createCoreVectorDistanceSquaredBlock();
+    createCoreVectorAddBlock();
+    createCoreVectorAddAllBlock();
+    createCoreVectorAddAllMutateBlock();
+    createCoreVectorAddMutateBlock();
+    createCoreVectorDivBlock();
+    createCoreVectorDotBlock();
+    createCoreVectorIsZeroBlock();
+    createCoreVectorMulBlock();
+    createCoreVectorMulMutateBlock();
+    createCoreVectorNormBlock();
+    createCoreVectorNormSquaredBlock();
+    createCoreVectorSubBlock();
+    createCoreVectorSubMutateBlock();
 }

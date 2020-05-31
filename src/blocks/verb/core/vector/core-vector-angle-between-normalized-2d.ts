@@ -6,11 +6,11 @@ export function createCoreVectorAngleBetweenNormalized2dBlock() {
     Blocks['verb_core_vector_angle_between_normalized_2d'] = {
         init: function () {
             this.appendValueInput("First")
-                .setCheck("Vector3")
+                .setCheck("Array")
                 .setAlign(ALIGN_RIGHT)
                 .appendField("Normalized 2d angle between first vector");
             this.appendValueInput("Second")
-                .setCheck("Vector3")
+                .setCheck("Array")
                 .setAlign(ALIGN_RIGHT)
                 .appendField("and a second vector");
             this.setOutput(true, "Number");

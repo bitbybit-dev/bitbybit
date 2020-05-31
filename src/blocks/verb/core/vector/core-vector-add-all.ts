@@ -1,25 +1,25 @@
 import { Blocks, ALIGN_RIGHT } from "blockly";
 import * as JavaScript from 'blockly/javascript';
 
-export function createCoreVectorDomainBlock() {
+export function createCoreVectorAddAllBlock() {
 
-    Blocks['verb_core_vector_domain'] = {
+    Blocks['verb_core_vector_add_all'] = {
         init: function () {
             this.appendValueInput("Vector")
                 .setCheck("Array")
                 .setAlign(ALIGN_RIGHT)
-                .appendField("Domain of the vector");
-            this.setOutput(true, "Number");
+                .appendField("Add elements in lists");
+            this.setOutput(true, "Array");
             this.setColour("#fff");
-            this.setTooltip("Measures a domain of the vector.");
+            this.setTooltip("Adds all elements in multiple lists and returns a list with results.");
             this.setHelpUrl("");
         }
     };
 
-    JavaScript['verb_core_vector_domain'] = function (block) {
+    JavaScript['verb_core_vector_add_all'] = function (block) {
         var value_vector = JavaScript.valueToCode(block, 'Vector', JavaScript.ORDER_ATOMIC);
-        
-        var code = `(() => verb.core.Vec.domain(${value_vector}))()`;
+
+        var code = `(() => verb.core.Vec.addAll(${value_vector}))()`;
         return [code, JavaScript.ORDER_ATOMIC];
     };
 }

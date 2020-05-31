@@ -6,7 +6,7 @@ export function createDrawPointBlock() {
     Blocks['babylon_draw_point'] = {
         init: function () {
             this.appendValueInput("Point")
-                .setCheck("Vector3")
+                .setCheck("Array")
                 .setAlign(ALIGN_RIGHT)
                 .appendField("Draw point at");
             this.appendValueInput("Colour")

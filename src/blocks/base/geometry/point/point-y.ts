@@ -6,7 +6,7 @@ export function createPointYBlock() {
     Blocks['base_geometry_point_y'] = {
         init: function () {
             this.appendValueInput("Point")
-                .setCheck("Vector3")
+                .setCheck("Array")
                 .setAlign(ALIGN_RIGHT)
                 .appendField("Y coordinate of the point");
             this.setOutput(true, "Number");

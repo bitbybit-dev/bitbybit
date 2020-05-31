@@ -6,10 +6,10 @@ export function createCoreVectorNormalizedBlock() {
     Blocks['verb_core_vector_normalized'] = {
         init: function () {
             this.appendValueInput("Vector")
-                .setCheck("Vector3")
+                .setCheck("Array")
                 .setAlign(ALIGN_RIGHT)
                 .appendField("Normalize vector");
-            this.setOutput(true, "Vector3");
+            this.setOutput(true, "Array");
             this.setColour("#fff");
             this.setTooltip("Normalizes vector to unit vector that has length equal to 1.");
             this.setHelpUrl("");

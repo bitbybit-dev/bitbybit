@@ -6,7 +6,7 @@ export function createPointXBlock() {
     Blocks['base_geometry_point_x'] = {
         init: function () {
             this.appendValueInput("Point")
-                .setCheck("Vector3")
+                .setCheck("Array")
                 .setAlign(ALIGN_RIGHT)
                 .appendField("X coordinate of the point");
             this.setOutput(true, "Number");

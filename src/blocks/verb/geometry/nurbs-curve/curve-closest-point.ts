@@ -10,10 +10,10 @@ export function createCurveClosestPointBlock() {
                 .setAlign(ALIGN_RIGHT)
                 .appendField("Curve");
             this.appendValueInput("Point")
-                .setCheck("Vector3")
+                .setCheck("Array")
                 .setAlign(ALIGN_RIGHT)
                 .appendField("closest point");
-            this.setOutput(true, "Vector3");
+            this.setOutput(true, "Array");
             this.setColour("#fff");
             this.setTooltip("Find the closest point on curve.");
             this.setHelpUrl("");

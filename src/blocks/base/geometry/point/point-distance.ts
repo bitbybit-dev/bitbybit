@@ -6,11 +6,11 @@ export function createPointDistanceBlock() {
     Blocks['base_geometry_point_distance'] = {
         init: function () {
             this.appendValueInput("start_point")
-                .setCheck("Vector3")
+                .setCheck("Array")
                 .setAlign(ALIGN_RIGHT)
                 .appendField("Distance between first point");
             this.appendValueInput("end_point")
-                .setCheck("Vector3")
+                .setCheck("Array")
                 .setAlign(ALIGN_RIGHT)
                 .appendField("and second point");
             this.setOutput(true, "Number");

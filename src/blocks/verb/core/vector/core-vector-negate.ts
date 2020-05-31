@@ -6,10 +6,10 @@ export function createCoreVectorNegateBlock() {
     Blocks['verb_core_vector_negate'] = {
         init: function () {
             this.appendValueInput("Vector")
-                .setCheck("Vector3")
+                .setCheck("Array")
                 .setAlign(ALIGN_RIGHT)
                 .appendField("Negate the vector");
-            this.setOutput(true, "Vector3");
+            this.setOutput(true, "Array");
             this.setColour("#fff");
             this.setTooltip("Negates the vector.");
             this.setHelpUrl("");

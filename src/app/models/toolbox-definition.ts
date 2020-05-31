@@ -1,6 +1,6 @@
 export function toolboxDefinition() {
     return `
-<xml id="toolbox" style="display: none">
+    <xml id="toolbox" style="display: none">
     <category name="Scene" categorystyle="scene_category">
         <block type="babylon_draw_grid">
             <value name="width">
@@ -95,6 +95,42 @@ export function toolboxDefinition() {
         </block>
         <block type="verb_core_vector_distance">
         </block>
+        <block type="verb_core_vector_distance_squared">
+        </block>
+        <block type="verb_core_vector_on_ray">
+        </block>
+        <block type="verb_core_vector_lerp">
+        </block>
+        <block type="verb_core_vector_sum">
+        </block>
+        <block type="verb_core_vector_add">
+        </block>
+        <block type="verb_core_vector_sub">
+        </block>
+        <block type="verb_core_vector_mul">
+        </block>
+        <block type="verb_core_vector_div">
+        </block>
+        <block type="verb_core_vector_dot">
+        </block>
+        <block type="verb_core_vector_cross">
+        </block>
+        <block type="verb_core_vector_add_all">
+        </block>
+        <block type="verb_core_vector_add_all_mutate">
+        </block>
+        <block type="verb_core_vector_add_mutate">
+        </block>
+        <block type="verb_core_vector_is_zero">
+        </block>
+        <block type="verb_core_vector_mul_mutate">
+        </block>
+        <block type="verb_core_vector_sub_mutate">
+        </block>
+        <block type="verb_core_vector_norm">
+        </block>
+        <block type="verb_core_vector_norm_squared">
+        </block>
         <block type="verb_core_vector_domain">
         </block>
         <block type="verb_core_vector_min">
@@ -111,17 +147,7 @@ export function toolboxDefinition() {
         </block>
         <block type="verb_core_vector_finite">
         </block>
-        <block type="verb_core_vector_sum">
-        </block>
         <block type="verb_core_vector_normalized">
-        </block>
-        <block type="verb_core_vector_cross">
-        </block>
-        <block type="verb_core_vector_on_ray">
-        </block>
-        <block type="verb_core_vector_lerp">
-        </block>
-        <block type="verb_core_vector_distance_squared">
         </block>
     </category>
     <category name="Point" categorystyle="geometry_category">

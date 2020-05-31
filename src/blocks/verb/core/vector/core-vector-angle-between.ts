@@ -6,11 +6,11 @@ export function createCoreVectorAngleBetweenBlock() {
     Blocks['verb_core_vector_angle_between'] = {
         init: function () {
             this.appendValueInput("First")
-                .setCheck("Vector3")
+                .setCheck("Array")
                 .setAlign(ALIGN_RIGHT)
                 .appendField("Angle between first vector");
             this.appendValueInput("Second")
-                .setCheck("Vector3")
+                .setCheck("Array")
                 .setAlign(ALIGN_RIGHT)
                 .appendField("and a second vector");
             this.setOutput(true, "Number");
