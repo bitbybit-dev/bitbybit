@@ -30,6 +30,7 @@ export class AppComponent implements OnInit, AfterViewInit {
     workspace: WorkspaceSvg;
     defaultPointsMesh: Mesh;
     scene: Scene;
+    engine: Engine;
     windowBlockly;
 
     constructor(public dialog: MatDialog) {
@@ -63,14 +64,13 @@ export class AppComponent implements OnInit, AfterViewInit {
         svgResize(this.workspace);
 
         const canvas = document.getElementById("renderCanvas") as HTMLCanvasElement;
-        const engine = new Engine(canvas);
-        this.scene = new Scene(engine);
+        this.engine = new Engine(canvas);
+        this.scene = new Scene(this.engine);
         this.scene.clearColor = new Color4(1, 1, 1, 1);
 
         var camera = new ArcRotateCamera("Camera", 0, 10, 10, new Vector3(0, 0, 0), this.scene);
         camera.setPosition(new Vector3(0, 10, 20));
         camera.attachControl(canvas, true);
-
         var light = new HemisphericLight("light1", new Vector3(0, 1, 0), this.scene);
 
         light.intensity = 0.7;
@@ -78,8 +78,8 @@ export class AppComponent implements OnInit, AfterViewInit {
         this.windowBlockly = {};
         this.windowBlockly.scene = this.scene;
         (window as any).blockly = this.windowBlockly;
-      
-        engine.runRenderLoop(() => {
+
+        this.engine.runRenderLoop(() => {
             this.scene.render();
         });
 
@@ -92,6 +92,9 @@ export class AppComponent implements OnInit, AfterViewInit {
 
     onResize() {
         var element = this.blocklyArea;
+        if (this.engine) {
+            this.engine.resize();
+        }
         var x = 0;
         var y = 0;
         do {
@@ -196,12 +199,12 @@ ${code}
 
     private openAboutDialog(): void {
         const dialogRef = this.dialog.open(AboutDialogComponent, {
-          width: '600px',
-          height: '500px'
+            width: '600px',
+            height: '500px'
         });
-    
+
         dialogRef.afterClosed().subscribe(result => {
-          const d = result;
+            const d = result;
         });
-      }
+    }
 }
