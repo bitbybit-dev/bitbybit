@@ -19,6 +19,10 @@ import { createCurveWeightsBlock } from './curve-weights';
 import { createCurveCloneBlock } from './curve-clone';
 import { createCurveDomainBlock } from './curve-domain';
 import { createCurveTransformBlock } from './curve-transform';
+import { createCurveTangentBlock } from './curve-tangent';
+import { createCurveDerivativesBlock } from './curve-derivatives';
+import { createCurveReverseBlock } from './curve-reverse';
+import { createCurveTesselateBlock } from './curve-tesselate';
 
 export function assembleCurveBlocks() {
     createCurveByKnotsControlPointsWeightsBlock();
@@ -42,5 +46,8 @@ export function assembleCurveBlocks() {
     createCurveCloneBlock();
     createCurveDomainBlock();
     createCurveTransformBlock();
-    
+    createCurveDerivativesBlock();
+    createCurveReverseBlock();
+    createCurveTangentBlock();
+    createCurveTesselateBlock();
 }

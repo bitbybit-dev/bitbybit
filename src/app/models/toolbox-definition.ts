@@ -1,6 +1,6 @@
 export function toolboxDefinition() {
     return `
-    <xml id="toolbox" style="display: none">
+<xml id="toolbox" style="display: none">
     <category name="Scene" categorystyle="scene_category">
         <block type="babylon_draw_grid">
             <value name="width">
@@ -438,6 +438,14 @@ export function toolboxDefinition() {
         <block type="verb_curve_domain">
         </block>
         <block type="verb_curve_transform">
+        </block>
+        <block type="verb_curve_derivatives">
+        </block>
+        <block type="verb_curve_reverse">
+        </block>
+        <block type="verb_curve_tangent">
+        </block>
+        <block type="verb_curve_tesselate">
         </block>
     </category>
     <sep></sep>

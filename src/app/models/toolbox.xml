@@ -437,6 +437,14 @@
         </block>
         <block type="verb_curve_transform">
         </block>
+        <block type="verb_curve_derivatives">
+        </block>
+        <block type="verb_curve_reverse">
+        </block>
+        <block type="verb_curve_tangent">
+        </block>
+        <block type="verb_curve_tesselate">
+        </block>
     </category>
     <sep></sep>
     <category name="Loop" categorystyle="control_category">
