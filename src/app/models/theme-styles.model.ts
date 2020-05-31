@@ -18,6 +18,7 @@ export function themeStyle() {
             },
             "text_blocks": {
                 "colourPrimary": "#fff",
+                "colourSecondary": "#ccc",
             },
             "variable_blocks": {
                 "colourPrimary": "#fff",
