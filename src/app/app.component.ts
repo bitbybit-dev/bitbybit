@@ -47,7 +47,7 @@ export class AppComponent implements OnInit, AfterViewInit {
                 {
                     controls: true,
                     wheel: true,
-                    startScale: 0.8,
+                    startScale: 0.7,
                     maxScale: 3,
                     minScale: 0.3,
                     scaleSpeed: 1.2

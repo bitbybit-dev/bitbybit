@@ -1,25 +1,25 @@
 import { Blocks, ALIGN_RIGHT } from "blockly";
 import * as JavaScript from 'blockly/javascript';
 
-export function createLineLengthBlock() {
+export function createLineReverseBlock() {
 
-    Blocks['base_geometry_line_length'] = {
+    Blocks['base_geometry_line_reverse'] = {
         init: function () {
             this.appendValueInput("Line")
                 .setCheck("Line")
                 .setAlign(ALIGN_RIGHT)
-                .appendField("Length of the line");
-            this.setOutput(true, "Number");
+                .appendField("Reverse the line");
+            this.setOutput(true, "Line");
             this.setColour("#fff");
-            this.setTooltip("Calculates the line length.");
+            this.setTooltip("Reverses the line direction.");
             this.setHelpUrl("");
         }
     };
 
-    JavaScript['base_geometry_line_length'] = function (block) {
+    JavaScript['base_geometry_line_reverse'] = function (block) {
         var value_line = JavaScript.valueToCode(block, 'Line', JavaScript.ORDER_ATOMIC);
 
-        var code = `(() => verb.core.Vec.dist(${value_line}.start, ${value_line}.end))()`;
+        var code = `{start: ${value_line}.end, end: ${value_line}.start}`;
         return [code, JavaScript.ORDER_ATOMIC];
     };
 }

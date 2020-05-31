@@ -66,9 +66,10 @@ mat-tab-body {
 }
 
 ::ng-deep .blocklyTreeRow {
-    margin-top:10px;
+    margin-top: 10px;
+    margin-bottom: 7px;
     min-width: 100px;
-    height: 25px;
+    height: 30px;
     vertical-align: middle;
 }
 
@@ -159,6 +160,7 @@ h1 {
     padding-bottom: 15px;
     font-size: 10px;
     text-align: center;
+    width: 44px;
 }
 
 .example-spacer {

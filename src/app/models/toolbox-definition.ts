@@ -1,6 +1,6 @@
 export function toolboxDefinition() {
     return `
-<xml id="toolbox" style="display: none">
+    <xml id="toolbox" style="display: none">
     <category name="Scene" categorystyle="scene_category">
         <block type="babylon_draw_grid">
             <value name="width">
@@ -62,6 +62,7 @@ export function toolboxDefinition() {
             </value>
         </block>
     </category>
+    <sep></sep>
     <category name="Core Interval" categorystyle="verb_core_category">
         <block type="verb_core_interval">
         </block>
@@ -150,7 +151,8 @@ export function toolboxDefinition() {
         <block type="verb_core_vector_normalized">
         </block>
     </category>
-    <category name="Point" categorystyle="geometry_category">
+    <sep></sep>
+    <category name="Geom Point" categorystyle="geometry_category">
         <block type="base_geometry_point">
         </block>
         <block type="base_geometry_point">
@@ -219,7 +221,7 @@ export function toolboxDefinition() {
         <block type="base_geometry_point_z">
         </block>
     </category>
-    <category name="Line" categorystyle="geometry_category">
+    <category name="Geom Line" categorystyle="geometry_category">
         <block type="base_geometry_line">
         </block>
         <block type="base_geometry_line">
@@ -346,8 +348,10 @@ export function toolboxDefinition() {
         </block>
         <block type="base_geometry_line_end_point">
         </block>
+        <block type="base_geometry_line_reverse">
+        </block>
     </category>
-    <category name="Polyline" categorystyle="geometry_category">
+    <category name="Geom Polyline" categorystyle="geometry_category">
         <block type="base_geometry_polyline">
         </block>
         <block type="babylon_draw_polyline">
@@ -369,12 +373,14 @@ export function toolboxDefinition() {
         </block>
         <block type="base_geometry_polyline_length">
         </block>
+        <block type="base_geometry_polyline_reverse">
+        </block>
         <block type="base_geometry_polyline_points">
         </block>
         <block type="base_geometry_polyline_points_count">
         </block>
     </category>
-    <category name="Curve" categorystyle="geometry_category">
+    <category name="Geom Curve" categorystyle="geometry_category">
         <block type="verb_curve_by_points">
             <value name="Degree">
                 <shadow type="math_number">

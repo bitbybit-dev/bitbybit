@@ -21,14 +21,13 @@ export function createPolylineLengthBlock() {
 
         var code = `
 (() => {
-    var polyline = ${value_polyline};
-    var distance = 0;
-    for (var i = 1; i < polyline.points.length; i++) {
-        var previousPoint = polyline.points[i - 1];
-        var currentPoint = polyline.points[i];
-        distance += verb.core.Vec.dist(previousPoint, currentPoint);
+    var distanceOfPolyline = 0;
+    for (var i = 1; i < ${value_polyline}.points.length; i++) {
+        var previousPoint = ${value_polyline}.points[i - 1];
+        var currentPoint = ${value_polyline}.points[i];
+        distanceOfPolyline += verb.core.Vec.dist(previousPoint, currentPoint);
     };
-    return distance;
+    return distanceOfPolyline;
 })()
 `;
         return [code, JavaScript.ORDER_ATOMIC];
