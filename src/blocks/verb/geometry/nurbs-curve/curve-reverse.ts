@@ -3,7 +3,7 @@ import * as JavaScript from 'blockly/javascript';
 
 export function createCurveReverseBlock() {
 
-    Blocks['verb_curve_reverse'] = {
+    Blocks['verb_geometry_nurbs_curve_reverse'] = {
         init: function () {
             this.appendValueInput("Curve")
                 .setCheck("NurbsCurve")
@@ -16,7 +16,7 @@ export function createCurveReverseBlock() {
         }
     };
 
-    JavaScript['verb_curve_reverse'] = function (block) {
+    JavaScript['verb_geometry_nurbs_curve_reverse'] = function (block) {
         var value_curve = JavaScript.valueToCode(block, 'Curve', JavaScript.ORDER_ATOMIC);
 
         var code = `

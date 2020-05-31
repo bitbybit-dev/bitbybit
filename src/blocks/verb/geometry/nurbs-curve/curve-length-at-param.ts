@@ -3,7 +3,7 @@ import * as JavaScript from 'blockly/javascript';
 
 export function createCurveLengthAtParamBlock() {
 
-    Blocks['verb_curve_length_at_param'] = {
+    Blocks['verb_geometry_nurbs_curve_length_at_param'] = {
         init: function () {
             this.appendValueInput("Curve")
                 .setCheck("NurbsCurve")
@@ -20,7 +20,7 @@ export function createCurveLengthAtParamBlock() {
         }
     };
 
-    JavaScript['verb_curve_length_at_param'] = function (block) {
+    JavaScript['verb_geometry_nurbs_curve_length_at_param'] = function (block) {
         var value_curve = JavaScript.valueToCode(block, 'Curve', JavaScript.ORDER_ATOMIC);
         var value_param = JavaScript.valueToCode(block, 'Number', JavaScript.ORDER_ATOMIC);
 

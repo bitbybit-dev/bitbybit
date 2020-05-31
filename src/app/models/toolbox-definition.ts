@@ -1,6 +1,6 @@
 export function toolboxDefinition() {
     return `
-    <xml id="toolbox" style="display: none">
+<xml id="toolbox" style="display: none">
     <category name="Scene" categorystyle="scene_category">
         <block type="babylon_draw_grid">
             <value name="width">
@@ -381,14 +381,14 @@ export function toolboxDefinition() {
         </block>
     </category>
     <category name="Geom Curve" categorystyle="geometry_category">
-        <block type="verb_curve_by_points">
+        <block type="verb_geometry_nurbs_curve_by_points">
             <value name="Degree">
                 <shadow type="math_number">
                     <field name="NUM">3</field>
                 </shadow>
             </value>
         </block>
-        <block type="verb_curve_by_knots_control_points_weights">
+        <block type="verb_geometry_nurbs_curve_by_knots_control_points_weights">
         </block>
         <block type="babylon_draw_curve">
             <value name="Colour">
@@ -407,51 +407,73 @@ export function toolboxDefinition() {
                 </shadow>
             </value>
         </block>
-        <block type="verb_curve_divide_by_arc_length_points">
+        <block type="verb_geometry_nurbs_curve_divide_by_arc_length_points">
         </block>
-        <block type="verb_curve_divide_by_arc_length_params">
+        <block type="verb_geometry_nurbs_curve_divide_by_arc_length_params">
         </block>
-        <block type="verb_curve_divide_by_equal_arc_length_points">
+        <block type="verb_geometry_nurbs_curve_divide_by_equal_arc_length_points">
         </block>
-        <block type="verb_curve_divide_by_equal_arc_length_params">
+        <block type="verb_geometry_nurbs_curve_divide_by_equal_arc_length_params">
         </block>
-        <block type="verb_curve_split">
+        <block type="verb_geometry_nurbs_curve_split">
         </block>
-        <block type="verb_curve_closest_point">
+        <block type="verb_geometry_nurbs_curve_closest_point">
         </block>
-        <block type="verb_curve_closest_points">
+        <block type="verb_geometry_nurbs_curve_closest_points">
         </block>
-        <block type="verb_curve_closest_param">
+        <block type="verb_geometry_nurbs_curve_closest_param">
         </block>
-        <block type="verb_curve_closest_params">
+        <block type="verb_geometry_nurbs_curve_closest_params">
         </block>
-        <block type="verb_curve_length">
+        <block type="verb_geometry_nurbs_curve_length">
         </block>
-        <block type="verb_curve_degree">
+        <block type="verb_geometry_nurbs_curve_degree">
         </block>
-        <block type="verb_curve_knots">
+        <block type="verb_geometry_nurbs_curve_knots">
         </block>
-        <block type="verb_curve_weights">
+        <block type="verb_geometry_nurbs_curve_weights">
         </block>
-        <block type="verb_curve_control_points">
+        <block type="verb_geometry_nurbs_curve_control_points">
         </block>
-        <block type="verb_curve_length_at_param">
+        <block type="verb_geometry_nurbs_curve_length_at_param">
         </block>
-        <block type="verb_curve_param_at_length">
+        <block type="verb_geometry_nurbs_curve_param_at_length">
         </block>
-        <block type="verb_curve_clone">
+        <block type="verb_geometry_nurbs_curve_clone">
         </block>
-        <block type="verb_curve_domain">
+        <block type="verb_geometry_nurbs_curve_domain">
         </block>
-        <block type="verb_curve_transform">
+        <block type="verb_geometry_nurbs_curve_transform">
         </block>
-        <block type="verb_curve_derivatives">
+        <block type="verb_geometry_nurbs_curve_derivatives">
         </block>
-        <block type="verb_curve_reverse">
+        <block type="verb_geometry_nurbs_curve_reverse">
         </block>
-        <block type="verb_curve_tangent">
+        <block type="verb_geometry_nurbs_curve_tangent">
         </block>
-        <block type="verb_curve_tesselate">
+        <block type="verb_geometry_nurbs_curve_tesselate">
+        </block>
+    </category>
+    <category name="Geom Surface" categorystyle="geometry_category">
+        <block type="verb_geometry_nurbs_surface_by_corners">
+        </block>
+        <block type="verb_geometry_nurbs_surface_by_lofting_curves">
+        </block>
+        <block type="verb_geometry_nurbs_surface_by_knots_control_points_weights">
+        </block>
+        <block type="verb_geometry_nurbs_surface_clone">
+        </block>
+        <block type="verb_geometry_nurbs_surface_control_points">
+        </block>
+        <block type="verb_geometry_nurbs_surface_weights">
+        </block>
+        <block type="verb_geometry_nurbs_surface_degree_u">
+        </block>
+        <block type="verb_geometry_nurbs_surface_degree_v">
+        </block>
+        <block type="verb_geometry_nurbs_surface_knots_u">
+        </block>
+        <block type="verb_geometry_nurbs_surface_knots_v">
         </block>
     </category>
     <sep></sep>

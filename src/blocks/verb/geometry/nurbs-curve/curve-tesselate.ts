@@ -3,7 +3,7 @@ import * as JavaScript from 'blockly/javascript';
 
 export function createCurveTesselateBlock() {
 
-    Blocks['verb_curve_tesselate'] = {
+    Blocks['verb_geometry_nurbs_curve_tesselate'] = {
         init: function () {
             this.appendValueInput("Curve")
                 .setCheck("NurbsCurve")
@@ -20,7 +20,7 @@ export function createCurveTesselateBlock() {
         }
     };
 
-    JavaScript['verb_curve_tesselate'] = function (block) {
+    JavaScript['verb_geometry_nurbs_curve_tesselate'] = function (block) {
         var value_curve = JavaScript.valueToCode(block, 'Curve', JavaScript.ORDER_ATOMIC);
         var value_tolerance = JavaScript.valueToCode(block, 'Tolerance', JavaScript.ORDER_ATOMIC);
 

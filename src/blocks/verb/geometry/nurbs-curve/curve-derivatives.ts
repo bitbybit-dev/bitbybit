@@ -3,7 +3,7 @@ import * as JavaScript from 'blockly/javascript';
 
 export function createCurveDerivativesBlock() {
 
-    Blocks['verb_curve_derivatives'] = {
+    Blocks['verb_geometry_nurbs_curve_derivatives'] = {
         init: function () {
             this.appendValueInput("Curve")
                 .setCheck("NurbsCurve")
@@ -24,7 +24,7 @@ export function createCurveDerivativesBlock() {
         }
     };
 
-    JavaScript['verb_curve_derivatives'] = function (block) {
+    JavaScript['verb_geometry_nurbs_curve_derivatives'] = function (block) {
         var value_curve = JavaScript.valueToCode(block, 'Curve', JavaScript.ORDER_ATOMIC);
         var value_parameter = JavaScript.valueToCode(block, 'Parameter', JavaScript.ORDER_ATOMIC);
         var value_num_derivatives = JavaScript.valueToCode(block, 'NumDerivatives', JavaScript.ORDER_ATOMIC);

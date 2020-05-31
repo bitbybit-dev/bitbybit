@@ -3,7 +3,7 @@ import * as JavaScript from 'blockly/javascript';
 
 export function createCurveDegreeBlock() {
 
-    Blocks['verb_curve_degree'] = {
+    Blocks['verb_geometry_nurbs_curve_degree'] = {
         init: function () {
             this.appendValueInput("Curve")
                 .setCheck("NurbsCurve")
@@ -16,7 +16,7 @@ export function createCurveDegreeBlock() {
         }
     };
 
-    JavaScript['verb_curve_degree'] = function (block) {
+    JavaScript['verb_geometry_nurbs_curve_degree'] = function (block) {
         var value_curve = JavaScript.valueToCode(block, 'Curve', JavaScript.ORDER_ATOMIC);
 
         var code = `

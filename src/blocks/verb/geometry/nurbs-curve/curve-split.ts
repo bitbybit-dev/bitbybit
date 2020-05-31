@@ -3,7 +3,7 @@ import * as JavaScript from 'blockly/javascript';
 
 export function createCurveSplitBlock() {
 
-    Blocks['verb_curve_split'] = {
+    Blocks['verb_geometry_nurbs_curve_split'] = {
         init: function () {
             this.appendValueInput("Curve")
                 .setCheck("NurbsCurve")
@@ -20,7 +20,7 @@ export function createCurveSplitBlock() {
         }
     };
 
-    JavaScript['verb_curve_split'] = function (block) {
+    JavaScript['verb_geometry_nurbs_curve_split'] = function (block) {
         var value_curve = JavaScript.valueToCode(block, 'Curve', JavaScript.ORDER_ATOMIC);
         var value_param = JavaScript.valueToCode(block, 'Number', JavaScript.ORDER_ATOMIC);
 

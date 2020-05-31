@@ -3,7 +3,7 @@ import * as JavaScript from 'blockly/javascript';
 
 export function createCurveClosestPointsBlock() {
 
-    Blocks['verb_curve_closest_points'] = {
+    Blocks['verb_geometry_nurbs_curve_closest_points'] = {
         init: function () {
             this.appendValueInput("Curve")
                 .setCheck("NurbsCurve")
@@ -20,7 +20,7 @@ export function createCurveClosestPointsBlock() {
         }
     };
 
-    JavaScript['verb_curve_closest_points'] = function (block) {
+    JavaScript['verb_geometry_nurbs_curve_closest_points'] = function (block) {
         var value_curve = JavaScript.valueToCode(block, 'Curve', JavaScript.ORDER_ATOMIC);
         var value_points = JavaScript.valueToCode(block, 'Points', JavaScript.ORDER_ATOMIC);
 

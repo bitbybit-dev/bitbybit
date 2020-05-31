@@ -3,7 +3,7 @@ import * as JavaScript from 'blockly/javascript';
 
 export function createCurveTangentBlock() {
 
-    Blocks['verb_curve_tangent'] = {
+    Blocks['verb_geometry_nurbs_curve_tangent'] = {
         init: function () {
             this.appendValueInput("Curve")
                 .setCheck("NurbsCurve")
@@ -20,7 +20,7 @@ export function createCurveTangentBlock() {
         }
     };
 
-    JavaScript['verb_curve_tangent'] = function (block) {
+    JavaScript['verb_geometry_nurbs_curve_tangent'] = function (block) {
         var value_curve = JavaScript.valueToCode(block, 'Curve', JavaScript.ORDER_ATOMIC);
         var value_parameter = JavaScript.valueToCode(block, 'Parameter', JavaScript.ORDER_ATOMIC);
 

@@ -3,7 +3,7 @@ import * as JavaScript from 'blockly/javascript';
 
 export function createCurveWeightsBlock() {
 
-    Blocks['verb_curve_weights'] = {
+    Blocks['verb_geometry_nurbs_curve_weights'] = {
         init: function () {
             this.appendValueInput("Curve")
                 .setCheck("NurbsCurve")
@@ -16,7 +16,7 @@ export function createCurveWeightsBlock() {
         }
     };
 
-    JavaScript['verb_curve_weights'] = function (block) {
+    JavaScript['verb_geometry_nurbs_curve_weights'] = function (block) {
         var value_curve = JavaScript.valueToCode(block, 'Curve', JavaScript.ORDER_ATOMIC);
 
         var code = `
