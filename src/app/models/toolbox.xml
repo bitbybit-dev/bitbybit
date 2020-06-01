@@ -61,7 +61,7 @@
         </block>
     </category>
     <sep></sep>
-    <category name="Core Interval" categorystyle="verb_core_category">
+    <category name="Core Types" categorystyle="verb_core_category">
         <block type="verb_core_interval">
         </block>
         <block type="verb_core_interval">
@@ -79,6 +79,24 @@
         <block type="verb_core_interval_get_min">
         </block>
         <block type="verb_core_interval_get_max">
+        </block>
+        <block type="verb_core_uv">
+        </block>
+        <block type="verb_core_uv">
+            <value name="U">
+                <shadow type="math_number">
+                    <field name="NUM">0</field>
+                </shadow>
+            </value>
+            <value name="V">
+                <shadow type="math_number">
+                    <field name="NUM">0</field>
+                </shadow>
+            </value>
+        </block>
+        <block type="verb_core_uv_get_u">
+        </block>
+        <block type="verb_core_uv_get_v">
         </block>
     </category>
     <category name="Core Vector" categorystyle="verb_core_category">
@@ -460,6 +478,36 @@
         <block type="verb_geometry_nurbs_surface_by_knots_control_points_weights">
         </block>
         <block type="babylon_draw_surface">
+            <value name="Colour">
+                <shadow type="colour_picker">
+                    <field name="COLOUR">#555</field>
+                </shadow>
+            </value>
+            <value name="Opacity">
+                <shadow type="math_number">
+                    <field name="NUM">1</field>
+                </shadow>
+            </value>
+        </block>
+        <block type="babylon_draw_surfaces">
+            <value name="Colour">
+                <shadow type="colour_picker">
+                    <field name="COLOUR">#555</field>
+                </shadow>
+            </value>
+            <value name="Opacity">
+                <shadow type="math_number">
+                    <field name="NUM">1</field>
+                </shadow>
+            </value>
+        </block>
+        <block type="verb_geometry_nurbs_surface_normal">
+        </block>
+        <block type="verb_geometry_nurbs_surface_point">
+        </block>
+        <block type="verb_geometry_nurbs_surface_closest_param">
+        </block>
+        <block type="verb_geometry_nurbs_surface_closest_point">
         </block>
         <block type="verb_geometry_nurbs_surface_clone">
         </block>
@@ -474,6 +522,12 @@
         <block type="verb_geometry_nurbs_surface_knots_u">
         </block>
         <block type="verb_geometry_nurbs_surface_knots_v">
+        </block>
+        <block type="verb_geometry_nurbs_surface_domain_u">
+        </block>
+        <block type="verb_geometry_nurbs_surface_domain_v">
+        </block>
+        <block type="verb_geometry_nurbs_surface_derivatives">
         </block>
     </category>
     <sep></sep>

@@ -6,6 +6,7 @@ import { createDrawLinesBlock } from './draw-lines';
 import { createDrawPolylineBlock } from './draw-polyline';
 import { createDrawCurveBlock } from './draw-curve';
 import { createDrawSurfaceBlock } from './draw-surface';
+import { createDrawSurfacesBlock } from './draw-surfaces';
 
 export function assembleDrawBlocks(){
     createDrawPointBlock();
@@ -16,4 +17,5 @@ export function assembleDrawBlocks(){
     createDrawPolylineBlock();
     createDrawCurveBlock();    
     createDrawSurfaceBlock();
+    createDrawSurfacesBlock();
 }
