@@ -1,6 +1,6 @@
 export function toolboxDefinition() {
     return `
-<xml id="toolbox" style="display: none">
+    <xml id="toolbox" style="display: none">
     <category name="Scene" categorystyle="scene_category">
         <block type="babylon_draw_grid">
             <value name="width">
@@ -191,6 +191,21 @@ export function toolboxDefinition() {
             </value>
         </block>
         <block type="babylon_draw_point">
+            <value name="Colour">
+                <shadow type="colour_picker">
+                    <field name="COLOUR">#555</field>
+                </shadow>
+            </value>
+            <value name="Size">
+                <shadow type="math_number">
+                    <field name="NUM">3</field>
+                </shadow>
+            </value>
+            <value name="Opacity">
+                <shadow type="math_number">
+                    <field name="NUM">1</field>
+                </shadow>
+            </value>
         </block>
         <block type="babylon_draw_point">
             <value name="Point">
@@ -229,6 +244,21 @@ export function toolboxDefinition() {
             </value>
         </block>
         <block type="babylon_draw_points">
+            <value name="Colour">
+                <shadow type="colour_picker">
+                    <field name="COLOUR">#555</field>
+                </shadow>
+            </value>
+            <value name="Size">
+                <shadow type="math_number">
+                    <field name="NUM">3</field>
+                </shadow>
+            </value>
+            <value name="Opacity">
+                <shadow type="math_number">
+                    <field name="NUM">1</field>
+                </shadow>
+            </value>
         </block>
         <block type="base_geometry_point_distance">
         </block>
@@ -283,6 +313,21 @@ export function toolboxDefinition() {
             </value>
         </block>
         <block type="babylon_draw_line">
+            <value name="Colour">
+                <shadow type="colour_picker">
+                    <field name="COLOUR">#555</field>
+                </shadow>
+            </value>
+            <value name="Width">
+                <shadow type="math_number">
+                    <field name="NUM">3</field>
+                </shadow>
+            </value>
+            <value name="Opacity">
+                <shadow type="math_number">
+                    <field name="NUM">1</field>
+                </shadow>
+            </value>
         </block>
         <block type="babylon_draw_line">
             <value name="Line">
