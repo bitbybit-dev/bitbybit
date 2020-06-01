@@ -66,6 +66,8 @@ export function createDrawSurfaceBlock() {
     customMeshForSurface.material = new BABYLON.StandardMaterial();
     customMeshForSurface.material.alpha = ${value_opacity};
     customMeshForSurface.material.diffuseColor = BABYLON.Color3.FromHexString(${value_colour});
+    customMeshForSurface.material.specularColor = new BABYLON.Color3(1, 1, 1);
+    customMeshForSurface.material.ambientColor = new BABYLON.Color3(1, 1, 1);
     customMeshForSurface.material.backFaceCulling = false;
     customMeshForSurface.isPickable = false;
 })();

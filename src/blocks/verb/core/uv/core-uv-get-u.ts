@@ -8,7 +8,7 @@ export function createCoreUVGetUBlock() {
             this.appendValueInput("UV")
                 .setCheck("UV")
                 .setAlign(ALIGN_RIGHT)
-                .appendField("UV parameter");
+                .appendField("Get u from UV");
             this.setOutput(true, "Number");
             this.setColour("#fff");
             this.setTooltip("Gets u param of the UV object.");

@@ -36,7 +36,7 @@ export function createDrawPointBlock() {
         var value_opacity = JavaScript.valueToCode(block, 'Opacity', JavaScript.ORDER_ATOMIC);
 
         var code = `
-var drawPoint = () => {
+(() => {
     var vectorPoint = ${value_point};
     var colour = BABYLON.Color3.FromHexString(${value_colour});
     var size = ${value_size ? value_size : 3};
@@ -64,8 +64,7 @@ var drawPoint = () => {
     mat.pointSize = size;
     mat.alpha = ${value_opacity ? value_opacity : 1};
     customMesh.material = mat;
-}
-drawPoint();
+})();
         `;
         return code;
     };

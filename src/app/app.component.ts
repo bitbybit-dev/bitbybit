@@ -8,12 +8,11 @@ import "@babylonjs/core/Materials/standardMaterial";
 // Side-effects only imports allowing Mesh to create default shapes (to enhance tree shaking, the construction methods on mesh are not available if the meshbuilder has not been imported).
 import { Engine } from "@babylonjs/core/Engines/engine";
 import { Scene } from "@babylonjs/core/scene";
-import { Vector3, Color4 } from "@babylonjs/core/Maths/math";
-import { HemisphericLight } from "@babylonjs/core/Lights/hemisphericLight";
+import { Vector3, Color4, Color3 } from "@babylonjs/core/Maths/math";
 import { Mesh } from "@babylonjs/core/Meshes/mesh";
 import { themeStyle } from './models/theme-styles.model';
 import { toolboxDefinition } from './models/toolbox-definition';
-import { ArcRotateCamera } from '@babylonjs/core';
+import { ArcRotateCamera, DirectionalLight } from '@babylonjs/core';
 import { MatDialog } from '@angular/material/dialog';
 import { ExamplesDialogComponent } from './components/examples-dialog/examples-dialog.component';
 import { AboutDialogComponent } from './components/about-dialog/about-dialog.component';
@@ -73,10 +72,10 @@ export class AppComponent implements OnInit, AfterViewInit {
         var camera = new ArcRotateCamera("Camera", 0, 10, 10, new Vector3(0, 0, 0), this.scene);
         camera.setPosition(new Vector3(0, 10, 20));
         camera.attachControl(canvas, true);
-        var light = new HemisphericLight("light1", new Vector3(0, 1, 0), this.scene);
-
-        light.intensity = 0.7;
-
+        var light = new DirectionalLight("DirectionalLight", new Vector3(-1, -1, 0), this.scene);
+        light.diffuse = new Color3(1, 1, 1);
+        light.specular = new Color3(1, 1, 1);
+        light.intensity = 1;
         this.windowBlockly = {};
         this.windowBlockly.scene = this.scene;
         (window as any).blockly = this.windowBlockly;

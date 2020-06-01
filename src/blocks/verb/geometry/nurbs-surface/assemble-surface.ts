@@ -15,6 +15,11 @@ import { createSurfaceNormalBlock } from './surface-normal';
 import { createSurfaceDerivativesBlock } from './surface-derivatives';
 import { createSurfaceClosestParamBlock } from './surface-closest-param';
 import { createSurfaceClosestPointBlock } from './surface-closest-point';
+import { createSurfaceSplitBlock } from './surface-split';
+import { createSurfaceReverseBlock } from './surface-reverse';
+import { createSurfaceIsocurveBlock } from './surface-isocurve';
+import { createSurfaceBoundariesBlock } from './surface-boundaries';
+import { createSurfaceTransformBlock } from './surface-transform';
 
 export function assembleSurfaceBlocks() {
     createSurfaceByCornersBlock();
@@ -34,4 +39,9 @@ export function assembleSurfaceBlocks() {
     createSurfaceDerivativesBlock();
     createSurfaceClosestParamBlock();
     createSurfaceClosestPointBlock();
+    createSurfaceSplitBlock();
+    createSurfaceReverseBlock();
+    createSurfaceIsocurveBlock();
+    createSurfaceBoundariesBlock();
+    createSurfaceTransformBlock();
 }

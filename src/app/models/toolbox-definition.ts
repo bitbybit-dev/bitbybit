@@ -368,6 +368,8 @@ export function toolboxDefinition() {
         </block>
         <block type="base_geometry_line_reverse">
         </block>
+        <block type="base_geometry_line_convert_to_nurbs_curve">
+        </block>
     </category>
     <category name="Geom Polyline" categorystyle="geometry_category">
         <block type="base_geometry_polyline">
@@ -397,6 +399,8 @@ export function toolboxDefinition() {
         </block>
         <block type="base_geometry_polyline_points_count">
         </block>
+        <block type="base_geometry_polyline_convert_to_nurbs_curve">
+        </block>
     </category>
     <category name="Geom Curve" categorystyle="geometry_category">
         <block type="verb_geometry_nurbs_curve_by_points">
@@ -409,6 +413,23 @@ export function toolboxDefinition() {
         <block type="verb_geometry_nurbs_curve_by_knots_control_points_weights">
         </block>
         <block type="babylon_draw_curve">
+            <value name="Colour">
+                <shadow type="colour_picker">
+                    <field name="COLOUR">#555</field>
+                </shadow>
+            </value>
+            <value name="Width">
+                <shadow type="math_number">
+                    <field name="NUM">3</field>
+                </shadow>
+            </value>
+            <value name="Opacity">
+                <shadow type="math_number">
+                    <field name="NUM">1</field>
+                </shadow>
+            </value>
+        </block>
+        <block type="babylon_draw_curves">
             <value name="Colour">
                 <shadow type="colour_picker">
                     <field name="COLOUR">#555</field>
@@ -510,6 +531,16 @@ export function toolboxDefinition() {
         <block type="verb_geometry_nurbs_surface_closest_param">
         </block>
         <block type="verb_geometry_nurbs_surface_closest_point">
+        </block>
+        <block type="verb_geometry_nurbs_surface_boundaries">
+        </block>
+        <block type="verb_geometry_nurbs_surface_isocurve">
+        </block>
+        <block type="verb_geometry_nurbs_surface_reverse">
+        </block>
+        <block type="verb_geometry_nurbs_surface_split">
+        </block>
+        <block type="verb_geometry_nurbs_surface_transform">
         </block>
         <block type="verb_geometry_nurbs_surface_clone">
         </block>

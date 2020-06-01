@@ -1,14 +1,14 @@
 import { Blocks, ALIGN_RIGHT } from "blockly";
 import * as JavaScript from 'blockly/javascript';
 
-export function createDrawLinesBlock() {
+export function createDrawCurvesBlock() {
 
-    Blocks['babylon_draw_lines'] = {
+    Blocks['babylon_draw_curves'] = {
         init: function () {
-            this.appendValueInput("Lines")
+            this.appendValueInput("Curves")
                 .setCheck("Array")
                 .setAlign(ALIGN_RIGHT)
-                .appendField("Draw lines");
+                .appendField("Draw curves");
             this.appendValueInput("Colour")
                 .setCheck("Colour")
                 .setAlign(ALIGN_RIGHT)
@@ -24,42 +24,39 @@ export function createDrawLinesBlock() {
             this.setColour("#fff");
             this.setPreviousStatement(true, null);
             this.setNextStatement(true, null);
-            this.setTooltip("Draws a coloured line in space of selected width");
+            this.setTooltip("Draws a coloured curves in space of selected width");
             this.setHelpUrl("");
         }
     };
 
-    JavaScript['babylon_draw_lines'] = function (block) {
-        var value_lines = JavaScript.valueToCode(block, 'Lines', JavaScript.ORDER_ATOMIC);
+    JavaScript['babylon_draw_curves'] = function (block) {
+        var value_curves = JavaScript.valueToCode(block, 'Curves', JavaScript.ORDER_ATOMIC);
         var value_colour = JavaScript.valueToCode(block, 'Colour', JavaScript.ORDER_ATOMIC);
         var value_opacity = JavaScript.valueToCode(block, 'Opacity', JavaScript.ORDER_ATOMIC);
         var value_width = JavaScript.valueToCode(block, 'Width', JavaScript.ORDER_ATOMIC);
 
         var code = `
 (() => {
-    var lines = ${value_lines};
+    var lines = ${value_curves};
     var width = ${value_width ? value_width : 3};
     var linesForRender = [];
+    var col = BABYLON.Color3.FromHexString(${value_colour});
     
     var colors = [];
     lines.forEach(line => {
-        linesForRender.push([new BABYLON.Vector3(line.start[0], line.start[1], line.start[2]), new BABYLON.Vector3(line.end[0], line.end[1], line.end[2])]);
-        var col = BABYLON.Color3.FromHexString(${value_colour});
-        colors.push([
-            new BABYLON.Color4(col.r, col.g, col.b, ${value_opacity}),
-            new BABYLON.Color4(col.r, col.g, col.b, ${value_opacity})
-        ]); 
+        var points = line.tessellate();
+        linesForRender.push(points.map(pt => new BABYLON.Vector3(pt[0], pt[1], pt[2])));
+        colors.push(points.map(pt => new BABYLON.Color4(col.r, col.g, col.b, ${value_opacity})));
     });
 
     var lines = BABYLON.MeshBuilder.CreateLineSystem("lines${Math.random()}", {lines: linesForRender, colors, useVertexAlpha: true}, scene);
     
     lines.enableEdgesRendering();	
     lines.edgesWidth = width;
-    var col = BABYLON.Color3.FromHexString(${value_colour});
     lines.edgesColor = new BABYLON.Color4(col.r, col.g, col.b, ${value_opacity});
     lines.opacity = ${value_opacity ? value_opacity : 1};
 })();
-`;
+        `;
         return code;
     };
 }
