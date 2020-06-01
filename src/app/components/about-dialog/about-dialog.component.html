@@ -1,4 +1,43 @@
 <h2>About BitByBit <span class="version">Core v{{constants.version}}</span></h2>
+<h3>The BitByBit Core Platform</h3>
+<p>
+    BitByBit is an open source, community based, frictionless web platform that allows creators to program geometry
+    through simple visual programming language. This tool is great for all ages and can fulfil many artistic,
+    educational or
+    practical needs of its users. Through familiar programming interface, used in tools such as Scratch, Blockly.Games
+    and
+    others we try to expose powerful 3D algorithms that make it easier to implement various parametric tasks that may
+    otherwise be hard to achieve without expensive CAD applications which require a lot of specific domain knowledge.
+    Our
+    goal is to make it very simple for users to share their ideas and designs by just exporting and importing scripts,
+    uploading designs and participating in lively discussions on Discord. We want to encourage everyone to engage in the
+    future of this tool.
+</p>
+<p>Programming language that was implemented in BitByBit
+    platform
+    consists of basic building blocks that can compose various 3D shapes. Starting from simple points, lines and going
+    into NURBS curves and surfaces. This model allows creators to learn by experimenting. 3D environment
+    that is integrated in the platform provides instant feedback and gratification, which inspires users to grow and
+    innovate.
+</p>
+<h3>Principles</h3>
+<p>BitByBit will always keep it's Core free for its users. Principles of minimalism and simplicity are reflected in all
+    of
+    the design decisions we make. Application itself is frictionless, users don't need to create accounts or install
+    browser plugins. BitByBit creators have no intention of tracking the users by any analytical tools that can cause
+    performance issues or be blocked by various browser addons. We could not find a better Home screen for the
+    application than the application itself. Website immediately starts the empty canvas for your code and an empty 3D
+    world. All Core algorithms will always remain opensource and will not require any backend based server
+    infrastructure. This will allow application to be used on various devices as a Progressive Web App (PWA). After the
+    application is loaded on your devices, internet
+    connectivitiy will not be required for it to function.
+</p>
+<h3>Community</h3>
+<p>Community members are encouraged to join our Forum at Discord, share
+    their
+    creations, ask questions, teach, inspire each other and grow. We are also actively looking for patrons and sponsors to support our development efforts. Authors are eager to learn what you think this tool can become.
+</p>
+<h3>Thanks other OpenSource projects!</h3>
 <a href="https://developers.google.com/blockly" target="_blank">
     <img width="130" src="assets/logo_built_on_blockly.png" alt="Built on Blockly logo" />
 </a>
@@ -8,28 +47,15 @@
 <a href="http://verbnurbs.com/" target="_blank">
     <img width="110" src="assets/verb.png" alt="Built on VerbNurbs logo" />
 </a>
-BitByBit is proud to be developed on great technologies. We appreciate the opportunity that Blockly, BabylonJS and VerbNurbs
-provide.
-<h3>The BitByBit Core Platform</h3>
-<p>BitByBit is a geometric programming platform for innovators. Programming language that was implemented in BitByBit platform
-    consists of basic building blocks that can compose various 3D shapes. Starting from simple points, lines and going
-    into NURBS curves and surfaces. This model allows creators to learn by experimenting. 3D environment
-    that is integrated in the platform provides instant feedback and gratification, which inspires users to grow and
-    innovate.
+<p>
+    BitByBit is proud to be developed on great technologies. We appreciate the opportunity that Blockly, BabylonJS and
+    VerbNurbs provide.
 </p>
-<h3>Principles</h3>
-<p>BitByBit will always keep it's Core free for its users. Principles of minimalism and simplicity are reflected in all of
-    the design decisions we make. Application itself is frictionless, users don't need to create accounts or install
-    browser plugins. BitByBit creators have no intention of tracking the users by any analytical tools that can cause
-    performance issues or be blocked by various browser addons. We could not find a better Home screen for the
-    application than the application itself. Website immediately starts the empty canvas for your code and an empty 3D
-    world. All Core algorithms will always remain opensource and will not require any backend based server
-    infrastructure. This will allow application to be used on various devices as a Progressive Web App (PWA). After the application is loaded on your devices, internet
-    connectivitiy will not be required for it to function.
-</p>
-<h3>Community</h3>
-<p>While BitByBit Core will remain frictionless, community members are encouraged to join our Forum at Discord, share their
-creations, ask questions, teach, inspire each other and grow.
+<br>
+<h4>Important!</h4>
+<p>
+    BitByBit is in alpha release, beware of dragons. We try to avoid, but do not guarantee that breaking changes
+    will not occur. Currently the platform is in active development and is not yet stable.
 </p>
 <h3>License</h3>
 <h4>The MIT License (MIT)</h4>
@@ -43,7 +69,7 @@ creations, ask questions, teach, inspire each other and grow.
     to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
     copies of the Software, and to permit persons to whom the Software is
     furnished to do so, subject to the following conditions:
-</p>    
+</p>
 <p>
     The above copyright notice and this permission notice shall be included in
     all copies or substantial portions of the Software.
@@ -57,3 +83,4 @@ creations, ask questions, teach, inspire each other and grow.
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
     THE SOFTWARE.
 </p>
+<button mat-button mat-raised-button (click)="onClose()">Close</button>

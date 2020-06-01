@@ -13,7 +13,7 @@ export class AboutDialogComponent {
         public dialogRef: MatDialogRef<AboutDialogComponent>,
         @Inject(MAT_DIALOG_DATA) public data: any) { }
 
-    onNoClick(): void {
+    onClose(): void {
         this.dialogRef.close();
     }
 

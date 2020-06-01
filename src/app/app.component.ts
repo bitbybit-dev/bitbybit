@@ -199,6 +199,7 @@ ${code}
         const dialogRef = this.dialog.open(AlertDialogComponent, {
             width: '600px',
             height: '300px',
+            autoFocus: false,
             data: error,
         });
 
@@ -210,7 +211,8 @@ ${code}
     private openExamplesDialog(): void {
         const dialogRef = this.dialog.open(ExamplesDialogComponent, {
             width: '600px',
-            height: '500px'
+            height: '500px',
+            autoFocus: false
         });
 
         dialogRef.afterClosed().subscribe(result => {
@@ -221,7 +223,8 @@ ${code}
     private openAboutDialog(): void {
         const dialogRef = this.dialog.open(AboutDialogComponent, {
             width: '600px',
-            height: '500px'
+            height: '500px',
+            autoFocus: false
         });
 
         dialogRef.afterClosed().subscribe(result => {
@@ -232,7 +235,8 @@ ${code}
     private openSponsorsDialog(): void {
         const dialogRef = this.dialog.open(SponsorsDialogComponent, {
             width: '700px',
-            height: '700px'
+            height: '700px',
+            autoFocus: false
         });
 
         dialogRef.afterClosed().subscribe(result => {

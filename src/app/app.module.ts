@@ -17,6 +17,7 @@ import { ExamplesDialogComponent } from './components/examples-dialog/examples-d
 import { MatDialogModule } from '@angular/material/dialog';
 import { SponsorsDialogComponent } from './components/sponsors-dialog/sponsors-dialog.component';
 import { AlertDialogComponent } from './components/alert-dialog/alert-dialog.component';
+import { AboutDialogComponent } from './components/about-dialog/about-dialog.component';
 
 
 
@@ -24,6 +25,7 @@ import { AlertDialogComponent } from './components/alert-dialog/alert-dialog.com
     declarations: [
         AppComponent,
         ExamplesDialogComponent,
+        AboutDialogComponent,
         SponsorsDialogComponent,
         AlertDialogComponent,
     ],
