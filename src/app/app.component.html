@@ -14,6 +14,10 @@
                 target="_blank">
                 <img width="16px" src="../assets/logo-patreon.svg">
             </a>
+            <button mat-buttom mat-icon-button (click)="cleanCanvas()">
+                <mat-icon matTooltip="Clean canvas" aria-label="Clean Canvas">refresh
+                </mat-icon>
+            </button>
             <button matTooltip="More" mat-buttom mat-icon-button [matMenuTriggerFor]="appMenu">
                 <mat-icon aria-hidden="false" aria-label="More">more_vert
                 </mat-icon>
@@ -53,7 +57,7 @@
             </mat-menu>
             <mat-menu #social="matMenu">
                 <a mat-menu-item href="https://www.patreon.com/bitbybitdev" target="_blank">
-                    <img class="mat-icon" width="15px" src="../assets/logo-patreon.svg">
+                    <img class="mat-icon" width="20px" src="../assets/logo-patreon.svg">
                     Patreon
                 </a>
                 <a mat-menu-item href="https://discord.gg/GSe3VMe" target="_blank">

@@ -172,10 +172,18 @@ export class AppComponent implements OnInit, AfterViewInit {
         this.openSponsorsDialog();
     }
 
+    cleanCanvas(){
+        this.workspace.clear();
+        this.router.navigate(['/']);
+        this.run();
+    }
+
     run() {
         try {
             this.scene.meshes.forEach(m => m.dispose());
             this.scene.meshes = [];
+            this.scene.clearColor = new Color4(1, 1, 1, 1);
+            
             const javascript = JavaScript;
             (window as any).LoopTrap = 10000;
             javascript.INFINITE_LOOP_TRAP = 'if(--window.LoopTrap == 0) throw "Infinite loop cancelled after 10000 iterations.";\n';

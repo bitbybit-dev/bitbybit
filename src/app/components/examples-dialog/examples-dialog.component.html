@@ -1,5 +1,10 @@
 <h2>BitByBit Examples</h2>
 <p>Provided examples give you a starting point to understanding the world of 3D algorithms.</p>
-<a [routerLink]="['/']" [queryParams]="{examples: 'advanced-lines-between-two-surfaces'}">Somewhere</a>
+<mat-card>
+    <h3>Lines between two surfaces</h3>
+    <a [routerLink]="['/']" [queryParams]="{examples: 'advanced-lines-between-two-surfaces'}" (click)="onClose()">
+        <img src="assets/example-cover.png"/>
+    </a>
+</mat-card>
 <br>
 <button mat-button mat-raised-button (click)="onClose()">Close</button>
