@@ -31,9 +31,6 @@
               "src/styles.scss"
             ],
             "scripts": [
-                "node_modules/blockly/blockly.js",
-                "node_modules/blockly/javascript.js",
-                "node_modules/blockly/msg/en.js"
             ]
           },
           "configurations": {
@@ -48,9 +45,9 @@
               "outputHashing": "all",
               "sourceMap": false,
               "extractCss": true,
-              "namedChunks": false,
+              "namedChunks": true,
               "extractLicenses": true,
-              "vendorChunk": false,
+              "vendorChunk": true,
               "buildOptimizer": true,
               "budgets": [
                 {
