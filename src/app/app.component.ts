@@ -18,6 +18,8 @@ import { ExamplesDialogComponent } from './components/examples-dialog/examples-d
 import { AboutDialogComponent } from './components/about-dialog/about-dialog.component';
 import { SponsorsDialogComponent } from './components/sponsors-dialog/sponsors-dialog.component';
 import { AlertDialogComponent } from './components/alert-dialog/alert-dialog.component';
+import { Router, NavigationEnd, Route, ActivatedRoute } from '@angular/router';
+import { advancedLinesBetweenTwoSurfaces } from './examples/advanced/advanced-lines-between-two-surfaces';
 
 @Component({
     selector: 'app-root',
@@ -34,7 +36,7 @@ export class AppComponent implements OnInit, AfterViewInit {
     engine: Engine;
     windowBlockly;
 
-    constructor(public dialog: MatDialog) {
+    constructor(public dialog: MatDialog, public readonly router: Router, public readonly route: ActivatedRoute) {
     }
 
     ngAfterViewInit(): void {
@@ -84,6 +86,17 @@ export class AppComponent implements OnInit, AfterViewInit {
             this.scene.render();
         });
 
+        this.route.queryParamMap.subscribe(param => {
+            const exampleParam = param.get('examples');
+            if (exampleParam === 'advanced-lines-between-two-surfaces') {
+                var xml = Xml.textToDom(advancedLinesBetweenTwoSurfaces());
+                this.workspace.clear();
+                Xml.domToWorkspace(xml, this.workspace);
+                this.workspace.zoomToFit();
+                this.workspace.zoomCenter(-3);
+                this.run();
+            }
+        });
     }
 
     ngOnInit(): void {
@@ -164,6 +177,8 @@ export class AppComponent implements OnInit, AfterViewInit {
             this.scene.meshes.forEach(m => m.dispose());
             this.scene.meshes = [];
             const javascript = JavaScript;
+            (window as any).LoopTrap = 10000;
+            javascript.INFINITE_LOOP_TRAP = 'if(--window.LoopTrap == 0) throw "Infinite loop cancelled after 10000 iterations.";\n';
             let code = javascript.workspaceToCode(this.workspace);
             eval(`
 'use reserved'
