@@ -1,10 +1,31 @@
 <h2>BitByBit Examples</h2>
 <p>Provided examples give you a starting point to understanding the world of 3D algorithms.</p>
-<mat-card>
-    <h3>Lines between two surfaces</h3>
-    <a [routerLink]="['/']" [queryParams]="{examples: 'advanced-lines-between-two-surfaces'}" (click)="onClose()">
-        <img src="assets/example-cover.png"/>
-    </a>
-</mat-card>
+<mat-tab-group mat-align-tabs="center">
+    <mat-tab label="Newbie" > 
+        <mat-card>
+            <h3>Polyline between three points</h3>
+            <a [routerLink]="['/']" [queryParams]="{examples: 'basic-polyline-between-three-points'}" (click)="onClose()">
+                <img src="assets/example-cover.png"/>
+            </a>
+        </mat-card>    
+    </mat-tab>
+    <mat-tab label="Street Smart">
+        <mat-card>
+            <h3>Lines between two surfaces</h3>
+            <a [routerLink]="['/']" [queryParams]="{examples: 'advanced-lines-between-two-surfaces'}" (click)="onClose()">
+                <img src="assets/example-cover.png"/>
+            </a>
+        </mat-card>
+    </mat-tab>
+    <mat-tab label="Ninja"> 
+        <mat-card>
+            <h3>Lines between two surfaces</h3>
+            <a [routerLink]="['/']" [queryParams]="{examples: 'advanced-lines-between-two-surfaces'}" (click)="onClose()">
+                <img src="assets/example-cover.png"/>
+            </a>
+        </mat-card>
+    </mat-tab>
+  </mat-tab-group>
+
 <br>
 <button mat-button mat-raised-button (click)="onClose()">Close</button>
