@@ -18,9 +18,9 @@ import { ExamplesDialogComponent } from './components/examples-dialog/examples-d
 import { AboutDialogComponent } from './components/about-dialog/about-dialog.component';
 import { SponsorsDialogComponent } from './components/sponsors-dialog/sponsors-dialog.component';
 import { AlertDialogComponent } from './components/alert-dialog/alert-dialog.component';
-import { Router, NavigationEnd, Route, ActivatedRoute } from '@angular/router';
-import { advancedLinesBetweenTwoSurfaces } from './examples/advanced/advanced-lines-between-two-surfaces';
-import { basicPolylineBetweenThreePoints } from './examples/advanced/basic-polyline-between-three-points';
+import { Router, ActivatedRoute } from '@angular/router';
+import { midLinesBetweenTwoSurfaces } from './examples/mid/mid-lines-between-two-surfaces';
+import { basicPolylineBetweenThreePoints } from './examples/basic/basic-polyline-between-three-points';
 
 @Component({
     selector: 'app-root',
@@ -91,8 +91,8 @@ export class AppComponent implements OnInit, AfterViewInit {
             this.route.queryParamMap.subscribe(param => {
                 const exampleParam = param.get('examples');
                 let xml;
-                if (exampleParam === 'advanced-lines-between-two-surfaces') {
-                    xml = Xml.textToDom(advancedLinesBetweenTwoSurfaces());
+                if (exampleParam === 'mid-lines-between-two-surfaces' || exampleParam === 'advanced-lines-between-two-surfaces') {
+                    xml = Xml.textToDom(midLinesBetweenTwoSurfaces());
                 } else if (exampleParam === 'basic-polyline-between-three-points') {
                     xml = Xml.textToDom(basicPolylineBetweenThreePoints());
                 }
