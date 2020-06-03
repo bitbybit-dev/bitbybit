@@ -19,7 +19,7 @@ import { AboutDialogComponent } from './components/about-dialog/about-dialog.com
 import { SponsorsDialogComponent } from './components/sponsors-dialog/sponsors-dialog.component';
 import { AlertDialogComponent } from './components/alert-dialog/alert-dialog.component';
 import { Router, ActivatedRoute } from '@angular/router';
-import { advancedLinesBetweenTwoSurfaces } from './examples/mid/mid-lines-between-two-surfaces';
+import { midLinesBetweenTwoSurfaces } from './examples/mid/mid-lines-between-two-surfaces';
 import { basicPolylineBetweenThreePoints } from './examples/basic/basic-polyline-between-three-points';
 
 @Component({
@@ -91,8 +91,8 @@ export class AppComponent implements OnInit, AfterViewInit {
             this.route.queryParamMap.subscribe(param => {
                 const exampleParam = param.get('examples');
                 let xml;
-                if (exampleParam === 'mid-lines-between-two-surfaces') {
-                    xml = Xml.textToDom(advancedLinesBetweenTwoSurfaces());
+                if (exampleParam === 'mid-lines-between-two-surfaces' || exampleParam === 'advanced-lines-between-two-surfaces') {
+                    xml = Xml.textToDom(midLinesBetweenTwoSurfaces());
                 } else if (exampleParam === 'basic-polyline-between-three-points') {
                     xml = Xml.textToDom(basicPolylineBetweenThreePoints());
                 }
