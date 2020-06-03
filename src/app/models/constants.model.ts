@@ -1,3 +1,3 @@
 export const constantsModel = {
-    version: 0.01
+    version: '0.0.1'
 }
