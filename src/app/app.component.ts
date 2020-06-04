@@ -2,6 +2,7 @@ import { Component, OnInit, AfterViewInit } from '@angular/core';
 import { svgResize, inject, Theme, Xml, WorkspaceSvg } from 'blockly';
 import * as JavaScript from 'blockly/javascript';
 
+import { constantsModel } from './models/constants.model';
 import '@babylonjs/core/Meshes/meshBuilder';
 import '@babylonjs/core/Materials/standardMaterial';
 import { Engine } from '@babylonjs/core/Engines/engine';
@@ -33,6 +34,7 @@ export class AppComponent implements OnInit, AfterViewInit {
     scene: Scene;
     engine: Engine;
     windowBlockly;
+    constants = constantsModel;
 
     constructor(
         public dialog: MatDialog,
