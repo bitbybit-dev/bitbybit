@@ -2,27 +2,29 @@
 <p>Provided examples give you a starting point to understanding the world of 3D algorithms.</p>
 <mat-tab-group mat-align-tabs="center">
     <mat-tab label="Newbie">
-        <mat-card *ngFor="let example of basicExamples">
+        <div *ngFor="let example of basicExamples" class="example">
             <h3>{{example.title}}</h3>
             <a [routerLink]="['/']" [queryParams]="{examples: example.queryParam}" (click)="onClose()">
                 <img [src]="example.image"/>
             </a>
-        </mat-card>
+            <p>{{example.description}}</p>
+        </div>
     </mat-tab>
     <mat-tab label="Street Smart">
-        <mat-card *ngFor="let example of mediumExamples">
+        <div *ngFor="let example of mediumExamples" class="example">
             <h3>{{example.title}}</h3>
             <a [routerLink]="['/']" [queryParams]="{examples: example.queryParam}" (click)="onClose()">
                 <img [src]="example.image"/>
             </a>
-        </mat-card>
+            <p>{{example.description}}</p>
+        </div>
     </mat-tab>
     <mat-tab label="Ninja"> 
-        <mat-card>
+        <div>
             <h3>
                 Ninja examples will require some ninja time to prepare, please be patient...
             </h3>
-        </mat-card>
+        </div>
     </mat-tab>
   </mat-tab-group>
 

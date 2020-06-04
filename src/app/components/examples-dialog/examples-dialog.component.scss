@@ -1,7 +1,12 @@
 img {
     width: 100%;
+    filter: grayscale(100%);
 }
 
 ::ng-deep .mat-tab-body-wrapper {
     max-height:  430px;
+}
+
+.example {
+    margin-top: 20px;
 }
