@@ -1,3 +1,7 @@
 img {
     width: 100%;
 }
+
+::ng-deep .mat-tab-body-wrapper {
+    max-height:  430px;
+}

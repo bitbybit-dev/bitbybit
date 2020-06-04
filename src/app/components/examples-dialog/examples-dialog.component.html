@@ -1,19 +1,19 @@
 <h2>BitByBit Examples</h2>
 <p>Provided examples give you a starting point to understanding the world of 3D algorithms.</p>
 <mat-tab-group mat-align-tabs="center">
-    <mat-tab label="Newbie" > 
-        <mat-card>
-            <h3>Polyline between three points</h3>
-            <a [routerLink]="['/']" [queryParams]="{examples: 'basic-polyline-between-three-points'}" (click)="onClose()">
-                <img src="assets/examples/basic/basic-polyline-between-three-points.png"/>
+    <mat-tab label="Newbie">
+        <mat-card *ngFor="let example of basicExamples">
+            <h3>{{example.title}}</h3>
+            <a [routerLink]="['/']" [queryParams]="{examples: example.queryParam}" (click)="onClose()">
+                <img [src]="example.image"/>
             </a>
         </mat-card>
     </mat-tab>
     <mat-tab label="Street Smart">
-        <mat-card>
-            <h3>Lines between two surfaces</h3>
-            <a [routerLink]="['/']" [queryParams]="{examples: 'mid-lines-between-two-surfaces'}" (click)="onClose()">
-                <img src="assets/examples/mid/mid-lines-between-two-surfaces.png"/>
+        <mat-card *ngFor="let example of mediumExamples">
+            <h3>{{example.title}}</h3>
+            <a [routerLink]="['/']" [queryParams]="{examples: example.queryParam}" (click)="onClose()">
+                <img [src]="example.image"/>
             </a>
         </mat-card>
     </mat-tab>

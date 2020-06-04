@@ -18,6 +18,7 @@ import { MatDialogModule } from '@angular/material/dialog';
 import { SponsorsDialogComponent } from './components/sponsors-dialog/sponsors-dialog.component';
 import { AlertDialogComponent } from './components/alert-dialog/alert-dialog.component';
 import { AboutDialogComponent } from './components/about-dialog/about-dialog.component';
+import { ExamplesService } from './examples/example-service';
 
 
 
@@ -45,7 +46,7 @@ import { AboutDialogComponent } from './components/about-dialog/about-dialog.com
         MatMenuModule,
         MatCardModule,
     ],
-    providers: [],
+    providers: [ExamplesService],
     bootstrap: [AppComponent]
 })
 export class AppModule { }
