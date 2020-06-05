@@ -1,10 +1,10 @@
-import { ValidationModel } from './validation.model';
+import { ValidationEntityInterface } from './validation-entity.interface';
 
 export class BlockValidationService {
-    static validate(block: any, validationModel: { entity: any, validations: ValidationModel[] }[]) {
+    static validate(block: any, validationEntityModel: ValidationEntityInterface[]) {
         const errors = [];
 
-        validationModel.forEach(validation => {
+        validationEntityModel.forEach(validation => {
             validation.validations.forEach(val => {
                 if (!val.validationFunc(validation.entity, val.validationData)) {
                     errors.push(val.errorText);

@@ -1,4 +1,4 @@
-export class ValidationModel {
+export interface ValidationInterface {
     validationFunc: (entity: any, validationData?: any) => {};
     validationData?: any;
     errorText: string;
