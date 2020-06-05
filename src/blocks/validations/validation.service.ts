@@ -14,7 +14,7 @@ export class BlockValidationService {
 
         if (errors.length > 0) {
             block.setColour('ffab91');
-            const errorText = `\n${errors.join(',\n')}.`;
+            const errorText = `Block with id "${block.id}" failed - \n${errors.join(',\n')}.`;
             block.setWarningText(errorText);
             throw new Error(errorText);
         }

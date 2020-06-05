@@ -209,7 +209,7 @@ ${code}
             this.openAlertDialog({
                 title: 'Code execution failed',
                 details: `Something went wrong when running the code. Check if there are no disconnected or misconfigured components on your canvas`,
-                message: `Error Message: "${e}"`,
+                message: `${e}`,
             });
         }
     }
