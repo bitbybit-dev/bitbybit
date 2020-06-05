@@ -29,12 +29,12 @@ export function createCurveByKnotsControlPointsWeightsBlock() {
     };
 
     JavaScript['verb_geometry_nurbs_curve_by_knots_control_points_weights'] = function (block) {
-        var value_knots = JavaScript.valueToCode(block, 'Knots', JavaScript.ORDER_ATOMIC);
-        var value_points = JavaScript.valueToCode(block, 'Points', JavaScript.ORDER_ATOMIC);
-        var value_weights = JavaScript.valueToCode(block, 'Weights', JavaScript.ORDER_ATOMIC);
-        var value_degree = JavaScript.valueToCode(block, 'Degree', JavaScript.ORDER_ATOMIC);
+        let value_knots = JavaScript.valueToCode(block, 'Knots', JavaScript.ORDER_ATOMIC);
+        let value_points = JavaScript.valueToCode(block, 'Points', JavaScript.ORDER_ATOMIC);
+        let value_weights = JavaScript.valueToCode(block, 'Weights', JavaScript.ORDER_ATOMIC);
+        let value_degree = JavaScript.valueToCode(block, 'Degree', JavaScript.ORDER_ATOMIC);
 
-        var code = `(() => verb.geom.NurbsCurve.byKnotsControlPointsWeights(${value_degree}, ${value_knots}, ${value_points}, ${value_weights} ))()`;
+        let code = `(() => verb.geom.NurbsCurve.byKnotsControlPointsWeights(${value_degree}, ${value_knots}, ${value_points}, ${value_weights} ))()`;
         return [code, JavaScript.ORDER_ATOMIC];
     };
 }

@@ -16,9 +16,9 @@ export function createSurfaceControlPointsBlock() {
     };
 
     JavaScript['verb_geometry_nurbs_surface_control_points'] = function (block) {
-        var value_surface = JavaScript.valueToCode(block, 'Surface', JavaScript.ORDER_ATOMIC);
+        let value_surface = JavaScript.valueToCode(block, 'Surface', JavaScript.ORDER_ATOMIC);
 
-        var code = `
+        let code = `
 (() => ${value_surface}.controlPoints())()
 `;
         return [code, JavaScript.ORDER_ATOMIC];

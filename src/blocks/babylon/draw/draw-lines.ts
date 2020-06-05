@@ -30,34 +30,33 @@ export function createDrawLinesBlock() {
     };
 
     JavaScript['babylon_draw_lines'] = function (block) {
-        var value_lines = JavaScript.valueToCode(block, 'Lines', JavaScript.ORDER_ATOMIC);
-        var value_colour = JavaScript.valueToCode(block, 'Colour', JavaScript.ORDER_ATOMIC);
-        var value_opacity = JavaScript.valueToCode(block, 'Opacity', JavaScript.ORDER_ATOMIC);
-        var value_width = JavaScript.valueToCode(block, 'Width', JavaScript.ORDER_ATOMIC);
+        let value_lines = JavaScript.valueToCode(block, 'Lines', JavaScript.ORDER_ATOMIC);
+        let value_colour = JavaScript.valueToCode(block, 'Colour', JavaScript.ORDER_ATOMIC);
+        let value_opacity = JavaScript.valueToCode(block, 'Opacity', JavaScript.ORDER_ATOMIC);
+        let value_width = JavaScript.valueToCode(block, 'Width', JavaScript.ORDER_ATOMIC);
 
-        var code = `
+        let code = `
 (() => {
-    var lines = ${value_lines};
-    var width = ${value_width ? value_width : 3};
-    var linesForRender = [];
-    
-    var colors = [];
+    let lines = ${value_lines};
+    let width = ${value_width ? value_width : 3};
+    let linesForRender = [];
+    let colors = [];
     lines.forEach(line => {
         linesForRender.push([new BABYLON.Vector3(line.start[0], line.start[1], line.start[2]), new BABYLON.Vector3(line.end[0], line.end[1], line.end[2])]);
-        var col = BABYLON.Color3.FromHexString(${value_colour});
+        let col = BABYLON.Color3.FromHexString(${value_colour});
         colors.push([
             new BABYLON.Color4(col.r, col.g, col.b, ${value_opacity}),
             new BABYLON.Color4(col.r, col.g, col.b, ${value_opacity})
-        ]); 
+        ]);
     });
 
-    var lines = BABYLON.MeshBuilder.CreateLineSystem("lines${Math.random()}", {lines: linesForRender, colors, useVertexAlpha: true}, scene);
-    
-    lines.enableEdgesRendering();	
-    lines.edgesWidth = width;
-    var col = BABYLON.Color3.FromHexString(${value_colour});
-    lines.edgesColor = new BABYLON.Color4(col.r, col.g, col.b, ${value_opacity});
-    lines.opacity = ${value_opacity ? value_opacity : 1};
+    let linesMesh = BABYLON.MeshBuilder.CreateLineSystem("lines${Math.random()}", {lines: linesForRender, colors, useVertexAlpha: true}, scene);
+
+    linesMesh.enableEdgesRendering();
+    linesMesh.edgesWidth = width;
+    let col = BABYLON.Color3.FromHexString(${value_colour});
+    linesMesh.edgesColor = new BABYLON.Color4(col.r, col.g, col.b, ${value_opacity});
+    linesMesh.opacity = ${value_opacity ? value_opacity : 1};
 })();
 `;
         return code;

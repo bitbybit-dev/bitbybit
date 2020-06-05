@@ -17,9 +17,9 @@ export function createCurveKnotsBlock() {
     };
 
     JavaScript['verb_geometry_nurbs_curve_knots'] = function (block) {
-        var value_curve = JavaScript.valueToCode(block, 'Curve', JavaScript.ORDER_ATOMIC);
+        let value_curve = JavaScript.valueToCode(block, 'Curve', JavaScript.ORDER_ATOMIC);
 
-        var code = `
+        let code = `
 (() => ${value_curve}.knots())()
 `;
         return [code, JavaScript.ORDER_ATOMIC];

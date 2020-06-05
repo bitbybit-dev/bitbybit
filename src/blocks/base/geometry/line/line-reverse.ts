@@ -17,9 +17,9 @@ export function createLineReverseBlock() {
     };
 
     JavaScript['base_geometry_line_reverse'] = function (block) {
-        var value_line = JavaScript.valueToCode(block, 'Line', JavaScript.ORDER_ATOMIC);
+        let value_line = JavaScript.valueToCode(block, 'Line', JavaScript.ORDER_ATOMIC);
 
-        var code = `{start: ${value_line}.end, end: ${value_line}.start}`;
+        let code = `{start: ${value_line}.end, end: ${value_line}.start}`;
         return [code, JavaScript.ORDER_ATOMIC];
     };
 }

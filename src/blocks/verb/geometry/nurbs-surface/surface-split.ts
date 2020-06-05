@@ -24,11 +24,11 @@ export function createSurfaceSplitBlock() {
     };
 
     JavaScript['verb_geometry_nurbs_surface_split'] = function (block) {
-        var value_surface = JavaScript.valueToCode(block, 'Surface', JavaScript.ORDER_ATOMIC);
-        var value_param = JavaScript.valueToCode(block, 'Param', JavaScript.ORDER_ATOMIC);
-        var value_use_v = JavaScript.valueToCode(block, 'UseV', JavaScript.ORDER_ATOMIC);
+        let value_surface = JavaScript.valueToCode(block, 'Surface', JavaScript.ORDER_ATOMIC);
+        let value_param = JavaScript.valueToCode(block, 'Param', JavaScript.ORDER_ATOMIC);
+        let value_use_v = JavaScript.valueToCode(block, 'UseV', JavaScript.ORDER_ATOMIC);
 
-        var code = `
+        let code = `
 (() => ${value_surface}.split(${value_param}, ${value_use_v}))()
 `;
         return [code, JavaScript.ORDER_ATOMIC];

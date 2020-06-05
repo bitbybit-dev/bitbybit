@@ -28,12 +28,12 @@ export function createSurfaceByCornersBlock() {
     };
 
     JavaScript['verb_geometry_nurbs_surface_by_corners'] = function (block) {
-        var value_point_1 = JavaScript.valueToCode(block, 'Point1', JavaScript.ORDER_ATOMIC);
-        var value_point_2 = JavaScript.valueToCode(block, 'Point2', JavaScript.ORDER_ATOMIC);
-        var value_point_3 = JavaScript.valueToCode(block, 'Point3', JavaScript.ORDER_ATOMIC);
-        var value_point_4 = JavaScript.valueToCode(block, 'Point4', JavaScript.ORDER_ATOMIC);
+        let value_point_1 = JavaScript.valueToCode(block, 'Point1', JavaScript.ORDER_ATOMIC);
+        let value_point_2 = JavaScript.valueToCode(block, 'Point2', JavaScript.ORDER_ATOMIC);
+        let value_point_3 = JavaScript.valueToCode(block, 'Point3', JavaScript.ORDER_ATOMIC);
+        let value_point_4 = JavaScript.valueToCode(block, 'Point4', JavaScript.ORDER_ATOMIC);
 
-        var code = `(() => verb.geom.NurbsSurface.byCorners(${value_point_1}, ${value_point_2}, ${value_point_3}, ${value_point_4}))()`;
+        let code = `(() => verb.geom.NurbsSurface.byCorners(${value_point_1}, ${value_point_2}, ${value_point_3}, ${value_point_4}))()`;
         return [code, JavaScript.ORDER_ATOMIC];
     };
 }

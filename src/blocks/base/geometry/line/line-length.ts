@@ -17,9 +17,9 @@ export function createLineLengthBlock() {
     };
 
     JavaScript['base_geometry_line_length'] = function (block) {
-        var value_line = JavaScript.valueToCode(block, 'Line', JavaScript.ORDER_ATOMIC);
+        let value_line = JavaScript.valueToCode(block, 'Line', JavaScript.ORDER_ATOMIC);
 
-        var code = `(() => verb.core.Vec.dist(${value_line}.start, ${value_line}.end))()`;
+        let code = `(() => verb.core.Vec.dist(${value_line}.start, ${value_line}.end))()`;
         return [code, JavaScript.ORDER_ATOMIC];
     };
 }

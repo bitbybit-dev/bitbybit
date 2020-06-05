@@ -21,10 +21,10 @@ export function createCoreVectorDivBlock() {
     };
 
     JavaScript['verb_core_vector_div'] = function (block) {
-        var value_vector = JavaScript.valueToCode(block, 'Vector', JavaScript.ORDER_ATOMIC);
-        var value_scalar = JavaScript.valueToCode(block, 'Scalar', JavaScript.ORDER_ATOMIC);
+        let value_vector = JavaScript.valueToCode(block, 'Vector', JavaScript.ORDER_ATOMIC);
+        let value_scalar = JavaScript.valueToCode(block, 'Scalar', JavaScript.ORDER_ATOMIC);
 
-        var code = `(() => verb.core.Vec.div(${value_vector}, ${value_scalar}))()`;
+        let code = `(() => verb.core.Vec.div(${value_vector}, ${value_scalar}))()`;
         return [code, JavaScript.ORDER_ATOMIC];
     };
 }

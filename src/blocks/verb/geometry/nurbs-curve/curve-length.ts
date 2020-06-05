@@ -17,9 +17,9 @@ export function createCurveLengthBlock() {
     };
 
     JavaScript['verb_geometry_nurbs_curve_length'] = function (block) {
-        var value_curve = JavaScript.valueToCode(block, 'Curve', JavaScript.ORDER_ATOMIC);
+        let value_curve = JavaScript.valueToCode(block, 'Curve', JavaScript.ORDER_ATOMIC);
 
-        var code = `
+        let code = `
 (() => ${value_curve}.length())()
 `;
         return [code, JavaScript.ORDER_ATOMIC];

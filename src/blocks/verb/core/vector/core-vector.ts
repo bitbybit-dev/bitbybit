@@ -26,11 +26,11 @@ export function createCoreVector3Block() {
       };
 
     JavaScript['verb_core_vector'] = function(block) {
-        var value_x = JavaScript.valueToCode(block, 'X', JavaScript.ORDER_ATOMIC);
-        var value_y = JavaScript.valueToCode(block, 'Y', JavaScript.ORDER_ATOMIC);
-        var value_z = JavaScript.valueToCode(block, 'Z', JavaScript.ORDER_ATOMIC);
+        let value_x = JavaScript.valueToCode(block, 'X', JavaScript.ORDER_ATOMIC);
+        let value_y = JavaScript.valueToCode(block, 'Y', JavaScript.ORDER_ATOMIC);
+        let value_z = JavaScript.valueToCode(block, 'Z', JavaScript.ORDER_ATOMIC);
         
-        var code = `[${value_x ? value_x : 0}, ${value_y ? value_y : 0}, ${value_z ? value_z : 0}]`;
+        let code = `[${value_x ? value_x : 0}, ${value_y ? value_y : 0}, ${value_z ? value_z : 0}]`;
         return [code, JavaScript.ORDER_ATOMIC];
       };
 }

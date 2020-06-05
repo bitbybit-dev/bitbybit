@@ -25,11 +25,11 @@ export function createCurveDerivativesBlock() {
     };
 
     JavaScript['verb_geometry_nurbs_curve_derivatives'] = function (block) {
-        var value_curve = JavaScript.valueToCode(block, 'Curve', JavaScript.ORDER_ATOMIC);
-        var value_parameter = JavaScript.valueToCode(block, 'Parameter', JavaScript.ORDER_ATOMIC);
-        var value_num_derivatives = JavaScript.valueToCode(block, 'NumDerivatives', JavaScript.ORDER_ATOMIC);
+        let value_curve = JavaScript.valueToCode(block, 'Curve', JavaScript.ORDER_ATOMIC);
+        let value_parameter = JavaScript.valueToCode(block, 'Parameter', JavaScript.ORDER_ATOMIC);
+        let value_num_derivatives = JavaScript.valueToCode(block, 'NumDerivatives', JavaScript.ORDER_ATOMIC);
 
-        var code = `
+        let code = `
 (() => ${value_curve}.derivatives(${value_parameter}, ${value_num_derivatives}))()
 `;
         return [code, JavaScript.ORDER_ATOMIC];

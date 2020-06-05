@@ -17,9 +17,9 @@ export function createPointZBlock() {
     };
 
     JavaScript['base_geometry_point_z'] = function (block) {
-        var value_point = JavaScript.valueToCode(block, 'Point', JavaScript.ORDER_ATOMIC);
+        let value_point = JavaScript.valueToCode(block, 'Point', JavaScript.ORDER_ATOMIC);
         
-        var code = `${value_point}[2]`;
+        let code = `${value_point}[2]`;
         return [code, JavaScript.ORDER_ATOMIC];
     };
 }

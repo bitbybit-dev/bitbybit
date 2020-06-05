@@ -17,9 +17,9 @@ export function createPolylineConvertToNurbsCurveBlock() {
     };
 
     JavaScript['base_geometry_polyline_convert_to_nurbs_curve'] = function (block) {
-        var value_polyline = JavaScript.valueToCode(block, 'Polyline', JavaScript.ORDER_ATOMIC);
+        let value_polyline = JavaScript.valueToCode(block, 'Polyline', JavaScript.ORDER_ATOMIC);
 
-        var code = `(() => verb.geom.NurbsCurve.byPoints( ${value_polyline}.points, 1 ))()`;
+        let code = `(() => verb.geom.NurbsCurve.byPoints( ${value_polyline}.points, 1 ))()`;
         return [code, JavaScript.ORDER_ATOMIC];
     };
 }

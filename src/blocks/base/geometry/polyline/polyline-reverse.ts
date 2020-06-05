@@ -17,9 +17,9 @@ export function createPolylineReverseBlock() {
     };
 
     JavaScript['base_geometry_polyline_reverse'] = function (block) {
-        var value_polyline = JavaScript.valueToCode(block, 'Polyline', JavaScript.ORDER_ATOMIC);
+        let value_polyline = JavaScript.valueToCode(block, 'Polyline', JavaScript.ORDER_ATOMIC);
 
-        var code = `{points: ${value_polyline}.points.reverse()}`;
+        let code = `{points: ${value_polyline}.points.reverse()}`;
         return [code, JavaScript.ORDER_ATOMIC];
     };
 }

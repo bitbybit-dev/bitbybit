@@ -21,10 +21,10 @@ export function createCoreIntervalBlock() {
     };
 
     JavaScript['verb_core_interval'] = function (block) {
-        var value_min = JavaScript.valueToCode(block, 'Min', JavaScript.ORDER_ATOMIC);
-        var value_max = JavaScript.valueToCode(block, 'Max', JavaScript.ORDER_ATOMIC);
+        let value_min = JavaScript.valueToCode(block, 'Min', JavaScript.ORDER_ATOMIC);
+        let value_max = JavaScript.valueToCode(block, 'Max', JavaScript.ORDER_ATOMIC);
         
-        var code = `{min: ${value_min}, max: ${value_max}}`;
+        let code = `{min: ${value_min}, max: ${value_max}}`;
         return [code, JavaScript.ORDER_ATOMIC];
     };
 }

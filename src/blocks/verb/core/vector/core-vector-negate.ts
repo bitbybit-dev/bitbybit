@@ -17,9 +17,9 @@ export function createCoreVectorNegateBlock() {
     };
 
     JavaScript['verb_core_vector_negate'] = function (block) {
-        var value_vector = JavaScript.valueToCode(block, 'Vector', JavaScript.ORDER_ATOMIC);
+        let value_vector = JavaScript.valueToCode(block, 'Vector', JavaScript.ORDER_ATOMIC);
         
-        var code = `(() => verb.core.Vec.neg(${value_vector}))()`;
+        let code = `(() => verb.core.Vec.neg(${value_vector}))()`;
         return [code, JavaScript.ORDER_ATOMIC];
     };
 }

@@ -21,10 +21,10 @@ export function createCurveLengthAtParamBlock() {
     };
 
     JavaScript['verb_geometry_nurbs_curve_length_at_param'] = function (block) {
-        var value_curve = JavaScript.valueToCode(block, 'Curve', JavaScript.ORDER_ATOMIC);
-        var value_param = JavaScript.valueToCode(block, 'Number', JavaScript.ORDER_ATOMIC);
+        let value_curve = JavaScript.valueToCode(block, 'Curve', JavaScript.ORDER_ATOMIC);
+        let value_param = JavaScript.valueToCode(block, 'Number', JavaScript.ORDER_ATOMIC);
 
-        var code = `
+        let code = `
 (() => {
     return ${value_curve}.lengthAtParam(${value_param});
 })()

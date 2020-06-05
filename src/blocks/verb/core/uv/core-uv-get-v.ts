@@ -17,9 +17,9 @@ export function createCoreUVGetVBlock() {
     };
 
     JavaScript['verb_core_uv_get_v'] = function (block) {
-        var value_uv = JavaScript.valueToCode(block, 'UV', JavaScript.ORDER_ATOMIC);
+        let value_uv = JavaScript.valueToCode(block, 'UV', JavaScript.ORDER_ATOMIC);
         
-        var code = `${value_uv}.v`;
+        let code = `${value_uv}.v`;
         return [code, JavaScript.ORDER_ATOMIC];
     };
 }

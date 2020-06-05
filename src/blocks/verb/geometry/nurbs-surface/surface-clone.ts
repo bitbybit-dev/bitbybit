@@ -16,9 +16,9 @@ export function createSurfaceCloneBlock() {
     };
 
     JavaScript['verb_geometry_nurbs_surface_clone'] = function (block) {
-        var value_surface = JavaScript.valueToCode(block, 'Surface', JavaScript.ORDER_ATOMIC);
+        let value_surface = JavaScript.valueToCode(block, 'Surface', JavaScript.ORDER_ATOMIC);
 
-        var code = `
+        let code = `
 (() => ${value_surface}.clone())()
 `;
         return [code, JavaScript.ORDER_ATOMIC];

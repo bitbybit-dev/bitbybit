@@ -17,9 +17,9 @@ export function createPolylinePointsBlock() {
     };
 
     JavaScript['base_geometry_polyline_points'] = function (block) {
-        var value_polyline = JavaScript.valueToCode(block, 'Polyline', JavaScript.ORDER_ATOMIC);
+        let value_polyline = JavaScript.valueToCode(block, 'Polyline', JavaScript.ORDER_ATOMIC);
 
-        var code = `${value_polyline}.points`;
+        let code = `${value_polyline}.points`;
         return [code, JavaScript.ORDER_ATOMIC];
     };
 }

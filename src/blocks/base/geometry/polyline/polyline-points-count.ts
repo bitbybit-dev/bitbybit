@@ -17,9 +17,9 @@ export function createPolylineGetPointsCountBlock() {
     };
 
     JavaScript['base_geometry_polyline_points_count'] = function (block) {
-        var value_polyline = JavaScript.valueToCode(block, 'Polyline', JavaScript.ORDER_ATOMIC);
+        let value_polyline = JavaScript.valueToCode(block, 'Polyline', JavaScript.ORDER_ATOMIC);
 
-        var code = `${value_polyline}.points.length`;
+        let code = `${value_polyline}.points.length`;
         return [code, JavaScript.ORDER_ATOMIC];
     };
 }

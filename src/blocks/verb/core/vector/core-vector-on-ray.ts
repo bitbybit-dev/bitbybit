@@ -25,11 +25,11 @@ export function createCoreVectorOnRayBlock() {
     };
 
     JavaScript['verb_core_vector_on_ray'] = function (block) {
-        var value_point = JavaScript.valueToCode(block, 'Point', JavaScript.ORDER_ATOMIC);
-        var value_vector = JavaScript.valueToCode(block, 'Vector', JavaScript.ORDER_ATOMIC);
-        var value_distance = JavaScript.valueToCode(block, 'Distance', JavaScript.ORDER_ATOMIC);
+        let value_point = JavaScript.valueToCode(block, 'Point', JavaScript.ORDER_ATOMIC);
+        let value_vector = JavaScript.valueToCode(block, 'Vector', JavaScript.ORDER_ATOMIC);
+        let value_distance = JavaScript.valueToCode(block, 'Distance', JavaScript.ORDER_ATOMIC);
 
-        var code = `(() => verb.core.Vec.onRay(${value_point}, ${value_vector}, ${value_distance}))()`;
+        let code = `(() => verb.core.Vec.onRay(${value_point}, ${value_vector}, ${value_distance}))()`;
         return [code, JavaScript.ORDER_ATOMIC];
     };
 }

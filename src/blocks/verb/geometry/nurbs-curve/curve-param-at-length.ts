@@ -25,11 +25,11 @@ export function createCurveParamAtLengthBlock() {
     };
 
     JavaScript['verb_geometry_nurbs_curve_param_at_length'] = function (block) {
-        var value_curve = JavaScript.valueToCode(block, 'Curve', JavaScript.ORDER_ATOMIC);
-        var value_length = JavaScript.valueToCode(block, 'Length', JavaScript.ORDER_ATOMIC);
-        var value_tolerance = JavaScript.valueToCode(block, 'Tolerance', JavaScript.ORDER_ATOMIC);
+        let value_curve = JavaScript.valueToCode(block, 'Curve', JavaScript.ORDER_ATOMIC);
+        let value_length = JavaScript.valueToCode(block, 'Length', JavaScript.ORDER_ATOMIC);
+        let value_tolerance = JavaScript.valueToCode(block, 'Tolerance', JavaScript.ORDER_ATOMIC);
 
-        var code = `
+        let code = `
 (() => {
     return ${value_curve}.paramAtLength(${value_length}, ${value_tolerance});
 })()

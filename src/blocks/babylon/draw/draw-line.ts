@@ -30,21 +30,21 @@ export function createDrawLineBlock() {
     };
 
     JavaScript['babylon_draw_line'] = function (block) {
-        var value_line = JavaScript.valueToCode(block, 'Line', JavaScript.ORDER_ATOMIC);
-        var value_colour = JavaScript.valueToCode(block, 'Colour', JavaScript.ORDER_ATOMIC);
-        var value_opacity = JavaScript.valueToCode(block, 'Opacity', JavaScript.ORDER_ATOMIC);
-        var value_width = JavaScript.valueToCode(block, 'Width', JavaScript.ORDER_ATOMIC);
+        let value_line = JavaScript.valueToCode(block, 'Line', JavaScript.ORDER_ATOMIC);
+        let value_colour = JavaScript.valueToCode(block, 'Colour', JavaScript.ORDER_ATOMIC);
+        let value_opacity = JavaScript.valueToCode(block, 'Opacity', JavaScript.ORDER_ATOMIC);
+        let value_width = JavaScript.valueToCode(block, 'Width', JavaScript.ORDER_ATOMIC);
 
-        var code = `
+        let code = `
 var drawLine = () => {
-    var line = ${value_line};
-    var width = ${value_width ? value_width : 3};
+    let line = ${value_line};
+    let width = ${value_width ? value_width : 3};
 
-    var points = [new BABYLON.Vector3(line.start[0],line.start[1],line.start[2]), new BABYLON.Vector3(line.end[0],line.end[1],line.end[2])];
-    var lines = BABYLON.MeshBuilder.CreateLines("lines${Math.random()}", {points}, scene);
+    let points = [new BABYLON.Vector3(line.start[0],line.start[1],line.start[2]), new BABYLON.Vector3(line.end[0],line.end[1],line.end[2])];
+    let lines = BABYLON.MeshBuilder.CreateLines("lines${Math.random()}", {points}, scene);
     lines.enableEdgesRendering();	
 	lines.edgesWidth = width;
-    var edgeColor = BABYLON.Color3.FromHexString(${value_colour});
+    let edgeColor = BABYLON.Color3.FromHexString(${value_colour});
     lines.edgesColor = new BABYLON.Color4(edgeColor.r, edgeColor.g, edgeColor.b, ${value_opacity});
 }
 drawLine();

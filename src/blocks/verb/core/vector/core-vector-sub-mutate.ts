@@ -22,10 +22,10 @@ export function createCoreVectorSubMutateBlock() {
     };
 
     JavaScript['verb_core_vector_sub_mutate'] = function (block) {
-        var value_first = JavaScript.valueToCode(block, 'First', JavaScript.ORDER_ATOMIC);
-        var value_second = JavaScript.valueToCode(block, 'Second', JavaScript.ORDER_ATOMIC);
+        let value_first = JavaScript.valueToCode(block, 'First', JavaScript.ORDER_ATOMIC);
+        let value_second = JavaScript.valueToCode(block, 'Second', JavaScript.ORDER_ATOMIC);
 
-        var code = `verb.core.Vec.subMutate(${value_first}, ${value_second});`;
+        let code = `verb.core.Vec.subMutate(${value_first}, ${value_second});`;
         return [code, JavaScript.ORDER_ATOMIC];
     };
 }

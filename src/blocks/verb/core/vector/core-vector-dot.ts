@@ -21,10 +21,10 @@ export function createCoreVectorDotBlock() {
     };
 
     JavaScript['verb_core_vector_dot'] = function (block) {
-        var value_first = JavaScript.valueToCode(block, 'First', JavaScript.ORDER_ATOMIC);
-        var value_second = JavaScript.valueToCode(block, 'Second', JavaScript.ORDER_ATOMIC);
+        let value_first = JavaScript.valueToCode(block, 'First', JavaScript.ORDER_ATOMIC);
+        let value_second = JavaScript.valueToCode(block, 'Second', JavaScript.ORDER_ATOMIC);
 
-        var code = `(() => verb.core.Vec.dot(${value_first}, ${value_second}))()`;
+        let code = `(() => verb.core.Vec.dot(${value_first}, ${value_second}))()`;
         return [code, JavaScript.ORDER_ATOMIC];
     };
 }

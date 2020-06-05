@@ -21,10 +21,10 @@ export function createCurveTransformBlock() {
     };
 
     JavaScript['verb_geometry_nurbs_curve_transform'] = function (block) {
-        var value_curve = JavaScript.valueToCode(block, 'Curve', JavaScript.ORDER_ATOMIC);
-        var value_matrix = JavaScript.valueToCode(block, 'Matrix', JavaScript.ORDER_ATOMIC);
+        let value_curve = JavaScript.valueToCode(block, 'Curve', JavaScript.ORDER_ATOMIC);
+        let value_matrix = JavaScript.valueToCode(block, 'Matrix', JavaScript.ORDER_ATOMIC);
 
-        var code = `
+        let code = `
 (() => ${value_curve}.transform(${value_matrix}))()
 `;
         return [code, JavaScript.ORDER_ATOMIC];

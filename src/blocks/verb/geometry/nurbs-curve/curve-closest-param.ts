@@ -21,12 +21,12 @@ export function createCurveClosestParamBlock() {
     };
 
     JavaScript['verb_geometry_nurbs_curve_closest_param'] = function (block) {
-        var value_curve = JavaScript.valueToCode(block, 'Curve', JavaScript.ORDER_ATOMIC);
-        var value_point = JavaScript.valueToCode(block, 'Point', JavaScript.ORDER_ATOMIC);
+        let value_curve = JavaScript.valueToCode(block, 'Curve', JavaScript.ORDER_ATOMIC);
+        let value_point = JavaScript.valueToCode(block, 'Point', JavaScript.ORDER_ATOMIC);
 
-        var code = `
+        let code = `
 (() => {
-    var crv = ${value_curve};
+    let crv = ${value_curve};
     return crv.closestParam(${value_point});
 })()
 `;

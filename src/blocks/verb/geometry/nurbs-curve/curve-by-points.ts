@@ -21,10 +21,10 @@ export function createCurveByPointsBlock() {
     };
 
     JavaScript['verb_geometry_nurbs_curve_by_points'] = function (block) {
-        var value_points = JavaScript.valueToCode(block, 'Points', JavaScript.ORDER_ATOMIC);
-        var value_degree = JavaScript.valueToCode(block, 'Degree', JavaScript.ORDER_ATOMIC);
+        let value_points = JavaScript.valueToCode(block, 'Points', JavaScript.ORDER_ATOMIC);
+        let value_degree = JavaScript.valueToCode(block, 'Degree', JavaScript.ORDER_ATOMIC);
 
-        var code = `(() => verb.geom.NurbsCurve.byPoints( ${value_points}, ${value_degree} ))()`;
+        let code = `(() => verb.geom.NurbsCurve.byPoints( ${value_points}, ${value_degree} ))()`;
         return [code, JavaScript.ORDER_ATOMIC];
     };
 }

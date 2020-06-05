@@ -17,9 +17,9 @@ export function createCoreMatrixBlock() {
     };
 
     JavaScript['verb_core_matrix'] = function (block) {
-        var value_matrix = JavaScript.valueToCode(block, 'Matrix', JavaScript.ORDER_ATOMIC);
+        let value_matrix = JavaScript.valueToCode(block, 'Matrix', JavaScript.ORDER_ATOMIC);
         
-        var code = `${value_matrix}`;
+        let code = `${value_matrix}`;
         return [code, JavaScript.ORDER_ATOMIC];
     };
 }

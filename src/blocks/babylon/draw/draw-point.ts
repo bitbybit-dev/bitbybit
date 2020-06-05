@@ -30,34 +30,34 @@ export function createDrawPointBlock() {
     };
 
     JavaScript['babylon_draw_point'] = function (block) {
-        var value_point = JavaScript.valueToCode(block, 'Point', JavaScript.ORDER_ATOMIC);
-        var value_colour = JavaScript.valueToCode(block, 'Colour', JavaScript.ORDER_ATOMIC);
-        var value_size = JavaScript.valueToCode(block, 'Size', JavaScript.ORDER_ATOMIC);
-        var value_opacity = JavaScript.valueToCode(block, 'Opacity', JavaScript.ORDER_ATOMIC);
+        let value_point = JavaScript.valueToCode(block, 'Point', JavaScript.ORDER_ATOMIC);
+        let value_colour = JavaScript.valueToCode(block, 'Colour', JavaScript.ORDER_ATOMIC);
+        let value_size = JavaScript.valueToCode(block, 'Size', JavaScript.ORDER_ATOMIC);
+        let value_opacity = JavaScript.valueToCode(block, 'Opacity', JavaScript.ORDER_ATOMIC);
 
-        var code = `
+        let code = `
 (() => {
-    var vectorPoint = ${value_point};
-    var colour = BABYLON.Color3.FromHexString(${value_colour});
-    var size = ${value_size ? value_size : 3};
+    let vectorPoint = ${value_point};
+    let colour = BABYLON.Color3.FromHexString(${value_colour});
+    let size = ${value_size ? value_size : 3};
 
-    var customMesh = new BABYLON.Mesh("custom${Math.random()}", scene);
+    let customMesh = new BABYLON.Mesh("custom${Math.random()}", scene);
 
-    var positions = [];
-    var colors = [];
+    let positions = [];
+    let colors = [];
 
-    var pointsCount = 1;
+    let pointsCount = 1;
     positions = vectorPoint;
     colors.push(colour.r, colour.g, colour.b, 1);
     
-    var vertexData = new BABYLON.VertexData();
+    let vertexData = new BABYLON.VertexData();
 
     vertexData.positions = positions;
     vertexData.colors = colors;
 
     vertexData.applyToMesh(customMesh);
     
-    var mat = new BABYLON.StandardMaterial("mat${Math.random()}", scene);
+    let mat = new BABYLON.StandardMaterial("mat${Math.random()}", scene);
     mat.emissiveColor = new BABYLON.Color3(1, 1, 1);
     mat.disableLighting = true;
     mat.pointsCloud = true;

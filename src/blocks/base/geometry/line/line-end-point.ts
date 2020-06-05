@@ -17,9 +17,9 @@ export function createLineEndPointBlock() {
     };
 
     JavaScript['base_geometry_line_end_point'] = function (block) {
-        var value_line = JavaScript.valueToCode(block, 'Line', JavaScript.ORDER_ATOMIC);
+        let value_line = JavaScript.valueToCode(block, 'Line', JavaScript.ORDER_ATOMIC);
 
-        var code = `${value_line}.end`;
+        let code = `${value_line}.end`;
         return [code, JavaScript.ORDER_ATOMIC];
     };
 }

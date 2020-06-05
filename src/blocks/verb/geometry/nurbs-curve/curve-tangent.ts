@@ -21,10 +21,10 @@ export function createCurveTangentBlock() {
     };
 
     JavaScript['verb_geometry_nurbs_curve_tangent'] = function (block) {
-        var value_curve = JavaScript.valueToCode(block, 'Curve', JavaScript.ORDER_ATOMIC);
-        var value_parameter = JavaScript.valueToCode(block, 'Parameter', JavaScript.ORDER_ATOMIC);
+        let value_curve = JavaScript.valueToCode(block, 'Curve', JavaScript.ORDER_ATOMIC);
+        let value_parameter = JavaScript.valueToCode(block, 'Parameter', JavaScript.ORDER_ATOMIC);
 
-        var code = `
+        let code = `
 (() => ${value_curve}.tangent(${value_parameter}))()
 `;
         return [code, JavaScript.ORDER_ATOMIC];
