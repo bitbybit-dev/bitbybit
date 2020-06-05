@@ -2,10 +2,9 @@ import { Component, OnInit, AfterViewInit } from '@angular/core';
 import { svgResize, inject, Theme, Xml, WorkspaceSvg } from 'blockly';
 import * as JavaScript from 'blockly/javascript';
 
+import { constantsModel } from './models/constants.model';
 import '@babylonjs/core/Meshes/meshBuilder';
-// Side-effects only imports allowing the standard material to be used as default.
 import '@babylonjs/core/Materials/standardMaterial';
-// Side-effects only imports allowing Mesh to create default shapes (to enhance tree shaking, the construction methods on mesh are not available if the meshbuilder has not been imported).
 import { Engine } from '@babylonjs/core/Engines/engine';
 import { Scene } from '@babylonjs/core/scene';
 import { Vector3, Color4, Color3 } from '@babylonjs/core/Maths/math';
@@ -19,8 +18,7 @@ import { AboutDialogComponent } from './components/about-dialog/about-dialog.com
 import { SponsorsDialogComponent } from './components/sponsors-dialog/sponsors-dialog.component';
 import { AlertDialogComponent } from './components/alert-dialog/alert-dialog.component';
 import { Router, ActivatedRoute } from '@angular/router';
-import { midLinesBetweenTwoSurfaces } from './examples/mid/mid-lines-between-two-surfaces';
-import { basicPolylineBetweenThreePoints } from './examples/basic/basic-polyline-between-three-points';
+import { ExamplesService } from './examples/example-service';
 
 @Component({
     selector: 'app-root',
@@ -36,8 +34,14 @@ export class AppComponent implements OnInit, AfterViewInit {
     scene: Scene;
     engine: Engine;
     windowBlockly;
+    constants = constantsModel;
 
-    constructor(public dialog: MatDialog, public readonly router: Router, public readonly route: ActivatedRoute) {
+    constructor(
+        public dialog: MatDialog,
+        public readonly router: Router,
+        public readonly route: ActivatedRoute,
+        public readonly examplesService: ExamplesService
+    ) {
     }
 
     ngAfterViewInit(): void {
@@ -90,12 +94,7 @@ export class AppComponent implements OnInit, AfterViewInit {
 
             this.route.queryParamMap.subscribe(param => {
                 const exampleParam = param.get('examples');
-                let xml;
-                if (exampleParam === 'mid-lines-between-two-surfaces' || exampleParam === 'advanced-lines-between-two-surfaces') {
-                    xml = Xml.textToDom(midLinesBetweenTwoSurfaces());
-                } else if (exampleParam === 'basic-polyline-between-three-points') {
-                    xml = Xml.textToDom(basicPolylineBetweenThreePoints());
-                }
+                const xml = Xml.textToDom(this.examplesService.getExampleXml(exampleParam));
                 if (xml) {
                     this.workspace.clear();
                     Xml.domToWorkspace(xml, this.workspace);
@@ -243,7 +242,7 @@ ${code}
     private openExamplesDialog(): void {
         const dialogRef = this.dialog.open(ExamplesDialogComponent, {
             width: '600px',
-            height: '500px',
+            height: '700px',
             autoFocus: false
         });
 
