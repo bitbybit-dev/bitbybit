@@ -25,11 +25,11 @@ export function createCoreVectorSpanBlock() {
     };
 
     JavaScript['verb_core_vector_range'] = function (block) {
-        var value_min = JavaScript.valueToCode(block, 'Min', JavaScript.ORDER_ATOMIC);
-        var value_max = JavaScript.valueToCode(block, 'Max', JavaScript.ORDER_ATOMIC);
-        var value_step = JavaScript.valueToCode(block, 'Step', JavaScript.ORDER_ATOMIC);
+        let value_min = JavaScript.valueToCode(block, 'Min', JavaScript.ORDER_ATOMIC);
+        let value_max = JavaScript.valueToCode(block, 'Max', JavaScript.ORDER_ATOMIC);
+        let value_step = JavaScript.valueToCode(block, 'Step', JavaScript.ORDER_ATOMIC);
 
-        var code = `(() => verb.core.Vec.span(${value_min}, ${value_max}, ${value_step}))()`;
+        let code = `(() => verb.core.Vec.span(${value_min}, ${value_max}, ${value_step}))()`;
         return [code, JavaScript.ORDER_ATOMIC];
     };
 }

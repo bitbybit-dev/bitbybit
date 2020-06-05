@@ -53,18 +53,18 @@ export function createDrawGridBlock() {
     };
 
     JavaScript['babylon_draw_grid'] = function (block) {
-        var value_width = JavaScript.valueToCode(block, 'width', JavaScript.ORDER_ATOMIC);
-        var value_height = JavaScript.valueToCode(block, 'height', JavaScript.ORDER_ATOMIC);
-        var value_subdivisions = JavaScript.valueToCode(block, 'subdivisions', JavaScript.ORDER_ATOMIC);
-        var value_major_unit_frequency = JavaScript.valueToCode(block, 'major_unit_frequency', JavaScript.ORDER_ATOMIC);
-        var value_minor_unit_visibility = JavaScript.valueToCode(block, 'minor_unit_visibility', JavaScript.ORDER_ATOMIC);
-        var value_grid_ratio = JavaScript.valueToCode(block, 'grid_ratio', JavaScript.ORDER_ATOMIC);
-        var value_opacity = JavaScript.valueToCode(block, 'opacity', JavaScript.ORDER_ATOMIC);
-        var value_back_face_culling = JavaScript.valueToCode(block, 'back_face_culling', JavaScript.ORDER_ATOMIC);
-        var value_main_color = JavaScript.valueToCode(block, 'main_color', JavaScript.ORDER_ATOMIC);
-        var value_line_color = JavaScript.valueToCode(block, 'line_color', JavaScript.ORDER_ATOMIC);
+        let value_width = JavaScript.valueToCode(block, 'width', JavaScript.ORDER_ATOMIC);
+        let value_height = JavaScript.valueToCode(block, 'height', JavaScript.ORDER_ATOMIC);
+        let value_subdivisions = JavaScript.valueToCode(block, 'subdivisions', JavaScript.ORDER_ATOMIC);
+        let value_major_unit_frequency = JavaScript.valueToCode(block, 'major_unit_frequency', JavaScript.ORDER_ATOMIC);
+        let value_minor_unit_visibility = JavaScript.valueToCode(block, 'minor_unit_visibility', JavaScript.ORDER_ATOMIC);
+        let value_grid_ratio = JavaScript.valueToCode(block, 'grid_ratio', JavaScript.ORDER_ATOMIC);
+        let value_opacity = JavaScript.valueToCode(block, 'opacity', JavaScript.ORDER_ATOMIC);
+        let value_back_face_culling = JavaScript.valueToCode(block, 'back_face_culling', JavaScript.ORDER_ATOMIC);
+        let value_main_color = JavaScript.valueToCode(block, 'main_color', JavaScript.ORDER_ATOMIC);
+        let value_line_color = JavaScript.valueToCode(block, 'line_color', JavaScript.ORDER_ATOMIC);
 
-        var code = `
+        let code = `
 let drawGrid = () => {
     let groundMaterial = new BABYLON.GridMaterial('groundMaterial${Math.random()}', scene);
     groundMaterial.majorUnitFrequency = ${value_major_unit_frequency};

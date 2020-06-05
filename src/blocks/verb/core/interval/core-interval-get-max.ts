@@ -17,9 +17,9 @@ export function createCoreIntervalGetMaxBlock() {
     };
 
     JavaScript['verb_core_interval_get_max'] = function (block) {
-        var value_interval = JavaScript.valueToCode(block, 'Interval', JavaScript.ORDER_ATOMIC);
+        let value_interval = JavaScript.valueToCode(block, 'Interval', JavaScript.ORDER_ATOMIC);
         
-        var code = `${value_interval}.max`;
+        let code = `${value_interval}.max`;
         return [code, JavaScript.ORDER_ATOMIC];
     };
 }

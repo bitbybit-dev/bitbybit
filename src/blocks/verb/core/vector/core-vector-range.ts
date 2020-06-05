@@ -17,9 +17,9 @@ export function createCoreVectorRangeBlock() {
     };
 
     JavaScript['verb_core_vector_range'] = function (block) {
-        var value_max = JavaScript.valueToCode(block, 'Max', JavaScript.ORDER_ATOMIC);
+        let value_max = JavaScript.valueToCode(block, 'Max', JavaScript.ORDER_ATOMIC);
         
-        var code = `(() => verb.core.Vec.range(${value_max}))()`;
+        let code = `(() => verb.core.Vec.range(${value_max}))()`;
         return [code, JavaScript.ORDER_ATOMIC];
     };
 }

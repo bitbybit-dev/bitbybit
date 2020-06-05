@@ -25,11 +25,11 @@ export function createCoreVectorLerpBlock() {
     };
 
     JavaScript['verb_core_vector_lerp'] = function (block) {
-        var value_fraction = JavaScript.valueToCode(block, 'Fraction', JavaScript.ORDER_ATOMIC);
-        var value_first = JavaScript.valueToCode(block, 'First', JavaScript.ORDER_ATOMIC);
-        var value_second = JavaScript.valueToCode(block, 'Second', JavaScript.ORDER_ATOMIC);
+        let value_fraction = JavaScript.valueToCode(block, 'Fraction', JavaScript.ORDER_ATOMIC);
+        let value_first = JavaScript.valueToCode(block, 'First', JavaScript.ORDER_ATOMIC);
+        let value_second = JavaScript.valueToCode(block, 'Second', JavaScript.ORDER_ATOMIC);
 
-        var code = `(() => verb.core.Vec.lerp(${value_fraction}, ${value_first}, ${value_second}))()`;
+        let code = `(() => verb.core.Vec.lerp(${value_fraction}, ${value_first}, ${value_second}))()`;
         return [code, JavaScript.ORDER_ATOMIC];
     };
 }

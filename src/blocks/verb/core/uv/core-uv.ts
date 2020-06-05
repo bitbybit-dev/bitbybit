@@ -21,10 +21,10 @@ export function createCoreUVBlock() {
     };
 
     JavaScript['verb_core_uv'] = function (block) {
-        var value_u = JavaScript.valueToCode(block, 'U', JavaScript.ORDER_ATOMIC);
-        var value_v = JavaScript.valueToCode(block, 'V', JavaScript.ORDER_ATOMIC);
+        let value_u = JavaScript.valueToCode(block, 'U', JavaScript.ORDER_ATOMIC);
+        let value_v = JavaScript.valueToCode(block, 'V', JavaScript.ORDER_ATOMIC);
         
-        var code = `{u: ${value_u}, v: ${value_v}}`;
+        let code = `{u: ${value_u}, v: ${value_v}}`;
         return [code, JavaScript.ORDER_ATOMIC];
     };
 }

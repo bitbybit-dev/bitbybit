@@ -21,10 +21,10 @@ export function createSurfaceTransformBlock() {
     };
 
     JavaScript['verb_geometry_nurbs_surface_transform'] = function (block) {
-        var value_surface = JavaScript.valueToCode(block, 'Surface', JavaScript.ORDER_ATOMIC);
-        var value_matrix = JavaScript.valueToCode(block, 'Matrix', JavaScript.ORDER_ATOMIC);
+        let value_surface = JavaScript.valueToCode(block, 'Surface', JavaScript.ORDER_ATOMIC);
+        let value_matrix = JavaScript.valueToCode(block, 'Matrix', JavaScript.ORDER_ATOMIC);
 
-        var code = `
+        let code = `
 (() => ${value_surface}.transform(${value_matrix}))()
 `;
         return [code, JavaScript.ORDER_ATOMIC];

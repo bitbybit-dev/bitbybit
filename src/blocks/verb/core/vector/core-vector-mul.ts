@@ -21,10 +21,10 @@ export function createCoreVectorMulBlock() {
     };
 
     JavaScript['verb_core_vector_mul'] = function (block) {
-        var value_vector = JavaScript.valueToCode(block, 'Vector', JavaScript.ORDER_ATOMIC);
-        var value_scalar = JavaScript.valueToCode(block, 'Scalar', JavaScript.ORDER_ATOMIC);
+        let value_vector = JavaScript.valueToCode(block, 'Vector', JavaScript.ORDER_ATOMIC);
+        let value_scalar = JavaScript.valueToCode(block, 'Scalar', JavaScript.ORDER_ATOMIC);
 
-        var code = `(() => verb.core.Vec.mul(${value_scalar}, ${value_vector}))()`;
+        let code = `(() => verb.core.Vec.mul(${value_scalar}, ${value_vector}))()`;
         return [code, JavaScript.ORDER_ATOMIC];
     };
 }

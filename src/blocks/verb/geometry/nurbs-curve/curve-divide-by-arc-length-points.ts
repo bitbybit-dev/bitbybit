@@ -21,14 +21,14 @@ export function createCurveDivideByArcLengthPointsBlock() {
     };
 
     JavaScript['verb_geometry_nurbs_curve_divide_by_arc_length_points'] = function (block) {
-        var value_curve = JavaScript.valueToCode(block, 'Curve', JavaScript.ORDER_ATOMIC);
-        var value_length = JavaScript.valueToCode(block, 'Length', JavaScript.ORDER_ATOMIC);
+        let value_curve = JavaScript.valueToCode(block, 'Curve', JavaScript.ORDER_ATOMIC);
+        let value_length = JavaScript.valueToCode(block, 'Length', JavaScript.ORDER_ATOMIC);
 
-        var code = `
+        let code = `
 (() => {
-    var crv = ${value_curve};
-    var segments = crv.divideByArcLength(${value_length});
-    var points = [];
+    let crv = ${value_curve};
+    let segments = crv.divideByArcLength(${value_length});
+    let points = [];
     segments.forEach(s => {
         points.push(crv.point( s.u ));
     });

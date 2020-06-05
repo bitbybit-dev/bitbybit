@@ -21,10 +21,10 @@ export function createLineBlock() {
     };
 
     JavaScript['base_geometry_line'] = function (block) {
-        var value_start_point = JavaScript.valueToCode(block, 'start_point', JavaScript.ORDER_ATOMIC);
-        var value_end_point = JavaScript.valueToCode(block, 'end_point', JavaScript.ORDER_ATOMIC);
+        let value_start_point = JavaScript.valueToCode(block, 'start_point', JavaScript.ORDER_ATOMIC);
+        let value_end_point = JavaScript.valueToCode(block, 'end_point', JavaScript.ORDER_ATOMIC);
         
-        var code = `{start: ${value_start_point}, end: ${value_end_point}}`;
+        let code = `{start: ${value_start_point}, end: ${value_end_point}}`;
         return [code, JavaScript.ORDER_ATOMIC];
     };
 }

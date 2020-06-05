@@ -17,9 +17,9 @@ export function createLineStartPointBlock() {
     };
 
     JavaScript['base_geometry_line_start_point'] = function (block) {
-        var value_line = JavaScript.valueToCode(block, 'Line', JavaScript.ORDER_ATOMIC);
+        let value_line = JavaScript.valueToCode(block, 'Line', JavaScript.ORDER_ATOMIC);
 
-        var code = `${value_line}.start`;
+        let code = `${value_line}.start`;
         return [code, JavaScript.ORDER_ATOMIC];
     };
 }

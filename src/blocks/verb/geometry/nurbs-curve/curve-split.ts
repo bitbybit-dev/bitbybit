@@ -21,12 +21,12 @@ export function createCurveSplitBlock() {
     };
 
     JavaScript['verb_geometry_nurbs_curve_split'] = function (block) {
-        var value_curve = JavaScript.valueToCode(block, 'Curve', JavaScript.ORDER_ATOMIC);
-        var value_param = JavaScript.valueToCode(block, 'Number', JavaScript.ORDER_ATOMIC);
+        let value_curve = JavaScript.valueToCode(block, 'Curve', JavaScript.ORDER_ATOMIC);
+        let value_param = JavaScript.valueToCode(block, 'Number', JavaScript.ORDER_ATOMIC);
 
-        var code = `
+        let code = `
 (() => {
-    var crv = ${value_curve};
+    let crv = ${value_curve};
     return crv.split(${value_param});
 })()
 `;

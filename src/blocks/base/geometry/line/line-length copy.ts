@@ -16,9 +16,9 @@ export function createLineConvertToNurbsCurveBlock() {
     };
 
     JavaScript['base_geometry_line_convert_to_nurbs_curve'] = function (block) {
-        var value_line = JavaScript.valueToCode(block, 'Line', JavaScript.ORDER_ATOMIC);
+        let value_line = JavaScript.valueToCode(block, 'Line', JavaScript.ORDER_ATOMIC);
 
-        var code = `(() => new verb.geom.Line(${value_line}.start, ${value_line}.end))()`;
+        let code = `(() => new verb.geom.Line(${value_line}.start, ${value_line}.end))()`;
         return [code, JavaScript.ORDER_ATOMIC];
     };
 }

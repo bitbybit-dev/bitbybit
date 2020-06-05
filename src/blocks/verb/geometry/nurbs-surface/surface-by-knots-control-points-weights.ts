@@ -36,14 +36,14 @@ export function createSurfaceByKnotsControlPointsWeightsBlock() {
     };
 
     JavaScript['verb_geometry_nurbs_surface_by_knots_control_points_weights'] = function (block) {
-        var value_knots_u = JavaScript.valueToCode(block, 'KnotsU', JavaScript.ORDER_ATOMIC);
-        var value_knots_v = JavaScript.valueToCode(block, 'KnotsV', JavaScript.ORDER_ATOMIC);
-        var value_points = JavaScript.valueToCode(block, 'Points', JavaScript.ORDER_ATOMIC);
-        var value_weights = JavaScript.valueToCode(block, 'Weights', JavaScript.ORDER_ATOMIC);
-        var value_degree_u = JavaScript.valueToCode(block, 'DegreeU', JavaScript.ORDER_ATOMIC);
-        var value_degree_v = JavaScript.valueToCode(block, 'DegreeV', JavaScript.ORDER_ATOMIC);
+        let value_knots_u = JavaScript.valueToCode(block, 'KnotsU', JavaScript.ORDER_ATOMIC);
+        let value_knots_v = JavaScript.valueToCode(block, 'KnotsV', JavaScript.ORDER_ATOMIC);
+        let value_points = JavaScript.valueToCode(block, 'Points', JavaScript.ORDER_ATOMIC);
+        let value_weights = JavaScript.valueToCode(block, 'Weights', JavaScript.ORDER_ATOMIC);
+        let value_degree_u = JavaScript.valueToCode(block, 'DegreeU', JavaScript.ORDER_ATOMIC);
+        let value_degree_v = JavaScript.valueToCode(block, 'DegreeV', JavaScript.ORDER_ATOMIC);
 
-        var code = `(() => verb.geom.NurbsSurface.byKnotsControlPointsWeights(${value_degree_u}, ${value_degree_v}, ${value_knots_u}, ${value_knots_v}, ${value_points}, ${value_weights} ))()`;
+        let code = `(() => verb.geom.NurbsSurface.byKnotsControlPointsWeights(${value_degree_u}, ${value_degree_v}, ${value_knots_u}, ${value_knots_v}, ${value_points}, ${value_weights} ))()`;
         return [code, JavaScript.ORDER_ATOMIC];
     };
 }

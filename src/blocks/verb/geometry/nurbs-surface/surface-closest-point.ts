@@ -20,10 +20,10 @@ export function createSurfaceClosestPointBlock() {
     };
 
     JavaScript['verb_geometry_nurbs_surface_closest_point'] = function (block) {
-        var value_surface = JavaScript.valueToCode(block, 'Surface', JavaScript.ORDER_ATOMIC);
-        var value_point = JavaScript.valueToCode(block, 'Point', JavaScript.ORDER_ATOMIC);
+        let value_surface = JavaScript.valueToCode(block, 'Surface', JavaScript.ORDER_ATOMIC);
+        let value_point = JavaScript.valueToCode(block, 'Point', JavaScript.ORDER_ATOMIC);
 
-        var code = `
+        let code = `
 (() => ${value_surface}.closestPoint(${value_point}))()
 `;
         return [code, JavaScript.ORDER_ATOMIC];

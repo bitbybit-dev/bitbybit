@@ -17,9 +17,9 @@ export function createCoreVectorAllBlock() {
     };
 
     JavaScript['verb_core_vector_all'] = function (block) {
-        var value_vector = JavaScript.valueToCode(block, 'Vector', JavaScript.ORDER_ATOMIC);
+        let value_vector = JavaScript.valueToCode(block, 'Vector', JavaScript.ORDER_ATOMIC);
 
-        var code = `(() => verb.core.Vec.all(${value_vector}))()`;
+        let code = `(() => verb.core.Vec.all(${value_vector}))()`;
         return [code, JavaScript.ORDER_ATOMIC];
     };
 }

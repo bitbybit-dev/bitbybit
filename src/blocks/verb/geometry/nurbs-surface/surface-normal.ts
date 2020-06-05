@@ -24,11 +24,11 @@ export function createSurfaceNormalBlock() {
     };
 
     JavaScript['verb_geometry_nurbs_surface_normal'] = function (block) {
-        var value_surface = JavaScript.valueToCode(block, 'Surface', JavaScript.ORDER_ATOMIC);
-        var value_u = JavaScript.valueToCode(block, 'U', JavaScript.ORDER_ATOMIC);
-        var value_v = JavaScript.valueToCode(block, 'V', JavaScript.ORDER_ATOMIC);
+        let value_surface = JavaScript.valueToCode(block, 'Surface', JavaScript.ORDER_ATOMIC);
+        let value_u = JavaScript.valueToCode(block, 'U', JavaScript.ORDER_ATOMIC);
+        let value_v = JavaScript.valueToCode(block, 'V', JavaScript.ORDER_ATOMIC);
 
-        var code = `
+        let code = `
 (() => ${value_surface}.normal(${value_u}, ${value_v}))()
 `;
         return [code, JavaScript.ORDER_ATOMIC];

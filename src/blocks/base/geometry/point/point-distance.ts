@@ -21,10 +21,10 @@ export function createPointDistanceBlock() {
     };
 
     JavaScript['base_geometry_point_distance'] = function (block) {
-        var value_start_point = JavaScript.valueToCode(block, 'start_point', JavaScript.ORDER_ATOMIC);
-        var value_end_point = JavaScript.valueToCode(block, 'end_point', JavaScript.ORDER_ATOMIC);
+        let value_start_point = JavaScript.valueToCode(block, 'start_point', JavaScript.ORDER_ATOMIC);
+        let value_end_point = JavaScript.valueToCode(block, 'end_point', JavaScript.ORDER_ATOMIC);
         
-        var code = `(() => verb.core.Vec.dist(${value_start_point}, ${value_end_point}))()`;
+        let code = `(() => verb.core.Vec.dist(${value_start_point}, ${value_end_point}))()`;
         return [code, JavaScript.ORDER_ATOMIC];
     };
 }

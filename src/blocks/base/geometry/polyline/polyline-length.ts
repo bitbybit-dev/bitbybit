@@ -17,14 +17,14 @@ export function createPolylineLengthBlock() {
     };
 
     JavaScript['base_geometry_polyline_length'] = function (block) {
-        var value_polyline = JavaScript.valueToCode(block, 'Polyline', JavaScript.ORDER_ATOMIC);
+        let value_polyline = JavaScript.valueToCode(block, 'Polyline', JavaScript.ORDER_ATOMIC);
 
-        var code = `
+        let code = `
 (() => {
-    var distanceOfPolyline = 0;
+    let distanceOfPolyline = 0;
     for (var i = 1; i < ${value_polyline}.points.length; i++) {
-        var previousPoint = ${value_polyline}.points[i - 1];
-        var currentPoint = ${value_polyline}.points[i];
+        let previousPoint = ${value_polyline}.points[i - 1];
+        let currentPoint = ${value_polyline}.points[i];
         distanceOfPolyline += verb.core.Vec.dist(previousPoint, currentPoint);
     };
     return distanceOfPolyline;

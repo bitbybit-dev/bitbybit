@@ -21,10 +21,10 @@ export function createCurveTesselateBlock() {
     };
 
     JavaScript['verb_geometry_nurbs_curve_tesselate'] = function (block) {
-        var value_curve = JavaScript.valueToCode(block, 'Curve', JavaScript.ORDER_ATOMIC);
-        var value_tolerance = JavaScript.valueToCode(block, 'Tolerance', JavaScript.ORDER_ATOMIC);
+        let value_curve = JavaScript.valueToCode(block, 'Curve', JavaScript.ORDER_ATOMIC);
+        let value_tolerance = JavaScript.valueToCode(block, 'Tolerance', JavaScript.ORDER_ATOMIC);
 
-        var code = `
+        let code = `
 (() => ${value_curve}.tesselate(${value_tolerance}))()
 `;
         return [code, JavaScript.ORDER_ATOMIC];

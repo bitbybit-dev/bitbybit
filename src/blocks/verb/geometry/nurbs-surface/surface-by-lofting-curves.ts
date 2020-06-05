@@ -20,10 +20,10 @@ export function createSurfaceByLoftingCurvesBlock() {
     };
 
     JavaScript['verb_geometry_nurbs_surface_by_lofting_curves'] = function (block) {
-        var value_curves = JavaScript.valueToCode(block, 'Curves', JavaScript.ORDER_ATOMIC);
-        var value_degree_v = JavaScript.valueToCode(block, 'DegreeV', JavaScript.ORDER_ATOMIC);
+        let value_curves = JavaScript.valueToCode(block, 'Curves', JavaScript.ORDER_ATOMIC);
+        let value_degree_v = JavaScript.valueToCode(block, 'DegreeV', JavaScript.ORDER_ATOMIC);
 
-        var code = `(() => verb.geom.NurbsSurface.byLoftingCurves(${value_curves}, ${value_degree_v}))()`;
+        let code = `(() => verb.geom.NurbsSurface.byLoftingCurves(${value_curves}, ${value_degree_v}))()`;
         return [code, JavaScript.ORDER_ATOMIC];
     };
 }

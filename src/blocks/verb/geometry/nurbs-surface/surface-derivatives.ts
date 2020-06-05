@@ -28,12 +28,12 @@ export function createSurfaceDerivativesBlock() {
     };
 
     JavaScript['verb_geometry_nurbs_surface_derivatives'] = function (block) {
-        var value_surface = JavaScript.valueToCode(block, 'Surface', JavaScript.ORDER_ATOMIC);
-        var value_u = JavaScript.valueToCode(block, 'U', JavaScript.ORDER_ATOMIC);
-        var value_v = JavaScript.valueToCode(block, 'V', JavaScript.ORDER_ATOMIC);
-        var value_num_derivatives = JavaScript.valueToCode(block, 'NumDerivatives', JavaScript.ORDER_ATOMIC);
+        let value_surface = JavaScript.valueToCode(block, 'Surface', JavaScript.ORDER_ATOMIC);
+        let value_u = JavaScript.valueToCode(block, 'U', JavaScript.ORDER_ATOMIC);
+        let value_v = JavaScript.valueToCode(block, 'V', JavaScript.ORDER_ATOMIC);
+        let value_num_derivatives = JavaScript.valueToCode(block, 'NumDerivatives', JavaScript.ORDER_ATOMIC);
 
-        var code = `
+        let code = `
 (() => ${value_surface}.derivatives(${value_u}, ${value_v}, ${value_num_derivatives}))()
 `;
         return [code, JavaScript.ORDER_ATOMIC];
