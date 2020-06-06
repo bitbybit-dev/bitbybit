@@ -1,8 +1,15 @@
-import { Blocks, ALIGN_RIGHT } from 'blockly';
+import { ALIGN_RIGHT, Blocks } from 'blockly';
 import * as JavaScript from 'blockly/javascript';
+import { ResourcesInterface } from '../../../resources/resources.interface';
+import { ResourcesService } from '../../../resources/resources.service';
+import { createStandardContextIIFE } from '../../_shared/create-standard-context-iife';
+import { ValidationEntityInterface } from '../../validations/validation-entity.interface';
+import { getRequired, getRequiredAndMin, getRequiredAndRange } from '../../validations/validation-shorthands';
+import { BlockValidationService } from '../../validations/validation.service';
 
 export function createDrawCurvesBlock() {
 
+    const resources = ResourcesService.getResourcesForSelectedLanguage();
     const blockSelector = 'babylon_draw_curves';
 
     Blocks[blockSelector] = {
@@ -10,24 +17,23 @@ export function createDrawCurvesBlock() {
             this.appendValueInput('Curves')
                 .setCheck('Array')
                 .setAlign(ALIGN_RIGHT)
-                .appendField('Draw curves');
+                .appendField(resources.block_babylon_input_curves);
             this.appendValueInput('Colour')
                 .setCheck('Colour')
                 .setAlign(ALIGN_RIGHT)
-                .appendField('in colour');
+                .appendField(resources.block_babylon_input_color);
             this.appendValueInput('Opacity')
                 .setCheck('Number')
                 .setAlign(ALIGN_RIGHT)
-                .appendField('opacity');
+                .appendField(resources.block_babylon_input_opacity);
             this.appendValueInput('Width')
                 .setCheck('Number')
                 .setAlign(ALIGN_RIGHT)
-                .appendField('and width');
+                .appendField(resources.block_babylon_input_width);
             this.setColour('#fff');
             this.setPreviousStatement(true, null);
             this.setNextStatement(true, null);
-            this.setTooltip('Draws a coloured curves in space of selected width');
-            this.setHelpUrl('');
+            this.setTooltip(resources.block_babylon_draw_curves_description);
         }
     };
 
@@ -37,27 +43,63 @@ export function createDrawCurvesBlock() {
         const valueOpacity = JavaScript.valueToCode(block, 'Opacity', JavaScript.ORDER_ATOMIC);
         const valueWidth = JavaScript.valueToCode(block, 'Width', JavaScript.ORDER_ATOMIC);
 
-        const code = `
-(() => {
-    const lines = ${valueCurves};
-    const width = ${valueWidth ? valueWidth : 3};
-    const linesForRender = [];
+        BlockValidationService.validate(
+            block,
+            block.workspace,
+            makeValidationModel(resources, valueCurves, valueColour, valueOpacity, valueWidth)
+        );
+
+        return createStandardContextIIFE(block, blockSelector,
+`
+    const curves = ${valueCurves};
+    const curvesForRender = [];
     const col = BABYLON.Color3.FromHexString(${valueColour});
     const colors = [];
-    lines.forEach(line => {
+    curves.forEach(line => {
         let points = line.tessellate();
-        linesForRender.push(points.map(pt => new BABYLON.Vector3(pt[0], pt[1], pt[2])));
+        curvesForRender.push(points.map(pt => new BABYLON.Vector3(pt[0], pt[1], pt[2])));
         colors.push(points.map(pt => new BABYLON.Color4(col.r, col.g, col.b, ${valueOpacity})));
     });
 
-    const linesMesh = BABYLON.MeshBuilder.CreateLineSystem("lines${Math.random()}", {lines: linesForRender, colors, useVertexAlpha: true}, scene);
+    const curvesMesh = BABYLON.MeshBuilder.CreateLineSystem("lines${Math.random()}", {lines: curvesForRender, colors, useVertexAlpha: true}, scene);
 
-    linesMesh.enableEdgesRendering();
-    linesMesh.edgesWidth = width;
-    linesMesh.edgesColor = new BABYLON.Color4(col.r, col.g, col.b, ${valueOpacity});
-    linesMesh.opacity = ${valueOpacity ? valueOpacity : 1};
-})();
-        `;
-        return code;
+    curvesMesh.enableEdgesRendering();
+    curvesMesh.edgesWidth = ${valueWidth};
+    curvesMesh.edgesColor = new BABYLON.Color4(col.r, col.g, col.b, ${valueOpacity});
+    curvesMesh.opacity = ${valueOpacity};
+`);
     };
+}
+
+function makeValidationModel(
+    resources: ResourcesInterface,
+    valueCurves: any,
+    valueColour: any,
+    valueOpacity: any,
+    valueWidth: any): ValidationEntityInterface[] {
+
+    return [{
+        entity: valueCurves,
+        validations: [
+            getRequired(resources, resources.block_curves)
+        ]
+    },
+    {
+        entity: valueColour,
+        validations: [
+            getRequired(resources, resources.block_color)
+        ]
+    },
+    {
+        entity: valueOpacity,
+        validations: [
+            ...getRequiredAndRange(resources, resources.block_opacity, 0, 1)
+        ]
+    },
+    {
+        entity: valueWidth,
+        validations: [
+            ...getRequiredAndMin(resources, resources.block_width, 0)
+        ]
+    }];
 }

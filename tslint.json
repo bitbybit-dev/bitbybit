@@ -1,5 +1,5 @@
 {
-    "extends": "tslint:recommended",
+    "extends": ["tslint:recommended", "tslint-sonarts"],
     "rules": {
         "align": {
             "options": [
@@ -140,7 +140,14 @@
         "template-banana-in-box": true,
         "template-no-negated-async": true,
         "use-lifecycle-interface": true,
-        "use-pipe-transform-interface": true
+        "use-pipe-transform-interface": true,
+        "ordered-imports": [
+            true,
+            {
+              "import-sources-order": "lowercase-last",
+              "named-imports-order": "lowercase-first"
+            }
+          ]
     },
     "rulesDirectory": [
         "codelyzer"

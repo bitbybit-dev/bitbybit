@@ -1,15 +1,15 @@
-import { Blocks, ALIGN_RIGHT, Block } from 'blockly';
+import { ALIGN_RIGHT, Block, Blocks } from 'blockly';
 import * as JavaScript from 'blockly/javascript';
-import { BlockValidationService } from '../../../blocks/validations/validation.service';
-import { BlockValidations } from '../../../blocks/validations/block-validations';
-import { ResourcesService } from '../../../resources/resources.service';
 import { ResourcesInterface } from '../../../resources/resources.interface';
-import { ValidationEntityInterface } from '../../../blocks/validations/validation-entity.interface';
+import { ResourcesService } from '../../../resources/resources.service';
 import { createStandardContextIIFE } from '../../_shared/create-standard-context-iife';
+import { ValidationEntityInterface } from '../../validations/validation-entity.interface';
+import { getRequired, getRequiredAndMin, getRequiredAndRange } from '../../validations/validation-shorthands';
+import { BlockValidationService } from '../../validations/validation.service';
 
 export function createDrawCurveBlock() {
-    const resources = ResourcesService.getResourcesForSelectedLanguage();
 
+    const resources = ResourcesService.getResourcesForSelectedLanguage();
     const blockSelector = 'babylon_draw_curve';
 
     Blocks[blockSelector] = {
@@ -17,19 +17,19 @@ export function createDrawCurveBlock() {
             this.appendValueInput('Curve')
                 .setCheck('NurbsCurve')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_babylon_draw_curve_input_curve);
+                .appendField(resources.block_babylon_input_curve);
             this.appendValueInput('Colour')
                 .setCheck('Colour')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_babylon_draw_curve_input_color);
+                .appendField(resources.block_babylon_input_color);
             this.appendValueInput('Opacity')
                 .setCheck('Number')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_babylon_draw_curve_input_opacity);
+                .appendField(resources.block_babylon_input_opacity);
             this.appendValueInput('Width')
                 .setCheck('Number')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_babylon_draw_curve_input_width);
+                .appendField(resources.block_babylon_input_width);
             this.setColour('#fff');
             this.setPreviousStatement(true, null);
             this.setNextStatement(true, null);
@@ -49,8 +49,9 @@ export function createDrawCurveBlock() {
             block.workspace,
             makeValidationModel(resources, valueCurve, valueColour, valueOpacity, valueWidth)
         );
-        const code = createStandardContextIIFE(block, blockSelector,
-`
+
+        return createStandardContextIIFE(block, blockSelector,
+            `
     const points = ${valueCurve}.tessellate();
 
     const colors = [];
@@ -68,7 +69,6 @@ export function createDrawCurveBlock() {
     curves.edgesColor = new BABYLON.Color4(col.r, col.g, col.b, ${valueOpacity});
     curves.opacity = ${valueOpacity};
 `);
-        return code;
     };
 }
 
@@ -82,56 +82,25 @@ function makeValidationModel(
     return [{
         entity: valueCurve,
         validations: [
-            {
-                validationFunc: BlockValidations.required,
-                errorText: `${resources.block_curve} ${resources.block_validation_required}`,
-            }
+            getRequired(resources, resources.block_curve)
         ]
     },
     {
         entity: valueColour,
         validations: [
-            {
-                validationFunc: BlockValidations.required,
-                errorText: `${resources.block_color} ${resources.block_validation_required}`,
-            }
+            getRequired(resources, resources.block_color)
         ]
     },
     {
         entity: valueOpacity,
         validations: [
-            {
-                validationFunc: BlockValidations.required,
-                errorText: `${resources.block_opacity} ${resources.block_validation_required}`,
-            }, {
-                validationFunc: BlockValidations.min,
-                errorText: `${resources.block_opacity} ${resources.block_validation_higher_or_equal} 0`,
-                validationData: {
-                    length: 0
-                }
-            }, {
-                validationFunc: BlockValidations.max,
-                errorText: `${resources.block_opacity} ${resources.block_validation_lower_or_equal} 1`,
-                validationData: {
-                    length: 1
-                }
-            }
+            ...getRequiredAndRange(resources, resources.block_opacity, 0, 1)
         ]
     },
     {
         entity: valueWidth,
         validations: [
-            {
-                validationFunc: BlockValidations.required,
-                errorText: `${resources.block_width} ${resources.block_validation_required}`,
-            }, {
-                validationFunc: BlockValidations.min,
-                errorText: `${resources.block_width} ${resources.block_validation_higher_or_equal} 0`,
-                validationData: {
-                    length: 0
-                }
-            }
+            ...getRequiredAndMin(resources, resources.block_width, 0)
         ]
     }];
 }
-

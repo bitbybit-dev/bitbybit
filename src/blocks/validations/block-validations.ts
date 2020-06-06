@@ -18,4 +18,8 @@ export class BlockValidations {
     static max(entity: number, validationData: { length: number }): boolean {
         return entity <= validationData.length;
     }
+
+    static range(entity: number, validationData: { min: number, max: number }): boolean {
+        return entity >= validationData.min && entity <= validationData.max;
+    }
 }

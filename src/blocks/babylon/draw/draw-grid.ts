@@ -1,85 +1,188 @@
-import { Blocks, ALIGN_RIGHT } from "blockly";
+import { ALIGN_RIGHT, Block, Blocks } from 'blockly';
 import * as JavaScript from 'blockly/javascript';
+import { ResourcesInterface } from '../../../resources/resources.interface';
+import { ResourcesService } from '../../../resources/resources.service';
+import { createStandardContextIIFE } from '../../_shared/create-standard-context-iife';
+import { ValidationEntityInterface } from '../../validations/validation-entity.interface';
+import { getRequired, getRequiredAndMin, getRequiredAndRange } from '../../validations/validation-shorthands';
+import { BlockValidationService } from '../../validations/validation.service';
 
 export function createDrawGridBlock() {
-    Blocks['babylon_draw_grid'] = {
-        init: function () {
-            this.appendValueInput("width")
-                .setCheck("Number")
+
+    const resources = ResourcesService.getResourcesForSelectedLanguage();
+    const blockSelector = 'babylon_draw_grid';
+
+    Blocks[blockSelector] = {
+        init() {
+            this.appendValueInput('Width')
+                .setCheck('Number')
                 .setAlign(ALIGN_RIGHT)
-                .appendField("Draw grid of width");
-            this.appendValueInput("height")
-                .setCheck("Number")
+                .appendField(resources.block_babylon_input_draw_grid);
+            this.appendValueInput('Height')
+                .setCheck('Number')
                 .setAlign(ALIGN_RIGHT)
-                .appendField("height");
-            this.appendValueInput("subdivisions")
-                .setCheck("Number")
+                .appendField(resources.block_babylon_input_height);
+            this.appendValueInput('Subdivisions')
+                .setCheck('Number')
                 .setAlign(ALIGN_RIGHT)
-                .appendField("subdivisions");
-            this.appendValueInput("major_unit_frequency")
-                .setCheck("Number")
+                .appendField(resources.block_babylon_input_subdivisions);
+            this.appendValueInput('MajorUnitFrequency')
+                .setCheck('Number')
                 .setAlign(ALIGN_RIGHT)
-                .appendField("major unit frequency");
-            this.appendValueInput("minor_unit_visibility")
-                .setCheck("Number")
+                .appendField(resources.block_babylon_input_major_unit_frequency);
+            this.appendValueInput('MinorUnitVisibility')
+                .setCheck('Number')
                 .setAlign(ALIGN_RIGHT)
-                .appendField("minor unit visibility");
-            this.appendValueInput("grid_ratio")
-                .setCheck("Number")
+                .appendField(resources.block_babylon_input_minor_unit_visibility);
+            this.appendValueInput('GridRatio')
+                .setCheck('Number')
                 .setAlign(ALIGN_RIGHT)
-                .appendField("grid ratio");
-            this.appendValueInput("opacity")
-                .setCheck("Number")
+                .appendField(resources.block_babylon_input_grid_ratio);
+            this.appendValueInput('Opacity')
+                .setCheck('Number')
                 .setAlign(ALIGN_RIGHT)
-                .appendField("opacity");
-            this.appendValueInput("back_face_culling")
-                .setCheck("Boolean")
+                .appendField(resources.block_babylon_input_opacity);
+            this.appendValueInput('BackFaceCulling')
+                .setCheck('Boolean')
                 .setAlign(ALIGN_RIGHT)
-                .appendField("back face culling");
-            this.appendValueInput("main_color")
-                .setCheck("Colour")
+                .appendField(resources.block_babylon_input_back_face_culling);
+            this.appendValueInput('MainColor')
+                .setCheck('Colour')
                 .setAlign(ALIGN_RIGHT)
-                .appendField("main color");
-            this.appendValueInput("line_color")
-                .setCheck("Colour")
+                .appendField(resources.block_babylon_input_main_color);
+            this.appendValueInput('LineColor')
+                .setCheck('Colour')
                 .setAlign(ALIGN_RIGHT)
-                .appendField("line colour");
+                .appendField(resources.block_babylon_input_secondary_color);
             this.setPreviousStatement(true, null);
             this.setNextStatement(true, null);
-            this.setColour("#fff");
-            this.setTooltip("Activates the ground grid to help orientation when navigating 3D space.");
-            this.setHelpUrl("https://doc.babylonjs.com/extensions/grid");
+            this.setColour('#fff');
+            this.setTooltip(resources.block_babylon_draw_grid_description);
         }
     };
 
-    JavaScript['babylon_draw_grid'] = function (block) {
-        let value_width = JavaScript.valueToCode(block, 'width', JavaScript.ORDER_ATOMIC);
-        let value_height = JavaScript.valueToCode(block, 'height', JavaScript.ORDER_ATOMIC);
-        let value_subdivisions = JavaScript.valueToCode(block, 'subdivisions', JavaScript.ORDER_ATOMIC);
-        let value_major_unit_frequency = JavaScript.valueToCode(block, 'major_unit_frequency', JavaScript.ORDER_ATOMIC);
-        let value_minor_unit_visibility = JavaScript.valueToCode(block, 'minor_unit_visibility', JavaScript.ORDER_ATOMIC);
-        let value_grid_ratio = JavaScript.valueToCode(block, 'grid_ratio', JavaScript.ORDER_ATOMIC);
-        let value_opacity = JavaScript.valueToCode(block, 'opacity', JavaScript.ORDER_ATOMIC);
-        let value_back_face_culling = JavaScript.valueToCode(block, 'back_face_culling', JavaScript.ORDER_ATOMIC);
-        let value_main_color = JavaScript.valueToCode(block, 'main_color', JavaScript.ORDER_ATOMIC);
-        let value_line_color = JavaScript.valueToCode(block, 'line_color', JavaScript.ORDER_ATOMIC);
+    JavaScript[blockSelector] = (block: Block) => {
+        const valueWidth = JavaScript.valueToCode(block, 'Width', JavaScript.ORDER_ATOMIC);
+        const valueHeight = JavaScript.valueToCode(block, 'Height', JavaScript.ORDER_ATOMIC);
+        const valueSubdivisions = JavaScript.valueToCode(block, 'Subdivisions', JavaScript.ORDER_ATOMIC);
+        const valueMajorUnitFrequency = JavaScript.valueToCode(block, 'MajorUnitFrequency', JavaScript.ORDER_ATOMIC);
+        const valueMinorUnitVisibility = JavaScript.valueToCode(block, 'MinorUnitVisibility', JavaScript.ORDER_ATOMIC);
+        const valueGridRatio = JavaScript.valueToCode(block, 'GridRatio', JavaScript.ORDER_ATOMIC);
+        const valueOpacity = JavaScript.valueToCode(block, 'Opacity', JavaScript.ORDER_ATOMIC);
+        const valueBackFaceCulling = JavaScript.valueToCode(block, 'BackFaceCulling', JavaScript.ORDER_ATOMIC);
+        const valueMainColor = JavaScript.valueToCode(block, 'MainColor', JavaScript.ORDER_ATOMIC);
+        const valueSecondaryColor = JavaScript.valueToCode(block, 'LineColor', JavaScript.ORDER_ATOMIC);
 
-        let code = `
-let drawGrid = () => {
-    let groundMaterial = new BABYLON.GridMaterial('groundMaterial${Math.random()}', scene);
-    groundMaterial.majorUnitFrequency = ${value_major_unit_frequency};
-    groundMaterial.minorUnitVisibility = ${value_minor_unit_visibility};
-    groundMaterial.gridRatio = ${value_grid_ratio};
-    groundMaterial.backFaceCulling = ${value_back_face_culling};
-    groundMaterial.mainColor = BABYLON.Color3.FromHexString(${value_main_color});
-    groundMaterial.lineColor = BABYLON.Color3.FromHexString(${value_line_color});
-    groundMaterial.opacity = ${value_opacity};
+        BlockValidationService.validate(
+            block,
+            block.workspace,
+            makeValidationModel(resources, {
+                valueWidth,
+                valueHeight,
+                valueSubdivisions,
+                valueMajorUnitFrequency,
+                valueMinorUnitVisibility,
+                valueGridRatio,
+                valueOpacity,
+                valueBackFaceCulling,
+                valueMainColor,
+                valueSecondaryColor
+            })
+        );
 
-    let ground = BABYLON.Mesh.CreateGround('ground${Math.random()}', ${value_width}, ${value_height}, ${value_subdivisions}, scene, false);
+        return createStandardContextIIFE(block, blockSelector,
+            `
+    const groundMaterial = new BABYLON.GridMaterial('groundMaterial${Math.random()}', scene);
+    groundMaterial.majorUnitFrequency = ${valueMajorUnitFrequency};
+    groundMaterial.minorUnitVisibility = ${valueMinorUnitVisibility};
+    groundMaterial.gridRatio = ${valueGridRatio};
+    groundMaterial.backFaceCulling = ${valueBackFaceCulling};
+    groundMaterial.mainColor = BABYLON.Color3.FromHexString(${valueMainColor});
+    groundMaterial.lineColor = BABYLON.Color3.FromHexString(${valueSecondaryColor});
+    groundMaterial.opacity = ${valueOpacity};
+
+    const ground = BABYLON.Mesh.CreateGround('ground${Math.random()}', ${valueWidth}, ${valueHeight}, ${valueSubdivisions}, scene, false);
     ground.material = groundMaterial;
-}
-drawGrid();
-        `;
-        return code;
+`
+        );
     };
 }
+
+function makeValidationModel(
+    resources: ResourcesInterface,
+    values: {
+        valueWidth: number,
+        valueHeight: number,
+        valueSubdivisions: number,
+        valueMajorUnitFrequency: number,
+        valueMinorUnitVisibility: number,
+        valueGridRatio: number,
+        valueOpacity: number,
+        valueBackFaceCulling: boolean,
+        valueMainColor: any,
+        valueSecondaryColor: any
+    }
+): ValidationEntityInterface[] {
+
+    return [{
+        entity: values.valueWidth,
+        validations: [
+            ...getRequiredAndMin(resources, resources.block_babylon_input_width, 0)
+        ]
+    },
+    {
+        entity: values.valueHeight,
+        validations: [
+            ...getRequiredAndMin(resources, resources.block_babylon_input_height, 0)
+        ]
+    },
+    {
+        entity: values.valueSubdivisions,
+        validations: [
+            ...getRequiredAndMin(resources, resources.block_babylon_input_subdivisions, 0)
+        ]
+    },
+    {
+        entity: values.valueMajorUnitFrequency,
+        validations: [
+            ...getRequiredAndMin(resources, resources.block_babylon_input_major_unit_frequency, 0)
+        ]
+    },
+    {
+        entity: values.valueMinorUnitVisibility,
+        validations: [
+            ...getRequiredAndRange(resources, resources.block_babylon_input_minor_unit_visibility, 0, 1)
+        ]
+    },
+    {
+        entity: values.valueGridRatio,
+        validations: [
+            ...getRequiredAndRange(resources, resources.block_babylon_input_grid_ratio, 0, 1)
+        ]
+    },
+    {
+        entity: values.valueOpacity,
+        validations: [
+            ...getRequiredAndRange(resources, resources.block_opacity, 0, 1)
+        ]
+    },
+    {
+        entity: values.valueBackFaceCulling,
+        validations: [
+            getRequired(resources, resources.block_babylon_input_back_face_culling)
+        ]
+    },
+    {
+        entity: values.valueMainColor,
+        validations: [
+            getRequired(resources, resources.block_babylon_input_main_color)
+        ]
+    },
+    {
+        entity: values.valueSecondaryColor,
+        validations: [
+            getRequired(resources, resources.block_babylon_input_secondary_color)
+        ]
+    }];
+}
+
