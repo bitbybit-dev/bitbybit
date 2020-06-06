@@ -1,54 +1,108 @@
-import { Blocks, ALIGN_RIGHT } from "blockly";
+import { ALIGN_RIGHT, Blocks } from 'blockly';
 import * as JavaScript from 'blockly/javascript';
+import { ResourcesInterface } from '../../../resources/resources.interface';
+import { ResourcesService } from '../../../resources/resources.service';
+import { createStandardContextIIFE } from '../../_shared/create-standard-context-iife';
+import { ValidationEntityInterface } from '../../validations/validation-entity.interface';
+import { getRequired, getRequiredAndMin, getRequiredAndRange } from '../../validations/validation-shorthands';
+import { BlockValidationService } from '../../validations/validation.service';
 
 export function createDrawLineBlock() {
 
-    Blocks['babylon_draw_line'] = {
-        init: function () {
-            this.appendValueInput("Line")
-                .setCheck("Line")
+    const resources = ResourcesService.getResourcesForSelectedLanguage();
+    const blockSelector = 'babylon_draw_line';
+
+    Blocks[blockSelector] = {
+        init() {
+            this.appendValueInput('Line')
+                .setCheck('Line')
                 .setAlign(ALIGN_RIGHT)
-                .appendField("Draw line");
-            this.appendValueInput("Colour")
-                .setCheck("Colour")
+                .appendField(resources.block_babylon_input_draw_line);
+            this.appendValueInput('Colour')
+                .setCheck('Colour')
                 .setAlign(ALIGN_RIGHT)
-                .appendField("in colour");
-            this.appendValueInput("Opacity")
-                .setCheck("Number")
+                .appendField(resources.block_babylon_input_color);
+            this.appendValueInput('Opacity')
+                .setCheck('Number')
                 .setAlign(ALIGN_RIGHT)
-                .appendField("opacity");
-            this.appendValueInput("Width")
-                .setCheck("Number")
+                .appendField(resources.block_babylon_input_opacity);
+            this.appendValueInput('Width')
+                .setCheck('Number')
                 .setAlign(ALIGN_RIGHT)
-                .appendField("and width");
-            this.setColour("#fff");
+                .appendField(resources.block_babylon_input_width);
+            this.setColour('#fff');
             this.setPreviousStatement(true, null);
             this.setNextStatement(true, null);
-            this.setTooltip("Draws a coloured line in space of selected width");
-            this.setHelpUrl("");
+            this.setTooltip(resources.block_babylon_draw_line_description);
+            this.setHelpUrl('');
         }
     };
 
-    JavaScript['babylon_draw_line'] = function (block) {
-        let value_line = JavaScript.valueToCode(block, 'Line', JavaScript.ORDER_ATOMIC);
-        let value_colour = JavaScript.valueToCode(block, 'Colour', JavaScript.ORDER_ATOMIC);
-        let value_opacity = JavaScript.valueToCode(block, 'Opacity', JavaScript.ORDER_ATOMIC);
-        let value_width = JavaScript.valueToCode(block, 'Width', JavaScript.ORDER_ATOMIC);
+    JavaScript[blockSelector] = (block) => {
+        const valueLine = JavaScript.valueToCode(block, 'Line', JavaScript.ORDER_ATOMIC);
+        const valueColour = JavaScript.valueToCode(block, 'Colour', JavaScript.ORDER_ATOMIC);
+        const valueOpacity = JavaScript.valueToCode(block, 'Opacity', JavaScript.ORDER_ATOMIC);
+        const valueWidth = JavaScript.valueToCode(block, 'Width', JavaScript.ORDER_ATOMIC);
 
-        let code = `
-var drawLine = () => {
-    let line = ${value_line};
-    let width = ${value_width ? value_width : 3};
+        BlockValidationService.validate(
+            block,
+            block.workspace,
+            makeValidationModel(resources, {
+                valueLine,
+                valueColour,
+                valueOpacity,
+                valueWidth,
+            })
+        );
 
-    let points = [new BABYLON.Vector3(line.start[0],line.start[1],line.start[2]), new BABYLON.Vector3(line.end[0],line.end[1],line.end[2])];
-    let lines = BABYLON.MeshBuilder.CreateLines("lines${Math.random()}", {points}, scene);
-    lines.enableEdgesRendering();	
-	lines.edgesWidth = width;
-    let edgeColor = BABYLON.Color3.FromHexString(${value_colour});
-    lines.edgesColor = new BABYLON.Color4(edgeColor.r, edgeColor.g, edgeColor.b, ${value_opacity});
-}
-drawLine();
-        `;
-        return code;
+        return createStandardContextIIFE(block, blockSelector,
+`
+    const line = ${valueLine};
+
+    const points = [new BABYLON.Vector3(line.start[0],line.start[1],line.start[2]), new BABYLON.Vector3(line.end[0],line.end[1],line.end[2])];
+    const lines = BABYLON.MeshBuilder.CreateLines("lines${Math.random()}", {points}, scene);
+    lines.enableEdgesRendering();
+	lines.edgesWidth = ${valueWidth};
+    const edgeColor = BABYLON.Color3.FromHexString(${valueColour});
+    lines.edgesColor = new BABYLON.Color4(edgeColor.r, edgeColor.g, edgeColor.b, ${valueOpacity});
+ `
+        );
     };
 }
+
+function makeValidationModel(
+    resources: ResourcesInterface,
+    values: {
+        valueLine: any,
+        valueColour: any,
+        valueOpacity: any,
+        valueWidth: any,
+    }
+): ValidationEntityInterface[] {
+
+    return [{
+        entity: values.valueLine,
+        validations: [
+            getRequired(resources, resources.block_line)
+        ]
+    },
+    {
+        entity: values.valueColour,
+        validations: [
+            getRequired(resources, resources.block_color)
+        ]
+    },
+    {
+        entity: values.valueOpacity,
+        validations: [
+            ...getRequiredAndRange(resources, resources.block_opacity, 0, 1)
+        ]
+    },
+    {
+        entity: values.valueWidth,
+        validations: [
+            ...getRequiredAndMin(resources, resources.block_width, 0)
+        ]
+    }];
+}
+

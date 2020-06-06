@@ -6,6 +6,7 @@ export const resourcesEn: ResourcesInterface = {
     block_color: 'Color',
     block_opacity: 'Opacity',
     block_width: 'Width',
+    block_line: 'Line',
     block_validation_required: 'must be provided',
     block_validation_higher_or_equal: 'must be higher or equal to',
     block_validation_lower_or_equal: 'must be lower or equal to',
@@ -16,6 +17,7 @@ export const resourcesEn: ResourcesInterface = {
     block_babylon_input_opacity: 'Opacity',
     block_babylon_input_width: 'Width',
     block_babylon_input_draw_grid: 'Draw grid of width',
+    block_babylon_input_draw_line: 'Draw line',
     block_babylon_input_height: 'Height',
     block_babylon_input_subdivisions: 'Subdivisions',
     block_babylon_input_major_unit_frequency: 'Major unit frequency',
@@ -27,4 +29,5 @@ export const resourcesEn: ResourcesInterface = {
     block_babylon_draw_curve_description: 'Draws a coloured curve in space of selected width',
     block_babylon_draw_curves_description: 'Draws a coloured curves in space of selected width',
     block_babylon_draw_grid_description: 'Draws the ground grid to help orientation when navigating 3D space',
+    block_babylon_draw_line_description: 'Draws a coloured line in space of selected width',
 };

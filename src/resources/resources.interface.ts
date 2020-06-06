@@ -1,4 +1,5 @@
 export interface ResourcesInterface {
+    block_line: string;
     block_curve: string;
     block_curves: string;
     block_color: string;
@@ -22,7 +23,9 @@ export interface ResourcesInterface {
     block_babylon_input_back_face_culling: string;
     block_babylon_input_main_color: string;
     block_babylon_input_secondary_color: string;
+    block_babylon_input_draw_line: string;
     block_babylon_draw_curve_description: string;
     block_babylon_draw_curves_description: string;
+    block_babylon_draw_line_description: string;
     block_babylon_draw_grid_description: string;
 }

@@ -91,7 +91,7 @@ export function createDrawGridBlock() {
         );
 
         return createStandardContextIIFE(block, blockSelector,
-            `
+`
     const groundMaterial = new BABYLON.GridMaterial('groundMaterial${Math.random()}', scene);
     groundMaterial.majorUnitFrequency = ${valueMajorUnitFrequency};
     groundMaterial.minorUnitVisibility = ${valueMinorUnitVisibility};
@@ -185,4 +185,3 @@ function makeValidationModel(
         ]
     }];
 }
-

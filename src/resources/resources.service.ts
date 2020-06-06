@@ -1,6 +1,7 @@
 import { languagesEnum } from './languages.enum';
-import { ResourcesInterface } from './resources.interface';
 import { resourcesEn } from './resources.en';
+import { ResourcesInterface } from './resources.interface';
+import { resourcesLt } from './resources.lt';
 
 export class ResourcesService {
     static languageSelected: languagesEnum;
@@ -10,6 +11,9 @@ export class ResourcesService {
         switch (ResourcesService.languageSelected) {
             case languagesEnum.en:
                 resources = resourcesEn;
+                break;
+            case languagesEnum.lt:
+                resources = resourcesLt;
                 break;
             default:
                 break;

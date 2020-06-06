@@ -1,5 +1,5 @@
+import { Block, Workspace, WorkspaceSvg } from 'blockly';
 import { ValidationEntityInterface } from './validation-entity.interface';
-import { WorkspaceSvg, Block, Workspace } from 'blockly';
 
 export class BlockValidationService {
     static validate(block: Block, workspace: Workspace | WorkspaceSvg, validationEntityModel: ValidationEntityInterface[]) {
