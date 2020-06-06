@@ -18,9 +18,8 @@ export function createSceneBackgroundColourBlock() {
     JavaScript['babylon_scene_background_colour'] = function (block) {
         let value_colour = JavaScript.valueToCode(block, 'colour', JavaScript.ORDER_ATOMIC);
 
-        let code = `
+        return `
 scene.clearColor = BABYLON.Color3.FromHexString(${value_colour});
-        `;
-        return code;
+`;
     };
 }

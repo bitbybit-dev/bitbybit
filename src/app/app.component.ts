@@ -86,6 +86,7 @@ export class AppComponent implements OnInit, AfterViewInit {
             light.intensity = 1;
             this.windowBlockly = {};
             this.windowBlockly.scene = this.scene;
+            this.windowBlockly.workspace = this.workspace;
             (window as any).blockly = this.windowBlockly;
 
             this.engine.runRenderLoop(() => {
@@ -202,8 +203,10 @@ export class AppComponent implements OnInit, AfterViewInit {
             eval(`
 'use reserved'
 let scene = window.blockly.scene;
+let blocklyWorkspace = window.blockly.workspace;
 let BABYLON = window.BABYLON;
 let verb = window.verb;
+let Blockly = window.BlocklyGlobal;
 ${code}
             `);
         } catch (e) {

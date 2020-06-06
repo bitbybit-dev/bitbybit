@@ -1,10 +1,11 @@
-import { Blocks, ALIGN_RIGHT } from 'blockly';
+import { Blocks, ALIGN_RIGHT, Block } from 'blockly';
 import * as JavaScript from 'blockly/javascript';
 import { BlockValidationService } from '../../../blocks/validations/validation.service';
 import { BlockValidations } from '../../../blocks/validations/block-validations';
 import { ResourcesService } from '../../../resources/resources.service';
 import { ResourcesInterface } from '../../../resources/resources.interface';
 import { ValidationEntityInterface } from '../../../blocks/validations/validation-entity.interface';
+import { createStandardContextIIFE } from '../../_shared/create-standard-context-iife';
 
 export function createDrawCurveBlock() {
     const resources = ResourcesService.getResourcesForSelectedLanguage();
@@ -37,16 +38,19 @@ export function createDrawCurveBlock() {
         }
     };
 
-    JavaScript[blockSelector] = (block: any) => {
+    JavaScript[blockSelector] = (block: Block) => {
         const valueCurve = JavaScript.valueToCode(block, 'Curve', JavaScript.ORDER_ATOMIC);
         const valueColour = JavaScript.valueToCode(block, 'Colour', JavaScript.ORDER_ATOMIC);
         const valueOpacity = JavaScript.valueToCode(block, 'Opacity', JavaScript.ORDER_ATOMIC);
         const valueWidth = JavaScript.valueToCode(block, 'Width', JavaScript.ORDER_ATOMIC);
 
-        BlockValidationService.validate(block, makeValidationModel(resources, valueCurve, valueColour, valueOpacity, valueWidth));
-
-        const code = `
-(() => {
+        BlockValidationService.validate(
+            block,
+            block.workspace,
+            makeValidationModel(resources, valueCurve, valueColour, valueOpacity, valueWidth)
+        );
+        const code = createStandardContextIIFE(block, blockSelector,
+`
     const points = ${valueCurve}.tessellate();
 
     const colors = [];
@@ -63,15 +67,18 @@ export function createDrawCurveBlock() {
     const col = BABYLON.Color3.FromHexString(${valueColour});
     curves.edgesColor = new BABYLON.Color4(col.r, col.g, col.b, ${valueOpacity});
     curves.opacity = ${valueOpacity};
-})();
-        `;
+`);
         return code;
     };
 }
 
-function makeValidationModel(resources: ResourcesInterface,
-                             valueCurve: any, valueColour: any, valueOpacity: any,
-                             valueWidth: any): ValidationEntityInterface[] {
+function makeValidationModel(
+    resources: ResourcesInterface,
+    valueCurve: any,
+    valueColour: any,
+    valueOpacity: any,
+    valueWidth: any): ValidationEntityInterface[] {
+
     return [{
         entity: valueCurve,
         validations: [

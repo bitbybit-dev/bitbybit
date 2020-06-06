@@ -1,7 +1,8 @@
 import { ValidationEntityInterface } from './validation-entity.interface';
+import { WorkspaceSvg, Block, Workspace } from 'blockly';
 
 export class BlockValidationService {
-    static validate(block: any, validationEntityModel: ValidationEntityInterface[]) {
+    static validate(block: Block, workspace: Workspace | WorkspaceSvg, validationEntityModel: ValidationEntityInterface[]) {
         const errors = [];
 
         validationEntityModel.forEach(validation => {
@@ -14,9 +15,13 @@ export class BlockValidationService {
 
         if (errors.length > 0) {
             block.setColour('ffab91');
-            const errorText = `Block with id "${block.id}" failed - \n${errors.join(',\n')}.`;
+            const errorText = `Block failed - \n${errors.join(',\n')}.`;
             block.setWarningText(errorText);
+            (workspace as WorkspaceSvg).centerOnBlock(block.id);
             throw new Error(errorText);
+        } else {
+            block.setColour('ffffff');
+            block.setWarningText(null);
         }
     }
 }
