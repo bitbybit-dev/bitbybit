@@ -49,14 +49,14 @@ export function createDrawPointBlock() {
     let pointsCount = 1;
     positions = vectorPoint;
     colors.push(colour.r, colour.g, colour.b, 1);
-    
+
     let vertexData = new BABYLON.VertexData();
 
     vertexData.positions = positions;
     vertexData.colors = colors;
 
     vertexData.applyToMesh(customMesh);
-    
+
     let mat = new BABYLON.StandardMaterial("mat${Math.random()}", scene);
     mat.emissiveColor = new BABYLON.Color3(1, 1, 1);
     mat.disableLighting = true;

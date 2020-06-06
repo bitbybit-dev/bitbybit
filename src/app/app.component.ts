@@ -158,8 +158,8 @@ export class AppComponent implements OnInit, AfterViewInit {
 
     export() {
         const xml = Xml.workspaceToDom(this.workspace);
-        let xml_text = Xml.domToText(xml);
-        const blob = new Blob([xml_text], { type: 'text/xml' });
+        const xmlText = Xml.domToText(xml);
+        const blob = new Blob([xmlText], { type: 'text/xml' });
         const blobUrl = URL.createObjectURL(blob);
 
         const fileLink = document.createElement('a');
@@ -198,6 +198,7 @@ export class AppComponent implements OnInit, AfterViewInit {
             (window as any).LoopTrap = 10000;
             javascript.INFINITE_LOOP_TRAP = 'if(--window.LoopTrap == 0) throw "Infinite loop cancelled after 10000 iterations.";\n';
             const code = javascript.workspaceToCode(this.workspace);
+            // tslint:disable-next-line: no-eval
             eval(`
 'use reserved'
 let scene = window.blockly.scene;
@@ -211,20 +212,6 @@ ${code}
                 details: `Something went wrong when running the code. Check if there are no disconnected or misconfigured components on your canvas`,
                 message: `${e}`,
             });
-        }
-    }
-
-    runCodeWithDateFunction() {
-        const code = JavaScript.workspaceToCode(this.workspace);
-        return Function(code)()();
-    }
-
-    evaluate = () => {
-        try {
-            const code = JavaScript.workspaceToCode(this.workspace);
-            eval(code);
-        } catch (e) {
-            alert(e);
         }
     }
 
