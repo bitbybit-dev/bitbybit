@@ -4,7 +4,13 @@ export function createStandardContextIIFE(block: Block, componentName: string, b
     return `
 /// Component: "${componentName}", Block ID: "${block.id}"
 (() => {
-    ${body}
+    try {
+        ${body}
+    } catch (e) {
+        const blockWithError = blocklyWorkspace.getBlockById("${block.id}");
+        blockWithError.setColour('ffab91');
+        blockWithError.setWarningText('Block failed when computing, check if data provided is correct. ' + e);
+    }
 })();
 /// End Component: "${componentName}", Block ID: "${block.id}"
 `;

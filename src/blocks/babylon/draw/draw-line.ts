@@ -1,11 +1,14 @@
-import { ALIGN_RIGHT, Blocks } from 'blockly';
+import { ALIGN_RIGHT, Block, Blocks } from 'blockly';
 import * as JavaScript from 'blockly/javascript';
-import { ResourcesInterface } from '../../../resources/resources.interface';
-import { ResourcesService } from '../../../resources/resources.service';
-import { createStandardContextIIFE } from '../../_shared/create-standard-context-iife';
-import { ValidationEntityInterface } from '../../validations/validation-entity.interface';
-import { getRequired, getRequiredAndMin, getRequiredAndRange } from '../../validations/validation-shorthands';
-import { BlockValidationService } from '../../validations/validation.service';
+import { ResourcesInterface, ResourcesService } from '../../../resources';
+import { createStandardContextIIFE } from '../../_shared';
+import {
+    getRequired,
+    getRequiredAndMin,
+    getRequiredAndRange,
+    BlockValidationService,
+    ValidationEntityInterface
+} from '../../validations';
 
 export function createDrawLineBlock() {
 
@@ -38,7 +41,7 @@ export function createDrawLineBlock() {
         }
     };
 
-    JavaScript[blockSelector] = (block) => {
+    JavaScript[blockSelector] = (block: Block) => {
         const valueLine = JavaScript.valueToCode(block, 'Line', JavaScript.ORDER_ATOMIC);
         const valueColour = JavaScript.valueToCode(block, 'Colour', JavaScript.ORDER_ATOMIC);
         const valueOpacity = JavaScript.valueToCode(block, 'Opacity', JavaScript.ORDER_ATOMIC);

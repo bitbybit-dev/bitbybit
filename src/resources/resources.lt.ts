@@ -7,6 +7,7 @@ export const resourcesLt: ResourcesInterface = {
     block_opacity: 'Matomumas',
     block_width: 'Storis',
     block_line: 'Linija',
+    block_lines: 'Linijos',
     block_validation_required: 'privalo buti ivesta',
     block_validation_higher_or_equal: 'privalo buto daugiau arba lygu',
     block_validation_lower_or_equal: 'privalo buto maziau arba lygu',
@@ -18,6 +19,7 @@ export const resourcesLt: ResourcesInterface = {
     block_babylon_input_width: 'Storis',
     block_babylon_input_draw_grid: 'Piesti tinkleli kurio plotis',
     block_babylon_input_draw_line: 'Piesti linija',
+    block_babylon_input_draw_lines: 'Piesti linijas',
     block_babylon_input_height: 'Aukstis',
     block_babylon_input_subdivisions: 'Sudalinimas',
     block_babylon_input_major_unit_frequency: 'Didziojo tinklelio tankumas',
@@ -30,4 +32,5 @@ export const resourcesLt: ResourcesInterface = {
     block_babylon_draw_curves_description: 'Piesti spalvotas nurodyto storio kreives',
     block_babylon_draw_grid_description: 'Piesti zemes tinkleli kuris padeda orientuotis 3D erdveje',
     block_babylon_draw_line_description: 'Piesti spalvota nurodyto storio linija',
+    block_babylon_draw_lines_description: 'Piesti spalvotas nurodyto storio linijas'
 };

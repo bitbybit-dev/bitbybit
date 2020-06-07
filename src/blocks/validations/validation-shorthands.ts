@@ -1,4 +1,4 @@
-import { ResourcesInterface } from '../../resources/resources.interface';
+import { ResourcesInterface } from '../../resources';
 import { BlockValidations } from './block-validations';
 import { ValidationInterface } from './validation.interface';
 
