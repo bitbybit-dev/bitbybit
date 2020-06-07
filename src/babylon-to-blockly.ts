@@ -1,7 +1,7 @@
-import { Vector3, Color3, Color4, Mesh, MeshBuilder, StandardMaterial, VertexData } from '@babylonjs/core';
+import { Color3, Color4, Mesh, MeshBuilder, StandardMaterial, Vector3, VertexData } from '@babylonjs/core';
 import { GridMaterial } from '@babylonjs/materials';
-import { geom, core } from 'verb-nurbs-web';
 import * as Blockly from 'blockly';
+import { core, geom } from 'verb-nurbs-web';
 import { BlockValidationService } from './blocks/validations';
 
 export function prepareBabylonForBlockly() {

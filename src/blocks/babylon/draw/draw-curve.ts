@@ -6,9 +6,9 @@ import {
     getRequired,
     getRequiredAndMin,
     getRequiredAndRange,
+    makeRequiredValidationModelForInputs,
     BlockValidationService,
-    ValidationEntityInterface,
-    makeRequiredValidationModelForInputs
+    ValidationEntityInterface
 } from '../../validations';
 
 export function createDrawCurveBlock() {
@@ -60,7 +60,7 @@ export function createDrawCurveBlock() {
         const runtimeValidationModel = makeRuntimeValidationModel(resources, Object.keys(inputs));
         (block as any).validationModel = runtimeValidationModel;
 
-        return createStandardContextIIFE(block, blockSelector,
+        return createStandardContextIIFE(block, blockSelector, inputs,
 `
         const points = inputs.curve.tessellate();
 
@@ -78,7 +78,7 @@ export function createDrawCurveBlock() {
         const col = BABYLON.Color3.FromHexString(inputs.colour);
         curves.edgesColor = new BABYLON.Color4(col.r, col.g, col.b, inputs.opacity);
         curves.opacity = inputs.opacity;
-`, inputs);
+`);
     };
 }
 

@@ -1,6 +1,6 @@
 import { Block } from 'blockly';
 
-export function createStandardContextIIFE(block: Block, componentName: string, body: string, inputs?: any) {
+export function createStandardContextIIFE(block: Block, componentName: string, inputs: any, body: string) {
     return `
 /// Component: "${componentName}", Block ID: "${block.id}"
 (() => {

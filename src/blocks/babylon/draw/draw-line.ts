@@ -60,7 +60,7 @@ export function createDrawLineBlock() {
         const runtimeValidationModel = makeRuntimeValidationModel(resources, Object.keys(inputs));
         (block as any).validationModel = runtimeValidationModel;
 
-        return createStandardContextIIFE(block, blockSelector,
+        return createStandardContextIIFE(block, blockSelector, inputs,
 `
         const line = inputs.line;
 
@@ -70,7 +70,7 @@ export function createDrawLineBlock() {
         lines.edgesWidth = inputs.width;
         const edgeColor = BABYLON.Color3.FromHexString(inputs.colour);
         lines.edgesColor = new BABYLON.Color4(edgeColor.r, edgeColor.g, edgeColor.b, inputs.opacity);
- `, inputs
+ `
         );
     };
 }

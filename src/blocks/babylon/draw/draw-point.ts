@@ -60,8 +60,7 @@ export function createDrawPointBlock() {
         const runtimeValidationModel = makeRuntimeValidationModel(resources, Object.keys(inputs));
         (block as any).validationModel = runtimeValidationModel;
 
-
-        return createStandardContextIIFE(block, blockSelector,
+        return createStandardContextIIFE(block, blockSelector, inputs,
 `
         const vectorPoint = inputs.point;
         const colour = BABYLON.Color3.FromHexString(inputs.colour);
@@ -89,7 +88,7 @@ export function createDrawPointBlock() {
         mat.pointSize = inputs.size;
         mat.alpha = inputs.opacity;
         customMesh.material = mat;
-`, inputs
+`
         );
     };
 }

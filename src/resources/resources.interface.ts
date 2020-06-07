@@ -1,4 +1,6 @@
 export interface ResourcesInterface {
+    block_point: string;
+    block_points: string;
     block_line: string;
     block_lines: string;
     block_curve: string;
@@ -6,7 +8,6 @@ export interface ResourcesInterface {
     block_colour: string;
     block_opacity: string;
     block_width: string;
-    block_point: string;
     block_size: string;
     block_validation_required: string;
     block_validation_of_length: string;
@@ -31,10 +32,12 @@ export interface ResourcesInterface {
     block_babylon_input_draw_line: string;
     block_babylon_input_draw_lines: string;
     block_babylon_input_draw_point: string;
+    block_babylon_input_draw_points: string;
     block_babylon_draw_curve_description: string;
     block_babylon_draw_curves_description: string;
     block_babylon_draw_line_description: string;
     block_babylon_draw_lines_description: string;
     block_babylon_draw_grid_description: string;
     block_babylon_draw_point_description: string;
+    block_babylon_draw_points_description: string;
 }

@@ -98,7 +98,7 @@ export function createDrawGridBlock() {
         const runtimeValidationModel = makeRuntimeValidationModel(resources, Object.keys(inputs));
         (block as any).validationModel = runtimeValidationModel;
 
-        return createStandardContextIIFE(block, blockSelector,
+        return createStandardContextIIFE(block, blockSelector, inputs,
             `
         const groundMaterial = new BABYLON.GridMaterial('groundMaterial${Math.random()}', scene);
         groundMaterial.majorUnitFrequency = inputs.majorUnitFrequency;
@@ -111,7 +111,7 @@ export function createDrawGridBlock() {
 
         const ground = BABYLON.Mesh.CreateGround('ground${Math.random()}', inputs.width, inputs.height, inputs.subdivisions, scene, false);
         ground.material = groundMaterial;
-`, inputs
+`
         );
     };
 }

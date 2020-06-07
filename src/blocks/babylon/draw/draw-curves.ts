@@ -59,7 +59,7 @@ export function createDrawCurvesBlock() {
         const runtimeValidationModel = makeRuntimeValidationModel(resources, Object.keys(inputs));
         (block as any).validationModel = runtimeValidationModel;
 
-        return createStandardContextIIFE(block, blockSelector,
+        return createStandardContextIIFE(block, blockSelector, inputs,
 `
         const curvesForRender = [];
         const col = BABYLON.Color3.FromHexString(inputs.colour);
@@ -76,7 +76,7 @@ export function createDrawCurvesBlock() {
         curvesMesh.edgesWidth = inputs.width;
         curvesMesh.edgesColor = new BABYLON.Color4(col.r, col.g, col.b, inputs.opacity);
         curvesMesh.opacity = inputs.opacity;
-`, inputs
+`
         );
     };
 }
