@@ -60,7 +60,7 @@ export function createDrawLineBlock() {
         const runtimeValidationModel = makeRuntimeValidationModel(resources, Object.keys(inputs));
         (block as any).validationModel = runtimeValidationModel;
 
-        return createStandardContextIIFE(block, blockSelector, inputs,
+        return createStandardContextIIFE(block, blockSelector, inputs, false,
 `
         const line = inputs.line;
 

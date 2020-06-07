@@ -98,7 +98,7 @@ export function createDrawGridBlock() {
         const runtimeValidationModel = makeRuntimeValidationModel(resources, Object.keys(inputs));
         (block as any).validationModel = runtimeValidationModel;
 
-        return createStandardContextIIFE(block, blockSelector, inputs,
+        return createStandardContextIIFE(block, blockSelector, inputs, false,
             `
         const groundMaterial = new BABYLON.GridMaterial('groundMaterial${Math.random()}', scene);
         groundMaterial.majorUnitFrequency = inputs.majorUnitFrequency;

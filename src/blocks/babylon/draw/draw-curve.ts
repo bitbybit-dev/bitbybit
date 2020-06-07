@@ -60,7 +60,7 @@ export function createDrawCurveBlock() {
         const runtimeValidationModel = makeRuntimeValidationModel(resources, Object.keys(inputs));
         (block as any).validationModel = runtimeValidationModel;
 
-        return createStandardContextIIFE(block, blockSelector, inputs,
+        return createStandardContextIIFE(block, blockSelector, inputs, false,
 `
         const points = inputs.curve.tessellate();
 

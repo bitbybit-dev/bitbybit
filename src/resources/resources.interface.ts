@@ -51,4 +51,7 @@ export interface ResourcesInterface {
     block_babylon_draw_surface_description: string;
     block_babylon_draw_surfaces_description: string;
     block_babylon_scene_background_colour_description: string;
+    block_base_geometry_input_line_start_point: string;
+    block_base_geometry_input_line_end_point: string;
+    block_base_geometry_line_description: string;
 }

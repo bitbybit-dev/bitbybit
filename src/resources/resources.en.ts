@@ -52,5 +52,8 @@ export const resourcesEn: ResourcesInterface = {
     block_babylon_draw_polyline_description: 'Draws a coloured polyline of selected width',
     block_babylon_draw_surface_description: 'Draws a coloured surface',
     block_babylon_draw_surfaces_description: 'Draws a coloured surfaces',
-    block_babylon_scene_background_colour_description: 'Change the background color of the 3D scene'
+    block_babylon_scene_background_colour_description: 'Change the background color of the 3D scene',
+    block_base_geometry_input_line_start_point: 'Line with start point',
+    block_base_geometry_input_line_end_point: 'End point',
+    block_base_geometry_line_description: 'Constructs a Line object between two points',
 };

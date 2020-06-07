@@ -52,5 +52,8 @@ export const resourcesLt: ResourcesInterface = {
     block_babylon_draw_polyline_description: 'Piesti spalvota nurodyto storio polilinija',
     block_babylon_draw_surface_description: 'Piesti spalvota pavirsiu',
     block_babylon_draw_surfaces_description: 'Piesti spalvotus pavirsius',
-    block_babylon_scene_background_colour_description: 'Pakeisti scenos fono spalva'
+    block_babylon_scene_background_colour_description: 'Pakeisti scenos fono spalva',
+    block_base_geometry_input_line_start_point: 'Linija su pradzios tasku',
+    block_base_geometry_input_line_end_point: 'Galiniu tasku',
+    block_base_geometry_line_description: 'Sukuria linijos objekta tarp dvieju tasku',
 };

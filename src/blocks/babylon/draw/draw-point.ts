@@ -60,7 +60,7 @@ export function createDrawPointBlock() {
         const runtimeValidationModel = makeRuntimeValidationModel(resources, Object.keys(inputs));
         (block as any).validationModel = runtimeValidationModel;
 
-        return createStandardContextIIFE(block, blockSelector, inputs,
+        return createStandardContextIIFE(block, blockSelector, inputs, false,
 `
         const vectorPoint = inputs.point;
         const colour = BABYLON.Color3.FromHexString(inputs.colour);

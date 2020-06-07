@@ -273,7 +273,7 @@ export function toolboxDefinition() {
         <block type="base_geometry_line">
         </block>
         <block type="base_geometry_line">
-            <value name="start_point">
+            <value name="StartPoint">
                 <shadow type="base_geometry_point">
                     <value name="X">
                         <shadow type="math_number">
@@ -292,7 +292,7 @@ export function toolboxDefinition() {
                     </value>
                 </shadow>
             </value>
-            <value name="end_point">
+            <value name="EndPoint">
                 <shadow type="base_geometry_point">
                     <value name="X">
                         <shadow type="math_number">
@@ -332,7 +332,7 @@ export function toolboxDefinition() {
         <block type="babylon_draw_line">
             <value name="Line">
                 <shadow type="base_geometry_line">
-                    <value name="start_point">
+                    <value name="StartPoint">
                         <shadow type="base_geometry_point">
                             <value name="X">
                                 <shadow type="math_number">
@@ -351,7 +351,7 @@ export function toolboxDefinition() {
                             </value>
                         </shadow>
                     </value>
-                    <value name="end_point">
+                    <value name="EndPoint">
                         <shadow type="base_geometry_point">
                             <value name="X">
                                 <shadow type="math_number">

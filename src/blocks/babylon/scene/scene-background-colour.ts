@@ -39,7 +39,7 @@ export function createSceneBackgroundColourBlock() {
         const runtimeValidationModel = makeRuntimeValidationModel(resources, Object.keys(inputs));
         (block as any).validationModel = runtimeValidationModel;
 
-        return createStandardContextIIFE(block, blockSelector, inputs,
+        return createStandardContextIIFE(block, blockSelector, inputs, false,
 `
         scene.clearColor = BABYLON.Color3.FromHexString(inputs.colour);
 `
