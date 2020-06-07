@@ -38,6 +38,7 @@ export interface ResourcesInterface {
     block_babylon_input_draw_point: string;
     block_babylon_input_draw_points: string;
     block_babylon_input_draw_surface: string;
+    block_babylon_input_scene_background_colour: string;
     block_babylon_input_draw_surfaces: string;
     block_babylon_draw_curve_description: string;
     block_babylon_draw_curves_description: string;
@@ -49,4 +50,5 @@ export interface ResourcesInterface {
     block_babylon_draw_points_description: string;
     block_babylon_draw_surface_description: string;
     block_babylon_draw_surfaces_description: string;
+    block_babylon_scene_background_colour_description: string;
 }

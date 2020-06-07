@@ -55,7 +55,7 @@ export function toolboxDefinition() {
             </value>
         </block>
         <block type="babylon_scene_background_colour">
-            <value name="colour">
+            <value name="Colour">
                 <shadow type="colour_picker">
                     <field name="COLOUR">#eee</field>
                 </shadow>

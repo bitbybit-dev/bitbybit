@@ -40,6 +40,7 @@ export const resourcesEn: ResourcesInterface = {
     block_babylon_input_draw_polyline: 'Draw polyline',
     block_babylon_input_draw_surface: 'Draw surface',
     block_babylon_input_draw_surfaces: 'Draw surfaces',
+    block_babylon_input_scene_background_colour: 'Scene background colour',
     block_babylon_input_size: 'Size',
     block_babylon_draw_curve_description: 'Draws a coloured curve of selected width',
     block_babylon_draw_curves_description: 'Draws a coloured curves of selected width',
@@ -51,4 +52,5 @@ export const resourcesEn: ResourcesInterface = {
     block_babylon_draw_polyline_description: 'Draws a coloured polyline of selected width',
     block_babylon_draw_surface_description: 'Draws a coloured surface',
     block_babylon_draw_surfaces_description: 'Draws a coloured surfaces',
+    block_babylon_scene_background_colour_description: 'Change the background color of the 3D scene'
 };

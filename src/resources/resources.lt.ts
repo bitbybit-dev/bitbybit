@@ -32,6 +32,7 @@ export const resourcesLt: ResourcesInterface = {
     block_babylon_input_draw_points: 'Piesti taskus',
     block_babylon_input_draw_surface: 'Piesti pavirsiu',
     block_babylon_input_draw_surfaces: 'Piesti pavirsius',
+    block_babylon_input_scene_background_colour: 'Scenos fono spalva',
     block_babylon_input_size: 'Dydis',
     block_babylon_input_height: 'Aukstis',
     block_babylon_input_subdivisions: 'Sudalinimas',
@@ -51,4 +52,5 @@ export const resourcesLt: ResourcesInterface = {
     block_babylon_draw_polyline_description: 'Piesti spalvota nurodyto storio polilinija',
     block_babylon_draw_surface_description: 'Piesti spalvota pavirsiu',
     block_babylon_draw_surfaces_description: 'Piesti spalvotus pavirsius',
+    block_babylon_scene_background_colour_description: 'Pakeisti scenos fono spalva'
 };
