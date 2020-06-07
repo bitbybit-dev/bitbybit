@@ -66,7 +66,7 @@ export function createDrawPointBlock() {
         const colour = BABYLON.Color3.FromHexString(inputs.colour);
         const size = inputs.size;
 
-        const customMesh = new BABYLON.Mesh("custom${Math.random()}", scene);
+        const customMesh = new BABYLON.Mesh('custom${Math.random()}', scene);
 
         const colors = [];
         const pointsCount = 1;
@@ -81,7 +81,7 @@ export function createDrawPointBlock() {
 
         vertexData.applyToMesh(customMesh);
 
-        const mat = new BABYLON.StandardMaterial("mat${Math.random()}", scene);
+        const mat = new BABYLON.StandardMaterial('mat${Math.random()}', scene);
         mat.emissiveColor = new BABYLON.Color3(1, 1, 1);
         mat.disableLighting = true;
         mat.pointsCloud = true;

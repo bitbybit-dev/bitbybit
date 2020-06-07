@@ -2,6 +2,7 @@ export interface ResourcesInterface {
     block_point: string;
     block_points: string;
     block_line: string;
+    block_polyline: string;
     block_lines: string;
     block_curve: string;
     block_curves: string;
@@ -31,11 +32,13 @@ export interface ResourcesInterface {
     block_babylon_input_secondary_colour: string;
     block_babylon_input_draw_line: string;
     block_babylon_input_draw_lines: string;
+    block_babylon_input_draw_polyline: string;
     block_babylon_input_draw_point: string;
     block_babylon_input_draw_points: string;
     block_babylon_draw_curve_description: string;
     block_babylon_draw_curves_description: string;
     block_babylon_draw_line_description: string;
+    block_babylon_draw_polyline_description: string;
     block_babylon_draw_lines_description: string;
     block_babylon_draw_grid_description: string;
     block_babylon_draw_point_description: string;

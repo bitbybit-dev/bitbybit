@@ -70,7 +70,7 @@ export function createDrawCurvesBlock() {
             colors.push(points.map(pt => new BABYLON.Color4(col.r, col.g, col.b, inputs.opacity)));
         });
 
-        const curvesMesh = BABYLON.MeshBuilder.CreateLineSystem("lines${Math.random()}", {lines: curvesForRender, colors, useVertexAlpha: true}, scene);
+        const curvesMesh = BABYLON.MeshBuilder.CreateLineSystem('lines${Math.random()}', {lines: curvesForRender, colors, useVertexAlpha: true}, scene);
 
         curvesMesh.enableEdgesRendering();
         curvesMesh.edgesWidth = inputs.width;

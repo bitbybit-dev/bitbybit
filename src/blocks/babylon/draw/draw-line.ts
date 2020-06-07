@@ -64,8 +64,13 @@ export function createDrawLineBlock() {
 `
         const line = inputs.line;
 
-        const points = [new BABYLON.Vector3(line.start[0],line.start[1],line.start[2]), new BABYLON.Vector3(line.end[0],line.end[1],line.end[2])];
-        const lines = BABYLON.MeshBuilder.CreateLines("lines${Math.random()}", {points}, scene);
+        const points = [
+            new BABYLON.Vector3(line.start[0], line.start[1], line.start[2]),
+            new BABYLON.Vector3(line.end[0], line.end[1], line.end[2])
+        ];
+
+        const lines = BABYLON.MeshBuilder.CreateLines('lines${Math.random()}', {points}, scene);
+
         lines.enableEdgesRendering();
         lines.edgesWidth = inputs.width;
         const edgeColor = BABYLON.Color3.FromHexString(inputs.colour);

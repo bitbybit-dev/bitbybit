@@ -72,7 +72,7 @@ export function createDrawLinesBlock() {
             ]);
         });
 
-        const linesMesh = BABYLON.MeshBuilder.CreateLineSystem("lines${Math.random()}", {lines: linesForRender, colors, useVertexAlpha: true}, scene);
+        const linesMesh = BABYLON.MeshBuilder.CreateLineSystem('lines${Math.random()}', {lines: linesForRender, colors, useVertexAlpha: true}, scene);
 
         linesMesh.enableEdgesRendering();
         linesMesh.edgesWidth = inputs.width;

@@ -1,6 +1,6 @@
 export class BlockValidations {
     static required(entity: any): boolean {
-        return entity ? true : false;
+        return entity !== undefined && entity !== null && entity !== '';
     }
 
     static minLength(entity: any, validationData: { length: number }): boolean {

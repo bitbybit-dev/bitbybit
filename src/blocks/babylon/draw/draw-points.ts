@@ -38,7 +38,7 @@ export function createDrawPointsBlock() {
             this.setColour('#fff');
             this.setPreviousStatement(true, null);
             this.setNextStatement(true, null);
-            this.setTooltip('');
+            this.setTooltip(resources.block_babylon_draw_points_description);
         }
     };
 
@@ -61,28 +61,28 @@ export function createDrawPointsBlock() {
 
         return createStandardContextIIFE(block, blockSelector, inputs,
 `
-        let vectorPoints = inputs.points;
-        let colour = BABYLON.Color3.FromHexString(inputs.colour);
+        const vectorPoints = inputs.points;
+        const colour = BABYLON.Color3.FromHexString(inputs.colour);
 
-        let customMesh = new BABYLON.Mesh("custom${Math.random()}", scene);
+        const customMesh = new BABYLON.Mesh('custom${Math.random()}', scene);
 
-        let positions = [];
-        let colors = [];
+        const positions = [];
+        const colors = [];
 
-        let pointsCount = vectorPoints.length;
+        const pointsCount = vectorPoints.length;
         vectorPoints.forEach(p =>  {
             positions.push(...p);
             colors.push(colour.r, colour.g, colour.b, 1);
         });
 
-        let vertexData = new BABYLON.VertexData();
+        const vertexData = new BABYLON.VertexData();
 
         vertexData.positions = positions;
         vertexData.colors = colors;
 
         vertexData.applyToMesh(customMesh);
 
-        let mat = new BABYLON.StandardMaterial("mat${Math.random()}", scene);
+        const mat = new BABYLON.StandardMaterial('mat${Math.random()}', scene);
         mat.emissiveColor = new BABYLON.Color3(1, 1, 1);
         mat.disableLighting = true;
         mat.pointsCloud = true;

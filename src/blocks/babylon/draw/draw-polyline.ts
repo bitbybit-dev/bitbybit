@@ -1,62 +1,112 @@
-import { Blocks, ALIGN_RIGHT } from "blockly";
+import { ALIGN_RIGHT, Block, Blocks } from 'blockly';
 import * as JavaScript from 'blockly/javascript';
+import { ResourcesInterface, ResourcesService } from '../../../resources';
+import { createStandardContextIIFE } from '../../_shared';
+import {
+    getRequired,
+    getRequiredAndMin,
+    getRequiredAndRange,
+    makeRequiredValidationModelForInputs,
+    BlockValidationService,
+    ValidationEntityInterface
+} from '../../validations';
 
 export function createDrawPolylineBlock() {
 
-    Blocks['babylon_draw_polyline'] = {
-        init: function () {
-            this.appendValueInput("Polyline")
-                .setCheck("Polyline")
+    const resources = ResourcesService.getResourcesForSelectedLanguage();
+    const blockSelector = 'babylon_draw_polyline';
+
+    Blocks[blockSelector] = {
+        init() {
+            this.appendValueInput('Polyline')
+                .setCheck('Polyline')
                 .setAlign(ALIGN_RIGHT)
-                .appendField("Draw polyline");
-            this.appendValueInput("Colour")
-                .setCheck("Colour")
+                .appendField(resources.block_babylon_input_draw_polyline);
+            this.appendValueInput('Colour')
+                .setCheck('Colour')
                 .setAlign(ALIGN_RIGHT)
-                .appendField("in colour");
-            this.appendValueInput("Opacity")
-                .setCheck("Number")
+                .appendField(resources.block_babylon_input_colour);
+            this.appendValueInput('Opacity')
+                .setCheck('Number')
                 .setAlign(ALIGN_RIGHT)
-                .appendField("opacity");
-            this.appendValueInput("Width")
-                .setCheck("Number")
+                .appendField(resources.block_babylon_input_opacity);
+            this.appendValueInput('Width')
+                .setCheck('Number')
                 .setAlign(ALIGN_RIGHT)
-                .appendField("and width");
-            this.setColour("#fff");
+                .appendField(resources.block_babylon_input_width);
+            this.setColour('#fff');
             this.setPreviousStatement(true, null);
             this.setNextStatement(true, null);
-            this.setTooltip("Draws a coloured line in space of selected width");
-            this.setHelpUrl("");
+            this.setTooltip(resources.block_babylon_draw_polyline_description);
         }
     };
 
-    JavaScript['babylon_draw_polyline'] = function (block) {
-        let value_polyline = JavaScript.valueToCode(block, 'Polyline', JavaScript.ORDER_ATOMIC);
-        let value_colour = JavaScript.valueToCode(block, 'Colour', JavaScript.ORDER_ATOMIC);
-        let value_opacity = JavaScript.valueToCode(block, 'Opacity', JavaScript.ORDER_ATOMIC);
-        let value_width = JavaScript.valueToCode(block, 'Width', JavaScript.ORDER_ATOMIC);
+    JavaScript[blockSelector] = (block: Block) => {
+        const inputs = {
+            polyline: JavaScript.valueToCode(block, 'Polyline', JavaScript.ORDER_ATOMIC),
+            colour: JavaScript.valueToCode(block, 'Colour', JavaScript.ORDER_ATOMIC),
+            opacity: JavaScript.valueToCode(block, 'Opacity', JavaScript.ORDER_ATOMIC),
+            width: JavaScript.valueToCode(block, 'Width', JavaScript.ORDER_ATOMIC)
+        };
 
-        let code = `
-(() => {
-    let width = ${value_width ? value_width : 3};
-    let points = [];
-    let polyline = ${value_polyline};
+        // this is first set of validations to check that all inputs are non empty strings
+        BlockValidationService.validate(block, block.workspace, makeRequiredValidationModelForInputs(resources, inputs, [
+            resources.block_polyline, resources.block_colour, resources.block_opacity, resources.block_width
+        ]));
 
-    let colors = [];
-    polyline.points.forEach(pt => {
-        points.push(new BABYLON.Vector3(pt[0], pt[1], pt[2]));
-        colors.push( new BABYLON.Color4(1, 1, 1, 0)); 
-    });
+        // this creates validation model to be used at runtime to evaluate real values of inputs
+        const runtimeValidationModel = makeRuntimeValidationModel(resources, Object.keys(inputs));
+        (block as any).validationModel = runtimeValidationModel;
 
-    let lines = BABYLON.MeshBuilder.CreateLines("lines${Math.random()}", {points, colors, useVertexAlpha: true}, scene);
+        return createStandardContextIIFE(block, blockSelector, inputs,
+`
+        const points = [];
+        const colors = [];
+        inputs.polyline.points.forEach(pt => {
+            points.push(new BABYLON.Vector3(pt[0], pt[1], pt[2]));
+            colors.push( new BABYLON.Color4(1, 1, 1, 0));
+        });
 
-    lines.enableEdgesRendering();
-    lines.edgesWidth = width;
-    let col = BABYLON.Color3.FromHexString(${value_colour});
-    lines.edgesColor = new BABYLON.Color4(col.r, col.g, col.b, ${value_opacity});
-    lines.opacity = ${value_opacity ? value_opacity : 1};
-    return lines;
-})();
-        `;
-        return code;
+        const lines = BABYLON.MeshBuilder.CreateLines('lines${Math.random()}', {points, colors, useVertexAlpha: true}, scene);
+
+        lines.enableEdgesRendering();
+        lines.edgesWidth = inputs.width;
+        let col = BABYLON.Color3.FromHexString(inputs.colour);
+        lines.edgesColor = new BABYLON.Color4(col.r, col.g, col.b, inputs.opacity);
+        lines.opacity =  inputs.opacity;
+        return lines;
+`
+        );
     };
+}
+
+function makeRuntimeValidationModel(
+    resources: ResourcesInterface,
+    keys: string[]
+): ValidationEntityInterface[] {
+
+    return [{
+        entity: keys[0],
+        validations: [
+            getRequired(resources, resources.block_polyline),
+        ]
+    },
+    {
+        entity: keys[1],
+        validations: [
+            getRequired(resources, resources.block_colour)
+        ]
+    },
+    {
+        entity: keys[2],
+        validations: [
+            ...getRequiredAndRange(resources, resources.block_opacity, 0, 1)
+        ]
+    },
+    {
+        entity: keys[3],
+        validations: [
+            ...getRequiredAndMin(resources, resources.block_width, 0)
+        ]
+    }];
 }

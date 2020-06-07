@@ -10,6 +10,7 @@ export const resourcesLt: ResourcesInterface = {
     block_width: 'Storis',
     block_line: 'Linija',
     block_lines: 'Linijos',
+    block_polyline: 'Polilinija',
     block_size: 'Dydis',
     block_validation_required: 'privalo buti ivesta',
     block_validation_higher_or_equal: 'privalo buti daugiau arba lygu',
@@ -24,6 +25,7 @@ export const resourcesLt: ResourcesInterface = {
     block_babylon_input_draw_grid: 'Piesti tinkleli kurio plotis',
     block_babylon_input_draw_line: 'Piesti linija',
     block_babylon_input_draw_lines: 'Piesti linijas',
+    block_babylon_input_draw_polyline: 'Piesti polilinija',
     block_babylon_input_draw_point: 'Piesti taska',
     block_babylon_input_draw_points: 'Piesti taskus',
     block_babylon_input_size: 'Dydis',
@@ -41,5 +43,6 @@ export const resourcesLt: ResourcesInterface = {
     block_babylon_draw_line_description: 'Piesti spalvota nurodyto storio linija',
     block_babylon_draw_lines_description: 'Piesti spalvotas nurodyto storio linijas',
     block_babylon_draw_point_description: 'Piesti spalvota nurodyto dydzio taska',
-    block_babylon_draw_points_description: 'Piesti spalvotus nurodyto dydzio taskus'
+    block_babylon_draw_points_description: 'Piesti spalvotus nurodyto dydzio taskus',
+    block_babylon_draw_polyline_description: 'Piesti spalvota nurodyto storio polilinija'
 };

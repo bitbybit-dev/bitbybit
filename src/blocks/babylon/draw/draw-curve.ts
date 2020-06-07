@@ -71,7 +71,7 @@ export function createDrawCurveBlock() {
             pointsToRender.push(new BABYLON.Vector3(pt[0], pt[1], pt[2]));
         });
 
-        const curves = BABYLON.MeshBuilder.CreateLines("lines${Math.random()}", {points: pointsToRender, colors, useVertexAlpha: true}, scene);
+        const curves = BABYLON.MeshBuilder.CreateLines('lines${Math.random()}', {points: pointsToRender, colors, useVertexAlpha: true}, scene);
 
         curves.enableEdgesRendering();
         curves.edgesWidth = inputs.width;
