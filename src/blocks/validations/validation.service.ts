@@ -17,7 +17,6 @@ export class BlockValidationService {
             block.setColour('ffab91');
             const errorText = `Block failed - \n${errors.join(',\n')}.`;
             block.setWarningText(errorText);
-            (workspace as WorkspaceSvg).centerOnBlock(block.id);
             throw new Error(errorText);
         } else {
             block.setColour('ffffff');

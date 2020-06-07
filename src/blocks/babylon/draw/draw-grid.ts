@@ -95,17 +95,17 @@ export function createDrawGridBlock() {
 
         return createStandardContextIIFE(block, blockSelector,
 `
-    const groundMaterial = new BABYLON.GridMaterial('groundMaterial${Math.random()}', scene);
-    groundMaterial.majorUnitFrequency = ${valueMajorUnitFrequency};
-    groundMaterial.minorUnitVisibility = ${valueMinorUnitVisibility};
-    groundMaterial.gridRatio = ${valueGridRatio};
-    groundMaterial.backFaceCulling = ${valueBackFaceCulling};
-    groundMaterial.mainColor = BABYLON.Color3.FromHexString(${valueMainColor});
-    groundMaterial.lineColor = BABYLON.Color3.FromHexString(${valueSecondaryColor});
-    groundMaterial.opacity = ${valueOpacity};
+        const groundMaterial = new BABYLON.GridMaterial('groundMaterial${Math.random()}', scene);
+        groundMaterial.majorUnitFrequency = ${valueMajorUnitFrequency};
+        groundMaterial.minorUnitVisibility = ${valueMinorUnitVisibility};
+        groundMaterial.gridRatio = ${valueGridRatio};
+        groundMaterial.backFaceCulling = ${valueBackFaceCulling};
+        groundMaterial.mainColor = BABYLON.Color3.FromHexString(${valueMainColor});
+        groundMaterial.lineColor = BABYLON.Color3.FromHexString(${valueSecondaryColor});
+        groundMaterial.opacity = ${valueOpacity};
 
-    const ground = BABYLON.Mesh.CreateGround('ground${Math.random()}', ${valueWidth}, ${valueHeight}, ${valueSubdivisions}, scene, false);
-    ground.material = groundMaterial;
+        const ground = BABYLON.Mesh.CreateGround('ground${Math.random()}', ${valueWidth}, ${valueHeight}, ${valueSubdivisions}, scene, false);
+        ground.material = groundMaterial;
 `
         );
     };

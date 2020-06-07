@@ -54,22 +54,22 @@ export function createDrawCurvesBlock() {
 
         return createStandardContextIIFE(block, blockSelector,
 `
-    const curves = ${valueCurves};
-    const curvesForRender = [];
-    const col = BABYLON.Color3.FromHexString(${valueColour});
-    const colors = [];
-    curves.forEach(line => {
-        let points = line.tessellate();
-        curvesForRender.push(points.map(pt => new BABYLON.Vector3(pt[0], pt[1], pt[2])));
-        colors.push(points.map(pt => new BABYLON.Color4(col.r, col.g, col.b, ${valueOpacity})));
-    });
+        const curves = ${valueCurves};
+        const curvesForRender = [];
+        const col = BABYLON.Color3.FromHexString(${valueColour});
+        const colors = [];
+        curves.forEach(line => {
+            let points = line.tessellate();
+            curvesForRender.push(points.map(pt => new BABYLON.Vector3(pt[0], pt[1], pt[2])));
+            colors.push(points.map(pt => new BABYLON.Color4(col.r, col.g, col.b, ${valueOpacity})));
+        });
 
-    const curvesMesh = BABYLON.MeshBuilder.CreateLineSystem("lines${Math.random()}", {lines: curvesForRender, colors, useVertexAlpha: true}, scene);
+        const curvesMesh = BABYLON.MeshBuilder.CreateLineSystem("lines${Math.random()}", {lines: curvesForRender, colors, useVertexAlpha: true}, scene);
 
-    curvesMesh.enableEdgesRendering();
-    curvesMesh.edgesWidth = ${valueWidth};
-    curvesMesh.edgesColor = new BABYLON.Color4(col.r, col.g, col.b, ${valueOpacity});
-    curvesMesh.opacity = ${valueOpacity};
+        curvesMesh.enableEdgesRendering();
+        curvesMesh.edgesWidth = ${valueWidth};
+        curvesMesh.edgesColor = new BABYLON.Color4(col.r, col.g, col.b, ${valueOpacity});
+        curvesMesh.opacity = ${valueOpacity};
 `);
     };
 }

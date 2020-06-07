@@ -60,14 +60,14 @@ export function createDrawLineBlock() {
 
         return createStandardContextIIFE(block, blockSelector,
 `
-    const line = ${valueLine};
+        const line = ${valueLine};
 
-    const points = [new BABYLON.Vector3(line.start[0],line.start[1],line.start[2]), new BABYLON.Vector3(line.end[0],line.end[1],line.end[2])];
-    const lines = BABYLON.MeshBuilder.CreateLines("lines${Math.random()}", {points}, scene);
-    lines.enableEdgesRendering();
-	lines.edgesWidth = ${valueWidth};
-    const edgeColor = BABYLON.Color3.FromHexString(${valueColour});
-    lines.edgesColor = new BABYLON.Color4(edgeColor.r, edgeColor.g, edgeColor.b, ${valueOpacity});
+        const points = [new BABYLON.Vector3(line.start[0],line.start[1],line.start[2]), new BABYLON.Vector3(line.end[0],line.end[1],line.end[2])];
+        const lines = BABYLON.MeshBuilder.CreateLines("lines${Math.random()}", {points}, scene);
+        lines.enableEdgesRendering();
+        lines.edgesWidth = ${valueWidth};
+        const edgeColor = BABYLON.Color3.FromHexString(${valueColour});
+        lines.edgesColor = new BABYLON.Color4(edgeColor.r, edgeColor.g, edgeColor.b, ${valueOpacity});
  `
         );
     };

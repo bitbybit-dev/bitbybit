@@ -60,7 +60,6 @@ export function createDrawLinesBlock() {
         return createStandardContextIIFE(block, blockSelector,
 `
         const lines = ${valueLines};
-
         const linesForRender = [];
         const colors = [];
         lines.forEach(line => {
