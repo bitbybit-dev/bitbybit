@@ -11,6 +11,7 @@ export interface ResourcesInterface {
     block_width: string;
     block_size: string;
     block_surface: string;
+    block_surfaces: string;
     block_validation_required: string;
     block_validation_of_length: string;
     block_validation_higher_or_equal: string;
@@ -37,6 +38,7 @@ export interface ResourcesInterface {
     block_babylon_input_draw_point: string;
     block_babylon_input_draw_points: string;
     block_babylon_input_draw_surface: string;
+    block_babylon_input_draw_surfaces: string;
     block_babylon_draw_curve_description: string;
     block_babylon_draw_curves_description: string;
     block_babylon_draw_line_description: string;
@@ -46,4 +48,5 @@ export interface ResourcesInterface {
     block_babylon_draw_point_description: string;
     block_babylon_draw_points_description: string;
     block_babylon_draw_surface_description: string;
+    block_babylon_draw_surfaces_description: string;
 }

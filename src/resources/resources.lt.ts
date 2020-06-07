@@ -13,6 +13,7 @@ export const resourcesLt: ResourcesInterface = {
     block_polyline: 'Polilinija',
     block_size: 'Dydis',
     block_surface: 'Pavirsius',
+    block_surfaces: 'Pavirsiai',
     block_validation_required: 'privalo buti ivesta',
     block_validation_higher_or_equal: 'privalo buti daugiau arba lygu',
     block_validation_lower_or_equal: 'privalo buti maziau arba lygu',
@@ -30,6 +31,7 @@ export const resourcesLt: ResourcesInterface = {
     block_babylon_input_draw_point: 'Piesti taska',
     block_babylon_input_draw_points: 'Piesti taskus',
     block_babylon_input_draw_surface: 'Piesti pavirsiu',
+    block_babylon_input_draw_surfaces: 'Piesti pavirsius',
     block_babylon_input_size: 'Dydis',
     block_babylon_input_height: 'Aukstis',
     block_babylon_input_subdivisions: 'Sudalinimas',
@@ -48,4 +50,5 @@ export const resourcesLt: ResourcesInterface = {
     block_babylon_draw_points_description: 'Piesti spalvotus nurodyto dydzio taskus',
     block_babylon_draw_polyline_description: 'Piesti spalvota nurodyto storio polilinija',
     block_babylon_draw_surface_description: 'Piesti spalvota pavirsiu',
+    block_babylon_draw_surfaces_description: 'Piesti spalvotus pavirsius',
 };

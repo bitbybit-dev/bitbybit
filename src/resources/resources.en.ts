@@ -13,6 +13,7 @@ export const resourcesEn: ResourcesInterface = {
     block_size: 'Size',
     block_polyline: 'Polyline',
     block_surface: 'Surface',
+    block_surfaces: 'Surfaces',
     block_validation_required: 'must be provided',
     block_validation_of_length: 'must contain item count of',
     block_validation_higher_or_equal: 'must be higher or equal to',
@@ -38,6 +39,7 @@ export const resourcesEn: ResourcesInterface = {
     block_babylon_input_draw_lines: 'Draw lines',
     block_babylon_input_draw_polyline: 'Draw polyline',
     block_babylon_input_draw_surface: 'Draw surface',
+    block_babylon_input_draw_surfaces: 'Draw surfaces',
     block_babylon_input_size: 'Size',
     block_babylon_draw_curve_description: 'Draws a coloured curve of selected width',
     block_babylon_draw_curves_description: 'Draws a coloured curves of selected width',
@@ -48,4 +50,5 @@ export const resourcesEn: ResourcesInterface = {
     block_babylon_draw_points_description: 'Draws a coloured selected size points in space',
     block_babylon_draw_polyline_description: 'Draws a coloured polyline of selected width',
     block_babylon_draw_surface_description: 'Draws a coloured surface',
+    block_babylon_draw_surfaces_description: 'Draws a coloured surfaces',
 };
