@@ -7,7 +7,8 @@ import {
     getRequiredAndMin,
     getRequiredAndRange,
     BlockValidationService,
-    ValidationEntityInterface
+    ValidationEntityInterface,
+    makeRequiredValidationModelForInputs
 } from '../../validations';
 
 export function createDrawCurveBlock() {
@@ -24,7 +25,7 @@ export function createDrawCurveBlock() {
             this.appendValueInput('Colour')
                 .setCheck('Colour')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_babylon_input_color);
+                .appendField(resources.block_babylon_input_colour);
             this.appendValueInput('Opacity')
                 .setCheck('Number')
                 .setAlign(ALIGN_RIGHT)
@@ -42,20 +43,26 @@ export function createDrawCurveBlock() {
     };
 
     JavaScript[blockSelector] = (block: Block) => {
-        const valueCurve = JavaScript.valueToCode(block, 'Curve', JavaScript.ORDER_ATOMIC);
-        const valueColour = JavaScript.valueToCode(block, 'Colour', JavaScript.ORDER_ATOMIC);
-        const valueOpacity = JavaScript.valueToCode(block, 'Opacity', JavaScript.ORDER_ATOMIC);
-        const valueWidth = JavaScript.valueToCode(block, 'Width', JavaScript.ORDER_ATOMIC);
 
-        BlockValidationService.validate(
-            block,
-            block.workspace,
-            makeValidationModel(resources, valueCurve, valueColour, valueOpacity, valueWidth)
-        );
+        const inputs = {
+            curve: JavaScript.valueToCode(block, 'Curve', JavaScript.ORDER_ATOMIC),
+            colour: JavaScript.valueToCode(block, 'Colour', JavaScript.ORDER_ATOMIC),
+            opacity: JavaScript.valueToCode(block, 'Opacity', JavaScript.ORDER_ATOMIC),
+            width: JavaScript.valueToCode(block, 'Width', JavaScript.ORDER_ATOMIC)
+        };
+
+        // this is first set of validations to check that all inputs are non empty strings
+        BlockValidationService.validate(block, block.workspace, makeRequiredValidationModelForInputs(resources, inputs, [
+            resources.block_curve, resources.block_colour, resources.block_opacity, resources.block_width
+        ]));
+
+        // this creates validation model to be used at runtime to evaluate real values of inputs
+        const runtimeValidationModel = makeRuntimeValidationModel(resources, Object.keys(inputs));
+        (block as any).validationModel = runtimeValidationModel;
 
         return createStandardContextIIFE(block, blockSelector,
 `
-        const points = ${valueCurve}.tessellate();
+        const points = inputs.curve.tessellate();
 
         const colors = [];
         const pointsToRender = [];
@@ -67,41 +74,38 @@ export function createDrawCurveBlock() {
         const curves = BABYLON.MeshBuilder.CreateLines("lines${Math.random()}", {points: pointsToRender, colors, useVertexAlpha: true}, scene);
 
         curves.enableEdgesRendering();
-        curves.edgesWidth = ${valueWidth};
-        const col = BABYLON.Color3.FromHexString(${valueColour});
-        curves.edgesColor = new BABYLON.Color4(col.r, col.g, col.b, ${valueOpacity});
-        curves.opacity = ${valueOpacity};
-`);
+        curves.edgesWidth = inputs.width;
+        const col = BABYLON.Color3.FromHexString(inputs.colour);
+        curves.edgesColor = new BABYLON.Color4(col.r, col.g, col.b, inputs.opacity);
+        curves.opacity = inputs.opacity;
+`, inputs);
     };
 }
 
-function makeValidationModel(
+function makeRuntimeValidationModel(
     resources: ResourcesInterface,
-    valueCurve: any,
-    valueColour: any,
-    valueOpacity: any,
-    valueWidth: any): ValidationEntityInterface[] {
+    keys: string[]): ValidationEntityInterface[] {
 
     return [{
-        entity: valueCurve,
+        entity: keys[0],
         validations: [
             getRequired(resources, resources.block_curve)
         ]
     },
     {
-        entity: valueColour,
+        entity: keys[1],
         validations: [
-            getRequired(resources, resources.block_color)
+            getRequired(resources, resources.block_colour)
         ]
     },
     {
-        entity: valueOpacity,
+        entity: keys[2],
         validations: [
             ...getRequiredAndRange(resources, resources.block_opacity, 0, 1)
         ]
     },
     {
-        entity: valueWidth,
+        entity: keys[3],
         validations: [
             ...getRequiredAndMin(resources, resources.block_width, 0)
         ]

@@ -201,11 +201,12 @@ export class AppComponent implements OnInit, AfterViewInit {
             const code = javascript.workspaceToCode(this.workspace);
             eval(`
 'use reserved'
-let scene = window.blockly.scene;
-let blocklyWorkspace = window.blockly.workspace;
-let BABYLON = window.BABYLON;
-let verb = window.verb;
-let Blockly = window.BlocklyGlobal;
+const scene = window.blockly.scene;
+const blocklyWorkspace = window.blockly.workspace;
+const BABYLON = window.BABYLON;
+const verb = window.verb;
+const Blockly = window.BlocklyGlobal;
+const BlockValidationService = window.BlockValidationService;
 ${code}
             `);
         } catch (e) {

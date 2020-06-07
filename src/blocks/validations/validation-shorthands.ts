@@ -2,6 +2,15 @@ import { ResourcesInterface } from '../../resources';
 import { BlockValidations } from './block-validations';
 import { ValidationInterface } from './validation.interface';
 
+export function makeRequiredValidationModelForInputs(resources: ResourcesInterface, inputs: any, propertyNames: string[]){
+    return Object.keys(inputs).map((key, index) => ({
+        entity: inputs[key],
+        validations: [
+            getRequired(resources, propertyNames[index])
+        ]
+    }));
+}
+
 export function getRequiredAndMin(resources: ResourcesInterface, name: string, min: number) {
     return [
         getRequired(resources, name),

@@ -3,7 +3,7 @@ export interface ResourcesInterface {
     block_lines: string;
     block_curve: string;
     block_curves: string;
-    block_color: string;
+    block_colour: string;
     block_opacity: string;
     block_width: string;
     block_point: string;
@@ -15,7 +15,7 @@ export interface ResourcesInterface {
     block_validation_range: string;
     block_babylon_input_curve: string;
     block_babylon_input_curves: string;
-    block_babylon_input_color: string;
+    block_babylon_input_colour: string;
     block_babylon_input_opacity: string;
     block_babylon_input_size: string;
     block_babylon_input_width: string;
@@ -26,8 +26,8 @@ export interface ResourcesInterface {
     block_babylon_input_grid_ratio: string;
     block_babylon_input_height: string;
     block_babylon_input_back_face_culling: string;
-    block_babylon_input_main_color: string;
-    block_babylon_input_secondary_color: string;
+    block_babylon_input_main_colour: string;
+    block_babylon_input_secondary_colour: string;
     block_babylon_input_draw_line: string;
     block_babylon_input_draw_lines: string;
     block_babylon_input_draw_point: string;

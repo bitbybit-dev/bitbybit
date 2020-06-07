@@ -2,6 +2,7 @@ import { Vector3, Color3, Color4, Mesh, MeshBuilder, StandardMaterial, VertexDat
 import { GridMaterial } from '@babylonjs/materials';
 import { geom, core } from 'verb-nurbs-web';
 import * as Blockly from 'blockly';
+import { BlockValidationService } from './blocks/validations';
 
 export function prepareBabylonForBlockly() {
     const windowBlockly = window as any;
@@ -22,6 +23,7 @@ export function prepareBabylonForBlockly() {
     verb.core = core;
     windowBlockly.verb = verb;
 
-    const blockly = Blockly;
-    windowBlockly.BlocklyGlobal = blockly;
+    windowBlockly.BlocklyGlobal = Blockly;
+
+    windowBlockly.BlockValidationService = BlockValidationService;
 }
