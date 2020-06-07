@@ -53,12 +53,12 @@ export function createDrawSurfacesBlock() {
 
         return createStandardContextIIFE(block, blockSelector, inputs,
 `
-        let allMeshDatas = [];
+        const allMeshDatas = [];
         inputs.surfaces.forEach(srf => {
             allMeshDatas.push(srf.tessellate());
         });
 
-        let meshDataConverted = {
+        const meshDataConverted = {
             positions: [],
             indices: [],
             normals: [],
@@ -69,10 +69,10 @@ export function createDrawSurfacesBlock() {
         allMeshDatas.forEach(meshData => {
             meshData.faces.forEach((faceIndices) => {
                 faceIndices.forEach((x) => {
-                    let vn = meshData.normals[x];
+                    const vn = meshData.normals[x];
                     meshDataConverted.normals.push( vn[0], vn[1], vn[2] );
 
-                    let pt = meshData.points[x];
+                    const pt = meshData.points[x];
                     meshDataConverted.positions.push( pt[0], pt[1], pt[2] );
 
                     meshDataConverted.indices.push(countIndices);
@@ -81,9 +81,9 @@ export function createDrawSurfacesBlock() {
             });
         });
 
-        let customMeshForSurface = new BABYLON.Mesh('custom${Math.random()}', scene);
+        const customMeshForSurface = new BABYLON.Mesh('custom${Math.random()}', scene);
 
-        let vertexData = new BABYLON.VertexData();
+        const vertexData = new BABYLON.VertexData();
 
         vertexData.positions = meshDataConverted.positions;
         vertexData.indices = meshDataConverted.indices;
