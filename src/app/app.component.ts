@@ -199,7 +199,6 @@ export class AppComponent implements OnInit, AfterViewInit {
             (window as any).LoopTrap = 10000;
             javascript.INFINITE_LOOP_TRAP = 'if(--window.LoopTrap == 0) throw "Infinite loop cancelled after 10000 iterations.";\n';
             const code = javascript.workspaceToCode(this.workspace);
-            // tslint:disable-next-line: no-eval
             eval(`
 'use reserved'
 let scene = window.blockly.scene;

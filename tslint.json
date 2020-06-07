@@ -147,7 +147,8 @@
               "import-sources-order": "lowercase-last",
               "named-imports-order": "lowercase-first"
             }
-          ]
+          ],
+          "no-eval": false
     },
     "rulesDirectory": [
         "codelyzer"

@@ -55,3 +55,13 @@ export function getRequired(resources: ResourcesInterface, name: string): Valida
     };
 }
 
+export function getOfLength(resources: ResourcesInterface, name: string, length: number): ValidationInterface {
+    return {
+        validationFunc: BlockValidations.ofLength,
+        errorText: `${name} ${resources.block_validation_of_length} ${length}`,
+        validationData: {
+            length,
+        }
+    };
+}
+

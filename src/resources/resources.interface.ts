@@ -6,7 +6,10 @@ export interface ResourcesInterface {
     block_color: string;
     block_opacity: string;
     block_width: string;
+    block_point: string;
+    block_size: string;
     block_validation_required: string;
+    block_validation_of_length: string;
     block_validation_higher_or_equal: string;
     block_validation_lower_or_equal: string;
     block_validation_range: string;
@@ -14,6 +17,7 @@ export interface ResourcesInterface {
     block_babylon_input_curves: string;
     block_babylon_input_color: string;
     block_babylon_input_opacity: string;
+    block_babylon_input_size: string;
     block_babylon_input_width: string;
     block_babylon_input_draw_grid: string;
     block_babylon_input_subdivisions: string;
@@ -26,9 +30,11 @@ export interface ResourcesInterface {
     block_babylon_input_secondary_color: string;
     block_babylon_input_draw_line: string;
     block_babylon_input_draw_lines: string;
+    block_babylon_input_draw_point: string;
     block_babylon_draw_curve_description: string;
     block_babylon_draw_curves_description: string;
     block_babylon_draw_line_description: string;
     block_babylon_draw_lines_description: string;
     block_babylon_draw_grid_description: string;
+    block_babylon_draw_point_description: string;
 }
