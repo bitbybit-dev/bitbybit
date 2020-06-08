@@ -2,6 +2,12 @@ export interface ResourcesInterface {
     block_point: string;
     block_points: string;
     block_line: string;
+    block_coordinate_x: string;
+    block_coordinate_y: string;
+    block_coordinate_z: string;
+    block_coordinate_short_x: string;
+    block_coordinate_short_y: string;
+    block_coordinate_short_z: string;
     block_polyline: string;
     block_lines: string;
     block_curve: string;
@@ -64,4 +70,5 @@ export interface ResourcesInterface {
     block_base_geometry_line_convert_to_nurbs_curve_description: string;
     block_base_geometry_line_reverse: string;
     block_base_geometry_line_reverse_description: string;
+    block_base_geometry_point_description: string;
 }

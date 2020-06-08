@@ -2,6 +2,12 @@ import { ResourcesInterface } from './resources.interface';
 
 export const resourcesEn: ResourcesInterface = {
     block_point: 'Point',
+    block_coordinate_x: 'Coordinate X',
+    block_coordinate_y: 'Coordinate Y',
+    block_coordinate_z: 'Coordinate Z',
+    block_coordinate_short_x: 'X',
+    block_coordinate_short_y: 'Y',
+    block_coordinate_short_z: 'Z',
     block_points: 'Points',
     block_curve: 'Curve',
     block_curves: 'Curves',
@@ -66,4 +72,5 @@ export const resourcesEn: ResourcesInterface = {
     block_base_geometry_line_convert_to_nurbs_curve_description: 'Converts line to curve',
     block_base_geometry_line_reverse: 'Reverse the line',
     block_base_geometry_line_reverse_description: 'Reverses the line direction. Start point becomes end point and vice versa.',
+    block_base_geometry_point_description: 'Creates a point in space',
 };

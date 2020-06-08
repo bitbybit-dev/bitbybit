@@ -2,6 +2,12 @@ import { ResourcesInterface } from './resources.interface';
 
 export const resourcesLt: ResourcesInterface = {
     block_point: 'Taskas',
+    block_coordinate_x: 'Koordinate X',
+    block_coordinate_y: 'Koordinate Y',
+    block_coordinate_z: 'Koordinate Z',
+    block_coordinate_short_x: 'X',
+    block_coordinate_short_y: 'Y',
+    block_coordinate_short_z: 'Z',
     block_points: 'Taskai',
     block_curve: 'Kreive',
     block_curves: 'Kreives',
@@ -66,5 +72,5 @@ export const resourcesLt: ResourcesInterface = {
     block_base_geometry_line_convert_to_nurbs_curve_description: 'Konvertuoja linija i kreive',
     block_base_geometry_line_reverse: 'Apgrezti linija',
     block_base_geometry_line_reverse_description: 'Apgrezia linijos krypti. Pradinis taskas tampa galiniu, o galinis pirminiu.',
-
+    block_base_geometry_point_description: 'Sukuria taska erdveje',
 };
