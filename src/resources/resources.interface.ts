@@ -60,4 +60,6 @@ export interface ResourcesInterface {
     block_base_geometry_line_start_point_description: string;
     block_base_geometry_line_length: string;
     block_base_geometry_line_length_description: string;
+    block_base_geometry_line_convert_to_nurbs_curve: string;
+    block_base_geometry_line_convert_to_nurbs_curve_description: string;
 }

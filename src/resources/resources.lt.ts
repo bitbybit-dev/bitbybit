@@ -62,4 +62,6 @@ export const resourcesLt: ResourcesInterface = {
     block_base_geometry_line_start_point_description: 'Gauti pradini linijos taska',
     block_base_geometry_line_length: 'Linijos ilgis',
     block_base_geometry_line_length_description: 'Matuoti linijos ilgi',
+    block_base_geometry_line_convert_to_nurbs_curve: 'Kreive is linijos',
+    block_base_geometry_line_convert_to_nurbs_curve_description: 'Konvertuoja linija i kreive',
 };

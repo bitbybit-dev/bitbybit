@@ -62,4 +62,6 @@ export const resourcesEn: ResourcesInterface = {
     block_base_geometry_line_start_point_description: 'Gets the start point of the line',
     block_base_geometry_line_length: 'Length of the line',
     block_base_geometry_line_length_description: 'Get length of the line',
+    block_base_geometry_line_convert_to_nurbs_curve: 'Curve from line',
+    block_base_geometry_line_convert_to_nurbs_curve_description: 'Converts line to curve',
 };

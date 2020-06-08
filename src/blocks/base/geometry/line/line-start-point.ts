@@ -1,6 +1,7 @@
 import { ALIGN_RIGHT, Block, Blocks } from 'blockly';
 import * as JavaScript from 'blockly/javascript';
 import { ResourcesService } from '../../../../resources';
+import { makeRequiredValidationModelForInputs, BlockValidationService } from '../../../validations';
 
 export function createLineStartPointBlock() {
 
@@ -20,11 +21,17 @@ export function createLineStartPointBlock() {
     };
 
     JavaScript[blockSelector] = (block: Block) => {
-        const valueLine = JavaScript.valueToCode(block, 'Line', JavaScript.ORDER_ATOMIC);
+        const inputs = {
+            line: JavaScript.valueToCode(block, 'Line', JavaScript.ORDER_ATOMIC)
+        };
 
-        // for information getters we do not validate if line is correct because it is already done in line component
+        // this is first set of validations to check that all inputs are non empty strings
 
-        const code = `${valueLine}.start /* Component: "${blockSelector}", Block ID: "${block.id}" */`;
+        BlockValidationService.validate(block, block.workspace, makeRequiredValidationModelForInputs(resources, inputs, [
+            resources.block_line
+        ]));
+
+        const code = `${inputs.line}.start /* Component: "${blockSelector}", Block ID: "${block.id}" */`;
         return [code, JavaScript.ORDER_ATOMIC];
     };
 }

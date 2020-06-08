@@ -1,9 +1,9 @@
 import { createLineBlock } from './line';
-import { createLineLengthBlock } from './line-length';
-import { createLineStartPointBlock } from './line-start-point';
 import { createLineEndPointBlock } from './line-end-point';
+import { createLineLengthBlock } from './line-length';
+import { createLineConvertToNurbsCurveBlock } from './line-length-convert-to-nurbs-curve';
 import { createLineReverseBlock } from './line-reverse';
-import { createLineConvertToNurbsCurveBlock } from './line-length copy';
+import { createLineStartPointBlock } from './line-start-point';
 
 export function assembleLineBlocks() {
     createLineBlock();
