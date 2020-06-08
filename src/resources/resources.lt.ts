@@ -56,4 +56,8 @@ export const resourcesLt: ResourcesInterface = {
     block_base_geometry_input_line_start_point: 'Linija su pradzios tasku',
     block_base_geometry_input_line_end_point: 'Galiniu tasku',
     block_base_geometry_line_description: 'Sukuria linijos objekta tarp dvieju tasku',
+    block_base_geometry_line_end_point: 'Galinis linijos taskas',
+    block_base_geometry_line_end_point_description: 'Gauti galini linijos taska',
+    block_base_geometry_line_start_point: 'Pradinis linijos taskas',
+    block_base_geometry_line_start_point_description: 'Gauti pradini linijos taska',
 };

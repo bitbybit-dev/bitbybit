@@ -56,4 +56,8 @@ export const resourcesEn: ResourcesInterface = {
     block_base_geometry_input_line_start_point: 'Line with start point',
     block_base_geometry_input_line_end_point: 'End point',
     block_base_geometry_line_description: 'Constructs a Line object between two points',
+    block_base_geometry_line_end_point: 'End point of the line',
+    block_base_geometry_line_end_point_description: 'Gets the end point of the line',
+    block_base_geometry_line_start_point: 'Start point of the line',
+    block_base_geometry_line_start_point_description: 'Gets the start point of the line',
 };

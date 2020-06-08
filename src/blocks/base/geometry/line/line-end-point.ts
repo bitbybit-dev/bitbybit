@@ -1,25 +1,28 @@
-import { Blocks, ALIGN_RIGHT } from "blockly";
+import { ALIGN_RIGHT, Block, Blocks } from 'blockly';
 import * as JavaScript from 'blockly/javascript';
+import { ResourcesService } from '../../../../resources';
 
 export function createLineEndPointBlock() {
 
-    Blocks['base_geometry_line_end_point'] = {
-        init: function () {
-            this.appendValueInput("Line")
-                .setCheck("Line")
+    const resources = ResourcesService.getResourcesForSelectedLanguage();
+    const blockSelector = 'base_geometry_line_end_point';
+
+    Blocks[blockSelector] = {
+        init() {
+            this.appendValueInput('Line')
+                .setCheck('Line')
                 .setAlign(ALIGN_RIGHT)
-                .appendField("End point of the line");
-            this.setOutput(true, "Array");
-            this.setColour("#fff");
-            this.setTooltip("Gets the end point of the line.");
-            this.setHelpUrl("");
+                .appendField(resources.block_base_geometry_line_end_point);
+            this.setOutput(true, 'Array');
+            this.setColour('#fff');
+            this.setTooltip(resources.block_base_geometry_line_end_point_description);
         }
     };
 
-    JavaScript['base_geometry_line_end_point'] = function (block) {
-        let value_line = JavaScript.valueToCode(block, 'Line', JavaScript.ORDER_ATOMIC);
+    JavaScript[blockSelector] = (block: Block) => {
+        const valueLine = JavaScript.valueToCode(block, 'Line', JavaScript.ORDER_ATOMIC);
 
-        let code = `${value_line}.end`;
+        const code = `${valueLine}.end /* Component: "${blockSelector}", Block ID: "${block.id}" */`;
         return [code, JavaScript.ORDER_ATOMIC];
     };
 }
