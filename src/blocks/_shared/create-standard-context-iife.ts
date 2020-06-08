@@ -9,25 +9,12 @@ export function createStandardContextIIFE(block: Block, componentName: string, i
     ${Object.keys(inputs).map(key => assignInputs(key, inputs)).join(`;
     `)};
     const currentBlock = blocklyWorkspace.getBlockById('${block.id}');
-    const validationModel = currentBlock.validationModel.map(model => {
-        return {
-            entity: inputs[model.entity],
-            validations: model.validations,
-        }
-    });
-
-    /* Runtime Input Validation */
-    BlockValidationService.validate(
-        currentBlock,
-        currentBlock.workspace,
-        validationModel
-    );
+    BlockValidationService.runtimeValidation(currentBlock, inputs);
 
     try {
         ${body}
     } catch (e) {
-        currentBlock.setColour('ffab91');
-        currentBlock.setWarningText('Block failed when computing, check if data provided is correct. ' + e);
+        BlockValidationService.handleBlockException(currentBlock, e)
     }
     /* End Component: "${componentName}", Block ID: "${block.id}" */
 })()${returns ? '' : ';'}

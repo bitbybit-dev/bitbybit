@@ -2,6 +2,23 @@ import { Block, Workspace, WorkspaceSvg } from 'blockly';
 import { ValidationEntityInterface } from './validation-entity.interface';
 
 export class BlockValidationService {
+
+    static runtimeValidation(block: { validationModel: ValidationEntityInterface[] } & Block, inputs: any) {
+        if (block.validationModel) {
+            const validationModel = block.validationModel.map(model => {
+                return {
+                    entity: inputs[model.entity],
+                    validations: model.validations,
+                };
+            });
+            BlockValidationService.validate(
+                block,
+                block.workspace,
+                validationModel
+            );
+        }
+    }
+
     static validate(block: Block, workspace: Workspace | WorkspaceSvg, validationEntityModel: ValidationEntityInterface[]) {
         const errors = [];
 
@@ -19,5 +36,10 @@ export class BlockValidationService {
 
         block.setColour('ffffff');
         block.setWarningText(null);
+    }
+
+    static handleBlockException(block: Block, e){
+        block.setColour('ffab91');
+        block.setWarningText('Block failed when computing, check if data provided is correct. ' + e);
     }
 }

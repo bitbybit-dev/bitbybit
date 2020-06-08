@@ -58,4 +58,6 @@ export interface ResourcesInterface {
     block_base_geometry_line_end_point_description: string;
     block_base_geometry_line_start_point: string;
     block_base_geometry_line_start_point_description: string;
+    block_base_geometry_line_length: string;
+    block_base_geometry_line_length_description: string;
 }

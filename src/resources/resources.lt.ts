@@ -60,4 +60,6 @@ export const resourcesLt: ResourcesInterface = {
     block_base_geometry_line_end_point_description: 'Gauti galini linijos taska',
     block_base_geometry_line_start_point: 'Pradinis linijos taskas',
     block_base_geometry_line_start_point_description: 'Gauti pradini linijos taska',
+    block_base_geometry_line_length: 'Linijos ilgis',
+    block_base_geometry_line_length_description: 'Matuoti linijos ilgi',
 };
