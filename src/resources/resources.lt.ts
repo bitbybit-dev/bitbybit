@@ -64,4 +64,7 @@ export const resourcesLt: ResourcesInterface = {
     block_base_geometry_line_length_description: 'Matuoti linijos ilgi',
     block_base_geometry_line_convert_to_nurbs_curve: 'Kreive is linijos',
     block_base_geometry_line_convert_to_nurbs_curve_description: 'Konvertuoja linija i kreive',
+    block_base_geometry_line_reverse: 'Apgrezti linija',
+    block_base_geometry_line_reverse_description: 'Apgrezia linijos krypti. Pradinis taskas tampa galiniu, o galinis pirminiu.',
+
 };
