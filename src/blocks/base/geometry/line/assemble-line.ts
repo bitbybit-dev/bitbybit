@@ -1,7 +1,7 @@
 import { createLineBlock } from './line';
+import { createLineConvertToNurbsCurveBlock } from './line-convert-to-nurbs-curve';
 import { createLineEndPointBlock } from './line-end-point';
 import { createLineLengthBlock } from './line-length';
-import { createLineConvertToNurbsCurveBlock } from './line-length-convert-to-nurbs-curve';
 import { createLineReverseBlock } from './line-reverse';
 import { createLineStartPointBlock } from './line-start-point';
 

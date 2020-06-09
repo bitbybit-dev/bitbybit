@@ -1,25 +1,39 @@
-import { Blocks, ALIGN_RIGHT } from "blockly";
+import { ALIGN_RIGHT, Block, Blocks } from 'blockly';
 import * as JavaScript from 'blockly/javascript';
+import { ResourcesService } from '../../../../resources';
+import { createStandardContextIIFE } from '../../../_shared';
+import { makeRequiredValidationModelForInputs, BlockValidationService } from '../../../validations';
 
 export function createPolylineConvertToNurbsCurveBlock() {
 
-    Blocks['base_geometry_polyline_convert_to_nurbs_curve'] = {
-        init: function () {
-            this.appendValueInput("Polyline")
-                .setCheck("Polyline")
+    const resources = ResourcesService.getResourcesForSelectedLanguage();
+    const blockSelector = 'base_geometry_polyline_convert_to_nurbs_curve';
+
+    Blocks[blockSelector] = {
+        init() {
+            this.appendValueInput('Polyline')
+                .setCheck('Polyline')
                 .setAlign(ALIGN_RIGHT)
-                .appendField("Convert to nurbs curve the polyline");
-            this.setOutput(true, "NurbsCurve");
-            this.setColour("#fff");
-            this.setTooltip("Gets the points of the polyline.");
-            this.setHelpUrl("");
+                .appendField(resources.block_base_geometry_polyline_convert_to_nurbs_curve);
+            this.setOutput(true, 'NurbsCurve');
+            this.setColour('#fff');
+            this.setTooltip(resources.block_base_geometry_polyline_convert_to_nurbs_curve_description);
         }
     };
 
-    JavaScript['base_geometry_polyline_convert_to_nurbs_curve'] = function (block) {
-        let value_polyline = JavaScript.valueToCode(block, 'Polyline', JavaScript.ORDER_ATOMIC);
+    JavaScript[blockSelector] = (block: Block) => {
+        const inputs = {
+            polyline: JavaScript.valueToCode(block, 'Polyline', JavaScript.ORDER_ATOMIC)
+        };
 
-        let code = `(() => verb.geom.NurbsCurve.byPoints( ${value_polyline}.points, 1 ))()`;
+        // this is first set of validations to check that all inputs are non empty strings
+        BlockValidationService.validate(block, block.workspace, makeRequiredValidationModelForInputs(resources, inputs, [
+            resources.block_line
+        ]));
+
+        const code = createStandardContextIIFE(block, blockSelector, inputs, true,
+            `return verb.geom.NurbsCurve.byPoints(inputs.polyline.points, 1);`
+        );
         return [code, JavaScript.ORDER_ATOMIC];
     };
 }

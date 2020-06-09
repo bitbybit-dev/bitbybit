@@ -18,6 +18,9 @@ export interface ResourcesInterface {
     block_size: string;
     block_surface: string;
     block_surfaces: string;
+    block_center: string;
+    block_circle: string;
+    block_radius: string;
     block_validation_required: string;
     block_validation_of_length: string;
     block_validation_higher_or_equal: string;
@@ -64,6 +67,10 @@ export interface ResourcesInterface {
     block_base_geometry_line_end_point_description: string;
     block_base_geometry_line_start_point: string;
     block_base_geometry_line_start_point_description: string;
+    block_base_geometry_polyline_points: string;
+    block_base_geometry_polyline_points_description: string;
+    block_base_geometry_polyline_points_count: string;
+    block_base_geometry_polyline_points_count_description: string;
     block_base_geometry_line_length: string;
     block_base_geometry_line_length_description: string;
     block_base_geometry_line_convert_to_nurbs_curve: string;
@@ -71,4 +78,25 @@ export interface ResourcesInterface {
     block_base_geometry_line_reverse: string;
     block_base_geometry_line_reverse_description: string;
     block_base_geometry_point_description: string;
+    block_base_geometry_point_distance: string;
+    block_base_geometry_point_distance_second_point: string;
+    block_base_geometry_point_distance_description: string;
+    block_base_geometry_point_x: string;
+    block_base_geometry_point_x_description: string;
+    block_base_geometry_point_y: string;
+    block_base_geometry_point_y_description: string;
+    block_base_geometry_point_z: string;
+    block_base_geometry_point_z_description: string;
+    block_base_geometry_polyline: string;
+    block_base_geometry_polyline_description: string;
+    block_base_geometry_polyline_length: string;
+    block_base_geometry_polyline_length_description: string;
+    block_base_geometry_polyline_convert_to_nurbs_curve: string;
+    block_base_geometry_polyline_convert_to_nurbs_curve_description: string;
+    block_base_geometry_polyline_reverse: string;
+    block_base_geometry_polyline_reverse_description: string;
+    block_base_geometry_shape_circle_center: string;
+    block_base_geometry_shape_rectangle_center: string;
+    block_base_geometry_shape_x_axis: string;
+    block_base_geometry_shape_y_axis: string;
 }

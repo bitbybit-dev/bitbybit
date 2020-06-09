@@ -58,7 +58,6 @@ export function createLineBlock() {
     };
 }
 
-
 function makeRuntimeValidationModel(
     resources: ResourcesInterface,
     keys: string[]

@@ -25,15 +25,15 @@ export function createDrawPointsBlock() {
             this.appendValueInput('Colour')
                 .setCheck('Colour')
                 .setAlign(ALIGN_RIGHT)
-                .appendField('in colour');
+                .appendField(resources.block_babylon_input_colour);
             this.appendValueInput('Opacity')
                 .setCheck('Number')
                 .setAlign(ALIGN_RIGHT)
-                .appendField('opacity');
+                .appendField(resources.block_babylon_input_opacity);
             this.appendValueInput('Size')
                 .setCheck('Number')
                 .setAlign(ALIGN_RIGHT)
-                .appendField('and size');
+                .appendField(resources.block_babylon_input_size);
             this.setInputsInline(false);
             this.setColour('#fff');
             this.setPreviousStatement(true, null);

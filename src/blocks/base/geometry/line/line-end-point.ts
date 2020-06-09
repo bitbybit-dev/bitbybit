@@ -1,6 +1,7 @@
 import { ALIGN_RIGHT, Block, Blocks } from 'blockly';
 import * as JavaScript from 'blockly/javascript';
 import { ResourcesService } from '../../../../resources';
+import { createStandardContextIIFE } from '../../../_shared';
 import { makeRequiredValidationModelForInputs, BlockValidationService } from '../../../validations';
 
 export function createLineEndPointBlock() {
@@ -31,7 +32,8 @@ export function createLineEndPointBlock() {
             resources.block_line
         ]));
 
-        const code = `${inputs.line}.end /* Component: "${blockSelector}", Block ID: "${block.id}" */`;
+        const code = createStandardContextIIFE(block, blockSelector, inputs, true,
+            `return inputs.line.end;`);
         return [code, JavaScript.ORDER_ATOMIC];
     };
 }

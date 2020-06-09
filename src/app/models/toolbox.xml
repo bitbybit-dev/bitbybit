@@ -455,6 +455,70 @@
         </block>
         <block type="verb_geometry_nurbs_curve_by_knots_control_points_weights">
         </block>
+        <block type="verb_geometry_nurbs_curve_circle">
+            <value name="Center">
+                <shadow type="base_geometry_point">
+                    <value name="X">
+                        <shadow type="math_number">
+                            <field name="NUM">0</field>
+                        </shadow>
+                    </value>
+                    <value name="Y">
+                        <shadow type="math_number">
+                            <field name="NUM">0</field>
+                        </shadow>
+                    </value>
+                    <value name="Z">
+                        <shadow type="math_number">
+                            <field name="NUM">0</field>
+                        </shadow>
+                    </value>
+                </shadow>
+            </value>
+            <value name="XAxis">
+                <shadow type="base_geometry_point">
+                    <value name="X">
+                        <shadow type="math_number">
+                            <field name="NUM">1</field>
+                        </shadow>
+                    </value>
+                    <value name="Y">
+                        <shadow type="math_number">
+                            <field name="NUM">0</field>
+                        </shadow>
+                    </value>
+                    <value name="Z">
+                        <shadow type="math_number">
+                            <field name="NUM">0</field>
+                        </shadow>
+                    </value>
+                </shadow>
+            </value>
+            <value name="YAxis">
+                <shadow type="base_geometry_point">
+                    <value name="X">
+                        <shadow type="math_number">
+                            <field name="NUM">0</field>
+                        </shadow>
+                    </value>
+                    <value name="Y">
+                        <shadow type="math_number">
+                            <field name="NUM">1</field>
+                        </shadow>
+                    </value>
+                    <value name="Z">
+                        <shadow type="math_number">
+                            <field name="NUM">0</field>
+                        </shadow>
+                    </value>
+                </shadow>
+            </value>
+            <value name="Radius">
+                <shadow type="math_number">
+                    <field name="NUM">1</field>
+                </shadow>
+            </value>
+        </block>
         <block type="babylon_draw_curve">
             <value name="Colour">
                 <shadow type="colour_picker">
