@@ -6,7 +6,7 @@ import { getRequired, makeRequiredValidationModelForInputs, BlockValidationServi
 
 export function createPolylineBlock() {
 
-    const resources = ResourcesService.getResourcesForSelectedLanguage();
+    const resources = ResourcesService.getResources();
     const blockSelector = 'base_geometry_polyline';
 
     Blocks[blockSelector] = {

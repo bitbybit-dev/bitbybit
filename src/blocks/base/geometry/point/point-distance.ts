@@ -6,7 +6,7 @@ import { getOfLength, getRequired, makeRequiredValidationModelForInputs, BlockVa
 
 export function createPointDistanceBlock() {
 
-    const resources = ResourcesService.getResourcesForSelectedLanguage();
+    const resources = ResourcesService.getResources();
     const blockSelector = 'base_geometry_point_distance';
 
     Blocks[blockSelector] = {

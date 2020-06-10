@@ -14,7 +14,7 @@ import {
 
 export function createDrawPointBlock() {
 
-    const resources = ResourcesService.getResourcesForSelectedLanguage();
+    const resources = ResourcesService.getResources();
     const blockSelector = 'babylon_draw_point';
 
     Blocks[blockSelector] = {

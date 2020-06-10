@@ -13,7 +13,7 @@ import {
 
 export function createDrawLineBlock() {
 
-    const resources = ResourcesService.getResourcesForSelectedLanguage();
+    const resources = ResourcesService.getResources();
     const blockSelector = 'babylon_draw_line';
 
     Blocks[blockSelector] = {

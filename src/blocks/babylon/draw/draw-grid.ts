@@ -13,7 +13,7 @@ import {
 
 export function createDrawGridBlock() {
 
-    const resources = ResourcesService.getResourcesForSelectedLanguage();
+    const resources = ResourcesService.getResources();
     const blockSelector = 'babylon_draw_grid';
 
     Blocks[blockSelector] = {

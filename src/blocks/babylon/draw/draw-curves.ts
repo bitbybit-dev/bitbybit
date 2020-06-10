@@ -13,7 +13,7 @@ import {
 
 export function createDrawCurvesBlock() {
 
-    const resources = ResourcesService.getResourcesForSelectedLanguage();
+    const resources = ResourcesService.getResources();
     const blockSelector = 'babylon_draw_curves';
 
     Blocks[blockSelector] = {

@@ -10,7 +10,7 @@ import {
 } from '../../validations';
 export function createSceneBackgroundColourBlock() {
 
-    const resources = ResourcesService.getResourcesForSelectedLanguage();
+    const resources = ResourcesService.getResources();
     const blockSelector = 'babylon_scene_background_colour';
 
     Blocks[blockSelector] = {

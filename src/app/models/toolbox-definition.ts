@@ -1,7 +1,10 @@
+import { ResourcesService } from 'src/resources'
+
 export function toolboxDefinition() {
+    const resources = ResourcesService.getResources();
     return `
     <xml id="toolbox" style="display: none">
-    <category name="Scene" categorystyle="scene_category">
+    <category name="${resources.block_toolbox_category_scene}" categorystyle="scene_category">
         <block type="babylon_draw_grid">
             <value name="Width">
                 <shadow type="math_number">
@@ -63,7 +66,7 @@ export function toolboxDefinition() {
         </block>
     </category>
     <sep></sep>
-    <category name="Core Types" categorystyle="verb_core_category">
+    <category name="${resources.block_toolbox_category_core_types}" categorystyle="verb_core_category">
         <block type="verb_core_interval">
         </block>
         <block type="verb_core_interval">
@@ -101,7 +104,7 @@ export function toolboxDefinition() {
         <block type="verb_core_uv_get_v">
         </block>
     </category>
-    <category name="Core Vector" categorystyle="verb_core_category">
+    <category name="${resources.block_toolbox_category_core_vector}" categorystyle="verb_core_category">
         <block type="verb_core_vector">
         </block>
         <block type="verb_core_vector_angle_between">
@@ -170,7 +173,7 @@ export function toolboxDefinition() {
         </block>
     </category>
     <sep></sep>
-    <category name="Geom Point" categorystyle="geometry_category">
+    <category name="${resources.block_toolbox_category_geom_point}" categorystyle="geometry_category">
         <block type="base_geometry_point">
         </block>
         <block type="base_geometry_point">
@@ -269,7 +272,7 @@ export function toolboxDefinition() {
         <block type="base_geometry_point_z">
         </block>
     </category>
-    <category name="Geom Line" categorystyle="geometry_category">
+    <category name="${resources.block_toolbox_category_geom_line}" categorystyle="geometry_category">
         <block type="base_geometry_line">
         </block>
         <block type="base_geometry_line">
@@ -416,7 +419,7 @@ export function toolboxDefinition() {
         <block type="base_geometry_line_convert_to_nurbs_curve">
         </block>
     </category>
-    <category name="Geom Polyline" categorystyle="geometry_category">
+    <category name="${resources.block_toolbox_category_geom_polyline}" categorystyle="geometry_category">
         <block type="base_geometry_polyline">
         </block>
         <block type="babylon_draw_polyline">
@@ -447,7 +450,7 @@ export function toolboxDefinition() {
         <block type="base_geometry_polyline_convert_to_nurbs_curve">
         </block>
     </category>
-    <category name="Geom Curve" categorystyle="geometry_category">
+    <category name="${resources.block_toolbox_category_geom_curve}" categorystyle="geometry_category">
         <block type="verb_geometry_nurbs_curve_by_points">
             <value name="Degree">
                 <shadow type="math_number">
@@ -602,7 +605,7 @@ export function toolboxDefinition() {
         <block type="verb_geometry_nurbs_curve_tesselate">
         </block>
     </category>
-    <category name="Geom Surface" categorystyle="geometry_category">
+    <category name="${resources.block_toolbox_category_geom_surface}" categorystyle="geometry_category">
         <block type="verb_geometry_nurbs_surface_by_corners">
         </block>
         <block type="verb_geometry_nurbs_surface_by_lofting_curves">
@@ -673,7 +676,7 @@ export function toolboxDefinition() {
         </block>
     </category>
     <sep></sep>
-    <category name="Loop" categorystyle="control_category">
+    <category name="${resources.block_toolbox_category_loop}" categorystyle="control_category">
         <block type="controls_repeat_ext">
             <value name="TIMES">
                 <shadow type="math_number">
@@ -689,7 +692,7 @@ export function toolboxDefinition() {
         <block type="controls_flow_statements">
         </block>
     </category>
-    <category name="Logic" categorystyle="logic_category">
+    <category name="${resources.block_toolbox_category_logic}" categorystyle="logic_category">
         <block type="controls_if"></block>
         <block type="logic_compare"></block>
         <block type="logic_operation"></block>
@@ -698,12 +701,12 @@ export function toolboxDefinition() {
         <block type="logic_null"></block>
         <block type="logic_ternary"></block>
     </category>
-    <category name="Math" categorystyle="math_category">
+    <category name="${resources.block_toolbox_category_math}" categorystyle="math_category">
         <block type="math_number"></block>
         <block type="math_arithmetic"></block>
         <block type="math_single"></block>
     </category>
-    <category name="Lists" categorystyle="lists_category">
+    <category name="${resources.block_toolbox_category_lists}" categorystyle="lists_category">
         <block type="lists_create_with">
             <mutation items="0"></mutation>
         </block>
@@ -754,7 +757,7 @@ export function toolboxDefinition() {
         </block>
         <block type="lists_sort"></block>
     </category>
-    <category name="Colour" categorystyle="colour_category">
+    <category name="${resources.block_toolbox_category_colour}" categorystyle="colour_category">
         <block type="colour_picker">
             <field name="COLOUR">#FEF8DD</field>
         </block>
@@ -794,7 +797,7 @@ export function toolboxDefinition() {
             </value>
         </block>
     </category>
-    <category name="Text" categorystyle="text_category">
+    <category name="${resources.block_toolbox_category_text}" categorystyle="text_category">
         <block type="text"></block>
         <block type="text_join"></block>
         <block type="text_append">
@@ -871,8 +874,8 @@ export function toolboxDefinition() {
             </value>
         </block>
     </category>
-    <category name="Variables" categorystyle="variables_category" custom="VARIABLE"></category>
-    <category name="Functions" categorystyle="functions_category" custom="PROCEDURE"></category>
+    <category name="${resources.block_toolbox_category_variables}" categorystyle="variables_category" custom="VARIABLE"></category>
+    <category name="${resources.block_toolbox_category_functions}" categorystyle="functions_category" custom="PROCEDURE"></category>
 </xml>
 `
 }
