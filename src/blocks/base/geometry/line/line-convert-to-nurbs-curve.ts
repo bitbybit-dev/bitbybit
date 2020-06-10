@@ -4,36 +4,36 @@ import { ResourcesService } from '../../../../resources';
 import { createStandardContextIIFE } from '../../../_shared';
 import { makeRequiredValidationModelForInputs, BlockValidationService } from '../../../validations';
 
-export function createPolylineGetPointsCountBlock() {
+export function createLineConvertToNurbsCurveBlock() {
 
     const resources = ResourcesService.getResourcesForSelectedLanguage();
-    const blockSelector = 'base_geometry_polyline_points_count';
+    const blockSelector = 'base_geometry_line_convert_to_nurbs_curve';
 
     Blocks[blockSelector] = {
         init() {
-            this.appendValueInput('Polyline')
-                .setCheck('Polyline')
+            this.appendValueInput('Line')
+                .setCheck('Line')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_base_geometry_polyline_points_count);
-            this.setOutput(true, 'Array');
+                .appendField(resources.block_base_geometry_line_convert_to_nurbs_curve);
+            this.setOutput(true, 'NurbsCurve');
             this.setColour('#fff');
-            this.setTooltip(resources.block_base_geometry_polyline_points_count_description);
+            this.setTooltip(resources.block_base_geometry_line_convert_to_nurbs_curve_description);
         }
     };
 
     JavaScript[blockSelector] = (block: Block) => {
         const inputs = {
-            polyline: JavaScript.valueToCode(block, 'Polyline', JavaScript.ORDER_ATOMIC)
+            line: JavaScript.valueToCode(block, 'Line', JavaScript.ORDER_ATOMIC)
         };
 
         // this is first set of validations to check that all inputs are non empty strings
-
         BlockValidationService.validate(block, block.workspace, makeRequiredValidationModelForInputs(resources, inputs, [
-            resources.block_polyline
+            resources.block_line
         ]));
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `return inputs.polyline.points.length;`);
+            `return new verb.geom.Line(inputs.line.start, inputs.line.end);`
+        );
         return [code, JavaScript.ORDER_ATOMIC];
     };
 }

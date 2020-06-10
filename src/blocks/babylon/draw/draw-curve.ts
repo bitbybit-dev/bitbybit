@@ -1,14 +1,19 @@
-import { Blocks, ALIGN_RIGHT } from 'blockly';
+import { ALIGN_RIGHT, Block, Blocks } from 'blockly';
 import * as JavaScript from 'blockly/javascript';
-import { BlockValidationService } from '../../../blocks/validations/validation.service';
-import { BlockValidations } from '../../../blocks/validations/block-validations';
-import { ResourcesService } from '../../../resources/resources.service';
-import { ResourcesInterface } from '../../../resources/resources.interface';
-import { ValidationEntityInterface } from '../../../blocks/validations/validation-entity.interface';
+import { ResourcesInterface, ResourcesService } from '../../../resources';
+import { createStandardContextIIFE } from '../../_shared';
+import {
+    getRequired,
+    getRequiredAndMin,
+    getRequiredAndRange,
+    makeRequiredValidationModelForInputs,
+    BlockValidationService,
+    ValidationEntityInterface
+} from '../../validations';
 
 export function createDrawCurveBlock() {
-    const resources = ResourcesService.getResourcesForSelectedLanguage();
 
+    const resources = ResourcesService.getResourcesForSelectedLanguage();
     const blockSelector = 'babylon_draw_curve';
 
     Blocks[blockSelector] = {
@@ -16,19 +21,19 @@ export function createDrawCurveBlock() {
             this.appendValueInput('Curve')
                 .setCheck('NurbsCurve')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_babylon_draw_curve_input_curve);
+                .appendField(resources.block_babylon_input_curve);
             this.appendValueInput('Colour')
                 .setCheck('Colour')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_babylon_draw_curve_input_color);
+                .appendField(resources.block_babylon_input_colour);
             this.appendValueInput('Opacity')
                 .setCheck('Number')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_babylon_draw_curve_input_opacity);
+                .appendField(resources.block_babylon_input_opacity);
             this.appendValueInput('Width')
                 .setCheck('Number')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_babylon_draw_curve_input_width);
+                .appendField(resources.block_babylon_input_width);
             this.setColour('#fff');
             this.setPreviousStatement(true, null);
             this.setNextStatement(true, null);
@@ -37,94 +42,72 @@ export function createDrawCurveBlock() {
         }
     };
 
-    JavaScript[blockSelector] = (block: any) => {
-        const valueCurve = JavaScript.valueToCode(block, 'Curve', JavaScript.ORDER_ATOMIC);
-        const valueColour = JavaScript.valueToCode(block, 'Colour', JavaScript.ORDER_ATOMIC);
-        const valueOpacity = JavaScript.valueToCode(block, 'Opacity', JavaScript.ORDER_ATOMIC);
-        const valueWidth = JavaScript.valueToCode(block, 'Width', JavaScript.ORDER_ATOMIC);
+    JavaScript[blockSelector] = (block: Block) => {
 
-        BlockValidationService.validate(block, makeValidationModel(resources, valueCurve, valueColour, valueOpacity, valueWidth));
+        const inputs = {
+            curve: JavaScript.valueToCode(block, 'Curve', JavaScript.ORDER_ATOMIC),
+            colour: JavaScript.valueToCode(block, 'Colour', JavaScript.ORDER_ATOMIC),
+            opacity: JavaScript.valueToCode(block, 'Opacity', JavaScript.ORDER_ATOMIC),
+            width: JavaScript.valueToCode(block, 'Width', JavaScript.ORDER_ATOMIC)
+        };
 
-        const code = `
-(() => {
-    const points = ${valueCurve}.tessellate();
+        // this is first set of validations to check that all inputs are non empty strings
+        BlockValidationService.validate(block, block.workspace, makeRequiredValidationModelForInputs(resources, inputs, [
+            resources.block_curve, resources.block_colour, resources.block_opacity, resources.block_width
+        ]));
 
-    const colors = [];
-    const pointsToRender = [];
-    points.forEach(pt => {
-        colors.push(new BABYLON.Color4(1, 1, 1, 0));
-        pointsToRender.push(new BABYLON.Vector3(pt[0], pt[1], pt[2]));
-    });
+        // this creates validation model to be used at runtime to evaluate real values of inputs
+        const runtimeValidationModel = makeRuntimeValidationModel(resources, Object.keys(inputs));
+        (block as any).validationModel = runtimeValidationModel;
 
-    const curves = BABYLON.MeshBuilder.CreateLines("lines${Math.random()}", {points: pointsToRender, colors, useVertexAlpha: true}, scene);
+        return createStandardContextIIFE(block, blockSelector, inputs, false,
+`
+        const points = inputs.curve.tessellate();
 
-    curves.enableEdgesRendering();
-    curves.edgesWidth = ${valueWidth};
-    const col = BABYLON.Color3.FromHexString(${valueColour});
-    curves.edgesColor = new BABYLON.Color4(col.r, col.g, col.b, ${valueOpacity});
-    curves.opacity = ${valueOpacity};
-})();
-        `;
-        return code;
+        const colors = [];
+        const pointsToRender = [];
+        points.forEach(pt => {
+            colors.push(new BABYLON.Color4(1, 1, 1, 0));
+            pointsToRender.push(new BABYLON.Vector3(pt[0], pt[1], pt[2]));
+        });
+
+        const curves = BABYLON.MeshBuilder.CreateLines('lines${Math.random()}', {points: pointsToRender, colors, useVertexAlpha: true}, scene);
+
+        curves.enableEdgesRendering();
+        curves.edgesWidth = inputs.width;
+        const col = BABYLON.Color3.FromHexString(inputs.colour);
+        curves.edgesColor = new BABYLON.Color4(col.r, col.g, col.b, inputs.opacity);
+        curves.opacity = inputs.opacity;
+`);
     };
 }
 
-function makeValidationModel(resources: ResourcesInterface,
-                             valueCurve: any, valueColour: any, valueOpacity: any,
-                             valueWidth: any): ValidationEntityInterface[] {
+function makeRuntimeValidationModel(
+    resources: ResourcesInterface,
+    keys: string[]): ValidationEntityInterface[] {
+
     return [{
-        entity: valueCurve,
+        entity: keys[0],
         validations: [
-            {
-                validationFunc: BlockValidations.required,
-                errorText: `${resources.block_curve} ${resources.block_validation_required}`,
-            }
+            getRequired(resources, resources.block_curve)
         ]
     },
     {
-        entity: valueColour,
+        entity: keys[1],
         validations: [
-            {
-                validationFunc: BlockValidations.required,
-                errorText: `${resources.block_color} ${resources.block_validation_required}`,
-            }
+            getRequired(resources, resources.block_colour)
         ]
     },
     {
-        entity: valueOpacity,
+        entity: keys[2],
         validations: [
-            {
-                validationFunc: BlockValidations.required,
-                errorText: `${resources.block_opacity} ${resources.block_validation_required}`,
-            }, {
-                validationFunc: BlockValidations.min,
-                errorText: `${resources.block_opacity} ${resources.block_validation_higher_or_equal} 0`,
-                validationData: {
-                    length: 0
-                }
-            }, {
-                validationFunc: BlockValidations.max,
-                errorText: `${resources.block_opacity} ${resources.block_validation_lower_or_equal} 1`,
-                validationData: {
-                    length: 1
-                }
-            }
+            ...getRequiredAndRange(resources, resources.block_opacity, 0, 1)
         ]
     },
     {
-        entity: valueWidth,
+        entity: keys[3],
         validations: [
-            {
-                validationFunc: BlockValidations.required,
-                errorText: `${resources.block_width} ${resources.block_validation_required}`,
-            }, {
-                validationFunc: BlockValidations.min,
-                errorText: `${resources.block_width} ${resources.block_validation_higher_or_equal} 0`,
-                validationData: {
-                    length: 0
-                }
-            }
+            ...getRequiredAndMin(resources, resources.block_width, 0)
         ]
     }];
 }
-

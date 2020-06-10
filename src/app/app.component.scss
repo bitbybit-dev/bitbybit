@@ -181,3 +181,7 @@ h1 {
 ::ng-deep .blocklySvg, .mat-drawer {
     background-color: rgba(255,255,255,0.4);
 }
+
+::ng-deep .blocklyText.statusClass{
+    transform: translate(0px,7px);
+}

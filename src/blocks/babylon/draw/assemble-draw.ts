@@ -1,13 +1,13 @@
-import { createDrawPointBlock } from './draw-point';
-import { createDrawPointsBlock } from './draw-points';
+import { createDrawCurveBlock } from './draw-curve';
+import { createDrawCurvesBlock } from './draw-curves';
 import { createDrawGridBlock } from './draw-grid';
 import { createDrawLineBlock } from './draw-line';
 import { createDrawLinesBlock } from './draw-lines';
+import { createDrawPointBlock } from './draw-point';
+import { createDrawPointsBlock } from './draw-points';
 import { createDrawPolylineBlock } from './draw-polyline';
-import { createDrawCurveBlock } from './draw-curve';
 import { createDrawSurfaceBlock } from './draw-surface';
 import { createDrawSurfacesBlock } from './draw-surfaces';
-import { createDrawCurvesBlock } from './draw-curves';
 
 export function assembleDrawBlocks(){
     createDrawPointBlock();
@@ -16,8 +16,8 @@ export function assembleDrawBlocks(){
     createDrawLineBlock();
     createDrawLinesBlock();
     createDrawPolylineBlock();
-    createDrawCurveBlock();  
-    createDrawCurvesBlock();  
+    createDrawCurveBlock();
+    createDrawCurvesBlock();
     createDrawSurfaceBlock();
     createDrawSurfacesBlock();
 }

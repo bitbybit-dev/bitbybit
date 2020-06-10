@@ -6,8 +6,7 @@ import { environment } from './environments/environment';
 
 import { prepareBabylonForBlockly } from './babylon-to-blockly';
 import { assembleBlocks } from './blocks/assemble-blocks';
-import { languagesEnum } from './resources/languages.enum';
-import { ResourcesService } from './resources/resources.service';
+import { languagesEnum, ResourcesService } from './resources';
 
 ResourcesService.setLanguage(languagesEnum.en);
 prepareBabylonForBlockly();

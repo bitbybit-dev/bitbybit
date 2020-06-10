@@ -1,25 +1,39 @@
-import { Blocks, ALIGN_RIGHT } from "blockly";
+import { ALIGN_RIGHT, Block, Blocks } from 'blockly';
 import * as JavaScript from 'blockly/javascript';
+import { ResourcesService } from '../../../../resources';
+import { createStandardContextIIFE } from '../../../_shared';
+import { makeRequiredValidationModelForInputs, BlockValidationService } from '../../../validations';
 
 export function createLineEndPointBlock() {
 
-    Blocks['base_geometry_line_end_point'] = {
-        init: function () {
-            this.appendValueInput("Line")
-                .setCheck("Line")
+    const resources = ResourcesService.getResourcesForSelectedLanguage();
+    const blockSelector = 'base_geometry_line_end_point';
+
+    Blocks[blockSelector] = {
+        init() {
+            this.appendValueInput('Line')
+                .setCheck('Line')
                 .setAlign(ALIGN_RIGHT)
-                .appendField("End point of the line");
-            this.setOutput(true, "Array");
-            this.setColour("#fff");
-            this.setTooltip("Gets the end point of the line.");
-            this.setHelpUrl("");
+                .appendField(resources.block_base_geometry_line_end_point);
+            this.setOutput(true, 'Array');
+            this.setColour('#fff');
+            this.setTooltip(resources.block_base_geometry_line_end_point_description);
         }
     };
 
-    JavaScript['base_geometry_line_end_point'] = function (block) {
-        let value_line = JavaScript.valueToCode(block, 'Line', JavaScript.ORDER_ATOMIC);
+    JavaScript[blockSelector] = (block: Block) => {
+        const inputs = {
+            line: JavaScript.valueToCode(block, 'Line', JavaScript.ORDER_ATOMIC)
+        };
 
-        let code = `${value_line}.end`;
+        // this is first set of validations to check that all inputs are non empty strings
+
+        BlockValidationService.validate(block, block.workspace, makeRequiredValidationModelForInputs(resources, inputs, [
+            resources.block_line
+        ]));
+
+        const code = createStandardContextIIFE(block, blockSelector, inputs, true,
+            `return inputs.line.end;`);
         return [code, JavaScript.ORDER_ATOMIC];
     };
 }

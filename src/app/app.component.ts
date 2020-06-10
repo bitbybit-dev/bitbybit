@@ -86,6 +86,7 @@ export class AppComponent implements OnInit, AfterViewInit {
             light.intensity = 1;
             this.windowBlockly = {};
             this.windowBlockly.scene = this.scene;
+            this.windowBlockly.workspace = this.workspace;
             (window as any).blockly = this.windowBlockly;
 
             this.engine.runRenderLoop(() => {
@@ -158,8 +159,8 @@ export class AppComponent implements OnInit, AfterViewInit {
 
     export() {
         const xml = Xml.workspaceToDom(this.workspace);
-        let xml_text = Xml.domToText(xml);
-        const blob = new Blob([xml_text], { type: 'text/xml' });
+        const xmlText = Xml.domToText(xml);
+        const blob = new Blob([xmlText], { type: 'text/xml' });
         const blobUrl = URL.createObjectURL(blob);
 
         const fileLink = document.createElement('a');
@@ -200,9 +201,12 @@ export class AppComponent implements OnInit, AfterViewInit {
             const code = javascript.workspaceToCode(this.workspace);
             eval(`
 'use reserved'
-let scene = window.blockly.scene;
-let BABYLON = window.BABYLON;
-let verb = window.verb;
+const scene = window.blockly.scene;
+const blocklyWorkspace = window.blockly.workspace;
+const BABYLON = window.BABYLON;
+const verb = window.verb;
+const Blockly = window.BlocklyGlobal;
+const BlockValidationService = window.BlockValidationService;
 ${code}
             `);
         } catch (e) {
@@ -211,20 +215,6 @@ ${code}
                 details: `Something went wrong when running the code. Check if there are no disconnected or misconfigured components on your canvas`,
                 message: `${e}`,
             });
-        }
-    }
-
-    runCodeWithDateFunction() {
-        const code = JavaScript.workspaceToCode(this.workspace);
-        return Function(code)()();
-    }
-
-    evaluate = () => {
-        try {
-            const code = JavaScript.workspaceToCode(this.workspace);
-            eval(code);
-        } catch (e) {
-            alert(e);
         }
     }
 

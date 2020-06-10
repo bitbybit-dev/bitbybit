@@ -3,59 +3,59 @@ export function toolboxDefinition() {
     <xml id="toolbox" style="display: none">
     <category name="Scene" categorystyle="scene_category">
         <block type="babylon_draw_grid">
-            <value name="width">
+            <value name="Width">
                 <shadow type="math_number">
                     <field name="NUM">400</field>
                 </shadow>
             </value>
-            <value name="height">
+            <value name="Height">
                 <shadow type="math_number">
                     <field name="NUM">400</field>
                 </shadow>
             </value>
-            <value name="subdivisions">
+            <value name="Subdivisions">
                 <shadow type="math_number">
                     <field name="NUM">10</field>
                 </shadow>
             </value>
-            <value name="major_unit_frequency">
+            <value name="MajorUnitFrequency">
                 <shadow type="math_number">
                     <field name="NUM">10</field>
                 </shadow>
             </value>
-            <value name="minor_unit_visibility">
+            <value name="MinorUnitVisibility">
                 <shadow type="math_number">
                     <field name="NUM">0.45</field>
                 </shadow>
             </value>
-            <value name="grid_ratio">
+            <value name="GridRatio">
                 <shadow type="math_number">
                     <field name="NUM">0.5</field>
                 </shadow>
             </value>
-            <value name="opacity">
+            <value name="Opacity">
                 <shadow type="math_number">
                     <field name="NUM">0.5</field>
                 </shadow>
             </value>
-            <value name="back_face_culling">
+            <value name="BackFaceCulling">
                 <shadow type="logic_boolean">
                     <field name="BOOL">FALSE</field>
                 </shadow>
             </value>
-            <value name="main_color">
+            <value name="MainColor">
                 <shadow type="colour_picker">
                     <field name="COLOUR">#000</field>
                 </shadow>
             </value>
-            <value name="line_color">
+            <value name="LineColor">
                 <shadow type="colour_picker">
                     <field name="COLOUR">#555</field>
                 </shadow>
             </value>
         </block>
         <block type="babylon_scene_background_colour">
-            <value name="colour">
+            <value name="Colour">
                 <shadow type="colour_picker">
                     <field name="COLOUR">#eee</field>
                 </shadow>
@@ -273,7 +273,7 @@ export function toolboxDefinition() {
         <block type="base_geometry_line">
         </block>
         <block type="base_geometry_line">
-            <value name="start_point">
+            <value name="StartPoint">
                 <shadow type="base_geometry_point">
                     <value name="X">
                         <shadow type="math_number">
@@ -292,7 +292,7 @@ export function toolboxDefinition() {
                     </value>
                 </shadow>
             </value>
-            <value name="end_point">
+            <value name="EndPoint">
                 <shadow type="base_geometry_point">
                     <value name="X">
                         <shadow type="math_number">
@@ -332,7 +332,7 @@ export function toolboxDefinition() {
         <block type="babylon_draw_line">
             <value name="Line">
                 <shadow type="base_geometry_line">
-                    <value name="start_point">
+                    <value name="StartPoint">
                         <shadow type="base_geometry_point">
                             <value name="X">
                                 <shadow type="math_number">
@@ -351,7 +351,7 @@ export function toolboxDefinition() {
                             </value>
                         </shadow>
                     </value>
-                    <value name="end_point">
+                    <value name="EndPoint">
                         <shadow type="base_geometry_point">
                             <value name="X">
                                 <shadow type="math_number">
@@ -456,6 +456,70 @@ export function toolboxDefinition() {
             </value>
         </block>
         <block type="verb_geometry_nurbs_curve_by_knots_control_points_weights">
+        </block>
+        <block type="verb_geometry_nurbs_curve_circle">
+            <value name="Center">
+                <shadow type="base_geometry_point">
+                    <value name="X">
+                        <shadow type="math_number">
+                            <field name="NUM">0</field>
+                        </shadow>
+                    </value>
+                    <value name="Y">
+                        <shadow type="math_number">
+                            <field name="NUM">0</field>
+                        </shadow>
+                    </value>
+                    <value name="Z">
+                        <shadow type="math_number">
+                            <field name="NUM">0</field>
+                        </shadow>
+                    </value>
+                </shadow>
+            </value>
+            <value name="XAxis">
+                <shadow type="base_geometry_point">
+                    <value name="X">
+                        <shadow type="math_number">
+                            <field name="NUM">1</field>
+                        </shadow>
+                    </value>
+                    <value name="Y">
+                        <shadow type="math_number">
+                            <field name="NUM">0</field>
+                        </shadow>
+                    </value>
+                    <value name="Z">
+                        <shadow type="math_number">
+                            <field name="NUM">0</field>
+                        </shadow>
+                    </value>
+                </shadow>
+            </value>
+            <value name="YAxis">
+                <shadow type="base_geometry_point">
+                    <value name="X">
+                        <shadow type="math_number">
+                            <field name="NUM">0</field>
+                        </shadow>
+                    </value>
+                    <value name="Y">
+                        <shadow type="math_number">
+                            <field name="NUM">1</field>
+                        </shadow>
+                    </value>
+                    <value name="Z">
+                        <shadow type="math_number">
+                            <field name="NUM">0</field>
+                        </shadow>
+                    </value>
+                </shadow>
+            </value>
+            <value name="Radius">
+                <shadow type="math_number">
+                    <field name="NUM">1</field>
+                </shadow>
+            </value>
         </block>
         <block type="babylon_draw_curve">
             <value name="Colour">
