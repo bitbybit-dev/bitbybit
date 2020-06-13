@@ -153,4 +153,8 @@ export const resourcesLt: ResourcesInterface = {
     block_babylon_transformation_scale_xyz_description: 'Sukuria didinomo transformacija, kuri objekta gali didinti skirtingais dydziais xyz kryptimis.',
     block_babylon_input_transformation_scale_center_uniform: 'Didinti kartais',
     block_babylon_transformation_scale_center_uniform_description: 'Sukuria didinimo transformacija, kuri objekta plecia aplink taska erdveje.',
+    block_babylon_input_transformation_scale_center_xyz: 'Didinimas XYZ vektoriumi',
+    block_babylon_transformation_scale_center_xyz_description: 'Sukuria didinomo transformacija, kuri objekta gali didinti skirtingais dydziais xyz kryptimis aplink taska.',
+    block_babylon_input_transformation_translation_xyz: 'Perkelti XYZ kryptimi',
+    block_babylon_transformation_translation_xyz_description: 'Perkelia objekta XYZ kryptimi i nauja lokacija.',
 };
