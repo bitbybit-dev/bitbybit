@@ -31,6 +31,8 @@ export interface ResourcesInterface {
     block_point: string;
     block_points: string;
     block_line: string;
+    block_min: string;
+    block_max: string;
     block_coordinate_x: string;
     block_coordinate_y: string;
     block_coordinate_z: string;
@@ -50,11 +52,16 @@ export interface ResourcesInterface {
     block_center: string;
     block_circle: string;
     block_radius: string;
+    block_interval: string;
     block_validation_required: string;
     block_validation_of_length: string;
     block_validation_higher_or_equal: string;
     block_validation_lower_or_equal: string;
     block_validation_range: string;
+    block_validation_smaller_or_equal_than: string;
+    block_validation_smaller_than: string;
+    block_validation_larger_or_equal_than: string;
+    block_validation_larger_than: string;
     block_babylon_input_curve: string;
     block_babylon_input_curves: string;
     block_babylon_input_colour: string;
@@ -128,4 +135,11 @@ export interface ResourcesInterface {
     block_base_geometry_shape_rectangle_center: string;
     block_base_geometry_shape_x_axis: string;
     block_base_geometry_shape_y_axis: string;
+    block_verb_core_interval_input_min: string;
+    block_verb_core_interval_input_max: string;
+    block_verb_core_interval_description: string;
+    block_verb_core_interval_get_max: string;
+    block_verb_core_interval_get_min: string;
+    block_verb_core_interval_get_max_description: string;
+    block_verb_core_interval_get_min_description: string;
 }

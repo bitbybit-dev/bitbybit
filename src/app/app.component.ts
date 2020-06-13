@@ -12,7 +12,7 @@ import { inject, svgResize, Theme, WorkspaceSvg, Xml } from 'blockly';
 import * as JavaScript from 'blockly/javascript';
 import { prepareBabylonForBlockly } from '../babylon-to-blockly';
 import { assembleBlocks } from '../blocks/assemble-blocks';
-import { languagesEnum, ResourcesService, ResourcesInterface } from '../resources';
+import { languagesEnum, ResourcesInterface, ResourcesService } from '../resources';
 import { AboutDialogComponent } from './components/about-dialog/about-dialog.component';
 import { AlertDialogComponent } from './components/alert-dialog/alert-dialog.component';
 import { ExamplesDialogComponent } from './components/examples-dialog/examples-dialog.component';
@@ -21,7 +21,6 @@ import { ExamplesService } from './examples/example-service';
 import { constantsModel } from './models/constants.model';
 import { themeStyle } from './models/theme-styles.model';
 import { toolboxDefinition } from './models/toolbox-definition';
-import * as Blockly from 'blockly';
 
 @Component({
     selector: 'app-root',

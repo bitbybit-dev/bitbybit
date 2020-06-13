@@ -13,18 +13,18 @@ export class BlockValidationService {
             });
             BlockValidationService.validate(
                 block,
-                block.workspace,
+                inputs,
                 validationModel
             );
         }
     }
 
-    static validate(block: Block, workspace: Workspace | WorkspaceSvg, validationEntityModel: ValidationEntityInterface[]) {
+    static validate(block: Block, inputs: any, validationEntityModel: ValidationEntityInterface[]) {
         const errors = [];
 
         validationEntityModel.forEach(validation => {
             validation.validations.forEach(val => {
-                if (!val.validationFunc(validation.entity, val.validationData)) {
+                if (!val.validationFunc(validation.entity, val.validationData, inputs)) {
                     errors.push(val.errorText);
                     block.setColour('ffab91');
                     const errorText = `Block failed - \n${errors.join(',\n')}.`;
