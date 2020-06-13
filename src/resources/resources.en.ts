@@ -55,6 +55,8 @@ export const resourcesEn: ResourcesInterface = {
     block_min: 'Minimum',
     block_max: 'Maximum',
     block_interval: 'Interval',
+    block_scale: 'Scale',
+    block_vector: 'Vector',
     block_validation_required: 'must be provided',
     block_validation_of_length: 'must contain item count of',
     block_validation_higher_or_equal: 'must be higher or equal to',
@@ -144,4 +146,9 @@ export const resourcesEn: ResourcesInterface = {
     block_verb_core_interval_get_max_description: 'Gets maximum bound of the interval.',
     block_verb_core_interval_get_min: 'Minimum bound of the interval',
     block_verb_core_interval_get_min_description: 'Gets minimum bound of the interval.',
+    block_babylon_input_transformation_scale_uniform: 'Uniform scale',
+    block_babylon_input_transformation_scale_center: 'Center',
+    block_babylon_transformation_scale_uniform_description: 'Constructs transformation of uniform scale on XYZ directions.',
+    block_babylon_input_transformation_scale_xyz: 'Scale with XYZ vector',
+    block_babylon_transformation_scale_xyz_description: 'Constructs XYZ based scale that may scale geometry with different factors in different directions.',
 };

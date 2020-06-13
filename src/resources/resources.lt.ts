@@ -55,6 +55,8 @@ export const resourcesLt: ResourcesInterface = {
     block_min: 'Minimumas',
     block_max: 'Maksimumas',
     block_interval: 'Intervalas',
+    block_scale: 'Didinimas',
+    block_vector: 'Vektorius',
     block_validation_required: 'privalo buti ivesta',
     block_validation_higher_or_equal: 'privalo buti daugiau arba lygu',
     block_validation_lower_or_equal: 'privalo buti maziau arba lygu',
@@ -144,4 +146,9 @@ export const resourcesLt: ResourcesInterface = {
     block_verb_core_interval_get_max_description: 'Gauna intervalo maksimumo verte.',
     block_verb_core_interval_get_min: 'Minimumo verte intervale',
     block_verb_core_interval_get_min_description: 'Gauna intervalo minimumo verte.',
+    block_babylon_input_transformation_scale_center: 'Centras',
+    block_babylon_input_transformation_scale_uniform: 'Didinti kartais',
+    block_babylon_transformation_scale_uniform_description: 'Didinti arba mazinti objekta kartais',
+    block_babylon_input_transformation_scale_xyz: 'Didinimas XYZ vektoriumi',
+    block_babylon_transformation_scale_xyz_description: 'Sukuria didinomo transformacija, kuri objekta gali didinti skirtingais dydziais xyz kryptimis.',
 };

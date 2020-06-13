@@ -53,6 +53,8 @@ export interface ResourcesInterface {
     block_circle: string;
     block_radius: string;
     block_interval: string;
+    block_scale: string;
+    block_vector: string;
     block_validation_required: string;
     block_validation_of_length: string;
     block_validation_higher_or_equal: string;
@@ -85,6 +87,9 @@ export interface ResourcesInterface {
     block_babylon_input_draw_surface: string;
     block_babylon_input_scene_background_colour: string;
     block_babylon_input_draw_surfaces: string;
+    block_babylon_input_transformation_scale_uniform: string;
+    block_babylon_input_transformation_scale_xyz: string;
+    block_babylon_input_transformation_scale_center: string;
     block_babylon_draw_curve_description: string;
     block_babylon_draw_curves_description: string;
     block_babylon_draw_line_description: string;
@@ -96,6 +101,8 @@ export interface ResourcesInterface {
     block_babylon_draw_surface_description: string;
     block_babylon_draw_surfaces_description: string;
     block_babylon_scene_background_colour_description: string;
+    block_babylon_transformation_scale_uniform_description: string;
+    block_babylon_transformation_scale_xyz_description: string;
     block_base_geometry_input_line_start_point: string;
     block_base_geometry_input_line_end_point: string;
     block_base_geometry_line_description: string;

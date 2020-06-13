@@ -13,7 +13,7 @@ export function createCurveTransformBlock() {
                 .setCheck("Matrix")
                 .setAlign(ALIGN_RIGHT)
                 .appendField("with matrix");
-            this.setOutput(true, "Array");
+            this.setOutput(true, "NurbsCurve");
             this.setColour("#fff");
             this.setTooltip("Transforms the curve by transformation matrix (translation, rotation, scale...).");
             this.setHelpUrl("");
@@ -25,7 +25,18 @@ export function createCurveTransformBlock() {
         let value_matrix = JavaScript.valueToCode(block, 'Matrix', JavaScript.ORDER_ATOMIC);
 
         let code = `
-(() => ${value_curve}.transform(${value_matrix}))()
+(() => {
+    const points = ${value_curve}.controlPoints();
+    const transformedControlPoints = points.map(pt => {
+        const vector = new BABYLON.Vector3(pt[0], pt[1], pt[2]);
+        const transformedVector = BABYLON.Vector3.TransformCoordinates(vector, ${value_matrix});
+        return [transformedVector.x, transformedVector.y, transformedVector.z];
+    });
+
+    const curve = verb.geom.NurbsCurve.byKnotsControlPointsWeights( ${value_curve}.degree(), ${value_curve}.knots(), transformedControlPoints, ${value_curve}.weights());
+    console.log(curve);
+    return curve;
+})()
 `;
         return [code, JavaScript.ORDER_ATOMIC];
     };

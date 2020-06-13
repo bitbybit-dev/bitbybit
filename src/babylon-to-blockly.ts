@@ -1,10 +1,22 @@
-import { Color3, Color4, Mesh, MeshBuilder, StandardMaterial, Vector3, VertexData } from '@babylonjs/core';
+import { Color3, Color4, Matrix, Mesh, MeshBuilder, StandardMaterial, Vector3, VertexData } from '@babylonjs/core';
 import { GridMaterial } from '@babylonjs/materials';
 import * as Blockly from 'blockly';
 import { core, geom } from 'verb-nurbs-web';
 import { BlockValidationService } from './blocks/validations';
 
 export function prepareBabylonForBlockly() {
+    Object.defineProperty(Float32Array.prototype, 'chunk', {
+        value(chunkSize: number){
+            const temporal = [];
+
+            for (let i = 0; i < this.length; i += chunkSize){
+                temporal.push(this.slice(i, i + chunkSize));
+            }
+
+            return temporal;
+        }
+    });
+
     const windowBlockly = window as any;
     const BABYLON: any = {};
     BABYLON.Mesh = Mesh;
@@ -14,6 +26,7 @@ export function prepareBabylonForBlockly() {
     BABYLON.Color4 = Color4;
     BABYLON.GridMaterial = GridMaterial;
     BABYLON.StandardMaterial = StandardMaterial;
+    BABYLON.Matrix = Matrix;
     BABYLON.VertexData = VertexData;
 
     windowBlockly.BABYLON = BABYLON;

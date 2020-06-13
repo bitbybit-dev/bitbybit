@@ -35,28 +35,10 @@ export function createSceneBackgroundColourBlock() {
             resources.block_colour
         ]));
 
-        // this creates validation model to be used at runtime to evaluate real values of inputs
-        const runtimeValidationModel = makeRuntimeValidationModel(resources, Object.keys(inputs));
-        (block as any).validationModel = runtimeValidationModel;
-
         return createStandardContextIIFE(block, blockSelector, inputs, false,
 `
         scene.clearColor = BABYLON.Color3.FromHexString(inputs.colour);
 `
         );
     };
-}
-
-function makeRuntimeValidationModel(
-    resources: ResourcesInterface,
-    keys: string[]
-): ValidationEntityInterface[] {
-
-    return [
-    {
-        entity: keys[0],
-        validations: [
-            getRequired(resources, resources.block_colour)
-        ]
-    }];
 }
