@@ -10,7 +10,6 @@ export function createCurveTransformBlock() {
                 .setAlign(ALIGN_RIGHT)
                 .appendField("Transform the curve");
             this.appendValueInput("Matrix")
-                .setCheck("Matrix")
                 .setAlign(ALIGN_RIGHT)
                 .appendField("with matrix");
             this.setOutput(true, "NurbsCurve");
@@ -27,12 +26,15 @@ export function createCurveTransformBlock() {
         let code = `
 (() => {
     const points = ${value_curve}.controlPoints();
-    const transformedControlPoints = points.map(pt => {
-        const vector = new BABYLON.Vector3(pt[0], pt[1], pt[2]);
-        const transformedVector = BABYLON.Vector3.TransformCoordinates(vector, ${value_matrix});
-        return [transformedVector.x, transformedVector.y, transformedVector.z];
-    });
-
+    const transformation = ${value_matrix};
+    let transformedControlPoints = points;
+    if(transformation.length && transformation.length > 0){
+        transformation.forEach(transform => {
+            transformedControlPoints = BitByBitBlocklyHelperService.transformPointsByMatrix(transformedControlPoints, transform);
+        });
+    }else {
+        transformedControlPoints = BitByBitBlocklyHelperService.transformPointsByMatrix(points, transformation);
+    }
     const curve = verb.geom.NurbsCurve.byKnotsControlPointsWeights( ${value_curve}.degree(), ${value_curve}.knots(), transformedControlPoints, ${value_curve}.weights());
     console.log(curve);
     return curve;

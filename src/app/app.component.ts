@@ -228,6 +228,7 @@ const BABYLON = window.BABYLON;
 const verb = window.verb;
 const Blockly = window.BlocklyGlobal;
 const BlockValidationService = window.BlockValidationService;
+const BitByBitBlocklyHelperService = window.BitByBitBlocklyHelperService;
 ${code}
             `);
         } catch (e) {

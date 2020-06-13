@@ -151,4 +151,7 @@ export const resourcesEn: ResourcesInterface = {
     block_babylon_transformation_scale_uniform_description: 'Constructs transformation of uniform scale on XYZ directions.',
     block_babylon_input_transformation_scale_xyz: 'Scale with XYZ vector',
     block_babylon_transformation_scale_xyz_description: 'Constructs XYZ based scale that may scale geometry with different factors in different directions.',
+    block_babylon_input_transformation_scale_center_uniform: 'Uniform scale',
+    block_babylon_transformation_scale_center_uniform_description: 'Constructs transformations that scales object around certain point in space.',
+
 };

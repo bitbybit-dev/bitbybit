@@ -112,6 +112,32 @@ export function toolboxDefinition() {
                 </shadow>
             </value>
         </block>
+        <block type="babylon_transformation_scale_center_uniform">
+            <value name="Scale">
+                <shadow type="math_number">
+                    <field name="NUM">2</field>
+                </shadow>
+            </value>
+            <value name="Center">
+                <shadow type="verb_core_vector">
+                    <value name="X">
+                        <shadow type="math_number">
+                            <field name="NUM">0</field>
+                        </shadow>
+                    </value>
+                    <value name="Y">
+                        <shadow type="math_number">
+                            <field name="NUM">0</field>
+                        </shadow>
+                    </value>
+                    <value name="Z">
+                        <shadow type="math_number">
+                            <field name="NUM">0</field>
+                        </shadow>
+                    </value>
+                </shadow>
+            </value>
+       </block>
         <block type="babylon_transformation_scale_xyz">
             <value name="ScaleXYZ">
                 <shadow type="verb_core_vector">

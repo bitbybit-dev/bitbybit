@@ -151,4 +151,6 @@ export const resourcesLt: ResourcesInterface = {
     block_babylon_transformation_scale_uniform_description: 'Didinti arba mazinti objekta kartais',
     block_babylon_input_transformation_scale_xyz: 'Didinimas XYZ vektoriumi',
     block_babylon_transformation_scale_xyz_description: 'Sukuria didinomo transformacija, kuri objekta gali didinti skirtingais dydziais xyz kryptimis.',
+    block_babylon_input_transformation_scale_center_uniform: 'Didinti kartais',
+    block_babylon_transformation_scale_center_uniform_description: 'Sukuria didinimo transformacija, kuri objekta plecia aplink taska erdveje.',
 };

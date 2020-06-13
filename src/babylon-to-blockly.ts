@@ -2,6 +2,7 @@ import { Color3, Color4, Matrix, Mesh, MeshBuilder, StandardMaterial, Vector3, V
 import { GridMaterial } from '@babylonjs/materials';
 import * as Blockly from 'blockly';
 import { core, geom } from 'verb-nurbs-web';
+import { BitByBitBlocklyHelperService } from './blocks/_shared/bit-by-bit-blockly-helper.service';
 import { BlockValidationService } from './blocks/validations';
 
 export function prepareBabylonForBlockly() {
@@ -39,4 +40,5 @@ export function prepareBabylonForBlockly() {
     windowBlockly.BlocklyGlobal = Blockly;
 
     windowBlockly.BlockValidationService = BlockValidationService;
+    windowBlockly.BitByBitBlocklyHelperService = BitByBitBlocklyHelperService;
 }
