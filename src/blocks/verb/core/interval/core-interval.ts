@@ -59,7 +59,7 @@ function makeRuntimeValidationModel(
             getSmallerOrEqualThan(resources, resources.block_min, 'max', resources.block_max)
         ]
     }, {
-        entity: keys[0],
+        entity: keys[1],
         validations: [
             getRequired(resources, resources.block_max),
         ]

@@ -33,6 +33,9 @@ export interface ResourcesInterface {
     block_line: string;
     block_min: string;
     block_max: string;
+    block_u: string;
+    block_v: string;
+    block_uv: string;
     block_coordinate_x: string;
     block_coordinate_y: string;
     block_coordinate_z: string;
@@ -160,6 +163,9 @@ export interface ResourcesInterface {
     block_base_geometry_shape_rectangle_center: string;
     block_base_geometry_shape_x_axis: string;
     block_base_geometry_shape_y_axis: string;
+    block_verb_core_uv_input_u: string;
+    block_verb_core_uv_input_v: string;
+    block_verb_core_uv_description: string;
     block_verb_core_interval_input_min: string;
     block_verb_core_interval_input_max: string;
     block_verb_core_interval_description: string;
@@ -167,6 +173,10 @@ export interface ResourcesInterface {
     block_verb_core_interval_get_min: string;
     block_verb_core_interval_get_max_description: string;
     block_verb_core_interval_get_min_description: string;
+    block_verb_core_uv_get_u: string;
+    block_verb_core_uv_get_v: string;
+    block_verb_core_uv_get_u_description: string;
+    block_verb_core_uv_get_v_description: string;
     block_verb_geom_curve_transform_curve: string;
     block_verb_geom_curve_transform_transformation: string;
     block_verb_geom_curve_transform_description: string;
