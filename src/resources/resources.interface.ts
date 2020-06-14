@@ -170,6 +170,9 @@ export interface ResourcesInterface {
     block_verb_geom_curve_transform_curve: string;
     block_verb_geom_curve_transform_transformation: string;
     block_verb_geom_curve_transform_description: string;
+    block_verb_geom_surface_transform_surface: string;
+    block_verb_geom_surface_transform_transformation: string;
+    block_verb_geom_surface_transform_description: string;
     block_base_geom_point_transform_point: string;
     block_base_geom_point_transform_transformation: string;
     block_base_geom_point_transform_description: string;
