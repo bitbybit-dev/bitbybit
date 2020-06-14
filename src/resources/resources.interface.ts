@@ -195,4 +195,5 @@ export interface ResourcesInterface {
     block_base_geom_polyline_transform_polyline: string;
     block_base_geom_polyline_transform_transformation: string;
     block_base_geom_polyline_transform_description: string;
+    block_verb_core_vector_description: string;
 }

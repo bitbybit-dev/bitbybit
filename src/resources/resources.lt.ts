@@ -197,4 +197,5 @@ export const resourcesLt: ResourcesInterface = {
     block_verb_core_uv_get_v: 'Gauti V dali is UV',
     block_verb_core_uv_get_u_description: 'Gauna U parametra is UV.',
     block_verb_core_uv_get_v_description: 'Gauna V parametra is UV.',
+    block_verb_core_vector_description: 'Sukuria vektoriu is XYZ koordinaciu.'
 };
