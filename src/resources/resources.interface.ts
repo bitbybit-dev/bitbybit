@@ -55,6 +55,8 @@ export interface ResourcesInterface {
     block_interval: string;
     block_scale: string;
     block_vector: string;
+    block_angle: string;
+    block_axis: string;
     block_validation_required: string;
     block_validation_of_length: string;
     block_validation_higher_or_equal: string;
@@ -89,6 +91,11 @@ export interface ResourcesInterface {
     block_babylon_input_draw_surfaces: string;
     block_babylon_input_transformation_scale_uniform: string;
     block_babylon_input_transformation_scale_center_uniform: string;
+    block_babylon_input_transformation_rotation_center_x: string;
+    block_babylon_input_transformation_rotation_center_y: string;
+    block_babylon_input_transformation_rotation_center_z: string;
+    block_babylon_input_transformation_rotation_center_axis: string;
+    block_babylon_input_transformation_rotation_center_angle: string;
     block_babylon_input_transformation_scale_xyz: string;
     block_babylon_input_transformation_translation_xyz: string;
     block_babylon_input_transformation_scale_center_xyz: string;
@@ -106,6 +113,10 @@ export interface ResourcesInterface {
     block_babylon_scene_background_colour_description: string;
     block_babylon_transformation_scale_uniform_description: string;
     block_babylon_transformation_scale_center_uniform_description: string;
+    block_babylon_transformation_rotation_center_x_description: string;
+    block_babylon_transformation_rotation_center_y_description: string;
+    block_babylon_transformation_rotation_center_z_description: string;
+    block_babylon_transformation_rotation_center_axis_description: string;
     block_babylon_transformation_scale_center_xyz_description: string;
     block_babylon_transformation_scale_xyz_description: string;
     block_babylon_transformation_translation_xyz_description: string;
