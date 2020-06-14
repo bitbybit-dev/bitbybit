@@ -178,4 +178,7 @@ export const resourcesLt: ResourcesInterface = {
     block_base_geom_points_transform_points: 'Transformuoti taskus',
     block_base_geom_points_transform_transformation: 'Transformacija',
     block_base_geom_points_transform_description: 'Transformuoti taskus su duota transformacija.',
+    block_base_geom_line_transform_line: 'Transformuoti linija',
+    block_base_geom_line_transform_transformation: 'Transformacija',
+    block_base_geom_line_transform_description: 'Transformuoti linija su duota transformacija.',
 };

@@ -176,4 +176,7 @@ export interface ResourcesInterface {
     block_base_geom_points_transform_points: string;
     block_base_geom_points_transform_transformation: string;
     block_base_geom_points_transform_description: string;
+    block_base_geom_line_transform_line: string;
+    block_base_geom_line_transform_transformation: string;
+    block_base_geom_line_transform_description: string;
 }

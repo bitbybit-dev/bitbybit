@@ -652,6 +652,8 @@ export function toolboxDefinition() {
                 </shadow>
             </value>
         </block>
+        <block type="base_geometry_line_transform">
+        </block>
         <block type="base_geometry_line_length">
         </block>
         <block type="base_geometry_line_start_point">
