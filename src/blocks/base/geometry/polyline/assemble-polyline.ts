@@ -4,6 +4,7 @@ import { createPolylineLengthBlock } from './polyline-length';
 import { createPolylinePointsBlock } from './polyline-points';
 import { createPolylineGetPointsCountBlock } from './polyline-points-count';
 import { createPolylineReverseBlock } from './polyline-reverse';
+import { createPolylineTransformBlock } from './polyline-transform';
 
 export function assemblePolylineBlocks() {
     createPolylineBlock();
@@ -12,4 +13,5 @@ export function assemblePolylineBlocks() {
     createPolylineGetPointsCountBlock();
     createPolylineReverseBlock();
     createPolylineConvertToNurbsCurveBlock();
+    createPolylineTransformBlock();
 }

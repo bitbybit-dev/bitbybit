@@ -181,4 +181,7 @@ export const resourcesLt: ResourcesInterface = {
     block_base_geom_line_transform_line: 'Transformuoti linija',
     block_base_geom_line_transform_transformation: 'Transformacija',
     block_base_geom_line_transform_description: 'Transformuoti linija su duota transformacija.',
+    block_base_geom_polyline_transform_polyline: 'Transformuoti polilinija',
+    block_base_geom_polyline_transform_transformation: 'Transformacija',
+    block_base_geom_polyline_transform_description: 'Transformuoti polilinija su duota transformacija.',
 };

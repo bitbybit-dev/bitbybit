@@ -685,6 +685,8 @@ export function toolboxDefinition() {
                 </shadow>
             </value>
         </block>
+        <block type="base_geometry_polyline_transform">
+        </block>
         <block type="base_geometry_polyline_length">
         </block>
         <block type="base_geometry_polyline_reverse">

@@ -181,4 +181,7 @@ export const resourcesEn: ResourcesInterface = {
     block_base_geom_line_transform_line: 'Transform line',
     block_base_geom_line_transform_transformation: 'Transformation',
     block_base_geom_line_transform_description: 'Transforms the line with provided transformation.',
+    block_base_geom_polyline_transform_polyline: 'Transform polyline',
+    block_base_geom_polyline_transform_transformation: 'Transformation',
+    block_base_geom_polyline_transform_description: 'Transforms the polyline with provided transformation.',
 };
