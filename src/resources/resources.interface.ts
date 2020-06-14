@@ -58,6 +58,7 @@ export interface ResourcesInterface {
     block_interval: string;
     block_scale: string;
     block_vector: string;
+    block_vectors: string;
     block_angle: string;
     block_axis: string;
     block_transform: string;
@@ -199,4 +200,6 @@ export interface ResourcesInterface {
     block_verb_core_vector_add_input_first: string;
     block_verb_core_vector_add_input_second: string;
     block_verb_core_vector_add_description: string;
+    block_verb_core_vector_add_all_input_vectors: string;
+    block_verb_core_vector_add_all_description: string;
 }

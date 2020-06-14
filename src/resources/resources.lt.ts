@@ -57,6 +57,7 @@ export const resourcesLt: ResourcesInterface = {
     block_interval: 'Intervalas',
     block_scale: 'Didinimas',
     block_vector: 'Vektorius',
+    block_vectors: 'Vektoriai',
     block_angle: 'Kampas',
     block_axis: 'Asis',
     block_u: 'U',
@@ -201,4 +202,6 @@ export const resourcesLt: ResourcesInterface = {
     block_verb_core_vector_add_input_first: 'Sudeti vektoriu',
     block_verb_core_vector_add_input_second: 'Su vektoriumi',
     block_verb_core_vector_add_description: 'Sudeda du vektorius.',
+    block_verb_core_vector_add_all_input_vectors: 'Sudeti visus vektorius',
+    block_verb_core_vector_add_all_description: 'Sudeda visus vektorius.',
 };

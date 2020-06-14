@@ -57,6 +57,7 @@ export const resourcesEn: ResourcesInterface = {
     block_interval: 'Interval',
     block_scale: 'Scale',
     block_vector: 'Vector',
+    block_vectors: 'Vectors',
     block_angle: 'Angle',
     block_axis: 'Axis',
     block_u: 'U',
@@ -200,5 +201,7 @@ export const resourcesEn: ResourcesInterface = {
     block_verb_core_vector_description: 'Constructs a vector from XYZ coordinates.',
     block_verb_core_vector_add_input_first: 'Add vector',
     block_verb_core_vector_add_input_second: 'With vector',
-    block_verb_core_vector_add_description: 'Adds two vectors together.'
+    block_verb_core_vector_add_description: 'Adds two vectors together.',
+    block_verb_core_vector_add_all_input_vectors: 'Add all vectors',
+    block_verb_core_vector_add_all_description: 'Adds all vectors.',
 };
