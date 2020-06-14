@@ -57,6 +57,7 @@ export interface ResourcesInterface {
     block_vector: string;
     block_angle: string;
     block_axis: string;
+    block_transform: string;
     block_validation_required: string;
     block_validation_of_length: string;
     block_validation_higher_or_equal: string;
@@ -166,4 +167,7 @@ export interface ResourcesInterface {
     block_verb_core_interval_get_min: string;
     block_verb_core_interval_get_max_description: string;
     block_verb_core_interval_get_min_description: string;
+    block_verb_geom_curve_transform_curve: string;
+    block_verb_geom_curve_transform_transformation: string;
+    block_verb_geom_curve_transform_description: string;
 }

@@ -59,6 +59,7 @@ export const resourcesEn: ResourcesInterface = {
     block_vector: 'Vector',
     block_angle: 'Angle',
     block_axis: 'Axis',
+    block_transform: 'Transformation',
     block_validation_required: 'must be provided',
     block_validation_of_length: 'must contain item count of',
     block_validation_higher_or_equal: 'must be higher or equal to',
@@ -168,4 +169,7 @@ export const resourcesEn: ResourcesInterface = {
     block_babylon_input_transformation_rotation_center_angle: 'Rotate in angle',
     block_babylon_input_transformation_rotation_center_axis: 'Around axis',
     block_babylon_transformation_rotation_center_axis_description: 'Rotates object around Z axis and a center point.',
+    block_verb_geom_curve_transform_curve: 'Transform curve',
+    block_verb_geom_curve_transform_transformation: 'Transformation',
+    block_verb_geom_curve_transform_description: 'Transforms the curve with Transformation.',
 };

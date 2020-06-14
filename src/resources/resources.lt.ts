@@ -59,6 +59,7 @@ export const resourcesLt: ResourcesInterface = {
     block_vector: 'Vektorius',
     block_angle: 'Kampas',
     block_axis: 'Asis',
+    block_transform: 'Transformacija',
     block_validation_required: 'privalo buti ivesta',
     block_validation_higher_or_equal: 'privalo buti daugiau arba lygu',
     block_validation_lower_or_equal: 'privalo buti maziau arba lygu',
@@ -168,4 +169,7 @@ export const resourcesLt: ResourcesInterface = {
     block_babylon_input_transformation_rotation_center_angle: 'Sukti kampu',
     block_babylon_input_transformation_rotation_center_axis: 'Aplink asi',
     block_babylon_transformation_rotation_center_axis_description: 'Suka objekta aplink pasirinkta asi ir duota taska.',
+    block_verb_geom_curve_transform_curve: 'Transformuoti kreive',
+    block_verb_geom_curve_transform_transformation: 'Transformacija',
+    block_verb_geom_curve_transform_description: 'Transformuoja kreive su duota transformacija.',
 };

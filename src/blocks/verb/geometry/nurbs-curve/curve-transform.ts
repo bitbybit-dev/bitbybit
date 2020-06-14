@@ -1,32 +1,45 @@
-import { Blocks, ALIGN_RIGHT } from "blockly";
+import { ALIGN_RIGHT, Block, Blocks } from 'blockly';
 import * as JavaScript from 'blockly/javascript';
+import { ResourcesService } from '../../../../resources';
+import { createStandardContextIIFE } from '../../../_shared';
+import { makeRequiredValidationModelForInputs, BlockValidationService, ValidationEntityInterface } from '../../../validations';
 
 export function createCurveTransformBlock() {
 
-    Blocks['verb_geometry_nurbs_curve_transform'] = {
-        init: function () {
-            this.appendValueInput("Curve")
-                .setCheck("NurbsCurve")
+    const resources = ResourcesService.getResources();
+    const blockSelector = 'verb_geometry_nurbs_curve_transform';
+
+    Blocks[blockSelector] = {
+        init() {
+            this.appendValueInput('Curve')
+                .setCheck('NurbsCurve')
                 .setAlign(ALIGN_RIGHT)
-                .appendField("Transform the curve");
-            this.appendValueInput("Matrix")
+                .appendField(resources.block_verb_geom_curve_transform_curve);
+            this.appendValueInput('Matrix')
                 .setAlign(ALIGN_RIGHT)
-                .appendField("with matrix");
-            this.setOutput(true, "NurbsCurve");
-            this.setColour("#fff");
-            this.setTooltip("Transforms the curve by transformation matrix (translation, rotation, scale...).");
-            this.setHelpUrl("");
+                .appendField(resources.block_verb_geom_curve_transform_transformation);
+            this.setOutput(true, 'NurbsCurve');
+            this.setColour('#fff');
+            this.setTooltip(resources.block_verb_geom_curve_transform_description);
+            this.setHelpUrl('');
         }
     };
 
-    JavaScript['verb_geometry_nurbs_curve_transform'] = function (block) {
-        let value_curve = JavaScript.valueToCode(block, 'Curve', JavaScript.ORDER_ATOMIC);
-        let value_matrix = JavaScript.valueToCode(block, 'Matrix', JavaScript.ORDER_ATOMIC);
+    JavaScript[blockSelector] = (block: Block) => {
+        const inputs = {
+            curve: JavaScript.valueToCode(block, 'Curve', JavaScript.ORDER_ATOMIC),
+            matrix: JavaScript.valueToCode(block, 'Matrix', JavaScript.ORDER_ATOMIC),
+        };
 
-        let code = `
-(() => {
-    const points = ${value_curve}.controlPoints();
-    const transformation = ${value_matrix};
+        // this is first set of validations to check that all inputs are non empty strings
+        BlockValidationService.validate(block, block.workspace, makeRequiredValidationModelForInputs(resources, inputs, [
+            resources.block_curve, resources.block_transform
+        ]));
+
+        const code = createStandardContextIIFE(block, blockSelector, inputs, true,
+`
+    const points = inputs.curve.controlPoints();
+    const transformation = inputs.matrix;
     let transformedControlPoints = points;
     if(transformation.length && transformation.length > 0){
         transformation.forEach(transform => {
@@ -35,11 +48,8 @@ export function createCurveTransformBlock() {
     }else {
         transformedControlPoints = BitByBitBlocklyHelperService.transformPointsByMatrix(points, transformation);
     }
-    const curve = verb.geom.NurbsCurve.byKnotsControlPointsWeights( ${value_curve}.degree(), ${value_curve}.knots(), transformedControlPoints, ${value_curve}.weights());
-    console.log(curve);
-    return curve;
-})()
-`;
+    return verb.geom.NurbsCurve.byKnotsControlPointsWeights(inputs.curve.degree(), inputs.curve.knots(), transformedControlPoints, inputs.curve.weights());
+`);
         return [code, JavaScript.ORDER_ATOMIC];
     };
 }
