@@ -197,5 +197,8 @@ export const resourcesEn: ResourcesInterface = {
     block_verb_core_uv_get_v: 'Get V of UV',
     block_verb_core_uv_get_u_description: 'Gets U parameter of UV.',
     block_verb_core_uv_get_v_description: 'Gets V parameter of UV.',
-    block_verb_core_vector_description: 'Constructs a vector from XYZ coordinates.'
+    block_verb_core_vector_description: 'Constructs a vector from XYZ coordinates.',
+    block_verb_core_vector_add_input_first: 'Add vector',
+    block_verb_core_vector_add_input_second: 'With vector',
+    block_verb_core_vector_add_description: 'Adds two vectors together.'
 };

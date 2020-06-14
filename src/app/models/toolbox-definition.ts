@@ -347,6 +347,23 @@ export function toolboxDefinition() {
     <category name="${resources.block_toolbox_category_core_vector}" categorystyle="verb_core_category">
         <block type="verb_core_vector">
         </block>
+        <block type="verb_core_vector">
+            <value name="X">
+                <shadow type="math_number">
+                    <field name="NUM">0</field>
+                </shadow>
+            </value>
+            <value name="Y">
+                <shadow type="math_number">
+                    <field name="NUM">0</field>
+                </shadow>
+            </value>
+            <value name="Z">
+                <shadow type="math_number">
+                    <field name="NUM">0</field>
+                </shadow>
+            </value>
+        </block>
         <block type="verb_core_vector_angle_between">
         </block>
         <block type="verb_core_vector_angle_between_normalized_2d">
