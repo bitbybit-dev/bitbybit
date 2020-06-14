@@ -172,4 +172,10 @@ export const resourcesLt: ResourcesInterface = {
     block_verb_geom_curve_transform_curve: 'Transformuoti kreive',
     block_verb_geom_curve_transform_transformation: 'Transformacija',
     block_verb_geom_curve_transform_description: 'Transformuoja kreive su duota transformacija.',
+    block_base_geom_point_transform_point: 'Transformuoti taska',
+    block_base_geom_point_transform_transformation: 'Transformacija',
+    block_base_geom_point_transform_description: 'Transformuoti taska su duota transformacija.',
+    block_base_geom_points_transform_points: 'Transformuoti taskus',
+    block_base_geom_points_transform_transformation: 'Transformacija',
+    block_base_geom_points_transform_description: 'Transformuoti taskus su duota transformacija.',
 };

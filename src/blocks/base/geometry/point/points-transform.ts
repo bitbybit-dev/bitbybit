@@ -4,36 +4,36 @@ import { ResourcesInterface, ResourcesService } from '../../../../resources';
 import { createStandardContextIIFE } from '../../../_shared';
 import { getRequired, makeRequiredValidationModelForInputs, BlockValidationService, ValidationEntityInterface } from '../../../validations';
 
-export function createCurveTransformBlock() {
+export function createPointsTransformBlock() {
 
     const resources = ResourcesService.getResources();
-    const blockSelector = 'verb_geometry_nurbs_curve_transform';
+    const blockSelector = 'base_geometry_points_transform';
 
     Blocks[blockSelector] = {
         init() {
-            this.appendValueInput('Curve')
-                .setCheck('NurbsCurve')
+            this.appendValueInput('Points')
+                .setCheck('Array')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_verb_geom_curve_transform_curve);
+                .appendField(resources.block_base_geom_points_transform_points);
             this.appendValueInput('Matrix')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_verb_geom_curve_transform_transformation);
-            this.setOutput(true, 'NurbsCurve');
+                .appendField(resources.block_base_geom_points_transform_transformation);
+            this.setOutput(true, 'Array');
             this.setColour('#fff');
-            this.setTooltip(resources.block_verb_geom_curve_transform_description);
+            this.setTooltip(resources.block_base_geom_points_transform_description);
             this.setHelpUrl('');
         }
     };
 
     JavaScript[blockSelector] = (block: Block) => {
         const inputs = {
-            curve: JavaScript.valueToCode(block, 'Curve', JavaScript.ORDER_ATOMIC),
+            points: JavaScript.valueToCode(block, 'Points', JavaScript.ORDER_ATOMIC),
             matrix: JavaScript.valueToCode(block, 'Matrix', JavaScript.ORDER_ATOMIC),
         };
 
         // this is first set of validations to check that all inputs are non empty strings
         BlockValidationService.validate(block, block.workspace, makeRequiredValidationModelForInputs(resources, inputs, [
-            resources.block_curve, resources.block_transform
+            resources.block_points, resources.block_transform
         ]));
 
         // this creates validation model to be used at runtime to evaluate real values of inputs
@@ -41,18 +41,17 @@ export function createCurveTransformBlock() {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `
-    const points = inputs.curve.controlPoints();
+`
     const transformation = inputs.matrix;
-    let transformedControlPoints = points;
+    let transformedControlPoints = inputs.points;
     if(transformation.length && transformation.length > 0){
         transformation.forEach(transform => {
             transformedControlPoints = BitByBitBlocklyHelperService.transformPointsByMatrix(transformedControlPoints, transform);
         });
-    }else {
-        transformedControlPoints = BitByBitBlocklyHelperService.transformPointsByMatrix(points, transformation);
+    } else {
+        transformedControlPoints = BitByBitBlocklyHelperService.transformPointsByMatrix(transformedControlPoints, transformation);
     }
-    return verb.geom.NurbsCurve.byKnotsControlPointsWeights(inputs.curve.degree(), inputs.curve.knots(), transformedControlPoints, inputs.curve.weights());
+    return transformedControlPoints;
 `);
         return [code, JavaScript.ORDER_ATOMIC];
     };
@@ -66,7 +65,7 @@ function makeRuntimeValidationModel(
     return [{
         entity: keys[0],
         validations: [
-            getRequired(resources, resources.block_curve),
+            getRequired(resources, resources.block_points),
         ]
     },
     {

@@ -503,6 +503,10 @@ export function toolboxDefinition() {
                 </shadow>
             </value>
         </block>
+        <block type="base_geometry_point_transform">
+        </block>
+        <block type="base_geometry_points_transform">
+        </block>
         <block type="base_geometry_point_distance">
         </block>
         <block type="base_geometry_point_x">
