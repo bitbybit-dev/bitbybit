@@ -12,7 +12,7 @@ import {
 
 export function createDrawSurfacesBlock() {
 
-    const resources = ResourcesService.getResourcesForSelectedLanguage();
+    const resources = ResourcesService.getResources();
     const blockSelector = 'babylon_draw_surfaces';
 
     Blocks[blockSelector] = {

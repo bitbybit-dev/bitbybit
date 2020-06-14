@@ -6,7 +6,7 @@ import { makeRequiredValidationModelForInputs, BlockValidationService } from '..
 
 export function createLineConvertToNurbsCurveBlock() {
 
-    const resources = ResourcesService.getResourcesForSelectedLanguage();
+    const resources = ResourcesService.getResources();
     const blockSelector = 'base_geometry_line_convert_to_nurbs_curve';
 
     Blocks[blockSelector] = {

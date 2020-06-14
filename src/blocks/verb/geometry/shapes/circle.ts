@@ -6,7 +6,7 @@ import { makeRequiredValidationModelForInputs, BlockValidationService } from '..
 
 export function createShapesCircleBlock() {
 
-    const resources = ResourcesService.getResourcesForSelectedLanguage();
+    const resources = ResourcesService.getResources();
     const blockSelector = 'verb_geometry_nurbs_curve_circle';
 
     Blocks[blockSelector] = {

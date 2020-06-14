@@ -6,7 +6,7 @@ import { makeRequiredValidationModelForInputs, BlockValidationService } from '..
 
 export function createLineEndPointBlock() {
 
-    const resources = ResourcesService.getResourcesForSelectedLanguage();
+    const resources = ResourcesService.getResources();
     const blockSelector = 'base_geometry_line_end_point';
 
     Blocks[blockSelector] = {

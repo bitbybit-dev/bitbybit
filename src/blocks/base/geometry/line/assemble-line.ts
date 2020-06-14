@@ -4,6 +4,7 @@ import { createLineEndPointBlock } from './line-end-point';
 import { createLineLengthBlock } from './line-length';
 import { createLineReverseBlock } from './line-reverse';
 import { createLineStartPointBlock } from './line-start-point';
+import { createLineTransformBlock } from './line-transform';
 
 export function assembleLineBlocks() {
     createLineBlock();
@@ -12,4 +13,5 @@ export function assembleLineBlocks() {
     createLineEndPointBlock();
     createLineReverseBlock();
     createLineConvertToNurbsCurveBlock();
+    createLineTransformBlock();
 }

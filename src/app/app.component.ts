@@ -1,24 +1,26 @@
-import { Component, OnInit, AfterViewInit } from '@angular/core';
-import { svgResize, inject, Theme, Xml, WorkspaceSvg } from 'blockly';
-import * as JavaScript from 'blockly/javascript';
-
-import { constantsModel } from './models/constants.model';
-import '@babylonjs/core/Meshes/meshBuilder';
-import '@babylonjs/core/Materials/standardMaterial';
+import { AfterViewInit, Component, OnInit } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
+import { ActivatedRoute, Router } from '@angular/router';
+import { ArcRotateCamera, DirectionalLight } from '@babylonjs/core';
 import { Engine } from '@babylonjs/core/Engines/engine';
-import { Scene } from '@babylonjs/core/scene';
-import { Vector3, Color4, Color3 } from '@babylonjs/core/Maths/math';
+import '@babylonjs/core/Materials/standardMaterial';
+import { Color3, Color4, Vector3 } from '@babylonjs/core/Maths/math';
 import { Mesh } from '@babylonjs/core/Meshes/mesh';
+import '@babylonjs/core/Meshes/meshBuilder';
+import { Scene } from '@babylonjs/core/scene';
+import { inject, svgResize, Theme, WorkspaceSvg, Xml } from 'blockly';
+import * as JavaScript from 'blockly/javascript';
+import { prepareBabylonForBlockly } from '../babylon-to-blockly';
+import { assembleBlocks } from '../blocks/assemble-blocks';
+import { languagesEnum, ResourcesInterface, ResourcesService } from '../resources';
+import { AboutDialogComponent } from './components/about-dialog/about-dialog.component';
+import { AlertDialogComponent } from './components/alert-dialog/alert-dialog.component';
+import { ExamplesDialogComponent } from './components/examples-dialog/examples-dialog.component';
+import { SponsorsDialogComponent } from './components/sponsors-dialog/sponsors-dialog.component';
+import { ExamplesService } from './examples/example-service';
+import { constantsModel } from './models/constants.model';
 import { themeStyle } from './models/theme-styles.model';
 import { toolboxDefinition } from './models/toolbox-definition';
-import { ArcRotateCamera, DirectionalLight } from '@babylonjs/core';
-import { MatDialog } from '@angular/material/dialog';
-import { ExamplesDialogComponent } from './components/examples-dialog/examples-dialog.component';
-import { AboutDialogComponent } from './components/about-dialog/about-dialog.component';
-import { SponsorsDialogComponent } from './components/sponsors-dialog/sponsors-dialog.component';
-import { AlertDialogComponent } from './components/alert-dialog/alert-dialog.component';
-import { Router, ActivatedRoute } from '@angular/router';
-import { ExamplesService } from './examples/example-service';
 
 @Component({
     selector: 'app-root',
@@ -35,6 +37,7 @@ export class AppComponent implements OnInit, AfterViewInit {
     engine: Engine;
     windowBlockly;
     constants = constantsModel;
+    resources: ResourcesInterface;
 
     constructor(
         public dialog: MatDialog,
@@ -111,6 +114,12 @@ export class AppComponent implements OnInit, AfterViewInit {
     }
 
     ngOnInit(): void {
+
+        ResourcesService.setLanguage(languagesEnum.en);
+        this.resources = ResourcesService.getResources();
+        prepareBabylonForBlockly();
+        assembleBlocks();
+
         const el = document.getElementById('blocklyArea');
         el.insertAdjacentHTML('afterend', toolboxDefinition());
     }
@@ -176,7 +185,19 @@ export class AppComponent implements OnInit, AfterViewInit {
     }
 
     about() {
+        // ResourcesService.setLanguage(languagesEnum.lt);
+        // assembleBlocks();
+        // const xml = Xml.workspaceToDom(this.workspace);
+        // this.workspace.clear();
+        // Xml.domToWorkspace(xml, this.workspace);
+
+        // this.workspace.zoomToFit();
+        // this.workspace.zoomCenter(-3);
+
         this.openAboutDialog();
+    }
+
+    settings(){
     }
 
     sponsors() {
@@ -207,6 +228,7 @@ const BABYLON = window.BABYLON;
 const verb = window.verb;
 const Blockly = window.BlocklyGlobal;
 const BlockValidationService = window.BlockValidationService;
+const BitByBitBlocklyHelperService = window.BitByBitBlocklyHelperService;
 ${code}
             `);
         } catch (e) {

@@ -1,24 +1,24 @@
 <mat-drawer-container class="main-container">
     <mat-drawer class="main-side" mode="side" opened>
-        <img class="logo" matTooltip="BitByBit" src="assets/logo-small.png">
+        <img class="logo" [matTooltip]="resources.bit_by_bit" src="assets/logo-small.png">
         <div class="actions">
             <button mat-buttom mat-icon-button (click)="run()">
-                <mat-icon matTooltip="Run the code" aria-label="Run the code">play_arrow
+                <mat-icon [matTooltip]="resources.app_menu_run_code" aria-label="Run the code">play_arrow
                 </mat-icon>
             </button>
             <button mat-buttom mat-icon-button (click)="drawer.toggle()">
-                <mat-icon matTooltip="Swap canvas" aria-label="Swap Canvas">swap_horiz
+                <mat-icon [matTooltip]="resources.app_menu_swap_canvas" aria-label="Swap Canvas">swap_horiz
                 </mat-icon>
             </button>
-            <a matTooltip="Support us on Patreon" mat-icon-button href="https://www.patreon.com/bitbybitdev"
+            <a [matTooltip]="resources.app_menu_support_us_on_patreon" mat-icon-button href="https://www.patreon.com/bitbybitdev"
                 target="_blank">
                 <img width="16px" src="../assets/logo-patreon.svg">
             </a>
             <button mat-buttom mat-icon-button (click)="cleanCanvas()">
-                <mat-icon matTooltip="Clean canvas" aria-label="Clean Canvas">refresh
+                <mat-icon [matTooltip]="resources.app_menu_clean_canvas" aria-label="Clean Canvas">refresh
                 </mat-icon>
             </button>
-            <button matTooltip="More" mat-buttom mat-icon-button [matMenuTriggerFor]="appMenu">
+            <button [matTooltip]="resources.app_menu_more" mat-buttom mat-icon-button [matMenuTriggerFor]="appMenu">
                 <mat-icon aria-hidden="false" aria-label="More">more_vert
                 </mat-icon>
             </button>
@@ -26,33 +26,38 @@
                 <button mat-menu-item (click)="import()">
                     <mat-icon aria-hidden="false" aria-label="Import">get_app
                     </mat-icon>
-                    Import
+                    {{resources.app_menu_more_import}}
                     <input type="file" id="exampleInput" style="display: none" />
                 </button>
                 <button mat-menu-item (click)="export()">
                     <mat-icon aria-hidden="false" aria-label="Export">publish
                     </mat-icon>
-                    Export
+                    {{resources.app_menu_more_export}}
                 </button>
                 <button mat-menu-item (click)="examples()" [matMenuTriggerFor]="social">
-                    <mat-icon aria-hidden="false" aria-label="Examples">forum
+                    <mat-icon aria-hidden="false" aria-label="Community">forum
                     </mat-icon>
-                    Community
+                    {{resources.app_menu_more_community}}
                 </button>
                 <button mat-menu-item (click)="sponsors()">
-                    <mat-icon aria-hidden="false" aria-label="Examples">monetization_on
+                    <mat-icon aria-hidden="false" aria-label="Sponsors">monetization_on
                     </mat-icon>
-                    Sponsors
+                    {{resources.app_menu_more_sponsors}}
                 </button>
                 <button mat-menu-item (click)="examples()">
                     <mat-icon aria-hidden="false" aria-label="Examples">library_books
                     </mat-icon>
-                    Examples
+                    {{resources.app_menu_more_examples}}
                 </button>
+                <!-- <button mat-menu-item (click)="settings()">
+                    <mat-icon aria-hidden="false" aria-label="Settings">settings
+                    </mat-icon>
+                    {{resources.app_menu_more_settings}}
+                </button> -->
                 <button mat-menu-item (click)="about()">
                     <mat-icon aria-hidden="false" aria-label="About">help_outline
                     </mat-icon>
-                    About
+                    {{resources.app_menu_more_about}}
                 </button>
             </mat-menu>
             <mat-menu #social="matMenu">
@@ -63,6 +68,10 @@
                 <a mat-menu-item href="https://discord.gg/GSe3VMe" target="_blank">
                     <img class="mat-icon" width="20px" src="../assets/logo-discord.svg">
                     Discord
+                </a>
+                <a mat-menu-item href="https://www.youtube.com/channel/UCWM0VODRsLYOjB2IAaFHBSQ" target="_blank">
+                    <img class="mat-icon" width="20px" src="../assets/logo-youtube.svg" />
+                    Youtube
                 </a>
                 <a mat-menu-item href="https://www.instagram.com/bitbybit.dev/" target="_blank">
                     <img class="mat-icon" width="20px" src="../assets/logo-instagram.svg">

@@ -6,7 +6,7 @@ import { makeRequiredValidationModelForInputs, BlockValidationService } from '..
 
 export function createLineReverseBlock() {
 
-    const resources = ResourcesService.getResourcesForSelectedLanguage();
+    const resources = ResourcesService.getResources();
     const blockSelector = 'base_geometry_line_reverse';
 
     Blocks[blockSelector] = {

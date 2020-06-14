@@ -1,32 +1,85 @@
-import { Blocks, ALIGN_RIGHT } from "blockly";
+import { ALIGN_RIGHT, Block, Blocks } from 'blockly';
 import * as JavaScript from 'blockly/javascript';
+import { ResourcesInterface, ResourcesService } from '../../../../resources';
+import { createStandardContextIIFE } from '../../../_shared';
+import { getRequired, makeRequiredValidationModelForInputs, BlockValidationService, ValidationEntityInterface } from '../../../validations';
 
 export function createSurfaceTransformBlock() {
 
-    Blocks['verb_geometry_nurbs_surface_transform'] = {
-        init: function () {
-            this.appendValueInput("Surface")
-                .setCheck("NurbsSurface")
+    const resources = ResourcesService.getResources();
+    const blockSelector = 'verb_geometry_nurbs_surface_transform';
+
+    Blocks[blockSelector] = {
+        init() {
+            this.appendValueInput('Surface')
+                .setCheck('NurbsSurface')
                 .setAlign(ALIGN_RIGHT)
-                .appendField("Transform the surface");
-            this.appendValueInput("Matrix")
-                .setCheck("Matrix")
+                .appendField(resources.block_verb_geom_surface_transform_surface);
+            this.appendValueInput('Matrix')
                 .setAlign(ALIGN_RIGHT)
-                .appendField("with matrix");
-            this.setOutput(true, "Array");
-            this.setColour("#fff");
-            this.setTooltip("Transforms the surface by transformation matrix (translation, rotation, scale...).");
-            this.setHelpUrl("");
+                .appendField(resources.block_verb_geom_surface_transform_transformation);
+            this.setOutput(true, 'NurbsSurface');
+            this.setColour('#fff');
+            this.setTooltip(resources.block_verb_geom_surface_transform_description);
+            this.setHelpUrl('');
         }
     };
 
-    JavaScript['verb_geometry_nurbs_surface_transform'] = function (block) {
-        let value_surface = JavaScript.valueToCode(block, 'Surface', JavaScript.ORDER_ATOMIC);
-        let value_matrix = JavaScript.valueToCode(block, 'Matrix', JavaScript.ORDER_ATOMIC);
+    JavaScript[blockSelector] = (block: Block) => {
+        const inputs = {
+            surface: JavaScript.valueToCode(block, 'Surface', JavaScript.ORDER_ATOMIC),
+            matrix: JavaScript.valueToCode(block, 'Matrix', JavaScript.ORDER_ATOMIC),
+        };
 
-        let code = `
-(() => ${value_surface}.transform(${value_matrix}))()
-`;
+        // this is first set of validations to check that all inputs are non empty strings
+        BlockValidationService.validate(block, block.workspace, makeRequiredValidationModelForInputs(resources, inputs, [
+            resources.block_surface, resources.block_transform
+        ]));
+
+        // this creates validation model to be used at runtime to evaluate real values of inputs
+        const runtimeValidationModel = makeRuntimeValidationModel(resources, Object.keys(inputs));
+        (block as any).validationModel = runtimeValidationModel;
+
+        const code = createStandardContextIIFE(block, blockSelector, inputs, true,
+            `
+    const points = inputs.surface.controlPoints();
+    const transformation = inputs.matrix;
+    let twoDimensionalPoints = [];
+    points.forEach(ptCollection => {
+        console.log(ptCollection);
+        let transformedControlPoints = ptCollection;
+        if(transformation.length && transformation.length > 0){
+            transformation.forEach(transform => {
+                transformedControlPoints = BitByBitBlocklyHelperService.transformPointsByMatrix(transformedControlPoints, transform);
+            });
+        } else {
+            transformedControlPoints = BitByBitBlocklyHelperService.transformPointsByMatrix(transformedControlPoints, transformation);
+        }
+        twoDimensionalPoints.push(transformedControlPoints);
+    });
+    console.log(twoDimensionalPoints);
+    return verb.geom.NurbsSurface.byKnotsControlPointsWeights(inputs.surface.degreeU(), inputs.surface.degreeV(), inputs.surface.knotsU(), inputs.surface.knotsV(), twoDimensionalPoints, inputs.surface.weights());
+`);
         return [code, JavaScript.ORDER_ATOMIC];
     };
 }
+
+function makeRuntimeValidationModel(
+    resources: ResourcesInterface,
+    keys: string[]
+): ValidationEntityInterface[] {
+
+    return [{
+        entity: keys[0],
+        validations: [
+            getRequired(resources, resources.block_surface),
+        ]
+    },
+    {
+        entity: keys[1],
+        validations: [
+            getRequired(resources, resources.block_transform),
+        ]
+    }];
+}
+

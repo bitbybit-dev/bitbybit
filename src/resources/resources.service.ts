@@ -5,23 +5,28 @@ import { resourcesLt } from './resources.lt';
 
 export class ResourcesService {
     static languageSelected: languagesEnum;
+    static resources: ResourcesInterface = resourcesEn;
+    static getResources(): ResourcesInterface {
+        return ResourcesService.resources;
+    }
 
-    static getResourcesForSelectedLanguage(): ResourcesInterface {
-        let resources: ResourcesInterface;
-        switch (ResourcesService.languageSelected) {
-            case languagesEnum.en:
-                resources = resourcesEn;
-                break;
-            case languagesEnum.lt:
-                resources = resourcesLt;
-                break;
-            default:
-                break;
-        }
-        return resources;
+    private static updateResources(resources: ResourcesInterface, languageResources: ResourcesInterface) {
+        Object.keys(resources).forEach(key => {
+            resources[key] = languageResources[key];
+        });
     }
 
     static setLanguage(language: languagesEnum) {
         ResourcesService.languageSelected = language;
+        switch (ResourcesService.languageSelected) {
+            case languagesEnum.en:
+                ResourcesService.updateResources(ResourcesService.resources, resourcesEn);
+                break;
+            case languagesEnum.lt:
+                ResourcesService.updateResources(ResourcesService.resources, resourcesLt);
+                break;
+            default:
+                break;
+        }
     }
 }

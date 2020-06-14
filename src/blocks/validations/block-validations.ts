@@ -27,4 +27,19 @@ export class BlockValidations {
         return entity >= validationData.min && entity <= validationData.max;
     }
 
+    static smallerThan(entity: number, validationData: { propName: string }, inputs): boolean {
+        return entity < inputs[validationData.propName];
+    }
+
+    static largerThan(entity: number, validationData: { propName: string }, inputs): boolean {
+        return entity > inputs[validationData.propName];
+    }
+
+    static smallerOrEqualThan(entity: number, validationData: { propName: string }, inputs): boolean {
+        return entity <= inputs[validationData.propName];
+    }
+
+    static largerOrEqualThan(entity: number, validationData: { propName: string }, inputs): boolean {
+        return entity >= inputs[validationData.propName];
+    }
 }
