@@ -58,6 +58,7 @@ export interface ResourcesInterface {
     block_interval: string;
     block_scale: string;
     block_vector: string;
+    block_scalar: string;
     block_vectors: string;
     block_angle: string;
     block_axis: string;
@@ -216,4 +217,10 @@ export interface ResourcesInterface {
     block_verb_core_vector_distance_input_first: string;
     block_verb_core_vector_distance_input_second: string;
     block_verb_core_vector_distance_description: string;
+    block_verb_core_vector_distance_squared_input_first: string;
+    block_verb_core_vector_distance_squared_input_second: string;
+    block_verb_core_vector_distance_squared_description: string;
+    block_verb_core_vector_div_input_vector: string;
+    block_verb_core_vector_div_input_scalar: string;
+    block_verb_core_vector_div_description: string;
 }

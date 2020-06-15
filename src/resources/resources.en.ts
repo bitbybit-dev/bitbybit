@@ -63,6 +63,7 @@ export const resourcesEn: ResourcesInterface = {
     block_u: 'U',
     block_v: 'V',
     block_uv: 'UV',
+    block_scalar: 'Scalar',
     block_transform: 'Transformation',
     block_validation_required: 'must be provided',
     block_validation_of_length: 'must contain item count of',
@@ -218,4 +219,10 @@ export const resourcesEn: ResourcesInterface = {
     block_verb_core_vector_distance_input_first: 'Distance between first vector',
     block_verb_core_vector_distance_input_second: 'Second vector',
     block_verb_core_vector_distance_description: 'Measures distance between two vectors.',
+    block_verb_core_vector_distance_squared_input_first: 'Squared distance between first vector',
+    block_verb_core_vector_distance_squared_input_second: 'Second vector',
+    block_verb_core_vector_distance_squared_description: 'Measures a squared distance between two vectors.',
+    block_verb_core_vector_div_input_vector: 'Divide a vector',
+    block_verb_core_vector_div_input_scalar: 'By a scalar',
+    block_verb_core_vector_div_description: 'Divides a vector by a scalar number.',
 };

@@ -1,30 +1,67 @@
-import { Blocks, ALIGN_RIGHT } from "blockly";
+import { ALIGN_RIGHT, Block, Blocks } from 'blockly';
 import * as JavaScript from 'blockly/javascript';
+import { ResourcesInterface, ResourcesService } from '../../../../resources';
+import { createStandardContextIIFE } from '../../../_shared';
+import { getRequired, makeRequiredValidationModelForInputs, BlockValidationService, ValidationEntityInterface } from '../../../validations';
 
 export function createCoreVectorDivBlock() {
 
-    Blocks['verb_core_vector_div'] = {
-        init: function () {
-            this.appendValueInput("Vector")
-                .setCheck("Array")
+    const resources = ResourcesService.getResources();
+    const blockSelector = 'verb_core_vector_div';
+
+    Blocks[blockSelector] = {
+        init() {
+            this.appendValueInput('Vector')
+                .setCheck('Array')
                 .setAlign(ALIGN_RIGHT)
-                .appendField("Divide vector");
-            this.appendValueInput("Scalar")
-                .setCheck("Number")
+                .appendField(resources.block_verb_core_vector_div_input_vector)
+            this.appendValueInput('Scalar')
+                .setCheck('Number')
                 .setAlign(ALIGN_RIGHT)
-                .appendField("by a scalar");
-            this.setOutput(true, "Array");
-            this.setColour("#fff");
-            this.setTooltip("Divides a vector by a scalar.");
-            this.setHelpUrl("");
+                .appendField(resources.block_verb_core_vector_div_input_scalar);
+            this.setOutput(true, 'Array');
+            this.setColour('#fff');
+            this.setTooltip(resources.block_verb_core_vector_div_description);
+            this.setHelpUrl('');
         }
     };
 
-    JavaScript['verb_core_vector_div'] = function (block) {
-        let value_vector = JavaScript.valueToCode(block, 'Vector', JavaScript.ORDER_ATOMIC);
-        let value_scalar = JavaScript.valueToCode(block, 'Scalar', JavaScript.ORDER_ATOMIC);
+    JavaScript[blockSelector] = (block: Block) => {
+        const inputs = {
+            vector: JavaScript.valueToCode(block, 'Vector', JavaScript.ORDER_ATOMIC),
+            scalar: JavaScript.valueToCode(block, 'Scalar', JavaScript.ORDER_ATOMIC),
+        };
 
-        let code = `(() => verb.core.Vec.div(${value_vector}, ${value_scalar}))()`;
+        // this is first set of validations to check that all inputs are non empty strings
+        BlockValidationService.validate(block, block.workspace, makeRequiredValidationModelForInputs(resources, inputs, [
+            resources.block_vector, resources.block_scalar
+        ]));
+
+        // this creates validation model to be used at runtime to evaluate real values of inputs
+        const runtimeValidationModel = makeRuntimeValidationModel(resources, Object.keys(inputs));
+        (block as any).validationModel = runtimeValidationModel;
+
+        const code = createStandardContextIIFE(block, blockSelector, inputs, true,
+            `return verb.core.Vec.div(inputs.vector, inputs.scalar);`);
+
         return [code, JavaScript.ORDER_ATOMIC];
     };
+}
+
+function makeRuntimeValidationModel(
+    resources: ResourcesInterface,
+    keys: string[]
+): ValidationEntityInterface[] {
+
+    return [{
+        entity: keys[0],
+        validations: [
+            getRequired(resources, resources.block_vector),
+        ]
+    }, {
+        entity: keys[1],
+        validations: [
+            getRequired(resources, resources.block_scalar),
+        ]
+    }];
 }
