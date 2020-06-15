@@ -210,4 +210,10 @@ export interface ResourcesInterface {
     block_verb_core_vector_angle_between_normalized_2d_input_first: string;
     block_verb_core_vector_angle_between_normalized_2d_input_second: string;
     block_verb_core_vector_angle_between_normalized_2d_description: string;
+    block_verb_core_vector_cross_input_first: string;
+    block_verb_core_vector_cross_input_second: string;
+    block_verb_core_vector_cross_description: string;
+    block_verb_core_vector_distance_input_first: string;
+    block_verb_core_vector_distance_input_second: string;
+    block_verb_core_vector_distance_description: string;
 }

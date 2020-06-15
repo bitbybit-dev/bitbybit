@@ -212,4 +212,10 @@ export const resourcesEn: ResourcesInterface = {
     block_verb_core_vector_angle_between_normalized_2d_input_first: 'Normalized 2d angle between first vector',
     block_verb_core_vector_angle_between_normalized_2d_input_second: 'Second vector',
     block_verb_core_vector_angle_between_normalized_2d_description: 'Measures normalized 2d angle between two vectors.',
+    block_verb_core_vector_cross_input_first: 'Cross first vector',
+    block_verb_core_vector_cross_input_second: 'Second vector',
+    block_verb_core_vector_cross_description: 'Crossess two vectors.',
+    block_verb_core_vector_distance_input_first: 'Distance between first vector',
+    block_verb_core_vector_distance_input_second: 'Second vector',
+    block_verb_core_vector_distance_description: 'Measures distance between two vectors.',
 };

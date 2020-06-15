@@ -212,4 +212,10 @@ export const resourcesLt: ResourcesInterface = {
     block_verb_core_vector_angle_between_normalized_2d_input_first: 'Normalizuotas 2d kampas tarp pirmo vektoriaus',
     block_verb_core_vector_angle_between_normalized_2d_input_second: 'Antro vektoriaus',
     block_verb_core_vector_angle_between_normalized_2d_description: 'Matuoja normalizuota 2d kampa tarp dvieju vektoriu.',
+    block_verb_core_vector_cross_input_first: 'Kryzminti vektoriu',
+    block_verb_core_vector_cross_input_second: 'Su vektoriumi',
+    block_verb_core_vector_cross_description: 'Sukryzimina du vektorius.',
+    block_verb_core_vector_distance_input_first: 'Atstumas tarp vektoriaus',
+    block_verb_core_vector_distance_input_second: 'Ir vektoriaus',
+    block_verb_core_vector_distance_description: 'Matuoja atstuma tarp dvieju vektoriu.',
 };
