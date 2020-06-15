@@ -225,4 +225,9 @@ export const resourcesLt: ResourcesInterface = {
     block_verb_core_vector_div_input_vector: 'Dalinti vektoriu',
     block_verb_core_vector_div_input_scalar: 'Is skaiciaus',
     block_verb_core_vector_div_description: 'Dalina vektoriu is skaiciaus.',
+    block_verb_core_vector_domain_input_vector: 'Vektoriaus domenas',
+    block_verb_core_vector_domain_description: 'Matuoja vektoriaus domena.',
+    block_verb_core_vector_dot_input_vector: 'Taskinis produktas tarp vektoriaus',
+    block_verb_core_vector_dot_input_scalar: 'Ir vektoriaus',
+    block_verb_core_vector_dot_description: 'Matuoja taskini produkta tarp dvieju vektoriu.'
 };

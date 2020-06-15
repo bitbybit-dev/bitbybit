@@ -14,7 +14,7 @@ export function createCoreVectorDivBlock() {
             this.appendValueInput('Vector')
                 .setCheck('Array')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_verb_core_vector_div_input_vector)
+                .appendField(resources.block_verb_core_vector_div_input_vector);
             this.appendValueInput('Scalar')
                 .setCheck('Number')
                 .setAlign(ALIGN_RIGHT)

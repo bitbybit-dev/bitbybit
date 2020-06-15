@@ -225,4 +225,9 @@ export const resourcesEn: ResourcesInterface = {
     block_verb_core_vector_div_input_vector: 'Divide a vector',
     block_verb_core_vector_div_input_scalar: 'By a scalar',
     block_verb_core_vector_div_description: 'Divides a vector by a scalar number.',
+    block_verb_core_vector_domain_input_vector: 'Domain of the vector',
+    block_verb_core_vector_domain_description: 'Measures the domain of the vector.',
+    block_verb_core_vector_dot_input_vector: 'Dot product between vector',
+    block_verb_core_vector_dot_input_scalar: 'Second vector',
+    block_verb_core_vector_dot_description: 'Measures dot product between two vectors.'
 };

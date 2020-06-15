@@ -223,4 +223,9 @@ export interface ResourcesInterface {
     block_verb_core_vector_div_input_vector: string;
     block_verb_core_vector_div_input_scalar: string;
     block_verb_core_vector_div_description: string;
+    block_verb_core_vector_domain_input_vector: string;
+    block_verb_core_vector_domain_description: string;
+    block_verb_core_vector_dot_input_vector: string;
+    block_verb_core_vector_dot_input_scalar: string;
+    block_verb_core_vector_dot_description: string;
 }
