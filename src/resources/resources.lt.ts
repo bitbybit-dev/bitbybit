@@ -204,4 +204,6 @@ export const resourcesLt: ResourcesInterface = {
     block_verb_core_vector_add_description: 'Sudeda du vektorius.',
     block_verb_core_vector_add_all_input_vectors: 'Sudeti visus vektorius',
     block_verb_core_vector_add_all_description: 'Sudeda visus vektorius.',
+    block_verb_core_vector_all_input: 'Visi binarai teigiami',
+    block_verb_core_vector_all_description: 'Patikrina ar visi binarai kolekcijoje yra teigiami',
 };

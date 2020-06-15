@@ -396,15 +396,7 @@ export function toolboxDefinition() {
         </block>
         <block type="verb_core_vector_add_all">
         </block>
-        <block type="verb_core_vector_add_all_mutate">
-        </block>
-        <block type="verb_core_vector_add_mutate">
-        </block>
         <block type="verb_core_vector_is_zero">
-        </block>
-        <block type="verb_core_vector_mul_mutate">
-        </block>
-        <block type="verb_core_vector_sub_mutate">
         </block>
         <block type="verb_core_vector_norm">
         </block>

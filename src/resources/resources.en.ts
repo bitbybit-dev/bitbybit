@@ -204,4 +204,6 @@ export const resourcesEn: ResourcesInterface = {
     block_verb_core_vector_add_description: 'Adds two vectors together.',
     block_verb_core_vector_add_all_input_vectors: 'Add all vectors',
     block_verb_core_vector_add_all_description: 'Adds all vectors.',
+    block_verb_core_vector_all_input: 'All booleans true',
+    block_verb_core_vector_all_description: 'Checks if all booleans are true in the vector.',
 };

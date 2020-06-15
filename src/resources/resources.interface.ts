@@ -202,4 +202,6 @@ export interface ResourcesInterface {
     block_verb_core_vector_add_description: string;
     block_verb_core_vector_add_all_input_vectors: string;
     block_verb_core_vector_add_all_description: string;
+    block_verb_core_vector_all_input: string;
+    block_verb_core_vector_all_description: string;
 }
