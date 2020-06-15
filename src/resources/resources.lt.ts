@@ -229,5 +229,7 @@ export const resourcesLt: ResourcesInterface = {
     block_verb_core_vector_domain_description: 'Matuoja vektoriaus domena.',
     block_verb_core_vector_dot_input_vector: 'Taskinis produktas tarp vektoriaus',
     block_verb_core_vector_dot_input_scalar: 'Ir vektoriaus',
-    block_verb_core_vector_dot_description: 'Matuoja taskini produkta tarp dvieju vektoriu.'
+    block_verb_core_vector_dot_description: 'Matuoja taskini produkta tarp dvieju vektoriu.',
+    block_verb_core_vector_finite_input_vector: 'Tikrinti begalybes vektoriuje',
+    block_verb_core_vector_finite_description: 'Tikrina ar vektoriuje yra begaliniu elementu ir grazina binarine buliu kolekcija kiekvienam elementui.',
 };

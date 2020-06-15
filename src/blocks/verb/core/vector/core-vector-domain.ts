@@ -15,7 +15,7 @@ export function createCoreVectorDomainBlock() {
                 .setCheck('Array')
                 .setAlign(ALIGN_RIGHT)
                 .appendField(resources.block_verb_core_vector_domain_input_vector);
-            this.setOutput(true, 'Array');
+            this.setOutput(true, 'Number');
             this.setColour('#fff');
             this.setTooltip(resources.block_verb_core_vector_domain_description);
             this.setHelpUrl('');

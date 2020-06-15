@@ -228,4 +228,6 @@ export interface ResourcesInterface {
     block_verb_core_vector_dot_input_vector: string;
     block_verb_core_vector_dot_input_scalar: string;
     block_verb_core_vector_dot_description: string;
+    block_verb_core_vector_finite_input_vector: string;
+    block_verb_core_vector_finite_description: string;
 }

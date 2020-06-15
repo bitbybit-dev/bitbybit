@@ -229,5 +229,7 @@ export const resourcesEn: ResourcesInterface = {
     block_verb_core_vector_domain_description: 'Measures the domain of the vector.',
     block_verb_core_vector_dot_input_vector: 'Dot product between vector',
     block_verb_core_vector_dot_input_scalar: 'Second vector',
-    block_verb_core_vector_dot_description: 'Measures dot product between two vectors.'
+    block_verb_core_vector_dot_description: 'Measures dot product between two vectors.',
+    block_verb_core_vector_finite_input_vector: 'Check for infinity in vector',
+    block_verb_core_vector_finite_description: 'Creates collection of booleans that identify if elements in the list are finite or not.',
 };
