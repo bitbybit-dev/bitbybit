@@ -206,4 +206,10 @@ export const resourcesLt: ResourcesInterface = {
     block_verb_core_vector_add_all_description: 'Sudeda visus vektorius.',
     block_verb_core_vector_all_input: 'Visi binarai teigiami',
     block_verb_core_vector_all_description: 'Patikrina ar visi binarai kolekcijoje yra teigiami',
+    block_verb_core_vector_angle_between_input_first: 'Kampas tarp pirmo vektoriaus',
+    block_verb_core_vector_angle_between_input_second: 'Antro vektoriaus',
+    block_verb_core_vector_angle_between_description: 'Matuoja kampa tarp dvieju vektoriu.',
+    block_verb_core_vector_angle_between_normalized_2d_input_first: 'Normalizuotas 2d kampas tarp pirmo vektoriaus',
+    block_verb_core_vector_angle_between_normalized_2d_input_second: 'Antro vektoriaus',
+    block_verb_core_vector_angle_between_normalized_2d_description: 'Matuoja normalizuota 2d kampa tarp dvieju vektoriu.',
 };

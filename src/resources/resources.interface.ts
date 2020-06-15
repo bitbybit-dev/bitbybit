@@ -204,4 +204,10 @@ export interface ResourcesInterface {
     block_verb_core_vector_add_all_description: string;
     block_verb_core_vector_all_input: string;
     block_verb_core_vector_all_description: string;
+    block_verb_core_vector_angle_between_input_first: string;
+    block_verb_core_vector_angle_between_input_second: string;
+    block_verb_core_vector_angle_between_description: string;
+    block_verb_core_vector_angle_between_normalized_2d_input_first: string;
+    block_verb_core_vector_angle_between_normalized_2d_input_second: string;
+    block_verb_core_vector_angle_between_normalized_2d_description: string;
 }

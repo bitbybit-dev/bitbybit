@@ -206,4 +206,10 @@ export const resourcesEn: ResourcesInterface = {
     block_verb_core_vector_add_all_description: 'Adds all vectors.',
     block_verb_core_vector_all_input: 'All booleans true',
     block_verb_core_vector_all_description: 'Checks if all booleans are true in the vector.',
+    block_verb_core_vector_angle_between_input_first: 'Angle between first vector',
+    block_verb_core_vector_angle_between_input_second: 'Second vector',
+    block_verb_core_vector_angle_between_description: 'Measures an angle between two vectors.',
+    block_verb_core_vector_angle_between_normalized_2d_input_first: 'Normalized 2d angle between first vector',
+    block_verb_core_vector_angle_between_normalized_2d_input_second: 'Second vector',
+    block_verb_core_vector_angle_between_normalized_2d_description: 'Measures normalized 2d angle between two vectors.',
 };
