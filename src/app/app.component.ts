@@ -10,7 +10,7 @@ import '@babylonjs/core/Meshes/meshBuilder';
 import { Scene } from '@babylonjs/core/scene';
 import { inject, svgResize, Theme, WorkspaceSvg, Xml } from 'blockly';
 import * as JavaScript from 'blockly/javascript';
-import { BlockValidationService } from 'src/blocks/validations';
+import { BitByBitBlockHandlerService } from 'src/blocks/validations';
 import { prepareBabylonForBlockly } from '../babylon-to-blockly';
 import { assembleBlocks } from '../blocks/assemble-blocks';
 import { languagesEnum, ResourcesInterface, ResourcesService } from '../resources';
@@ -22,6 +22,7 @@ import { ExamplesService } from './examples/example-service';
 import { constantsModel } from './models/constants.model';
 import { themeStyle } from './models/theme-styles.model';
 import { toolboxDefinition } from './models/toolbox-definition';
+import * as Blockly from 'blockly';
 
 @Component({
     selector: 'app-root',
@@ -110,6 +111,7 @@ export class AppComponent implements OnInit, AfterViewInit {
                     }
                 }
             });
+
         }, 500);
 
     }
@@ -228,13 +230,13 @@ const blocklyWorkspace = window.blockly.workspace;
 const BABYLON = window.BABYLON;
 const verb = window.verb;
 const Blockly = window.BlocklyGlobal;
-const BlockValidationService = window.BlockValidationService;
+const BitByBitBlockHandlerService = window.BitByBitBlockHandlerService;
 const BitByBitBlocklyHelperService = window.BitByBitBlocklyHelperService;
 ${code}
             `);
         } catch (e) {
-            const blockThatWasActive = this.workspace.getBlockById(BlockValidationService.runningBlockId);
-            BlockValidationService.handleBlockException(blockThatWasActive, e);
+            const blockThatWasActive = this.workspace.getBlockById(BitByBitBlockHandlerService.runningBlockId);
+            BitByBitBlockHandlerService.handleBlockException(blockThatWasActive, e);
             this.openAlertDialog({
                 title: 'Code execution failed',
                 details: `Something went wrong when running the code. Check if there are no disconnected or misconfigured components on your canvas`,

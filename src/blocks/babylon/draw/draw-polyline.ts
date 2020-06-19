@@ -7,7 +7,7 @@ import {
     getRequiredAndMin,
     getRequiredAndRange,
     makeRequiredValidationModelForInputs,
-    BlockValidationService,
+    BitByBitBlockHandlerService,
     ValidationEntityInterface
 } from '../../validations';
 
@@ -50,7 +50,7 @@ export function createDrawPolylineBlock() {
         };
 
         // this is first set of validations to check that all inputs are non empty strings
-        BlockValidationService.validate(block, block.workspace, makeRequiredValidationModelForInputs(resources, inputs, [
+        BitByBitBlockHandlerService.validate(block, block.workspace, makeRequiredValidationModelForInputs(resources, inputs, [
             resources.block_polyline, resources.block_colour, resources.block_opacity, resources.block_width
         ]));
 

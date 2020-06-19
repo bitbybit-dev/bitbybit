@@ -2,7 +2,7 @@ import { ALIGN_RIGHT, Block, Blocks } from 'blockly';
 import * as JavaScript from 'blockly/javascript';
 import { ResourcesInterface, ResourcesService } from '../../../../resources';
 import { createStandardContextIIFE } from '../../../_shared';
-import { getRequired, getSmallerOrEqualThan, makeRequiredValidationModelForInputs, BlockValidationService, ValidationEntityInterface } from '../../../validations';
+import { getRequired, getSmallerOrEqualThan, makeRequiredValidationModelForInputs, BitByBitBlockHandlerService, ValidationEntityInterface } from '../../../validations';
 
 export function createCoreIntervalBlock() {
 
@@ -33,7 +33,7 @@ export function createCoreIntervalBlock() {
         };
 
         // this is first set of validations to check that all inputs are non empty strings
-        BlockValidationService.validate(block, block.workspace, makeRequiredValidationModelForInputs(resources, inputs, [
+        BitByBitBlockHandlerService.validate(block, block.workspace, makeRequiredValidationModelForInputs(resources, inputs, [
             resources.block_min, resources.block_max
         ]));
 

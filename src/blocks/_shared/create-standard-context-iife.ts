@@ -8,9 +8,7 @@ export function createStandardContextIIFE(block: Block, componentName: string, i
     const inputs = {};
     ${Object.keys(inputs).map(key => assignInputs(key, inputs)).join(`;
     `)};
-    BlockValidationService.runningBlockId = '${block.id}'
-    const currentBlock = blocklyWorkspace.getBlockById(BlockValidationService.runningBlockId);
-    BlockValidationService.runtimeValidation(currentBlock, inputs);
+    BitByBitBlockHandlerService.handleBlock(blocklyWorkspace, '${block.id}', inputs)
 
     ${body}
 

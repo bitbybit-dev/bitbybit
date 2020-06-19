@@ -6,7 +6,7 @@ import {
     getOfLength,
     getRequired,
     makeRequiredValidationModelForInputs,
-    BlockValidationService,
+    BitByBitBlockHandlerService,
     ValidationEntityInterface
 } from '../../../validations';
 
@@ -38,7 +38,7 @@ export function createLineBlock() {
         };
 
         // this is first set of validations to check that all inputs are non empty strings
-        BlockValidationService.validate(block, block.workspace, makeRequiredValidationModelForInputs(resources, inputs, [
+        BitByBitBlockHandlerService.validate(block, block.workspace, makeRequiredValidationModelForInputs(resources, inputs, [
             resources.block_point, resources.block_point
         ]));
 

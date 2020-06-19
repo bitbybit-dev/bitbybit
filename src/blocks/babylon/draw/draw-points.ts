@@ -7,7 +7,7 @@ import {
     getRequiredAndMin,
     getRequiredAndRange,
     makeRequiredValidationModelForInputs,
-    BlockValidationService,
+    BitByBitBlockHandlerService,
     ValidationEntityInterface
 } from '../../validations';
 
@@ -51,7 +51,7 @@ export function createDrawPointsBlock() {
         };
 
         // this is first set of validations to check that all inputs are non empty strings
-        BlockValidationService.validate(block, block.workspace, makeRequiredValidationModelForInputs(resources, inputs, [
+        BitByBitBlockHandlerService.validate(block, block.workspace, makeRequiredValidationModelForInputs(resources, inputs, [
             resources.block_points, resources.block_colour, resources.block_opacity, resources.block_size
         ]));
 
