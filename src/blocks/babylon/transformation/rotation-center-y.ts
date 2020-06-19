@@ -18,7 +18,7 @@ export function createRotationCenterYBlock() {
             this.appendValueInput('Center')
                 .setCheck('Array')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_center);
+                .appendField(resources.block_center.toLowerCase());
             this.setOutput(true, 'Array');
             this.setColour('#fff');
             this.setTooltip(resources.block_babylon_transformation_rotation_center_y_description);

@@ -17,7 +17,7 @@ export function createPolylineTransformBlock() {
                 .appendField(resources.block_base_geom_polyline_transform_polyline);
             this.appendValueInput('Matrix')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_base_geom_polyline_transform_transformation);
+                .appendField(resources.block_base_geom_polyline_transform_transformation.toLowerCase());
             this.setOutput(true, 'Polyline');
             this.setColour('#fff');
             this.setTooltip(resources.block_base_geom_polyline_transform_description);

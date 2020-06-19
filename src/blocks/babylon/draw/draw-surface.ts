@@ -24,11 +24,11 @@ export function createDrawSurfaceBlock() {
             this.appendValueInput('Colour')
                 .setCheck('Colour')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_babylon_input_colour);
+                .appendField(resources.block_babylon_input_colour.toLowerCase());
             this.appendValueInput('Opacity')
                 .setCheck('Number')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_babylon_input_opacity);
+                .appendField(resources.block_babylon_input_opacity.toLowerCase());
             this.setColour('#fff');
             this.setPreviousStatement(true, null);
             this.setNextStatement(true, null);

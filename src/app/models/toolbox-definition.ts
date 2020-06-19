@@ -104,7 +104,7 @@ export function toolboxDefinition() {
         <block type="verb_core_uv_get_v">
         </block>
     </category>
-    <category name="Core Transforms" categorystyle="verb_core_category">
+    <category name="${resources.block_toolbox_category_core_transforms}" categorystyle="verb_core_category">
         <block type="babylon_transformation_scale_uniform">
             <value name="Scale">
                 <shadow type="math_number">

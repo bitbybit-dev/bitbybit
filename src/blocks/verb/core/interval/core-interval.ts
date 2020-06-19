@@ -18,7 +18,7 @@ export function createCoreIntervalBlock() {
             this.appendValueInput('Max')
                 .setCheck('Number')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_verb_core_interval_input_max);
+                .appendField(resources.block_verb_core_interval_input_max.toLowerCase());
             this.setOutput(true, 'Interval');
             this.setColour('#fff');
             this.setTooltip(resources.block_verb_core_interval_description);

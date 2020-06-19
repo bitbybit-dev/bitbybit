@@ -18,7 +18,7 @@ export function createPointDistanceBlock() {
             this.appendValueInput('EndPoint')
                 .setCheck('Array')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_base_geometry_point_distance_second_point);
+                .appendField(resources.block_base_geometry_point_distance_second_point.toLowerCase());
             this.setOutput(true, 'Number');
             this.setColour('#fff');
             this.setTooltip(resources.block_base_geometry_point_distance_description);

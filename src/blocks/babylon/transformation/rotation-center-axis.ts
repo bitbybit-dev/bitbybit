@@ -18,7 +18,7 @@ export function createRotationCenterAxisBlock() {
             this.appendValueInput('Axis')
                 .setCheck('Array')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_babylon_input_transformation_rotation_center_axis);
+                .appendField(resources.block_babylon_input_transformation_rotation_center_axis.toLowerCase());
             this.appendValueInput('Center')
                 .setCheck('Array')
                 .setAlign(ALIGN_RIGHT)

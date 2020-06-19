@@ -25,39 +25,39 @@ export function createDrawGridBlock() {
             this.appendValueInput('Height')
                 .setCheck('Number')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_babylon_input_height);
+                .appendField(resources.block_babylon_input_height.toLowerCase());
             this.appendValueInput('Subdivisions')
                 .setCheck('Number')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_babylon_input_subdivisions);
+                .appendField(resources.block_babylon_input_subdivisions.toLowerCase());
             this.appendValueInput('MajorUnitFrequency')
                 .setCheck('Number')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_babylon_input_major_unit_frequency);
+                .appendField(resources.block_babylon_input_major_unit_frequency.toLowerCase());
             this.appendValueInput('MinorUnitVisibility')
                 .setCheck('Number')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_babylon_input_minor_unit_visibility);
+                .appendField(resources.block_babylon_input_minor_unit_visibility.toLowerCase());
             this.appendValueInput('GridRatio')
                 .setCheck('Number')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_babylon_input_grid_ratio);
+                .appendField(resources.block_babylon_input_grid_ratio.toLowerCase());
             this.appendValueInput('Opacity')
                 .setCheck('Number')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_babylon_input_opacity);
+                .appendField(resources.block_babylon_input_opacity.toLowerCase());
             this.appendValueInput('BackFaceCulling')
                 .setCheck('Boolean')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_babylon_input_back_face_culling);
+                .appendField(resources.block_babylon_input_back_face_culling.toLowerCase());
             this.appendValueInput('MainColor')
                 .setCheck('Colour')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_babylon_input_main_colour);
+                .appendField(resources.block_babylon_input_main_colour.toLowerCase());
             this.appendValueInput('LineColor')
                 .setCheck('Colour')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_babylon_input_secondary_colour);
+                .appendField(resources.block_babylon_input_secondary_colour.toLowerCase());
             this.setPreviousStatement(true, null);
             this.setNextStatement(true, null);
             this.setColour('#fff');

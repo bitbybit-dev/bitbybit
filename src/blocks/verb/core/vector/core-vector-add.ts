@@ -18,7 +18,7 @@ export function createCoreVectorAddBlock() {
             this.appendValueInput('Second')
                 .setCheck('Array')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_verb_core_vector_add_input_second);
+                .appendField(resources.block_verb_core_vector_add_input_second.toLowerCase());
             this.setOutput(true, 'Array');
             this.setColour('#fff');
             this.setTooltip(resources.block_verb_core_vector_add_description);

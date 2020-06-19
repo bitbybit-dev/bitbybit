@@ -18,7 +18,7 @@ export function createCoreVectorAngleBetweenBlock() {
             this.appendValueInput('Second')
                 .setCheck('Array')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_verb_core_vector_angle_between_input_second);
+                .appendField(resources.block_verb_core_vector_angle_between_input_second.toLowerCase());
             this.setOutput(true, 'Number');
             this.setColour('#fff');
             this.setTooltip(resources.block_verb_core_vector_angle_between_description);

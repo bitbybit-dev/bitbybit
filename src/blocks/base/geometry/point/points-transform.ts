@@ -17,7 +17,7 @@ export function createPointsTransformBlock() {
                 .appendField(resources.block_base_geom_points_transform_points);
             this.appendValueInput('Matrix')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_base_geom_points_transform_transformation);
+                .appendField(resources.block_base_geom_points_transform_transformation.toLowerCase());
             this.setOutput(true, 'Array');
             this.setColour('#fff');
             this.setTooltip(resources.block_base_geom_points_transform_description);

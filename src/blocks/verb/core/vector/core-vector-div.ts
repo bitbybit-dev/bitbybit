@@ -18,7 +18,7 @@ export function createCoreVectorDivBlock() {
             this.appendValueInput('Scalar')
                 .setCheck('Number')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_verb_core_vector_div_input_scalar);
+                .appendField(resources.block_verb_core_vector_div_input_scalar.toLowerCase());
             this.setOutput(true, 'Array');
             this.setColour('#fff');
             this.setTooltip(resources.block_verb_core_vector_div_description);

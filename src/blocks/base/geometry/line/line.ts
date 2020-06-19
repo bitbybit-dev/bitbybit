@@ -24,7 +24,7 @@ export function createLineBlock() {
             this.appendValueInput('EndPoint')
                 .setCheck('Array')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_base_geometry_input_line_end_point);
+                .appendField(resources.block_base_geometry_input_line_end_point.toLowerCase());
             this.setOutput(true, 'Line');
             this.setColour('#fff');
             this.setTooltip(resources.block_base_geometry_line_description);

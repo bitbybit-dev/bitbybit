@@ -17,7 +17,7 @@ export function createLineTransformBlock() {
                 .appendField(resources.block_base_geom_line_transform_line);
             this.appendValueInput('Matrix')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_base_geom_line_transform_transformation);
+                .appendField(resources.block_base_geom_line_transform_transformation.toLowerCase());
             this.setOutput(true, 'Line');
             this.setColour('#fff');
             this.setTooltip(resources.block_base_geom_line_transform_description);

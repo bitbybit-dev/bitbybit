@@ -18,7 +18,7 @@ export function createCoreVectorAngleBetweenNormalized2dBlock() {
             this.appendValueInput('Second')
                 .setCheck('Array')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_verb_core_vector_angle_between_normalized_2d_input_second);
+                .appendField(resources.block_verb_core_vector_angle_between_normalized_2d_input_second.toLowerCase());
             this.setOutput(true, 'Number');
             this.setColour('#fff');
             this.setTooltip(resources.block_verb_core_vector_angle_between_normalized_2d_description);
