@@ -22,7 +22,6 @@ import { ExamplesService } from './examples/example-service';
 import { constantsModel } from './models/constants.model';
 import { themeStyle } from './models/theme-styles.model';
 import { toolboxDefinition } from './models/toolbox-definition';
-import * as Blockly from 'blockly';
 
 @Component({
     selector: 'app-root',
