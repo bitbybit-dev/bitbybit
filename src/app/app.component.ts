@@ -10,6 +10,7 @@ import '@babylonjs/core/Meshes/meshBuilder';
 import { Scene } from '@babylonjs/core/scene';
 import { inject, svgResize, Theme, WorkspaceSvg, Xml } from 'blockly';
 import * as JavaScript from 'blockly/javascript';
+import { BlockValidationService } from 'src/blocks/validations';
 import { prepareBabylonForBlockly } from '../babylon-to-blockly';
 import { assembleBlocks } from '../blocks/assemble-blocks';
 import { languagesEnum, ResourcesInterface, ResourcesService } from '../resources';
@@ -232,6 +233,8 @@ const BitByBitBlocklyHelperService = window.BitByBitBlocklyHelperService;
 ${code}
             `);
         } catch (e) {
+            const blockThatWasActive = this.workspace.getBlockById(BlockValidationService.runningBlockId);
+            BlockValidationService.handleBlockException(blockThatWasActive, e);
             this.openAlertDialog({
                 title: 'Code execution failed',
                 details: `Something went wrong when running the code. Check if there are no disconnected or misconfigured components on your canvas`,

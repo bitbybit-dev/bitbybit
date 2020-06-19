@@ -8,14 +8,12 @@ export function createStandardContextIIFE(block: Block, componentName: string, i
     const inputs = {};
     ${Object.keys(inputs).map(key => assignInputs(key, inputs)).join(`;
     `)};
-    const currentBlock = blocklyWorkspace.getBlockById('${block.id}');
+    BlockValidationService.runningBlockId = '${block.id}'
+    const currentBlock = blocklyWorkspace.getBlockById(BlockValidationService.runningBlockId);
     BlockValidationService.runtimeValidation(currentBlock, inputs);
 
-    try {
-        ${body}
-    } catch (e) {
-        BlockValidationService.handleBlockException(currentBlock, e)
-    }
+    ${body}
+
     /* End Component: "${componentName}" */
 })()${returns ? '' : ';'}
 `;
