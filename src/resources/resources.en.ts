@@ -70,6 +70,9 @@ export const resourcesEn: ResourcesInterface = {
     block_fraction: 'Fraction',
     block_transform: 'Transformation',
     block_reference: 'Reference',
+    block_knots: 'Knots',
+    block_weights: 'Weights',
+    block_degree: 'Degree',
     block_step: 'Step',
     block_validation_required: 'must be provided',
     block_validation_of_length: 'must contain item count of',
@@ -281,5 +284,10 @@ export const resourcesEn: ResourcesInterface = {
     block_verb_core_vector_span_input_step: 'At step',
     block_verb_core_vector_span_description: 'Populates the array of numbers between minimum and maximum values at a given step.',
     block_verb_core_vector_sum_input_vector: 'Sum all elements of a vector',
-    block_verb_core_vector_sum_description: 'Sums all of the elements of a vector.'
+    block_verb_core_vector_sum_description: 'Sums all of the elements of a vector.',
+    block_verb_geometry_nurbs_curve_by_knots_control_points_weights_input_knots: 'Curve by knots',
+    block_verb_geometry_nurbs_curve_by_knots_control_points_weights_input_control_points: 'Control points',
+    block_verb_geometry_nurbs_curve_by_knots_control_points_weights_input_weights: 'Weights',
+    block_verb_geometry_nurbs_curve_by_knots_control_points_weights_input_degree: 'Of degree',
+    block_verb_geometry_nurbs_curve_by_knots_control_points_weights_description: 'Creates a curve of degree by knots, control points and weights.',
 };

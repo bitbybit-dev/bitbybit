@@ -61,6 +61,9 @@ export interface ResourcesInterface {
     block_interval: string;
     block_scale: string;
     block_vector: string;
+    block_knots: string;
+    block_weights: string;
+    block_degree: string;
     block_distance: string;
     block_fraction: string;
     block_scalar: string;
@@ -280,4 +283,10 @@ export interface ResourcesInterface {
     block_verb_core_vector_range_description: string;
     block_verb_core_vector_sum_input_vector: string;
     block_verb_core_vector_sum_description: string;
+    block_verb_geometry_nurbs_curve_by_knots_control_points_weights_input_knots: string;
+    block_verb_geometry_nurbs_curve_by_knots_control_points_weights_input_control_points: string;
+    block_verb_geometry_nurbs_curve_by_knots_control_points_weights_input_weights: string;
+    block_verb_geometry_nurbs_curve_by_knots_control_points_weights_input_degree: string;
+    block_verb_geometry_nurbs_curve_by_knots_control_points_weights_description: string;
+
 }

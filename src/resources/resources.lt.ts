@@ -70,7 +70,10 @@ export const resourcesLt: ResourcesInterface = {
     block_fraction: 'Frakcija',
     block_transform: 'Transformacija',
     block_step: 'Zingsnis',
-    block_reference: 'Eralonas',
+    block_reference: 'Etalonas',
+    block_knots: 'Saitai',
+    block_weights: 'Svoriai',
+    block_degree: 'Laipsnis',
     block_validation_required: 'privalo buti ivesta',
     block_validation_higher_or_equal: 'privalo buti daugiau arba lygu',
     block_validation_lower_or_equal: 'privalo buti maziau arba lygu',
@@ -281,5 +284,10 @@ export const resourcesLt: ResourcesInterface = {
     block_verb_core_vector_span_input_step: 'Zingsniu',
     block_verb_core_vector_span_description: 'Sukuria skaiciu rinkini tarp minimumo ir maksimumo nurodytu zingsniu.',
     block_verb_core_vector_sum_input_vector: 'Susumuoti visus vektoriaus elementus',
-    block_verb_core_vector_sum_description: 'Susumuoja visus vektoriaus elementus.'
+    block_verb_core_vector_sum_description: 'Susumuoja visus vektoriaus elementus.',
+    block_verb_geometry_nurbs_curve_by_knots_control_points_weights_input_knots: 'Kreive su saitais',
+    block_verb_geometry_nurbs_curve_by_knots_control_points_weights_input_control_points: 'Kontroliniais taskais',
+    block_verb_geometry_nurbs_curve_by_knots_control_points_weights_input_weights: 'Svoriais',
+    block_verb_geometry_nurbs_curve_by_knots_control_points_weights_input_degree: 'Ir laipsniu',
+    block_verb_geometry_nurbs_curve_by_knots_control_points_weights_description: 'Sukuria duoto laipsnio kreive su saitais, kontroliniais taskais ir svoriais.',
 };
