@@ -49,6 +49,8 @@ export interface ResourcesInterface {
     block_lines: string;
     block_curve: string;
     block_curves: string;
+    block_parameter: string;
+    block_num_derivatives: string;
     block_colour: string;
     block_opacity: string;
     block_width: string;
@@ -307,4 +309,9 @@ export interface ResourcesInterface {
     block_verb_geometry_nurbs_curve_closest_points_description: string;
     block_verb_geometry_nurbs_curve_degree_input_curve: string;
     block_verb_geometry_nurbs_curve_degree_description: string;
+    block_verb_geometry_nurbs_curve_derivatives_input_curve: string;
+    block_verb_geometry_nurbs_curve_derivatives_input_parameter: string;
+    block_verb_geometry_nurbs_curve_derivatives_input_num_derivatives: string;
+    block_verb_geometry_nurbs_curve_derivatives_description: string;
+
 }

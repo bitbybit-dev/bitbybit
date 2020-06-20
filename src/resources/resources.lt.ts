@@ -74,6 +74,8 @@ export const resourcesLt: ResourcesInterface = {
     block_knots: 'Saitai',
     block_weights: 'Svoriai',
     block_degree: 'Laipsnis',
+    block_num_derivatives: 'Isvestiniu skaicius',
+    block_parameter: 'Parametras',
     block_validation_required: 'privalo buti ivesta',
     block_validation_higher_or_equal: 'privalo buti daugiau arba lygu',
     block_validation_lower_or_equal: 'privalo buti maziau arba lygu',
@@ -309,4 +311,8 @@ export const resourcesLt: ResourcesInterface = {
     block_verb_geometry_nurbs_curve_closest_points_description: 'Randa arciausius kreives taskus nuo duotu tasku kolekcijos.',    
     block_verb_geometry_nurbs_curve_degree_input_curve: 'Kreives laipsnis',
     block_verb_geometry_nurbs_curve_degree_description: 'Grazina kreives laipsni.',
+    block_verb_geometry_nurbs_curve_derivatives_input_curve: 'Kreives isvestines',
+    block_verb_geometry_nurbs_curve_derivatives_input_parameter: 'Ant parametro',
+    block_verb_geometry_nurbs_curve_derivatives_input_num_derivatives: 'Isvestiniu skaicius',
+    block_verb_geometry_nurbs_curve_derivatives_description: 'Gauna nurodyta skaiciu kreives isvestiu ant parametro.',
 };

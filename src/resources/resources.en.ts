@@ -73,7 +73,9 @@ export const resourcesEn: ResourcesInterface = {
     block_knots: 'Knots',
     block_weights: 'Weights',
     block_degree: 'Degree',
+    block_num_derivatives: 'Number of derivatives',
     block_step: 'Step',
+    block_parameter: 'Parameter',
     block_validation_required: 'must be provided',
     block_validation_of_length: 'must contain item count of',
     block_validation_higher_or_equal: 'must be higher or equal to',
@@ -309,4 +311,8 @@ export const resourcesEn: ResourcesInterface = {
     block_verb_geometry_nurbs_curve_closest_points_description: 'Finds the closest points on the curve from a list of points.',
     block_verb_geometry_nurbs_curve_degree_input_curve: 'Degree of the curve',
     block_verb_geometry_nurbs_curve_degree_description: 'Returns the degree of the curve.',
+    block_verb_geometry_nurbs_curve_derivatives_input_curve: 'Derivatives of the curve',
+    block_verb_geometry_nurbs_curve_derivatives_input_parameter: 'At parameter',
+    block_verb_geometry_nurbs_curve_derivatives_input_num_derivatives: 'Number of derivatives',
+    block_verb_geometry_nurbs_curve_derivatives_description: 'Gets the derivatives of the curve.',
 };
