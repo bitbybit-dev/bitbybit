@@ -306,5 +306,7 @@ export const resourcesLt: ResourcesInterface = {
     block_verb_geometry_nurbs_curve_closest_point_description: 'Randa arciausia taska ant kreives nuo duoto tasko.',
     block_verb_geometry_nurbs_curve_closest_points_input_curve: 'Arciausi taskai ant kreives',
     block_verb_geometry_nurbs_curve_closest_points_input_points: 'Nuo tasku',
-    block_verb_geometry_nurbs_curve_closest_points_description: 'Randa arciausius kreives taskus nuo duotu tasku kolekcijos.',
+    block_verb_geometry_nurbs_curve_closest_points_description: 'Randa arciausius kreives taskus nuo duotu tasku kolekcijos.',    
+    block_verb_geometry_nurbs_curve_degree_input_curve: 'Kreives laipsnis',
+    block_verb_geometry_nurbs_curve_degree_description: 'Grazina kreives laipsni.',
 };

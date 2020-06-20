@@ -307,5 +307,6 @@ export const resourcesEn: ResourcesInterface = {
     block_verb_geometry_nurbs_curve_closest_points_input_curve: 'Closest points on the curve',
     block_verb_geometry_nurbs_curve_closest_points_input_points: 'From points',
     block_verb_geometry_nurbs_curve_closest_points_description: 'Finds the closest points on the curve from a list of points.',
-    
+    block_verb_geometry_nurbs_curve_degree_input_curve: 'Degree of the curve',
+    block_verb_geometry_nurbs_curve_degree_description: 'Returns the degree of the curve.',
 };
