@@ -859,7 +859,7 @@ export function toolboxDefinition() {
         </block>
         <block type="verb_geometry_nurbs_curve_tangent">
         </block>
-        <block type="verb_geometry_nurbs_curve_tesselate">
+        <block type="verb_geometry_nurbs_curve_tessellate">
         </block>
     </category>
     <category name="${resources.block_toolbox_category_geom_surface}" categorystyle="geometry_category">

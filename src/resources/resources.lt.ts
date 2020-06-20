@@ -348,5 +348,11 @@ export const resourcesLt: ResourcesInterface = {
     block_verb_geometry_nurbs_curve_split_input_curve: 'Perkirpty kreive',
     block_verb_geometry_nurbs_curve_split_input_param: 'Ties parametru',
     block_verb_geometry_nurbs_curve_split_description: 'Perkerpa kreive i dvi dalis ties parametru ir grazina dvi kreives.',
+    block_verb_geometry_nurbs_curve_tangent_input_curve: 'Kreives tangents',
+    block_verb_geometry_nurbs_curve_tangent_input_param: 'Ties parametru',
+    block_verb_geometry_nurbs_curve_tangent_description: 'Grazina tangentini kreives vektoriu ties duotu parametru.',
+    block_verb_geometry_nurbs_curve_tessellate_input_curve: 'Isskaidyti kreive',
+    block_verb_geometry_nurbs_curve_tessellate_input_tolerance: 'Su tolerancija',
+    block_verb_geometry_nurbs_curve_tessellate_description: 'Isskaido kreive i taskus duota tolerancija.',
 
 };

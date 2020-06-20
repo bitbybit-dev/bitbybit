@@ -854,7 +854,7 @@
         </block>
         <block type="verb_geometry_nurbs_curve_tangent">
         </block>
-        <block type="verb_geometry_nurbs_curve_tesselate">
+        <block type="verb_geometry_nurbs_curve_tessellate">
         </block>
     </category>
     <category name="Geom Surface" categorystyle="geometry_category">

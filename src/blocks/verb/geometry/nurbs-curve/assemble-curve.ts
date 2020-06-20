@@ -22,7 +22,7 @@ import { createCurveTransformBlock } from './curve-transform';
 import { createCurveTangentBlock } from './curve-tangent';
 import { createCurveDerivativesBlock } from './curve-derivatives';
 import { createCurveReverseBlock } from './curve-reverse';
-import { createCurveTesselateBlock } from './curve-tesselate';
+import { createCurveTessellateBlock } from './curve-tesselate';
 
 export function assembleCurveBlocks() {
     createCurveByKnotsControlPointsWeightsBlock();
@@ -49,5 +49,5 @@ export function assembleCurveBlocks() {
     createCurveDerivativesBlock();
     createCurveReverseBlock();
     createCurveTangentBlock();
-    createCurveTesselateBlock();
+    createCurveTessellateBlock();
 }

@@ -348,4 +348,10 @@ export const resourcesEn: ResourcesInterface = {
     block_verb_geometry_nurbs_curve_split_input_curve: 'Split the curve',
     block_verb_geometry_nurbs_curve_split_input_param: 'At parameter',
     block_verb_geometry_nurbs_curve_split_description: 'Splits the curve to two parts at parameter and if successfult returns a list of two curves.',
+    block_verb_geometry_nurbs_curve_tangent_input_curve: 'Tangent of curve',
+    block_verb_geometry_nurbs_curve_tangent_input_param: 'At parameter',
+    block_verb_geometry_nurbs_curve_tangent_description: 'Returns a tangent vector of the curve at parameter.',
+    block_verb_geometry_nurbs_curve_tessellate_input_curve: 'Tessellate the curve',
+    block_verb_geometry_nurbs_curve_tessellate_input_tolerance: 'With tolerance',
+    block_verb_geometry_nurbs_curve_tessellate_description: 'Tessellate the curve to points with tolerance.',
 };
