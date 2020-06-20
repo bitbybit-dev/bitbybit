@@ -352,4 +352,6 @@ export interface ResourcesInterface {
     block_verb_geometry_nurbs_curve_tessellate_input_curve: string;
     block_verb_geometry_nurbs_curve_tessellate_input_tolerance: string;
     block_verb_geometry_nurbs_curve_tessellate_description: string;
+    block_verb_geometry_nurbs_curve_weights_input_curve: string;
+    block_verb_geometry_nurbs_curve_weights_description: string;
 }

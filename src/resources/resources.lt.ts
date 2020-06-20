@@ -354,5 +354,7 @@ export const resourcesLt: ResourcesInterface = {
     block_verb_geometry_nurbs_curve_tessellate_input_curve: 'Isskaidyti kreive',
     block_verb_geometry_nurbs_curve_tessellate_input_tolerance: 'Su tolerancija',
     block_verb_geometry_nurbs_curve_tessellate_description: 'Isskaido kreive i taskus duota tolerancija.',
+    block_verb_geometry_nurbs_curve_weights_input_curve: 'Kreives svoriai',
+    block_verb_geometry_nurbs_curve_weights_description: 'Grazina kreives svorius',
 
 };
