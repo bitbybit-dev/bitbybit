@@ -29,7 +29,7 @@ export function createCurveByKnotsControlPointsWeightsBlock() {
                 .appendField(resources.block_verb_geometry_nurbs_curve_by_knots_control_points_weights_input_degree.toLowerCase());
             this.setOutput(true, 'NurbsCurve');
             this.setColour('#fff');
-            this.setTooltip(resources.block_verb_geometry_nurbs_curve_by_knots_control_points_weights_input_degree.toLowerCase());
+            this.setTooltip(resources.block_verb_geometry_nurbs_curve_by_knots_control_points_weights_description);
         }
     };
 

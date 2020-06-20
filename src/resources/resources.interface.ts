@@ -291,4 +291,18 @@ export interface ResourcesInterface {
     block_verb_geometry_nurbs_curve_by_points_inputs_points: string;
     block_verb_geometry_nurbs_curve_by_points_inputs_degree: string;
     block_verb_geometry_nurbs_curve_by_points_description: string;
+    block_verb_geometry_nurbs_curve_clone_input_curve: string;
+    block_verb_geometry_nurbs_curve_clone_description: string;
+    block_verb_geometry_nurbs_curve_closest_param_input_curve: string;
+    block_verb_geometry_nurbs_curve_closest_param_input_point: string;
+    block_verb_geometry_nurbs_curve_closest_param_description: string;
+    block_verb_geometry_nurbs_curve_closest_params_input_curve: string;
+    block_verb_geometry_nurbs_curve_closest_params_input_points: string;
+    block_verb_geometry_nurbs_curve_closest_params_description: string;
+    block_verb_geometry_nurbs_curve_closest_point_input_curve: string;
+    block_verb_geometry_nurbs_curve_closest_point_input_point: string;
+    block_verb_geometry_nurbs_curve_closest_point_description: string;
+    block_verb_geometry_nurbs_curve_closest_points_input_curve: string;
+    block_verb_geometry_nurbs_curve_closest_points_input_points: string;
+    block_verb_geometry_nurbs_curve_closest_points_description: string;
 }

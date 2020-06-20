@@ -18,7 +18,7 @@ export function createCurveByPointsBlock() {
             this.appendValueInput('Degree')
                 .setCheck('Number')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_verb_geometry_nurbs_curve_by_points_inputs_degree);
+                .appendField(resources.block_verb_geometry_nurbs_curve_by_points_inputs_degree.toLowerCase());
             this.setOutput(true, 'NurbsCurve');
             this.setColour('#fff');
             this.setTooltip(resources.block_verb_geometry_nurbs_curve_by_points_description);

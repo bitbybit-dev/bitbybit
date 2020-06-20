@@ -1,35 +1,65 @@
-import { Blocks, ALIGN_RIGHT } from "blockly";
+import { ALIGN_RIGHT, Block, Blocks } from 'blockly';
 import * as JavaScript from 'blockly/javascript';
+import { ResourcesInterface, ResourcesService } from '../../../../resources';
+import { createStandardContextIIFE } from '../../../_shared';
+import { getRequired, makeRequiredValidationModelForInputs, BitByBitBlockHandlerService, ValidationEntityInterface } from '../../../validations';
 
 export function createCurveClosestPointsBlock() {
 
-    Blocks['verb_geometry_nurbs_curve_closest_points'] = {
-        init: function () {
-            this.appendValueInput("Curve")
-                .setCheck("NurbsCurve")
+    const resources = ResourcesService.getResources();
+    const blockSelector = 'verb_geometry_nurbs_curve_closest_points';
+
+    Blocks[blockSelector] = {
+        init() {
+            this.appendValueInput('Curve')
+                .setCheck('NurbsCurve')
                 .setAlign(ALIGN_RIGHT)
-                .appendField("Curve");
-            this.appendValueInput("Points")
-                .setCheck("Array")
+                .appendField(resources.block_verb_geometry_nurbs_curve_closest_points_input_curve);
+            this.appendValueInput('Points')
+                .setCheck('Array')
                 .setAlign(ALIGN_RIGHT)
-                .appendField("closest points");
-            this.setOutput(true, "Array");
-            this.setColour("#fff");
-            this.setTooltip("Find closest points on curve for the list of points.");
-            this.setHelpUrl("");
+                .appendField(resources.block_verb_geometry_nurbs_curve_closest_points_input_points.toLowerCase());
+            this.setOutput(true, 'Array');
+            this.setColour('#fff');
+            this.setTooltip(resources.block_verb_geometry_nurbs_curve_closest_points_description);
         }
     };
 
-    JavaScript['verb_geometry_nurbs_curve_closest_points'] = function (block) {
-        let value_curve = JavaScript.valueToCode(block, 'Curve', JavaScript.ORDER_ATOMIC);
-        let value_points = JavaScript.valueToCode(block, 'Points', JavaScript.ORDER_ATOMIC);
+    JavaScript[blockSelector] = (block: Block) => {
+        const inputs = {
+            curve: JavaScript.valueToCode(block, 'Curve', JavaScript.ORDER_ATOMIC),
+            points: JavaScript.valueToCode(block, 'Points', JavaScript.ORDER_ATOMIC),
+        };
+        // this is first set of validations to check that all inputs are non empty strings
+        BitByBitBlockHandlerService.validate(block, block.workspace, makeRequiredValidationModelForInputs(resources, inputs, [
+            resources.block_curve, resources.block_points
+        ]));
 
-        let code = `
-(() => {
-    let crv = ${value_curve};
-    return ${value_points}.map(p => crv.closestPoint(p)) ;
-})()
-`;
+        // this creates validation model to be used at runtime to evaluate real values of inputs
+        const runtimeValidationModel = makeRuntimeValidationModel(resources, Object.keys(inputs));
+        (block as any).validationModel = runtimeValidationModel;
+
+        const code = createStandardContextIIFE(block, blockSelector, inputs, true,
+            `return inputs.points.map(p => inputs.curve.closestPoint(p)) ;`
+        );
         return [code, JavaScript.ORDER_ATOMIC];
     };
+}
+
+function makeRuntimeValidationModel(
+    resources: ResourcesInterface,
+    keys: string[]
+): ValidationEntityInterface[] {
+
+    return [{
+        entity: keys[0],
+        validations: [
+            getRequired(resources, resources.block_curve),
+        ]
+    }, {
+        entity: keys[1],
+        validations: [
+            getRequired(resources, resources.block_points),
+        ]
+    }];
 }
