@@ -290,4 +290,7 @@ export const resourcesEn: ResourcesInterface = {
     block_verb_geometry_nurbs_curve_by_knots_control_points_weights_input_weights: 'Weights',
     block_verb_geometry_nurbs_curve_by_knots_control_points_weights_input_degree: 'Of degree',
     block_verb_geometry_nurbs_curve_by_knots_control_points_weights_description: 'Creates a curve of degree by knots, control points and weights.',
+    block_verb_geometry_nurbs_curve_by_points_inputs_points: 'Curve through points',
+    block_verb_geometry_nurbs_curve_by_points_inputs_degree: 'Of degree',
+    block_verb_geometry_nurbs_curve_by_points_description: 'Create a curve that goes through points.',
 };

@@ -288,5 +288,7 @@ export interface ResourcesInterface {
     block_verb_geometry_nurbs_curve_by_knots_control_points_weights_input_weights: string;
     block_verb_geometry_nurbs_curve_by_knots_control_points_weights_input_degree: string;
     block_verb_geometry_nurbs_curve_by_knots_control_points_weights_description: string;
-
+    block_verb_geometry_nurbs_curve_by_points_inputs_points: string;
+    block_verb_geometry_nurbs_curve_by_points_inputs_degree: string;
+    block_verb_geometry_nurbs_curve_by_points_description: string;
 }

@@ -290,4 +290,7 @@ export const resourcesLt: ResourcesInterface = {
     block_verb_geometry_nurbs_curve_by_knots_control_points_weights_input_weights: 'Svoriais',
     block_verb_geometry_nurbs_curve_by_knots_control_points_weights_input_degree: 'Ir laipsniu',
     block_verb_geometry_nurbs_curve_by_knots_control_points_weights_description: 'Sukuria duoto laipsnio kreive su saitais, kontroliniais taskais ir svoriais.',
+    block_verb_geometry_nurbs_curve_by_points_inputs_points: 'Kreive kuri eina per taskus',
+    block_verb_geometry_nurbs_curve_by_points_inputs_degree: 'Laipsnis',
+    block_verb_geometry_nurbs_curve_by_points_description: 'Sukurti kreive kuri eina per duotus taskus ir laipsni.',
 };
