@@ -337,10 +337,16 @@ export const resourcesLt: ResourcesInterface = {
     block_verb_geometry_nurbs_curve_length_input_curve: 'Kreives ilgis',
     block_verb_geometry_nurbs_curve_length_description: 'Grazina kreives ilgi.',
     block_verb_geometry_nurbs_curve_length_at_param_input_curve: 'Kreives ilgis',
-    block_verb_geometry_nurbs_curve_length_at_param_input_param: 'Ant parametro',
+    block_verb_geometry_nurbs_curve_length_at_param_input_param: 'Ties parametru',
     block_verb_geometry_nurbs_curve_length_at_param_description: 'Matuoja kreives ilgi ant parametro.',
     block_verb_geometry_nurbs_curve_param_at_length_input_curve: 'Parametras ant kreives',
     block_verb_geometry_nurbs_curve_param_at_length_input_length: 'Atstume',
     block_verb_geometry_nurbs_curve_param_at_length_input_tolerance: 'Su tolerancija',
     block_verb_geometry_nurbs_curve_param_at_length_description: 'Grazina parametra kreives duotu atustumu nuo kreives pradzios.',
+    block_verb_geometry_nurbs_curve_reverse_input_curve: 'Apgrezti kreive',
+    block_verb_geometry_nurbs_curve_reverse_description: 'Apgrezia kreive.',
+    block_verb_geometry_nurbs_curve_split_input_curve: 'Perkirpty kreive',
+    block_verb_geometry_nurbs_curve_split_input_param: 'Ties parametru',
+    block_verb_geometry_nurbs_curve_split_description: 'Perkerpa kreive i dvi dalis ties parametru ir grazina dvi kreives.',
+
 };

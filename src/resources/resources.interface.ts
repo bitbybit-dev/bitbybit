@@ -341,4 +341,9 @@ export interface ResourcesInterface {
     block_verb_geometry_nurbs_curve_param_at_length_input_length: string;
     block_verb_geometry_nurbs_curve_param_at_length_input_tolerance: string;
     block_verb_geometry_nurbs_curve_param_at_length_description: string;
+    block_verb_geometry_nurbs_curve_reverse_input_curve: string;
+    block_verb_geometry_nurbs_curve_reverse_description: string;
+    block_verb_geometry_nurbs_curve_split_input_curve: string;
+    block_verb_geometry_nurbs_curve_split_input_param: string;
+    block_verb_geometry_nurbs_curve_split_description: string;
 }

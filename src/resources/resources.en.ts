@@ -343,4 +343,9 @@ export const resourcesEn: ResourcesInterface = {
     block_verb_geometry_nurbs_curve_param_at_length_input_length: 'At length',
     block_verb_geometry_nurbs_curve_param_at_length_input_tolerance: 'With tolerance',
     block_verb_geometry_nurbs_curve_param_at_length_description: 'Returns a parameter of the curve at a given length.',
+    block_verb_geometry_nurbs_curve_reverse_input_curve: 'Reverse the curve',
+    block_verb_geometry_nurbs_curve_reverse_description: 'Reverses the curve.',
+    block_verb_geometry_nurbs_curve_split_input_curve: 'Split the curve',
+    block_verb_geometry_nurbs_curve_split_input_param: 'At parameter',
+    block_verb_geometry_nurbs_curve_split_description: 'Splits the curve to two parts at parameter and if successfult returns a list of two curves.',
 };
