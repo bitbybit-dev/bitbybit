@@ -76,6 +76,7 @@ export const resourcesEn: ResourcesInterface = {
     block_num_derivatives: 'Number of derivatives',
     block_step: 'Step',
     block_parameter: 'Parameter',
+    block_subdivision: 'Subdivision',
     block_validation_required: 'must be provided',
     block_validation_of_length: 'must contain item count of',
     block_validation_higher_or_equal: 'must be higher or equal to',
@@ -315,4 +316,7 @@ export const resourcesEn: ResourcesInterface = {
     block_verb_geometry_nurbs_curve_derivatives_input_parameter: 'At parameter',
     block_verb_geometry_nurbs_curve_derivatives_input_num_derivatives: 'Number of derivatives',
     block_verb_geometry_nurbs_curve_derivatives_description: 'Gets the derivatives of the curve.',
+    block_verb_geometry_nurbs_curve_divide_by_equal_arc_length_params_input_curve: 'Divide the curve to parameters',
+    block_verb_geometry_nurbs_curve_divide_by_equal_arc_length_params_input_subdivison_number: 'By number of segments',
+    block_verb_geometry_nurbs_curve_divide_by_equal_arc_length_params_description: 'Subdivides a curve by equal arc length to a number of segments and returns parameters.',
 };

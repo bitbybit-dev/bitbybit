@@ -31,6 +31,7 @@ export interface ResourcesInterface {
     block_toolbox_category_functions: string;
     block_point: string;
     block_points: string;
+    block_subdivision: string;
     block_line: string;
     block_min: string;
     block_max: string;
@@ -313,5 +314,7 @@ export interface ResourcesInterface {
     block_verb_geometry_nurbs_curve_derivatives_input_parameter: string;
     block_verb_geometry_nurbs_curve_derivatives_input_num_derivatives: string;
     block_verb_geometry_nurbs_curve_derivatives_description: string;
-
+    block_verb_geometry_nurbs_curve_divide_by_equal_arc_length_params_input_curve: string;
+    block_verb_geometry_nurbs_curve_divide_by_equal_arc_length_params_input_subdivison_number: string;
+    block_verb_geometry_nurbs_curve_divide_by_equal_arc_length_params_description: string;
 }
