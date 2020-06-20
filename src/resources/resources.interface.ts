@@ -327,4 +327,10 @@ export interface ResourcesInterface {
     block_verb_geometry_nurbs_curve_divide_by_arc_length_points_input_curve: string;
     block_verb_geometry_nurbs_curve_divide_by_arc_length_points_input_arc_length: string;
     block_verb_geometry_nurbs_curve_divide_by_arc_length_points_description: string;
+    block_verb_geometry_nurbs_curve_domain_input_curve: string;
+    block_verb_geometry_nurbs_curve_domain_description: string;
+    block_verb_geometry_nurbs_curve_knots_input_curve: string;
+    block_verb_geometry_nurbs_curve_knots_description: string;
+    block_verb_geometry_nurbs_curve_length_input_curve: string;
+    block_verb_geometry_nurbs_curve_length_description: string;
 }

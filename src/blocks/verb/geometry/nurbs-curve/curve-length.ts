@@ -1,27 +1,55 @@
-import { Blocks, ALIGN_RIGHT } from "blockly";
+import { ALIGN_RIGHT, Block, Blocks } from 'blockly';
 import * as JavaScript from 'blockly/javascript';
+import { ResourcesInterface, ResourcesService } from '../../../../resources';
+import { createStandardContextIIFE } from '../../../_shared';
+import { getRequired, makeRequiredValidationModelForInputs, BitByBitBlockHandlerService, ValidationEntityInterface } from '../../../validations';
 
 export function createCurveLengthBlock() {
 
-    Blocks['verb_geometry_nurbs_curve_length'] = {
-        init: function () {
-            this.appendValueInput("Curve")
-                .setCheck("NurbsCurve")
+    const resources = ResourcesService.getResources();
+    const blockSelector = 'verb_geometry_nurbs_curve_length';
+
+    Blocks[blockSelector] = {
+        init() {
+            this.appendValueInput('Curve')
+                .setCheck('NurbsCurve')
                 .setAlign(ALIGN_RIGHT)
-                .appendField("Length of curve");
-            this.setOutput(true, "Number");
-            this.setColour("#fff");
-            this.setTooltip("Get length of the curve.");
-            this.setHelpUrl("");
+                .appendField(resources.block_verb_geometry_nurbs_curve_length_input_curve);
+            this.setOutput(true, 'Number');
+            this.setColour('#fff');
+            this.setTooltip(resources.block_verb_geometry_nurbs_curve_length_description);
         }
     };
 
-    JavaScript['verb_geometry_nurbs_curve_length'] = function (block) {
-        let value_curve = JavaScript.valueToCode(block, 'Curve', JavaScript.ORDER_ATOMIC);
+    JavaScript[blockSelector] = (block: Block) => {
+        const inputs = {
+            curve: JavaScript.valueToCode(block, 'Curve', JavaScript.ORDER_ATOMIC),
+        };
+        // this is first set of validations to check that all inputs are non empty strings
+        BitByBitBlockHandlerService.validate(block, block.workspace, makeRequiredValidationModelForInputs(resources, inputs, [
+            resources.block_curve
+        ]));
 
-        let code = `
-(() => ${value_curve}.length())()
-`;
+        // this creates validation model to be used at runtime to evaluate real values of inputs
+        const runtimeValidationModel = makeRuntimeValidationModel(resources, Object.keys(inputs));
+        (block as any).validationModel = runtimeValidationModel;
+
+        const code = createStandardContextIIFE(block, blockSelector, inputs, true,
+            `return inputs.curve.length();`);
+
         return [code, JavaScript.ORDER_ATOMIC];
     };
+}
+
+function makeRuntimeValidationModel(
+    resources: ResourcesInterface,
+    keys: string[]
+): ValidationEntityInterface[] {
+
+    return [{
+        entity: keys[0],
+        validations: [
+            getRequired(resources, resources.block_curve),
+        ]
+    }];
 }

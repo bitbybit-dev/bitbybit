@@ -328,5 +328,11 @@ export const resourcesLt: ResourcesInterface = {
     block_verb_geometry_nurbs_curve_divide_by_arc_length_params_description: 'Sudalina kreive i parametrus arkos ilgiu.',
     block_verb_geometry_nurbs_curve_divide_by_arc_length_points_input_curve: 'Sudalinti kreive i taskus',
     block_verb_geometry_nurbs_curve_divide_by_arc_length_points_input_arc_length: 'Arkos ilgiu',
-    block_verb_geometry_nurbs_curve_divide_by_arc_length_points_description: 'Sudalina kreive it askus arkos ilgiu.'
+    block_verb_geometry_nurbs_curve_divide_by_arc_length_points_description: 'Sudalina kreive it askus arkos ilgiu.',
+    block_verb_geometry_nurbs_curve_domain_input_curve: 'Kreives domenas',
+    block_verb_geometry_nurbs_curve_domain_description: 'Grazina kreives domena.',
+    block_verb_geometry_nurbs_curve_knots_input_curve: 'Kreives saitai',
+    block_verb_geometry_nurbs_curve_knots_description: 'Grazina kreives saitus.',
+    block_verb_geometry_nurbs_curve_length_input_curve: 'Kreives ilgis',
+    block_verb_geometry_nurbs_curve_length_description: 'Grazina kreives ilgi.',
 };

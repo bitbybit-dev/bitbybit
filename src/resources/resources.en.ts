@@ -328,5 +328,11 @@ export const resourcesEn: ResourcesInterface = {
     block_verb_geometry_nurbs_curve_divide_by_arc_length_params_description: 'Subdivides the curve to parameters by arc length.',
     block_verb_geometry_nurbs_curve_divide_by_arc_length_points_input_curve: 'Subdivide the curve to points',
     block_verb_geometry_nurbs_curve_divide_by_arc_length_points_input_arc_length: 'By arc length',
-    block_verb_geometry_nurbs_curve_divide_by_arc_length_points_description: 'Subdivides the curve to points by arc length.'
+    block_verb_geometry_nurbs_curve_divide_by_arc_length_points_description: 'Subdivides the curve to points by arc length.',
+    block_verb_geometry_nurbs_curve_domain_input_curve: 'Domain of the curve',
+    block_verb_geometry_nurbs_curve_domain_description: 'Returns the domain of the curve.',
+    block_verb_geometry_nurbs_curve_knots_input_curve: 'Knots of the curve',
+    block_verb_geometry_nurbs_curve_knots_description: 'Returns the knots of the curve.',
+    block_verb_geometry_nurbs_curve_length_input_curve: 'Length of the curve',
+    block_verb_geometry_nurbs_curve_length_description: 'Returns the length of the curve.',
 };
