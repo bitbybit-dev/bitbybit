@@ -65,8 +65,12 @@ export interface ResourcesInterface {
     block_scale: string;
     block_vector: string;
     block_knots: string;
+    block_knots_u: string;
+    block_knots_v: string;
     block_weights: string;
     block_degree: string;
+    block_degree_u: string;
+    block_degree_v: string;
     block_distance: string;
     block_fraction: string;
     block_scalar: string;
@@ -356,4 +360,17 @@ export interface ResourcesInterface {
     block_verb_geometry_nurbs_curve_weights_description: string;
     block_verb_geometry_nurbs_surface_boundaries_input_surface: string;
     block_verb_geometry_nurbs_surface_boundaries_description: string;
+    block_verb_geometry_nurbs_surface_by_corners_input_point1: string;
+    block_verb_geometry_nurbs_surface_by_corners_input_point2: string;
+    block_verb_geometry_nurbs_surface_by_corners_input_point3: string;
+    block_verb_geometry_nurbs_surface_by_corners_input_point4: string;
+    block_verb_geometry_nurbs_surface_by_corners_description: string;
+    block_verb_geometry_nurbs_surface_by_knots_control_points_weights_input_knots_u: string;
+    block_verb_geometry_nurbs_surface_by_knots_control_points_weights_input_knots_v: string;
+    block_verb_geometry_nurbs_surface_by_knots_control_points_weights_input_points: string;
+    block_verb_geometry_nurbs_surface_by_knots_control_points_weights_input_weights: string;
+    block_verb_geometry_nurbs_surface_by_knots_control_points_weights_input_degree_u: string;
+    block_verb_geometry_nurbs_surface_by_knots_control_points_weights_input_degree_v: string;
+    block_verb_geometry_nurbs_surface_by_knots_control_points_weights_description: string;
+
 }
