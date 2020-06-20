@@ -74,6 +74,7 @@ export const resourcesLt: ResourcesInterface = {
     block_knots: 'Saitai',
     block_weights: 'Svoriai',
     block_degree: 'Laipsnis',
+    block_length: 'Ilgis',
     block_num_derivatives: 'Isvestiniu skaicius',
     block_parameter: 'Parametras',
     block_subdivision: 'Sudalinimai',
@@ -319,4 +320,13 @@ export const resourcesLt: ResourcesInterface = {
     block_verb_geometry_nurbs_curve_divide_by_equal_arc_length_params_input_curve: 'Sudalinti kreive i parametrus',
     block_verb_geometry_nurbs_curve_divide_by_equal_arc_length_params_input_subdivison_number: 'Segmentu skaicius',
     block_verb_geometry_nurbs_curve_divide_by_equal_arc_length_params_description: 'Sudalina kreive lygiu arkos ilgiu i duota segmentu skaiciu ir grazina kreives parametru vertes.',
+    block_verb_geometry_nurbs_curve_divide_by_equal_arc_length_points_input_curve: 'Sudalinti kreive i taskus',
+    block_verb_geometry_nurbs_curve_divide_by_equal_arc_length_points_input_subdivison_number: 'Segmentu skaicius',
+    block_verb_geometry_nurbs_curve_divide_by_equal_arc_length_points_description: 'Sudalina kreive lygiu arkos ilgiu i duota segmentu skaiciu ir grazina taskus ant kreives.',
+    block_verb_geometry_nurbs_curve_divide_by_arc_length_params_input_curve: 'Sudalinti kreive i parametrus',
+    block_verb_geometry_nurbs_curve_divide_by_arc_length_params_input_arc_length: 'Arkos ilgiu',
+    block_verb_geometry_nurbs_curve_divide_by_arc_length_params_description: 'Sudalina kreive i parametrus arkos ilgiu.',
+    block_verb_geometry_nurbs_curve_divide_by_arc_length_points_input_curve: 'Sudalinti kreive i taskus',
+    block_verb_geometry_nurbs_curve_divide_by_arc_length_points_input_arc_length: 'Arkos ilgiu',
+    block_verb_geometry_nurbs_curve_divide_by_arc_length_points_description: 'Sudalina kreive it askus arkos ilgiu.'
 };

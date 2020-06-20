@@ -77,6 +77,7 @@ export const resourcesEn: ResourcesInterface = {
     block_step: 'Step',
     block_parameter: 'Parameter',
     block_subdivision: 'Subdivision',
+    block_length: 'Length',
     block_validation_required: 'must be provided',
     block_validation_of_length: 'must contain item count of',
     block_validation_higher_or_equal: 'must be higher or equal to',
@@ -319,4 +320,13 @@ export const resourcesEn: ResourcesInterface = {
     block_verb_geometry_nurbs_curve_divide_by_equal_arc_length_params_input_curve: 'Divide the curve to parameters',
     block_verb_geometry_nurbs_curve_divide_by_equal_arc_length_params_input_subdivison_number: 'By number of segments',
     block_verb_geometry_nurbs_curve_divide_by_equal_arc_length_params_description: 'Subdivides a curve by equal arc length to a number of segments and returns parameters.',
+    block_verb_geometry_nurbs_curve_divide_by_equal_arc_length_points_input_curve: 'Divide the curve to points',
+    block_verb_geometry_nurbs_curve_divide_by_equal_arc_length_points_input_subdivison_number: 'By number of segments',
+    block_verb_geometry_nurbs_curve_divide_by_equal_arc_length_points_description: 'Subdivides a curve by equal arc length to a number of segments and returns points.',
+    block_verb_geometry_nurbs_curve_divide_by_arc_length_params_input_curve: 'Subdivide the curve to parameters',
+    block_verb_geometry_nurbs_curve_divide_by_arc_length_params_input_arc_length: 'By arc length',
+    block_verb_geometry_nurbs_curve_divide_by_arc_length_params_description: 'Subdivides the curve to parameters by arc length.',
+    block_verb_geometry_nurbs_curve_divide_by_arc_length_points_input_curve: 'Subdivide the curve to points',
+    block_verb_geometry_nurbs_curve_divide_by_arc_length_points_input_arc_length: 'By arc length',
+    block_verb_geometry_nurbs_curve_divide_by_arc_length_points_description: 'Subdivides the curve to points by arc length.'
 };

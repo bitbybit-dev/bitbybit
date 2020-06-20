@@ -75,6 +75,7 @@ export interface ResourcesInterface {
     block_axis: string;
     block_reference: string;
     block_transform: string;
+    block_length: string;
     block_validation_required: string;
     block_validation_of_length: string;
     block_validation_higher_or_equal: string;
@@ -317,4 +318,13 @@ export interface ResourcesInterface {
     block_verb_geometry_nurbs_curve_divide_by_equal_arc_length_params_input_curve: string;
     block_verb_geometry_nurbs_curve_divide_by_equal_arc_length_params_input_subdivison_number: string;
     block_verb_geometry_nurbs_curve_divide_by_equal_arc_length_params_description: string;
+    block_verb_geometry_nurbs_curve_divide_by_equal_arc_length_points_input_curve: string;
+    block_verb_geometry_nurbs_curve_divide_by_equal_arc_length_points_input_subdivison_number: string;
+    block_verb_geometry_nurbs_curve_divide_by_equal_arc_length_points_description: string;
+    block_verb_geometry_nurbs_curve_divide_by_arc_length_params_input_curve: string;
+    block_verb_geometry_nurbs_curve_divide_by_arc_length_params_input_arc_length: string;
+    block_verb_geometry_nurbs_curve_divide_by_arc_length_params_description: string;
+    block_verb_geometry_nurbs_curve_divide_by_arc_length_points_input_curve: string;
+    block_verb_geometry_nurbs_curve_divide_by_arc_length_points_input_arc_length: string;
+    block_verb_geometry_nurbs_curve_divide_by_arc_length_points_description: string;
 }

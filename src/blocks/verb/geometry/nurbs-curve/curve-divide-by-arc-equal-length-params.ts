@@ -42,7 +42,7 @@ export function createCurveDivideByEqualArcLengthParamsBlock() {
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
             `
 const segments = inputs.curve.divideByEqualArcLength(inputs.subdivision);
-return segments.map(s => inputs.curve.point(s.u));
+return segments.map(s => s.u);
             `
         );
         return [code, JavaScript.ORDER_ATOMIC];
