@@ -78,6 +78,7 @@ export const resourcesEn: ResourcesInterface = {
     block_parameter: 'Parameter',
     block_subdivision: 'Subdivision',
     block_length: 'Length',
+    block_tolerance: 'Tolerance',
     block_validation_required: 'must be provided',
     block_validation_of_length: 'must contain item count of',
     block_validation_higher_or_equal: 'must be higher or equal to',
@@ -338,4 +339,8 @@ export const resourcesEn: ResourcesInterface = {
     block_verb_geometry_nurbs_curve_length_at_param_input_curve: 'Length of the curve',
     block_verb_geometry_nurbs_curve_length_at_param_input_param: 'At parameter',
     block_verb_geometry_nurbs_curve_length_at_param_description: 'Gives back a length of the curve at parameter',
+    block_verb_geometry_nurbs_curve_param_at_length_input_curve: 'Parameter on the curve',
+    block_verb_geometry_nurbs_curve_param_at_length_input_length: 'At length',
+    block_verb_geometry_nurbs_curve_param_at_length_input_tolerance: 'With tolerance',
+    block_verb_geometry_nurbs_curve_param_at_length_description: 'Returns a parameter of the curve at a given length.',
 };

@@ -76,6 +76,7 @@ export interface ResourcesInterface {
     block_reference: string;
     block_transform: string;
     block_length: string;
+    block_tolerance: string;
     block_validation_required: string;
     block_validation_of_length: string;
     block_validation_higher_or_equal: string;
@@ -336,4 +337,8 @@ export interface ResourcesInterface {
     block_verb_geometry_nurbs_curve_length_at_param_input_curve: string;
     block_verb_geometry_nurbs_curve_length_at_param_input_param: string;
     block_verb_geometry_nurbs_curve_length_at_param_description: string;
+    block_verb_geometry_nurbs_curve_param_at_length_input_curve: string;
+    block_verb_geometry_nurbs_curve_param_at_length_input_length: string;
+    block_verb_geometry_nurbs_curve_param_at_length_input_tolerance: string;
+    block_verb_geometry_nurbs_curve_param_at_length_description: string;
 }

@@ -78,6 +78,7 @@ export const resourcesLt: ResourcesInterface = {
     block_num_derivatives: 'Isvestiniu skaicius',
     block_parameter: 'Parametras',
     block_subdivision: 'Sudalinimai',
+    block_tolerance: 'Tolerancija',
     block_validation_required: 'privalo buti ivesta',
     block_validation_higher_or_equal: 'privalo buti daugiau arba lygu',
     block_validation_lower_or_equal: 'privalo buti maziau arba lygu',
@@ -338,4 +339,8 @@ export const resourcesLt: ResourcesInterface = {
     block_verb_geometry_nurbs_curve_length_at_param_input_curve: 'Kreives ilgis',
     block_verb_geometry_nurbs_curve_length_at_param_input_param: 'Ant parametro',
     block_verb_geometry_nurbs_curve_length_at_param_description: 'Matuoja kreives ilgi ant parametro.',
+    block_verb_geometry_nurbs_curve_param_at_length_input_curve: 'Parametras ant kreives',
+    block_verb_geometry_nurbs_curve_param_at_length_input_length: 'Atstume',
+    block_verb_geometry_nurbs_curve_param_at_length_input_tolerance: 'Su tolerancija',
+    block_verb_geometry_nurbs_curve_param_at_length_description: 'Grazina parametra kreives duotu atustumu nuo kreives pradzios.',
 };
