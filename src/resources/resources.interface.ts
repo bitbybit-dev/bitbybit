@@ -333,4 +333,7 @@ export interface ResourcesInterface {
     block_verb_geometry_nurbs_curve_knots_description: string;
     block_verb_geometry_nurbs_curve_length_input_curve: string;
     block_verb_geometry_nurbs_curve_length_description: string;
+    block_verb_geometry_nurbs_curve_length_at_param_input_curve: string;
+    block_verb_geometry_nurbs_curve_length_at_param_input_param: string;
+    block_verb_geometry_nurbs_curve_length_at_param_description: string;
 }

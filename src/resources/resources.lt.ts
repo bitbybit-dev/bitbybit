@@ -335,4 +335,7 @@ export const resourcesLt: ResourcesInterface = {
     block_verb_geometry_nurbs_curve_knots_description: 'Grazina kreives saitus.',
     block_verb_geometry_nurbs_curve_length_input_curve: 'Kreives ilgis',
     block_verb_geometry_nurbs_curve_length_description: 'Grazina kreives ilgi.',
+    block_verb_geometry_nurbs_curve_length_at_param_input_curve: 'Kreives ilgis',
+    block_verb_geometry_nurbs_curve_length_at_param_input_param: 'Ant parametro',
+    block_verb_geometry_nurbs_curve_length_at_param_description: 'Matuoja kreives ilgi ant parametro.',
 };

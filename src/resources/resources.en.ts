@@ -335,4 +335,7 @@ export const resourcesEn: ResourcesInterface = {
     block_verb_geometry_nurbs_curve_knots_description: 'Returns the knots of the curve.',
     block_verb_geometry_nurbs_curve_length_input_curve: 'Length of the curve',
     block_verb_geometry_nurbs_curve_length_description: 'Returns the length of the curve.',
+    block_verb_geometry_nurbs_curve_length_at_param_input_curve: 'Length of the curve',
+    block_verb_geometry_nurbs_curve_length_at_param_input_param: 'At parameter',
+    block_verb_geometry_nurbs_curve_length_at_param_description: 'Gives back a length of the curve at parameter',
 };
