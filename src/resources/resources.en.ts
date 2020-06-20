@@ -356,4 +356,6 @@ export const resourcesEn: ResourcesInterface = {
     block_verb_geometry_nurbs_curve_tessellate_description: 'Tessellate the curve to points with tolerance.',
     block_verb_geometry_nurbs_curve_weights_input_curve: 'Weights of the curve',
     block_verb_geometry_nurbs_curve_weights_description: 'Returns the weights of the curve.',
+    block_verb_geometry_nurbs_surface_boundaries_input_surface: 'Boundary curves of the surface',
+    block_verb_geometry_nurbs_surface_boundaries_description: 'Returns 4 boundary curves of the surface',
 };
