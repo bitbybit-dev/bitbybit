@@ -6,7 +6,7 @@ import {
     getOfLength,
     getRequired,
     makeRequiredValidationModelForInputs,
-    BlockValidationService,
+    BitByBitBlockHandlerService,
     ValidationEntityInterface
 } from '../../../validations';
 
@@ -24,7 +24,7 @@ export function createLineBlock() {
             this.appendValueInput('EndPoint')
                 .setCheck('Array')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_base_geometry_input_line_end_point);
+                .appendField(resources.block_base_geometry_input_line_end_point.toLowerCase());
             this.setOutput(true, 'Line');
             this.setColour('#fff');
             this.setTooltip(resources.block_base_geometry_line_description);
@@ -38,7 +38,7 @@ export function createLineBlock() {
         };
 
         // this is first set of validations to check that all inputs are non empty strings
-        BlockValidationService.validate(block, block.workspace, makeRequiredValidationModelForInputs(resources, inputs, [
+        BitByBitBlockHandlerService.validate(block, block.workspace, makeRequiredValidationModelForInputs(resources, inputs, [
             resources.block_point, resources.block_point
         ]));
 

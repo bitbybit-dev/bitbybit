@@ -339,8 +339,25 @@
             </value>
         </block>
     </category>
-    <category name="Core Vector" categorystyle="verb_core_category">
+    <category name="Core Vector" categorystyle="verb_core_category">        
         <block type="verb_core_vector">
+        </block>
+        <block type="verb_core_vector">
+            <value name="X">
+                <shadow type="math_number">
+                    <field name="NUM">0</field>
+                </shadow>
+            </value>
+            <value name="Y">
+                <shadow type="math_number">
+                    <field name="NUM">0</field>
+                </shadow>
+            </value>
+            <value name="Z">
+                <shadow type="math_number">
+                    <field name="NUM">0</field>
+                </shadow>
+            </value>
         </block>
         <block type="verb_core_vector_angle_between">
         </block>
@@ -374,15 +391,7 @@
         </block>
         <block type="verb_core_vector_add_all">
         </block>
-        <block type="verb_core_vector_add_all_mutate">
-        </block>
-        <block type="verb_core_vector_add_mutate">
-        </block>
         <block type="verb_core_vector_is_zero">
-        </block>
-        <block type="verb_core_vector_mul_mutate">
-        </block>
-        <block type="verb_core_vector_sub_mutate">
         </block>
         <block type="verb_core_vector_norm">
         </block>

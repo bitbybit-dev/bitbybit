@@ -1,7 +1,15 @@
 import { Block, Workspace, WorkspaceSvg } from 'blockly';
 import { ValidationEntityInterface } from './validation-entity.interface';
 
-export class BlockValidationService {
+export class BitByBitBlockHandlerService {
+
+    static runningBlockId: string;
+
+    static handleBlock(workspace: Workspace, id: string, inputs: any){
+        const block = workspace.getBlockById(id) as { validationModel: ValidationEntityInterface[] } & Block;
+        BitByBitBlockHandlerService.runningBlockId = id;
+        BitByBitBlockHandlerService.runtimeValidation(block, inputs);
+    }
 
     static runtimeValidation(block: { validationModel: ValidationEntityInterface[] } & Block, inputs: any) {
         if (block.validationModel) {
@@ -11,7 +19,7 @@ export class BlockValidationService {
                     validations: model.validations,
                 };
             });
-            BlockValidationService.validate(
+            BitByBitBlockHandlerService.validate(
                 block,
                 inputs,
                 validationModel
@@ -38,7 +46,7 @@ export class BlockValidationService {
         block.setWarningText(null);
     }
 
-    static handleBlockException(block: Block, e){
+    static handleBlockException(block: Block, e) {
         block.setColour('ffab91');
         block.setWarningText('Block failed when computing, check if data provided is correct. ' + e);
     }

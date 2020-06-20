@@ -104,7 +104,7 @@ export function toolboxDefinition() {
         <block type="verb_core_uv_get_v">
         </block>
     </category>
-    <category name="Core Transforms" categorystyle="verb_core_category">
+    <category name="${resources.block_toolbox_category_core_transforms}" categorystyle="verb_core_category">
         <block type="babylon_transformation_scale_uniform">
             <value name="Scale">
                 <shadow type="math_number">
@@ -347,6 +347,23 @@ export function toolboxDefinition() {
     <category name="${resources.block_toolbox_category_core_vector}" categorystyle="verb_core_category">
         <block type="verb_core_vector">
         </block>
+        <block type="verb_core_vector">
+            <value name="X">
+                <shadow type="math_number">
+                    <field name="NUM">0</field>
+                </shadow>
+            </value>
+            <value name="Y">
+                <shadow type="math_number">
+                    <field name="NUM">0</field>
+                </shadow>
+            </value>
+            <value name="Z">
+                <shadow type="math_number">
+                    <field name="NUM">0</field>
+                </shadow>
+            </value>
+        </block>
         <block type="verb_core_vector_angle_between">
         </block>
         <block type="verb_core_vector_angle_between_normalized_2d">
@@ -379,15 +396,7 @@ export function toolboxDefinition() {
         </block>
         <block type="verb_core_vector_add_all">
         </block>
-        <block type="verb_core_vector_add_all_mutate">
-        </block>
-        <block type="verb_core_vector_add_mutate">
-        </block>
         <block type="verb_core_vector_is_zero">
-        </block>
-        <block type="verb_core_vector_mul_mutate">
-        </block>
-        <block type="verb_core_vector_sub_mutate">
         </block>
         <block type="verb_core_vector_norm">
         </block>

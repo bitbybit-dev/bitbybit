@@ -3,7 +3,7 @@ import { GridMaterial } from '@babylonjs/materials';
 import * as Blockly from 'blockly';
 import { core, geom } from 'verb-nurbs-web';
 import { BitByBitBlocklyHelperService } from './blocks/_shared/bit-by-bit-blockly-helper.service';
-import { BlockValidationService } from './blocks/validations';
+import { BitByBitBlockHandlerService } from './blocks/validations';
 
 export function prepareBabylonForBlockly() {
     Object.defineProperty(Float32Array.prototype, 'chunk', {
@@ -40,6 +40,6 @@ export function prepareBabylonForBlockly() {
 
     windowBlockly.BlocklyGlobal = Blockly;
 
-    windowBlockly.BlockValidationService = BlockValidationService;
+    windowBlockly.BitByBitBlockHandlerService = BitByBitBlockHandlerService;
     windowBlockly.BitByBitBlocklyHelperService = BitByBitBlocklyHelperService;
 }

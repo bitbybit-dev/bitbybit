@@ -2,7 +2,7 @@ import { ALIGN_RIGHT, Block, Blocks } from 'blockly';
 import * as JavaScript from 'blockly/javascript';
 import { ResourcesService } from '../../../resources';
 import { createStandardContextIIFE } from '../../_shared';
-import { makeRequiredValidationModelForInputs, BlockValidationService } from '../../validations';
+import { makeRequiredValidationModelForInputs, BitByBitBlockHandlerService } from '../../validations';
 
 export function createRotationCenterAxisBlock() {
 
@@ -18,7 +18,7 @@ export function createRotationCenterAxisBlock() {
             this.appendValueInput('Axis')
                 .setCheck('Array')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_babylon_input_transformation_rotation_center_axis);
+                .appendField(resources.block_babylon_input_transformation_rotation_center_axis.toLowerCase());
             this.appendValueInput('Center')
                 .setCheck('Array')
                 .setAlign(ALIGN_RIGHT)
@@ -37,7 +37,7 @@ export function createRotationCenterAxisBlock() {
         };
 
         // this is first set of validations to check that all inputs are non empty strings
-        BlockValidationService.validate(block, block.workspace, makeRequiredValidationModelForInputs(resources, inputs, [
+        BitByBitBlockHandlerService.validate(block, block.workspace, makeRequiredValidationModelForInputs(resources, inputs, [
             resources.block_angle, resources.block_axis, resources.block_center
         ]));
 

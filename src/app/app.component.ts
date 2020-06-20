@@ -10,6 +10,7 @@ import '@babylonjs/core/Meshes/meshBuilder';
 import { Scene } from '@babylonjs/core/scene';
 import { inject, svgResize, Theme, WorkspaceSvg, Xml } from 'blockly';
 import * as JavaScript from 'blockly/javascript';
+import { BitByBitBlockHandlerService } from 'src/blocks/validations';
 import { prepareBabylonForBlockly } from '../babylon-to-blockly';
 import { assembleBlocks } from '../blocks/assemble-blocks';
 import { languagesEnum, ResourcesInterface, ResourcesService } from '../resources';
@@ -109,6 +110,7 @@ export class AppComponent implements OnInit, AfterViewInit {
                     }
                 }
             });
+
         }, 500);
 
     }
@@ -227,11 +229,13 @@ const blocklyWorkspace = window.blockly.workspace;
 const BABYLON = window.BABYLON;
 const verb = window.verb;
 const Blockly = window.BlocklyGlobal;
-const BlockValidationService = window.BlockValidationService;
+const BitByBitBlockHandlerService = window.BitByBitBlockHandlerService;
 const BitByBitBlocklyHelperService = window.BitByBitBlocklyHelperService;
 ${code}
             `);
         } catch (e) {
+            const blockThatWasActive = this.workspace.getBlockById(BitByBitBlockHandlerService.runningBlockId);
+            BitByBitBlockHandlerService.handleBlockException(blockThatWasActive, e);
             this.openAlertDialog({
                 title: 'Code execution failed',
                 details: `Something went wrong when running the code. Check if there are no disconnected or misconfigured components on your canvas`,

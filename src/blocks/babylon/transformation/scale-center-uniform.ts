@@ -2,7 +2,7 @@ import { ALIGN_RIGHT, Block, Blocks } from 'blockly';
 import * as JavaScript from 'blockly/javascript';
 import { ResourcesService } from '../../../resources';
 import { createStandardContextIIFE } from '../../_shared';
-import { makeRequiredValidationModelForInputs, BlockValidationService, ValidationEntityInterface } from '../../validations';
+import { makeRequiredValidationModelForInputs, BitByBitBlockHandlerService, ValidationEntityInterface } from '../../validations';
 
 export function createScaleCenterUniformBlock() {
 
@@ -18,7 +18,7 @@ export function createScaleCenterUniformBlock() {
             this.appendValueInput('Center')
                 .setCheck('Array')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_babylon_input_transformation_scale_center);
+                .appendField(resources.block_babylon_input_transformation_scale_center.toLowerCase());
             this.setOutput(true, 'Array');
             this.setColour('#fff');
             this.setTooltip(resources.block_babylon_transformation_scale_center_uniform_description);
@@ -33,7 +33,7 @@ export function createScaleCenterUniformBlock() {
         };
 
         // this is first set of validations to check that all inputs are non empty strings
-        BlockValidationService.validate(block, block.workspace, makeRequiredValidationModelForInputs(resources, inputs, [
+        BitByBitBlockHandlerService.validate(block, block.workspace, makeRequiredValidationModelForInputs(resources, inputs, [
             resources.block_scale, resources.block_center
         ]));
 

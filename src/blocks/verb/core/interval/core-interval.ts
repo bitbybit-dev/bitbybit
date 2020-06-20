@@ -2,7 +2,7 @@ import { ALIGN_RIGHT, Block, Blocks } from 'blockly';
 import * as JavaScript from 'blockly/javascript';
 import { ResourcesInterface, ResourcesService } from '../../../../resources';
 import { createStandardContextIIFE } from '../../../_shared';
-import { getRequired, getSmallerOrEqualThan, makeRequiredValidationModelForInputs, BlockValidationService, ValidationEntityInterface } from '../../../validations';
+import { getRequired, getSmallerOrEqualThan, makeRequiredValidationModelForInputs, BitByBitBlockHandlerService, ValidationEntityInterface } from '../../../validations';
 
 export function createCoreIntervalBlock() {
 
@@ -18,7 +18,7 @@ export function createCoreIntervalBlock() {
             this.appendValueInput('Max')
                 .setCheck('Number')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_verb_core_interval_input_max);
+                .appendField(resources.block_verb_core_interval_input_max.toLowerCase());
             this.setOutput(true, 'Interval');
             this.setColour('#fff');
             this.setTooltip(resources.block_verb_core_interval_description);
@@ -33,7 +33,7 @@ export function createCoreIntervalBlock() {
         };
 
         // this is first set of validations to check that all inputs are non empty strings
-        BlockValidationService.validate(block, block.workspace, makeRequiredValidationModelForInputs(resources, inputs, [
+        BitByBitBlockHandlerService.validate(block, block.workspace, makeRequiredValidationModelForInputs(resources, inputs, [
             resources.block_min, resources.block_max
         ]));
 
@@ -59,7 +59,7 @@ function makeRuntimeValidationModel(
             getSmallerOrEqualThan(resources, resources.block_min, 'max', resources.block_max)
         ]
     }, {
-        entity: keys[0],
+        entity: keys[1],
         validations: [
             getRequired(resources, resources.block_max),
         ]

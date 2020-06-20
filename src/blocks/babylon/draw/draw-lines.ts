@@ -7,7 +7,7 @@ import {
     getRequiredAndMin,
     getRequiredAndRange,
     makeRequiredValidationModelForInputs,
-    BlockValidationService,
+    BitByBitBlockHandlerService,
     ValidationEntityInterface
 } from '../../validations';
 
@@ -25,15 +25,15 @@ export function createDrawLinesBlock() {
             this.appendValueInput('Colour')
                 .setCheck('Colour')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_babylon_input_colour);
+                .appendField(resources.block_babylon_input_colour.toLowerCase());
             this.appendValueInput('Opacity')
                 .setCheck('Number')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_babylon_input_opacity);
+                .appendField(resources.block_babylon_input_opacity.toLowerCase());
             this.appendValueInput('Width')
                 .setCheck('Number')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_babylon_input_width);
+                .appendField(resources.block_babylon_input_width.toLowerCase());
             this.setColour('#fff');
             this.setPreviousStatement(true, null);
             this.setNextStatement(true, null);
@@ -51,7 +51,7 @@ export function createDrawLinesBlock() {
         };
 
         // this is first set of validations to check that all inputs are non empty strings
-        BlockValidationService.validate(block, block.workspace, makeRequiredValidationModelForInputs(resources, inputs, [
+        BitByBitBlockHandlerService.validate(block, block.workspace, makeRequiredValidationModelForInputs(resources, inputs, [
             resources.block_lines, resources.block_colour, resources.block_opacity, resources.block_width
         ]));
 

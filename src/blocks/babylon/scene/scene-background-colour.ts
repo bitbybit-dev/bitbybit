@@ -5,7 +5,7 @@ import { createStandardContextIIFE } from '../../_shared';
 import {
     getRequired,
     makeRequiredValidationModelForInputs,
-    BlockValidationService,
+    BitByBitBlockHandlerService,
     ValidationEntityInterface
 } from '../../validations';
 export function createSceneBackgroundColourBlock() {
@@ -31,7 +31,7 @@ export function createSceneBackgroundColourBlock() {
         };
 
         // this is first set of validations to check that all inputs are non empty strings
-        BlockValidationService.validate(block, block.workspace, makeRequiredValidationModelForInputs(resources, inputs, [
+        BitByBitBlockHandlerService.validate(block, block.workspace, makeRequiredValidationModelForInputs(resources, inputs, [
             resources.block_colour
         ]));
 
