@@ -12,6 +12,11 @@ export interface ResourcesInterface {
     app_menu_more_community: string;
     app_menu_more_export: string;
     app_menu_more_import: string;
+    app_button_close: string;
+    app_button_save: string;
+    app_languages: string;
+    app_languages_lithuanian: string;
+    app_languages_english: string;
     block_toolbox_category_scene: string;
     block_toolbox_category_core_types: string;
     block_toolbox_category_core_transforms: string;

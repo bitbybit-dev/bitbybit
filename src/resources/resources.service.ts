@@ -5,14 +5,16 @@ import { resourcesLt } from './resources.lt';
 
 export class ResourcesService {
     static languageSelected: languagesEnum;
-    static resources: ResourcesInterface = resourcesEn;
+    static resources: ResourcesInterface = {...resourcesEn};
     static getResources(): ResourcesInterface {
         return ResourcesService.resources;
     }
 
     private static updateResources(resources: ResourcesInterface, languageResources: ResourcesInterface) {
         Object.keys(resources).forEach(key => {
-            resources[key] = languageResources[key];
+            if (languageResources[key]){
+                resources[key] = languageResources[key];
+            }
         });
     }
 

@@ -1,6 +1,6 @@
 import { ResourcesInterface } from './resources.interface';
 
-export const resourcesEn: ResourcesInterface = {
+export const resourcesEn: ResourcesInterface = Object.freeze({
     bit_by_bit: 'BitByBit',
     app_menu_run_code: 'Run The Code',
     app_menu_swap_canvas: 'Swap Canvas',
@@ -14,6 +14,11 @@ export const resourcesEn: ResourcesInterface = {
     app_menu_more_community: 'Community',
     app_menu_more_export: 'Export',
     app_menu_more_import: 'Import',
+    app_button_close: 'Close',
+    app_button_save: 'Save',
+    app_languages: 'Languages',
+    app_languages_lithuanian: 'Lithuanian',
+    app_languages_english: 'English',
     block_toolbox_category_scene: 'Scene',
     block_toolbox_category_core_types: 'Types',
     block_toolbox_category_core_vector: 'Vector',
@@ -427,4 +432,4 @@ export const resourcesEn: ResourcesInterface = {
     block_verb_geometry_nurbs_surface_split_description: 'Splits the surface at u or v parameters.',
     block_verb_geometry_nurbs_surface_weights_input_surface: 'Weights of the surface',
     block_verb_geometry_nurbs_surface_weights_description: 'Returns the weights of the surface.',
-};
+});

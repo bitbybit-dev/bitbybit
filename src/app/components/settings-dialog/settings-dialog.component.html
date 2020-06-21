@@ -1,0 +1,11 @@
+<h2>{{resources.app_menu_more_settings}}</h2>
+<mat-form-field>
+    <mat-label>{{resources.app_languages}}</mat-label>
+    <mat-select [(value)]="selected">
+        <mat-option [value]="languagesEnum.en">{{resources.app_languages_english}}</mat-option>
+        <mat-option [value]="languagesEnum.lt">{{resources.app_languages_lithuanian}}</mat-option>
+    </mat-select>
+</mat-form-field>
+<br>
+<button mat-button mat-raised-button color="primary" (click)="save()">{{resources.app_button_save}}</button>
+<button mat-button mat-raised-button (click)="onClose()">{{resources.app_button_close}}</button>

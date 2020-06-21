@@ -22,6 +22,7 @@ import { ExamplesService } from './examples/example-service';
 import { constantsModel } from './models/constants.model';
 import { themeStyle } from './models/theme-styles.model';
 import { toolboxDefinition } from './models/toolbox-definition';
+import { SettingsDialogComponent } from './components/settings-dialog/settings-dialog.component';
 
 @Component({
     selector: 'app-root',
@@ -49,6 +50,7 @@ export class AppComponent implements OnInit, AfterViewInit {
     }
 
     ngAfterViewInit(): void {
+
         setTimeout(() => {
             const theme = Theme.defineTheme('themeName', themeStyle());
 
@@ -186,19 +188,11 @@ export class AppComponent implements OnInit, AfterViewInit {
     }
 
     about() {
-        // ResourcesService.setLanguage(languagesEnum.lt);
-        // assembleBlocks();
-        // const xml = Xml.workspaceToDom(this.workspace);
-        // this.workspace.clear();
-        // Xml.domToWorkspace(xml, this.workspace);
-
-        // this.workspace.zoomToFit();
-        // this.workspace.zoomCenter(-3);
-
         this.openAboutDialog();
     }
 
-    settings(){
+    settings() {
+        this.openSettingsDialog();
     }
 
     sponsors() {
@@ -285,6 +279,21 @@ ${code}
             width: '700px',
             height: '700px',
             autoFocus: false
+        });
+
+        dialogRef.afterClosed().subscribe(result => {
+            const d = result;
+        });
+    }
+
+    private openSettingsDialog(): void {
+        const dialogRef = this.dialog.open(SettingsDialogComponent, {
+            width: '500px',
+            height: '500px',
+            autoFocus: false,
+            data: {
+                workspace: this.workspace
+            }
         });
 
         dialogRef.afterClosed().subscribe(result => {

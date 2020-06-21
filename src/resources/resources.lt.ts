@@ -1,6 +1,6 @@
 import { ResourcesInterface } from './resources.interface';
 
-export const resourcesLt: ResourcesInterface = {
+export const resourcesLt: ResourcesInterface = Object.freeze({
     bit_by_bit: 'BitasPoBito',
     app_menu_run_code: 'Paleisti Kodą',
     app_menu_swap_canvas: 'Sukeisti Aplinkas',
@@ -14,6 +14,11 @@ export const resourcesLt: ResourcesInterface = {
     app_menu_more_community: 'Bendruomenė',
     app_menu_more_export: 'Išsaugoti',
     app_menu_more_import: 'Atidaryti',
+    app_button_close: 'Uždaryti',
+    app_button_save: 'Išsaugoti',
+    app_languages: 'Kalbos',
+    app_languages_lithuanian: 'Lietuvių',
+    app_languages_english: 'Anglų',
     block_toolbox_category_scene: 'Scena',
     block_toolbox_category_core_types: 'Tipai',
     block_toolbox_category_core_transforms: 'Transformacijos',
@@ -427,4 +432,4 @@ export const resourcesLt: ResourcesInterface = {
     block_verb_geometry_nurbs_surface_split_description: 'Padalina paviršių į dvi dalis ties parametru.',
     block_verb_geometry_nurbs_surface_weights_input_surface: 'Paviršiaus svoriai',
     block_verb_geometry_nurbs_surface_weights_description: 'Gražina paviršiaus svorius.',
-};
+});
