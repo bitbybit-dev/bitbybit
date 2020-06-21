@@ -112,12 +112,11 @@ export class AppComponent implements OnInit, AfterViewInit {
             });
 
         }, 500);
-
     }
 
     ngOnInit(): void {
 
-        ResourcesService.setLanguage(languagesEnum.en);
+        ResourcesService.setLanguage(languagesEnum.lt);
         this.resources = ResourcesService.getResources();
         prepareBabylonForBlockly();
         assembleBlocks();

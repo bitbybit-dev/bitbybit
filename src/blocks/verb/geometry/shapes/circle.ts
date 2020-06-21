@@ -18,11 +18,11 @@ export function createShapesCircleBlock() {
             this.appendValueInput('XAxis')
                 .setCheck('Array')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_base_geometry_shape_x_axis);
+                .appendField(resources.block_base_geometry_shape_x_axis.toLowerCase());
             this.appendValueInput('YAxis')
                 .setCheck('Array')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_base_geometry_shape_y_axis);
+                .appendField(resources.block_base_geometry_shape_y_axis.toLowerCase());
             this.appendValueInput('Radius')
                 .setCheck('Number')
                 .setAlign(ALIGN_RIGHT)
