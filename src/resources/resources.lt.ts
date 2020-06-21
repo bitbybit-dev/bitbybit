@@ -374,4 +374,7 @@ export const resourcesLt: ResourcesInterface = {
     block_verb_geometry_nurbs_surface_by_knots_control_points_weights_input_degree_u: 'u laipsniu',
     block_verb_geometry_nurbs_surface_by_knots_control_points_weights_input_degree_v: 'v laipsniu',
     block_verb_geometry_nurbs_surface_by_knots_control_points_weights_description: 'Sukuria pavirsiu is uv saitu, tasku, svoriu ir uv laipsniais.',
+    blocK_verb_geometry_nurbs_surface_by_lofting_curves_input_curves: 'Pavirsius vedamas per kreives',
+    blocK_verb_geometry_nurbs_surface_by_lofting_curves_input_degree_v: 'V laipsnio',
+    blocK_verb_geometry_nurbs_surface_by_lofting_curves_description: 'Pavirsius sudaromas per dvi ar daugiau kreiviu.',
 };

@@ -372,5 +372,7 @@ export interface ResourcesInterface {
     block_verb_geometry_nurbs_surface_by_knots_control_points_weights_input_degree_u: string;
     block_verb_geometry_nurbs_surface_by_knots_control_points_weights_input_degree_v: string;
     block_verb_geometry_nurbs_surface_by_knots_control_points_weights_description: string;
-
+    blocK_verb_geometry_nurbs_surface_by_lofting_curves_input_curves: string;
+    blocK_verb_geometry_nurbs_surface_by_lofting_curves_input_degree_v: string;
+    blocK_verb_geometry_nurbs_surface_by_lofting_curves_description: string;
 }

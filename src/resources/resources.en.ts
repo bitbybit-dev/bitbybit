@@ -374,4 +374,7 @@ export const resourcesEn: ResourcesInterface = {
     block_verb_geometry_nurbs_surface_by_knots_control_points_weights_input_degree_u: 'degree u',
     block_verb_geometry_nurbs_surface_by_knots_control_points_weights_input_degree_v: 'degree v',
     block_verb_geometry_nurbs_surface_by_knots_control_points_weights_description: 'Creates a surface by uv knots, control points, weights and uv degrees.',
+    blocK_verb_geometry_nurbs_surface_by_lofting_curves_input_curves: 'Surface by lofting curves',
+    blocK_verb_geometry_nurbs_surface_by_lofting_curves_input_degree_v: 'Of degree v',
+    blocK_verb_geometry_nurbs_surface_by_lofting_curves_description: 'Lofts curves to form a surface.',
 };
