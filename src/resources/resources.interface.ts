@@ -51,6 +51,8 @@ export interface ResourcesInterface {
     block_curve: string;
     block_curves: string;
     block_parameter: string;
+    block_parameter_u: string;
+    block_parameter_v: string;
     block_num_derivatives: string;
     block_colour: string;
     block_opacity: string;
@@ -375,4 +377,27 @@ export interface ResourcesInterface {
     blocK_verb_geometry_nurbs_surface_by_lofting_curves_input_curves: string;
     blocK_verb_geometry_nurbs_surface_by_lofting_curves_input_degree_v: string;
     blocK_verb_geometry_nurbs_surface_by_lofting_curves_description: string;
+    block_verb_geometry_nurbs_surface_clone_input_surface: string;
+    block_verb_geometry_nurbs_surface_clone_description: string;
+    block_verb_geometry_nurbs_surface_closest_param_input_surface: string;
+    block_verb_geometry_nurbs_surface_closest_param_input_point: string;
+    block_verb_geometry_nurbs_surface_closest_param_description: string;
+    block_verb_geometry_nurbs_surface_closest_point_input_surface: string;
+    block_verb_geometry_nurbs_surface_closest_point_input_point: string;
+    block_verb_geometry_nurbs_surface_closest_point_description: string;
+    block_verb_geometry_nurbs_surface_control_points_input_surface: string;
+    block_verb_geometry_nurbs_surface_control_points_description: string;
+    block_verb_geometry_nurbs_surface_degree_u_input_surface: string;
+    block_verb_geometry_nurbs_surface_degree_u_points_description: string;
+    block_verb_geometry_nurbs_surface_degree_v_input_surface: string;
+    block_verb_geometry_nurbs_surface_degree_v_points_description: string;
+    block_verb_geometry_nurbs_surface_derivatives_input_surface: string;
+    block_verb_geometry_nurbs_surface_derivatives_input_u: string;
+    block_verb_geometry_nurbs_surface_derivatives_input_v: string;
+    block_verb_geometry_nurbs_surface_derivatives_input_num_derivatives: string;
+    block_verb_geometry_nurbs_surface_derivatives_description: string;
+    block_verb_geometry_nurbs_surface_domain_u_input_surface: string;
+    block_verb_geometry_nurbs_surface_domain_u_description: string;
+    block_verb_geometry_nurbs_surface_domain_v_input_surface: string;
+    block_verb_geometry_nurbs_surface_domain_v_description: string;
 }
