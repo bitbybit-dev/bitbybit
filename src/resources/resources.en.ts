@@ -65,6 +65,7 @@ export const resourcesEn: ResourcesInterface = {
     block_u: 'U',
     block_v: 'V',
     block_uv: 'UV',
+    block_use_v: 'Use V',
     block_scalar: 'Scalar',
     block_distance: 'Distance',
     block_fraction: 'Fraction',

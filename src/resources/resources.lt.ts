@@ -65,6 +65,7 @@ export const resourcesLt: ResourcesInterface = {
     block_u: 'U',
     block_v: 'V',
     block_uv: 'UV',
+    block_use_v: 'Naudito V',
     block_distance: 'Atstumas',
     block_scalar: 'Skaicius',
     block_fraction: 'Frakcija',

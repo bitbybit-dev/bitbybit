@@ -42,7 +42,7 @@ export function createSurfaceDerivativesBlock() {
         };
         // this is first set of validations to check that all inputs are non empty strings
         BitByBitBlockHandlerService.validate(block, block.workspace, makeRequiredValidationModelForInputs(resources, inputs, [
-            resources.block_surface, resources.block_parameter, resources.block_num_derivatives
+            resources.block_surface, resources.block_parameter_u, resources.block_parameter_v, resources.block_num_derivatives
         ]));
 
         // this creates validation model to be used at runtime to evaluate real values of inputs
@@ -63,15 +63,20 @@ function makeRuntimeValidationModel(
     return [{
         entity: keys[0],
         validations: [
-            getRequired(resources, resources.block_curve),
+            getRequired(resources, resources.block_surface),
         ]
     }, {
         entity: keys[1],
         validations: [
-            getRequired(resources, resources.block_parameter),
+            getRequired(resources, resources.block_parameter_u),
         ]
     }, {
         entity: keys[2],
+        validations: [
+            getRequired(resources, resources.block_parameter_v),
+        ]
+    }, {
+        entity: keys[3],
         validations: [
             getRequired(resources, resources.block_num_derivatives),
         ]

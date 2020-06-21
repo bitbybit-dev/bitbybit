@@ -54,6 +54,7 @@ export interface ResourcesInterface {
     block_parameter_u: string;
     block_parameter_v: string;
     block_num_derivatives: string;
+    block_use_v: string;
     block_colour: string;
     block_opacity: string;
     block_width: string;
@@ -400,4 +401,8 @@ export interface ResourcesInterface {
     block_verb_geometry_nurbs_surface_domain_u_description: string;
     block_verb_geometry_nurbs_surface_domain_v_input_surface: string;
     block_verb_geometry_nurbs_surface_domain_v_description: string;
+    block_verb_geometry_nurbs_surface_isocurve_input_surface: string;
+    block_verb_geometry_nurbs_surface_isocurve_input_parameter: string;
+    block_verb_geometry_nurbs_surface_isocurve_input_use_v: string;
+    block_verb_geometry_nurbs_surface_isocurve_description: string;
 }
