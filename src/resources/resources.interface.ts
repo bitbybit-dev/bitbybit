@@ -405,4 +405,24 @@ export interface ResourcesInterface {
     block_verb_geometry_nurbs_surface_isocurve_input_parameter: string;
     block_verb_geometry_nurbs_surface_isocurve_input_use_v: string;
     block_verb_geometry_nurbs_surface_isocurve_description: string;
+    block_verb_geometry_nurbs_surface_knots_u_input_surface: string;
+    block_verb_geometry_nurbs_surface_knots_u_description: string;
+    block_verb_geometry_nurbs_surface_knots_v_input_surface: string;
+    block_verb_geometry_nurbs_surface_knots_v_description: string;
+    block_verb_geometry_nurbs_surface_normal_input_surface: string;
+    block_verb_geometry_nurbs_surface_normal_input_u: string;
+    block_verb_geometry_nurbs_surface_normal_input_v: string;
+    block_verb_geometry_nurbs_surface_normal_description: string;
+    block_verb_geometry_nurbs_surface_point_input_surface: string;
+    block_verb_geometry_nurbs_surface_point_input_u: string;
+    block_verb_geometry_nurbs_surface_point_input_v: string;
+    block_verb_geometry_nurbs_surface_point_description: string;
+    block_verb_geometry_nurbs_surface_reverse_input_surface: string;
+    block_verb_geometry_nurbs_surface_reverse_description: string;
+    block_verb_geometry_nurbs_surface_split_input_surface: string;
+    block_verb_geometry_nurbs_surface_split_input_parameter: string;
+    block_verb_geometry_nurbs_surface_split_input_use_v: string;
+    block_verb_geometry_nurbs_surface_split_description: string;
+    block_verb_geometry_nurbs_surface_weights_input_surface: string;
+    block_verb_geometry_nurbs_surface_weights_description: string;
 }
