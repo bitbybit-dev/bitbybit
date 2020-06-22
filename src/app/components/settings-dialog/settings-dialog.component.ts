@@ -1,9 +1,10 @@
-import { Component, Inject, OnInit } from '@angular/core';
-import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { ChangeDetectorRef, Component, Inject, OnInit } from '@angular/core';
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Xml } from 'blockly';
 import { constantsModel } from 'src/app/models/constants.model';
 import { assembleBlocks } from 'src/blocks/assemble-blocks';
 import { languagesEnum, ResourcesInterface, ResourcesService } from 'src/resources';
+import { SettingsService } from '../../shared/setting.service';
 
 @Component({
     selector: 'app-settings-dialog',
@@ -18,6 +19,8 @@ export class SettingsDialogComponent implements OnInit {
 
     constructor(
         public dialogRef: MatDialogRef<SettingsDialogComponent>,
+        private settingsService: SettingsService,
+        private changeDetectorRef: ChangeDetectorRef,
         @Inject(MAT_DIALOG_DATA) public data: any) { }
 
     ngOnInit() {
@@ -29,15 +32,7 @@ export class SettingsDialogComponent implements OnInit {
     }
 
     save() {
-        const litLan = import(`src/assets/blockly-languages/${this.selected}.js`);
-        litLan.then(
-            s => {
-                s.activateLanguage();
-                ResourcesService.setLanguage(this.selected);
-                assembleBlocks();
-                const xml = Xml.workspaceToDom(this.data.workspace);
-                this.data.workspace.clear();
-                Xml.domToWorkspace(xml, this.data.workspace);
-            });
+       this.settingsService.setLanguage(this.selected, this.data.workspace, this.changeDetectorRef);
     }
+
 }

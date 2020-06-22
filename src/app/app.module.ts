@@ -21,6 +21,7 @@ import { SettingsDialogComponent } from './components/settings-dialog/settings-d
 import { SponsorsDialogComponent } from './components/sponsors-dialog/sponsors-dialog.component';
 import { ExamplesService } from './examples/example-service';
 import {MatSelectModule} from '@angular/material/select';
+import { SettingsService } from './shared/setting.service';
 
 
 
@@ -50,7 +51,7 @@ import {MatSelectModule} from '@angular/material/select';
         MatCardModule,
         MatSelectModule,
     ],
-    providers: [ExamplesService],
+    providers: [ExamplesService, SettingsService],
     bootstrap: [AppComponent]
 })
 export class AppModule { }

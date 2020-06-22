@@ -17,12 +17,12 @@ import { languagesEnum, ResourcesInterface, ResourcesService } from '../resource
 import { AboutDialogComponent } from './components/about-dialog/about-dialog.component';
 import { AlertDialogComponent } from './components/alert-dialog/alert-dialog.component';
 import { ExamplesDialogComponent } from './components/examples-dialog/examples-dialog.component';
+import { SettingsDialogComponent } from './components/settings-dialog/settings-dialog.component';
 import { SponsorsDialogComponent } from './components/sponsors-dialog/sponsors-dialog.component';
 import { ExamplesService } from './examples/example-service';
 import { constantsModel } from './models/constants.model';
 import { themeStyle } from './models/theme-styles.model';
 import { toolboxDefinition } from './models/toolbox-definition';
-import { SettingsDialogComponent } from './components/settings-dialog/settings-dialog.component';
 
 @Component({
     selector: 'app-root',
@@ -118,7 +118,7 @@ export class AppComponent implements OnInit, AfterViewInit {
 
     ngOnInit(): void {
 
-        ResourcesService.setLanguage(languagesEnum.lt);
+        ResourcesService.setLanguage(languagesEnum.en);
         this.resources = ResourcesService.getResources();
         prepareBabylonForBlockly();
         assembleBlocks();

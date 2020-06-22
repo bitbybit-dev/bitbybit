@@ -7,6 +7,7 @@ export interface ResourcesInterface {
     app_menu_more: string;
     app_menu_more_about: string;
     app_menu_more_settings: string;
+    app_menu_more_settings_explanation_save: string;
     app_menu_more_examples: string;
     app_menu_more_sponsors: string;
     app_menu_more_community: string;

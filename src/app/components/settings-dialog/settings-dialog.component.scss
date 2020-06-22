@@ -1,11 +1,5 @@
-img {
-    margin: 20px;
-}
-
-h3 {
-    margin-top: 20px;
-}
-
-.version {
-    font-size: 12px;
+::ng-deep .settings {
+    min-height: 300px;
+    max-height:  300px;
+    overflow-y: scroll;
 }

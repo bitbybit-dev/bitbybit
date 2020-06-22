@@ -9,6 +9,7 @@ export const resourcesLt: ResourcesInterface = Object.freeze({
     app_menu_more: 'Daugiau',
     app_menu_more_about: 'Apie',
     app_menu_more_settings: 'Pasirinktys',
+    app_menu_more_settings_explanation_save: 'Pasirinktys bus išsaugotos jūsų kitam vizitui.',
     app_menu_more_examples: 'Pavyzdžiai',
     app_menu_more_sponsors: 'Remėjai',
     app_menu_more_community: 'Bendruomenė',

@@ -9,6 +9,7 @@ export const resourcesEn: ResourcesInterface = Object.freeze({
     app_menu_more: 'More',
     app_menu_more_about: 'About',
     app_menu_more_settings: 'Settings',
+    app_menu_more_settings_explanation_save: 'Setting preferences will be saved for your next visit.',
     app_menu_more_examples: 'Examples',
     app_menu_more_sponsors: 'Sponsors',
     app_menu_more_community: 'Community',

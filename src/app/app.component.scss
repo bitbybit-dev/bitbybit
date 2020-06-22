@@ -185,3 +185,8 @@ h1 {
 ::ng-deep .blocklyText.statusClass{
     transform: translate(0px,7px);
 }
+
+
+::ng-deep button.mat-button {
+    margin-right: 10px;
+}
