@@ -1,9 +1,8 @@
 import { ChangeDetectorRef, Component, Inject, OnInit } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { Xml } from 'blockly';
-import { constantsModel } from 'src/app/models/constants.model';
-import { assembleBlocks } from 'src/blocks/assemble-blocks';
-import { languagesEnum, ResourcesInterface, ResourcesService } from 'src/resources';
+import { languagesEnum, ResourcesInterface, ResourcesService } from '../../../resources';
+import { constantsModel } from '../../models/constants.model';
+import { localStorageKeysEnum } from '../../shared/local-storage-keys.enum';
 import { SettingsService } from '../../shared/setting.service';
 
 @Component({
@@ -14,8 +13,9 @@ import { SettingsService } from '../../shared/setting.service';
 export class SettingsDialogComponent implements OnInit {
     constants = constantsModel;
     resources: ResourcesInterface;
-    selected: languagesEnum;
+    selectedLanguage: languagesEnum;
     languagesEnum = languagesEnum;
+    browserStorage = window.localStorage;
 
     constructor(
         public dialogRef: MatDialogRef<SettingsDialogComponent>,
@@ -25,6 +25,7 @@ export class SettingsDialogComponent implements OnInit {
 
     ngOnInit() {
         this.resources = ResourcesService.getResources();
+        this.selectedLanguage = this.browserStorage.getItem(localStorageKeysEnum.settingsLanguage) as languagesEnum;
     }
 
     onClose(): void {
@@ -32,7 +33,8 @@ export class SettingsDialogComponent implements OnInit {
     }
 
     save() {
-       this.settingsService.setLanguage(this.selected, this.data.workspace, this.changeDetectorRef);
+        this.settingsService.setLanguage(this.selectedLanguage, this.data.workspace, this.changeDetectorRef);
+        this.browserStorage.setItem(localStorageKeysEnum.settingsLanguage, this.selectedLanguage);
     }
 
 }

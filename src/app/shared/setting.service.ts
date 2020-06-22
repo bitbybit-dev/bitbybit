@@ -1,7 +1,8 @@
 import { ChangeDetectorRef, Injectable } from '@angular/core';
 import { WorkspaceSvg, Xml } from 'blockly';
-import { assembleBlocks } from 'src/blocks/assemble-blocks';
-import { languagesEnum, ResourcesInterface, ResourcesService } from 'src/resources';
+import { assembleBlocks } from '../../blocks/assemble-blocks';
+import { languagesEnum, ResourcesInterface, ResourcesService } from '../../resources';
+import { localStorageKeysEnum } from './local-storage-keys.enum';
 
 @Injectable()
 export class SettingsService {
@@ -9,8 +10,12 @@ export class SettingsService {
     constructor() {
     }
 
-    initSettings(workspace: WorkspaceSvg, changeDetector: ChangeDetectorRef){
-        this.setLanguage(languagesEnum.lt, workspace, changeDetector);
+    initSettings(workspace: WorkspaceSvg, changeDetector: ChangeDetectorRef) {
+        const browserStorage = window.localStorage;
+        const languageInSettings = browserStorage.getItem(localStorageKeysEnum.settingsLanguage) as languagesEnum;
+        if (languageInSettings !== languagesEnum.en) {
+            this.setLanguage(languageInSettings, workspace, changeDetector);
+        }
     }
 
     setLanguage(language: languagesEnum, workspace: WorkspaceSvg, changeDetector: ChangeDetectorRef) {
@@ -24,6 +29,8 @@ export class SettingsService {
                 const xml = Xml.workspaceToDom(workspace);
                 workspace.clear();
                 Xml.domToWorkspace(xml, workspace);
+                workspace.zoomToFit();
+                workspace.zoomCenter(-3);
                 changeDetector.detectChanges();
                 this.setToolboxTexts(resources);
                 const toolbox = workspace.getToolbox();
