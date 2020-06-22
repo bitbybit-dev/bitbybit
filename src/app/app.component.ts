@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, OnInit } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ArcRotateCamera, DirectionalLight } from '@babylonjs/core';
@@ -13,7 +13,7 @@ import * as JavaScript from 'blockly/javascript';
 import { BitByBitBlockHandlerService } from 'src/blocks/validations';
 import { prepareBabylonForBlockly } from '../babylon-to-blockly';
 import { assembleBlocks } from '../blocks/assemble-blocks';
-import { languagesEnum, ResourcesInterface, ResourcesService } from '../resources';
+import { ResourcesInterface, ResourcesService } from '../resources';
 import { AboutDialogComponent } from './components/about-dialog/about-dialog.component';
 import { AlertDialogComponent } from './components/alert-dialog/alert-dialog.component';
 import { ExamplesDialogComponent } from './components/examples-dialog/examples-dialog.component';
@@ -23,6 +23,7 @@ import { ExamplesService } from './examples/example-service';
 import { constantsModel } from './models/constants.model';
 import { themeStyle } from './models/theme-styles.model';
 import { toolboxDefinition } from './models/toolbox-definition';
+import { SettingsService } from './shared/setting.service';
 
 @Component({
     selector: 'app-root',
@@ -45,7 +46,9 @@ export class AppComponent implements OnInit, AfterViewInit {
         public dialog: MatDialog,
         public readonly router: Router,
         public readonly route: ActivatedRoute,
-        public readonly examplesService: ExamplesService
+        public readonly examplesService: ExamplesService,
+        private readonly settingsService: SettingsService,
+        private readonly changeDetectorService: ChangeDetectorRef,
     ) {
     }
 
@@ -113,12 +116,13 @@ export class AppComponent implements OnInit, AfterViewInit {
                 }
             });
 
+            this.settingsService.initSettings(this.workspace, this.changeDetectorService);
+
         }, 500);
     }
 
     ngOnInit(): void {
 
-        ResourcesService.setLanguage(languagesEnum.en);
         this.resources = ResourcesService.getResources();
         prepareBabylonForBlockly();
         assembleBlocks();

@@ -9,6 +9,10 @@ export class SettingsService {
     constructor() {
     }
 
+    initSettings(workspace: WorkspaceSvg, changeDetector: ChangeDetectorRef){
+        this.setLanguage(languagesEnum.lt, workspace, changeDetector);
+    }
+
     setLanguage(language: languagesEnum, workspace: WorkspaceSvg, changeDetector: ChangeDetectorRef) {
         const litLan = import(`src/assets/blockly-languages/${language}.js`);
         litLan.then(
