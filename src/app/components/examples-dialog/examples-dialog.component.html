@@ -1,7 +1,7 @@
-<h2>BitByBit Examples</h2>
-<p>Provided examples give you a starting point to understanding the world of 3D algorithms.</p>
+<h2>{{resources.bit_by_bit}} {{resources.app_menu_more_examples}}</h2>
+<p>{{resources.app_menu_more_examples_explanation}}</p>
 <mat-tab-group mat-align-tabs="center">
-    <mat-tab label="Newbie">
+    <mat-tab [label]="resources.app_menu_more_examples_newbie">
         <div *ngFor="let example of basicExamples" class="example">
             <h3>{{example.title}}</h3>
             <a [routerLink]="['/']" [queryParams]="{examples: example.queryParam}" (click)="onClose()">
@@ -10,7 +10,7 @@
             <p>{{example.description}}</p>
         </div>
     </mat-tab>
-    <mat-tab label="Street Smart">
+    <mat-tab [label]="resources.app_menu_more_examples_street_smart">
         <div *ngFor="let example of mediumExamples" class="example">
             <h3>{{example.title}}</h3>
             <a [routerLink]="['/']" [queryParams]="{examples: example.queryParam}" (click)="onClose()">
@@ -19,13 +19,13 @@
             <p>{{example.description}}</p>
         </div>
     </mat-tab>
-    <mat-tab label="Ninja"> 
+    <mat-tab [label]="resources.app_menu_more_examples_ninja"> 
         <div>
             <h3>
-                Ninja examples will require some ninja time to prepare, please be patient...
+                {{resources.app_menu_more_examples_ninja_patience_notice}}
             </h3>
         </div>
     </mat-tab>
   </mat-tab-group>
 <br>
-<button mat-button mat-raised-button (click)="onClose()">Close</button>
+<button mat-button mat-raised-button (click)="onClose()">{{resources.app_button_close}}</button>
