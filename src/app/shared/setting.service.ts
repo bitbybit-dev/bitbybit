@@ -19,8 +19,8 @@ export class SettingsService {
     }
 
     setLanguage(language: languagesEnum, workspace: WorkspaceSvg, changeDetector: ChangeDetectorRef) {
-        const litLan = import(`src/assets/blockly-languages/${language}.js`);
-        litLan.then(
+        const languageImport = import(`src/assets/blockly-languages/${language}.js`);
+        languageImport.then(
             s => {
                 s.activateLanguage();
                 ResourcesService.setLanguage(language);
@@ -30,7 +30,6 @@ export class SettingsService {
                 workspace.clear();
                 Xml.domToWorkspace(xml, workspace);
                 workspace.zoomToFit();
-                workspace.zoomCenter(-3);
                 changeDetector.detectChanges();
                 this.setToolboxTexts(resources);
                 const toolbox = workspace.getToolbox();
