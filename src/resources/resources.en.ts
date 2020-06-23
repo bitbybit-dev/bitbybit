@@ -27,6 +27,8 @@ export const resourcesEn: ResourcesInterface = Object.freeze({
     app_menu_more_examples_ninja: 'Ninja',
     app_menu_more_examples_ninja_patience_notice: 'Ninja examples will require some ninja time to prepare, please be patient...',
     app_menu_more_sponsors: 'Sponsors',
+    app_menu_more_sponsors_explanation: 'Currently BitByBit does not have any sponsors. You could be the first one to put your companys logo here and help us out in building this amazing opensource platform.',
+    app_menu_more_sponsors_email: 'If you would like to help us out, send us an email on',
     app_menu_more_community: 'Community',
     app_menu_more_export: 'Export',
     app_menu_more_import: 'Import',

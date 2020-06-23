@@ -27,6 +27,8 @@ export const resourcesLt: ResourcesInterface = Object.freeze({
     app_menu_more_examples_ninja: 'Nindzėms',
     app_menu_more_examples_ninja_patience_notice: 'Nindzėms skirti pavyzdžiai pareikalaus nindzės laiko. Ačiū už kantrybę.',
     app_menu_more_sponsors: 'Remėjai',
+    app_menu_more_sponsors_explanation: 'Šiuo metu projektas remėjų neturi. Jei norėtumėte mus paremti mums būtų malonu įdėti jūsų logo šioje remėjų lentoje.',
+    app_menu_more_sponsors_email: 'Jei norėtumėte mums padėti, kreipkitės elektroniniu paštu',
     app_menu_more_community: 'Bendruomenė',
     app_menu_more_export: 'Išsaugoti',
     app_menu_more_import: 'Atidaryti',

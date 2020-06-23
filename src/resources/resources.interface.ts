@@ -25,6 +25,8 @@ export interface ResourcesInterface {
     app_menu_more_examples_ninja: string;
     app_menu_more_examples_ninja_patience_notice: string;
     app_menu_more_sponsors: string;
+    app_menu_more_sponsors_explanation: string;
+    app_menu_more_sponsors_email: string;
     app_menu_more_community: string;
     app_menu_more_export: string;
     app_menu_more_import: string;
