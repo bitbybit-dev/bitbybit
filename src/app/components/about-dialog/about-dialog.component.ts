@@ -1,17 +1,24 @@
-import { Component, Inject } from '@angular/core';
-import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { constantsModel } from 'src/app/models/constants.model';
+import { Component, Inject, OnInit } from '@angular/core';
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { ResourcesInterface, ResourcesService } from '../../../resources';
+import { constantsModel } from '../../models/constants.model';
 
 @Component({
-    selector: 'about-dialog',
+    selector: 'app-about-dialog',
     styleUrls: ['./about-dialog.component.scss'],
     templateUrl: './about-dialog.component.html',
 })
-export class AboutDialogComponent {
+export class AboutDialogComponent implements OnInit {
     constants = constantsModel;
+    resources: ResourcesInterface;
+
     constructor(
         public dialogRef: MatDialogRef<AboutDialogComponent>,
         @Inject(MAT_DIALOG_DATA) public data: any) { }
+
+    ngOnInit(): void {
+        this.resources = ResourcesService.getResources();
+    }
 
     onClose(): void {
         this.dialogRef.close();

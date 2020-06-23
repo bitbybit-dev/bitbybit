@@ -6,6 +6,17 @@ export interface ResourcesInterface {
     app_menu_clean_canvas: string;
     app_menu_more: string;
     app_menu_more_about: string;
+    app_menu_more_about_paragraph_first: string;
+    app_menu_more_about_paragraph_second: string;
+    app_menu_more_about_paragraph_third: string;
+    app_menu_more_about_paragraph_fourth: string;
+    app_menu_more_about_paragraph_fifth: string;
+    app_menu_more_about_paragraph_sixth: string;
+    app_menu_more_about_sub_header_first: string;
+    app_menu_more_about_sub_header_second: string;
+    app_menu_more_about_sub_header_third: string;
+    app_menu_more_about_sub_header_fourth: string;
+    app_menu_more_about_sub_header_fifth: string;
     app_menu_more_settings: string;
     app_menu_more_settings_explanation_save: string;
     app_menu_more_examples: string;
