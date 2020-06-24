@@ -102,22 +102,23 @@ export class AppComponent implements OnInit, AfterViewInit {
                 this.scene.render();
             });
 
-            this.route.queryParamMap.subscribe(param => {
-                const exampleParam = param.get('examples');
-                if (exampleParam) {
-                    const xml = Xml.textToDom(this.examplesService.getExampleXml(exampleParam));
-                    if (xml) {
-                        this.workspace.clear();
-                        Xml.domToWorkspace(xml, this.workspace);
-                        this.workspace.zoomToFit();
-                        this.workspace.zoomCenter(-3);
-                        this.run();
+            this.settingsService.initSettings(this.workspace, this.changeDetectorService).subscribe(s => {
+                this.route.queryParamMap.subscribe(param => {
+                    const exampleParam = param.get('examples');
+                    if (exampleParam) {
+                        const xml = Xml.textToDom(this.examplesService.getExampleXml(exampleParam));
+                        if (xml) {
+                            this.workspace.clear();
+                            Xml.domToWorkspace(xml, this.workspace);
+                            this.workspace.zoomToFit();
+                            this.workspace.zoomCenter(-3);
+                            this.run();
+                        }
+                    } else {
+                        this.examples();
                     }
-                }
+                });
             });
-
-            this.settingsService.initSettings(this.workspace, this.changeDetectorService);
-
         }, 500);
     }
 

@@ -3,6 +3,7 @@ import { WorkspaceSvg, Xml } from 'blockly';
 import { assembleBlocks } from '../../blocks/assemble-blocks';
 import { languagesEnum, ResourcesInterface, ResourcesService } from '../../resources';
 import { localStorageKeysEnum } from './local-storage-keys.enum';
+import { Observable, Subject } from 'rxjs';
 
 @Injectable()
 export class SettingsService {
@@ -10,15 +11,21 @@ export class SettingsService {
     constructor() {
     }
 
-    initSettings(workspace: WorkspaceSvg, changeDetector: ChangeDetectorRef) {
+    initSettings(workspace: WorkspaceSvg, changeDetector: ChangeDetectorRef): Observable<any> {
         const browserStorage = window.localStorage;
         const languageInSettings = browserStorage.getItem(localStorageKeysEnum.settingsLanguage) as languagesEnum;
+        let subject = new Subject();
         if (languageInSettings !== languagesEnum.en) {
-            this.setLanguage(languageInSettings, workspace, changeDetector);
+            subject = this.setLanguage(languageInSettings, workspace, changeDetector);
+        } else {
+            subject.next();
+            subject.complete();
         }
+        return subject;
     }
 
-    setLanguage(language: languagesEnum, workspace: WorkspaceSvg, changeDetector: ChangeDetectorRef) {
+    setLanguage(language: languagesEnum, workspace: WorkspaceSvg, changeDetector: ChangeDetectorRef): Subject<any> {
+        const subject = new Subject();
         const languageImport = import(`src/assets/blockly-languages/${language}.js`);
         languageImport.then(
             s => {
@@ -30,11 +37,16 @@ export class SettingsService {
                 workspace.clear();
                 Xml.domToWorkspace(xml, workspace);
                 workspace.zoomToFit();
+                workspace.zoomCenter(-3);
                 changeDetector.detectChanges();
                 this.setToolboxTexts(resources);
                 const toolbox = workspace.getToolbox();
                 toolbox.position();
+                subject.next();
+                subject.complete();
             });
+
+        return subject;
     }
 
     private setToolboxTexts(resources: ResourcesInterface) {
