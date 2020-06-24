@@ -18,8 +18,10 @@ export class SettingsService {
         if (languageInSettings !== languagesEnum.en) {
             subject = this.setLanguage(languageInSettings, workspace, changeDetector);
         } else {
-            subject.next();
-            subject.complete();
+            setTimeout(() => {
+                subject.next();
+                subject.complete();
+            });
         }
         return subject;
     }
@@ -37,13 +39,12 @@ export class SettingsService {
                 workspace.clear();
                 Xml.domToWorkspace(xml, workspace);
                 workspace.zoomToFit();
-                workspace.zoomCenter(-3);
+                workspace.zoomCenter(-1);
                 changeDetector.detectChanges();
                 this.setToolboxTexts(resources);
                 const toolbox = workspace.getToolbox();
                 toolbox.position();
                 subject.next();
-                subject.complete();
             });
 
         return subject;
