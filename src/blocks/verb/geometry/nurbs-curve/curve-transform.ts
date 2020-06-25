@@ -17,7 +17,7 @@ export function createCurveTransformBlock() {
                 .appendField(resources.block_verb_geom_curve_transform_curve);
             this.appendValueInput('Matrix')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_verb_geom_curve_transform_transformation);
+                .appendField(resources.block_verb_geom_curve_transform_transformation.toLowerCase());
             this.setOutput(true, 'NurbsCurve');
             this.setColour('#fff');
             this.setTooltip(resources.block_verb_geom_curve_transform_description);
@@ -49,7 +49,7 @@ export function createCurveTransformBlock() {
         transformation.forEach(transform => {
             transformedControlPoints = BitByBitBlocklyHelperService.transformPointsByMatrix(transformedControlPoints, transform);
         });
-    }else {
+    } else {
         transformedControlPoints = BitByBitBlocklyHelperService.transformPointsByMatrix(points, transformation);
     }
     return verb.geom.NurbsCurve.byKnotsControlPointsWeights(inputs.curve.degree(), inputs.curve.knots(), transformedControlPoints, inputs.curve.weights());

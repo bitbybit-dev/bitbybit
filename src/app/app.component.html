@@ -10,12 +10,12 @@
                 <mat-icon [matTooltip]="resources.app_menu_swap_canvas" aria-label="Swap Canvas">swap_horiz
                 </mat-icon>
             </button>
-            <a [matTooltip]="resources.app_menu_support_us_on_patreon" mat-icon-button href="https://www.patreon.com/bitbybitdev"
-                target="_blank">
-                <img width="16px" src="../assets/logo-patreon.svg">
-            </a>
             <button mat-buttom mat-icon-button (click)="cleanCanvas()">
                 <mat-icon [matTooltip]="resources.app_menu_clean_canvas" aria-label="Clean Canvas">refresh
+                </mat-icon>
+            </button>
+            <button mat-buttom mat-icon-button (click)="examples()">
+                <mat-icon [matTooltip]="resources.app_menu_more_examples"  aria-hidden="false" aria-label="Examples">library_books
                 </mat-icon>
             </button>
             <button [matTooltip]="resources.app_menu_more" mat-buttom mat-icon-button [matMenuTriggerFor]="appMenu">
@@ -34,7 +34,7 @@
                     </mat-icon>
                     {{resources.app_menu_more_export}}
                 </button>
-                <button mat-menu-item (click)="examples()" [matMenuTriggerFor]="social">
+                <button mat-menu-item [matMenuTriggerFor]="social">
                     <mat-icon aria-hidden="false" aria-label="Community">forum
                     </mat-icon>
                     {{resources.app_menu_more_community}}
@@ -44,16 +44,11 @@
                     </mat-icon>
                     {{resources.app_menu_more_sponsors}}
                 </button>
-                <button mat-menu-item (click)="examples()">
-                    <mat-icon aria-hidden="false" aria-label="Examples">library_books
-                    </mat-icon>
-                    {{resources.app_menu_more_examples}}
-                </button>
-                <!-- <button mat-menu-item (click)="settings()">
+                <button mat-menu-item (click)="settings()">
                     <mat-icon aria-hidden="false" aria-label="Settings">settings
                     </mat-icon>
                     {{resources.app_menu_more_settings}}
-                </button> -->
+                </button>
                 <button mat-menu-item (click)="about()">
                     <mat-icon aria-hidden="false" aria-label="About">help_outline
                     </mat-icon>

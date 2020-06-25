@@ -1,7 +1,9 @@
 import { Component, Inject, OnInit } from '@angular/core';
-import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { ExamplesService } from 'src/app/examples/example-service';
-import { ExampleInterface } from 'src/app/examples/interfaces/example.interface';
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { ResourcesInterface, ResourcesService } from '../../../resources';
+import { ExamplesService } from '../../examples/example-service';
+import { ExampleInterface } from '../../examples/interfaces/example.interface';
+import { ExamplesModel } from '../../examples/models/examples.model';
 
 @Component({
     selector: 'app-examples-dialog',
@@ -13,6 +15,8 @@ export class ExamplesDialogComponent implements OnInit {
     basicExamples: ExampleInterface[];
     mediumExamples: ExampleInterface[];
     advancedExamples: ExampleInterface[];
+    resources: ResourcesInterface;
+
 
     constructor(
         public dialogRef: MatDialogRef<ExamplesDialogComponent>,
@@ -20,7 +24,8 @@ export class ExamplesDialogComponent implements OnInit {
         @Inject(MAT_DIALOG_DATA) public data: any) { }
 
     ngOnInit(): void {
-        const examples = this.exampleService.getExamples();
+        this.resources = ResourcesService.getResources();
+        const examples = new ExamplesModel();
         this.basicExamples = examples.basic;
         this.mediumExamples = examples.middle;
         this.advancedExamples = examples.advanced;

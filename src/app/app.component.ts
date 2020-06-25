@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, OnInit } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ArcRotateCamera, DirectionalLight } from '@babylonjs/core';
@@ -13,15 +13,17 @@ import * as JavaScript from 'blockly/javascript';
 import { BitByBitBlockHandlerService } from 'src/blocks/validations';
 import { prepareBabylonForBlockly } from '../babylon-to-blockly';
 import { assembleBlocks } from '../blocks/assemble-blocks';
-import { languagesEnum, ResourcesInterface, ResourcesService } from '../resources';
+import { ResourcesInterface, ResourcesService } from '../resources';
 import { AboutDialogComponent } from './components/about-dialog/about-dialog.component';
 import { AlertDialogComponent } from './components/alert-dialog/alert-dialog.component';
 import { ExamplesDialogComponent } from './components/examples-dialog/examples-dialog.component';
+import { SettingsDialogComponent } from './components/settings-dialog/settings-dialog.component';
 import { SponsorsDialogComponent } from './components/sponsors-dialog/sponsors-dialog.component';
 import { ExamplesService } from './examples/example-service';
 import { constantsModel } from './models/constants.model';
 import { themeStyle } from './models/theme-styles.model';
 import { toolboxDefinition } from './models/toolbox-definition';
+import { SettingsService } from './shared/setting.service';
 
 @Component({
     selector: 'app-root',
@@ -39,16 +41,20 @@ export class AppComponent implements OnInit, AfterViewInit {
     windowBlockly;
     constants = constantsModel;
     resources: ResourcesInterface;
+    firstTimeOpen = true;
 
     constructor(
         public dialog: MatDialog,
         public readonly router: Router,
         public readonly route: ActivatedRoute,
-        public readonly examplesService: ExamplesService
+        public readonly examplesService: ExamplesService,
+        private readonly settingsService: SettingsService,
+        private readonly changeDetectorService: ChangeDetectorRef,
     ) {
     }
 
     ngAfterViewInit(): void {
+
         setTimeout(() => {
             const theme = Theme.defineTheme('themeName', themeStyle());
 
@@ -97,27 +103,33 @@ export class AppComponent implements OnInit, AfterViewInit {
                 this.scene.render();
             });
 
-            this.route.queryParamMap.subscribe(param => {
-                const exampleParam = param.get('examples');
-                if (exampleParam) {
-                    const xml = Xml.textToDom(this.examplesService.getExampleXml(exampleParam));
-                    if (xml) {
-                        this.workspace.clear();
-                        Xml.domToWorkspace(xml, this.workspace);
-                        this.workspace.zoomToFit();
-                        this.workspace.zoomCenter(-3);
-                        this.run();
+            this.settingsService.initSettings(this.workspace, this.changeDetectorService).subscribe(s => {
+
+                this.route.queryParamMap.subscribe(param => {
+                    const exampleParam = param.get('examples');
+                    if (exampleParam) {
+                        this.firstTimeOpen = false;
+                        const xml = Xml.textToDom(this.examplesService.getExampleXml(exampleParam));
+                        if (xml) {
+                            this.workspace.clear();
+                            Xml.domToWorkspace(xml, this.workspace);
+                            this.workspace.zoomToFit();
+                            this.workspace.zoomCenter(-3);
+                            this.run();
+                        }
+                    } else {
+                        if(this.firstTimeOpen){
+                            this.examples();
+                            this.firstTimeOpen = false;
+                        }
                     }
-                }
+                });
             });
-
         }, 500);
-
     }
 
     ngOnInit(): void {
 
-        ResourcesService.setLanguage(languagesEnum.en);
         this.resources = ResourcesService.getResources();
         prepareBabylonForBlockly();
         assembleBlocks();
@@ -187,19 +199,11 @@ export class AppComponent implements OnInit, AfterViewInit {
     }
 
     about() {
-        // ResourcesService.setLanguage(languagesEnum.lt);
-        // assembleBlocks();
-        // const xml = Xml.workspaceToDom(this.workspace);
-        // this.workspace.clear();
-        // Xml.domToWorkspace(xml, this.workspace);
-
-        // this.workspace.zoomToFit();
-        // this.workspace.zoomCenter(-3);
-
         this.openAboutDialog();
     }
 
-    settings(){
+    settings() {
+        this.openSettingsDialog();
     }
 
     sponsors() {
@@ -286,6 +290,21 @@ ${code}
             width: '700px',
             height: '700px',
             autoFocus: false
+        });
+
+        dialogRef.afterClosed().subscribe(result => {
+            const d = result;
+        });
+    }
+
+    private openSettingsDialog(): void {
+        const dialogRef = this.dialog.open(SettingsDialogComponent, {
+            width: '500px',
+            height: '500px',
+            autoFocus: false,
+            data: {
+                workspace: this.workspace
+            }
         });
 
         dialogRef.afterClosed().subscribe(result => {

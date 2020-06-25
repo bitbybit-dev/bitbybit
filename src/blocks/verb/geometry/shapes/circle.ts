@@ -1,8 +1,8 @@
 import { ALIGN_RIGHT, Block, Blocks } from 'blockly';
 import * as JavaScript from 'blockly/javascript';
-import { ResourcesService } from '../../../../resources';
+import { ResourcesInterface, ResourcesService } from '../../../../resources';
 import { createStandardContextIIFE } from '../../../_shared';
-import { makeRequiredValidationModelForInputs, BitByBitBlockHandlerService } from '../../../validations';
+import { getRequired, makeRequiredValidationModelForInputs, BitByBitBlockHandlerService, ValidationEntityInterface } from '../../../validations';
 
 export function createShapesCircleBlock() {
 
@@ -18,11 +18,11 @@ export function createShapesCircleBlock() {
             this.appendValueInput('XAxis')
                 .setCheck('Array')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_base_geometry_shape_x_axis);
+                .appendField(resources.block_base_geometry_shape_x_axis.toLowerCase());
             this.appendValueInput('YAxis')
                 .setCheck('Array')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_base_geometry_shape_y_axis);
+                .appendField(resources.block_base_geometry_shape_y_axis.toLowerCase());
             this.appendValueInput('Radius')
                 .setCheck('Number')
                 .setAlign(ALIGN_RIGHT)
@@ -51,8 +51,8 @@ export function createShapesCircleBlock() {
         ]));
 
         // this creates validation model to be used at runtime to evaluate real values of inputs
-        // const runtimeValidationModel = makeRuntimeValidationModel(resources, Object.keys(inputs));
-        // (block as any).validationModel = runtimeValidationModel;
+        const runtimeValidationModel = makeRuntimeValidationModel(resources, Object.keys(inputs));
+        (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
             `return new verb.geom.Circle(inputs.center, inputs.xAxis, inputs.yAxis, inputs.radius);`
@@ -61,15 +61,30 @@ export function createShapesCircleBlock() {
     };
 }
 
-// function makeRuntimeValidationModel(
-//     resources: ResourcesInterface,
-//     keys: string[]
-// ): ValidationEntityInterface[] {
+function makeRuntimeValidationModel(
+    resources: ResourcesInterface,
+    keys: string[]
+): ValidationEntityInterface[] {
 
-//     return [{
-//         entity: keys[0],
-//         validations: [
-//             getRequired(resources, resources.block_points),
-//         ]
-//     }];
-// }
+    return [{
+        entity: keys[0],
+        validations: [
+            getRequired(resources, resources.block_center),
+        ]
+    }, {
+        entity: keys[1],
+        validations: [
+            getRequired(resources, resources.block_base_geometry_shape_x_axis),
+        ]
+    }, {
+        entity: keys[2],
+        validations: [
+            getRequired(resources, resources.block_base_geometry_shape_y_axis),
+        ]
+    }, {
+        entity: keys[3],
+        validations: [
+            getRequired(resources, resources.block_radius),
+        ]
+    }];
+}
