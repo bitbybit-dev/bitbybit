@@ -409,9 +409,9 @@ export interface ResourcesInterface {
     block_verb_geometry_nurbs_surface_by_knots_control_points_weights_input_degree_u: string;
     block_verb_geometry_nurbs_surface_by_knots_control_points_weights_input_degree_v: string;
     block_verb_geometry_nurbs_surface_by_knots_control_points_weights_description: string;
-    blocK_verb_geometry_nurbs_surface_by_lofting_curves_input_curves: string;
-    blocK_verb_geometry_nurbs_surface_by_lofting_curves_input_degree_v: string;
-    blocK_verb_geometry_nurbs_surface_by_lofting_curves_description: string;
+    block_verb_geometry_nurbs_surface_by_lofting_curves_input_curves: string;
+    block_verb_geometry_nurbs_surface_by_lofting_curves_input_degree_v: string;
+    block_verb_geometry_nurbs_surface_by_lofting_curves_description: string;
     block_verb_geometry_nurbs_surface_clone_input_surface: string;
     block_verb_geometry_nurbs_surface_clone_description: string;
     block_verb_geometry_nurbs_surface_closest_param_input_surface: string;
@@ -459,4 +459,7 @@ export interface ResourcesInterface {
     block_verb_geometry_nurbs_surface_split_description: string;
     block_verb_geometry_nurbs_surface_weights_input_surface: string;
     block_verb_geometry_nurbs_surface_weights_description: string;
+    block_verb_geometry_spherical_surface_input_center: string;
+    block_verb_geometry_spherical_surface_input_radius: string;
+    block_verb_geometry_spherical_surface_description: string;
 }

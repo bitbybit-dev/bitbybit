@@ -411,9 +411,9 @@ export const resourcesLt: ResourcesInterface = Object.freeze({
     block_verb_geometry_nurbs_surface_by_knots_control_points_weights_input_degree_u: 'U laipsniu',
     block_verb_geometry_nurbs_surface_by_knots_control_points_weights_input_degree_v: 'V laipsniu',
     block_verb_geometry_nurbs_surface_by_knots_control_points_weights_description: 'Sukuria paviršių iš uv saitų, taškų, svorių ir uv laipsniais.',
-    blocK_verb_geometry_nurbs_surface_by_lofting_curves_input_curves: 'Paviršius vedamas per kreives',
-    blocK_verb_geometry_nurbs_surface_by_lofting_curves_input_degree_v: 'V laipsnio',
-    blocK_verb_geometry_nurbs_surface_by_lofting_curves_description: 'Paviršius sudaromas per kreivių rinkinį.',
+    block_verb_geometry_nurbs_surface_by_lofting_curves_input_curves: 'Paviršius vedamas per kreives',
+    block_verb_geometry_nurbs_surface_by_lofting_curves_input_degree_v: 'V laipsnio',
+    block_verb_geometry_nurbs_surface_by_lofting_curves_description: 'Paviršius sudaromas per kreivių rinkinį.',
     block_verb_geometry_nurbs_surface_clone_input_surface: 'Klonuoti paviršių',
     block_verb_geometry_nurbs_surface_clone_description: 'Klonuoja paviršių.',
     block_verb_geometry_nurbs_surface_closest_param_input_surface: 'Arčiausias uv parametras ant paviršiaus',
@@ -461,4 +461,7 @@ export const resourcesLt: ResourcesInterface = Object.freeze({
     block_verb_geometry_nurbs_surface_split_description: 'Padalina paviršių į dvi dalis ties parametru.',
     block_verb_geometry_nurbs_surface_weights_input_surface: 'Paviršiaus svoriai',
     block_verb_geometry_nurbs_surface_weights_description: 'Gražina paviršiaus svorius.',
+    block_verb_geometry_spherical_surface_input_center: 'Sferinio paviršiaus centras',
+    block_verb_geometry_spherical_surface_input_radius: 'Spindulys',
+    block_verb_geometry_spherical_surface_description: 'Sukuria sferinį duoto spindulio paviršių.'
 });

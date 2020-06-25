@@ -411,9 +411,9 @@ export const resourcesEn: ResourcesInterface = Object.freeze({
     block_verb_geometry_nurbs_surface_by_knots_control_points_weights_input_degree_u: 'degree u',
     block_verb_geometry_nurbs_surface_by_knots_control_points_weights_input_degree_v: 'degree v',
     block_verb_geometry_nurbs_surface_by_knots_control_points_weights_description: 'Creates a surface by uv knots, control points, weights and uv degrees.',
-    blocK_verb_geometry_nurbs_surface_by_lofting_curves_input_curves: 'Surface by lofting curves',
-    blocK_verb_geometry_nurbs_surface_by_lofting_curves_input_degree_v: 'Of degree v',
-    blocK_verb_geometry_nurbs_surface_by_lofting_curves_description: 'Lofts curves to form a surface.',
+    block_verb_geometry_nurbs_surface_by_lofting_curves_input_curves: 'Surface by lofting curves',
+    block_verb_geometry_nurbs_surface_by_lofting_curves_input_degree_v: 'Of degree v',
+    block_verb_geometry_nurbs_surface_by_lofting_curves_description: 'Lofts curves to form a surface.',
     block_verb_geometry_nurbs_surface_clone_input_surface: 'Clone the surface',
     block_verb_geometry_nurbs_surface_clone_description: 'Clones the surface.',
     block_verb_geometry_nurbs_surface_closest_param_input_surface: 'Closest parameter on the surface',
@@ -461,4 +461,7 @@ export const resourcesEn: ResourcesInterface = Object.freeze({
     block_verb_geometry_nurbs_surface_split_description: 'Splits the surface at u or v parameters.',
     block_verb_geometry_nurbs_surface_weights_input_surface: 'Weights of the surface',
     block_verb_geometry_nurbs_surface_weights_description: 'Returns the weights of the surface.',
+    block_verb_geometry_spherical_surface_input_center: 'Spherical surface center',
+    block_verb_geometry_spherical_surface_input_radius: 'Radius',
+    block_verb_geometry_spherical_surface_description: 'Creates spherical surface of given radius.'
 });

@@ -4,35 +4,35 @@ import { ResourcesInterface, ResourcesService } from '../../../../resources';
 import { createStandardContextIIFE } from '../../../_shared';
 import { getRequired, makeRequiredValidationModelForInputs, BitByBitBlockHandlerService, ValidationEntityInterface } from '../../../validations';
 
-export function createSurfaceByLoftingCurvesBlock() {
+export function createSphericalSurfaceBlock() {
 
     const resources = ResourcesService.getResources();
-    const blockSelector = 'verb_geometry_nurbs_surface_by_lofting_curves';
+    const blockSelector = 'verb_geometry_spherical_surface';
 
     Blocks[blockSelector] = {
         init() {
-            this.appendValueInput('Curves')
+            this.appendValueInput('Center')
                 .setCheck('Array')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_verb_geometry_nurbs_surface_by_lofting_curves_input_curves);
-            this.appendValueInput('DegreeV')
+                .appendField(resources.block_verb_geometry_spherical_surface_input_center);
+            this.appendValueInput('Radius')
                 .setCheck('Number')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_verb_geometry_nurbs_surface_by_lofting_curves_input_degree_v.toLowerCase());
+                .appendField(resources.block_verb_geometry_spherical_surface_input_radius.toLowerCase());
             this.setOutput(true, 'NurbsSurface');
             this.setColour('#fff');
-            this.setTooltip(resources.block_verb_geometry_nurbs_surface_by_lofting_curves_description);
+            this.setTooltip(resources.block_verb_geometry_spherical_surface_description);
         }
     };
 
     JavaScript[blockSelector] = (block: Block) => {
         const inputs = {
-            curves: JavaScript.valueToCode(block, 'Curves', JavaScript.ORDER_ATOMIC),
-            degreeV: JavaScript.valueToCode(block, 'DegreeV', JavaScript.ORDER_ATOMIC),
+            center: JavaScript.valueToCode(block, 'Center', JavaScript.ORDER_ATOMIC),
+            radius: JavaScript.valueToCode(block, 'Radius', JavaScript.ORDER_ATOMIC),
         };
         // this is first set of validations to check that all inputs are non empty strings
         BitByBitBlockHandlerService.validate(block, block.workspace, makeRequiredValidationModelForInputs(resources, inputs, [
-            resources.block_curves, resources.block_degree_v
+            resources.block_center, resources.block_radius
         ]));
 
         // this creates validation model to be used at runtime to evaluate real values of inputs
@@ -40,7 +40,7 @@ export function createSurfaceByLoftingCurvesBlock() {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `return verb.geom.NurbsSurface.byLoftingCurves(inputs.curves, inputs.degree_v)`
+            `return new verb.geom.SphericalSurface(inputs.center, inputs.radius)`
         );
         return [code, JavaScript.ORDER_ATOMIC];
     };
@@ -54,12 +54,12 @@ function makeRuntimeValidationModel(
     return [{
         entity: keys[0],
         validations: [
-            getRequired(resources, resources.block_curves),
+            getRequired(resources, resources.block_center),
         ]
     }, {
         entity: keys[1],
         validations: [
-            getRequired(resources, resources.block_degree_v),
+            getRequired(resources, resources.block_radius),
         ]
     }];
 }
