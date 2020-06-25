@@ -84,6 +84,7 @@ export const resourcesEn: ResourcesInterface = Object.freeze({
     block_polyline: 'Polyline',
     block_surface: 'Surface',
     block_surfaces: 'Surfaces',
+    block_sphere: 'Sphere',
     block_circle: 'Circle',
     block_center: 'Center',
     block_radius: 'Radius',
@@ -463,5 +464,9 @@ export const resourcesEn: ResourcesInterface = Object.freeze({
     block_verb_geometry_nurbs_surface_weights_description: 'Returns the weights of the surface.',
     block_verb_geometry_spherical_surface_input_center: 'Spherical surface center',
     block_verb_geometry_spherical_surface_input_radius: 'Radius',
-    block_verb_geometry_spherical_surface_description: 'Creates spherical surface of given radius.'
+    block_verb_geometry_spherical_surface_description: 'Creates spherical surface of given radius.',
+    block_verb_geometry_spherical_surface_center_input_sphere: 'Center of the sphere',
+    block_verb_geometry_spherical_surface_center_description: 'Returns the center point of the sphere',
+    block_verb_geometry_spherical_surface_radius_input_sphere: 'Radius of the sphere',
+    block_verb_geometry_spherical_surface_radius_description: 'Returns the radius point of the sphere',
 });

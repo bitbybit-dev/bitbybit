@@ -94,6 +94,7 @@ export interface ResourcesInterface {
     block_width: string;
     block_size: string;
     block_surface: string;
+    block_sphere: string;
     block_surfaces: string;
     block_center: string;
     block_circle: string;
@@ -462,4 +463,8 @@ export interface ResourcesInterface {
     block_verb_geometry_spherical_surface_input_center: string;
     block_verb_geometry_spherical_surface_input_radius: string;
     block_verb_geometry_spherical_surface_description: string;
+    block_verb_geometry_spherical_surface_center_input_sphere: string;
+    block_verb_geometry_spherical_surface_center_description: string;
+    block_verb_geometry_spherical_surface_radius_input_sphere: string;
+    block_verb_geometry_spherical_surface_radius_description: string;
 }

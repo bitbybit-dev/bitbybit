@@ -869,8 +869,6 @@ export function toolboxDefinition() {
         </block>
         <block type="verb_geometry_nurbs_surface_by_knots_control_points_weights">
         </block>
-        <block type="verb_geometry_spherical_surface">
-        </block>
         <block type="babylon_draw_surface">
             <value name="Colour">
                 <shadow type="colour_picker">
@@ -894,6 +892,12 @@ export function toolboxDefinition() {
                     <field name="NUM">1</field>
                 </shadow>
             </value>
+        </block>
+        <block type="verb_geometry_spherical_surface">
+        </block>
+        <block type="verb_geometry_spherical_surface_center">
+        </block>
+        <block type="verb_geometry_spherical_surface_radius">
         </block>
         <block type="verb_geometry_nurbs_surface_normal">
         </block>

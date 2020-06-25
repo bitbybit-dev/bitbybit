@@ -84,6 +84,7 @@ export const resourcesLt: ResourcesInterface = Object.freeze({
     block_size: 'Dydis',
     block_surface: 'Paviršius',
     block_surfaces: 'Paviršiai',
+    block_sphere: 'Sfera',
     block_circle: 'Apskritimas',
     block_center: 'Centras',
     block_radius: 'Spindulys',
@@ -463,5 +464,9 @@ export const resourcesLt: ResourcesInterface = Object.freeze({
     block_verb_geometry_nurbs_surface_weights_description: 'Gražina paviršiaus svorius.',
     block_verb_geometry_spherical_surface_input_center: 'Sferinio paviršiaus centras',
     block_verb_geometry_spherical_surface_input_radius: 'Spindulys',
-    block_verb_geometry_spherical_surface_description: 'Sukuria sferinį duoto spindulio paviršių.'
+    block_verb_geometry_spherical_surface_description: 'Sukuria sferinį duoto spindulio paviršių.',
+    block_verb_geometry_spherical_surface_center_input_sphere: 'Sferos centras',
+    block_verb_geometry_spherical_surface_center_description: 'Gražina sferos centrą.',
+    block_verb_geometry_spherical_surface_radius_input_sphere: 'Sferos spindulys',
+    block_verb_geometry_spherical_surface_radius_description: 'Gražina sferos spindlį.',
 });
