@@ -14,20 +14,18 @@ export class SettingsService {
     initSettings(workspace: WorkspaceSvg, changeDetector: ChangeDetectorRef): Observable<any> {
         const browserStorage = window.localStorage;
         const languageInSettings = browserStorage.getItem(localStorageKeysEnum.settingsLanguage) as languagesEnum;
-        let subject = new Subject();
+        const subject = new Subject();
         if (languageInSettings !== languagesEnum.en) {
-            subject = this.setLanguage(languageInSettings, workspace, changeDetector);
+            this.setLanguage(languageInSettings, workspace, changeDetector, subject);
         } else {
             setTimeout(() => {
                 subject.next();
-                subject.complete();
             });
         }
         return subject;
     }
 
-    setLanguage(language: languagesEnum, workspace: WorkspaceSvg, changeDetector: ChangeDetectorRef): Subject<any> {
-        const subject = new Subject();
+    setLanguage(language: languagesEnum, workspace: WorkspaceSvg, changeDetector: ChangeDetectorRef, subject?: Subject<any>) {
         const languageImport = import(`src/assets/blockly-languages/${language}.js`);
         languageImport.then(
             s => {
@@ -44,10 +42,10 @@ export class SettingsService {
                 this.setToolboxTexts(resources);
                 const toolbox = workspace.getToolbox();
                 toolbox.position();
-                subject.next();
+                if (subject){
+                    subject.next();
+                }
             });
-
-        return subject;
     }
 
     private setToolboxTexts(resources: ResourcesInterface) {

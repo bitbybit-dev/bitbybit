@@ -41,6 +41,7 @@ export class AppComponent implements OnInit, AfterViewInit {
     windowBlockly;
     constants = constantsModel;
     resources: ResourcesInterface;
+    firstTimeOpen = true;
 
     constructor(
         public dialog: MatDialog,
@@ -103,9 +104,11 @@ export class AppComponent implements OnInit, AfterViewInit {
             });
 
             this.settingsService.initSettings(this.workspace, this.changeDetectorService).subscribe(s => {
+
                 this.route.queryParamMap.subscribe(param => {
                     const exampleParam = param.get('examples');
                     if (exampleParam) {
+                        this.firstTimeOpen = false;
                         const xml = Xml.textToDom(this.examplesService.getExampleXml(exampleParam));
                         if (xml) {
                             this.workspace.clear();
@@ -115,7 +118,10 @@ export class AppComponent implements OnInit, AfterViewInit {
                             this.run();
                         }
                     } else {
-                        this.examples();
+                        if(this.firstTimeOpen){
+                            this.examples();
+                            this.firstTimeOpen = false;
+                        }
                     }
                 });
             });
