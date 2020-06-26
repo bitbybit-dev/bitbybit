@@ -15,7 +15,7 @@ export class SettingsService {
         const browserStorage = window.localStorage;
         const languageInSettings = browserStorage.getItem(localStorageKeysEnum.settingsLanguage) as languagesEnum;
         const subject = new Subject();
-        if (languageInSettings !== languagesEnum.en) {
+        if (languageInSettings && languageInSettings !== languagesEnum.en) {
             this.setLanguage(languageInSettings, workspace, changeDetector, subject);
         } else {
             setTimeout(() => {
@@ -26,26 +26,28 @@ export class SettingsService {
     }
 
     setLanguage(language: languagesEnum, workspace: WorkspaceSvg, changeDetector: ChangeDetectorRef, subject?: Subject<any>) {
-        const languageImport = import(`src/assets/blockly-languages/${language}.js`);
-        languageImport.then(
-            s => {
-                s.activateLanguage();
-                ResourcesService.setLanguage(language);
-                const resources = ResourcesService.getResources();
-                assembleBlocks();
-                const xml = Xml.workspaceToDom(workspace);
-                workspace.clear();
-                Xml.domToWorkspace(xml, workspace);
-                workspace.zoomToFit();
-                workspace.zoomCenter(-1);
-                changeDetector.detectChanges();
-                this.setToolboxTexts(resources);
-                const toolbox = workspace.getToolbox();
-                toolbox.position();
-                if (subject){
-                    subject.next();
-                }
-            });
+        if (language) {
+            const languageImport = import(`src/assets/blockly-languages/${language}.js`);
+            languageImport.then(
+                s => {
+                    s.activateLanguage();
+                    ResourcesService.setLanguage(language);
+                    const resources = ResourcesService.getResources();
+                    assembleBlocks();
+                    const xml = Xml.workspaceToDom(workspace);
+                    workspace.clear();
+                    Xml.domToWorkspace(xml, workspace);
+                    workspace.zoomToFit();
+                    workspace.zoomCenter(-1);
+                    changeDetector.detectChanges();
+                    this.setToolboxTexts(resources);
+                    const toolbox = workspace.getToolbox();
+                    toolbox.position();
+                    if (subject) {
+                        subject.next();
+                    }
+                });
+        }
     }
 
     private setToolboxTexts(resources: ResourcesInterface) {
