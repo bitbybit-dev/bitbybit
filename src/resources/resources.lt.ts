@@ -497,4 +497,7 @@ export const resourcesLt: ResourcesInterface = Object.freeze({
     block_verb_geometry_nurbs_curve_circle_min_angle_description: 'Gražina mažąjį arkos kampą.',
     block_verb_geometry_nurbs_curve_circle_max_angle_input_circle: 'Didysis arkos kampas',
     block_verb_geometry_nurbs_curve_circle_max_angle_description: 'Grąžina didyjį arkos kampą.',
+    block_verb_geometry_bezier_curve_inputs_points: 'Bezier kreivė tarp taškų',
+    block_verb_geometry_bezier_curve_inputs_weights: 'Ir svorių',
+    block_verb_geometry_bezier_curve_description: 'Sukuria Bezier kreivę tarp taškų ir svorių.',
 });

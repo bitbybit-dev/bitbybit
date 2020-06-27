@@ -752,6 +752,8 @@ export function toolboxDefinition() {
             </block>
             <block type="verb_geometry_nurbs_curve_by_knots_control_points_weights">
             </block>
+            <block type="verb_geometry_bezier_curve_by_points">
+            </block>
             <category name="${resources.block_toolbox_category_geom_circle}"  expanded="true" categorystyle="geometry_category">
                 <block type="verb_geometry_nurbs_curve_circle">
                     <value name="Center">

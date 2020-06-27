@@ -497,4 +497,7 @@ export const resourcesEn: ResourcesInterface = Object.freeze({
     block_verb_geometry_nurbs_curve_circle_min_angle_description: 'Gets the minimum angle of the arc',
     block_verb_geometry_nurbs_curve_circle_max_angle_input_circle: 'Maximum angle of the arc',
     block_verb_geometry_nurbs_curve_circle_max_angle_description: 'Gets the maximum angle of the arc',
+    block_verb_geometry_bezier_curve_inputs_points: 'Bezier curve with points',
+    block_verb_geometry_bezier_curve_inputs_weights: 'Weights',
+    block_verb_geometry_bezier_curve_description: 'Constructs Bezier curve by points and weights.',
 });

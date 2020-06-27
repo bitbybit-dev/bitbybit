@@ -495,4 +495,7 @@ export interface ResourcesInterface {
     block_verb_geometry_nurbs_curve_circle_min_angle_description: string;
     block_verb_geometry_nurbs_curve_circle_max_angle_input_circle: string;
     block_verb_geometry_nurbs_curve_circle_max_angle_description: string;
+    block_verb_geometry_bezier_curve_inputs_points: string;
+    block_verb_geometry_bezier_curve_inputs_weights: string;
+    block_verb_geometry_bezier_curve_description: string;
 }
