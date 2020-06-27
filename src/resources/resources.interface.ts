@@ -55,6 +55,9 @@ export interface ResourcesInterface {
     block_toolbox_category_geom_polyline: string;
     block_toolbox_category_geom_curve: string;
     block_toolbox_category_geom_surface: string;
+    block_toolbox_category_geom_sphere: string;
+    block_toolbox_category_create: string;
+    block_toolbox_category_apply: string;
     block_toolbox_category_loop: string;
     block_toolbox_category_logic: string;
     block_toolbox_category_math: string;

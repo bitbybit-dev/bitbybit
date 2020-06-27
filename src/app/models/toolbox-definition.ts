@@ -862,13 +862,7 @@ export function toolboxDefinition() {
         <block type="verb_geometry_nurbs_curve_tessellate">
         </block>
     </category>
-    <category name="${resources.block_toolbox_category_geom_surface}" categorystyle="geometry_category">
-        <block type="verb_geometry_nurbs_surface_by_corners">
-        </block>
-        <block type="verb_geometry_nurbs_surface_by_lofting_curves">
-        </block>
-        <block type="verb_geometry_nurbs_surface_by_knots_control_points_weights">
-        </block>
+    <category name="${resources.block_toolbox_category_geom_surface}" expanded="true" categorystyle="geometry_category">
         <block type="babylon_draw_surface">
             <value name="Colour">
                 <shadow type="colour_picker">
@@ -893,50 +887,64 @@ export function toolboxDefinition() {
                 </shadow>
             </value>
         </block>
-        <block type="verb_geometry_spherical_surface">
-        </block>
-        <block type="verb_geometry_spherical_surface_center">
-        </block>
-        <block type="verb_geometry_spherical_surface_radius">
-        </block>
-        <block type="verb_geometry_nurbs_surface_normal">
-        </block>
-        <block type="verb_geometry_nurbs_surface_point">
-        </block>
-        <block type="verb_geometry_nurbs_surface_closest_param">
-        </block>
-        <block type="verb_geometry_nurbs_surface_closest_point">
-        </block>
-        <block type="verb_geometry_nurbs_surface_boundaries">
-        </block>
-        <block type="verb_geometry_nurbs_surface_isocurve">
-        </block>
-        <block type="verb_geometry_nurbs_surface_reverse">
-        </block>
-        <block type="verb_geometry_nurbs_surface_split">
-        </block>
-        <block type="verb_geometry_nurbs_surface_transform">
-        </block>
-        <block type="verb_geometry_nurbs_surface_clone">
-        </block>
-        <block type="verb_geometry_nurbs_surface_control_points">
-        </block>
-        <block type="verb_geometry_nurbs_surface_weights">
-        </block>
-        <block type="verb_geometry_nurbs_surface_degree_u">
-        </block>
-        <block type="verb_geometry_nurbs_surface_degree_v">
-        </block>
-        <block type="verb_geometry_nurbs_surface_knots_u">
-        </block>
-        <block type="verb_geometry_nurbs_surface_knots_v">
-        </block>
-        <block type="verb_geometry_nurbs_surface_domain_u">
-        </block>
-        <block type="verb_geometry_nurbs_surface_domain_v">
-        </block>
-        <block type="verb_geometry_nurbs_surface_derivatives">
-        </block>
+        <category name="${resources.block_toolbox_category_create}"  expanded="true" categorystyle="geometry_category">
+            <block type="verb_geometry_nurbs_surface_by_corners">
+            </block>
+            <block type="verb_geometry_nurbs_surface_by_lofting_curves">
+            </block>
+            <block type="verb_geometry_nurbs_surface_by_knots_control_points_weights">
+            </block>
+            <category name="${resources.block_toolbox_category_geom_sphere}" categorystyle="geometry_category">
+                <block type="verb_geometry_spherical_surface">
+                </block>
+            </category>
+        </category>
+        <category name="${resources.block_toolbox_category_apply}" expanded="true" categorystyle="geometry_category">
+            <block type="verb_geometry_nurbs_surface_normal">
+            </block>
+            <block type="verb_geometry_nurbs_surface_point">
+            </block>
+            <block type="verb_geometry_nurbs_surface_closest_param">
+            </block>
+            <block type="verb_geometry_nurbs_surface_closest_point">
+            </block>
+            <block type="verb_geometry_nurbs_surface_boundaries">
+            </block>
+            <block type="verb_geometry_nurbs_surface_isocurve">
+            </block>
+            <block type="verb_geometry_nurbs_surface_reverse">
+            </block>
+            <block type="verb_geometry_nurbs_surface_split">
+            </block>
+            <block type="verb_geometry_nurbs_surface_transform">
+            </block>
+            <block type="verb_geometry_nurbs_surface_clone">
+            </block>
+            <block type="verb_geometry_nurbs_surface_control_points">
+            </block>
+            <block type="verb_geometry_nurbs_surface_weights">
+            </block>
+            <block type="verb_geometry_nurbs_surface_degree_u">
+            </block>
+            <block type="verb_geometry_nurbs_surface_degree_v">
+            </block>
+            <block type="verb_geometry_nurbs_surface_knots_u">
+            </block>
+            <block type="verb_geometry_nurbs_surface_knots_v">
+            </block>
+            <block type="verb_geometry_nurbs_surface_domain_u">
+            </block>
+            <block type="verb_geometry_nurbs_surface_domain_v">
+            </block>
+            <block type="verb_geometry_nurbs_surface_derivatives">
+            </block>
+            <category name="${resources.block_toolbox_category_geom_sphere}" expanded="true" categorystyle="geometry_category">
+                <block type="verb_geometry_spherical_surface_center">
+                </block>
+                <block type="verb_geometry_spherical_surface_radius">
+                </block>
+            </category>
+        </category>
     </category>
     <sep></sep>
     <category name="${resources.block_toolbox_category_loop}" categorystyle="control_category">

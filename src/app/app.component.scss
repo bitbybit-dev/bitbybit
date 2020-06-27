@@ -125,8 +125,21 @@ mat-tab-body {
     // opacity: 0.5;
 }
 
+::ng-deep .blocklyTreeSelected>.blocklyTreeIconOpen {
+    background-position: 0px 0px;
+    color: grey;
+}
+::ng-deep .blocklyTreeSelected>.blocklyTreeIconClosedLtr {
+        background-position: 0px 0px;
+}
+
+::ng-deep .blocklyTreeIcon {
+    opacity: 0.2;
+}
+
 ::ng-deep .injectionDiv {
     outline: none;
+    color: grey;
 }
 
 ::ng-deep .blocklyTreeLabel {

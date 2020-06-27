@@ -77,8 +77,14 @@ export class AppComponent implements OnInit, AfterViewInit {
                 });
 
             window.addEventListener('resize', () => this.onResize(), false);
-
+            const toolbox = this.workspace.getToolbox();
+            const flyout = toolbox.getFlyout();
+            flyout.MARGIN = 40;
+            flyout.CORNER_RADIUS = 10;
             this.onResize();
+
+            this.collapseExpandedMenus();
+            toolbox.clearSelection();
 
             svgResize(this.workspace);
 
@@ -118,7 +124,7 @@ export class AppComponent implements OnInit, AfterViewInit {
                             this.run();
                         }
                     } else {
-                        if(this.firstTimeOpen){
+                        if (this.firstTimeOpen) {
                             this.examples();
                             this.firstTimeOpen = false;
                         }
@@ -126,6 +132,17 @@ export class AppComponent implements OnInit, AfterViewInit {
                 });
             });
         }, 500);
+    }
+
+    private collapseExpandedMenus() {
+        const treeRows = document.body.querySelectorAll(
+            '.blocklyTreeRow');
+        treeRows.forEach((element) => {
+            const ariaExpanded = element.parentElement.attributes.getNamedItem('aria-expanded');
+            if (ariaExpanded) {
+                (element as HTMLElement).click();
+            }
+        });
     }
 
     ngOnInit(): void {
