@@ -54,6 +54,7 @@ export interface ResourcesInterface {
     block_toolbox_category_geom_line: string;
     block_toolbox_category_geom_polyline: string;
     block_toolbox_category_geom_curve: string;
+    block_toolbox_category_geom_circle: string;
     block_toolbox_category_geom_surface: string;
     block_toolbox_category_geom_sphere: string;
     block_toolbox_category_create: string;
@@ -118,6 +119,10 @@ export interface ResourcesInterface {
     block_vectors: string;
     block_angle: string;
     block_axis: string;
+    block_x_axis: string;
+    block_y_axis: string;
+    block_min_angle: string;
+    block_max_angle: string;
     block_reference: string;
     block_transform: string;
     block_length: string;
@@ -220,10 +225,6 @@ export interface ResourcesInterface {
     block_base_geometry_polyline_convert_to_nurbs_curve_description: string;
     block_base_geometry_polyline_reverse: string;
     block_base_geometry_polyline_reverse_description: string;
-    block_base_geometry_shape_circle_center: string;
-    block_base_geometry_shape_rectangle_center: string;
-    block_base_geometry_shape_x_axis: string;
-    block_base_geometry_shape_y_axis: string;
     block_verb_core_uv_input_u: string;
     block_verb_core_uv_input_v: string;
     block_verb_core_uv_description: string;
@@ -470,4 +471,28 @@ export interface ResourcesInterface {
     block_verb_geometry_spherical_surface_center_description: string;
     block_verb_geometry_spherical_surface_radius_input_sphere: string;
     block_verb_geometry_spherical_surface_radius_description: string;
+    block_verb_geometry_nurbs_curve_circle_input_center: string;
+    block_verb_geometry_nurbs_curve_circle_input_x_axis: string;
+    block_verb_geometry_nurbs_curve_circle_input_y_axis: string;
+    block_verb_geometry_nurbs_curve_circle_input_radius: string;
+    block_verb_geometry_nurbs_curve_circle_description: string;
+    block_verb_geometry_nurbs_curve_arc_input_center: string;
+    block_verb_geometry_nurbs_curve_arc_input_x_axis: string;
+    block_verb_geometry_nurbs_curve_arc_input_y_axis: string;
+    block_verb_geometry_nurbs_curve_arc_input_radius: string;
+    block_verb_geometry_nurbs_curve_arc_input_min_angle: string;
+    block_verb_geometry_nurbs_curve_arc_input_max_angle: string;
+    block_verb_geometry_nurbs_curve_arc_description: string;
+    block_verb_geometry_nurbs_curve_circle_radius_input_circle: string;
+    block_verb_geometry_nurbs_curve_circle_radius_description: string;
+    block_verb_geometry_nurbs_curve_circle_center_input_circle: string;
+    block_verb_geometry_nurbs_curve_circle_center_description: string;
+    block_verb_geometry_nurbs_curve_circle_x_axis_input_circle: string;
+    block_verb_geometry_nurbs_curve_circle_x_axis_description: string;
+    block_verb_geometry_nurbs_curve_circle_y_axis_input_circle: string;
+    block_verb_geometry_nurbs_curve_circle_y_axis_description: string;
+    block_verb_geometry_nurbs_curve_circle_min_angle_input_circle: string;
+    block_verb_geometry_nurbs_curve_circle_min_angle_description: string;
+    block_verb_geometry_nurbs_curve_circle_max_angle_input_circle: string;
+    block_verb_geometry_nurbs_curve_circle_max_angle_description: string;
 }

@@ -707,80 +707,7 @@ export function toolboxDefinition() {
         <block type="base_geometry_polyline_convert_to_nurbs_curve">
         </block>
     </category>
-    <category name="${resources.block_toolbox_category_geom_curve}" categorystyle="geometry_category">
-        <block type="verb_geometry_nurbs_curve_by_points">
-            <value name="Degree">
-                <shadow type="math_number">
-                    <field name="NUM">3</field>
-                </shadow>
-            </value>
-        </block>
-        <block type="verb_geometry_nurbs_curve_by_knots_control_points_weights">
-        </block>
-        <block type="verb_geometry_nurbs_curve_circle">
-            <value name="Center">
-                <shadow type="base_geometry_point">
-                    <value name="X">
-                        <shadow type="math_number">
-                            <field name="NUM">0</field>
-                        </shadow>
-                    </value>
-                    <value name="Y">
-                        <shadow type="math_number">
-                            <field name="NUM">0</field>
-                        </shadow>
-                    </value>
-                    <value name="Z">
-                        <shadow type="math_number">
-                            <field name="NUM">0</field>
-                        </shadow>
-                    </value>
-                </shadow>
-            </value>
-            <value name="XAxis">
-                <shadow type="base_geometry_point">
-                    <value name="X">
-                        <shadow type="math_number">
-                            <field name="NUM">1</field>
-                        </shadow>
-                    </value>
-                    <value name="Y">
-                        <shadow type="math_number">
-                            <field name="NUM">0</field>
-                        </shadow>
-                    </value>
-                    <value name="Z">
-                        <shadow type="math_number">
-                            <field name="NUM">0</field>
-                        </shadow>
-                    </value>
-                </shadow>
-            </value>
-            <value name="YAxis">
-                <shadow type="base_geometry_point">
-                    <value name="X">
-                        <shadow type="math_number">
-                            <field name="NUM">0</field>
-                        </shadow>
-                    </value>
-                    <value name="Y">
-                        <shadow type="math_number">
-                            <field name="NUM">1</field>
-                        </shadow>
-                    </value>
-                    <value name="Z">
-                        <shadow type="math_number">
-                            <field name="NUM">0</field>
-                        </shadow>
-                    </value>
-                </shadow>
-            </value>
-            <value name="Radius">
-                <shadow type="math_number">
-                    <field name="NUM">1</field>
-                </shadow>
-            </value>
-        </block>
+    <category name="${resources.block_toolbox_category_geom_curve}" expanded="true" categorystyle="geometry_category">
         <block type="babylon_draw_curve">
             <value name="Colour">
                 <shadow type="colour_picker">
@@ -815,52 +742,219 @@ export function toolboxDefinition() {
                 </shadow>
             </value>
         </block>
-        <block type="verb_geometry_nurbs_curve_divide_by_arc_length_points">
-        </block>
-        <block type="verb_geometry_nurbs_curve_divide_by_arc_length_params">
-        </block>
-        <block type="verb_geometry_nurbs_curve_divide_by_equal_arc_length_points">
-        </block>
-        <block type="verb_geometry_nurbs_curve_divide_by_equal_arc_length_params">
-        </block>
-        <block type="verb_geometry_nurbs_curve_split">
-        </block>
-        <block type="verb_geometry_nurbs_curve_closest_point">
-        </block>
-        <block type="verb_geometry_nurbs_curve_closest_points">
-        </block>
-        <block type="verb_geometry_nurbs_curve_closest_param">
-        </block>
-        <block type="verb_geometry_nurbs_curve_closest_params">
-        </block>
-        <block type="verb_geometry_nurbs_curve_length">
-        </block>
-        <block type="verb_geometry_nurbs_curve_degree">
-        </block>
-        <block type="verb_geometry_nurbs_curve_knots">
-        </block>
-        <block type="verb_geometry_nurbs_curve_weights">
-        </block>
-        <block type="verb_geometry_nurbs_curve_control_points">
-        </block>
-        <block type="verb_geometry_nurbs_curve_length_at_param">
-        </block>
-        <block type="verb_geometry_nurbs_curve_param_at_length">
-        </block>
-        <block type="verb_geometry_nurbs_curve_clone">
-        </block>
-        <block type="verb_geometry_nurbs_curve_domain">
-        </block>
-        <block type="verb_geometry_nurbs_curve_transform">
-        </block>
-        <block type="verb_geometry_nurbs_curve_derivatives">
-        </block>
-        <block type="verb_geometry_nurbs_curve_reverse">
-        </block>
-        <block type="verb_geometry_nurbs_curve_tangent">
-        </block>
-        <block type="verb_geometry_nurbs_curve_tessellate">
-        </block>
+        <category name="${resources.block_toolbox_category_create}"  expanded="true" categorystyle="geometry_category">
+            <block type="verb_geometry_nurbs_curve_by_points">
+                <value name="Degree">
+                    <shadow type="math_number">
+                        <field name="NUM">3</field>
+                    </shadow>
+                </value>
+            </block>
+            <block type="verb_geometry_nurbs_curve_by_knots_control_points_weights">
+            </block>
+            <category name="${resources.block_toolbox_category_geom_circle}"  expanded="true" categorystyle="geometry_category">
+                <block type="verb_geometry_nurbs_curve_circle">
+                    <value name="Center">
+                        <shadow type="base_geometry_point">
+                            <value name="X">
+                                <shadow type="math_number">
+                                    <field name="NUM">0</field>
+                                </shadow>
+                            </value>
+                            <value name="Y">
+                                <shadow type="math_number">
+                                    <field name="NUM">0</field>
+                                </shadow>
+                            </value>
+                            <value name="Z">
+                                <shadow type="math_number">
+                                    <field name="NUM">0</field>
+                                </shadow>
+                            </value>
+                        </shadow>
+                    </value>
+                    <value name="XAxis">
+                        <shadow type="base_geometry_point">
+                            <value name="X">
+                                <shadow type="math_number">
+                                    <field name="NUM">1</field>
+                                </shadow>
+                            </value>
+                            <value name="Y">
+                                <shadow type="math_number">
+                                    <field name="NUM">0</field>
+                                </shadow>
+                            </value>
+                            <value name="Z">
+                                <shadow type="math_number">
+                                    <field name="NUM">0</field>
+                                </shadow>
+                            </value>
+                        </shadow>
+                    </value>
+                    <value name="YAxis">
+                        <shadow type="base_geometry_point">
+                            <value name="X">
+                                <shadow type="math_number">
+                                    <field name="NUM">0</field>
+                                </shadow>
+                            </value>
+                            <value name="Y">
+                                <shadow type="math_number">
+                                    <field name="NUM">1</field>
+                                </shadow>
+                            </value>
+                            <value name="Z">
+                                <shadow type="math_number">
+                                    <field name="NUM">0</field>
+                                </shadow>
+                            </value>
+                        </shadow>
+                    </value>
+                    <value name="Radius">
+                        <shadow type="math_number">
+                            <field name="NUM">1</field>
+                        </shadow>
+                    </value>
+                </block>
+                <block type="verb_geometry_nurbs_curve_arc">
+                    <value name="Center">
+                        <shadow type="base_geometry_point">
+                            <value name="X">
+                                <shadow type="math_number">
+                                    <field name="NUM">0</field>
+                                </shadow>
+                            </value>
+                            <value name="Y">
+                                <shadow type="math_number">
+                                    <field name="NUM">0</field>
+                                </shadow>
+                            </value>
+                            <value name="Z">
+                                <shadow type="math_number">
+                                    <field name="NUM">0</field>
+                                </shadow>
+                            </value>
+                        </shadow>
+                    </value>
+                    <value name="XAxis">
+                        <shadow type="base_geometry_point">
+                            <value name="X">
+                                <shadow type="math_number">
+                                    <field name="NUM">1</field>
+                                </shadow>
+                            </value>
+                            <value name="Y">
+                                <shadow type="math_number">
+                                    <field name="NUM">0</field>
+                                </shadow>
+                            </value>
+                            <value name="Z">
+                                <shadow type="math_number">
+                                    <field name="NUM">0</field>
+                                </shadow>
+                            </value>
+                        </shadow>
+                    </value>
+                    <value name="YAxis">
+                        <shadow type="base_geometry_point">
+                            <value name="X">
+                                <shadow type="math_number">
+                                    <field name="NUM">0</field>
+                                </shadow>
+                            </value>
+                            <value name="Y">
+                                <shadow type="math_number">
+                                    <field name="NUM">1</field>
+                                </shadow>
+                            </value>
+                            <value name="Z">
+                                <shadow type="math_number">
+                                    <field name="NUM">0</field>
+                                </shadow>
+                            </value>
+                        </shadow>
+                    </value>
+                    <value name="Radius">
+                        <shadow type="math_number">
+                            <field name="NUM">1</field>
+                        </shadow>
+                    </value>
+                    <value name="MinAngle">
+                        <shadow type="math_number">
+                            <field name="NUM">0</field>
+                        </shadow>
+                    </value>
+                    <value name="MaxAngle">
+                        <shadow type="math_number">
+                            <field name="NUM">90</field>
+                        </shadow>
+                    </value>
+                </block>
+            </category>
+        </category>
+        <category name="${resources.block_toolbox_category_apply}" expanded="true" categorystyle="geometry_category">
+            <block type="verb_geometry_nurbs_curve_divide_by_arc_length_points">
+            </block>
+            <block type="verb_geometry_nurbs_curve_divide_by_arc_length_params">
+            </block>
+            <block type="verb_geometry_nurbs_curve_divide_by_equal_arc_length_points">
+            </block>
+            <block type="verb_geometry_nurbs_curve_divide_by_equal_arc_length_params">
+            </block>
+            <block type="verb_geometry_nurbs_curve_split">
+            </block>
+            <block type="verb_geometry_nurbs_curve_closest_point">
+            </block>
+            <block type="verb_geometry_nurbs_curve_closest_points">
+            </block>
+            <block type="verb_geometry_nurbs_curve_closest_param">
+            </block>
+            <block type="verb_geometry_nurbs_curve_closest_params">
+            </block>
+            <block type="verb_geometry_nurbs_curve_length">
+            </block>
+            <block type="verb_geometry_nurbs_curve_degree">
+            </block>
+            <block type="verb_geometry_nurbs_curve_knots">
+            </block>
+            <block type="verb_geometry_nurbs_curve_weights">
+            </block>
+            <block type="verb_geometry_nurbs_curve_control_points">
+            </block>
+            <block type="verb_geometry_nurbs_curve_length_at_param">
+            </block>
+            <block type="verb_geometry_nurbs_curve_param_at_length">
+            </block>
+            <block type="verb_geometry_nurbs_curve_clone">
+            </block>
+            <block type="verb_geometry_nurbs_curve_domain">
+            </block>
+            <block type="verb_geometry_nurbs_curve_transform">
+            </block>
+            <block type="verb_geometry_nurbs_curve_derivatives">
+            </block>
+            <block type="verb_geometry_nurbs_curve_reverse">
+            </block>
+            <block type="verb_geometry_nurbs_curve_tangent">
+            </block>
+            <block type="verb_geometry_nurbs_curve_tessellate">
+            </block>
+            <category name="${resources.block_toolbox_category_geom_circle}" expanded="true" categorystyle="geometry_category">
+                <block type="verb_geometry_nurbs_curve_circle_center">
+                </block>
+                <block type="verb_geometry_nurbs_curve_circle_radius">
+                </block>
+                <block type="verb_geometry_nurbs_curve_circle_x_axis">
+                </block>
+                <block type="verb_geometry_nurbs_curve_circle_y_axis">
+                </block>
+                <block type="verb_geometry_nurbs_curve_circle_min_angle">
+                </block>
+                <block type="verb_geometry_nurbs_curve_circle_max_angle">
+                </block>
+            </category>
+        </category>
     </category>
     <category name="${resources.block_toolbox_category_geom_surface}" expanded="true" categorystyle="geometry_category">
         <block type="babylon_draw_surface">
