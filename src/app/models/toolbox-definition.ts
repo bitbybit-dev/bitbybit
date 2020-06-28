@@ -1148,6 +1148,79 @@ export function toolboxDefinition() {
                 <block type="verb_geometry_spherical_surface">
                 </block>
             </category>
+            <category name="${resources.block_toolbox_category_geom_cone}" categorystyle="geometry_category">
+                <block type="verb_geometry_conical_surface">
+                </block>
+                <block type="verb_geometry_conical_surface">
+                    <value name="Axis">
+                        <shadow type="base_geometry_point">
+                            <value name="X">
+                                <shadow type="math_number">
+                                    <field name="NUM">0</field>
+                                </shadow>
+                            </value>
+                            <value name="Y">
+                                <shadow type="math_number">
+                                    <field name="NUM">1</field>
+                                </shadow>
+                            </value>
+                            <value name="Z">
+                                <shadow type="math_number">
+                                    <field name="NUM">0</field>
+                                </shadow>
+                            </value>
+                        </shadow>
+                    </value>
+                    <value name="XAxis">
+                        <shadow type="base_geometry_point">
+                            <value name="X">
+                                <shadow type="math_number">
+                                    <field name="NUM">1</field>
+                                </shadow>
+                            </value>
+                            <value name="Y">
+                                <shadow type="math_number">
+                                    <field name="NUM">0</field>
+                                </shadow>
+                            </value>
+                            <value name="Z">
+                                <shadow type="math_number">
+                                    <field name="NUM">0</field>
+                                </shadow>
+                            </value>
+                        </shadow>
+                    </value>
+                    <value name="Base">
+                        <shadow type="base_geometry_point">
+                            <value name="X">
+                                <shadow type="math_number">
+                                    <field name="NUM">0</field>
+                                </shadow>
+                            </value>
+                            <value name="Y">
+                                <shadow type="math_number">
+                                    <field name="NUM">0</field>
+                                </shadow>
+                            </value>
+                            <value name="Z">
+                                <shadow type="math_number">
+                                    <field name="NUM">0</field>
+                                </shadow>
+                            </value>
+                        </shadow>
+                    </value>
+                    <value name="Height">
+                        <shadow type="math_number">
+                            <field name="NUM">2</field>
+                        </shadow>
+                    </value>
+                    <value name="Radius">
+                        <shadow type="math_number">
+                            <field name="NUM">0.5</field>
+                        </shadow>
+                    </value>
+                </block>
+            </category>
         </category>
         <category name="${resources.block_toolbox_category_apply}" expanded="true" categorystyle="geometry_category">
             <block type="verb_geometry_nurbs_surface_normal">
@@ -1192,6 +1265,18 @@ export function toolboxDefinition() {
                 <block type="verb_geometry_spherical_surface_center">
                 </block>
                 <block type="verb_geometry_spherical_surface_radius">
+                </block>
+            </category>
+            <category name="${resources.block_toolbox_category_geom_cone}" expanded="true" categorystyle="geometry_category">
+                <block type="verb_geometry_conical_surface_axis">
+                </block>
+                <block type="verb_geometry_conical_surface_x_axis">
+                </block>
+                <block type="verb_geometry_conical_surface_base">
+                </block>
+                <block type="verb_geometry_conical_surface_radius">
+                </block>
+                <block type="verb_geometry_conical_surface_height">
                 </block>
             </category>
         </category>

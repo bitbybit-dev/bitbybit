@@ -96,7 +96,7 @@ export class AppComponent implements OnInit, AfterViewInit {
             const camera = new ArcRotateCamera('Camera', 0, 10, 10, new Vector3(0, 0, 0), this.scene);
             camera.setPosition(new Vector3(0, 10, 20));
             camera.attachControl(canvas, true);
-            const light = new DirectionalLight('DirectionalLight', new Vector3(1, 1, 0), this.scene);
+            const light = new DirectionalLight('DirectionalLight', new Vector3(10, 10, 0), this.scene);
             light.diffuse = new Color3(1, 1, 1);
             light.specular = new Color3(1, 1, 1);
             light.intensity = 1;

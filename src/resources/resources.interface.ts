@@ -57,6 +57,7 @@ export interface ResourcesInterface {
     block_toolbox_category_geom_circle: string;
     block_toolbox_category_geom_ellipse: string;
     block_toolbox_category_geom_surface: string;
+    block_toolbox_category_geom_cone: string;
     block_toolbox_category_geom_sphere: string;
     block_toolbox_category_create: string;
     block_toolbox_category_apply: string;
@@ -100,6 +101,7 @@ export interface ResourcesInterface {
     block_size: string;
     block_surface: string;
     block_sphere: string;
+    block_cone: string;
     block_surfaces: string;
     block_center: string;
     block_circle: string;
@@ -122,6 +124,8 @@ export interface ResourcesInterface {
     block_angle: string;
     block_axis: string;
     block_x_axis: string;
+    block_base: string;
+    block_height: string;
     block_y_axis: string;
     block_min_angle: string;
     block_max_angle: string;
@@ -520,4 +524,20 @@ export interface ResourcesInterface {
     block_verb_geometry_nurbs_curve_ellipse_min_angle_description: string;
     block_verb_geometry_nurbs_curve_ellipse_max_angle_input_ellipse: string;
     block_verb_geometry_nurbs_curve_ellipse_max_angle_description: string;
+    block_verb_geometry_conical_surface_input_axis: string;
+    block_verb_geometry_conical_surface_input_base: string;
+    block_verb_geometry_conical_surface_input_x_axis: string;
+    block_verb_geometry_conical_surface_input_radius: string;
+    block_verb_geometry_conical_surface_input_height: string;
+    block_verb_geometry_conical_surface_description: string;
+    block_verb_geometry_conical_surface_base_input_cone: string;
+    block_verb_geometry_conical_surface_base_description: string;
+    block_verb_geometry_conical_surface_axis_input_cone: string;
+    block_verb_geometry_conical_surface_axis_description: string;
+    block_verb_geometry_conical_surface_x_axis_input_cone: string;
+    block_verb_geometry_conical_surface_x_axis_description: string;
+    block_verb_geometry_conical_surface_radius_input_cone: string;
+    block_verb_geometry_conical_surface_radius_description: string;
+    block_verb_geometry_conical_surface_height_input_cone: string;
+    block_verb_geometry_conical_surface_height_description: string;
 }
