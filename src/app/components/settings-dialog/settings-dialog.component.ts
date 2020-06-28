@@ -35,6 +35,7 @@ export class SettingsDialogComponent implements OnInit {
     save() {
         this.settingsService.setLanguage(this.selectedLanguage, this.data.workspace, this.changeDetectorRef);
         this.browserStorage.setItem(localStorageKeysEnum.settingsLanguage, this.selectedLanguage);
+        this.dialogRef.close();
     }
 
 }
