@@ -112,6 +112,10 @@ export function surfaceCategory() {
                     </value>
                 </block>
             </category>
+            <category name="${resources.block_toolbox_category_geom_extrusion}" categorystyle="geometry_category">
+                <block type="verb_geometry_extruded_surface">
+                </block>
+            </category>
         </category>
         <category name="${resources.block_toolbox_category_apply}" expanded="true" categorystyle="geometry_category">
             <block type="verb_geometry_nurbs_surface_normal">
@@ -168,6 +172,12 @@ export function surfaceCategory() {
                 <block type="verb_geometry_conical_surface_radius">
                 </block>
                 <block type="verb_geometry_conical_surface_height">
+                </block>
+            </category>
+            <category name="${resources.block_toolbox_category_geom_extrusion}" expanded="true" categorystyle="geometry_category">
+                <block type="verb_geometry_extruded_surface_profile">
+                </block>
+                <block type="verb_geometry_extruded_surface_direction">
                 </block>
             </category>
         </category>

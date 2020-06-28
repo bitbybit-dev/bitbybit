@@ -58,6 +58,7 @@ export interface ResourcesInterface {
     block_toolbox_category_geom_ellipse: string;
     block_toolbox_category_geom_surface: string;
     block_toolbox_category_geom_cone: string;
+    block_toolbox_category_geom_extrusion: string;
     block_toolbox_category_geom_sphere: string;
     block_toolbox_category_create: string;
     block_toolbox_category_apply: string;
@@ -101,9 +102,12 @@ export interface ResourcesInterface {
     block_size: string;
     block_surface: string;
     block_sphere: string;
+    block_extrusion: string;
     block_cone: string;
     block_surfaces: string;
     block_center: string;
+    block_profile: string;
+    block_direction: string;
     block_circle: string;
     block_ellipse: string;
     block_radius: string;
@@ -540,4 +544,11 @@ export interface ResourcesInterface {
     block_verb_geometry_conical_surface_radius_description: string;
     block_verb_geometry_conical_surface_height_input_cone: string;
     block_verb_geometry_conical_surface_height_description: string;
+    block_verb_geometry_extruded_surface_input_profile: string;
+    block_verb_geometry_extruded_surface_input_direction: string;
+    block_verb_geometry_extruded_surface_description: string;
+    block_verb_geometry_extruded_surface_direction_input_extrusion: string;
+    block_verb_geometry_extruded_surface_direction_description: string;
+    block_verb_geometry_extruded_surface_profile_input_extrusion: string;
+    block_verb_geometry_extruded_surface_profile_description: string;
 }
