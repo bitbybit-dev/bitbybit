@@ -112,6 +112,79 @@ export function surfaceCategory() {
                     </value>
                 </block>
             </category>
+            <category name="${resources.block_toolbox_category_geom_cylinder}" categorystyle="geometry_category">
+                <block type="verb_geometry_cylindrical_surface">
+                </block>
+                <block type="verb_geometry_cylindrical_surface">
+                    <value name="Axis">
+                        <shadow type="base_geometry_point">
+                            <value name="X">
+                                <shadow type="math_number">
+                                    <field name="NUM">0</field>
+                                </shadow>
+                            </value>
+                            <value name="Y">
+                                <shadow type="math_number">
+                                    <field name="NUM">1</field>
+                                </shadow>
+                            </value>
+                            <value name="Z">
+                                <shadow type="math_number">
+                                    <field name="NUM">0</field>
+                                </shadow>
+                            </value>
+                        </shadow>
+                    </value>
+                    <value name="XAxis">
+                        <shadow type="base_geometry_point">
+                            <value name="X">
+                                <shadow type="math_number">
+                                    <field name="NUM">1</field>
+                                </shadow>
+                            </value>
+                            <value name="Y">
+                                <shadow type="math_number">
+                                    <field name="NUM">0</field>
+                                </shadow>
+                            </value>
+                            <value name="Z">
+                                <shadow type="math_number">
+                                    <field name="NUM">0</field>
+                                </shadow>
+                            </value>
+                        </shadow>
+                    </value>
+                    <value name="Base">
+                        <shadow type="base_geometry_point">
+                            <value name="X">
+                                <shadow type="math_number">
+                                    <field name="NUM">0</field>
+                                </shadow>
+                            </value>
+                            <value name="Y">
+                                <shadow type="math_number">
+                                    <field name="NUM">0</field>
+                                </shadow>
+                            </value>
+                            <value name="Z">
+                                <shadow type="math_number">
+                                    <field name="NUM">0</field>
+                                </shadow>
+                            </value>
+                        </shadow>
+                    </value>
+                    <value name="Height">
+                        <shadow type="math_number">
+                            <field name="NUM">2</field>
+                        </shadow>
+                    </value>
+                    <value name="Radius">
+                        <shadow type="math_number">
+                            <field name="NUM">0.5</field>
+                        </shadow>
+                    </value>
+                </block>
+            </category>
             <category name="${resources.block_toolbox_category_geom_extrusion}" categorystyle="geometry_category">
                 <block type="verb_geometry_extruded_surface">
                 </block>
@@ -172,6 +245,18 @@ export function surfaceCategory() {
                 <block type="verb_geometry_conical_surface_radius">
                 </block>
                 <block type="verb_geometry_conical_surface_height">
+                </block>
+            </category>
+            <category name="${resources.block_toolbox_category_geom_cylinder}" expanded="true" categorystyle="geometry_category">
+                <block type="verb_geometry_cylindrical_surface_axis">
+                </block>
+                <block type="verb_geometry_cylindrical_surface_x_axis">
+                </block>
+                <block type="verb_geometry_cylindrical_surface_base">
+                </block>
+                <block type="verb_geometry_cylindrical_surface_radius">
+                </block>
+                <block type="verb_geometry_cylindrical_surface_height">
                 </block>
             </category>
             <category name="${resources.block_toolbox_category_geom_extrusion}" expanded="true" categorystyle="geometry_category">

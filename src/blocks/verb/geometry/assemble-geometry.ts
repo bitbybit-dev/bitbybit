@@ -1,6 +1,7 @@
 import { assembleBezierCurveBlocks } from './bezier-curve/assemble-bezier-curve';
 import { assembleCircleBlocks } from './circle/assemble-circle';
 import { assembleConicalSurfaceBlocks } from './conical-surface/assemble-conical-surface';
+import { assembleCylindricalSurfaceBlocks } from './cylindrical-surface/assemble-cylindrical-surface';
 import { assembleEllipseBlocks } from './ellipse/assemble-ellipse';
 import { assembleExtrudedSurfaceBlocks } from './extruded-surface/assemble-extruded-surface';
 import { assembleCurveBlocks } from './nurbs-curve/assemble-curve';
@@ -16,4 +17,5 @@ export function assembleGeometryBlocks() {
     assembleSphericalSurfaceBlocks();
     assembleConicalSurfaceBlocks();
     assembleExtrudedSurfaceBlocks();
+    assembleCylindricalSurfaceBlocks();
 }

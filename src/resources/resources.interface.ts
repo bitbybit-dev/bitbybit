@@ -58,6 +58,7 @@ export interface ResourcesInterface {
     block_toolbox_category_geom_ellipse: string;
     block_toolbox_category_geom_surface: string;
     block_toolbox_category_geom_cone: string;
+    block_toolbox_category_geom_cylinder: string;
     block_toolbox_category_geom_extrusion: string;
     block_toolbox_category_geom_sphere: string;
     block_toolbox_category_create: string;
@@ -104,6 +105,7 @@ export interface ResourcesInterface {
     block_sphere: string;
     block_extrusion: string;
     block_cone: string;
+    block_cylinder: string;
     block_surfaces: string;
     block_center: string;
     block_profile: string;
@@ -551,4 +553,20 @@ export interface ResourcesInterface {
     block_verb_geometry_extruded_surface_direction_description: string;
     block_verb_geometry_extruded_surface_profile_input_extrusion: string;
     block_verb_geometry_extruded_surface_profile_description: string;
+    block_verb_geometry_cylindrical_surface_input_axis: string;
+    block_verb_geometry_cylindrical_surface_input_base: string;
+    block_verb_geometry_cylindrical_surface_input_x_axis: string;
+    block_verb_geometry_cylindrical_surface_input_radius: string;
+    block_verb_geometry_cylindrical_surface_input_height: string;
+    block_verb_geometry_cylindrical_surface_description: string;
+    block_verb_geometry_cylindrical_surface_base_input_cylinder: string;
+    block_verb_geometry_cylindrical_surface_base_description: string;
+    block_verb_geometry_cylindrical_surface_axis_input_cylinder: string;
+    block_verb_geometry_cylindrical_surface_axis_description: string;
+    block_verb_geometry_cylindrical_surface_x_axis_input_cylinder: string;
+    block_verb_geometry_cylindrical_surface_x_axis_description: string;
+    block_verb_geometry_cylindrical_surface_radius_input_cylinder: string;
+    block_verb_geometry_cylindrical_surface_radius_description: string;
+    block_verb_geometry_cylindrical_surface_height_input_cylinder: string;
+    block_verb_geometry_cylindrical_surface_height_description: string;
 }
