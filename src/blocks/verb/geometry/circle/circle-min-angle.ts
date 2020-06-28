@@ -14,8 +14,8 @@ export function createCircleMinAngleBlock() {
             this.appendValueInput('Circle')
                 .setCheck('NurbsCurve')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_verb_geometry_nurbs_curve_circle_min_angle_description);
-            this.setOutput(true, 'Array');
+                .appendField(resources.block_verb_geometry_nurbs_curve_circle_min_angle_input_circle);
+            this.setOutput(true, 'Number');
             this.setColour('#fff');
             this.setTooltip(resources.block_verb_geometry_nurbs_curve_circle_min_angle_description);
         }

@@ -1,13 +1,15 @@
 import { assembleBezierCurveBlocks } from './bezier-curve/assemble-bezier-curve';
+import { assembleCircleBlocks } from './circle/assemble-circle';
+import { assembleEllipseBlocks } from './ellipse/assemble-ellipse';
 import { assembleCurveBlocks } from './nurbs-curve/assemble-curve';
 import { assembleSurfaceBlocks } from './nurbs-surface/assemble-surface';
-import { assembleShapesBlocks } from './shapes/assemble-shapes';
 import { assembleSphericalSurfaceBlocks } from './spherical-surface/assemble-spherical-surface';
 
 export function assembleGeometryBlocks() {
     assembleBezierCurveBlocks();
     assembleCurveBlocks();
     assembleSurfaceBlocks();
-    assembleShapesBlocks();
+    assembleEllipseBlocks();
+    assembleCircleBlocks();
     assembleSphericalSurfaceBlocks();
 }

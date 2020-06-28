@@ -55,6 +55,7 @@ export interface ResourcesInterface {
     block_toolbox_category_geom_polyline: string;
     block_toolbox_category_geom_curve: string;
     block_toolbox_category_geom_circle: string;
+    block_toolbox_category_geom_ellipse: string;
     block_toolbox_category_geom_surface: string;
     block_toolbox_category_geom_sphere: string;
     block_toolbox_category_create: string;
@@ -102,6 +103,7 @@ export interface ResourcesInterface {
     block_surfaces: string;
     block_center: string;
     block_circle: string;
+    block_ellipse: string;
     block_radius: string;
     block_interval: string;
     block_scale: string;
@@ -498,4 +500,24 @@ export interface ResourcesInterface {
     block_verb_geometry_bezier_curve_inputs_points: string;
     block_verb_geometry_bezier_curve_inputs_weights: string;
     block_verb_geometry_bezier_curve_description: string;
+    block_verb_geometry_nurbs_curve_ellipse_arc_input_center: string;
+    block_verb_geometry_nurbs_curve_ellipse_arc_input_x_axis: string;
+    block_verb_geometry_nurbs_curve_ellipse_arc_input_y_axis: string;
+    block_verb_geometry_nurbs_curve_ellipse_arc_input_min_angle: string;
+    block_verb_geometry_nurbs_curve_ellipse_arc_input_max_angle: string;
+    block_verb_geometry_nurbs_curve_ellipse_arc_description: string;
+    block_verb_geometry_nurbs_curve_ellipse_input_center: string;
+    block_verb_geometry_nurbs_curve_ellipse_input_x_axis: string;
+    block_verb_geometry_nurbs_curve_ellipse_input_y_axis: string;
+    block_verb_geometry_nurbs_curve_ellipse_description: string;
+    block_verb_geometry_nurbs_curve_ellipse_center_input_ellipse: string;
+    block_verb_geometry_nurbs_curve_ellipse_center_description: string;
+    block_verb_geometry_nurbs_curve_ellipse_x_axis_input_ellipse: string;
+    block_verb_geometry_nurbs_curve_ellipse_x_axis_description: string;
+    block_verb_geometry_nurbs_curve_ellipse_y_axis_input_ellipse: string;
+    block_verb_geometry_nurbs_curve_ellipse_y_axis_description: string;
+    block_verb_geometry_nurbs_curve_ellipse_min_angle_input_ellipse: string;
+    block_verb_geometry_nurbs_curve_ellipse_min_angle_description: string;
+    block_verb_geometry_nurbs_curve_ellipse_max_angle_input_ellipse: string;
+    block_verb_geometry_nurbs_curve_ellipse_max_angle_description: string;
 }

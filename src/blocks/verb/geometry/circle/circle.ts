@@ -4,40 +4,32 @@ import { ResourcesInterface, ResourcesService } from '../../../../resources';
 import { createStandardContextIIFE } from '../../../_shared';
 import { getRequired, makeRequiredValidationModelForInputs, BitByBitBlockHandlerService, ValidationEntityInterface } from '../../../validations';
 
-export function createShapesArcBlock() {
+export function createCircleBlock() {
 
     const resources = ResourcesService.getResources();
-    const blockSelector = 'verb_geometry_nurbs_curve_arc';
+    const blockSelector = 'verb_geometry_nurbs_curve_circle';
 
     Blocks[blockSelector] = {
         init() {
             this.appendValueInput('Center')
                 .setCheck('Array')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_verb_geometry_nurbs_curve_arc_input_center);
+                .appendField(resources.block_verb_geometry_nurbs_curve_circle_input_center);
             this.appendValueInput('XAxis')
                 .setCheck('Array')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_verb_geometry_nurbs_curve_arc_input_x_axis.toLowerCase());
+                .appendField(resources.block_verb_geometry_nurbs_curve_circle_input_x_axis.toLowerCase());
             this.appendValueInput('YAxis')
                 .setCheck('Array')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_verb_geometry_nurbs_curve_arc_input_y_axis.toLowerCase());
+                .appendField(resources.block_verb_geometry_nurbs_curve_circle_input_y_axis.toLowerCase());
             this.appendValueInput('Radius')
                 .setCheck('Number')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_verb_geometry_nurbs_curve_arc_input_radius.toLowerCase());
-            this.appendValueInput('MinAngle')
-                .setCheck('Number')
-                .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_verb_geometry_nurbs_curve_arc_input_min_angle.toLowerCase());
-            this.appendValueInput('MaxAngle')
-                .setCheck('Number')
-                .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_verb_geometry_nurbs_curve_arc_input_max_angle.toLowerCase());
+                .appendField(resources.block_verb_geometry_nurbs_curve_circle_input_radius.toLowerCase());
             this.setOutput(true, 'NurbsCurve');
             this.setColour('#fff');
-            this.setTooltip(resources.block_verb_geometry_nurbs_curve_arc_description);
+            this.setTooltip(resources.block_verb_geometry_nurbs_curve_circle_description);
             this.setHelpUrl('');
         }
     };
@@ -48,8 +40,6 @@ export function createShapesArcBlock() {
             xAxis: JavaScript.valueToCode(block, 'XAxis', JavaScript.ORDER_ATOMIC),
             yAxis: JavaScript.valueToCode(block, 'YAxis', JavaScript.ORDER_ATOMIC),
             radius: JavaScript.valueToCode(block, 'Radius', JavaScript.ORDER_ATOMIC),
-            minAngle: JavaScript.valueToCode(block, 'MinAngle', JavaScript.ORDER_ATOMIC),
-            maxAngle: JavaScript.valueToCode(block, 'MaxAngle', JavaScript.ORDER_ATOMIC),
         };
 
         // this is first set of validations to check that all inputs are non empty strings
@@ -57,9 +47,7 @@ export function createShapesArcBlock() {
             resources.block_center,
             resources.block_axis,
             resources.block_axis,
-            resources.block_radius,
-            resources.block_min_angle,
-            resources.block_max_angle,
+            resources.block_radius
         ]));
 
         // this creates validation model to be used at runtime to evaluate real values of inputs
@@ -67,7 +55,7 @@ export function createShapesArcBlock() {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `return new verb.geom.Arc(inputs.center, inputs.xAxis, inputs.yAxis, inputs.radius, BABYLON.Angle.FromDegrees(inputs.minAngle).radians(), BABYLON.Angle.FromDegrees(inputs.maxAngle).radians());`
+            `return new verb.geom.Circle(inputs.center, inputs.xAxis, inputs.yAxis, inputs.radius);`
         );
         return [code, JavaScript.ORDER_ATOMIC];
     };
@@ -97,16 +85,6 @@ function makeRuntimeValidationModel(
         entity: keys[3],
         validations: [
             getRequired(resources, resources.block_radius),
-        ]
-    }, {
-        entity: keys[4],
-        validations: [
-            getRequired(resources, resources.block_min_angle),
-        ]
-    }, {
-        entity: keys[5],
-        validations: [
-            getRequired(resources, resources.block_max_angle),
         ]
     }];
 }

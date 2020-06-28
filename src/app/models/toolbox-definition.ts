@@ -894,6 +894,136 @@ export function toolboxDefinition() {
                     </value>
                 </block>
             </category>
+            <category name="${resources.block_toolbox_category_geom_ellipse}"  expanded="true" categorystyle="geometry_category">
+                <block type="verb_geometry_nurbs_curve_ellipse">
+                    <value name="Center">
+                        <shadow type="base_geometry_point">
+                            <value name="X">
+                                <shadow type="math_number">
+                                    <field name="NUM">0</field>
+                                </shadow>
+                            </value>
+                            <value name="Y">
+                                <shadow type="math_number">
+                                    <field name="NUM">0</field>
+                                </shadow>
+                            </value>
+                            <value name="Z">
+                                <shadow type="math_number">
+                                    <field name="NUM">0</field>
+                                </shadow>
+                            </value>
+                        </shadow>
+                    </value>
+                    <value name="XAxis">
+                        <shadow type="base_geometry_point">
+                            <value name="X">
+                                <shadow type="math_number">
+                                    <field name="NUM">2</field>
+                                </shadow>
+                            </value>
+                            <value name="Y">
+                                <shadow type="math_number">
+                                    <field name="NUM">0</field>
+                                </shadow>
+                            </value>
+                            <value name="Z">
+                                <shadow type="math_number">
+                                    <field name="NUM">0</field>
+                                </shadow>
+                            </value>
+                        </shadow>
+                    </value>
+                    <value name="YAxis">
+                        <shadow type="base_geometry_point">
+                            <value name="X">
+                                <shadow type="math_number">
+                                    <field name="NUM">0</field>
+                                </shadow>
+                            </value>
+                            <value name="Y">
+                                <shadow type="math_number">
+                                    <field name="NUM">1</field>
+                                </shadow>
+                            </value>
+                            <value name="Z">
+                                <shadow type="math_number">
+                                    <field name="NUM">0</field>
+                                </shadow>
+                            </value>
+                        </shadow>
+                    </value>
+                </block>
+                <block type="verb_geometry_nurbs_curve_ellipse_arc">
+                    <value name="Center">
+                        <shadow type="base_geometry_point">
+                            <value name="X">
+                                <shadow type="math_number">
+                                    <field name="NUM">0</field>
+                                </shadow>
+                            </value>
+                            <value name="Y">
+                                <shadow type="math_number">
+                                    <field name="NUM">0</field>
+                                </shadow>
+                            </value>
+                            <value name="Z">
+                                <shadow type="math_number">
+                                    <field name="NUM">0</field>
+                                </shadow>
+                            </value>
+                        </shadow>
+                    </value>
+                    <value name="XAxis">
+                        <shadow type="base_geometry_point">
+                            <value name="X">
+                                <shadow type="math_number">
+                                    <field name="NUM">2</field>
+                                </shadow>
+                            </value>
+                            <value name="Y">
+                                <shadow type="math_number">
+                                    <field name="NUM">0</field>
+                                </shadow>
+                            </value>
+                            <value name="Z">
+                                <shadow type="math_number">
+                                    <field name="NUM">0</field>
+                                </shadow>
+                            </value>
+                        </shadow>
+                    </value>
+                    <value name="YAxis">
+                        <shadow type="base_geometry_point">
+                            <value name="X">
+                                <shadow type="math_number">
+                                    <field name="NUM">0</field>
+                                </shadow>
+                            </value>
+                            <value name="Y">
+                                <shadow type="math_number">
+                                    <field name="NUM">1</field>
+                                </shadow>
+                            </value>
+                            <value name="Z">
+                                <shadow type="math_number">
+                                    <field name="NUM">0</field>
+                                </shadow>
+                            </value>
+                        </shadow>
+                    </value>
+                    <value name="MinAngle">
+                        <shadow type="math_number">
+                            <field name="NUM">0</field>
+                        </shadow>
+                    </value>
+                    <value name="MaxAngle">
+                        <shadow type="math_number">
+                            <field name="NUM">90</field>
+                        </shadow>
+                    </value>
+                </block>
+            </category>
         </category>
         <category name="${resources.block_toolbox_category_apply}" expanded="true" categorystyle="geometry_category">
             <block type="verb_geometry_nurbs_curve_divide_by_arc_length_points">
@@ -954,6 +1084,18 @@ export function toolboxDefinition() {
                 <block type="verb_geometry_nurbs_curve_circle_min_angle">
                 </block>
                 <block type="verb_geometry_nurbs_curve_circle_max_angle">
+                </block>
+            </category>
+            <category name="${resources.block_toolbox_category_geom_ellipse}" expanded="true" categorystyle="geometry_category">
+                <block type="verb_geometry_nurbs_curve_ellipse_center">
+                </block>
+                <block type="verb_geometry_nurbs_curve_ellipse_x_axis">
+                </block>
+                <block type="verb_geometry_nurbs_curve_ellipse_y_axis">
+                </block>
+                <block type="verb_geometry_nurbs_curve_ellipse_min_angle">
+                </block>
+                <block type="verb_geometry_nurbs_curve_ellipse_max_angle">
                 </block>
             </category>
         </category>
