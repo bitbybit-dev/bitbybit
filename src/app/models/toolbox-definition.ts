@@ -525,49 +525,7 @@ export function toolboxDefinition() {
         <block type="base_geometry_point_z">
         </block>
     </category>
-    <category name="${resources.block_toolbox_category_geom_line}" categorystyle="geometry_category">
-        <block type="base_geometry_line">
-        </block>
-        <block type="base_geometry_line">
-            <value name="StartPoint">
-                <shadow type="base_geometry_point">
-                    <value name="X">
-                        <shadow type="math_number">
-                            <field name="NUM">-1</field>
-                        </shadow>
-                    </value>
-                    <value name="Y">
-                        <shadow type="math_number">
-                            <field name="NUM">-1</field>
-                        </shadow>
-                    </value>
-                    <value name="Z">
-                        <shadow type="math_number">
-                            <field name="NUM">-1</field>
-                        </shadow>
-                    </value>
-                </shadow>
-            </value>
-            <value name="EndPoint">
-                <shadow type="base_geometry_point">
-                    <value name="X">
-                        <shadow type="math_number">
-                            <field name="NUM">1</field>
-                        </shadow>
-                    </value>
-                    <value name="Y">
-                        <shadow type="math_number">
-                            <field name="NUM">1</field>
-                        </shadow>
-                    </value>
-                    <value name="Z">
-                        <shadow type="math_number">
-                            <field name="NUM">1</field>
-                        </shadow>
-                    </value>
-                </shadow>
-            </value>
-        </block>
+    <category name="${resources.block_toolbox_category_geom_line}" expanded="true" categorystyle="geometry_category">
         <block type="babylon_draw_line">
             <value name="Colour">
                 <shadow type="colour_picker">
@@ -661,22 +619,66 @@ export function toolboxDefinition() {
                 </shadow>
             </value>
         </block>
-        <block type="base_geometry_line_transform">
-        </block>
-        <block type="base_geometry_line_length">
-        </block>
-        <block type="base_geometry_line_start_point">
-        </block>
-        <block type="base_geometry_line_end_point">
-        </block>
-        <block type="base_geometry_line_reverse">
-        </block>
-        <block type="base_geometry_line_convert_to_nurbs_curve">
-        </block>
+        <category name="${resources.block_toolbox_category_create}" expanded="true" categorystyle="geometry_category">
+            <block type="base_geometry_line">
+            </block>
+            <block type="base_geometry_line">
+                <value name="StartPoint">
+                    <shadow type="base_geometry_point">
+                        <value name="X">
+                            <shadow type="math_number">
+                                <field name="NUM">-1</field>
+                            </shadow>
+                        </value>
+                        <value name="Y">
+                            <shadow type="math_number">
+                                <field name="NUM">-1</field>
+                            </shadow>
+                        </value>
+                        <value name="Z">
+                            <shadow type="math_number">
+                                <field name="NUM">-1</field>
+                            </shadow>
+                        </value>
+                    </shadow>
+                </value>
+                <value name="EndPoint">
+                    <shadow type="base_geometry_point">
+                        <value name="X">
+                            <shadow type="math_number">
+                                <field name="NUM">1</field>
+                            </shadow>
+                        </value>
+                        <value name="Y">
+                            <shadow type="math_number">
+                                <field name="NUM">1</field>
+                            </shadow>
+                        </value>
+                        <value name="Z">
+                            <shadow type="math_number">
+                                <field name="NUM">1</field>
+                            </shadow>
+                        </value>
+                    </shadow>
+                </value>
+            </block>
+        </category>
+        <category name="${resources.block_toolbox_category_apply}" expanded="true" categorystyle="geometry_category">
+            <block type="base_geometry_line_transform">
+            </block>
+            <block type="base_geometry_line_length">
+            </block>
+            <block type="base_geometry_line_start_point">
+            </block>
+            <block type="base_geometry_line_end_point">
+            </block>
+            <block type="base_geometry_line_reverse">
+            </block>
+            <block type="base_geometry_line_convert_to_nurbs_curve">
+            </block>
+        </category>
     </category>
-    <category name="${resources.block_toolbox_category_geom_polyline}" categorystyle="geometry_category">
-        <block type="base_geometry_polyline">
-        </block>
+    <category name="${resources.block_toolbox_category_geom_polyline}" expanded="true" categorystyle="geometry_category">
         <block type="babylon_draw_polyline">
             <value name="Colour">
                 <shadow type="colour_picker">
@@ -694,18 +696,24 @@ export function toolboxDefinition() {
                 </shadow>
             </value>
         </block>
-        <block type="base_geometry_polyline_transform">
-        </block>
-        <block type="base_geometry_polyline_length">
-        </block>
-        <block type="base_geometry_polyline_reverse">
-        </block>
-        <block type="base_geometry_polyline_points">
-        </block>
-        <block type="base_geometry_polyline_points_count">
-        </block>
-        <block type="base_geometry_polyline_convert_to_nurbs_curve">
-        </block>
+        <category name="${resources.block_toolbox_category_create}" expanded="true" categorystyle="geometry_category">
+            <block type="base_geometry_polyline">
+            </block>
+        </category>
+        <category name="${resources.block_toolbox_category_apply}" expanded="true" categorystyle="geometry_category">
+            <block type="base_geometry_polyline_transform">
+            </block>
+            <block type="base_geometry_polyline_length">
+            </block>
+            <block type="base_geometry_polyline_reverse">
+            </block>
+            <block type="base_geometry_polyline_points">
+            </block>
+            <block type="base_geometry_polyline_points_count">
+            </block>
+            <block type="base_geometry_polyline_convert_to_nurbs_curve">
+            </block>
+        </category>
     </category>
     <category name="${resources.block_toolbox_category_geom_curve}" expanded="true" categorystyle="geometry_category">
         <block type="babylon_draw_curve">
