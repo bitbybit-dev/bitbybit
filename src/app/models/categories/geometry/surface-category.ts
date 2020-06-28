@@ -189,6 +189,10 @@ export function surfaceCategory() {
                 <block type="verb_geometry_extruded_surface">
                 </block>
             </category>
+            <category name="${resources.block_toolbox_category_geom_revolution}" categorystyle="geometry_category">
+                <block type="verb_geometry_revolved_surface">
+                </block>
+            </category>
         </category>
         <category name="${resources.block_toolbox_category_apply}" expanded="true" categorystyle="geometry_category">
             <block type="verb_geometry_nurbs_surface_normal">
@@ -263,6 +267,16 @@ export function surfaceCategory() {
                 <block type="verb_geometry_extruded_surface_profile">
                 </block>
                 <block type="verb_geometry_extruded_surface_direction">
+                </block>
+            </category>
+            <category name="${resources.block_toolbox_category_geom_revolution}" expanded="true" categorystyle="geometry_category">
+                <block type="verb_geometry_revolved_surface_profile">
+                </block>
+                <block type="verb_geometry_revolved_surface_axis">
+                </block>
+                <block type="verb_geometry_revolved_surface_center">
+                </block>
+                <block type="verb_geometry_revolved_surface_angle">
                 </block>
             </category>
         </category>

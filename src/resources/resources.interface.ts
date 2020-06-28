@@ -60,6 +60,7 @@ export interface ResourcesInterface {
     block_toolbox_category_geom_cone: string;
     block_toolbox_category_geom_cylinder: string;
     block_toolbox_category_geom_extrusion: string;
+    block_toolbox_category_geom_revolution: string;
     block_toolbox_category_geom_sphere: string;
     block_toolbox_category_create: string;
     block_toolbox_category_apply: string;
@@ -103,6 +104,7 @@ export interface ResourcesInterface {
     block_size: string;
     block_surface: string;
     block_sphere: string;
+    block_revolution: string;
     block_extrusion: string;
     block_cone: string;
     block_cylinder: string;
@@ -569,4 +571,17 @@ export interface ResourcesInterface {
     block_verb_geometry_cylindrical_surface_radius_description: string;
     block_verb_geometry_cylindrical_surface_height_input_cylinder: string;
     block_verb_geometry_cylindrical_surface_height_description: string;
+    block_verb_geometry_revolved_surface_input_profile: string;
+    block_verb_geometry_revolved_surface_input_center: string;
+    block_verb_geometry_revolved_surface_input_axis: string;
+    block_verb_geometry_revolved_surface_input_angle: string;
+    block_verb_geometry_revolved_surface_description: string;
+    block_verb_geometry_revolved_surface_center_input_revolution: string;
+    block_verb_geometry_revolved_surface_center_description: string;
+    block_verb_geometry_revolved_surface_axis_input_revolution: string;
+    block_verb_geometry_revolved_surface_axis_description: string;
+    block_verb_geometry_revolved_surface_profile_input_revolution: string;
+    block_verb_geometry_revolved_surface_profile_description: string;
+    block_verb_geometry_revolved_surface_angle_input_revolution: string;
+    block_verb_geometry_revolved_surface_angle_description: string;
 }

@@ -6,6 +6,7 @@ import { assembleEllipseBlocks } from './ellipse/assemble-ellipse';
 import { assembleExtrudedSurfaceBlocks } from './extruded-surface/assemble-extruded-surface';
 import { assembleCurveBlocks } from './nurbs-curve/assemble-curve';
 import { assembleSurfaceBlocks } from './nurbs-surface/assemble-surface';
+import { assembleRevolvedSurfaceBlocks } from './revolved-surface/assemble-revolved-surface';
 import { assembleSphericalSurfaceBlocks } from './spherical-surface/assemble-spherical-surface';
 
 export function assembleGeometryBlocks() {
@@ -18,4 +19,5 @@ export function assembleGeometryBlocks() {
     assembleConicalSurfaceBlocks();
     assembleExtrudedSurfaceBlocks();
     assembleCylindricalSurfaceBlocks();
+    assembleRevolvedSurfaceBlocks();
 }
