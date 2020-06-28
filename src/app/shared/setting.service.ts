@@ -60,6 +60,8 @@ export class SettingsService {
             resources.block_toolbox_category_core_transforms,
             resources.block_toolbox_category_core_vector,
             resources.block_toolbox_category_geom_point,
+            resources.block_toolbox_category_create,
+            resources.block_toolbox_category_apply,
             resources.block_toolbox_category_geom_line,
             resources.block_toolbox_category_create,
             resources.block_toolbox_category_apply,
