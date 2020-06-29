@@ -4,30 +4,35 @@ import { ResourcesInterface, ResourcesService } from '../../../../resources';
 import { createStandardContextIIFE } from '../../../_shared';
 import { getRequired, makeRequiredValidationModelForInputs, BitByBitBlockHandlerService, ValidationEntityInterface } from '../../../validations';
 
-export function createExtrudedSurfaceDirectionBlocks() {
+export function createSweptSurfaceBlock() {
 
     const resources = ResourcesService.getResources();
-    const blockSelector = 'verb_geometry_extruded_surface_direction';
+    const blockSelector = 'verb_geometry_swept_surface';
 
     Blocks[blockSelector] = {
         init() {
-            this.appendValueInput('Extrusion')
-                .setCheck('NurbsSurface')
+            this.appendValueInput('Profile')
+                .setCheck('NurbsCurve')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_verb_geometry_extruded_surface_direction_input_extrusion);
-            this.setOutput(true, 'Array');
+                .appendField(resources.block_verb_geometry_swept_surface_input_profile);
+            this.appendValueInput('Rail')
+                .setCheck('NurbsCurve')
+                .setAlign(ALIGN_RIGHT)
+                .appendField(resources.block_verb_geometry_swept_surface_input_rail.toLowerCase());
+            this.setOutput(true, 'NurbsSurface');
             this.setColour('#fff');
-            this.setTooltip(resources.block_verb_geometry_extruded_surface_direction_description);
+            this.setTooltip(resources.block_verb_geometry_swept_surface_description);
         }
     };
 
     JavaScript[blockSelector] = (block: Block) => {
         const inputs = {
-            extrusion: JavaScript.valueToCode(block, 'Extrusion', JavaScript.ORDER_ATOMIC),
+            profile: JavaScript.valueToCode(block, 'Profile', JavaScript.ORDER_ATOMIC),
+            rail: JavaScript.valueToCode(block, 'Rail', JavaScript.ORDER_ATOMIC),
         };
         // this is first set of validations to check that all inputs are non empty strings
         BitByBitBlockHandlerService.validate(block, block.workspace, makeRequiredValidationModelForInputs(resources, inputs, [
-            resources.block_extrusion
+            resources.block_profile, resources.block_rail
         ]));
 
         // this creates validation model to be used at runtime to evaluate real values of inputs
@@ -35,7 +40,7 @@ export function createExtrudedSurfaceDirectionBlocks() {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `return inputs.extrusion.direction();`
+            `return new verb.geom.SweptSurface(inputs.profile, inputs.rail);`
         );
         return [code, JavaScript.ORDER_ATOMIC];
     };
@@ -49,7 +54,12 @@ function makeRuntimeValidationModel(
     return [{
         entity: keys[0],
         validations: [
-            getRequired(resources, resources.block_extrusion),
+            getRequired(resources, resources.block_profile),
+        ]
+    }, {
+        entity: keys[1],
+        validations: [
+            getRequired(resources, resources.block_rail),
         ]
     }];
 }

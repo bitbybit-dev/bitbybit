@@ -1,9 +1,9 @@
 import { createExtrudedSurfaceBlock } from './extruded-surface';
-import { assembleExtrudedSurfaceDirectionBlocks } from './extruded-surface-direction';
-import { assembleExtrudedSurfaceProfileBlocks } from './extruded-surface-profile';
+import { createExtrudedSurfaceDirectionBlocks } from './extruded-surface-direction';
+import { createExtrudedSurfaceProfileBlocks } from './extruded-surface-profile';
 
 export function assembleExtrudedSurfaceBlocks() {
     createExtrudedSurfaceBlock();
-    assembleExtrudedSurfaceDirectionBlocks();
-    assembleExtrudedSurfaceProfileBlocks();
+    createExtrudedSurfaceDirectionBlocks();
+    createExtrudedSurfaceProfileBlocks();
 }

@@ -4,7 +4,7 @@ import { ResourcesInterface, ResourcesService } from '../../../../resources';
 import { createStandardContextIIFE } from '../../../_shared';
 import { getRequired, makeRequiredValidationModelForInputs, BitByBitBlockHandlerService, ValidationEntityInterface } from '../../../validations';
 
-export function assembleExtrudedSurfaceProfileBlocks() {
+export function createExtrudedSurfaceProfileBlocks() {
 
     const resources = ResourcesService.getResources();
     const blockSelector = 'verb_geometry_extruded_surface_profile';

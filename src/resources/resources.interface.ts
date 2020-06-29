@@ -58,6 +58,7 @@ export interface ResourcesInterface {
     block_toolbox_category_geom_ellipse: string;
     block_toolbox_category_geom_surface: string;
     block_toolbox_category_geom_cone: string;
+    block_toolbox_category_geom_sweep: string;
     block_toolbox_category_geom_cylinder: string;
     block_toolbox_category_geom_extrusion: string;
     block_toolbox_category_geom_revolution: string;
@@ -106,11 +107,13 @@ export interface ResourcesInterface {
     block_sphere: string;
     block_revolution: string;
     block_extrusion: string;
+    block_sweep: string;
     block_cone: string;
     block_cylinder: string;
     block_surfaces: string;
     block_center: string;
     block_profile: string;
+    block_rail: string;
     block_direction: string;
     block_circle: string;
     block_ellipse: string;
@@ -584,4 +587,11 @@ export interface ResourcesInterface {
     block_verb_geometry_revolved_surface_profile_description: string;
     block_verb_geometry_revolved_surface_angle_input_revolution: string;
     block_verb_geometry_revolved_surface_angle_description: string;
+    block_verb_geometry_swept_surface_input_profile: string;
+    block_verb_geometry_swept_surface_input_rail: string;
+    block_verb_geometry_swept_surface_description: string;
+    block_verb_geometry_swept_surface_profile_input_sweep: string;
+    block_verb_geometry_swept_surface_profile_description: string;
+    block_verb_geometry_swept_surface_rail_input_sweep: string;
+    block_verb_geometry_swept_surface_rail_description: string;
 }

@@ -4,30 +4,30 @@ import { ResourcesInterface, ResourcesService } from '../../../../resources';
 import { createStandardContextIIFE } from '../../../_shared';
 import { getRequired, makeRequiredValidationModelForInputs, BitByBitBlockHandlerService, ValidationEntityInterface } from '../../../validations';
 
-export function createExtrudedSurfaceDirectionBlocks() {
+export function createSweptSurfaceRailBlock() {
 
     const resources = ResourcesService.getResources();
-    const blockSelector = 'verb_geometry_extruded_surface_direction';
+    const blockSelector = 'verb_geometry_swept_surface_rail';
 
     Blocks[blockSelector] = {
         init() {
-            this.appendValueInput('Extrusion')
+            this.appendValueInput('Sweep')
                 .setCheck('NurbsSurface')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_verb_geometry_extruded_surface_direction_input_extrusion);
-            this.setOutput(true, 'Array');
+                .appendField(resources.block_verb_geometry_swept_surface_rail_input_sweep);
+            this.setOutput(true, 'NurbsCurve');
             this.setColour('#fff');
-            this.setTooltip(resources.block_verb_geometry_extruded_surface_direction_description);
+            this.setTooltip(resources.block_verb_geometry_swept_surface_rail_description);
         }
     };
 
     JavaScript[blockSelector] = (block: Block) => {
         const inputs = {
-            extrusion: JavaScript.valueToCode(block, 'Extrusion', JavaScript.ORDER_ATOMIC),
+            sweep: JavaScript.valueToCode(block, 'Sweep', JavaScript.ORDER_ATOMIC),
         };
         // this is first set of validations to check that all inputs are non empty strings
         BitByBitBlockHandlerService.validate(block, block.workspace, makeRequiredValidationModelForInputs(resources, inputs, [
-            resources.block_extrusion
+            resources.block_sweep
         ]));
 
         // this creates validation model to be used at runtime to evaluate real values of inputs
@@ -35,7 +35,7 @@ export function createExtrudedSurfaceDirectionBlocks() {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `return inputs.extrusion.direction();`
+            `return inputs.sweep.rail();`
         );
         return [code, JavaScript.ORDER_ATOMIC];
     };
@@ -49,7 +49,7 @@ function makeRuntimeValidationModel(
     return [{
         entity: keys[0],
         validations: [
-            getRequired(resources, resources.block_extrusion),
+            getRequired(resources, resources.block_sweep),
         ]
     }];
 }

@@ -8,6 +8,7 @@ import { assembleCurveBlocks } from './nurbs-curve/assemble-curve';
 import { assembleSurfaceBlocks } from './nurbs-surface/assemble-surface';
 import { assembleRevolvedSurfaceBlocks } from './revolved-surface/assemble-revolved-surface';
 import { assembleSphericalSurfaceBlocks } from './spherical-surface/assemble-spherical-surface';
+import { assembleSweptSurfaceBlocks } from './swept-surface/assemble-swept-surface';
 
 export function assembleGeometryBlocks() {
     assembleBezierCurveBlocks();
@@ -20,4 +21,5 @@ export function assembleGeometryBlocks() {
     assembleExtrudedSurfaceBlocks();
     assembleCylindricalSurfaceBlocks();
     assembleRevolvedSurfaceBlocks();
+    assembleSweptSurfaceBlocks();
 }
