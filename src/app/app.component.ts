@@ -100,6 +100,12 @@ export class AppComponent implements OnInit, AfterViewInit {
             light.diffuse = new Color3(1, 1, 1);
             light.specular = new Color3(1, 1, 1);
             light.intensity = 1;
+            const light2 = new DirectionalLight('DirectionalLight', new Vector3(-10, 10, -10), this.scene);
+            light2.diffuse = new Color3(1, 1, 1);
+            light2.specular = new Color3(1, 1, 1);
+            light2.intensity = 1;
+            this.scene.ambientColor = new Color3(0.1, 0.1, 0.1);
+
             this.windowBlockly = {};
             this.windowBlockly.scene = this.scene;
             this.windowBlockly.workspace = this.workspace;

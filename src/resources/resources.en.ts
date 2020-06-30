@@ -30,6 +30,8 @@ export const resourcesEn: ResourcesInterface = Object.freeze({
     app_menu_more_examples_newbie_nurbs_curve_along_points_description: 'The NURBS curve gets created by using 7 control points. That curve is then subdivided into 20 equally distanced points. The result is visualized.',
     app_menu_more_examples_newbie_transformation_circle_title: 'Transformation circle',
     app_menu_more_examples_newbie_transformation_circle_description: 'This example demonstrates the transformation of a circle. Simple iteration applies rotation and scale transformations to create beautiful shell like structural elements.',
+    app_menu_more_examples_newbie_standard_surfaces_title: 'Standard surfaces',
+    app_menu_more_examples_newbie_standard_surfaces_description: 'Shows how to create standard NURBS surfaces. Sphere, cone, cylinder, extrusion, revolution and sweep surfaces are set up in one scene.',
     app_menu_more_examples_street_smart: 'Street Smart',
     app_menu_more_examples_street_smart_virtual_folds_in_iteration_title: 'Virtual folds in iteration',
     app_menu_more_examples_street_smart_virtual_folds_in_iteration_description: 'A small iteration produces pleasing aesthetics. Illustrates well how little amount of code can give very interesting results.',

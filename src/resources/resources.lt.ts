@@ -30,6 +30,8 @@ export const resourcesLt: ResourcesInterface = Object.freeze({
     app_menu_more_examples_newbie_nurbs_curve_along_points_description: 'Iš 7 kontrolinių taškų sukuriama kreivė, kuri vėliau sudalinama į 20 lygaus ilgio atkarpų.',
     app_menu_more_examples_newbie_transformation_circle_title: 'Transformuotas apskritimas',
     app_menu_more_examples_newbie_transformation_circle_description: 'Šis pavyzdys demonstruoja, kaip naudojant elementarias dydžio ir sukimo transformacijas iš paprasto apskritimo galima sukurti intriguojančią linijinę struktūrą.',
+    app_menu_more_examples_newbie_standard_surfaces_title: 'Standartiniai paviršiai',
+    app_menu_more_examples_newbie_standard_surfaces_description: 'Parodo kaip sukurti standartinius NURBS paviršius. Sfera, kūgis, cilindras, kėlinys, sukinys ir juostinis paviršiai yra sudėti į vieną sceną.',
     app_menu_more_examples_street_smart: 'Gatvių Grudintiems',
     app_menu_more_examples_street_smart_virtual_folds_in_iteration_title: 'Virtualūs paviršiai',
     app_menu_more_examples_street_smart_virtual_folds_in_iteration_description: 'Iteracijos pagalba sukurti paviršiai varijuoja spalva ir dydžiu. Panaudojus labai paprastą kodą galima sukurti sudėtingą trimatę skulptūrą.',
