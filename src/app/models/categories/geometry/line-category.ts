@@ -140,6 +140,10 @@ export function lineCategory() {
                     </shadow>
                 </value>
             </block>
+            <block type="base_geometry_lines">
+            </block>
+            <block type="base_geometry_lines_between_points">
+            </block>
         </category>
         <category name="${resources.block_toolbox_category_apply}" expanded="true" categorystyle="geometry_category">
             <block type="base_geometry_line_transform">
@@ -153,6 +157,8 @@ export function lineCategory() {
             <block type="base_geometry_line_reverse">
             </block>
             <block type="base_geometry_line_convert_to_nurbs_curve">
+            </block>
+            <block type="base_geometry_lines_convert_to_nurbs_curves">
             </block>
         </category>
     </category>

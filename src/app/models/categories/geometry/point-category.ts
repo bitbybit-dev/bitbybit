@@ -94,6 +94,34 @@ export function pointCategory() {
                     </shadow>
                 </value>
             </block>
+            <block type="base_geometry_point_list">
+                <value name="Point">
+                    <shadow type="base_geometry_point">
+                        <value name="X">
+                            <shadow type="math_number">
+                                <field name="NUM">-0</field>
+                            </shadow>
+                        </value>
+                        <value name="Y">
+                            <shadow type="math_number">
+                                <field name="NUM">-0</field>
+                            </shadow>
+                        </value>
+                        <value name="Z">
+                            <shadow type="math_number">
+                                <field name="NUM">-0</field>
+                            </shadow>
+                        </value>
+                    </shadow>
+                </value>
+                <value name="AmountOfPoints">
+                    <shadow type="math_number">
+                        <field name="NUM">10</field>
+                    </shadow>
+                </value>
+            </block>
+            <block type="base_geometry_point_spiral">
+            </block>
         </category>
         <category name="${resources.block_toolbox_category_apply}" expanded="true" categorystyle="geometry_category">
             <block type="base_geometry_point_transform">

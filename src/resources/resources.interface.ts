@@ -65,6 +65,7 @@ export interface ResourcesInterface {
     block_toolbox_category_geom_extrusion: string;
     block_toolbox_category_geom_revolution: string;
     block_toolbox_category_geom_sphere: string;
+    block_toolbox_category_intersect: string;
     block_toolbox_category_create: string;
     block_toolbox_category_apply: string;
     block_toolbox_category_loop: string;
@@ -76,7 +77,10 @@ export interface ResourcesInterface {
     block_toolbox_category_variables: string;
     block_toolbox_category_functions: string;
     block_point: string;
+    block_intersection: string;
+    block_intersections: string;
     block_points: string;
+    block_number_points: string;
     block_subdivision: string;
     block_line: string;
     block_min: string;
@@ -267,6 +271,12 @@ export interface ResourcesInterface {
     block_base_geom_point_transform_point: string;
     block_base_geom_point_transform_transformation: string;
     block_base_geom_point_transform_description: string;
+    block_base_geom_point_spiral_input_phi: string;
+    block_base_geom_point_spiral_input_increase: string;
+    block_base_geom_point_spiral_input_factor: string;
+    block_base_geom_point_spiral_input_radius: string;
+    block_base_geom_point_spiral_input_number_points: string;
+    block_base_geom_point_spiral_description: string;
     block_base_geom_points_transform_points: string;
     block_base_geom_points_transform_transformation: string;
     block_base_geom_points_transform_description: string;
@@ -596,4 +606,26 @@ export interface ResourcesInterface {
     block_verb_geometry_swept_surface_profile_description: string;
     block_verb_geometry_swept_surface_rail_input_sweep: string;
     block_verb_geometry_swept_surface_rail_description: string;
+    block_base_geometry_lines_input_start_points: string;
+    block_base_geometry_lines_input_end_points: string;
+    block_base_geometry_lines_description: string;
+    block_base_geometry_point_list_input_point: string;
+    block_base_geometry_point_list_input_amount_of_points: string;
+    block_base_geometry_point_list_description: string;
+    block_verb_geometry_intersect_curve_curve_input_first_curve: string;
+    block_verb_geometry_intersect_curve_curve_input_second_curve: string;
+    block_verb_geometry_intersect_curve_curve_input_tolerance: string;
+    block_verb_geometry_intersect_curve_curve_description: string;
+    block_base_geometry_lines_convert_to_nurbs_curves: string;
+    block_base_geometry_lines_convert_to_nurbs_curves_description: string;
+    verb_geometry_intersect_curve_curve_first_params_input_intersections: string;
+    verb_geometry_intersect_curve_curve_first_params_description: string;
+    verb_geometry_intersect_curve_curve_second_params_input_intersections: string;
+    verb_geometry_intersect_curve_curve_second_params_description: string;
+    verb_geometry_intersect_curve_curve_first_points_input_intersections: string;
+    verb_geometry_intersect_curve_curve_first_points_description: string;
+    verb_geometry_intersect_curve_curve_second_points_input_intersections: string;
+    verb_geometry_intersect_curve_curve_second_points_description: string;
+    block_base_geometry_lines_between_points_input_points: string;
+    block_base_geometry_lines_between_points_description: string;
 }
