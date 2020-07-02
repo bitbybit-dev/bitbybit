@@ -14,10 +14,10 @@ export function createIntersectCurveCurveSecondParamsBlock() {
             this.appendValueInput('Intersections')
                 .setCheck('Array')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.verb_geometry_intersect_curve_curve_second_params_input_intersections);
+                .appendField(resources.block_verb_geometry_intersect_curve_curve_second_params_input_intersections);
             this.setOutput(true, 'Number');
             this.setColour('#fff');
-            this.setTooltip(resources.verb_geometry_intersect_curve_curve_second_params_description);
+            this.setTooltip(resources.block_verb_geometry_intersect_curve_curve_second_params_description);
             this.setHelpUrl('');
         }
     };

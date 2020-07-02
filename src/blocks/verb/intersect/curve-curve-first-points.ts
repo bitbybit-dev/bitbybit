@@ -14,10 +14,10 @@ export function createIntersectCurveCurveFirstPointsBlock() {
             this.appendValueInput('Intersections')
                 .setCheck('Array')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.verb_geometry_intersect_curve_curve_first_points_input_intersections);
+                .appendField(resources.block_verb_geometry_intersect_curve_curve_first_points_input_intersections);
             this.setOutput(true, 'Array');
             this.setColour('#fff');
-            this.setTooltip(resources.verb_geometry_intersect_curve_curve_first_points_description);
+            this.setTooltip(resources.block_verb_geometry_intersect_curve_curve_first_points_description);
             this.setHelpUrl('');
         }
     };

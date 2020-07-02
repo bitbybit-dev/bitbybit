@@ -121,6 +121,31 @@ export function pointCategory() {
                 </value>
             </block>
             <block type="base_geometry_point_spiral">
+                <value name="Factor">
+                    <shadow type="math_number">
+                        <field name="NUM">1</field>
+                    </shadow>
+                </value>
+                <value name="Radius">
+                    <shadow type="math_number">
+                        <field name="NUM">6</field>
+                    </shadow>
+                </value>
+                <value name="NumberPoints">
+                    <shadow type="math_number">
+                        <field name="NUM">200</field>
+                    </shadow>
+                </value>
+                <value name="Phi">
+                    <shadow type="math_number">
+                        <field name="NUM">0.9</field>
+                    </shadow>
+                </value>
+                <value name="Widening">
+                    <shadow type="math_number">
+                        <field name="NUM">3</field>
+                    </shadow>
+                </value>
             </block>
         </category>
         <category name="${resources.block_toolbox_category_apply}" expanded="true" categorystyle="geometry_category">

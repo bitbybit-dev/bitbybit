@@ -190,7 +190,7 @@ export class AppComponent implements OnInit, AfterViewInit {
                 reader.readAsText(file, 'UTF-8');
                 reader.onload = (evt) => {
                     const xml = Xml.textToDom(evt.target.result as string);
-                    this.workspace.clear();
+                    this.cleanCanvas();
                     Xml.domToWorkspace(xml, this.workspace);
                     this.workspace.zoomToFit();
                     this.workspace.zoomCenter(-3);

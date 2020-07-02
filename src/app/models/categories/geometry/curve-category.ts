@@ -340,6 +340,12 @@ export function curveCategory() {
             </block>
             <block type="verb_geometry_nurbs_curve_closest_params">
             </block>
+            <block type="verb_geometry_nurbs_curve_start_point">
+            </block>
+            <block type="verb_geometry_nurbs_curve_end_point">
+            </block>
+            <block type="verb_geometry_nurbs_curve_point_at_param">
+            </block>
             <block type="verb_geometry_nurbs_curve_length">
             </block>
             <block type="verb_geometry_nurbs_curve_degree">

@@ -13,12 +13,15 @@ import { createCurveDivideByEqualArcLengthPointsBlock } from './curve-divide-by-
 import { createCurveDivideByArcLengthParamsBlock } from './curve-divide-by-arc-length-params';
 import { createCurveDivideByArcLengthPointsBlock } from './curve-divide-by-arc-length-points';
 import { createCurveDomainBlock } from './curve-domain';
+import { createCurveEndPointBlock } from './curve-end-point';
 import { createCurveKnotsBlock } from './curve-knots';
 import { createCurveLengthBlock } from './curve-length';
 import { createCurveLengthAtParamBlock } from './curve-length-at-param';
 import { createCurveParamAtLengthBlock } from './curve-param-at-length';
+import { createCurvePointAtParamBlock } from './curve-point-at-param';
 import { createCurveReverseBlock } from './curve-reverse';
 import { createCurveSplitBlock } from './curve-split';
+import { createCurveStartPointBlock } from './curve-start-point';
 import { createCurveTangentBlock } from './curve-tangent';
 import { createCurveTessellateBlock } from './curve-tesselate';
 import { createCurveTransformBlock } from './curve-transform';
@@ -50,4 +53,7 @@ export function assembleCurveBlocks() {
     createCurveReverseBlock();
     createCurveTangentBlock();
     createCurveTessellateBlock();
+    createCurvePointAtParamBlock();
+    createCurveEndPointBlock();
+    createCurveStartPointBlock();
 }

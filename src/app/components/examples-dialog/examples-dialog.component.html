@@ -20,10 +20,12 @@
         </div>
     </mat-tab>
     <mat-tab [label]="resources.app_menu_more_examples_ninja"> 
-        <div>
-            <h3>
-                {{resources.app_menu_more_examples_ninja_patience_notice}}
-            </h3>
+        <div *ngFor="let example of advancedExamples" class="example">
+            <h3>{{example.title}}</h3>
+            <a [routerLink]="['/']" [queryParams]="{examples: example.queryParam}" (click)="onClose()">
+                <img [src]="example.image"/>
+            </a>
+            <p>{{example.description}}</p>
         </div>
     </mat-tab>
   </mat-tab-group>

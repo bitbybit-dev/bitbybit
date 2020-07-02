@@ -8,6 +8,7 @@ import { createDrawPointsBlock } from './draw-points';
 import { createDrawPolylineBlock } from './draw-polyline';
 import { createDrawSurfaceBlock } from './draw-surface';
 import { createDrawSurfacesBlock } from './draw-surfaces';
+import { createDrawSurfacesColoursBlock } from './draw-surfaces-colours';
 
 export function assembleDrawBlocks(){
     createDrawPointBlock();
@@ -20,4 +21,5 @@ export function assembleDrawBlocks(){
     createDrawCurvesBlock();
     createDrawSurfaceBlock();
     createDrawSurfacesBlock();
+    createDrawSurfacesColoursBlock();
 }

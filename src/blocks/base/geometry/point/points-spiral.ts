@@ -27,7 +27,7 @@ export function createPointSpiralBlock() {
                 .setCheck('Number')
                 .setAlign(ALIGN_RIGHT)
                 .appendField(resources.block_base_geom_point_spiral_input_phi.toLowerCase());
-            this.appendValueInput('Theta')
+            this.appendValueInput('Widening')
                 .setCheck('Number')
                 .setAlign(ALIGN_RIGHT)
                 .appendField(resources.block_base_geom_point_spiral_input_increase.toLowerCase());
@@ -44,7 +44,7 @@ export function createPointSpiralBlock() {
             radius: JavaScript.valueToCode(block, 'Radius', JavaScript.ORDER_ATOMIC),
             numberPoints: JavaScript.valueToCode(block, 'NumberPoints', JavaScript.ORDER_ATOMIC),
             phi: JavaScript.valueToCode(block, 'Phi', JavaScript.ORDER_ATOMIC),
-            theta: JavaScript.valueToCode(block, 'Theta', JavaScript.ORDER_ATOMIC),
+            widening: JavaScript.valueToCode(block, 'Widening', JavaScript.ORDER_ATOMIC),
         };
 
         // this is first set of validations to check that all inputs are non empty strings
@@ -59,7 +59,7 @@ export function createPointSpiralBlock() {
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
             `
     const phi = inputs.phi;
-    const b = Math.log(phi) / (Math.PI / inputs.theta);
+    const b = Math.log(phi) / (Math.PI / inputs.widening);
     const spiral = [];
     const step = inputs.radius / inputs.numberPoints;
     for(let i = 0; i <= inputs.radius; i += step){
