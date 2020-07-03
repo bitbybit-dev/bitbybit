@@ -14,14 +14,14 @@ export function createSurfaceByLoftingCurvesBlock() {
             this.appendValueInput('Curves')
                 .setCheck('Array')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.blocK_verb_geometry_nurbs_surface_by_lofting_curves_input_curves);
+                .appendField(resources.block_verb_geometry_nurbs_surface_by_lofting_curves_input_curves);
             this.appendValueInput('DegreeV')
                 .setCheck('Number')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.blocK_verb_geometry_nurbs_surface_by_lofting_curves_input_degree_v.toLowerCase());
+                .appendField(resources.block_verb_geometry_nurbs_surface_by_lofting_curves_input_degree_v.toLowerCase());
             this.setOutput(true, 'NurbsSurface');
             this.setColour('#fff');
-            this.setTooltip(resources.blocK_verb_geometry_nurbs_surface_by_lofting_curves_description);
+            this.setTooltip(resources.block_verb_geometry_nurbs_surface_by_lofting_curves_description);
         }
     };
 

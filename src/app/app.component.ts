@@ -77,8 +77,14 @@ export class AppComponent implements OnInit, AfterViewInit {
                 });
 
             window.addEventListener('resize', () => this.onResize(), false);
-
+            const toolbox = this.workspace.getToolbox();
+            const flyout = toolbox.getFlyout();
+            flyout.MARGIN = 40;
+            flyout.CORNER_RADIUS = 10;
             this.onResize();
+
+            this.collapseExpandedMenus();
+            toolbox.clearSelection();
 
             svgResize(this.workspace);
 
@@ -90,10 +96,16 @@ export class AppComponent implements OnInit, AfterViewInit {
             const camera = new ArcRotateCamera('Camera', 0, 10, 10, new Vector3(0, 0, 0), this.scene);
             camera.setPosition(new Vector3(0, 10, 20));
             camera.attachControl(canvas, true);
-            const light = new DirectionalLight('DirectionalLight', new Vector3(1, 1, 0), this.scene);
+            const light = new DirectionalLight('DirectionalLight', new Vector3(10, 10, 0), this.scene);
             light.diffuse = new Color3(1, 1, 1);
             light.specular = new Color3(1, 1, 1);
             light.intensity = 1;
+            const light2 = new DirectionalLight('DirectionalLight', new Vector3(-10, 10, -10), this.scene);
+            light2.diffuse = new Color3(1, 1, 1);
+            light2.specular = new Color3(1, 1, 1);
+            light2.intensity = 1;
+            this.scene.ambientColor = new Color3(0.1, 0.1, 0.1);
+
             this.windowBlockly = {};
             this.windowBlockly.scene = this.scene;
             this.windowBlockly.workspace = this.workspace;
@@ -118,7 +130,7 @@ export class AppComponent implements OnInit, AfterViewInit {
                             this.run();
                         }
                     } else {
-                        if(this.firstTimeOpen){
+                        if (this.firstTimeOpen) {
                             this.examples();
                             this.firstTimeOpen = false;
                         }
@@ -126,6 +138,17 @@ export class AppComponent implements OnInit, AfterViewInit {
                 });
             });
         }, 500);
+    }
+
+    private collapseExpandedMenus() {
+        const treeRows = document.body.querySelectorAll(
+            '.blocklyTreeRow');
+        treeRows.forEach((element) => {
+            const ariaExpanded = element.parentElement.attributes.getNamedItem('aria-expanded');
+            if (ariaExpanded) {
+                (element as HTMLElement).click();
+            }
+        });
     }
 
     ngOnInit(): void {
@@ -167,7 +190,7 @@ export class AppComponent implements OnInit, AfterViewInit {
                 reader.readAsText(file, 'UTF-8');
                 reader.onload = (evt) => {
                     const xml = Xml.textToDom(evt.target.result as string);
-                    this.workspace.clear();
+                    this.cleanCanvas();
                     Xml.domToWorkspace(xml, this.workspace);
                     this.workspace.zoomToFit();
                     this.workspace.zoomCenter(-3);

@@ -15,7 +15,7 @@ export class SettingsService {
         const browserStorage = window.localStorage;
         const languageInSettings = browserStorage.getItem(localStorageKeysEnum.settingsLanguage) as languagesEnum;
         const subject = new Subject();
-        if (languageInSettings !== languagesEnum.en) {
+        if (languageInSettings && languageInSettings !== languagesEnum.en) {
             this.setLanguage(languageInSettings, workspace, changeDetector, subject);
         } else {
             setTimeout(() => {
@@ -26,46 +26,85 @@ export class SettingsService {
     }
 
     setLanguage(language: languagesEnum, workspace: WorkspaceSvg, changeDetector: ChangeDetectorRef, subject?: Subject<any>) {
-        const languageImport = import(`src/assets/blockly-languages/${language}.js`);
-        languageImport.then(
-            s => {
-                s.activateLanguage();
-                ResourcesService.setLanguage(language);
-                const resources = ResourcesService.getResources();
-                assembleBlocks();
-                const xml = Xml.workspaceToDom(workspace);
-                workspace.clear();
-                Xml.domToWorkspace(xml, workspace);
-                workspace.zoomToFit();
-                workspace.zoomCenter(-1);
-                changeDetector.detectChanges();
-                this.setToolboxTexts(resources);
-                const toolbox = workspace.getToolbox();
-                toolbox.position();
-                if (subject){
-                    subject.next();
-                }
-            });
+        if (language) {
+            const languageImport = import(`src/assets/blockly-languages/${language}.js`);
+            languageImport.then(
+                s => {
+                    s.activateLanguage();
+                    ResourcesService.setLanguage(language);
+                    const resources = ResourcesService.getResources();
+                    assembleBlocks();
+                    const xml = Xml.workspaceToDom(workspace);
+                    workspace.clear();
+                    Xml.domToWorkspace(xml, workspace);
+                    workspace.zoomToFit();
+                    workspace.zoomCenter(-1);
+                    changeDetector.detectChanges();
+                    this.setToolboxTexts(resources);
+                    const toolbox = workspace.getToolbox();
+                    toolbox.position();
+                    if (subject) {
+                        subject.next();
+                    }
+                });
+        }
     }
 
     private setToolboxTexts(resources: ResourcesInterface) {
+
+        // this wont work in the long term, categories will have to get some attribute selectors
         const htmlElements = document.getElementsByClassName('blocklyTreeLabel');
-        htmlElements[1].textContent = resources.block_toolbox_category_scene;
-        htmlElements[2].textContent = resources.block_toolbox_category_core_types;
-        htmlElements[3].textContent = resources.block_toolbox_category_core_transforms;
-        htmlElements[4].textContent = resources.block_toolbox_category_core_vector;
-        htmlElements[5].textContent = resources.block_toolbox_category_geom_point;
-        htmlElements[6].textContent = resources.block_toolbox_category_geom_line;
-        htmlElements[7].textContent = resources.block_toolbox_category_geom_polyline;
-        htmlElements[8].textContent = resources.block_toolbox_category_geom_curve;
-        htmlElements[9].textContent = resources.block_toolbox_category_geom_surface;
-        htmlElements[10].textContent = resources.block_toolbox_category_loop;
-        htmlElements[11].textContent = resources.block_toolbox_category_logic;
-        htmlElements[12].textContent = resources.block_toolbox_category_math;
-        htmlElements[13].textContent = resources.block_toolbox_category_lists;
-        htmlElements[14].textContent = resources.block_toolbox_category_colour;
-        htmlElements[15].textContent = resources.block_toolbox_category_text;
-        htmlElements[16].textContent = resources.block_toolbox_category_variables;
-        htmlElements[17].textContent = resources.block_toolbox_category_functions;
+        const toolboxCategoryFlatList = [
+            resources.block_toolbox_category_scene,
+            resources.block_toolbox_category_core_types,
+            resources.block_toolbox_category_core_transforms,
+            resources.block_toolbox_category_core_vector,
+            resources.block_toolbox_category_geom_point,
+            resources.block_toolbox_category_create,
+            resources.block_toolbox_category_apply,
+            resources.block_toolbox_category_geom_line,
+            resources.block_toolbox_category_create,
+            resources.block_toolbox_category_apply,
+            resources.block_toolbox_category_geom_polyline,
+            resources.block_toolbox_category_create,
+            resources.block_toolbox_category_apply,
+            resources.block_toolbox_category_geom_curve,
+            resources.block_toolbox_category_create,
+            resources.block_toolbox_category_geom_circle,
+            resources.block_toolbox_category_geom_ellipse,
+            resources.block_toolbox_category_apply,
+            resources.block_toolbox_category_geom_circle,
+            resources.block_toolbox_category_geom_ellipse,
+            resources.block_toolbox_category_geom_surface,
+            resources.block_toolbox_category_create,
+            resources.block_toolbox_category_geom_sphere,
+            resources.block_toolbox_category_geom_cone,
+            resources.block_toolbox_category_geom_cylinder,
+            resources.block_toolbox_category_geom_extrusion,
+            resources.block_toolbox_category_geom_revolution,
+            resources.block_toolbox_category_geom_sweep,
+            resources.block_toolbox_category_apply,
+            resources.block_toolbox_category_geom_sphere,
+            resources.block_toolbox_category_geom_cone,
+            resources.block_toolbox_category_geom_cylinder,
+            resources.block_toolbox_category_geom_extrusion,
+            resources.block_toolbox_category_geom_revolution,
+            resources.block_toolbox_category_geom_sweep,
+            resources.block_toolbox_category_intersect,
+            resources.block_toolbox_category_create,
+            resources.block_toolbox_category_apply,
+            resources.block_toolbox_category_loop,
+            resources.block_toolbox_category_logic,
+            resources.block_toolbox_category_math,
+            resources.block_toolbox_category_lists,
+            resources.block_toolbox_category_colour,
+            resources.block_toolbox_category_text,
+            resources.block_toolbox_category_variables,
+            resources.block_toolbox_category_functions,
+        ];
+
+        toolboxCategoryFlatList.forEach((resource, index) => {
+            htmlElements[index + 1].textContent = resource;
+        });
     }
 }

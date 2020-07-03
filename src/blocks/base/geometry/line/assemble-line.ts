@@ -5,6 +5,9 @@ import { createLineLengthBlock } from './line-length';
 import { createLineReverseBlock } from './line-reverse';
 import { createLineStartPointBlock } from './line-start-point';
 import { createLineTransformBlock } from './line-transform';
+import { createLinesBlock } from './lines';
+import { createLinesBetweenPointsBlock } from './lines-between-points';
+import { createLinesConvertToNurbsCurvesBlock } from './lines-convert-to-nurbs-curves';
 
 export function assembleLineBlocks() {
     createLineBlock();
@@ -14,4 +17,7 @@ export function assembleLineBlocks() {
     createLineReverseBlock();
     createLineConvertToNurbsCurveBlock();
     createLineTransformBlock();
+    createLinesBlock();
+    createLinesConvertToNurbsCurvesBlock();
+    createLinesBetweenPointsBlock();
 }
