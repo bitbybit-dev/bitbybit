@@ -641,6 +641,9 @@ export const resourcesEn: ResourcesInterface = Object.freeze({
     block_verb_geometry_nurbs_curve_point_at_param_input_curve: 'Point on curve',
     block_verb_geometry_nurbs_curve_point_at_param_input_param: 'At parameter',
     block_verb_geometry_nurbs_curve_point_at_param_description: 'Gets the point on curve at parameter.',
+    block_verb_geometry_nurbs_curves_points_at_param_input_curve: 'Points on curves',
+    block_verb_geometry_nurbs_curves_points_at_param_input_param: 'At parameter',
+    block_verb_geometry_nurbs_curves_points_at_param_description: 'Gets the points on curves at parameter.',
     block_verb_geometry_nurbs_curve_start_point_input_curve: 'Start point of the curve',
     block_verb_geometry_nurbs_curve_start_point_description: 'Gets the start point of the curve.',
     block_verb_geometry_nurbs_curve_end_point_input_curve: 'End point of the curve',
@@ -653,4 +656,9 @@ export const resourcesEn: ResourcesInterface = Object.freeze({
     block_base_math_remap_number_input_source_interval: 'Source interval',
     block_base_math_remap_number_input_target_interval: 'Target interval',
     block_base_math_remap_number_description: 'Remaps the number that fits in source interval to a new target interval.',
+    block_verb_geometry_nurbs_curves_start_points_input_curve: 'Start points of the curves',
+    block_verb_geometry_nurbs_curves_start_points_description: 'Gets the start points of the curves.',
+    block_verb_geometry_nurbs_curves_end_points_input_curve: 'End points of the curves',
+    block_verb_geometry_nurbs_curves_end_points_description: 'Gets the end points of the curves.',
+
 });

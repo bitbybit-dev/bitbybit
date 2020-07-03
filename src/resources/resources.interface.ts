@@ -427,10 +427,17 @@ export interface ResourcesInterface {
     block_verb_geometry_nurbs_curve_point_at_param_input_curve: string;
     block_verb_geometry_nurbs_curve_point_at_param_input_param: string;
     block_verb_geometry_nurbs_curve_point_at_param_description: string;
+    block_verb_geometry_nurbs_curves_points_at_param_input_curve: string;
+    block_verb_geometry_nurbs_curves_points_at_param_input_param: string;
+    block_verb_geometry_nurbs_curves_points_at_param_description: string;
     block_verb_geometry_nurbs_curve_start_point_input_curve: string;
     block_verb_geometry_nurbs_curve_start_point_description: string;
     block_verb_geometry_nurbs_curve_end_point_input_curve: string;
     block_verb_geometry_nurbs_curve_end_point_description: string;
+    block_verb_geometry_nurbs_curves_start_points_input_curve: string;
+    block_verb_geometry_nurbs_curves_start_points_description: string;
+    block_verb_geometry_nurbs_curves_end_points_input_curve: string;
+    block_verb_geometry_nurbs_curves_end_points_description: string;
     block_verb_geometry_nurbs_curve_reverse_input_curve: string;
     block_verb_geometry_nurbs_curve_reverse_description: string;
     block_verb_geometry_nurbs_curve_split_input_curve: string;

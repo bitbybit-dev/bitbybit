@@ -374,6 +374,12 @@ export function curveCategory() {
             </block>
             <block type="verb_geometry_nurbs_curve_tessellate">
             </block>
+            <block type="verb_geometry_nurbs_curves_points_at_param">
+            </block>
+            <block type="verb_geometry_nurbs_curves_start_points">
+            </block>
+            <block type="verb_geometry_nurbs_curves_end_points">
+            </block>
             <category name="${resources.block_toolbox_category_geom_circle}" expanded="true" categorystyle="geometry_category">
                 <block type="verb_geometry_nurbs_curve_circle_center">
                 </block>
