@@ -8,6 +8,7 @@ import { pointCategory } from './categories/geometry/point-category';
 import { polylineCategory } from './categories/geometry/polyline-category';
 import { surfaceCategory } from './categories/geometry/surface-category';
 import { intersectCategory } from './categories/intersect/intersect-category';
+import { ioCategory } from './categories/io/io-category';
 import { sceneCategory } from './categories/scene/scene-category';
 
 export function toolboxDefinition() {
@@ -26,6 +27,8 @@ export function toolboxDefinition() {
     ${surfaceCategory()}
     <sep></sep>
     ${intersectCategory()}
+    <sep></sep>
+    ${ioCategory()}
     <sep></sep>
     ${defaultBlocklyCategories()}
 </xml>

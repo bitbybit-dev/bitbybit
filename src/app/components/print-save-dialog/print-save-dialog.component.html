@@ -1,0 +1,18 @@
+<h2>{{resources.app_print_save_dialog_title}}</h2>
+
+<form *ngIf="printSaveForm" [formGroup]="printSaveForm" (ngSubmit)="onSubmit()">
+    <mat-form-field class="full-width" *ngIf="!data.hidden">
+        <mat-label>Enter your text</mat-label>
+        <textarea formControlName="text" matInput [placeholder]="resources.app_placeholder_text"></textarea>
+    </mat-form-field>
+    <mat-form-field class="half-width">
+        <mat-label>Filename</mat-label>
+        <input formControlName="fileName" matInput [placeholder]="resources.app_placeholder_text"/>
+    </mat-form-field>
+    <mat-form-field class="half-width">
+        <mat-label>Extension</mat-label>
+        <input formControlName="extension" matInput [placeholder]="resources.app_placeholder_text"/>
+    </mat-form-field>
+    <button type="submit" mat-button mat-raised-button color="primary" >{{resources.app_button_save}}</button>
+    <button type="button" mat-button mat-raised-button (click)="onClose()">{{resources.app_button_close}}</button>
+</form>

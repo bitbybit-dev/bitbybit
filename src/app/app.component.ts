@@ -24,6 +24,10 @@ import { constantsModel } from './models/constants.model';
 import { themeStyle } from './models/theme-styles.model';
 import { toolboxDefinition } from './models/toolbox-definition';
 import { SettingsService } from './shared/setting.service';
+import * as Blockly from 'blockly';
+import { BitByBitBlocklyHelperService } from 'src/blocks/_shared/bit-by-bit-blockly-helper.service';
+import { PrintSaveInterface } from 'src/blocks/_shared/models/print-save.model';
+import { PrintSaveDialogComponent } from './components/print-save-dialog/print-save-dialog.component';
 
 @Component({
     selector: 'app-root',
@@ -86,6 +90,10 @@ export class AppComponent implements OnInit, AfterViewInit {
             this.collapseExpandedMenus();
             toolbox.clearSelection();
 
+            (Blockly.alert as any) = (message, opt) => { this.openAboutDialog(); };
+            (Blockly.prompt as any) = (message, opt) => { this.openAboutDialog(); };
+            (Blockly.confirm as any) = (message, opt) => { this.openAboutDialog(); };
+
             svgResize(this.workspace);
 
             const canvas = document.getElementById('renderCanvas') as HTMLCanvasElement;
@@ -115,6 +123,7 @@ export class AppComponent implements OnInit, AfterViewInit {
                 this.scene.render();
             });
 
+            BitByBitBlocklyHelperService.promptPrintSave = (prompt: PrintSaveInterface) => this.openPrintSaveDialog(prompt);
             this.settingsService.initSettings(this.workspace, this.changeDetectorService).subscribe(s => {
 
                 this.route.queryParamMap.subscribe(param => {
@@ -159,6 +168,7 @@ export class AppComponent implements OnInit, AfterViewInit {
 
         const el = document.getElementById('blocklyArea');
         el.insertAdjacentHTML('afterend', toolboxDefinition());
+
     }
 
     onResize() {
@@ -328,6 +338,19 @@ ${code}
             data: {
                 workspace: this.workspace
             }
+        });
+
+        dialogRef.afterClosed().subscribe(result => {
+            const d = result;
+        });
+    }
+
+    private openPrintSaveDialog(prompt: PrintSaveInterface): void {
+        const dialogRef = this.dialog.open(PrintSaveDialogComponent, {
+            width: '500px',
+            height: '500px',
+            autoFocus: false,
+            data: prompt
         });
 
         dialogRef.afterClosed().subscribe(result => {

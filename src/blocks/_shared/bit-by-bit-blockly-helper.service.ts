@@ -1,6 +1,9 @@
 import { Matrix, Vector3 } from '@babylonjs/core';
+import { PrintSaveInterface } from './models/print-save.model';
 
 export class BitByBitBlocklyHelperService {
+
+    static promptPrintSave: (prompt: PrintSaveInterface) => void;
 
     static transformPointsByMatrix(points: [], transformMatrix: Matrix) {
         const transformedPoints = [];
@@ -12,4 +15,5 @@ export class BitByBitBlocklyHelperService {
         }
         return transformedPoints;
     }
+
 }

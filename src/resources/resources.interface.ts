@@ -49,12 +49,20 @@ export interface ResourcesInterface {
     app_languages: string;
     app_languages_lithuanian: string;
     app_languages_english: string;
+    app_placeholder_text: string;
+    app_default_file_name: string;
+    app_default_file_extension: string;
+    app_print_save_dialog_title: string;
+    app_print_save_dialog_export: string;
+    app_print_save_dialog_text_to_save: string;
+    app_print_save_dialog_file_format: string;
     block_toolbox_category_scene: string;
     block_toolbox_category_core_types: string;
     block_toolbox_category_core_transforms: string;
     block_toolbox_category_core_vector: string;
     block_toolbox_category_geom_point: string;
     block_toolbox_category_geom_line: string;
+    block_toolbox_category_io: string;
     block_toolbox_category_geom_polyline: string;
     block_toolbox_category_geom_curve: string;
     block_toolbox_category_geom_circle: string;
@@ -104,6 +112,7 @@ export interface ResourcesInterface {
     block_source_interval: string;
     block_target_interval: string;
     block_curves: string;
+    block_text: string;
     block_parameter: string;
     block_parameter_u: string;
     block_parameter_v: string;
@@ -658,4 +667,8 @@ export interface ResourcesInterface {
     block_base_math_remap_number_input_source_interval: string;
     block_base_math_remap_number_input_target_interval: string;
     block_base_math_remap_number_description: string;
+    block_base_text_print_save_input_text: string;
+    block_base_text_print_save_description: string;
+    block_base_text_save_input_text: string;
+    block_base_text_save_description: string;
 }

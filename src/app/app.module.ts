@@ -1,11 +1,14 @@
 import { NgModule } from '@angular/core';
+import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatGridListModule } from '@angular/material/grid-list';
 import { MatIconModule } from '@angular/material/icon';
+import {MatInputModule} from '@angular/material/input';
 import { MatMenuModule } from '@angular/material/menu';
+import {MatSelectModule} from '@angular/material/select';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatToolbarModule } from '@angular/material/toolbar';
@@ -17,13 +20,11 @@ import { AppComponent } from './app.component';
 import { AboutDialogComponent } from './components/about-dialog/about-dialog.component';
 import { AlertDialogComponent } from './components/alert-dialog/alert-dialog.component';
 import { ExamplesDialogComponent } from './components/examples-dialog/examples-dialog.component';
+import { PrintSaveDialogComponent } from './components/print-save-dialog/print-save-dialog.component';
 import { SettingsDialogComponent } from './components/settings-dialog/settings-dialog.component';
 import { SponsorsDialogComponent } from './components/sponsors-dialog/sponsors-dialog.component';
 import { ExamplesService } from './examples/example-service';
-import {MatSelectModule} from '@angular/material/select';
 import { SettingsService } from './shared/setting.service';
-
-
 
 @NgModule({
     declarations: [
@@ -33,9 +34,12 @@ import { SettingsService } from './shared/setting.service';
         SponsorsDialogComponent,
         AlertDialogComponent,
         SettingsDialogComponent,
+        PrintSaveDialogComponent,
     ],
     imports: [
         BrowserModule,
+        ReactiveFormsModule,
+        FormsModule,
         AppRoutingModule,
         MatTabsModule,
         BrowserAnimationsModule,
@@ -50,6 +54,7 @@ import { SettingsService } from './shared/setting.service';
         MatMenuModule,
         MatCardModule,
         MatSelectModule,
+        MatInputModule,
     ],
     providers: [ExamplesService, SettingsService],
     bootstrap: [AppComponent]

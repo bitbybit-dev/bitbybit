@@ -50,4 +50,5 @@ export class BitByBitBlockHandlerService {
         block.setColour('ffab91');
         block.setWarningText('Block failed when computing, check if data provided is correct. ' + e);
     }
+
 }

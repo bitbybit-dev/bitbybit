@@ -91,6 +91,7 @@ export class SettingsService {
             resources.block_toolbox_category_geom_revolution,
             resources.block_toolbox_category_geom_sweep,
             resources.block_toolbox_category_intersect,
+            resources.block_toolbox_category_io,
             resources.block_toolbox_category_create,
             resources.block_toolbox_category_apply,
             resources.block_toolbox_category_loop,

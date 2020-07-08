@@ -203,3 +203,11 @@ h1 {
 ::ng-deep button.mat-button {
     margin-right: 10px;
 }
+
+::ng-deep .full-width {
+    width: 100%;
+}
+
+::ng-deep .half-width {
+    width: 50%;
+}
