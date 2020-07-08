@@ -90,9 +90,9 @@ export class AppComponent implements OnInit, AfterViewInit {
             this.collapseExpandedMenus();
             toolbox.clearSelection();
 
-            (Blockly.alert as any) = (message, opt) => { this.openAboutDialog(); };
-            (Blockly.prompt as any) = (message, opt) => { this.openAboutDialog(); };
-            (Blockly.confirm as any) = (message, opt) => { this.openAboutDialog(); };
+            // (Blockly.alert as any) = (message, opt) => { this.openAboutDialog(); };
+            // (Blockly.prompt as any) = (message, opt) => { this.openAboutDialog(); };
+            // (Blockly.confirm as any) = (message, opt) => { this.openAboutDialog(); };
 
             svgResize(this.workspace);
 
