@@ -350,7 +350,7 @@ ${code}
     private openPrintSaveDialog(prompt: PrintSaveInterface): void {
         const dialogRef = this.dialog.open(PrintSaveDialogComponent, {
             width: '500px',
-            height: '500px',
+            height: '450px',
             autoFocus: false,
             data: prompt
         });
