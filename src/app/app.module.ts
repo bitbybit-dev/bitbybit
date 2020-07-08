@@ -1,5 +1,5 @@
 import { NgModule } from '@angular/core';
-import { ReactiveFormsModule, FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatDialogModule } from '@angular/material/dialog';
@@ -21,6 +21,7 @@ import { AboutDialogComponent } from './components/about-dialog/about-dialog.com
 import { AlertDialogComponent } from './components/alert-dialog/alert-dialog.component';
 import { ExamplesDialogComponent } from './components/examples-dialog/examples-dialog.component';
 import { PrintSaveDialogComponent } from './components/print-save-dialog/print-save-dialog.component';
+import { PromptDialogComponent } from './components/prompt-dialog/prompt-dialog.component';
 import { SettingsDialogComponent } from './components/settings-dialog/settings-dialog.component';
 import { SponsorsDialogComponent } from './components/sponsors-dialog/sponsors-dialog.component';
 import { ExamplesService } from './examples/example-service';
@@ -35,6 +36,7 @@ import { SettingsService } from './shared/setting.service';
         AlertDialogComponent,
         SettingsDialogComponent,
         PrintSaveDialogComponent,
+        PromptDialogComponent,
     ],
     imports: [
         BrowserModule,

@@ -28,6 +28,8 @@ import * as Blockly from 'blockly';
 import { BitByBitBlocklyHelperService } from 'src/blocks/_shared/bit-by-bit-blockly-helper.service';
 import { PrintSaveInterface } from 'src/blocks/_shared/models/print-save.model';
 import { PrintSaveDialogComponent } from './components/print-save-dialog/print-save-dialog.component';
+import { PromptInterface } from 'src/blocks/_shared/models/prompt.interface';
+import { PromptDialogComponent } from './components/prompt-dialog/prompt-dialog.component';
 
 @Component({
     selector: 'app-root',
@@ -91,7 +93,7 @@ export class AppComponent implements OnInit, AfterViewInit {
             toolbox.clearSelection();
 
             // (Blockly.alert as any) = (message, opt) => { this.openAboutDialog(); };
-            // (Blockly.prompt as any) = (message, opt) => { this.openAboutDialog(); };
+            (Blockly.prompt as any) = (message, defaultValue, callback) => { this.openPromptDialog({message, defaultValue, callback}); };
             // (Blockly.confirm as any) = (message, opt) => { this.openAboutDialog(); };
 
             svgResize(this.workspace);
@@ -355,6 +357,19 @@ ${code}
 
         dialogRef.afterClosed().subscribe(result => {
             const d = result;
+        });
+    }
+
+    private openPromptDialog(prompt: PromptInterface): void {
+        const dialogRef = this.dialog.open(PromptDialogComponent, {
+            width: '500px',
+            height: '200px',
+            autoFocus: false,
+            data: prompt
+        });
+
+        dialogRef.afterClosed().subscribe(result => {
+            prompt.callback(null);
         });
     }
 }
