@@ -5,6 +5,7 @@ import { PromptInterface } from '../../../blocks/_shared/models/prompt.interface
 import { ResourcesInterface, ResourcesService } from '../../../resources';
 import { constantsModel } from '../../models/constants.model';
 
+// based on https://blockly-demo.appspot.com/static/demos/custom-dialogs/custom-dialog.js
 @Component({
     selector: 'app-prompt-dialog',
     styleUrls: ['./prompt-dialog.component.scss'],
