@@ -284,56 +284,40 @@ ${code}
     }
 
     private openAlertDialog(error: { title: string, details: string, message: string }): void {
-        const dialogRef = this.dialog.open(AlertDialogComponent, {
+        this.dialog.open(AlertDialogComponent, {
             width: '600px',
             height: '300px',
             autoFocus: false,
             data: error,
         });
-
-        dialogRef.afterClosed().subscribe(result => {
-            const d = result;
-        });
     }
 
     private openExamplesDialog(): void {
-        const dialogRef = this.dialog.open(ExamplesDialogComponent, {
+        this.dialog.open(ExamplesDialogComponent, {
             width: '600px',
             height: '700px',
             autoFocus: false
-        });
-
-        dialogRef.afterClosed().subscribe(result => {
-            const d = result;
         });
     }
 
     private openAboutDialog(): void {
-        const dialogRef = this.dialog.open(AboutDialogComponent, {
+        this.dialog.open(AboutDialogComponent, {
             width: '600px',
             height: '500px',
             autoFocus: false
         });
-
-        dialogRef.afterClosed().subscribe(result => {
-            const d = result;
-        });
     }
 
     private openSponsorsDialog(): void {
-        const dialogRef = this.dialog.open(SponsorsDialogComponent, {
+        this.dialog.open(SponsorsDialogComponent, {
             width: '700px',
             height: '700px',
             autoFocus: false
         });
-
-        dialogRef.afterClosed().subscribe(result => {
-            const d = result;
-        });
     }
 
     private openSettingsDialog(): void {
-        const dialogRef = this.dialog.open(SettingsDialogComponent, {
+        this.dialog.open(SettingsDialogComponent, {
             width: '500px',
             height: '500px',
             autoFocus: false,
@@ -341,22 +325,14 @@ ${code}
                 workspace: this.workspace
             }
         });
-
-        dialogRef.afterClosed().subscribe(result => {
-            const d = result;
-        });
     }
 
     private openPrintSaveDialog(prompt: PrintSaveInterface): void {
-        const dialogRef = this.dialog.open(PrintSaveDialogComponent, {
+        this.dialog.open(PrintSaveDialogComponent, {
             width: '500px',
             height: '450px',
             autoFocus: false,
             data: prompt
-        });
-
-        dialogRef.afterClosed().subscribe(result => {
-            const d = result;
         });
     }
 
