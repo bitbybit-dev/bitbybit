@@ -3,7 +3,7 @@ import { BlockValidations } from './block-validations';
 import { ValidationInterface } from './validation.interface';
 
 export function makeRequiredValidationModelForInputs(resources: ResourcesInterface, inputs: any, propertyNames: string[]) {
-    return Object.keys(inputs).map((key, index) => ({
+    return Object.keys(inputs).filter(key => propertyNames.includes(key)).map((key, index) => ({
         entity: inputs[key],
         validations: [
             getRequired(resources, propertyNames[index])

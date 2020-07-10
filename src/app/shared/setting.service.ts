@@ -94,6 +94,7 @@ export class SettingsService {
             resources.block_toolbox_category_create,
             resources.block_toolbox_category_apply,
             resources.block_toolbox_category_io,
+            resources.block_toolbox_category_async,
             resources.block_toolbox_category_loop,
             resources.block_toolbox_category_logic,
             resources.block_toolbox_category_math,

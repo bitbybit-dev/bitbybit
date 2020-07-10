@@ -1,3 +1,4 @@
+import { asyncCategory } from './categories/async/async-category';
 import { defaultBlocklyCategories } from './categories/blockly/default-categories';
 import { transformsCategory } from './categories/core/transforms-category';
 import { typesCategory } from './categories/core/types-category';
@@ -29,6 +30,7 @@ export function toolboxDefinition() {
     ${intersectCategory()}
     <sep></sep>
     ${ioCategory()}
+    ${asyncCategory()}
     <sep></sep>
     ${defaultBlocklyCategories()}
 </xml>

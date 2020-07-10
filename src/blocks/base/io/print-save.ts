@@ -7,19 +7,19 @@ import { getRequired, makeRequiredValidationModelForInputs, BitByBitBlockHandler
 export function createPrintSaveBlock() {
 
     const resources = ResourcesService.getResources();
-    const blockSelector = 'base_text_print_save';
+    const blockSelector = 'base_io_print_save';
 
     Blocks[blockSelector] = {
         init() {
             this.appendValueInput('Text')
                 .setCheck('String')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_base_text_print_save_input_text);
+                .appendField(resources.block_base_io_print_save_input_text);
             this.setColour('#fff');
             this.setOutput(false);
             this.setPreviousStatement(true, null);
             this.setNextStatement(true, null);
-            this.setTooltip(resources.block_base_text_print_save_description);
+            this.setTooltip(resources.block_base_io_print_save_description);
         }
     };
 

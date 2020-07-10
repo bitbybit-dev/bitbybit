@@ -1,6 +1,7 @@
-import { Block, ALIGN_LEFT, FieldImage, FieldLabel } from 'blockly';
+import { ALIGN_LEFT, Block, FieldImage, FieldLabel } from 'blockly';
+import { ResourcesInterface } from 'src/resources';
 
-export function createDummyAsyncLoadingIndicator(context: Block) {
+export function createDummyAsyncLoadingIndicator(context: Block, resources: ResourcesInterface) {
     context.appendDummyInput('Status')
                 .setAlign(ALIGN_LEFT)
                 .appendField(new FieldImage(
@@ -10,7 +11,7 @@ export function createDummyAsyncLoadingIndicator(context: Block) {
                     ''),
                     'LoadingIndicator'
                 )
-                .appendField(new FieldLabel('Computing...', 'statusClass'))
+                .appendField(new FieldLabel(resources.block_computing, 'statusClass'))
                 .setVisible(false);
     return context;
 }

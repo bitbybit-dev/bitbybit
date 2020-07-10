@@ -71,6 +71,7 @@ export interface ResourcesInterface {
     block_toolbox_category_geom_point: string;
     block_toolbox_category_geom_line: string;
     block_toolbox_category_io: string;
+    block_toolbox_category_async: string;
     block_toolbox_category_geom_polyline: string;
     block_toolbox_category_geom_curve: string;
     block_toolbox_category_geom_circle: string;
@@ -93,6 +94,7 @@ export interface ResourcesInterface {
     block_toolbox_category_text: string;
     block_toolbox_category_variables: string;
     block_toolbox_category_functions: string;
+    block_computing: string;
     block_point: string;
     block_intersection: string;
     block_intersections: string;
@@ -121,6 +123,7 @@ export interface ResourcesInterface {
     block_target_interval: string;
     block_curves: string;
     block_text: string;
+    block_promise: string;
     block_parameter: string;
     block_parameter_u: string;
     block_parameter_v: string;
@@ -675,8 +678,20 @@ export interface ResourcesInterface {
     block_base_math_remap_number_input_source_interval: string;
     block_base_math_remap_number_input_target_interval: string;
     block_base_math_remap_number_description: string;
-    block_base_text_print_save_input_text: string;
-    block_base_text_print_save_description: string;
-    block_base_text_save_input_text: string;
-    block_base_text_save_description: string;
+    block_base_io_print_save_input_text: string;
+    block_base_io_print_save_description: string;
+    block_base_io_save_input_text: string;
+    block_base_io_save_description: string;
+    block_base_io_import_text_file_input_text_file: string;
+    block_base_io_import_text_file_description: string;
+    block_base_promises_catch_input_promise_one: string;
+    block_base_promises_catch_var_error: string;
+    block_base_promises_catch_input_promise_two: string;
+    block_base_promises_catch_statement_catch: string;
+    block_base_promises_catch_description: string;
+    block_base_promises_then_input_promise_one: string;
+    block_base_promises_then_var_result: string;
+    block_base_promises_then_input_promise_two: string;
+    block_base_promises_then_statement_catch: string;
+    block_base_promises_then_description: string;
 }

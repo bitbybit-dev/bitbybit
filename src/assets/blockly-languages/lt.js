@@ -166,10 +166,10 @@ export function activateLanguage() {
     Blockly.Msg["LISTS_SPLIT_TOOLTIP_JOIN"] = "Sujungti rinkinį tekstų į vieną tekstą, sujungtą dalikliu."; 
     Blockly.Msg["LISTS_SPLIT_TOOLTIP_SPLIT"] = "Padalinti tekstą į rinkinį tekstų, dalinant dalikliu.";
     Blockly.Msg["LISTS_SPLIT_WITH_DELIMITER"] = "su dalikliu";
-    Blockly.Msg["LOGIC_BOOLEAN_FALSE"] = "klaidinga";
+    Blockly.Msg["LOGIC_BOOLEAN_FALSE"] = "ne";
     Blockly.Msg["LOGIC_BOOLEAN_HELPURL"] = "https://github.com/google/blockly/wiki/Logic#values";  // untranslated
     Blockly.Msg["LOGIC_BOOLEAN_TOOLTIP"] = "Reikšmė gali būti \"teisinga\"/\"Taip\" arba \"klaidinga\"/\"Ne\".";
-    Blockly.Msg["LOGIC_BOOLEAN_TRUE"] = "tiesa";
+    Blockly.Msg["LOGIC_BOOLEAN_TRUE"] = "taip";
     Blockly.Msg["LOGIC_COMPARE_HELPURL"] = "https://en.wikipedia.org/wiki/Inequality_(mathematics)";
     Blockly.Msg["LOGIC_COMPARE_TOOLTIP_EQ"] = "Tenkinama, jei abu reiškiniai lygūs.";
     Blockly.Msg["LOGIC_COMPARE_TOOLTIP_GT"] = "Grįžti tiesa, jei pirmoji įvestis didesnė nei antroji įvestis.";
