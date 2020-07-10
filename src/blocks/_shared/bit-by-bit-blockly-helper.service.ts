@@ -1,10 +1,11 @@
+import { HttpClient } from '@angular/common/http';
 import { Matrix, Vector3 } from '@babylonjs/core';
 import { PrintSaveInterface } from './models/print-save.model';
 
 export class BitByBitBlocklyHelperService {
 
     static promptPrintSave: (prompt: PrintSaveInterface) => void;
-    static sessionCache: { key: string, value: any }[] = [];
+    static httpClient: HttpClient;
 
     static transformPointsByMatrix(points: [], transformMatrix: Matrix) {
         const transformedPoints = [];

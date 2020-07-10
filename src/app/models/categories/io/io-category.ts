@@ -5,11 +5,6 @@ export function ioCategory() {
     return `
     <category name="${resources.block_toolbox_category_io}" categorystyle="geometry_category">
         <block type="base_io_import_text_file">
-            <value name="Cache">
-                <shadow type="logic_boolean">
-                    <field name="BOOL">TRUE</field>
-                </shadow>
-            </value>
         </block>
         <block type="base_io_print_save">
             <value name="Text">
@@ -24,6 +19,16 @@ export function ioCategory() {
                     <field name="TEXT">abc</field>
                 </shadow>
             </value>
+        </block>
+        <block type="base_io_http_get">
+        </block>
+        <block type="base_io_http_post">
+        </block>
+        <block type="base_io_http_put">
+        </block>
+        <block type="base_io_http_patch">
+        </block>
+        <block type="base_io_http_delete">
         </block>
     </category>
 `;

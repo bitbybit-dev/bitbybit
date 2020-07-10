@@ -26,6 +26,7 @@ import { SettingsDialogComponent } from './components/settings-dialog/settings-d
 import { SponsorsDialogComponent } from './components/sponsors-dialog/sponsors-dialog.component';
 import { ExamplesService } from './examples/example-service';
 import { SettingsService } from './shared/setting.service';
+import { HttpClientModule } from '@angular/common/http';
 
 @NgModule({
     declarations: [
@@ -42,6 +43,7 @@ import { SettingsService } from './shared/setting.service';
         BrowserModule,
         ReactiveFormsModule,
         FormsModule,
+        HttpClientModule,
         AppRoutingModule,
         MatTabsModule,
         BrowserAnimationsModule,

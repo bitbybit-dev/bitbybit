@@ -124,6 +124,8 @@ export interface ResourcesInterface {
     block_curves: string;
     block_text: string;
     block_promise: string;
+    block_url: string;
+    block_body: string;
     block_parameter: string;
     block_parameter_u: string;
     block_parameter_v: string;
@@ -694,4 +696,22 @@ export interface ResourcesInterface {
     block_base_promises_then_input_promise_two: string;
     block_base_promises_then_statement_catch: string;
     block_base_promises_then_description: string;
+    block_base_io_http_get_input_url: string;
+    block_base_io_http_get_input_options: string;
+    block_base_io_http_get_description: string;
+    block_base_io_http_put_input_url: string;
+    block_base_io_http_put_input_body: string;
+    block_base_io_http_put_input_options: string;
+    block_base_io_http_put_description: string;
+    block_base_io_http_post_input_url: string;
+    block_base_io_http_post_input_options: string;
+    block_base_io_http_post_input_body: string;
+    block_base_io_http_post_description: string;
+    block_base_io_http_patch_input_url: string;
+    block_base_io_http_patch_input_options: string;
+    block_base_io_http_patch_input_body: string;
+    block_base_io_http_patch_description: string;
+    block_base_io_http_delete_input_url: string;
+    block_base_io_http_delete_input_options: string;
+    block_base_io_http_delete_description: string;
 }

@@ -1,8 +1,8 @@
 import { ALIGN_RIGHT, Block, Blocks, FieldImage } from 'blockly';
 import * as JavaScript from 'blockly/javascript';
-import { ResourcesInterface, ResourcesService } from '../../../resources';
+import { ResourcesService } from '../../../resources';
 import { createStandardContextIIFE } from '../../_shared';
-import { getRequired, makeRequiredValidationModelForInputs, BitByBitBlockHandlerService, ValidationEntityInterface } from '../../validations';
+import { createDummyPromiseIndicator } from '../../_shared/dummy-promise-indicator';
 
 export function createImportTextFileBlock() {
 
@@ -13,11 +13,7 @@ export function createImportTextFileBlock() {
         init() {
             this.appendDummyInput('TextFileInput')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(new FieldImage(
-                    'assets/blocks/async.svg',
-                    16,
-                    16,
-                    ''),
+                .appendField(createDummyPromiseIndicator(),
                     'LoadingIndicator'
                 )
                 .appendField(resources.block_base_io_import_text_file_input_text_file);

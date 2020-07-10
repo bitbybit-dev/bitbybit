@@ -1,12 +1,14 @@
 import { Block } from 'blockly';
 
 export function createStandardContextIIFE(block: Block, componentName: string, inputs: any, returns: boolean, body: string) {
+    const filteredKeys = Object.keys(inputs).filter(key => inputs[key] !== '' );
+
     return `
 (() => {
     /* Component: "${componentName}" */
     /* Assigning Inputs */
     const inputs = {};
-    ${Object.keys(inputs).filter(key => inputs[key] !== undefined).map(key => key.includes('statement_') ? assignStatements(key, inputs) : assignInputs(key, inputs)).join(`;
+    ${filteredKeys.map(key => key.includes('statement_') ? assignStatements(key, inputs) : assignInputs(key, inputs)).join(`;
     `)};
     BitByBitBlockHandlerService.handleBlock(blocklyWorkspace, '${block.id}', inputs)
 

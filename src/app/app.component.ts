@@ -1,3 +1,4 @@
+import { HttpClient } from '@angular/common/http';
 import { AfterViewInit, ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -9,7 +10,11 @@ import { Mesh } from '@babylonjs/core/Meshes/mesh';
 import '@babylonjs/core/Meshes/meshBuilder';
 import { Scene } from '@babylonjs/core/scene';
 import { inject, svgResize, Theme, WorkspaceSvg, Xml } from 'blockly';
+import * as Blockly from 'blockly';
 import * as JavaScript from 'blockly/javascript';
+import { BitByBitBlocklyHelperService } from 'src/blocks/_shared/bit-by-bit-blockly-helper.service';
+import { PrintSaveInterface } from 'src/blocks/_shared/models/print-save.model';
+import { PromptInterface } from 'src/blocks/_shared/models/prompt.interface';
 import { BitByBitBlockHandlerService } from 'src/blocks/validations';
 import { prepareBabylonForBlockly } from '../babylon-to-blockly';
 import { assembleBlocks } from '../blocks/assemble-blocks';
@@ -17,6 +22,8 @@ import { ResourcesInterface, ResourcesService } from '../resources';
 import { AboutDialogComponent } from './components/about-dialog/about-dialog.component';
 import { AlertDialogComponent } from './components/alert-dialog/alert-dialog.component';
 import { ExamplesDialogComponent } from './components/examples-dialog/examples-dialog.component';
+import { PrintSaveDialogComponent } from './components/print-save-dialog/print-save-dialog.component';
+import { PromptDialogComponent } from './components/prompt-dialog/prompt-dialog.component';
 import { SettingsDialogComponent } from './components/settings-dialog/settings-dialog.component';
 import { SponsorsDialogComponent } from './components/sponsors-dialog/sponsors-dialog.component';
 import { ExamplesService } from './examples/example-service';
@@ -24,12 +31,6 @@ import { constantsModel } from './models/constants.model';
 import { themeStyle } from './models/theme-styles.model';
 import { toolboxDefinition } from './models/toolbox-definition';
 import { SettingsService } from './shared/setting.service';
-import * as Blockly from 'blockly';
-import { BitByBitBlocklyHelperService } from 'src/blocks/_shared/bit-by-bit-blockly-helper.service';
-import { PrintSaveInterface } from 'src/blocks/_shared/models/print-save.model';
-import { PrintSaveDialogComponent } from './components/print-save-dialog/print-save-dialog.component';
-import { PromptInterface } from 'src/blocks/_shared/models/prompt.interface';
-import { PromptDialogComponent } from './components/prompt-dialog/prompt-dialog.component';
 
 @Component({
     selector: 'app-root',
@@ -56,6 +57,7 @@ export class AppComponent implements OnInit, AfterViewInit {
         public readonly examplesService: ExamplesService,
         private readonly settingsService: SettingsService,
         private readonly changeDetectorService: ChangeDetectorRef,
+        private readonly httpClient: HttpClient
     ) {
     }
 
@@ -126,6 +128,8 @@ export class AppComponent implements OnInit, AfterViewInit {
             });
 
             BitByBitBlocklyHelperService.promptPrintSave = (prompt: PrintSaveInterface) => this.openPrintSaveDialog(prompt);
+            BitByBitBlocklyHelperService.httpClient = this.httpClient;
+
             this.settingsService.initSettings(this.workspace, this.changeDetectorService).subscribe(s => {
 
                 this.route.queryParamMap.subscribe(param => {
