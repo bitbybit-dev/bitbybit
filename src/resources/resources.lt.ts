@@ -716,4 +716,8 @@ app_menu_more_community: 'Bendruomenė',
     block_base_io_http_delete_input_url: 'Http ištrynimo (delete) url nuoroda',
     block_base_io_http_delete_input_options: 'Nustatymai',
     block_base_io_http_delete_description: 'Http ištrynimas (delete) su nustatymais.',
+    block_base_io_http_options_input_headers: 'Http nustatymai su antraštėm (headers)',
+    block_base_io_http_options_input_params: 'Parametrais',
+    block_base_io_http_options_input_with_credentials: 'Naudoti įgaliojimus',
+    block_base_io_http_options_description: 'Sukuria Http nustatymus su antraštėmis, parametrais ir įgaliojimais. Visos įvestys yra neprivalomos, bet jei egzistuos ims viršenybę prieš standartines vertes.'
 });

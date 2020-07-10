@@ -714,4 +714,8 @@ export interface ResourcesInterface {
     block_base_io_http_delete_input_url: string;
     block_base_io_http_delete_input_options: string;
     block_base_io_http_delete_description: string;
+    block_base_io_http_options_input_headers: string;
+    block_base_io_http_options_input_params: string;
+    block_base_io_http_options_input_with_credentials: string;
+    block_base_io_http_options_description: string;
 }

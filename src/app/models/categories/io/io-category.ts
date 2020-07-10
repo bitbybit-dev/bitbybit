@@ -30,6 +30,8 @@ export function ioCategory() {
         </block>
         <block type="base_io_http_delete">
         </block>
+        <block type="base_io_http_options">
+        </block>
     </category>
 `;
 }

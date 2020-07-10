@@ -716,4 +716,8 @@ export const resourcesEn: ResourcesInterface = Object.freeze({
     block_base_io_http_delete_input_url: 'Http delete url',
     block_base_io_http_delete_input_options: 'Options',
     block_base_io_http_delete_description: 'Http delete with options.',
+    block_base_io_http_options_input_headers: 'Http options with headers',
+    block_base_io_http_options_input_params: 'Params',
+    block_base_io_http_options_input_with_credentials: 'With credentials',
+    block_base_io_http_options_description: 'Constructs http options. All inputs are optional, but if present will overrule the defaults.'
 });
