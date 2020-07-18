@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { AfterViewInit, ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -128,7 +128,11 @@ export class AppComponent implements OnInit, AfterViewInit {
             });
 
             BitByBitBlocklyHelperService.promptPrintSave = (prompt: PrintSaveInterface) => this.openPrintSaveDialog(prompt);
-            BitByBitBlocklyHelperService.httpClient = this.httpClient;
+            BitByBitBlocklyHelperService.angular = {
+                httpClient: this.httpClient,
+                HttpHeaders,
+                HttpParams
+            };
 
             this.settingsService.initSettings(this.workspace, this.changeDetectorService).subscribe(s => {
 

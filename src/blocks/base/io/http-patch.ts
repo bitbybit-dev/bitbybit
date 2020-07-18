@@ -57,7 +57,7 @@ export function createHttpPatchBlock() {
         (block as any).validationModel = runtimeValidationModel;
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
             `
-            return BitByBitBlocklyHelperService.httpClient.patch(inputs.url, inputs.body, inputs.options).toPromise();
+            return BitByBitBlocklyHelperService.angular.httpClient.patch(inputs.url, inputs.body, inputs.options).toPromise();
 `
         );
         return [code, JavaScript.ORDER_ATOMIC];

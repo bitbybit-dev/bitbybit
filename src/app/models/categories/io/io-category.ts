@@ -32,6 +32,10 @@ export function ioCategory() {
         </block>
         <block type="base_io_http_options">
         </block>
+        <block type="base_io_http_header">
+        </block>
+        <block type="base_io_http_param">
+        </block>
     </category>
 `;
 }

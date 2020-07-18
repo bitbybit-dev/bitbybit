@@ -29,18 +29,35 @@ export function createHttpOptionsBlock() {
 
     JavaScript[blockSelector] = (block: Block) => {
         const inputs = {
-            headers: JavaScript.valueToCode(block, 'Url', JavaScript.ORDER_ATOMIC),
-            params: JavaScript.valueToCode(block, 'Body', JavaScript.ORDER_ATOMIC),
-            withCredentials: JavaScript.valueToCode(block, 'HttpOptions', JavaScript.ORDER_ATOMIC),
+            headers: JavaScript.valueToCode(block, 'Headers', JavaScript.ORDER_ATOMIC),
+            params: JavaScript.valueToCode(block, 'Params', JavaScript.ORDER_ATOMIC),
+            withCredentials: JavaScript.valueToCode(block, 'WithCredentials', JavaScript.ORDER_ATOMIC),
         };
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `
-return {
-    ${inputs.headers ? 'headers: inputs.headers,' : ''}
-    ${inputs.params ? 'params: inputs.params,' : ''}
+`
+let headers;
+if(inputs.headers && inputs.headers.length > 0){
+    headers = new BitByBitBlocklyHelperService.angular.HttpHeaders();
+    console.log(inputs.headers);
+    inputs.headers.forEach(header => {
+        headers = headers.append(header.name, header.value);
+    });
+}
+let params;
+if(inputs.params && inputs.params.length > 0){
+    params = new BitByBitBlocklyHelperService.angular.HttpParams();
+    console.log(inputs.params);
+    inputs.params.forEach(param => {
+        params = params.append(param.param, param.value);
+    });
+}
+const options = {
+    ${inputs.headers ? 'headers,' : ''}
+    ${inputs.params ? 'params,' : ''}
     ${inputs.withCredentials ? 'withCredentials: inputs.withCredentials,' : ''}
 };
+return options;
 `
         );
         return [code, JavaScript.ORDER_ATOMIC];

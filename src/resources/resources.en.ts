@@ -719,5 +719,11 @@ export const resourcesEn: ResourcesInterface = Object.freeze({
     block_base_io_http_options_input_headers: 'Http options with headers',
     block_base_io_http_options_input_params: 'Params',
     block_base_io_http_options_input_with_credentials: 'With credentials',
-    block_base_io_http_options_description: 'Constructs http options. All inputs are optional, but if present will overrule the defaults.'
+    block_base_io_http_options_description: 'Constructs http options. All inputs are optional, but if present will overrule the defaults.',
+    block_base_io_http_header_input_name: 'Http header name',
+    block_base_io_http_header_input_value: 'Value',
+    block_base_io_http_header_description: 'Creates Http header with name and value that can be added to a list that is used in http options.',
+    block_base_io_http_param_input_name: 'Http param name',
+    block_base_io_http_param_input_value: 'Value',
+    block_base_io_http_param_description: 'Creates Http parameter with name and value that can be added to a list that is used in http options.',
 });

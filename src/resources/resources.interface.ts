@@ -718,4 +718,10 @@ export interface ResourcesInterface {
     block_base_io_http_options_input_params: string;
     block_base_io_http_options_input_with_credentials: string;
     block_base_io_http_options_description: string;
+    block_base_io_http_header_input_name: string;
+    block_base_io_http_header_input_value: string;
+    block_base_io_http_header_description: string;
+    block_base_io_http_param_input_name: string;
+    block_base_io_http_param_input_value: string;
+    block_base_io_http_param_description: string;
 }

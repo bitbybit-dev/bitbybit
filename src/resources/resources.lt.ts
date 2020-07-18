@@ -719,5 +719,11 @@ app_menu_more_community: 'Bendruomenė',
     block_base_io_http_options_input_headers: 'Http nustatymai su antraštėm (headers)',
     block_base_io_http_options_input_params: 'Parametrais',
     block_base_io_http_options_input_with_credentials: 'Naudoti įgaliojimus',
-    block_base_io_http_options_description: 'Sukuria Http nustatymus su antraštėmis, parametrais ir įgaliojimais. Visos įvestys yra neprivalomos, bet jei egzistuos ims viršenybę prieš standartines vertes.'
+    block_base_io_http_options_description: 'Sukuria Http nustatymus su antraštėmis, parametrais ir įgaliojimais. Visos įvestys yra neprivalomos, bet jei egzistuos ims viršenybę prieš standartines vertes.',
+    block_base_io_http_header_input_name: 'Http antraštės (header) vardas',
+    block_base_io_http_header_input_value: 'Vertė',
+    block_base_io_http_header_description: 'Sukuria Http antraštę su vardu ir verte, kuri gali būti prijungta prie rinkinio naudojamo Http nustatymų komponente.',
+    block_base_io_http_param_input_name: 'Http parametro vardas',
+    block_base_io_http_param_input_value: 'Vertė',
+    block_base_io_http_param_description: 'Sukuria Http parametrą su vardu ir verte, kuri gali būti prijungta prie rinkinio naudojamo Http nustatymų komponente.',
 });

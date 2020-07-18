@@ -5,7 +5,7 @@ import { PrintSaveInterface } from './models/print-save.model';
 export class BitByBitBlocklyHelperService {
 
     static promptPrintSave: (prompt: PrintSaveInterface) => void;
-    static httpClient: HttpClient;
+    static angular: { httpClient: HttpClient, HttpHeaders: any, HttpParams: any };
 
     static transformPointsByMatrix(points: [], transformMatrix: Matrix) {
         const transformedPoints = [];
