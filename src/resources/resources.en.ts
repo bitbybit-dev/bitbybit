@@ -726,4 +726,7 @@ export const resourcesEn: ResourcesInterface = Object.freeze({
     block_base_io_http_param_input_name: 'Http param name',
     block_base_io_http_param_input_value: 'Value',
     block_base_io_http_param_description: 'Creates Http parameter with name and value that can be added to a list that is used in http options.',
+    block_base_io_json_path_query_input_json: 'Parse JSON',
+    block_base_io_json_path_query_input_query: 'With query',
+    block_base_io_json_path_query_description: 'Parses JSON object with json path query',
 });

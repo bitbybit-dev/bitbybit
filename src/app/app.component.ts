@@ -12,6 +12,7 @@ import { Scene } from '@babylonjs/core/scene';
 import { inject, svgResize, Theme, WorkspaceSvg, Xml } from 'blockly';
 import * as Blockly from 'blockly';
 import * as JavaScript from 'blockly/javascript';
+import * as jsonpath from 'jsonpath';
 import { BitByBitBlocklyHelperService } from 'src/blocks/_shared/bit-by-bit-blockly-helper.service';
 import { PrintSaveInterface } from 'src/blocks/_shared/models/print-save.model';
 import { PromptInterface } from 'src/blocks/_shared/models/prompt.interface';
@@ -133,6 +134,7 @@ export class AppComponent implements OnInit, AfterViewInit {
                 HttpHeaders,
                 HttpParams
             };
+            BitByBitBlocklyHelperService.jsonpath = jsonpath;
 
             this.settingsService.initSettings(this.workspace, this.changeDetectorService).subscribe(s => {
 

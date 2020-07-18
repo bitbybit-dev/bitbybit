@@ -724,4 +724,7 @@ export interface ResourcesInterface {
     block_base_io_http_param_input_name: string;
     block_base_io_http_param_input_value: string;
     block_base_io_http_param_description: string;
+    block_base_io_json_path_query_input_json: string;
+    block_base_io_json_path_query_input_query: string;
+    block_base_io_json_path_query_description: string;
 }

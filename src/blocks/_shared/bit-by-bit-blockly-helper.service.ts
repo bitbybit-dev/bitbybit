@@ -6,6 +6,7 @@ export class BitByBitBlocklyHelperService {
 
     static promptPrintSave: (prompt: PrintSaveInterface) => void;
     static angular: { httpClient: HttpClient, HttpHeaders: any, HttpParams: any };
+    static jsonpath: any;
 
     static transformPointsByMatrix(points: [], transformMatrix: Matrix) {
         const transformedPoints = [];

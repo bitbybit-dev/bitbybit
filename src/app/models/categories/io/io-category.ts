@@ -36,6 +36,8 @@ export function ioCategory() {
         </block>
         <block type="base_io_http_param">
         </block>
+        <block type="base_io_json_path_query">
+        </block>
     </category>
 `;
 }
