@@ -730,7 +730,8 @@ export const resourcesEn: ResourcesInterface = Object.freeze({
     block_base_io_json_path_query_input_json: 'Parse JSON',
     block_base_io_json_path_query_input_query: 'With query',
     block_base_io_json_path_query_description: 'Parses JSON object with json path query',
-    block_base_async_execute_later_handler_input_timeout: 'Execute code after delay',
+    block_base_async_execute_later_handler_input_timeout: 'Execute code after',
+    block_base_async_execute_later_handler_input_unit: 'second(s)',
     block_base_async_execute_later_handler_statement_then: 'Then',
     block_base_async_execute_later_handler_description: 'Executes a block of code after a given time given in seconds passes.',
 });

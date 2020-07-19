@@ -731,6 +731,7 @@ app_menu_more_community: 'Bendruomenė',
     block_base_io_json_path_query_input_query: 'Su užklausa',
     block_base_io_json_path_query_description: 'Gauna specifinę JSON objekto dalį pateikus "JSON Path" užklausą.',
     block_base_async_execute_later_handler_input_timeout: 'Paleisti kodą po',
+    block_base_async_execute_later_handler_input_unit: 'sekundžių',
     block_base_async_execute_later_handler_statement_then: 'Tada',
     block_base_async_execute_later_handler_description: 'Paleidžia kodą praėjus nurodytam sekundžių skaičiui.',
 });

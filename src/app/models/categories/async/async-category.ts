@@ -11,6 +11,11 @@ export function asyncCategory() {
         <block type="base_async_catch">
         </block>
         <block type="base_async_execute_later">
+            <value name="Timeout">
+                <shadow type="math_number">
+                    <field name="NUM">2</field>
+                </shadow>
+            </value>
         </block>
     </category>
 `;

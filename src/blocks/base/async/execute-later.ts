@@ -1,4 +1,4 @@
-import { Block, Blocks, FieldVariable, VARIABLE_CATEGORY_NAME } from 'blockly';
+import { Block, Blocks, FieldVariable, VARIABLE_CATEGORY_NAME, ALIGN_RIGHT } from 'blockly';
 import * as JavaScript from 'blockly/javascript';
 import { ResourcesInterface, ResourcesService } from '../../../resources';
 import { createDummyAsyncLoadingIndicator, createStandardContextIIFE } from '../../_shared';
@@ -14,11 +14,15 @@ export function createExecuteLaterBlock() {
             this.appendValueInput('Timeout')
                 .setCheck('Number')
                 .appendField(resources.block_base_async_execute_later_handler_input_timeout);
+            this.appendDummyInput('Unit')
+                .setAlign(ALIGN_RIGHT)
+                .appendField(resources.block_base_async_execute_later_handler_input_unit.toLowerCase());
             this.appendStatementInput('Then')
                 .setCheck(null)
                 .appendField(resources.block_base_async_execute_later_handler_statement_then.toLowerCase());
             createDummyAsyncLoadingIndicator(this, resources);
             this.setColour('#fff');
+            this.setInputsInline(true);
             this.setOutput(false);
             this.setPreviousStatement(true, null);
             this.setNextStatement(true, null);
