@@ -1,44 +1,41 @@
-import { Block, Blocks, FieldVariable, Variables, VARIABLE_CATEGORY_NAME } from 'blockly';
+import { Block, Blocks, FieldVariable, VARIABLE_CATEGORY_NAME } from 'blockly';
 import * as JavaScript from 'blockly/javascript';
 import { ResourcesInterface, ResourcesService } from '../../../resources';
 import { createDummyAsyncLoadingIndicator, createStandardContextIIFE } from '../../_shared';
-import { getRequired, makeRequiredValidationModelForInputs, BitByBitBlockHandlerService, ValidationEntityInterface } from '../../validations';
+import { getRequired, BitByBitBlockHandlerService, ValidationEntityInterface } from '../../validations';
 
-export function createCatchBlock() {
+export function createExecuteLaterBlock() {
 
     const resources = ResourcesService.getResources();
-    const blockSelector = 'base_async_catch';
+    const blockSelector = 'base_async_execute_later';
 
     Blocks[blockSelector] = {
         init() {
-            this.appendValueInput('Promise')
-                    .setCheck(null)
-                    .appendField(resources.block_base_async_catch_input_promise_one)
-                    .appendField(new FieldVariable(resources.block_base_async_catch_var_error), 'Error')
-                    .appendField(resources.block_base_async_catch_input_promise_two);
-            this.appendStatementInput('Catch')
-                    .setCheck(null)
-                    .appendField(resources.block_base_async_catch_statement_catch.toLowerCase());
+            this.appendValueInput('Timeout')
+                .setCheck('Number')
+                .appendField(resources.block_base_async_execute_later_handler_input_timeout);
+            this.appendStatementInput('Then')
+                .setCheck(null)
+                .appendField(resources.block_base_async_execute_later_handler_statement_then.toLowerCase());
             createDummyAsyncLoadingIndicator(this, resources);
             this.setColour('#fff');
             this.setOutput(false);
             this.setPreviousStatement(true, null);
             this.setNextStatement(true, null);
-            this.setTooltip(resources.block_base_async_catch_description);
+            this.setTooltip(resources.block_base_async_execute_later_handler_description);
         }
     };
 
     JavaScript[blockSelector] = (block: Block) => {
         const inputs = {
-            error: JavaScript.variableDB_.getName(block.getFieldValue('Error'), VARIABLE_CATEGORY_NAME),
-            promise: JavaScript.valueToCode(block, 'Promise', JavaScript.ORDER_ATOMIC),
-            statement_catch: JavaScript.statementToCode(block, 'Catch'),
+            timeout: JavaScript.valueToCode(block, 'Timeout', JavaScript.ORDER_ATOMIC),
+            statement_then: JavaScript.statementToCode(block, 'Then'),
         };
         // this is first set of validations to check that all inputs are non empty strings
         BitByBitBlockHandlerService.validate(block, block.workspace, [{
-            entity: inputs.promise,
+            entity: inputs.timeout,
             validations: [
-                getRequired(resources, resources.block_promise)
+                getRequired(resources, resources.block_timeout)
             ]
         }]);
 
@@ -48,11 +45,14 @@ export function createCatchBlock() {
         return createStandardContextIIFE(block, blockSelector, inputs, false,
             `
             const block = blocklyWorkspace.getBlockById('${block.id}');
-            inputs.promise.catch((err) => {
-                inputs.error = err;
-                ${JavaScript.variableDB_.getName(block.getFieldValue('Error'), VARIABLE_CATEGORY_NAME)} = err;
-                return inputs.statement_catch();
-            });
+            block.inputList[2].setVisible(true);
+            block.inputList[2].setAlign(-1);
+
+            setTimeout(() => {
+                block.inputList[2].setVisible(false);
+                block.inputList[2].setAlign(-1);
+                inputs.statement_then();
+            }, inputs.timeout * 1000);
 `);
     };
 }

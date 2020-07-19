@@ -19,6 +19,7 @@ export function createJsonPathQueryBlock() {
                 .appendField(resources.block_base_io_json_path_query_input_query.toLowerCase());
             this.setOutput(true, 'Any');
             this.setColour('#fff');
+            this.setHelpUrl('https://www.npmjs.com/package/jsonpath');
             this.setTooltip(resources.block_base_io_json_path_query_description);
         }
     };
@@ -30,10 +31,7 @@ export function createJsonPathQueryBlock() {
         };
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-`
-return BitByBitBlocklyHelperService.jsonpath.query(inputs.json, inputs.query);
-`
-        );
+        `return BitByBitBlocklyHelperService.jsonpath.query(inputs.json, inputs.query);`);
         return [code, JavaScript.ORDER_ATOMIC];
     };
 }

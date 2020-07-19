@@ -7,18 +7,18 @@ import { getRequired, ValidationEntityInterface, BitByBitBlockHandlerService, ma
 export function createThenChainBlock() {
 
     const resources = ResourcesService.getResources();
-    const blockSelector = 'base_promises_then_chain';
+    const blockSelector = 'base_async_then_chain';
 
     Blocks[blockSelector] = {
         init() {
             this.appendValueInput('Promise')
                 .setCheck('Promise')
-                .appendField(resources.block_base_promises_then_input_promise_one)
-                .appendField(new FieldVariable(resources.block_base_promises_then_var_result), 'Result')
-                .appendField(resources.block_base_promises_then_input_promise_two);
+                .appendField(resources.block_base_async_then_input_promise_one)
+                .appendField(new FieldVariable(resources.block_base_async_then_var_result), 'Result')
+                .appendField(resources.block_base_async_then_input_promise_two);
             this.appendStatementInput('Then')
                 .setCheck(null)
-                .appendField(resources.block_base_promises_then_statement_catch.toLowerCase());
+                .appendField(resources.block_base_async_then_statement_catch.toLowerCase());
             createDummyAsyncLoadingIndicator(this, resources);
             this.setColour('#fff');
             this.setOutput(true, 'Promise');

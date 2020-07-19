@@ -124,6 +124,7 @@ export interface ResourcesInterface {
     block_curves: string;
     block_text: string;
     block_promise: string;
+    block_timeout: string;
     block_url: string;
     block_body: string;
     block_parameter: string;
@@ -686,16 +687,16 @@ export interface ResourcesInterface {
     block_base_io_save_description: string;
     block_base_io_import_text_file_input_text_file: string;
     block_base_io_import_text_file_description: string;
-    block_base_promises_catch_input_promise_one: string;
-    block_base_promises_catch_var_error: string;
-    block_base_promises_catch_input_promise_two: string;
-    block_base_promises_catch_statement_catch: string;
-    block_base_promises_catch_description: string;
-    block_base_promises_then_input_promise_one: string;
-    block_base_promises_then_var_result: string;
-    block_base_promises_then_input_promise_two: string;
-    block_base_promises_then_statement_catch: string;
-    block_base_promises_then_description: string;
+    block_base_async_catch_input_promise_one: string;
+    block_base_async_catch_var_error: string;
+    block_base_async_catch_input_promise_two: string;
+    block_base_async_catch_statement_catch: string;
+    block_base_async_catch_description: string;
+    block_base_async_then_input_promise_one: string;
+    block_base_async_then_var_result: string;
+    block_base_async_then_input_promise_two: string;
+    block_base_async_then_statement_catch: string;
+    block_base_async_then_description: string;
     block_base_io_http_get_input_url: string;
     block_base_io_http_get_input_options: string;
     block_base_io_http_get_description: string;
@@ -727,4 +728,7 @@ export interface ResourcesInterface {
     block_base_io_json_path_query_input_json: string;
     block_base_io_json_path_query_input_query: string;
     block_base_io_json_path_query_description: string;
+    block_base_async_execute_later_handler_input_timeout: string;
+    block_base_async_execute_later_handler_statement_then: string;
+    block_base_async_execute_later_handler_description: string;
 }
