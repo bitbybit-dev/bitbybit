@@ -1,8 +1,8 @@
 import { ALIGN_RIGHT, Block, Blocks } from 'blockly';
 import * as JavaScript from 'blockly/javascript';
-import { ResourcesService } from '../../../resources';
+import { ResourcesInterface, ResourcesService } from '../../../resources';
 import { createStandardContextIIFE } from '../../_shared';
-import { makeRequiredValidationModelForInputs, BitByBitBlockHandlerService } from '../../validations';
+import { getRequired, makeRequiredValidationModelForInputs, BitByBitBlockHandlerService, ValidationEntityInterface } from '../../validations';
 
 export function createCancelIntervalBlock() {
 
@@ -33,8 +33,24 @@ export function createCancelIntervalBlock() {
             resources.block_interval_handler
         ]));
 
+        // this creates validation model to be used at runtime to evaluate real values of inputs
+        const runtimeValidationModel = makeRuntimeValidationModel(resources, Object.keys(inputs));
+        (block as any).validationModel = runtimeValidationModel;
         return createStandardContextIIFE(block, blockSelector, inputs, false,
             `clearInterval(inputs.intervalHandler);`
         );
     };
+}
+
+function makeRuntimeValidationModel(
+    resources: ResourcesInterface,
+    keys: string[]
+): ValidationEntityInterface[] {
+
+    return [{
+        entity: keys[0],
+        validations: [
+            getRequired(resources, resources.block_interval_handler),
+        ]
+    }];
 }
