@@ -141,6 +141,7 @@ export const resourcesEn: ResourcesInterface = Object.freeze({
     block_max: 'Maximum',
     block_integer: 'Integer',
     block_interval: 'Interval',
+    block_interval_handler: 'Interval Handler',
     block_scale: 'Scale',
     block_vector: 'Vector',
     block_vectors: 'Vectors',
@@ -738,4 +739,10 @@ export const resourcesEn: ResourcesInterface = Object.freeze({
     block_base_async_execute_at_interval_input_unit: 'second(s)',
     block_base_async_execute_at_interval_statement_then: 'Then',
     block_base_async_execute_at_interval_description: 'Executes code at given interval in seconds.',
+    block_base_async_execute_at_interval_with_handler_input_interval: 'Execute code every',
+    block_base_async_execute_at_interval_with_handler_input_unit: 'second(s) and return handler',
+    block_base_async_execute_at_interval_with_handler_statement_then: 'Then',
+    block_base_async_execute_at_interval_with_handler_description: 'Executes code at given interval in seconds and returns the handler, which can be used to stop the interval.',
+    block_base_async_cancel_interval_input_interval_handler: 'Cancel the interval',
+    block_base_async_cancel_interval_description: 'Cancels the interval by providing the handler.'
 });

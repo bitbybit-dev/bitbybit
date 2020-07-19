@@ -61,7 +61,7 @@ function makeRuntimeValidationModel(
 ): ValidationEntityInterface[] {
 
     return [{
-        entity: keys[1],
+        entity: keys[0],
         validations: [
             getRequired(resources, resources.block_interval),
         ]

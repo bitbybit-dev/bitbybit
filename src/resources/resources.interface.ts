@@ -152,6 +152,7 @@ export interface ResourcesInterface {
     block_ellipse: string;
     block_radius: string;
     block_interval: string;
+    block_interval_handler: string;
     block_scale: string;
     block_vector: string;
     block_knots: string;
@@ -736,4 +737,10 @@ export interface ResourcesInterface {
     block_base_async_execute_at_interval_input_unit: string;
     block_base_async_execute_at_interval_statement_then: string;
     block_base_async_execute_at_interval_description: string;
+    block_base_async_execute_at_interval_with_handler_input_interval: string;
+    block_base_async_execute_at_interval_with_handler_input_unit: string;
+    block_base_async_execute_at_interval_with_handler_statement_then: string;
+    block_base_async_execute_at_interval_with_handler_description: string;
+    block_base_async_cancel_interval_input_interval_handler: string;
+    block_base_async_cancel_interval_description: string;
 }

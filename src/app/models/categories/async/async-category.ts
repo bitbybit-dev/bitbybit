@@ -24,6 +24,15 @@ export function asyncCategory() {
                 </shadow>
             </value>
         </block>
+        <block type="base_async_execute_at_interval_with_handler">
+            <value name="Interval">
+                <shadow type="math_number">
+                    <field name="NUM">2</field>
+                </shadow>
+            </value>
+        </block>
+        <block type="base_async_cancel_interval">
+        </block>
     </category>
 `;
 }
