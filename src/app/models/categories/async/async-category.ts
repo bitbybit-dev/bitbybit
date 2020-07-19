@@ -31,7 +31,7 @@ export function asyncCategory() {
                 </shadow>
             </value>
         </block>
-        <block type="base_async_cancel_interval">
+        <block type="base_async_clear_interval">
         </block>
     </category>
 `;

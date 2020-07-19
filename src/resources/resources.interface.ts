@@ -741,6 +741,6 @@ export interface ResourcesInterface {
     block_base_async_execute_at_interval_with_handler_input_unit: string;
     block_base_async_execute_at_interval_with_handler_statement_then: string;
     block_base_async_execute_at_interval_with_handler_description: string;
-    block_base_async_cancel_interval_input_interval_handler: string;
-    block_base_async_cancel_interval_description: string;
+    block_base_async_clear_interval_input_interval_handler: string;
+    block_base_async_clear_interval_description: string;
 }

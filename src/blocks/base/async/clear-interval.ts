@@ -4,22 +4,22 @@ import { ResourcesInterface, ResourcesService } from '../../../resources';
 import { createStandardContextIIFE } from '../../_shared';
 import { getRequired, makeRequiredValidationModelForInputs, BitByBitBlockHandlerService, ValidationEntityInterface } from '../../validations';
 
-export function createCancelIntervalBlock() {
+export function createClearIntervalBlock() {
 
     const resources = ResourcesService.getResources();
-    const blockSelector = 'base_async_cancel_interval';
+    const blockSelector = 'base_async_clear_interval';
 
     Blocks[blockSelector] = {
         init() {
             this.appendValueInput('IntervalHandler')
                 .setCheck('IntervalHandler')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_base_async_cancel_interval_input_interval_handler);
+                .appendField(resources.block_base_async_clear_interval_input_interval_handler);
             this.setOutput(false);
             this.setColour('#fff');
             this.setPreviousStatement(true, null);
             this.setNextStatement(true, null);
-            this.setTooltip(resources.block_base_async_cancel_interval_description);
+            this.setTooltip(resources.block_base_async_clear_interval_description);
         }
     };
 

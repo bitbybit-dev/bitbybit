@@ -1,5 +1,5 @@
-import { createCancelIntervalBlock } from './cancel-interval';
 import { createCatchBlock } from './catch';
+import { createClearIntervalBlock } from './clear-interval';
 import { createExecuteAtIntervalBlock } from './execute-at-interval';
 import { createExecuteAtIntervalWithHandlerBlock } from './execute-at-interval-with-handler';
 import { createExecuteLaterBlock } from './execute-later';
@@ -13,5 +13,5 @@ export function assembleAsyncBlocks() {
     createExecuteLaterBlock();
     createExecuteAtIntervalBlock();
     createExecuteAtIntervalWithHandlerBlock();
-    createCancelIntervalBlock();
+    createClearIntervalBlock();
 }

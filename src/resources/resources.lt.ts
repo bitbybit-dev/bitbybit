@@ -743,6 +743,6 @@ app_menu_more_community: 'Bendruomenė',
     block_base_async_execute_at_interval_with_handler_input_unit: 'sekundžių ir grąžinti prižiūrėtoją',
     block_base_async_execute_at_interval_with_handler_statement_then: 'Tada',
     block_base_async_execute_at_interval_with_handler_description: 'Paleisti kodą duotu sekundžių intervalu ir grąžinti intervalo prižiūrėtoją, kuris gali būti naudojamas sustabdyti intervalą.',    
-    block_base_async_cancel_interval_input_interval_handler: 'Sustabdyti intervalą',
-    block_base_async_cancel_interval_description: 'Sustabdo intervalą davus intervalo prižiūrėtojo objektą.'
+    block_base_async_clear_interval_input_interval_handler: 'Sustabdyti intervalą',
+    block_base_async_clear_interval_description: 'Sustabdo intervalą davus intervalo prižiūrėtojo objektą.'
 });
