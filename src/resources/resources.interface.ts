@@ -728,8 +728,12 @@ export interface ResourcesInterface {
     block_base_io_json_path_query_input_json: string;
     block_base_io_json_path_query_input_query: string;
     block_base_io_json_path_query_description: string;
-    block_base_async_execute_later_handler_input_timeout: string;
-    block_base_async_execute_later_handler_input_unit: string;
-    block_base_async_execute_later_handler_statement_then: string;
-    block_base_async_execute_later_handler_description: string;
+    block_base_async_execute_later_input_timeout: string;
+    block_base_async_execute_later_input_unit: string;
+    block_base_async_execute_later_statement_then: string;
+    block_base_async_execute_later_description: string;
+    block_base_async_execute_at_interval_input_interval: string;
+    block_base_async_execute_at_interval_input_unit: string;
+    block_base_async_execute_at_interval_statement_then: string;
+    block_base_async_execute_at_interval_description: string;
 }

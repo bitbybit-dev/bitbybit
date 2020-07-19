@@ -1,45 +1,45 @@
-import { Block, Blocks, FieldVariable, VARIABLE_CATEGORY_NAME, ALIGN_RIGHT } from 'blockly';
+import { ALIGN_RIGHT, Block, Blocks } from 'blockly';
 import * as JavaScript from 'blockly/javascript';
 import { ResourcesInterface, ResourcesService } from '../../../resources';
 import { createDummyAsyncLoadingIndicator, createStandardContextIIFE } from '../../_shared';
 import { getRequired, BitByBitBlockHandlerService, ValidationEntityInterface } from '../../validations';
 
-export function createExecuteLaterBlock() {
+export function createExecuteAtIntervalBlock() {
 
     const resources = ResourcesService.getResources();
-    const blockSelector = 'base_async_execute_later';
+    const blockSelector = 'base_async_execute_at_interval';
 
     Blocks[blockSelector] = {
         init() {
-            this.appendValueInput('Timeout')
+            this.appendValueInput('Interval')
                 .setCheck('Number')
-                .appendField(resources.block_base_async_execute_later_input_timeout);
+                .appendField(resources.block_base_async_execute_at_interval_input_interval);
             this.appendDummyInput('Unit')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_base_async_execute_later_input_unit.toLowerCase());
+                .appendField(resources.block_base_async_execute_at_interval_input_unit.toLowerCase());
             this.appendStatementInput('Then')
                 .setCheck(null)
-                .appendField(resources.block_base_async_execute_later_statement_then.toLowerCase());
+                .appendField(resources.block_base_async_execute_at_interval_statement_then.toLowerCase());
             createDummyAsyncLoadingIndicator(this, resources);
             this.setColour('#fff');
             this.setInputsInline(true);
             this.setOutput(false);
             this.setPreviousStatement(true, null);
             this.setNextStatement(true, null);
-            this.setTooltip(resources.block_base_async_execute_later_description);
+            this.setTooltip(resources.block_base_async_execute_at_interval_description);
         }
     };
 
     JavaScript[blockSelector] = (block: Block) => {
         const inputs = {
-            timeout: JavaScript.valueToCode(block, 'Timeout', JavaScript.ORDER_ATOMIC),
+            interval: JavaScript.valueToCode(block, 'Interval', JavaScript.ORDER_ATOMIC),
             statement_then: JavaScript.statementToCode(block, 'Then'),
         };
         // this is first set of validations to check that all inputs are non empty strings
         BitByBitBlockHandlerService.validate(block, block.workspace, [{
-            entity: inputs.timeout,
+            entity: inputs.interval,
             validations: [
-                getRequired(resources, resources.block_timeout)
+                getRequired(resources, resources.block_interval)
             ]
         }]);
 
@@ -48,15 +48,9 @@ export function createExecuteLaterBlock() {
         (block as any).validationModel = runtimeValidationModel;
         return createStandardContextIIFE(block, blockSelector, inputs, false,
             `
-            const block = blocklyWorkspace.getBlockById('${block.id}');
-            block.inputList[2].setVisible(true);
-            block.inputList[2].setAlign(-1);
-
-            setTimeout(() => {
-                block.inputList[2].setVisible(false);
-                block.inputList[2].setAlign(-1);
-                inputs.statement_then();
-            }, inputs.timeout * 1000);
+setInterval(() => {
+    inputs.statement_then();
+}, inputs.interval * 1000);
 `);
     };
 }
@@ -69,7 +63,7 @@ function makeRuntimeValidationModel(
     return [{
         entity: keys[1],
         validations: [
-            getRequired(resources, resources.block_timeout),
+            getRequired(resources, resources.block_interval),
         ]
     }];
 }
