@@ -94,6 +94,9 @@ export interface ResourcesInterface {
     block_toolbox_category_text: string;
     block_toolbox_category_variables: string;
     block_toolbox_category_functions: string;
+    block_toolbox_category_io_text: string;
+    block_toolbox_category_io_json: string;
+    block_toolbox_category_io_http: string;
     block_computing: string;
     block_point: string;
     block_intersection: string;
@@ -124,6 +127,12 @@ export interface ResourcesInterface {
     block_curves: string;
     block_text: string;
     block_json: string;
+    block_path: string;
+    block_value: string;
+    block_name: string;
+    block_param: string;
+    block_paths_values: string;
+    block_query: string;
     block_promise: string;
     block_timeout: string;
     block_url: string;
