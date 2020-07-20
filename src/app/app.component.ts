@@ -1,3 +1,4 @@
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { AfterViewInit, ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -9,7 +10,12 @@ import { Mesh } from '@babylonjs/core/Meshes/mesh';
 import '@babylonjs/core/Meshes/meshBuilder';
 import { Scene } from '@babylonjs/core/scene';
 import { inject, svgResize, Theme, WorkspaceSvg, Xml } from 'blockly';
+import * as Blockly from 'blockly';
 import * as JavaScript from 'blockly/javascript';
+import * as jsonpath from 'jsonpath';
+import { BitByBitBlocklyHelperService } from 'src/blocks/_shared/bit-by-bit-blockly-helper.service';
+import { PrintSaveInterface } from 'src/blocks/_shared/models/print-save.model';
+import { PromptInterface } from 'src/blocks/_shared/models/prompt.interface';
 import { BitByBitBlockHandlerService } from 'src/blocks/validations';
 import { prepareBabylonForBlockly } from '../babylon-to-blockly';
 import { assembleBlocks } from '../blocks/assemble-blocks';
@@ -17,6 +23,8 @@ import { ResourcesInterface, ResourcesService } from '../resources';
 import { AboutDialogComponent } from './components/about-dialog/about-dialog.component';
 import { AlertDialogComponent } from './components/alert-dialog/alert-dialog.component';
 import { ExamplesDialogComponent } from './components/examples-dialog/examples-dialog.component';
+import { PrintSaveDialogComponent } from './components/print-save-dialog/print-save-dialog.component';
+import { PromptDialogComponent } from './components/prompt-dialog/prompt-dialog.component';
 import { SettingsDialogComponent } from './components/settings-dialog/settings-dialog.component';
 import { SponsorsDialogComponent } from './components/sponsors-dialog/sponsors-dialog.component';
 import { ExamplesService } from './examples/example-service';
@@ -50,6 +58,7 @@ export class AppComponent implements OnInit, AfterViewInit {
         public readonly examplesService: ExamplesService,
         private readonly settingsService: SettingsService,
         private readonly changeDetectorService: ChangeDetectorRef,
+        private readonly httpClient: HttpClient
     ) {
     }
 
@@ -86,6 +95,10 @@ export class AppComponent implements OnInit, AfterViewInit {
             this.collapseExpandedMenus();
             toolbox.clearSelection();
 
+            // (Blockly.alert as any) = (message, opt) => { this.openAboutDialog(); };
+            (Blockly.prompt as any) = (message, defaultValue, callback) => { this.openPromptDialog({message, defaultValue, callback}); };
+            // (Blockly.confirm as any) = (message, opt) => { this.openAboutDialog(); };
+
             svgResize(this.workspace);
 
             const canvas = document.getElementById('renderCanvas') as HTMLCanvasElement;
@@ -114,6 +127,14 @@ export class AppComponent implements OnInit, AfterViewInit {
             this.engine.runRenderLoop(() => {
                 this.scene.render();
             });
+
+            BitByBitBlocklyHelperService.promptPrintSave = (prompt: PrintSaveInterface) => this.openPrintSaveDialog(prompt);
+            BitByBitBlocklyHelperService.angular = {
+                httpClient: this.httpClient,
+                HttpHeaders,
+                HttpParams
+            };
+            BitByBitBlocklyHelperService.jsonpath = jsonpath;
 
             this.settingsService.initSettings(this.workspace, this.changeDetectorService).subscribe(s => {
 
@@ -159,6 +180,7 @@ export class AppComponent implements OnInit, AfterViewInit {
 
         const el = document.getElementById('blocklyArea');
         el.insertAdjacentHTML('afterend', toolboxDefinition());
+
     }
 
     onResize() {
@@ -272,56 +294,40 @@ ${code}
     }
 
     private openAlertDialog(error: { title: string, details: string, message: string }): void {
-        const dialogRef = this.dialog.open(AlertDialogComponent, {
+        this.dialog.open(AlertDialogComponent, {
             width: '600px',
             height: '300px',
             autoFocus: false,
             data: error,
         });
-
-        dialogRef.afterClosed().subscribe(result => {
-            const d = result;
-        });
     }
 
     private openExamplesDialog(): void {
-        const dialogRef = this.dialog.open(ExamplesDialogComponent, {
+        this.dialog.open(ExamplesDialogComponent, {
             width: '600px',
             height: '700px',
             autoFocus: false
-        });
-
-        dialogRef.afterClosed().subscribe(result => {
-            const d = result;
         });
     }
 
     private openAboutDialog(): void {
-        const dialogRef = this.dialog.open(AboutDialogComponent, {
+        this.dialog.open(AboutDialogComponent, {
             width: '600px',
             height: '500px',
             autoFocus: false
         });
-
-        dialogRef.afterClosed().subscribe(result => {
-            const d = result;
-        });
     }
 
     private openSponsorsDialog(): void {
-        const dialogRef = this.dialog.open(SponsorsDialogComponent, {
+        this.dialog.open(SponsorsDialogComponent, {
             width: '700px',
             height: '700px',
             autoFocus: false
         });
-
-        dialogRef.afterClosed().subscribe(result => {
-            const d = result;
-        });
     }
 
     private openSettingsDialog(): void {
-        const dialogRef = this.dialog.open(SettingsDialogComponent, {
+        this.dialog.open(SettingsDialogComponent, {
             width: '500px',
             height: '500px',
             autoFocus: false,
@@ -329,9 +335,27 @@ ${code}
                 workspace: this.workspace
             }
         });
+    }
+
+    private openPrintSaveDialog(prompt: PrintSaveInterface): void {
+        this.dialog.open(PrintSaveDialogComponent, {
+            width: '500px',
+            height: '450px',
+            autoFocus: false,
+            data: prompt
+        });
+    }
+
+    private openPromptDialog(prompt: PromptInterface): void {
+        const dialogRef = this.dialog.open(PromptDialogComponent, {
+            width: '500px',
+            height: '200px',
+            autoFocus: false,
+            data: prompt
+        });
 
         dialogRef.afterClosed().subscribe(result => {
-            const d = result;
+            prompt.callback(null);
         });
     }
 }

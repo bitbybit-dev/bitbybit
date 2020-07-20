@@ -1,0 +1,10 @@
+<h2>{{data.message}}</h2>
+<form [formGroup]="promptForm" (ngSubmit)="onSubmit()">
+    <mat-form-field class="half-width">
+        <mat-label>{{resources.app_prompt_value}}</mat-label>
+        <input formControlName="promptValue" matInput [placeholder]="resources.app_prompt_value_placeholder"/>
+    </mat-form-field>
+    <br>
+    <button type="submit" mat-button mat-raised-button color="primary" >{{resources.app_button_create}}</button>
+    <button type="button" mat-button mat-raised-button (click)="onClose()">{{resources.app_button_close}}</button>
+</form>

@@ -1,3 +1,4 @@
+import { asyncCategory } from './categories/async/async-category';
 import { defaultBlocklyCategories } from './categories/blockly/default-categories';
 import { transformsCategory } from './categories/core/transforms-category';
 import { typesCategory } from './categories/core/types-category';
@@ -8,6 +9,7 @@ import { pointCategory } from './categories/geometry/point-category';
 import { polylineCategory } from './categories/geometry/polyline-category';
 import { surfaceCategory } from './categories/geometry/surface-category';
 import { intersectCategory } from './categories/intersect/intersect-category';
+import { ioCategory } from './categories/io/io-category';
 import { sceneCategory } from './categories/scene/scene-category';
 
 export function toolboxDefinition() {
@@ -26,6 +28,9 @@ export function toolboxDefinition() {
     ${surfaceCategory()}
     <sep></sep>
     ${intersectCategory()}
+    <sep></sep>
+    ${ioCategory()}
+    ${asyncCategory()}
     <sep></sep>
     ${defaultBlocklyCategories()}
 </xml>
