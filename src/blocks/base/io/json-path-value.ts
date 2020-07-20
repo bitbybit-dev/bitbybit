@@ -3,34 +3,39 @@ import * as JavaScript from 'blockly/javascript';
 import { ResourcesService } from '../../../resources';
 import { createStandardContextIIFE } from '../../_shared';
 
-export function createJsonPathQueryBlock() {
+export function createJsonPathValueBlock() {
 
     const resources = ResourcesService.getResources();
-    const blockSelector = 'base_io_json_path_query';
+    const blockSelector = 'base_io_json_path_value';
     Blocks[blockSelector] = {
         init() {
-            this.appendValueInput('JSON')
+            this.appendValueInput('Value')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_base_io_json_path_query_input_json);
-            this.appendValueInput('Query')
+                .appendField(resources.block_base_io_json_path_value_input_value);
+            this.appendValueInput('Path')
                 .setCheck('String')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_base_io_json_path_query_input_query.toLowerCase());
+                .appendField(resources.block_base_io_json_path_value_input_path.toLowerCase());
             this.setOutput(true, 'Any');
             this.setColour('#fff');
             this.setHelpUrl('https://www.npmjs.com/package/jsonpath');
-            this.setTooltip(resources.block_base_io_json_path_query_description);
+            this.setTooltip(resources.block_base_io_json_path_value_description);
         }
     };
 
     JavaScript[blockSelector] = (block: Block) => {
         const inputs = {
             json: JavaScript.valueToCode(block, 'JSON', JavaScript.ORDER_ATOMIC),
-            query: JavaScript.valueToCode(block, 'Query', JavaScript.ORDER_ATOMIC),
+            path: JavaScript.valueToCode(block, 'Path', JavaScript.ORDER_ATOMIC),
+            value: JavaScript.valueToCode(block, 'Value', JavaScript.ORDER_ATOMIC),
         };
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-        `return BitByBitBlocklyHelperService.jsonpath.query(inputs.json, inputs.query);`);
+            `
+            const clonedJson = {...inputs.json};
+            BitByBitBlocklyHelperService.jsonpath.value(clonedJson, inputs.path, inputs.value);
+            return clonedJson;
+            `);
         return [code, JavaScript.ORDER_ATOMIC];
     };
 }

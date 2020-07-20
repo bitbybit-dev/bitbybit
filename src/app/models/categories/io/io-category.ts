@@ -38,6 +38,16 @@ export function ioCategory() {
         </block>
         <block type="base_io_json_path_query">
         </block>
+        <block type="base_io_json_set_path_value">
+        </block>
+        <block type="base_io_json_set_paths_values">
+        </block>
+        <block type="base_io_json_path_value">
+        </block>
+        <block type="base_io_json_empty_object">
+        </block>
+        <block type="base_io_json_preview">
+        </block>
     </category>
 `;
 }

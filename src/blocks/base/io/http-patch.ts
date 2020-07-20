@@ -19,7 +19,6 @@ export function createHttpPatchBlock() {
                 )
                 .appendField(resources.block_base_io_http_patch_input_url);
             this.appendValueInput('Body')
-                .setCheck('JSON')
                 .setAlign(ALIGN_RIGHT)
                 .appendField(resources.block_base_io_http_patch_input_body.toLowerCase());
             this.appendValueInput('HttpOptions')

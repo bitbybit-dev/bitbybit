@@ -123,6 +123,7 @@ export interface ResourcesInterface {
     block_target_interval: string;
     block_curves: string;
     block_text: string;
+    block_json: string;
     block_promise: string;
     block_timeout: string;
     block_url: string;
@@ -729,6 +730,10 @@ export interface ResourcesInterface {
     block_base_io_json_path_query_input_json: string;
     block_base_io_json_path_query_input_query: string;
     block_base_io_json_path_query_description: string;
+    block_base_io_json_set_path_value_input_json: string;
+    block_base_io_json_set_path_value_input_path: string;
+    block_base_io_json_set_path_value_input_value: string;
+    block_base_io_json_set_path_value_description: string;
     block_base_async_execute_later_input_timeout: string;
     block_base_async_execute_later_input_unit: string;
     block_base_async_execute_later_statement_then: string;
@@ -743,4 +748,14 @@ export interface ResourcesInterface {
     block_base_async_execute_at_interval_with_handler_description: string;
     block_base_async_clear_interval_input_interval_handler: string;
     block_base_async_clear_interval_description: string;
+    block_base_io_json_empty_object_input_json: string;
+    block_base_io_json_empty_object_description: string;
+    block_base_io_json_preview_input_json: string;
+    block_base_io_json_preview_description: string;
+    block_base_io_json_set_paths_values_input_json: string;
+    block_base_io_json_set_paths_values_input_paths_values: string;
+    block_base_io_json_set_paths_values_description: string;
+    block_base_io_json_path_value_input_value: string;
+    block_base_io_json_path_value_input_path: string;
+    block_base_io_json_path_value_description: string;
 }
