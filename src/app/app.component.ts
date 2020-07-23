@@ -5,7 +5,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { ArcRotateCamera, DirectionalLight } from '@babylonjs/core';
 import { Engine } from '@babylonjs/core/Engines/engine';
 import '@babylonjs/core/Materials/standardMaterial';
-import { Color3, Color4, Vector3 } from '@babylonjs/core/Maths/math';
+import { Color3, Color4, Matrix, Vector3 } from '@babylonjs/core/Maths/math';
 import { Mesh } from '@babylonjs/core/Meshes/mesh';
 import '@babylonjs/core/Meshes/meshBuilder';
 import { Scene } from '@babylonjs/core/scene';
@@ -50,6 +50,7 @@ export class AppComponent implements OnInit, AfterViewInit {
     constants = constantsModel;
     resources: ResourcesInterface;
     firstTimeOpen = true;
+    tagsNeedUpdate = false;
 
     constructor(
         public dialog: MatDialog,
@@ -95,9 +96,7 @@ export class AppComponent implements OnInit, AfterViewInit {
             this.collapseExpandedMenus();
             toolbox.clearSelection();
 
-            // (Blockly.alert as any) = (message, opt) => { this.openAboutDialog(); };
-            (Blockly.prompt as any) = (message, defaultValue, callback) => { this.openPromptDialog({message, defaultValue, callback}); };
-            // (Blockly.confirm as any) = (message, opt) => { this.openAboutDialog(); };
+            (Blockly.prompt as any) = (message, defaultValue, callback) => { this.openPromptDialog({ message, defaultValue, callback }); };
 
             svgResize(this.workspace);
 
@@ -126,6 +125,55 @@ export class AppComponent implements OnInit, AfterViewInit {
 
             this.engine.runRenderLoop(() => {
                 this.scene.render();
+
+            });
+
+            this.tagsNeedUpdate = false;
+
+            camera.onProjectionMatrixChangedObservable.add(() => {
+                this.tagsNeedUpdate = true;
+            });
+
+            camera.onViewMatrixChangedObservable.add(() => {
+                this.tagsNeedUpdate = true;
+            });
+
+            this.scene.registerAfterRender(() => {
+                if (this.tagsNeedUpdate && BitByBitBlocklyHelperService.tagBag.length > 0) {
+
+                    for (let i = 0; i < BitByBitBlocklyHelperService.tagBag.length; i++) {
+                        const tag = BitByBitBlocklyHelperService.tagBag[i];
+                        const textNode = document.querySelector('#_tag' + i);
+                        const vector = new Vector3(tag.position[0], tag.position[1], tag.position[2]);
+                        const renWidth = this.engine.getRenderWidth();
+                        const renHeight = this.engine.getRenderHeight();
+                        const pos = Vector3.Project(
+                            vector,
+                            Matrix.IdentityReadOnly,
+                            this.scene.getTransformMatrix(),
+                            camera.viewport.toGlobal(
+                                renWidth,
+                                renHeight,
+                            ),
+                        );
+                        const defStyle = 'position: absolute; transform: translate(-50%, -50%);';
+
+                        const distance = Vector3.Distance(camera.position, vector);
+                        const size = tag.adaptDepth ? Math.ceil(BitByBitBlocklyHelperService.remap(distance,
+                            0, 100,
+                            tag.size, 3)) : tag.size;
+                        if (pos.x > 0 && pos.x < renWidth &&
+                            pos.y > 0 && pos.y < renHeight &&
+                            pos.z > 0 && pos.z < 1 && size > 3) {
+                            (textNode as any).style =
+                                `${defStyle} font-size: ${size}px; color: ${tag.colour}; left: ${pos.x}px; top: ${pos.y}px; display: inline;`;
+                        } else {
+                            (textNode as any).style = 'display: none;';
+                        }
+                    }
+
+                    this.tagsNeedUpdate = false;
+                }
             });
 
             BitByBitBlocklyHelperService.promptPrintSave = (prompt: PrintSaveInterface) => this.openPrintSaveDialog(prompt);
@@ -263,8 +311,8 @@ export class AppComponent implements OnInit, AfterViewInit {
 
     run() {
         try {
-            this.scene.meshes.forEach(m => m.dispose());
-            this.scene.meshes = [];
+            this.clearMeshes();
+            BitByBitBlocklyHelperService.tagBag = [];
             this.scene.clearColor = new Color4(1, 1, 1, 1);
 
             const javascript = JavaScript;
@@ -282,6 +330,16 @@ const BitByBitBlockHandlerService = window.BitByBitBlockHandlerService;
 const BitByBitBlocklyHelperService = window.BitByBitBlocklyHelperService;
 ${code}
             `);
+            BitByBitBlocklyHelperService.tagBag.forEach((tag, index) => {
+                const textNode = document.querySelector('#_tag' + index) || document.createElement('span');
+                textNode.id = '_tag' + index;
+                textNode.textContent = tag.text;
+                document.querySelector('.canvasZone').appendChild(textNode);
+            });
+            if (BitByBitBlocklyHelperService.tagBag.length > 0) {
+                this.tagsNeedUpdate = true;
+            }
+
         } catch (e) {
             const blockThatWasActive = this.workspace.getBlockById(BitByBitBlockHandlerService.runningBlockId);
             BitByBitBlockHandlerService.handleBlockException(blockThatWasActive, e);
@@ -291,6 +349,11 @@ ${code}
                 message: `${e}`,
             });
         }
+    }
+
+    clearMeshes() {
+        this.scene.meshes.forEach(m => m.dispose());
+        this.scene.meshes = [];
     }
 
     private openAlertDialog(error: { title: string, details: string, message: string }): void {

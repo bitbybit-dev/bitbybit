@@ -7,6 +7,7 @@ export class BitByBitBlocklyHelperService {
     static promptPrintSave: (prompt: PrintSaveInterface) => void;
     static angular: { httpClient: HttpClient, HttpHeaders: any, HttpParams: any };
     static jsonpath: any;
+    static tagBag = [];
 
     static transformPointsByMatrix(points: [], transformMatrix: Matrix) {
         const transformedPoints = [];
@@ -25,7 +26,6 @@ export class BitByBitBlocklyHelperService {
 
             inputFileElement.onchange = (e) => {
                 const file = inputFileElement.files[0];
-                console.log('change', file);
 
                 if (file) {
                     const reader = new FileReader();
@@ -43,6 +43,10 @@ export class BitByBitBlocklyHelperService {
             };
             inputFileElement.click();
         });
+    }
+
+    static remap(value: number, from1: number, to1: number, from2: number, to2: number) {
+        return (value - from1) / (to1 - from1) * (to2 - from2) + from2;
     }
 
 }

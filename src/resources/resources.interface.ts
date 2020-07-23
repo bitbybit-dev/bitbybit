@@ -69,6 +69,7 @@ export interface ResourcesInterface {
     block_toolbox_category_core_transforms: string;
     block_toolbox_category_core_vector: string;
     block_toolbox_category_geom_point: string;
+    block_toolbox_category_geom_tag: string;
     block_toolbox_category_geom_line: string;
     block_toolbox_category_io: string;
     block_toolbox_category_async: string;
@@ -146,6 +147,10 @@ export interface ResourcesInterface {
     block_opacity: string;
     block_width: string;
     block_size: string;
+    block_position: string;
+    block_text_tag: string;
+    block_text_tags: string;
+    block_adapt_depth: string;
     block_surface: string;
     block_sphere: string;
     block_revolution: string;
@@ -767,4 +772,14 @@ export interface ResourcesInterface {
     block_base_io_json_path_value_input_value: string;
     block_base_io_json_path_value_input_path: string;
     block_base_io_json_path_value_description: string;
+    block_base_geometry_draw_text_tags_input_text_tags: string;
+    block_base_geometry_draw_text_tags_description: string;
+    block_base_geometry_draw_text_tag_input_text_tag: string;
+    block_base_geometry_draw_text_tag_description: string;
+    block_base_geometry_text_tag_input_text: string;
+    block_base_geometry_text_tag_input_position: string;
+    block_base_geometry_text_tag_input_color: string;
+    block_base_geometry_text_tag_input_size: string;
+    block_base_geometry_text_tag_input_adapt_depth: string;
+    block_base_geometry_text_tag_description: string;
 }
