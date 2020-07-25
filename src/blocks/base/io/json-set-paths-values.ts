@@ -17,7 +17,7 @@ export function createJsonSetPathsValuesBlock() {
                 .setCheck('Array')
                 .setAlign(ALIGN_RIGHT)
                 .appendField(resources.block_base_io_json_set_paths_values_input_paths_values.toLowerCase());
-            this.setOutput(true, 'Any');
+            this.setOutput(true);
             this.setColour('#fff');
             this.setHelpUrl('https://www.npmjs.com/package/jsonpath');
             this.setTooltip(resources.block_base_io_json_set_paths_values_description);

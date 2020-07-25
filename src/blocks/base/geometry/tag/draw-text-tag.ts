@@ -44,6 +44,13 @@ export function createDrawTextTagBlock() {
 
         return createStandardContextIIFE(block, blockSelector, inputs, false,
             `
+            const textNode = document.createElement('span');
+            const id = '_tag' + ${new Date().getTime()} + BitByBitBlocklyHelperService.tagBag.length;
+            inputs.textTag.id = id;
+            textNode.id = id;
+            textNode.textContent = inputs.textTag.text;
+            document.querySelector('.canvasZone').appendChild(textNode);
+            inputs.textTag.needsUpdate = true;
             BitByBitBlocklyHelperService.tagBag.push(inputs.textTag);
 `);
     };

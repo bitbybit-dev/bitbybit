@@ -139,11 +139,15 @@ export class AppComponent implements OnInit, AfterViewInit {
             });
 
             this.scene.registerAfterRender(() => {
+                if (!this.tagsNeedUpdate && BitByBitBlocklyHelperService.tagBag.length > 0 &&
+                    BitByBitBlocklyHelperService.tagBag.find(tag => tag.needsUpdate)) {
+                    this.tagsNeedUpdate = true;
+                }
                 if (this.tagsNeedUpdate && BitByBitBlocklyHelperService.tagBag.length > 0) {
 
                     for (let i = 0; i < BitByBitBlocklyHelperService.tagBag.length; i++) {
                         const tag = BitByBitBlocklyHelperService.tagBag[i];
-                        const textNode = document.querySelector('#_tag' + i);
+                        const textNode = document.querySelector('#' + tag.id);
                         const vector = new Vector3(tag.position[0], tag.position[1], tag.position[2]);
                         const renWidth = this.engine.getRenderWidth();
                         const renHeight = this.engine.getRenderHeight();
@@ -312,6 +316,12 @@ export class AppComponent implements OnInit, AfterViewInit {
     run() {
         try {
             this.clearMeshes();
+            if (BitByBitBlocklyHelperService.tagBag.length > 0) {
+                BitByBitBlocklyHelperService.tagBag.forEach(tag => {
+                    const element = document.getElementById(tag.id);
+                    element.parentNode.removeChild(element);
+                });
+            }
             BitByBitBlocklyHelperService.tagBag = [];
             this.scene.clearColor = new Color4(1, 1, 1, 1);
 
@@ -330,12 +340,7 @@ const BitByBitBlockHandlerService = window.BitByBitBlockHandlerService;
 const BitByBitBlocklyHelperService = window.BitByBitBlocklyHelperService;
 ${code}
             `);
-            BitByBitBlocklyHelperService.tagBag.forEach((tag, index) => {
-                const textNode = document.querySelector('#_tag' + index) || document.createElement('span');
-                textNode.id = '_tag' + index;
-                textNode.textContent = tag.text;
-                document.querySelector('.canvasZone').appendChild(textNode);
-            });
+
             if (BitByBitBlocklyHelperService.tagBag.length > 0) {
                 this.tagsNeedUpdate = true;
             }

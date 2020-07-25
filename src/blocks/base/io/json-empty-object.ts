@@ -12,7 +12,7 @@ export function createJsonEmptyObjectBlock() {
             this.appendDummyInput('JSON')
                 .setAlign(ALIGN_RIGHT)
                 .appendField(resources.block_base_io_json_empty_object_input_json);
-            this.setOutput(true, 'Any');
+            this.setOutput(true);
             this.setColour('#fff');
             this.setTooltip(resources.block_base_io_json_empty_object_description);
         }
