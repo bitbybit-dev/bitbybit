@@ -160,7 +160,7 @@ export class AppComponent implements OnInit, AfterViewInit {
                                 renHeight,
                             ),
                         );
-                        const defStyle = 'position: absolute; transform: translate(-50%, -50%);';
+                        const defStyle = 'position: absolute; transform: translate(-50%, -50%); font-weight: 400;';
 
                         const distance = Vector3.Distance(camera.position, vector);
                         const size = tag.adaptDepth ? Math.ceil(BitByBitBlocklyHelperService.remap(distance,

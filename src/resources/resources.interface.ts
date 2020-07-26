@@ -123,8 +123,10 @@ export interface ResourcesInterface {
     block_lines: string;
     block_curve: string;
     block_number_to_remap: string;
+    block_number_to_round: string;
     block_source_interval: string;
     block_target_interval: string;
+    block_decimal_places: string;
     block_curves: string;
     block_text: string;
     block_json: string;
@@ -782,4 +784,7 @@ export interface ResourcesInterface {
     block_base_geometry_text_tag_input_size: string;
     block_base_geometry_text_tag_input_adapt_depth: string;
     block_base_geometry_text_tag_description: string;
+    block_base_math_round_to_decimals_input_number_to_round: string;
+    block_base_math_round_to_decimals_input_decimal_places: string;
+    block_base_math_round_to_decimals_description: string;
 }
