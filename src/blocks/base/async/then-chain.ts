@@ -1,8 +1,8 @@
 import { Block, Blocks, FieldVariable, VARIABLE_CATEGORY_NAME } from 'blockly';
 import * as JavaScript from 'blockly/javascript';
 import { ResourcesInterface, ResourcesService } from '../../../resources';
-import { createStandardContextIIFE, createDummyAsyncLoadingIndicator } from '../../_shared';
-import { getRequired, ValidationEntityInterface, BitByBitBlockHandlerService, makeRequiredValidationModelForInputs } from '../../validations';
+import { createDummyAsyncLoadingIndicator, createStandardContextIIFE } from '../../_shared';
+import { getRequired, BitByBitBlockHandlerService, ValidationEntityInterface } from '../../validations';
 
 export function createThenChainBlock() {
 

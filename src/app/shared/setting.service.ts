@@ -99,14 +99,20 @@ export class SettingsService {
             resources.block_toolbox_category_io_http,
             resources.block_toolbox_category_io_json,
             resources.block_toolbox_category_async,
+            resources.block_toolbox_category_variables,
+            resources.block_toolbox_category_functions,
+            resources.block_toolbox_category_date,
+            resources.block_toolbox_category_create,
+            resources.block_toolbox_category_apply,
+            resources.block_toolbox_category_apply_convert,
+            resources.block_toolbox_category_apply_get,
+            resources.block_toolbox_category_apply_set,
             resources.block_toolbox_category_loop,
             resources.block_toolbox_category_logic,
             resources.block_toolbox_category_math,
             resources.block_toolbox_category_lists,
             resources.block_toolbox_category_colour,
             resources.block_toolbox_category_text,
-            resources.block_toolbox_category_variables,
-            resources.block_toolbox_category_functions,
         ];
 
         toolboxCategoryFlatList.forEach((resource, index) => {

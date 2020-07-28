@@ -37,6 +37,9 @@ export function themeStyle() {
             "logic_category": {
                 "colour": "#fff",
             },
+            "default_category": {
+                "colour": "#fff",
+            },
             "math_category": {
                 "colour": "#fff",
             },
