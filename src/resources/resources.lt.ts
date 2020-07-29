@@ -39,6 +39,8 @@ export const resourcesLt: ResourcesInterface = Object.freeze({
     app_menu_more_examples_street_smart_lines_between_two_surfaces_description: 'Du vienas virš kito egzistuojantys paviršiai sudalinami izokreivėmis. Izokreivės savo ruožtu sudalinamos pradžios ir galo taškais, kurie jungiami į karkasines linijas tarp dviejų paviršių.',
     app_menu_more_examples_ninja_magic_spiral_title: 'Magiška spiralė',
     app_menu_more_examples_ninja_magic_spiral_description: 'Spiralės žavi savo grožiu ir yra populiarios tarp gamtoje paplitusių algoritmų. Šis pavyzdys parodo kaip galima suprogramuoti tokią spiralę patiems.',
+    app_menu_more_examples_ninja_crypto_data_visualziation_title: 'Kripto valiutų',
+    app_menu_more_examples_ninja_crypto_data_visualziation_description: '3D data visualization opens up additional layer for understanding your information. This example demonstrates 3D charts of some popular crypto currencies. Communication with coingecko api is implemented via Http components, data is assembled and visualize via 3D tags and polylines.',
     app_menu_more_examples_ninja: 'Nindzėms',
     app_menu_more_sponsors: 'Remėjai',
     app_menu_more_sponsors_explanation: 'Šiuo metu projektas remėjų neturi. Jei norėtumėte mus paremti mums būtų malonu įdėti jūsų logo šioje remėjų lentoje.',

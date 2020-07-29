@@ -39,6 +39,8 @@ export const resourcesEn: ResourcesInterface = Object.freeze({
     app_menu_more_examples_street_smart_lines_between_two_surfaces_description: 'There are two NURBS surfaces created above each other from corner points. Then both surfaces are subdivided in equal number of isocurves, those then are subdivided into points and those points are used to create lines between both surfaces.',
     app_menu_more_examples_ninja_magic_spiral_title: 'Magic spiral',
     app_menu_more_examples_ninja_magic_spiral_description: 'Spirals are everywhere in nature and they are beautiful. This example demonstrates how to code the magical parametric spiral.',
+    app_menu_more_examples_ninja_crypto_data_visualziation_title: 'Crypto currency data visualization',
+    app_menu_more_examples_ninja_crypto_data_visualziation_description: '3D data visualization opens up additional layer for understanding your information. This example demonstrates 3D charts of some popular crypto currencies. Communication with coingecko api is implemented via Http components, data is assembled and visualize via 3D tags and polylines.',
     app_menu_more_examples_ninja: 'Ninja',
     app_menu_more_sponsors: 'Sponsors',
     app_menu_more_sponsors_explanation: 'Currently BitByBit does not have any sponsors. You could be the first one to put your companys logo here and help us out in building this amazing opensource platform.',

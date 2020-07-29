@@ -37,6 +37,8 @@ export interface ResourcesInterface {
     app_menu_more_examples_street_smart_lines_between_two_surfaces_description: string;
     app_menu_more_examples_ninja_magic_spiral_title: string;
     app_menu_more_examples_ninja_magic_spiral_description: string;
+    app_menu_more_examples_ninja_crypto_data_visualziation_title: string;
+    app_menu_more_examples_ninja_crypto_data_visualziation_description: string;
     app_menu_more_examples_ninja: string;
     app_menu_more_sponsors: string;
     app_menu_more_sponsors_explanation: string;
