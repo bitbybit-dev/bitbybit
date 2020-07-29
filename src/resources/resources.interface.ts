@@ -142,6 +142,8 @@ export interface ResourcesInterface {
     block_source_interval: string;
     block_target_interval: string;
     block_decimal_places: string;
+    block_number: string;
+    block_modulus: string;
     block_curves: string;
     block_text: string;
     block_json: string;
@@ -934,4 +936,7 @@ export interface ResourcesInterface {
     block_base_date_convert_to_time_string_description: string;
     block_base_date_convert_to_json_input_date: string;
     block_base_date_convert_to_json_description: string;
+    block_base_math_modulus_input_number: string;
+    block_base_math_modulus_input_modulus: string;
+    block_base_math_modulus_description: string;
 }

@@ -104,6 +104,8 @@ export const resourcesEn: ResourcesInterface = Object.freeze({
     block_toolbox_category_io_text: 'Text',
     block_toolbox_category_io_json: 'JSON',
     block_toolbox_category_io_http: 'HTTP',
+    block_number: 'Number',
+    block_modulus: 'Modulus',
     block_year: 'Year',
     block_month: 'Month',
     block_day: 'Day',
@@ -937,4 +939,7 @@ export const resourcesEn: ResourcesInterface = Object.freeze({
     block_base_date_convert_to_time_string_description: 'Converts the date to time text - Ex. "23:15:30 GMT+0200 (CEST)"',
     block_base_date_convert_to_json_input_date: 'JSON from date',
     block_base_date_convert_to_json_description: 'Converts the date to JSON object.',
+    block_base_math_modulus_input_number: 'The number',
+    block_base_math_modulus_input_modulus: 'Modulus',
+    block_base_math_modulus_description: 'Computes the modulus value of the number.',
 });

@@ -18,7 +18,6 @@ export function createTextTagBlock() {
     Blocks[blockSelector] = {
         init() {
             this.appendValueInput('Text')
-                .setCheck('String')
                 .setAlign(ALIGN_RIGHT)
                 .appendField(resources.block_base_geometry_text_tag_input_text);
             this.appendValueInput('Position')
