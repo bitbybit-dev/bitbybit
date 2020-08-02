@@ -28,6 +28,8 @@ export interface ResourcesInterface {
     app_menu_more_examples_newbie_nurbs_curve_along_points_description: string;
     app_menu_more_examples_newbie_transformation_circle_title: string;
     app_menu_more_examples_newbie_transformation_circle_description: string;
+    app_menu_more_examples_newbie_curve_to_gcode_title: string;
+    app_menu_more_examples_newbie_curve_to_gcode_description: string;
     app_menu_more_examples_newbie_standard_surfaces_title: string;
     app_menu_more_examples_newbie_standard_surfaces_description: string;
     app_menu_more_examples_street_smart: string;

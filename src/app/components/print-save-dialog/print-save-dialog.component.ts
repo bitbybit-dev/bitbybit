@@ -22,6 +22,12 @@ export class PrintSaveDialogComponent implements OnInit {
 
     ngOnInit(): void {
         this.resources = ResourcesService.getResources();
+        if(Array.isArray(this.data.text)){
+            this.data.text = this.data.text.map(txt => {
+                return `${txt}
+`;
+            }).join('');
+        }
         if (this.data.isJson) {
             this.printSaveForm = this.formBuilder.group({
                 text: this.data.text,
