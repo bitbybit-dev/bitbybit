@@ -70,7 +70,7 @@ export function themeStyle() {
         },
         'componentStyles': {
             "toolboxBackgroundColour": "#fff",
-            "flyoutBackgroundColour": "#fff"
+            "flyoutBackgroundColour": "#eee"
         },
         'fontStyle': {
             "family": "'IBM Plex Sans', sans-serif",
