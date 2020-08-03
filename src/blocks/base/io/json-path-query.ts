@@ -17,7 +17,7 @@ export function createJsonPathQueryBlock() {
                 .setCheck('String')
                 .setAlign(ALIGN_RIGHT)
                 .appendField(resources.block_base_io_json_path_query_input_query.toLowerCase());
-            this.setOutput(true, 'Any');
+            this.setOutput(true);
             this.setColour('#fff');
             this.setHelpUrl('https://www.npmjs.com/package/jsonpath');
             this.setTooltip(resources.block_base_io_json_path_query_description);

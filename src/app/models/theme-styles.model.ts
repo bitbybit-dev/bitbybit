@@ -37,6 +37,9 @@ export function themeStyle() {
             "logic_category": {
                 "colour": "#fff",
             },
+            "default_category": {
+                "colour": "#fff",
+            },
             "math_category": {
                 "colour": "#fff",
             },
@@ -67,7 +70,7 @@ export function themeStyle() {
         },
         'componentStyles': {
             "toolboxBackgroundColour": "#fff",
-            "flyoutBackgroundColour": "#fff"
+            "flyoutBackgroundColour": "#eee"
         },
         'fontStyle': {
             "family": "'IBM Plex Sans', sans-serif",

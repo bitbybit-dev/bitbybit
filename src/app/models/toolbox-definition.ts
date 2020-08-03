@@ -11,6 +11,7 @@ import { surfaceCategory } from './categories/geometry/surface-category';
 import { intersectCategory } from './categories/intersect/intersect-category';
 import { ioCategory } from './categories/io/io-category';
 import { sceneCategory } from './categories/scene/scene-category';
+import { tagCategory } from './categories/tag/tag-category';
 
 export function toolboxDefinition() {
     return `
@@ -28,6 +29,7 @@ export function toolboxDefinition() {
     ${surfaceCategory()}
     <sep></sep>
     ${intersectCategory()}
+    ${tagCategory()}
     <sep></sep>
     ${ioCategory()}
     ${asyncCategory()}
