@@ -3,5 +3,6 @@ export interface ExampleInterface {
     description: string;
     queryParam: string;
     title: string;
+    youtubeLink?: string;
     xml: string;
 }

@@ -7,6 +7,9 @@
             <a [routerLink]="['/']" [queryParams]="{examples: example.queryParam}" (click)="onClose()">
                 <img [src]="example.image"/>
             </a>
+            <a *ngIf="example.youtubeLink" class="youtube-link" [href]="example.youtubeLink" target="_blank">
+                <img width="40px" height="30px" src="../assets/logo-youtube.svg" />
+            </a>
             <p>{{example.description}}</p>
         </div>
     </mat-tab>
@@ -16,6 +19,9 @@
             <a [routerLink]="['/']" [queryParams]="{examples: example.queryParam}" (click)="onClose()">
                 <img [src]="example.image"/>
             </a>
+            <a *ngIf="example.youtubeLink" class="youtube-link" [href]="example.youtubeLink" target="_blank">
+                <img width="40px" height="30px" src="../assets/logo-youtube.svg" />
+            </a>
             <p>{{example.description}}</p>
         </div>
     </mat-tab>
@@ -24,6 +30,9 @@
             <h3>{{example.title}}</h3>
             <a [routerLink]="['/']" [queryParams]="{examples: example.queryParam}" (click)="onClose()">
                 <img [src]="example.image"/>
+            </a>
+            <a *ngIf="example.youtubeLink" class="youtube-link" [href]="example.youtubeLink" target="_blank">
+                <img width="40px" height="30px" src="../assets/logo-youtube.svg" />
             </a>
             <p>{{example.description}}</p>
         </div>
