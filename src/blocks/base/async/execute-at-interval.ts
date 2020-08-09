@@ -48,9 +48,10 @@ export function createExecuteAtIntervalBlock() {
         (block as any).validationModel = runtimeValidationModel;
         return createStandardContextIIFE(block, blockSelector, inputs, false,
             `
-setInterval(() => {
+const interval = setInterval(() => {
     inputs.statement_then();
 }, inputs.interval * 1000);
+BitByBitBlocklyHelperService.intervalBag.push(interval);
 `);
     };
 }

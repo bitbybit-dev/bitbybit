@@ -1,3 +1,4 @@
+import { createClearAllDrawnBlock } from './clear-all-drawn';
 import { createDrawCurveBlock } from './draw-curve';
 import { createDrawCurvesBlock } from './draw-curves';
 import { createDrawGridBlock } from './draw-grid';
@@ -22,4 +23,5 @@ export function assembleDrawBlocks(){
     createDrawSurfaceBlock();
     createDrawSurfacesBlock();
     createDrawSurfacesColoursBlock();
+    createClearAllDrawnBlock();
 }

@@ -1,3 +1,4 @@
+import { HttpClientModule } from '@angular/common/http';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
@@ -26,7 +27,7 @@ import { SettingsDialogComponent } from './components/settings-dialog/settings-d
 import { SponsorsDialogComponent } from './components/sponsors-dialog/sponsors-dialog.component';
 import { ExamplesService } from './examples/example-service';
 import { SettingsService } from './shared/setting.service';
-import { HttpClientModule } from '@angular/common/http';
+import { TagService } from './tags/tag.service';
 
 @NgModule({
     declarations: [
@@ -60,7 +61,7 @@ import { HttpClientModule } from '@angular/common/http';
         MatSelectModule,
         MatInputModule,
     ],
-    providers: [ExamplesService, SettingsService],
+    providers: [ExamplesService, SettingsService, TagService],
     bootstrap: [AppComponent]
 })
 export class AppModule { }

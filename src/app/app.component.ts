@@ -32,6 +32,7 @@ import { constantsModel } from './models/constants.model';
 import { themeStyle } from './models/theme-styles.model';
 import { toolboxDefinition } from './models/toolbox-definition';
 import { SettingsService } from './shared/setting.service';
+import { TagService } from './tags/tag.service';
 
 @Component({
     selector: 'app-root',
@@ -40,8 +41,8 @@ import { SettingsService } from './shared/setting.service';
 })
 export class AppComponent implements OnInit, AfterViewInit {
 
-    blocklyDiv;
-    blocklyArea;
+    blocklyDiv: HTMLElement;
+    blocklyArea: Element & HTMLElement;
     workspace: WorkspaceSvg;
     defaultPointsMesh: Mesh;
     scene: Scene;
@@ -59,7 +60,8 @@ export class AppComponent implements OnInit, AfterViewInit {
         public readonly examplesService: ExamplesService,
         private readonly settingsService: SettingsService,
         private readonly changeDetectorService: ChangeDetectorRef,
-        private readonly httpClient: HttpClient
+        private readonly httpClient: HttpClient,
+        private readonly tagService: TagService,
     ) {
     }
 
@@ -139,45 +141,8 @@ export class AppComponent implements OnInit, AfterViewInit {
             });
 
             this.scene.registerAfterRender(() => {
-                if (!this.tagsNeedUpdate && BitByBitBlocklyHelperService.tagBag.length > 0 &&
-                    BitByBitBlocklyHelperService.tagBag.find(tag => tag.needsUpdate)) {
-                    this.tagsNeedUpdate = true;
-                }
-                if (this.tagsNeedUpdate && BitByBitBlocklyHelperService.tagBag.length > 0) {
-
-                    for (let i = 0; i < BitByBitBlocklyHelperService.tagBag.length; i++) {
-                        const tag = BitByBitBlocklyHelperService.tagBag[i];
-                        const textNode = document.querySelector('#' + tag.id);
-                        const vector = new Vector3(tag.position[0], tag.position[1], tag.position[2]);
-                        const renWidth = this.engine.getRenderWidth();
-                        const renHeight = this.engine.getRenderHeight();
-                        const pos = Vector3.Project(
-                            vector,
-                            Matrix.IdentityReadOnly,
-                            this.scene.getTransformMatrix(),
-                            camera.viewport.toGlobal(
-                                renWidth,
-                                renHeight,
-                            ),
-                        );
-                        const defStyle = 'position: absolute; transform: translate(-50%, -50%); font-weight: 400;';
-
-                        const distance = Vector3.Distance(camera.position, vector);
-                        const size = tag.adaptDepth ? Math.ceil(BitByBitBlocklyHelperService.remap(distance,
-                            0, 100,
-                            tag.size, 3)) : tag.size;
-                        if (pos.x > 0 && pos.x < renWidth &&
-                            pos.y > 0 && pos.y < renHeight &&
-                            pos.z > 0 && pos.z < 1 && size > 3) {
-                            (textNode as any).style =
-                                `${defStyle} font-size: ${size}px; color: ${tag.colour}; left: ${pos.x}px; top: ${pos.y}px; display: inline;`;
-                        } else {
-                            (textNode as any).style = 'display: none;';
-                        }
-                    }
-
-                    this.tagsNeedUpdate = false;
-                }
+                this.tagService.handleTags(camera, this.tagsNeedUpdate, this.engine, this.scene);
+                this.tagsNeedUpdate = false;
             });
 
             BitByBitBlocklyHelperService.promptPrintSave = (prompt: PrintSaveInterface) => this.openPrintSaveDialog(prompt);
@@ -187,6 +152,7 @@ export class AppComponent implements OnInit, AfterViewInit {
                 HttpParams
             };
             BitByBitBlocklyHelperService.jsonpath = jsonpath;
+            BitByBitBlocklyHelperService.clearAllDrawn = () => this.clearMeshesAndMaterials();
 
             this.settingsService.initSettings(this.workspace, this.changeDetectorService).subscribe(s => {
 
@@ -245,7 +211,7 @@ export class AppComponent implements OnInit, AfterViewInit {
         do {
             x += element.offsetLeft;
             y += element.offsetTop;
-            element = element.offsetParent;
+            element = element.offsetParent as HTMLElement;
         } while (element);
         this.blocklyDiv.style.width = this.blocklyArea.offsetWidth + 'px';
         this.blocklyDiv.style.height = this.blocklyArea.offsetHeight + 'px';
@@ -315,14 +281,11 @@ export class AppComponent implements OnInit, AfterViewInit {
 
     run() {
         try {
-            this.clearMeshes();
-            if (BitByBitBlocklyHelperService.tagBag.length > 0) {
-                BitByBitBlocklyHelperService.tagBag.forEach(tag => {
-                    const element = document.getElementById(tag.id);
-                    element.parentNode.removeChild(element);
-                });
-            }
-            BitByBitBlocklyHelperService.tagBag = [];
+            this.clearMeshesAndMaterials();
+            this.tagService.removeTagsIfNeeded();
+            BitByBitBlocklyHelperService.intervalBag.forEach(i => clearInterval(i));
+            BitByBitBlocklyHelperService.timeoutBag.forEach(t => clearTimeout(t));
+
             this.scene.clearColor = new Color4(1, 1, 1, 1);
 
             const javascript = JavaScript;
@@ -341,7 +304,7 @@ const BitByBitBlocklyHelperService = window.BitByBitBlocklyHelperService;
 ${code}
             `);
 
-            if (BitByBitBlocklyHelperService.tagBag.length > 0) {
+            if (this.tagService.tagsExist()) {
                 this.tagsNeedUpdate = true;
             }
 
@@ -356,9 +319,11 @@ ${code}
         }
     }
 
-    clearMeshes() {
+    clearMeshesAndMaterials() {
         this.scene.meshes.forEach(m => m.dispose());
         this.scene.meshes = [];
+        this.scene.materials.forEach(m => m.dispose());
+        this.scene.materials = [];
     }
 
     private openAlertDialog(error: { title: string, details: string, message: string }): void {

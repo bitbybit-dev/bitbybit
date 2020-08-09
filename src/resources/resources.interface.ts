@@ -191,6 +191,7 @@ export interface ResourcesInterface {
     block_radius: string;
     block_interval: string;
     block_interval_handler: string;
+    block_timeout_handler: string;
     block_scale: string;
     block_vector: string;
     block_knots: string;
@@ -231,7 +232,9 @@ export interface ResourcesInterface {
     block_babylon_input_opacity: string;
     block_babylon_input_size: string;
     block_babylon_input_width: string;
+    block_babylon_input_draw_grid_variable: string;
     block_babylon_input_draw_grid: string;
+    block_babylon_input_draw_grid_2: string;
     block_babylon_input_subdivisions: string;
     block_babylon_input_major_unit_frequency: string;
     block_babylon_input_minor_unit_visibility: string;
@@ -785,6 +788,8 @@ export interface ResourcesInterface {
     block_base_async_execute_at_interval_with_handler_description: string;
     block_base_async_clear_interval_input_interval_handler: string;
     block_base_async_clear_interval_description: string;
+    block_base_async_clear_timeout_input_timeout_handler: string;
+    block_base_async_clear_timeout_description: string;
     block_base_io_json_empty_object_input_json: string;
     block_base_io_json_empty_object_description: string;
     block_base_io_json_preview_input_json: string;
@@ -943,4 +948,6 @@ export interface ResourcesInterface {
     block_base_math_modulus_input_number: string;
     block_base_math_modulus_input_modulus: string;
     block_base_math_modulus_description: string;
+    block_base_clear_all_drawn_input_clear_all_drawn: string;
+    block_base_clear_all_drawn_description: string;
 }

@@ -1,4 +1,4 @@
-import { ALIGN_RIGHT, Block, Blocks } from 'blockly';
+import { ALIGN_RIGHT, Block, Blocks, FieldVariable, VARIABLE_CATEGORY_NAME } from 'blockly';
 import * as JavaScript from 'blockly/javascript';
 import { ResourcesInterface, ResourcesService } from '../../../resources';
 import { createStandardContextIIFE } from '../../_shared';
@@ -21,7 +21,9 @@ export function createDrawGridBlock() {
             this.appendValueInput('Width')
                 .setCheck('Number')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_babylon_input_draw_grid);
+                .appendField(resources.block_babylon_input_draw_grid)
+                .appendField(new FieldVariable(resources.block_babylon_input_draw_grid_variable), 'Grid')
+                .appendField(resources.block_babylon_input_draw_grid_2);
             this.appendValueInput('Height')
                 .setCheck('Number')
                 .setAlign(ALIGN_RIGHT)
@@ -77,6 +79,7 @@ export function createDrawGridBlock() {
             backFaceCulling: JavaScript.valueToCode(block, 'BackFaceCulling', JavaScript.ORDER_ATOMIC),
             mainColor: JavaScript.valueToCode(block, 'MainColor', JavaScript.ORDER_ATOMIC),
             secondaryColor: JavaScript.valueToCode(block, 'LineColor', JavaScript.ORDER_ATOMIC),
+            gridVariable: JavaScript.variableDB_.getName(block.getFieldValue('Grid'), VARIABLE_CATEGORY_NAME),
         };
 
         // this is first set of validations to check that all inputs are non empty strings
@@ -111,6 +114,7 @@ export function createDrawGridBlock() {
 
         const ground = BABYLON.Mesh.CreateGround('ground${Math.random()}', inputs.width, inputs.height, inputs.subdivisions, scene, false);
         ground.material = groundMaterial;
+        ${JavaScript.variableDB_.getName(block.getFieldValue('Grid'), VARIABLE_CATEGORY_NAME)} = grid;
 `
         );
     };

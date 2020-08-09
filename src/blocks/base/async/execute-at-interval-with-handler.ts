@@ -46,9 +46,11 @@ export function createExecuteAtIntervalWithHandlerBlock() {
         (block as any).validationModel = runtimeValidationModel;
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
             `
-return setInterval(() => {
-    inputs.statement_then();
-}, inputs.interval * 1000);
+            const interval = setInterval(() => {
+                inputs.statement_then();
+            }, inputs.interval * 1000);
+            BitByBitBlocklyHelperService.intervalBag.push(interval);
+            return interval;
 `);
         return [code, JavaScript.ORDER_ATOMIC];
     };

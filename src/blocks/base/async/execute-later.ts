@@ -48,9 +48,10 @@ export function createExecuteLaterBlock() {
         (block as any).validationModel = runtimeValidationModel;
         return createStandardContextIIFE(block, blockSelector, inputs, false,
             `
-            setTimeout(() => {
+            const handler = setTimeout(() => {
                 inputs.statement_then();
             }, inputs.timeout * 1000);
+            BitByBitBlocklyHelperService.timeoutBag.push(handler);
 `);
     };
 }

@@ -63,6 +63,8 @@ export function sceneCategory() {
                 </shadow>
             </value>
         </block>
+        <block type="babylon_clear_all_drawn">
+        </block>
     </category>
 `;
 }

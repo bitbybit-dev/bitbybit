@@ -33,6 +33,8 @@ export function asyncCategory() {
         </block>
         <block type="base_async_clear_interval">
         </block>
+        <block type="base_async_clear_timeout">
+        </block>
     </category>
 `;
 }

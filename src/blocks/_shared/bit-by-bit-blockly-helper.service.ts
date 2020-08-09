@@ -1,13 +1,17 @@
 import { HttpClient } from '@angular/common/http';
 import { Matrix, Vector3 } from '@babylonjs/core';
 import { PrintSaveInterface } from './models/print-save.model';
+import { TagInterface } from './models/tag.interface';
 
 export class BitByBitBlocklyHelperService {
 
     static promptPrintSave: (prompt: PrintSaveInterface) => void;
+    static clearAllDrawn: () => void;
     static angular: { httpClient: HttpClient, HttpHeaders: any, HttpParams: any };
     static jsonpath: any;
-    static tagBag = [];
+    static tagBag: TagInterface[] = [];
+    static timeoutBag: number[] = [];
+    static intervalBag: number[] = [];
 
     static transformPointsByMatrix(points: [], transformMatrix: Matrix) {
         const transformedPoints = [];
