@@ -170,6 +170,7 @@ export interface ResourcesInterface {
     block_opacity: string;
     block_width: string;
     block_size: string;
+    block_updatable: string;
     block_position: string;
     block_text_tag: string;
     block_text_tags: string;
@@ -231,6 +232,7 @@ export interface ResourcesInterface {
     block_babylon_input_colour: string;
     block_babylon_input_opacity: string;
     block_babylon_input_size: string;
+    block_babylon_input_updatable: string;
     block_babylon_input_width: string;
     block_babylon_input_draw_grid_variable: string;
     block_babylon_input_draw_grid: string;
