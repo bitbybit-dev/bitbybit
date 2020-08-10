@@ -6,6 +6,7 @@ import { createExecuteAtIntervalWithHandlerBlock } from './execute-at-interval-w
 import { createExecuteLaterBlock } from './execute-later';
 import { createThenBlock } from './then';
 import { createThenChainBlock } from './then-chain';
+import { createUpdateBlock } from './update';
 
 export function assembleAsyncBlocks() {
     createThenBlock();
@@ -16,4 +17,5 @@ export function assembleAsyncBlocks() {
     createExecuteAtIntervalWithHandlerBlock();
     createClearIntervalBlock();
     createClearTimeoutBlock();
+    createUpdateBlock();
 }

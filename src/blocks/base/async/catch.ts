@@ -7,24 +7,24 @@ import { getRequired, makeRequiredValidationModelForInputs, BitByBitBlockHandler
 export function createCatchBlock() {
 
     const resources = ResourcesService.getResources();
-    const blockSelector = 'base_async_catch';
+    const blockSelector = 'base_time_catch';
 
     Blocks[blockSelector] = {
         init() {
             this.appendValueInput('Promise')
                     .setCheck(null)
-                    .appendField(resources.block_base_async_catch_input_promise_one)
-                    .appendField(new FieldVariable(resources.block_base_async_catch_var_error), 'Error')
-                    .appendField(resources.block_base_async_catch_input_promise_two);
+                    .appendField(resources.block_base_time_catch_input_promise_one)
+                    .appendField(new FieldVariable(resources.block_base_time_catch_var_error), 'Error')
+                    .appendField(resources.block_base_time_catch_input_promise_two);
             this.appendStatementInput('Catch')
                     .setCheck(null)
-                    .appendField(resources.block_base_async_catch_statement_catch.toLowerCase());
+                    .appendField(resources.block_base_time_catch_statement_catch.toLowerCase());
             createDummyAsyncLoadingIndicator(this, resources);
             this.setColour('#fff');
             this.setOutput(false);
             this.setPreviousStatement(true, null);
             this.setNextStatement(true, null);
-            this.setTooltip(resources.block_base_async_catch_description);
+            this.setTooltip(resources.block_base_time_catch_description);
         }
     };
 

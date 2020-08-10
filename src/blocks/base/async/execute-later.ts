@@ -7,26 +7,26 @@ import { getRequired, BitByBitBlockHandlerService, ValidationEntityInterface } f
 export function createExecuteLaterBlock() {
 
     const resources = ResourcesService.getResources();
-    const blockSelector = 'base_async_execute_later';
+    const blockSelector = 'base_time_execute_later';
 
     Blocks[blockSelector] = {
         init() {
             this.appendValueInput('Timeout')
                 .setCheck('Number')
-                .appendField(resources.block_base_async_execute_later_input_timeout);
+                .appendField(resources.block_base_time_execute_later_input_timeout);
             this.appendDummyInput('Unit')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_base_async_execute_later_input_unit.toLowerCase());
+                .appendField(resources.block_base_time_execute_later_input_unit.toLowerCase());
             this.appendStatementInput('Then')
                 .setCheck(null)
-                .appendField(resources.block_base_async_execute_later_statement_then.toLowerCase());
+                .appendField(resources.block_base_time_execute_later_statement_then.toLowerCase());
             createDummyAsyncLoadingIndicator(this, resources);
             this.setColour('#fff');
             this.setInputsInline(true);
             this.setOutput(false);
             this.setPreviousStatement(true, null);
             this.setNextStatement(true, null);
-            this.setTooltip(resources.block_base_async_execute_later_description);
+            this.setTooltip(resources.block_base_time_execute_later_description);
         }
     };
 

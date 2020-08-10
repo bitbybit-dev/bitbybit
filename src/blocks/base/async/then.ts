@@ -7,18 +7,18 @@ import { getRequired, BitByBitBlockHandlerService, ValidationEntityInterface } f
 export function createThenBlock() {
 
     const resources = ResourcesService.getResources();
-    const blockSelector = 'base_async_then';
+    const blockSelector = 'base_time_then';
 
     Blocks[blockSelector] = {
         init() {
             this.appendValueInput('Promise')
                 .setCheck('Promise')
-                .appendField(resources.block_base_async_then_input_promise_one)
-                .appendField(new FieldVariable(resources.block_base_async_then_var_result), 'Result')
-                .appendField(resources.block_base_async_then_input_promise_two);
+                .appendField(resources.block_base_time_then_input_promise_one)
+                .appendField(new FieldVariable(resources.block_base_time_then_var_result), 'Result')
+                .appendField(resources.block_base_time_then_input_promise_two);
             this.appendStatementInput('Then')
                 .setCheck(null)
-                .appendField(resources.block_base_async_then_statement_catch.toLowerCase());
+                .appendField(resources.block_base_time_then_statement_catch.toLowerCase());
             createDummyAsyncLoadingIndicator(this, resources);
             this.setColour('#fff');
             this.setOutput(false);

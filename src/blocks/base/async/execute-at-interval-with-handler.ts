@@ -7,24 +7,24 @@ import { getRequired, BitByBitBlockHandlerService, ValidationEntityInterface } f
 export function createExecuteAtIntervalWithHandlerBlock() {
 
     const resources = ResourcesService.getResources();
-    const blockSelector = 'base_async_execute_at_interval_with_handler';
+    const blockSelector = 'base_time_execute_at_interval_with_handler';
 
     Blocks[blockSelector] = {
         init() {
             this.appendValueInput('Interval')
                 .setCheck('Number')
-                .appendField(resources.block_base_async_execute_at_interval_with_handler_input_interval);
+                .appendField(resources.block_base_time_execute_at_interval_with_handler_input_interval);
             this.appendDummyInput('Unit')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_base_async_execute_at_interval_with_handler_input_unit.toLowerCase());
+                .appendField(resources.block_base_time_execute_at_interval_with_handler_input_unit.toLowerCase());
             this.appendStatementInput('Then')
                 .setCheck(null)
-                .appendField(resources.block_base_async_execute_at_interval_with_handler_statement_then.toLowerCase());
+                .appendField(resources.block_base_time_execute_at_interval_with_handler_statement_then.toLowerCase());
             createDummyAsyncLoadingIndicator(this, resources);
             this.setColour('#fff');
             this.setInputsInline(true);
             this.setOutput(true, 'IntervalHandler');
-            this.setTooltip(resources.block_base_async_execute_at_interval_with_handler_description);
+            this.setTooltip(resources.block_base_time_execute_at_interval_with_handler_description);
         }
     };
 

@@ -52,6 +52,7 @@ export class AppComponent implements OnInit, AfterViewInit {
     resources: ResourcesInterface;
     firstTimeOpen = true;
     tagsNeedUpdate = false;
+    timePassedFromPreviousIteration = 0;
 
     constructor(
         public dialog: MatDialog,
@@ -126,8 +127,11 @@ export class AppComponent implements OnInit, AfterViewInit {
             (window as any).blockly = this.windowBlockly;
 
             this.engine.runRenderLoop(() => {
+                const now = Date.now();
+                const timeElapsedFromPreviousIteration = now - this.timePassedFromPreviousIteration;
+                this.timePassedFromPreviousIteration = now;
+                BitByBitBlocklyHelperService.renderLoopBag.forEach(f => f(timeElapsedFromPreviousIteration));
                 this.scene.render();
-
             });
 
             this.tagsNeedUpdate = false;
@@ -285,6 +289,7 @@ export class AppComponent implements OnInit, AfterViewInit {
             this.tagService.removeTagsIfNeeded();
             BitByBitBlocklyHelperService.intervalBag.forEach(i => clearInterval(i));
             BitByBitBlocklyHelperService.timeoutBag.forEach(t => clearTimeout(t));
+            BitByBitBlocklyHelperService.renderLoopBag = [];
 
             this.scene.clearColor = new Color4(1, 1, 1, 1);
 

@@ -1,4 +1,4 @@
-import { ALIGN_RIGHT, Block, Blocks } from 'blockly';
+import { ALIGN_RIGHT, Block, Blocks, FieldVariable, VARIABLE_CATEGORY_NAME } from 'blockly';
 import * as JavaScript from 'blockly/javascript';
 import { ResourcesInterface, ResourcesService } from '../../../resources';
 import { createStandardContextIIFE } from '../../_shared';
@@ -21,7 +21,8 @@ export function createDrawPointsBlock() {
             this.appendValueInput('Points')
                 .setCheck('Array')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_babylon_input_draw_points);
+                .appendField(resources.block_babylon_input_draw_points)
+                .appendField(new FieldVariable(resources.block_babylon_input_draw_points_variable), 'Points');
             this.appendValueInput('Colour')
                 .setCheck('Colour')
                 .setAlign(ALIGN_RIGHT)
@@ -47,7 +48,7 @@ export function createDrawPointsBlock() {
             points: JavaScript.valueToCode(block, 'Points', JavaScript.ORDER_ATOMIC),
             colour: JavaScript.valueToCode(block, 'Colour', JavaScript.ORDER_ATOMIC),
             opacity: JavaScript.valueToCode(block, 'Opacity', JavaScript.ORDER_ATOMIC),
-            size: JavaScript.valueToCode(block, 'Size', JavaScript.ORDER_ATOMIC)
+            size: JavaScript.valueToCode(block, 'Size', JavaScript.ORDER_ATOMIC),
         };
 
         // this is first set of validations to check that all inputs are non empty strings
@@ -60,12 +61,10 @@ export function createDrawPointsBlock() {
         (block as any).validationModel = runtimeValidationModel;
 
         return createStandardContextIIFE(block, blockSelector, inputs, false,
-`
+            `
+        const pointsMesh = ${JavaScript.variableDB_.getName(block.getFieldValue('Points'), VARIABLE_CATEGORY_NAME)};
         const vectorPoints = inputs.points;
         const colour = BABYLON.Color3.FromHexString(inputs.colour);
-
-        const customMesh = new BABYLON.Mesh('custom${Math.random()}', scene);
-
         const positions = [];
         const colors = [];
 
@@ -75,21 +74,36 @@ export function createDrawPointsBlock() {
             colors.push(colour.r, colour.g, colour.b, 1);
         });
 
-        const vertexData = new BABYLON.VertexData();
+        if(pointsMesh) {
 
-        vertexData.positions = positions;
-        vertexData.colors = colors;
+            pointsMesh.updateVerticesData(BABYLON.VertexBuffer.PositionKind, positions);
+            pointsMesh.updateVerticesData(BABYLON.VertexBuffer.ColorKind, colors);
+            pointsMesh.material.alpha = inputs.opacity;
+            pointsMesh.material.pointSize = inputs.size;
 
-        vertexData.applyToMesh(customMesh);
+        } else {
 
-        const mat = new BABYLON.StandardMaterial('mat${Math.random()}', scene);
-        mat.emissiveColor = new BABYLON.Color3(1, 1, 1);
-        mat.disableLighting = true;
-        mat.pointsCloud = true;
-        mat.alpha = inputs.opacity;
-        mat.pointSize = inputs.size;
+            const vertexData = new BABYLON.VertexData();
 
-        customMesh.material = mat;
+            vertexData.positions = positions;
+            vertexData.colors = colors;
+
+            const customMesh = new BABYLON.Mesh('custom${Math.random()}', scene);
+            vertexData.applyToMesh(customMesh, true);
+
+            const mat = new BABYLON.StandardMaterial('mat${Math.random()}', scene);
+            customMesh.material = mat;
+
+            customMesh.material.emissiveColor = new BABYLON.Color3(1, 1, 1);
+            customMesh.material.disableLighting = true;
+            customMesh.material.pointsCloud = true;
+            customMesh.material.alpha = inputs.opacity;
+            customMesh.material.pointSize = inputs.size;
+
+            ${JavaScript.variableDB_.getName(block.getFieldValue('Points'), VARIABLE_CATEGORY_NAME)} = customMesh;
+        }
+
+
 `
         );
     };

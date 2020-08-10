@@ -1,39 +1,41 @@
 import { ResourcesService } from 'src/resources';
 
-export function asyncCategory() {
+export function timeCategory() {
     const resources = ResourcesService.getResources();
     return `
-    <category name="${resources.block_toolbox_category_async}" categorystyle="verb_core_category">
-        <block type="base_async_then">
+    <category name="${resources.block_toolbox_category_time}" categorystyle="verb_core_category">
+        <block type="base_time_update">
         </block>
-        <block type="base_async_then_chain">
+        <block type="base_time_then">
         </block>
-        <block type="base_async_catch">
+        <block type="base_time_then_chain">
         </block>
-        <block type="base_async_execute_later">
+        <block type="base_time_catch">
+        </block>
+        <block type="base_time_execute_later">
             <value name="Timeout">
                 <shadow type="math_number">
                     <field name="NUM">2</field>
                 </shadow>
             </value>
         </block>
-        <block type="base_async_execute_at_interval">
+        <block type="base_time_execute_at_interval">
             <value name="Interval">
                 <shadow type="math_number">
                     <field name="NUM">2</field>
                 </shadow>
             </value>
         </block>
-        <block type="base_async_execute_at_interval_with_handler">
+        <block type="base_time_execute_at_interval_with_handler">
             <value name="Interval">
                 <shadow type="math_number">
                     <field name="NUM">2</field>
                 </shadow>
             </value>
         </block>
-        <block type="base_async_clear_interval">
+        <block type="base_time_clear_interval">
         </block>
-        <block type="base_async_clear_timeout">
+        <block type="base_time_clear_timeout">
         </block>
     </category>
 `;

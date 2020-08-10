@@ -1,4 +1,3 @@
-import { asyncCategory } from './categories/async/async-category';
 import { defaultBlocklyCategories } from './categories/blockly/default-categories';
 import { transformsCategory } from './categories/core/transforms-category';
 import { typesCategory } from './categories/core/types-category';
@@ -12,6 +11,7 @@ import { intersectCategory } from './categories/intersect/intersect-category';
 import { ioCategory } from './categories/io/io-category';
 import { sceneCategory } from './categories/scene/scene-category';
 import { tagCategory } from './categories/tag/tag-category';
+import { timeCategory } from './categories/time/time-category';
 
 export function toolboxDefinition() {
     return `
@@ -32,7 +32,7 @@ export function toolboxDefinition() {
     ${tagCategory()}
     <sep></sep>
     ${ioCategory()}
-    ${asyncCategory()}
+    ${timeCategory()}
     <sep></sep>
     ${defaultBlocklyCategories()}
 </xml>

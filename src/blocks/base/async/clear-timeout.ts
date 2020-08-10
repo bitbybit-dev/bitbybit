@@ -7,19 +7,19 @@ import { getRequired, makeRequiredValidationModelForInputs, BitByBitBlockHandler
 export function createClearTimeoutBlock() {
 
     const resources = ResourcesService.getResources();
-    const blockSelector = 'base_async_clear_timeout';
+    const blockSelector = 'base_time_clear_timeout';
 
     Blocks[blockSelector] = {
         init() {
             this.appendValueInput('TimeoutHandler')
                 .setCheck('TimeoutHandler')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_base_async_clear_timeout_input_timeout_handler);
+                .appendField(resources.block_base_time_clear_timeout_input_timeout_handler);
             this.setOutput(false);
             this.setColour('#fff');
             this.setPreviousStatement(true, null);
             this.setNextStatement(true, null);
-            this.setTooltip(resources.block_base_async_clear_timeout_description);
+            this.setTooltip(resources.block_base_time_clear_timeout_description);
         }
     };
 

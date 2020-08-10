@@ -12,6 +12,7 @@ export class BitByBitBlocklyHelperService {
     static tagBag: TagInterface[] = [];
     static timeoutBag: number[] = [];
     static intervalBag: number[] = [];
+    static renderLoopBag: ((timePassedFromPreviousIteration: number) => void)[] = [];
 
     static transformPointsByMatrix(points: [], transformMatrix: Matrix) {
         const transformedPoints = [];

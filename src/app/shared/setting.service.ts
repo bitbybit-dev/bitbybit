@@ -98,7 +98,7 @@ export class SettingsService {
             resources.block_toolbox_category_io_text,
             resources.block_toolbox_category_io_http,
             resources.block_toolbox_category_io_json,
-            resources.block_toolbox_category_async,
+            resources.block_toolbox_category_time,
             resources.block_toolbox_category_variables,
             resources.block_toolbox_category_functions,
             resources.block_toolbox_category_date,

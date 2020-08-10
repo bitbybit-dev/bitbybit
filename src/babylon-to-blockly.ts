@@ -1,4 +1,4 @@
-import { Angle, Color3, Color4, Matrix, Mesh, MeshBuilder, StandardMaterial, Vector3, VertexData } from '@babylonjs/core';
+import { Angle, Color3, Color4, Matrix, Mesh, MeshBuilder, StandardMaterial, Vector3, VertexData, VertexBuffer } from '@babylonjs/core';
 import { GridMaterial } from '@babylonjs/materials';
 import * as Blockly from 'blockly';
 import { core, geom } from 'verb-nurbs-web';
@@ -29,6 +29,7 @@ export function prepareBabylonForBlockly() {
     BABYLON.StandardMaterial = StandardMaterial;
     BABYLON.Matrix = Matrix;
     BABYLON.VertexData = VertexData;
+    BABYLON.VertexBuffer = VertexBuffer;
     BABYLON.Angle = Angle;
 
     windowBlockly.BABYLON = BABYLON;
