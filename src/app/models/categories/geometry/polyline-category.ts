@@ -20,6 +20,11 @@ export function polylineCategory() {
                     <field name="NUM">1</field>
                 </shadow>
             </value>
+            <value name="Updatable">
+                <shadow type="logic_boolean">
+                    <field name="BOOL">FALSE</field>
+                </shadow>
+            </value>
         </block>
         <category name="${resources.block_toolbox_category_create}" expanded="true" categorystyle="geometry_category">
             <block type="base_geometry_polyline">

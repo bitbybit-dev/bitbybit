@@ -1,4 +1,4 @@
-import { ALIGN_RIGHT, Block, Blocks } from 'blockly';
+import { ALIGN_RIGHT, Block, Blocks, VARIABLE_CATEGORY_NAME, FieldVariable } from 'blockly';
 import * as JavaScript from 'blockly/javascript';
 import { ResourcesInterface, ResourcesService } from '../../../resources';
 import { createStandardContextIIFE } from '../../_shared';
@@ -21,7 +21,9 @@ export function createDrawPolylineBlock() {
             this.appendValueInput('Polyline')
                 .setCheck('Polyline')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_babylon_input_draw_polyline);
+                .appendField(resources.block_babylon_input_draw_polyline)
+                .appendField(new FieldVariable(resources.block_babylon_input_draw_polyline_variable), 'DrawnPolylineMesh')
+                .appendField(resources.block_babylon_input_draw_polyline_2);
             this.appendValueInput('Colour')
                 .setCheck('Colour')
                 .setAlign(ALIGN_RIGHT)
@@ -34,6 +36,10 @@ export function createDrawPolylineBlock() {
                 .setCheck('Number')
                 .setAlign(ALIGN_RIGHT)
                 .appendField(resources.block_babylon_input_width.toLowerCase());
+            this.appendValueInput('Updatable')
+                .setCheck('Boolean')
+                .setAlign(ALIGN_RIGHT)
+                .appendField(resources.block_babylon_input_updatable.toLowerCase());
             this.setColour('#fff');
             this.setPreviousStatement(true, null);
             this.setNextStatement(true, null);
@@ -46,7 +52,8 @@ export function createDrawPolylineBlock() {
             polyline: JavaScript.valueToCode(block, 'Polyline', JavaScript.ORDER_ATOMIC),
             colour: JavaScript.valueToCode(block, 'Colour', JavaScript.ORDER_ATOMIC),
             opacity: JavaScript.valueToCode(block, 'Opacity', JavaScript.ORDER_ATOMIC),
-            width: JavaScript.valueToCode(block, 'Width', JavaScript.ORDER_ATOMIC)
+            width: JavaScript.valueToCode(block, 'Width', JavaScript.ORDER_ATOMIC),
+            updatable: JavaScript.valueToCode(block, 'Updatable', JavaScript.ORDER_ATOMIC),
         };
 
         // this is first set of validations to check that all inputs are non empty strings
@@ -59,7 +66,9 @@ export function createDrawPolylineBlock() {
         (block as any).validationModel = runtimeValidationModel;
 
         return createStandardContextIIFE(block, blockSelector, inputs, false,
-`
+            `
+        let lineMeshVariable = ${JavaScript.variableDB_.getName(block.getFieldValue('DrawnPolylineMesh'), VARIABLE_CATEGORY_NAME)};
+
         const points = [];
         const colors = [];
         inputs.polyline.points.forEach(pt => {
@@ -67,14 +76,18 @@ export function createDrawPolylineBlock() {
             colors.push( new BABYLON.Color4(1, 1, 1, 0));
         });
 
-        const lines = BABYLON.MeshBuilder.CreateLines('lines${Math.random()}', {points, colors, useVertexAlpha: true}, scene);
+        if(lineMeshVariable && inputs.updatable){
+            lineMeshVariable = BABYLON.MeshBuilder.CreateLines(null, {points, colors, instance: lineMeshVariable, useVertexAlpha: true, updatable: inputs.updatable}, null);
+        } else {
+            lineMeshVariable = BABYLON.MeshBuilder.CreateLines('polylineMesh${Math.random()}', {points, colors, updatable: inputs.updatable, useVertexAlpha: true}, scene);
+            ${JavaScript.variableDB_.getName(block.getFieldValue('DrawnPolylineMesh'), VARIABLE_CATEGORY_NAME)} = lineMeshVariable;
+        }
 
-        lines.enableEdgesRendering();
-        lines.edgesWidth = inputs.width;
+        lineMeshVariable.enableEdgesRendering();
+        lineMeshVariable.edgesWidth = inputs.width;
         let col = BABYLON.Color3.FromHexString(inputs.colour);
-        lines.edgesColor = new BABYLON.Color4(col.r, col.g, col.b, inputs.opacity);
-        lines.opacity =  inputs.opacity;
-        return lines;
+        lineMeshVariable.edgesColor = new BABYLON.Color4(col.r, col.g, col.b, inputs.opacity);
+        lineMeshVariable.opacity =  inputs.opacity;
 `
         );
     };

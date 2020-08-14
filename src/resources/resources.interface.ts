@@ -252,6 +252,7 @@ export interface ResourcesInterface {
     block_babylon_input_draw_lines_variable: string;
     block_babylon_input_draw_lines_2: string;
     block_babylon_input_draw_polyline: string;
+    block_babylon_input_draw_polyline_2: string;
     block_babylon_input_draw_polyline_variable: string;
     block_babylon_input_draw_point: string;
     block_babylon_input_draw_point_variable: string;

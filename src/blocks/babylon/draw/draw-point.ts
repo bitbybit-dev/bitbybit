@@ -69,7 +69,7 @@ export function createDrawPointBlock() {
 
         return createStandardContextIIFE(block, blockSelector, inputs, false,
             `
-            let pointsMesh = ${JavaScript.variableDB_.getName(block.getFieldValue('DrawnPointMesh'), VARIABLE_CATEGORY_NAME)};
+            let pointMeshVariable = ${JavaScript.variableDB_.getName(block.getFieldValue('DrawnPointMesh'), VARIABLE_CATEGORY_NAME)};
             const vectorPoints = [inputs.point];
             const colour = BABYLON.Color3.FromHexString(inputs.colour);
             const positions = [];
@@ -81,12 +81,12 @@ export function createDrawPointBlock() {
                 colors.push(colour.r, colour.g, colour.b, 1);
             });
 
-            if(pointsMesh && inputs.updatable) {
+            if(pointMeshVariable && inputs.updatable) {
 
-                pointsMesh.updateVerticesData(BABYLON.VertexBuffer.PositionKind, positions);
-                pointsMesh.updateVerticesData(BABYLON.VertexBuffer.ColorKind, colors);
-                pointsMesh.material.alpha = inputs.opacity;
-                pointsMesh.material.pointSize = inputs.size;
+                pointMeshVariable.updateVerticesData(BABYLON.VertexBuffer.PositionKind, positions);
+                pointMeshVariable.updateVerticesData(BABYLON.VertexBuffer.ColorKind, colors);
+                pointMeshVariable.material.alpha = inputs.opacity;
+                pointMeshVariable.material.pointSize = inputs.size;
 
             } else {
 
@@ -95,19 +95,19 @@ export function createDrawPointBlock() {
                 vertexData.positions = positions;
                 vertexData.colors = colors;
 
-                pointsMesh = new BABYLON.Mesh('pointsMesh${Math.random()}', scene);
-                vertexData.applyToMesh(pointsMesh, inputs.updatable);
+                pointMeshVariable = new BABYLON.Mesh('pointMesh${Math.random()}', scene);
+                vertexData.applyToMesh(pointMeshVariable, inputs.updatable);
 
                 const mat = new BABYLON.StandardMaterial('mat${Math.random()}', scene);
-                pointsMesh.material = mat;
+                pointMeshVariable.material = mat;
 
-                pointsMesh.material.emissiveColor = new BABYLON.Color3(1, 1, 1);
-                pointsMesh.material.disableLighting = true;
-                pointsMesh.material.pointsCloud = true;
-                pointsMesh.material.alpha = inputs.opacity;
-                pointsMesh.material.pointSize = inputs.size;
+                pointMeshVariable.material.emissiveColor = new BABYLON.Color3(1, 1, 1);
+                pointMeshVariable.material.disableLighting = true;
+                pointMeshVariable.material.pointsCloud = true;
+                pointMeshVariable.material.alpha = inputs.opacity;
+                pointMeshVariable.material.pointSize = inputs.size;
 
-                ${JavaScript.variableDB_.getName(block.getFieldValue('DrawnPointMesh'), VARIABLE_CATEGORY_NAME)} = pointsMesh;
+                ${JavaScript.variableDB_.getName(block.getFieldValue('DrawnPointMesh'), VARIABLE_CATEGORY_NAME)} = pointMeshVariable;
             }
 `
         );
