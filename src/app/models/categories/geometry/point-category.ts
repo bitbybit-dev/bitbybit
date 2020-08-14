@@ -20,6 +20,11 @@ export function pointCategory() {
                     <field name="NUM">1</field>
                 </shadow>
             </value>
+            <value name="Updatable">
+                <shadow type="logic_boolean">
+                    <field name="BOOL">FALSE</field>
+                </shadow>
+            </value>
         </block>
         <block type="babylon_draw_point">
             <value name="Point">
@@ -54,6 +59,11 @@ export function pointCategory() {
             <value name="Opacity">
                 <shadow type="math_number">
                     <field name="NUM">1</field>
+                </shadow>
+            </value>
+            <value name="Updatable">
+                <shadow type="logic_boolean">
+                    <field name="BOOL">FALSE</field>
                 </shadow>
             </value>
         </block>

@@ -1,4 +1,5 @@
-import { ALIGN_RIGHT, Block, Blocks } from 'blockly';
+
+import { ALIGN_RIGHT, Block, Blocks, FieldVariable, VARIABLE_CATEGORY_NAME } from 'blockly';
 import * as JavaScript from 'blockly/javascript';
 import { ResourcesInterface, ResourcesService } from '../../../resources';
 import { createStandardContextIIFE } from '../../_shared';
@@ -21,7 +22,9 @@ export function createDrawLineBlock() {
             this.appendValueInput('Line')
                 .setCheck('Line')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_babylon_input_draw_line);
+                .appendField(resources.block_babylon_input_draw_line)
+                .appendField(new FieldVariable(resources.block_babylon_input_draw_line_variable), 'DrawnLineMesh')
+                .appendField(resources.block_babylon_input_draw_line_2);
             this.appendValueInput('Colour')
                 .setCheck('Colour')
                 .setAlign(ALIGN_RIGHT)
@@ -34,6 +37,10 @@ export function createDrawLineBlock() {
                 .setCheck('Number')
                 .setAlign(ALIGN_RIGHT)
                 .appendField(resources.block_babylon_input_width.toLowerCase());
+            this.appendValueInput('Updatable')
+                .setCheck('Boolean')
+                .setAlign(ALIGN_RIGHT)
+                .appendField(resources.block_babylon_input_updatable.toLowerCase());
             this.setColour('#fff');
             this.setPreviousStatement(true, null);
             this.setNextStatement(true, null);
@@ -48,7 +55,8 @@ export function createDrawLineBlock() {
             line: JavaScript.valueToCode(block, 'Line', JavaScript.ORDER_ATOMIC),
             colour: JavaScript.valueToCode(block, 'Colour', JavaScript.ORDER_ATOMIC),
             opacity: JavaScript.valueToCode(block, 'Opacity', JavaScript.ORDER_ATOMIC),
-            width: JavaScript.valueToCode(block, 'Width', JavaScript.ORDER_ATOMIC)
+            width: JavaScript.valueToCode(block, 'Width', JavaScript.ORDER_ATOMIC),
+            updatable: JavaScript.valueToCode(block, 'Updatable', JavaScript.ORDER_ATOMIC),
         };
 
         // this is first set of validations to check that all inputs are non empty strings
@@ -61,7 +69,9 @@ export function createDrawLineBlock() {
         (block as any).validationModel = runtimeValidationModel;
 
         return createStandardContextIIFE(block, blockSelector, inputs, false,
-`
+            `
+        let lineMeshVariable = ${JavaScript.variableDB_.getName(block.getFieldValue('DrawnLineMesh'), VARIABLE_CATEGORY_NAME)};
+
         const line = inputs.line;
 
         const points = [
@@ -69,12 +79,17 @@ export function createDrawLineBlock() {
             new BABYLON.Vector3(line.end[0], line.end[1], line.end[2])
         ];
 
-        const lines = BABYLON.MeshBuilder.CreateLines('lines${Math.random()}', {points}, scene);
+        if(lineMeshVariable && inputs.updatable){
+            lineMeshVariable = BABYLON.MeshBuilder.CreateLines(null, {points, instance: lineMeshVariable, useVertexAlpha: true, updatable: inputs.updatable}, null);
+        } else {
+            lineMeshVariable = BABYLON.MeshBuilder.CreateLines('lines${Math.random()}', {points, updatable: inputs.updatable, useVertexAlpha: true}, scene);
+            ${JavaScript.variableDB_.getName(block.getFieldValue('DrawnLineMesh'), VARIABLE_CATEGORY_NAME)} = lineMeshVariable;
+        }
 
-        lines.enableEdgesRendering();
-        lines.edgesWidth = inputs.width;
+        lineMeshVariable.enableEdgesRendering();
+        lineMeshVariable.edgesWidth = inputs.width;
         const edgeColor = BABYLON.Color3.FromHexString(inputs.colour);
-        lines.edgesColor = new BABYLON.Color4(edgeColor.r, edgeColor.g, edgeColor.b, inputs.opacity);
+        lineMeshVariable.edgesColor = new BABYLON.Color4(edgeColor.r, edgeColor.g, edgeColor.b, inputs.opacity);
  `
         );
     };

@@ -22,7 +22,8 @@ export function createDrawPointsBlock() {
                 .setCheck('Array')
                 .setAlign(ALIGN_RIGHT)
                 .appendField(resources.block_babylon_input_draw_points)
-                .appendField(new FieldVariable(resources.block_babylon_input_draw_points_variable), 'DrawnPointsMesh');
+                .appendField(new FieldVariable(resources.block_babylon_input_draw_points_variable), 'DrawnPointsMesh')
+                .appendField(resources.block_babylon_input_draw_points_2);
             this.appendValueInput('Colour')
                 .setCheck('Colour')
                 .setAlign(ALIGN_RIGHT)

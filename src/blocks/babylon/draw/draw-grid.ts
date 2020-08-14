@@ -114,7 +114,7 @@ export function createDrawGridBlock() {
 
         const ground = BABYLON.Mesh.CreateGround('ground${Math.random()}', inputs.width, inputs.height, inputs.subdivisions, scene, false);
         ground.material = groundMaterial;
-        ${JavaScript.variableDB_.getName(block.getFieldValue('Grid'), VARIABLE_CATEGORY_NAME)} = grid;
+        ${JavaScript.variableDB_.getName(block.getFieldValue('Grid'), VARIABLE_CATEGORY_NAME)} = ground;
 `
         );
     };

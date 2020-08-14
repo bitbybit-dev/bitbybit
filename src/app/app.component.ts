@@ -2,7 +2,7 @@ import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { AfterViewInit, ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ArcRotateCamera, DirectionalLight } from '@babylonjs/core';
+import { ArcRotateCamera, DirectionalLight, MeshBuilder } from '@babylonjs/core';
 import { Engine } from '@babylonjs/core/Engines/engine';
 import '@babylonjs/core/Materials/standardMaterial';
 import { Color3, Color4, Matrix, Vector3 } from '@babylonjs/core/Maths/math';
@@ -294,8 +294,10 @@ export class AppComponent implements OnInit, AfterViewInit {
             this.scene.clearColor = new Color4(1, 1, 1, 1);
 
             const javascript = JavaScript;
-            (window as any).LoopTrap = 10000;
-            javascript.INFINITE_LOOP_TRAP = 'if(--window.LoopTrap == 0) throw "Infinite loop cancelled after 10000 iterations.";\n';
+
+            // MeshBuilder.CreateLineSystem()
+            // (window as any).LoopTrap = 10000;
+            // javascript.INFINITE_LOOP_TRAP = 'if(--window.LoopTrap == 0) throw "Infinite loop cancelled after 10000 iterations.";\n';
             const code = javascript.workspaceToCode(this.workspace);
             eval(`
 'use reserved'
