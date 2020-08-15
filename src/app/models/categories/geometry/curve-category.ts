@@ -20,6 +20,11 @@ export function curveCategory() {
                     <field name="NUM">1</field>
                 </shadow>
             </value>
+            <value name="Updatable">
+                <shadow type="logic_boolean">
+                    <field name="BOOL">FALSE</field>
+                </shadow>
+            </value>
         </block>
         <block type="babylon_draw_curves">
             <value name="Colour">
