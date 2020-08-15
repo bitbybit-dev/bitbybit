@@ -1,4 +1,4 @@
-import { ALIGN_RIGHT, Block, Blocks } from 'blockly';
+import { ALIGN_RIGHT, Block, Blocks, VARIABLE_CATEGORY_NAME, FieldVariable } from 'blockly';
 import * as JavaScript from 'blockly/javascript';
 import { ResourcesInterface, ResourcesService } from '../../../resources';
 import { createStandardContextIIFE } from '../../_shared';
@@ -21,7 +21,9 @@ export function createDrawCurveBlock() {
             this.appendValueInput('Curve')
                 .setCheck('NurbsCurve')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_babylon_input_curve);
+                .appendField(resources.block_babylon_input_curve)
+                .appendField(new FieldVariable(resources.block_babylon_input_curve_variable), 'DrawnCurveMesh')
+                .appendField(resources.block_babylon_input_curve_2);
             this.appendValueInput('Colour')
                 .setCheck('Colour')
                 .setAlign(ALIGN_RIGHT)
@@ -34,6 +36,10 @@ export function createDrawCurveBlock() {
                 .setCheck('Number')
                 .setAlign(ALIGN_RIGHT)
                 .appendField(resources.block_babylon_input_width.toLowerCase());
+            this.appendValueInput('Updatable')
+                .setCheck('Boolean')
+                .setAlign(ALIGN_RIGHT)
+                .appendField(resources.block_babylon_input_updatable.toLowerCase());
             this.setColour('#fff');
             this.setPreviousStatement(true, null);
             this.setNextStatement(true, null);
@@ -48,7 +54,8 @@ export function createDrawCurveBlock() {
             curve: JavaScript.valueToCode(block, 'Curve', JavaScript.ORDER_ATOMIC),
             colour: JavaScript.valueToCode(block, 'Colour', JavaScript.ORDER_ATOMIC),
             opacity: JavaScript.valueToCode(block, 'Opacity', JavaScript.ORDER_ATOMIC),
-            width: JavaScript.valueToCode(block, 'Width', JavaScript.ORDER_ATOMIC)
+            width: JavaScript.valueToCode(block, 'Width', JavaScript.ORDER_ATOMIC),
+            updatable: JavaScript.valueToCode(block, 'Updatable', JavaScript.ORDER_ATOMIC),
         };
 
         // this is first set of validations to check that all inputs are non empty strings
@@ -61,7 +68,9 @@ export function createDrawCurveBlock() {
         (block as any).validationModel = runtimeValidationModel;
 
         return createStandardContextIIFE(block, blockSelector, inputs, false,
-`
+            `
+        inputs.curveMesh = ${JavaScript.variableDB_.getName(block.getFieldValue('DrawnCurveMesh'), VARIABLE_CATEGORY_NAME)};
+
         const points = inputs.curve.tessellate();
 
         const colors = [];
@@ -71,13 +80,24 @@ export function createDrawCurveBlock() {
             pointsToRender.push(new BABYLON.Vector3(pt[0], pt[1], pt[2]));
         });
 
-        const curves = BABYLON.MeshBuilder.CreateLines('lines${Math.random()}', {points: pointsToRender, colors, useVertexAlpha: true}, scene);
+        if(inputs.curveMesh && inputs.updatable){
+            if(inputs.curveMesh.getTotalVertices() === points.length){
+                inputs.curveMesh = BABYLON.MeshBuilder.CreateLines(null, {points: pointsToRender, colors, instance: inputs.curveMesh, useVertexAlpha: true, updatable: inputs.updatable}, null);
+            } else {
+                inputs.curveMesh.dispose();
+                inputs.curveMesh = BABYLON.MeshBuilder.CreateLines('curves${Math.random()}', {points: pointsToRender, colors, useVertexAlpha: true, updatable: inputs.updatable}, scene);
+                ${JavaScript.variableDB_.getName(block.getFieldValue('DrawnCurveMesh'), VARIABLE_CATEGORY_NAME)} = inputs.curveMesh;
+            }
+        } else {
+            inputs.curveMesh = BABYLON.MeshBuilder.CreateLines('curves${Math.random()}', {points: pointsToRender, colors, useVertexAlpha: true, updatable: inputs.updatable}, scene);
+            ${JavaScript.variableDB_.getName(block.getFieldValue('DrawnCurveMesh'), VARIABLE_CATEGORY_NAME)} = inputs.curveMesh;
+        }
 
-        curves.enableEdgesRendering();
-        curves.edgesWidth = inputs.width;
+        inputs.curveMesh.enableEdgesRendering();
+        inputs.curveMesh.edgesWidth = inputs.width;
         const col = BABYLON.Color3.FromHexString(inputs.colour);
-        curves.edgesColor = new BABYLON.Color4(col.r, col.g, col.b, inputs.opacity);
-        curves.opacity = inputs.opacity;
+        inputs.curveMesh.edgesColor = new BABYLON.Color4(col.r, col.g, col.b, inputs.opacity);
+        inputs.curveMesh.opacity = inputs.opacity;
 `);
     };
 }

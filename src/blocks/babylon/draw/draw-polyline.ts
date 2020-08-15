@@ -58,7 +58,7 @@ export function createDrawPolylineBlock() {
 
         // this is first set of validations to check that all inputs are non empty strings
         BitByBitBlockHandlerService.validate(block, block.workspace, makeRequiredValidationModelForInputs(resources, inputs, [
-            resources.block_polyline, resources.block_colour, resources.block_opacity, resources.block_width
+            resources.block_polyline, resources.block_colour, resources.block_opacity, resources.block_width, resources.block_updatable
         ]));
 
         // this creates validation model to be used at runtime to evaluate real values of inputs
@@ -67,7 +67,7 @@ export function createDrawPolylineBlock() {
 
         return createStandardContextIIFE(block, blockSelector, inputs, false,
             `
-        let lineMeshVariable = ${JavaScript.variableDB_.getName(block.getFieldValue('DrawnPolylineMesh'), VARIABLE_CATEGORY_NAME)};
+        inputs.polylineMeshVariable = ${JavaScript.variableDB_.getName(block.getFieldValue('DrawnPolylineMesh'), VARIABLE_CATEGORY_NAME)};
 
         const points = [];
         const colors = [];
@@ -76,18 +76,26 @@ export function createDrawPolylineBlock() {
             colors.push( new BABYLON.Color4(1, 1, 1, 0));
         });
 
-        if(lineMeshVariable && inputs.updatable){
-            lineMeshVariable = BABYLON.MeshBuilder.CreateLines(null, {points, colors, instance: lineMeshVariable, useVertexAlpha: true, updatable: inputs.updatable}, null);
+        if(inputs.polylineMeshVariable && inputs.updatable){
+
+            if(inputs.polylineMeshVariable.getTotalVertices() === points.length){
+                inputs.polylineMeshVariable = BABYLON.MeshBuilder.CreateLines(null, {points, colors, instance: inputs.polylineMeshVariable, useVertexAlpha: true, updatable: inputs.updatable}, null);
+            } else {
+                inputs.polylineMeshVariable.dispose();
+                inputs.polylineMeshVariable = BABYLON.MeshBuilder.CreateLines('polylineMesh${Math.random()}', {points, colors, updatable: inputs.updatable, useVertexAlpha: true}, scene);
+                ${JavaScript.variableDB_.getName(block.getFieldValue('DrawnPolylineMesh'), VARIABLE_CATEGORY_NAME)} = inputs.polylineMeshVariable;
+            }
+
         } else {
-            lineMeshVariable = BABYLON.MeshBuilder.CreateLines('polylineMesh${Math.random()}', {points, colors, updatable: inputs.updatable, useVertexAlpha: true}, scene);
-            ${JavaScript.variableDB_.getName(block.getFieldValue('DrawnPolylineMesh'), VARIABLE_CATEGORY_NAME)} = lineMeshVariable;
+            inputs.polylineMeshVariable = BABYLON.MeshBuilder.CreateLines('polylineMesh${Math.random()}', {points, colors, updatable: inputs.updatable, useVertexAlpha: true}, scene);
+            ${JavaScript.variableDB_.getName(block.getFieldValue('DrawnPolylineMesh'), VARIABLE_CATEGORY_NAME)} = inputs.polylineMeshVariable;
         }
 
-        lineMeshVariable.enableEdgesRendering();
-        lineMeshVariable.edgesWidth = inputs.width;
-        let col = BABYLON.Color3.FromHexString(inputs.colour);
-        lineMeshVariable.edgesColor = new BABYLON.Color4(col.r, col.g, col.b, inputs.opacity);
-        lineMeshVariable.opacity =  inputs.opacity;
+        inputs.polylineMeshVariable.enableEdgesRendering();
+        inputs.polylineMeshVariable.edgesWidth = inputs.width;
+        const col = BABYLON.Color3.FromHexString(inputs.colour);
+        inputs.polylineMeshVariable.edgesColor = new BABYLON.Color4(col.r, col.g, col.b, inputs.opacity);
+        inputs.polylineMeshVariable.opacity =  inputs.opacity;
 `
         );
     };

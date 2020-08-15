@@ -68,7 +68,7 @@ export function createDrawLinesBlock() {
 
         return createStandardContextIIFE(block, blockSelector, inputs, false,
             `
-        let linesMesh = ${JavaScript.variableDB_.getName(block.getFieldValue('DrawnLinesMesh'), VARIABLE_CATEGORY_NAME)};
+        inputs.linesMesh = ${JavaScript.variableDB_.getName(block.getFieldValue('DrawnLinesMesh'), VARIABLE_CATEGORY_NAME)};
         const linesForRender = [];
         const colors = [];
         inputs.lines.forEach(line => {
@@ -80,18 +80,26 @@ export function createDrawLinesBlock() {
             ]);
         });
 
-        if(linesMesh && inputs.updatable){
-            linesMesh = BABYLON.MeshBuilder.CreateLineSystem(null, {lines: linesForRender, instance: linesMesh, colors, useVertexAlpha: true, updatable: inputs.updatable}, null);
+        if(inputs.linesMesh && inputs.updatable) {
+
+            if(inputs.linesMesh.getTotalVertices() / 2 === linesForRender.length){
+                inputs.linesMesh = BABYLON.MeshBuilder.CreateLineSystem(null, {lines: linesForRender, instance: inputs.linesMesh, colors, useVertexAlpha: true, updatable: inputs.updatable}, null);
+            } else {
+                inputs.linesMesh.dispose();
+                inputs.linesMesh = BABYLON.MeshBuilder.CreateLineSystem('lines${Math.random()}', {lines: linesForRender, colors, useVertexAlpha: true, updatable: inputs.updatable}, scene);
+                ${JavaScript.variableDB_.getName(block.getFieldValue('DrawnLinesMesh'), VARIABLE_CATEGORY_NAME)} = inputs.linesMesh;
+            }
+
         } else {
-            linesMesh = BABYLON.MeshBuilder.CreateLineSystem('lines${Math.random()}', {lines: linesForRender, colors, useVertexAlpha: true, updatable: inputs.updatable}, scene);
-            ${JavaScript.variableDB_.getName(block.getFieldValue('DrawnLinesMesh'), VARIABLE_CATEGORY_NAME)} = linesMesh;
+            inputs.linesMesh = BABYLON.MeshBuilder.CreateLineSystem('lines${Math.random()}', {lines: linesForRender, colors, useVertexAlpha: true, updatable: inputs.updatable}, scene);
+            ${JavaScript.variableDB_.getName(block.getFieldValue('DrawnLinesMesh'), VARIABLE_CATEGORY_NAME)} = inputs.linesMesh;
         }
 
-        linesMesh.enableEdgesRendering();
-        linesMesh.edgesWidth = inputs.width;
+        inputs.linesMesh.enableEdgesRendering();
+        inputs.linesMesh.edgesWidth = inputs.width;
         const col = BABYLON.Color3.FromHexString(inputs.colour);
-        linesMesh.edgesColor = new BABYLON.Color4(col.r, col.g, col.b, inputs.opacity);
-        linesMesh.opacity = inputs.opacity;
+        inputs.linesMesh.edgesColor = new BABYLON.Color4(col.r, col.g, col.b, inputs.opacity);
+        inputs.linesMesh.opacity = inputs.opacity;
 `);
     };
 }

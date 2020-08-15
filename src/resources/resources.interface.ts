@@ -228,7 +228,11 @@ export interface ResourcesInterface {
     block_validation_larger_or_equal_than: string;
     block_validation_larger_than: string;
     block_babylon_input_curve: string;
+    block_babylon_input_curve_2: string;
+    block_babylon_input_curve_variable: string;
     block_babylon_input_curves: string;
+    block_babylon_input_curves_2: string;
+    block_babylon_input_curves_variable: string;
     block_babylon_input_colour: string;
     block_babylon_input_opacity: string;
     block_babylon_input_size: string;

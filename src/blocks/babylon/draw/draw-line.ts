@@ -61,7 +61,7 @@ export function createDrawLineBlock() {
 
         // this is first set of validations to check that all inputs are non empty strings
         BitByBitBlockHandlerService.validate(block, block.workspace, makeRequiredValidationModelForInputs(resources, inputs, [
-            resources.block_line, resources.block_colour, resources.block_opacity, resources.block_width
+            resources.block_line, resources.block_colour, resources.block_opacity, resources.block_width, resources.block_updatable
         ]));
 
         // this creates validation model to be used at runtime to evaluate real values of inputs
@@ -70,7 +70,7 @@ export function createDrawLineBlock() {
 
         return createStandardContextIIFE(block, blockSelector, inputs, false,
             `
-        let lineMeshVariable = ${JavaScript.variableDB_.getName(block.getFieldValue('DrawnLineMesh'), VARIABLE_CATEGORY_NAME)};
+        inputs.lineMeshVariable = ${JavaScript.variableDB_.getName(block.getFieldValue('DrawnLineMesh'), VARIABLE_CATEGORY_NAME)};
 
         const line = inputs.line;
 
@@ -79,17 +79,17 @@ export function createDrawLineBlock() {
             new BABYLON.Vector3(line.end[0], line.end[1], line.end[2])
         ];
 
-        if(lineMeshVariable && inputs.updatable){
-            lineMeshVariable = BABYLON.MeshBuilder.CreateLines(null, {points, instance: lineMeshVariable, useVertexAlpha: true, updatable: inputs.updatable}, null);
+        if(inputs.lineMeshVariable && inputs.updatable){
+            inputs.lineMeshVariable = BABYLON.MeshBuilder.CreateLines(null, {points, instance: inputs.lineMeshVariable, useVertexAlpha: true, updatable: inputs.updatable}, null);
         } else {
-            lineMeshVariable = BABYLON.MeshBuilder.CreateLines('lines${Math.random()}', {points, updatable: inputs.updatable, useVertexAlpha: true}, scene);
-            ${JavaScript.variableDB_.getName(block.getFieldValue('DrawnLineMesh'), VARIABLE_CATEGORY_NAME)} = lineMeshVariable;
+            inputs.lineMeshVariable = BABYLON.MeshBuilder.CreateLines('lines${Math.random()}', {points, updatable: inputs.updatable, useVertexAlpha: true}, scene);
+            ${JavaScript.variableDB_.getName(block.getFieldValue('DrawnLineMesh'), VARIABLE_CATEGORY_NAME)} = inputs.lineMeshVariable;
         }
 
-        lineMeshVariable.enableEdgesRendering();
-        lineMeshVariable.edgesWidth = inputs.width;
+        inputs.lineMeshVariable.enableEdgesRendering();
+        inputs.lineMeshVariable.edgesWidth = inputs.width;
         const edgeColor = BABYLON.Color3.FromHexString(inputs.colour);
-        lineMeshVariable.edgesColor = new BABYLON.Color4(edgeColor.r, edgeColor.g, edgeColor.b, inputs.opacity);
+        inputs.lineMeshVariable.edgesColor = new BABYLON.Color4(edgeColor.r, edgeColor.g, edgeColor.b, inputs.opacity);
  `
         );
     };

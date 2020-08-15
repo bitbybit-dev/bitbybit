@@ -60,7 +60,7 @@ export function createDrawPointBlock() {
 
         // this is first set of validations to check that all inputs are non empty strings
         BitByBitBlockHandlerService.validate(block, block.workspace, makeRequiredValidationModelForInputs(resources, inputs, [
-            resources.block_point, resources.block_colour, resources.block_opacity, resources.block_size
+            resources.block_point, resources.block_colour, resources.block_opacity, resources.block_size, resources.block_updatable
         ]));
 
         // this creates validation model to be used at runtime to evaluate real values of inputs
@@ -69,7 +69,7 @@ export function createDrawPointBlock() {
 
         return createStandardContextIIFE(block, blockSelector, inputs, false,
             `
-            let pointMeshVariable = ${JavaScript.variableDB_.getName(block.getFieldValue('DrawnPointMesh'), VARIABLE_CATEGORY_NAME)};
+            inputs.pointMeshVariable = ${JavaScript.variableDB_.getName(block.getFieldValue('DrawnPointMesh'), VARIABLE_CATEGORY_NAME)};
             const vectorPoints = [inputs.point];
             const colour = BABYLON.Color3.FromHexString(inputs.colour);
             const positions = [];
@@ -81,12 +81,12 @@ export function createDrawPointBlock() {
                 colors.push(colour.r, colour.g, colour.b, 1);
             });
 
-            if(pointMeshVariable && inputs.updatable) {
+            if(inputs.pointMeshVariable && inputs.updatable) {
 
-                pointMeshVariable.updateVerticesData(BABYLON.VertexBuffer.PositionKind, positions);
-                pointMeshVariable.updateVerticesData(BABYLON.VertexBuffer.ColorKind, colors);
-                pointMeshVariable.material.alpha = inputs.opacity;
-                pointMeshVariable.material.pointSize = inputs.size;
+                inputs.pointMeshVariable.updateVerticesData(BABYLON.VertexBuffer.PositionKind, positions);
+                inputs.pointMeshVariable.updateVerticesData(BABYLON.VertexBuffer.ColorKind, colors);
+                inputs.pointMeshVariable.material.alpha = inputs.opacity;
+                inputs.pointMeshVariable.material.pointSize = inputs.size;
 
             } else {
 
@@ -95,19 +95,19 @@ export function createDrawPointBlock() {
                 vertexData.positions = positions;
                 vertexData.colors = colors;
 
-                pointMeshVariable = new BABYLON.Mesh('pointMesh${Math.random()}', scene);
-                vertexData.applyToMesh(pointMeshVariable, inputs.updatable);
+                inputs.pointMeshVariable = new BABYLON.Mesh('pointMesh${Math.random()}', scene);
+                vertexData.applyToMesh(inputs.pointMeshVariable, inputs.updatable);
 
                 const mat = new BABYLON.StandardMaterial('mat${Math.random()}', scene);
-                pointMeshVariable.material = mat;
+                inputs.pointMeshVariable.material = mat;
 
-                pointMeshVariable.material.emissiveColor = new BABYLON.Color3(1, 1, 1);
-                pointMeshVariable.material.disableLighting = true;
-                pointMeshVariable.material.pointsCloud = true;
-                pointMeshVariable.material.alpha = inputs.opacity;
-                pointMeshVariable.material.pointSize = inputs.size;
+                inputs.pointMeshVariable.material.emissiveColor = new BABYLON.Color3(1, 1, 1);
+                inputs.pointMeshVariable.material.disableLighting = true;
+                inputs.pointMeshVariable.material.pointsCloud = true;
+                inputs.pointMeshVariable.material.alpha = inputs.opacity;
+                inputs.pointMeshVariable.material.pointSize = inputs.size;
 
-                ${JavaScript.variableDB_.getName(block.getFieldValue('DrawnPointMesh'), VARIABLE_CATEGORY_NAME)} = pointMeshVariable;
+                ${JavaScript.variableDB_.getName(block.getFieldValue('DrawnPointMesh'), VARIABLE_CATEGORY_NAME)} = inputs.pointMeshVariable;
             }
 `
         );
