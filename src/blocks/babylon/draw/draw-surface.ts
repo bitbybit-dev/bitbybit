@@ -84,8 +84,6 @@ export function createDrawSurfaceBlock() {
         });
 
         const createMesh = () => {
-            inputs.surfaceMesh = new BABYLON.Mesh('custom${Math.random()}', scene);
-
             const vertexData = new BABYLON.VertexData();
 
             vertexData.positions = meshDataConverted.positions;
@@ -93,16 +91,16 @@ export function createDrawSurfaceBlock() {
             vertexData.normals = meshDataConverted.normals;
 
             vertexData.applyToMesh(inputs.surfaceMesh, inputs.updatable);
-            inputs.surfaceMesh.material = new BABYLON.StandardMaterial();
             ${JavaScript.variableDB_.getName(block.getFieldValue('DrawnSurfaceMesh'), VARIABLE_CATEGORY_NAME)} = inputs.surfaceMesh;
 
         }
 
         if(inputs.surfaceMesh && inputs.updatable){
-            inputs.surfaceMesh.dispose();
             createMesh();
         } else {
+            inputs.surfaceMesh = new BABYLON.Mesh('custom${Math.random()}', scene);
             createMesh();
+            inputs.surfaceMesh.material = new BABYLON.StandardMaterial();
         }
 
         inputs.surfaceMesh.material.alpha = inputs.opacity;

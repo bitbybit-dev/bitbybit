@@ -1,4 +1,4 @@
-import { ALIGN_RIGHT, Block, Blocks } from 'blockly';
+import { ALIGN_RIGHT, Block, Blocks, FieldVariable, VARIABLE_CATEGORY_NAME } from 'blockly';
 import * as JavaScript from 'blockly/javascript';
 import { ResourcesInterface, ResourcesService } from '../../../resources';
 import { createStandardContextIIFE } from '../../_shared';
@@ -21,7 +21,9 @@ export function createDrawSurfacesColoursBlock() {
             this.appendValueInput('Surfaces')
                 .setCheck('Array')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_babylon_draw_surfaces_colours_input_surfaces);
+                .appendField(resources.block_babylon_draw_surfaces_colours_input_surfaces)
+                .appendField(new FieldVariable(resources.block_babylon_draw_surfaces_colours_input_surfaces_variable), 'DrawnSurfaceMeshes')
+                .appendField(resources.block_babylon_draw_surfaces_colours_input_surfaces_2);
             this.appendValueInput('Colours')
                 .setCheck('Array')
                 .setAlign(ALIGN_RIGHT)
@@ -30,6 +32,10 @@ export function createDrawSurfacesColoursBlock() {
                 .setCheck('Number')
                 .setAlign(ALIGN_RIGHT)
                 .appendField(resources.block_babylon_draw_surfaces_colours_input_opacity.toLowerCase());
+            this.appendValueInput('Updatable')
+                .setCheck('Boolean')
+                .setAlign(ALIGN_RIGHT)
+                .appendField(resources.block_babylon_input_updatable.toLowerCase());
             this.setColour('#fff');
             this.setPreviousStatement(true, null);
             this.setNextStatement(true, null);
@@ -42,10 +48,11 @@ export function createDrawSurfacesColoursBlock() {
             surfaces: JavaScript.valueToCode(block, 'Surfaces', JavaScript.ORDER_ATOMIC),
             colours: JavaScript.valueToCode(block, 'Colours', JavaScript.ORDER_ATOMIC),
             opacity: JavaScript.valueToCode(block, 'Opacity', JavaScript.ORDER_ATOMIC),
+            updatable: JavaScript.valueToCode(block, 'Updatable', JavaScript.ORDER_ATOMIC),
         };
         // this is first set of validations to check that all inputs are non empty strings
         BitByBitBlockHandlerService.validate(block, block.workspace, makeRequiredValidationModelForInputs(resources, inputs, [
-            resources.block_surfaces, resources.block_colour, resources.block_opacity
+            resources.block_surfaces, resources.block_colour, resources.block_opacity, resources.block_updatable
         ]));
 
         // this creates validation model to be used at runtime to evaluate real values of inputs
@@ -53,7 +60,14 @@ export function createDrawSurfacesColoursBlock() {
         (block as any).validationModel = runtimeValidationModel;
 
         return createStandardContextIIFE(block, blockSelector, inputs, false,
-`
+            `
+inputs.surfaceMeshes = ${JavaScript.variableDB_.getName(block.getFieldValue('DrawnSurfaceMeshes'), VARIABLE_CATEGORY_NAME)};
+
+if(inputs.surfaceMeshes && inputs.updatable){
+    inputs.surfaceMeshes.forEach(srf => srf.dispose());
+}
+
+inputs.surfaceMeshes = [];
 inputs.surfaces.forEach((srf, index) => {
     const meshData = srf.tessellate();
 
@@ -92,7 +106,10 @@ inputs.surfaces.forEach((srf, index) => {
     customMeshForSurface.material.diffuseColor = BABYLON.Color3.FromHexString(inputs.colours[index]);
     customMeshForSurface.material.backFaceCulling = false;
     customMeshForSurface.isPickable = false;
+
+    inputs.surfaceMeshes.push(customMeshForSurface);
 });
+${JavaScript.variableDB_.getName(block.getFieldValue('DrawnSurfaceMeshes'), VARIABLE_CATEGORY_NAME)} = inputs.surfaceMeshes;
         `
         );
     };

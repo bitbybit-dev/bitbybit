@@ -276,6 +276,8 @@ export interface ResourcesInterface {
     block_babylon_update_input_time_passed: string;
     block_babylon_update_description: string;
     block_babylon_draw_surfaces_colours_input_surfaces: string;
+    block_babylon_draw_surfaces_colours_input_surfaces_variable: string;
+    block_babylon_draw_surfaces_colours_input_surfaces_2: string;
     block_babylon_draw_surfaces_colours_input_colours: string;
     block_babylon_draw_surfaces_colours_input_opacity: string;
     block_babylon_draw_surfaces_colours_description: string;
