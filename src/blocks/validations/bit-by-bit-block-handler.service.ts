@@ -12,7 +12,7 @@ export class BitByBitBlockHandlerService {
     }
 
     static runtimeValidation(block: { validationModel: ValidationEntityInterface[] } & Block, inputs: any) {
-        if (block.validationModel) {
+        if (block && block.validationModel) {
             const validationModel = block.validationModel.map(model => {
                 return {
                     entity: inputs[model.entity],

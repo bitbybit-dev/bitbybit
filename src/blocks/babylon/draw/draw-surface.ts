@@ -1,4 +1,4 @@
-import { ALIGN_RIGHT, Block, Blocks } from 'blockly';
+import { ALIGN_RIGHT, Block, Blocks, FieldVariable, VARIABLE_CATEGORY_NAME } from 'blockly';
 import * as JavaScript from 'blockly/javascript';
 import { ResourcesInterface, ResourcesService } from '../../../resources';
 import { createStandardContextIIFE } from '../../_shared';
@@ -20,7 +20,9 @@ export function createDrawSurfaceBlock() {
             this.appendValueInput('Surface')
                 .setCheck('NurbsSurface')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_babylon_input_draw_surface);
+                .appendField(resources.block_babylon_input_draw_surface)
+                .appendField(new FieldVariable(resources.block_babylon_input_draw_surface_variable), 'DrawnSurfaceMesh')
+                .appendField(resources.block_babylon_input_draw_surface_2);
             this.appendValueInput('Colour')
                 .setCheck('Colour')
                 .setAlign(ALIGN_RIGHT)
@@ -29,6 +31,10 @@ export function createDrawSurfaceBlock() {
                 .setCheck('Number')
                 .setAlign(ALIGN_RIGHT)
                 .appendField(resources.block_babylon_input_opacity.toLowerCase());
+            this.appendValueInput('Updatable')
+                .setCheck('Boolean')
+                .setAlign(ALIGN_RIGHT)
+                .appendField(resources.block_babylon_input_updatable.toLowerCase());
             this.setColour('#fff');
             this.setPreviousStatement(true, null);
             this.setNextStatement(true, null);
@@ -41,10 +47,11 @@ export function createDrawSurfaceBlock() {
             surface: JavaScript.valueToCode(block, 'Surface', JavaScript.ORDER_ATOMIC),
             colour: JavaScript.valueToCode(block, 'Colour', JavaScript.ORDER_ATOMIC),
             opacity: JavaScript.valueToCode(block, 'Opacity', JavaScript.ORDER_ATOMIC),
+            updatable: JavaScript.valueToCode(block, 'Updatable', JavaScript.ORDER_ATOMIC),
         };
         // this is first set of validations to check that all inputs are non empty strings
         BitByBitBlockHandlerService.validate(block, block.workspace, makeRequiredValidationModelForInputs(resources, inputs, [
-            resources.block_surface, resources.block_colour, resources.block_opacity
+            resources.block_surface, resources.block_colour, resources.block_opacity, resources.block_updatable
         ]));
 
         // this creates validation model to be used at runtime to evaluate real values of inputs
@@ -52,8 +59,9 @@ export function createDrawSurfaceBlock() {
         (block as any).validationModel = runtimeValidationModel;
 
         return createStandardContextIIFE(block, blockSelector, inputs, false,
-`
+            `
         const meshData =  inputs.surface.tessellate();
+        inputs.surfaceMesh = ${JavaScript.variableDB_.getName(block.getFieldValue('DrawnSurfaceMesh'), VARIABLE_CATEGORY_NAME)};
 
         const meshDataConverted = {
             positions: [],
@@ -75,22 +83,34 @@ export function createDrawSurfaceBlock() {
             });
         });
 
-        const customMeshForSurface = new BABYLON.Mesh('custom${Math.random()}', scene);
+        const createMesh = () => {
+            inputs.surfaceMesh = new BABYLON.Mesh('custom${Math.random()}', scene);
 
-        const vertexData = new BABYLON.VertexData();
+            const vertexData = new BABYLON.VertexData();
 
-        vertexData.positions = meshDataConverted.positions;
-        vertexData.indices = meshDataConverted.indices;
-        vertexData.normals = meshDataConverted.normals;
+            vertexData.positions = meshDataConverted.positions;
+            vertexData.indices = meshDataConverted.indices;
+            vertexData.normals = meshDataConverted.normals;
 
-        vertexData.applyToMesh(customMeshForSurface);
-        customMeshForSurface.material = new BABYLON.StandardMaterial();
-        customMeshForSurface.material.alpha = inputs.opacity;
-        customMeshForSurface.material.diffuseColor = BABYLON.Color3.FromHexString(inputs.colour);
-        customMeshForSurface.material.specularColor = new BABYLON.Color3(1, 1, 1);
-        customMeshForSurface.material.ambientColor = new BABYLON.Color3(1, 1, 1);
-        customMeshForSurface.material.backFaceCulling = false;
-        customMeshForSurface.isPickable = false;
+            vertexData.applyToMesh(inputs.surfaceMesh, inputs.updatable);
+            inputs.surfaceMesh.material = new BABYLON.StandardMaterial();
+            ${JavaScript.variableDB_.getName(block.getFieldValue('DrawnSurfaceMesh'), VARIABLE_CATEGORY_NAME)} = inputs.surfaceMesh;
+
+        }
+
+        if(inputs.surfaceMesh && inputs.updatable){
+            inputs.surfaceMesh.dispose();
+            createMesh();
+        } else {
+            createMesh();
+        }
+
+        inputs.surfaceMesh.material.alpha = inputs.opacity;
+        inputs.surfaceMesh.material.diffuseColor = BABYLON.Color3.FromHexString(inputs.colour);
+        inputs.surfaceMesh.material.specularColor = new BABYLON.Color3(1, 1, 1);
+        inputs.surfaceMesh.material.ambientColor = new BABYLON.Color3(1, 1, 1);
+        inputs.surfaceMesh.material.backFaceCulling = false;
+        inputs.surfaceMesh.isPickable = false;
 `
         );
     };
