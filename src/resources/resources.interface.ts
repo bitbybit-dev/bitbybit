@@ -35,6 +35,8 @@ export interface ResourcesInterface {
     app_menu_more_examples_street_smart: string;
     app_menu_more_examples_street_smart_virtual_folds_in_iteration_title: string;
     app_menu_more_examples_street_smart_virtual_folds_in_iteration_description: string;
+    app_menu_more_examples_street_smart_kinetic_surfaces_title: string;
+    app_menu_more_examples_street_smart_kinetic_surfaces_description: string;
     app_menu_more_examples_street_smart_lines_between_two_surfaces_title: string;
     app_menu_more_examples_street_smart_lines_between_two_surfaces_description: string;
     app_menu_more_examples_ninja_magic_spiral_title: string;
@@ -364,6 +366,9 @@ export interface ResourcesInterface {
     block_verb_geom_curve_transform_curve: string;
     block_verb_geom_curve_transform_transformation: string;
     block_verb_geom_curve_transform_description: string;
+    block_verb_geom_curves_transform_curves: string;
+    block_verb_geom_curves_transform_transformation: string;
+    block_verb_geom_curves_transform_description: string;
     block_verb_geom_surface_transform_surface: string;
     block_verb_geom_surface_transform_transformation: string;
     block_verb_geom_surface_transform_description: string;
@@ -502,6 +507,12 @@ export interface ResourcesInterface {
     block_verb_geometry_nurbs_curve_divide_by_arc_length_points_input_curve: string;
     block_verb_geometry_nurbs_curve_divide_by_arc_length_points_input_arc_length: string;
     block_verb_geometry_nurbs_curve_divide_by_arc_length_points_description: string;
+    block_verb_geometry_nurbs_curves_divide_by_equal_arc_length_points_input_curves: string;
+    block_verb_geometry_nurbs_curves_divide_by_equal_arc_length_points_input_subdivison_number: string;
+    block_verb_geometry_nurbs_curves_divide_by_equal_arc_length_points_description: string;
+    block_verb_geometry_nurbs_curves_divide_by_arc_length_points_input_curves: string;
+    block_verb_geometry_nurbs_curves_divide_by_arc_length_points_input_arc_length: string;
+    block_verb_geometry_nurbs_curves_divide_by_arc_length_points_description: string;
     block_verb_geometry_nurbs_curve_domain_input_curve: string;
     block_verb_geometry_nurbs_curve_domain_description: string;
     block_verb_geometry_nurbs_curve_knots_input_curve: string;
@@ -829,6 +840,7 @@ export interface ResourcesInterface {
     block_base_geometry_draw_text_tags_input_text_tags: string;
     block_base_geometry_draw_text_tags_description: string;
     block_base_geometry_draw_text_tag_input_text_tag: string;
+    block_base_geometry_draw_text_tag_input_text_tag_variable: string;
     block_base_geometry_draw_text_tag_description: string;
     block_base_geometry_text_tag_input_text: string;
     block_base_geometry_text_tag_input_position: string;

@@ -26,9 +26,12 @@ import { createCurveTangentBlock } from './curve-tangent';
 import { createCurveTessellateBlock } from './curve-tesselate';
 import { createCurveTransformBlock } from './curve-transform';
 import { createCurveWeightsBlock } from './curve-weights';
+import { createCurvesDivideByEqualArcLengthPointsBlock } from './curves-divide-by-arc-equal-length-point';
+import { createCurvesDivideByArcLengthPointsBlock } from './curves-divide-by-arc-length-points';
 import { createCurvesEndPointsBlock } from './curves-end-points';
 import { createCurvesPointsAtParamBlock } from './curves-points-at-param';
 import { createCurvesStartPointsBlock } from './curves-start-points';
+import { createCurvesTransformBlock } from './curves-transform';
 
 export function assembleCurveBlocks() {
     createCurveByKnotsControlPointsWeightsBlock();
@@ -62,4 +65,7 @@ export function assembleCurveBlocks() {
     createCurvesPointsAtParamBlock();
     createCurvesEndPointsBlock();
     createCurvesStartPointsBlock();
+    createCurvesTransformBlock();
+    createCurvesDivideByEqualArcLengthPointsBlock();
+    createCurvesDivideByArcLengthPointsBlock();
 }

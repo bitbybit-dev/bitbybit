@@ -17,6 +17,7 @@ export class TagService {
             BitByBitBlocklyHelperService.tagBag.forEach(tag => {
                 const textNode = document.querySelector('#' + tag.id);
                 const vector = new Vector3(tag.position[0], tag.position[1], tag.position[2]);
+                textNode.textContent = tag.text;
                 const renWidth = engine.getRenderWidth();
                 const renHeight = engine.getRenderHeight();
                 const pos = Vector3.Project(

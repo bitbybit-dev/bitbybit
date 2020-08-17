@@ -19,7 +19,7 @@ export function createRoundToDecimalsBlock() {
                 .setCheck('Number')
                 .setAlign(ALIGN_RIGHT)
                 .appendField(resources.block_base_math_round_to_decimals_input_decimal_places.toLowerCase());
-            this.setOutput(true, 'Number');
+            this.setOutput(true, 'String');
             this.setColour('#fff');
             this.setTooltip(resources.block_base_math_round_to_decimals_description);
         }
@@ -41,7 +41,7 @@ export function createRoundToDecimalsBlock() {
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
             `
-return +inputs.numberToRound.toFixed(inputs.decimalPlaces);
+return inputs.numberToRound.toFixed(inputs.decimalPlaces);
 `
         );
         return [code, JavaScript.ORDER_ATOMIC];

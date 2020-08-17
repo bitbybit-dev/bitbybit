@@ -1,4 +1,4 @@
-import { ALIGN_RIGHT, Block, Blocks } from 'blockly';
+import { ALIGN_RIGHT, Block, Blocks, FieldVariable, VARIABLE_CATEGORY_NAME } from 'blockly';
 import * as JavaScript from 'blockly/javascript';
 import { ResourcesInterface, ResourcesService } from '../../../../resources';
 import { createStandardContextIIFE } from '../../../_shared';
@@ -19,7 +19,12 @@ export function createDrawTextTagBlock() {
             this.appendValueInput('TextTag')
                 .setCheck('TextTag')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_base_geometry_draw_text_tag_input_text_tag);
+                .appendField(resources.block_base_geometry_draw_text_tag_input_text_tag)
+                .appendField(new FieldVariable(resources.block_base_geometry_draw_text_tag_input_text_tag_variable), 'DrawnTextTag');
+            this.appendValueInput('Updatable')
+                .setCheck('Boolean')
+                .setAlign(ALIGN_RIGHT)
+                .appendField(resources.block_babylon_input_updatable.toLowerCase());
             this.setOutput(false);
             this.setColour('#fff');
             this.setPreviousStatement(true, null);
@@ -31,11 +36,12 @@ export function createDrawTextTagBlock() {
     JavaScript[blockSelector] = (block: Block) => {
         const inputs = {
             textTag: JavaScript.valueToCode(block, 'TextTag', JavaScript.ORDER_ATOMIC),
+            updatable: JavaScript.valueToCode(block, 'Updatable', JavaScript.ORDER_ATOMIC),
         };
 
         // this is first set of validations to check that all inputs are non empty strings
         BitByBitBlockHandlerService.validate(block, block.workspace, makeRequiredValidationModelForInputs(resources, inputs, [
-            resources.block_text_tag
+            resources.block_text_tag, resources.block_updatable
         ]));
 
         // this creates validation model to be used at runtime to evaluate real values of inputs
@@ -44,14 +50,24 @@ export function createDrawTextTagBlock() {
 
         return createStandardContextIIFE(block, blockSelector, inputs, false,
             `
-            const textNode = document.createElement('span');
-            const id = '_tag' + ${new Date().getTime()} + BitByBitBlocklyHelperService.tagBag.length;
-            inputs.textTag.id = id;
-            textNode.id = id;
-            textNode.textContent = inputs.textTag.text;
-            document.querySelector('.canvasZone').appendChild(textNode);
-            inputs.textTag.needsUpdate = true;
-            BitByBitBlocklyHelperService.tagBag.push(inputs.textTag);
+            inputs.tagVariable = ${JavaScript.variableDB_.getName(block.getFieldValue('DrawnTextTag'), VARIABLE_CATEGORY_NAME)};
+
+            if(inputs.tagVariable && inputs.updatable) {
+                const tagToUpdate = BitByBitBlocklyHelperService.tagBag.find(tag => tag.id === inputs.tagVariable.id);
+                Object.keys(inputs.textTag).forEach(key => {
+                    tagToUpdate[key] = inputs.textTag[key];
+                });
+            } else {
+                const textNode = document.createElement('span');
+                const id = '_tag' + ${new Date().getTime()} + BitByBitBlocklyHelperService.tagBag.length;
+                inputs.textTag.id = id;
+                textNode.id = id;
+                textNode.textContent = inputs.textTag.text;
+                document.querySelector('.canvasZone').appendChild(textNode);
+                inputs.textTag.needsUpdate = true;
+                BitByBitBlocklyHelperService.tagBag.push(inputs.textTag);
+                ${JavaScript.variableDB_.getName(block.getFieldValue('DrawnTextTag'), VARIABLE_CATEGORY_NAME)} = inputs.textTag;
+            }
 `);
     };
 }
