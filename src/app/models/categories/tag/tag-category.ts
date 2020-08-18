@@ -7,6 +7,11 @@ export function tagCategory() {
         <block type="base_geometry_draw_text_tags">
         </block>
         <block type="base_geometry_draw_text_tag">
+            <value name="Updatable">
+                <shadow type="logic_boolean">
+                    <field name="BOOL">FALSE</field>
+                </shadow>
+            </value>
         </block>
         <block type="base_geometry_text_tag">
             <value name="Text">

@@ -838,6 +838,7 @@ export interface ResourcesInterface {
     block_base_io_json_path_value_input_path: string;
     block_base_io_json_path_value_description: string;
     block_base_geometry_draw_text_tags_input_text_tags: string;
+    block_base_geometry_draw_text_tags_input_text_tags_variable: string;
     block_base_geometry_draw_text_tags_description: string;
     block_base_geometry_draw_text_tag_input_text_tag: string;
     block_base_geometry_draw_text_tag_input_text_tag_variable: string;
