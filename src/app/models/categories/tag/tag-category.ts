@@ -5,6 +5,11 @@ export function tagCategory() {
     return `
     <category name="${resources.block_toolbox_category_geom_tag}" expanded="true" categorystyle="geometry_category">
         <block type="base_geometry_draw_text_tags">
+            <value name="Updatable">
+                <shadow type="logic_boolean">
+                    <field name="BOOL">FALSE</field>
+                </shadow>
+            </value>
         </block>
         <block type="base_geometry_draw_text_tag">
             <value name="Updatable">
