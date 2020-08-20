@@ -1,4 +1,5 @@
 import { createPointBlock } from './point';
+import { createPointClosestFromPointsBlock } from './point-closest-from-points';
 import { createPointDistanceBlock } from './point-distance';
 import { createPointListBlock } from './point-list';
 import { createPointTransformBlock } from './point-transform';
@@ -18,4 +19,5 @@ export function assemblePointBlocks() {
     createPointsTransformBlock();
     createPointSpiralBlock();
     createPointListBlock();
+    createPointClosestFromPointsBlock();
 }

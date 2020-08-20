@@ -176,6 +176,8 @@ export function pointCategory() {
             </block>
             <block type="base_geometry_point_z">
             </block>
+            <block type="base_geometry_point_closest_from_points">
+            </block>
         </category>
     </category>
 `;
