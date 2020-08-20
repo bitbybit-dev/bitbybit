@@ -852,6 +852,8 @@ export interface ResourcesInterface {
     block_base_math_round_to_decimals_input_number_to_round: string;
     block_base_math_round_to_decimals_input_decimal_places: string;
     block_base_math_round_to_decimals_description: string;
+    block_base_math_random_input_random: string;
+    block_base_math_random_description: string;
     block_base_date_now_input_date: string;
     block_base_date_now_description: string;
     block_base_date_parse_input_date: string;

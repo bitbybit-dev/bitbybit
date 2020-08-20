@@ -855,6 +855,8 @@ export const resourcesEn: ResourcesInterface = Object.freeze({
     block_base_math_round_to_decimals_input_number_to_round: 'Round number',
     block_base_math_round_to_decimals_input_decimal_places: 'To decimal places',
     block_base_math_round_to_decimals_description: 'Rounds the number to decimal places.',
+    block_base_math_random_input_random: 'Random 0 to 1',
+    block_base_math_random_description: 'Generates a random number between 0 and 1',
     block_base_date_now_input_date: 'Date now',
     block_base_date_now_description: 'Creates the date at this moment.',
     block_base_date_parse_input_date: 'Unix timestamp of the date',
