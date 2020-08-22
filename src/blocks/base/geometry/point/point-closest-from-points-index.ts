@@ -4,24 +4,24 @@ import { ResourcesInterface, ResourcesService } from '../../../../resources';
 import { createStandardContextIIFE } from '../../../_shared';
 import { getRequired, makeRequiredValidationModelForInputs, BitByBitBlockHandlerService, ValidationEntityInterface } from '../../../validations';
 
-export function createPointClosestFromPointsBlock() {
+export function createPointClosestFromPointsIndexBlock() {
 
     const resources = ResourcesService.getResources();
-    const blockSelector = 'base_geometry_point_closest_from_points';
+    const blockSelector = 'base_geometry_point_closest_from_points_index';
 
     Blocks[blockSelector] = {
         init() {
             this.appendValueInput('Point')
                 .setCheck('Array')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_base_geom_point_closest_from_points_input_point);
+                .appendField(resources.block_base_geom_point_closest_from_points_index_input_point);
             this.appendValueInput('Points')
                 .setCheck('Array')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_base_geom_point_closest_from_points_input_points.toLowerCase());
-            this.setOutput(true, 'Array');
+                .appendField(resources.block_base_geom_point_closest_from_points_index_input_points.toLowerCase());
+            this.setOutput(true, 'Number');
             this.setColour('#fff');
-            this.setTooltip(resources.block_base_geom_point_closest_from_points_description);
+            this.setTooltip(resources.block_base_geom_point_closest_from_points_index_description);
             this.setHelpUrl('');
         }
     };
@@ -44,16 +44,16 @@ export function createPointClosestFromPointsBlock() {
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
 `
     let smallestDistanceSoFar = Number.MAX_SAFE_INTEGER;
-    let closestPoint;
+    let closestPointIndex;
     for(let i = 0; i < inputs.points.length; i++){
         const pt = inputs.points[i];
         const currentDist = verb.core.Vec.dist(inputs.point, pt);
         if(currentDist < smallestDistanceSoFar){
             smallestDistanceSoFar = currentDist;
-            closestPoint = pt;
+            closestPointIndex = i;
         }
     }
-    return closestPoint;
+    return closestPointIndex + 1;
 `);
         return [code, JavaScript.ORDER_ATOMIC];
     };

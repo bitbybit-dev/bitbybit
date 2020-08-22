@@ -2,7 +2,7 @@ import { ALIGN_RIGHT, Block, Blocks } from 'blockly';
 import * as JavaScript from 'blockly/javascript';
 import { ResourcesInterface, ResourcesService } from '../../../../resources';
 import { createStandardContextIIFE } from '../../../_shared';
-import { getRequired, getSmallerOrEqualThan, makeRequiredValidationModelForInputs, BitByBitBlockHandlerService, ValidationEntityInterface } from '../../../validations';
+import { getRequired, makeRequiredValidationModelForInputs, BitByBitBlockHandlerService, ValidationEntityInterface } from '../../../validations';
 
 export function createCoreIntervalBlock() {
 
@@ -56,7 +56,6 @@ function makeRuntimeValidationModel(
         entity: keys[0],
         validations: [
             getRequired(resources, resources.block_min),
-            getSmallerOrEqualThan(resources, resources.block_min, 'max', resources.block_max)
         ]
     }, {
         entity: keys[1],

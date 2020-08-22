@@ -41,6 +41,8 @@ export interface ResourcesInterface {
     app_menu_more_examples_street_smart_lines_between_two_surfaces_description: string;
     app_menu_more_examples_ninja_magic_spiral_title: string;
     app_menu_more_examples_ninja_magic_spiral_description: string;
+    app_menu_more_examples_ninja_living_landscape_title: string;
+    app_menu_more_examples_ninja_living_landscape_description: string;
     app_menu_more_examples_ninja_crypto_data_visualziation_title: string;
     app_menu_more_examples_ninja_crypto_data_visualziation_description: string;
     app_menu_more_examples_ninja: string;
@@ -257,6 +259,9 @@ export interface ResourcesInterface {
     block_babylon_input_draw_lines: string;
     block_babylon_input_draw_lines_variable: string;
     block_babylon_input_draw_lines_2: string;
+    block_babylon_input_draw_polylines: string;
+    block_babylon_input_draw_polylines_variable: string;
+    block_babylon_input_draw_polylines_2: string;
     block_babylon_input_draw_polyline: string;
     block_babylon_input_draw_polyline_2: string;
     block_babylon_input_draw_polyline_variable: string;
@@ -299,6 +304,7 @@ export interface ResourcesInterface {
     block_babylon_draw_line_description: string;
     block_babylon_draw_polyline_description: string;
     block_babylon_draw_lines_description: string;
+    block_babylon_draw_polylines_description: string;
     block_babylon_draw_grid_description: string;
     block_babylon_draw_point_description: string;
     block_babylon_draw_points_description: string;
@@ -387,6 +393,12 @@ export interface ResourcesInterface {
     block_base_geom_point_closest_from_points_input_points: string;
     block_base_geom_point_closest_from_points_input_point: string;
     block_base_geom_point_closest_from_points_description: string;
+    block_base_geom_point_closest_from_points_index_input_points: string;
+    block_base_geom_point_closest_from_points_index_input_point: string;
+    block_base_geom_point_closest_from_points_index_description: string;
+    block_base_geom_point_closest_from_points_distance_input_points: string;
+    block_base_geom_point_closest_from_points_distance_input_point: string;
+    block_base_geom_point_closest_from_points_distance_description: string;
     block_base_geom_line_transform_line: string;
     block_base_geom_line_transform_transformation: string;
     block_base_geom_line_transform_description: string;

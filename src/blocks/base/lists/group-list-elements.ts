@@ -57,7 +57,7 @@ while(clonedList.length > 0)
     }
     const groupToFill = grouped[grouped.length - 1];
     groupToFill.push(clonedList.pop());
-    if(index === inputs.numberOfElements - 1) {
+    if(index === inputs.numberOfElements) {
         groupToFill.push(clonedList.pop());
         index++;
     }

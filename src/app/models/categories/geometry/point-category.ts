@@ -168,15 +168,19 @@ export function pointCategory() {
             </block>
             <block type="base_geometry_points_transform">
             </block>
-            <block type="base_geometry_point_distance">
-            </block>
             <block type="base_geometry_point_x">
             </block>
             <block type="base_geometry_point_y">
             </block>
             <block type="base_geometry_point_z">
             </block>
+            <block type="base_geometry_point_distance">
+            </block>
             <block type="base_geometry_point_closest_from_points">
+            </block>
+            <block type="base_geometry_point_closest_from_points_index">
+            </block>
+            <block type="base_geometry_point_closest_from_points_distance">
             </block>
         </category>
     </category>
