@@ -1,0 +1,68 @@
+
+img.logo {
+    max-width: 44px;
+    filter: invert(1);
+    margin-right: 20px;
+}
+
+::ng-deep .main-container {
+    height: 100%;
+    width: 100%;
+    margin-left: 0px;
+    margin-right: 0px;
+}
+
+::ng-deep button {
+    outline: none !important;
+}
+
+nav {
+    padding: 10px;
+    background-color: #444;
+    color: white;
+}
+
+.secondary-large-menu {
+    margin-top: 3px;
+    float: right;
+}
+
+.secondary-menu {
+    background-color: #555;
+    color: white;
+}
+
+.third-menu {
+    background-color: #eee;
+    color: white;
+    padding:5px;
+}
+
+::ng-deep .sidenav {
+    position: sticky;
+    top: 4rem;
+    z-index: 1000;
+    height: calc(100vh - 4rem);
+    max-height: calc(100vh - 4rem);
+    overflow-y: auto;
+}
+
+@media(max-width:767px){
+    ::ng-deep .sidenav {
+        position: sticky;
+        top: 4rem;
+        z-index: 1000;
+        height: calc(100vh - 9.5rem);
+        max-height: calc(100vh - 9.5rem);
+        overflow-y: auto;
+    }
+}
+
+.mat-button.mat-primary {
+    color: white;
+}
+
+a {
+    color: white;
+    text-decoration-line: none;
+}
