@@ -16,6 +16,10 @@ img.logo {
     outline: none !important;
 }
 
+::ng-deep a {
+    outline: none !important;
+}
+
 nav {
     padding: 10px;
     background-color: #444;
@@ -27,11 +31,14 @@ nav {
     float: right;
 }
 
-.secondary-menu {
+.secondary-menu, .footer {
     background-color: #555;
     color: white;
 }
-
+.footer {
+    margin-top: 80px;
+    padding: 40px;
+}
 .third-menu {
     background-color: #eee;
     color: white;
@@ -65,4 +72,16 @@ nav {
 a {
     color: white;
     text-decoration-line: none;
+}
+
+.social-container {
+    background-color: white;
+    padding: 10px;
+    margin-top: 10px;
+}
+
+.social {
+    display: inline-block;
+    opacity: 0.6;
+    margin: 5px;
 }
