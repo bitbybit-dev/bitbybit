@@ -38,7 +38,7 @@
                 </mat-tree>
             </div>
         </div>
-        <div class="col">
+        <div [ngClass]="{'col-6': sideNavOpen, 'col-12': !sideNavOpen }" >
             <div class="container">
                 <div class="row">
                     <div class="col main-content">

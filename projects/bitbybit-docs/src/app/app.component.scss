@@ -1,5 +1,7 @@
 
-img.logo {
+// STYLES
+
+::ng-deep .logo {
     max-width: 44px;
     filter: invert(1);
     margin-right: 20px;
@@ -23,18 +25,18 @@ img.logo {
     outline: none !important;
 }
 
-nav {
+::ng-deep nav {
     padding: 10px;
     background-color: #444;
     color: white;
 }
 
-.secondary-large-menu {
+::ng-deep .secondary-large-menu {
     margin-top: 3px;
     float: right;
 }
 
-::ng-deep .secondary-menu, .footer {
+::ng-deep .secondary-menu, ::ng-deep .footer {
     background-color: #555;
     color: white;
 }
@@ -81,11 +83,11 @@ nav {
     }
 }
 
-.mat-button.mat-primary {
+::ng-deep .mat-button.mat-primary {
     color: white;
 }
 
-a {
+::ng-deep a {
     color: white;
     text-decoration-line: none;
 }
@@ -100,4 +102,53 @@ a {
     display: inline-block;
     opacity: 0.6;
     margin: 5px;
+}
+
+// TUTORIALS
+
+::ng-deep .tutorial-part {
+    margin-top: 50px;
+}
+::ng-deep .tutorial {
+    margin-bottom: 50px;
+}
+::ng-deep .tree-invisible {
+    display: none;
+}
+  
+::ng-deep .tree ul,
+::ng-deep .tree li {
+    margin-top: 0;
+    margin-bottom: 0;
+    list-style-type: none;
+}
+
+::ng-deep a, ::ng-deep a:hover {
+    color: #444;
+}
+
+::ng-deep p {
+    margin-top: 30px;
+}
+
+::ng-deep iframe {
+    width: 100%;
+    height: 440px;
+}
+
+::ng-deep img {
+    width: 100%;
+}
+
+::ng-deep video {
+    width: 100%;
+}
+
+::ng-deep .screenshot-image {
+    border: 2px solid black;
+}
+
+::ng-deep dl {
+    margin-top: 20px;
+    margin-bottom: 20px;
 }
