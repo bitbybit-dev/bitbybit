@@ -6,10 +6,13 @@ img.logo {
 }
 
 ::ng-deep .main-container {
-    height: 100%;
-    width: 100%;
     margin-left: 0px;
     margin-right: 0px;
+    max-width: 100%;
+}
+
+::ng-deep .main-content{
+    margin-top: 70px;
 }
 
 ::ng-deep button {
@@ -31,36 +34,49 @@ nav {
     float: right;
 }
 
-.secondary-menu, .footer {
+::ng-deep .secondary-menu, .footer {
     background-color: #555;
     color: white;
 }
-.footer {
-    margin-top: 80px;
+::ng-deep .footer {
     padding: 40px;
 }
-.third-menu {
+::ng-deep .third-menu {
     background-color: #eee;
-    color: white;
     padding:5px;
+    top: 0;
+    position: sticky;
+    z-index: 1000;
+}
+
+::ng-deep .zero-padding {
+    padding-left: 0;
+    padding-right: 0;
 }
 
 ::ng-deep .sidenav {
+    background-color: #eee;
     position: sticky;
-    top: 4rem;
+    top: 0;
+    bottom: 0;
     z-index: 1000;
-    height: calc(100vh - 4rem);
-    max-height: calc(100vh - 4rem);
+    height: calc(100vh);
     overflow-y: auto;
+}
+::ng-deep .sidenav .tree {
+    background-color: #eee;
+}
+
+::ng-deep .mat-tree-node {
+    font-size: 16px;
 }
 
 @media(max-width:767px){
     ::ng-deep .sidenav {
         position: sticky;
-        top: 4rem;
+        top: 3rem;
         z-index: 1000;
-        height: calc(100vh - 9.5rem);
-        max-height: calc(100vh - 9.5rem);
+        height: calc(100vh);
         overflow-y: auto;
     }
 }
@@ -74,13 +90,13 @@ a {
     text-decoration-line: none;
 }
 
-.social-container {
+::ng-deep .social-container {
     background-color: white;
     padding: 10px;
     margin-top: 10px;
 }
 
-.social {
+::ng-deep .social {
     display: inline-block;
     opacity: 0.6;
     margin: 5px;
