@@ -1,26 +1,34 @@
-import { Component } from '@angular/core';
-import { Router } from '@angular/router';
+import { Component, OnInit } from '@angular/core';
+import { Router, NavigationEnd } from '@angular/router';
 
 @Component({
     selector: 'app-root',
     templateUrl: './app.component.html',
     styleUrls: ['./app.component.scss']
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
     title = 'bitbybit-docs';
 
-    constructor(private readonly router: Router){
+    constructor(private readonly router: Router) {
     }
 
-    documentation(){
+    ngOnInit() {
+        this.router.events.subscribe(event => {
+            if (event instanceof NavigationEnd) {
+                window.scroll({top: 0});
+            };
+        });
+    }
+
+    documentation() {
         this.router.navigate(['documentation']);
     }
 
-    tutorials(){
+    tutorials() {
         this.router.navigate(['tutorials']);
     }
 
-    home(){
+    home() {
         this.router.navigate(['/']);
     }
 }
