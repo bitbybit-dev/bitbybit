@@ -6,10 +6,11 @@
     "start": "ng serve",
     "start:docs": "ng serve bitbybit-docs",
     "build": "ng build",
+    "build:docs": "ng build bitbybit-docs --prod",
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e",
-    "scully": "scully --project bitbybit-docs",
+    "scully": "scully --project bitbybit-docs --prod",
     "scully:serve": "scully serve --project bitbybit-docs"
   },
   "private": true,

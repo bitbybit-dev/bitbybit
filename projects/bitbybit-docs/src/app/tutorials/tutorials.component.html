@@ -14,7 +14,7 @@
                         <li class="mat-tree-node">
                             <!-- use a disabled button to provide padding for tree leaf -->
                             <button mat-icon-button disabled></button>
-                            <a *ngIf="node.link" [routerLink]="node.link">{{node.name}}</a>
+                            <a class="tree-link" *ngIf="node.link" [routerLink]="node.link">{{node.name}}</a>
                             <span *ngIf="!node.link">{{node.name}}</span>
                         </li>
                     </mat-tree-node>
