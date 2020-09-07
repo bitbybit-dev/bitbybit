@@ -1,9 +1,7 @@
 # BitByBit
 Platform for programming geometry on the browser.
-# BitbybitDev
 
 Visit https://bitbybit.dev and start your journey.
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 10.0.7.
 
 # About
 BitByBit is an open source, community-based, frictionless web platform that allows creators to program geometry through simple visual programming language. This tool is great for all ages and can fulfil many artistic, educational, and practical needs of its users. Through familiar programming interface used in tools such as Scratch and Blockly.Games we expose powerful 3D algorithms that make it easier to implement various parametric tasks. Such intuitive and flexible programming environments are hard to find even at the expensive CAD applications which usually require a lot of specific domain knowledge. Our goal is to make it very simple for users to share their ideas and designs by just exporting and importing scripts, uploading designs, and participating in lively discussions on Discord. We want to encourage everyone to engage in the future of this tool.
