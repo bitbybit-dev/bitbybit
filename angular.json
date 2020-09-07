@@ -1,133 +1,254 @@
 {
-  "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
-  "version": 1,
-  "newProjectRoot": "projects",
-  "projects": {
-    "bitbybit-ui": {
-      "projectType": "application",
-      "schematics": {
-        "@schematics/angular:component": {
-          "style": "scss"
-        }
-      },
-      "root": "",
-      "sourceRoot": "src",
-      "prefix": "app",
-      "architect": {
-        "build": {
-          "builder": "@angular-devkit/build-angular:browser",
-          "options": {
-            "outputPath": "dist/bitbybit-ui",
-            "index": "src/index.html",
-            "main": "src/main.ts",
-            "polyfills": "src/polyfills.ts",
-            "tsConfig": "tsconfig.app.json",
-            "aot": true,
-            "assets": [
-              "src/favicon.ico",
-              "src/assets"
-            ],
-            "styles": [
-              "src/styles.scss"
-            ],
-            "scripts": [
-            ]
-          },
-          "configurations": {
-            "production": {
-              "fileReplacements": [
-                {
-                  "replace": "src/environments/environment.ts",
-                  "with": "src/environments/environment.prod.ts"
+    "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
+    "version": 1,
+    "newProjectRoot": "projects",
+    "projects": {
+        "bitbybit": {
+            "projectType": "application",
+            "schematics": {
+                "@schematics/angular:component": {
+                    "style": "scss"
                 }
-              ],
-              "optimization": true,
-              "outputHashing": "all",
-              "sourceMap": false,
-              "extractCss": true,
-              "namedChunks": true,
-              "extractLicenses": true,
-              "vendorChunk": true,
-              "buildOptimizer": true,
-              "budgets": [
-                {
-                  "type": "initial",
-                  "maximumWarning": "5.5mb",
-                  "maximumError": "6mb"
+            },
+            "root": "projects/bitbybit",
+            "sourceRoot": "projects/bitbybit/src",
+            "prefix": "app",
+            "architect": {
+                "build": {
+                    "builder": "@angular-devkit/build-angular:browser",
+                    "options": {
+                        "outputPath": "dist/bitbybit",
+                        "index": "projects/bitbybit/src/index.html",
+                        "main": "projects/bitbybit/src/main.ts",
+                        "polyfills": "projects/bitbybit/src/polyfills.ts",
+                        "tsConfig": "projects/bitbybit/tsconfig.app.json",
+                        "aot": true,
+                        "assets": [
+                            "projects/bitbybit/src/favicon.ico",
+                            "projects/bitbybit/src/assets"
+                        ],
+                        "styles": [
+                            "projects/bitbybit/src/styles.scss"
+                        ],
+                        "scripts": []
+                    },
+                    "configurations": {
+                        "production": {
+                            "fileReplacements": [
+                                {
+                                    "replace": "projects/bitbybit/src/environments/environment.ts",
+                                    "with": "projects/bitbybit/src/environments/environment.prod.ts"
+                                }
+                            ],
+                            "optimization": true,
+                            "outputHashing": "all",
+                            "sourceMap": false,
+                            "extractCss": true,
+                            "namedChunks": false,
+                            "extractLicenses": true,
+                            "vendorChunk": true,
+                            "buildOptimizer": true,
+                            "budgets": [
+                                {
+                                    "type": "initial",
+                                    "maximumWarning": "5mb",
+                                    "maximumError": "10mb"
+                                },
+                                {
+                                    "type": "anyComponentStyle",
+                                    "maximumWarning": "6kb",
+                                    "maximumError": "10kb"
+                                }
+                            ]
+                        }
+                    }
                 },
-                {
-                  "type": "anyComponentStyle",
-                  "maximumWarning": "6kb",
-                  "maximumError": "10kb"
+                "serve": {
+                    "builder": "@angular-devkit/build-angular:dev-server",
+                    "options": {
+                        "browserTarget": "bitbybit:build"
+                    },
+                    "configurations": {
+                        "production": {
+                            "browserTarget": "bitbybit:build:production"
+                        }
+                    }
+                },
+                "extract-i18n": {
+                    "builder": "@angular-devkit/build-angular:extract-i18n",
+                    "options": {
+                        "browserTarget": "bitbybit:build"
+                    }
+                },
+                "test": {
+                    "builder": "@angular-devkit/build-angular:karma",
+                    "options": {
+                        "main": "projects/bitbybit/src/test.ts",
+                        "polyfills": "projects/bitbybit/src/polyfills.ts",
+                        "tsConfig": "projects/bitbybit/tsconfig.spec.json",
+                        "karmaConfig": "projects/bitbybit/karma.conf.js",
+                        "assets": [
+                            "projects/bitbybit/src/favicon.ico",
+                            "projects/bitbybit/src/assets"
+                        ],
+                        "styles": [
+                            "projects/bitbybit/src/styles.scss"
+                        ],
+                        "scripts": []
+                    }
+                },
+                "lint": {
+                    "builder": "@angular-devkit/build-angular:tslint",
+                    "options": {
+                        "tsConfig": [
+                            "projects/bitbybit/tsconfig.app.json",
+                            "projects/bitbybit/tsconfig.spec.json",
+                            "projects/bitbybit/e2e/tsconfig.json"
+                        ],
+                        "exclude": [
+                            "**/node_modules/**"
+                        ]
+                    }
+                },
+                "e2e": {
+                    "builder": "@angular-devkit/build-angular:protractor",
+                    "options": {
+                        "protractorConfig": "projects/bitbybit/e2e/protractor.conf.js",
+                        "devServerTarget": "bitbybit:serve"
+                    },
+                    "configurations": {
+                        "production": {
+                            "devServerTarget": "bitbybit:serve:production"
+                        }
+                    }
                 }
-              ]
             }
-          }
         },
-        "serve": {
-          "builder": "@angular-devkit/build-angular:dev-server",
-          "options": {
-            "browserTarget": "bitbybit-ui:build"
-          },
-          "configurations": {
-            "production": {
-              "browserTarget": "bitbybit-ui:build:production"
+        "bitbybit-docs": {
+            "projectType": "application",
+            "schematics": {
+                "@schematics/angular:component": {
+                    "style": "scss"
+                }
+            },
+            "root": "projects/bitbybit-docs",
+            "sourceRoot": "projects/bitbybit-docs/src",
+            "prefix": "app",
+            "architect": {
+                "build": {
+                    "builder": "@angular-devkit/build-angular:browser",
+                    "options": {
+                        "outputPath": "dist/bitbybit-docs",
+                        "index": "projects/bitbybit-docs/src/index.html",
+                        "main": "projects/bitbybit-docs/src/main.ts",
+                        "polyfills": "projects/bitbybit-docs/src/polyfills.ts",
+                        "tsConfig": "projects/bitbybit-docs/tsconfig.app.json",
+                        "aot": true,
+                        "assets": [
+                            "projects/bitbybit-docs/src/favicon.ico",
+                            "projects/bitbybit-docs/src/assets"
+                        ],
+                        "styles": [
+                            "node_modules/bootstrap/dist/css/bootstrap.min.css",
+                            "projects/bitbybit-docs/src/styles.scss"
+                        ],
+                        "scripts": []
+                    },
+                    "configurations": {
+                        "production": {
+                            "fileReplacements": [
+                                {
+                                    "replace": "projects/bitbybit-docs/src/environments/environment.ts",
+                                    "with": "projects/bitbybit-docs/src/environments/environment.prod.ts"
+                                }
+                            ],
+                            "optimization": true,
+                            "outputHashing": "all",
+                            "sourceMap": false,
+                            "extractCss": true,
+                            "namedChunks": false,
+                            "extractLicenses": true,
+                            "vendorChunk": false,
+                            "buildOptimizer": true,
+                            "budgets": [
+                                {
+                                    "type": "initial",
+                                    "maximumWarning": "4mb",
+                                    "maximumError": "10mb"
+                                },
+                                {
+                                    "type": "anyComponentStyle",
+                                    "maximumWarning": "6kb",
+                                    "maximumError": "10kb"
+                                }
+                            ]
+                        }
+                    }
+                },
+                "serve": {
+                    "builder": "@angular-devkit/build-angular:dev-server",
+                    "options": {
+                        "browserTarget": "bitbybit-docs:build"
+                    },
+                    "configurations": {
+                        "production": {
+                            "browserTarget": "bitbybit-docs:build:production"
+                        }
+                    }
+                },
+                "extract-i18n": {
+                    "builder": "@angular-devkit/build-angular:extract-i18n",
+                    "options": {
+                        "browserTarget": "bitbybit-docs:build"
+                    }
+                },
+                "test": {
+                    "builder": "@angular-devkit/build-angular:karma",
+                    "options": {
+                        "main": "projects/bitbybit-docs/src/test.ts",
+                        "polyfills": "projects/bitbybit-docs/src/polyfills.ts",
+                        "tsConfig": "projects/bitbybit-docs/tsconfig.spec.json",
+                        "karmaConfig": "projects/bitbybit-docs/karma.conf.js",
+                        "assets": [
+                            "projects/bitbybit-docs/src/favicon.ico",
+                            "projects/bitbybit-docs/src/assets"
+                        ],
+                        "styles": [
+                            "projects/bitbybit-docs/src/styles.scss"
+                        ],
+                        "scripts": []
+                    }
+                },
+                "lint": {
+                    "builder": "@angular-devkit/build-angular:tslint",
+                    "options": {
+                        "tsConfig": [
+                            "projects/bitbybit-docs/tsconfig.app.json",
+                            "projects/bitbybit-docs/tsconfig.spec.json",
+                            "projects/bitbybit-docs/e2e/tsconfig.json"
+                        ],
+                        "exclude": [
+                            "**/node_modules/**"
+                        ]
+                    }
+                },
+                "e2e": {
+                    "builder": "@angular-devkit/build-angular:protractor",
+                    "options": {
+                        "protractorConfig": "projects/bitbybit-docs/e2e/protractor.conf.js",
+                        "devServerTarget": "bitbybit-docs:serve"
+                    },
+                    "configurations": {
+                        "production": {
+                            "devServerTarget": "bitbybit-docs:serve:production"
+                        }
+                    }
+                }
             }
-          }
-        },
-        "extract-i18n": {
-          "builder": "@angular-devkit/build-angular:extract-i18n",
-          "options": {
-            "browserTarget": "bitbybit-ui:build"
-          }
-        },
-        "test": {
-          "builder": "@angular-devkit/build-angular:karma",
-          "options": {
-            "main": "src/test.ts",
-            "polyfills": "src/polyfills.ts",
-            "tsConfig": "tsconfig.spec.json",
-            "karmaConfig": "karma.conf.js",
-            "assets": [
-              "src/favicon.ico",
-              "src/assets"
-            ],
-            "styles": [
-              "src/styles.scss"
-            ],
-            "scripts": []
-          }
-        },
-        "lint": {
-          "builder": "@angular-devkit/build-angular:tslint",
-          "options": {
-            "tsConfig": [
-              "tsconfig.app.json",
-              "tsconfig.spec.json",
-              "e2e/tsconfig.json"
-            ],
-            "exclude": [
-              "**/node_modules/**"
-            ]
-          }
-        },
-        "e2e": {
-          "builder": "@angular-devkit/build-angular:protractor",
-          "options": {
-            "protractorConfig": "e2e/protractor.conf.js",
-            "devServerTarget": "bitbybit-ui:serve"
-          },
-          "configurations": {
-            "production": {
-              "devServerTarget": "bitbybit-ui:serve:production"
-            }
-          }
         }
-      }
-    }
-  },
-  "defaultProject": "bitbybit-ui",
-  "cli": {
-    "analytics": "e8bc7d57-7a07-4318-8592-885edd83bd47"
-  }
+    },
+    "cli": {
+        "analytics": "2e92328a-053d-425c-93a7-4bb86bf45f65"
+    },
+    "defaultProject": "bitbybit"
 }
