@@ -96,7 +96,7 @@ export interface ResourcesInterface {
     block_toolbox_category_intersect: string;
     block_toolbox_category_create: string;
     block_toolbox_category_apply: string;
-    block_toolbox_category_apply_get: string;
+     block_toolbox_category_apply_get: string;
     block_toolbox_category_apply_set: string;
     block_toolbox_category_apply_convert: string;
     block_toolbox_category_loop: string;
@@ -756,6 +756,12 @@ export interface ResourcesInterface {
     block_verb_geometry_intersect_curve_curve_input_second_curve: string;
     block_verb_geometry_intersect_curve_curve_input_tolerance: string;
     block_verb_geometry_intersect_curve_curve_description: string;
+    block_verb_geometry_intersect_curve_surface_input_curve: string;
+    block_verb_geometry_intersect_curve_surface_input_surface: string;
+    block_verb_geometry_intersect_curve_surface_description: string;
+    block_verb_geometry_intersect_surface_surface_input_curve: string;
+    block_verb_geometry_intersect_surface_surface_input_surface: string;
+    block_verb_geometry_intersect_surface_surface_description: string;
     block_base_geometry_lines_convert_to_nurbs_curves: string;
     block_base_geometry_lines_convert_to_nurbs_curves_description: string;
     block_verb_geometry_intersect_curve_curve_first_params_input_intersections: string;
@@ -766,6 +772,14 @@ export interface ResourcesInterface {
     block_verb_geometry_intersect_curve_curve_first_points_description: string;
     block_verb_geometry_intersect_curve_curve_second_points_input_intersections: string;
     block_verb_geometry_intersect_curve_curve_second_points_description: string;
+    block_verb_geometry_intersect_curve_surface_curve_params_input_intersections: string;
+    block_verb_geometry_intersect_curve_surface_curve_params_description: string;
+    block_verb_geometry_intersect_curve_surface_surface_params_input_intersections: string;
+    block_verb_geometry_intersect_curve_surface_surface_params_description: string;
+    block_verb_geometry_intersect_curve_surface_curve_points_input_intersections: string;
+    block_verb_geometry_intersect_curve_surface_curve_points_description: string;
+    block_verb_geometry_intersect_curve_surface_surface_points_input_intersections: string;
+    block_verb_geometry_intersect_curve_surface_surface_points_description: string;
     block_base_geometry_lines_between_points_input_points: string;
     block_base_geometry_lines_between_points_description: string;
     block_base_lists_group_list_elements_input_list: string;

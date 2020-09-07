@@ -15,7 +15,7 @@ export function createIntersectCurveCurveSecondParamsBlock() {
                 .setCheck('Array')
                 .setAlign(ALIGN_RIGHT)
                 .appendField(resources.block_verb_geometry_intersect_curve_curve_second_params_input_intersections);
-            this.setOutput(true, 'Number');
+            this.setOutput(true, 'Array');
             this.setColour('#fff');
             this.setTooltip(resources.block_verb_geometry_intersect_curve_curve_second_params_description);
             this.setHelpUrl('');

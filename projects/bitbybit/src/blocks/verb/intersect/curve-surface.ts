@@ -4,40 +4,44 @@ import { ResourcesInterface, ResourcesService } from '../../../resources';
 import { createStandardContextIIFE } from '../../_shared';
 import { getRequired, makeRequiredValidationModelForInputs, BitByBitBlockHandlerService, ValidationEntityInterface } from '../../validations';
 
-export function createIntersectCurveCurveFirstParamsBlock() {
+export function createIntersectCurveSurfaceBlock() {
 
     const resources = ResourcesService.getResources();
-    const blockSelector = 'verb_geometry_intersect_curve_curve_first_params';
+    const blockSelector = 'verb_geometry_intersect_curve_surface';
 
     Blocks[blockSelector] = {
         init() {
-            this.appendValueInput('Intersections')
-                .setCheck('Array')
+            this.appendValueInput('Curve')
+                .setCheck('NurbsCurve')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_verb_geometry_intersect_curve_curve_first_params_input_intersections);
+                .appendField(resources.block_verb_geometry_intersect_curve_surface_input_curve);
+            this.appendValueInput('Surface')
+                .setCheck('NurbsSurface')
+                .setAlign(ALIGN_RIGHT)
+                .appendField(resources.block_verb_geometry_intersect_curve_surface_input_surface.toLowerCase());
             this.setOutput(true, 'Array');
             this.setColour('#fff');
-            this.setTooltip(resources.block_verb_geometry_intersect_curve_curve_first_params_description);
-            this.setHelpUrl('');
+            this.setTooltip(resources.block_verb_geometry_intersect_curve_surface_description);
         }
     };
 
     JavaScript[blockSelector] = (block: Block) => {
         const inputs = {
-            intersections: JavaScript.valueToCode(block, 'Intersections', JavaScript.ORDER_ATOMIC)
+            curve: JavaScript.valueToCode(block, 'Curve', JavaScript.ORDER_ATOMIC),
+            surface: JavaScript.valueToCode(block, 'Surface', JavaScript.ORDER_ATOMIC),
         };
-
         // this is first set of validations to check that all inputs are non empty strings
-
         BitByBitBlockHandlerService.validate(block, block.workspace, makeRequiredValidationModelForInputs(resources, inputs, [
-            resources.block_intersections
+            resources.block_curve, resources.block_surface, resources.block_tolerance
         ]));
+
         // this creates validation model to be used at runtime to evaluate real values of inputs
         const runtimeValidationModel = makeRuntimeValidationModel(resources, Object.keys(inputs));
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `return inputs.intersections.filter(s => s.u0 >= 0 && s.u0 <= 1).map(i => i.u0);`);
+            `return verb.geom.Intersect.curveAndSurface(inputs.curve, inputs.surface);`
+        );
         return [code, JavaScript.ORDER_ATOMIC];
     };
 }
@@ -50,7 +54,12 @@ function makeRuntimeValidationModel(
     return [{
         entity: keys[0],
         validations: [
-            getRequired(resources, resources.block_intersections),
+            getRequired(resources, resources.block_curve),
+        ]
+    }, {
+        entity: keys[1],
+        validations: [
+            getRequired(resources, resources.block_surface),
         ]
     }];
 }

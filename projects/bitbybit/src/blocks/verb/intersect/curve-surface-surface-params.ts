@@ -4,20 +4,20 @@ import { ResourcesInterface, ResourcesService } from '../../../resources';
 import { createStandardContextIIFE } from '../../_shared';
 import { getRequired, makeRequiredValidationModelForInputs, BitByBitBlockHandlerService, ValidationEntityInterface } from '../../validations';
 
-export function createIntersectCurveCurveFirstParamsBlock() {
+export function createIntersectCurveSurfaceSurfaceParamsBlock() {
 
     const resources = ResourcesService.getResources();
-    const blockSelector = 'verb_geometry_intersect_curve_curve_first_params';
+    const blockSelector = 'verb_geometry_intersect_curve_surface_surface_params';
 
     Blocks[blockSelector] = {
         init() {
             this.appendValueInput('Intersections')
                 .setCheck('Array')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_verb_geometry_intersect_curve_curve_first_params_input_intersections);
+                .appendField(resources.block_verb_geometry_intersect_curve_surface_surface_params_input_intersections);
             this.setOutput(true, 'Array');
             this.setColour('#fff');
-            this.setTooltip(resources.block_verb_geometry_intersect_curve_curve_first_params_description);
+            this.setTooltip(resources.block_verb_geometry_intersect_curve_surface_surface_params_description);
             this.setHelpUrl('');
         }
     };
@@ -37,7 +37,7 @@ export function createIntersectCurveCurveFirstParamsBlock() {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `return inputs.intersections.filter(s => s.u0 >= 0 && s.u0 <= 1).map(i => i.u0);`);
+            `return inputs.intersections.map(i => i.uv);`);
         return [code, JavaScript.ORDER_ATOMIC];
     };
 }
