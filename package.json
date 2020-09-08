@@ -37,6 +37,7 @@
     "blockly": "3.20200402.1",
     "@babylonjs/core": "4.1.0",
     "@babylonjs/materials": "4.1.0",
+    "@babylonjs/loaders": "4.1.0",
     "@babylonjs/gui": "4.1.0"
   },
   "devDependencies": {

@@ -126,11 +126,11 @@ mat-tab-body {
 }
 
 ::ng-deep .blocklyTreeSelected>.blocklyTreeIconOpen {
-    background-position: 0px 0px;
+    background-position: -16px -1px;
     color: grey;
 }
 ::ng-deep .blocklyTreeSelected>.blocklyTreeIconClosedLtr {
-        background-position: 0px 0px;
+    background-position: -32px -1px;
 }
 
 ::ng-deep .blocklyTreeIcon {

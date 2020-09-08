@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Matrix, Vector3 } from '@babylonjs/core';
 import { PrintSaveInterface } from './models/print-save.model';
 import { TagInterface } from './models/tag.interface';
+import { OBJFileLoader } from '@babylonjs/loaders';
 
 export class BitByBitBlocklyHelperService {
 
@@ -13,6 +14,9 @@ export class BitByBitBlocklyHelperService {
     static timeoutBag: number[] = [];
     static intervalBag: number[] = [];
     static renderLoopBag: ((timePassedFromPreviousIteration: number) => void)[] = [];
+    static babylon = {
+        loader: new OBJFileLoader(),
+    };
 
     static transformPointsByMatrix(points: [], transformMatrix: Matrix) {
         const transformedPoints = [];
