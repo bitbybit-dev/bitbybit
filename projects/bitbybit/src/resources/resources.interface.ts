@@ -75,6 +75,7 @@ export interface ResourcesInterface {
     app_print_save_dialog_file_format: string;
     block_toolbox_category_scene: string;
     block_toolbox_category_core_types: string;
+    block_toolbox_category_core_node: string;
     block_toolbox_category_core_transforms: string;
     block_toolbox_category_core_vector: string;
     block_toolbox_category_geom_point: string;
@@ -87,6 +88,8 @@ export interface ResourcesInterface {
     block_toolbox_category_geom_circle: string;
     block_toolbox_category_geom_ellipse: string;
     block_toolbox_category_geom_surface: string;
+    block_toolbox_category_geom_mesh: string;
+    block_toolbox_category_geom_plane: string;
     block_toolbox_category_geom_cone: string;
     block_toolbox_category_geom_sweep: string;
     block_toolbox_category_geom_cylinder: string;
@@ -95,6 +98,7 @@ export interface ResourcesInterface {
     block_toolbox_category_geom_sphere: string;
     block_toolbox_category_intersect: string;
     block_toolbox_category_create: string;
+    block_toolbox_category_draw: string;
     block_toolbox_category_apply: string;
      block_toolbox_category_apply_get: string;
     block_toolbox_category_apply_set: string;
@@ -119,6 +123,7 @@ export interface ResourcesInterface {
     block_number_points: string;
     block_subdivision: string;
     block_line: string;
+    block_node: string;
     block_min: string;
     block_max: string;
     block_step: string;
@@ -135,6 +140,7 @@ export interface ResourcesInterface {
     block_polyline: string;
     block_lines: string;
     block_curve: string;
+    block_mesh: string;
     block_time: string;
     block_date: string;
     block_unix_timestamp: string;
@@ -177,6 +183,7 @@ export interface ResourcesInterface {
     block_size: string;
     block_updatable: string;
     block_position: string;
+    block_rotation: string;
     block_text_tag: string;
     block_text_tags: string;
     block_adapt_depth: string;
@@ -194,6 +201,8 @@ export interface ResourcesInterface {
     block_direction: string;
     block_circle: string;
     block_ellipse: string;
+    block_shape: string;
+    block_holes: string;
     block_radius: string;
     block_interval: string;
     block_interval_handler: string;
@@ -257,9 +266,20 @@ export interface ResourcesInterface {
     block_babylon_input_draw_line: string;
     block_babylon_input_draw_line_variable: string;
     block_babylon_input_draw_line_2: string;
+    block_babylon_input_draw_node: string;
+    block_babylon_input_draw_node_color_x: string;
+    block_babylon_input_draw_node_color_y: string;
+    block_babylon_input_draw_node_color_z: string;
+    block_babylon_input_draw_node_description: string;
+    block_babylon_input_draw_nodes: string;
+    block_babylon_input_draw_nodes_description: string;
     block_babylon_input_draw_lines: string;
     block_babylon_input_draw_lines_variable: string;
     block_babylon_input_draw_lines_2: string;
+    block_babylon_draw_csg_mesh_input_csg_mesh_variable: string;
+    block_babylon_draw_csg_mesh_input_csg_mesh: string;
+    block_babylon_draw_csg_mesh_input_csg_mesh_2: string;
+    block_babylon_draw_csg_mesh_description: string;
     block_babylon_input_draw_polylines: string;
     block_babylon_input_draw_polylines_variable: string;
     block_babylon_input_draw_polylines_2: string;
@@ -1021,4 +1041,16 @@ export interface ResourcesInterface {
     block_base_math_modulus_description: string;
     block_base_clear_all_drawn_input_clear_all_drawn: string;
     block_base_clear_all_drawn_description: string;
+    block_babylon_node_from_rotation_input_origin: string;
+    block_babylon_node_from_rotation_input_rotation: string;
+    block_babylon_node_from_rotation_input_parent: string;
+    block_babylon_node_from_rotation_description: string;
+    block_babylon_node_world_input_world: string;
+    block_babylon_node_world_description: string;
+    block_babylon_node_get_root_input_root: string;
+    block_babylon_node_get_root_description: string;
+    block_babylon_node_get_rotation_quaternion_input_node: string;
+    block_babylon_node_get_rotation_quaternion_description: string;
+    block_babylon_node_get_rotation_input_node: string;
+    block_babylon_node_get_rotation_description: string;
 }

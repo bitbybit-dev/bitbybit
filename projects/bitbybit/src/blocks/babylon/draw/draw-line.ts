@@ -75,21 +75,21 @@ export function createDrawLineBlock() {
         const line = inputs.line;
 
         const points = [
-            new BABYLON.Vector3(line.start[0], line.start[1], line.start[2]),
-            new BABYLON.Vector3(line.end[0], line.end[1], line.end[2])
+            new BitByBit.BABYLON.Vector3(line.start[0], line.start[1], line.start[2]),
+            new BitByBit.BABYLON.Vector3(line.end[0], line.end[1], line.end[2])
         ];
 
         if(inputs.lineMeshVariable && inputs.updatable){
-            inputs.lineMeshVariable = BABYLON.MeshBuilder.CreateLines(null, {points, instance: inputs.lineMeshVariable, useVertexAlpha: true, updatable: inputs.updatable}, null);
+            inputs.lineMeshVariable = BitByBit.BABYLON.MeshBuilder.CreateLines(null, {points, instance: inputs.lineMeshVariable, useVertexAlpha: true, updatable: inputs.updatable}, null);
         } else {
-            inputs.lineMeshVariable = BABYLON.MeshBuilder.CreateLines('lines${Math.random()}', {points, updatable: inputs.updatable, useVertexAlpha: true}, scene);
+            inputs.lineMeshVariable = BitByBit.BABYLON.MeshBuilder.CreateLines('lines${Math.random()}', {points, updatable: inputs.updatable, useVertexAlpha: true}, BitByBit.scene);
             ${JavaScript.variableDB_.getName(block.getFieldValue('DrawnLineMesh'), VARIABLE_CATEGORY_NAME)} = inputs.lineMeshVariable;
         }
 
         inputs.lineMeshVariable.enableEdgesRendering();
         inputs.lineMeshVariable.edgesWidth = inputs.width;
-        const edgeColor = BABYLON.Color3.FromHexString(inputs.colour);
-        inputs.lineMeshVariable.edgesColor = new BABYLON.Color4(edgeColor.r, edgeColor.g, edgeColor.b, inputs.opacity);
+        const edgeColor = BitByBit.BABYLON.Color3.FromHexString(inputs.colour);
+        inputs.lineMeshVariable.edgesColor = new BitByBit.BABYLON.Color4(edgeColor.r, edgeColor.g, edgeColor.b, inputs.opacity);
  `
         );
     };

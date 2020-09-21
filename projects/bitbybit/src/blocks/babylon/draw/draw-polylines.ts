@@ -71,28 +71,28 @@ export function createDrawPolylinesBlock() {
         inputs.linesMesh = ${JavaScript.variableDB_.getName(block.getFieldValue('DrawnPolylinesMesh'), VARIABLE_CATEGORY_NAME)};
         const linesForRender = [];
         inputs.polylines.forEach(polyline => {
-            linesForRender.push(polyline.points.map(pt => new BABYLON.Vector3(pt[0], pt[1], pt[2])));
+            linesForRender.push(polyline.points.map(pt => new BitByBit.BABYLON.Vector3(pt[0], pt[1], pt[2])));
         });
 
         if(inputs.linesMesh && inputs.updatable) {
 
             if(inputs.linesMesh.getTotalVertices() / 2 === linesForRender.length){
-                inputs.linesMesh = BABYLON.MeshBuilder.CreateLineSystem(null, {lines: linesForRender, instance: inputs.linesMesh, useVertexAlpha: true, updatable: inputs.updatable}, null);
+                inputs.linesMesh = BitByBit.BABYLON.MeshBuilder.CreateLineSystem(null, {lines: linesForRender, instance: inputs.linesMesh, useVertexAlpha: true, updatable: inputs.updatable}, null);
             } else {
                 inputs.linesMesh.dispose();
-                inputs.linesMesh = BABYLON.MeshBuilder.CreateLineSystem('lines${Math.random()}', {lines: linesForRender, useVertexAlpha: true, updatable: inputs.updatable}, scene);
+                inputs.linesMesh = BitByBit.BABYLON.MeshBuilder.CreateLineSystem('lines${Math.random()}', {lines: linesForRender, useVertexAlpha: true, updatable: inputs.updatable}, BitByBit.scene);
                 ${JavaScript.variableDB_.getName(block.getFieldValue('DrawnPolylinesMesh'), VARIABLE_CATEGORY_NAME)} = inputs.linesMesh;
             }
 
         } else {
-            inputs.linesMesh = BABYLON.MeshBuilder.CreateLineSystem('lines${Math.random()}', {lines: linesForRender, useVertexAlpha: true, updatable: inputs.updatable}, scene);
+            inputs.linesMesh = BitByBit.BABYLON.MeshBuilder.CreateLineSystem('lines${Math.random()}', {lines: linesForRender, useVertexAlpha: true, updatable: inputs.updatable}, BitByBit.scene);
             ${JavaScript.variableDB_.getName(block.getFieldValue('DrawnPolylinesMesh'), VARIABLE_CATEGORY_NAME)} = inputs.linesMesh;
         }
 
         inputs.linesMesh.enableEdgesRendering();
         inputs.linesMesh.edgesWidth = inputs.width;
-        const col = BABYLON.Color3.FromHexString(inputs.colour);
-        inputs.linesMesh.edgesColor = new BABYLON.Color4(col.r, col.g, col.b, inputs.opacity);
+        const col = BitByBit.BABYLON.Color3.FromHexString(inputs.colour);
+        inputs.linesMesh.edgesColor = new BitByBit.BABYLON.Color4(col.r, col.g, col.b, inputs.opacity);
         inputs.linesMesh.opacity = inputs.opacity;
 `);
     };

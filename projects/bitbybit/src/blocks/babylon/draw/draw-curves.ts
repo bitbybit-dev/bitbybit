@@ -71,15 +71,15 @@ export function createDrawCurvesBlock() {
         inputs.curvesMesh = ${JavaScript.variableDB_.getName(block.getFieldValue('DrawnCurvesMesh'), VARIABLE_CATEGORY_NAME)};
 
         const curvesForRender = [];
-        const col = BABYLON.Color3.FromHexString(inputs.colour);
+        const col = BitByBit.BABYLON.Color3.FromHexString(inputs.colour);
         const colors = [];
         const totalPoints = [];
 
         inputs.curves.forEach(curve => {
             const points = curve.tessellate();
             totalPoints.push(points.length);
-            curvesForRender.push(points.map(pt => new BABYLON.Vector3(pt[0], pt[1], pt[2])));
-            colors.push(points.map(pt => new BABYLON.Color4(col.r, col.g, col.b, inputs.opacity)));
+            curvesForRender.push(points.map(pt => new BitByBit.BABYLON.Vector3(pt[0], pt[1], pt[2])));
+            colors.push(points.map(pt => new BitByBit.BABYLON.Color4(col.r, col.g, col.b, inputs.opacity)));
         });
 
         const validateCurvePointNumber = (old, newPoints) => {
@@ -98,21 +98,21 @@ export function createDrawCurvesBlock() {
 
         if(inputs.curvesMesh && inputs.updatable) {
             if(validateCurvePointNumber(inputs.curvesMesh.totalPoints, totalPoints)){
-                inputs.curvesMesh = BABYLON.MeshBuilder.CreateLineSystem(null, {lines: curvesForRender, instance: inputs.curvesMesh, colors, useVertexAlpha: true, updatable: inputs.updatable}, null);
+                inputs.curvesMesh = BitByBit.BABYLON.MeshBuilder.CreateLineSystem(null, {lines: curvesForRender, instance: inputs.curvesMesh, colors, useVertexAlpha: true, updatable: inputs.updatable}, null);
             } else {
                 inputs.curvesMesh.dispose();
-                inputs.curvesMesh = BABYLON.MeshBuilder.CreateLineSystem('lines${Math.random()}', {lines: curvesForRender, colors, useVertexAlpha: true, updatable: inputs.updatable}, scene);
+                inputs.curvesMesh = BitByBit.BABYLON.MeshBuilder.CreateLineSystem('lines${Math.random()}', {lines: curvesForRender, colors, useVertexAlpha: true, updatable: inputs.updatable}, BitByBit.scene);
                 ${JavaScript.variableDB_.getName(block.getFieldValue('DrawnCurvesMesh'), VARIABLE_CATEGORY_NAME)} = inputs.curvesMesh;
             }
         } else {
-            inputs.curvesMesh = BABYLON.MeshBuilder.CreateLineSystem('lines${Math.random()}', {lines: curvesForRender, colors, useVertexAlpha: true, updatable: inputs.updatable}, scene);
+            inputs.curvesMesh = BitByBit.BABYLON.MeshBuilder.CreateLineSystem('lines${Math.random()}', {lines: curvesForRender, colors, useVertexAlpha: true, updatable: inputs.updatable}, BitByBit.scene);
             ${JavaScript.variableDB_.getName(block.getFieldValue('DrawnCurvesMesh'), VARIABLE_CATEGORY_NAME)} = inputs.curvesMesh;
         }
 
         inputs.curvesMesh.totalPoints = totalPoints;
         inputs.curvesMesh.enableEdgesRendering();
         inputs.curvesMesh.edgesWidth = inputs.width;
-        inputs.curvesMesh.edgesColor = new BABYLON.Color4(col.r, col.g, col.b, inputs.opacity);
+        inputs.curvesMesh.edgesColor = new BitByBit.BABYLON.Color4(col.r, col.g, col.b, inputs.opacity);
         inputs.curvesMesh.opacity = inputs.opacity;
 `
         );

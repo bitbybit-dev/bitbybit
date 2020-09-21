@@ -40,7 +40,7 @@ export function createIntersectCurveCurveBlock() {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `return verb.geom.Intersect.curves(inputs.firstCurve, inputs.secondCurve);`
+            `return BitByBit.verb.geom.Intersect.curves(inputs.firstCurve, inputs.secondCurve);`
         );
         return [code, JavaScript.ORDER_ATOMIC];
     };

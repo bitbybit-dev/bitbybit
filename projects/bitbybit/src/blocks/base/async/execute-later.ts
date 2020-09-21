@@ -51,7 +51,7 @@ export function createExecuteLaterBlock() {
             const handler = setTimeout(() => {
                 inputs.statement_then();
             }, inputs.timeout * 1000);
-            BitByBitBlocklyHelperService.timeoutBag.push(handler);
+            BitByBit.BitByBitBlocklyHelperService.timeoutBag.push(handler);
 `);
     };
 }

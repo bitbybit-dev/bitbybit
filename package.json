@@ -38,7 +38,9 @@
     "@babylonjs/core": "4.1.0",
     "@babylonjs/materials": "4.1.0",
     "@babylonjs/loaders": "4.1.0",
-    "@babylonjs/gui": "4.1.0"
+    "@babylonjs/gui": "4.1.0",
+    "earcut": "2.2.2",
+    "@jscad/csg": "https://github.com/jscad/csg.js.git#V2"
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "~0.1000.7",

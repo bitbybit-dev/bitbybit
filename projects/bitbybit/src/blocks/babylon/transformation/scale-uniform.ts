@@ -34,7 +34,7 @@ export function createScaleUniformBlock() {
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
 `
-        return new BABYLON.Matrix.Scaling(inputs.scale, inputs.scale, inputs.scale);
+        return new BitByBit.BABYLON.Matrix.Scaling(inputs.scale, inputs.scale, inputs.scale);
 `);
         return [code, JavaScript.ORDER_ATOMIC];
     };

@@ -49,7 +49,7 @@ export function createEllipseBlock() {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `return new verb.geom.Ellipse(inputs.center, inputs.xAxis, inputs.yAxis);`
+            `return new BitByBit.verb.geom.Ellipse(inputs.center, inputs.xAxis, inputs.yAxis);`
         );
         return [code, JavaScript.ORDER_ATOMIC];
     };

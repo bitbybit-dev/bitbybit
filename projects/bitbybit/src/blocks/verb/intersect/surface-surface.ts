@@ -40,7 +40,7 @@ export function createIntersectSurfaceSurfaceBlock() {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `return verb.geom.Intersect.surfaces(inputs.firstSurface, inputs.secondSurface);`
+            `return BitByBit.verb.geom.Intersect.surfaces(inputs.firstSurface, inputs.secondSurface);`
         );
         return [code, JavaScript.ORDER_ATOMIC];
     };

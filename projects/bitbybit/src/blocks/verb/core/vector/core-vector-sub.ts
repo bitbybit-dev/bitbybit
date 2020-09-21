@@ -40,7 +40,7 @@ export function createCoreVectorSubBlock() {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `return verb.core.Vec.sub(inputs.first, inputs.second);`
+            `return BitByBit.verb.core.Vec.sub(inputs.first, inputs.second);`
         );
         return [code, JavaScript.ORDER_ATOMIC];
     };

@@ -35,7 +35,7 @@ export function createCircleMinAngleBlock() {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `return BABYLON.Angle.FromRadians(inputs.circle.minAngle()).degrees();`
+            `return BitByBit.BABYLON.Angle.FromRadians(inputs.circle.minAngle()).degrees();`
         );
         return [code, JavaScript.ORDER_ATOMIC];
     };

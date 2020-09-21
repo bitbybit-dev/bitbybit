@@ -32,7 +32,7 @@ export function createLineLengthBlock() {
         ]));
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `return verb.core.Vec.dist(inputs.line.start, inputs.line.end);`
+            `return BitByBit.verb.core.Vec.dist(inputs.line.start, inputs.line.end);`
         );
         return [code, JavaScript.ORDER_ATOMIC];
     };

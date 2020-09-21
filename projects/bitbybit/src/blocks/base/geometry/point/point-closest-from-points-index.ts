@@ -47,7 +47,7 @@ export function createPointClosestFromPointsIndexBlock() {
     let closestPointIndex;
     for(let i = 0; i < inputs.points.length; i++){
         const pt = inputs.points[i];
-        const currentDist = verb.core.Vec.dist(inputs.point, pt);
+        const currentDist = BitByBit.verb.core.Vec.dist(inputs.point, pt);
         if(currentDist < smallestDistanceSoFar){
             smallestDistanceSoFar = currentDist;
             closestPointIndex = i;

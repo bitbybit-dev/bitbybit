@@ -40,7 +40,7 @@ export function createSweptSurfaceBlock() {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `return new verb.geom.SweptSurface(inputs.profile, inputs.rail);`
+            `return new BitByBit.verb.geom.SweptSurface(inputs.profile, inputs.rail);`
         );
         return [code, JavaScript.ORDER_ATOMIC];
     };

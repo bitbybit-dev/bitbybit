@@ -33,7 +33,7 @@ export function createScaleXYZBlock() {
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
 `
-        return new BABYLON.Matrix.Scaling(inputs.scaleXyz[0], inputs.scaleXyz[1], inputs.scaleXyz[2]);
+        return new BitByBit.BABYLON.Matrix.Scaling(inputs.scaleXyz[0], inputs.scaleXyz[1], inputs.scaleXyz[2]);
 `);
         return [code, JavaScript.ORDER_ATOMIC];
     };

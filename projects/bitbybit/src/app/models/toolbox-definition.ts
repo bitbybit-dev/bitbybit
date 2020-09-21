@@ -1,6 +1,7 @@
 import { defaultBlocklyCategories } from './categories/blockly/default-categories';
 import { transformsCategory } from './categories/core/transforms-category';
 import { typesCategory } from './categories/core/types-category';
+import { nodeCategory } from './categories/core/node-category';
 import { vectorCategory } from './categories/core/vector-category';
 import { curveCategory } from './categories/geometry/curve-category';
 import { lineCategory } from './categories/geometry/line-category';
@@ -21,6 +22,7 @@ export function toolboxDefinition() {
     ${typesCategory()}
     ${transformsCategory()}
     ${vectorCategory()}
+    ${nodeCategory()}
     <sep></sep>
     ${pointCategory()}
     ${lineCategory()}

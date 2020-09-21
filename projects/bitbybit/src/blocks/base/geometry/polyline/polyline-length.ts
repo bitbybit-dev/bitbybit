@@ -37,7 +37,7 @@ export function createPolylineLengthBlock() {
         for (var i = 1; i < inputs.polyline.points.length; i++) {
             const previousPoint = inputs.polyline.points[i - 1];
             const currentPoint = inputs.polyline.points[i];
-            distanceOfPolyline += verb.core.Vec.dist(previousPoint, currentPoint);
+            distanceOfPolyline += BitByBit.verb.core.Vec.dist(previousPoint, currentPoint);
         };
         return distanceOfPolyline;
 `

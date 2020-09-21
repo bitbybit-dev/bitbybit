@@ -1,0 +1,140 @@
+
+import { ALIGN_RIGHT, Block, Blocks, FieldVariable, VARIABLE_CATEGORY_NAME } from 'blockly';
+import * as JavaScript from 'blockly/javascript';
+import { ResourcesInterface, ResourcesService } from '../../../resources';
+import { createStandardContextIIFE } from '../../_shared';
+import {
+    getRequired,
+    makeRequiredValidationModelForInputs,
+    BitByBitBlockHandlerService,
+    ValidationEntityInterface
+} from '../../validations';
+
+export function createDrawNodeBlock() {
+
+    const resources = ResourcesService.getResources();
+    const blockSelector = 'babylon_draw_node';
+
+    Blocks[blockSelector] = {
+        init() {
+            this.appendValueInput('Node')
+                .setCheck('Node')
+                .setAlign(ALIGN_RIGHT)
+                .appendField(resources.block_babylon_input_draw_node);
+            this.appendValueInput('ColorX')
+                .setCheck('Colour')
+                .setAlign(ALIGN_RIGHT)
+                .appendField(resources.block_babylon_input_draw_node_color_x.toLowerCase());
+            this.appendValueInput('ColorY')
+                .setCheck('Colour')
+                .setAlign(ALIGN_RIGHT)
+                .appendField(resources.block_babylon_input_draw_node_color_y.toLowerCase());
+            this.appendValueInput('ColorZ')
+                .setCheck('Colour')
+                .setAlign(ALIGN_RIGHT)
+                .appendField(resources.block_babylon_input_draw_node_color_z.toLowerCase());
+            this.appendValueInput('Size')
+                .setCheck('Number')
+                .setAlign(ALIGN_RIGHT)
+                .appendField(resources.block_babylon_input_size.toLowerCase());
+            this.setColour('#fff');
+            this.setPreviousStatement(true, null);
+            this.setNextStatement(true, null);
+            this.setTooltip(resources.block_babylon_input_draw_node_description);
+            this.setHelpUrl('');
+        }
+    };
+
+    JavaScript[blockSelector] = (block: Block) => {
+
+        const inputs = {
+            node: JavaScript.valueToCode(block, 'Node', JavaScript.ORDER_ATOMIC),
+            colorX: JavaScript.valueToCode(block, 'ColorX', JavaScript.ORDER_ATOMIC),
+            colorY: JavaScript.valueToCode(block, 'ColorY', JavaScript.ORDER_ATOMIC),
+            colorZ: JavaScript.valueToCode(block, 'ColorZ', JavaScript.ORDER_ATOMIC),
+            size: JavaScript.valueToCode(block, 'Size', JavaScript.ORDER_ATOMIC),
+        };
+
+        // this is first set of validations to check that all inputs are non empty strings
+        BitByBitBlockHandlerService.validate(block, block.workspace, makeRequiredValidationModelForInputs(resources, inputs, [
+            resources.block_node, resources.block_colour, resources.block_colour, resources.block_colour,
+            resources.block_size
+        ]));
+
+        // this creates validation model to be used at runtime to evaluate real values of inputs
+        const runtimeValidationModel = makeRuntimeValidationModel(resources, Object.keys(inputs));
+        (block as any).validationModel = runtimeValidationModel;
+
+        return createStandardContextIIFE(block, blockSelector, inputs, false,
+            `
+            function localAxes(size) {
+                var pilot_local_axisX = BABYLON.Mesh.CreateLines("pilot_local_axisX${Math.random()}", [
+                    new BABYLON.Vector3.Zero(), new BABYLON.Vector3(size, 0, 0), new BABYLON.Vector3(size * 0.95, 0.05 * size, 0), 
+                    new BABYLON.Vector3(size, 0, 0), new BABYLON.Vector3(size * 0.95, -0.05 * size, 0)
+                ], BitByBit.scene);
+                const colorX = BitByBit.BABYLON.Color3.FromHexString(inputs.colorX);
+                pilot_local_axisX.color = colorX;
+
+                var pilot_local_axisY = BABYLON.Mesh.CreateLines("pilot_local_axisY${Math.random()}", [
+                    new BABYLON.Vector3.Zero(), new BABYLON.Vector3(0, size, 0), new BABYLON.Vector3(-0.05 * size, size * 0.95, 0),
+                    new BABYLON.Vector3(0, size, 0), new BABYLON.Vector3(0.05 * size, size * 0.95, 0)
+                ], BitByBit.scene);
+                const colorY = BitByBit.BABYLON.Color3.FromHexString(inputs.colorY);
+                pilot_local_axisY.color = colorY;
+
+                var pilot_local_axisZ = BABYLON.Mesh.CreateLines("pilot_local_axisZ${Math.random()}", [
+                    new BABYLON.Vector3.Zero(), new BABYLON.Vector3(0, 0, size), new BABYLON.Vector3( 0 , -0.05 * size, size * 0.95),
+                    new BABYLON.Vector3(0, 0, size), new BABYLON.Vector3( 0, 0.05 * size, size * 0.95)
+                ], BitByBit.scene);
+                const colorZ = BitByBit.BABYLON.Color3.FromHexString(inputs.colorZ);
+                pilot_local_axisZ.color = colorZ;
+
+                var local_origin = BABYLON.MeshBuilder.CreateBox("local_origin${Math.random()}", {size:1}, BitByBit.scene);
+                local_origin.isVisible = false;
+
+                pilot_local_axisX.parent = local_origin;
+                pilot_local_axisY.parent = local_origin;
+                pilot_local_axisZ.parent = local_origin;
+
+                return local_origin;
+            }
+
+            const CoTAxis = localAxes(inputs.size);
+            CoTAxis.parent = inputs.node;
+ `
+        );
+    };
+}
+
+function makeRuntimeValidationModel(
+    resources: ResourcesInterface,
+    keys: string[]
+): ValidationEntityInterface[] {
+
+    return [{
+        entity: keys[0],
+        validations: [
+            getRequired(resources, resources.block_node)
+        ]
+    },{
+        entity: keys[1],
+        validations: [
+            getRequired(resources, resources.block_colour)
+        ]
+    },{
+        entity: keys[2],
+        validations: [
+            getRequired(resources, resources.block_colour)
+        ]
+    },{
+        entity: keys[3],
+        validations: [
+            getRequired(resources, resources.block_colour)
+        ]
+    },{
+        entity: keys[4],
+        validations: [
+            getRequired(resources, resources.block_size)
+        ]
+    }];
+}

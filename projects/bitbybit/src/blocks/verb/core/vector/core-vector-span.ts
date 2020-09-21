@@ -46,7 +46,7 @@ export function createCoreVectorSpanBlock() {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `return verb.core.Vec.span(inputs.min, inputs.max, inputs.step);`);
+            `return BitByBit.verb.core.Vec.span(inputs.min, inputs.max, inputs.step);`);
         return [code, JavaScript.ORDER_ATOMIC];
     };
 }

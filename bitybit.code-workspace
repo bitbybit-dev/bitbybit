@@ -1,0 +1,10 @@
+{
+	"folders": [
+		{
+			"path": "."
+		}
+    ],
+    "settings": {
+        "typescript.tsdk": "/Users/matasubarevicius/Documents/My Projects/bitbybit/node_modules/typescript/lib"
+    }
+}

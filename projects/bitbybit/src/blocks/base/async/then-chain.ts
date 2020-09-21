@@ -45,7 +45,7 @@ export function createThenChainBlock() {
         (block as any).validationModel = runtimeValidationModel;
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
             `
-            const block = blocklyWorkspace.getBlockById('${block.id}');
+            const block = BitByBit.blocklyWorkspace.getBlockById('${block.id}');
             block.inputList[2].setVisible(true);
             block.inputList[2].setAlign(-1);
 

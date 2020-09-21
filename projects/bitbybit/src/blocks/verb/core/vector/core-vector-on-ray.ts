@@ -47,7 +47,7 @@ export function createCoreVectorOnRayBlock() {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `return verb.core.Vec.onRay(inputs.point, inputs.vector, inputs.distance);`);
+            `return BitByBit.verb.core.Vec.onRay(inputs.point, inputs.vector, inputs.distance);`);
         return [code, JavaScript.ORDER_ATOMIC];
     };
 }

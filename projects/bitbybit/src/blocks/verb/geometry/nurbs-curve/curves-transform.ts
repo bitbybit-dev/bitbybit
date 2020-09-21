@@ -49,10 +49,10 @@ inputs.curves.forEach(curve => {
     let transformedControlPoints = points;
     if(transformation.length && transformation.length > 0){
         transformation.forEach(transform => {
-            transformedControlPoints = BitByBitBlocklyHelperService.transformPointsByMatrix(transformedControlPoints, transform);
+            transformedControlPoints = BitByBit.BitByBitBlocklyHelperService.transformPointsByMatrix(transformedControlPoints, transform);
         });
     } else {
-        transformedControlPoints = BitByBitBlocklyHelperService.transformPointsByMatrix(points, transformation);
+        transformedControlPoints = BitByBit.BitByBitBlocklyHelperService.transformPointsByMatrix(points, transformation);
     }
     curvesTransformed.push(verb.geom.NurbsCurve.byKnotsControlPointsWeights(curve.degree(), curve.knots(), transformedControlPoints, curve.weights()));
 });

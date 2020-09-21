@@ -28,7 +28,7 @@ export function createImportTextFileBlock() {
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
             `
-            return BitByBitBlocklyHelperService.getFile();
+            return BitByBit.BitByBitBlocklyHelperService.getFile();
 `
         );
         return [code, JavaScript.ORDER_ATOMIC];

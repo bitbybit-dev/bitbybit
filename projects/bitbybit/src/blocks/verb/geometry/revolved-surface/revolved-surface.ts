@@ -50,7 +50,7 @@ export function createRevolvedSurfaceBlock() {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `return new verb.geom.RevolvedSurface(inputs.profile, inputs.center, inputs.axis, BABYLON.Angle.FromDegrees(inputs.angle).radians())`
+            `return new BitByBit.verb.geom.RevolvedSurface(inputs.profile, inputs.center, inputs.axis, BitByBit.BABYLON.Angle.FromDegrees(inputs.angle).radians())`
         );
         return [code, JavaScript.ORDER_ATOMIC];
     };

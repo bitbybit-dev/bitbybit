@@ -39,7 +39,7 @@ export function createClearTimeoutBlock() {
         return createStandardContextIIFE(block, blockSelector, inputs, false,
             `
             clearTimeout(inputs.timeoutHandler);
-            BitByBitBlocklyHelperService.timeoutBag = BitByBitBlocklyHelperService.timeoutBag.filter(t => t !== inputs.timeoutHandler);
+            BitByBit.BitByBitBlocklyHelperService.timeoutBag = BitByBit.BitByBitBlocklyHelperService.timeoutBag.filter(t => t !== inputs.timeoutHandler);
             `
         );
     };

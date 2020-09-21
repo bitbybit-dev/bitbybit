@@ -33,7 +33,7 @@ export function createTranslationXYZBlock() {
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
 `
-        return new BABYLON.Matrix.Translation(inputs.translation[0], inputs.translation[1], inputs.translation[2]);
+        return new BitByBit.BABYLON.Matrix.Translation(inputs.translation[0], inputs.translation[1], inputs.translation[2]);
 `);
         return [code, JavaScript.ORDER_ATOMIC];
     };

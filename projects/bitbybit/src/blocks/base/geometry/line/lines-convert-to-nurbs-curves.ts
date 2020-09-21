@@ -32,7 +32,7 @@ export function createLinesConvertToNurbsCurvesBlock() {
         ]));
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `return inputs.lines.map(line => new verb.geom.Line(line.start, line.end));`
+            `return inputs.lines.map(line => new BitByBit.verb.geom.Line(line.start, line.end));`
         );
         return [code, JavaScript.ORDER_ATOMIC];
     };

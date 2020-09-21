@@ -44,7 +44,7 @@ export function createJsonSetPathValueBlock() {
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
             `
             const clonedJson = {...inputs.json};
-            BitByBitBlocklyHelperService.jsonpath.value(clonedJson, inputs.path, inputs.value);
+            BitByBit.BitByBitBlocklyHelperService.jsonpath.value(clonedJson, inputs.path, inputs.value);
             return clonedJson;
             `);
         return [code, JavaScript.ORDER_ATOMIC];

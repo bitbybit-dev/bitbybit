@@ -37,7 +37,7 @@ export function createCoreVectorFiniteBlock() {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `return verb.core.Vec.finite(inputs.vector);`);
+            `return BitByBit.verb.core.Vec.finite(inputs.vector);`);
 
         return [code, JavaScript.ORDER_ATOMIC];
     };

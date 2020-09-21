@@ -46,10 +46,10 @@ export function createPolylineTransformBlock() {
     let transformedControlPoints = inputs.polyline.points;
     if(transformation.length && transformation.length > 0){
         transformation.forEach(transform => {
-            transformedControlPoints = BitByBitBlocklyHelperService.transformPointsByMatrix(transformedControlPoints, transform);
+            transformedControlPoints = BitByBit.BitByBitBlocklyHelperService.transformPointsByMatrix(transformedControlPoints, transform);
         });
     } else {
-        transformedControlPoints = BitByBitBlocklyHelperService.transformPointsByMatrix(transformedControlPoints, transformation);
+        transformedControlPoints = BitByBit.BitByBitBlocklyHelperService.transformPointsByMatrix(transformedControlPoints, transformation);
     }
     return { points: transformedControlPoints };
 `);

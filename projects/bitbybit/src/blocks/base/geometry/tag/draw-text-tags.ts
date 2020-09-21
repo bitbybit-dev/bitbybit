@@ -59,18 +59,18 @@ export function createDrawTextTagsBlock() {
                     for(let i = inputs.tagsVariable.length - 1; i < inputs.textTags.length - 1; i++){
                         const tagToCreate = inputs.textTags[i];
                         const textNode = document.createElement('span');
-                        const id = '_tag' + ${new Date().getTime()} + BitByBitBlocklyHelperService.tagBag.length;
+                        const id = '_tag' + ${new Date().getTime()} + BitByBit.BitByBitBlocklyHelperService.tagBag.length;
                         tagToCreate.id = id;
                         textNode.id = id;
                         document.querySelector('.canvasZone').appendChild(textNode);
                         tagToCreate.needsUpdate = true;
-                        BitByBitBlocklyHelperService.tagBag.push(tagToCreate);
+                        BitByBit.BitByBitBlocklyHelperService.tagBag.push(tagToCreate);
                         inputs.tagsVariable.push(tagToCreate);
                     }
                 }
 
                 inputs.tagsVariable.forEach((tagFromVar, index) => {
-                    const tagToUpdate = BitByBitBlocklyHelperService.tagBag.find(tag => tag.id === tagFromVar.id);
+                    const tagToUpdate = BitByBit.BitByBitBlocklyHelperService.tagBag.find(tag => tag.id === tagFromVar.id);
                     const tagToUpdateWith = inputs.textTags[index];
                     if(tagToUpdateWith){
                         Object.keys(tagToUpdateWith).forEach(key => {
@@ -79,7 +79,7 @@ export function createDrawTextTagsBlock() {
                         tagToUpdate.needsUpdate = true;
                     } else {
                         // delete tag
-                        BitByBitBlocklyHelperService.tagBag = BitByBitBlocklyHelperService.tagBag.filter(tag => tag.id !== tagToUpdate.id)
+                        BitByBit.BitByBitBlocklyHelperService.tagBag = BitByBit.BitByBitBlocklyHelperService.tagBag.filter(tag => tag.id !== tagToUpdate.id)
                         const element = document.getElementById(tagToUpdate.id);
                         element.parentNode.removeChild(element);
                     }
@@ -88,13 +88,13 @@ export function createDrawTextTagsBlock() {
                 const tagsToCreate = [];
                 inputs.textTags.forEach((tag, index) => {
                     const textNode = document.createElement('span');
-                    const id = '_tag' + ${new Date().getTime()} + BitByBitBlocklyHelperService.tagBag.length;
+                    const id = '_tag' + ${new Date().getTime()} + BitByBit.BitByBitBlocklyHelperService.tagBag.length;
                     tag.id = id;
                     textNode.id = id;
                     textNode.textContent = tag.text;
                     document.querySelector('.canvasZone').appendChild(textNode);
                     tag.needsUpdate = true;
-                    BitByBitBlocklyHelperService.tagBag.push(tag);
+                    BitByBit.BitByBitBlocklyHelperService.tagBag.push(tag);
                     tagsToCreate.push(tag);
                 });
                 ${JavaScript.variableDB_.getName(block.getFieldValue('DrawnTextTags'), VARIABLE_CATEGORY_NAME)} = tagsToCreate;

@@ -38,7 +38,7 @@ export function createHttpOptionsBlock() {
 `
 let headers;
 if(inputs.headers && inputs.headers.length > 0){
-    headers = new BitByBitBlocklyHelperService.angular.HttpHeaders();
+    headers = new BitByBit.BitByBitBlocklyHelperService.angular.HttpHeaders();
     console.log(inputs.headers);
     inputs.headers.forEach(header => {
         headers = headers.append(header.name, header.value);
@@ -46,7 +46,7 @@ if(inputs.headers && inputs.headers.length > 0){
 }
 let params;
 if(inputs.params && inputs.params.length > 0){
-    params = new BitByBitBlocklyHelperService.angular.HttpParams();
+    params = new BitByBit.BitByBitBlocklyHelperService.angular.HttpParams();
     console.log(inputs.params);
     inputs.params.forEach(param => {
         params = params.append(param.param, param.value);
