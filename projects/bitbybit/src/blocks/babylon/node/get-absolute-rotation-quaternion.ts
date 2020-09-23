@@ -4,20 +4,20 @@ import { ResourcesInterface, ResourcesService } from '../../../resources';
 import { createStandardContextIIFE } from '../../_shared';
 import { getRequired, makeRequiredValidationModelForInputs, BitByBitBlockHandlerService, ValidationEntityInterface } from '../../validations';
 
-export function createNodeGetRotationQuaternionBlock() {
+export function createNodeGetAbsoluteRotationQuaternionBlock(): void {
 
     const resources = ResourcesService.getResources();
-    const blockSelector = 'base_geometry_node_get_rotation_quaternion';
+    const blockSelector = 'base_geometry_node_get_absolute_rotation_quaternion';
 
     Blocks[blockSelector] = {
-        init() {
+        init(): void {
             this.appendValueInput('Node')
                 .setCheck('Node')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_babylon_node_get_rotation_quaternion_input_node);
+                .appendField(resources.block_babylon_node_get_absolute_rotation_quaternion_input_node);
             this.setOutput(true, 'Node');
             this.setColour('#fff');
-            this.setTooltip(resources.block_babylon_node_get_rotation_quaternion_description);
+            this.setTooltip(resources.block_babylon_node_get_absolute_rotation_quaternion_description);
             this.setHelpUrl('');
         }
     };
@@ -38,7 +38,7 @@ export function createNodeGetRotationQuaternionBlock() {
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
             `
-            return inputs.node.rotationQuaternion;
+            return inputs.node.absoluteRotationQuaternion;
 `
         );
         return [code, JavaScript.ORDER_ATOMIC];

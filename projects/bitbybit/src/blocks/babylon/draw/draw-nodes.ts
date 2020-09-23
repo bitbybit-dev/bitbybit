@@ -10,29 +10,29 @@ import {
     ValidationEntityInterface
 } from '../../validations';
 
-export function createDrawNodeBlock() {
+export function createDrawNodesBlock(): void {
 
     const resources = ResourcesService.getResources();
-    const blockSelector = 'babylon_draw_node';
+    const blockSelector = 'babylon_draw_nodes';
 
     Blocks[blockSelector] = {
-        init() {
-            this.appendValueInput('Node')
-                .setCheck('Node')
+        init(): void {
+            this.appendValueInput('Nodes')
+                .setCheck('Array')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_babylon_input_draw_node);
+                .appendField(resources.block_babylon_input_draw_nodes);
             this.appendValueInput('ColorX')
                 .setCheck('Colour')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_babylon_input_draw_node_color_x.toLowerCase());
+                .appendField(resources.block_babylon_input_draw_nodes_color_x.toLowerCase());
             this.appendValueInput('ColorY')
                 .setCheck('Colour')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_babylon_input_draw_node_color_y.toLowerCase());
+                .appendField(resources.block_babylon_input_draw_nodes_color_y.toLowerCase());
             this.appendValueInput('ColorZ')
                 .setCheck('Colour')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_babylon_input_draw_node_color_z.toLowerCase());
+                .appendField(resources.block_babylon_input_draw_nodes_color_z.toLowerCase());
             this.appendValueInput('Size')
                 .setCheck('Number')
                 .setAlign(ALIGN_RIGHT)
@@ -40,7 +40,7 @@ export function createDrawNodeBlock() {
             this.setColour('#fff');
             this.setPreviousStatement(true, null);
             this.setNextStatement(true, null);
-            this.setTooltip(resources.block_babylon_input_draw_node_description);
+            this.setTooltip(resources.block_babylon_input_draw_nodes_description);
             this.setHelpUrl('');
         }
     };
@@ -48,7 +48,7 @@ export function createDrawNodeBlock() {
     JavaScript[blockSelector] = (block: Block) => {
 
         const inputs = {
-            node: JavaScript.valueToCode(block, 'Node', JavaScript.ORDER_ATOMIC),
+            nodes: JavaScript.valueToCode(block, 'Nodes', JavaScript.ORDER_ATOMIC),
             colorX: JavaScript.valueToCode(block, 'ColorX', JavaScript.ORDER_ATOMIC),
             colorY: JavaScript.valueToCode(block, 'ColorY', JavaScript.ORDER_ATOMIC),
             colorZ: JavaScript.valueToCode(block, 'ColorZ', JavaScript.ORDER_ATOMIC),
@@ -67,8 +67,10 @@ export function createDrawNodeBlock() {
 
         return createStandardContextIIFE(block, blockSelector, inputs, false,
             `
-            const CoTAxis = BitByBit.BitByBitBlocklyHelperService.localAxes(inputs.size, BitByBit.scene, inputs.colorX, inputs.colorY, inputs.colorZ);
-            CoTAxis.parent = inputs.node;
+            inputs.nodes.forEach(node => {
+                const CoTAxis = BitByBit.BitByBitBlocklyHelperService.localAxes(inputs.size, BitByBit.scene, inputs.colorX, inputs.colorY, inputs.colorZ);
+                CoTAxis.parent = node;
+            });
  `
         );
     };
