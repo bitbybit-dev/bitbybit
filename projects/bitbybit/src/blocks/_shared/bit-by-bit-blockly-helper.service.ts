@@ -8,6 +8,7 @@ export class BitByBitBlocklyHelperService {
 
     static promptPrintSave: (prompt: PrintSaveInterface) => void;
     static clearAllDrawn: () => void;
+    static tolerance = 0.00001;
     static angular: { httpClient: HttpClient, HttpHeaders: any, HttpParams: any };
     static jsonpath: any;
     static tagBag: TagInterface[] = [];
@@ -88,6 +89,47 @@ export class BitByBitBlocklyHelperService {
         pilotLocalAxisZ.parent = localOrigin;
 
         return localOrigin;
+    }
+
+    static removeConsecutiveDuplicates(points: number[][], tolerance: number, checkFirstAndLast: boolean = true): number[][] {
+        const pointsRemaining = [];
+        if (points.length > 1) {
+            for (let i = 1; i < points.length; i++) {
+                const currentPoint = points[i];
+                const previousPoint = points[i - 1];
+                if (!BitByBitBlocklyHelperService.arePointsTheSame(currentPoint, previousPoint, tolerance)) {
+                    pointsRemaining.push(previousPoint);
+                }
+                if (i === points.length - 1) {
+                    pointsRemaining.push(currentPoint);
+                }
+            }
+            if (checkFirstAndLast) {
+                const firstPoint = pointsRemaining[0];
+                const lastPoint = pointsRemaining[pointsRemaining.length - 1];
+                if (BitByBitBlocklyHelperService.arePointsTheSame(firstPoint, lastPoint, tolerance)) {
+                    pointsRemaining.pop();
+                }
+            }
+        }
+        return pointsRemaining;
+    }
+
+    static arePointsTheSame(pointA: number[], pointB: number[], tolerance: number): boolean {
+        let result = false;
+        if (pointA.length === 2 && pointB.length === 2) {
+            if (Math.abs(pointA[0] - pointB[0]) < tolerance
+                && Math.abs(pointA[1] - pointB[1]) < tolerance) {
+                result = true;
+            }
+        } else if (pointA.length === 3 && pointB.length === 3) {
+            if (Math.abs(pointA[0] - pointB[0]) < tolerance
+                && Math.abs(pointA[1] - pointB[1]) < tolerance
+                && Math.abs(pointA[2] - pointB[2]) < tolerance) {
+                result = true;
+            }
+        }
+        return result;
     }
 
 }

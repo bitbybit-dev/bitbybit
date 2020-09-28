@@ -4,15 +4,15 @@ import { ResourcesInterface, ResourcesService } from '../../resources';
 import { createStandardContextIIFE } from '../_shared';
 import { getRequired, makeRequiredValidationModelForInputs, BitByBitBlockHandlerService, ValidationEntityInterface } from '../validations';
 
-export function createPolygonBlock() {
+export function createTransform2DShapeBlock() {
 
     const resources = ResourcesService.getResources();
-    const blockSelector = 'csg_polygon';
+    const blockSelector = 'csg_transform_2d_shape';
 
     Blocks[blockSelector] = {
         init() {
-            this.appendValueInput('Points')
-                .setCheck('Array')
+            this.appendValueInput('Polygon')
+                .setCheck('Polygon')
                 .setAlign(ALIGN_RIGHT)
                 .appendField(resources.block_csg_polygon_input_points);
             this.setOutput(true, 'Polygon');
@@ -37,10 +37,8 @@ export function createPolygonBlock() {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `
-            const twoDimensionalPoints = inputs.points.map(pt => [pt[0], pt[1]]);
-            const duplicatePointsRemoved = BitByBit.BitByBitBlocklyHelperService.removeConsecutiveDuplicates(twoDimensionalPoints, BitByBit.BitByBitBlocklyHelperService.tolerance);
-            const polygon = BitByBit.CSG.primitives.polygon({points: duplicatePointsRemoved});
+`
+            const polygon = BitByBit.CSG.primitives.rectangle({points: inputs.points.map(pt => [pt[0], pt[1]])});
             return polygon;
 `
         );

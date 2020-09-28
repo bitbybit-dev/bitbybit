@@ -11,13 +11,13 @@ import {
     ValidationEntityInterface
 } from '../../validations';
 
-export function createDrawCsgMeshBlock() {
+export function createDrawCsgMeshBlock(): void {
 
     const resources = ResourcesService.getResources();
     const blockSelector = 'babylon_draw_csg_mesh';
 
     Blocks[blockSelector] = {
-        init() {
+        init(): void {
             this.appendValueInput('CsgMesh')
                 .setCheck('CsgMesh')
                 .setAlign(ALIGN_RIGHT)
@@ -80,32 +80,27 @@ export function createDrawCsgMeshBlock() {
             let countIndices = 0;
 
             for (let polygon of polygons) {
-                const quat = new BitByBit.BABYLON.Quaternion(...polygon.plane);
-                let up = new BitByBit.BABYLON.Vector3();
-                BitByBit.BABYLON.Vector3.Up().rotateByQuaternionToRef(quat, up);
-                up.normalize();
                 if (polygon.vertices.length === 3) {
                     polygon.vertices.forEach(vert => {
-                        normals.push(up.x, up.y, up.z);
-                        positions.push(vert[0], vert[1], vert[2]);
+                        positions.push(vert[0], vert[2], vert[1]);
                         indices.push(countIndices);
                         countIndices++;
                     });
                 } else {
                     const triangles = [];
-                    let firstVertex = polygon.vertices[0]
-                    for (let i = polygon.vertices.length - 3; i >= 0; i--) {
+                    const reversedVertices = polygon.vertices.reverse();
+                    let firstVertex = reversedVertices[0]
+                    for (let i = reversedVertices.length - 3; i >= 0; i--) {
                         triangles.push(
                             [
                                 firstVertex,
-                                polygon.vertices[i + 1],
-                                polygon.vertices[i + 2]
+                                reversedVertices[i + 2],
+                                reversedVertices[i + 1],
                             ]);
                     }
-                    triangles.forEach(triangle => {
+                    triangles.forEach((triangle, index) => {
                         triangle.forEach(vert => {
-                            normals.push(eulerAngles.x, eulerAngles.y, eulerAngles.z);
-                            positions.push(vert[0], vert[1], vert[2]);
+                            positions.push(vert[0], vert[2], vert[1]);
                             indices.push(countIndices);
                             countIndices++;
                         });
@@ -117,8 +112,11 @@ export function createDrawCsgMeshBlock() {
                 const vertexData = new BitByBit.BABYLON.VertexData();
                 vertexData.positions = positions;
                 vertexData.indices = indices;
+                BitByBit.BABYLON.VertexData.ComputeNormals(positions, indices, normals, {useRightHandedSystem: true});
                 vertexData.normals = normals;
+
                 vertexData.applyToMesh(inputs.csgMesh, inputs.updatable);
+                inputs.csgMesh.setPreTransformMatrix(BitByBit.BABYLON.Matrix.FromArray(inputs.mesh.transforms));
                 ${JavaScript.variableDB_.getName(block.getFieldValue('DrawnCsgMesh'), VARIABLE_CATEGORY_NAME)} = inputs.csgMesh;
             }
 
@@ -132,10 +130,7 @@ export function createDrawCsgMeshBlock() {
 
             inputs.csgMesh.material.alpha = inputs.opacity;
             inputs.csgMesh.material.diffuseColor = BitByBit.BABYLON.Color3.FromHexString(inputs.colour);
-            inputs.csgMesh.material.specularColor = new BitByBit.BABYLON.Color3(1, 1, 1);
-            inputs.csgMesh.material.ambientColor = new BitByBit.BABYLON.Color3(1, 1, 1);
-            inputs.csgMesh.material.backFaceCulling = false;
-            inputs.csgMesh.convertToFlatShadedMesh();
+            // inputs.csgMesh.convertToFlatShadedMesh();
             inputs.csgMesh.isPickable = false;
 `);
     };

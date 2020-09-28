@@ -120,6 +120,7 @@ export interface ResourcesInterface {
     block_intersection: string;
     block_intersections: string;
     block_points: string;
+    block_polygon: string;
     block_number_points: string;
     block_subdivision: string;
     block_line: string;
@@ -128,6 +129,7 @@ export interface ResourcesInterface {
     block_min: string;
     block_max: string;
     block_step: string;
+    block_steps: string;
     block_u: string;
     block_v: string;
     block_uv: string;
@@ -205,6 +207,8 @@ export interface ResourcesInterface {
     block_shape: string;
     block_holes: string;
     block_radius: string;
+    block_resolution: string;
+    block_segments: string;
     block_interval: string;
     block_interval_handler: string;
     block_timeout_handler: string;
@@ -284,6 +288,10 @@ export interface ResourcesInterface {
     block_babylon_draw_csg_mesh_input_csg_mesh: string;
     block_babylon_draw_csg_mesh_input_csg_mesh_2: string;
     block_babylon_draw_csg_mesh_description: string;
+    block_babylon_draw_csg_polygon_input_csg_polygon_variable: string;
+    block_babylon_draw_csg_polygon_input_csg_polygon: string;
+    block_babylon_draw_csg_polygon_input_csg_polygon_2: string;
+    block_babylon_draw_csg_polygon_description: string;
     block_babylon_input_draw_polylines: string;
     block_babylon_input_draw_polylines_variable: string;
     block_babylon_input_draw_polylines_2: string;
@@ -363,6 +371,7 @@ export interface ResourcesInterface {
     block_base_geometry_line_reverse: string;
     block_base_geometry_line_reverse_description: string;
     block_base_geometry_point_description: string;
+    block_base_geometry_point_2d_description: string;
     block_base_geometry_point_distance: string;
     block_base_geometry_point_distance_second_point: string;
     block_base_geometry_point_distance_description: string;
@@ -1095,4 +1104,34 @@ export interface ResourcesInterface {
     block_babylon_node_translate_input_direction: string;
     block_babylon_node_translate_input_distance: string;
     block_babylon_node_translate_description: string;
+    block_csg_rectangle_input_center: string;
+    block_csg_rectangle_input_width: string;
+    block_csg_rectangle_input_length: string;
+    block_csg_rectangle_description: string;
+    block_csg_extrude_linear_input_polygon: string;
+    block_csg_extrude_linear_input_height: string;
+    block_csg_extrude_linear_input_twist_angle: string;
+    block_csg_extrude_linear_input_twist_steps: string;
+    block_csg_extrude_linear_description: string;
+    block_csg_polygon_input_points: string;
+    block_csg_polygon_description: string;
+    block_csg_transform_input_csg_mesh: string;
+    block_csg_transform_input_transformation: string;
+    block_csg_transform_description: string;
+    block_csg_sphere_input_center: string;
+    block_csg_sphere_input_radius: string;
+    block_csg_sphere_input_segments: string;
+    block_csg_sphere_description: string;
+    block_csg_cube_input_center: string;
+    block_csg_cube_input_size: string;
+    block_csg_cube_description: string;
+    block_csg_subtract_input_subtract_from_object: string;
+    block_csg_subtract_input_subtract_object: string;
+    block_csg_subtract_description: string;
+    block_csg_union_input_union_object: string;
+    block_csg_union_input_with_object: string;
+    block_csg_union_description: string;
+    block_csg_intersect_input_intersect_object: string;
+    block_csg_intersect_input_with_object: string;
+    block_csg_intersect_description: string;
 }

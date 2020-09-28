@@ -4,47 +4,42 @@ import { ResourcesInterface, ResourcesService } from '../../resources';
 import { createStandardContextIIFE } from '../_shared';
 import { getRequired, makeRequiredValidationModelForInputs, BitByBitBlockHandlerService, ValidationEntityInterface } from '../validations';
 
-export function createExtrudeLinearBlock() {
+export function createPrimitiveSphereBlock(): void {
 
     const resources = ResourcesService.getResources();
-    const blockSelector = 'csg_extrude_linear';
+    const blockSelector = 'csg_primitive_sphere';
 
     Blocks[blockSelector] = {
-        init() {
-            this.appendValueInput('Polygon')
-                .setCheck('Polygon')
+        init(): void {
+            this.appendValueInput('Center')
+                .setCheck('Array')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_csg_extrude_linear_input_polygon);
-            this.appendValueInput('Height')
+                .appendField(resources.block_csg_sphere_input_center);
+            this.appendValueInput('Radius')
                 .setCheck('Number')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_csg_extrude_linear_input_height);
-            this.appendValueInput('TwistAngle')
+                .appendField(resources.block_csg_sphere_input_radius.toLowerCase());
+            this.appendValueInput('Segments')
                 .setCheck('Number')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_csg_extrude_linear_input_twist_angle);
-            this.appendValueInput('TwistSteps')
-                .setCheck('Number')
-                .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_csg_extrude_linear_input_twist_steps);
+                .appendField(resources.block_csg_sphere_input_segments.toLowerCase());
             this.setOutput(true, 'CsgMesh');
             this.setColour('#fff');
-            this.setTooltip(resources.block_csg_extrude_linear_description);
+            this.setTooltip(resources.block_csg_sphere_description);
             this.setHelpUrl('');
         }
     };
 
     JavaScript[blockSelector] = (block: Block) => {
         const inputs = {
-            polygon: JavaScript.valueToCode(block, 'Polygon', JavaScript.ORDER_ATOMIC),
-            height: JavaScript.valueToCode(block, 'Height', JavaScript.ORDER_ATOMIC),
-            twistAngle: JavaScript.valueToCode(block, 'TwistAngle', JavaScript.ORDER_ATOMIC),
-            twistSteps: JavaScript.valueToCode(block, 'TwistSteps', JavaScript.ORDER_ATOMIC),
+            center: JavaScript.valueToCode(block, 'Center', JavaScript.ORDER_ATOMIC),
+            radius: JavaScript.valueToCode(block, 'Radius', JavaScript.ORDER_ATOMIC),
+            segments: JavaScript.valueToCode(block, 'Segments', JavaScript.ORDER_ATOMIC),
         };
 
         // this is first set of validations to check that all inputs are non empty strings
         BitByBitBlockHandlerService.validate(block, block.workspace, makeRequiredValidationModelForInputs(resources, inputs, [
-            resources.block_polygon, resources.block_height, resources.block_angle, resources.block_steps
+            resources.block_center, resources.block_radius, resources.block_segments
         ]));
 
         // this creates validation model to be used at runtime to evaluate real values of inputs
@@ -53,8 +48,8 @@ export function createExtrudeLinearBlock() {
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
             `
-            const extrusion = BitByBit.CSG.extrusions.extrudeLinear({height: inputs.height, twistAngle: inputs.twistAngle, twistSteps: inputs.twistSteps}, inputs.polygon);
-            return extrusion;
+            const sphere = BitByBit.CSG.primitives.sphere({center: [inputs.center[0], inputs.center[2], inputs.center[1]], radius: inputs.radius, segments: inputs.segments});
+            return sphere;
 `
         );
         return [code, JavaScript.ORDER_ATOMIC];
@@ -69,22 +64,17 @@ function makeRuntimeValidationModel(
     return [{
         entity: keys[0],
         validations: [
-            getRequired(resources, resources.block_polygon),
+            getRequired(resources, resources.block_center),
         ]
     }, {
         entity: keys[1],
         validations: [
-            getRequired(resources, resources.block_height),
+            getRequired(resources, resources.block_radius),
         ]
     }, {
         entity: keys[2],
         validations: [
-            getRequired(resources, resources.block_angle),
-        ]
-    }, {
-        entity: keys[3],
-        validations: [
-            getRequired(resources, resources.block_steps),
+            getRequired(resources, resources.block_segments),
         ]
     }];
 }

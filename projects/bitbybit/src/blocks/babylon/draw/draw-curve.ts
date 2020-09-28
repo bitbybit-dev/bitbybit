@@ -11,13 +11,13 @@ import {
     ValidationEntityInterface
 } from '../../validations';
 
-export function createDrawCurveBlock() {
+export function createDrawCurveBlock(): void {
 
     const resources = ResourcesService.getResources();
     const blockSelector = 'babylon_draw_curve';
 
     Blocks[blockSelector] = {
-        init() {
+        init(): void {
             this.appendValueInput('Curve')
                 .setCheck('NurbsCurve')
                 .setAlign(ALIGN_RIGHT)

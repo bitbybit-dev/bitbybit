@@ -13,6 +13,7 @@ import { ioCategory } from './categories/io/io-category';
 import { sceneCategory } from './categories/scene/scene-category';
 import { tagCategory } from './categories/tag/tag-category';
 import { timeCategory } from './categories/time/time-category';
+import { meshCategory } from './categories/geometry/mesh-category';
 
 export function toolboxDefinition() {
     return `
@@ -29,6 +30,7 @@ export function toolboxDefinition() {
     ${polylineCategory()}
     ${curveCategory()}
     ${surfaceCategory()}
+    ${meshCategory()}
     <sep></sep>
     ${intersectCategory()}
     ${tagCategory()}

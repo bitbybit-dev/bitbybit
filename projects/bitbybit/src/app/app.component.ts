@@ -2,7 +2,7 @@ import { HttpHeaders, HttpParams, HttpClient } from '@angular/common/http';
 import { AfterViewInit, ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ArcRotateCamera, DirectionalLight, MeshBuilder, VertexData, StandardMaterial, TransformNode } from '@babylonjs/core';
+import { ArcRotateCamera, DirectionalLight, MeshBuilder, VertexData, StandardMaterial, TransformNode, HemisphericLight } from '@babylonjs/core';
 import { Engine } from '@babylonjs/core/Engines/engine';
 import '@babylonjs/core/Materials/standardMaterial';
 import { Color3, Color4, Matrix, Vector3, Quaternion } from '@babylonjs/core/Maths/math';
@@ -114,11 +114,14 @@ export class AppComponent implements OnInit, AfterViewInit {
             const light = new DirectionalLight('DirectionalLight', new Vector3(10, 10, 0), this.scene);
             light.diffuse = new Color3(1, 1, 1);
             light.specular = new Color3(1, 1, 1);
-            light.intensity = 1;
+            light.intensity = 0.6;
             const light2 = new DirectionalLight('DirectionalLight', new Vector3(-10, 10, -10), this.scene);
             light2.diffuse = new Color3(1, 1, 1);
             light2.specular = new Color3(1, 1, 1);
-            light2.intensity = 1;
+            light2.intensity = 0.6;
+            const light3 = new HemisphericLight('HemiLight', new Vector3(0, 1, 0), this.scene);
+            light3.intensity = 0.2;
+
             this.scene.ambientColor = new Color3(0.1, 0.1, 0.1);
 
             this.windowBlockly = {};
@@ -294,7 +297,7 @@ export class AppComponent implements OnInit, AfterViewInit {
             this.scene.clearColor = new Color4(1, 1, 1, 1);
 
             // const CSG = (window as any).CSG;
-            // console.log(window.CSG);
+            console.log((window as any).CSG);
             // function radiusFromDiameter(d) {
             //     return d / 2;
             // }
@@ -496,25 +499,4 @@ ${code}
         });
     }
 
-    // /** returns the triangles of this csg
-    //  * @returns {Polygons} triangulated polygons
-    //  */
-    // toTriangles = (polygonsToTriangulate) => {
-
-    //     let polygons = []
-    //     polygonsToTriangulate.forEach(function (poly) {
-    //         let firstVertex = poly.vertices[0]
-    //         for (let i = poly.vertices.length - 3; i >= 0; i--) {
-    //             polygons.push(new Polygon(
-    //                 [
-    //                     firstVertex,
-    //                     poly.vertices[i + 1],
-    //                     poly.vertices[i + 2]
-    //                 ],
-    //                 poly.shared,
-    //                 poly.plane))
-    //         }
-    //     })
-    //     return polygons
-    // }
 }
