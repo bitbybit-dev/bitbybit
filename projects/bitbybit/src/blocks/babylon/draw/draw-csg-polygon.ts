@@ -14,16 +14,16 @@ import {
 export function createDrawCsgPolygonBlock(): void {
 
     const resources = ResourcesService.getResources();
-    const blockSelector = 'babylon_draw_csg_polygon';
+    const blockSelector = 'babylon_draw_csg_primitive_2d_polygon';
 
     Blocks[blockSelector] = {
         init(): void {
             this.appendValueInput('CsgPolygon')
                 .setCheck('Polygon')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_babylon_draw_csg_polygon_input_csg_polygon)
-                .appendField(new FieldVariable(resources.block_babylon_draw_csg_polygon_input_csg_polygon_variable), 'DrawnCsgPolygonMesh')
-                .appendField(resources.block_babylon_draw_csg_polygon_input_csg_polygon_2);
+                .appendField(resources.block_babylon_draw_csg_primitive_2d_polygon_input_csg_primitive_2d_polygon)
+                .appendField(new FieldVariable(resources.block_babylon_draw_csg_primitive_2d_polygon_input_csg_primitive_2d_polygon_variable), 'DrawnCsgPolygonMesh')
+                .appendField(resources.block_babylon_draw_csg_primitive_2d_polygon_input_csg_primitive_2d_polygon_2);
             this.appendValueInput('Colour')
                 .setCheck('Colour')
                 .setAlign(ALIGN_RIGHT)

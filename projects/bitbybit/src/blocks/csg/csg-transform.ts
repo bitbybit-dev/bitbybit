@@ -4,7 +4,7 @@ import { ResourcesInterface, ResourcesService } from '../../resources';
 import { createStandardContextIIFE } from '../_shared';
 import { getRequired, makeRequiredValidationModelForInputs, BitByBitBlockHandlerService, ValidationEntityInterface } from '../validations';
 
-export function creatCsgTransformBlock(): void {
+export function createCsgTransformBlock(): void {
 
     const resources = ResourcesService.getResources();
     const blockSelector = 'csg_transform';
@@ -33,7 +33,7 @@ export function creatCsgTransformBlock(): void {
 
         // this is first set of validations to check that all inputs are non empty strings
         BitByBitBlockHandlerService.validate(block, block.workspace, makeRequiredValidationModelForInputs(resources, inputs, [
-            resources.block_mesh, resources.block_transform
+            resources.block_solid, resources.block_transform
         ]));
 
         // this creates validation model to be used at runtime to evaluate real values of inputs
@@ -65,7 +65,7 @@ function makeRuntimeValidationModel(
     return [{
         entity: keys[0],
         validations: [
-            getRequired(resources, resources.block_mesh),
+            getRequired(resources, resources.block_solid),
         ]
     },
     {

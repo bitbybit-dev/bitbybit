@@ -32,7 +32,7 @@
                         ],
                         "scripts": [
                             "node_modules/earcut/dist/earcut.min.js",
-                            "node_modules/@jscad/csg/src/csg-generated.js"
+                            "csg-generated.js"
                         ]
                     },
                     "configurations": {

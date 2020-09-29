@@ -1,0 +1,1 @@
+window.CSG = require('./node_modules/@jscad/modeling/src/index.js');

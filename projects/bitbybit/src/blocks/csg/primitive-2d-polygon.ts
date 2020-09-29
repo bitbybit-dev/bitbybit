@@ -4,37 +4,32 @@ import { ResourcesInterface, ResourcesService } from '../../resources';
 import { createStandardContextIIFE } from '../_shared';
 import { getRequired, makeRequiredValidationModelForInputs, BitByBitBlockHandlerService, ValidationEntityInterface } from '../validations';
 
-export function createBooleanSubtractBlock(): void {
+export function createPrimitive2dPolygonBlock(): void {
 
     const resources = ResourcesService.getResources();
-    const blockSelector = 'csg_boolean_subtract';
+    const blockSelector = 'csg_primitive_2d_polygon';
 
     Blocks[blockSelector] = {
         init(): void {
-            this.appendValueInput('SubtractObject')
-                .setCheck('CsgMesh')
+            this.appendValueInput('Points')
+                .setCheck('Array')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_csg_subtract_input_subtract_object);
-            this.appendValueInput('SubtractFromObject')
-                .setCheck('CsgMesh')
-                .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_csg_subtract_input_subtract_from_object.toLowerCase());
-            this.setOutput(true, 'CsgMesh');
+                .appendField(resources.block_csg_primitive_2d_polygon_input_points);
+            this.setOutput(true, 'Polygon');
             this.setColour('#fff');
-            this.setTooltip(resources.block_csg_subtract_description);
+            this.setTooltip(resources.block_csg_primitive_2d_polygon_description);
             this.setHelpUrl('');
         }
     };
 
     JavaScript[blockSelector] = (block: Block) => {
         const inputs = {
-            subtractObject: JavaScript.valueToCode(block, 'SubtractObject', JavaScript.ORDER_ATOMIC),
-            subtractFromObject: JavaScript.valueToCode(block, 'SubtractFromObject', JavaScript.ORDER_ATOMIC),
+            points: JavaScript.valueToCode(block, 'Points', JavaScript.ORDER_ATOMIC),
         };
 
         // this is first set of validations to check that all inputs are non empty strings
         BitByBitBlockHandlerService.validate(block, block.workspace, makeRequiredValidationModelForInputs(resources, inputs, [
-            resources.block_solid, resources.block_solid
+            resources.block_points
         ]));
 
         // this creates validation model to be used at runtime to evaluate real values of inputs
@@ -43,8 +38,10 @@ export function createBooleanSubtractBlock(): void {
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
             `
-            const subtracted = BitByBit.CSG.booleans.subtract(inputs.subtractFromObject, inputs.subtractObject);
-            return subtracted;
+            const twoDimensionalPoints = inputs.points.map(pt => [pt[0], pt[1]]);
+            const duplicatePointsRemoved = BitByBit.BitByBitBlocklyHelperService.removeConsecutiveDuplicates(twoDimensionalPoints, BitByBit.BitByBitBlocklyHelperService.tolerance);
+            const polygon = BitByBit.CSG.primitives.polygon({points: duplicatePointsRemoved});
+            return polygon;
 `
         );
         return [code, JavaScript.ORDER_ATOMIC];
@@ -59,12 +56,7 @@ function makeRuntimeValidationModel(
     return [{
         entity: keys[0],
         validations: [
-            getRequired(resources, resources.block_solid),
-        ]
-    }, {
-        entity: keys[1],
-        validations: [
-            getRequired(resources, resources.block_solid),
+            getRequired(resources, resources.block_points),
         ]
     }];
 }

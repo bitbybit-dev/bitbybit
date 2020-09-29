@@ -34,7 +34,7 @@ export function createBooleanIntersectBlock(): void {
 
         // this is first set of validations to check that all inputs are non empty strings
         BitByBitBlockHandlerService.validate(block, block.workspace, makeRequiredValidationModelForInputs(resources, inputs, [
-            resources.block_mesh, resources.block_mesh
+            resources.block_solid, resources.block_solid
         ]));
 
         // this creates validation model to be used at runtime to evaluate real values of inputs
@@ -59,12 +59,12 @@ function makeRuntimeValidationModel(
     return [{
         entity: keys[0],
         validations: [
-            getRequired(resources, resources.block_mesh),
+            getRequired(resources, resources.block_solid),
         ]
     }, {
         entity: keys[1],
         validations: [
-            getRequired(resources, resources.block_mesh),
+            getRequired(resources, resources.block_solid),
         ]
     }];
 }

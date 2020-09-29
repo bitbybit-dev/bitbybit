@@ -4,32 +4,37 @@ import { ResourcesInterface, ResourcesService } from '../../resources';
 import { createStandardContextIIFE } from '../_shared';
 import { getRequired, makeRequiredValidationModelForInputs, BitByBitBlockHandlerService, ValidationEntityInterface } from '../validations';
 
-export function createTransform2DShapeBlock() {
+export function createCsgColourBlock(): void {
 
     const resources = ResourcesService.getResources();
-    const blockSelector = 'csg_transform_2d_shape';
+    const blockSelector = 'csg_colour';
 
     Blocks[blockSelector] = {
-        init() {
-            this.appendValueInput('Polygon')
-                .setCheck('Polygon')
+        init(): void {
+            this.appendValueInput('Colour')
+                .setCheck('Colour')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_csg_polygon_input_points);
-            this.setOutput(true, 'Polygon');
+                .appendField(resources.block_csg_color_input_color);
+            this.appendValueInput('Object')
+                .setCheck('CsgMesh')
+                .setAlign(ALIGN_RIGHT)
+                .appendField(resources.block_csg_color_input_object);
+            this.setOutput(true, 'CsgMesh');
             this.setColour('#fff');
-            this.setTooltip(resources.block_csg_polygon_description);
+            this.setTooltip(resources.block_csg_color_description);
             this.setHelpUrl('');
         }
     };
 
     JavaScript[blockSelector] = (block: Block) => {
         const inputs = {
-            points: JavaScript.valueToCode(block, 'Points', JavaScript.ORDER_ATOMIC),
+            colour: JavaScript.valueToCode(block, 'Colour', JavaScript.ORDER_ATOMIC),
+            object: JavaScript.valueToCode(block, 'Object', JavaScript.ORDER_ATOMIC),
         };
 
         // this is first set of validations to check that all inputs are non empty strings
         BitByBitBlockHandlerService.validate(block, block.workspace, makeRequiredValidationModelForInputs(resources, inputs, [
-            resources.block_points
+            resources.block_colour, resources.block_mesh
         ]));
 
         // this creates validation model to be used at runtime to evaluate real values of inputs
@@ -37,9 +42,9 @@ export function createTransform2DShapeBlock() {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-`
-            const polygon = BitByBit.CSG.primitives.rectangle({points: inputs.points.map(pt => [pt[0], pt[1]])});
-            return polygon;
+            `
+            const solid = BitByBit.CSG.colors.colorize(BitByBit.CSG.colors.hexToRgb(inputs.colour), inputs.object);
+            return solid;
 `
         );
         return [code, JavaScript.ORDER_ATOMIC];
@@ -54,7 +59,12 @@ function makeRuntimeValidationModel(
     return [{
         entity: keys[0],
         validations: [
-            getRequired(resources, resources.block_points),
+            getRequired(resources, resources.block_colour),
+        ]
+    }, {
+        entity: keys[0],
+        validations: [
+            getRequired(resources, resources.block_mesh),
         ]
     }];
 }
