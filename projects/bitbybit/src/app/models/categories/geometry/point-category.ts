@@ -117,7 +117,7 @@ export function pointCategory() {
                         <field name="NUM">0</field>
                     </shadow>
                 </value>
-                <value name="Y">
+                <value name="Z">
                     <shadow type="math_number">
                         <field name="NUM">0</field>
                     </shadow>

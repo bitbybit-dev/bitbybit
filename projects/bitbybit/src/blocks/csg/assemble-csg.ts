@@ -1,5 +1,6 @@
 import { createPrimitive2dPolygonBlock } from './primitive-2d-polygon';
-import { createExtrudeLinearBlock } from './extrude-linear';
+import { createExtrudeLinearPolygonBlock } from './extrude-linear-polygon';
+import { createExtrudeLinearPolygonObjectsBlock } from './extrude-linear-polygon-objects';
 import { createPrimitive2dRectangleBlock } from './primitive-2d-rectangle';
 import { createCsgTransformBlock } from './csg-transform';
 import { createPrimitiveSphereBlock } from './primitive-sphere';
@@ -12,11 +13,21 @@ import { createPrimitiveCuboidBlock } from './primitive-cuboid';
 import { createBooleanIntersectObjectsBlock } from './boolean-intersect-objects';
 import { createBooleanUnionObjectsBlock } from './boolean-union-objects';
 import { createBooleanSubtractObjectsBlock } from './boolean-subtract-objects';
+import { createExtrudeRectangularPointsBlock } from './extrude-rectanglar-points';
+import { createPrimitive2dPathFromPointsBlock } from './primitive-2d-path-from-points';
+import { createExtrudeRectangularPathBlock } from './extrude-rectanglar-path';
+import { createPrimitive2dPathCloseBlock } from './primitive-2d-path-close';
+import { createPrimitive2dPathAppendPointsBlock } from './primitive-2d-path-append-points';
+import { createPrimitive2dPathAppendArcBlock } from './primitive-2d-path-append-arc';
 
 export function assembleCsgBlocks(): void {
     createPrimitive2dPolygonBlock();
     createPrimitive2dRectangleBlock();
-    createExtrudeLinearBlock();
+    createPrimitive2dPathFromPointsBlock();
+    createExtrudeLinearPolygonBlock();
+    createExtrudeLinearPolygonObjectsBlock();
+    createExtrudeRectangularPointsBlock();
+    createExtrudeRectangularPathBlock();
     createPrimitiveSphereBlock();
     createPrimitiveCubeBlock();
     createBooleanSubtractBlock();
@@ -28,4 +39,7 @@ export function assembleCsgBlocks(): void {
     createCsgTransformBlock();
     createCsgColourBlock();
     createPrimitiveCuboidBlock();
+    createPrimitive2dPathCloseBlock();
+    createPrimitive2dPathAppendPointsBlock();
+    createPrimitive2dPathAppendArcBlock();
 }

@@ -4,47 +4,42 @@ import { ResourcesInterface, ResourcesService } from '../../resources';
 import { createStandardContextIIFE } from '../_shared';
 import { getRequired, makeRequiredValidationModelForInputs, BitByBitBlockHandlerService, ValidationEntityInterface } from '../validations';
 
-export function createExtrudeLinearBlock() {
+export function createExtrudeRectangularPathBlock(): void {
 
     const resources = ResourcesService.getResources();
-    const blockSelector = 'csg_extrude_linear';
+    const blockSelector = 'csg_extrude_rectangular_path';
 
     Blocks[blockSelector] = {
-        init() {
-            this.appendValueInput('Polygon')
-                .setCheck('Polygon')
+        init(): void {
+            this.appendValueInput('Path')
+                .setCheck('Path')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_csg_extrude_linear_input_polygon);
+                .appendField(resources.block_csg_extrude_rectangular_path_input_path);
+            this.appendValueInput('Size')
+                .setCheck('Number')
+                .setAlign(ALIGN_RIGHT)
+                .appendField(resources.block_csg_extrude_rectangular_path_input_size.toLowerCase());
             this.appendValueInput('Height')
                 .setCheck('Number')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_csg_extrude_linear_input_height);
-            this.appendValueInput('TwistAngle')
-                .setCheck('Number')
-                .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_csg_extrude_linear_input_twist_angle);
-            this.appendValueInput('TwistSteps')
-                .setCheck('Number')
-                .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_csg_extrude_linear_input_twist_steps);
+                .appendField(resources.block_csg_extrude_rectangular_path_input_height.toLowerCase());
             this.setOutput(true, 'CsgMesh');
             this.setColour('#fff');
-            this.setTooltip(resources.block_csg_extrude_linear_description);
+            this.setTooltip(resources.block_csg_extrude_rectangular_path_description);
             this.setHelpUrl('');
         }
     };
 
     JavaScript[blockSelector] = (block: Block) => {
         const inputs = {
-            polygon: JavaScript.valueToCode(block, 'Polygon', JavaScript.ORDER_ATOMIC),
+            path: JavaScript.valueToCode(block, 'Path', JavaScript.ORDER_ATOMIC),
+            size: JavaScript.valueToCode(block, 'Size', JavaScript.ORDER_ATOMIC),
             height: JavaScript.valueToCode(block, 'Height', JavaScript.ORDER_ATOMIC),
-            twistAngle: JavaScript.valueToCode(block, 'TwistAngle', JavaScript.ORDER_ATOMIC),
-            twistSteps: JavaScript.valueToCode(block, 'TwistSteps', JavaScript.ORDER_ATOMIC),
         };
 
         // this is first set of validations to check that all inputs are non empty strings
         BitByBitBlockHandlerService.validate(block, block.workspace, makeRequiredValidationModelForInputs(resources, inputs, [
-            resources.block_polygon, resources.block_height, resources.block_angle, resources.block_steps
+            resources.block_2d_path, resources.block_size, resources.block_height
         ]));
 
         // this creates validation model to be used at runtime to evaluate real values of inputs
@@ -53,7 +48,7 @@ export function createExtrudeLinearBlock() {
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
             `
-            const extrusion = BitByBit.CSG.extrusions.extrudeLinear({height: inputs.height, twistAngle: inputs.twistAngle, twistSteps: inputs.twistSteps}, inputs.polygon);
+            const extrusion = BitByBit.CSG.extrusions.extrudeRectangular({height: inputs.height, size: inputs.size}, inputs.path);
             return extrusion;
 `
         );
@@ -69,22 +64,17 @@ function makeRuntimeValidationModel(
     return [{
         entity: keys[0],
         validations: [
-            getRequired(resources, resources.block_polygon),
+            getRequired(resources, resources.block_2d_path),
         ]
     }, {
         entity: keys[1],
         validations: [
-            getRequired(resources, resources.block_height),
+            getRequired(resources, resources.block_size),
         ]
     }, {
         entity: keys[2],
         validations: [
-            getRequired(resources, resources.block_angle),
-        ]
-    }, {
-        entity: keys[3],
-        validations: [
-            getRequired(resources, resources.block_steps),
+            getRequired(resources, resources.block_height),
         ]
     }];
 }
