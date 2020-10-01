@@ -39,7 +39,7 @@ export function solidCategory(): string {
             </value>
         </block>
         <category name="${resources.block_toolbox_category_create}" expanded="true" categorystyle="geometry_category">
-            <category name="${resources.block_toolbox_category_create_2d_path}" categorystyle="geometry_category">
+            <category name="${resources.block_toolbox_category_2d_path}" categorystyle="geometry_category">
                 <block type="csg_primitive_2d_path_from_points">
                     <value name="Closed">
                         <shadow type="logic_boolean">
@@ -47,58 +47,8 @@ export function solidCategory(): string {
                         </shadow>
                     </value>
                 </block>
-                <block type="csg_primitive_2d_path_close">
-                </block>
-                <block type="csg_primitive_2d_path_append_points">
-                </block>
-                <block type="csg_primitive_2d_path_append_arc">
-                    <value name="EndPoint">
-                        <shadow type="base_geometry_point_2d">
-                            <value name="X">
-                                <shadow type="math_number">
-                                    <field name="NUM">0</field>
-                                </shadow>
-                            </value>
-                            <value name="Z">
-                                <shadow type="math_number">
-                                    <field name="NUM">0</field>
-                                </shadow>
-                            </value>
-                        </shadow>
-                    </value>
-                    <value name="RadiusX">
-                        <shadow type="math_number">
-                            <field name="NUM">1</field>
-                        </shadow>
-                    </value>
-                    <value name="RadiusZ">
-                        <shadow type="math_number">
-                            <field name="NUM">1</field>
-                        </shadow>
-                    </value>
-                    <value name="XAxisRotation">
-                        <shadow type="math_number">
-                            <field name="NUM">0</field>
-                        </shadow>
-                    </value>
-                    <value name="Clockwise">
-                        <shadow type="logic_boolean">
-                            <field name="BOOL">FALSE</field>
-                        </shadow>
-                    </value>
-                    <value name="Large">
-                        <shadow type="logic_boolean">
-                            <field name="BOOL">FALSE</field>
-                        </shadow>
-                    </value>
-                    <value name="Segments">
-                        <shadow type="math_number">
-                            <field name="NUM">16</field>
-                        </shadow>
-                    </value>
-                </block>
             </category>
-            <category name="${resources.block_toolbox_category_create_2d_polygon}" categorystyle="geometry_category">
+            <category name="${resources.block_toolbox_category_2d_polygon}" categorystyle="geometry_category">
                 <block type="csg_primitive_2d_polygon">
                 </block>
                 <block type="csg_primitive_2d_rectangle">
@@ -128,7 +78,7 @@ export function solidCategory(): string {
                     </value>
                 </block>
             </category>
-            <category name="${resources.block_toolbox_category_create_3d_solid}" categorystyle="geometry_category">
+            <category name="${resources.block_toolbox_category_3d_solid}" categorystyle="geometry_category">
                 <block type="csg_primitive_cube">
                     <value name="Center">
                         <shadow type="base_geometry_point">
@@ -223,7 +173,7 @@ export function solidCategory(): string {
                     </value>
                 </block>
             </category>
-            <category name="${resources.block_toolbox_category_create_extrusion}" categorystyle="geometry_category">
+            <category name="${resources.block_toolbox_category_extrusion}" categorystyle="geometry_category">
                 <block type="csg_extrude_linear_polygon">
                     <value name="Height">
                         <shadow type="math_number">
@@ -285,18 +235,6 @@ export function solidCategory(): string {
             </category>
         </category>
         <category name="${resources.block_toolbox_category_apply}" expanded="true" categorystyle="geometry_category">
-            <block type="csg_boolean_subtract">
-            </block>
-            <block type="csg_boolean_subtract_objects">
-            </block>
-            <block type="csg_boolean_union">
-            </block>
-            <block type="csg_boolean_union_objects">
-            </block>
-            <block type="csg_boolean_intersect">
-            </block>
-            <block type="csg_boolean_intersect_objects">
-            </block>
             <block type="csg_colour">
                 <value name="Colour">
                     <shadow type="colour_picker">
@@ -306,6 +244,76 @@ export function solidCategory(): string {
             </block>
             <block type="csg_transform">
             </block>
+            <category name="${resources.block_toolbox_category_2d_path}" categorystyle="geometry_category">
+                <block type="csg_primitive_2d_path_close">
+                </block>
+                <block type="csg_primitive_2d_path_append_points">
+                </block>
+                <block type="csg_primitive_2d_path_append_polyline">
+                </block>
+                <block type="csg_primitive_2d_path_append_curve">
+                </block>
+                <block type="csg_primitive_2d_path_append_arc">
+                    <value name="EndPoint">
+                        <shadow type="base_geometry_point_2d">
+                            <value name="X">
+                                <shadow type="math_number">
+                                    <field name="NUM">0</field>
+                                </shadow>
+                            </value>
+                            <value name="Z">
+                                <shadow type="math_number">
+                                    <field name="NUM">0</field>
+                                </shadow>
+                            </value>
+                        </shadow>
+                    </value>
+                    <value name="RadiusX">
+                        <shadow type="math_number">
+                            <field name="NUM">1</field>
+                        </shadow>
+                    </value>
+                    <value name="RadiusZ">
+                        <shadow type="math_number">
+                            <field name="NUM">1</field>
+                        </shadow>
+                    </value>
+                    <value name="XAxisRotation">
+                        <shadow type="math_number">
+                            <field name="NUM">0</field>
+                        </shadow>
+                    </value>
+                    <value name="Clockwise">
+                        <shadow type="logic_boolean">
+                            <field name="BOOL">FALSE</field>
+                        </shadow>
+                    </value>
+                    <value name="Large">
+                        <shadow type="logic_boolean">
+                            <field name="BOOL">FALSE</field>
+                        </shadow>
+                    </value>
+                    <value name="Segments">
+                        <shadow type="math_number">
+                            <field name="NUM">16</field>
+                        </shadow>
+                    </value>
+                </block>
+            </category>
+            <category name="${resources.block_toolbox_category_boolean}" categorystyle="geometry_category">
+                <block type="csg_boolean_subtract">
+                </block>
+                <block type="csg_boolean_subtract_objects">
+                </block>
+                <block type="csg_boolean_union">
+                </block>
+                <block type="csg_boolean_union_objects">
+                </block>
+                <block type="csg_boolean_intersect">
+                </block>
+                <block type="csg_boolean_intersect_objects">
+                </block>
+            </category>
         </category>
     </category>
 `;

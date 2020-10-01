@@ -19,6 +19,8 @@ import { createExtrudeRectangularPathBlock } from './extrude-rectanglar-path';
 import { createPrimitive2dPathCloseBlock } from './primitive-2d-path-close';
 import { createPrimitive2dPathAppendPointsBlock } from './primitive-2d-path-append-points';
 import { createPrimitive2dPathAppendArcBlock } from './primitive-2d-path-append-arc';
+import { createPrimitive2dPathAppendPolylineBlock } from './primitive-2d-path-append-polyline';
+import { createPrimitive2dPathAppendCurveBlock } from './primitive-2d-path-append-curve';
 
 export function assembleCsgBlocks(): void {
     createPrimitive2dPolygonBlock();
@@ -42,4 +44,6 @@ export function assembleCsgBlocks(): void {
     createPrimitive2dPathCloseBlock();
     createPrimitive2dPathAppendPointsBlock();
     createPrimitive2dPathAppendArcBlock();
+    createPrimitive2dPathAppendPolylineBlock();
+    createPrimitive2dPathAppendCurveBlock();
 }

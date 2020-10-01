@@ -98,10 +98,11 @@ export interface ResourcesInterface {
     block_toolbox_category_geom_sphere: string;
     block_toolbox_category_intersect: string;
     block_toolbox_category_create: string;
-    block_toolbox_category_create_2d_path: string;
-    block_toolbox_category_create_2d_polygon: string;
-    block_toolbox_category_create_3d_solid: string;
-    block_toolbox_category_create_extrusion: string;
+    block_toolbox_category_2d_path: string;
+    block_toolbox_category_boolean: string;
+    block_toolbox_category_2d_polygon: string;
+    block_toolbox_category_3d_solid: string;
+    block_toolbox_category_extrusion: string;
     block_toolbox_category_draw: string;
     block_toolbox_category_apply: string;
     block_toolbox_category_apply_get: string;
@@ -1192,4 +1193,10 @@ export interface ResourcesInterface {
     block_csg_primitive_2d_path_append_arc_input_large: string;
     block_csg_primitive_2d_path_append_arc_input_segments: string;
     block_csg_primitive_2d_path_append_arc_description: string;
+    block_csg_primitive_2d_path_append_polyline_input_path: string;
+    block_csg_primitive_2d_path_append_polyline_input_polyline: string;
+    block_csg_primitive_2d_path_append_polyline_description: string;
+    block_csg_primitive_2d_path_append_curve_input_path: string;
+    block_csg_primitive_2d_path_append_curve_input_curve: string;
+    block_csg_primitive_2d_path_append_curve_description: string;
 }
