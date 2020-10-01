@@ -39,7 +39,7 @@ export function createDrawCsgMeshBlock(): void {
             this.setColour('#fff');
             this.setPreviousStatement(true, null);
             this.setNextStatement(true, null);
-            this.setTooltip(resources.block_babylon_draw_surface_description);
+            this.setTooltip(resources.block_babylon_draw_csg_mesh_description);
         }
     };
 
@@ -63,7 +63,6 @@ export function createDrawCsgMeshBlock(): void {
 
         return createStandardContextIIFE(block, blockSelector, inputs, false,
             `
-            console.log(inputs.mesh);
             let polygons = [];
 
             if(inputs.mesh.toPolygons){
@@ -130,7 +129,6 @@ export function createDrawCsgMeshBlock(): void {
 
             inputs.csgMesh.material.alpha = inputs.opacity;
             inputs.csgMesh.material.diffuseColor = BitByBit.BABYLON.Color3.FromHexString(inputs.colour);
-            // inputs.csgMesh.convertToFlatShadedMesh();
             inputs.csgMesh.isPickable = false;
 `);
     };

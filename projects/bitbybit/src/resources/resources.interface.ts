@@ -300,6 +300,10 @@ export interface ResourcesInterface {
     block_babylon_draw_csg_mesh_input_csg_mesh: string;
     block_babylon_draw_csg_mesh_input_csg_mesh_2: string;
     block_babylon_draw_csg_mesh_description: string;
+    block_babylon_draw_csg_meshes_input_csg_meshes_variable: string;
+    block_babylon_draw_csg_meshes_input_csg_meshes: string;
+    block_babylon_draw_csg_meshes_input_csg_meshes_2: string;
+    block_babylon_draw_csg_meshes_description: string;
     block_babylon_draw_csg_primitive_2d_polygon_input_csg_primitive_2d_polygon_variable: string;
     block_babylon_draw_csg_primitive_2d_polygon_input_csg_primitive_2d_polygon: string;
     block_babylon_draw_csg_primitive_2d_polygon_input_csg_primitive_2d_polygon_2: string;

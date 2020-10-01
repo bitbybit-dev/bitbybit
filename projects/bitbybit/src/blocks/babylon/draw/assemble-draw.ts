@@ -12,6 +12,7 @@ import { createDrawSurfaceBlock } from './draw-surface';
 import { createDrawSurfacesBlock } from './draw-surfaces';
 import { createDrawSurfacesColoursBlock } from './draw-surfaces-colours';
 import { createDrawCsgMeshBlock } from './draw-csg-mesh';
+import { createDrawCsgMeshesBlock } from './draw-csg-meshes';
 import { createDrawNodeBlock } from './draw-node';
 import { createDrawNodesBlock } from './draw-nodes';
 import { createDrawCsgPolygonBlock } from './draw-csg-polygon';
@@ -33,6 +34,7 @@ export function assembleDrawBlocks(): void{
     createClearAllDrawnBlock();
     createDrawPolylinesBlock();
     createDrawCsgMeshBlock();
+    createDrawCsgMeshesBlock();
     createDrawCsgPolygonBlock();
     createDrawNodeBlock();
     createDrawNodesBlock();
