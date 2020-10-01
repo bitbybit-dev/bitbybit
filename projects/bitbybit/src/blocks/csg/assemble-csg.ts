@@ -21,15 +21,22 @@ import { createPrimitive2dPathAppendPointsBlock } from './primitive-2d-path-appe
 import { createPrimitive2dPathAppendArcBlock } from './primitive-2d-path-append-arc';
 import { createPrimitive2dPathAppendPolylineBlock } from './primitive-2d-path-append-polyline';
 import { createPrimitive2dPathAppendCurveBlock } from './primitive-2d-path-append-curve';
+import { createPrimitive2dPathEmptyBlock } from './primitive-2d-path-empty';
+import { createExtrudeRectangularPathsBlock } from './extrude-rectanglar-paths';
+import { createPrimitive2dPathFromPolylineBlock } from './primitive-2d-path-from-polyline';
+import { createPrimitive2dPathFromCurveBlock } from './primitive-2d-path-from-curve';
 
 export function assembleCsgBlocks(): void {
     createPrimitive2dPolygonBlock();
     createPrimitive2dRectangleBlock();
     createPrimitive2dPathFromPointsBlock();
+    createPrimitive2dPathFromPolylineBlock();
+    createPrimitive2dPathFromCurveBlock();
     createExtrudeLinearPolygonBlock();
     createExtrudeLinearPolygonObjectsBlock();
     createExtrudeRectangularPointsBlock();
     createExtrudeRectangularPathBlock();
+    createExtrudeRectangularPathsBlock();
     createPrimitiveSphereBlock();
     createPrimitiveCubeBlock();
     createBooleanSubtractBlock();
@@ -41,6 +48,7 @@ export function assembleCsgBlocks(): void {
     createCsgTransformBlock();
     createCsgColourBlock();
     createPrimitiveCuboidBlock();
+    createPrimitive2dPathEmptyBlock();
     createPrimitive2dPathCloseBlock();
     createPrimitive2dPathAppendPointsBlock();
     createPrimitive2dPathAppendArcBlock();

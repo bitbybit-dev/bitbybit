@@ -38,6 +38,28 @@ export function solidCategory(): string {
                 </shadow>
             </value>
         </block>
+        <block type="babylon_draw_2d_path">
+            <value name="Colour">
+                <shadow type="colour_picker">
+                    <field name="COLOUR">#555</field>
+                </shadow>
+            </value>
+            <value name="Width">
+                <shadow type="math_number">
+                    <field name="NUM">3</field>
+                </shadow>
+            </value>
+            <value name="Opacity">
+                <shadow type="math_number">
+                    <field name="NUM">1</field>
+                </shadow>
+            </value>
+            <value name="Updatable">
+                <shadow type="logic_boolean">
+                    <field name="BOOL">FALSE</field>
+                </shadow>
+            </value>
+        </block>
         <category name="${resources.block_toolbox_category_create}" expanded="true" categorystyle="geometry_category">
             <category name="${resources.block_toolbox_category_2d_path}" categorystyle="geometry_category">
                 <block type="csg_primitive_2d_path_from_points">
@@ -46,6 +68,22 @@ export function solidCategory(): string {
                             <field name="BOOL">FALSE</field>
                         </shadow>
                     </value>
+                </block>
+                <block type="csg_primitive_2d_path_from_polyline">
+                    <value name="Closed">
+                        <shadow type="logic_boolean">
+                            <field name="BOOL">FALSE</field>
+                        </shadow>
+                    </value>
+                </block>
+                <block type="csg_primitive_2d_path_from_curve">
+                    <value name="Closed">
+                        <shadow type="logic_boolean">
+                            <field name="BOOL">FALSE</field>
+                        </shadow>
+                    </value>
+                </block>
+                <block type="csg_primitive_2d_path_empty">
                 </block>
             </category>
             <category name="${resources.block_toolbox_category_2d_polygon}" categorystyle="geometry_category">
@@ -221,6 +259,18 @@ export function solidCategory(): string {
                     </value>
                 </block>
                 <block type="csg_extrude_rectangular_path">
+                    <value name="Height">
+                        <shadow type="math_number">
+                            <field name="NUM">2</field>
+                        </shadow>
+                    </value>
+                    <value name="Size">
+                        <shadow type="math_number">
+                            <field name="NUM">0.1</field>
+                        </shadow>
+                    </value>
+                </block>
+                <block type="csg_extrude_rectangular_paths">
                     <value name="Height">
                         <shadow type="math_number">
                             <field name="NUM">2</field>

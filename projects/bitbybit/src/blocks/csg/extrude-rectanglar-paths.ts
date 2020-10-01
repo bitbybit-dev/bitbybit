@@ -4,37 +4,42 @@ import { ResourcesInterface, ResourcesService } from '../../resources';
 import { createStandardContextIIFE } from '../_shared';
 import { getRequired, makeRequiredValidationModelForInputs, BitByBitBlockHandlerService, ValidationEntityInterface } from '../validations';
 
-export function createPrimitive2dPathFromPointsBlock(): void {
+export function createExtrudeRectangularPathsBlock(): void {
 
     const resources = ResourcesService.getResources();
-    const blockSelector = 'csg_primitive_2d_path_from_points';
+    const blockSelector = 'csg_extrude_rectangular_paths';
 
     Blocks[blockSelector] = {
         init(): void {
-            this.appendValueInput('Points')
+            this.appendValueInput('Paths')
                 .setCheck('Array')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_csg_primitive_2d_path_from_points_input_points);
-            this.appendValueInput('Closed')
-                .setCheck('Boolean')
+                .appendField(resources.block_csg_extrude_rectangular_paths_input_paths);
+            this.appendValueInput('Size')
+                .setCheck('Number')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_csg_primitive_2d_path_from_points_input_closed.toLowerCase());
-            this.setOutput(true, 'Path');
+                .appendField(resources.block_csg_extrude_rectangular_paths_input_size.toLowerCase());
+            this.appendValueInput('Height')
+                .setCheck('Number')
+                .setAlign(ALIGN_RIGHT)
+                .appendField(resources.block_csg_extrude_rectangular_paths_input_height.toLowerCase());
+            this.setOutput(true, 'Array');
             this.setColour('#fff');
-            this.setTooltip(resources.block_csg_primitive_2d_path_from_points_description);
+            this.setTooltip(resources.block_csg_extrude_rectangular_paths_description);
             this.setHelpUrl('');
         }
     };
 
     JavaScript[blockSelector] = (block: Block) => {
         const inputs = {
-            points: JavaScript.valueToCode(block, 'Points', JavaScript.ORDER_ATOMIC),
-            closed: JavaScript.valueToCode(block, 'Closed', JavaScript.ORDER_ATOMIC),
+            paths: JavaScript.valueToCode(block, 'Paths', JavaScript.ORDER_ATOMIC),
+            size: JavaScript.valueToCode(block, 'Size', JavaScript.ORDER_ATOMIC),
+            height: JavaScript.valueToCode(block, 'Height', JavaScript.ORDER_ATOMIC),
         };
 
         // this is first set of validations to check that all inputs are non empty strings
         BitByBitBlockHandlerService.validate(block, block.workspace, makeRequiredValidationModelForInputs(resources, inputs, [
-            resources.block_points, resources.block_closed
+            resources.block_2d_paths, resources.block_size, resources.block_height
         ]));
 
         // this creates validation model to be used at runtime to evaluate real values of inputs
@@ -43,14 +48,11 @@ export function createPrimitive2dPathFromPointsBlock(): void {
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
             `
-            const twoDimensionalPoints = inputs.points.map(pt => [pt[0], pt[2]]);
-            const duplicatePointsRemoved = BitByBit.BitByBitBlocklyHelperService.removeConsecutiveDuplicates(twoDimensionalPoints, BitByBit.BitByBitBlocklyHelperService.tolerance);
-            let path2d = BitByBit.CSG.geometries.path2.fromPoints({}, duplicatePointsRemoved);
-            if(inputs.closed){
-                path2d = BitByBit.CSG.geometries.path2.close(path2d);
+            const extrusions = BitByBit.CSG.extrusions.extrudeRectangular({height: inputs.height, size: inputs.size}, ...inputs.paths);
+            if (!extrusions.length){
+                extrusions = [extrusions];
             }
-            console.log(path2d);
-            return path2d;
+            return extrusions;
 `
         );
         return [code, JavaScript.ORDER_ATOMIC];
@@ -65,12 +67,17 @@ function makeRuntimeValidationModel(
     return [{
         entity: keys[0],
         validations: [
-            getRequired(resources, resources.block_points),
+            getRequired(resources, resources.block_2d_paths),
         ]
     }, {
         entity: keys[1],
         validations: [
-            getRequired(resources, resources.block_closed),
+            getRequired(resources, resources.block_size),
+        ]
+    }, {
+        entity: keys[2],
+        validations: [
+            getRequired(resources, resources.block_height),
         ]
     }];
 }

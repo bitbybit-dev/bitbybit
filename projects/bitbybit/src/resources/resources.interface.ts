@@ -123,6 +123,7 @@ export interface ResourcesInterface {
     block_computing: string;
     block_point: string;
     block_2d_path: string;
+    block_2d_paths: string;
     block_intersection: string;
     block_intersections: string;
     block_points: string;
@@ -309,6 +310,9 @@ export interface ResourcesInterface {
     block_babylon_input_draw_polyline: string;
     block_babylon_input_draw_polyline_2: string;
     block_babylon_input_draw_polyline_variable: string;
+    block_babylon_input_draw_2d_path: string;
+    block_babylon_input_draw_2d_path_2: string;
+    block_babylon_input_draw_2d_path_variable: string;
     block_babylon_input_draw_point: string;
     block_babylon_input_draw_point_variable: string;
     block_babylon_input_draw_point_2: string;
@@ -347,6 +351,7 @@ export interface ResourcesInterface {
     block_babylon_draw_curves_description: string;
     block_babylon_draw_line_description: string;
     block_babylon_draw_polyline_description: string;
+    block_babylon_draw_2d_path_description: string;
     block_babylon_draw_lines_description: string;
     block_babylon_draw_polylines_description: string;
     block_babylon_draw_grid_description: string;
@@ -1199,4 +1204,12 @@ export interface ResourcesInterface {
     block_csg_primitive_2d_path_append_curve_input_path: string;
     block_csg_primitive_2d_path_append_curve_input_curve: string;
     block_csg_primitive_2d_path_append_curve_description: string;
+    block_csg_primitive_2d_path_empty_input_path: string;
+    block_csg_primitive_2d_path_empty_description: string;
+    block_csg_primitive_2d_path_from_polyline_input_polyline: string;
+    block_csg_primitive_2d_path_from_polyline_input_closed: string;
+    block_csg_primitive_2d_path_from_polyline_description: string;
+    block_csg_primitive_2d_path_from_curve_input_curve: string;
+    block_csg_primitive_2d_path_from_curve_input_closed: string;
+    block_csg_primitive_2d_path_from_curve_description: string;
 }
