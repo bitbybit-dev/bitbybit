@@ -66,7 +66,7 @@ export function createDrawCsgPolygonBlock(): void {
             let vertices = [];
 
             if(inputs.polygon.sides){
-                const allVerts = BitByBit.CSG.geometry.geom2.toPoints(inputs.polygon);
+                const allVerts = BitByBit.CSG.geometries.geom2.toPoints(inputs.polygon);
                 vertices = allVerts.map(vert => {
                     return new BitByBit.BABYLON.Vector2(vert[0], vert[1]);
                 }).reverse();

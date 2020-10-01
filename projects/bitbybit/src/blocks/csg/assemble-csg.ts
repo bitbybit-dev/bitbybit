@@ -25,6 +25,7 @@ import { createPrimitive2dPathEmptyBlock } from './primitive-2d-path-empty';
 import { createExtrudeRectangularPathsBlock } from './extrude-rectanglar-paths';
 import { createPrimitive2dPathFromPolylineBlock } from './primitive-2d-path-from-polyline';
 import { createPrimitive2dPathFromCurveBlock } from './primitive-2d-path-from-curve';
+import { createExtrudeRotatePolygonBlock } from './extrude-rotate-polygon';
 
 export function assembleCsgBlocks(): void {
     createPrimitive2dPolygonBlock();
@@ -37,6 +38,7 @@ export function assembleCsgBlocks(): void {
     createExtrudeRectangularPointsBlock();
     createExtrudeRectangularPathBlock();
     createExtrudeRectangularPathsBlock();
+    createExtrudeRotatePolygonBlock();
     createPrimitiveSphereBlock();
     createPrimitiveCubeBlock();
     createBooleanSubtractBlock();

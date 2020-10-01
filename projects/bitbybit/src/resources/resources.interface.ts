@@ -238,6 +238,8 @@ export interface ResourcesInterface {
     block_scalar: string;
     block_vectors: string;
     block_angle: string;
+    block_start_angle: string;
+    block_end_angle: string;
     block_axis: string;
     block_x_axis: string;
     block_base: string;
@@ -1216,4 +1218,9 @@ export interface ResourcesInterface {
     block_csg_primitive_2d_path_from_curve_input_curve: string;
     block_csg_primitive_2d_path_from_curve_input_closed: string;
     block_csg_primitive_2d_path_from_curve_description: string;
+    block_csg_extrude_rotate_polygon_input_polygon: string;
+    block_csg_extrude_rotate_polygon_input_angle: string;
+    block_csg_extrude_rotate_polygon_input_start_angle: string;
+    block_csg_extrude_rotate_polygon_input_segments: string;
+    block_csg_extrude_rotate_polygon_description: string;
 }

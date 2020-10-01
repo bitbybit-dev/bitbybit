@@ -2,10 +2,10 @@ import { HttpHeaders, HttpParams, HttpClient } from '@angular/common/http';
 import { AfterViewInit, ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ArcRotateCamera, DirectionalLight, MeshBuilder, VertexData, StandardMaterial, TransformNode, HemisphericLight } from '@babylonjs/core';
+import { ArcRotateCamera, DirectionalLight, TransformNode, HemisphericLight } from '@babylonjs/core';
 import { Engine } from '@babylonjs/core/Engines/engine';
 import '@babylonjs/core/Materials/standardMaterial';
-import { Color3, Color4, Matrix, Vector3, Quaternion } from '@babylonjs/core/Maths/math';
+import { Color3, Color4, Vector3 } from '@babylonjs/core/Maths/math';
 import { Mesh } from '@babylonjs/core/Meshes/mesh';
 import '@babylonjs/core/Meshes/meshBuilder';
 import { Scene } from '@babylonjs/core/scene';
@@ -295,95 +295,6 @@ export class AppComponent implements OnInit, AfterViewInit {
             BitByBitBlocklyHelperService.renderLoopBag = [];
 
             this.scene.clearColor = new Color4(1, 1, 1, 1);
-
-            // const CSG = (window as any).CSG;
-            console.log((window as any).CSG);
-            // function radiusFromDiameter(d) {
-            //     return d / 2;
-            // }
-
-            // const rotcy = (rot, r, h) => {
-            //     return CSG.transforms.rotate(rot, CSG.primitives.cylinder({ r: r, h: h, center: true }));
-            // }
-
-            // const example001 = () => {
-            //     const size = 5;
-            //     const hole = 2.5;
-            //     const radius = radiusFromDiameter(hole);
-            //     const height = radiusFromDiameter(size * 2.5);
-
-            //     const sphere = CSG.primitives.sphere({ radius: radiusFromDiameter(size), segments: 16 });
-            //     const cylinder = CSG.primitives.roundedCylinder({ startRadius: 1, endRadius: 1, height: 10, segments: 16 });
-            //     const cylinder2 = CSG.primitives.cylinder({ startRadius: 0.5, endRadius: 0.5, height: 20, segments: 16 });
-            //     return [CSG.booleans.subtract(CSG.booleans.union(sphere, cylinder), cylinder2)];
-            // }
-
-            // const body = example001();
-            // // console.log(body);
-            // const d = example001().map(g => CSG.geometry.geom3.toPolygons(g));
-
-            // let shapeNr = 0;
-            // for (let shape of d) {
-            //     const positions = [];
-            //     const normals = [];
-            //     const indices = [];
-            //     let countIndices = 0;
-
-            //     for (let polygon of shape) {
-            //         const quat = new Quaternion(...polygon.plane);
-            //         let up = new Vector3();
-            //         Vector3.Up().rotateByQuaternionToRef(quat, up);
-            //         const eulerAngles = up;
-            //         up.normalize();
-            //         if (polygon.vertices.length === 3) {
-            //             polygon.vertices.forEach(vert => {
-            //                 normals.push(eulerAngles.x, eulerAngles.y, eulerAngles.z);
-            //                 positions.push(vert[0], vert[1], vert[2]);
-            //                 indices.push(countIndices);
-            //                 countIndices++;
-            //             });
-            //         } else {
-            //             const triangles = [];
-            //             let firstVertex = polygon.vertices[0]
-            //             for (let i = polygon.vertices.length - 3; i >= 0; i--) {
-            //                 triangles.push(
-            //                     [
-            //                         firstVertex,
-            //                         polygon.vertices[i + 1],
-            //                         polygon.vertices[i + 2]
-            //                     ]);
-            //             }
-            //             triangles.forEach(triangle => {
-            //                 triangle.forEach(vert => {
-            //                     normals.push(eulerAngles.x, eulerAngles.y, eulerAngles.z);
-            //                     positions.push(vert[0], vert[1], vert[2]);
-            //                     indices.push(countIndices);
-            //                     countIndices++;
-            //                 });
-            //             });
-            //         }
-            //     }
-            //     const mesh = new Mesh('custom${Math.random()}' + shapeNr, this.scene);
-            //     const createMesh = () => {
-            //         const vertexData = new VertexData();
-
-            //         vertexData.positions = positions;
-            //         vertexData.indices = indices;
-            //         vertexData.normals = normals;
-
-            //         vertexData.applyToMesh(mesh, false);
-            //     };
-
-            //     createMesh();
-
-            //     const material = new StandardMaterial('dada', this.scene);
-            //     material.backFaceCulling = false;
-            //     material.diffuseColor = new Color3(0, 0, 1);
-            //     mesh.material = material;
-            //     mesh.isPickable = false;
-            //     mesh.convertToFlatShadedMesh();
-            //     shapeNr++;
-            // }
 
             const javascript = JavaScript;
 
