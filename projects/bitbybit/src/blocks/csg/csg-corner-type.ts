@@ -13,9 +13,9 @@ export function createCornerTypeBlock(): void {
         init(): void {
             this.appendDummyInput('Corners')
                 .appendField(new FieldDropdown([
-                    [resources.block_csg_expansions_expand_path_input_corner_type_edge, '\'edge\''],
-                    [resources.block_csg_expansions_expand_path_input_corner_type_round, '\'round\''],
-                    [resources.block_csg_expansions_expand_path_input_corner_type_chamfer, '\'chamfer\''],
+                    [resources.block_csg_corner_type_input_edge, '\'edge\''],
+                    [resources.block_csg_corner_type_input_round, '\'round\''],
+                    [resources.block_csg_corner_type_input_chamfer, '\'chamfer\''],
                 ]), 'CornerType');
             this.setOutput(true, 'String');
             this.setColour('#fff');

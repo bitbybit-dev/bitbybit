@@ -1244,9 +1244,14 @@ export interface ResourcesInterface {
     block_csg_expansions_expand_path_input_path: string;
     block_csg_expansions_expand_path_input_delta: string;
     block_csg_expansions_expand_path_input_corners: string;
-    block_csg_expansions_expand_path_input_corner_type_round: string;
-    block_csg_expansions_expand_path_input_corner_type_chamfer: string;
-    block_csg_expansions_expand_path_input_corner_type_edge: string;
     block_csg_expansions_expand_path_input_segments: string;
     block_csg_expansions_expand_path_description: string;
+    block_csg_corner_type_input_round: string;
+    block_csg_corner_type_input_chamfer: string;
+    block_csg_corner_type_input_edge: string;
+    block_csg_expansions_expand_polygon_input_polygon: string;
+    block_csg_expansions_expand_polygon_input_delta: string;
+    block_csg_expansions_expand_polygon_input_corners: string;
+    block_csg_expansions_expand_polygon_input_segments: string;
+    block_csg_expansions_expand_polygon_description: string;
 }

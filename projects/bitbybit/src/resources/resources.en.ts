@@ -1247,9 +1247,14 @@ export const resourcesEn: ResourcesInterface = Object.freeze({
     block_csg_expansions_expand_path_input_path: 'Expand to polygon the path',
     block_csg_expansions_expand_path_input_delta: 'Delta',
     block_csg_expansions_expand_path_input_corners: 'Corner type',
-    block_csg_expansions_expand_path_input_corner_type_round: 'round',
-    block_csg_expansions_expand_path_input_corner_type_chamfer: 'chamfer',
-    block_csg_expansions_expand_path_input_corner_type_edge: 'edge',
     block_csg_expansions_expand_path_input_segments: 'Segment count',
     block_csg_expansions_expand_path_description: 'Expands the path to polygon with given delta distance, selected corner type and segment count.',
+    block_csg_corner_type_input_round: 'round',
+    block_csg_corner_type_input_chamfer: 'chamfer',
+    block_csg_corner_type_input_edge: 'edge',
+    block_csg_expansions_expand_polygon_input_polygon: 'Expand polygon',
+    block_csg_expansions_expand_polygon_input_delta: 'Delta',
+    block_csg_expansions_expand_polygon_input_corners: 'Corners',
+    block_csg_expansions_expand_polygon_input_segments: 'Segment count',
+    block_csg_expansions_expand_polygon_description: 'Expands the polygon with given delta distance, selected corner type and segment count.'
 });
