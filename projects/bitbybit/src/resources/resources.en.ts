@@ -1302,4 +1302,9 @@ export const resourcesEn: ResourcesInterface = Object.freeze({
     block_csg_primitive_2d_circle_input_radius: 'Radius',
     block_csg_primitive_2d_circle_input_segments: 'Segment count',
     block_csg_primitive_2d_circle_description: 'Creates a circle polygon of the given radius and segment count.',
+    block_csg_cylinder_input_center: 'Cylinder at center point',
+    block_csg_cylinder_input_radius: 'Radius',
+    block_csg_cylinder_input_height: 'Height',
+    block_csg_cylinder_input_segments: 'Segment count',
+    block_csg_cylinder_description: 'Creates a cylinder at a center point of the given radius and height.'
 });
