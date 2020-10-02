@@ -1232,14 +1232,14 @@ export interface ResourcesInterface {
     block_csg_extrude_rotate_polygon_description: string;
     block_csg_hull_paths_input_paths: string;
     block_csg_hull_paths_description: string;
-    block_csg_hull_polygons_input_paths: string;
+    block_csg_hull_polygons_input_polygons: string;
     block_csg_hull_polygons_description: string;
-    block_csg_hull_solids_input_paths: string;
+    block_csg_hull_solids_input_solids: string;
     block_csg_hull_solids_description: string;
     block_csg_chain_hull_paths_input_paths: string;
     block_csg_chain_hull_paths_description: string;
-    block_csg_chain_hull_polygons_input_paths: string;
+    block_csg_chain_hull_polygons_input_polygons: string;
     block_csg_chain_hull_polygons_description: string;
-    block_csg_chain_hull_solids_input_paths: string;
+    block_csg_chain_hull_solids_input_solids: string;
     block_csg_chain_hull_solids_description: string;
 }

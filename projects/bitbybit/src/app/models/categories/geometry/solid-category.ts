@@ -407,6 +407,16 @@ export function solidCategory(): string {
             <category name="${resources.block_toolbox_category_hull}" categorystyle="geometry_category">
                 <block type="csg_hull_paths">
                 </block>
+                <block type="csg_hull_polygons">
+                </block>
+                <block type="csg_hull_solids">
+                </block>
+                <block type="csg_hull_chain_paths">
+                </block>
+                <block type="csg_hull_chain_polygons">
+                </block>
+                <block type="csg_hull_chain_solids">
+                </block>
             </category>
         </category>
     </category>

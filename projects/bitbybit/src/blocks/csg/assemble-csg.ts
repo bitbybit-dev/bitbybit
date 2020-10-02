@@ -30,6 +30,11 @@ import { createHullPathsBlock } from './hull-paths';
 import { createPrimitive2dPolygonFromPolylineBlock } from './primitive-2d-polygon-from-polyline';
 import { createPrimitive2dPolygonFromCurveBlock } from './primitive-2d-polygon-from-curve';
 import { createPrimitive2dPolygonFromPathBlock } from './primitive-2d-polygon-from-path';
+import { createHullPolygonsBlock } from './hull-polygons';
+import { createHullSolidsBlock } from './hull-solids';
+import { createHullChainPathsBlock } from './hull-chain-paths';
+import { createHullChainPolygonsBlock } from './hull-chain-polygons';
+import { createHullChainSolidsBlock } from './hull-chain-solids';
 
 export function assembleCsgBlocks(): void {
     createPrimitive2dPolygonFromPointsBlock();
@@ -55,6 +60,11 @@ export function assembleCsgBlocks(): void {
     createBooleanIntersectBlock();
     createBooleanIntersectObjectsBlock();
     createHullPathsBlock();
+    createHullPolygonsBlock();
+    createHullSolidsBlock();
+    createHullChainPathsBlock();
+    createHullChainPolygonsBlock();
+    createHullChainSolidsBlock();
     createCsgTransformBlock();
     createCsgColourBlock();
     createPrimitiveCuboidBlock();
