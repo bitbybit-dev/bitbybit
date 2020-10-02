@@ -19,7 +19,6 @@ export function createDrawCsgMeshBlock(): void {
     Blocks[blockSelector] = {
         init(): void {
             this.appendValueInput('CsgMesh')
-                .setCheck('CsgMesh')
                 .setAlign(ALIGN_RIGHT)
                 .appendField(resources.block_babylon_draw_csg_mesh_input_csg_mesh)
                 .appendField(new FieldVariable(resources.block_babylon_draw_csg_mesh_input_csg_mesh_variable), 'DrawnCsgMesh')
@@ -69,6 +68,13 @@ export function createDrawCsgMeshBlock(): void {
                 polygons = inputs.mesh.toPolygons();
             } else if(inputs.mesh.polygons){
                 polygons = inputs.mesh.polygons
+            } else if(inputs.mesh.sides || inputs.mesh.vertices){
+                const extrusion = BitByBit.CSG.extrusions.extrudeLinear({height: 0.001, twistAngle: 0, twistSteps: 1}, inputs.mesh);
+                if(extrusion.toPolygons){
+                    polygons = extrusion.toPolygons();
+                } else if(extrusion.polygons){
+                    polygons = extrusion.polygons
+                }
             }
 
             inputs.csgMesh = ${JavaScript.variableDB_.getName(block.getFieldValue('DrawnCsgMesh'), VARIABLE_CATEGORY_NAME)};

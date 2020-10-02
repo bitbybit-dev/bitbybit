@@ -101,6 +101,7 @@ export interface ResourcesInterface {
     block_toolbox_category_2d_path: string;
     block_toolbox_category_boolean: string;
     block_toolbox_category_hull: string;
+    block_toolbox_category_expansions: string;
     block_toolbox_category_2d_polygon: string;
     block_toolbox_category_3d_solid: string;
     block_toolbox_category_extrusion: string;
@@ -123,6 +124,8 @@ export interface ResourcesInterface {
     block_toolbox_category_io_http: string;
     block_computing: string;
     block_point: string;
+    block_corners: string;
+    block_delta: string;
     block_2d_path: string;
     block_2d_paths: string;
     block_intersection: string;
@@ -307,10 +310,6 @@ export interface ResourcesInterface {
     block_babylon_draw_csg_meshes_input_csg_meshes: string;
     block_babylon_draw_csg_meshes_input_csg_meshes_2: string;
     block_babylon_draw_csg_meshes_description: string;
-    block_babylon_draw_csg_primitive_2d_polygon_input_polygon_variable: string;
-    block_babylon_draw_csg_primitive_2d_polygon_input_polygon: string;
-    block_babylon_draw_csg_primitive_2d_polygon_input_polygon_2: string;
-    block_babylon_draw_csg_primitive_2d_polygon_description: string;
     block_babylon_input_draw_polylines: string;
     block_babylon_input_draw_polylines_variable: string;
     block_babylon_input_draw_polylines_2: string;
@@ -1242,4 +1241,12 @@ export interface ResourcesInterface {
     block_csg_chain_hull_polygons_description: string;
     block_csg_chain_hull_solids_input_solids: string;
     block_csg_chain_hull_solids_description: string;
+    block_csg_expansions_expand_path_input_path: string;
+    block_csg_expansions_expand_path_input_delta: string;
+    block_csg_expansions_expand_path_input_corners: string;
+    block_csg_expansions_expand_path_input_corner_type_round: string;
+    block_csg_expansions_expand_path_input_corner_type_chamfer: string;
+    block_csg_expansions_expand_path_input_corner_type_edge: string;
+    block_csg_expansions_expand_path_input_segments: string;
+    block_csg_expansions_expand_path_description: string;
 }

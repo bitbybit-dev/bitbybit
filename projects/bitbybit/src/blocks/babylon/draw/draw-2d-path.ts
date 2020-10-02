@@ -58,7 +58,7 @@ export function createDraw2dPathBlock(): void {
 
         // this is first set of validations to check that all inputs are non empty strings
         BitByBitBlockHandlerService.validate(block, block.workspace, makeRequiredValidationModelForInputs(resources, inputs, [
-            resources.block_polyline, resources.block_colour, resources.block_opacity, resources.block_width, resources.block_updatable
+            resources.block_2d_path, resources.block_colour, resources.block_opacity, resources.block_width, resources.block_updatable
         ]));
 
         // this creates validation model to be used at runtime to evaluate real values of inputs
@@ -71,15 +71,18 @@ export function createDraw2dPathBlock(): void {
 
         const points = [];
         const colors = [];
-        inputs.path.points.forEach(pt => {
-            points.push(new BitByBit.BABYLON.Vector3(pt[0], 0, pt[1]));
-            colors.push( new BitByBit.BABYLON.Color4(1, 1, 1, 0));
-        });
 
-        if(inputs.path.isClosed){
-            const pt = inputs.path.points[0];
-            points.push(new BitByBit.BABYLON.Vector3(pt[0], 0, pt[1]));
-            colors.push( new BitByBit.BABYLON.Color4(1, 1, 1, 0));
+        if(inputs.path.points){
+            inputs.path.points.forEach(pt => {
+                points.push(new BitByBit.BABYLON.Vector3(pt[0], 0, pt[1]));
+                colors.push( new BitByBit.BABYLON.Color4(1, 1, 1, 0));
+            });
+
+            if(inputs.path.isClosed){
+                const pt = inputs.path.points[0];
+                points.push(new BitByBit.BABYLON.Vector3(pt[0], 0, pt[1]));
+                colors.push( new BitByBit.BABYLON.Color4(1, 1, 1, 0));
+            }
         }
 
         if(inputs.pathMeshVariable && inputs.updatable){
@@ -115,7 +118,7 @@ function makeRuntimeValidationModel(
     return [{
         entity: keys[0],
         validations: [
-            getRequired(resources, resources.block_polyline),
+            getRequired(resources, resources.block_2d_path),
         ]
     },
     {

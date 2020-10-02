@@ -38,23 +38,6 @@ export function solidCategory(): string {
                 </shadow>
             </value>
         </block>
-        <block type="babylon_draw_csg_primitive_2d_polygon">
-            <value name="Colour">
-                <shadow type="colour_picker">
-                    <field name="COLOUR">#555</field>
-                </shadow>
-            </value>
-            <value name="Opacity">
-                <shadow type="math_number">
-                    <field name="NUM">1</field>
-                </shadow>
-            </value>
-            <value name="Updatable">
-                <shadow type="logic_boolean">
-                    <field name="BOOL">FALSE</field>
-                </shadow>
-            </value>
-        </block>
         <block type="babylon_draw_2d_path">
             <value name="Colour">
                 <shadow type="colour_picker">
@@ -416,6 +399,27 @@ export function solidCategory(): string {
                 <block type="csg_hull_chain_polygons">
                 </block>
                 <block type="csg_hull_chain_solids">
+                </block>
+            </category>
+            <category name="${resources.block_toolbox_category_expansions}" categorystyle="geometry_category">
+                <block type="csg_corner_type">
+                </block>
+                <block type="csg_expansions_expand_path">
+                    <value name="Corners">
+                        <shadow type="csg_corner_type">
+                        <field name="CornerType">'edge'</field>
+                        </shadow>
+                    </value>
+                    <value name="Segments">
+                        <shadow type="math_number">
+                            <field name="NUM">12</field>
+                        </shadow>
+                    </value>
+                    <value name="Delta">
+                        <shadow type="math_number">
+                            <field name="NUM">0.5</field>
+                        </shadow>
+                    </value>
                 </block>
             </category>
         </category>

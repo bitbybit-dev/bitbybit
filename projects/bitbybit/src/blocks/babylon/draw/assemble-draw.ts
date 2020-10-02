@@ -15,7 +15,6 @@ import { createDrawCsgMeshBlock } from './draw-csg-mesh';
 import { createDrawCsgMeshesBlock } from './draw-csg-meshes';
 import { createDrawNodeBlock } from './draw-node';
 import { createDrawNodesBlock } from './draw-nodes';
-import { createDrawCsgPolygonBlock } from './draw-csg-polygon';
 import { createDraw2dPathBlock } from './draw-2d-path';
 
 export function assembleDrawBlocks(): void{
@@ -35,7 +34,6 @@ export function assembleDrawBlocks(): void{
     createDrawPolylinesBlock();
     createDrawCsgMeshBlock();
     createDrawCsgMeshesBlock();
-    createDrawCsgPolygonBlock();
     createDrawNodeBlock();
     createDrawNodesBlock();
 }
