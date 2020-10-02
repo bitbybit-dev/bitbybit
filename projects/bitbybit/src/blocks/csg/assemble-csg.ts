@@ -1,4 +1,4 @@
-import { createPrimitive2dPolygonBlock } from './primitive-2d-polygon';
+import { createPrimitive2dPolygonFromPointsBlock } from './primitive-2d-polygon-from-points';
 import { createExtrudeLinearPolygonBlock } from './extrude-linear-polygon';
 import { createExtrudeLinearPolygonObjectsBlock } from './extrude-linear-polygon-objects';
 import { createPrimitive2dRectangleBlock } from './primitive-2d-rectangle';
@@ -26,9 +26,16 @@ import { createExtrudeRectangularPathsBlock } from './extrude-rectanglar-paths';
 import { createPrimitive2dPathFromPolylineBlock } from './primitive-2d-path-from-polyline';
 import { createPrimitive2dPathFromCurveBlock } from './primitive-2d-path-from-curve';
 import { createExtrudeRotatePolygonBlock } from './extrude-rotate-polygon';
+import { createHullPathsBlock } from './hull-paths';
+import { createPrimitive2dPolygonFromPolylineBlock } from './primitive-2d-polygon-from-polyline';
+import { createPrimitive2dPolygonFromCurveBlock } from './primitive-2d-polygon-from-curve';
+import { createPrimitive2dPolygonFromPathBlock } from './primitive-2d-polygon-from-path';
 
 export function assembleCsgBlocks(): void {
-    createPrimitive2dPolygonBlock();
+    createPrimitive2dPolygonFromPointsBlock();
+    createPrimitive2dPolygonFromPolylineBlock();
+    createPrimitive2dPolygonFromCurveBlock();
+    createPrimitive2dPolygonFromPathBlock();
     createPrimitive2dRectangleBlock();
     createPrimitive2dPathFromPointsBlock();
     createPrimitive2dPathFromPolylineBlock();
@@ -47,6 +54,7 @@ export function assembleCsgBlocks(): void {
     createBooleanUnionObjectsBlock();
     createBooleanIntersectBlock();
     createBooleanIntersectObjectsBlock();
+    createHullPathsBlock();
     createCsgTransformBlock();
     createCsgColourBlock();
     createPrimitiveCuboidBlock();

@@ -76,6 +76,12 @@ export function createDraw2dPathBlock(): void {
             colors.push( new BitByBit.BABYLON.Color4(1, 1, 1, 0));
         });
 
+        if(inputs.path.isClosed){
+            const pt = inputs.path.points[0];
+            points.push(new BitByBit.BABYLON.Vector3(pt[0], 0, pt[1]));
+            colors.push( new BitByBit.BABYLON.Color4(1, 1, 1, 0));
+        }
+
         if(inputs.pathMeshVariable && inputs.updatable){
 
             if(inputs.pathMeshVariable.getTotalVertices() === points.length){

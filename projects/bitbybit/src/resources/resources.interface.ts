@@ -100,6 +100,7 @@ export interface ResourcesInterface {
     block_toolbox_category_create: string;
     block_toolbox_category_2d_path: string;
     block_toolbox_category_boolean: string;
+    block_toolbox_category_hull: string;
     block_toolbox_category_2d_polygon: string;
     block_toolbox_category_3d_solid: string;
     block_toolbox_category_extrusion: string;
@@ -306,9 +307,9 @@ export interface ResourcesInterface {
     block_babylon_draw_csg_meshes_input_csg_meshes: string;
     block_babylon_draw_csg_meshes_input_csg_meshes_2: string;
     block_babylon_draw_csg_meshes_description: string;
-    block_babylon_draw_csg_primitive_2d_polygon_input_csg_primitive_2d_polygon_variable: string;
-    block_babylon_draw_csg_primitive_2d_polygon_input_csg_primitive_2d_polygon: string;
-    block_babylon_draw_csg_primitive_2d_polygon_input_csg_primitive_2d_polygon_2: string;
+    block_babylon_draw_csg_primitive_2d_polygon_input_polygon_variable: string;
+    block_babylon_draw_csg_primitive_2d_polygon_input_polygon: string;
+    block_babylon_draw_csg_primitive_2d_polygon_input_polygon_2: string;
     block_babylon_draw_csg_primitive_2d_polygon_description: string;
     block_babylon_input_draw_polylines: string;
     block_babylon_input_draw_polylines_variable: string;
@@ -1140,8 +1141,14 @@ export interface ResourcesInterface {
     block_csg_extrude_linear_polygon_objects_input_twist_angle: string;
     block_csg_extrude_linear_polygon_objects_input_twist_steps: string;
     block_csg_extrude_linear_polygon_objects_description: string;
-    block_csg_primitive_2d_polygon_input_points: string;
-    block_csg_primitive_2d_polygon_description: string;
+    block_csg_primitive_2d_polygon_from_points_input_points: string;
+    block_csg_primitive_2d_polygon_from_points_description: string;
+    block_csg_primitive_2d_polygon_from_polyline_input_polyline: string;
+    block_csg_primitive_2d_polygon_from_polyline_description: string;
+    block_csg_primitive_2d_polygon_from_curve_input_curve: string;
+    block_csg_primitive_2d_polygon_from_curve_description: string;
+    block_csg_primitive_2d_polygon_from_path_input_path: string;
+    block_csg_primitive_2d_polygon_from_path_description: string;
     block_csg_transform_input_csg_mesh: string;
     block_csg_transform_input_transformation: string;
     block_csg_transform_description: string;
@@ -1223,4 +1230,16 @@ export interface ResourcesInterface {
     block_csg_extrude_rotate_polygon_input_start_angle: string;
     block_csg_extrude_rotate_polygon_input_segments: string;
     block_csg_extrude_rotate_polygon_description: string;
+    block_csg_hull_paths_input_paths: string;
+    block_csg_hull_paths_description: string;
+    block_csg_hull_polygons_input_paths: string;
+    block_csg_hull_polygons_description: string;
+    block_csg_hull_solids_input_paths: string;
+    block_csg_hull_solids_description: string;
+    block_csg_chain_hull_paths_input_paths: string;
+    block_csg_chain_hull_paths_description: string;
+    block_csg_chain_hull_polygons_input_paths: string;
+    block_csg_chain_hull_polygons_description: string;
+    block_csg_chain_hull_solids_input_paths: string;
+    block_csg_chain_hull_solids_description: string;
 }

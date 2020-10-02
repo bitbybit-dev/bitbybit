@@ -104,6 +104,7 @@ export class SettingsService {
             resources.block_toolbox_category_apply,
             resources.block_toolbox_category_2d_path,
             resources.block_toolbox_category_boolean,
+            resources.block_toolbox_category_hull,
             resources.block_toolbox_category_intersect,
             resources.block_toolbox_category_create,
             resources.block_toolbox_category_apply,

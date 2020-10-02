@@ -21,9 +21,9 @@ export function createDrawCsgPolygonBlock(): void {
             this.appendValueInput('CsgPolygon')
                 .setCheck('Polygon')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_babylon_draw_csg_primitive_2d_polygon_input_csg_primitive_2d_polygon)
-                .appendField(new FieldVariable(resources.block_babylon_draw_csg_primitive_2d_polygon_input_csg_primitive_2d_polygon_variable), 'DrawnCsgPolygonMesh')
-                .appendField(resources.block_babylon_draw_csg_primitive_2d_polygon_input_csg_primitive_2d_polygon_2);
+                .appendField(resources.block_babylon_draw_csg_primitive_2d_polygon_input_polygon)
+                .appendField(new FieldVariable(resources.block_babylon_draw_csg_primitive_2d_polygon_input_polygon_variable), 'DrawnCsgPolygonMesh')
+                .appendField(resources.block_babylon_draw_csg_primitive_2d_polygon_input_polygon_2);
             this.appendValueInput('Colour')
                 .setCheck('Colour')
                 .setAlign(ALIGN_RIGHT)

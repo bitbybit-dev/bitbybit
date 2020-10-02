@@ -4,32 +4,32 @@ import { ResourcesInterface, ResourcesService } from '../../resources';
 import { createStandardContextIIFE } from '../_shared';
 import { getRequired, makeRequiredValidationModelForInputs, BitByBitBlockHandlerService, ValidationEntityInterface } from '../validations';
 
-export function createPrimitive2dPolygonBlock(): void {
+export function createPrimitive2dPolygonFromPathBlock(): void {
 
     const resources = ResourcesService.getResources();
-    const blockSelector = 'csg_primitive_2d_polygon';
+    const blockSelector = 'csg_primitive_2d_polygon_from_path';
 
     Blocks[blockSelector] = {
         init(): void {
-            this.appendValueInput('Points')
-                .setCheck('Array')
+            this.appendValueInput('Path')
+                .setCheck('Path')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_csg_primitive_2d_polygon_input_points);
+                .appendField(resources.block_csg_primitive_2d_polygon_from_path_input_path);
             this.setOutput(true, 'Polygon');
             this.setColour('#fff');
-            this.setTooltip(resources.block_csg_primitive_2d_polygon_description);
+            this.setTooltip(resources.block_csg_primitive_2d_polygon_from_path_description);
             this.setHelpUrl('');
         }
     };
 
     JavaScript[blockSelector] = (block: Block) => {
         const inputs = {
-            points: JavaScript.valueToCode(block, 'Points', JavaScript.ORDER_ATOMIC),
+            polyline: JavaScript.valueToCode(block, 'Polyline', JavaScript.ORDER_ATOMIC),
         };
 
         // this is first set of validations to check that all inputs are non empty strings
         BitByBitBlockHandlerService.validate(block, block.workspace, makeRequiredValidationModelForInputs(resources, inputs, [
-            resources.block_points
+            resources.block_2d_path
         ]));
 
         // this creates validation model to be used at runtime to evaluate real values of inputs
@@ -38,9 +38,7 @@ export function createPrimitive2dPolygonBlock(): void {
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
             `
-            const twoDimensionalPoints = inputs.points.map(pt => [pt[0], pt[2]]);
-            const duplicatePointsRemoved = BitByBit.BitByBitBlocklyHelperService.removeConsecutiveDuplicates(twoDimensionalPoints, BitByBit.BitByBitBlocklyHelperService.tolerance);
-            const polygon = BitByBit.CSG.primitives.polygon({points: duplicatePointsRemoved});
+            const polygon = BitByBit.CSG.primitives.polygon({points: inputs.path.points});
             return polygon;
 `
         );
@@ -56,7 +54,7 @@ function makeRuntimeValidationModel(
     return [{
         entity: keys[0],
         validations: [
-            getRequired(resources, resources.block_points),
+            getRequired(resources, resources.block_2d_path),
         ]
     }];
 }

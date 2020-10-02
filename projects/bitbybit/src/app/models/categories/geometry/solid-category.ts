@@ -104,7 +104,13 @@ export function solidCategory(): string {
                 </block>
             </category>
             <category name="${resources.block_toolbox_category_2d_polygon}" categorystyle="geometry_category">
-                <block type="csg_primitive_2d_polygon">
+                <block type="csg_primitive_2d_polygon_from_points">
+                </block>
+                <block type="csg_primitive_2d_polygon_from_polyline">
+                </block>
+                <block type="csg_primitive_2d_polygon_from_curve">
+                </block>
+                <block type="csg_primitive_2d_polygon_from_path">
                 </block>
                 <block type="csg_primitive_2d_rectangle">
                     <value name="Center">
@@ -396,6 +402,10 @@ export function solidCategory(): string {
                 <block type="csg_boolean_intersect">
                 </block>
                 <block type="csg_boolean_intersect_objects">
+                </block>
+            </category>
+            <category name="${resources.block_toolbox_category_hull}" categorystyle="geometry_category">
+                <block type="csg_hull_paths">
                 </block>
             </category>
         </category>
