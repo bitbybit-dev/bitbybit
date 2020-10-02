@@ -215,6 +215,7 @@ export interface ResourcesInterface {
     block_cylinder: string;
     block_surfaces: string;
     block_center: string;
+    block_centers: string;
     block_profile: string;
     block_rail: string;
     block_direction: string;
@@ -1303,4 +1304,8 @@ export interface ResourcesInterface {
     block_csg_cylinder_input_height: string;
     block_csg_cylinder_input_segments: string;
     block_csg_cylinder_description: string;
+    block_csg_spheres_on_center_points_input_centers: string;
+    block_csg_spheres_on_center_points_input_radius: string;
+    block_csg_spheres_on_center_points_input_segments: string;
+    block_csg_spheres_on_center_points_description: string;
 }

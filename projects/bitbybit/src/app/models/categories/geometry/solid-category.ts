@@ -242,6 +242,18 @@ export function solidCategory(): string {
                         </shadow>
                     </value>
                 </block>
+                <block type="csg_primitive_spheres_on_center_points">
+                    <value name="Radius">
+                        <shadow type="math_number">
+                            <field name="NUM">2</field>
+                        </shadow>
+                    </value>
+                    <value name="Segments">
+                        <shadow type="math_number">
+                            <field name="NUM">24</field>
+                        </shadow>
+                    </value>
+                </block>
                 <block type="csg_primitive_cylinder">
                     <value name="Center">
                         <shadow type="base_geometry_point">

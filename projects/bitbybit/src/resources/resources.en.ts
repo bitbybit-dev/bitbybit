@@ -207,6 +207,7 @@ export const resourcesEn: ResourcesInterface = Object.freeze({
     block_cylinder: 'Cylinder',
     block_circle: 'Circle',
     block_center: 'Center',
+    block_centers: 'Centers',
     block_ellipse: 'Ellipse',
     block_radius: 'Radius',
     block_resolution: 'Resolution',
@@ -1306,5 +1307,9 @@ export const resourcesEn: ResourcesInterface = Object.freeze({
     block_csg_cylinder_input_radius: 'Radius',
     block_csg_cylinder_input_height: 'Height',
     block_csg_cylinder_input_segments: 'Segment count',
-    block_csg_cylinder_description: 'Creates a cylinder at a center point of the given radius and height.'
+    block_csg_cylinder_description: 'Creates a cylinder at a center point of the given radius and height.',
+    block_csg_spheres_on_center_points_input_centers: 'Spheres on center points',
+    block_csg_spheres_on_center_points_input_radius: 'Radius',
+    block_csg_spheres_on_center_points_input_segments: 'Segment count',
+    block_csg_spheres_on_center_points_description: 'Creates a list of spheres on center points of given radius and segment count.',
 });
