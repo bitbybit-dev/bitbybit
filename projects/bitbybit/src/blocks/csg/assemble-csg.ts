@@ -46,6 +46,7 @@ import { createExpansionsOffsetPathBlock } from './expansions-offset-path';
 import { createExpansionsOffsetPolygonBlock } from './expansions-offset-polygon';
 import { createExpansionsOffsetPathsBlock } from './expansions-offset-paths';
 import { createExpansionsOffsetPolygonsBlock } from './expansions-offset-polygons';
+import { createPrimitive2dCircleBlock } from './primitive-2d-circle';
 
 export function assembleCsgBlocks(): void {
     createPrimitive2dPolygonFromPointsBlock();
@@ -96,4 +97,5 @@ export function assembleCsgBlocks(): void {
     createExpansionsOffsetPathsBlock();
     createExpansionsOffsetPolygonsBlock();
     createCornerTypeBlock();
+    createPrimitive2dCircleBlock();
 }

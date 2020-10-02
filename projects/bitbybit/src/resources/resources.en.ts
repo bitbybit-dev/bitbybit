@@ -1298,4 +1298,8 @@ export const resourcesEn: ResourcesInterface = Object.freeze({
     block_csg_expansions_offset_polygons_input_corners: 'Corners',
     block_csg_expansions_offset_polygons_input_segments: 'Segment count',
     block_csg_expansions_offset_polygons_description: 'Offsets the polygons with given delta distance, selected corner type and segment count.',
+    block_csg_primitive_2d_circle_input_center: 'Circle polygon',
+    block_csg_primitive_2d_circle_input_radius: 'Radius',
+    block_csg_primitive_2d_circle_input_segments: 'Segment count',
+    block_csg_primitive_2d_circle_description: 'Creates a circle polygon of the given radius and segment count.',
 });

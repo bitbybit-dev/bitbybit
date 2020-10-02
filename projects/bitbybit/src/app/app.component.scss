@@ -142,6 +142,10 @@ mat-tab-body {
     color: grey;
 }
 
+::ng-deep canvas {
+    outline: none;
+}
+
 ::ng-deep .blocklyTreeLabel {
     color: #000;
     font-family: 'IBM Plex Sans', sans-serif;

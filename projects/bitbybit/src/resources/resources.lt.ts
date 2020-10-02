@@ -1300,4 +1300,8 @@ app_menu_more_community: 'Bendruomenė',
     block_csg_expansions_offset_polygons_input_corners: 'Kampų tipas',
     block_csg_expansions_offset_polygons_input_segments: 'Segmentų skaičius',
     block_csg_expansions_offset_polygons_description: 'Perslenka poligonus delta atstumu ir naudoja nurodytą kampų tipą.',
+    block_csg_primitive_2d_circle_input_center: 'Skritulio poligonas',
+    block_csg_primitive_2d_circle_input_radius: 'Spindulys',
+    block_csg_primitive_2d_circle_input_segments: 'Segmentų skaičius',
+    block_csg_primitive_2d_circle_description: 'Sukuria duoto spindulio ir segmentų skaičiaus skritulio poligoną.',
 });

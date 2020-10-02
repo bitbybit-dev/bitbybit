@@ -1294,4 +1294,8 @@ export interface ResourcesInterface {
     block_csg_expansions_offset_polygons_input_corners: string;
     block_csg_expansions_offset_polygons_input_segments: string;
     block_csg_expansions_offset_polygons_description: string;
+    block_csg_primitive_2d_circle_input_center: string;
+    block_csg_primitive_2d_circle_input_radius: string;
+    block_csg_primitive_2d_circle_input_segments: string;
+    block_csg_primitive_2d_circle_description: string;
 }
