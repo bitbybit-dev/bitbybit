@@ -419,6 +419,23 @@ export function solidCategory(): string {
                         </shadow>
                     </value>
                 </block>
+                <block type="csg_expansions_expand_paths">
+                    <value name="Corners">
+                        <shadow type="csg_corner_type">
+                        <field name="CornerType">'edge'</field>
+                        </shadow>
+                    </value>
+                    <value name="Segments">
+                        <shadow type="math_number">
+                            <field name="NUM">12</field>
+                        </shadow>
+                    </value>
+                    <value name="Delta">
+                        <shadow type="math_number">
+                            <field name="NUM">0.5</field>
+                        </shadow>
+                    </value>
+                </block>
                 <block type="csg_expansions_expand_polygon">
                     <value name="Corners">
                         <shadow type="csg_corner_type">
@@ -436,7 +453,36 @@ export function solidCategory(): string {
                         </shadow>
                     </value>
                 </block>
+                <block type="csg_expansions_expand_polygons">
+                    <value name="Corners">
+                        <shadow type="csg_corner_type">
+                        <field name="CornerType">'edge'</field>
+                        </shadow>
+                    </value>
+                    <value name="Segments">
+                        <shadow type="math_number">
+                            <field name="NUM">12</field>
+                        </shadow>
+                    </value>
+                    <value name="Delta">
+                        <shadow type="math_number">
+                            <field name="NUM">0.5</field>
+                        </shadow>
+                    </value>
+                </block>
                 <block type="csg_expansions_expand_solid">
+                    <value name="Segments">
+                        <shadow type="math_number">
+                            <field name="NUM">12</field>
+                        </shadow>
+                    </value>
+                    <value name="Delta">
+                        <shadow type="math_number">
+                            <field name="NUM">0.5</field>
+                        </shadow>
+                    </value>
+                </block>
+                <block type="csg_expansions_expand_solids">
                     <value name="Segments">
                         <shadow type="math_number">
                             <field name="NUM">12</field>

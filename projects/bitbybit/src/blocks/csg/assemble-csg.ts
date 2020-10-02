@@ -39,6 +39,9 @@ import { createExpansionsExpandPathBlock } from './expansions-expand-path';
 import { createCornerTypeBlock } from './csg-corner-type';
 import { createExpansionsExpandPolygonBlock } from './expansions-expand-polygon';
 import { createExpansionsExpandSolidBlock } from './expansions-expand-solid';
+import { createExpansionsExpandPathsBlock } from './expansions-expand-paths';
+import { createExpansionsExpandPolygonsBlock } from './expansions-expand-polygons';
+import { createExpansionsExpandSolidsBlock } from './expansions-expand-solids';
 
 export function assembleCsgBlocks(): void {
     createPrimitive2dPolygonFromPointsBlock();
@@ -81,5 +84,8 @@ export function assembleCsgBlocks(): void {
     createExpansionsExpandPathBlock();
     createExpansionsExpandPolygonBlock();
     createExpansionsExpandSolidBlock();
+    createExpansionsExpandPathsBlock();
+    createExpansionsExpandPolygonsBlock();
+    createExpansionsExpandSolidsBlock();
     createCornerTypeBlock();
 }

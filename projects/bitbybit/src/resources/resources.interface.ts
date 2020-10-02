@@ -1241,14 +1241,14 @@ export interface ResourcesInterface {
     block_csg_chain_hull_polygons_description: string;
     block_csg_chain_hull_solids_input_solids: string;
     block_csg_chain_hull_solids_description: string;
+    block_csg_corner_type_input_round: string;
+    block_csg_corner_type_input_chamfer: string;
+    block_csg_corner_type_input_edge: string;
     block_csg_expansions_expand_path_input_path: string;
     block_csg_expansions_expand_path_input_delta: string;
     block_csg_expansions_expand_path_input_corners: string;
     block_csg_expansions_expand_path_input_segments: string;
     block_csg_expansions_expand_path_description: string;
-    block_csg_corner_type_input_round: string;
-    block_csg_corner_type_input_chamfer: string;
-    block_csg_corner_type_input_edge: string;
     block_csg_expansions_expand_polygon_input_polygon: string;
     block_csg_expansions_expand_polygon_input_delta: string;
     block_csg_expansions_expand_polygon_input_corners: string;
@@ -1259,4 +1259,19 @@ export interface ResourcesInterface {
     block_csg_expansions_expand_solid_input_corners: string;
     block_csg_expansions_expand_solid_input_segments: string;
     block_csg_expansions_expand_solid_description: string;
+    block_csg_expansions_expand_paths_input_paths: string;
+    block_csg_expansions_expand_paths_input_delta: string;
+    block_csg_expansions_expand_paths_input_corners: string;
+    block_csg_expansions_expand_paths_input_segments: string;
+    block_csg_expansions_expand_paths_description: string;
+    block_csg_expansions_expand_polygons_input_polygons: string;
+    block_csg_expansions_expand_polygons_input_delta: string;
+    block_csg_expansions_expand_polygons_input_corners: string;
+    block_csg_expansions_expand_polygons_input_segments: string;
+    block_csg_expansions_expand_polygons_description: string;
+    block_csg_expansions_expand_solids_input_solids: string;
+    block_csg_expansions_expand_solids_input_delta: string;
+    block_csg_expansions_expand_solids_input_corners: string;
+    block_csg_expansions_expand_solids_input_segments: string;
+    block_csg_expansions_expand_solids_description: string;
 }
