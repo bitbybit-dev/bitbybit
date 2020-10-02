@@ -1258,5 +1258,10 @@ app_menu_more_community: 'Bendruomenė',
     block_csg_expansions_expand_polygon_input_delta: 'Delta',
     block_csg_expansions_expand_polygon_input_corners: 'Kampų tipas',
     block_csg_expansions_expand_polygon_input_segments: 'Segmentų skaičius',
-    block_csg_expansions_expand_polygon_description: 'Plečia poligoną delta atstumu ir naudoja nurodytą kampų tipą.'
+    block_csg_expansions_expand_polygon_description: 'Plečia poligoną delta atstumu ir naudoja nurodytą kampų tipą.',
+    block_csg_expansions_expand_solid_input_solid: 'Plėsti kūną',
+    block_csg_expansions_expand_solid_input_delta: 'Delta',
+    block_csg_expansions_expand_solid_input_corners: 'Kampų tipas',
+    block_csg_expansions_expand_solid_input_segments: 'Segmentų skaičius',
+    block_csg_expansions_expand_solid_description: 'Plečia kūną delta atstumu ir naudoja nurodytą kampų tipą.'
 });

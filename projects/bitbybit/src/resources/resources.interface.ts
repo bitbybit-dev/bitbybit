@@ -1254,4 +1254,9 @@ export interface ResourcesInterface {
     block_csg_expansions_expand_polygon_input_corners: string;
     block_csg_expansions_expand_polygon_input_segments: string;
     block_csg_expansions_expand_polygon_description: string;
+    block_csg_expansions_expand_solid_input_solid: string;
+    block_csg_expansions_expand_solid_input_delta: string;
+    block_csg_expansions_expand_solid_input_corners: string;
+    block_csg_expansions_expand_solid_input_segments: string;
+    block_csg_expansions_expand_solid_description: string;
 }

@@ -1256,5 +1256,10 @@ export const resourcesEn: ResourcesInterface = Object.freeze({
     block_csg_expansions_expand_polygon_input_delta: 'Delta',
     block_csg_expansions_expand_polygon_input_corners: 'Corners',
     block_csg_expansions_expand_polygon_input_segments: 'Segment count',
-    block_csg_expansions_expand_polygon_description: 'Expands the polygon with given delta distance, selected corner type and segment count.'
+    block_csg_expansions_expand_polygon_description: 'Expands the polygon with given delta distance, selected corner type and segment count.',
+    block_csg_expansions_expand_solid_input_solid: 'Expand solid',
+    block_csg_expansions_expand_solid_input_delta: 'Delta',
+    block_csg_expansions_expand_solid_input_corners: 'Corners',
+    block_csg_expansions_expand_solid_input_segments: 'Segment count',
+    block_csg_expansions_expand_solid_description: 'Expands the solid with given delta distance, selected corner type and segment count.'
 });

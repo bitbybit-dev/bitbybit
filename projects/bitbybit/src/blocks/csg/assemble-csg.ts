@@ -38,6 +38,7 @@ import { createHullChainSolidsBlock } from './hull-chain-solids';
 import { createExpansionsExpandPathBlock } from './expansions-expand-path';
 import { createCornerTypeBlock } from './csg-corner-type';
 import { createExpansionsExpandPolygonBlock } from './expansions-expand-polygon';
+import { createExpansionsExpandSolidBlock } from './expansions-expand-solid';
 
 export function assembleCsgBlocks(): void {
     createPrimitive2dPolygonFromPointsBlock();
@@ -79,5 +80,6 @@ export function assembleCsgBlocks(): void {
     createPrimitive2dPathAppendCurveBlock();
     createExpansionsExpandPathBlock();
     createExpansionsExpandPolygonBlock();
+    createExpansionsExpandSolidBlock();
     createCornerTypeBlock();
 }
