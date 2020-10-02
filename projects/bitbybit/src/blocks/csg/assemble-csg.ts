@@ -42,6 +42,10 @@ import { createExpansionsExpandSolidBlock } from './expansions-expand-solid';
 import { createExpansionsExpandPathsBlock } from './expansions-expand-paths';
 import { createExpansionsExpandPolygonsBlock } from './expansions-expand-polygons';
 import { createExpansionsExpandSolidsBlock } from './expansions-expand-solids';
+import { createExpansionsOffsetPathBlock } from './expansions-offset-path';
+import { createExpansionsOffsetPolygonBlock } from './expansions-offset-polygon';
+import { createExpansionsOffsetPathsBlock } from './expansions-offset-paths';
+import { createExpansionsOffsetPolygonsBlock } from './expansions-offset-polygons';
 
 export function assembleCsgBlocks(): void {
     createPrimitive2dPolygonFromPointsBlock();
@@ -87,5 +91,9 @@ export function assembleCsgBlocks(): void {
     createExpansionsExpandPathsBlock();
     createExpansionsExpandPolygonsBlock();
     createExpansionsExpandSolidsBlock();
+    createExpansionsOffsetPathBlock();
+    createExpansionsOffsetPolygonBlock();
+    createExpansionsOffsetPathsBlock();
+    createExpansionsOffsetPolygonsBlock();
     createCornerTypeBlock();
 }

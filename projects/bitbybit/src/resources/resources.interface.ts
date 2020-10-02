@@ -1274,4 +1274,24 @@ export interface ResourcesInterface {
     block_csg_expansions_expand_solids_input_corners: string;
     block_csg_expansions_expand_solids_input_segments: string;
     block_csg_expansions_expand_solids_description: string;
+    block_csg_expansions_offset_path_input_path: string;
+    block_csg_expansions_offset_path_input_delta: string;
+    block_csg_expansions_offset_path_input_corners: string;
+    block_csg_expansions_offset_path_input_segments: string;
+    block_csg_expansions_offset_path_description: string;
+    block_csg_expansions_offset_polygon_input_polygon: string;
+    block_csg_expansions_offset_polygon_input_delta: string;
+    block_csg_expansions_offset_polygon_input_corners: string;
+    block_csg_expansions_offset_polygon_input_segments: string;
+    block_csg_expansions_offset_polygon_description: string;
+    block_csg_expansions_offset_paths_input_paths: string;
+    block_csg_expansions_offset_paths_input_delta: string;
+    block_csg_expansions_offset_paths_input_corners: string;
+    block_csg_expansions_offset_paths_input_segments: string;
+    block_csg_expansions_offset_paths_description: string;
+    block_csg_expansions_offset_polygons_input_polygons: string;
+    block_csg_expansions_offset_polygons_input_delta: string;
+    block_csg_expansions_offset_polygons_input_corners: string;
+    block_csg_expansions_offset_polygons_input_segments: string;
+    block_csg_expansions_offset_polygons_description: string;
 }

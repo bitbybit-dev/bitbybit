@@ -4,42 +4,47 @@ import { ResourcesInterface, ResourcesService } from '../../resources';
 import { createStandardContextIIFE } from '../_shared';
 import { getRequired, makeRequiredValidationModelForInputs, BitByBitBlockHandlerService, ValidationEntityInterface } from '../validations';
 
-export function createExpansionsExpandSolidBlock(): void {
+export function createExpansionsOffsetPathsBlock(): void {
 
     const resources = ResourcesService.getResources();
-    const blockSelector = 'csg_expansions_expand_solid';
+    const blockSelector = 'csg_expansions_offset_paths';
 
     Blocks[blockSelector] = {
         init(): void {
-            this.appendValueInput('Solid')
-                .setCheck('CsgMesh')
+            this.appendValueInput('Paths')
+                .setCheck('Array')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_csg_expansions_expand_solid_input_solid);
+                .appendField(resources.block_csg_expansions_offset_paths_input_paths);
             this.appendValueInput('Delta')
                 .setCheck('Number')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_csg_expansions_expand_solid_input_delta);
+                .appendField(resources.block_csg_expansions_offset_paths_input_delta);
             this.appendValueInput('Segments')
                 .setCheck('Number')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_csg_expansions_expand_solid_input_segments);
-            this.setOutput(true, 'CsgMesh');
+                .appendField(resources.block_csg_expansions_offset_paths_input_segments);
+            this.appendValueInput('Corners')
+                .setCheck('String')
+                .setAlign(ALIGN_RIGHT)
+                .appendField(resources.block_csg_expansions_offset_paths_input_corners);
+            this.setOutput(true, 'Array');
             this.setColour('#fff');
-            this.setTooltip(resources.block_csg_expansions_expand_solid_description);
+            this.setTooltip(resources.block_csg_expansions_offset_paths_description);
             this.setHelpUrl('');
         }
     };
 
     JavaScript[blockSelector] = (block: Block) => {
         const inputs = {
-            solid: JavaScript.valueToCode(block, 'Solid', JavaScript.ORDER_ATOMIC),
+            paths: JavaScript.valueToCode(block, 'Paths', JavaScript.ORDER_ATOMIC),
             delta: JavaScript.valueToCode(block, 'Delta', JavaScript.ORDER_ATOMIC),
             segments: JavaScript.valueToCode(block, 'Segments', JavaScript.ORDER_ATOMIC),
+            corners: JavaScript.valueToCode(block, 'Corners', JavaScript.ORDER_ATOMIC),
         };
 
         // this is first set of validations to check that all inputs are non empty strings
         BitByBitBlockHandlerService.validate(block, block.workspace, makeRequiredValidationModelForInputs(resources, inputs, [
-            resources.block_solid, resources.block_delta, resources.block_segments
+            resources.block_2d_paths, resources.block_delta, resources.block_segments, resources.block_corners
         ]));
 
         // this creates validation model to be used at runtime to evaluate real values of inputs
@@ -48,11 +53,11 @@ export function createExpansionsExpandSolidBlock(): void {
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
             `
-            const result = BitByBit.CSG.expansions.expand({
+            const result = BitByBit.CSG.expansions.offset({
                 delta: inputs.delta,
-                corners: 'round',
+                corners: inputs.corners,
                 segments: inputs.segments,
-            }, inputs.solid);
+            }, ...inputs.paths);
             return result;
 `
         );
@@ -68,7 +73,7 @@ function makeRuntimeValidationModel(
     return [{
         entity: keys[0],
         validations: [
-            getRequired(resources, resources.block_solid),
+            getRequired(resources, resources.block_2d_paths),
         ]
     }, {
         entity: keys[1],
@@ -79,6 +84,11 @@ function makeRuntimeValidationModel(
         entity: keys[2],
         validations: [
             getRequired(resources, resources.block_segments),
+        ]
+    }, {
+        entity: keys[3],
+        validations: [
+            getRequired(resources, resources.block_corners),
         ]
     }];
 }
