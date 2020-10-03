@@ -171,7 +171,14 @@ export function solidCategory(): string {
                     </value>
                     <value name="Size">
                         <shadow type="math_number">
-                            <field name="NUM">2</field>
+                            <field name="NUM">1</field>
+                        </shadow>
+                    </value>
+                </block>
+                <block type="csg_primitive_cubes_on_center_points">
+                    <value name="Size">
+                        <shadow type="math_number">
+                            <field name="NUM">1</field>
                         </shadow>
                     </value>
                 </block>

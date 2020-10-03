@@ -1322,4 +1322,7 @@ export const resourcesEn: ResourcesInterface = Object.freeze({
     block_csg_cuboids_on_center_points_input_length: 'Length',
     block_csg_cuboids_on_center_points_input_height: 'Height',
     block_csg_cuboids_on_center_points_description: 'Creates a cuboids of given size on the center points.',
+    block_csg_cubes_on_center_points_input_centers: 'Cubes on center points',
+    block_csg_cubes_on_center_points_input_size: 'Size',
+    block_csg_cubes_on_center_points_description: 'Create a list of cubes on center points.',
 });

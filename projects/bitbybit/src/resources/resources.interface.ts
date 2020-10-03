@@ -1318,4 +1318,7 @@ export interface ResourcesInterface {
     block_csg_cuboids_on_center_points_input_length: string;
     block_csg_cuboids_on_center_points_input_height: string;
     block_csg_cuboids_on_center_points_description: string;
+    block_csg_cubes_on_center_points_input_centers: string;
+    block_csg_cubes_on_center_points_input_size: string;
+    block_csg_cubes_on_center_points_description: string;
 }

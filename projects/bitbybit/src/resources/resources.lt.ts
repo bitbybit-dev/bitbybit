@@ -1324,4 +1324,7 @@ app_menu_more_community: 'Bendruomenė',
     block_csg_cuboids_on_center_points_input_length: 'Ilgis',
     block_csg_cuboids_on_center_points_input_height: 'Aukštis',
     block_csg_cuboids_on_center_points_description: 'Sukuria duoto dydžio stačiakampius gretasienius ant centro taškų.',
+    block_csg_cubes_on_center_points_input_centers: 'Kubai ant centro taškų',
+    block_csg_cubes_on_center_points_input_size: 'Dydis',
+    block_csg_cubes_on_center_points_description: 'Sukuria nurodyto dydžio kubų rinkinį ant centrinių taškų.',
 });
