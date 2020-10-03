@@ -1313,4 +1313,9 @@ export interface ResourcesInterface {
     block_csg_cylinder_on_center_points_input_height: string;
     block_csg_cylinder_on_center_points_input_segments: string;
     block_csg_cylinder_on_center_points_description: string;
+    block_csg_cuboids_on_center_points_input_centers: string;
+    block_csg_cuboids_on_center_points_input_width: string;
+    block_csg_cuboids_on_center_points_input_length: string;
+    block_csg_cuboids_on_center_points_input_height: string;
+    block_csg_cuboids_on_center_points_description: string;
 }
