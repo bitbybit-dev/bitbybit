@@ -1314,4 +1314,9 @@ app_menu_more_community: 'Bendruomenė',
     block_csg_spheres_on_center_points_input_radius: 'Spindulys',
     block_csg_spheres_on_center_points_input_segments: 'Segmentų skaičius',
     block_csg_spheres_on_center_points_description: 'Sukuria duoto spindulio ir segmentų skaičiaus sferas ant centrinių taškų rinkinio.',
+    block_csg_cylinder_on_center_points_input_centers: 'Cilindrai ant centrinių taškų',
+    block_csg_cylinder_on_center_points_input_radius: 'Spindulys',
+    block_csg_cylinder_on_center_points_input_height: 'Aukštis',
+    block_csg_cylinder_on_center_points_input_segments: 'Segmentų skaičius',
+    block_csg_cylinder_on_center_points_description: 'Sukuria duoti spindulio, aukščio ir segmentų skaičiaus cilindrus and duotų taškų.'
 });

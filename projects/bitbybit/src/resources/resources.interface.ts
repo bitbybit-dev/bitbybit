@@ -1308,4 +1308,9 @@ export interface ResourcesInterface {
     block_csg_spheres_on_center_points_input_radius: string;
     block_csg_spheres_on_center_points_input_segments: string;
     block_csg_spheres_on_center_points_description: string;
+    block_csg_cylinder_on_center_points_input_centers: string;
+    block_csg_cylinder_on_center_points_input_radius: string;
+    block_csg_cylinder_on_center_points_input_height: string;
+    block_csg_cylinder_on_center_points_input_segments: string;
+    block_csg_cylinder_on_center_points_description: string;
 }

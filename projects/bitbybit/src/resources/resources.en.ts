@@ -1312,4 +1312,9 @@ export const resourcesEn: ResourcesInterface = Object.freeze({
     block_csg_spheres_on_center_points_input_radius: 'Radius',
     block_csg_spheres_on_center_points_input_segments: 'Segment count',
     block_csg_spheres_on_center_points_description: 'Creates a list of spheres on center points of given radius and segment count.',
+    block_csg_cylinder_on_center_points_input_centers: 'Cylinders on center points',
+    block_csg_cylinder_on_center_points_input_radius: 'Radius',
+    block_csg_cylinder_on_center_points_input_height: 'Height',
+    block_csg_cylinder_on_center_points_input_segments: 'Segment count',
+    block_csg_cylinder_on_center_points_description: 'Creates cylinders of given radius, height and segments on center points.'
 });
