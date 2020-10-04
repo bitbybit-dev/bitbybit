@@ -147,6 +147,37 @@ export function solidCategory(): string {
                         </shadow>
                     </value>
                 </block>
+                <block type="csg_primitive_2d_ellipse">
+                    <value name="Center">
+                        <shadow type="base_geometry_point_2d">
+                            <value name="X">
+                                <shadow type="math_number">
+                                    <field name="NUM">0</field>
+                                </shadow>
+                            </value>
+                            <value name="Z">
+                                <shadow type="math_number">
+                                    <field name="NUM">0</field>
+                                </shadow>
+                            </value>
+                        </shadow>
+                    </value>
+                    <value name="RadiusX">
+                        <shadow type="math_number">
+                            <field name="NUM">1</field>
+                        </shadow>
+                    </value>
+                    <value name="RadiusZ">
+                        <shadow type="math_number">
+                            <field name="NUM">2</field>
+                        </shadow>
+                    </value>
+                    <value name="Segments">
+                        <shadow type="math_number">
+                            <field name="NUM">16</field>
+                        </shadow>
+                    </value>
+                </block>
             </category>
             <category name="${resources.block_toolbox_category_3d_solid}" categorystyle="geometry_category">
                 <block type="csg_primitive_cube">

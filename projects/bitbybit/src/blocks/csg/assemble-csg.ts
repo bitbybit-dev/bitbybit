@@ -52,6 +52,7 @@ import { createPrimitiveSpheresOnCenterPointsBlock } from './primitive-spheres-o
 import { createPrimitiveCylindersOnCenterPointsBlock } from './primitive-cylinders-on-center-points';
 import { createPrimitiveCuboidsOnCenterPointsBlock } from './primitive-cuboids-on-center-points';
 import { createPrimitiveCubesOnCenterPointsBlock } from './primitive-cubes-on-center-points';
+import { createPrimitive2dEllipseBlock } from './primitive-2d-ellipse';
 
 export function assembleCsgBlocks(): void {
     createPrimitive2dPolygonFromPointsBlock();
@@ -104,6 +105,7 @@ export function assembleCsgBlocks(): void {
     createExpansionsOffsetPolygonsBlock();
     createCornerTypeBlock();
     createPrimitive2dCircleBlock();
+    createPrimitive2dEllipseBlock();
     createPrimitiveCylinderBlock();
     createPrimitiveCylindersOnCenterPointsBlock();
     createPrimitiveCuboidsOnCenterPointsBlock();

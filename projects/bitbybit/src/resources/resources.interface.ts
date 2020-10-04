@@ -224,6 +224,9 @@ export interface ResourcesInterface {
     block_shape: string;
     block_holes: string;
     block_radius: string;
+    block_radius_x: string;
+    block_radius_y: string;
+    block_radius_z: string;
     block_resolution: string;
     block_segments: string;
     block_interval: string;
@@ -1321,4 +1324,9 @@ export interface ResourcesInterface {
     block_csg_cubes_on_center_points_input_centers: string;
     block_csg_cubes_on_center_points_input_size: string;
     block_csg_cubes_on_center_points_description: string;
+    block_csg_primitive_2d_ellipse_input_center: string;
+    block_csg_primitive_2d_ellipse_input_radius_x: string;
+    block_csg_primitive_2d_ellipse_input_radius_z: string;
+    block_csg_primitive_2d_ellipse_input_segments: string;
+    block_csg_primitive_2d_ellipse_description: string;
 }
