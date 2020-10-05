@@ -4,28 +4,36 @@ import { ResourcesInterface, ResourcesService } from '../../resources';
 import { createStandardContextIIFE } from '../_shared';
 import { getRequired, makeRequiredValidationModelForInputs, BitByBitBlockHandlerService, ValidationEntityInterface } from '../validations';
 
-export function createPrimitive2dRectangleBlock(): void {
+export function createPrimitive2dRoundedRectangleBlock(): void {
 
     const resources = ResourcesService.getResources();
-    const blockSelector = 'csg_primitive_2d_rectangle';
+    const blockSelector = 'csg_primitive_2d_rounded_rectangle';
 
     Blocks[blockSelector] = {
         init(): void {
             this.appendValueInput('Center')
                 .setCheck('Array')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_csg_primitive_2d_rectangle_input_center);
+                .appendField(resources.block_csg_primitive_2d_rounded_rectangle_input_center);
             this.appendValueInput('Width')
                 .setCheck('Number')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_csg_primitive_2d_rectangle_input_width.toLowerCase());
+                .appendField(resources.block_csg_primitive_2d_rounded_rectangle_input_width.toLowerCase());
             this.appendValueInput('Length')
                 .setCheck('Number')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_csg_primitive_2d_rectangle_input_length.toLowerCase());
+                .appendField(resources.block_csg_primitive_2d_rounded_rectangle_input_length.toLowerCase());
+            this.appendValueInput('RoundRadius')
+                .setCheck('Number')
+                .setAlign(ALIGN_RIGHT)
+                .appendField(resources.block_csg_primitive_2d_rounded_rectangle_input_round_radius.toLowerCase());
+            this.appendValueInput('Segments')
+                .setCheck('Number')
+                .setAlign(ALIGN_RIGHT)
+                .appendField(resources.block_csg_primitive_2d_rounded_rectangle_input_segments.toLowerCase());
             this.setOutput(true, 'Polygon');
             this.setColour('#fff');
-            this.setTooltip(resources.block_base_geometry_polyline_description);
+            this.setTooltip(resources.block_csg_primitive_2d_rounded_rectangle_description);
             this.setHelpUrl('');
         }
     };
@@ -35,6 +43,8 @@ export function createPrimitive2dRectangleBlock(): void {
             center: JavaScript.valueToCode(block, 'Center', JavaScript.ORDER_ATOMIC),
             width: JavaScript.valueToCode(block, 'Width', JavaScript.ORDER_ATOMIC),
             length: JavaScript.valueToCode(block, 'Length', JavaScript.ORDER_ATOMIC),
+            roundRadius: JavaScript.valueToCode(block, 'RoundRadius', JavaScript.ORDER_ATOMIC),
+            segments: JavaScript.valueToCode(block, 'Segments', JavaScript.ORDER_ATOMIC),
         };
 
         // this is first set of validations to check that all inputs are non empty strings
@@ -48,7 +58,12 @@ export function createPrimitive2dRectangleBlock(): void {
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
             `
-            const rectangle = BitByBit.CSG.primitives.rectangle({center: [inputs.center[0], inputs.center[2]], size: [inputs.width, inputs.length]});
+            const rectangle = BitByBit.CSG.primitives.roundedRectangle({
+                center: [inputs.center[0], inputs.center[2]],
+                size: [inputs.width, inputs.length],
+                roundRadius: inputs.roundRadius,
+                segments: inputs.segments,
+            });
             return rectangle;
 `
         );

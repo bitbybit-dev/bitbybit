@@ -1393,5 +1393,11 @@ export const resourcesEn: ResourcesInterface = Object.freeze({
     block_csg_rounded_cylinders_on_center_points_input_radius: 'Radius',
     block_csg_rounded_cylinders_on_center_points_input_height: 'Height',
     block_csg_rounded_cylinders_on_center_points_input_segments: 'Segments',
-    block_csg_rounded_cylinders_on_center_points_description: 'Creates a rounded cylinders of given radius and height on the center points.'
+    block_csg_rounded_cylinders_on_center_points_description: 'Creates a rounded cylinders of given radius and height on the center points.',
+    block_csg_primitive_2d_rounded_rectangle_input_center: 'Rounded rectangle on the center point',
+    block_csg_primitive_2d_rounded_rectangle_input_width: 'Width',
+    block_csg_primitive_2d_rounded_rectangle_input_length: 'Length',
+    block_csg_primitive_2d_rounded_rectangle_input_round_radius: 'Round Radius',
+    block_csg_primitive_2d_rounded_rectangle_input_segments: 'Segment count',
+    block_csg_primitive_2d_rounded_rectangle_description: 'Creates rounded rectangle of the given size on the center point.',
 });

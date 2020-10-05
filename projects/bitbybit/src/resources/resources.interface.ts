@@ -1390,4 +1390,10 @@ export interface ResourcesInterface {
     block_csg_rounded_cylinders_on_center_points_input_height: string;
     block_csg_rounded_cylinders_on_center_points_input_segments: string;
     block_csg_rounded_cylinders_on_center_points_description: string;
+    block_csg_primitive_2d_rounded_rectangle_input_center: string;
+    block_csg_primitive_2d_rounded_rectangle_input_width: string;
+    block_csg_primitive_2d_rounded_rectangle_input_length: string;
+    block_csg_primitive_2d_rounded_rectangle_input_round_radius: string;
+    block_csg_primitive_2d_rounded_rectangle_input_segments: string;
+    block_csg_primitive_2d_rounded_rectangle_description: string;
 }
