@@ -212,6 +212,7 @@ app_menu_more_community: 'Bendruomenė',
     block_radius_z: 'Spindulys Z',
     block_resolution: 'Rezoliucija',
     block_segments: 'Segmentai',
+    block_frequency: 'Frequency',
     block_profile: 'Profilis',
     block_promise: 'Pažadas',
     block_timeout: 'Atidėjimas',
@@ -1359,5 +1360,9 @@ app_menu_more_community: 'Bendruomenė',
     block_csg_ellipsoids_on_center_points_input_centers: 'Elipsoidai ant centrinių taškų',
     block_csg_ellipsoids_on_center_points_input_radius:  'Spindulys',
     block_csg_ellipsoids_on_center_points_input_segments: 'Segmentų skaičius',
-    block_csg_ellipsoids_on_center_points_description: 'Sukuria duoto spindulio ir segmentų skaičiaus elipsoidus ant centrinių taškų.'
+    block_csg_ellipsoids_on_center_points_description: 'Sukuria duoto spindulio ir segmentų skaičiaus elipsoidus ant centrinių taškų.',
+    block_csg_geodesic_sphere_input_center: 'Geodezinė sfera ant centrinio taško',
+    block_csg_geodesic_sphere_input_radius: 'Spindulys',
+    block_csg_geodesic_sphere_input_frequency: 'Dažnis',
+    block_csg_geodesic_sphere_description: 'Sukuria duoto spindulio ir dažnio geodezinę sferą ant centrinio taško.'
 });

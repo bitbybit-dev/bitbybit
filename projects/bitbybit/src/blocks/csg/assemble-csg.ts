@@ -57,6 +57,7 @@ import { createPrimitiveCylinderEllipticBlock } from './primitive-cylinder-ellip
 import { createPrimitiveCylindersEllipticOnCenterPointsBlock } from './primitive-cylinders-elliptic-on-center-points';
 import { createPrimitiveEllipsoidBlock } from './primitive-ellipsoid';
 import { createPrimitiveEllipsoidsOnCenterPointsBlock } from './primitive-ellipsoids-on-center-points';
+import { createPrimitiveGeodesicSphereBlock } from './primitive-geodesic-sphere';
 
 export function assembleCsgBlocks(): void {
     createPrimitive2dPolygonFromPointsBlock();
@@ -75,6 +76,7 @@ export function assembleCsgBlocks(): void {
     createExtrudeRotatePolygonBlock();
     createPrimitiveSphereBlock();
     createPrimitiveSpheresOnCenterPointsBlock();
+    createPrimitiveGeodesicSphereBlock();
     createPrimitiveCubeBlock();
     createBooleanSubtractBlock();
     createBooleanSubtractObjectsBlock();

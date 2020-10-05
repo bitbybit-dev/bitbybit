@@ -217,6 +217,7 @@ export const resourcesEn: ResourcesInterface = Object.freeze({
     block_radius_z: 'Radius Z',
     block_resolution: 'Resolution',
     block_segments: 'Segments',
+    block_frequency: 'Frequency',
     block_min: 'Minimum',
     block_max: 'Maximum',
     block_integer: 'Integer',
@@ -1357,5 +1358,9 @@ export const resourcesEn: ResourcesInterface = Object.freeze({
     block_csg_ellipsoids_on_center_points_input_centers: 'Ellipsoids on center points',
     block_csg_ellipsoids_on_center_points_input_radius: 'Radius',
     block_csg_ellipsoids_on_center_points_input_segments: 'Segment count',
-    block_csg_ellipsoids_on_center_points_description: 'Creates ellipsoids on center points of the given radius and segment count.'
+    block_csg_ellipsoids_on_center_points_description: 'Creates ellipsoids on center points of the given radius and segment count.',
+    block_csg_geodesic_sphere_input_center: 'Geodesic sphere on the center point',
+    block_csg_geodesic_sphere_input_radius: 'Radius',
+    block_csg_geodesic_sphere_input_frequency: 'Frequency',
+    block_csg_geodesic_sphere_description: 'Creates geodesic sphere on the center point and given frequency.'
 });

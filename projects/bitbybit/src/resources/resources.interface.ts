@@ -231,6 +231,7 @@ export interface ResourcesInterface {
     block_radius_z: string;
     block_resolution: string;
     block_segments: string;
+    block_frequency: string;
     block_interval: string;
     block_interval_handler: string;
     block_timeout_handler: string;
@@ -1354,4 +1355,8 @@ export interface ResourcesInterface {
     block_csg_ellipsoids_on_center_points_input_radius: string;
     block_csg_ellipsoids_on_center_points_input_segments: string;
     block_csg_ellipsoids_on_center_points_description: string;
+    block_csg_geodesic_sphere_input_center: string;
+    block_csg_geodesic_sphere_input_radius: string;
+    block_csg_geodesic_sphere_input_frequency: string;
+    block_csg_geodesic_sphere_description: string;
 }
