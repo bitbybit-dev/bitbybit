@@ -1396,4 +1396,7 @@ export interface ResourcesInterface {
     block_csg_primitive_2d_rounded_rectangle_input_round_radius: string;
     block_csg_primitive_2d_rounded_rectangle_input_segments: string;
     block_csg_primitive_2d_rounded_rectangle_description: string;
+    block_csg_primitive_2d_square_input_center: string;
+    block_csg_primitive_2d_square_input_size: string;
+    block_csg_primitive_2d_square_description: string;
 }

@@ -95,6 +95,27 @@ export function solidCategory(): string {
                 </block>
                 <block type="csg_primitive_2d_polygon_from_path">
                 </block>
+                <block type="csg_primitive_2d_square">
+                    <value name="Center">
+                        <shadow type="base_geometry_point_2d">
+                            <value name="X">
+                                <shadow type="math_number">
+                                    <field name="NUM">0</field>
+                                </shadow>
+                            </value>
+                            <value name="Z">
+                                <shadow type="math_number">
+                                    <field name="NUM">0</field>
+                                </shadow>
+                            </value>
+                        </shadow>
+                    </value>
+                    <value name="Size">
+                        <shadow type="math_number">
+                            <field name="NUM">2</field>
+                        </shadow>
+                    </value>
+                </block>
                 <block type="csg_primitive_2d_rectangle">
                     <value name="Center">
                         <shadow type="base_geometry_point_2d">

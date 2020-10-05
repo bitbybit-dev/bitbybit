@@ -1400,4 +1400,7 @@ export const resourcesEn: ResourcesInterface = Object.freeze({
     block_csg_primitive_2d_rounded_rectangle_input_round_radius: 'Round Radius',
     block_csg_primitive_2d_rounded_rectangle_input_segments: 'Segment count',
     block_csg_primitive_2d_rounded_rectangle_description: 'Creates rounded rectangle of the given size on the center point.',
+    block_csg_primitive_2d_square_input_center: 'Square on the center point',
+    block_csg_primitive_2d_square_input_size: 'Size',
+    block_csg_primitive_2d_square_description: 'Creates a square of the given size on the center point.',
 });

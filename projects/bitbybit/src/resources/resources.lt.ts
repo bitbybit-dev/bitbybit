@@ -1402,4 +1402,7 @@ app_menu_more_community: 'Bendruomenė',
     block_csg_primitive_2d_rounded_rectangle_input_segments: 'Segmentū skaičius',
     block_csg_primitive_2d_rounded_rectangle_input_round_radius: 'Apvalinimo spindulys',
     block_csg_primitive_2d_rounded_rectangle_description: 'Sukuria duoto dydžio stačiakampį poligoną užapvalintais kampais.',
+    block_csg_primitive_2d_square_input_center: 'Kvadratas ant centrinio taško',
+    block_csg_primitive_2d_square_input_size: 'Dydis',
+    block_csg_primitive_2d_square_description: 'Sukuria norimo dydžio kvadratą ant centrinio taško.',
 });
