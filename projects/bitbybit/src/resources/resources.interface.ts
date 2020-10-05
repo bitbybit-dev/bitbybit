@@ -1378,4 +1378,10 @@ export interface ResourcesInterface {
     block_csg_rounded_cuboids_on_center_points_input_round_radius: string;
     block_csg_rounded_cuboids_on_center_points_input_segments: string;
     block_csg_rounded_cuboids_on_center_points_description: string;
+    block_csg_rounded_cylinder_input_center: string;
+    block_csg_rounded_cylinder_input_radius: string;
+    block_csg_rounded_cylinder_input_round_radius: string;
+    block_csg_rounded_cylinder_input_height: string;
+    block_csg_rounded_cylinder_input_segments: string;
+    block_csg_rounded_cylinder_description: string;
 }
