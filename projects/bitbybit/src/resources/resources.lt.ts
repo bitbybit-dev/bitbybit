@@ -1342,4 +1342,10 @@ app_menu_more_community: 'Bendruomenė',
     block_csg_cylinder_elliptic_input_height: 'Aukštis',
     block_csg_cylinder_elliptic_input_segments: 'Segmentų skaičius',
     block_csg_cylinder_elliptic_description: 'Sukuria elipsinį cilindrą su pradiniu ir galiniu spinduliais, aukščiu ir segmentų skaičiumi.',
+    block_csg_cylinders_elliptic_on_center_points_input_centers: 'Elipsinis cilindrai ant centrinių taškų',
+    block_csg_cylinders_elliptic_on_center_points_input_start_radius: 'Pradinis XZ spindults',
+    block_csg_cylinders_elliptic_on_center_points_input_end_radius: 'Galinis XZ spindulys',
+    block_csg_cylinders_elliptic_on_center_points_input_height: 'Aukštis',
+    block_csg_cylinders_elliptic_on_center_points_input_segments: 'Segmentų skaičius',
+    block_csg_cylinders_elliptic_on_center_points_description: 'Sukuria elipsinius cilindrus ant centrinių taškų su pradiniu ir galiniu spinduliais, aukščiu ir segmentų skaičiumi.'
 });

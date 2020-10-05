@@ -425,6 +425,46 @@ export function solidCategory(): string {
                         </shadow>
                     </value>
                 </block>
+                <block type="csg_primitive_cylinders_elliptic_on_center_points">
+                    <value name="Height">
+                        <shadow type="math_number">
+                            <field name="NUM">2</field>
+                        </shadow>
+                    </value>
+                    <value name="StartRadius">
+                        <shadow type="base_geometry_point_2d">
+                            <value name="X">
+                                <shadow type="math_number">
+                                    <field name="NUM">1</field>
+                                </shadow>
+                            </value>
+                            <value name="Z">
+                                <shadow type="math_number">
+                                    <field name="NUM">2</field>
+                                </shadow>
+                            </value>
+                        </shadow>
+                    </value>
+                    <value name="EndRadius">
+                        <shadow type="base_geometry_point_2d">
+                            <value name="X">
+                                <shadow type="math_number">
+                                    <field name="NUM">2</field>
+                                </shadow>
+                            </value>
+                            <value name="Z">
+                                <shadow type="math_number">
+                                    <field name="NUM">1</field>
+                                </shadow>
+                            </value>
+                        </shadow>
+                    </value>
+                    <value name="Segments">
+                        <shadow type="math_number">
+                            <field name="NUM">24</field>
+                        </shadow>
+                    </value>
+                </block>
             </category>
             <category name="${resources.block_toolbox_category_extrusion}" categorystyle="geometry_category">
                 <block type="csg_extrude_linear_polygon">

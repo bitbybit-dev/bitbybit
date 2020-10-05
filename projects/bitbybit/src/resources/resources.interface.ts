@@ -1336,4 +1336,10 @@ export interface ResourcesInterface {
     block_csg_cylinder_elliptic_input_height: string;
     block_csg_cylinder_elliptic_input_segments: string;
     block_csg_cylinder_elliptic_description: string;
+    block_csg_cylinders_elliptic_on_center_points_input_centers: string;
+    block_csg_cylinders_elliptic_on_center_points_input_start_radius: string;
+    block_csg_cylinders_elliptic_on_center_points_input_end_radius: string;
+    block_csg_cylinders_elliptic_on_center_points_input_height: string;
+    block_csg_cylinders_elliptic_on_center_points_input_segments: string;
+    block_csg_cylinders_elliptic_on_center_points_description: string;
 }

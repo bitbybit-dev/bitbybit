@@ -1340,4 +1340,10 @@ export const resourcesEn: ResourcesInterface = Object.freeze({
     block_csg_cylinder_elliptic_input_height: 'Height',
     block_csg_cylinder_elliptic_input_segments: 'Segment count',
     block_csg_cylinder_elliptic_description: 'Creates elliptic cylinder with independent start and end radius, height and segment count.',
+    block_csg_cylinders_elliptic_on_center_points_input_centers: 'Elliptic cylinders on center points',
+    block_csg_cylinders_elliptic_on_center_points_input_start_radius: 'Start radius XZ',
+    block_csg_cylinders_elliptic_on_center_points_input_end_radius: 'End radius XZ',
+    block_csg_cylinders_elliptic_on_center_points_input_height: 'Height',
+    block_csg_cylinders_elliptic_on_center_points_input_segments: 'Segment count',
+    block_csg_cylinders_elliptic_on_center_points_description: 'Creates elliptic cylinders on center points with start and end radius, height and segment count.'
 });
