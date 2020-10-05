@@ -226,6 +226,7 @@ export interface ResourcesInterface {
     block_radius: string;
     block_start_radius: string;
     block_end_radius: string;
+    block_round_radius: string;
     block_radius_x: string;
     block_radius_y: string;
     block_radius_z: string;
@@ -1363,4 +1364,11 @@ export interface ResourcesInterface {
     block_csg_geodesic_spheres_on_center_points_input_radius: string;
     block_csg_geodesic_spheres_on_center_points_input_frequency: string;
     block_csg_geodesic_spheres_on_center_points_description: string;
+    block_csg_rounded_cuboid_input_center: string;
+    block_csg_rounded_cuboid_input_width: string;
+    block_csg_rounded_cuboid_input_length: string;
+    block_csg_rounded_cuboid_input_height: string;
+    block_csg_rounded_cuboid_input_round_radius: string;
+    block_csg_rounded_cuboid_input_segments: string;
+    block_csg_rounded_cuboid_description: string;
 }
