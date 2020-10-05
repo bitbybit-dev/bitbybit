@@ -1356,4 +1356,8 @@ app_menu_more_community: 'Bendruomenė',
     block_csg_ellipsoid_input_axis_y: 'Ašis Y',
     block_csg_ellipsoid_input_axis_z: 'Ašis Z',
     block_csg_ellipsoid_description: 'Sukuria elipsoidą ant centinio taško duotu spinduliu, ašimis ir segmentų skaičiumi.',
+    block_csg_ellipsoids_on_center_points_input_centers: 'Elipsoidai ant centrinių taškų',
+    block_csg_ellipsoids_on_center_points_input_radius:  'Spindulys',
+    block_csg_ellipsoids_on_center_points_input_segments: 'Segmentų skaičius',
+    block_csg_ellipsoids_on_center_points_description: 'Sukuria duoto spindulio ir segmentų skaičiaus elipsoidus ant centrinių taškų.'
 });

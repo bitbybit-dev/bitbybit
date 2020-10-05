@@ -1353,5 +1353,9 @@ export const resourcesEn: ResourcesInterface = Object.freeze({
     block_csg_ellipsoid_input_axis_x: 'Axis X',
     block_csg_ellipsoid_input_axis_y: 'Axis Y',
     block_csg_ellipsoid_input_axis_z: 'Axis Z',
-    block_csg_ellipsoid_description: 'Creates ellipsoid on center point of given radius, axes and segment count.',
+    block_csg_ellipsoid_description: 'Creates ellipsoid on center point of given radius and segment count.',
+    block_csg_ellipsoids_on_center_points_input_centers: 'Ellipsoids on center points',
+    block_csg_ellipsoids_on_center_points_input_radius: 'Radius',
+    block_csg_ellipsoids_on_center_points_input_segments: 'Segment count',
+    block_csg_ellipsoids_on_center_points_description: 'Creates ellipsoids on center points of the given radius and segment count.'
 });
