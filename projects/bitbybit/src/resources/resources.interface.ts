@@ -252,9 +252,10 @@ export interface ResourcesInterface {
     block_end_angle: string;
     block_axis: string;
     block_x_axis: string;
+    block_y_axis: string;
+    block_z_axis: string;
     block_base: string;
     block_height: string;
-    block_y_axis: string;
     block_min_angle: string;
     block_max_angle: string;
     block_reference: string;
@@ -1342,4 +1343,11 @@ export interface ResourcesInterface {
     block_csg_cylinders_elliptic_on_center_points_input_height: string;
     block_csg_cylinders_elliptic_on_center_points_input_segments: string;
     block_csg_cylinders_elliptic_on_center_points_description: string;
+    block_csg_ellipsoid_input_center: string;
+    block_csg_ellipsoid_input_radius: string;
+    block_csg_ellipsoid_input_segments: string;
+    block_csg_ellipsoid_input_axis_x: string;
+    block_csg_ellipsoid_input_axis_y: string;
+    block_csg_ellipsoid_input_axis_z: string;
+    block_csg_ellipsoid_description: string;
 }

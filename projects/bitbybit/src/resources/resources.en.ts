@@ -232,6 +232,7 @@ export const resourcesEn: ResourcesInterface = Object.freeze({
     block_axis: 'Axis',
     block_x_axis: 'X Axis',
     block_y_axis: 'Y Axis',
+    block_z_axis: 'Z Axis',
     block_min_angle: 'Minimum angle',
     block_max_angle: 'Maximum angle',
     block_intersection: 'Intersection',
@@ -1345,5 +1346,12 @@ export const resourcesEn: ResourcesInterface = Object.freeze({
     block_csg_cylinders_elliptic_on_center_points_input_end_radius: 'End radius XZ',
     block_csg_cylinders_elliptic_on_center_points_input_height: 'Height',
     block_csg_cylinders_elliptic_on_center_points_input_segments: 'Segment count',
-    block_csg_cylinders_elliptic_on_center_points_description: 'Creates elliptic cylinders on center points with start and end radius, height and segment count.'
+    block_csg_cylinders_elliptic_on_center_points_description: 'Creates elliptic cylinders on center points with start and end radius, height and segment count.',
+    block_csg_ellipsoid_input_center: 'Ellipsoid on center point',
+    block_csg_ellipsoid_input_radius: 'Radius',
+    block_csg_ellipsoid_input_segments: 'Segment count',
+    block_csg_ellipsoid_input_axis_x: 'Axis X',
+    block_csg_ellipsoid_input_axis_y: 'Axis Y',
+    block_csg_ellipsoid_input_axis_z: 'Axis Z',
+    block_csg_ellipsoid_description: 'Creates ellipsoid on center point of given radius, axes and segment count.',
 });
