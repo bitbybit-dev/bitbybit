@@ -234,6 +234,10 @@ export interface ResourcesInterface {
     block_outer_radius: string;
     block_vertices: string;
     block_density: string;
+    block_inner_segments: string;
+    block_outer_segments: string;
+    block_inner_rotation: string;
+    block_outer_rotation: string;
     block_resolution: string;
     block_segments: string;
     block_frequency: string;
@@ -1410,4 +1414,13 @@ export interface ResourcesInterface {
     block_csg_primitive_2d_star_input_density: string;
     block_csg_primitive_2d_star_input_start_angle: string;
     block_csg_primitive_2d_star_description: string;
+    block_csg_torus_input_center: string;
+    block_csg_torus_input_inner_radius: string;
+    block_csg_torus_input_outer_radius: string;
+    block_csg_torus_input_inner_segments: string;
+    block_csg_torus_input_outer_segments: string;
+    block_csg_torus_input_inner_rotation: string;
+    block_csg_torus_input_outer_rotation: string;
+    block_csg_torus_input_start_angle: string;
+    block_csg_torus_description: string;
 }
