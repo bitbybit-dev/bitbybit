@@ -230,6 +230,10 @@ export interface ResourcesInterface {
     block_radius_x: string;
     block_radius_y: string;
     block_radius_z: string;
+    block_inner_radius: string;
+    block_outer_radius: string;
+    block_vertices: string;
+    block_density: string;
     block_resolution: string;
     block_segments: string;
     block_frequency: string;
@@ -1399,4 +1403,11 @@ export interface ResourcesInterface {
     block_csg_primitive_2d_square_input_center: string;
     block_csg_primitive_2d_square_input_size: string;
     block_csg_primitive_2d_square_description: string;
+    block_csg_primitive_2d_star_input_center: string;
+    block_csg_primitive_2d_star_input_outer_radius: string;
+    block_csg_primitive_2d_star_input_inner_radius: string;
+    block_csg_primitive_2d_star_input_vertices: string;
+    block_csg_primitive_2d_star_input_density: string;
+    block_csg_primitive_2d_star_input_start_angle: string;
+    block_csg_primitive_2d_star_description: string;
 }

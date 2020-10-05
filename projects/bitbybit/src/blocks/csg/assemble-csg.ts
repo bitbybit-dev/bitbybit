@@ -65,6 +65,7 @@ import { createPrimitiveRoundedCylinderBlock } from './primitive-rounded-cylinde
 import { createPrimitiveRoundedCylindersOnCenterPointsBlock } from './primitive-rounded-cylinders-on-center-points';
 import { createPrimitive2dRoundedRectangleBlock } from './primitive-2d-rounded-rectangle';
 import { createPrimitive2dSquareBlock } from './primitive-2d-square';
+import { createPrimitive2dStarBlock } from './primitive-2d-star';
 
 export function assembleCsgBlocks(): void {
     createPrimitive2dPolygonFromPointsBlock();
@@ -134,4 +135,5 @@ export function assembleCsgBlocks(): void {
     createPrimitiveRoundedCylindersOnCenterPointsBlock();
     createPrimitive2dRoundedRectangleBlock();
     createPrimitive2dSquareBlock();
+    createPrimitive2dStarBlock();
 }

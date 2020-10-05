@@ -239,6 +239,47 @@ export function solidCategory(): string {
                         </shadow>
                     </value>
                 </block>
+                <block type="csg_primitive_2d_star">
+                    <value name="Center">
+                        <shadow type="base_geometry_point_2d">
+                            <value name="X">
+                                <shadow type="math_number">
+                                    <field name="NUM">0</field>
+                                </shadow>
+                            </value>
+                            <value name="Z">
+                                <shadow type="math_number">
+                                    <field name="NUM">0</field>
+                                </shadow>
+                            </value>
+                        </shadow>
+                    </value>
+                    <value name="Vertices">
+                        <shadow type="math_number">
+                            <field name="NUM">5</field>
+                        </shadow>
+                    </value>
+                    <value name="Density">
+                        <shadow type="math_number">
+                            <field name="NUM">2</field>
+                        </shadow>
+                    </value>
+                    <value name="OuterRadius">
+                        <shadow type="math_number">
+                            <field name="NUM">1</field>
+                        </shadow>
+                    </value>
+                    <value name="InnerRadius">
+                        <shadow type="math_number">
+                            <field name="NUM">0</field>
+                        </shadow>
+                    </value>
+                    <value name="StartAngle">
+                        <shadow type="math_number">
+                            <field name="NUM">0</field>
+                        </shadow>
+                    </value>
+                </block>
             </category>
             <category name="${resources.block_toolbox_category_3d_solid}" categorystyle="geometry_category">
                 <block type="csg_primitive_cube">
