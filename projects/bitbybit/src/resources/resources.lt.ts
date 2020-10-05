@@ -1389,5 +1389,11 @@ app_menu_more_community: 'Bendruomenė',
     block_csg_rounded_cylinder_input_radius: 'Spindulys',
     block_csg_rounded_cylinder_input_height: 'Aukštis',
     block_csg_rounded_cylinder_input_segments: 'Segmentų skaičius',
-    block_csg_rounded_cylinder_description: 'Sukuria duoto dydžio cilindrą užapvalintais kampais ant centrinio taško.'
+    block_csg_rounded_cylinder_description: 'Sukuria duoto dydžio cilindrą užapvalintais kampais ant centrinio taško.',
+    block_csg_rounded_cylinders_on_center_points_input_centers: 'Užapvalinti cilindrai ant centrinių taškų',
+    block_csg_rounded_cylinders_on_center_points_input_round_radius: 'Apvalinimo spindulys',
+    block_csg_rounded_cylinders_on_center_points_input_radius: 'Spindulys',
+    block_csg_rounded_cylinders_on_center_points_input_height: 'Aukštis',
+    block_csg_rounded_cylinders_on_center_points_input_segments: 'Segmentų skaičius',
+    block_csg_rounded_cylinders_on_center_points_description: 'Sukuria duoto dydžio cilindrus užapvalintais kampais ant centrinių taškų.',
 });

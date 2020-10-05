@@ -480,6 +480,28 @@ export function solidCategory(): string {
                         </shadow>
                     </value>
                 </block>
+                <block type="csg_primitive_rounded_cylinders_on_center_points">
+                    <value name="Height">
+                        <shadow type="math_number">
+                            <field name="NUM">2</field>
+                        </shadow>
+                    </value>
+                    <value name="Radius">
+                        <shadow type="math_number">
+                            <field name="NUM">1</field>
+                        </shadow>
+                    </value>
+                    <value name="RoundRadius">
+                        <shadow type="math_number">
+                            <field name="NUM">0.4</field>
+                        </shadow>
+                    </value>
+                    <value name="Segments">
+                        <shadow type="math_number">
+                            <field name="NUM">24</field>
+                        </shadow>
+                    </value>
+                </block>
                 <block type="csg_primitive_cylinder_elliptic">
                     <value name="Center">
                         <shadow type="base_geometry_point">
