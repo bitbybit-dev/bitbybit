@@ -1362,5 +1362,9 @@ export const resourcesEn: ResourcesInterface = Object.freeze({
     block_csg_geodesic_sphere_input_center: 'Geodesic sphere on the center point',
     block_csg_geodesic_sphere_input_radius: 'Radius',
     block_csg_geodesic_sphere_input_frequency: 'Frequency',
-    block_csg_geodesic_sphere_description: 'Creates geodesic sphere on the center point and given frequency.'
+    block_csg_geodesic_sphere_description: 'Creates geodesic sphere on the center point and given frequency.',
+    block_csg_geodesic_spheres_on_center_points_input_centers: 'Geodesic spheres on center points',
+    block_csg_geodesic_spheres_on_center_points_input_radius: 'Radius',
+    block_csg_geodesic_spheres_on_center_points_input_frequency: 'Frequency',
+    block_csg_geodesic_spheres_on_center_points_description: 'Creates geodesic spheres on center points with given radius and frequency.'
 });

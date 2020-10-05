@@ -567,6 +567,18 @@ export function solidCategory(): string {
                         </shadow>
                     </value>
                 </block>
+                <block type="csg_primitive_geodesic_spheres_on_center_points">
+                    <value name="Radius">
+                        <shadow type="math_number">
+                            <field name="NUM">2</field>
+                        </shadow>
+                    </value>
+                    <value name="Frequency">
+                        <shadow type="math_number">
+                            <field name="NUM">24</field>
+                        </shadow>
+                    </value>
+                </block>
             </category>
             <category name="${resources.block_toolbox_category_extrusion}" categorystyle="geometry_category">
                 <block type="csg_extrude_linear_polygon">

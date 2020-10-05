@@ -1359,4 +1359,8 @@ export interface ResourcesInterface {
     block_csg_geodesic_sphere_input_radius: string;
     block_csg_geodesic_sphere_input_frequency: string;
     block_csg_geodesic_sphere_description: string;
+    block_csg_geodesic_spheres_on_center_points_input_centers: string;
+    block_csg_geodesic_spheres_on_center_points_input_radius: string;
+    block_csg_geodesic_spheres_on_center_points_input_frequency: string;
+    block_csg_geodesic_spheres_on_center_points_description: string;
 }

@@ -1364,5 +1364,9 @@ app_menu_more_community: 'Bendruomenė',
     block_csg_geodesic_sphere_input_center: 'Geodezinė sfera ant centrinio taško',
     block_csg_geodesic_sphere_input_radius: 'Spindulys',
     block_csg_geodesic_sphere_input_frequency: 'Dažnis',
-    block_csg_geodesic_sphere_description: 'Sukuria duoto spindulio ir dažnio geodezinę sferą ant centrinio taško.'
+    block_csg_geodesic_sphere_description: 'Sukuria duoto spindulio ir dažnio geodezinę sferą ant centrinio taško.',
+    block_csg_geodesic_spheres_on_center_points_input_centers: 'Geodezinės sferos ant centrinių taškų',
+    block_csg_geodesic_spheres_on_center_points_input_radius: 'Spindulys',
+    block_csg_geodesic_spheres_on_center_points_input_frequency: 'Dažnis',
+    block_csg_geodesic_spheres_on_center_points_description: 'Sukuria duoto spindulio ir dažnio geodezines sferas ant centrinių taškų.',
 });
