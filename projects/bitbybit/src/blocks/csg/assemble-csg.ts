@@ -60,6 +60,7 @@ import { createPrimitiveEllipsoidsOnCenterPointsBlock } from './primitive-ellips
 import { createPrimitiveGeodesicSphereBlock } from './primitive-geodesic-sphere';
 import { createPrimitiveGeodesicSpheresOnCenterPointsBlock } from './primitive-geodesic-spheres-on-center-points';
 import { createPrimitiveRoundedCuboidBlock } from './primitive-rounded-cuboid';
+import { createPrimitiveRoundedCuboidsOnCenterPointsBlock } from './primitive-rounded-cuboids-on-center-points';
 
 export function assembleCsgBlocks(): void {
     createPrimitive2dPolygonFromPointsBlock();
@@ -124,4 +125,5 @@ export function assembleCsgBlocks(): void {
     createPrimitiveEllipsoidBlock();
     createPrimitiveEllipsoidsOnCenterPointsBlock();
     createPrimitiveRoundedCuboidBlock();
+    createPrimitiveRoundedCuboidsOnCenterPointsBlock();
 }

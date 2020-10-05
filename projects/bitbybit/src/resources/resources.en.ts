@@ -1375,4 +1375,11 @@ export const resourcesEn: ResourcesInterface = Object.freeze({
     block_csg_rounded_cuboid_input_round_radius: 'Round radius',
     block_csg_rounded_cuboid_input_segments: 'Segment count',
     block_csg_rounded_cuboid_description: 'Creates rounded cuboid on the center point of given size and radius.',
+    block_csg_rounded_cuboids_on_center_points_input_centers: 'Rounded cuboids on center points',
+    block_csg_rounded_cuboids_on_center_points_input_width: 'Width',
+    block_csg_rounded_cuboids_on_center_points_input_length: 'Length',
+    block_csg_rounded_cuboids_on_center_points_input_height: 'Height',
+    block_csg_rounded_cuboids_on_center_points_input_round_radius: 'Round radius',
+    block_csg_rounded_cuboids_on_center_points_input_segments: 'Segment count',
+    block_csg_rounded_cuboids_on_center_points_description: 'Creates rounded cuboids on the center points of given size and radius.',
 });

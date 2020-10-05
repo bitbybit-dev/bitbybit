@@ -1371,4 +1371,11 @@ export interface ResourcesInterface {
     block_csg_rounded_cuboid_input_round_radius: string;
     block_csg_rounded_cuboid_input_segments: string;
     block_csg_rounded_cuboid_description: string;
+    block_csg_rounded_cuboids_on_center_points_input_centers: string;
+    block_csg_rounded_cuboids_on_center_points_input_width: string;
+    block_csg_rounded_cuboids_on_center_points_input_length: string;
+    block_csg_rounded_cuboids_on_center_points_input_height: string;
+    block_csg_rounded_cuboids_on_center_points_input_round_radius: string;
+    block_csg_rounded_cuboids_on_center_points_input_segments: string;
+    block_csg_rounded_cuboids_on_center_points_description: string;
 }
