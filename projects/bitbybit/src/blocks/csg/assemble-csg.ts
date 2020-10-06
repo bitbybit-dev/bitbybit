@@ -70,6 +70,7 @@ import { createPrimitiveTorusBlock } from './primitive-torus';
 import { createTextVectorCylindricalTextBlock } from './text-vector-cylindrical-text';
 import { createTextAlignTypeBlock } from './csg-text-align-type';
 import { createTextVectorSphericalTextBlock } from './text-vector-spherical-text';
+import { createIoSolidToStlDownloadBlock } from './io-solid-to-stl-download';
 
 export function assembleCsgBlocks(): void {
     createPrimitive2dPolygonFromPointsBlock();
@@ -144,4 +145,5 @@ export function assembleCsgBlocks(): void {
     createTextAlignTypeBlock();
     createTextVectorCylindricalTextBlock();
     createTextVectorSphericalTextBlock();
+    createIoSolidToStlDownloadBlock();
 }

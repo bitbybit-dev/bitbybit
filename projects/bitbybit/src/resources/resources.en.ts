@@ -195,6 +195,7 @@ export const resourcesEn: ResourcesInterface = Object.freeze({
     block_mesh: 'Mesh',
     block_solid: 'Solid',
     block_solids: 'Solids',
+    block_file_name: 'File Name',
     block_adapt_depth: 'Adapt Depth',
     block_polyline: 'Polyline',
     block_surface: 'Surface',
@@ -1474,5 +1475,8 @@ export const resourcesEn: ResourcesInterface = Object.freeze({
     block_csg_text_vector_spherical_text_description: 'Creates a rectangular extrusion of the text.',
     block_csg_text_align_type_input_left: 'Left',
     block_csg_text_align_type_input_center: 'Center',
-    block_csg_text_align_type_input_right: 'Right'
+    block_csg_text_align_type_input_right: 'Right',
+    block_csg_io_solid_to_stl_input_solid: 'Download STL from solid',
+    block_csg_io_solid_to_stl_input_file_name: 'File name',
+    block_csg_io_solid_to_stl_description: 'Downloads the STL by giving a single 3D solid.',
 });

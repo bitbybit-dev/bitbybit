@@ -160,6 +160,7 @@ export interface ResourcesInterface {
     block_curve: string;
     block_mesh: string;
     block_solid: string;
+    block_file_name: string;
     block_solids: string;
     block_time: string;
     block_date: string;
@@ -1471,4 +1472,7 @@ export interface ResourcesInterface {
     block_csg_text_align_type_input_left: string;
     block_csg_text_align_type_input_center: string;
     block_csg_text_align_type_input_right: string;
+    block_csg_io_solid_to_stl_input_solid: string;
+    block_csg_io_solid_to_stl_input_file_name: string;
+    block_csg_io_solid_to_stl_description: string;
 }
