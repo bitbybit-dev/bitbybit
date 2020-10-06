@@ -959,6 +959,117 @@ export function solidCategory(): string {
                     </value>
                 </block>
             </category>
+            <category name="${resources.block_toolbox_category_3d_text}" categorystyle="geometry_category">
+                <block type="csg_text_vector_cylindrical_text">
+                    <value name="ExtrusionHeight">
+                        <shadow type="math_number">
+                            <field name="NUM">0.2</field>
+                        </shadow>
+                    </value>
+                    <value name="ExtrusionSize">
+                        <shadow type="math_number">
+                            <field name="NUM">0.1</field>
+                        </shadow>
+                    </value>
+                    <value name="Segments">
+                        <shadow type="math_number">
+                            <field name="NUM">16</field>
+                        </shadow>
+                     </value>
+                    <value name="XOffset">
+                        <shadow type="math_number">
+                            <field name="NUM">0</field>
+                        </shadow>
+                    </value>
+                    <value name="YOffset">
+                        <shadow type="math_number">
+                            <field name="NUM">0</field>
+                        </shadow>
+                    </value>
+                    <value name="Height">
+                        <shadow type="math_number">
+                            <field name="NUM">1</field>
+                        </shadow>
+                    </value>
+                    <value name="LineSpacing">
+                        <shadow type="math_number">
+                            <field name="NUM">1.4</field>
+                        </shadow>
+                    </value>
+                    <value name="LetterSpacing">
+                        <shadow type="math_number">
+                            <field name="NUM">1</field>
+                        </shadow>
+                    </value>
+                    <value name="Align">
+                        <shadow type="csg_text_align_type">
+                            <field name="TextAlignType">'left'</field>
+                        </shadow>
+                    </value>
+                    <value name="ExtrudeOffset">
+                        <shadow type="math_number">
+                            <field name="NUM">0</field>
+                        </shadow>
+                    </value>
+                    <value name="InputText">
+                        <shadow type="text">
+                            <field name="TEXT">abc</field>
+                        </shadow>
+                    </value>
+                </block>
+                <block type="csg_text_vector_spherical_text">
+                    <value name="Radius">
+                        <shadow type="math_number">
+                            <field name="NUM">0.1</field>
+                        </shadow>
+                    </value>
+                    <value name="Segments">
+                        <shadow type="math_number">
+                            <field name="NUM">10</field>
+                        </shadow>
+                     </value>
+                    <value name="XOffset">
+                        <shadow type="math_number">
+                            <field name="NUM">0</field>
+                        </shadow>
+                    </value>
+                    <value name="YOffset">
+                        <shadow type="math_number">
+                            <field name="NUM">0</field>
+                        </shadow>
+                    </value>
+                    <value name="Height">
+                        <shadow type="math_number">
+                            <field name="NUM">1</field>
+                        </shadow>
+                    </value>
+                    <value name="LineSpacing">
+                        <shadow type="math_number">
+                            <field name="NUM">1.4</field>
+                        </shadow>
+                    </value>
+                    <value name="LetterSpacing">
+                        <shadow type="math_number">
+                            <field name="NUM">1</field>
+                        </shadow>
+                    </value>
+                    <value name="Align">
+                        <shadow type="csg_text_align_type">
+                            <field name="TextAlignType">'left'</field>
+                        </shadow>
+                    </value>
+                    <value name="ExtrudeOffset">
+                        <shadow type="math_number">
+                            <field name="NUM">0</field>
+                        </shadow>
+                    </value>
+                    <value name="InputText">
+                        <shadow type="text">
+                            <field name="TEXT">abc</field>
+                        </shadow>
+                    </value>
+                </block>
+            </category>
         </category>
         <category name="${resources.block_toolbox_category_apply}" expanded="true" categorystyle="geometry_category">
             <block type="csg_colour">

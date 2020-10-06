@@ -38,7 +38,7 @@ export function createBooleanSubtractObjectsBlock(): void {
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
             `
-            const subtracted = BitByBit.CSG.booleans.subtract(...inputs.subtractFromObjects);
+            const subtracted = BitByBit.CSG.booleans.subtract(...inputs.subtractObjects);
             return subtracted;
 `
         );

@@ -101,6 +101,7 @@ export class SettingsService {
             resources.block_toolbox_category_2d_polygon,
             resources.block_toolbox_category_3d_solid,
             resources.block_toolbox_category_extrusion,
+            resources.block_toolbox_category_3d_text,
             resources.block_toolbox_category_apply,
             resources.block_toolbox_category_2d_path,
             resources.block_toolbox_category_boolean,

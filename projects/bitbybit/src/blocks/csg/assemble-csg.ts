@@ -67,6 +67,9 @@ import { createPrimitive2dRoundedRectangleBlock } from './primitive-2d-rounded-r
 import { createPrimitive2dSquareBlock } from './primitive-2d-square';
 import { createPrimitive2dStarBlock } from './primitive-2d-star';
 import { createPrimitiveTorusBlock } from './primitive-torus';
+import { createTextVectorCylindricalTextBlock } from './text-vector-cylindrical-text';
+import { createTextAlignTypeBlock } from './csg-text-align-type';
+import { createTextVectorSphericalTextBlock } from './text-vector-spherical-text';
 
 export function assembleCsgBlocks(): void {
     createPrimitive2dPolygonFromPointsBlock();
@@ -138,4 +141,7 @@ export function assembleCsgBlocks(): void {
     createPrimitive2dSquareBlock();
     createPrimitive2dStarBlock();
     createPrimitiveTorusBlock();
+    createTextAlignTypeBlock();
+    createTextVectorCylindricalTextBlock();
+    createTextVectorSphericalTextBlock();
 }
