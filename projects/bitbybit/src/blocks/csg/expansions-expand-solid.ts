@@ -18,11 +18,11 @@ export function createExpansionsExpandSolidBlock(): void {
             this.appendValueInput('Delta')
                 .setCheck('Number')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_csg_expansions_expand_solid_input_delta);
+                .appendField(resources.block_csg_expansions_expand_solid_input_delta.toLowerCase());
             this.appendValueInput('Segments')
                 .setCheck('Number')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_csg_expansions_expand_solid_input_segments);
+                .appendField(resources.block_csg_expansions_expand_solid_input_segments.toLowerCase());
             this.setOutput(true, 'CsgMesh');
             this.setColour('#fff');
             this.setTooltip(resources.block_csg_expansions_expand_solid_description);

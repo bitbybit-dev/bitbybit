@@ -18,15 +18,15 @@ export function createExpansionsExpandPathsBlock(): void {
             this.appendValueInput('Delta')
                 .setCheck('Number')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_csg_expansions_expand_paths_input_delta);
+                .appendField(resources.block_csg_expansions_expand_paths_input_delta.toLowerCase());
             this.appendValueInput('Segments')
                 .setCheck('Number')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_csg_expansions_expand_paths_input_segments);
+                .appendField(resources.block_csg_expansions_expand_paths_input_segments.toLowerCase());
             this.appendValueInput('Corners')
                 .setCheck('String')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_csg_expansions_expand_paths_input_corners);
+                .appendField(resources.block_csg_expansions_expand_paths_input_corners.toLowerCase());
             this.setOutput(true, 'Array');
             this.setColour('#fff');
             this.setTooltip(resources.block_csg_expansions_expand_paths_description);
