@@ -41,7 +41,9 @@
     "@babylonjs/loaders": "4.1.0",
     "@babylonjs/gui": "4.1.0",
     "earcut": "2.2.2",
-    "@jscad/modeling": "2.0.0-alpha.5"
+    "@jscad/modeling": "2.0.0-alpha.5",
+    "@jscad/io-utils": "2.0.0-alpha.5",
+    "@jscad/stl-serializer": "2.0.0-alpha.5"
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "~0.1000.7",

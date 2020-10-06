@@ -233,6 +233,25 @@ export function surfaceCategory() {
             </block>
             <block type="verb_geometry_nurbs_surface_isocurve">
             </block>
+            <block type="verb_geometry_nurbs_surface_isocurves">
+            </block>
+            <block type="verb_geometry_nurbs_surface_isocurves_subdivision">
+                <value name="IsocurveSegments">
+                    <shadow type="math_number">
+                        <field name="NUM">10</field>
+                    </shadow>
+                </value>
+                <value name="IncludeLast">
+                    <shadow type="logic_boolean">
+                        <field name="BOOL">FALSE</field>
+                    </shadow>
+                </value>
+                <value name="UseV">
+                    <shadow type="logic_boolean">
+                        <field name="BOOL">FALSE</field>
+                    </shadow>
+                </value>
+            </block>
             <block type="verb_geometry_nurbs_surface_reverse">
             </block>
             <block type="verb_geometry_nurbs_surface_split">

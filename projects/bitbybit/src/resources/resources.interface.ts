@@ -193,6 +193,7 @@ export interface ResourcesInterface {
     block_url: string;
     block_body: string;
     block_parameter: string;
+    block_parameters: string;
     block_parameter_u: string;
     block_parameter_v: string;
     block_num_derivatives: string;
@@ -249,6 +250,7 @@ export interface ResourcesInterface {
     block_outer_rotation: string;
     block_resolution: string;
     block_segments: string;
+    block_include_last: string;
     block_frequency: string;
     block_interval: string;
     block_interval_handler: string;
@@ -696,6 +698,15 @@ export interface ResourcesInterface {
     block_verb_geometry_nurbs_surface_isocurve_input_parameter: string;
     block_verb_geometry_nurbs_surface_isocurve_input_use_v: string;
     block_verb_geometry_nurbs_surface_isocurve_description: string;
+    block_verb_geometry_nurbs_surface_isocurves_input_surface: string;
+    block_verb_geometry_nurbs_surface_isocurves_input_parameters: string;
+    block_verb_geometry_nurbs_surface_isocurves_input_use_v: string;
+    block_verb_geometry_nurbs_surface_isocurves_description: string;
+    block_verb_geometry_nurbs_surface_isocurves_subdivision_input_surface: string;
+    block_verb_geometry_nurbs_surface_isocurves_subdivision_input_segments: string;
+    block_verb_geometry_nurbs_surface_isocurves_subdivision_input_include_last: string;
+    block_verb_geometry_nurbs_surface_isocurves_subdivision_input_use_v: string;
+    block_verb_geometry_nurbs_surface_isocurves_subdivision_description: string;
     block_verb_geometry_nurbs_surface_knots_u_input_surface: string;
     block_verb_geometry_nurbs_surface_knots_u_description: string;
     block_verb_geometry_nurbs_surface_knots_v_input_surface: string;
