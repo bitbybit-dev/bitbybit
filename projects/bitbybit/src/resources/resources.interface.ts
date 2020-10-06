@@ -1475,4 +1475,7 @@ export interface ResourcesInterface {
     block_csg_io_solid_to_stl_input_solid: string;
     block_csg_io_solid_to_stl_input_file_name: string;
     block_csg_io_solid_to_stl_description: string;
+    block_csg_io_solids_to_stl_input_solids: string;
+    block_csg_io_solids_to_stl_input_file_name: string;
+    block_csg_io_solids_to_stl_description: string;
 }

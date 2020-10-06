@@ -46,7 +46,6 @@ export function createSurfaceTransformBlock() {
     const transformation = inputs.matrix;
     let twoDimensionalPoints = [];
     points.forEach(ptCollection => {
-        console.log(ptCollection);
         let transformedControlPoints = ptCollection;
         if(transformation.length && transformation.length > 0){
             transformation.forEach(transform => {
@@ -57,7 +56,6 @@ export function createSurfaceTransformBlock() {
         }
         twoDimensionalPoints.push(transformedControlPoints);
     });
-    console.log(twoDimensionalPoints);
     return BitByBit.verb.geom.NurbsSurface.byKnotsControlPointsWeights(inputs.surface.degreeU(), inputs.surface.degreeV(), inputs.surface.knotsU(), inputs.surface.knotsV(), twoDimensionalPoints, inputs.surface.weights());
 `);
         return [code, JavaScript.ORDER_ATOMIC];

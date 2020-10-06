@@ -67,6 +67,13 @@ export function solidCategory(): string {
                 </shadow>
             </value>
         </block>
+        <block type="csg_io_solids_to_stl_download">
+            <value name="FileName">
+                <shadow type="text">
+                    <field name="TEXT">bitbybit-model</field>
+                </shadow>
+            </value>
+        </block>
         <category name="${resources.block_toolbox_category_create}" expanded="true" categorystyle="geometry_category">
             <category name="${resources.block_toolbox_category_2d_path}" categorystyle="geometry_category">
                 <block type="csg_primitive_2d_path_from_points">

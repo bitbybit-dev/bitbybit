@@ -71,6 +71,7 @@ import { createTextVectorCylindricalTextBlock } from './text-vector-cylindrical-
 import { createTextAlignTypeBlock } from './csg-text-align-type';
 import { createTextVectorSphericalTextBlock } from './text-vector-spherical-text';
 import { createIoSolidToStlDownloadBlock } from './io-solid-to-stl-download';
+import { createIoSolidsToStlDownloadBlock } from './io-solids-to-stl-download';
 
 export function assembleCsgBlocks(): void {
     createPrimitive2dPolygonFromPointsBlock();
@@ -146,4 +147,5 @@ export function assembleCsgBlocks(): void {
     createTextVectorCylindricalTextBlock();
     createTextVectorSphericalTextBlock();
     createIoSolidToStlDownloadBlock();
+    createIoSolidsToStlDownloadBlock();
 }

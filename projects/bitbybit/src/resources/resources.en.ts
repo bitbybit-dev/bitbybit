@@ -1479,4 +1479,7 @@ export const resourcesEn: ResourcesInterface = Object.freeze({
     block_csg_io_solid_to_stl_input_solid: 'Download STL from solid',
     block_csg_io_solid_to_stl_input_file_name: 'File name',
     block_csg_io_solid_to_stl_description: 'Downloads the STL by giving a single 3D solid.',
+    block_csg_io_solids_to_stl_input_solids: 'Download STL from solids',
+    block_csg_io_solids_to_stl_input_file_name: 'File name',
+    block_csg_io_solids_to_stl_description: 'Downloads the STL by giving a list of 3D solids.',
 });

@@ -1481,4 +1481,7 @@ app_menu_more_community: 'Bendruomenė',
     block_csg_io_solid_to_stl_input_solid: 'Atsisiųsti STL failą iš kūno',
     block_csg_io_solid_to_stl_input_file_name: 'Failo pavadinimas',
     block_csg_io_solid_to_stl_description: 'Atsiunčia duoto pavidinimo STL failą iš trimačio kūno.',
+    block_csg_io_solids_to_stl_input_solids: 'Atsisiųsti STL failą iš kūnų',
+    block_csg_io_solids_to_stl_input_file_name: 'Failo pavadinimas',
+    block_csg_io_solids_to_stl_description: 'Atsiunčia duoto pavidinimo STL failą iš trimačių kūnų rinkinio.',
 });

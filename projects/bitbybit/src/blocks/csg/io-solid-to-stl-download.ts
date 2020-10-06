@@ -44,7 +44,6 @@ export function createIoSolidToStlDownloadBlock(): void {
 
         return createStandardContextIIFE(block, blockSelector, inputs, false,
             `
-            console.log(BitByBit.CSG.STLSERIALIZER);
             const rawData = BitByBit.CSG.STLSERIALIZER.serialize({}, inputs.solid);
             const madeBlob = new Blob(rawData, {type: 'application/sla'});
             const blobUrl = URL.createObjectURL(madeBlob);
