@@ -42,6 +42,8 @@ export const resourcesLt: ResourcesInterface = Object.freeze({
     app_menu_more_examples_street_smart_kinetic_surfaces_description: 'Pavyzdys demonstruoja kaip realaus laiko simuliacijos gali būti atliktos naudojant renderiavimo ciklą. Kinetinė struktūra keičiasi bėgant laikui ir reprezentuoja papildomą dimensiją, kurią programuoti yra lengva ir paprasta.',
     app_menu_more_examples_street_smart_lines_between_two_surfaces_title: 'Linijos tarp dviejų paviršių',
     app_menu_more_examples_street_smart_lines_between_two_surfaces_description: 'Du vienas virš kito egzistuojantys paviršiai sudalinami izokreivėmis. Izokreivės savo ruožtu sudalinamos pradžios ir galo taškais, kurie jungiami į karkasines linijas tarp dviejų paviršių.',
+    app_menu_more_examples_street_smart_parametric_lamp_title: 'Parametrinis lempos gobtuvo modelis',
+    app_menu_more_examples_street_smart_parametric_lamp_description: 'Šis pavyzdys demonstruoja kaip įvairūs BitByBit algoritmai gali būti kombinuojami kuriant parametrinius modelius 3D spausdinimui. Modelis, kurį matote gali būti išsaugotas STL formatu.',
     app_menu_more_examples_ninja_magic_spiral_title: 'Magiška spiralė',
     app_menu_more_examples_ninja_magic_spiral_description: 'Spiralės žavi savo grožiu ir yra populiarios tarp gamtoje paplitusių algoritmų. Šis pavyzdys parodo kaip galima suprogramuoti tokią spiralę patiems.',
     app_menu_more_examples_ninja_living_landscape_title: 'Gyvas reljefas',
