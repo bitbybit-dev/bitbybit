@@ -1,5 +1,5 @@
 import { HttpHeaders, HttpParams, HttpClient } from '@angular/common/http';
-import { AfterViewInit, ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ArcRotateCamera, DirectionalLight, TransformNode, HemisphericLight } from '@babylonjs/core';
@@ -33,6 +33,7 @@ import { themeStyle } from './models/theme-styles.model';
 import { toolboxDefinition } from './models/toolbox-definition';
 import { SettingsService } from './shared/setting.service';
 import { TagService } from './tags/tag.service';
+import { MatDrawer } from '@angular/material/sidenav';
 
 @Component({
     selector: 'app-root',
@@ -53,6 +54,7 @@ export class AppComponent implements OnInit, AfterViewInit {
     firstTimeOpen = true;
     tagsNeedUpdate = false;
     timePassedFromPreviousIteration = 0;
+    @ViewChild('drawer', { static: true }) drawerElement: MatDrawer;
 
     constructor(
         public dialog: MatDialog,
@@ -280,6 +282,11 @@ export class AppComponent implements OnInit, AfterViewInit {
         this.openSponsorsDialog();
     }
 
+    swapCanvas() {
+        this.drawerElement.toggle();
+        Blockly.hideChaff();
+    }
+
     cleanCanvas() {
         this.workspace.clear();
         this.router.navigate(['/']);
@@ -287,6 +294,7 @@ export class AppComponent implements OnInit, AfterViewInit {
     }
 
     run() {
+
         try {
             this.clearMeshesAndMaterials();
             this.tagService.removeTagsIfNeeded();

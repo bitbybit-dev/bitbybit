@@ -44,6 +44,8 @@ export const resourcesEn: ResourcesInterface = Object.freeze({
     app_menu_more_examples_street_smart_lines_between_two_surfaces_description: 'There are two NURBS surfaces created above each other from corner points. Then both surfaces are subdivided in equal number of isocurves, those then are subdivided into points and those points are used to create lines between both surfaces.',
     app_menu_more_examples_street_smart_parametric_lamp_title: 'Parametric lamp hood model',
     app_menu_more_examples_street_smart_parametric_lamp_description: 'This example demonstrates how parametric 3D model can be produced by using NURBS framework and CAD features of BitByBit platform. Parametric lamp model can also be saved to STL format and 3D printed.',
+    app_menu_more_examples_street_smart_parametric_vase_title: 'Parametric vase model',
+    app_menu_more_examples_street_smart_parametric_vase_description: 'This example demonstrates few boolean operations that can be done on solids to produce a vase. On top of the script users can change various parameters and adapt the model to their needs and choose to export this model to STL format.',
     app_menu_more_examples_ninja_magic_spiral_title: 'Magic spiral',
     app_menu_more_examples_ninja_magic_spiral_description: 'Spirals are everywhere in nature and they are beautiful. This example demonstrates how to code the magical parametric spiral.',
     app_menu_more_examples_ninja_living_landscape_title: 'Living landscape',
