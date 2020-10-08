@@ -117,7 +117,7 @@ export function solidCategory(): string {
                                     <field name="NUM">0</field>
                                 </shadow>
                             </value>
-                            <value name="Z">
+                            <value name="Y">
                                 <shadow type="math_number">
                                     <field name="NUM">0</field>
                                 </shadow>
@@ -138,7 +138,7 @@ export function solidCategory(): string {
                                     <field name="NUM">0</field>
                                 </shadow>
                             </value>
-                            <value name="Z">
+                            <value name="Y">
                                 <shadow type="math_number">
                                     <field name="NUM">0</field>
                                 </shadow>
@@ -164,7 +164,7 @@ export function solidCategory(): string {
                                     <field name="NUM">0</field>
                                 </shadow>
                             </value>
-                            <value name="Z">
+                            <value name="Y">
                                 <shadow type="math_number">
                                     <field name="NUM">0</field>
                                 </shadow>
@@ -200,7 +200,7 @@ export function solidCategory(): string {
                                     <field name="NUM">0</field>
                                 </shadow>
                             </value>
-                            <value name="Z">
+                            <value name="Y">
                                 <shadow type="math_number">
                                     <field name="NUM">0</field>
                                 </shadow>
@@ -226,7 +226,7 @@ export function solidCategory(): string {
                                     <field name="NUM">0</field>
                                 </shadow>
                             </value>
-                            <value name="Z">
+                            <value name="Y">
                                 <shadow type="math_number">
                                     <field name="NUM">0</field>
                                 </shadow>
@@ -240,7 +240,7 @@ export function solidCategory(): string {
                                     <field name="NUM">1</field>
                                 </shadow>
                             </value>
-                            <value name="Z">
+                            <value name="Y">
                                 <shadow type="math_number">
                                     <field name="NUM">2</field>
                                 </shadow>
@@ -261,7 +261,7 @@ export function solidCategory(): string {
                                     <field name="NUM">0</field>
                                 </shadow>
                             </value>
-                            <value name="Z">
+                            <value name="Y">
                                 <shadow type="math_number">
                                     <field name="NUM">0</field>
                                 </shadow>
@@ -646,7 +646,7 @@ export function solidCategory(): string {
                                     <field name="NUM">1</field>
                                 </shadow>
                             </value>
-                            <value name="Z">
+                            <value name="Y">
                                 <shadow type="math_number">
                                     <field name="NUM">2</field>
                                 </shadow>
@@ -660,7 +660,7 @@ export function solidCategory(): string {
                                     <field name="NUM">2</field>
                                 </shadow>
                             </value>
-                            <value name="Z">
+                            <value name="Y">
                                 <shadow type="math_number">
                                     <field name="NUM">1</field>
                                 </shadow>
@@ -686,7 +686,7 @@ export function solidCategory(): string {
                                     <field name="NUM">1</field>
                                 </shadow>
                             </value>
-                            <value name="Z">
+                            <value name="Y">
                                 <shadow type="math_number">
                                     <field name="NUM">2</field>
                                 </shadow>
@@ -700,7 +700,7 @@ export function solidCategory(): string {
                                     <field name="NUM">2</field>
                                 </shadow>
                             </value>
-                            <value name="Z">
+                            <value name="Y">
                                 <shadow type="math_number">
                                     <field name="NUM">1</field>
                                 </shadow>
@@ -1112,7 +1112,7 @@ export function solidCategory(): string {
                                     <field name="NUM">0</field>
                                 </shadow>
                             </value>
-                            <value name="Z">
+                            <value name="Y">
                                 <shadow type="math_number">
                                     <field name="NUM">0</field>
                                 </shadow>

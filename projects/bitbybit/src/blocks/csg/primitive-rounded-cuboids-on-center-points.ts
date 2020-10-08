@@ -66,8 +66,8 @@ export function createPrimitiveRoundedCuboidsOnCenterPointsBlock(): void {
             `
             return inputs.centers.map(center => {
                 return BitByBit.CSG.primitives.roundedCuboid({
-                    center: [center[0], center[2], center[1]],
-                    size: [inputs.width, inputs.length, inputs.height],
+                    center: [center[0], center[1], center[2]],
+                    size: [inputs.width, inputs.height, inputs.length],
                     roundRadius: inputs.roundRadius,
                     segments: inputs.segments,
                 });

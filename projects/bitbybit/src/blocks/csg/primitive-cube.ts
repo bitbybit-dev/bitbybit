@@ -43,7 +43,7 @@ export function createPrimitiveCubeBlock(): void {
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
             `
-            const cube = BitByBit.CSG.primitives.cube({center: [inputs.center[0], inputs.center[2], inputs.center[1]], size: inputs.size});
+            const cube = BitByBit.CSG.primitives.cube({center: [inputs.center[0], inputs.center[1], inputs.center[2]], size: inputs.size});
             return cube;
 `
         );

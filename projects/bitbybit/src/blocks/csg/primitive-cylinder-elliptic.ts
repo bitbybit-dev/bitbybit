@@ -60,10 +60,10 @@ export function createPrimitiveCylinderEllipticBlock(): void {
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
             `
             const cylinder = BitByBit.CSG.primitives.cylinderElliptic({
-                center: [inputs.center[0], inputs.center[2], inputs.center[1]],
+                center: [inputs.center[0], inputs.center[1], inputs.center[2]],
                 height: inputs.height,
-                startRadius: [inputs.startRadius[0], inputs.startRadius[2]],
-                endRadius: [inputs.endRadius[0], inputs.endRadius[2]],
+                startRadius: [inputs.startRadius[0], inputs.startRadius[1]],
+                endRadius: [inputs.endRadius[0], inputs.endRadius[1]],
                 segments: inputs.segments,
             });
             return cylinder;

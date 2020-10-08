@@ -61,10 +61,10 @@ export function createPrimitiveCylindersEllipticOnCenterPointsBlock(): void {
             `
             return inputs.centers.map(center => {
                 return BitByBit.CSG.primitives.cylinderElliptic({
-                    center: [center[0], center[2], center[1]],
+                    center: [center[0], center[1], center[2]],
                     height: inputs.height,
-                    startRadius: [inputs.startRadius[0], inputs.startRadius[2]],
-                    endRadius: [inputs.endRadius[0], inputs.endRadius[2]],
+                    startRadius: [inputs.startRadius[0], inputs.startRadius[1]],
+                    endRadius: [inputs.endRadius[0], inputs.endRadius[1]],
                     segments: inputs.segments,
                 });
             });

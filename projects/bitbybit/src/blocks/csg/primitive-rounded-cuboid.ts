@@ -65,8 +65,8 @@ export function createPrimitiveRoundedCuboidBlock(): void {
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
             `
             const roundedCuboid = BitByBit.CSG.primitives.roundedCuboid({
-                center: [inputs.center[0], inputs.center[2], inputs.center[1]],
-                size: [inputs.width, inputs.length, inputs.height],
+                center: [inputs.center[0], inputs.center[1], inputs.center[2]],
+                size: [inputs.width, inputs.height, inputs.length],
                 roundRadius: inputs.roundRadius,
                 segments: inputs.segments,
             });

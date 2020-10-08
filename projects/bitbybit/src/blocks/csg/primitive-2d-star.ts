@@ -65,7 +65,7 @@ export function createPrimitive2dStarBlock(): void {
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
             `
             return BitByBit.CSG.primitives.star({
-                center: [inputs.center[0], inputs.center[2]],
+                center: [inputs.center[0], inputs.center[1]],
                 vertices: inputs.vertices,
                 density: inputs.density,
                 outerRadius: inputs.outerRadius,

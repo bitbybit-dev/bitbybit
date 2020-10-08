@@ -15,10 +15,10 @@ export function createPoint2dBlock(): void {
                 .setCheck('Number')
                 .setAlign(ALIGN_RIGHT)
                 .appendField(resources.block_coordinate_short_x);
-            this.appendValueInput('Z')
+            this.appendValueInput('Y')
                 .setCheck('Number')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_coordinate_short_z);
+                .appendField(resources.block_coordinate_short_y);
             this.setInputsInline(true);
             this.setOutput(true, 'Array');
             this.setColour('#fff');
@@ -29,7 +29,7 @@ export function createPoint2dBlock(): void {
     JavaScript[blockSelector] = (block: Block) => {
         const inputs = {
             x: JavaScript.valueToCode(block, 'X', JavaScript.ORDER_ATOMIC),
-            z: JavaScript.valueToCode(block, 'Z', JavaScript.ORDER_ATOMIC),
+            y: JavaScript.valueToCode(block, 'Y', JavaScript.ORDER_ATOMIC),
         };
 
         // this is first set of validations to check that all inputs are non empty strings
@@ -38,7 +38,7 @@ export function createPoint2dBlock(): void {
         ]));
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `return [inputs.x, 0, inputs.z];`
+            `return [inputs.x, inputs.y, 0];`
         );
         return [code, JavaScript.ORDER_ATOMIC];
     };

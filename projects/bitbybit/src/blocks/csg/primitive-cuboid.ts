@@ -53,7 +53,7 @@ export function createPrimitiveCuboidBlock(): void {
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
             `
-            const cube = BitByBit.CSG.primitives.cuboid({center: [inputs.center[0], inputs.center[2], inputs.center[1]], size: [inputs.width, inputs.length, inputs.height]});
+            const cube = BitByBit.CSG.primitives.cuboid({center: [inputs.center[0], inputs.center[1], inputs.center[2]], size: [inputs.width, inputs.height, inputs.length]});
             return cube;
 `
         );

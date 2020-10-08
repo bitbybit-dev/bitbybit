@@ -54,7 +54,7 @@ export function createPrimitiveCylinderBlock(): void {
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
             `
             const cylinder = BitByBit.CSG.primitives.cylinder({
-                center: [inputs.center[0], inputs.center[2], inputs.center[1]],
+                center: [inputs.center[0], inputs.center[1], inputs.center[2]],
                 height: inputs.height,
                 radius: inputs.radius,
                 segments: inputs.segments,

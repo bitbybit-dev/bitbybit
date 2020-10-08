@@ -43,7 +43,7 @@ export function createPrimitive2dPathAppendPointsBlock(): void {
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
             `
-            const twoDimensionalPoints = inputs.points.map(pt => [pt[0], pt[2]]);
+            const twoDimensionalPoints = inputs.points.map(pt => [pt[0], pt[1]]);
             const duplicatePointsRemoved = BitByBit.BitByBitBlocklyHelperService.removeConsecutiveDuplicates(twoDimensionalPoints, BitByBit.BitByBitBlocklyHelperService.tolerance);
             return BitByBit.CSG.geometries.path2.appendPoints(duplicatePointsRemoved, inputs.path);
 `

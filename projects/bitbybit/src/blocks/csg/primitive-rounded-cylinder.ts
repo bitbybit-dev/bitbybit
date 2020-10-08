@@ -60,7 +60,7 @@ export function createPrimitiveRoundedCylinderBlock(): void {
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
             `
             const cylinder = BitByBit.CSG.primitives.roundedCylinder({
-                center: [inputs.center[0], inputs.center[2], inputs.center[1]],
+                center: [inputs.center[0], inputs.center[1], inputs.center[2]],
                 height: inputs.height,
                 radius: inputs.radius,
                 roundRadius: inputs.roundRadius,

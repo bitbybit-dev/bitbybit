@@ -43,7 +43,7 @@ export function createPrimitive2dPathAppendCurveBlock(): void {
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
             `
-            const points = inputs.curve.tessellate().map(pt => [pt[0], pt[2]]);
+            const points = inputs.curve.tessellate().map(pt => [pt[0], pt[1]]);
             return BitByBit.CSG.geometries.path2.appendPoints(points, inputs.path);
 `
         );

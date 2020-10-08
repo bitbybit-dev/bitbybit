@@ -75,7 +75,7 @@ export function createPrimitiveTorusBlock(): void {
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
             `
             const torus = BitByBit.CSG.primitives.torus({
-                center: [inputs.center[0], inputs.center[2], inputs.center[1]],
+                center: [inputs.center[0], inputs.center[1], inputs.center[2]],
                 innerRadius: inputs.innerRadius,
                 outerRadius: inputs.outerRadius,
                 innerSegments: inputs.innerSegments,

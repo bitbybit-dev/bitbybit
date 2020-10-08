@@ -59,7 +59,7 @@ export function createPrimitive2dRoundedRectangleBlock(): void {
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
             `
             const rectangle = BitByBit.CSG.primitives.roundedRectangle({
-                center: [inputs.center[0], inputs.center[2]],
+                center: [inputs.center[0], inputs.center[1]],
                 size: [inputs.width, inputs.length],
                 roundRadius: inputs.roundRadius,
                 segments: inputs.segments,

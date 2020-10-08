@@ -61,7 +61,7 @@ export function createPrimitiveRoundedCylindersOnCenterPointsBlock(): void {
             `
             return inputs.centers.map(center => {
                 return BitByBit.CSG.primitives.roundedCylinder({
-                    center: [center[0], center[2], center[1]],
+                    center: [center[0], center[1], center[2]],
                     height: inputs.height,
                     radius: inputs.radius,
                     roundRadius: inputs.roundRadius,

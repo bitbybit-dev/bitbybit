@@ -54,7 +54,7 @@ export function createPrimitiveCuboidsOnCenterPointsBlock(): void {
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
             `
             return inputs.centers.map(center => {
-                return BitByBit.CSG.primitives.cuboid({center: [center[0], center[2], center[1]], size: [inputs.width, inputs.length, inputs.height]});
+                return BitByBit.CSG.primitives.cuboid({center: [center[0], center[1], center[2]], size: [inputs.width, inputs.height, inputs.length]});
             });
 `
         );

@@ -48,7 +48,7 @@ export function createPrimitiveSphereBlock(): void {
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
             `
-            const sphere = BitByBit.CSG.primitives.sphere({center: [inputs.center[0], inputs.center[2], inputs.center[1]], radius: inputs.radius, segments: inputs.segments});
+            const sphere = BitByBit.CSG.primitives.sphere({center: [inputs.center[0], inputs.center[1], inputs.center[2]], radius: inputs.radius, segments: inputs.segments});
             return sphere;
 `
         );

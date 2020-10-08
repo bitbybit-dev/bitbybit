@@ -50,8 +50,8 @@ export function createPrimitiveEllipsoidsOnCenterPointsBlock(): void {
             `
             return inputs.centers.map(center => {
                 return BitByBit.CSG.primitives.ellipsoid({
-                    center: [center[0], center[2], center[1]],
-                    radius: [inputs.radius[0], inputs.radius[2], inputs.radius[1]],
+                    center: [center[0], center[1], center[2]],
+                    radius: [inputs.radius[0], inputs.radius[1], inputs.radius[2]],
                     segments: inputs.segments,
                     axes: [
                         [-1, 0, 0],

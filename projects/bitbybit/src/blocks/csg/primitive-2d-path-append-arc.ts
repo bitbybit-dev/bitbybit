@@ -23,10 +23,10 @@ export function createPrimitive2dPathAppendArcBlock(): void {
                 .setCheck('Number')
                 .setAlign(ALIGN_RIGHT)
                 .appendField(resources.block_csg_primitive_2d_path_append_arc_input_radius_x.toLowerCase());
-            this.appendValueInput('RadiusZ')
+            this.appendValueInput('RadiusY')
                 .setCheck('Number')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_csg_primitive_2d_path_append_arc_input_radius_z.toLowerCase());
+                .appendField(resources.block_csg_primitive_2d_path_append_arc_input_radius_y.toLowerCase());
             this.appendValueInput('XAxisRotation')
                 .setCheck('Number')
                 .setAlign(ALIGN_RIGHT)
@@ -55,7 +55,7 @@ export function createPrimitive2dPathAppendArcBlock(): void {
             path: JavaScript.valueToCode(block, 'Path', JavaScript.ORDER_ATOMIC),
             endPoint: JavaScript.valueToCode(block, 'EndPoint', JavaScript.ORDER_ATOMIC),
             radiusX: JavaScript.valueToCode(block, 'RadiusX', JavaScript.ORDER_ATOMIC),
-            radiusZ: JavaScript.valueToCode(block, 'RadiusZ', JavaScript.ORDER_ATOMIC),
+            radiusY: JavaScript.valueToCode(block, 'RadiusY', JavaScript.ORDER_ATOMIC),
             xAxisRotation: JavaScript.valueToCode(block, 'XAxisRotation', JavaScript.ORDER_ATOMIC),
             clockwise: JavaScript.valueToCode(block, 'Clockwise', JavaScript.ORDER_ATOMIC),
             large: JavaScript.valueToCode(block, 'Large', JavaScript.ORDER_ATOMIC),
@@ -64,7 +64,9 @@ export function createPrimitive2dPathAppendArcBlock(): void {
 
         // this is first set of validations to check that all inputs are non empty strings
         BitByBitBlockHandlerService.validate(block, block.workspace, makeRequiredValidationModelForInputs(resources, inputs, [
-            resources.block_2d_path, resources.block_points
+            resources.block_2d_path, resources.block_point, resources.block_radius_x, resources.block_radius_y,
+            resources.block_x_axis_rotation, resources.block_clockwise,
+            resources.block_large, resources.block_segments
         ]));
 
         // this creates validation model to be used at runtime to evaluate real values of inputs
@@ -73,8 +75,8 @@ export function createPrimitive2dPathAppendArcBlock(): void {
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
             `
-            const endpoint = [inputs.endPoint[0], inputs.endPoint[2]];
-            const radius = [inputs.radiusX, inputs.radiusZ];
+            const endpoint = [inputs.endPoint[0], inputs.endPoint[1]];
+            const radius = [inputs.radiusX, inputs.radiusY];
             return BitByBit.CSG.geometries.path2.appendArc({
                 endpoint,
                 radius,
@@ -102,7 +104,37 @@ function makeRuntimeValidationModel(
     }, {
         entity: keys[1],
         validations: [
-            getRequired(resources, resources.block_points),
+            getRequired(resources, resources.block_point),
+        ]
+    }, {
+        entity: keys[2],
+        validations: [
+            getRequired(resources, resources.block_radius_x),
+        ]
+    }, {
+        entity: keys[3],
+        validations: [
+            getRequired(resources, resources.block_radius_y),
+        ]
+    }, {
+        entity: keys[4],
+        validations: [
+            getRequired(resources, resources.block_x_axis_rotation),
+        ]
+    }, {
+        entity: keys[5],
+        validations: [
+            getRequired(resources, resources.block_clockwise),
+        ]
+    }, {
+        entity: keys[6],
+        validations: [
+            getRequired(resources, resources.block_large),
+        ]
+    }, {
+        entity: keys[7],
+        validations: [
+            getRequired(resources, resources.block_segments),
         ]
     }];
 }

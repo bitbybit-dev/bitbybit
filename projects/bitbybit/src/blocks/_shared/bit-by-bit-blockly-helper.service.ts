@@ -111,7 +111,7 @@ export class BitByBitBlocklyHelperService {
                     pointsRemaining.pop();
                 }
             }
-        } else if(points.length === 1){
+        } else if (points.length === 1) {
             pointsRemaining.push(...points);
         }
         return pointsRemaining;

@@ -86,8 +86,8 @@ export function createDrawCsgMeshBlock(): void {
 
             for (let polygon of polygons) {
                 if (polygon.vertices.length === 3) {
-                    polygon.vertices.forEach(vert => {
-                        positions.push(vert[0], vert[2], vert[1]);
+                    polygon.vertices.reverse().forEach(vert => {
+                        positions.push(vert[0], vert[1], vert[2]);
                         indices.push(countIndices);
                         countIndices++;
                     });
@@ -99,13 +99,13 @@ export function createDrawCsgMeshBlock(): void {
                         triangles.push(
                             [
                                 firstVertex,
-                                reversedVertices[i + 2],
                                 reversedVertices[i + 1],
+                                reversedVertices[i + 2],
                             ]);
                     }
                     triangles.forEach((triangle, index) => {
                         triangle.forEach(vert => {
-                            positions.push(vert[0], vert[2], vert[1]);
+                            positions.push(vert[0], vert[1], vert[2]);
                             indices.push(countIndices);
                             countIndices++;
                         });

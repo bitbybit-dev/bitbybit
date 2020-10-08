@@ -127,6 +127,11 @@ export interface ResourcesInterface {
     block_toolbox_category_io_http: string;
     block_computing: string;
     block_point: string;
+    block_clockwise: string;
+    block_counter_clockwise: string;
+    block_large: string;
+    block_medium: string;
+    block_small: string;
     block_corners: string;
     block_delta: string;
     block_2d_path: string;
@@ -278,6 +283,9 @@ export interface ResourcesInterface {
     block_x_axis: string;
     block_y_axis: string;
     block_z_axis: string;
+    block_x_axis_rotation: string;
+    block_y_axis_rotation: string;
+    block_z_axis_rotation: string;
     block_base: string;
     block_height: string;
     block_extrusion_height: string;
@@ -1246,7 +1254,7 @@ export interface ResourcesInterface {
     block_csg_primitive_2d_path_append_arc_input_path: string;
     block_csg_primitive_2d_path_append_arc_input_end_point: string;
     block_csg_primitive_2d_path_append_arc_input_radius_x: string;
-    block_csg_primitive_2d_path_append_arc_input_radius_z: string;
+    block_csg_primitive_2d_path_append_arc_input_radius_y: string;
     block_csg_primitive_2d_path_append_arc_input_x_axis_rotation: string;
     block_csg_primitive_2d_path_append_arc_input_clockwise: string;
     block_csg_primitive_2d_path_append_arc_input_large: string;

@@ -43,7 +43,7 @@ export function createPrimitive2dSquareBlock(): void {
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
             `
-            return BitByBit.CSG.primitives.square({center: [inputs.center[0], inputs.center[2]], size: inputs.size});
+            return BitByBit.CSG.primitives.square({center: [inputs.center[0], inputs.center[1]], size: inputs.size});
 `
         );
         return [code, JavaScript.ORDER_ATOMIC];

@@ -48,7 +48,7 @@ export function createPrimitive2dRectangleBlock(): void {
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
             `
-            const rectangle = BitByBit.CSG.primitives.rectangle({center: [inputs.center[0], inputs.center[2]], size: [inputs.width, inputs.length]});
+            const rectangle = BitByBit.CSG.primitives.rectangle({center: [inputs.center[0], inputs.center[1]], size: [inputs.width, inputs.length]});
             return rectangle;
 `
         );

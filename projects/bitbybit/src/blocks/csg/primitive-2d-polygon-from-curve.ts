@@ -38,7 +38,7 @@ export function createPrimitive2dPolygonFromCurveBlock(): void {
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
             `
-            const twoDimensionalPoints = inputs.curve.tessellate().map(pt => [pt[0], pt[2]]);
+            const twoDimensionalPoints = inputs.curve.tessellate().map(pt => [pt[0], pt[1]]);
             const duplicatePointsRemoved = BitByBit.BitByBitBlocklyHelperService.removeConsecutiveDuplicates(twoDimensionalPoints, BitByBit.BitByBitBlocklyHelperService.tolerance);
             const polygon = BitByBit.CSG.primitives.polygon({points: duplicatePointsRemoved});
             return polygon;
