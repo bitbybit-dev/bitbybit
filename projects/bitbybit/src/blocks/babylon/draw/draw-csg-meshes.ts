@@ -101,14 +101,14 @@ export function createDrawCsgMeshesBlock(): void {
 
                 for (let polygon of polygons) {
                     if (polygon.vertices.length === 3) {
-                        polygon.vertices.reverse().forEach(vert => {
+                        polygon.vertices.forEach(vert => {
                             positions.push(vert[0], vert[1], vert[2]);
                             indices.push(countIndices);
                             countIndices++;
                         });
                     } else {
                         const triangles = [];
-                        const reversedVertices = polygon.vertices.reverse();
+                        const reversedVertices = polygon.vertices;
                         let firstVertex = reversedVertices[0]
                         for (let i = reversedVertices.length - 3; i >= 0; i--) {
                             triangles.push(
@@ -139,7 +139,7 @@ export function createDrawCsgMeshesBlock(): void {
                 const vertexData = new BitByBit.BABYLON.VertexData();
                 vertexData.positions = positions;
                 vertexData.indices = indices;
-                BitByBit.BABYLON.VertexData.ComputeNormals(positions, indices, normals, {useRightHandedSystem: true});
+                BitByBit.BABYLON.VertexData.ComputeNormals(positions, indices, normals, {useRightHandedSystem: false});
                 vertexData.normals = normals;
 
                 vertexData.applyToMesh(newMesh, inputs.updatable);
@@ -150,6 +150,7 @@ export function createDrawCsgMeshesBlock(): void {
                 newMesh.material.alpha = inputs.opacity;
                 newMesh.material.diffuseColor = BitByBit.BABYLON.Color3.FromHexString(inputs.colour);
                 newMesh.isPickable = false;
+                newMesh.material.backFaceCulling = false;
                 newMesh.parent = localOrigin;
             });
 
