@@ -40,7 +40,7 @@ export function createSurfaceByLoftingCurvesBlock() {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `return verb.geom.NurbsSurface.byLoftingCurves(inputs.curves, inputs.degree_v)`
+            `return BitByBit.verb.geom.NurbsSurface.byLoftingCurves(inputs.curves, inputs.degree_v)`
         );
         return [code, JavaScript.ORDER_ATOMIC];
     };

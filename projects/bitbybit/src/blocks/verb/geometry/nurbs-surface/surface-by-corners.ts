@@ -51,7 +51,7 @@ export function createSurfaceByCornersBlock() {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `return verb.geom.NurbsSurface.byCorners(inputs.point1, inputs.point2, inputs.point3, inputs.point4);`);
+            `return BitByBit.verb.geom.NurbsSurface.byCorners(inputs.point1, inputs.point2, inputs.point3, inputs.point4);`);
         return [code, JavaScript.ORDER_ATOMIC];
     };
 }

@@ -109,6 +109,20 @@ export function pointCategory() {
                     </shadow>
                 </value>
             </block>
+            <block type="base_geometry_point_2d">
+            </block>
+            <block type="base_geometry_point_2d">
+                <value name="X">
+                    <shadow type="math_number">
+                        <field name="NUM">0</field>
+                    </shadow>
+                </value>
+                <value name="Y">
+                    <shadow type="math_number">
+                        <field name="NUM">0</field>
+                    </shadow>
+                </value>
+            </block>
             <block type="base_geometry_point_list">
                 <value name="Point">
                     <shadow type="base_geometry_point">

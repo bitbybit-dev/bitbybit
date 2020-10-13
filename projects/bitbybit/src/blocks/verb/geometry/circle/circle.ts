@@ -55,7 +55,7 @@ export function createCircleBlock() {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `return new verb.geom.Circle(inputs.center, inputs.xAxis, inputs.yAxis, inputs.radius);`
+            `return new BitByBit.verb.geom.Circle(inputs.center, inputs.xAxis, inputs.yAxis, inputs.radius);`
         );
         return [code, JavaScript.ORDER_ATOMIC];
     };

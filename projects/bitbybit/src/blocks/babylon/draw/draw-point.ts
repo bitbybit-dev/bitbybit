@@ -71,7 +71,7 @@ export function createDrawPointBlock() {
             `
             inputs.pointMeshVariable = ${JavaScript.variableDB_.getName(block.getFieldValue('DrawnPointMesh'), VARIABLE_CATEGORY_NAME)};
             const vectorPoints = [inputs.point];
-            const colour = BABYLON.Color3.FromHexString(inputs.colour);
+            const colour = BitByBit.BABYLON.Color3.FromHexString(inputs.colour);
             const positions = [];
             const colors = [];
 
@@ -90,18 +90,18 @@ export function createDrawPointBlock() {
 
             } else {
 
-                const vertexData = new BABYLON.VertexData();
+                const vertexData = new BitByBit.BABYLON.VertexData();
 
                 vertexData.positions = positions;
                 vertexData.colors = colors;
 
-                inputs.pointMeshVariable = new BABYLON.Mesh('pointMesh${Math.random()}', scene);
+                inputs.pointMeshVariable = new BitByBit.BABYLON.Mesh('pointMesh${Math.random()}', BitByBit.scene);
                 vertexData.applyToMesh(inputs.pointMeshVariable, inputs.updatable);
 
-                const mat = new BABYLON.StandardMaterial('mat${Math.random()}', scene);
+                const mat = new BitByBit.BABYLON.StandardMaterial('mat${Math.random()}', BitByBit.scene);
                 inputs.pointMeshVariable.material = mat;
 
-                inputs.pointMeshVariable.material.emissiveColor = new BABYLON.Color3(1, 1, 1);
+                inputs.pointMeshVariable.material.emissiveColor = new BitByBit.BABYLON.Color3(1, 1, 1);
                 inputs.pointMeshVariable.material.disableLighting = true;
                 inputs.pointMeshVariable.material.pointsCloud = true;
                 inputs.pointMeshVariable.material.alpha = inputs.opacity;

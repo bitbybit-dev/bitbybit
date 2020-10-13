@@ -26,7 +26,7 @@ export function createClearAllDrawnBlock() {
 
         return createStandardContextIIFE(block, blockSelector, inputs, false,
             `
-            BitByBitBlocklyHelperService.clearAllDrawn();
+            BitByBit.BitByBitBlocklyHelperService.clearAllDrawn();
 `
         );
     };

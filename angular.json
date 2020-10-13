@@ -30,7 +30,10 @@
                         "styles": [
                             "projects/bitbybit/src/styles.scss"
                         ],
-                        "scripts": []
+                        "scripts": [
+                            "node_modules/earcut/dist/earcut.min.js",
+                            "csg-generated.js"
+                        ]
                     },
                     "configurations": {
                         "production": {

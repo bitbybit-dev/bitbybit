@@ -42,7 +42,7 @@ export function createBezierCurveBlock() {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `return new verb.geom.BezierCurve( inputs.points, inputs.weights );`);
+            `return new BitByBit.verb.geom.BezierCurve( inputs.points, inputs.weights );`);
         return [code, JavaScript.ORDER_ATOMIC];
     };
 }

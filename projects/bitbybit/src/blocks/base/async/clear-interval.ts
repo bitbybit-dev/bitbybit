@@ -38,7 +38,7 @@ export function createClearIntervalBlock() {
         (block as any).validationModel = runtimeValidationModel;
         return createStandardContextIIFE(block, blockSelector, inputs, false,
             `clearInterval(inputs.intervalHandler);
-            BitByBitBlocklyHelperService.intervalBag = BitByBitBlocklyHelperService.intervalBag.filter(t => t !== inputs.intervalHandler);
+            BitByBit.BitByBitBlocklyHelperService.intervalBag = BitByBit.BitByBitBlocklyHelperService.intervalBag.filter(t => t !== inputs.intervalHandler);
             `
         );
     };

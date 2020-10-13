@@ -41,7 +41,7 @@ export function createJsonSetPathsValuesBlock() {
             `
             const clonedJson = {...inputs.json};
             inputs.pathsValues.forEach(pv => {
-                BitByBitBlocklyHelperService.jsonpath.value(clonedJson, pv.path, pv.value);
+                BitByBit.BitByBitBlocklyHelperService.jsonpath.value(clonedJson, pv.path, pv.value);
             });
             return clonedJson;
             `);

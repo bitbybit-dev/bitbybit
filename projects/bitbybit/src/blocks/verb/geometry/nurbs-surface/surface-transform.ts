@@ -46,19 +46,17 @@ export function createSurfaceTransformBlock() {
     const transformation = inputs.matrix;
     let twoDimensionalPoints = [];
     points.forEach(ptCollection => {
-        console.log(ptCollection);
         let transformedControlPoints = ptCollection;
         if(transformation.length && transformation.length > 0){
             transformation.forEach(transform => {
-                transformedControlPoints = BitByBitBlocklyHelperService.transformPointsByMatrix(transformedControlPoints, transform);
+                transformedControlPoints = BitByBit.BitByBitBlocklyHelperService.transformPointsByMatrix(transformedControlPoints, transform);
             });
         } else {
-            transformedControlPoints = BitByBitBlocklyHelperService.transformPointsByMatrix(transformedControlPoints, transformation);
+            transformedControlPoints = BitByBit.BitByBitBlocklyHelperService.transformPointsByMatrix(transformedControlPoints, transformation);
         }
         twoDimensionalPoints.push(transformedControlPoints);
     });
-    console.log(twoDimensionalPoints);
-    return verb.geom.NurbsSurface.byKnotsControlPointsWeights(inputs.surface.degreeU(), inputs.surface.degreeV(), inputs.surface.knotsU(), inputs.surface.knotsV(), twoDimensionalPoints, inputs.surface.weights());
+    return BitByBit.verb.geom.NurbsSurface.byKnotsControlPointsWeights(inputs.surface.degreeU(), inputs.surface.degreeV(), inputs.surface.knotsU(), inputs.surface.knotsV(), twoDimensionalPoints, inputs.surface.weights());
 `);
         return [code, JavaScript.ORDER_ATOMIC];
     };

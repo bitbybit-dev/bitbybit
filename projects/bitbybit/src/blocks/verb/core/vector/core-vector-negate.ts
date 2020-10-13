@@ -36,7 +36,7 @@ export function createCoreVectorNegateBlock() {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `return verb.core.Vec.neg(inputs.vector);`);
+            `return BitByBit.verb.core.Vec.neg(inputs.vector);`);
 
         return [code, JavaScript.ORDER_ATOMIC];
     };

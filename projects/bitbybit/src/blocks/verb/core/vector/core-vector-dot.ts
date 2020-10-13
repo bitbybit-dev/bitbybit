@@ -42,7 +42,7 @@ export function createCoreVectorDotBlock() {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `return verb.core.Vec.dot(inputs.first, inputs.second);`);
+            `return BitByBit.verb.core.Vec.dot(inputs.first, inputs.second);`);
 
         return [code, JavaScript.ORDER_ATOMIC];
     };

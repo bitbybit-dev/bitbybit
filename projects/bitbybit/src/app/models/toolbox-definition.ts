@@ -1,6 +1,7 @@
 import { defaultBlocklyCategories } from './categories/blockly/default-categories';
 import { transformsCategory } from './categories/core/transforms-category';
 import { typesCategory } from './categories/core/types-category';
+import { nodeCategory } from './categories/core/node-category';
 import { vectorCategory } from './categories/core/vector-category';
 import { curveCategory } from './categories/geometry/curve-category';
 import { lineCategory } from './categories/geometry/line-category';
@@ -12,8 +13,9 @@ import { ioCategory } from './categories/io/io-category';
 import { sceneCategory } from './categories/scene/scene-category';
 import { tagCategory } from './categories/tag/tag-category';
 import { timeCategory } from './categories/time/time-category';
+import { solidCategory } from './categories/geometry/solid-category';
 
-export function toolboxDefinition() {
+export function toolboxDefinition(): string {
     return `
 <xml id="toolbox" style="display: none">
     ${sceneCategory()}
@@ -21,12 +23,14 @@ export function toolboxDefinition() {
     ${typesCategory()}
     ${transformsCategory()}
     ${vectorCategory()}
+    ${nodeCategory()}
     <sep></sep>
     ${pointCategory()}
     ${lineCategory()}
     ${polylineCategory()}
     ${curveCategory()}
     ${surfaceCategory()}
+    ${solidCategory()}
     <sep></sep>
     ${intersectCategory()}
     ${tagCategory()}

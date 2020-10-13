@@ -4,7 +4,7 @@ export function createStandardAsyncContextIIFE(block: Block, componentName: stri
     return `
 /// Component: "${componentName}", Block ID: "${block.id}"
 (() => {
-    const block = blocklyWorkspace.getBlockById('${block.id}');
+    const block = BitByBit.blocklyWorkspace.getBlockById('${block.id}');
     block.inputList[0].setVisible(true);
     block.inputList[0].setAlign(0);
 

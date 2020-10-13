@@ -35,7 +35,7 @@ export function createRevolvedSurfaceAxisBlock() {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            // TODO might be a mistake in verb (seems to return center coord)
+            // TODO might be a mistake in BitByBit.verb (seems to return center coord)
             `return inputs.revolution.axis();`
         );
         return [code, JavaScript.ORDER_ATOMIC];

@@ -46,10 +46,10 @@ export function createPointTransformBlock() {
     let transformedControlPoints = [inputs.point];
     if(transformation.length && transformation.length > 0){
         transformation.forEach(transform => {
-            transformedControlPoints = BitByBitBlocklyHelperService.transformPointsByMatrix(transformedControlPoints, transform);
+            transformedControlPoints = BitByBit.BitByBitBlocklyHelperService.transformPointsByMatrix(transformedControlPoints, transform);
         });
     } else {
-        transformedControlPoints = BitByBitBlocklyHelperService.transformPointsByMatrix(transformedControlPoints, transformation);
+        transformedControlPoints = BitByBit.BitByBitBlocklyHelperService.transformPointsByMatrix(transformedControlPoints, transformation);
     }
     return transformedControlPoints[0];
 `);

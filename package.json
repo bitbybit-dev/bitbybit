@@ -11,7 +11,8 @@
     "lint": "ng lint",
     "e2e": "ng e2e",
     "scully": "scully --project bitbybit-docs --prod",
-    "scully:serve": "scully serve --project bitbybit-docs"
+    "scully:serve": "scully serve --project bitbybit-docs",
+    "browserify-csg": "browserify csg.js --outfile csg-generated.js"
   },
   "private": true,
   "dependencies": {
@@ -37,7 +38,12 @@
     "blockly": "3.20200402.1",
     "@babylonjs/core": "4.1.0",
     "@babylonjs/materials": "4.1.0",
-    "@babylonjs/gui": "4.1.0"
+    "@babylonjs/loaders": "4.1.0",
+    "@babylonjs/gui": "4.1.0",
+    "earcut": "2.2.2",
+    "@jscad/modeling": "2.0.0-alpha.5",
+    "@jscad/io-utils": "2.0.0-alpha.5",
+    "@jscad/stl-serializer": "2.0.0-alpha.5"
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "~0.1000.7",

@@ -11,13 +11,13 @@ import {
     ValidationEntityInterface
 } from '../../validations';
 
-export function createDrawCurveBlock() {
+export function createDrawCurveBlock(): void {
 
     const resources = ResourcesService.getResources();
     const blockSelector = 'babylon_draw_curve';
 
     Blocks[blockSelector] = {
-        init() {
+        init(): void {
             this.appendValueInput('Curve')
                 .setCheck('NurbsCurve')
                 .setAlign(ALIGN_RIGHT)
@@ -76,27 +76,27 @@ export function createDrawCurveBlock() {
         const colors = [];
         const pointsToRender = [];
         points.forEach(pt => {
-            colors.push(new BABYLON.Color4(1, 1, 1, 0));
-            pointsToRender.push(new BABYLON.Vector3(pt[0], pt[1], pt[2]));
+            colors.push(new BitByBit.BABYLON.Color4(1, 1, 1, 0));
+            pointsToRender.push(new BitByBit.BABYLON.Vector3(pt[0], pt[1], pt[2]));
         });
 
         if(inputs.curveMesh && inputs.updatable){
             if(inputs.curveMesh.getTotalVertices() === points.length){
-                inputs.curveMesh = BABYLON.MeshBuilder.CreateLines(null, {points: pointsToRender, colors, instance: inputs.curveMesh, useVertexAlpha: true, updatable: inputs.updatable}, null);
+                inputs.curveMesh = BitByBit.BABYLON.MeshBuilder.CreateLines(null, {points: pointsToRender, colors, instance: inputs.curveMesh, useVertexAlpha: true, updatable: inputs.updatable}, null);
             } else {
                 inputs.curveMesh.dispose();
-                inputs.curveMesh = BABYLON.MeshBuilder.CreateLines('curves${Math.random()}', {points: pointsToRender, colors, useVertexAlpha: true, updatable: inputs.updatable}, scene);
+                inputs.curveMesh = BitByBit.BABYLON.MeshBuilder.CreateLines('curves${Math.random()}', {points: pointsToRender, colors, useVertexAlpha: true, updatable: inputs.updatable}, BitByBit.scene);
                 ${JavaScript.variableDB_.getName(block.getFieldValue('DrawnCurveMesh'), VARIABLE_CATEGORY_NAME)} = inputs.curveMesh;
             }
         } else {
-            inputs.curveMesh = BABYLON.MeshBuilder.CreateLines('curves${Math.random()}', {points: pointsToRender, colors, useVertexAlpha: true, updatable: inputs.updatable}, scene);
+            inputs.curveMesh = BitByBit.BABYLON.MeshBuilder.CreateLines('curves${Math.random()}', {points: pointsToRender, colors, useVertexAlpha: true, updatable: inputs.updatable}, BitByBit.scene);
             ${JavaScript.variableDB_.getName(block.getFieldValue('DrawnCurveMesh'), VARIABLE_CATEGORY_NAME)} = inputs.curveMesh;
         }
 
         inputs.curveMesh.enableEdgesRendering();
         inputs.curveMesh.edgesWidth = inputs.width;
-        const col = BABYLON.Color3.FromHexString(inputs.colour);
-        inputs.curveMesh.edgesColor = new BABYLON.Color4(col.r, col.g, col.b, inputs.opacity);
+        const col = BitByBit.BABYLON.Color3.FromHexString(inputs.colour);
+        inputs.curveMesh.edgesColor = new BitByBit.BABYLON.Color4(col.r, col.g, col.b, inputs.opacity);
         inputs.curveMesh.opacity = inputs.opacity;
 `);
     };

@@ -51,7 +51,7 @@ export function createCurveByKnotsControlPointsWeightsBlock() {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `return verb.geom.NurbsCurve.byKnotsControlPointsWeights(inputs.degree, inputs.knots, inputs.points, inputs.weights);`);
+            `return BitByBit.verb.geom.NurbsCurve.byKnotsControlPointsWeights(inputs.degree, inputs.knots, inputs.points, inputs.weights);`);
         return [code, JavaScript.ORDER_ATOMIC];
     };
 }

@@ -49,7 +49,7 @@ export function createExecuteAtIntervalWithHandlerBlock() {
             const interval = setInterval(() => {
                 inputs.statement_then();
             }, inputs.interval * 1000);
-            BitByBitBlocklyHelperService.intervalBag.push(interval);
+            BitByBit.BitByBitBlocklyHelperService.intervalBag.push(interval);
             return interval;
 `);
         return [code, JavaScript.ORDER_ATOMIC];

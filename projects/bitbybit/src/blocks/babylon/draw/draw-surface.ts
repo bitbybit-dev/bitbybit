@@ -84,7 +84,7 @@ export function createDrawSurfaceBlock() {
         });
 
         const createMesh = () => {
-            const vertexData = new BABYLON.VertexData();
+            const vertexData = new BitByBit.BABYLON.VertexData();
 
             vertexData.positions = meshDataConverted.positions;
             vertexData.indices = meshDataConverted.indices;
@@ -98,15 +98,15 @@ export function createDrawSurfaceBlock() {
         if(inputs.surfaceMesh && inputs.updatable){
             createMesh();
         } else {
-            inputs.surfaceMesh = new BABYLON.Mesh('custom${Math.random()}', scene);
+            inputs.surfaceMesh = new BitByBit.BABYLON.Mesh('custom${Math.random()}', BitByBit.scene);
             createMesh();
-            inputs.surfaceMesh.material = new BABYLON.StandardMaterial();
+            inputs.surfaceMesh.material = new BitByBit.BABYLON.StandardMaterial();
         }
 
         inputs.surfaceMesh.material.alpha = inputs.opacity;
-        inputs.surfaceMesh.material.diffuseColor = BABYLON.Color3.FromHexString(inputs.colour);
-        inputs.surfaceMesh.material.specularColor = new BABYLON.Color3(1, 1, 1);
-        inputs.surfaceMesh.material.ambientColor = new BABYLON.Color3(1, 1, 1);
+        inputs.surfaceMesh.material.diffuseColor = BitByBit.BABYLON.Color3.FromHexString(inputs.colour);
+        inputs.surfaceMesh.material.specularColor = new BitByBit.BABYLON.Color3(1, 1, 1);
+        inputs.surfaceMesh.material.ambientColor = new BitByBit.BABYLON.Color3(1, 1, 1);
         inputs.surfaceMesh.material.backFaceCulling = false;
         inputs.surfaceMesh.isPickable = false;
 `

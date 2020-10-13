@@ -40,9 +40,9 @@ export function createScaleCenterUniformBlock() {
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
 `
         return [
-            new BABYLON.Matrix.Translation(-inputs.center[0], -inputs.center[1], -inputs.center[2]),
-            new BABYLON.Matrix.Scaling(inputs.scale, inputs.scale, inputs.scale),
-            new BABYLON.Matrix.Translation(inputs.center[0], inputs.center[1], inputs.center[2]),
+            new BitByBit.BABYLON.Matrix.Translation(-inputs.center[0], -inputs.center[1], -inputs.center[2]),
+            new BitByBit.BABYLON.Matrix.Scaling(inputs.scale, inputs.scale, inputs.scale),
+            new BitByBit.BABYLON.Matrix.Translation(inputs.center[0], inputs.center[1], inputs.center[2]),
         ];
 `);
         return [code, JavaScript.ORDER_ATOMIC];

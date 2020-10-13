@@ -47,12 +47,12 @@ export function createCurveTransformBlock() {
     let transformedControlPoints = points;
     if(transformation.length && transformation.length > 0){
         transformation.forEach(transform => {
-            transformedControlPoints = BitByBitBlocklyHelperService.transformPointsByMatrix(transformedControlPoints, transform);
+            transformedControlPoints = BitByBit.BitByBitBlocklyHelperService.transformPointsByMatrix(transformedControlPoints, transform);
         });
     } else {
-        transformedControlPoints = BitByBitBlocklyHelperService.transformPointsByMatrix(points, transformation);
+        transformedControlPoints = BitByBit.BitByBitBlocklyHelperService.transformPointsByMatrix(points, transformation);
     }
-    return verb.geom.NurbsCurve.byKnotsControlPointsWeights(inputs.curve.degree(), inputs.curve.knots(), transformedControlPoints, inputs.curve.weights());
+    return BitByBit.verb.geom.NurbsCurve.byKnotsControlPointsWeights(inputs.curve.degree(), inputs.curve.knots(), transformedControlPoints, inputs.curve.weights());
 `);
         return [code, JavaScript.ORDER_ATOMIC];
     };

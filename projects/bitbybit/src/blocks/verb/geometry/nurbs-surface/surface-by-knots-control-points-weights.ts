@@ -62,7 +62,7 @@ export function createSurfaceByKnotsControlPointsWeightsBlock() {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `return verb.geom.NurbsSurface.byKnotsControlPointsWeights(inputs.degree_u, inputs.degree_v, inputs.knots_u, inputs.knots_v, inputs.points, inputs.weights);`);
+            `return BitByBit.verb.geom.NurbsSurface.byKnotsControlPointsWeights(inputs.degree_u, inputs.degree_v, inputs.knots_u, inputs.knots_v, inputs.points, inputs.weights);`);
         return [code, JavaScript.ORDER_ATOMIC];
     };
 }

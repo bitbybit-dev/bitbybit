@@ -11,14 +11,20 @@ import { createDrawPolylinesBlock } from './draw-polylines';
 import { createDrawSurfaceBlock } from './draw-surface';
 import { createDrawSurfacesBlock } from './draw-surfaces';
 import { createDrawSurfacesColoursBlock } from './draw-surfaces-colours';
+import { createDrawCsgMeshBlock } from './draw-csg-mesh';
+import { createDrawCsgMeshesBlock } from './draw-csg-meshes';
+import { createDrawNodeBlock } from './draw-node';
+import { createDrawNodesBlock } from './draw-nodes';
+import { createDraw2dPathBlock } from './draw-2d-path';
 
-export function assembleDrawBlocks(){
+export function assembleDrawBlocks(): void{
     createDrawPointBlock();
     createDrawPointsBlock();
     createDrawGridBlock();
     createDrawLineBlock();
     createDrawLinesBlock();
     createDrawPolylineBlock();
+    createDraw2dPathBlock();
     createDrawCurveBlock();
     createDrawCurvesBlock();
     createDrawSurfaceBlock();
@@ -26,4 +32,8 @@ export function assembleDrawBlocks(){
     createDrawSurfacesColoursBlock();
     createClearAllDrawnBlock();
     createDrawPolylinesBlock();
+    createDrawCsgMeshBlock();
+    createDrawCsgMeshesBlock();
+    createDrawNodeBlock();
+    createDrawNodesBlock();
 }

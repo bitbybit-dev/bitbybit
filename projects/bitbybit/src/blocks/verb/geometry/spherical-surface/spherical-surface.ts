@@ -40,7 +40,7 @@ export function createSphericalSurfaceBlock() {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `return new verb.geom.SphericalSurface(inputs.center, inputs.radius)`
+            `return new BitByBit.verb.geom.SphericalSurface(inputs.center, inputs.radius)`
         );
         return [code, JavaScript.ORDER_ATOMIC];
     };

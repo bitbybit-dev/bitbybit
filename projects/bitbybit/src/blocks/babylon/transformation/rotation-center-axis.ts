@@ -44,9 +44,9 @@ export function createRotationCenterAxisBlock() {
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
             `
         return [
-            new BABYLON.Matrix.Translation(-inputs.center[0], -inputs.center[1], -inputs.center[2]),
-            new BABYLON.Matrix.RotationAxis(new BABYLON.Vector3(inputs.axis[0], inputs.axis[1], inputs.axis[2]), BABYLON.Angle.FromDegrees(inputs.angle).radians()),
-            new BABYLON.Matrix.Translation(inputs.center[0], inputs.center[1], inputs.center[2]),
+            new BitByBit.BABYLON.Matrix.Translation(-inputs.center[0], -inputs.center[1], -inputs.center[2]),
+            new BitByBit.BABYLON.Matrix.RotationAxis(new BitByBit.BABYLON.Vector3(inputs.axis[0], inputs.axis[1], inputs.axis[2]), BitByBit.BABYLON.Angle.FromDegrees(inputs.angle).radians()),
+            new BitByBit.BABYLON.Matrix.Translation(inputs.center[0], inputs.center[1], inputs.center[2]),
         ];
 `);
         return [code, JavaScript.ORDER_ATOMIC];

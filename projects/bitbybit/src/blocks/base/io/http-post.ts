@@ -56,7 +56,7 @@ export function createHttpPostBlock() {
         (block as any).validationModel = runtimeValidationModel;
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
             `
-            return BitByBitBlocklyHelperService.angular.httpClient.post(inputs.url, inputs.body, inputs.options).toPromise();
+            return BitByBit.BitByBitBlocklyHelperService.angular.httpClient.post(inputs.url, inputs.body, inputs.options).toPromise();
 `
         );
         return [code, JavaScript.ORDER_ATOMIC];

@@ -10,8 +10,9 @@ import { createPointYBlock } from './point-y';
 import { createPointZBlock } from './point-z';
 import { createPointSpiralBlock } from './points-spiral';
 import { createPointsTransformBlock } from './points-transform';
+import { createPoint2dBlock } from './point-2d';
 
-export function assemblePointBlocks() {
+export function assemblePointBlocks(): void {
     createPointBlock();
     createPointDistanceBlock();
     createPointXBlock();
@@ -24,4 +25,5 @@ export function assemblePointBlocks() {
     createPointClosestFromPointsBlock();
     createPointClosestFromPointsDistanceBlock();
     createPointClosestFromPointsIndexBlock();
+    createPoint2dBlock();
 }

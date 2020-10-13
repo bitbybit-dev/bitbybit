@@ -10,7 +10,7 @@ export function createStandardContextIIFE(block: Block, componentName: string, i
     const inputs = {};
     ${filteredKeys.map(key => key.includes('statement_') ? assignStatements(key, inputs) : assignInputs(key, inputs)).join(`;
     `)};
-    BitByBitBlockHandlerService.handleBlock(blocklyWorkspace, '${block.id}', inputs)
+    BitByBit.BitByBitBlockHandlerService.handleBlock(BitByBit.blocklyWorkspace, '${block.id}', inputs)
 
     ${body}
 

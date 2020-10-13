@@ -35,7 +35,7 @@ export function createEllipseMaxAngleBlock() {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `return BABYLON.Angle.FromRadians(inputs.ellipse.maxAngle()).degrees();`
+            `return BitByBit.BABYLON.Angle.FromRadians(inputs.ellipse.maxAngle()).degrees();`
         );
         return [code, JavaScript.ORDER_ATOMIC];
     };

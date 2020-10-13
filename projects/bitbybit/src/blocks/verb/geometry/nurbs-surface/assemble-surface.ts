@@ -20,6 +20,8 @@ import { createSurfaceReverseBlock } from './surface-reverse';
 import { createSurfaceSplitBlock } from './surface-split';
 import { createSurfaceTransformBlock } from './surface-transform';
 import { createSurfaceWeightsBlock } from './surface-weights';
+import { createSurfaceIsocurvesBlock } from './surface-isocurves';
+import { createSurfaceIsocurvesSubdivisionBlock } from './surface-isocurves-subdivision';
 
 export function assembleSurfaceBlocks() {
     createSurfaceByCornersBlock();
@@ -42,6 +44,8 @@ export function assembleSurfaceBlocks() {
     createSurfaceSplitBlock();
     createSurfaceReverseBlock();
     createSurfaceIsocurveBlock();
+    createSurfaceIsocurvesBlock();
     createSurfaceBoundariesBlock();
     createSurfaceTransformBlock();
+    createSurfaceIsocurvesSubdivisionBlock();
 }

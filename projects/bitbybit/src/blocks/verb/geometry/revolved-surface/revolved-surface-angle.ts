@@ -35,7 +35,7 @@ export function createRevolvedSurfaceAngleBlock() {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `return BABYLON.Angle.FromRadians(inputs.revolution.angle()).degrees();`
+            `return BitByBit.BABYLON.Angle.FromRadians(inputs.revolution.angle()).degrees();`
         );
         return [code, JavaScript.ORDER_ATOMIC];
     };

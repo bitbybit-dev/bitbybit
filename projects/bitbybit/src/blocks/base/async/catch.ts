@@ -47,7 +47,7 @@ export function createCatchBlock() {
         (block as any).validationModel = runtimeValidationModel;
         return createStandardContextIIFE(block, blockSelector, inputs, false,
             `
-            const block = blocklyWorkspace.getBlockById('${block.id}');
+            const block = BitByBit.blocklyWorkspace.getBlockById('${block.id}');
             inputs.promise.catch((err) => {
                 inputs.error = err;
                 ${JavaScript.variableDB_.getName(block.getFieldValue('Error'), VARIABLE_CATEGORY_NAME)} = err;

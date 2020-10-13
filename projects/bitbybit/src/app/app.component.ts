@@ -1,11 +1,11 @@
-import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
-import { AfterViewInit, ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { HttpHeaders, HttpParams, HttpClient } from '@angular/common/http';
+import { AfterViewInit, ChangeDetectorRef, Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ArcRotateCamera, DirectionalLight, MeshBuilder } from '@babylonjs/core';
+import { ArcRotateCamera, DirectionalLight, TransformNode, HemisphericLight } from '@babylonjs/core';
 import { Engine } from '@babylonjs/core/Engines/engine';
 import '@babylonjs/core/Materials/standardMaterial';
-import { Color3, Color4, Matrix, Vector3 } from '@babylonjs/core/Maths/math';
+import { Color3, Color4, Vector3 } from '@babylonjs/core/Maths/math';
 import { Mesh } from '@babylonjs/core/Meshes/mesh';
 import '@babylonjs/core/Meshes/meshBuilder';
 import { Scene } from '@babylonjs/core/scene';
@@ -33,6 +33,7 @@ import { themeStyle } from './models/theme-styles.model';
 import { toolboxDefinition } from './models/toolbox-definition';
 import { SettingsService } from './shared/setting.service';
 import { TagService } from './tags/tag.service';
+import { MatDrawer } from '@angular/material/sidenav';
 
 @Component({
     selector: 'app-root',
@@ -53,6 +54,7 @@ export class AppComponent implements OnInit, AfterViewInit {
     firstTimeOpen = true;
     tagsNeedUpdate = false;
     timePassedFromPreviousIteration = 0;
+    @ViewChild('drawer', { static: true }) drawerElement: MatDrawer;
 
     constructor(
         public dialog: MatDialog,
@@ -107,18 +109,21 @@ export class AppComponent implements OnInit, AfterViewInit {
             this.engine = new Engine(canvas);
             this.scene = new Scene(this.engine);
             this.scene.clearColor = new Color4(1, 1, 1, 1);
-
+            const tnode = new TransformNode('root', this.scene);
             const camera = new ArcRotateCamera('Camera', 0, 10, 10, new Vector3(0, 0, 0), this.scene);
             camera.setPosition(new Vector3(0, 10, 20));
             camera.attachControl(canvas, true);
             const light = new DirectionalLight('DirectionalLight', new Vector3(10, 10, 0), this.scene);
             light.diffuse = new Color3(1, 1, 1);
             light.specular = new Color3(1, 1, 1);
-            light.intensity = 1;
+            light.intensity = 0.6;
             const light2 = new DirectionalLight('DirectionalLight', new Vector3(-10, 10, -10), this.scene);
             light2.diffuse = new Color3(1, 1, 1);
             light2.specular = new Color3(1, 1, 1);
-            light2.intensity = 1;
+            light2.intensity = 0.6;
+            const light3 = new HemisphericLight('HemiLight', new Vector3(0, 1, 0), this.scene);
+            light3.intensity = 0.2;
+
             this.scene.ambientColor = new Color3(0.1, 0.1, 0.1);
 
             this.windowBlockly = {};
@@ -277,6 +282,11 @@ export class AppComponent implements OnInit, AfterViewInit {
         this.openSponsorsDialog();
     }
 
+    swapCanvas() {
+        this.drawerElement.toggle();
+        Blockly.hideChaff();
+    }
+
     cleanCanvas() {
         this.workspace.clear();
         this.router.navigate(['/']);
@@ -284,6 +294,7 @@ export class AppComponent implements OnInit, AfterViewInit {
     }
 
     run() {
+
         try {
             this.clearMeshesAndMaterials();
             this.tagService.removeTagsIfNeeded();
@@ -301,13 +312,15 @@ export class AppComponent implements OnInit, AfterViewInit {
             const code = javascript.workspaceToCode(this.workspace);
             eval(`
 'use reserved'
-const scene = window.blockly.scene;
-const blocklyWorkspace = window.blockly.workspace;
-const BABYLON = window.BABYLON;
-const verb = window.verb;
-const Blockly = window.BlocklyGlobal;
-const BitByBitBlockHandlerService = window.BitByBitBlockHandlerService;
-const BitByBitBlocklyHelperService = window.BitByBitBlocklyHelperService;
+const BitByBit = {
+    scene: window.blockly.scene,
+    blocklyWorkspace: window.blockly.workspace,
+    BABYLON: window.BABYLON,
+    verb: window.verb,
+    BitByBitBlockHandlerService: window.BitByBitBlockHandlerService,
+    BitByBitBlocklyHelperService: window.BitByBitBlocklyHelperService,
+    CSG: window.CSG
+};
 ${code}
             `);
 
@@ -331,6 +344,12 @@ ${code}
         this.scene.meshes = [];
         this.scene.materials.forEach(m => m.dispose());
         this.scene.materials = [];
+        this.scene.transformNodes.forEach(t => {
+            if (t.name !== 'root') {
+                t.dispose();
+            }
+        });
+        this.scene.transformNodes = [this.scene.getTransformNodeByName('root')];
     }
 
     private openAlertDialog(error: { title: string, details: string, message: string }): void {
@@ -398,4 +417,5 @@ ${code}
             prompt.callback(null);
         });
     }
+
 }

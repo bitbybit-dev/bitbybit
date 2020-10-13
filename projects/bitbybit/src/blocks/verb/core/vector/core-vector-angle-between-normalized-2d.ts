@@ -41,7 +41,7 @@ export function createCoreVectorAngleBetweenNormalized2dBlock() {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `return verb.core.Vec.angleBetweenNormalized2d(inputs.first, inputs.second);`);
+            `return BitByBit.verb.core.Vec.angleBetweenNormalized2d(inputs.first, inputs.second);`);
 
         return [code, JavaScript.ORDER_ATOMIC];
     };

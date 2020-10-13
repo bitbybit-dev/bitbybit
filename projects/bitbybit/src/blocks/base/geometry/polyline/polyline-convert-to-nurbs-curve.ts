@@ -32,7 +32,7 @@ export function createPolylineConvertToNurbsCurveBlock() {
         ]));
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `return verb.geom.NurbsCurve.byPoints(inputs.polyline.points, 1);`
+            `return BitByBit.verb.geom.NurbsCurve.byPoints(inputs.polyline.points, 1);`
         );
         return [code, JavaScript.ORDER_ATOMIC];
     };

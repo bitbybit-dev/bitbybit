@@ -62,7 +62,7 @@ export function createPointSpiralBlock() {
     const b = Math.log(phi) / (Math.PI / inputs.widening);
     const spiral = [];
     const step = inputs.radius / inputs.numberPoints;
-    for(let i = 0; i <= inputs.radius; i += step){
+    for(let i = 0; i < inputs.radius; i += step){
         const th = Math.log(i / inputs.factor) / b;
         const x = i * Math.cos(th);
         const y = i * Math.sin(th);

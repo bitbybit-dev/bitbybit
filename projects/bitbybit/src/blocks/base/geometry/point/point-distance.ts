@@ -43,7 +43,7 @@ export function createPointDistanceBlock() {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `return verb.core.Vec.dist(inputs.startPoint, inputs.endPoint);`
+            `return BitByBit.verb.core.Vec.dist(inputs.startPoint, inputs.endPoint);`
         );
         return [code, JavaScript.ORDER_ATOMIC];
     };

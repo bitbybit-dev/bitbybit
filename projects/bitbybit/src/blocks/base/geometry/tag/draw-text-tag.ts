@@ -53,20 +53,20 @@ export function createDrawTextTagBlock() {
             inputs.tagVariable = ${JavaScript.variableDB_.getName(block.getFieldValue('DrawnTextTag'), VARIABLE_CATEGORY_NAME)};
 
             if(inputs.tagVariable && inputs.updatable) {
-                const tagToUpdate = BitByBitBlocklyHelperService.tagBag.find(tag => tag.id === inputs.tagVariable.id);
+                const tagToUpdate = BitByBit.BitByBitBlocklyHelperService.tagBag.find(tag => tag.id === inputs.tagVariable.id);
                 Object.keys(inputs.textTag).forEach(key => {
                     tagToUpdate[key] = inputs.textTag[key];
                 });
                 tagToUpdate.needsUpdate = true;
             } else {
                 const textNode = document.createElement('span');
-                const id = '_tag' + ${new Date().getTime()} + BitByBitBlocklyHelperService.tagBag.length;
+                const id = '_tag' + ${new Date().getTime()} + BitByBit.BitByBitBlocklyHelperService.tagBag.length;
                 inputs.textTag.id = id;
                 textNode.id = id;
                 textNode.textContent = inputs.textTag.text;
                 document.querySelector('.canvasZone').appendChild(textNode);
                 inputs.textTag.needsUpdate = true;
-                BitByBitBlocklyHelperService.tagBag.push(inputs.textTag);
+                BitByBit.BitByBitBlocklyHelperService.tagBag.push(inputs.textTag);
                 ${JavaScript.variableDB_.getName(block.getFieldValue('DrawnTextTag'), VARIABLE_CATEGORY_NAME)} = inputs.textTag;
             }
 `);
@@ -96,10 +96,10 @@ function makeRuntimeValidationModel(
 //     /* Assigning Inputs */
 //     const inputs = {};
 //     inputs['colour'] = '#000000';
-//     BitByBitBlockHandlerService.handleBlock(blocklyWorkspace, 'OXbWcW.q8]VB0SOQ1O;$', inputs)
+//     BitByBit.BitByBitBlockHandlerService.handleBlock(BitByBit.blocklyWorkspace, 'OXbWcW.q8]VB0SOQ1O;$', inputs)
 
 
-//     scene.clearColor = BABYLON.Color3.FromHexString(inputs.colour);
+//     scene.clearColor = BitByBit.BABYLON.Color3.FromHexString(inputs.colour);
 
 
 //     /* End Component: "babylon_scene_background_colour" */
@@ -120,19 +120,19 @@ function makeRuntimeValidationModel(
 //     inputs['mainColor'] = '#ffffff';
 //     inputs['secondaryColor'] = '#c0c0c0';
 //     inputs['gridVariable'] = gridMesh;
-//     BitByBitBlockHandlerService.handleBlock(blocklyWorkspace, '/W/#[TX.f(q7h0]!{P6p', inputs)
+//     BitByBit.BitByBitBlockHandlerService.handleBlock(BitByBit.blocklyWorkspace, '/W/#[TX.f(q7h0]!{P6p', inputs)
 
 
-//     const groundMaterial = new BABYLON.GridMaterial('groundMaterial0.2940005753135404', scene);
+//     const groundMaterial = new BitByBit.BABYLON.GridMaterial('groundMaterial0.2940005753135404', BitByBit.scene);
 //     groundMaterial.majorUnitFrequency = inputs.majorUnitFrequency;
 //     groundMaterial.minorUnitVisibility = inputs.minorUnitVisibility;
 //     groundMaterial.gridRatio = inputs.gridRatio;
 //     groundMaterial.backFaceCulling = inputs.backFaceCulling;
-//     groundMaterial.mainColor = BABYLON.Color3.FromHexString(inputs.mainColor);
-//     groundMaterial.lineColor = BABYLON.Color3.FromHexString(inputs.secondaryColor);
+//     groundMaterial.mainColor = BitByBit.BABYLON.Color3.FromHexString(inputs.mainColor);
+//     groundMaterial.lineColor = BitByBit.BABYLON.Color3.FromHexString(inputs.secondaryColor);
 //     groundMaterial.opacity = inputs.opacity;
 
-//     const ground = BABYLON.Mesh.CreateGround('ground0.9958908545734881', inputs.width, inputs.height, inputs.subdivisions, scene, false);
+//     const ground = BitByBit.BABYLON.Mesh.CreateGround('ground0.9958908545734881', inputs.width, inputs.height, inputs.subdivisions, BitByBit.scene, false);
 //     ground.material = groundMaterial;
 //     gridMesh = ground;
 
@@ -152,7 +152,7 @@ function makeRuntimeValidationModel(
 //                 inputs['x'] = 0;
 //                 inputs['y'] = 0;
 //                 inputs['z'] = 0;
-//                 BitByBitBlockHandlerService.handleBlock(blocklyWorkspace, 'wvW+[SwyxoQE4SlrEGh1', inputs)
+//                 BitByBit.BitByBitBlockHandlerService.handleBlock(BitByBit.blocklyWorkspace, 'wvW+[SwyxoQE4SlrEGh1', inputs)
 
 //                 return [inputs.x, inputs.y, inputs.z];
 
@@ -166,7 +166,7 @@ function makeRuntimeValidationModel(
 //                 inputs['x'] = 0;
 //                 inputs['y'] = 0.3;
 //                 inputs['z'] = 2;
-//                 BitByBitBlockHandlerService.handleBlock(blocklyWorkspace, 'AW~%c-,jVk*rM4RooZed', inputs)
+//                 BitByBit.BitByBitBlockHandlerService.handleBlock(BitByBit.blocklyWorkspace, 'AW~%c-,jVk*rM4RooZed', inputs)
 
 //                 return [inputs.x, inputs.y, inputs.z];
 
@@ -180,7 +180,7 @@ function makeRuntimeValidationModel(
 //                 inputs['x'] = 1;
 //                 inputs['y'] = 0;
 //                 inputs['z'] = 0;
-//                 BitByBitBlockHandlerService.handleBlock(blocklyWorkspace, 'is.*$(=V2qszKrHiPU^X', inputs)
+//                 BitByBit.BitByBitBlockHandlerService.handleBlock(BitByBit.blocklyWorkspace, 'is.*$(=V2qszKrHiPU^X', inputs)
 
 //                 return [inputs.x, inputs.y, inputs.z];
 
@@ -194,7 +194,7 @@ function makeRuntimeValidationModel(
 //                 inputs['x'] = 3;
 //                 inputs['y'] = 0;
 //                 inputs['z'] = (-1);
-//                 BitByBitBlockHandlerService.handleBlock(blocklyWorkspace, 'An$ED6rPzTDbcRMdenbL', inputs)
+//                 BitByBit.BitByBitBlockHandlerService.handleBlock(BitByBit.blocklyWorkspace, 'An$ED6rPzTDbcRMdenbL', inputs)
 
 //                 return [inputs.x, inputs.y, inputs.z];
 
@@ -208,7 +208,7 @@ function makeRuntimeValidationModel(
 //                 inputs['x'] = (-1);
 //                 inputs['y'] = 0.3;
 //                 inputs['z'] = 1;
-//                 BitByBitBlockHandlerService.handleBlock(blocklyWorkspace, 'jNO+RB#(KE2QunUC_:DH', inputs)
+//                 BitByBit.BitByBitBlockHandlerService.handleBlock(BitByBit.blocklyWorkspace, 'jNO+RB#(KE2QunUC_:DH', inputs)
 
 //                 return [inputs.x, inputs.y, inputs.z];
 
@@ -216,9 +216,9 @@ function makeRuntimeValidationModel(
 //             })()
 //         ];
 //         inputs['degree'] = 3;
-//         BitByBitBlockHandlerService.handleBlock(blocklyWorkspace, '}cED{E|$(`}lB+i-`8g_', inputs)
+//         BitByBit.BitByBitBlockHandlerService.handleBlock(BitByBit.blocklyWorkspace, '}cED{E|$(`}lB+i-`8g_', inputs)
 
-//         return verb.geom.NurbsCurve.byPoints(inputs.points, inputs.degree);
+//         return BitByBit.verb.geom.NurbsCurve.byPoints(inputs.points, inputs.degree);
 
 //         /* End Component: "verb_geometry_nurbs_curve_by_points" */
 //     })()
@@ -230,7 +230,7 @@ function makeRuntimeValidationModel(
 //         const inputs = {};
 //         inputs['curve'] = curveForGCode;
 //         inputs['tolerance'] = 0.000001;
-//         BitByBitBlockHandlerService.handleBlock(blocklyWorkspace, '9HG5xqsuAWb5]B?U6Ffm', inputs)
+//         BitByBit.BitByBitBlockHandlerService.handleBlock(BitByBit.blocklyWorkspace, '9HG5xqsuAWb5]B?U6Ffm', inputs)
 
 //         return inputs.curve.tessellate(inputs.tolerance);
 
@@ -257,7 +257,7 @@ function makeRuntimeValidationModel(
 //                     /* Assigning Inputs */
 //                     const inputs = {};
 //                     inputs['point'] = curvePoint;
-//                     BitByBitBlockHandlerService.handleBlock(blocklyWorkspace, 'x#CMQOg_{yUR0)l[(%og', inputs)
+//                     BitByBit.BitByBitBlockHandlerService.handleBlock(BitByBit.blocklyWorkspace, 'x#CMQOg_{yUR0)l[(%og', inputs)
 
 //                     return inputs.point[0];
 
@@ -265,7 +265,7 @@ function makeRuntimeValidationModel(
 //                 })()
 //                 ;
 //             inputs['decimalPlaces'] = 3;
-//             BitByBitBlockHandlerService.handleBlock(blocklyWorkspace, 'q%]BA/Fim/#bo7TXtHd:', inputs)
+//             BitByBit.BitByBitBlockHandlerService.handleBlock(BitByBit.blocklyWorkspace, 'q%]BA/Fim/#bo7TXtHd:', inputs)
 
 
 //             return inputs.numberToRound.toFixed(inputs.decimalPlaces);
@@ -284,7 +284,7 @@ function makeRuntimeValidationModel(
 //                     /* Assigning Inputs */
 //                     const inputs = {};
 //                     inputs['point'] = curvePoint;
-//                     BitByBitBlockHandlerService.handleBlock(blocklyWorkspace, ':rr3^rQQjw_jSWXQL}J$', inputs)
+//                     BitByBit.BitByBitBlockHandlerService.handleBlock(BitByBit.blocklyWorkspace, ':rr3^rQQjw_jSWXQL}J$', inputs)
 
 //                     return inputs.point[2];
 
@@ -292,7 +292,7 @@ function makeRuntimeValidationModel(
 //                 })()
 //                 ;
 //             inputs['decimalPlaces'] = 3;
-//             BitByBitBlockHandlerService.handleBlock(blocklyWorkspace, 'Ah[BtAMP.hv^nt0M3))(', inputs)
+//             BitByBit.BitByBitBlockHandlerService.handleBlock(BitByBit.blocklyWorkspace, 'Ah[BtAMP.hv^nt0M3))(', inputs)
 
 
 //             return inputs.numberToRound.toFixed(inputs.decimalPlaces);
@@ -311,7 +311,7 @@ function makeRuntimeValidationModel(
 //                     /* Assigning Inputs */
 //                     const inputs = {};
 //                     inputs['point'] = curvePoint;
-//                     BitByBitBlockHandlerService.handleBlock(blocklyWorkspace, 'e/Z,/L5@MP}]P@:t#cPg', inputs)
+//                     BitByBit.BitByBitBlockHandlerService.handleBlock(BitByBit.blocklyWorkspace, 'e/Z,/L5@MP}]P@:t#cPg', inputs)
 
 //                     return inputs.point[1];
 
@@ -319,7 +319,7 @@ function makeRuntimeValidationModel(
 //                 })()
 //                 ;
 //             inputs['decimalPlaces'] = 3;
-//             BitByBitBlockHandlerService.handleBlock(blocklyWorkspace, '@sDOkkIX.}4#B;nkB0!|', inputs)
+//             BitByBit.BitByBitBlockHandlerService.handleBlock(BitByBit.blocklyWorkspace, '@sDOkkIX.}4#B;nkB0!|', inputs)
 
 
 //             return inputs.numberToRound.toFixed(inputs.decimalPlaces);
@@ -345,7 +345,7 @@ function makeRuntimeValidationModel(
 //                             /* Assigning Inputs */
 //                             const inputs = {};
 //                             inputs['point'] = curvePoint;
-//                             BitByBitBlockHandlerService.handleBlock(blocklyWorkspace, 'n2B4zw`fimAL-k=LMc;S', inputs)
+//                             BitByBit.BitByBitBlockHandlerService.handleBlock(BitByBit.blocklyWorkspace, 'n2B4zw`fimAL-k=LMc;S', inputs)
 
 //                             return inputs.point[0];
 
@@ -358,7 +358,7 @@ function makeRuntimeValidationModel(
 //                             /* Assigning Inputs */
 //                             const inputs = {};
 //                             inputs['point'] = curvePoint;
-//                             BitByBitBlockHandlerService.handleBlock(blocklyWorkspace, 'ykVe[SR9#K[5]]E^p#36', inputs)
+//                             BitByBit.BitByBitBlockHandlerService.handleBlock(BitByBit.blocklyWorkspace, 'ykVe[SR9#K[5]]E^p#36', inputs)
 
 //                             return inputs.point[1];
 
@@ -371,14 +371,14 @@ function makeRuntimeValidationModel(
 //                             /* Assigning Inputs */
 //                             const inputs = {};
 //                             inputs['point'] = curvePoint;
-//                             BitByBitBlockHandlerService.handleBlock(blocklyWorkspace, '1h*uGFjvn+4P97si4]sJ', inputs)
+//                             BitByBit.BitByBitBlockHandlerService.handleBlock(BitByBit.blocklyWorkspace, '1h*uGFjvn+4P97si4]sJ', inputs)
 
 //                             return inputs.point[2];
 
 //                             /* End Component: "base_geometry_point_z" */
 //                         })()
 //                         - 0.1);
-//                     BitByBitBlockHandlerService.handleBlock(blocklyWorkspace, '$P$,anc}b`j=8?0O6bWP', inputs)
+//                     BitByBit.BitByBitBlockHandlerService.handleBlock(BitByBit.blocklyWorkspace, '$P$,anc}b`j=8?0O6bWP', inputs)
 
 //                     return [inputs.x, inputs.y, inputs.z];
 
@@ -388,7 +388,7 @@ function makeRuntimeValidationModel(
 //             inputs['colour'] = '#ff99ff';
 //             inputs['size'] = 8;
 //             inputs['adaptDepth'] = true;
-//             BitByBitBlockHandlerService.handleBlock(blocklyWorkspace, 'F}(.-D}N5*.9zl?R-6l}', inputs)
+//             BitByBit.BitByBitBlockHandlerService.handleBlock(BitByBit.blocklyWorkspace, 'F}(.-D}N5*.9zl?R-6l}', inputs)
 
 
 //             return {
@@ -411,9 +411,9 @@ function makeRuntimeValidationModel(
 //     /* Assigning Inputs */
 //     const inputs = {};
 //     inputs['text'] = gCodeText;
-//     BitByBitBlockHandlerService.handleBlock(blocklyWorkspace, '[I0]J,t%jNhNp#~x(s;@', inputs)
+//     BitByBit.BitByBitBlockHandlerService.handleBlock(BitByBit.blocklyWorkspace, '[I0]J,t%jNhNp#~x(s;@', inputs)
 
-//     BitByBitBlocklyHelperService.promptPrintSave({ text: inputs.text });
+//     BitByBit.BitByBitBlocklyHelperService.promptPrintSave({ text: inputs.text });
 
 //     /* End Component: "base_io_print_save" */
 // })();
@@ -423,7 +423,7 @@ function makeRuntimeValidationModel(
 //     /* Assigning Inputs */
 //     const inputs = {};
 //     inputs['textTags'] = gCodeTags;
-//     BitByBitBlockHandlerService.handleBlock(blocklyWorkspace, '=}bFZgtfJQ}vDO[7q+|?', inputs)
+//     BitByBit.BitByBitBlockHandlerService.handleBlock(BitByBit.blocklyWorkspace, '=}bFZgtfJQ}vDO[7q+|?', inputs)
 
 
 //     inputs.tagsVariable = tags;
@@ -435,18 +435,18 @@ function makeRuntimeValidationModel(
 //             for (let i = inputs.tagsVariable.length - 1; i < inputs.textTags.length - 1; i++) {
 //                 const tagToCreate = inputs.textTags[i];
 //                 const textNode = document.createElement('span');
-//                 const id = '_tag' + 1597740022360 + BitByBitBlocklyHelperService.tagBag.length;
+//                 const id = '_tag' + 1597740022360 + BitByBit.BitByBitBlocklyHelperService.tagBag.length;
 //                 tagToCreate.id = id;
 //                 textNode.id = id;
 //                 document.querySelector('.canvasZone').appendChild(textNode);
 //                 tagToCreate.needsUpdate = true;
-//                 BitByBitBlocklyHelperService.tagBag.push(tagToCreate);
+//                 BitByBit.BitByBitBlocklyHelperService.tagBag.push(tagToCreate);
 //                 inputs.tagsVariable.push(tagToCreate);
 //             }
 //         }
 
 //         inputs.tagsVariable.forEach((tagFromVar, index) => {
-//             const tagToUpdate = BitByBitBlocklyHelperService.tagBag.find(tag => tag.id === tagFromVar.id);
+//             const tagToUpdate = BitByBit.BitByBitBlocklyHelperService.tagBag.find(tag => tag.id === tagFromVar.id);
 //             const tagToUpdateWith = inputs.textTags[index];
 //             if (tagToUpdateWith) {
 //                 Object.keys(tagToUpdateWith).forEach(key => {
@@ -455,7 +455,7 @@ function makeRuntimeValidationModel(
 //                 tagToUpdate.needsUpdate = true;
 //             } else {
 //                 // delete tag
-//                 BitByBitBlocklyHelperService.tagBag = BitByBitBlocklyHelperService.tagBag.filter(tag => tag.id !== tagToUpdate.id)
+//                 BitByBit.BitByBitBlocklyHelperService.tagBag = BitByBit.BitByBitBlocklyHelperService.tagBag.filter(tag => tag.id !== tagToUpdate.id)
 //                 const element = document.getElementById(tagToUpdate.id);
 //                 element.parentNode.removeChild(element);
 //             }
@@ -464,13 +464,13 @@ function makeRuntimeValidationModel(
 //         const tags = [];
 //         inputs.textTags.forEach((tag, index) => {
 //             const textNode = document.createElement('span');
-//             const id = '_tag' + 1597740022360 + BitByBitBlocklyHelperService.tagBag.length;
+//             const id = '_tag' + 1597740022360 + BitByBit.BitByBitBlocklyHelperService.tagBag.length;
 //             tag.id = id;
 //             textNode.id = id;
 //             textNode.textContent = tag.text;
 //             document.querySelector('.canvasZone').appendChild(textNode);
 //             tag.needsUpdate = true;
-//             BitByBitBlocklyHelperService.tagBag.push(tag);
+//             BitByBit.BitByBitBlocklyHelperService.tagBag.push(tag);
 //             tags.push(tag);
 //         });
 //         tags = tags;
@@ -490,12 +490,12 @@ function makeRuntimeValidationModel(
 //     inputs['opacity'] = 1;
 //     inputs['size'] = 10;
 //     inputs['updatable'] = false;
-//     BitByBitBlockHandlerService.handleBlock(blocklyWorkspace, 'q7w#xP02w}d#}#Mw``^@', inputs)
+//     BitByBit.BitByBitBlockHandlerService.handleBlock(BitByBit.blocklyWorkspace, 'q7w#xP02w}d#}#Mw``^@', inputs)
 
 
 //     inputs.pointsMeshVariable = pointsMesh;
 //     const vectorPoints = inputs.points;
-//     const colour = BABYLON.Color3.FromHexString(inputs.colour);
+//     const colour = BitByBit.BABYLON.Color3.FromHexString(inputs.colour);
 //     const positions = [];
 //     const colors = [];
 
@@ -507,18 +507,18 @@ function makeRuntimeValidationModel(
 
 //     const createNewMesh = () => {
 
-//         const vertexData = new BABYLON.VertexData();
+//         const vertexData = new BitByBit.BABYLON.VertexData();
 
 //         vertexData.positions = positions;
 //         vertexData.colors = colors;
 
-//         inputs.pointsMeshVariable = new BABYLON.Mesh('inputs.pointsMeshVariable0.7279862239597046', scene);
+//         inputs.pointsMeshVariable = new BitByBit.BABYLON.Mesh('inputs.pointsMeshVariable0.7279862239597046', BitByBit.scene);
 //         vertexData.applyToMesh(inputs.pointsMeshVariable, inputs.updatable);
 
-//         const mat = new BABYLON.StandardMaterial('mat0.05590442329434375', scene);
+//         const mat = new BitByBit.BABYLON.StandardMaterial('mat0.05590442329434375', BitByBit.scene);
 //         inputs.pointsMeshVariable.material = mat;
 
-//         inputs.pointsMeshVariable.material.emissiveColor = new BABYLON.Color3(1, 1, 1);
+//         inputs.pointsMeshVariable.material.emissiveColor = new BitByBit.BABYLON.Color3(1, 1, 1);
 //         inputs.pointsMeshVariable.material.disableLighting = true;
 //         inputs.pointsMeshVariable.material.pointsCloud = true;
 //         inputs.pointsMeshVariable.material.alpha = inputs.opacity;
@@ -560,7 +560,7 @@ function makeRuntimeValidationModel(
 //     inputs['opacity'] = 1;
 //     inputs['width'] = 1;
 //     inputs['updatable'] = false;
-//     BitByBitBlockHandlerService.handleBlock(blocklyWorkspace, 'MaNo:J`2L`?gYM5I_m]g', inputs)
+//     BitByBit.BitByBitBlockHandlerService.handleBlock(BitByBit.blocklyWorkspace, 'MaNo:J`2L`?gYM5I_m]g', inputs)
 
 
 //     inputs.curveMesh = curveMesh;
@@ -570,27 +570,27 @@ function makeRuntimeValidationModel(
 //     const colors = [];
 //     const pointsToRender = [];
 //     points.forEach(pt => {
-//         colors.push(new BABYLON.Color4(1, 1, 1, 0));
-//         pointsToRender.push(new BABYLON.Vector3(pt[0], pt[1], pt[2]));
+//         colors.push(new BitByBit.BABYLON.Color4(1, 1, 1, 0));
+//         pointsToRender.push(new BitByBit.BABYLON.Vector3(pt[0], pt[1], pt[2]));
 //     });
 
 //     if (inputs.curveMesh && inputs.updatable) {
 //         if (inputs.curveMesh.getTotalVertices() === points.length) {
-//             inputs.curveMesh = BABYLON.MeshBuilder.CreateLines(null, { points: pointsToRender, colors, instance: inputs.curveMesh, useVertexAlpha: true, updatable: inputs.updatable }, null);
+//             inputs.curveMesh = BitByBit.BABYLON.MeshBuilder.CreateLines(null, { points: pointsToRender, colors, instance: inputs.curveMesh, useVertexAlpha: true, updatable: inputs.updatable }, null);
 //         } else {
 //             inputs.curveMesh.dispose();
-//             inputs.curveMesh = BABYLON.MeshBuilder.CreateLines('curves0.46538421660397233', { points: pointsToRender, colors, useVertexAlpha: true, updatable: inputs.updatable }, scene);
+//             inputs.curveMesh = BitByBit.BABYLON.MeshBuilder.CreateLines('curves0.46538421660397233', { points: pointsToRender, colors, useVertexAlpha: true, updatable: inputs.updatable }, BitByBit.scene);
 //             curveMesh = inputs.curveMesh;
 //         }
 //     } else {
-//         inputs.curveMesh = BABYLON.MeshBuilder.CreateLines('curves0.11915521692642583', { points: pointsToRender, colors, useVertexAlpha: true, updatable: inputs.updatable }, scene);
+//         inputs.curveMesh = BitByBit.BABYLON.MeshBuilder.CreateLines('curves0.11915521692642583', { points: pointsToRender, colors, useVertexAlpha: true, updatable: inputs.updatable }, BitByBit.scene);
 //         curveMesh = inputs.curveMesh;
 //     }
 
 //     inputs.curveMesh.enableEdgesRendering();
 //     inputs.curveMesh.edgesWidth = inputs.width;
-//     const col = BABYLON.Color3.FromHexString(inputs.colour);
-//     inputs.curveMesh.edgesColor = new BABYLON.Color4(col.r, col.g, col.b, inputs.opacity);
+//     const col = BitByBit.BABYLON.Color3.FromHexString(inputs.colour);
+//     inputs.curveMesh.edgesColor = new BitByBit.BABYLON.Color4(col.r, col.g, col.b, inputs.opacity);
 //     inputs.curveMesh.opacity = inputs.opacity;
 
 

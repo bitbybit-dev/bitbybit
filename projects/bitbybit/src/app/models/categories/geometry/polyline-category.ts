@@ -25,7 +25,7 @@ export function polylineCategory() {
                     <field name="BOOL">FALSE</field>
                 </shadow>
             </value>
-        </block>   
+        </block>
         <block type="babylon_draw_polylines">
             <value name="Colour">
                 <shadow type="colour_picker">

@@ -49,7 +49,7 @@ export function createLinesBlock() {
 `
         return inputs.startPoints
             .map((s, index) => ({start: s, end: inputs.endPoints[index]}))
-            .filter(line => verb.core.Vec.dist(line.start, line.end) !== 0);
+            .filter(line => BitByBit.verb.core.Vec.dist(line.start, line.end) !== 0);
 `
         );
         return [code, JavaScript.ORDER_ATOMIC];

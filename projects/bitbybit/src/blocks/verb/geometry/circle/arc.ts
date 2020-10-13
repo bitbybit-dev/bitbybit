@@ -67,7 +67,7 @@ export function createArcBlock() {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `return new verb.geom.Arc(inputs.center, inputs.xAxis, inputs.yAxis, inputs.radius, BABYLON.Angle.FromDegrees(inputs.minAngle).radians(), BABYLON.Angle.FromDegrees(inputs.maxAngle).radians());`
+            `return new BitByBit.verb.geom.Arc(inputs.center, inputs.xAxis, inputs.yAxis, inputs.radius, BitByBit.BABYLON.Angle.FromDegrees(inputs.minAngle).radians(), BitByBit.BABYLON.Angle.FromDegrees(inputs.maxAngle).radians());`
         );
         return [code, JavaScript.ORDER_ATOMIC];
     };

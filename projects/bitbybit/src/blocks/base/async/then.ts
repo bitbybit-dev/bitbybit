@@ -48,7 +48,7 @@ export function createThenBlock() {
         (block as any).validationModel = runtimeValidationModel;
         return createStandardContextIIFE(block, blockSelector, inputs, false,
             `
-            const block = blocklyWorkspace.getBlockById('${block.id}');
+            const block = BitByBit.blocklyWorkspace.getBlockById('${block.id}');
             block.inputList[2].setVisible(true);
             block.inputList[2].setAlign(-1);
 

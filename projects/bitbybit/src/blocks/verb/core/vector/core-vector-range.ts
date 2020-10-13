@@ -36,7 +36,7 @@ export function createCoreVectorRangeBlock() {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `return verb.core.Vec.range(inputs.max);`);
+            `return BitByBit.verb.core.Vec.range(inputs.max);`);
 
         return [code, JavaScript.ORDER_ATOMIC];
     };

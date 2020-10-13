@@ -103,16 +103,16 @@ export function createDrawGridBlock() {
 
         return createStandardContextIIFE(block, blockSelector, inputs, false,
             `
-        const groundMaterial = new BABYLON.GridMaterial('groundMaterial${Math.random()}', scene);
+        const groundMaterial = new BitByBit.BABYLON.GridMaterial('groundMaterial${Math.random()}', BitByBit.scene);
         groundMaterial.majorUnitFrequency = inputs.majorUnitFrequency;
         groundMaterial.minorUnitVisibility = inputs.minorUnitVisibility;
         groundMaterial.gridRatio = inputs.gridRatio;
         groundMaterial.backFaceCulling = inputs.backFaceCulling;
-        groundMaterial.mainColor = BABYLON.Color3.FromHexString(inputs.mainColor);
-        groundMaterial.lineColor = BABYLON.Color3.FromHexString(inputs.secondaryColor);
+        groundMaterial.mainColor = BitByBit.BABYLON.Color3.FromHexString(inputs.mainColor);
+        groundMaterial.lineColor = BitByBit.BABYLON.Color3.FromHexString(inputs.secondaryColor);
         groundMaterial.opacity = inputs.opacity;
 
-        const ground = BABYLON.Mesh.CreateGround('ground${Math.random()}', inputs.width, inputs.height, inputs.subdivisions, scene, false);
+        const ground = BitByBit.BABYLON.Mesh.CreateGround('ground${Math.random()}', inputs.width, inputs.height, inputs.subdivisions, BitByBit.scene, false);
         ground.material = groundMaterial;
         ${JavaScript.variableDB_.getName(block.getFieldValue('Grid'), VARIABLE_CATEGORY_NAME)} = ground;
 `

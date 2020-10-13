@@ -92,18 +92,18 @@ inputs.surfaces.forEach((srf, index) => {
         });
     });
 
-    const customMeshForSurface = new BABYLON.Mesh('custom${Math.random()}', scene);
+    const customMeshForSurface = new BitByBit.BABYLON.Mesh('custom${Math.random()}', BitByBit.scene);
 
-    const vertexData = new BABYLON.VertexData();
+    const vertexData = new BitByBit.BABYLON.VertexData();
 
     vertexData.positions = meshDataConverted.positions;
     vertexData.indices = meshDataConverted.indices;
     vertexData.normals = meshDataConverted.normals;
 
     vertexData.applyToMesh(customMeshForSurface);
-    customMeshForSurface.material = new BABYLON.StandardMaterial();
+    customMeshForSurface.material = new BitByBit.BABYLON.StandardMaterial();
     customMeshForSurface.material.alpha = inputs.opacity;
-    customMeshForSurface.material.diffuseColor = BABYLON.Color3.FromHexString(inputs.colours[index]);
+    customMeshForSurface.material.diffuseColor = BitByBit.BABYLON.Color3.FromHexString(inputs.colours[index]);
     customMeshForSurface.material.backFaceCulling = false;
     customMeshForSurface.isPickable = false;
 

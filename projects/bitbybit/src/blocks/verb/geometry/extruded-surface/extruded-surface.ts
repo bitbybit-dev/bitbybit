@@ -40,7 +40,7 @@ export function createExtrudedSurfaceBlock() {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `return new verb.geom.ExtrudedSurface(inputs.profile, inputs.direction);`
+            `return new BitByBit.verb.geom.ExtrudedSurface(inputs.profile, inputs.direction);`
         );
         return [code, JavaScript.ORDER_ATOMIC];
     };
