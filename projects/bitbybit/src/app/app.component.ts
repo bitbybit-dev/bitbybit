@@ -176,6 +176,9 @@ export class AppComponent implements OnInit, AfterViewInit {
                             this.workspace.zoomToFit();
                             this.workspace.zoomCenter(-3);
                             this.run();
+                            if (this.drawerElement.opened) {
+                                this.swapCanvas();
+                            }
                         }
                     } else {
                         if (this.firstTimeOpen) {
@@ -244,6 +247,10 @@ export class AppComponent implements OnInit, AfterViewInit {
                     this.workspace.zoomToFit();
                     this.workspace.zoomCenter(-3);
                     this.run();
+
+                    if (this.drawerElement.opened) {
+                        this.swapCanvas();
+                    }
                 };
                 reader.onerror = (evt) => {
                     document.getElementById('fileContents').innerHTML = 'error reading file';
