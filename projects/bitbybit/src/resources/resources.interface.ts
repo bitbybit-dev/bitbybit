@@ -1207,6 +1207,9 @@ export interface ResourcesInterface {
     block_csg_transform_input_csg_mesh: string;
     block_csg_transform_input_transformation: string;
     block_csg_transform_description: string;
+    block_csg_transform_solids_input_solids: string;
+    block_csg_transform_solids_input_transformation: string;
+    block_csg_transform_solids_description: string;
     block_csg_sphere_input_center: string;
     block_csg_sphere_input_radius: string;
     block_csg_sphere_input_segments: string;
@@ -1235,6 +1238,9 @@ export interface ResourcesInterface {
     block_csg_union_objects_description: string;
     block_csg_subtract_objects_input_objects: string;
     block_csg_subtract_objects_description: string;
+    block_csg_subtract_objects_from_solid_input_objects: string;
+    block_csg_subtract_objects_from_solid_input_solid: string;
+    block_csg_subtract_objects_from_solid_description: string;
     block_csg_intersect_objects_input_objects: string;
     block_csg_intersect_objects_description: string;
     block_csg_extrude_rectangular_points_input_points: string;

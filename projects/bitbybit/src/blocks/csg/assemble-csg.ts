@@ -72,6 +72,8 @@ import { createTextAlignTypeBlock } from './csg-text-align-type';
 import { createTextVectorSphericalTextBlock } from './text-vector-spherical-text';
 import { createIoSolidToStlDownloadBlock } from './io-solid-to-stl-download';
 import { createIoSolidsToStlDownloadBlock } from './io-solids-to-stl-download';
+import { createCsgTransformSolidsBlock } from './csg-transform-solids';
+import { createBooleanSubtractObjectsFromSolidBlock } from './boolean-subtract-objects-from-solid';
 
 export function assembleCsgBlocks(): void {
     createPrimitive2dPolygonFromPointsBlock();
@@ -95,6 +97,7 @@ export function assembleCsgBlocks(): void {
     createPrimitiveCubeBlock();
     createBooleanSubtractBlock();
     createBooleanSubtractObjectsBlock();
+    createBooleanSubtractObjectsFromSolidBlock();
     createBooleanUnionBlock();
     createBooleanUnionObjectsBlock();
     createBooleanIntersectBlock();
@@ -106,6 +109,7 @@ export function assembleCsgBlocks(): void {
     createHullChainPolygonsBlock();
     createHullChainSolidsBlock();
     createCsgTransformBlock();
+    createCsgTransformSolidsBlock();
     createCsgColourBlock();
     createPrimitiveCuboidBlock();
     createPrimitive2dPathEmptyBlock();
