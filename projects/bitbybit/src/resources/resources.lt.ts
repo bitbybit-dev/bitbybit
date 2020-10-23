@@ -48,6 +48,8 @@ export const resourcesLt: ResourcesInterface = Object.freeze({
     app_menu_more_examples_street_smart_parametric_lamp_description: 'Šis pavyzdys demonstruoja kaip įvairūs BitByBit algoritmai gali būti kombinuojami kuriant parametrinius modelius 3D spausdinimui. Modelis, kurį matote gali būti išsaugotas STL formatu.',
     app_menu_more_examples_street_smart_parametric_vase_title: 'Parametrinis vazos modelis',
     app_menu_more_examples_street_smart_parametric_vase_description: 'Keičiant skripto viršuje esančius parametrus vartotojai gali susikonfigūruoti įvairias vazos proporcijas. Pademonstruotos kelios Būlio operacijos, kurios leidžia sukurti šį modeli. Vartotojai gali atsisiųsti STL failą pakeisdami reikiamą kintamąjį.',
+    app_menu_more_examples_street_smart_halloween_pumpkin_title: 'Vaiduoklių šventės moliūgas',
+    app_menu_more_examples_street_smart_halloween_pumpkin_description: 'Vaiduokliškas moliūgas yra paruoštas jūsų žvakės uždegimui per šventę. Šis moliūgas gali būti piktas, linksmas arba nustebes, taip pat galite pakeisti modelyje esantį tekstą, moliūgo rezoliuciją. Modelis gali būti atspausdintas 3D spausdintuvu.',
     app_menu_more_examples_ninja_carbon_title: 'Anglies pluošto įkvėpta struktūra',
     app_menu_more_examples_ninja_carbon_description: 'Modernios gamybos technologijos yra pajėgios spausdinti labai kompleksiškas geometrijas. Šis pavyzdys rodo, jog bitbybit.dev gali būti naudojamas kurti naujos generacijos parametriniams dizaino modeliams.',
     app_menu_more_examples_ninja_magic_spiral_title: 'Magiška spiralė',

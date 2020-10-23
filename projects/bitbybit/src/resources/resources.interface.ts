@@ -40,6 +40,8 @@ export interface ResourcesInterface {
     app_menu_more_examples_street_smart_kinetic_surfaces_description: string;
     app_menu_more_examples_street_smart_flower_light_title: string;
     app_menu_more_examples_street_smart_flower_light_description: string;
+    app_menu_more_examples_street_smart_halloween_pumpkin_title: string;
+    app_menu_more_examples_street_smart_halloween_pumpkin_description: string;
     app_menu_more_examples_street_smart_lines_between_two_surfaces_title: string;
     app_menu_more_examples_street_smart_lines_between_two_surfaces_description: string;
     app_menu_more_examples_street_smart_parametric_lamp_title: string;

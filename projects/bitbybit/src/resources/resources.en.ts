@@ -48,6 +48,8 @@ export const resourcesEn: ResourcesInterface = Object.freeze({
     app_menu_more_examples_street_smart_parametric_lamp_description: 'This example demonstrates how parametric 3D model can be produced by using NURBS framework and CAD features of BitByBit platform. Parametric lamp model can also be saved to STL format and 3D printed.',
     app_menu_more_examples_street_smart_parametric_vase_title: 'Parametric vase model',
     app_menu_more_examples_street_smart_parametric_vase_description: 'This example demonstrates few boolean operations that can be done on solids to produce a vase. On top of the script users can change various parameters and adapt the model to their needs and choose to export this model to STL format.',
+    app_menu_more_examples_street_smart_halloween_pumpkin_title: 'Halloween pumpkin',
+    app_menu_more_examples_street_smart_halloween_pumpkin_description: '3D printable Halloween pumpkin model is ready to be lit up during the celebration. Customize the model, add your own text, name or a wish, print two separate parts for the candle holder and the pumpkin itself. Lite it up and enjoy!',
     app_menu_more_examples_ninja_carbon_title: 'Carbon inspired structure',
     app_menu_more_examples_ninja_carbon_description: 'This example demonstrates the parametric carbon inspired structure, which shows that bitbybit.dev is able to handle complex and rich geometries. Play with variables and see how structure adapts density and angles.',
     app_menu_more_examples_ninja_magic_spiral_title: 'Magic spiral',
