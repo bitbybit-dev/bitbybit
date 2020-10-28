@@ -95,6 +95,22 @@ export function createTextVectorSphericalTextBlock(): void {
                 align: inputs.align,
                 extrudeOffset: inputs.extrudeOffset,
             });
+            let maxX = 0;
+            text.forEach(txt => {
+                txt.forEach(center => {
+                    if(center[0] > maxX){
+                        maxX = center[0];
+                    }
+                });
+            });
+            const compensate = maxX / 2;
+            text.forEach(txt => {
+                txt.forEach(center => {
+                    let z = center[0];
+                    z = z - compensate;
+                    center[0] = z;
+                });
+            });
             return text.map(txt => {
                 const spheres = txt.map(center => {
                     return BitByBit.CSG.primitives.sphere({

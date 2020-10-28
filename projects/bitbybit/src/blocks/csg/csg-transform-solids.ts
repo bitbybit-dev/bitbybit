@@ -1,39 +1,39 @@
 import { ALIGN_RIGHT, Block, Blocks } from 'blockly';
 import * as JavaScript from 'blockly/javascript';
-import { ResourcesInterface, ResourcesService } from '../../../../resources';
-import { createStandardContextIIFE } from '../../../_shared';
-import { getRequired, makeRequiredValidationModelForInputs, BitByBitBlockHandlerService, ValidationEntityInterface } from '../../../validations';
+import { ResourcesInterface, ResourcesService } from '../../resources';
+import { createStandardContextIIFE } from '../_shared';
+import { getRequired, makeRequiredValidationModelForInputs, BitByBitBlockHandlerService, ValidationEntityInterface } from '../validations';
 
-export function createLineTransformBlock() {
+export function createCsgTransformSolidsBlock(): void {
 
     const resources = ResourcesService.getResources();
-    const blockSelector = 'base_geometry_line_transform';
+    const blockSelector = 'csg_transform_solids';
 
     Blocks[blockSelector] = {
-        init() {
-            this.appendValueInput('Line')
-                .setCheck('Line')
+        init(): void {
+            this.appendValueInput('Solids')
+                .setCheck('Array')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_base_geom_line_transform_line);
+                .appendField(resources.block_csg_transform_solids_input_solids);
             this.appendValueInput('Matrix')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_base_geom_line_transform_transformation.toLowerCase());
-            this.setOutput(true, 'Line');
+                .appendField(resources.block_csg_transform_solids_input_transformation.toLowerCase());
+            this.setOutput(true, 'Array');
             this.setColour('#fff');
-            this.setTooltip(resources.block_base_geom_line_transform_description);
+            this.setTooltip(resources.block_csg_transform_solids_description);
             this.setHelpUrl('');
         }
     };
 
     JavaScript[blockSelector] = (block: Block) => {
         const inputs = {
-            line: JavaScript.valueToCode(block, 'Line', JavaScript.ORDER_ATOMIC),
+            solids: JavaScript.valueToCode(block, 'Solids', JavaScript.ORDER_ATOMIC),
             matrix: JavaScript.valueToCode(block, 'Matrix', JavaScript.ORDER_ATOMIC),
         };
 
         // this is first set of validations to check that all inputs are non empty strings
         BitByBitBlockHandlerService.validate(block, block.workspace, makeRequiredValidationModelForInputs(resources, inputs, [
-            resources.block_line, resources.block_transform
+            resources.block_solids, resources.block_transform
         ]));
 
         // this creates validation model to be used at runtime to evaluate real values of inputs
@@ -43,18 +43,18 @@ export function createLineTransformBlock() {
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
 `
     const transformation = inputs.matrix;
-    let transformedControlPoints = [inputs.line.start, inputs.line.end];
-    if(transformation.length && transformation.length > 0){
-        transformation.flat().forEach(transform => {
-            transformedControlPoints = BitByBit.BitByBitBlocklyHelperService.transformPointsByMatrix(transformedControlPoints, transform);
-        });
-    } else {
-        transformedControlPoints = BitByBit.BitByBitBlocklyHelperService.transformPointsByMatrix(transformedControlPoints, transformation);
-    }
-    return {
-        start: transformedControlPoints[0],
-        end: transformedControlPoints[1]
-    };
+    let solidsToTransform = inputs.solids;
+    return solidsToTransform.map(solid => {
+        let transformedMesh = BitByBit.CSG.geometries.geom3.clone(solid);
+        if(transformation.length && transformation.length > 0){
+            transformation.flat().forEach(transform => {
+                transformedMesh = BitByBit.CSG.transforms.transform(transform.toArray(), transformedMesh);
+            });
+        } else {
+            transformedMesh = BitByBit.CSG.transforms.transform(transformation.toArray(), transformedMesh);
+        }
+        return transformedMesh;
+    });
 `);
         return [code, JavaScript.ORDER_ATOMIC];
     };
@@ -68,7 +68,7 @@ function makeRuntimeValidationModel(
     return [{
         entity: keys[0],
         validations: [
-            getRequired(resources, resources.block_line),
+            getRequired(resources, resources.block_solid),
         ]
     },
     {

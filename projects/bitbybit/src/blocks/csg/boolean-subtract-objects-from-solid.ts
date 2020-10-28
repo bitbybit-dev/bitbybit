@@ -4,36 +4,37 @@ import { ResourcesInterface, ResourcesService } from '../../resources';
 import { createStandardContextIIFE } from '../_shared';
 import { getRequired, makeRequiredValidationModelForInputs, BitByBitBlockHandlerService, ValidationEntityInterface } from '../validations';
 
-export function createCsgTransformBlock(): void {
+export function createBooleanSubtractObjectsFromSolidBlock(): void {
 
     const resources = ResourcesService.getResources();
-    const blockSelector = 'csg_transform';
+    const blockSelector = 'csg_boolean_subtract_objects_from_solid';
 
     Blocks[blockSelector] = {
         init(): void {
-            this.appendValueInput('CsgMesh')
+            this.appendValueInput('SubtractObjects')
+                .setCheck('Array')
+                .setAlign(ALIGN_RIGHT)
+                .appendField(resources.block_csg_subtract_objects_from_solid_input_objects);
+            this.appendValueInput('Solid')
                 .setCheck('CsgMesh')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_csg_transform_input_csg_mesh);
-            this.appendValueInput('Matrix')
-                .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_csg_transform_input_transformation.toLowerCase());
+                .appendField(resources.block_csg_subtract_objects_from_solid_input_solid.toLowerCase());
             this.setOutput(true, 'CsgMesh');
             this.setColour('#fff');
-            this.setTooltip(resources.block_csg_transform_description);
+            this.setTooltip(resources.block_csg_subtract_objects_from_solid_description);
             this.setHelpUrl('');
         }
     };
 
     JavaScript[blockSelector] = (block: Block) => {
         const inputs = {
-            csgMesh: JavaScript.valueToCode(block, 'CsgMesh', JavaScript.ORDER_ATOMIC),
-            matrix: JavaScript.valueToCode(block, 'Matrix', JavaScript.ORDER_ATOMIC),
+            subtractObjects: JavaScript.valueToCode(block, 'SubtractObjects', JavaScript.ORDER_ATOMIC),
+            solid: JavaScript.valueToCode(block, 'Solid', JavaScript.ORDER_ATOMIC),
         };
 
         // this is first set of validations to check that all inputs are non empty strings
         BitByBitBlockHandlerService.validate(block, block.workspace, makeRequiredValidationModelForInputs(resources, inputs, [
-            resources.block_solid, resources.block_transform
+            resources.block_solids, resources.block_solid
         ]));
 
         // this creates validation model to be used at runtime to evaluate real values of inputs
@@ -41,18 +42,12 @@ export function createCsgTransformBlock(): void {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
+            `
+            const allObjects = [inputs.solid, ...inputs.subtractObjects];
+            const subtracted = BitByBit.CSG.booleans.subtract(allObjects);
+            return subtracted;
 `
-    const transformation = inputs.matrix;
-    let transformedMesh = BitByBit.CSG.geometries.geom3.clone(inputs.csgMesh);
-    if(transformation.length && transformation.length > 0){
-        transformation.flat().forEach(transform => {
-            transformedMesh = BitByBit.CSG.transforms.transform(transform.toArray(), transformedMesh);
-        });
-    } else {
-        transformedMesh = BitByBit.CSG.transforms.transform(transformation.toArray(), transformedMesh);
-    }
-    return transformedMesh;
-`);
+        );
         return [code, JavaScript.ORDER_ATOMIC];
     };
 }
@@ -65,14 +60,12 @@ function makeRuntimeValidationModel(
     return [{
         entity: keys[0],
         validations: [
-            getRequired(resources, resources.block_solid),
+            getRequired(resources, resources.block_solids),
         ]
-    },
-    {
+    },{
         entity: keys[1],
         validations: [
-            getRequired(resources, resources.block_transform),
+            getRequired(resources, resources.block_solid),
         ]
     }];
 }
-

@@ -1095,6 +1095,8 @@ export function solidCategory(): string {
             </block>
             <block type="csg_transform">
             </block>
+            <block type="csg_transform_solids">
+            </block>
             <category name="${resources.block_toolbox_category_2d_path}" categorystyle="geometry_category">
                 <block type="csg_primitive_2d_path_close">
                 </block>
@@ -1155,6 +1157,8 @@ export function solidCategory(): string {
                 <block type="csg_boolean_subtract">
                 </block>
                 <block type="csg_boolean_subtract_objects">
+                </block>
+                <block type="csg_boolean_subtract_objects_from_solid">
                 </block>
                 <block type="csg_boolean_union">
                 </block>

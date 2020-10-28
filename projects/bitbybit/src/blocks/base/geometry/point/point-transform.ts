@@ -45,7 +45,7 @@ export function createPointTransformBlock() {
     const transformation = inputs.matrix;
     let transformedControlPoints = [inputs.point];
     if(transformation.length && transformation.length > 0){
-        transformation.forEach(transform => {
+        transformation.flat().forEach(transform => {
             transformedControlPoints = BitByBit.BitByBitBlocklyHelperService.transformPointsByMatrix(transformedControlPoints, transform);
         });
     } else {

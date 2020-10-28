@@ -40,6 +40,8 @@ export interface ResourcesInterface {
     app_menu_more_examples_street_smart_kinetic_surfaces_description: string;
     app_menu_more_examples_street_smart_flower_light_title: string;
     app_menu_more_examples_street_smart_flower_light_description: string;
+    app_menu_more_examples_street_smart_halloween_pumpkin_title: string;
+    app_menu_more_examples_street_smart_halloween_pumpkin_description: string;
     app_menu_more_examples_street_smart_lines_between_two_surfaces_title: string;
     app_menu_more_examples_street_smart_lines_between_two_surfaces_description: string;
     app_menu_more_examples_street_smart_parametric_lamp_title: string;
@@ -400,6 +402,11 @@ export interface ResourcesInterface {
     block_babylon_input_transformation_translation_xyz: string;
     block_babylon_input_transformation_scale_center_xyz: string;
     block_babylon_input_transformation_scale_center: string;
+    block_babylon_transformation_rotation_yaw_pitch_roll_input_yaw: string;
+    block_babylon_transformation_rotation_yaw_pitch_roll_input_pitch: string;
+    block_babylon_transformation_rotation_yaw_pitch_roll_input_roll: string;
+    block_babylon_transformation_rotation_yaw_pitch_roll_input_center: string;
+    block_babylon_transformation_rotation_yaw_pitch_roll_description: string;
     block_babylon_draw_curve_description: string;
     block_babylon_draw_curves_description: string;
     block_babylon_draw_line_description: string;
@@ -1207,6 +1214,9 @@ export interface ResourcesInterface {
     block_csg_transform_input_csg_mesh: string;
     block_csg_transform_input_transformation: string;
     block_csg_transform_description: string;
+    block_csg_transform_solids_input_solids: string;
+    block_csg_transform_solids_input_transformation: string;
+    block_csg_transform_solids_description: string;
     block_csg_sphere_input_center: string;
     block_csg_sphere_input_radius: string;
     block_csg_sphere_input_segments: string;
@@ -1235,6 +1245,9 @@ export interface ResourcesInterface {
     block_csg_union_objects_description: string;
     block_csg_subtract_objects_input_objects: string;
     block_csg_subtract_objects_description: string;
+    block_csg_subtract_objects_from_solid_input_objects: string;
+    block_csg_subtract_objects_from_solid_input_solid: string;
+    block_csg_subtract_objects_from_solid_description: string;
     block_csg_intersect_objects_input_objects: string;
     block_csg_intersect_objects_description: string;
     block_csg_extrude_rectangular_points_input_points: string;

@@ -7,8 +7,9 @@ import { createScaleCenterXYZBlock } from './scale-center-xyz';
 import { createScaleUniformBlock } from './scale-uniform';
 import { createScaleXYZBlock } from './scale-xyz';
 import { createTranslationXYZBlock } from './translation-xyz';
+import { createRotationYawPitchRollBlock } from './rotation-yaw-pitch-roll';
 
-export function assembleTransformationBlocks() {
+export function assembleTransformationBlocks(): void {
     createScaleUniformBlock();
     createScaleXYZBlock();
     createScaleCenterUniformBlock();
@@ -18,4 +19,5 @@ export function assembleTransformationBlocks() {
     createRotationCenterXBlock();
     createRotationCenterYBlock();
     createRotationCenterZBlock();
+    createRotationYawPitchRollBlock();
 }

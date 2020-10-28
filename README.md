@@ -14,4 +14,4 @@ Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app w
 BitByBit will always keep it's Core free and opensource for its users. Principles of minimalism and simplicity are reflected in all of the design decisions we make. Application itself is frictionless, users don't need to create accounts or install browser plugins. We could not find a better Home screen for the application than the application itself. Website immediately starts the empty canvas for your code and an empty 3D world. All Core algorithms will always remain opensource and will not require any backend based server  infrastructure. This will allow application to be used on various devices as a Progressive Web App (PWA). After the application is loaded on your devices, internet connectivitiy will not be required for it to function.
 
 # Major Dependencies
-Verbnurbs, BabylonJS, Blockly, CSG.JS
+Verbnurbs, BabylonJS, Blockly, JSCAD
