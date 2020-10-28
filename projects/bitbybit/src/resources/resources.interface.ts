@@ -402,6 +402,11 @@ export interface ResourcesInterface {
     block_babylon_input_transformation_translation_xyz: string;
     block_babylon_input_transformation_scale_center_xyz: string;
     block_babylon_input_transformation_scale_center: string;
+    block_babylon_transformation_rotation_yaw_pitch_roll_input_yaw: string;
+    block_babylon_transformation_rotation_yaw_pitch_roll_input_pitch: string;
+    block_babylon_transformation_rotation_yaw_pitch_roll_input_roll: string;
+    block_babylon_transformation_rotation_yaw_pitch_roll_input_center: string;
+    block_babylon_transformation_rotation_yaw_pitch_roll_description: string;
     block_babylon_draw_curve_description: string;
     block_babylon_draw_curves_description: string;
     block_babylon_draw_line_description: string;

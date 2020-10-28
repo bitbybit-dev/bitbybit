@@ -45,7 +45,7 @@ export function createCsgTransformBlock(): void {
     const transformation = inputs.matrix;
     let transformedMesh = BitByBit.CSG.geometries.geom3.clone(inputs.csgMesh);
     if(transformation.length && transformation.length > 0){
-        transformation.forEach(transform => {
+        transformation.flat().forEach(transform => {
             transformedMesh = BitByBit.CSG.transforms.transform(transform.toArray(), transformedMesh);
         });
     } else {

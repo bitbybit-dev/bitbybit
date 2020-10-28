@@ -164,6 +164,42 @@ export function transformsCategory() {
                 </shadow>
             </value>
         </block>
+        <block type="babylon_transformation_rotation_yaw_pitch_roll">
+            <value name="Yaw">
+                <shadow type="math_number">
+                    <field name="NUM">45</field>
+                </shadow>
+            </value>
+            <value name="Pitch">
+                <shadow type="math_number">
+                    <field name="NUM">45</field>
+                </shadow>
+            </value>
+            <value name="Roll">
+                <shadow type="math_number">
+                    <field name="NUM">45</field>
+                </shadow>
+            </value>
+            <value name="Center">
+                <shadow type="verb_core_vector">
+                    <value name="X">
+                        <shadow type="math_number">
+                            <field name="NUM">0</field>
+                        </shadow>
+                    </value>
+                    <value name="Y">
+                        <shadow type="math_number">
+                            <field name="NUM">0</field>
+                        </shadow>
+                    </value>
+                    <value name="Z">
+                        <shadow type="math_number">
+                            <field name="NUM">0</field>
+                        </shadow>
+                    </value>
+                </shadow>
+            </value>
+        </block>
         <block type="babylon_transformation_rotation_center_x">
             <value name="Angle">
                 <shadow type="math_number">
