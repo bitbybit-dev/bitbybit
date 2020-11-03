@@ -10,8 +10,10 @@
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e",
-    "scully": "scully --project bitbybit-docs --prod",
-    "scully:serve": "scully serve --project bitbybit-docs",
+    "scully": "scully --project bitbybit --prod",
+    "scully:serve": "scully serve --project bitbybit",
+    "scully-docs": "scully --project bitbybit-docs --prod",
+    "scully-docs:serve": "scully serve --project bitbybit-docs",
     "browserify-csg": "browserify csg.js --outfile csg-generated.js"
   },
   "private": true,

@@ -6,20 +6,24 @@ import { BitByBitBlocklyHelperService } from './blocks/_shared/bit-by-bit-blockl
 import { BitByBitBlockHandlerService } from './blocks/validations';
 
 export function prepareBabylonForBlockly() {
-    Object.defineProperty(Float32Array.prototype, 'chunk', {
-        value(chunkSize: number){
-            const temporal = [];
-
-            for (let i = 0; i < this.length; i += chunkSize){
-                temporal.push(this.slice(i, i + chunkSize));
-            }
-
-            return temporal;
-        }
-    });
 
     const windowBlockly = window as any;
     const BABYLON: any = {};
+
+    if (!windowBlockly.BABYLON) {
+        Object.defineProperty(Float32Array.prototype, 'chunk', {
+            value(chunkSize: number) {
+                const temporal = [];
+
+                for (let i = 0; i < this.length; i += chunkSize) {
+                    temporal.push(this.slice(i, i + chunkSize));
+                }
+
+                return temporal;
+            }
+        });
+    }
+
     BABYLON.Mesh = Mesh;
     BABYLON.MeshBuilder = MeshBuilder;
     BABYLON.PolygonMeshBuilder = PolygonMeshBuilder;
