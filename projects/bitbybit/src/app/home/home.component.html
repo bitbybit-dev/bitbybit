@@ -1,3 +1,69 @@
-Hello
-<button routerLink="/app">App</button>
-<button routerLink="/home">Home</button>
+<div>
+    <nav aria-label="Top Toolbar">
+        <img class="logo" src="assets/logo-small.png">
+        <a routerLink="/">
+            BitByBit Home
+        </a>
+        <div class="secondary-large-menu d-md-inline-block d-none">
+            <!-- <button mat-button color="primary" (click)="documentation()">Documentation</button> -->
+            <button mat-button color="primary" (click)="tutorials()">Tutorials</button>
+        </div>
+    </nav>
+    <div class="d-md-none secondary-menu">
+        <!-- <button mat-button color="primary" (click)="documentation()">Documentation</button> -->
+        <button mat-button color="primary" (click)="tutorials()">Tutorials</button>
+    </div>
+    <router-outlet></router-outlet>
+    <div class="footer">
+        <div class="container">
+            <div class="row">
+                <div class="col"> <img class="logo" src="assets/logo-small.png">BitByBit v0.2.3 © 2020</div>
+                <div class="col"></div>
+                <div class="col">
+                    <a href="mailto:info@bitbybit.dev">Email: info@bitbybit.dev</a>
+                    <div class="social-container">
+                        <div>
+                            <a class="social" mat-menu-item href="https://www.patreon.com/bitbybitdev" title="Patreon"
+                                target="_blank">
+                                <img class="mat-icon" width="20px" src="../assets/logo-patreon.svg">
+                            </a>
+                            <a class="social" mat-menu-item href="https://discord.gg/GSe3VMe" title="Discord"
+                                target="_blank">
+                                <img class="mat-icon" width="20px" src="../assets/logo-discord.svg">
+                            </a>
+                            <a class="social" mat-menu-item
+                                href="https://www.youtube.com/channel/UCWM0VODRsLYOjB2IAaFHBSQ" title="Youtube"
+                                target="_blank">
+                                <img class="mat-icon" width="20px" src="../assets/logo-youtube.svg" />
+                            </a>
+                            <a class="social" mat-menu-item href="https://medium.com/@bitbybit" title="Medium"
+                                target="_blank">
+                                <img class="mat-icon" width="20px" src="../assets/logo-medium.svg" />
+                            </a>
+                            <a class="social" mat-menu-item href="https://www.instagram.com/bitbybit.dev/"
+                                title="Instagram" target="_blank">
+                                <img class="mat-icon" width="20px" src="../assets/logo-instagram.svg">
+                            </a>
+                            <a class="social" mat-menu-item href="https://www.linkedin.com/company/bitbybit-dev"
+                                title="LinkedIn" target="_blank">
+                                <img class="mat-icon" width="20px" src="../assets/logo-linkedin.svg">
+                            </a>
+                            <a class="social" mat-menu-item href="https://fb.me/bitbybitdev" title="Facebook"
+                                target="_blank">
+                                <img class="mat-icon" width="20px" src="../assets/logo-facebook.svg" />
+                            </a>
+                            <a class="social" mat-menu-item href="https://twitter.com/bitbybit_dev" title="Twitter"
+                                target="_blank">
+                                <img class="mat-icon" width="20px" src="../assets/logo-twitter.svg" />
+                            </a>
+                            <a class="social" mat-menu-item href="https://github.com/bitbybit-dev/bitbybit"
+                                title="Github" target="_blank">
+                                <img class="mat-icon" width="20px" src="../assets/logo-github.svg" />
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -67,7 +67,7 @@ export class BitbybitAppComponent implements OnInit, AfterViewInit, OnDestroy {
         private readonly tagService: TagService,
     ) {
     }
-    
+
     ngOnDestroy(): void {
         this.workspace.dispose();
         this.scene.dispose();
