@@ -33,8 +33,8 @@ export function createLineBlock() {
 
     JavaScript[blockSelector] = (block: Block) => {
         const inputs = {
-            startPoint: JavaScript.valueToCode(block, 'StartPoint', JavaScript.ORDER_ATOMIC),
-            endPoint: JavaScript.valueToCode(block, 'EndPoint', JavaScript.ORDER_ATOMIC),
+            startPoint: (JavaScript as any).valueToCode(block, 'StartPoint', (JavaScript as any).ORDER_ATOMIC),
+            endPoint: (JavaScript as any).valueToCode(block, 'EndPoint', (JavaScript as any).ORDER_ATOMIC),
         };
 
         // this is first set of validations to check that all inputs are non empty strings
@@ -54,7 +54,7 @@ export function createLineBlock() {
         };
 `
         );
-        return [code, JavaScript.ORDER_ATOMIC];
+        return [code, (JavaScript as any).ORDER_ATOMIC];
     };
 }
 

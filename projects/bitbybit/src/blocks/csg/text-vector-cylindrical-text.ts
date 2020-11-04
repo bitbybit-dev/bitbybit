@@ -64,17 +64,17 @@ export function createTextVectorCylindricalTextBlock(): void {
 
     JavaScript[blockSelector] = (block: Block) => {
         const inputs = {
-            inputText: JavaScript.valueToCode(block, 'InputText', JavaScript.ORDER_ATOMIC),
-            extrusionHeight: JavaScript.valueToCode(block, 'ExtrusionHeight', JavaScript.ORDER_ATOMIC),
-            extrusionSize: JavaScript.valueToCode(block, 'ExtrusionSize', JavaScript.ORDER_ATOMIC),
-            segments: JavaScript.valueToCode(block, 'Segments', JavaScript.ORDER_ATOMIC),
-            xOffset: JavaScript.valueToCode(block, 'XOffset', JavaScript.ORDER_ATOMIC),
-            yOffset: JavaScript.valueToCode(block, 'YOffset', JavaScript.ORDER_ATOMIC),
-            height: JavaScript.valueToCode(block, 'Height', JavaScript.ORDER_ATOMIC),
-            lineSpacing: JavaScript.valueToCode(block, 'LineSpacing', JavaScript.ORDER_ATOMIC),
-            letterSpacing: JavaScript.valueToCode(block, 'LetterSpacing', JavaScript.ORDER_ATOMIC),
-            align: JavaScript.valueToCode(block, 'Align', JavaScript.ORDER_ATOMIC),
-            extrudeOffset: JavaScript.valueToCode(block, 'ExtrudeOffset', JavaScript.ORDER_ATOMIC),
+            inputText: (JavaScript as any).valueToCode(block, 'InputText', (JavaScript as any).ORDER_ATOMIC),
+            extrusionHeight: (JavaScript as any).valueToCode(block, 'ExtrusionHeight', (JavaScript as any).ORDER_ATOMIC),
+            extrusionSize: (JavaScript as any).valueToCode(block, 'ExtrusionSize', (JavaScript as any).ORDER_ATOMIC),
+            segments: (JavaScript as any).valueToCode(block, 'Segments', (JavaScript as any).ORDER_ATOMIC),
+            xOffset: (JavaScript as any).valueToCode(block, 'XOffset', (JavaScript as any).ORDER_ATOMIC),
+            yOffset: (JavaScript as any).valueToCode(block, 'YOffset', (JavaScript as any).ORDER_ATOMIC),
+            height: (JavaScript as any).valueToCode(block, 'Height', (JavaScript as any).ORDER_ATOMIC),
+            lineSpacing: (JavaScript as any).valueToCode(block, 'LineSpacing', (JavaScript as any).ORDER_ATOMIC),
+            letterSpacing: (JavaScript as any).valueToCode(block, 'LetterSpacing', (JavaScript as any).ORDER_ATOMIC),
+            align: (JavaScript as any).valueToCode(block, 'Align', (JavaScript as any).ORDER_ATOMIC),
+            extrudeOffset: (JavaScript as any).valueToCode(block, 'ExtrudeOffset', (JavaScript as any).ORDER_ATOMIC),
         };
 
         // this is first set of validations to check that all inputs are non empty strings
@@ -129,7 +129,7 @@ export function createTextVectorCylindricalTextBlock(): void {
             });
 `
         );
-        return [code, JavaScript.ORDER_ATOMIC];
+        return [code, (JavaScript as any).ORDER_ATOMIC];
     };
 }
 

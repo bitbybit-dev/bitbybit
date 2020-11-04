@@ -28,8 +28,8 @@ export function createPointDistanceBlock() {
 
     JavaScript[blockSelector] = (block: Block) => {
         const inputs = {
-            startPoint: JavaScript.valueToCode(block, 'StartPoint', JavaScript.ORDER_ATOMIC),
-            endPoint: JavaScript.valueToCode(block, 'EndPoint', JavaScript.ORDER_ATOMIC),
+            startPoint: (JavaScript as any).valueToCode(block, 'StartPoint', (JavaScript as any).ORDER_ATOMIC),
+            endPoint: (JavaScript as any).valueToCode(block, 'EndPoint', (JavaScript as any).ORDER_ATOMIC),
         };
 
         // this is first set of validations to check that all inputs are non empty strings
@@ -45,7 +45,7 @@ export function createPointDistanceBlock() {
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
             `return BitByBit.verb.core.Vec.dist(inputs.startPoint, inputs.endPoint);`
         );
-        return [code, JavaScript.ORDER_ATOMIC];
+        return [code, (JavaScript as any).ORDER_ATOMIC];
     };
 }
 

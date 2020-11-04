@@ -32,9 +32,9 @@ export function createExpansionsExpandSolidsBlock(): void {
 
     JavaScript[blockSelector] = (block: Block) => {
         const inputs = {
-            solids: JavaScript.valueToCode(block, 'Solids', JavaScript.ORDER_ATOMIC),
-            delta: JavaScript.valueToCode(block, 'Delta', JavaScript.ORDER_ATOMIC),
-            segments: JavaScript.valueToCode(block, 'Segments', JavaScript.ORDER_ATOMIC),
+            solids: (JavaScript as any).valueToCode(block, 'Solids', (JavaScript as any).ORDER_ATOMIC),
+            delta: (JavaScript as any).valueToCode(block, 'Delta', (JavaScript as any).ORDER_ATOMIC),
+            segments: (JavaScript as any).valueToCode(block, 'Segments', (JavaScript as any).ORDER_ATOMIC),
         };
 
         // this is first set of validations to check that all inputs are non empty strings
@@ -56,7 +56,7 @@ export function createExpansionsExpandSolidsBlock(): void {
             return result;
 `
         );
-        return [code, JavaScript.ORDER_ATOMIC];
+        return [code, (JavaScript as any).ORDER_ATOMIC];
     };
 }
 

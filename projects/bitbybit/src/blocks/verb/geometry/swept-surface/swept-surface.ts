@@ -27,8 +27,8 @@ export function createSweptSurfaceBlock() {
 
     JavaScript[blockSelector] = (block: Block) => {
         const inputs = {
-            profile: JavaScript.valueToCode(block, 'Profile', JavaScript.ORDER_ATOMIC),
-            rail: JavaScript.valueToCode(block, 'Rail', JavaScript.ORDER_ATOMIC),
+            profile: (JavaScript as any).valueToCode(block, 'Profile', (JavaScript as any).ORDER_ATOMIC),
+            rail: (JavaScript as any).valueToCode(block, 'Rail', (JavaScript as any).ORDER_ATOMIC),
         };
         // this is first set of validations to check that all inputs are non empty strings
         BitByBitBlockHandlerService.validate(block, block.workspace, makeRequiredValidationModelForInputs(resources, inputs, [
@@ -42,7 +42,7 @@ export function createSweptSurfaceBlock() {
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
             `return new BitByBit.verb.geom.SweptSurface(inputs.profile, inputs.rail);`
         );
-        return [code, JavaScript.ORDER_ATOMIC];
+        return [code, (JavaScript as any).ORDER_ATOMIC];
     };
 }
 

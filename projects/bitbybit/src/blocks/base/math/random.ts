@@ -27,6 +27,6 @@ export function createRandomBlock() {
         return Math.random();
 `
         );
-        return [code, JavaScript.ORDER_ATOMIC];
+        return [code, (JavaScript as any).ORDER_ATOMIC];
     };
 }

@@ -23,7 +23,7 @@ export function createRevolvedSurfaceAxisBlock() {
 
     JavaScript[blockSelector] = (block: Block) => {
         const inputs = {
-            revolution: JavaScript.valueToCode(block, 'Revolution', JavaScript.ORDER_ATOMIC),
+            revolution: (JavaScript as any).valueToCode(block, 'Revolution', (JavaScript as any).ORDER_ATOMIC),
         };
         // this is first set of validations to check that all inputs are non empty strings
         BitByBitBlockHandlerService.validate(block, block.workspace, makeRequiredValidationModelForInputs(resources, inputs, [
@@ -38,7 +38,7 @@ export function createRevolvedSurfaceAxisBlock() {
             // TODO might be a mistake in BitByBit.verb (seems to return center coord)
             `return inputs.revolution.axis();`
         );
-        return [code, JavaScript.ORDER_ATOMIC];
+        return [code, (JavaScript as any).ORDER_ATOMIC];
     };
 }
 

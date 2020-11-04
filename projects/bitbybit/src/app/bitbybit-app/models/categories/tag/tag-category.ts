@@ -3,7 +3,7 @@ import { ResourcesService } from '../../../../../resources';
 export function tagCategory() {
     const resources = ResourcesService.getResources();
     return `
-    <category name="${resources.block_toolbox_category_geom_tag}" expanded="true" categorystyle="geometry_category">
+    <category name="${resources.block_toolbox_category_geom_tag}"  categorystyle="geometry_category">
         <block type="base_geometry_draw_text_tags">
             <value name="Updatable">
                 <shadow type="logic_boolean">

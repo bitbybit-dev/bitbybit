@@ -27,6 +27,6 @@ export function createDateNowBlock() {
         return new Date(Date.now());
 `
         );
-        return [code, JavaScript.ORDER_ATOMIC];
+        return [code, (JavaScript as any).ORDER_ATOMIC];
     };
 }

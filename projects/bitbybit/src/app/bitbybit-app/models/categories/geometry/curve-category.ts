@@ -3,7 +3,7 @@ import { ResourcesService } from '../../../../../resources';
 export function curveCategory() {
     const resources = ResourcesService.getResources();
     return `
-    <category name="${resources.block_toolbox_category_geom_curve}" expanded="true" categorystyle="geometry_category">
+    <category name="${resources.block_toolbox_category_geom_curve}"  categorystyle="geometry_category">
         <block type="babylon_draw_curve">
             <value name="Colour">
                 <shadow type="colour_picker">
@@ -48,7 +48,7 @@ export function curveCategory() {
                 </shadow>
             </value>
         </block>
-        <category name="${resources.block_toolbox_category_create}"  expanded="true" categorystyle="geometry_category">
+        <category name="${resources.block_toolbox_category_create}"   categorystyle="geometry_category">
             <block type="verb_geometry_nurbs_curve_by_points">
                 <value name="Degree">
                     <shadow type="math_number">
@@ -60,7 +60,7 @@ export function curveCategory() {
             </block>
             <block type="verb_geometry_bezier_curve_by_points">
             </block>
-            <category name="${resources.block_toolbox_category_geom_circle}"  expanded="true" categorystyle="geometry_category">
+            <category name="${resources.block_toolbox_category_geom_circle}"   categorystyle="geometry_category">
                 <block type="verb_geometry_nurbs_curve_circle">
                     <value name="Center">
                         <shadow type="base_geometry_point">
@@ -200,7 +200,7 @@ export function curveCategory() {
                     </value>
                 </block>
             </category>
-            <category name="${resources.block_toolbox_category_geom_ellipse}"  expanded="true" categorystyle="geometry_category">
+            <category name="${resources.block_toolbox_category_geom_ellipse}"   categorystyle="geometry_category">
                 <block type="verb_geometry_nurbs_curve_ellipse">
                     <value name="Center">
                         <shadow type="base_geometry_point">
@@ -331,7 +331,7 @@ export function curveCategory() {
                 </block>
             </category>
         </category>
-        <category name="${resources.block_toolbox_category_apply}" expanded="true" categorystyle="geometry_category">
+        <category name="${resources.block_toolbox_category_apply}"  categorystyle="geometry_category">
             <block type="verb_geometry_nurbs_curve_divide_by_arc_length_points">
             </block>
             <block type="verb_geometry_nurbs_curve_divide_by_arc_length_params">
@@ -396,7 +396,7 @@ export function curveCategory() {
             </block>
             <block type="verb_geometry_nurbs_curves_divide_by_equal_arc_length_points">
             </block>
-            <category name="${resources.block_toolbox_category_geom_circle}" expanded="true" categorystyle="geometry_category">
+            <category name="${resources.block_toolbox_category_geom_circle}"  categorystyle="geometry_category">
                 <block type="verb_geometry_nurbs_curve_circle_center">
                 </block>
                 <block type="verb_geometry_nurbs_curve_circle_radius">
@@ -410,7 +410,7 @@ export function curveCategory() {
                 <block type="verb_geometry_nurbs_curve_circle_max_angle">
                 </block>
             </category>
-            <category name="${resources.block_toolbox_category_geom_ellipse}" expanded="true" categorystyle="geometry_category">
+            <category name="${resources.block_toolbox_category_geom_ellipse}"  categorystyle="geometry_category">
                 <block type="verb_geometry_nurbs_curve_ellipse_center">
                 </block>
                 <block type="verb_geometry_nurbs_curve_ellipse_x_axis">

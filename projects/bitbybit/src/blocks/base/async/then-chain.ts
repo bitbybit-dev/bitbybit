@@ -28,9 +28,9 @@ export function createThenChainBlock() {
 
     JavaScript[blockSelector] = (block: Block) => {
         const inputs = {
-            result: JavaScript.variableDB_.getName(block.getFieldValue('Result'), VARIABLE_CATEGORY_NAME),
-            promise: JavaScript.valueToCode(block, 'Promise', JavaScript.ORDER_ATOMIC),
-            statement_then: JavaScript.statementToCode(block, 'Then'),
+            result: (JavaScript as any).variableDB_.getName(block.getFieldValue('Result'), VARIABLE_CATEGORY_NAME),
+            promise: (JavaScript as any).valueToCode(block, 'Promise', (JavaScript as any).ORDER_ATOMIC),
+            statement_then: (JavaScript as any).statementToCode(block, 'Then'),
         };
         // this is first set of validations to check that all inputs are non empty strings
         BitByBitBlockHandlerService.validate(block, block.workspace, [{
@@ -54,9 +54,9 @@ export function createThenChainBlock() {
                 block.inputList[2].setAlign(-1);
 
                 inputs.result = res;
-                ${JavaScript.variableDB_.getName(block.getFieldValue('Result'), VARIABLE_CATEGORY_NAME)} = res;
+                ${(JavaScript as any).variableDB_.getName(block.getFieldValue('Result'), VARIABLE_CATEGORY_NAME)} = res;
                 inputs.statement_then();
-                return ${JavaScript.variableDB_.getName(block.getFieldValue('Result'), VARIABLE_CATEGORY_NAME)};
+                return ${(JavaScript as any).variableDB_.getName(block.getFieldValue('Result'), VARIABLE_CATEGORY_NAME)};
             }, err => {
                 block.inputList[2].setVisible(false);
                 block.inputList[2].setAlign(-1);
@@ -64,7 +64,7 @@ export function createThenChainBlock() {
             });
 `);
 
-        return [code, JavaScript.ORDER_ATOMIC];
+        return [code, (JavaScript as any).ORDER_ATOMIC];
     };
 }
 

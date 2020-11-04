@@ -32,8 +32,8 @@ export function createLinesBlock() {
 
     JavaScript[blockSelector] = (block: Block) => {
         const inputs = {
-            startPoints: JavaScript.valueToCode(block, 'StartPoints', JavaScript.ORDER_ATOMIC),
-            endPoints: JavaScript.valueToCode(block, 'EndPoints', JavaScript.ORDER_ATOMIC),
+            startPoints: (JavaScript as any).valueToCode(block, 'StartPoints', (JavaScript as any).ORDER_ATOMIC),
+            endPoints: (JavaScript as any).valueToCode(block, 'EndPoints', (JavaScript as any).ORDER_ATOMIC),
         };
 
         // this is first set of validations to check that all inputs are non empty strings
@@ -52,7 +52,7 @@ export function createLinesBlock() {
             .filter(line => BitByBit.verb.core.Vec.dist(line.start, line.end) !== 0);
 `
         );
-        return [code, JavaScript.ORDER_ATOMIC];
+        return [code, (JavaScript as any).ORDER_ATOMIC];
     };
 }
 

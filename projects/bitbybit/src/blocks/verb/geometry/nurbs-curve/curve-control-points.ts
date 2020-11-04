@@ -17,11 +17,11 @@ export function createCurveControlPointsBlock() {
     };
 
     JavaScript['verb_geometry_nurbs_curve_control_points'] = function (block) {
-        let value_curve = JavaScript.valueToCode(block, 'Curve', JavaScript.ORDER_ATOMIC);
+        let value_curve = (JavaScript as any).valueToCode(block, 'Curve', (JavaScript as any).ORDER_ATOMIC);
 
         let code = `
 (() => ${value_curve}.controlPoints())()
 `;
-        return [code, JavaScript.ORDER_ATOMIC];
+        return [code, (JavaScript as any).ORDER_ATOMIC];
     };
 }

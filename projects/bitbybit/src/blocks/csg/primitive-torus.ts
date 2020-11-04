@@ -52,14 +52,14 @@ export function createPrimitiveTorusBlock(): void {
 
     JavaScript[blockSelector] = (block: Block) => {
         const inputs = {
-            center: JavaScript.valueToCode(block, 'Center', JavaScript.ORDER_ATOMIC),
-            innerRadius: JavaScript.valueToCode(block, 'InnerRadius', JavaScript.ORDER_ATOMIC),
-            outerRadius: JavaScript.valueToCode(block, 'OuterRadius', JavaScript.ORDER_ATOMIC),
-            innerSegments: JavaScript.valueToCode(block, 'InnerSegments', JavaScript.ORDER_ATOMIC),
-            outerSegments: JavaScript.valueToCode(block, 'OuterSegments', JavaScript.ORDER_ATOMIC),
-            innerRotation: JavaScript.valueToCode(block, 'InnerRotation', JavaScript.ORDER_ATOMIC),
-            outerRotation: JavaScript.valueToCode(block, 'OuterRotation', JavaScript.ORDER_ATOMIC),
-            startAngle: JavaScript.valueToCode(block, 'StartAngle', JavaScript.ORDER_ATOMIC),
+            center: (JavaScript as any).valueToCode(block, 'Center', (JavaScript as any).ORDER_ATOMIC),
+            innerRadius: (JavaScript as any).valueToCode(block, 'InnerRadius', (JavaScript as any).ORDER_ATOMIC),
+            outerRadius: (JavaScript as any).valueToCode(block, 'OuterRadius', (JavaScript as any).ORDER_ATOMIC),
+            innerSegments: (JavaScript as any).valueToCode(block, 'InnerSegments', (JavaScript as any).ORDER_ATOMIC),
+            outerSegments: (JavaScript as any).valueToCode(block, 'OuterSegments', (JavaScript as any).ORDER_ATOMIC),
+            innerRotation: (JavaScript as any).valueToCode(block, 'InnerRotation', (JavaScript as any).ORDER_ATOMIC),
+            outerRotation: (JavaScript as any).valueToCode(block, 'OuterRotation', (JavaScript as any).ORDER_ATOMIC),
+            startAngle: (JavaScript as any).valueToCode(block, 'StartAngle', (JavaScript as any).ORDER_ATOMIC),
         };
 
         // this is first set of validations to check that all inputs are non empty strings
@@ -87,7 +87,7 @@ export function createPrimitiveTorusBlock(): void {
             return torus;
 `
         );
-        return [code, JavaScript.ORDER_ATOMIC];
+        return [code, (JavaScript as any).ORDER_ATOMIC];
     };
 }
 

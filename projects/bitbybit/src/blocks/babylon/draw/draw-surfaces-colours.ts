@@ -45,10 +45,10 @@ export function createDrawSurfacesColoursBlock() {
 
     JavaScript[blockSelector] = (block: Block) => {
         const inputs = {
-            surfaces: JavaScript.valueToCode(block, 'Surfaces', JavaScript.ORDER_ATOMIC),
-            colours: JavaScript.valueToCode(block, 'Colours', JavaScript.ORDER_ATOMIC),
-            opacity: JavaScript.valueToCode(block, 'Opacity', JavaScript.ORDER_ATOMIC),
-            updatable: JavaScript.valueToCode(block, 'Updatable', JavaScript.ORDER_ATOMIC),
+            surfaces: (JavaScript as any).valueToCode(block, 'Surfaces', (JavaScript as any).ORDER_ATOMIC),
+            colours: (JavaScript as any).valueToCode(block, 'Colours', (JavaScript as any).ORDER_ATOMIC),
+            opacity: (JavaScript as any).valueToCode(block, 'Opacity', (JavaScript as any).ORDER_ATOMIC),
+            updatable: (JavaScript as any).valueToCode(block, 'Updatable', (JavaScript as any).ORDER_ATOMIC),
         };
         // this is first set of validations to check that all inputs are non empty strings
         BitByBitBlockHandlerService.validate(block, block.workspace, makeRequiredValidationModelForInputs(resources, inputs, [
@@ -61,7 +61,7 @@ export function createDrawSurfacesColoursBlock() {
 
         return createStandardContextIIFE(block, blockSelector, inputs, false,
             `
-inputs.surfaceMeshes = ${JavaScript.variableDB_.getName(block.getFieldValue('DrawnSurfaceMeshes'), VARIABLE_CATEGORY_NAME)};
+inputs.surfaceMeshes = ${(JavaScript as any).variableDB_.getName(block.getFieldValue('DrawnSurfaceMeshes'), VARIABLE_CATEGORY_NAME)};
 
 if(inputs.surfaceMeshes && inputs.updatable){
     inputs.surfaceMeshes.forEach(srf => srf.dispose());
@@ -109,7 +109,7 @@ inputs.surfaces.forEach((srf, index) => {
 
     inputs.surfaceMeshes.push(customMeshForSurface);
 });
-${JavaScript.variableDB_.getName(block.getFieldValue('DrawnSurfaceMeshes'), VARIABLE_CATEGORY_NAME)} = inputs.surfaceMeshes;
+${(JavaScript as any).variableDB_.getName(block.getFieldValue('DrawnSurfaceMeshes'), VARIABLE_CATEGORY_NAME)} = inputs.surfaceMeshes;
         `
         );
     };

@@ -3,7 +3,7 @@ import { ResourcesService } from '../../../../../resources';
 export function polylineCategory() {
     const resources = ResourcesService.getResources();
     return `
-    <category name="${resources.block_toolbox_category_geom_polyline}" expanded="true" categorystyle="geometry_category">
+    <category name="${resources.block_toolbox_category_geom_polyline}"  categorystyle="geometry_category">
         <block type="babylon_draw_polyline">
             <value name="Colour">
                 <shadow type="colour_picker">
@@ -48,11 +48,11 @@ export function polylineCategory() {
                 </shadow>
             </value>
         </block>
-        <category name="${resources.block_toolbox_category_create}" expanded="true" categorystyle="geometry_category">
+        <category name="${resources.block_toolbox_category_create}"  categorystyle="geometry_category">
             <block type="base_geometry_polyline">
             </block>
         </category>
-        <category name="${resources.block_toolbox_category_apply}" expanded="true" categorystyle="geometry_category">
+        <category name="${resources.block_toolbox_category_apply}"  categorystyle="geometry_category">
             <block type="base_geometry_polyline_transform">
             </block>
             <block type="base_geometry_polyline_length">

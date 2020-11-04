@@ -30,8 +30,8 @@ export function createHttpGetBlock() {
 
     JavaScript[blockSelector] = (block: Block) => {
         const inputs = {
-            url: JavaScript.valueToCode(block, 'Url', JavaScript.ORDER_ATOMIC),
-            httpOptions: JavaScript.valueToCode(block, 'HttpOptions', JavaScript.ORDER_ATOMIC),
+            url: (JavaScript as any).valueToCode(block, 'Url', (JavaScript as any).ORDER_ATOMIC),
+            httpOptions: (JavaScript as any).valueToCode(block, 'HttpOptions', (JavaScript as any).ORDER_ATOMIC),
         };
 
         // this is first set of validations to check that all inputs are non empty strings
@@ -50,7 +50,7 @@ export function createHttpGetBlock() {
             return BitByBit.BitByBitBlocklyHelperService.angular.httpClient.get(inputs.url, inputs.httpOptions).toPromise();
 `
         );
-        return [code, JavaScript.ORDER_ATOMIC];
+        return [code, (JavaScript as any).ORDER_ATOMIC];
     };
 }
 

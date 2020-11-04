@@ -23,7 +23,7 @@ export function createLinesConvertToNurbsCurvesBlock() {
 
     JavaScript[blockSelector] = (block: Block) => {
         const inputs = {
-            lines: JavaScript.valueToCode(block, 'Lines', JavaScript.ORDER_ATOMIC)
+            lines: (JavaScript as any).valueToCode(block, 'Lines', (JavaScript as any).ORDER_ATOMIC)
         };
 
         // this is first set of validations to check that all inputs are non empty strings
@@ -34,6 +34,6 @@ export function createLinesConvertToNurbsCurvesBlock() {
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
             `return inputs.lines.map(line => new BitByBit.verb.geom.Line(line.start, line.end));`
         );
-        return [code, JavaScript.ORDER_ATOMIC];
+        return [code, (JavaScript as any).ORDER_ATOMIC];
     };
 }

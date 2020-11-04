@@ -33,9 +33,9 @@ export function createHttpPatchBlock() {
 
     JavaScript[blockSelector] = (block: Block) => {
         const inputs = {
-            url: JavaScript.valueToCode(block, 'Url', JavaScript.ORDER_ATOMIC),
-            body: JavaScript.valueToCode(block, 'Body', JavaScript.ORDER_ATOMIC),
-            httpOptions: JavaScript.valueToCode(block, 'HttpOptions', JavaScript.ORDER_ATOMIC),
+            url: (JavaScript as any).valueToCode(block, 'Url', (JavaScript as any).ORDER_ATOMIC),
+            body: (JavaScript as any).valueToCode(block, 'Body', (JavaScript as any).ORDER_ATOMIC),
+            httpOptions: (JavaScript as any).valueToCode(block, 'HttpOptions', (JavaScript as any).ORDER_ATOMIC),
         };
 
         // this is first set of validations to check that all inputs are non empty strings
@@ -59,7 +59,7 @@ export function createHttpPatchBlock() {
             return BitByBit.BitByBitBlocklyHelperService.angular.httpClient.patch(inputs.url, inputs.body, inputs.options).toPromise();
 `
         );
-        return [code, JavaScript.ORDER_ATOMIC];
+        return [code, (JavaScript as any).ORDER_ATOMIC];
     };
 }
 

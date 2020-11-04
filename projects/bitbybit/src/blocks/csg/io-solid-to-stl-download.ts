@@ -29,8 +29,8 @@ export function createIoSolidToStlDownloadBlock(): void {
 
     JavaScript[blockSelector] = (block: Block) => {
         const inputs = {
-            solid: JavaScript.valueToCode(block, 'Solid', JavaScript.ORDER_ATOMIC),
-            fileName: JavaScript.valueToCode(block, 'FileName', JavaScript.ORDER_ATOMIC),
+            solid: (JavaScript as any).valueToCode(block, 'Solid', (JavaScript as any).ORDER_ATOMIC),
+            fileName: (JavaScript as any).valueToCode(block, 'FileName', (JavaScript as any).ORDER_ATOMIC),
         };
 
         // this is first set of validations to check that all inputs are non empty strings

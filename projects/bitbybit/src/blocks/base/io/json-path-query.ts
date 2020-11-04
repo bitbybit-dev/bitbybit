@@ -26,8 +26,8 @@ export function createJsonPathQueryBlock() {
 
     JavaScript[blockSelector] = (block: Block) => {
         const inputs = {
-            json: JavaScript.valueToCode(block, 'JSON', JavaScript.ORDER_ATOMIC),
-            query: JavaScript.valueToCode(block, 'Query', JavaScript.ORDER_ATOMIC),
+            json: (JavaScript as any).valueToCode(block, 'JSON', (JavaScript as any).ORDER_ATOMIC),
+            query: (JavaScript as any).valueToCode(block, 'Query', (JavaScript as any).ORDER_ATOMIC),
         };
         // this is first set of validations to check that all inputs are non empty strings
         BitByBitBlockHandlerService.validate(block, block.workspace, makeRequiredValidationModelForInputs(resources, inputs, [
@@ -39,7 +39,7 @@ export function createJsonPathQueryBlock() {
         (block as any).validationModel = runtimeValidationModel;
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
             `return BitByBit.BitByBitBlocklyHelperService.jsonpath.query(inputs.json, inputs.query);`);
-        return [code, JavaScript.ORDER_ATOMIC];
+        return [code, (JavaScript as any).ORDER_ATOMIC];
     };
 }
 

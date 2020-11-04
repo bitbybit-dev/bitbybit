@@ -3,7 +3,7 @@ import { ResourcesService } from '../../../../../resources';
 export function nodeCategory() {
     const resources = ResourcesService.getResources();
     return `
-    <category name="${resources.block_toolbox_category_core_node}" expanded="true" categorystyle="verb_core_category">
+    <category name="${resources.block_toolbox_category_core_node}"  categorystyle="verb_core_category">
         <block type="babylon_draw_node">
             <value name="ColorX">
                 <shadow type="colour_picker">
@@ -96,7 +96,7 @@ export function nodeCategory() {
             <block type="base_geometry_node_world">
             </block>
         </category>
-        <category name="${resources.block_toolbox_category_apply}" expanded="true" categorystyle="geometry_category">
+        <category name="${resources.block_toolbox_category_apply}"  categorystyle="geometry_category">
             <block type="base_geometry_node_rotate">
             </block>
             <block type="base_geometry_node_rotate_around">

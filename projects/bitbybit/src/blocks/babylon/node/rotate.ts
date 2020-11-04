@@ -34,10 +34,10 @@ export function createNodeRotateBlock(): void {
 
     JavaScript[blockSelector] = (block: Block) => {
         const inputs = {
-            node: JavaScript.valueToCode(block, 'Node', JavaScript.ORDER_ATOMIC),
-            position: JavaScript.valueToCode(block, 'Position', JavaScript.ORDER_ATOMIC),
-            axis: JavaScript.valueToCode(block, 'Axis', JavaScript.ORDER_ATOMIC),
-            amount: JavaScript.valueToCode(block, 'Amount', JavaScript.ORDER_ATOMIC),
+            node: (JavaScript as any).valueToCode(block, 'Node', (JavaScript as any).ORDER_ATOMIC),
+            position: (JavaScript as any).valueToCode(block, 'Position', (JavaScript as any).ORDER_ATOMIC),
+            axis: (JavaScript as any).valueToCode(block, 'Axis', (JavaScript as any).ORDER_ATOMIC),
+            amount: (JavaScript as any).valueToCode(block, 'Amount', (JavaScript as any).ORDER_ATOMIC),
         };
 
         // this is first set of validations to check that all inputs are non empty strings

@@ -3,8 +3,8 @@ import { ResourcesService } from '../../../../../resources';
 export function intersectCategory() {
     const resources = ResourcesService.getResources();
     return `
-    <category name="${resources.block_toolbox_category_intersect}" expanded="true" categorystyle="geometry_category">
-        <category name="${resources.block_toolbox_category_create}" expanded="true" categorystyle="geometry_category">
+    <category name="${resources.block_toolbox_category_intersect}"  categorystyle="geometry_category">
+        <category name="${resources.block_toolbox_category_create}"  categorystyle="geometry_category">
             <block type="verb_geometry_intersect_curve_curve">
             </block>
             <block type="verb_geometry_intersect_curve_surface">
@@ -12,7 +12,7 @@ export function intersectCategory() {
             <block type="verb_geometry_intersect_surface_surface">
             </block>
         </category>
-        <category name="${resources.block_toolbox_category_apply}" expanded="true" categorystyle="geometry_category">
+        <category name="${resources.block_toolbox_category_apply}"  categorystyle="geometry_category">
             <block type="verb_geometry_intersect_curve_curve_first_params">
             </block>
             <block type="verb_geometry_intersect_curve_curve_first_points">

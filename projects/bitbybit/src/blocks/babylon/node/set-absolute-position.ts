@@ -30,8 +30,8 @@ export function createNodeSetAbsolutePositionBlock(): void {
 
     JavaScript[blockSelector] = (block: Block) => {
         const inputs = {
-            node: JavaScript.valueToCode(block, 'Node', JavaScript.ORDER_ATOMIC),
-            position: JavaScript.valueToCode(block, 'Position', JavaScript.ORDER_ATOMIC),
+            node: (JavaScript as any).valueToCode(block, 'Node', (JavaScript as any).ORDER_ATOMIC),
+            position: (JavaScript as any).valueToCode(block, 'Position', (JavaScript as any).ORDER_ATOMIC),
         };
 
         // this is first set of validations to check that all inputs are non empty strings

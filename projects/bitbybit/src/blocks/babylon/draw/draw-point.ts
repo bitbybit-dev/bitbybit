@@ -51,11 +51,11 @@ export function createDrawPointBlock() {
 
     JavaScript[blockSelector] = (block: Block) => {
         const inputs = {
-            point: JavaScript.valueToCode(block, 'Point', JavaScript.ORDER_ATOMIC),
-            colour: JavaScript.valueToCode(block, 'Colour', JavaScript.ORDER_ATOMIC),
-            opacity: JavaScript.valueToCode(block, 'Opacity', JavaScript.ORDER_ATOMIC),
-            size: JavaScript.valueToCode(block, 'Size', JavaScript.ORDER_ATOMIC),
-            updatable: JavaScript.valueToCode(block, 'Updatable', JavaScript.ORDER_ATOMIC),
+            point: (JavaScript as any).valueToCode(block, 'Point', (JavaScript as any).ORDER_ATOMIC),
+            colour: (JavaScript as any).valueToCode(block, 'Colour', (JavaScript as any).ORDER_ATOMIC),
+            opacity: (JavaScript as any).valueToCode(block, 'Opacity', (JavaScript as any).ORDER_ATOMIC),
+            size: (JavaScript as any).valueToCode(block, 'Size', (JavaScript as any).ORDER_ATOMIC),
+            updatable: (JavaScript as any).valueToCode(block, 'Updatable', (JavaScript as any).ORDER_ATOMIC),
         };
 
         // this is first set of validations to check that all inputs are non empty strings
@@ -69,7 +69,7 @@ export function createDrawPointBlock() {
 
         return createStandardContextIIFE(block, blockSelector, inputs, false,
             `
-            inputs.pointMeshVariable = ${JavaScript.variableDB_.getName(block.getFieldValue('DrawnPointMesh'), VARIABLE_CATEGORY_NAME)};
+            inputs.pointMeshVariable = ${(JavaScript as any).variableDB_.getName(block.getFieldValue('DrawnPointMesh'), VARIABLE_CATEGORY_NAME)};
             const vectorPoints = [inputs.point];
             const colour = BitByBit.BABYLON.Color3.FromHexString(inputs.colour);
             const positions = [];
@@ -107,7 +107,7 @@ export function createDrawPointBlock() {
                 inputs.pointMeshVariable.material.alpha = inputs.opacity;
                 inputs.pointMeshVariable.material.pointSize = inputs.size;
 
-                ${JavaScript.variableDB_.getName(block.getFieldValue('DrawnPointMesh'), VARIABLE_CATEGORY_NAME)} = inputs.pointMeshVariable;
+                ${(JavaScript as any).variableDB_.getName(block.getFieldValue('DrawnPointMesh'), VARIABLE_CATEGORY_NAME)} = inputs.pointMeshVariable;
             }
 `
         );

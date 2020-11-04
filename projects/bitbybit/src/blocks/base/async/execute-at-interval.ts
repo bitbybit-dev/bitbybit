@@ -32,8 +32,8 @@ export function createExecuteAtIntervalBlock() {
 
     JavaScript[blockSelector] = (block: Block) => {
         const inputs = {
-            interval: JavaScript.valueToCode(block, 'Interval', JavaScript.ORDER_ATOMIC),
-            statement_then: JavaScript.statementToCode(block, 'Then'),
+            interval: (JavaScript as any).valueToCode(block, 'Interval', (JavaScript as any).ORDER_ATOMIC),
+            statement_then: (JavaScript as any).statementToCode(block, 'Then'),
         };
         // this is first set of validations to check that all inputs are non empty strings
         BitByBitBlockHandlerService.validate(block, block.workspace, [{

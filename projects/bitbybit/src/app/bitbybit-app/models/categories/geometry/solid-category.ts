@@ -3,7 +3,7 @@ import { ResourcesService } from '../../../../../resources';
 export function solidCategory(): string {
     const resources = ResourcesService.getResources();
     return `
-    <category name="${resources.block_toolbox_category_geom_solid}" expanded="true" categorystyle="geometry_category">
+    <category name="${resources.block_toolbox_category_geom_solid}"  categorystyle="geometry_category">
         <block type="babylon_draw_csg_mesh">
             <value name="Colour">
                 <shadow type="colour_picker">
@@ -74,7 +74,7 @@ export function solidCategory(): string {
                 </shadow>
             </value>
         </block>
-        <category name="${resources.block_toolbox_category_create}" expanded="true" categorystyle="geometry_category">
+        <category name="${resources.block_toolbox_category_create}"  categorystyle="geometry_category">
             <category name="${resources.block_toolbox_category_2d_path}" categorystyle="geometry_category">
                 <block type="csg_primitive_2d_path_from_points">
                     <value name="Closed">
@@ -1085,7 +1085,7 @@ export function solidCategory(): string {
                 </block>
             </category>
         </category>
-        <category name="${resources.block_toolbox_category_apply}" expanded="true" categorystyle="geometry_category">
+        <category name="${resources.block_toolbox_category_apply}"  categorystyle="geometry_category">
             <block type="csg_colour">
                 <value name="Colour">
                     <shadow type="colour_picker">

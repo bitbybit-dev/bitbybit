@@ -28,8 +28,8 @@ export function createCoreIntervalBlock() {
 
     JavaScript[blockSelector] = (block: Block) => {
         const inputs = {
-            min: JavaScript.valueToCode(block, 'Min', JavaScript.ORDER_ATOMIC),
-            max: JavaScript.valueToCode(block, 'Max', JavaScript.ORDER_ATOMIC),
+            min: (JavaScript as any).valueToCode(block, 'Min', (JavaScript as any).ORDER_ATOMIC),
+            max: (JavaScript as any).valueToCode(block, 'Max', (JavaScript as any).ORDER_ATOMIC),
         };
 
         // this is first set of validations to check that all inputs are non empty strings
@@ -43,7 +43,7 @@ export function createCoreIntervalBlock() {
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
             `return {min: ${inputs.min}, max: ${inputs.max}};`);
-        return [code, JavaScript.ORDER_ATOMIC];
+        return [code, (JavaScript as any).ORDER_ATOMIC];
     };
 }
 

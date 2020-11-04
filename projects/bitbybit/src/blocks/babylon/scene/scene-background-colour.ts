@@ -27,7 +27,7 @@ export function createSceneBackgroundColourBlock() {
 
     JavaScript[blockSelector] = (block: Block) => {
         const inputs = {
-            colour: JavaScript.valueToCode(block, 'Colour', JavaScript.ORDER_ATOMIC)
+            colour: (JavaScript as any).valueToCode(block, 'Colour', (JavaScript as any).ORDER_ATOMIC)
         };
 
         // this is first set of validations to check that all inputs are non empty strings

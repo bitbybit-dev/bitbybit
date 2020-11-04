@@ -3,7 +3,7 @@ import { ResourcesService } from '../../../../../resources';
 export function lineCategory() {
     const resources = ResourcesService.getResources();
     return `
-    <category name="${resources.block_toolbox_category_geom_line}" expanded="true" categorystyle="geometry_category">
+    <category name="${resources.block_toolbox_category_geom_line}"  categorystyle="geometry_category">
         <block type="babylon_draw_line">
             <value name="Colour">
                 <shadow type="colour_picker">
@@ -112,7 +112,7 @@ export function lineCategory() {
                 </shadow>
             </value>
         </block>
-        <category name="${resources.block_toolbox_category_create}" expanded="true" categorystyle="geometry_category">
+        <category name="${resources.block_toolbox_category_create}"  categorystyle="geometry_category">
             <block type="base_geometry_line">
             </block>
             <block type="base_geometry_line">
@@ -160,7 +160,7 @@ export function lineCategory() {
             <block type="base_geometry_lines_between_points">
             </block>
         </category>
-        <category name="${resources.block_toolbox_category_apply}" expanded="true" categorystyle="geometry_category">
+        <category name="${resources.block_toolbox_category_apply}"  categorystyle="geometry_category">
             <block type="base_geometry_line_transform">
             </block>
             <block type="base_geometry_line_length">

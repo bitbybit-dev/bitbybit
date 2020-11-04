@@ -40,11 +40,11 @@ export function createPrimitiveCylinderEllipticBlock(): void {
 
     JavaScript[blockSelector] = (block: Block) => {
         const inputs = {
-            center: JavaScript.valueToCode(block, 'Center', JavaScript.ORDER_ATOMIC),
-            height: JavaScript.valueToCode(block, 'Height', JavaScript.ORDER_ATOMIC),
-            startRadius: JavaScript.valueToCode(block, 'StartRadius', JavaScript.ORDER_ATOMIC),
-            endRadius: JavaScript.valueToCode(block, 'EndRadius', JavaScript.ORDER_ATOMIC),
-            segments: JavaScript.valueToCode(block, 'Segments', JavaScript.ORDER_ATOMIC),
+            center: (JavaScript as any).valueToCode(block, 'Center', (JavaScript as any).ORDER_ATOMIC),
+            height: (JavaScript as any).valueToCode(block, 'Height', (JavaScript as any).ORDER_ATOMIC),
+            startRadius: (JavaScript as any).valueToCode(block, 'StartRadius', (JavaScript as any).ORDER_ATOMIC),
+            endRadius: (JavaScript as any).valueToCode(block, 'EndRadius', (JavaScript as any).ORDER_ATOMIC),
+            segments: (JavaScript as any).valueToCode(block, 'Segments', (JavaScript as any).ORDER_ATOMIC),
         };
 
         // this is first set of validations to check that all inputs are non empty strings
@@ -69,7 +69,7 @@ export function createPrimitiveCylinderEllipticBlock(): void {
             return cylinder;
 `
         );
-        return [code, JavaScript.ORDER_ATOMIC];
+        return [code, (JavaScript as any).ORDER_ATOMIC];
     };
 }
 

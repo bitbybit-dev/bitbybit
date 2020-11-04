@@ -44,12 +44,12 @@ export function createPrimitive2dStarBlock(): void {
 
     JavaScript[blockSelector] = (block: Block) => {
         const inputs = {
-            center: JavaScript.valueToCode(block, 'Center', JavaScript.ORDER_ATOMIC),
-            vertices: JavaScript.valueToCode(block, 'Vertices', JavaScript.ORDER_ATOMIC),
-            density: JavaScript.valueToCode(block, 'Density', JavaScript.ORDER_ATOMIC),
-            outerRadius: JavaScript.valueToCode(block, 'OuterRadius', JavaScript.ORDER_ATOMIC),
-            innerRadius: JavaScript.valueToCode(block, 'InnerRadius', JavaScript.ORDER_ATOMIC),
-            startAngle: JavaScript.valueToCode(block, 'StartAngle', JavaScript.ORDER_ATOMIC),
+            center: (JavaScript as any).valueToCode(block, 'Center', (JavaScript as any).ORDER_ATOMIC),
+            vertices: (JavaScript as any).valueToCode(block, 'Vertices', (JavaScript as any).ORDER_ATOMIC),
+            density: (JavaScript as any).valueToCode(block, 'Density', (JavaScript as any).ORDER_ATOMIC),
+            outerRadius: (JavaScript as any).valueToCode(block, 'OuterRadius', (JavaScript as any).ORDER_ATOMIC),
+            innerRadius: (JavaScript as any).valueToCode(block, 'InnerRadius', (JavaScript as any).ORDER_ATOMIC),
+            startAngle: (JavaScript as any).valueToCode(block, 'StartAngle', (JavaScript as any).ORDER_ATOMIC),
         };
 
         // this is first set of validations to check that all inputs are non empty strings
@@ -74,7 +74,7 @@ export function createPrimitive2dStarBlock(): void {
             });
 `
         );
-        return [code, JavaScript.ORDER_ATOMIC];
+        return [code, (JavaScript as any).ORDER_ATOMIC];
     };
 }
 

@@ -23,7 +23,7 @@ export function createExtrudedSurfaceProfileBlocks() {
 
     JavaScript[blockSelector] = (block: Block) => {
         const inputs = {
-            extrusion: JavaScript.valueToCode(block, 'Extrusion', JavaScript.ORDER_ATOMIC),
+            extrusion: (JavaScript as any).valueToCode(block, 'Extrusion', (JavaScript as any).ORDER_ATOMIC),
         };
         // this is first set of validations to check that all inputs are non empty strings
         BitByBitBlockHandlerService.validate(block, block.workspace, makeRequiredValidationModelForInputs(resources, inputs, [
@@ -37,7 +37,7 @@ export function createExtrudedSurfaceProfileBlocks() {
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
             `return inputs.extrusion.profile();`
         );
-        return [code, JavaScript.ORDER_ATOMIC];
+        return [code, (JavaScript as any).ORDER_ATOMIC];
     };
 }
 

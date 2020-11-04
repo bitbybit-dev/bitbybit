@@ -23,7 +23,7 @@ export function createDateCreateUnixTimestampBlock() {
 
     JavaScript[blockSelector] = (block: Block) => {
         const inputs = {
-            unixTimestamp: JavaScript.valueToCode(block, 'UnixTimestamp', JavaScript.ORDER_ATOMIC),
+            unixTimestamp: (JavaScript as any).valueToCode(block, 'UnixTimestamp', (JavaScript as any).ORDER_ATOMIC),
         };
         // this is first set of validations to check that all inputs are non empty strings
         BitByBitBlockHandlerService.validate(block, block.workspace, makeRequiredValidationModelForInputs(resources, inputs, [
@@ -39,7 +39,7 @@ export function createDateCreateUnixTimestampBlock() {
 return new Date(inputs.unixTimestamp);
 `
         );
-        return [code, JavaScript.ORDER_ATOMIC];
+        return [code, (JavaScript as any).ORDER_ATOMIC];
     };
 }
 

@@ -1,3 +1,8 @@
+
+::ng-deep button {
+    outline: none !important;
+}
+
 .flex-container {
     height: 100%;
 }
@@ -42,11 +47,12 @@
 
 .fill-height-or-more .min-menu {
     flex: none;
-    height: 50px;
+    height: 60px;
     display: flex;
 }
 
 .min-menu .actions {
+    margin-top: 10px;
     margin-right: 20px;
 }
 
@@ -131,14 +137,35 @@ mat-tab-body {
     width: 100%;
 }
 
-::ng-deep .blocklyTreeRow {
-    margin-top: 10px;
-    margin-bottom: 7px;
-    margin-right: 10px;
-    min-width: 100px;
-    height: 30px;
-    vertical-align: middle;
+@media(max-width:767px){
+    ::ng-deep .blocklyTreeRow {
+        margin-top: 10px;
+        margin-bottom: 7px;
+        margin-right: 10px;
+        min-width: 100px;
+        height: 18px;
+        vertical-align: middle;
+    }
 }
+
+@media(min-width:767px){
+    ::ng-deep .blocklyTreeRow {
+        margin-top: 10px;
+        margin-bottom: 7px;
+        margin-right: 10px;
+        min-width: 100px;
+        height: 30px;
+        vertical-align: middle;
+    }
+}
+// ::ng-deep .blocklyTreeRow {
+//     margin-top: 10px;
+//     margin-bottom: 7px;
+//     margin-right: 10px;
+//     min-width: 100px;
+//     height: 30px;
+//     vertical-align: middle;
+// }
 
 ::ng-deep .blocklyIconShape {
     fill: black;

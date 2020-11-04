@@ -44,10 +44,10 @@ export function createDrawSurfacesBlock() {
 
     JavaScript[blockSelector] = (block: Block) => {
         const inputs = {
-            surfaces: JavaScript.valueToCode(block, 'Surfaces', JavaScript.ORDER_ATOMIC),
-            colour: JavaScript.valueToCode(block, 'Colour', JavaScript.ORDER_ATOMIC),
-            opacity: JavaScript.valueToCode(block, 'Opacity', JavaScript.ORDER_ATOMIC),
-            updatable: JavaScript.valueToCode(block, 'Updatable', JavaScript.ORDER_ATOMIC),
+            surfaces: (JavaScript as any).valueToCode(block, 'Surfaces', (JavaScript as any).ORDER_ATOMIC),
+            colour: (JavaScript as any).valueToCode(block, 'Colour', (JavaScript as any).ORDER_ATOMIC),
+            opacity: (JavaScript as any).valueToCode(block, 'Opacity', (JavaScript as any).ORDER_ATOMIC),
+            updatable: (JavaScript as any).valueToCode(block, 'Updatable', (JavaScript as any).ORDER_ATOMIC),
         };
         // this is first set of validations to check that all inputs are non empty strings
         BitByBitBlockHandlerService.validate(block, block.workspace, makeRequiredValidationModelForInputs(resources, inputs, [
@@ -60,7 +60,7 @@ export function createDrawSurfacesBlock() {
 
         return createStandardContextIIFE(block, blockSelector, inputs, false,
             `
-        inputs.surfacesMesh = ${JavaScript.variableDB_.getName(block.getFieldValue('DrawnSurfacesMesh'), VARIABLE_CATEGORY_NAME)};
+        inputs.surfacesMesh = ${(JavaScript as any).variableDB_.getName(block.getFieldValue('DrawnSurfacesMesh'), VARIABLE_CATEGORY_NAME)};
 
         const allMeshDatas = [];
         inputs.surfaces.forEach(srf => {
@@ -98,7 +98,7 @@ export function createDrawSurfacesBlock() {
             vertexData.normals = meshDataConverted.normals;
 
             vertexData.applyToMesh(inputs.surfacesMesh, inputs.updatable);
-            ${JavaScript.variableDB_.getName(block.getFieldValue('DrawnSurfacesMesh'), VARIABLE_CATEGORY_NAME)} = inputs.surfacesMesh;
+            ${(JavaScript as any).variableDB_.getName(block.getFieldValue('DrawnSurfacesMesh'), VARIABLE_CATEGORY_NAME)} = inputs.surfacesMesh;
 
         }
 

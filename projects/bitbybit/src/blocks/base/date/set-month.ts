@@ -27,8 +27,8 @@ export function createDateSetMonthBlock() {
 
     JavaScript[blockSelector] = (block: Block) => {
         const inputs = {
-            date: JavaScript.valueToCode(block, 'Date', JavaScript.ORDER_ATOMIC),
-            month: JavaScript.valueToCode(block, 'Month', JavaScript.ORDER_ATOMIC),
+            date: (JavaScript as any).valueToCode(block, 'Date', (JavaScript as any).ORDER_ATOMIC),
+            month: (JavaScript as any).valueToCode(block, 'Month', (JavaScript as any).ORDER_ATOMIC),
         };
         // this is first set of validations to check that all inputs are non empty strings
         BitByBitBlockHandlerService.validate(block, block.workspace, makeRequiredValidationModelForInputs(resources, inputs, [
@@ -44,7 +44,7 @@ export function createDateSetMonthBlock() {
 return new Date(inputs.date.setMonth(inputs.month));
 `
         );
-        return [code, JavaScript.ORDER_ATOMIC];
+        return [code, (JavaScript as any).ORDER_ATOMIC];
     };
 }
 

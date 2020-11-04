@@ -26,8 +26,8 @@ export function createHttpParamBlock() {
 
     JavaScript[blockSelector] = (block: Block) => {
         const inputs = {
-            param: JavaScript.valueToCode(block, 'Param', JavaScript.ORDER_ATOMIC),
-            value: JavaScript.valueToCode(block, 'Value', JavaScript.ORDER_ATOMIC),
+            param: (JavaScript as any).valueToCode(block, 'Param', (JavaScript as any).ORDER_ATOMIC),
+            value: (JavaScript as any).valueToCode(block, 'Value', (JavaScript as any).ORDER_ATOMIC),
         };
         // this is first set of validations to check that all inputs are non empty strings
         BitByBitBlockHandlerService.validate(block, block.workspace, makeRequiredValidationModelForInputs(resources, inputs, [
@@ -42,7 +42,7 @@ export function createHttpParamBlock() {
 return {param: inputs.param, value: inputs.value};
 `
         );
-        return [code, JavaScript.ORDER_ATOMIC];
+        return [code, (JavaScript as any).ORDER_ATOMIC];
     };
 }
 

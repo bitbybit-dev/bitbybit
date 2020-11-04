@@ -24,7 +24,7 @@ export function createBooleanUnionObjectsBlock(): void {
 
     JavaScript[blockSelector] = (block: Block) => {
         const inputs = {
-            unionObjects: JavaScript.valueToCode(block, 'UnionObjects', JavaScript.ORDER_ATOMIC),
+            unionObjects: (JavaScript as any).valueToCode(block, 'UnionObjects', (JavaScript as any).ORDER_ATOMIC),
         };
 
         // this is first set of validations to check that all inputs are non empty strings
@@ -42,7 +42,7 @@ export function createBooleanUnionObjectsBlock(): void {
             return union;
 `
         );
-        return [code, JavaScript.ORDER_ATOMIC];
+        return [code, (JavaScript as any).ORDER_ATOMIC];
     };
 }
 

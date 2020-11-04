@@ -48,11 +48,11 @@ export function createDrawNodeBlock() {
     JavaScript[blockSelector] = (block: Block) => {
 
         const inputs = {
-            node: JavaScript.valueToCode(block, 'Node', JavaScript.ORDER_ATOMIC),
-            colorX: JavaScript.valueToCode(block, 'ColorX', JavaScript.ORDER_ATOMIC),
-            colorY: JavaScript.valueToCode(block, 'ColorY', JavaScript.ORDER_ATOMIC),
-            colorZ: JavaScript.valueToCode(block, 'ColorZ', JavaScript.ORDER_ATOMIC),
-            size: JavaScript.valueToCode(block, 'Size', JavaScript.ORDER_ATOMIC),
+            node: (JavaScript as any).valueToCode(block, 'Node', (JavaScript as any).ORDER_ATOMIC),
+            colorX: (JavaScript as any).valueToCode(block, 'ColorX', (JavaScript as any).ORDER_ATOMIC),
+            colorY: (JavaScript as any).valueToCode(block, 'ColorY', (JavaScript as any).ORDER_ATOMIC),
+            colorZ: (JavaScript as any).valueToCode(block, 'ColorZ', (JavaScript as any).ORDER_ATOMIC),
+            size: (JavaScript as any).valueToCode(block, 'Size', (JavaScript as any).ORDER_ATOMIC),
         };
 
         // this is first set of validations to check that all inputs are non empty strings

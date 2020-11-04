@@ -33,6 +33,6 @@ export function createCornerTypeBlock(): void {
             return inputs.cornerType;
 `
         );
-        return [code, JavaScript.ORDER_ATOMIC];
+        return [code, (JavaScript as any).ORDER_ATOMIC];
     };
 }

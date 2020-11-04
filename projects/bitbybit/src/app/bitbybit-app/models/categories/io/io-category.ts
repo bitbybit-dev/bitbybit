@@ -3,8 +3,8 @@ import { ResourcesService } from '../../../../../resources';
 export function ioCategory() {
     const resources = ResourcesService.getResources();
     return `
-    <category name="${resources.block_toolbox_category_io}" expanded="true" categorystyle="geometry_category">
-        <category name="${resources.block_toolbox_category_io_text}" expanded="true" categorystyle="geometry_category">
+    <category name="${resources.block_toolbox_category_io}"  categorystyle="geometry_category">
+        <category name="${resources.block_toolbox_category_io_text}"  categorystyle="geometry_category">
             <block type="base_io_import_text_file">
             </block>
             <block type="base_io_print_save">
@@ -22,7 +22,7 @@ export function ioCategory() {
                 </value>
             </block>
         </category>
-        <category name="${resources.block_toolbox_category_io_http}" expanded="true" categorystyle="geometry_category">
+        <category name="${resources.block_toolbox_category_io_http}"  categorystyle="geometry_category">
             <block type="base_io_http_get">
             </block>
             <block type="base_io_http_post">
@@ -40,7 +40,7 @@ export function ioCategory() {
             <block type="base_io_http_param">
             </block>
         </category>
-        <category name="${resources.block_toolbox_category_io_json}" expanded="true" categorystyle="geometry_category">
+        <category name="${resources.block_toolbox_category_io_json}"  categorystyle="geometry_category">
             <block type="base_io_json_path_query">
             </block>
             <block type="base_io_json_set_path_value">

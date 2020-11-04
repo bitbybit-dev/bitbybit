@@ -29,9 +29,9 @@ export function createHttpOptionsBlock() {
 
     JavaScript[blockSelector] = (block: Block) => {
         const inputs = {
-            headers: JavaScript.valueToCode(block, 'Headers', JavaScript.ORDER_ATOMIC),
-            params: JavaScript.valueToCode(block, 'Params', JavaScript.ORDER_ATOMIC),
-            withCredentials: JavaScript.valueToCode(block, 'WithCredentials', JavaScript.ORDER_ATOMIC),
+            headers: (JavaScript as any).valueToCode(block, 'Headers', (JavaScript as any).ORDER_ATOMIC),
+            params: (JavaScript as any).valueToCode(block, 'Params', (JavaScript as any).ORDER_ATOMIC),
+            withCredentials: (JavaScript as any).valueToCode(block, 'WithCredentials', (JavaScript as any).ORDER_ATOMIC),
         };
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
@@ -58,6 +58,6 @@ const options = {
 return options;
 `
         );
-        return [code, JavaScript.ORDER_ATOMIC];
+        return [code, (JavaScript as any).ORDER_ATOMIC];
     };
 }

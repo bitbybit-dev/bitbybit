@@ -31,6 +31,6 @@ export function createImportTextFileBlock() {
             return BitByBit.BitByBitBlocklyHelperService.getFile();
 `
         );
-        return [code, JavaScript.ORDER_ATOMIC];
+        return [code, (JavaScript as any).ORDER_ATOMIC];
     };
 }

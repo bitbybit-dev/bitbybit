@@ -23,7 +23,7 @@ export function createCoreUVGetUBlock() {
 
     JavaScript[blockSelector] =  (block: Block) => {
         const inputs = {
-            uv: JavaScript.valueToCode(block, 'UV', JavaScript.ORDER_ATOMIC)
+            uv: (JavaScript as any).valueToCode(block, 'UV', (JavaScript as any).ORDER_ATOMIC)
         };
 
         // this is first set of validations to check that all inputs are non empty strings
@@ -34,6 +34,6 @@ export function createCoreUVGetUBlock() {
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
             `return inputs.uv.u;`);
-        return [code, JavaScript.ORDER_ATOMIC];
+        return [code, (JavaScript as any).ORDER_ATOMIC];
     };
 }

@@ -3,7 +3,7 @@ import { ResourcesService } from '../../../../../resources';
 export function pointCategory() {
     const resources = ResourcesService.getResources();
     return `
-    <category name="${resources.block_toolbox_category_geom_point}" expanded="true" categorystyle="geometry_category">
+    <category name="${resources.block_toolbox_category_geom_point}"  categorystyle="geometry_category">
         <block type="babylon_draw_point">
             <value name="Colour">
                 <shadow type="colour_picker">
@@ -89,7 +89,7 @@ export function pointCategory() {
                 </shadow>
             </value>
         </block>
-        <category name="${resources.block_toolbox_category_create}" expanded="true" categorystyle="geometry_category">
+        <category name="${resources.block_toolbox_category_create}"  categorystyle="geometry_category">
             <block type="base_geometry_point">
             </block>
             <block type="base_geometry_point">
@@ -177,7 +177,7 @@ export function pointCategory() {
                 </value>
             </block>
         </category>
-        <category name="${resources.block_toolbox_category_apply}" expanded="true" categorystyle="geometry_category">
+        <category name="${resources.block_toolbox_category_apply}"  categorystyle="geometry_category">
             <block type="base_geometry_point_transform">
             </block>
             <block type="base_geometry_points_transform">

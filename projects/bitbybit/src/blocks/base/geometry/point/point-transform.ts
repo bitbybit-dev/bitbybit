@@ -27,8 +27,8 @@ export function createPointTransformBlock() {
 
     JavaScript[blockSelector] = (block: Block) => {
         const inputs = {
-            point: JavaScript.valueToCode(block, 'Point', JavaScript.ORDER_ATOMIC),
-            matrix: JavaScript.valueToCode(block, 'Matrix', JavaScript.ORDER_ATOMIC),
+            point: (JavaScript as any).valueToCode(block, 'Point', (JavaScript as any).ORDER_ATOMIC),
+            matrix: (JavaScript as any).valueToCode(block, 'Matrix', (JavaScript as any).ORDER_ATOMIC),
         };
 
         // this is first set of validations to check that all inputs are non empty strings
@@ -53,7 +53,7 @@ export function createPointTransformBlock() {
     }
     return transformedControlPoints[0];
 `);
-        return [code, JavaScript.ORDER_ATOMIC];
+        return [code, (JavaScript as any).ORDER_ATOMIC];
     };
 }
 

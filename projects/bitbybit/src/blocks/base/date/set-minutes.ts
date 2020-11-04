@@ -27,8 +27,8 @@ export function createDateSetMinutesBlock() {
 
     JavaScript[blockSelector] = (block: Block) => {
         const inputs = {
-            date: JavaScript.valueToCode(block, 'Date', JavaScript.ORDER_ATOMIC),
-            minutes: JavaScript.valueToCode(block, 'Minutes', JavaScript.ORDER_ATOMIC),
+            date: (JavaScript as any).valueToCode(block, 'Date', (JavaScript as any).ORDER_ATOMIC),
+            minutes: (JavaScript as any).valueToCode(block, 'Minutes', (JavaScript as any).ORDER_ATOMIC),
         };
         // this is first set of validations to check that all inputs are non empty strings
         BitByBitBlockHandlerService.validate(block, block.workspace, makeRequiredValidationModelForInputs(resources, inputs, [
@@ -44,7 +44,7 @@ export function createDateSetMinutesBlock() {
 return new Date(inputs.date.setMinutes(inputs.minutes));
 `
         );
-        return [code, JavaScript.ORDER_ATOMIC];
+        return [code, (JavaScript as any).ORDER_ATOMIC];
     };
 }
 

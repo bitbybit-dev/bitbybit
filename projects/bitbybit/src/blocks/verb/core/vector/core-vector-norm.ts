@@ -23,7 +23,7 @@ export function createCoreVectorNormBlock() {
 
     JavaScript[blockSelector] = (block: Block) => {
         const inputs = {
-            vector: JavaScript.valueToCode(block, 'Vector', JavaScript.ORDER_ATOMIC),
+            vector: (JavaScript as any).valueToCode(block, 'Vector', (JavaScript as any).ORDER_ATOMIC),
         };
 
         // this is first set of validations to check that all inputs are non empty strings
@@ -38,7 +38,7 @@ export function createCoreVectorNormBlock() {
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
             `return BitByBit.verb.core.Vec.norm(inputs.vector);`);
 
-        return [code, JavaScript.ORDER_ATOMIC];
+        return [code, (JavaScript as any).ORDER_ATOMIC];
     };
 }
 

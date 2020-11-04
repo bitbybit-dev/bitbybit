@@ -43,12 +43,12 @@ export function createDateCreateUtcBlock() {
 
     JavaScript[blockSelector] = (block: Block) => {
         const inputs = {
-            year: JavaScript.valueToCode(block, 'Year', JavaScript.ORDER_ATOMIC),
-            month: JavaScript.valueToCode(block, 'Month', JavaScript.ORDER_ATOMIC),
-            day: JavaScript.valueToCode(block, 'Day', JavaScript.ORDER_ATOMIC),
-            hour: JavaScript.valueToCode(block, 'Hour', JavaScript.ORDER_ATOMIC),
-            minute: JavaScript.valueToCode(block, 'Minute', JavaScript.ORDER_ATOMIC),
-            second: JavaScript.valueToCode(block, 'Second', JavaScript.ORDER_ATOMIC),
+            year: (JavaScript as any).valueToCode(block, 'Year', (JavaScript as any).ORDER_ATOMIC),
+            month: (JavaScript as any).valueToCode(block, 'Month', (JavaScript as any).ORDER_ATOMIC),
+            day: (JavaScript as any).valueToCode(block, 'Day', (JavaScript as any).ORDER_ATOMIC),
+            hour: (JavaScript as any).valueToCode(block, 'Hour', (JavaScript as any).ORDER_ATOMIC),
+            minute: (JavaScript as any).valueToCode(block, 'Minute', (JavaScript as any).ORDER_ATOMIC),
+            second: (JavaScript as any).valueToCode(block, 'Second', (JavaScript as any).ORDER_ATOMIC),
         };
         // this is first set of validations to check that all inputs are non empty strings
         BitByBitBlockHandlerService.validate(block, block.workspace, makeRequiredValidationModelForInputs(resources, inputs, [
@@ -65,7 +65,7 @@ export function createDateCreateUtcBlock() {
 return new Date(Date.UTC(inputs.year, inputs.month - 1, inputs.day, inputs.hour, inputs.minute, inputs.second));
 `
         );
-        return [code, JavaScript.ORDER_ATOMIC];
+        return [code, (JavaScript as any).ORDER_ATOMIC];
     };
 }
 

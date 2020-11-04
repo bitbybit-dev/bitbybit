@@ -27,8 +27,8 @@ export function createIntersectCurveCurveBlock() {
 
     JavaScript[blockSelector] = (block: Block) => {
         const inputs = {
-            firstCurve: JavaScript.valueToCode(block, 'FirstCurve', JavaScript.ORDER_ATOMIC),
-            secondCurve: JavaScript.valueToCode(block, 'SecondCurve', JavaScript.ORDER_ATOMIC),
+            firstCurve: (JavaScript as any).valueToCode(block, 'FirstCurve', (JavaScript as any).ORDER_ATOMIC),
+            secondCurve: (JavaScript as any).valueToCode(block, 'SecondCurve', (JavaScript as any).ORDER_ATOMIC),
         };
         // this is first set of validations to check that all inputs are non empty strings
         BitByBitBlockHandlerService.validate(block, block.workspace, makeRequiredValidationModelForInputs(resources, inputs, [
@@ -42,7 +42,7 @@ export function createIntersectCurveCurveBlock() {
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
             `return BitByBit.verb.geom.Intersect.curves(inputs.firstCurve, inputs.secondCurve);`
         );
-        return [code, JavaScript.ORDER_ATOMIC];
+        return [code, (JavaScript as any).ORDER_ATOMIC];
     };
 }
 

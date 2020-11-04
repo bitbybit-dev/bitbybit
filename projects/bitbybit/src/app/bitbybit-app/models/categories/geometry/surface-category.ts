@@ -3,7 +3,7 @@ import { ResourcesService } from '../../../../../resources';
 export function surfaceCategory() {
     const resources = ResourcesService.getResources();
     return `
-    <category name="${resources.block_toolbox_category_geom_surface}" expanded="true" categorystyle="geometry_category">
+    <category name="${resources.block_toolbox_category_geom_surface}"  categorystyle="geometry_category">
         <block type="babylon_draw_surface">
             <value name="Colour">
                 <shadow type="colour_picker">
@@ -50,7 +50,7 @@ export function surfaceCategory() {
                 </shadow>
             </value>
         </block>
-        <category name="${resources.block_toolbox_category_create}"  expanded="true" categorystyle="geometry_category">
+        <category name="${resources.block_toolbox_category_create}"   categorystyle="geometry_category">
             <block type="verb_geometry_nurbs_surface_by_corners">
             </block>
             <block type="verb_geometry_nurbs_surface_by_lofting_curves">
@@ -220,7 +220,7 @@ export function surfaceCategory() {
                 </block>
             </category>
         </category>
-        <category name="${resources.block_toolbox_category_apply}" expanded="true" categorystyle="geometry_category">
+        <category name="${resources.block_toolbox_category_apply}"  categorystyle="geometry_category">
             <block type="verb_geometry_nurbs_surface_normal">
             </block>
             <block type="verb_geometry_nurbs_surface_point">
@@ -278,13 +278,13 @@ export function surfaceCategory() {
             </block>
             <block type="verb_geometry_nurbs_surface_derivatives">
             </block>
-            <category name="${resources.block_toolbox_category_geom_sphere}" expanded="true" categorystyle="geometry_category">
+            <category name="${resources.block_toolbox_category_geom_sphere}"  categorystyle="geometry_category">
                 <block type="verb_geometry_spherical_surface_center">
                 </block>
                 <block type="verb_geometry_spherical_surface_radius">
                 </block>
             </category>
-            <category name="${resources.block_toolbox_category_geom_cone}" expanded="true" categorystyle="geometry_category">
+            <category name="${resources.block_toolbox_category_geom_cone}"  categorystyle="geometry_category">
                 <block type="verb_geometry_conical_surface_axis">
                 </block>
                 <block type="verb_geometry_conical_surface_x_axis">
@@ -296,7 +296,7 @@ export function surfaceCategory() {
                 <block type="verb_geometry_conical_surface_height">
                 </block>
             </category>
-            <category name="${resources.block_toolbox_category_geom_cylinder}" expanded="true" categorystyle="geometry_category">
+            <category name="${resources.block_toolbox_category_geom_cylinder}"  categorystyle="geometry_category">
                 <block type="verb_geometry_cylindrical_surface_axis">
                 </block>
                 <block type="verb_geometry_cylindrical_surface_x_axis">
@@ -308,13 +308,13 @@ export function surfaceCategory() {
                 <block type="verb_geometry_cylindrical_surface_height">
                 </block>
             </category>
-            <category name="${resources.block_toolbox_category_geom_extrusion}" expanded="true" categorystyle="geometry_category">
+            <category name="${resources.block_toolbox_category_geom_extrusion}"  categorystyle="geometry_category">
                 <block type="verb_geometry_extruded_surface_profile">
                 </block>
                 <block type="verb_geometry_extruded_surface_direction">
                 </block>
             </category>
-            <category name="${resources.block_toolbox_category_geom_revolution}" expanded="true" categorystyle="geometry_category">
+            <category name="${resources.block_toolbox_category_geom_revolution}"  categorystyle="geometry_category">
                 <block type="verb_geometry_revolved_surface_profile">
                 </block>
                 <block type="verb_geometry_revolved_surface_axis">

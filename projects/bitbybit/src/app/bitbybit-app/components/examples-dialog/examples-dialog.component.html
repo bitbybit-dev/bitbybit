@@ -4,7 +4,7 @@
     <mat-tab [label]="resources.app_menu_more_examples_newbie">
         <div *ngFor="let example of basicExamples" class="example">
             <h3>{{example.title}}</h3>
-            <a [routerLink]="['/']" [queryParams]="{examples: example.queryParam}" (click)="onClose()">
+            <a [routerLink]="['/app']" [queryParams]="{examples: example.queryParam}" (click)="onClose()">
                 <img [src]="example.image"/>
             </a>
             <a *ngIf="example.youtubeLink" class="youtube-link" [href]="example.youtubeLink" target="_blank">
@@ -16,7 +16,7 @@
     <mat-tab [label]="resources.app_menu_more_examples_street_smart">
         <div *ngFor="let example of mediumExamples" class="example">
             <h3>{{example.title}}</h3>
-            <a [routerLink]="['/']" [queryParams]="{examples: example.queryParam}" (click)="onClose()">
+            <a [routerLink]="['/app']" [queryParams]="{examples: example.queryParam}" (click)="onClose()">
                 <img [src]="example.image"/>
             </a>
             <a *ngIf="example.youtubeLink" class="youtube-link" [href]="example.youtubeLink" target="_blank">
@@ -28,7 +28,7 @@
     <mat-tab [label]="resources.app_menu_more_examples_ninja"> 
         <div *ngFor="let example of advancedExamples" class="example">
             <h3>{{example.title}}</h3>
-            <a [routerLink]="['/']" [queryParams]="{examples: example.queryParam}" (click)="onClose()">
+            <a [routerLink]="['/app']" [queryParams]="{examples: example.queryParam}" (click)="onClose()">
                 <img [src]="example.image"/>
             </a>
             <a *ngIf="example.youtubeLink" class="youtube-link" [href]="example.youtubeLink" target="_blank">
