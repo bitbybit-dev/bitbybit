@@ -7,6 +7,10 @@
     height: 100%;
 }
 
+.mid-content {
+    width: 5px;
+}
+
 .fill-row {
     display: flex;
     flex-direction: row;
@@ -15,7 +19,12 @@
 }
 
 .left-menu {
+    z-index: 1;
+    color: white;
+    font-weight: 400;
     width: 70px;
+    background-color: #1a1c1f;
+    // background: linear-gradient(to bottom, #777, black);
 }
 
 .right-content {
@@ -46,9 +55,19 @@
 }
 
 .fill-height-or-more .min-menu {
+    z-index: 1;
     flex: none;
     height: 60px;
     display: flex;
+    color: white;
+    background-color: #1a1c1f;
+    // background: linear-gradient(to right,  #777, black);
+}
+
+.min-menu .logo {
+    display: inline-flex;
+    margin-top: -2px;
+    margin-left: 10px;
 }
 
 .min-menu .actions {
@@ -56,8 +75,11 @@
     margin-right: 20px;
 }
 
+// .min-menu .actions {
+//     display: inline-flex;
+// }
+
 .min-menu .actions button {
-    display: inline-flex;
     float: right;
     margin-left: 10px;
 }
@@ -69,6 +91,7 @@
 }
 
 img.logo {
+    filter: drop-shadow(0px 0px 12px rgba(0, 0, 0, 0.5));
     max-width: 44px;
     margin-top: 10px;
     margin-left: auto;

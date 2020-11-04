@@ -339,7 +339,7 @@ export class BitbybitAppComponent implements OnDestroy {
 
     cleanCanvas() {
         this.workspace.clear();
-        this.router.navigate(['/']);
+        this.router.navigate(['/app']);
         this.run();
     }
 
