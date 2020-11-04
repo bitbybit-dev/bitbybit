@@ -287,7 +287,8 @@ h1 {
 }
 
 .canvasZone {
-    // position: absolute;
+    position: fixed;
+    display: block;
     height: 100%;
     width: 100%;
 }
