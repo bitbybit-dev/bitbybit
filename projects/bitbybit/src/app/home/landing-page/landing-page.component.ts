@@ -13,10 +13,6 @@ export class LandingPageComponent implements OnInit, AfterViewInit {
     ngOnInit(): void {
     }
 
-    getStarted(): void {
-        window.open('https://bitbybit.dev');
-    }
-
     ngAfterViewInit(): void {
         setTimeout(() => {
             this.loaded = true;

@@ -17,7 +17,6 @@ export class ExamplesDialogComponent implements OnInit {
     advancedExamples: ExampleInterface[];
     resources: ResourcesInterface;
 
-
     constructor(
         public dialogRef: MatDialogRef<ExamplesDialogComponent>,
         @Inject(MAT_DIALOG_DATA) public data: any) { }

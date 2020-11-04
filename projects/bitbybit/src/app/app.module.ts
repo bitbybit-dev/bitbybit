@@ -4,6 +4,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { RouterModule } from '@angular/router';
+import { ScullyLibModule } from '@scullyio/ng-lib';
 
 @NgModule({
     declarations: [
@@ -11,6 +12,7 @@ import { RouterModule } from '@angular/router';
     ],
     imports: [
         BrowserModule,
+        ScullyLibModule,
         RouterModule,
         BrowserAnimationsModule,
         AppRoutingModule,

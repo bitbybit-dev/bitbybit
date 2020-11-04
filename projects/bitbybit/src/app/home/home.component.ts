@@ -14,11 +14,11 @@ export class HomeComponent implements OnInit {
     }
 
     ngOnInit(): void {
-        this.router.events.subscribe(event => {
-            if (event instanceof onanimationend) {
-                window.scroll({ top: 0 });
-            };
-        });
+        // this.router.events.subscribe(event => {
+        //     if (event instanceof onanimationend) {
+        //         window.scroll({ top: 0 });
+        //     };
+        // });
     }
 
     documentation(): void {

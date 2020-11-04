@@ -40,7 +40,7 @@ import { MatDrawer } from '@angular/material/sidenav';
     templateUrl: './bitbybit-app.component.html',
     styleUrls: ['./bitbybit-app.component.scss']
 })
-export class BitbybitAppComponent implements OnInit, AfterViewInit, OnDestroy {
+export class BitbybitAppComponent implements OnDestroy {
 
     blocklyDiv: HTMLElement;
     blocklyArea: Element & HTMLElement;
@@ -75,123 +75,127 @@ export class BitbybitAppComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     ngAfterViewInit(): void {
-        const theme = Theme.defineTheme('themeName', themeStyle());
+        import('csg-generated')
+        .then((module: Function) => {
+            const theme = Theme.defineTheme('themeName', themeStyle());
 
-        this.blocklyArea = document.getElementById('blocklyArea');
-        this.blocklyDiv = document.getElementById('blocklyDiv');
-        this.workspace = inject(this.blocklyDiv,
-            {
-                toolbox: document.getElementById('toolbox'),
-                zoom:
+            this.blocklyArea = document.getElementById('blocklyArea');
+            this.blocklyDiv = document.getElementById('blocklyDiv');
+            this.workspace = inject(this.blocklyDiv,
                 {
-                    controls: true,
-                    wheel: true,
-                    startScale: 0.7,
-                    maxScale: 3,
-                    minScale: 0.3,
-                    scaleSpeed: 1.2
-                },
-                trashcan: false,
-                theme
+                    toolbox: document.getElementById('toolbox'),
+                    zoom:
+                    {
+                        controls: true,
+                        wheel: true,
+                        startScale: 0.7,
+                        maxScale: 3,
+                        minScale: 0.3,
+                        scaleSpeed: 1.2
+                    },
+                    trashcan: false,
+                    theme,
+                });
+
+            window.addEventListener('resize', () => this.onResize(), false);
+            const toolbox = this.workspace.getToolbox();
+            const flyout = toolbox.getFlyout();
+            flyout.MARGIN = 40;
+            flyout.CORNER_RADIUS = 10;
+
+            this.collapseExpandedMenus();
+            toolbox.clearSelection();
+
+            (Blockly.prompt as any) = (message, defaultValue, callback) => { this.openPromptDialog({ message, defaultValue, callback }); };
+
+            svgResize(this.workspace);
+
+            const canvas = document.getElementById('renderCanvas') as HTMLCanvasElement;
+            this.engine = new Engine(canvas);
+            this.scene = new Scene(this.engine);
+            this.scene.clearColor = new Color4(1, 1, 1, 1);
+            const tnode = new TransformNode('root', this.scene);
+            const camera = new ArcRotateCamera('Camera', 0, 10, 10, new Vector3(0, 0, 0), this.scene);
+            camera.setPosition(new Vector3(0, 10, 20));
+            camera.attachControl(canvas, true);
+            const light = new DirectionalLight('DirectionalLight', new Vector3(10, 10, 0), this.scene);
+            light.diffuse = new Color3(1, 1, 1);
+            light.specular = new Color3(1, 1, 1);
+            light.intensity = 0.6;
+            const light2 = new DirectionalLight('DirectionalLight', new Vector3(-10, 10, -10), this.scene);
+            light2.diffuse = new Color3(1, 1, 1);
+            light2.specular = new Color3(1, 1, 1);
+            light2.intensity = 0.6;
+            const light3 = new HemisphericLight('HemiLight', new Vector3(0, 1, 0), this.scene);
+            light3.intensity = 0.2;
+
+            this.scene.ambientColor = new Color3(0.1, 0.1, 0.1);
+
+            this.windowBlockly = {};
+            this.windowBlockly.scene = this.scene;
+            this.windowBlockly.workspace = this.workspace;
+            (window as any).blockly = this.windowBlockly;
+
+            this.engine.runRenderLoop(() => {
+                const now = Date.now();
+                const timeElapsedFromPreviousIteration = now - this.timePassedFromPreviousIteration;
+                this.timePassedFromPreviousIteration = now;
+                BitByBitBlocklyHelperService.renderLoopBag.forEach(f => f(timeElapsedFromPreviousIteration));
+                this.scene.render();
             });
 
-        window.addEventListener('resize', () => this.onResize(), false);
-        const toolbox = this.workspace.getToolbox();
-        const flyout = toolbox.getFlyout();
-        flyout.MARGIN = 40;
-        flyout.CORNER_RADIUS = 10;
-
-        this.collapseExpandedMenus();
-        toolbox.clearSelection();
-
-        (Blockly.prompt as any) = (message, defaultValue, callback) => { this.openPromptDialog({ message, defaultValue, callback }); };
-
-        svgResize(this.workspace);
-
-        const canvas = document.getElementById('renderCanvas') as HTMLCanvasElement;
-        this.engine = new Engine(canvas);
-        this.scene = new Scene(this.engine);
-        this.scene.clearColor = new Color4(1, 1, 1, 1);
-        const tnode = new TransformNode('root', this.scene);
-        const camera = new ArcRotateCamera('Camera', 0, 10, 10, new Vector3(0, 0, 0), this.scene);
-        camera.setPosition(new Vector3(0, 10, 20));
-        camera.attachControl(canvas, true);
-        const light = new DirectionalLight('DirectionalLight', new Vector3(10, 10, 0), this.scene);
-        light.diffuse = new Color3(1, 1, 1);
-        light.specular = new Color3(1, 1, 1);
-        light.intensity = 0.6;
-        const light2 = new DirectionalLight('DirectionalLight', new Vector3(-10, 10, -10), this.scene);
-        light2.diffuse = new Color3(1, 1, 1);
-        light2.specular = new Color3(1, 1, 1);
-        light2.intensity = 0.6;
-        const light3 = new HemisphericLight('HemiLight', new Vector3(0, 1, 0), this.scene);
-        light3.intensity = 0.2;
-
-        this.scene.ambientColor = new Color3(0.1, 0.1, 0.1);
-
-        this.windowBlockly = {};
-        this.windowBlockly.scene = this.scene;
-        this.windowBlockly.workspace = this.workspace;
-        (window as any).blockly = this.windowBlockly;
-
-        this.engine.runRenderLoop(() => {
-            const now = Date.now();
-            const timeElapsedFromPreviousIteration = now - this.timePassedFromPreviousIteration;
-            this.timePassedFromPreviousIteration = now;
-            BitByBitBlocklyHelperService.renderLoopBag.forEach(f => f(timeElapsedFromPreviousIteration));
-            this.scene.render();
-        });
-
-        this.tagsNeedUpdate = false;
-
-        camera.onProjectionMatrixChangedObservable.add(() => {
-            this.tagsNeedUpdate = true;
-        });
-
-        camera.onViewMatrixChangedObservable.add(() => {
-            this.tagsNeedUpdate = true;
-        });
-
-        this.scene.registerAfterRender(() => {
-            this.tagService.handleTags(camera, this.tagsNeedUpdate, this.engine, this.scene);
             this.tagsNeedUpdate = false;
-        });
 
-        BitByBitBlocklyHelperService.promptPrintSave = (prompt: PrintSaveInterface) => this.openPrintSaveDialog(prompt);
-        BitByBitBlocklyHelperService.angular = {
-            httpClient: this.httpClient,
-            HttpHeaders,
-            HttpParams
-        };
-        BitByBitBlocklyHelperService.jsonpath = jsonpath;
-        BitByBitBlocklyHelperService.clearAllDrawn = () => this.clearMeshesAndMaterials();
-
-        this.settingsService.initSettings(this.workspace, this.changeDetectorService).subscribe(s => {
-
-            this.route.queryParamMap.subscribe(param => {
-                const exampleParam = param.get('examples');
-                if (exampleParam) {
-                    this.firstTimeOpen = false;
-                    const xml = Xml.textToDom(this.examplesService.getExampleXml(exampleParam));
-                    if (xml) {
-                        this.workspace.clear();
-                        Xml.domToWorkspace(xml, this.workspace);
-                        this.workspace.zoomToFit();
-                        this.workspace.zoomCenter(-3);
-                        this.run();
-                    }
-                } else {
-                    if (this.firstTimeOpen) {
-                        this.examples();
-                        this.firstTimeOpen = false;
-                    }
-                }
+            camera.onProjectionMatrixChangedObservable.add(() => {
+                this.tagsNeedUpdate = true;
             });
+
+            camera.onViewMatrixChangedObservable.add(() => {
+                this.tagsNeedUpdate = true;
+            });
+
+            this.scene.registerAfterRender(() => {
+                this.tagService.handleTags(camera, this.tagsNeedUpdate, this.engine, this.scene);
+                this.tagsNeedUpdate = false;
+            });
+
+            BitByBitBlocklyHelperService.promptPrintSave = (prompt: PrintSaveInterface) => this.openPrintSaveDialog(prompt);
+            BitByBitBlocklyHelperService.angular = {
+                httpClient: this.httpClient,
+                HttpHeaders,
+                HttpParams
+            };
+            BitByBitBlocklyHelperService.jsonpath = jsonpath;
+            BitByBitBlocklyHelperService.clearAllDrawn = () => this.clearMeshesAndMaterials();
+
+            this.settingsService.initSettings(this.workspace, this.changeDetectorService).subscribe(s => {
+
+                this.route.queryParamMap.subscribe(param => {
+                    const exampleParam = param.get('examples');
+                    if (exampleParam) {
+                        this.firstTimeOpen = false;
+                        const xml = Xml.textToDom(this.examplesService.getExampleXml(exampleParam));
+                        if (xml) {
+                            this.workspace.clear();
+                            Xml.domToWorkspace(xml, this.workspace);
+                            this.workspace.zoomToFit();
+                            this.workspace.zoomCenter(-3);
+                            this.run();
+                        }
+                    } else {
+                        if (this.firstTimeOpen) {
+                            this.examples();
+                            this.firstTimeOpen = false;
+                        }
+                    }
+                });
+            });
+
+            setTimeout(() => {
+                this.onResize();
+            }, 0);
         });
 
-        setTimeout(() => {
-            this.onResize();
-        }, 0);
     }
 
     private collapseExpandedMenus() {
@@ -206,9 +210,7 @@ export class BitbybitAppComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     ngOnInit(): void {
-        import('csg-generated')
-            .then((module: Function) => {
-            });
+
         this.resources = ResourcesService.getResources();
         prepareBabylonForBlockly();
         assembleBlocks();
@@ -289,6 +291,11 @@ export class BitbybitAppComponent implements OnInit, AfterViewInit, OnDestroy {
 
     examples() {
         this.openExamplesDialog();
+    }
+
+    toggleToolbox() {
+        const toolbox = document.getElementsByClassName('blocklyToolboxDiv')[0] as HTMLElement;
+        toolbox.hidden = !toolbox.hidden;
     }
 
     about() {
