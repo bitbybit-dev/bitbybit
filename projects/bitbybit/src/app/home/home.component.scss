@@ -1,107 +1,351 @@
 
-// STYLES
-
-::ng-deep .logo {
-    max-width: 44px;
-    filter: invert(1);
-    margin-right: 20px;
+.landing-page {
+    min-height: 100vh;
 }
 
-::ng-deep .main-container {
-    margin-left: 0px;
-    margin-right: 0px;
-    max-width: 100%;
+.landing-body {
+    margin: 100px 100px 100px 100px;
+    color: white;
+    // border: 1px solid white;
 }
 
-::ng-deep .main-content{
+.logo {
+    width: 90px;
+    display: inline-block;
+    object-fit: contain;
+}
+
+nav {
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+    height: 90px;
+}
+
+.fill-width-or-more {
+    flex-direction: column;
+    height: 100%;
+}
+
+.head-title {
+    margin-left: 40px;
+}
+
+.title {
+    height: 60%;
+    font-size: 72px;
+    font-weight: 400;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.sub-title {
+    height: 40%;
+    font-size: 25px;
+    font-weight: 400;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.menu-zone {
+    flex: 1;
+}
+
+.menu {
+    flex: 1;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    height: 100%;
+}
+
+.menu-item{
+    margin-left: 30px;
+    font-size: 30px;
+    font-weight: 400;
+    margin-top: auto;
+    margin-bottom: auto;
+}
+
+.header-content {
     margin-top: 70px;
+    display: flex;
+    flex-direction: row;
+    flex: 1;
 }
 
-::ng-deep button {
-    outline: none !important;
+.separator-margin {
+    margin-top: 170px;
 }
 
-::ng-deep a {
-    outline: none !important;
+.header-text {
+    flex: 0.4;
+    display: flex;
 }
 
-::ng-deep nav {
-    padding: 10px;
-    background-color: #444;
-    color: white;
+.align-center {
+    margin-top: auto;
+    margin-bottom: auto;
 }
 
-::ng-deep .secondary-large-menu {
-    margin-top: 3px;
-    float: right;
+.header-image {
+    flex: 0.6;
 }
 
-::ng-deep .secondary-menu, ::ng-deep .footer {
-    background-color: #555;
-    color: white;
-}
-::ng-deep .footer {
-    padding: 40px;
-}
-::ng-deep .third-menu {
-    background-color: #eee;
-    padding:5px;
-    top: 0;
-    position: sticky;
-    z-index: 1000;
+.mac-landing {
+    width: 100%;
 }
 
-::ng-deep .zero-padding {
-    padding-left: 0;
-    padding-right: 0;
+.ipad {
+    text-align: center;
 }
 
-::ng-deep .sidenav {
-    background-color: #eee;
-    position: sticky;
-    top: 0;
-    bottom: 0;
-    z-index: 1000;
-    height: calc(100vh);
-    overflow-y: auto;
-}
-::ng-deep .sidenav .tree {
-    background-color: #eee;
+.ipad-landing {
+    width: 50%;
+    filter: drop-shadow(0 4mm 4mm rgba(0, 0, 0, 0.5));
 }
 
-::ng-deep .mat-tree-node {
-    font-size: 16px;
+dt {
+    margin-bottom: 10px;
 }
 
-@media(max-width:767px){
-    ::ng-deep .sidenav {
-        position: sticky;
-        top: 3rem;
-        z-index: 1000;
-        height: calc(100vh);
-        overflow-y: auto;
+dd {
+    margin-bottom: 20px
+}
+
+@media(max-width:1400px){
+
+    .main-title {
+        font-size: 40px;
+        font-weight: 400;
+    }
+    
+    .main-text {
+        margin-top: 50px;
+        font-size: 15px;
+        line-height: 25px;
+        font-weight: 300;
     }
 }
 
-::ng-deep .mat-button.mat-primary {
+@media(min-width:1400px){
+    .main-title {
+        font-size: 60px;
+        font-weight: 400;
+    }
+    
+    .main-text {
+        margin-top: 50px;
+        font-size: 20px;
+        line-height: 25px;
+        font-weight: 300;
+    }
+}
+
+
+
+a {
     color: white;
 }
 
-::ng-deep a, ::ng-deep a:hover {
-    color: white;
-    text-decoration-line: none;
+ul {
+    // list-style-type: none;
+    padding-inline-start: 20px;
 }
 
-::ng-deep .social-container {
-    background-color: white;
-    padding: 10px;
-    margin-top: 10px;
+li {
+    margin-bottom: 10px;
 }
 
-::ng-deep .social {
-    display: inline-block;
-    opacity: 0.6;
-    margin: 5px;
+
+.get-started {
+    margin-top: 170px;    
 }
 
-// TUTORIALS
+.get-started a:hover {
+    text-decoration: none;
+}
+
+.get-started a:hover .start-button-text {
+    background: linear-gradient(to right, rgb(196, 139, 115), #ac6c4c);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.text-align-center {
+    text-align: center;
+}
+
+.start-button-text {
+    padding-top: 25px;
+    padding-bottom: 25px;
+    margin-top: -80px;
+    font-size: 37px;
+    font-weight: 900;
+    color: #fff;
+    background: linear-gradient(to right, #8b614e, #c07e5e);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    filter: drop-shadow(0 4mm 4mm rgba(0, 0, 0, 0.5));
+}
+
+.start-button{
+    height: 80px;
+    margin-left:auto;
+    margin-right: auto;
+}
+
+.get-started-text {
+    margin-top: 50px;
+    font-size: 20px;
+    font-weight: 300;
+    line-height: 25px;
+}
+
+.social-media {
+    margin-top: 170px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+}
+
+.social {
+    filter: drop-shadow(0 4mm 4mm rgba(0, 0, 0, 0.5));
+}
+
+
+.tools {
+    margin-top: 130px;
+    font-size: 30px;
+    font-weight: 300;
+    line-height: 40px;
+}
+
+.separator {
+    margin-top: 180px;
+    margin-left: 100px;
+    margin-right: 100px;
+    height: 2px;
+    background: linear-gradient(to right, #d6b39f, #fff6f3);
+}
+.separator-bottom {
+    margin-left: 100px;
+    margin-right: 100px;
+    height: 4px;
+    background: linear-gradient(to right, #9b7b68, #b97e6a );
+}
+
+footer {
+    margin-left: 100px;
+    margin-right: 100px;
+    min-height: 500px;
+}
+
+// // STYLES
+
+// ::ng-deep .logo {
+//     max-width: 44px;
+//     filter: invert(1);
+//     margin-right: 20px;
+// }
+
+// ::ng-deep .main-container {
+//     margin-left: 0px;
+//     margin-right: 0px;
+//     max-width: 100%;
+// }
+
+// ::ng-deep .main-content{
+//     margin-top: 70px;
+// }
+
+// ::ng-deep button {
+//     outline: none !important;
+// }
+
+// ::ng-deep a {
+//     outline: none !important;
+// }
+
+// ::ng-deep nav {
+//     padding: 10px;
+//     background-color: #444;
+//     color: white;
+// }
+
+// ::ng-deep .secondary-large-menu {
+//     margin-top: 3px;
+//     float: right;
+// }
+
+// ::ng-deep .secondary-menu, ::ng-deep .footer {
+//     background-color: #555;
+//     color: white;
+// }
+// ::ng-deep .footer {
+//     padding: 40px;
+// }
+// ::ng-deep .third-menu {
+//     background-color: #eee;
+//     padding:5px;
+//     top: 0;
+//     position: sticky;
+//     z-index: 1000;
+// }
+
+// ::ng-deep .zero-padding {
+//     padding-left: 0;
+//     padding-right: 0;
+// }
+
+// ::ng-deep .sidenav {
+//     background-color: #eee;
+//     position: sticky;
+//     top: 0;
+//     bottom: 0;
+//     z-index: 1000;
+//     height: calc(100vh);
+//     overflow-y: auto;
+// }
+// ::ng-deep .sidenav .tree {
+//     background-color: #eee;
+// }
+
+// ::ng-deep .mat-tree-node {
+//     font-size: 16px;
+// }
+
+// @media(max-width:767px){
+//     ::ng-deep .sidenav {
+//         position: sticky;
+//         top: 3rem;
+//         z-index: 1000;
+//         height: calc(100vh);
+//         overflow-y: auto;
+//     }
+// }
+
+// ::ng-deep .mat-button.mat-primary {
+//     color: white;
+// }
+
+// ::ng-deep a, ::ng-deep a:hover {
+//     color: white;
+//     text-decoration-line: none;
+// }
+
+// ::ng-deep .social-container {
+//     background-color: white;
+//     padding: 10px;
+//     margin-top: 10px;
+// }
+
+// ::ng-deep .social {
+//     display: inline-block;
+//     opacity: 0.6;
+//     margin: 5px;
+// }
+
+// // TUTORIALS

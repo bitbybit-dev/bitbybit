@@ -79,6 +79,7 @@ $custom-typography: mat-typography-config(
 html, body { height: 100%; }
 body { 
     margin: 0; 
+    background-color: #1a1c1f;
     font-family: 'IBM Plex Sans', sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;

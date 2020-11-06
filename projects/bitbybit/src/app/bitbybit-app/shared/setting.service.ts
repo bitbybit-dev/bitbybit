@@ -132,8 +132,12 @@ export class SettingsService {
             resources.block_toolbox_category_text,
         ];
 
+
         toolboxCategoryFlatList.forEach((resource, index) => {
-            htmlElements[index + 1].textContent = resource;
+            const htmlElement = htmlElements[index];
+            if (htmlElement) {
+                htmlElement.textContent = resource;
+            }
         });
     }
 }
