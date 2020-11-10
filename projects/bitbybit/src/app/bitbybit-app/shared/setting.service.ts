@@ -1,13 +1,16 @@
 import { ChangeDetectorRef, Injectable } from '@angular/core';
-import { WorkspaceSvg, Xml } from 'blockly';
+import { WorkspaceSvg, Xml, Theme } from 'blockly';
 import { assembleBlocks } from '../../../blocks/assemble-blocks';
 import { languagesEnum, ResourcesInterface, ResourcesService } from '../../../resources';
 import { localStorageKeysEnum } from './local-storage-keys.enum';
 import { Observable, Subject } from 'rxjs';
+import { themeStyle } from '../models/theme-styles.model';
 
 @Injectable()
 export class SettingsService {
 
+    theme = Theme.defineTheme('themeName', themeStyle());
+    
     constructor() {
     }
 

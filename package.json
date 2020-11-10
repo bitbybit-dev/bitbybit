@@ -38,14 +38,15 @@
     "verb-nurbs-web": "2.1.3",
     "jsonpath": "1.0.2",
     "blockly": "3.20200924.4",
-    "@babylonjs/core": "4.2.0-beta.17",
-    "@babylonjs/materials": "4.2.0-beta.17",
-    "@babylonjs/loaders": "4.2.0-beta.17",
-    "@babylonjs/gui": "4.2.0-beta.17",
+    "@babylonjs/core": "4.2.0-rc.6",
+    "@babylonjs/materials": "4.2.0-rc.6",
+    "@babylonjs/loaders": "4.2.0-rc.6",
+    "@babylonjs/gui": "4.2.0-rc.6",
     "earcut": "2.2.2",
-    "@jscad/modeling": "2.0.0-alpha.6",
-    "@jscad/io-utils": "2.0.0-alpha.6",
-    "@jscad/stl-serializer": "2.0.0-alpha.6"
+    "@jscad/modeling": "2.0.0-alpha.7",
+    "@jscad/io-utils": "2.0.0-alpha.7",
+    "@jscad/stl-serializer": "2.0.0-alpha.7",
+    "simplebar-angular": "2.3.0"
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "^0.1002.0",

@@ -81,8 +81,6 @@ export class BitbybitAppComponent implements OnDestroy {
     ngAfterViewInit(): void {
         import('csg-generated')
             .then((module: Function) => {
-                const theme = Theme.defineTheme('themeName', themeStyle());
-
                 this.blocklyArea = document.getElementById('blocklyArea');
                 this.blocklyDiv = document.getElementById('blocklyDiv');
 
@@ -98,7 +96,7 @@ export class BitbybitAppComponent implements OnDestroy {
                             scaleSpeed: 1.2
                         },
                         trashcan: true,
-                        theme,
+                        theme: this.settingsService.theme,
                     });
 
                 window.addEventListener('resize', () => this.onResize(), false);

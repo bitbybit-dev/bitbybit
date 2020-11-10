@@ -4,7 +4,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { RouterModule } from '@angular/router';
-import { ScullyLibModule } from '@scullyio/ng-lib';
+import { SimplebarAngularModule } from 'simplebar-angular';
 
 @NgModule({
     declarations: [
@@ -12,9 +12,9 @@ import { ScullyLibModule } from '@scullyio/ng-lib';
     ],
     imports: [
         BrowserModule,
-        ScullyLibModule,
         RouterModule,
         BrowserAnimationsModule,
+        SimplebarAngularModule,
         AppRoutingModule,
     ],
     providers: [],

@@ -76,7 +76,7 @@ $custom-typography: mat-typography-config(
 
 /* You can add global styles to this file, and also import other style files */
 
-html, body { height: 100%; }
+html, body { height: 100%; scroll-behavior: smooth;}
 body { 
     margin: 0; 
     background-color: #1a1c1f;
@@ -88,28 +88,3 @@ body {
 .mat-tooltip {
     font-weight: 400;
 }
-
-
-/* Customize website's scrollbar like Mac OS
-Not supports in Firefox and IE */
-
-/* total width */
-::-webkit-scrollbar {
-    background-color:#fff;
-    width:10px
-}
-
-/* background of the scrollbar except button or resizer */
-::-webkit-scrollbar-track {
-    background-color:#fff
-}
-
-/* scrollbar itself */
-::-webkit-scrollbar-thumb {
-    background-color:#babac0;
-    border-radius:16px;
-    border:2px solid #fff
-}
-
-/* set button(top and bottom of the scrollbar) */
-::-webkit-scrollbar-button {display:none}

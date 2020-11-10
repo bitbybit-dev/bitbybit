@@ -2,7 +2,10 @@
     <div class="fill-row">
         <div class="fill-height-or-more left-menu d-none d-lg-flex">
             <div>
-                <img class="logo" [matTooltip]="resources.bit_by_bit" src="assets/logo-gold-small.png" />
+                <a routerLink="/home" class="logo">
+                    <img [matTooltip]="resources.bit_by_bit"
+                        src="assets/logo-gold-small.png" />
+                </a>
             </div>
             <div class="justify-end">
                 <div class="actions">
@@ -65,7 +68,7 @@
                             </mat-icon>
                             {{resources.app_menu_more_about}}
                         </button>
-                        <a mat-menu-item href="https://home.bitbybit.dev" target="_blank">
+                        <a mat-menu-item routerLink="home">
                             <mat-icon aria-hidden="false" aria-label="Home">home
                             </mat-icon>
                             {{resources.app_menu_more_home}}
@@ -132,7 +135,10 @@
             <div class="min-menu d-lg-none">
                 <div class="justify-end">
                     <div class="actions">
-                        <img class="logo" [matTooltip]="resources.bit_by_bit" src="assets/logo-gold-small.png" />
+                        <a routerLink="/home" class="logo">
+                            <img [matTooltip]="resources.bit_by_bit"
+                                src="assets/logo-gold-small.png" />
+                        </a>
                         <button mat-buttom mat-icon-button (click)="swapCanvas()">
                             <mat-icon [matTooltip]="resources.app_menu_swap_canvas" aria-label="Swap Canvas">swap_horiz
                             </mat-icon>
@@ -192,7 +198,7 @@
                                 </mat-icon>
                                 {{resources.app_menu_more_about}}
                             </button>
-                            <a mat-menu-item href="https://home.bitbybit.dev" target="_blank">
+                            <a mat-menu-item routerLink="home">
                                 <mat-icon aria-hidden="false" aria-label="Home">home
                                 </mat-icon>
                                 {{resources.app_menu_more_home}}

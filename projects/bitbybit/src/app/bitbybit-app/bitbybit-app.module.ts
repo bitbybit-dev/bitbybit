@@ -14,8 +14,6 @@ import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { BrowserModule } from '@angular/platform-browser';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { AboutDialogComponent } from './components/about-dialog/about-dialog.component';
 import { AlertDialogComponent } from './components/alert-dialog/alert-dialog.component';
 import { ExamplesDialogComponent } from './components/examples-dialog/examples-dialog.component';
