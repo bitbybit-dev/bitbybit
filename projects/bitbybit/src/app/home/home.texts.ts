@@ -18,19 +18,19 @@ export function texts(): Texts {
         head: {
             title: 'Value Education',
             listElements: [
-                'To our community we provide the most valuable asset class in the world - knowledge.',
-                'We give our users powerful design & coding tools that empower to learn & teach others by making things.',
-                'We combine Science, Technology, Engineering, the Arts and Mathematics (STEAM) in our tools & our teaching methodology.',
+                'We provide the most valuable asset class in the world - knowledge.',
+                'We build powerful design and coding tools that empower our users to learn through visual programming of geometry.',
+                'We combine Science, Technology, Engineering, the Arts and Mathematics (STEAM) in our tools and our teaching methodology.',
             ]
         },
-        definition: `The "Bit by bit developers" company build tools that are free, open-source & available for the individuals, schools, coding bootcamps & government institutions responsible for education. Our frictionless products can be adapted in many STEAM based programs. Get in touch if you would like to learn more, integrate our applciation in your curriculum or get personalised training.`,
+        definition: `The "Bit by bit developers" company builds open-source tools that are available for the individuals, schools, coding bootcamps and government institutions involved in education. Our frictionless products can be adapted in many STEAM based programs. Get in touch if you would like to learn more, integrate our application in your curriculum or get personalised training.`,
         startTheAppButton: 'Start the Applciation!',
         startTheAppExplanation: 'Learn to code through visual programming of geometry. Start your journey by launching our web application, it is completely FREE.',
         about: {
             title: 'About',
             paragraphs: [
-                '"Bit by bit developers" LLC is based in Lithuania (EU). We provide the 3D visual programming platform, tools, educational STEAM based material & consulting services to individuals and our partners.',
-                'By treating education and knowledge as the most valuable assets of society we are committed to enrich EdTech environment with practical, accessible, easy to use solutions that work accross devices and operating systems.',
+                '"Bit by bit developers" LLC is based in Lithuania. We provide the 3D visual programming platform, tools, educational STEAM based material and consulting services to individuals and our partners.',
+                'By treating education and knowledge as the most valuable assets of society we are committed to enrich the EdTech environment with practical, accessible, easy to use solutions that work across devices and operating systems.',
             ]
         },
         contact: {
@@ -48,7 +48,7 @@ export function texts(): Texts {
                     dd: 'Willing to integrate new digital tools in education and enrich existing curriculum used in public schools.'
                 }
             ],
-            formExplanation: 'To submit this form you need to have mail client app on your computer configured. Otherwise just contact us on',
+            formExplanation: 'To submit this form you need to have the mail client app on your computer configured. Otherwise just contact us on',
         }
     };
 }
