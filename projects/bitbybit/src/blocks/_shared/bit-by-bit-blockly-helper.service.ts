@@ -137,7 +137,6 @@ export class BitByBitBlocklyHelperService {
 
     static snapVec3(v3): any {
         const tolerance = BitByBitBlocklyHelperService.snapTolerance;
-        console.log(v3);
         const x = Math.round(v3[0] / tolerance) * tolerance + 0; // no more -0
         const y = Math.round(v3[1] / tolerance) * tolerance + 0; // no more -0
         const z = Math.round(v3[2] / tolerance) * tolerance + 0; // no more -0

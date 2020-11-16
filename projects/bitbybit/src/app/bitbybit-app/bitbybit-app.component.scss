@@ -98,6 +98,7 @@ a.logo {
 a.logo img {
     filter: drop-shadow(0px 0px 12px rgba(0, 0, 0, 0.5));
     max-width: 44px;
+    max-height: 44px;
 }
 
 ::ng-deep span.mat-button-wrapper {
