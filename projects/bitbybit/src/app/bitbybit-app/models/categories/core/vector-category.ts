@@ -8,19 +8,19 @@ export function vectorCategory() {
         </block>
         <block type="verb_core_vector">
             <value name="X">
-                <shadow type="math_number">
+                <block type="math_number">
                     <field name="NUM">0</field>
-                </shadow>
+                </block>
             </value>
             <value name="Y">
-                <shadow type="math_number">
+                <block type="math_number">
                     <field name="NUM">0</field>
-                </shadow>
+                </block>
             </value>
             <value name="Z">
-                <shadow type="math_number">
+                <block type="math_number">
                     <field name="NUM">0</field>
-                </shadow>
+                </block>
             </value>
         </block>
         <block type="verb_core_vector_angle_between">

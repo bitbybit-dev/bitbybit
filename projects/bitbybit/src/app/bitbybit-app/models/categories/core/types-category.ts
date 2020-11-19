@@ -8,14 +8,14 @@ export function typesCategory() {
         </block>
         <block type="verb_core_interval">
             <value name="Min">
-                <shadow type="math_number">
+                <block type="math_number">
                     <field name="NUM">0</field>
-                </shadow>
+                </block>
             </value>
             <value name="Max">
-                <shadow type="math_number">
+                <block type="math_number">
                     <field name="NUM">1</field>
-                </shadow>
+                </block>
             </value>
         </block>
         <block type="verb_core_interval_get_min">
@@ -26,14 +26,14 @@ export function typesCategory() {
         </block>
         <block type="verb_core_uv">
             <value name="U">
-                <shadow type="math_number">
+                <block type="math_number">
                     <field name="NUM">0</field>
-                </shadow>
+                </block>
             </value>
             <value name="V">
-                <shadow type="math_number">
+                <block type="math_number">
                     <field name="NUM">0</field>
-                </shadow>
+                </block>
             </value>
         </block>
         <block type="verb_core_uv_get_u">

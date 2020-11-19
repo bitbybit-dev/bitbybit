@@ -6,91 +6,91 @@ export function nodeCategory() {
     <category name="${resources.block_toolbox_category_core_node}"  categorystyle="verb_core_category">
         <block type="babylon_draw_node">
             <value name="ColorX">
-                <shadow type="colour_picker">
+                <block type="colour_picker">
                     <field name="COLOUR">#FF0000</field>
-                </shadow>
+                </block>
             </value>
             <value name="ColorY">
-                <shadow type="colour_picker">
+                <block type="colour_picker">
                     <field name="COLOUR">#00FF00</field>
-                </shadow>
+                </block>
             </value>
             <value name="ColorZ">
-                <shadow type="colour_picker">
+                <block type="colour_picker">
                     <field name="COLOUR">#0000FF</field>
-                </shadow>
+                </block>
             </value>
             <value name="Size">
-                <shadow type="math_number">
+                <block type="math_number">
                     <field name="NUM">1</field>
-                </shadow>
+                </block>
             </value>
         </block>
         <block type="babylon_draw_nodes">
             <value name="ColorX">
-                <shadow type="colour_picker">
+                <block type="colour_picker">
                     <field name="COLOUR">#FF0000</field>
-                </shadow>
+                </block>
             </value>
             <value name="ColorY">
-                <shadow type="colour_picker">
+                <block type="colour_picker">
                     <field name="COLOUR">#00FF00</field>
-                </shadow>
+                </block>
             </value>
             <value name="ColorZ">
-                <shadow type="colour_picker">
+                <block type="colour_picker">
                     <field name="COLOUR">#0000FF</field>
-                </shadow>
+                </block>
             </value>
             <value name="Size">
-                <shadow type="math_number">
+                <block type="math_number">
                     <field name="NUM">1</field>
-                </shadow>
+                </block>
             </value>
         </block>
         <category name="${resources.block_toolbox_category_create}" categorystyle="geometry_category">
             <block type="base_geometry_node_from_rotation">
                 <value name="Origin">
-                    <shadow type="base_geometry_point">
+                    <block type="base_geometry_point">
                         <value name="X">
-                            <shadow type="math_number">
+                            <block type="math_number">
                                 <field name="NUM">-0</field>
-                            </shadow>
+                            </block>
                         </value>
                         <value name="Y">
-                            <shadow type="math_number">
+                            <block type="math_number">
                                 <field name="NUM">-0</field>
-                            </shadow>
+                            </block>
                         </value>
                         <value name="Z">
-                            <shadow type="math_number">
+                            <block type="math_number">
                                 <field name="NUM">-0</field>
-                            </shadow>
+                            </block>
                         </value>
-                    </shadow>
+                    </block>
                 </value>
                 <value name="Rotation">
-                    <shadow type="base_geometry_point">
+                    <block type="base_geometry_point">
                         <value name="X">
-                            <shadow type="math_number">
+                            <block type="math_number">
                                 <field name="NUM">-0</field>
-                            </shadow>
+                            </block>
                         </value>
                         <value name="Y">
-                            <shadow type="math_number">
+                            <block type="math_number">
                                 <field name="NUM">-0</field>
-                            </shadow>
+                            </block>
                         </value>
                         <value name="Z">
-                            <shadow type="math_number">
+                            <block type="math_number">
                                 <field name="NUM">-0</field>
-                            </shadow>
+                            </block>
                         </value>
-                    </shadow>
+                    </block>
                 </value>
                 <value name="Parent">
-                    <shadow type="base_geometry_node_get_root">
-                    </shadow>
+                    <block type="base_geometry_node_get_root">
+                    </block>
                 </value>
             </block>
             <block type="base_geometry_node_world">

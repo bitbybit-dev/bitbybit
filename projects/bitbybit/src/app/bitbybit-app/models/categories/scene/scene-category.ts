@@ -6,61 +6,61 @@ export function sceneCategory() {
     <category name="${resources.block_toolbox_category_scene}" categorystyle="scene_category">
         <block type="babylon_draw_grid">
             <value name="Width">
-                <shadow type="math_number">
+                <block type="math_number">
                     <field name="NUM">400</field>
-                </shadow>
+                </block>
             </value>
             <value name="Height">
-                <shadow type="math_number">
+                <block type="math_number">
                     <field name="NUM">400</field>
-                </shadow>
+                </block>
             </value>
             <value name="Subdivisions">
-                <shadow type="math_number">
+                <block type="math_number">
                     <field name="NUM">10</field>
-                </shadow>
+                </block>
             </value>
             <value name="MajorUnitFrequency">
-                <shadow type="math_number">
+                <block type="math_number">
                     <field name="NUM">10</field>
-                </shadow>
+                </block>
             </value>
             <value name="MinorUnitVisibility">
-                <shadow type="math_number">
+                <block type="math_number">
                     <field name="NUM">0.45</field>
-                </shadow>
+                </block>
             </value>
             <value name="GridRatio">
-                <shadow type="math_number">
+                <block type="math_number">
                     <field name="NUM">0.5</field>
-                </shadow>
+                </block>
             </value>
             <value name="Opacity">
-                <shadow type="math_number">
+                <block type="math_number">
                     <field name="NUM">0.5</field>
-                </shadow>
+                </block>
             </value>
             <value name="BackFaceCulling">
-                <shadow type="logic_boolean">
+                <block type="logic_boolean">
                     <field name="BOOL">FALSE</field>
-                </shadow>
+                </block>
             </value>
             <value name="MainColor">
-                <shadow type="colour_picker">
+                <block type="colour_picker">
                     <field name="COLOUR">#000</field>
-                </shadow>
+                </block>
             </value>
             <value name="LineColor">
-                <shadow type="colour_picker">
+                <block type="colour_picker">
                     <field name="COLOUR">#555</field>
-                </shadow>
+                </block>
             </value>
         </block>
         <block type="babylon_scene_background_colour">
             <value name="Colour">
-                <shadow type="colour_picker">
+                <block type="colour_picker">
                     <field name="COLOUR">#eee</field>
-                </shadow>
+                </block>
             </value>
         </block>
         <block type="babylon_clear_all_drawn">

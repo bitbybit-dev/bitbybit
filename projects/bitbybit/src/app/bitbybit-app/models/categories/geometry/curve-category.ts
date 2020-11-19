@@ -6,54 +6,54 @@ export function curveCategory() {
     <category name="${resources.block_toolbox_category_geom_curve}"  categorystyle="geometry_category">
         <block type="babylon_draw_curve">
             <value name="Colour">
-                <shadow type="colour_picker">
+                <block type="colour_picker">
                     <field name="COLOUR">#555</field>
-                </shadow>
+                </block>
             </value>
             <value name="Width">
-                <shadow type="math_number">
+                <block type="math_number">
                     <field name="NUM">3</field>
-                </shadow>
+                </block>
             </value>
             <value name="Opacity">
-                <shadow type="math_number">
+                <block type="math_number">
                     <field name="NUM">1</field>
-                </shadow>
+                </block>
             </value>
             <value name="Updatable">
-                <shadow type="logic_boolean">
+                <block type="logic_boolean">
                     <field name="BOOL">FALSE</field>
-                </shadow>
+                </block>
             </value>
         </block>
         <block type="babylon_draw_curves">
             <value name="Colour">
-                <shadow type="colour_picker">
+                <block type="colour_picker">
                     <field name="COLOUR">#555</field>
-                </shadow>
+                </block>
             </value>
             <value name="Width">
-                <shadow type="math_number">
+                <block type="math_number">
                     <field name="NUM">3</field>
-                </shadow>
+                </block>
             </value>
             <value name="Opacity">
-                <shadow type="math_number">
+                <block type="math_number">
                     <field name="NUM">1</field>
-                </shadow>
+                </block>
             </value>
             <value name="Updatable">
-                <shadow type="logic_boolean">
+                <block type="logic_boolean">
                     <field name="BOOL">FALSE</field>
-                </shadow>
+                </block>
             </value>
         </block>
         <category name="${resources.block_toolbox_category_create}"   categorystyle="geometry_category">
             <block type="verb_geometry_nurbs_curve_by_points">
                 <value name="Degree">
-                    <shadow type="math_number">
+                    <block type="math_number">
                         <field name="NUM">3</field>
-                    </shadow>
+                    </block>
                 </value>
             </block>
             <block type="verb_geometry_nurbs_curve_by_knots_control_points_weights">
@@ -63,270 +63,270 @@ export function curveCategory() {
             <category name="${resources.block_toolbox_category_geom_circle}"   categorystyle="geometry_category">
                 <block type="verb_geometry_nurbs_curve_circle">
                     <value name="Center">
-                        <shadow type="base_geometry_point">
+                        <block type="base_geometry_point">
                             <value name="X">
-                                <shadow type="math_number">
+                                <block type="math_number">
                                     <field name="NUM">0</field>
-                                </shadow>
+                                </block>
                             </value>
                             <value name="Y">
-                                <shadow type="math_number">
+                                <block type="math_number">
                                     <field name="NUM">0</field>
-                                </shadow>
+                                </block>
                             </value>
                             <value name="Z">
-                                <shadow type="math_number">
+                                <block type="math_number">
                                     <field name="NUM">0</field>
-                                </shadow>
+                                </block>
                             </value>
-                        </shadow>
+                        </block>
                     </value>
                     <value name="XAxis">
-                        <shadow type="base_geometry_point">
+                        <block type="base_geometry_point">
                             <value name="X">
-                                <shadow type="math_number">
+                                <block type="math_number">
                                     <field name="NUM">1</field>
-                                </shadow>
+                                </block>
                             </value>
                             <value name="Y">
-                                <shadow type="math_number">
+                                <block type="math_number">
                                     <field name="NUM">0</field>
-                                </shadow>
+                                </block>
                             </value>
                             <value name="Z">
-                                <shadow type="math_number">
+                                <block type="math_number">
                                     <field name="NUM">0</field>
-                                </shadow>
+                                </block>
                             </value>
-                        </shadow>
+                        </block>
                     </value>
                     <value name="YAxis">
-                        <shadow type="base_geometry_point">
+                        <block type="base_geometry_point">
                             <value name="X">
-                                <shadow type="math_number">
+                                <block type="math_number">
                                     <field name="NUM">0</field>
-                                </shadow>
+                                </block>
                             </value>
                             <value name="Y">
-                                <shadow type="math_number">
+                                <block type="math_number">
                                     <field name="NUM">1</field>
-                                </shadow>
+                                </block>
                             </value>
                             <value name="Z">
-                                <shadow type="math_number">
+                                <block type="math_number">
                                     <field name="NUM">0</field>
-                                </shadow>
+                                </block>
                             </value>
-                        </shadow>
+                        </block>
                     </value>
                     <value name="Radius">
-                        <shadow type="math_number">
+                        <block type="math_number">
                             <field name="NUM">1</field>
-                        </shadow>
+                        </block>
                     </value>
                 </block>
                 <block type="verb_geometry_nurbs_curve_arc">
                     <value name="Center">
-                        <shadow type="base_geometry_point">
+                        <block type="base_geometry_point">
                             <value name="X">
-                                <shadow type="math_number">
+                                <block type="math_number">
                                     <field name="NUM">0</field>
-                                </shadow>
+                                </block>
                             </value>
                             <value name="Y">
-                                <shadow type="math_number">
+                                <block type="math_number">
                                     <field name="NUM">0</field>
-                                </shadow>
+                                </block>
                             </value>
                             <value name="Z">
-                                <shadow type="math_number">
+                                <block type="math_number">
                                     <field name="NUM">0</field>
-                                </shadow>
+                                </block>
                             </value>
-                        </shadow>
+                        </block>
                     </value>
                     <value name="XAxis">
-                        <shadow type="base_geometry_point">
+                        <block type="base_geometry_point">
                             <value name="X">
-                                <shadow type="math_number">
+                                <block type="math_number">
                                     <field name="NUM">1</field>
-                                </shadow>
+                                </block>
                             </value>
                             <value name="Y">
-                                <shadow type="math_number">
+                                <block type="math_number">
                                     <field name="NUM">0</field>
-                                </shadow>
+                                </block>
                             </value>
                             <value name="Z">
-                                <shadow type="math_number">
+                                <block type="math_number">
                                     <field name="NUM">0</field>
-                                </shadow>
+                                </block>
                             </value>
-                        </shadow>
+                        </block>
                     </value>
                     <value name="YAxis">
-                        <shadow type="base_geometry_point">
+                        <block type="base_geometry_point">
                             <value name="X">
-                                <shadow type="math_number">
+                                <block type="math_number">
                                     <field name="NUM">0</field>
-                                </shadow>
+                                </block>
                             </value>
                             <value name="Y">
-                                <shadow type="math_number">
+                                <block type="math_number">
                                     <field name="NUM">1</field>
-                                </shadow>
+                                </block>
                             </value>
                             <value name="Z">
-                                <shadow type="math_number">
+                                <block type="math_number">
                                     <field name="NUM">0</field>
-                                </shadow>
+                                </block>
                             </value>
-                        </shadow>
+                        </block>
                     </value>
                     <value name="Radius">
-                        <shadow type="math_number">
+                        <block type="math_number">
                             <field name="NUM">1</field>
-                        </shadow>
+                        </block>
                     </value>
                     <value name="MinAngle">
-                        <shadow type="math_number">
+                        <block type="math_number">
                             <field name="NUM">0</field>
-                        </shadow>
+                        </block>
                     </value>
                     <value name="MaxAngle">
-                        <shadow type="math_number">
+                        <block type="math_number">
                             <field name="NUM">90</field>
-                        </shadow>
+                        </block>
                     </value>
                 </block>
             </category>
             <category name="${resources.block_toolbox_category_geom_ellipse}"   categorystyle="geometry_category">
                 <block type="verb_geometry_nurbs_curve_ellipse">
                     <value name="Center">
-                        <shadow type="base_geometry_point">
+                        <block type="base_geometry_point">
                             <value name="X">
-                                <shadow type="math_number">
+                                <block type="math_number">
                                     <field name="NUM">0</field>
-                                </shadow>
+                                </block>
                             </value>
                             <value name="Y">
-                                <shadow type="math_number">
+                                <block type="math_number">
                                     <field name="NUM">0</field>
-                                </shadow>
+                                </block>
                             </value>
                             <value name="Z">
-                                <shadow type="math_number">
+                                <block type="math_number">
                                     <field name="NUM">0</field>
-                                </shadow>
+                                </block>
                             </value>
-                        </shadow>
+                        </block>
                     </value>
                     <value name="XAxis">
-                        <shadow type="base_geometry_point">
+                        <block type="base_geometry_point">
                             <value name="X">
-                                <shadow type="math_number">
+                                <block type="math_number">
                                     <field name="NUM">2</field>
-                                </shadow>
+                                </block>
                             </value>
                             <value name="Y">
-                                <shadow type="math_number">
+                                <block type="math_number">
                                     <field name="NUM">0</field>
-                                </shadow>
+                                </block>
                             </value>
                             <value name="Z">
-                                <shadow type="math_number">
+                                <block type="math_number">
                                     <field name="NUM">0</field>
-                                </shadow>
+                                </block>
                             </value>
-                        </shadow>
+                        </block>
                     </value>
                     <value name="YAxis">
-                        <shadow type="base_geometry_point">
+                        <block type="base_geometry_point">
                             <value name="X">
-                                <shadow type="math_number">
+                                <block type="math_number">
                                     <field name="NUM">0</field>
-                                </shadow>
+                                </block>
                             </value>
                             <value name="Y">
-                                <shadow type="math_number">
+                                <block type="math_number">
                                     <field name="NUM">1</field>
-                                </shadow>
+                                </block>
                             </value>
                             <value name="Z">
-                                <shadow type="math_number">
+                                <block type="math_number">
                                     <field name="NUM">0</field>
-                                </shadow>
+                                </block>
                             </value>
-                        </shadow>
+                        </block>
                     </value>
                 </block>
                 <block type="verb_geometry_nurbs_curve_ellipse_arc">
                     <value name="Center">
-                        <shadow type="base_geometry_point">
+                        <block type="base_geometry_point">
                             <value name="X">
-                                <shadow type="math_number">
+                                <block type="math_number">
                                     <field name="NUM">0</field>
-                                </shadow>
+                                </block>
                             </value>
                             <value name="Y">
-                                <shadow type="math_number">
+                                <block type="math_number">
                                     <field name="NUM">0</field>
-                                </shadow>
+                                </block>
                             </value>
                             <value name="Z">
-                                <shadow type="math_number">
+                                <block type="math_number">
                                     <field name="NUM">0</field>
-                                </shadow>
+                                </block>
                             </value>
-                        </shadow>
+                        </block>
                     </value>
                     <value name="XAxis">
-                        <shadow type="base_geometry_point">
+                        <block type="base_geometry_point">
                             <value name="X">
-                                <shadow type="math_number">
+                                <block type="math_number">
                                     <field name="NUM">2</field>
-                                </shadow>
+                                </block>
                             </value>
                             <value name="Y">
-                                <shadow type="math_number">
+                                <block type="math_number">
                                     <field name="NUM">0</field>
-                                </shadow>
+                                </block>
                             </value>
                             <value name="Z">
-                                <shadow type="math_number">
+                                <block type="math_number">
                                     <field name="NUM">0</field>
-                                </shadow>
+                                </block>
                             </value>
-                        </shadow>
+                        </block>
                     </value>
                     <value name="YAxis">
-                        <shadow type="base_geometry_point">
+                        <block type="base_geometry_point">
                             <value name="X">
-                                <shadow type="math_number">
+                                <block type="math_number">
                                     <field name="NUM">0</field>
-                                </shadow>
+                                </block>
                             </value>
                             <value name="Y">
-                                <shadow type="math_number">
+                                <block type="math_number">
                                     <field name="NUM">1</field>
-                                </shadow>
+                                </block>
                             </value>
                             <value name="Z">
-                                <shadow type="math_number">
+                                <block type="math_number">
                                     <field name="NUM">0</field>
-                                </shadow>
+                                </block>
                             </value>
-                        </shadow>
+                        </block>
                     </value>
                     <value name="MinAngle">
-                        <shadow type="math_number">
+                        <block type="math_number">
                             <field name="NUM">0</field>
-                        </shadow>
+                        </block>
                     </value>
                     <value name="MaxAngle">
-                        <shadow type="math_number">
+                        <block type="math_number">
                             <field name="NUM">90</field>
-                        </shadow>
+                        </block>
                     </value>
                 </block>
             </category>

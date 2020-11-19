@@ -9,16 +9,16 @@ export function ioCategory() {
             </block>
             <block type="base_io_print_save">
                 <value name="Text">
-                    <shadow type="text">
+                    <block type="text">
                         <field name="TEXT">abc</field>
-                    </shadow>
+                    </block>
                 </value>
             </block>
             <block type="base_io_save">
                 <value name="Text">
-                    <shadow type="text">
+                    <block type="text">
                         <field name="TEXT">abc</field>
-                    </shadow>
+                    </block>
                 </value>
             </block>
         </category>

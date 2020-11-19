@@ -6,276 +6,276 @@ export function transformsCategory() {
     <category name="${resources.block_toolbox_category_core_transforms}" categorystyle="verb_core_category">
         <block type="babylon_transformation_scale_uniform">
             <value name="Scale">
-                <shadow type="math_number">
+                <block type="math_number">
                     <field name="NUM">2</field>
-                </shadow>
+                </block>
             </value>
         </block>
         <block type="babylon_transformation_scale_center_uniform">
             <value name="Scale">
-                <shadow type="math_number">
+                <block type="math_number">
                     <field name="NUM">2</field>
-                </shadow>
+                </block>
             </value>
             <value name="Center">
-                <shadow type="verb_core_vector">
+                <block type="verb_core_vector">
                     <value name="X">
-                        <shadow type="math_number">
+                        <block type="math_number">
                             <field name="NUM">0</field>
-                        </shadow>
+                        </block>
                     </value>
                     <value name="Y">
-                        <shadow type="math_number">
+                        <block type="math_number">
                             <field name="NUM">0</field>
-                        </shadow>
+                        </block>
                     </value>
                     <value name="Z">
-                        <shadow type="math_number">
+                        <block type="math_number">
                             <field name="NUM">0</field>
-                        </shadow>
+                        </block>
                     </value>
-                </shadow>
+                </block>
             </value>
        </block>
         <block type="babylon_transformation_scale_xyz">
             <value name="ScaleXYZ">
-                <shadow type="verb_core_vector">
+                <block type="verb_core_vector">
                     <value name="X">
-                        <shadow type="math_number">
+                        <block type="math_number">
                             <field name="NUM">2</field>
-                        </shadow>
+                        </block>
                     </value>
                     <value name="Y">
-                        <shadow type="math_number">
+                        <block type="math_number">
                             <field name="NUM">2</field>
-                        </shadow>
+                        </block>
                     </value>
                     <value name="Z">
-                        <shadow type="math_number">
+                        <block type="math_number">
                             <field name="NUM">2</field>
-                        </shadow>
+                        </block>
                     </value>
-                </shadow>
+                </block>
             </value>
         </block>
         <block type="babylon_transformation_scale_center_xyz">
             <value name="ScaleXYZ">
-                <shadow type="verb_core_vector">
+                <block type="verb_core_vector">
                     <value name="X">
-                        <shadow type="math_number">
+                        <block type="math_number">
                             <field name="NUM">2</field>
-                        </shadow>
+                        </block>
                     </value>
                     <value name="Y">
-                        <shadow type="math_number">
+                        <block type="math_number">
                             <field name="NUM">2</field>
-                        </shadow>
+                        </block>
                     </value>
                     <value name="Z">
-                        <shadow type="math_number">
+                        <block type="math_number">
                             <field name="NUM">2</field>
-                        </shadow>
+                        </block>
                     </value>
-                </shadow>
+                </block>
             </value>
             <value name="Center">
-                <shadow type="verb_core_vector">
+                <block type="verb_core_vector">
                     <value name="X">
-                        <shadow type="math_number">
+                        <block type="math_number">
                             <field name="NUM">0</field>
-                        </shadow>
+                        </block>
                     </value>
                     <value name="Y">
-                        <shadow type="math_number">
+                        <block type="math_number">
                             <field name="NUM">0</field>
-                        </shadow>
+                        </block>
                     </value>
                     <value name="Z">
-                        <shadow type="math_number">
+                        <block type="math_number">
                             <field name="NUM">0</field>
-                        </shadow>
+                        </block>
                     </value>
-                </shadow>
+                </block>
             </value>
        </block>
        <block type="babylon_transformation_translation_xyz">
             <value name="Translation">
-                <shadow type="verb_core_vector">
+                <block type="verb_core_vector">
                     <value name="X">
-                        <shadow type="math_number">
+                        <block type="math_number">
                             <field name="NUM">2</field>
-                        </shadow>
+                        </block>
                     </value>
                     <value name="Y">
-                        <shadow type="math_number">
+                        <block type="math_number">
                             <field name="NUM">2</field>
-                        </shadow>
+                        </block>
                     </value>
                     <value name="Z">
-                        <shadow type="math_number">
+                        <block type="math_number">
                             <field name="NUM">2</field>
-                        </shadow>
+                        </block>
                     </value>
-                </shadow>
+                </block>
             </value>
         </block>
         <block type="babylon_transformation_rotation_center_axis">
             <value name="Angle">
-                <shadow type="math_number">
+                <block type="math_number">
                     <field name="NUM">45</field>
-                </shadow>
+                </block>
             </value>
             <value name="Axis">
-                <shadow type="verb_core_vector">
+                <block type="verb_core_vector">
                     <value name="X">
-                        <shadow type="math_number">
+                        <block type="math_number">
                             <field name="NUM">0</field>
-                        </shadow>
+                        </block>
                     </value>
                     <value name="Y">
-                        <shadow type="math_number">
+                        <block type="math_number">
                             <field name="NUM">1</field>
-                        </shadow>
+                        </block>
                     </value>
                     <value name="Z">
-                        <shadow type="math_number">
+                        <block type="math_number">
                             <field name="NUM">0</field>
-                        </shadow>
+                        </block>
                     </value>
-                </shadow>
+                </block>
             </value>
             <value name="Center">
-                <shadow type="verb_core_vector">
+                <block type="verb_core_vector">
                     <value name="X">
-                        <shadow type="math_number">
+                        <block type="math_number">
                             <field name="NUM">0</field>
-                        </shadow>
+                        </block>
                     </value>
                     <value name="Y">
-                        <shadow type="math_number">
+                        <block type="math_number">
                             <field name="NUM">0</field>
-                        </shadow>
+                        </block>
                     </value>
                     <value name="Z">
-                        <shadow type="math_number">
+                        <block type="math_number">
                             <field name="NUM">0</field>
-                        </shadow>
+                        </block>
                     </value>
-                </shadow>
+                </block>
             </value>
         </block>
         <block type="babylon_transformation_rotation_yaw_pitch_roll">
             <value name="Yaw">
-                <shadow type="math_number">
+                <block type="math_number">
                     <field name="NUM">45</field>
-                </shadow>
+                </block>
             </value>
             <value name="Pitch">
-                <shadow type="math_number">
+                <block type="math_number">
                     <field name="NUM">45</field>
-                </shadow>
+                </block>
             </value>
             <value name="Roll">
-                <shadow type="math_number">
+                <block type="math_number">
                     <field name="NUM">45</field>
-                </shadow>
+                </block>
             </value>
             <value name="Center">
-                <shadow type="verb_core_vector">
+                <block type="verb_core_vector">
                     <value name="X">
-                        <shadow type="math_number">
+                        <block type="math_number">
                             <field name="NUM">0</field>
-                        </shadow>
+                        </block>
                     </value>
                     <value name="Y">
-                        <shadow type="math_number">
+                        <block type="math_number">
                             <field name="NUM">0</field>
-                        </shadow>
+                        </block>
                     </value>
                     <value name="Z">
-                        <shadow type="math_number">
+                        <block type="math_number">
                             <field name="NUM">0</field>
-                        </shadow>
+                        </block>
                     </value>
-                </shadow>
+                </block>
             </value>
         </block>
         <block type="babylon_transformation_rotation_center_x">
             <value name="Angle">
-                <shadow type="math_number">
+                <block type="math_number">
                     <field name="NUM">45</field>
-                </shadow>
+                </block>
             </value>
             <value name="Center">
-                <shadow type="verb_core_vector">
+                <block type="verb_core_vector">
                     <value name="X">
-                        <shadow type="math_number">
+                        <block type="math_number">
                             <field name="NUM">0</field>
-                        </shadow>
+                        </block>
                     </value>
                     <value name="Y">
-                        <shadow type="math_number">
+                        <block type="math_number">
                             <field name="NUM">0</field>
-                        </shadow>
+                        </block>
                     </value>
                     <value name="Z">
-                        <shadow type="math_number">
+                        <block type="math_number">
                             <field name="NUM">0</field>
-                        </shadow>
+                        </block>
                     </value>
-                </shadow>
+                </block>
             </value>
         </block>
         <block type="babylon_transformation_rotation_center_y">
             <value name="Angle">
-                <shadow type="math_number">
+                <block type="math_number">
                     <field name="NUM">45</field>
-                </shadow>
+                </block>
             </value>
             <value name="Center">
-                <shadow type="verb_core_vector">
+                <block type="verb_core_vector">
                     <value name="X">
-                        <shadow type="math_number">
+                        <block type="math_number">
                             <field name="NUM">0</field>
-                        </shadow>
+                        </block>
                     </value>
                     <value name="Y">
-                        <shadow type="math_number">
+                        <block type="math_number">
                             <field name="NUM">0</field>
-                        </shadow>
+                        </block>
                     </value>
                     <value name="Z">
-                        <shadow type="math_number">
+                        <block type="math_number">
                             <field name="NUM">0</field>
-                        </shadow>
+                        </block>
                     </value>
-                </shadow>
+                </block>
             </value>
         </block>
         <block type="babylon_transformation_rotation_center_z">
             <value name="Angle">
-                <shadow type="math_number">
+                <block type="math_number">
                     <field name="NUM">45</field>
-                </shadow>
+                </block>
             </value>
             <value name="Center">
-                <shadow type="verb_core_vector">
+                <block type="verb_core_vector">
                     <value name="X">
-                        <shadow type="math_number">
+                        <block type="math_number">
                             <field name="NUM">0</field>
-                        </shadow>
+                        </block>
                     </value>
                     <value name="Y">
-                        <shadow type="math_number">
+                        <block type="math_number">
                             <field name="NUM">0</field>
-                        </shadow>
+                        </block>
                     </value>
                     <value name="Z">
-                        <shadow type="math_number">
+                        <block type="math_number">
                             <field name="NUM">0</field>
-                        </shadow>
+                        </block>
                     </value>
-                </shadow>
+                </block>
             </value>
         </block>
     </category>

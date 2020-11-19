@@ -6,87 +6,87 @@ export function pointCategory() {
     <category name="${resources.block_toolbox_category_geom_point}"  categorystyle="geometry_category">
         <block type="babylon_draw_point">
             <value name="Colour">
-                <shadow type="colour_picker">
+                <block type="colour_picker">
                     <field name="COLOUR">#555</field>
-                </shadow>
+                </block>
             </value>
             <value name="Size">
-                <shadow type="math_number">
+                <block type="math_number">
                     <field name="NUM">3</field>
-                </shadow>
+                </block>
             </value>
             <value name="Opacity">
-                <shadow type="math_number">
+                <block type="math_number">
                     <field name="NUM">1</field>
-                </shadow>
+                </block>
             </value>
             <value name="Updatable">
-                <shadow type="logic_boolean">
+                <block type="logic_boolean">
                     <field name="BOOL">FALSE</field>
-                </shadow>
+                </block>
             </value>
         </block>
         <block type="babylon_draw_point">
             <value name="Point">
-                <shadow type="base_geometry_point">
+                <block type="base_geometry_point">
                     <value name="X">
-                        <shadow type="math_number">
+                        <block type="math_number">
                             <field name="NUM">0</field>
-                        </shadow>
+                        </block>
                     </value>
                     <value name="Y">
-                        <shadow type="math_number">
+                        <block type="math_number">
                             <field name="NUM">0</field>
-                        </shadow>
+                        </block>
                     </value>
                     <value name="Z">
-                        <shadow type="math_number">
+                        <block type="math_number">
                             <field name="NUM">0</field>
-                        </shadow>
+                        </block>
                     </value>
-                </shadow>
+                </block>
             </value>
             <value name="Colour">
-                <shadow type="colour_picker">
+                <block type="colour_picker">
                     <field name="COLOUR">#555</field>
-                </shadow>
+                </block>
             </value>
             <value name="Size">
-                <shadow type="math_number">
+                <block type="math_number">
                     <field name="NUM">3</field>
-                </shadow>
+                </block>
             </value>
             <value name="Opacity">
-                <shadow type="math_number">
+                <block type="math_number">
                     <field name="NUM">1</field>
-                </shadow>
+                </block>
             </value>
             <value name="Updatable">
-                <shadow type="logic_boolean">
+                <block type="logic_boolean">
                     <field name="BOOL">FALSE</field>
-                </shadow>
+                </block>
             </value>
         </block>
         <block type="babylon_draw_points">
             <value name="Colour">
-                <shadow type="colour_picker">
+                <block type="colour_picker">
                     <field name="COLOUR">#555</field>
-                </shadow>
+                </block>
             </value>
             <value name="Size">
-                <shadow type="math_number">
+                <block type="math_number">
                     <field name="NUM">3</field>
-                </shadow>
+                </block>
             </value>
             <value name="Opacity">
-                <shadow type="math_number">
+                <block type="math_number">
                     <field name="NUM">1</field>
-                </shadow>
+                </block>
             </value>
             <value name="Updatable">
-                <shadow type="logic_boolean">
+                <block type="logic_boolean">
                     <field name="BOOL">FALSE</field>
-                </shadow>
+                </block>
             </value>
         </block>
         <category name="${resources.block_toolbox_category_create}"  categorystyle="geometry_category">
@@ -94,86 +94,86 @@ export function pointCategory() {
             </block>
             <block type="base_geometry_point">
                 <value name="X">
-                    <shadow type="math_number">
+                    <block type="math_number">
                         <field name="NUM">0</field>
-                    </shadow>
+                    </block>
                 </value>
                 <value name="Y">
-                    <shadow type="math_number">
+                    <block type="math_number">
                         <field name="NUM">0</field>
-                    </shadow>
+                    </block>
                 </value>
                 <value name="Z">
-                    <shadow type="math_number">
+                    <block type="math_number">
                         <field name="NUM">0</field>
-                    </shadow>
+                    </block>
                 </value>
             </block>
             <block type="base_geometry_point_2d">
             </block>
             <block type="base_geometry_point_2d">
                 <value name="X">
-                    <shadow type="math_number">
+                    <block type="math_number">
                         <field name="NUM">0</field>
-                    </shadow>
+                    </block>
                 </value>
                 <value name="Y">
-                    <shadow type="math_number">
+                    <block type="math_number">
                         <field name="NUM">0</field>
-                    </shadow>
+                    </block>
                 </value>
             </block>
             <block type="base_geometry_point_list">
                 <value name="Point">
-                    <shadow type="base_geometry_point">
+                    <block type="base_geometry_point">
                         <value name="X">
-                            <shadow type="math_number">
+                            <block type="math_number">
                                 <field name="NUM">-0</field>
-                            </shadow>
+                            </block>
                         </value>
                         <value name="Y">
-                            <shadow type="math_number">
+                            <block type="math_number">
                                 <field name="NUM">-0</field>
-                            </shadow>
+                            </block>
                         </value>
                         <value name="Z">
-                            <shadow type="math_number">
+                            <block type="math_number">
                                 <field name="NUM">-0</field>
-                            </shadow>
+                            </block>
                         </value>
-                    </shadow>
+                    </block>
                 </value>
                 <value name="AmountOfPoints">
-                    <shadow type="math_number">
+                    <block type="math_number">
                         <field name="NUM">10</field>
-                    </shadow>
+                    </block>
                 </value>
             </block>
             <block type="base_geometry_point_spiral">
                 <value name="Factor">
-                    <shadow type="math_number">
+                    <block type="math_number">
                         <field name="NUM">1</field>
-                    </shadow>
+                    </block>
                 </value>
                 <value name="Radius">
-                    <shadow type="math_number">
+                    <block type="math_number">
                         <field name="NUM">6</field>
-                    </shadow>
+                    </block>
                 </value>
                 <value name="NumberPoints">
-                    <shadow type="math_number">
+                    <block type="math_number">
                         <field name="NUM">200</field>
-                    </shadow>
+                    </block>
                 </value>
                 <value name="Phi">
-                    <shadow type="math_number">
+                    <block type="math_number">
                         <field name="NUM">0.9</field>
-                    </shadow>
+                    </block>
                 </value>
                 <value name="Widening">
-                    <shadow type="math_number">
+                    <block type="math_number">
                         <field name="NUM">3</field>
-                    </shadow>
+                    </block>
                 </value>
             </block>
         </category>

@@ -6,57 +6,57 @@ export function tagCategory() {
     <category name="${resources.block_toolbox_category_geom_tag}"  categorystyle="geometry_category">
         <block type="base_geometry_draw_text_tags">
             <value name="Updatable">
-                <shadow type="logic_boolean">
+                <block type="logic_boolean">
                     <field name="BOOL">FALSE</field>
-                </shadow>
+                </block>
             </value>
         </block>
         <block type="base_geometry_draw_text_tag">
             <value name="Updatable">
-                <shadow type="logic_boolean">
+                <block type="logic_boolean">
                     <field name="BOOL">FALSE</field>
-                </shadow>
+                </block>
             </value>
         </block>
         <block type="base_geometry_text_tag">
             <value name="Text">
-                <shadow type="text">
+                <block type="text">
                     <field name="TEXT">abc</field>
-                </shadow>
+                </block>
             </value>
             <value name="Position">
-                <shadow type="base_geometry_point">
+                <block type="base_geometry_point">
                     <value name="X">
-                        <shadow type="math_number">
+                        <block type="math_number">
                             <field name="NUM">-0</field>
-                        </shadow>
+                        </block>
                     </value>
                     <value name="Y">
-                        <shadow type="math_number">
+                        <block type="math_number">
                             <field name="NUM">-0</field>
-                        </shadow>
+                        </block>
                     </value>
                     <value name="Z">
-                        <shadow type="math_number">
+                        <block type="math_number">
                             <field name="NUM">-0</field>
-                        </shadow>
+                        </block>
                     </value>
-                </shadow>
+                </block>
             </value>
             <value name="Colour">
-                <shadow type="colour_picker">
+                <block type="colour_picker">
                     <field name="COLOUR">#555</field>
-                </shadow>
+                </block>
             </value>
             <value name="Size">
-                <shadow type="math_number">
+                <block type="math_number">
                     <field name="NUM">12</field>
-                </shadow>
+                </block>
             </value>
             <value name="AdaptDepth">
-                <shadow type="logic_boolean">
+                <block type="logic_boolean">
                     <field name="BOOL">FALSE</field>
-                </shadow>
+                </block>
             </value>
         </block>
     </category>

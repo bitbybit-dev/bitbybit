@@ -6,48 +6,48 @@ export function surfaceCategory() {
     <category name="${resources.block_toolbox_category_geom_surface}"  categorystyle="geometry_category">
         <block type="babylon_draw_surface">
             <value name="Colour">
-                <shadow type="colour_picker">
+                <block type="colour_picker">
                     <field name="COLOUR">#555</field>
-                </shadow>
+                </block>
             </value>
             <value name="Opacity">
-                <shadow type="math_number">
+                <block type="math_number">
                     <field name="NUM">1</field>
-                </shadow>
+                </block>
             </value>
             <value name="Updatable">
-                <shadow type="logic_boolean">
+                <block type="logic_boolean">
                     <field name="BOOL">FALSE</field>
-                </shadow>
+                </block>
             </value>
         </block>
         <block type="babylon_draw_surfaces">
             <value name="Colour">
-                <shadow type="colour_picker">
+                <block type="colour_picker">
                     <field name="COLOUR">#555</field>
-                </shadow>
+                </block>
             </value>
             <value name="Opacity">
-                <shadow type="math_number">
+                <block type="math_number">
                     <field name="NUM">1</field>
-                </shadow>
+                </block>
             </value>
             <value name="Updatable">
-                <shadow type="logic_boolean">
+                <block type="logic_boolean">
                     <field name="BOOL">FALSE</field>
-                </shadow>
+                </block>
             </value>
         </block>
         <block type="babylon_draw_surfaces_colours">
             <value name="Opacity">
-                <shadow type="math_number">
+                <block type="math_number">
                     <field name="NUM">1</field>
-                </shadow>
+                </block>
             </value>
             <value name="Updatable">
-                <shadow type="logic_boolean">
+                <block type="logic_boolean">
                     <field name="BOOL">FALSE</field>
-                </shadow>
+                </block>
             </value>
         </block>
         <category name="${resources.block_toolbox_category_create}"   categorystyle="geometry_category">
@@ -66,71 +66,71 @@ export function surfaceCategory() {
                 </block>
                 <block type="verb_geometry_conical_surface">
                     <value name="Axis">
-                        <shadow type="base_geometry_point">
+                        <block type="base_geometry_point">
                             <value name="X">
-                                <shadow type="math_number">
+                                <block type="math_number">
                                     <field name="NUM">0</field>
-                                </shadow>
+                                </block>
                             </value>
                             <value name="Y">
-                                <shadow type="math_number">
+                                <block type="math_number">
                                     <field name="NUM">1</field>
-                                </shadow>
+                                </block>
                             </value>
                             <value name="Z">
-                                <shadow type="math_number">
+                                <block type="math_number">
                                     <field name="NUM">0</field>
-                                </shadow>
+                                </block>
                             </value>
-                        </shadow>
+                        </block>
                     </value>
                     <value name="XAxis">
-                        <shadow type="base_geometry_point">
+                        <block type="base_geometry_point">
                             <value name="X">
-                                <shadow type="math_number">
+                                <block type="math_number">
                                     <field name="NUM">1</field>
-                                </shadow>
+                                </block>
                             </value>
                             <value name="Y">
-                                <shadow type="math_number">
+                                <block type="math_number">
                                     <field name="NUM">0</field>
-                                </shadow>
+                                </block>
                             </value>
                             <value name="Z">
-                                <shadow type="math_number">
+                                <block type="math_number">
                                     <field name="NUM">0</field>
-                                </shadow>
+                                </block>
                             </value>
-                        </shadow>
+                        </block>
                     </value>
                     <value name="Base">
-                        <shadow type="base_geometry_point">
+                        <block type="base_geometry_point">
                             <value name="X">
-                                <shadow type="math_number">
+                                <block type="math_number">
                                     <field name="NUM">0</field>
-                                </shadow>
+                                </block>
                             </value>
                             <value name="Y">
-                                <shadow type="math_number">
+                                <block type="math_number">
                                     <field name="NUM">0</field>
-                                </shadow>
+                                </block>
                             </value>
                             <value name="Z">
-                                <shadow type="math_number">
+                                <block type="math_number">
                                     <field name="NUM">0</field>
-                                </shadow>
+                                </block>
                             </value>
-                        </shadow>
+                        </block>
                     </value>
                     <value name="Height">
-                        <shadow type="math_number">
+                        <block type="math_number">
                             <field name="NUM">2</field>
-                        </shadow>
+                        </block>
                     </value>
                     <value name="Radius">
-                        <shadow type="math_number">
+                        <block type="math_number">
                             <field name="NUM">0.5</field>
-                        </shadow>
+                        </block>
                     </value>
                 </block>
             </category>
@@ -139,71 +139,71 @@ export function surfaceCategory() {
                 </block>
                 <block type="verb_geometry_cylindrical_surface">
                     <value name="Axis">
-                        <shadow type="base_geometry_point">
+                        <block type="base_geometry_point">
                             <value name="X">
-                                <shadow type="math_number">
+                                <block type="math_number">
                                     <field name="NUM">0</field>
-                                </shadow>
+                                </block>
                             </value>
                             <value name="Y">
-                                <shadow type="math_number">
+                                <block type="math_number">
                                     <field name="NUM">1</field>
-                                </shadow>
+                                </block>
                             </value>
                             <value name="Z">
-                                <shadow type="math_number">
+                                <block type="math_number">
                                     <field name="NUM">0</field>
-                                </shadow>
+                                </block>
                             </value>
-                        </shadow>
+                        </block>
                     </value>
                     <value name="XAxis">
-                        <shadow type="base_geometry_point">
+                        <block type="base_geometry_point">
                             <value name="X">
-                                <shadow type="math_number">
+                                <block type="math_number">
                                     <field name="NUM">1</field>
-                                </shadow>
+                                </block>
                             </value>
                             <value name="Y">
-                                <shadow type="math_number">
+                                <block type="math_number">
                                     <field name="NUM">0</field>
-                                </shadow>
+                                </block>
                             </value>
                             <value name="Z">
-                                <shadow type="math_number">
+                                <block type="math_number">
                                     <field name="NUM">0</field>
-                                </shadow>
+                                </block>
                             </value>
-                        </shadow>
+                        </block>
                     </value>
                     <value name="Base">
-                        <shadow type="base_geometry_point">
+                        <block type="base_geometry_point">
                             <value name="X">
-                                <shadow type="math_number">
+                                <block type="math_number">
                                     <field name="NUM">0</field>
-                                </shadow>
+                                </block>
                             </value>
                             <value name="Y">
-                                <shadow type="math_number">
+                                <block type="math_number">
                                     <field name="NUM">0</field>
-                                </shadow>
+                                </block>
                             </value>
                             <value name="Z">
-                                <shadow type="math_number">
+                                <block type="math_number">
                                     <field name="NUM">0</field>
-                                </shadow>
+                                </block>
                             </value>
-                        </shadow>
+                        </block>
                     </value>
                     <value name="Height">
-                        <shadow type="math_number">
+                        <block type="math_number">
                             <field name="NUM">2</field>
-                        </shadow>
+                        </block>
                     </value>
                     <value name="Radius">
-                        <shadow type="math_number">
+                        <block type="math_number">
                             <field name="NUM">0.5</field>
-                        </shadow>
+                        </block>
                     </value>
                 </block>
             </category>
@@ -237,19 +237,19 @@ export function surfaceCategory() {
             </block>
             <block type="verb_geometry_nurbs_surface_isocurves_subdivision">
                 <value name="IsocurveSegments">
-                    <shadow type="math_number">
+                    <block type="math_number">
                         <field name="NUM">10</field>
-                    </shadow>
+                    </block>
                 </value>
                 <value name="IncludeLast">
-                    <shadow type="logic_boolean">
+                    <block type="logic_boolean">
                         <field name="BOOL">FALSE</field>
-                    </shadow>
+                    </block>
                 </value>
                 <value name="UseV">
-                    <shadow type="logic_boolean">
+                    <block type="logic_boolean">
                         <field name="BOOL">FALSE</field>
-                    </shadow>
+                    </block>
                 </value>
             </block>
             <block type="verb_geometry_nurbs_surface_reverse">

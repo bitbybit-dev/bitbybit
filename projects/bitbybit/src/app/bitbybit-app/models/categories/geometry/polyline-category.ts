@@ -6,46 +6,46 @@ export function polylineCategory() {
     <category name="${resources.block_toolbox_category_geom_polyline}"  categorystyle="geometry_category">
         <block type="babylon_draw_polyline">
             <value name="Colour">
-                <shadow type="colour_picker">
+                <block type="colour_picker">
                     <field name="COLOUR">#555</field>
-                </shadow>
+                </block>
             </value>
             <value name="Width">
-                <shadow type="math_number">
+                <block type="math_number">
                     <field name="NUM">3</field>
-                </shadow>
+                </block>
             </value>
             <value name="Opacity">
-                <shadow type="math_number">
+                <block type="math_number">
                     <field name="NUM">1</field>
-                </shadow>
+                </block>
             </value>
             <value name="Updatable">
-                <shadow type="logic_boolean">
+                <block type="logic_boolean">
                     <field name="BOOL">FALSE</field>
-                </shadow>
+                </block>
             </value>
         </block>
         <block type="babylon_draw_polylines">
             <value name="Colour">
-                <shadow type="colour_picker">
+                <block type="colour_picker">
                     <field name="COLOUR">#555</field>
-                </shadow>
+                </block>
             </value>
             <value name="Width">
-                <shadow type="math_number">
+                <block type="math_number">
                     <field name="NUM">3</field>
-                </shadow>
+                </block>
             </value>
             <value name="Opacity">
-                <shadow type="math_number">
+                <block type="math_number">
                     <field name="NUM">1</field>
-                </shadow>
+                </block>
             </value>
             <value name="Updatable">
-                <shadow type="logic_boolean">
+                <block type="logic_boolean">
                     <field name="BOOL">FALSE</field>
-                </shadow>
+                </block>
             </value>
         </block>
         <category name="${resources.block_toolbox_category_create}"  categorystyle="geometry_category">

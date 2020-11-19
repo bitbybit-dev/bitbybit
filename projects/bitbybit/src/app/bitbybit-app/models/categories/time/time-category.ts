@@ -14,23 +14,23 @@ export function timeCategory() {
         </block>
         <block type="base_time_execute_later">
             <value name="Timeout">
-                <shadow type="math_number">
+                <block type="math_number">
                     <field name="NUM">2</field>
-                </shadow>
+                </block>
             </value>
         </block>
         <block type="base_time_execute_at_interval">
             <value name="Interval">
-                <shadow type="math_number">
+                <block type="math_number">
                     <field name="NUM">2</field>
-                </shadow>
+                </block>
             </value>
         </block>
         <block type="base_time_execute_at_interval_with_handler">
             <value name="Interval">
-                <shadow type="math_number">
+                <block type="math_number">
                     <field name="NUM">2</field>
-                </shadow>
+                </block>
             </value>
         </block>
         <block type="base_time_clear_interval">

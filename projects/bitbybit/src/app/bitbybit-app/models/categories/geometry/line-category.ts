@@ -6,110 +6,110 @@ export function lineCategory() {
     <category name="${resources.block_toolbox_category_geom_line}"  categorystyle="geometry_category">
         <block type="babylon_draw_line">
             <value name="Colour">
-                <shadow type="colour_picker">
+                <block type="colour_picker">
                     <field name="COLOUR">#555</field>
-                </shadow>
+                </block>
             </value>
             <value name="Width">
-                <shadow type="math_number">
+                <block type="math_number">
                     <field name="NUM">3</field>
-                </shadow>
+                </block>
             </value>
             <value name="Opacity">
-                <shadow type="math_number">
+                <block type="math_number">
                     <field name="NUM">1</field>
-                </shadow>
+                </block>
             </value>
             <value name="Updatable">
-                <shadow type="logic_boolean">
+                <block type="logic_boolean">
                     <field name="BOOL">FALSE</field>
-                </shadow>
+                </block>
             </value>
         </block>
         <block type="babylon_draw_line">
             <value name="Line">
-                <shadow type="base_geometry_line">
+                <block type="base_geometry_line">
                     <value name="StartPoint">
-                        <shadow type="base_geometry_point">
+                        <block type="base_geometry_point">
                             <value name="X">
-                                <shadow type="math_number">
+                                <block type="math_number">
                                     <field name="NUM">-1</field>
-                                </shadow>
+                                </block>
                             </value>
                             <value name="Y">
-                                <shadow type="math_number">
+                                <block type="math_number">
                                     <field name="NUM">-1</field>
-                                </shadow>
+                                </block>
                             </value>
                             <value name="Z">
-                                <shadow type="math_number">
+                                <block type="math_number">
                                     <field name="NUM">-1</field>
-                                </shadow>
+                                </block>
                             </value>
-                        </shadow>
+                        </block>
                     </value>
                     <value name="EndPoint">
-                        <shadow type="base_geometry_point">
+                        <block type="base_geometry_point">
                             <value name="X">
-                                <shadow type="math_number">
+                                <block type="math_number">
                                     <field name="NUM">1</field>
-                                </shadow>
+                                </block>
                             </value>
                             <value name="Y">
-                                <shadow type="math_number">
+                                <block type="math_number">
                                     <field name="NUM">1</field>
-                                </shadow>
+                                </block>
                             </value>
                             <value name="Z">
-                                <shadow type="math_number">
+                                <block type="math_number">
                                     <field name="NUM">1</field>
-                                </shadow>
+                                </block>
                             </value>
-                        </shadow>
+                        </block>
                     </value>
-                </shadow>
+                </block>
             </value>
             <value name="Colour">
-                <shadow type="colour_picker">
+                <block type="colour_picker">
                     <field name="COLOUR">#555</field>
-                </shadow>
+                </block>
             </value>
             <value name="Width">
-                <shadow type="math_number">
+                <block type="math_number">
                     <field name="NUM">3</field>
-                </shadow>
+                </block>
             </value>
             <value name="Opacity">
-                <shadow type="math_number">
+                <block type="math_number">
                     <field name="NUM">1</field>
-                </shadow>
+                </block>
             </value>
             <value name="Updatable">
-                <shadow type="logic_boolean">
+                <block type="logic_boolean">
                     <field name="BOOL">FALSE</field>
-                </shadow>
+                </block>
             </value>
         </block>
         <block type="babylon_draw_lines">
             <value name="Colour">
-                <shadow type="colour_picker">
+                <block type="colour_picker">
                     <field name="COLOUR">#555</field>
-                </shadow>
+                </block>
             </value>
             <value name="Width">
-                <shadow type="math_number">
+                <block type="math_number">
                     <field name="NUM">3</field>
-                </shadow>
+                </block>
             </value>
             <value name="Opacity">
-                <shadow type="math_number">
+                <block type="math_number">
                     <field name="NUM">1</field>
-                </shadow>
+                </block>
             </value>
             <value name="Updatable">
-                <shadow type="logic_boolean">
+                <block type="logic_boolean">
                     <field name="BOOL">FALSE</field>
-                </shadow>
+                </block>
             </value>
         </block>
         <category name="${resources.block_toolbox_category_create}"  categorystyle="geometry_category">
@@ -117,42 +117,42 @@ export function lineCategory() {
             </block>
             <block type="base_geometry_line">
                 <value name="StartPoint">
-                    <shadow type="base_geometry_point">
+                    <block type="base_geometry_point">
                         <value name="X">
-                            <shadow type="math_number">
+                            <block type="math_number">
                                 <field name="NUM">-1</field>
-                            </shadow>
+                            </block>
                         </value>
                         <value name="Y">
-                            <shadow type="math_number">
+                            <block type="math_number">
                                 <field name="NUM">-1</field>
-                            </shadow>
+                            </block>
                         </value>
                         <value name="Z">
-                            <shadow type="math_number">
+                            <block type="math_number">
                                 <field name="NUM">-1</field>
-                            </shadow>
+                            </block>
                         </value>
-                    </shadow>
+                    </block>
                 </value>
                 <value name="EndPoint">
-                    <shadow type="base_geometry_point">
+                    <block type="base_geometry_point">
                         <value name="X">
-                            <shadow type="math_number">
+                            <block type="math_number">
                                 <field name="NUM">1</field>
-                            </shadow>
+                            </block>
                         </value>
                         <value name="Y">
-                            <shadow type="math_number">
+                            <block type="math_number">
                                 <field name="NUM">1</field>
-                            </shadow>
+                            </block>
                         </value>
                         <value name="Z">
-                            <shadow type="math_number">
+                            <block type="math_number">
                                 <field name="NUM">1</field>
-                            </shadow>
+                            </block>
                         </value>
-                    </shadow>
+                    </block>
                 </value>
             </block>
             <block type="base_geometry_lines">
