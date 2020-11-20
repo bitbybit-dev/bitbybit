@@ -343,3 +343,7 @@ h1 {
 ::ng-deep .half-width {
     width: 50%;
 }
+
+::ng-deep input {
+    line-height: initial;
+}
