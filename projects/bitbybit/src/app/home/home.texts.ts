@@ -24,7 +24,7 @@ export function texts(): Texts {
             ]
         },
         definition: `The "Bit by bit developers" company builds open-source tools that are available for the individuals, schools, coding bootcamps and government institutions involved in education. Our frictionless products can be adapted in many STEAM based programs. Get in touch if you would like to learn more, integrate our application in your curriculum or get personalised training.`,
-        startTheAppButton: 'Start the Applciation!',
+        startTheAppButton: 'Start the Application!',
         startTheAppExplanation: 'Learn to code through visual programming of geometry. Start your journey by launching our web application, it is completely FREE.',
         about: {
             title: 'About',
