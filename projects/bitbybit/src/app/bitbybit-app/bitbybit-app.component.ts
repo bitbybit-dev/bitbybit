@@ -181,6 +181,7 @@ export class BitbybitAppComponent implements OnDestroy {
                                 Xml.domToWorkspace(xml, this.workspace);
                                 this.workspace.zoomToFit();
                                 this.workspace.zoomCenter(-3);
+                                this.onResize();
                                 this.run();
                             }
                         } else {
@@ -194,17 +195,7 @@ export class BitbybitAppComponent implements OnDestroy {
 
                 setTimeout(() => {
                     this.onResize();
-
-                    // Blockly.Scrollbar.scrollbarThickness = 5;
-                    // const scrollbar = new Scrollbar(this.workspace, true, true);
-                    // scrollbar.setPosition(5, 5);
-                    // scrollbar.setOrigin(5, 5);
-                    // scrollbar.updateDisplay_();
-
-                    // setTimeout(
-                    //     () => this.onResize()
-                    // );
-                }, 0);
+                }, 400);
             });
 
     }
@@ -275,10 +266,7 @@ export class BitbybitAppComponent implements OnDestroy {
                     this.workspace.zoomToFit();
                     this.workspace.zoomCenter(-3);
                     this.run();
-
-                    // if (this.drawerElement.opened) {
-                    //     this.swapCanvas();
-                    // }
+                    this.onResize();
                 };
                 reader.onerror = (evt) => {
                     document.getElementById('fileContents').innerHTML = 'error reading file';
