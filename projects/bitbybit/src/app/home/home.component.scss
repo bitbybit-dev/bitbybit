@@ -165,6 +165,10 @@ nav {
     filter: drop-shadow(0 4mm 4mm rgba(0, 0, 0, 0.5));
 }
 
+.school-landing {
+    width: 100%;
+}
+
 @media(max-width:993px){
     .ipad {
         margin-top: 100px;
@@ -504,7 +508,7 @@ input {
     border-bottom-style: hidden;
 }
 
-form button, .form-success button {
+form button, .form-success button, a.mat-button {
     font-size: 15px;
     font-weight: 900;
     background-color: #F0CEBB;

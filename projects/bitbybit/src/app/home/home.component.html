@@ -23,10 +23,13 @@
                         <a routerLink="../app">{{texts.menu.app}}</a>
                     </div>
                     <div class="menu-item d-none  d-sm-flex">
-                        <a href="" (click)="scroll('about', $event)">{{texts.menu.about}}</a>
+                        <a href="https://school.bitbybit.dev">{{texts.menu.school}}</a>
                     </div>
                     <div class="menu-item d-none  d-sm-flex">
-                        <a href="" (click)="scroll('contact', $event)">{{texts.menu.contact}}</a>
+                        <a href="#about" (click)="scroll('about', $event)">{{texts.menu.about}}</a>
+                    </div>
+                    <div class="menu-item d-none  d-sm-flex">
+                        <a href="#contact" (click)="scroll('contact', $event)">{{texts.menu.contact}}</a>
                     </div>
                     <button (click)="toggleMenu()" mat-icon-button class="menu-item d-sm-none">
                         <mat-icon>menu</mat-icon>
@@ -39,10 +42,13 @@
                 <a routerLink="../app">{{texts.menu.app}}</a>
             </div>
             <div class="menu-item">
-                <a href="" (click)="scroll('about', $event)">{{texts.menu.about}}</a>
+                <a href="https://school.bitbybit.dev">{{texts.menu.school}}</a>
             </div>
             <div class="menu-item">
-                <a href="" (click)="scroll('contact', $event)">{{texts.menu.contact}}</a>
+                <a href="#about" (click)="scroll('about', $event)">{{texts.menu.about}}</a>
+            </div>
+            <div class="menu-item">
+                <a href="#contact" (click)="scroll('contact', $event)">{{texts.menu.contact}}</a>
             </div>
         </nav>
         <div class="header-content d-none d-sm-none d-md-none d-lg-flex">
@@ -105,7 +111,6 @@
             <div class="col"></div>
         </div>
         <div class="row get-started">
-
             <div class="col text-align-center">
                 <a routerLink="../app">
                     <picture>
@@ -126,6 +131,67 @@
                 {{texts.startTheAppExplanation}}
             </div>
             <div class="col"></div>
+        </div>
+
+        <div id="school">
+            <div class="separator-margin header-content d-none d-sm-none d-md-none d-lg-flex">
+                <div class="header-image ipad">
+                    <picture>
+                        <source srcset="
+                        /assets/landing-page/bitbybit-school.webp 1x" type="image/webp">
+                        <source srcset="
+                        /assets/landing-page/bitbybit-school.png 1x" type="image/png">
+                        <img class="school-landing" src="assets/landing-page/bitbybit-school.webp"
+                        alt="Picture showing an example of a course from Bit by bit developers school."
+                        loading="lazy" />
+                    </picture>
+                </div>
+                <div class="header-text">
+                    <div class="align-center">
+                        <div class="main-title">
+                            <h2>
+                                {{texts.school.title}}
+                            </h2>
+                        </div>
+                        <div class="main-text">
+                            <p *ngFor="let paragraph of texts.school.paragraphs">
+                                {{paragraph}}
+                            </p>
+                        </div>
+                        <br>
+                        <a href="https://school.bitbybit.dev" mat-button mat-primary-button>Find out more!</a>
+                    </div>
+                </div>
+            </div>
+            <div class="header-content d-block d-sm-block d-md-block d-lg-none">
+                <div class="header-image ipad">
+                    <picture>
+                        <source srcset="
+                        /assets/landing-page/bitbybit-school.webp 1x" type="image/webp">
+                        <source srcset="
+                        /assets/landing-page/bitbybit-school.png 1x" type="image/png">
+                        <img class="school-landing" src="assets/landing-page/bitbybit-school.webp"
+                        alt="Picture showing an example of a course from Bit by bit developers school."
+                        loading="lazy" />
+                    </picture>
+                </div>
+                <div class="header-text">
+                    <div class="align-center">
+                        <div class="main-title">
+                            <h2>
+                                {{texts.school.title}}
+                            </h2>
+                        </div>
+                        <div class="main-text">
+                            <p *ngFor="let paragraph of texts.school.paragraphs">
+                                {{paragraph}}
+                            </p>
+                        </div>
+                        <br>
+                        <a href="https://school.bitbybit.dev" mat-button>Find out more!</a>
+                    </div>
+                </div>
+            </div>
         </div>
         <div class="social-media d-none d-sm-flex">
             <a class="social" mat-menu-item href="https://www.patreon.com/bitbybitdev" title="Patreon" target="_blank">
