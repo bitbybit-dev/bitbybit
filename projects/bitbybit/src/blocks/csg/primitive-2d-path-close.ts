@@ -24,7 +24,7 @@ export function createPrimitive2dPathCloseBlock(): void {
 
     JavaScript[blockSelector] = (block: Block) => {
         const inputs = {
-            path: JavaScript.valueToCode(block, 'Path', JavaScript.ORDER_ATOMIC),
+            path: (JavaScript as any).valueToCode(block, 'Path', (JavaScript as any).ORDER_ATOMIC),
         };
 
         // this is first set of validations to check that all inputs are non empty strings
@@ -41,7 +41,7 @@ export function createPrimitive2dPathCloseBlock(): void {
             return BitByBit.CSG.geometries.path2.close(inputs.path);
 `
         );
-        return [code, JavaScript.ORDER_ATOMIC];
+        return [code, (JavaScript as any).ORDER_ATOMIC];
     };
 }
 

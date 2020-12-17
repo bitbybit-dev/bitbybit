@@ -32,9 +32,9 @@ export function createNodeFromRotationBlock() {
 
     JavaScript[blockSelector] = (block: Block) => {
         const inputs = {
-            origin: JavaScript.valueToCode(block, 'Origin', JavaScript.ORDER_ATOMIC),
-            rotation: JavaScript.valueToCode(block, 'Rotation', JavaScript.ORDER_ATOMIC),
-            parent: JavaScript.valueToCode(block, 'Parent', JavaScript.ORDER_ATOMIC),
+            origin: (JavaScript as any).valueToCode(block, 'Origin', (JavaScript as any).ORDER_ATOMIC),
+            rotation: (JavaScript as any).valueToCode(block, 'Rotation', (JavaScript as any).ORDER_ATOMIC),
+            parent: (JavaScript as any).valueToCode(block, 'Parent', (JavaScript as any).ORDER_ATOMIC),
         };
 
         // this is first set of validations to check that all inputs are non empty strings
@@ -61,7 +61,7 @@ export function createNodeFromRotationBlock() {
             return transformNode;
 `
         );
-        return [code, JavaScript.ORDER_ATOMIC];
+        return [code, (JavaScript as any).ORDER_ATOMIC];
     };
 }
 

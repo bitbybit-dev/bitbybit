@@ -47,14 +47,14 @@ export function createDrawCurvesBlock() {
         }
     };
 
-    JavaScript.babylon_draw_curves = (block: Block) => {
+    (JavaScript as any).babylon_draw_curves = (block: Block) => {
 
         const inputs = {
-            curves: JavaScript.valueToCode(block, 'Curves', JavaScript.ORDER_ATOMIC),
-            colour: JavaScript.valueToCode(block, 'Colour', JavaScript.ORDER_ATOMIC),
-            opacity: JavaScript.valueToCode(block, 'Opacity', JavaScript.ORDER_ATOMIC),
-            width: JavaScript.valueToCode(block, 'Width', JavaScript.ORDER_ATOMIC),
-            updatable: JavaScript.valueToCode(block, 'Updatable', JavaScript.ORDER_ATOMIC),
+            curves: (JavaScript as any).valueToCode(block, 'Curves', (JavaScript as any).ORDER_ATOMIC),
+            colour: (JavaScript as any).valueToCode(block, 'Colour', (JavaScript as any).ORDER_ATOMIC),
+            opacity: (JavaScript as any).valueToCode(block, 'Opacity', (JavaScript as any).ORDER_ATOMIC),
+            width: (JavaScript as any).valueToCode(block, 'Width', (JavaScript as any).ORDER_ATOMIC),
+            updatable: (JavaScript as any).valueToCode(block, 'Updatable', (JavaScript as any).ORDER_ATOMIC),
         };
 
         // this is first set of validations to check that all inputs are non empty strings
@@ -68,7 +68,7 @@ export function createDrawCurvesBlock() {
 
         return createStandardContextIIFE(block, blockSelector, inputs, false,
             `
-        inputs.curvesMesh = ${JavaScript.variableDB_.getName(block.getFieldValue('DrawnCurvesMesh'), VARIABLE_CATEGORY_NAME)};
+        inputs.curvesMesh = ${(JavaScript as any).variableDB_.getName(block.getFieldValue('DrawnCurvesMesh'), VARIABLE_CATEGORY_NAME)};
 
         const curvesForRender = [];
         const col = BitByBit.BABYLON.Color3.FromHexString(inputs.colour);
@@ -102,11 +102,11 @@ export function createDrawCurvesBlock() {
             } else {
                 inputs.curvesMesh.dispose();
                 inputs.curvesMesh = BitByBit.BABYLON.MeshBuilder.CreateLineSystem('lines${Math.random()}', {lines: curvesForRender, colors, useVertexAlpha: true, updatable: inputs.updatable}, BitByBit.scene);
-                ${JavaScript.variableDB_.getName(block.getFieldValue('DrawnCurvesMesh'), VARIABLE_CATEGORY_NAME)} = inputs.curvesMesh;
+                ${(JavaScript as any).variableDB_.getName(block.getFieldValue('DrawnCurvesMesh'), VARIABLE_CATEGORY_NAME)} = inputs.curvesMesh;
             }
         } else {
             inputs.curvesMesh = BitByBit.BABYLON.MeshBuilder.CreateLineSystem('lines${Math.random()}', {lines: curvesForRender, colors, useVertexAlpha: true, updatable: inputs.updatable}, BitByBit.scene);
-            ${JavaScript.variableDB_.getName(block.getFieldValue('DrawnCurvesMesh'), VARIABLE_CATEGORY_NAME)} = inputs.curvesMesh;
+            ${(JavaScript as any).variableDB_.getName(block.getFieldValue('DrawnCurvesMesh'), VARIABLE_CATEGORY_NAME)} = inputs.curvesMesh;
         }
 
         inputs.curvesMesh.totalPoints = totalPoints;

@@ -33,6 +33,6 @@ export function createTextAlignTypeBlock(): void {
             return inputs.textAlignType;
 `
         );
-        return [code, JavaScript.ORDER_ATOMIC];
+        return [code, (JavaScript as any).ORDER_ATOMIC];
     };
 }

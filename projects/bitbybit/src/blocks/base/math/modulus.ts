@@ -27,8 +27,8 @@ export function createModulusBlock() {
 
     JavaScript[blockSelector] = (block: Block) => {
         const inputs = {
-            number: JavaScript.valueToCode(block, 'Number', JavaScript.ORDER_ATOMIC),
-            modulus: JavaScript.valueToCode(block, 'Modulus', JavaScript.ORDER_ATOMIC),
+            number: (JavaScript as any).valueToCode(block, 'Number', (JavaScript as any).ORDER_ATOMIC),
+            modulus: (JavaScript as any).valueToCode(block, 'Modulus', (JavaScript as any).ORDER_ATOMIC),
         };
         // this is first set of validations to check that all inputs are non empty strings
         BitByBitBlockHandlerService.validate(block, block.workspace, makeRequiredValidationModelForInputs(resources, inputs, [
@@ -44,7 +44,7 @@ export function createModulusBlock() {
 return inputs.number % inputs.modulus;
 `
         );
-        return [code, JavaScript.ORDER_ATOMIC];
+        return [code, (JavaScript as any).ORDER_ATOMIC];
     };
 }
 

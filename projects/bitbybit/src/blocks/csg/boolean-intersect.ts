@@ -28,8 +28,8 @@ export function createBooleanIntersectBlock(): void {
 
     JavaScript[blockSelector] = (block: Block) => {
         const inputs = {
-            intersectObject: JavaScript.valueToCode(block, 'IntersectObject', JavaScript.ORDER_ATOMIC),
-            withObject: JavaScript.valueToCode(block, 'WithObject', JavaScript.ORDER_ATOMIC),
+            intersectObject: (JavaScript as any).valueToCode(block, 'IntersectObject', (JavaScript as any).ORDER_ATOMIC),
+            withObject: (JavaScript as any).valueToCode(block, 'WithObject', (JavaScript as any).ORDER_ATOMIC),
         };
 
         // this is first set of validations to check that all inputs are non empty strings
@@ -47,7 +47,7 @@ export function createBooleanIntersectBlock(): void {
             return intersected;
 `
         );
-        return [code, JavaScript.ORDER_ATOMIC];
+        return [code, (JavaScript as any).ORDER_ATOMIC];
     };
 }
 

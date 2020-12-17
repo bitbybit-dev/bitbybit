@@ -23,7 +23,7 @@ export function createSweptSurfaceRailBlock() {
 
     JavaScript[blockSelector] = (block: Block) => {
         const inputs = {
-            sweep: JavaScript.valueToCode(block, 'Sweep', JavaScript.ORDER_ATOMIC),
+            sweep: (JavaScript as any).valueToCode(block, 'Sweep', (JavaScript as any).ORDER_ATOMIC),
         };
         // this is first set of validations to check that all inputs are non empty strings
         BitByBitBlockHandlerService.validate(block, block.workspace, makeRequiredValidationModelForInputs(resources, inputs, [
@@ -37,7 +37,7 @@ export function createSweptSurfaceRailBlock() {
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
             `return inputs.sweep.rail();`
         );
-        return [code, JavaScript.ORDER_ATOMIC];
+        return [code, (JavaScript as any).ORDER_ATOMIC];
     };
 }
 

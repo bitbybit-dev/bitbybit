@@ -31,9 +31,9 @@ export function createGroupListElementsBlock() {
 
     JavaScript[blockSelector] = (block: Block) => {
         const inputs = {
-            list: JavaScript.valueToCode(block, 'List', JavaScript.ORDER_ATOMIC),
-            numberOfElements: JavaScript.valueToCode(block, 'NumberOfElements', JavaScript.ORDER_ATOMIC),
-            segmented: JavaScript.valueToCode(block, 'Segmented', JavaScript.ORDER_ATOMIC),
+            list: (JavaScript as any).valueToCode(block, 'List', (JavaScript as any).ORDER_ATOMIC),
+            numberOfElements: (JavaScript as any).valueToCode(block, 'NumberOfElements', (JavaScript as any).ORDER_ATOMIC),
+            segmented: (JavaScript as any).valueToCode(block, 'Segmented', (JavaScript as any).ORDER_ATOMIC),
         };
         // this is first set of validations to check that all inputs are non empty strings
         BitByBitBlockHandlerService.validate(block, block.workspace, makeRequiredValidationModelForInputs(resources, inputs, [
@@ -66,7 +66,7 @@ while(clonedList.length > 0)
 return grouped;
 `
         );
-        return [code, JavaScript.ORDER_ATOMIC];
+        return [code, (JavaScript as any).ORDER_ATOMIC];
     };
 }
 

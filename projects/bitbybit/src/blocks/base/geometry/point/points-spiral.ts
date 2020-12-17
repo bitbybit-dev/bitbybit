@@ -40,11 +40,11 @@ export function createPointSpiralBlock() {
 
     JavaScript[blockSelector] = (block: Block) => {
         const inputs = {
-            factor: JavaScript.valueToCode(block, 'Factor', JavaScript.ORDER_ATOMIC),
-            radius: JavaScript.valueToCode(block, 'Radius', JavaScript.ORDER_ATOMIC),
-            numberPoints: JavaScript.valueToCode(block, 'NumberPoints', JavaScript.ORDER_ATOMIC),
-            phi: JavaScript.valueToCode(block, 'Phi', JavaScript.ORDER_ATOMIC),
-            widening: JavaScript.valueToCode(block, 'Widening', JavaScript.ORDER_ATOMIC),
+            factor: (JavaScript as any).valueToCode(block, 'Factor', (JavaScript as any).ORDER_ATOMIC),
+            radius: (JavaScript as any).valueToCode(block, 'Radius', (JavaScript as any).ORDER_ATOMIC),
+            numberPoints: (JavaScript as any).valueToCode(block, 'NumberPoints', (JavaScript as any).ORDER_ATOMIC),
+            phi: (JavaScript as any).valueToCode(block, 'Phi', (JavaScript as any).ORDER_ATOMIC),
+            widening: (JavaScript as any).valueToCode(block, 'Widening', (JavaScript as any).ORDER_ATOMIC),
         };
 
         // this is first set of validations to check that all inputs are non empty strings
@@ -70,7 +70,7 @@ export function createPointSpiralBlock() {
     }
     return spiral;
 `);
-        return [code, JavaScript.ORDER_ATOMIC];
+        return [code, (JavaScript as any).ORDER_ATOMIC];
     };
 }
 

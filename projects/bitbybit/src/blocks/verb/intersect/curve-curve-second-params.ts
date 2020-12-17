@@ -24,7 +24,7 @@ export function createIntersectCurveCurveSecondParamsBlock() {
 
     JavaScript[blockSelector] = (block: Block) => {
         const inputs = {
-            intersections: JavaScript.valueToCode(block, 'Intersections', JavaScript.ORDER_ATOMIC)
+            intersections: (JavaScript as any).valueToCode(block, 'Intersections', (JavaScript as any).ORDER_ATOMIC)
         };
 
         // this is first set of validations to check that all inputs are non empty strings
@@ -38,7 +38,7 @@ export function createIntersectCurveCurveSecondParamsBlock() {
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
             `return inputs.intersections.filter(s => s.u1 >= 0 && s.u1 <= 1).map(i => i.u1);`);
-        return [code, JavaScript.ORDER_ATOMIC];
+        return [code, (JavaScript as any).ORDER_ATOMIC];
     };
 }
 

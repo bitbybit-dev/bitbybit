@@ -1,0 +1,251 @@
+<div class="flex-container">
+    <div class="fill-row">
+        <div class="fill-height-or-more left-menu d-none d-lg-flex">
+            <div>
+                <a routerLink="/home" class="logo">
+                    <img [matTooltip]="resources.bit_by_bit"
+                        src="assets/logo-gold-small.png" />
+                </a>
+            </div>
+            <div class="justify-end">
+                <div class="actions">
+                    <button *ngIf="canvasVisible" mat-buttom mat-icon-button (click)="run()">
+                        <mat-icon [matTooltip]="resources.app_menu_run_code" aria-label="Run the code">play_arrow
+                        </mat-icon>
+                    </button>
+                    <button *ngIf="canvasVisible" mat-buttom mat-icon-button (click)="toggleToolbox()">
+                        <mat-icon [matTooltip]="resources.app_menu_toolbox" aria-hidden="false" aria-label="Toolbox">
+                            handyman
+                        </mat-icon>
+                    </button>
+                    <button *ngIf="canvasVisible" mat-buttom mat-icon-button (click)="cleanCanvas()">
+                        <mat-icon [matTooltip]="resources.app_menu_clean_canvas" aria-label="Clean Canvas">refresh
+                        </mat-icon>
+                    </button>
+                    <button *ngIf="canvasVisible" mat-buttom mat-icon-button (click)="examples()">
+                        <mat-icon [matTooltip]="resources.app_menu_more_examples" aria-hidden="false"
+                            aria-label="Examples">library_books
+                        </mat-icon>
+                    </button>
+                    <button mat-buttom mat-icon-button (click)="swapCanvas()">
+                        <mat-icon [matTooltip]="resources.app_menu_swap_canvas" aria-label="Swap Canvas">swap_horiz
+                        </mat-icon>
+                    </button>
+                    <button [matTooltip]="resources.app_menu_more" mat-buttom mat-icon-button
+                        [matMenuTriggerFor]="appMenu">
+                        <mat-icon aria-hidden="false" aria-label="More">more_vert
+                        </mat-icon>
+                    </button>
+                    <mat-menu #appMenu="matMenu">
+                        <button mat-menu-item (click)="import()">
+                            <mat-icon aria-hidden="false" aria-label="Import">get_app
+                            </mat-icon>
+                            {{resources.app_menu_more_import}}
+                            <input type="file" id="exampleInput" style="display: none" />
+                        </button>
+                        <button mat-menu-item (click)="export()">
+                            <mat-icon aria-hidden="false" aria-label="Export">publish
+                            </mat-icon>
+                            {{resources.app_menu_more_export}}
+                        </button>
+                        <button mat-menu-item [matMenuTriggerFor]="social">
+                            <mat-icon aria-hidden="false" aria-label="Community">forum
+                            </mat-icon>
+                            {{resources.app_menu_more_community}}
+                        </button>
+                        <button mat-menu-item (click)="sponsors()">
+                            <mat-icon aria-hidden="false" aria-label="Sponsors">monetization_on
+                            </mat-icon>
+                            {{resources.app_menu_more_sponsors}}
+                        </button>
+                        <button mat-menu-item (click)="settings()">
+                            <mat-icon aria-hidden="false" aria-label="Settings">settings
+                            </mat-icon>
+                            {{resources.app_menu_more_settings}}
+                        </button>
+                        <button mat-menu-item (click)="about()">
+                            <mat-icon aria-hidden="false" aria-label="About">help_outline
+                            </mat-icon>
+                            {{resources.app_menu_more_about}}
+                        </button>
+                        <a mat-menu-item routerLink="home">
+                            <mat-icon aria-hidden="false" aria-label="Home">home
+                            </mat-icon>
+                            {{resources.app_menu_more_home}}
+                        </a>
+                    </mat-menu>
+                    <mat-menu #social="matMenu">
+                        <a mat-menu-item href="https://www.patreon.com/bitbybitdev" target="_blank">
+                            <img class="mat-icon" width="20px" src="../assets/logo-patreon.svg">
+                            Patreon
+                        </a>
+                        <a mat-menu-item href="https://discord.gg/GSe3VMe" target="_blank">
+                            <img class="mat-icon" width="20px" src="../assets/logo-discord.svg">
+                            Discord
+                        </a>
+                        <a mat-menu-item href="https://www.youtube.com/channel/UCWM0VODRsLYOjB2IAaFHBSQ"
+                            target="_blank">
+                            <img class="mat-icon" width="20px" src="../assets/logo-youtube.svg" />
+                            Youtube
+                        </a>
+                        <a mat-menu-item href="https://medium.com/@bitbybit" target="_blank">
+                            <img class="mat-icon" width="20px" src="../assets/logo-medium.svg" />
+                            Medium
+                        </a>
+                        <a mat-menu-item href="https://www.instagram.com/bitbybit.dev/" target="_blank">
+                            <img class="mat-icon" width="20px" src="../assets/logo-instagram.svg">
+                            Instagram
+                        </a>
+                        <a mat-menu-item href="https://www.linkedin.com/company/bitbybit-dev" target="_blank">
+                            <img class="mat-icon" width="20px" src="../assets/logo-linkedin.svg">
+                            LinkedIn
+                        </a>
+                        <a mat-menu-item href="https://fb.me/bitbybitdev" target="_blank">
+                            <img class="mat-icon" width="20px" src="../assets/logo-facebook.svg" />
+                            Facebook
+                        </a>
+                        <a mat-menu-item href="https://twitter.com/bitbybit_dev" target="_blank">
+                            <img class="mat-icon" width="20px" src="../assets/logo-twitter.svg" />
+                            Twitter
+                        </a>
+                        <a mat-menu-item href="https://github.com/bitbybit-dev/bitbybit" target="_blank">
+                            <img class="mat-icon" width="20px" src="../assets/logo-github.svg" />
+                            Github
+                        </a>
+                    </mat-menu>
+                    <div class="version font">core alpha
+                        <div>v{{constants.version}}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="fill-height-or-more mid-content d-none d-lg-flex">
+        </div>
+        <div class="fill-height-or-more right-content">
+            <div class="blockly-content">
+                <div id="blocklyDiv">
+                </div>
+                <div id="blocklyArea">
+                </div>
+                <div class="canvasZone">
+                    <canvas id="renderCanvas" class="example-sidenav-content">
+                    </canvas>
+                </div>
+            </div>
+            <div class="min-menu d-lg-none">
+                <div class="justify-end">
+                    <div class="actions">
+                        <a routerLink="/home" class="logo">
+                            <img [matTooltip]="resources.bit_by_bit"
+                                src="assets/logo-gold-small.png" />
+                        </a>
+                        <button mat-buttom mat-icon-button (click)="swapCanvas()">
+                            <mat-icon [matTooltip]="resources.app_menu_swap_canvas" aria-label="Swap Canvas">swap_horiz
+                            </mat-icon>
+                        </button>
+                        <button *ngIf="canvasVisible" mat-buttom mat-icon-button (click)="run()">
+                            <mat-icon [matTooltip]="resources.app_menu_run_code" aria-label="Run the code">play_arrow
+                            </mat-icon>
+                        </button>
+                        <button *ngIf="canvasVisible" mat-buttom mat-icon-button (click)="toggleToolbox()">
+                            <mat-icon [matTooltip]="resources.app_menu_toolbox" aria-hidden="false"
+                                aria-label="Toolbox">handyman
+                            </mat-icon>
+                        </button>
+                        <button *ngIf="canvasVisible" mat-buttom mat-icon-button (click)="cleanCanvas()">
+                            <mat-icon [matTooltip]="resources.app_menu_clean_canvas" aria-label="Clean Canvas">refresh
+                            </mat-icon>
+                        </button>
+                        <button *ngIf="canvasVisible" mat-buttom mat-icon-button (click)="examples()">
+                            <mat-icon [matTooltip]="resources.app_menu_more_examples" aria-hidden="false"
+                                aria-label="Examples">library_books
+                            </mat-icon>
+                        </button>
+                        <button *ngIf="canvasVisible" [matTooltip]="resources.app_menu_more" mat-buttom mat-icon-button
+                            [matMenuTriggerFor]="appMenu">
+                            <mat-icon aria-hidden="false" aria-label="More">more_vert
+                            </mat-icon>
+                        </button>
+                        <mat-menu #appMenu="matMenu">
+                            <button mat-menu-item (click)="import()">
+                                <mat-icon aria-hidden="false" aria-label="Import">get_app
+                                </mat-icon>
+                                {{resources.app_menu_more_import}}
+                                <input type="file" id="exampleInput" style="display: none" />
+                            </button>
+                            <button mat-menu-item (click)="export()">
+                                <mat-icon aria-hidden="false" aria-label="Export">publish
+                                </mat-icon>
+                                {{resources.app_menu_more_export}}
+                            </button>
+                            <button mat-menu-item [matMenuTriggerFor]="social">
+                                <mat-icon aria-hidden="false" aria-label="Community">forum
+                                </mat-icon>
+                                {{resources.app_menu_more_community}}
+                            </button>
+                            <button mat-menu-item (click)="sponsors()">
+                                <mat-icon aria-hidden="false" aria-label="Sponsors">monetization_on
+                                </mat-icon>
+                                {{resources.app_menu_more_sponsors}}
+                            </button>
+                            <button mat-menu-item (click)="settings()">
+                                <mat-icon aria-hidden="false" aria-label="Settings">settings
+                                </mat-icon>
+                                {{resources.app_menu_more_settings}}
+                            </button>
+                            <button mat-menu-item (click)="about()">
+                                <mat-icon aria-hidden="false" aria-label="About">help_outline
+                                </mat-icon>
+                                {{resources.app_menu_more_about}}
+                            </button>
+                            <a mat-menu-item routerLink="home">
+                                <mat-icon aria-hidden="false" aria-label="Home">home
+                                </mat-icon>
+                                {{resources.app_menu_more_home}}
+                            </a>
+                        </mat-menu>
+                        <mat-menu #social="matMenu">
+                            <a mat-menu-item href="https://www.patreon.com/bitbybitdev" target="_blank">
+                                <img class="mat-icon" width="20px" src="../assets/logo-patreon.svg" />
+                                Patreon
+                            </a>
+                            <a mat-menu-item href="https://discord.gg/GSe3VMe" target="_blank">
+                                <img class="mat-icon" width="20px" src="../assets/logo-discord.svg" />
+                                Discord
+                            </a>
+                            <a mat-menu-item href="https://www.youtube.com/channel/UCWM0VODRsLYOjB2IAaFHBSQ"
+                                target="_blank">
+                                <img class="mat-icon" width="20px" src="../assets/logo-youtube.svg" />
+                                Youtube
+                            </a>
+                            <a mat-menu-item href="https://medium.com/@bitbybit" target="_blank">
+                                <img class="mat-icon" width="20px" src="../assets/logo-medium.svg" />
+                                Medium
+                            </a>
+                            <a mat-menu-item href="https://www.instagram.com/bitbybit.dev/" target="_blank">
+                                <img class="mat-icon" width="20px" src="../assets/logo-instagram.svg" />
+                                Instagram
+                            </a>
+                            <a mat-menu-item href="https://www.linkedin.com/company/bitbybit-dev" target="_blank">
+                                <img class="mat-icon" width="20px" src="../assets/logo-linkedin.svg" />
+                                LinkedIn
+                            </a>
+                            <a mat-menu-item href="https://fb.me/bitbybitdev" target="_blank">
+                                <img class="mat-icon" width="20px" src="../assets/logo-facebook.svg" />
+                                Facebook
+                            </a>
+                            <a mat-menu-item href="https://twitter.com/bitbybit_dev" target="_blank">
+                                <img class="mat-icon" width="20px" src="../assets/logo-twitter.svg" />
+                                Twitter
+                            </a>
+                            <a mat-menu-item href="https://github.com/bitbybit-dev/bitbybit" target="_blank">
+                                <img class="mat-icon" width="20px" src="../assets/logo-github.svg" />
+                                Github
+                            </a>
+                        </mat-menu>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

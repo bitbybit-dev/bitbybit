@@ -31,9 +31,9 @@ export function createRemapNumberBlock() {
 
     JavaScript[blockSelector] = (block: Block) => {
         const inputs = {
-            numberToRemap: JavaScript.valueToCode(block, 'NumberToRemap', JavaScript.ORDER_ATOMIC),
-            sourceInterval: JavaScript.valueToCode(block, 'SourceInterval', JavaScript.ORDER_ATOMIC),
-            targetInterval: JavaScript.valueToCode(block, 'TargetInterval', JavaScript.ORDER_ATOMIC),
+            numberToRemap: (JavaScript as any).valueToCode(block, 'NumberToRemap', (JavaScript as any).ORDER_ATOMIC),
+            sourceInterval: (JavaScript as any).valueToCode(block, 'SourceInterval', (JavaScript as any).ORDER_ATOMIC),
+            targetInterval: (JavaScript as any).valueToCode(block, 'TargetInterval', (JavaScript as any).ORDER_ATOMIC),
         };
         // this is first set of validations to check that all inputs are non empty strings
         BitByBitBlockHandlerService.validate(block, block.workspace, makeRequiredValidationModelForInputs(resources, inputs, [
@@ -55,7 +55,7 @@ const to2 = inputs.targetInterval.max;
 return (value - from1) / (to1 - from1) * (to2 - from2) + from2;
 `
         );
-        return [code, JavaScript.ORDER_ATOMIC];
+        return [code, (JavaScript as any).ORDER_ATOMIC];
     };
 }
 

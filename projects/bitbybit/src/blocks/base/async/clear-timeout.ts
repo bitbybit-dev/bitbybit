@@ -25,7 +25,7 @@ export function createClearTimeoutBlock() {
 
     JavaScript[blockSelector] = (block: Block) => {
         const inputs = {
-            timeoutHandler: JavaScript.valueToCode(block, 'TimeoutHandler', JavaScript.ORDER_ATOMIC)
+            timeoutHandler: (JavaScript as any).valueToCode(block, 'TimeoutHandler', (JavaScript as any).ORDER_ATOMIC)
         };
 
         // this is first set of validations to check that all inputs are non empty strings

@@ -44,11 +44,11 @@ export function createTextTagBlock() {
 
     JavaScript[blockSelector] = (block: Block) => {
         const inputs = {
-            text: JavaScript.valueToCode(block, 'Text', JavaScript.ORDER_ATOMIC),
-            position: JavaScript.valueToCode(block, 'Position', JavaScript.ORDER_ATOMIC),
-            colour: JavaScript.valueToCode(block, 'Colour', JavaScript.ORDER_ATOMIC),
-            size: JavaScript.valueToCode(block, 'Size', JavaScript.ORDER_ATOMIC),
-            adaptDepth: JavaScript.valueToCode(block, 'AdaptDepth', JavaScript.ORDER_ATOMIC),
+            text: (JavaScript as any).valueToCode(block, 'Text', (JavaScript as any).ORDER_ATOMIC),
+            position: (JavaScript as any).valueToCode(block, 'Position', (JavaScript as any).ORDER_ATOMIC),
+            colour: (JavaScript as any).valueToCode(block, 'Colour', (JavaScript as any).ORDER_ATOMIC),
+            size: (JavaScript as any).valueToCode(block, 'Size', (JavaScript as any).ORDER_ATOMIC),
+            adaptDepth: (JavaScript as any).valueToCode(block, 'AdaptDepth', (JavaScript as any).ORDER_ATOMIC),
         };
 
         // this is first set of validations to check that all inputs are non empty strings
@@ -70,7 +70,7 @@ return {
     adaptDepth: inputs.adaptDepth,
 };
 `);
-        return [code, JavaScript.ORDER_ATOMIC];
+        return [code, (JavaScript as any).ORDER_ATOMIC];
     };
 }
 

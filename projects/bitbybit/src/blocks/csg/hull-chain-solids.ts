@@ -24,7 +24,7 @@ export function createHullChainSolidsBlock(): void {
 
     JavaScript[blockSelector] = (block: Block) => {
         const inputs = {
-            solids: JavaScript.valueToCode(block, 'Solids', JavaScript.ORDER_ATOMIC),
+            solids: (JavaScript as any).valueToCode(block, 'Solids', (JavaScript as any).ORDER_ATOMIC),
         };
 
         // this is first set of validations to check that all inputs are non empty strings
@@ -41,7 +41,7 @@ export function createHullChainSolidsBlock(): void {
             return BitByBit.CSG.hulls.hullChain(...inputs.solids);
 `
         );
-        return [code, JavaScript.ORDER_ATOMIC];
+        return [code, (JavaScript as any).ORDER_ATOMIC];
     };
 }
 

@@ -69,17 +69,17 @@ export function createDrawGridBlock() {
 
     JavaScript[blockSelector] = (block: Block) => {
         const inputs = {
-            width: JavaScript.valueToCode(block, 'Width', JavaScript.ORDER_ATOMIC),
-            height: JavaScript.valueToCode(block, 'Height', JavaScript.ORDER_ATOMIC),
-            subdivisions: JavaScript.valueToCode(block, 'Subdivisions', JavaScript.ORDER_ATOMIC),
-            majorUnitFrequency: JavaScript.valueToCode(block, 'MajorUnitFrequency', JavaScript.ORDER_ATOMIC),
-            minorUnitVisibility: JavaScript.valueToCode(block, 'MinorUnitVisibility', JavaScript.ORDER_ATOMIC),
-            gridRatio: JavaScript.valueToCode(block, 'GridRatio', JavaScript.ORDER_ATOMIC),
-            opacity: JavaScript.valueToCode(block, 'Opacity', JavaScript.ORDER_ATOMIC),
-            backFaceCulling: JavaScript.valueToCode(block, 'BackFaceCulling', JavaScript.ORDER_ATOMIC),
-            mainColor: JavaScript.valueToCode(block, 'MainColor', JavaScript.ORDER_ATOMIC),
-            secondaryColor: JavaScript.valueToCode(block, 'LineColor', JavaScript.ORDER_ATOMIC),
-            gridVariable: JavaScript.variableDB_.getName(block.getFieldValue('Grid'), VARIABLE_CATEGORY_NAME),
+            width: (JavaScript as any).valueToCode(block, 'Width', (JavaScript as any).ORDER_ATOMIC),
+            height: (JavaScript as any).valueToCode(block, 'Height', (JavaScript as any).ORDER_ATOMIC),
+            subdivisions: (JavaScript as any).valueToCode(block, 'Subdivisions', (JavaScript as any).ORDER_ATOMIC),
+            majorUnitFrequency: (JavaScript as any).valueToCode(block, 'MajorUnitFrequency', (JavaScript as any).ORDER_ATOMIC),
+            minorUnitVisibility: (JavaScript as any).valueToCode(block, 'MinorUnitVisibility', (JavaScript as any).ORDER_ATOMIC),
+            gridRatio: (JavaScript as any).valueToCode(block, 'GridRatio', (JavaScript as any).ORDER_ATOMIC),
+            opacity: (JavaScript as any).valueToCode(block, 'Opacity', (JavaScript as any).ORDER_ATOMIC),
+            backFaceCulling: (JavaScript as any).valueToCode(block, 'BackFaceCulling', (JavaScript as any).ORDER_ATOMIC),
+            mainColor: (JavaScript as any).valueToCode(block, 'MainColor', (JavaScript as any).ORDER_ATOMIC),
+            secondaryColor: (JavaScript as any).valueToCode(block, 'LineColor', (JavaScript as any).ORDER_ATOMIC),
+            gridVariable: (JavaScript as any).variableDB_.getName(block.getFieldValue('Grid'), VARIABLE_CATEGORY_NAME),
         };
 
         // this is first set of validations to check that all inputs are non empty strings
@@ -114,7 +114,7 @@ export function createDrawGridBlock() {
 
         const ground = BitByBit.BABYLON.Mesh.CreateGround('ground${Math.random()}', inputs.width, inputs.height, inputs.subdivisions, BitByBit.scene, false);
         ground.material = groundMaterial;
-        ${JavaScript.variableDB_.getName(block.getFieldValue('Grid'), VARIABLE_CATEGORY_NAME)} = ground;
+        ${(JavaScript as any).variableDB_.getName(block.getFieldValue('Grid'), VARIABLE_CATEGORY_NAME)} = ground;
 `
         );
     };

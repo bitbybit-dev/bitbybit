@@ -31,6 +31,6 @@ export function createNodeWorldBlock() {
             return tnode;
 `
         );
-        return [code, JavaScript.ORDER_ATOMIC];
+        return [code, (JavaScript as any).ORDER_ATOMIC];
     };
 }

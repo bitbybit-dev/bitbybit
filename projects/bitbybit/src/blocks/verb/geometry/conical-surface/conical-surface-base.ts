@@ -23,7 +23,7 @@ export function createConicalSurfaceBaseBlock() {
 
     JavaScript[blockSelector] = (block: Block) => {
         const inputs = {
-            cone: JavaScript.valueToCode(block, 'Cone', JavaScript.ORDER_ATOMIC),
+            cone: (JavaScript as any).valueToCode(block, 'Cone', (JavaScript as any).ORDER_ATOMIC),
         };
         // this is first set of validations to check that all inputs are non empty strings
         BitByBitBlockHandlerService.validate(block, block.workspace, makeRequiredValidationModelForInputs(resources, inputs, [
@@ -37,7 +37,7 @@ export function createConicalSurfaceBaseBlock() {
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
             `return inputs.cone.base();`
         );
-        return [code, JavaScript.ORDER_ATOMIC];
+        return [code, (JavaScript as any).ORDER_ATOMIC];
     };
 }
 

@@ -27,13 +27,13 @@ export function createUpdateBlock() {
 
     JavaScript[blockSelector] = (block: Block) => {
         const inputs = {
-            statement_update: JavaScript.statementToCode(block, 'Update'),
+            statement_update: (JavaScript as any).statementToCode(block, 'Update'),
         };
 
         return createStandardContextIIFE(block, blockSelector, inputs, false,
             `
             BitByBit.BitByBitBlocklyHelperService.renderLoopBag.push((timePassedMs) => {
-                ${JavaScript.variableDB_.getName(block.getFieldValue('TimePassedMs'), VARIABLE_CATEGORY_NAME)} = timePassedMs;
+                ${(JavaScript as any).variableDB_.getName(block.getFieldValue('TimePassedMs'), VARIABLE_CATEGORY_NAME)} = timePassedMs;
                 inputs.statement_update();
             });
 `);

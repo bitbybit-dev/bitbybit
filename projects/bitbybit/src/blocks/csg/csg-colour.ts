@@ -28,8 +28,8 @@ export function createCsgColourBlock(): void {
 
     JavaScript[blockSelector] = (block: Block) => {
         const inputs = {
-            colour: JavaScript.valueToCode(block, 'Colour', JavaScript.ORDER_ATOMIC),
-            object: JavaScript.valueToCode(block, 'Object', JavaScript.ORDER_ATOMIC),
+            colour: (JavaScript as any).valueToCode(block, 'Colour', (JavaScript as any).ORDER_ATOMIC),
+            object: (JavaScript as any).valueToCode(block, 'Object', (JavaScript as any).ORDER_ATOMIC),
         };
 
         // this is first set of validations to check that all inputs are non empty strings
@@ -47,7 +47,7 @@ export function createCsgColourBlock(): void {
             return solid;
 `
         );
-        return [code, JavaScript.ORDER_ATOMIC];
+        return [code, (JavaScript as any).ORDER_ATOMIC];
     };
 }
 

@@ -23,7 +23,7 @@ export function createCoreVectorRangeBlock() {
 
     JavaScript[blockSelector] = (block: Block) => {
         const inputs = {
-            max: JavaScript.valueToCode(block, 'Max', JavaScript.ORDER_ATOMIC),
+            max: (JavaScript as any).valueToCode(block, 'Max', (JavaScript as any).ORDER_ATOMIC),
         };
 
         // this is first set of validations to check that all inputs are non empty strings
@@ -38,7 +38,7 @@ export function createCoreVectorRangeBlock() {
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
             `return BitByBit.verb.core.Vec.range(inputs.max);`);
 
-        return [code, JavaScript.ORDER_ATOMIC];
+        return [code, (JavaScript as any).ORDER_ATOMIC];
     };
 }
 

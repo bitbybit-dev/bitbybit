@@ -23,7 +23,7 @@ export function createSurfaceDomainVBlock() {
 
     JavaScript[blockSelector] = (block: Block) => {
         const inputs = {
-            surface: JavaScript.valueToCode(block, 'Surface', JavaScript.ORDER_ATOMIC),
+            surface: (JavaScript as any).valueToCode(block, 'Surface', (JavaScript as any).ORDER_ATOMIC),
         };
         // this is first set of validations to check that all inputs are non empty strings
         BitByBitBlockHandlerService.validate(block, block.workspace, makeRequiredValidationModelForInputs(resources, inputs, [
@@ -37,7 +37,7 @@ export function createSurfaceDomainVBlock() {
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
             `return inputs.surface.domainV();`);
 
-        return [code, JavaScript.ORDER_ATOMIC];
+        return [code, (JavaScript as any).ORDER_ATOMIC];
     };
 }
 

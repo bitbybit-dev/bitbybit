@@ -30,9 +30,9 @@ export function createCatchBlock() {
 
     JavaScript[blockSelector] = (block: Block) => {
         const inputs = {
-            error: JavaScript.variableDB_.getName(block.getFieldValue('Error'), VARIABLE_CATEGORY_NAME),
-            promise: JavaScript.valueToCode(block, 'Promise', JavaScript.ORDER_ATOMIC),
-            statement_catch: JavaScript.statementToCode(block, 'Catch'),
+            error: (JavaScript as any).variableDB_.getName(block.getFieldValue('Error'), VARIABLE_CATEGORY_NAME),
+            promise: (JavaScript as any).valueToCode(block, 'Promise', (JavaScript as any).ORDER_ATOMIC),
+            statement_catch: (JavaScript as any).statementToCode(block, 'Catch'),
         };
         // this is first set of validations to check that all inputs are non empty strings
         BitByBitBlockHandlerService.validate(block, block.workspace, [{
@@ -50,7 +50,7 @@ export function createCatchBlock() {
             const block = BitByBit.blocklyWorkspace.getBlockById('${block.id}');
             inputs.promise.catch((err) => {
                 inputs.error = err;
-                ${JavaScript.variableDB_.getName(block.getFieldValue('Error'), VARIABLE_CATEGORY_NAME)} = err;
+                ${(JavaScript as any).variableDB_.getName(block.getFieldValue('Error'), VARIABLE_CATEGORY_NAME)} = err;
                 return inputs.statement_catch();
             });
 `);

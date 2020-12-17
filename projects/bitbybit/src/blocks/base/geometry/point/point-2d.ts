@@ -28,8 +28,8 @@ export function createPoint2dBlock(): void {
 
     JavaScript[blockSelector] = (block: Block) => {
         const inputs = {
-            x: JavaScript.valueToCode(block, 'X', JavaScript.ORDER_ATOMIC),
-            y: JavaScript.valueToCode(block, 'Y', JavaScript.ORDER_ATOMIC),
+            x: (JavaScript as any).valueToCode(block, 'X', (JavaScript as any).ORDER_ATOMIC),
+            y: (JavaScript as any).valueToCode(block, 'Y', (JavaScript as any).ORDER_ATOMIC),
         };
 
         // this is first set of validations to check that all inputs are non empty strings
@@ -40,6 +40,6 @@ export function createPoint2dBlock(): void {
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
             `return [inputs.x, inputs.y, 0];`
         );
-        return [code, JavaScript.ORDER_ATOMIC];
+        return [code, (JavaScript as any).ORDER_ATOMIC];
     };
 }

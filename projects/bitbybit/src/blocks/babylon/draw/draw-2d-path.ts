@@ -49,11 +49,11 @@ export function createDraw2dPathBlock(): void {
 
     JavaScript[blockSelector] = (block: Block) => {
         const inputs = {
-            path: JavaScript.valueToCode(block, 'Path', JavaScript.ORDER_ATOMIC),
-            colour: JavaScript.valueToCode(block, 'Colour', JavaScript.ORDER_ATOMIC),
-            opacity: JavaScript.valueToCode(block, 'Opacity', JavaScript.ORDER_ATOMIC),
-            width: JavaScript.valueToCode(block, 'Width', JavaScript.ORDER_ATOMIC),
-            updatable: JavaScript.valueToCode(block, 'Updatable', JavaScript.ORDER_ATOMIC),
+            path: (JavaScript as any).valueToCode(block, 'Path', (JavaScript as any).ORDER_ATOMIC),
+            colour: (JavaScript as any).valueToCode(block, 'Colour', (JavaScript as any).ORDER_ATOMIC),
+            opacity: (JavaScript as any).valueToCode(block, 'Opacity', (JavaScript as any).ORDER_ATOMIC),
+            width: (JavaScript as any).valueToCode(block, 'Width', (JavaScript as any).ORDER_ATOMIC),
+            updatable: (JavaScript as any).valueToCode(block, 'Updatable', (JavaScript as any).ORDER_ATOMIC),
         };
 
         // this is first set of validations to check that all inputs are non empty strings
@@ -67,7 +67,7 @@ export function createDraw2dPathBlock(): void {
 
         return createStandardContextIIFE(block, blockSelector, inputs, false,
             `
-        inputs.pathMeshVariable = ${JavaScript.variableDB_.getName(block.getFieldValue('DrawnPathMesh'), VARIABLE_CATEGORY_NAME)};
+        inputs.pathMeshVariable = ${(JavaScript as any).variableDB_.getName(block.getFieldValue('DrawnPathMesh'), VARIABLE_CATEGORY_NAME)};
 
         const points = [];
         const colors = [];
@@ -92,12 +92,12 @@ export function createDraw2dPathBlock(): void {
             } else {
                 inputs.pathMeshVariable.dispose();
                 inputs.pathMeshVariable = BitByBit.BABYLON.MeshBuilder.CreateLines('pathMesh${Math.random()}', {points, colors, updatable: inputs.updatable, useVertexAlpha: true}, BitByBit.scene);
-                ${JavaScript.variableDB_.getName(block.getFieldValue('DrawnPathMesh'), VARIABLE_CATEGORY_NAME)} = inputs.pathMeshVariable;
+                ${(JavaScript as any).variableDB_.getName(block.getFieldValue('DrawnPathMesh'), VARIABLE_CATEGORY_NAME)} = inputs.pathMeshVariable;
             }
 
         } else {
             inputs.pathMeshVariable = BitByBit.BABYLON.MeshBuilder.CreateLines('pathMesh${Math.random()}', {points, colors, updatable: inputs.updatable, useVertexAlpha: true}, BitByBit.scene);
-            ${JavaScript.variableDB_.getName(block.getFieldValue('DrawnPathMesh'), VARIABLE_CATEGORY_NAME)} = inputs.pathMeshVariable;
+            ${(JavaScript as any).variableDB_.getName(block.getFieldValue('DrawnPathMesh'), VARIABLE_CATEGORY_NAME)} = inputs.pathMeshVariable;
         }
 
         inputs.pathMeshVariable.enableEdgesRendering();

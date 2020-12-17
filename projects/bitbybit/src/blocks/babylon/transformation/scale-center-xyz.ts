@@ -28,8 +28,8 @@ export function createScaleCenterXYZBlock() {
 
     JavaScript[blockSelector] = (block: Block) => {
         const inputs = {
-            scaleXyz: JavaScript.valueToCode(block, 'ScaleXYZ', JavaScript.ORDER_ATOMIC),
-            center: JavaScript.valueToCode(block, 'Center', JavaScript.ORDER_ATOMIC),
+            scaleXyz: (JavaScript as any).valueToCode(block, 'ScaleXYZ', (JavaScript as any).ORDER_ATOMIC),
+            center: (JavaScript as any).valueToCode(block, 'Center', (JavaScript as any).ORDER_ATOMIC),
         };
 
         // this is first set of validations to check that all inputs are non empty strings
@@ -45,6 +45,6 @@ export function createScaleCenterXYZBlock() {
             new BitByBit.BABYLON.Matrix.Translation(inputs.center[0], inputs.center[1], inputs.center[2]),
         ];
 `);
-        return [code, JavaScript.ORDER_ATOMIC];
+        return [code, (JavaScript as any).ORDER_ATOMIC];
     };
 }

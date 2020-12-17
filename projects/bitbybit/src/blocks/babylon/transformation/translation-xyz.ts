@@ -23,7 +23,7 @@ export function createTranslationXYZBlock() {
 
     JavaScript[blockSelector] = (block: Block) => {
         const inputs = {
-            translation: JavaScript.valueToCode(block, 'Translation', JavaScript.ORDER_ATOMIC),
+            translation: (JavaScript as any).valueToCode(block, 'Translation', (JavaScript as any).ORDER_ATOMIC),
         };
 
         // this is first set of validations to check that all inputs are non empty strings
@@ -35,6 +35,6 @@ export function createTranslationXYZBlock() {
 `
         return new BitByBit.BABYLON.Matrix.Translation(inputs.translation[0], inputs.translation[1], inputs.translation[2]);
 `);
-        return [code, JavaScript.ORDER_ATOMIC];
+        return [code, (JavaScript as any).ORDER_ATOMIC];
     };
 }

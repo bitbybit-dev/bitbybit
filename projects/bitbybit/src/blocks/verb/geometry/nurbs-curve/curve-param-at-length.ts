@@ -31,9 +31,9 @@ export function createCurveParamAtLengthBlock() {
 
     JavaScript[blockSelector] = (block: Block) => {
         const inputs = {
-            curve: JavaScript.valueToCode(block, 'Curve', JavaScript.ORDER_ATOMIC),
-            length: JavaScript.valueToCode(block, 'Length', JavaScript.ORDER_ATOMIC),
-            tolerance: JavaScript.valueToCode(block, 'Tolerance', JavaScript.ORDER_ATOMIC),
+            curve: (JavaScript as any).valueToCode(block, 'Curve', (JavaScript as any).ORDER_ATOMIC),
+            length: (JavaScript as any).valueToCode(block, 'Length', (JavaScript as any).ORDER_ATOMIC),
+            tolerance: (JavaScript as any).valueToCode(block, 'Tolerance', (JavaScript as any).ORDER_ATOMIC),
         };
         // this is first set of validations to check that all inputs are non empty strings
         BitByBitBlockHandlerService.validate(block, block.workspace, makeRequiredValidationModelForInputs(resources, inputs, [
@@ -47,7 +47,7 @@ export function createCurveParamAtLengthBlock() {
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
             `return inputs.curve.paramAtLength(inputs.length, inputs.tolerance) ;`
         );
-        return [code, JavaScript.ORDER_ATOMIC];
+        return [code, (JavaScript as any).ORDER_ATOMIC];
     };
 }
 

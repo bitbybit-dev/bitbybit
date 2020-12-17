@@ -32,9 +32,9 @@ export function createPointBlock() {
 
     JavaScript[blockSelector] = (block: Block) => {
         const inputs = {
-            x: JavaScript.valueToCode(block, 'X', JavaScript.ORDER_ATOMIC),
-            y: JavaScript.valueToCode(block, 'Y', JavaScript.ORDER_ATOMIC),
-            z: JavaScript.valueToCode(block, 'Z', JavaScript.ORDER_ATOMIC)
+            x: (JavaScript as any).valueToCode(block, 'X', (JavaScript as any).ORDER_ATOMIC),
+            y: (JavaScript as any).valueToCode(block, 'Y', (JavaScript as any).ORDER_ATOMIC),
+            z: (JavaScript as any).valueToCode(block, 'Z', (JavaScript as any).ORDER_ATOMIC)
         };
 
         // this is first set of validations to check that all inputs are non empty strings
@@ -45,6 +45,6 @@ export function createPointBlock() {
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
             `return [inputs.x, inputs.y, inputs.z];`
         );
-        return [code, JavaScript.ORDER_ATOMIC];
+        return [code, (JavaScript as any).ORDER_ATOMIC];
     };
 }

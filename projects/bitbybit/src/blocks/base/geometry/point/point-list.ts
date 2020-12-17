@@ -27,8 +27,8 @@ export function createPointListBlock() {
 
     JavaScript[blockSelector] = (block: Block) => {
         const inputs = {
-            point: JavaScript.valueToCode(block, 'Point', JavaScript.ORDER_ATOMIC),
-            amountOfPoints: JavaScript.valueToCode(block, 'AmountOfPoints', JavaScript.ORDER_ATOMIC)
+            point: (JavaScript as any).valueToCode(block, 'Point', (JavaScript as any).ORDER_ATOMIC),
+            amountOfPoints: (JavaScript as any).valueToCode(block, 'AmountOfPoints', (JavaScript as any).ORDER_ATOMIC)
         };
 
         // this is first set of validations to check that all inputs are non empty strings
@@ -45,6 +45,6 @@ export function createPointListBlock() {
             return points;
 `
         );
-        return [code, JavaScript.ORDER_ATOMIC];
+        return [code, (JavaScript as any).ORDER_ATOMIC];
     };
 }

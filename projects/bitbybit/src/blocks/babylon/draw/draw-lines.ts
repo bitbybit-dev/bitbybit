@@ -50,11 +50,11 @@ export function createDrawLinesBlock() {
     JavaScript[blockSelector] = (block: Block) => {
 
         const inputs = {
-            lines: JavaScript.valueToCode(block, 'Lines', JavaScript.ORDER_ATOMIC),
-            colour: JavaScript.valueToCode(block, 'Colour', JavaScript.ORDER_ATOMIC),
-            opacity: JavaScript.valueToCode(block, 'Opacity', JavaScript.ORDER_ATOMIC),
-            width: JavaScript.valueToCode(block, 'Width', JavaScript.ORDER_ATOMIC),
-            updatable: JavaScript.valueToCode(block, 'Updatable', JavaScript.ORDER_ATOMIC),
+            lines: (JavaScript as any).valueToCode(block, 'Lines', (JavaScript as any).ORDER_ATOMIC),
+            colour: (JavaScript as any).valueToCode(block, 'Colour', (JavaScript as any).ORDER_ATOMIC),
+            opacity: (JavaScript as any).valueToCode(block, 'Opacity', (JavaScript as any).ORDER_ATOMIC),
+            width: (JavaScript as any).valueToCode(block, 'Width', (JavaScript as any).ORDER_ATOMIC),
+            updatable: (JavaScript as any).valueToCode(block, 'Updatable', (JavaScript as any).ORDER_ATOMIC),
         };
 
         // this is first set of validations to check that all inputs are non empty strings
@@ -68,7 +68,7 @@ export function createDrawLinesBlock() {
 
         return createStandardContextIIFE(block, blockSelector, inputs, false,
             `
-        inputs.linesMesh = ${JavaScript.variableDB_.getName(block.getFieldValue('DrawnLinesMesh'), VARIABLE_CATEGORY_NAME)};
+        inputs.linesMesh = ${(JavaScript as any).variableDB_.getName(block.getFieldValue('DrawnLinesMesh'), VARIABLE_CATEGORY_NAME)};
         const linesForRender = [];
         const colors = [];
         inputs.lines.forEach(line => {
@@ -87,12 +87,12 @@ export function createDrawLinesBlock() {
             } else {
                 inputs.linesMesh.dispose();
                 inputs.linesMesh = BitByBit.BABYLON.MeshBuilder.CreateLineSystem('lines${Math.random()}', {lines: linesForRender, colors, useVertexAlpha: true, updatable: inputs.updatable}, BitByBit.scene);
-                ${JavaScript.variableDB_.getName(block.getFieldValue('DrawnLinesMesh'), VARIABLE_CATEGORY_NAME)} = inputs.linesMesh;
+                ${(JavaScript as any).variableDB_.getName(block.getFieldValue('DrawnLinesMesh'), VARIABLE_CATEGORY_NAME)} = inputs.linesMesh;
             }
 
         } else {
             inputs.linesMesh = BitByBit.BABYLON.MeshBuilder.CreateLineSystem('lines${Math.random()}', {lines: linesForRender, colors, useVertexAlpha: true, updatable: inputs.updatable}, BitByBit.scene);
-            ${JavaScript.variableDB_.getName(block.getFieldValue('DrawnLinesMesh'), VARIABLE_CATEGORY_NAME)} = inputs.linesMesh;
+            ${(JavaScript as any).variableDB_.getName(block.getFieldValue('DrawnLinesMesh'), VARIABLE_CATEGORY_NAME)} = inputs.linesMesh;
         }
 
         inputs.linesMesh.enableEdgesRendering();

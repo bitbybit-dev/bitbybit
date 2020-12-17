@@ -24,7 +24,7 @@ export function createHullChainPolygonsBlock(): void {
 
     JavaScript[blockSelector] = (block: Block) => {
         const inputs = {
-            polygons: JavaScript.valueToCode(block, 'Polygons', JavaScript.ORDER_ATOMIC),
+            polygons: (JavaScript as any).valueToCode(block, 'Polygons', (JavaScript as any).ORDER_ATOMIC),
         };
 
         // this is first set of validations to check that all inputs are non empty strings
@@ -41,7 +41,7 @@ export function createHullChainPolygonsBlock(): void {
             return BitByBit.CSG.hulls.hullChain(...inputs.polygons);
 `
         );
-        return [code, JavaScript.ORDER_ATOMIC];
+        return [code, (JavaScript as any).ORDER_ATOMIC];
     };
 }
 

@@ -36,10 +36,10 @@ export function createExpansionsExpandPolygonsBlock(): void {
 
     JavaScript[blockSelector] = (block: Block) => {
         const inputs = {
-            polygons: JavaScript.valueToCode(block, 'Polygons', JavaScript.ORDER_ATOMIC),
-            delta: JavaScript.valueToCode(block, 'Delta', JavaScript.ORDER_ATOMIC),
-            segments: JavaScript.valueToCode(block, 'Segments', JavaScript.ORDER_ATOMIC),
-            corners: JavaScript.valueToCode(block, 'Corners', JavaScript.ORDER_ATOMIC),
+            polygons: (JavaScript as any).valueToCode(block, 'Polygons', (JavaScript as any).ORDER_ATOMIC),
+            delta: (JavaScript as any).valueToCode(block, 'Delta', (JavaScript as any).ORDER_ATOMIC),
+            segments: (JavaScript as any).valueToCode(block, 'Segments', (JavaScript as any).ORDER_ATOMIC),
+            corners: (JavaScript as any).valueToCode(block, 'Corners', (JavaScript as any).ORDER_ATOMIC),
         };
 
         // this is first set of validations to check that all inputs are non empty strings
@@ -61,7 +61,7 @@ export function createExpansionsExpandPolygonsBlock(): void {
             return result;
 `
         );
-        return [code, JavaScript.ORDER_ATOMIC];
+        return [code, (JavaScript as any).ORDER_ATOMIC];
     };
 }
 

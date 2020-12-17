@@ -24,7 +24,7 @@ export function createHullChainPathsBlock(): void {
 
     JavaScript[blockSelector] = (block: Block) => {
         const inputs = {
-            paths: JavaScript.valueToCode(block, 'Paths', JavaScript.ORDER_ATOMIC),
+            paths: (JavaScript as any).valueToCode(block, 'Paths', (JavaScript as any).ORDER_ATOMIC),
         };
 
         // this is first set of validations to check that all inputs are non empty strings
@@ -41,7 +41,7 @@ export function createHullChainPathsBlock(): void {
             return BitByBit.CSG.hulls.hullChain(...inputs.paths);
 `
         );
-        return [code, JavaScript.ORDER_ATOMIC];
+        return [code, (JavaScript as any).ORDER_ATOMIC];
     };
 }
 

@@ -27,8 +27,8 @@ export function createDateSetSecondsBlock() {
 
     JavaScript[blockSelector] = (block: Block) => {
         const inputs = {
-            date: JavaScript.valueToCode(block, 'Date', JavaScript.ORDER_ATOMIC),
-            seconds: JavaScript.valueToCode(block, 'Seconds', JavaScript.ORDER_ATOMIC),
+            date: (JavaScript as any).valueToCode(block, 'Date', (JavaScript as any).ORDER_ATOMIC),
+            seconds: (JavaScript as any).valueToCode(block, 'Seconds', (JavaScript as any).ORDER_ATOMIC),
         };
         // this is first set of validations to check that all inputs are non empty strings
         BitByBitBlockHandlerService.validate(block, block.workspace, makeRequiredValidationModelForInputs(resources, inputs, [
@@ -44,7 +44,7 @@ export function createDateSetSecondsBlock() {
 return new Date(inputs.date.setSeconds(inputs.seconds));
 `
         );
-        return [code, JavaScript.ORDER_ATOMIC];
+        return [code, (JavaScript as any).ORDER_ATOMIC];
     };
 }
 

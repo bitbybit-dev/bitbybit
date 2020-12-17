@@ -24,7 +24,7 @@ export function createNodeGetAbsoluteRightVectorBlock(): void {
 
     JavaScript[blockSelector] = (block: Block) => {
         const inputs = {
-            node: JavaScript.valueToCode(block, 'Node', JavaScript.ORDER_ATOMIC),
+            node: (JavaScript as any).valueToCode(block, 'Node', (JavaScript as any).ORDER_ATOMIC),
         };
 
         // this is first set of validations to check that all inputs are non empty strings
@@ -42,7 +42,7 @@ export function createNodeGetAbsoluteRightVectorBlock(): void {
             return [dir.x, dir.y, dir.z];
 `
         );
-        return [code, JavaScript.ORDER_ATOMIC];
+        return [code, (JavaScript as any).ORDER_ATOMIC];
     };
 }
 

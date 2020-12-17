@@ -35,11 +35,11 @@ export function createRotationYawPitchRollBlock(): void {
 
     JavaScript[blockSelector] = (block: Block) => {
         const inputs = {
-            yaw: JavaScript.valueToCode(block, 'Yaw', JavaScript.ORDER_ATOMIC),
-            pitch: JavaScript.valueToCode(block, 'Pitch', JavaScript.ORDER_ATOMIC),
-            roll: JavaScript.valueToCode(block, 'Roll', JavaScript.ORDER_ATOMIC),
-            axis: JavaScript.valueToCode(block, 'Axis', JavaScript.ORDER_ATOMIC),
-            center: JavaScript.valueToCode(block, 'Center', JavaScript.ORDER_ATOMIC),
+            yaw: (JavaScript as any).valueToCode(block, 'Yaw', (JavaScript as any).ORDER_ATOMIC),
+            pitch: (JavaScript as any).valueToCode(block, 'Pitch', (JavaScript as any).ORDER_ATOMIC),
+            roll: (JavaScript as any).valueToCode(block, 'Roll', (JavaScript as any).ORDER_ATOMIC),
+            axis: (JavaScript as any).valueToCode(block, 'Axis', (JavaScript as any).ORDER_ATOMIC),
+            center: (JavaScript as any).valueToCode(block, 'Center', (JavaScript as any).ORDER_ATOMIC),
         };
 
         // this is first set of validations to check that all inputs are non empty strings
@@ -55,6 +55,6 @@ export function createRotationYawPitchRollBlock(): void {
             new BitByBit.BABYLON.Matrix.Translation(inputs.center[0], inputs.center[1], inputs.center[2]),
         ];
 `);
-        return [code, JavaScript.ORDER_ATOMIC];
+        return [code, (JavaScript as any).ORDER_ATOMIC];
     };
 }

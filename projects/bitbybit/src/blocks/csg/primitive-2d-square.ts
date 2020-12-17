@@ -28,8 +28,8 @@ export function createPrimitive2dSquareBlock(): void {
 
     JavaScript[blockSelector] = (block: Block) => {
         const inputs = {
-            center: JavaScript.valueToCode(block, 'Center', JavaScript.ORDER_ATOMIC),
-            size: JavaScript.valueToCode(block, 'Size', JavaScript.ORDER_ATOMIC),
+            center: (JavaScript as any).valueToCode(block, 'Center', (JavaScript as any).ORDER_ATOMIC),
+            size: (JavaScript as any).valueToCode(block, 'Size', (JavaScript as any).ORDER_ATOMIC),
         };
 
         // this is first set of validations to check that all inputs are non empty strings
@@ -46,7 +46,7 @@ export function createPrimitive2dSquareBlock(): void {
             return BitByBit.CSG.primitives.square({center: [inputs.center[0], inputs.center[1]], size: inputs.size});
 `
         );
-        return [code, JavaScript.ORDER_ATOMIC];
+        return [code, (JavaScript as any).ORDER_ATOMIC];
     };
 }
 

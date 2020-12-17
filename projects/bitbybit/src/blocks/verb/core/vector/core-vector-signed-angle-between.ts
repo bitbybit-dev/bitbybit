@@ -32,9 +32,9 @@ export function createCoreVectorSignedAngleBetweenBlock() {
 
     JavaScript[blockSelector] = (block: Block) => {
         const inputs = {
-            first: JavaScript.valueToCode(block, 'First', JavaScript.ORDER_ATOMIC),
-            second: JavaScript.valueToCode(block, 'Second', JavaScript.ORDER_ATOMIC),
-            reference: JavaScript.valueToCode(block, 'Reference', JavaScript.ORDER_ATOMIC),
+            first: (JavaScript as any).valueToCode(block, 'First', (JavaScript as any).ORDER_ATOMIC),
+            second: (JavaScript as any).valueToCode(block, 'Second', (JavaScript as any).ORDER_ATOMIC),
+            reference: (JavaScript as any).valueToCode(block, 'Reference', (JavaScript as any).ORDER_ATOMIC),
         };
 
         // this is first set of validations to check that all inputs are non empty strings
@@ -48,7 +48,7 @@ export function createCoreVectorSignedAngleBetweenBlock() {
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
             `return BitByBit.verb.core.Vec.signedAngleBetween(inputs.first, inputs.second, inputs.reference);`);
-        return [code, JavaScript.ORDER_ATOMIC];
+        return [code, (JavaScript as any).ORDER_ATOMIC];
     };
 }
 

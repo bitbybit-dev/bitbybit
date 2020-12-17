@@ -25,7 +25,7 @@ export function createPrintSaveBlock() {
 
     JavaScript[blockSelector] = (block: Block) => {
         const inputs = {
-            text: JavaScript.valueToCode(block, 'Text', JavaScript.ORDER_ATOMIC),
+            text: (JavaScript as any).valueToCode(block, 'Text', (JavaScript as any).ORDER_ATOMIC),
         };
         // this is first set of validations to check that all inputs are non empty strings
         BitByBitBlockHandlerService.validate(block, block.workspace, makeRequiredValidationModelForInputs(resources, inputs, [

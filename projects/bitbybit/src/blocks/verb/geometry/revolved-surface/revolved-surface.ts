@@ -35,10 +35,10 @@ export function createRevolvedSurfaceBlock() {
 
     JavaScript[blockSelector] = (block: Block) => {
         const inputs = {
-            profile: JavaScript.valueToCode(block, 'Profile', JavaScript.ORDER_ATOMIC),
-            center: JavaScript.valueToCode(block, 'Center', JavaScript.ORDER_ATOMIC),
-            axis: JavaScript.valueToCode(block, 'Axis', JavaScript.ORDER_ATOMIC),
-            angle: JavaScript.valueToCode(block, 'Angle', JavaScript.ORDER_ATOMIC),
+            profile: (JavaScript as any).valueToCode(block, 'Profile', (JavaScript as any).ORDER_ATOMIC),
+            center: (JavaScript as any).valueToCode(block, 'Center', (JavaScript as any).ORDER_ATOMIC),
+            axis: (JavaScript as any).valueToCode(block, 'Axis', (JavaScript as any).ORDER_ATOMIC),
+            angle: (JavaScript as any).valueToCode(block, 'Angle', (JavaScript as any).ORDER_ATOMIC),
         };
         // this is first set of validations to check that all inputs are non empty strings
         BitByBitBlockHandlerService.validate(block, block.workspace, makeRequiredValidationModelForInputs(resources, inputs, [
@@ -52,7 +52,7 @@ export function createRevolvedSurfaceBlock() {
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
             `return new BitByBit.verb.geom.RevolvedSurface(inputs.profile, inputs.center, inputs.axis, BitByBit.BABYLON.Angle.FromDegrees(inputs.angle).radians())`
         );
-        return [code, JavaScript.ORDER_ATOMIC];
+        return [code, (JavaScript as any).ORDER_ATOMIC];
     };
 }
 

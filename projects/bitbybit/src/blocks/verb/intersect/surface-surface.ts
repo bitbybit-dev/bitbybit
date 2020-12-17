@@ -27,8 +27,8 @@ export function createIntersectSurfaceSurfaceBlock() {
 
     JavaScript[blockSelector] = (block: Block) => {
         const inputs = {
-            firstSurface: JavaScript.valueToCode(block, 'FirstSurface', JavaScript.ORDER_ATOMIC),
-            secondSurface: JavaScript.valueToCode(block, 'SecondSurface', JavaScript.ORDER_ATOMIC),
+            firstSurface: (JavaScript as any).valueToCode(block, 'FirstSurface', (JavaScript as any).ORDER_ATOMIC),
+            secondSurface: (JavaScript as any).valueToCode(block, 'SecondSurface', (JavaScript as any).ORDER_ATOMIC),
         };
         // this is first set of validations to check that all inputs are non empty strings
         BitByBitBlockHandlerService.validate(block, block.workspace, makeRequiredValidationModelForInputs(resources, inputs, [
@@ -42,7 +42,7 @@ export function createIntersectSurfaceSurfaceBlock() {
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
             `return BitByBit.verb.geom.Intersect.surfaces(inputs.firstSurface, inputs.secondSurface);`
         );
-        return [code, JavaScript.ORDER_ATOMIC];
+        return [code, (JavaScript as any).ORDER_ATOMIC];
     };
 }
 

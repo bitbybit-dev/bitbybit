@@ -25,7 +25,7 @@ export function createClearIntervalBlock() {
 
     JavaScript[blockSelector] = (block: Block) => {
         const inputs = {
-            intervalHandler: JavaScript.valueToCode(block, 'IntervalHandler', JavaScript.ORDER_ATOMIC)
+            intervalHandler: (JavaScript as any).valueToCode(block, 'IntervalHandler', (JavaScript as any).ORDER_ATOMIC)
         };
 
         // this is first set of validations to check that all inputs are non empty strings

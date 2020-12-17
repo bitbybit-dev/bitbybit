@@ -23,7 +23,7 @@ export function createCircleMaxAngleBlock() {
 
     JavaScript[blockSelector] = (block: Block) => {
         const inputs = {
-            circle: JavaScript.valueToCode(block, 'Circle', JavaScript.ORDER_ATOMIC),
+            circle: (JavaScript as any).valueToCode(block, 'Circle', (JavaScript as any).ORDER_ATOMIC),
         };
         // this is first set of validations to check that all inputs are non empty strings
         BitByBitBlockHandlerService.validate(block, block.workspace, makeRequiredValidationModelForInputs(resources, inputs, [
@@ -37,7 +37,7 @@ export function createCircleMaxAngleBlock() {
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
             `return BitByBit.BABYLON.Angle.FromRadians(inputs.circle.maxAngle()).degrees();`
         );
-        return [code, JavaScript.ORDER_ATOMIC];
+        return [code, (JavaScript as any).ORDER_ATOMIC];
     };
 }
 

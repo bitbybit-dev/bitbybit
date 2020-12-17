@@ -29,8 +29,8 @@ export function createIoSolidsToStlDownloadBlock(): void {
 
     JavaScript[blockSelector] = (block: Block) => {
         const inputs = {
-            solids: JavaScript.valueToCode(block, 'Solids', JavaScript.ORDER_ATOMIC),
-            fileName: JavaScript.valueToCode(block, 'FileName', JavaScript.ORDER_ATOMIC),
+            solids: (JavaScript as any).valueToCode(block, 'Solids', (JavaScript as any).ORDER_ATOMIC),
+            fileName: (JavaScript as any).valueToCode(block, 'FileName', (JavaScript as any).ORDER_ATOMIC),
         };
 
         // this is first set of validations to check that all inputs are non empty strings
@@ -44,7 +44,7 @@ export function createIoSolidsToStlDownloadBlock(): void {
 
         return createStandardContextIIFE(block, blockSelector, inputs, false,
             `
-            const rawData = BitByBit.CSG.STLSERIALIZER.serialize({}, ...inputs.solids);
+            const rawData = BitByBit.CSG.STLSERIALIZER.serialize({binary: true}, ...inputs.solids.map(solid => BitByBit.BitByBitBlocklyHelperService.snapGeometry(solid)));
             const madeBlob = new Blob(rawData, {type: 'application/sla'});
             const blobUrl = URL.createObjectURL(madeBlob);
 

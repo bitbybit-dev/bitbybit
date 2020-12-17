@@ -31,9 +31,9 @@ export function createSurfacePointBlock() {
 
     JavaScript[blockSelector] = (block: Block) => {
         const inputs = {
-            surface: JavaScript.valueToCode(block, 'Surface', JavaScript.ORDER_ATOMIC),
-            u: JavaScript.valueToCode(block, 'U', JavaScript.ORDER_ATOMIC),
-            v: JavaScript.valueToCode(block, 'V', JavaScript.ORDER_ATOMIC),
+            surface: (JavaScript as any).valueToCode(block, 'Surface', (JavaScript as any).ORDER_ATOMIC),
+            u: (JavaScript as any).valueToCode(block, 'U', (JavaScript as any).ORDER_ATOMIC),
+            v: (JavaScript as any).valueToCode(block, 'V', (JavaScript as any).ORDER_ATOMIC),
         };
         // this is first set of validations to check that all inputs are non empty strings
         BitByBitBlockHandlerService.validate(block, block.workspace, makeRequiredValidationModelForInputs(resources, inputs, [
@@ -46,7 +46,7 @@ export function createSurfacePointBlock() {
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
             `return inputs.surface.point(inputs.u, inputs.v);`);
-        return [code, JavaScript.ORDER_ATOMIC];
+        return [code, (JavaScript as any).ORDER_ATOMIC];
     };
 }
 

@@ -35,8 +35,8 @@ export function createDrawTextTagsBlock() {
 
     JavaScript[blockSelector] = (block: Block) => {
         const inputs = {
-            textTags: JavaScript.valueToCode(block, 'TextTags', JavaScript.ORDER_ATOMIC),
-            updatable: JavaScript.valueToCode(block, 'Updatable', JavaScript.ORDER_ATOMIC),
+            textTags: (JavaScript as any).valueToCode(block, 'TextTags', (JavaScript as any).ORDER_ATOMIC),
+            updatable: (JavaScript as any).valueToCode(block, 'Updatable', (JavaScript as any).ORDER_ATOMIC),
         };
 
         // this is first set of validations to check that all inputs are non empty strings
@@ -50,7 +50,7 @@ export function createDrawTextTagsBlock() {
 
         return createStandardContextIIFE(block, blockSelector, inputs, false,
             `
-            inputs.tagsVariable = ${JavaScript.variableDB_.getName(block.getFieldValue('DrawnTextTags'), VARIABLE_CATEGORY_NAME)};
+            inputs.tagsVariable = ${(JavaScript as any).variableDB_.getName(block.getFieldValue('DrawnTextTags'), VARIABLE_CATEGORY_NAME)};
 
             if(inputs.tagsVariable && inputs.updatable) {
 
@@ -97,7 +97,7 @@ export function createDrawTextTagsBlock() {
                     BitByBit.BitByBitBlocklyHelperService.tagBag.push(tag);
                     tagsToCreate.push(tag);
                 });
-                ${JavaScript.variableDB_.getName(block.getFieldValue('DrawnTextTags'), VARIABLE_CATEGORY_NAME)} = tagsToCreate;
+                ${(JavaScript as any).variableDB_.getName(block.getFieldValue('DrawnTextTags'), VARIABLE_CATEGORY_NAME)} = tagsToCreate;
             }
 
 `);

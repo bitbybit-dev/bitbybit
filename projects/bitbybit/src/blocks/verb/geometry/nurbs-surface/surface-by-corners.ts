@@ -35,10 +35,10 @@ export function createSurfaceByCornersBlock() {
 
     JavaScript[blockSelector] = (block: Block) => {
         const inputs = {
-            point1: JavaScript.valueToCode(block, 'Point1', JavaScript.ORDER_ATOMIC),
-            point2: JavaScript.valueToCode(block, 'Point2', JavaScript.ORDER_ATOMIC),
-            point3: JavaScript.valueToCode(block, 'Point3', JavaScript.ORDER_ATOMIC),
-            point4: JavaScript.valueToCode(block, 'Point4', JavaScript.ORDER_ATOMIC),
+            point1: (JavaScript as any).valueToCode(block, 'Point1', (JavaScript as any).ORDER_ATOMIC),
+            point2: (JavaScript as any).valueToCode(block, 'Point2', (JavaScript as any).ORDER_ATOMIC),
+            point3: (JavaScript as any).valueToCode(block, 'Point3', (JavaScript as any).ORDER_ATOMIC),
+            point4: (JavaScript as any).valueToCode(block, 'Point4', (JavaScript as any).ORDER_ATOMIC),
         };
 
         // this is first set of validations to check that all inputs are non empty strings
@@ -52,7 +52,7 @@ export function createSurfaceByCornersBlock() {
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
             `return BitByBit.verb.geom.NurbsSurface.byCorners(inputs.point1, inputs.point2, inputs.point3, inputs.point4);`);
-        return [code, JavaScript.ORDER_ATOMIC];
+        return [code, (JavaScript as any).ORDER_ATOMIC];
     };
 }
 

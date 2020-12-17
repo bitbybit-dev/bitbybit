@@ -9,6 +9,7 @@ export class BitByBitBlocklyHelperService {
     static promptPrintSave: (prompt: PrintSaveInterface) => void;
     static clearAllDrawn: () => void;
     static tolerance = 0.00001;
+    static snapTolerance = 0.00001;
     static angular: { httpClient: HttpClient, HttpHeaders: any, HttpParams: any };
     static jsonpath: any;
     static tagBag: TagInterface[] = [];
@@ -132,6 +133,24 @@ export class BitByBitBlocklyHelperService {
             }
         }
         return result;
+    }
+
+    static snapVec3(v3): any {
+        const tolerance = BitByBitBlocklyHelperService.snapTolerance;
+        const x = -(Math.round(v3[0] / tolerance) * tolerance) + 0; // no more -0
+        const y = Math.round(v3[1] / tolerance) * tolerance + 0; // no more -0
+        const z = Math.round(v3[2] / tolerance) * tolerance + 0; // no more -0
+        return (window as any).CSG.maths.vec3.fromValues(x, y, z);
+    }
+
+    static snapGeometry(geometry): any {
+        const CSG = (window as any).CSG;
+        const polygons = CSG.geometries.geom3.toPolygons(geometry);
+        const newpolygons = polygons.map((polygon) => {
+            const newvertices = polygon.vertices.map((vertice) => BitByBitBlocklyHelperService.snapVec3(vertice));
+            return CSG.geometries.poly3.create(newvertices);
+        });
+        return CSG.geometries.geom3.create(newpolygons);
     }
 
 }

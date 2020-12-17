@@ -27,8 +27,8 @@ export function createDateSetUtcFullYearBlock() {
 
     JavaScript[blockSelector] = (block: Block) => {
         const inputs = {
-            date: JavaScript.valueToCode(block, 'Date', JavaScript.ORDER_ATOMIC),
-            year: JavaScript.valueToCode(block, 'Year', JavaScript.ORDER_ATOMIC),
+            date: (JavaScript as any).valueToCode(block, 'Date', (JavaScript as any).ORDER_ATOMIC),
+            year: (JavaScript as any).valueToCode(block, 'Year', (JavaScript as any).ORDER_ATOMIC),
         };
         // this is first set of validations to check that all inputs are non empty strings
         BitByBitBlockHandlerService.validate(block, block.workspace, makeRequiredValidationModelForInputs(resources, inputs, [
@@ -44,7 +44,7 @@ export function createDateSetUtcFullYearBlock() {
 return new Date(inputs.date.setUTCFullYear(inputs.year));
 `
         );
-        return [code, JavaScript.ORDER_ATOMIC];
+        return [code, (JavaScript as any).ORDER_ATOMIC];
     };
 }
 

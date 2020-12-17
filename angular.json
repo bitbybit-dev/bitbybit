@@ -28,12 +28,10 @@
                             "projects/bitbybit/src/assets"
                         ],
                         "styles": [
+                            "node_modules/bootstrap/dist/css/bootstrap.min.css",
                             "projects/bitbybit/src/styles.scss"
                         ],
-                        "scripts": [
-                            "node_modules/earcut/dist/earcut.min.js",
-                            "csg-generated.js"
-                        ]
+                        "scripts": []
                     },
                     "configurations": {
                         "production": {
@@ -51,6 +49,7 @@
                             "extractLicenses": true,
                             "vendorChunk": true,
                             "buildOptimizer": true,
+                            "aot": true,
                             "budgets": [
                                 {
                                     "type": "initial",
