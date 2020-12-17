@@ -43,9 +43,9 @@
     "@babylonjs/loaders": "4.2.0",
     "@babylonjs/gui": "4.2.0",
     "earcut": "2.2.2",
-    "@jscad/modeling": "2.0.0-alpha.7",
-    "@jscad/io-utils": "2.0.0-alpha.7",
-    "@jscad/stl-serializer": "2.0.0-alpha.7",
+    "@jscad/modeling": "2.0.0-alpha.8",
+    "@jscad/io-utils": "2.0.0-alpha.8",
+    "@jscad/stl-serializer": "2.0.0-alpha.8",
     "simplebar-angular": "2.3.0"
   },
   "devDependencies": {
