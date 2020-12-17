@@ -29,6 +29,6 @@ export function createNodeGetRootBlock() {
             return BitByBit.scene.getTransformNodeByID('root');
 `
         );
-        return [code, JavaScript.ORDER_ATOMIC];
+        return [code, (JavaScript as any).ORDER_ATOMIC];
     };
 }

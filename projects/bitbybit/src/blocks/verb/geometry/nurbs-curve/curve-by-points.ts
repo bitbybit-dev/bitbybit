@@ -28,8 +28,8 @@ export function createCurveByPointsBlock() {
 
     JavaScript[blockSelector] = (block: Block) => {
         const inputs = {
-            points: JavaScript.valueToCode(block, 'Points', JavaScript.ORDER_ATOMIC),
-            degree: JavaScript.valueToCode(block, 'Degree', JavaScript.ORDER_ATOMIC),
+            points: (JavaScript as any).valueToCode(block, 'Points', (JavaScript as any).ORDER_ATOMIC),
+            degree: (JavaScript as any).valueToCode(block, 'Degree', (JavaScript as any).ORDER_ATOMIC),
         };
 
         // this is first set of validations to check that all inputs are non empty strings
@@ -43,7 +43,7 @@ export function createCurveByPointsBlock() {
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
             `return BitByBit.verb.geom.NurbsCurve.byPoints( inputs.points, inputs.degree );`);
-        return [code, JavaScript.ORDER_ATOMIC];
+        return [code, (JavaScript as any).ORDER_ATOMIC];
     };
 }
 

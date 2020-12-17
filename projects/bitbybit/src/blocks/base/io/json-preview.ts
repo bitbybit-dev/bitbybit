@@ -24,7 +24,7 @@ export function createJsonPreviewBlock() {
 
     JavaScript[blockSelector] = (block: Block) => {
         const inputs = {
-            json: JavaScript.valueToCode(block, 'JSON', JavaScript.ORDER_ATOMIC),
+            json: (JavaScript as any).valueToCode(block, 'JSON', (JavaScript as any).ORDER_ATOMIC),
         };
 
         // this is first set of validations to check that all inputs are non empty strings

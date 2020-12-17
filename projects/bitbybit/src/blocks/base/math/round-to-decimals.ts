@@ -27,8 +27,8 @@ export function createRoundToDecimalsBlock() {
 
     JavaScript[blockSelector] = (block: Block) => {
         const inputs = {
-            numberToRound: JavaScript.valueToCode(block, 'NumberToRound', JavaScript.ORDER_ATOMIC),
-            decimalPlaces: JavaScript.valueToCode(block, 'DecimalPlaces', JavaScript.ORDER_ATOMIC),
+            numberToRound: (JavaScript as any).valueToCode(block, 'NumberToRound', (JavaScript as any).ORDER_ATOMIC),
+            decimalPlaces: (JavaScript as any).valueToCode(block, 'DecimalPlaces', (JavaScript as any).ORDER_ATOMIC),
         };
         // this is first set of validations to check that all inputs are non empty strings
         BitByBitBlockHandlerService.validate(block, block.workspace, makeRequiredValidationModelForInputs(resources, inputs, [
@@ -44,7 +44,7 @@ export function createRoundToDecimalsBlock() {
 return inputs.numberToRound.toFixed(inputs.decimalPlaces);
 `
         );
-        return [code, JavaScript.ORDER_ATOMIC];
+        return [code, (JavaScript as any).ORDER_ATOMIC];
     };
 }
 

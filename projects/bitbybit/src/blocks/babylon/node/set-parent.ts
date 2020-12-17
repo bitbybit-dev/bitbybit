@@ -30,8 +30,8 @@ export function createNodeSetParentBlock(): void {
 
     JavaScript[blockSelector] = (block: Block) => {
         const inputs = {
-            node: JavaScript.valueToCode(block, 'Node', JavaScript.ORDER_ATOMIC),
-            parentNode: JavaScript.valueToCode(block, 'ParentNode', JavaScript.ORDER_ATOMIC),
+            node: (JavaScript as any).valueToCode(block, 'Node', (JavaScript as any).ORDER_ATOMIC),
+            parentNode: (JavaScript as any).valueToCode(block, 'ParentNode', (JavaScript as any).ORDER_ATOMIC),
         };
 
         // this is first set of validations to check that all inputs are non empty strings

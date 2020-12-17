@@ -36,10 +36,10 @@ export function createPrimitiveCuboidBlock(): void {
 
     JavaScript[blockSelector] = (block: Block) => {
         const inputs = {
-            center: JavaScript.valueToCode(block, 'Center', JavaScript.ORDER_ATOMIC),
-            width: JavaScript.valueToCode(block, 'Width', JavaScript.ORDER_ATOMIC),
-            length: JavaScript.valueToCode(block, 'Length', JavaScript.ORDER_ATOMIC),
-            height: JavaScript.valueToCode(block, 'Height', JavaScript.ORDER_ATOMIC),
+            center: (JavaScript as any).valueToCode(block, 'Center', (JavaScript as any).ORDER_ATOMIC),
+            width: (JavaScript as any).valueToCode(block, 'Width', (JavaScript as any).ORDER_ATOMIC),
+            length: (JavaScript as any).valueToCode(block, 'Length', (JavaScript as any).ORDER_ATOMIC),
+            height: (JavaScript as any).valueToCode(block, 'Height', (JavaScript as any).ORDER_ATOMIC),
         };
 
         // this is first set of validations to check that all inputs are non empty strings
@@ -57,7 +57,7 @@ export function createPrimitiveCuboidBlock(): void {
             return cube;
 `
         );
-        return [code, JavaScript.ORDER_ATOMIC];
+        return [code, (JavaScript as any).ORDER_ATOMIC];
     };
 }
 

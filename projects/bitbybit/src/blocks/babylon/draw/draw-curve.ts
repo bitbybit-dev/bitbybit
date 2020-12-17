@@ -51,11 +51,11 @@ export function createDrawCurveBlock(): void {
     JavaScript[blockSelector] = (block: Block) => {
 
         const inputs = {
-            curve: JavaScript.valueToCode(block, 'Curve', JavaScript.ORDER_ATOMIC),
-            colour: JavaScript.valueToCode(block, 'Colour', JavaScript.ORDER_ATOMIC),
-            opacity: JavaScript.valueToCode(block, 'Opacity', JavaScript.ORDER_ATOMIC),
-            width: JavaScript.valueToCode(block, 'Width', JavaScript.ORDER_ATOMIC),
-            updatable: JavaScript.valueToCode(block, 'Updatable', JavaScript.ORDER_ATOMIC),
+            curve: (JavaScript as any).valueToCode(block, 'Curve', (JavaScript as any).ORDER_ATOMIC),
+            colour: (JavaScript as any).valueToCode(block, 'Colour', (JavaScript as any).ORDER_ATOMIC),
+            opacity: (JavaScript as any).valueToCode(block, 'Opacity', (JavaScript as any).ORDER_ATOMIC),
+            width: (JavaScript as any).valueToCode(block, 'Width', (JavaScript as any).ORDER_ATOMIC),
+            updatable: (JavaScript as any).valueToCode(block, 'Updatable', (JavaScript as any).ORDER_ATOMIC),
         };
 
         // this is first set of validations to check that all inputs are non empty strings
@@ -69,7 +69,7 @@ export function createDrawCurveBlock(): void {
 
         return createStandardContextIIFE(block, blockSelector, inputs, false,
             `
-        inputs.curveMesh = ${JavaScript.variableDB_.getName(block.getFieldValue('DrawnCurveMesh'), VARIABLE_CATEGORY_NAME)};
+        inputs.curveMesh = ${(JavaScript as any).variableDB_.getName(block.getFieldValue('DrawnCurveMesh'), VARIABLE_CATEGORY_NAME)};
 
         const points = inputs.curve.tessellate();
 
@@ -86,11 +86,11 @@ export function createDrawCurveBlock(): void {
             } else {
                 inputs.curveMesh.dispose();
                 inputs.curveMesh = BitByBit.BABYLON.MeshBuilder.CreateLines('curves${Math.random()}', {points: pointsToRender, colors, useVertexAlpha: true, updatable: inputs.updatable}, BitByBit.scene);
-                ${JavaScript.variableDB_.getName(block.getFieldValue('DrawnCurveMesh'), VARIABLE_CATEGORY_NAME)} = inputs.curveMesh;
+                ${(JavaScript as any).variableDB_.getName(block.getFieldValue('DrawnCurveMesh'), VARIABLE_CATEGORY_NAME)} = inputs.curveMesh;
             }
         } else {
             inputs.curveMesh = BitByBit.BABYLON.MeshBuilder.CreateLines('curves${Math.random()}', {points: pointsToRender, colors, useVertexAlpha: true, updatable: inputs.updatable}, BitByBit.scene);
-            ${JavaScript.variableDB_.getName(block.getFieldValue('DrawnCurveMesh'), VARIABLE_CATEGORY_NAME)} = inputs.curveMesh;
+            ${(JavaScript as any).variableDB_.getName(block.getFieldValue('DrawnCurveMesh'), VARIABLE_CATEGORY_NAME)} = inputs.curveMesh;
         }
 
         inputs.curveMesh.enableEdgesRendering();

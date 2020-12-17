@@ -36,10 +36,10 @@ export function createExtrudeLinearPolygonBlock(): void {
 
     JavaScript[blockSelector] = (block: Block) => {
         const inputs = {
-            polygon: JavaScript.valueToCode(block, 'Polygon', JavaScript.ORDER_ATOMIC),
-            height: JavaScript.valueToCode(block, 'Height', JavaScript.ORDER_ATOMIC),
-            twistAngle: JavaScript.valueToCode(block, 'TwistAngle', JavaScript.ORDER_ATOMIC),
-            twistSteps: JavaScript.valueToCode(block, 'TwistSteps', JavaScript.ORDER_ATOMIC),
+            polygon: (JavaScript as any).valueToCode(block, 'Polygon', (JavaScript as any).ORDER_ATOMIC),
+            height: (JavaScript as any).valueToCode(block, 'Height', (JavaScript as any).ORDER_ATOMIC),
+            twistAngle: (JavaScript as any).valueToCode(block, 'TwistAngle', (JavaScript as any).ORDER_ATOMIC),
+            twistSteps: (JavaScript as any).valueToCode(block, 'TwistSteps', (JavaScript as any).ORDER_ATOMIC),
         };
 
         // this is first set of validations to check that all inputs are non empty strings
@@ -57,7 +57,7 @@ export function createExtrudeLinearPolygonBlock(): void {
             return extrusion;
 `
         );
-        return [code, JavaScript.ORDER_ATOMIC];
+        return [code, (JavaScript as any).ORDER_ATOMIC];
     };
 }
 

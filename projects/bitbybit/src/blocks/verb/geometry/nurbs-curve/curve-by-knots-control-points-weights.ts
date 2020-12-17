@@ -35,10 +35,10 @@ export function createCurveByKnotsControlPointsWeightsBlock() {
 
     JavaScript[blockSelector] = (block: Block) => {
         const inputs = {
-            knots: JavaScript.valueToCode(block, 'Knots', JavaScript.ORDER_ATOMIC),
-            points: JavaScript.valueToCode(block, 'Points', JavaScript.ORDER_ATOMIC),
-            weights: JavaScript.valueToCode(block, 'Weights', JavaScript.ORDER_ATOMIC),
-            degree: JavaScript.valueToCode(block, 'Degree', JavaScript.ORDER_ATOMIC),
+            knots: (JavaScript as any).valueToCode(block, 'Knots', (JavaScript as any).ORDER_ATOMIC),
+            points: (JavaScript as any).valueToCode(block, 'Points', (JavaScript as any).ORDER_ATOMIC),
+            weights: (JavaScript as any).valueToCode(block, 'Weights', (JavaScript as any).ORDER_ATOMIC),
+            degree: (JavaScript as any).valueToCode(block, 'Degree', (JavaScript as any).ORDER_ATOMIC),
         };
 
         // this is first set of validations to check that all inputs are non empty strings
@@ -52,7 +52,7 @@ export function createCurveByKnotsControlPointsWeightsBlock() {
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
             `return BitByBit.verb.geom.NurbsCurve.byKnotsControlPointsWeights(inputs.degree, inputs.knots, inputs.points, inputs.weights);`);
-        return [code, JavaScript.ORDER_ATOMIC];
+        return [code, (JavaScript as any).ORDER_ATOMIC];
     };
 }
 

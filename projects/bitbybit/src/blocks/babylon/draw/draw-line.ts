@@ -52,11 +52,11 @@ export function createDrawLineBlock() {
     JavaScript[blockSelector] = (block: Block) => {
 
         const inputs = {
-            line: JavaScript.valueToCode(block, 'Line', JavaScript.ORDER_ATOMIC),
-            colour: JavaScript.valueToCode(block, 'Colour', JavaScript.ORDER_ATOMIC),
-            opacity: JavaScript.valueToCode(block, 'Opacity', JavaScript.ORDER_ATOMIC),
-            width: JavaScript.valueToCode(block, 'Width', JavaScript.ORDER_ATOMIC),
-            updatable: JavaScript.valueToCode(block, 'Updatable', JavaScript.ORDER_ATOMIC),
+            line: (JavaScript as any).valueToCode(block, 'Line', (JavaScript as any).ORDER_ATOMIC),
+            colour: (JavaScript as any).valueToCode(block, 'Colour', (JavaScript as any).ORDER_ATOMIC),
+            opacity: (JavaScript as any).valueToCode(block, 'Opacity', (JavaScript as any).ORDER_ATOMIC),
+            width: (JavaScript as any).valueToCode(block, 'Width', (JavaScript as any).ORDER_ATOMIC),
+            updatable: (JavaScript as any).valueToCode(block, 'Updatable', (JavaScript as any).ORDER_ATOMIC),
         };
 
         // this is first set of validations to check that all inputs are non empty strings
@@ -70,7 +70,7 @@ export function createDrawLineBlock() {
 
         return createStandardContextIIFE(block, blockSelector, inputs, false,
             `
-        inputs.lineMeshVariable = ${JavaScript.variableDB_.getName(block.getFieldValue('DrawnLineMesh'), VARIABLE_CATEGORY_NAME)};
+        inputs.lineMeshVariable = ${(JavaScript as any).variableDB_.getName(block.getFieldValue('DrawnLineMesh'), VARIABLE_CATEGORY_NAME)};
 
         const line = inputs.line;
 
@@ -83,7 +83,7 @@ export function createDrawLineBlock() {
             inputs.lineMeshVariable = BitByBit.BABYLON.MeshBuilder.CreateLines(null, {points, instance: inputs.lineMeshVariable, useVertexAlpha: true, updatable: inputs.updatable}, null);
         } else {
             inputs.lineMeshVariable = BitByBit.BABYLON.MeshBuilder.CreateLines('lines${Math.random()}', {points, updatable: inputs.updatable, useVertexAlpha: true}, BitByBit.scene);
-            ${JavaScript.variableDB_.getName(block.getFieldValue('DrawnLineMesh'), VARIABLE_CATEGORY_NAME)} = inputs.lineMeshVariable;
+            ${(JavaScript as any).variableDB_.getName(block.getFieldValue('DrawnLineMesh'), VARIABLE_CATEGORY_NAME)} = inputs.lineMeshVariable;
         }
 
         inputs.lineMeshVariable.enableEdgesRendering();

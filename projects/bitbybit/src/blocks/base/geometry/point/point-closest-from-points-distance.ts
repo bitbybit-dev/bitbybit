@@ -28,8 +28,8 @@ export function createPointClosestFromPointsDistanceBlock() {
 
     JavaScript[blockSelector] = (block: Block) => {
         const inputs = {
-            point: JavaScript.valueToCode(block, 'Point', JavaScript.ORDER_ATOMIC),
-            points: JavaScript.valueToCode(block, 'Points', JavaScript.ORDER_ATOMIC),
+            point: (JavaScript as any).valueToCode(block, 'Point', (JavaScript as any).ORDER_ATOMIC),
+            points: (JavaScript as any).valueToCode(block, 'Points', (JavaScript as any).ORDER_ATOMIC),
         };
 
         // this is first set of validations to check that all inputs are non empty strings
@@ -53,7 +53,7 @@ export function createPointClosestFromPointsDistanceBlock() {
     }
     return smallestDistanceSoFar;
 `);
-        return [code, JavaScript.ORDER_ATOMIC];
+        return [code, (JavaScript as any).ORDER_ATOMIC];
     };
 }
 

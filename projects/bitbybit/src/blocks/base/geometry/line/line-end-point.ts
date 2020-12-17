@@ -23,7 +23,7 @@ export function createLineEndPointBlock() {
 
     JavaScript[blockSelector] = (block: Block) => {
         const inputs = {
-            line: JavaScript.valueToCode(block, 'Line', JavaScript.ORDER_ATOMIC)
+            line: (JavaScript as any).valueToCode(block, 'Line', (JavaScript as any).ORDER_ATOMIC)
         };
 
         // this is first set of validations to check that all inputs are non empty strings
@@ -34,6 +34,6 @@ export function createLineEndPointBlock() {
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
             `return inputs.line.end;`);
-        return [code, JavaScript.ORDER_ATOMIC];
+        return [code, (JavaScript as any).ORDER_ATOMIC];
     };
 }

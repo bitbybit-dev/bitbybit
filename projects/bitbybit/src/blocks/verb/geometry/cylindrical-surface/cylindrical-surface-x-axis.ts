@@ -23,7 +23,7 @@ export function createCylindricalSurfaceXAxisBlock() {
 
     JavaScript[blockSelector] = (block: Block) => {
         const inputs = {
-            cylinder: JavaScript.valueToCode(block, 'Cylinder', JavaScript.ORDER_ATOMIC),
+            cylinder: (JavaScript as any).valueToCode(block, 'Cylinder', (JavaScript as any).ORDER_ATOMIC),
         };
         // this is first set of validations to check that all inputs are non empty strings
         BitByBitBlockHandlerService.validate(block, block.workspace, makeRequiredValidationModelForInputs(resources, inputs, [
@@ -37,7 +37,7 @@ export function createCylindricalSurfaceXAxisBlock() {
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
             `return inputs.cylinder.xaxis();`
         );
-        return [code, JavaScript.ORDER_ATOMIC];
+        return [code, (JavaScript as any).ORDER_ATOMIC];
     };
 }
 

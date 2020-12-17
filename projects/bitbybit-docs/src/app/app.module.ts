@@ -24,14 +24,15 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { DocumentationComponent } from './documentation/documentation.component';
 import { TutorialsComponent } from './tutorials/tutorials.component';
 import { HomeComponent } from './home/home.component';
+import { ReactiveFormsModule } from '@angular/forms';
 
 @NgModule({
-    declarations: [			
+    declarations: [
         AppComponent,
-      DocumentationComponent,
-      TutorialsComponent,
-      HomeComponent
-   ],
+        DocumentationComponent,
+        TutorialsComponent,
+        HomeComponent
+    ],
     imports: [
         BrowserModule,
         BrowserAnimationsModule,

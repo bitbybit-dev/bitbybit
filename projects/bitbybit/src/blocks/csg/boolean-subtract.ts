@@ -28,8 +28,8 @@ export function createBooleanSubtractBlock(): void {
 
     JavaScript[blockSelector] = (block: Block) => {
         const inputs = {
-            subtractObject: JavaScript.valueToCode(block, 'SubtractObject', JavaScript.ORDER_ATOMIC),
-            subtractFromObject: JavaScript.valueToCode(block, 'SubtractFromObject', JavaScript.ORDER_ATOMIC),
+            subtractObject: (JavaScript as any).valueToCode(block, 'SubtractObject', (JavaScript as any).ORDER_ATOMIC),
+            subtractFromObject: (JavaScript as any).valueToCode(block, 'SubtractFromObject', (JavaScript as any).ORDER_ATOMIC),
         };
 
         // this is first set of validations to check that all inputs are non empty strings
@@ -47,7 +47,7 @@ export function createBooleanSubtractBlock(): void {
             return subtracted;
 `
         );
-        return [code, JavaScript.ORDER_ATOMIC];
+        return [code, (JavaScript as any).ORDER_ATOMIC];
     };
 }
 

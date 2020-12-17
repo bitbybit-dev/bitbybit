@@ -27,8 +27,8 @@ export function createSurfaceClosestPointBlock() {
 
     JavaScript[blockSelector] = (block: Block) => {
         const inputs = {
-            surface: JavaScript.valueToCode(block, 'Surface', JavaScript.ORDER_ATOMIC),
-            point: JavaScript.valueToCode(block, 'Point', JavaScript.ORDER_ATOMIC),
+            surface: (JavaScript as any).valueToCode(block, 'Surface', (JavaScript as any).ORDER_ATOMIC),
+            point: (JavaScript as any).valueToCode(block, 'Point', (JavaScript as any).ORDER_ATOMIC),
         };
         // this is first set of validations to check that all inputs are non empty strings
         BitByBitBlockHandlerService.validate(block, block.workspace, makeRequiredValidationModelForInputs(resources, inputs, [
@@ -42,7 +42,7 @@ export function createSurfaceClosestPointBlock() {
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
             `return inputs.surface.closestPoint(inputs.point);`
         );
-        return [code, JavaScript.ORDER_ATOMIC];
+        return [code, (JavaScript as any).ORDER_ATOMIC];
     };
 }
 

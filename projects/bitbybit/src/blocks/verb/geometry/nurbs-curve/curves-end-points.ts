@@ -23,7 +23,7 @@ export function createCurvesEndPointsBlock() {
 
     JavaScript[blockSelector] = (block: Block) => {
         const inputs = {
-            curves: JavaScript.valueToCode(block, 'Curves', JavaScript.ORDER_ATOMIC),
+            curves: (JavaScript as any).valueToCode(block, 'Curves', (JavaScript as any).ORDER_ATOMIC),
         };
         // this is first set of validations to check that all inputs are non empty strings
         BitByBitBlockHandlerService.validate(block, block.workspace, makeRequiredValidationModelForInputs(resources, inputs, [
@@ -37,7 +37,7 @@ export function createCurvesEndPointsBlock() {
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
             `return inputs.curves.map(crv => crv.point(1));`
         );
-        return [code, JavaScript.ORDER_ATOMIC];
+        return [code, (JavaScript as any).ORDER_ATOMIC];
     };
 }
 

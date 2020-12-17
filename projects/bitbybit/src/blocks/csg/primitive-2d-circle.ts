@@ -32,9 +32,9 @@ export function createPrimitive2dCircleBlock(): void {
 
     JavaScript[blockSelector] = (block: Block) => {
         const inputs = {
-            center: JavaScript.valueToCode(block, 'Center', JavaScript.ORDER_ATOMIC),
-            radius: JavaScript.valueToCode(block, 'Radius', JavaScript.ORDER_ATOMIC),
-            segments: JavaScript.valueToCode(block, 'Segments', JavaScript.ORDER_ATOMIC),
+            center: (JavaScript as any).valueToCode(block, 'Center', (JavaScript as any).ORDER_ATOMIC),
+            radius: (JavaScript as any).valueToCode(block, 'Radius', (JavaScript as any).ORDER_ATOMIC),
+            segments: (JavaScript as any).valueToCode(block, 'Segments', (JavaScript as any).ORDER_ATOMIC),
         };
 
         // this is first set of validations to check that all inputs are non empty strings
@@ -52,7 +52,7 @@ export function createPrimitive2dCircleBlock(): void {
             return circle;
 `
         );
-        return [code, JavaScript.ORDER_ATOMIC];
+        return [code, (JavaScript as any).ORDER_ATOMIC];
     };
 }
 

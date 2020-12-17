@@ -44,12 +44,12 @@ export function createArcBlock() {
 
     JavaScript[blockSelector] = (block: Block) => {
         const inputs = {
-            center: JavaScript.valueToCode(block, 'Center', JavaScript.ORDER_ATOMIC),
-            xAxis: JavaScript.valueToCode(block, 'XAxis', JavaScript.ORDER_ATOMIC),
-            yAxis: JavaScript.valueToCode(block, 'YAxis', JavaScript.ORDER_ATOMIC),
-            radius: JavaScript.valueToCode(block, 'Radius', JavaScript.ORDER_ATOMIC),
-            minAngle: JavaScript.valueToCode(block, 'MinAngle', JavaScript.ORDER_ATOMIC),
-            maxAngle: JavaScript.valueToCode(block, 'MaxAngle', JavaScript.ORDER_ATOMIC),
+            center: (JavaScript as any).valueToCode(block, 'Center', (JavaScript as any).ORDER_ATOMIC),
+            xAxis: (JavaScript as any).valueToCode(block, 'XAxis', (JavaScript as any).ORDER_ATOMIC),
+            yAxis: (JavaScript as any).valueToCode(block, 'YAxis', (JavaScript as any).ORDER_ATOMIC),
+            radius: (JavaScript as any).valueToCode(block, 'Radius', (JavaScript as any).ORDER_ATOMIC),
+            minAngle: (JavaScript as any).valueToCode(block, 'MinAngle', (JavaScript as any).ORDER_ATOMIC),
+            maxAngle: (JavaScript as any).valueToCode(block, 'MaxAngle', (JavaScript as any).ORDER_ATOMIC),
         };
 
         // this is first set of validations to check that all inputs are non empty strings
@@ -69,7 +69,7 @@ export function createArcBlock() {
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
             `return new BitByBit.verb.geom.Arc(inputs.center, inputs.xAxis, inputs.yAxis, inputs.radius, BitByBit.BABYLON.Angle.FromDegrees(inputs.minAngle).radians(), BitByBit.BABYLON.Angle.FromDegrees(inputs.maxAngle).radians());`
         );
-        return [code, JavaScript.ORDER_ATOMIC];
+        return [code, (JavaScript as any).ORDER_ATOMIC];
     };
 }
 

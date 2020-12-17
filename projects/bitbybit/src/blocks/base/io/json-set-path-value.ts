@@ -29,9 +29,9 @@ export function createJsonSetPathValueBlock() {
 
     JavaScript[blockSelector] = (block: Block) => {
         const inputs = {
-            json: JavaScript.valueToCode(block, 'JSON', JavaScript.ORDER_ATOMIC),
-            path: JavaScript.valueToCode(block, 'Path', JavaScript.ORDER_ATOMIC),
-            value: JavaScript.valueToCode(block, 'Value', JavaScript.ORDER_ATOMIC),
+            json: (JavaScript as any).valueToCode(block, 'JSON', (JavaScript as any).ORDER_ATOMIC),
+            path: (JavaScript as any).valueToCode(block, 'Path', (JavaScript as any).ORDER_ATOMIC),
+            value: (JavaScript as any).valueToCode(block, 'Value', (JavaScript as any).ORDER_ATOMIC),
         };
         // this is first set of validations to check that all inputs are non empty strings
         BitByBitBlockHandlerService.validate(block, block.workspace, makeRequiredValidationModelForInputs(resources, inputs, [
@@ -47,7 +47,7 @@ export function createJsonSetPathValueBlock() {
             BitByBit.BitByBitBlocklyHelperService.jsonpath.value(clonedJson, inputs.path, inputs.value);
             return clonedJson;
             `);
-        return [code, JavaScript.ORDER_ATOMIC];
+        return [code, (JavaScript as any).ORDER_ATOMIC];
     };
 }
 

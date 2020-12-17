@@ -32,9 +32,9 @@ export function createExtrudeRectangularPointsBlock(): void {
 
     JavaScript[blockSelector] = (block: Block) => {
         const inputs = {
-            points: JavaScript.valueToCode(block, 'Points', JavaScript.ORDER_ATOMIC),
-            size: JavaScript.valueToCode(block, 'Size', JavaScript.ORDER_ATOMIC),
-            height: JavaScript.valueToCode(block, 'Height', JavaScript.ORDER_ATOMIC),
+            points: (JavaScript as any).valueToCode(block, 'Points', (JavaScript as any).ORDER_ATOMIC),
+            size: (JavaScript as any).valueToCode(block, 'Size', (JavaScript as any).ORDER_ATOMIC),
+            height: (JavaScript as any).valueToCode(block, 'Height', (JavaScript as any).ORDER_ATOMIC),
         };
 
         // this is first set of validations to check that all inputs are non empty strings
@@ -55,7 +55,7 @@ export function createExtrudeRectangularPointsBlock(): void {
             return extrusion;
 `
         );
-        return [code, JavaScript.ORDER_ATOMIC];
+        return [code, (JavaScript as any).ORDER_ATOMIC];
     };
 }
 

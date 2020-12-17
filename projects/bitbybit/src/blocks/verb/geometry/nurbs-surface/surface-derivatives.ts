@@ -35,10 +35,10 @@ export function createSurfaceDerivativesBlock() {
 
     JavaScript[blockSelector] = (block: Block) => {
         const inputs = {
-            surface: JavaScript.valueToCode(block, 'Surface', JavaScript.ORDER_ATOMIC),
-            u: JavaScript.valueToCode(block, 'U', JavaScript.ORDER_ATOMIC),
-            v: JavaScript.valueToCode(block, 'V', JavaScript.ORDER_ATOMIC),
-            numDerivatives: JavaScript.valueToCode(block, 'NumDerivatives', JavaScript.ORDER_ATOMIC),
+            surface: (JavaScript as any).valueToCode(block, 'Surface', (JavaScript as any).ORDER_ATOMIC),
+            u: (JavaScript as any).valueToCode(block, 'U', (JavaScript as any).ORDER_ATOMIC),
+            v: (JavaScript as any).valueToCode(block, 'V', (JavaScript as any).ORDER_ATOMIC),
+            numDerivatives: (JavaScript as any).valueToCode(block, 'NumDerivatives', (JavaScript as any).ORDER_ATOMIC),
         };
         // this is first set of validations to check that all inputs are non empty strings
         BitByBitBlockHandlerService.validate(block, block.workspace, makeRequiredValidationModelForInputs(resources, inputs, [
@@ -51,7 +51,7 @@ export function createSurfaceDerivativesBlock() {
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
             `return inputs.surface.derivatives(inputs.u, inputs.v, inputs.numDerivatives);`);
-        return [code, JavaScript.ORDER_ATOMIC];
+        return [code, (JavaScript as any).ORDER_ATOMIC];
     };
 }
 

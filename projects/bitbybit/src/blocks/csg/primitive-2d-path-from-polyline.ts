@@ -28,8 +28,8 @@ export function createPrimitive2dPathFromPolylineBlock(): void {
 
     JavaScript[blockSelector] = (block: Block) => {
         const inputs = {
-            polyline: JavaScript.valueToCode(block, 'Polyline', JavaScript.ORDER_ATOMIC),
-            closed: JavaScript.valueToCode(block, 'Closed', JavaScript.ORDER_ATOMIC),
+            polyline: (JavaScript as any).valueToCode(block, 'Polyline', (JavaScript as any).ORDER_ATOMIC),
+            closed: (JavaScript as any).valueToCode(block, 'Closed', (JavaScript as any).ORDER_ATOMIC),
         };
 
         // this is first set of validations to check that all inputs are non empty strings
@@ -52,7 +52,7 @@ export function createPrimitive2dPathFromPolylineBlock(): void {
             return path2d;
 `
         );
-        return [code, JavaScript.ORDER_ATOMIC];
+        return [code, (JavaScript as any).ORDER_ATOMIC];
     };
 }
 

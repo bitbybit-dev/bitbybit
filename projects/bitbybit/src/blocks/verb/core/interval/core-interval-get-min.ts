@@ -23,7 +23,7 @@ export function createCoreIntervalGetMinBlock() {
 
     JavaScript[blockSelector] =  (block: Block) => {
         const inputs = {
-            interval: JavaScript.valueToCode(block, 'Interval', JavaScript.ORDER_ATOMIC)
+            interval: (JavaScript as any).valueToCode(block, 'Interval', (JavaScript as any).ORDER_ATOMIC)
         };
 
         // this is first set of validations to check that all inputs are non empty strings
@@ -34,6 +34,6 @@ export function createCoreIntervalGetMinBlock() {
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
             `return inputs.interval.min;`);
-        return [code, JavaScript.ORDER_ATOMIC];
+        return [code, (JavaScript as any).ORDER_ATOMIC];
     };
 }

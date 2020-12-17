@@ -32,9 +32,9 @@ export function createCoreVectorOnRayBlock() {
 
     JavaScript[blockSelector] = (block: Block) => {
         const inputs = {
-            point: JavaScript.valueToCode(block, 'Point', JavaScript.ORDER_ATOMIC),
-            vector: JavaScript.valueToCode(block, 'Vector', JavaScript.ORDER_ATOMIC),
-            distance: JavaScript.valueToCode(block, 'Distance', JavaScript.ORDER_ATOMIC),
+            point: (JavaScript as any).valueToCode(block, 'Point', (JavaScript as any).ORDER_ATOMIC),
+            vector: (JavaScript as any).valueToCode(block, 'Vector', (JavaScript as any).ORDER_ATOMIC),
+            distance: (JavaScript as any).valueToCode(block, 'Distance', (JavaScript as any).ORDER_ATOMIC),
         };
 
         // this is first set of validations to check that all inputs are non empty strings
@@ -48,7 +48,7 @@ export function createCoreVectorOnRayBlock() {
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
             `return BitByBit.verb.core.Vec.onRay(inputs.point, inputs.vector, inputs.distance);`);
-        return [code, JavaScript.ORDER_ATOMIC];
+        return [code, (JavaScript as any).ORDER_ATOMIC];
     };
 }
 

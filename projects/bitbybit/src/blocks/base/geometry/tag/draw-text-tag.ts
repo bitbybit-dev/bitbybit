@@ -35,8 +35,8 @@ export function createDrawTextTagBlock() {
 
     JavaScript[blockSelector] = (block: Block) => {
         const inputs = {
-            textTag: JavaScript.valueToCode(block, 'TextTag', JavaScript.ORDER_ATOMIC),
-            updatable: JavaScript.valueToCode(block, 'Updatable', JavaScript.ORDER_ATOMIC),
+            textTag: (JavaScript as any).valueToCode(block, 'TextTag', (JavaScript as any).ORDER_ATOMIC),
+            updatable: (JavaScript as any).valueToCode(block, 'Updatable', (JavaScript as any).ORDER_ATOMIC),
         };
 
         // this is first set of validations to check that all inputs are non empty strings
@@ -50,7 +50,7 @@ export function createDrawTextTagBlock() {
 
         return createStandardContextIIFE(block, blockSelector, inputs, false,
             `
-            inputs.tagVariable = ${JavaScript.variableDB_.getName(block.getFieldValue('DrawnTextTag'), VARIABLE_CATEGORY_NAME)};
+            inputs.tagVariable = ${(JavaScript as any).variableDB_.getName(block.getFieldValue('DrawnTextTag'), VARIABLE_CATEGORY_NAME)};
 
             if(inputs.tagVariable && inputs.updatable) {
                 const tagToUpdate = BitByBit.BitByBitBlocklyHelperService.tagBag.find(tag => tag.id === inputs.tagVariable.id);
@@ -67,7 +67,7 @@ export function createDrawTextTagBlock() {
                 document.querySelector('.canvasZone').appendChild(textNode);
                 inputs.textTag.needsUpdate = true;
                 BitByBit.BitByBitBlocklyHelperService.tagBag.push(inputs.textTag);
-                ${JavaScript.variableDB_.getName(block.getFieldValue('DrawnTextTag'), VARIABLE_CATEGORY_NAME)} = inputs.textTag;
+                ${(JavaScript as any).variableDB_.getName(block.getFieldValue('DrawnTextTag'), VARIABLE_CATEGORY_NAME)} = inputs.textTag;
             }
 `);
     };

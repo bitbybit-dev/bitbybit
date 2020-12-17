@@ -23,7 +23,7 @@ export function createScaleXYZBlock() {
 
     JavaScript[blockSelector] = (block: Block) => {
         const inputs = {
-            scaleXyz: JavaScript.valueToCode(block, 'ScaleXYZ', JavaScript.ORDER_ATOMIC),
+            scaleXyz: (JavaScript as any).valueToCode(block, 'ScaleXYZ', (JavaScript as any).ORDER_ATOMIC),
         };
 
         // this is first set of validations to check that all inputs are non empty strings
@@ -35,6 +35,6 @@ export function createScaleXYZBlock() {
 `
         return new BitByBit.BABYLON.Matrix.Scaling(inputs.scaleXyz[0], inputs.scaleXyz[1], inputs.scaleXyz[2]);
 `);
-        return [code, JavaScript.ORDER_ATOMIC];
+        return [code, (JavaScript as any).ORDER_ATOMIC];
     };
 }

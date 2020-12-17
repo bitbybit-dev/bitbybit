@@ -32,8 +32,8 @@ export function createExecuteLaterBlock() {
 
     JavaScript[blockSelector] = (block: Block) => {
         const inputs = {
-            timeout: JavaScript.valueToCode(block, 'Timeout', JavaScript.ORDER_ATOMIC),
-            statement_then: JavaScript.statementToCode(block, 'Then'),
+            timeout: (JavaScript as any).valueToCode(block, 'Timeout', (JavaScript as any).ORDER_ATOMIC),
+            statement_then: (JavaScript as any).statementToCode(block, 'Then'),
         };
         // this is first set of validations to check that all inputs are non empty strings
         BitByBitBlockHandlerService.validate(block, block.workspace, [{

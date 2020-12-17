@@ -27,8 +27,8 @@ export function createCoreUVBlock() {
 
     JavaScript[blockSelector] = (block: Block) => {
         const inputs = {
-            u: JavaScript.valueToCode(block, 'U', JavaScript.ORDER_ATOMIC),
-            v: JavaScript.valueToCode(block, 'V', JavaScript.ORDER_ATOMIC),
+            u: (JavaScript as any).valueToCode(block, 'U', (JavaScript as any).ORDER_ATOMIC),
+            v: (JavaScript as any).valueToCode(block, 'V', (JavaScript as any).ORDER_ATOMIC),
         };
 
         // this is first set of validations to check that all inputs are non empty strings
@@ -42,7 +42,7 @@ export function createCoreUVBlock() {
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
             `return {u: inputs.u, v: inputs.v};`);
-        return [code, JavaScript.ORDER_ATOMIC];
+        return [code, (JavaScript as any).ORDER_ATOMIC];
     };
 }
 

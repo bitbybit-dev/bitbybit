@@ -27,8 +27,8 @@ export function createCurveTransformBlock() {
 
     JavaScript[blockSelector] = (block: Block) => {
         const inputs = {
-            curve: JavaScript.valueToCode(block, 'Curve', JavaScript.ORDER_ATOMIC),
-            matrix: JavaScript.valueToCode(block, 'Matrix', JavaScript.ORDER_ATOMIC),
+            curve: (JavaScript as any).valueToCode(block, 'Curve', (JavaScript as any).ORDER_ATOMIC),
+            matrix: (JavaScript as any).valueToCode(block, 'Matrix', (JavaScript as any).ORDER_ATOMIC),
         };
 
         // this is first set of validations to check that all inputs are non empty strings
@@ -54,7 +54,7 @@ export function createCurveTransformBlock() {
     }
     return BitByBit.verb.geom.NurbsCurve.byKnotsControlPointsWeights(inputs.curve.degree(), inputs.curve.knots(), transformedControlPoints, inputs.curve.weights());
 `);
-        return [code, JavaScript.ORDER_ATOMIC];
+        return [code, (JavaScript as any).ORDER_ATOMIC];
     };
 }
 

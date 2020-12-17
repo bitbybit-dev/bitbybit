@@ -27,8 +27,8 @@ export function createCurveClosestParamBlock() {
 
     JavaScript[blockSelector] = (block: Block) => {
         const inputs = {
-            curve: JavaScript.valueToCode(block, 'Curve', JavaScript.ORDER_ATOMIC),
-            point: JavaScript.valueToCode(block, 'Point', JavaScript.ORDER_ATOMIC),
+            curve: (JavaScript as any).valueToCode(block, 'Curve', (JavaScript as any).ORDER_ATOMIC),
+            point: (JavaScript as any).valueToCode(block, 'Point', (JavaScript as any).ORDER_ATOMIC),
         };
         // this is first set of validations to check that all inputs are non empty strings
         BitByBitBlockHandlerService.validate(block, block.workspace, makeRequiredValidationModelForInputs(resources, inputs, [
@@ -42,7 +42,7 @@ export function createCurveClosestParamBlock() {
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
             `return inputs.curve.closestParam(inputs.point);`
         );
-        return [code, JavaScript.ORDER_ATOMIC];
+        return [code, (JavaScript as any).ORDER_ATOMIC];
     };
 }
 

@@ -23,6 +23,6 @@ export function createJsonEmptyObjectBlock() {
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
             `return {};`);
-        return [code, JavaScript.ORDER_ATOMIC];
+        return [code, (JavaScript as any).ORDER_ATOMIC];
     };
 }

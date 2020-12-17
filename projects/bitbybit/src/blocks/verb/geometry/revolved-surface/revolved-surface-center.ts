@@ -23,7 +23,7 @@ export function createRevolvedSurfaceCenterBlock() {
 
     JavaScript[blockSelector] = (block: Block) => {
         const inputs = {
-            revolution: JavaScript.valueToCode(block, 'Revolution', JavaScript.ORDER_ATOMIC),
+            revolution: (JavaScript as any).valueToCode(block, 'Revolution', (JavaScript as any).ORDER_ATOMIC),
         };
         // this is first set of validations to check that all inputs are non empty strings
         BitByBitBlockHandlerService.validate(block, block.workspace, makeRequiredValidationModelForInputs(resources, inputs, [
@@ -37,7 +37,7 @@ export function createRevolvedSurfaceCenterBlock() {
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
             `return inputs.revolution.center();`
         );
-        return [code, JavaScript.ORDER_ATOMIC];
+        return [code, (JavaScript as any).ORDER_ATOMIC];
     };
 }
 

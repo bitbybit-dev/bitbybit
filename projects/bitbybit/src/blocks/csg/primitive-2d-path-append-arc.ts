@@ -52,14 +52,14 @@ export function createPrimitive2dPathAppendArcBlock(): void {
 
     JavaScript[blockSelector] = (block: Block) => {
         const inputs = {
-            path: JavaScript.valueToCode(block, 'Path', JavaScript.ORDER_ATOMIC),
-            endPoint: JavaScript.valueToCode(block, 'EndPoint', JavaScript.ORDER_ATOMIC),
-            radiusX: JavaScript.valueToCode(block, 'RadiusX', JavaScript.ORDER_ATOMIC),
-            radiusY: JavaScript.valueToCode(block, 'RadiusY', JavaScript.ORDER_ATOMIC),
-            xAxisRotation: JavaScript.valueToCode(block, 'XAxisRotation', JavaScript.ORDER_ATOMIC),
-            clockwise: JavaScript.valueToCode(block, 'Clockwise', JavaScript.ORDER_ATOMIC),
-            large: JavaScript.valueToCode(block, 'Large', JavaScript.ORDER_ATOMIC),
-            segments: JavaScript.valueToCode(block, 'Segments', JavaScript.ORDER_ATOMIC),
+            path: (JavaScript as any).valueToCode(block, 'Path', (JavaScript as any).ORDER_ATOMIC),
+            endPoint: (JavaScript as any).valueToCode(block, 'EndPoint', (JavaScript as any).ORDER_ATOMIC),
+            radiusX: (JavaScript as any).valueToCode(block, 'RadiusX', (JavaScript as any).ORDER_ATOMIC),
+            radiusY: (JavaScript as any).valueToCode(block, 'RadiusY', (JavaScript as any).ORDER_ATOMIC),
+            xAxisRotation: (JavaScript as any).valueToCode(block, 'XAxisRotation', (JavaScript as any).ORDER_ATOMIC),
+            clockwise: (JavaScript as any).valueToCode(block, 'Clockwise', (JavaScript as any).ORDER_ATOMIC),
+            large: (JavaScript as any).valueToCode(block, 'Large', (JavaScript as any).ORDER_ATOMIC),
+            segments: (JavaScript as any).valueToCode(block, 'Segments', (JavaScript as any).ORDER_ATOMIC),
         };
 
         // this is first set of validations to check that all inputs are non empty strings
@@ -87,7 +87,7 @@ export function createPrimitive2dPathAppendArcBlock(): void {
             }, inputs.path);
 `
         );
-        return [code, JavaScript.ORDER_ATOMIC];
+        return [code, (JavaScript as any).ORDER_ATOMIC];
     };
 }
 

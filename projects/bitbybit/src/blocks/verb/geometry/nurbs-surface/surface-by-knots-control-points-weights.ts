@@ -43,12 +43,12 @@ export function createSurfaceByKnotsControlPointsWeightsBlock() {
 
     JavaScript[blockSelector] = (block: Block) => {
         const inputs = {
-            knots_u: JavaScript.valueToCode(block, 'KnotsU', JavaScript.ORDER_ATOMIC),
-            knots_v: JavaScript.valueToCode(block, 'KnotsV', JavaScript.ORDER_ATOMIC),
-            points: JavaScript.valueToCode(block, 'Points', JavaScript.ORDER_ATOMIC),
-            weights: JavaScript.valueToCode(block, 'Weights', JavaScript.ORDER_ATOMIC),
-            degree_u: JavaScript.valueToCode(block, 'DegreeU', JavaScript.ORDER_ATOMIC),
-            degree_v: JavaScript.valueToCode(block, 'DegreeV', JavaScript.ORDER_ATOMIC),
+            knots_u: (JavaScript as any).valueToCode(block, 'KnotsU', (JavaScript as any).ORDER_ATOMIC),
+            knots_v: (JavaScript as any).valueToCode(block, 'KnotsV', (JavaScript as any).ORDER_ATOMIC),
+            points: (JavaScript as any).valueToCode(block, 'Points', (JavaScript as any).ORDER_ATOMIC),
+            weights: (JavaScript as any).valueToCode(block, 'Weights', (JavaScript as any).ORDER_ATOMIC),
+            degree_u: (JavaScript as any).valueToCode(block, 'DegreeU', (JavaScript as any).ORDER_ATOMIC),
+            degree_v: (JavaScript as any).valueToCode(block, 'DegreeV', (JavaScript as any).ORDER_ATOMIC),
         };
 
         // this is first set of validations to check that all inputs are non empty strings
@@ -63,7 +63,7 @@ export function createSurfaceByKnotsControlPointsWeightsBlock() {
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
             `return BitByBit.verb.geom.NurbsSurface.byKnotsControlPointsWeights(inputs.degree_u, inputs.degree_v, inputs.knots_u, inputs.knots_v, inputs.points, inputs.weights);`);
-        return [code, JavaScript.ORDER_ATOMIC];
+        return [code, (JavaScript as any).ORDER_ATOMIC];
     };
 }
 

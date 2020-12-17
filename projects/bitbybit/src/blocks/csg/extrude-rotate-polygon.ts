@@ -36,10 +36,10 @@ export function createExtrudeRotatePolygonBlock(): void {
 
     JavaScript[blockSelector] = (block: Block) => {
         const inputs = {
-            polygon: JavaScript.valueToCode(block, 'Polygon', JavaScript.ORDER_ATOMIC),
-            angle: JavaScript.valueToCode(block, 'Angle', JavaScript.ORDER_ATOMIC),
-            startAngle: JavaScript.valueToCode(block, 'StartAngle', JavaScript.ORDER_ATOMIC),
-            segments: JavaScript.valueToCode(block, 'Segments', JavaScript.ORDER_ATOMIC),
+            polygon: (JavaScript as any).valueToCode(block, 'Polygon', (JavaScript as any).ORDER_ATOMIC),
+            angle: (JavaScript as any).valueToCode(block, 'Angle', (JavaScript as any).ORDER_ATOMIC),
+            startAngle: (JavaScript as any).valueToCode(block, 'StartAngle', (JavaScript as any).ORDER_ATOMIC),
+            segments: (JavaScript as any).valueToCode(block, 'Segments', (JavaScript as any).ORDER_ATOMIC),
         };
 
         // this is first set of validations to check that all inputs are non empty strings
@@ -63,7 +63,7 @@ export function createExtrudeRotatePolygonBlock(): void {
             return extrusion;
 `
         );
-        return [code, JavaScript.ORDER_ATOMIC];
+        return [code, (JavaScript as any).ORDER_ATOMIC];
     };
 }
 

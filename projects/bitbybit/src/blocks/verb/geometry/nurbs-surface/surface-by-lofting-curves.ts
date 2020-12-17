@@ -27,8 +27,8 @@ export function createSurfaceByLoftingCurvesBlock() {
 
     JavaScript[blockSelector] = (block: Block) => {
         const inputs = {
-            curves: JavaScript.valueToCode(block, 'Curves', JavaScript.ORDER_ATOMIC),
-            degreeV: JavaScript.valueToCode(block, 'DegreeV', JavaScript.ORDER_ATOMIC),
+            curves: (JavaScript as any).valueToCode(block, 'Curves', (JavaScript as any).ORDER_ATOMIC),
+            degreeV: (JavaScript as any).valueToCode(block, 'DegreeV', (JavaScript as any).ORDER_ATOMIC),
         };
         // this is first set of validations to check that all inputs are non empty strings
         BitByBitBlockHandlerService.validate(block, block.workspace, makeRequiredValidationModelForInputs(resources, inputs, [
@@ -42,7 +42,7 @@ export function createSurfaceByLoftingCurvesBlock() {
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
             `return BitByBit.verb.geom.NurbsSurface.byLoftingCurves(inputs.curves, inputs.degree_v)`
         );
-        return [code, JavaScript.ORDER_ATOMIC];
+        return [code, (JavaScript as any).ORDER_ATOMIC];
     };
 }
 

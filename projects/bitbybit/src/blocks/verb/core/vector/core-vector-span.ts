@@ -31,9 +31,9 @@ export function createCoreVectorSpanBlock() {
 
     JavaScript[blockSelector] = (block: Block) => {
         const inputs = {
-            min: JavaScript.valueToCode(block, 'Min', JavaScript.ORDER_ATOMIC),
-            max: JavaScript.valueToCode(block, 'Max', JavaScript.ORDER_ATOMIC),
-            step: JavaScript.valueToCode(block, 'Step', JavaScript.ORDER_ATOMIC),
+            min: (JavaScript as any).valueToCode(block, 'Min', (JavaScript as any).ORDER_ATOMIC),
+            max: (JavaScript as any).valueToCode(block, 'Max', (JavaScript as any).ORDER_ATOMIC),
+            step: (JavaScript as any).valueToCode(block, 'Step', (JavaScript as any).ORDER_ATOMIC),
         };
 
         // this is first set of validations to check that all inputs are non empty strings
@@ -47,7 +47,7 @@ export function createCoreVectorSpanBlock() {
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
             `return BitByBit.verb.core.Vec.span(inputs.min, inputs.max, inputs.step);`);
-        return [code, JavaScript.ORDER_ATOMIC];
+        return [code, (JavaScript as any).ORDER_ATOMIC];
     };
 }
 

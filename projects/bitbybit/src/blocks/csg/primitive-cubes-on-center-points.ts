@@ -28,8 +28,8 @@ export function createPrimitiveCubesOnCenterPointsBlock(): void {
 
     JavaScript[blockSelector] = (block: Block) => {
         const inputs = {
-            centers: JavaScript.valueToCode(block, 'Centers', JavaScript.ORDER_ATOMIC),
-            size: JavaScript.valueToCode(block, 'Size', JavaScript.ORDER_ATOMIC),
+            centers: (JavaScript as any).valueToCode(block, 'Centers', (JavaScript as any).ORDER_ATOMIC),
+            size: (JavaScript as any).valueToCode(block, 'Size', (JavaScript as any).ORDER_ATOMIC),
         };
 
         // this is first set of validations to check that all inputs are non empty strings
@@ -48,7 +48,7 @@ export function createPrimitiveCubesOnCenterPointsBlock(): void {
             });
 `
         );
-        return [code, JavaScript.ORDER_ATOMIC];
+        return [code, (JavaScript as any).ORDER_ATOMIC];
     };
 }
 

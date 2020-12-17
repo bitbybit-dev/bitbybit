@@ -27,8 +27,8 @@ export function createCsgTransformBlock(): void {
 
     JavaScript[blockSelector] = (block: Block) => {
         const inputs = {
-            csgMesh: JavaScript.valueToCode(block, 'CsgMesh', JavaScript.ORDER_ATOMIC),
-            matrix: JavaScript.valueToCode(block, 'Matrix', JavaScript.ORDER_ATOMIC),
+            csgMesh: (JavaScript as any).valueToCode(block, 'CsgMesh', (JavaScript as any).ORDER_ATOMIC),
+            matrix: (JavaScript as any).valueToCode(block, 'Matrix', (JavaScript as any).ORDER_ATOMIC),
         };
 
         // this is first set of validations to check that all inputs are non empty strings
@@ -53,7 +53,7 @@ export function createCsgTransformBlock(): void {
     }
     return transformedMesh;
 `);
-        return [code, JavaScript.ORDER_ATOMIC];
+        return [code, (JavaScript as any).ORDER_ATOMIC];
     };
 }
 

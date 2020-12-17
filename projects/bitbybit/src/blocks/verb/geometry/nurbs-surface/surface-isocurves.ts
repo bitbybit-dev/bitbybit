@@ -31,9 +31,9 @@ export function createSurfaceIsocurvesBlock(): void {
 
     JavaScript[blockSelector] = (block: Block) => {
         const inputs = {
-            surface: JavaScript.valueToCode(block, 'Surface', JavaScript.ORDER_ATOMIC),
-            parameters: JavaScript.valueToCode(block, 'Parameters', JavaScript.ORDER_ATOMIC),
-            useV: JavaScript.valueToCode(block, 'UseV', JavaScript.ORDER_ATOMIC),
+            surface: (JavaScript as any).valueToCode(block, 'Surface', (JavaScript as any).ORDER_ATOMIC),
+            parameters: (JavaScript as any).valueToCode(block, 'Parameters', (JavaScript as any).ORDER_ATOMIC),
+            useV: (JavaScript as any).valueToCode(block, 'UseV', (JavaScript as any).ORDER_ATOMIC),
         };
         // this is first set of validations to check that all inputs are non empty strings
         BitByBitBlockHandlerService.validate(block, block.workspace, makeRequiredValidationModelForInputs(resources, inputs, [
@@ -48,7 +48,7 @@ export function createSurfaceIsocurvesBlock(): void {
             `return inputs.parameters.map(parameter => {
                 return inputs.surface.isocurve(parameter, inputs.useV);
             });`);
-        return [code, JavaScript.ORDER_ATOMIC];
+        return [code, (JavaScript as any).ORDER_ATOMIC];
     };
 }
 

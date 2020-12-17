@@ -27,8 +27,8 @@ export function createSphericalSurfaceBlock() {
 
     JavaScript[blockSelector] = (block: Block) => {
         const inputs = {
-            center: JavaScript.valueToCode(block, 'Center', JavaScript.ORDER_ATOMIC),
-            radius: JavaScript.valueToCode(block, 'Radius', JavaScript.ORDER_ATOMIC),
+            center: (JavaScript as any).valueToCode(block, 'Center', (JavaScript as any).ORDER_ATOMIC),
+            radius: (JavaScript as any).valueToCode(block, 'Radius', (JavaScript as any).ORDER_ATOMIC),
         };
         // this is first set of validations to check that all inputs are non empty strings
         BitByBitBlockHandlerService.validate(block, block.workspace, makeRequiredValidationModelForInputs(resources, inputs, [
@@ -42,7 +42,7 @@ export function createSphericalSurfaceBlock() {
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
             `return new BitByBit.verb.geom.SphericalSurface(inputs.center, inputs.radius)`
         );
-        return [code, JavaScript.ORDER_ATOMIC];
+        return [code, (JavaScript as any).ORDER_ATOMIC];
     };
 }
 

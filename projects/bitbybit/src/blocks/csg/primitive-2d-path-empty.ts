@@ -30,6 +30,6 @@ export function createPrimitive2dPathEmptyBlock(): void {
             return  BitByBit.CSG.geometries.path2.create();
 `
         );
-        return [code, JavaScript.ORDER_ATOMIC];
+        return [code, (JavaScript as any).ORDER_ATOMIC];
     };
 }

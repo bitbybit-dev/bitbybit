@@ -27,8 +27,8 @@ export function createCurvesDivideByArcLengthPointsBlock() {
 
     JavaScript[blockSelector] = (block: Block) => {
         const inputs = {
-            curves: JavaScript.valueToCode(block, 'Curves', JavaScript.ORDER_ATOMIC),
-            length: JavaScript.valueToCode(block, 'Length', JavaScript.ORDER_ATOMIC),
+            curves: (JavaScript as any).valueToCode(block, 'Curves', (JavaScript as any).ORDER_ATOMIC),
+            length: (JavaScript as any).valueToCode(block, 'Length', (JavaScript as any).ORDER_ATOMIC),
         };
         // this is first set of validations to check that all inputs are non empty strings
         BitByBitBlockHandlerService.validate(block, block.workspace, makeRequiredValidationModelForInputs(resources, inputs, [
@@ -49,7 +49,7 @@ inputs.curves.forEach(curve => {
 return points;
             `
         );
-        return [code, JavaScript.ORDER_ATOMIC];
+        return [code, (JavaScript as any).ORDER_ATOMIC];
     };
 }
 

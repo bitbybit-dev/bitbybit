@@ -46,10 +46,10 @@ export function createDrawCsgMeshesBlock(): void {
     JavaScript[blockSelector] = (block: Block) => {
 
         const inputs = {
-            meshes: JavaScript.valueToCode(block, 'CsgMeshes', JavaScript.ORDER_ATOMIC),
-            colour: JavaScript.valueToCode(block, 'Colour', JavaScript.ORDER_ATOMIC),
-            opacity: JavaScript.valueToCode(block, 'Opacity', JavaScript.ORDER_ATOMIC),
-            updatable: JavaScript.valueToCode(block, 'Updatable', JavaScript.ORDER_ATOMIC),
+            meshes: (JavaScript as any).valueToCode(block, 'CsgMeshes', (JavaScript as any).ORDER_ATOMIC),
+            colour: (JavaScript as any).valueToCode(block, 'Colour', (JavaScript as any).ORDER_ATOMIC),
+            opacity: (JavaScript as any).valueToCode(block, 'Opacity', (JavaScript as any).ORDER_ATOMIC),
+            updatable: (JavaScript as any).valueToCode(block, 'Updatable', (JavaScript as any).ORDER_ATOMIC),
         };
 
         // this is first set of validations to check that all inputs are non empty strings
@@ -63,7 +63,7 @@ export function createDrawCsgMeshesBlock(): void {
 
         return createStandardContextIIFE(block, blockSelector, inputs, false,
             `
-            inputs.csgMesh = ${JavaScript.variableDB_.getName(block.getFieldValue('DrawnCsgMeshes'), VARIABLE_CATEGORY_NAME)};
+            inputs.csgMesh = ${(JavaScript as any).variableDB_.getName(block.getFieldValue('DrawnCsgMeshes'), VARIABLE_CATEGORY_NAME)};
 
             let amountOfMeshesEqual = true;
             let children = [];
@@ -154,7 +154,7 @@ export function createDrawCsgMeshesBlock(): void {
                 newMesh.parent = localOrigin;
             });
 
-            ${JavaScript.variableDB_.getName(block.getFieldValue('DrawnCsgMeshes'), VARIABLE_CATEGORY_NAME)} = localOrigin;
+            ${(JavaScript as any).variableDB_.getName(block.getFieldValue('DrawnCsgMeshes'), VARIABLE_CATEGORY_NAME)} = localOrigin;
 `);
     };
 }
