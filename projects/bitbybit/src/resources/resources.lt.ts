@@ -5,6 +5,7 @@ export const resourcesLt: ResourcesInterface = Object.freeze({
     app_menu_run_code: 'Paleisti Kodą',
     app_menu_toolbox: 'Įrankiai',
     app_menu_code: 'Kodas',
+    app_menu_visual_programming: 'Vizualinis Programavimas',
     app_menu_swap_canvas: 'Sukeisti Aplinkas',
     app_menu_support_us_on_patreon: 'Paremkite mus Patreone',
     app_menu_clean_canvas: 'Išvalyti Drobę',

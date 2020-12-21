@@ -36,6 +36,7 @@ import { TagService } from './tags/tag.service';
 import { MatDrawer } from '@angular/material/sidenav';
 import { EditorComponent } from 'ngx-monaco-editor';
 import { transpile } from 'typescript';
+import { UiStatesEnum } from './models/ui-states.enum';
 
 @Component({
     selector: 'app-root',
@@ -55,9 +56,12 @@ export class BitbybitAppComponent implements OnDestroy {
     resources: ResourcesInterface;
     firstTimeOpen = true;
     tagsNeedUpdate = false;
+
+    previousUiState: UiStatesEnum = UiStatesEnum.blockly;
+    currentUiState: UiStatesEnum = UiStatesEnum.blockly;
+    UiStatesEnum = UiStatesEnum;
+
     toolboxVisible = true;
-    canvasVisible = true;
-    codeEditorVisible = false;
 
     timePassedFromPreviousIteration = 0;
 
@@ -338,18 +342,26 @@ const BitByBit = {
     ${(JavaScript as any).workspaceToCode(this.workspace)}
             `;
 
-        this.codeEditorVisible = !this.codeEditorVisible;
-        if (this.codeEditorVisible) {
+        if (this.currentUiState === UiStatesEnum.blockly) {
+            this.currentUiState = UiStatesEnum.monaco;
+            this.previousUiState = UiStatesEnum.monaco;
+
             (document.getElementsByClassName('editor-container')[0] as HTMLElement).style.height = '100%';
             setTimeout(() => {
                 window.dispatchEvent(new Event('resize'));
                 if ((this.editor as any)._editor) {
                     (this.editor as any)._editor.trigger('anyString', 'editor.action.formatDocument');
                 }
-            }, 400);
-        } else {
+            }, 100);
+        } else if (this.currentUiState === UiStatesEnum.monaco) {
+            this.currentUiState = UiStatesEnum.blockly;
+            this.previousUiState = UiStatesEnum.blockly;
+
             setTimeout(() => {
                 window.dispatchEvent(new Event('resize'));
+                this.workspace.zoomToFit();
+                this.workspace.zoomCenter(-3);
+                this.onResize();
             });
         }
     }
@@ -367,11 +379,26 @@ const BitByBit = {
     }
 
     swapCanvas() {
-        // this.drawerElement.toggle();
-        this.blocklyDiv.hidden = !this.blocklyDiv.hidden;
-        this.blocklyArea.hidden = !this.blocklyArea.hidden;
-        this.canvasVisible = !this.blocklyDiv.hidden;
-        Blockly.hideChaff();
+        switch (this.currentUiState) {
+            case UiStatesEnum.babylon:
+                this.currentUiState = this.previousUiState;
+                break;
+            case UiStatesEnum.blockly:
+                this.currentUiState = UiStatesEnum.babylon;
+                this.previousUiState = UiStatesEnum.blockly;
+                Blockly.hideChaff();
+                break;
+            case UiStatesEnum.monaco:
+                this.currentUiState = UiStatesEnum.babylon;
+                this.previousUiState = UiStatesEnum.monaco;
+                break;
+            default:
+                break;
+        }
+
+        setTimeout(() => {
+            window.dispatchEvent(new Event('resize'));
+        });
     }
 
     cleanCanvas() {
@@ -396,22 +423,25 @@ const BitByBit = {
             // MeshBuilder.CreateLineSystem()
             // (window as any).LoopTrap = 10000;
             // (JavaScript as any).INFINITE_LOOP_TRAP = 'if(--window.LoopTrap == 0) throw "Infinite loop cancelled after 10000 iterations.";\n';
-            const code = (JavaScript as any).workspaceToCode(this.workspace);
-            const jscode = transpile(this.code);
-            console.log(jscode);
-            eval(`
-'use reserved'
-const BitByBit = {
-    scene: window.blockly.scene,
-    blocklyWorkspace: window.blockly.workspace,
-    BABYLON: window.BABYLON,
-    verb: window.verb,
-    BitByBitBlockHandlerService: window.BitByBitBlockHandlerService,
-    BitByBitBlocklyHelperService: window.BitByBitBlocklyHelperService,
-    CSG: window.CSG
-};
-${code}
-            `);
+            let code = `
+            'use reserved'
+            const BitByBit = {
+                scene: window.blockly.scene,
+                blocklyWorkspace: window.blockly.workspace,
+                BABYLON: window.BABYLON,
+                verb: window.verb,
+                BitByBitBlockHandlerService: window.BitByBitBlockHandlerService,
+                BitByBitBlocklyHelperService: window.BitByBitBlocklyHelperService,
+                CSG: window.CSG
+            };
+            ${(JavaScript as any).workspaceToCode(this.workspace)}
+                        `;
+
+            if (this.currentUiState === UiStatesEnum.monaco) {
+                code = transpile(this.code);
+            }
+
+            eval(code);
 
             if (this.tagService.tagsExist()) {
                 this.tagsNeedUpdate = true;

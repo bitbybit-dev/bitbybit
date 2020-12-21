@@ -5,6 +5,7 @@ export const resourcesEn: ResourcesInterface = Object.freeze({
     app_menu_run_code: 'Run The Code',
     app_menu_toolbox: 'Toolbox',
     app_menu_code: 'Code',
+    app_menu_visual_programming: 'Visual Programming',
     app_menu_swap_canvas: 'Swap Canvas',
     app_menu_support_us_on_patreon: 'Support us on Patreon',
     app_menu_clean_canvas: 'Clean Canvas',

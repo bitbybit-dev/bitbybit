@@ -3,37 +3,47 @@
         <div class="fill-height-or-more left-menu d-none d-lg-flex">
             <div>
                 <a routerLink="/home" class="logo">
-                    <img [matTooltip]="resources.bit_by_bit"
-                        src="assets/logo-gold-small.png" />
+                    <img [matTooltip]="resources.bit_by_bit" src="assets/logo-gold-small.png" />
                 </a>
             </div>
             <div class="justify-end">
                 <div class="actions">
-                    <button *ngIf="canvasVisible" mat-buttom mat-icon-button (click)="run()">
+                    <button mat-buttom mat-icon-button (click)="run()">
                         <mat-icon [matTooltip]="resources.app_menu_run_code" aria-label="Run the code">play_arrow
-                        </mat-icon>
-                    </button>
-                    <button *ngIf="canvasVisible" mat-buttom mat-icon-button (click)="toggleToolbox()">
-                        <mat-icon [matTooltip]="resources.app_menu_toolbox" aria-hidden="false" aria-label="Toolbox">
-                            handyman
-                        </mat-icon>
-                    </button>
-                    <button *ngIf="canvasVisible" mat-buttom mat-icon-button (click)="toggleCodeEditor()">
-                        <mat-icon [matTooltip]="resources.app_menu_code" aria-hidden="false"
-                            aria-label="Code">code
-                        </mat-icon>
-                    </button>
-                    <button *ngIf="canvasVisible" mat-buttom mat-icon-button (click)="cleanCanvas()">
-                        <mat-icon [matTooltip]="resources.app_menu_clean_canvas" aria-label="Clean Canvas">refresh
-                        </mat-icon>
-                    </button>
-                    <button *ngIf="canvasVisible" mat-buttom mat-icon-button (click)="examples()">
-                        <mat-icon [matTooltip]="resources.app_menu_more_examples" aria-hidden="false"
-                            aria-label="Examples">library_books
                         </mat-icon>
                     </button>
                     <button mat-buttom mat-icon-button (click)="swapCanvas()">
                         <mat-icon [matTooltip]="resources.app_menu_swap_canvas" aria-label="Swap Canvas">swap_horiz
+                        </mat-icon>
+                    </button>
+                    <ng-container
+                        *ngIf="currentUiState === UiStatesEnum.blockly || currentUiState === UiStatesEnum.monaco">
+                        <button *ngIf="currentUiState === UiStatesEnum.blockly" mat-buttom mat-icon-button
+                            (click)="toggleToolbox()">
+                            <mat-icon [matTooltip]="resources.app_menu_toolbox" aria-hidden="false"
+                                aria-label="Toolbox">handyman
+                            </mat-icon>
+                        </button>
+                        <button *ngIf="currentUiState === UiStatesEnum.blockly" mat-buttom mat-icon-button
+                            (click)="toggleCodeEditor()">
+                            <mat-icon [matTooltip]="resources.app_menu_code" aria-hidden="false" aria-label="Code">code
+                            </mat-icon>
+                        </button>
+                        <button *ngIf="currentUiState === UiStatesEnum.monaco" mat-buttom mat-icon-button
+                            (click)="toggleCodeEditor()">
+                            <mat-icon [matTooltip]="resources.app_menu_visual_programming" aria-hidden="false"
+                                aria-label="Visual Programming">code_off
+                            </mat-icon>
+                        </button>
+                        <button *ngIf="currentUiState === UiStatesEnum.blockly" mat-buttom mat-icon-button
+                            (click)="cleanCanvas()">
+                            <mat-icon [matTooltip]="resources.app_menu_clean_canvas" aria-label="Clean Canvas">refresh
+                            </mat-icon>
+                        </button>
+                    </ng-container>
+                    <button mat-buttom mat-icon-button (click)="examples()">
+                        <mat-icon [matTooltip]="resources.app_menu_more_examples" aria-hidden="false"
+                            aria-label="Examples">library_books
                         </mat-icon>
                     </button>
                     <button [matTooltip]="resources.app_menu_more" mat-buttom mat-icon-button
@@ -128,10 +138,14 @@
         </div>
         <div class="fill-height-or-more right-content">
             <div class="blockly-content">
-                <ngx-monaco-editor style="height: 100%" [ngClass]="{'hide': !codeEditorVisible}" #editor [options]="editorOptions" [(ngModel)]="code"></ngx-monaco-editor>
-                <div [ngClass]="{'hide': codeEditorVisible}"  id="blocklyDiv">
+                <ngx-monaco-editor style="height: 100%"
+                    [ngClass]="{'hide': currentUiState === UiStatesEnum.babylon || currentUiState === UiStatesEnum.blockly }"
+                    #editor [options]="editorOptions" [(ngModel)]="code"></ngx-monaco-editor>
+                <div [ngClass]="{'hide': currentUiState === UiStatesEnum.babylon || currentUiState === UiStatesEnum.monaco }"
+                    id="blocklyDiv">
                 </div>
-                <div  [ngClass]="{'hide': codeEditorVisible}"  id="blocklyArea">
+                <div [ngClass]="{'hide': currentUiState === UiStatesEnum.babylon || currentUiState === UiStatesEnum.monaco }"
+                    id="blocklyArea">
                 </div>
                 <div class="canvasZone">
                     <canvas id="renderCanvas" class="example-sidenav-content">
@@ -142,41 +156,54 @@
                 <div class="justify-end">
                     <div class="actions">
                         <a routerLink="/home" class="logo">
-                            <img [matTooltip]="resources.bit_by_bit"
-                                src="assets/logo-gold-small.png" />
+                            <img [matTooltip]="resources.bit_by_bit" src="assets/logo-gold-small.png" />
                         </a>
                         <button mat-buttom mat-icon-button (click)="swapCanvas()">
                             <mat-icon [matTooltip]="resources.app_menu_swap_canvas" aria-label="Swap Canvas">swap_horiz
                             </mat-icon>
                         </button>
-                        <button *ngIf="canvasVisible" mat-buttom mat-icon-button (click)="run()">
-                            <mat-icon [matTooltip]="resources.app_menu_run_code" aria-label="Run the code">play_arrow
-                            </mat-icon>
-                        </button>
-                        <button *ngIf="canvasVisible" mat-buttom mat-icon-button (click)="toggleToolbox()">
-                            <mat-icon [matTooltip]="resources.app_menu_toolbox" aria-hidden="false"
-                                aria-label="Toolbox">handyman
-                            </mat-icon>
-                        </button>
-                        <button *ngIf="canvasVisible" mat-buttom mat-icon-button (click)="toggleCodeEditor()">
-                            <mat-icon [matTooltip]="resources.app_menu_code" aria-hidden="false"
-                                aria-label="Code">code
-                            </mat-icon>
-                        </button>
-                        <button *ngIf="canvasVisible" mat-buttom mat-icon-button (click)="cleanCanvas()">
-                            <mat-icon [matTooltip]="resources.app_menu_clean_canvas" aria-label="Clean Canvas">refresh
-                            </mat-icon>
-                        </button>
-                        <button *ngIf="canvasVisible" mat-buttom mat-icon-button (click)="examples()">
-                            <mat-icon [matTooltip]="resources.app_menu_more_examples" aria-hidden="false"
-                                aria-label="Examples">library_books
-                            </mat-icon>
-                        </button>
-                        <button *ngIf="canvasVisible" [matTooltip]="resources.app_menu_more" mat-buttom mat-icon-button
-                            [matMenuTriggerFor]="appMenu">
-                            <mat-icon aria-hidden="false" aria-label="More">more_vert
-                            </mat-icon>
-                        </button>
+                        <ng-container
+                            *ngIf="currentUiState === UiStatesEnum.blockly || currentUiState === UiStatesEnum.monaco">
+                            <button mat-buttom mat-icon-button (click)="run()">
+                                <mat-icon [matTooltip]="resources.app_menu_run_code" aria-label="Run the code">
+                                    play_arrow
+                                </mat-icon>
+                            </button>
+                            <button *ngIf="currentUiState === UiStatesEnum.blockly" mat-buttom mat-icon-button
+                                (click)="toggleToolbox()">
+                                <mat-icon [matTooltip]="resources.app_menu_toolbox" aria-hidden="false"
+                                    aria-label="Toolbox">handyman
+                                </mat-icon>
+                            </button>
+                            <button *ngIf="currentUiState === UiStatesEnum.blockly" mat-buttom mat-icon-button
+                                (click)="toggleCodeEditor()">
+                                <mat-icon [matTooltip]="resources.app_menu_code" aria-hidden="false" aria-label="Code">
+                                    code
+                                </mat-icon>
+                            </button>
+                            <button *ngIf="currentUiState === UiStatesEnum.monaco" mat-buttom mat-icon-button
+                                (click)="toggleCodeEditor()">
+                                <mat-icon [matTooltip]="resources.app_menu_visual_programming" aria-hidden="false"
+                                    aria-label="Visual Programming">code_off
+                                </mat-icon>
+                            </button>
+                            <button *ngIf="currentUiState === UiStatesEnum.blockly" mat-buttom mat-icon-button
+                                (click)="cleanCanvas()">
+                                <mat-icon [matTooltip]="resources.app_menu_clean_canvas" aria-label="Clean Canvas">
+                                    refresh
+                                </mat-icon>
+                            </button>
+                            <button [matTooltip]="resources.app_menu_more" mat-buttom mat-icon-button
+                                [matMenuTriggerFor]="appMenu">
+                                <mat-icon aria-hidden="false" aria-label="More">more_vert
+                                </mat-icon>
+                            </button>
+                            <button mat-buttom mat-icon-button (click)="examples()">
+                                <mat-icon [matTooltip]="resources.app_menu_more_examples" aria-hidden="false"
+                                    aria-label="Examples">library_books
+                                </mat-icon>
+                            </button>
+                        </ng-container>
                         <mat-menu #appMenu="matMenu">
                             <button mat-menu-item (click)="import()">
                                 <mat-icon aria-hidden="false" aria-label="Import">get_app
