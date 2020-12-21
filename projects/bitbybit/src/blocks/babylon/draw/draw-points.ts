@@ -107,8 +107,8 @@ export function createDrawPointsBlock() {
 
             if(inputs.pointsMeshVariable.getTotalVertices() === vectorPoints.length){
 
-                inputs.pointsMeshVariable.updateVerticesData(BABYLON.VertexBuffer.PositionKind, positions);
-                inputs.pointsMeshVariable.updateVerticesData(BABYLON.VertexBuffer.ColorKind, colors);
+                inputs.pointsMeshVariable.updateVerticesData(BitByBit.BABYLON.VertexBuffer.PositionKind, positions);
+                inputs.pointsMeshVariable.updateVerticesData(BitByBit.BABYLON.VertexBuffer.ColorKind, colors);
                 inputs.pointsMeshVariable.material.alpha = inputs.opacity;
                 inputs.pointsMeshVariable.material.pointSize = inputs.size;
 

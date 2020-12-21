@@ -34,6 +34,8 @@ import { toolboxDefinition } from './models/toolbox-definition';
 import { SettingsService } from './shared/setting.service';
 import { TagService } from './tags/tag.service';
 import { MatDrawer } from '@angular/material/sidenav';
+import { EditorComponent } from 'ngx-monaco-editor';
+import { transpile } from 'typescript';
 
 @Component({
     selector: 'app-root',
@@ -55,10 +57,24 @@ export class BitbybitAppComponent implements OnDestroy {
     tagsNeedUpdate = false;
     toolboxVisible = true;
     canvasVisible = true;
+    codeEditorVisible = false;
 
     timePassedFromPreviousIteration = 0;
 
+    editorOptions = {
+        theme: 'my-dark',
+        language: 'typescript',
+        formatOnPaste: true,
+        autoIndent: true,
+        formatOnType: true,
+        insertSpaces: true,
+        tabSize: 4,
+        formatDocument: true,
+    };
+    code: string = 'function x() {\nconsole.log("Hello world!");\n}';
+
     @ViewChild('drawer', { static: true }) drawerElement: MatDrawer;
+    @ViewChild('editor', { static: false }) editor: EditorComponent;
 
     constructor(
         public dialog: MatDialog,
@@ -81,6 +97,9 @@ export class BitbybitAppComponent implements OnDestroy {
     ngAfterViewInit(): void {
         import('csg-generated')
             .then((module: Function) => {
+
+                this.code = 'function x() {\nconsole.log("Hello world!");\nconsole.log("Matas");\n}';
+
                 this.blocklyArea = document.getElementById('blocklyArea');
                 this.blocklyDiv = document.getElementById('blocklyDiv');
 
@@ -303,6 +322,38 @@ export class BitbybitAppComponent implements OnDestroy {
         this.onResize();
     }
 
+    toggleCodeEditor() {
+        this.code =
+            `
+'use reserved'
+const BitByBit = {
+    scene: window.blockly.scene,
+    blocklyWorkspace: window.blockly.workspace,
+    BABYLON: window.BABYLON,
+    verb: window.verb,
+    BitByBitBlockHandlerService: window.BitByBitBlockHandlerService,
+    BitByBitBlocklyHelperService: window.BitByBitBlocklyHelperService,
+    CSG: window.CSG
+};
+    ${(JavaScript as any).workspaceToCode(this.workspace)}
+            `;
+
+        this.codeEditorVisible = !this.codeEditorVisible;
+        if (this.codeEditorVisible) {
+            (document.getElementsByClassName('editor-container')[0] as HTMLElement).style.height = '100%';
+            setTimeout(() => {
+                window.dispatchEvent(new Event('resize'));
+                if ((this.editor as any)._editor) {
+                    (this.editor as any)._editor.trigger('anyString', 'editor.action.formatDocument');
+                }
+            }, 400);
+        } else {
+            setTimeout(() => {
+                window.dispatchEvent(new Event('resize'));
+            });
+        }
+    }
+
     about() {
         this.openAboutDialog();
     }
@@ -346,6 +397,8 @@ export class BitbybitAppComponent implements OnDestroy {
             // (window as any).LoopTrap = 10000;
             // (JavaScript as any).INFINITE_LOOP_TRAP = 'if(--window.LoopTrap == 0) throw "Infinite loop cancelled after 10000 iterations.";\n';
             const code = (JavaScript as any).workspaceToCode(this.workspace);
+            const jscode = transpile(this.code);
+            console.log(jscode);
             eval(`
 'use reserved'
 const BitByBit = {

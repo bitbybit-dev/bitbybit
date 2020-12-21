@@ -18,6 +18,11 @@
                             handyman
                         </mat-icon>
                     </button>
+                    <button *ngIf="canvasVisible" mat-buttom mat-icon-button (click)="toggleCodeEditor()">
+                        <mat-icon [matTooltip]="resources.app_menu_code" aria-hidden="false"
+                            aria-label="Code">code
+                        </mat-icon>
+                    </button>
                     <button *ngIf="canvasVisible" mat-buttom mat-icon-button (click)="cleanCanvas()">
                         <mat-icon [matTooltip]="resources.app_menu_clean_canvas" aria-label="Clean Canvas">refresh
                         </mat-icon>
@@ -123,9 +128,10 @@
         </div>
         <div class="fill-height-or-more right-content">
             <div class="blockly-content">
-                <div id="blocklyDiv">
+                <ngx-monaco-editor style="height: 100%" [ngClass]="{'hide': !codeEditorVisible}" #editor [options]="editorOptions" [(ngModel)]="code"></ngx-monaco-editor>
+                <div [ngClass]="{'hide': codeEditorVisible}"  id="blocklyDiv">
                 </div>
-                <div id="blocklyArea">
+                <div  [ngClass]="{'hide': codeEditorVisible}"  id="blocklyArea">
                 </div>
                 <div class="canvasZone">
                     <canvas id="renderCanvas" class="example-sidenav-content">
@@ -150,6 +156,11 @@
                         <button *ngIf="canvasVisible" mat-buttom mat-icon-button (click)="toggleToolbox()">
                             <mat-icon [matTooltip]="resources.app_menu_toolbox" aria-hidden="false"
                                 aria-label="Toolbox">handyman
+                            </mat-icon>
+                        </button>
+                        <button *ngIf="canvasVisible" mat-buttom mat-icon-button (click)="toggleCodeEditor()">
+                            <mat-icon [matTooltip]="resources.app_menu_code" aria-hidden="false"
+                                aria-label="Code">code
                             </mat-icon>
                         </button>
                         <button *ngIf="canvasVisible" mat-buttom mat-icon-button (click)="cleanCanvas()">

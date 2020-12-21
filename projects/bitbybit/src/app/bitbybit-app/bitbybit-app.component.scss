@@ -1,6 +1,22 @@
+::ng-deep ngx-monaco-editor {
+    z-index: 1;
+    height: 100% !important;
+}
+
+::ng-deep .monaco-editor,::ng-deep  .monaco-editor-background,::ng-deep  .monaco-editor ::ng-deep .inputarea.ime-input {
+    background-color: rgba(25, 29, 32, 0.5) !important;
+}
+
+:ng-deep .editor-container {
+    height: 100% !important;
+}
 
 ::ng-deep button {
     outline: none !important;
+}
+
+.hide {
+    display: none;
 }
 
 .flex-container {

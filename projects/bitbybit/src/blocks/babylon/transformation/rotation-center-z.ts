@@ -40,7 +40,7 @@ export function createRotationCenterZBlock() {
 `
         return [
             new BitByBit.BABYLON.Matrix.Translation(-inputs.center[0], -inputs.center[1], -inputs.center[2]),
-            new BitByBit.BABYLON.Matrix.RotationZ(BABYLON.Angle.FromDegrees(inputs.angle).radians()),
+            new BitByBit.BABYLON.Matrix.RotationZ(BitByBit.BABYLON.Angle.FromDegrees(inputs.angle).radians()),
             new BitByBit.BABYLON.Matrix.Translation(inputs.center[0], inputs.center[1], inputs.center[2]),
         ];
 `);

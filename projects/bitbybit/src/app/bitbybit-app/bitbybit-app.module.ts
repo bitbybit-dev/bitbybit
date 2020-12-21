@@ -28,6 +28,7 @@ import { BitbybitAppComponent } from './bitbybit-app.component';
 import { BitbybitAppRoutingModule } from './bitbybit-app-routing.module';
 import { CommonModule } from '@angular/common';
 import { BitbybitCanDeativate } from './bitbybit-app-can-deactivate.service';
+import { MonacoEditorModule } from 'ngx-monaco-editor';
 
 @NgModule({
     declarations: [
@@ -59,6 +60,7 @@ import { BitbybitCanDeativate } from './bitbybit-app-can-deactivate.service';
         MatCardModule,
         MatSelectModule,
         MatInputModule,
+        MonacoEditorModule,
     ],
     providers: [ExamplesService, SettingsService, TagService, BitbybitCanDeativate],
 })

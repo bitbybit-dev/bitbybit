@@ -83,8 +83,8 @@ export function createDrawPointBlock() {
 
             if(inputs.pointMeshVariable && inputs.updatable) {
 
-                inputs.pointMeshVariable.updateVerticesData(BABYLON.VertexBuffer.PositionKind, positions);
-                inputs.pointMeshVariable.updateVerticesData(BABYLON.VertexBuffer.ColorKind, colors);
+                inputs.pointMeshVariable.updateVerticesData(BitByBit.BABYLON.VertexBuffer.PositionKind, positions);
+                inputs.pointMeshVariable.updateVerticesData(BitByBit.BABYLON.VertexBuffer.ColorKind, colors);
                 inputs.pointMeshVariable.material.alpha = inputs.opacity;
                 inputs.pointMeshVariable.material.pointSize = inputs.size;
 

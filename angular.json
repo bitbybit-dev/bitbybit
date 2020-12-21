@@ -24,6 +24,7 @@
                         "tsConfig": "projects/bitbybit/tsconfig.app.json",
                         "aot": true,
                         "assets": [
+                            { "glob": "**/*", "input": "node_modules/ngx-monaco-editor/assets/monaco", "output": "./assets/monaco/" },
                             "projects/bitbybit/src/favicon.ico",
                             "projects/bitbybit/src/assets"
                         ],
@@ -31,7 +32,8 @@
                             "node_modules/bootstrap/dist/css/bootstrap.min.css",
                             "projects/bitbybit/src/styles.scss"
                         ],
-                        "scripts": []
+                        "scripts": [
+                        ]
                     },
                     "configurations": {
                         "production": {
