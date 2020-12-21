@@ -9,7 +9,7 @@ import { Color3, Color4, Vector3 } from '@babylonjs/core/Maths/math';
 import { Mesh } from '@babylonjs/core/Meshes/mesh';
 import '@babylonjs/core/Meshes/meshBuilder';
 import { Scene } from '@babylonjs/core/scene';
-import { inject, svgResize, Theme, WorkspaceSvg, Xml, Scrollbar } from 'blockly';
+import { inject, svgResize, WorkspaceSvg, Xml } from 'blockly';
 import * as Blockly from 'blockly';
 import * as JavaScript from 'blockly/javascript';
 import * as jsonpath from 'jsonpath';
@@ -29,7 +29,6 @@ import { SettingsDialogComponent } from './components/settings-dialog/settings-d
 import { SponsorsDialogComponent } from './components/sponsors-dialog/sponsors-dialog.component';
 import { ExamplesService } from './examples/example-service';
 import { constantsModel } from './models/constants.model';
-import { themeStyle } from './models/theme-styles.model';
 import { toolboxDefinition } from './models/toolbox-definition';
 import { SettingsService } from './shared/setting.service';
 import { TagService } from './tags/tag.service';
@@ -43,7 +42,7 @@ import { UiStatesEnum } from './models/ui-states.enum';
     templateUrl: './bitbybit-app.component.html',
     styleUrls: ['./bitbybit-app.component.scss']
 })
-export class BitbybitAppComponent implements OnDestroy {
+export class BitbybitAppComponent implements OnInit, OnDestroy, AfterViewInit {
 
     blocklyDiv: HTMLElement;
     blocklyArea: Element & HTMLElement;
@@ -75,7 +74,8 @@ export class BitbybitAppComponent implements OnDestroy {
         tabSize: 4,
         formatDocument: true,
     };
-    code: string = 'function x() {\nconsole.log("Hello world!");\n}';
+
+    code = 'function x() {\nconsole.log("Hello world!");\n}';
 
     @ViewChild('drawer', { static: true }) drawerElement: MatDrawer;
     @ViewChild('editor', { static: false }) editor: EditorComponent;
@@ -100,10 +100,7 @@ export class BitbybitAppComponent implements OnDestroy {
 
     ngAfterViewInit(): void {
         import('csg-generated')
-            .then((module: Function) => {
-
-                this.code = 'function x() {\nconsole.log("Hello world!");\nconsole.log("Matas");\n}';
-
+            .then(() => {
                 this.blocklyArea = document.getElementById('blocklyArea');
                 this.blocklyDiv = document.getElementById('blocklyDiv');
 
@@ -131,7 +128,9 @@ export class BitbybitAppComponent implements OnDestroy {
                 this.collapseExpandedMenus();
                 toolbox.clearSelection();
 
-                (Blockly.prompt as any) = (message, defaultValue, callback) => { this.openPromptDialog({ message, defaultValue, callback }); };
+                (Blockly.prompt as any) = (message, defaultValue, callback) => {
+                     this.openPromptDialog({ message, defaultValue, callback });
+                };
 
                 svgResize(this.workspace);
                 const canvas = document.getElementById('renderCanvas') as HTMLCanvasElement;
@@ -223,7 +222,7 @@ export class BitbybitAppComponent implements OnDestroy {
 
     }
 
-    private collapseExpandedMenus() {
+    private collapseExpandedMenus(): void {
         const treeRows = document.body.querySelectorAll(
             '.blocklyTreeRow');
         treeRows.forEach((element) => {
@@ -272,9 +271,7 @@ export class BitbybitAppComponent implements OnDestroy {
         svgResize(this.workspace);
     }
 
-    onCode(code: string) { }
-
-    import() {
+    import(): void {
         const inputFileElement = document.getElementById('exampleInput') as HTMLInputElement;
         inputFileElement.click();
         inputFileElement.onchange = (e) => {
@@ -298,7 +295,7 @@ export class BitbybitAppComponent implements OnDestroy {
         };
     }
 
-    export() {
+    export(): void {
         const xml = Xml.workspaceToDom(this.workspace);
         const xmlText = Xml.domToText(xml);
         const blob = new Blob([xmlText], { type: 'text/xml' });
@@ -326,7 +323,7 @@ export class BitbybitAppComponent implements OnDestroy {
         this.onResize();
     }
 
-    toggleCodeEditor() {
+    toggleCodeEditor(): void {
         this.code =
             `
 'use reserved'
@@ -366,19 +363,19 @@ const BitByBit = {
         }
     }
 
-    about() {
+    about(): void {
         this.openAboutDialog();
     }
 
-    settings() {
+    settings(): void {
         this.openSettingsDialog();
     }
 
-    sponsors() {
+    sponsors(): void {
         this.openSponsorsDialog();
     }
 
-    swapCanvas() {
+    swapCanvas(): void {
         switch (this.currentUiState) {
             case UiStatesEnum.babylon:
                 this.currentUiState = this.previousUiState;
@@ -401,13 +398,13 @@ const BitByBit = {
         });
     }
 
-    cleanCanvas() {
+    cleanCanvas(): void {
         this.workspace.clear();
         this.router.navigate(['/app']);
         this.run();
     }
 
-    run() {
+    run(): void {
 
         try {
             this.clearMeshesAndMaterials();
@@ -420,9 +417,6 @@ const BitByBit = {
 
             const javascript = JavaScript;
 
-            // MeshBuilder.CreateLineSystem()
-            // (window as any).LoopTrap = 10000;
-            // (JavaScript as any).INFINITE_LOOP_TRAP = 'if(--window.LoopTrap == 0) throw "Infinite loop cancelled after 10000 iterations.";\n';
             let code = `
             'use reserved'
             const BitByBit = {
@@ -458,7 +452,7 @@ const BitByBit = {
         }
     }
 
-    clearMeshesAndMaterials() {
+    clearMeshesAndMaterials(): void {
         this.scene.meshes.forEach(m => m.dispose());
         this.scene.meshes = [];
         this.scene.materials.forEach(m => m.dispose());
