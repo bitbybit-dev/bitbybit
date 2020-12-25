@@ -5,3 +5,4 @@ dist
 blockly
 .scully
 csg-generated.js
+*.d.ts

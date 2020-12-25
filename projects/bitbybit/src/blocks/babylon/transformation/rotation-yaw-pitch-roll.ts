@@ -47,14 +47,7 @@ export function createRotationYawPitchRollBlock(): void {
             resources.block_angle, resources.block_axis, resources.block_center
         ]));
 
-        const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `
-        return [
-            new BitByBit.BABYLON.Matrix.Translation(-inputs.center[0], -inputs.center[1], -inputs.center[2]),
-            new BitByBit.BABYLON.Matrix.RotationYawPitchRoll(BitByBit.BABYLON.Angle.FromDegrees(inputs.yaw).radians(), BitByBit.BABYLON.Angle.FromDegrees(inputs.pitch).radians(), BitByBit.BABYLON.Angle.FromDegrees(inputs.roll).radians()),
-            new BitByBit.BABYLON.Matrix.Translation(inputs.center[0], inputs.center[1], inputs.center[2]),
-        ];
-`);
+        const code = createStandardContextIIFE(block, blockSelector, inputs, true, `return bitbybit.transforms.rotationCenterYawPitchRoll(inputs);`);
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };
 }

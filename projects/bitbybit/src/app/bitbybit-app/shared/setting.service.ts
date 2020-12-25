@@ -10,7 +10,7 @@ import { themeStyle } from '../models/theme-styles.model';
 export class SettingsService {
 
     theme = Theme.defineTheme('themeName', themeStyle());
-    
+
     constructor() {
     }
 

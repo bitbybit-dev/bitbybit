@@ -47,12 +47,12 @@ inputs.curves.forEach(curve => {
     const points = curve.controlPoints();
     const transformation = inputs.matrix;
     let transformedControlPoints = points;
-    if(transformation.length && transformation.length > 0){
-        transformation.flat().forEach(transform => {
-            transformedControlPoints = BitByBit.BitByBitBlocklyHelperService.transformPointsByMatrix(transformedControlPoints, transform);
+    if(transformation.length && transformation.length > 0 && isNaN(transformation[0])){
+        transformation.forEach(transform => {
+            transformedControlPoints = BitByBit.BitByBitBlocklyHelperService.transformPointsByMatrixArray(transformedControlPoints, transform);
         });
     } else {
-        transformedControlPoints = BitByBit.BitByBitBlocklyHelperService.transformPointsByMatrix(points, transformation);
+        transformedControlPoints = BitByBit.BitByBitBlocklyHelperService.transformPointsByMatrixArray(points, transformation);
     }
     curvesTransformed.push(verb.geom.NurbsCurve.byKnotsControlPointsWeights(curve.degree(), curve.knots(), transformedControlPoints, curve.weights()));
 });

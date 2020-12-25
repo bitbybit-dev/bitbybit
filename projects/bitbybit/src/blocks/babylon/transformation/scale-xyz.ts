@@ -4,13 +4,13 @@ import { ResourcesService } from '../../../resources';
 import { createStandardContextIIFE } from '../../_shared';
 import { makeRequiredValidationModelForInputs, BitByBitBlockHandlerService, ValidationEntityInterface } from '../../validations';
 
-export function createScaleXYZBlock() {
+export function createScaleXYZBlock(): void {
 
     const resources = ResourcesService.getResources();
     const blockSelector = 'babylon_transformation_scale_xyz';
 
     Blocks[blockSelector] = {
-        init() {
+        init(): void {
             this.appendValueInput('ScaleXYZ')
                 .setCheck('Array')
                 .setAlign(ALIGN_RIGHT)
@@ -31,10 +31,7 @@ export function createScaleXYZBlock() {
             resources.block_vector
         ]));
 
-        const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-`
-        return new BitByBit.BABYLON.Matrix.Scaling(inputs.scaleXyz[0], inputs.scaleXyz[1], inputs.scaleXyz[2]);
-`);
+        const code = createStandardContextIIFE(block, blockSelector, inputs, true, `return bitbybit.transforms.scaleXYZ(inputs);`);
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };
 }

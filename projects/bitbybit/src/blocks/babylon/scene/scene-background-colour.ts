@@ -35,10 +35,6 @@ export function createSceneBackgroundColourBlock() {
             resources.block_colour
         ]));
 
-        return createStandardContextIIFE(block, blockSelector, inputs, false,
-`
-        BitByBit.scene.clearColor = BitByBit.BABYLON.Color3.FromHexString(inputs.colour);
-`
-        );
+        return createStandardContextIIFE(block, blockSelector, inputs, false, `bitbybit.scene.backgroundColour(inputs);`);
     };
 }

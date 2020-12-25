@@ -33,10 +33,11 @@ import { toolboxDefinition } from './models/toolbox-definition';
 import { SettingsService } from './shared/setting.service';
 import { TagService } from './tags/tag.service';
 import { MatDrawer } from '@angular/material/sidenav';
-import { EditorComponent } from 'ngx-monaco-editor';
-import { transpile } from 'typescript';
+import { EditorComponent, NgxEditorModel } from 'ngx-monaco-editor';
+import { transpile, ModuleResolutionKind, ModuleKind } from 'typescript';
 import { UiStatesEnum } from './models/ui-states.enum';
-
+import { Context } from '../../blocks-code/code/context';
+import { BitByBitBase } from '../../blocks-code/code/bitbybit';
 @Component({
     selector: 'app-root',
     templateUrl: './bitbybit-app.component.html',
@@ -75,7 +76,7 @@ export class BitbybitAppComponent implements OnInit, OnDestroy, AfterViewInit {
         formatDocument: true,
     };
 
-    code = 'function x() {\nconsole.log("Hello world!");\n}';
+    code = '';
 
     @ViewChild('drawer', { static: true }) drawerElement: MatDrawer;
     @ViewChild('editor', { static: false }) editor: EditorComponent;
@@ -89,6 +90,8 @@ export class BitbybitAppComponent implements OnInit, OnDestroy, AfterViewInit {
         private readonly changeDetectorService: ChangeDetectorRef,
         private readonly httpClient: HttpClient,
         private readonly tagService: TagService,
+        private readonly context: Context,
+        private readonly bitByBit: BitByBitBase,
     ) {
     }
 
@@ -129,7 +132,7 @@ export class BitbybitAppComponent implements OnInit, OnDestroy, AfterViewInit {
                 toolbox.clearSelection();
 
                 (Blockly.prompt as any) = (message, defaultValue, callback) => {
-                     this.openPromptDialog({ message, defaultValue, callback });
+                    this.openPromptDialog({ message, defaultValue, callback });
                 };
 
                 svgResize(this.workspace);
@@ -155,6 +158,8 @@ export class BitbybitAppComponent implements OnInit, OnDestroy, AfterViewInit {
                 this.scene.ambientColor = new Color3(0.1, 0.1, 0.1);
 
                 this.windowBlockly = {};
+                this.context.scene = this.scene;
+                (window as any).BitByBitBase = this.bitByBit;
                 this.windowBlockly.scene = this.scene;
                 this.windowBlockly.workspace = this.workspace;
                 (window as any).blockly = this.windowBlockly;
@@ -326,16 +331,6 @@ export class BitbybitAppComponent implements OnInit, OnDestroy, AfterViewInit {
     toggleCodeEditor(): void {
         this.code =
             `
-'use reserved'
-const BitByBit = {
-    scene: window.blockly.scene,
-    blocklyWorkspace: window.blockly.workspace,
-    BABYLON: window.BABYLON,
-    verb: window.verb,
-    BitByBitBlockHandlerService: window.BitByBitBlockHandlerService,
-    BitByBitBlocklyHelperService: window.BitByBitBlocklyHelperService,
-    CSG: window.CSG
-};
     ${(JavaScript as any).workspaceToCode(this.workspace)}
             `;
 
@@ -415,10 +410,13 @@ const BitByBit = {
 
             this.scene.clearColor = new Color4(1, 1, 1, 1);
 
-            const javascript = JavaScript;
+            let code = (JavaScript as any).workspaceToCode(this.workspace);
 
-            let code = `
-            'use reserved'
+            if (this.currentUiState === UiStatesEnum.monaco) {
+                code = transpile(this.code);
+            }
+
+            eval(`const bitbybit = window.BitByBitBase;
             const BitByBit = {
                 scene: window.blockly.scene,
                 blocklyWorkspace: window.blockly.workspace,
@@ -428,14 +426,7 @@ const BitByBit = {
                 BitByBitBlocklyHelperService: window.BitByBitBlocklyHelperService,
                 CSG: window.CSG
             };
-            ${(JavaScript as any).workspaceToCode(this.workspace)}
-                        `;
-
-            if (this.currentUiState === UiStatesEnum.monaco) {
-                code = transpile(this.code);
-            }
-
-            eval(code);
+            ${code}`);
 
             if (this.tagService.tagsExist()) {
                 this.tagsNeedUpdate = true;

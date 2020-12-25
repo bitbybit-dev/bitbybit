@@ -20,6 +20,11 @@ export class BitByBitBlocklyHelperService {
         loader: new OBJFileLoader(),
     };
 
+    static transformPointsByMatrixArray(points: [], transform: number[]) {
+        const transformMatrix = Matrix.FromArray(transform);
+        return BitByBitBlocklyHelperService.transformPointsByMatrix(points, transformMatrix);
+    }
+
     static transformPointsByMatrix(points: [], transformMatrix: Matrix) {
         const transformedPoints = [];
         for (let i = 0; i < points.length; i++) {

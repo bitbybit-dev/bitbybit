@@ -25,9 +25,7 @@ export function createClearAllDrawnBlock() {
         };
 
         return createStandardContextIIFE(block, blockSelector, inputs, false,
-            `
-            BitByBit.BitByBitBlocklyHelperService.clearAllDrawn();
-`
+            `bitbybit.scene.clearAllDrawnObjects();`
         );
     };
 }

@@ -45,12 +45,12 @@ export function createCurveTransformBlock() {
     const points = inputs.curve.controlPoints();
     const transformation = inputs.matrix;
     let transformedControlPoints = points;
-    if(transformation.length && transformation.length > 0){
-        transformation.flat().forEach(transform => {
-            transformedControlPoints = BitByBit.BitByBitBlocklyHelperService.transformPointsByMatrix(transformedControlPoints, transform);
+    if(transformation.length && transformation.length > 0 && isNaN(transformation[0])){
+        transformation.forEach(transform => {
+            transformedControlPoints = BitByBit.BitByBitBlocklyHelperService.transformPointsByMatrixArray(transformedControlPoints, transform);
         });
     } else {
-        transformedControlPoints = BitByBit.BitByBitBlocklyHelperService.transformPointsByMatrix(points, transformation);
+        transformedControlPoints = BitByBit.BitByBitBlocklyHelperService.transformPointsByMatrixArray(points, transformation);
     }
     return BitByBit.verb.geom.NurbsCurve.byKnotsControlPointsWeights(inputs.curve.degree(), inputs.curve.knots(), transformedControlPoints, inputs.curve.weights());
 `);

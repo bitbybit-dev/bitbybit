@@ -1,6 +1,6 @@
 import { Block } from 'blockly';
 
-export function createStandardContextIIFE(block: Block, componentName: string, inputs: any, returns: boolean, body: string) {
+export function createSimpleContextIIFE(block: Block, componentName: string, inputs: any, returns: boolean, body: string) {
     const filteredKeys = Object.keys(inputs).filter(key => inputs[key] !== '' );
 
     return `
