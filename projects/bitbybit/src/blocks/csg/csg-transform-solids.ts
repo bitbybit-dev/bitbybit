@@ -48,10 +48,10 @@ export function createCsgTransformSolidsBlock(): void {
         let transformedMesh = BitByBit.CSG.geometries.geom3.clone(solid);
         if(transformation.length && transformation.length > 0 && isNaN(transformation[0])){
             transformation.forEach(transform => {
-                transformedMesh = BitByBit.CSG.transforms.transform(transform.toArray(), transformedMesh);
+                transformedMesh = BitByBit.CSG.transforms.transform(transform, transformedMesh);
             });
         } else {
-            transformedMesh = BitByBit.CSG.transforms.transform(transformation.toArray(), transformedMesh);
+            transformedMesh = BitByBit.CSG.transforms.transform(transformation, transformedMesh);
         }
         return transformedMesh;
     });

@@ -8,6 +8,8 @@ export class Context {
 
     scene: Scene;
     blocklyWorkspace: Workspace;
+    verb: any;
+
     bitByBitBlocklyHelperService = BitByBitBlocklyHelperService;
 
     constructor() {}

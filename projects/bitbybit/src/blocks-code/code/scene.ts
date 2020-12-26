@@ -41,7 +41,7 @@ export class Scene {
     /**
      * Clears all of the drawn objects in the 3D scene
      */
-    clearAllDrawnObjects(): void {
+    clearAllDrawn(): void {
         this.context.bitByBitBlocklyHelperService.clearAllDrawn();
     }
 

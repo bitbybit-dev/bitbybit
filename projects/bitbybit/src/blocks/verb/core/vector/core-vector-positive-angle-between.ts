@@ -46,8 +46,7 @@ export function createCoreVectorPositiveAngleBetweenBlock() {
         const runtimeValidationModel = makeRuntimeValidationModel(resources, Object.keys(inputs));
         (block as any).validationModel = runtimeValidationModel;
 
-        const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `return BitByBit.verb.core.Vec.positiveAngleBetween(inputs.first, inputs.second, inputs.reference);`);
+        const code = createStandardContextIIFE(block, blockSelector, inputs, true, `return bitbybit.vector.positiveAngleBetween(inputs)`);
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };
 }

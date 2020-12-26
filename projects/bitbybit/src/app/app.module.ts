@@ -10,6 +10,7 @@ import { Scene } from '../blocks-code/code/scene';
 import { BitByBitBase } from '../blocks-code/code/bitbybit';
 import { Context } from '../blocks-code/code/context';
 import { Transforms } from '../blocks-code/code/transforms';
+import { Vector } from '../blocks-code/code/vector';
 
 
 const monacoConfig: NgxMonacoEditorConfig = {
@@ -50,7 +51,7 @@ const monacoConfig: NgxMonacoEditorConfig = {
                 /**
                  * Clears all of the drawn objects in the 3D scene
                  */
-                clearAllDrawnObjects(): void;
+                clearAllDrawn(): void;
             }
             interface SceneBackgroundColourDto {
                 colour: string;
@@ -159,9 +160,74 @@ const monacoConfig: NgxMonacoEditorConfig = {
             interface TranslationXYZDto {
                 translation: number[];
             }
+            declare class Vector {
+                private readonly context;
+                constructor(context: Context);
+                /**
+                 * Measures an angle between two vectors in degrees
+                 * @param inputs Contains two vectors represented as number arrays
+                 */
+                angle(inputs: TwoVectorsDto): number;
+                /**
+                 * Measures an normalized 2d angle between two vectors in degrees
+                 * @param inputs Contains two vectors represented as number arrays
+                 */
+                angleBetweenNormalized2d(inputs: TwoVectorsDto): number;
+                /**
+                 * Measures a positive angle between two vectors given the reference vector in degrees
+                 * @param inputs Contains information between two vectors represented as number arrays
+                 */
+                positiveAngleBetween(inputs: TwoVectorsReferenceDto): number;
+                /**
+                 * Adds all vectors together
+                 * @param inputs Vectors to be added
+                 */
+                addAll(inputs: VectorsDto): number[];
+                /**
+                 * Adds two vectors together
+                 * @param inputs Two vectors to be added
+                 */
+                add(inputs: TwoVectorsDto): number[];
+                /**
+                 * Checks if the boolean array is true or false
+                 * @param inputs Vectors to be checked
+                 */
+                all(inputs: VectorBoolDto): boolean;
+                /**
+                 * Cross two vectors
+                 * @param inputs Two vectors to be crossed
+                 */
+                cross(inputs: TwoVectorsDto): number[];
+                /**
+                 * Squared distance between two vectors
+                 * @param inputs Two vectors
+                 */
+                distSquared(inputs: TwoVectorsDto): number;
+                /**
+                 * Distance between two vectors
+                 * @param inputs Two vectors
+                 */
+                dist(inputs: TwoVectorsDto): number;
+            }
+            interface VectorsDto {
+                vectors: number[][];
+            }
+            interface VectorBoolDto {
+                vector: boolean[];
+            }
+            interface TwoVectorsDto {
+                first: number[];
+                second: number[];
+            }
+            interface TwoVectorsReferenceDto {
+                first: number[];
+                second: number[];
+                reference: number[];
+            }
             declare class BitByBitBase {
                 readonly scene: Scene;
                 readonly transforms: Transforms;
+                readonly vector: Vector;
             }
         }
         `;
@@ -235,7 +301,7 @@ const monacoConfig: NgxMonacoEditorConfig = {
         AppRoutingModule,
         MonacoEditorModule.forRoot(monacoConfig),
     ],
-    providers: [Scene, BitByBitBase, Context, Transforms],
+    providers: [BitByBitBase, Scene, Context, Transforms, Vector],
     bootstrap: [AppComponent]
 })
 export class AppModule { }

@@ -41,8 +41,7 @@ export function createCoreVectorCrossBlock() {
         const runtimeValidationModel = makeRuntimeValidationModel(resources, Object.keys(inputs));
         (block as any).validationModel = runtimeValidationModel;
 
-        const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `return BitByBit.verb.core.Vec.cross(inputs.first, inputs.second);`);
+        const code = createStandardContextIIFE(block, blockSelector, inputs, true, `return bitbybit.vector.cross(inputs);`);
 
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };

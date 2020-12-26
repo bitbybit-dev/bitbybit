@@ -8,13 +8,13 @@ import {
     BitByBitBlockHandlerService,
     ValidationEntityInterface
 } from '../../validations';
-export function createSceneBackgroundColourBlock() {
+export function createSceneBackgroundColourBlock(): void {
 
     const resources = ResourcesService.getResources();
     const blockSelector = 'babylon_scene_background_colour';
 
     Blocks[blockSelector] = {
-        init() {
+        init(): void {
             this.appendValueInput('Colour')
                 .setCheck('Colour')
                 .appendField(resources.block_babylon_input_scene_background_colour);

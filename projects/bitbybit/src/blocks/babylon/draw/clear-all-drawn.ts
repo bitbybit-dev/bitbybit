@@ -3,13 +3,13 @@ import * as JavaScript from 'blockly/javascript';
 import { ResourcesService } from '../../../resources';
 import { createStandardContextIIFE } from '../../_shared';
 
-export function createClearAllDrawnBlock() {
+export function createClearAllDrawnBlock(): void {
 
     const resources = ResourcesService.getResources();
     const blockSelector = 'babylon_clear_all_drawn';
 
     Blocks[blockSelector] = {
-        init() {
+        init(): void {
             this.appendDummyInput('ClearAllDrawn')
                 .appendField(resources.block_base_clear_all_drawn_input_clear_all_drawn);
             this.setColour('#fff');
@@ -25,7 +25,7 @@ export function createClearAllDrawnBlock() {
         };
 
         return createStandardContextIIFE(block, blockSelector, inputs, false,
-            `bitbybit.scene.clearAllDrawnObjects();`
+            `bitbybit.scene.clearAllDrawn();`
         );
     };
 }

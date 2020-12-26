@@ -34,8 +34,7 @@ export function createCoreVectorAddAllBlock() {
         const runtimeValidationModel = makeRuntimeValidationModel(resources, Object.keys(inputs));
         (block as any).validationModel = runtimeValidationModel;
 
-        const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `return BitByBit.verb.core.Vec.addAll(inputs.vectors);`);
+        const code = createStandardContextIIFE(block, blockSelector, inputs, true, `return bitbybit.vector.addAll(inputs);`);
 
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };

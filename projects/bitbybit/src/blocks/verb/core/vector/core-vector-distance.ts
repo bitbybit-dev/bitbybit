@@ -42,7 +42,7 @@ export function createCoreVectorDistanceBlock() {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `return BitByBit.verb.core.Vec.dist(inputs.first, inputs.second);`);
+            `return bitbybit.vector.dist(inputs);`);
 
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };
