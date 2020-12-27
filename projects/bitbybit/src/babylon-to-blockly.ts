@@ -1,8 +1,8 @@
 import { Angle, Color3, Color4, Matrix, Mesh, MeshBuilder, StandardMaterial, Vector3, VertexData, VertexBuffer, Quaternion, TransformNode, Vector2, PolygonMeshBuilder } from '@babylonjs/core';
 import { GridMaterial } from '@babylonjs/materials';
 import * as Blockly from 'blockly';
+import { BitByBitBlocklyHelperService } from 'projects/bitbybit-core/src/public-api';
 import { core, geom } from 'verb-nurbs-web';
-import { BitByBitBlocklyHelperService } from './blocks/_shared/bit-by-bit-blockly-helper.service';
 import { BitByBitBlockHandlerService } from './blocks/validations';
 
 export function prepareBabylonForBlockly() {

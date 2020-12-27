@@ -1,5 +1,5 @@
 import { HttpHeaders, HttpParams, HttpClient } from '@angular/common/http';
-import { AfterViewInit, ChangeDetectorRef, Component, OnInit, ViewChild, ElementRef, OnDestroy } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, OnInit, ViewChild, OnDestroy } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ArcRotateCamera, DirectionalLight, TransformNode, HemisphericLight } from '@babylonjs/core';
@@ -13,8 +13,6 @@ import { inject, svgResize, WorkspaceSvg, Xml } from 'blockly';
 import * as Blockly from 'blockly';
 import * as JavaScript from 'blockly/javascript';
 import * as jsonpath from 'jsonpath';
-import { BitByBitBlocklyHelperService } from '../../blocks/_shared/bit-by-bit-blockly-helper.service';
-import { PrintSaveInterface } from '../../blocks/_shared/models/print-save.model';
 import { PromptInterface } from '../../blocks/_shared/models/prompt.interface';
 import { BitByBitBlockHandlerService } from '../../blocks/validations';
 import { prepareBabylonForBlockly } from '../../babylon-to-blockly';
@@ -33,11 +31,11 @@ import { toolboxDefinition } from './models/toolbox-definition';
 import { SettingsService } from './shared/setting.service';
 import { TagService } from './tags/tag.service';
 import { MatDrawer } from '@angular/material/sidenav';
-import { EditorComponent, NgxEditorModel } from 'ngx-monaco-editor';
-import { transpile, ModuleResolutionKind, ModuleKind } from 'typescript';
+import { EditorComponent } from 'ngx-monaco-editor';
+import { transpile } from 'typescript';
 import { UiStatesEnum } from './models/ui-states.enum';
-import { Context } from '../../api/context';
-import { BitByBitBase } from '../../api/bitbybit';
+import { BitByBitBase, BitByBitBlocklyHelperService, Context, PrintSaveInterface } from 'projects/bitbybit-core/src/public-api';
+
 @Component({
     selector: 'app-root',
     templateUrl: './bitbybit-app.component.html',

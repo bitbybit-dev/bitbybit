@@ -29,6 +29,7 @@ import { BitbybitAppRoutingModule } from './bitbybit-app-routing.module';
 import { CommonModule } from '@angular/common';
 import { BitbybitCanDeativate } from './bitbybit-app-can-deactivate.service';
 import { MonacoEditorModule } from 'ngx-monaco-editor';
+import { BitbybitCoreModule } from 'projects/bitbybit-core/src/public-api';
 
 @NgModule({
     declarations: [

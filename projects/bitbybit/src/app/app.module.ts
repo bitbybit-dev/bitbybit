@@ -6,11 +6,7 @@ import { AppComponent } from './app.component';
 import { RouterModule } from '@angular/router';
 import { SimplebarAngularModule } from 'simplebar-angular';
 import { MonacoEditorModule, NgxMonacoEditorConfig } from 'ngx-monaco-editor';
-import { BitByBitBase } from '../api/bitbybit';
-import { Scene } from '../api/categories/scene';
-import { Context } from '../api/context';
-import { Transforms } from '../api/categories/transforms';
-import { Vector } from '../api/categories/vector';
+import { BitByBitBase, BitbybitCoreModule, Context, Scene, Transforms, Vector } from 'projects/bitbybit-core/src/public-api';
 
 const monacoConfig: NgxMonacoEditorConfig = {
     onMonacoLoad: () => {
@@ -392,7 +388,7 @@ const monacoConfig: NgxMonacoEditorConfig = {
         AppRoutingModule,
         MonacoEditorModule.forRoot(monacoConfig),
     ],
-    providers: [BitByBitBase, Scene, Context, Transforms, Vector],
+    providers: [BitByBitBase, Context, Scene, Transforms, Vector],
     bootstrap: [AppComponent]
 })
 export class AppModule { }
