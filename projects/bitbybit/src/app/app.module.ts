@@ -378,34 +378,6 @@ const monacoConfig: NgxMonacoEditorConfig = {
             window.monaco.Uri.parse(libUri)
         );
 
-
-        // // extra libraries
-        // var libSource = [
-        //     'declare class Facts {',
-        //     '    /**',
-        //     '     * Returns the next fact',
-        //     '     */',
-        //     '    static next():string',
-        //     '}',
-        // ].join('\n');
-        // var libUri = 'ts:filename/facts.d.ts';
-        // monaco.languages.typescript.javascriptDefaults.addExtraLib(libSource, libUri);
-
-        // // When resolving definitions and references, the editor will try to use created models.
-        // // Creating a model for the library allows "peek definition/references" commands to work with the library.
-        // monaco.editor.createModel(libSource, 'typescript', monaco.Uri.parse(libUri));
-
-
-        // var libSource = [
-        //     'const d = {ga: "gaga"};'
-        // ].join('\n');
-        // var libUri = 'ts:filename/dafa.ts';
-        // monaco.languages.typescript.javascriptDefaults.addExtraLib(libSource, libUri);
-
-        // // When resolving definitions and references, the editor will try to use created models.
-        // // Creating a model for the library allows "peek definition/references" commands to work with the library.
-        // monaco.editor.createModel(libSource, 'typescript', monaco.Uri.parse(libUri));
-
     } // here monaco object will be available as window.monaco use this function to extend monaco editor functionalities.
 };
 @NgModule({
@@ -424,10 +396,3 @@ const monacoConfig: NgxMonacoEditorConfig = {
     bootstrap: [AppComponent]
 })
 export class AppModule { }
-
-// ---------------------------
-//       @angular/cdk                       10.2.3 -> 11.0.3         ng update @angular/cdk
-//       @angular/cli                       10.2.1 -> 11.0.5         ng update @angular/cli
-//       @angular/core                      10.2.3 -> 11.0.5         ng update @angular/core
-//       @angular/material                  10.2.3 -> 11.0.3         ng update @angular/material
-//       rxjs                               6.5.5 -> 6.6.3           ng update rxjs
