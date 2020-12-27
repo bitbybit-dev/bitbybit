@@ -4,13 +4,13 @@ import { ResourcesInterface, ResourcesService } from '../../../../resources';
 import { createStandardContextIIFE } from '../../../_shared';
 import { getRequired, makeRequiredValidationModelForInputs, BitByBitBlockHandlerService, ValidationEntityInterface } from '../../../validations';
 
-export function createCoreVectorPositiveAngleBetweenBlock() {
+export function createCoreVectorPositiveAngleBetweenBlock(): void {
 
     const resources = ResourcesService.getResources();
     const blockSelector = 'verb_core_vector_positive_angle_between';
 
     Blocks[blockSelector] = {
-        init() {
+        init(): void {
             this.appendValueInput('First')
                 .setCheck('Array')
                 .setAlign(ALIGN_RIGHT)

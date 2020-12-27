@@ -47,7 +47,7 @@ export function createCoreVectorSignedAngleBetweenBlock() {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `return BitByBit.verb.core.Vec.signedAngleBetween(inputs.first, inputs.second, inputs.reference);`);
+            `return bitbybit.vector.signedAngleBetween(inputs);`);
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };
 }

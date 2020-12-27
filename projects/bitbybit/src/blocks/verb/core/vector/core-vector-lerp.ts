@@ -4,13 +4,13 @@ import { ResourcesInterface, ResourcesService } from '../../../../resources';
 import { createStandardContextIIFE } from '../../../_shared';
 import { getRequired, makeRequiredValidationModelForInputs, BitByBitBlockHandlerService, ValidationEntityInterface } from '../../../validations';
 
-export function createCoreVectorLerpBlock() {
+export function createCoreVectorLerpBlock(): void {
 
     const resources = ResourcesService.getResources();
     const blockSelector = 'verb_core_vector_lerp';
 
     Blocks[blockSelector] = {
-        init() {
+        init(): void {
             this.appendValueInput('Fraction')
                 .setCheck('Number')
                 .setAlign(ALIGN_RIGHT)
@@ -47,7 +47,7 @@ export function createCoreVectorLerpBlock() {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `return BitByBit.verb.core.Vec.lerp(inputs.fraction, inputs.first, inputs.second);`);
+            `return bitbybit.vector.lerp(inputs);`);
 
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };

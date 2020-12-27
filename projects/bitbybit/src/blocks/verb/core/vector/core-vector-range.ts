@@ -4,13 +4,13 @@ import { ResourcesInterface, ResourcesService } from '../../../../resources';
 import { createStandardContextIIFE } from '../../../_shared';
 import { getRequired, makeRequiredValidationModelForInputs, BitByBitBlockHandlerService, ValidationEntityInterface } from '../../../validations';
 
-export function createCoreVectorRangeBlock() {
+export function createCoreVectorRangeBlock(): void {
 
     const resources = ResourcesService.getResources();
     const blockSelector = 'verb_core_vector_range';
 
     Blocks[blockSelector] = {
-        init() {
+        init(): void {
             this.appendValueInput('Max')
                 .setCheck('Number')
                 .setAlign(ALIGN_RIGHT)
@@ -36,7 +36,7 @@ export function createCoreVectorRangeBlock() {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `return BitByBit.verb.core.Vec.range(inputs.max);`);
+            `return bitbybit.vector.range(inputs);`);
 
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };

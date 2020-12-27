@@ -4,13 +4,13 @@ import { ResourcesInterface, ResourcesService } from '../../../../resources';
 import { createStandardContextIIFE } from '../../../_shared';
 import { getRequired, makeRequiredValidationModelForInputs, BitByBitBlockHandlerService, ValidationEntityInterface } from '../../../validations';
 
-export function createCoreVectorSpanBlock() {
+export function createCoreVectorSpanBlock(): void {
 
     const resources = ResourcesService.getResources();
     const blockSelector = 'verb_core_vector_span';
 
     Blocks[blockSelector] = {
-        init() {
+        init(): void {
             this.appendValueInput('Min')
                 .setCheck('Number')
                 .setAlign(ALIGN_RIGHT)
@@ -46,7 +46,7 @@ export function createCoreVectorSpanBlock() {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `return BitByBit.verb.core.Vec.span(inputs.min, inputs.max, inputs.step);`);
+            `return bitbybit.vectort.span(inputs);`);
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };
 }
