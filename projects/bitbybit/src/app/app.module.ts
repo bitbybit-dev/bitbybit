@@ -424,3 +424,10 @@ const monacoConfig: NgxMonacoEditorConfig = {
     bootstrap: [AppComponent]
 })
 export class AppModule { }
+
+// ---------------------------
+//       @angular/cdk                       10.2.3 -> 11.0.3         ng update @angular/cdk
+//       @angular/cli                       10.2.1 -> 11.0.5         ng update @angular/cli
+//       @angular/core                      10.2.3 -> 11.0.5         ng update @angular/core
+//       @angular/material                  10.2.3 -> 11.0.3         ng update @angular/material
+//       rxjs                               6.5.5 -> 6.6.3           ng update rxjs
