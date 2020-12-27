@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Angle } from '@babylonjs/core';
-import { Context } from './context';
+import { Context } from '../context';
 
 @Injectable()
 /**
@@ -11,14 +11,21 @@ export class Vector {
     constructor(private readonly context: Context) { }
     /**
      * Measures the angle between two vectors in degrees
+     * <div>
+     *  <img src="../assets/images/blockly-block-images/vector/angle.png" alt="Blockly Image"/>
+     * </div>
      * @param inputs Contains two vectors represented as number arrays
+     * @returns Number in degrees
      */
-    angle(inputs: TwoVectorsDto): number {
+    angleBetween(inputs: TwoVectorsDto): number {
         return Angle.FromRadians(this.context.verb.core.Vec.angleBetween(inputs.first, inputs.second)).degrees();
     }
 
     /**
      * Measures the normalized 2d angle between two vectors in degrees
+     * <div>
+     *  <img src="../assets/images/blockly-block-images/vector/angleBetweenNormalized2d.png" alt="Blockly Image"/>
+     * </div>
      * @param inputs Contains two vectors represented as number arrays
      */
     angleBetweenNormalized2d(inputs: TwoVectorsDto): number {
@@ -206,7 +213,9 @@ export class Vector {
      * @param inputs Contains information of two vectors and a reference vector
      */
     signedAngleBetween(inputs: TwoVectorsReferenceDto): number {
-        return this.context.verb.core.Vec.signedAngleBetween(inputs.first, inputs.second, inputs.reference);
+        return Angle.FromRadians(
+            this.context.verb.core.Vec.signedAngleBetween(inputs.first, inputs.second, inputs.reference)
+        ).degrees();
     }
 
     /**

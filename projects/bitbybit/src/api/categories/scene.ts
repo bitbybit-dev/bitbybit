@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Context } from './context';
+import { Context } from '../context';
 import { Color4, Color3, Mesh } from '@babylonjs/core';
 import { GridMaterial } from '@babylonjs/materials';
 

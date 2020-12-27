@@ -6,12 +6,11 @@ import { AppComponent } from './app.component';
 import { RouterModule } from '@angular/router';
 import { SimplebarAngularModule } from 'simplebar-angular';
 import { MonacoEditorModule, NgxMonacoEditorConfig } from 'ngx-monaco-editor';
-import { Scene } from '../blocks-code/code/scene';
-import { BitByBitBase } from '../blocks-code/code/bitbybit';
-import { Context } from '../blocks-code/code/context';
-import { Transforms } from '../blocks-code/code/transforms';
-import { Vector } from '../blocks-code/code/vector';
-
+import { BitByBitBase } from '../api/bitbybit';
+import { Scene } from '../api/categories/scene';
+import { Context } from '../api/context';
+import { Transforms } from '../api/categories/transforms';
+import { Vector } from '../api/categories/vector';
 
 const monacoConfig: NgxMonacoEditorConfig = {
     onMonacoLoad: () => {
