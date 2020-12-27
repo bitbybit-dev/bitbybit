@@ -36,8 +36,8 @@ import { MatDrawer } from '@angular/material/sidenav';
 import { EditorComponent, NgxEditorModel } from 'ngx-monaco-editor';
 import { transpile, ModuleResolutionKind, ModuleKind } from 'typescript';
 import { UiStatesEnum } from './models/ui-states.enum';
-import { Context } from '../../blocks-code/code/context';
-import { BitByBitBase } from '../../blocks-code/code/bitbybit';
+import { Context } from '../../api/context';
+import { BitByBitBase } from '../../api/bitbybit';
 @Component({
     selector: 'app-root',
     templateUrl: './bitbybit-app.component.html',
