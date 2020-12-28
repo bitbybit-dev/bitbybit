@@ -24,7 +24,7 @@ export function createCoreVectorAngleBetweenNormalized2dBlock() {
             this.setOutput(true, 'Number');
             this.setColour('#fff');
             this.setTooltip(resources.block_verb_core_vector_angle_between_normalized_2d_description);
-            this.setHelpUrl(environment.docsUrl + vectorConstants.helpUrl + '#anglebetweennormalized2d');
+            this.setHelpUrl(environment.docsUrl + vectorConstants.helpUrl + '#' + 'anglebetweennormalized2d');
         }
     };
 

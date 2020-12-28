@@ -43,17 +43,19 @@ export class Vector {
      *  <img src="../assets/images/blockly-images/vector/positiveAngleBetween.png" alt="Blockly Image"/>
      * </div>
      * @param inputs Contains information of two vectors and a reference vector
+     * @returns Number in degrees
      */
     positiveAngleBetween(inputs: TwoVectorsReferenceDto): number {
         return Angle.FromRadians(this.context.verb.core.Vec.positiveAngleBetween(inputs.first, inputs.second, inputs.reference)).degrees();
     }
 
     /**
-     * Adds all vectors together
+     * Adds all vector xyz values together and create a new vector
      * <div>
      *  <img src="../assets/images/blockly-images/vector/addAll.png" alt="Blockly Image"/>
      * </div>
      * @param inputs Vectors to be added
+     * @returns New vector that has xyz values as sums of all the vectors
      */
     addAll(inputs: VectorsDto): number[] {
         return this.context.verb.core.Vec.addAll(inputs.vectors);
@@ -65,17 +67,19 @@ export class Vector {
      *  <img src="../assets/images/blockly-images/vector/add.png" alt="Blockly Image"/>
      * </div>
      * @param inputs Two vectors to be added
+     * @returns Number array representing vector
      */
     add(inputs: TwoVectorsDto): number[] {
         return this.context.verb.core.Vec.add(inputs.first, inputs.second);
     }
 
     /**
-     * Checks if the boolean array is true or false
+     * Checks if the boolean array contains only true values, if there's a single false it will return false.
      * <div>
      *  <img src="../assets/images/blockly-images/vector/all.png" alt="Blockly Image"/>
      * </div>
      * @param inputs Vectors to be checked
+     * @returns Boolean indicating if vector contains only true values
      */
     all(inputs: VectorBoolDto): boolean {
         return this.context.verb.core.Vec.all(inputs.vector);
@@ -87,6 +91,7 @@ export class Vector {
      *  <img src="../assets/images/blockly-images/vector/cross.png" alt="Blockly Image"/>
      * </div>
      * @param inputs Two vectors to be crossed
+     * @returns Crossed vector
      */
     cross(inputs: TwoVectorsDto): number[] {
         return this.context.verb.core.Vec.cross(inputs.first, inputs.second);
@@ -98,6 +103,7 @@ export class Vector {
      *  <img src="../assets/images/blockly-images/vector/distSquared.png" alt="Blockly Image"/>
      * </div>
      * @param inputs Two vectors
+     * @returns Number representing squared distance between two vectors
      */
     distSquared(inputs: TwoVectorsDto): number {
         return this.context.verb.core.Vec.distSquared(inputs.first, inputs.second);
@@ -109,17 +115,19 @@ export class Vector {
      *  <img src="../assets/images/blockly-images/vector/dist.png" alt="Blockly Image"/>
      * </div>
      * @param inputs Two vectors
+     * @returns Number representing distance between two vectors
      */
     dist(inputs: TwoVectorsDto): number {
         return this.context.verb.core.Vec.dist(inputs.first, inputs.second);
     }
 
     /**
-     * Divide the vector by a scalar value
+     * Divide the vector by a scalar value/
      * <div>
      *  <img src="../assets/images/blockly-images/vector/div.png" alt="Blockly Image"/>
      * </div>
      * @param inputs Contains vector and a scalar
+     * @returns Vector that is a result of division by a scalar
      */
     div(inputs: VectorScalarDto): number[] {
         return this.context.verb.core.Vec.div(inputs.vector, inputs.scalar);
@@ -131,6 +139,7 @@ export class Vector {
      *  <img src="../assets/images/blockly-images/vector/domain.png" alt="Blockly Image"/>
      * </div>
      * @param inputs Vector information
+     * @returns Number representing distance between two vectors
      */
     domain(inputs: VectorDto): number {
         return this.context.verb.core.Vec.domain(inputs.vector);
@@ -142,6 +151,7 @@ export class Vector {
      *  <img src="../assets/images/blockly-images/vector/dot.png" alt="Blockly Image"/>
      * </div>
      * @param inputs Two vectors
+     * @returns Number representing dot product of the vector
      */
     dot(inputs: TwoVectorsDto): number {
         return this.context.verb.core.Vec.dot(inputs.first, inputs.second);
@@ -153,6 +163,7 @@ export class Vector {
      *  <img src="../assets/images/blockly-images/vector/finite.png" alt="Blockly Image"/>
      * </div>
      * @param inputs Vector with possibly infinite values
+     * @returns Vector array that contains boolean values for each number in the input vector that identifies if value is finite (true) or infinite (false)
      */
     finite(inputs: VectorDto): boolean[] {
         return this.context.verb.core.Vec.finite(inputs.vector);
@@ -164,6 +175,7 @@ export class Vector {
      *  <img src="../assets/images/blockly-images/vector/isZero.png" alt="Blockly Image"/>
      * </div>
      * @param inputs Vector to be checked
+     * @returns Boolean that identifies if vector is zero length
      */
     isZero(inputs: VectorDto): boolean {
         return this.context.verb.core.Vec.isZero(inputs.vector);
@@ -176,6 +188,7 @@ export class Vector {
      *  <img src="../assets/images/blockly-images/vector/lerp.png" alt="Blockly Image"/>
      * </div>
      * @param inputs Information for finding vector between two vectors using a fraction
+     * @returns Vector that is in between two vectors
      */
     lerp(inputs: FractionTwoVectorsDto): number[] {
         return this.context.verb.core.Vec.lerp(inputs.fraction, inputs.first, inputs.second);
@@ -187,6 +200,7 @@ export class Vector {
      *  <img src="../assets/images/blockly-images/vector/max.png" alt="Blockly Image"/>
      * </div>
      * @param inputs Vector to be checked
+     * @returns Largest number in the vector
      */
     max(inputs: VectorDto): number {
         return this.context.verb.core.Vec.max(inputs.vector);
@@ -198,6 +212,7 @@ export class Vector {
      *  <img src="../assets/images/blockly-images/vector/min.png" alt="Blockly Image"/>
      * </div>
      * @param inputs Vector to be checked
+     * @returns Lowest number in the vector
      */
     min(inputs: VectorDto): number {
         return this.context.verb.core.Vec.min(inputs.vector);
@@ -209,6 +224,7 @@ export class Vector {
      *  <img src="../assets/images/blockly-images/vector/mul.png" alt="Blockly Image"/>
      * </div>
      * @param inputs Vector with a scalar
+     * @returns Vector that results from multiplication
      */
     mul(inputs: VectorScalarDto): number[] {
         return inputs.vector.map(s => s * inputs.scalar);
@@ -220,6 +236,7 @@ export class Vector {
      *  <img src="../assets/images/blockly-images/vector/neg.png" alt="Blockly Image"/>
      * </div>
      * @param inputs Vector to negate
+     * @returns Negative vector
      */
     neg(inputs: VectorDto): number[] {
         return this.context.verb.core.Vec.neg(inputs.vector);
@@ -231,6 +248,7 @@ export class Vector {
      *  <img src="../assets/images/blockly-images/vector/normSquared.png" alt="Blockly Image"/>
      * </div>
      * @param inputs Vector for squared norm
+     * @returns Number that is squared norm
      */
     normSquared(inputs: VectorDto): number {
         return this.context.verb.core.Vec.normSquared(inputs.vector);
@@ -242,17 +260,19 @@ export class Vector {
      *  <img src="../assets/images/blockly-images/vector/norm.png" alt="Blockly Image"/>
      * </div>
      * @param inputs Vector to compute the norm
+     * @returns Number that is norm of the vector
      */
     norm(inputs: VectorDto): number {
         return this.context.verb.core.Vec.norm(inputs.vector);
     }
 
     /**
-     * Normalize the vector
+     * Normalize the vector into a unit vector, that has a length of 1
      * <div>
      *  <img src="../assets/images/blockly-images/vector/normalized.png" alt="Blockly Image"/>
      * </div>
      * @param inputs Vector to normalize
+     * @returns Unit vector that has length of 1
      */
     normalized(inputs: VectorDto): number {
         return this.context.verb.core.Vec.normalized(inputs.vector);
@@ -264,6 +284,7 @@ export class Vector {
      *  <img src="../assets/images/blockly-images/vector/onRay.png" alt="Blockly Image"/>
      * </div>
      * @param inputs Provide a point, vector and a distance for finding a point
+     * @returns Vector representing point on the ray
      */
     onRay(inputs: RayPointDto): number[] {
         return this.context.verb.core.Vec.onRay(inputs.point, inputs.vector, inputs.distance);
@@ -275,6 +296,7 @@ export class Vector {
      *  <img src="../assets/images/blockly-images/vector/range.png" alt="Blockly Image"/>
      * </div>
      * @param inputs Max value for the range
+     * @returns Vector containing items from 0 to max
      */
     range(inputs: RangeMaxDto): number[] {
         return this.context.verb.core.Vec.range(inputs.max);
@@ -286,6 +308,7 @@ export class Vector {
      *  <img src="../assets/images/blockly-images/vector/signedAngleBetween.png" alt="Blockly Image"/>
      * </div>
      * @param inputs Contains information of two vectors and a reference vector
+     * @returns Signed angle in degrees
      */
     signedAngleBetween(inputs: TwoVectorsReferenceDto): number {
         return Angle.FromRadians(
@@ -299,6 +322,7 @@ export class Vector {
      *  <img src="../assets/images/blockly-images/vector/span.png" alt="Blockly Image"/>
      * </div>
      * @param inputs Span information containing min, max and step values
+     * @returns Vector containing number between min, max and increasing at a given step
      */
     span(inputs: SpanDto): number[] {
         return this.context.verb.core.Vec.span(inputs.min, inputs.max, inputs.step);
@@ -310,6 +334,7 @@ export class Vector {
      *  <img src="../assets/images/blockly-images/vector/sub.png" alt="Blockly Image"/>
      * </div>
      * @param inputs Two vectors
+     * @returns Vector that result by subtraction two vectors
      */
     sub(inputs: TwoVectorsDto): number[] {
         return this.context.verb.core.Vec.sub(inputs.first, inputs.second);
@@ -321,6 +346,7 @@ export class Vector {
      *  <img src="../assets/images/blockly-images/vector/sum.png" alt="Blockly Image"/>
      * </div>
      * @param inputs Vector to sum
+     * @returns Number that results by adding up all values in the vector
      */
     sum(inputs: VectorDto): number {
         return this.context.verb.core.Vec.sum(inputs.vector);

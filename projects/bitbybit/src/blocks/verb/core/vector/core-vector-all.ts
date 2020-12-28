@@ -3,6 +3,8 @@ import * as JavaScript from 'blockly/javascript';
 import { ResourcesInterface, ResourcesService } from '../../../../resources';
 import { createStandardContextIIFE } from '../../../_shared';
 import { getRequired, makeRequiredValidationModelForInputs, BitByBitBlockHandlerService, ValidationEntityInterface } from '../../../validations';
+import { vectorConstants } from './vector-constants';
+import { environment } from 'projects/bitbybit/src/environments/environment';
 
 export function createCoreVectorAllBlock(): void {
 
@@ -18,6 +20,7 @@ export function createCoreVectorAllBlock(): void {
             this.setOutput(true, 'Boolean');
             this.setColour('#fff');
             this.setTooltip(resources.block_verb_core_vector_all_description);
+            this.setHelpUrl(environment.docsUrl + vectorConstants.helpUrl + '#' + 'all');
         }
     };
 

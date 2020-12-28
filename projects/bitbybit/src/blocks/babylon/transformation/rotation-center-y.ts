@@ -3,6 +3,8 @@ import * as JavaScript from 'blockly/javascript';
 import { ResourcesService } from '../../../resources';
 import { createStandardContextIIFE } from '../../_shared';
 import { makeRequiredValidationModelForInputs, BitByBitBlockHandlerService } from '../../validations';
+import { environment } from 'projects/bitbybit/src/environments/environment';
+import { transformationConstants } from './transformation-constants';
 
 export function createRotationCenterYBlock(): void {
 
@@ -22,6 +24,7 @@ export function createRotationCenterYBlock(): void {
             this.setOutput(true, 'Array');
             this.setColour('#fff');
             this.setTooltip(resources.block_babylon_transformation_rotation_center_y_description);
+            this.setHelpUrl(environment.docsUrl + transformationConstants.helpUrl + '#' + 'rotationcentery');
         }
     };
 

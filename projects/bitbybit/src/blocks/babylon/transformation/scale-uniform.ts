@@ -3,6 +3,8 @@ import * as JavaScript from 'blockly/javascript';
 import { ResourcesService } from '../../../resources';
 import { createStandardContextIIFE } from '../../_shared';
 import { makeRequiredValidationModelForInputs, BitByBitBlockHandlerService, ValidationEntityInterface } from '../../validations';
+import { environment } from 'projects/bitbybit/src/environments/environment';
+import { transformationConstants } from './transformation-constants';
 
 export function createScaleUniformBlock(): void {
 
@@ -18,7 +20,7 @@ export function createScaleUniformBlock(): void {
             this.setOutput(true, 'Matrix');
             this.setColour('#fff');
             this.setTooltip(resources.block_babylon_transformation_scale_uniform_description);
-            this.setHelpUrl('');
+            this.setHelpUrl(environment.docsUrl + transformationConstants.helpUrl + '#' + 'uniformscale');   
         }
     };
 

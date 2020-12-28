@@ -3,6 +3,8 @@ import * as JavaScript from 'blockly/javascript';
 import { ResourcesService } from '../../../resources';
 import { createStandardContextIIFE } from '../../_shared';
 import { makeRequiredValidationModelForInputs, BitByBitBlockHandlerService, ValidationEntityInterface } from '../../validations';
+import { environment } from 'projects/bitbybit/src/environments/environment';
+import { transformationConstants } from './transformation-constants';
 
 export function createScaleXYZBlock(): void {
 
@@ -18,6 +20,7 @@ export function createScaleXYZBlock(): void {
             this.setOutput(true, 'Matrix');
             this.setColour('#fff');
             this.setTooltip(resources.block_babylon_transformation_scale_xyz_description);
+            this.setHelpUrl(environment.docsUrl + transformationConstants.helpUrl + '#' + 'scalexyz');   
         }
     };
 
