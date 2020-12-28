@@ -1,24 +1,17 @@
-# BitbybitCore
+# BitByBit
+Platform for programming geometry on the browser.
 
-This library was generated with [Angular CLI](https://github.com/angular/angular-cli) version 11.0.5.
+Visit https://bitbybit.dev and start your journey.
 
-## Code scaffolding
+# About
+BitByBit is an open source, community-based, frictionless web platform that allows creators to program geometry through simple visual programming language. This tool is great for all ages and can fulfil many artistic, educational, and practical needs of its users. Through familiar programming interface used in tools such as Scratch and Blockly.Games we expose powerful 3D algorithms that make it easier to implement various parametric tasks. Our goal is to make it very simple for users to share their ideas and designs by just exporting and importing scripts, uploading designs, and participating in lively discussions on Discord. We want to encourage everyone to engage in the future of this tool.
 
-Run `ng generate component component-name --project bitbybit-core` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module --project bitbybit-core`.
-> Note: Don't forget to add `--project bitbybit-core` or else it will be added to the default project in your `angular.json` file. 
+## Development server
+Programming language that was implemented in BitByBit platform consists of basic building blocks that can compose various 3D shapes. Starting from simple points, lines and going into NURBS curves and surfaces. This model allows creators to learn by experimenting. 3D environment that is integrated in the platform provides instant feedback and gratification, which inspires users to grow and innovate.
+Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
 
-## Build
+# Principles
+BitByBit will always keep it's Core free and opensource for its users. Principles of minimalism and simplicity are reflected in all of the design decisions we make. Application itself is frictionless, users don't need to create accounts or install browser plugins. We could not find a better Home screen for the application than the application itself. Website immediately starts the empty canvas for your code and an empty 3D world. All Core algorithms will always remain opensource and will not require any backend based server  infrastructure. This will allow application to be used on various devices as a Progressive Web App (PWA). After the application is loaded on your devices, internet connectivitiy will not be required for it to function.
 
-Run `ng build bitbybit-core` to build the project. The build artifacts will be stored in the `dist/` directory.
-
-## Publishing
-
-After building your library with `ng build bitbybit-core`, go to the dist folder `cd dist/bitbybit-core` and run `npm publish`.
-
-## Running unit tests
-
-Run `ng test bitbybit-core` to execute the unit tests via [Karma](https://karma-runner.github.io).
-
-## Further help
-
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
+# Major Dependencies
+Verbnurbs, BabylonJS, Blockly, JSCAD

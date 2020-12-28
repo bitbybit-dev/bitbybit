@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
-import { Scene } from './categories/scene';
-import { Transforms } from './categories/transforms';
-import { Vector } from './categories/vector';
+import { Scene } from './bitbybit/scene';
+import { Transforms } from './bitbybit/transforms';
+import { Vector } from './bitbybit/vector';
 @Injectable()
 export class BitByBitBase {
     constructor(
