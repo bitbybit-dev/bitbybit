@@ -4,6 +4,7 @@ import { ResourcesInterface, ResourcesService } from '../../../../resources';
 import { createStandardContextIIFE } from '../../../_shared';
 import { getRequired, makeRequiredValidationModelForInputs, BitByBitBlockHandlerService, ValidationEntityInterface } from '../../../validations';
 import { environment } from 'projects/bitbybit/src/environments/environment';
+import { vectorConstants } from './vector-constants';
 
 export function createCoreVectorAngleBetweenBlock(): void {
 
@@ -23,7 +24,7 @@ export function createCoreVectorAngleBetweenBlock(): void {
             this.setOutput(true, 'Number');
             this.setColour('#fff');
             this.setTooltip(resources.block_verb_core_vector_angle_between_description);
-            this.setHelpUrl(environment.docsUrl + '/classes/_blocks_code_code_vector_.vector.html#angle');
+            this.setHelpUrl(environment.docsUrl + vectorConstants + '#anglebetween');
         }
     };
 

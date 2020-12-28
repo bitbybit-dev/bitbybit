@@ -12,7 +12,7 @@ export class Vector {
     /**
      * Measures the angle between two vectors in degrees
      * <div>
-     *  <img src="../assets/images/blockly-block-images/vector/angle.png" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/vector/angleBetween.png" alt="Blockly Image"/>
      * </div>
      * @param inputs Contains two vectors represented as number arrays
      * @returns Number in degrees
@@ -24,9 +24,10 @@ export class Vector {
     /**
      * Measures the normalized 2d angle between two vectors in degrees
      * <div>
-     *  <img src="../assets/images/blockly-block-images/vector/angleBetweenNormalized2d.png" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/vector/angleBetweenNormalized2d.png" alt="Blockly Image"/>
      * </div>
      * @param inputs Contains two vectors represented as number arrays
+     * @returns Number in degrees
      */
     angleBetweenNormalized2d(inputs: TwoVectorsDto): number {
         return Angle.FromRadians(this.context.verb.core.Vec.angleBetweenNormalized2d(inputs.first, inputs.second)).degrees();
