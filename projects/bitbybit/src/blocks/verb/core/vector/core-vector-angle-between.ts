@@ -24,7 +24,7 @@ export function createCoreVectorAngleBetweenBlock(): void {
             this.setOutput(true, 'Number');
             this.setColour('#fff');
             this.setTooltip(resources.block_verb_core_vector_angle_between_description);
-            this.setHelpUrl(environment.docsUrl + vectorConstants + '#anglebetween');
+            this.setHelpUrl(environment.docsUrl + vectorConstants.helpUrl + '#anglebetween');
         }
     };
 

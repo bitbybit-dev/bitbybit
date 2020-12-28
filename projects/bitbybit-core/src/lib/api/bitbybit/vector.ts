@@ -2,10 +2,14 @@ import { Injectable } from '@angular/core';
 import { Angle } from '@babylonjs/core';
 import { Context } from '../context';
 
-@Injectable()
 /**
- * Contains various methods for vector mathematics
+ * Contains various methods for vector mathematics. Vector in bitbybit is simply an array, usually containing numbers. In 3D [x, y, z] form describes space, where y is the up vector.
+ * Because of this form Vector can be interchanged with Point, which also is an array in [x, y, z] form.
+ * <div>
+ *  <img src="../assets/images/blockly-images/vector/vector.png" alt="Blockly Image"/>
+ * </div>
  */
+@Injectable()
 export class Vector {
 
     constructor(private readonly context: Context) { }
@@ -35,6 +39,9 @@ export class Vector {
 
     /**
      * Measures a positive angle between two vectors given the reference vector in degrees
+     * <div>
+     *  <img src="../assets/images/blockly-images/vector/positiveAngleBetween.png" alt="Blockly Image"/>
+     * </div>
      * @param inputs Contains information of two vectors and a reference vector
      */
     positiveAngleBetween(inputs: TwoVectorsReferenceDto): number {
@@ -43,6 +50,9 @@ export class Vector {
 
     /**
      * Adds all vectors together
+     * <div>
+     *  <img src="../assets/images/blockly-images/vector/addAll.png" alt="Blockly Image"/>
+     * </div>
      * @param inputs Vectors to be added
      */
     addAll(inputs: VectorsDto): number[] {
@@ -51,6 +61,9 @@ export class Vector {
 
     /**
      * Adds two vectors together
+     * <div>
+     *  <img src="../assets/images/blockly-images/vector/add.png" alt="Blockly Image"/>
+     * </div>
      * @param inputs Two vectors to be added
      */
     add(inputs: TwoVectorsDto): number[] {
@@ -59,6 +72,9 @@ export class Vector {
 
     /**
      * Checks if the boolean array is true or false
+     * <div>
+     *  <img src="../assets/images/blockly-images/vector/all.png" alt="Blockly Image"/>
+     * </div>
      * @param inputs Vectors to be checked
      */
     all(inputs: VectorBoolDto): boolean {
@@ -67,6 +83,9 @@ export class Vector {
 
     /**
      * Cross two vectors
+     * <div>
+     *  <img src="../assets/images/blockly-images/vector/cross.png" alt="Blockly Image"/>
+     * </div>
      * @param inputs Two vectors to be crossed
      */
     cross(inputs: TwoVectorsDto): number[] {
@@ -75,6 +94,9 @@ export class Vector {
 
     /**
      * Squared distance between two vectors
+     * <div>
+     *  <img src="../assets/images/blockly-images/vector/distSquared.png" alt="Blockly Image"/>
+     * </div>
      * @param inputs Two vectors
      */
     distSquared(inputs: TwoVectorsDto): number {
@@ -83,6 +105,9 @@ export class Vector {
 
     /**
      * Distance between two vectors
+     * <div>
+     *  <img src="../assets/images/blockly-images/vector/dist.png" alt="Blockly Image"/>
+     * </div>
      * @param inputs Two vectors
      */
     dist(inputs: TwoVectorsDto): number {
@@ -91,6 +116,9 @@ export class Vector {
 
     /**
      * Divide the vector by a scalar value
+     * <div>
+     *  <img src="../assets/images/blockly-images/vector/div.png" alt="Blockly Image"/>
+     * </div>
      * @param inputs Contains vector and a scalar
      */
     div(inputs: VectorScalarDto): number[] {
@@ -99,6 +127,9 @@ export class Vector {
 
     /**
      * Computes the domain between minimum and maximum values of the vector
+     * <div>
+     *  <img src="../assets/images/blockly-images/vector/domain.png" alt="Blockly Image"/>
+     * </div>
      * @param inputs Vector information
      */
     domain(inputs: VectorDto): number {
@@ -107,6 +138,9 @@ export class Vector {
 
     /**
      * Dot product between two vectors
+     * <div>
+     *  <img src="../assets/images/blockly-images/vector/dot.png" alt="Blockly Image"/>
+     * </div>
      * @param inputs Two vectors
      */
     dot(inputs: TwoVectorsDto): number {
@@ -115,6 +149,9 @@ export class Vector {
 
     /**
      * Checks if vector is finite for each number and returns a boolean array
+     * <div>
+     *  <img src="../assets/images/blockly-images/vector/finite.png" alt="Blockly Image"/>
+     * </div>
      * @param inputs Vector with possibly infinite values
      */
     finite(inputs: VectorDto): boolean[] {
@@ -123,6 +160,9 @@ export class Vector {
 
     /**
      * Checks if the vector is zero length
+     * <div>
+     *  <img src="../assets/images/blockly-images/vector/isZero.png" alt="Blockly Image"/>
+     * </div>
      * @param inputs Vector to be checked
      */
     isZero(inputs: VectorDto): boolean {
@@ -131,6 +171,10 @@ export class Vector {
 
     /**
      * Finds in between vector between two vectors by providing a fracture
+     * 
+     * <div>
+     *  <img src="../assets/images/blockly-images/vector/lerp.png" alt="Blockly Image"/>
+     * </div>
      * @param inputs Information for finding vector between two vectors using a fraction
      */
     lerp(inputs: FractionTwoVectorsDto): number[] {
@@ -139,6 +183,9 @@ export class Vector {
 
     /**
      * Finds the maximum value in the vector
+     * <div>
+     *  <img src="../assets/images/blockly-images/vector/max.png" alt="Blockly Image"/>
+     * </div>
      * @param inputs Vector to be checked
      */
     max(inputs: VectorDto): number {
@@ -147,6 +194,9 @@ export class Vector {
 
     /**
      * Finds the minimum value in the vector
+     * <div>
+     *  <img src="../assets/images/blockly-images/vector/min.png" alt="Blockly Image"/>
+     * </div>
      * @param inputs Vector to be checked
      */
     min(inputs: VectorDto): number {
@@ -155,6 +205,9 @@ export class Vector {
 
     /**
      * Multiple vector with the scalar
+     * <div>
+     *  <img src="../assets/images/blockly-images/vector/mul.png" alt="Blockly Image"/>
+     * </div>
      * @param inputs Vector with a scalar
      */
     mul(inputs: VectorScalarDto): number[] {
@@ -163,6 +216,9 @@ export class Vector {
 
     /**
      * Negates the vector
+     * <div>
+     *  <img src="../assets/images/blockly-images/vector/neg.png" alt="Blockly Image"/>
+     * </div>
      * @param inputs Vector to negate
      */
     neg(inputs: VectorDto): number[] {
@@ -171,6 +227,9 @@ export class Vector {
 
     /**
      * Compute squared norm
+     * <div>
+     *  <img src="../assets/images/blockly-images/vector/normSquared.png" alt="Blockly Image"/>
+     * </div>
      * @param inputs Vector for squared norm
      */
     normSquared(inputs: VectorDto): number {
@@ -179,6 +238,9 @@ export class Vector {
 
     /**
      * Norm of the vector
+     * <div>
+     *  <img src="../assets/images/blockly-images/vector/norm.png" alt="Blockly Image"/>
+     * </div>
      * @param inputs Vector to compute the norm
      */
     norm(inputs: VectorDto): number {
@@ -187,6 +249,9 @@ export class Vector {
 
     /**
      * Normalize the vector
+     * <div>
+     *  <img src="../assets/images/blockly-images/vector/normalized.png" alt="Blockly Image"/>
+     * </div>
      * @param inputs Vector to normalize
      */
     normalized(inputs: VectorDto): number {
@@ -195,6 +260,9 @@ export class Vector {
 
     /**
      * Finds a point coordinates on the given distance ray that spans between the point along the direction vector
+     * <div>
+     *  <img src="../assets/images/blockly-images/vector/onRay.png" alt="Blockly Image"/>
+     * </div>
      * @param inputs Provide a point, vector and a distance for finding a point
      */
     onRay(inputs: RayPointDto): number[] {
@@ -203,6 +271,9 @@ export class Vector {
 
     /**
      * Creates a vector of integers between 0 and maximum ceiling integer
+     * <div>
+     *  <img src="../assets/images/blockly-images/vector/range.png" alt="Blockly Image"/>
+     * </div>
      * @param inputs Max value for the range
      */
     range(inputs: RangeMaxDto): number[] {
@@ -211,6 +282,9 @@ export class Vector {
 
     /**
      * Computes signed angle between two vectors and a reference. This will always return a smaller angle between two possible angles.
+     * <div>
+     *  <img src="../assets/images/blockly-images/vector/signedAngleBetween.png" alt="Blockly Image"/>
+     * </div>
      * @param inputs Contains information of two vectors and a reference vector
      */
     signedAngleBetween(inputs: TwoVectorsReferenceDto): number {
@@ -221,6 +295,9 @@ export class Vector {
 
     /**
      * Creates a vector that contains numbers spanning between minimum and maximum values at a given step
+     * <div>
+     *  <img src="../assets/images/blockly-images/vector/span.png" alt="Blockly Image"/>
+     * </div>
      * @param inputs Span information containing min, max and step values
      */
     span(inputs: SpanDto): number[] {
@@ -229,6 +306,9 @@ export class Vector {
 
     /**
      * Subtract two vectors
+     * <div>
+     *  <img src="../assets/images/blockly-images/vector/sub.png" alt="Blockly Image"/>
+     * </div>
      * @param inputs Two vectors
      */
     sub(inputs: TwoVectorsDto): number[] {
@@ -237,6 +317,9 @@ export class Vector {
 
     /**
      * Sums the values of the vector
+     * <div>
+     *  <img src="../assets/images/blockly-images/vector/sum.png" alt="Blockly Image"/>
+     * </div>
      * @param inputs Vector to sum
      */
     sum(inputs: VectorDto): number {

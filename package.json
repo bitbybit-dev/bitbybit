@@ -16,7 +16,7 @@
         "scully-docs:serve": "scully serve --project bitbybit-docs",
         "browserify-csg": "browserify csg.js --outfile csg-generated.js",
         "generate-api-declarations": "tsc --project projects/bitbybit/src/api/tsconfig.bbb.json",
-        "ts-api-docs": "node_modules/.bin/typedoc --out ts-api-docs/ projects/bitbybit-core/src/lib/api --tsconfig projects/bitbybit-core/src/lib/api/tsconfig.bbb.json --media assets/images/blockly-block-images/ && node mvdocpictures"
+        "docs": "node_modules/.bin/typedoc --out ts-api-docs/ projects/bitbybit-core/src/lib/api --tsconfig projects/bitbybit-core/src/lib/api/tsconfig.bbb.json --media assets/images/blockly-block-images/ && node mvdocpictures"
     },
     "private": true,
     "dependencies": {
