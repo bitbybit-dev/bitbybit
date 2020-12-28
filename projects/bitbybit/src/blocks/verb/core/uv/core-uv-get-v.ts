@@ -3,6 +3,8 @@ import * as JavaScript from 'blockly/javascript';
 import { ResourcesService } from '../../../../resources';
 import { createStandardContextIIFE } from '../../../_shared';
 import { makeRequiredValidationModelForInputs, BitByBitBlockHandlerService } from '../../../validations';
+import { environment } from 'projects/bitbybit/src/environments/environment';
+import { uvConstants } from './uv-constants';
 
 export function createCoreUVGetVBlock() {
 
@@ -18,6 +20,7 @@ export function createCoreUVGetVBlock() {
             this.setOutput(true, 'Number');
             this.setColour('#fff');
             this.setTooltip(resources.block_verb_core_uv_get_v_description);
+            this.setHelpUrl(environment.docsUrl + uvConstants.helpUrl + '#' + 'v');
         }
     };
 
