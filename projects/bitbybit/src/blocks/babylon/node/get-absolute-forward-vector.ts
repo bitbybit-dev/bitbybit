@@ -15,7 +15,7 @@ export function createNodeGetAbsoluteForwardVectorBlock(): void {
                 .setCheck('Node')
                 .setAlign(ALIGN_RIGHT)
                 .appendField(resources.block_babylon_node_get_absolute_forward_vector_input_node);
-            this.setOutput(true, 'Node');
+            this.setOutput(true, 'Array');
             this.setColour('#fff');
             this.setTooltip(resources.block_babylon_node_get_absolute_forward_vector_description);
             this.setHelpUrl('');
@@ -37,10 +37,7 @@ export function createNodeGetAbsoluteForwardVectorBlock(): void {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `
-            const dir = inputs.node.forward;
-            return [dir.x, dir.y, dir.z];
-`
+            `return bitbybit.node.getAbsoluteForwardVector(inputs);`
         );
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };

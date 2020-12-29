@@ -36,11 +36,7 @@ export function createNodeGetChildrenBlock(): void {
         const runtimeValidationModel = makeRuntimeValidationModel(resources, Object.keys(inputs));
         (block as any).validationModel = runtimeValidationModel;
 
-        const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `
-            return inputs.node.getChildren();
-`
-        );
+        const code = createStandardContextIIFE(block, blockSelector, inputs, true, `return bitbybit.node.getChildren(inputs);`);
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };
 }

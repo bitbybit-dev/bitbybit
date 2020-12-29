@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { Context } from '../context';
 import { Color4, Color3, Mesh } from '@babylonjs/core';
 import { GridMaterial } from '@babylonjs/materials';
+import * as Inputs from '../inputs/inputs';
 
 @Injectable()
 export class Scene {
@@ -12,7 +13,7 @@ export class Scene {
      * Changes the scene background colour for 3D space
      * @param inputs Describes the colour of the scene background
      */
-    backgroundColour(inputs: SceneBackgroundColourDto): void {
+    backgroundColour(inputs: Inputs.Scene.SceneBackgroundColourDto): void {
         this.context.scene.clearColor = Color4.FromColor3(Color3.FromHexString(inputs.colour));
     }
 
@@ -20,7 +21,7 @@ export class Scene {
      * Draws a grid mesh on the ground plane in 3D space. This helps to orient yourself in the world.
      * @param inputs Describes various parameters of the grid mesh like size, colour, etc.
      */
-    drawGridMesh(inputs: SceneDrawGridMeshDto): Mesh {
+    drawGridMesh(inputs: Inputs.Scene.SceneDrawGridMeshDto): Mesh {
         const groundMaterial = new GridMaterial(`groundMaterial${Math.random()}`, this.context.scene);
         groundMaterial.majorUnitFrequency = inputs.majorUnitFrequency;
         groundMaterial.minorUnitVisibility = inputs.minorUnitVisibility;
@@ -45,21 +46,4 @@ export class Scene {
         this.context.bitByBitBlocklyHelperService.clearAllDrawn();
     }
 
-}
-
-interface SceneBackgroundColourDto {
-    colour: string;
-}
-
-interface SceneDrawGridMeshDto {
-    width: number;
-    height: number;
-    subdivisions: number;
-    majorUnitFrequency: number;
-    minorUnitVisibility: number;
-    gridRatio: number;
-    opacity: number;
-    backFaceCulling: boolean;
-    mainColor: string;
-    secondaryColor: string;
 }

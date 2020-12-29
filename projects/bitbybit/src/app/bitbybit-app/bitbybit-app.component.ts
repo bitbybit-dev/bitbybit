@@ -2,7 +2,7 @@ import { HttpHeaders, HttpParams, HttpClient } from '@angular/common/http';
 import { AfterViewInit, ChangeDetectorRef, Component, OnInit, ViewChild, OnDestroy } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ArcRotateCamera, DirectionalLight, TransformNode, HemisphericLight } from '@babylonjs/core';
+import { ArcRotateCamera, DirectionalLight, TransformNode, HemisphericLight, WindowsMotionController } from '@babylonjs/core';
 import { Engine } from '@babylonjs/core/Engines/engine';
 import '@babylonjs/core/Materials/standardMaterial';
 import { Color3, Color4, Vector3 } from '@babylonjs/core/Maths/math';
@@ -35,6 +35,7 @@ import { EditorComponent } from 'ngx-monaco-editor';
 import { transpile } from 'typescript';
 import { UiStatesEnum } from './models/ui-states.enum';
 import { BitByBitBase, BitByBitBlocklyHelperService, Context, PrintSaveInterface } from 'projects/bitbybit-core/src/public-api';
+import * as Inputs from 'projects/bitbybit-core/src/lib/api/inputs/inputs';
 
 @Component({
     selector: 'app-root',
@@ -158,6 +159,7 @@ export class BitbybitAppComponent implements OnInit, OnDestroy, AfterViewInit {
                 this.windowBlockly = {};
                 this.context.scene = this.scene;
                 this.context.verb = (window as any).verb;
+                (window as any).Bit = { Inputs };
                 (window as any).BitByBitBase = this.bitByBit;
                 this.windowBlockly.scene = this.scene;
                 this.windowBlockly.workspace = this.workspace;
@@ -399,7 +401,7 @@ export class BitbybitAppComponent implements OnInit, OnDestroy, AfterViewInit {
     }
 
     run(): void {
-
+        let transpiledCode = false;
         try {
             this.clearMeshesAndMaterials();
             this.tagService.removeTagsIfNeeded();
@@ -413,9 +415,11 @@ export class BitbybitAppComponent implements OnInit, OnDestroy, AfterViewInit {
 
             if (this.currentUiState === UiStatesEnum.monaco) {
                 code = transpile(this.code);
+                transpiledCode = true;
             }
 
             eval(`const bitbybit = window.BitByBitBase;
+            const Bit = window.Bit;
             const BitByBit = {
                 scene: window.blockly.scene,
                 blocklyWorkspace: window.blockly.workspace,
@@ -432,13 +436,22 @@ export class BitbybitAppComponent implements OnInit, OnDestroy, AfterViewInit {
             }
 
         } catch (e) {
-            const blockThatWasActive = this.workspace.getBlockById(BitByBitBlockHandlerService.runningBlockId);
-            BitByBitBlockHandlerService.handleBlockException(blockThatWasActive, e);
-            this.openAlertDialog({
-                title: 'Code execution failed',
-                details: `Something went wrong when running the code. Check if there are no disconnected or misconfigured components on your canvas`,
-                message: `${e}`,
-            });
+            if (transpiledCode) {
+                this.openAlertDialog({
+                    title: 'Code execution failed',
+                    details: `Something went wrong when running the code.`,
+                    message: `${e}`,
+                });
+            } else {
+                const blockThatWasActive = this.workspace.getBlockById(BitByBitBlockHandlerService.runningBlockId);
+                BitByBitBlockHandlerService.handleBlockException(blockThatWasActive, e);
+                this.openAlertDialog({
+                    title: 'Code execution failed',
+                    details: `Something went wrong when running the code. Check if there are no disconnected or misconfigured components on your canvas`,
+                    message: `${e}`,
+                });
+            }
+
         }
     }
 

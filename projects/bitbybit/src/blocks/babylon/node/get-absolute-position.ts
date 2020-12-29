@@ -15,7 +15,7 @@ export function createNodeGetAbsolutePositionBlock(): void {
                 .setCheck('Node')
                 .setAlign(ALIGN_RIGHT)
                 .appendField(resources.block_babylon_node_get_absolute_position_input_node);
-            this.setOutput(true, 'Node');
+            this.setOutput(true, 'Array');
             this.setColour('#fff');
             this.setTooltip(resources.block_babylon_node_get_absolute_position_description);
             this.setHelpUrl('');
@@ -37,10 +37,7 @@ export function createNodeGetAbsolutePositionBlock(): void {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `
-            const position = inputs.node.getAbsolutePosition();
-            return [position.x, position.y, position.z];
-`
+            `return bitbybit.node.getAbsolutePosition(inputs);`
         );
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };

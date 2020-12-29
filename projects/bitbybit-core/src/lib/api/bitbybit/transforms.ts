@@ -1,8 +1,10 @@
 import { Injectable } from '@angular/core';
 import { Matrix, Vector3, Angle } from '@babylonjs/core';
+import * as Inputs from '../inputs/inputs';
 
 /**
- * Transformations help to move, scale, rotate and mirror objects. You can combine multiple transformations for object to be placed exactly into position and orientation that you want.
+ * Transformations help to move, scale, rotate and mirror objects. You can combine multiple transformations
+ * for object to be placed exactly into position and orientation that you want.
  * Contains various methods for transformations that represent 4x4 matrixes in flat 16 number arrays.
  */
 @Injectable()
@@ -16,7 +18,7 @@ export class Transforms {
      * @param inputs Rotation around center with an axis information
      * @returns array of transformations
      */
-    rotationCenterAxis(inputs: RotationCenterAxisDto): number[][] {
+    rotationCenterAxis(inputs: Inputs.Transforms.RotationCenterAxisDto): number[][] {
         return [
             Matrix.Translation(-inputs.center[0], -inputs.center[1], -inputs.center[2]).toArray() as number[],
             Matrix.RotationAxis(
@@ -34,7 +36,7 @@ export class Transforms {
      * @param inputs Rotation around center with an X axis information
      * @returns array of transformations
      */
-    rotationCenterX(inputs: RotationCenterDto): number[][] {
+    rotationCenterX(inputs: Inputs.Transforms.RotationCenterDto): number[][] {
         return [
             Matrix.Translation(-inputs.center[0], -inputs.center[1], -inputs.center[2]).toArray() as number[],
             Matrix.RotationX(Angle.FromDegrees(inputs.angle).radians()).toArray() as number[],
@@ -50,7 +52,7 @@ export class Transforms {
      * @param inputs Rotation around center with an Y axis information
      * @returns array of transformations
      */
-    rotationCenterY(inputs: RotationCenterDto): number[][] {
+    rotationCenterY(inputs: Inputs.Transforms.RotationCenterDto): number[][] {
         return [
             Matrix.Translation(-inputs.center[0], -inputs.center[1], -inputs.center[2]).toArray() as number[],
             Matrix.RotationY(Angle.FromDegrees(inputs.angle).radians()).toArray() as number[],
@@ -66,7 +68,7 @@ export class Transforms {
      * @param inputs Rotation around center with an Z axis information
      * @returns array of transformations
      */
-    rotationCenterZ(inputs: RotationCenterDto): number[][] {
+    rotationCenterZ(inputs: Inputs.Transforms.RotationCenterDto): number[][] {
         return [
             Matrix.Translation(-inputs.center[0], -inputs.center[1], -inputs.center[2]).toArray() as number[],
             Matrix.RotationZ(Angle.FromDegrees(inputs.angle).radians()).toArray() as number[],
@@ -82,7 +84,7 @@ export class Transforms {
      * @param inputs Yaw pitch roll rotation information
      * @returns array of transformations
      */
-    rotationCenterYawPitchRoll(inputs: RotationCenterYawPitchRollDto): number[][] {
+    rotationCenterYawPitchRoll(inputs: Inputs.Transforms.RotationCenterYawPitchRollDto): number[][] {
         return [
             Matrix.Translation(-inputs.center[0], -inputs.center[1], -inputs.center[2]).toArray() as number[],
             Matrix.RotationYawPitchRoll(
@@ -101,7 +103,7 @@ export class Transforms {
      * @param inputs Scale center xyz trnansformation
      * @returns array of transformations
      */
-    scaleCenterXYZ(inputs: ScaleCenterXYZDto): number[][] {
+    scaleCenterXYZ(inputs: Inputs.Transforms.ScaleCenterXYZDto): number[][] {
         return [
             Matrix.Translation(-inputs.center[0], -inputs.center[1], -inputs.center[2]).toArray() as number[],
             Matrix.Scaling(inputs.scaleXyz[0], inputs.scaleXyz[1], inputs.scaleXyz[2]).toArray() as number[],
@@ -117,7 +119,7 @@ export class Transforms {
      * @param inputs Scale XYZ number array information
      * @returns transformation
      */
-    scaleXYZ(inputs: ScaleXYZDto): number[] {
+    scaleXYZ(inputs: Inputs.Transforms.ScaleXYZDto): number[] {
         return Matrix.Scaling(inputs.scaleXyz[0], inputs.scaleXyz[1], inputs.scaleXyz[2]).toArray() as number[];
     }
 
@@ -129,7 +131,7 @@ export class Transforms {
      * @param inputs Scale Dto
      * @returns transformation
      */
-    uniformScale(inputs: UniformScaleDto): number[] {
+    uniformScale(inputs: Inputs.Transforms.UniformScaleDto): number[] {
         return Matrix.Scaling(inputs.scale, inputs.scale, inputs.scale).toArray() as number[];
     }
 
@@ -141,7 +143,7 @@ export class Transforms {
      * @param inputs Scale Dto with center point information
      * @returns array of transformations
      */
-    uniformScaleFromCenter(inputs: UniformScaleFromCenterDto): number[][] {
+    uniformScaleFromCenter(inputs: Inputs.Transforms.UniformScaleFromCenterDto): number[][] {
         return [
             Matrix.Translation(-inputs.center[0], -inputs.center[1], -inputs.center[2]).toArray() as number[],
             Matrix.Scaling(inputs.scale, inputs.scale, inputs.scale).toArray() as number[],
@@ -157,48 +159,8 @@ export class Transforms {
      * @param inputs Translation information
      * @returns transformation
      */
-    translationXYZ(inputs: TranslationXYZDto): number[] {
+    translationXYZ(inputs: Inputs.Transforms.TranslationXYZDto): number[] {
         return Matrix.Translation(inputs.translation[0], inputs.translation[1], inputs.translation[2]).toArray() as number[];
     }
 
-}
-
-interface RotationCenterAxisDto {
-    angle: number;
-    axis: number[];
-    center: number[];
-}
-
-interface RotationCenterDto {
-    angle: number;
-    center: number[];
-}
-
-interface RotationCenterYawPitchRollDto {
-    yaw: number;
-    pitch: number;
-    roll: number;
-    center: number[];
-}
-
-interface ScaleXYZDto {
-    scaleXyz: number[];
-}
-
-interface ScaleCenterXYZDto {
-    center: number[];
-    scaleXyz: number[];
-}
-
-interface UniformScaleDto {
-    scale: number;
-}
-
-interface UniformScaleFromCenterDto {
-    scale: number;
-    center: number[];
-}
-
-interface TranslationXYZDto {
-    translation: number[];
 }

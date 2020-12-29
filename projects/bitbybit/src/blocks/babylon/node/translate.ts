@@ -48,14 +48,7 @@ export function createNodeTranslateBlock(): void {
         const runtimeValidationModel = makeRuntimeValidationModel(resources, Object.keys(inputs));
         (block as any).validationModel = runtimeValidationModel;
 
-        return createStandardContextIIFE(block, blockSelector, inputs, false,
-            `
-            inputs.node.translate(
-                new BitByBit.BABYLON.Vector3(inputs.direction[0], inputs.direction[1], inputs.direction[2]),
-                inputs.distance,
-            );
-`
-        );
+        return createStandardContextIIFE(block, blockSelector, inputs, false, `bitbybit.node.translate(inputs);`);
     };
 }
 

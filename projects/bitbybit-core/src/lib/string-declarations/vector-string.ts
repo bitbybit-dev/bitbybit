@@ -1,8 +1,8 @@
-import { Injectable } from '@angular/core';
-import { Angle } from '@babylonjs/core';
+import { simplifyDeclaration } from "./simplify-declaration";
+
+export const vectorString = simplifyDeclaration(`
 import { Context } from '../context';
 import * as Inputs from '../inputs/inputs';
-
 /**
  * Contains various methods for vector mathematics. Vector in bitbybit is simply an array, usually containing numbers.
  * In 3D [x, y, z] form describes space, where y is the up vector.
@@ -11,10 +11,9 @@ import * as Inputs from '../inputs/inputs';
  *  <img src="../assets/images/blockly-images/vector/vector.png" alt="Blockly Image"/>
  * </div>
  */
-@Injectable()
-export class Vector {
-
-    constructor(private readonly context: Context) { }
+export declare class Vector {
+    private readonly context;
+    constructor(context: Context);
     /**
      * Measures the angle between two vectors in degrees
      * <div>
@@ -23,10 +22,7 @@ export class Vector {
      * @param inputs Contains two vectors represented as number arrays
      * @returns Number in degrees
      */
-    angleBetween(inputs: Inputs.Vector.TwoVectorsDto): number {
-        return Angle.FromRadians(this.context.verb.core.Vec.angleBetween(inputs.first, inputs.second)).degrees();
-    }
-
+    angleBetween(inputs: Inputs.Vector.TwoVectorsDto): number;
     /**
      * Measures the normalized 2d angle between two vectors in degrees
      * <div>
@@ -35,10 +31,7 @@ export class Vector {
      * @param inputs Contains two vectors represented as number arrays
      * @returns Number in degrees
      */
-    angleBetweenNormalized2d(inputs: Inputs.Vector.TwoVectorsDto): number {
-        return Angle.FromRadians(this.context.verb.core.Vec.angleBetweenNormalized2d(inputs.first, inputs.second)).degrees();
-    }
-
+    angleBetweenNormalized2d(inputs: Inputs.Vector.TwoVectorsDto): number;
     /**
      * Measures a positive angle between two vectors given the reference vector in degrees
      * <div>
@@ -47,10 +40,7 @@ export class Vector {
      * @param inputs Contains information of two vectors and a reference vector
      * @returns Number in degrees
      */
-    positiveAngleBetween(inputs: Inputs.Vector.TwoVectorsReferenceDto): number {
-        return Angle.FromRadians(this.context.verb.core.Vec.positiveAngleBetween(inputs.first, inputs.second, inputs.reference)).degrees();
-    }
-
+    positiveAngleBetween(inputs: Inputs.Vector.TwoVectorsReferenceDto): number;
     /**
      * Adds all vector xyz values together and create a new vector
      * <div>
@@ -59,10 +49,7 @@ export class Vector {
      * @param inputs Vectors to be added
      * @returns New vector that has xyz values as sums of all the vectors
      */
-    addAll(inputs: Inputs.Vector.VectorsDto): number[] {
-        return this.context.verb.core.Vec.addAll(inputs.vectors);
-    }
-
+    addAll(inputs: Inputs.Vector.VectorsDto): number[];
     /**
      * Adds two vectors together
      * <div>
@@ -71,10 +58,7 @@ export class Vector {
      * @param inputs Two vectors to be added
      * @returns Number array representing vector
      */
-    add(inputs: Inputs.Vector.TwoVectorsDto): number[] {
-        return this.context.verb.core.Vec.add(inputs.first, inputs.second);
-    }
-
+    add(inputs: Inputs.Vector.TwoVectorsDto): number[];
     /**
      * Checks if the boolean array contains only true values, if there's a single false it will return false.
      * <div>
@@ -83,10 +67,7 @@ export class Vector {
      * @param inputs Vectors to be checked
      * @returns Boolean indicating if vector contains only true values
      */
-    all(inputs: Inputs.Vector.VectorBoolDto): boolean {
-        return this.context.verb.core.Vec.all(inputs.vector);
-    }
-
+    all(inputs: Inputs.Vector.VectorBoolDto): boolean;
     /**
      * Cross two vectors
      * <div>
@@ -95,10 +76,7 @@ export class Vector {
      * @param inputs Two vectors to be crossed
      * @returns Crossed vector
      */
-    cross(inputs: Inputs.Vector.TwoVectorsDto): number[] {
-        return this.context.verb.core.Vec.cross(inputs.first, inputs.second);
-    }
-
+    cross(inputs: Inputs.Vector.TwoVectorsDto): number[];
     /**
      * Squared distance between two vectors
      * <div>
@@ -107,10 +85,7 @@ export class Vector {
      * @param inputs Two vectors
      * @returns Number representing squared distance between two vectors
      */
-    distSquared(inputs: Inputs.Vector.TwoVectorsDto): number {
-        return this.context.verb.core.Vec.distSquared(inputs.first, inputs.second);
-    }
-
+    distSquared(inputs: Inputs.Vector.TwoVectorsDto): number;
     /**
      * Distance between two vectors
      * <div>
@@ -119,10 +94,7 @@ export class Vector {
      * @param inputs Two vectors
      * @returns Number representing distance between two vectors
      */
-    dist(inputs: Inputs.Vector.TwoVectorsDto): number {
-        return this.context.verb.core.Vec.dist(inputs.first, inputs.second);
-    }
-
+    dist(inputs: Inputs.Vector.TwoVectorsDto): number;
     /**
      * Divide the vector by a scalar value/
      * <div>
@@ -131,10 +103,7 @@ export class Vector {
      * @param inputs Contains vector and a scalar
      * @returns Vector that is a result of division by a scalar
      */
-    div(inputs: Inputs.Vector.VectorScalarDto): number[] {
-        return this.context.verb.core.Vec.div(inputs.vector, inputs.scalar);
-    }
-
+    div(inputs: Inputs.Vector.VectorScalarDto): number[];
     /**
      * Computes the domain between minimum and maximum values of the vector
      * <div>
@@ -143,10 +112,7 @@ export class Vector {
      * @param inputs Vector information
      * @returns Number representing distance between two vectors
      */
-    domain(inputs: Inputs.Vector.VectorDto): number {
-        return this.context.verb.core.Vec.domain(inputs.vector);
-    }
-
+    domain(inputs: Inputs.Vector.VectorDto): number;
     /**
      * Dot product between two vectors
      * <div>
@@ -155,10 +121,7 @@ export class Vector {
      * @param inputs Two vectors
      * @returns Number representing dot product of the vector
      */
-    dot(inputs: Inputs.Vector.TwoVectorsDto): number {
-        return this.context.verb.core.Vec.dot(inputs.first, inputs.second);
-    }
-
+    dot(inputs: Inputs.Vector.TwoVectorsDto): number;
     /**
      * Checks if vector is finite for each number and returns a boolean array
      * <div>
@@ -168,10 +131,7 @@ export class Vector {
      * @returns Vector array that contains boolean values for each number in the input
      * vector that identifies if value is finite (true) or infinite (false)
      */
-    finite(inputs: Inputs.Vector.VectorDto): boolean[] {
-        return this.context.verb.core.Vec.finite(inputs.vector);
-    }
-
+    finite(inputs: Inputs.Vector.VectorDto): boolean[];
     /**
      * Checks if the vector is zero length
      * <div>
@@ -180,10 +140,7 @@ export class Vector {
      * @param inputs Vector to be checked
      * @returns Boolean that identifies if vector is zero length
      */
-    isZero(inputs: Inputs.Vector.VectorDto): boolean {
-        return this.context.verb.core.Vec.isZero(inputs.vector);
-    }
-
+    isZero(inputs: Inputs.Vector.VectorDto): boolean;
     /**
      * Finds in between vector between two vectors by providing a fracture
      * <div>
@@ -192,10 +149,7 @@ export class Vector {
      * @param inputs Information for finding vector between two vectors using a fraction
      * @returns Vector that is in between two vectors
      */
-    lerp(inputs: Inputs.Vector.FractionTwoVectorsDto): number[] {
-        return this.context.verb.core.Vec.lerp(inputs.fraction, inputs.first, inputs.second);
-    }
-
+    lerp(inputs: Inputs.Vector.FractionTwoVectorsDto): number[];
     /**
      * Finds the maximum value in the vector
      * <div>
@@ -204,10 +158,7 @@ export class Vector {
      * @param inputs Vector to be checked
      * @returns Largest number in the vector
      */
-    max(inputs: Inputs.Vector.VectorDto): number {
-        return this.context.verb.core.Vec.max(inputs.vector);
-    }
-
+    max(inputs: Inputs.Vector.VectorDto): number;
     /**
      * Finds the minimum value in the vector
      * <div>
@@ -216,10 +167,7 @@ export class Vector {
      * @param inputs Vector to be checked
      * @returns Lowest number in the vector
      */
-    min(inputs: Inputs.Vector.VectorDto): number {
-        return this.context.verb.core.Vec.min(inputs.vector);
-    }
-
+    min(inputs: Inputs.Vector.VectorDto): number;
     /**
      * Multiple vector with the scalar
      * <div>
@@ -228,10 +176,7 @@ export class Vector {
      * @param inputs Vector with a scalar
      * @returns Vector that results from multiplication
      */
-    mul(inputs: Inputs.Vector.VectorScalarDto): number[] {
-        return inputs.vector.map(s => s * inputs.scalar);
-    }
-
+    mul(inputs: Inputs.Vector.VectorScalarDto): number[];
     /**
      * Negates the vector
      * <div>
@@ -240,10 +185,7 @@ export class Vector {
      * @param inputs Vector to negate
      * @returns Negative vector
      */
-    neg(inputs: Inputs.Vector.VectorDto): number[] {
-        return this.context.verb.core.Vec.neg(inputs.vector);
-    }
-
+    neg(inputs: Inputs.Vector.VectorDto): number[];
     /**
      * Compute squared norm
      * <div>
@@ -252,10 +194,7 @@ export class Vector {
      * @param inputs Vector for squared norm
      * @returns Number that is squared norm
      */
-    normSquared(inputs: Inputs.Vector.VectorDto): number {
-        return this.context.verb.core.Vec.normSquared(inputs.vector);
-    }
-
+    normSquared(inputs: Inputs.Vector.VectorDto): number;
     /**
      * Norm of the vector
      * <div>
@@ -264,10 +203,7 @@ export class Vector {
      * @param inputs Vector to compute the norm
      * @returns Number that is norm of the vector
      */
-    norm(inputs: Inputs.Vector.VectorDto): number {
-        return this.context.verb.core.Vec.norm(inputs.vector);
-    }
-
+    norm(inputs: Inputs.Vector.VectorDto): number;
     /**
      * Normalize the vector into a unit vector, that has a length of 1
      * <div>
@@ -276,10 +212,7 @@ export class Vector {
      * @param inputs Vector to normalize
      * @returns Unit vector that has length of 1
      */
-    normalized(inputs: Inputs.Vector.VectorDto): number {
-        return this.context.verb.core.Vec.normalized(inputs.vector);
-    }
-
+    normalized(inputs: Inputs.Vector.VectorDto): number;
     /**
      * Finds a point coordinates on the given distance ray that spans between the point along the direction vector
      * <div>
@@ -288,10 +221,7 @@ export class Vector {
      * @param inputs Provide a point, vector and a distance for finding a point
      * @returns Vector representing point on the ray
      */
-    onRay(inputs: Inputs.Vector.RayPointDto): number[] {
-        return this.context.verb.core.Vec.onRay(inputs.point, inputs.vector, inputs.distance);
-    }
-
+    onRay(inputs: Inputs.Vector.RayPointDto): number[];
     /**
      * Creates a vector of integers between 0 and maximum ceiling integer
      * <div>
@@ -300,10 +230,7 @@ export class Vector {
      * @param inputs Max value for the range
      * @returns Vector containing items from 0 to max
      */
-    range(inputs: Inputs.Vector.RangeMaxDto): number[] {
-        return this.context.verb.core.Vec.range(inputs.max);
-    }
-
+    range(inputs: Inputs.Vector.RangeMaxDto): number[];
     /**
      * Computes signed angle between two vectors and a reference. This will always return a smaller angle between two possible angles.
      * <div>
@@ -312,12 +239,7 @@ export class Vector {
      * @param inputs Contains information of two vectors and a reference vector
      * @returns Signed angle in degrees
      */
-    signedAngleBetween(inputs: Inputs.Vector.TwoVectorsReferenceDto): number {
-        return Angle.FromRadians(
-            this.context.verb.core.Vec.signedAngleBetween(inputs.first, inputs.second, inputs.reference)
-        ).degrees();
-    }
-
+    signedAngleBetween(inputs: Inputs.Vector.TwoVectorsReferenceDto): number;
     /**
      * Creates a vector that contains numbers spanning between minimum and maximum values at a given step
      * <div>
@@ -326,10 +248,7 @@ export class Vector {
      * @param inputs Span information containing min, max and step values
      * @returns Vector containing number between min, max and increasing at a given step
      */
-    span(inputs: Inputs.Vector.SpanDto): number[] {
-        return this.context.verb.core.Vec.span(inputs.min, inputs.max, inputs.step);
-    }
-
+    span(inputs: Inputs.Vector.SpanDto): number[];
     /**
      * Subtract two vectors
      * <div>
@@ -338,10 +257,7 @@ export class Vector {
      * @param inputs Two vectors
      * @returns Vector that result by subtraction two vectors
      */
-    sub(inputs: Inputs.Vector.TwoVectorsDto): number[] {
-        return this.context.verb.core.Vec.sub(inputs.first, inputs.second);
-    }
-
+    sub(inputs: Inputs.Vector.TwoVectorsDto): number[];
     /**
      * Sums the values of the vector
      * <div>
@@ -350,7 +266,6 @@ export class Vector {
      * @param inputs Vector to sum
      * @returns Number that results by adding up all values in the vector
      */
-    sum(inputs: Inputs.Vector.VectorDto): number {
-        return this.context.verb.core.Vec.sum(inputs.vector);
-    }
+    sum(inputs: Inputs.Vector.VectorDto): number;
 }
+`);

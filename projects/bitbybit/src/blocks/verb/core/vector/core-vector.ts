@@ -6,13 +6,13 @@ import { makeRequiredValidationModelForInputs, BitByBitBlockHandlerService } fro
 import { environment } from 'projects/bitbybit/src/environments/environment';
 import { vectorConstants } from './vector-constants';
 
-export function createCoreVector3Block() {
+export function createCoreVector3Block(): void {
 
     const resources = ResourcesService.getResources();
     const blockSelector = 'verb_core_vector';
 
     Blocks[blockSelector] = {
-        init() {
+        init(): void {
             this.appendValueInput('X')
                 .setCheck('Number')
                 .setAlign(ALIGN_RIGHT)

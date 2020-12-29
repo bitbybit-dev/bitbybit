@@ -3,13 +3,13 @@ import * as JavaScript from 'blockly/javascript';
 import { ResourcesService } from '../../../resources';
 import { createStandardContextIIFE } from '../../_shared';
 
-export function createNodeGetRootBlock() {
+export function createNodeGetRootBlock(): void {
 
     const resources = ResourcesService.getResources();
     const blockSelector = 'base_geometry_node_get_root';
 
     Blocks[blockSelector] = {
-        init() {
+        init(): void {
             this.appendDummyInput('RootNode')
                 .setAlign(ALIGN_RIGHT)
                 .appendField(resources.block_babylon_node_get_root_input_root);
@@ -25,9 +25,7 @@ export function createNodeGetRootBlock() {
         };
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `
-            return BitByBit.scene.getTransformNodeByID('root');
-`
+            `return bitbybit.node.getRootNode();`
         );
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };

@@ -15,7 +15,7 @@ export function createNodeGetAbsoluteUpVectorBlock(): void {
                 .setCheck('Node')
                 .setAlign(ALIGN_RIGHT)
                 .appendField(resources.block_babylon_node_get_absolute_up_vector_input_node);
-            this.setOutput(true, 'Node');
+            this.setOutput(true, 'Array');
             this.setColour('#fff');
             this.setTooltip(resources.block_babylon_node_get_absolute_up_vector_description);
             this.setHelpUrl('');
@@ -37,10 +37,7 @@ export function createNodeGetAbsoluteUpVectorBlock(): void {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `
-            const dir = inputs.node.up;
-            return [dir.x, dir.y, dir.z];
-`
+            `return bitbybit.node.getAbsoluteUpVector(inputs);`
         );
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };

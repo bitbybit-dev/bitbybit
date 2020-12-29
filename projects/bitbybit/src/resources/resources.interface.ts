@@ -1150,8 +1150,8 @@ export interface ResourcesInterface {
     block_babylon_node_world_description: string;
     block_babylon_node_get_root_input_root: string;
     block_babylon_node_get_root_description: string;
-    block_babylon_node_get_rotation_quaternion_input_node: string;
-    block_babylon_node_get_rotation_quaternion_description: string;
+    block_babylon_node_get_rotation_transformation_input_node: string;
+    block_babylon_node_get_rotation_transformation_description: string;
     block_babylon_node_get_rotation_input_node: string;
     block_babylon_node_get_rotation_description: string;
     block_babylon_node_get_parent_input_node: string;
@@ -1162,8 +1162,8 @@ export interface ResourcesInterface {
     block_babylon_node_get_absolute_position_description: string;
     block_babylon_node_get_position_expressed_in_local_space_input_node: string;
     block_babylon_node_get_position_expressed_in_local_space_description: string;
-    block_babylon_node_get_absolute_rotation_quaternion_input_node: string;
-    block_babylon_node_get_absolute_rotation_quaternion_description: string;
+    block_babylon_node_get_absolute_rotation_transformation_input_node: string;
+    block_babylon_node_get_absolute_rotation_transformation_description: string;
     block_babylon_node_get_absolute_up_vector_input_node: string;
     block_babylon_node_get_absolute_up_vector_description: string;
     block_babylon_node_get_absolute_right_vector_input_node: string;

@@ -44,11 +44,7 @@ export function createNodeSetAbsolutePositionBlock(): void {
         (block as any).validationModel = runtimeValidationModel;
 
         return createStandardContextIIFE(block, blockSelector, inputs, false,
-            `
-            inputs.node.setAbsolutePosition(
-                new BitByBit.BABYLON.Vector3(inputs.position[0], inputs.position[1], inputs.position[2]),
-            );
-`
+            `bitbybit.node.setAbsolutePosition(inputs);`
         );
     };
 }

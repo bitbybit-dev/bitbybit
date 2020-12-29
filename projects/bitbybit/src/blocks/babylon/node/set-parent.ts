@@ -43,13 +43,7 @@ export function createNodeSetParentBlock(): void {
         const runtimeValidationModel = makeRuntimeValidationModel(resources, Object.keys(inputs));
         (block as any).validationModel = runtimeValidationModel;
 
-        return createStandardContextIIFE(block, blockSelector, inputs, false,
-            `
-            inputs.node.setParent(
-                inputs.parentNode
-            );
-`
-        );
+        return createStandardContextIIFE(block, blockSelector, inputs, false, `bitbybit.node.setParent(inputs);`);
     };
 }
 

@@ -66,10 +66,7 @@ export function createDrawNodeBlock() {
         (block as any).validationModel = runtimeValidationModel;
 
         return createStandardContextIIFE(block, blockSelector, inputs, false,
-            `
-            const CoTAxis = BitByBit.BitByBitBlocklyHelperService.localAxes(inputs.size, BitByBit.scene, inputs.colorX, inputs.colorY, inputs.colorZ);
-            CoTAxis.parent = inputs.node;
- `
+            `bitbybit.node.drawNodes(inputs);`
         );
     };
 }

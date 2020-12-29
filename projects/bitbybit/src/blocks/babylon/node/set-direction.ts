@@ -44,11 +44,7 @@ export function createNodeSetDirectionBlock(): void {
         (block as any).validationModel = runtimeValidationModel;
 
         return createStandardContextIIFE(block, blockSelector, inputs, false,
-            `
-            inputs.node.setDirection(
-                new BitByBit.BABYLON.Vector3(inputs.direction[0], inputs.direction[1], inputs.direction[2]),
-            );
-`
+            `bitbybit.node.setDirection(inputs);`
         );
     };
 }

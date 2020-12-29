@@ -19,7 +19,7 @@ export function createNodeRotateBlock(): void {
                 .setCheck('Array')
                 .setAlign(ALIGN_RIGHT)
                 .appendField(resources.block_babylon_node_rotate_input_axis.toLowerCase());
-            this.appendValueInput('Amount')
+            this.appendValueInput('Angle')
                 .setCheck('Number')
                 .setAlign(ALIGN_RIGHT)
                 .appendField(resources.block_babylon_node_rotate_input_amount.toLowerCase());
@@ -37,7 +37,7 @@ export function createNodeRotateBlock(): void {
             node: (JavaScript as any).valueToCode(block, 'Node', (JavaScript as any).ORDER_ATOMIC),
             position: (JavaScript as any).valueToCode(block, 'Position', (JavaScript as any).ORDER_ATOMIC),
             axis: (JavaScript as any).valueToCode(block, 'Axis', (JavaScript as any).ORDER_ATOMIC),
-            amount: (JavaScript as any).valueToCode(block, 'Amount', (JavaScript as any).ORDER_ATOMIC),
+            angle: (JavaScript as any).valueToCode(block, 'Angle', (JavaScript as any).ORDER_ATOMIC),
         };
 
         // this is first set of validations to check that all inputs are non empty strings
@@ -49,14 +49,7 @@ export function createNodeRotateBlock(): void {
         const runtimeValidationModel = makeRuntimeValidationModel(resources, Object.keys(inputs));
         (block as any).validationModel = runtimeValidationModel;
 
-        return createStandardContextIIFE(block, blockSelector, inputs, false,
-            `
-            inputs.node.rotate(
-                new BitByBit.BABYLON.Vector3(inputs.axis[0], inputs.axis[1], inputs.axis[2]),
-                BitByBit.BABYLON.Angle.FromDegrees(inputs.amount).radians()
-            );
-`
-        );
+        return createStandardContextIIFE(block, blockSelector, inputs, false, `bitbybit.node.rotate(inputs);`);
     };
 }
 

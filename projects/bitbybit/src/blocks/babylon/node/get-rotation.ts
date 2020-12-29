@@ -4,18 +4,18 @@ import { ResourcesInterface, ResourcesService } from '../../../resources';
 import { createStandardContextIIFE } from '../../_shared';
 import { getRequired, makeRequiredValidationModelForInputs, BitByBitBlockHandlerService, ValidationEntityInterface } from '../../validations';
 
-export function createNodeGetRotationBlock() {
+export function createNodeGetRotationBlock(): void {
 
     const resources = ResourcesService.getResources();
     const blockSelector = 'base_geometry_node_get_rotation';
 
     Blocks[blockSelector] = {
-        init() {
+        init(): void {
             this.appendValueInput('Node')
                 .setCheck('Node')
                 .setAlign(ALIGN_RIGHT)
                 .appendField(resources.block_babylon_node_get_rotation_input_node);
-            this.setOutput(true, 'Node');
+            this.setOutput(true, 'Array');
             this.setColour('#fff');
             this.setTooltip(resources.block_babylon_node_get_rotation_description);
             this.setHelpUrl('');
@@ -37,14 +37,7 @@ export function createNodeGetRotationBlock() {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `
-            const vector3 = inputs.node.rotation;
-            return [
-                BitByBit.BABYLON.Angle.FromRadians(vector3.x).degrees(),
-                BitByBit.BABYLON.Angle.FromRadians(vector3.y).degrees(),
-                BitByBit.BABYLON.Angle.FromRadians(vector3.z).degrees()
-            ];
-`
+            `return bitbybit.node.getRotation(inputs);`
         );
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };
