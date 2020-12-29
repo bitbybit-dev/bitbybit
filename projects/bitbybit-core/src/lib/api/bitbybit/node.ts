@@ -15,6 +15,9 @@ export class Node {
 
     /**
      * Draws a node of given size with given colours for every axis
+     * <div>
+     *  <img src="../assets/images/blockly-images/node/drawNode.png" alt="Blockly Image"/>
+     * </div>
      * @param inputs Contains node data that includes size and colour information
      */
     drawNode(inputs: Inputs.Node.DrawNodeDto): void {
@@ -26,6 +29,9 @@ export class Node {
 
     /**
      * Draws a nodes of given size with given colours for every axis
+     * <div>
+     *  <img src="../assets/images/blockly-images/node/drawNodes.png" alt="Blockly Image"/>
+     * </div>
      * @param inputs Contains node data that includes size and colour information
      */
     drawNodes(inputs: Inputs.Node.DrawNodesDto): void {
@@ -38,6 +44,9 @@ export class Node {
 
     /**
      * Creates a node on the origin with the given rotations in the parent coordinate system
+     * <div>
+     *  <img src="../assets/images/blockly-images/node/createNodeFromRotation.png" alt="Blockly Image"/>
+     * </div>
      * @param inputs Contains information for origin, rotation and parent node
      * @returns A new node
      */
@@ -57,6 +66,9 @@ export class Node {
 
     /**
      * Creates a world node which has root node as his parent
+     * <div>
+     *  <img src="../assets/images/blockly-images/node/createWorldNode.png" alt="Blockly Image"/>
+     * </div>
      * @returns A new node whos parent is the root node of the scene
      */
     createWorldNode(): TransformNode {
@@ -67,6 +79,9 @@ export class Node {
 
     /**
      * Gets the absolute forward facing vector in world space
+     * <div>
+     *  <img src="../assets/images/blockly-images/node/getAbsoluteForwardVector.png" alt="Blockly Image"/>
+     * </div>
      * @param inputs Node from which to get the forward vector
      * @returns Vector as an array of numbers
      */
@@ -77,6 +92,9 @@ export class Node {
 
     /**
      * Gets the absolute right facing vector in world space
+     * <div>
+     *  <img src="../assets/images/blockly-images/node/getAbsoluteRightVector.png" alt="Blockly Image"/>
+     * </div>
      * @param inputs Node from which to get the right vector
      * @returns Vector as an array of numbers
      */
@@ -87,6 +105,9 @@ export class Node {
 
     /**
      * Gets the absolute up facing vector in world space
+     * <div>
+     *  <img src="../assets/images/blockly-images/node/getAbsoluteUpVector.png" alt="Blockly Image"/>
+     * </div>
      * @param inputs Node from which to get the up vector
      * @returns Vector as an array of numbers
      */
@@ -97,6 +118,9 @@ export class Node {
 
     /**
      * Gets the absolute position of the node as origin vector in world space
+     * <div>
+     *  <img src="../assets/images/blockly-images/node/getAbsolutePosition.png" alt="Blockly Image"/>
+     * </div>
      * @param inputs Node from which to get the absolute position
      * @returns Vector as an array of numbers indicating location of origin in world space
      */
@@ -107,6 +131,9 @@ export class Node {
 
     /**
      * Gets the absolute rotation of the node as a transformation matrix encoded in array of 16 numbers
+     * <div>
+     *  <img src="../assets/images/blockly-images/node/getAbsoluteRotationTransformation.png" alt="Blockly Image"/>
+     * </div>
      * @param inputs Node from which to get the rotation transformation
      * @returns Transformation as an array of 16 numbers
      */
@@ -118,6 +145,9 @@ export class Node {
 
     /**
      * Gets the rotation of the node in local parent coordinate space as a transformation matrix encoded in array of 16 numbers
+     * <div>
+     *  <img src="../assets/images/blockly-images/node/getRotationTransformation.png" alt="Blockly Image"/>
+     * </div>
      * @param inputs Node from which to get the rotation transformation
      * @returns Transformation as an array of 16 numbers
      */
@@ -129,6 +159,9 @@ export class Node {
 
     /**
      * Gets children of the node
+     * <div>
+     *  <img src="../assets/images/blockly-images/node/getChildren.png" alt="Blockly Image"/>
+     * </div>
      * @param inputs Node from which to get the children
      * @returns List of children nodes in the array
      */
@@ -138,6 +171,9 @@ export class Node {
 
     /**
      * Gets parent of the node
+     * <div>
+     *  <img src="../assets/images/blockly-images/node/getParent.png" alt="Blockly Image"/>
+     * </div>
      * @param inputs Node from which to get a parent
      * @returns Parent node
      */
@@ -147,6 +183,9 @@ export class Node {
 
     /**
      * Gets the position of the node expressed in local space
+     * <div>
+     *  <img src="../assets/images/blockly-images/node/getPositionExpressedInLocalSpace.png" alt="Blockly Image"/>
+     * </div>
      * @param inputs Node from which to get the position in local space
      * @returns Position vector
      */
@@ -157,6 +196,9 @@ export class Node {
 
     /**
      * Gets the root node
+     * <div>
+     *  <img src="../assets/images/blockly-images/node/getRootNode.png" alt="Blockly Image"/>
+     * </div>
      * @returns Root node
      */
     getRootNode(): TransformNode {
@@ -165,6 +207,9 @@ export class Node {
 
     /**
      * Gets the euler rotations
+     * <div>
+     *  <img src="../assets/images/blockly-images/node/getRotation.png" alt="Blockly Image"/>
+     * </div>
      * @param inputs Node from which to get rotation
      * @returns Euler rotations of x, y and z angles in the number array
      */
@@ -179,6 +224,9 @@ export class Node {
 
     /**
      * Rotates the node around axis and given position by a given angle
+     * <div>
+     *  <img src="../assets/images/blockly-images/node/rotateAroundAxisWithPosition.png" alt="Blockly Image"/>
+     * </div>
      * @param inputs Rotation around axis information
      */
     rotateAroundAxisWithPosition(inputs: Inputs.Node.RotateAroundAxisNodeDto): void {
@@ -191,6 +239,9 @@ export class Node {
 
     /**
      * Rotates the node around the origin and given axis
+     * <div>
+     *  <img src="../assets/images/blockly-images/node/rotate.png" alt="Blockly Image"/>
+     * </div>
      * @param inputs Rotation information
      */
     rotate(inputs: Inputs.Node.RotateNodeDto): void {
@@ -202,6 +253,9 @@ export class Node {
 
     /**
      * Sets the absolute position of the node
+     * <div>
+     *  <img src="../assets/images/blockly-images/node/setAbsolutePosition.png" alt="Blockly Image"/>
+     * </div>
      * @param inputs Node absolute position information
      */
     setAbsolutePosition(inputs: Inputs.Node.NodePositionDto): void {
@@ -212,6 +266,9 @@ export class Node {
 
     /**
      * Sets the direction of the node
+     * <div>
+     *  <img src="../assets/images/blockly-images/node/setDirection.png" alt="Blockly Image"/>
+     * </div>
      * @param inputs Direction information
      */
     setDirection(inputs: Inputs.Node.NodeDirectionDto): void {
@@ -222,6 +279,9 @@ export class Node {
 
     /**
      * Sets the new parent to the node
+     * <div>
+     *  <img src="../assets/images/blockly-images/node/setParent.png" alt="Blockly Image"/>
+     * </div>
      * @param inputs Node parent information
      */
     setParent(inputs: Inputs.Node.NodeParentDto): void {
@@ -232,6 +292,9 @@ export class Node {
 
     /**
      * Translates the node by a given direction vector and a distance
+     * <div>
+     *  <img src="../assets/images/blockly-images/node/translate.png" alt="Blockly Image"/>
+     * </div>
      * @param inputs Node translation information
      */
     translate(inputs: Inputs.Node.NodeTranslationDto): void {
