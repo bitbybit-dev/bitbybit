@@ -1,3 +1,3 @@
 export const intervalConstants = {
-    helpUrl: '/interfaces/_api_bitbybit_base_types_.intervaldto.html'
+    helpUrl: '/classes/_api_bitbybit_base_types_.intervaldto.html'
 }

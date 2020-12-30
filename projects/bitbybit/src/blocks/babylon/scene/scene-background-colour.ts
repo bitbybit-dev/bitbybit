@@ -8,6 +8,8 @@ import {
     BitByBitBlockHandlerService,
     ValidationEntityInterface
 } from '../../validations';
+import { environment } from 'projects/bitbybit/src/environments/environment';
+import { sceneConstants } from './scene-constants';
 export function createSceneBackgroundColourBlock(): void {
 
     const resources = ResourcesService.getResources();
@@ -22,6 +24,7 @@ export function createSceneBackgroundColourBlock(): void {
             this.setNextStatement(true, null);
             this.setColour('#fff');
             this.setTooltip(resources.block_babylon_scene_background_colour_description);
+            this.setHelpUrl(environment.docsUrl + sceneConstants.helpUrl + '#' + 'backgroundcolour');
         }
     };
 

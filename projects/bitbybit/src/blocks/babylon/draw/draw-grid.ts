@@ -10,6 +10,8 @@ import {
     BitByBitBlockHandlerService,
     ValidationEntityInterface
 } from '../../validations';
+import { environment } from 'projects/bitbybit/src/environments/environment';
+import { sceneConstants } from '../scene/scene-constants';
 
 export function createDrawGridBlock() {
 
@@ -64,6 +66,7 @@ export function createDrawGridBlock() {
             this.setNextStatement(true, null);
             this.setColour('#fff');
             this.setTooltip(resources.block_babylon_draw_grid_description);
+            this.setHelpUrl(environment.docsUrl + sceneConstants.helpUrl + '#' + 'drawgridmesh');
         }
     };
 
