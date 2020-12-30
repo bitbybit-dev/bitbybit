@@ -9,6 +9,8 @@ import {
     BitByBitBlockHandlerService,
     ValidationEntityInterface
 } from '../../validations';
+import { environment } from 'projects/bitbybit/src/environments/environment';
+import { nodeConstants } from '../node/node-constants';
 
 export function createDrawNodesBlock(): void {
 
@@ -41,7 +43,7 @@ export function createDrawNodesBlock(): void {
             this.setPreviousStatement(true, null);
             this.setNextStatement(true, null);
             this.setTooltip(resources.block_babylon_input_draw_nodes_description);
-            this.setHelpUrl('');
+            this.setHelpUrl(environment.docsUrl + nodeConstants.helpUrl + '#' + 'drawnodes');
         }
     };
 

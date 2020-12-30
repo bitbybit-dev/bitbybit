@@ -9,6 +9,8 @@ import {
     BitByBitBlockHandlerService,
     ValidationEntityInterface
 } from '../../validations';
+import { environment } from 'projects/bitbybit/src/environments/environment';
+import { nodeConstants } from '../node/node-constants';
 
 export function createDrawNodeBlock() {
 
@@ -41,7 +43,7 @@ export function createDrawNodeBlock() {
             this.setPreviousStatement(true, null);
             this.setNextStatement(true, null);
             this.setTooltip(resources.block_babylon_input_draw_node_description);
-            this.setHelpUrl('');
+            this.setHelpUrl(environment.docsUrl + nodeConstants.helpUrl + '#' + 'drawnode');
         }
     };
 
@@ -66,7 +68,7 @@ export function createDrawNodeBlock() {
         (block as any).validationModel = runtimeValidationModel;
 
         return createStandardContextIIFE(block, blockSelector, inputs, false,
-            `bitbybit.node.drawNodes(inputs);`
+            `bitbybit.node.drawNode(inputs);`
         );
     };
 }

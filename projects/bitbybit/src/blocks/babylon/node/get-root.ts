@@ -1,7 +1,9 @@
 import { Block, Blocks, ALIGN_RIGHT } from 'blockly';
 import * as JavaScript from 'blockly/javascript';
+import { environment } from 'projects/bitbybit/src/environments/environment';
 import { ResourcesService } from '../../../resources';
 import { createStandardContextIIFE } from '../../_shared';
+import { nodeConstants } from './node-constants';
 
 export function createNodeGetRootBlock(): void {
 
@@ -16,7 +18,7 @@ export function createNodeGetRootBlock(): void {
             this.setOutput(true, 'Node');
             this.setColour('#fff');
             this.setTooltip(resources.block_babylon_node_get_root_description);
-            this.setHelpUrl('');
+            this.setHelpUrl(environment.docsUrl + nodeConstants.helpUrl + '#' + 'getrootnode');
         }
     };
 
