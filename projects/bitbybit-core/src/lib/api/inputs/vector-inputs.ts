@@ -1,4 +1,4 @@
-import { IntervalDto } from '../bitbybit/base-types';
+import { BaseTypes } from '../bitbybit/base-types';
 
 // tslint:disable-next-line: no-namespace
 export namespace Vector {
@@ -30,7 +30,7 @@ export namespace Vector {
          */
         max: number;
     }
-    export class SpanDto extends IntervalDto {
+    export class SpanDto extends BaseTypes.IntervalDto {
         /**
          * Step of the span
          */

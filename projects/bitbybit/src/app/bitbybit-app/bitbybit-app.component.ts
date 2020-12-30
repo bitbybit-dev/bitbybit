@@ -36,6 +36,7 @@ import { transpile } from 'typescript';
 import { UiStatesEnum } from './models/ui-states.enum';
 import { BitByBitBase, BitByBitBlocklyHelperService, Context, PrintSaveInterface } from 'projects/bitbybit-core/src/public-api';
 import * as Inputs from 'projects/bitbybit-core/src/lib/api/inputs/inputs';
+import { BaseTypes } from 'projects/bitbybit-core/src/lib/api/bitbybit/base-types';
 
 @Component({
     selector: 'app-root',
@@ -67,6 +68,7 @@ export class BitbybitAppComponent implements OnInit, OnDestroy, AfterViewInit {
     editorOptions = {
         theme: 'my-dark',
         language: 'typescript',
+        contextmenu: false,
         formatOnPaste: true,
         autoIndent: true,
         formatOnType: true,
@@ -159,7 +161,7 @@ export class BitbybitAppComponent implements OnInit, OnDestroy, AfterViewInit {
                 this.windowBlockly = {};
                 this.context.scene = this.scene;
                 this.context.verb = (window as any).verb;
-                (window as any).Bit = { Inputs };
+                (window as any).Bit = { Inputs, BaseTypes };
                 (window as any).BitByBitBase = this.bitByBit;
                 this.windowBlockly.scene = this.scene;
                 this.windowBlockly.workspace = this.workspace;

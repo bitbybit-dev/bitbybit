@@ -2,7 +2,7 @@ import { simplifyDeclaration } from '../simplify-declaration';
 
 export const vectorInputsString = simplifyDeclaration(`
 import { IntervalDto } from '../bitbybit/base-types';
-export declare namespace Vector {
+export namespace Vector {
     class TwoVectorsDto {
         /**
          * First vector
@@ -31,7 +31,7 @@ export declare namespace Vector {
          */
         max: number;
     }
-    class SpanDto extends IntervalDto {
+    class SpanDto extends BaseTypes.IntervalDto {
         /**
          * Step of the span
          */

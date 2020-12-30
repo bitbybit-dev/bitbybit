@@ -1,7 +1,7 @@
 import { simplifyDeclaration } from '../simplify-declaration';
 
 export const transformsInputsString = simplifyDeclaration(`
-export declare namespace Transforms {
+export namespace Transforms {
     class RotationCenterAxisDto {
         /**
          * Angle of rotation in degrees

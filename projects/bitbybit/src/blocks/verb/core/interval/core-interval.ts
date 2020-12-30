@@ -6,13 +6,13 @@ import { getRequired, makeRequiredValidationModelForInputs, BitByBitBlockHandler
 import { environment } from 'projects/bitbybit/src/environments/environment';
 import { intervalConstants } from './interval-constants';
 
-export function createCoreIntervalBlock() {
+export function createCoreIntervalBlock(): void {
 
     const resources = ResourcesService.getResources();
     const blockSelector = 'verb_core_interval';
 
     Blocks[blockSelector] = {
-        init() {
+        init(): void {
             this.appendValueInput('Min')
                 .setCheck('Number')
                 .setAlign(ALIGN_RIGHT)

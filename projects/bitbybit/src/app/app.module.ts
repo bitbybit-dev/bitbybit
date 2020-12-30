@@ -25,7 +25,7 @@ const monacoConfig: NgxMonacoEditorConfig = {
 
         let libSource = `
         declare namespace Bit {
-            declare namespace Inputs {
+            namespace Inputs {
                 ${DeclarationStrings.nodeInputsString}
                 ${DeclarationStrings.sceneInputsString}
                 ${DeclarationStrings.vectorInputsString}
@@ -36,7 +36,7 @@ const monacoConfig: NgxMonacoEditorConfig = {
             ${DeclarationStrings.transformsString}
             ${DeclarationStrings.sceneString}
             ${DeclarationStrings.nodeString}
-            declare class BitByBitBase {
+            class BitByBitBase {
                 readonly vector: Vector;
                 readonly scene: Scene;
                 readonly transforms: Transforms;

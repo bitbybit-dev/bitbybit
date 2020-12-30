@@ -13,13 +13,13 @@ import {
 import { environment } from 'projects/bitbybit/src/environments/environment';
 import { sceneConstants } from '../scene/scene-constants';
 
-export function createDrawGridBlock() {
+export function createDrawGridBlock(): void {
 
     const resources = ResourcesService.getResources();
     const blockSelector = 'babylon_draw_grid';
 
     Blocks[blockSelector] = {
-        init() {
+        init(): void {
             this.appendValueInput('Width')
                 .setCheck('Number')
                 .setAlign(ALIGN_RIGHT)

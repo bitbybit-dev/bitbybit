@@ -1,7 +1,7 @@
 import { simplifyDeclaration } from '../simplify-declaration';
 
 export const sceneInputsString = simplifyDeclaration(`
-export declare namespace Scene {
+export namespace Scene {
     class SceneBackgroundColourDto {
         /**
          * Hex colour string for the scene background colour

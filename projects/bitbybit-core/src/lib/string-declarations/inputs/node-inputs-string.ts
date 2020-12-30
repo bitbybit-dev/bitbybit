@@ -2,7 +2,7 @@ import { simplifyDeclaration } from '../simplify-declaration';
 
 export const nodeInputsString = simplifyDeclaration(`
 import { TransformNode } from '@babylonjs/core';
-export declare namespace Node {
+export namespace Node {
     class NodeDto {
         /**
          * Transformation node
