@@ -6,7 +6,7 @@ import { AppComponent } from './app.component';
 import { RouterModule } from '@angular/router';
 import { SimplebarAngularModule } from 'simplebar-angular';
 import { MonacoEditorModule, NgxMonacoEditorConfig } from 'ngx-monaco-editor';
-import { BitByBitBase, Context, Scene, Transforms, Vector, Node } from 'projects/bitbybit-core/src/public-api';
+import { BitByBitBase, Context, Scene, Transforms, Vector, Node, Point } from 'projects/bitbybit-core/src/public-api';
 import * as DeclarationStrings from 'projects/bitbybit-core/src/lib/string-declarations';
 
 const monacoConfig: NgxMonacoEditorConfig = {
@@ -41,11 +41,11 @@ const monacoConfig: NgxMonacoEditorConfig = {
                 readonly scene: Scene;
                 readonly transforms: Transforms;
                 readonly node: Node;
+                readonly point: Point;
             }
         }
         `;
 
-        console.log(libSource);
         let libUri = 'ts:filename/base.d.ts';
         monaco.languages.typescript.typescriptDefaults.addExtraLib(libSource, libUri);
 
@@ -90,7 +90,7 @@ const monacoConfig: NgxMonacoEditorConfig = {
         AppRoutingModule,
         MonacoEditorModule.forRoot(monacoConfig),
     ],
-    providers: [BitByBitBase, Context, Scene, Transforms, Vector, Node],
+    providers: [BitByBitBase, Context, Scene, Transforms, Vector, Node, Point],
     bootstrap: [AppComponent]
 })
 export class AppModule { }

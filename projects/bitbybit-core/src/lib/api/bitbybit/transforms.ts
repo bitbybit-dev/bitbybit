@@ -126,8 +126,8 @@ export class Transforms {
      * @param inputs Scale XYZ number array information
      * @returns transformation
      */
-    scaleXYZ(inputs: Inputs.Transforms.ScaleXYZDto): number[] {
-        return Matrix.Scaling(inputs.scaleXyz[0], inputs.scaleXyz[1], inputs.scaleXyz[2]).toArray() as number[];
+    scaleXYZ(inputs: Inputs.Transforms.ScaleXYZDto): number[][] {
+        return [Matrix.Scaling(inputs.scaleXyz[0], inputs.scaleXyz[1], inputs.scaleXyz[2]).toArray() as number[]];
     }
 
     /**
@@ -139,8 +139,8 @@ export class Transforms {
      * @param inputs Scale Dto
      * @returns transformation
      */
-    uniformScale(inputs: Inputs.Transforms.UniformScaleDto): number[] {
-        return Matrix.Scaling(inputs.scale, inputs.scale, inputs.scale).toArray() as number[];
+    uniformScale(inputs: Inputs.Transforms.UniformScaleDto): number[][] {
+        return [Matrix.Scaling(inputs.scale, inputs.scale, inputs.scale).toArray() as number[]];
     }
 
     /**
@@ -169,8 +169,8 @@ export class Transforms {
      * @param inputs Translation information
      * @returns transformation
      */
-    translationXYZ(inputs: Inputs.Transforms.TranslationXYZDto): number[] {
-        return Matrix.Translation(inputs.translation[0], inputs.translation[1], inputs.translation[2]).toArray() as number[];
+    translationXYZ(inputs: Inputs.Transforms.TranslationXYZDto): number[][] {
+        return [Matrix.Translation(inputs.translation[0], inputs.translation[1], inputs.translation[2]).toArray() as number[]];
     }
 
 }

@@ -20,12 +20,12 @@ export class BitByBitBlocklyHelperService {
         loader: new OBJFileLoader(),
     };
 
-    static transformPointsByMatrixArray(points: [], transform: number[]) {
+    static transformPointsByMatrixArray(points: number[][], transform: number[]): number[][] {
         const transformMatrix = Matrix.FromArray(transform);
         return BitByBitBlocklyHelperService.transformPointsByMatrix(points, transformMatrix);
     }
 
-    static transformPointsByMatrix(points: [], transformMatrix: Matrix) {
+    static transformPointsByMatrix(points: number[][], transformMatrix: Matrix): number[][] {
         const transformedPoints = [];
         for (let i = 0; i < points.length; i++) {
             const pt = points[i];

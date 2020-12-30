@@ -3,6 +3,8 @@ import { Scene } from './bitbybit/scene';
 import { Transforms } from './bitbybit/transforms';
 import { Vector } from './bitbybit/vector';
 import { Node } from './bitbybit/node';
+import { Point } from './bitbybit/point';
+
 @Injectable()
 export class BitByBitBase {
     constructor(
@@ -10,6 +12,7 @@ export class BitByBitBase {
         public readonly transforms: Transforms,
         public readonly vector: Vector,
         public readonly node: Node,
+        public readonly point: Point,
     ) {
     }
 }

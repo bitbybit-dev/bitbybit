@@ -4,7 +4,9 @@ import { Scene } from '@babylonjs/core';
 import { BitByBitBase } from './api/bitbybit';
 import { Transforms } from './api/bitbybit/transforms';
 import { Vector } from './api/bitbybit/vector';
+import { Node } from './api/bitbybit/node';
 import { Context } from './api/context';
+import { Point } from './api/bitbybit/point';
 
 @NgModule({
     declarations: [],
@@ -12,7 +14,7 @@ import { Context } from './api/context';
         CommonModule
     ],
     providers: [
-        BitByBitBase, Context, Scene, Transforms, Vector
+        BitByBitBase, Context, Scene, Transforms, Vector, Node, Point
     ],
     exports: []
 })

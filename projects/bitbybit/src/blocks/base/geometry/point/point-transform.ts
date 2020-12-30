@@ -4,13 +4,13 @@ import { ResourcesInterface, ResourcesService } from '../../../../resources';
 import { createStandardContextIIFE } from '../../../_shared';
 import { getRequired, makeRequiredValidationModelForInputs, BitByBitBlockHandlerService, ValidationEntityInterface } from '../../../validations';
 
-export function createPointTransformBlock() {
+export function createPointTransformBlock(): void {
 
     const resources = ResourcesService.getResources();
     const blockSelector = 'base_geometry_point_transform';
 
     Blocks[blockSelector] = {
-        init() {
+        init(): void {
             this.appendValueInput('Point')
                 .setCheck('Array')
                 .setAlign(ALIGN_RIGHT)
@@ -40,19 +40,7 @@ export function createPointTransformBlock() {
         const runtimeValidationModel = makeRuntimeValidationModel(resources, Object.keys(inputs));
         (block as any).validationModel = runtimeValidationModel;
 
-        const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-`
-    const transformation = inputs.matrix;
-    let transformedControlPoints = [inputs.point];
-    if(transformation.length && transformation.length > 0 && isNaN(transformation[0])){
-        transformation.forEach(transform => {
-            transformedControlPoints = BitByBit.BitByBitBlocklyHelperService.transformPointsByMatrixArray(transformedControlPoints, transform);
-        });
-    } else {
-        transformedControlPoints = BitByBit.BitByBitBlocklyHelperService.transformPointsByMatrixArray(transformedControlPoints, transformation);
-    }
-    return transformedControlPoints[0];
-`);
+        const code = createStandardContextIIFE(block, blockSelector, inputs, true, `return bitbybit.point.transformPoint(inputs);`);
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };
 }
