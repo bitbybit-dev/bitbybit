@@ -18,6 +18,7 @@ export class Node {
      * <div>
      *  <img src="../assets/images/blockly-images/node/drawNode.png" alt="Blockly Image"/>
      * </div>
+     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_node_.node.html#drawnode
      * @param inputs Contains node data that includes size and colour information
      */
     drawNode(inputs: Inputs.Node.DrawNodeDto): void {
@@ -32,6 +33,7 @@ export class Node {
      * <div>
      *  <img src="../assets/images/blockly-images/node/drawNodes.png" alt="Blockly Image"/>
      * </div>
+     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_node_.node.html#drawnodes
      * @param inputs Contains node data that includes size and colour information
      */
     drawNodes(inputs: Inputs.Node.DrawNodesDto): void {
@@ -47,6 +49,7 @@ export class Node {
      * <div>
      *  <img src="../assets/images/blockly-images/node/createNodeFromRotation.png" alt="Blockly Image"/>
      * </div>
+     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_node_.node.html#createnodefromrotation
      * @param inputs Contains information for origin, rotation and parent node
      * @returns A new node
      */
@@ -69,6 +72,7 @@ export class Node {
      * <div>
      *  <img src="../assets/images/blockly-images/node/createWorldNode.png" alt="Blockly Image"/>
      * </div>
+     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_node_.node.html#createworldnode
      * @returns A new node whos parent is the root node of the scene
      */
     createWorldNode(): TransformNode {
@@ -82,6 +86,7 @@ export class Node {
      * <div>
      *  <img src="../assets/images/blockly-images/node/getAbsoluteForwardVector.png" alt="Blockly Image"/>
      * </div>
+     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_node_.node.html#getabsoluteforwardvector
      * @param inputs Node from which to get the forward vector
      * @returns Vector as an array of numbers
      */
@@ -95,6 +100,7 @@ export class Node {
      * <div>
      *  <img src="../assets/images/blockly-images/node/getAbsoluteRightVector.png" alt="Blockly Image"/>
      * </div>
+     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_node_.node.html#getabsoluterightvector
      * @param inputs Node from which to get the right vector
      * @returns Vector as an array of numbers
      */
@@ -108,6 +114,7 @@ export class Node {
      * <div>
      *  <img src="../assets/images/blockly-images/node/getAbsoluteUpVector.png" alt="Blockly Image"/>
      * </div>
+     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_node_.node.html#getabsoluteupvector
      * @param inputs Node from which to get the up vector
      * @returns Vector as an array of numbers
      */
@@ -121,6 +128,7 @@ export class Node {
      * <div>
      *  <img src="../assets/images/blockly-images/node/getAbsolutePosition.png" alt="Blockly Image"/>
      * </div>
+     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_node_.node.html#getabsoluteposition
      * @param inputs Node from which to get the absolute position
      * @returns Vector as an array of numbers indicating location of origin in world space
      */
@@ -134,6 +142,7 @@ export class Node {
      * <div>
      *  <img src="../assets/images/blockly-images/node/getAbsoluteRotationTransformation.png" alt="Blockly Image"/>
      * </div>
+     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_node_.node.html#getabsoluterotationtransformation
      * @param inputs Node from which to get the rotation transformation
      * @returns Transformation as an array of 16 numbers
      */
@@ -148,6 +157,7 @@ export class Node {
      * <div>
      *  <img src="../assets/images/blockly-images/node/getRotationTransformation.png" alt="Blockly Image"/>
      * </div>
+     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_node_.node.html#getrotationtransformation
      * @param inputs Node from which to get the rotation transformation
      * @returns Transformation as an array of 16 numbers
      */
@@ -162,6 +172,7 @@ export class Node {
      * <div>
      *  <img src="../assets/images/blockly-images/node/getChildren.png" alt="Blockly Image"/>
      * </div>
+     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_node_.node.html#getchildren
      * @param inputs Node from which to get the children
      * @returns List of children nodes in the array
      */
@@ -174,6 +185,7 @@ export class Node {
      * <div>
      *  <img src="../assets/images/blockly-images/node/getParent.png" alt="Blockly Image"/>
      * </div>
+     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_node_.node.html#getparent
      * @param inputs Node from which to get a parent
      * @returns Parent node
      */
@@ -186,6 +198,7 @@ export class Node {
      * <div>
      *  <img src="../assets/images/blockly-images/node/getPositionExpressedInLocalSpace.png" alt="Blockly Image"/>
      * </div>
+     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_node_.node.html#getpositionexpressedinlocalspace
      * @param inputs Node from which to get the position in local space
      * @returns Position vector
      */
@@ -199,6 +212,7 @@ export class Node {
      * <div>
      *  <img src="../assets/images/blockly-images/node/getRootNode.png" alt="Blockly Image"/>
      * </div>
+     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_node_.node.html#getrootnode
      * @returns Root node
      */
     getRootNode(): TransformNode {
@@ -210,6 +224,7 @@ export class Node {
      * <div>
      *  <img src="../assets/images/blockly-images/node/getRotation.png" alt="Blockly Image"/>
      * </div>
+     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_node_.node.html#getrotation
      * @param inputs Node from which to get rotation
      * @returns Euler rotations of x, y and z angles in the number array
      */
@@ -227,6 +242,7 @@ export class Node {
      * <div>
      *  <img src="../assets/images/blockly-images/node/rotateAroundAxisWithPosition.png" alt="Blockly Image"/>
      * </div>
+     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_node_.node.html#rotatearoundaxiswithposition
      * @param inputs Rotation around axis information
      */
     rotateAroundAxisWithPosition(inputs: Inputs.Node.RotateAroundAxisNodeDto): void {
@@ -242,6 +258,7 @@ export class Node {
      * <div>
      *  <img src="../assets/images/blockly-images/node/rotate.png" alt="Blockly Image"/>
      * </div>
+     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_node_.node.html#rotate
      * @param inputs Rotation information
      */
     rotate(inputs: Inputs.Node.RotateNodeDto): void {
@@ -256,6 +273,7 @@ export class Node {
      * <div>
      *  <img src="../assets/images/blockly-images/node/setAbsolutePosition.png" alt="Blockly Image"/>
      * </div>
+     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_node_.node.html#setabsoluteposition
      * @param inputs Node absolute position information
      */
     setAbsolutePosition(inputs: Inputs.Node.NodePositionDto): void {
@@ -269,6 +287,7 @@ export class Node {
      * <div>
      *  <img src="../assets/images/blockly-images/node/setDirection.png" alt="Blockly Image"/>
      * </div>
+     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_node_.node.html#setdirection
      * @param inputs Direction information
      */
     setDirection(inputs: Inputs.Node.NodeDirectionDto): void {
@@ -282,6 +301,7 @@ export class Node {
      * <div>
      *  <img src="../assets/images/blockly-images/node/setParent.png" alt="Blockly Image"/>
      * </div>
+     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_node_.node.html#setparent
      * @param inputs Node parent information
      */
     setParent(inputs: Inputs.Node.NodeParentDto): void {
@@ -295,6 +315,7 @@ export class Node {
      * <div>
      *  <img src="../assets/images/blockly-images/node/translate.png" alt="Blockly Image"/>
      * </div>
+     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_node_.node.html#translate
      * @param inputs Node translation information
      */
     translate(inputs: Inputs.Node.NodeTranslationDto): void {

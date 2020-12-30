@@ -13,6 +13,7 @@ export declare class IntervalDto {
      * <div>
      *  <img src="../assets/images/blockly-images/base-types/interval-min.png" alt="Blockly Image"/>
      * </div>
+     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_base_types_.intervaldto.html#min
      */
     min: number;
     /**
@@ -20,6 +21,7 @@ export declare class IntervalDto {
      * <div>
      *  <img src="../assets/images/blockly-images/base-types/interval-max.png" alt="Blockly Image"/>
      * </div>
+     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_base_types_.intervaldto.html#max
      */
     max: number;
 }
@@ -35,6 +37,7 @@ export declare class UVDto {
      * <div>
      *  <img src="../assets/images/blockly-images/base-types/uv-u.png" alt="Blockly Image"/>
      * </div>
+     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_base_types_.uvdto.html#u
      */
     u: number;
     /**
@@ -42,6 +45,7 @@ export declare class UVDto {
      * <div>
      *  <img src="../assets/images/blockly-images/base-types/uv-v.png" alt="Blockly Image"/>
      * </div>
+     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_base_types_.uvdto.html#v
      */
     v: number;
 }
