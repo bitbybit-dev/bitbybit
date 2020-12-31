@@ -30,12 +30,14 @@ const monacoConfig: NgxMonacoEditorConfig = {
                 ${DeclarationStrings.sceneInputsString}
                 ${DeclarationStrings.vectorInputsString}
                 ${DeclarationStrings.transformsInputsString}
+                ${DeclarationStrings.pointInputsString}
             }
             ${DeclarationStrings.baseTypesString}
             ${DeclarationStrings.vectorString}
             ${DeclarationStrings.transformsString}
             ${DeclarationStrings.sceneString}
             ${DeclarationStrings.nodeString}
+            ${DeclarationStrings.pointString}
             class BitByBitBase {
                 readonly vector: Vector;
                 readonly scene: Scene;

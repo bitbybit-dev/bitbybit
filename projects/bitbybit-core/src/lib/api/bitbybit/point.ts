@@ -24,6 +24,7 @@ export class Point {
      * </div>
      * @link https://docs.bitbybit.dev/classes/_api_bitbybit_point_.point.html#drawpoint
      * @param inputs Contains a point to be drawn
+     * @returns Mesh that is being drawn by Babylon
      */
     drawPoint(inputs: Inputs.Point.DrawPointDto): Mesh {
         const vectorPoints = [inputs.point];
@@ -46,6 +47,7 @@ export class Point {
      * </div>
      * @link https://docs.bitbybit.dev/classes/_api_bitbybit_point_.point.html#drawpoints
      * @param inputs Contains a point array to be drawn
+     * @returns Mesh that is being drawn by Babylon
      */
     drawPoints(inputs: Inputs.Point.DrawPointsDto): Mesh {
         const vectorPoints = inputs.points;
@@ -111,7 +113,7 @@ export class Point {
     }
 
     /**
-     * Finds the closest point index between a point and a collection of points
+     * Finds the closest point index between a point and a collection of points. Caution, index is not 0 based, it starts with 1.
      * <div>
      *  <img src="../assets/images/blockly-images/point/closestPointFromPointsIndex.png" alt="Blockly Image"/>
      * </div>
@@ -132,8 +134,8 @@ export class Point {
      * @param inputs Point and points collection to find the closest point in
      * @returns Closest point
      */
-    closestPointFromPoints(inputs: Inputs.Point.ClosestPointFromPointsDto): number {
-        return this.closestPointFromPointData(inputs).index;
+    closestPointFromPoints(inputs: Inputs.Point.ClosestPointFromPointsDto): number[] {
+        return this.closestPointFromPointData(inputs).point;
     }
 
     /**

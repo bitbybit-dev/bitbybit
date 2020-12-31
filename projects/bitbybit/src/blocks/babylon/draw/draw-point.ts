@@ -56,6 +56,7 @@ export function createDrawPointBlock(): void {
             opacity: (JavaScript as any).valueToCode(block, 'Opacity', (JavaScript as any).ORDER_ATOMIC),
             size: (JavaScript as any).valueToCode(block, 'Size', (JavaScript as any).ORDER_ATOMIC),
             updatable: (JavaScript as any).valueToCode(block, 'Updatable', (JavaScript as any).ORDER_ATOMIC),
+            pointMesh: undefined,
         };
 
         // this is first set of validations to check that all inputs are non empty strings

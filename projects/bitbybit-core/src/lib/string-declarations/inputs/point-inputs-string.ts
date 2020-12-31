@@ -1,20 +1,21 @@
-import { Mesh } from '@babylonjs/core';
+import { simplifyDeclaration } from '../simplify-declaration';
 
-// tslint:disable-next-line: no-namespace
-export namespace Point {
-    export class PointDto {
+export const pointInputsString = simplifyDeclaration(`
+import { Mesh } from "@babylonjs/core";
+export declare namespace Point {
+    class PointDto {
         /**
          * Point
          */
         point: number[];
     }
-    export class PointsDto {
+    class PointsDto {
         /**
          * Points
          */
         points: number[][];
     }
-    export class DrawPointDto {
+    class DrawPointDto {
         /**
          * Point
          */
@@ -22,25 +23,25 @@ export namespace Point {
         /**
          * Value between 0 and 1
          */
-        opacity = 1;
+        opacity: number;
         /**
          * Size of the point
          */
-        size = 3;
+        size: number;
         /**
          * Hex colour string
          */
-        colour = '#444444';
+        colour: string;
         /**
          * Indicates wether the position of this point will change in time
          */
-        updatable = false;
+        updatable: boolean;
         /**
          * Point mesh variable in case it already exists and needs updating
          */
         pointMesh: Mesh;
     }
-    export class DrawPointsDto {
+    class DrawPointsDto {
         /**
          * Point
          */
@@ -48,25 +49,25 @@ export namespace Point {
         /**
          * Value between 0 and 1
          */
-        opacity = 1;
+        opacity: number;
         /**
-         * Size of the points
+         * Size of the point
          */
-        size = 3;
+        size: number;
         /**
          * Hex colour string
          */
-        colour = '#444444';
+        colour: string;
         /**
-         * Indicates wether the position of this point will change in time
+         * Indicates wether the position of these points will change in time
          */
-        updatable = false;
+        updatable: boolean;
         /**
          * Points mesh variable in case it already exists and needs updating
          */
         pointsMesh: Mesh;
     }
-    export class TransformPointDto {
+    class TransformPointDto {
         /**
          * Point to transform
          */
@@ -76,7 +77,7 @@ export namespace Point {
          */
         matrix: number[][] | number[][][];
     }
-    export class TransformPointsDto {
+    class TransformPointsDto {
         /**
          * Points to transform
          */
@@ -86,7 +87,7 @@ export namespace Point {
          */
         matrix: number[][] | number[][][];
     }
-    export class ClosestPointFromPointsDto {
+    class ClosestPointFromPointsDto {
         /**
          * Points to transform
          */
@@ -96,7 +97,7 @@ export namespace Point {
          */
         point: number[];
     }
-    export class StartEndPointsDto {
+    class StartEndPointsDto {
         /**
          * Start point
          */
@@ -106,8 +107,7 @@ export namespace Point {
          */
         endPoint: number[];
     }
-
-    export class MultiplyPointDto {
+    class MultiplyPointDto {
         /**
          * Point for multiplication
          */
@@ -117,27 +117,28 @@ export namespace Point {
          */
         amountOfPoints: number;
     }
-
-    export class SpiralDto {
+    class SpiralDto {
         /**
          * Identifies phi angle
          */
-        phi = 0.9;
+        phi: number;
         /**
          * Identifies how many points will be created
          */
-        numberPoints =  200;
+        numberPoints: number;
         /**
          * Widening factor of the spiral
          */
-        widening = 3;
+        widening: number;
         /**
          * Radius of the spiral
          */
-        radius = 6;
+        radius: number;
         /**
          * Factor of the spiral
          */
-        factor = 1;
+        factor: number;
     }
 }
+
+`);
