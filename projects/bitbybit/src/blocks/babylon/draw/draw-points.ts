@@ -67,7 +67,7 @@ export function createDrawPointsBlock(): void {
         (block as any).validationModel = runtimeValidationModel;
 
         return createStandardContextIIFE(block, blockSelector, inputs, false,
-            `inputs.pointsMeshVariable = ${(JavaScript as any).variableDB_.getName(block.getFieldValue('DrawnPointsMesh'), VARIABLE_CATEGORY_NAME)};
+            `inputs.pointsMesh = ${(JavaScript as any).variableDB_.getName(block.getFieldValue('DrawnPointsMesh'), VARIABLE_CATEGORY_NAME)};
              ${(JavaScript as any).variableDB_.getName(block.getFieldValue('DrawnPointsMesh'), VARIABLE_CATEGORY_NAME)} = bitbybit.point.drawPoints(inputs);`
         );
     };
