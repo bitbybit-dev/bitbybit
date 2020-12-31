@@ -1,12 +1,13 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
-import { Scene } from '@babylonjs/core';
 import { BitByBitBase } from './api/bitbybit';
 import { Transforms } from './api/bitbybit/transforms';
 import { Vector } from './api/bitbybit/vector';
 import { Node } from './api/bitbybit/node';
 import { Context } from './api/context';
 import { Point } from './api/bitbybit/point';
+import { GeometryHelper } from './api/geometry-helper';
+import { Scene } from './api/bitbybit/scene';
 
 @NgModule({
     declarations: [],
@@ -14,7 +15,7 @@ import { Point } from './api/bitbybit/point';
         CommonModule
     ],
     providers: [
-        BitByBitBase, Context, Scene, Transforms, Vector, Node, Point
+        BitByBitBase, GeometryHelper, Context, Scene, Transforms, Vector, Node, Point
     ],
     exports: []
 })

@@ -4,13 +4,13 @@ import { ResourcesService } from '../../../../resources';
 import { createStandardContextIIFE } from '../../../_shared';
 import { makeRequiredValidationModelForInputs, BitByBitBlockHandlerService } from '../../../validations';
 
-export function createPointBlock() {
+export function createPointBlock(): void {
 
     const resources = ResourcesService.getResources();
     const blockSelector = 'base_geometry_point';
 
     Blocks[blockSelector] = {
-        init() {
+        init(): void {
             this.appendValueInput('X')
                 .setCheck('Number')
                 .setAlign(ALIGN_RIGHT)

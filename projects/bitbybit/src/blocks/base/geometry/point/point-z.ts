@@ -33,7 +33,7 @@ export function createPointZBlock() {
             resources.block_point
         ]));
 
-        const code = createStandardContextIIFE(block, blockSelector, inputs, true, `return inputs.point[2];`);
+        const code = createStandardContextIIFE(block, blockSelector, inputs, true, `return bitbybit.point.getZ(inputs);`);
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };
 }

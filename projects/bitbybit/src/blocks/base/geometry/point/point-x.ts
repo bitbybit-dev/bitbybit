@@ -4,13 +4,13 @@ import { ResourcesService } from '../../../../resources';
 import { createStandardContextIIFE } from '../../../_shared';
 import { makeRequiredValidationModelForInputs, BitByBitBlockHandlerService } from '../../../validations';
 
-export function createPointXBlock() {
+export function createPointXBlock(): void {
 
     const resources = ResourcesService.getResources();
     const blockSelector = 'base_geometry_point_x';
 
     Blocks[blockSelector] = {
-        init() {
+        init(): void {
             this.appendValueInput('Point')
                 .setCheck('Array')
                 .setAlign(ALIGN_RIGHT)
@@ -28,12 +28,11 @@ export function createPointXBlock() {
         };
 
         // this is first set of validations to check that all inputs are non empty strings
-
         BitByBitBlockHandlerService.validate(block, block.workspace, makeRequiredValidationModelForInputs(resources, inputs, [
             resources.block_point
         ]));
 
-        const code = createStandardContextIIFE(block, blockSelector, inputs, true, `return inputs.point[0];`);
+        const code = createStandardContextIIFE(block, blockSelector, inputs, true, `return bitbybit.point.getX(inputs);`);
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };
 }

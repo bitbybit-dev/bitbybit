@@ -41,20 +41,7 @@ export function createPointClosestFromPointsIndexBlock() {
         const runtimeValidationModel = makeRuntimeValidationModel(resources, Object.keys(inputs));
         (block as any).validationModel = runtimeValidationModel;
 
-        const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-`
-    let smallestDistanceSoFar = Number.MAX_SAFE_INTEGER;
-    let closestPointIndex;
-    for(let i = 0; i < inputs.points.length; i++){
-        const pt = inputs.points[i];
-        const currentDist = BitByBit.verb.core.Vec.dist(inputs.point, pt);
-        if(currentDist < smallestDistanceSoFar){
-            smallestDistanceSoFar = currentDist;
-            closestPointIndex = i;
-        }
-    }
-    return closestPointIndex + 1;
-`);
+        const code = createStandardContextIIFE(block, blockSelector, inputs, true, `return bitbybit.point.closestPointFromPointsIndex(inputs);`);
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };
 }

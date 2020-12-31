@@ -40,19 +40,7 @@ export function createPointsTransformBlock() {
         const runtimeValidationModel = makeRuntimeValidationModel(resources, Object.keys(inputs));
         (block as any).validationModel = runtimeValidationModel;
 
-        const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-`
-    const transformation = inputs.matrix;
-    let transformedControlPoints = inputs.points;
-    if(transformation.length && transformation.length > 0 && isNaN(transformation[0])){
-        transformation.forEach(transform => {
-            transformedControlPoints = BitByBit.BitByBitBlocklyHelperService.transformPointsByMatrixArray(transformedControlPoints, transform);
-        });
-    } else {
-        transformedControlPoints = BitByBit.BitByBitBlocklyHelperService.transformPointsByMatrixArray(transformedControlPoints, transformation);
-    }
-    return transformedControlPoints;
-`);
+        const code = createStandardContextIIFE(block, blockSelector, inputs, true, `return bitbybit.point.transformPoints(inputs);`);
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };
 }

@@ -36,15 +36,7 @@ export function createPointListBlock() {
             resources.block_coordinate_x, resources.block_coordinate_y, resources.block_coordinate_z
         ]));
 
-        const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-`
-            const points = [];
-            for(let i = 0; i < inputs.amountOfPoints; i++){
-                points.push([inputs.point[0], inputs.point[1], inputs.point[2]]);
-            }
-            return points;
-`
-        );
+        const code = createStandardContextIIFE(block, blockSelector, inputs, true, `return bitbybit.point.multiplyPoint(inputs);`);
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };
 }
