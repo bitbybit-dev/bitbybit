@@ -3,6 +3,8 @@ import * as JavaScript from 'blockly/javascript';
 import { ResourcesService } from '../../../../resources';
 import { createStandardContextIIFE } from '../../../_shared';
 import { makeRequiredValidationModelForInputs, BitByBitBlockHandlerService } from '../../../validations';
+import { environment } from 'projects/bitbybit/src/environments/environment';
+import { pointConstants } from './point-constants';
 
 export function createPointXBlock(): void {
 
@@ -18,7 +20,7 @@ export function createPointXBlock(): void {
             this.setOutput(true, 'Number');
             this.setColour('#fff');
             this.setTooltip(resources.block_base_geometry_point_x_description);
-            this.setHelpUrl('');
+            this.setHelpUrl(environment.docsUrl + pointConstants.helpUrl + '#' + 'getx');
         }
     };
 

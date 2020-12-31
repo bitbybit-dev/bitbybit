@@ -3,6 +3,8 @@ import * as JavaScript from 'blockly/javascript';
 import { ResourcesInterface, ResourcesService } from '../../../../resources';
 import { createStandardContextIIFE } from '../../../_shared';
 import { getRequired, makeRequiredValidationModelForInputs, BitByBitBlockHandlerService, ValidationEntityInterface } from '../../../validations';
+import { environment } from 'projects/bitbybit/src/environments/environment';
+import { pointConstants } from './point-constants';
 
 export function createPointTransformBlock(): void {
 
@@ -21,7 +23,7 @@ export function createPointTransformBlock(): void {
             this.setOutput(true, 'Array');
             this.setColour('#fff');
             this.setTooltip(resources.block_base_geom_point_transform_description);
-            this.setHelpUrl('');
+            this.setHelpUrl(environment.docsUrl + pointConstants.helpUrl + '#' + 'transformpoint');
         }
     };
 

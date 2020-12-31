@@ -3,14 +3,16 @@ import * as JavaScript from 'blockly/javascript';
 import { ResourcesInterface, ResourcesService } from '../../../../resources';
 import { createStandardContextIIFE } from '../../../_shared';
 import { getRequired, makeRequiredValidationModelForInputs, BitByBitBlockHandlerService, ValidationEntityInterface } from '../../../validations';
+import { environment } from 'projects/bitbybit/src/environments/environment';
+import { pointConstants } from './point-constants';
 
-export function createPointClosestFromPointsBlock() {
+export function createPointClosestFromPointsBlock(): void {
 
     const resources = ResourcesService.getResources();
     const blockSelector = 'base_geometry_point_closest_from_points';
 
     Blocks[blockSelector] = {
-        init() {
+        init(): void {
             this.appendValueInput('Point')
                 .setCheck('Array')
                 .setAlign(ALIGN_RIGHT)
@@ -22,7 +24,7 @@ export function createPointClosestFromPointsBlock() {
             this.setOutput(true, 'Array');
             this.setColour('#fff');
             this.setTooltip(resources.block_base_geom_point_closest_from_points_description);
-            this.setHelpUrl('');
+            this.setHelpUrl(environment.docsUrl + pointConstants.helpUrl + '#' + 'closestpointfrompoints');
         }
     };
 

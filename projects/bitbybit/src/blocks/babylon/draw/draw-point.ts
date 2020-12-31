@@ -11,6 +11,8 @@ import {
     BitByBitBlockHandlerService,
     ValidationEntityInterface
 } from '../../validations';
+import { environment } from 'projects/bitbybit/src/environments/environment';
+import { pointConstants } from '../../base/geometry/point/point-constants';
 
 export function createDrawPointBlock(): void {
 
@@ -45,7 +47,7 @@ export function createDrawPointBlock(): void {
             this.setPreviousStatement(true, null);
             this.setNextStatement(true, null);
             this.setTooltip(resources.block_babylon_draw_point_description);
-            this.setHelpUrl('');
+            this.setHelpUrl(environment.docsUrl + pointConstants.helpUrl + '#' + 'drawpoint');
         }
     };
 

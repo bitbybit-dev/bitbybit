@@ -3,6 +3,8 @@ import * as JavaScript from 'blockly/javascript';
 import { ResourcesService } from '../../../../resources';
 import { createStandardContextIIFE } from '../../../_shared';
 import { makeRequiredValidationModelForInputs, BitByBitBlockHandlerService } from '../../../validations';
+import { environment } from 'projects/bitbybit/src/environments/environment';
+import { pointConstants } from './point-constants';
 
 export function createPointListBlock() {
 
@@ -22,6 +24,7 @@ export function createPointListBlock() {
             this.setOutput(true, 'Array');
             this.setColour('#fff');
             this.setTooltip(resources.block_base_geometry_point_list_description);
+            this.setHelpUrl(environment.docsUrl + pointConstants.helpUrl + '#' + 'multiplypoint');
         }
     };
 
