@@ -9,13 +9,13 @@ import {
     ValidationEntityInterface
 } from '../../../validations';
 
-export function createLinesBlock() {
+export function createLinesBlock(): void {
 
     const resources = ResourcesService.getResources();
     const blockSelector = 'base_geometry_lines';
 
     Blocks[blockSelector] = {
-        init() {
+        init(): void {
             this.appendValueInput('StartPoints')
                 .setCheck('Array')
                 .setAlign(ALIGN_RIGHT)
@@ -45,12 +45,7 @@ export function createLinesBlock() {
         const runtimeValidationModel = makeRuntimeValidationModel(resources, Object.keys(inputs));
         (block as any).validationModel = runtimeValidationModel;
 
-        const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-`
-        return inputs.startPoints
-            .map((s, index) => ({start: s, end: inputs.endPoints[index]}))
-            .filter(line => BitByBit.verb.core.Vec.dist(line.start, line.end) !== 0);
-`
+        const code = createStandardContextIIFE(block, blockSelector, inputs, true, `return bitbybit.line.linesBetweenStartAndEndPoints(inputs);`
         );
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };

@@ -4,13 +4,13 @@ import { ResourcesService } from '../../../../resources';
 import { createStandardContextIIFE } from '../../../_shared';
 import { makeRequiredValidationModelForInputs, BitByBitBlockHandlerService } from '../../../validations';
 
-export function createLineStartPointBlock() {
+export function createLineStartPointBlock(): void {
 
     const resources = ResourcesService.getResources();
     const blockSelector = 'base_geometry_line_start_point';
 
     Blocks[blockSelector] = {
-        init() {
+        init(): void {
             this.appendValueInput('Line')
                 .setCheck('Line')
                 .setAlign(ALIGN_RIGHT)
@@ -33,7 +33,7 @@ export function createLineStartPointBlock() {
         ]));
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `return inputs.line.start;`);
+            `return bitbybit.line.getStartPoint(inputs);`);
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };
 }

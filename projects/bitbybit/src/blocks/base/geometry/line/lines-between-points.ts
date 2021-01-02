@@ -9,13 +9,13 @@ import {
     ValidationEntityInterface
 } from '../../../validations';
 
-export function createLinesBetweenPointsBlock() {
+export function createLinesBetweenPointsBlock(): void {
 
     const resources = ResourcesService.getResources();
     const blockSelector = 'base_geometry_lines_between_points';
 
     Blocks[blockSelector] = {
-        init() {
+        init(): void {
             this.appendValueInput('Points')
                 .setCheck('Array')
                 .setAlign(ALIGN_RIGHT)
@@ -40,17 +40,7 @@ export function createLinesBetweenPointsBlock() {
         const runtimeValidationModel = makeRuntimeValidationModel(resources, Object.keys(inputs));
         (block as any).validationModel = runtimeValidationModel;
 
-        const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-`
-        const lines = [];
-        for(let i = 1; i < inputs.points.length; i++){
-            const previousPoint = inputs.points[i - 1];
-            const currentPoint = inputs.points[i];
-            lines.push({start: previousPoint, end: currentPoint});
-        }
-        return lines;
-`
-        );
+        const code = createStandardContextIIFE(block, blockSelector, inputs, true, `return bitbybit.line.linesBetweenPoints(inputs);`);
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };
 }

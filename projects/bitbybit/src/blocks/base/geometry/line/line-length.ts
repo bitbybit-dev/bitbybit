@@ -4,13 +4,13 @@ import { ResourcesService } from '../../../../resources';
 import { createStandardContextIIFE } from '../../../_shared';
 import { makeRequiredValidationModelForInputs, BitByBitBlockHandlerService } from '../../../validations';
 
-export function createLineLengthBlock() {
+export function createLineLengthBlock(): void {
 
     const resources = ResourcesService.getResources();
     const blockSelector = 'base_geometry_line_length';
 
     Blocks[blockSelector] = {
-        init() {
+        init(): void {
             this.appendValueInput('Line')
                 .setCheck('Line')
                 .setAlign(ALIGN_RIGHT)

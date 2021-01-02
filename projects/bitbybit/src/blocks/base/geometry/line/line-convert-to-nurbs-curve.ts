@@ -4,13 +4,13 @@ import { ResourcesService } from '../../../../resources';
 import { createStandardContextIIFE } from '../../../_shared';
 import { makeRequiredValidationModelForInputs, BitByBitBlockHandlerService } from '../../../validations';
 
-export function createLineConvertToNurbsCurveBlock() {
+export function createLineConvertToNurbsCurveBlock(): void {
 
     const resources = ResourcesService.getResources();
     const blockSelector = 'base_geometry_line_convert_to_nurbs_curve';
 
     Blocks[blockSelector] = {
-        init() {
+        init(): void {
             this.appendValueInput('Line')
                 .setCheck('Line')
                 .setAlign(ALIGN_RIGHT)
@@ -31,9 +31,7 @@ export function createLineConvertToNurbsCurveBlock() {
             resources.block_line
         ]));
 
-        const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `return new BitByBit.verb.geom.Line(inputs.line.start, inputs.line.end);`
-        );
+        const code = createStandardContextIIFE(block, blockSelector, inputs, true, `return bitbybit.line.convertToNurbsCurve(inputs);`);
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };
 }
