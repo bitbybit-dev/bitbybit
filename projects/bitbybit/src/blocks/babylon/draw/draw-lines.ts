@@ -55,6 +55,7 @@ export function createDrawLinesBlock() {
             opacity: (JavaScript as any).valueToCode(block, 'Opacity', (JavaScript as any).ORDER_ATOMIC),
             width: (JavaScript as any).valueToCode(block, 'Width', (JavaScript as any).ORDER_ATOMIC),
             updatable: (JavaScript as any).valueToCode(block, 'Updatable', (JavaScript as any).ORDER_ATOMIC),
+            linesMesh: undefined,
         };
 
         // this is first set of validations to check that all inputs are non empty strings
@@ -67,40 +68,8 @@ export function createDrawLinesBlock() {
         (block as any).validationModel = runtimeValidationModel;
 
         return createStandardContextIIFE(block, blockSelector, inputs, false,
-            `
-        inputs.linesMesh = ${(JavaScript as any).variableDB_.getName(block.getFieldValue('DrawnLinesMesh'), VARIABLE_CATEGORY_NAME)};
-        const linesForRender = [];
-        const colors = [];
-        inputs.lines.forEach(line => {
-            linesForRender.push([new BitByBit.BABYLON.Vector3(line.start[0], line.start[1], line.start[2]), new BitByBit.BABYLON.Vector3(line.end[0], line.end[1], line.end[2])]);
-            const col = BitByBit.BABYLON.Color3.FromHexString(inputs.colour);
-            colors.push([
-                new BitByBit.BABYLON.Color4(col.r, col.g, col.b, inputs.opacity),
-                new BitByBit.BABYLON.Color4(col.r, col.g, col.b, inputs.opacity)
-            ]);
-        });
-
-        if(inputs.linesMesh && inputs.updatable) {
-
-            if(inputs.linesMesh.getTotalVertices() / 2 === linesForRender.length){
-                inputs.linesMesh = BitByBit.BABYLON.MeshBuilder.CreateLineSystem(null, {lines: linesForRender, instance: inputs.linesMesh, colors, useVertexAlpha: true, updatable: inputs.updatable}, null);
-            } else {
-                inputs.linesMesh.dispose();
-                inputs.linesMesh = BitByBit.BABYLON.MeshBuilder.CreateLineSystem('lines${Math.random()}', {lines: linesForRender, colors, useVertexAlpha: true, updatable: inputs.updatable}, BitByBit.scene);
-                ${(JavaScript as any).variableDB_.getName(block.getFieldValue('DrawnLinesMesh'), VARIABLE_CATEGORY_NAME)} = inputs.linesMesh;
-            }
-
-        } else {
-            inputs.linesMesh = BitByBit.BABYLON.MeshBuilder.CreateLineSystem('lines${Math.random()}', {lines: linesForRender, colors, useVertexAlpha: true, updatable: inputs.updatable}, BitByBit.scene);
-            ${(JavaScript as any).variableDB_.getName(block.getFieldValue('DrawnLinesMesh'), VARIABLE_CATEGORY_NAME)} = inputs.linesMesh;
-        }
-
-        inputs.linesMesh.enableEdgesRendering();
-        inputs.linesMesh.edgesWidth = inputs.width;
-        const col = BitByBit.BABYLON.Color3.FromHexString(inputs.colour);
-        inputs.linesMesh.edgesColor = new BitByBit.BABYLON.Color4(col.r, col.g, col.b, inputs.opacity);
-        inputs.linesMesh.opacity = inputs.opacity;
-`);
+            `inputs.linesMesh = ${(JavaScript as any).variableDB_.getName(block.getFieldValue('DrawnLinesMesh'), VARIABLE_CATEGORY_NAME)};
+            ${(JavaScript as any).variableDB_.getName(block.getFieldValue('DrawnLinesMesh'), VARIABLE_CATEGORY_NAME)} = bitbybit.line.drawLines(inputs);`);
     };
 }
 
