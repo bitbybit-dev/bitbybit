@@ -7,9 +7,6 @@ import * as Inputs from '../inputs/inputs';
 /**
  * Contains various methods for lines. Line in bitbybit is a simple object that has star and end point properties.
  * { start: [ x, y, z ], end: [ x, y, z ] }
- * <div>
- *  <img src="../assets/images/blockly-images/line/line.png" alt="Blockly Image"/>
- * </div>
  */
 @Injectable()
 export class Line {
