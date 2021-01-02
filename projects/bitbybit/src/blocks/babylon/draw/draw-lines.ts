@@ -10,6 +10,8 @@ import {
     BitByBitBlockHandlerService,
     ValidationEntityInterface
 } from '../../validations';
+import { lineConstants } from '../../base/geometry/line/line-constants';
+import { environment } from 'projects/bitbybit/src/environments/environment';
 
 export function createDrawLinesBlock(): void {
 
@@ -44,6 +46,7 @@ export function createDrawLinesBlock(): void {
             this.setPreviousStatement(true, null);
             this.setNextStatement(true, null);
             this.setTooltip(resources.block_babylon_draw_lines_description);
+            this.setHelpUrl(environment.docsUrl + lineConstants.helpUrl + '#' + 'drawlines');
         }
     };
 

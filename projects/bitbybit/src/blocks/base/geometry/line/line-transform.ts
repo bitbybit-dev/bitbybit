@@ -3,6 +3,8 @@ import * as JavaScript from 'blockly/javascript';
 import { ResourcesInterface, ResourcesService } from '../../../../resources';
 import { createStandardContextIIFE } from '../../../_shared';
 import { getRequired, makeRequiredValidationModelForInputs, BitByBitBlockHandlerService, ValidationEntityInterface } from '../../../validations';
+import { environment } from 'projects/bitbybit/src/environments/environment';
+import { lineConstants } from './line-constants';
 
 export function createLineTransformBlock(): void {
 
@@ -21,7 +23,7 @@ export function createLineTransformBlock(): void {
             this.setOutput(true, 'Line');
             this.setColour('#fff');
             this.setTooltip(resources.block_base_geom_line_transform_description);
-            this.setHelpUrl('');
+            this.setHelpUrl(environment.docsUrl + lineConstants.helpUrl + '#' + 'transformline');
         }
     };
 

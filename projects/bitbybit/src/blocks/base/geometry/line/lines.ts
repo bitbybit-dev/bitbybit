@@ -8,6 +8,8 @@ import {
     BitByBitBlockHandlerService,
     ValidationEntityInterface
 } from '../../../validations';
+import { environment } from 'projects/bitbybit/src/environments/environment';
+import { lineConstants } from './line-constants';
 
 export function createLinesBlock(): void {
 
@@ -27,6 +29,7 @@ export function createLinesBlock(): void {
             this.setOutput(true, 'Array');
             this.setColour('#fff');
             this.setTooltip(resources.block_babylon_draw_lines_description);
+            this.setHelpUrl(environment.docsUrl + lineConstants.helpUrl + '#' + 'linesbetweenstartandendpoints');
         }
     };
 

@@ -9,6 +9,8 @@ import {
     BitByBitBlockHandlerService,
     ValidationEntityInterface
 } from '../../../validations';
+import { environment } from 'projects/bitbybit/src/environments/environment';
+import { lineConstants } from './line-constants';
 
 export function createLineBlock(): void {
 
@@ -28,6 +30,7 @@ export function createLineBlock(): void {
             this.setOutput(true, 'Line');
             this.setColour('#fff');
             this.setTooltip(resources.block_base_geometry_line_description);
+            this.setHelpUrl(environment.docsUrl + lineConstants.helpUrl + '#' + 'create');
         }
     };
 

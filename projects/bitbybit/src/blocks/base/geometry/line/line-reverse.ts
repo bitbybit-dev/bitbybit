@@ -3,6 +3,8 @@ import * as JavaScript from 'blockly/javascript';
 import { ResourcesService } from '../../../../resources';
 import { createStandardContextIIFE } from '../../../_shared';
 import { makeRequiredValidationModelForInputs, BitByBitBlockHandlerService } from '../../../validations';
+import { environment } from 'projects/bitbybit/src/environments/environment';
+import { lineConstants } from './line-constants';
 
 export function createLineReverseBlock(): void {
 
@@ -18,6 +20,7 @@ export function createLineReverseBlock(): void {
             this.setOutput(true, 'Line');
             this.setColour('#fff');
             this.setTooltip(resources.block_base_geometry_line_reverse_description);
+            this.setHelpUrl(environment.docsUrl + lineConstants.helpUrl + '#' + 'reverse');
         }
     };
 

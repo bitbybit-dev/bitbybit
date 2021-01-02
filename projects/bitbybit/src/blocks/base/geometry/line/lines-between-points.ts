@@ -8,6 +8,8 @@ import {
     BitByBitBlockHandlerService,
     ValidationEntityInterface
 } from '../../../validations';
+import { environment } from 'projects/bitbybit/src/environments/environment';
+import { lineConstants } from './line-constants';
 
 export function createLinesBetweenPointsBlock(): void {
 
@@ -23,6 +25,7 @@ export function createLinesBetweenPointsBlock(): void {
             this.setOutput(true, 'Array');
             this.setColour('#fff');
             this.setTooltip(resources.block_base_geometry_lines_between_points_description);
+            this.setHelpUrl(environment.docsUrl + lineConstants.helpUrl + '#' + 'linesbetweenpoints');
         }
     };
 
