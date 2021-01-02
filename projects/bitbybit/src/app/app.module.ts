@@ -31,6 +31,7 @@ const monacoConfig: NgxMonacoEditorConfig = {
                 ${DeclarationStrings.vectorInputsString}
                 ${DeclarationStrings.transformsInputsString}
                 ${DeclarationStrings.pointInputsString}
+                ${DeclarationStrings.lineInputsString}
             }
             ${DeclarationStrings.baseTypesString}
             ${DeclarationStrings.vectorString}
@@ -38,12 +39,14 @@ const monacoConfig: NgxMonacoEditorConfig = {
             ${DeclarationStrings.sceneString}
             ${DeclarationStrings.nodeString}
             ${DeclarationStrings.pointString}
+            ${DeclarationStrings.lineString}
             class BitByBitBase {
                 readonly vector: Vector;
                 readonly scene: Scene;
                 readonly transforms: Transforms;
                 readonly node: Node;
                 readonly point: Point;
+                readonly line: Line;
             }
         }
         `;

@@ -1,8 +1,9 @@
-import { LinesMesh } from '@babylonjs/core';
+import { simplifyDeclaration } from '../simplify-declaration';
 
-// tslint:disable-next-line: no-namespace
-export namespace Line {
-    export class LinePointsDto {
+export const lineInputsString = simplifyDeclaration(`
+import { LinesMesh } from '@babylonjs/core';
+export declare namespace Line {
+    class LinePointsDto {
         /**
          * Start point
          */
@@ -12,7 +13,7 @@ export namespace Line {
          */
         end: number[];
     }
-    export class LineStartEndPointsDto {
+    class LineStartEndPointsDto {
         /**
          * Start points
          */
@@ -22,7 +23,7 @@ export namespace Line {
          */
         endPoints: number[][];
     }
-    export class DrawLineDto {
+    class DrawLineDto {
         /**
          * Point
          */
@@ -30,25 +31,25 @@ export namespace Line {
         /**
          * Value between 0 and 1
          */
-        opacity = 1;
+        opacity: number;
         /**
          * Hex colour string
          */
-        colour = '#444444';
+        colour: string;
         /**
          * Width of the line
          */
-        width = 3;
+        width: number;
         /**
          * Indicates wether the position of this line will change in time
          */
-        updatable = false;
+        updatable: boolean;
         /**
          * Line mesh variable in case it already exists and needs updating
          */
         lineMesh: LinesMesh;
     }
-    export class DrawLinesDto {
+    class DrawLinesDto {
         /**
          * Lines
          */
@@ -56,43 +57,43 @@ export namespace Line {
         /**
          * Value between 0 and 1
          */
-        opacity = 1;
+        opacity: number;
         /**
          * Hex colour string
          */
-        colour = '#444444';
+        colour: string;
         /**
          * Width of the line
          */
-        width = 3;
+        width: number;
         /**
          * Indicates wether the position of these lines will change in time
          */
-        updatable = false;
+        updatable: boolean;
         /**
          * Line mesh variable in case it already exists and needs updating
          */
         linesMesh: LinesMesh;
     }
-    export class PointsLinesDto {
+    class PointsLinesDto {
         /**
          * Points
          */
         points: number[][];
     }
-    export class LineDto {
+    class LineDto {
         /**
          * Line to convert
          */
         line: LinePointsDto;
     }
-    export class LinesDto {
+    class LinesDto {
         /**
          * Lines to convert
          */
         lines: LinePointsDto[];
     }
-    export class TransformLineDto {
+    class TransformLineDto {
         /**
          * Line to transform
          */
@@ -102,7 +103,7 @@ export namespace Line {
          */
         matrix: number[][] | number[][][];
     }
-    export class TransformLinesDto {
+    class TransformLinesDto {
         /**
          * Lines to transform
          */
@@ -113,3 +114,5 @@ export namespace Line {
         matrix: number[][] | number[][][];
     }
 }
+
+`);

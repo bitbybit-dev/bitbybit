@@ -258,6 +258,7 @@ export class Line {
         mesh.enableEdgesRendering();
         mesh.edgesWidth = width;
         const edgeColor = Color3.FromHexString(colour);
+        mesh.color = edgeColor;
         mesh.edgesColor = new Color4(edgeColor.r, edgeColor.g, edgeColor.b, opacity);
     }
 

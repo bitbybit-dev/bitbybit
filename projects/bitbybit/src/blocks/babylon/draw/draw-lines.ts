@@ -11,13 +11,13 @@ import {
     ValidationEntityInterface
 } from '../../validations';
 
-export function createDrawLinesBlock() {
+export function createDrawLinesBlock(): void {
 
     const resources = ResourcesService.getResources();
     const blockSelector = 'babylon_draw_lines';
 
     Blocks[blockSelector] = {
-        init() {
+        init(): void {
             this.appendValueInput('Lines')
                 .setCheck('Array')
                 .setAlign(ALIGN_RIGHT)
