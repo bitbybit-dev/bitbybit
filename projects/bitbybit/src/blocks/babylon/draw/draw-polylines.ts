@@ -71,9 +71,8 @@ export function createDrawPolylinesBlock(): void {
         (block as any).validationModel = runtimeValidationModel;
 
         return createStandardContextIIFE(block, blockSelector, inputs, false,
-            `
-        inputs.polylinesMesh = ${(JavaScript as any).variableDB_.getName(block.getFieldValue('DrawnPolylinesMesh'), VARIABLE_CATEGORY_NAME)};
-        ${(JavaScript as any).variableDB_.getName(block.getFieldValue('DrawnPolylinesMesh'), VARIABLE_CATEGORY_NAME)} = bitbybit.polyline.drawPolylines(inputs);`
+            `inputs.polylinesMesh = ${(JavaScript as any).variableDB_.getName(block.getFieldValue('DrawnPolylinesMesh'), VARIABLE_CATEGORY_NAME)};
+            ${(JavaScript as any).variableDB_.getName(block.getFieldValue('DrawnPolylinesMesh'), VARIABLE_CATEGORY_NAME)} = bitbybit.polyline.drawPolylines(inputs);`
 );
     };
 }
