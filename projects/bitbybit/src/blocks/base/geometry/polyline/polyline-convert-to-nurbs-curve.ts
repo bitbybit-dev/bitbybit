@@ -3,6 +3,8 @@ import * as JavaScript from 'blockly/javascript';
 import { ResourcesService } from '../../../../resources';
 import { createStandardContextIIFE } from '../../../_shared';
 import { makeRequiredValidationModelForInputs, BitByBitBlockHandlerService } from '../../../validations';
+import { polylineConstants } from './polyline-constants';
+import { environment } from 'projects/bitbybit/src/environments/environment';
 
 export function createPolylineConvertToNurbsCurveBlock(): void {
 
@@ -18,6 +20,7 @@ export function createPolylineConvertToNurbsCurveBlock(): void {
             this.setOutput(true, 'NurbsCurve');
             this.setColour('#fff');
             this.setTooltip(resources.block_base_geometry_polyline_convert_to_nurbs_curve_description);
+            this.setHelpUrl(environment.docsUrl + polylineConstants.helpUrl + '#' + 'converttonurbscurve');
         }
     };
 

@@ -3,6 +3,8 @@ import * as JavaScript from 'blockly/javascript';
 import { ResourcesInterface, ResourcesService } from '../../../../resources';
 import { createStandardContextIIFE } from '../../../_shared';
 import { getRequired, makeRequiredValidationModelForInputs, BitByBitBlockHandlerService, ValidationEntityInterface } from '../../../validations';
+import { environment } from 'projects/bitbybit/src/environments/environment';
+import { polylineConstants } from './polyline-constants';
 
 export function createPolylineTransformBlock(): void {
 
@@ -21,7 +23,7 @@ export function createPolylineTransformBlock(): void {
             this.setOutput(true, 'Polyline');
             this.setColour('#fff');
             this.setTooltip(resources.block_base_geom_polyline_transform_description);
-            this.setHelpUrl('');
+            this.setHelpUrl(environment.docsUrl + polylineConstants.helpUrl + '#' + 'transformpolyline');
         }
     };
 

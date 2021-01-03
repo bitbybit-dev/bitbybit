@@ -10,6 +10,8 @@ import {
     BitByBitBlockHandlerService,
     ValidationEntityInterface
 } from '../../validations';
+import { environment } from 'projects/bitbybit/src/environments/environment';
+import { polylineConstants } from '../../base/geometry/polyline/polyline-constants';
 
 export function createDrawPolylineBlock(): void {
 
@@ -44,6 +46,7 @@ export function createDrawPolylineBlock(): void {
             this.setPreviousStatement(true, null);
             this.setNextStatement(true, null);
             this.setTooltip(resources.block_babylon_draw_polyline_description);
+            this.setHelpUrl(environment.docsUrl + polylineConstants.helpUrl + '#' + 'drawpolyline');
         }
     };
 
