@@ -4,13 +4,13 @@ import { ResourcesInterface, ResourcesService } from '../../../../resources';
 import { createStandardContextIIFE } from '../../../_shared';
 import { getRequired, makeRequiredValidationModelForInputs, BitByBitBlockHandlerService, ValidationEntityInterface } from '../../../validations';
 
-export function createPolylineBlock() {
+export function createPolylineBlock(): void {
 
     const resources = ResourcesService.getResources();
     const blockSelector = 'base_geometry_polyline';
 
     Blocks[blockSelector] = {
-        init() {
+        init(): void {
             this.appendValueInput('Points')
                 .setCheck('Array')
                 .setAlign(ALIGN_RIGHT)
