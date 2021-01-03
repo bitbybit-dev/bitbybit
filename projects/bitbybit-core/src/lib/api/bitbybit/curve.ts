@@ -34,4 +34,25 @@ export class Curve {
             inputs.colour
         );
     }
+
+    /**
+     * Draws multiple curves
+     * <div>
+     *  <img src="../assets/images/blockly-images/curve/drawCurves.png" alt="Blockly Image"/>
+     * </div>
+     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_curve_.curves.html#drawcurves
+     * @param inputs Contains curves to be drawn
+     * @returns Lines mesh that is being drawn by Babylon
+     */
+    drawCurves(inputs: Inputs.Curve.DrawCurvesDto): LinesMesh {
+        const points = inputs.curves.map(s => s.tessellate());
+        return this.geometryHelper.drawPolylines(
+            inputs.curveMesh,
+            points,
+            inputs.updatable,
+            inputs.width,
+            inputs.opacity,
+            inputs.colour
+        );
+    }
 }

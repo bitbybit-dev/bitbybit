@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
-import { LinesMesh, Matrix, Color3, Vector3, Color4, MeshBuilder, Scene } from '@babylonjs/core';
+import { LinesMesh, Matrix, Color3, Vector3, Color4, MeshBuilder } from '@babylonjs/core';
 import { Context } from './context';
 @Injectable()
 export class GeometryHelper {
-    constructor(private readonly context: Context) {}
+    constructor(private readonly context: Context) { }
 
     transformControlPoints(transformation: number[][] | number[][][], transformedControlPoints: number[][]): number[][] {
         let transformationArrays = [];
@@ -75,6 +75,36 @@ export class GeometryHelper {
             }
         } else {
             mesh = this.createLines(updatable, points, colors);
+        }
+
+        this.edgesRendering(mesh, width, opacity, colour);
+        return mesh;
+    }
+
+    drawPolylines(
+        mesh: LinesMesh, polylinePoints: number[][][], updatable: boolean,
+        width: number, opacity: number, colour: string
+    ): LinesMesh {
+        const linesForRender = [];
+        polylinePoints.forEach(polyline => {
+            linesForRender.push(polyline.map(pt => new Vector3(pt[0], pt[1], pt[2])));
+        });
+
+        if (mesh && updatable) {
+            if (mesh.getTotalVertices() / 2 === linesForRender.length) {
+                mesh = MeshBuilder.CreateLineSystem(null,
+                    {
+                        lines: linesForRender,
+                        instance: mesh,
+                        useVertexAlpha: true,
+                        updatable
+                    }, null);
+            } else {
+                mesh.dispose();
+                mesh = this.createLineSystem(updatable, linesForRender);
+            }
+        } else {
+            mesh = this.createLineSystem(updatable, linesForRender);
         }
 
         this.edgesRendering(mesh, width, opacity, colour);

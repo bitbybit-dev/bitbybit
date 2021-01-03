@@ -33,7 +33,6 @@ export class Polyline {
         );
     }
 
-
     /**
      * Draws multiple polylines
      * <div>
@@ -44,30 +43,15 @@ export class Polyline {
      * @returns Lines mesh that is being drawn by Babylon
      */
     drawPolylines(inputs: Inputs.Polyline.DrawPolylinesDto): LinesMesh {
-        const linesForRender = [];
-        inputs.polylines.forEach(polyline => {
-            linesForRender.push(polyline.points.map(pt => new Vector3(pt[0], pt[1], pt[2])));
-        });
-
-        if (inputs.polylinesMesh && inputs.updatable) {
-            if (inputs.polylinesMesh.getTotalVertices() / 2 === linesForRender.length) {
-                inputs.polylinesMesh = MeshBuilder.CreateLineSystem(null,
-                    {
-                        lines: linesForRender,
-                        instance: inputs.polylinesMesh,
-                        useVertexAlpha: true,
-                        updatable: inputs.updatable
-                    }, null);
-            } else {
-                inputs.polylinesMesh.dispose();
-                inputs.polylinesMesh = this.geometryHelper.createLineSystem(inputs.updatable, linesForRender);
-            }
-        } else {
-            inputs.polylinesMesh = this.geometryHelper.createLineSystem(inputs.updatable, linesForRender);
-        }
-
-        this.geometryHelper.edgesRendering(inputs.polylinesMesh, inputs.width, inputs.opacity, inputs.colour);
-        return inputs.polylinesMesh;
+        const points = inputs.polylines.map(s => s.points);
+        return this.geometryHelper.drawPolylines(
+            inputs.polylinesMesh,
+            points,
+            inputs.updatable,
+            inputs.width,
+            inputs.opacity,
+            inputs.colour
+        );
     }
 
     /**
