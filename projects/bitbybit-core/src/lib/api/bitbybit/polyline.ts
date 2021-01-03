@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Color3, Color4, LinesMesh, Mesh, MeshBuilder, Vector3 } from '@babylonjs/core';
+import { LinesMesh, MeshBuilder, Vector3 } from '@babylonjs/core';
 import { Context } from '../context';
 import { GeometryHelper } from '../geometry-helper';
 import * as Inputs from '../inputs/inputs';
@@ -23,34 +23,16 @@ export class Polyline {
      * @returns Lines mesh that is being drawn by Babylon
      */
     drawPolyline(inputs: Inputs.Polyline.DrawPolylineDto): LinesMesh {
-        const points = [];
-        const colors = [];
-        inputs.polyline.points.forEach(pt => {
-            points.push(new Vector3(pt[0], pt[1], pt[2]));
-            colors.push(new Color4(1, 1, 1, 0));
-        });
-
-        if (inputs.polylineMesh && inputs.updatable) {
-
-            if (inputs.polylineMesh.getTotalVertices() === points.length) {
-                inputs.polylineMesh = MeshBuilder.CreateLines(null, {
-                    points,
-                    colors,
-                    instance: inputs.polylineMesh,
-                    useVertexAlpha: true,
-                    updatable: inputs.updatable
-                }, null);
-            } else {
-                inputs.polylineMesh.dispose();
-                inputs.polylineMesh = this.CreateLines(inputs, points, colors);
-            }
-        } else {
-            inputs.polylineMesh = this.CreateLines(inputs, points, colors);
-        }
-
-        this.geometryHelper.edgesRendering(inputs.polylineMesh, inputs.width, inputs.opacity, inputs.colour);
-        return inputs.polylineMesh;
+        return this.geometryHelper.drawPolyline(
+            inputs.polylineMesh,
+            inputs.polyline.points,
+            inputs.updatable,
+            inputs.width,
+            inputs.opacity,
+            inputs.colour
+        );
     }
+
 
     /**
      * Draws multiple polylines
@@ -78,10 +60,10 @@ export class Polyline {
                     }, null);
             } else {
                 inputs.polylinesMesh.dispose();
-                inputs.polylinesMesh = this.createLineSystem(inputs.updatable, linesForRender);
+                inputs.polylinesMesh = this.geometryHelper.createLineSystem(inputs.updatable, linesForRender);
             }
         } else {
-            inputs.polylinesMesh = this.createLineSystem(inputs.updatable, linesForRender);
+            inputs.polylinesMesh = this.geometryHelper.createLineSystem(inputs.updatable, linesForRender);
         }
 
         this.geometryHelper.edgesRendering(inputs.polylinesMesh, inputs.width, inputs.opacity, inputs.colour);
@@ -192,23 +174,5 @@ export class Polyline {
         };
     }
 
-    private createLineSystem(updatable: boolean, lines: Vector3[][]): LinesMesh {
-        return MeshBuilder.CreateLineSystem(`lines${Math.random()}`,
-            {
-                lines,
-                useVertexAlpha: true,
-                updatable
-            }, this.context.scene);
-    }
-
-    private CreateLines(inputs: Inputs.Polyline.DrawPolylineDto, points: Vector3[], colors: Color4[]): LinesMesh {
-        return MeshBuilder.CreateLines(`polylineMesh${Math.random()}`,
-            {
-                points,
-                colors,
-                updatable: inputs.updatable,
-                useVertexAlpha: true
-            }, this.context.scene);
-    }
 }
 
