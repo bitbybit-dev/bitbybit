@@ -164,7 +164,7 @@ export class Polyline {
     /**
      * Transform the polyline
      * <div>
-     *  <img src="../assets/images/blockly-images/line/transformPolyline.png" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/polyline/transformPolyline.png" alt="Blockly Image"/>
      * </div>
      * @link https://docs.bitbybit.dev/classes/_api_bitbybit_polyline_.polyline.html#transformpolyline
      * @param inputs Polyline to be transformed
