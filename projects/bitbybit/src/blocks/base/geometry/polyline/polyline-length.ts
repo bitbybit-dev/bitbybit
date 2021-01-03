@@ -4,13 +4,13 @@ import { ResourcesService } from '../../../../resources';
 import { createStandardContextIIFE } from '../../../_shared';
 import { makeRequiredValidationModelForInputs, BitByBitBlockHandlerService } from '../../../validations';
 
-export function createPolylineLengthBlock() {
+export function createPolylineLengthBlock(): void {
 
     const resources = ResourcesService.getResources();
     const blockSelector = 'base_geometry_polyline_length';
 
     Blocks[blockSelector] = {
-        init() {
+        init(): void {
             this.appendValueInput('Polyline')
                 .setCheck('Polyline')
                 .setAlign(ALIGN_RIGHT)
@@ -32,15 +32,7 @@ export function createPolylineLengthBlock() {
         ]));
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-`
-        let distanceOfPolyline = 0;
-        for (var i = 1; i < inputs.polyline.points.length; i++) {
-            const previousPoint = inputs.polyline.points[i - 1];
-            const currentPoint = inputs.polyline.points[i];
-            distanceOfPolyline += BitByBit.verb.core.Vec.dist(previousPoint, currentPoint);
-        };
-        return distanceOfPolyline;
-`
+            `return bitbybit.polyline.length(inputs);`
         );
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };

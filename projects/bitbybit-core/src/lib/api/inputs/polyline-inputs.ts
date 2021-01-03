@@ -2,17 +2,39 @@ import { LinesMesh } from '@babylonjs/core';
 
 // tslint:disable-next-line: no-namespace
 export namespace Polyline {
-    export class PolylineDto {
+    export class PolylinePointsDto {
         /**
          * Points of the polyline
          */
         points: number[][];
     }
+    export class PolylineDto {
+        /**
+         * Polyline with points
+         */
+        polyline: PolylinePointsDto;
+    }
+    export class PolylinesDto {
+        /**
+         * Polylines array
+         */
+        polylines: PolylinePointsDto[];
+    }
+    export class TransformPolylineDto {
+        /**
+         * Polyline to transform
+         */
+        polyline: PolylinePointsDto;
+        /**
+         * Transformation matrix or a list of transformation matrixes
+         */
+        matrix: number[][] | number[][][];
+    }
     export class DrawPolylineDto {
         /**
          * Polyline
          */
-        polyline: PolylineDto;
+        polyline: PolylinePointsDto;
         /**
          * Value between 0 and 1
          */
@@ -38,7 +60,7 @@ export namespace Polyline {
         /**
          * Polylines
          */
-        polylines: PolylineDto[];
+        polylines: PolylinePointsDto[];
         /**
          * Value between 0 and 1
          */

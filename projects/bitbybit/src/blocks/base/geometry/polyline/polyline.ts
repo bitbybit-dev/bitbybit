@@ -37,11 +37,7 @@ export function createPolylineBlock() {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-`
-        return {
-            points: inputs.points
-        };
-`
+            `return bitbybit.polyline.create(inputs);`
         );
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };

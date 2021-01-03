@@ -4,13 +4,13 @@ import { ResourcesInterface, ResourcesService } from '../../../../resources';
 import { createStandardContextIIFE } from '../../../_shared';
 import { getRequired, makeRequiredValidationModelForInputs, BitByBitBlockHandlerService, ValidationEntityInterface } from '../../../validations';
 
-export function createPolylineTransformBlock() {
+export function createPolylineTransformBlock(): void {
 
     const resources = ResourcesService.getResources();
     const blockSelector = 'base_geometry_polyline_transform';
 
     Blocks[blockSelector] = {
-        init() {
+        init(): void {
             this.appendValueInput('Polyline')
                 .setCheck('Polyline')
                 .setAlign(ALIGN_RIGHT)
@@ -41,18 +41,8 @@ export function createPolylineTransformBlock() {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-`
-    const transformation = inputs.matrix;
-    let transformedControlPoints = inputs.polyline.points;
-    if(transformation.length && transformation.length > 0 && isNaN(transformation[0])){
-        transformation.forEach(transform => {
-            transformedControlPoints = BitByBit.BitByBitBlocklyHelperService.transformPointsByMatrixArray(transformedControlPoints, transform);
-        });
-    } else {
-        transformedControlPoints = BitByBit.BitByBitBlocklyHelperService.transformPointsByMatrixArray(transformedControlPoints, transformation);
-    }
-    return { points: transformedControlPoints };
-`);
+            `return bitbybit.polyline.transformPolyline(inputs);`
+        );
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };
 }

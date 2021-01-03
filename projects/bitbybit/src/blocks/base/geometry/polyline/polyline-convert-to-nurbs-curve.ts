@@ -4,13 +4,13 @@ import { ResourcesService } from '../../../../resources';
 import { createStandardContextIIFE } from '../../../_shared';
 import { makeRequiredValidationModelForInputs, BitByBitBlockHandlerService } from '../../../validations';
 
-export function createPolylineConvertToNurbsCurveBlock() {
+export function createPolylineConvertToNurbsCurveBlock(): void {
 
     const resources = ResourcesService.getResources();
     const blockSelector = 'base_geometry_polyline_convert_to_nurbs_curve';
 
     Blocks[blockSelector] = {
-        init() {
+        init(): void {
             this.appendValueInput('Polyline')
                 .setCheck('Polyline')
                 .setAlign(ALIGN_RIGHT)
@@ -32,7 +32,7 @@ export function createPolylineConvertToNurbsCurveBlock() {
         ]));
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `return BitByBit.verb.geom.NurbsCurve.byPoints(inputs.polyline.points, 1);`
+            `return bitbybit.polyline.convertToNurbsCurve(inputs);`
         );
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };

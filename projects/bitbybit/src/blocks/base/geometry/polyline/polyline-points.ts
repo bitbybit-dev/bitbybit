@@ -4,13 +4,13 @@ import { ResourcesService } from '../../../../resources';
 import { createStandardContextIIFE } from '../../../_shared';
 import { makeRequiredValidationModelForInputs, BitByBitBlockHandlerService } from '../../../validations';
 
-export function createPolylinePointsBlock() {
+export function createPolylinePointsBlock(): void {
 
     const resources = ResourcesService.getResources();
     const blockSelector = 'base_geometry_polyline_points';
 
     Blocks[blockSelector] = {
-        init() {
+        init(): void {
             this.appendValueInput('Polyline')
                 .setCheck('Polyline')
                 .setAlign(ALIGN_RIGHT)
@@ -33,7 +33,7 @@ export function createPolylinePointsBlock() {
         ]));
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `return inputs.polyline.points;`);
+            `return bitbybit.polyline.getPoints(inputs);`);
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };
 }

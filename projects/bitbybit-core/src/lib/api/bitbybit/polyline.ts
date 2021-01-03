@@ -57,7 +57,7 @@ export class Polyline {
      * <div>
      *  <img src="../assets/images/blockly-images/polyline/drawPolylines.png" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_polyline_.polylines.html#drawpolylines
+     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_polyline_.polyline.html#drawpolylines
      * @param inputs Contains a polyline to be drawn
      * @returns Lines mesh that is being drawn by Babylon
      */
@@ -88,6 +88,109 @@ export class Polyline {
         return inputs.polylinesMesh;
     }
 
+    /**
+     * Converts a polyline to a NURBS curve
+     * <div>
+     *  <img src="../assets/images/blockly-images/polyline/convertToNurbsCurve.png" alt="Blockly Image"/>
+     * </div>
+     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_polyline_.polyline.html#converttonurbscurve
+     * Returns the verbnurbs NurbsCurve object
+     * @link http://verbnurbs.com/docs/geom/NurbsCurve/
+     * @param inputs Polyline to be transformed to curve
+     * @returns Verb nurbs curve
+     */
+    convertToNurbsCurve(inputs: Inputs.Polyline.PolylineDto): any {
+        return this.context.verb.geom.NurbsCurve.byPoints(inputs.polyline.points, 1);
+    }
+
+    /**
+     * Gets the length of the polyline
+     * <div>
+     *  <img src="../assets/images/blockly-images/polyline/length.png" alt="Blockly Image"/>
+     * </div>
+     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_polyline_.polyline.html#length
+     * @param inputs Polyline to be queried
+     * @returns Length of the polyline
+     */
+    length(inputs: Inputs.Polyline.PolylineDto): number {
+        let distanceOfPolyline = 0;
+        for (let i = 1; i < inputs.polyline.points.length; i++) {
+            const previousPoint = inputs.polyline.points[i - 1];
+            const currentPoint = inputs.polyline.points[i];
+            distanceOfPolyline += this.context.verb.core.Vec.dist(previousPoint, currentPoint);
+        }
+        return distanceOfPolyline;
+    }
+
+    /**
+     * Gets the number of points in the polyline
+     * <div>
+     *  <img src="../assets/images/blockly-images/polyline/countPoints.png" alt="Blockly Image"/>
+     * </div>
+     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_polyline_.polyline.html#countpoints
+     * @param inputs Polyline to be queried
+     * @returns Number of points in polyline
+     */
+    countPoints(inputs: Inputs.Polyline.PolylineDto): number {
+        return inputs.polyline.points.length;
+    }
+
+    /**
+     * Gets the points of the polyline
+     * <div>
+     *  <img src="../assets/images/blockly-images/polyline/getPoints.png" alt="Blockly Image"/>
+     * </div>
+     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_polyline_.polyline.html#getpoints
+     * @param inputs Polyline to be queried
+     * @returns Points of the polyline
+     */
+    getPoints(inputs: Inputs.Polyline.PolylineDto): number[][] {
+        return inputs.polyline.points;
+    }
+
+    /**
+     * Reverse the points of the polyline
+     * <div>
+     *  <img src="../assets/images/blockly-images/polyline/reverse.png" alt="Blockly Image"/>
+     * </div>
+     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_polyline_.polyline.html#reverse
+     * @param inputs Polyline to be reversed
+     * @returns Reversed polyline
+     */
+    reverse(inputs: Inputs.Polyline.PolylineDto): Inputs.Polyline.PolylinePointsDto {
+        return { points: inputs.polyline.points.reverse() };
+    }
+
+    /**
+     * Transform the polyline
+     * <div>
+     *  <img src="../assets/images/blockly-images/line/transformPolyline.png" alt="Blockly Image"/>
+     * </div>
+     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_polyline_.polyline.html#transformpolyline
+     * @param inputs Polyline to be transformed
+     * @returns Transformed polyline
+     */
+    transformPolyline(inputs: Inputs.Polyline.TransformPolylineDto): Inputs.Polyline.PolylinePointsDto {
+        const transformation = inputs.matrix;
+        let transformedControlPoints = inputs.polyline.points;
+        transformedControlPoints = this.geometryHelper.transformControlPoints(transformation, transformedControlPoints);
+        return { points: transformedControlPoints };
+    }
+
+    /**
+     * Create the polyline
+     * <div>
+     *  <img src="../assets/images/blockly-images/polyline/create.png" alt="Blockly Image"/>
+     * </div>
+     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_polyline_.polyline.html#create
+     * @param inputs Points of the polyline
+     * @returns Polyline
+     */
+    create(inputs: Inputs.Polyline.PolylinePointsDto): Inputs.Polyline.PolylinePointsDto {
+        return {
+            points: inputs.points,
+        };
+    }
 
     private createLineSystem(updatable: boolean, lines: Vector3[][]): LinesMesh {
         return MeshBuilder.CreateLineSystem(`lines${Math.random()}`,

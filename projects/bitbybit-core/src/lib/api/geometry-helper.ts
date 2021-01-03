@@ -34,8 +34,7 @@ export class GeometryHelper {
 
     transformPointsByMatrix(points: number[][], transformMatrix: Matrix): number[][] {
         const transformedPoints = [];
-        for (let i = 0; i < points.length; i++) {
-            const pt = points[i];
+        for (const pt of points) {
             const vector = new Vector3(pt[0], pt[1], pt[2]);
             const transformedVector = Vector3.TransformCoordinates(vector, transformMatrix);
             transformedPoints.push([transformedVector.x, transformedVector.y, transformedVector.z]);
