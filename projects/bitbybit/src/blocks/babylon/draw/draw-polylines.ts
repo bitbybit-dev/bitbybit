@@ -11,13 +11,13 @@ import {
     ValidationEntityInterface
 } from '../../validations';
 
-export function createDrawPolylinesBlock() {
+export function createDrawPolylinesBlock(): void {
 
     const resources = ResourcesService.getResources();
     const blockSelector = 'babylon_draw_polylines';
 
     Blocks[blockSelector] = {
-        init() {
+        init(): void {
             this.appendValueInput('Polylines')
                 .setCheck('Array')
                 .setAlign(ALIGN_RIGHT)
@@ -55,6 +55,7 @@ export function createDrawPolylinesBlock() {
             opacity: (JavaScript as any).valueToCode(block, 'Opacity', (JavaScript as any).ORDER_ATOMIC),
             width: (JavaScript as any).valueToCode(block, 'Width', (JavaScript as any).ORDER_ATOMIC),
             updatable: (JavaScript as any).valueToCode(block, 'Updatable', (JavaScript as any).ORDER_ATOMIC),
+            polylinesMesh: undefined,
         };
 
         // this is first set of validations to check that all inputs are non empty strings
@@ -68,33 +69,9 @@ export function createDrawPolylinesBlock() {
 
         return createStandardContextIIFE(block, blockSelector, inputs, false,
             `
-        inputs.linesMesh = ${(JavaScript as any).variableDB_.getName(block.getFieldValue('DrawnPolylinesMesh'), VARIABLE_CATEGORY_NAME)};
-        const linesForRender = [];
-        inputs.polylines.forEach(polyline => {
-            linesForRender.push(polyline.points.map(pt => new BitByBit.BABYLON.Vector3(pt[0], pt[1], pt[2])));
-        });
-
-        if(inputs.linesMesh && inputs.updatable) {
-
-            if(inputs.linesMesh.getTotalVertices() / 2 === linesForRender.length){
-                inputs.linesMesh = BitByBit.BABYLON.MeshBuilder.CreateLineSystem(null, {lines: linesForRender, instance: inputs.linesMesh, useVertexAlpha: true, updatable: inputs.updatable}, null);
-            } else {
-                inputs.linesMesh.dispose();
-                inputs.linesMesh = BitByBit.BABYLON.MeshBuilder.CreateLineSystem('lines${Math.random()}', {lines: linesForRender, useVertexAlpha: true, updatable: inputs.updatable}, BitByBit.scene);
-                ${(JavaScript as any).variableDB_.getName(block.getFieldValue('DrawnPolylinesMesh'), VARIABLE_CATEGORY_NAME)} = inputs.linesMesh;
-            }
-
-        } else {
-            inputs.linesMesh = BitByBit.BABYLON.MeshBuilder.CreateLineSystem('lines${Math.random()}', {lines: linesForRender, useVertexAlpha: true, updatable: inputs.updatable}, BitByBit.scene);
-            ${(JavaScript as any).variableDB_.getName(block.getFieldValue('DrawnPolylinesMesh'), VARIABLE_CATEGORY_NAME)} = inputs.linesMesh;
-        }
-
-        inputs.linesMesh.enableEdgesRendering();
-        inputs.linesMesh.edgesWidth = inputs.width;
-        const col = BitByBit.BABYLON.Color3.FromHexString(inputs.colour);
-        inputs.linesMesh.edgesColor = new BitByBit.BABYLON.Color4(col.r, col.g, col.b, inputs.opacity);
-        inputs.linesMesh.opacity = inputs.opacity;
-`);
+        inputs.polylinesMesh = ${(JavaScript as any).variableDB_.getName(block.getFieldValue('DrawnPolylinesMesh'), VARIABLE_CATEGORY_NAME)};
+        ${(JavaScript as any).variableDB_.getName(block.getFieldValue('DrawnPolylinesMesh'), VARIABLE_CATEGORY_NAME)} = bitbybit.polyline.drawPolylines(inputs);`
+);
     };
 }
 

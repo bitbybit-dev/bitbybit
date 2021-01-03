@@ -51,7 +51,7 @@ export class Line {
 
         }
 
-        this.edgesRendering(inputs.lineMesh, inputs.width, inputs.opacity, inputs.colour);
+        this.geometryHelper.edgesRendering(inputs.lineMesh, inputs.width, inputs.opacity, inputs.colour);
         return inputs.lineMesh;
     }
 
@@ -65,10 +65,10 @@ export class Line {
      * @returns Lines mesh that is being drawn by Babylon
      */
     drawLines(inputs: Inputs.Line.DrawLinesDto): LinesMesh {
-        const linesForRender = [];
+        const lines = [];
         const colors = [];
         inputs.lines.forEach(line => {
-            linesForRender.push([
+            lines.push([
                 new Vector3(line.start[0], line.start[1], line.start[2]),
                 new Vector3(line.end[0], line.end[1], line.end[2])]
             );
@@ -80,23 +80,23 @@ export class Line {
         });
 
         if (inputs.linesMesh && inputs.updatable) {
-            if (inputs.linesMesh.getTotalVertices() / 2 === linesForRender.length) {
+            if (inputs.linesMesh.getTotalVertices() / 2 === lines.length) {
                 inputs.linesMesh = MeshBuilder.CreateLineSystem(null,
                     {
-                        lines: linesForRender,
+                        lines,
                         instance: inputs.linesMesh,
                         colors, useVertexAlpha: true,
                         updatable: inputs.updatable
                     }, null);
             } else {
                 inputs.linesMesh.dispose();
-                inputs.linesMesh = this.createLinesMesh(inputs.updatable, linesForRender, colors);
+                inputs.linesMesh = this.createLineSystemMesh(inputs.updatable, lines, colors);
             }
         } else {
-            inputs.linesMesh = this.createLinesMesh(inputs.updatable, linesForRender, colors);
+            inputs.linesMesh = this.createLineSystemMesh(inputs.updatable, lines, colors);
         }
 
-        this.edgesRendering(inputs.linesMesh, inputs.width, inputs.opacity, inputs.colour);
+        this.geometryHelper.edgesRendering(inputs.linesMesh, inputs.width, inputs.opacity, inputs.colour);
         return inputs.linesMesh;
     }
 
@@ -251,18 +251,10 @@ export class Line {
             .filter(line => this.context.verb.core.Vec.dist(line.start, line.end) !== 0);
     }
 
-    private edgesRendering(mesh: LinesMesh, width: number, opacity: number, colour: string): void {
-        mesh.enableEdgesRendering();
-        mesh.edgesWidth = width;
-        const edgeColor = Color3.FromHexString(colour);
-        mesh.color = edgeColor;
-        mesh.edgesColor = new Color4(edgeColor.r, edgeColor.g, edgeColor.b, opacity);
-    }
-
-    private createLinesMesh(updatable: boolean, linesForRender: Vector3[][], colors: any[]): LinesMesh {
+    private createLineSystemMesh(updatable: boolean, lines: Vector3[][], colors: Color4[][]): LinesMesh {
         return MeshBuilder.CreateLineSystem(`lines${Math.random()}`,
             {
-                lines: linesForRender,
+                lines,
                 colors,
                 useVertexAlpha: true,
                 updatable

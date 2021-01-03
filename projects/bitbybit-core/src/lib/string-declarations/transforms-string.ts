@@ -77,7 +77,7 @@ export declare class Transforms {
      * @param inputs Scale XYZ number array information
      * @returns transformation
      */
-    scaleXYZ(inputs: Inputs.Transforms.ScaleXYZDto): number[];
+    scaleXYZ(inputs: Inputs.Transforms.ScaleXYZDto): number[][];
     /**
      * Creates uniform scale transformation
      * <div>
@@ -87,7 +87,7 @@ export declare class Transforms {
      * @param inputs Scale Dto
      * @returns transformation
      */
-    uniformScale(inputs: Inputs.Transforms.UniformScaleDto): number[];
+    uniformScale(inputs: Inputs.Transforms.UniformScaleDto): number[][];
     /**
      * Creates uniform scale transformation from the center
      * <div>
@@ -107,6 +107,6 @@ export declare class Transforms {
      * @param inputs Translation information
      * @returns transformation
      */
-    translationXYZ(inputs: Inputs.Transforms.TranslationXYZDto): number[];
+    translationXYZ(inputs: Inputs.Transforms.TranslationXYZDto): number[][];
 }
 `);

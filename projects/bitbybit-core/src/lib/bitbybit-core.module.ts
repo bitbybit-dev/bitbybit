@@ -9,14 +9,14 @@ import { Point } from './api/bitbybit/point';
 import { GeometryHelper } from './api/geometry-helper';
 import { Scene } from './api/bitbybit/scene';
 import { Line } from './api/bitbybit/line';
-
+import { Polyline } from './api/bitbybit/polyline';
 @NgModule({
     declarations: [],
     imports: [
         CommonModule
     ],
     providers: [
-        BitByBitBase, GeometryHelper, Context, Scene, Transforms, Vector, Node, Point, Line,
+        BitByBitBase, GeometryHelper, Context, Scene, Transforms, Vector, Node, Point, Line, Polyline
     ],
     exports: []
 })
