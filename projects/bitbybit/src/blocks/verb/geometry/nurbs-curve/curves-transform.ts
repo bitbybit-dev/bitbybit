@@ -41,24 +41,7 @@ export function createCurvesTransformBlock(): void {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `
-const curvesTransformed = [];
-inputs.curves.forEach(curve => {
-    const points = curve.controlPoints();
-    const transformation = inputs.matrix;
-    let transformedControlPoints = points;
-    if(transformation.length && transformation.length > 0 && isNaN(transformation[0])){
-        transformation.forEach(transform => {
-            transformedControlPoints = BitByBit.BitByBitBlocklyHelperService.transformPointsByMatrixArray(transformedControlPoints, transform);
-        });
-    } else {
-        transformedControlPoints = BitByBit.BitByBitBlocklyHelperService.transformPointsByMatrixArray(points, transformation);
-    }
-    curvesTransformed.push(verb.geom.NurbsCurve.byKnotsControlPointsWeights(curve.degree(), curve.knots(), transformedControlPoints, curve.weights()));
-});
-return curvesTransformed;
-
-`);
+            `bitbybit.curve.transformCurves(inputs);`);
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };
 }

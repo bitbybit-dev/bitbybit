@@ -4,13 +4,13 @@ import { ResourcesInterface, ResourcesService } from '../../../../resources';
 import { createStandardContextIIFE } from '../../../_shared';
 import { getRequired, makeRequiredValidationModelForInputs, BitByBitBlockHandlerService, ValidationEntityInterface } from '../../../validations';
 
-export function createCurveClosestParamsBlock() {
+export function createCurveClosestParamsBlock(): void {
 
     const resources = ResourcesService.getResources();
     const blockSelector = 'verb_geometry_nurbs_curve_closest_params';
 
     Blocks[blockSelector] = {
-        init() {
+        init(): void {
             this.appendValueInput('Curve')
                 .setCheck('NurbsCurve')
                 .setAlign(ALIGN_RIGHT)
@@ -40,7 +40,7 @@ export function createCurveClosestParamsBlock() {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `return inputs.points.map(p => inputs.curve.closestParam(p)) ;`
+            `return bitbybit.curve.closestParams(inputs);`
         );
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };

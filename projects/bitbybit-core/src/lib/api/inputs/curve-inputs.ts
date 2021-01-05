@@ -8,6 +8,42 @@ export namespace Curve {
          */
         curve: any;
     }
+    export class CurvesDto {
+        /**
+         * Nurbs curves
+         */
+        curves: any[];
+    }
+    export class ClosestPointDto {
+        /**
+         * Nurbs curve
+         */
+        curve: any;
+        /**
+         * Point
+         */
+        point: number[];
+    }
+    export class ClosestPointsDto {
+        /**
+         * Nurbs curve
+         */
+        curve: any;
+        /**
+         * Points
+         */
+        points: number[][];
+    }
+    export class BezierCurveDto {
+        /**
+         * Control points
+         */
+        points: number[][];
+        /**
+         * Weights
+         */
+        weights: number[];
+    }
     export class DrawCurveDto {
         /**
          * Nurbs curve
@@ -34,6 +70,126 @@ export namespace Curve {
          */
         curveMesh: LinesMesh;
     }
+
+    export class CurveParameterDto {
+        /**
+         * Nurbs curve
+         */
+        curve: any;
+        /**
+         * Parameter on the curve
+         */
+        parameter: number;
+    }
+    export class CurvesParameterDto {
+        /**
+         * Nurbs curve
+         */
+        curves: any;
+        /**
+         * Parameter on the curve
+         */
+        parameter: number;
+    }
+    export class CurveTransformDto {
+        /**
+         * Nurbs curve
+         */
+        curve: any;
+        /**
+         * Transformation matrixes
+         */
+        matrix: number[][] | number[][][];
+    }
+    export class CurvesTransformDto {
+        /**
+         * Nurbs curve
+         */
+        curves: any[];
+        /**
+         * Transformation matrixes
+         */
+        matrix: number[][] | number[][][];
+    }
+    export class CurveToleranceDto {
+        /**
+         * Nurbs curve
+         */
+        curve: any;
+        /**
+         * Optional tolerance
+         */
+        tolerance: number;
+    }
+
+    export class CurveLengthToleranceDto {
+        /**
+         * Nurbs curve
+         */
+        curve: any;
+        /**
+         * Length on the curve
+         */
+        length: number;
+        /**
+         * Tolerance
+         */
+        tolerance: number;
+    }
+    export class CurveDerivativesDto {
+        /**
+         * Nurbs curve
+         */
+        curve: any;
+        /**
+         * Number of derivatives
+         */
+        numDerivatives: number;
+        /**
+         * Parameter on the curve
+         */
+        parameter: number;
+    }
+    export class CurveSubdivisionsDto {
+        /**
+         * Nurbs curve
+         */
+        curve: any;
+        /**
+         * Number of subdivisions
+         */
+        subdivision: number;
+    }
+    export class CurvesSubdivisionsDto {
+        /**
+         * Nurbs curves
+         */
+        curves: any[];
+        /**
+         * Number of subdivisions
+         */
+        subdivision: number;
+    }
+    export class CurvesDivideLengthDto {
+        /**
+         * Nurbs curves
+         */
+        curves: any[];
+        /**
+         * Length of subdivisions
+         */
+        length: number;
+    }
+    export class CurveDivideLengthDto {
+        /**
+         * Nurbs curve
+         */
+        curve: any;
+        /**
+         * Length of subdivisions
+         */
+        length: number;
+    }
     export class DrawCurvesDto {
         /**
          * Nurbs curves
@@ -59,5 +215,33 @@ export namespace Curve {
          * Curve mesh variable in case it already exists and needs updating
          */
         curveMesh: LinesMesh;
+    }
+    export class CurveNurbsDataDto {
+        /**
+         * Nurbs curve degree
+         */
+        degree: number;
+        /**
+         * Weights that identify strength that attracts curve to control points
+         */
+        weights: number[];
+        /**
+         * Knots of the Nurbs curve
+         */
+        knots: number[];
+        /**
+         * Control points of the nurbs curve
+         */
+        points: number[][];
+    }
+    export class CurvePathDataDto {
+        /**
+         * Nurbs curve degree
+         */
+        degree: number;
+        /**
+         * Control points of the nurbs curve
+         */
+        points: number[][];
     }
 }

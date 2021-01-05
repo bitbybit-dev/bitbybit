@@ -4,13 +4,13 @@ import { ResourcesInterface, ResourcesService } from '../../../../resources';
 import { createStandardContextIIFE } from '../../../_shared';
 import { getRequired, makeRequiredValidationModelForInputs, BitByBitBlockHandlerService, ValidationEntityInterface } from '../../../validations';
 
-export function createCurveTransformBlock() {
+export function createCurveTransformBlock(): void {
 
     const resources = ResourcesService.getResources();
     const blockSelector = 'verb_geometry_nurbs_curve_transform';
 
     Blocks[blockSelector] = {
-        init() {
+        init(): void {
             this.appendValueInput('Curve')
                 .setCheck('NurbsCurve')
                 .setAlign(ALIGN_RIGHT)
@@ -41,19 +41,8 @@ export function createCurveTransformBlock() {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `
-    const points = inputs.curve.controlPoints();
-    const transformation = inputs.matrix;
-    let transformedControlPoints = points;
-    if(transformation.length && transformation.length > 0 && isNaN(transformation[0])){
-        transformation.forEach(transform => {
-            transformedControlPoints = BitByBit.BitByBitBlocklyHelperService.transformPointsByMatrixArray(transformedControlPoints, transform);
-        });
-    } else {
-        transformedControlPoints = BitByBit.BitByBitBlocklyHelperService.transformPointsByMatrixArray(points, transformation);
-    }
-    return BitByBit.verb.geom.NurbsCurve.byKnotsControlPointsWeights(inputs.curve.degree(), inputs.curve.knots(), transformedControlPoints, inputs.curve.weights());
-`);
+            `return bitbybit.curve.transform(inputs);`
+        );
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };
 }

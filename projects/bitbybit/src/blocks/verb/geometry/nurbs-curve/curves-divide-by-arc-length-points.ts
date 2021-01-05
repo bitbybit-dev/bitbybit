@@ -4,13 +4,13 @@ import { ResourcesInterface, ResourcesService } from '../../../../resources';
 import { createStandardContextIIFE } from '../../../_shared';
 import { getRequired, makeRequiredValidationModelForInputs, BitByBitBlockHandlerService, ValidationEntityInterface } from '../../../validations';
 
-export function createCurvesDivideByArcLengthPointsBlock() {
+export function createCurvesDivideByArcLengthPointsBlock(): void {
 
     const resources = ResourcesService.getResources();
     const blockSelector = 'verb_geometry_nurbs_curves_divide_by_arc_length_points';
 
     Blocks[blockSelector] = {
-        init() {
+        init(): void {
             this.appendValueInput('Curves')
                 .setCheck('NurbsCurve')
                 .setAlign(ALIGN_RIGHT)
@@ -40,14 +40,7 @@ export function createCurvesDivideByArcLengthPointsBlock() {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `
-const points = [];
-inputs.curves.forEach(curve => {
-    const crvSegments = curve.divideByArcLength(inputs.length);
-    points.push(...crvSegments.map(s => curve.point(s.u)));
-});
-return points;
-            `
+            `return bitbybit.curve.divideCurvesByArcLengthToPoints(inputs);`
         );
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };

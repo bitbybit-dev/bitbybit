@@ -610,6 +610,8 @@ export const resourcesEn: ResourcesInterface = Object.freeze({
     block_verb_geometry_nurbs_curve_closest_points_description: 'Finds the closest points on the curve from a list of points.',
     block_verb_geometry_nurbs_curve_degree_input_curve: 'Degree of the curve',
     block_verb_geometry_nurbs_curve_degree_description: 'Returns the degree of the curve.',
+    block_verb_geometry_nurbs_curve_control_points_input_curve: 'Control points of the curve',
+    block_verb_geometry_nurbs_curve_control_points_description: 'Returns the control points of the curve',
     block_verb_geometry_nurbs_curve_derivatives_input_curve: 'Derivatives of the curve',
     block_verb_geometry_nurbs_curve_derivatives_input_parameter: 'At parameter',
     block_verb_geometry_nurbs_curve_derivatives_input_num_derivatives: 'Number of derivatives',

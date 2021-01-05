@@ -4,13 +4,13 @@ import { ResourcesInterface, ResourcesService } from '../../../../resources';
 import { createStandardContextIIFE } from '../../../_shared';
 import { getRequired, getRequiredAndMin, makeRequiredValidationModelForInputs, BitByBitBlockHandlerService, ValidationEntityInterface } from '../../../validations';
 
-export function createCurveByPointsBlock() {
+export function createCurveByPointsBlock(): void {
 
     const resources = ResourcesService.getResources();
     const blockSelector = 'verb_geometry_nurbs_curve_by_points';
 
     Blocks[blockSelector] = {
-        init() {
+        init(): void {
             this.appendValueInput('Points')
                 .setCheck('Array')
                 .setAlign(ALIGN_RIGHT)
@@ -42,7 +42,8 @@ export function createCurveByPointsBlock() {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `return BitByBit.verb.geom.NurbsCurve.byPoints( inputs.points, inputs.degree );`);
+            `return bitbybit.curve.createCurveByPoints(inputs);`
+        );
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };
 }

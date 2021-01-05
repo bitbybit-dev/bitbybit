@@ -617,6 +617,8 @@ export interface ResourcesInterface {
     block_verb_geometry_nurbs_curve_closest_points_input_curve: string;
     block_verb_geometry_nurbs_curve_closest_points_input_points: string;
     block_verb_geometry_nurbs_curve_closest_points_description: string;
+    block_verb_geometry_nurbs_curve_control_points_input_curve: string;
+    block_verb_geometry_nurbs_curve_control_points_description: string;
     block_verb_geometry_nurbs_curve_degree_input_curve: string;
     block_verb_geometry_nurbs_curve_degree_description: string;
     block_verb_geometry_nurbs_curve_derivatives_input_curve: string;
