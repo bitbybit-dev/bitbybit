@@ -3,14 +3,16 @@ import * as JavaScript from 'blockly/javascript';
 import { ResourcesInterface, ResourcesService } from '../../../../resources';
 import { createStandardContextIIFE } from '../../../_shared';
 import { getRequired, makeRequiredValidationModelForInputs, BitByBitBlockHandlerService, ValidationEntityInterface } from '../../../validations';
+import { environment } from 'projects/bitbybit/src/environments/environment';
+import { ellipseConstants } from './ellipse-constants';
 
-export function createEllipseYAxisBlock() {
+export function createEllipseYAxisBlock(): void {
 
     const resources = ResourcesService.getResources();
     const blockSelector = 'verb_geometry_nurbs_curve_ellipse_y_axis';
 
     Blocks[blockSelector] = {
-        init() {
+        init(): void {
             this.appendValueInput('Ellipse')
                 .setCheck('NurbsCurve')
                 .setAlign(ALIGN_RIGHT)
@@ -18,6 +20,7 @@ export function createEllipseYAxisBlock() {
             this.setOutput(true, 'Array');
             this.setColour('#fff');
             this.setTooltip(resources.block_verb_geometry_nurbs_curve_ellipse_y_axis_description);
+            this.setHelpUrl(environment.docsUrl + ellipseConstants.helpUrl + '#' + 'yaxis');
         }
     };
 

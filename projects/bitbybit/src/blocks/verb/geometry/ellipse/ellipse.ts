@@ -3,6 +3,8 @@ import * as JavaScript from 'blockly/javascript';
 import { ResourcesInterface, ResourcesService } from '../../../../resources';
 import { createStandardContextIIFE } from '../../../_shared';
 import { getRequired, makeRequiredValidationModelForInputs, BitByBitBlockHandlerService, ValidationEntityInterface } from '../../../validations';
+import { ellipseConstants } from './ellipse-constants';
+import { environment } from 'projects/bitbybit/src/environments/environment';
 
 export function createEllipseBlock(): void {
 
@@ -26,7 +28,7 @@ export function createEllipseBlock(): void {
             this.setOutput(true, 'NurbsCurve');
             this.setColour('#fff');
             this.setTooltip(resources.block_verb_geometry_nurbs_curve_ellipse_description);
-            this.setHelpUrl('');
+            this.setHelpUrl(environment.docsUrl + ellipseConstants.helpUrl + '#' + 'createellipse');
         }
     };
 

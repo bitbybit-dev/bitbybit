@@ -3,14 +3,16 @@ import * as JavaScript from 'blockly/javascript';
 import { ResourcesInterface, ResourcesService } from '../../../../resources';
 import { createStandardContextIIFE } from '../../../_shared';
 import { getRequired, makeRequiredValidationModelForInputs, BitByBitBlockHandlerService, ValidationEntityInterface } from '../../../validations';
+import { environment } from 'projects/bitbybit/src/environments/environment';
+import { ellipseConstants } from './ellipse-constants';
 
-export function createEllipseMinAngleBlock() {
+export function createEllipseMinAngleBlock(): void {
 
     const resources = ResourcesService.getResources();
     const blockSelector = 'verb_geometry_nurbs_curve_ellipse_min_angle';
 
     Blocks[blockSelector] = {
-        init() {
+        init(): void {
             this.appendValueInput('Ellipse')
                 .setCheck('NurbsCurve')
                 .setAlign(ALIGN_RIGHT)
@@ -18,6 +20,7 @@ export function createEllipseMinAngleBlock() {
             this.setOutput(true, 'Number');
             this.setColour('#fff');
             this.setTooltip(resources.block_verb_geometry_nurbs_curve_ellipse_min_angle_description);
+            this.setHelpUrl(environment.docsUrl + ellipseConstants.helpUrl + '#' + 'minangle');
         }
     };
 
