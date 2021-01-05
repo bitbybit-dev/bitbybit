@@ -11,13 +11,13 @@ import {
     ValidationEntityInterface
 } from '../../validations';
 
-export function createDrawCurvesBlock() {
+export function createDrawCurvesBlock(): void {
 
     const resources = ResourcesService.getResources();
     const blockSelector = 'babylon_draw_curves';
 
     Blocks[blockSelector] = {
-        init() {
+        init(): void {
             this.appendValueInput('Curves')
                 .setCheck('Array')
                 .setAlign(ALIGN_RIGHT)
@@ -55,6 +55,7 @@ export function createDrawCurvesBlock() {
             opacity: (JavaScript as any).valueToCode(block, 'Opacity', (JavaScript as any).ORDER_ATOMIC),
             width: (JavaScript as any).valueToCode(block, 'Width', (JavaScript as any).ORDER_ATOMIC),
             updatable: (JavaScript as any).valueToCode(block, 'Updatable', (JavaScript as any).ORDER_ATOMIC),
+            curvesMesh: undefined
         };
 
         // this is first set of validations to check that all inputs are non empty strings

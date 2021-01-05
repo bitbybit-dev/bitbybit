@@ -1,4 +1,6 @@
-import { Injectable } from '@angular/core';
+import { simplifyDeclaration } from './simplify-declaration';
+
+export const curveString = simplifyDeclaration(`
 import { LinesMesh } from '@babylonjs/core';
 import { Context } from '../context';
 import { GeometryHelper } from '../geometry-helper';
@@ -6,22 +8,17 @@ import * as Inputs from '../inputs/inputs';
 import { BaseTypes } from './base-types';
 import { CurveCircle } from './curve-circle';
 import { CurveEllipse } from './curve-ellipse';
-
 /**
  * Contains various methods for nurbs curves.
  * These methods wrap around Verbnurbs library that you can find here http://verbnurbs.com/.
  * Thanks Peter Boyer for his work.
  */
-@Injectable()
-export class Curve {
-
-    constructor(
-        public readonly circle: CurveCircle,
-        public readonly ellipse: CurveEllipse,
-        private readonly context: Context,
-        private readonly geometryHelper: GeometryHelper
-    ) { }
-
+export declare class Curve {
+    readonly circle: CurveCircle;
+    readonly ellipse: CurveEllipse;
+    private readonly context;
+    private readonly geometryHelper;
+    constructor(circle: CurveCircle, ellipse: CurveEllipse, context: Context, geometryHelper: GeometryHelper);
     /**
      * Draws a single curve
      * <div>
@@ -31,18 +28,7 @@ export class Curve {
      * @param inputs Contains a curve to be drawn
      * @returns Lines mesh that is being drawn by Babylon
      */
-    drawCurve(inputs: Inputs.Curve.DrawCurveDto): LinesMesh {
-        const points = inputs.curve.tessellate();
-        return this.geometryHelper.drawPolyline(
-            inputs.curveMesh,
-            points,
-            inputs.updatable,
-            inputs.width,
-            inputs.opacity,
-            inputs.colour
-        );
-    }
-
+    drawCurve(inputs: Inputs.Curve.DrawCurveDto): LinesMesh;
     /**
      * Draws multiple curves
      * <div>
@@ -52,18 +38,7 @@ export class Curve {
      * @param inputs Contains curves to be drawn
      * @returns Lines mesh that is being drawn by Babylon
      */
-    drawCurves(inputs: Inputs.Curve.DrawCurvesDto): LinesMesh {
-        const points = inputs.curves.map(s => s.tessellate());
-        return this.geometryHelper.drawPolylines(
-            inputs.curvesMesh,
-            points,
-            inputs.updatable,
-            inputs.width,
-            inputs.opacity,
-            inputs.colour
-        );
-    }
-
+    drawCurves(inputs: Inputs.Curve.DrawCurvesDto): LinesMesh;
     /**
      * Creates a Nurbs curve by providing knots, control points & weights
      * <div>
@@ -73,10 +48,7 @@ export class Curve {
      * @param inputs Contains knots, control points and weights
      * @returns Nurbs curve
      */
-    createCurveByKnotsControlPointsWeights(inputs: Inputs.Curve.CurveNurbsDataDto): any {
-        return this.context.verb.geom.NurbsCurve.byKnotsControlPointsWeights(inputs.degree, inputs.knots, inputs.points, inputs.weights);
-    }
-
+    createCurveByKnotsControlPointsWeights(inputs: Inputs.Curve.CurveNurbsDataDto): any;
     /**
      * Creates a Nurbs curve by providing control points
      * <div>
@@ -86,10 +58,7 @@ export class Curve {
      * @param inputs Control points
      * @returns Nurbs curve
      */
-    createCurveByPoints(inputs: Inputs.Curve.CurvePathDataDto): any {
-        return this.context.verb.geom.NurbsCurve.byPoints(inputs.points, inputs.degree);
-    }
-
+    createCurveByPoints(inputs: Inputs.Curve.CurvePathDataDto): any;
     /**
      * Creates a Bezier Nurbs curve by providing control points and weights
      * <div>
@@ -99,10 +68,7 @@ export class Curve {
      * @param inputs Control points
      * @returns Bezier Nurbs curve
      */
-    createBezierCurve(inputs: Inputs.Curve.BezierCurveDto): any {
-        return new this.context.verb.geom.BezierCurve(inputs.points, inputs.weights);
-    }
-
+    createBezierCurve(inputs: Inputs.Curve.BezierCurveDto): any;
     /**
      * Clone the Nurbs curve
      * <div>
@@ -112,10 +78,7 @@ export class Curve {
      * @param inputs Nurbs curve
      * @returns Nurbs curve
      */
-    clone(inputs: Inputs.Curve.CurveDto): any {
-        return inputs.curve.clone();
-    }
-
+    clone(inputs: Inputs.Curve.CurveDto): any;
     /**
      * Finds the closest param on the Nurbs curve from the point
      * <div>
@@ -125,10 +88,7 @@ export class Curve {
      * @param inputs Nurbs curve with point
      * @returns Param number
      */
-    closestParam(inputs: Inputs.Curve.ClosestPointDto): number {
-        return inputs.curve.closestParam(inputs.point);
-    }
-
+    closestParam(inputs: Inputs.Curve.ClosestPointDto): number;
     /**
      * Finds the closest params on the Nurbs curve from the points
      * <div>
@@ -138,10 +98,7 @@ export class Curve {
      * @param inputs Nurbs curve with points
      * @returns Param numbers
      */
-    closestParams(inputs: Inputs.Curve.ClosestPointsDto): number[] {
-        return inputs.points.map(pt => inputs.curve.closestParam(pt));
-    }
-
+    closestParams(inputs: Inputs.Curve.ClosestPointsDto): number[];
     /**
      * Finds the closest point on the Nurbs curve from the point
      * <div>
@@ -151,10 +108,7 @@ export class Curve {
      * @param inputs Nurbs curve with point
      * @returns Point
      */
-    closestPoint(inputs: Inputs.Curve.ClosestPointDto): number[] {
-        return inputs.curve.closestPoint(inputs.point);
-    }
-
+    closestPoint(inputs: Inputs.Curve.ClosestPointDto): number[];
     /**
      * Finds the closest points on the Nurbs curve from the list of points
      * <div>
@@ -164,10 +118,7 @@ export class Curve {
      * @param inputs Nurbs curve with points
      * @returns Points
      */
-    closestPoints(inputs: Inputs.Curve.ClosestPointsDto): number[][] {
-        return inputs.points.map(pt => inputs.curve.closestPoint(pt));
-    }
-
+    closestPoints(inputs: Inputs.Curve.ClosestPointsDto): number[][];
     /**
      * Finds the control points of the Nurbs curve
      * <div>
@@ -177,10 +128,7 @@ export class Curve {
      * @param inputs Nurbs curve
      * @returns Points
      */
-    controlPoints(inputs: Inputs.Curve.CurveDto): number[][] {
-        return inputs.curve.controlPoints();
-    }
-
+    controlPoints(inputs: Inputs.Curve.CurveDto): number[][];
     /**
      * Finds the degree of the Nurbs curve
      * <div>
@@ -190,10 +138,7 @@ export class Curve {
      * @param inputs Nurbs curve
      * @returns Degree number
      */
-    degree(inputs: Inputs.Curve.CurveDto): number {
-        return inputs.curve.degree();
-    }
-
+    degree(inputs: Inputs.Curve.CurveDto): number;
     /**
      * Finds the derivatives of the Nurbs curve at parameter
      * <div>
@@ -203,10 +148,7 @@ export class Curve {
      * @param inputs Nurbs curve with specified derivative number and parameter
      * @returns Derivatives
      */
-    derivatives(inputs: Inputs.Curve.CurveDerivativesDto): number[] {
-        return inputs.curve.derivatives(inputs.parameter, inputs.numDerivatives);
-    }
-
+    derivatives(inputs: Inputs.Curve.CurveDerivativesDto): number[];
     /**
      * Divides the curve by equal arc length to parameters
      * <div>
@@ -216,11 +158,7 @@ export class Curve {
      * @param inputs Nurbs curve
      * @returns Parameters
      */
-    divideByEqualArcLengthToParams(inputs: Inputs.Curve.CurveSubdivisionsDto): number[] {
-        const segments: BaseTypes.UVDto[] = inputs.curve.divideByEqualArcLength(inputs.subdivision);
-        return segments.map(s => s.u);
-    }
-
+    divideByEqualArcLengthToParams(inputs: Inputs.Curve.CurveSubdivisionsDto): number[];
     /**
      * Divides the curve by equal arc length to points
      * <div>
@@ -230,11 +168,7 @@ export class Curve {
      * @param inputs Nurbs curve
      * @returns Points
      */
-    divideByEqualArcLengthToPoints(inputs: Inputs.Curve.CurveSubdivisionsDto): number[][] {
-        const segments: BaseTypes.UVDto[] = inputs.curve.divideByEqualArcLength(inputs.subdivision);
-        return segments.map(s => inputs.curve.point(s.u));
-    }
-
+    divideByEqualArcLengthToPoints(inputs: Inputs.Curve.CurveSubdivisionsDto): number[][];
     /**
      * Divides the curve by arc length to parameters
      * <div>
@@ -244,11 +178,7 @@ export class Curve {
      * @param inputs Nurbs curve
      * @returns Parameters
      */
-    divideByArcLengthToParams(inputs: Inputs.Curve.CurveDivideLengthDto): number[] {
-        const segments: BaseTypes.UVDto[] = inputs.curve.divideByArcLength(inputs.length);
-        return segments.map(s => s.u);
-    }
-
+    divideByArcLengthToParams(inputs: Inputs.Curve.CurveDivideLengthDto): number[];
     /**
      * Divides the curve by arc length to points
      * <div>
@@ -258,11 +188,7 @@ export class Curve {
      * @param inputs Nurbs curve
      * @returns Points
      */
-    divideByArcLengthToPoints(inputs: Inputs.Curve.CurveDivideLengthDto): number[][] {
-        const segments: BaseTypes.UVDto[] = inputs.curve.divideByArcLength(inputs.length);
-        return segments.map(s => inputs.curve.point(s.u));
-    }
-
+    divideByArcLengthToPoints(inputs: Inputs.Curve.CurveDivideLengthDto): number[][];
     /**
      * Divides multiple curves by equal arc length to points
      * <div>
@@ -272,10 +198,7 @@ export class Curve {
      * @param inputs Nurbs curves
      * @returns Points placed for each curve in separate arrays
      */
-    divideCurvesByEqualArcLengthToPoints(inputs: Inputs.Curve.CurvesSubdivisionsDto): number[][][] {
-        return inputs.curves.map(curve => this.divideByEqualArcLengthToPoints({ curve, subdivision: inputs.subdivision }));
-    }
-
+    divideCurvesByEqualArcLengthToPoints(inputs: Inputs.Curve.CurvesSubdivisionsDto): number[][][];
     /**
      * Divides multiple curves by arc length to points
      * <div>
@@ -285,10 +208,7 @@ export class Curve {
      * @param inputs Nurbs curves
      * @returns Points placed for each curve in separate arrays
      */
-    divideCurvesByArcLengthToPoints(inputs: Inputs.Curve.CurvesDivideLengthDto): number[][][] {
-        return inputs.curves.map(curve => this.divideByArcLengthToPoints({ curve, length: inputs.length }));
-    }
-
+    divideCurvesByArcLengthToPoints(inputs: Inputs.Curve.CurvesDivideLengthDto): number[][][];
     /**
      * Finds the domain interval of the curve parameters
      * <div>
@@ -298,10 +218,7 @@ export class Curve {
      * @param inputs Nurbs curve
      * @returns Interval domain
      */
-    domain(inputs: Inputs.Curve.CurveDto): BaseTypes.IntervalDto {
-        return inputs.curve.domain();
-    }
-
+    domain(inputs: Inputs.Curve.CurveDto): BaseTypes.IntervalDto;
     /**
      * Start point of the curve
      * <div>
@@ -311,10 +228,7 @@ export class Curve {
      * @param inputs Nurbs curve
      * @returns Start point
      */
-    startPoint(inputs: Inputs.Curve.CurveDto): number[] {
-        return inputs.curve.point(inputs.curve.domain().min);
-    }
-
+    startPoint(inputs: Inputs.Curve.CurveDto): number[];
     /**
      * End point of the curve
      * <div>
@@ -324,9 +238,7 @@ export class Curve {
      * @param inputs Nurbs curve
      * @returns End point
      */
-    endPoint(inputs: Inputs.Curve.CurveDto): number[] {
-        return inputs.curve.point(inputs.curve.domain().max);
-    }
+    endPoint(inputs: Inputs.Curve.CurveDto): number[];
     /**
      * Start points of the curves
      * <div>
@@ -336,10 +248,7 @@ export class Curve {
      * @param inputs Nurbs curves
      * @returns Start points
      */
-    startPoints(inputs: Inputs.Curve.CurvesDto): number[][] {
-        return inputs.curves.map(curve => this.startPoint({ curve }));
-    }
-
+    startPoints(inputs: Inputs.Curve.CurvesDto): number[][];
     /**
      * End points of the curves
      * <div>
@@ -349,10 +258,7 @@ export class Curve {
      * @param inputs Nurbs curves
      * @returns End points
      */
-    endPoints(inputs: Inputs.Curve.CurvesDto): number[][] {
-        return inputs.curves.map(curve => this.endPoint({ curve }));
-    }
-
+    endPoints(inputs: Inputs.Curve.CurvesDto): number[][];
     /**
      * Finds the knots of the Nurbs curve
      * <div>
@@ -362,10 +268,7 @@ export class Curve {
      * @param inputs Nurbs curve
      * @returns Knots
      */
-    knots(inputs: Inputs.Curve.CurveDto): number[] {
-        return inputs.curve.knots();
-    }
-
+    knots(inputs: Inputs.Curve.CurveDto): number[];
     /**
      * Gets the length of the Nurbs curve at specific parameter
      * <div>
@@ -375,10 +278,7 @@ export class Curve {
      * @param inputs Nurbs curve and parameter
      * @returns Length
      */
-    lengthAtParam(inputs: Inputs.Curve.CurveParameterDto): number {
-        return inputs.curve.lengthAtParam(inputs.parameter);
-    }
-
+    lengthAtParam(inputs: Inputs.Curve.CurveParameterDto): number;
     /**
      * Gets the length of the Nurbs curve
      * <div>
@@ -388,10 +288,7 @@ export class Curve {
      * @param inputs Nurbs curve
      * @returns Length
      */
-    length(inputs: Inputs.Curve.CurveDto): number {
-        return inputs.curve.length();
-    }
-
+    length(inputs: Inputs.Curve.CurveDto): number;
     /**
      * Gets the param at specified length on the Nurbs curve
      * <div>
@@ -401,10 +298,7 @@ export class Curve {
      * @param inputs Nurbs curve, length and tolerance
      * @returns Parameter
      */
-    paramAtLength(inputs: Inputs.Curve.CurveLengthToleranceDto): number {
-        return inputs.curve.paramAtLength(inputs.length, inputs.tolerance);
-    }
-
+    paramAtLength(inputs: Inputs.Curve.CurveLengthToleranceDto): number;
     /**
      * Gets the point at specified parameter on the Nurbs curve
      * <div>
@@ -414,10 +308,7 @@ export class Curve {
      * @param inputs Nurbs curve and a parameter
      * @returns Point
      */
-    pointAtParam(inputs: Inputs.Curve.CurveParameterDto): number[] {
-        return inputs.curve.point(inputs.parameter);
-    }
-
+    pointAtParam(inputs: Inputs.Curve.CurveParameterDto): number[];
     /**
      * Gets the points at specified parameter on the Nurbs curves
      * <div>
@@ -427,10 +318,7 @@ export class Curve {
      * @param inputs Nurbs curves and a parameter
      * @returns Points in arrays for each curve
      */
-    pointsAtParam(inputs: Inputs.Curve.CurvesParameterDto): number[][] {
-        return inputs.curves.map(curve => this.pointAtParam({ curve, parameter: inputs.parameter }));
-    }
-
+    pointsAtParam(inputs: Inputs.Curve.CurvesParameterDto): number[][];
     /**
      * Reverses the Nurbs curve
      * <div>
@@ -440,10 +328,7 @@ export class Curve {
      * @param inputs Nurbs curve
      * @returns Reversed Nurbs curve
      */
-    reverse(inputs: Inputs.Curve.CurveDto): any {
-        return inputs.curve.reverse();
-    }
-
+    reverse(inputs: Inputs.Curve.CurveDto): any;
     /**
      * Splits the Nurbs curve in two at a given parameter
      * <div>
@@ -453,10 +338,7 @@ export class Curve {
      * @param inputs Nurbs curve with parameter
      * @returns Nurbs curves
      */
-    split(inputs: Inputs.Curve.CurveParameterDto): any[] {
-        return inputs.curve.split(inputs.parameter);
-    }
-
+    split(inputs: Inputs.Curve.CurveParameterDto): any[];
     /**
      * Tangent of the Nurbs curve at a given parameter
      * <div>
@@ -466,10 +348,7 @@ export class Curve {
      * @param inputs Nurbs curve with parameter
      * @returns Tangent vector
      */
-    tangent(inputs: Inputs.Curve.CurveParameterDto): number[] {
-        return inputs.curve.tangent(inputs.parameter);
-    }
-
+    tangent(inputs: Inputs.Curve.CurveParameterDto): number[];
     /**
      * Tessellates the Nurbs curve into a list of points
      * <div>
@@ -479,10 +358,7 @@ export class Curve {
      * @param inputs Nurbs curve with tolerance
      * @returns Points
      */
-    tessellate(inputs: Inputs.Curve.CurveToleranceDto): number[][] {
-        return inputs.curve.tessellate(inputs.tolerance);
-    }
-
+    tessellate(inputs: Inputs.Curve.CurveToleranceDto): number[][];
     /**
      * Transforms the Nurbs curve
      * <div>
@@ -492,14 +368,7 @@ export class Curve {
      * @param inputs Nurbs curve with transformation matrixes
      * @returns Transformed curve
      */
-    transform(inputs: Inputs.Curve.CurveTransformDto): any {
-        const points = inputs.curve.controlPoints();
-        const transformedControlPoints = this.geometryHelper.transformControlPoints(inputs.matrix, points);
-        return this.context.verb.geom.NurbsCurve.byKnotsControlPointsWeights(
-            inputs.curve.degree(), inputs.curve.knots(), transformedControlPoints, inputs.curve.weights()
-        );
-    }
-
+    transform(inputs: Inputs.Curve.CurveTransformDto): any;
     /**
      * Transforms the Nurbs curves
      * <div>
@@ -509,10 +378,7 @@ export class Curve {
      * @param inputs Nurbs curves with transformation matrixes
      * @returns Transformed curves
      */
-    transformCurves(inputs: Inputs.Curve.CurvesTransformDto): any[] {
-        return inputs.curves.map(curve => this.transform({ curve, matrix: inputs.matrix }));
-    }
-
+    transformCurves(inputs: Inputs.Curve.CurvesTransformDto): any[];
     /**
      * Weights of the Nurbs curve
      * <div>
@@ -522,7 +388,7 @@ export class Curve {
      * @param inputs Nurbs curve
      * @returns Weights
      */
-    weights(inputs: Inputs.Curve.CurveDto): number[] {
-        return inputs.curve.weights();
-    }
+    weights(inputs: Inputs.Curve.CurveDto): number[];
 }
+
+`);

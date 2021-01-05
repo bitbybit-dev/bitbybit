@@ -1,20 +1,21 @@
-import { LinesMesh } from '@babylonjs/core';
+import { simplifyDeclaration } from '../simplify-declaration';
 
-// tslint:disable-next-line: no-namespace
-export namespace Curve {
-    export class CurveDto {
+export const curveInputsString = simplifyDeclaration(`
+import { LinesMesh } from '@babylonjs/core';
+export declare namespace Curve {
+    class CurveDto {
         /**
          * Nurbs curve
          */
         curve: any;
     }
-    export class CurvesDto {
+    class CurvesDto {
         /**
          * Nurbs curves
          */
         curves: any[];
     }
-    export class ClosestPointDto {
+    class ClosestPointDto {
         /**
          * Nurbs curve
          */
@@ -24,7 +25,7 @@ export namespace Curve {
          */
         point: number[];
     }
-    export class ClosestPointsDto {
+    class ClosestPointsDto {
         /**
          * Nurbs curve
          */
@@ -34,7 +35,7 @@ export namespace Curve {
          */
         points: number[][];
     }
-    export class BezierCurveDto {
+    class BezierCurveDto {
         /**
          * Control points
          */
@@ -44,7 +45,7 @@ export namespace Curve {
          */
         weights: number[];
     }
-    export class DrawCurveDto {
+    class DrawCurveDto {
         /**
          * Nurbs curve
          */
@@ -52,26 +53,25 @@ export namespace Curve {
         /**
          * Value between 0 and 1
          */
-        opacity = 1;
+        opacity: number;
         /**
          * Hex colour string
          */
-        colour = '#444444';
+        colour: string;
         /**
          * Width of the polyline
          */
-        width = 3;
+        width: number;
         /**
          * Indicates wether the position of this polyline will change in time
          */
-        updatable = false;
+        updatable: boolean;
         /**
          * Curve mesh variable in case it already exists and needs updating
          */
         curveMesh?: LinesMesh;
     }
-
-    export class CurveParameterDto {
+    class CurveParameterDto {
         /**
          * Nurbs curve
          */
@@ -81,7 +81,7 @@ export namespace Curve {
          */
         parameter: number;
     }
-    export class CurvesParameterDto {
+    class CurvesParameterDto {
         /**
          * Nurbs curve
          */
@@ -91,7 +91,7 @@ export namespace Curve {
          */
         parameter: number;
     }
-    export class CurveTransformDto {
+    class CurveTransformDto {
         /**
          * Nurbs curve
          */
@@ -101,7 +101,7 @@ export namespace Curve {
          */
         matrix: number[][] | number[][][];
     }
-    export class CurvesTransformDto {
+    class CurvesTransformDto {
         /**
          * Nurbs curve
          */
@@ -111,7 +111,7 @@ export namespace Curve {
          */
         matrix: number[][] | number[][][];
     }
-    export class CurveToleranceDto {
+    class CurveToleranceDto {
         /**
          * Nurbs curve
          */
@@ -121,8 +121,7 @@ export namespace Curve {
          */
         tolerance: number;
     }
-
-    export class CurveLengthToleranceDto {
+    class CurveLengthToleranceDto {
         /**
          * Nurbs curve
          */
@@ -136,7 +135,7 @@ export namespace Curve {
          */
         tolerance: number;
     }
-    export class CurveDerivativesDto {
+    class CurveDerivativesDto {
         /**
          * Nurbs curve
          */
@@ -150,7 +149,7 @@ export namespace Curve {
          */
         parameter: number;
     }
-    export class CurveSubdivisionsDto {
+    class CurveSubdivisionsDto {
         /**
          * Nurbs curve
          */
@@ -160,7 +159,7 @@ export namespace Curve {
          */
         subdivision: number;
     }
-    export class CurvesSubdivisionsDto {
+    class CurvesSubdivisionsDto {
         /**
          * Nurbs curves
          */
@@ -170,7 +169,7 @@ export namespace Curve {
          */
         subdivision: number;
     }
-    export class CurvesDivideLengthDto {
+    class CurvesDivideLengthDto {
         /**
          * Nurbs curves
          */
@@ -180,7 +179,7 @@ export namespace Curve {
          */
         length: number;
     }
-    export class CurveDivideLengthDto {
+    class CurveDivideLengthDto {
         /**
          * Nurbs curve
          */
@@ -190,7 +189,7 @@ export namespace Curve {
          */
         length: number;
     }
-    export class DrawCurvesDto {
+    class DrawCurvesDto {
         /**
          * Nurbs curves
          */
@@ -198,25 +197,25 @@ export namespace Curve {
         /**
          * Value between 0 and 1
          */
-        opacity = 1;
+        opacity: number;
         /**
          * Hex colour string
          */
-        colour = '#444444';
+        colour: string;
         /**
          * Width of the polyline
          */
-        width = 3;
+        width: number;
         /**
          * Indicates wether the position of this polyline will change in time
          */
-        updatable = false;
+        updatable: boolean;
         /**
          * Curve mesh variable in case it already exists and needs updating
          */
         curvesMesh?: LinesMesh;
     }
-    export class CurveNurbsDataDto {
+    class CurveNurbsDataDto {
         /**
          * Nurbs curve degree
          */
@@ -234,7 +233,7 @@ export namespace Curve {
          */
         points: number[][];
     }
-    export class CurvePathDataDto {
+    class CurvePathDataDto {
         /**
          * Nurbs curve degree
          */
@@ -244,25 +243,25 @@ export namespace Curve {
          */
         points: number[][];
     }
-    export class EllipseDto {
+    class EllipseDto {
         /**
          * Nurbs ellipse
          */
         ellipse: any;
     }
-    export class CircleDto {
+    class CircleDto {
         /**
          * Nurbs circle
          */
         circle: any;
     }
-    export class ArcDto {
+    class ArcDto {
         /**
          * Nurbs arc
          */
         arc: any;
     }
-    export class EllipseParametersDto {
+    class EllipseParametersDto {
         /**
          * X axis of the circle
          */
@@ -276,7 +275,7 @@ export namespace Curve {
          */
         center: number[];
     }
-    export class CircleParametersDto {
+    class CircleParametersDto {
         /**
          * X axis of the circle
          */
@@ -294,7 +293,7 @@ export namespace Curve {
          */
         center: number[];
     }
-    export class ArcParametersDto extends CircleParametersDto {
+    class ArcParametersDto extends CircleParametersDto {
         /**
          * Minimum angle in degrees
          */
@@ -304,7 +303,7 @@ export namespace Curve {
          */
         maxAngle: number;
     }
-    export class EllipseArcParametersDto extends EllipseParametersDto {
+    class EllipseArcParametersDto extends EllipseParametersDto {
         /**
          * Minimum angle in degrees
          */
@@ -315,3 +314,5 @@ export namespace Curve {
         maxAngle: number;
     }
 }
+
+`);

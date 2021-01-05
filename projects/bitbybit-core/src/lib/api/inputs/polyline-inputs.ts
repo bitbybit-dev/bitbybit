@@ -54,7 +54,7 @@ export namespace Polyline {
         /**
          * Line mesh variable in case it already exists and needs updating
          */
-        polylineMesh: LinesMesh;
+        polylineMesh?: LinesMesh;
     }
     export class DrawPolylinesDto {
         /**
@@ -80,6 +80,6 @@ export namespace Polyline {
         /**
          * Polyline mesh variable in case it already exists and needs updating
          */
-        polylinesMesh: LinesMesh;
+        polylinesMesh?: LinesMesh;
     }
 }

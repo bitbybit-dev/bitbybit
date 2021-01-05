@@ -46,7 +46,7 @@ export namespace Line {
         /**
          * Line mesh variable in case it already exists and needs updating
          */
-        lineMesh: LinesMesh;
+        lineMesh?: LinesMesh;
     }
     export class DrawLinesDto {
         /**
@@ -72,7 +72,7 @@ export namespace Line {
         /**
          * Line mesh variable in case it already exists and needs updating
          */
-        linesMesh: LinesMesh;
+        linesMesh?: LinesMesh;
     }
     export class PointsLinesDto {
         /**

@@ -38,7 +38,7 @@ export namespace Point {
         /**
          * Point mesh variable in case it already exists and needs updating
          */
-        pointMesh: Mesh;
+        pointMesh?: Mesh;
     }
     export class DrawPointsDto {
         /**
@@ -64,7 +64,7 @@ export namespace Point {
         /**
          * Points mesh variable in case it already exists and needs updating
          */
-        pointsMesh: Mesh;
+        pointsMesh?: Mesh;
     }
     export class TransformPointDto {
         /**
