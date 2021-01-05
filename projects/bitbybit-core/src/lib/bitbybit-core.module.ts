@@ -13,6 +13,7 @@ import { Polyline } from './api/bitbybit/polyline';
 import { Curve } from './api/bitbybit/curve';
 import { CurveCircle } from './api/bitbybit/curve-circle';
 import { CurveEllipse } from './api/bitbybit/curve-ellipse';
+import { Surface } from './api/bitbybit/surface';
 
 @NgModule({
     declarations: [],
@@ -20,7 +21,20 @@ import { CurveEllipse } from './api/bitbybit/curve-ellipse';
         CommonModule
     ],
     providers: [
-        BitByBitBase, GeometryHelper, Context, Scene, Transforms, Vector, Node, Point, Line, Polyline, Curve, CurveCircle, CurveEllipse
+        BitByBitBase,
+        GeometryHelper,
+        Context,
+        Scene,
+        Transforms,
+        Vector,
+        Node,
+        Point,
+        Line,
+        Polyline,
+        Curve,
+        CurveCircle,
+        CurveEllipse,
+        Surface
     ],
     exports: []
 })

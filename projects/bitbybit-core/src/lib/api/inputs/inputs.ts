@@ -6,3 +6,4 @@ export * from './point-inputs';
 export * from './line-inputs';
 export * from './polyline-inputs';
 export * from './curve-inputs';
+export * from './surface-inputs';

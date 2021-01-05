@@ -62,7 +62,7 @@ export namespace Curve {
          */
         width = 3;
         /**
-         * Indicates wether the position of this polyline will change in time
+         * Indicates wether the position of this curve will change in time
          */
         updatable = false;
         /**
@@ -70,7 +70,6 @@ export namespace Curve {
          */
         curveMesh?: LinesMesh;
     }
-
     export class CurveParameterDto {
         /**
          * Nurbs curve

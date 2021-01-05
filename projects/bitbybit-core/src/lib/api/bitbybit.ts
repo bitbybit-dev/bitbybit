@@ -7,6 +7,7 @@ import { Point } from './bitbybit/point';
 import { Line } from './bitbybit/line';
 import { Polyline } from './bitbybit/polyline';
 import { Curve } from './bitbybit/curve';
+import { Surface } from './bitbybit/surface';
 
 @Injectable()
 export class BitByBitBase {
@@ -19,6 +20,7 @@ export class BitByBitBase {
         public readonly line: Line,
         public readonly polyline: Polyline,
         public readonly curve: Curve,
+        public readonly surface: Surface,
     ) {
     }
 }

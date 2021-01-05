@@ -39,7 +39,7 @@ export function createCoreVectorMinBlock(): void {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `return bitbybit.vector.min(inputs.vector);`);
+            `return bitbybit.vector.min(inputs);`);
 
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };
