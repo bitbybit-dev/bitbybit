@@ -420,7 +420,9 @@ export class BitbybitAppComponent implements OnInit, OnDestroy, AfterViewInit {
                 transpiledCode = true;
             }
 
-            eval(`const bitbybit = window.BitByBitBase;
+            Function(`
+            "use strict";
+            const bitbybit = window.BitByBitBase;
             const Bit = window.Bit;
             const BitByBit = {
                 scene: window.blockly.scene,
@@ -431,7 +433,7 @@ export class BitbybitAppComponent implements OnInit, OnDestroy, AfterViewInit {
                 BitByBitBlocklyHelperService: window.BitByBitBlocklyHelperService,
                 CSG: window.CSG
             };
-            ${code}`);
+            ${code}`)();
 
             if (this.tagService.tagsExist()) {
                 this.tagsNeedUpdate = true;
