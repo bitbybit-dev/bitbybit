@@ -3,6 +3,8 @@ import * as JavaScript from 'blockly/javascript';
 import { ResourcesInterface, ResourcesService } from '../../../../resources';
 import { createStandardContextIIFE } from '../../../_shared';
 import { getRequired, makeRequiredValidationModelForInputs, BitByBitBlockHandlerService, ValidationEntityInterface } from '../../../validations';
+import { curveConstants } from './curve-constants';
+import { environment } from 'projects/bitbybit/src/environments/environment';
 
 export function createCurveReverseBlock(): void {
 
@@ -18,6 +20,7 @@ export function createCurveReverseBlock(): void {
             this.setOutput(true, 'NurbsCurve');
             this.setColour('#fff');
             this.setTooltip(resources.block_verb_geometry_nurbs_curve_reverse_description);
+            this.setHelpUrl(environment.docsUrl + curveConstants.helpUrl + '#' + 'reverse');
         }
     };
 

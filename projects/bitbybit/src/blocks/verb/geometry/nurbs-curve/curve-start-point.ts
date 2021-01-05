@@ -3,6 +3,8 @@ import * as JavaScript from 'blockly/javascript';
 import { ResourcesInterface, ResourcesService } from '../../../../resources';
 import { createStandardContextIIFE } from '../../../_shared';
 import { getRequired, makeRequiredValidationModelForInputs, BitByBitBlockHandlerService, ValidationEntityInterface } from '../../../validations';
+import { environment } from 'projects/bitbybit/src/environments/environment';
+import { curveConstants } from './curve-constants';
 
 export function createCurveStartPointBlock(): void {
 
@@ -18,6 +20,7 @@ export function createCurveStartPointBlock(): void {
             this.setOutput(true, 'Number');
             this.setColour('#fff');
             this.setTooltip(resources.block_verb_geometry_nurbs_curve_start_point_description);
+            this.setHelpUrl(environment.docsUrl + curveConstants.helpUrl + '#' + 'startpoint');
         }
     };
 

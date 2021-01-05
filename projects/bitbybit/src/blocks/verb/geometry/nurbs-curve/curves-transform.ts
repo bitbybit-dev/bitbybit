@@ -3,6 +3,8 @@ import * as JavaScript from 'blockly/javascript';
 import { ResourcesInterface, ResourcesService } from '../../../../resources';
 import { createStandardContextIIFE } from '../../../_shared';
 import { getRequired, makeRequiredValidationModelForInputs, BitByBitBlockHandlerService, ValidationEntityInterface } from '../../../validations';
+import { curveConstants } from './curve-constants';
+import { environment } from 'projects/bitbybit/src/environments/environment';
 
 export function createCurvesTransformBlock(): void {
 
@@ -21,7 +23,7 @@ export function createCurvesTransformBlock(): void {
             this.setOutput(true, 'Array');
             this.setColour('#fff');
             this.setTooltip(resources.block_verb_geom_curves_transform_description);
-            this.setHelpUrl('');
+            this.setHelpUrl(environment.docsUrl + curveConstants.helpUrl + '#' + 'transformcurves');
         }
     };
 

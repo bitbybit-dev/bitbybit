@@ -3,6 +3,8 @@ import * as JavaScript from 'blockly/javascript';
 import { ResourcesInterface, ResourcesService } from '../../../../resources';
 import { createStandardContextIIFE } from '../../../_shared';
 import { getRequired, makeRequiredValidationModelForInputs, BitByBitBlockHandlerService, ValidationEntityInterface } from '../../../validations';
+import { environment } from 'projects/bitbybit/src/environments/environment';
+import { curveConstants } from './curve-constants';
 
 export function createCurveDivideByEqualArcLengthPointsBlock(): void {
 
@@ -23,6 +25,7 @@ export function createCurveDivideByEqualArcLengthPointsBlock(): void {
             this.setOutput(true, 'Array');
             this.setColour('#fff');
             this.setTooltip(resources.block_verb_geometry_nurbs_curve_divide_by_equal_arc_length_points_description);
+            this.setHelpUrl(environment.docsUrl + curveConstants.helpUrl + '#' + 'dividebyequalarclengthtopoints');
         }
     };
 
