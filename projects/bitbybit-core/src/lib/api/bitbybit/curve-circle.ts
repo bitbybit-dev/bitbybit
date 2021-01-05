@@ -5,7 +5,7 @@ import * as Inputs from '../inputs/inputs';
 
 /**
  * Contains various methods for nurbs circle.
- * These methods wrap around Verbnurbs library that you can find here https://verbnurbs.com/.
+ * These methods wrap around Verbnurbs library that you can find here http://verbnurbs.com/.
  * Thanks Peter Boyer for his work.
  */
 @Injectable()

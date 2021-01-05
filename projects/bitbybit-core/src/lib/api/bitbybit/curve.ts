@@ -9,7 +9,7 @@ import { CurveEllipse } from './curve-ellipse';
 
 /**
  * Contains various methods for nurbs curves.
- * These methods wrap around Verbnurbs library that you can find here https://verbnurbs.com/.
+ * These methods wrap around Verbnurbs library that you can find here http://verbnurbs.com/.
  * Thanks Peter Boyer for his work.
  */
 @Injectable()
