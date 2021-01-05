@@ -4,13 +4,13 @@ import { ResourcesInterface, ResourcesService } from '../../../../resources';
 import { createStandardContextIIFE } from '../../../_shared';
 import { getRequired, makeRequiredValidationModelForInputs, BitByBitBlockHandlerService, ValidationEntityInterface } from '../../../validations';
 
-export function createEllipseBlock() {
+export function createEllipseBlock(): void {
 
     const resources = ResourcesService.getResources();
     const blockSelector = 'verb_geometry_nurbs_curve_ellipse';
 
     Blocks[blockSelector] = {
-        init() {
+        init(): void {
             this.appendValueInput('Center')
                 .setCheck('Array')
                 .setAlign(ALIGN_RIGHT)
@@ -49,7 +49,7 @@ export function createEllipseBlock() {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `return new BitByBit.verb.geom.Ellipse(inputs.center, inputs.xAxis, inputs.yAxis);`
+            `return bitbybit.curve.ellipse.createEllipse(inputs);`
         );
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };

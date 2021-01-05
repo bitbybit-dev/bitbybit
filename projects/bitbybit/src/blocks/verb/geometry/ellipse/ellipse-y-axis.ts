@@ -35,7 +35,7 @@ export function createEllipseYAxisBlock() {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `return inputs.ellipse.yaxis();`
+            `return bitbybit.curve.ellipse.yAxis(inputs);`
         );
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };

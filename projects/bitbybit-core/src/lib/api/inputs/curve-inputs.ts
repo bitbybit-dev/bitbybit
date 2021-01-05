@@ -244,4 +244,74 @@ export namespace Curve {
          */
         points: number[][];
     }
+    export class EllipseDto {
+        /**
+         * Nurbs ellipse
+         */
+        ellipse: any;
+    }
+    export class CircleDto {
+        /**
+         * Nurbs circle
+         */
+        circle: any;
+    }
+    export class ArcDto {
+        /**
+         * Nurbs arc
+         */
+        arc: any;
+    }
+    export class EllipseParametersDto {
+        /**
+         * X axis of the circle
+         */
+        xAxis: number[];
+        /**
+         * Y axis of the circle
+         */
+        yAxis: number[];
+        /**
+         * Center of the circle
+         */
+        center: number[];
+    }
+    export class CircleParametersDto {
+        /**
+         * X axis of the circle
+         */
+        xAxis: number[];
+        /**
+         * Y axis of the circle
+         */
+        yAxis: number[];
+        /**
+         * Radius of the circle
+         */
+        radius: number;
+        /**
+         * Center of the circle
+         */
+        center: number[];
+    }
+    export class ArcParametersDto extends CircleParametersDto {
+        /**
+         * Minimum angle in degrees
+         */
+        minAngle: number;
+        /**
+         * Maximum angle in degrees
+         */
+        maxAngle: number;
+    }
+    export class EllipseArcParametersDto extends EllipseParametersDto {
+        /**
+         * Minimum angle in degrees
+         */
+        minAngle: number;
+        /**
+         * Maximum angle in degrees
+         */
+        maxAngle: number;
+    }
 }

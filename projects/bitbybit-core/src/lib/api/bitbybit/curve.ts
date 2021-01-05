@@ -4,16 +4,23 @@ import { Context } from '../context';
 import { GeometryHelper } from '../geometry-helper';
 import * as Inputs from '../inputs/inputs';
 import { BaseTypes } from './base-types';
+import { CurveCircle } from './curve-circle';
+import { CurveEllipse } from './curve-ellipse';
 
 /**
  * Contains various methods for nurbs curves.
- * These methods mostly wrap around Verbnurbs library that you can find here https://verbnurbs.com/.
+ * These methods wrap around Verbnurbs library that you can find here https://verbnurbs.com/.
  * Thanks Peter Boyer for his work.
  */
 @Injectable()
 export class Curve {
 
-    constructor(private readonly context: Context, private readonly geometryHelper: GeometryHelper) { }
+    constructor(
+        public readonly circle: CurveCircle,
+        public readonly ellipse: CurveEllipse,
+        private readonly context: Context,
+        private readonly geometryHelper: GeometryHelper
+    ) { }
 
     /**
      * Draws a single curve

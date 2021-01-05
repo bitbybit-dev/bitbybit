@@ -4,13 +4,13 @@ import { ResourcesInterface, ResourcesService } from '../../../../resources';
 import { createStandardContextIIFE } from '../../../_shared';
 import { getRequired, makeRequiredValidationModelForInputs, BitByBitBlockHandlerService, ValidationEntityInterface } from '../../../validations';
 
-export function createCircleRadiusBlock() {
+export function createCircleRadiusBlock(): void {
 
     const resources = ResourcesService.getResources();
     const blockSelector = 'verb_geometry_nurbs_curve_circle_radius';
 
     Blocks[blockSelector] = {
-        init() {
+        init(): void {
             this.appendValueInput('Circle')
                 .setCheck('NurbsCurve')
                 .setAlign(ALIGN_RIGHT)
@@ -35,7 +35,7 @@ export function createCircleRadiusBlock() {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `return inputs.circle.radius();`
+            `return bitbybit.curve.circle.radius(inputs);`
         );
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };

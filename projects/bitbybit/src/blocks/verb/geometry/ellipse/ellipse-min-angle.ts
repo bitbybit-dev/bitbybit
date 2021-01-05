@@ -35,7 +35,7 @@ export function createEllipseMinAngleBlock() {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `return BitByBit.BABYLON.Angle.FromRadians(inputs.ellipse.minAngle()).degrees();`
+            `return bitbybit.curve.ellipse.minAngle(inputs);`
         );
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };
