@@ -10,13 +10,13 @@ import {
     ValidationEntityInterface
 } from '../../validations';
 
-export function createDrawSurfacesBlock() {
+export function createDrawSurfacesBlock(): void {
 
     const resources = ResourcesService.getResources();
     const blockSelector = 'babylon_draw_surfaces';
 
     Blocks[blockSelector] = {
-        init() {
+        init(): void {
             this.appendValueInput('Surfaces')
                 .setCheck('Array')
                 .setAlign(ALIGN_RIGHT)
@@ -48,6 +48,7 @@ export function createDrawSurfacesBlock() {
             colour: (JavaScript as any).valueToCode(block, 'Colour', (JavaScript as any).ORDER_ATOMIC),
             opacity: (JavaScript as any).valueToCode(block, 'Opacity', (JavaScript as any).ORDER_ATOMIC),
             updatable: (JavaScript as any).valueToCode(block, 'Updatable', (JavaScript as any).ORDER_ATOMIC),
+            surfacesMesh: undefined,
         };
         // this is first set of validations to check that all inputs are non empty strings
         BitByBitBlockHandlerService.validate(block, block.workspace, makeRequiredValidationModelForInputs(resources, inputs, [

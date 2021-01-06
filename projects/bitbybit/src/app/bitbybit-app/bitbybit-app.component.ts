@@ -212,7 +212,6 @@ export class BitbybitAppComponent implements OnInit, OnDestroy, AfterViewInit {
                                 this.workspace.zoomToFit();
                                 this.workspace.zoomCenter(-3);
                                 this.onResize();
-                                this.run();
                             }
                         } else {
                             if (this.firstTimeOpen) {
@@ -393,7 +392,7 @@ export class BitbybitAppComponent implements OnInit, OnDestroy, AfterViewInit {
 
         setTimeout(() => {
             window.dispatchEvent(new Event('resize'));
-        });
+        }, 100);
     }
 
     cleanCanvas(): void {

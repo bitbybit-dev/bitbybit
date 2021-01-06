@@ -86,6 +86,34 @@ export class Surface {
         );
     }
 
+    /**
+     * Draws multiple surfaces with multiple colours. Number of colours has to be equal to number of surfaces
+     * <div>
+     *  <img src="../assets/images/blockly-images/surface/drawSurfacesMultiColour.png" alt="Blockly Image"/>
+     * </div>
+     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_surface_.surface.html#drawsurfacesmulticolour
+     * @param inputs Contains the Nurbs surfaces, colours and other information for drawing
+     * @returns Mesh that is being drawn by Babylon
+     */
+    drawSurfacesMultiColour(inputs: Inputs.Surface.DrawSurfacesColoursDto): Mesh {
+        if (inputs.surfacesMesh && inputs.updatable) {
+            inputs.surfacesMesh.getChildren().forEach(srf => srf.dispose());
+        }
+
+        inputs.surfacesMesh = new Mesh(`ColouredSurfaces${Math.random()}`, this.context.scene);
+        inputs.surfaces.forEach((surface, index) => {
+            const srf = this.drawSurface({
+                surface,
+                colour: inputs.colours[index],
+                updatable: inputs.updatable,
+                opacity: inputs.opacity,
+            });
+            inputs.surfacesMesh.addChild(srf);
+        });
+
+        return inputs.surfacesMesh;
+    }
+
     private createOrUpdateSurfaceMesh(
         meshDataConverted: { positions: any[]; indices: any[]; normals: any[]; },
         mesh: Mesh, updatable: boolean, opacity: number, colour: string

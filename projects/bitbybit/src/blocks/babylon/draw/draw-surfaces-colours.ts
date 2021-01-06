@@ -10,14 +10,13 @@ import {
     ValidationEntityInterface
 } from '../../validations';
 
-// This component can probably be better implemented with SubMeshes and MultiMaterials of BabylonJS
-export function createDrawSurfacesColoursBlock() {
+export function createDrawSurfacesColoursBlock(): void {
 
     const resources = ResourcesService.getResources();
     const blockSelector = 'babylon_draw_surfaces_colours';
 
     Blocks[blockSelector] = {
-        init() {
+        init(): void {
             this.appendValueInput('Surfaces')
                 .setCheck('Array')
                 .setAlign(ALIGN_RIGHT)
@@ -49,6 +48,7 @@ export function createDrawSurfacesColoursBlock() {
             colours: (JavaScript as any).valueToCode(block, 'Colours', (JavaScript as any).ORDER_ATOMIC),
             opacity: (JavaScript as any).valueToCode(block, 'Opacity', (JavaScript as any).ORDER_ATOMIC),
             updatable: (JavaScript as any).valueToCode(block, 'Updatable', (JavaScript as any).ORDER_ATOMIC),
+            surfacesMesh: undefined,
         };
         // this is first set of validations to check that all inputs are non empty strings
         BitByBitBlockHandlerService.validate(block, block.workspace, makeRequiredValidationModelForInputs(resources, inputs, [
@@ -60,57 +60,8 @@ export function createDrawSurfacesColoursBlock() {
         (block as any).validationModel = runtimeValidationModel;
 
         return createStandardContextIIFE(block, blockSelector, inputs, false,
-            `
-inputs.surfaceMeshes = ${(JavaScript as any).variableDB_.getName(block.getFieldValue('DrawnSurfaceMeshes'), VARIABLE_CATEGORY_NAME)};
-
-if(inputs.surfaceMeshes && inputs.updatable){
-    inputs.surfaceMeshes.forEach(srf => srf.dispose());
-}
-
-inputs.surfaceMeshes = [];
-inputs.surfaces.forEach((srf, index) => {
-    const meshData = srf.tessellate();
-
-    const meshDataConverted = {
-        positions: [],
-        indices: [],
-        normals: [],
-    }
-
-    let countIndices = 0;
-
-    meshData.faces.forEach((faceIndices) => {
-        faceIndices.forEach((x) => {
-            const vn = meshData.normals[x];
-            meshDataConverted.normals.push( vn[0], vn[1], vn[2] );
-
-            const pt = meshData.points[x];
-            meshDataConverted.positions.push( pt[0], pt[1], pt[2] );
-
-            meshDataConverted.indices.push(countIndices);
-            countIndices++;
-        });
-    });
-
-    const customMeshForSurface = new BitByBit.BABYLON.Mesh('custom${Math.random()}', BitByBit.scene);
-
-    const vertexData = new BitByBit.BABYLON.VertexData();
-
-    vertexData.positions = meshDataConverted.positions;
-    vertexData.indices = meshDataConverted.indices;
-    vertexData.normals = meshDataConverted.normals;
-
-    vertexData.applyToMesh(customMeshForSurface);
-    customMeshForSurface.material = new BitByBit.BABYLON.StandardMaterial();
-    customMeshForSurface.material.alpha = inputs.opacity;
-    customMeshForSurface.material.diffuseColor = BitByBit.BABYLON.Color3.FromHexString(inputs.colours[index]);
-    customMeshForSurface.material.backFaceCulling = false;
-    customMeshForSurface.isPickable = false;
-
-    inputs.surfaceMeshes.push(customMeshForSurface);
-});
-${(JavaScript as any).variableDB_.getName(block.getFieldValue('DrawnSurfaceMeshes'), VARIABLE_CATEGORY_NAME)} = inputs.surfaceMeshes;
-        `
+            `inputs.surfacesMesh = ${(JavaScript as any).variableDB_.getName(block.getFieldValue('DrawnSurfaceMeshes'), VARIABLE_CATEGORY_NAME)};
+            ${(JavaScript as any).variableDB_.getName(block.getFieldValue('DrawnSurfaceMeshes'), VARIABLE_CATEGORY_NAME)} = bitbybit.surface.drawSurfacesMultiColour(inputs);`
         );
     };
 }

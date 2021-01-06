@@ -31,7 +31,7 @@ export namespace Surface {
         /**
          * Nurbs surfaces
          */
-        surfaces: any;
+        surfaces: any[];
         /**
          * Value between 0 and 1
          */
@@ -40,6 +40,28 @@ export namespace Surface {
          * Hex colour string
          */
         colour = '#444444';
+        /**
+         * Indicates wether the position of these surfaces will change in time
+         */
+        updatable = false;
+        /**
+         * Surfaces mesh variable in case it already exists and needs updating
+         */
+        surfacesMesh?: Mesh;
+    }
+    export class DrawSurfacesColoursDto {
+        /**
+         * Nurbs surfaces
+         */
+        surfaces: any[];
+        /**
+         * Value between 0 and 1
+         */
+        opacity = 1;
+        /**
+         * Hex colour strings, there has to be a colour for every single surface and lengths of arrays need to match
+         */
+        colours: string[];
         /**
          * Indicates wether the position of these surfaces will change in time
          */
