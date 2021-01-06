@@ -45,9 +45,7 @@ export function createSurfaceIsocurvesBlock(): void {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `return inputs.parameters.map(parameter => {
-                return inputs.surface.isocurve(parameter, inputs.useV);
-            });`);
+            `return bitbybit.surface.isocurvesAtParams(inputs);`);
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };
 }

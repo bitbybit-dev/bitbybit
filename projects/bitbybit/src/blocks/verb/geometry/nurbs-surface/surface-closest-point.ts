@@ -4,13 +4,13 @@ import { ResourcesInterface, ResourcesService } from '../../../../resources';
 import { createStandardContextIIFE } from '../../../_shared';
 import { getRequired, makeRequiredValidationModelForInputs, BitByBitBlockHandlerService, ValidationEntityInterface } from '../../../validations';
 
-export function createSurfaceClosestPointBlock() {
+export function createSurfaceClosestPointBlock(): void {
 
     const resources = ResourcesService.getResources();
     const blockSelector = 'verb_geometry_nurbs_surface_closest_point';
 
     Blocks[blockSelector] = {
-        init() {
+        init(): void {
             this.appendValueInput('Surface')
                 .setCheck('NurbsSurface')
                 .setAlign(ALIGN_RIGHT)
@@ -19,7 +19,7 @@ export function createSurfaceClosestPointBlock() {
                 .setCheck('Array')
                 .setAlign(ALIGN_RIGHT)
                 .appendField(resources.block_verb_geometry_nurbs_surface_closest_point_input_point.toLowerCase());
-            this.setOutput(true, 'UV');
+            this.setOutput(true, 'Array');
             this.setColour('#fff');
             this.setTooltip(resources.block_verb_geometry_nurbs_surface_closest_point_description);
         }
@@ -40,7 +40,7 @@ export function createSurfaceClosestPointBlock() {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `return inputs.surface.closestPoint(inputs.point);`
+            `return bitbybit.surface.closestPoint(inputs);`
         );
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };

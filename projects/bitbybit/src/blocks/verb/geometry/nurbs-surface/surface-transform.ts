@@ -4,13 +4,13 @@ import { ResourcesInterface, ResourcesService } from '../../../../resources';
 import { createStandardContextIIFE } from '../../../_shared';
 import { getRequired, makeRequiredValidationModelForInputs, BitByBitBlockHandlerService, ValidationEntityInterface } from '../../../validations';
 
-export function createSurfaceTransformBlock() {
+export function createSurfaceTransformBlock(): void {
 
     const resources = ResourcesService.getResources();
     const blockSelector = 'verb_geometry_nurbs_surface_transform';
 
     Blocks[blockSelector] = {
-        init() {
+        init(): void {
             this.appendValueInput('Surface')
                 .setCheck('NurbsSurface')
                 .setAlign(ALIGN_RIGHT)
@@ -41,23 +41,7 @@ export function createSurfaceTransformBlock() {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `
-    const points = inputs.surface.controlPoints();
-    const transformation = inputs.matrix;
-    let twoDimensionalPoints = [];
-    points.forEach(ptCollection => {
-        let transformedControlPoints = ptCollection;
-        if(transformation.length && transformation.length > 0 && isNaN(transformation[0])){
-            transformation.forEach(transform => {
-                transformedControlPoints = BitByBit.BitByBitBlocklyHelperService.transformPointsByMatrixArray(transformedControlPoints, transform);
-            });
-        } else {
-            transformedControlPoints = BitByBit.BitByBitBlocklyHelperService.transformPointsByMatrixArray(transformedControlPoints, transformation);
-        }
-        twoDimensionalPoints.push(transformedControlPoints);
-    });
-    return BitByBit.verb.geom.NurbsSurface.byKnotsControlPointsWeights(inputs.surface.degreeU(), inputs.surface.degreeV(), inputs.surface.knotsU(), inputs.surface.knotsV(), twoDimensionalPoints, inputs.surface.weights());
-`);
+            `return bitbybit.surface.transformSurface(inputs);`);
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };
 }

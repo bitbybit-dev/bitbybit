@@ -4,13 +4,13 @@ import { ResourcesInterface, ResourcesService } from '../../../../resources';
 import { createStandardContextIIFE } from '../../../_shared';
 import { getRequired, makeRequiredValidationModelForInputs, BitByBitBlockHandlerService, ValidationEntityInterface } from '../../../validations';
 
-export function createSurfaceByLoftingCurvesBlock() {
+export function createSurfaceByLoftingCurvesBlock(): void {
 
     const resources = ResourcesService.getResources();
     const blockSelector = 'verb_geometry_nurbs_surface_by_lofting_curves';
 
     Blocks[blockSelector] = {
-        init() {
+        init(): void {
             this.appendValueInput('Curves')
                 .setCheck('Array')
                 .setAlign(ALIGN_RIGHT)
@@ -40,7 +40,7 @@ export function createSurfaceByLoftingCurvesBlock() {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `return BitByBit.verb.geom.NurbsSurface.byLoftingCurves(inputs.curves, inputs.degree_v)`
+            `return bitbybit.surface.createSurfaceByLoftingCurves(inputs);`
         );
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };
