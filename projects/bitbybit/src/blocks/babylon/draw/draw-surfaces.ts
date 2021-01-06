@@ -59,64 +59,8 @@ export function createDrawSurfacesBlock() {
         (block as any).validationModel = runtimeValidationModel;
 
         return createStandardContextIIFE(block, blockSelector, inputs, false,
-            `
-        inputs.surfacesMesh = ${(JavaScript as any).variableDB_.getName(block.getFieldValue('DrawnSurfacesMesh'), VARIABLE_CATEGORY_NAME)};
-
-        const allMeshDatas = [];
-        inputs.surfaces.forEach(srf => {
-            allMeshDatas.push(srf.tessellate());
-        });
-
-        const meshDataConverted = {
-            positions: [],
-            indices: [],
-            normals: [],
-        }
-
-        let countIndices = 0;
-
-        allMeshDatas.forEach(meshData => {
-            meshData.faces.forEach((faceIndices) => {
-                faceIndices.forEach((x) => {
-                    const vn = meshData.normals[x];
-                    meshDataConverted.normals.push( vn[0], vn[1], vn[2] );
-
-                    const pt = meshData.points[x];
-                    meshDataConverted.positions.push( pt[0], pt[1], pt[2] );
-
-                    meshDataConverted.indices.push(countIndices);
-                    countIndices++;
-                });
-            });
-        });
-
-        const createMesh = () => {
-            const vertexData = new BitByBit.BABYLON.VertexData();
-
-            vertexData.positions = meshDataConverted.positions;
-            vertexData.indices = meshDataConverted.indices;
-            vertexData.normals = meshDataConverted.normals;
-
-            vertexData.applyToMesh(inputs.surfacesMesh, inputs.updatable);
-            ${(JavaScript as any).variableDB_.getName(block.getFieldValue('DrawnSurfacesMesh'), VARIABLE_CATEGORY_NAME)} = inputs.surfacesMesh;
-
-        }
-
-        if(inputs.surfacesMesh && inputs.updatable){
-            createMesh();
-        } else {
-            inputs.surfacesMesh = new BitByBit.BABYLON.Mesh('custom${Math.random()}', BitByBit.scene);
-            createMesh();
-            inputs.surfacesMesh.material = new BitByBit.BABYLON.StandardMaterial();
-        }
-
-        inputs.surfacesMesh.material.alpha = inputs.opacity;
-        inputs.surfacesMesh.material.diffuseColor = BitByBit.BABYLON.Color3.FromHexString(inputs.colour);
-        inputs.surfacesMesh.material.specularColor = new BitByBit.BABYLON.Color3(1, 1, 1);
-        inputs.surfacesMesh.material.ambientColor = new BitByBit.BABYLON.Color3(1, 1, 1);
-        inputs.surfacesMesh.material.backFaceCulling = false;
-        inputs.surfacesMesh.isPickable = false;
-        `
+            `inputs.surfacesMesh = ${(JavaScript as any).variableDB_.getName(block.getFieldValue('DrawnSurfacesMesh'), VARIABLE_CATEGORY_NAME)};
+            ${(JavaScript as any).variableDB_.getName(block.getFieldValue('DrawnSurfacesMesh'), VARIABLE_CATEGORY_NAME)} = bitbybit.surface.drawSurfaces(inputs);`
         );
     };
 }
