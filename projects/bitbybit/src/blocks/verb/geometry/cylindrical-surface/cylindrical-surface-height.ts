@@ -4,13 +4,13 @@ import { ResourcesInterface, ResourcesService } from '../../../../resources';
 import { createStandardContextIIFE } from '../../../_shared';
 import { getRequired, makeRequiredValidationModelForInputs, BitByBitBlockHandlerService, ValidationEntityInterface } from '../../../validations';
 
-export function createCylindricalSurfaceHeightBlock() {
+export function createCylindricalSurfaceHeightBlock(): void {
 
     const resources = ResourcesService.getResources();
     const blockSelector = 'verb_geometry_cylindrical_surface_height';
 
     Blocks[blockSelector] = {
-        init() {
+        init(): void {
             this.appendValueInput('Cylinder')
                 .setCheck('NurbsSurface')
                 .setAlign(ALIGN_RIGHT)
@@ -35,7 +35,7 @@ export function createCylindricalSurfaceHeightBlock() {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `return inputs.cylinder.height();`
+            `return bitbybit.surface.cylindrical.height(inputs);`
         );
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };

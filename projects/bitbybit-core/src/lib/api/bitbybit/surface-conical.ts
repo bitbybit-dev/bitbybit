@@ -15,13 +15,13 @@ export class SurfaceConical {
     /**
      * Creates the conical Nurbs surface
      * <div>
-     *  <img src="../assets/images/blockly-images/surface/conical/createCone.png" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/surface/conical/create.png" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_surface_conical_.surfaceconical.html#createcone
-     * @param inputs Nurbs conical surface
+     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_surface_conical_.surfaceconical.html#create
+     * @param inputs Parameters for Nurbs conical surface
      * @returns Conical Nurbs surface
      */
-    create(inputs: Inputs.Surface.ConeParametersDto): any {
+    create(inputs: Inputs.Surface.ConeAndCylinderParametersDto): any {
         return new this.context.verb.geom.ConicalSurface(inputs.axis, inputs.xAxis, inputs.base, inputs.height, inputs.radius);
     }
 

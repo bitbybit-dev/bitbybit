@@ -234,7 +234,7 @@ export namespace Surface {
          */
         surfacesMesh?: Mesh;
     }
-    export class ConeParametersDto {
+    export class ConeAndCylinderParametersDto {
         /**
          * Defines main axis of the cone
          */
@@ -261,5 +261,11 @@ export namespace Surface {
          * Conical Nurbs surface
          */
         cone: any;
+    }
+    export class CylinderDto {
+        /**
+         * Cylindrical Nurbs surface
+         */
+        cylinder: any;
     }
 }

@@ -4,13 +4,13 @@ import { ResourcesInterface, ResourcesService } from '../../../../resources';
 import { createStandardContextIIFE } from '../../../_shared';
 import { getRequired, makeRequiredValidationModelForInputs, BitByBitBlockHandlerService, ValidationEntityInterface } from '../../../validations';
 
-export function createCylindricalSurfaceRadiusBlock() {
+export function createCylindricalSurfaceRadiusBlock(): void {
 
     const resources = ResourcesService.getResources();
     const blockSelector = 'verb_geometry_cylindrical_surface_radius';
 
     Blocks[blockSelector] = {
-        init() {
+        init(): void {
             this.appendValueInput('Cylinder')
                 .setCheck('NurbsSurface')
                 .setAlign(ALIGN_RIGHT)
@@ -35,7 +35,7 @@ export function createCylindricalSurfaceRadiusBlock() {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `return inputs.cylinder.radius();`
+            `return bitbybit.surface.cylindrical.radius(inputs);`
         );
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };

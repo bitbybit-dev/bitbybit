@@ -5,6 +5,7 @@ import { GeometryHelper } from '../geometry-helper';
 import * as Inputs from '../inputs/inputs';
 import { BaseTypes } from './base-types';
 import { SurfaceConical } from './surface-conical';
+import { SurfaceCylindrical } from './surface-cylindrical';
 
 /**
  * Contains various methods for nurbs surfaces.
@@ -16,6 +17,7 @@ export class Surface {
 
     constructor(
         public readonly conical: SurfaceConical,
+        public readonly cylindrical: SurfaceCylindrical,
         private readonly context: Context,
         private readonly geometryHelper: GeometryHelper
     ) { }
