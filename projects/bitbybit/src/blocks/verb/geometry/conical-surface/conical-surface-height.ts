@@ -4,13 +4,13 @@ import { ResourcesInterface, ResourcesService } from '../../../../resources';
 import { createStandardContextIIFE } from '../../../_shared';
 import { getRequired, makeRequiredValidationModelForInputs, BitByBitBlockHandlerService, ValidationEntityInterface } from '../../../validations';
 
-export function createConicalSurfaceHeightBlock() {
+export function createConicalSurfaceHeightBlock(): void {
 
     const resources = ResourcesService.getResources();
     const blockSelector = 'verb_geometry_conical_surface_height';
 
     Blocks[blockSelector] = {
-        init() {
+        init(): void {
             this.appendValueInput('Cone')
                 .setCheck('NurbsSurface')
                 .setAlign(ALIGN_RIGHT)
@@ -35,7 +35,7 @@ export function createConicalSurfaceHeightBlock() {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `return inputs.cone.height();`
+            `return bitbybit.surface.conical.height(inputs);`
         );
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };

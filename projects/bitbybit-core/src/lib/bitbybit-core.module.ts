@@ -14,6 +14,7 @@ import { Curve } from './api/bitbybit/curve';
 import { CurveCircle } from './api/bitbybit/curve-circle';
 import { CurveEllipse } from './api/bitbybit/curve-ellipse';
 import { Surface } from './api/bitbybit/surface';
+import { SurfaceConical } from './api/bitbybit/surface-conical';
 
 @NgModule({
     declarations: [],
@@ -34,7 +35,8 @@ import { Surface } from './api/bitbybit/surface';
         Curve,
         CurveCircle,
         CurveEllipse,
-        Surface
+        Surface,
+        SurfaceConical,
     ],
     exports: []
 })

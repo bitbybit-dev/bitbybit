@@ -234,4 +234,32 @@ export namespace Surface {
          */
         surfacesMesh?: Mesh;
     }
+    export class ConeParametersDto {
+        /**
+         * Defines main axis of the cone
+         */
+        axis = [0, 1, 0];
+        /**
+         * X axis of the cone
+         */
+        xAxis = [1, 0, 0];
+        /**
+         * Base point for the cone
+         */
+        base = [0, 0, 0];
+        /**
+         * Height of the cone
+         */
+        height = 2;
+        /**
+         * Radius of the cone
+         */
+        radius = 1;
+    }
+    export class ConeDto {
+        /**
+         * Conical Nurbs surface
+         */
+        cone: any;
+    }
 }
