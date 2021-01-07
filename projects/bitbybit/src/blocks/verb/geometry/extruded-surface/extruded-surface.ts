@@ -4,13 +4,13 @@ import { ResourcesInterface, ResourcesService } from '../../../../resources';
 import { createStandardContextIIFE } from '../../../_shared';
 import { getRequired, makeRequiredValidationModelForInputs, BitByBitBlockHandlerService, ValidationEntityInterface } from '../../../validations';
 
-export function createExtrudedSurfaceBlock() {
+export function createExtrudedSurfaceBlock(): void {
 
     const resources = ResourcesService.getResources();
     const blockSelector = 'verb_geometry_extruded_surface';
 
     Blocks[blockSelector] = {
-        init() {
+        init(): void {
             this.appendValueInput('Profile')
                 .setCheck('NurbsCurve')
                 .setAlign(ALIGN_RIGHT)
@@ -40,7 +40,7 @@ export function createExtrudedSurfaceBlock() {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `return new BitByBit.verb.geom.ExtrudedSurface(inputs.profile, inputs.direction);`
+            `return bitbybit.surface.extrusion.create(inputs);`
         );
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };

@@ -4,13 +4,13 @@ import { ResourcesInterface, ResourcesService } from '../../../../resources';
 import { createStandardContextIIFE } from '../../../_shared';
 import { getRequired, makeRequiredValidationModelForInputs, BitByBitBlockHandlerService, ValidationEntityInterface } from '../../../validations';
 
-export function createExtrudedSurfaceDirectionBlocks() {
+export function createExtrudedSurfaceDirectionBlocks(): void {
 
     const resources = ResourcesService.getResources();
     const blockSelector = 'verb_geometry_extruded_surface_direction';
 
     Blocks[blockSelector] = {
-        init() {
+        init(): void {
             this.appendValueInput('Extrusion')
                 .setCheck('NurbsSurface')
                 .setAlign(ALIGN_RIGHT)
@@ -35,7 +35,7 @@ export function createExtrudedSurfaceDirectionBlocks() {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `return inputs.extrusion.direction();`
+            `return bitbybit.surface.extrusion.direction(inputs);`
         );
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };

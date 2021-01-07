@@ -268,4 +268,20 @@ export namespace Surface {
          */
         cylinder: any;
     }
+    export class ExtrusionParametersDto {
+        /**
+         * Profile Nurbs curve
+         */
+        profile: any;
+        /**
+         * Direction vector
+         */
+        direction: number[];
+    }
+    export class ExtrusionDto {
+        /**
+         * Nurbs surface created through extrusion
+         */
+        extrusion: any;
+    }
 }
