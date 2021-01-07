@@ -3,6 +3,8 @@ import * as JavaScript from 'blockly/javascript';
 import { ResourcesInterface, ResourcesService } from '../../../../resources';
 import { createStandardContextIIFE } from '../../../_shared';
 import { getRequired, makeRequiredValidationModelForInputs, BitByBitBlockHandlerService, ValidationEntityInterface } from '../../../validations';
+import { conicalSurfaceConstants } from './conical-surface-constants';
+import { environment } from 'projects/bitbybit/src/environments/environment';
 
 export function createConicalSurfaceBlock(): void {
 
@@ -34,6 +36,7 @@ export function createConicalSurfaceBlock(): void {
             this.setOutput(true, 'NurbsSurface');
             this.setColour('#fff');
             this.setTooltip(resources.block_verb_geometry_conical_surface_description);
+            this.setHelpUrl(environment.docsUrl + conicalSurfaceConstants.helpUrl + '#' + 'create');
         }
     };
 

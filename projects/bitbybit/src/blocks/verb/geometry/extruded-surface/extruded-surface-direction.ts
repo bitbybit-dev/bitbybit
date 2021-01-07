@@ -3,6 +3,8 @@ import * as JavaScript from 'blockly/javascript';
 import { ResourcesInterface, ResourcesService } from '../../../../resources';
 import { createStandardContextIIFE } from '../../../_shared';
 import { getRequired, makeRequiredValidationModelForInputs, BitByBitBlockHandlerService, ValidationEntityInterface } from '../../../validations';
+import { environment } from 'projects/bitbybit/src/environments/environment';
+import { extrudedSurfaceConstants } from './extruded-surface-constants';
 
 export function createExtrudedSurfaceDirectionBlocks(): void {
 
@@ -18,6 +20,7 @@ export function createExtrudedSurfaceDirectionBlocks(): void {
             this.setOutput(true, 'Array');
             this.setColour('#fff');
             this.setTooltip(resources.block_verb_geometry_extruded_surface_direction_description);
+            this.setHelpUrl(environment.docsUrl + extrudedSurfaceConstants.helpUrl + '#' + 'direction');
         }
     };
 

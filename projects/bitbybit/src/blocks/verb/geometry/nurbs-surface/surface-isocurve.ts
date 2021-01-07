@@ -3,6 +3,8 @@ import * as JavaScript from 'blockly/javascript';
 import { ResourcesInterface, ResourcesService } from '../../../../resources';
 import { createStandardContextIIFE } from '../../../_shared';
 import { getRequired, makeRequiredValidationModelForInputs, BitByBitBlockHandlerService, ValidationEntityInterface } from '../../../validations';
+import { surfaceConstants } from './surface-constants';
+import { environment } from 'projects/bitbybit/src/environments/environment';
 
 export function createSurfaceIsocurveBlock(): void {
 
@@ -26,6 +28,7 @@ export function createSurfaceIsocurveBlock(): void {
             this.setOutput(true, 'NurbsCurve');
             this.setColour('#fff');
             this.setTooltip(resources.block_verb_geometry_nurbs_surface_isocurve_description);
+            this.setHelpUrl(environment.docsUrl + surfaceConstants.helpUrl + '#' + 'isocurve');
         }
     };
 

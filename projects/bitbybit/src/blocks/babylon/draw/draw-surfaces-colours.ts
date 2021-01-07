@@ -9,6 +9,8 @@ import {
     BitByBitBlockHandlerService,
     ValidationEntityInterface
 } from '../../validations';
+import { environment } from 'projects/bitbybit/src/environments/environment';
+import { surfaceConstants } from '../../verb/geometry/nurbs-surface/surface-constants';
 
 export function createDrawSurfacesColoursBlock(): void {
 
@@ -39,6 +41,7 @@ export function createDrawSurfacesColoursBlock(): void {
             this.setPreviousStatement(true, null);
             this.setNextStatement(true, null);
             this.setTooltip(resources.block_babylon_draw_surfaces_colours_description);
+            this.setHelpUrl(environment.docsUrl + surfaceConstants.helpUrl + '#' + 'drawsurfacesmulticolour');
         }
     };
 

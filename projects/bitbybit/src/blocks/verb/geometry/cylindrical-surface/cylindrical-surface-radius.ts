@@ -3,6 +3,8 @@ import * as JavaScript from 'blockly/javascript';
 import { ResourcesInterface, ResourcesService } from '../../../../resources';
 import { createStandardContextIIFE } from '../../../_shared';
 import { getRequired, makeRequiredValidationModelForInputs, BitByBitBlockHandlerService, ValidationEntityInterface } from '../../../validations';
+import { environment } from 'projects/bitbybit/src/environments/environment';
+import { cylindricalSurfaceConstants } from './cylindrical-surface-constants';
 
 export function createCylindricalSurfaceRadiusBlock(): void {
 
@@ -18,6 +20,7 @@ export function createCylindricalSurfaceRadiusBlock(): void {
             this.setOutput(true, 'Array');
             this.setColour('#fff');
             this.setTooltip(resources.block_verb_geometry_cylindrical_surface_radius_description);
+            this.setHelpUrl(environment.docsUrl + cylindricalSurfaceConstants.helpUrl + '#' + 'radius');
         }
     };
 

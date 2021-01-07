@@ -3,6 +3,8 @@ import * as JavaScript from 'blockly/javascript';
 import { ResourcesInterface, ResourcesService } from '../../../../resources';
 import { createStandardContextIIFE } from '../../../_shared';
 import { getRequired, makeRequiredValidationModelForInputs, BitByBitBlockHandlerService, ValidationEntityInterface } from '../../../validations';
+import { environment } from 'projects/bitbybit/src/environments/environment';
+import { surfaceConstants } from './surface-constants';
 
 export function createSurfaceByKnotsControlPointsWeightsBlock(): void {
 
@@ -38,6 +40,7 @@ export function createSurfaceByKnotsControlPointsWeightsBlock(): void {
             this.setOutput(true, 'NurbsSurface');
             this.setColour('#fff');
             this.setTooltip(resources.block_verb_geometry_nurbs_surface_by_knots_control_points_weights_description);
+            this.setHelpUrl(environment.docsUrl + surfaceConstants.helpUrl + '#' + 'createsurfacebyknotscontrolpointsweights');
         }
     };
 

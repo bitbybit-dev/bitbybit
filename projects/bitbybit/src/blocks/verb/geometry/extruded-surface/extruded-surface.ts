@@ -3,6 +3,8 @@ import * as JavaScript from 'blockly/javascript';
 import { ResourcesInterface, ResourcesService } from '../../../../resources';
 import { createStandardContextIIFE } from '../../../_shared';
 import { getRequired, makeRequiredValidationModelForInputs, BitByBitBlockHandlerService, ValidationEntityInterface } from '../../../validations';
+import { extrudedSurfaceConstants } from './extruded-surface-constants';
+import { environment } from 'projects/bitbybit/src/environments/environment';
 
 export function createExtrudedSurfaceBlock(): void {
 
@@ -22,6 +24,8 @@ export function createExtrudedSurfaceBlock(): void {
             this.setOutput(true, 'NurbsSurface');
             this.setColour('#fff');
             this.setTooltip(resources.block_verb_geometry_extruded_surface_description);
+            this.setHelpUrl(environment.docsUrl + extrudedSurfaceConstants.helpUrl + '#' + 'create');
+
         }
     };
 

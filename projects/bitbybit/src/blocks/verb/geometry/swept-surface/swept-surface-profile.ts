@@ -3,6 +3,8 @@ import * as JavaScript from 'blockly/javascript';
 import { ResourcesInterface, ResourcesService } from '../../../../resources';
 import { createStandardContextIIFE } from '../../../_shared';
 import { getRequired, makeRequiredValidationModelForInputs, BitByBitBlockHandlerService, ValidationEntityInterface } from '../../../validations';
+import { environment } from 'projects/bitbybit/src/environments/environment';
+import { sweptSurfaceConstants } from './swept-surface-constants';
 
 export function createSweptSurfaceProfileBlock(): void {
 
@@ -18,6 +20,7 @@ export function createSweptSurfaceProfileBlock(): void {
             this.setOutput(true, 'NurbsCurve');
             this.setColour('#fff');
             this.setTooltip(resources.block_verb_geometry_swept_surface_profile_description);
+            this.setHelpUrl(environment.docsUrl + sweptSurfaceConstants.helpUrl + '#' + 'profile');
         }
     };
 

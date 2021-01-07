@@ -3,6 +3,8 @@ import * as JavaScript from 'blockly/javascript';
 import { ResourcesInterface, ResourcesService } from '../../../../resources';
 import { createStandardContextIIFE } from '../../../_shared';
 import { getRequired, makeRequiredValidationModelForInputs, BitByBitBlockHandlerService, ValidationEntityInterface } from '../../../validations';
+import { revolvedSurfaceConstants } from './revolved-surface-constants';
+import { environment } from 'projects/bitbybit/src/environments/environment';
 
 export function createRevolvedSurfaceAngleBlock(): void {
 
@@ -18,6 +20,7 @@ export function createRevolvedSurfaceAngleBlock(): void {
             this.setOutput(true, 'Number');
             this.setColour('#fff');
             this.setTooltip(resources.block_verb_geometry_revolved_surface_angle_description);
+            this.setHelpUrl(environment.docsUrl + revolvedSurfaceConstants.helpUrl + '#' + 'angle');
         }
     };
 

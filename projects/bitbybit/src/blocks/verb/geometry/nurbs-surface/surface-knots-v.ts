@@ -3,6 +3,8 @@ import * as JavaScript from 'blockly/javascript';
 import { ResourcesInterface, ResourcesService } from '../../../../resources';
 import { createStandardContextIIFE } from '../../../_shared';
 import { getRequired, makeRequiredValidationModelForInputs, BitByBitBlockHandlerService, ValidationEntityInterface } from '../../../validations';
+import { surfaceConstants } from './surface-constants';
+import { environment } from 'projects/bitbybit/src/environments/environment';
 
 export function createSurfaceKnotsVBlock(): void {
 
@@ -18,6 +20,7 @@ export function createSurfaceKnotsVBlock(): void {
             this.setOutput(true, 'Array');
             this.setColour('#fff');
             this.setTooltip(resources.block_verb_geometry_nurbs_surface_knots_v_description);
+            this.setHelpUrl(environment.docsUrl + surfaceConstants.helpUrl + '#' + 'knotsv');
         }
     };
 
