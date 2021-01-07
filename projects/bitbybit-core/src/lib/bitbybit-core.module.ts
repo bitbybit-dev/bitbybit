@@ -17,6 +17,7 @@ import { Surface } from './api/bitbybit/surface';
 import { SurfaceConical } from './api/bitbybit/surface-conical';
 import { SurfaceCylindrical } from './api/bitbybit/surface-cylindrical';
 import { SurfaceExtrusion } from './api/bitbybit/surface-extrusion';
+import { SurfaceSpherical } from './api/bitbybit/surface-spherical';
 
 @NgModule({
     declarations: [],
@@ -41,6 +42,7 @@ import { SurfaceExtrusion } from './api/bitbybit/surface-extrusion';
         SurfaceConical,
         SurfaceCylindrical,
         SurfaceExtrusion,
+        SurfaceSpherical,
     ],
     exports: []
 })

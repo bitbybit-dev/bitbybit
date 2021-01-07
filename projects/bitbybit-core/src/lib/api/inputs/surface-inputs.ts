@@ -284,4 +284,20 @@ export namespace Surface {
          */
         extrusion: any;
     }
+    export class SphericalParametersDto {
+        /**
+         * Radius of the sphere
+         */
+        radius: any;
+        /**
+         * Center point
+         */
+        center: number[];
+    }
+    export class SphereDto {
+        /**
+         * Spherical Nurbs surface
+         */
+        sphere: any;
+    }
 }

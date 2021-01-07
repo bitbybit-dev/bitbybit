@@ -3,8 +3,8 @@ import { Context } from '../context';
 import * as Inputs from '../inputs/inputs';
 
 /**
- * Conical surface methods.
- * These methods wrap around Verbnurbs library that you can find here http://verbnurbs.com/.
+ * Conical surface functions.
+ * These functions wrap around Verbnurbs library that you can find here http://verbnurbs.com/.
  * Thanks Peter Boyer for his work.
  */
 @Injectable()

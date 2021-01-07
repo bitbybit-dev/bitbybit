@@ -7,10 +7,11 @@ import { BaseTypes } from './base-types';
 import { SurfaceConical } from './surface-conical';
 import { SurfaceCylindrical } from './surface-cylindrical';
 import { SurfaceExtrusion } from './surface-extrusion';
+import { SurfaceSpherical } from './surface-spherical';
 
 /**
- * Contains various methods for nurbs surfaces.
- * These methods wrap around Verbnurbs library that you can find here http://verbnurbs.com/.
+ * Contains various functions for Nurbs surfaces.
+ * These functions wrap around Verbnurbs library that you can find here http://verbnurbs.com/.
  * Thanks Peter Boyer for his work.
  */
 @Injectable()
@@ -20,6 +21,7 @@ export class Surface {
         public readonly cone: SurfaceConical,
         public readonly cylinder: SurfaceCylindrical,
         public readonly extrusion: SurfaceExtrusion,
+        public readonly sphere: SurfaceSpherical,
         private readonly context: Context,
         private readonly geometryHelper: GeometryHelper
     ) { }

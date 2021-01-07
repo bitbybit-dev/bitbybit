@@ -4,13 +4,13 @@ import { ResourcesInterface, ResourcesService } from '../../../../resources';
 import { createStandardContextIIFE } from '../../../_shared';
 import { getRequired, makeRequiredValidationModelForInputs, BitByBitBlockHandlerService, ValidationEntityInterface } from '../../../validations';
 
-export function createSphericalSurfaceBlock() {
+export function createSphericalSurfaceBlock(): void {
 
     const resources = ResourcesService.getResources();
     const blockSelector = 'verb_geometry_spherical_surface';
 
     Blocks[blockSelector] = {
-        init() {
+        init(): void {
             this.appendValueInput('Center')
                 .setCheck('Array')
                 .setAlign(ALIGN_RIGHT)
@@ -40,7 +40,7 @@ export function createSphericalSurfaceBlock() {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `return new BitByBit.verb.geom.SphericalSurface(inputs.center, inputs.radius)`
+            `return bitbybit.surface.sphere.create(inputs);`
         );
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };

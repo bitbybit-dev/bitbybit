@@ -3,8 +3,8 @@ import { Context } from '../context';
 import * as Inputs from '../inputs/inputs';
 
 /**
- * Cylindrical surface methods.
- * These methods wrap around Verbnurbs library that you can find here http://verbnurbs.com/.
+ * Cylindrical surface functions.
+ * These functions wrap around Verbnurbs library that you can find here http://verbnurbs.com/.
  * Thanks Peter Boyer for his work.
  */
 @Injectable()
