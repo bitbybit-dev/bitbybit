@@ -35,7 +35,7 @@ export function createConicalSurfaceAxisBlock(): void {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `return bitbybit.surface.conical.axis(inputs);`
+            `return bitbybit.surface.cone.axis(inputs);`
         );
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };

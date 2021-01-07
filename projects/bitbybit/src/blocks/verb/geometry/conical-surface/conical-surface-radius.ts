@@ -35,7 +35,7 @@ export function createConicalSurfaceRadiusBlock(): void {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `return bitbybit.surface.conical.radius(inputs);`
+            `return bitbybit.surface.cone.radius(inputs);`
         );
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };

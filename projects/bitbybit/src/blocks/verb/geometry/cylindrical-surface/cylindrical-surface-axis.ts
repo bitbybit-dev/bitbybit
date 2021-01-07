@@ -35,7 +35,7 @@ export function createCylindricalSurfaceAxisBlock(): void {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `return bitbybit.surface.cylindrical.axis(inputs);`
+            `return bitbybit.surface.cylinder.axis(inputs);`
         );
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };

@@ -76,6 +76,7 @@ export class SurfaceCylindrical {
     radius(inputs: Inputs.Surface.CylinderDto): number {
         return inputs.cylinder.radius();
     }
+
     /**
      * Get cylinder x axis
      * <div>

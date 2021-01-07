@@ -16,8 +16,8 @@ import { SurfaceCylindrical } from './surface-cylindrical';
 export class Surface {
 
     constructor(
-        public readonly conical: SurfaceConical,
-        public readonly cylindrical: SurfaceCylindrical,
+        public readonly cone: SurfaceConical,
+        public readonly cylinder: SurfaceCylindrical,
         private readonly context: Context,
         private readonly geometryHelper: GeometryHelper
     ) { }
