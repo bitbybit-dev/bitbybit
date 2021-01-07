@@ -7,6 +7,7 @@ import { BaseTypes } from './base-types';
 import { SurfaceConical } from './surface-conical';
 import { SurfaceCylindrical } from './surface-cylindrical';
 import { SurfaceExtrusion } from './surface-extrusion';
+import { SurfaceRevolved } from './surface-revolved';
 import { SurfaceSpherical } from './surface-spherical';
 
 /**
@@ -22,6 +23,7 @@ export class Surface {
         public readonly cylinder: SurfaceCylindrical,
         public readonly extrusion: SurfaceExtrusion,
         public readonly sphere: SurfaceSpherical,
+        public readonly revolved: SurfaceRevolved,
         private readonly context: Context,
         private readonly geometryHelper: GeometryHelper
     ) { }

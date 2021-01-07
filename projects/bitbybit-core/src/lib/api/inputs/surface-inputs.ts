@@ -300,4 +300,28 @@ export namespace Surface {
          */
         sphere: any;
     }
+    export class RevolutionParametersDto {
+        /**
+         * Profile Nurbs curve
+         */
+        profile: any;
+        /**
+         * Center point
+         */
+        center: number[];
+        /**
+         * Axis around which rotation will happen
+         */
+        axis: number[];
+        /**
+         * Angle at which to rotate in degrees
+         */
+        angle: number;
+    }
+    export class RevolutionDto {
+        /**
+         * Revolved Nurbs surface
+         */
+        revolution: any;
+    }
 }

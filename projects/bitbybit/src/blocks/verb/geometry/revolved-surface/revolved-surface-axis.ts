@@ -4,13 +4,13 @@ import { ResourcesInterface, ResourcesService } from '../../../../resources';
 import { createStandardContextIIFE } from '../../../_shared';
 import { getRequired, makeRequiredValidationModelForInputs, BitByBitBlockHandlerService, ValidationEntityInterface } from '../../../validations';
 
-export function createRevolvedSurfaceAxisBlock() {
+export function createRevolvedSurfaceAxisBlock(): void {
 
     const resources = ResourcesService.getResources();
     const blockSelector = 'verb_geometry_revolved_surface_axis';
 
     Blocks[blockSelector] = {
-        init() {
+        init(): void {
             this.appendValueInput('Revolution')
                 .setCheck('NurbsSurface')
                 .setAlign(ALIGN_RIGHT)
@@ -36,7 +36,7 @@ export function createRevolvedSurfaceAxisBlock() {
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
             // TODO might be a mistake in BitByBit.verb (seems to return center coord)
-            `return inputs.revolution.axis();`
+            `return bitbybit.surface.revolved.axis(inputs);`
         );
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };
