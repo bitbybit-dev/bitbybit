@@ -4,13 +4,13 @@ import { ResourcesInterface, ResourcesService } from '../../../../resources';
 import { createStandardContextIIFE } from '../../../_shared';
 import { getRequired, makeRequiredValidationModelForInputs, BitByBitBlockHandlerService, ValidationEntityInterface } from '../../../validations';
 
-export function createSweptSurfaceProfileBlock() {
+export function createSweptSurfaceProfileBlock(): void {
 
     const resources = ResourcesService.getResources();
     const blockSelector = 'verb_geometry_swept_surface_profile';
 
     Blocks[blockSelector] = {
-        init() {
+        init(): void {
             this.appendValueInput('Sweep')
                 .setCheck('NurbsSurface')
                 .setAlign(ALIGN_RIGHT)
@@ -35,7 +35,7 @@ export function createSweptSurfaceProfileBlock() {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `return inputs.sweep.profile();`
+            `return bitbybit.surface.sweep.profile(inputs);`
         );
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };

@@ -9,6 +9,7 @@ import { SurfaceCylindrical } from './surface-cylindrical';
 import { SurfaceExtrusion } from './surface-extrusion';
 import { SurfaceRevolved } from './surface-revolved';
 import { SurfaceSpherical } from './surface-spherical';
+import { SurfaceSweep } from './surface-sweep';
 
 /**
  * Contains various functions for Nurbs surfaces.
@@ -24,6 +25,7 @@ export class Surface {
         public readonly extrusion: SurfaceExtrusion,
         public readonly sphere: SurfaceSpherical,
         public readonly revolved: SurfaceRevolved,
+        public readonly sweep: SurfaceSweep,
         private readonly context: Context,
         private readonly geometryHelper: GeometryHelper
     ) { }

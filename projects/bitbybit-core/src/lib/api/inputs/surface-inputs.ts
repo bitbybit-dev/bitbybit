@@ -324,4 +324,20 @@ export namespace Surface {
          */
         revolution: any;
     }
+    export class SweepParametersDto {
+        /**
+         * Profile Nurbs curve
+         */
+        profile: any;
+        /**
+         * Rail Nurbs curve
+         */
+        rail: any;
+    }
+    export class SweepDto {
+        /**
+         * Revolved Nurbs surface
+         */
+        sweep: any;
+    }
 }
