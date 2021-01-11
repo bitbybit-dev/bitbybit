@@ -46,6 +46,26 @@ export namespace Solid {
          */
         jscadMesh?: Mesh;
     }
+    export class TransformSolidsDto {
+        /**
+         * Solids to be transformed
+         */
+        solids: any[];
+        /**
+         * Transformation matrix or a list of transformation matrixes
+         */
+        matrix: number[][] | number[][][];
+    }
+    export class TransformSolidDto {
+        /**
+         * Solid to be transformed
+         */
+        solid: any[];
+        /**
+         * Transformation matrix or a list of transformation matrixes
+         */
+        matrix: number[][] | number[][][];
+    }
     export class BooleanObjectsDto {
         /**
          * Contains solid Jscad mesh objects that will be used to perform boolean operation

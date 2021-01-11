@@ -41,21 +41,8 @@ export function createCsgTransformSolidsBlock(): void {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-`
-    const transformation = inputs.matrix;
-    let solidsToTransform = inputs.solids;
-    return solidsToTransform.map(solid => {
-        let transformedMesh = BitByBit.CSG.geometries.geom3.clone(solid);
-        if(transformation.length && transformation.length > 0 && isNaN(transformation[0])){
-            transformation.forEach(transform => {
-                transformedMesh = BitByBit.CSG.transforms.transform(transform, transformedMesh);
-            });
-        } else {
-            transformedMesh = BitByBit.CSG.transforms.transform(transformation, transformedMesh);
-        }
-        return transformedMesh;
-    });
-`);
+            `return bitbybit.solid.transformSolids(inputs);`
+        );
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };
 }

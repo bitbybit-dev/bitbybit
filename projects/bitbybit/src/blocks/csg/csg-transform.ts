@@ -27,7 +27,7 @@ export function createCsgTransformBlock(): void {
 
     JavaScript[blockSelector] = (block: Block) => {
         const inputs = {
-            csgMesh: (JavaScript as any).valueToCode(block, 'CsgMesh', (JavaScript as any).ORDER_ATOMIC),
+            solid: (JavaScript as any).valueToCode(block, 'CsgMesh', (JavaScript as any).ORDER_ATOMIC),
             matrix: (JavaScript as any).valueToCode(block, 'Matrix', (JavaScript as any).ORDER_ATOMIC),
         };
 
@@ -41,18 +41,8 @@ export function createCsgTransformBlock(): void {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-`
-    const transformation = inputs.matrix;
-    let transformedMesh = BitByBit.CSG.geometries.geom3.clone(inputs.csgMesh);
-    if(transformation.length && transformation.length > 0 && isNaN(transformation[0])){
-        transformation.forEach(transform => {
-            transformedMesh = BitByBit.CSG.transforms.transform(transform, transformedMesh);
-        });
-    } else {
-        transformedMesh = BitByBit.CSG.transforms.transform(transformation, transformedMesh);
-    }
-    return transformedMesh;
-`);
+            `return bitbybit.solid.transformSolid(inputs);`
+            );
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };
 }

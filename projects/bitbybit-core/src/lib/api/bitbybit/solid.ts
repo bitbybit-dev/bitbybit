@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Color3, Matrix, Mesh, MeshBuilder, StandardMaterial, VertexData } from '@babylonjs/core';
 import { Context } from '../context';
+import { GeometryHelper } from '../geometry-helper';
 import * as Inputs from '../inputs/inputs';
 import { SolidBooleans } from './solid-booleans';
 
@@ -14,6 +15,7 @@ export class Solid {
     constructor(
         public readonly booleans: SolidBooleans,
         private readonly context: Context,
+        private readonly geometryHelper: GeometryHelper
     ) { }
 
     /**
@@ -137,6 +139,44 @@ export class Solid {
         });
 
         return localOrigin;
+    }
+
+    /**
+     * Transforms the Jscad solid meshes with a given list of transformations.
+     * <div>
+     *  <img src="../assets/images/blockly-images/surface/transformSolids.png" alt="Blockly Image"/>
+     * </div>
+     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_solid_.solid.html#transformsolids
+     * @param inputs Solids with the transformation matrixes
+     * @returns Solids with a transformation
+     */
+    transformSolids(inputs: Inputs.Solid.TransformSolidsDto): any {
+        const solidsToTransform = inputs.solids;
+        return solidsToTransform.map(solid => {
+            return this.transformSolid({solid, matrix: inputs.matrix});
+        });
+    }
+
+    /**
+     * Transforms the Jscad solid mesh with a given list of transformations.
+     * <div>
+     *  <img src="../assets/images/blockly-images/surface/transformSolid.png" alt="Blockly Image"/>
+     * </div>
+     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_solid_.solid.html#transformsolid
+     * @param inputs Solid with the transformation matrixes
+     * @returns Solid with a transformation
+     */
+    transformSolid(inputs: Inputs.Solid.TransformSolidDto): any {
+        const transformation = inputs.matrix;
+        let transformedMesh = this.context.jscad.geometries.geom3.clone(inputs.solid);
+        if (this.geometryHelper.getArrayDepth(transformation) === 2) {
+            transformation.forEach(transform => {
+                transformedMesh = this.context.jscad.transforms.transform(transform, transformedMesh);
+            });
+        } else {
+            transformedMesh = this.context.jscad.transforms.transform(transformation, transformedMesh);
+        }
+        return transformedMesh;
     }
 
     private createMesh(
