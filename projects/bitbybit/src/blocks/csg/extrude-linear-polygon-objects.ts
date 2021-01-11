@@ -36,7 +36,7 @@ export function createExtrudeLinearPolygonObjectsBlock(): void {
 
     JavaScript[blockSelector] = (block: Block) => {
         const inputs = {
-            polygons: (JavaScript as any).valueToCode(block, 'Polygons', (JavaScript as any).ORDER_ATOMIC),
+            geometry: (JavaScript as any).valueToCode(block, 'Polygons', (JavaScript as any).ORDER_ATOMIC),
             height: (JavaScript as any).valueToCode(block, 'Height', (JavaScript as any).ORDER_ATOMIC),
             twistAngle: (JavaScript as any).valueToCode(block, 'TwistAngle', (JavaScript as any).ORDER_ATOMIC),
             twistSteps: (JavaScript as any).valueToCode(block, 'TwistSteps', (JavaScript as any).ORDER_ATOMIC),
@@ -52,13 +52,7 @@ export function createExtrudeLinearPolygonObjectsBlock(): void {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `
-            let extrusions = BitByBit.CSG.extrusions.extrudeLinear({height: inputs.height, twistAngle: BitByBit.BABYLON.Angle.FromDegrees(inputs.twistAngle).radians(), twistSteps: inputs.twistSteps}, ...inputs.polygons);
-            if (!extrusions.length){
-                extrusions = [extrusions];
-            }
-            return extrusions;
-`
+            `return bitbybit.solid.extrusions.extrudeLinear(inputs);`
         );
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };

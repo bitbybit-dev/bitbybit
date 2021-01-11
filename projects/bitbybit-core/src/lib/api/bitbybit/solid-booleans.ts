@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-import { Color3, Matrix, Mesh, MeshBuilder, StandardMaterial, VertexData } from '@babylonjs/core';
 import { Context } from '../context';
 import { GeometryHelper } from '../geometry-helper';
 import * as Inputs from '../inputs/inputs';
@@ -19,7 +18,7 @@ export class SolidBooleans {
     /**
      * Intersect multiple solid mesh objects
      * <div>
-     *  <img src="../assets/images/blockly-images/solid/intersect.png" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/solid/booleans/intersect.png" alt="Blockly Image"/>
      * </div>
      * @link https://docs.bitbybit.dev/classes/_api_bitbybit_solid_.solid.html#intersect
      * @param inputs Contains multiple solids for intersection
@@ -32,7 +31,7 @@ export class SolidBooleans {
     /**
      * Subtract multiple solid mesh objects
      * <div>
-     *  <img src="../assets/images/blockly-images/solid/subtract.png" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/solid/booleans/subtract.png" alt="Blockly Image"/>
      * </div>
      * @link https://docs.bitbybit.dev/classes/_api_bitbybit_solid_.solid.html#subtract
      * @param inputs Contains multiple solids for subtraction
@@ -45,7 +44,7 @@ export class SolidBooleans {
     /**
      * Union multiple solid mesh objects
      * <div>
-     *  <img src="../assets/images/blockly-images/solid/union.png" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/solid/booleans/union.png" alt="Blockly Image"/>
      * </div>
      * @link https://docs.bitbybit.dev/classes/_api_bitbybit_solid_.solid.html#union
      * @param inputs Contains multiple solids for union

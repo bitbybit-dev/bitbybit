@@ -108,6 +108,24 @@ export namespace Solid {
          */
         geometry: any[];
     }
+    export class ExtrudeLinearDto {
+        /**
+         * Height of linear extrude
+         */
+        height: number;
+        /**
+         * Twist angle in degrees
+         */
+        twistAngle: number;
+        /**
+         * Number of twist steps
+         */
+        twistSteps: number;
+        /**
+         * Geometry to extrude
+         */
+        geometry: any | any[];
+    }
     export enum SolidCornerTypeEnum {
         /**
          * Edges will meet at a corner

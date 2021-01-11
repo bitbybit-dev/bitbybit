@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-import { Color3, Matrix, Mesh, MeshBuilder, StandardMaterial, VertexData } from '@babylonjs/core';
 import { Context } from '../context';
 import { GeometryHelper } from '../geometry-helper';
 import * as Inputs from '../inputs/inputs';
@@ -19,7 +18,7 @@ export class SolidExpansions {
     /**
      * Expand geometries of solid category
      * <div>
-     *  <img src="../assets/images/blockly-images/solid/expand.png" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/solid/expansions/expand.png" alt="Blockly Image"/>
      * </div>
      * @link https://docs.bitbybit.dev/classes/_api_bitbybit_solid_.solid.html#expand
      * @param inputs Contains options and geometries for expansion
@@ -41,7 +40,7 @@ export class SolidExpansions {
     /**
      * Offset 2d geometries of solid category
      * <div>
-     *  <img src="../assets/images/blockly-images/solid/offset.png" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/solid/expansions/offset.png" alt="Blockly Image"/>
      * </div>
      * @link https://docs.bitbybit.dev/classes/_api_bitbybit_solid_.solid.html#offset
      * @param inputs Contains options and geometries for offset

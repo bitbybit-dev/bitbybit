@@ -23,6 +23,7 @@ import { SurfaceSweep } from './api/bitbybit/surface-sweep';
 import { Solid } from './api/bitbybit/solid';
 import { SolidBooleans } from './api/bitbybit/solid-booleans';
 import { SolidExpansions } from './api/bitbybit/solid-expansions';
+import { SolidExtrusions } from './api/bitbybit/solid-extrusions';
 
 @NgModule({
     declarations: [],
@@ -53,6 +54,7 @@ import { SolidExpansions } from './api/bitbybit/solid-expansions';
         Solid,
         SolidBooleans,
         SolidExpansions,
+        SolidExtrusions
     ],
     exports: []
 })
