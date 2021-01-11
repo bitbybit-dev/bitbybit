@@ -29,9 +29,7 @@ export function createCornerTypeBlock(): void {
         };
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `
-            return inputs.cornerType;
-`
+            `return inputs.cornerType;`
         );
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };

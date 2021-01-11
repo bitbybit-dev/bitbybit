@@ -392,9 +392,10 @@ export class BitbybitAppComponent implements OnInit, OnDestroy, AfterViewInit {
                 break;
         }
 
-        setTimeout(() => {
-            window.dispatchEvent(new Event('resize'));
-        }, 100);
+        // setTimeout(() => {
+        //     window.dispatchEvent(new Event('resize'));
+        //     this.onResize();
+        // }, 100);
     }
 
     cleanCanvas(): void {

@@ -52,4 +52,32 @@ export namespace Solid {
          */
         objects: any[];
     }
+    export enum SolidCornerTypeEnum {
+        /**
+         * Edges will meet at a corner
+         */
+        edge = 'edge',
+        /**
+         * Edges will be rounded on the corner
+         */
+        round = 'round',
+        /**
+         * Edges will be chamfered on the corner
+         */
+        chamfer = 'chamfer',
+    }
+    export enum SolidTextAlignEnum {
+        /**
+         * Aligns text to the left
+         */
+        left = 'left',
+        /**
+         * Aligns text to the center
+         */
+        center = 'center',
+        /**
+         * Aligns text to the right
+         */
+        right = 'right',
+    }
 }

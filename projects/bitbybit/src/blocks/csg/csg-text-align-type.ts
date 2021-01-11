@@ -29,9 +29,7 @@ export function createTextAlignTypeBlock(): void {
         };
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `
-            return inputs.textAlignType;
-`
+            `return inputs.textAlignType;`
         );
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };
