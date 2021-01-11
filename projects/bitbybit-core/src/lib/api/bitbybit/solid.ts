@@ -1,31 +1,31 @@
 import { Injectable } from '@angular/core';
 import { Color3, Matrix, Mesh, MeshBuilder, StandardMaterial, VertexData } from '@babylonjs/core';
 import { Context } from '../context';
-import { GeometryHelper } from '../geometry-helper';
 import * as Inputs from '../inputs/inputs';
+import { SolidBooleans } from './solid-booleans';
 
 /**
  * Contains various functions for Solid meshes from JSCAD library http://openjscad.org
  * Thanks JSCAD community for developing this kernel
  */
 @Injectable()
-export class SolidMesh {
+export class Solid {
 
     constructor(
+        public readonly booleans: SolidBooleans,
         private readonly context: Context,
-        private readonly geometryHelper: GeometryHelper
     ) { }
 
     /**
-     * Draws a single surface
+     * Draws a single solids
      * <div>
-     *  <img src="../assets/images/blockly-images/surface/drawSurface.png" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/solid/drawSolidOrPolygonMesh.png" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_surface_.surface.html#drawsurface
-     * @param inputs Contains a surface and information for drawing
+     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_solid_.solid.html#drawsolidorpolygonmesh
+     * @param inputs Contains a solid or polygon and information for drawing
      * @returns Mesh that is being drawn by Babylon
      */
-    drawSolidOrPolygonMesh(inputs: Inputs.SolidMesh.DrawSolidMeshDto): Mesh {
+    drawSolidOrPolygonMesh(inputs: Inputs.Solid.DrawSolidMeshDto): Mesh {
         let polygons = [];
 
         if (inputs.mesh.toPolygons) {
@@ -91,18 +91,16 @@ export class SolidMesh {
         return inputs.jscadMesh;
     }
 
-
     /**
-     * Draws a single surface
+     * Draws multiple solids
      * <div>
-     *  <img src="../assets/images/blockly-images/surface/drawSurface.png" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/solid/drawSolidOrPolygonMeshes.png" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_surface_.surface.html#drawsurface
-     * @param inputs Contains a surface and information for drawing
+     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_solid_.solid.html#drawsolidorpolygonmeshes
+     * @param inputs Contains solids or polygons and information for drawing
      * @returns Mesh that is being drawn by Babylon
      */
-    drawSolidOrPolygonMeshes(inputs: Inputs.SolidMesh.DrawSolidsMeshDto): Mesh {
-
+    drawSolidOrPolygonMeshes(inputs: Inputs.Solid.DrawSolidsMeshDto): Mesh {
         let amountOfMeshesEqual = true;
         let children = [];
         if (inputs.jscadMesh) {
@@ -136,60 +134,6 @@ export class SolidMesh {
                 mesh, jscadMesh: newMesh, colour: inputs.colour, updatable: inputs.updatable, opacity: inputs.opacity
             });
             newMesh.parent = localOrigin;
-
-            // let polygons = [];
-
-            // if (mesh.toPolygons) {
-            //     polygons = mesh.toPolygons();
-            // } else if (mesh.polygons) {
-            //     polygons = mesh.polygons;
-            // }
-
-            // const positions = [];
-            // const normals = [];
-            // const indices = [];
-            // let countIndices = 0;
-
-            // for (const polygon of polygons) {
-            //     if (polygon.vertices.length === 3) {
-            //         polygon.vertices.forEach(vert => {
-            //             positions.push(vert[0], vert[1], vert[2]);
-            //             indices.push(countIndices);
-            //             countIndices++;
-            //         });
-            //     } else {
-            //         const triangles = [];
-            //         const reversedVertices = polygon.vertices;
-            //         const firstVertex = reversedVertices[0];
-            //         for (let i = reversedVertices.length - 3; i >= 0; i--) {
-            //             triangles.push(
-            //                 [
-            //                     firstVertex,
-            //                     reversedVertices[i + 1],
-            //                     reversedVertices[i + 2],
-            //                 ]);
-            //         }
-            //         triangles.forEach((triangle) => {
-            //             triangle.forEach(vert => {
-            //                 positions.push(vert[0], vert[1], vert[2]);
-            //                 indices.push(countIndices);
-            //                 countIndices++;
-            //             });
-            //         });
-            //     }
-            // }
-
-
-
-            // this.createMesh(positions, indices, normals, inputs.jscadMesh, mesh.transforms, inputs.updatable);
-
-            // newMesh.material = new StandardMaterial(`jscadMaterial${Math.random()}`, this.context.scene);
-
-            // newMesh.material.alpha = inputs.opacity;
-            // newMesh.material.diffuseColor = Color3.FromHexString(inputs.colour);
-            // newMesh.isPickable = false;
-            // newMesh.material.backFaceCulling = false;
-            // newMesh.parent = localOrigin;
         });
 
         return localOrigin;

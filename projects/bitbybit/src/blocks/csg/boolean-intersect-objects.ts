@@ -24,7 +24,7 @@ export function createBooleanIntersectObjectsBlock(): void {
 
     JavaScript[blockSelector] = (block: Block) => {
         const inputs = {
-            intersectObjects: (JavaScript as any).valueToCode(block, 'IntersectObjects', (JavaScript as any).ORDER_ATOMIC),
+            objects: (JavaScript as any).valueToCode(block, 'IntersectObjects', (JavaScript as any).ORDER_ATOMIC),
         };
 
         // this is first set of validations to check that all inputs are non empty strings
@@ -37,10 +37,7 @@ export function createBooleanIntersectObjectsBlock(): void {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `
-            const intersected = BitByBit.CSG.booleans.intersect(...inputs.intersectObjects);
-            return intersected;
-`
+            `return bitbybit.solid.booleans.intersect(inputs);`
         );
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };

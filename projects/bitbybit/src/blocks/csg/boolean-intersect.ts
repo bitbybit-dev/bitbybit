@@ -42,10 +42,7 @@ export function createBooleanIntersectBlock(): void {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `
-            const intersected = BitByBit.CSG.booleans.intersect(inputs.intersectObject, inputs.withObject);
-            return intersected;
-`
+            `return bitbybit.solid.booleans.intersect({objects: [inputs.intersectObject, inputs.withObject]});`
         );
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };

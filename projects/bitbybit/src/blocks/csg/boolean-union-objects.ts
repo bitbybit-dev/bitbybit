@@ -24,7 +24,7 @@ export function createBooleanUnionObjectsBlock(): void {
 
     JavaScript[blockSelector] = (block: Block) => {
         const inputs = {
-            unionObjects: (JavaScript as any).valueToCode(block, 'UnionObjects', (JavaScript as any).ORDER_ATOMIC),
+            objects: (JavaScript as any).valueToCode(block, 'UnionObjects', (JavaScript as any).ORDER_ATOMIC),
         };
 
         // this is first set of validations to check that all inputs are non empty strings
@@ -37,10 +37,7 @@ export function createBooleanUnionObjectsBlock(): void {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `
-            const union = BitByBit.CSG.booleans.union(...inputs.unionObjects);
-            return union;
-`
+            `return bitbybit.solid.booleans.union(inputs);`
         );
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };

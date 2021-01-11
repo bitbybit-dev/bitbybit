@@ -8,7 +8,7 @@ import { Line } from './bitbybit/line';
 import { Polyline } from './bitbybit/polyline';
 import { Curve } from './bitbybit/curve';
 import { Surface } from './bitbybit/surface';
-import { SolidMesh } from './bitbybit/solid-mesh';
+import { Solid } from './bitbybit/solid';
 
 @Injectable()
 export class BitByBitBase {
@@ -22,7 +22,7 @@ export class BitByBitBase {
         public readonly polyline: Polyline,
         public readonly curve: Curve,
         public readonly surface: Surface,
-        public readonly solid: SolidMesh,
+        public readonly solid: Solid,
     ) {
     }
 }

@@ -1,7 +1,7 @@
 import { Mesh } from '@babylonjs/core';
 
 // tslint:disable-next-line: no-namespace
-export namespace SolidMesh {
+export namespace Solid {
     export class DrawSolidMeshDto {
         /**
          * Solid Jscad mesh
@@ -45,5 +45,11 @@ export namespace SolidMesh {
          * Solid mesh variable in case it already exists and needs updating
          */
         jscadMesh?: Mesh;
+    }
+    export class BooleanObjectsDto {
+        /**
+         * Contains solid Jscad mesh objects that will be used to perform boolean operation
+         */
+        objects: any[];
     }
 }

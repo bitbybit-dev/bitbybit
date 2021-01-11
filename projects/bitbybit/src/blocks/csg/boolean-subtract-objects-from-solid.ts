@@ -42,11 +42,7 @@ export function createBooleanSubtractObjectsFromSolidBlock(): void {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `
-            const allObjects = [inputs.solid, ...inputs.subtractObjects];
-            const subtracted = BitByBit.CSG.booleans.subtract(allObjects);
-            return subtracted;
-`
+            `return bitbybit.solid.booleans.subtract({objects: [inputs.solid, ...inputs.subtractObjects]});`
         );
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };

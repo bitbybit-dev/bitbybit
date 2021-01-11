@@ -161,6 +161,7 @@ export class BitbybitAppComponent implements OnInit, OnDestroy, AfterViewInit {
                 this.windowBlockly = {};
                 this.context.scene = this.scene;
                 this.context.verb = (window as any).verb;
+                this.context.jscad = (window as any).CSG;
                 (window as any).Bit = { Inputs, BaseTypes };
                 (window as any).BitByBitBase = this.bitByBit;
                 this.windowBlockly.scene = this.scene;

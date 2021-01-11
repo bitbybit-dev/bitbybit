@@ -42,10 +42,7 @@ export function createBooleanUnionBlock(): void {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `
-            const union = BitByBit.CSG.booleans.union(inputs.unionObject, inputs.withObject);
-            return union;
-`
+            `return bitbybit.solid.booleans.union({objects: [inputs.unionObject, inputs.withObject]});`
         );
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };
