@@ -60,11 +60,31 @@ export namespace Solid {
         /**
          * Solid to be transformed
          */
-        solid: any[];
+        solid: any;
         /**
          * Transformation matrix or a list of transformation matrixes
          */
         matrix: number[][] | number[][][];
+    }
+    export class DownloadSolidDto {
+        /**
+         * Solid to be downloaded
+         */
+        solid: any;
+        /**
+         * File name
+         */
+        fileName: string;
+    }
+    export class DownloadSolidsDto {
+        /**
+         * Solids to be downloaded
+         */
+        solids: any[];
+        /**
+         * File name
+         */
+        fileName: string;
     }
     export class BooleanObjectsDto {
         /**

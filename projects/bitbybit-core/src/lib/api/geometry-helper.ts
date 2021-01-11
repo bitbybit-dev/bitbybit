@@ -6,6 +6,7 @@ export class GeometryHelper {
     constructor(private readonly context: Context) { }
 
     private readonly tolerance = 0.00001;
+    private readonly snapTolerance = 0.00001;
 
     transformControlPoints(transformation: number[][] | number[][][], transformedControlPoints: number[][]): number[][] {
         let transformationArrays = [];
@@ -173,5 +174,22 @@ export class GeometryHelper {
             }
         }
         return result;
+    }
+
+    snapGeometry(geometry): any {
+        const polygons = this.context.jscad.geometries.geom3.toPolygons(geometry);
+        const newpolygons = polygons.map((polygon) => {
+            const newvertices = polygon.vertices.map((vertice) => this.snapVec3(vertice));
+            return this.context.jscad.geometries.poly3.create(newvertices);
+        });
+        return this.context.jscad.geometries.geom3.create(newpolygons);
+    }
+
+    private snapVec3(v3): any {
+        const tolerance = this.snapTolerance;
+        const x = -(Math.round(v3[0] / tolerance) * tolerance) + 0; // no more -0
+        const y = Math.round(v3[1] / tolerance) * tolerance + 0; // no more -0
+        const z = Math.round(v3[2] / tolerance) * tolerance + 0; // no more -0
+        return this.context.jscad.maths.vec3.fromValues(x, y, z);
     }
 }

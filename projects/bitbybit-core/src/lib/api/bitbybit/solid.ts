@@ -150,7 +150,7 @@ export class Solid {
     /**
      * Transforms the Jscad solid meshes with a given list of transformations.
      * <div>
-     *  <img src="../assets/images/blockly-images/surface/transformSolids.png" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/solid/transformSolids.png" alt="Blockly Image"/>
      * </div>
      * @link https://docs.bitbybit.dev/classes/_api_bitbybit_solid_.solid.html#transformsolids
      * @param inputs Solids with the transformation matrixes
@@ -166,7 +166,7 @@ export class Solid {
     /**
      * Transforms the Jscad solid mesh with a given list of transformations.
      * <div>
-     *  <img src="../assets/images/blockly-images/surface/transformSolid.png" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/solid/transformSolid.png" alt="Blockly Image"/>
      * </div>
      * @link https://docs.bitbybit.dev/classes/_api_bitbybit_solid_.solid.html#transformsolid
      * @param inputs Solid with the transformation matrixes
@@ -191,6 +191,45 @@ export class Solid {
             transformedMesh = this.context.jscad.transforms.transform(transformation, transformedMesh);
         }
         return transformedMesh;
+    }
+
+    /**
+     * Downloads the binary STL file from a 3D solid
+     * <div>
+     *  <img src="../assets/images/blockly-images/solid/downloadSolidSTL.png" alt="Blockly Image"/>
+     * </div>
+     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_solid_.solid.html#downloadsolidstl
+     * @param inputs 3D Solid
+     */
+    downloadSolidSTL(inputs: Inputs.Solid.DownloadSolidDto): void {
+        const rawData = this.context.jscad.STLSERIALIZER.serialize({binary: true}, this.geometryHelper.snapGeometry(inputs.solid));
+        this.downloadSTL(rawData, inputs.fileName);
+    }
+
+    /**
+     * Downloads the binary STL file from a 3D solids
+     * <div>
+     *  <img src="../assets/images/blockly-images/solid/downloadSolidsSTL.png" alt="Blockly Image"/>
+     * </div>
+     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_solid_.solid.html#downloadsolidsstl
+     * @param inputs 3D Solid
+     */
+    downloadSolidsSTL(inputs: Inputs.Solid.DownloadSolidsDto): void {
+        const rawData = this.context.jscad.STLSERIALIZER.serialize({binary: true},
+            ...inputs.solids.map(solid => this.geometryHelper.snapGeometry(solid)));
+        this.downloadSTL(rawData, inputs.fileName);
+    }
+
+    private downloadSTL(rawData: any, fileName: string): void {
+        const madeBlob = new Blob(rawData, { type: 'application/sla' });
+        const blobUrl = URL.createObjectURL(madeBlob);
+
+        const fileLink = document.createElement('a');
+        fileLink.href = blobUrl;
+        fileLink.target = '_self';
+        fileLink.download = fileName + '.stl';
+        fileLink.click();
+        fileLink.remove();
     }
 
     private createMesh(

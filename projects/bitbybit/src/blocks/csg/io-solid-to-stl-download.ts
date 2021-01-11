@@ -43,18 +43,7 @@ export function createIoSolidToStlDownloadBlock(): void {
         (block as any).validationModel = runtimeValidationModel;
 
         return createStandardContextIIFE(block, blockSelector, inputs, false,
-            `
-            const rawData = BitByBit.CSG.STLSERIALIZER.serialize({binary: true}, BitByBit.BitByBitBlocklyHelperService.snapGeometry(inputs.solid));
-            const madeBlob = new Blob(rawData, {type: 'application/sla'});
-            const blobUrl = URL.createObjectURL(madeBlob);
-
-            const fileLink = document.createElement('a');
-            fileLink.href = blobUrl;
-            fileLink.target = '_self';
-            fileLink.download = inputs.fileName + '.stl';
-            fileLink.click();
-            fileLink.remove();
-`
+            `bitbybit.solid.downloadSolidSTL(inputs);`
         );
     };
 }
