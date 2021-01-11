@@ -173,11 +173,19 @@ export class Solid {
     transformSolid(inputs: Inputs.Solid.TransformSolidDto): any {
         const transformation = inputs.matrix;
         let transformedMesh = this.context.jscad.geometries.geom3.clone(inputs.solid);
-        if (this.geometryHelper.getArrayDepth(transformation) === 2) {
+        if (this.geometryHelper.getArrayDepth(transformation) === 1) {
             transformation.forEach(transform => {
                 transformedMesh = this.context.jscad.transforms.transform(transform, transformedMesh);
             });
-        } else {
+        }
+        else if (this.geometryHelper.getArrayDepth(transformation) === 2) {
+            transformation.forEach(transforms => {
+                transforms.forEach(mat => {
+                    transformedMesh = this.context.jscad.transforms.transform(mat, transformedMesh);
+                });
+            });
+        }
+        else {
             transformedMesh = this.context.jscad.transforms.transform(transformation, transformedMesh);
         }
         return transformedMesh;

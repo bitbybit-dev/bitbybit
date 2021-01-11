@@ -52,16 +52,7 @@ export function createExtrudeRotatePolygonBlock(): void {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `
-            const options = {
-                angle: BitByBit.BABYLON.Angle.FromDegrees(inputs.angle).radians(),
-                startAngle: BitByBit.BABYLON.Angle.FromDegrees(inputs.startAngle).radians(),
-                overflow: 'cap',
-                segments: inputs.segments
-            };
-            const extrusion = BitByBit.CSG.extrusions.extrudeRotate(options, inputs.polygon);
-            return extrusion;
-`
+            `return bitbybit.solid.extrusions.extrudeRotate(inputs);`
         );
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };

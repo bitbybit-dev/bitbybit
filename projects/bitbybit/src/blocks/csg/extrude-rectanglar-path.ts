@@ -32,7 +32,7 @@ export function createExtrudeRectangularPathBlock(): void {
 
     JavaScript[blockSelector] = (block: Block) => {
         const inputs = {
-            path: (JavaScript as any).valueToCode(block, 'Path', (JavaScript as any).ORDER_ATOMIC),
+            geometry: (JavaScript as any).valueToCode(block, 'Path', (JavaScript as any).ORDER_ATOMIC),
             size: (JavaScript as any).valueToCode(block, 'Size', (JavaScript as any).ORDER_ATOMIC),
             height: (JavaScript as any).valueToCode(block, 'Height', (JavaScript as any).ORDER_ATOMIC),
         };
@@ -47,10 +47,7 @@ export function createExtrudeRectangularPathBlock(): void {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `
-            const extrusion = BitByBit.CSG.extrusions.extrudeRectangular({height: inputs.height, size: inputs.size}, inputs.path);
-            return extrusion;
-`
+            `return bitbybit.solid.extrusions.extrudeRectangular(inputs);`
         );
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };

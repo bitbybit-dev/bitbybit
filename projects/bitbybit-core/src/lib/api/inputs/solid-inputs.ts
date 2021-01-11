@@ -126,6 +126,52 @@ export namespace Solid {
          */
         geometry: any | any[];
     }
+    export class ExtrudeRectangularDto {
+        /**
+         * Height of linear extrude
+         */
+        height: number;
+        /**
+         * Size of the rectangle
+         */
+        size: number;
+        /**
+         * Geometry to extrude
+         */
+        geometry: any | any[];
+    }
+    export class ExtrudeRectangularPointsDto {
+        /**
+         * Height of linear extrude
+         */
+        height: number;
+        /**
+         * Size of the rectangle
+         */
+        size: number;
+        /**
+         * Points for a path
+         */
+        points: number[][];
+    }
+    export class ExtrudeRotateDto {
+        /**
+         * Angle in degrees
+         */
+        angle: number;
+        /**
+         * Start angle in degrees
+         */
+        startAngle: number;
+        /**
+         * Number of segments
+         */
+        segments: number;
+        /**
+         * Polygon to extrude
+         */
+        polygon: any;
+    }
     export enum SolidCornerTypeEnum {
         /**
          * Edges will meet at a corner
