@@ -22,6 +22,7 @@ import { SurfaceRevolved } from './api/bitbybit/surface-revolved';
 import { SurfaceSweep } from './api/bitbybit/surface-sweep';
 import { Solid } from './api/bitbybit/solid';
 import { SolidBooleans } from './api/bitbybit/solid-booleans';
+import { SolidExpansions } from './api/bitbybit/solid-expansions';
 
 @NgModule({
     declarations: [],
@@ -51,6 +52,7 @@ import { SolidBooleans } from './api/bitbybit/solid-booleans';
         SurfaceSweep,
         Solid,
         SolidBooleans,
+        SolidExpansions,
     ],
     exports: []
 })

@@ -32,7 +32,7 @@ export function createExpansionsExpandSolidBlock(): void {
 
     JavaScript[blockSelector] = (block: Block) => {
         const inputs = {
-            solid: (JavaScript as any).valueToCode(block, 'Solid', (JavaScript as any).ORDER_ATOMIC),
+            geometry: (JavaScript as any).valueToCode(block, 'Solid', (JavaScript as any).ORDER_ATOMIC),
             delta: (JavaScript as any).valueToCode(block, 'Delta', (JavaScript as any).ORDER_ATOMIC),
             segments: (JavaScript as any).valueToCode(block, 'Segments', (JavaScript as any).ORDER_ATOMIC),
         };
@@ -47,14 +47,7 @@ export function createExpansionsExpandSolidBlock(): void {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `
-            const result = BitByBit.CSG.expansions.expand({
-                delta: inputs.delta,
-                corners: 'round',
-                segments: inputs.segments,
-            }, inputs.solid);
-            return result;
-`
+            `return bitbybit.solid.expansions.expand(inputs);`
         );
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };

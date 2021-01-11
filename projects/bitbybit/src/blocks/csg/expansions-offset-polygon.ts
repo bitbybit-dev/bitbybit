@@ -36,7 +36,7 @@ export function createExpansionsOffsetPolygonBlock(): void {
 
     JavaScript[blockSelector] = (block: Block) => {
         const inputs = {
-            polygon: (JavaScript as any).valueToCode(block, 'Polygon', (JavaScript as any).ORDER_ATOMIC),
+            geometry: (JavaScript as any).valueToCode(block, 'Polygon', (JavaScript as any).ORDER_ATOMIC),
             delta: (JavaScript as any).valueToCode(block, 'Delta', (JavaScript as any).ORDER_ATOMIC),
             segments: (JavaScript as any).valueToCode(block, 'Segments', (JavaScript as any).ORDER_ATOMIC),
             corners: (JavaScript as any).valueToCode(block, 'Corners', (JavaScript as any).ORDER_ATOMIC),
@@ -52,14 +52,7 @@ export function createExpansionsOffsetPolygonBlock(): void {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `
-            const result = BitByBit.CSG.expansions.offset({
-                delta: inputs.delta,
-                corners: inputs.corners,
-                segments: inputs.segments,
-            }, inputs.polygon);
-            return result;
-`
+            `return bitbybit.solid.expansions.offset(inputs);`
         );
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };

@@ -72,6 +72,42 @@ export namespace Solid {
          */
         objects: any[];
     }
+    export class ExpansionDto {
+        /**
+         * Delta (+/-) of expansion
+         */
+        delta: number;
+        /**
+         * Type of corner to create during of expansion; edge, chamfer, round
+         */
+        corners: SolidCornerTypeEnum;
+        /**
+         * Integer number of segments when creating round corners
+         */
+        segments: number;
+        /**
+         * Can contain various Jscad entities from Solid category
+         */
+        geometry: any[];
+    }
+    export class OffsetDto {
+        /**
+         * Delta (+/-) of offset
+         */
+        delta: number;
+        /**
+         * Type of corner to create during the offset; edge, chamfer, round.
+         */
+        corners: SolidCornerTypeEnum;
+        /**
+         * Integer number of segments when creating round corners
+         */
+        segments: number;
+        /**
+         * Can contain various Jscad entities from Solid category
+         */
+        geometry: any[];
+    }
     export enum SolidCornerTypeEnum {
         /**
          * Edges will meet at a corner

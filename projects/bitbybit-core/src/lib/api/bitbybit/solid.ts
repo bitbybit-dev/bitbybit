@@ -4,6 +4,7 @@ import { Context } from '../context';
 import { GeometryHelper } from '../geometry-helper';
 import * as Inputs from '../inputs/inputs';
 import { SolidBooleans } from './solid-booleans';
+import { SolidExpansions } from './solid-expansions';
 
 /**
  * Contains various functions for Solid meshes from JSCAD library http://openjscad.org
@@ -14,6 +15,7 @@ export class Solid {
 
     constructor(
         public readonly booleans: SolidBooleans,
+        public readonly expansions: SolidExpansions,
         private readonly context: Context,
         private readonly geometryHelper: GeometryHelper
     ) { }
