@@ -11,8 +11,7 @@ import * as Inputs from '../inputs/inputs';
 export class SolidBooleans {
 
     constructor(
-        private readonly context: Context,
-        private readonly geometryHelper: GeometryHelper
+        private readonly context: Context
     ) { }
 
     /**
@@ -20,7 +19,7 @@ export class SolidBooleans {
      * <div>
      *  <img src="../assets/images/blockly-images/solid/booleans/intersect.png" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_solid_.solid.html#intersect
+     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_solid_booleans_.solidbooleans.html#intersect
      * @param inputs Contains multiple solids for intersection
      * @returns Solid mesh
      */
@@ -33,7 +32,7 @@ export class SolidBooleans {
      * <div>
      *  <img src="../assets/images/blockly-images/solid/booleans/subtract.png" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_solid_.solid.html#subtract
+     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_solid_booleans_.solidbooleans.html#subtract
      * @param inputs Contains multiple solids for subtraction
      * @returns Solid mesh
      */
@@ -46,7 +45,7 @@ export class SolidBooleans {
      * <div>
      *  <img src="../assets/images/blockly-images/solid/booleans/union.png" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_solid_.solid.html#union
+     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_solid_booleans_.solidbooleans.html#union
      * @param inputs Contains multiple solids for union
      * @returns Solid mesh
      */

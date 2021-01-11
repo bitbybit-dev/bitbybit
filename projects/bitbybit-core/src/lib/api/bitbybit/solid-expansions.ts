@@ -20,7 +20,7 @@ export class SolidExpansions {
      * <div>
      *  <img src="../assets/images/blockly-images/solid/expansions/expand.png" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_solid_.solid.html#expand
+     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_solid_expansions_.solidexpansions.html#expand
      * @param inputs Contains options and geometries for expansion
      * @returns Expanded geometry
      */
@@ -42,7 +42,7 @@ export class SolidExpansions {
      * <div>
      *  <img src="../assets/images/blockly-images/solid/expansions/offset.png" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_solid_.solid.html#offset
+     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_solid_expansions_.solidexpansions.html#offset
      * @param inputs Contains options and geometries for offset
      * @returns Expanded geometry
      */

@@ -21,7 +21,7 @@ export class SolidExtrusions {
      * <div>
      *  <img src="../assets/images/blockly-images/solid/extrusions/extrudeLinear.png" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_solid_.solid.html#extrudelinear
+     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_solid_extrusions_.solidextrusions.html#extrudelinear
      * @param inputs Contains options and geometries for linear extrude
      * @returns Extruded geometry
      */
@@ -46,7 +46,7 @@ export class SolidExtrusions {
      * <div>
      *  <img src="../assets/images/blockly-images/solid/extrusions/extrudeRectangular.png" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_solid_.solid.html#extruderectangular
+     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_solid_extrusions_.solidextrusions.html#extruderectangular
      * @param inputs Contains options and geometries for rectangular extrude
      * @returns Extruded geometry
      */
@@ -66,7 +66,7 @@ export class SolidExtrusions {
      * <div>
      *  <img src="../assets/images/blockly-images/solid/extrusions/extrudeRectangularPoints.png" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_solid_.solid.html#extruderectangularpoints
+     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_solid_extrusions_.solidextrusions.html#extruderectangularpoints
      * @param inputs Contains options and points for extrusion
      * @returns Extruded geometry
      */
@@ -83,7 +83,7 @@ export class SolidExtrusions {
      * <div>
      *  <img src="../assets/images/blockly-images/solid/extrusions/extrudeRectangularPoints.png" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_solid_.solid.html#extruderectangularpoints
+     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_solid_extrusions_.solidextrusions.html#extruderotate
      * @param inputs Contains options and points for extrusion
      * @returns Extruded geometry
      */

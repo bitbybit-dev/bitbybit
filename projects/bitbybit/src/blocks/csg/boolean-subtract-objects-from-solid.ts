@@ -58,7 +58,8 @@ function makeRuntimeValidationModel(
         validations: [
             getRequired(resources, resources.block_solids),
         ]
-    },{
+    },
+    {
         entity: keys[1],
         validations: [
             getRequired(resources, resources.block_solid),

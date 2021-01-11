@@ -126,6 +126,13 @@ export namespace Solid {
          */
         geometry: any | any[];
     }
+
+    export class HullDto {
+        /**
+         * Geometries to use in hull
+         */
+        geometry: any[];
+    }
     export class ExtrudeRectangularDto {
         /**
          * Height of linear extrude
