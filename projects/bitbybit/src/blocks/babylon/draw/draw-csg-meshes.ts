@@ -4,7 +4,6 @@ import { ResourcesInterface, ResourcesService } from '../../../resources';
 import { createStandardContextIIFE } from '../../_shared';
 import {
     getRequired,
-    getRequiredAndMin,
     getRequiredAndRange,
     makeRequiredValidationModelForInputs,
     BitByBitBlockHandlerService,
@@ -63,98 +62,8 @@ export function createDrawCsgMeshesBlock(): void {
 
         return createStandardContextIIFE(block, blockSelector, inputs, false,
             `
-            inputs.csgMesh = ${(JavaScript as any).variableDB_.getName(block.getFieldValue('DrawnCsgMeshes'), VARIABLE_CATEGORY_NAME)};
-
-            let amountOfMeshesEqual = true;
-            let children = [];
-            if(inputs.csgMesh){
-                children = inputs.csgMesh.getChildMeshes(true);
-                if(children.length !== inputs.meshes.length){
-                    amountOfMeshesEqual = false;
-                    children.forEach(child => child.dispose());
-                }
-            }
-
-            let localOrigin;
-            if(inputs.csgMesh && inputs.updatable && amountOfMeshesEqual){
-                localOrigin = inputs.csgMesh;
-            }
-            else {
-                localOrigin = BitByBit.BABYLON.MeshBuilder.CreateBox('local_origin' + Math.random(), { size: 1 }, BitByBit.scene);
-            }
-
-            localOrigin.isVisible = false;
-
-            inputs.meshes.forEach((mesh, index) => {
-                let polygons = [];
-
-                if(mesh.toPolygons){
-                    polygons = mesh.toPolygons();
-                } else if(mesh.polygons){
-                    polygons = mesh.polygons;
-                }
-
-                const positions = [];
-                const normals = [];
-                const indices = [];
-                let countIndices = 0;
-
-                for (let polygon of polygons) {
-                    if (polygon.vertices.length === 3) {
-                        polygon.vertices.forEach(vert => {
-                            positions.push(vert[0], vert[1], vert[2]);
-                            indices.push(countIndices);
-                            countIndices++;
-                        });
-                    } else {
-                        const triangles = [];
-                        const reversedVertices = polygon.vertices;
-                        let firstVertex = reversedVertices[0]
-                        for (let i = reversedVertices.length - 3; i >= 0; i--) {
-                            triangles.push(
-                                [
-                                    firstVertex,
-                                    reversedVertices[i + 1],
-                                    reversedVertices[i + 2],
-                                ]);
-                        }
-                        triangles.forEach((triangle, index) => {
-                            triangle.forEach(vert => {
-                                positions.push(vert[0], vert[1], vert[2]);
-                                indices.push(countIndices);
-                                countIndices++;
-                            });
-                        });
-                    }
-                }
-
-                let newMesh;
-                if(inputs.csgMesh && inputs.updatable && amountOfMeshesEqual){
-                    newMesh = children[index];
-                }
-                else {
-                    newMesh = new BitByBit.BABYLON.Mesh('csgMesh${Math.random()}', BitByBit.scene);
-                }
-
-                const vertexData = new BitByBit.BABYLON.VertexData();
-                vertexData.positions = positions;
-                vertexData.indices = indices;
-                BitByBit.BABYLON.VertexData.ComputeNormals(positions, indices, normals, {useRightHandedSystem: false});
-                vertexData.normals = normals;
-
-                vertexData.applyToMesh(newMesh, inputs.updatable);
-                newMesh.setPreTransformMatrix(BitByBit.BABYLON.Matrix.FromArray(mesh.transforms));
-
-                newMesh.material = new BitByBit.BABYLON.StandardMaterial();
-
-                newMesh.material.alpha = inputs.opacity;
-                newMesh.material.diffuseColor = BitByBit.BABYLON.Color3.FromHexString(inputs.colour);
-                newMesh.isPickable = false;
-                newMesh.material.backFaceCulling = false;
-                newMesh.parent = localOrigin;
-            });
-
-            ${(JavaScript as any).variableDB_.getName(block.getFieldValue('DrawnCsgMeshes'), VARIABLE_CATEGORY_NAME)} = localOrigin;
+            inputs.jscadMesh = ${(JavaScript as any).variableDB_.getName(block.getFieldValue('DrawnCsgMeshes'), VARIABLE_CATEGORY_NAME)};
+            ${(JavaScript as any).variableDB_.getName(block.getFieldValue('DrawnCsgMeshes'), VARIABLE_CATEGORY_NAME)} = bitbybit.solid.drawSolidOrPolygonMeshes(inputs);
 `);
     };
 }

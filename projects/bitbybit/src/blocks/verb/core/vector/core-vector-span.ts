@@ -49,7 +49,7 @@ export function createCoreVectorSpanBlock(): void {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `return bitbybit.vectort.span(inputs);`);
+            `return bitbybit.vector.span(inputs);`);
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };
 }

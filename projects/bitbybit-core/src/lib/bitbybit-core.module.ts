@@ -20,6 +20,7 @@ import { SurfaceExtrusion } from './api/bitbybit/surface-extrusion';
 import { SurfaceSpherical } from './api/bitbybit/surface-spherical';
 import { SurfaceRevolved } from './api/bitbybit/surface-revolved';
 import { SurfaceSweep } from './api/bitbybit/surface-sweep';
+import { SolidMesh } from './api/bitbybit/solid-mesh';
 
 @NgModule({
     declarations: [],
@@ -47,6 +48,7 @@ import { SurfaceSweep } from './api/bitbybit/surface-sweep';
         SurfaceSpherical,
         SurfaceRevolved,
         SurfaceSweep,
+        SolidMesh,
     ],
     exports: []
 })

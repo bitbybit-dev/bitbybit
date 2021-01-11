@@ -61,82 +61,8 @@ export function createDrawCsgMeshBlock(): void {
         (block as any).validationModel = runtimeValidationModel;
 
         return createStandardContextIIFE(block, blockSelector, inputs, false,
-            `
-            let polygons = [];
-
-            if(inputs.mesh.toPolygons){
-                polygons = inputs.mesh.toPolygons();
-            } else if(inputs.mesh.polygons){
-                polygons = inputs.mesh.polygons
-            } else if(inputs.mesh.sides || inputs.mesh.vertices){
-                const extrusion = BitByBit.CSG.extrusions.extrudeLinear({height: 0.001, twistAngle: 0, twistSteps: 1}, inputs.mesh);
-                if(extrusion.toPolygons){
-                    polygons = extrusion.toPolygons();
-                } else if(extrusion.polygons){
-                    polygons = extrusion.polygons
-                }
-            }
-
-            inputs.csgMesh = ${(JavaScript as any).variableDB_.getName(block.getFieldValue('DrawnCsgMesh'), VARIABLE_CATEGORY_NAME)};
-
-            const positions = [];
-            const normals = [];
-            const indices = [];
-            let countIndices = 0;
-
-            for (let polygon of polygons) {
-                if (polygon.vertices.length === 3) {
-                    polygon.vertices.reverse().forEach(vert => {
-                        positions.push(vert[0], vert[1], vert[2]);
-                        indices.push(countIndices);
-                        countIndices++;
-                    });
-                } else {
-                    const triangles = [];
-                    const reversedVertices = polygon.vertices.reverse();
-                    let firstVertex = reversedVertices[0]
-                    for (let i = reversedVertices.length - 3; i >= 0; i--) {
-                        triangles.push(
-                            [
-                                firstVertex,
-                                reversedVertices[i + 1],
-                                reversedVertices[i + 2],
-                            ]);
-                    }
-                    triangles.forEach((triangle, index) => {
-                        triangle.forEach(vert => {
-                            positions.push(vert[0], vert[1], vert[2]);
-                            indices.push(countIndices);
-                            countIndices++;
-                        });
-                    });
-                }
-            }
-
-            const createMesh = () => {
-                const vertexData = new BitByBit.BABYLON.VertexData();
-                vertexData.positions = positions;
-                vertexData.indices = indices;
-                BitByBit.BABYLON.VertexData.ComputeNormals(positions, indices, normals, {useRightHandedSystem: true});
-                vertexData.normals = normals;
-
-                vertexData.applyToMesh(inputs.csgMesh, inputs.updatable);
-                inputs.csgMesh.setPreTransformMatrix(BitByBit.BABYLON.Matrix.FromArray(inputs.mesh.transforms));
-                ${(JavaScript as any).variableDB_.getName(block.getFieldValue('DrawnCsgMesh'), VARIABLE_CATEGORY_NAME)} = inputs.csgMesh;
-            }
-
-            if(inputs.csgMesh && inputs.updatable){
-                createMesh();
-            } else {
-                inputs.csgMesh = new BitByBit.BABYLON.Mesh('csgMesh${Math.random()}', BitByBit.scene);
-                createMesh();
-                inputs.csgMesh.material = new BitByBit.BABYLON.StandardMaterial();
-            }
-
-            inputs.csgMesh.material.alpha = inputs.opacity;
-            inputs.csgMesh.material.diffuseColor = BitByBit.BABYLON.Color3.FromHexString(inputs.colour);
-            inputs.csgMesh.isPickable = false;
-`);
+            `inputs.jscadMesh = ${(JavaScript as any).variableDB_.getName(block.getFieldValue('DrawnCsgMesh'), VARIABLE_CATEGORY_NAME)};
+            ${(JavaScript as any).variableDB_.getName(block.getFieldValue('DrawnCsgMesh'), VARIABLE_CATEGORY_NAME)} = bitbybit.solid.drawSolidOrPolygonMesh(inputs);`);
     };
 }
 
