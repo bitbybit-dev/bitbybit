@@ -123,7 +123,7 @@ export class Polyline {
      * @param inputs Polyline to be reversed
      * @returns Reversed polyline
      */
-    reverse(inputs: Inputs.Polyline.PolylineDto): Inputs.Polyline.PolylinePointsDto {
+    reverse(inputs: Inputs.Polyline.PolylineDto): Inputs.Polyline.PolylinePropertiesDto {
         return { points: inputs.polyline.points.reverse() };
     }
 
@@ -136,7 +136,7 @@ export class Polyline {
      * @param inputs Polyline to be transformed
      * @returns Transformed polyline
      */
-    transformPolyline(inputs: Inputs.Polyline.TransformPolylineDto): Inputs.Polyline.PolylinePointsDto {
+    transformPolyline(inputs: Inputs.Polyline.TransformPolylineDto): Inputs.Polyline.PolylinePropertiesDto {
         const transformation = inputs.matrix;
         let transformedControlPoints = inputs.polyline.points;
         transformedControlPoints = this.geometryHelper.transformControlPoints(transformation, transformedControlPoints);
@@ -152,7 +152,7 @@ export class Polyline {
      * @param inputs Points of the polyline
      * @returns Polyline
      */
-    create(inputs: Inputs.Polyline.PolylinePointsDto): Inputs.Polyline.PolylinePointsDto {
+    create(inputs: Inputs.Polyline.PolylinePropertiesDto): Inputs.Polyline.PolylinePropertiesDto {
         return {
             points: inputs.points,
         };

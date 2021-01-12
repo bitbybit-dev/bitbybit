@@ -74,18 +74,7 @@ export function createPrimitive2dPathAppendArcBlock(): void {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `
-            const endpoint = [inputs.endPoint[0], inputs.endPoint[1]];
-            const radius = [inputs.radiusX, inputs.radiusY];
-            return BitByBit.CSG.geometries.path2.appendArc({
-                endpoint,
-                radius,
-                xaxisrotation: inputs.xAxisRotation,
-                clockwise: inputs.clockwise,
-                large: inputs.large,
-                segments: inputs.segments,
-            }, inputs.path);
-`
+            `return bitbybit.solid.path.appendArc(inputs);`
         );
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };

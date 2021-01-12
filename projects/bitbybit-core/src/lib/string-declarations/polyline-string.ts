@@ -84,7 +84,7 @@ export declare class Polyline {
      * @param inputs Polyline to be reversed
      * @returns Reversed polyline
      */
-    reverse(inputs: Inputs.Polyline.PolylineDto): Inputs.Polyline.PolylinePointsDto;
+    reverse(inputs: Inputs.Polyline.PolylineDto): Inputs.Polyline.PolylinePropertiesDto;
     /**
      * Transform the polyline
      * <div>
@@ -94,7 +94,7 @@ export declare class Polyline {
      * @param inputs Polyline to be transformed
      * @returns Transformed polyline
      */
-    transformPolyline(inputs: Inputs.Polyline.TransformPolylineDto): Inputs.Polyline.PolylinePointsDto;
+    transformPolyline(inputs: Inputs.Polyline.TransformPolylineDto): Inputs.Polyline.PolylinePropertiesDto;
     /**
      * Create the polyline
      * <div>
@@ -104,6 +104,6 @@ export declare class Polyline {
      * @param inputs Points of the polyline
      * @returns Polyline
      */
-    create(inputs: Inputs.Polyline.PolylinePointsDto): Inputs.Polyline.PolylinePointsDto;
+    create(inputs: Inputs.Polyline.PolylinePropertiesDto): Inputs.Polyline.PolylinePropertiesDto;
 }
 `);

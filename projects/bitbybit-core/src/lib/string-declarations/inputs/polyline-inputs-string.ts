@@ -3,7 +3,7 @@ import { simplifyDeclaration } from '../simplify-declaration';
 export const polylineInputsString = simplifyDeclaration(`
 import { LinesMesh } from '@babylonjs/core';
 export declare namespace Polyline {
-    class PolylinePointsDto {
+    class PolylinePropertiesDto {
         /**
          * Points of the polyline
          */
@@ -13,19 +13,19 @@ export declare namespace Polyline {
         /**
          * Polyline with points
          */
-        polyline: PolylinePointsDto;
+        polyline: PolylinePropertiesDto;
     }
     class PolylinesDto {
         /**
          * Polylines array
          */
-        polylines: PolylinePointsDto[];
+        polylines: PolylinePropertiesDto[];
     }
     class TransformPolylineDto {
         /**
          * Polyline to transform
          */
-        polyline: PolylinePointsDto;
+        polyline: PolylinePropertiesDto;
         /**
          * Transformation matrix or a list of transformation matrixes
          */
@@ -35,7 +35,7 @@ export declare namespace Polyline {
         /**
          * Polyline
          */
-        polyline: PolylinePointsDto;
+        polyline: PolylinePropertiesDto;
         /**
          * Value between 0 and 1
          */
@@ -61,7 +61,7 @@ export declare namespace Polyline {
         /**
          * Polylines
          */
-        polylines: PolylinePointsDto[];
+        polylines: PolylinePropertiesDto[];
         /**
          * Value between 0 and 1
          */

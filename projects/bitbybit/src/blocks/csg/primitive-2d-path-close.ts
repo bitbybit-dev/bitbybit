@@ -37,9 +37,7 @@ export function createPrimitive2dPathCloseBlock(): void {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `
-            return BitByBit.CSG.geometries.path2.close(inputs.path);
-`
+            `return bitbybit.solid.path.close(inputs);`
         );
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };

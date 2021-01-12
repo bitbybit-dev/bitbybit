@@ -26,9 +26,8 @@ export function createPrimitive2dPathEmptyBlock(): void {
         };
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `
-            return  BitByBit.CSG.geometries.path2.create();
-`
+            `return bitbybit.solid.path.createEmpty();`
+
         );
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };

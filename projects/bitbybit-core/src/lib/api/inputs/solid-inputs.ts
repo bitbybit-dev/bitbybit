@@ -1,4 +1,5 @@
 import { Mesh } from '@babylonjs/core';
+import { Polyline } from './polyline-inputs';
 
 // tslint:disable-next-line: no-namespace
 export namespace Solid {
@@ -198,6 +199,106 @@ export namespace Solid {
          * Polygon to extrude
          */
         polygon: any;
+    }
+    export class PathDto {
+        /**
+         * 2D path
+         */
+        path: any;
+    }
+    export class PathFromPointsDto {
+        /**
+         * Points through which to create a path
+         */
+        points: number[][];
+        /**
+         * Indicates wether we want to create a closed path
+         */
+        closed: boolean;
+    }
+    export class PathFromPolylineDto {
+        /**
+         * Polyline
+         */
+        polyline: Polyline.PolylinePropertiesDto;
+        /**
+         * Indicates wether we want to create a closed path
+         */
+        closed: boolean;
+    }
+    export class PathFromCurveDto {
+        /**
+         * Verb Nurbs curve
+         */
+        curve: any;
+        /**
+         * Indicates wether we want to create a closed path
+         */
+        closed: boolean;
+    }
+    export class PathAppendCurveDto {
+        /**
+         * Verb Nurbs curve
+         */
+        curve: any;
+        /**
+         * Path to append the curve to
+         */
+        path: any;
+    }
+    export class PathAppendPointsDto {
+        /**
+         * Points to append
+         */
+        points: number[][];
+        /**
+         * Path to append the points to
+         */
+        path: any;
+    }
+    export class PathAppendPolylineDto {
+        /**
+         * Polyline to append
+         */
+        polyline: Polyline.PolylinePropertiesDto;
+        /**
+         * Path to append the polyline to
+         */
+        path: any;
+    }
+    export class PathAppendArcDto {
+        /**
+         * Path to append the arc to
+         */
+        path: any;
+        /**
+         * End point of an arc
+         */
+        endPoint: number[];
+        /**
+         * Rotation (degrees) of the X axis of the arc with respect to the X axis of the coordinate system
+         */
+        xAxisRotation: number;
+        /**
+         * Draw an arc clockwise with respect to the center point
+         */
+        clockwise: boolean;
+        /**
+         * Draw an arc longer than PI radians
+         */
+        large: boolean;
+        /**
+         * Number of segments for the arc
+         */
+        segments: number;
+        /**
+         * X radius of an arc
+         */
+        radiusX: number;
+        /**
+         * Y radius of an arc
+         */
+        radiusY: number;
     }
     export enum SolidCornerTypeEnum {
         /**
