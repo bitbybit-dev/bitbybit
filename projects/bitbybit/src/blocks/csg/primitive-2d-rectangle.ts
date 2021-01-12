@@ -47,10 +47,7 @@ export function createPrimitive2dRectangleBlock(): void {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `
-            const rectangle = BitByBit.CSG.primitives.rectangle({center: [inputs.center[0], inputs.center[1]], size: [inputs.width, inputs.length]});
-            return rectangle;
-`
+            `return bitbybit.solid.polygon.rectangle(inputs);`
         );
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };

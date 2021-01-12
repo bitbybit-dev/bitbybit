@@ -63,16 +63,7 @@ export function createPrimitive2dStarBlock(): void {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `
-            return BitByBit.CSG.primitives.star({
-                center: [inputs.center[0], inputs.center[1]],
-                vertices: inputs.vertices,
-                density: inputs.density,
-                outerRadius: inputs.outerRadius,
-                innerRadius: inputs.innerRadius,
-                startAngle: BitByBit.BABYLON.Angle.FromDegrees(inputs.startAngle).radians(),
-            });
-`
+            `return bitbybit.solid.polygon.star(inputs);`
         );
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };

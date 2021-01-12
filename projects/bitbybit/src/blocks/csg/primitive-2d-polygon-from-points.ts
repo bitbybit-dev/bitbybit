@@ -37,12 +37,7 @@ export function createPrimitive2dPolygonFromPointsBlock(): void {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `
-            const twoDimensionalPoints = inputs.points.map(pt => [pt[0], pt[1]]);
-            const duplicatePointsRemoved = BitByBit.BitByBitBlocklyHelperService.removeConsecutiveDuplicates(twoDimensionalPoints, BitByBit.BitByBitBlocklyHelperService.tolerance);
-            const polygon = BitByBit.CSG.primitives.polygon({points: duplicatePointsRemoved});
-            return polygon;
-`
+            `return bitbybit.solid.polygon.createFromPoints(inputs);`
         );
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };

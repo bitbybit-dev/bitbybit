@@ -42,9 +42,7 @@ export function createPrimitive2dSquareBlock(): void {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `
-            return BitByBit.CSG.primitives.square({center: [inputs.center[0], inputs.center[1]], size: inputs.size});
-`
+            `return bitbybit.solid.polygon.square(inputs);`
         );
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };

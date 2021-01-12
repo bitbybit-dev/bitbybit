@@ -24,7 +24,7 @@ export function createPrimitive2dPolygonFromPathBlock(): void {
 
     JavaScript[blockSelector] = (block: Block) => {
         const inputs = {
-            polyline: (JavaScript as any).valueToCode(block, 'Polyline', (JavaScript as any).ORDER_ATOMIC),
+            path: (JavaScript as any).valueToCode(block, 'Path', (JavaScript as any).ORDER_ATOMIC),
         };
 
         // this is first set of validations to check that all inputs are non empty strings
@@ -37,10 +37,7 @@ export function createPrimitive2dPolygonFromPathBlock(): void {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `
-            const polygon = BitByBit.CSG.primitives.polygon({points: inputs.path.points});
-            return polygon;
-`
+            `return bitbybit.solid.polygon.createFromPath(inputs);`
         );
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };

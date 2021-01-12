@@ -47,9 +47,7 @@ export function createPrimitive2dEllipseBlock(): void {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `
-            return BitByBit.CSG.primitives.ellipse({center: inputs.center, radius: [inputs.radius[0], inputs.radius[1]], segments: inputs.segments});
-`
+            `return bitbybit.solid.polygon.ellipse(inputs);`
         );
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };

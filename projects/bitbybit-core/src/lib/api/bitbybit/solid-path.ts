@@ -28,13 +28,9 @@ export class SolidPath {
      */
     createFromPoints(inputs: Inputs.Solid.PathFromPointsDto): any {
         const twoDimensionalPoints = inputs.points.map(pt => [pt[0], pt[1]]);
-        const duplicatePointsRemoved = this.geometryHelper.removeConsecutiveDuplicates(twoDimensionalPoints);
-        let path2d = this.context.jscad.geometries.path2.fromPoints({}, duplicatePointsRemoved);
-        if (inputs.closed) {
-            path2d = this.context.jscad.geometries.path2.close(path2d);
-        }
-        return path2d;
+        return this.removeDuplicatesAndCreateFromPoints(twoDimensionalPoints, inputs.closed);
     }
+
 
     /**
      * Create a 2D path from a polyline
@@ -47,7 +43,7 @@ export class SolidPath {
      */
     createFromPolyline(inputs: Inputs.Solid.PathFromPolylineDto): any {
         const twoDimensionalPoints = inputs.polyline.points.map(pt => [pt[0], pt[1]]);
-        return this.createFromPoints({ points: twoDimensionalPoints, closed: inputs.closed });
+        return this.removeDuplicatesAndCreateFromPoints(twoDimensionalPoints, inputs.closed);
     }
 
     /**
@@ -61,7 +57,7 @@ export class SolidPath {
      */
     createFromCurve(inputs: Inputs.Solid.PathFromCurveDto): any {
         const twoDimensionalPoints = inputs.curve.tessellate().map(pt => [pt[0], pt[1]]);
-        return this.createFromPoints({ points: twoDimensionalPoints, closed: inputs.closed });
+        return this.removeDuplicatesAndCreateFromPoints(twoDimensionalPoints, inputs.closed);
     }
 
     /**
@@ -152,5 +148,14 @@ export class SolidPath {
             large: inputs.large,
             segments: inputs.segments,
         }, inputs.path);
+    }
+
+    private removeDuplicatesAndCreateFromPoints(twoDimensionalPoints: number[][], closed: boolean): any {
+        const duplicatePointsRemoved = this.geometryHelper.removeConsecutiveDuplicates(twoDimensionalPoints);
+        let path2d = this.context.jscad.geometries.path2.fromPoints({}, duplicatePointsRemoved);
+        if (closed) {
+            path2d = this.context.jscad.geometries.path2.close(path2d);
+        }
+        return path2d;
     }
 }

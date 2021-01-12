@@ -57,15 +57,7 @@ export function createPrimitive2dRoundedRectangleBlock(): void {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `
-            const rectangle = BitByBit.CSG.primitives.roundedRectangle({
-                center: [inputs.center[0], inputs.center[1]],
-                size: [inputs.width, inputs.length],
-                roundRadius: inputs.roundRadius,
-                segments: inputs.segments,
-            });
-            return rectangle;
-`
+            `return bitbybit.solid.polygon.roundedRectangle(inputs);`
         );
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };

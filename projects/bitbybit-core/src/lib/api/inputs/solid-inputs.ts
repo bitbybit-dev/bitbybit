@@ -300,6 +300,95 @@ export namespace Solid {
          */
         radiusY: number;
     }
+    export class CircleDto {
+        /**
+         * Center of the circle
+         */
+        center: number[];
+        /**
+         * Radius of the circle
+         */
+        radius: number;
+        /**
+         * Segment number
+         */
+        segments: number;
+    }
+    export class EllipseDto {
+        /**
+         * Center of the circle
+         */
+        center: number[];
+        /**
+         * Radius of the circle in [x, y] form
+         */
+        radius: number[];
+        /**
+         * Segment number
+         */
+        segments: number;
+    }
+    export class SquareDto {
+        /**
+         * Center of the 2D square
+         */
+        center: number[];
+        /**
+         * Size of the square
+         */
+        size: number;
+
+    }
+    export class RectangleDto {
+        /**
+         * Center of the 2D rectangle
+         */
+        center: number[];
+        /**
+         * Width of the rectangle
+         */
+        width: number;
+        /**
+         * Length of the rectangle
+         */
+        length: number;
+    }
+    export class RoundedRectangleDto extends RectangleDto {
+        /**
+         * The radius to round the rectangle edge
+         */
+        roundRadius: number;
+        /**
+         * Number of segments for corners
+         */
+        segments: number;
+    }
+    export class StarDto {
+        /**
+         * Center of the 2D star
+         */
+        center: number[];
+        /**
+         * Number of vertices on the star
+         */
+        vertices: number;
+        /**
+         * Density of the star
+         */
+        density: number;
+        /**
+         * Outer radius of the star
+         */
+        outerRadius: number;
+        /**
+         * Inner radius of the star
+         */
+        innerRadius: number;
+        /**
+         * Starting angle for first vertice, in degrees
+         */
+        startAngle: number;
+    }
     export enum SolidCornerTypeEnum {
         /**
          * Edges will meet at a corner

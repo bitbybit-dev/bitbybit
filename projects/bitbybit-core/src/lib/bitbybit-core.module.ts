@@ -25,6 +25,8 @@ import { SolidBooleans } from './api/bitbybit/solid-booleans';
 import { SolidExpansions } from './api/bitbybit/solid-expansions';
 import { SolidExtrusions } from './api/bitbybit/solid-extrusions';
 import { SolidHulls } from './api/bitbybit/solid-hulls';
+import { SolidPolygon } from './api/bitbybit/solid-polygon';
+import { SolidPath } from './api/bitbybit/solid-path';
 
 @NgModule({
     declarations: [],
@@ -56,7 +58,9 @@ import { SolidHulls } from './api/bitbybit/solid-hulls';
         SolidBooleans,
         SolidExpansions,
         SolidExtrusions,
-        SolidHulls
+        SolidHulls,
+        SolidPath,
+        SolidPolygon,
     ],
     exports: []
 })

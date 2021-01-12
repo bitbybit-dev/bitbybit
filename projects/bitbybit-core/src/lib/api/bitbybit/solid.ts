@@ -7,6 +7,8 @@ import { SolidBooleans } from './solid-booleans';
 import { SolidExpansions } from './solid-expansions';
 import { SolidExtrusions } from './solid-extrusions';
 import { SolidHulls } from './solid-hulls';
+import { SolidPath } from './solid-path';
+import { SolidPolygon } from './solid-polygon';
 
 /**
  * Contains various functions for Solid meshes from JSCAD library http://openjscad.org
@@ -20,6 +22,8 @@ export class Solid {
         public readonly expansions: SolidExpansions,
         public readonly extrusions: SolidExtrusions,
         public readonly hulls: SolidHulls,
+        public readonly path: SolidPath,
+        public readonly polygon: SolidPolygon,
         private readonly context: Context,
         private readonly geometryHelper: GeometryHelper
     ) { }

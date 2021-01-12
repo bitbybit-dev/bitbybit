@@ -47,10 +47,7 @@ export function createPrimitive2dCircleBlock(): void {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `
-            const circle = BitByBit.CSG.primitives.circle({center: inputs.center, radius: inputs.radius, segments: inputs.segments});
-            return circle;
-`
+            `return bitbybit.solid.polygon.circle(inputs);`
         );
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };
