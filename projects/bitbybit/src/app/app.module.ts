@@ -35,6 +35,7 @@ const monacoConfig: NgxMonacoEditorConfig = {
                 ${DeclarationStrings.polylineInputsString}
                 ${DeclarationStrings.curveInputsString}
                 ${DeclarationStrings.surfaceInputsString}
+                ${DeclarationStrings.solidInputsString}
             }
             ${DeclarationStrings.baseTypesString}
             ${DeclarationStrings.vectorString}
@@ -54,6 +55,15 @@ const monacoConfig: NgxMonacoEditorConfig = {
             ${DeclarationStrings.surfaceRevolvedString}
             ${DeclarationStrings.surfaceSphericalString}
             ${DeclarationStrings.surfaceSweepString}
+            ${DeclarationStrings.solidString}
+            ${DeclarationStrings.solidBooleansString}
+            ${DeclarationStrings.solidExpansionsString}
+            ${DeclarationStrings.solidExtrusionsString}
+            ${DeclarationStrings.solidHullsString}
+            ${DeclarationStrings.solidPathString}
+            ${DeclarationStrings.solidPolygonString}
+            ${DeclarationStrings.solidShapesString}
+            ${DeclarationStrings.solidTextString}
 
             class BitByBitBase {
                 readonly vector: Vector;
@@ -65,6 +75,7 @@ const monacoConfig: NgxMonacoEditorConfig = {
                 readonly polyline: Polyline;
                 readonly curve: Curve;
                 readonly surface: Surface;
+                readonly solid: Solid;
             }
         }
         `;
