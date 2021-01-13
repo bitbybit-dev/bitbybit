@@ -27,6 +27,8 @@ import { SolidExtrusions } from './api/bitbybit/solid-extrusions';
 import { SolidHulls } from './api/bitbybit/solid-hulls';
 import { SolidPolygon } from './api/bitbybit/solid-polygon';
 import { SolidPath } from './api/bitbybit/solid-path';
+import { SolidShapes } from './api/bitbybit/solid-shapes';
+import { SolidText } from './api/bitbybit/solid-text';
 
 @NgModule({
     declarations: [],
@@ -61,6 +63,8 @@ import { SolidPath } from './api/bitbybit/solid-path';
         SolidHulls,
         SolidPath,
         SolidPolygon,
+        SolidShapes,
+        SolidText,
     ],
     exports: []
 })

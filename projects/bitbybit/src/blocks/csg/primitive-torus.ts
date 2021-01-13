@@ -73,19 +73,7 @@ export function createPrimitiveTorusBlock(): void {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `
-            const torus = BitByBit.CSG.primitives.torus({
-                center: [inputs.center[0], inputs.center[1], inputs.center[2]],
-                innerRadius: inputs.innerRadius,
-                outerRadius: inputs.outerRadius,
-                innerSegments: inputs.innerSegments,
-                outerSegments: inputs.outerSegments,
-                innerRotation: BitByBit.BABYLON.Angle.FromDegrees(inputs.innerRotation).radians(),
-                outerRotation: BitByBit.BABYLON.Angle.FromDegrees(inputs.outerRotation).radians(),
-                startAngle: BitByBit.BABYLON.Angle.FromDegrees(inputs.startAngle).radians(),
-            });
-            return torus;
-`
+            `return bitbybit.solid.shapes.torus(inputs);`
         );
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };

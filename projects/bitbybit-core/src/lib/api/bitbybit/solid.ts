@@ -9,6 +9,8 @@ import { SolidExtrusions } from './solid-extrusions';
 import { SolidHulls } from './solid-hulls';
 import { SolidPath } from './solid-path';
 import { SolidPolygon } from './solid-polygon';
+import { SolidShapes } from './solid-shapes';
+import { SolidText } from './solid-text';
 
 /**
  * Contains various functions for Solid meshes from JSCAD library http://openjscad.org
@@ -24,6 +26,8 @@ export class Solid {
         public readonly hulls: SolidHulls,
         public readonly path: SolidPath,
         public readonly polygon: SolidPolygon,
+        public readonly shapes: SolidShapes,
+        public readonly text: SolidText,
         private readonly context: Context,
         private readonly geometryHelper: GeometryHelper
     ) { }

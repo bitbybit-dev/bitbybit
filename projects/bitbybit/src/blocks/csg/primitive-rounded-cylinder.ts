@@ -58,16 +58,8 @@ export function createPrimitiveRoundedCylinderBlock(): void {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `
-            const cylinder = BitByBit.CSG.primitives.roundedCylinder({
-                center: [inputs.center[0], inputs.center[1], inputs.center[2]],
-                height: inputs.height,
-                radius: inputs.radius,
-                roundRadius: inputs.roundRadius,
-                segments: inputs.segments,
-            });
-            return cylinder;
-`
+            `return bitbybit.solid.shapes.roundedCylinder(inputs);`
+
         );
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };

@@ -64,7 +64,7 @@ export function createTextVectorCylindricalTextBlock(): void {
 
     JavaScript[blockSelector] = (block: Block) => {
         const inputs = {
-            inputText: (JavaScript as any).valueToCode(block, 'InputText', (JavaScript as any).ORDER_ATOMIC),
+            text: (JavaScript as any).valueToCode(block, 'InputText', (JavaScript as any).ORDER_ATOMIC),
             extrusionHeight: (JavaScript as any).valueToCode(block, 'ExtrusionHeight', (JavaScript as any).ORDER_ATOMIC),
             extrusionSize: (JavaScript as any).valueToCode(block, 'ExtrusionSize', (JavaScript as any).ORDER_ATOMIC),
             segments: (JavaScript as any).valueToCode(block, 'Segments', (JavaScript as any).ORDER_ATOMIC),
@@ -89,45 +89,7 @@ export function createTextVectorCylindricalTextBlock(): void {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `
-            const text = BitByBit.CSG.text.vectorText({
-                input: inputs.inputText,
-                xOffset: inputs.xOffset,
-                yOffset: inputs.yOffset,
-                height: inputs.height,
-                lineSpacing: inputs.lineSpacing,
-                letterSpacing: inputs.letterSpacing,
-                align: inputs.align,
-                extrudeOffset: inputs.extrudeOffset,
-            });
-            let maxX = 0;
-            text.forEach(txt => {
-                txt.forEach(center => {
-                    if(center[0] > maxX){
-                        maxX = center[0];
-                    }
-                });
-            });
-            const compensate = maxX / 2;
-            text.forEach(txt => {
-                txt.forEach(center => {
-                    let z = center[0];
-                    z = z - compensate;
-                    center[0] = z;
-                });
-            });
-            return text.map(txt => {
-                const cylinders = txt.map(center => {
-                    return BitByBit.CSG.primitives.cylinder({
-                        center: [center[0], center[1], 0],
-                        height: inputs.extrusionHeight,
-                        radius: inputs.extrusionSize,
-                        segments: inputs.segments,
-                    });
-                });
-                return BitByBit.CSG.hulls.hullChain(...cylinders);
-            });
-`
+            `return bitbybit.solid.text.cylindricalText(inputs);`
         );
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };

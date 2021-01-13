@@ -58,17 +58,7 @@ export function createPrimitiveRoundedCylindersOnCenterPointsBlock(): void {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `
-            return inputs.centers.map(center => {
-                return BitByBit.CSG.primitives.roundedCylinder({
-                    center: [center[0], center[1], center[2]],
-                    height: inputs.height,
-                    radius: inputs.radius,
-                    roundRadius: inputs.roundRadius,
-                    segments: inputs.segments,
-                });
-            });
-`
+            `return bitbybit.solid.shapes.roundedCylindersOnCenterPoints(inputs);`
         );
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };

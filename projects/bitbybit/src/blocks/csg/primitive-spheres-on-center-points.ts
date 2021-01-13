@@ -47,11 +47,7 @@ export function createPrimitiveSpheresOnCenterPointsBlock(): void {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `
-            return inputs.centers.map(center => {
-                return BitByBit.CSG.primitives.sphere({center: [center[0], center[1], center[2]], radius: inputs.radius, segments: inputs.segments});
-            })
-`
+            `return bitbybit.solid.shapes.spheresOnCenterPoints(inputs);`
         );
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };

@@ -52,15 +52,7 @@ export function createPrimitiveCylinderBlock(): void {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `
-            const cylinder = BitByBit.CSG.primitives.cylinder({
-                center: [inputs.center[0], inputs.center[1], inputs.center[2]],
-                height: inputs.height,
-                radius: inputs.radius,
-                segments: inputs.segments,
-            });
-            return cylinder;
-`
+            `return bitbybit.solid.shapes.cylinder(inputs);`
         );
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };

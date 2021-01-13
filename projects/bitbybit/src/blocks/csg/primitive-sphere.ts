@@ -47,10 +47,7 @@ export function createPrimitiveSphereBlock(): void {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `
-            const sphere = BitByBit.CSG.primitives.sphere({center: [inputs.center[0], inputs.center[1], inputs.center[2]], radius: inputs.radius, segments: inputs.segments});
-            return sphere;
-`
+            `return bitbybit.solid.shapes.sphere(inputs);`
         );
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };

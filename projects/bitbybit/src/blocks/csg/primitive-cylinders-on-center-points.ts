@@ -52,16 +52,7 @@ export function createPrimitiveCylindersOnCenterPointsBlock(): void {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `
-            return inputs.centers.map(center => {
-                return BitByBit.CSG.primitives.cylinder({
-                    center: [center[0], center[1], center[2]],
-                    height: inputs.height,
-                    radius: inputs.radius,
-                    segments: inputs.segments,
-                });
-            });
-`
+            `return bitbybit.solid.shapes.cylindersOnCenterPoints(inputs);`
         );
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };

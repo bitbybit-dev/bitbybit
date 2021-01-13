@@ -47,16 +47,7 @@ export function createPrimitiveGeodesicSpheresOnCenterPointsBlock(): void {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `
-            return inputs.centers.map(center => {
-                let sphere = BitByBit.CSG.primitives.geodesicSphere({
-                    radius: inputs.radius,
-                    frequency: inputs.frequency
-                });
-                sphere = BitByBit.CSG.transforms.translate([center[0], center[1], center[2]], sphere);
-                return sphere;
-            });
-`
+            `return bitbybit.solid.shapes.geodesicSpheresOnCenterPoints(inputs);`
         );
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };

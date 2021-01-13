@@ -63,16 +63,7 @@ export function createPrimitiveRoundedCuboidsOnCenterPointsBlock(): void {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `
-            return inputs.centers.map(center => {
-                return BitByBit.CSG.primitives.roundedCuboid({
-                    center: [center[0], center[1], center[2]],
-                    size: [inputs.width, inputs.height, inputs.length],
-                    roundRadius: inputs.roundRadius,
-                    segments: inputs.segments,
-                });
-            });
-`
+            `return bitbybit.solid.shapes.roundedCuboidsOnCenterPoints(inputs);`
         );
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };

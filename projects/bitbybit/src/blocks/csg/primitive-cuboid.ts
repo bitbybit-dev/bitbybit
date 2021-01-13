@@ -52,10 +52,7 @@ export function createPrimitiveCuboidBlock(): void {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `
-            const cube = BitByBit.CSG.primitives.cuboid({center: [inputs.center[0], inputs.center[1], inputs.center[2]], size: [inputs.width, inputs.height, inputs.length]});
-            return cube;
-`
+            `return bitbybit.solid.shapes.cuboid(inputs);`
         );
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };

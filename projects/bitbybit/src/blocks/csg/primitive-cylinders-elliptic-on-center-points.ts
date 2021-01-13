@@ -58,17 +58,7 @@ export function createPrimitiveCylindersEllipticOnCenterPointsBlock(): void {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `
-            return inputs.centers.map(center => {
-                return BitByBit.CSG.primitives.cylinderElliptic({
-                    center: [center[0], center[1], center[2]],
-                    height: inputs.height,
-                    startRadius: [inputs.startRadius[0], inputs.startRadius[1]],
-                    endRadius: [inputs.endRadius[0], inputs.endRadius[1]],
-                    segments: inputs.segments,
-                });
-            });
-`
+            `return bitbybit.solid.shapes.cylinderEllipticOnCenterPoints(inputs);`
         );
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };

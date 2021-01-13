@@ -52,11 +52,7 @@ export function createPrimitiveCuboidsOnCenterPointsBlock(): void {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `
-            return inputs.centers.map(center => {
-                return BitByBit.CSG.primitives.cuboid({center: [center[0], center[1], center[2]], size: [inputs.width, inputs.height, inputs.length]});
-            });
-`
+            `return bitbybit.solid.shapes.cuboidsOnCenterPoints(inputs);`
         );
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };

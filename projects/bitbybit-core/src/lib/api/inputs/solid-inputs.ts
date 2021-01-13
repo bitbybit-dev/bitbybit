@@ -389,6 +389,362 @@ export namespace Solid {
          */
         startAngle: number;
     }
+    export class CubeDto {
+        /**
+         * Center coordinates of the cube
+         */
+        center: number[];
+        /**
+         * Size of the cube
+         */
+        size: number;
+    }
+    export class CubeCentersDto {
+        /**
+         * Center coordinates of the cubes
+         */
+        centers: number[][];
+        /**
+         * Size of the cube
+         */
+        size: number;
+    }
+    export class CuboidDto {
+        /**
+         * Center coordinates of the cubod
+         */
+        center: number[];
+        /**
+         * Width of the cuboid
+         */
+        width: number;
+        /**
+         * Length of the cuboid
+         */
+        length: number;
+        /**
+         * Height of the cuboid
+         */
+        height: number;
+    }
+    export class CuboidCentersDto {
+        /**
+         * Center coordinates of the cuboids
+         */
+        centers: number[][];
+        /**
+         * Width of the cuboids
+         */
+        width: number;
+        /**
+         * Length of the cuboids
+         */
+        length: number;
+        /**
+         * Height of the cuboids
+         */
+        height: number;
+    }
+    export class RoundedCuboidDto extends CuboidDto {
+        /**
+         * Radius for rounding edges
+         */
+        roundRadius: number;
+        /**
+         * Segments of rounded edges
+         */
+        segments: number;
+    }
+    export class RoundedCuboidCentersDto extends CuboidCentersDto {
+        /**
+         * Radius for rounding edges
+         */
+        roundRadius: number;
+        /**
+         * Segments of rounded edges
+         */
+        segments: number;
+    }
+    export class CylidnerEllipticDto {
+        /**
+         * Center of the cylinder
+         */
+        center: number[];
+        /**
+         * Height of the cylinder
+         */
+        height: number;
+        /**
+         * Start radius on X and Y directions
+         */
+        startRadius: number[];
+        /**
+         * End radius on X and Y directions
+         */
+        endRadius: number[];
+        /**
+         * Subdivision segments
+         */
+        segments: number;
+    }
+    export class CylidnerCentersEllipticDto {
+        /**
+         * Centers of the cylinders
+         */
+        centers: number[][];
+        /**
+         * Height of the cylinders
+         */
+        height: number;
+        /**
+         * Start radius on X and Y directions
+         */
+        startRadius: number[];
+        /**
+         * End radius on X and Y directions
+         */
+        endRadius: number[];
+        /**
+         * Subdivision segments
+         */
+        segments: number;
+    }
+    export class CylidnerDto {
+        /**
+         * Center of the cylinder
+         */
+        center: number[];
+        /**
+         * Height of the cylinder
+         */
+        height: number;
+        /**
+         * Radius of the cylinder
+         */
+        radius: number;
+        /**
+         * Subdivision segments
+         */
+        segments: number;
+    }
+    export class RoundedCylidnerDto extends CylidnerDto {
+        /**
+         * Rounding radius
+         */
+        roundRadius: number;
+        /**
+         * Segment number
+         */
+        segments: number;
+    }
+    export class EllipsoidDto {
+        /**
+         * Center coordinates
+         */
+        center: number[];
+        /**
+         * Radius of the ellipsoid in [x, y, z] form
+         */
+        radius: number[];
+        /**
+         * Segment count for ellipsoid
+         */
+        segments: number;
+    }
+    export class EllipsoidCentersDto {
+        /**
+         * Center coordinates
+         */
+        centers: number[][];
+        /**
+         * Radius of the ellipsoid in [x, y, z] form
+         */
+        radius: number[];
+        /**
+         * Segment count for ellipsoid
+         */
+        segments: number;
+    }
+    export class GeodesicSphereDto {
+        /**
+         * Radius of the sphere
+         */
+        radius: number;
+        /**
+         * Subdivision count
+         */
+        frequency: number;
+        /**
+         * Center coordinate of the geodesic sphere
+         */
+        center: number[];
+    }
+    export class GeodesicSphereCentersDto {
+        /**
+         * Radius of the sphere
+         */
+        radius: number;
+        /**
+         * Subdivision count
+         */
+        frequency: number;
+        /**
+         * Center coordinates of the geodesic spheres
+         */
+        centers: number[][];
+    }
+    export class CylidnerCentersDto {
+        /**
+         * Centers of the cylinders
+         */
+        centers: number[][];
+        /**
+         * Height of the cylinders
+         */
+        height: number;
+        /**
+         * Radius of the cylinders
+         */
+        radius: number;
+        /**
+         * Subdivision segmentss
+         */
+        segments: number;
+    }
+    export class RoundedCylidnerCentersDto extends CylidnerCentersDto {
+        /**
+         * Rounding radius
+         */
+        roundRadius: number;
+        /**
+         * Segment number
+         */
+        segments: number;
+    }
+    export class SphereDto {
+        /**
+         * Center point of the sphere
+         */
+        center: number[];
+        /**
+         * Radius of the sphere
+         */
+        radius: number;
+        /**
+         * Segment count
+         */
+        segments: number;
+    }
+    export class SphereCentersDto {
+        /**
+         * Center points of the spheres
+         */
+        centers: number[][];
+        /**
+         * Radius of the spheres
+         */
+        radius: number;
+        /**
+         * Segment count
+         */
+        segments: number;
+    }
+    export class TorusDto {
+        /**
+         * Center coordinate
+         */
+        center: number[];
+        /**
+         * Inner radius
+         */
+        innerRadius: number;
+        /**
+         * Outer radius
+         */
+        outerRadius: number;
+        /**
+         * Number of inner segments
+         */
+        innerSegments: number;
+        /**
+         * Number of outer segments
+         */
+        outerSegments: number;
+        /**
+         * Inner rotation in degrees
+         */
+        innerRotation: number;
+        /**
+         * Outer rotation in degrees
+         */
+        outerRotation: number;
+        /**
+         * Start angle in degrees
+         */
+        startAngle: number;
+    }
+    export class TextDto {
+        /**
+         * Text to write
+         */
+        text: string;
+        /**
+         * Number of segments
+         */
+        /**
+         * X offset of the text
+         */
+        xOffset: number;
+        /**
+         * Y offset of the text
+         */
+        yOffset: number;
+        /**
+         * Height of the text
+         */
+        height: number;
+        /**
+         * Space between lines
+         */
+        lineSpacing: number;
+        /**
+         * Space between letters
+         */
+        letterSpacing: number;
+        /**
+         * Align between left, center, right
+         */
+        align: SolidTextAlignEnum;
+        /**
+         * Offset the extrusion
+         */
+        extrudeOffset: boolean;
+    }
+    export class CylinderTextDto extends TextDto {
+        /**
+         * Height of the cylinder
+         */
+        extrusionHeight: number;
+        /**
+         * Radius of the cylinder
+         */
+        extrusionSize: number;
+        /**
+         * Segment subdivision for cylinder
+         */
+        segments: number;
+    }
+    export class SphereTextDto extends TextDto {
+        /**
+         * Radius of the spheres
+         */
+        radius: number;
+        /**
+         * Segment subdivision for sphere
+         */
+        segments: number;
+    }
+
     export enum SolidCornerTypeEnum {
         /**
          * Edges will meet at a corner

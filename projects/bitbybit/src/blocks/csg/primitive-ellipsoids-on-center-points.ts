@@ -47,20 +47,7 @@ export function createPrimitiveEllipsoidsOnCenterPointsBlock(): void {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `
-            return inputs.centers.map(center => {
-                return BitByBit.CSG.primitives.ellipsoid({
-                    center: [center[0], center[1], center[2]],
-                    radius: [inputs.radius[0], inputs.radius[1], inputs.radius[2]],
-                    segments: inputs.segments,
-                    axes: [
-                        [-1, 0, 0],
-                        [0, -1, 0],
-                        [0, 0, -1],
-                    ],
-                });
-            });
-`
+            `return bitbybit.solid.shapes.ellipsoidsOnCenterPoints(inputs);`
         );
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };
