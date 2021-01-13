@@ -1,4 +1,4 @@
-import { Mesh } from '@babylonjs/core';
+import { LinesMesh, Mesh } from '@babylonjs/core';
 import { Polyline } from './polyline-inputs';
 
 // tslint:disable-next-line: no-namespace
@@ -46,6 +46,32 @@ export namespace Solid {
          * Solid mesh variable in case it already exists and needs updating
          */
         jscadMesh?: Mesh;
+    }
+    export class DrawPathDto {
+        /**
+         * 2D Path to draw
+         */
+        path: any;
+        /**
+         * Colour of the path
+         */
+        colour: string;
+        /**
+         * Opacity of the path
+         */
+        opacity: number;
+        /**
+         * Width of the path
+         */
+        width: number;
+        /**
+         * Indicates wether the path will change in time
+         */
+        updatable: boolean;
+        /**
+         * Path mesh variable that will be updated if updatable property is set to true
+         */
+        pathMesh?: LinesMesh;
     }
     export class TransformSolidsDto {
         /**

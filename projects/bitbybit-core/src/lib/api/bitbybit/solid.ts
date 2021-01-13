@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Color3, Matrix, Mesh, MeshBuilder, StandardMaterial, VertexData } from '@babylonjs/core';
+import { Color3, Color4, LinesMesh, Matrix, Mesh, MeshBuilder, StandardMaterial, Vector3, VertexData } from '@babylonjs/core';
 import { Context } from '../context';
 import { GeometryHelper } from '../geometry-helper';
 import * as Inputs from '../inputs/inputs';
@@ -156,6 +156,44 @@ export class Solid {
     }
 
     /**
+     * Draws a 2D path
+     * <div>
+     *  <img src="../assets/images/blockly-images/solid/drawPath.png" alt="Blockly Image"/>
+     * </div>
+     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_solid_.solid.html#drawpath
+     * @param inputs Contains a path and information for drawing
+     * @returns Mesh that is being drawn by Babylon
+     */
+    drawPath(inputs: Inputs.Solid.DrawPathDto): LinesMesh {
+
+        const points = [];
+        const colors = [];
+
+        if (inputs.path.points) {
+            inputs.path.points.forEach(pt => {
+                points.push(new Vector3(pt[0], 0, pt[1]));
+                colors.push(new Color4(1, 1, 1, 0));
+            });
+
+            if (inputs.path.isClosed) {
+                const pt = inputs.path.points[0];
+                points.push(new Vector3(pt[0], 0, pt[1]));
+                colors.push(new Color4(1, 1, 1, 0));
+            }
+        }
+
+        return this.geometryHelper.drawPolylineFromPointsAndColours(
+            inputs.pathMesh,
+            inputs.updatable,
+            points,
+            colors,
+            inputs.width,
+            inputs.opacity,
+            inputs.colour
+        );
+    }
+
+    /**
      * Transforms the Jscad solid meshes with a given list of transformations.
      * <div>
      *  <img src="../assets/images/blockly-images/solid/transformSolids.png" alt="Blockly Image"/>
@@ -167,7 +205,7 @@ export class Solid {
     transformSolids(inputs: Inputs.Solid.TransformSolidsDto): any {
         const solidsToTransform = inputs.solids;
         return solidsToTransform.map(solid => {
-            return this.transformSolid({solid, matrix: inputs.matrix});
+            return this.transformSolid({ solid, matrix: inputs.matrix });
         });
     }
 
@@ -210,7 +248,7 @@ export class Solid {
      * @param inputs 3D Solid
      */
     downloadSolidSTL(inputs: Inputs.Solid.DownloadSolidDto): void {
-        const rawData = this.context.jscad.STLSERIALIZER.serialize({binary: true}, this.geometryHelper.snapGeometry(inputs.solid));
+        const rawData = this.context.jscad.STLSERIALIZER.serialize({ binary: true }, this.geometryHelper.snapGeometry(inputs.solid));
         this.downloadSTL(rawData, inputs.fileName);
     }
 
@@ -223,7 +261,7 @@ export class Solid {
      * @param inputs 3D Solid
      */
     downloadSolidsSTL(inputs: Inputs.Solid.DownloadSolidsDto): void {
-        const rawData = this.context.jscad.STLSERIALIZER.serialize({binary: true},
+        const rawData = this.context.jscad.STLSERIALIZER.serialize({ binary: true },
             ...inputs.solids.map(solid => this.geometryHelper.snapGeometry(solid)));
         this.downloadSTL(rawData, inputs.fileName);
     }

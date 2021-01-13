@@ -62,6 +62,13 @@ export class GeometryHelper {
             colors.push(new Color4(1, 1, 1, 0));
         });
 
+        mesh = this.drawPolylineFromPointsAndColours(mesh, updatable, points, colors, width, opacity, colour);
+        return mesh;
+    }
+
+    drawPolylineFromPointsAndColours(
+        mesh: LinesMesh, updatable: boolean, points: Vector3[], colors: Color4[], width: number, opacity: number, colour: string
+    ): LinesMesh {
         if (mesh && updatable) {
 
             if (mesh.getTotalVertices() === points.length) {

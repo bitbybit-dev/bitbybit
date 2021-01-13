@@ -54,6 +54,7 @@ export function createDraw2dPathBlock(): void {
             opacity: (JavaScript as any).valueToCode(block, 'Opacity', (JavaScript as any).ORDER_ATOMIC),
             width: (JavaScript as any).valueToCode(block, 'Width', (JavaScript as any).ORDER_ATOMIC),
             updatable: (JavaScript as any).valueToCode(block, 'Updatable', (JavaScript as any).ORDER_ATOMIC),
+            pathMesh: undefined
         };
 
         // this is first set of validations to check that all inputs are non empty strings
@@ -67,44 +68,9 @@ export function createDraw2dPathBlock(): void {
 
         return createStandardContextIIFE(block, blockSelector, inputs, false,
             `
-        inputs.pathMeshVariable = ${(JavaScript as any).variableDB_.getName(block.getFieldValue('DrawnPathMesh'), VARIABLE_CATEGORY_NAME)};
+        inputs.pathMesh = ${(JavaScript as any).variableDB_.getName(block.getFieldValue('DrawnPathMesh'), VARIABLE_CATEGORY_NAME)};
+        ${(JavaScript as any).variableDB_.getName(block.getFieldValue('DrawnPathMesh'), VARIABLE_CATEGORY_NAME)} = bitbybit.solid.drawPath(inputs);
 
-        const points = [];
-        const colors = [];
-
-        if(inputs.path.points){
-            inputs.path.points.forEach(pt => {
-                points.push(new BitByBit.BABYLON.Vector3(pt[0], 0, pt[1]));
-                colors.push( new BitByBit.BABYLON.Color4(1, 1, 1, 0));
-            });
-
-            if(inputs.path.isClosed){
-                const pt = inputs.path.points[0];
-                points.push(new BitByBit.BABYLON.Vector3(pt[0], 0, pt[1]));
-                colors.push( new BitByBit.BABYLON.Color4(1, 1, 1, 0));
-            }
-        }
-
-        if(inputs.pathMeshVariable && inputs.updatable){
-
-            if(inputs.pathMeshVariable.getTotalVertices() === points.length){
-                inputs.pathMeshVariable = BitByBit.BABYLON.MeshBuilder.CreateLines(null, {points, colors, instance: inputs.pathMeshVariable, useVertexAlpha: true, updatable: inputs.updatable}, null);
-            } else {
-                inputs.pathMeshVariable.dispose();
-                inputs.pathMeshVariable = BitByBit.BABYLON.MeshBuilder.CreateLines('pathMesh${Math.random()}', {points, colors, updatable: inputs.updatable, useVertexAlpha: true}, BitByBit.scene);
-                ${(JavaScript as any).variableDB_.getName(block.getFieldValue('DrawnPathMesh'), VARIABLE_CATEGORY_NAME)} = inputs.pathMeshVariable;
-            }
-
-        } else {
-            inputs.pathMeshVariable = BitByBit.BABYLON.MeshBuilder.CreateLines('pathMesh${Math.random()}', {points, colors, updatable: inputs.updatable, useVertexAlpha: true}, BitByBit.scene);
-            ${(JavaScript as any).variableDB_.getName(block.getFieldValue('DrawnPathMesh'), VARIABLE_CATEGORY_NAME)} = inputs.pathMeshVariable;
-        }
-
-        inputs.pathMeshVariable.enableEdgesRendering();
-        inputs.pathMeshVariable.edgesWidth = inputs.width;
-        const col = BitByBit.BABYLON.Color3.FromHexString(inputs.colour);
-        inputs.pathMeshVariable.edgesColor = new BitByBit.BABYLON.Color4(col.r, col.g, col.b, inputs.opacity);
-        inputs.pathMeshVariable.opacity =  inputs.opacity;
 `
         );
     };
