@@ -29,6 +29,7 @@ import { SolidPolygon } from './api/bitbybit/solid-polygon';
 import { SolidPath } from './api/bitbybit/solid-path';
 import { SolidShapes } from './api/bitbybit/solid-shapes';
 import { SolidText } from './api/bitbybit/solid-text';
+import { Intersect } from './api/bitbybit/intersect';
 
 @NgModule({
     declarations: [],
@@ -65,6 +66,7 @@ import { SolidText } from './api/bitbybit/solid-text';
         SolidPolygon,
         SolidShapes,
         SolidText,
+        Intersect
     ],
     exports: []
 })

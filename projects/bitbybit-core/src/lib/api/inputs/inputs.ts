@@ -8,3 +8,4 @@ export * from './polyline-inputs';
 export * from './curve-inputs';
 export * from './surface-inputs';
 export * from './solid-inputs';
+export * from './intersect-inputs';

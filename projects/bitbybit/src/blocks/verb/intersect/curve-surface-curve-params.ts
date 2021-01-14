@@ -3,14 +3,16 @@ import * as JavaScript from 'blockly/javascript';
 import { ResourcesInterface, ResourcesService } from '../../../resources';
 import { createStandardContextIIFE } from '../../_shared';
 import { getRequired, makeRequiredValidationModelForInputs, BitByBitBlockHandlerService, ValidationEntityInterface } from '../../validations';
+import { environment } from 'projects/bitbybit/src/environments/environment';
+import { intersectConstants } from './intersect-constants';
 
-export function createIntersectCurveSurfaceCurveParamsBlock() {
+export function createIntersectCurveSurfaceCurveParamsBlock(): void {
 
     const resources = ResourcesService.getResources();
     const blockSelector = 'verb_geometry_intersect_curve_surface_curve_params';
 
     Blocks[blockSelector] = {
-        init() {
+        init(): void {
             this.appendValueInput('Intersections')
                 .setCheck('Array')
                 .setAlign(ALIGN_RIGHT)
@@ -18,7 +20,7 @@ export function createIntersectCurveSurfaceCurveParamsBlock() {
             this.setOutput(true, 'Array');
             this.setColour('#fff');
             this.setTooltip(resources.block_verb_geometry_intersect_curve_surface_curve_params_description);
-            this.setHelpUrl('');
+            this.setHelpUrl(environment.docsUrl + intersectConstants.helpUrl + '#' + 'curvesurfacecurveparams');
         }
     };
 
@@ -37,7 +39,8 @@ export function createIntersectCurveSurfaceCurveParamsBlock() {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `return inputs.intersections.filter(s => s.u >= 0 && s.u <= 1).map(i => i.u);`);
+            `return bitbybit.intersect.curveSurfaceCurveParams(inputs);`
+        );
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };
 }
