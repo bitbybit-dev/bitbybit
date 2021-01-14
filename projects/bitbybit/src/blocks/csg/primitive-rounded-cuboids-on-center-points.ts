@@ -3,6 +3,8 @@ import * as JavaScript from 'blockly/javascript';
 import { ResourcesInterface, ResourcesService } from '../../resources';
 import { createStandardContextIIFE } from '../_shared';
 import { getRequired, makeRequiredValidationModelForInputs, BitByBitBlockHandlerService, ValidationEntityInterface } from '../validations';
+import { environment } from '../../environments/environment';
+import { solidConstants } from './solid-constants';
 
 export function createPrimitiveRoundedCuboidsOnCenterPointsBlock(): void {
 
@@ -38,7 +40,7 @@ export function createPrimitiveRoundedCuboidsOnCenterPointsBlock(): void {
             this.setOutput(true, 'Array');
             this.setColour('#fff');
             this.setTooltip(resources.block_csg_rounded_cuboids_on_center_points_description);
-            this.setHelpUrl('');
+            this.setHelpUrl(environment.docsUrl + solidConstants.solidShapesHelpUrl + '#' + 'roundedcuboidsoncenterpoints');
         }
     };
 

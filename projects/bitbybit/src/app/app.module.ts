@@ -6,7 +6,7 @@ import { AppComponent } from './app.component';
 import { RouterModule } from '@angular/router';
 import { SimplebarAngularModule } from 'simplebar-angular';
 import { MonacoEditorModule, NgxMonacoEditorConfig } from 'ngx-monaco-editor';
-import { BitByBitBase, Context, Scene, Transforms, Vector, Node, Point, BitbybitCoreModule } from 'projects/bitbybit-core/src/public-api';
+import { BitbybitCoreModule } from 'projects/bitbybit-core/src/public-api';
 import * as DeclarationStrings from 'projects/bitbybit-core/src/lib/string-declarations';
 
 const monacoConfig: NgxMonacoEditorConfig = {

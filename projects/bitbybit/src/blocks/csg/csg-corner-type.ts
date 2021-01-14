@@ -1,7 +1,9 @@
 import { Block, Blocks, FieldDropdown } from 'blockly';
 import * as JavaScript from 'blockly/javascript';
+import { environment } from '../../environments/environment';
 import { ResourcesService } from '../../resources';
 import { createStandardContextIIFE } from '../_shared';
+import { solidConstants } from './solid-constants';
 
 export function createCornerTypeBlock(): void {
 
@@ -19,7 +21,7 @@ export function createCornerTypeBlock(): void {
             this.setOutput(true, 'String');
             this.setColour('#fff');
             this.setTooltip(resources.block_csg_expansions_expand_path_description);
-            this.setHelpUrl('');
+            this.setHelpUrl(environment.docsUrl + '/enums/_api_inputs_solid_inputs_.solid.solidcornertypeenum.html');
         }
     };
 

@@ -9,6 +9,8 @@ import {
     BitByBitBlockHandlerService,
     ValidationEntityInterface
 } from '../../validations';
+import { environment } from 'projects/bitbybit/src/environments/environment';
+import { solidConstants } from '../../csg/solid-constants';
 
 export function createDrawCsgMeshesBlock(): void {
 
@@ -39,6 +41,7 @@ export function createDrawCsgMeshesBlock(): void {
             this.setPreviousStatement(true, null);
             this.setNextStatement(true, null);
             this.setTooltip(resources.block_babylon_draw_csg_meshes_description);
+            this.setHelpUrl(environment.docsUrl + solidConstants.solidHelpUrl + '#' + 'drawsolidorpolygonmeshes');
         }
     };
 
@@ -61,10 +64,8 @@ export function createDrawCsgMeshesBlock(): void {
         (block as any).validationModel = runtimeValidationModel;
 
         return createStandardContextIIFE(block, blockSelector, inputs, false,
-            `
-            inputs.jscadMesh = ${(JavaScript as any).variableDB_.getName(block.getFieldValue('DrawnCsgMeshes'), VARIABLE_CATEGORY_NAME)};
-            ${(JavaScript as any).variableDB_.getName(block.getFieldValue('DrawnCsgMeshes'), VARIABLE_CATEGORY_NAME)} = bitbybit.solid.drawSolidOrPolygonMeshes(inputs);
-`);
+            `inputs.jscadMesh = ${(JavaScript as any).variableDB_.getName(block.getFieldValue('DrawnCsgMeshes'), VARIABLE_CATEGORY_NAME)};
+            ${(JavaScript as any).variableDB_.getName(block.getFieldValue('DrawnCsgMeshes'), VARIABLE_CATEGORY_NAME)} = bitbybit.solid.drawSolidOrPolygonMeshes(inputs);`);
     };
 }
 

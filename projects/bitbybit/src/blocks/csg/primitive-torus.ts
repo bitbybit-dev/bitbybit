@@ -3,6 +3,8 @@ import * as JavaScript from 'blockly/javascript';
 import { ResourcesInterface, ResourcesService } from '../../resources';
 import { createStandardContextIIFE } from '../_shared';
 import { getRequired, makeRequiredValidationModelForInputs, BitByBitBlockHandlerService, ValidationEntityInterface } from '../validations';
+import { environment } from '../../environments/environment';
+import { solidConstants } from './solid-constants';
 
 export function createPrimitiveTorusBlock(): void {
 
@@ -46,7 +48,7 @@ export function createPrimitiveTorusBlock(): void {
             this.setOutput(true, 'CsgMesh');
             this.setColour('#fff');
             this.setTooltip(resources.block_csg_torus_description);
-            this.setHelpUrl('');
+            this.setHelpUrl(environment.docsUrl + solidConstants.solidShapesHelpUrl + '#' + 'torus');
         }
     };
 

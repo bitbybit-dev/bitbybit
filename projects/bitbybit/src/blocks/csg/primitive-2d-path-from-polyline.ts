@@ -3,6 +3,8 @@ import * as JavaScript from 'blockly/javascript';
 import { ResourcesInterface, ResourcesService } from '../../resources';
 import { createStandardContextIIFE } from '../_shared';
 import { getRequired, makeRequiredValidationModelForInputs, BitByBitBlockHandlerService, ValidationEntityInterface } from '../validations';
+import { environment } from '../../environments/environment';
+import { solidConstants } from './solid-constants';
 
 export function createPrimitive2dPathFromPolylineBlock(): void {
 
@@ -22,7 +24,7 @@ export function createPrimitive2dPathFromPolylineBlock(): void {
             this.setOutput(true, 'Path');
             this.setColour('#fff');
             this.setTooltip(resources.block_csg_primitive_2d_path_from_polyline_description);
-            this.setHelpUrl('');
+            this.setHelpUrl(environment.docsUrl + solidConstants.solidPathHelpUrl + '#' + 'createfrompolyline');
         }
     };
 

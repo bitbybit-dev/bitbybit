@@ -10,6 +10,8 @@ import {
     BitByBitBlockHandlerService,
     ValidationEntityInterface
 } from '../../validations';
+import { environment } from 'projects/bitbybit/src/environments/environment';
+import { solidConstants } from '../../csg/solid-constants';
 
 export function createDraw2dPathBlock(): void {
 
@@ -44,6 +46,7 @@ export function createDraw2dPathBlock(): void {
             this.setPreviousStatement(true, null);
             this.setNextStatement(true, null);
             this.setTooltip(resources.block_babylon_draw_polyline_description);
+            this.setHelpUrl(environment.docsUrl + solidConstants.solidHelpUrl + '#' + 'drawpath');
         }
     };
 
@@ -67,11 +70,8 @@ export function createDraw2dPathBlock(): void {
         (block as any).validationModel = runtimeValidationModel;
 
         return createStandardContextIIFE(block, blockSelector, inputs, false,
-            `
-        inputs.pathMesh = ${(JavaScript as any).variableDB_.getName(block.getFieldValue('DrawnPathMesh'), VARIABLE_CATEGORY_NAME)};
-        ${(JavaScript as any).variableDB_.getName(block.getFieldValue('DrawnPathMesh'), VARIABLE_CATEGORY_NAME)} = bitbybit.solid.drawPath(inputs);
-
-`
+            `inputs.pathMesh = ${(JavaScript as any).variableDB_.getName(block.getFieldValue('DrawnPathMesh'), VARIABLE_CATEGORY_NAME)};
+            ${(JavaScript as any).variableDB_.getName(block.getFieldValue('DrawnPathMesh'), VARIABLE_CATEGORY_NAME)} = bitbybit.solid.drawPath(inputs);`
         );
     };
 }

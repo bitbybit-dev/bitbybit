@@ -10,6 +10,8 @@ import {
     BitByBitBlockHandlerService,
     ValidationEntityInterface
 } from '../../validations';
+import { environment } from 'projects/bitbybit/src/environments/environment';
+import { solidConstants } from '../../csg/solid-constants';
 
 export function createDrawCsgMeshBlock(): void {
 
@@ -39,6 +41,7 @@ export function createDrawCsgMeshBlock(): void {
             this.setPreviousStatement(true, null);
             this.setNextStatement(true, null);
             this.setTooltip(resources.block_babylon_draw_csg_mesh_description);
+            this.setHelpUrl(environment.docsUrl + solidConstants.solidHelpUrl + '#' + 'drawsolidorpolygonmesh');
         }
     };
 
