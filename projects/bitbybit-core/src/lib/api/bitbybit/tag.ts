@@ -15,10 +15,10 @@ export class Tag {
     /**
      * Creates a tag dto
      * <div>
-     *  <img src="../assets/images/blockly-images/tag/drawTag.png" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/tag/create.png" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_tag_.tag.html#drawtag
-     * @param inputs Information to draw the tag
+     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_tag_.tag.html#create
+     * @param inputs Tag description
      * @returns A tag
      */
     create(inputs: BaseTypes.TagDto): BaseTypes.TagDto {

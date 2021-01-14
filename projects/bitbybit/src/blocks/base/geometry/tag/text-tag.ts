@@ -9,14 +9,15 @@ import {
     BitByBitBlockHandlerService,
     ValidationEntityInterface
 } from '../../../validations';
+import { environment } from 'projects/bitbybit/src/environments/environment';
 
-export function createTextTagBlock() {
+export function createTextTagBlock(): void {
 
     const resources = ResourcesService.getResources();
     const blockSelector = 'base_geometry_text_tag';
 
     Blocks[blockSelector] = {
-        init() {
+        init(): void {
             this.appendValueInput('Text')
                 .setAlign(ALIGN_RIGHT)
                 .appendField(resources.block_base_geometry_text_tag_input_text);
@@ -39,6 +40,7 @@ export function createTextTagBlock() {
             this.setOutput(true, 'TextTag');
             this.setColour('#fff');
             this.setTooltip(resources.block_base_geometry_text_tag_description);
+            this.setHelpUrl(environment.docsUrl + 'classes/_api_bitbybit_base_types_.basetypes.tagdto.html');
         }
     };
 

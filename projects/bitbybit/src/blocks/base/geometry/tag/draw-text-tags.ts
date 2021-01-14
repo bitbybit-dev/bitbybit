@@ -8,14 +8,16 @@ import {
     BitByBitBlockHandlerService,
     ValidationEntityInterface
 } from '../../../validations';
+import { environment } from 'projects/bitbybit/src/environments/environment';
+import { tagConstants } from './tag-constants';
 
-export function createDrawTextTagsBlock() {
+export function createDrawTextTagsBlock(): void {
 
     const resources = ResourcesService.getResources();
     const blockSelector = 'base_geometry_draw_text_tags';
 
     Blocks[blockSelector] = {
-        init() {
+        init(): void {
             this.appendValueInput('TextTags')
                 .setCheck('Array')
                 .setAlign(ALIGN_RIGHT)
@@ -30,6 +32,7 @@ export function createDrawTextTagsBlock() {
             this.setPreviousStatement(true, null);
             this.setNextStatement(true, null);
             this.setTooltip(resources.block_base_geometry_draw_text_tags_description);
+            this.setHelpUrl(environment.docsUrl + tagConstants.helpUrl + '#' + 'drawtags');
         }
     };
 
