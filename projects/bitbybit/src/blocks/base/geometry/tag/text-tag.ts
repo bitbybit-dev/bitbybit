@@ -40,7 +40,7 @@ export function createTextTagBlock(): void {
             this.setOutput(true, 'TextTag');
             this.setColour('#fff');
             this.setTooltip(resources.block_base_geometry_text_tag_description);
-            this.setHelpUrl(environment.docsUrl + 'classes/_api_bitbybit_base_types_.basetypes.tagdto.html');
+            this.setHelpUrl(environment.docsUrl + '/classes/_api_bitbybit_base_types_.basetypes.tagdto.html');
         }
     };
 
