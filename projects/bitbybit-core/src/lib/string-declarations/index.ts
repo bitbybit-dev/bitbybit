@@ -25,6 +25,7 @@ export * from './solid-path-string';
 export * from './solid-polygon-string';
 export * from './solid-shapes-string';
 export * from './solid-text-string';
+export * from './intersect-string';
 
 export * from './inputs/node-inputs-string';
 export * from './inputs/vector-inputs-string';
@@ -36,3 +37,4 @@ export * from './inputs/polyline-inputs-string';
 export * from './inputs/curve-inputs-string';
 export * from './inputs/surface-inputs-string';
 export * from './inputs/solid-inputs-string';
+export * from './inputs/intersect-inputs-string';

@@ -25,7 +25,7 @@ export declare namespace Line {
     }
     class DrawLineDto {
         /**
-         * Point
+         * Line
          */
         line: LinePointsDto;
         /**
