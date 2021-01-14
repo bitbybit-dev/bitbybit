@@ -38,7 +38,7 @@ export function createDrawTextTagsBlock(): void {
 
     JavaScript[blockSelector] = (block: Block) => {
         const inputs = {
-            textTags: (JavaScript as any).valueToCode(block, 'TextTags', (JavaScript as any).ORDER_ATOMIC),
+            tags: (JavaScript as any).valueToCode(block, 'TextTags', (JavaScript as any).ORDER_ATOMIC),
             updatable: (JavaScript as any).valueToCode(block, 'Updatable', (JavaScript as any).ORDER_ATOMIC),
         };
 

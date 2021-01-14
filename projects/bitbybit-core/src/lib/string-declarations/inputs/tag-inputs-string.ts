@@ -1,9 +1,9 @@
-import { Mesh } from '@babylonjs/core';
-import { BaseTypes } from '../bitbybit/base-types';
+import { simplifyDeclaration } from '../simplify-declaration';
 
-// tslint:disable-next-line: no-namespace
-export namespace Tag {
-    export class DrawTagDto {
+export const tagInputsString = simplifyDeclaration(`
+import { BaseTypes } from '../bitbybit/base-types';
+export declare namespace Tag {
+    class DrawTagDto {
         /**
          * Text tag to draw
          */
@@ -17,7 +17,7 @@ export namespace Tag {
          */
         tagVariable?: BaseTypes.TagDto;
     }
-    export class DrawTagsDto {
+    class DrawTagsDto {
         /**
          * Text tag to draw
          */
@@ -32,3 +32,4 @@ export namespace Tag {
         tagsVariable?: BaseTypes.TagDto[];
     }
 }
+`);

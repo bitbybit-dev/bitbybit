@@ -129,19 +129,19 @@ export namespace BaseTypes {
         /**
          * Position of the tag
          */
-        position: number[];
+        position = [0, 0, 0];
         /**
          * Colour of the tag
          */
-        colour: string;
+        colour = '#444444';
         /**
          * Text size
          */
-        size: number;
+        size = 12;
         /**
          * Make tags that are further away smaller
          */
-        adaptDepth: boolean;
+        adaptDepth = false;
         /**
          * Indicates if tag needs updating
          */

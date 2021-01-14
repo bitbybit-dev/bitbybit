@@ -43,21 +43,21 @@ export class Tag {
     drawTag(inputs: Inputs.Tag.DrawTagDto): BaseTypes.TagDto {
         if (inputs.tagVariable && inputs.updatable) {
             const tagToUpdate = BitByBitBlocklyHelperService.tagBag.find(tag => tag.id === inputs.tagVariable.id);
-            Object.keys(inputs.textTag).forEach(key => {
-                tagToUpdate[key] = inputs.textTag[key];
+            Object.keys(inputs.tag).forEach(key => {
+                tagToUpdate[key] = inputs.tag[key];
             });
             tagToUpdate.needsUpdate = true;
         } else {
             const textNode = document.createElement('span');
             const id = '_tag' + new Date().getTime() + BitByBitBlocklyHelperService.tagBag.length;
-            inputs.textTag.id = id;
+            inputs.tag.id = id;
             textNode.id = id;
-            textNode.textContent = inputs.textTag.text;
+            textNode.textContent = inputs.tag.text;
             document.querySelector('.canvasZone').appendChild(textNode);
-            inputs.textTag.needsUpdate = true;
-            BitByBitBlocklyHelperService.tagBag.push(inputs.textTag);
+            inputs.tag.needsUpdate = true;
+            BitByBitBlocklyHelperService.tagBag.push(inputs.tag);
         }
-        return inputs.textTag;
+        return inputs.tag;
     }
 
     /**
@@ -73,9 +73,9 @@ export class Tag {
         if (inputs.tagsVariable && inputs.updatable) {
 
             // check if list has grown, and add new empty tags to tags variable so that
-            if (inputs.tagsVariable.length < inputs.textTags.length) {
-                for (let i = inputs.tagsVariable.length - 1; i < inputs.textTags.length - 1; i++) {
-                    const tagToCreate = inputs.textTags[i];
+            if (inputs.tagsVariable.length < inputs.tags.length) {
+                for (let i = inputs.tagsVariable.length - 1; i < inputs.tags.length - 1; i++) {
+                    const tagToCreate = inputs.tags[i];
                     const textNode = document.createElement('span');
                     const id = '_tag' + new Date().getTime() + BitByBitBlocklyHelperService.tagBag.length;
                     tagToCreate.id = id;
@@ -89,7 +89,7 @@ export class Tag {
 
             inputs.tagsVariable.forEach((tagFromVar, index) => {
                 const tagToUpdate = BitByBitBlocklyHelperService.tagBag.find(tag => tag.id === tagFromVar.id);
-                const tagToUpdateWith = inputs.textTags[index];
+                const tagToUpdateWith = inputs.tags[index];
                 if (tagToUpdateWith) {
                     Object.keys(tagToUpdateWith).forEach(key => {
                         tagToUpdate[key] = tagToUpdateWith[key];
@@ -104,7 +104,7 @@ export class Tag {
             });
         } else {
             const tagsToCreate = [];
-            inputs.textTags.forEach((tag, index) => {
+            inputs.tags.forEach((tag, index) => {
                 const textNode = document.createElement('span');
                 const id = '_tag' + new Date().getTime() + BitByBitBlocklyHelperService.tagBag.length;
                 tag.id = id;
