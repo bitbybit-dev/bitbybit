@@ -37,6 +37,7 @@ export function createDrawTextTagBlock(): void {
         const inputs = {
             textTag: (JavaScript as any).valueToCode(block, 'TextTag', (JavaScript as any).ORDER_ATOMIC),
             updatable: (JavaScript as any).valueToCode(block, 'Updatable', (JavaScript as any).ORDER_ATOMIC),
+            tagVariable: undefined,
         };
 
         // this is first set of validations to check that all inputs are non empty strings
@@ -49,27 +50,9 @@ export function createDrawTextTagBlock(): void {
         (block as any).validationModel = runtimeValidationModel;
 
         return createStandardContextIIFE(block, blockSelector, inputs, false,
-            `
-            inputs.tagVariable = ${(JavaScript as any).variableDB_.getName(block.getFieldValue('DrawnTextTag'), VARIABLE_CATEGORY_NAME)};
-
-            if(inputs.tagVariable && inputs.updatable) {
-                const tagToUpdate = BitByBit.BitByBitBlocklyHelperService.tagBag.find(tag => tag.id === inputs.tagVariable.id);
-                Object.keys(inputs.textTag).forEach(key => {
-                    tagToUpdate[key] = inputs.textTag[key];
-                });
-                tagToUpdate.needsUpdate = true;
-            } else {
-                const textNode = document.createElement('span');
-                const id = '_tag' + ${new Date().getTime()} + BitByBit.BitByBitBlocklyHelperService.tagBag.length;
-                inputs.textTag.id = id;
-                textNode.id = id;
-                textNode.textContent = inputs.textTag.text;
-                document.querySelector('.canvasZone').appendChild(textNode);
-                inputs.textTag.needsUpdate = true;
-                BitByBit.BitByBitBlocklyHelperService.tagBag.push(inputs.textTag);
-                ${(JavaScript as any).variableDB_.getName(block.getFieldValue('DrawnTextTag'), VARIABLE_CATEGORY_NAME)} = inputs.textTag;
-            }
-`);
+            `inputs.tagVariable = ${(JavaScript as any).variableDB_.getName(block.getFieldValue('DrawnTextTag'), VARIABLE_CATEGORY_NAME)};
+            ${(JavaScript as any).variableDB_.getName(block.getFieldValue('DrawnTextTag'), VARIABLE_CATEGORY_NAME)} = bitbybit.tag.drawTag(inputs);`
+        );
     };
 }
 

@@ -30,6 +30,7 @@ import { SolidPath } from './api/bitbybit/solid-path';
 import { SolidShapes } from './api/bitbybit/solid-shapes';
 import { SolidText } from './api/bitbybit/solid-text';
 import { Intersect } from './api/bitbybit/intersect';
+import { Tag } from './api/bitbybit/tag';
 
 @NgModule({
     declarations: [],
@@ -66,7 +67,8 @@ import { Intersect } from './api/bitbybit/intersect';
         SolidPolygon,
         SolidShapes,
         SolidText,
-        Intersect
+        Intersect,
+        Tag
     ],
     exports: []
 })

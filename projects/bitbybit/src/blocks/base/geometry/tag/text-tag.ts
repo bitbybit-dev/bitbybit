@@ -61,15 +61,7 @@ export function createTextTagBlock() {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `
-return {
-    text: inputs.text,
-    position: inputs.position,
-    colour: inputs.colour,
-    size: inputs.size,
-    adaptDepth: inputs.adaptDepth,
-};
-`);
+            `return bitbybit.tag.create(inputs);`);
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };
 }

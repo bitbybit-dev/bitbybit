@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { Angle, Matrix, Mesh, Quaternion, TransformNode, Node as BabylonNode, Vector3 } from '@babylonjs/core';
 import { BitByBitBlocklyHelperService } from '../../bit-by-bit-blockly-helper.service';
 import { Context } from '../context';
+import { GeometryHelper } from '../geometry-helper';
 import * as Inputs from '../inputs/inputs';
 
 /**
@@ -11,7 +12,7 @@ import * as Inputs from '../inputs/inputs';
 @Injectable()
 export class Node {
 
-    constructor(private readonly context: Context) { }
+    constructor(private readonly context: Context, private readonly geometryHelper: GeometryHelper) { }
 
     /**
      * Draws a node of given size with given colours for every axis
@@ -22,7 +23,7 @@ export class Node {
      * @param inputs Contains node data that includes size and colour information
      */
     drawNode(inputs: Inputs.Node.DrawNodeDto): void {
-        const cotAxis = BitByBitBlocklyHelperService.localAxes(
+        const cotAxis = this.geometryHelper.localAxes(
             inputs.size, this.context.scene, inputs.colorX, inputs.colorY, inputs.colorZ
         );
         cotAxis.parent = inputs.node;
@@ -38,7 +39,7 @@ export class Node {
      */
     drawNodes(inputs: Inputs.Node.DrawNodesDto): void {
         inputs.nodes.forEach(node => {
-            const CoTAxis = BitByBitBlocklyHelperService.localAxes(
+            const CoTAxis = this.geometryHelper.localAxes(
                 inputs.size, this.context.scene, inputs.colorX, inputs.colorY, inputs.colorZ);
             CoTAxis.parent = node;
         });

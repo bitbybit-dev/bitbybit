@@ -10,6 +10,7 @@ import { Curve } from './bitbybit/curve';
 import { Surface } from './bitbybit/surface';
 import { Solid } from './bitbybit/solid';
 import { Intersect } from './bitbybit/intersect';
+import { Tag } from './bitbybit/tag';
 
 @Injectable()
 export class BitByBitBase {
@@ -25,6 +26,7 @@ export class BitByBitBase {
         public readonly surface: Surface,
         public readonly solid: Solid,
         public readonly intersect: Intersect,
+        public readonly tag: Tag,
     ) {
     }
 }
