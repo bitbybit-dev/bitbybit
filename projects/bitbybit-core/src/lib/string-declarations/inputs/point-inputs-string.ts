@@ -1,7 +1,7 @@
 import { simplifyDeclaration } from '../simplify-declaration';
 
 export const pointInputsString = simplifyDeclaration(`
-import { Mesh } from "@babylonjs/core";
+import { Mesh } from '@babylonjs/core';
 export declare namespace Point {
     class PointDto {
         /**
@@ -16,6 +16,10 @@ export declare namespace Point {
         points: number[][];
     }
     class DrawPointDto {
+        /**
+         * Provide options without default values
+         */
+        constructor(point?: number[]);
         /**
          * Point
          */
@@ -43,6 +47,10 @@ export declare namespace Point {
     }
     class DrawPointsDto {
         /**
+         * Provide options without default values
+         */
+        constructor(points?: number[][]);
+        /**
          * Point
          */
         points: number[][];
@@ -51,7 +59,7 @@ export declare namespace Point {
          */
         opacity: number;
         /**
-         * Size of the point
+         * Size of the points
          */
         size: number;
         /**
@@ -59,7 +67,7 @@ export declare namespace Point {
          */
         colour: string;
         /**
-         * Indicates wether the position of these points will change in time
+         * Indicates wether the position of this point will change in time
          */
         updatable: boolean;
         /**

@@ -19,6 +19,14 @@ export class ExamplesService {
         return exampleFound ? exampleFound.xml : undefined;
     }
 
+    getExampleTypescript(example: string): string {
+        if (example === 'advanced-lines-between-two-surfaces') {
+            example = 'mid-lines-between-two-surfaces';
+        }
+        const exampleFound = this.flatExamples.find(s => s.queryParam === example);
+        return exampleFound ? exampleFound.typescript : undefined;
+    }
+
     getExamples(): ExamplesModel{
         return this.examples;
     }

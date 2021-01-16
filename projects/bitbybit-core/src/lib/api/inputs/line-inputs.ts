@@ -4,6 +4,13 @@ import { LinesMesh } from '@babylonjs/core';
 export namespace Line {
     export class LinePointsDto {
         /**
+         * Provide options without default values
+         */
+        constructor(start?: number[], end?: number[]) {
+            this.start = start;
+            this.end = end;
+        }
+        /**
          * Start point
          */
         start: number[];
@@ -14,6 +21,13 @@ export namespace Line {
     }
     export class LineStartEndPointsDto {
         /**
+         * Provide options without default values
+         */
+        constructor(startPoints?: number[][], endPoints?: number[][]) {
+            this.startPoints = startPoints;
+            this.endPoints = endPoints;
+        }
+        /**
          * Start points
          */
         startPoints: number[][];
@@ -23,6 +37,12 @@ export namespace Line {
         endPoints: number[][];
     }
     export class DrawLineDto {
+        /**
+         * Provide options without default values
+         */
+        constructor(line?: LinePointsDto) {
+            this.line = line;
+        }
         /**
          * Line
          */
@@ -49,6 +69,12 @@ export namespace Line {
         lineMesh?: LinesMesh;
     }
     export class DrawLinesDto {
+        /**
+         * Provide options without default values
+         */
+        constructor(lines?: LinePointsDto[]) {
+            this.lines = lines;
+        }
         /**
          * Lines
          */

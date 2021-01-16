@@ -5,6 +5,12 @@ import { Polyline } from './polyline-inputs';
 export namespace Solid {
     export class DrawSolidMeshDto {
         /**
+         * Provide options without default values
+         */
+        constructor(mesh?: any[]) {
+            this.mesh = mesh;
+        }
+        /**
          * Solid Jscad mesh
          */
         mesh: any;
@@ -26,6 +32,12 @@ export namespace Solid {
         jscadMesh?: Mesh;
     }
     export class DrawSolidsMeshDto {
+        /**
+         * Provide options without default values
+         */
+        constructor(meshes?: any[]) {
+            this.meshes = meshes;
+        }
         /**
          * Solid Jscad meshes
          */
@@ -49,25 +61,31 @@ export namespace Solid {
     }
     export class DrawPathDto {
         /**
+         * Provide options without default values
+         */
+        constructor(path?: any[]) {
+            this.path = path;
+        }
+        /**
          * 2D Path to draw
          */
         path: any;
         /**
          * Colour of the path
          */
-        colour: string;
+        colour = '#444444';
         /**
          * Opacity of the path
          */
-        opacity: number;
+        opacity = 1;
         /**
          * Width of the path
          */
-        width: number;
+        width = 3;
         /**
          * Indicates wether the path will change in time
          */
-        updatable: boolean;
+        updatable = false;
         /**
          * Path mesh variable that will be updated if updatable property is set to true
          */

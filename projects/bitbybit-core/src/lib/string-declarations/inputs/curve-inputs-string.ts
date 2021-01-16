@@ -47,6 +47,10 @@ export declare namespace Curve {
     }
     class DrawCurveDto {
         /**
+         * Provide options without default values
+         */
+        constructor(curve?: any);
+        /**
          * Nurbs curve
          */
         curve: any;
@@ -63,7 +67,7 @@ export declare namespace Curve {
          */
         width: number;
         /**
-         * Indicates wether the position of this polyline will change in time
+         * Indicates wether the position of this curve will change in time
          */
         updatable: boolean;
         /**
@@ -190,6 +194,10 @@ export declare namespace Curve {
         length: number;
     }
     class DrawCurvesDto {
+        /**
+         * Provide options without default values
+         */
+        constructor(curves?: any[]);
         /**
          * Nurbs curves
          */

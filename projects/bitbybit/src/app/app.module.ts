@@ -98,13 +98,9 @@ const monacoConfig: NgxMonacoEditorConfig = {
             const Bit: Bit = (window as any).Bit;
             const bitbybit: Bit.BitByBitBase = (window as any).BitByBitBase;
             const BitByBit = {
-                scene: window.blockly.scene,
                 blocklyWorkspace: window.blockly.workspace,
-                BABYLON: window.BABYLON,
-                verb: window.verb,
                 BitByBitBlockHandlerService: window.BitByBitBlockHandlerService,
                 BitByBitBlocklyHelperService: window.BitByBitBlocklyHelperService,
-                CSG: window.CSG
             };
         `;
         libUri = 'ts:filename/bitbybit.ts';

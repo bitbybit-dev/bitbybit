@@ -46,6 +46,12 @@ export namespace Curve {
     }
     export class DrawCurveDto {
         /**
+         * Provide options without default values
+         */
+        constructor(curve?: any) {
+            this.curve = curve;
+        }
+        /**
          * Nurbs curve
          */
         curve: any;
@@ -190,6 +196,12 @@ export namespace Curve {
         length: number;
     }
     export class DrawCurvesDto {
+        /**
+         * Provide options without default values
+         */
+        constructor(curves?: any[]) {
+            this.curves = curves;
+        }
         /**
          * Nurbs curves
          */

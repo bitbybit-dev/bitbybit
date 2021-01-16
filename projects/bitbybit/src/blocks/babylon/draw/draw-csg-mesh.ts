@@ -52,6 +52,7 @@ export function createDrawCsgMeshBlock(): void {
             colour: (JavaScript as any).valueToCode(block, 'Colour', (JavaScript as any).ORDER_ATOMIC),
             opacity: (JavaScript as any).valueToCode(block, 'Opacity', (JavaScript as any).ORDER_ATOMIC),
             updatable: (JavaScript as any).valueToCode(block, 'Updatable', (JavaScript as any).ORDER_ATOMIC),
+            jscadMesh: undefined,
         };
 
         // this is first set of validations to check that all inputs are non empty strings

@@ -85,6 +85,13 @@ export namespace Node {
 
     export class DrawNodeDto extends NodeDto {
         /**
+         * Provide options without default values
+         */
+        constructor(node?: TransformNode) {
+            super();
+            this.node = node;
+        }
+        /**
          * Hex encoded color string for X axis
          */
         colorX = '#ff0000';
@@ -103,6 +110,12 @@ export namespace Node {
     }
 
     export class DrawNodesDto {
+        /**
+         * Provide options without default values
+         */
+        constructor(nodes?: TransformNode[]) {
+            this.nodes = nodes;
+        }
         /**
          * Nodes that will be drawn
          */

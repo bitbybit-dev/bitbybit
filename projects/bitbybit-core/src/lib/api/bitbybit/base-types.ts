@@ -114,41 +114,4 @@ export namespace BaseTypes {
          */
         dist: number;
     }
-    /**
-     * Class representing a tag
-     * <div>
-     *  <img src="../assets/images/blockly-images/base-types/tag.png" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_base_types_.basetypes.tagdto.html
-     */
-    export class TagDto {
-        /**
-         * Text of the tag
-         */
-        text: string;
-        /**
-         * Position of the tag
-         */
-        position = [0, 0, 0];
-        /**
-         * Colour of the tag
-         */
-        colour = '#444444';
-        /**
-         * Text size
-         */
-        size = 12;
-        /**
-         * Make tags that are further away smaller
-         */
-        adaptDepth = false;
-        /**
-         * Indicates if tag needs updating
-         */
-        needsUpdate?: boolean;
-        /**
-         * Unique id of the tag
-         */
-        id?: string;
-    }
 }

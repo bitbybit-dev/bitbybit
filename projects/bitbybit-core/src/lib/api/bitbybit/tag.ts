@@ -21,8 +21,8 @@ export class Tag {
      * @param inputs Tag description
      * @returns A tag
      */
-    create(inputs: BaseTypes.TagDto): BaseTypes.TagDto {
-        const tag = new BaseTypes.TagDto();
+    create(inputs: Inputs.Tag.TagDto): Inputs.Tag.TagDto {
+        const tag = new Inputs.Tag.TagDto();
         tag.text = inputs.text;
         tag.position = inputs.position;
         tag.colour = inputs.colour;
@@ -40,7 +40,7 @@ export class Tag {
      * @param inputs Information to draw the tag
      * @returns A tag
      */
-    drawTag(inputs: Inputs.Tag.DrawTagDto): BaseTypes.TagDto {
+    drawTag(inputs: Inputs.Tag.DrawTagDto): Inputs.Tag.TagDto {
         if (inputs.tagVariable && inputs.updatable) {
             const tagToUpdate = BitByBitBlocklyHelperService.tagBag.find(tag => tag.id === inputs.tagVariable.id);
             Object.keys(inputs.tag).forEach(key => {
@@ -69,7 +69,7 @@ export class Tag {
      * @param inputs Information to draw the tags
      * @returns Tags
      */
-    drawTags(inputs: Inputs.Tag.DrawTagsDto): BaseTypes.TagDto[] {
+    drawTags(inputs: Inputs.Tag.DrawTagsDto): Inputs.Tag.TagDto[] {
         if (inputs.tagsVariable && inputs.updatable) {
 
             // check if list has grown, and add new empty tags to tags variable so that

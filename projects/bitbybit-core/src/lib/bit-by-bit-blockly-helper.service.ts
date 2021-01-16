@@ -2,8 +2,6 @@ import { HttpClient } from '@angular/common/http';
 import { Vector3, Mesh, Scene, Color3, MeshBuilder } from '@babylonjs/core';
 import { PrintSaveInterface } from './models/print-save.model';
 import { OBJFileLoader } from '@babylonjs/loaders';
-import { BaseTypes } from './api/bitbybit/base-types';
-
 export class BitByBitBlocklyHelperService {
 
     static promptPrintSave: (prompt: PrintSaveInterface) => void;
@@ -12,7 +10,7 @@ export class BitByBitBlocklyHelperService {
     static snapTolerance = 0.00001;
     static angular: { httpClient: HttpClient, HttpHeaders: any, HttpParams: any };
     static jsonpath: any;
-    static tagBag: BaseTypes.TagDto[] = [];
+    static tagBag: any[] = [];
     static timeoutBag: number[] = [];
     static intervalBag: number[] = [];
     static renderLoopBag: ((timePassedFromPreviousIteration: number) => void)[] = [];

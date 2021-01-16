@@ -7,6 +7,9 @@
             <a [routerLink]="['/app']" [queryParams]="{examples: example.queryParam}" (click)="onClose()">
                 <img [src]="example.image"/>
             </a>
+            <a *ngIf="example.typescript" class="youtube-link" [routerLink]="['/app']" [queryParams]="{examples: example.queryParam, editor: 'ts'}" (click)="onClose()">
+                <img width="30px" height="30px" src="../assets/typescript-logo.png" />
+            </a>
             <a *ngIf="example.youtubeLink" class="youtube-link" [href]="example.youtubeLink" target="_blank">
                 <img width="40px" height="30px" src="../assets/logo-youtube.svg" />
             </a>
@@ -19,6 +22,9 @@
             <a [routerLink]="['/app']" [queryParams]="{examples: example.queryParam}" (click)="onClose()">
                 <img [src]="example.image"/>
             </a>
+            <a *ngIf="example.typescript" class="youtube-link" [routerLink]="['/app']" [queryParams]="{examples: example.queryParam, editor: 'ts'}" (click)="onClose()">
+                <img width="30px" height="30px" src="../assets/typescript-logo.png" />
+            </a>
             <a *ngIf="example.youtubeLink" class="youtube-link" [href]="example.youtubeLink" target="_blank">
                 <img width="40px" height="30px" src="../assets/logo-youtube.svg" />
             </a>
@@ -30,6 +36,9 @@
             <h3>{{example.title}}</h3>
             <a [routerLink]="['/app']" [queryParams]="{examples: example.queryParam}" (click)="onClose()">
                 <img [src]="example.image"/>
+            </a>
+            <a *ngIf="example.typescript" class="youtube-link" [routerLink]="['/app']" [queryParams]="{examples: example.queryParam, editor: 'ts'}" (click)="onClose()">
+                <img width="30px" height="30px" src="../assets/typescript-logo.png" />
             </a>
             <a *ngIf="example.youtubeLink" class="youtube-link" [href]="example.youtubeLink" target="_blank">
                 <img width="40px" height="30px" src="../assets/logo-youtube.svg" />

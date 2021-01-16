@@ -4,6 +4,12 @@ import { LinesMesh } from '@babylonjs/core';
 export namespace Polyline {
     export class PolylinePropertiesDto {
         /**
+         * Provide options without default values
+         */
+        constructor(points?: number[][]) {
+            this.points = points;
+        }
+        /**
          * Points of the polyline
          */
         points: number[][];
@@ -32,6 +38,12 @@ export namespace Polyline {
     }
     export class DrawPolylineDto {
         /**
+         * Provide options without default values
+         */
+        constructor(polyline?: PolylinePropertiesDto) {
+            this.polyline = polyline;
+        }
+        /**
          * Polyline
          */
         polyline: PolylinePropertiesDto;
@@ -57,6 +69,12 @@ export namespace Polyline {
         polylineMesh?: LinesMesh;
     }
     export class DrawPolylinesDto {
+        /**
+         * Provide options without default values
+         */
+        constructor(polylines?: PolylinePropertiesDto[]) {
+            this.polylines = polylines;
+        }
         /**
          * Polylines
          */

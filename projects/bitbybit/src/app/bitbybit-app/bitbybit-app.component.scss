@@ -4,7 +4,7 @@
 }
 
 ::ng-deep .monaco-editor,::ng-deep  .monaco-editor-background,::ng-deep  .monaco-editor ::ng-deep .inputarea.ime-input {
-    background-color: rgba(25, 29, 32, 0.8) !important;
+    background-color: rgba(25, 29, 32, 0.7) !important;
 }
 
 :ng-deep .editor-container {
@@ -213,29 +213,38 @@ mat-tab-body {
     fill: black;
 }
 
-::ng-deep .geras-renderer.themeName-theme .blocklyText, ::ng-deep .geras-renderer.themeName-theme .blocklyNonEditableText>text, ::ng-deep  .geras-renderer.themeName-theme .blocklyEditableText>text {
+::ng-deep .zelos-renderer.themeName-theme .blocklyText, ::ng-deep .zelos-renderer.themeName-theme .blocklyNonEditableText>text, ::ng-deep  .zelos-renderer.themeName-theme .blocklyEditableText>text {
     fill: #444;
     opacity: 1;
 }
-
-::ng-deep .geras-renderer.themeName-theme .blocklyNonEditableText>rect, ::ng-deep .geras-renderer.themeName-theme .blocklyEditableText>rect {
+::ng-deep .zelos-renderer.themeName-theme .blocklyNonEditableText>rect, ::ng-deep .zelos-renderer.themeName-theme .blocklyEditableText>rect {
     stroke: #444;
     stroke-width: 1px;
+    fill: #eee;
+    columns: #fff200;
 }
 
-::ng-deep .geras-renderer.themeName-theme .blocklySelected>.blocklyPath{
+::ng-deep .zelos-renderer.themeName-theme.blocklyDropDownDiv .goog-menuitem-content {
+    color: #000;
+}
+
+::ng-deep .zelos-renderer.themeName-theme .blocklySelected>.blocklyPath{
     stroke: #000;
     stroke-width: 1px;
     opacity: 0.9;
 }
 
-::ng-deep .geras-renderer.themeName-theme .blocklyDraggable {
-    fill: #ddd;
+::ng-deep .zelos-renderer.themeName-theme .blocklyDraggable {
+    fill: #000;
     stroke-width: 1px;
 }
 
-::ng-deep .geras-renderer.themeName-theme tspan {
+::ng-deep .zelos-renderer.themeName-theme tspan {
     fill: #666 !important;
+}
+
+::ng-deep .zelos-renderer.themeName-theme .blocklyDropdownText {
+    fill: #444 !important;
 }
 
 ::ng-deep .blocklyPath {

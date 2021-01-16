@@ -37,6 +37,10 @@ import { UiStatesEnum } from './models/ui-states.enum';
 import { BitByBitBase, BitByBitBlocklyHelperService, Context, PrintSaveInterface } from 'projects/bitbybit-core/src/public-api';
 import * as Inputs from 'projects/bitbybit-core/src/lib/api/inputs/inputs';
 import { BaseTypes } from 'projects/bitbybit-core/src/lib/api/bitbybit/base-types';
+import { core, geom } from 'verb-nurbs-web';
+import { EnterMonacoDialogComponent } from './components/enter-monaco-dialog/enter-monaco-dialog.component';
+import { monacoDialogResultEnum } from './models/monaco-dialog-result.enum';
+import { EnterBlocklyDialogComponent } from './components/enter-blockly-dialog/enter-blockly-dialog.component';
 
 @Component({
     selector: 'app-root',
@@ -107,21 +111,28 @@ export class BitbybitAppComponent implements OnInit, OnDestroy, AfterViewInit {
             .then(() => {
                 this.blocklyArea = document.getElementById('blocklyArea');
                 this.blocklyDiv = document.getElementById('blocklyDiv');
-
-                this.workspace = inject(this.blocklyDiv,
+                const options = {
+                    toolbox: document.getElementById('toolbox'),
+                    zoom:
                     {
-                        toolbox: document.getElementById('toolbox'),
-                        zoom:
-                        {
-                            wheel: true,
-                            startScale: 0.6,
-                            maxScale: 3,
-                            minScale: 0.3,
-                            scaleSpeed: 1.2
-                        },
-                        trashcan: true,
-                        theme: this.settingsService.theme,
-                    });
+                        wheel: true,
+                        startScale: 0.6,
+                        maxScale: 3,
+                        minScale: 0.3,
+                        scaleSpeed: 1.2
+                    },
+                    trashcan: true,
+                    sounds: false,
+                    theme: this.settingsService.theme,
+                    renderer: 'zelos',
+                    rendererOverrides: {
+                        FIELD_DROPDOWN_SVG_ARROW_DATAURI: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAADVUlEQVR4Xu2YSeiOURTGf39TIlKUhWlD2LDAQmZCZiUyZSGFYqEUKRsRURbIGCVEUoYQMk8LIgtJEZFIIREhoqfuW7e378v3jmfx3rP69733nuc5zznn3nv+TVTcmioeP0GAUAEVVyC0QMULIByCoQVCC1RcgdACFS+AcAuEFggtUHEFQgtUvADCLZC2BXoD24FZwGfjKuoIHAOWAs+TckkjQHfgNtANuAuMA74lBc5pfTvgCjAIeAUMBd4k8Z1GAAU/xAO5BEwFfiYBzmFta+A8MMrzJW7DkvhOI8AA4Bog9SM7AcwG/iQBz7C2JSBMCR/ZVyfGgyR+0wgg/yOAC4CyENkBYBHwNwmBFGubAQeB+d7eH8B44GZSf2kFEM5k4CTQwgPdCqwsUATx3QYs8zB/A9OBc0mD1/osAmj/XOBwzM9aYH0aMg3sWQfIf2SqtnnA0Qb21lySVQA51fWzM+Z9ObAjLak6+1YAqjDfhL07C04eAgh/DbAhRmQBcCgLOW/vQmB/zJcwN2b1n5cA8rPZ9X/ESTfCDOB0RpLycRzQ4RfZFmBVHmdNXgJE58ledxNERH8BE4CrKUUYC5wFWnn79wGL8wg+Ip2SW81tzd2BNNP7qlfiaOBeQqDBwGWgjbdPlaCDN7f3Rp4VEPFUts64ezn67ZN7OzxuUIR+wA2gg7de745pgKoqNytCAJFrC1yMPZnfubf6i/+w7+lmjc7eujtu5vieW+TOUVECyL2ydx3o75F+6UR4WyeQLoCC7eF9f+SeuIVMnUUKoBiUxVtALy+gJ8Bw4GNMhE7uKdvX+/2ZG27e5535yF/RAghH2dSU1tUL4j4wBtAAI2vvxtqB3hqNtZo6XxcVvPyWIYBw+rhKUJYj00Q50XHQWDvS+/bBZf5pkcGXKYCwao3Rui2UhCleoF9czz8sOviyBRCeel+3gz9G+3GmHmvTilVWC/j8JgGnYmO0vmus1T2vdijNLARQcHOAI94ZpLFWLzz9c7NUsxJAQS4Bdrlo9feeUiN3YJYCiMJqx2OTRfAWh6BVnHVxrSvAXJAggHkKjAmECjBOgDl8qADzFBgTCBVgnABz+FAB5ikwJhAqwDgB5vChAsxTYEwgVIBxAszhQwWYp8CYwD/Za3NBeWp1tQAAAABJRU5ErkJggg==',
+                        SELECTED_GLOW_COLOUR: '#e5b7a0',
+                        REPLACEMENT_GLOW_COLOUR: '#e5b7a0',
+                    },
+                }
+                this.workspace = inject(this.blocklyDiv,
+                  options);
 
                 window.addEventListener('resize', () => this.onResize(), false);
                 const toolbox = this.workspace.getToolbox();
@@ -129,7 +140,6 @@ export class BitbybitAppComponent implements OnInit, OnDestroy, AfterViewInit {
                 flyout.MARGIN = 40;
                 flyout.CORNER_RADIUS = 10;
 
-                this.collapseExpandedMenus();
                 toolbox.clearSelection();
 
                 (Blockly.prompt as any) = (message, defaultValue, callback) => {
@@ -160,7 +170,10 @@ export class BitbybitAppComponent implements OnInit, OnDestroy, AfterViewInit {
 
                 this.windowBlockly = {};
                 this.context.scene = this.scene;
-                this.context.verb = (window as any).verb;
+                const verb: any = {};
+                verb.geom = geom;
+                verb.core = core;
+                this.context.verb = verb;
                 this.context.jscad = (window as any).CSG;
                 (window as any).Bit = { Inputs, BaseTypes };
                 (window as any).BitByBitBase = this.bitByBit;
@@ -204,16 +217,33 @@ export class BitbybitAppComponent implements OnInit, OnDestroy, AfterViewInit {
 
                     this.route.queryParamMap.subscribe(param => {
                         const exampleParam = param.get('examples');
-                        if (exampleParam) {
+                        const editorParam = param.get('editor');
+                        if (exampleParam && !editorParam) {
                             this.firstTimeOpen = false;
                             const xml = Xml.textToDom(this.examplesService.getExampleXml(exampleParam));
                             if (xml) {
+                                this.currentUiState = UiStatesEnum.blockly;
+                                this.previousUiState = UiStatesEnum.babylon;
                                 this.workspace.clear();
                                 Xml.domToWorkspace(xml, this.workspace);
-                                this.workspace.zoomToFit();
-                                this.workspace.zoomCenter(-3);
-                                this.onResize();
-                                this.run();
+                                setTimeout(() => {
+                                    this.workspace.zoomToFit();
+                                    this.workspace.zoomCenter(-3);
+                                    this.collapseExpandedMenus();
+                                    this.onResize();
+                                    this.run();
+                                }, 200);
+                            }
+                        } else if (exampleParam && editorParam === 'ts') {
+                            this.code = this.examplesService.getExampleTypescript(exampleParam);
+                            this.startMonaco();
+                            this.run();
+                        } else if (editorParam === 'ts') {
+                            this.code = this.examplesService.getExampleTypescript(exampleParam);
+                            this.startMonaco();
+                            if (this.firstTimeOpen) {
+                                this.examples();
+                                this.firstTimeOpen = false;
                             }
                         } else {
                             if (this.firstTimeOpen) {
@@ -225,8 +255,9 @@ export class BitbybitAppComponent implements OnInit, OnDestroy, AfterViewInit {
                 });
 
                 setTimeout(() => {
+                    this.collapseExpandedMenus();
                     this.onResize();
-                }, 400);
+                });
             });
 
     }
@@ -307,15 +338,11 @@ export class BitbybitAppComponent implements OnInit, OnDestroy, AfterViewInit {
     export(): void {
         const xml = Xml.workspaceToDom(this.workspace);
         const xmlText = Xml.domToText(xml);
-        const blob = new Blob([xmlText], { type: 'text/xml' });
-        const blobUrl = URL.createObjectURL(blob);
+        this.createBlobAndDownload(xmlText, 'text/xml', 'workspace.bitbybit');
+    }
 
-        const fileLink = document.createElement('a');
-        fileLink.href = blobUrl;
-        fileLink.target = '_self';
-        fileLink.download = 'workspace.bitbybit';
-        fileLink.click();
-        fileLink.remove();
+    exportTypescript(): void {
+        this.createBlobAndDownload(this.code, 'text', 'workspace.ts');
     }
 
     examples(): void {
@@ -333,33 +360,39 @@ export class BitbybitAppComponent implements OnInit, OnDestroy, AfterViewInit {
     }
 
     toggleCodeEditor(): void {
-        this.code =
-            `
-    ${(JavaScript as any).workspaceToCode(this.workspace)}
-            `;
 
         if (this.currentUiState === UiStatesEnum.blockly) {
-            this.currentUiState = UiStatesEnum.monaco;
-            this.previousUiState = UiStatesEnum.monaco;
-
-            (document.getElementsByClassName('editor-container')[0] as HTMLElement).style.height = '100%';
-            setTimeout(() => {
-                window.dispatchEvent(new Event('resize'));
-                if ((this.editor as any)._editor) {
-                    (this.editor as any)._editor.trigger('anyString', 'editor.action.formatDocument');
-                }
-            }, 100);
+            this.openEnterMonacoDialog();
         } else if (this.currentUiState === UiStatesEnum.monaco) {
-            this.currentUiState = UiStatesEnum.blockly;
-            this.previousUiState = UiStatesEnum.blockly;
-
-            setTimeout(() => {
-                window.dispatchEvent(new Event('resize'));
-                this.workspace.zoomToFit();
-                this.workspace.zoomCenter(-3);
-                this.onResize();
-            });
+            this.openEnterBlocklyDialog();
         }
+    }
+
+    private startBlocklyEditor(): void {
+        this.currentUiState = UiStatesEnum.blockly;
+        this.previousUiState = UiStatesEnum.babylon;
+
+        setTimeout(() => {
+            this.clearBabylonScene();
+            this.router.navigate(['/app']);
+            window.dispatchEvent(new Event('resize'));
+            this.workspace.zoomToFit();
+            this.workspace.zoomCenter(-3);
+            this.onResize();
+        });
+    }
+
+    private startMonaco(): void {
+        this.clearBabylonScene();
+        this.currentUiState = UiStatesEnum.monaco;
+        this.previousUiState = UiStatesEnum.babylon;
+        (document.getElementsByClassName('editor-container')[0] as HTMLElement).style.height = '100%';
+        setTimeout(() => {
+            window.dispatchEvent(new Event('resize'));
+            if ((this.editor as any)._editor) {
+                (this.editor as any)._editor.trigger('anyString', 'editor.action.formatDocument');
+            }
+        }, 200);
     }
 
     about(): void {
@@ -391,11 +424,6 @@ export class BitbybitAppComponent implements OnInit, OnDestroy, AfterViewInit {
             default:
                 break;
         }
-
-        // setTimeout(() => {
-        //     window.dispatchEvent(new Event('resize'));
-        //     this.onResize();
-        // }, 100);
     }
 
     cleanCanvas(): void {
@@ -407,13 +435,7 @@ export class BitbybitAppComponent implements OnInit, OnDestroy, AfterViewInit {
     run(): void {
         let transpiledCode = false;
         try {
-            this.clearMeshesAndMaterials();
-            this.tagService.removeTagsIfNeeded();
-            BitByBitBlocklyHelperService.intervalBag.forEach(i => clearInterval(i));
-            BitByBitBlocklyHelperService.timeoutBag.forEach(t => clearTimeout(t));
-            BitByBitBlocklyHelperService.renderLoopBag = [];
-
-            this.scene.clearColor = new Color4(1, 1, 1, 1);
+            this.clearBabylonScene();
 
             let code = (JavaScript as any).workspaceToCode(this.workspace);
 
@@ -427,13 +449,9 @@ export class BitbybitAppComponent implements OnInit, OnDestroy, AfterViewInit {
             const bitbybit = window.BitByBitBase;
             const Bit = window.Bit;
             const BitByBit = {
-                scene: window.blockly.scene,
                 blocklyWorkspace: window.blockly.workspace,
-                BABYLON: window.BABYLON,
-                verb: window.verb,
                 BitByBitBlockHandlerService: window.BitByBitBlockHandlerService,
                 BitByBitBlocklyHelperService: window.BitByBitBlocklyHelperService,
-                CSG: window.CSG
             };
             ${code}`)();
 
@@ -461,6 +479,16 @@ export class BitbybitAppComponent implements OnInit, OnDestroy, AfterViewInit {
         }
     }
 
+    private clearBabylonScene(): void {
+        this.clearMeshesAndMaterials();
+        this.tagService.removeTagsIfNeeded();
+        BitByBitBlocklyHelperService.intervalBag.forEach(i => clearInterval(i));
+        BitByBitBlocklyHelperService.timeoutBag.forEach(t => clearTimeout(t));
+        BitByBitBlocklyHelperService.renderLoopBag = [];
+
+        this.scene.clearColor = new Color4(1, 1, 1, 1);
+    }
+
     clearMeshesAndMaterials(): void {
         this.scene.meshes.forEach(m => m.dispose());
         this.scene.meshes = [];
@@ -474,10 +502,75 @@ export class BitbybitAppComponent implements OnInit, OnDestroy, AfterViewInit {
         this.scene.transformNodes = [this.scene.getTransformNodeByName('root')];
     }
 
+    private createBlobAndDownload(text: string, type: string, fileName: string): void {
+        const blob = new Blob([text], { type });
+        const blobUrl = URL.createObjectURL(blob);
+
+        const fileLink = document.createElement('a');
+        fileLink.href = blobUrl;
+        fileLink.target = '_self';
+        fileLink.download = fileName;
+        fileLink.click();
+        fileLink.remove();
+    }
+
+    private openEnterMonacoDialog(): void {
+        const dialogRef = this.dialog.open(EnterMonacoDialogComponent,
+            {
+                width: '600px',
+                height: 'auto',
+                autoFocus: false,
+            });
+        dialogRef.afterClosed().subscribe((result: monacoDialogResultEnum) => {
+            switch (result) {
+                case monacoDialogResultEnum.saveAndContinue:
+                    this.export();
+                    this.code = `${(JavaScript as any).workspaceToCode(this.workspace)}`;
+                    this.startMonaco();
+                    this.router.navigate(['/app']);
+
+                    break;
+                case monacoDialogResultEnum.continue:
+                    this.code = `${(JavaScript as any).workspaceToCode(this.workspace)}`;
+                    this.startMonaco();
+                    this.router.navigate(['/app']);
+                    break;
+                case monacoDialogResultEnum.cancel:
+                    break;
+                default:
+                    break;
+            }
+        });
+    }
+
+    private openEnterBlocklyDialog(): void {
+        const dialogRef = this.dialog.open(EnterBlocklyDialogComponent,
+            {
+                width: '600px',
+                height: 'auto',
+                autoFocus: false,
+            });
+        dialogRef.afterClosed().subscribe((result: monacoDialogResultEnum) => {
+            switch (result) {
+                case monacoDialogResultEnum.saveAndContinue:
+                    this.exportTypescript();
+                    this.startBlocklyEditor();
+                    break;
+                case monacoDialogResultEnum.continue:
+                    this.startBlocklyEditor();
+                    break;
+                case monacoDialogResultEnum.cancel:
+                    break;
+                default:
+                    break;
+            }
+        });
+    }
+
     private openAlertDialog(error: { title: string, details: string, message: string }): void {
         this.dialog.open(AlertDialogComponent, {
             width: '600px',
-            height: '300px',
+            height: 'auto',
             autoFocus: false,
             data: error,
         });
@@ -486,7 +579,7 @@ export class BitbybitAppComponent implements OnInit, OnDestroy, AfterViewInit {
     private openExamplesDialog(): void {
         this.dialog.open(ExamplesDialogComponent, {
             width: '600px',
-            height: '700px',
+            height: 'auto',
             autoFocus: false
         });
     }
@@ -494,7 +587,7 @@ export class BitbybitAppComponent implements OnInit, OnDestroy, AfterViewInit {
     private openAboutDialog(): void {
         this.dialog.open(AboutDialogComponent, {
             width: '600px',
-            height: '500px',
+            height: 'auto',
             autoFocus: false
         });
     }
@@ -502,7 +595,7 @@ export class BitbybitAppComponent implements OnInit, OnDestroy, AfterViewInit {
     private openSponsorsDialog(): void {
         this.dialog.open(SponsorsDialogComponent, {
             width: '700px',
-            height: '700px',
+            height: 'auto',
             autoFocus: false
         });
     }
@@ -510,7 +603,7 @@ export class BitbybitAppComponent implements OnInit, OnDestroy, AfterViewInit {
     private openSettingsDialog(): void {
         this.dialog.open(SettingsDialogComponent, {
             width: '500px',
-            height: '500px',
+            height: 'auto',
             autoFocus: false,
             data: {
                 workspace: this.workspace
@@ -521,7 +614,7 @@ export class BitbybitAppComponent implements OnInit, OnDestroy, AfterViewInit {
     private openPrintSaveDialog(prompt: PrintSaveInterface): void {
         this.dialog.open(PrintSaveDialogComponent, {
             width: '500px',
-            height: '450px',
+            height: 'auto',
             autoFocus: false,
             data: prompt
         });
@@ -530,7 +623,7 @@ export class BitbybitAppComponent implements OnInit, OnDestroy, AfterViewInit {
     private openPromptDialog(prompt: PromptInterface): void {
         const dialogRef = this.dialog.open(PromptDialogComponent, {
             width: '500px',
-            height: '200px',
+            height: 'auto',
             autoFocus: false,
             data: prompt
         });

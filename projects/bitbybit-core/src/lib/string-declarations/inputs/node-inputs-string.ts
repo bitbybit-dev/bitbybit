@@ -2,7 +2,7 @@ import { simplifyDeclaration } from '../simplify-declaration';
 
 export const nodeInputsString = simplifyDeclaration(`
 import { TransformNode } from '@babylonjs/core';
-export namespace Node {
+export declare namespace Node {
     class NodeDto {
         /**
          * Transformation node
@@ -77,23 +77,31 @@ export namespace Node {
     }
     class DrawNodeDto extends NodeDto {
         /**
+         * Provide options without default values
+         */
+        constructor(node?: TransformNode);
+        /**
          * Hex encoded color string for X axis
          */
         colorX: string;
         /**
          * Hex encoded color string for Y axis
          */
-        colorY: '#00ff00';
+        colorY: string;
         /**
          * Hex encoded color string for Z axis
          */
-        colorZ: '#0000ff';
+        colorZ: string;
         /**
          * Length of the node axis
          */
-        size: 2;
+        size: number;
     }
     class DrawNodesDto {
+        /**
+         * Provide options without default values
+         */
+        constructor(nodes?: TransformNode[]);
         /**
          * Nodes that will be drawn
          */

@@ -53,10 +53,6 @@ export declare namespace Surface {
          */
         surface: any;
         /**
-         * Parameter on the surface
-         */
-        parameter: number;
-        /**
          * Default parameter is on U direction, use V to switch
          */
         useV: boolean;

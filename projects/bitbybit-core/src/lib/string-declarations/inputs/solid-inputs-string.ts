@@ -6,6 +6,10 @@ import { Polyline } from './polyline-inputs';
 export declare namespace Solid {
     class DrawSolidMeshDto {
         /**
+         * Provide options without default values
+         */
+        constructor(mesh?: any[]);
+        /**
          * Solid Jscad mesh
          */
         mesh: any;
@@ -28,6 +32,10 @@ export declare namespace Solid {
     }
     class DrawSolidsMeshDto {
         /**
+         * Provide options without default values
+         */
+        constructor(meshes?: any[]);
+        /**
          * Solid Jscad meshes
          */
         meshes: any[];
@@ -49,6 +57,10 @@ export declare namespace Solid {
         jscadMesh?: Mesh;
     }
     class DrawPathDto {
+        /**
+         * Provide options without default values
+         */
+        constructor(path?: any[]);
         /**
          * 2D Path to draw
          */

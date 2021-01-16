@@ -16,6 +16,12 @@ export namespace Point {
     }
     export class DrawPointDto {
         /**
+         * Provide options without default values
+         */
+        constructor(point?: number[]) {
+            this.point = point;
+        }
+        /**
          * Point
          */
         point: number[];
@@ -41,6 +47,12 @@ export namespace Point {
         pointMesh?: Mesh;
     }
     export class DrawPointsDto {
+        /**
+         * Provide options without default values
+         */
+        constructor(points?: number[][]) {
+            this.points = points;
+        }
         /**
          * Point
          */
@@ -126,7 +138,7 @@ export namespace Point {
         /**
          * Identifies how many points will be created
          */
-        numberPoints =  200;
+        numberPoints = 200;
         /**
          * Widening factor of the spiral
          */

@@ -48,17 +48,20 @@ export namespace Surface {
     }
     export class IsocurveSubdivisionDto {
         /**
+         * Provide undefined options
+         */
+        constructor(surface?: any, isocurveSegments?: number) {
+            this.surface = surface;
+            this.isocurveSegments = isocurveSegments;
+        }
+        /**
          * Nurbs surface
          */
         surface: any;
         /**
-         * Parameter on the surface
-         */
-        parameter: number;
-        /**
          * Default parameter is on U direction, use V to switch
          */
-        useV: boolean;
+        useV = false;
         /**
          * Check to include the last isocurve
          */
@@ -170,6 +173,12 @@ export namespace Surface {
     }
     export class DrawSurfaceDto {
         /**
+         * Provide options without default values
+         */
+        constructor(surface?: any) {
+            this.surface = surface;
+        }
+        /**
          * Nurbs surface
          */
         surface: any;
@@ -192,6 +201,12 @@ export namespace Surface {
     }
     export class DrawSurfacesDto {
         /**
+         * Provide options without default values
+         */
+        constructor(surfaces?: any[]) {
+            this.surfaces = surfaces;
+        }
+        /**
          * Nurbs surfaces
          */
         surfaces: any[];
@@ -213,6 +228,13 @@ export namespace Surface {
         surfacesMesh?: Mesh;
     }
     export class DrawSurfacesColoursDto {
+        /**
+         * Provide options without default values
+         */
+        constructor(surfaces?: any[], colours?: string[]) {
+            this.surfaces = surfaces;
+            this.colours = colours;
+        }
         /**
          * Nurbs surfaces
          */

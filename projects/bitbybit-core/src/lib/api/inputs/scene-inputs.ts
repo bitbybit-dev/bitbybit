@@ -3,6 +3,12 @@ export namespace Scene {
 
     export class SceneBackgroundColourDto {
         /**
+         * Provide options without default values
+         */
+        constructor(colour?: string) {
+            this.colour = colour;
+        }
+        /**
          * Hex colour string for the scene background colour
          */
         colour = '#ffffff';
