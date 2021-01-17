@@ -618,11 +618,11 @@ ul.tsd-descriptions > li > :last-child > :last-child > :last-child,
   width: 17px;
   height: 17px;
   margin: 0 3px 2px 0;
-  background-image: url(../../images/icons.png);
+  background-image: url(../../assets/images/icons.png);
 }
 @media (-webkit-min-device-pixel-ratio: 1.5), (min-resolution: 144dpi) {
   .tsd-kind-icon:before {
-    background-image: url(../../images/icons@2x.png);
+    background-image: url(../../assets/images/icons@2x.png);
     background-size: 238px 204px;
   }
 }
@@ -1586,7 +1586,7 @@ ul.tsd-descriptions > li > :last-child > :last-child > :last-child,
 }
 body {
   background: #1a1c1f;
-  font-family: "Segoe UI", sans-serif;
+  font-family: "IBM Plex Sans", sans-serif;
   font-size: 16px;
   color: #fff;
 }
@@ -1723,7 +1723,7 @@ html.default.has-menu .col-content {
 
 .tsd-page-title {
   padding: 70px 0 20px 0;
-  margin: 40px 0 40px 0;
+  margin: 0 0 40px 0;
   background: #1c1f21;
   box-shadow: 0 0 40px rgba(0, 0, 0, 0.5);
 }
@@ -1859,7 +1859,7 @@ dl.tsd-comment-tags p {
 #tsd-filter {
   position: relative;
   display: inline-block;
-  height: 80px;
+  height: 40px;
   vertical-align: bottom;
 }
 .no-filter #tsd-filter {
@@ -1867,7 +1867,7 @@ dl.tsd-comment-tags p {
 }
 #tsd-filter .tsd-filter-group {
   display: inline-block;
-  height: 80px;
+  height: 40px;
   vertical-align: bottom;
   white-space: nowrap;
 }
@@ -1878,7 +1878,7 @@ dl.tsd-comment-tags p {
   #tsd-filter .tsd-filter-group {
     display: block;
     position: absolute;
-    top: 80px;
+    top: 40px;
     right: 20px;
     height: auto;
     background-color: #1c1f21;
@@ -2125,11 +2125,11 @@ footer .tsd-legend {
 }
 
 .tsd-navigation.secondary {
-  max-height: calc(100vh - 1rem - 80px);
+  max-height: calc(100vh - 1rem - 40px);
   overflow: auto;
   position: -webkit-sticky;
   position: sticky;
-  top: calc(.5rem + 80px);
+  top: calc(.5rem + 40px);
   transition: 0.3s;
 }
 .tsd-navigation.secondary.tsd-navigation--toolbar-hide {
@@ -2465,7 +2465,7 @@ ul.tsd-type-parameters .tsd-comment {
   top: 0;
   left: 0;
   width: 100%;
-  height: 80px;
+  height: 40px;
   color: #fff;
   background: #1a1c1f;
   border-bottom: 1px solid #F2C5AA;
@@ -2484,13 +2484,13 @@ ul.tsd-type-parameters .tsd-comment {
 .tsd-page-toolbar .table-wrap {
   display: table;
   width: 100%;
-  height: 80px;
+  height: 40px;
 }
 .tsd-page-toolbar .table-cell {
   display: table-cell;
   position: relative;
   white-space: nowrap;
-  line-height: 80px;
+  line-height: 40px;
 }
 .tsd-page-toolbar .table-cell:first-child {
   width: 100%;
@@ -2506,14 +2506,14 @@ ul.tsd-type-parameters .tsd-comment {
   width: 40px;
   height: 40px;
   margin: 0 -8px 0 0;
-  background-image: url(../../images/widgets.png);
+  background-image: url(../../assets/images/widgets.png);
   background-repeat: no-repeat;
   text-indent: -1024px;
   vertical-align: bottom;
 }
 @media (-webkit-min-device-pixel-ratio: 1.5), (min-resolution: 144dpi) {
   .tsd-select .tsd-select-list li:before, .tsd-select .tsd-select-label:before, .tsd-widget:before {
-    background-image: url(../../images/widgets@2x.png);
+    background-image: url(../../assets/images/widgets@2x.png);
     background-size: 320px 40px;
   }
 }
@@ -2522,7 +2522,7 @@ ul.tsd-type-parameters .tsd-comment {
   display: inline-block;
   overflow: hidden;
   opacity: 0.6;
-  height: 80px;
+  height: 40px;
   transition: opacity 0.1s, background-color 0.2s;
   vertical-align: bottom;
   cursor: pointer;
@@ -2567,7 +2567,7 @@ input[type=checkbox]:checked + .tsd-widget:before {
 .tsd-select {
   position: relative;
   display: inline-block;
-  height: 80px;
+  height: 40px;
   transition: opacity 0.1s, background-color 0.2s;
   vertical-align: bottom;
   cursor: pointer;
@@ -2590,7 +2590,7 @@ input[type=checkbox]:checked + .tsd-widget:before {
 .tsd-select .tsd-select-list {
   position: absolute;
   visibility: hidden;
-  top: 80px;
+  top: 40px;
   left: 0;
   margin: 0;
   padding: 0;
