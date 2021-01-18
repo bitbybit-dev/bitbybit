@@ -9,7 +9,7 @@ import * as Inputs from '../inputs/inputs';
  * Contains various methods for lines. Line in bitbybit is a simple object that has star and end point properties.
  * { start: [ x, y, z ], end: [ x, y, z ] }
  * <div>
- *  <img src="../assets/images/blockly-images/line/line.png" alt="Blockly Image"/>
+ *  <img src="../assets/images/blockly-images/line/line.svg" alt="Blockly Image"/>
  * </div>
  */
 export declare class Line {
@@ -19,7 +19,7 @@ export declare class Line {
     /**
      * Draws a single line
      * <div>
-     *  <img src="../assets/images/blockly-images/line/drawLine.png" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/line/drawLine.svg" alt="Blockly Image"/>
      * </div>
      * @link https://docs.bitbybit.dev/classes/_api_bitbybit_line_.line.html#drawline
      * @param inputs Contains a line to be drawn
@@ -29,7 +29,7 @@ export declare class Line {
     /**
      * Draws multiple lines
      * <div>
-     *  <img src="../assets/images/blockly-images/line/drawLines.png" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/line/drawLines.svg" alt="Blockly Image"/>
      * </div>
      * @link https://docs.bitbybit.dev/classes/_api_bitbybit_line_.line.html#drawlines
      * @param inputs Contains a line to be drawn
@@ -39,7 +39,7 @@ export declare class Line {
     /**
      * Converts a line to a NURBS line curve
      * <div>
-     *  <img src="../assets/images/blockly-images/line/convertToNurbsCurve.png" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/line/convertToNurbsCurve.svg" alt="Blockly Image"/>
      * </div>
      * @link https://docs.bitbybit.dev/classes/_api_bitbybit_line_.line.html#converttonurbscurve
      * Returns the verbnurbs Line object
@@ -51,7 +51,7 @@ export declare class Line {
     /**
      * Converts lines to a NURBS curves
      * <div>
-     *  <img src="../assets/images/blockly-images/line/convertLinesToNurbsCurves.png" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/line/convertLinesToNurbsCurves.svg" alt="Blockly Image"/>
      * </div>
      * @link https://docs.bitbybit.dev/classes/_api_bitbybit_line_.line.html#convertlinestonurbscurves
      * Returns array of the verbnurbs Line objects
@@ -63,7 +63,7 @@ export declare class Line {
     /**
      * Gets the start point of the line
      * <div>
-     *  <img src="../assets/images/blockly-images/line/getStartPoint.png" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/line/getStartPoint.svg" alt="Blockly Image"/>
      * </div>
      * @link https://docs.bitbybit.dev/classes/_api_bitbybit_line_.line.html#getstartpoint
      * @param inputs Line to be queried
@@ -73,7 +73,7 @@ export declare class Line {
     /**
      * Gets the end point of the line
      * <div>
-     *  <img src="../assets/images/blockly-images/line/getEndPoint.png" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/line/getEndPoint.svg" alt="Blockly Image"/>
      * </div>
      * @link https://docs.bitbybit.dev/classes/_api_bitbybit_line_.line.html#getendpoint
      * @param inputs Line to be queried
@@ -83,7 +83,7 @@ export declare class Line {
     /**
      * Gets the length of the line
      * <div>
-     *  <img src="../assets/images/blockly-images/line/length.png" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/line/length.svg" alt="Blockly Image"/>
      * </div>
      * @link https://docs.bitbybit.dev/classes/_api_bitbybit_line_.line.html#length
      * @param inputs Line to be queried
@@ -93,7 +93,7 @@ export declare class Line {
     /**
      * Reverse the endpoints of the line
      * <div>
-     *  <img src="../assets/images/blockly-images/line/reverse.png" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/line/reverse.svg" alt="Blockly Image"/>
      * </div>
      * @link https://docs.bitbybit.dev/classes/_api_bitbybit_line_.line.html#reverse
      * @param inputs Line to be reversed
@@ -103,7 +103,7 @@ export declare class Line {
     /**
      * Transform the line
      * <div>
-     *  <img src="../assets/images/blockly-images/line/transformLine.png" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/line/transformLine.svg" alt="Blockly Image"/>
      * </div>
      * @link https://docs.bitbybit.dev/classes/_api_bitbybit_line_.line.html#transformline
      * @param inputs Line to be transformed
@@ -113,7 +113,7 @@ export declare class Line {
     /**
      * Create the line
      * <div>
-     *  <img src="../assets/images/blockly-images/line/create.png" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/line/create.svg" alt="Blockly Image"/>
      * </div>
      * @link https://docs.bitbybit.dev/classes/_api_bitbybit_line_.line.html#create
      * @param inputs Endpoints of the line
@@ -123,7 +123,7 @@ export declare class Line {
     /**
      * Create the line segments between all of the points in a list
      * <div>
-     *  <img src="../assets/images/blockly-images/line/linesBetweenPoints.png" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/line/linesBetweenPoints.svg" alt="Blockly Image"/>
      * </div>
      * @link https://docs.bitbybit.dev/classes/_api_bitbybit_line_.line.html#linesbetweenpoints
      * @param inputs Lines in a list
@@ -133,7 +133,7 @@ export declare class Line {
     /**
      * Create the lines between two lists of start and end points of equal length
      * <div>
-     *  <img src="../assets/images/blockly-images/line/linesBetweenStartAndEndPoints.png" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/line/linesBetweenStartAndEndPoints.svg" alt="Blockly Image"/>
      * </div>
      * @link https://docs.bitbybit.dev/classes/_api_bitbybit_line_.line.html#linesbetweenstartandendpoints
      * @param inputs Two lists of start and end points

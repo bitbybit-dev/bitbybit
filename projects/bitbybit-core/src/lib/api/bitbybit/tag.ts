@@ -15,7 +15,7 @@ export class Tag {
     /**
      * Creates a tag dto
      * <div>
-     *  <img src="../assets/images/blockly-images/tag/create.png" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/tag/create.svg" alt="Blockly Image"/>
      * </div>
      * @link https://docs.bitbybit.dev/classes/_api_bitbybit_tag_.tag.html#create
      * @param inputs Tag description
@@ -34,7 +34,7 @@ export class Tag {
     /**
      * Draws a single tag
      * <div>
-     *  <img src="../assets/images/blockly-images/tag/drawTag.png" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/tag/drawTag.svg" alt="Blockly Image"/>
      * </div>
      * @link https://docs.bitbybit.dev/classes/_api_bitbybit_tag_.tag.html#drawtag
      * @param inputs Information to draw the tag
@@ -63,7 +63,7 @@ export class Tag {
     /**
      * Draws multiple tags
      * <div>
-     *  <img src="../assets/images/blockly-images/tag/drawTags.png" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/tag/drawTags.svg" alt="Blockly Image"/>
      * </div>
      * @link https://docs.bitbybit.dev/classes/_api_bitbybit_tag_.tag.html#drawtags
      * @param inputs Information to draw the tags

@@ -1732,7 +1732,7 @@ html.default.has-menu .col-content {
 }
 
 .tsd-breadcrumb {
-  margin: 0;
+  margin: 0 0 4px 0;
   padding: 0;
   color: #F2C5AA;
 }
@@ -1989,7 +1989,7 @@ footer .tsd-legend {
 }
 .tsd-index-panel a,
 .tsd-index-panel .tsd-parent-kind-module a {
-  color: #9600ff;
+  color: #F2C5AA;
 }
 .tsd-index-panel .tsd-parent-kind-interface a {
   color: #647F1B;
@@ -2001,7 +2001,7 @@ footer .tsd-legend {
   color: #0672DE;
 }
 .tsd-index-panel .tsd-kind-module a {
-  color: #9600ff;
+  color: #F2C5AA;
 }
 .tsd-index-panel .tsd-kind-interface a {
   color: #647F1B;
@@ -2041,7 +2041,7 @@ footer .tsd-legend {
   border-bottom: none;
 }
 .tsd-member a[data-tsd-kind] {
-  color: #9600ff;
+  color: #F2C5AA;
 }
 .tsd-member a[data-tsd-kind=Interface] {
   color: #647F1B;
@@ -2507,6 +2507,8 @@ ul.tsd-type-parameters .tsd-comment {
   height: 40px;
   margin: 0 -8px 0 0;
   background-image: url(../../assets/images/widgets.png);
+  filter: invert(100%);
+  -webkit-filter: invert(100%);
   background-repeat: no-repeat;
   text-indent: -1024px;
   vertical-align: bottom;
@@ -2629,6 +2631,10 @@ input[type=checkbox]:checked + .tsd-widget:before {
 
 img {
   max-width: 100%;
+}
+
+.tsd-comment img {
+  filter: drop-shadow(4mm 4mm 4mm rgba(0, 0, 0, 0.75));
 }
 
 /*# sourceMappingURL=main.css.map */

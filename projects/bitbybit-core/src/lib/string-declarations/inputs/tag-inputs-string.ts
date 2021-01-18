@@ -35,7 +35,7 @@ export declare namespace Tag {
     /**
      * Class representing a tag
      * <div>
-     *  <img src="../assets/images/blockly-images/base-types/tag.png" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/base-types/tag.svg" alt="Blockly Image"/>
      * </div>
      * @link https://docs.bitbybit.dev/classes/_api_inputs_tag_inputs_.tag.tagdto.html
      */

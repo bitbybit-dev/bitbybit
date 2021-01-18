@@ -15,7 +15,7 @@ export class SurfaceExtrusion {
     /**
      * Creates the Nurbs surface extrusion from the curve
      * <div>
-     *  <img src="../assets/images/blockly-images/surface/extrusion/create.png" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/surface/extrusion/create.svg" alt="Blockly Image"/>
      * </div>
      * @link https://docs.bitbybit.dev/classes/_api_bitbybit_surface_extrusion_.surfaceextrusion.html#create
      * @param inputs Nurbs profile curve and direction vector
@@ -28,7 +28,7 @@ export class SurfaceExtrusion {
     /**
      * Gets the direction vector of the extrusion
      * <div>
-     *  <img src="../assets/images/blockly-images/surface/extrusion/direction.png" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/surface/extrusion/direction.svg" alt="Blockly Image"/>
      * </div>
      * @link https://docs.bitbybit.dev/classes/_api_bitbybit_surface_extrusion_.surfaceextrusion.html#direction
      * @param inputs Extruded Nurbs surface
@@ -41,7 +41,7 @@ export class SurfaceExtrusion {
     /**
      * Gets the profile Nurbs curve of the extrusion
      * <div>
-     *  <img src="../assets/images/blockly-images/surface/extrusion/profile.png" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/surface/extrusion/profile.svg" alt="Blockly Image"/>
      * </div>
      * @link https://docs.bitbybit.dev/classes/_api_bitbybit_surface_extrusion_.surfaceextrusion.html#profile
      * @param inputs Extruded Nurbs surface

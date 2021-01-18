@@ -14,7 +14,7 @@ export declare class CurveCircle {
     /**
      * Creates the circle Nurbs curve
      * <div>
-     *  <img src="../assets/images/blockly-images/curve/circle/createCircle.png" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/curve/circle/createCircle.svg" alt="Blockly Image"/>
      * </div>
      * @link https://docs.bitbybit.dev/classes/_api_bitbybit_curve_circle_.curvecircle.html#createcircle
      * @param inputs Circle parameters
@@ -24,7 +24,7 @@ export declare class CurveCircle {
     /**
      * Creates the arc Nurbs curve
      * <div>
-     *  <img src="../assets/images/blockly-images/curve/circle/createArc.png" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/curve/circle/createArc.svg" alt="Blockly Image"/>
      * </div>
      * @link https://docs.bitbybit.dev/classes/_api_bitbybit_curve_circle_.curvecircle.html#createarc
      * @param inputs Arc parameters
@@ -34,7 +34,7 @@ export declare class CurveCircle {
     /**
      * Gets the center point of the circle or an arc
      * <div>
-     *  <img src="../assets/images/blockly-images/curve/circle/center.png" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/curve/circle/center.svg" alt="Blockly Image"/>
      * </div>
      * @link https://docs.bitbybit.dev/classes/_api_bitbybit_curve_circle_.curvecircle.html#center
      * @param inputs An arc or a circle Nurbs curve
@@ -44,7 +44,7 @@ export declare class CurveCircle {
     /**
      * Gets the radius of the circle or an arc
      * <div>
-     *  <img src="../assets/images/blockly-images/curve/circle/radius.png" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/curve/circle/radius.svg" alt="Blockly Image"/>
      * </div>
      * @link https://docs.bitbybit.dev/classes/_api_bitbybit_curve_circle_.curvecircle.html#radius
      * @param inputs An arc or a circle Nurbs curve
@@ -54,7 +54,7 @@ export declare class CurveCircle {
     /**
      * Gets the max angle of the arc in degrees
      * <div>
-     *  <img src="../assets/images/blockly-images/curve/circle/maxAngle.png" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/curve/circle/maxAngle.svg" alt="Blockly Image"/>
      * </div>
      * @link https://docs.bitbybit.dev/classes/_api_bitbybit_curve_circle_.curvecircle.html#maxangle
      * @param inputs Arc
@@ -64,7 +64,7 @@ export declare class CurveCircle {
     /**
      * Gets the min angle of the arc in degrees
      * <div>
-     *  <img src="../assets/images/blockly-images/curve/circle/minAngle.png" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/curve/circle/minAngle.svg" alt="Blockly Image"/>
      * </div>
      * @link https://docs.bitbybit.dev/classes/_api_bitbybit_curve_circle_.curvecircle.html#minangle
      * @param inputs Arc
@@ -74,7 +74,7 @@ export declare class CurveCircle {
     /**
      * Gets the x angle of the arc
      * <div>
-     *  <img src="../assets/images/blockly-images/curve/circle/xAxis.png" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/curve/circle/xAxis.svg" alt="Blockly Image"/>
      * </div>
      * @link https://docs.bitbybit.dev/classes/_api_bitbybit_curve_circle_.curvecircle.html#xaxis
      * @param inputs Circle
@@ -84,7 +84,7 @@ export declare class CurveCircle {
     /**
      * Gets the y angle of the arc
      * <div>
-     *  <img src="../assets/images/blockly-images/curve/circle/yAxis.png" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/curve/circle/yAxis.svg" alt="Blockly Image"/>
      * </div>
      * @link https://docs.bitbybit.dev/classes/_api_bitbybit_curve_circle_.curvecircle.html#yaxis
      * @param inputs Circle

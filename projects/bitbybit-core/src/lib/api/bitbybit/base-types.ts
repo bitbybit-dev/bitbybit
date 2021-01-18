@@ -3,14 +3,14 @@ export namespace BaseTypes {
     /**
      * Interval represents an object that has two properties - min and max.
      * <div>
-     *  <img src="../assets/images/blockly-images/base-types/interval.png" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/base-types/interval.svg" alt="Blockly Image"/>
      * </div>
      */
     export class IntervalDto {
         /**
          * Minimum value of the interval
          * <div>
-         *  <img src="../assets/images/blockly-images/base-types/interval-min.png" alt="Blockly Image"/>
+         *  <img src="../assets/images/blockly-images/base-types/interval-min.svg" alt="Blockly Image"/>
          * </div>
          * @link https://docs.bitbybit.dev/classes/_api_bitbybit_base_types_.basetypes.intervaldto.html#min
          */
@@ -18,7 +18,7 @@ export namespace BaseTypes {
         /**
          * Maximum value of the interval
          * <div>
-         *  <img src="../assets/images/blockly-images/base-types/interval-max.png" alt="Blockly Image"/>
+         *  <img src="../assets/images/blockly-images/base-types/interval-max.svg" alt="Blockly Image"/>
          * </div>
          * @link https://docs.bitbybit.dev/classes/_api_bitbybit_base_types_.basetypes.intervaldto.html#max
          */
@@ -28,14 +28,14 @@ export namespace BaseTypes {
     /**
      * UV usually represents 2D coordinates on 3D or 2D surfaces. It is similar to XY coordinates in planes.
      * <div>
-     *  <img src="../assets/images/blockly-images/base-types/uv.png" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/base-types/uv.svg" alt="Blockly Image"/>
      * </div>
      */
     export class UVDto {
         /**
          * U coordinate of the surface
          * <div>
-         *  <img src="../assets/images/blockly-images/base-types/uv-u.png" alt="Blockly Image"/>
+         *  <img src="../assets/images/blockly-images/base-types/uv-u.svg" alt="Blockly Image"/>
          * </div>
          * @link https://docs.bitbybit.dev/classes/_api_bitbybit_base_types_.basetypes.uvdto.html#u
          */
@@ -43,7 +43,7 @@ export namespace BaseTypes {
         /**
          * V coordinate of the surface
          * <div>
-         *  <img src="../assets/images/blockly-images/base-types/uv-v.png" alt="Blockly Image"/>
+         *  <img src="../assets/images/blockly-images/base-types/uv-v.svg" alt="Blockly Image"/>
          * </div>
          * @link https://docs.bitbybit.dev/classes/_api_bitbybit_base_types_.basetypes.uvdto.html#v
          */

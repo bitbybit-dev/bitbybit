@@ -14,7 +14,7 @@ export declare class SurfaceRevolved {
     /**
      * Creates the revolved Nurbs surface
      * <div>
-     *  <img src="../assets/images/blockly-images/surface/revolved/create.png" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/surface/revolved/create.svg" alt="Blockly Image"/>
      * </div>
      * @link https://docs.bitbybit.dev/classes/_api_bitbybit_surface_revolved_.surfacerevolved.html#create
      * @param inputs Parameters for Nurbs revolved surface
@@ -24,7 +24,7 @@ export declare class SurfaceRevolved {
     /**
      * Get the profile Nurbs curve of the revolved Nurbs surface
      * <div>
-     *  <img src="../assets/images/blockly-images/surface/revolved/profile.png" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/surface/revolved/profile.svg" alt="Blockly Image"/>
      * </div>
      * @link https://docs.bitbybit.dev/classes/_api_bitbybit_surface_revolved_.surfacerevolved.html#profile
      * @param inputs Revolved Nurbs surface
@@ -34,7 +34,7 @@ export declare class SurfaceRevolved {
     /**
      * Get the center Nurbs curve of the revolved Nurbs surface
      * <div>
-     *  <img src="../assets/images/blockly-images/surface/revolved/center.png" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/surface/revolved/center.svg" alt="Blockly Image"/>
      * </div>
      * @link https://docs.bitbybit.dev/classes/_api_bitbybit_surface_revolved_.surfacerevolved.html#center
      * @param inputs Revolved Nurbs surface
@@ -44,7 +44,7 @@ export declare class SurfaceRevolved {
     /**
      * Get the rotation axis of the revolved Nurbs surface
      * <div>
-     *  <img src="../assets/images/blockly-images/surface/revolved/axis.png" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/surface/revolved/axis.svg" alt="Blockly Image"/>
      * </div>
      * @link https://docs.bitbybit.dev/classes/_api_bitbybit_surface_revolved_.surfacerevolved.html#axis
      * @param inputs Revolved Nurbs surface
@@ -54,7 +54,7 @@ export declare class SurfaceRevolved {
     /**
      * Get the angle of rotation from revolved Nurbs surface
      * <div>
-     *  <img src="../assets/images/blockly-images/surface/revolved/angle.png" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/surface/revolved/angle.svg" alt="Blockly Image"/>
      * </div>
      * @link https://docs.bitbybit.dev/classes/_api_bitbybit_surface_revolved_.surfacerevolved.html#angle
      * @param inputs Revolved Nurbs surface

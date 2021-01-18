@@ -15,7 +15,7 @@ export declare class SolidText {
     /**
      * Creates a text that is based on chain hulling cylinders
      * <div>
-     *  <img src="../assets/images/blockly-images/solid/text/cylindricalText.png" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/solid/text/cylindricalText.svg" alt="Blockly Image"/>
      * </div>
      * @link https://docs.bitbybit.dev/classes/_api_bitbybit_solid_text_.solidtext.html#cylindricaltext
      * @param inputs Cylindrical text parameters
@@ -25,7 +25,7 @@ export declare class SolidText {
     /**
      * Creates a text that is based on chain hulling spheres
      * <div>
-     *  <img src="../assets/images/blockly-images/solid/text/sphericalText.png" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/solid/text/sphericalText.svg" alt="Blockly Image"/>
      * </div>
      * @link https://docs.bitbybit.dev/classes/_api_bitbybit_solid_text_.solidtext.html#sphericalText
      * @param inputs Spherical text parameters

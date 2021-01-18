@@ -33,7 +33,7 @@ export class Surface {
     /**
      * Draws a single surface
      * <div>
-     *  <img src="../assets/images/blockly-images/surface/drawSurface.png" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/surface/drawSurface.svg" alt="Blockly Image"/>
      * </div>
      * @link https://docs.bitbybit.dev/classes/_api_bitbybit_surface_.surface.html#drawsurface
      * @param inputs Contains a surface and information for drawing
@@ -65,7 +65,7 @@ export class Surface {
     /**
      * Draws multiple surfaces
      * <div>
-     *  <img src="../assets/images/blockly-images/surface/drawSurfaces.png" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/surface/drawSurfaces.svg" alt="Blockly Image"/>
      * </div>
      * @link https://docs.bitbybit.dev/classes/_api_bitbybit_surface_.surface.html#drawsurfaces
      * @param inputs Contains the Nurbs surfaces and information for drawing
@@ -102,7 +102,7 @@ export class Surface {
     /**
      * Draws multiple surfaces with multiple colours. Number of colours has to be equal to number of surfaces
      * <div>
-     *  <img src="../assets/images/blockly-images/surface/drawSurfacesMultiColour.png" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/surface/drawSurfacesMultiColour.svg" alt="Blockly Image"/>
      * </div>
      * @link https://docs.bitbybit.dev/classes/_api_bitbybit_surface_.surface.html#drawsurfacesmulticolour
      * @param inputs Contains the Nurbs surfaces, colours and other information for drawing
@@ -130,7 +130,7 @@ export class Surface {
     /**
      * Gets the boundary edge Nurbs curves of the surface in a list
      * <div>
-     *  <img src="../assets/images/blockly-images/surface/boundaries.png" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/surface/boundaries.svg" alt="Blockly Image"/>
      * </div>
      * @link https://docs.bitbybit.dev/classes/_api_bitbybit_surface_.surface.html#boundaries
      * @param inputs Nurbs surface
@@ -143,7 +143,7 @@ export class Surface {
     /**
      * Creates the surface by providing 4 points as corners
      * <div>
-     *  <img src="../assets/images/blockly-images/surface/createSurfaceByCorners.png" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/surface/createSurfaceByCorners.svg" alt="Blockly Image"/>
      * </div>
      * @link https://docs.bitbybit.dev/classes/_api_bitbybit_surface_.surface.html#createsurfacebycorners
      * @param inputs 4 points
@@ -156,7 +156,7 @@ export class Surface {
     /**
      * Creates the Nurbs surface by providing uv knots, uv degrees, points and weights
      * <div>
-     *  <img src="../assets/images/blockly-images/surface/createSurfaceByKnotsControlPointsWeights.png" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/surface/createSurfaceByKnotsControlPointsWeights.svg" alt="Blockly Image"/>
      * </div>
      * @link https://docs.bitbybit.dev/classes/_api_bitbybit_surface_.surface.html#createsurfacebyknotscontrolpointsweights
      * @param inputs Surface creation information
@@ -176,7 +176,7 @@ export class Surface {
     /**
      * Creates the Nurbs surface by lofting curves
      * <div>
-     *  <img src="../assets/images/blockly-images/surface/createSurfaceByLoftingCurves.png" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/surface/createSurfaceByLoftingCurves.svg" alt="Blockly Image"/>
      * </div>
      * @link https://docs.bitbybit.dev/classes/_api_bitbybit_surface_.surface.html#createsurfacebyloftingcurves
      * @param inputs Curves to loft through
@@ -189,7 +189,7 @@ export class Surface {
     /**
      * Clone the Nurbs surface
      * <div>
-     *  <img src="../assets/images/blockly-images/surface/clone.png" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/surface/clone.svg" alt="Blockly Image"/>
      * </div>
      * @link https://docs.bitbybit.dev/classes/_api_bitbybit_surface_.surface.html#clone
      * @param inputs Nurbs surface
@@ -202,7 +202,7 @@ export class Surface {
     /**
      * Finds the closest parameter on the surface from the point
      * <div>
-     *  <img src="../assets/images/blockly-images/surface/closestParam.png" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/surface/closestParam.svg" alt="Blockly Image"/>
      * </div>
      * @link https://docs.bitbybit.dev/classes/_api_bitbybit_surface_.surface.html#closestparam
      * @param inputs Nurbs surface with a point
@@ -215,7 +215,7 @@ export class Surface {
     /**
      * Finds the closest point on the surface from the point
      * <div>
-     *  <img src="../assets/images/blockly-images/surface/closestPoint.png" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/surface/closestPoint.svg" alt="Blockly Image"/>
      * </div>
      * @link https://docs.bitbybit.dev/classes/_api_bitbybit_surface_.surface.html#closestpoint
      * @param inputs Nurbs surface with a point
@@ -228,7 +228,7 @@ export class Surface {
     /**
      * Gets the control points on the surface
      * <div>
-     *  <img src="../assets/images/blockly-images/surface/controlPoints.png" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/surface/controlPoints.svg" alt="Blockly Image"/>
      * </div>
      * @link https://docs.bitbybit.dev/classes/_api_bitbybit_surface_.surface.html#controlpoints
      * @param inputs Nurbs surface
@@ -241,7 +241,7 @@ export class Surface {
     /**
      * Gets the U degree of the surface
      * <div>
-     *  <img src="../assets/images/blockly-images/surface/degreeU.png" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/surface/degreeU.svg" alt="Blockly Image"/>
      * </div>
      * @link https://docs.bitbybit.dev/classes/_api_bitbybit_surface_.surface.html#degreeu
      * @param inputs Nurbs surface
@@ -254,7 +254,7 @@ export class Surface {
     /**
      * Gets the V degree of the surface
      * <div>
-     *  <img src="../assets/images/blockly-images/surface/degreeV.png" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/surface/degreeV.svg" alt="Blockly Image"/>
      * </div>
      * @link https://docs.bitbybit.dev/classes/_api_bitbybit_surface_.surface.html#degreev
      * @param inputs Nurbs surface
@@ -267,7 +267,7 @@ export class Surface {
     /**
      * Gets the derivatives of the surface at specified uv coordinate
      * <div>
-     *  <img src="../assets/images/blockly-images/surface/derivatives.png" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/surface/derivatives.svg" alt="Blockly Image"/>
      * </div>
      * @link https://docs.bitbybit.dev/classes/_api_bitbybit_surface_.surface.html#derivatives
      * @param inputs Nurbs surface
@@ -280,7 +280,7 @@ export class Surface {
     /**
      * Gets the U domain of the surface
      * <div>
-     *  <img src="../assets/images/blockly-images/surface/domainU.png" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/surface/domainU.svg" alt="Blockly Image"/>
      * </div>
      * @link https://docs.bitbybit.dev/classes/_api_bitbybit_surface_.surface.html#domainu
      * @param inputs Nurbs surface
@@ -293,7 +293,7 @@ export class Surface {
     /**
      * Gets the V domain of the surface
      * <div>
-     *  <img src="../assets/images/blockly-images/surface/domainV.png" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/surface/domainV.svg" alt="Blockly Image"/>
      * </div>
      * @link https://docs.bitbybit.dev/classes/_api_bitbybit_surface_.surface.html#domainv
      * @param inputs Nurbs surface
@@ -306,7 +306,7 @@ export class Surface {
     /**
      * Gets the Nurbs isocurve on the surface
      * <div>
-     *  <img src="../assets/images/blockly-images/surface/isocurve.png" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/surface/isocurve.svg" alt="Blockly Image"/>
      * </div>
      * @link https://docs.bitbybit.dev/classes/_api_bitbybit_surface_.surface.html#isocurve
      * @param inputs Nurbs surface
@@ -319,7 +319,7 @@ export class Surface {
     /**
      * Subdivides surface into preferred number of isocurves
      * <div>
-     *  <img src="../assets/images/blockly-images/surface/isocurveSubdivision.png" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/surface/isocurvesSubdivision.svg" alt="Blockly Image"/>
      * </div>
      * @link https://docs.bitbybit.dev/classes/_api_bitbybit_surface_.surface.html#isocurvesubdivision
      * @param inputs Nurbs surface
@@ -342,7 +342,7 @@ export class Surface {
     /**
      * Subdivides surface into isocurves on specified array of parameters
      * <div>
-     *  <img src="../assets/images/blockly-images/surface/isocurvesAtParams.png" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/surface/isocurvesAtParams.svg" alt="Blockly Image"/>
      * </div>
      * @link https://docs.bitbybit.dev/classes/_api_bitbybit_surface_.surface.html#isocurvesatparams
      * @param inputs Nurbs surface
@@ -357,7 +357,7 @@ export class Surface {
     /**
      * Gets the U knots of the surface
      * <div>
-     *  <img src="../assets/images/blockly-images/surface/knotsU.png" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/surface/knotsU.svg" alt="Blockly Image"/>
      * </div>
      * @link https://docs.bitbybit.dev/classes/_api_bitbybit_surface_.surface.html#knotsu
      * @param inputs Nurbs surface
@@ -370,7 +370,7 @@ export class Surface {
     /**
      * Gets the V knots of the surface
      * <div>
-     *  <img src="../assets/images/blockly-images/surface/knotsV.png" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/surface/knotsV.svg" alt="Blockly Image"/>
      * </div>
      * @link https://docs.bitbybit.dev/classes/_api_bitbybit_surface_.surface.html#knotsv
      * @param inputs Nurbs surface
@@ -383,7 +383,7 @@ export class Surface {
     /**
      * Gets the normal on the surface at uv coordinate
      * <div>
-     *  <img src="../assets/images/blockly-images/surface/normal.png" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/surface/normal.svg" alt="Blockly Image"/>
      * </div>
      * @link https://docs.bitbybit.dev/classes/_api_bitbybit_surface_.surface.html#normal
      * @param inputs Nurbs surface
@@ -396,7 +396,7 @@ export class Surface {
     /**
      * Gets the point on the surface at uv coordinate
      * <div>
-     *  <img src="../assets/images/blockly-images/surface/point.png" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/surface/point.svg" alt="Blockly Image"/>
      * </div>
      * @link https://docs.bitbybit.dev/classes/_api_bitbybit_surface_.surface.html#point
      * @param inputs Nurbs surface
@@ -409,7 +409,7 @@ export class Surface {
     /**
      * Reverse the Nurbs surface. This will reverse the UV origin and isocurve directions
      * <div>
-     *  <img src="../assets/images/blockly-images/surface/reverse.png" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/surface/reverse.svg" alt="Blockly Image"/>
      * </div>
      * @link https://docs.bitbybit.dev/classes/_api_bitbybit_surface_.surface.html#reverse
      * @param inputs Nurbs surface
@@ -422,7 +422,7 @@ export class Surface {
     /**
      * Splits the Nurbs surface in two halfs.
      * <div>
-     *  <img src="../assets/images/blockly-images/surface/split.png" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/surface/split.svg" alt="Blockly Image"/>
      * </div>
      * @link https://docs.bitbybit.dev/classes/_api_bitbybit_surface_.surface.html#split
      * @param inputs Nurbs surface
@@ -435,7 +435,7 @@ export class Surface {
     /**
      * Transforms the Nurbs surface with a given list of transformations.
      * <div>
-     *  <img src="../assets/images/blockly-images/surface/transformSurface.png" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/surface/transformSurface.svg" alt="Blockly Image"/>
      * </div>
      * @link https://docs.bitbybit.dev/classes/_api_bitbybit_surface_.surface.html#transformsurface
      * @param inputs Nurbs surface with transforms
@@ -462,7 +462,7 @@ export class Surface {
     /**
      * Gets the weights of the surface
      * <div>
-     *  <img src="../assets/images/blockly-images/surface/weights.png" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/surface/weights.svg" alt="Blockly Image"/>
      * </div>
      * @link https://docs.bitbybit.dev/classes/_api_bitbybit_surface_.surface.html#weights
      * @param inputs Nurbs surface

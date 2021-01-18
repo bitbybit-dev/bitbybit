@@ -14,7 +14,7 @@ export declare class SurfaceConical {
     /**
      * Creates the conical Nurbs surface
      * <div>
-     *  <img src="../assets/images/blockly-images/surface/conical/create.png" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/surface/conical/create.svg" alt="Blockly Image"/>
      * </div>
      * @link https://docs.bitbybit.dev/classes/_api_bitbybit_surface_conical_.surfaceconical.html#create
      * @param inputs Parameters for Nurbs conical surface
@@ -24,7 +24,7 @@ export declare class SurfaceConical {
     /**
      * Get cone axis
      * <div>
-     *  <img src="../assets/images/blockly-images/surface/conical/axis.png" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/surface/conical/axis.svg" alt="Blockly Image"/>
      * </div>
      * @link https://docs.bitbybit.dev/classes/_api_bitbybit_surface_conical_.surfaceconical.html#axis
      * @param inputs Nurbs conical surface
@@ -34,7 +34,7 @@ export declare class SurfaceConical {
     /**
      * Get cone base
      * <div>
-     *  <img src="../assets/images/blockly-images/surface/conical/base.png" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/surface/conical/base.svg" alt="Blockly Image"/>
      * </div>
      * @link https://docs.bitbybit.dev/classes/_api_bitbybit_surface_conical_.surfaceconical.html#base
      * @param inputs Nurbs conical surface
@@ -44,7 +44,7 @@ export declare class SurfaceConical {
     /**
      * Get cone height
      * <div>
-     *  <img src="../assets/images/blockly-images/surface/conical/height.png" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/surface/conical/height.svg" alt="Blockly Image"/>
      * </div>
      * @link https://docs.bitbybit.dev/classes/_api_bitbybit_surface_conical_.surfaceconical.html#height
      * @param inputs Nurbs conical surface
@@ -54,7 +54,7 @@ export declare class SurfaceConical {
     /**
      * Get cone radius
      * <div>
-     *  <img src="../assets/images/blockly-images/surface/conical/radius.png" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/surface/conical/radius.svg" alt="Blockly Image"/>
      * </div>
      * @link https://docs.bitbybit.dev/classes/_api_bitbybit_surface_conical_.surfaceconical.html#radius
      * @param inputs Nurbs conical surface
@@ -64,7 +64,7 @@ export declare class SurfaceConical {
     /**
      * Get cone x axis
      * <div>
-     *  <img src="../assets/images/blockly-images/surface/conical/xAxis.png" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/surface/conical/xAxis.svg" alt="Blockly Image"/>
      * </div>
      * @link https://docs.bitbybit.dev/classes/_api_bitbybit_surface_conical_.surfaceconical.html#xaxis
      * @param inputs Nurbs conical surface

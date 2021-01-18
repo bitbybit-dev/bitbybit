@@ -16,7 +16,7 @@ export class SurfaceSweep {
     /**
      * Creates the sweep Nurbs surface
      * <div>
-     *  <img src="../assets/images/blockly-images/surface/sweep/create.png" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/surface/sweep/create.svg" alt="Blockly Image"/>
      * </div>
      * @link https://docs.bitbybit.dev/classes/_api_bitbybit_surface_sweep_.surfacerevolved.html#create
      * @param inputs Parameters for Nurbs sweep surface
@@ -29,7 +29,7 @@ export class SurfaceSweep {
     /**
      * Get the profile Nurbs curve of the swept Nurbs surface
      * <div>
-     *  <img src="../assets/images/blockly-images/surface/sweep/profile.png" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/surface/sweep/profile.svg" alt="Blockly Image"/>
      * </div>
      * @link https://docs.bitbybit.dev/classes/_api_bitbybit_surface_sweep_.surfacesweep.html#profile
      * @param inputs Sweep Nurbs surface
@@ -42,7 +42,7 @@ export class SurfaceSweep {
     /**
      * Get the rail Nurbs curve of the swept Nurbs surface
      * <div>
-     *  <img src="../assets/images/blockly-images/surface/sweep/rail.png" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/surface/sweep/rail.svg" alt="Blockly Image"/>
      * </div>
      * @link https://docs.bitbybit.dev/classes/_api_bitbybit_surface_sweep_.surfacesweep.html#rail
      * @param inputs Sweep Nurbs surface

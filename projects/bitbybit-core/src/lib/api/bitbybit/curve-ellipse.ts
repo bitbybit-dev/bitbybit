@@ -16,7 +16,7 @@ export class CurveEllipse {
     /**
      * Creates the ellipse Nurbs curve
      * <div>
-     *  <img src="../assets/images/blockly-images/curve/ellipse/createEllipse.png" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/curve/ellipse/createEllipse.svg" alt="Blockly Image"/>
      * </div>
      * @link https://docs.bitbybit.dev/classes/_api_bitbybit_curve_ellipse_.curveellipse.html#createellipse
      * @param inputs Ellipse parameters
@@ -29,7 +29,7 @@ export class CurveEllipse {
     /**
      * Creates the ellipse arc Nurbs curve
      * <div>
-     *  <img src="../assets/images/blockly-images/curve/ellipse/createArc.png" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/curve/ellipse/createArc.svg" alt="Blockly Image"/>
      * </div>
      * @link https://docs.bitbybit.dev/classes/_api_bitbybit_curve_ellipse_.curveellipse.html#createarc
      * @param inputs Ellipse arc parameters
@@ -46,7 +46,7 @@ export class CurveEllipse {
     /**
      * Gets the center point of the ellipse or an arc
      * <div>
-     *  <img src="../assets/images/blockly-images/curve/ellipse/center.png" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/curve/ellipse/center.svg" alt="Blockly Image"/>
      * </div>
      * @link https://docs.bitbybit.dev/classes/_api_bitbybit_curve_ellipse_.curveellipse.html#center
      * @param inputs The arc or the ellipse Nurbs curve
@@ -59,7 +59,7 @@ export class CurveEllipse {
     /**
      * Gets the max angle of the arc in degrees
      * <div>
-     *  <img src="../assets/images/blockly-images/curve/ellipse/maxAngle.png" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/curve/ellipse/maxAngle.svg" alt="Blockly Image"/>
      * </div>
      * @link https://docs.bitbybit.dev/classes/_api_bitbybit_curve_ellipse_.curveellipse.html#maxangle
      * @param inputs Arc
@@ -72,7 +72,7 @@ export class CurveEllipse {
     /**
      * Gets the min angle of the arc in degrees
      * <div>
-     *  <img src="../assets/images/blockly-images/curve/ellipse/minAngle.png" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/curve/ellipse/minAngle.svg" alt="Blockly Image"/>
      * </div>
      * @link https://docs.bitbybit.dev/classes/_api_bitbybit_curve_ellipse_.curveellipse.html#minangle
      * @param inputs Arc
@@ -85,7 +85,7 @@ export class CurveEllipse {
     /**
      * Gets the x angle of the arc or an ellipse
      * <div>
-     *  <img src="../assets/images/blockly-images/curve/ellipse/xAxis.png" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/curve/ellipse/xAxis.svg" alt="Blockly Image"/>
      * </div>
      * @link https://docs.bitbybit.dev/classes/_api_bitbybit_curve_ellipse_.curveellipse.html#xaxis
      * @param inputs Ellipse or an arc
@@ -98,7 +98,7 @@ export class CurveEllipse {
     /**
      * Gets the y angle of the arc or an ellipse
      * <div>
-     *  <img src="../assets/images/blockly-images/curve/ellipse/yAxis.png" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/curve/ellipse/yAxis.svg" alt="Blockly Image"/>
      * </div>
      * @link https://docs.bitbybit.dev/classes/_api_bitbybit_curve_ellipse_.curveellipse.html#yaxis
      * @param inputs Ellipse or an arc

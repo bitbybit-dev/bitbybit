@@ -15,7 +15,7 @@ export class SurfaceCylindrical {
     /**
      * Creates the cylindrical Nurbs surface
      * <div>
-     *  <img src="../assets/images/blockly-images/surface/cylindrical/create.png" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/surface/cylindrical/create.svg" alt="Blockly Image"/>
      * </div>
      * @link https://docs.bitbybit.dev/classes/_api_bitbybit_surface_cylindrical_.surfacecylindrical.html#create
      * @param inputs Parameters for cylindrical Nurbs surface
@@ -28,7 +28,7 @@ export class SurfaceCylindrical {
     /**
      * Get cylinder axis
      * <div>
-     *  <img src="../assets/images/blockly-images/surface/cylindrical/axis.png" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/surface/cylindrical/axis.svg" alt="Blockly Image"/>
      * </div>
      * @link https://docs.bitbybit.dev/classes/_api_bitbybit_surface_cylindrical_.surfacecylindrical.html#axis
      * @param inputs Nurbs cylindrical surface
@@ -41,7 +41,7 @@ export class SurfaceCylindrical {
     /**
      * Get cylinder base
      * <div>
-     *  <img src="../assets/images/blockly-images/surface/cylindrical/base.png" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/surface/cylindrical/base.svg" alt="Blockly Image"/>
      * </div>
      * @link https://docs.bitbybit.dev/classes/_api_bitbybit_surface_cylindrical_.surfacecylindrical.html#base
      * @param inputs Nurbs cylindrical surface
@@ -54,7 +54,7 @@ export class SurfaceCylindrical {
     /**
      * Get cylinder height
      * <div>
-     *  <img src="../assets/images/blockly-images/surface/cylindrical/height.png" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/surface/cylindrical/height.svg" alt="Blockly Image"/>
      * </div>
      * @link https://docs.bitbybit.dev/classes/_api_bitbybit_surface_cylindrical_.surfacecylindrical.html#height
      * @param inputs Nurbs cylindrical surface
@@ -67,7 +67,7 @@ export class SurfaceCylindrical {
     /**
      * Get cylinder radius
      * <div>
-     *  <img src="../assets/images/blockly-images/surface/cylindrical/radius.png" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/surface/cylindrical/radius.svg" alt="Blockly Image"/>
      * </div>
      * @link https://docs.bitbybit.dev/classes/_api_bitbybit_surface_cylindrical_.surfacecylindrical.html#radius
      * @param inputs Nurbs cylindrical surface
@@ -80,7 +80,7 @@ export class SurfaceCylindrical {
     /**
      * Get cylinder x axis
      * <div>
-     *  <img src="../assets/images/blockly-images/surface/cylindrical/xAxis.png" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/surface/cylindrical/xAxis.svg" alt="Blockly Image"/>
      * </div>
      * @link https://docs.bitbybit.dev/classes/_api_bitbybit_surface_cylindrical_.surfacecylindrical.html#xaxis
      * @param inputs Nurbs cylindrical surface

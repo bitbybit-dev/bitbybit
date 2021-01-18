@@ -12,6 +12,10 @@
                         <mat-icon [matTooltip]="resources.app_menu_run_code" aria-label="Run the code">play_arrow
                         </mat-icon>
                     </button>
+                    <button mat-buttom mat-icon-button (click)="exportSvg()">
+                        <mat-icon [matTooltip]="resources.app_menu_run_code" aria-label="Export png">play_arrow
+                        </mat-icon>
+                    </button>
                     <ng-container
                         *ngIf="currentUiState === UiStatesEnum.blockly || currentUiState === UiStatesEnum.monaco">
                         <button *ngIf="currentUiState === UiStatesEnum.blockly" mat-buttom mat-icon-button

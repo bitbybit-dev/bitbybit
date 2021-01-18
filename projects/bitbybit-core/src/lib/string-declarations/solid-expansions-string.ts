@@ -15,7 +15,7 @@ export declare class SolidExpansions {
     /**
      * Expand geometries of solid category
      * <div>
-     *  <img src="../assets/images/blockly-images/solid/expansions/expand.png" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/solid/expansions/expand.svg" alt="Blockly Image"/>
      * </div>
      * @link https://docs.bitbybit.dev/classes/_api_bitbybit_solid_expansions_.solidexpansions.html#expand
      * @param inputs Contains options and geometries for expansion
@@ -25,7 +25,7 @@ export declare class SolidExpansions {
     /**
      * Offset 2d geometries of solid category
      * <div>
-     *  <img src="../assets/images/blockly-images/solid/expansions/offset.png" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/solid/expansions/offset.svg" alt="Blockly Image"/>
      * </div>
      * @link https://docs.bitbybit.dev/classes/_api_bitbybit_solid_expansions_.solidexpansions.html#offset
      * @param inputs Contains options and geometries for offset

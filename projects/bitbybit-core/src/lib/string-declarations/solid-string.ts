@@ -32,7 +32,7 @@ export declare class Solid {
     /**
      * Draws a single solids
      * <div>
-     *  <img src="../assets/images/blockly-images/solid/drawSolidOrPolygonMesh.png" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/solid/drawSolidOrPolygonMesh.svg" alt="Blockly Image"/>
      * </div>
      * @link https://docs.bitbybit.dev/classes/_api_bitbybit_solid_.solid.html#drawsolidorpolygonmesh
      * @param inputs Contains a solid or polygon and information for drawing
@@ -42,7 +42,7 @@ export declare class Solid {
     /**
      * Draws multiple solids
      * <div>
-     *  <img src="../assets/images/blockly-images/solid/drawSolidOrPolygonMeshes.png" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/solid/drawSolidOrPolygonMeshes.svg" alt="Blockly Image"/>
      * </div>
      * @link https://docs.bitbybit.dev/classes/_api_bitbybit_solid_.solid.html#drawsolidorpolygonmeshes
      * @param inputs Contains solids or polygons and information for drawing
@@ -52,7 +52,7 @@ export declare class Solid {
     /**
      * Draws a 2D path
      * <div>
-     *  <img src="../assets/images/blockly-images/solid/drawPath.png" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/solid/drawPath.svg" alt="Blockly Image"/>
      * </div>
      * @link https://docs.bitbybit.dev/classes/_api_bitbybit_solid_.solid.html#drawpath
      * @param inputs Contains a path and information for drawing
@@ -62,7 +62,7 @@ export declare class Solid {
     /**
      * Transforms the Jscad solid meshes with a given list of transformations.
      * <div>
-     *  <img src="../assets/images/blockly-images/solid/transformSolids.png" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/solid/transformSolids.svg" alt="Blockly Image"/>
      * </div>
      * @link https://docs.bitbybit.dev/classes/_api_bitbybit_solid_.solid.html#transformsolids
      * @param inputs Solids with the transformation matrixes
@@ -72,7 +72,7 @@ export declare class Solid {
     /**
      * Transforms the Jscad solid mesh with a given list of transformations.
      * <div>
-     *  <img src="../assets/images/blockly-images/solid/transformSolid.png" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/solid/transformSolid.svg" alt="Blockly Image"/>
      * </div>
      * @link https://docs.bitbybit.dev/classes/_api_bitbybit_solid_.solid.html#transformsolid
      * @param inputs Solid with the transformation matrixes
@@ -82,7 +82,7 @@ export declare class Solid {
     /**
      * Downloads the binary STL file from a 3D solid
      * <div>
-     *  <img src="../assets/images/blockly-images/solid/downloadSolidSTL.png" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/solid/downloadSolidSTL.svg" alt="Blockly Image"/>
      * </div>
      * @link https://docs.bitbybit.dev/classes/_api_bitbybit_solid_.solid.html#downloadsolidstl
      * @param inputs 3D Solid
@@ -91,7 +91,7 @@ export declare class Solid {
     /**
      * Downloads the binary STL file from a 3D solids
      * <div>
-     *  <img src="../assets/images/blockly-images/solid/downloadSolidsSTL.png" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/solid/downloadSolidsSTL.svg" alt="Blockly Image"/>
      * </div>
      * @link https://docs.bitbybit.dev/classes/_api_bitbybit_solid_.solid.html#downloadsolidsstl
      * @param inputs 3D Solid

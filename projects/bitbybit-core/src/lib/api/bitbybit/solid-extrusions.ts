@@ -19,7 +19,8 @@ export class SolidExtrusions {
     /**
      * Linear extrude 2D geometries of solid category
      * <div>
-     *  <img src="../assets/images/blockly-images/solid/extrusions/extrudeLinear.png" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/solid/extrusions/extrudeLinear1.svg" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/solid/extrusions/extrudeLinear2.svg" alt="Blockly Image"/>
      * </div>
      * @link https://docs.bitbybit.dev/classes/_api_bitbybit_solid_extrusions_.solidextrusions.html#extrudelinear
      * @param inputs Contains options and geometries for linear extrude
@@ -44,7 +45,8 @@ export class SolidExtrusions {
     /**
      * Rectangular extrude 2D geometries of solid category. Creates a wall-type extrusion of certain height and size.
      * <div>
-     *  <img src="../assets/images/blockly-images/solid/extrusions/extrudeRectangular.png" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/solid/extrusions/extrudeRectangular1.svg" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/solid/extrusions/extrudeRectangular2.svg" alt="Blockly Image"/>
      * </div>
      * @link https://docs.bitbybit.dev/classes/_api_bitbybit_solid_extrusions_.solidextrusions.html#extruderectangular
      * @param inputs Contains options and geometries for rectangular extrude
@@ -64,7 +66,7 @@ export class SolidExtrusions {
     /**
      * Rectangular extrude a list of 2D points. Creates a wall-type extrusion of certain height and size.
      * <div>
-     *  <img src="../assets/images/blockly-images/solid/extrusions/extrudeRectangularPoints.png" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/solid/extrusions/extrudeRectangularPoints.svg" alt="Blockly Image"/>
      * </div>
      * @link https://docs.bitbybit.dev/classes/_api_bitbybit_solid_extrusions_.solidextrusions.html#extruderectangularpoints
      * @param inputs Contains options and points for extrusion
@@ -81,7 +83,7 @@ export class SolidExtrusions {
     /**
      * Rectangular extrude a list of 2D points. Creates a wall-type extrusion of certain height and size.
      * <div>
-     *  <img src="../assets/images/blockly-images/solid/extrusions/extrudeRectangularPoints.png" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/solid/extrusions/extrudeRectangularPoints.svg" alt="Blockly Image"/>
      * </div>
      * @link https://docs.bitbybit.dev/classes/_api_bitbybit_solid_extrusions_.solidextrusions.html#extruderotate
      * @param inputs Contains options and points for extrusion

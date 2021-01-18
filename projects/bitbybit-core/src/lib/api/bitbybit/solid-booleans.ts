@@ -17,7 +17,8 @@ export class SolidBooleans {
     /**
      * Intersect multiple solid mesh objects
      * <div>
-     *  <img src="../assets/images/blockly-images/solid/booleans/intersect.png" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/solid/booleans/intersect1.svg" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/solid/booleans/intersect2.svg" alt="Blockly Image"/>
      * </div>
      * @link https://docs.bitbybit.dev/classes/_api_bitbybit_solid_booleans_.solidbooleans.html#intersect
      * @param inputs Contains multiple solids for intersection
@@ -30,7 +31,9 @@ export class SolidBooleans {
     /**
      * Subtract multiple solid mesh objects
      * <div>
-     *  <img src="../assets/images/blockly-images/solid/booleans/subtract.png" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/solid/booleans/subtract1.svg" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/solid/booleans/subtract2.svg" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/solid/booleans/subtract3.svg" alt="Blockly Image"/>
      * </div>
      * @link https://docs.bitbybit.dev/classes/_api_bitbybit_solid_booleans_.solidbooleans.html#subtract
      * @param inputs Contains multiple solids for subtraction
@@ -43,7 +46,8 @@ export class SolidBooleans {
     /**
      * Union multiple solid mesh objects
      * <div>
-     *  <img src="../assets/images/blockly-images/solid/booleans/union.png" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/solid/booleans/union1.svg" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/solid/booleans/union2.svg" alt="Blockly Image"/>
      * </div>
      * @link https://docs.bitbybit.dev/classes/_api_bitbybit_solid_booleans_.solidbooleans.html#union
      * @param inputs Contains multiple solids for union

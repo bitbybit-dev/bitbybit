@@ -15,7 +15,7 @@ export declare class SolidPolygon {
     /**
      * Create a 2D polygon from a list of points
      * <div>
-     *  <img src="../assets/images/blockly-images/solid/polygon/createFromPoints.png" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/solid/polygon/createFromPoints.svg" alt="Blockly Image"/>
      * </div>
      * @link https://docs.bitbybit.dev/classes/_api_bitbybit_solid_polygon_.solidpolygon.html#createfrompoints
      * @param inputs Points
@@ -25,7 +25,7 @@ export declare class SolidPolygon {
     /**
      * Create a 2D polygon from a polyline
      * <div>
-     *  <img src="../assets/images/blockly-images/solid/polygon/createFromPolyline.png" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/solid/polygon/createFromPolyline.svg" alt="Blockly Image"/>
      * </div>
      * @link https://docs.bitbybit.dev/classes/_api_bitbybit_solid_polygon_.solidpolygon.html#createfrompolyline
      * @param inputs Polyline
@@ -35,7 +35,7 @@ export declare class SolidPolygon {
     /**
      * Create a 2D polygon from a curve
      * <div>
-     *  <img src="../assets/images/blockly-images/solid/polygon/createFromCurve.png" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/solid/polygon/createFromCurve.svg" alt="Blockly Image"/>
      * </div>
      * @link https://docs.bitbybit.dev/classes/_api_bitbybit_solid_polygon_.solidpolygon.html#createfromcurve
      * @param inputs Nurbs curve
@@ -45,7 +45,7 @@ export declare class SolidPolygon {
     /**
      * Create a 2D polygon from a path
      * <div>
-     *  <img src="../assets/images/blockly-images/solid/polygon/createFromPath.png" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/solid/polygon/createFromPath.svg" alt="Blockly Image"/>
      * </div>
      * @link https://docs.bitbybit.dev/classes/_api_bitbybit_solid_polygon_.solidpolygon.html#createfrompath
      * @param inputs Path
@@ -55,7 +55,7 @@ export declare class SolidPolygon {
     /**
      * Create a 2D polygon circle
      * <div>
-     *  <img src="../assets/images/blockly-images/solid/polygon/circle.png" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/solid/polygon/circle.svg" alt="Blockly Image"/>
      * </div>
      * @link https://docs.bitbybit.dev/classes/_api_bitbybit_solid_polygon_.solidpolygon.html#circle
      * @param inputs Circle parameters
@@ -65,7 +65,7 @@ export declare class SolidPolygon {
     /**
      * Create a 2D polygon ellipse
      * <div>
-     *  <img src="../assets/images/blockly-images/solid/polygon/ellipse.png" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/solid/polygon/ellipse.svg" alt="Blockly Image"/>
      * </div>
      * @link https://docs.bitbybit.dev/classes/_api_bitbybit_solid_polygon_.solidpolygon.html#ellipse
      * @param inputs Ellipse parameters
@@ -75,7 +75,7 @@ export declare class SolidPolygon {
     /**
      * Create a 2D polygon rectangle
      * <div>
-     *  <img src="../assets/images/blockly-images/solid/polygon/rectangle.png" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/solid/polygon/rectangle.svg" alt="Blockly Image"/>
      * </div>
      * @link https://docs.bitbybit.dev/classes/_api_bitbybit_solid_polygon_.solidpolygon.html#rectangle
      * @param inputs Rectangle parameters
@@ -85,7 +85,7 @@ export declare class SolidPolygon {
     /**
      * Create a 2D rounded rectangle
      * <div>
-     *  <img src="../assets/images/blockly-images/solid/polygon/roundedRectangle.png" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/solid/polygon/roundedRectangle.svg" alt="Blockly Image"/>
      * </div>
      * @link https://docs.bitbybit.dev/classes/_api_bitbybit_solid_polygon_.solidpolygon.html#roundedrectangle
      * @param inputs Rounded rectangle parameters
@@ -95,7 +95,7 @@ export declare class SolidPolygon {
     /**
      * Create a 2D polygon square
      * <div>
-     *  <img src="../assets/images/blockly-images/solid/polygon/square.png" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/solid/polygon/square.svg" alt="Blockly Image"/>
      * </div>
      * @link https://docs.bitbybit.dev/classes/_api_bitbybit_solid_polygon_.solidpolygon.html#square
      * @param inputs Square parameters
@@ -105,7 +105,7 @@ export declare class SolidPolygon {
     /**
      * Create a 2D polygon star
      * <div>
-     *  <img src="../assets/images/blockly-images/solid/polygon/star.png" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/solid/polygon/star.svg" alt="Blockly Image"/>
      * </div>
      * @link https://docs.bitbybit.dev/classes/_api_bitbybit_solid_polygon_.solidpolygon.html#star
      * @param inputs Star parameters

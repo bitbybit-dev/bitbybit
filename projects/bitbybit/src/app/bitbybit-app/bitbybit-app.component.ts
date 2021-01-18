@@ -130,9 +130,9 @@ export class BitbybitAppComponent implements OnInit, OnDestroy, AfterViewInit {
                         SELECTED_GLOW_COLOUR: '#e5b7a0',
                         REPLACEMENT_GLOW_COLOUR: '#e5b7a0',
                     },
-                }
+                };
                 this.workspace = inject(this.blocklyDiv,
-                  options);
+                    options);
 
                 window.addEventListener('resize', () => this.onResize(), false);
                 const toolbox = this.workspace.getToolbox();
@@ -203,6 +203,9 @@ export class BitbybitAppComponent implements OnInit, OnDestroy, AfterViewInit {
                     this.tagService.handleTags(camera, this.tagsNeedUpdate, this.engine, this.scene);
                     this.tagsNeedUpdate = false;
                 });
+
+                // console.log(this.workspace);
+                console.log(toolbox);
 
                 BitByBitBlocklyHelperService.promptPrintSave = (prompt: PrintSaveInterface) => this.openPrintSaveDialog(prompt);
                 BitByBitBlocklyHelperService.angular = {
@@ -430,6 +433,25 @@ export class BitbybitAppComponent implements OnInit, OnDestroy, AfterViewInit {
         this.workspace.clear();
         this.router.navigate(['/app']);
         this.run();
+    }
+
+    exportSvg() {
+        const workspace = this.workspace.getCanvas() as SVGElement;
+        const blocks = workspace.getElementsByClassName('blocklyDraggable');
+        this.toArray(blocks).forEach((s: SVGElement, index: number) => {
+            s.removeAttribute('transform');
+            const blockSvg = `<svg  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="${(s as any).getBBox().width}px" height="${(s as any).getBBox().height}px" style="font-family: 'IBM Plex Sans'; font-size: 13">${s.outerHTML.replace(/&nbsp;/g, ' ')}</svg>`;
+            this.createBlobAndDownload(blockSvg, 'image/svg+xml', 'cool' + index);
+        });
+    }
+
+    toArray(obj): any[] {
+        let array = [];
+        // iterate backwards ensuring that length is an UInt32
+        for (var i = obj.length >>> 0; i--;) {
+            array[i] = obj[i];
+        }
+        return array;
     }
 
     run(): void {
