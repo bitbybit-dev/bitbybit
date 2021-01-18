@@ -217,6 +217,7 @@ export class BitbybitAppComponent implements OnInit, OnDestroy, AfterViewInit {
                 BitByBitBlocklyHelperService.clearAllDrawn = () => this.clearMeshesAndMaterials();
 
                 this.settingsService.initSettings(this.workspace, this.changeDetectorService).subscribe(s => {
+                    this.collapseExpandedMenus();
 
                     this.route.queryParamMap.subscribe(param => {
                         const exampleParam = param.get('examples');
@@ -232,7 +233,6 @@ export class BitbybitAppComponent implements OnInit, OnDestroy, AfterViewInit {
                                 setTimeout(() => {
                                     this.workspace.zoomToFit();
                                     this.workspace.zoomCenter(-3);
-                                    this.collapseExpandedMenus();
                                     this.onResize();
                                     this.run();
                                 }, 200);
@@ -258,8 +258,8 @@ export class BitbybitAppComponent implements OnInit, OnDestroy, AfterViewInit {
                 });
 
                 setTimeout(() => {
-                    this.collapseExpandedMenus();
                     this.onResize();
+                    this.collapseExpandedMenus();
                 });
             });
 
