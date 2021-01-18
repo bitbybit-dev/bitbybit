@@ -17,7 +17,7 @@ export class Tag {
      * <div>
      *  <img src="../assets/images/blockly-images/tag/create.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_tag_.tag.html#create
+     * @link https://docs.bitbybit.dev/classes/bitbybit_tag.tag.html#create
      * @param inputs Tag description
      * @returns A tag
      */
@@ -36,7 +36,7 @@ export class Tag {
      * <div>
      *  <img src="../assets/images/blockly-images/tag/drawTag.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_tag_.tag.html#drawtag
+     * @link https://docs.bitbybit.dev/classes/bitbybit_tag.tag.html#drawtag
      * @param inputs Information to draw the tag
      * @returns A tag
      */
@@ -65,7 +65,7 @@ export class Tag {
      * <div>
      *  <img src="../assets/images/blockly-images/tag/drawTags.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_tag_.tag.html#drawtags
+     * @link https://docs.bitbybit.dev/classes/bitbybit_tag.tag.html#drawtags
      * @param inputs Information to draw the tags
      * @returns Tags
      */

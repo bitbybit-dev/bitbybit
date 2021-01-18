@@ -16,7 +16,7 @@ export declare class CurveEllipse {
      * <div>
      *  <img src="../assets/images/blockly-images/curve/ellipse/createEllipse.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_curve_ellipse_.curveellipse.html#createellipse
+     * @link https://docs.bitbybit.dev/classes/bitbybit_curve_ellipse.curveellipse.html#createellipse
      * @param inputs Ellipse parameters
      * @returns Ellipse Nurbs curve
      */
@@ -26,7 +26,7 @@ export declare class CurveEllipse {
      * <div>
      *  <img src="../assets/images/blockly-images/curve/ellipse/createArc.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_curve_ellipse_.curveellipse.html#createarc
+     * @link https://docs.bitbybit.dev/classes/bitbybit_curve_ellipse.curveellipse.html#createarc
      * @param inputs Ellipse arc parameters
      * @returns Ellipse arc Nurbs curve
      */
@@ -36,7 +36,7 @@ export declare class CurveEllipse {
      * <div>
      *  <img src="../assets/images/blockly-images/curve/ellipse/center.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_curve_ellipse_.curveellipse.html#center
+     * @link https://docs.bitbybit.dev/classes/bitbybit_curve_ellipse.curveellipse.html#center
      * @param inputs The arc or the ellipse Nurbs curve
      * @returns Point
      */
@@ -46,7 +46,7 @@ export declare class CurveEllipse {
      * <div>
      *  <img src="../assets/images/blockly-images/curve/ellipse/maxAngle.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_curve_ellipse_.curveellipse.html#maxangle
+     * @link https://docs.bitbybit.dev/classes/bitbybit_curve_ellipse.curveellipse.html#maxangle
      * @param inputs Arc
      * @returns Max angle in degrees
      */
@@ -56,7 +56,7 @@ export declare class CurveEllipse {
      * <div>
      *  <img src="../assets/images/blockly-images/curve/ellipse/minAngle.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_curve_ellipse_.curveellipse.html#minangle
+     * @link https://docs.bitbybit.dev/classes/bitbybit_curve_ellipse.curveellipse.html#minangle
      * @param inputs Arc
      * @returns Min angle in degrees
      */
@@ -66,7 +66,7 @@ export declare class CurveEllipse {
      * <div>
      *  <img src="../assets/images/blockly-images/curve/ellipse/xAxis.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_curve_ellipse_.curveellipse.html#xaxis
+     * @link https://docs.bitbybit.dev/classes/bitbybit_curve_ellipse.curveellipse.html#xaxis
      * @param inputs Ellipse or an arc
      * @returns X axis vector
      */
@@ -76,7 +76,7 @@ export declare class CurveEllipse {
      * <div>
      *  <img src="../assets/images/blockly-images/curve/ellipse/yAxis.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_curve_ellipse_.curveellipse.html#yaxis
+     * @link https://docs.bitbybit.dev/classes/bitbybit_curve_ellipse.curveellipse.html#yaxis
      * @param inputs Ellipse or an arc
      * @returns Y axis vector
      */

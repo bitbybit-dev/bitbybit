@@ -20,7 +20,7 @@ export function createTextAlignTypeBlock(): void {
             this.setOutput(true, 'String');
             this.setColour('#fff');
             this.setTooltip(resources.block_csg_expansions_expand_path_description);
-            this.setHelpUrl(environment.docsUrl + '/enums/_api_inputs_solid_inputs_.solid.solidtextalignenum.html');
+            this.setHelpUrl(environment.docsUrl + '/enums/_api_inputs_solid_inputs.solid.solidtextalignenum.html');
         }
     };
 

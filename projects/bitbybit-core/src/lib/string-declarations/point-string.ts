@@ -22,7 +22,7 @@ export declare class Point {
      * <div>
      *  <img src="../assets/images/blockly-images/point/drawPoint.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_point_.point.html#drawpoint
+     * @link https://docs.bitbybit.dev/classes/bitbybit_point.point.html#drawpoint
      * @param inputs Contains a point to be drawn
      */
     drawPoint(inputs: Inputs.Point.DrawPointDto): Mesh;
@@ -31,7 +31,7 @@ export declare class Point {
      * <div>
      *  <img src="../assets/images/blockly-images/point/drawPoints.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_point_.point.html#drawpoints
+     * @link https://docs.bitbybit.dev/classes/bitbybit_point.point.html#drawpoints
      * @param inputs Contains a point array to be drawn
      */
     drawPoints(inputs: Inputs.Point.DrawPointsDto): Mesh;
@@ -40,7 +40,7 @@ export declare class Point {
      * <div>
      *  <img src="../assets/images/blockly-images/point/transformPoint.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_point_.point.html#transformpoint
+     * @link https://docs.bitbybit.dev/classes/bitbybit_point.point.html#transformpoint
      * @param inputs Contains a point and the transformations to apply
      * @returns Transformed point
      */
@@ -50,7 +50,7 @@ export declare class Point {
      * <div>
      *  <img src="../assets/images/blockly-images/point/transformPoints.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_point_.point.html#transformpoints
+     * @link https://docs.bitbybit.dev/classes/bitbybit_point.point.html#transformpoints
      * @param inputs Contains points and the transformations to apply
      * @returns Transformed points
      */
@@ -60,7 +60,7 @@ export declare class Point {
      * <div>
      *  <img src="../assets/images/blockly-images/point/closestPointFromPointsDistance.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_point_.point.html#closestpointfrompointsdistance
+     * @link https://docs.bitbybit.dev/classes/bitbybit_point.point.html#closestpointfrompointsdistance
      * @param inputs Point from which to measure and points to measure the distance against
      * @returns Distance to closest point
      */
@@ -70,7 +70,7 @@ export declare class Point {
      * <div>
      *  <img src="../assets/images/blockly-images/point/closestPointFromPointsIndex.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_point_.point.html#closestpointfrompointsindex
+     * @link https://docs.bitbybit.dev/classes/bitbybit_point.point.html#closestpointfrompointsindex
      * @param inputs Point from which to find the index in a collection of points
      * @returns Closest point index
      */
@@ -80,7 +80,7 @@ export declare class Point {
      * <div>
      *  <img src="../assets/images/blockly-images/point/closestPointFromPoints.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_point_.point.html#closestpointfrompoints
+     * @link https://docs.bitbybit.dev/classes/bitbybit_point.point.html#closestpointfrompoints
      * @param inputs Point and points collection to find the closest point in
      * @returns Closest point
      */
@@ -90,7 +90,7 @@ export declare class Point {
      * <div>
      *  <img src="../assets/images/blockly-images/point/distance.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_point_.point.html#distance
+     * @link https://docs.bitbybit.dev/classes/bitbybit_point.point.html#distance
      * @param inputs Coordinates of start and end points
      * @returns Distance
      */
@@ -100,7 +100,7 @@ export declare class Point {
      * <div>
      *  <img src="../assets/images/blockly-images/point/multiplyPoint.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_point_.point.html#multiplypoint
+     * @link https://docs.bitbybit.dev/classes/bitbybit_point.point.html#multiplypoint
      * @param inputs The point to be multiplied and the amount of points to create
      * @returns Distance
      */
@@ -110,7 +110,7 @@ export declare class Point {
      * <div>
      *  <img src="../assets/images/blockly-images/point/getX.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_point_.point.html#getx
+     * @link https://docs.bitbybit.dev/classes/bitbybit_point.point.html#getx
      * @param inputs The point
      * @returns X coordinate
      */
@@ -120,7 +120,7 @@ export declare class Point {
      * <div>
      *  <img src="../assets/images/blockly-images/point/getY.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_point_.point.html#gety
+     * @link https://docs.bitbybit.dev/classes/bitbybit_point.point.html#gety
      * @param inputs The point
      * @returns Y coordinate
      */
@@ -130,7 +130,7 @@ export declare class Point {
      * <div>
      *  <img src="../assets/images/blockly-images/point/getZ.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_point_.point.html#getz
+     * @link https://docs.bitbybit.dev/classes/bitbybit_point.point.html#getz
      * @param inputs The point
      * @returns Z coordinate
      */
@@ -140,7 +140,7 @@ export declare class Point {
      * <div>
      *  <img src="../assets/images/blockly-images/point/spiral.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_point_.point.html#spiral
+     * @link https://docs.bitbybit.dev/classes/bitbybit_point.point.html#spiral
      * @param inputs Spiral information
      * @returns Specified number of points in the array along the spiral
      */

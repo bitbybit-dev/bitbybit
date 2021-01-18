@@ -1,3 +1,3 @@
 export const curveConstants = {
-    helpUrl: '/classes/_api_bitbybit_curve_.curve.html'
+    helpUrl: '/classes/bitbybit_curve.curve.html'
 };

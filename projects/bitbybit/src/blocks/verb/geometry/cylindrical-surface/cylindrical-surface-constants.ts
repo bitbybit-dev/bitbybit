@@ -1,3 +1,3 @@
 export const cylindricalSurfaceConstants = {
-    helpUrl: '/classes/_api_bitbybit_surface_cylindrical_.surfacecylindrical.html'
+    helpUrl: '/classes/bitbybit_surface_cylindrical.surfacecylindrical.html'
 };

@@ -27,7 +27,7 @@ export class Curve {
      * <div>
      *  <img src="../assets/images/blockly-images/curve/drawCurve.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_curve_.curve.html#drawcurve
+     * @link https://docs.bitbybit.dev/classes/bitbybit_curve.curve.html#drawcurve
      * @param inputs Contains a curve to be drawn
      * @returns Lines mesh that is being drawn by Babylon
      */
@@ -48,7 +48,7 @@ export class Curve {
      * <div>
      *  <img src="../assets/images/blockly-images/curve/drawCurves.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_curve_.curve.html#drawcurves
+     * @link https://docs.bitbybit.dev/classes/bitbybit_curve.curve.html#drawcurves
      * @param inputs Contains curves to be drawn
      * @returns Lines mesh that is being drawn by Babylon
      */
@@ -69,7 +69,7 @@ export class Curve {
      * <div>
      *  <img src="../assets/images/blockly-images/curve/createCurveByKnotsControlPointsWeights.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_curve_.curve.html#createcurvebyknotscontrolpointsweights
+     * @link https://docs.bitbybit.dev/classes/bitbybit_curve.curve.html#createcurvebyknotscontrolpointsweights
      * @param inputs Contains knots, control points and weights
      * @returns Nurbs curve
      */
@@ -82,7 +82,7 @@ export class Curve {
      * <div>
      *  <img src="../assets/images/blockly-images/curve/createCurveByPoints.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_curve_.curve.html#createcurvebypoints
+     * @link https://docs.bitbybit.dev/classes/bitbybit_curve.curve.html#createcurvebypoints
      * @param inputs Control points
      * @returns Nurbs curve
      */
@@ -95,7 +95,7 @@ export class Curve {
      * <div>
      *  <img src="../assets/images/blockly-images/curve/createBezierCurve.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_curve_.curve.html#createbeziercurve
+     * @link https://docs.bitbybit.dev/classes/bitbybit_curve.curve.html#createbeziercurve
      * @param inputs Control points
      * @returns Bezier Nurbs curve
      */
@@ -108,7 +108,7 @@ export class Curve {
      * <div>
      *  <img src="../assets/images/blockly-images/curve/clone.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_curve_.curve.html#clone
+     * @link https://docs.bitbybit.dev/classes/bitbybit_curve.curve.html#clone
      * @param inputs Nurbs curve
      * @returns Nurbs curve
      */
@@ -121,7 +121,7 @@ export class Curve {
      * <div>
      *  <img src="../assets/images/blockly-images/curve/closestParam.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_curve_.curve.html#closestparam
+     * @link https://docs.bitbybit.dev/classes/bitbybit_curve.curve.html#closestparam
      * @param inputs Nurbs curve with point
      * @returns Param number
      */
@@ -134,7 +134,7 @@ export class Curve {
      * <div>
      *  <img src="../assets/images/blockly-images/curve/closestParams.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_curve_.curve.html#closestparams
+     * @link https://docs.bitbybit.dev/classes/bitbybit_curve.curve.html#closestparams
      * @param inputs Nurbs curve with points
      * @returns Param numbers
      */
@@ -147,7 +147,7 @@ export class Curve {
      * <div>
      *  <img src="../assets/images/blockly-images/curve/closestPoint.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_curve_.curve.html#closestpoint
+     * @link https://docs.bitbybit.dev/classes/bitbybit_curve.curve.html#closestpoint
      * @param inputs Nurbs curve with point
      * @returns Point
      */
@@ -160,7 +160,7 @@ export class Curve {
      * <div>
      *  <img src="../assets/images/blockly-images/curve/closestPoints.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_curve_.curve.html#closestpoints
+     * @link https://docs.bitbybit.dev/classes/bitbybit_curve.curve.html#closestpoints
      * @param inputs Nurbs curve with points
      * @returns Points
      */
@@ -173,7 +173,7 @@ export class Curve {
      * <div>
      *  <img src="../assets/images/blockly-images/curve/controlPoints.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_curve_.curve.html#controlpoints
+     * @link https://docs.bitbybit.dev/classes/bitbybit_curve.curve.html#controlpoints
      * @param inputs Nurbs curve
      * @returns Points
      */
@@ -186,7 +186,7 @@ export class Curve {
      * <div>
      *  <img src="../assets/images/blockly-images/curve/degree.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_curve_.curve.html#degree
+     * @link https://docs.bitbybit.dev/classes/bitbybit_curve.curve.html#degree
      * @param inputs Nurbs curve
      * @returns Degree number
      */
@@ -199,7 +199,7 @@ export class Curve {
      * <div>
      *  <img src="../assets/images/blockly-images/curve/derivatives.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_curve_.curve.html#derivatives
+     * @link https://docs.bitbybit.dev/classes/bitbybit_curve.curve.html#derivatives
      * @param inputs Nurbs curve with specified derivative number and parameter
      * @returns Derivatives
      */
@@ -212,7 +212,7 @@ export class Curve {
      * <div>
      *  <img src="../assets/images/blockly-images/curve/divideByEqualArcLengthToParams.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_curve_.curve.html#dividebyequalarclengthtoparams
+     * @link https://docs.bitbybit.dev/classes/bitbybit_curve.curve.html#dividebyequalarclengthtoparams
      * @param inputs Nurbs curve
      * @returns Parameters
      */
@@ -226,7 +226,7 @@ export class Curve {
      * <div>
      *  <img src="../assets/images/blockly-images/curve/divideByEqualArcLengthToPoints.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_curve_.curve.html#dividebyequalarclengthtopoints
+     * @link https://docs.bitbybit.dev/classes/bitbybit_curve.curve.html#dividebyequalarclengthtopoints
      * @param inputs Nurbs curve
      * @returns Points
      */
@@ -240,7 +240,7 @@ export class Curve {
      * <div>
      *  <img src="../assets/images/blockly-images/curve/divideByArcLengthToParams.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_curve_.curve.html#dividebyarclengthtoparams
+     * @link https://docs.bitbybit.dev/classes/bitbybit_curve.curve.html#dividebyarclengthtoparams
      * @param inputs Nurbs curve
      * @returns Parameters
      */
@@ -254,7 +254,7 @@ export class Curve {
      * <div>
      *  <img src="../assets/images/blockly-images/curve/divideByArcLengthToPoints.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_curve_.curve.html#dividebyarclengthtopoints
+     * @link https://docs.bitbybit.dev/classes/bitbybit_curve.curve.html#dividebyarclengthtopoints
      * @param inputs Nurbs curve
      * @returns Points
      */
@@ -268,7 +268,7 @@ export class Curve {
      * <div>
      *  <img src="../assets/images/blockly-images/curve/divideCurvesByEqualArcLengthToPoints.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_curve_.curve.html#dividecurvesbyequalarclengthtopoints
+     * @link https://docs.bitbybit.dev/classes/bitbybit_curve.curve.html#dividecurvesbyequalarclengthtopoints
      * @param inputs Nurbs curves
      * @returns Points placed for each curve in separate arrays
      */
@@ -281,7 +281,7 @@ export class Curve {
      * <div>
      *  <img src="../assets/images/blockly-images/curve/divideCurvesByArcLengthToPoints.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_curve_.curve.html#dividecurvesbyarclengthtopoints
+     * @link https://docs.bitbybit.dev/classes/bitbybit_curve.curve.html#dividecurvesbyarclengthtopoints
      * @param inputs Nurbs curves
      * @returns Points placed for each curve in separate arrays
      */
@@ -294,7 +294,7 @@ export class Curve {
      * <div>
      *  <img src="../assets/images/blockly-images/curve/domain.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_curve_.curve.html#domain
+     * @link https://docs.bitbybit.dev/classes/bitbybit_curve.curve.html#domain
      * @param inputs Nurbs curve
      * @returns Interval domain
      */
@@ -307,7 +307,7 @@ export class Curve {
      * <div>
      *  <img src="../assets/images/blockly-images/curve/startPoint.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_curve_.curve.html#startpoint
+     * @link https://docs.bitbybit.dev/classes/bitbybit_curve.curve.html#startpoint
      * @param inputs Nurbs curve
      * @returns Start point
      */
@@ -320,7 +320,7 @@ export class Curve {
      * <div>
      *  <img src="../assets/images/blockly-images/curve/endPoint.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_curve_.curve.html#endpoint
+     * @link https://docs.bitbybit.dev/classes/bitbybit_curve.curve.html#endpoint
      * @param inputs Nurbs curve
      * @returns End point
      */
@@ -332,7 +332,7 @@ export class Curve {
      * <div>
      *  <img src="../assets/images/blockly-images/curve/startPoints.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_curve_.curve.html#startpoints
+     * @link https://docs.bitbybit.dev/classes/bitbybit_curve.curve.html#startpoints
      * @param inputs Nurbs curves
      * @returns Start points
      */
@@ -345,7 +345,7 @@ export class Curve {
      * <div>
      *  <img src="../assets/images/blockly-images/curve/endPoints.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_curve_.curve.html#endpoints
+     * @link https://docs.bitbybit.dev/classes/bitbybit_curve.curve.html#endpoints
      * @param inputs Nurbs curves
      * @returns End points
      */
@@ -358,7 +358,7 @@ export class Curve {
      * <div>
      *  <img src="../assets/images/blockly-images/curve/knots.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_curve_.curve.html#knots
+     * @link https://docs.bitbybit.dev/classes/bitbybit_curve.curve.html#knots
      * @param inputs Nurbs curve
      * @returns Knots
      */
@@ -371,7 +371,7 @@ export class Curve {
      * <div>
      *  <img src="../assets/images/blockly-images/curve/lengthAtParam.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_curve_.curve.html#lengthatparam
+     * @link https://docs.bitbybit.dev/classes/bitbybit_curve.curve.html#lengthatparam
      * @param inputs Nurbs curve and parameter
      * @returns Length
      */
@@ -384,7 +384,7 @@ export class Curve {
      * <div>
      *  <img src="../assets/images/blockly-images/curve/length.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_curve_.curve.html#length
+     * @link https://docs.bitbybit.dev/classes/bitbybit_curve.curve.html#length
      * @param inputs Nurbs curve
      * @returns Length
      */
@@ -397,7 +397,7 @@ export class Curve {
      * <div>
      *  <img src="../assets/images/blockly-images/curve/paramAtLength.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_curve_.curve.html#paramatlength
+     * @link https://docs.bitbybit.dev/classes/bitbybit_curve.curve.html#paramatlength
      * @param inputs Nurbs curve, length and tolerance
      * @returns Parameter
      */
@@ -410,7 +410,7 @@ export class Curve {
      * <div>
      *  <img src="../assets/images/blockly-images/curve/pointAtParam.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_curve_.curve.html#pointAtParam
+     * @link https://docs.bitbybit.dev/classes/bitbybit_curve.curve.html#pointAtParam
      * @param inputs Nurbs curve and a parameter
      * @returns Point
      */
@@ -423,7 +423,7 @@ export class Curve {
      * <div>
      *  <img src="../assets/images/blockly-images/curve/pointAtParam.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_curve_.curve.html#pointAtParam
+     * @link https://docs.bitbybit.dev/classes/bitbybit_curve.curve.html#pointAtParam
      * @param inputs Nurbs curves and a parameter
      * @returns Points in arrays for each curve
      */
@@ -436,7 +436,7 @@ export class Curve {
      * <div>
      *  <img src="../assets/images/blockly-images/curve/reverse.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_curve_.curve.html#reverse
+     * @link https://docs.bitbybit.dev/classes/bitbybit_curve.curve.html#reverse
      * @param inputs Nurbs curve
      * @returns Reversed Nurbs curve
      */
@@ -449,7 +449,7 @@ export class Curve {
      * <div>
      *  <img src="../assets/images/blockly-images/curve/split.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_curve_.curve.html#split
+     * @link https://docs.bitbybit.dev/classes/bitbybit_curve.curve.html#split
      * @param inputs Nurbs curve with parameter
      * @returns Nurbs curves
      */
@@ -462,7 +462,7 @@ export class Curve {
      * <div>
      *  <img src="../assets/images/blockly-images/curve/tangent.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_curve_.curve.html#tangent
+     * @link https://docs.bitbybit.dev/classes/bitbybit_curve.curve.html#tangent
      * @param inputs Nurbs curve with parameter
      * @returns Tangent vector
      */
@@ -475,7 +475,7 @@ export class Curve {
      * <div>
      *  <img src="../assets/images/blockly-images/curve/tessellate.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_curve_.curve.html#tessellate
+     * @link https://docs.bitbybit.dev/classes/bitbybit_curve.curve.html#tessellate
      * @param inputs Nurbs curve with tolerance
      * @returns Points
      */
@@ -488,7 +488,7 @@ export class Curve {
      * <div>
      *  <img src="../assets/images/blockly-images/curve/transform.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_curve_.curve.html#transform
+     * @link https://docs.bitbybit.dev/classes/bitbybit_curve.curve.html#transform
      * @param inputs Nurbs curve with transformation matrixes
      * @returns Transformed curve
      */
@@ -505,7 +505,7 @@ export class Curve {
      * <div>
      *  <img src="../assets/images/blockly-images/curve/transformCurves.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_curve_.curve.html#transformcurves
+     * @link https://docs.bitbybit.dev/classes/bitbybit_curve.curve.html#transformcurves
      * @param inputs Nurbs curves with transformation matrixes
      * @returns Transformed curves
      */
@@ -518,7 +518,7 @@ export class Curve {
      * <div>
      *  <img src="../assets/images/blockly-images/curve/weights.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_curve_.curve.html#weights
+     * @link https://docs.bitbybit.dev/classes/bitbybit_curve.curve.html#weights
      * @param inputs Nurbs curve
      * @returns Weights
      */

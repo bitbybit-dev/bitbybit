@@ -1,3 +1,3 @@
 export const polylineConstants = {
-    helpUrl: '/classes/_api_bitbybit_polyline_.polyline.html'
+    helpUrl: '/classes/bitbybit_polyline.polyline.html'
 };

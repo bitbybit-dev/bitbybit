@@ -12,7 +12,7 @@ export namespace BaseTypes {
          * <div>
          *  <img src="../assets/images/blockly-images/base-types/interval-min.svg" alt="Blockly Image"/>
          * </div>
-         * @link https://docs.bitbybit.dev/classes/_api_bitbybit_base_types_.basetypes.intervaldto.html#min
+         * @link https://docs.bitbybit.dev/classes/bitbybit_base_types.basetypes.intervaldto.html#min
          */
         min = 0;
         /**
@@ -20,7 +20,7 @@ export namespace BaseTypes {
          * <div>
          *  <img src="../assets/images/blockly-images/base-types/interval-max.svg" alt="Blockly Image"/>
          * </div>
-         * @link https://docs.bitbybit.dev/classes/_api_bitbybit_base_types_.basetypes.intervaldto.html#max
+         * @link https://docs.bitbybit.dev/classes/bitbybit_base_types.basetypes.intervaldto.html#max
          */
         max = 1;
     }
@@ -37,7 +37,7 @@ export namespace BaseTypes {
          * <div>
          *  <img src="../assets/images/blockly-images/base-types/uv-u.svg" alt="Blockly Image"/>
          * </div>
-         * @link https://docs.bitbybit.dev/classes/_api_bitbybit_base_types_.basetypes.uvdto.html#u
+         * @link https://docs.bitbybit.dev/classes/bitbybit_base_types.basetypes.uvdto.html#u
          */
         u = 0;
         /**
@@ -45,7 +45,7 @@ export namespace BaseTypes {
          * <div>
          *  <img src="../assets/images/blockly-images/base-types/uv-v.svg" alt="Blockly Image"/>
          * </div>
-         * @link https://docs.bitbybit.dev/classes/_api_bitbybit_base_types_.basetypes.uvdto.html#v
+         * @link https://docs.bitbybit.dev/classes/bitbybit_base_types.basetypes.uvdto.html#v
          */
         v = 0;
     }

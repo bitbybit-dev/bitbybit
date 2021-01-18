@@ -15,7 +15,7 @@ export declare class SolidBooleans {
      * <div>
      *  <img src="../assets/images/blockly-images/solid/booleans/intersect.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_solid_booleans_.solidbooleans.html#intersect
+     * @link https://docs.bitbybit.dev/classes/bitbybit_solid_booleans.solidbooleans.html#intersect
      * @param inputs Contains multiple solids for intersection
      * @returns Solid mesh
      */
@@ -25,7 +25,7 @@ export declare class SolidBooleans {
      * <div>
      *  <img src="../assets/images/blockly-images/solid/booleans/subtract.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_solid_booleans_.solidbooleans.html#subtract
+     * @link https://docs.bitbybit.dev/classes/bitbybit_solid_booleans.solidbooleans.html#subtract
      * @param inputs Contains multiple solids for subtraction
      * @returns Solid mesh
      */
@@ -35,7 +35,7 @@ export declare class SolidBooleans {
      * <div>
      *  <img src="../assets/images/blockly-images/solid/booleans/union.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_solid_booleans_.solidbooleans.html#union
+     * @link https://docs.bitbybit.dev/classes/bitbybit_solid_booleans.solidbooleans.html#union
      * @param inputs Contains multiple solids for union
      * @returns Solid mesh
      */

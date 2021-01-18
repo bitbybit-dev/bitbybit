@@ -1,3 +1,3 @@
 export const extrudedSurfaceConstants = {
-    helpUrl: '/classes/_api_bitbybit_surface_extrusion_.surfaceextrusion.html'
+    helpUrl: '/classes/bitbybit_surface_extrusion.surfaceextrusion.html'
 };

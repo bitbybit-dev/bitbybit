@@ -22,7 +22,7 @@ export class SolidPolygon {
      * <div>
      *  <img src="../assets/images/blockly-images/solid/polygon/createFromPoints.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_solid_polygon_.solidpolygon.html#createfrompoints
+     * @link https://docs.bitbybit.dev/classes/bitbybit_solid_polygon.solidpolygon.html#createfrompoints
      * @param inputs Points
      * @returns Path
      */
@@ -36,7 +36,7 @@ export class SolidPolygon {
      * <div>
      *  <img src="../assets/images/blockly-images/solid/polygon/createFromPolyline.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_solid_polygon_.solidpolygon.html#createfrompolyline
+     * @link https://docs.bitbybit.dev/classes/bitbybit_solid_polygon.solidpolygon.html#createfrompolyline
      * @param inputs Polyline
      * @returns Polygon
      */
@@ -50,7 +50,7 @@ export class SolidPolygon {
      * <div>
      *  <img src="../assets/images/blockly-images/solid/polygon/createFromCurve.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_solid_polygon_.solidpolygon.html#createfromcurve
+     * @link https://docs.bitbybit.dev/classes/bitbybit_solid_polygon.solidpolygon.html#createfromcurve
      * @param inputs Nurbs curve
      * @returns Polygon
      */
@@ -64,7 +64,7 @@ export class SolidPolygon {
      * <div>
      *  <img src="../assets/images/blockly-images/solid/polygon/createFromPath.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_solid_polygon_.solidpolygon.html#createfrompath
+     * @link https://docs.bitbybit.dev/classes/bitbybit_solid_polygon.solidpolygon.html#createfrompath
      * @param inputs Path
      * @returns Polygon
      */
@@ -77,7 +77,7 @@ export class SolidPolygon {
      * <div>
      *  <img src="../assets/images/blockly-images/solid/polygon/circle.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_solid_polygon_.solidpolygon.html#circle
+     * @link https://docs.bitbybit.dev/classes/bitbybit_solid_polygon.solidpolygon.html#circle
      * @param inputs Circle parameters
      * @returns Circle polygon
      */
@@ -90,7 +90,7 @@ export class SolidPolygon {
      * <div>
      *  <img src="../assets/images/blockly-images/solid/polygon/ellipse.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_solid_polygon_.solidpolygon.html#ellipse
+     * @link https://docs.bitbybit.dev/classes/bitbybit_solid_polygon.solidpolygon.html#ellipse
      * @param inputs Ellipse parameters
      * @returns Ellipse polygon
      */
@@ -109,7 +109,7 @@ export class SolidPolygon {
      * <div>
      *  <img src="../assets/images/blockly-images/solid/polygon/rectangle.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_solid_polygon_.solidpolygon.html#rectangle
+     * @link https://docs.bitbybit.dev/classes/bitbybit_solid_polygon.solidpolygon.html#rectangle
      * @param inputs Rectangle parameters
      * @returns Rectangle polygon
      */
@@ -127,7 +127,7 @@ export class SolidPolygon {
      * <div>
      *  <img src="../assets/images/blockly-images/solid/polygon/roundedRectangle.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_solid_polygon_.solidpolygon.html#roundedrectangle
+     * @link https://docs.bitbybit.dev/classes/bitbybit_solid_polygon.solidpolygon.html#roundedrectangle
      * @param inputs Rounded rectangle parameters
      * @returns Rounded rectangle polygon
      */
@@ -145,7 +145,7 @@ export class SolidPolygon {
      * <div>
      *  <img src="../assets/images/blockly-images/solid/polygon/square.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_solid_polygon_.solidpolygon.html#square
+     * @link https://docs.bitbybit.dev/classes/bitbybit_solid_polygon.solidpolygon.html#square
      * @param inputs Square parameters
      * @returns Square polygon
      */
@@ -158,7 +158,7 @@ export class SolidPolygon {
      * <div>
      *  <img src="../assets/images/blockly-images/solid/polygon/star.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_solid_polygon_.solidpolygon.html#star
+     * @link https://docs.bitbybit.dev/classes/bitbybit_solid_polygon.solidpolygon.html#star
      * @param inputs Star parameters
      * @returns Star polygon
      */

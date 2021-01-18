@@ -12,7 +12,7 @@ export declare class Scene {
      * <div>
      *  <img src="../assets/images/blockly-images/scene/backgroundColour.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_scene_.scene.html#backgroundcolour
+     * @link https://docs.bitbybit.dev/classes/bitbybit_scene.scene.html#backgroundcolour
      * @param inputs Describes the colour of the scene background
      */
     backgroundColour(inputs: Inputs.Scene.SceneBackgroundColourDto): void;
@@ -21,7 +21,7 @@ export declare class Scene {
      * <div>
      *  <img src="../assets/images/blockly-images/scene/drawGridMesh.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_scene_.scene.html#drawgridmesh
+     * @link https://docs.bitbybit.dev/classes/bitbybit_scene.scene.html#drawgridmesh
      * @param inputs Describes various parameters of the grid mesh like size, colour, etc.
      */
     drawGridMesh(inputs: Inputs.Scene.SceneDrawGridMeshDto): Mesh;
@@ -30,7 +30,7 @@ export declare class Scene {
      * <div>
      *  <img src="../assets/images/blockly-images/scene/clearAllDrawn.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_scene_.scene.html#clearalldrawn
+     * @link https://docs.bitbybit.dev/classes/bitbybit_scene.scene.html#clearalldrawn
      */
     clearAllDrawn(): void;
 }

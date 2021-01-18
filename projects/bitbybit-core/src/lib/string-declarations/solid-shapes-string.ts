@@ -17,7 +17,7 @@ export declare class SolidShapes {
      * <div>
      *  <img src="../assets/images/blockly-images/solid/shapes/cube.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_solid_shapes_.solidshapes.html#cube
+     * @link https://docs.bitbybit.dev/classes/bitbybit_solid_shapes.solidshapes.html#cube
      * @param inputs Cube parameters
      * @returns Cube solid
      */
@@ -27,7 +27,7 @@ export declare class SolidShapes {
      * <div>
      *  <img src="../assets/images/blockly-images/solid/shapes/cubesOnCenterPoints.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_solid_shapes_.solidshapes.html#cubesoncenterpoints
+     * @link https://docs.bitbybit.dev/classes/bitbybit_solid_shapes.solidshapes.html#cubesoncenterpoints
      * @param inputs Cube with multiple center points parameters
      * @returns List of cube solids
      */
@@ -37,7 +37,7 @@ export declare class SolidShapes {
      * <div>
      *  <img src="../assets/images/blockly-images/solid/shapes/cuboid.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_solid_shapes_.solidshapes.html#cuboid
+     * @link https://docs.bitbybit.dev/classes/bitbybit_solid_shapes.solidshapes.html#cuboid
      * @param inputs Cuboid parameters
      * @returns Cuboid solid
      */
@@ -47,7 +47,7 @@ export declare class SolidShapes {
      * <div>
      *  <img src="../assets/images/blockly-images/solid/shapes/cuboidsOnCenterPoints.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_solid_shapes_.solidshapes.html#cuboidsoncenterpoints
+     * @link https://docs.bitbybit.dev/classes/bitbybit_solid_shapes.solidshapes.html#cuboidsoncenterpoints
      * @param inputs Cuboids with multiple center point parameters
      * @returns List of cuboid solids
      */
@@ -57,7 +57,7 @@ export declare class SolidShapes {
      * <div>
      *  <img src="../assets/images/blockly-images/solid/shapes/cylinderElliptic.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_solid_shapes_.solidshapes.html#cylinderelliptic
+     * @link https://docs.bitbybit.dev/classes/bitbybit_solid_shapes.solidshapes.html#cylinderelliptic
      * @param inputs Elliptic cylinder parameters
      * @returns Elliptic cylinder solid
      */
@@ -67,7 +67,7 @@ export declare class SolidShapes {
      * <div>
      *  <img src="../assets/images/blockly-images/solid/shapes/cylinderEllipticOnCenterPoints.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_solid_shapes_.solidshapes.html#cylinderellipticoncenterpoints
+     * @link https://docs.bitbybit.dev/classes/bitbybit_solid_shapes.solidshapes.html#cylinderellipticoncenterpoints
      * @param inputs Elliptic cylinders with multiple center point parameters
      * @returns List of elliptic cylinders solids
      */
@@ -77,7 +77,7 @@ export declare class SolidShapes {
      * <div>
      *  <img src="../assets/images/blockly-images/solid/shapes/cylinder.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_solid_shapes_.solidshapes.html#cylinder
+     * @link https://docs.bitbybit.dev/classes/bitbybit_solid_shapes.solidshapes.html#cylinder
      * @param inputs Cylinder parameters
      * @returns Cylinder solid
      */
@@ -87,7 +87,7 @@ export declare class SolidShapes {
      * <div>
      *  <img src="../assets/images/blockly-images/solid/shapes/cylinderOnCenterPoints.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_solid_shapes_.solidshapes.html#cylinderoncenterpoints
+     * @link https://docs.bitbybit.dev/classes/bitbybit_solid_shapes.solidshapes.html#cylinderoncenterpoints
      * @param inputs Cylinders with multiple center point parameters
      * @returns List of cylinder solids
      */
@@ -97,7 +97,7 @@ export declare class SolidShapes {
      * <div>
      *  <img src="../assets/images/blockly-images/solid/shapes/ellipsoid.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_solid_shapes_.solidshapes.html#ellipsoid
+     * @link https://docs.bitbybit.dev/classes/bitbybit_solid_shapes.solidshapes.html#ellipsoid
      * @param inputs Ellipsoid parameters
      * @returns Ellipsoid solid
      */
@@ -107,7 +107,7 @@ export declare class SolidShapes {
      * <div>
      *  <img src="../assets/images/blockly-images/solid/shapes/ellipsoidsOnCenterPoints.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_solid_shapes_.solidshapes.html#ellipsoidsoncenterpoints
+     * @link https://docs.bitbybit.dev/classes/bitbybit_solid_shapes.solidshapes.html#ellipsoidsoncenterpoints
      * @param inputs Ellipsoid parameters with multiple center points
      * @returns List of ellipsoid solids
      */
@@ -117,7 +117,7 @@ export declare class SolidShapes {
      * <div>
      *  <img src="../assets/images/blockly-images/solid/shapes/geodesicSphere.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_solid_shapes_.solidshapes.html#geodesicsphere
+     * @link https://docs.bitbybit.dev/classes/bitbybit_solid_shapes.solidshapes.html#geodesicsphere
      * @param inputs Geodesic sphere parameters
      * @returns Geodesic sphere solid
      */
@@ -127,7 +127,7 @@ export declare class SolidShapes {
      * <div>
      *  <img src="../assets/images/blockly-images/solid/shapes/geodesicSpheresOnCenterPoints.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_solid_shapes_.solidshapes.html#geodesicspheresoncenterpoints
+     * @link https://docs.bitbybit.dev/classes/bitbybit_solid_shapes.solidshapes.html#geodesicspheresoncenterpoints
      * @param inputs Geodesic sphere parameters with multiple center points
      * @returns List of geodesic spheres
      */
@@ -137,7 +137,7 @@ export declare class SolidShapes {
      * <div>
      *  <img src="../assets/images/blockly-images/solid/shapes/roundedCuboid.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_solid_shapes_.solidshapes.html#roundedcuboid
+     * @link https://docs.bitbybit.dev/classes/bitbybit_solid_shapes.solidshapes.html#roundedcuboid
      * @param inputs Rounded cuboid parameters
      * @returns Rounded cuboid solid
      */
@@ -147,7 +147,7 @@ export declare class SolidShapes {
      * <div>
      *  <img src="../assets/images/blockly-images/solid/shapes/roundedCuboidsOnCenterPoints.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_solid_shapes_.solidshapes.html#roundedcuboidsoncenterpoints
+     * @link https://docs.bitbybit.dev/classes/bitbybit_solid_shapes.solidshapes.html#roundedcuboidsoncenterpoints
      * @param inputs Rounded cuboids parameters with multiple center points
      * @returns List of rounded cuboids
      */
@@ -157,7 +157,7 @@ export declare class SolidShapes {
      * <div>
      *  <img src="../assets/images/blockly-images/solid/shapes/roundedCylinder.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_solid_shapes_.solidshapes.html#roundedcylinder
+     * @link https://docs.bitbybit.dev/classes/bitbybit_solid_shapes.solidshapes.html#roundedcylinder
      * @param inputs Rounded cylinder parameters
      * @returns Rounded cylinder solid
      */
@@ -167,7 +167,7 @@ export declare class SolidShapes {
      * <div>
      *  <img src="../assets/images/blockly-images/solid/shapes/roundedCylindersOnCenterPoints.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_solid_shapes_.solidshapes.html#roundedcylindersoncenterpoints
+     * @link https://docs.bitbybit.dev/classes/bitbybit_solid_shapes.solidshapes.html#roundedcylindersoncenterpoints
      * @param inputs Rounded cylinders parameters with multiple center points
      * @returns List of rounded cylinders
      */
@@ -177,7 +177,7 @@ export declare class SolidShapes {
      * <div>
      *  <img src="../assets/images/blockly-images/solid/shapes/sphere.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_solid_shapes_.solidshapes.html#sphere
+     * @link https://docs.bitbybit.dev/classes/bitbybit_solid_shapes.solidshapes.html#sphere
      * @param inputs Sphere parameters
      * @returns Sphere solid
      */
@@ -187,7 +187,7 @@ export declare class SolidShapes {
      * <div>
      *  <img src="../assets/images/blockly-images/solid/shapes/spheresOnCenterPoints.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_solid_shapes_.solidshapes.html#spheresoncenterpoints
+     * @link https://docs.bitbybit.dev/classes/bitbybit_solid_shapes.solidshapes.html#spheresoncenterpoints
      * @param inputs Sphere parameters with multiple center points
      * @returns List of spheres
      */
@@ -197,7 +197,7 @@ export declare class SolidShapes {
      * <div>
      *  <img src="../assets/images/blockly-images/solid/shapes/torus.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_solid_shapes_.solidshapes.html#torus
+     * @link https://docs.bitbybit.dev/classes/bitbybit_solid_shapes.solidshapes.html#torus
      * @param inputs Torus parameters
      * @returns Torus solid
      */

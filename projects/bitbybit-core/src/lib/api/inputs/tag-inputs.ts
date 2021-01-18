@@ -42,7 +42,7 @@ export namespace Tag {
      * <div>
      *  <img src="../assets/images/blockly-images/base-types/tag.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes_api_inputs_tag_inputs_.tag.tagdto.html
+     * @link https://docs.bitbybit.dev/classes_api_inputs_tag_inputs.tag.tagdto.html
      */
     export class TagDto {
 

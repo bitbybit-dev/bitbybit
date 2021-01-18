@@ -22,7 +22,7 @@ export class SolidExtrusions {
      *  <img src="../assets/images/blockly-images/solid/extrusions/extrudeLinear1.svg" alt="Blockly Image"/>
      *  <img src="../assets/images/blockly-images/solid/extrusions/extrudeLinear2.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_solid_extrusions_.solidextrusions.html#extrudelinear
+     * @link https://docs.bitbybit.dev/classes/bitbybit_solid_extrusions.solidextrusions.html#extrudelinear
      * @param inputs Contains options and geometries for linear extrude
      * @returns Extruded geometry
      */
@@ -48,7 +48,7 @@ export class SolidExtrusions {
      *  <img src="../assets/images/blockly-images/solid/extrusions/extrudeRectangular1.svg" alt="Blockly Image"/>
      *  <img src="../assets/images/blockly-images/solid/extrusions/extrudeRectangular2.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_solid_extrusions_.solidextrusions.html#extruderectangular
+     * @link https://docs.bitbybit.dev/classes/bitbybit_solid_extrusions.solidextrusions.html#extruderectangular
      * @param inputs Contains options and geometries for rectangular extrude
      * @returns Extruded geometry
      */
@@ -68,7 +68,7 @@ export class SolidExtrusions {
      * <div>
      *  <img src="../assets/images/blockly-images/solid/extrusions/extrudeRectangularPoints.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_solid_extrusions_.solidextrusions.html#extruderectangularpoints
+     * @link https://docs.bitbybit.dev/classes/bitbybit_solid_extrusions.solidextrusions.html#extruderectangularpoints
      * @param inputs Contains options and points for extrusion
      * @returns Extruded geometry
      */
@@ -85,7 +85,7 @@ export class SolidExtrusions {
      * <div>
      *  <img src="../assets/images/blockly-images/solid/extrusions/extrudeRectangularPoints.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_solid_extrusions_.solidextrusions.html#extruderotate
+     * @link https://docs.bitbybit.dev/classes/bitbybit_solid_extrusions.solidextrusions.html#extruderotate
      * @param inputs Contains options and points for extrusion
      * @returns Extruded geometry
      */

@@ -1,3 +1,3 @@
 export const uvConstants = {
-    helpUrl: '/classes/_api_bitbybit_base_types_.basetypes.uvdto.html'
+    helpUrl: '/classes/bitbybit_base_types.basetypes.uvdto.html'
 };

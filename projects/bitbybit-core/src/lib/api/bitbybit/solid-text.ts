@@ -22,7 +22,7 @@ export class SolidText {
      * <div>
      *  <img src="../assets/images/blockly-images/solid/text/cylindricalText.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_solid_text_.solidtext.html#cylindricaltext
+     * @link https://docs.bitbybit.dev/classes/bitbybit_solid_text.solidtext.html#cylindricaltext
      * @param inputs Cylindrical text parameters
      * @returns List of solids for text
      */
@@ -48,7 +48,7 @@ export class SolidText {
      * <div>
      *  <img src="../assets/images/blockly-images/solid/text/sphericalText.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_solid_text_.solidtext.html#sphericalText
+     * @link https://docs.bitbybit.dev/classes/bitbybit_solid_text.solidtext.html#sphericalText
      * @param inputs Spherical text parameters
      * @returns List of solids for text
      */

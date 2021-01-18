@@ -16,7 +16,7 @@ export declare class SurfaceSpherical {
      * <div>
      *  <img src="../assets/images/blockly-images/surface/spherical/create.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_surface_spherical_.surfacespherical.html#create
+     * @link https://docs.bitbybit.dev/classes/bitbybit_surface_spherical.surfacespherical.html#create
      * @param inputs Parameters for Nurbs spherical surface
      * @returns Spherical Nurbs surface
      */
@@ -26,7 +26,7 @@ export declare class SurfaceSpherical {
      * <div>
      *  <img src="../assets/images/blockly-images/surface/spherical/radius.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_surface_spherical_.surfacespherical.html#radius
+     * @link https://docs.bitbybit.dev/classes/bitbybit_surface_spherical.surfacespherical.html#radius
      * @param inputs Spherical Nurbs surface
      * @returns Radius
      */
@@ -36,7 +36,7 @@ export declare class SurfaceSpherical {
      * <div>
      *  <img src="../assets/images/blockly-images/surface/spherical/center.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_surface_spherical_.surfacespherical.html#center
+     * @link https://docs.bitbybit.dev/classes/bitbybit_surface_spherical.surfacespherical.html#center
      * @param inputs Spherical Nurbs surface
      * @returns Center point
      */

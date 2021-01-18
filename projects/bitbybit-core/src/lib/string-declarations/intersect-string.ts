@@ -17,7 +17,7 @@ export declare class Intersect {
      * <div>
      *  <img src="../assets/images/blockly-images/intersect/curves.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_intersect_.intersect.html#curves
+     * @link https://docs.bitbybit.dev/classes/bitbybit_intersect.intersect.html#curves
      * @param inputs Two Nurbs curves
      * @returns Intersection results
      */
@@ -27,7 +27,7 @@ export declare class Intersect {
      * <div>
      *  <img src="../assets/images/blockly-images/intersect/curveAndSurface.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_intersect_.intersect.html#curveAndSurface
+     * @link https://docs.bitbybit.dev/classes/bitbybit_intersect.intersect.html#curveAndSurface
      * @param inputs Nurbs curve and a Nurbs surface
      * @returns Intersection results
      */
@@ -37,7 +37,7 @@ export declare class Intersect {
      * <div>
      *  <img src="../assets/images/blockly-images/intersect/surfaces.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_intersect_.intersect.html#surfaces
+     * @link https://docs.bitbybit.dev/classes/bitbybit_intersect.intersect.html#surfaces
      * @param inputs Nurbs curve and a Nurbs surface
      * @returns Nurbs curves along the intersection
      */
@@ -47,7 +47,7 @@ export declare class Intersect {
      * <div>
      *  <img src="../assets/images/blockly-images/intersect/curveCurveFirstParams.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_intersect_.intersect.html#curvecurvefirstparams
+     * @link https://docs.bitbybit.dev/classes/bitbybit_intersect.intersect.html#curvecurvefirstparams
      * @param inputs Intersections data
      * @returns Parameters on first curve
      */
@@ -57,7 +57,7 @@ export declare class Intersect {
      * <div>
      *  <img src="../assets/images/blockly-images/intersect/curveCurveSecondParams.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_intersect_.intersect.html#curvecurvesecondparams
+     * @link https://docs.bitbybit.dev/classes/bitbybit_intersect.intersect.html#curvecurvesecondparams
      * @param inputs Intersections data
      * @returns Parameters on second curve
      */
@@ -67,7 +67,7 @@ export declare class Intersect {
      * <div>
      *  <img src="../assets/images/blockly-images/intersect/curveCurveFirstPoints.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_intersect_.intersect.html#curvecurvefirstpoints
+     * @link https://docs.bitbybit.dev/classes/bitbybit_intersect.intersect.html#curvecurvefirstpoints
      * @param inputs Intersections data
      * @returns Points on first curve
      */
@@ -77,7 +77,7 @@ export declare class Intersect {
      * <div>
      *  <img src="../assets/images/blockly-images/intersect/curveCurveSecondPoints.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_intersect_.intersect.html#curvecurvesecondpoints
+     * @link https://docs.bitbybit.dev/classes/bitbybit_intersect.intersect.html#curvecurvesecondpoints
      * @param inputs Intersections data
      * @returns Points on second curve
      */
@@ -87,7 +87,7 @@ export declare class Intersect {
      * <div>
      *  <img src="../assets/images/blockly-images/intersect/curveSurfaceCurveParams.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_intersect_.intersect.html#curvesurfacecurveparams
+     * @link https://docs.bitbybit.dev/classes/bitbybit_intersect.intersect.html#curvesurfacecurveparams
      * @param inputs Intersections data
      * @returns Parameters on the curve
      */
@@ -97,7 +97,7 @@ export declare class Intersect {
      * <div>
      *  <img src="../assets/images/blockly-images/intersect/curveSurfaceSurfaceParams.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_intersect_.intersect.html#curvesurfacesurfaceparams
+     * @link https://docs.bitbybit.dev/classes/bitbybit_intersect.intersect.html#curvesurfacesurfaceparams
      * @param inputs Intersections data
      * @returns Parameters on the surface
      */
@@ -107,7 +107,7 @@ export declare class Intersect {
      * <div>
      *  <img src="../assets/images/blockly-images/intersect/curveSurfaceCurvePoints.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_intersect_.intersect.html#curvesurfacecurvepoints
+     * @link https://docs.bitbybit.dev/classes/bitbybit_intersect.intersect.html#curvesurfacecurvepoints
      * @param inputs Intersections data
      * @returns Points on the curve
      */
@@ -117,7 +117,7 @@ export declare class Intersect {
      * <div>
      *  <img src="../assets/images/blockly-images/intersect/curveSurfaceSurfacePoints.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_intersect_.intersect.html#curvesurfacesurfacepoints
+     * @link https://docs.bitbybit.dev/classes/bitbybit_intersect.intersect.html#curvesurfacesurfacepoints
      * @param inputs Intersections data
      * @returns Points on the surface
      */

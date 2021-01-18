@@ -17,7 +17,7 @@ export declare class SolidPath {
      * <div>
      *  <img src="../assets/images/blockly-images/solid/path/createFromPoints.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_solid_path_.solidpath.html#createfrompoints
+     * @link https://docs.bitbybit.dev/classes/bitbybit_solid_path.solidpath.html#createfrompoints
      * @param inputs Points and indication if we want a closed path or not
      * @returns Path
      */
@@ -27,7 +27,7 @@ export declare class SolidPath {
      * <div>
      *  <img src="../assets/images/blockly-images/solid/path/createFromPolyline.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_solid_path_.solidpath.html#createfrompolyline
+     * @link https://docs.bitbybit.dev/classes/bitbybit_solid_path.solidpath.html#createfrompolyline
      * @param inputs Polyline and indication if we want a closed path or not
      * @returns Path
      */
@@ -37,7 +37,7 @@ export declare class SolidPath {
      * <div>
      *  <img src="../assets/images/blockly-images/solid/path/createFromCurve.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_solid_path_.solidpath.html#createfromcurve
+     * @link https://docs.bitbybit.dev/classes/bitbybit_solid_path.solidpath.html#createfromcurve
      * @param inputs Curve and indication if we want a closed path or not
      * @returns Path
      */
@@ -47,7 +47,7 @@ export declare class SolidPath {
      * <div>
      *  <img src="../assets/images/blockly-images/solid/path/createEmpty.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_solid_path_.solidpath.html#createempty
+     * @link https://docs.bitbybit.dev/classes/bitbybit_solid_path.solidpath.html#createempty
      * @returns Emprty path
      */
     createEmpty(): any;
@@ -56,7 +56,7 @@ export declare class SolidPath {
      * <div>
      *  <img src="../assets/images/blockly-images/solid/path/close.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_solid_path_.solidpath.html#close
+     * @link https://docs.bitbybit.dev/classes/bitbybit_solid_path.solidpath.html#close
      * @param inputs Path
      * @returns Closed path
      */
@@ -66,7 +66,7 @@ export declare class SolidPath {
      * <div>
      *  <img src="../assets/images/blockly-images/solid/path/appendpoints.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_solid_path_.solidpath.html#appendpoints
+     * @link https://docs.bitbybit.dev/classes/bitbybit_solid_path.solidpath.html#appendpoints
      * @param inputs Path to append and points
      * @returns Appended path
      */
@@ -76,7 +76,7 @@ export declare class SolidPath {
      * <div>
      *  <img src="../assets/images/blockly-images/solid/path/appendpolyline.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_solid_path_.solidpath.html#appendpolyline
+     * @link https://docs.bitbybit.dev/classes/bitbybit_solid_path.solidpath.html#appendpolyline
      * @param inputs Path to append and polyline
      * @returns Appended path
      */
@@ -86,7 +86,7 @@ export declare class SolidPath {
      * <div>
      *  <img src="../assets/images/blockly-images/solid/path/appendcurve.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_solid_path_.solidpath.html#appendcurve
+     * @link https://docs.bitbybit.dev/classes/bitbybit_solid_path.solidpath.html#appendcurve
      * @param inputs Path to append and a curve
      * @returns Appended path
      */
@@ -96,7 +96,7 @@ export declare class SolidPath {
      * <div>
      *  <img src="../assets/images/blockly-images/solid/path/appendarc.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_solid_path_.solidpath.html#appendarc
+     * @link https://docs.bitbybit.dev/classes/bitbybit_solid_path.solidpath.html#appendarc
      * @param inputs Path and arc parameters
      * @returns Appended path
      */

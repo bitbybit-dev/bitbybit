@@ -1,3 +1,3 @@
 export const nodeConstants = {
-    helpUrl: '/classes/_api_bitbybit_node_.node.html',
+    helpUrl: '/classes/bitbybit_node.node.html',
 }

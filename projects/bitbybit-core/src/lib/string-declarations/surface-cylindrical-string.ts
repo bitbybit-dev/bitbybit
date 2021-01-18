@@ -16,7 +16,7 @@ export declare class SurfaceCylindrical {
      * <div>
      *  <img src="../assets/images/blockly-images/surface/cylindrical/create.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_surface_cylindrical_.surfacecylindrical.html#create
+     * @link https://docs.bitbybit.dev/classes/bitbybit_surface_cylindrical.surfacecylindrical.html#create
      * @param inputs Parameters for cylindrical Nurbs surface
      * @returns Cylindrical Nurbs surface
      */
@@ -26,7 +26,7 @@ export declare class SurfaceCylindrical {
      * <div>
      *  <img src="../assets/images/blockly-images/surface/cylindrical/axis.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_surface_cylindrical_.surfacecylindrical.html#axis
+     * @link https://docs.bitbybit.dev/classes/bitbybit_surface_cylindrical.surfacecylindrical.html#axis
      * @param inputs Nurbs cylindrical surface
      * @returns Axis vector
      */
@@ -36,7 +36,7 @@ export declare class SurfaceCylindrical {
      * <div>
      *  <img src="../assets/images/blockly-images/surface/cylindrical/base.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_surface_cylindrical_.surfacecylindrical.html#base
+     * @link https://docs.bitbybit.dev/classes/bitbybit_surface_cylindrical.surfacecylindrical.html#base
      * @param inputs Nurbs cylindrical surface
      * @returns Base point
      */
@@ -46,7 +46,7 @@ export declare class SurfaceCylindrical {
      * <div>
      *  <img src="../assets/images/blockly-images/surface/cylindrical/height.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_surface_cylindrical_.surfacecylindrical.html#height
+     * @link https://docs.bitbybit.dev/classes/bitbybit_surface_cylindrical.surfacecylindrical.html#height
      * @param inputs Nurbs cylindrical surface
      * @returns Height
      */
@@ -56,7 +56,7 @@ export declare class SurfaceCylindrical {
      * <div>
      *  <img src="../assets/images/blockly-images/surface/cylindrical/radius.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_surface_cylindrical_.surfacecylindrical.html#radius
+     * @link https://docs.bitbybit.dev/classes/bitbybit_surface_cylindrical.surfacecylindrical.html#radius
      * @param inputs Nurbs cylindrical surface
      * @returns Radius
      */
@@ -66,7 +66,7 @@ export declare class SurfaceCylindrical {
      * <div>
      *  <img src="../assets/images/blockly-images/surface/cylindrical/xAxis.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_surface_cylindrical_.surfacecylindrical.html#xaxis
+     * @link https://docs.bitbybit.dev/classes/bitbybit_surface_cylindrical.surfacecylindrical.html#xaxis
      * @param inputs Nurbs cylindrical surface
      * @returns X axis vector
      */

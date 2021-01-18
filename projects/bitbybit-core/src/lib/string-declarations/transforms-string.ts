@@ -13,7 +13,7 @@ export declare class Transforms {
      * <div>
      *  <img src="../assets/images/blockly-images/transforms/rotationCenterAxis.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_transforms_.transforms.html#rotationcenteraxis
+     * @link https://docs.bitbybit.dev/classes/bitbybit_transforms.transforms.html#rotationcenteraxis
      * @param inputs Rotation around center with an axis information
      * @returns array of transformations
      */
@@ -23,7 +23,7 @@ export declare class Transforms {
      * <div>
      *  <img src="../assets/images/blockly-images/transforms/rotationCenterX.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_transforms_.transforms.html#rotationcenterx
+     * @link https://docs.bitbybit.dev/classes/bitbybit_transforms.transforms.html#rotationcenterx
      * @param inputs Rotation around center with an X axis information
      * @returns array of transformations
      */
@@ -33,7 +33,7 @@ export declare class Transforms {
      * <div>
      *  <img src="../assets/images/blockly-images/transforms/rotationCenterY.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_transforms_.transforms.html#rotationcentery
+     * @link https://docs.bitbybit.dev/classes/bitbybit_transforms.transforms.html#rotationcentery
      * @param inputs Rotation around center with an Y axis information
      * @returns array of transformations
      */
@@ -43,7 +43,7 @@ export declare class Transforms {
      * <div>
      *  <img src="../assets/images/blockly-images/transforms/rotationCenterZ.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_transforms_.transforms.html#rotationcenterz
+     * @link https://docs.bitbybit.dev/classes/bitbybit_transforms.transforms.html#rotationcenterz
      * @param inputs Rotation around center with an Z axis information
      * @returns array of transformations
      */
@@ -53,7 +53,7 @@ export declare class Transforms {
      * <div>
      *  <img src="../assets/images/blockly-images/transforms/rotationCenterYawPitchRoll.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_transforms_.transforms.html#rotationcenteryawpitchroll
+     * @link https://docs.bitbybit.dev/classes/bitbybit_transforms.transforms.html#rotationcenteryawpitchroll
      * @param inputs Yaw pitch roll rotation information
      * @returns array of transformations
      */
@@ -63,7 +63,7 @@ export declare class Transforms {
      * <div>
      *  <img src="../assets/images/blockly-images/transforms/scaleCenterXYZ.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_transforms_.transforms.html#scalecenterxyz
+     * @link https://docs.bitbybit.dev/classes/bitbybit_transforms.transforms.html#scalecenterxyz
      * @param inputs Scale center xyz trnansformation
      * @returns array of transformations
      */
@@ -73,7 +73,7 @@ export declare class Transforms {
      * <div>
      *  <img src="../assets/images/blockly-images/transforms/scaleXYZ.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_transforms_.transforms.html#scalexyz
+     * @link https://docs.bitbybit.dev/classes/bitbybit_transforms.transforms.html#scalexyz
      * @param inputs Scale XYZ number array information
      * @returns transformation
      */
@@ -83,7 +83,7 @@ export declare class Transforms {
      * <div>
      *  <img src="../assets/images/blockly-images/transforms/uniformScale.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_transforms_.transforms.html#uniformscale
+     * @link https://docs.bitbybit.dev/classes/bitbybit_transforms.transforms.html#uniformscale
      * @param inputs Scale Dto
      * @returns transformation
      */
@@ -93,7 +93,7 @@ export declare class Transforms {
      * <div>
      *  <img src="../assets/images/blockly-images/transforms/uniformScaleFromCenter.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_transforms_.transforms.html#uniformscalefromcenter
+     * @link https://docs.bitbybit.dev/classes/bitbybit_transforms.transforms.html#uniformscalefromcenter
      * @param inputs Scale Dto with center point information
      * @returns array of transformations
      */
@@ -103,7 +103,7 @@ export declare class Transforms {
      * <div>
      *  <img src="../assets/images/blockly-images/transforms/translationXYZ.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_transforms_.transforms.html#translationxyz
+     * @link https://docs.bitbybit.dev/classes/bitbybit_transforms.transforms.html#translationxyz
      * @param inputs Translation information
      * @returns transformation
      */

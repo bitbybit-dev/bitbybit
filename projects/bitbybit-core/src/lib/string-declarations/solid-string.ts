@@ -34,7 +34,7 @@ export declare class Solid {
      * <div>
      *  <img src="../assets/images/blockly-images/solid/drawSolidOrPolygonMesh.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_solid_.solid.html#drawsolidorpolygonmesh
+     * @link https://docs.bitbybit.dev/classes/bitbybit_solid.solid.html#drawsolidorpolygonmesh
      * @param inputs Contains a solid or polygon and information for drawing
      * @returns Mesh that is being drawn by Babylon
      */
@@ -44,7 +44,7 @@ export declare class Solid {
      * <div>
      *  <img src="../assets/images/blockly-images/solid/drawSolidOrPolygonMeshes.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_solid_.solid.html#drawsolidorpolygonmeshes
+     * @link https://docs.bitbybit.dev/classes/bitbybit_solid.solid.html#drawsolidorpolygonmeshes
      * @param inputs Contains solids or polygons and information for drawing
      * @returns Mesh that is being drawn by Babylon
      */
@@ -54,7 +54,7 @@ export declare class Solid {
      * <div>
      *  <img src="../assets/images/blockly-images/solid/drawPath.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_solid_.solid.html#drawpath
+     * @link https://docs.bitbybit.dev/classes/bitbybit_solid.solid.html#drawpath
      * @param inputs Contains a path and information for drawing
      * @returns Mesh that is being drawn by Babylon
      */
@@ -64,7 +64,7 @@ export declare class Solid {
      * <div>
      *  <img src="../assets/images/blockly-images/solid/transformSolids.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_solid_.solid.html#transformsolids
+     * @link https://docs.bitbybit.dev/classes/bitbybit_solid.solid.html#transformsolids
      * @param inputs Solids with the transformation matrixes
      * @returns Solids with a transformation
      */
@@ -74,7 +74,7 @@ export declare class Solid {
      * <div>
      *  <img src="../assets/images/blockly-images/solid/transformSolid.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_solid_.solid.html#transformsolid
+     * @link https://docs.bitbybit.dev/classes/bitbybit_solid.solid.html#transformsolid
      * @param inputs Solid with the transformation matrixes
      * @returns Solid with a transformation
      */
@@ -84,7 +84,7 @@ export declare class Solid {
      * <div>
      *  <img src="../assets/images/blockly-images/solid/downloadSolidSTL.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_solid_.solid.html#downloadsolidstl
+     * @link https://docs.bitbybit.dev/classes/bitbybit_solid.solid.html#downloadsolidstl
      * @param inputs 3D Solid
      */
     downloadSolidSTL(inputs: Inputs.Solid.DownloadSolidDto): void;
@@ -93,7 +93,7 @@ export declare class Solid {
      * <div>
      *  <img src="../assets/images/blockly-images/solid/downloadSolidsSTL.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_solid_.solid.html#downloadsolidsstl
+     * @link https://docs.bitbybit.dev/classes/bitbybit_solid.solid.html#downloadsolidsstl
      * @param inputs 3D Solid
      */
     downloadSolidsSTL(inputs: Inputs.Solid.DownloadSolidsDto): void;

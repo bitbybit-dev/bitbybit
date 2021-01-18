@@ -22,7 +22,7 @@ export class SolidHulls {
      *  <img src="../assets/images/blockly-images/solid/hulls/hull2.svg" alt="Blockly Image"/>
      *  <img src="../assets/images/blockly-images/solid/hulls/hull3.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_solid_hulls_.solidhulls.html#chainhull
+     * @link https://docs.bitbybit.dev/classes/bitbybit_solid_hulls.solidhulls.html#chainhull
      * @param inputs Geometries
      * @returns Chain hulled geometry
      */
@@ -37,7 +37,7 @@ export class SolidHulls {
      *  <img src="../assets/images/blockly-images/solid/hulls/hullChain2.svg" alt="Blockly Image"/>
      *  <img src="../assets/images/blockly-images/solid/hulls/hullChain3.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/_api_bitbybit_solid_hulls_.solidhulls.html#chainhull
+     * @link https://docs.bitbybit.dev/classes/bitbybit_solid_hulls.solidhulls.html#chainhull
      * @param inputs Geometries
      * @returns Hulled geometry
      */
