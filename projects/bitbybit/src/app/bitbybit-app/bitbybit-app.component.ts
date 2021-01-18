@@ -315,6 +315,51 @@ export class BitbybitAppComponent implements OnInit, OnDestroy, AfterViewInit {
     }
 
     import(): void {
+        switch (this.currentUiState) {
+            case UiStatesEnum.blockly:
+                this.importBlockly();
+                break;
+            case UiStatesEnum.monaco:
+                this.importTypeScript();
+                break;
+            case UiStatesEnum.babylon:
+                switch (this.previousUiState) {
+                    case UiStatesEnum.blockly:
+                        this.importBlockly();
+                        break;
+                    case UiStatesEnum.monaco:
+                        this.importTypeScript();
+                        break;
+                    default:
+                        break;
+                }
+                break;
+            default:
+                break;
+        }
+    }
+
+    importTypeScript(): void {
+        const inputFileElement = document.getElementById('exampleInput') as HTMLInputElement;
+        inputFileElement.click();
+        inputFileElement.onchange = (e) => {
+            const file = inputFileElement.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.readAsText(file, 'UTF-8');
+                reader.onload = (evt) => {
+                    this.code = evt.target.result as string;
+                    this.startMonaco();
+                    this.run();
+                };
+                reader.onerror = (evt) => {
+                    document.getElementById('fileContents').innerHTML = 'error reading file';
+                };
+            }
+        };
+    }
+
+    importBlockly(): void {
         const inputFileElement = document.getElementById('exampleInput') as HTMLInputElement;
         inputFileElement.click();
         inputFileElement.onchange = (e) => {
@@ -339,6 +384,31 @@ export class BitbybitAppComponent implements OnInit, OnDestroy, AfterViewInit {
     }
 
     export(): void {
+        switch (this.currentUiState) {
+            case UiStatesEnum.blockly:
+                this.exportBlockly();
+                break;
+            case UiStatesEnum.monaco:
+                this.exportTypescript();
+                break;
+            case UiStatesEnum.babylon:
+                switch (this.previousUiState) {
+                    case UiStatesEnum.blockly:
+                        this.exportBlockly();
+                        break;
+                    case UiStatesEnum.monaco:
+                        this.exportTypescript();
+                        break;
+                    default:
+                        break;
+                }
+                break;
+            default:
+                break;
+        }
+    }
+
+    private exportBlockly(): void {
         const xml = Xml.workspaceToDom(this.workspace);
         const xmlText = Xml.domToText(xml);
         this.createBlobAndDownload(xmlText, 'text/xml', 'workspace.bitbybit');
