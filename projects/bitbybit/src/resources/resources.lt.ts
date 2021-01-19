@@ -11,6 +11,7 @@ export const resourcesLt: ResourcesInterface = Object.freeze({
     app_menu_clean_canvas: 'Išvalyti Drobę',
     app_menu_more: 'Daugiau',
     app_menu_more_about: 'Apie',
+    app_menu_more_docs: 'API Dokumentacija',
     app_menu_more_home: 'BitByBit Namai',
     app_menu_more_clean_canvas: 'Išvalyti drobę',
     app_menu_more_about_paragraph_first: 'BitasPoBito yra internetinė aplikacija paremta atviro kodo, bendruomenės ir prieinamumo idėjomis, kuri kūrėjams padeda programuoti geometrinius kūnus. Paprasta vizualinio programavimo kalba tinka visiems amžiams ir gali tarnauti kaip įrankis skirtas parametriniam dizainui, edukacijai, duomenų vizualizavimui, menams, skaitmeninei manufaktūrai kurti. Vartotojo sąsaja turėtų būti gerai pažįstama žmonėms, kurie jau yra išbandę įrankius, tokius kaip Scratch ar Blockly.Games. Skirtumas tas, jog BitasPoBito pateikia pažangius trimačio modeliavimo algoritmus, kurie leidžia atlikti begalę parametrinių užduočių. Platformos tikslas - supaprastinti programavimą, leisti vartotojams išsaugoti, įkelti ir dalintis skriptais bei prisijungti prie Discord bendruomenės. Prisijunkite ir tapkite šio įrankio ateities dalimi.',

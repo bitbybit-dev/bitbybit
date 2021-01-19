@@ -10,6 +10,7 @@ export interface ResourcesInterface {
     app_menu_more: string;
     app_menu_more_about: string;
     app_menu_more_home: string;
+    app_menu_more_docs: string;
     app_menu_more_about_paragraph_first: string;
     app_menu_more_about_paragraph_second: string;
     app_menu_more_about_paragraph_third: string;
