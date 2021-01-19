@@ -204,9 +204,6 @@ export class BitbybitAppComponent implements OnInit, OnDestroy, AfterViewInit {
                     this.tagsNeedUpdate = false;
                 });
 
-                // console.log(this.workspace);
-                console.log(toolbox);
-
                 BitByBitBlocklyHelperService.promptPrintSave = (prompt: PrintSaveInterface) => this.openPrintSaveDialog(prompt);
                 BitByBitBlocklyHelperService.angular = {
                     httpClient: this.httpClient,

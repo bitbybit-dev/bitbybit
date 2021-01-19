@@ -27,6 +27,7 @@ export * from './solid-shapes-string';
 export * from './solid-text-string';
 export * from './intersect-string';
 export * from './tag-string';
+export * from './time-string';
 
 export * from './inputs/node-inputs-string';
 export * from './inputs/vector-inputs-string';

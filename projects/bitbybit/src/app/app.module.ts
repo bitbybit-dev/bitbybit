@@ -68,6 +68,7 @@ const monacoConfig: NgxMonacoEditorConfig = {
             ${DeclarationStrings.solidTextString}
             ${DeclarationStrings.intersectString}
             ${DeclarationStrings.tagString}
+            ${DeclarationStrings.timeString}
 
             class BitByBitBase {
                 readonly vector: Vector;
@@ -82,6 +83,7 @@ const monacoConfig: NgxMonacoEditorConfig = {
                 readonly solid: Solid;
                 readonly intersect: Intersect;
                 readonly tag: Tag;
+                readonly time: Time;
             }
         }
         `;

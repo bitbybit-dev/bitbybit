@@ -31,6 +31,7 @@ import { SolidShapes } from './api/bitbybit/solid-shapes';
 import { SolidText } from './api/bitbybit/solid-text';
 import { Intersect } from './api/bitbybit/intersect';
 import { Tag } from './api/bitbybit/tag';
+import { Time } from './api/bitbybit/time';
 
 @NgModule({
     declarations: [],
@@ -68,7 +69,8 @@ import { Tag } from './api/bitbybit/tag';
         SolidShapes,
         SolidText,
         Intersect,
-        Tag
+        Tag,
+        Time
     ],
     exports: []
 })
