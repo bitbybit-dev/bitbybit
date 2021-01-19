@@ -4,13 +4,13 @@ import { ResourcesInterface, ResourcesService } from '../../../../resources';
 import { createStandardContextIIFE } from '../../../_shared';
 import { getRequired, makeRequiredValidationModelForInputs, BitByBitBlockHandlerService, ValidationEntityInterface } from '../../../validations';
 
-export function createBezierCurveBlock() {
+export function createBezierCurveBlock(): void {
 
     const resources = ResourcesService.getResources();
     const blockSelector = 'verb_geometry_bezier_curve_by_points';
 
     Blocks[blockSelector] = {
-        init() {
+        init(): void {
             this.appendValueInput('Points')
                 .setCheck('Array')
                 .setAlign(ALIGN_RIGHT)
@@ -42,7 +42,7 @@ export function createBezierCurveBlock() {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `return new BitByBit.verb.geom.BezierCurve( inputs.points, inputs.weights );`);
+            `return bitbybit.curve.createBezierCurve(inputs);`);
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };
 }

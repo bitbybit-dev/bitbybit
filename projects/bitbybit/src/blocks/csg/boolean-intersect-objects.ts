@@ -3,6 +3,8 @@ import * as JavaScript from 'blockly/javascript';
 import { ResourcesInterface, ResourcesService } from '../../resources';
 import { createStandardContextIIFE } from '../_shared';
 import { getRequired, makeRequiredValidationModelForInputs, BitByBitBlockHandlerService, ValidationEntityInterface } from '../validations';
+import { environment } from '../../environments/environment';
+import { solidConstants } from './solid-constants';
 
 export function createBooleanIntersectObjectsBlock(): void {
 
@@ -18,13 +20,13 @@ export function createBooleanIntersectObjectsBlock(): void {
             this.setOutput(true, 'CsgMesh');
             this.setColour('#fff');
             this.setTooltip(resources.block_csg_intersect_objects_description);
-            this.setHelpUrl('');
+            this.setHelpUrl(environment.docsUrl + solidConstants.solidBooleansHelpUrl + '#' + 'intersect');
         }
     };
 
     JavaScript[blockSelector] = (block: Block) => {
         const inputs = {
-            intersectObjects: (JavaScript as any).valueToCode(block, 'IntersectObjects', (JavaScript as any).ORDER_ATOMIC),
+            objects: (JavaScript as any).valueToCode(block, 'IntersectObjects', (JavaScript as any).ORDER_ATOMIC),
         };
 
         // this is first set of validations to check that all inputs are non empty strings
@@ -37,10 +39,7 @@ export function createBooleanIntersectObjectsBlock(): void {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `
-            const intersected = BitByBit.CSG.booleans.intersect(...inputs.intersectObjects);
-            return intersected;
-`
+            `return bitbybit.solid.booleans.intersect(inputs);`
         );
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };

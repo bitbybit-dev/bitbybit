@@ -21,15 +21,12 @@
                 <div class="menu">
                     <div class="menu-item d-none d-sm-flex">
                         <a routerLink="../app">{{texts.menu.app}}</a>
-                    </div>
+                    </div>                   
+                     <div class="menu-item d-none d-sm-flex">
+                        <a href="https://docs.bitbybit.dev">{{texts.menu.docs}}</a>
+                    </div> 
                     <div class="menu-item d-none  d-sm-flex">
                         <a href="https://school.bitbybit.dev">{{texts.menu.school}}</a>
-                    </div>
-                    <div class="menu-item d-none  d-sm-flex">
-                        <a href="#about" (click)="scroll('about', $event)">{{texts.menu.about}}</a>
-                    </div>
-                    <div class="menu-item d-none  d-sm-flex">
-                        <a href="#contact" (click)="scroll('contact', $event)">{{texts.menu.contact}}</a>
                     </div>
                     <button (click)="toggleMenu()" mat-icon-button class="menu-item d-sm-none">
                         <mat-icon>menu</mat-icon>
@@ -40,15 +37,12 @@
         <nav class="menu-hamburger d-flex" *ngIf="menuOpen">
             <div class="menu-item">
                 <a routerLink="../app">{{texts.menu.app}}</a>
-            </div>
+            </div>                 
+            <div class="menu-item">
+               <a href="https://docs.bitbybit.dev">{{texts.menu.docs}}</a>
+           </div>
             <div class="menu-item">
                 <a href="https://school.bitbybit.dev">{{texts.menu.school}}</a>
-            </div>
-            <div class="menu-item">
-                <a href="#about" (click)="scroll('about', $event)">{{texts.menu.about}}</a>
-            </div>
-            <div class="menu-item">
-                <a href="#contact" (click)="scroll('contact', $event)">{{texts.menu.contact}}</a>
             </div>
         </nav>
         <div class="header-content d-none d-sm-none d-md-none d-lg-flex">

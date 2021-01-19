@@ -11,14 +11,16 @@ import {
     BitByBitBlockHandlerService,
     ValidationEntityInterface
 } from '../../validations';
+import { environment } from 'projects/bitbybit/src/environments/environment';
+import { lineConstants } from '../../base/geometry/line/line-constants';
 
-export function createDrawLineBlock() {
+export function createDrawLineBlock(): void {
 
     const resources = ResourcesService.getResources();
     const blockSelector = 'babylon_draw_line';
 
     Blocks[blockSelector] = {
-        init() {
+        init(): void {
             this.appendValueInput('Line')
                 .setCheck('Line')
                 .setAlign(ALIGN_RIGHT)
@@ -45,7 +47,7 @@ export function createDrawLineBlock() {
             this.setPreviousStatement(true, null);
             this.setNextStatement(true, null);
             this.setTooltip(resources.block_babylon_draw_line_description);
-            this.setHelpUrl('');
+            this.setHelpUrl(environment.docsUrl + lineConstants.helpUrl + '#' + 'drawline');
         }
     };
 
@@ -57,6 +59,7 @@ export function createDrawLineBlock() {
             opacity: (JavaScript as any).valueToCode(block, 'Opacity', (JavaScript as any).ORDER_ATOMIC),
             width: (JavaScript as any).valueToCode(block, 'Width', (JavaScript as any).ORDER_ATOMIC),
             updatable: (JavaScript as any).valueToCode(block, 'Updatable', (JavaScript as any).ORDER_ATOMIC),
+            lineMesh: undefined,
         };
 
         // this is first set of validations to check that all inputs are non empty strings
@@ -69,28 +72,8 @@ export function createDrawLineBlock() {
         (block as any).validationModel = runtimeValidationModel;
 
         return createStandardContextIIFE(block, blockSelector, inputs, false,
-            `
-        inputs.lineMeshVariable = ${(JavaScript as any).variableDB_.getName(block.getFieldValue('DrawnLineMesh'), VARIABLE_CATEGORY_NAME)};
-
-        const line = inputs.line;
-
-        const points = [
-            new BitByBit.BABYLON.Vector3(line.start[0], line.start[1], line.start[2]),
-            new BitByBit.BABYLON.Vector3(line.end[0], line.end[1], line.end[2])
-        ];
-
-        if(inputs.lineMeshVariable && inputs.updatable){
-            inputs.lineMeshVariable = BitByBit.BABYLON.MeshBuilder.CreateLines(null, {points, instance: inputs.lineMeshVariable, useVertexAlpha: true, updatable: inputs.updatable}, null);
-        } else {
-            inputs.lineMeshVariable = BitByBit.BABYLON.MeshBuilder.CreateLines('lines${Math.random()}', {points, updatable: inputs.updatable, useVertexAlpha: true}, BitByBit.scene);
-            ${(JavaScript as any).variableDB_.getName(block.getFieldValue('DrawnLineMesh'), VARIABLE_CATEGORY_NAME)} = inputs.lineMeshVariable;
-        }
-
-        inputs.lineMeshVariable.enableEdgesRendering();
-        inputs.lineMeshVariable.edgesWidth = inputs.width;
-        const edgeColor = BitByBit.BABYLON.Color3.FromHexString(inputs.colour);
-        inputs.lineMeshVariable.edgesColor = new BitByBit.BABYLON.Color4(edgeColor.r, edgeColor.g, edgeColor.b, inputs.opacity);
- `
+            `inputs.lineMesh = ${(JavaScript as any).variableDB_.getName(block.getFieldValue('DrawnLineMesh'), VARIABLE_CATEGORY_NAME)};
+            ${(JavaScript as any).variableDB_.getName(block.getFieldValue('DrawnLineMesh'), VARIABLE_CATEGORY_NAME)} = bitbybit.line.drawLine(inputs);`
         );
     };
 }

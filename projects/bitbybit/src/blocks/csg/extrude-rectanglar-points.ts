@@ -3,6 +3,8 @@ import * as JavaScript from 'blockly/javascript';
 import { ResourcesInterface, ResourcesService } from '../../resources';
 import { createStandardContextIIFE } from '../_shared';
 import { getRequired, makeRequiredValidationModelForInputs, BitByBitBlockHandlerService, ValidationEntityInterface } from '../validations';
+import { environment } from '../../environments/environment';
+import { solidConstants } from './solid-constants';
 
 export function createExtrudeRectangularPointsBlock(): void {
 
@@ -26,7 +28,7 @@ export function createExtrudeRectangularPointsBlock(): void {
             this.setOutput(true, 'CsgMesh');
             this.setColour('#fff');
             this.setTooltip(resources.block_csg_extrude_rectangular_points_description);
-            this.setHelpUrl('');
+            this.setHelpUrl(environment.docsUrl + solidConstants.solidExtrusionsHelpUrl + '#' + 'extruderectangularpoints');
         }
     };
 
@@ -47,13 +49,7 @@ export function createExtrudeRectangularPointsBlock(): void {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `
-            const twoDimensionalPoints = inputs.points.map(pt => [pt[0], pt[2]]);
-            const duplicatePointsRemoved = BitByBit.BitByBitBlocklyHelperService.removeConsecutiveDuplicates(twoDimensionalPoints, BitByBit.BitByBitBlocklyHelperService.tolerance);
-            const path = BitByBit.CSG.geometries.path2.fromPoints({}, duplicatePointsRemoved);
-            const extrusion = BitByBit.CSG.extrusions.extrudeRectangular({height: inputs.height, size: inputs.size}, path);
-            return extrusion;
-`
+            `return bitbybit.solid.extrusions.extrudeRectangularPoints(inputs);`
         );
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };

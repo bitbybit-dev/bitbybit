@@ -3,14 +3,16 @@ import * as JavaScript from 'blockly/javascript';
 import { ResourcesInterface, ResourcesService } from '../../../../resources';
 import { createStandardContextIIFE } from '../../../_shared';
 import { getRequired, makeRequiredValidationModelForInputs, BitByBitBlockHandlerService, ValidationEntityInterface } from '../../../validations';
+import { environment } from 'projects/bitbybit/src/environments/environment';
+import { sphericalSurfaceConstants } from './spherical-surface-constants';
 
-export function createSphericalSurfaceCenterBlock() {
+export function createSphericalSurfaceCenterBlock(): void {
 
     const resources = ResourcesService.getResources();
     const blockSelector = 'verb_geometry_spherical_surface_center';
 
     Blocks[blockSelector] = {
-        init() {
+        init(): void {
             this.appendValueInput('Sphere')
                 .setCheck('NurbsSurface')
                 .setAlign(ALIGN_RIGHT)
@@ -18,6 +20,7 @@ export function createSphericalSurfaceCenterBlock() {
             this.setOutput(true, 'Array');
             this.setColour('#fff');
             this.setTooltip(resources.block_verb_geometry_spherical_surface_center_description);
+            this.setHelpUrl(environment.docsUrl + sphericalSurfaceConstants.helpUrl + '#' + 'center');
         }
     };
 
@@ -35,7 +38,7 @@ export function createSphericalSurfaceCenterBlock() {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `return inputs.sphere.center();`
+            `return bitbybit.surface.sphere.center(inputs);`
         );
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };

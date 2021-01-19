@@ -3,14 +3,16 @@ import * as JavaScript from 'blockly/javascript';
 import { ResourcesInterface, ResourcesService } from '../../../../resources';
 import { createStandardContextIIFE } from '../../../_shared';
 import { getRequired, makeRequiredValidationModelForInputs, BitByBitBlockHandlerService, ValidationEntityInterface } from '../../../validations';
+import { environment } from 'projects/bitbybit/src/environments/environment';
+import { vectorConstants } from './vector-constants';
 
-export function createCoreVectorMulBlock() {
+export function createCoreVectorMulBlock(): void {
 
     const resources = ResourcesService.getResources();
     const blockSelector = 'verb_core_vector_mul';
 
     Blocks[blockSelector] = {
-        init() {
+        init(): void {
             this.appendValueInput('Vector')
                 .setCheck('Array')
                 .setAlign(ALIGN_RIGHT)
@@ -22,7 +24,7 @@ export function createCoreVectorMulBlock() {
             this.setOutput(true, 'Array');
             this.setColour('#fff');
             this.setTooltip(resources.block_verb_core_vector_mul_description);
-            this.setHelpUrl('');
+            this.setHelpUrl(environment.docsUrl + vectorConstants.helpUrl + '#' + 'mul');
         }
     };
 
@@ -42,9 +44,7 @@ export function createCoreVectorMulBlock() {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `
-            return inputs.vector.map(s => s * inputs.scalar);
-            `);
+            `return bitbybit.vector.mul(inputs);`);
 
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };

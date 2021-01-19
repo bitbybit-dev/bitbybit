@@ -3,14 +3,16 @@ import * as JavaScript from 'blockly/javascript';
 import { ResourcesService } from '../../../../resources';
 import { createStandardContextIIFE } from '../../../_shared';
 import { makeRequiredValidationModelForInputs, BitByBitBlockHandlerService } from '../../../validations';
+import { polylineConstants } from './polyline-constants';
+import { environment } from 'projects/bitbybit/src/environments/environment';
 
-export function createPolylineConvertToNurbsCurveBlock() {
+export function createPolylineConvertToNurbsCurveBlock(): void {
 
     const resources = ResourcesService.getResources();
     const blockSelector = 'base_geometry_polyline_convert_to_nurbs_curve';
 
     Blocks[blockSelector] = {
-        init() {
+        init(): void {
             this.appendValueInput('Polyline')
                 .setCheck('Polyline')
                 .setAlign(ALIGN_RIGHT)
@@ -18,6 +20,7 @@ export function createPolylineConvertToNurbsCurveBlock() {
             this.setOutput(true, 'NurbsCurve');
             this.setColour('#fff');
             this.setTooltip(resources.block_base_geometry_polyline_convert_to_nurbs_curve_description);
+            this.setHelpUrl(environment.docsUrl + polylineConstants.helpUrl + '#' + 'converttonurbscurve');
         }
     };
 
@@ -32,7 +35,7 @@ export function createPolylineConvertToNurbsCurveBlock() {
         ]));
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `return BitByBit.verb.geom.NurbsCurve.byPoints(inputs.polyline.points, 1);`
+            `return bitbybit.polyline.convertToNurbsCurve(inputs);`
         );
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };

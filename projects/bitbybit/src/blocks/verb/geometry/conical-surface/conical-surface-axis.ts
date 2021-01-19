@@ -3,14 +3,16 @@ import * as JavaScript from 'blockly/javascript';
 import { ResourcesInterface, ResourcesService } from '../../../../resources';
 import { createStandardContextIIFE } from '../../../_shared';
 import { getRequired, makeRequiredValidationModelForInputs, BitByBitBlockHandlerService, ValidationEntityInterface } from '../../../validations';
+import { environment } from 'projects/bitbybit/src/environments/environment';
+import { conicalSurfaceConstants } from './conical-surface-constants';
 
-export function createConicalSurfaceAxisBlock() {
+export function createConicalSurfaceAxisBlock(): void {
 
     const resources = ResourcesService.getResources();
     const blockSelector = 'verb_geometry_conical_surface_axis';
 
     Blocks[blockSelector] = {
-        init() {
+        init(): void {
             this.appendValueInput('Cone')
                 .setCheck('NurbsSurface')
                 .setAlign(ALIGN_RIGHT)
@@ -18,6 +20,7 @@ export function createConicalSurfaceAxisBlock() {
             this.setOutput(true, 'Array');
             this.setColour('#fff');
             this.setTooltip(resources.block_verb_geometry_conical_surface_axis_description);
+            this.setHelpUrl(environment.docsUrl + conicalSurfaceConstants.helpUrl + '#' + 'axis');
         }
     };
 
@@ -35,7 +38,7 @@ export function createConicalSurfaceAxisBlock() {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `return inputs.cone.axis();`
+            `return bitbybit.surface.cone.axis(inputs);`
         );
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };

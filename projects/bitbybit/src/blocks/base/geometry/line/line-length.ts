@@ -3,14 +3,16 @@ import * as JavaScript from 'blockly/javascript';
 import { ResourcesService } from '../../../../resources';
 import { createStandardContextIIFE } from '../../../_shared';
 import { makeRequiredValidationModelForInputs, BitByBitBlockHandlerService } from '../../../validations';
+import { lineConstants } from './line-constants';
+import { environment } from 'projects/bitbybit/src/environments/environment';
 
-export function createLineLengthBlock() {
+export function createLineLengthBlock(): void {
 
     const resources = ResourcesService.getResources();
     const blockSelector = 'base_geometry_line_length';
 
     Blocks[blockSelector] = {
-        init() {
+        init(): void {
             this.appendValueInput('Line')
                 .setCheck('Line')
                 .setAlign(ALIGN_RIGHT)
@@ -18,6 +20,7 @@ export function createLineLengthBlock() {
             this.setOutput(true, 'Number');
             this.setColour('#fff');
             this.setTooltip(resources.block_base_geometry_line_length_description);
+            this.setHelpUrl(environment.docsUrl + lineConstants.helpUrl + '#' + 'length');
         }
     };
 
@@ -32,7 +35,7 @@ export function createLineLengthBlock() {
         ]));
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `return BitByBit.verb.core.Vec.dist(inputs.line.start, inputs.line.end);`
+            `return bitbybit.line.length(input);`
         );
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };

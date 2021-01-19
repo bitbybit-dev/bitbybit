@@ -3,14 +3,16 @@ import * as JavaScript from 'blockly/javascript';
 import { ResourcesInterface, ResourcesService } from '../../../../resources';
 import { createStandardContextIIFE } from '../../../_shared';
 import { getRequired, makeRequiredValidationModelForInputs, BitByBitBlockHandlerService, ValidationEntityInterface } from '../../../validations';
+import { curveConstants } from './curve-constants';
+import { environment } from 'projects/bitbybit/src/environments/environment';
 
-export function createCurvesTransformBlock() {
+export function createCurvesTransformBlock(): void {
 
     const resources = ResourcesService.getResources();
     const blockSelector = 'verb_geometry_nurbs_curves_transform';
 
     Blocks[blockSelector] = {
-        init() {
+        init(): void {
             this.appendValueInput('Curves')
                 .setCheck('Array')
                 .setAlign(ALIGN_RIGHT)
@@ -21,7 +23,7 @@ export function createCurvesTransformBlock() {
             this.setOutput(true, 'Array');
             this.setColour('#fff');
             this.setTooltip(resources.block_verb_geom_curves_transform_description);
-            this.setHelpUrl('');
+            this.setHelpUrl(environment.docsUrl + curveConstants.helpUrl + '#' + 'transformcurves');
         }
     };
 
@@ -41,24 +43,7 @@ export function createCurvesTransformBlock() {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `
-const curvesTransformed = [];
-inputs.curves.forEach(curve => {
-    const points = curve.controlPoints();
-    const transformation = inputs.matrix;
-    let transformedControlPoints = points;
-    if(transformation.length && transformation.length > 0){
-        transformation.flat().forEach(transform => {
-            transformedControlPoints = BitByBit.BitByBitBlocklyHelperService.transformPointsByMatrix(transformedControlPoints, transform);
-        });
-    } else {
-        transformedControlPoints = BitByBit.BitByBitBlocklyHelperService.transformPointsByMatrix(points, transformation);
-    }
-    curvesTransformed.push(verb.geom.NurbsCurve.byKnotsControlPointsWeights(curve.degree(), curve.knots(), transformedControlPoints, curve.weights()));
-});
-return curvesTransformed;
-
-`);
+            `return bitbybit.curve.transformCurves(inputs);`);
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };
 }

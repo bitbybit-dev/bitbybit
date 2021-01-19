@@ -3,6 +3,8 @@ import * as JavaScript from 'blockly/javascript';
 import { ResourcesInterface, ResourcesService } from '../../resources';
 import { createStandardContextIIFE } from '../_shared';
 import { getRequired, makeRequiredValidationModelForInputs, BitByBitBlockHandlerService, ValidationEntityInterface } from '../validations';
+import { environment } from '../../environments/environment';
+import { solidConstants } from './solid-constants';
 
 export function createPrimitive2dCircleBlock(): void {
 
@@ -26,7 +28,8 @@ export function createPrimitive2dCircleBlock(): void {
             this.setOutput(true, 'Polygon');
             this.setColour('#fff');
             this.setTooltip(resources.block_csg_primitive_2d_circle_description);
-            this.setHelpUrl('');
+            this.setHelpUrl(environment.docsUrl + solidConstants.solidPolygonHelpUrl + '#' + 'circle');
+
         }
     };
 
@@ -47,10 +50,7 @@ export function createPrimitive2dCircleBlock(): void {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `
-            const circle = BitByBit.CSG.primitives.circle({center: inputs.center, radius: inputs.radius, segments: inputs.segments});
-            return circle;
-`
+            `return bitbybit.solid.polygon.circle(inputs);`
         );
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };

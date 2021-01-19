@@ -3,6 +3,8 @@ import * as JavaScript from 'blockly/javascript';
 import { ResourcesInterface, ResourcesService } from '../../../resources';
 import { createStandardContextIIFE } from '../../_shared';
 import { getRequired, makeRequiredValidationModelForInputs, BitByBitBlockHandlerService, ValidationEntityInterface } from '../../validations';
+import { environment } from 'projects/bitbybit/src/environments/environment';
+import { nodeConstants } from './node-constants';
 
 export function createNodeRotateAroundBlock(): void {
 
@@ -23,7 +25,7 @@ export function createNodeRotateAroundBlock(): void {
                 .setCheck('Array')
                 .setAlign(ALIGN_RIGHT)
                 .appendField(resources.block_babylon_node_rotate_around_input_axis.toLowerCase());
-            this.appendValueInput('Amount')
+            this.appendValueInput('Angle')
                 .setCheck('Number')
                 .setAlign(ALIGN_RIGHT)
                 .appendField(resources.block_babylon_node_rotate_around_input_amount.toLowerCase());
@@ -32,7 +34,7 @@ export function createNodeRotateAroundBlock(): void {
             this.setPreviousStatement(true, null);
             this.setNextStatement(true, null);
             this.setTooltip(resources.block_babylon_node_rotate_around_description);
-            this.setHelpUrl('');
+            this.setHelpUrl(environment.docsUrl + nodeConstants.helpUrl + '#' + 'rotatearoundaxiswithposition');
         }
     };
 
@@ -41,7 +43,7 @@ export function createNodeRotateAroundBlock(): void {
             node: (JavaScript as any).valueToCode(block, 'Node', (JavaScript as any).ORDER_ATOMIC),
             position: (JavaScript as any).valueToCode(block, 'Position', (JavaScript as any).ORDER_ATOMIC),
             axis: (JavaScript as any).valueToCode(block, 'Axis', (JavaScript as any).ORDER_ATOMIC),
-            amount: (JavaScript as any).valueToCode(block, 'Amount', (JavaScript as any).ORDER_ATOMIC),
+            angle: (JavaScript as any).valueToCode(block, 'Angle', (JavaScript as any).ORDER_ATOMIC),
         };
 
         // this is first set of validations to check that all inputs are non empty strings
@@ -54,13 +56,7 @@ export function createNodeRotateAroundBlock(): void {
         (block as any).validationModel = runtimeValidationModel;
 
         return createStandardContextIIFE(block, blockSelector, inputs, false,
-            `
-            inputs.node.rotateAround(
-                new BitByBit.BABYLON.Vector3(inputs.position[0], inputs.position[1], inputs.position[2]),
-                new BitByBit.BABYLON.Vector3(inputs.axis[0], inputs.axis[1], inputs.axis[2]),
-                BitByBit.BABYLON.Angle.FromDegrees(inputs.amount).radians()
-            );
-`
+            `bitbybit.node.rotateAroundAxisWithPosition(inputs);`
         );
     };
 }

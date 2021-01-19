@@ -3,14 +3,16 @@ import * as JavaScript from 'blockly/javascript';
 import { ResourcesInterface, ResourcesService } from '../../../resources';
 import { createStandardContextIIFE } from '../../_shared';
 import { getRequired, makeRequiredValidationModelForInputs, BitByBitBlockHandlerService, ValidationEntityInterface } from '../../validations';
+import { environment } from 'projects/bitbybit/src/environments/environment';
+import { intersectConstants } from './intersect-constants';
 
-export function createIntersectCurveSurfaceBlock() {
+export function createIntersectCurveSurfaceBlock(): void {
 
     const resources = ResourcesService.getResources();
     const blockSelector = 'verb_geometry_intersect_curve_surface';
 
     Blocks[blockSelector] = {
-        init() {
+        init(): void {
             this.appendValueInput('Curve')
                 .setCheck('NurbsCurve')
                 .setAlign(ALIGN_RIGHT)
@@ -22,6 +24,7 @@ export function createIntersectCurveSurfaceBlock() {
             this.setOutput(true, 'Array');
             this.setColour('#fff');
             this.setTooltip(resources.block_verb_geometry_intersect_curve_surface_description);
+            this.setHelpUrl(environment.docsUrl + intersectConstants.helpUrl + '#' + 'curveandsurface');
         }
     };
 
@@ -40,7 +43,7 @@ export function createIntersectCurveSurfaceBlock() {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `return BitByBit.verb.geom.Intersect.curveAndSurface(inputs.curve, inputs.surface);`
+            `return bitbybit.intersect.curveAndSurface(inputs);`
         );
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };

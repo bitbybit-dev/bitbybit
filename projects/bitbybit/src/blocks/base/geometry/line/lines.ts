@@ -8,14 +8,16 @@ import {
     BitByBitBlockHandlerService,
     ValidationEntityInterface
 } from '../../../validations';
+import { environment } from 'projects/bitbybit/src/environments/environment';
+import { lineConstants } from './line-constants';
 
-export function createLinesBlock() {
+export function createLinesBlock(): void {
 
     const resources = ResourcesService.getResources();
     const blockSelector = 'base_geometry_lines';
 
     Blocks[blockSelector] = {
-        init() {
+        init(): void {
             this.appendValueInput('StartPoints')
                 .setCheck('Array')
                 .setAlign(ALIGN_RIGHT)
@@ -27,6 +29,7 @@ export function createLinesBlock() {
             this.setOutput(true, 'Array');
             this.setColour('#fff');
             this.setTooltip(resources.block_babylon_draw_lines_description);
+            this.setHelpUrl(environment.docsUrl + lineConstants.helpUrl + '#' + 'linesbetweenstartandendpoints');
         }
     };
 
@@ -45,12 +48,7 @@ export function createLinesBlock() {
         const runtimeValidationModel = makeRuntimeValidationModel(resources, Object.keys(inputs));
         (block as any).validationModel = runtimeValidationModel;
 
-        const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-`
-        return inputs.startPoints
-            .map((s, index) => ({start: s, end: inputs.endPoints[index]}))
-            .filter(line => BitByBit.verb.core.Vec.dist(line.start, line.end) !== 0);
-`
+        const code = createStandardContextIIFE(block, blockSelector, inputs, true, `return bitbybit.line.linesBetweenStartAndEndPoints(inputs);`
         );
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };

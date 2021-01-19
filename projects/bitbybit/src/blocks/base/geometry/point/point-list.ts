@@ -3,6 +3,8 @@ import * as JavaScript from 'blockly/javascript';
 import { ResourcesService } from '../../../../resources';
 import { createStandardContextIIFE } from '../../../_shared';
 import { makeRequiredValidationModelForInputs, BitByBitBlockHandlerService } from '../../../validations';
+import { environment } from 'projects/bitbybit/src/environments/environment';
+import { pointConstants } from './point-constants';
 
 export function createPointListBlock() {
 
@@ -22,6 +24,7 @@ export function createPointListBlock() {
             this.setOutput(true, 'Array');
             this.setColour('#fff');
             this.setTooltip(resources.block_base_geometry_point_list_description);
+            this.setHelpUrl(environment.docsUrl + pointConstants.helpUrl + '#' + 'multiplypoint');
         }
     };
 
@@ -36,15 +39,7 @@ export function createPointListBlock() {
             resources.block_coordinate_x, resources.block_coordinate_y, resources.block_coordinate_z
         ]));
 
-        const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-`
-            const points = [];
-            for(let i = 0; i < inputs.amountOfPoints; i++){
-                points.push([inputs.point[0], inputs.point[1], inputs.point[2]]);
-            }
-            return points;
-`
-        );
+        const code = createStandardContextIIFE(block, blockSelector, inputs, true, `return bitbybit.point.multiplyPoint(inputs);`);
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };
 }

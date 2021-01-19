@@ -3,14 +3,16 @@ import * as JavaScript from 'blockly/javascript';
 import { ResourcesInterface, ResourcesService } from '../../../../resources';
 import { createStandardContextIIFE } from '../../../_shared';
 import { getRequired, makeRequiredValidationModelForInputs, BitByBitBlockHandlerService, ValidationEntityInterface } from '../../../validations';
+import { environment } from 'projects/bitbybit/src/environments/environment';
+import { curveConstants } from './curve-constants';
 
-export function createCurveDivideByEqualArcLengthPointsBlock() {
+export function createCurveDivideByEqualArcLengthPointsBlock(): void {
 
     const resources = ResourcesService.getResources();
     const blockSelector = 'verb_geometry_nurbs_curve_divide_by_equal_arc_length_points';
 
     Blocks[blockSelector] = {
-        init() {
+        init(): void {
             this.appendValueInput('Curve')
                 .setCheck('NurbsCurve')
                 .setAlign(ALIGN_RIGHT)
@@ -18,10 +20,12 @@ export function createCurveDivideByEqualArcLengthPointsBlock() {
             this.appendValueInput('Subdivision')
                 .setCheck('Number')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_verb_geometry_nurbs_curve_divide_by_equal_arc_length_points_input_subdivison_number.toLowerCase());
+                .appendField(
+                    resources.block_verb_geometry_nurbs_curve_divide_by_equal_arc_length_points_input_subdivison_number.toLowerCase());
             this.setOutput(true, 'Array');
             this.setColour('#fff');
             this.setTooltip(resources.block_verb_geometry_nurbs_curve_divide_by_equal_arc_length_points_description);
+            this.setHelpUrl(environment.docsUrl + curveConstants.helpUrl + '#' + 'dividebyequalarclengthtopoints');
         }
     };
 
@@ -40,10 +44,7 @@ export function createCurveDivideByEqualArcLengthPointsBlock() {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `
-const segments = inputs.curve.divideByEqualArcLength(inputs.subdivision);
-return segments.map(s => inputs.curve.point(s.u));
-            `
+            `return bitbybit.curve.divideByEqualArcLengthToPoints(inputs);`
         );
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };

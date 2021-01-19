@@ -3,6 +3,8 @@ import * as JavaScript from 'blockly/javascript';
 import { ResourcesInterface, ResourcesService } from '../../resources';
 import { createStandardContextIIFE } from '../_shared';
 import { getRequired, makeRequiredValidationModelForInputs, BitByBitBlockHandlerService, ValidationEntityInterface } from '../validations';
+import { environment } from '../../environments/environment';
+import { solidConstants } from './solid-constants';
 
 export function createPrimitive2dPathAppendArcBlock(): void {
 
@@ -46,7 +48,7 @@ export function createPrimitive2dPathAppendArcBlock(): void {
             this.setOutput(true, 'Path');
             this.setColour('#fff');
             this.setTooltip(resources.block_csg_primitive_2d_path_append_arc_description);
-            this.setHelpUrl('');
+            this.setHelpUrl(environment.docsUrl + solidConstants.solidPathHelpUrl + '#' + 'appendarc');
         }
     };
 
@@ -74,18 +76,7 @@ export function createPrimitive2dPathAppendArcBlock(): void {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `
-            const endpoint = [inputs.endPoint[0], inputs.endPoint[1]];
-            const radius = [inputs.radiusX, inputs.radiusY];
-            return BitByBit.CSG.geometries.path2.appendArc({
-                endpoint,
-                radius,
-                xaxisrotation: inputs.xAxisRotation,
-                clockwise: inputs.clockwise,
-                large: inputs.large,
-                segments: inputs.segments,
-            }, inputs.path);
-`
+            `return bitbybit.solid.path.appendArc(inputs);`
         );
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };

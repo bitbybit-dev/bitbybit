@@ -3,6 +3,8 @@ import * as JavaScript from 'blockly/javascript';
 import { ResourcesInterface, ResourcesService } from '../../resources';
 import { createStandardContextIIFE } from '../_shared';
 import { getRequired, makeRequiredValidationModelForInputs, BitByBitBlockHandlerService, ValidationEntityInterface } from '../validations';
+import { environment } from '../../environments/environment';
+import { solidConstants } from './solid-constants';
 
 export function createCsgTransformSolidsBlock(): void {
 
@@ -21,7 +23,8 @@ export function createCsgTransformSolidsBlock(): void {
             this.setOutput(true, 'Array');
             this.setColour('#fff');
             this.setTooltip(resources.block_csg_transform_solids_description);
-            this.setHelpUrl('');
+            this.setHelpUrl(environment.docsUrl + solidConstants.solidHelpUrl + '#' + 'transformsolids');
+
         }
     };
 
@@ -41,21 +44,8 @@ export function createCsgTransformSolidsBlock(): void {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-`
-    const transformation = inputs.matrix;
-    let solidsToTransform = inputs.solids;
-    return solidsToTransform.map(solid => {
-        let transformedMesh = BitByBit.CSG.geometries.geom3.clone(solid);
-        if(transformation.length && transformation.length > 0){
-            transformation.flat().forEach(transform => {
-                transformedMesh = BitByBit.CSG.transforms.transform(transform.toArray(), transformedMesh);
-            });
-        } else {
-            transformedMesh = BitByBit.CSG.transforms.transform(transformation.toArray(), transformedMesh);
-        }
-        return transformedMesh;
-    });
-`);
+            `return bitbybit.solid.transformSolids(inputs);`
+        );
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };
 }

@@ -5,4 +5,5 @@ export interface ExampleInterface {
     title: string;
     youtubeLink?: string;
     xml: string;
+    typescript?: string;
 }

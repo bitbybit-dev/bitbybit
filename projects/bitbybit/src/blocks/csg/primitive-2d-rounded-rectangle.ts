@@ -3,6 +3,8 @@ import * as JavaScript from 'blockly/javascript';
 import { ResourcesInterface, ResourcesService } from '../../resources';
 import { createStandardContextIIFE } from '../_shared';
 import { getRequired, makeRequiredValidationModelForInputs, BitByBitBlockHandlerService, ValidationEntityInterface } from '../validations';
+import { environment } from '../../environments/environment';
+import { solidConstants } from './solid-constants';
 
 export function createPrimitive2dRoundedRectangleBlock(): void {
 
@@ -34,7 +36,7 @@ export function createPrimitive2dRoundedRectangleBlock(): void {
             this.setOutput(true, 'Polygon');
             this.setColour('#fff');
             this.setTooltip(resources.block_csg_primitive_2d_rounded_rectangle_description);
-            this.setHelpUrl('');
+            this.setHelpUrl(environment.docsUrl + solidConstants.solidPolygonHelpUrl + '#' + 'roundedrectangle');
         }
     };
 
@@ -57,15 +59,7 @@ export function createPrimitive2dRoundedRectangleBlock(): void {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `
-            const rectangle = BitByBit.CSG.primitives.roundedRectangle({
-                center: [inputs.center[0], inputs.center[1]],
-                size: [inputs.width, inputs.length],
-                roundRadius: inputs.roundRadius,
-                segments: inputs.segments,
-            });
-            return rectangle;
-`
+            `return bitbybit.solid.polygon.roundedRectangle(inputs);`
         );
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };

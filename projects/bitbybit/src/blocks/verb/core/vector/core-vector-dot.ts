@@ -3,14 +3,16 @@ import * as JavaScript from 'blockly/javascript';
 import { ResourcesInterface, ResourcesService } from '../../../../resources';
 import { createStandardContextIIFE } from '../../../_shared';
 import { getRequired, makeRequiredValidationModelForInputs, BitByBitBlockHandlerService, ValidationEntityInterface } from '../../../validations';
+import { environment } from 'projects/bitbybit/src/environments/environment';
+import { vectorConstants } from './vector-constants';
 
-export function createCoreVectorDotBlock() {
+export function createCoreVectorDotBlock(): void {
 
     const resources = ResourcesService.getResources();
     const blockSelector = 'verb_core_vector_dot';
 
     Blocks[blockSelector] = {
-        init() {
+        init(): void {
             this.appendValueInput('First')
                 .setCheck('Array')
                 .setAlign(ALIGN_RIGHT)
@@ -22,7 +24,7 @@ export function createCoreVectorDotBlock() {
             this.setOutput(true, 'Array');
             this.setColour('#fff');
             this.setTooltip(resources.block_verb_core_vector_dot_description);
-            this.setHelpUrl('');
+            this.setHelpUrl(environment.docsUrl + vectorConstants.helpUrl + '#' + 'dot');
         }
     };
 
@@ -42,7 +44,7 @@ export function createCoreVectorDotBlock() {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `return BitByBit.verb.core.Vec.dot(inputs.first, inputs.second);`);
+            `return bitbybit.vector.dot(inputs.first, inputs.second);`);
 
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };

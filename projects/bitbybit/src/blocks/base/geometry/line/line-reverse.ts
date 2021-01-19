@@ -3,14 +3,16 @@ import * as JavaScript from 'blockly/javascript';
 import { ResourcesService } from '../../../../resources';
 import { createStandardContextIIFE } from '../../../_shared';
 import { makeRequiredValidationModelForInputs, BitByBitBlockHandlerService } from '../../../validations';
+import { environment } from 'projects/bitbybit/src/environments/environment';
+import { lineConstants } from './line-constants';
 
-export function createLineReverseBlock() {
+export function createLineReverseBlock(): void {
 
     const resources = ResourcesService.getResources();
     const blockSelector = 'base_geometry_line_reverse';
 
     Blocks[blockSelector] = {
-        init () {
+        init(): void {
             this.appendValueInput('Line')
                 .setCheck('Line')
                 .setAlign(ALIGN_RIGHT)
@@ -18,6 +20,7 @@ export function createLineReverseBlock() {
             this.setOutput(true, 'Line');
             this.setColour('#fff');
             this.setTooltip(resources.block_base_geometry_line_reverse_description);
+            this.setHelpUrl(environment.docsUrl + lineConstants.helpUrl + '#' + 'reverse');
         }
     };
 
@@ -32,7 +35,7 @@ export function createLineReverseBlock() {
         ]));
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `return {start: inputs.line.end, end: inputs.line.start};`
+            `return bitbybit.line.reverse(inputs);`
         );
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };

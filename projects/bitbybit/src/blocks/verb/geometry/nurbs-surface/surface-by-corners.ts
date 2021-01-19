@@ -3,14 +3,16 @@ import * as JavaScript from 'blockly/javascript';
 import { ResourcesInterface, ResourcesService } from '../../../../resources';
 import { createStandardContextIIFE } from '../../../_shared';
 import { getRequired, makeRequiredValidationModelForInputs, BitByBitBlockHandlerService, ValidationEntityInterface } from '../../../validations';
+import { environment } from 'projects/bitbybit/src/environments/environment';
+import { surfaceConstants } from './surface-constants';
 
-export function createSurfaceByCornersBlock() {
+export function createSurfaceByCornersBlock(): void {
 
     const resources = ResourcesService.getResources();
     const blockSelector = 'verb_geometry_nurbs_surface_by_corners';
 
     Blocks[blockSelector] = {
-        init() {
+        init(): void {
             this.appendValueInput('Point1')
                 .setCheck('Array')
                 .setAlign(ALIGN_RIGHT)
@@ -30,6 +32,7 @@ export function createSurfaceByCornersBlock() {
             this.setOutput(true, 'NurbsSurface');
             this.setColour('#fff');
             this.setTooltip(resources.block_verb_geometry_nurbs_surface_by_corners_description);
+            this.setHelpUrl(environment.docsUrl + surfaceConstants.helpUrl + '#' + 'createsurfacebycorners');
         }
     };
 
@@ -51,7 +54,7 @@ export function createSurfaceByCornersBlock() {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `return BitByBit.verb.geom.NurbsSurface.byCorners(inputs.point1, inputs.point2, inputs.point3, inputs.point4);`);
+            `return bitbybit.surface.createSurfaceByCorners(inputs);`);
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };
 }

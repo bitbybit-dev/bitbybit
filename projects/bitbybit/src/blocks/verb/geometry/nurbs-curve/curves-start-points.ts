@@ -3,14 +3,16 @@ import * as JavaScript from 'blockly/javascript';
 import { ResourcesInterface, ResourcesService } from '../../../../resources';
 import { createStandardContextIIFE } from '../../../_shared';
 import { getRequired, makeRequiredValidationModelForInputs, BitByBitBlockHandlerService, ValidationEntityInterface } from '../../../validations';
+import { curveConstants } from './curve-constants';
+import { environment } from 'projects/bitbybit/src/environments/environment';
 
-export function createCurvesStartPointsBlock() {
+export function createCurvesStartPointsBlock(): void {
 
     const resources = ResourcesService.getResources();
     const blockSelector = 'verb_geometry_nurbs_curves_start_points';
 
     Blocks[blockSelector] = {
-        init() {
+        init(): void {
             this.appendValueInput('Curves')
                 .setCheck('Array')
                 .setAlign(ALIGN_RIGHT)
@@ -18,6 +20,7 @@ export function createCurvesStartPointsBlock() {
             this.setOutput(true, 'Array');
             this.setColour('#fff');
             this.setTooltip(resources.block_verb_geometry_nurbs_curves_start_points_description);
+            this.setHelpUrl(environment.docsUrl + curveConstants.helpUrl + '#' + 'startpoints');
         }
     };
 
@@ -35,7 +38,7 @@ export function createCurvesStartPointsBlock() {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `return inputs.curves.map(crv => crv.point(0));`
+            `return bitbybit.curve.startPoints(inputs);`
         );
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };

@@ -3,14 +3,16 @@ import * as JavaScript from 'blockly/javascript';
 import { ResourcesInterface, ResourcesService } from '../../../../resources';
 import { createStandardContextIIFE } from '../../../_shared';
 import { getRequired, makeRequiredValidationModelForInputs, BitByBitBlockHandlerService, ValidationEntityInterface } from '../../../validations';
+import { revolvedSurfaceConstants } from './revolved-surface-constants';
+import { environment } from 'projects/bitbybit/src/environments/environment';
 
-export function createRevolvedSurfaceAngleBlock() {
+export function createRevolvedSurfaceAngleBlock(): void {
 
     const resources = ResourcesService.getResources();
     const blockSelector = 'verb_geometry_revolved_surface_angle';
 
     Blocks[blockSelector] = {
-        init() {
+        init(): void {
             this.appendValueInput('Revolution')
                 .setCheck('NurbsSurface')
                 .setAlign(ALIGN_RIGHT)
@@ -18,6 +20,7 @@ export function createRevolvedSurfaceAngleBlock() {
             this.setOutput(true, 'Number');
             this.setColour('#fff');
             this.setTooltip(resources.block_verb_geometry_revolved_surface_angle_description);
+            this.setHelpUrl(environment.docsUrl + revolvedSurfaceConstants.helpUrl + '#' + 'angle');
         }
     };
 
@@ -35,7 +38,7 @@ export function createRevolvedSurfaceAngleBlock() {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `return BitByBit.BABYLON.Angle.FromRadians(inputs.revolution.angle()).degrees();`
+            `return bitbybit.surface.revolved.angle(inputs);`
         );
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };

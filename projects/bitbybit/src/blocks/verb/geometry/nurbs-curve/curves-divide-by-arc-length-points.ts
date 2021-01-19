@@ -3,14 +3,16 @@ import * as JavaScript from 'blockly/javascript';
 import { ResourcesInterface, ResourcesService } from '../../../../resources';
 import { createStandardContextIIFE } from '../../../_shared';
 import { getRequired, makeRequiredValidationModelForInputs, BitByBitBlockHandlerService, ValidationEntityInterface } from '../../../validations';
+import { environment } from 'projects/bitbybit/src/environments/environment';
+import { curveConstants } from './curve-constants';
 
-export function createCurvesDivideByArcLengthPointsBlock() {
+export function createCurvesDivideByArcLengthPointsBlock(): void {
 
     const resources = ResourcesService.getResources();
     const blockSelector = 'verb_geometry_nurbs_curves_divide_by_arc_length_points';
 
     Blocks[blockSelector] = {
-        init() {
+        init(): void {
             this.appendValueInput('Curves')
                 .setCheck('NurbsCurve')
                 .setAlign(ALIGN_RIGHT)
@@ -22,6 +24,7 @@ export function createCurvesDivideByArcLengthPointsBlock() {
             this.setOutput(true, 'Array');
             this.setColour('#fff');
             this.setTooltip(resources.block_verb_geometry_nurbs_curves_divide_by_arc_length_points_description);
+            this.setHelpUrl(environment.docsUrl + curveConstants.helpUrl + '#' + 'dividecurvesbyarclengthtopoints');
         }
     };
 
@@ -40,14 +43,7 @@ export function createCurvesDivideByArcLengthPointsBlock() {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `
-const points = [];
-inputs.curves.forEach(curve => {
-    const crvSegments = curve.divideByArcLength(inputs.length);
-    points.push(...crvSegments.map(s => curve.point(s.u)));
-});
-return points;
-            `
+            `return bitbybit.curve.divideCurvesByArcLengthToPoints(inputs);`
         );
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };

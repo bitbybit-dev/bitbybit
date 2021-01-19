@@ -3,14 +3,16 @@ import * as JavaScript from 'blockly/javascript';
 import { ResourcesInterface, ResourcesService } from '../../../../resources';
 import { createStandardContextIIFE } from '../../../_shared';
 import { getRequired, makeRequiredValidationModelForInputs, BitByBitBlockHandlerService, ValidationEntityInterface } from '../../../validations';
+import { curveConstants } from './curve-constants';
+import { environment } from 'projects/bitbybit/src/environments/environment';
 
-export function createCurveDomainBlock() {
+export function createCurveDomainBlock(): void {
 
     const resources = ResourcesService.getResources();
     const blockSelector = 'verb_geometry_nurbs_curve_domain';
 
     Blocks[blockSelector] = {
-        init() {
+        init(): void {
             this.appendValueInput('Curve')
                 .setCheck('NurbsCurve')
                 .setAlign(ALIGN_RIGHT)
@@ -18,6 +20,7 @@ export function createCurveDomainBlock() {
             this.setOutput(true, 'Interval');
             this.setColour('#fff');
             this.setTooltip(resources.block_verb_geometry_nurbs_curve_domain_description);
+            this.setHelpUrl(environment.docsUrl + curveConstants.helpUrl + '#' + 'domain');
         }
     };
 
@@ -35,7 +38,7 @@ export function createCurveDomainBlock() {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `return inputs.curve.domain();`);
+            `return bitbybit.curve.domain(inputs);`);
 
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };

@@ -3,14 +3,16 @@ import * as JavaScript from 'blockly/javascript';
 import { ResourcesInterface, ResourcesService } from '../../../../resources';
 import { createStandardContextIIFE } from '../../../_shared';
 import { getRequired, makeRequiredValidationModelForInputs, BitByBitBlockHandlerService, ValidationEntityInterface } from '../../../validations';
+import { environment } from 'projects/bitbybit/src/environments/environment';
+import { vectorConstants } from './vector-constants';
 
-export function createCoreVectorLerpBlock() {
+export function createCoreVectorLerpBlock(): void {
 
     const resources = ResourcesService.getResources();
     const blockSelector = 'verb_core_vector_lerp';
 
     Blocks[blockSelector] = {
-        init() {
+        init(): void {
             this.appendValueInput('Fraction')
                 .setCheck('Number')
                 .setAlign(ALIGN_RIGHT)
@@ -26,7 +28,7 @@ export function createCoreVectorLerpBlock() {
             this.setOutput(true, 'Array');
             this.setColour('#fff');
             this.setTooltip(resources.block_verb_core_vector_lerp_description);
-            this.setHelpUrl('');
+            this.setHelpUrl(environment.docsUrl + vectorConstants.helpUrl + '#' + 'lerp');
         }
     };
 
@@ -47,7 +49,7 @@ export function createCoreVectorLerpBlock() {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `return BitByBit.verb.core.Vec.lerp(inputs.fraction, inputs.first, inputs.second);`);
+            `return bitbybit.vector.lerp(inputs);`);
 
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };

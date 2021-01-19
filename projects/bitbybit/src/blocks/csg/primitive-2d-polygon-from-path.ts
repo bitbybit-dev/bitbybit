@@ -3,6 +3,8 @@ import * as JavaScript from 'blockly/javascript';
 import { ResourcesInterface, ResourcesService } from '../../resources';
 import { createStandardContextIIFE } from '../_shared';
 import { getRequired, makeRequiredValidationModelForInputs, BitByBitBlockHandlerService, ValidationEntityInterface } from '../validations';
+import { environment } from '../../environments/environment';
+import { solidConstants } from './solid-constants';
 
 export function createPrimitive2dPolygonFromPathBlock(): void {
 
@@ -18,13 +20,13 @@ export function createPrimitive2dPolygonFromPathBlock(): void {
             this.setOutput(true, 'Polygon');
             this.setColour('#fff');
             this.setTooltip(resources.block_csg_primitive_2d_polygon_from_path_description);
-            this.setHelpUrl('');
+            this.setHelpUrl(environment.docsUrl + solidConstants.solidPolygonHelpUrl + '#' + 'createfrompath');
         }
     };
 
     JavaScript[blockSelector] = (block: Block) => {
         const inputs = {
-            polyline: (JavaScript as any).valueToCode(block, 'Polyline', (JavaScript as any).ORDER_ATOMIC),
+            path: (JavaScript as any).valueToCode(block, 'Path', (JavaScript as any).ORDER_ATOMIC),
         };
 
         // this is first set of validations to check that all inputs are non empty strings
@@ -37,10 +39,7 @@ export function createPrimitive2dPolygonFromPathBlock(): void {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `
-            const polygon = BitByBit.CSG.primitives.polygon({points: inputs.path.points});
-            return polygon;
-`
+            `return bitbybit.solid.polygon.createFromPath(inputs);`
         );
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };

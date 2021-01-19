@@ -3,6 +3,8 @@ import * as JavaScript from 'blockly/javascript';
 import { ResourcesInterface, ResourcesService } from '../../resources';
 import { createStandardContextIIFE } from '../_shared';
 import { getRequired, makeRequiredValidationModelForInputs, BitByBitBlockHandlerService, ValidationEntityInterface } from '../validations';
+import { environment } from '../../environments/environment';
+import { solidConstants } from './solid-constants';
 
 export function createHullChainSolidsBlock(): void {
 
@@ -18,13 +20,13 @@ export function createHullChainSolidsBlock(): void {
             this.setOutput(true, 'CsgMesh');
             this.setColour('#fff');
             this.setTooltip(resources.block_csg_chain_hull_solids_description);
-            this.setHelpUrl('');
+            this.setHelpUrl(environment.docsUrl + solidConstants.solidHullsHelpUrl + '#' + 'hullchain');
         }
     };
 
     JavaScript[blockSelector] = (block: Block) => {
         const inputs = {
-            solids: (JavaScript as any).valueToCode(block, 'Solids', (JavaScript as any).ORDER_ATOMIC),
+            geometry: (JavaScript as any).valueToCode(block, 'Solids', (JavaScript as any).ORDER_ATOMIC),
         };
 
         // this is first set of validations to check that all inputs are non empty strings
@@ -37,9 +39,7 @@ export function createHullChainSolidsBlock(): void {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `
-            return BitByBit.CSG.hulls.hullChain(...inputs.solids);
-`
+            `return bitbybit.solid.hulls.hullChain(inputs);`
         );
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };

@@ -3,14 +3,16 @@ import * as JavaScript from 'blockly/javascript';
 import { ResourcesInterface, ResourcesService } from '../../../../resources';
 import { createStandardContextIIFE } from '../../../_shared';
 import { getRequired, makeRequiredValidationModelForInputs, BitByBitBlockHandlerService, ValidationEntityInterface } from '../../../validations';
+import { environment } from 'projects/bitbybit/src/environments/environment';
+import { cylindricalSurfaceConstants } from './cylindrical-surface-constants';
 
-export function createCylindricalSurfaceAxisBlock() {
+export function createCylindricalSurfaceAxisBlock(): void {
 
     const resources = ResourcesService.getResources();
     const blockSelector = 'verb_geometry_cylindrical_surface_axis';
 
     Blocks[blockSelector] = {
-        init() {
+        init(): void {
             this.appendValueInput('Cylinder')
                 .setCheck('NurbsSurface')
                 .setAlign(ALIGN_RIGHT)
@@ -18,6 +20,7 @@ export function createCylindricalSurfaceAxisBlock() {
             this.setOutput(true, 'Array');
             this.setColour('#fff');
             this.setTooltip(resources.block_verb_geometry_cylindrical_surface_axis_description);
+            this.setHelpUrl(environment.docsUrl + cylindricalSurfaceConstants.helpUrl + '#' + 'axis');
         }
     };
 
@@ -35,7 +38,7 @@ export function createCylindricalSurfaceAxisBlock() {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `return inputs.cylinder.axis();`
+            `return bitbybit.surface.cylinder.axis(inputs);`
         );
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };

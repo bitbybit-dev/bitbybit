@@ -3,14 +3,16 @@ import * as JavaScript from 'blockly/javascript';
 import { ResourcesService } from '../../../../resources';
 import { createStandardContextIIFE } from '../../../_shared';
 import { makeRequiredValidationModelForInputs, BitByBitBlockHandlerService } from '../../../validations';
+import { environment } from 'projects/bitbybit/src/environments/environment';
+import { pointConstants } from './point-constants';
 
-export function createPointZBlock() {
+export function createPointZBlock(): void {
 
     const resources = ResourcesService.getResources();
     const blockSelector = 'base_geometry_point_z';
 
     Blocks[blockSelector] = {
-        init() {
+        init(): void {
             this.appendValueInput('Point')
                 .setCheck('Array')
                 .setAlign(ALIGN_RIGHT)
@@ -18,7 +20,7 @@ export function createPointZBlock() {
             this.setOutput(true, 'Number');
             this.setColour('#fff');
             this.setTooltip(resources.block_base_geometry_point_z_description);
-            this.setHelpUrl('');
+            this.setHelpUrl(environment.docsUrl + pointConstants.helpUrl + '#' + 'getz');
         }
     };
 
@@ -33,7 +35,7 @@ export function createPointZBlock() {
             resources.block_point
         ]));
 
-        const code = createStandardContextIIFE(block, blockSelector, inputs, true, `return inputs.point[2];`);
+        const code = createStandardContextIIFE(block, blockSelector, inputs, true, `return bitbybit.point.getZ(inputs);`);
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };
 }

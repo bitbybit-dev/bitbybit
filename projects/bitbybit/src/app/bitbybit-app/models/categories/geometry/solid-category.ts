@@ -1081,13 +1081,6 @@ export function solidCategory(): string {
             </category>
         </category>
         <category name="${resources.block_toolbox_category_apply}"  categorystyle="geometry_category">
-            <block type="csg_colour">
-                <value name="Colour">
-                    <block type="colour_picker">
-                        <field name="COLOUR">#555</field>
-                    </block>
-                </value>
-            </block>
             <block type="csg_transform">
             </block>
             <block type="csg_transform_solids">

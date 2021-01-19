@@ -1,5 +1,5 @@
 export interface Texts {
-    menu: { about: string, contact: string, app: string, school: string };
+    menu: { about: string, contact: string, app: string, school: string, docs: string };
     head: { title: string, listElements: string[] };
     definition: string;
     startTheAppButton: string;
@@ -16,18 +16,21 @@ export function texts(): Texts {
             contact: 'Contact',
             app: 'App',
             school: 'School',
+            docs: 'API'
         },
         head: {
-            title: 'Value Education',
+            title: 'Creative Coding',
             listElements: [
-                'We provide the most valuable asset class in the world - knowledge.',
-                'We build powerful design and coding tools that empower our users to learn through visual programming of geometry.',
-                'We combine Science, Technology, Engineering, the Arts and Mathematics (STEAM) in our tools and our teaching methodology.',
+                'Design parametric 3D models',
+                'Make data visualizations',
+                'Create time based 3D simulations',
+                'Learn programming through art',
+                'Educate next generation of creators',
             ]
         },
         definition: `The "Bit by bit developers" company builds open-source tools and teaches courses that are available for the individuals, schools, coding bootcamps and government institutions involved in education. Our frictionless products can be adapted in many STEAM based programs. Get in touch if you would like to learn more, integrate our application in your curriculum or get personalised training.`,
         startTheAppButton: 'Start the Application!',
-        startTheAppExplanation: 'Learn to code through visual programming of geometry. Start your journey by launching our web application, it is completely FREE.',
+        startTheAppExplanation: 'Learn to code geometry. Start your journey by launching our web application, it is completely FREE.',
         about: {
             title: 'About',
             paragraphs: [

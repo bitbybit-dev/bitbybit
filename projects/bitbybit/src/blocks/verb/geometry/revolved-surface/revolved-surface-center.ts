@@ -3,14 +3,16 @@ import * as JavaScript from 'blockly/javascript';
 import { ResourcesInterface, ResourcesService } from '../../../../resources';
 import { createStandardContextIIFE } from '../../../_shared';
 import { getRequired, makeRequiredValidationModelForInputs, BitByBitBlockHandlerService, ValidationEntityInterface } from '../../../validations';
+import { environment } from 'projects/bitbybit/src/environments/environment';
+import { revolvedSurfaceConstants } from './revolved-surface-constants';
 
-export function createRevolvedSurfaceCenterBlock() {
+export function createRevolvedSurfaceCenterBlock(): void {
 
     const resources = ResourcesService.getResources();
     const blockSelector = 'verb_geometry_revolved_surface_center';
 
     Blocks[blockSelector] = {
-        init() {
+        init(): void {
             this.appendValueInput('Revolution')
                 .setCheck('NurbsSurface')
                 .setAlign(ALIGN_RIGHT)
@@ -18,6 +20,7 @@ export function createRevolvedSurfaceCenterBlock() {
             this.setOutput(true, 'Array');
             this.setColour('#fff');
             this.setTooltip(resources.block_verb_geometry_revolved_surface_center_description);
+            this.setHelpUrl(environment.docsUrl + revolvedSurfaceConstants.helpUrl + '#' + 'center');
         }
     };
 
@@ -35,7 +38,7 @@ export function createRevolvedSurfaceCenterBlock() {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `return inputs.revolution.center();`
+            `return bitbybit.surface.revolved.center(inputs);`
         );
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };

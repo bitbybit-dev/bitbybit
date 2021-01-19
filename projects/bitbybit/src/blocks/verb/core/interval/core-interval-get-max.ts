@@ -3,14 +3,16 @@ import * as JavaScript from 'blockly/javascript';
 import { ResourcesService } from '../../../../resources';
 import { createStandardContextIIFE } from '../../../_shared';
 import { makeRequiredValidationModelForInputs, BitByBitBlockHandlerService } from '../../../validations';
+import { environment } from 'projects/bitbybit/src/environments/environment';
+import { intervalConstants } from './interval-constants';
 
-export function createCoreIntervalGetMaxBlock() {
+export function createCoreIntervalGetMaxBlock(): void {
 
     const resources = ResourcesService.getResources();
     const blockSelector = 'verb_core_interval_get_max';
 
     Blocks[blockSelector] = {
-        init() {
+        init(): void {
             this.appendValueInput('Interval')
                 .setCheck('Interval')
                 .setAlign(ALIGN_RIGHT)
@@ -18,6 +20,7 @@ export function createCoreIntervalGetMaxBlock() {
             this.setOutput(true, 'Number');
             this.setColour('#fff');
             this.setTooltip(resources.block_verb_core_interval_get_max_description);
+            this.setHelpUrl(environment.docsUrl + intervalConstants.helpUrl + '#' + 'max');
         }
     };
 

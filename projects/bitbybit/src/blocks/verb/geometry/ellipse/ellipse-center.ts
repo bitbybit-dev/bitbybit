@@ -3,14 +3,16 @@ import * as JavaScript from 'blockly/javascript';
 import { ResourcesInterface, ResourcesService } from '../../../../resources';
 import { createStandardContextIIFE } from '../../../_shared';
 import { getRequired, makeRequiredValidationModelForInputs, BitByBitBlockHandlerService, ValidationEntityInterface } from '../../../validations';
+import { environment } from 'projects/bitbybit/src/environments/environment';
+import { ellipseConstants } from './ellipse-constants';
 
-export function createEllipseCenterBlock() {
+export function createEllipseCenterBlock(): void {
 
     const resources = ResourcesService.getResources();
     const blockSelector = 'verb_geometry_nurbs_curve_ellipse_center';
 
     Blocks[blockSelector] = {
-        init() {
+        init(): void {
             this.appendValueInput('Ellipse')
                 .setCheck('NurbsCurve')
                 .setAlign(ALIGN_RIGHT)
@@ -18,6 +20,7 @@ export function createEllipseCenterBlock() {
             this.setOutput(true, 'Array');
             this.setColour('#fff');
             this.setTooltip(resources.block_verb_geometry_nurbs_curve_ellipse_center_description);
+            this.setHelpUrl(environment.docsUrl + ellipseConstants.helpUrl + '#' + 'center');
         }
     };
 
@@ -35,7 +38,7 @@ export function createEllipseCenterBlock() {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `return inputs.ellipse.center();`
+            `return bitbybit.curve.ellipse.center(inputs);`
         );
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };

@@ -3,6 +3,8 @@ import * as JavaScript from 'blockly/javascript';
 import { ResourcesInterface, ResourcesService } from '../../../../resources';
 import { createStandardContextIIFE } from '../../../_shared';
 import { getRequired, makeRequiredValidationModelForInputs, BitByBitBlockHandlerService, ValidationEntityInterface } from '../../../validations';
+import { environment } from 'projects/bitbybit/src/environments/environment';
+import { vectorConstants } from './vector-constants';
 
 export function createCoreVectorAddBlock() {
 
@@ -22,6 +24,7 @@ export function createCoreVectorAddBlock() {
             this.setOutput(true, 'Array');
             this.setColour('#fff');
             this.setTooltip(resources.block_verb_core_vector_add_description);
+            this.setHelpUrl(environment.docsUrl + vectorConstants.helpUrl + '#' + 'add');
         }
     };
 
@@ -39,8 +42,7 @@ export function createCoreVectorAddBlock() {
         const runtimeValidationModel = makeRuntimeValidationModel(resources, Object.keys(inputs));
         (block as any).validationModel = runtimeValidationModel;
 
-        const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `return BitByBit.verb.core.Vec.add(inputs.first, inputs.second);`
+        const code = createStandardContextIIFE(block, blockSelector, inputs, true, `return bitbybit.vector.add(inputs);`
         );
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };

@@ -2,11 +2,11 @@
 import { createNodeFromRotationBlock } from './node-from-rotation';
 import { createNodeWorldBlock } from './node-world';
 import { createNodeGetRootBlock } from './get-root';
-import { createNodeGetRotationQuaternionBlock } from './get-rotation-quaternion';
+import { createNodeGetRotationTransformationBlock } from './get-rotation-transformation';
 import { createNodeGetRotationBlock } from './get-rotation';
 import { createNodeGetAbsolutePositionBlock } from './get-absolute-position';
 import { createNodeGetPositionExpressedInLocalSpaceBlock } from './get-position-expressed-in-local-space';
-import { createNodeGetAbsoluteRotationQuaternionBlock } from './get-absolute-rotation-quaternion';
+import { createNodeGetAbsoluteRotationTransformationBlock } from './get-absolute-rotation-transformation';
 import { createNodeGetAbsoluteUpVectorBlock } from './get-absolute-up-vector';
 import { createNodeGetAbsoluteRightVectorBlock } from './get-absolute-right-vector';
 import { createNodeGetAbsoluteForwardVectorBlock } from './get-absolute-forward-vector';
@@ -23,10 +23,10 @@ export function assembleNodeBlocks(): void {
     createNodeFromRotationBlock();
     createNodeWorldBlock();
     createNodeGetRootBlock();
-    createNodeGetRotationQuaternionBlock();
+    createNodeGetRotationTransformationBlock();
     createNodeGetRotationBlock();
     createNodeGetAbsolutePositionBlock();
-    createNodeGetAbsoluteRotationQuaternionBlock();
+    createNodeGetAbsoluteRotationTransformationBlock();
     createNodeGetAbsoluteUpVectorBlock();
     createNodeGetPositionExpressedInLocalSpaceBlock();
     createNodeGetAbsoluteRightVectorBlock();

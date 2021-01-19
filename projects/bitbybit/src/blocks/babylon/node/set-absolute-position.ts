@@ -3,6 +3,8 @@ import * as JavaScript from 'blockly/javascript';
 import { ResourcesInterface, ResourcesService } from '../../../resources';
 import { createStandardContextIIFE } from '../../_shared';
 import { getRequired, makeRequiredValidationModelForInputs, BitByBitBlockHandlerService, ValidationEntityInterface } from '../../validations';
+import { environment } from 'projects/bitbybit/src/environments/environment';
+import { nodeConstants } from './node-constants';
 
 export function createNodeSetAbsolutePositionBlock(): void {
 
@@ -24,7 +26,7 @@ export function createNodeSetAbsolutePositionBlock(): void {
             this.setPreviousStatement(true, null);
             this.setNextStatement(true, null);
             this.setTooltip(resources.block_babylon_node_set_absolute_position_description);
-            this.setHelpUrl('');
+            this.setHelpUrl(environment.docsUrl + nodeConstants.helpUrl + '#' + 'setabsoluteposition');
         }
     };
 
@@ -44,11 +46,7 @@ export function createNodeSetAbsolutePositionBlock(): void {
         (block as any).validationModel = runtimeValidationModel;
 
         return createStandardContextIIFE(block, blockSelector, inputs, false,
-            `
-            inputs.node.setAbsolutePosition(
-                new BitByBit.BABYLON.Vector3(inputs.position[0], inputs.position[1], inputs.position[2]),
-            );
-`
+            `bitbybit.node.setAbsolutePosition(inputs);`
         );
     };
 }

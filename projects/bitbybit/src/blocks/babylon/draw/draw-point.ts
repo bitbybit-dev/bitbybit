@@ -11,14 +11,16 @@ import {
     BitByBitBlockHandlerService,
     ValidationEntityInterface
 } from '../../validations';
+import { environment } from 'projects/bitbybit/src/environments/environment';
+import { pointConstants } from '../../base/geometry/point/point-constants';
 
-export function createDrawPointBlock() {
+export function createDrawPointBlock(): void {
 
     const resources = ResourcesService.getResources();
     const blockSelector = 'babylon_draw_point';
 
     Blocks[blockSelector] = {
-        init() {
+        init(): void {
             this.appendValueInput('Point')
                 .setCheck('Array')
                 .setAlign(ALIGN_RIGHT)
@@ -45,7 +47,7 @@ export function createDrawPointBlock() {
             this.setPreviousStatement(true, null);
             this.setNextStatement(true, null);
             this.setTooltip(resources.block_babylon_draw_point_description);
-            this.setHelpUrl('');
+            this.setHelpUrl(environment.docsUrl + pointConstants.helpUrl + '#' + 'drawpoint');
         }
     };
 
@@ -56,6 +58,7 @@ export function createDrawPointBlock() {
             opacity: (JavaScript as any).valueToCode(block, 'Opacity', (JavaScript as any).ORDER_ATOMIC),
             size: (JavaScript as any).valueToCode(block, 'Size', (JavaScript as any).ORDER_ATOMIC),
             updatable: (JavaScript as any).valueToCode(block, 'Updatable', (JavaScript as any).ORDER_ATOMIC),
+            pointMesh: undefined,
         };
 
         // this is first set of validations to check that all inputs are non empty strings
@@ -68,48 +71,8 @@ export function createDrawPointBlock() {
         (block as any).validationModel = runtimeValidationModel;
 
         return createStandardContextIIFE(block, blockSelector, inputs, false,
-            `
-            inputs.pointMeshVariable = ${(JavaScript as any).variableDB_.getName(block.getFieldValue('DrawnPointMesh'), VARIABLE_CATEGORY_NAME)};
-            const vectorPoints = [inputs.point];
-            const colour = BitByBit.BABYLON.Color3.FromHexString(inputs.colour);
-            const positions = [];
-            const colors = [];
-
-            const pointsCount = vectorPoints.length;
-            vectorPoints.forEach(p =>  {
-                positions.push(...p);
-                colors.push(colour.r, colour.g, colour.b, 1);
-            });
-
-            if(inputs.pointMeshVariable && inputs.updatable) {
-
-                inputs.pointMeshVariable.updateVerticesData(BABYLON.VertexBuffer.PositionKind, positions);
-                inputs.pointMeshVariable.updateVerticesData(BABYLON.VertexBuffer.ColorKind, colors);
-                inputs.pointMeshVariable.material.alpha = inputs.opacity;
-                inputs.pointMeshVariable.material.pointSize = inputs.size;
-
-            } else {
-
-                const vertexData = new BitByBit.BABYLON.VertexData();
-
-                vertexData.positions = positions;
-                vertexData.colors = colors;
-
-                inputs.pointMeshVariable = new BitByBit.BABYLON.Mesh('pointMesh${Math.random()}', BitByBit.scene);
-                vertexData.applyToMesh(inputs.pointMeshVariable, inputs.updatable);
-
-                const mat = new BitByBit.BABYLON.StandardMaterial('mat${Math.random()}', BitByBit.scene);
-                inputs.pointMeshVariable.material = mat;
-
-                inputs.pointMeshVariable.material.emissiveColor = new BitByBit.BABYLON.Color3(1, 1, 1);
-                inputs.pointMeshVariable.material.disableLighting = true;
-                inputs.pointMeshVariable.material.pointsCloud = true;
-                inputs.pointMeshVariable.material.alpha = inputs.opacity;
-                inputs.pointMeshVariable.material.pointSize = inputs.size;
-
-                ${(JavaScript as any).variableDB_.getName(block.getFieldValue('DrawnPointMesh'), VARIABLE_CATEGORY_NAME)} = inputs.pointMeshVariable;
-            }
-`
+            `inputs.pointMesh = ${(JavaScript as any).variableDB_.getName(block.getFieldValue('DrawnPointMesh'), VARIABLE_CATEGORY_NAME)};
+            ${(JavaScript as any).variableDB_.getName(block.getFieldValue('DrawnPointMesh'), VARIABLE_CATEGORY_NAME)} = bitbybit.point.drawPoint(inputs);`
         );
     };
 }

@@ -3,6 +3,8 @@ import * as JavaScript from 'blockly/javascript';
 import { ResourcesInterface, ResourcesService } from '../../resources';
 import { createStandardContextIIFE } from '../_shared';
 import { getRequired, makeRequiredValidationModelForInputs, BitByBitBlockHandlerService, ValidationEntityInterface } from '../validations';
+import { environment } from '../../environments/environment';
+import { solidConstants } from './solid-constants';
 
 export function createPrimitiveRoundedCuboidBlock(): void {
 
@@ -38,7 +40,7 @@ export function createPrimitiveRoundedCuboidBlock(): void {
             this.setOutput(true, 'CsgMesh');
             this.setColour('#fff');
             this.setTooltip(resources.block_csg_rounded_cuboid_description);
-            this.setHelpUrl('');
+            this.setHelpUrl(environment.docsUrl + solidConstants.solidShapesHelpUrl + '#' + 'roundedcuboid');
         }
     };
 
@@ -63,15 +65,7 @@ export function createPrimitiveRoundedCuboidBlock(): void {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `
-            const roundedCuboid = BitByBit.CSG.primitives.roundedCuboid({
-                center: [inputs.center[0], inputs.center[1], inputs.center[2]],
-                size: [inputs.width, inputs.height, inputs.length],
-                roundRadius: inputs.roundRadius,
-                segments: inputs.segments,
-            });
-            return roundedCuboid;
-`
+            `return bitbybit.solid.shapes.roundedCuboid(inputs);`
         );
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };

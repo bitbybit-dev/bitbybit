@@ -1,5 +1,6 @@
 import { Block, Blocks, FieldDropdown } from 'blockly';
 import * as JavaScript from 'blockly/javascript';
+import { environment } from '../../environments/environment';
 import { ResourcesService } from '../../resources';
 import { createStandardContextIIFE } from '../_shared';
 
@@ -19,7 +20,7 @@ export function createTextAlignTypeBlock(): void {
             this.setOutput(true, 'String');
             this.setColour('#fff');
             this.setTooltip(resources.block_csg_expansions_expand_path_description);
-            this.setHelpUrl('');
+            this.setHelpUrl(environment.docsUrl + '/enums/_api_inputs_solid_inputs.solid.solidtextalignenum.html');
         }
     };
 
@@ -29,9 +30,7 @@ export function createTextAlignTypeBlock(): void {
         };
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `
-            return inputs.textAlignType;
-`
+            `return inputs.textAlignType;`
         );
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };

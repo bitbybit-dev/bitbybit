@@ -3,6 +3,8 @@ import * as JavaScript from 'blockly/javascript';
 import { ResourcesInterface, ResourcesService } from '../../resources';
 import { createStandardContextIIFE } from '../_shared';
 import { getRequired, makeRequiredValidationModelForInputs, BitByBitBlockHandlerService, ValidationEntityInterface } from '../validations';
+import { environment } from '../../environments/environment';
+import { solidConstants } from './solid-constants';
 
 export function createExpansionsOffsetPathsBlock(): void {
 
@@ -30,13 +32,13 @@ export function createExpansionsOffsetPathsBlock(): void {
             this.setOutput(true, 'Array');
             this.setColour('#fff');
             this.setTooltip(resources.block_csg_expansions_offset_paths_description);
-            this.setHelpUrl('');
+            this.setHelpUrl(environment.docsUrl + solidConstants.solidExpansionsHelpUrl + '#' + 'offset');
         }
     };
 
     JavaScript[blockSelector] = (block: Block) => {
         const inputs = {
-            paths: (JavaScript as any).valueToCode(block, 'Paths', (JavaScript as any).ORDER_ATOMIC),
+            geometry: (JavaScript as any).valueToCode(block, 'Paths', (JavaScript as any).ORDER_ATOMIC),
             delta: (JavaScript as any).valueToCode(block, 'Delta', (JavaScript as any).ORDER_ATOMIC),
             segments: (JavaScript as any).valueToCode(block, 'Segments', (JavaScript as any).ORDER_ATOMIC),
             corners: (JavaScript as any).valueToCode(block, 'Corners', (JavaScript as any).ORDER_ATOMIC),
@@ -52,14 +54,7 @@ export function createExpansionsOffsetPathsBlock(): void {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `
-            const result = BitByBit.CSG.expansions.offset({
-                delta: inputs.delta,
-                corners: inputs.corners,
-                segments: inputs.segments,
-            }, ...inputs.paths);
-            return result;
-`
+             `return bitbybit.solid.expansions.offset(inputs);`
         );
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };

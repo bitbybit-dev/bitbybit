@@ -3,14 +3,16 @@ import * as JavaScript from 'blockly/javascript';
 import { ResourcesInterface, ResourcesService } from '../../../../resources';
 import { createStandardContextIIFE } from '../../../_shared';
 import { getRequired, makeRequiredValidationModelForInputs, BitByBitBlockHandlerService, ValidationEntityInterface } from '../../../validations';
+import { environment } from 'projects/bitbybit/src/environments/environment';
+import { circleConstants } from './circle-constants';
 
-export function createCircleBlock() {
+export function createCircleBlock(): void {
 
     const resources = ResourcesService.getResources();
     const blockSelector = 'verb_geometry_nurbs_curve_circle';
 
     Blocks[blockSelector] = {
-        init() {
+        init(): void {
             this.appendValueInput('Center')
                 .setCheck('Array')
                 .setAlign(ALIGN_RIGHT)
@@ -30,7 +32,7 @@ export function createCircleBlock() {
             this.setOutput(true, 'NurbsCurve');
             this.setColour('#fff');
             this.setTooltip(resources.block_verb_geometry_nurbs_curve_circle_description);
-            this.setHelpUrl('');
+            this.setHelpUrl(environment.docsUrl + circleConstants.helpUrl + '#' + 'createcircle');
         }
     };
 
@@ -55,7 +57,7 @@ export function createCircleBlock() {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `return new BitByBit.verb.geom.Circle(inputs.center, inputs.xAxis, inputs.yAxis, inputs.radius);`
+            `return bitbybit.curve.circle.createCircle(inputs);`
         );
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };
