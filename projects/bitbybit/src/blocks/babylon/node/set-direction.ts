@@ -3,6 +3,8 @@ import * as JavaScript from 'blockly/javascript';
 import { ResourcesInterface, ResourcesService } from '../../../resources';
 import { createStandardContextIIFE } from '../../_shared';
 import { getRequired, makeRequiredValidationModelForInputs, BitByBitBlockHandlerService, ValidationEntityInterface } from '../../validations';
+import { environment } from 'projects/bitbybit/src/environments/environment';
+import { nodeConstants } from './node-constants';
 
 export function createNodeSetDirectionBlock(): void {
 
@@ -24,7 +26,7 @@ export function createNodeSetDirectionBlock(): void {
             this.setPreviousStatement(true, null);
             this.setNextStatement(true, null);
             this.setTooltip(resources.block_babylon_node_set_direction_description);
-            this.setHelpUrl('');
+            this.setHelpUrl(environment.docsUrl + nodeConstants.helpUrl + '#' + 'setdirection');
         }
     };
 
@@ -44,11 +46,7 @@ export function createNodeSetDirectionBlock(): void {
         (block as any).validationModel = runtimeValidationModel;
 
         return createStandardContextIIFE(block, blockSelector, inputs, false,
-            `
-            inputs.node.setDirection(
-                new BitByBit.BABYLON.Vector3(inputs.direction[0], inputs.direction[1], inputs.direction[2]),
-            );
-`
+            `bitbybit.node.setDirection(inputs);`
         );
     };
 }

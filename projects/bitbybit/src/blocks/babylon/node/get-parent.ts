@@ -3,6 +3,8 @@ import * as JavaScript from 'blockly/javascript';
 import { ResourcesInterface, ResourcesService } from '../../../resources';
 import { createStandardContextIIFE } from '../../_shared';
 import { getRequired, makeRequiredValidationModelForInputs, BitByBitBlockHandlerService, ValidationEntityInterface } from '../../validations';
+import { environment } from 'projects/bitbybit/src/environments/environment';
+import { nodeConstants } from './node-constants';
 
 export function createNodeGetParentBlock(): void {
 
@@ -18,7 +20,7 @@ export function createNodeGetParentBlock(): void {
             this.setOutput(true, 'Node');
             this.setColour('#fff');
             this.setTooltip(resources.block_babylon_node_get_parent_description);
-            this.setHelpUrl('');
+            this.setHelpUrl(environment.docsUrl + nodeConstants.helpUrl + '#' + 'getparent');
         }
     };
 
@@ -36,11 +38,7 @@ export function createNodeGetParentBlock(): void {
         const runtimeValidationModel = makeRuntimeValidationModel(resources, Object.keys(inputs));
         (block as any).validationModel = runtimeValidationModel;
 
-        const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `
-            return inputs.node.parent;
-`
-        );
+        const code = createStandardContextIIFE(block, blockSelector, inputs, true, `return bitbybit.inputs.getParent(inputs);`);
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };
 }

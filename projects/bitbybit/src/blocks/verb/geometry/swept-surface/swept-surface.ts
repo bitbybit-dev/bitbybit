@@ -3,14 +3,16 @@ import * as JavaScript from 'blockly/javascript';
 import { ResourcesInterface, ResourcesService } from '../../../../resources';
 import { createStandardContextIIFE } from '../../../_shared';
 import { getRequired, makeRequiredValidationModelForInputs, BitByBitBlockHandlerService, ValidationEntityInterface } from '../../../validations';
+import { environment } from 'projects/bitbybit/src/environments/environment';
+import { sweptSurfaceConstants } from './swept-surface-constants';
 
-export function createSweptSurfaceBlock() {
+export function createSweptSurfaceBlock(): void {
 
     const resources = ResourcesService.getResources();
     const blockSelector = 'verb_geometry_swept_surface';
 
     Blocks[blockSelector] = {
-        init() {
+        init(): void {
             this.appendValueInput('Profile')
                 .setCheck('NurbsCurve')
                 .setAlign(ALIGN_RIGHT)
@@ -22,6 +24,7 @@ export function createSweptSurfaceBlock() {
             this.setOutput(true, 'NurbsSurface');
             this.setColour('#fff');
             this.setTooltip(resources.block_verb_geometry_swept_surface_description);
+            this.setHelpUrl(environment.docsUrl + sweptSurfaceConstants.helpUrl + '#' + 'create');
         }
     };
 
@@ -40,7 +43,7 @@ export function createSweptSurfaceBlock() {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `return new BitByBit.verb.geom.SweptSurface(inputs.profile, inputs.rail);`
+            `return bitbybit.surface.sweep.create(inputs);`
         );
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };

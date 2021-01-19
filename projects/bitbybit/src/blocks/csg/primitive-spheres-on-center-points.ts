@@ -3,6 +3,8 @@ import * as JavaScript from 'blockly/javascript';
 import { ResourcesInterface, ResourcesService } from '../../resources';
 import { createStandardContextIIFE } from '../_shared';
 import { getRequired, makeRequiredValidationModelForInputs, BitByBitBlockHandlerService, ValidationEntityInterface } from '../validations';
+import { environment } from '../../environments/environment';
+import { solidConstants } from './solid-constants';
 
 export function createPrimitiveSpheresOnCenterPointsBlock(): void {
 
@@ -26,7 +28,7 @@ export function createPrimitiveSpheresOnCenterPointsBlock(): void {
             this.setOutput(true, 'Array');
             this.setColour('#fff');
             this.setTooltip(resources.block_csg_sphere_description);
-            this.setHelpUrl('');
+            this.setHelpUrl(environment.docsUrl + solidConstants.solidShapesHelpUrl + '#' + 'spheresoncenterpoints');
         }
     };
 
@@ -47,11 +49,7 @@ export function createPrimitiveSpheresOnCenterPointsBlock(): void {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `
-            return inputs.centers.map(center => {
-                return BitByBit.CSG.primitives.sphere({center: [center[0], center[1], center[2]], radius: inputs.radius, segments: inputs.segments});
-            })
-`
+            `return bitbybit.solid.shapes.spheresOnCenterPoints(inputs);`
         );
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };

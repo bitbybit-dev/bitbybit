@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { ArcRotateCamera, Engine, Matrix, Vector3, Scene } from '@babylonjs/core';
-import { BitByBitBlocklyHelperService } from '../../../blocks/_shared/bit-by-bit-blockly-helper.service';
+import { BitByBitBlocklyHelperService } from 'projects/bitbybit-core/src/public-api';
 
 @Injectable()
 export class TagService {

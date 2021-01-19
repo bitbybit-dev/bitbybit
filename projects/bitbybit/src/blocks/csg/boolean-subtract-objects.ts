@@ -3,6 +3,8 @@ import * as JavaScript from 'blockly/javascript';
 import { ResourcesInterface, ResourcesService } from '../../resources';
 import { createStandardContextIIFE } from '../_shared';
 import { getRequired, makeRequiredValidationModelForInputs, BitByBitBlockHandlerService, ValidationEntityInterface } from '../validations';
+import { solidConstants } from './solid-constants';
+import { environment } from '../../environments/environment';
 
 export function createBooleanSubtractObjectsBlock(): void {
 
@@ -18,13 +20,13 @@ export function createBooleanSubtractObjectsBlock(): void {
             this.setOutput(true, 'CsgMesh');
             this.setColour('#fff');
             this.setTooltip(resources.block_csg_subtract_objects_description);
-            this.setHelpUrl('');
+            this.setHelpUrl(environment.docsUrl + solidConstants.solidBooleansHelpUrl + '#' + 'subtract');
         }
     };
 
     JavaScript[blockSelector] = (block: Block) => {
         const inputs = {
-            subtractObjects: (JavaScript as any).valueToCode(block, 'SubtractObjects', (JavaScript as any).ORDER_ATOMIC),
+            objects: (JavaScript as any).valueToCode(block, 'SubtractObjects', (JavaScript as any).ORDER_ATOMIC),
         };
 
         // this is first set of validations to check that all inputs are non empty strings
@@ -37,10 +39,7 @@ export function createBooleanSubtractObjectsBlock(): void {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `
-            const subtracted = BitByBit.CSG.booleans.subtract(...inputs.subtractObjects);
-            return subtracted;
-`
+            `return bitbybit.solid.booleans.subtract(inputs);`
         );
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };

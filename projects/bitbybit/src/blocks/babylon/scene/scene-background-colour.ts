@@ -8,13 +8,15 @@ import {
     BitByBitBlockHandlerService,
     ValidationEntityInterface
 } from '../../validations';
-export function createSceneBackgroundColourBlock() {
+import { environment } from 'projects/bitbybit/src/environments/environment';
+import { sceneConstants } from './scene-constants';
+export function createSceneBackgroundColourBlock(): void {
 
     const resources = ResourcesService.getResources();
     const blockSelector = 'babylon_scene_background_colour';
 
     Blocks[blockSelector] = {
-        init() {
+        init(): void {
             this.appendValueInput('Colour')
                 .setCheck('Colour')
                 .appendField(resources.block_babylon_input_scene_background_colour);
@@ -22,6 +24,7 @@ export function createSceneBackgroundColourBlock() {
             this.setNextStatement(true, null);
             this.setColour('#fff');
             this.setTooltip(resources.block_babylon_scene_background_colour_description);
+            this.setHelpUrl(environment.docsUrl + sceneConstants.helpUrl + '#' + 'backgroundcolour');
         }
     };
 
@@ -35,10 +38,6 @@ export function createSceneBackgroundColourBlock() {
             resources.block_colour
         ]));
 
-        return createStandardContextIIFE(block, blockSelector, inputs, false,
-`
-        BitByBit.scene.clearColor = BitByBit.BABYLON.Color3.FromHexString(inputs.colour);
-`
-        );
+        return createStandardContextIIFE(block, blockSelector, inputs, false, `bitbybit.scene.backgroundColour(inputs);`);
     };
 }

@@ -3,14 +3,16 @@ import * as JavaScript from 'blockly/javascript';
 import { ResourcesInterface, ResourcesService } from '../../../../resources';
 import { createStandardContextIIFE } from '../../../_shared';
 import { getRequired, makeRequiredValidationModelForInputs, BitByBitBlockHandlerService, ValidationEntityInterface } from '../../../validations';
+import { environment } from 'projects/bitbybit/src/environments/environment';
+import { vectorConstants } from './vector-constants';
 
-export function createCoreVectorDistanceBlock() {
+export function createCoreVectorDistanceBlock(): void {
 
     const resources = ResourcesService.getResources();
     const blockSelector = 'verb_core_vector_distance';
 
     Blocks[blockSelector] = {
-        init() {
+        init(): void {
             this.appendValueInput('First')
                 .setCheck('Array')
                 .setAlign(ALIGN_RIGHT)
@@ -22,7 +24,7 @@ export function createCoreVectorDistanceBlock() {
             this.setOutput(true, 'Number');
             this.setColour('#fff');
             this.setTooltip(resources.block_verb_core_vector_distance_description);
-            this.setHelpUrl('');
+            this.setHelpUrl(environment.docsUrl + vectorConstants.helpUrl + '#' + 'dist');
         }
     };
 
@@ -41,8 +43,7 @@ export function createCoreVectorDistanceBlock() {
         const runtimeValidationModel = makeRuntimeValidationModel(resources, Object.keys(inputs));
         (block as any).validationModel = runtimeValidationModel;
 
-        const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `return BitByBit.verb.core.Vec.dist(inputs.first, inputs.second);`);
+        const code = createStandardContextIIFE(block, blockSelector, inputs, true, `return bitbybit.vector.dist(inputs);`);
 
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };

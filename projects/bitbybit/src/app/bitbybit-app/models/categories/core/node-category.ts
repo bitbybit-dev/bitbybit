@@ -112,13 +112,13 @@ export function nodeCategory() {
                 </block>
                 <block type="base_geometry_node_get_rotation">
                 </block>
-                <block type="base_geometry_node_get_rotation_quaternion">
+                <block type="base_geometry_node_get_rotation_transformation">
                 </block>
                 <block type="base_geometry_node_get_position_expressed_in_local_space">
                 </block>
                 <block type="base_geometry_node_get_absolute_position">
                 </block>
-                <block type="base_geometry_node_get_absolute_rotation_quaternion">
+                <block type="base_geometry_node_get_absolute_rotation_transformation">
                 </block>
                 <block type="base_geometry_node_get_absolute_up_vector">
                 </block>

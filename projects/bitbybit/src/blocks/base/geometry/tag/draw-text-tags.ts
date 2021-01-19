@@ -8,14 +8,16 @@ import {
     BitByBitBlockHandlerService,
     ValidationEntityInterface
 } from '../../../validations';
+import { environment } from 'projects/bitbybit/src/environments/environment';
+import { tagConstants } from './tag-constants';
 
-export function createDrawTextTagsBlock() {
+export function createDrawTextTagsBlock(): void {
 
     const resources = ResourcesService.getResources();
     const blockSelector = 'base_geometry_draw_text_tags';
 
     Blocks[blockSelector] = {
-        init() {
+        init(): void {
             this.appendValueInput('TextTags')
                 .setCheck('Array')
                 .setAlign(ALIGN_RIGHT)
@@ -30,6 +32,7 @@ export function createDrawTextTagsBlock() {
             this.setPreviousStatement(true, null);
             this.setNextStatement(true, null);
             this.setTooltip(resources.block_base_geometry_draw_text_tags_description);
+            this.setHelpUrl(environment.docsUrl + tagConstants.helpUrl + '#' + 'drawtags');
         }
     };
 
@@ -49,58 +52,8 @@ export function createDrawTextTagsBlock() {
         (block as any).validationModel = runtimeValidationModel;
 
         return createStandardContextIIFE(block, blockSelector, inputs, false,
-            `
-            inputs.tagsVariable = ${(JavaScript as any).variableDB_.getName(block.getFieldValue('DrawnTextTags'), VARIABLE_CATEGORY_NAME)};
-
-            if(inputs.tagsVariable && inputs.updatable) {
-
-                // check if list has grown, and add new empty tags to tags variable so that
-                if(inputs.tagsVariable < inputs.textTags) {
-                    for(let i = inputs.tagsVariable.length - 1; i < inputs.textTags.length - 1; i++){
-                        const tagToCreate = inputs.textTags[i];
-                        const textNode = document.createElement('span');
-                        const id = '_tag' + ${new Date().getTime()} + BitByBit.BitByBitBlocklyHelperService.tagBag.length;
-                        tagToCreate.id = id;
-                        textNode.id = id;
-                        document.querySelector('.canvasZone').appendChild(textNode);
-                        tagToCreate.needsUpdate = true;
-                        BitByBit.BitByBitBlocklyHelperService.tagBag.push(tagToCreate);
-                        inputs.tagsVariable.push(tagToCreate);
-                    }
-                }
-
-                inputs.tagsVariable.forEach((tagFromVar, index) => {
-                    const tagToUpdate = BitByBit.BitByBitBlocklyHelperService.tagBag.find(tag => tag.id === tagFromVar.id);
-                    const tagToUpdateWith = inputs.textTags[index];
-                    if(tagToUpdateWith){
-                        Object.keys(tagToUpdateWith).forEach(key => {
-                            tagToUpdate[key] = tagToUpdateWith[key];
-                        });
-                        tagToUpdate.needsUpdate = true;
-                    } else {
-                        // delete tag
-                        BitByBit.BitByBitBlocklyHelperService.tagBag = BitByBit.BitByBitBlocklyHelperService.tagBag.filter(tag => tag.id !== tagToUpdate.id)
-                        const element = document.getElementById(tagToUpdate.id);
-                        element.parentNode.removeChild(element);
-                    }
-                });
-            } else {
-                const tagsToCreate = [];
-                inputs.textTags.forEach((tag, index) => {
-                    const textNode = document.createElement('span');
-                    const id = '_tag' + ${new Date().getTime()} + BitByBit.BitByBitBlocklyHelperService.tagBag.length;
-                    tag.id = id;
-                    textNode.id = id;
-                    textNode.textContent = tag.text;
-                    document.querySelector('.canvasZone').appendChild(textNode);
-                    tag.needsUpdate = true;
-                    BitByBit.BitByBitBlocklyHelperService.tagBag.push(tag);
-                    tagsToCreate.push(tag);
-                });
-                ${(JavaScript as any).variableDB_.getName(block.getFieldValue('DrawnTextTags'), VARIABLE_CATEGORY_NAME)} = tagsToCreate;
-            }
-
-`);
+            `inputs.tagsVariable = ${(JavaScript as any).variableDB_.getName(block.getFieldValue('DrawnTextTags'), VARIABLE_CATEGORY_NAME)};
+            ${(JavaScript as any).variableDB_.getName(block.getFieldValue('DrawnTextTags'), VARIABLE_CATEGORY_NAME)} = bitbybit.tag.drawTags(inputs);`);
     };
 }
 

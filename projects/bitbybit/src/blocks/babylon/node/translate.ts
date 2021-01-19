@@ -3,6 +3,8 @@ import * as JavaScript from 'blockly/javascript';
 import { ResourcesInterface, ResourcesService } from '../../../resources';
 import { createStandardContextIIFE } from '../../_shared';
 import { getRequired, makeRequiredValidationModelForInputs, BitByBitBlockHandlerService, ValidationEntityInterface } from '../../validations';
+import { environment } from 'projects/bitbybit/src/environments/environment';
+import { nodeConstants } from './node-constants';
 
 export function createNodeTranslateBlock(): void {
 
@@ -28,7 +30,7 @@ export function createNodeTranslateBlock(): void {
             this.setPreviousStatement(true, null);
             this.setNextStatement(true, null);
             this.setTooltip(resources.block_babylon_node_translate_description);
-            this.setHelpUrl('');
+            this.setHelpUrl(environment.docsUrl + nodeConstants.helpUrl + '#' + 'translate');
         }
     };
 
@@ -48,14 +50,7 @@ export function createNodeTranslateBlock(): void {
         const runtimeValidationModel = makeRuntimeValidationModel(resources, Object.keys(inputs));
         (block as any).validationModel = runtimeValidationModel;
 
-        return createStandardContextIIFE(block, blockSelector, inputs, false,
-            `
-            inputs.node.translate(
-                new BitByBit.BABYLON.Vector3(inputs.direction[0], inputs.direction[1], inputs.direction[2]),
-                inputs.distance,
-            );
-`
-        );
+        return createStandardContextIIFE(block, blockSelector, inputs, false, `bitbybit.node.translate(inputs);`);
     };
 }
 

@@ -3,14 +3,16 @@ import * as JavaScript from 'blockly/javascript';
 import { ResourcesInterface, ResourcesService } from '../../../../resources';
 import { createStandardContextIIFE } from '../../../_shared';
 import { getRequired, makeRequiredValidationModelForInputs, BitByBitBlockHandlerService, ValidationEntityInterface } from '../../../validations';
+import { environment } from 'projects/bitbybit/src/environments/environment';
+import { vectorConstants } from './vector-constants';
 
-export function createCoreVectorFiniteBlock() {
+export function createCoreVectorFiniteBlock(): void {
 
     const resources = ResourcesService.getResources();
     const blockSelector = 'verb_core_vector_finite';
 
     Blocks[blockSelector] = {
-        init() {
+        init(): void {
             this.appendValueInput('Vector')
                 .setCheck('Array')
                 .setAlign(ALIGN_RIGHT)
@@ -18,7 +20,7 @@ export function createCoreVectorFiniteBlock() {
             this.setOutput(true, 'Array');
             this.setColour('#fff');
             this.setTooltip(resources.block_verb_core_vector_finite_description);
-            this.setHelpUrl('');
+            this.setHelpUrl(environment.docsUrl + vectorConstants.helpUrl + '#' + 'finite');
         }
     };
 
@@ -37,7 +39,7 @@ export function createCoreVectorFiniteBlock() {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `return BitByBit.verb.core.Vec.finite(inputs.vector);`);
+            `return bitbybit.vector.finite(inputs.vector);`);
 
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };

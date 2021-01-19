@@ -3,6 +3,8 @@ import * as JavaScript from 'blockly/javascript';
 import { ResourcesInterface, ResourcesService } from '../../../resources';
 import { createStandardContextIIFE } from '../../_shared';
 import { getRequired, makeRequiredValidationModelForInputs, BitByBitBlockHandlerService, ValidationEntityInterface } from '../../validations';
+import { environment } from 'projects/bitbybit/src/environments/environment';
+import { nodeConstants } from './node-constants';
 
 export function createNodeGetAbsoluteUpVectorBlock(): void {
 
@@ -15,10 +17,10 @@ export function createNodeGetAbsoluteUpVectorBlock(): void {
                 .setCheck('Node')
                 .setAlign(ALIGN_RIGHT)
                 .appendField(resources.block_babylon_node_get_absolute_up_vector_input_node);
-            this.setOutput(true, 'Node');
+            this.setOutput(true, 'Array');
             this.setColour('#fff');
             this.setTooltip(resources.block_babylon_node_get_absolute_up_vector_description);
-            this.setHelpUrl('');
+            this.setHelpUrl(environment.docsUrl + nodeConstants.helpUrl + '#' + 'getabsoluteupvector');
         }
     };
 
@@ -37,10 +39,7 @@ export function createNodeGetAbsoluteUpVectorBlock(): void {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `
-            const dir = inputs.node.up;
-            return [dir.x, dir.y, dir.z];
-`
+            `return bitbybit.node.getAbsoluteUpVector(inputs);`
         );
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };

@@ -28,6 +28,9 @@ import { BitbybitAppComponent } from './bitbybit-app.component';
 import { BitbybitAppRoutingModule } from './bitbybit-app-routing.module';
 import { CommonModule } from '@angular/common';
 import { BitbybitCanDeativate } from './bitbybit-app-can-deactivate.service';
+import { MonacoEditorModule } from 'ngx-monaco-editor';
+import { EnterMonacoDialogComponent } from './components/enter-monaco-dialog/enter-monaco-dialog.component';
+import { EnterBlocklyDialogComponent } from './components/enter-blockly-dialog/enter-blockly-dialog.component';
 
 @NgModule({
     declarations: [
@@ -39,6 +42,8 @@ import { BitbybitCanDeativate } from './bitbybit-app-can-deactivate.service';
         SettingsDialogComponent,
         PrintSaveDialogComponent,
         PromptDialogComponent,
+        EnterMonacoDialogComponent,
+        EnterBlocklyDialogComponent,
     ],
     imports: [
         CommonModule,
@@ -59,6 +64,7 @@ import { BitbybitCanDeativate } from './bitbybit-app-can-deactivate.service';
         MatCardModule,
         MatSelectModule,
         MatInputModule,
+        MonacoEditorModule,
     ],
     providers: [ExamplesService, SettingsService, TagService, BitbybitCanDeativate],
 })

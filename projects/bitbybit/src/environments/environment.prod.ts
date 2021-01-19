@@ -1,4 +1,5 @@
 export const environment = {
     version: 0.01,
-    production: true
+    production: true,
+    docsUrl: 'https://docs.bitbybit.dev',
 };

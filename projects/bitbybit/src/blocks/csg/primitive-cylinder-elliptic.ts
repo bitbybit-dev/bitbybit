@@ -3,6 +3,8 @@ import * as JavaScript from 'blockly/javascript';
 import { ResourcesInterface, ResourcesService } from '../../resources';
 import { createStandardContextIIFE } from '../_shared';
 import { getRequired, makeRequiredValidationModelForInputs, BitByBitBlockHandlerService, ValidationEntityInterface } from '../validations';
+import { environment } from '../../environments/environment';
+import { solidConstants } from './solid-constants';
 
 export function createPrimitiveCylinderEllipticBlock(): void {
 
@@ -34,7 +36,7 @@ export function createPrimitiveCylinderEllipticBlock(): void {
             this.setOutput(true, 'CsgMesh');
             this.setColour('#fff');
             this.setTooltip(resources.block_csg_cylinder_elliptic_description);
-            this.setHelpUrl('');
+            this.setHelpUrl(environment.docsUrl + solidConstants.solidShapesHelpUrl + '#' + 'cylinderelliptic');
         }
     };
 
@@ -58,16 +60,7 @@ export function createPrimitiveCylinderEllipticBlock(): void {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `
-            const cylinder = BitByBit.CSG.primitives.cylinderElliptic({
-                center: [inputs.center[0], inputs.center[1], inputs.center[2]],
-                height: inputs.height,
-                startRadius: [inputs.startRadius[0], inputs.startRadius[1]],
-                endRadius: [inputs.endRadius[0], inputs.endRadius[1]],
-                segments: inputs.segments,
-            });
-            return cylinder;
-`
+            `return bitbybit.solid.shapes.cylinderElliptic(inputs);`
         );
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };

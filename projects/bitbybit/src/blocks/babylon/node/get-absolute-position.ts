@@ -3,6 +3,8 @@ import * as JavaScript from 'blockly/javascript';
 import { ResourcesInterface, ResourcesService } from '../../../resources';
 import { createStandardContextIIFE } from '../../_shared';
 import { getRequired, makeRequiredValidationModelForInputs, BitByBitBlockHandlerService, ValidationEntityInterface } from '../../validations';
+import { environment } from 'projects/bitbybit/src/environments/environment';
+import { nodeConstants } from './node-constants';
 
 export function createNodeGetAbsolutePositionBlock(): void {
 
@@ -15,10 +17,10 @@ export function createNodeGetAbsolutePositionBlock(): void {
                 .setCheck('Node')
                 .setAlign(ALIGN_RIGHT)
                 .appendField(resources.block_babylon_node_get_absolute_position_input_node);
-            this.setOutput(true, 'Node');
+            this.setOutput(true, 'Array');
             this.setColour('#fff');
             this.setTooltip(resources.block_babylon_node_get_absolute_position_description);
-            this.setHelpUrl('');
+            this.setHelpUrl(environment.docsUrl + nodeConstants.helpUrl + '#' + 'getabsoluteposition');
         }
     };
 
@@ -37,10 +39,7 @@ export function createNodeGetAbsolutePositionBlock(): void {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `
-            const position = inputs.node.getAbsolutePosition();
-            return [position.x, position.y, position.z];
-`
+            `return bitbybit.node.getAbsolutePosition(inputs);`
         );
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };

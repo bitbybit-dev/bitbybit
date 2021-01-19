@@ -3,14 +3,16 @@ import * as JavaScript from 'blockly/javascript';
 import { ResourcesInterface, ResourcesService } from '../../../../resources';
 import { createStandardContextIIFE } from '../../../_shared';
 import { getRequired, makeRequiredValidationModelForInputs, BitByBitBlockHandlerService, ValidationEntityInterface } from '../../../validations';
+import { surfaceConstants } from './surface-constants';
+import { environment } from 'projects/bitbybit/src/environments/environment';
 
-export function createSurfaceKnotsVBlock() {
+export function createSurfaceKnotsVBlock(): void {
 
     const resources = ResourcesService.getResources();
     const blockSelector = 'verb_geometry_nurbs_surface_knots_v';
 
     Blocks[blockSelector] = {
-        init() {
+        init(): void {
             this.appendValueInput('Surface')
                 .setCheck('NurbsSurface')
                 .setAlign(ALIGN_RIGHT)
@@ -18,6 +20,7 @@ export function createSurfaceKnotsVBlock() {
             this.setOutput(true, 'Array');
             this.setColour('#fff');
             this.setTooltip(resources.block_verb_geometry_nurbs_surface_knots_v_description);
+            this.setHelpUrl(environment.docsUrl + surfaceConstants.helpUrl + '#' + 'knotsv');
         }
     };
 
@@ -35,7 +38,7 @@ export function createSurfaceKnotsVBlock() {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `return inputs.surface.knotsV();`);
+            `return bitbybit.surface.knotsV(inputs);`);
 
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };

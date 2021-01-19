@@ -3,6 +3,8 @@ import * as JavaScript from 'blockly/javascript';
 import { ResourcesInterface, ResourcesService } from '../../resources';
 import { createStandardContextIIFE } from '../_shared';
 import { getRequired, makeRequiredValidationModelForInputs, BitByBitBlockHandlerService, ValidationEntityInterface } from '../validations';
+import { environment } from '../../environments/environment';
+import { solidConstants } from './solid-constants';
 
 export function createIoSolidToStlDownloadBlock(): void {
 
@@ -23,7 +25,7 @@ export function createIoSolidToStlDownloadBlock(): void {
             this.setNextStatement(true, null);
             this.setColour('#fff');
             this.setTooltip(resources.block_csg_io_solid_to_stl_description);
-            this.setHelpUrl('');
+            this.setHelpUrl(environment.docsUrl + solidConstants.solidHelpUrl + '#' + 'downloadsolidstl');
         }
     };
 
@@ -43,18 +45,7 @@ export function createIoSolidToStlDownloadBlock(): void {
         (block as any).validationModel = runtimeValidationModel;
 
         return createStandardContextIIFE(block, blockSelector, inputs, false,
-            `
-            const rawData = BitByBit.CSG.STLSERIALIZER.serialize({binary: true}, BitByBit.BitByBitBlocklyHelperService.snapGeometry(inputs.solid));
-            const madeBlob = new Blob(rawData, {type: 'application/sla'});
-            const blobUrl = URL.createObjectURL(madeBlob);
-
-            const fileLink = document.createElement('a');
-            fileLink.href = blobUrl;
-            fileLink.target = '_self';
-            fileLink.download = inputs.fileName + '.stl';
-            fileLink.click();
-            fileLink.remove();
-`
+            `bitbybit.solid.downloadSolidSTL(inputs);`
         );
     };
 }

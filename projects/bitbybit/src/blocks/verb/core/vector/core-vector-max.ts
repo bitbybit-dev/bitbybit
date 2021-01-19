@@ -3,14 +3,16 @@ import * as JavaScript from 'blockly/javascript';
 import { ResourcesInterface, ResourcesService } from '../../../../resources';
 import { createStandardContextIIFE } from '../../../_shared';
 import { getRequired, makeRequiredValidationModelForInputs, BitByBitBlockHandlerService, ValidationEntityInterface } from '../../../validations';
+import { environment } from 'projects/bitbybit/src/environments/environment';
+import { vectorConstants } from './vector-constants';
 
-export function createCoreVectorMaxBlock() {
+export function createCoreVectorMaxBlock(): void {
 
     const resources = ResourcesService.getResources();
     const blockSelector = 'verb_core_vector_max';
 
     Blocks[blockSelector] = {
-        init() {
+        init(): void {
             this.appendValueInput('Vector')
                 .setCheck('Array')
                 .setAlign(ALIGN_RIGHT)
@@ -18,6 +20,7 @@ export function createCoreVectorMaxBlock() {
             this.setOutput(true, 'Number');
             this.setColour('#fff');
             this.setTooltip(resources.block_verb_core_vector_max_description);
+            this.setHelpUrl(environment.docsUrl + vectorConstants.helpUrl + '#' + 'max');
         }
     };
 
@@ -36,7 +39,7 @@ export function createCoreVectorMaxBlock() {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `return BitByBit.verb.core.Vec.max(inputs.vector);`);
+            `return bitbybit.vector.max(inputs);`);
 
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };

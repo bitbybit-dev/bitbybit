@@ -3,6 +3,8 @@ import * as JavaScript from 'blockly/javascript';
 import { ResourcesInterface, ResourcesService } from '../../resources';
 import { createStandardContextIIFE } from '../_shared';
 import { getRequired, makeRequiredValidationModelForInputs, BitByBitBlockHandlerService, ValidationEntityInterface } from '../validations';
+import { environment } from '../../environments/environment';
+import { solidConstants } from './solid-constants';
 
 export function createPrimitive2dPathFromPointsBlock(): void {
 
@@ -22,7 +24,7 @@ export function createPrimitive2dPathFromPointsBlock(): void {
             this.setOutput(true, 'Path');
             this.setColour('#fff');
             this.setTooltip(resources.block_csg_primitive_2d_path_from_points_description);
-            this.setHelpUrl('');
+            this.setHelpUrl(environment.docsUrl + solidConstants.solidPathHelpUrl + '#' + 'createfrompoints');
         }
     };
 
@@ -42,15 +44,7 @@ export function createPrimitive2dPathFromPointsBlock(): void {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `
-            const twoDimensionalPoints = inputs.points.map(pt => [pt[0], pt[1]]);
-            const duplicatePointsRemoved = BitByBit.BitByBitBlocklyHelperService.removeConsecutiveDuplicates(twoDimensionalPoints, BitByBit.BitByBitBlocklyHelperService.tolerance);
-            let path2d = BitByBit.CSG.geometries.path2.fromPoints({}, duplicatePointsRemoved);
-            if(inputs.closed){
-                path2d = BitByBit.CSG.geometries.path2.close(path2d);
-            }
-            return path2d;
-`
+            `return bitbybit.solid.path.createFromPoints(inputs);`
         );
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };

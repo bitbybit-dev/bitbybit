@@ -3,14 +3,16 @@ import * as JavaScript from 'blockly/javascript';
 import { ResourcesInterface, ResourcesService } from '../../../../resources';
 import { createStandardContextIIFE } from '../../../_shared';
 import { getRequired, makeRequiredValidationModelForInputs, BitByBitBlockHandlerService, ValidationEntityInterface } from '../../../validations';
+import { extrudedSurfaceConstants } from './extruded-surface-constants';
+import { environment } from 'projects/bitbybit/src/environments/environment';
 
-export function createExtrudedSurfaceBlock() {
+export function createExtrudedSurfaceBlock(): void {
 
     const resources = ResourcesService.getResources();
     const blockSelector = 'verb_geometry_extruded_surface';
 
     Blocks[blockSelector] = {
-        init() {
+        init(): void {
             this.appendValueInput('Profile')
                 .setCheck('NurbsCurve')
                 .setAlign(ALIGN_RIGHT)
@@ -22,6 +24,8 @@ export function createExtrudedSurfaceBlock() {
             this.setOutput(true, 'NurbsSurface');
             this.setColour('#fff');
             this.setTooltip(resources.block_verb_geometry_extruded_surface_description);
+            this.setHelpUrl(environment.docsUrl + extrudedSurfaceConstants.helpUrl + '#' + 'create');
+
         }
     };
 
@@ -40,7 +44,7 @@ export function createExtrudedSurfaceBlock() {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `return new BitByBit.verb.geom.ExtrudedSurface(inputs.profile, inputs.direction);`
+            `return bitbybit.surface.extrusion.create(inputs);`
         );
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };

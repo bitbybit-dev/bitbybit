@@ -3,14 +3,16 @@ import * as JavaScript from 'blockly/javascript';
 import { ResourcesService } from '../../../resources';
 import { createStandardContextIIFE } from '../../_shared';
 import { makeRequiredValidationModelForInputs, BitByBitBlockHandlerService, ValidationEntityInterface } from '../../validations';
+import { environment } from 'projects/bitbybit/src/environments/environment';
+import { transformationConstants } from './transformation-constants';
 
-export function createScaleCenterUniformBlock() {
+export function createScaleCenterUniformBlock(): void {
 
     const resources = ResourcesService.getResources();
     const blockSelector = 'babylon_transformation_scale_center_uniform';
 
     Blocks[blockSelector] = {
-        init() {
+        init(): void {
             this.appendValueInput('Scale')
                 .setCheck('Number')
                 .setAlign(ALIGN_RIGHT)
@@ -22,7 +24,7 @@ export function createScaleCenterUniformBlock() {
             this.setOutput(true, 'Array');
             this.setColour('#fff');
             this.setTooltip(resources.block_babylon_transformation_scale_center_uniform_description);
-            this.setHelpUrl('');
+            this.setHelpUrl(environment.docsUrl + transformationConstants.helpUrl + '#' + 'uniformscalefromcenter');        
         }
     };
 
@@ -37,14 +39,7 @@ export function createScaleCenterUniformBlock() {
             resources.block_scale, resources.block_center
         ]));
 
-        const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-`
-        return [
-            new BitByBit.BABYLON.Matrix.Translation(-inputs.center[0], -inputs.center[1], -inputs.center[2]),
-            new BitByBit.BABYLON.Matrix.Scaling(inputs.scale, inputs.scale, inputs.scale),
-            new BitByBit.BABYLON.Matrix.Translation(inputs.center[0], inputs.center[1], inputs.center[2]),
-        ];
-`);
+        const code = createStandardContextIIFE(block, blockSelector, inputs, true, `return bitbybit.transforms.uniformScaleFromCenter(inputs);`);
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };
 }

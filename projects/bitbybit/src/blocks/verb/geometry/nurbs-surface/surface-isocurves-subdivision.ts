@@ -3,6 +3,8 @@ import * as JavaScript from 'blockly/javascript';
 import { ResourcesInterface, ResourcesService } from '../../../../resources';
 import { createStandardContextIIFE } from '../../../_shared';
 import { getRequired, makeRequiredValidationModelForInputs, BitByBitBlockHandlerService, ValidationEntityInterface } from '../../../validations';
+import { environment } from 'projects/bitbybit/src/environments/environment';
+import { surfaceConstants } from './surface-constants';
 
 export function createSurfaceIsocurvesSubdivisionBlock(): void {
 
@@ -23,6 +25,10 @@ export function createSurfaceIsocurvesSubdivisionBlock(): void {
                 .setCheck('Boolean')
                 .setAlign(ALIGN_RIGHT)
                 .appendField(resources.block_verb_geometry_nurbs_surface_isocurves_subdivision_input_include_last.toLowerCase());
+            this.appendValueInput('IncludeFirst')
+                .setCheck('Boolean')
+                .setAlign(ALIGN_RIGHT)
+                .appendField(resources.block_verb_geometry_nurbs_surface_isocurves_subdivision_input_include_first.toLowerCase());
             this.appendValueInput('UseV')
                 .setCheck('Boolean')
                 .setAlign(ALIGN_RIGHT)
@@ -30,6 +36,7 @@ export function createSurfaceIsocurvesSubdivisionBlock(): void {
             this.setOutput(true, 'Array');
             this.setColour('#fff');
             this.setTooltip(resources.block_verb_geometry_nurbs_surface_isocurves_subdivision_description);
+            this.setHelpUrl(environment.docsUrl + surfaceConstants.helpUrl + '#' + 'isocurvessubdivision');
         }
     };
 
@@ -38,11 +45,14 @@ export function createSurfaceIsocurvesSubdivisionBlock(): void {
             surface: (JavaScript as any).valueToCode(block, 'Surface', (JavaScript as any).ORDER_ATOMIC),
             isocurveSegments: (JavaScript as any).valueToCode(block, 'IsocurveSegments', (JavaScript as any).ORDER_ATOMIC),
             includeLast: (JavaScript as any).valueToCode(block, 'IncludeLast', (JavaScript as any).ORDER_ATOMIC),
+            includeFirst: (JavaScript as any).valueToCode(block, 'IncludeFirst', (JavaScript as any).ORDER_ATOMIC),
             useV: (JavaScript as any).valueToCode(block, 'UseV', (JavaScript as any).ORDER_ATOMIC),
         };
         // this is first set of validations to check that all inputs are non empty strings
         BitByBitBlockHandlerService.validate(block, block.workspace, makeRequiredValidationModelForInputs(resources, inputs, [
-            resources.block_surface, resources.block_segments, resources.block_include_last, resources.block_use_v
+            resources.block_surface, resources.block_segments,
+            resources.block_include_last, resources.block_include_first,
+            resources.block_use_v
         ]));
 
         // this creates validation model to be used at runtime to evaluate real values of inputs
@@ -50,16 +60,7 @@ export function createSurfaceIsocurvesSubdivisionBlock(): void {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `
-            const step = (0.999999 / inputs.isocurveSegments);
-            const params = BitByBit.verb.core.Vec.span(0.0000001, 0.999999, step);
-            if(!inputs.includeLast) {
-                params.pop();
-            }
-            return params.map(parameter => {
-                return inputs.surface.isocurve(parameter, inputs.useV);
-            });
-`);
+            `return bitbybit.surface.isocurvesSubdivision(inputs);`);
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };
 }
@@ -86,6 +87,11 @@ function makeRuntimeValidationModel(
         ]
     }, {
         entity: keys[3],
+        validations: [
+            getRequired(resources, resources.block_include_first),
+        ]
+    }, {
+        entity: keys[4],
         validations: [
             getRequired(resources, resources.block_use_v),
         ]

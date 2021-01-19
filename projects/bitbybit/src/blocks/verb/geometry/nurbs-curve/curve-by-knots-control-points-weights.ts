@@ -3,14 +3,16 @@ import * as JavaScript from 'blockly/javascript';
 import { ResourcesInterface, ResourcesService } from '../../../../resources';
 import { createStandardContextIIFE } from '../../../_shared';
 import { getRequired, makeRequiredValidationModelForInputs, BitByBitBlockHandlerService, ValidationEntityInterface } from '../../../validations';
+import { environment } from 'projects/bitbybit/src/environments/environment';
+import { curveConstants } from './curve-constants';
 
-export function createCurveByKnotsControlPointsWeightsBlock() {
+export function createCurveByKnotsControlPointsWeightsBlock(): void {
 
     const resources = ResourcesService.getResources();
     const blockSelector = 'verb_geometry_nurbs_curve_by_knots_control_points_weights';
 
     Blocks[blockSelector] = {
-        init() {
+        init(): void {
             this.appendValueInput('Knots')
                 .setCheck('Array')
                 .setAlign(ALIGN_RIGHT)
@@ -30,6 +32,7 @@ export function createCurveByKnotsControlPointsWeightsBlock() {
             this.setOutput(true, 'NurbsCurve');
             this.setColour('#fff');
             this.setTooltip(resources.block_verb_geometry_nurbs_curve_by_knots_control_points_weights_description);
+            this.setHelpUrl(environment.docsUrl + curveConstants.helpUrl + '#' + 'createcurvebyknotscontrolpointsweights');
         }
     };
 
@@ -51,7 +54,8 @@ export function createCurveByKnotsControlPointsWeightsBlock() {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `return BitByBit.verb.geom.NurbsCurve.byKnotsControlPointsWeights(inputs.degree, inputs.knots, inputs.points, inputs.weights);`);
+            `return bitbybit.curve.createCurveByKnotsControlPointsWeights(inputs);`
+        );
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };
 }

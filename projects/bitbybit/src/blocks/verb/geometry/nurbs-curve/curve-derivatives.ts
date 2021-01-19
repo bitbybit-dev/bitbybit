@@ -3,14 +3,16 @@ import * as JavaScript from 'blockly/javascript';
 import { ResourcesInterface, ResourcesService } from '../../../../resources';
 import { createStandardContextIIFE } from '../../../_shared';
 import { getRequired, makeRequiredValidationModelForInputs, BitByBitBlockHandlerService, ValidationEntityInterface } from '../../../validations';
+import { environment } from 'projects/bitbybit/src/environments/environment';
+import { curveConstants } from './curve-constants';
 
-export function createCurveDerivativesBlock() {
+export function createCurveDerivativesBlock(): void {
 
     const resources = ResourcesService.getResources();
     const blockSelector = 'verb_geometry_nurbs_curve_derivatives';
 
     Blocks[blockSelector] = {
-        init() {
+        init(): void {
             this.appendValueInput('Curve')
                 .setCheck('NurbsCurve')
                 .setAlign(ALIGN_RIGHT)
@@ -26,6 +28,7 @@ export function createCurveDerivativesBlock() {
             this.setOutput(true, 'Array');
             this.setColour('#fff');
             this.setTooltip(resources.block_verb_geometry_nurbs_curve_derivatives_description);
+            this.setHelpUrl(environment.docsUrl + curveConstants.helpUrl + '#' + 'derivatives');
         }
     };
 
@@ -33,7 +36,7 @@ export function createCurveDerivativesBlock() {
         const inputs = {
             curve: (JavaScript as any).valueToCode(block, 'Curve', (JavaScript as any).ORDER_ATOMIC),
             parameter: (JavaScript as any).valueToCode(block, 'Parameter', (JavaScript as any).ORDER_ATOMIC),
-            num_derivatives: (JavaScript as any).valueToCode(block, 'NumDerivatives', (JavaScript as any).ORDER_ATOMIC),
+            numDerivatives: (JavaScript as any).valueToCode(block, 'NumDerivatives', (JavaScript as any).ORDER_ATOMIC),
         };
         // this is first set of validations to check that all inputs are non empty strings
         BitByBitBlockHandlerService.validate(block, block.workspace, makeRequiredValidationModelForInputs(resources, inputs, [
@@ -45,7 +48,7 @@ export function createCurveDerivativesBlock() {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `return inputs.curve.derivatives(inputs.parameter, inputs.num_derivatives);`);
+            `return bitbybit.curve.derivatives(inputs);`);
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };
 }

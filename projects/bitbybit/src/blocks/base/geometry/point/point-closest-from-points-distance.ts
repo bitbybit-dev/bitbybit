@@ -3,14 +3,16 @@ import * as JavaScript from 'blockly/javascript';
 import { ResourcesInterface, ResourcesService } from '../../../../resources';
 import { createStandardContextIIFE } from '../../../_shared';
 import { getRequired, makeRequiredValidationModelForInputs, BitByBitBlockHandlerService, ValidationEntityInterface } from '../../../validations';
+import { pointConstants } from './point-constants';
+import { environment } from 'projects/bitbybit/src/environments/environment';
 
-export function createPointClosestFromPointsDistanceBlock() {
+export function createPointClosestFromPointsDistanceBlock(): void {
 
     const resources = ResourcesService.getResources();
     const blockSelector = 'base_geometry_point_closest_from_points_distance';
 
     Blocks[blockSelector] = {
-        init() {
+        init(): void {
             this.appendValueInput('Point')
                 .setCheck('Array')
                 .setAlign(ALIGN_RIGHT)
@@ -22,7 +24,7 @@ export function createPointClosestFromPointsDistanceBlock() {
             this.setOutput(true, 'Number');
             this.setColour('#fff');
             this.setTooltip(resources.block_base_geom_point_closest_from_points_distance_description);
-            this.setHelpUrl('');
+            this.setHelpUrl(environment.docsUrl + pointConstants.helpUrl + '#' + 'closestpointfrompointsdistance');
         }
     };
 
@@ -41,18 +43,7 @@ export function createPointClosestFromPointsDistanceBlock() {
         const runtimeValidationModel = makeRuntimeValidationModel(resources, Object.keys(inputs));
         (block as any).validationModel = runtimeValidationModel;
 
-        const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-`
-    let smallestDistanceSoFar = Number.MAX_SAFE_INTEGER;
-    for(let i = 0; i < inputs.points.length; i++){
-        const pt = inputs.points[i];
-        const currentDist = BitByBit.verb.core.Vec.dist(inputs.point, pt);
-        if(currentDist < smallestDistanceSoFar){
-            smallestDistanceSoFar = currentDist;
-        }
-    }
-    return smallestDistanceSoFar;
-`);
+        const code = createStandardContextIIFE(block, blockSelector, inputs, true, `return bitbybit.point.closestPointFromPointsDistance(inputs);`);
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };
 }

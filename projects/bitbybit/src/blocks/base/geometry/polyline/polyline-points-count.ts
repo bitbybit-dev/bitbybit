@@ -3,14 +3,16 @@ import * as JavaScript from 'blockly/javascript';
 import { ResourcesService } from '../../../../resources';
 import { createStandardContextIIFE } from '../../../_shared';
 import { makeRequiredValidationModelForInputs, BitByBitBlockHandlerService } from '../../../validations';
+import { environment } from 'projects/bitbybit/src/environments/environment';
+import { polylineConstants } from './polyline-constants';
 
-export function createPolylineGetPointsCountBlock() {
+export function createPolylineGetPointsCountBlock(): void {
 
     const resources = ResourcesService.getResources();
     const blockSelector = 'base_geometry_polyline_points_count';
 
     Blocks[blockSelector] = {
-        init() {
+        init(): void {
             this.appendValueInput('Polyline')
                 .setCheck('Polyline')
                 .setAlign(ALIGN_RIGHT)
@@ -18,6 +20,7 @@ export function createPolylineGetPointsCountBlock() {
             this.setOutput(true, 'Array');
             this.setColour('#fff');
             this.setTooltip(resources.block_base_geometry_polyline_points_count_description);
+            this.setHelpUrl(environment.docsUrl + polylineConstants.helpUrl + '#' + 'countpoints');
         }
     };
 
@@ -33,7 +36,7 @@ export function createPolylineGetPointsCountBlock() {
         ]));
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `return inputs.polyline.points.length;`);
+            `return bitbybit.polyline.countPoints(inputs);`);
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };
 }

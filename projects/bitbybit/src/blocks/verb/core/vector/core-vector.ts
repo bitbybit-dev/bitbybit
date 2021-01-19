@@ -3,14 +3,16 @@ import * as JavaScript from 'blockly/javascript';
 import { ResourcesService } from '../../../../resources';
 import { createStandardContextIIFE } from '../../../_shared';
 import { makeRequiredValidationModelForInputs, BitByBitBlockHandlerService } from '../../../validations';
+import { environment } from 'projects/bitbybit/src/environments/environment';
+import { vectorConstants } from './vector-constants';
 
-export function createCoreVector3Block() {
+export function createCoreVector3Block(): void {
 
     const resources = ResourcesService.getResources();
     const blockSelector = 'verb_core_vector';
 
     Blocks[blockSelector] = {
-        init() {
+        init(): void {
             this.appendValueInput('X')
                 .setCheck('Number')
                 .setAlign(ALIGN_RIGHT)
@@ -27,6 +29,7 @@ export function createCoreVector3Block() {
             this.setOutput(true, 'Array');
             this.setColour('#fff');
             this.setTooltip(resources.block_verb_core_vector_description);
+            this.setHelpUrl(environment.docsUrl + vectorConstants.helpUrl);
         }
     };
 

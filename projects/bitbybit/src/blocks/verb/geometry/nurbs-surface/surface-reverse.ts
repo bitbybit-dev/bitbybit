@@ -3,14 +3,16 @@ import * as JavaScript from 'blockly/javascript';
 import { ResourcesInterface, ResourcesService } from '../../../../resources';
 import { createStandardContextIIFE } from '../../../_shared';
 import { getRequired, makeRequiredValidationModelForInputs, BitByBitBlockHandlerService, ValidationEntityInterface } from '../../../validations';
+import { environment } from 'projects/bitbybit/src/environments/environment';
+import { surfaceConstants } from './surface-constants';
 
-export function createSurfaceReverseBlock() {
+export function createSurfaceReverseBlock(): void {
 
     const resources = ResourcesService.getResources();
     const blockSelector = 'verb_geometry_nurbs_surface_reverse';
 
     Blocks[blockSelector] = {
-        init() {
+        init(): void {
             this.appendValueInput('Surface')
                 .setCheck('NurbsSurface')
                 .setAlign(ALIGN_RIGHT)
@@ -18,6 +20,7 @@ export function createSurfaceReverseBlock() {
             this.setOutput(true, 'NurbsSurface');
             this.setColour('#fff');
             this.setTooltip(resources.block_verb_geometry_nurbs_surface_reverse_description);
+            this.setHelpUrl(environment.docsUrl + surfaceConstants.helpUrl + '#' + 'reverse');
         }
     };
 
@@ -35,7 +38,7 @@ export function createSurfaceReverseBlock() {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `return inputs.surface.reverse();`);
+            `return bitbybit.surface.reverse(inputs);`);
 
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };

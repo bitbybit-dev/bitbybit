@@ -1,5 +1,5 @@
 export interface Texts {
-    menu: { about: string, contact: string, app: string, school: string };
+    menu: { about: string, contact: string, app: string, school: string, docs: string };
     head: { title: string, listElements: string[] };
     definition: string;
     startTheAppButton: string;
@@ -16,6 +16,7 @@ export function texts(): Texts {
             contact: 'Contact',
             app: 'App',
             school: 'School',
+            docs: 'API'
         },
         head: {
             title: 'Creative Coding',

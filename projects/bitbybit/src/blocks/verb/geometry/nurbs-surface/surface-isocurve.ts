@@ -3,14 +3,16 @@ import * as JavaScript from 'blockly/javascript';
 import { ResourcesInterface, ResourcesService } from '../../../../resources';
 import { createStandardContextIIFE } from '../../../_shared';
 import { getRequired, makeRequiredValidationModelForInputs, BitByBitBlockHandlerService, ValidationEntityInterface } from '../../../validations';
+import { surfaceConstants } from './surface-constants';
+import { environment } from 'projects/bitbybit/src/environments/environment';
 
-export function createSurfaceIsocurveBlock() {
+export function createSurfaceIsocurveBlock(): void {
 
     const resources = ResourcesService.getResources();
     const blockSelector = 'verb_geometry_nurbs_surface_isocurve';
 
     Blocks[blockSelector] = {
-        init() {
+        init(): void {
             this.appendValueInput('Surface')
                 .setCheck('NurbsSurface')
                 .setAlign(ALIGN_RIGHT)
@@ -26,6 +28,7 @@ export function createSurfaceIsocurveBlock() {
             this.setOutput(true, 'NurbsCurve');
             this.setColour('#fff');
             this.setTooltip(resources.block_verb_geometry_nurbs_surface_isocurve_description);
+            this.setHelpUrl(environment.docsUrl + surfaceConstants.helpUrl + '#' + 'isocurve');
         }
     };
 
@@ -45,7 +48,7 @@ export function createSurfaceIsocurveBlock() {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `return inputs.surface.isocurve(inputs.parameter, inputs.useV);`);
+            `return bitbybit.surface.isocurve(inputs);`);
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };
 }

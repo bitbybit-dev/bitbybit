@@ -3,14 +3,16 @@ import * as JavaScript from 'blockly/javascript';
 import { ResourcesInterface, ResourcesService } from '../../../../resources';
 import { createStandardContextIIFE } from '../../../_shared';
 import { getRequired, makeRequiredValidationModelForInputs, BitByBitBlockHandlerService, ValidationEntityInterface } from '../../../validations';
+import { environment } from 'projects/bitbybit/src/environments/environment';
+import { curveConstants } from './curve-constants';
 
-export function createCurveDegreeBlock() {
+export function createCurveDegreeBlock(): void {
 
     const resources = ResourcesService.getResources();
     const blockSelector = 'verb_geometry_nurbs_curve_degree';
 
     Blocks[blockSelector] = {
-        init() {
+        init(): void {
             this.appendValueInput('Curve')
                 .setCheck('NurbsCurve')
                 .setAlign(ALIGN_RIGHT)
@@ -18,6 +20,7 @@ export function createCurveDegreeBlock() {
             this.setOutput(true, 'Number');
             this.setColour('#fff');
             this.setTooltip(resources.block_verb_geometry_nurbs_curve_degree_description);
+            this.setHelpUrl(environment.docsUrl + curveConstants.helpUrl + '#' + 'degree');
         }
     };
 
@@ -35,7 +38,7 @@ export function createCurveDegreeBlock() {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `return inputs.curve.degree();`);
+            `return bitbybit.curve.degree(inputs);`);
 
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };

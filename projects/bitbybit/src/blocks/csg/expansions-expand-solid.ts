@@ -3,6 +3,8 @@ import * as JavaScript from 'blockly/javascript';
 import { ResourcesInterface, ResourcesService } from '../../resources';
 import { createStandardContextIIFE } from '../_shared';
 import { getRequired, makeRequiredValidationModelForInputs, BitByBitBlockHandlerService, ValidationEntityInterface } from '../validations';
+import { environment } from '../../environments/environment';
+import { solidConstants } from './solid-constants';
 
 export function createExpansionsExpandSolidBlock(): void {
 
@@ -26,13 +28,13 @@ export function createExpansionsExpandSolidBlock(): void {
             this.setOutput(true, 'CsgMesh');
             this.setColour('#fff');
             this.setTooltip(resources.block_csg_expansions_expand_solid_description);
-            this.setHelpUrl('');
+            this.setHelpUrl(environment.docsUrl + solidConstants.solidExpansionsHelpUrl + '#' + 'expand');
         }
     };
 
     JavaScript[blockSelector] = (block: Block) => {
         const inputs = {
-            solid: (JavaScript as any).valueToCode(block, 'Solid', (JavaScript as any).ORDER_ATOMIC),
+            geometry: (JavaScript as any).valueToCode(block, 'Solid', (JavaScript as any).ORDER_ATOMIC),
             delta: (JavaScript as any).valueToCode(block, 'Delta', (JavaScript as any).ORDER_ATOMIC),
             segments: (JavaScript as any).valueToCode(block, 'Segments', (JavaScript as any).ORDER_ATOMIC),
         };
@@ -47,14 +49,7 @@ export function createExpansionsExpandSolidBlock(): void {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `
-            const result = BitByBit.CSG.expansions.expand({
-                delta: inputs.delta,
-                corners: 'round',
-                segments: inputs.segments,
-            }, inputs.solid);
-            return result;
-`
+            `return bitbybit.solid.expansions.expand(inputs);`
         );
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };

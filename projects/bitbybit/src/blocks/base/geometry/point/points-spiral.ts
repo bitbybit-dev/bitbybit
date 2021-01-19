@@ -3,6 +3,8 @@ import * as JavaScript from 'blockly/javascript';
 import { ResourcesInterface, ResourcesService } from '../../../../resources';
 import { createStandardContextIIFE } from '../../../_shared';
 import { getRequired, makeRequiredValidationModelForInputs, BitByBitBlockHandlerService, ValidationEntityInterface } from '../../../validations';
+import { environment } from 'projects/bitbybit/src/environments/environment';
+import { pointConstants } from './point-constants';
 
 export function createPointSpiralBlock() {
 
@@ -34,7 +36,7 @@ export function createPointSpiralBlock() {
             this.setOutput(true, 'Array');
             this.setColour('#fff');
             this.setTooltip(resources.block_base_geom_point_spiral_description);
-            this.setHelpUrl('');
+            this.setHelpUrl(environment.docsUrl + pointConstants.helpUrl + '#' + 'spiral');
         }
     };
 
@@ -56,20 +58,7 @@ export function createPointSpiralBlock() {
         const runtimeValidationModel = makeRuntimeValidationModel(resources, Object.keys(inputs));
         (block as any).validationModel = runtimeValidationModel;
 
-        const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `
-    const phi = inputs.phi;
-    const b = Math.log(phi) / (Math.PI / inputs.widening);
-    const spiral = [];
-    const step = inputs.radius / inputs.numberPoints;
-    for(let i = 0; i < inputs.radius; i += step){
-        const th = Math.log(i / inputs.factor) / b;
-        const x = i * Math.cos(th);
-        const y = i * Math.sin(th);
-        spiral.push([x ? x : 0, y ? y : 0, 0]);
-    }
-    return spiral;
-`);
+        const code = createStandardContextIIFE(block, blockSelector, inputs, true, `return bitbybit.point.spiral(inputs);`);
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };
 }

@@ -3,6 +3,8 @@ import * as JavaScript from 'blockly/javascript';
 import { ResourcesInterface, ResourcesService } from '../../resources';
 import { createStandardContextIIFE } from '../_shared';
 import { getRequired, makeRequiredValidationModelForInputs, BitByBitBlockHandlerService, ValidationEntityInterface } from '../validations';
+import { environment } from '../../environments/environment';
+import { solidConstants } from './solid-constants';
 
 export function createTextVectorSphericalTextBlock(): void {
 
@@ -54,13 +56,13 @@ export function createTextVectorSphericalTextBlock(): void {
             this.setOutput(true, 'Array');
             this.setColour('#fff');
             this.setTooltip(resources.block_csg_text_vector_spherical_text_description);
-            this.setHelpUrl('');
+            this.setHelpUrl(environment.docsUrl + solidConstants.solidTextHelpUrl + '#' + 'sphericaltext');
         }
     };
 
     JavaScript[blockSelector] = (block: Block) => {
         const inputs = {
-            inputText: (JavaScript as any).valueToCode(block, 'InputText', (JavaScript as any).ORDER_ATOMIC),
+            text: (JavaScript as any).valueToCode(block, 'InputText', (JavaScript as any).ORDER_ATOMIC),
             radius: (JavaScript as any).valueToCode(block, 'Radius', (JavaScript as any).ORDER_ATOMIC),
             segments: (JavaScript as any).valueToCode(block, 'Segments', (JavaScript as any).ORDER_ATOMIC),
             xOffset: (JavaScript as any).valueToCode(block, 'XOffset', (JavaScript as any).ORDER_ATOMIC),
@@ -84,44 +86,7 @@ export function createTextVectorSphericalTextBlock(): void {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `
-            const text = BitByBit.CSG.text.vectorText({
-                input: inputs.inputText,
-                xOffset: inputs.xOffset,
-                yOffset: inputs.yOffset,
-                height: inputs.height,
-                lineSpacing: inputs.lineSpacing,
-                letterSpacing: inputs.letterSpacing,
-                align: inputs.align,
-                extrudeOffset: inputs.extrudeOffset,
-            });
-            let maxX = 0;
-            text.forEach(txt => {
-                txt.forEach(center => {
-                    if(center[0] > maxX){
-                        maxX = center[0];
-                    }
-                });
-            });
-            const compensate = maxX / 2;
-            text.forEach(txt => {
-                txt.forEach(center => {
-                    let z = center[0];
-                    z = z - compensate;
-                    center[0] = z;
-                });
-            });
-            return text.map(txt => {
-                const spheres = txt.map(center => {
-                    return BitByBit.CSG.primitives.sphere({
-                        center: [center[0], center[1], 0],
-                        radius: inputs.radius,
-                        segments: inputs.segments,
-                    });
-                });
-                return BitByBit.CSG.hulls.hullChain(...spheres);
-            });
-`
+            `return bitbybit.solid.text.sphericalText(inputs);`
         );
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };

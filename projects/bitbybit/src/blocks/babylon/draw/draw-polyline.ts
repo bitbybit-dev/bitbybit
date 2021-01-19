@@ -10,14 +10,16 @@ import {
     BitByBitBlockHandlerService,
     ValidationEntityInterface
 } from '../../validations';
+import { environment } from 'projects/bitbybit/src/environments/environment';
+import { polylineConstants } from '../../base/geometry/polyline/polyline-constants';
 
-export function createDrawPolylineBlock() {
+export function createDrawPolylineBlock(): void {
 
     const resources = ResourcesService.getResources();
     const blockSelector = 'babylon_draw_polyline';
 
     Blocks[blockSelector] = {
-        init() {
+        init(): void {
             this.appendValueInput('Polyline')
                 .setCheck('Polyline')
                 .setAlign(ALIGN_RIGHT)
@@ -44,6 +46,7 @@ export function createDrawPolylineBlock() {
             this.setPreviousStatement(true, null);
             this.setNextStatement(true, null);
             this.setTooltip(resources.block_babylon_draw_polyline_description);
+            this.setHelpUrl(environment.docsUrl + polylineConstants.helpUrl + '#' + 'drawpolyline');
         }
     };
 
@@ -54,6 +57,7 @@ export function createDrawPolylineBlock() {
             opacity: (JavaScript as any).valueToCode(block, 'Opacity', (JavaScript as any).ORDER_ATOMIC),
             width: (JavaScript as any).valueToCode(block, 'Width', (JavaScript as any).ORDER_ATOMIC),
             updatable: (JavaScript as any).valueToCode(block, 'Updatable', (JavaScript as any).ORDER_ATOMIC),
+            polylineMesh: undefined
         };
 
         // this is first set of validations to check that all inputs are non empty strings
@@ -66,37 +70,8 @@ export function createDrawPolylineBlock() {
         (block as any).validationModel = runtimeValidationModel;
 
         return createStandardContextIIFE(block, blockSelector, inputs, false,
-            `
-        inputs.polylineMeshVariable = ${(JavaScript as any).variableDB_.getName(block.getFieldValue('DrawnPolylineMesh'), VARIABLE_CATEGORY_NAME)};
-
-        const points = [];
-        const colors = [];
-        inputs.polyline.points.forEach(pt => {
-            points.push(new BitByBit.BABYLON.Vector3(pt[0], pt[1], pt[2]));
-            colors.push( new BitByBit.BABYLON.Color4(1, 1, 1, 0));
-        });
-
-        if(inputs.polylineMeshVariable && inputs.updatable){
-
-            if(inputs.polylineMeshVariable.getTotalVertices() === points.length){
-                inputs.polylineMeshVariable = BitByBit.BABYLON.MeshBuilder.CreateLines(null, {points, colors, instance: inputs.polylineMeshVariable, useVertexAlpha: true, updatable: inputs.updatable}, null);
-            } else {
-                inputs.polylineMeshVariable.dispose();
-                inputs.polylineMeshVariable = BitByBit.BABYLON.MeshBuilder.CreateLines('polylineMesh${Math.random()}', {points, colors, updatable: inputs.updatable, useVertexAlpha: true}, BitByBit.scene);
-                ${(JavaScript as any).variableDB_.getName(block.getFieldValue('DrawnPolylineMesh'), VARIABLE_CATEGORY_NAME)} = inputs.polylineMeshVariable;
-            }
-
-        } else {
-            inputs.polylineMeshVariable = BitByBit.BABYLON.MeshBuilder.CreateLines('polylineMesh${Math.random()}', {points, colors, updatable: inputs.updatable, useVertexAlpha: true}, BitByBit.scene);
-            ${(JavaScript as any).variableDB_.getName(block.getFieldValue('DrawnPolylineMesh'), VARIABLE_CATEGORY_NAME)} = inputs.polylineMeshVariable;
-        }
-
-        inputs.polylineMeshVariable.enableEdgesRendering();
-        inputs.polylineMeshVariable.edgesWidth = inputs.width;
-        const col = BitByBit.BABYLON.Color3.FromHexString(inputs.colour);
-        inputs.polylineMeshVariable.edgesColor = new BitByBit.BABYLON.Color4(col.r, col.g, col.b, inputs.opacity);
-        inputs.polylineMeshVariable.opacity =  inputs.opacity;
-`
+            `inputs.polylineMesh = ${(JavaScript as any).variableDB_.getName(block.getFieldValue('DrawnPolylineMesh'), VARIABLE_CATEGORY_NAME)};
+            ${(JavaScript as any).variableDB_.getName(block.getFieldValue('DrawnPolylineMesh'), VARIABLE_CATEGORY_NAME)} = bitbybit.polyline.drawPolyline(inputs);`
         );
     };
 }

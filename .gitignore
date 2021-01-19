@@ -4,4 +4,6 @@ dist
 .DS_Store
 blockly
 .scully
+ts-api-docs
 csg-generated.js
+*.d.ts

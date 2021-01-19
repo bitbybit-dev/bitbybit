@@ -3,14 +3,16 @@ import * as JavaScript from 'blockly/javascript';
 import { ResourcesService } from '../../../../resources';
 import { createStandardContextIIFE } from '../../../_shared';
 import { makeRequiredValidationModelForInputs, BitByBitBlockHandlerService } from '../../../validations';
+import { environment } from 'projects/bitbybit/src/environments/environment';
+import { lineConstants } from './line-constants';
 
-export function createLinesConvertToNurbsCurvesBlock() {
+export function createLinesConvertToNurbsCurvesBlock(): void {
 
     const resources = ResourcesService.getResources();
     const blockSelector = 'base_geometry_lines_convert_to_nurbs_curves';
 
     Blocks[blockSelector] = {
-        init() {
+        init(): void {
             this.appendValueInput('Lines')
                 .setCheck('Array')
                 .setAlign(ALIGN_RIGHT)
@@ -18,6 +20,7 @@ export function createLinesConvertToNurbsCurvesBlock() {
             this.setOutput(true, 'Array');
             this.setColour('#fff');
             this.setTooltip(resources.block_base_geometry_lines_convert_to_nurbs_curves_description);
+            this.setHelpUrl(environment.docsUrl + lineConstants.helpUrl + '#' + 'convertlinestonurbscurves');
         }
     };
 
@@ -32,7 +35,7 @@ export function createLinesConvertToNurbsCurvesBlock() {
         ]));
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `return inputs.lines.map(line => new BitByBit.verb.geom.Line(line.start, line.end));`
+            `return bitbybit.line.convertLinesToNurbsCurves(inputs);`
         );
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };

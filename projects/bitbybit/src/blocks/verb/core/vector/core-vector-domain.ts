@@ -3,14 +3,16 @@ import * as JavaScript from 'blockly/javascript';
 import { ResourcesInterface, ResourcesService } from '../../../../resources';
 import { createStandardContextIIFE } from '../../../_shared';
 import { getRequired, makeRequiredValidationModelForInputs, BitByBitBlockHandlerService, ValidationEntityInterface } from '../../../validations';
+import { environment } from 'projects/bitbybit/src/environments/environment';
+import { vectorConstants } from './vector-constants';
 
-export function createCoreVectorDomainBlock() {
+export function createCoreVectorDomainBlock(): void {
 
     const resources = ResourcesService.getResources();
     const blockSelector = 'verb_core_vector_domain';
 
     Blocks[blockSelector] = {
-        init() {
+        init(): void {
             this.appendValueInput('Vector')
                 .setCheck('Array')
                 .setAlign(ALIGN_RIGHT)
@@ -18,7 +20,7 @@ export function createCoreVectorDomainBlock() {
             this.setOutput(true, 'Number');
             this.setColour('#fff');
             this.setTooltip(resources.block_verb_core_vector_domain_description);
-            this.setHelpUrl('');
+            this.setHelpUrl(environment.docsUrl + vectorConstants.helpUrl + '#' + 'domain');
         }
     };
 
@@ -37,7 +39,7 @@ export function createCoreVectorDomainBlock() {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `return BitByBit.verb.core.Vec.domain(inputs.vector);`);
+            `return bitbybit.vector.domain(inputs);`);
 
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };

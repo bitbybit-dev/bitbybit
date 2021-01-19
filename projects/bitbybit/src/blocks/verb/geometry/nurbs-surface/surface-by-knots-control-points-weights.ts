@@ -3,14 +3,16 @@ import * as JavaScript from 'blockly/javascript';
 import { ResourcesInterface, ResourcesService } from '../../../../resources';
 import { createStandardContextIIFE } from '../../../_shared';
 import { getRequired, makeRequiredValidationModelForInputs, BitByBitBlockHandlerService, ValidationEntityInterface } from '../../../validations';
+import { environment } from 'projects/bitbybit/src/environments/environment';
+import { surfaceConstants } from './surface-constants';
 
-export function createSurfaceByKnotsControlPointsWeightsBlock() {
+export function createSurfaceByKnotsControlPointsWeightsBlock(): void {
 
     const resources = ResourcesService.getResources();
     const blockSelector = 'verb_geometry_nurbs_surface_by_knots_control_points_weights';
 
     Blocks[blockSelector] = {
-        init() {
+        init(): void {
             this.appendValueInput('KnotsU')
                 .setCheck('Array')
                 .setAlign(ALIGN_RIGHT)
@@ -38,17 +40,18 @@ export function createSurfaceByKnotsControlPointsWeightsBlock() {
             this.setOutput(true, 'NurbsSurface');
             this.setColour('#fff');
             this.setTooltip(resources.block_verb_geometry_nurbs_surface_by_knots_control_points_weights_description);
+            this.setHelpUrl(environment.docsUrl + surfaceConstants.helpUrl + '#' + 'createsurfacebyknotscontrolpointsweights');
         }
     };
 
     JavaScript[blockSelector] = (block: Block) => {
         const inputs = {
-            knots_u: (JavaScript as any).valueToCode(block, 'KnotsU', (JavaScript as any).ORDER_ATOMIC),
-            knots_v: (JavaScript as any).valueToCode(block, 'KnotsV', (JavaScript as any).ORDER_ATOMIC),
+            knotsU: (JavaScript as any).valueToCode(block, 'KnotsU', (JavaScript as any).ORDER_ATOMIC),
+            knotsV: (JavaScript as any).valueToCode(block, 'KnotsV', (JavaScript as any).ORDER_ATOMIC),
             points: (JavaScript as any).valueToCode(block, 'Points', (JavaScript as any).ORDER_ATOMIC),
             weights: (JavaScript as any).valueToCode(block, 'Weights', (JavaScript as any).ORDER_ATOMIC),
-            degree_u: (JavaScript as any).valueToCode(block, 'DegreeU', (JavaScript as any).ORDER_ATOMIC),
-            degree_v: (JavaScript as any).valueToCode(block, 'DegreeV', (JavaScript as any).ORDER_ATOMIC),
+            degreeU: (JavaScript as any).valueToCode(block, 'DegreeU', (JavaScript as any).ORDER_ATOMIC),
+            degreeV: (JavaScript as any).valueToCode(block, 'DegreeV', (JavaScript as any).ORDER_ATOMIC),
         };
 
         // this is first set of validations to check that all inputs are non empty strings
@@ -62,7 +65,7 @@ export function createSurfaceByKnotsControlPointsWeightsBlock() {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `return BitByBit.verb.geom.NurbsSurface.byKnotsControlPointsWeights(inputs.degree_u, inputs.degree_v, inputs.knots_u, inputs.knots_v, inputs.points, inputs.weights);`);
+            `return bitbybit.surface.createSurfaceByKnotsControlPointsWeights(inputs);`);
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };
 }

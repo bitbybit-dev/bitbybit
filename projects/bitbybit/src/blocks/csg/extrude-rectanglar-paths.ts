@@ -3,6 +3,8 @@ import * as JavaScript from 'blockly/javascript';
 import { ResourcesInterface, ResourcesService } from '../../resources';
 import { createStandardContextIIFE } from '../_shared';
 import { getRequired, makeRequiredValidationModelForInputs, BitByBitBlockHandlerService, ValidationEntityInterface } from '../validations';
+import { environment } from '../../environments/environment';
+import { solidConstants } from './solid-constants';
 
 export function createExtrudeRectangularPathsBlock(): void {
 
@@ -26,13 +28,13 @@ export function createExtrudeRectangularPathsBlock(): void {
             this.setOutput(true, 'Array');
             this.setColour('#fff');
             this.setTooltip(resources.block_csg_extrude_rectangular_paths_description);
-            this.setHelpUrl('');
+            this.setHelpUrl(environment.docsUrl + solidConstants.solidExtrusionsHelpUrl + '#' + 'extruderectangular');
         }
     };
 
     JavaScript[blockSelector] = (block: Block) => {
         const inputs = {
-            paths: (JavaScript as any).valueToCode(block, 'Paths', (JavaScript as any).ORDER_ATOMIC),
+            geometry: (JavaScript as any).valueToCode(block, 'Paths', (JavaScript as any).ORDER_ATOMIC),
             size: (JavaScript as any).valueToCode(block, 'Size', (JavaScript as any).ORDER_ATOMIC),
             height: (JavaScript as any).valueToCode(block, 'Height', (JavaScript as any).ORDER_ATOMIC),
         };
@@ -47,13 +49,7 @@ export function createExtrudeRectangularPathsBlock(): void {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `
-            const extrusions = BitByBit.CSG.extrusions.extrudeRectangular({height: inputs.height, size: inputs.size}, ...inputs.paths);
-            if (!extrusions.length){
-                extrusions = [extrusions];
-            }
-            return extrusions;
-`
+            `return bitbybit.solid.extrusions.extrudeRectangular(inputs);`
         );
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };

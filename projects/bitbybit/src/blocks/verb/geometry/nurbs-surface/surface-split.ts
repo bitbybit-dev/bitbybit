@@ -3,14 +3,16 @@ import * as JavaScript from 'blockly/javascript';
 import { ResourcesInterface, ResourcesService } from '../../../../resources';
 import { createStandardContextIIFE } from '../../../_shared';
 import { getRequired, makeRequiredValidationModelForInputs, BitByBitBlockHandlerService, ValidationEntityInterface } from '../../../validations';
+import { environment } from 'projects/bitbybit/src/environments/environment';
+import { surfaceConstants } from './surface-constants';
 
-export function createSurfaceSplitBlock() {
+export function createSurfaceSplitBlock(): void {
 
     const resources = ResourcesService.getResources();
     const blockSelector = 'verb_geometry_nurbs_surface_split';
 
     Blocks[blockSelector] = {
-        init() {
+        init(): void {
             this.appendValueInput('Surface')
                 .setCheck('NurbsSurface')
                 .setAlign(ALIGN_RIGHT)
@@ -26,6 +28,7 @@ export function createSurfaceSplitBlock() {
             this.setOutput(true, 'Array');
             this.setColour('#fff');
             this.setTooltip(resources.block_verb_geometry_nurbs_surface_split_description);
+            this.setHelpUrl(environment.docsUrl + surfaceConstants.helpUrl + '#' + 'split');
         }
     };
 
@@ -45,7 +48,7 @@ export function createSurfaceSplitBlock() {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `return inputs.surface.split(inputs.parameter, inputs.useV);`);
+            `return bitbybit.surface.split(inputs);`);
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };
 }

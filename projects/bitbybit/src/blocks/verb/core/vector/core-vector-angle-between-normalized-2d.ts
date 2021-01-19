@@ -3,6 +3,8 @@ import * as JavaScript from 'blockly/javascript';
 import { ResourcesInterface, ResourcesService } from '../../../../resources';
 import { createStandardContextIIFE } from '../../../_shared';
 import { getRequired, makeRequiredValidationModelForInputs, BitByBitBlockHandlerService, ValidationEntityInterface } from '../../../validations';
+import { environment } from 'projects/bitbybit/src/environments/environment';
+import { vectorConstants } from './vector-constants';
 
 export function createCoreVectorAngleBetweenNormalized2dBlock() {
 
@@ -22,6 +24,7 @@ export function createCoreVectorAngleBetweenNormalized2dBlock() {
             this.setOutput(true, 'Number');
             this.setColour('#fff');
             this.setTooltip(resources.block_verb_core_vector_angle_between_normalized_2d_description);
+            this.setHelpUrl(environment.docsUrl + vectorConstants.helpUrl + '#' + 'anglebetweennormalized2d');
         }
     };
 
@@ -40,8 +43,7 @@ export function createCoreVectorAngleBetweenNormalized2dBlock() {
         const runtimeValidationModel = makeRuntimeValidationModel(resources, Object.keys(inputs));
         (block as any).validationModel = runtimeValidationModel;
 
-        const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `return BitByBit.verb.core.Vec.angleBetweenNormalized2d(inputs.first, inputs.second);`);
+        const code = createStandardContextIIFE(block, blockSelector, inputs, true, `return bitbybit.vector.angleBetweenNormalized2d(inputs);`);
 
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };

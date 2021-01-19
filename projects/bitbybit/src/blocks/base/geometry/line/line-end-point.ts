@@ -3,14 +3,16 @@ import * as JavaScript from 'blockly/javascript';
 import { ResourcesService } from '../../../../resources';
 import { createStandardContextIIFE } from '../../../_shared';
 import { makeRequiredValidationModelForInputs, BitByBitBlockHandlerService } from '../../../validations';
+import { environment } from 'projects/bitbybit/src/environments/environment';
+import { lineConstants } from './line-constants';
 
-export function createLineEndPointBlock() {
+export function createLineEndPointBlock(): void {
 
     const resources = ResourcesService.getResources();
     const blockSelector = 'base_geometry_line_end_point';
 
     Blocks[blockSelector] = {
-        init() {
+        init(): void {
             this.appendValueInput('Line')
                 .setCheck('Line')
                 .setAlign(ALIGN_RIGHT)
@@ -18,6 +20,7 @@ export function createLineEndPointBlock() {
             this.setOutput(true, 'Array');
             this.setColour('#fff');
             this.setTooltip(resources.block_base_geometry_line_end_point_description);
+            this.setHelpUrl(environment.docsUrl + lineConstants.helpUrl + '#' + 'getendpoint');
         }
     };
 
@@ -32,8 +35,7 @@ export function createLineEndPointBlock() {
             resources.block_line
         ]));
 
-        const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `return inputs.line.end;`);
+        const code = createStandardContextIIFE(block, blockSelector, inputs, true, `return bitbybit.line.getEndPoint(inputs);`);
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };
 }

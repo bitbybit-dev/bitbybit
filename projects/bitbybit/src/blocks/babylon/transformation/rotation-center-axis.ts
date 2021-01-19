@@ -3,14 +3,16 @@ import * as JavaScript from 'blockly/javascript';
 import { ResourcesService } from '../../../resources';
 import { createStandardContextIIFE } from '../../_shared';
 import { makeRequiredValidationModelForInputs, BitByBitBlockHandlerService } from '../../validations';
+import { environment } from 'projects/bitbybit/src/environments/environment';
+import { transformationConstants } from './transformation-constants';
 
-export function createRotationCenterAxisBlock() {
+export function createRotationCenterAxisBlock(): void {
 
     const resources = ResourcesService.getResources();
     const blockSelector = 'babylon_transformation_rotation_center_axis';
 
     Blocks[blockSelector] = {
-        init() {
+        init(): void {
             this.appendValueInput('Angle')
                 .setCheck('Number')
                 .setAlign(ALIGN_RIGHT)
@@ -26,6 +28,7 @@ export function createRotationCenterAxisBlock() {
             this.setOutput(true, 'Array');
             this.setColour('#fff');
             this.setTooltip(resources.block_babylon_transformation_rotation_center_z_description);
+            this.setHelpUrl(environment.docsUrl + transformationConstants.helpUrl + '#' + 'rotationcenteraxis');
         }
     };
 
@@ -41,14 +44,8 @@ export function createRotationCenterAxisBlock() {
             resources.block_angle, resources.block_axis, resources.block_center
         ]));
 
-        const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `
-        return [
-            new BitByBit.BABYLON.Matrix.Translation(-inputs.center[0], -inputs.center[1], -inputs.center[2]),
-            new BitByBit.BABYLON.Matrix.RotationAxis(new BitByBit.BABYLON.Vector3(inputs.axis[0], inputs.axis[1], inputs.axis[2]), BitByBit.BABYLON.Angle.FromDegrees(inputs.angle).radians()),
-            new BitByBit.BABYLON.Matrix.Translation(inputs.center[0], inputs.center[1], inputs.center[2]),
-        ];
-`);
+        const code = createStandardContextIIFE(block, blockSelector, inputs, true, 
+            `return bitbybit.transforms.rotationCenterAxis(inputs);`);
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };
 }

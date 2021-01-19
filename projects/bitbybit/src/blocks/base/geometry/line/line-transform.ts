@@ -3,14 +3,16 @@ import * as JavaScript from 'blockly/javascript';
 import { ResourcesInterface, ResourcesService } from '../../../../resources';
 import { createStandardContextIIFE } from '../../../_shared';
 import { getRequired, makeRequiredValidationModelForInputs, BitByBitBlockHandlerService, ValidationEntityInterface } from '../../../validations';
+import { environment } from 'projects/bitbybit/src/environments/environment';
+import { lineConstants } from './line-constants';
 
-export function createLineTransformBlock() {
+export function createLineTransformBlock(): void {
 
     const resources = ResourcesService.getResources();
     const blockSelector = 'base_geometry_line_transform';
 
     Blocks[blockSelector] = {
-        init() {
+        init(): void {
             this.appendValueInput('Line')
                 .setCheck('Line')
                 .setAlign(ALIGN_RIGHT)
@@ -21,7 +23,7 @@ export function createLineTransformBlock() {
             this.setOutput(true, 'Line');
             this.setColour('#fff');
             this.setTooltip(resources.block_base_geom_line_transform_description);
-            this.setHelpUrl('');
+            this.setHelpUrl(environment.docsUrl + lineConstants.helpUrl + '#' + 'transformline');
         }
     };
 
@@ -40,22 +42,7 @@ export function createLineTransformBlock() {
         const runtimeValidationModel = makeRuntimeValidationModel(resources, Object.keys(inputs));
         (block as any).validationModel = runtimeValidationModel;
 
-        const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-`
-    const transformation = inputs.matrix;
-    let transformedControlPoints = [inputs.line.start, inputs.line.end];
-    if(transformation.length && transformation.length > 0){
-        transformation.flat().forEach(transform => {
-            transformedControlPoints = BitByBit.BitByBitBlocklyHelperService.transformPointsByMatrix(transformedControlPoints, transform);
-        });
-    } else {
-        transformedControlPoints = BitByBit.BitByBitBlocklyHelperService.transformPointsByMatrix(transformedControlPoints, transformation);
-    }
-    return {
-        start: transformedControlPoints[0],
-        end: transformedControlPoints[1]
-    };
-`);
+        const code = createStandardContextIIFE(block, blockSelector, inputs, true, `return bitbybit.line.transformLine(inputs);`);
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };
 }

@@ -3,6 +3,8 @@ import * as JavaScript from 'blockly/javascript';
 import { ResourcesInterface, ResourcesService } from '../../resources';
 import { createStandardContextIIFE } from '../_shared';
 import { getRequired, makeRequiredValidationModelForInputs, BitByBitBlockHandlerService, ValidationEntityInterface } from '../validations';
+import { environment } from '../../environments/environment';
+import { solidConstants } from './solid-constants';
 
 export function createExtrudeRectangularPathBlock(): void {
 
@@ -26,13 +28,13 @@ export function createExtrudeRectangularPathBlock(): void {
             this.setOutput(true, 'CsgMesh');
             this.setColour('#fff');
             this.setTooltip(resources.block_csg_extrude_rectangular_path_description);
-            this.setHelpUrl('');
+            this.setHelpUrl(environment.docsUrl + solidConstants.solidExtrusionsHelpUrl + '#' + 'extruderectangular');
         }
     };
 
     JavaScript[blockSelector] = (block: Block) => {
         const inputs = {
-            path: (JavaScript as any).valueToCode(block, 'Path', (JavaScript as any).ORDER_ATOMIC),
+            geometry: (JavaScript as any).valueToCode(block, 'Path', (JavaScript as any).ORDER_ATOMIC),
             size: (JavaScript as any).valueToCode(block, 'Size', (JavaScript as any).ORDER_ATOMIC),
             height: (JavaScript as any).valueToCode(block, 'Height', (JavaScript as any).ORDER_ATOMIC),
         };
@@ -47,10 +49,7 @@ export function createExtrudeRectangularPathBlock(): void {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `
-            const extrusion = BitByBit.CSG.extrusions.extrudeRectangular({height: inputs.height, size: inputs.size}, inputs.path);
-            return extrusion;
-`
+            `return bitbybit.solid.extrusions.extrudeRectangular(inputs);`
         );
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };

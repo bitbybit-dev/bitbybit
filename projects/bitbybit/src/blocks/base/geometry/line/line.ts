@@ -9,14 +9,16 @@ import {
     BitByBitBlockHandlerService,
     ValidationEntityInterface
 } from '../../../validations';
+import { environment } from 'projects/bitbybit/src/environments/environment';
+import { lineConstants } from './line-constants';
 
-export function createLineBlock() {
+export function createLineBlock(): void {
 
     const resources = ResourcesService.getResources();
     const blockSelector = 'base_geometry_line';
 
     Blocks[blockSelector] = {
-        init() {
+        init(): void {
             this.appendValueInput('StartPoint')
                 .setCheck('Array')
                 .setAlign(ALIGN_RIGHT)
@@ -28,13 +30,14 @@ export function createLineBlock() {
             this.setOutput(true, 'Line');
             this.setColour('#fff');
             this.setTooltip(resources.block_base_geometry_line_description);
+            this.setHelpUrl(environment.docsUrl + lineConstants.helpUrl + '#' + 'create');
         }
     };
 
     JavaScript[blockSelector] = (block: Block) => {
         const inputs = {
-            startPoint: (JavaScript as any).valueToCode(block, 'StartPoint', (JavaScript as any).ORDER_ATOMIC),
-            endPoint: (JavaScript as any).valueToCode(block, 'EndPoint', (JavaScript as any).ORDER_ATOMIC),
+            start: (JavaScript as any).valueToCode(block, 'StartPoint', (JavaScript as any).ORDER_ATOMIC),
+            end: (JavaScript as any).valueToCode(block, 'EndPoint', (JavaScript as any).ORDER_ATOMIC),
         };
 
         // this is first set of validations to check that all inputs are non empty strings
@@ -46,14 +49,7 @@ export function createLineBlock() {
         const runtimeValidationModel = makeRuntimeValidationModel(resources, Object.keys(inputs));
         (block as any).validationModel = runtimeValidationModel;
 
-        const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-`
-        return {
-            start: inputs.startPoint,
-            end: inputs.endPoint
-        };
-`
-        );
+        const code = createStandardContextIIFE(block, blockSelector, inputs, true, `return bitbybit.line.create(inputs);`);
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };
 }

@@ -11,13 +11,13 @@ import {
     ValidationEntityInterface
 } from '../../validations';
 
-export function createDrawCurvesBlock() {
+export function createDrawCurvesBlock(): void {
 
     const resources = ResourcesService.getResources();
     const blockSelector = 'babylon_draw_curves';
 
     Blocks[blockSelector] = {
-        init() {
+        init(): void {
             this.appendValueInput('Curves')
                 .setCheck('Array')
                 .setAlign(ALIGN_RIGHT)
@@ -55,6 +55,7 @@ export function createDrawCurvesBlock() {
             opacity: (JavaScript as any).valueToCode(block, 'Opacity', (JavaScript as any).ORDER_ATOMIC),
             width: (JavaScript as any).valueToCode(block, 'Width', (JavaScript as any).ORDER_ATOMIC),
             updatable: (JavaScript as any).valueToCode(block, 'Updatable', (JavaScript as any).ORDER_ATOMIC),
+            curvesMesh: undefined
         };
 
         // this is first set of validations to check that all inputs are non empty strings
@@ -67,54 +68,8 @@ export function createDrawCurvesBlock() {
         (block as any).validationModel = runtimeValidationModel;
 
         return createStandardContextIIFE(block, blockSelector, inputs, false,
-            `
-        inputs.curvesMesh = ${(JavaScript as any).variableDB_.getName(block.getFieldValue('DrawnCurvesMesh'), VARIABLE_CATEGORY_NAME)};
-
-        const curvesForRender = [];
-        const col = BitByBit.BABYLON.Color3.FromHexString(inputs.colour);
-        const colors = [];
-        const totalPoints = [];
-
-        inputs.curves.forEach(curve => {
-            const points = curve.tessellate();
-            totalPoints.push(points.length);
-            curvesForRender.push(points.map(pt => new BitByBit.BABYLON.Vector3(pt[0], pt[1], pt[2])));
-            colors.push(points.map(pt => new BitByBit.BABYLON.Color4(col.r, col.g, col.b, inputs.opacity)));
-        });
-
-        const validateCurvePointNumber = (old, newPoints) => {
-            if(old.length !== newPoints.length){
-                return false;
-            } else {
-                for(let i = 0; i < old.length; i++){
-                    if(old[i] !== newPoints[i]) {
-                        return false;
-                        break;
-                    }
-                }
-                return true;
-            }
-        }
-
-        if(inputs.curvesMesh && inputs.updatable) {
-            if(validateCurvePointNumber(inputs.curvesMesh.totalPoints, totalPoints)){
-                inputs.curvesMesh = BitByBit.BABYLON.MeshBuilder.CreateLineSystem(null, {lines: curvesForRender, instance: inputs.curvesMesh, colors, useVertexAlpha: true, updatable: inputs.updatable}, null);
-            } else {
-                inputs.curvesMesh.dispose();
-                inputs.curvesMesh = BitByBit.BABYLON.MeshBuilder.CreateLineSystem('lines${Math.random()}', {lines: curvesForRender, colors, useVertexAlpha: true, updatable: inputs.updatable}, BitByBit.scene);
-                ${(JavaScript as any).variableDB_.getName(block.getFieldValue('DrawnCurvesMesh'), VARIABLE_CATEGORY_NAME)} = inputs.curvesMesh;
-            }
-        } else {
-            inputs.curvesMesh = BitByBit.BABYLON.MeshBuilder.CreateLineSystem('lines${Math.random()}', {lines: curvesForRender, colors, useVertexAlpha: true, updatable: inputs.updatable}, BitByBit.scene);
-            ${(JavaScript as any).variableDB_.getName(block.getFieldValue('DrawnCurvesMesh'), VARIABLE_CATEGORY_NAME)} = inputs.curvesMesh;
-        }
-
-        inputs.curvesMesh.totalPoints = totalPoints;
-        inputs.curvesMesh.enableEdgesRendering();
-        inputs.curvesMesh.edgesWidth = inputs.width;
-        inputs.curvesMesh.edgesColor = new BitByBit.BABYLON.Color4(col.r, col.g, col.b, inputs.opacity);
-        inputs.curvesMesh.opacity = inputs.opacity;
-`
+            `inputs.curvesMesh = ${(JavaScript as any).variableDB_.getName(block.getFieldValue('DrawnCurvesMesh'), VARIABLE_CATEGORY_NAME)};
+            ${(JavaScript as any).variableDB_.getName(block.getFieldValue('DrawnCurvesMesh'), VARIABLE_CATEGORY_NAME)} = bitbybit.curve.drawCurves(inputs);`
         );
     };
 }

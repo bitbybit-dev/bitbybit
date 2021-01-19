@@ -3,6 +3,8 @@ import * as JavaScript from 'blockly/javascript';
 import { ResourcesInterface, ResourcesService } from '../../../../resources';
 import { createStandardContextIIFE } from '../../../_shared';
 import { getRequired, makeRequiredValidationModelForInputs, BitByBitBlockHandlerService, ValidationEntityInterface } from '../../../validations';
+import { environment } from 'projects/bitbybit/src/environments/environment';
+import { ellipseConstants } from './ellipse-constants';
 
 export function createEllipseXAxisBlock() {
 
@@ -18,6 +20,7 @@ export function createEllipseXAxisBlock() {
             this.setOutput(true, 'Array');
             this.setColour('#fff');
             this.setTooltip(resources.block_verb_geometry_nurbs_curve_ellipse_x_axis_description);
+            this.setHelpUrl(environment.docsUrl + ellipseConstants.helpUrl + '#' + 'xaxis');
         }
     };
 
@@ -35,7 +38,7 @@ export function createEllipseXAxisBlock() {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `return inputs.ellipse.xaxis();`
+            `return bitbybit.curve.ellipse.xAxis(inputs);`
         );
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };

@@ -3,14 +3,16 @@ import * as JavaScript from 'blockly/javascript';
 import { ResourcesInterface, ResourcesService } from '../../../../resources';
 import { createStandardContextIIFE } from '../../../_shared';
 import { getRequired, makeRequiredValidationModelForInputs, BitByBitBlockHandlerService, ValidationEntityInterface } from '../../../validations';
+import { environment } from 'projects/bitbybit/src/environments/environment';
+import { circleConstants } from './circle-constants';
 
-export function createArcBlock() {
+export function createArcBlock(): void {
 
     const resources = ResourcesService.getResources();
     const blockSelector = 'verb_geometry_nurbs_curve_arc';
 
     Blocks[blockSelector] = {
-        init() {
+        init(): void {
             this.appendValueInput('Center')
                 .setCheck('Array')
                 .setAlign(ALIGN_RIGHT)
@@ -38,7 +40,7 @@ export function createArcBlock() {
             this.setOutput(true, 'NurbsCurve');
             this.setColour('#fff');
             this.setTooltip(resources.block_verb_geometry_nurbs_curve_arc_description);
-            this.setHelpUrl('');
+            this.setHelpUrl(environment.docsUrl + circleConstants.helpUrl + '#' + 'createarc');
         }
     };
 
@@ -67,7 +69,7 @@ export function createArcBlock() {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `return new BitByBit.verb.geom.Arc(inputs.center, inputs.xAxis, inputs.yAxis, inputs.radius, BitByBit.BABYLON.Angle.FromDegrees(inputs.minAngle).radians(), BitByBit.BABYLON.Angle.FromDegrees(inputs.maxAngle).radians());`
+            `return bitbybit.curve.circle.createArc(inputs);`
         );
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };

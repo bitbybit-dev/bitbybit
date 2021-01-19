@@ -3,6 +3,8 @@ import * as JavaScript from 'blockly/javascript';
 import { ResourcesInterface, ResourcesService } from '../../resources';
 import { createStandardContextIIFE } from '../_shared';
 import { getRequired, makeRequiredValidationModelForInputs, BitByBitBlockHandlerService, ValidationEntityInterface } from '../validations';
+import { environment } from '../../environments/environment';
+import { solidConstants } from './solid-constants';
 
 export function createPrimitiveEllipsoidsOnCenterPointsBlock(): void {
 
@@ -26,7 +28,7 @@ export function createPrimitiveEllipsoidsOnCenterPointsBlock(): void {
             this.setOutput(true, 'Array');
             this.setColour('#fff');
             this.setTooltip(resources.block_csg_ellipsoids_on_center_points_description);
-            this.setHelpUrl('');
+            this.setHelpUrl(environment.docsUrl + solidConstants.solidShapesHelpUrl + '#' + 'ellipsoidsoncenterpoints');
         }
     };
 
@@ -47,20 +49,7 @@ export function createPrimitiveEllipsoidsOnCenterPointsBlock(): void {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `
-            return inputs.centers.map(center => {
-                return BitByBit.CSG.primitives.ellipsoid({
-                    center: [center[0], center[1], center[2]],
-                    radius: [inputs.radius[0], inputs.radius[1], inputs.radius[2]],
-                    segments: inputs.segments,
-                    axes: [
-                        [-1, 0, 0],
-                        [0, -1, 0],
-                        [0, 0, -1],
-                    ],
-                });
-            });
-`
+            `return bitbybit.solid.shapes.ellipsoidsOnCenterPoints(inputs);`
         );
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };

@@ -10,14 +10,16 @@ import {
     BitByBitBlockHandlerService,
     ValidationEntityInterface
 } from '../../validations';
+import { environment } from 'projects/bitbybit/src/environments/environment';
+import { sceneConstants } from '../scene/scene-constants';
 
-export function createDrawGridBlock() {
+export function createDrawGridBlock(): void {
 
     const resources = ResourcesService.getResources();
     const blockSelector = 'babylon_draw_grid';
 
     Blocks[blockSelector] = {
-        init() {
+        init(): void {
             this.appendValueInput('Width')
                 .setCheck('Number')
                 .setAlign(ALIGN_RIGHT)
@@ -64,6 +66,7 @@ export function createDrawGridBlock() {
             this.setNextStatement(true, null);
             this.setColour('#fff');
             this.setTooltip(resources.block_babylon_draw_grid_description);
+            this.setHelpUrl(environment.docsUrl + sceneConstants.helpUrl + '#' + 'drawgridmesh');
         }
     };
 
@@ -79,7 +82,6 @@ export function createDrawGridBlock() {
             backFaceCulling: (JavaScript as any).valueToCode(block, 'BackFaceCulling', (JavaScript as any).ORDER_ATOMIC),
             mainColor: (JavaScript as any).valueToCode(block, 'MainColor', (JavaScript as any).ORDER_ATOMIC),
             secondaryColor: (JavaScript as any).valueToCode(block, 'LineColor', (JavaScript as any).ORDER_ATOMIC),
-            gridVariable: (JavaScript as any).variableDB_.getName(block.getFieldValue('Grid'), VARIABLE_CATEGORY_NAME),
         };
 
         // this is first set of validations to check that all inputs are non empty strings
@@ -102,20 +104,7 @@ export function createDrawGridBlock() {
         (block as any).validationModel = runtimeValidationModel;
 
         return createStandardContextIIFE(block, blockSelector, inputs, false,
-            `
-        const groundMaterial = new BitByBit.BABYLON.GridMaterial('groundMaterial${Math.random()}', BitByBit.scene);
-        groundMaterial.majorUnitFrequency = inputs.majorUnitFrequency;
-        groundMaterial.minorUnitVisibility = inputs.minorUnitVisibility;
-        groundMaterial.gridRatio = inputs.gridRatio;
-        groundMaterial.backFaceCulling = inputs.backFaceCulling;
-        groundMaterial.mainColor = BitByBit.BABYLON.Color3.FromHexString(inputs.mainColor);
-        groundMaterial.lineColor = BitByBit.BABYLON.Color3.FromHexString(inputs.secondaryColor);
-        groundMaterial.opacity = inputs.opacity;
-
-        const ground = BitByBit.BABYLON.Mesh.CreateGround('ground${Math.random()}', inputs.width, inputs.height, inputs.subdivisions, BitByBit.scene, false);
-        ground.material = groundMaterial;
-        ${(JavaScript as any).variableDB_.getName(block.getFieldValue('Grid'), VARIABLE_CATEGORY_NAME)} = ground;
-`
+            `${(JavaScript as any).variableDB_.getName(block.getFieldValue('Grid'), VARIABLE_CATEGORY_NAME)} = bitbybit.scene.drawGridMesh(inputs);`
         );
     };
 }

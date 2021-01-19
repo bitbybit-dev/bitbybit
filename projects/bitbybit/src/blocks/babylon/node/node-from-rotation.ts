@@ -3,14 +3,16 @@ import * as JavaScript from 'blockly/javascript';
 import { ResourcesInterface, ResourcesService } from '../../../resources';
 import { createStandardContextIIFE } from '../../_shared';
 import { getRequired, makeRequiredValidationModelForInputs, BitByBitBlockHandlerService, ValidationEntityInterface } from '../../validations';
+import { environment } from 'projects/bitbybit/src/environments/environment';
+import { nodeConstants } from './node-constants';
 
-export function createNodeFromRotationBlock() {
+export function createNodeFromRotationBlock(): void {
 
     const resources = ResourcesService.getResources();
     const blockSelector = 'base_geometry_node_from_rotation';
 
     Blocks[blockSelector] = {
-        init() {
+        init(): void {
             this.appendValueInput('Origin')
                 .setCheck('Array')
                 .setAlign(ALIGN_RIGHT)
@@ -26,7 +28,7 @@ export function createNodeFromRotationBlock() {
             this.setOutput(true, 'Node');
             this.setColour('#fff');
             this.setTooltip(resources.block_babylon_node_from_rotation_description);
-            this.setHelpUrl('');
+            this.setHelpUrl(environment.docsUrl + nodeConstants.helpUrl + '#' + 'createnodefromrotation');
         }
     };
 
@@ -47,19 +49,7 @@ export function createNodeFromRotationBlock() {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `
-            const transformNode = new BitByBit.BABYLON.TransformNode("node${Math.random()}");
-            if(inputs.parent){
-                transformNode.parent = inputs.parent;
-            }
-            transformNode.position = new BitByBit.BABYLON.Vector3(inputs.origin[0], inputs.origin[1], inputs.origin[2]);
-            transformNode.rotation = new BitByBit.BABYLON.Vector3(
-                BitByBit.BABYLON.Angle.FromDegrees(inputs.rotation[0]).radians(),
-                BitByBit.BABYLON.Angle.FromDegrees(inputs.rotation[1]).radians(),
-                BitByBit.BABYLON.Angle.FromDegrees(inputs.rotation[2]).radians()
-            );
-            return transformNode;
-`
+            `return bitbybit.node.createNodeFromRotation(inputs);`
         );
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };

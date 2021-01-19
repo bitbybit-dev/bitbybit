@@ -3,14 +3,16 @@ import * as JavaScript from 'blockly/javascript';
 import { ResourcesInterface, ResourcesService } from '../../../../resources';
 import { createStandardContextIIFE } from '../../../_shared';
 import { getRequired, makeRequiredValidationModelForInputs, BitByBitBlockHandlerService, ValidationEntityInterface } from '../../../validations';
+import { environment } from 'projects/bitbybit/src/environments/environment';
+import { vectorConstants } from './vector-constants';
 
-export function createCoreVectorSpanBlock() {
+export function createCoreVectorSpanBlock(): void {
 
     const resources = ResourcesService.getResources();
     const blockSelector = 'verb_core_vector_span';
 
     Blocks[blockSelector] = {
-        init() {
+        init(): void {
             this.appendValueInput('Min')
                 .setCheck('Number')
                 .setAlign(ALIGN_RIGHT)
@@ -26,6 +28,7 @@ export function createCoreVectorSpanBlock() {
             this.setOutput(true, 'Array');
             this.setColour('#fff');
             this.setTooltip(resources.block_verb_core_vector_span_description);
+            this.setHelpUrl(environment.docsUrl + vectorConstants.helpUrl + '#' + 'span');
         }
     };
 
@@ -46,7 +49,7 @@ export function createCoreVectorSpanBlock() {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `return BitByBit.verb.core.Vec.span(inputs.min, inputs.max, inputs.step);`);
+            `return bitbybit.vector.span(inputs);`);
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };
 }

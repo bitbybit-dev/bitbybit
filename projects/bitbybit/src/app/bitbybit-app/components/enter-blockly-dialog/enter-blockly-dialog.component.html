@@ -1,0 +1,13 @@
+<h2>You are entering Blockly visual editor</h2>
+<img width="200" src="assets/blockly_logo.png" />
+<p>
+    Be aware that changes you have made in Typescript editor will be lost.
+</p>
+<p>
+    You can save your work and continue or stay in Typescript editor.
+</p>
+<button mat-button mat-raised-button color="primary" (click)="onSaveAndContinue()">{{resources.app_button_save_and_continue}}</button>
+<div class="second">
+    <button mat-button mat-raised-button (click)="onContinue()">{{resources.app_button_continue}}</button>
+    <button mat-button mat-raised-button (click)="onCancel()">{{resources.app_button_cancel}}</button>
+</div>
