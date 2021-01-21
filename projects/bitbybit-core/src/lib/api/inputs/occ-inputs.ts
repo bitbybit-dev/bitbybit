@@ -82,6 +82,6 @@ export namespace OCC {
         /**
          * If this setting is set to true, edgeList will be ignored
          */
-        roundAll = false;
+        filletAll = false;
     }
 }

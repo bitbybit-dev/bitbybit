@@ -59,13 +59,13 @@ export declare class OCC {
     /**
      * Fillets OpenCascade Shapes
      * <div>
-     *  <img src="../assets/images/blockly-images/occ/createSphere.svg" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/occ/filletEdges.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_occ.occ.html#createsphere
-     * @param inputs Sphere size
-     * @returns OpenCascade Sphere
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occ.occ.html#filletedges
+     * @param inputs Shape, radius and edge indexes to fillet
+     * @returns OpenCascade shape with filleted edges
      */
-    filletEdges(shape: any, radius: any, edgeList: any, filletAll: any): any;
+    filletEdges(inputs: Inputs.OCC.FilletDto): any;
     forEachEdge(shape: any, callback: any): any;
 }
 

@@ -203,41 +203,42 @@ export class OCC {
     /**
      * Fillets OpenCascade Shapes
      * <div>
-     *  <img src="../assets/images/blockly-images/occ/createSphere.svg" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/occ/filletEdges.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_occ.occ.html#createsphere
-     * @param inputs Sphere size
-     * @returns OpenCascade Sphere
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occ.occ.html#filletedges
+     * @param inputs Shape, radius and edge indexes to fillet
+     * @returns OpenCascade shape with filleted edges
      */
-    filletEdges(shape, radius, edgeList, filletAll): any {
-        if (filletAll) {
+    filletEdges(inputs: Inputs.OCC.FilletDto): any {
+        if (inputs.filletAll) {
             const mkFillet = new this.context.occ.BRepFilletAPI_MakeFillet(
-                shape, this.context.occ.ChFi3d_FilletShape.ChFi3d_Rational
+                inputs.shape, this.context.occ.ChFi3d_FilletShape.ChFi3d_Rational
             );
             const anEdgeExplorer = new this.context.occ.TopExp_Explorer_2(
-                shape, this.context.occ.TopAbs_ShapeEnum.TopAbs_EDGE, this.context.occ.TopAbs_ShapeEnum.TopAbs_SHAPE
+                inputs.shape, this.context.occ.TopAbs_ShapeEnum.TopAbs_EDGE, this.context.occ.TopAbs_ShapeEnum.TopAbs_SHAPE
             );
             while (anEdgeExplorer.More()) {
                 const anEdge = new this.context.occ.TopoDS.Edge_1(anEdgeExplorer.Current());
-                // Add edge to fillet algorithm
                 mkFillet.Add_2(0.5, anEdge);
                 anEdgeExplorer.Next();
             }
-            shape = mkFillet.Shape();
-            return shape;
+            inputs.shape = mkFillet.Shape();
+            return inputs.shape;
         } else {
-            const mkFillet = new this.context.occ.BRepFilletAPI_MakeFillet(shape, this.context.occ.ChFi3d_FilletShape.ChFi3d_Rational);
+            const mkFillet = new this.context.occ.BRepFilletAPI_MakeFillet(
+                inputs.shape, this.context.occ.ChFi3d_FilletShape.ChFi3d_Rational
+            );
             let foundEdges = 0;
             let curFillet;
-            this.forEachEdge(shape, (index, edge) => {
-                if (edgeList.includes(index)) {
-                    mkFillet.Add_2(radius, edge);
+            this.forEachEdge(inputs.shape, (index, edge) => {
+                if (inputs.edgeList.includes(index)) {
+                    mkFillet.Add_2(inputs.radius, edge);
                     foundEdges++;
                 }
             });
             if (foundEdges === 0) {
                 console.error('Fillet Edges Not Found!  Make sure you are looking at the object _before_ the Fillet is applied!');
-                curFillet = shape.Solid();
+                curFillet = inputs.shape.Solid();
             }
             else {
                 curFillet = mkFillet.Shape();
@@ -247,7 +248,7 @@ export class OCC {
         }
     }
 
-    forEachEdge(shape, callback): any {
+    private forEachEdge(shape, callback): any {
         const edgeHashes = {};
         let edgeIndex = 0;
         const anExplorer = new this.context.occ.TopExp_Explorer_2(shape,
