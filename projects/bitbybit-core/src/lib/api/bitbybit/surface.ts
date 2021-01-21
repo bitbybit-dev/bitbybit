@@ -53,7 +53,7 @@ export class Surface {
             countIndices = this.parseFaces(faceIndices, meshData, meshDataConverted, countIndices);
         });
 
-        return this.createOrUpdateSurfaceMesh(
+        return this.geometryHelper.createOrUpdateSurfaceMesh(
             meshDataConverted,
             inputs.surfaceMesh,
             inputs.updatable,
@@ -90,7 +90,7 @@ export class Surface {
             });
         });
 
-        return this.createOrUpdateSurfaceMesh(
+        return this.geometryHelper.createOrUpdateSurfaceMesh(
             meshDataConverted,
             inputs.surfacesMesh,
             inputs.updatable,
@@ -470,37 +470,6 @@ export class Surface {
      */
     weights(inputs: Inputs.Surface.SurfaceDto): number[][] {
         return inputs.surface.weights();
-    }
-
-    private createOrUpdateSurfaceMesh(
-        meshDataConverted: { positions: any[]; indices: any[]; normals: any[]; },
-        mesh: Mesh, updatable: boolean, opacity: number, colour: string
-    ): Mesh {
-        const createMesh = () => {
-            const vertexData = new VertexData();
-            vertexData.positions = meshDataConverted.positions;
-            vertexData.indices = meshDataConverted.indices;
-            vertexData.normals = meshDataConverted.normals;
-            vertexData.applyToMesh(mesh, updatable);
-        };
-
-        if (mesh && updatable) {
-            mesh.dispose();
-            createMesh();
-        } else {
-            mesh = new Mesh(`surface${Math.random()}`, this.context.scene);
-            createMesh();
-            mesh.material = new StandardMaterial(`surfaceMaterial${Math.random()}`, this.context.scene);
-        }
-
-        const material = mesh.material as StandardMaterial;
-        material.alpha = opacity;
-        material.diffuseColor = Color3.FromHexString(colour);
-        material.specularColor = new Color3(1, 1, 1);
-        material.ambientColor = new Color3(1, 1, 1);
-        material.backFaceCulling = false;
-        mesh.isPickable = false;
-        return mesh;
     }
 
     private parseFaces(

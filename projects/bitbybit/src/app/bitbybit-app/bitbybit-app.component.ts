@@ -41,7 +41,7 @@ import { core, geom } from 'verb-nurbs-web';
 import { EnterMonacoDialogComponent } from './components/enter-monaco-dialog/enter-monaco-dialog.component';
 import { monacoDialogResultEnum } from './models/monaco-dialog-result.enum';
 import { EnterBlocklyDialogComponent } from './components/enter-blockly-dialog/enter-blockly-dialog.component';
-
+import { initOpenCascade } from 'opencascade.js';
 @Component({
     selector: 'app-root',
     templateUrl: './bitbybit-app.component.html',
@@ -180,6 +180,11 @@ export class BitbybitAppComponent implements OnInit, OnDestroy, AfterViewInit {
                 this.windowBlockly.scene = this.scene;
                 this.windowBlockly.workspace = this.workspace;
                 (window as any).blockly = this.windowBlockly;
+
+                initOpenCascade().then(occ => {
+                    this.context.occ = occ;
+                    alert('cascade initialized');
+                });
 
                 this.engine.runRenderLoop(() => {
                     const now = Date.now();

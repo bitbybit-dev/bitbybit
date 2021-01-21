@@ -10,3 +10,4 @@ export * from './surface-inputs';
 export * from './solid-inputs';
 export * from './intersect-inputs';
 export * from './tag-inputs';
+export * from './occ-inputs';

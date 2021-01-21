@@ -32,6 +32,8 @@ import { SolidText } from './api/bitbybit/solid-text';
 import { Intersect } from './api/bitbybit/intersect';
 import { Tag } from './api/bitbybit/tag';
 import { Time } from './api/bitbybit/time';
+import { OCC } from './api/bitbybit/occ/occ';
+import { OCCHelper } from './api/bitbybit/occ/occ-helper';
 
 @NgModule({
     declarations: [],
@@ -70,7 +72,9 @@ import { Time } from './api/bitbybit/time';
         SolidText,
         Intersect,
         Tag,
-        Time
+        Time,
+        OCC,
+        OCCHelper,
     ],
     exports: []
 })

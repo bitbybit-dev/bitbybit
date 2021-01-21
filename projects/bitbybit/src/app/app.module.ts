@@ -38,6 +38,7 @@ const monacoConfig: NgxMonacoEditorConfig = {
                 ${DeclarationStrings.solidInputsString}
                 ${DeclarationStrings.intersectInputsString}
                 ${DeclarationStrings.tagInputsString}
+                ${DeclarationStrings.occInputsString}
             }
             ${DeclarationStrings.baseTypesString}
             ${DeclarationStrings.vectorString}
@@ -69,6 +70,7 @@ const monacoConfig: NgxMonacoEditorConfig = {
             ${DeclarationStrings.intersectString}
             ${DeclarationStrings.tagString}
             ${DeclarationStrings.timeString}
+            ${DeclarationStrings.occString}
 
             class BitByBitBase {
                 readonly vector: Vector;
@@ -84,6 +86,7 @@ const monacoConfig: NgxMonacoEditorConfig = {
                 readonly intersect: Intersect;
                 readonly tag: Tag;
                 readonly time: Time;
+                readonly occ: OCC;
             }
         }
         `;

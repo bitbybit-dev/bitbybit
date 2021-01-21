@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { LinesMesh, Matrix, Color3, Vector3, Color4, MeshBuilder, Scene, Mesh } from '@babylonjs/core';
+import { LinesMesh, Matrix, Color3, Vector3, Color4, MeshBuilder, Scene, Mesh, VertexData, StandardMaterial } from '@babylonjs/core';
 import { Context } from './context';
 @Injectable()
 export class GeometryHelper {
@@ -7,6 +7,37 @@ export class GeometryHelper {
 
     private readonly tolerance = 0.00001;
     private readonly snapTolerance = 0.00001;
+
+    createOrUpdateSurfaceMesh(
+        meshDataConverted: { positions: any[]; indices: any[]; normals: any[]; },
+        mesh: Mesh, updatable: boolean, opacity: number, colour: string
+    ): Mesh {
+        const createMesh = () => {
+            const vertexData = new VertexData();
+            vertexData.positions = meshDataConverted.positions;
+            vertexData.indices = meshDataConverted.indices;
+            vertexData.normals = meshDataConverted.normals;
+            vertexData.applyToMesh(mesh, updatable);
+        };
+
+        if (mesh && updatable) {
+            mesh.dispose();
+            createMesh();
+        } else {
+            mesh = new Mesh(`surface${Math.random()}`, this.context.scene);
+            createMesh();
+            mesh.material = new StandardMaterial(`surfaceMaterial${Math.random()}`, this.context.scene);
+        }
+
+        const material = mesh.material as StandardMaterial;
+        material.alpha = opacity;
+        material.diffuseColor = Color3.FromHexString(colour);
+        material.specularColor = new Color3(1, 1, 1);
+        material.ambientColor = new Color3(1, 1, 1);
+        material.backFaceCulling = false;
+        mesh.isPickable = false;
+        return mesh;
+    }
 
     transformControlPoints(transformation: number[][] | number[][][], transformedControlPoints: number[][]): number[][] {
         let transformationArrays = [];

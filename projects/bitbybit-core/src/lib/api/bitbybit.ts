@@ -12,6 +12,7 @@ import { Solid } from './bitbybit/solid';
 import { Intersect } from './bitbybit/intersect';
 import { Tag } from './bitbybit/tag';
 import { Time } from './bitbybit/time';
+import { OCC } from './bitbybit/occ/occ';
 
 @Injectable()
 export class BitByBitBase {
@@ -28,7 +29,8 @@ export class BitByBitBase {
         public readonly solid: Solid,
         public readonly intersect: Intersect,
         public readonly tag: Tag,
-        public readonly time: Time
+        public readonly time: Time,
+        public readonly occ: OCC,
     ) {
     }
 }

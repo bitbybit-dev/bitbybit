@@ -28,6 +28,7 @@ export * from './solid-text-string';
 export * from './intersect-string';
 export * from './tag-string';
 export * from './time-string';
+export * from './occ/occ-string';
 
 export * from './inputs/node-inputs-string';
 export * from './inputs/vector-inputs-string';
@@ -41,3 +42,4 @@ export * from './inputs/surface-inputs-string';
 export * from './inputs/solid-inputs-string';
 export * from './inputs/intersect-inputs-string';
 export * from './inputs/tag-inputs-string';
+export * from './inputs/occ/occ-inputs-string';
