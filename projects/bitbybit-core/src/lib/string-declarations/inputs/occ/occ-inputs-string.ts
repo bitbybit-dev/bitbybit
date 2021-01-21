@@ -61,7 +61,7 @@ export declare namespace OCC {
         /**
          * Center of the sphere
          */
-        center: [0, 0, 0];
+        center: number[];
     }
     class FilletDto {
         /**
@@ -80,6 +80,24 @@ export declare namespace OCC {
          * If this setting is set to true, edgeList will be ignored
          */
         filletAll: boolean;
+    }
+    export class CylinderDto {
+        /**
+         * Radius of the cylinder
+         */
+        radius: number;
+        /**
+         * Height of the cylinder
+         */
+        height: number;
+        /**
+         * Angle of the cylinder in degrees
+         */
+        angle: number;
+        /**
+         * Center of the cylinder
+         */
+        center: number[];
     }
 }
 

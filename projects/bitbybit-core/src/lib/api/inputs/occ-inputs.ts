@@ -64,7 +64,25 @@ export namespace OCC {
         /**
          * Center of the sphere
          */
-        center: [0, 0, 0];
+        center = [0, 0, 0];
+    }
+    export class CylinderDto {
+        /**
+         * Radius of the cylinder
+         */
+        radius: number;
+        /**
+         * Height of the cylinder
+         */
+        height: number;
+        /**
+         * Angle of the cylinder in degrees
+         */
+        angle = 0;
+        /**
+         * Center of the cylinder
+         */
+        center = [0, 0, 0];
     }
     export class FilletDto {
         /**

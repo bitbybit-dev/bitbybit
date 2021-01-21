@@ -186,6 +186,22 @@ export class OCC {
     }
 
     /**
+     * Creates OpenCascade Cylinder
+     * <div>
+     *  <img src="../assets/images/blockly-images/occ/createCylinder.svg" alt="Blockly Image"/>
+     * </div>
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occ.occ.html#createcylinder
+     * @param inputs Cylinder parameters
+     * @returns OpenCascade Cylinder
+     */
+    createCylinder(inputs: Inputs.OCC.CylinderDto): any {
+        const cylinderPlane = new this.context.occ.gp_Ax2_3(
+            new this.context.occ.gp_Pnt_3(inputs.center[0], -inputs.height / 2 + inputs.center[1], inputs.center[2]),
+            new this.context.occ.gp_Dir_4(0., 1., 0.));
+        return new this.context.occ.BRepPrimAPI_MakeCylinder_3(cylinderPlane, inputs.radius, inputs.height).Shape();
+    }
+
+    /**
      * Creates OpenCascade Sphere
      * <div>
      *  <img src="../assets/images/blockly-images/occ/createSphere.svg" alt="Blockly Image"/>
