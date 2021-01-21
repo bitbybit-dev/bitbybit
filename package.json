@@ -42,6 +42,7 @@
         "@scullyio/scully": "^1.0.0-beta.2",
         "@types/simplebar": "^5.1.1",
         "blockly": "4.20201217.0",
+        "opencascade.js": "2.0.0-beta.af2d87e",
         "bootstrap": "4.5.2",
         "earcut": "2.2.2",
         "jsonpath": "1.0.2",
