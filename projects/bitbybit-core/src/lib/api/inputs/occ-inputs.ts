@@ -76,10 +76,6 @@ export namespace OCC {
          */
         height: number;
         /**
-         * Angle of the cylinder in degrees
-         */
-        angle = 0;
-        /**
          * Center of the cylinder
          */
         center = [0, 0, 0];

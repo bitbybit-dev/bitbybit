@@ -91,10 +91,6 @@ export declare namespace OCC {
          */
         height: number;
         /**
-         * Angle of the cylinder in degrees
-         */
-        angle: number;
-        /**
          * Center of the cylinder
          */
         center: number[];
