@@ -150,6 +150,21 @@ export class OCC {
         return brepMesh;
     }
 
+    //TODO finish implementing
+    drawShape(shape){
+        const fullShapeEdgeHashes = {};
+        const fullShapeFaceHashes = {};
+        this.forEachFace(shape, (index, face) => {
+            fullShapeFaceHashes[face.HashCode(100000000)] = index;
+        });
+        this.forEachEdge(shape, (index, edge) => {
+            fullShapeEdgeHashes[edge.HashCode(100000000)] = index;
+        });
+        // Object.assign(fullShapeEdgeHashes, this.forEachEdge(cylinder, (index, edge) => { }));
+        const d = this.shapeToMesh(shape, 0.1, fullShapeEdgeHashes, fullShapeFaceHashes);
+        console.log(d);
+    }
+
     /**
      * Creates OpenCascade Polygon
      * <div>
@@ -236,7 +251,7 @@ export class OCC {
      * @returns OpenCascade circle wire
      */
     createCircleWire(inputs: Inputs.OCC.CircleDto): any {
-        this.createCircle(inputs.radius, inputs.center, false);
+        return this.createCircle(inputs.radius, inputs.center, false);
     }
 
     /**
@@ -249,7 +264,7 @@ export class OCC {
      * @returns OpenCascade circle face
      */
     createCircleFace(inputs: Inputs.OCC.CircleDto): any {
-        this.createCircle(inputs.radius, inputs.center, true);
+        return this.createCircle(inputs.radius, inputs.center, true);
     }
 
 
@@ -334,6 +349,20 @@ export class OCC {
         return edgeHashes;
     }
 
+    private forEachFace(shape, callback): any {
+        let faceIndex = 0;
+        const anExplorer = new this.context.occ.TopExp_Explorer_2(
+            shape,
+            this.context.occ.TopAbs_ShapeEnum.TopAbs_FACE,
+            this.context.occ.TopAbs_ShapeEnum.TopAbs_SHAPE
+        );
+        for (anExplorer.Init(shape, this.context.occ.TopAbs_ShapeEnum.TopAbs_FACE, this.context.occ.TopAbs_ShapeEnum.TopAbs_SHAPE);
+            anExplorer.More();
+            anExplorer.Next()) {
+            callback(faceIndex++, this.context.occ.TopoDS.Face_1(anExplorer.Current()));
+        }
+    }
+
     private createCircle(radius: number, center: number[], wire: boolean): any {
         const circle = this.oc.gcMakeCircle(center, [0, 0, 1], radius);
         const edge = this.oc.bRepBuilderAPIMakeEdge(circle);
@@ -342,5 +371,149 @@ export class OCC {
             return circleWire;
         }
         return this.oc.bRepBuilderAPIMakeFace(wire, true);
+    }
+
+    private shapeToMesh(shape, maxDeviation, fullShapeEdgeHashes, fullShapeFaceHashes): { faceList, edgeList } {
+        const faceList = [];
+        const edgeList = [];
+
+        // shape = new this.context.occ.TopoDS_Shape_1(shape);
+
+        // Set up the Incremental Mesh builder, with a precision
+        const inctementalMeshBuilder = new this.context.occ.BRepMesh_IncrementalMesh_2(shape, maxDeviation, false, maxDeviation * 5, false);
+
+        // Construct the edge hashes to assign proper indices to the edges
+        const fullShapeEdgeHashes2 = {};
+
+        // Iterate through the faces and triangulate each one
+        const triangulations = [];
+        this.forEachFace(shape, (faceIndex, myFace) => {
+            const aLocation = new this.context.occ.TopLoc_Location_1();
+            const myT = this.context.occ.BRep_Tool.Triangulation(myFace, aLocation);
+            if (myT.IsNull()) { console.error('Encountered Null Face!'); return; }
+
+            const thisFace = {
+                vertex_coord: [],
+                normal_coord: [],
+                tri_indexes: [],
+                number_of_triangles: 0,
+                face_index: fullShapeFaceHashes[myFace.HashCode(100000000)]
+            };
+
+            const pc = new this.context.occ.Poly_Connect_2(myT);
+            const Nodes = myT.get().Nodes();
+
+            // write vertex buffer
+            thisFace.vertex_coord = new Array(Nodes.Length() * 3);
+            for (let i = 0; i < Nodes.Length(); i++) {
+                const p = Nodes.Value(i + 1).Transformed(aLocation.Transformation());
+                thisFace.vertex_coord[(i * 3) + 0] = p.X();
+                thisFace.vertex_coord[(i * 3) + 1] = p.Y();
+                thisFace.vertex_coord[(i * 3) + 2] = p.Z();
+            }
+
+            // write normal buffer
+            const myNormal = new this.context.occ.TColgp_Array1OfDir_2(Nodes.Lower(), Nodes.Upper());
+            const SST = new this.context.occ.StdPrs_ToolTriangulatedShape();
+            this.context.occ.StdPrs_ToolTriangulatedShape.Normal(myFace, pc, myNormal);
+            thisFace.normal_coord = new Array(myNormal.Length() * 3);
+            for (let i = 0; i < myNormal.Length(); i++) {
+                const d = myNormal.Value(i + 1).Transformed(aLocation.Transformation());
+                thisFace.normal_coord[(i * 3) + 0] = d.X();
+                thisFace.normal_coord[(i * 3) + 1] = d.Y();
+                thisFace.normal_coord[(i * 3) + 2] = d.Z();
+            }
+
+            // write triangle buffer
+            const orient = myFace.Orientation_1();
+            const triangles = myT.get().Triangles();
+            thisFace.tri_indexes = new Array(triangles.Length() * 3);
+            let validFaceTriCount = 0;
+            for (let nt = 1; nt <= myT.get().NbTriangles(); nt++) {
+                const t = triangles.Value(nt);
+                let n1 = t.Value(1);
+                let n2 = t.Value(2);
+                const n3 = t.Value(3);
+                if (orient !== this.context.occ.TopAbs_FORWARD) {
+                    const tmp = n1;
+                    n1 = n2;
+                    n2 = tmp;
+                }
+                // if(TriangleIsValid(Nodes.Value(1), Nodes.Value(n2), Nodes.Value(n3))) {
+                thisFace.tri_indexes[(validFaceTriCount * 3) + 0] = n1 - 1;
+                thisFace.tri_indexes[(validFaceTriCount * 3) + 1] = n2 - 1;
+                thisFace.tri_indexes[(validFaceTriCount * 3) + 2] = n3 - 1;
+                validFaceTriCount++;
+                // }
+            }
+            thisFace.number_of_triangles = validFaceTriCount;
+            faceList.push(thisFace);
+
+            this.forEachEdge(myFace, (index, myEdge) => {
+                const edgeHash = myEdge.HashCode(100000000);
+                if (fullShapeEdgeHashes2.hasOwnProperty(edgeHash)) {
+                    const thisEdge = {
+                        vertex_coord: [],
+                        edge_index: -1
+                    };
+
+                    const myP = this.context.occ.BRep_Tool.PolygonOnTriangulation_1(myEdge, myT, aLocation);
+                    const edgeNodes = myP.get().Nodes();
+
+                    // write vertex buffer
+                    thisEdge.vertex_coord = new Array(edgeNodes.Length() * 3);
+                    for (let j = 0; j < edgeNodes.Length(); j++) {
+                        const vertexIndex = edgeNodes.Value(j + 1);
+                        thisEdge.vertex_coord[(j * 3) + 0] = thisFace.vertex_coord[((vertexIndex - 1) * 3) + 0];
+                        thisEdge.vertex_coord[(j * 3) + 1] = thisFace.vertex_coord[((vertexIndex - 1) * 3) + 1];
+                        thisEdge.vertex_coord[(j * 3) + 2] = thisFace.vertex_coord[((vertexIndex - 1) * 3) + 2];
+                    }
+
+                    thisEdge.edge_index = fullShapeEdgeHashes[edgeHash];
+
+                    edgeList.push(thisEdge);
+                } else {
+                    fullShapeEdgeHashes2[edgeHash] = edgeHash;
+                }
+            });
+            triangulations.push(myT);
+        });
+        // Nullify Triangulations between runs so they're not stored in the cache
+        for (let i = 0; i < triangulations.length; i++) {
+            triangulations[i].Nullify();
+        }
+
+        // Get the free edges that aren't on any triangulated face/surface
+        this.forEachEdge(shape, (index, myEdge) => {
+            const edgeHash = myEdge.HashCode(100000000);
+            if (!fullShapeEdgeHashes2.hasOwnProperty(edgeHash)) {
+                const thisEdge = {
+                    vertex_coord: [],
+                    edge_index: -1
+                };
+
+                const aLocation = new this.context.occ.TopLoc_Location_1();
+                const adaptorCurve = new this.context.occ.BRepAdaptor_Curve_2(myEdge);
+                const tangDef = new this.context.occ.GCPnts_TangentialDeflection_2(adaptorCurve, maxDeviation, 0.1, 2, 1.0e-9, 1.0e-7);
+
+                // write vertex buffer
+                thisEdge.vertex_coord = new Array(tangDef.NbPoints() * 3);
+                for (let j = 0; j < tangDef.NbPoints(); j++) {
+                    const vertex = tangDef.Value(j + 1).Transformed(aLocation.Transformation());
+                    thisEdge.vertex_coord[(j * 3) + 0] = vertex.X();
+                    thisEdge.vertex_coord[(j * 3) + 1] = vertex.Y();
+                    thisEdge.vertex_coord[(j * 3) + 2] = vertex.Z();
+                }
+
+                thisEdge.edge_index = fullShapeEdgeHashes[edgeHash];
+                fullShapeEdgeHashes2[edgeHash] = edgeHash;
+
+                edgeList.push(thisEdge);
+            }
+        });
+
+
+
+        return { faceList, edgeList };
     }
 }
