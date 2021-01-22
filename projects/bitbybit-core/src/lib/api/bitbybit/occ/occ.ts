@@ -163,7 +163,7 @@ export class OCC {
         const builder = new this.context.occ.BRep_Builder();
         const aComp = new this.context.occ.TopoDS_Compound();
         builder.MakeCompound(aComp);
-        const path = inputs.polygon.map(([x, y, z]) => new this.context.occ.gp_Pnt_3(x, y, z));
+        const path = inputs.polygon.map((pt) => this.oc.gpPnt(pt));
         const makePolygon = new this.context.occ.BRepBuilderAPI_MakePolygon_3(path[0], path[1], path[2], true);
         const wire = makePolygon.Wire();
         const f = new this.context.occ.BRepBuilderAPI_MakeFace_15(wire, false);
@@ -181,12 +181,7 @@ export class OCC {
      * @returns OpenCascade Box
      */
     createBox(inputs: Inputs.OCC.BoxDto): any {
-        const pt = new this.context.occ.gp_Pnt_3(
-            -inputs.width / 2 + inputs.center[0],
-            -inputs.height / 2 + inputs.center[1],
-            -inputs.length / 2 + inputs.center[2]
-        );
-        return new this.context.occ.BRepPrimAPI_MakeBox_2(pt, inputs.width, inputs.height, inputs.length).Shape();
+        return this.oc.bRepPrimAPIMakeBox(inputs.width, inputs.length, inputs.height, inputs.center);
     }
 
     /**
@@ -199,10 +194,12 @@ export class OCC {
      * @returns OpenCascade Cylinder
      */
     createCylinder(inputs: Inputs.OCC.CylinderDto): any {
-        const cylinderPlane = new this.context.occ.gp_Ax2_3(
-            new this.context.occ.gp_Pnt_3(inputs.center[0], -inputs.height / 2 + inputs.center[1], inputs.center[2]),
-            new this.context.occ.gp_Dir_4(0., 1., 0.));
-        return new this.context.occ.BRepPrimAPI_MakeCylinder_3(cylinderPlane, inputs.radius, inputs.height).Shape();
+        return this.oc.bRepPrimAPIMakeCylinder(
+            [inputs.center[0], -inputs.height / 2 + inputs.center[1], inputs.center[2]],
+            [0., 1., 0.],
+            inputs.radius,
+            inputs.height
+        );
     }
 
     /**

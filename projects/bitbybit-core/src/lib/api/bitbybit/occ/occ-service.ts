@@ -43,6 +43,20 @@ export class OCCService {
         return new this.c.occ.BRepPrimAPI_MakeSphere_9(ax, radius).Shape();
     }
 
+    bRepPrimAPIMakeCylinder(center: number[], direction: number[], radius, height): any {
+        const ax = this.gpAx2(center, direction);
+        return new this.c.occ.BRepPrimAPI_MakeCylinder_3(ax, radius, height).Shape();
+    }
+
+    bRepPrimAPIMakeBox(width: number, length: number, height: number, center: number[]): any {
+        const pt = this.gpPnt([
+            -width / 2 + center[0],
+            -height / 2 + center[1],
+            -length / 2 + center[2]
+        ]);
+        return new this.c.occ.BRepPrimAPI_MakeBox_2(pt, width, height, length).Shape();
+    }
+
     castHandleGeomCurve(curve: any): any {
         return new this.c.occ.Handle_Geom_Curve_2(curve.get());
     }
