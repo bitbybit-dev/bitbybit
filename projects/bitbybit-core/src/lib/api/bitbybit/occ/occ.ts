@@ -4,6 +4,7 @@ import { Context } from '../../context';
 import { GeometryHelper } from '../../geometry-helper';
 import * as Inputs from '../../inputs/inputs';
 import { OCCHelper } from './occ-helper';
+import { OCCService } from './occ-service';
 
 /**
  * Contains various methods for OpenCascade implementation
@@ -13,11 +14,14 @@ import { OCCHelper } from './occ-helper';
 @Injectable()
 export class OCC {
 
+
     constructor(
         private readonly context: Context,
         private readonly geometryHelper: GeometryHelper,
-        private readonly occHelper: OCCHelper
-    ) { }
+        private readonly occHelper: OCCHelper,
+        private readonly oc: OCCService,
+    ) {
+    }
 
     /**
      * Draws a Brep solid
@@ -202,6 +206,57 @@ export class OCC {
     }
 
     /**
+     * Creates OpenCascade BSPline wire
+     * <div>
+     *  <img src="../assets/images/blockly-images/occ/createBSpline.svg" alt="Blockly Image"/>
+     * </div>
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occ.occ.html#createbspline
+     * @param inputs Points through which to make BSpline
+     * @returns OpenCascade BSpline wire
+     */
+    createBSpline(inputs: Inputs.OCC.BSplineDto): any {
+        const ptList = new this.context.occ.TColgp_Array1OfPnt_2(1, inputs.points.length + (inputs.closed ? 1 : 0));
+        for (let pIndex = 1; pIndex <= inputs.points.length; pIndex++) {
+            ptList.SetValue(pIndex, this.occHelper.convertToPnt(inputs.points[pIndex - 1]));
+        }
+        if (inputs.closed) { ptList.SetValue(inputs.points.length + 1, ptList.Value(1)); }
+
+        const geomCurveHandle = new this.context.occ.GeomAPI_PointsToBSpline_2(ptList, 3, 8,
+            this.context.occ.GeomAbs_Shape.GeomAbs_C2, 1.0e-3);
+        const edge = new this.context.occ.BRepBuilderAPI_MakeEdge_24(
+            new this.context.occ.Handle_Geom_Curve_2(geomCurveHandle.Curve().get())
+        ).Edge();
+        return new this.context.occ.BRepBuilderAPI_MakeWire_2(edge).Wire();
+    }
+
+    /**
+     * Creates OpenCascade circle wire
+     * <div>
+     *  <img src="../assets/images/blockly-images/occ/createCircleWire.svg" alt="Blockly Image"/>
+     * </div>
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occ.occ.html#createcirclewire
+     * @param inputs Circle parameters
+     * @returns OpenCascade circle wire
+     */
+    createCircleWire(inputs: Inputs.OCC.CircleDto): any {
+        this.createCircle(inputs.radius, inputs.center, false);
+    }
+
+    /**
+     * Creates OpenCascade circle face
+     * <div>
+     *  <img src="../assets/images/blockly-images/occ/createCircleFace.svg" alt="Blockly Image"/>
+     * </div>
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occ.occ.html#createcircleface
+     * @param inputs Circle parameters
+     * @returns OpenCascade circle face
+     */
+    createCircleFace(inputs: Inputs.OCC.CircleDto): any {
+        this.createCircle(inputs.radius, inputs.center, true);
+    }
+
+
+    /**
      * Creates OpenCascade Sphere
      * <div>
      *  <img src="../assets/images/blockly-images/occ/createSphere.svg" alt="Blockly Image"/>
@@ -211,9 +266,7 @@ export class OCC {
      * @returns OpenCascade Sphere
      */
     createSphere(inputs: Inputs.OCC.SphereDto): any {
-        const pt = new this.context.occ.gp_Pnt_3(inputs.center[0], inputs.center[1], inputs.center[2]);
-        const spherePlane = new this.context.occ.gp_Ax2_3(pt, new this.context.occ.gp_Dir_4(0., 0., 1.));
-        return new this.context.occ.BRepPrimAPI_MakeSphere_9(spherePlane, inputs.radius).Shape();
+        return this.oc.bRepPrimAPIMakeSphere(inputs.center, [0., 0., 1.], inputs.radius);
     }
 
     /**
@@ -282,5 +335,15 @@ export class OCC {
             }
         }
         return edgeHashes;
+    }
+
+    private createCircle(radius: number, center: number[], wire: boolean): any {
+        const circle = this.oc.gcMakeCircle(center, [0, 0, 1], radius);
+        const edge = this.oc.bRepBuilderAPIMakeEdge(circle);
+        const circleWire = this.oc.bRepBuilderAPIMakeWire(edge);
+        if (wire) {
+            return circleWire;
+        }
+        return this.oc.bRepBuilderAPIMakeFace(wire, true);
     }
 }

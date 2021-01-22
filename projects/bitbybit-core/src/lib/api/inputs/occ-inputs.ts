@@ -98,4 +98,24 @@ export namespace OCC {
          */
         filletAll = false;
     }
+    export class BSplineDto {
+        /**
+         * Points through which the BSpline will be created
+         */
+        points: number[][];
+        /**
+         * Indicates wether BSpline will be cloed
+         */
+        closed: boolean;
+    }
+    export class CircleDto {
+        /**
+         * Radius of the circle
+         */
+        radius: number;
+        /**
+         * Center of the circle
+         */
+        center: number[];
+    }
 }

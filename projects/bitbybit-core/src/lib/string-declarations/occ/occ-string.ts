@@ -76,6 +76,17 @@ export declare class OCC {
      * @returns OpenCascade Cylinder
      */
     createCylinder(inputs: Inputs.OCC.CylinderDto): any;
+    /**
+     * Creates OpenCascade BSPline
+     * <div>
+     *  <img src="../assets/images/blockly-images/occ/createBSpline.svg" alt="Blockly Image"/>
+     * </div>
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occ.occ.html#createbspline
+     * @param inputs Points through which to make BSpline
+     * @returns OpenCascade BSpline
+     */
+    createBSpline(inputs: Inputs.OCC.BSplineDto): any;
+    createCircle(radius, wire): any;
     forEachEdge(shape: any, callback: any): any;
 }
 

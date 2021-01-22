@@ -144,10 +144,10 @@ export class OCCHelper {
      * array or a gp_Pnt to a gp_Pnt.  Does not accept
      * `TopoDS_Vertex`'s yet! 
      */
-    convertToPnt(pnt) {
+    convertToPnt(pnt): any {
         let point = pnt; // Accept raw gp_Points if we got 'em
         if (point.length) {
-            point = new this.context.occ.gp_Pnt(point[0], point[1], (point[2]) ? point[2] : 0);
+            point = new this.context.occ.gp_Pnt_3(point[0], point[1], (point[2]) ? point[2] : 0);
         }
         return point;
     }

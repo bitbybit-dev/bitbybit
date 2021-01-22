@@ -95,6 +95,16 @@ export declare namespace OCC {
          */
         center: number[];
     }
+    export class BSplineDto {
+        /**
+         * Points through which the BSpline will be created
+         */
+        points: number[][];
+        /**
+         * Indicates wether BSpline will be cloed
+         */
+        closed: boolean;
+    }
 }
 
 `);
