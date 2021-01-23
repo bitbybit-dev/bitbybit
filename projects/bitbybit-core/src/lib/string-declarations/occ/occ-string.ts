@@ -46,7 +46,7 @@ export declare class OCC {
      * @param inputs Polygon points
      * @returns OpenCascade polygon shape
      */
-    createPolygon(inputs: Inputs.OCC.PolygonDto): any;
+    createPolygonWire(inputs: Inputs.OCC.PolygonDto): any;
     /**
      * Creates OpenCascade Box
      * <div>

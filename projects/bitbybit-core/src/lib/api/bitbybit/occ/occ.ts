@@ -185,7 +185,7 @@ export class OCC {
 
                 pbr.baseColor = Color3.FromHexString(inputs.faceColour);
                 pbr.metallic = 1.0;
-                pbr.roughness = 0.4;
+                pbr.roughness = 0.6;
 
                 mesh.material = pbr;
 
@@ -218,16 +218,32 @@ export class OCC {
      * @param inputs Polygon points
      * @returns OpenCascade polygon shape
      */
-    createPolygon(inputs: Inputs.OCC.PolygonDto): any {
-        const builder = new this.context.occ.BRep_Builder();
-        const aComp = new this.context.occ.TopoDS_Compound();
-        builder.MakeCompound(aComp);
-        const path = inputs.polygon.map((pt) => this.oc.gpPnt(pt));
-        const makePolygon = new this.context.occ.BRepBuilderAPI_MakePolygon_3(path[0], path[1], path[2], true);
-        const wire = makePolygon.Wire();
-        const f = new this.context.occ.BRepBuilderAPI_MakeFace_15(wire, false);
-        builder.Add(aComp, f.Shape());
-        return aComp;
+    createPolygonWire(inputs: Inputs.OCC.PolygonDto): any {
+        const gpPoints = [];
+        for (let ind = 0; ind < inputs.points.length; ind++) {
+            gpPoints.push(this.occHelper.convertToPnt(inputs.points[ind]));
+        }
+
+        const polygonWire = new this.context.occ.BRepBuilderAPI_MakeWire_1();
+        for (let ind = 0; ind < inputs.points.length - 1; ind++) {
+            const seg = new this.context.occ.GC_MakeSegment_1(gpPoints[ind], gpPoints[ind + 1]).Value();
+            const edge = new this.context.occ.BRepBuilderAPI_MakeEdge_24(
+                new this.context.occ.Handle_Geom_Curve_2(seg.get())
+            ).Edge();
+            const innerWire = new this.context.occ.BRepBuilderAPI_MakeWire_2(edge).Wire();
+            polygonWire.Add_2(innerWire);
+        }
+        const seg2 = new this.context.occ.GC_MakeSegment_1(gpPoints[inputs.points.length - 1], gpPoints[0]).Value();
+        const edge2 = new this.context.occ.BRepBuilderAPI_MakeEdge_24(
+            new this.context.occ.Handle_Geom_Curve_2(seg2.get())
+        ).Edge();
+        const innerWire2 = new this.context.occ.BRepBuilderAPI_MakeWire_2(edge2).Wire();
+        polygonWire.Add_2(innerWire2);
+        return polygonWire.Wire();
+    }
+
+    createPolygonFace(inputs: Inputs.OCC.PolygonDto): any {
+        return new this.context.occ.BRepBuilderAPI_MakeFace(this.createPolygonWire(inputs)).Face();
     }
 
     /**

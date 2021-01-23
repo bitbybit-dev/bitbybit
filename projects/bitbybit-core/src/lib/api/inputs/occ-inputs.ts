@@ -79,9 +79,9 @@ export namespace OCC {
 
     export class PolygonDto {
         /**
-         * Polygon points
+         * Points points
          */
-        polygon: number[][];
+        points: number[][];
     }
 
     export class BoxDto {

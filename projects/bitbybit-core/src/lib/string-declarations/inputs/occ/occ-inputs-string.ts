@@ -75,7 +75,7 @@ export declare namespace OCC {
         /**
          * Polygon points
          */
-        polygon: number[][];
+        points: number[][];
     }
     class BoxDto {
         /**
