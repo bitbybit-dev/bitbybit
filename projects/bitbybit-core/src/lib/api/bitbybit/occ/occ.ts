@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { Color3, Mesh, MeshBuilder, StandardMaterial, VertexData } from '@babylonjs/core';
-import { Color4 } from '@babylonjs/core/Maths/math';
+import { Color3, CubeTexture, Mesh, MeshBuilder, PBRMetallicRoughnessMaterial, StandardMaterial, VertexData } from '@babylonjs/core';
+import { Color4, Vector3 } from '@babylonjs/core/Maths/math';
 import { Context } from '../../context';
 import { GeometryHelper } from '../../geometry-helper';
 import * as Inputs from '../../inputs/inputs';
@@ -160,7 +160,7 @@ export class OCC {
      * @param inputs Contains a shape to be drawn and additional information
      * @returns BabylonJS Mesh
      */
-    drawShape(inputs: Inputs.OCC.DrawShapeDto): void {
+    drawShape(inputs: Inputs.OCC.DrawShapeDto): Mesh {
         const fullShapeEdgeHashes = {};
         const fullShapeFaceHashes = {};
         this.forEachFace(inputs.shape, (index, face) => {
@@ -169,11 +169,10 @@ export class OCC {
         this.forEachEdge(inputs.shape, (index, edge) => {
             fullShapeEdgeHashes[edge.HashCode(100000000)] = index;
         });
-        // Object.assign(fullShapeEdgeHashes, this.forEachEdge(cylinder, (index, edge) => { }));
-        const fe = this.shapeToMesh(inputs.shape, 0.1, fullShapeEdgeHashes, fullShapeFaceHashes);
+        const fe = this.shapeToMesh(inputs.shape, 0.025, fullShapeEdgeHashes, fullShapeFaceHashes);
 
         const shapeMesh = MeshBuilder.CreateBox('brepMesh' + Math.random(), { size: 0.01 }, this.context.scene);
-        // shapeMesh.isVisible = false;
+        shapeMesh.isVisible = false;
 
         if (inputs.drawFaces) {
             fe.faceList.forEach(face => {
@@ -182,6 +181,16 @@ export class OCC {
                     normals: face.normal_coord,
                     indices: face.tri_indexes,
                 }, inputs.shapeMesh, inputs.updatable, inputs.opacity, inputs.faceColour);
+                const pbr = new PBRMetallicRoughnessMaterial('pbr', this.context.scene);
+
+                pbr.baseColor = Color3.FromHexString(inputs.faceColour);
+                pbr.metallic = 1.0;
+                pbr.roughness = 0.4;
+
+                mesh.material = pbr;
+
+                mesh.material.backFaceCulling = false;
+                mesh.material.zOffset = 2;
             });
         }
         if (inputs.drawEdges) {
@@ -197,6 +206,7 @@ export class OCC {
                 mesh.parent = shapeMesh;
             });
         }
+        return shapeMesh;
     }
 
     /**
@@ -294,7 +304,7 @@ export class OCC {
 
         const geomCurveHandle = new this.context.occ.Geom_BezierCurve_1(ptList);
         const edge = new this.context.occ.BRepBuilderAPI_MakeEdge_24(
-                new this.context.occ.Handle_Geom_Curve_2(geomCurveHandle)
+            new this.context.occ.Handle_Geom_Curve_2(geomCurveHandle)
         ).Edge();
         return new this.context.occ.BRepBuilderAPI_MakeWire_2(edge).Wire();
     }
@@ -325,6 +335,81 @@ export class OCC {
         return this.createCircle(inputs.radius, inputs.center, true);
     }
 
+    /**
+     * Lofts wires into a shell
+     * <div>
+     *  <img src="../assets/images/blockly-images/occ/loft.svg" alt="Blockly Image"/>
+     * </div>
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occ.occ.html#loft
+     * @param inputs Circle parameters
+     * @returns Resulting loft shell
+     */
+    loft(inputs: Inputs.OCC.LoftDto): any {
+        const pipe = new this.context.occ.BRepOffsetAPI_ThruSections(false, false, 1.0e-06);
+        inputs.wires.forEach((wire) => { pipe.AddWire(wire); });
+        pipe.Build();
+        return pipe.Shape();
+    }
+
+    /**
+     * Offset for various shapes
+     * <div>
+     *  <img src="../assets/images/blockly-images/occ/offset.svg" alt="Blockly Image"/>
+     * </div>
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occ.occ.html#offset
+     * @param inputs Shape to offset and distance with tolerance
+     * @returns Resulting offset shape
+     */
+    offset(inputs: Inputs.OCC.OffsetDto): any {
+        if (!inputs.tolerance) { inputs.tolerance = 0.1; }
+        if (inputs.offsetDistance === 0.0) { return inputs.shape; }
+        let offset = null;
+        if (inputs.shape.ShapeType() === this.context.occ.TopAbs_ShapeEnum.TopAbs_WIRE) {
+            offset = new this.context.occ.BRepOffsetAPI_MakeOffset_1();
+            offset.AddWire(inputs.shape);
+            offset.Perform(inputs.offsetDistance);
+        } else {
+            offset = new this.context.occ.BRepOffsetAPI_MakeOffsetShape_1();
+            offset.PerformByJoin(
+                inputs.shape,
+                inputs.offsetDistance,
+                inputs.tolerance,
+                this.context.occ.BRepOffset_Mode.BRepOffset_Skin,
+                false,
+                false,
+                this.context.occ.GeomAbs_JoinType.GeomAbs_Arc,
+                false
+            );
+        }
+        let offsetShape = new this.context.occ.TopoDS.Shell_2(offset.Shape());
+
+        // Convert Shell to Solid as is expected
+        if (offsetShape.ShapeType() === this.context.occ.TopAbs_ShapeEnum.TopAbs_SHELL) {
+            const solidOffset = new this.context.occ.BRepBuilderAPI_MakeSolid_1();
+            solidOffset.Add(offsetShape);
+            offsetShape = solidOffset.Solid();
+        }
+
+        return offsetShape;
+    }
+
+    /**
+     * Extrudes the face along direction
+     * <div>
+     *  <img src="../assets/images/blockly-images/occ/extrude.svg" alt="Blockly Image"/>
+     * </div>
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occ.occ.html#extrude
+     * @param inputs Face to extrude and direction parameter with tolerance
+     * @returns Resulting extruded solid
+     */
+    extrude(inputs: Inputs.OCC.ExtrudeDto): any {
+        return new this.context.occ.BRepPrimAPI_MakePrism_1(
+            inputs.face,
+            new this.context.occ.gp_Vec_4(inputs.direction[0], inputs.direction[1], inputs.direction[2]),
+            false,
+            true
+        ).Shape();
+    }
 
     /**
      * Creates OpenCascade Sphere
@@ -456,10 +541,8 @@ export class OCC {
             vertex_coord: number[][];
         }[] = [];
 
-        // shape = new this.context.occ.TopoDS_Shape_1(shape);
-
         // Set up the Incremental Mesh builder, with a precision
-        const inctementalMeshBuilder = new this.context.occ.BRepMesh_IncrementalMesh_2(shape, maxDeviation, false, maxDeviation * 5, false);
+        const inctementalMeshBuilder = new this.context.occ.BRepMesh_IncrementalMesh_2(shape, maxDeviation, true, maxDeviation * 5, true);
 
         // Construct the edge hashes to assign proper indices to the edges
         const fullShapeEdgeHashes2 = {};

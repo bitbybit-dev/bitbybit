@@ -179,4 +179,34 @@ export namespace OCC {
          */
         center: number[];
     }
+    export class LoftDto {
+        /**
+         * Wires through which the loft passes
+         */
+        wires: any[];
+    }
+    export class OffsetDto {
+        /**
+         * Shape to offset
+         */
+        shape: any;
+        /**
+         * Distance of offset
+         */
+        offsetDistance: number;
+        /**
+         * Offset tolerance
+         */
+        tolerance = 0.1;
+    }
+    export class ExtrudeDto {
+        /**
+         * Face to extrude
+         */
+        face: any;
+        /**
+         * Direction vector for extrusion
+         */
+        direction: number[];
+    }
 }

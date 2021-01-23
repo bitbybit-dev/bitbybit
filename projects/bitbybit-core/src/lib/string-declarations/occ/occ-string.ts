@@ -1,7 +1,6 @@
 import { simplifyDeclaration } from '../simplify-declaration';
 
-export const occString = simplifyDeclaration(`
-import { Mesh } from '@babylonjs/core';
+export const occString = simplifyDeclaration(`import { Mesh } from '@babylonjs/core';
 import { Context } from '../../context';
 import { GeometryHelper } from '../../geometry-helper';
 import * as Inputs from '../../inputs/inputs';
@@ -37,7 +36,7 @@ export declare class OCC {
      * @param inputs Contains a shape to be drawn and additional information
      * @returns BabylonJS Mesh
      */
-    drawShape(inputs: Inputs.OCC.DrawShapeDto): void;
+    drawShape(inputs: Inputs.OCC.DrawShapeDto): Mesh;
     /**
      * Creates OpenCascade Polygon
      * <div>
@@ -108,6 +107,36 @@ export declare class OCC {
      * @returns OpenCascade circle face
      */
     createCircleFace(inputs: Inputs.OCC.CircleDto): any;
+    /**
+     * Lofts wires into a shell
+     * <div>
+     *  <img src="../assets/images/blockly-images/occ/loft.svg" alt="Blockly Image"/>
+     * </div>
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occ.occ.html#loft
+     * @param inputs Circle parameters
+     * @returns Resulting loft shell
+     */
+    loft(inputs: Inputs.OCC.LoftDto): any;
+    /**
+     * Offset for various shapes
+     * <div>
+     *  <img src="../assets/images/blockly-images/occ/offset.svg" alt="Blockly Image"/>
+     * </div>
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occ.occ.html#offset
+     * @param inputs Shape to offset and distance with tolerance
+     * @returns Resulting offset shape
+     */
+    offset(inputs: Inputs.OCC.OffsetDto): any;
+    /**
+     * Extrudes the face along direction
+     * <div>
+     *  <img src="../assets/images/blockly-images/occ/extrude.svg" alt="Blockly Image"/>
+     * </div>
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occ.occ.html#extrude
+     * @param inputs Face to extrude and direction parameter with tolerance
+     * @returns Resulting extruded solid
+     */
+    extrude(inputs: Inputs.OCC.ExtrudeDto): any;
     /**
      * Creates OpenCascade Sphere
      * <div>
