@@ -1,4 +1,4 @@
-import { Mesh } from '@babylonjs/core';
+import { LinesMesh, Mesh } from '@babylonjs/core';
 
 // tslint:disable-next-line: no-namespace
 export namespace OCC {
@@ -29,6 +29,52 @@ export namespace OCC {
          * Brep mesh variable in case it already exists and needs updating
          */
         brepMesh?: Mesh;
+    }
+    export class DrawShapeDto {
+        /**
+         * Provide options without default values
+         */
+        constructor(shape?: any) {
+            this.shape = shape;
+        }
+        /**
+         * Brep OpenCascade geometry
+         */
+        shape: any;
+        /**
+         * Value between 0 and 1
+         */
+        opacity = 1;
+        /**
+         * Hex colour string for the edges
+         */
+        edgeColour = '#000000';
+        /**
+         * Hex colour string for face colour
+         */
+        faceColour = '#ffffff';
+        /**
+         * Edge width
+         */
+        edgeWidth = 2;
+        /**
+         * Indicates wether the position of this surface will change in time
+         */
+        updatable = false;
+        /**
+         * You can turn off drawing of edges via this property
+         */
+        drawEdges = true;
+        /**
+         * You can turn off drawing of faces via this property
+         */
+        drawFaces = true;
+        /**
+         * Brep mesh variable in case it already exists and needs updating
+         */
+        shapeMesh?: Mesh;
+        linesMesh?: LinesMesh;
+
     }
 
     export class PolygonDto {
@@ -105,6 +151,21 @@ export namespace OCC {
         points: number[][];
         /**
          * Indicates wether BSpline will be cloed
+         */
+        closed: boolean;
+    }
+
+    export class BezierDto {
+        /**
+         * Points through which the Bezier curve will be created
+         */
+        points: number[][];
+        /**
+         * Optional weight parameter
+         */
+        weights?: number[];
+        /**
+         * Indicates wether Bezier will be cloed
          */
         closed: boolean;
     }

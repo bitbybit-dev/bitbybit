@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Color3, Mesh, MeshBuilder, StandardMaterial, VertexData } from '@babylonjs/core';
+import { Color4 } from '@babylonjs/core/Maths/math';
 import { Context } from '../../context';
 import { GeometryHelper } from '../../geometry-helper';
 import * as Inputs from '../../inputs/inputs';
@@ -150,19 +151,52 @@ export class OCC {
         return brepMesh;
     }
 
-    //TODO finish implementing
-    drawShape(shape){
+    /**
+     * Draws OpenCascade shape by going through faces and edges
+     * <div>
+     *  <img src="../assets/images/blockly-images/occ/drawShape.svg" alt="Blockly Image"/>
+     * </div>
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occ.occ.html#drawshape
+     * @param inputs Contains a shape to be drawn and additional information
+     * @returns BabylonJS Mesh
+     */
+    drawShape(inputs: Inputs.OCC.DrawShapeDto): void {
         const fullShapeEdgeHashes = {};
         const fullShapeFaceHashes = {};
-        this.forEachFace(shape, (index, face) => {
+        this.forEachFace(inputs.shape, (index, face) => {
             fullShapeFaceHashes[face.HashCode(100000000)] = index;
         });
-        this.forEachEdge(shape, (index, edge) => {
+        this.forEachEdge(inputs.shape, (index, edge) => {
             fullShapeEdgeHashes[edge.HashCode(100000000)] = index;
         });
         // Object.assign(fullShapeEdgeHashes, this.forEachEdge(cylinder, (index, edge) => { }));
-        const d = this.shapeToMesh(shape, 0.1, fullShapeEdgeHashes, fullShapeFaceHashes);
-        console.log(d);
+        const fe = this.shapeToMesh(inputs.shape, 0.1, fullShapeEdgeHashes, fullShapeFaceHashes);
+
+        const shapeMesh = MeshBuilder.CreateBox('brepMesh' + Math.random(), { size: 0.01 }, this.context.scene);
+        // shapeMesh.isVisible = false;
+
+        if (inputs.drawFaces) {
+            fe.faceList.forEach(face => {
+                const mesh = this.geometryHelper.createOrUpdateSurfaceMesh({
+                    positions: face.vertex_coord,
+                    normals: face.normal_coord,
+                    indices: face.tri_indexes,
+                }, inputs.shapeMesh, inputs.updatable, inputs.opacity, inputs.faceColour);
+            });
+        }
+        if (inputs.drawEdges) {
+            fe.edgeList.forEach(edge => {
+                const mesh = this.geometryHelper.drawPolyline(
+                    inputs.linesMesh,
+                    edge.vertex_coord,
+                    inputs.updatable,
+                    inputs.edgeWidth,
+                    inputs.opacity,
+                    inputs.edgeColour
+                );
+                mesh.parent = shapeMesh;
+            });
+        }
     }
 
     /**
@@ -237,6 +271,30 @@ export class OCC {
             this.context.occ.GeomAbs_Shape.GeomAbs_C2, 1.0e-3);
         const edge = new this.context.occ.BRepBuilderAPI_MakeEdge_24(
             new this.context.occ.Handle_Geom_Curve_2(geomCurveHandle.Curve().get())
+        ).Edge();
+        return new this.context.occ.BRepBuilderAPI_MakeWire_2(edge).Wire();
+    }
+
+
+    /**
+     * Creates OpenCascade Bezier wire
+     * <div>
+     *  <img src="../assets/images/blockly-images/occ/createBezier.svg" alt="Blockly Image"/>
+     * </div>
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occ.occ.html#createbezier
+     * @param inputs Points through which to make bezier curve
+     * @returns OpenCascade Bezier wire
+     */
+    createBezier(inputs: Inputs.OCC.BezierDto): any {
+        const ptList = new this.context.occ.TColgp_Array1OfPnt_2(1, inputs.points.length + (inputs.closed ? 1 : 0));
+        for (let pIndex = 1; pIndex <= inputs.points.length; pIndex++) {
+            ptList.SetValue(pIndex, this.occHelper.convertToPnt(inputs.points[pIndex - 1]));
+        }
+        if (inputs.closed) { ptList.SetValue(inputs.points.length + 1, ptList.Value(1)); }
+
+        const geomCurveHandle = new this.context.occ.Geom_BezierCurve_1(ptList);
+        const edge = new this.context.occ.BRepBuilderAPI_MakeEdge_24(
+                new this.context.occ.Handle_Geom_Curve_2(geomCurveHandle)
         ).Edge();
         return new this.context.occ.BRepBuilderAPI_MakeWire_2(edge).Wire();
     }
@@ -373,9 +431,30 @@ export class OCC {
         return this.oc.bRepBuilderAPIMakeFace(wire, true);
     }
 
-    private shapeToMesh(shape, maxDeviation, fullShapeEdgeHashes, fullShapeFaceHashes): { faceList, edgeList } {
-        const faceList = [];
-        const edgeList = [];
+    private shapeToMesh(shape, maxDeviation, fullShapeEdgeHashes, fullShapeFaceHashes): {
+        faceList: {
+            face_index: number;
+            normal_coord: number[];
+            number_of_triangles: number;
+            tri_indexes: number[];
+            vertex_coord: number[];
+        }[],
+        edgeList: {
+            edge_index: number;
+            vertex_coord: number[][];
+        }[]
+    } {
+        const faceList: {
+            face_index: number;
+            normal_coord: number[];
+            number_of_triangles: number;
+            tri_indexes: number[];
+            vertex_coord: number[];
+        }[] = [];
+        const edgeList: {
+            edge_index: number;
+            vertex_coord: number[][];
+        }[] = [];
 
         // shape = new this.context.occ.TopoDS_Shape_1(shape);
 
@@ -461,12 +540,17 @@ export class OCC {
                     const edgeNodes = myP.get().Nodes();
 
                     // write vertex buffer
-                    thisEdge.vertex_coord = new Array(edgeNodes.Length() * 3);
+                    thisEdge.vertex_coord = [];
                     for (let j = 0; j < edgeNodes.Length(); j++) {
                         const vertexIndex = edgeNodes.Value(j + 1);
-                        thisEdge.vertex_coord[(j * 3) + 0] = thisFace.vertex_coord[((vertexIndex - 1) * 3) + 0];
-                        thisEdge.vertex_coord[(j * 3) + 1] = thisFace.vertex_coord[((vertexIndex - 1) * 3) + 1];
-                        thisEdge.vertex_coord[(j * 3) + 2] = thisFace.vertex_coord[((vertexIndex - 1) * 3) + 2];
+                        thisEdge.vertex_coord.push([
+                            thisFace.vertex_coord[((vertexIndex - 1) * 3) + 0],
+                            thisFace.vertex_coord[((vertexIndex - 1) * 3) + 1],
+                            thisFace.vertex_coord[((vertexIndex - 1) * 3) + 2]
+                        ]);
+                        // thisEdge.vertex_coord[(j * 3) + 0] = thisFace.vertex_coord[((vertexIndex - 1) * 3) + 0];
+                        // thisEdge.vertex_coord[(j * 3) + 1] = thisFace.vertex_coord[((vertexIndex - 1) * 3) + 1];
+                        // thisEdge.vertex_coord[(j * 3) + 2] = thisFace.vertex_coord[((vertexIndex - 1) * 3) + 2];
                     }
 
                     thisEdge.edge_index = fullShapeEdgeHashes[edgeHash];
@@ -497,12 +581,14 @@ export class OCC {
                 const tangDef = new this.context.occ.GCPnts_TangentialDeflection_2(adaptorCurve, maxDeviation, 0.1, 2, 1.0e-9, 1.0e-7);
 
                 // write vertex buffer
-                thisEdge.vertex_coord = new Array(tangDef.NbPoints() * 3);
+                thisEdge.vertex_coord = new Array(tangDef.NbPoints());
                 for (let j = 0; j < tangDef.NbPoints(); j++) {
                     const vertex = tangDef.Value(j + 1).Transformed(aLocation.Transformation());
-                    thisEdge.vertex_coord[(j * 3) + 0] = vertex.X();
-                    thisEdge.vertex_coord[(j * 3) + 1] = vertex.Y();
-                    thisEdge.vertex_coord[(j * 3) + 2] = vertex.Z();
+                    thisEdge.vertex_coord.push([
+                        vertex.X(),
+                        vertex.Y(),
+                        vertex.Z()
+                    ]);
                 }
 
                 thisEdge.edge_index = fullShapeEdgeHashes[edgeHash];

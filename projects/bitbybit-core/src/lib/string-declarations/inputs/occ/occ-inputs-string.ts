@@ -1,7 +1,7 @@
 import { simplifyDeclaration } from '../../simplify-declaration';
 
 export const occInputsString = simplifyDeclaration(`
-import { Mesh } from '@babylonjs/core';
+import { LinesMesh, Mesh } from '@babylonjs/core';
 export declare namespace OCC {
     class DrawBrepDto {
         /**
@@ -28,6 +28,49 @@ export declare namespace OCC {
          * Brep mesh variable in case it already exists and needs updating
          */
         brepMesh?: Mesh;
+    }
+    class DrawShapeDto {
+        /**
+         * Provide options without default values
+         */
+        constructor(shape?: any);
+        /**
+         * Brep OpenCascade geometry
+         */
+        shape: any;
+        /**
+         * Value between 0 and 1
+         */
+        opacity: number;
+        /**
+         * Hex colour string for the edges
+         */
+        edgeColour: string;
+        /**
+         * Hex colour string for face colour
+         */
+        faceColour: string;
+        /**
+         * Edge width
+         */
+        edgeWidth: number;
+        /**
+         * Indicates wether the position of this surface will change in time
+         */
+        updatable: boolean;
+        /**
+         * You can turn off drawing of edges via this property
+         */
+        drawEdges: boolean;
+        /**
+         * You can turn off drawing of faces via this property
+         */
+        drawFaces: boolean;
+        /**
+         * Brep mesh variable in case it already exists and needs updating
+         */
+        shapeMesh?: Mesh;
+        linesMesh?: LinesMesh;
     }
     class PolygonDto {
         /**
@@ -63,6 +106,20 @@ export declare namespace OCC {
          */
         center: number[];
     }
+    class CylinderDto {
+        /**
+         * Radius of the cylinder
+         */
+        radius: number;
+        /**
+         * Height of the cylinder
+         */
+        height: number;
+        /**
+         * Center of the cylinder
+         */
+        center: number[];
+    }
     class FilletDto {
         /**
          * Shape to apply the fillets
@@ -81,21 +138,7 @@ export declare namespace OCC {
          */
         filletAll: boolean;
     }
-    export class CylinderDto {
-        /**
-         * Radius of the cylinder
-         */
-        radius: number;
-        /**
-         * Height of the cylinder
-         */
-        height: number;
-        /**
-         * Center of the cylinder
-         */
-        center: number[];
-    }
-    export class BSplineDto {
+    class BSplineDto {
         /**
          * Points through which the BSpline will be created
          */
@@ -104,6 +147,30 @@ export declare namespace OCC {
          * Indicates wether BSpline will be cloed
          */
         closed: boolean;
+    }
+    class BezierDto {
+        /**
+         * Points through which the Bezier curve will be created
+         */
+        points: number[][];
+        /**
+         * Optional weight parameter
+         */
+        weights?: number[];
+        /**
+         * Indicates wether Bezier will be cloed
+         */
+        closed: boolean;
+    }
+    class CircleDto {
+        /**
+         * Radius of the circle
+         */
+        radius: number;
+        /**
+         * Center of the circle
+         */
+        center: number[];
     }
 }
 

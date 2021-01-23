@@ -6,6 +6,7 @@ import { Context } from '../../context';
 import { GeometryHelper } from '../../geometry-helper';
 import * as Inputs from '../../inputs/inputs';
 import { OCCHelper } from './occ-helper';
+import { OCCService } from './occ-service';
 /**
  * Contains various methods for OpenCascade implementation
  * Much of the work is done by Johnathon Selstad and Sebastian Alff to port OCC to JavaScript
@@ -15,7 +16,8 @@ export declare class OCC {
     private readonly context;
     private readonly geometryHelper;
     private readonly occHelper;
-    constructor(context: Context, geometryHelper: GeometryHelper, occHelper: OCCHelper);
+    private readonly oc;
+    constructor(context: Context, geometryHelper: GeometryHelper, occHelper: OCCHelper, oc: OCCService);
     /**
      * Draws a Brep solid
      * <div>
@@ -26,6 +28,16 @@ export declare class OCC {
      * @returns BabylonJS Mesh
      */
     drawBrep(inputs: Inputs.OCC.DrawBrepDto): Mesh;
+    /**
+     * Draws OpenCascade shape by going through faces and edges
+     * <div>
+     *  <img src="../assets/images/blockly-images/occ/drawShape.svg" alt="Blockly Image"/>
+     * </div>
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occ.occ.html#drawshape
+     * @param inputs Contains a shape to be drawn and additional information
+     * @returns BabylonJS Mesh
+     */
+    drawShape(inputs: Inputs.OCC.DrawShapeDto): void;
     /**
      * Creates OpenCascade Polygon
      * <div>
@@ -47,6 +59,56 @@ export declare class OCC {
      */
     createBox(inputs: Inputs.OCC.BoxDto): any;
     /**
+     * Creates OpenCascade Cylinder
+     * <div>
+     *  <img src="../assets/images/blockly-images/occ/createCylinder.svg" alt="Blockly Image"/>
+     * </div>
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occ.occ.html#createcylinder
+     * @param inputs Cylinder parameters
+     * @returns OpenCascade Cylinder
+     */
+    createCylinder(inputs: Inputs.OCC.CylinderDto): any;
+    /**
+     * Creates OpenCascade BSPline wire
+     * <div>
+     *  <img src="../assets/images/blockly-images/occ/createBSpline.svg" alt="Blockly Image"/>
+     * </div>
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occ.occ.html#createbspline
+     * @param inputs Points through which to make BSpline
+     * @returns OpenCascade BSpline wire
+     */
+    createBSpline(inputs: Inputs.OCC.BSplineDto): any;
+    /**
+     * Creates OpenCascade Bezier wire
+     * <div>
+     *  <img src="../assets/images/blockly-images/occ/createBezier.svg" alt="Blockly Image"/>
+     * </div>
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occ.occ.html#createbezier
+     * @param inputs Points through which to make bezier curve
+     * @returns OpenCascade Bezier wire
+     */
+    createBezier(inputs: Inputs.OCC.BezierDto): any;
+    /**
+     * Creates OpenCascade circle wire
+     * <div>
+     *  <img src="../assets/images/blockly-images/occ/createCircleWire.svg" alt="Blockly Image"/>
+     * </div>
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occ.occ.html#createcirclewire
+     * @param inputs Circle parameters
+     * @returns OpenCascade circle wire
+     */
+    createCircleWire(inputs: Inputs.OCC.CircleDto): any;
+    /**
+     * Creates OpenCascade circle face
+     * <div>
+     *  <img src="../assets/images/blockly-images/occ/createCircleFace.svg" alt="Blockly Image"/>
+     * </div>
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occ.occ.html#createcircleface
+     * @param inputs Circle parameters
+     * @returns OpenCascade circle face
+     */
+    createCircleFace(inputs: Inputs.OCC.CircleDto): any;
+    /**
      * Creates OpenCascade Sphere
      * <div>
      *  <img src="../assets/images/blockly-images/occ/createSphere.svg" alt="Blockly Image"/>
@@ -66,28 +128,10 @@ export declare class OCC {
      * @returns OpenCascade shape with filleted edges
      */
     filletEdges(inputs: Inputs.OCC.FilletDto): any;
-    /**
-     * Creates OpenCascade Cylinder
-     * <div>
-     *  <img src="../assets/images/blockly-images/occ/createCylinder.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_occ.occ.html#createcylinder
-     * @param inputs Cylinder parameters
-     * @returns OpenCascade Cylinder
-     */
-    createCylinder(inputs: Inputs.OCC.CylinderDto): any;
-    /**
-     * Creates OpenCascade BSPline
-     * <div>
-     *  <img src="../assets/images/blockly-images/occ/createBSpline.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_occ.occ.html#createbspline
-     * @param inputs Points through which to make BSpline
-     * @returns OpenCascade BSpline
-     */
-    createBSpline(inputs: Inputs.OCC.BSplineDto): any;
-    createCircle(radius, wire): any;
-    forEachEdge(shape: any, callback: any): any;
+    private forEachEdge;
+    private forEachFace;
+    private createCircle;
+    private shapeToMesh;
 }
 
 `);
