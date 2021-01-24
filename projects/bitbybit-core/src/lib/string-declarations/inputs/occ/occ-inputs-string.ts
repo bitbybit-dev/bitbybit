@@ -39,9 +39,13 @@ export declare namespace OCC {
          */
         shape: any;
         /**
-         * Value between 0 and 1
+         * Face opacity value between 0 and 1
          */
-        opacity: number;
+        faceOpacity: number;
+        /**
+         * Edge opacity value between 0 and 1
+         */
+        edgeOpacity: number;
         /**
          * Hex colour string for the edges
          */
@@ -70,7 +74,14 @@ export declare namespace OCC {
          * Brep mesh variable in case it already exists and needs updating
          */
         shapeMesh?: Mesh;
+        /**
+         * Lines mesh
+         */
         linesMesh?: LinesMesh;
+        /**
+         * Precision
+         */
+        precision: number;
     }
     class PolygonDto {
         /**

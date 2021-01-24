@@ -42,9 +42,13 @@ export namespace OCC {
          */
         shape: any;
         /**
-         * Value between 0 and 1
+         * Face opacity value between 0 and 1
          */
-        opacity = 1;
+        faceOpacity = 1;
+        /**
+         * Edge opacity value between 0 and 1
+         */
+        edgeOpacity = 1;
         /**
          * Hex colour string for the edges
          */

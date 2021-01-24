@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Color3, CubeTexture, Mesh, MeshBuilder, PBRMetallicRoughnessMaterial, StandardMaterial, VertexData } from '@babylonjs/core';
-import { Color4, Vector3 } from '@babylonjs/core/Maths/math';
+import { Mesh, MeshBuilder } from '@babylonjs/core';
 import { Context } from '../../context';
 import { GeometryHelper } from '../../geometry-helper';
 import * as Inputs from '../../inputs/inputs';
@@ -180,17 +179,8 @@ export class OCC {
                     positions: face.vertex_coord,
                     normals: face.normal_coord,
                     indices: face.tri_indexes,
-                }, inputs.shapeMesh, inputs.updatable, inputs.opacity, inputs.faceColour);
-                const pbr = new PBRMetallicRoughnessMaterial('pbr', this.context.scene);
+                }, inputs.shapeMesh, inputs.updatable, inputs.faceOpacity, inputs.faceColour);
 
-                pbr.baseColor = Color3.FromHexString(inputs.faceColour);
-                pbr.metallic = 1.0;
-                pbr.roughness = 0.6;
-
-                mesh.material = pbr;
-
-                mesh.material.backFaceCulling = false;
-                mesh.material.zOffset = 2;
             });
         }
         if (inputs.drawEdges) {
@@ -200,7 +190,7 @@ export class OCC {
                     edge.vertex_coord,
                     inputs.updatable,
                     inputs.edgeWidth,
-                    inputs.opacity,
+                    inputs.faceOpacity,
                     inputs.edgeColour
                 );
                 mesh.parent = shapeMesh;
@@ -522,6 +512,77 @@ export class OCC {
         }
 
         return combined;
+    }
+
+    difference(mainBody, objectsToSubtract, keepEdges): any {
+        if (!mainBody || mainBody.IsNull()) { console.error('Main Shape in Difference is null!'); }
+        let difference = mainBody;
+        for (let i = 0; i < objectsToSubtract.length; i++) {
+            if (!objectsToSubtract[i] || objectsToSubtract[i].IsNull()) { console.error('Tool in Difference is null!'); }
+            const differenceCut = new this.context.occ.BRepAlgoAPI_Cut_3(difference, objectsToSubtract[i]);
+            differenceCut.Build();
+            difference = differenceCut.Shape();
+        }
+
+        if (!keepEdges) {
+            const fusor = new this.context.occ.ShapeUpgrade_UnifySameDomain_2(difference, true, true, false);
+            fusor.Build();
+            difference = fusor.Shape();
+        }
+
+        difference.hash = this.occHelper.ComputeHash(arguments);
+        if (this.getNumSolidsInCompound(difference) === 1) {
+            difference = this.getSolidFromCompound(difference, 0);
+        }
+
+        return difference;
+    }
+
+    private getNumSolidsInCompound(shape): any {
+        if (!shape ||
+            shape.ShapeType() > this.context.occ.TopAbs_ShapeEnum.TopAbs_COMPSOLID ||
+            shape.IsNull()
+        ) {
+            console.error('Not a compound shape!');
+            return shape;
+        }
+        let solidsFound = 0;
+        this.forEachSolid(shape, (i, s) => { solidsFound++; });
+        return solidsFound;
+    }
+
+    private getSolidFromCompound(shape, index): any {
+        if (!shape ||
+            shape.ShapeType() > this.context.occ.TopAbs_ShapeEnum.TopAbs_COMPSOLID ||
+            shape.IsNull()
+        ) {
+            console.error('Not a compound shape!');
+            return shape;
+        }
+        if (!index) {
+            index = 0;
+        }
+
+        let innerSolid: { hash?: string } = {};
+        let solidsFound = 0;
+        this.forEachSolid(shape, (i, s) => {
+            if (i === index) { innerSolid = new this.context.occ.TopoDS.Solid_1(s); } solidsFound++;
+        });
+        if (solidsFound === 0) { console.error('NO SOLIDS FOUND IN SHAPE!'); innerSolid = shape; }
+        innerSolid.hash = shape.hash + 1;
+        return innerSolid;
+    }
+
+    private forEachSolid(shape, callback): void {
+        let solidIndex = 0;
+        const anExplorer = new this.context.occ.TopExp_Explorer_2(shape,
+            this.context.occ.TopAbs_ShapeEnum.TopAbs_SOLID,
+            this.context.occ.TopAbs_ShapeEnum.TopAbs_SHAPE);
+        for (anExplorer.Init(shape, 
+            this.context.occ.TopAbs_ShapeEnum.TopAbs_SOLID, 
+            this.context.occ.TopAbs_ShapeEnum.TopAbs_SHAPE); anExplorer.More(); anExplorer.Next()) {
+            callback(solidIndex++, this.context.occ.TopoDS.Solid_2(anExplorer.Current()));
+        }
     }
 
     private forEachEdge(shape, callback): any {

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Color3, Color4, LinesMesh, Matrix, Mesh, MeshBuilder, StandardMaterial, Vector3, VertexData } from '@babylonjs/core';
+import { Color3, Color4, LinesMesh, Matrix, Mesh, MeshBuilder, PBRMetallicRoughnessMaterial, Vector3, VertexData } from '@babylonjs/core';
 import { Context } from '../context';
 import { GeometryHelper } from '../geometry-helper';
 import * as Inputs from '../inputs/inputs';
@@ -64,14 +64,14 @@ export class Solid {
 
         for (const polygon of polygons) {
             if (polygon.vertices.length === 3) {
-                polygon.vertices.reverse().forEach(vert => {
+                polygon.vertices.forEach(vert => {
                     positions.push(vert[0], vert[1], vert[2]);
                     indices.push(countIndices);
                     countIndices++;
                 });
             } else {
                 const triangles = [];
-                const reversedVertices = polygon.vertices.reverse();
+                const reversedVertices = polygon.vertices;
                 const firstVertex = reversedVertices[0];
                 for (let i = reversedVertices.length - 3; i >= 0; i--) {
                     triangles.push(
@@ -97,12 +97,17 @@ export class Solid {
         } else {
             inputs.jscadMesh = new Mesh(`jscadMesh${Math.random()}`, this.context.scene);
             this.createMesh(positions, indices, normals, inputs.jscadMesh, inputs.mesh.transforms, inputs.updatable);
-            inputs.jscadMesh.material = new StandardMaterial(`jscadMaterial${Math.random()}`, this.context.scene);
+            inputs.jscadMesh.material = new PBRMetallicRoughnessMaterial(`jscadMaterial${Math.random()}`, this.context.scene);
         }
 
-        const material = inputs.jscadMesh.material as StandardMaterial;
-        material.alpha = inputs.opacity;
-        material.diffuseColor = Color3.FromHexString(inputs.colour);
+        const pbr = inputs.jscadMesh.material as PBRMetallicRoughnessMaterial;
+        pbr.baseColor = Color3.FromHexString(inputs.colour);
+        pbr.metallic = 1.0;
+        pbr.roughness = 0.6;
+        pbr.alpha = inputs.opacity;
+        pbr.alphaMode = 1;
+        pbr.backFaceCulling = false;
+        pbr.zOffset = 2;
         inputs.jscadMesh.isPickable = false;
         return inputs.jscadMesh;
     }

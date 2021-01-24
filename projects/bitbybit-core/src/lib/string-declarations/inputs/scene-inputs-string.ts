@@ -1,6 +1,7 @@
 import { simplifyDeclaration } from '../simplify-declaration';
 
 export const sceneInputsString = simplifyDeclaration(`
+import { PointLight } from "@babylonjs/core";
 export declare namespace Scene {
     class SceneBackgroundColourDto {
         /**
@@ -53,6 +54,28 @@ export declare namespace Scene {
          * Color of the grid lines.
          */
         secondaryColor: string;
+    }
+    class PointLightDto {
+        /**
+         * Position of the point light
+         */
+        position: number[];
+        /**
+         * Intensity of the point light, value between 0 and 1
+         */
+        intensity: number;
+        /**
+         * Diffuse colour of the point light
+         */
+        diffuse: string;
+        /**
+         * Specular colour of the point light
+         */
+        specular: string;
+    }
+    class DrawLightDto {
+        light: PointLight;
+        bubbleRadius: number;
     }
 }
 

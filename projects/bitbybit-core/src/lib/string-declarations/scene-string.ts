@@ -1,8 +1,8 @@
-import { simplifyDeclaration } from "./simplify-declaration";
+import { simplifyDeclaration } from './simplify-declaration';
 
 export const sceneString = simplifyDeclaration(`
 import { Context } from '../context';
-import { Mesh } from '@babylonjs/core';
+import { Mesh, PointLight } from '@babylonjs/core';
 import * as Inputs from '../inputs/inputs';
 export declare class Scene {
     private readonly context;
@@ -26,6 +26,26 @@ export declare class Scene {
      */
     drawGridMesh(inputs: Inputs.Scene.SceneDrawGridMeshDto): Mesh;
     /**
+     * Creates a point light in the scene
+     * <div>
+     *  <img src="../assets/images/blockly-images/scene/createPointLight.svg" alt="Blockly Image"/>
+     * </div>
+     * @link https://docs.bitbybit.dev/classes/bitbybit_scene.scene.html#createpointlight
+     * @param inputs Describes the light source
+     * @returns BabylonJS point light
+     */
+    createPointLight(inputs: Inputs.Scene.PointLightDto): PointLight;
+    /**
+     * Draws a light in the scene
+     * <div>
+     *  <img src="../assets/images/blockly-images/scene/drawLight.svg" alt="Blockly Image"/>
+     * </div>
+     * @link https://docs.bitbybit.dev/classes/bitbybit_scene.scene.html#drawlight
+     * @param inputs Parameters for drawing lights
+     * @returns Sphere with emissive material in the location of the light
+     */
+    drawLight(inputs: Inputs.Scene.DrawLightDto): Mesh;
+    /**
      * Clears all of the drawn objects in the 3D scene
      * <div>
      *  <img src="../assets/images/blockly-images/scene/clearAllDrawn.svg" alt="Blockly Image"/>
@@ -34,4 +54,5 @@ export declare class Scene {
      */
     clearAllDrawn(): void;
 }
+
 `);

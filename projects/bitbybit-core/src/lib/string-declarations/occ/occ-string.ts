@@ -1,6 +1,7 @@
 import { simplifyDeclaration } from '../simplify-declaration';
 
-export const occString = simplifyDeclaration(`import { Mesh } from '@babylonjs/core';
+export const occString = simplifyDeclaration(`
+import { Mesh } from '@babylonjs/core';
 import { Context } from '../../context';
 import { GeometryHelper } from '../../geometry-helper';
 import * as Inputs from '../../inputs/inputs';
@@ -38,15 +39,25 @@ export declare class OCC {
      */
     drawShape(inputs: Inputs.OCC.DrawShapeDto): Mesh;
     /**
-     * Creates OpenCascade Polygon
+     * Creates OpenCascade Polygon wire
      * <div>
-     *  <img src="../assets/images/blockly-images/occ/createPolygon.svg" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/occ/createPolygonWire.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_occ.occ.html#createpolygon
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occ.occ.html#createpolygonwire
      * @param inputs Polygon points
-     * @returns OpenCascade polygon shape
+     * @returns OpenCascade polygon wire shape
      */
     createPolygonWire(inputs: Inputs.OCC.PolygonDto): any;
+    /**
+     * Creates OpenCascade Polygon face
+     * <div>
+     *  <img src="../assets/images/blockly-images/occ/createPolygonFace.svg" alt="Blockly Image"/>
+     * </div>
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occ.occ.html#createpolygonface
+     * @param inputs Polygon points
+     * @returns OpenCascade polygon face
+     */
+    createPolygonFace(inputs: Inputs.OCC.PolygonDto): any;
     /**
      * Creates OpenCascade Box
      * <div>
@@ -167,10 +178,15 @@ export declare class OCC {
      * @returns OpenCascade joined shape
      */
     union(inputs: Inputs.OCC.UnionDto): any;
+    difference(mainBody: any, objectsToSubtract: any, keepEdges: any): any;
+    private getNumSolidsInCompound;
+    private getSolidFromCompound;
+    private forEachSolid;
     private forEachEdge;
     private forEachFace;
     private createCircle;
     private shapeToMesh;
 }
+
 
 `);

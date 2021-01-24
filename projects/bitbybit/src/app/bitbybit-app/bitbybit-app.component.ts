@@ -2,7 +2,7 @@ import { HttpHeaders, HttpParams, HttpClient } from '@angular/common/http';
 import { AfterViewInit, ChangeDetectorRef, Component, OnInit, ViewChild, OnDestroy } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ArcRotateCamera, DirectionalLight, TransformNode, HemisphericLight, WindowsMotionController } from '@babylonjs/core';
+import { ArcRotateCamera, TransformNode, HemisphericLight, Light } from '@babylonjs/core';
 import { Engine } from '@babylonjs/core/Engines/engine';
 import '@babylonjs/core/Materials/standardMaterial';
 import { Color3, Color4, Vector3 } from '@babylonjs/core/Maths/math';
@@ -155,16 +155,10 @@ export class BitbybitAppComponent implements OnInit, OnDestroy, AfterViewInit {
                 const camera = new ArcRotateCamera('Camera', 0, 10, 10, new Vector3(0, 0, 0), this.scene);
                 camera.setPosition(new Vector3(0, 10, 20));
                 camera.attachControl(canvas, true);
-                const light = new DirectionalLight('DirectionalLight', new Vector3(10, 10, 0), this.scene);
-                light.diffuse = new Color3(1, 1, 1);
-                light.specular = new Color3(1, 1, 1);
+
+                const light = new HemisphericLight('HemiLight', new Vector3(0, 1, 0), this.scene);
+                light.intensityMode = Light.INTENSITYMODE_ILLUMINANCE;
                 light.intensity = 1;
-                const light2 = new DirectionalLight('DirectionalLight', new Vector3(-10, 10, -10), this.scene);
-                light2.diffuse = new Color3(1, 1, 1);
-                light2.specular = new Color3(1, 1, 1);
-                light2.intensity = 1;
-                const light3 = new HemisphericLight('HemiLight', new Vector3(0, 1, 0), this.scene);
-                light3.intensity = 0.2;
 
                 this.scene.ambientColor = new Color3(0.1, 0.1, 0.1);
 
@@ -591,6 +585,12 @@ export class BitbybitAppComponent implements OnInit, OnDestroy, AfterViewInit {
         this.scene.meshes = [];
         this.scene.materials.forEach(m => m.dispose());
         this.scene.materials = [];
+        this.scene.lights.forEach(l => {
+            if (l.name !== 'HemiLight') {
+                l.dispose();
+            }
+        });
+        this.scene.lights = this.scene.lights.filter(i => i.name === 'HemiLight');
         this.scene.transformNodes.forEach(t => {
             if (t.name !== 'root') {
                 t.dispose();

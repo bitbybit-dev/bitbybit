@@ -1,5 +1,9 @@
 import { Injectable } from '@angular/core';
-import { LinesMesh, Matrix, Color3, Vector3, Color4, MeshBuilder, Scene, Mesh, VertexData, StandardMaterial } from '@babylonjs/core';
+import {
+    LinesMesh, Matrix, Color3, Vector3, Color4,
+    MeshBuilder, Scene, Mesh, VertexData,
+    PBRMetallicRoughnessMaterial
+} from '@babylonjs/core';
 import { Context } from './context';
 @Injectable()
 export class GeometryHelper {
@@ -26,15 +30,19 @@ export class GeometryHelper {
         } else {
             mesh = new Mesh(`surface${Math.random()}`, this.context.scene);
             createMesh();
-            mesh.material = new StandardMaterial(`surfaceMaterial${Math.random()}`, this.context.scene);
+            mesh.material = new PBRMetallicRoughnessMaterial('pbr', this.context.scene);
         }
 
-        const material = mesh.material as StandardMaterial;
-        material.alpha = opacity;
-        material.diffuseColor = Color3.FromHexString(colour);
-        material.specularColor = new Color3(1, 1, 1);
-        material.ambientColor = new Color3(1, 1, 1);
-        material.backFaceCulling = false;
+        const pbr = mesh.material as PBRMetallicRoughnessMaterial;
+
+        pbr.baseColor = Color3.FromHexString(colour);
+        pbr.metallic = 1.0;
+        pbr.roughness = 0.6;
+        pbr.alpha = opacity;
+        pbr.alphaMode = 1;
+        pbr.backFaceCulling = false;
+        pbr.zOffset = 2;
+        mesh.material = pbr;
         mesh.isPickable = false;
         return mesh;
     }
