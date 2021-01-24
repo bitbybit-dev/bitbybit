@@ -169,7 +169,7 @@ export class OCC {
         this.forEachEdge(inputs.shape, (index, edge) => {
             fullShapeEdgeHashes[edge.HashCode(100000000)] = index;
         });
-        const fe = this.shapeToMesh(inputs.shape, 0.025, fullShapeEdgeHashes, fullShapeFaceHashes);
+        const fe = this.shapeToMesh(inputs.shape, inputs.precision, fullShapeEdgeHashes, fullShapeFaceHashes);
 
         const shapeMesh = MeshBuilder.CreateBox('brepMesh' + Math.random(), { size: 0.01 }, this.context.scene);
         shapeMesh.isVisible = false;
@@ -210,13 +210,13 @@ export class OCC {
     }
 
     /**
-     * Creates OpenCascade Polygon
+     * Creates OpenCascade Polygon wire
      * <div>
-     *  <img src="../assets/images/blockly-images/occ/createPolygon.svg" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/occ/createPolygonWire.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_occ.occ.html#createpolygon
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occ.occ.html#createpolygonwire
      * @param inputs Polygon points
-     * @returns OpenCascade polygon shape
+     * @returns OpenCascade polygon wire shape
      */
     createPolygonWire(inputs: Inputs.OCC.PolygonDto): any {
         const gpPoints = [];
@@ -242,6 +242,15 @@ export class OCC {
         return polygonWire.Wire();
     }
 
+    /**
+     * Creates OpenCascade Polygon face
+     * <div>
+     *  <img src="../assets/images/blockly-images/occ/createPolygonFace.svg" alt="Blockly Image"/>
+     * </div>
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occ.occ.html#createpolygonface
+     * @param inputs Polygon points
+     * @returns OpenCascade polygon face
+     */
     createPolygonFace(inputs: Inputs.OCC.PolygonDto): any {
         return new this.context.occ.BRepBuilderAPI_MakeFace(this.createPolygonWire(inputs)).Face();
     }
@@ -361,7 +370,7 @@ export class OCC {
      * @returns Resulting loft shell
      */
     loft(inputs: Inputs.OCC.LoftDto): any {
-        const pipe = new this.context.occ.BRepOffsetAPI_ThruSections(false, false, 1.0e-06);
+        const pipe = new this.context.occ.BRepOffsetAPI_ThruSections(inputs.solid, false, 1.0e-06);
         inputs.wires.forEach((wire) => { pipe.AddWire(wire); });
         pipe.Build();
         return pipe.Shape();
@@ -459,7 +468,7 @@ export class OCC {
             );
             while (anEdgeExplorer.More()) {
                 const anEdge = new this.context.occ.TopoDS.Edge_1(anEdgeExplorer.Current());
-                mkFillet.Add_2(0.5, anEdge);
+                mkFillet.Add_2(inputs.radius, anEdge);
                 anEdgeExplorer.Next();
             }
             inputs.shape = mkFillet.Shape();
@@ -486,6 +495,33 @@ export class OCC {
             this.occHelper.sceneShapes.push(curFillet);
             return curFillet;
         }
+    }
+
+    /**
+     * Joins separate objects
+     * <div>
+     *  <img src="../assets/images/blockly-images/occ/union.svg" alt="Blockly Image"/>
+     * </div>
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occ.occ.html#union
+     * @param inputs Objects to join
+     * @returns OpenCascade joined shape
+     */
+    union(inputs: Inputs.OCC.UnionDto): any {
+        if (!inputs.fuzzValue) { inputs.fuzzValue = 0.1; }
+        let combined = inputs.objectsToJoin[0];
+        for (let i = 0; i < inputs.objectsToJoin.length; i++) {
+            const combinedFuse = new this.context.occ.BRepAlgoAPI_Fuse_3(combined, inputs.objectsToJoin[i]);
+            combinedFuse.Build();
+            combined = combinedFuse.Shape();
+        }
+
+        if (!inputs.keepEdges) {
+            const fusor = new this.context.occ.ShapeUpgrade_UnifySameDomain_2(combined, true, true, false);
+            fusor.Build();
+            combined = fusor.Shape();
+        }
+
+        return combined;
     }
 
     private forEachEdge(shape, callback): any {
@@ -558,7 +594,7 @@ export class OCC {
         }[] = [];
 
         // Set up the Incremental Mesh builder, with a precision
-        const inctementalMeshBuilder = new this.context.occ.BRepMesh_IncrementalMesh_2(shape, maxDeviation, true, maxDeviation * 5, true);
+        const inctementalMeshBuilder = new this.context.occ.BRepMesh_IncrementalMesh_2(shape, maxDeviation, false, maxDeviation * 5, false);
 
         // Construct the edge hashes to assign proper indices to the edges
         const fullShapeEdgeHashes2 = {};

@@ -157,6 +157,16 @@ export declare class OCC {
      * @returns OpenCascade shape with filleted edges
      */
     filletEdges(inputs: Inputs.OCC.FilletDto): any;
+    /**
+     * Joins separate objects
+     * <div>
+     *  <img src="../assets/images/blockly-images/occ/union.svg" alt="Blockly Image"/>
+     * </div>
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occ.occ.html#union
+     * @param inputs Objects to join
+     * @returns OpenCascade joined shape
+     */
+    union(inputs: Inputs.OCC.UnionDto): any;
     private forEachEdge;
     private forEachFace;
     private createCircle;

@@ -158,11 +158,11 @@ export class BitbybitAppComponent implements OnInit, OnDestroy, AfterViewInit {
                 const light = new DirectionalLight('DirectionalLight', new Vector3(10, 10, 0), this.scene);
                 light.diffuse = new Color3(1, 1, 1);
                 light.specular = new Color3(1, 1, 1);
-                light.intensity = 0.6;
+                light.intensity = 1;
                 const light2 = new DirectionalLight('DirectionalLight', new Vector3(-10, 10, -10), this.scene);
                 light2.diffuse = new Color3(1, 1, 1);
                 light2.specular = new Color3(1, 1, 1);
-                light2.intensity = 0.6;
+                light2.intensity = 1;
                 const light3 = new HemisphericLight('HemiLight', new Vector3(0, 1, 0), this.scene);
                 light3.intensity = 0.2;
 
@@ -499,6 +499,9 @@ export class BitbybitAppComponent implements OnInit, OnDestroy, AfterViewInit {
             default:
                 break;
         }
+        setTimeout(() => {
+            window.dispatchEvent(new Event('resize'));
+        });
     }
 
     cleanCanvas(): void {

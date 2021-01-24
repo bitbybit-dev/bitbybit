@@ -73,8 +73,14 @@ export namespace OCC {
          * Brep mesh variable in case it already exists and needs updating
          */
         shapeMesh?: Mesh;
+        /**
+         * Lines mesh
+         */
         linesMesh?: LinesMesh;
-
+        /**
+         * Precision
+         */
+        precision = 0.05;
     }
 
     export class PolygonDto {
@@ -184,6 +190,10 @@ export namespace OCC {
          * Wires through which the loft passes
          */
         wires: any[];
+        /**
+         * Tries to make a solid when lofting
+         */
+        solid = false;
     }
     export class OffsetDto {
         /**
@@ -208,5 +218,19 @@ export namespace OCC {
          * Direction vector for extrusion
          */
         direction: number[];
+    }
+    export class UnionDto {
+        /**
+         * Objects to be joined together
+         */
+        objectsToJoin: any[];
+        /**
+         * Fuzz value
+         */
+        fuzzValue = 0.1;
+        /**
+         * Keeps edges
+         */
+        keepEdges: boolean;
     }
 }

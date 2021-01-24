@@ -1,6 +1,7 @@
 import { simplifyDeclaration } from '../../simplify-declaration';
 
-export const occInputsString = simplifyDeclaration(`import { LinesMesh, Mesh } from '@babylonjs/core';
+export const occInputsString = simplifyDeclaration(`
+import { LinesMesh, Mesh } from '@babylonjs/core';
 export declare namespace OCC {
     class DrawBrepDto {
         /**
@@ -73,7 +74,7 @@ export declare namespace OCC {
     }
     class PolygonDto {
         /**
-         * Polygon points
+         * Points points
          */
         points: number[][];
     }
@@ -176,6 +177,10 @@ export declare namespace OCC {
          * Wires through which the loft passes
          */
         wires: any[];
+        /**
+         * Tries to make a solid when lofting
+         */
+        solid: boolean;
     }
     class OffsetDto {
         /**
@@ -201,7 +206,20 @@ export declare namespace OCC {
          */
         direction: number[];
     }
+    class UnionDto {
+        /**
+         * Objects to be joined together
+         */
+        objectsToJoin: any[];
+        /**
+         * Fuzz value
+         */
+        fuzzValue: number;
+        /**
+         * Keeps edges
+         */
+        keepEdges: boolean;
+    }
 }
-
 
 `);
