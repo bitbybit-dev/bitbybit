@@ -190,7 +190,7 @@ export class OCC {
                     edge.vertex_coord,
                     inputs.updatable,
                     inputs.edgeWidth,
-                    inputs.faceOpacity,
+                    inputs.edgeOpacity,
                     inputs.edgeColour
                 );
                 mesh.parent = shapeMesh;
