@@ -66,7 +66,7 @@ export class OCC {
         brepMesh.isVisible = false;
 
         const ExpFace = new this.context.occ.TopExp_Explorer_1();
-        for (ExpFace.Init(inputs.brep,
+        for (ExpFace.Init(inputs.shape,
             this.context.occ.TopAbs_ShapeEnum.TopAbs_FACE,
             this.context.occ.TopAbs_ShapeEnum.TopAbs_SHAPE);
             ExpFace.More();

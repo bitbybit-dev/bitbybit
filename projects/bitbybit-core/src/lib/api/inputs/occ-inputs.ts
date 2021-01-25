@@ -6,13 +6,13 @@ export namespace OCC {
         /**
          * Provide options without default values
          */
-        constructor(brep?: any) {
-            this.brep = brep;
+        constructor(shape?: any) {
+            this.shape = shape;
         }
         /**
          * Brep OpenCascade geometry
          */
-        brep: any;
+        shape: any;
         /**
          * Value between 0 and 1
          */
@@ -197,7 +197,7 @@ export namespace OCC {
         /**
          * Tries to make a solid when lofting
          */
-        solid = false;
+        shape = false;
     }
     export class OffsetDto {
         /**
@@ -217,7 +217,7 @@ export namespace OCC {
         /**
          * Face to extrude
          */
-        face: any;
+        shape: any;
         /**
          * Direction vector for extrusion
          */
@@ -227,11 +227,7 @@ export namespace OCC {
         /**
          * Objects to be joined together
          */
-        objectsToJoin: any[];
-        /**
-         * Fuzz value
-         */
-        fuzzValue = 0.1;
+        shapes: any[];
         /**
          * Keeps edges
          */

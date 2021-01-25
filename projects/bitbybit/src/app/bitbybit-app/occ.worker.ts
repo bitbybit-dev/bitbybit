@@ -33,11 +33,20 @@ addEventListener('message', ({ data }) => {
     // as we don't need to render things and when we do need, we call tessellation methods with these hashes
     // and receive real objects. This cache is useful in modeling operations throughout 'run' sessions.
     if (d.action.functionName !== 'shapeToMesh' && d.action.functionName !== 'startedTheRun') {
+        // if inputs have shape or shapes properties, these are hashes on which the operations need to be performed.
+        // We thus replace these hashes to real objects from the cache before functions are called,
+        // this probably looks like smth generic but isn't, so will need to check if it works
+        if (d.action.inputs.shape) {
+            d.action.inputs.shape = cacheHelper.checkCache(d.action.inputs.shape);
+        }
+        if (d.action.inputs.shapes && d.action.inputs.shapes.length > 0) {
+            d.action.inputs.shapes = d.action.inputs.shapes.map(hash => cacheHelper.checkCache(hash));
+        }
+
         result = cacheHelper.cacheOp(d.action, () => openCascade[d.action.functionName](d.action.inputs)).hash;
     }
     if (d.action.functionName === 'shapeToMesh') {
-        const shapeFromCache = cacheHelper.checkCache(d.action.inputs.shape);
-        d.action.inputs.shape = shapeFromCache;
+        d.action.inputs.shape = cacheHelper.checkCache(d.action.inputs.shape);
         result = openCascade[d.action.functionName](d.action.inputs.shape, d.action.inputs.precision);
     }
     // Only the cache that was created in previous run has to be kept, the rest needs to go
@@ -289,7 +298,7 @@ export class Occ {
      * @returns Resulting loft shell
      */
     loft(inputs: Inputs.OCC.LoftDto): any {
-        const pipe = new this.occ.BRepOffsetAPI_ThruSections(inputs.solid, false, 1.0e-06);
+        const pipe = new this.occ.BRepOffsetAPI_ThruSections(inputs.shape, false, 1.0e-06);
         inputs.wires.forEach((wire) => { pipe.AddWire(wire); });
         pipe.Build();
         return pipe.Shape();
@@ -348,7 +357,7 @@ export class Occ {
      */
     extrude(inputs: Inputs.OCC.ExtrudeDto): any {
         return new this.occ.BRepPrimAPI_MakePrism_1(
-            inputs.face,
+            inputs.shape,
             new this.occ.gp_Vec_4(inputs.direction[0], inputs.direction[1], inputs.direction[2]),
             false,
             true
@@ -425,10 +434,9 @@ export class Occ {
      * @returns OpenCascade joined shape
      */
     union(inputs: Inputs.OCC.UnionDto): any {
-        if (!inputs.fuzzValue) { inputs.fuzzValue = 0.1; }
-        let combined = inputs.objectsToJoin[0];
-        for (let i = 0; i < inputs.objectsToJoin.length; i++) {
-            const combinedFuse = new this.occ.BRepAlgoAPI_Fuse_3(combined, inputs.objectsToJoin[i]);
+        let combined = inputs.shapes[0];
+        for (let i = 0; i < inputs.shapes.length; i++) {
+            const combinedFuse = new this.occ.BRepAlgoAPI_Fuse_3(combined, inputs.shapes[i]);
             combinedFuse.Build();
             combined = combinedFuse.Shape();
         }

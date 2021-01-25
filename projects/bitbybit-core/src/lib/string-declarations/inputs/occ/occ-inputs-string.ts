@@ -221,11 +221,7 @@ export declare namespace OCC {
         /**
          * Objects to be joined together
          */
-        objectsToJoin: any[];
-        /**
-         * Fuzz value
-         */
-        fuzzValue: number;
+        shapes: any[];
         /**
          * Keeps edges
          */
