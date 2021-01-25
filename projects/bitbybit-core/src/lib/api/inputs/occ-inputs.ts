@@ -1,7 +1,7 @@
-import { LinesMesh, Mesh } from '@babylonjs/core';
 
 // tslint:disable-next-line: no-namespace
 export namespace OCC {
+    // Can't use BabylonJS types here as that crashes worker, which tries to include them
     export class DrawBrepDto {
         /**
          * Provide options without default values
@@ -28,7 +28,7 @@ export namespace OCC {
         /**
          * Brep mesh variable in case it already exists and needs updating
          */
-        brepMesh?: Mesh;
+        brepMesh?: any;
     }
     export class DrawShapeDto {
         /**
@@ -76,11 +76,11 @@ export namespace OCC {
         /**
          * Brep mesh variable in case it already exists and needs updating
          */
-        shapeMesh?: Mesh;
+        shapeMesh?: any;
         /**
          * Lines mesh
          */
-        linesMesh?: LinesMesh;
+        linesMesh?: any;
         /**
          * Precision
          */

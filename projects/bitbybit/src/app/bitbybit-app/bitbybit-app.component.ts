@@ -41,7 +41,7 @@ import { core, geom } from 'verb-nurbs-web';
 import { EnterMonacoDialogComponent } from './components/enter-monaco-dialog/enter-monaco-dialog.component';
 import { monacoDialogResultEnum } from './models/monaco-dialog-result.enum';
 import { EnterBlocklyDialogComponent } from './components/enter-blockly-dialog/enter-blockly-dialog.component';
-import { initOpenCascade } from 'opencascade.js';
+
 @Component({
     selector: 'app-root',
     templateUrl: './bitbybit-app.component.html',
@@ -175,11 +175,6 @@ export class BitbybitAppComponent implements OnInit, OnDestroy, AfterViewInit {
                 this.windowBlockly.workspace = this.workspace;
                 (window as any).blockly = this.windowBlockly;
 
-                initOpenCascade().then(occ => {
-                    this.context.occ = occ;
-                    alert('cascade initialized');
-                });
-
                 this.engine.runRenderLoop(() => {
                     const now = Date.now();
                     const timeElapsedFromPreviousIteration = now - this.timePassedFromPreviousIteration;
@@ -290,6 +285,18 @@ export class BitbybitAppComponent implements OnInit, OnDestroy, AfterViewInit {
             // For Safari
             return 'Changes made to the script will be lost. Proceed?';
         };
+
+        let called = false;
+
+        if (typeof Worker !== 'undefined') {
+            // Create a new
+            this.bitByBit.occ.setOccWorker(new Worker('./occ.worker', { type: 'module' }));
+        } else {
+            alert('Your device does not support Webworkers, this application will not be able to run correctly');
+            // TODO this app requires Webworker for OCC, better to use it on other device...
+            // Web workers are not supported in this environment.
+            // You should add a fallback so that your program still executes correctly.
+        }
     }
 
     onResize(): void {
@@ -524,50 +531,54 @@ export class BitbybitAppComponent implements OnInit, OnDestroy, AfterViewInit {
     }
 
     run(): void {
-        let transpiledCode = false;
-        try {
-            this.clearBabylonScene();
+        // If we'll have more workers for other libraries, this could be applied here as well
+        // with Promise.all...
+        this.bitByBit.occ.cleanUpCache().then((res) => {
+            let transpiledCode = false;
+            try {
+                this.clearBabylonScene();
 
-            let code = (JavaScript as any).workspaceToCode(this.workspace);
+                let code = (JavaScript as any).workspaceToCode(this.workspace);
 
-            if (this.currentUiState === UiStatesEnum.monaco) {
-                code = transpile(this.code);
-                transpiledCode = true;
+                if (this.currentUiState === UiStatesEnum.monaco) {
+                    code = transpile(this.code);
+                    transpiledCode = true;
+                }
+
+                Function(`
+                "use strict";
+                const bitbybit = window.BitByBitBase;
+                const Bit = window.Bit;
+                const BitByBit = {
+                    blocklyWorkspace: window.blockly.workspace,
+                    BitByBitBlockHandlerService: window.BitByBitBlockHandlerService,
+                    BitByBitBlocklyHelperService: window.BitByBitBlocklyHelperService,
+                };
+                ${code}`)();
+
+                if (this.tagService.tagsExist()) {
+                    this.tagsNeedUpdate = true;
+                }
+
+            } catch (e) {
+                if (transpiledCode) {
+                    this.openAlertDialog({
+                        title: 'Code execution failed',
+                        details: `Something went wrong when running the code.`,
+                        message: `${e}`,
+                    });
+                } else {
+                    const blockThatWasActive = this.workspace.getBlockById(BitByBitBlockHandlerService.runningBlockId);
+                    BitByBitBlockHandlerService.handleBlockException(blockThatWasActive, e);
+                    this.openAlertDialog({
+                        title: 'Code execution failed',
+                        details: `Something went wrong when running the code. Check if there are no disconnected or misconfigured components on your canvas`,
+                        message: `${e}`,
+                    });
+                }
+
             }
-
-            Function(`
-            "use strict";
-            const bitbybit = window.BitByBitBase;
-            const Bit = window.Bit;
-            const BitByBit = {
-                blocklyWorkspace: window.blockly.workspace,
-                BitByBitBlockHandlerService: window.BitByBitBlockHandlerService,
-                BitByBitBlocklyHelperService: window.BitByBitBlocklyHelperService,
-            };
-            ${code}`)();
-
-            if (this.tagService.tagsExist()) {
-                this.tagsNeedUpdate = true;
-            }
-
-        } catch (e) {
-            if (transpiledCode) {
-                this.openAlertDialog({
-                    title: 'Code execution failed',
-                    details: `Something went wrong when running the code.`,
-                    message: `${e}`,
-                });
-            } else {
-                const blockThatWasActive = this.workspace.getBlockById(BitByBitBlockHandlerService.runningBlockId);
-                BitByBitBlockHandlerService.handleBlockException(blockThatWasActive, e);
-                this.openAlertDialog({
-                    title: 'Code execution failed',
-                    details: `Something went wrong when running the code. Check if there are no disconnected or misconfigured components on your canvas`,
-                    message: `${e}`,
-                });
-            }
-
-        }
+        });
     }
 
     private clearBabylonScene(): void {

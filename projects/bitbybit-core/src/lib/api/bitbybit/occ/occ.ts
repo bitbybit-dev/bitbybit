@@ -3,8 +3,6 @@ import { Mesh, MeshBuilder } from '@babylonjs/core';
 import { Context } from '../../context';
 import { GeometryHelper } from '../../geometry-helper';
 import * as Inputs from '../../inputs/inputs';
-import { OCCHelper } from './occ-helper';
-import { OCCService } from './occ-service';
 
 /**
  * Contains various methods for OpenCascade implementation
@@ -14,13 +12,44 @@ import { OCCService } from './occ-service';
 @Injectable()
 export class OCC {
 
+    private occWorker: Worker;
+    private promisesMade: { promise?: Promise<any>, uid: string, resolve?, reject?}[] = [];
 
     constructor(
         private readonly context: Context,
         private readonly geometryHelper: GeometryHelper,
-        private readonly occHelper: OCCHelper,
-        private readonly oc: OCCService,
     ) {
+    }
+
+    setOccWorker(worker: Worker): void {
+        this.occWorker = worker;
+        this.occWorker.onmessage = ({ data }) => {
+            const promise = this.promisesMade.find(made => made.uid === data.uid);
+            if (promise) {
+                promise.resolve(data.result);
+            }
+            this.promisesMade = this.promisesMade.filter(i => i.uid !== data.uid);
+        };
+    }
+
+    genericCallToWorkerPromise(functionName: string, inputs: any): Promise<any> {
+        const uid = `call${Math.random()}`;
+        const obj: { promise?: Promise<any>, uid: string, resolve?, reject?} = { uid };
+        const prom = new Promise((resolve, reject) => {
+            obj.resolve = resolve;
+            obj.reject = reject;
+        });
+        obj.promise = prom;
+        this.promisesMade.push(obj);
+
+        this.occWorker.postMessage({
+            action: {
+                functionName, inputs
+            },
+            uid,
+        });
+
+        return prom;
     }
 
     /**
@@ -159,44 +188,45 @@ export class OCC {
      * @param inputs Contains a shape to be drawn and additional information
      * @returns BabylonJS Mesh
      */
-    drawShape(inputs: Inputs.OCC.DrawShapeDto): Mesh {
-        const fullShapeEdgeHashes = {};
-        const fullShapeFaceHashes = {};
-        this.forEachFace(inputs.shape, (index, face) => {
-            fullShapeFaceHashes[face.HashCode(100000000)] = index;
+    drawShape(inputs: Inputs.OCC.DrawShapeDto): Promise<Mesh> {
+        return this.genericCallToWorkerPromise('shapeToMesh', inputs).then(fe => {
+            const shapeMesh = MeshBuilder.CreateBox('brepMesh' + Math.random(), { size: 0.01 }, this.context.scene);
+            shapeMesh.isVisible = false;
+
+            if (inputs.drawFaces) {
+                fe.faceList.forEach(face => {
+                    const mesh = this.geometryHelper.createOrUpdateSurfaceMesh({
+                        positions: face.vertex_coord,
+                        normals: face.normal_coord,
+                        indices: face.tri_indexes,
+                    }, inputs.shapeMesh, inputs.updatable, inputs.faceOpacity, inputs.faceColour);
+
+                });
+            }
+            if (inputs.drawEdges) {
+                fe.edgeList.forEach(edge => {
+                    const mesh = this.geometryHelper.drawPolyline(
+                        inputs.linesMesh,
+                        edge.vertex_coord,
+                        inputs.updatable,
+                        inputs.edgeWidth,
+                        inputs.edgeOpacity,
+                        inputs.edgeColour
+                    );
+                    mesh.parent = shapeMesh;
+                });
+            }
+            return shapeMesh;
         });
-        this.forEachEdge(inputs.shape, (index, edge) => {
-            fullShapeEdgeHashes[edge.HashCode(100000000)] = index;
-        });
-        const fe = this.shapeToMesh(inputs.shape, inputs.precision, fullShapeEdgeHashes, fullShapeFaceHashes);
+    }
 
-        const shapeMesh = MeshBuilder.CreateBox('brepMesh' + Math.random(), { size: 0.01 }, this.context.scene);
-        shapeMesh.isVisible = false;
-
-        if (inputs.drawFaces) {
-            fe.faceList.forEach(face => {
-                const mesh = this.geometryHelper.createOrUpdateSurfaceMesh({
-                    positions: face.vertex_coord,
-                    normals: face.normal_coord,
-                    indices: face.tri_indexes,
-                }, inputs.shapeMesh, inputs.updatable, inputs.faceOpacity, inputs.faceColour);
-
-            });
-        }
-        if (inputs.drawEdges) {
-            fe.edgeList.forEach(edge => {
-                const mesh = this.geometryHelper.drawPolyline(
-                    inputs.linesMesh,
-                    edge.vertex_coord,
-                    inputs.updatable,
-                    inputs.edgeWidth,
-                    inputs.edgeOpacity,
-                    inputs.edgeColour
-                );
-                mesh.parent = shapeMesh;
-            });
-        }
-        return shapeMesh;
+    /**
+     * This needs to be done before every run and the promise needs to be awaited before run executes again
+     * This makes sure that cache keeps the objects and hashes from the previous run and the rest is deleted
+     * In this way it is possible to hace the cache of manageable size
+     */
+    cleanUpCache(): Promise<any> {
+        return this.genericCallToWorkerPromise('startedTheRun', {});
     }
 
     /**
@@ -209,27 +239,7 @@ export class OCC {
      * @returns OpenCascade polygon wire shape
      */
     createPolygonWire(inputs: Inputs.OCC.PolygonDto): any {
-        const gpPoints = [];
-        for (let ind = 0; ind < inputs.points.length; ind++) {
-            gpPoints.push(this.occHelper.convertToPnt(inputs.points[ind]));
-        }
-
-        const polygonWire = new this.context.occ.BRepBuilderAPI_MakeWire_1();
-        for (let ind = 0; ind < inputs.points.length - 1; ind++) {
-            const seg = new this.context.occ.GC_MakeSegment_1(gpPoints[ind], gpPoints[ind + 1]).Value();
-            const edge = new this.context.occ.BRepBuilderAPI_MakeEdge_24(
-                new this.context.occ.Handle_Geom_Curve_2(seg.get())
-            ).Edge();
-            const innerWire = new this.context.occ.BRepBuilderAPI_MakeWire_2(edge).Wire();
-            polygonWire.Add_2(innerWire);
-        }
-        const seg2 = new this.context.occ.GC_MakeSegment_1(gpPoints[inputs.points.length - 1], gpPoints[0]).Value();
-        const edge2 = new this.context.occ.BRepBuilderAPI_MakeEdge_24(
-            new this.context.occ.Handle_Geom_Curve_2(seg2.get())
-        ).Edge();
-        const innerWire2 = new this.context.occ.BRepBuilderAPI_MakeWire_2(edge2).Wire();
-        polygonWire.Add_2(innerWire2);
-        return polygonWire.Wire();
+        return this.genericCallToWorkerPromise('createPolygonWire', inputs);
     }
 
     /**
@@ -254,8 +264,8 @@ export class OCC {
      * @param inputs Box size and center
      * @returns OpenCascade Box
      */
-    createBox(inputs: Inputs.OCC.BoxDto): any {
-        return this.oc.bRepPrimAPIMakeBox(inputs.width, inputs.length, inputs.height, inputs.center);
+    createBox(inputs: Inputs.OCC.BoxDto): Promise<any> {
+        return this.genericCallToWorkerPromise('createBox', inputs);
     }
 
     /**
@@ -268,12 +278,7 @@ export class OCC {
      * @returns OpenCascade Cylinder
      */
     createCylinder(inputs: Inputs.OCC.CylinderDto): any {
-        return this.oc.bRepPrimAPIMakeCylinder(
-            [inputs.center[0], -inputs.height / 2 + inputs.center[1], inputs.center[2]],
-            [0., 1., 0.],
-            inputs.radius,
-            inputs.height
-        );
+        return this.genericCallToWorkerPromise('createCylinder', inputs);
     }
 
     /**
@@ -286,18 +291,7 @@ export class OCC {
      * @returns OpenCascade BSpline wire
      */
     createBSpline(inputs: Inputs.OCC.BSplineDto): any {
-        const ptList = new this.context.occ.TColgp_Array1OfPnt_2(1, inputs.points.length + (inputs.closed ? 1 : 0));
-        for (let pIndex = 1; pIndex <= inputs.points.length; pIndex++) {
-            ptList.SetValue(pIndex, this.occHelper.convertToPnt(inputs.points[pIndex - 1]));
-        }
-        if (inputs.closed) { ptList.SetValue(inputs.points.length + 1, ptList.Value(1)); }
-
-        const geomCurveHandle = new this.context.occ.GeomAPI_PointsToBSpline_2(ptList, 3, 8,
-            this.context.occ.GeomAbs_Shape.GeomAbs_C2, 1.0e-3);
-        const edge = new this.context.occ.BRepBuilderAPI_MakeEdge_24(
-            new this.context.occ.Handle_Geom_Curve_2(geomCurveHandle.Curve().get())
-        ).Edge();
-        return new this.context.occ.BRepBuilderAPI_MakeWire_2(edge).Wire();
+        return this.genericCallToWorkerPromise('createBSpline', inputs);
     }
 
 
@@ -311,17 +305,7 @@ export class OCC {
      * @returns OpenCascade Bezier wire
      */
     createBezier(inputs: Inputs.OCC.BezierDto): any {
-        const ptList = new this.context.occ.TColgp_Array1OfPnt_2(1, inputs.points.length + (inputs.closed ? 1 : 0));
-        for (let pIndex = 1; pIndex <= inputs.points.length; pIndex++) {
-            ptList.SetValue(pIndex, this.occHelper.convertToPnt(inputs.points[pIndex - 1]));
-        }
-        if (inputs.closed) { ptList.SetValue(inputs.points.length + 1, ptList.Value(1)); }
-
-        const geomCurveHandle = new this.context.occ.Geom_BezierCurve_1(ptList);
-        const edge = new this.context.occ.BRepBuilderAPI_MakeEdge_24(
-            new this.context.occ.Handle_Geom_Curve_2(geomCurveHandle)
-        ).Edge();
-        return new this.context.occ.BRepBuilderAPI_MakeWire_2(edge).Wire();
+        return this.genericCallToWorkerPromise('createBezier', inputs);
     }
 
     /**
@@ -334,7 +318,7 @@ export class OCC {
      * @returns OpenCascade circle wire
      */
     createCircleWire(inputs: Inputs.OCC.CircleDto): any {
-        return this.createCircle(inputs.radius, inputs.center, false);
+        return this.genericCallToWorkerPromise('createCircleWire', inputs);
     }
 
     /**
@@ -346,8 +330,9 @@ export class OCC {
      * @param inputs Circle parameters
      * @returns OpenCascade circle face
      */
+    // TODO
     createCircleFace(inputs: Inputs.OCC.CircleDto): any {
-        return this.createCircle(inputs.radius, inputs.center, true);
+        return this.genericCallToWorkerPromise('createCircleFace', inputs);
     }
 
     /**
@@ -360,10 +345,7 @@ export class OCC {
      * @returns Resulting loft shell
      */
     loft(inputs: Inputs.OCC.LoftDto): any {
-        const pipe = new this.context.occ.BRepOffsetAPI_ThruSections(inputs.solid, false, 1.0e-06);
-        inputs.wires.forEach((wire) => { pipe.AddWire(wire); });
-        pipe.Build();
-        return pipe.Shape();
+        return this.genericCallToWorkerPromise('loft', inputs);
     }
 
     /**
@@ -376,36 +358,7 @@ export class OCC {
      * @returns Resulting offset shape
      */
     offset(inputs: Inputs.OCC.OffsetDto): any {
-        if (!inputs.tolerance) { inputs.tolerance = 0.1; }
-        if (inputs.offsetDistance === 0.0) { return inputs.shape; }
-        let offset = null;
-        if (inputs.shape.ShapeType() === this.context.occ.TopAbs_ShapeEnum.TopAbs_WIRE) {
-            offset = new this.context.occ.BRepOffsetAPI_MakeOffset_1();
-            offset.AddWire(inputs.shape);
-            offset.Perform(inputs.offsetDistance);
-        } else {
-            offset = new this.context.occ.BRepOffsetAPI_MakeOffsetShape_1();
-            offset.PerformByJoin(
-                inputs.shape,
-                inputs.offsetDistance,
-                inputs.tolerance,
-                this.context.occ.BRepOffset_Mode.BRepOffset_Skin,
-                false,
-                false,
-                this.context.occ.GeomAbs_JoinType.GeomAbs_Arc,
-                false
-            );
-        }
-        let offsetShape = new this.context.occ.TopoDS.Shell_2(offset.Shape());
-
-        // Convert Shell to Solid as is expected
-        if (offsetShape.ShapeType() === this.context.occ.TopAbs_ShapeEnum.TopAbs_SHELL) {
-            const solidOffset = new this.context.occ.BRepBuilderAPI_MakeSolid_1();
-            solidOffset.Add(offsetShape);
-            offsetShape = solidOffset.Solid();
-        }
-
-        return offsetShape;
+        return this.genericCallToWorkerPromise('offset', inputs);
     }
 
     /**
@@ -418,12 +371,7 @@ export class OCC {
      * @returns Resulting extruded solid
      */
     extrude(inputs: Inputs.OCC.ExtrudeDto): any {
-        return new this.context.occ.BRepPrimAPI_MakePrism_1(
-            inputs.face,
-            new this.context.occ.gp_Vec_4(inputs.direction[0], inputs.direction[1], inputs.direction[2]),
-            false,
-            true
-        ).Shape();
+        return this.genericCallToWorkerPromise('extrude', inputs);
     }
 
     /**
@@ -436,7 +384,7 @@ export class OCC {
      * @returns OpenCascade Sphere
      */
     createSphere(inputs: Inputs.OCC.SphereDto): any {
-        return this.oc.bRepPrimAPIMakeSphere(inputs.center, [0., 0., 1.], inputs.radius);
+        return this.genericCallToWorkerPromise('createSphere', inputs);
     }
 
     /**
@@ -449,42 +397,7 @@ export class OCC {
      * @returns OpenCascade shape with filleted edges
      */
     filletEdges(inputs: Inputs.OCC.FilletDto): any {
-        if (inputs.filletAll) {
-            const mkFillet = new this.context.occ.BRepFilletAPI_MakeFillet(
-                inputs.shape, this.context.occ.ChFi3d_FilletShape.ChFi3d_Rational
-            );
-            const anEdgeExplorer = new this.context.occ.TopExp_Explorer_2(
-                inputs.shape, this.context.occ.TopAbs_ShapeEnum.TopAbs_EDGE, this.context.occ.TopAbs_ShapeEnum.TopAbs_SHAPE
-            );
-            while (anEdgeExplorer.More()) {
-                const anEdge = new this.context.occ.TopoDS.Edge_1(anEdgeExplorer.Current());
-                mkFillet.Add_2(inputs.radius, anEdge);
-                anEdgeExplorer.Next();
-            }
-            inputs.shape = mkFillet.Shape();
-            return inputs.shape;
-        } else {
-            const mkFillet = new this.context.occ.BRepFilletAPI_MakeFillet(
-                inputs.shape, this.context.occ.ChFi3d_FilletShape.ChFi3d_Rational
-            );
-            let foundEdges = 0;
-            let curFillet;
-            this.forEachEdge(inputs.shape, (index, edge) => {
-                if (inputs.edgeList.includes(index)) {
-                    mkFillet.Add_2(inputs.radius, edge);
-                    foundEdges++;
-                }
-            });
-            if (foundEdges === 0) {
-                console.error('Fillet Edges Not Found!  Make sure you are looking at the object _before_ the Fillet is applied!');
-                curFillet = inputs.shape.Solid();
-            }
-            else {
-                curFillet = mkFillet.Shape();
-            }
-            this.occHelper.sceneShapes.push(curFillet);
-            return curFillet;
-        }
+        return this.genericCallToWorkerPromise('filletEdges', inputs);
     }
 
     /**
@@ -497,305 +410,11 @@ export class OCC {
      * @returns OpenCascade joined shape
      */
     union(inputs: Inputs.OCC.UnionDto): any {
-        if (!inputs.fuzzValue) { inputs.fuzzValue = 0.1; }
-        let combined = inputs.objectsToJoin[0];
-        for (let i = 0; i < inputs.objectsToJoin.length; i++) {
-            const combinedFuse = new this.context.occ.BRepAlgoAPI_Fuse_3(combined, inputs.objectsToJoin[i]);
-            combinedFuse.Build();
-            combined = combinedFuse.Shape();
-        }
-
-        if (!inputs.keepEdges) {
-            const fusor = new this.context.occ.ShapeUpgrade_UnifySameDomain_2(combined, true, true, false);
-            fusor.Build();
-            combined = fusor.Shape();
-        }
-
-        return combined;
+        return this.genericCallToWorkerPromise('union', inputs);
     }
 
-    difference(mainBody, objectsToSubtract, keepEdges): any {
-        if (!mainBody || mainBody.IsNull()) { console.error('Main Shape in Difference is null!'); }
-        let difference = mainBody;
-        for (let i = 0; i < objectsToSubtract.length; i++) {
-            if (!objectsToSubtract[i] || objectsToSubtract[i].IsNull()) { console.error('Tool in Difference is null!'); }
-            const differenceCut = new this.context.occ.BRepAlgoAPI_Cut_3(difference, objectsToSubtract[i]);
-            differenceCut.Build();
-            difference = differenceCut.Shape();
-        }
-
-        if (!keepEdges) {
-            const fusor = new this.context.occ.ShapeUpgrade_UnifySameDomain_2(difference, true, true, false);
-            fusor.Build();
-            difference = fusor.Shape();
-        }
-
-        difference.hash = this.occHelper.ComputeHash(arguments);
-        if (this.getNumSolidsInCompound(difference) === 1) {
-            difference = this.getSolidFromCompound(difference, 0);
-        }
-
-        return difference;
-    }
-
-    private getNumSolidsInCompound(shape): any {
-        if (!shape ||
-            shape.ShapeType() > this.context.occ.TopAbs_ShapeEnum.TopAbs_COMPSOLID ||
-            shape.IsNull()
-        ) {
-            console.error('Not a compound shape!');
-            return shape;
-        }
-        let solidsFound = 0;
-        this.forEachSolid(shape, (i, s) => { solidsFound++; });
-        return solidsFound;
-    }
-
-    private getSolidFromCompound(shape, index): any {
-        if (!shape ||
-            shape.ShapeType() > this.context.occ.TopAbs_ShapeEnum.TopAbs_COMPSOLID ||
-            shape.IsNull()
-        ) {
-            console.error('Not a compound shape!');
-            return shape;
-        }
-        if (!index) {
-            index = 0;
-        }
-
-        let innerSolid: { hash?: string } = {};
-        let solidsFound = 0;
-        this.forEachSolid(shape, (i, s) => {
-            if (i === index) { innerSolid = new this.context.occ.TopoDS.Solid_1(s); } solidsFound++;
-        });
-        if (solidsFound === 0) { console.error('NO SOLIDS FOUND IN SHAPE!'); innerSolid = shape; }
-        innerSolid.hash = shape.hash + 1;
-        return innerSolid;
-    }
-
-    private forEachSolid(shape, callback): void {
-        let solidIndex = 0;
-        const anExplorer = new this.context.occ.TopExp_Explorer_2(shape,
-            this.context.occ.TopAbs_ShapeEnum.TopAbs_SOLID,
-            this.context.occ.TopAbs_ShapeEnum.TopAbs_SHAPE);
-        for (anExplorer.Init(shape, 
-            this.context.occ.TopAbs_ShapeEnum.TopAbs_SOLID, 
-            this.context.occ.TopAbs_ShapeEnum.TopAbs_SHAPE); anExplorer.More(); anExplorer.Next()) {
-            callback(solidIndex++, this.context.occ.TopoDS.Solid_2(anExplorer.Current()));
-        }
-    }
-
-    private forEachEdge(shape, callback): any {
-        const edgeHashes = {};
-        let edgeIndex = 0;
-        const anExplorer = new this.context.occ.TopExp_Explorer_2(shape,
-            this.context.occ.TopAbs_ShapeEnum.TopAbs_EDGE, this.context.occ.TopAbs_ShapeEnum.TopAbs_SHAPE
-        );
-        for (anExplorer.Init(shape, this.context.occ.TopAbs_ShapeEnum.TopAbs_EDGE, this.context.occ.TopAbs_ShapeEnum.TopAbs_SHAPE);
-            anExplorer.More();
-            anExplorer.Next()
-        ) {
-            const edge = this.context.occ.TopoDS.Edge_1(anExplorer.Current());
-            const edgeHash = edge.HashCode(100000000);
-            if (!edgeHashes.hasOwnProperty(edgeHash)) {
-                edgeHashes[edgeHash] = edgeIndex;
-                callback(edgeIndex++, edge);
-            }
-        }
-        return edgeHashes;
-    }
-
-    private forEachFace(shape, callback): any {
-        let faceIndex = 0;
-        const anExplorer = new this.context.occ.TopExp_Explorer_2(
-            shape,
-            this.context.occ.TopAbs_ShapeEnum.TopAbs_FACE,
-            this.context.occ.TopAbs_ShapeEnum.TopAbs_SHAPE
-        );
-        for (anExplorer.Init(shape, this.context.occ.TopAbs_ShapeEnum.TopAbs_FACE, this.context.occ.TopAbs_ShapeEnum.TopAbs_SHAPE);
-            anExplorer.More();
-            anExplorer.Next()) {
-            callback(faceIndex++, this.context.occ.TopoDS.Face_1(anExplorer.Current()));
-        }
-    }
-
-    private createCircle(radius: number, center: number[], wire: boolean): any {
-        const circle = this.oc.gcMakeCircle(center, [0, 0, 1], radius);
-        const edge = this.oc.bRepBuilderAPIMakeEdge(circle);
-        const circleWire = this.oc.bRepBuilderAPIMakeWire(edge);
-        if (wire) {
-            return circleWire;
-        }
-        return this.oc.bRepBuilderAPIMakeFace(wire, true);
-    }
-
-    private shapeToMesh(shape, maxDeviation, fullShapeEdgeHashes, fullShapeFaceHashes): {
-        faceList: {
-            face_index: number;
-            normal_coord: number[];
-            number_of_triangles: number;
-            tri_indexes: number[];
-            vertex_coord: number[];
-        }[],
-        edgeList: {
-            edge_index: number;
-            vertex_coord: number[][];
-        }[]
-    } {
-        const faceList: {
-            face_index: number;
-            normal_coord: number[];
-            number_of_triangles: number;
-            tri_indexes: number[];
-            vertex_coord: number[];
-        }[] = [];
-        const edgeList: {
-            edge_index: number;
-            vertex_coord: number[][];
-        }[] = [];
-
-        // Set up the Incremental Mesh builder, with a precision
-        const inctementalMeshBuilder = new this.context.occ.BRepMesh_IncrementalMesh_2(shape, maxDeviation, false, maxDeviation * 5, false);
-
-        // Construct the edge hashes to assign proper indices to the edges
-        const fullShapeEdgeHashes2 = {};
-
-        // Iterate through the faces and triangulate each one
-        const triangulations = [];
-        this.forEachFace(shape, (faceIndex, myFace) => {
-            const aLocation = new this.context.occ.TopLoc_Location_1();
-            const myT = this.context.occ.BRep_Tool.Triangulation(myFace, aLocation);
-            if (myT.IsNull()) { console.error('Encountered Null Face!'); return; }
-
-            const thisFace = {
-                vertex_coord: [],
-                normal_coord: [],
-                tri_indexes: [],
-                number_of_triangles: 0,
-                face_index: fullShapeFaceHashes[myFace.HashCode(100000000)]
-            };
-
-            const pc = new this.context.occ.Poly_Connect_2(myT);
-            const Nodes = myT.get().Nodes();
-
-            // write vertex buffer
-            thisFace.vertex_coord = new Array(Nodes.Length() * 3);
-            for (let i = 0; i < Nodes.Length(); i++) {
-                const p = Nodes.Value(i + 1).Transformed(aLocation.Transformation());
-                thisFace.vertex_coord[(i * 3) + 0] = p.X();
-                thisFace.vertex_coord[(i * 3) + 1] = p.Y();
-                thisFace.vertex_coord[(i * 3) + 2] = p.Z();
-            }
-
-            // write normal buffer
-            const myNormal = new this.context.occ.TColgp_Array1OfDir_2(Nodes.Lower(), Nodes.Upper());
-            const SST = new this.context.occ.StdPrs_ToolTriangulatedShape();
-            this.context.occ.StdPrs_ToolTriangulatedShape.Normal(myFace, pc, myNormal);
-            thisFace.normal_coord = new Array(myNormal.Length() * 3);
-            for (let i = 0; i < myNormal.Length(); i++) {
-                const d = myNormal.Value(i + 1).Transformed(aLocation.Transformation());
-                thisFace.normal_coord[(i * 3) + 0] = d.X();
-                thisFace.normal_coord[(i * 3) + 1] = d.Y();
-                thisFace.normal_coord[(i * 3) + 2] = d.Z();
-            }
-
-            // write triangle buffer
-            const orient = myFace.Orientation_1();
-            const triangles = myT.get().Triangles();
-            thisFace.tri_indexes = new Array(triangles.Length() * 3);
-            let validFaceTriCount = 0;
-            for (let nt = 1; nt <= myT.get().NbTriangles(); nt++) {
-                const t = triangles.Value(nt);
-                let n1 = t.Value(1);
-                let n2 = t.Value(2);
-                const n3 = t.Value(3);
-                if (orient !== this.context.occ.TopAbs_FORWARD) {
-                    const tmp = n1;
-                    n1 = n2;
-                    n2 = tmp;
-                }
-                // if(TriangleIsValid(Nodes.Value(1), Nodes.Value(n2), Nodes.Value(n3))) {
-                thisFace.tri_indexes[(validFaceTriCount * 3) + 0] = n1 - 1;
-                thisFace.tri_indexes[(validFaceTriCount * 3) + 1] = n2 - 1;
-                thisFace.tri_indexes[(validFaceTriCount * 3) + 2] = n3 - 1;
-                validFaceTriCount++;
-                // }
-            }
-            thisFace.number_of_triangles = validFaceTriCount;
-            faceList.push(thisFace);
-
-            this.forEachEdge(myFace, (index, myEdge) => {
-                const edgeHash = myEdge.HashCode(100000000);
-                if (fullShapeEdgeHashes2.hasOwnProperty(edgeHash)) {
-                    const thisEdge = {
-                        vertex_coord: [],
-                        edge_index: -1
-                    };
-
-                    const myP = this.context.occ.BRep_Tool.PolygonOnTriangulation_1(myEdge, myT, aLocation);
-                    const edgeNodes = myP.get().Nodes();
-
-                    // write vertex buffer
-                    thisEdge.vertex_coord = [];
-                    for (let j = 0; j < edgeNodes.Length(); j++) {
-                        const vertexIndex = edgeNodes.Value(j + 1);
-                        thisEdge.vertex_coord.push([
-                            thisFace.vertex_coord[((vertexIndex - 1) * 3) + 0],
-                            thisFace.vertex_coord[((vertexIndex - 1) * 3) + 1],
-                            thisFace.vertex_coord[((vertexIndex - 1) * 3) + 2]
-                        ]);
-                        // thisEdge.vertex_coord[(j * 3) + 0] = thisFace.vertex_coord[((vertexIndex - 1) * 3) + 0];
-                        // thisEdge.vertex_coord[(j * 3) + 1] = thisFace.vertex_coord[((vertexIndex - 1) * 3) + 1];
-                        // thisEdge.vertex_coord[(j * 3) + 2] = thisFace.vertex_coord[((vertexIndex - 1) * 3) + 2];
-                    }
-
-                    thisEdge.edge_index = fullShapeEdgeHashes[edgeHash];
-
-                    edgeList.push(thisEdge);
-                } else {
-                    fullShapeEdgeHashes2[edgeHash] = edgeHash;
-                }
-            });
-            triangulations.push(myT);
-        });
-        // Nullify Triangulations between runs so they're not stored in the cache
-        for (let i = 0; i < triangulations.length; i++) {
-            triangulations[i].Nullify();
-        }
-
-        // Get the free edges that aren't on any triangulated face/surface
-        this.forEachEdge(shape, (index, myEdge) => {
-            const edgeHash = myEdge.HashCode(100000000);
-            if (!fullShapeEdgeHashes2.hasOwnProperty(edgeHash)) {
-                const thisEdge = {
-                    vertex_coord: [],
-                    edge_index: -1
-                };
-
-                const aLocation = new this.context.occ.TopLoc_Location_1();
-                const adaptorCurve = new this.context.occ.BRepAdaptor_Curve_2(myEdge);
-                const tangDef = new this.context.occ.GCPnts_TangentialDeflection_2(adaptorCurve, maxDeviation, 0.1, 2, 1.0e-9, 1.0e-7);
-
-                // write vertex buffer
-                thisEdge.vertex_coord = new Array(tangDef.NbPoints());
-                for (let j = 0; j < tangDef.NbPoints(); j++) {
-                    const vertex = tangDef.Value(j + 1).Transformed(aLocation.Transformation());
-                    thisEdge.vertex_coord.push([
-                        vertex.X(),
-                        vertex.Y(),
-                        vertex.Z()
-                    ]);
-                }
-
-                thisEdge.edge_index = fullShapeEdgeHashes[edgeHash];
-                fullShapeEdgeHashes2[edgeHash] = edgeHash;
-
-                edgeList.push(thisEdge);
-            }
-        });
-
-
-
-        return { faceList, edgeList };
+    // TODO Difference inputs
+    difference(inputs: any): any {
+        return this.genericCallToWorkerPromise('difference', inputs);
     }
 }
