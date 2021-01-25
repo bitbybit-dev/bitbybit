@@ -25,8 +25,11 @@ export class OCC {
         this.occWorker = worker;
         this.occWorker.onmessage = ({ data }) => {
             const promise = this.promisesMade.find(made => made.uid === data.uid);
-            if (promise) {
+            if (promise && data.result && !data.error) {
                 promise.resolve(data.result);
+            } else if (data.error) {
+                promise.reject(data.error);
+                alert(data.error);
             }
             this.promisesMade = this.promisesMade.filter(i => i.uid !== data.uid);
         };
