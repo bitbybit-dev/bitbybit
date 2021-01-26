@@ -270,4 +270,20 @@ export namespace OCC {
          */
         keepEdges: boolean;
     }
+    export class ShapeDto {
+        /**
+         * Shape on which action should be performed
+         */
+        shape: any;
+    }
+    export class ShapeIndexDto {
+        /**
+         * Shape
+         */
+        shape: any;
+        /**
+         * Index of the entity
+         */
+        index: number;
+    }
 }

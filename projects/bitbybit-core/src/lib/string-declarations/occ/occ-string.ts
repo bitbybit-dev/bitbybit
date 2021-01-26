@@ -188,7 +188,6 @@ export declare class OCC {
      * @returns OpenCascade difference shape
      */
     difference(inputs: Inputs.OCC.DifferenceDto): any;
-
     /**
      * Does boolean intersection operation between a main shape and given shapes
      * <div>
@@ -199,6 +198,26 @@ export declare class OCC {
      * @returns OpenCascade difference shape
      */
     intersection(inputs: Inputs.OCC.IntersectionDto): any;
+    /**
+     * Removes internal faces for the shape
+     * <div>
+     *  <img src="../assets/images/blockly-images/occ/removeInternalEdges.svg" alt="Blockly Image"/>
+     * </div>
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occ.occ.html#removeinternaledges
+     * @param inputs Shape
+     * @returns OpenCascade shape with no internal edges
+     */
+    removeInternalEdges(inputs: Inputs.OCC.ShapeDto): any;
+    /**
+     * Gets the wire by providing an index from the shape
+     * <div>
+     *  <img src="../assets/images/blockly-images/occ/getWire.svg" alt="Blockly Image"/>
+     * </div>
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occ.occ.html#getwire
+     * @param inputs Shape
+     * @returns OpenCascade wire
+     */
+    getWire(inputs: Inputs.OCC.ShapeIndexDto): any;
     private getNumSolidsInCompound;
     private getSolidFromCompound;
     private forEachSolid;

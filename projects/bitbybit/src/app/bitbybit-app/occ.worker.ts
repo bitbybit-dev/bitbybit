@@ -491,8 +491,8 @@ export class Occ {
     }
 
     intersection(inputs: Inputs.OCC.IntersectionDto): any {
-        if(inputs.shapes.length < 2) {
-            throw(new Error('Less than 2 shapes provided for intersection'));
+        if (inputs.shapes.length < 2) {
+            throw (new Error('Less than 2 shapes provided for intersection'));
         }
 
         let intersected = inputs.shapes[0];
@@ -511,6 +511,23 @@ export class Occ {
         return intersected;
     }
 
+    removeInternalEdges(inputs: Inputs.OCC.ShapeDto): any {
+        const fusor = new this.occ.ShapeUpgrade_UnifySameDomain_2(inputs.shape, true, true, false);
+        fusor.Build();
+        return fusor.Shape();
+    }
+
+    getWire(inputs: Inputs.OCC.ShapeIndexDto): any {
+        if (!inputs.shape || inputs.shape.ShapeType() > this.occ.TopAbs_ShapeEnum.TopAbs_FACE || inputs.shape.IsNull()) {
+            throw(new Error('Shape is not provided or is of incorrect type'));
+         }
+        if (!inputs.index) { inputs.index = 0; }
+        let innerWire = {}; let wiresFound = 0;
+        this.forEachWire(inputs.shape, (i, s) => {
+            if (i === inputs.index) { innerWire = new this.occ.TopoDS.Wire_1(s); } wiresFound++;
+        });
+        return innerWire;
+    }
 
     shapeToMesh(shape, maxDeviation): {
         faceList: {
@@ -730,6 +747,18 @@ export class Occ {
             this.occ.TopAbs_ShapeEnum.TopAbs_SOLID,
             this.occ.TopAbs_ShapeEnum.TopAbs_SHAPE); anExplorer.More(); anExplorer.Next()) {
             callback(solidIndex++, this.occ.TopoDS.Solid_2(anExplorer.Current()));
+        }
+    }
+
+    private forEachWire(shape, callback): void {
+        let wireIndex = 0;
+        const anExplorer = new this.occ.TopExp_Explorer_2(shape,
+            this.occ.TopAbs_ShapeEnum.TopAbs_WIRE,
+            this.occ.TopAbs_ShapeEnum.TopAbs_SHAPE);
+        for (anExplorer.Init(shape,
+            this.occ.TopAbs_ShapeEnum.TopAbs_WIRE,
+            this.occ.TopAbs_ShapeEnum.TopAbs_SHAPE); anExplorer.More(); anExplorer.Next()) {
+            callback(wireIndex++, this.occ.TopoDS.Wire_2(anExplorer.Current()));
         }
     }
 

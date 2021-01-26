@@ -262,6 +262,22 @@ export declare namespace OCC {
          */
         keepEdges: boolean;
     }
+    class ShapeDto {
+        /**
+         * Shape on which action should be performed
+         */
+        shape: any;
+    }
+    class ShapeIndexDto {
+        /**
+         * Shape
+         */
+        shape: any;
+        /**
+         * Index of the entity
+         */
+        index: number;
+    }
 }
 
 `);

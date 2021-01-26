@@ -509,4 +509,30 @@ export class OCC {
     intersection(inputs: Inputs.OCC.IntersectionDto): any {
         return this.genericCallToWorkerPromise('intersection', inputs);
     }
+
+    /**
+     * Removes internal faces for the shape
+     * <div>
+     *  <img src="../assets/images/blockly-images/occ/removeInternalEdges.svg" alt="Blockly Image"/>
+     * </div>
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occ.occ.html#removeinternaledges
+     * @param inputs Shape
+     * @returns OpenCascade shape with no internal edges
+     */
+    removeInternalEdges(inputs: Inputs.OCC.ShapeDto): any {
+        return this.genericCallToWorkerPromise('removeInternalEdges', inputs);
+    }
+
+    /**
+     * Gets the wire by providing an index from the shape
+     * <div>
+     *  <img src="../assets/images/blockly-images/occ/getWire.svg" alt="Blockly Image"/>
+     * </div>
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occ.occ.html#getwire
+     * @param inputs Shape
+     * @returns OpenCascade wire
+     */
+    getWire(inputs: Inputs.OCC.ShapeIndexDto): any {
+        return this.genericCallToWorkerPromise('getWire', inputs);
+    }
 }
