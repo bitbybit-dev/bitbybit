@@ -19,7 +19,7 @@ type DataInput = {
         functionName: string;
         inputs: any;
     }
-    // Uid is used to know to which promise to resolve the answer
+    // Uid is used to know to which promise to resolve when answering
     uid: string;
 };
 
@@ -69,19 +69,19 @@ addEventListener('message', ({ data }) => {
         });
     } catch (e) {
         let props;
-        if(d && d.action && d.action.inputs){
+        if (d && d.action && d.action.inputs) {
             props = `Input values were: {${Object.keys(d.action.inputs).map(key => `${key}: ${d.action.inputs[key]}`).join(',')}}. `;
         }
         let fun;
-        if(d && d.action && d.action.functionName){
+        if (d && d.action && d.action.functionName) {
             fun = `- ${d.action.functionName}`;
         }
-        const message = 
-        postMessage({
-            uid: data.uid,
-            result: undefined,
-            error: `OCC computation failed when executing function ${fun}. ${props}Original message: ${e}`
-        });
+        const message =
+            postMessage({
+                uid: data.uid,
+                result: undefined,
+                error: `OCC computation failed when executing function ${fun}. ${props}Original message: ${e}`
+            });
     }
 
 });
@@ -467,9 +467,9 @@ export class Occ {
         return combined;
     }
 
-    difference(mainBody, objectsToSubtract, keepEdges): any {
-        if (!mainBody || mainBody.IsNull()) { console.error('Main Shape in Difference is null!'); }
-        let difference = mainBody;
+    difference(inputs: Inputs.OCC.DifferenceDto): any {
+        let difference = inputs.shape;
+        const objectsToSubtract = inputs.shapes;
         for (let i = 0; i < objectsToSubtract.length; i++) {
             if (!objectsToSubtract[i] || objectsToSubtract[i].IsNull()) { console.error('Tool in Difference is null!'); }
             const differenceCut = new this.occ.BRepAlgoAPI_Cut_3(difference, objectsToSubtract[i]);
@@ -477,13 +477,12 @@ export class Occ {
             difference = differenceCut.Shape();
         }
 
-        if (!keepEdges) {
+        if (!inputs.keepEdges) {
             const fusor = new this.occ.ShapeUpgrade_UnifySameDomain_2(difference, true, true, false);
             fusor.Build();
             difference = fusor.Shape();
         }
 
-        // difference.hash = this.cacheHelper.computeHash(arguments);
         if (this.getNumSolidsInCompound(difference) === 1) {
             difference = this.getSolidFromCompound(difference, 0);
         }

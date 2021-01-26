@@ -238,6 +238,20 @@ export declare namespace OCC {
          */
         keepEdges: boolean;
     }
+    class DifferenceDto {
+        /**
+         * Object to subtract from
+         */
+        shape: any;
+        /**
+         * Objects to subtract
+         */
+        shapes: any[];
+        /**
+         * Keeps edges unaffected
+         */
+        keepEdges: boolean;
+    }
 }
 
 `);
