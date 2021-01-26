@@ -85,6 +85,18 @@ export namespace OCC {
          * Precision
          */
         precision = 0.05;
+        /**
+         * Draw indexes can be drawn as tags
+         */
+        drawEdgeIndexes = false;
+        /**
+         * Indicates the edge index height if they are drawn
+         */
+        edgeIndexHeight = 0.06;
+        /**
+         * Edge index colour if the edges are drawn
+         */
+        edgeIndexColour = '#ff00ff';
     }
 
     export class PolygonDto {

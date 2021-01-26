@@ -3,6 +3,9 @@ import { Mesh, MeshBuilder } from '@babylonjs/core';
 import { Context } from '../../context';
 import { GeometryHelper } from '../../geometry-helper';
 import * as Inputs from '../../inputs/inputs';
+import { SolidText } from '../solid-text';
+import { Tag } from '../tag';
+import { Vector } from '../vector';
 
 /**
  * Contains various methods for OpenCascade implementation
@@ -18,6 +21,8 @@ export class OCC {
     constructor(
         private readonly context: Context,
         private readonly geometryHelper: GeometryHelper,
+        private readonly solidText: SolidText,
+        private readonly vector: Vector
     ) {
     }
 
@@ -192,7 +197,19 @@ export class OCC {
      * @returns BabylonJS Mesh
      */
     drawShape(inputs: Inputs.OCC.DrawShapeDto): Promise<Mesh> {
-        return this.genericCallToWorkerPromise('shapeToMesh', inputs).then(fe => {
+        return this.genericCallToWorkerPromise('shapeToMesh', inputs).then((fe: {
+            faceList: {
+                face_index: number;
+                normal_coord: number[];
+                number_of_triangles: number;
+                tri_indexes: number[];
+                vertex_coord: number[];
+            }[],
+            edgeList: {
+                edge_index: number;
+                vertex_coord: number[][];
+            }[]
+        }) => {
             const shapeMesh = MeshBuilder.CreateBox('brepMesh' + Math.random(), { size: 0.01 }, this.context.scene);
             shapeMesh.isVisible = false;
 
@@ -219,8 +236,59 @@ export class OCC {
                     mesh.parent = shapeMesh;
                 });
             }
+            if (inputs.drawEdgeIndexes) {
+                const textPolylines: number[][][] = [];
+                fe.edgeList.forEach(edge => {
+                    const edgeMiddle = this.computeEdgeMiddlePos(edge);
+                    const tdto = new Inputs.Solid.TextDto();
+                    tdto.text = `${edge.edge_index}`;
+                    tdto.height = inputs.edgeIndexHeight;
+                    tdto.lineSpacing = 1.5;
+                    const t = this.solidText.createVectorText(tdto);
+                    const texts = t.map(s => {
+                        const res = s.map(c => {
+                            return [
+                                c[0],
+                                c[1] + 0.05,
+                                0];
+                        });
+                        const movedOnPosition = res.map(r => this.vector.add({first: r, second: edgeMiddle}));
+                        return movedOnPosition;
+                    });
+
+                    texts.forEach(te => textPolylines.push(te));
+                });
+
+                const edgeMesh = this.geometryHelper.drawPolylines(null, textPolylines, false, 0.2, 1, inputs.edgeIndexColour);
+                edgeMesh.parent = shapeMesh;
+                edgeMesh.material.zOffset = -2;
+            }
             return shapeMesh;
         });
+    }
+
+    private computeEdgeMiddlePos(edge: { edge_index: number; vertex_coord: number[][]; }) {
+        let pos;
+        if (edge.vertex_coord.length === 2) {
+            const midFloor = edge.vertex_coord[0];
+            const midCeil = edge.vertex_coord[1];
+            pos = this.vector.lerp({
+                first: midFloor,
+                second: midCeil,
+                fraction: 0.5,
+            });
+        } else if (edge.vertex_coord.length === 3) {
+            pos = edge.vertex_coord[1];
+        } else {
+            const midFloor = edge.vertex_coord[Math.floor(edge.vertex_coord.length / 2)];
+            const midCeil = edge.vertex_coord[Math.floor(edge.vertex_coord.length / 2 + 1)];
+            pos = this.vector.lerp({
+                first: midFloor,
+                second: midCeil,
+                fraction: 0.5,
+            });
+        }
+        return pos;
     }
 
     /**

@@ -1,17 +1,16 @@
 import { simplifyDeclaration } from '../../simplify-declaration';
 
 export const occInputsString = simplifyDeclaration(`
-import { LinesMesh, Mesh } from '@babylonjs/core';
 export declare namespace OCC {
     class DrawBrepDto {
         /**
          * Provide options without default values
          */
-        constructor(brep?: any);
+        constructor(shape?: any);
         /**
          * Brep OpenCascade geometry
          */
-        brep: any;
+        shape: any;
         /**
          * Value between 0 and 1
          */
@@ -27,7 +26,7 @@ export declare namespace OCC {
         /**
          * Brep mesh variable in case it already exists and needs updating
          */
-        brepMesh?: Mesh;
+        brepMesh?: any;
     }
     class DrawShapeDto {
         /**
@@ -73,15 +72,27 @@ export declare namespace OCC {
         /**
          * Brep mesh variable in case it already exists and needs updating
          */
-        shapeMesh?: Mesh;
+        shapeMesh?: any;
         /**
          * Lines mesh
          */
-        linesMesh?: LinesMesh;
+        linesMesh?: any;
         /**
          * Precision
          */
         precision: number;
+        /**
+         * Draw indexes can be drawn as tags
+         */
+        drawEdgeIndexes: boolean;
+        /**
+         * Indicates the edge index height if they are drawn
+         */
+        edgeIndexHeight: number;
+        /**
+         * Edge index colour if the edges are drawn
+         */
+        edgeIndexColour: string;
     }
     class PolygonDto {
         /**
@@ -191,7 +202,7 @@ export declare namespace OCC {
         /**
          * Tries to make a solid when lofting
          */
-        solid: boolean;
+        shape: boolean;
     }
     class OffsetDto {
         /**
@@ -211,7 +222,7 @@ export declare namespace OCC {
         /**
          * Face to extrude
          */
-        face: any;
+        shape: any;
         /**
          * Direction vector for extrusion
          */

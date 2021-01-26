@@ -2,7 +2,7 @@ import { HttpHeaders, HttpParams, HttpClient } from '@angular/common/http';
 import { AfterViewInit, ChangeDetectorRef, Component, OnInit, ViewChild, OnDestroy } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ArcRotateCamera, TransformNode, HemisphericLight, Light } from '@babylonjs/core';
+import { ArcRotateCamera, TransformNode, HemisphericLight, Light, MeshBuilder } from '@babylonjs/core';
 import { Engine } from '@babylonjs/core/Engines/engine';
 import '@babylonjs/core/Materials/standardMaterial';
 import { Color3, Color4, Vector3 } from '@babylonjs/core/Maths/math';

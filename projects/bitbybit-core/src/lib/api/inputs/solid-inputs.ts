@@ -728,6 +728,10 @@ export namespace Solid {
         startAngle: number;
     }
     export class TextDto {
+
+        constructor(text?: string) {
+            this.text = text;
+        }
         /**
          * Text to write
          */
@@ -738,31 +742,31 @@ export namespace Solid {
         /**
          * X offset of the text
          */
-        xOffset: number;
+        xOffset = 0;
         /**
          * Y offset of the text
          */
-        yOffset: number;
+        yOffset = 0;
         /**
          * Height of the text
          */
-        height: number;
+        height = 1;
         /**
          * Space between lines
          */
-        lineSpacing: number;
+        lineSpacing = 1.4;
         /**
          * Space between letters
          */
-        letterSpacing: number;
+        letterSpacing = 1;
         /**
          * Align between left, center, right
          */
-        align: SolidTextAlignEnum;
+        align = SolidTextAlignEnum.center;
         /**
          * Offset the extrusion
          */
-        extrudeOffset: boolean;
+        extrudeOffset = 0;
     }
     export class CylinderTextDto extends TextDto {
         /**

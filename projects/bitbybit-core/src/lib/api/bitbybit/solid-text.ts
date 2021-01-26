@@ -86,7 +86,7 @@ export class SolidText {
         });
     }
 
-    private createVectorText(inputs: Inputs.Solid.TextDto): any[] {
+    createVectorText(inputs: Inputs.Solid.TextDto): number[][] {
         return this.context.jscad.text.vectorText({
             input: inputs.text,
             xOffset: inputs.xOffset,
