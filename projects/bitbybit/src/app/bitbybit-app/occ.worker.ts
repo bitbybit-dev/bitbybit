@@ -52,14 +52,23 @@ addEventListener('message', ({ data }) => {
         }
         // Only the cache that was created in previous run has to be kept, the rest needs to go
         if (d.action.functionName === 'startedTheRun') {
-            if (Object.keys(cacheHelper.hashesFromPreviousRun).length > 0) {
-                cacheHelper.cleanUpCache();
+            try {
+                if (Object.keys(cacheHelper.hashesFromPreviousRun).length > 0) {
+                    cacheHelper.cleanUpCache();
+                    result = {
+                        argCache: Object.keys(cacheHelper.argCache),
+                        hashesFromPreviousRun: Object.keys(cacheHelper.hashesFromPreviousRun),
+                        usedHashes: Object.keys(cacheHelper.usedHashes),
+                    };
+                    cacheHelper.hashesFromPreviousRun = {};
+                }
+                else {
+                    result = {};
+                }
             }
-            result = {
-                argCache: Object.keys(cacheHelper.argCache),
-                hashesFromPreviousRun: Object.keys(cacheHelper.hashesFromPreviousRun),
-                usedHashes: Object.keys(cacheHelper.usedHashes),
-            };
+            catch {
+
+            }
         }
         // Returns only the hash as main process can't receive pointers
         // But with hash reference we can always initiate further computations
@@ -336,8 +345,9 @@ export class Occ {
         let offset = null;
         if (inputs.shape.ShapeType() === this.occ.TopAbs_ShapeEnum.TopAbs_WIRE) {
             offset = new this.occ.BRepOffsetAPI_MakeOffset_1();
+            offset.Init_2(this.occ.GeomAbs_JoinType.GeomAbs_Arc, false);
             offset.AddWire(inputs.shape);
-            offset.Perform(inputs.offsetDistance);
+            offset.Perform(inputs.offsetDistance, 0.0);
         } else {
             offset = new this.occ.BRepOffsetAPI_MakeOffsetShape_1();
             offset.PerformByJoin(
@@ -351,7 +361,7 @@ export class Occ {
                 false
             );
         }
-        let offsetShape = new this.occ.TopoDS.Shell_2(offset.Shape());
+        let offsetShape = offset.Shape();
 
         // Convert Shell to Solid as is expected
         if (offsetShape.ShapeType() === this.occ.TopAbs_ShapeEnum.TopAbs_SHELL) {
@@ -519,8 +529,8 @@ export class Occ {
 
     getWire(inputs: Inputs.OCC.ShapeIndexDto): any {
         if (!inputs.shape || inputs.shape.ShapeType() > this.occ.TopAbs_ShapeEnum.TopAbs_FACE || inputs.shape.IsNull()) {
-            throw(new Error('Shape is not provided or is of incorrect type'));
-         }
+            throw (new Error('Shape is not provided or is of incorrect type'));
+        }
         if (!inputs.index) { inputs.index = 0; }
         let innerWire = {}; let wiresFound = 0;
         this.forEachWire(inputs.shape, (i, s) => {
@@ -536,6 +546,7 @@ export class Occ {
             number_of_triangles: number;
             tri_indexes: number[];
             vertex_coord: number[];
+            vertex_coord_vec: number[][];
         }[],
         edgeList: {
             edge_index: number;
@@ -548,6 +559,7 @@ export class Occ {
             number_of_triangles: number;
             tri_indexes: number[];
             vertex_coord: number[];
+            vertex_coord_vec: number[][];
         }[] = [];
         const edgeList: {
             edge_index: number;
@@ -580,6 +592,7 @@ export class Occ {
                 vertex_coord: [],
                 normal_coord: [],
                 tri_indexes: [],
+                vertex_coord_vec: [],
                 number_of_triangles: 0,
                 face_index: fullShapeFaceHashes[myFace.HashCode(100000000)]
             };
@@ -589,11 +602,13 @@ export class Occ {
 
             // write vertex buffer
             thisFace.vertex_coord = new Array(Nodes.Length() * 3);
+            thisFace.vertex_coord_vec = [];
             for (let i = 0; i < Nodes.Length(); i++) {
                 const p = Nodes.Value(i + 1).Transformed(aLocation.Transformation());
                 thisFace.vertex_coord[(i * 3) + 0] = p.X();
                 thisFace.vertex_coord[(i * 3) + 1] = p.Y();
                 thisFace.vertex_coord[(i * 3) + 2] = p.Z();
+                thisFace.vertex_coord_vec.push([p.X(), p.Y(), p.Z()]);
             }
 
             // write normal buffer
@@ -817,19 +832,20 @@ class CacheHelper {
     argCache = {};
 
     cleanUpCache(): void {
-        const usedHashKeys = Object.keys(this.usedHashes);
+        let usedHashKeys = Object.keys(this.usedHashes);
         const hashesFromPreviousRunKeys = Object.keys(this.hashesFromPreviousRun);
-
-        usedHashKeys.forEach(hash => {
-            if (!hashesFromPreviousRunKeys.find(h => h === hash)) {
-                if (this.argCache[hash]) {
-                    this.argCache[hash].delete();
-                    delete this.argCache[hash];
-                }
-                delete this.usedHashes[hash];
-            }
+        const newArgsCache = {};
+        const newUsedHashKeys = {};
+        hashesFromPreviousRunKeys.forEach(hash => {
+            newArgsCache[hash] = this.argCache[hash];
+            newUsedHashKeys[hash] = this.usedHashes[hash];
+            usedHashKeys = usedHashKeys.filter(h => h === hash);
         });
-
+        usedHashKeys.forEach(hash => {
+                this.argCache[hash].delete();
+        });
+        this.argCache = newArgsCache;
+        this.usedHashes = newUsedHashKeys;
         this.hashesFromPreviousRun = {};
     }
 

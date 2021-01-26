@@ -2,34 +2,6 @@
 // tslint:disable-next-line: no-namespace
 export namespace OCC {
     // Can't use BabylonJS types here as that crashes worker, which tries to include them
-    export class DrawBrepDto {
-        /**
-         * Provide options without default values
-         */
-        constructor(shape?: any) {
-            this.shape = shape;
-        }
-        /**
-         * Brep OpenCascade geometry
-         */
-        shape: any;
-        /**
-         * Value between 0 and 1
-         */
-        opacity = 1;
-        /**
-         * Hex colour string
-         */
-        colour = '#444444';
-        /**
-         * Indicates wether the position of this surface will change in time
-         */
-        updatable = false;
-        /**
-         * Brep mesh variable in case it already exists and needs updating
-         */
-        brepMesh?: any;
-    }
     export class DrawShapeDto {
         /**
          * Provide options without default values
@@ -86,7 +58,7 @@ export namespace OCC {
          */
         precision = 0.05;
         /**
-         * Draw indexes can be drawn as tags
+         * Draw index of edges in space
          */
         drawEdgeIndexes = false;
         /**
@@ -97,6 +69,18 @@ export namespace OCC {
          * Edge index colour if the edges are drawn
          */
         edgeIndexColour = '#ff00ff';
+        /**
+         * Draw indexes of faces in space
+         */
+        drawFaceIndexes = false;
+        /**
+         * Indicates the edge index height if they are drawn
+         */
+        faceIndexHeight = 0.06;
+        /**
+         * Edge index colour if the edges are drawn
+         */
+        faceIndexColour = '#0000ff';
     }
 
     export class PolygonDto {

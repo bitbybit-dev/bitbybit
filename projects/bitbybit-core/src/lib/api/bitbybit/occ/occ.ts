@@ -59,134 +59,6 @@ export class OCC {
 
         return prom;
     }
-
-    /**
-     * Draws a Brep solid
-     * <div>
-     *  <img src="../assets/images/blockly-images/occ/drawBrep.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_occ.occ.html#drawbrep
-     * @param inputs Contains a brep to be drawn and options
-     * @returns BabylonJS Mesh
-     */
-    drawBrep(inputs: Inputs.OCC.DrawBrepDto): Mesh {
-        const brepMesh = MeshBuilder.CreateBox('brepMesh' + Math.random(), { size: 0.01 }, this.context.scene);
-        brepMesh.isVisible = false;
-
-        const ExpFace = new this.context.occ.TopExp_Explorer_1();
-        for (ExpFace.Init(inputs.shape,
-            this.context.occ.TopAbs_ShapeEnum.TopAbs_FACE,
-            this.context.occ.TopAbs_ShapeEnum.TopAbs_SHAPE);
-            ExpFace.More();
-            ExpFace.Next()) {
-            const myShape = ExpFace.Current();
-            const myFace = this.context.occ.TopoDS.Face_1(myShape);
-            let inc;
-            try {
-                // in case some of the faces can not been visualized
-                inc = new this.context.occ.BRepMesh_IncrementalMesh_2(myFace, 0.1, false, 0.5, false);
-            } catch (e) {
-                console.error('face visualizi<ng failed');
-                continue;
-            }
-
-            const aLocation = new this.context.occ.TopLoc_Location_1();
-            const myT = this.context.occ.BRep_Tool.Triangulation(myFace, aLocation);
-            if (myT.IsNull()) {
-                continue;
-            }
-
-
-            const pc = new this.context.occ.Poly_Connect_2(myT);
-            const Nodes = myT.get().Nodes();
-
-            const vertices = new Float32Array(Nodes.Length() * 3);
-
-            // write vertex buffer
-            for (let i = Nodes.Lower(); i <= Nodes.Upper(); i++) {
-                const t1 = aLocation.Transformation();
-                const p = Nodes.Value(i);
-                const p1 = p.Transformed(t1);
-                vertices[3 * (i - 1)] = p.X();
-                vertices[3 * (i - 1) + 1] = p.Y();
-                vertices[3 * (i - 1) + 2] = p.Z();
-                p.delete();
-                t1.delete();
-                p1.delete();
-            }
-            // write normal buffer
-            const myNormal = new this.context.occ.TColgp_Array1OfDir_2(Nodes.Lower(), Nodes.Upper());
-            this.context.occ.StdPrs_ToolTriangulatedShape.Normal(myFace, pc, myNormal);
-
-            const normals = new Float32Array(myNormal.Length() * 3);
-            for (let i = myNormal.Lower(); i <= myNormal.Upper(); i++) {
-                const t1 = aLocation.Transformation();
-                const d1 = myNormal.Value(i);
-                const d = d1.Transformed(t1);
-
-                normals[3 * (i - 1)] = d.X();
-                normals[3 * (i - 1) + 1] = d.Y();
-                normals[3 * (i - 1) + 2] = d.Z();
-
-                t1.delete();
-                d1.delete();
-                d.delete();
-            }
-
-            myNormal.delete();
-
-            // write triangle buffer
-            const orient = myFace.Orientation_1();
-            const triangles = myT.get().Triangles();
-
-            let indices;
-            const triLength = triangles.Length() * 3;
-            if (triLength > 65535) {
-                indices = new Uint32Array(triLength);
-            }
-            else {
-                indices = new Uint16Array(triLength);
-            }
-
-            for (let nt = 1; nt <= myT.get().NbTriangles(); nt++) {
-                const t = triangles.Value(nt);
-                let n1 = t.Value(1);
-                let n2 = t.Value(2);
-                const n3 = t.Value(3);
-                if (orient !== this.context.occ.TopAbs_Orientation.TopAbs_FORWARD) {
-                    const tmp = n1;
-                    n1 = n2;
-                    n2 = tmp;
-                }
-
-                indices[3 * (nt - 1)] = n1 - 1;
-                indices[3 * (nt - 1) + 1] = n2 - 1;
-                indices[3 * (nt - 1) + 2] = n3 - 1;
-                t.delete();
-            }
-
-            triangles.delete();
-
-            const mesh = this.geometryHelper.createOrUpdateSurfaceMesh({
-                positions: vertices as any,
-                normals: normals as any,
-                indices,
-            }, inputs.brepMesh, inputs.updatable, inputs.opacity, inputs.colour);
-
-            mesh.parent = brepMesh;
-
-            Nodes.delete();
-            pc.delete();
-            aLocation.delete();
-            myT.delete();
-            inc.delete();
-            myFace.delete();
-            myShape.delete();
-        }
-        ExpFace.delete();
-        return brepMesh;
-    }
-
     /**
      * Draws OpenCascade shape by going through faces and edges
      * <div>
@@ -204,6 +76,7 @@ export class OCC {
                 number_of_triangles: number;
                 tri_indexes: number[];
                 vertex_coord: number[];
+                vertex_coord_vec: number[][];
             }[],
             edgeList: {
                 edge_index: number;
@@ -252,7 +125,7 @@ export class OCC {
                                 c[1] + 0.05,
                                 0];
                         });
-                        const movedOnPosition = res.map(r => this.vector.add({first: r, second: edgeMiddle}));
+                        const movedOnPosition = res.map(r => this.vector.add({ first: r, second: edgeMiddle }));
                         return movedOnPosition;
                     });
 
@@ -262,6 +135,32 @@ export class OCC {
                 const edgeMesh = this.geometryHelper.drawPolylines(null, textPolylines, false, 0.2, 1, inputs.edgeIndexColour);
                 edgeMesh.parent = shapeMesh;
                 edgeMesh.material.zOffset = -2;
+            }
+            if (inputs.drawFaceIndexes) {
+                const textPolylines: number[][][] = [];
+                fe.faceList.forEach(face => {
+                    const faceMiddle = this.computeFaceMiddlePos(face.vertex_coord_vec);
+                    const tdto = new Inputs.Solid.TextDto();
+                    tdto.text = `${face.face_index}`;
+                    tdto.height = inputs.faceIndexHeight;
+                    tdto.lineSpacing = 1.5;
+                    const t = this.solidText.createVectorText(tdto);
+                    const texts = t.map(s => {
+                        const res = s.map(c => {
+                            return [
+                                c[0],
+                                c[1] + 0.05,
+                                0];
+                        });
+                        const movedOnPosition = res.map(r => this.vector.add({ first: r, second: faceMiddle }));
+                        return movedOnPosition;
+                    });
+                    texts.forEach(te => textPolylines.push(te));
+                });
+
+                const faceMesh = this.geometryHelper.drawPolylines(null, textPolylines, false, 0.2, 1, inputs.faceIndexColour);
+                faceMesh.parent = shapeMesh;
+                faceMesh.material.zOffset = -2;
             }
             return shapeMesh;
         });
@@ -534,5 +433,27 @@ export class OCC {
      */
     getWire(inputs: Inputs.OCC.ShapeIndexDto): any {
         return this.genericCallToWorkerPromise('getWire', inputs);
+    }
+
+    private computeFaceMiddlePos(vertexCoordVec: number[][]): number[] {
+        const length = vertexCoordVec.length;
+        console.log(length);
+        console.log(vertexCoordVec);
+
+        let x = 0;
+        let y = 0;
+        let z = 0;
+        for (let i = 0; i < length - 1; i++) {
+            const v = vertexCoordVec[i];
+            x += v[0];
+            y += v[1];
+            z += v[2];
+        }
+        console.log('x:', x);
+        console.log('y:', y);
+        console.log('z:', z);
+
+
+        return [x / length, y / length, z / length];
     }
 }

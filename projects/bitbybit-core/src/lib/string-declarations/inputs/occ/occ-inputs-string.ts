@@ -2,32 +2,6 @@ import { simplifyDeclaration } from '../../simplify-declaration';
 
 export const occInputsString = simplifyDeclaration(`
 export declare namespace OCC {
-    class DrawBrepDto {
-        /**
-         * Provide options without default values
-         */
-        constructor(shape?: any);
-        /**
-         * Brep OpenCascade geometry
-         */
-        shape: any;
-        /**
-         * Value between 0 and 1
-         */
-        opacity: number;
-        /**
-         * Hex colour string
-         */
-        colour: string;
-        /**
-         * Indicates wether the position of this surface will change in time
-         */
-        updatable: boolean;
-        /**
-         * Brep mesh variable in case it already exists and needs updating
-         */
-        brepMesh?: any;
-    }
     class DrawShapeDto {
         /**
          * Provide options without default values
@@ -93,6 +67,18 @@ export declare namespace OCC {
          * Edge index colour if the edges are drawn
          */
         edgeIndexColour: string;
+        /**
+         * Draw indexes of faces in space
+         */
+        drawFaceIndexes = false;
+        /**
+         * Indicates the edge index height if they are drawn
+         */
+        faceIndexHeight = 0.06;
+        /**
+         * Edge index colour if the edges are drawn
+         */
+        faceIndexColour = '#0000ff';
     }
     class PolygonDto {
         /**
