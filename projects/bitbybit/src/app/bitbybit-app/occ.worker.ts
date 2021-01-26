@@ -490,6 +490,28 @@ export class Occ {
         return difference;
     }
 
+    intersection(inputs: Inputs.OCC.IntersectionDto): any {
+        if(inputs.shapes.length < 2) {
+            throw(new Error('Less than 2 shapes provided for intersection'));
+        }
+
+        let intersected = inputs.shapes[0];
+        for (let i = 1; i < inputs.shapes.length; i++) {
+            const intersectedCommon = new this.occ.BRepAlgoAPI_Common_3(intersected, inputs.shapes[i]);
+            intersectedCommon.Build();
+            intersected = intersectedCommon.Shape();
+        }
+
+        if (!inputs.keepEdges) {
+            const fusor = new this.occ.ShapeUpgrade_UnifySameDomain_2(intersected, true, true, false);
+            fusor.Build();
+            intersected = fusor.Shape();
+        }
+
+        return intersected;
+    }
+
+
     shapeToMesh(shape, maxDeviation): {
         faceList: {
             face_index: number;

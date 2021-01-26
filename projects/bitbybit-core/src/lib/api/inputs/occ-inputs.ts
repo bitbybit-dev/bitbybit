@@ -259,4 +259,15 @@ export namespace OCC {
          */
         keepEdges: boolean;
     }
+
+    export class IntersectionDto {
+        /**
+         * Shapes to intersect
+         */
+        shapes: any[];
+        /**
+         * Keep the edges
+         */
+        keepEdges: boolean;
+    }
 }

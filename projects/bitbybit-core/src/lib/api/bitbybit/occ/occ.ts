@@ -496,4 +496,17 @@ export class OCC {
     difference(inputs: Inputs.OCC.DifferenceDto): any {
         return this.genericCallToWorkerPromise('difference', inputs);
     }
+
+    /**
+     * Does boolean intersection operation between a main shape and given shapes
+     * <div>
+     *  <img src="../assets/images/blockly-images/occ/difference.svg" alt="Blockly Image"/>
+     * </div>
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occ.occ.html#difference
+     * @param inputs Main shape and shapes to differ
+     * @returns OpenCascade difference shape
+     */
+    intersection(inputs: Inputs.OCC.IntersectionDto): any {
+        return this.genericCallToWorkerPromise('intersection', inputs);
+    }
 }
