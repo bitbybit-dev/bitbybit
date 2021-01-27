@@ -377,6 +377,19 @@ export class OCC {
     }
 
     /**
+     * Chamfer OpenCascade Shape edges
+     * <div>
+     *  <img src="../assets/images/blockly-images/occ/chamferEdges.svg" alt="Blockly Image"/>
+     * </div>
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occ.occ.html#chamferedges
+     * @param inputs Shape, distance and edge indexes to fillet
+     * @returns OpenCascade shape with filleted edges
+     */
+    chamferEdges(inputs: Inputs.OCC.ChamferDto): any {
+        return this.genericCallToWorkerPromise('chamferEdges', inputs);
+    }
+
+    /**
      * Joins separate objects
      * <div>
      *  <img src="../assets/images/blockly-images/occ/union.svg" alt="Blockly Image"/>

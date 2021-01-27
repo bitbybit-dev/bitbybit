@@ -180,15 +180,6 @@ export class Occ {
         private readonly och: OccHelper) {
     }
 
-    /**
-     * Creates OpenCascade Polygon wire
-     * <div>
-     *  <img src="../assets/images/blockly-images/occ/createPolygonWire.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_occ.occ.html#createpolygonwire
-     * @param inputs Polygon points
-     * @returns OpenCascade polygon wire shape
-     */
     createPolygonWire(inputs: Inputs.OCC.PolygonDto): any {
         const gpPoints = [];
         for (let ind = 0; ind < inputs.points.length; ind++) {
@@ -213,41 +204,14 @@ export class Occ {
         return polygonWire.Wire();
     }
 
-    /**
-     * Creates OpenCascade Polygon face
-     * <div>
-     *  <img src="../assets/images/blockly-images/occ/createPolygonFace.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_occ.occ.html#createpolygonface
-     * @param inputs Polygon points
-     * @returns OpenCascade polygon face
-     */
     createPolygonFace(inputs: Inputs.OCC.PolygonDto): any {
         return this.och.bRepBuilderAPIMakeFace(this.createPolygonWire(inputs), false);
     }
 
-    /**
-     * Creates OpenCascade Box
-     * <div>
-     *  <img src="../assets/images/blockly-images/occ/createBox.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_occ.occ.html#createbox
-     * @param inputs Box size and center
-     * @returns OpenCascade Box
-     */
     createBox(inputs: Inputs.OCC.BoxDto): any {
         return this.och.bRepPrimAPIMakeBox(inputs.width, inputs.length, inputs.height, inputs.center);
     }
 
-    /**
-     * Creates OpenCascade Cylinder
-     * <div>
-     *  <img src="../assets/images/blockly-images/occ/createCylinder.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_occ.occ.html#createcylinder
-     * @param inputs Cylinder parameters
-     * @returns OpenCascade Cylinder
-     */
     createCylinder(inputs: Inputs.OCC.CylinderDto): any {
         return this.och.bRepPrimAPIMakeCylinder(
             [inputs.center[0], -inputs.height / 2 + inputs.center[1], inputs.center[2]],
@@ -257,15 +221,6 @@ export class Occ {
         );
     }
 
-    /**
-     * Creates OpenCascade BSPline wire
-     * <div>
-     *  <img src="../assets/images/blockly-images/occ/createBSpline.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_occ.occ.html#createbspline
-     * @param inputs Points through which to make BSpline
-     * @returns OpenCascade BSpline wire
-     */
     createBSpline(inputs: Inputs.OCC.BSplineDto): any {
         const ptList = new this.occ.TColgp_Array1OfPnt_2(1, inputs.points.length + (inputs.closed ? 1 : 0));
         for (let pIndex = 1; pIndex <= inputs.points.length; pIndex++) {
@@ -281,16 +236,6 @@ export class Occ {
         return new this.occ.BRepBuilderAPI_MakeWire_2(edge).Wire();
     }
 
-
-    /**
-     * Creates OpenCascade Bezier wire
-     * <div>
-     *  <img src="../assets/images/blockly-images/occ/createBezier.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_occ.occ.html#createbezier
-     * @param inputs Points through which to make bezier curve
-     * @returns OpenCascade Bezier wire
-     */
     createBezier(inputs: Inputs.OCC.BezierDto): any {
         const ptList = new this.occ.TColgp_Array1OfPnt_2(1, inputs.points.length + (inputs.closed ? 1 : 0));
         for (let pIndex = 1; pIndex <= inputs.points.length; pIndex++) {
@@ -305,41 +250,14 @@ export class Occ {
         return new this.occ.BRepBuilderAPI_MakeWire_2(edge).Wire();
     }
 
-    /**
-     * Creates OpenCascade circle wire
-     * <div>
-     *  <img src="../assets/images/blockly-images/occ/createCircleWire.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_occ.occ.html#createcirclewire
-     * @param inputs Circle parameters
-     * @returns OpenCascade circle wire
-     */
     createCircleWire(inputs: Inputs.OCC.CircleDto): any {
         return this.createCircle(inputs.radius, inputs.center, false);
     }
 
-    /**
-     * Creates OpenCascade circle face
-     * <div>
-     *  <img src="../assets/images/blockly-images/occ/createCircleFace.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_occ.occ.html#createcircleface
-     * @param inputs Circle parameters
-     * @returns OpenCascade circle face
-     */
     createCircleFace(inputs: Inputs.OCC.CircleDto): any {
         return this.createCircle(inputs.radius, inputs.center, true);
     }
 
-    /**
-     * Lofts wires into a shell
-     * <div>
-     *  <img src="../assets/images/blockly-images/occ/loft.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_occ.occ.html#loft
-     * @param inputs Circle parameters
-     * @returns Resulting loft shell
-     */
     loft(inputs: Inputs.OCC.LoftDto): any {
         const pipe = new this.occ.BRepOffsetAPI_ThruSections(inputs.shape, false, 1.0e-06);
         inputs.wires.forEach((wire) => { pipe.AddWire(wire); });
@@ -347,15 +265,6 @@ export class Occ {
         return pipe.Shape();
     }
 
-    /**
-     * Offset for various shapes
-     * <div>
-     *  <img src="../assets/images/blockly-images/occ/offset.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_occ.occ.html#offset
-     * @param inputs Shape to offset and distance with tolerance
-     * @returns Resulting offset shape
-     */
     offset(inputs: Inputs.OCC.OffsetDto): any {
         if (!inputs.tolerance) { inputs.tolerance = 0.1; }
         if (inputs.offsetDistance === 0.0) { return inputs.shape; }
@@ -390,26 +299,9 @@ export class Occ {
             );
         }
         let offsetShape = offset.Shape();
-
-        // Convert Shell to Solid as is expected - it's not necessarily expected
-        // if (offsetShape.ShapeType() === this.occ.TopAbs_ShapeEnum.TopAbs_SHELL) {
-        //     const solidOffset = new this.occ.BRepBuilderAPI_MakeSolid_1();
-        //     solidOffset.Add(offsetShape);
-        //     offsetShape = solidOffset.Solid();
-        // }
-
         return offsetShape;
     }
 
-    /**
-     * Extrudes the face along direction
-     * <div>
-     *  <img src="../assets/images/blockly-images/occ/extrude.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_occ.occ.html#extrude
-     * @param inputs Face to extrude and direction parameter with tolerance
-     * @returns Resulting extruded solid
-     */
     extrude(inputs: Inputs.OCC.ExtrudeDto): any {
         return new this.occ.BRepPrimAPI_MakePrism_1(
             inputs.shape,
@@ -419,30 +311,12 @@ export class Occ {
         ).Shape();
     }
 
-    /**
-     * Creates OpenCascade Sphere
-     * <div>
-     *  <img src="../assets/images/blockly-images/occ/createSphere.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_occ.occ.html#createsphere
-     * @param inputs Sphere radius and center
-     * @returns OpenCascade Sphere
-     */
     createSphere(inputs: Inputs.OCC.SphereDto): any {
         return this.och.bRepPrimAPIMakeSphere(inputs.center, [0., 0., 1.], inputs.radius);
     }
 
-    /**
-     * Fillets OpenCascade Shapes
-     * <div>
-     *  <img src="../assets/images/blockly-images/occ/filletEdges.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_occ.occ.html#filletedges
-     * @param inputs Shape, radius and edge indexes to fillet
-     * @returns OpenCascade shape with filleted edges
-     */
     filletEdges(inputs: Inputs.OCC.FilletDto): any {
-        if (inputs.filletAll) {
+        if (inputs.all) {
             const mkFillet = new this.occ.BRepFilletAPI_MakeFillet(
                 inputs.shape, this.occ.ChFi3d_FilletShape.ChFi3d_Rational
             );
@@ -478,6 +352,45 @@ export class Occ {
             return curFillet;
         }
     }
+
+    chamferEdges(inputs: Inputs.OCC.ChamferDto): any {
+        if (inputs.all) {
+            const mkChamfer = new this.occ.BRepFilletAPI_MakeChamfer(
+                inputs.shape
+            );
+            const anEdgeExplorer = new this.occ.TopExp_Explorer_2(
+                inputs.shape, this.occ.TopAbs_ShapeEnum.TopAbs_EDGE, this.occ.TopAbs_ShapeEnum.TopAbs_SHAPE
+            );
+            while (anEdgeExplorer.More()) {
+                const anEdge = new this.occ.TopoDS.Edge_1(anEdgeExplorer.Current());
+                mkChamfer.Add_2(inputs.distance, anEdge);
+                anEdgeExplorer.Next();
+            }
+            inputs.shape = mkChamfer.Shape();
+            return inputs.shape;
+        } else {
+            const mkChamfer = new this.occ.BRepFilletAPI_MakeChamfer(
+                inputs.shape
+            );
+            let foundEdges = 0;
+            let curFillet;
+            this.forEachEdge(inputs.shape, (index, edge) => {
+                if (inputs.edgeList.includes(index)) {
+                    mkChamfer.Add_2(inputs.distance, edge);
+                    foundEdges++;
+                }
+            });
+            if (foundEdges === 0) {
+                console.error('Fillet Edges Not Found!  Make sure you are looking at the object _before_ the Fillet is applied!');
+                curFillet = inputs.shape.Solid();
+            }
+            else {
+                curFillet = mkChamfer.Shape();
+            }
+            return curFillet;
+        }
+    }
+
 
     /**
      * Joins separate objects
@@ -957,6 +870,33 @@ export class Occ {
         }
     }
 
+    private forEachShell(shape, callback): any {
+        let faceIndex = 0;
+        const anExplorer = new this.occ.TopExp_Explorer_2(
+            shape,
+            this.occ.TopAbs_ShapeEnum.TopAbs_SHELL,
+            this.occ.TopAbs_ShapeEnum.TopAbs_SHAPE
+        );
+        for (anExplorer.Init(shape, this.occ.TopAbs_ShapeEnum.TopAbs_SHELL, this.occ.TopAbs_ShapeEnum.TopAbs_SHAPE);
+            anExplorer.More();
+            anExplorer.Next()) {
+            callback(faceIndex++, this.occ.TopoDS.Shell_1(anExplorer.Current()));
+        }
+    }
+
+    private forEachVertex(shape, callback): any {
+        let faceIndex = 0;
+        const anExplorer = new this.occ.TopExp_Explorer_2(
+            shape,
+            this.occ.TopAbs_ShapeEnum.TopAbs_VERTEX,
+            this.occ.TopAbs_ShapeEnum.TopAbs_SHAPE
+        );
+        for (anExplorer.Init(shape, this.occ.TopAbs_ShapeEnum.TopAbs_VERTEX, this.occ.TopAbs_ShapeEnum.TopAbs_SHAPE);
+            anExplorer.More();
+            anExplorer.Next()) {
+            callback(faceIndex++, this.occ.TopoDS.Vertex_1(anExplorer.Current()));
+        }
+    }
     private createCircle(radius: number, center: number[], wire: boolean): any {
         const circle = this.och.gcMakeCircle(center, [0, 0, 1], radius);
         const edge = this.och.bRepBuilderAPIMakeEdge(circle);

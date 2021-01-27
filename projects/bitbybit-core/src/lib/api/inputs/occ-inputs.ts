@@ -148,7 +148,25 @@ export namespace OCC {
         /**
          * If this setting is set to true, edgeList will be ignored
          */
-        filletAll = false;
+        all = false;
+    }
+    export class ChamferDto {
+        /**
+         * Shape to apply the chamfer
+         */
+        shape: any;
+        /**
+         * Distance for the chamfer
+         */
+        distance: number;
+        /**
+         * List of edge indexes to which apply the chamfer
+         */
+        edgeList: number[];
+        /**
+         * If this setting is set to true, edgeList will be ignored
+         */
+        all = false;
     }
     export class BSplineDto {
         /**
