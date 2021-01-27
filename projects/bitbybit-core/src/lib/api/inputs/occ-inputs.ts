@@ -306,6 +306,20 @@ export namespace OCC {
          */
         copy = false;
     }
+    export class PipeDto {
+        constructor(shape?: any, shapes?: number[]) {
+            this.shape = shape;
+            this.shapes = shapes;
+        }
+        /**
+         * The wire path
+         */
+        shape: any;
+        /**
+         * Shapes along the path to be piped
+         */
+        shapes: any;
+    }
     export class ExtrudeDto {
         constructor(shape?: any, direction?: number[]) {
             this.shape = shape;

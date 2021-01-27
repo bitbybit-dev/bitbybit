@@ -180,6 +180,16 @@ export declare class OCC {
      * @param inputs Shape, radius and edge indexes to fillet
      * @returns OpenCascade shape with filleted edges
      */
+    /**
+     * Pipe shapes along the wire
+     * <div>
+     *  <img src="../assets/images/blockly-images/occ/pipe.svg" alt="Blockly Image"/>
+     * </div>
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occ.occ.html#pipe
+     * @param inputs Path wire and shapes along the path
+     * @returns OpenCascade shape
+     */
+    pipe(inputs: Inputs.OCC.PipeDto): any;
     filletEdges(inputs: Inputs.OCC.FilletDto): any;
     /**
      * Chamfer OpenCascade Shape edges

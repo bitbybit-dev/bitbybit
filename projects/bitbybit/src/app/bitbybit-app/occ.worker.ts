@@ -145,7 +145,7 @@ class OccHelper {
     }
 
     bRepBuilderAPIMakeFace(wire: any, planar: boolean): any {
-        return new this.occ.BRepBuilderAPI_MakeFace_14(wire, planar).Face();
+        return new this.occ.BRepBuilderAPI_MakeFace_15(wire, planar).Face();
     }
 
     bRepPrimAPIMakeSphere(center: number[], direction: number[], radius: number): any {
@@ -251,11 +251,11 @@ export class Occ {
     }
 
     createCircleWire(inputs: Inputs.OCC.CircleDto): any {
-        return this.createCircle(inputs.radius, inputs.center, false);
+        return this.createCircle(inputs.radius, inputs.center, true);
     }
 
     createCircleFace(inputs: Inputs.OCC.CircleDto): any {
-        return this.createCircle(inputs.radius, inputs.center, true);
+        return this.createCircle(inputs.radius, inputs.center, false);
     }
 
     loft(inputs: Inputs.OCC.LoftDto): any {
@@ -327,6 +327,16 @@ export class Occ {
                 inputs.degrees * 0.0174533, inputs.copy).Shape();
         }
         return result;
+    }
+
+    pipe(inputs: Inputs.OCC.PipeDto): any {
+        const pipe = new this.occ.BRepOffsetAPI_MakePipeShell(inputs.shape);
+        inputs.shapes.forEach(sh => {
+            pipe.Add_1(sh, false, false);
+        });
+        pipe.Build();
+        pipe.MakeSolid();
+        return pipe.Shape();
     }
 
     createSphere(inputs: Inputs.OCC.SphereDto): any {
@@ -922,7 +932,7 @@ export class Occ {
         if (wire) {
             return circleWire;
         }
-        return this.och.bRepBuilderAPIMakeFace(wire, true);
+        return this.och.bRepBuilderAPIMakeFace(circleWire, true);
     }
 
     private isArrayLike(item): any {

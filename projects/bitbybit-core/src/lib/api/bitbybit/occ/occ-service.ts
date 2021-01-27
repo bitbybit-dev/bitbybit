@@ -35,7 +35,7 @@ export class OCCService {
     }
 
     bRepBuilderAPIMakeFace(wire: any, planar: boolean): any {
-        return new this.c.occ.BRepBuilderAPI_MakeFace_14(wire, planar).Face();
+        return new this.c.occ.BRepBuilderAPI_MakeFace_15(wire, planar).Face();
     }
 
     bRepPrimAPIMakeSphere(center: number[], direction: number[], radius: number): any {

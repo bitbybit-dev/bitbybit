@@ -1,12 +1,17 @@
 import { simplifyDeclaration } from '../../simplify-declaration';
 
 export const occInputsString = simplifyDeclaration(`
-export declare namespace OCC {
-    class DrawShapeDto {
+
+// tslint:disable-next-line: no-namespace
+export namespace OCC {
+    // Can't use BabylonJS types here as that crashes worker, which tries to include them
+    export class DrawShapeDto {
         /**
          * Provide options without default values
          */
-        constructor(shape?: any);
+        constructor(shape?: any) {
+            this.shape = shape;
+        }
         /**
          * Brep OpenCascade geometry
          */
@@ -14,35 +19,35 @@ export declare namespace OCC {
         /**
          * Face opacity value between 0 and 1
          */
-        faceOpacity: number;
+        faceOpacity = 1;
         /**
          * Edge opacity value between 0 and 1
          */
-        edgeOpacity: number;
+        edgeOpacity = 1;
         /**
          * Hex colour string for the edges
          */
-        edgeColour: string;
+        edgeColour = '#000000';
         /**
          * Hex colour string for face colour
          */
-        faceColour: string;
+        faceColour = '#ffffff';
         /**
          * Edge width
          */
-        edgeWidth: number;
+        edgeWidth = 2;
         /**
          * Indicates wether the position of this surface will change in time
          */
-        updatable: boolean;
+        updatable = false;
         /**
          * You can turn off drawing of edges via this property
          */
-        drawEdges: boolean;
+        drawEdges = true;
         /**
          * You can turn off drawing of faces via this property
          */
-        drawFaces: boolean;
+        drawFaces = true;
         /**
          * Brep mesh variable in case it already exists and needs updating
          */
@@ -54,41 +59,52 @@ export declare namespace OCC {
         /**
          * Precision
          */
-        precision: number;
+        precision = 0.05;
         /**
          * Draw index of edges in space
          */
-        drawEdgeIndexes: boolean;
+        drawEdgeIndexes = false;
         /**
          * Indicates the edge index height if they are drawn
          */
-        edgeIndexHeight: number;
+        edgeIndexHeight = 0.06;
         /**
          * Edge index colour if the edges are drawn
          */
-        edgeIndexColour: string;
+        edgeIndexColour = '#ff00ff';
         /**
          * Draw indexes of faces in space
          */
-        drawFaceIndexes: boolean;
+        drawFaceIndexes = false;
         /**
          * Indicates the edge index height if they are drawn
          */
-        faceIndexHeight: number;
+        faceIndexHeight = 0.06;
         /**
          * Edge index colour if the edges are drawn
          */
-        faceIndexColour: string;
+        faceIndexColour = '#0000ff';
     }
-    class PolygonDto {
-        constructor(points?: number[][]);
+
+    export class PolygonDto {
+        constructor(points?: number[][]) {
+            this.points = points;
+        }
         /**
          * Points points
          */
         points: number[][];
     }
-    class BoxDto {
-        constructor(width?: number, length?: number, height?: number, center?: number[]);
+
+    export class BoxDto {
+        constructor(width?: number, length?: number, height?: number, center?: number[]) {
+            this.width = width;
+            this.length = length;
+            this.height = height;
+            if (center) {
+                this.center = center;
+            }
+        }
         /**
          * Width of the box
          */
@@ -104,10 +120,15 @@ export declare namespace OCC {
         /**
          * Center of the box
          */
-        center: number[];
+        center = [0, 0, 0];
     }
-    class SphereDto {
-        constructor(radius?: number, center?: number[]);
+    export class SphereDto {
+        constructor(radius?: number, center?: number[]) {
+            this.radius = radius;
+            if (center) {
+                this.center = center;
+            }
+        }
         /**
          * Radius of the sphere
          */
@@ -115,9 +136,9 @@ export declare namespace OCC {
         /**
          * Center of the sphere
          */
-        center: number[];
+        center = [0, 0, 0];
     }
-    class CylinderDto {
+    export class CylinderDto {
         /**
          * Radius of the cylinder
          */
@@ -129,10 +150,15 @@ export declare namespace OCC {
         /**
          * Center of the cylinder
          */
-        center: number[];
+        center = [0, 0, 0];
     }
-    class FilletDto {
-        constructor(shape?: any, radius?: number, edgeList?: number[], all?: boolean);
+    export class FilletDto {
+        constructor(shape?: any, radius?: number, edgeList?: number[], all?: boolean) {
+            this.shape = shape;
+            this.radius = radius;
+            this.edgeList = edgeList;
+            this.all = all;
+        }
         /**
          * Shape to apply the fillets
          */
@@ -144,14 +170,19 @@ export declare namespace OCC {
         /**
          * List of edge indexes to which apply the fillet
          */
-        edgeList: any[];
+        edgeList = [];
         /**
          * If this setting is set to true, edgeList will be ignored
          */
-        all: boolean;
+        all = false;
     }
-    class ChamferDto {
-        constructor(shape?: any, distance?: number, edgeList?: number[], all?: boolean);
+    export class ChamferDto {
+        constructor(shape?: any, distance?: number, edgeList?: number[], all?: boolean) {
+            this.shape = shape;
+            this.distance = distance;
+            this.edgeList = edgeList;
+            this.all = all;
+        }
         /**
          * Shape to apply the chamfer
          */
@@ -167,10 +198,13 @@ export declare namespace OCC {
         /**
          * If this setting is set to true, edgeList will be ignored
          */
-        all: boolean;
+        all = false;
     }
-    class BSplineDto {
-        constructor(points?: number[][], closed?: boolean);
+    export class BSplineDto {
+        constructor(points?: number[][], closed?: boolean) {
+            this.points = points;
+            this.closed = closed;
+        }
         /**
          * Points through which the BSpline will be created
          */
@@ -180,8 +214,13 @@ export declare namespace OCC {
          */
         closed: boolean;
     }
-    class BezierDto {
-        constructor(points?: number[][], weights?: number[], closed?: boolean);
+
+    export class BezierDto {
+        constructor(points?: number[][], weights?: number[], closed?: boolean) {
+            this.points = points;
+            this.weights = weights;
+            this.closed = closed;
+        }
         /**
          * Points through which the Bezier curve will be created
          */
@@ -195,8 +234,11 @@ export declare namespace OCC {
          */
         closed: boolean;
     }
-    class CircleDto {
-        constructor(radius?: number, center?: number[]);
+    export class CircleDto {
+        constructor(radius?: number, center?: number[]) {
+            this.radius = radius;
+            this.center = center;
+        }
         /**
          * Radius of the circle
          */
@@ -206,8 +248,11 @@ export declare namespace OCC {
          */
         center: number[];
     }
-    class LoftDto {
-        constructor(shapes?: any[], makeSolid?: boolean);
+    export class LoftDto {
+        constructor(shapes?: any[], makeSolid?: boolean) {
+            this.shapes = shapes;
+            this.makeSolid = makeSolid;
+        }
         /**
          * Wires through which the loft passes
          */
@@ -215,10 +260,16 @@ export declare namespace OCC {
         /**
          * Tries to make a solid when lofting
          */
-        makeSolid: boolean;
+        makeSolid = false;
     }
-    class OffsetDto {
-        constructor(shape?: any, distance?: number, tolerance?: number);
+    export class OffsetDto {
+        constructor(shape?: any, distance?: number, tolerance?: number) {
+            this.shape = shape;
+            this.distance = distance;
+            if (tolerance) {
+                this.tolerance = tolerance;
+            }
+        }
         /**
          * Shape to offset
          */
@@ -230,10 +281,17 @@ export declare namespace OCC {
         /**
          * Offset tolerance
          */
-        tolerance: number;
+        tolerance = 0.1;
     }
-    class RevolveDto {
-        constructor(shape?: any, degrees?: number, direction?: number[], copy?: boolean);
+    export class RevolveDto {
+        constructor(shape?: any, degrees?: number, direction?: number[], copy?: boolean) {
+            this.shape = shape;
+            this.degrees = degrees;
+            this.direction = direction;
+            if (this.copy) {
+                this.copy = copy;
+            }
+        }
         /**
          * Shape to revolve
          */
@@ -249,10 +307,27 @@ export declare namespace OCC {
         /**
          * Copy original shape
          */
-        copy: boolean;
+        copy = false;
     }
-    class ExtrudeDto {
-        constructor(shape?: any, direction?: number[]);
+    export class PipeDto {
+        constructor(shape?: any, shapes?: number[]) {
+            this.shape = shape;
+            this.shapes = shapes;
+        }
+        /**
+         * The wire path
+         */
+        shape: any;
+        /**
+         * Shapes along the path to be piped
+         */
+        shapes: any;
+    }
+    export class ExtrudeDto {
+        constructor(shape?: any, direction?: number[]) {
+            this.shape = shape;
+            this.direction = direction;
+        }
         /**
          * Face to extrude
          */
@@ -262,8 +337,11 @@ export declare namespace OCC {
          */
         direction: number[];
     }
-    class UnionDto {
-        constructor(shapes?: any[], keepEdges?: boolean);
+    export class UnionDto {
+        constructor(shapes?: any[], keepEdges?: boolean) {
+            this.shapes = shapes;
+            this.keepEdges = keepEdges;
+        }
         /**
          * Objects to be joined together
          */
@@ -271,10 +349,14 @@ export declare namespace OCC {
         /**
          * Keeps edges
          */
-        keepEdges: boolean;
+        keepEdges = false;
     }
-    class DifferenceDto {
-        constructor(shape?: any[], shapes?: any[], keepEdges?: boolean);
+    export class DifferenceDto {
+        constructor(shape?: any[], shapes?: any[], keepEdges?: boolean) {
+            this.shape = shape;
+            this.shapes = shapes;
+            this.keepEdges = keepEdges;
+        }
         /**
          * Object to subtract from
          */
@@ -286,10 +368,14 @@ export declare namespace OCC {
         /**
          * Keeps edges unaffected
          */
-        keepEdges: boolean;
+        keepEdges = false;
     }
-    class IntersectionDto {
-        constructor(shapes?: any[], keepEdges?: boolean);
+
+    export class IntersectionDto {
+        constructor(shapes?: any[], keepEdges?: boolean) {
+            this.shapes = shapes;
+            this.keepEdges = keepEdges;
+        }
         /**
          * Shapes to intersect
          */
@@ -297,17 +383,22 @@ export declare namespace OCC {
         /**
          * Keep the edges
          */
-        keepEdges: boolean;
+        keepEdges = false;
     }
-    class ShapeDto {
-        constructor(shape?: any[]);
+    export class ShapeDto {
+        constructor(shape?: any[]) {
+            this.shape = shape;
+        }
         /**
          * Shape on which action should be performed
          */
         shape: any;
     }
-    class ShapeIndexDto {
-        constructor(shape?: any, index?: number);
+    export class ShapeIndexDto {
+        constructor(shape?: any, index?: number) {
+            this.shape = shape;
+            this.index = index;
+        }
         /**
          * Shape
          */
@@ -317,8 +408,12 @@ export declare namespace OCC {
          */
         index: number;
     }
-    class RotationExtrudeDto {
-        constructor(shape?: any, height?: number, degrees?: number);
+    export class RotationExtrudeDto {
+        constructor(shape?: any, height?: number, degrees?: number) {
+            this.shape = shape;
+            this.height = height;
+            this.degrees = degrees;
+        }
         /**
          * Wire to extrude by rotating
          */
@@ -332,8 +427,14 @@ export declare namespace OCC {
          */
         degrees: number;
     }
-    class TransformDto {
-        constructor(shape?: any, translation?: number[], rotationAxis?: number[], rotationDegrees?: number, scale?: number);
+    export class TransformDto {
+        constructor(shape?: any, translation?: number[], rotationAxis?: number[], rotationDegrees?: number, scale?: number) {
+            this.shape = shape;
+            this.translation = translation;
+            this.rotationAxis = rotationAxis;
+            this.rotationDegrees = rotationDegrees;
+            this.scale = scale;
+        }
         /**
          * Shape to transform
          */
@@ -355,8 +456,11 @@ export declare namespace OCC {
          */
         scale: number;
     }
-    class TranslateDto {
-        constructor(shape?: any, translation?: number[]);
+    export class TranslateDto {
+        constructor(shape?: any, translation?: number[]) {
+            this.shape = shape;
+            this.translation = translation;
+        }
         /**
          * Shape for translation
          */
@@ -366,8 +470,12 @@ export declare namespace OCC {
          */
         translation: number[];
     }
-    class RotateDto {
-        constructor(shape?: any, axis?: number[], degrees?: number);
+    export class RotateDto {
+        constructor(shape?: any, axis?: number[], degrees?: number) {
+            this.shape = shape;
+            this.axis = axis;
+            this.degrees = degrees;
+        }
         /**
          * Shape to rotate
          */
@@ -381,8 +489,11 @@ export declare namespace OCC {
          */
         degrees: number;
     }
-    class ScaleDto {
-        constructor(shape?: any, scale?: number);
+    export class ScaleDto {
+        constructor(shape?: any, scale?: number) {
+            this.shape = shape;
+            this.scale = scale;
+        }
         /**
          * Shape to scale
          */
@@ -393,4 +504,5 @@ export declare namespace OCC {
         scale: number;
     }
 }
+
 `);
