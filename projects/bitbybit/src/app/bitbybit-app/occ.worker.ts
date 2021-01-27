@@ -591,6 +591,49 @@ export class Occ {
         return innerFace;
     }
 
+    rotatedExtrude(inputs: Inputs.OCC.RotationExtrudeDto): any {
+        const upperPolygon = this.rotate(
+            {
+                axis: [0, 1, 0],
+                degrees: inputs.degrees,
+                shape: this.translate({
+                    translation: [0, inputs.height, 0],
+                    shape: inputs.shape,
+                })
+            });
+
+        // Define the straight spine going up the middle of the sweep
+        const spineWire = this.createBSpline({
+            points: [
+                [0, 0, 0],
+                [0, inputs.height, 0]
+            ],
+            closed: false,
+        });
+
+        // Define the guiding helical auxiliary spine (which controls the rotation)
+        const steps = 30;
+        const aspinePoints = [];
+        for (let i = 0; i <= steps; i++) {
+            const alpha = i / steps;
+            aspinePoints.push([
+                20 * Math.sin(alpha * inputs.degrees * 0.0174533),
+                inputs.height * alpha,
+                20 * Math.cos(alpha * inputs.degrees * 0.0174533),
+            ]);
+        }
+
+        const aspineWire = this.createBSpline({ points: aspinePoints, closed: false });
+
+        // Sweep the face wires along the spine to create the extrusion
+        const pipe = new this.occ.BRepOffsetAPI_MakePipeShell(spineWire);
+        pipe.SetMode_5(aspineWire, true, this.occ.BRepFill_TypeOfContact.BRepFill_NoContact);
+        pipe.Add_1(inputs.shape, false, false);
+        pipe.Add_1(upperPolygon, false, false);
+        pipe.Build();
+        pipe.MakeSolid();
+        return pipe.Shape();
+    }
 
     shapeToMesh(shape, maxDeviation): {
         faceList: {
@@ -771,6 +814,56 @@ export class Occ {
         return { faceList, edgeList };
     }
 
+    transform(inputs: Inputs.OCC.TransformDto): any {
+        return this.translate(
+            {
+                translation: inputs.translation,
+                shape: this.rotate({
+                    axis: inputs.rotationAxis,
+                    degrees: inputs.rotationDegrees,
+                    shape: this.scale({
+                        scale: inputs.scale,
+                        shape: inputs.shape,
+                    })
+                })
+            }
+        );
+    }
+
+    translate(inputs: Inputs.OCC.TranslateDto): any {
+        const transformation = new this.occ.gp_Trsf_1();
+        transformation.SetTranslation_1(new this.occ.gp_Vec_4(inputs.translation[0], inputs.translation[1], inputs.translation[2]));
+        const translation = new this.occ.TopLoc_Location_2(transformation);
+        return inputs.shape.Moved(translation);
+    }
+
+    rotate(inputs: Inputs.OCC.RotateDto): any {
+        let rotated;
+        if (inputs.degrees === 0) {
+            rotated = inputs.shape;
+        } else {
+            const transformation = new this.occ.gp_Trsf_1();
+            transformation.SetRotation_1(
+                new this.occ.gp_Ax1_2(
+                    new this.occ.gp_Pnt_3(0, 0, 0),
+                    new this.occ.gp_Dir_2(
+                        new this.occ.gp_Vec_4(inputs.axis[0], inputs.axis[1], inputs.axis[2])
+                    )
+                ),
+                inputs.degrees * 0.0174533);
+            const rotation = new this.occ.TopLoc_Location_2(transformation);
+            rotated = inputs.shape.Moved(rotation);
+        }
+        return rotated;
+    }
+
+    scale(inputs: Inputs.OCC.ScaleDto): any {
+        const transformation = new this.occ.gp_Trsf_1();
+        transformation.SetScaleFactor(inputs.scale);
+        const scaling = new this.occ.TopLoc_Location_2(transformation);
+        return inputs.shape.Moved(scaling);
+    }
+
     private getNumSolidsInCompound(shape): any {
         if (!shape ||
             shape.ShapeType() > this.occ.TopAbs_ShapeEnum.TopAbs_COMPSOLID ||
@@ -874,6 +967,18 @@ export class Occ {
         return this.och.bRepBuilderAPIMakeFace(wire, true);
     }
 
+    private isArrayLike(item): any {
+        return (
+            Array.isArray(item) ||
+            (!!item &&
+                typeof item === 'object' &&
+                item.hasOwnProperty('length') &&
+                typeof item.length === 'number' &&
+                item.length > 0 &&
+                (item.length - 1) in item
+            )
+        );
+    }
 
 }
 

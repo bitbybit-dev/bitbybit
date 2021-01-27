@@ -270,4 +270,74 @@ export namespace OCC {
          */
         index: number;
     }
+    export class RotationExtrudeDto {
+        /**
+         * Wire to extrude by rotating
+         */
+        shape: any;
+        /**
+         * Height of rotation
+         */
+        height: number;
+        /**
+         * Rotation in degrees
+         */
+        degrees: number;
+    }
+    export class TransformDto {
+        /**
+         * Shape to transform
+         */
+        shape: any;
+        /**
+         * Translation to apply
+         */
+        translation: number[];
+        /**
+         * Rotation to apply
+         */
+        rotationAxis: number[];
+        /**
+         * Rotation degrees
+         */
+        rotationDegrees: number;
+        /**
+         * Scale factor to apply
+         */
+        scale: number;
+    }
+    export class TranslateDto {
+        /**
+         * Shape for translation
+         */
+        shape: any;
+        /**
+         * Translation vector
+         */
+        translation: number[];
+    }
+    export class RotateDto {
+        /**
+         * Shape to rotate
+         */
+        shape: any;
+        /**
+         * Axis on which to rotate
+         */
+        axis: number[];
+        /**
+         * Rotation degrees
+         */
+        degrees: number;
+    }
+    export class ScaleDto {
+        /**
+         * Shape to scale
+         */
+        shape: any;
+        /**
+         * Scale factor to apply
+         */
+        scale: number;
+    }
 }

@@ -467,11 +467,76 @@ export class OCC {
         return this.genericCallToWorkerPromise('getFace', inputs);
     }
 
+    /**
+     * Rotated extrude that is perofrmed on the wire shape
+     * <div>
+     *  <img src="../assets/images/blockly-images/occ/rotatedExtrude.svg" alt="Blockly Image"/>
+     * </div>
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occ.occ.html#rotatedextrude
+     * @param inputs Rotated extrusion inputs
+     * @returns OpenCascade shape
+     */
+    rotatedExtrude(inputs: Inputs.OCC.RotationExtrudeDto): any {
+        return this.genericCallToWorkerPromise('rotatedExtrude', inputs);
+    }
+
+
+    /**
+     * Transforms the array of shapes
+     * <div>
+     *  <img src="../assets/images/blockly-images/occ/transform.svg" alt="Blockly Image"/>
+     * </div>
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occ.occ.html#transform
+     * @param inputs Transformation description
+     * @returns OpenCascade shapes
+     */
+    transform(inputs: Inputs.OCC.TransformDto): any {
+        return this.genericCallToWorkerPromise('transform', inputs);
+    }
+
+
+    /**
+     * Rotate the shapes
+     * <div>
+     *  <img src="../assets/images/blockly-images/occ/rotate.svg" alt="Blockly Image"/>
+     * </div>
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occ.occ.html#rotate
+     * @param inputs Rotation description
+     * @returns OpenCascade shapes
+     */
+    rotate(inputs: Inputs.OCC.RotateDto): any {
+        return this.genericCallToWorkerPromise('rotate', inputs);
+    }
+
+
+    /**
+     * Translates the shapes
+     * <div>
+     *  <img src="../assets/images/blockly-images/occ/translate.svg" alt="Blockly Image"/>
+     * </div>
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occ.occ.html#translate
+     * @param inputs Translation description
+     * @returns OpenCascade shapes
+     */
+    translate(inputs: Inputs.OCC.TranslateDto): any {
+        return this.genericCallToWorkerPromise('translate', inputs);
+    }
+
+    /**
+     * Scales the shapes
+     * <div>
+     *  <img src="../assets/images/blockly-images/occ/scale.svg" alt="Blockly Image"/>
+     * </div>
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occ.occ.html#scale
+     * @param inputs Scale description
+     * @returns OpenCascade shapes
+     */
+    scale(inputs: Inputs.OCC.ScaleDto): any {
+        return this.genericCallToWorkerPromise('scale', inputs);
+    }
+
     private computeFaceMiddlePos(vertexCoordVec: number[][]): number[] {
         const length = vertexCoordVec.length;
-        console.log(length);
-        console.log(vertexCoordVec);
-
         let x = 0;
         let y = 0;
         let z = 0;
@@ -481,10 +546,6 @@ export class OCC {
             y += v[1];
             z += v[2];
         }
-        console.log('x:', x);
-        console.log('y:', y);
-        console.log('z:', z);
-
 
         return [x / length, y / length, z / length];
     }

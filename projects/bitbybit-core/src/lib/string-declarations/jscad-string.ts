@@ -17,7 +17,7 @@ import { JSCADText } from './jscad-text';
  * Contains various functions for Solid meshes from JSCAD library http://openjscad.org
  * Thanks JSCAD community for developing this kernel
  */
-export declare class Solid {
+export declare class JSCAD {
     readonly booleans: JSCADBooleans;
     readonly expansions: JSCADExpansions;
     readonly extrusions: JSCADExtrusions;

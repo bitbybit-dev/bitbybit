@@ -2,11 +2,12 @@ import { simplifyDeclaration } from '../simplify-declaration';
 
 export const occString = simplifyDeclaration(`
 import { Mesh } from '@babylonjs/core';
+import { Subject } from 'rxjs';
 import { Context } from '../../context';
 import { GeometryHelper } from '../../geometry-helper';
 import * as Inputs from '../../inputs/inputs';
-import { OCCHelper } from './occ-helper';
-import { OCCService } from './occ-service';
+import { JSCADText } from '../jscad-text';
+import { Vector } from '../vector';
 /**
  * Contains various methods for OpenCascade implementation
  * Much of the work is done by Johnathon Selstad and Sebastian Alff to port OCC to JavaScript
@@ -15,19 +16,14 @@ import { OCCService } from './occ-service';
 export declare class OCC {
     private readonly context;
     private readonly geometryHelper;
-    private readonly occHelper;
-    private readonly oc;
-    constructor(context: Context, geometryHelper: GeometryHelper, occHelper: OCCHelper, oc: OCCService);
-    /**
-     * Draws a Brep solid
-     * <div>
-     *  <img src="../assets/images/blockly-images/occ/drawBrep.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_occ.occ.html#drawbrep
-     * @param inputs Contains a brep to be drawn and options
-     * @returns BabylonJS Mesh
-     */
-    drawBrep(inputs: Inputs.OCC.DrawBrepDto): Mesh;
+    private readonly solidText;
+    private readonly vector;
+    occWorkerInitialised: Subject<void>;
+    private occWorker;
+    private promisesMade;
+    constructor(context: Context, geometryHelper: GeometryHelper, solidText: JSCADText, vector: Vector);
+    setOccWorker(worker: Worker): void;
+    genericCallToWorkerPromise(functionName: string, inputs: any): Promise<any>;
     /**
      * Draws OpenCascade shape by going through faces and edges
      * <div>
@@ -37,7 +33,14 @@ export declare class OCC {
      * @param inputs Contains a shape to be drawn and additional information
      * @returns BabylonJS Mesh
      */
-    drawShape(inputs: Inputs.OCC.DrawShapeDto): Mesh;
+    drawShape(inputs: Inputs.OCC.DrawShapeDto): Promise<Mesh>;
+    private computeEdgeMiddlePos;
+    /**
+     * This needs to be done before every run and the promise needs to be awaited before run executes again
+     * This makes sure that cache keeps the objects and hashes from the previous run and the rest is deleted
+     * In this way it is possible to hace the cache of manageable size
+     */
+    cleanUpCache(): Promise<any>;
     /**
      * Creates OpenCascade Polygon wire
      * <div>
@@ -67,7 +70,7 @@ export declare class OCC {
      * @param inputs Box size and center
      * @returns OpenCascade Box
      */
-    createBox(inputs: Inputs.OCC.BoxDto): any;
+    createBox(inputs: Inputs.OCC.BoxDto): Promise<any>;
     /**
      * Creates OpenCascade Cylinder
      * <div>
@@ -209,16 +212,6 @@ export declare class OCC {
      */
     removeInternalEdges(inputs: Inputs.OCC.ShapeDto): any;
     /**
-     * Gets the wire by providing an index from the shape
-     * <div>
-     *  <img src="../assets/images/blockly-images/occ/getWire.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_occ.occ.html#getwire
-     * @param inputs Shape
-     * @returns OpenCascade wire
-     */
-    getWire(inputs: Inputs.OCC.ShapeIndexDto): any;
-    /**
      * Gets the edge by providing an index from the shape
      * <div>
      *  <img src="../assets/images/blockly-images/occ/getEdge.svg" alt="Blockly Image"/>
@@ -229,6 +222,16 @@ export declare class OCC {
      */
     getEdge(inputs: Inputs.OCC.ShapeIndexDto): any;
     /**
+     * Gets the wire by providing an index from the shape
+     * <div>
+     *  <img src="../assets/images/blockly-images/occ/getWire.svg" alt="Blockly Image"/>
+     * </div>
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occ.occ.html#getwire
+     * @param inputs Shape
+     * @returns OpenCascade wire
+     */
+    getWire(inputs: Inputs.OCC.ShapeIndexDto): any;
+    /**
      * Gets the face by providing an index from the shape
      * <div>
      *  <img src="../assets/images/blockly-images/occ/getFace.svg" alt="Blockly Image"/>
@@ -238,14 +241,56 @@ export declare class OCC {
      * @returns OpenCascade face
      */
     getFace(inputs: Inputs.OCC.ShapeIndexDto): any;
-    private getNumSolidsInCompound;
-    private getSolidFromCompound;
-    private forEachSolid;
-    private forEachEdge;
-    private forEachFace;
-    private createCircle;
-    private shapeToMesh;
+    /**
+     * Rotated extrude that is perofrmed on the wire shape
+     * <div>
+     *  <img src="../assets/images/blockly-images/occ/rotatedExtrude.svg" alt="Blockly Image"/>
+     * </div>
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occ.occ.html#rotatedextrude
+     * @param inputs Rotated extrusion inputs
+     * @returns OpenCascade shape
+     */
+    rotatedExtrude(inputs: Inputs.OCC.RotationExtrudeDto): any;
+    /**
+     * Transforms the array of shapes
+     * <div>
+     *  <img src="../assets/images/blockly-images/occ/transform.svg" alt="Blockly Image"/>
+     * </div>
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occ.occ.html#transform
+     * @param inputs Transformation description
+     * @returns OpenCascade shapes
+     */
+    transform(inputs: Inputs.OCC.TransformDto): any;
+    /**
+     * Rotate the shapes
+     * <div>
+     *  <img src="../assets/images/blockly-images/occ/rotate.svg" alt="Blockly Image"/>
+     * </div>
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occ.occ.html#rotate
+     * @param inputs Rotation description
+     * @returns OpenCascade shapes
+     */
+    rotate(inputs: Inputs.OCC.RotateDto): any;
+    /**
+     * Translates the shapes
+     * <div>
+     *  <img src="../assets/images/blockly-images/occ/translate.svg" alt="Blockly Image"/>
+     * </div>
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occ.occ.html#translate
+     * @param inputs Translation description
+     * @returns OpenCascade shapes
+     */
+    translate(inputs: Inputs.OCC.RotationExtrudeDto): any;
+    /**
+     * Scales the shapes
+     * <div>
+     *  <img src="../assets/images/blockly-images/occ/scale.svg" alt="Blockly Image"/>
+     * </div>
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occ.occ.html#scale
+     * @param inputs Scale description
+     * @returns OpenCascade shapes
+     */
+    scale(inputs: Inputs.OCC.RotationExtrudeDto): any;
+    private computeFaceMiddlePos;
 }
-
-
 `);

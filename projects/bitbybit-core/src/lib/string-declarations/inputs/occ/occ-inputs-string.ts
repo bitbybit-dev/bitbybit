@@ -56,7 +56,7 @@ export declare namespace OCC {
          */
         precision: number;
         /**
-         * Draw indexes can be drawn as tags
+         * Draw index of edges in space
          */
         drawEdgeIndexes: boolean;
         /**
@@ -70,15 +70,15 @@ export declare namespace OCC {
         /**
          * Draw indexes of faces in space
          */
-        drawFaceIndexes = false;
+        drawFaceIndexes: boolean;
         /**
          * Indicates the edge index height if they are drawn
          */
-        faceIndexHeight = 0.06;
+        faceIndexHeight: number;
         /**
          * Edge index colour if the edges are drawn
          */
-        faceIndexColour = '#0000ff';
+        faceIndexColour: string;
     }
     class PolygonDto {
         /**
@@ -264,6 +264,75 @@ export declare namespace OCC {
          */
         index: number;
     }
+    class RotationExtrudeDto {
+        /**
+         * Wire to extrude by rotating
+         */
+        shape: any;
+        /**
+         * Height of rotation
+         */
+        height: number;
+        /**
+         * Rotation in degrees
+         */
+        degrees: number;
+    }
+    class TransformDto {
+        /**
+         * Shape to transform
+         */
+        shape: any;
+        /**
+         * Translation to apply
+         */
+        translation: number[];
+        /**
+         * Rotation to apply
+         */
+        rotationAxis: number[];
+        /**
+         * Rotation degrees
+         */
+        rotationDegrees: number;
+        /**
+         * Scale factor to apply
+         */
+        scale: number;
+    }
+    class TranslateDto {
+        /**
+         * Shape for translation
+         */
+        shape: any;
+        /**
+         * Translation vector
+         */
+        translation: number[];
+    }
+    class RotateDto {
+        /**
+         * Shape to rotate
+         */
+        shape: any;
+        /**
+         * Axis on which to rotate
+         */
+        axis: number[];
+        /**
+         * Rotation degrees
+         */
+        degrees: number;
+    }
+    class ScaleDto {
+        /**
+         * Shape to scale
+         */
+        shape: any;
+        /**
+         * Scale factor to apply
+         */
+        scale: number;
+    }
 }
-
 `);
