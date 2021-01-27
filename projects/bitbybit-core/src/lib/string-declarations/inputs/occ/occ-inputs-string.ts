@@ -81,12 +81,14 @@ export declare namespace OCC {
         faceIndexColour: string;
     }
     class PolygonDto {
+        constructor(points?: number[][]);
         /**
          * Points points
          */
         points: number[][];
     }
     class BoxDto {
+        constructor(width?: number, length?: number, height?: number, center?: number[]);
         /**
          * Width of the box
          */
@@ -105,6 +107,7 @@ export declare namespace OCC {
         center: number[];
     }
     class SphereDto {
+        constructor(radius?: number, center?: number[]);
         /**
          * Radius of the sphere
          */
@@ -129,6 +132,7 @@ export declare namespace OCC {
         center: number[];
     }
     class FilletDto {
+        constructor(shape?: any, radius?: number, edgeList?: number[], all?: boolean);
         /**
          * Shape to apply the fillets
          */
@@ -140,13 +144,14 @@ export declare namespace OCC {
         /**
          * List of edge indexes to which apply the fillet
          */
-        edgeList: number[];
+        edgeList: any[];
         /**
          * If this setting is set to true, edgeList will be ignored
          */
         all: boolean;
     }
     class ChamferDto {
+        constructor(shape?: any, distance?: number, edgeList?: number[], all?: boolean);
         /**
          * Shape to apply the chamfer
          */
@@ -162,9 +167,10 @@ export declare namespace OCC {
         /**
          * If this setting is set to true, edgeList will be ignored
          */
-        all = false;
+        all: boolean;
     }
     class BSplineDto {
+        constructor(points?: number[][], closed?: boolean);
         /**
          * Points through which the BSpline will be created
          */
@@ -175,6 +181,7 @@ export declare namespace OCC {
         closed: boolean;
     }
     class BezierDto {
+        constructor(points?: number[][], weights?: number[], closed?: boolean);
         /**
          * Points through which the Bezier curve will be created
          */
@@ -189,6 +196,7 @@ export declare namespace OCC {
         closed: boolean;
     }
     class CircleDto {
+        constructor(radius?: number, center?: number[]);
         /**
          * Radius of the circle
          */
@@ -199,16 +207,18 @@ export declare namespace OCC {
         center: number[];
     }
     class LoftDto {
+        constructor(shapes?: any[], makeSolid?: boolean);
         /**
          * Wires through which the loft passes
          */
-        wires: any[];
+        shapes: any[];
         /**
          * Tries to make a solid when lofting
          */
-        shape: boolean;
+        makeSolid: boolean;
     }
     class OffsetDto {
+        constructor(shape?: any, distance?: number, tolerance?: number);
         /**
          * Shape to offset
          */
@@ -216,13 +226,14 @@ export declare namespace OCC {
         /**
          * Distance of offset
          */
-        offsetDistance: number;
+        distance: number;
         /**
          * Offset tolerance
          */
         tolerance: number;
     }
     class ExtrudeDto {
+        constructor(shape?: any, direction?: number[]);
         /**
          * Face to extrude
          */
@@ -233,6 +244,7 @@ export declare namespace OCC {
         direction: number[];
     }
     class UnionDto {
+        constructor(shapes?: any[], keepEdges?: boolean);
         /**
          * Objects to be joined together
          */
@@ -243,6 +255,7 @@ export declare namespace OCC {
         keepEdges: boolean;
     }
     class DifferenceDto {
+        constructor(shape?: any[], shapes?: any[], keepEdges?: boolean);
         /**
          * Object to subtract from
          */
@@ -257,6 +270,7 @@ export declare namespace OCC {
         keepEdges: boolean;
     }
     class IntersectionDto {
+        constructor(shapes?: any[], keepEdges?: boolean);
         /**
          * Shapes to intersect
          */
@@ -267,12 +281,14 @@ export declare namespace OCC {
         keepEdges: boolean;
     }
     class ShapeDto {
+        constructor(shape?: any[]);
         /**
          * Shape on which action should be performed
          */
         shape: any;
     }
     class ShapeIndexDto {
+        constructor(shape?: any, index?: number);
         /**
          * Shape
          */
@@ -283,6 +299,7 @@ export declare namespace OCC {
         index: number;
     }
     class RotationExtrudeDto {
+        constructor(shape?: any, height?: number, degrees?: number);
         /**
          * Wire to extrude by rotating
          */
@@ -297,6 +314,7 @@ export declare namespace OCC {
         degrees: number;
     }
     class TransformDto {
+        constructor(shape?: any, translation?: number[], rotationAxis?: number[], rotationDegrees?: number, scale?: number);
         /**
          * Shape to transform
          */
@@ -319,6 +337,7 @@ export declare namespace OCC {
         scale: number;
     }
     class TranslateDto {
+        constructor(shape?: any, translation?: number[]);
         /**
          * Shape for translation
          */
@@ -329,6 +348,7 @@ export declare namespace OCC {
         translation: number[];
     }
     class RotateDto {
+        constructor(shape?: any, axis?: number[], degrees?: number);
         /**
          * Shape to rotate
          */
@@ -343,6 +363,7 @@ export declare namespace OCC {
         degrees: number;
     }
     class ScaleDto {
+        constructor(shape?: any, scale?: number);
         /**
          * Shape to scale
          */
@@ -353,4 +374,5 @@ export declare namespace OCC {
         scale: number;
     }
 }
+
 `);

@@ -84,6 +84,9 @@ export namespace OCC {
     }
 
     export class PolygonDto {
+        constructor(points?: number[][]) {
+            this.points = points;
+        }
         /**
          * Points points
          */
@@ -91,6 +94,14 @@ export namespace OCC {
     }
 
     export class BoxDto {
+        constructor(width?: number, length?: number, height?: number, center?: number[]) {
+            this.width = width;
+            this.length = length;
+            this.height = height;
+            if (center) {
+                this.center = center;
+            }
+        }
         /**
          * Width of the box
          */
@@ -109,6 +120,12 @@ export namespace OCC {
         center = [0, 0, 0];
     }
     export class SphereDto {
+        constructor(radius?: number, center?: number[]) {
+            this.radius = radius;
+            if (center) {
+                this.center = center;
+            }
+        }
         /**
          * Radius of the sphere
          */
@@ -133,6 +150,12 @@ export namespace OCC {
         center = [0, 0, 0];
     }
     export class FilletDto {
+        constructor(shape?: any, radius?: number, edgeList?: number[], all?: boolean) {
+            this.shape = shape;
+            this.radius = radius;
+            this.edgeList = edgeList;
+            this.all = all;
+        }
         /**
          * Shape to apply the fillets
          */
@@ -144,13 +167,19 @@ export namespace OCC {
         /**
          * List of edge indexes to which apply the fillet
          */
-        edgeList: number[];
+        edgeList = [];
         /**
          * If this setting is set to true, edgeList will be ignored
          */
         all = false;
     }
     export class ChamferDto {
+        constructor(shape?: any, distance?: number, edgeList?: number[], all?: boolean) {
+            this.shape = shape;
+            this.distance = distance;
+            this.edgeList = edgeList;
+            this.all = all;
+        }
         /**
          * Shape to apply the chamfer
          */
@@ -169,6 +198,10 @@ export namespace OCC {
         all = false;
     }
     export class BSplineDto {
+        constructor(points?: number[][], closed?: boolean) {
+            this.points = points;
+            this.closed = closed;
+        }
         /**
          * Points through which the BSpline will be created
          */
@@ -180,6 +213,11 @@ export namespace OCC {
     }
 
     export class BezierDto {
+        constructor(points?: number[][], weights?: number[], closed?: boolean) {
+            this.points = points;
+            this.weights = weights;
+            this.closed = closed;
+        }
         /**
          * Points through which the Bezier curve will be created
          */
@@ -194,6 +232,10 @@ export namespace OCC {
         closed: boolean;
     }
     export class CircleDto {
+        constructor(radius?: number, center?: number[]) {
+            this.radius = radius;
+            this.center = center;
+        }
         /**
          * Radius of the circle
          */
@@ -204,16 +246,27 @@ export namespace OCC {
         center: number[];
     }
     export class LoftDto {
+        constructor(shapes?: any[], makeSolid?: boolean) {
+            this.shapes = shapes;
+            this.makeSolid = makeSolid;
+        }
         /**
          * Wires through which the loft passes
          */
-        wires: any[];
+        shapes: any[];
         /**
          * Tries to make a solid when lofting
          */
-        shape = false;
+        makeSolid = false;
     }
     export class OffsetDto {
+        constructor(shape?: any, distance?: number, tolerance?: number) {
+            this.shape = shape;
+            this.distance = distance;
+            if (tolerance) {
+                this.tolerance = tolerance;
+            }
+        }
         /**
          * Shape to offset
          */
@@ -221,13 +274,17 @@ export namespace OCC {
         /**
          * Distance of offset
          */
-        offsetDistance: number;
+        distance: number;
         /**
          * Offset tolerance
          */
         tolerance = 0.1;
     }
     export class ExtrudeDto {
+        constructor(shape?: any, direction?: number[]) {
+            this.shape = shape;
+            this.direction = direction;
+        }
         /**
          * Face to extrude
          */
@@ -238,6 +295,10 @@ export namespace OCC {
         direction: number[];
     }
     export class UnionDto {
+        constructor(shapes?: any[], keepEdges?: boolean) {
+            this.shapes = shapes;
+            this.keepEdges = keepEdges;
+        }
         /**
          * Objects to be joined together
          */
@@ -245,9 +306,14 @@ export namespace OCC {
         /**
          * Keeps edges
          */
-        keepEdges: boolean;
+        keepEdges = false;
     }
     export class DifferenceDto {
+        constructor(shape?: any[], shapes?: any[], keepEdges?: boolean) {
+            this.shape = shape;
+            this.shapes = shapes;
+            this.keepEdges = keepEdges;
+        }
         /**
          * Object to subtract from
          */
@@ -259,10 +325,14 @@ export namespace OCC {
         /**
          * Keeps edges unaffected
          */
-        keepEdges: boolean;
+        keepEdges = false;
     }
 
     export class IntersectionDto {
+        constructor(shapes?: any[], keepEdges?: boolean) {
+            this.shapes = shapes;
+            this.keepEdges = keepEdges;
+        }
         /**
          * Shapes to intersect
          */
@@ -270,15 +340,22 @@ export namespace OCC {
         /**
          * Keep the edges
          */
-        keepEdges: boolean;
+        keepEdges = false;
     }
     export class ShapeDto {
+        constructor(shape?: any[]) {
+            this.shape = shape;
+        }
         /**
          * Shape on which action should be performed
          */
         shape: any;
     }
     export class ShapeIndexDto {
+        constructor(shape?: any, index?: number) {
+            this.shape = shape;
+            this.index = index;
+        }
         /**
          * Shape
          */
@@ -289,6 +366,11 @@ export namespace OCC {
         index: number;
     }
     export class RotationExtrudeDto {
+        constructor(shape?: any, height?: number, degrees?: number) {
+            this.shape = shape;
+            this.height = height;
+            this.degrees = degrees;
+        }
         /**
          * Wire to extrude by rotating
          */
@@ -303,6 +385,13 @@ export namespace OCC {
         degrees: number;
     }
     export class TransformDto {
+        constructor(shape?: any, translation?: number[], rotationAxis?: number[], rotationDegrees?: number, scale?: number) {
+            this.shape = shape;
+            this.translation = translation;
+            this.rotationAxis = rotationAxis;
+            this.rotationDegrees = rotationDegrees;
+            this.scale = scale;
+        }
         /**
          * Shape to transform
          */
@@ -325,6 +414,10 @@ export namespace OCC {
         scale: number;
     }
     export class TranslateDto {
+        constructor(shape?: any, translation?: number[]) {
+            this.shape = shape;
+            this.translation = translation;
+        }
         /**
          * Shape for translation
          */
@@ -335,6 +428,11 @@ export namespace OCC {
         translation: number[];
     }
     export class RotateDto {
+        constructor(shape?: any, axis?: number[], degrees?: number) {
+            this.shape = shape;
+            this.axis = axis;
+            this.degrees = degrees;
+        }
         /**
          * Shape to rotate
          */
@@ -349,6 +447,10 @@ export namespace OCC {
         degrees: number;
     }
     export class ScaleDto {
+        constructor(shape?: any, scale?: number) {
+            this.shape = shape;
+            this.scale = scale;
+        }
         /**
          * Shape to scale
          */

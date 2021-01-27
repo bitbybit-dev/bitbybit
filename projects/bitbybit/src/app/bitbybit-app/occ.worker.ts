@@ -259,15 +259,15 @@ export class Occ {
     }
 
     loft(inputs: Inputs.OCC.LoftDto): any {
-        const pipe = new this.occ.BRepOffsetAPI_ThruSections(inputs.shape, false, 1.0e-06);
-        inputs.wires.forEach((wire) => { pipe.AddWire(wire); });
+        const pipe = new this.occ.BRepOffsetAPI_ThruSections(inputs.makeSolid, false, 1.0e-06);
+        inputs.shapes.forEach((wire) => { pipe.AddWire(wire); });
         pipe.Build();
         return pipe.Shape();
     }
 
     offset(inputs: Inputs.OCC.OffsetDto): any {
         if (!inputs.tolerance) { inputs.tolerance = 0.1; }
-        if (inputs.offsetDistance === 0.0) { return inputs.shape; }
+        if (inputs.distance === 0.0) { return inputs.shape; }
         let offset = null;
         if (inputs.shape.ShapeType() === this.occ.TopAbs_ShapeEnum.TopAbs_WIRE ||
             inputs.shape.ShapeType() === this.occ.TopAbs_ShapeEnum.TopAbs_EDGE) {
@@ -280,7 +280,7 @@ export class Occ {
             offset = new this.occ.BRepOffsetAPI_MakeOffset_1();
             offset.Init_2(this.occ.GeomAbs_JoinType.GeomAbs_Arc, false);
             offset.AddWire(wire);
-            offset.Perform(inputs.offsetDistance, 0.0);
+            offset.Perform(inputs.distance, 0.0);
         } else {
             let shell = inputs.shape;
             if (inputs.shape.ShapeType() === this.occ.TopAbs_ShapeEnum.TopAbs_FACE) {
@@ -289,7 +289,7 @@ export class Occ {
             offset = new this.occ.BRepOffsetAPI_MakeOffsetShape_1();
             offset.PerformByJoin(
                 shell,
-                inputs.offsetDistance,
+                inputs.distance,
                 inputs.tolerance,
                 this.occ.BRepOffset_Mode.BRepOffset_Skin,
                 false,
