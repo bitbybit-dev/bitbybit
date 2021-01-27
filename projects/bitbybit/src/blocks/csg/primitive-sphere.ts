@@ -16,18 +16,18 @@ export function createPrimitiveSphereBlock(): void {
             this.appendValueInput('Center')
                 .setCheck('Array')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_csg_sphere_input_center);
+                .appendField(resources.block_jscad_sphere_input_center);
             this.appendValueInput('Radius')
                 .setCheck('Number')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_csg_sphere_input_radius.toLowerCase());
+                .appendField(resources.block_jscad_sphere_input_radius.toLowerCase());
             this.appendValueInput('Segments')
                 .setCheck('Number')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_csg_sphere_input_segments.toLowerCase());
+                .appendField(resources.block_jscad_sphere_input_segments.toLowerCase());
             this.setOutput(true, 'CsgMesh');
             this.setColour('#fff');
-            this.setTooltip(resources.block_csg_sphere_description);
+            this.setTooltip(resources.block_jscad_sphere_description);
             this.setHelpUrl(environment.docsUrl + solidConstants.solidShapesHelpUrl + '#' + 'sphere');
         }
     };
@@ -49,7 +49,7 @@ export function createPrimitiveSphereBlock(): void {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `return bitbybit.solid.shapes.sphere(inputs);`
+            `return bitbybit.jscad.shapes.sphere(inputs);`
         );
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };

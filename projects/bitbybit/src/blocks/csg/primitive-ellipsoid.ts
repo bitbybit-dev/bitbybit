@@ -16,18 +16,18 @@ export function createPrimitiveEllipsoidBlock(): void {
             this.appendValueInput('Center')
                 .setCheck('Array')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_csg_ellipsoid_input_center);
+                .appendField(resources.block_jscad_ellipsoid_input_center);
             this.appendValueInput('Radius')
                 .setCheck('Array')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_csg_ellipsoid_input_radius.toLowerCase());
+                .appendField(resources.block_jscad_ellipsoid_input_radius.toLowerCase());
             this.appendValueInput('Segments')
                 .setCheck('Number')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_csg_ellipsoid_input_segments.toLowerCase());
+                .appendField(resources.block_jscad_ellipsoid_input_segments.toLowerCase());
             this.setOutput(true, 'CsgMesh');
             this.setColour('#fff');
-            this.setTooltip(resources.block_csg_cuboid_description);
+            this.setTooltip(resources.block_jscad_cuboid_description);
             this.setHelpUrl(environment.docsUrl + solidConstants.solidShapesHelpUrl + '#' + 'ellipsoid');
         }
     };
@@ -49,7 +49,7 @@ export function createPrimitiveEllipsoidBlock(): void {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `return bitbybit.solid.shapes.ellipsoid(inputs);`
+            `return bitbybit.jscad.shapes.ellipsoid(inputs);`
         );
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };

@@ -16,14 +16,14 @@ export function createPrimitiveCubesOnCenterPointsBlock(): void {
             this.appendValueInput('Centers')
                 .setCheck('Array')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_csg_cubes_on_center_points_input_centers);
+                .appendField(resources.block_jscad_cubes_on_center_points_input_centers);
             this.appendValueInput('Size')
                 .setCheck('Number')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_csg_cubes_on_center_points_input_size.toLowerCase());
+                .appendField(resources.block_jscad_cubes_on_center_points_input_size.toLowerCase());
             this.setOutput(true, 'Array');
             this.setColour('#fff');
-            this.setTooltip(resources.block_csg_cubes_on_center_points_description);
+            this.setTooltip(resources.block_jscad_cubes_on_center_points_description);
             this.setHelpUrl(environment.docsUrl + solidConstants.solidShapesHelpUrl + '#' + 'cubesoncenterpoints');
         }
     };
@@ -44,7 +44,7 @@ export function createPrimitiveCubesOnCenterPointsBlock(): void {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `return bitbybit.solid.shapes.cubesOnCenterPoints(inputs);`
+            `return bitbybit.jscad.shapes.cubesOnCenterPoints(inputs);`
         );
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };

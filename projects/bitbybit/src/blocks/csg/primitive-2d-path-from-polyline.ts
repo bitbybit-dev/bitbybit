@@ -16,14 +16,14 @@ export function createPrimitive2dPathFromPolylineBlock(): void {
             this.appendValueInput('Polyline')
                 .setCheck('Polyline')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_csg_primitive_2d_path_from_polyline_input_polyline);
+                .appendField(resources.block_jscad_primitive_2d_path_from_polyline_input_polyline);
             this.appendValueInput('Closed')
                 .setCheck('Boolean')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_csg_primitive_2d_path_from_polyline_input_closed.toLowerCase());
+                .appendField(resources.block_jscad_primitive_2d_path_from_polyline_input_closed.toLowerCase());
             this.setOutput(true, 'Path');
             this.setColour('#fff');
-            this.setTooltip(resources.block_csg_primitive_2d_path_from_polyline_description);
+            this.setTooltip(resources.block_jscad_primitive_2d_path_from_polyline_description);
             this.setHelpUrl(environment.docsUrl + solidConstants.solidPathHelpUrl + '#' + 'createfrompolyline');
         }
     };
@@ -44,7 +44,7 @@ export function createPrimitive2dPathFromPolylineBlock(): void {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `return bitbybit.solid.path.createFromPolyline(inputs);`
+            `return bitbybit.jscad.path.createFromPolyline(inputs);`
         );
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };

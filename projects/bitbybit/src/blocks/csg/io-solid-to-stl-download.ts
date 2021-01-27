@@ -16,15 +16,15 @@ export function createIoSolidToStlDownloadBlock(): void {
             this.appendValueInput('Solid')
                 .setCheck('CsgMesh')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_csg_io_solid_to_stl_input_solid);
+                .appendField(resources.block_jscad_io_solid_to_stl_input_solid);
             this.appendValueInput('FileName')
                 .setCheck('String')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_csg_io_solid_to_stl_input_file_name.toLowerCase());
+                .appendField(resources.block_jscad_io_solid_to_stl_input_file_name.toLowerCase());
             this.setPreviousStatement(true, null);
             this.setNextStatement(true, null);
             this.setColour('#fff');
-            this.setTooltip(resources.block_csg_io_solid_to_stl_description);
+            this.setTooltip(resources.block_jscad_io_solid_to_stl_description);
             this.setHelpUrl(environment.docsUrl + solidConstants.solidHelpUrl + '#' + 'downloadsolidstl');
         }
     };
@@ -45,7 +45,7 @@ export function createIoSolidToStlDownloadBlock(): void {
         (block as any).validationModel = runtimeValidationModel;
 
         return createStandardContextIIFE(block, blockSelector, inputs, false,
-            `bitbybit.solid.downloadSolidSTL(inputs);`
+            `bitbybit.jscad.downloadSolidSTL(inputs);`
         );
     };
 }

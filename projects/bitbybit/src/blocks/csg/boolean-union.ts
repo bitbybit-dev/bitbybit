@@ -16,14 +16,14 @@ export function createBooleanUnionBlock(): void {
             this.appendValueInput('UnionObject')
                 .setCheck('CsgMesh')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_csg_union_input_union_object);
+                .appendField(resources.block_jscad_union_input_union_object);
             this.appendValueInput('WithObject')
                 .setCheck('CsgMesh')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_csg_union_input_with_object.toLowerCase());
+                .appendField(resources.block_jscad_union_input_with_object.toLowerCase());
             this.setOutput(true, 'CsgMesh');
             this.setColour('#fff');
-            this.setTooltip(resources.block_csg_union_description);
+            this.setTooltip(resources.block_jscad_union_description);
             this.setHelpUrl(environment.docsUrl + solidConstants.solidBooleansHelpUrl + '#' + 'union');
         }
     };
@@ -44,7 +44,7 @@ export function createBooleanUnionBlock(): void {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `return bitbybit.solid.booleans.union({objects: [inputs.unionObject, inputs.withObject]});`
+            `return bitbybit.jscad.booleans.union({objects: [inputs.unionObject, inputs.withObject]});`
         );
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };

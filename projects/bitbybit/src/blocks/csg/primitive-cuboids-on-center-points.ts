@@ -16,22 +16,22 @@ export function createPrimitiveCuboidsOnCenterPointsBlock(): void {
             this.appendValueInput('Centers')
                 .setCheck('Array')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_csg_cuboids_on_center_points_input_centers);
+                .appendField(resources.block_jscad_cuboids_on_center_points_input_centers);
             this.appendValueInput('Width')
                 .setCheck('Number')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_csg_cuboids_on_center_points_input_width.toLowerCase());
+                .appendField(resources.block_jscad_cuboids_on_center_points_input_width.toLowerCase());
             this.appendValueInput('Length')
                 .setCheck('Number')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_csg_cuboids_on_center_points_input_length.toLowerCase());
+                .appendField(resources.block_jscad_cuboids_on_center_points_input_length.toLowerCase());
             this.appendValueInput('Height')
                 .setCheck('Number')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_csg_cuboids_on_center_points_input_height.toLowerCase());
+                .appendField(resources.block_jscad_cuboids_on_center_points_input_height.toLowerCase());
             this.setOutput(true, 'Array');
             this.setColour('#fff');
-            this.setTooltip(resources.block_csg_cuboids_on_center_points_description);
+            this.setTooltip(resources.block_jscad_cuboids_on_center_points_description);
             this.setHelpUrl(environment.docsUrl + solidConstants.solidShapesHelpUrl + '#' + 'cuboidsoncenterpoints');
         }
     };
@@ -54,7 +54,7 @@ export function createPrimitiveCuboidsOnCenterPointsBlock(): void {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `return bitbybit.solid.shapes.cuboidsOnCenterPoints(inputs);`
+            `return bitbybit.jscad.shapes.cuboidsOnCenterPoints(inputs);`
         );
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };

@@ -20,15 +20,15 @@ import { SurfaceExtrusion } from './api/bitbybit/surface-extrusion';
 import { SurfaceSpherical } from './api/bitbybit/surface-spherical';
 import { SurfaceRevolved } from './api/bitbybit/surface-revolved';
 import { SurfaceSweep } from './api/bitbybit/surface-sweep';
-import { Solid } from './api/bitbybit/solid';
-import { SolidBooleans } from './api/bitbybit/solid-booleans';
-import { SolidExpansions } from './api/bitbybit/solid-expansions';
-import { SolidExtrusions } from './api/bitbybit/solid-extrusions';
-import { SolidHulls } from './api/bitbybit/solid-hulls';
-import { SolidPolygon } from './api/bitbybit/solid-polygon';
-import { SolidPath } from './api/bitbybit/solid-path';
-import { SolidShapes } from './api/bitbybit/solid-shapes';
-import { SolidText } from './api/bitbybit/solid-text';
+import { JSCAD } from './api/bitbybit/jscad';
+import { JSCADBooleans } from './api/bitbybit/jscad-booleans';
+import { JSCADExpansions } from './api/bitbybit/jscad-expansions';
+import { JSCADExtrusions } from './api/bitbybit/jscad-extrusions';
+import { JSCADHulls } from './api/bitbybit/jscad-hulls';
+import { JSCADPolygon } from './api/bitbybit/jscad-polygon';
+import { JSCADPath } from './api/bitbybit/jscad-path';
+import { JSCADShapes } from './api/bitbybit/jscad-shapes';
+import { JSCADText } from './api/bitbybit/jscad-text';
 import { Intersect } from './api/bitbybit/intersect';
 import { Tag } from './api/bitbybit/tag';
 import { Time } from './api/bitbybit/time';
@@ -62,15 +62,15 @@ import { OCCService } from './api/bitbybit/occ/occ-service';
         SurfaceSpherical,
         SurfaceRevolved,
         SurfaceSweep,
-        Solid,
-        SolidBooleans,
-        SolidExpansions,
-        SolidExtrusions,
-        SolidHulls,
-        SolidPath,
-        SolidPolygon,
-        SolidShapes,
-        SolidText,
+        JSCAD,
+        JSCADBooleans,
+        JSCADExpansions,
+        JSCADExtrusions,
+        JSCADHulls,
+        JSCADPath,
+        JSCADPolygon,
+        JSCADShapes,
+        JSCADText,
         Intersect,
         Tag,
         Time,

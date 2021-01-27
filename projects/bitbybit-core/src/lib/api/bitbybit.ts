@@ -8,7 +8,7 @@ import { Line } from './bitbybit/line';
 import { Polyline } from './bitbybit/polyline';
 import { Curve } from './bitbybit/curve';
 import { Surface } from './bitbybit/surface';
-import { Solid } from './bitbybit/solid';
+import { JSCAD } from './bitbybit/jscad';
 import { Intersect } from './bitbybit/intersect';
 import { Tag } from './bitbybit/tag';
 import { Time } from './bitbybit/time';
@@ -26,7 +26,7 @@ export class BitByBitBase {
         public readonly polyline: Polyline,
         public readonly curve: Curve,
         public readonly surface: Surface,
-        public readonly solid: Solid,
+        public readonly jscad: JSCAD,
         public readonly intersect: Intersect,
         public readonly tag: Tag,
         public readonly time: Time,

@@ -1,3 +1,3 @@
 export const solidBooleansConstants = {
-    helpUrl: '/classes/bitbybit_solid_booleans.solidbooleans.html'
+    helpUrl: '/classes/bitbybit_jscad_booleans.jscadbooleans.html'
 };

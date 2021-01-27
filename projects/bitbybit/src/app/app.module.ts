@@ -35,7 +35,7 @@ const monacoConfig: NgxMonacoEditorConfig = {
                 ${DeclarationStrings.polylineInputsString}
                 ${DeclarationStrings.curveInputsString}
                 ${DeclarationStrings.surfaceInputsString}
-                ${DeclarationStrings.solidInputsString}
+                ${DeclarationStrings.jscadInputsString}
                 ${DeclarationStrings.intersectInputsString}
                 ${DeclarationStrings.tagInputsString}
                 ${DeclarationStrings.occInputsString}
@@ -58,15 +58,15 @@ const monacoConfig: NgxMonacoEditorConfig = {
             ${DeclarationStrings.surfaceRevolvedString}
             ${DeclarationStrings.surfaceSphericalString}
             ${DeclarationStrings.surfaceSweepString}
-            ${DeclarationStrings.solidString}
-            ${DeclarationStrings.solidBooleansString}
-            ${DeclarationStrings.solidExpansionsString}
-            ${DeclarationStrings.solidExtrusionsString}
-            ${DeclarationStrings.solidHullsString}
-            ${DeclarationStrings.solidPathString}
-            ${DeclarationStrings.solidPolygonString}
-            ${DeclarationStrings.solidShapesString}
-            ${DeclarationStrings.solidTextString}
+            ${DeclarationStrings.jscadString}
+            ${DeclarationStrings.jscadBooleansString}
+            ${DeclarationStrings.jscadExpansionsString}
+            ${DeclarationStrings.jscadExtrusionsString}
+            ${DeclarationStrings.jscadHullsString}
+            ${DeclarationStrings.jscadPathString}
+            ${DeclarationStrings.jscadPolygonString}
+            ${DeclarationStrings.jscadShapesString}
+            ${DeclarationStrings.jscadTextString}
             ${DeclarationStrings.intersectString}
             ${DeclarationStrings.tagString}
             ${DeclarationStrings.timeString}
@@ -82,7 +82,7 @@ const monacoConfig: NgxMonacoEditorConfig = {
                 readonly polyline: Polyline;
                 readonly curve: Curve;
                 readonly surface: Surface;
-                readonly solid: Solid;
+                readonly jscad: JSCAD;
                 readonly intersect: Intersect;
                 readonly tag: Tag;
                 readonly time: Time;

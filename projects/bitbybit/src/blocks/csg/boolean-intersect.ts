@@ -16,14 +16,14 @@ export function createBooleanIntersectBlock(): void {
             this.appendValueInput('IntersectObject')
                 .setCheck('CsgMesh')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_csg_intersect_input_intersect_object);
+                .appendField(resources.block_jscad_intersect_input_intersect_object);
             this.appendValueInput('WithObject')
                 .setCheck('CsgMesh')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_csg_intersect_input_with_object.toLowerCase());
+                .appendField(resources.block_jscad_intersect_input_with_object.toLowerCase());
             this.setOutput(true, 'CsgMesh');
             this.setColour('#fff');
-            this.setTooltip(resources.block_csg_intersect_description);
+            this.setTooltip(resources.block_jscad_intersect_description);
             this.setHelpUrl(environment.docsUrl + solidConstants.solidBooleansHelpUrl + '#' + 'intersect');
         }
     };
@@ -44,7 +44,7 @@ export function createBooleanIntersectBlock(): void {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `return bitbybit.solid.booleans.intersect({objects: [inputs.intersectObject, inputs.withObject]});`
+            `return bitbybit.jscad.booleans.intersect({objects: [inputs.intersectObject, inputs.withObject]});`
         );
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };

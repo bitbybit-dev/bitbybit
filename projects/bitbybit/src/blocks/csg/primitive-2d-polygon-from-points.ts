@@ -16,10 +16,10 @@ export function createPrimitive2dPolygonFromPointsBlock(): void {
             this.appendValueInput('Points')
                 .setCheck('Array')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_csg_primitive_2d_polygon_from_points_input_points);
+                .appendField(resources.block_jscad_primitive_2d_polygon_from_points_input_points);
             this.setOutput(true, 'Polygon');
             this.setColour('#fff');
-            this.setTooltip(resources.block_csg_primitive_2d_polygon_from_points_description);
+            this.setTooltip(resources.block_jscad_primitive_2d_polygon_from_points_description);
             this.setHelpUrl(environment.docsUrl + solidConstants.solidPolygonHelpUrl + '#' + 'createfrompoints');
         }
     };
@@ -39,7 +39,7 @@ export function createPrimitive2dPolygonFromPointsBlock(): void {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `return bitbybit.solid.polygon.createFromPoints(inputs);`
+            `return bitbybit.jscad.polygon.createFromPoints(inputs);`
         );
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };

@@ -16,10 +16,10 @@ export function createHullChainPathsBlock(): void {
             this.appendValueInput('Paths')
                 .setCheck('Array')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_csg_chain_hull_paths_input_paths);
+                .appendField(resources.block_jscad_chain_hull_paths_input_paths);
             this.setOutput(true, 'Path');
             this.setColour('#fff');
-            this.setTooltip(resources.block_csg_chain_hull_paths_description);
+            this.setTooltip(resources.block_jscad_chain_hull_paths_description);
             this.setHelpUrl(environment.docsUrl + solidConstants.solidHullsHelpUrl + '#' + 'hullchain');
         }
     };
@@ -39,7 +39,7 @@ export function createHullChainPathsBlock(): void {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `return bitbybit.solid.hulls.hullChain(inputs);`
+            `return bitbybit.jscad.hulls.hullChain(inputs);`
         );
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };

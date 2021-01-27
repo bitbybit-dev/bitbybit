@@ -16,18 +16,18 @@ export function createPrimitiveSpheresOnCenterPointsBlock(): void {
             this.appendValueInput('Centers')
                 .setCheck('Array')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_csg_spheres_on_center_points_input_centers);
+                .appendField(resources.block_jscad_spheres_on_center_points_input_centers);
             this.appendValueInput('Radius')
                 .setCheck('Number')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_csg_spheres_on_center_points_input_radius.toLowerCase());
+                .appendField(resources.block_jscad_spheres_on_center_points_input_radius.toLowerCase());
             this.appendValueInput('Segments')
                 .setCheck('Number')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_csg_spheres_on_center_points_input_segments.toLowerCase());
+                .appendField(resources.block_jscad_spheres_on_center_points_input_segments.toLowerCase());
             this.setOutput(true, 'Array');
             this.setColour('#fff');
-            this.setTooltip(resources.block_csg_sphere_description);
+            this.setTooltip(resources.block_jscad_sphere_description);
             this.setHelpUrl(environment.docsUrl + solidConstants.solidShapesHelpUrl + '#' + 'spheresoncenterpoints');
         }
     };
@@ -49,7 +49,7 @@ export function createPrimitiveSpheresOnCenterPointsBlock(): void {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `return bitbybit.solid.shapes.spheresOnCenterPoints(inputs);`
+            `return bitbybit.jscad.shapes.spheresOnCenterPoints(inputs);`
         );
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };

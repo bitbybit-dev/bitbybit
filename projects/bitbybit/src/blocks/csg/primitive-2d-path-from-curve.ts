@@ -16,14 +16,14 @@ export function createPrimitive2dPathFromCurveBlock(): void {
             this.appendValueInput('Curve')
                 .setCheck('NurbsCurve')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_csg_primitive_2d_path_from_curve_input_curve);
+                .appendField(resources.block_jscad_primitive_2d_path_from_curve_input_curve);
             this.appendValueInput('Closed')
                 .setCheck('Boolean')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_csg_primitive_2d_path_from_curve_input_closed.toLowerCase());
+                .appendField(resources.block_jscad_primitive_2d_path_from_curve_input_closed.toLowerCase());
             this.setOutput(true, 'Path');
             this.setColour('#fff');
-            this.setTooltip(resources.block_csg_primitive_2d_path_from_curve_description);
+            this.setTooltip(resources.block_jscad_primitive_2d_path_from_curve_description);
             this.setHelpUrl(environment.docsUrl + solidConstants.solidPathHelpUrl + '#' + 'createfromcurve');
         }
     };
@@ -44,7 +44,7 @@ export function createPrimitive2dPathFromCurveBlock(): void {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `return bitbybit.solid.path.createFromCurve(inputs);`
+            `return bitbybit.jscad.path.createFromCurve(inputs);`
         );
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };

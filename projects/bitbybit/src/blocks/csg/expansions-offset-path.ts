@@ -16,22 +16,22 @@ export function createExpansionsOffsetPathBlock(): void {
             this.appendValueInput('Path')
                 .setCheck('Path')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_csg_expansions_offset_path_input_path);
+                .appendField(resources.block_jscad_expansions_offset_path_input_path);
             this.appendValueInput('Delta')
                 .setCheck('Number')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_csg_expansions_offset_path_input_delta.toLowerCase());
+                .appendField(resources.block_jscad_expansions_offset_path_input_delta.toLowerCase());
             this.appendValueInput('Segments')
                 .setCheck('Number')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_csg_expansions_offset_path_input_segments.toLowerCase());
+                .appendField(resources.block_jscad_expansions_offset_path_input_segments.toLowerCase());
             this.appendValueInput('Corners')
                 .setCheck('String')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_csg_expansions_offset_path_input_corners.toLowerCase());
+                .appendField(resources.block_jscad_expansions_offset_path_input_corners.toLowerCase());
             this.setOutput(true, 'Polygon');
             this.setColour('#fff');
-            this.setTooltip(resources.block_csg_expansions_offset_path_description);
+            this.setTooltip(resources.block_jscad_expansions_offset_path_description);
             this.setHelpUrl(environment.docsUrl + solidConstants.solidExpansionsHelpUrl + '#' + 'offset');
         }
     };
@@ -54,7 +54,7 @@ export function createExpansionsOffsetPathBlock(): void {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `return bitbybit.solid.expansions.offset(inputs);`
+            `return bitbybit.jscad.expansions.offset(inputs);`
         );
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };

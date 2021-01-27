@@ -14,14 +14,14 @@ export function createCornerTypeBlock(): void {
         init(): void {
             this.appendDummyInput('Corners')
                 .appendField(new FieldDropdown([
-                    [resources.block_csg_corner_type_input_edge, '\'edge\''],
-                    [resources.block_csg_corner_type_input_round, '\'round\''],
-                    [resources.block_csg_corner_type_input_chamfer, '\'chamfer\''],
+                    [resources.block_jscad_corner_type_input_edge, '\'edge\''],
+                    [resources.block_jscad_corner_type_input_round, '\'round\''],
+                    [resources.block_jscad_corner_type_input_chamfer, '\'chamfer\''],
                 ]), 'CornerType');
             this.setOutput(true, 'String');
             this.setColour('#fff');
-            this.setTooltip(resources.block_csg_expansions_expand_path_description);
-            this.setHelpUrl(environment.docsUrl + '/enums/_api_inputs_solid_inputs.solid.solidcornertypeenum.html');
+            this.setTooltip(resources.block_jscad_expansions_expand_path_description);
+            this.setHelpUrl(environment.docsUrl + '/enums/_api_inputs_solid_Inputs.JSCAD.solidcornertypeenum.html');
         }
     };
 

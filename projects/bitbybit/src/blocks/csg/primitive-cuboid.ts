@@ -16,22 +16,22 @@ export function createPrimitiveCuboidBlock(): void {
             this.appendValueInput('Center')
                 .setCheck('Array')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_csg_cuboid_input_center);
+                .appendField(resources.block_jscad_cuboid_input_center);
             this.appendValueInput('Width')
                 .setCheck('Number')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_csg_cuboid_input_width.toLowerCase());
+                .appendField(resources.block_jscad_cuboid_input_width.toLowerCase());
             this.appendValueInput('Length')
                 .setCheck('Number')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_csg_cuboid_input_length.toLowerCase());
+                .appendField(resources.block_jscad_cuboid_input_length.toLowerCase());
             this.appendValueInput('Height')
                 .setCheck('Number')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_csg_cuboid_input_height.toLowerCase());
+                .appendField(resources.block_jscad_cuboid_input_height.toLowerCase());
             this.setOutput(true, 'CsgMesh');
             this.setColour('#fff');
-            this.setTooltip(resources.block_csg_cuboid_description);
+            this.setTooltip(resources.block_jscad_cuboid_description);
             this.setHelpUrl(environment.docsUrl + solidConstants.solidShapesHelpUrl + '#' + 'cuboid');
         }
     };
@@ -54,7 +54,7 @@ export function createPrimitiveCuboidBlock(): void {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `return bitbybit.solid.shapes.cuboid(inputs);`
+            `return bitbybit.jscad.shapes.cuboid(inputs);`
         );
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };

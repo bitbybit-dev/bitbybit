@@ -9,7 +9,7 @@ import * as Inputs from '../inputs/inputs';
  * Thanks JSCAD community for developing this kernel
  */
 @Injectable()
-export class SolidPolygon {
+export class JSCADPolygon {
 
     constructor(
         private readonly context: Context,
@@ -20,9 +20,9 @@ export class SolidPolygon {
     /**
      * Create a 2D polygon from a list of points
      * <div>
-     *  <img src="../assets/images/blockly-images/solid/polygon/createFromPoints.svg" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/jscad/polygon/createFromPoints.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_solid_polygon.solidpolygon.html#createfrompoints
+     * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_polygon.jscadpolygon.html#createfrompoints
      * @param inputs Points
      * @returns Path
      */
@@ -34,9 +34,9 @@ export class SolidPolygon {
     /**
      * Create a 2D polygon from a polyline
      * <div>
-     *  <img src="../assets/images/blockly-images/solid/polygon/createFromPolyline.svg" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/jscad/polygon/createFromPolyline.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_solid_polygon.solidpolygon.html#createfrompolyline
+     * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_polygon.jscadpolygon.html#createfrompolyline
      * @param inputs Polyline
      * @returns Polygon
      */
@@ -48,9 +48,9 @@ export class SolidPolygon {
     /**
      * Create a 2D polygon from a curve
      * <div>
-     *  <img src="../assets/images/blockly-images/solid/polygon/createFromCurve.svg" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/jscad/polygon/createFromCurve.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_solid_polygon.solidpolygon.html#createfromcurve
+     * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_polygon.jscadpolygon.html#createfromcurve
      * @param inputs Nurbs curve
      * @returns Polygon
      */
@@ -62,39 +62,39 @@ export class SolidPolygon {
     /**
      * Create a 2D polygon from a path
      * <div>
-     *  <img src="../assets/images/blockly-images/solid/polygon/createFromPath.svg" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/jscad/polygon/createFromPath.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_solid_polygon.solidpolygon.html#createfrompath
+     * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_polygon.jscadpolygon.html#createfrompath
      * @param inputs Path
      * @returns Polygon
      */
-    createFromPath(inputs: Inputs.Solid.PathDto): any {
+    createFromPath(inputs: Inputs.JSCAD.PathDto): any {
         return this.removeDuplicatesAndCreateFromPoints(inputs.path.points);
     }
 
     /**
      * Create a 2D polygon circle
      * <div>
-     *  <img src="../assets/images/blockly-images/solid/polygon/circle.svg" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/jscad/polygon/circle.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_solid_polygon.solidpolygon.html#circle
+     * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_polygon.jscadpolygon.html#circle
      * @param inputs Circle parameters
      * @returns Circle polygon
      */
-    circle(inputs: Inputs.Solid.CircleDto): any {
+    circle(inputs: Inputs.JSCAD.CircleDto): any {
         return this.context.jscad.primitives.circle({ center: inputs.center, radius: inputs.radius, segments: inputs.segments });
     }
 
     /**
      * Create a 2D polygon ellipse
      * <div>
-     *  <img src="../assets/images/blockly-images/solid/polygon/ellipse.svg" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/jscad/polygon/ellipse.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_solid_polygon.solidpolygon.html#ellipse
+     * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_polygon.jscadpolygon.html#ellipse
      * @param inputs Ellipse parameters
      * @returns Ellipse polygon
      */
-    ellipse(inputs: Inputs.Solid.EllipseDto): any {
+    ellipse(inputs: Inputs.JSCAD.EllipseDto): any {
         return this.context.jscad.primitives.ellipse(
             {
                 center: inputs.center,
@@ -107,13 +107,13 @@ export class SolidPolygon {
     /**
      * Create a 2D polygon rectangle
      * <div>
-     *  <img src="../assets/images/blockly-images/solid/polygon/rectangle.svg" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/jscad/polygon/rectangle.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_solid_polygon.solidpolygon.html#rectangle
+     * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_polygon.jscadpolygon.html#rectangle
      * @param inputs Rectangle parameters
      * @returns Rectangle polygon
      */
-    rectangle(inputs: Inputs.Solid.RectangleDto): any {
+    rectangle(inputs: Inputs.JSCAD.RectangleDto): any {
         return this.context.jscad.primitives.rectangle(
             {
                 center: [inputs.center[0], inputs.center[1]],
@@ -125,13 +125,13 @@ export class SolidPolygon {
     /**
      * Create a 2D rounded rectangle
      * <div>
-     *  <img src="../assets/images/blockly-images/solid/polygon/roundedRectangle.svg" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/jscad/polygon/roundedRectangle.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_solid_polygon.solidpolygon.html#roundedrectangle
+     * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_polygon.jscadpolygon.html#roundedrectangle
      * @param inputs Rounded rectangle parameters
      * @returns Rounded rectangle polygon
      */
-    roundedRectangle(inputs: Inputs.Solid.RoundedRectangleDto): any {
+    roundedRectangle(inputs: Inputs.JSCAD.RoundedRectangleDto): any {
         return this.context.jscad.primitives.roundedRectangle({
             center: [inputs.center[0], inputs.center[1]],
             size: [inputs.width, inputs.length],
@@ -143,26 +143,26 @@ export class SolidPolygon {
     /**
      * Create a 2D polygon square
      * <div>
-     *  <img src="../assets/images/blockly-images/solid/polygon/square.svg" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/jscad/polygon/square.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_solid_polygon.solidpolygon.html#square
+     * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_polygon.jscadpolygon.html#square
      * @param inputs Square parameters
      * @returns Square polygon
      */
-    square(inputs: Inputs.Solid.SquareDto): any {
+    square(inputs: Inputs.JSCAD.SquareDto): any {
         return this.context.jscad.primitives.square({ center: [inputs.center[0], inputs.center[1]], size: inputs.size });
     }
 
     /**
      * Create a 2D polygon star
      * <div>
-     *  <img src="../assets/images/blockly-images/solid/polygon/star.svg" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/jscad/polygon/star.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_solid_polygon.solidpolygon.html#star
+     * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_polygon.jscadpolygon.html#star
      * @param inputs Star parameters
      * @returns Star polygon
      */
-    star(inputs: Inputs.Solid.StarDto): any {
+    star(inputs: Inputs.JSCAD.StarDto): any {
         return this.context.jscad.primitives.star({
             center: [inputs.center[0], inputs.center[1]],
             vertices: inputs.vertices,

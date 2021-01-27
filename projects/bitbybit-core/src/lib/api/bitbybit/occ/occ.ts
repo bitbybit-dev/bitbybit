@@ -4,8 +4,7 @@ import { Subject } from 'rxjs';
 import { Context } from '../../context';
 import { GeometryHelper } from '../../geometry-helper';
 import * as Inputs from '../../inputs/inputs';
-import { SolidText } from '../solid-text';
-import { Tag } from '../tag';
+import { JSCADText } from '../jscad-text';
 import { Vector } from '../vector';
 
 /**
@@ -23,7 +22,7 @@ export class OCC {
     constructor(
         private readonly context: Context,
         private readonly geometryHelper: GeometryHelper,
-        private readonly solidText: SolidText,
+        private readonly solidText: JSCADText,
         private readonly vector: Vector
     ) {
     }
@@ -120,7 +119,7 @@ export class OCC {
                 const textPolylines: number[][][] = [];
                 fe.edgeList.forEach(edge => {
                     const edgeMiddle = this.computeEdgeMiddlePos(edge);
-                    const tdto = new Inputs.Solid.TextDto();
+                    const tdto = new Inputs.JSCAD.TextDto();
                     tdto.text = `${edge.edge_index}`;
                     tdto.height = inputs.edgeIndexHeight;
                     tdto.lineSpacing = 1.5;
@@ -147,7 +146,7 @@ export class OCC {
                 const textPolylines: number[][][] = [];
                 fe.faceList.forEach(face => {
                     const faceMiddle = this.computeFaceMiddlePos(face.vertex_coord_vec);
-                    const tdto = new Inputs.Solid.TextDto();
+                    const tdto = new Inputs.JSCAD.TextDto();
                     tdto.text = `${face.face_index}`;
                     tdto.height = inputs.faceIndexHeight;
                     tdto.lineSpacing = 1.5;

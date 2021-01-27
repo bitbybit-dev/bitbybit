@@ -66,7 +66,7 @@ export function createDrawCsgMeshesBlock(): void {
 
         return createStandardContextIIFE(block, blockSelector, inputs, false,
             `inputs.jscadMesh = ${(JavaScript as any).variableDB_.getName(block.getFieldValue('DrawnCsgMeshes'), VARIABLE_CATEGORY_NAME)};
-            ${(JavaScript as any).variableDB_.getName(block.getFieldValue('DrawnCsgMeshes'), VARIABLE_CATEGORY_NAME)} = bitbybit.solid.drawSolidOrPolygonMeshes(inputs);`);
+            ${(JavaScript as any).variableDB_.getName(block.getFieldValue('DrawnCsgMeshes'), VARIABLE_CATEGORY_NAME)} = bitbybit.jscad.drawSolidOrPolygonMeshes(inputs);`);
     };
 }
 

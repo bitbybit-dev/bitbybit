@@ -16,18 +16,18 @@ export function createPrimitiveGeodesicSpheresOnCenterPointsBlock(): void {
             this.appendValueInput('Centers')
                 .setCheck('Array')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_csg_geodesic_spheres_on_center_points_input_centers);
+                .appendField(resources.block_jscad_geodesic_spheres_on_center_points_input_centers);
             this.appendValueInput('Radius')
                 .setCheck('Number')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_csg_geodesic_spheres_on_center_points_input_radius.toLowerCase());
+                .appendField(resources.block_jscad_geodesic_spheres_on_center_points_input_radius.toLowerCase());
             this.appendValueInput('Frequency')
                 .setCheck('Number')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_csg_geodesic_spheres_on_center_points_input_frequency.toLowerCase());
+                .appendField(resources.block_jscad_geodesic_spheres_on_center_points_input_frequency.toLowerCase());
             this.setOutput(true, 'Array');
             this.setColour('#fff');
-            this.setTooltip(resources.block_csg_geodesic_spheres_on_center_points_description);
+            this.setTooltip(resources.block_jscad_geodesic_spheres_on_center_points_description);
             this.setHelpUrl(environment.docsUrl + solidConstants.solidShapesHelpUrl + '#' + 'geodesicspheresoncenterpoints');
         }
     };
@@ -49,7 +49,7 @@ export function createPrimitiveGeodesicSpheresOnCenterPointsBlock(): void {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `return bitbybit.solid.shapes.geodesicSpheresOnCenterPoints(inputs);`
+            `return bitbybit.jscad.shapes.geodesicSpheresOnCenterPoints(inputs);`
         );
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };

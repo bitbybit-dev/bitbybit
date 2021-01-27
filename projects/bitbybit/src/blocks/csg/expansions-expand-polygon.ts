@@ -16,22 +16,22 @@ export function createExpansionsExpandPolygonBlock(): void {
             this.appendValueInput('Polygon')
                 .setCheck('Polygon')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_csg_expansions_expand_polygon_input_polygon);
+                .appendField(resources.block_jscad_expansions_expand_polygon_input_polygon);
             this.appendValueInput('Delta')
                 .setCheck('Number')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_csg_expansions_expand_polygon_input_delta.toLowerCase());
+                .appendField(resources.block_jscad_expansions_expand_polygon_input_delta.toLowerCase());
             this.appendValueInput('Segments')
                 .setCheck('Number')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_csg_expansions_expand_polygon_input_segments.toLowerCase());
+                .appendField(resources.block_jscad_expansions_expand_polygon_input_segments.toLowerCase());
             this.appendValueInput('Corners')
                 .setCheck('String')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_csg_expansions_expand_polygon_input_corners.toLowerCase());
+                .appendField(resources.block_jscad_expansions_expand_polygon_input_corners.toLowerCase());
             this.setOutput(true, 'Polygon');
             this.setColour('#fff');
-            this.setTooltip(resources.block_csg_expansions_expand_polygon_description);
+            this.setTooltip(resources.block_jscad_expansions_expand_polygon_description);
             this.setHelpUrl(environment.docsUrl + solidConstants.solidExpansionsHelpUrl + '#' + 'expand');
         }
     };
@@ -54,7 +54,7 @@ export function createExpansionsExpandPolygonBlock(): void {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `return bitbybit.solid.expansions.expand(inputs);`
+            `return bitbybit.jscad.expansions.expand(inputs);`
         );
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };

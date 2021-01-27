@@ -13,14 +13,14 @@ export function createTextAlignTypeBlock(): void {
         init(): void {
             this.appendDummyInput('TextAlign')
                 .appendField(new FieldDropdown([
-                    [resources.block_csg_text_align_type_input_left.toLowerCase(), '\'left\''],
-                    [resources.block_csg_text_align_type_input_center.toLowerCase(), '\'center\''],
-                    [resources.block_csg_text_align_type_input_right.toLowerCase(), '\'right\''],
+                    [resources.block_jscad_text_align_type_input_left.toLowerCase(), '\'left\''],
+                    [resources.block_jscad_text_align_type_input_center.toLowerCase(), '\'center\''],
+                    [resources.block_jscad_text_align_type_input_right.toLowerCase(), '\'right\''],
                 ]), 'TextAlignType');
             this.setOutput(true, 'String');
             this.setColour('#fff');
-            this.setTooltip(resources.block_csg_expansions_expand_path_description);
-            this.setHelpUrl(environment.docsUrl + '/enums/_api_inputs_solid_inputs.solid.solidtextalignenum.html');
+            this.setTooltip(resources.block_jscad_expansions_expand_path_description);
+            this.setHelpUrl(environment.docsUrl + '/enums/_api_inputs_solid_Inputs.JSCAD.solidtextalignenum.html');
         }
     };
 

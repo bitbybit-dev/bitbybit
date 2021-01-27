@@ -16,14 +16,14 @@ export function createBooleanSubtractBlock(): void {
             this.appendValueInput('SubtractObject')
                 .setCheck('CsgMesh')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_csg_subtract_input_subtract_object);
+                .appendField(resources.block_jscad_subtract_input_subtract_object);
             this.appendValueInput('SubtractFromObject')
                 .setCheck('CsgMesh')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_csg_subtract_input_subtract_from_object.toLowerCase());
+                .appendField(resources.block_jscad_subtract_input_subtract_from_object.toLowerCase());
             this.setOutput(true, 'CsgMesh');
             this.setColour('#fff');
-            this.setTooltip(resources.block_csg_subtract_description);
+            this.setTooltip(resources.block_jscad_subtract_description);
             this.setHelpUrl(environment.docsUrl + solidConstants.solidBooleansHelpUrl + '#' + 'subtract');
         }
     };
@@ -44,7 +44,7 @@ export function createBooleanSubtractBlock(): void {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `return bitbybit.solid.booleans.subtract({objects: [inputs.subtractFromObject, inputs.subtractObject]});`
+            `return bitbybit.jscad.booleans.subtract({objects: [inputs.subtractFromObject, inputs.subtractObject]});`
         );
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };

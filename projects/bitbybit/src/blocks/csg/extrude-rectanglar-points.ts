@@ -16,18 +16,18 @@ export function createExtrudeRectangularPointsBlock(): void {
             this.appendValueInput('Points')
                 .setCheck('Array')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_csg_extrude_rectangular_points_input_points);
+                .appendField(resources.block_jscad_extrude_rectangular_points_input_points);
             this.appendValueInput('Size')
                 .setCheck('Number')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_csg_extrude_rectangular_points_input_size.toLowerCase());
+                .appendField(resources.block_jscad_extrude_rectangular_points_input_size.toLowerCase());
             this.appendValueInput('Height')
                 .setCheck('Number')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_csg_extrude_rectangular_points_input_height.toLowerCase());
+                .appendField(resources.block_jscad_extrude_rectangular_points_input_height.toLowerCase());
             this.setOutput(true, 'CsgMesh');
             this.setColour('#fff');
-            this.setTooltip(resources.block_csg_extrude_rectangular_points_description);
+            this.setTooltip(resources.block_jscad_extrude_rectangular_points_description);
             this.setHelpUrl(environment.docsUrl + solidConstants.solidExtrusionsHelpUrl + '#' + 'extruderectangularpoints');
         }
     };
@@ -49,7 +49,7 @@ export function createExtrudeRectangularPointsBlock(): void {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `return bitbybit.solid.extrusions.extrudeRectangularPoints(inputs);`
+            `return bitbybit.jscad.extrusions.extrudeRectangularPoints(inputs);`
         );
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };

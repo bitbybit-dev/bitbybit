@@ -17,7 +17,7 @@
                         </mat-icon>
                     </button> -->
                     <mat-spinner *ngIf="!occWorkerInitialised" [matTooltip]="resources.app_menu_workers_initialising"
-                        diameter="30"></mat-spinner>
+                        diameter="30" color="accent"></mat-spinner>
                     <ng-container
                         *ngIf="(currentUiState === UiStatesEnum.blockly || currentUiState === UiStatesEnum.monaco)">
                         <button *ngIf="currentUiState === UiStatesEnum.blockly" mat-buttom mat-icon-button
@@ -168,7 +168,7 @@
                             <mat-icon [matTooltip]="resources.app_menu_swap_canvas" aria-label="Swap Canvas">swap_horiz
                             </mat-icon>
                         </button>
-                        <mat-spinner [matTooltip]="resources.app_menu_workers_initialising" diameter="30"></mat-spinner>
+                        <mat-spinner *ngIf="!occWorkerInitialised" [matTooltip]="resources.app_menu_workers_initialising" color="accent" diameter="30"></mat-spinner>
                         <ng-container
                             *ngIf="currentUiState === UiStatesEnum.blockly || currentUiState === UiStatesEnum.monaco">
                             <button *ngIf="occWorkerInitialised" mat-buttom mat-icon-button (click)="run()">

@@ -16,26 +16,26 @@ export function createPrimitiveRoundedCylinderBlock(): void {
             this.appendValueInput('Center')
                 .setCheck('Array')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_csg_rounded_cylinder_input_center);
+                .appendField(resources.block_jscad_rounded_cylinder_input_center);
             this.appendValueInput('Height')
                 .setCheck('Number')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_csg_rounded_cylinder_input_height.toLowerCase());
+                .appendField(resources.block_jscad_rounded_cylinder_input_height.toLowerCase());
             this.appendValueInput('Radius')
                 .setCheck('Number')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_csg_rounded_cylinder_input_radius.toLowerCase());
+                .appendField(resources.block_jscad_rounded_cylinder_input_radius.toLowerCase());
             this.appendValueInput('RoundRadius')
                 .setCheck('Number')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_csg_rounded_cylinder_input_round_radius.toLowerCase());
+                .appendField(resources.block_jscad_rounded_cylinder_input_round_radius.toLowerCase());
             this.appendValueInput('Segments')
                 .setCheck('Number')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_csg_rounded_cylinder_input_segments.toLowerCase());
+                .appendField(resources.block_jscad_rounded_cylinder_input_segments.toLowerCase());
             this.setOutput(true, 'CsgMesh');
             this.setColour('#fff');
-            this.setTooltip(resources.block_csg_rounded_cylinder_description);
+            this.setTooltip(resources.block_jscad_rounded_cylinder_description);
             this.setHelpUrl(environment.docsUrl + solidConstants.solidShapesHelpUrl + '#' + 'roundedcylinder');
         }
     };
@@ -60,7 +60,7 @@ export function createPrimitiveRoundedCylinderBlock(): void {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `return bitbybit.solid.shapes.roundedCylinder(inputs);`
+            `return bitbybit.jscad.shapes.roundedCylinder(inputs);`
 
         );
         return [code, (JavaScript as any).ORDER_ATOMIC];

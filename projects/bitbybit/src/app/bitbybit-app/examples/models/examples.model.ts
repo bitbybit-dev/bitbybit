@@ -207,22 +207,22 @@ const hullSolids = allIsocurves.map((curve) => {
         curve,
         subdivision: isocurveSubdivisions,
     });
-    const spheres = bitbybit.solid.shapes.spheresOnCenterPoints({
+    const spheres = bitbybit.jscad.shapes.spheresOnCenterPoints({
         centers,
         radius: verticalIsocurveRadius,
         segments: 4,
     });
-    return bitbybit.solid.hulls.hullChain({
+    return bitbybit.jscad.hulls.hullChain({
         geometry: spheres,
     });
 });
 
-const drawSolidsInput = new Inputs.Solid.DrawSolidsMeshDto(hullSolids);
+const drawSolidsInput = new Inputs.JSCAD.DrawSolidsMeshDto(hullSolids);
 drawSolidsInput.colour = '#ffffff';
-bitbybit.solid.drawSolidOrPolygonMeshes(drawSolidsInput);
+bitbybit.jscad.drawSolidOrPolygonMeshes(drawSolidsInput);
 
 if (downloadStl) {
-    bitbybit.solid.downloadSolidsSTL({
+    bitbybit.jscad.downloadSolidsSTL({
         solids: hullSolids,
         fileName: 'bitbybit-model',
     });

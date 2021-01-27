@@ -1,14 +1,15 @@
-import { simplifyDeclaration } from '../simplify-declaration';
-
-export const solidInputsString = simplifyDeclaration(`
 import { LinesMesh, Mesh } from '@babylonjs/core';
 import { Polyline } from './polyline-inputs';
-export declare namespace Solid {
-    class DrawSolidMeshDto {
+
+// tslint:disable-next-line: no-namespace
+export namespace JSCAD {
+    export class DrawSolidMeshDto {
         /**
          * Provide options without default values
          */
-        constructor(mesh?: any[]);
+        constructor(mesh?: any[]) {
+            this.mesh = mesh;
+        }
         /**
          * Solid Jscad mesh
          */
@@ -16,25 +17,27 @@ export declare namespace Solid {
         /**
          * Value between 0 and 1
          */
-        opacity: number;
+        opacity = 1;
         /**
          * Hex colour string
          */
-        colour: string;
+        colour = '#444444';
         /**
          * Indicates wether this solid will be transformed in time
          */
-        updatable: boolean;
+        updatable = false;
         /**
          * Solid mesh variable in case it already exists and needs updating
          */
         jscadMesh?: Mesh;
     }
-    class DrawSolidsMeshDto {
+    export class DrawSolidsMeshDto {
         /**
          * Provide options without default values
          */
-        constructor(meshes?: any[]);
+        constructor(meshes?: any[]) {
+            this.meshes = meshes;
+        }
         /**
          * Solid Jscad meshes
          */
@@ -42,25 +45,27 @@ export declare namespace Solid {
         /**
          * Value between 0 and 1
          */
-        opacity: number;
+        opacity = 1;
         /**
          * Hex colour string
          */
-        colour: string;
+        colour = '#444444';
         /**
          * Indicates wether this solid will be transformed in time
          */
-        updatable: boolean;
+        updatable = false;
         /**
          * Solid mesh variable in case it already exists and needs updating
          */
         jscadMesh?: Mesh;
     }
-    class DrawPathDto {
+    export class DrawPathDto {
         /**
          * Provide options without default values
          */
-        constructor(path?: any[]);
+        constructor(path?: any[]) {
+            this.path = path;
+        }
         /**
          * 2D Path to draw
          */
@@ -68,25 +73,25 @@ export declare namespace Solid {
         /**
          * Colour of the path
          */
-        colour: string;
+        colour = '#444444';
         /**
          * Opacity of the path
          */
-        opacity: number;
+        opacity = 1;
         /**
          * Width of the path
          */
-        width: number;
+        width = 3;
         /**
          * Indicates wether the path will change in time
          */
-        updatable: boolean;
+        updatable = false;
         /**
          * Path mesh variable that will be updated if updatable property is set to true
          */
         pathMesh?: LinesMesh;
     }
-    class TransformSolidsDto {
+    export class TransformSolidsDto {
         /**
          * Solids to be transformed
          */
@@ -96,7 +101,7 @@ export declare namespace Solid {
          */
         matrix: number[][] | number[][][];
     }
-    class TransformSolidDto {
+    export class TransformSolidDto {
         /**
          * Solid to be transformed
          */
@@ -106,7 +111,7 @@ export declare namespace Solid {
          */
         matrix: number[][] | number[][][];
     }
-    class DownloadSolidDto {
+    export class DownloadSolidDto {
         /**
          * Solid to be downloaded
          */
@@ -116,7 +121,7 @@ export declare namespace Solid {
          */
         fileName: string;
     }
-    class DownloadSolidsDto {
+    export class DownloadSolidsDto {
         /**
          * Solids to be downloaded
          */
@@ -126,13 +131,13 @@ export declare namespace Solid {
          */
         fileName: string;
     }
-    class BooleanObjectsDto {
+    export class BooleanObjectsDto {
         /**
          * Contains solid Jscad mesh objects that will be used to perform boolean operation
          */
         objects: any[];
     }
-    class ExpansionDto {
+    export class ExpansionDto {
         /**
          * Delta (+/-) of expansion
          */
@@ -150,7 +155,7 @@ export declare namespace Solid {
          */
         geometry: any[];
     }
-    class OffsetDto {
+    export class OffsetDto {
         /**
          * Delta (+/-) of offset
          */
@@ -168,7 +173,7 @@ export declare namespace Solid {
          */
         geometry: any[];
     }
-    class ExtrudeLinearDto {
+    export class ExtrudeLinearDto {
         /**
          * Height of linear extrude
          */
@@ -186,13 +191,14 @@ export declare namespace Solid {
          */
         geometry: any | any[];
     }
-    class HullDto {
+
+    export class HullDto {
         /**
          * Geometries to use in hull
          */
         geometry: any[];
     }
-    class ExtrudeRectangularDto {
+    export class ExtrudeRectangularDto {
         /**
          * Height of linear extrude
          */
@@ -206,7 +212,7 @@ export declare namespace Solid {
          */
         geometry: any | any[];
     }
-    class ExtrudeRectangularPointsDto {
+    export class ExtrudeRectangularPointsDto {
         /**
          * Height of linear extrude
          */
@@ -220,7 +226,7 @@ export declare namespace Solid {
          */
         points: number[][];
     }
-    class ExtrudeRotateDto {
+    export class ExtrudeRotateDto {
         /**
          * Angle in degrees
          */
@@ -238,13 +244,13 @@ export declare namespace Solid {
          */
         polygon: any;
     }
-    class PathDto {
+    export class PathDto {
         /**
          * 2D path
          */
         path: any;
     }
-    class PathFromPointsDto {
+    export class PathFromPointsDto {
         /**
          * Points through which to create a path
          */
@@ -254,7 +260,7 @@ export declare namespace Solid {
          */
         closed: boolean;
     }
-    class PathFromPolylineDto {
+    export class PathFromPolylineDto {
         /**
          * Polyline
          */
@@ -264,7 +270,7 @@ export declare namespace Solid {
          */
         closed: boolean;
     }
-    class PathFromCurveDto {
+    export class PathFromCurveDto {
         /**
          * Verb Nurbs curve
          */
@@ -274,7 +280,7 @@ export declare namespace Solid {
          */
         closed: boolean;
     }
-    class PathAppendCurveDto {
+    export class PathAppendCurveDto {
         /**
          * Verb Nurbs curve
          */
@@ -284,7 +290,7 @@ export declare namespace Solid {
          */
         path: any;
     }
-    class PathAppendPointsDto {
+    export class PathAppendPointsDto {
         /**
          * Points to append
          */
@@ -294,7 +300,7 @@ export declare namespace Solid {
          */
         path: any;
     }
-    class PathAppendPolylineDto {
+    export class PathAppendPolylineDto {
         /**
          * Polyline to append
          */
@@ -304,7 +310,7 @@ export declare namespace Solid {
          */
         path: any;
     }
-    class PathAppendArcDto {
+    export class PathAppendArcDto {
         /**
          * Path to append the arc to
          */
@@ -338,7 +344,7 @@ export declare namespace Solid {
          */
         radiusY: number;
     }
-    class CircleDto {
+    export class CircleDto {
         /**
          * Center of the circle
          */
@@ -352,7 +358,7 @@ export declare namespace Solid {
          */
         segments: number;
     }
-    class EllipseDto {
+    export class EllipseDto {
         /**
          * Center of the circle
          */
@@ -366,7 +372,7 @@ export declare namespace Solid {
          */
         segments: number;
     }
-    class SquareDto {
+    export class SquareDto {
         /**
          * Center of the 2D square
          */
@@ -375,8 +381,9 @@ export declare namespace Solid {
          * Size of the square
          */
         size: number;
+
     }
-    class RectangleDto {
+    export class RectangleDto {
         /**
          * Center of the 2D rectangle
          */
@@ -390,7 +397,7 @@ export declare namespace Solid {
          */
         length: number;
     }
-    class RoundedRectangleDto extends RectangleDto {
+    export class RoundedRectangleDto extends RectangleDto {
         /**
          * The radius to round the rectangle edge
          */
@@ -400,7 +407,7 @@ export declare namespace Solid {
          */
         segments: number;
     }
-    class StarDto {
+    export class StarDto {
         /**
          * Center of the 2D star
          */
@@ -426,7 +433,7 @@ export declare namespace Solid {
          */
         startAngle: number;
     }
-    class CubeDto {
+    export class CubeDto {
         /**
          * Center coordinates of the cube
          */
@@ -436,7 +443,7 @@ export declare namespace Solid {
          */
         size: number;
     }
-    class CubeCentersDto {
+    export class CubeCentersDto {
         /**
          * Center coordinates of the cubes
          */
@@ -446,7 +453,7 @@ export declare namespace Solid {
          */
         size: number;
     }
-    class CuboidDto {
+    export class CuboidDto {
         /**
          * Center coordinates of the cubod
          */
@@ -464,7 +471,7 @@ export declare namespace Solid {
          */
         height: number;
     }
-    class CuboidCentersDto {
+    export class CuboidCentersDto {
         /**
          * Center coordinates of the cuboids
          */
@@ -482,7 +489,7 @@ export declare namespace Solid {
          */
         height: number;
     }
-    class RoundedCuboidDto extends CuboidDto {
+    export class RoundedCuboidDto extends CuboidDto {
         /**
          * Radius for rounding edges
          */
@@ -492,7 +499,7 @@ export declare namespace Solid {
          */
         segments: number;
     }
-    class RoundedCuboidCentersDto extends CuboidCentersDto {
+    export class RoundedCuboidCentersDto extends CuboidCentersDto {
         /**
          * Radius for rounding edges
          */
@@ -502,7 +509,7 @@ export declare namespace Solid {
          */
         segments: number;
     }
-    class CylidnerEllipticDto {
+    export class CylidnerEllipticDto {
         /**
          * Center of the cylinder
          */
@@ -524,7 +531,7 @@ export declare namespace Solid {
          */
         segments: number;
     }
-    class CylidnerCentersEllipticDto {
+    export class CylidnerCentersEllipticDto {
         /**
          * Centers of the cylinders
          */
@@ -546,7 +553,7 @@ export declare namespace Solid {
          */
         segments: number;
     }
-    class CylidnerDto {
+    export class CylidnerDto {
         /**
          * Center of the cylinder
          */
@@ -564,7 +571,7 @@ export declare namespace Solid {
          */
         segments: number;
     }
-    class RoundedCylidnerDto extends CylidnerDto {
+    export class RoundedCylidnerDto extends CylidnerDto {
         /**
          * Rounding radius
          */
@@ -574,7 +581,7 @@ export declare namespace Solid {
          */
         segments: number;
     }
-    class EllipsoidDto {
+    export class EllipsoidDto {
         /**
          * Center coordinates
          */
@@ -588,7 +595,7 @@ export declare namespace Solid {
          */
         segments: number;
     }
-    class EllipsoidCentersDto {
+    export class EllipsoidCentersDto {
         /**
          * Center coordinates
          */
@@ -602,7 +609,7 @@ export declare namespace Solid {
          */
         segments: number;
     }
-    class GeodesicSphereDto {
+    export class GeodesicSphereDto {
         /**
          * Radius of the sphere
          */
@@ -616,7 +623,7 @@ export declare namespace Solid {
          */
         center: number[];
     }
-    class GeodesicSphereCentersDto {
+    export class GeodesicSphereCentersDto {
         /**
          * Radius of the sphere
          */
@@ -630,7 +637,7 @@ export declare namespace Solid {
          */
         centers: number[][];
     }
-    class CylidnerCentersDto {
+    export class CylidnerCentersDto {
         /**
          * Centers of the cylinders
          */
@@ -648,7 +655,7 @@ export declare namespace Solid {
          */
         segments: number;
     }
-    class RoundedCylidnerCentersDto extends CylidnerCentersDto {
+    export class RoundedCylidnerCentersDto extends CylidnerCentersDto {
         /**
          * Rounding radius
          */
@@ -658,7 +665,7 @@ export declare namespace Solid {
          */
         segments: number;
     }
-    class SphereDto {
+    export class SphereDto {
         /**
          * Center point of the sphere
          */
@@ -672,7 +679,7 @@ export declare namespace Solid {
          */
         segments: number;
     }
-    class SphereCentersDto {
+    export class SphereCentersDto {
         /**
          * Center points of the spheres
          */
@@ -686,7 +693,7 @@ export declare namespace Solid {
          */
         segments: number;
     }
-    class TorusDto {
+    export class TorusDto {
         /**
          * Center coordinate
          */
@@ -720,7 +727,11 @@ export declare namespace Solid {
          */
         startAngle: number;
     }
-    class TextDto {
+    export class TextDto {
+
+        constructor(text?: string) {
+            this.text = text;
+        }
         /**
          * Text to write
          */
@@ -731,33 +742,33 @@ export declare namespace Solid {
         /**
          * X offset of the text
          */
-        xOffset: number;
+        xOffset = 0;
         /**
          * Y offset of the text
          */
-        yOffset: number;
+        yOffset = 0;
         /**
          * Height of the text
          */
-        height: number;
+        height = 1;
         /**
          * Space between lines
          */
-        lineSpacing: number;
+        lineSpacing = 1.4;
         /**
          * Space between letters
          */
-        letterSpacing: number;
+        letterSpacing = 1;
         /**
          * Align between left, center, right
          */
-        align: SolidTextAlignEnum;
+        align = JSCADTextAlignEnum.center;
         /**
          * Offset the extrusion
          */
-        extrudeOffset: boolean;
+        extrudeOffset = 0;
     }
-    class CylinderTextDto extends TextDto {
+    export class CylinderTextDto extends TextDto {
         /**
          * Height of the cylinder
          */
@@ -771,7 +782,7 @@ export declare namespace Solid {
          */
         segments: number;
     }
-    class SphereTextDto extends TextDto {
+    export class SphereTextDto extends TextDto {
         /**
          * Radius of the spheres
          */
@@ -781,34 +792,33 @@ export declare namespace Solid {
          */
         segments: number;
     }
-    enum SolidCornerTypeEnum {
+
+    export enum SolidCornerTypeEnum {
         /**
          * Edges will meet at a corner
          */
-        edge = "edge",
+        edge = 'edge',
         /**
          * Edges will be rounded on the corner
          */
-        round = "round",
+        round = 'round',
         /**
          * Edges will be chamfered on the corner
          */
-        chamfer = "chamfer"
+        chamfer = 'chamfer',
     }
-    enum SolidTextAlignEnum {
+    export enum JSCADTextAlignEnum {
         /**
          * Aligns text to the left
          */
-        left = "left",
+        left = 'left',
         /**
          * Aligns text to the center
          */
-        center = "center",
+        center = 'center',
         /**
          * Aligns text to the right
          */
-        right = "right"
+        right = 'right',
     }
 }
-
-`);

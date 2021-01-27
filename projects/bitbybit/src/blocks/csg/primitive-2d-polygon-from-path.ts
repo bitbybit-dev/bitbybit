@@ -16,10 +16,10 @@ export function createPrimitive2dPolygonFromPathBlock(): void {
             this.appendValueInput('Path')
                 .setCheck('Path')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_csg_primitive_2d_polygon_from_path_input_path);
+                .appendField(resources.block_jscad_primitive_2d_polygon_from_path_input_path);
             this.setOutput(true, 'Polygon');
             this.setColour('#fff');
-            this.setTooltip(resources.block_csg_primitive_2d_polygon_from_path_description);
+            this.setTooltip(resources.block_jscad_primitive_2d_polygon_from_path_description);
             this.setHelpUrl(environment.docsUrl + solidConstants.solidPolygonHelpUrl + '#' + 'createfrompath');
         }
     };
@@ -39,7 +39,7 @@ export function createPrimitive2dPolygonFromPathBlock(): void {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `return bitbybit.solid.polygon.createFromPath(inputs);`
+            `return bitbybit.jscad.polygon.createFromPath(inputs);`
         );
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };

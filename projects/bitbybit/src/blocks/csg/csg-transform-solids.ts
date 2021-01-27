@@ -16,13 +16,13 @@ export function createCsgTransformSolidsBlock(): void {
             this.appendValueInput('Solids')
                 .setCheck('Array')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_csg_transform_solids_input_solids);
+                .appendField(resources.block_jscad_transform_solids_input_solids);
             this.appendValueInput('Matrix')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_csg_transform_solids_input_transformation.toLowerCase());
+                .appendField(resources.block_jscad_transform_solids_input_transformation.toLowerCase());
             this.setOutput(true, 'Array');
             this.setColour('#fff');
-            this.setTooltip(resources.block_csg_transform_solids_description);
+            this.setTooltip(resources.block_jscad_transform_solids_description);
             this.setHelpUrl(environment.docsUrl + solidConstants.solidHelpUrl + '#' + 'transformsolids');
 
         }
@@ -44,7 +44,7 @@ export function createCsgTransformSolidsBlock(): void {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `return bitbybit.solid.transformSolids(inputs);`
+            `return bitbybit.jscad.transformSolids(inputs);`
         );
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };

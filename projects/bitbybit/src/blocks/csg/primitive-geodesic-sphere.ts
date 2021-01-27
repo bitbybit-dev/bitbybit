@@ -16,18 +16,18 @@ export function createPrimitiveGeodesicSphereBlock(): void {
             this.appendValueInput('Center')
                 .setCheck('Array')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_csg_geodesic_sphere_input_center);
+                .appendField(resources.block_jscad_geodesic_sphere_input_center);
             this.appendValueInput('Radius')
                 .setCheck('Number')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_csg_geodesic_sphere_input_radius.toLowerCase());
+                .appendField(resources.block_jscad_geodesic_sphere_input_radius.toLowerCase());
             this.appendValueInput('Frequency')
                 .setCheck('Number')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_csg_geodesic_sphere_input_frequency.toLowerCase());
+                .appendField(resources.block_jscad_geodesic_sphere_input_frequency.toLowerCase());
             this.setOutput(true, 'CsgMesh');
             this.setColour('#fff');
-            this.setTooltip(resources.block_csg_geodesic_sphere_description);
+            this.setTooltip(resources.block_jscad_geodesic_sphere_description);
             this.setHelpUrl(environment.docsUrl + solidConstants.solidShapesHelpUrl + '#' + 'geodesicsphere');
         }
     };
@@ -49,7 +49,7 @@ export function createPrimitiveGeodesicSphereBlock(): void {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `return bitbybit.solid.shapes.geodesicSphere(inputs);`
+            `return bitbybit.jscad.shapes.geodesicSphere(inputs);`
         );
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };

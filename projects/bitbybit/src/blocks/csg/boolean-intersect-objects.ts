@@ -16,10 +16,10 @@ export function createBooleanIntersectObjectsBlock(): void {
             this.appendValueInput('IntersectObjects')
                 .setCheck('Array')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_csg_intersect_objects_input_objects);
+                .appendField(resources.block_jscad_intersect_objects_input_objects);
             this.setOutput(true, 'CsgMesh');
             this.setColour('#fff');
-            this.setTooltip(resources.block_csg_intersect_objects_description);
+            this.setTooltip(resources.block_jscad_intersect_objects_description);
             this.setHelpUrl(environment.docsUrl + solidConstants.solidBooleansHelpUrl + '#' + 'intersect');
         }
     };
@@ -39,7 +39,7 @@ export function createBooleanIntersectObjectsBlock(): void {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `return bitbybit.solid.booleans.intersect(inputs);`
+            `return bitbybit.jscad.booleans.intersect(inputs);`
         );
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };

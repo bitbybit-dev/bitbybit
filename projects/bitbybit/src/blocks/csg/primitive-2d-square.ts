@@ -16,14 +16,14 @@ export function createPrimitive2dSquareBlock(): void {
             this.appendValueInput('Center')
                 .setCheck('Array')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_csg_primitive_2d_square_input_center);
+                .appendField(resources.block_jscad_primitive_2d_square_input_center);
             this.appendValueInput('Size')
                 .setCheck('Number')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_csg_primitive_2d_square_input_size.toLowerCase());
+                .appendField(resources.block_jscad_primitive_2d_square_input_size.toLowerCase());
             this.setOutput(true, 'Polygon');
             this.setColour('#fff');
-            this.setTooltip(resources.block_csg_primitive_2d_square_description);
+            this.setTooltip(resources.block_jscad_primitive_2d_square_description);
             this.setHelpUrl(environment.docsUrl + solidConstants.solidPolygonHelpUrl + '#' + 'square');
         }
     };
@@ -44,7 +44,7 @@ export function createPrimitive2dSquareBlock(): void {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `return bitbybit.solid.polygon.square(inputs);`
+            `return bitbybit.jscad.polygon.square(inputs);`
         );
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };

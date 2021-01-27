@@ -16,14 +16,14 @@ export function createPrimitiveCubeBlock(): void {
             this.appendValueInput('Center')
                 .setCheck('Array')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_csg_cube_input_center);
+                .appendField(resources.block_jscad_cube_input_center);
             this.appendValueInput('Size')
                 .setCheck('Number')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_csg_cube_input_size.toLowerCase());
+                .appendField(resources.block_jscad_cube_input_size.toLowerCase());
             this.setOutput(true, 'CsgMesh');
             this.setColour('#fff');
-            this.setTooltip(resources.block_csg_cube_description);
+            this.setTooltip(resources.block_jscad_cube_description);
             this.setHelpUrl(environment.docsUrl + solidConstants.solidShapesHelpUrl + '#' + 'cube');
         }
     };
@@ -44,7 +44,7 @@ export function createPrimitiveCubeBlock(): void {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `return bitbybit.solid.shapes.cube(inputs);`
+            `return bitbybit.jscad.shapes.cube(inputs);`
         );
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };

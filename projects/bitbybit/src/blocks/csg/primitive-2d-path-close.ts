@@ -16,10 +16,10 @@ export function createPrimitive2dPathCloseBlock(): void {
             this.appendValueInput('Path')
                 .setCheck('Path')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_csg_primitive_2d_path_close_input_close);
+                .appendField(resources.block_jscad_primitive_2d_path_close_input_close);
             this.setOutput(true, 'Path');
             this.setColour('#fff');
-            this.setTooltip(resources.block_csg_primitive_2d_path_close_description);
+            this.setTooltip(resources.block_jscad_primitive_2d_path_close_description);
             this.setHelpUrl(environment.docsUrl + solidConstants.solidPathHelpUrl + '#' + 'close');
         }
     };
@@ -39,7 +39,7 @@ export function createPrimitive2dPathCloseBlock(): void {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `return bitbybit.solid.path.close(inputs);`
+            `return bitbybit.jscad.path.close(inputs);`
         );
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };

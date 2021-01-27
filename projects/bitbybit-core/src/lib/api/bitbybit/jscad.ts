@@ -3,31 +3,31 @@ import { Color3, Color4, LinesMesh, Matrix, Mesh, MeshBuilder, PBRMetallicRoughn
 import { Context } from '../context';
 import { GeometryHelper } from '../geometry-helper';
 import * as Inputs from '../inputs/inputs';
-import { SolidBooleans } from './solid-booleans';
-import { SolidExpansions } from './solid-expansions';
-import { SolidExtrusions } from './solid-extrusions';
-import { SolidHulls } from './solid-hulls';
-import { SolidPath } from './solid-path';
-import { SolidPolygon } from './solid-polygon';
-import { SolidShapes } from './solid-shapes';
-import { SolidText } from './solid-text';
+import { JSCADBooleans } from './jscad-booleans';
+import { JSCADExpansions } from './jscad-expansions';
+import { JSCADExtrusions } from './jscad-extrusions';
+import { JSCADHulls } from './jscad-hulls';
+import { JSCADPath } from './jscad-path';
+import { JSCADPolygon } from './jscad-polygon';
+import { JSCADShapes } from './jscad-shapes';
+import { JSCADText } from './jscad-text';
 
 /**
  * Contains various functions for Solid meshes from JSCAD library http://openjscad.org
  * Thanks JSCAD community for developing this kernel
  */
 @Injectable()
-export class Solid {
+export class JSCAD {
 
     constructor(
-        public readonly booleans: SolidBooleans,
-        public readonly expansions: SolidExpansions,
-        public readonly extrusions: SolidExtrusions,
-        public readonly hulls: SolidHulls,
-        public readonly path: SolidPath,
-        public readonly polygon: SolidPolygon,
-        public readonly shapes: SolidShapes,
-        public readonly text: SolidText,
+        public readonly booleans: JSCADBooleans,
+        public readonly expansions: JSCADExpansions,
+        public readonly extrusions: JSCADExtrusions,
+        public readonly hulls: JSCADHulls,
+        public readonly path: JSCADPath,
+        public readonly polygon: JSCADPolygon,
+        public readonly shapes: JSCADShapes,
+        public readonly text: JSCADText,
         private readonly context: Context,
         private readonly geometryHelper: GeometryHelper
     ) { }
@@ -35,13 +35,13 @@ export class Solid {
     /**
      * Draws a single solids
      * <div>
-     *  <img src="../assets/images/blockly-images/solid/drawSolidOrPolygonMesh.svg" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/jscad/drawSolidOrPolygonMesh.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_solid.solid.html#drawsolidorpolygonmesh
+     * @link https://docs.bitbybit.dev/classes/bitbybit_jscad.jscad.html#drawsolidorpolygonmesh
      * @param inputs Contains a solid or polygon and information for drawing
      * @returns Mesh that is being drawn by Babylon
      */
-    drawSolidOrPolygonMesh(inputs: Inputs.Solid.DrawSolidMeshDto): Mesh {
+    drawSolidOrPolygonMesh(inputs: Inputs.JSCAD.DrawSolidMeshDto): Mesh {
         let polygons = [];
 
         if (inputs.mesh.toPolygons) {
@@ -115,13 +115,13 @@ export class Solid {
     /**
      * Draws multiple solids
      * <div>
-     *  <img src="../assets/images/blockly-images/solid/drawSolidOrPolygonMeshes.svg" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/jscad/drawSolidOrPolygonMeshes.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_solid.solid.html#drawsolidorpolygonmeshes
+     * @link https://docs.bitbybit.dev/classes/bitbybit_jscad.jscad.html#drawsolidorpolygonmeshes
      * @param inputs Contains solids or polygons and information for drawing
      * @returns Mesh that is being drawn by Babylon
      */
-    drawSolidOrPolygonMeshes(inputs: Inputs.Solid.DrawSolidsMeshDto): Mesh {
+    drawSolidOrPolygonMeshes(inputs: Inputs.JSCAD.DrawSolidsMeshDto): Mesh {
         let amountOfMeshesEqual = true;
         let children = [];
         if (inputs.jscadMesh) {
@@ -163,13 +163,13 @@ export class Solid {
     /**
      * Draws a 2D path
      * <div>
-     *  <img src="../assets/images/blockly-images/solid/drawPath.svg" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/jscad/drawPath.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_solid.solid.html#drawpath
+     * @link https://docs.bitbybit.dev/classes/bitbybit_jscad.jscad.html#drawpath
      * @param inputs Contains a path and information for drawing
      * @returns Mesh that is being drawn by Babylon
      */
-    drawPath(inputs: Inputs.Solid.DrawPathDto): LinesMesh {
+    drawPath(inputs: Inputs.JSCAD.DrawPathDto): LinesMesh {
 
         const points = [];
         const colors = [];
@@ -201,13 +201,13 @@ export class Solid {
     /**
      * Transforms the Jscad solid meshes with a given list of transformations.
      * <div>
-     *  <img src="../assets/images/blockly-images/solid/transformSolids.svg" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/jscad/transformSolids.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_solid.solid.html#transformsolids
+     * @link https://docs.bitbybit.dev/classes/bitbybit_jscad.jscad.html#transformsolids
      * @param inputs Solids with the transformation matrixes
      * @returns Solids with a transformation
      */
-    transformSolids(inputs: Inputs.Solid.TransformSolidsDto): any {
+    transformSolids(inputs: Inputs.JSCAD.TransformSolidsDto): any {
         const solidsToTransform = inputs.solids;
         return solidsToTransform.map(solid => {
             return this.transformSolid({ solid, matrix: inputs.matrix });
@@ -217,13 +217,13 @@ export class Solid {
     /**
      * Transforms the Jscad solid mesh with a given list of transformations.
      * <div>
-     *  <img src="../assets/images/blockly-images/solid/transformSolid.svg" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/jscad/transformSolid.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_solid.solid.html#transformsolid
+     * @link https://docs.bitbybit.dev/classes/bitbybit_jscad.jscad.html#transformsolid
      * @param inputs Solid with the transformation matrixes
      * @returns Solid with a transformation
      */
-    transformSolid(inputs: Inputs.Solid.TransformSolidDto): any {
+    transformSolid(inputs: Inputs.JSCAD.TransformSolidDto): any {
         const transformation = inputs.matrix;
         let transformedMesh = this.context.jscad.geometries.geom3.clone(inputs.solid);
         if (this.geometryHelper.getArrayDepth(transformation) === 1) {
@@ -247,12 +247,12 @@ export class Solid {
     /**
      * Downloads the binary STL file from a 3D solid
      * <div>
-     *  <img src="../assets/images/blockly-images/solid/downloadSolidSTL.svg" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/jscad/downloadSolidSTL.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_solid.solid.html#downloadsolidstl
+     * @link https://docs.bitbybit.dev/classes/bitbybit_jscad.jscad.html#downloadsolidstl
      * @param inputs 3D Solid
      */
-    downloadSolidSTL(inputs: Inputs.Solid.DownloadSolidDto): void {
+    downloadSolidSTL(inputs: Inputs.JSCAD.DownloadSolidDto): void {
         const rawData = this.context.jscad.STLSERIALIZER.serialize({ binary: true }, this.geometryHelper.snapGeometry(inputs.solid));
         this.downloadSTL(rawData, inputs.fileName);
     }
@@ -260,12 +260,12 @@ export class Solid {
     /**
      * Downloads the binary STL file from a 3D solids
      * <div>
-     *  <img src="../assets/images/blockly-images/solid/downloadSolidsSTL.svg" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/jscad/downloadSolidsSTL.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_solid.solid.html#downloadsolidsstl
+     * @link https://docs.bitbybit.dev/classes/bitbybit_jscad.jscad.html#downloadsolidsstl
      * @param inputs 3D Solid
      */
-    downloadSolidsSTL(inputs: Inputs.Solid.DownloadSolidsDto): void {
+    downloadSolidsSTL(inputs: Inputs.JSCAD.DownloadSolidsDto): void {
         const rawData = this.context.jscad.STLSERIALIZER.serialize({ binary: true },
             ...inputs.solids.map(solid => this.geometryHelper.snapGeometry(solid)));
         this.downloadSTL(rawData, inputs.fileName);

@@ -16,22 +16,22 @@ export function createExtrudeLinearPolygonObjectsBlock(): void {
             this.appendValueInput('Polygons')
                 .setCheck('Array')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_csg_extrude_linear_polygon_objects_input_polygons);
+                .appendField(resources.block_jscad_extrude_linear_polygon_objects_input_polygons);
             this.appendValueInput('Height')
                 .setCheck('Number')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_csg_extrude_linear_polygon_objects_input_height.toLowerCase());
+                .appendField(resources.block_jscad_extrude_linear_polygon_objects_input_height.toLowerCase());
             this.appendValueInput('TwistAngle')
                 .setCheck('Number')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_csg_extrude_linear_polygon_objects_input_twist_angle.toLowerCase());
+                .appendField(resources.block_jscad_extrude_linear_polygon_objects_input_twist_angle.toLowerCase());
             this.appendValueInput('TwistSteps')
                 .setCheck('Number')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_csg_extrude_linear_polygon_objects_input_twist_steps.toLowerCase());
+                .appendField(resources.block_jscad_extrude_linear_polygon_objects_input_twist_steps.toLowerCase());
             this.setOutput(true, 'Array');
             this.setColour('#fff');
-            this.setTooltip(resources.block_csg_extrude_linear_polygon_objects_description);
+            this.setTooltip(resources.block_jscad_extrude_linear_polygon_objects_description);
             this.setHelpUrl(environment.docsUrl + solidConstants.solidExtrusionsHelpUrl + '#' + 'extrudelinear');
         }
     };
@@ -54,7 +54,7 @@ export function createExtrudeLinearPolygonObjectsBlock(): void {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `return bitbybit.solid.extrusions.extrudeLinear(inputs);`
+            `return bitbybit.jscad.extrusions.extrudeLinear(inputs);`
         );
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };

@@ -16,22 +16,22 @@ export function createExtrudeRotatePolygonBlock(): void {
             this.appendValueInput('Polygon')
                 .setCheck('Polygon')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_csg_extrude_rotate_polygon_input_polygon);
+                .appendField(resources.block_jscad_extrude_rotate_polygon_input_polygon);
             this.appendValueInput('Angle')
                 .setCheck('Number')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_csg_extrude_rotate_polygon_input_angle.toLowerCase());
+                .appendField(resources.block_jscad_extrude_rotate_polygon_input_angle.toLowerCase());
             this.appendValueInput('StartAngle')
                 .setCheck('Number')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_csg_extrude_rotate_polygon_input_start_angle.toLowerCase());
+                .appendField(resources.block_jscad_extrude_rotate_polygon_input_start_angle.toLowerCase());
             this.appendValueInput('Segments')
                 .setCheck('Number')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_csg_extrude_rotate_polygon_input_segments.toLowerCase());
+                .appendField(resources.block_jscad_extrude_rotate_polygon_input_segments.toLowerCase());
             this.setOutput(true, 'CsgMesh');
             this.setColour('#fff');
-            this.setTooltip(resources.block_csg_extrude_rectangular_path_description);
+            this.setTooltip(resources.block_jscad_extrude_rectangular_path_description);
             this.setHelpUrl(environment.docsUrl + solidConstants.solidExtrusionsHelpUrl + '#' + 'extruderotate');
         }
     };
@@ -54,7 +54,7 @@ export function createExtrudeRotatePolygonBlock(): void {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `return bitbybit.solid.extrusions.extrudeRotate(inputs);`
+            `return bitbybit.jscad.extrusions.extrudeRotate(inputs);`
         );
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };

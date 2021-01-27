@@ -1,7 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Angle } from '@babylonjs/core';
 import { Context } from '../context';
-import { GeometryHelper } from '../geometry-helper';
 import * as Inputs from '../inputs/inputs';
 
 /**
@@ -9,24 +7,23 @@ import * as Inputs from '../inputs/inputs';
  * Thanks JSCAD community for developing this kernel
  */
 @Injectable()
-export class SolidText {
+export class JSCADText {
 
     constructor(
         private readonly context: Context,
-        private readonly geometryHelper: GeometryHelper,
 
     ) { }
 
     /**
      * Creates a text that is based on chain hulling cylinders
      * <div>
-     *  <img src="../assets/images/blockly-images/solid/text/cylindricalText.svg" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/jscad/text/cylindricalText.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_solid_text.solidtext.html#cylindricaltext
+     * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_text.jscadtext.html#cylindricaltext
      * @param inputs Cylindrical text parameters
      * @returns List of solids for text
      */
-    cylindricalText(inputs: Inputs.Solid.CylinderTextDto): any[] {
+    cylindricalText(inputs: Inputs.JSCAD.CylinderTextDto): any[] {
         const text = this.createVectorText(inputs);
         this.adjustTextToBeOnCenter(text);
         return text.map(txt => {
@@ -46,13 +43,13 @@ export class SolidText {
     /**
      * Creates a text that is based on chain hulling spheres
      * <div>
-     *  <img src="../assets/images/blockly-images/solid/text/sphericalText.svg" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/jscad/text/sphericalText.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_solid_text.solidtext.html#sphericalText
+     * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_text.jscadtext.html#sphericalText
      * @param inputs Spherical text parameters
      * @returns List of solids for text
      */
-    sphericalText(inputs: Inputs.Solid.SphereTextDto): any[] {
+    sphericalText(inputs: Inputs.JSCAD.SphereTextDto): any[] {
         const text = this.createVectorText(inputs);
         this.adjustTextToBeOnCenter(text);
         return text.map(txt => {
@@ -86,7 +83,7 @@ export class SolidText {
         });
     }
 
-    createVectorText(inputs: Inputs.Solid.TextDto): number[][] {
+    createVectorText(inputs: Inputs.JSCAD.TextDto): number[][] {
         return this.context.jscad.text.vectorText({
             input: inputs.text,
             xOffset: inputs.xOffset,

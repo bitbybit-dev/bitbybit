@@ -16,15 +16,15 @@ export function createPrimitive2dRectangleBlock(): void {
             this.appendValueInput('Center')
                 .setCheck('Array')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_csg_primitive_2d_rectangle_input_center);
+                .appendField(resources.block_jscad_primitive_2d_rectangle_input_center);
             this.appendValueInput('Width')
                 .setCheck('Number')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_csg_primitive_2d_rectangle_input_width.toLowerCase());
+                .appendField(resources.block_jscad_primitive_2d_rectangle_input_width.toLowerCase());
             this.appendValueInput('Length')
                 .setCheck('Number')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_csg_primitive_2d_rectangle_input_length.toLowerCase());
+                .appendField(resources.block_jscad_primitive_2d_rectangle_input_length.toLowerCase());
             this.setOutput(true, 'Polygon');
             this.setColour('#fff');
             this.setTooltip(resources.block_base_geometry_polyline_description);
@@ -49,7 +49,7 @@ export function createPrimitive2dRectangleBlock(): void {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `return bitbybit.solid.polygon.rectangle(inputs);`
+            `return bitbybit.jscad.polygon.rectangle(inputs);`
         );
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };

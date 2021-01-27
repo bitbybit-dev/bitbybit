@@ -16,26 +16,26 @@ export function createPrimitive2dRoundedRectangleBlock(): void {
             this.appendValueInput('Center')
                 .setCheck('Array')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_csg_primitive_2d_rounded_rectangle_input_center);
+                .appendField(resources.block_jscad_primitive_2d_rounded_rectangle_input_center);
             this.appendValueInput('Width')
                 .setCheck('Number')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_csg_primitive_2d_rounded_rectangle_input_width.toLowerCase());
+                .appendField(resources.block_jscad_primitive_2d_rounded_rectangle_input_width.toLowerCase());
             this.appendValueInput('Length')
                 .setCheck('Number')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_csg_primitive_2d_rounded_rectangle_input_length.toLowerCase());
+                .appendField(resources.block_jscad_primitive_2d_rounded_rectangle_input_length.toLowerCase());
             this.appendValueInput('RoundRadius')
                 .setCheck('Number')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_csg_primitive_2d_rounded_rectangle_input_round_radius.toLowerCase());
+                .appendField(resources.block_jscad_primitive_2d_rounded_rectangle_input_round_radius.toLowerCase());
             this.appendValueInput('Segments')
                 .setCheck('Number')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_csg_primitive_2d_rounded_rectangle_input_segments.toLowerCase());
+                .appendField(resources.block_jscad_primitive_2d_rounded_rectangle_input_segments.toLowerCase());
             this.setOutput(true, 'Polygon');
             this.setColour('#fff');
-            this.setTooltip(resources.block_csg_primitive_2d_rounded_rectangle_description);
+            this.setTooltip(resources.block_jscad_primitive_2d_rounded_rectangle_description);
             this.setHelpUrl(environment.docsUrl + solidConstants.solidPolygonHelpUrl + '#' + 'roundedrectangle');
         }
     };
@@ -59,7 +59,7 @@ export function createPrimitive2dRoundedRectangleBlock(): void {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `return bitbybit.solid.polygon.roundedRectangle(inputs);`
+            `return bitbybit.jscad.polygon.roundedRectangle(inputs);`
         );
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };

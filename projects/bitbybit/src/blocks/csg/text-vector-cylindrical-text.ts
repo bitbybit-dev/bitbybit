@@ -16,50 +16,50 @@ export function createTextVectorCylindricalTextBlock(): void {
             this.appendValueInput('InputText')
                 .setCheck('String')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_csg_text_vector_cylindrical_text_input_input);
+                .appendField(resources.block_jscad_text_vector_cylindrical_text_input_input);
             this.appendValueInput('ExtrusionHeight')
                 .setCheck('Number')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_csg_text_vector_cylindrical_text_input_extrude_height.toLowerCase());
+                .appendField(resources.block_jscad_text_vector_cylindrical_text_input_extrude_height.toLowerCase());
             this.appendValueInput('ExtrusionSize')
                 .setCheck('Number')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_csg_text_vector_cylindrical_text_input_extrude_size.toLowerCase());
+                .appendField(resources.block_jscad_text_vector_cylindrical_text_input_extrude_size.toLowerCase());
             this.appendValueInput('Segments')
                 .setCheck('Number')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_csg_text_vector_cylindrical_text_input_segments.toLowerCase());
+                .appendField(resources.block_jscad_text_vector_cylindrical_text_input_segments.toLowerCase());
             this.appendValueInput('XOffset')
                 .setCheck('Number')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_csg_text_vector_cylindrical_text_input_x_offset.toLowerCase());
+                .appendField(resources.block_jscad_text_vector_cylindrical_text_input_x_offset.toLowerCase());
             this.appendValueInput('YOffset')
                 .setCheck('Number')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_csg_text_vector_cylindrical_text_input_y_offset.toLowerCase());
+                .appendField(resources.block_jscad_text_vector_cylindrical_text_input_y_offset.toLowerCase());
             this.appendValueInput('Height')
                 .setCheck('Number')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_csg_text_vector_cylindrical_text_input_height.toLowerCase());
+                .appendField(resources.block_jscad_text_vector_cylindrical_text_input_height.toLowerCase());
             this.appendValueInput('LineSpacing')
                 .setCheck('Number')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_csg_text_vector_cylindrical_text_input_line_spacing.toLowerCase());
+                .appendField(resources.block_jscad_text_vector_cylindrical_text_input_line_spacing.toLowerCase());
             this.appendValueInput('LetterSpacing')
                 .setCheck('Number')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_csg_text_vector_cylindrical_text_input_letter_spacing.toLowerCase());
+                .appendField(resources.block_jscad_text_vector_cylindrical_text_input_letter_spacing.toLowerCase());
             this.appendValueInput('Align')
                 .setCheck('String')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_csg_text_vector_cylindrical_text_input_align.toLowerCase());
+                .appendField(resources.block_jscad_text_vector_cylindrical_text_input_align.toLowerCase());
             this.appendValueInput('ExtrudeOffset')
                 .setCheck('Number')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_csg_text_vector_cylindrical_text_input_extrude_offset.toLowerCase());
+                .appendField(resources.block_jscad_text_vector_cylindrical_text_input_extrude_offset.toLowerCase());
             this.setOutput(true, 'Array');
             this.setColour('#fff');
-            this.setTooltip(resources.block_csg_text_vector_cylindrical_text_description);
+            this.setTooltip(resources.block_jscad_text_vector_cylindrical_text_description);
             this.setHelpUrl(environment.docsUrl + solidConstants.solidTextHelpUrl + '#' + 'cylindricaltext');
         }
     };
@@ -91,7 +91,7 @@ export function createTextVectorCylindricalTextBlock(): void {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `return bitbybit.solid.text.cylindricalText(inputs);`
+            `return bitbybit.jscad.text.cylindricalText(inputs);`
         );
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };

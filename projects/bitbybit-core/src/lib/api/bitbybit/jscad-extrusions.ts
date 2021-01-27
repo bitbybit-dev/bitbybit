@@ -9,7 +9,7 @@ import * as Inputs from '../inputs/inputs';
  * Thanks JSCAD community for developing this kernel
  */
 @Injectable()
-export class SolidExtrusions {
+export class JSCADExtrusions {
 
     constructor(
         private readonly context: Context,
@@ -19,14 +19,14 @@ export class SolidExtrusions {
     /**
      * Linear extrude 2D geometries of solid category
      * <div>
-     *  <img src="../assets/images/blockly-images/solid/extrusions/extrudeLinear1.svg" alt="Blockly Image"/>
-     *  <img src="../assets/images/blockly-images/solid/extrusions/extrudeLinear2.svg" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/jscad/extrusions/extrudeLinear1.svg" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/jscad/extrusions/extrudeLinear2.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_solid_extrusions.solidextrusions.html#extrudelinear
+     * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_extrusions.jscadextrusions.html#extrudelinear
      * @param inputs Contains options and geometries for linear extrude
      * @returns Extruded geometry
      */
-    extrudeLinear(inputs: Inputs.Solid.ExtrudeLinearDto): any | any[] {
+    extrudeLinear(inputs: Inputs.JSCAD.ExtrudeLinearDto): any | any[] {
         const multipleGeometries = inputs.geometry.length && inputs.geometry.length > 0;
         const geometry = multipleGeometries ? inputs.geometry : [inputs.geometry];
 
@@ -45,14 +45,14 @@ export class SolidExtrusions {
     /**
      * Rectangular extrude 2D geometries of solid category. Creates a wall-type extrusion of certain height and size.
      * <div>
-     *  <img src="../assets/images/blockly-images/solid/extrusions/extrudeRectangular1.svg" alt="Blockly Image"/>
-     *  <img src="../assets/images/blockly-images/solid/extrusions/extrudeRectangular2.svg" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/jscad/extrusions/extrudeRectangular1.svg" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/jscad/extrusions/extrudeRectangular2.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_solid_extrusions.solidextrusions.html#extruderectangular
+     * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_extrusions.jscadextrusions.html#extruderectangular
      * @param inputs Contains options and geometries for rectangular extrude
      * @returns Extruded geometry
      */
-    extrudeRectangular(inputs: Inputs.Solid.ExtrudeRectangularDto): any | any[] {
+    extrudeRectangular(inputs: Inputs.JSCAD.ExtrudeRectangularDto): any | any[] {
         const multipleGeometries = inputs.geometry.length && inputs.geometry.length > 0;
         const geometry = multipleGeometries ? inputs.geometry : [inputs.geometry];
 
@@ -66,13 +66,13 @@ export class SolidExtrusions {
     /**
      * Rectangular extrude a list of 2D points. Creates a wall-type extrusion of certain height and size.
      * <div>
-     *  <img src="../assets/images/blockly-images/solid/extrusions/extrudeRectangularPoints.svg" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/jscad/extrusions/extrudeRectangularPoints.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_solid_extrusions.solidextrusions.html#extruderectangularpoints
+     * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_extrusions.jscadextrusions.html#extruderectangularpoints
      * @param inputs Contains options and points for extrusion
      * @returns Extruded geometry
      */
-    extrudeRectangularPoints(inputs: Inputs.Solid.ExtrudeRectangularPointsDto): any {
+    extrudeRectangularPoints(inputs: Inputs.JSCAD.ExtrudeRectangularPointsDto): any {
         const twoDimensionalPoints = inputs.points.map(pt => [pt[0], pt[1]]);
         const duplicatePointsRemoved = this.geometryHelper.removeConsecutiveDuplicates(twoDimensionalPoints);
         const path = this.context.jscad.geometries.path2.fromPoints({}, duplicatePointsRemoved);
@@ -83,13 +83,13 @@ export class SolidExtrusions {
     /**
      * Rectangular extrude a list of 2D points. Creates a wall-type extrusion of certain height and size.
      * <div>
-     *  <img src="../assets/images/blockly-images/solid/extrusions/extrudeRectangularPoints.svg" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/jscad/extrusions/extrudeRectangularPoints.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_solid_extrusions.solidextrusions.html#extruderotate
+     * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_extrusions.jscadextrusions.html#extruderotate
      * @param inputs Contains options and points for extrusion
      * @returns Extruded geometry
      */
-    extrudeRotate(inputs: Inputs.Solid.ExtrudeRotateDto): any {
+    extrudeRotate(inputs: Inputs.JSCAD.ExtrudeRotateDto): any {
         const options = {
             angle: Angle.FromDegrees(inputs.angle).radians(),
             startAngle: Angle.FromDegrees(inputs.startAngle).radians(),

@@ -16,18 +16,18 @@ export function createExtrudeRectangularPathsBlock(): void {
             this.appendValueInput('Paths')
                 .setCheck('Array')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_csg_extrude_rectangular_paths_input_paths);
+                .appendField(resources.block_jscad_extrude_rectangular_paths_input_paths);
             this.appendValueInput('Size')
                 .setCheck('Number')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_csg_extrude_rectangular_paths_input_size.toLowerCase());
+                .appendField(resources.block_jscad_extrude_rectangular_paths_input_size.toLowerCase());
             this.appendValueInput('Height')
                 .setCheck('Number')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_csg_extrude_rectangular_paths_input_height.toLowerCase());
+                .appendField(resources.block_jscad_extrude_rectangular_paths_input_height.toLowerCase());
             this.setOutput(true, 'Array');
             this.setColour('#fff');
-            this.setTooltip(resources.block_csg_extrude_rectangular_paths_description);
+            this.setTooltip(resources.block_jscad_extrude_rectangular_paths_description);
             this.setHelpUrl(environment.docsUrl + solidConstants.solidExtrusionsHelpUrl + '#' + 'extruderectangular');
         }
     };
@@ -49,7 +49,7 @@ export function createExtrudeRectangularPathsBlock(): void {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `return bitbybit.solid.extrusions.extrudeRectangular(inputs);`
+            `return bitbybit.jscad.extrusions.extrudeRectangular(inputs);`
         );
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };

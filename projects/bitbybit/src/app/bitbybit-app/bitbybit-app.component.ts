@@ -505,6 +505,9 @@ export class BitbybitAppComponent implements OnInit, OnDestroy, AfterViewInit {
         }
         setTimeout(() => {
             window.dispatchEvent(new Event('resize'));
+            this.onResize();
+            this.workspace.zoomToFit();
+            this.workspace.zoomCenter(-3);
         });
     }
 

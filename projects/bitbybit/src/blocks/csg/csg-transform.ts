@@ -16,13 +16,13 @@ export function createCsgTransformBlock(): void {
             this.appendValueInput('CsgMesh')
                 .setCheck('CsgMesh')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_csg_transform_input_csg_mesh);
+                .appendField(resources.block_jscad_transform_input_csg_mesh);
             this.appendValueInput('Matrix')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_csg_transform_input_transformation.toLowerCase());
+                .appendField(resources.block_jscad_transform_input_transformation.toLowerCase());
             this.setOutput(true, 'CsgMesh');
             this.setColour('#fff');
-            this.setTooltip(resources.block_csg_transform_description);
+            this.setTooltip(resources.block_jscad_transform_description);
             this.setHelpUrl(environment.docsUrl + solidConstants.solidHelpUrl + '#' + 'transformsolid');
         }
     };
@@ -43,7 +43,7 @@ export function createCsgTransformBlock(): void {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `return bitbybit.solid.transformSolid(inputs);`
+            `return bitbybit.jscad.transformSolid(inputs);`
             );
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };

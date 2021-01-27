@@ -71,7 +71,7 @@ export function createDraw2dPathBlock(): void {
 
         return createStandardContextIIFE(block, blockSelector, inputs, false,
             `inputs.pathMesh = ${(JavaScript as any).variableDB_.getName(block.getFieldValue('DrawnPathMesh'), VARIABLE_CATEGORY_NAME)};
-            ${(JavaScript as any).variableDB_.getName(block.getFieldValue('DrawnPathMesh'), VARIABLE_CATEGORY_NAME)} = bitbybit.solid.drawPath(inputs);`
+            ${(JavaScript as any).variableDB_.getName(block.getFieldValue('DrawnPathMesh'), VARIABLE_CATEGORY_NAME)} = bitbybit.jscad.drawPath(inputs);`
         );
     };
 }

@@ -16,18 +16,18 @@ export function createExpansionsExpandSolidBlock(): void {
             this.appendValueInput('Solid')
                 .setCheck('CsgMesh')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_csg_expansions_expand_solid_input_solid);
+                .appendField(resources.block_jscad_expansions_expand_solid_input_solid);
             this.appendValueInput('Delta')
                 .setCheck('Number')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_csg_expansions_expand_solid_input_delta.toLowerCase());
+                .appendField(resources.block_jscad_expansions_expand_solid_input_delta.toLowerCase());
             this.appendValueInput('Segments')
                 .setCheck('Number')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_csg_expansions_expand_solid_input_segments.toLowerCase());
+                .appendField(resources.block_jscad_expansions_expand_solid_input_segments.toLowerCase());
             this.setOutput(true, 'CsgMesh');
             this.setColour('#fff');
-            this.setTooltip(resources.block_csg_expansions_expand_solid_description);
+            this.setTooltip(resources.block_jscad_expansions_expand_solid_description);
             this.setHelpUrl(environment.docsUrl + solidConstants.solidExpansionsHelpUrl + '#' + 'expand');
         }
     };
@@ -49,7 +49,7 @@ export function createExpansionsExpandSolidBlock(): void {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `return bitbybit.solid.expansions.expand(inputs);`
+            `return bitbybit.jscad.expansions.expand(inputs);`
         );
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };

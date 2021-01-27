@@ -14,14 +14,14 @@ export function createCsgColourBlock(): void {
             this.appendValueInput('Colour')
                 .setCheck('Colour')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_csg_color_input_color);
+                .appendField(resources.block_jscad_color_input_color);
             this.appendValueInput('Object')
                 .setCheck('CsgMesh')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_csg_color_input_object);
+                .appendField(resources.block_jscad_color_input_object);
             this.setOutput(true, 'CsgMesh');
             this.setColour('#fff');
-            this.setTooltip(resources.block_csg_color_description);
+            this.setTooltip(resources.block_jscad_color_description);
             this.setHelpUrl('');
         }
     };
