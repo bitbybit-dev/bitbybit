@@ -8,7 +8,8 @@
             </div>
             <div class="justify-end">
                 <div class="actions">
-                    <button *ngIf="occWorkerInitialised" mat-buttom mat-icon-button (click)="run()">
+                    <button *ngIf="occWorkerState.state === OccStateEnum.loaded" mat-buttom mat-icon-button
+                        (click)="run()">
                         <mat-icon [matTooltip]="resources.app_menu_run_code" aria-label="Run the code">play_arrow
                         </mat-icon>
                     </button>
@@ -16,8 +17,11 @@
                         <mat-icon [matTooltip]="resources.app_menu_run_code" aria-label="Export png">play_arrow
                         </mat-icon>
                     </button> -->
-                    <mat-spinner *ngIf="!occWorkerInitialised" [matTooltip]="resources.app_menu_workers_initialising"
-                        diameter="30" color="accent"></mat-spinner>
+                    <ng-container
+                        *ngIf="occWorkerState.state === OccStateEnum.loading || occWorkerState.state === OccStateEnum.computing">
+                        <mat-spinner [matTooltip]="resources.app_menu_workers_initialising" color="accent"
+                            diameter="30"></mat-spinner>
+                    </ng-container>
                     <ng-container
                         *ngIf="(currentUiState === UiStatesEnum.blockly || currentUiState === UiStatesEnum.monaco)">
                         <button *ngIf="currentUiState === UiStatesEnum.blockly" mat-buttom mat-icon-button
@@ -168,10 +172,15 @@
                             <mat-icon [matTooltip]="resources.app_menu_swap_canvas" aria-label="Swap Canvas">swap_horiz
                             </mat-icon>
                         </button>
-                        <mat-spinner *ngIf="!occWorkerInitialised" [matTooltip]="resources.app_menu_workers_initialising" color="accent" diameter="30"></mat-spinner>
+                        <ng-container
+                            *ngIf="occWorkerState.state === OccStateEnum.loading || occWorkerState.state === OccStateEnum.computing">
+                            <mat-spinner [matTooltip]="resources.app_menu_workers_initialising" color="accent"
+                                diameter="30"></mat-spinner>
+                        </ng-container>
                         <ng-container
                             *ngIf="currentUiState === UiStatesEnum.blockly || currentUiState === UiStatesEnum.monaco">
-                            <button *ngIf="occWorkerInitialised" mat-buttom mat-icon-button (click)="run()">
+                            <button *ngIf="occWorkerState.state === OccStateEnum.loaded" mat-buttom mat-icon-button
+                                (click)="run()">
                                 <mat-icon [matTooltip]="resources.app_menu_run_code" aria-label="Run the code">
                                     play_arrow
                                 </mat-icon>

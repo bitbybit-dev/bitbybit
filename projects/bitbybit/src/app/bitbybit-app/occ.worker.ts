@@ -24,6 +24,7 @@ type DataInput = {
 };
 
 addEventListener('message', ({ data }) => {
+    postMessage('busy');
 
     const d = data as DataInput;
     let result;

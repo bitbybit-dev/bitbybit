@@ -34,7 +34,7 @@ import { MatDrawer } from '@angular/material/sidenav';
 import { EditorComponent } from 'ngx-monaco-editor';
 import { transpile } from 'typescript';
 import { UiStatesEnum } from './models/ui-states.enum';
-import { BitByBitBase, BitByBitBlocklyHelperService, Context, PrintSaveInterface } from 'projects/bitbybit-core/src/public-api';
+import { BitByBitBase, BitByBitBlocklyHelperService, Context, OccInfo, OccStateEnum, PrintSaveInterface } from 'projects/bitbybit-core/src/public-api';
 import * as Inputs from 'projects/bitbybit-core/src/lib/api/inputs/inputs';
 import { BaseTypes } from 'projects/bitbybit-core/src/lib/api/bitbybit/base-types';
 import { core, geom } from 'verb-nurbs-web';
@@ -66,7 +66,10 @@ export class BitbybitAppComponent implements OnInit, OnDestroy, AfterViewInit {
     UiStatesEnum = UiStatesEnum;
 
     toolboxVisible = true;
-    occWorkerInitialised = false;
+    OccStateEnum = OccStateEnum;
+    occWorkerState: OccInfo = {
+        state: OccStateEnum.loading,
+    };
 
     timePassedFromPreviousIteration = 0;
 
@@ -293,8 +296,8 @@ export class BitbybitAppComponent implements OnInit, OnDestroy, AfterViewInit {
         if (typeof Worker !== 'undefined') {
             // Create a new
             this.bitByBit.occ.setOccWorker(new Worker('./occ.worker', { type: 'module' }));
-            this.bitByBit.occ.occWorkerInitialised.subscribe(() => {
-                this.occWorkerInitialised = true;
+            this.bitByBit.occ.occWorkerState.subscribe((state) => {
+                this.occWorkerState = state;
             });
         } else {
             alert('Your device does not support Webworkers, this application will not be able to run correctly');

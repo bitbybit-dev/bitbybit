@@ -6,6 +6,8 @@ import { GeometryHelper } from '../../geometry-helper';
 import * as Inputs from '../../inputs/inputs';
 import { JSCADText } from '../jscad-text';
 import { Vector } from '../vector';
+import { OccInfo } from './occ-info';
+import { OccStateEnum } from './occ-state.enum';
 
 /**
  * Contains various methods for OpenCascade implementation
@@ -15,9 +17,10 @@ import { Vector } from '../vector';
 @Injectable()
 export class OCC {
 
-    occWorkerInitialised: Subject<void> = new Subject();
+    occWorkerState: Subject<OccInfo> = new Subject();
     private occWorker: Worker;
     private promisesMade: { promise?: Promise<any>, uid: string, resolve?, reject?}[] = [];
+    private promisesResolved: string[] = [];
 
     constructor(
         private readonly context: Context,
@@ -31,9 +34,15 @@ export class OCC {
         this.occWorker = worker;
         this.occWorker.onmessage = ({ data }) => {
             if (data === 'occ initialised') {
-                this.occWorkerInitialised.next();
-                this.occWorkerInitialised.complete();
-            } else {
+                this.occWorkerState.next({
+                    state: OccStateEnum.loaded,
+                });
+            } else if (data === 'busy') {
+                this.occWorkerState.next({
+                    state: OccStateEnum.computing,
+                });
+            }
+            else {
                 const promise = this.promisesMade.find(made => made.uid === data.uid);
                 if (promise && data.result && !data.error) {
                     promise.resolve(data.result);
@@ -41,7 +50,18 @@ export class OCC {
                     promise.reject(data.error);
                     alert(data.error);
                 }
+                this.promisesResolved.push(data.uid);
                 this.promisesMade = this.promisesMade.filter(i => i.uid !== data.uid);
+
+                if (this.promisesMade.length === 0) {
+                    this.occWorkerState.next({
+                        state: OccStateEnum.loaded,
+                    });
+                } else {
+                    this.occWorkerState.next({
+                        state: OccStateEnum.computing,
+                    });
+                }
             }
         };
     }

@@ -11,7 +11,7 @@ export const resourcesEn: ResourcesInterface = Object.freeze({
     app_menu_clean_canvas: 'Clean Canvas',
     app_menu_more: 'More',
     app_menu_more_about: 'About',
-    app_menu_workers_initialising: 'Starting up workers',
+    app_menu_workers_initialising: 'Worker busy',
     app_menu_more_docs: 'API Documentation',
     app_menu_more_clean_canvas: 'Clean Canvas',
     app_menu_more_home: 'Home of BitByBit',
