@@ -48,7 +48,7 @@ export class Scene {
     }
 
     /**
-     * Creates a point light in the scene
+     * Creates and draws a point light in the scene
      * <div>
      *  <img src="../assets/images/blockly-images/scene/createPointLight.svg" alt="Blockly Image"/>
      * </div>
@@ -56,39 +56,31 @@ export class Scene {
      * @param inputs Describes the light source
      * @returns BabylonJS point light
      */
-    createPointLight(inputs: Inputs.Scene.PointLightDto): PointLight {
+    drawPointLight(inputs: Inputs.Scene.PointLightDto): PointLight {
+        const pos = new Vector3(inputs.position[0], inputs.position[1], inputs.position[2]);
         const light = new PointLight(`pointLight${Math.random()}`,
-            new Vector3(inputs.position[0], inputs.position[1], inputs.position[2]),
+            pos,
             this.context.scene
         );
         light.diffuse = Color3.FromHexString(inputs.diffuse);
         light.specular = Color3.FromHexString(inputs.specular);
         light.intensityMode = Light.INTENSITYMODE_LUMINOUSPOWER;
         light.intensity = inputs.intensity;
-        return light;
-    }
 
-    /**
-     * Draws a light in the scene
-     * <div>
-     *  <img src="../assets/images/blockly-images/scene/drawLight.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_scene.scene.html#drawlight
-     * @param inputs Parameters for drawing lights
-     * @returns Sphere with emissive material in the location of the light
-     */
-    drawLight(inputs: Inputs.Scene.DrawLightDto): Mesh {
-        const sphere = MeshBuilder.CreateSphere(`PointLightSphere${Math.random()}`,
-            { diameter: inputs.bubbleRadius * 2 },
-            this.context.scene
-        );
-        sphere.position = inputs.light.position;
-        const lightMaterial = new StandardMaterial(`LightMaterial${Math.random()}`, this.context.scene);
-        lightMaterial.diffuseColor = inputs.light.diffuse;
-        lightMaterial.specularColor = inputs.light.specular;
-        lightMaterial.emissiveColor = inputs.light.diffuse;
-        sphere.material = lightMaterial;
-        return sphere;
+        if (inputs.radius > 0) {
+            const sphere = MeshBuilder.CreateSphere(`PointLightSphere${Math.random()}`,
+                { diameter: inputs.radius * 2 },
+                this.context.scene
+            );
+            sphere.position = pos;
+            const lightMaterial = new StandardMaterial(`LightMaterial${Math.random()}`, this.context.scene);
+            lightMaterial.diffuseColor = light.diffuse;
+            lightMaterial.specularColor = light.diffuse;
+            lightMaterial.emissiveColor = light.diffuse;
+            sphere.material = lightMaterial;
+            sphere.parent = light;
+        }
+        return light;
     }
 
     /**

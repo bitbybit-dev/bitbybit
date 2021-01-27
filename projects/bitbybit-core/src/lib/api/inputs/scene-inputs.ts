@@ -75,9 +75,9 @@ export namespace Scene {
          * Specular colour of the point light
          */
         specular = '#ffffff';
-    }
-    export class DrawLightDto {
-        light: PointLight;
-        bubbleRadius: number;
+        /**
+         * Radius of the sphere mesh representing the light bulb. If 0 light gets created without the mesh
+         */
+        radius: 0.1;
     }
 }

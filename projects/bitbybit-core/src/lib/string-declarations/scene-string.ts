@@ -26,7 +26,7 @@ export declare class Scene {
      */
     drawGridMesh(inputs: Inputs.Scene.SceneDrawGridMeshDto): Mesh;
     /**
-     * Creates a point light in the scene
+     * Creates and draws a point light in the scene
      * <div>
      *  <img src="../assets/images/blockly-images/scene/createPointLight.svg" alt="Blockly Image"/>
      * </div>
@@ -34,17 +34,7 @@ export declare class Scene {
      * @param inputs Describes the light source
      * @returns BabylonJS point light
      */
-    createPointLight(inputs: Inputs.Scene.PointLightDto): PointLight;
-    /**
-     * Draws a light in the scene
-     * <div>
-     *  <img src="../assets/images/blockly-images/scene/drawLight.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_scene.scene.html#drawlight
-     * @param inputs Parameters for drawing lights
-     * @returns Sphere with emissive material in the location of the light
-     */
-    drawLight(inputs: Inputs.Scene.DrawLightDto): Mesh;
+    drawPointLight(inputs: Inputs.Scene.PointLightDto): PointLight;
     /**
      * Clears all of the drawn objects in the 3D scene
      * <div>
