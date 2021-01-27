@@ -127,6 +127,23 @@ class OccHelper {
         return new this.occ.BRepBuilderAPI_MakeWire_2(edge).Wire();
     }
 
+    bRepBuilderAPIMakeShell(face: any): any {
+        // TODO come back to this later to get UVBounds before creating a surface. Now faces converted
+        // to a surface and eventually to a shell get no bounds
+        // const uMin = new this.occ.TDataStd_Real();
+        // const uMax = new this.occ.TDataStd_Real();
+        // const vMin = new this.occ.TDataStd_Real();
+        // const vMax = new this.occ.TDataStd_Real();
+        // this.occ.BRepTools.UVBounds_1(face, uMin, uMax, vMin, vMax);
+        // const srf = this.occ.BRep_Tool.Surface_3(face, uMin.Value(), uMax.Value(), vMin.Value(), vMax.Value());
+        const srf = this.occ.BRep_Tool.Surface_3(face);
+        const d = new this.occ.BRepBuilderAPI_MakeShell_2(
+            srf,
+            false);
+        const x = d.Shell();
+        return x;
+    }
+
     bRepBuilderAPIMakeFace(wire: any, planar: boolean): any {
         return new this.occ.BRepBuilderAPI_MakeFace_14(wire, planar).Face();
     }
@@ -343,15 +360,26 @@ export class Occ {
         if (!inputs.tolerance) { inputs.tolerance = 0.1; }
         if (inputs.offsetDistance === 0.0) { return inputs.shape; }
         let offset = null;
-        if (inputs.shape.ShapeType() === this.occ.TopAbs_ShapeEnum.TopAbs_WIRE) {
+        if (inputs.shape.ShapeType() === this.occ.TopAbs_ShapeEnum.TopAbs_WIRE ||
+            inputs.shape.ShapeType() === this.occ.TopAbs_ShapeEnum.TopAbs_EDGE) {
+            let wire;
+            if (inputs.shape.ShapeType() === this.occ.TopAbs_ShapeEnum.TopAbs_EDGE) {
+                wire = this.och.bRepBuilderAPIMakeWire(inputs.shape);
+            } else {
+                wire = inputs.shape;
+            }
             offset = new this.occ.BRepOffsetAPI_MakeOffset_1();
             offset.Init_2(this.occ.GeomAbs_JoinType.GeomAbs_Arc, false);
-            offset.AddWire(inputs.shape);
+            offset.AddWire(wire);
             offset.Perform(inputs.offsetDistance, 0.0);
         } else {
+            let shell = inputs.shape;
+            if (inputs.shape.ShapeType() === this.occ.TopAbs_ShapeEnum.TopAbs_FACE) {
+                shell = this.och.bRepBuilderAPIMakeShell(inputs.shape);
+            }
             offset = new this.occ.BRepOffsetAPI_MakeOffsetShape_1();
             offset.PerformByJoin(
-                inputs.shape,
+                shell,
                 inputs.offsetDistance,
                 inputs.tolerance,
                 this.occ.BRepOffset_Mode.BRepOffset_Skin,
@@ -363,12 +391,12 @@ export class Occ {
         }
         let offsetShape = offset.Shape();
 
-        // Convert Shell to Solid as is expected
-        if (offsetShape.ShapeType() === this.occ.TopAbs_ShapeEnum.TopAbs_SHELL) {
-            const solidOffset = new this.occ.BRepBuilderAPI_MakeSolid_1();
-            solidOffset.Add(offsetShape);
-            offsetShape = solidOffset.Solid();
-        }
+        // Convert Shell to Solid as is expected - it's not necessarily expected
+        // if (offsetShape.ShapeType() === this.occ.TopAbs_ShapeEnum.TopAbs_SHELL) {
+        //     const solidOffset = new this.occ.BRepBuilderAPI_MakeSolid_1();
+        //     solidOffset.Add(offsetShape);
+        //     offsetShape = solidOffset.Solid();
+        // }
 
         return offsetShape;
     }
@@ -527,6 +555,18 @@ export class Occ {
         return fusor.Shape();
     }
 
+    getEdge(inputs: Inputs.OCC.ShapeIndexDto): any {
+        if (!inputs.shape || inputs.shape.ShapeType() > this.occ.TopAbs_ShapeEnum.TopAbs_WIRE || inputs.shape.IsNull()) {
+            throw (new Error('Shape is not provided or is of incorrect type'));
+        }
+        if (!inputs.index) { inputs.index = 0; }
+        let innerEdge = {}; let edgesFound = 0;
+        this.forEachEdge(inputs.shape, (i, s) => {
+            if (i === inputs.index) { innerEdge = s; } edgesFound++;
+        });
+        return innerEdge;
+    }
+
     getWire(inputs: Inputs.OCC.ShapeIndexDto): any {
         if (!inputs.shape || inputs.shape.ShapeType() > this.occ.TopAbs_ShapeEnum.TopAbs_FACE || inputs.shape.IsNull()) {
             throw (new Error('Shape is not provided or is of incorrect type'));
@@ -538,6 +578,19 @@ export class Occ {
         });
         return innerWire;
     }
+
+    getFace(inputs: Inputs.OCC.ShapeIndexDto): any {
+        if (!inputs.shape || inputs.shape.ShapeType() > this.occ.TopAbs_ShapeEnum.TopAbs_SHELL || inputs.shape.IsNull()) {
+            throw (new Error('Shape is not provided or is of incorrect type'));
+        }
+        if (!inputs.index) { inputs.index = 0; }
+        let innerFace = {}; let facesFound = 0;
+        this.forEachFace(inputs.shape, (i, s) => {
+            if (i === inputs.index) { innerFace = new this.occ.TopoDS.Face_1(s); } facesFound++;
+        });
+        return innerFace;
+    }
+
 
     shapeToMesh(shape, maxDeviation): {
         faceList: {
@@ -842,7 +895,7 @@ class CacheHelper {
             usedHashKeys = usedHashKeys.filter(h => h === hash);
         });
         usedHashKeys.forEach(hash => {
-                this.argCache[hash].delete();
+            this.argCache[hash].delete();
         });
         this.argCache = newArgsCache;
         this.usedHashes = newUsedHashKeys;

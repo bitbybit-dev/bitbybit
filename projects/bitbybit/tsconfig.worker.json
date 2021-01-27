@@ -2,6 +2,7 @@
 {
   "extends": "../../tsconfig.json",
   "compilerOptions": {
+    "sourceMap": true,
     "outDir": "../../out-tsc/worker",
     "lib": [
       "es2018",

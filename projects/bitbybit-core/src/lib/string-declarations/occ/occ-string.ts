@@ -218,6 +218,26 @@ export declare class OCC {
      * @returns OpenCascade wire
      */
     getWire(inputs: Inputs.OCC.ShapeIndexDto): any;
+    /**
+     * Gets the edge by providing an index from the shape
+     * <div>
+     *  <img src="../assets/images/blockly-images/occ/getEdge.svg" alt="Blockly Image"/>
+     * </div>
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occ.occ.html#getedge
+     * @param inputs Shape
+     * @returns OpenCascade edge
+     */
+    getEdge(inputs: Inputs.OCC.ShapeIndexDto): any;
+    /**
+     * Gets the face by providing an index from the shape
+     * <div>
+     *  <img src="../assets/images/blockly-images/occ/getFace.svg" alt="Blockly Image"/>
+     * </div>
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occ.occ.html#getface
+     * @param inputs Shape
+     * @returns OpenCascade face
+     */
+    getFace(inputs: Inputs.OCC.ShapeIndexDto): any;
     private getNumSolidsInCompound;
     private getSolidFromCompound;
     private forEachSolid;

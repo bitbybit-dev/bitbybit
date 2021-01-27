@@ -423,6 +423,19 @@ export class OCC {
     }
 
     /**
+     * Gets the edge by providing an index from the shape
+     * <div>
+     *  <img src="../assets/images/blockly-images/occ/getEdge.svg" alt="Blockly Image"/>
+     * </div>
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occ.occ.html#getedge
+     * @param inputs Shape
+     * @returns OpenCascade edge
+     */
+    getEdge(inputs: Inputs.OCC.ShapeIndexDto): any {
+        return this.genericCallToWorkerPromise('getEdge', inputs);
+    }
+
+    /**
      * Gets the wire by providing an index from the shape
      * <div>
      *  <img src="../assets/images/blockly-images/occ/getWire.svg" alt="Blockly Image"/>
@@ -433,6 +446,19 @@ export class OCC {
      */
     getWire(inputs: Inputs.OCC.ShapeIndexDto): any {
         return this.genericCallToWorkerPromise('getWire', inputs);
+    }
+
+    /**
+     * Gets the face by providing an index from the shape
+     * <div>
+     *  <img src="../assets/images/blockly-images/occ/getFace.svg" alt="Blockly Image"/>
+     * </div>
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occ.occ.html#getface
+     * @param inputs Shape
+     * @returns OpenCascade face
+     */
+    getFace(inputs: Inputs.OCC.ShapeIndexDto): any {
+        return this.genericCallToWorkerPromise('getFace', inputs);
     }
 
     private computeFaceMiddlePos(vertexCoordVec: number[][]): number[] {
