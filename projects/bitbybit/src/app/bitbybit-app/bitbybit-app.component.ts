@@ -563,7 +563,11 @@ export class BitbybitAppComponent implements OnInit, OnDestroy, AfterViewInit {
                     BitByBitBlockHandlerService: window.BitByBitBlockHandlerService,
                     BitByBitBlocklyHelperService: window.BitByBitBlocklyHelperService,
                 };
-                ${code}`)();
+                allTheCode();
+                async function allTheCode(){
+                    ${code}
+                }
+                `)();
 
                 if (this.tagService.tagsExist()) {
                     this.tagsNeedUpdate = true;
