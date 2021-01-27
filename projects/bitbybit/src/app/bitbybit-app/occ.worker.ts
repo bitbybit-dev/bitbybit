@@ -136,7 +136,7 @@ class OccHelper {
         // const vMax = new this.occ.TDataStd_Real();
         // this.occ.BRepTools.UVBounds_1(face, uMin, uMax, vMin, vMax);
         // const srf = this.occ.BRep_Tool.Surface_3(face, uMin.Value(), uMax.Value(), vMin.Value(), vMax.Value());
-        const srf = this.occ.BRep_Tool.Surface_3(face);
+        const srf = this.occ.BRep_Tool.Surface_2(face);
         const d = new this.occ.BRepBuilderAPI_MakeShell_2(
             srf,
             false);
