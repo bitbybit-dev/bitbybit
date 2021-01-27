@@ -280,6 +280,32 @@ export namespace OCC {
          */
         tolerance = 0.1;
     }
+    export class RevolveDto {
+        constructor(shape?: any, degrees?: number, direction?: number[], copy?: boolean) {
+            this.shape = shape;
+            this.degrees = degrees;
+            this.direction = direction;
+            if (this.copy) {
+                this.copy = copy;
+            }
+        }
+        /**
+         * Shape to revolve
+         */
+        shape: any;
+        /**
+         * Angle degrees
+         */
+        degrees: number;
+        /**
+         * Direction vector
+         */
+        direction: number[];
+        /**
+         * Copy original shape
+         */
+        copy = false;
+    }
     export class ExtrudeDto {
         constructor(shape?: any, direction?: number[]) {
             this.shape = shape;

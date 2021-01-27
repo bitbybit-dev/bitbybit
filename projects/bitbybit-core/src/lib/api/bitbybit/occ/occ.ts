@@ -343,11 +343,24 @@ export class OCC {
      *  <img src="../assets/images/blockly-images/occ/extrude.svg" alt="Blockly Image"/>
      * </div>
      * @link https://docs.bitbybit.dev/classes/bitbybit_occ.occ.html#extrude
-     * @param inputs Face to extrude and direction parameter with tolerance
-     * @returns Resulting extruded solid
+     * @param inputs Shape to extrude and direction parameter with tolerance
+     * @returns Resulting extruded shape
      */
     extrude(inputs: Inputs.OCC.ExtrudeDto): any {
         return this.genericCallToWorkerPromise('extrude', inputs);
+    }
+
+    /**
+     * Revolves the shape around the given direction
+     * <div>
+     *  <img src="../assets/images/blockly-images/occ/revolve.svg" alt="Blockly Image"/>
+     * </div>
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occ.occ.html#revolve
+     * @param inputs Revolve parameters
+     * @returns Resulting revolved shape
+     */
+    revolve(inputs: Inputs.OCC.RevolveDto): any {
+        return this.genericCallToWorkerPromise('revolve', inputs);
     }
 
     /**

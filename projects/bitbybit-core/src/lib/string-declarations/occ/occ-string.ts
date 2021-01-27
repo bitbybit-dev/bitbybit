@@ -152,6 +152,16 @@ export declare class OCC {
      */
     extrude(inputs: Inputs.OCC.ExtrudeDto): any;
     /**
+     * Revolves the shape around the given direction
+     * <div>
+     *  <img src="../assets/images/blockly-images/occ/revolve.svg" alt="Blockly Image"/>
+     * </div>
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occ.occ.html#revolve
+     * @param inputs Revolve parameters
+     * @returns Resulting revolved shape
+     */
+    revolve(inputs: Inputs.OCC.RevolveDto): any ;
+    /**
      * Creates OpenCascade Sphere
      * <div>
      *  <img src="../assets/images/blockly-images/occ/createSphere.svg" alt="Blockly Image"/>

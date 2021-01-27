@@ -232,6 +232,25 @@ export declare namespace OCC {
          */
         tolerance: number;
     }
+    class RevolveDto {
+        constructor(shape?: any, degrees?: number, direction?: number[], copy?: boolean);
+        /**
+         * Shape to revolve
+         */
+        shape: any;
+        /**
+         * Angle degrees
+         */
+        degrees: number;
+        /**
+         * Direction vector
+         */
+        direction: number[];
+        /**
+         * Copy original shape
+         */
+        copy: boolean;
+    }
     class ExtrudeDto {
         constructor(shape?: any, direction?: number[]);
         /**
@@ -374,5 +393,4 @@ export declare namespace OCC {
         scale: number;
     }
 }
-
 `);
