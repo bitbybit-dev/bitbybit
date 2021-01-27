@@ -11,6 +11,7 @@ export const resourcesLt: ResourcesInterface = Object.freeze({
     app_menu_clean_canvas: 'Išvalyti Drobę',
     app_menu_more: 'Daugiau',
     app_menu_more_about: 'Apie',
+    app_menu_workers_initialising: 'Paleidžiami workeriai',
     app_menu_more_docs: 'API Dokumentacija',
     app_menu_more_home: 'BitByBit Namai',
     app_menu_more_clean_canvas: 'Išvalyti drobę',

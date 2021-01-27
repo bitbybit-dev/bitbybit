@@ -3,6 +3,7 @@ export interface ResourcesInterface {
     app_menu_run_code: string;
     app_menu_swap_canvas: string;
     app_menu_toolbox: string;
+    app_menu_workers_initialising: string;
     app_menu_code: string;
     app_menu_visual_programming: string;
     app_menu_support_us_on_patreon: string;

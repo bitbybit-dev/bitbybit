@@ -66,6 +66,7 @@ export class BitbybitAppComponent implements OnInit, OnDestroy, AfterViewInit {
     UiStatesEnum = UiStatesEnum;
 
     toolboxVisible = true;
+    occWorkerInitialised = false;
 
     timePassedFromPreviousIteration = 0;
 
@@ -221,19 +222,20 @@ export class BitbybitAppComponent implements OnInit, OnDestroy, AfterViewInit {
                                 this.previousUiState = UiStatesEnum.babylon;
                                 this.workspace.clear();
                                 Xml.domToWorkspace(xml, this.workspace);
+                                this.clearBabylonScene();
                                 setTimeout(() => {
                                     this.workspace.zoomToFit();
                                     this.workspace.zoomCenter(-3);
                                     this.onResize();
-                                    this.run();
                                 }, 200);
                             }
                         } else if (exampleParam && editorParam === 'ts') {
                             this.code = this.examplesService.getExampleTypescript(exampleParam);
+                            this.clearBabylonScene();
                             this.startMonaco();
-                            this.run();
                         } else if (editorParam === 'ts') {
                             this.code = this.examplesService.getExampleTypescript(exampleParam);
+                            this.clearBabylonScene();
                             this.startMonaco();
                             if (this.firstTimeOpen) {
                                 this.examples();
@@ -291,6 +293,9 @@ export class BitbybitAppComponent implements OnInit, OnDestroy, AfterViewInit {
         if (typeof Worker !== 'undefined') {
             // Create a new
             this.bitByBit.occ.setOccWorker(new Worker('./occ.worker', { type: 'module' }));
+            this.bitByBit.occ.occWorkerInitialised.subscribe(() => {
+                this.occWorkerInitialised = true;
+            });
         } else {
             alert('Your device does not support Webworkers, this application will not be able to run correctly');
             // TODO this app requires Webworker for OCC, better to use it on other device...
@@ -353,7 +358,6 @@ export class BitbybitAppComponent implements OnInit, OnDestroy, AfterViewInit {
                 reader.onload = (evt) => {
                     this.code = evt.target.result as string;
                     this.startMonaco();
-                    this.run();
                 };
                 reader.onerror = (evt) => {
                     document.getElementById('fileContents').innerHTML = 'error reading file';
@@ -376,7 +380,6 @@ export class BitbybitAppComponent implements OnInit, OnDestroy, AfterViewInit {
                     Xml.domToWorkspace(xml, this.workspace);
                     this.workspace.zoomToFit();
                     this.workspace.zoomCenter(-3);
-                    this.run();
                     this.onResize();
                 };
                 reader.onerror = (evt) => {

@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Mesh, MeshBuilder } from '@babylonjs/core';
+import { Subject } from 'rxjs';
 import { Context } from '../../context';
 import { GeometryHelper } from '../../geometry-helper';
 import * as Inputs from '../../inputs/inputs';
@@ -15,6 +16,7 @@ import { Vector } from '../vector';
 @Injectable()
 export class OCC {
 
+    occWorkerInitialised: Subject<void> = new Subject();
     private occWorker: Worker;
     private promisesMade: { promise?: Promise<any>, uid: string, resolve?, reject?}[] = [];
 
@@ -29,14 +31,19 @@ export class OCC {
     setOccWorker(worker: Worker): void {
         this.occWorker = worker;
         this.occWorker.onmessage = ({ data }) => {
-            const promise = this.promisesMade.find(made => made.uid === data.uid);
-            if (promise && data.result && !data.error) {
-                promise.resolve(data.result);
-            } else if (data.error) {
-                promise.reject(data.error);
-                alert(data.error);
+            if (data === 'occ initialised') {
+                this.occWorkerInitialised.next();
+                this.occWorkerInitialised.complete();
+            } else {
+                const promise = this.promisesMade.find(made => made.uid === data.uid);
+                if (promise && data.result && !data.error) {
+                    promise.resolve(data.result);
+                } else if (data.error) {
+                    promise.reject(data.error);
+                    alert(data.error);
+                }
+                this.promisesMade = this.promisesMade.filter(i => i.uid !== data.uid);
             }
-            this.promisesMade = this.promisesMade.filter(i => i.uid !== data.uid);
         };
     }
 

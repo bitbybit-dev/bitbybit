@@ -8,7 +8,7 @@
             </div>
             <div class="justify-end">
                 <div class="actions">
-                    <button mat-buttom mat-icon-button (click)="run()">
+                    <button *ngIf="occWorkerInitialised" mat-buttom mat-icon-button (click)="run()">
                         <mat-icon [matTooltip]="resources.app_menu_run_code" aria-label="Run the code">play_arrow
                         </mat-icon>
                     </button>
@@ -16,8 +16,10 @@
                         <mat-icon [matTooltip]="resources.app_menu_run_code" aria-label="Export png">play_arrow
                         </mat-icon>
                     </button> -->
+                    <mat-spinner *ngIf="!occWorkerInitialised" [matTooltip]="resources.app_menu_workers_initialising"
+                        diameter="30"></mat-spinner>
                     <ng-container
-                        *ngIf="currentUiState === UiStatesEnum.blockly || currentUiState === UiStatesEnum.monaco">
+                        *ngIf="(currentUiState === UiStatesEnum.blockly || currentUiState === UiStatesEnum.monaco)">
                         <button *ngIf="currentUiState === UiStatesEnum.blockly" mat-buttom mat-icon-button
                             (click)="toggleToolbox()">
                             <mat-icon [matTooltip]="resources.app_menu_toolbox" aria-hidden="false"
@@ -161,14 +163,15 @@
                     <div class="actions">
                         <a routerLink="/home" class="logo">
                             <img [matTooltip]="resources.bit_by_bit" src="assets/logo-gold-small.png" />
-                        </a>                       
+                        </a>
                         <button mat-buttom mat-icon-button (click)="swapCanvas()">
                             <mat-icon [matTooltip]="resources.app_menu_swap_canvas" aria-label="Swap Canvas">swap_horiz
                             </mat-icon>
                         </button>
+                        <mat-spinner [matTooltip]="resources.app_menu_workers_initialising" diameter="30"></mat-spinner>
                         <ng-container
                             *ngIf="currentUiState === UiStatesEnum.blockly || currentUiState === UiStatesEnum.monaco">
-                            <button mat-buttom mat-icon-button (click)="run()">
+                            <button *ngIf="occWorkerInitialised" mat-buttom mat-icon-button (click)="run()">
                                 <mat-icon [matTooltip]="resources.app_menu_run_code" aria-label="Run the code">
                                     play_arrow
                                 </mat-icon>

@@ -8,7 +8,7 @@ let cacheHelper: CacheHelper;
 initOpenCascade().then(occ => {
     cacheHelper = new CacheHelper();
     openCascade = new Occ(occ, new OccHelper(occ));
-    postMessage('occ initialised;');
+    postMessage('occ initialised');
 });
 
 type DataInput = {
