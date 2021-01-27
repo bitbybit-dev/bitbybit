@@ -172,6 +172,16 @@ export declare class OCC {
      */
     createSphere(inputs: Inputs.OCC.SphereDto): any;
     /**
+     * Creates OpenCascade Cone
+     * <div>
+     *  <img src="../assets/images/blockly-images/occ/createCone.svg" alt="Blockly Image"/>
+     * </div>
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occ.occ.html#createcone
+     * @param inputs Cone parameters
+     * @returns OpenCascade cone shape
+     */
+    createCone(inputs: Inputs.OCC.ConeDto): any;
+    /**
      * Fillets OpenCascade Shapes
      * <div>
      *  <img src="../assets/images/blockly-images/occ/filletEdges.svg" alt="Blockly Image"/>

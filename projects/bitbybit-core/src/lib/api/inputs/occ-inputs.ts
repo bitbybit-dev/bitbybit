@@ -135,6 +135,25 @@ export namespace OCC {
          */
         center = [0, 0, 0];
     }
+    export class ConeDto {
+        constructor(radius1?: number, radius2?: number, height?: number) {
+            this.radius1 = radius1;
+            this.radius2 = radius2;
+            this.height = height;
+        }
+        /**
+         * First radius of the cone
+         */
+        radius1: number;
+        /**
+         * Second radius of the cone
+         */
+        radius2: number;
+        /**
+         * Height of the cone
+         */
+        height: number;
+    }
     export class CylinderDto {
         /**
          * Radius of the cylinder

@@ -343,6 +343,11 @@ export class Occ {
         return this.och.bRepPrimAPIMakeSphere(inputs.center, [0., 0., 1.], inputs.radius);
     }
 
+    createCone(inputs: Inputs.OCC.ConeDto): any {
+        return new this.occ.BRepPrimAPI_MakeCone_1(inputs.radius1, inputs.radius2, inputs.height).Shape();
+    }
+
+
     filletEdges(inputs: Inputs.OCC.FilletDto): any {
         if (inputs.all) {
             const mkFillet = new this.occ.BRepFilletAPI_MakeFillet(
