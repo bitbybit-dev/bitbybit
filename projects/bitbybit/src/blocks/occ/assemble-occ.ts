@@ -1,6 +1,7 @@
 import { createDrawShapeBlock } from './draw-shape';
 import { createExtrudeBlock } from './extrude';
 import { createFacesCreateCircleBlock } from './faces-create-circle';
+import { createLoftBlock } from './loft';
 import { createOffsetBlock } from './offset';
 import { createBoxBlock } from './shapes-create-box';
 import { createConeBlock } from './shapes-create-cone';
@@ -22,4 +23,5 @@ export function assembleOCCBlocks(): void {
     createFacesCreateCircleBlock();
     createOffsetBlock();
     createExtrudeBlock();
+    createLoftBlock();
 }

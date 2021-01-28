@@ -1584,5 +1584,8 @@ app_menu_more_community: 'Bendruomenė',
     block_occ_offset_description: 'Ofsetina figūrą.',
     block_occ_extrude_input_shape: 'Iškelti OCC figūrą',
     block_occ_extrude_input_direction: 'Kryptis',
-    block_occ_extrude_description: 'Iškelia figūrą krypties vektoriumi.'
+    block_occ_extrude_description: 'Iškelia figūrą krypties vektoriumi.',
+    block_occ_loft_input_shapes: 'Jungti OCC profilius',
+    block_occ_loft_input_make_solid: 'Daryti kūną',
+    block_occ_loft_description: 'Jungia (Loft) įvairius profilius į paviršių arba kūną.',
 });

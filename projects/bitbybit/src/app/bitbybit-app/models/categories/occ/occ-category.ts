@@ -294,6 +294,13 @@ export function occCategory(): string {
                     </block>
                 </value>
             </block>
+            <block type="occ_loft">
+                <value name="MakeSolid">
+                    <block type="logic_boolean">
+                        <field name="BOOL">FALSE</field>
+                    </block>
+                </value>
+            </block>
         </category>
     </category>
 `;

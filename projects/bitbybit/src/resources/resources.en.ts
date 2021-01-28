@@ -1582,5 +1582,8 @@ export const resourcesEn: ResourcesInterface = Object.freeze({
     block_occ_offset_description: 'Offsets the shape by a given distance.',
     block_occ_extrude_input_shape: 'Extrude OCC shape',
     block_occ_extrude_input_direction: 'Direction',
-    block_occ_extrude_description: 'Extrudes OCC shape along the vector.'
+    block_occ_extrude_description: 'Extrudes OCC shape along the vector.',
+    block_occ_loft_input_shapes: 'Loft OCC shapes',
+    block_occ_loft_input_make_solid: 'Make solid',
+    block_occ_loft_description: 'Creates the loft through shapes',
 });

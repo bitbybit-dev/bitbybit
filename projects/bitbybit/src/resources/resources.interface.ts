@@ -1579,5 +1579,8 @@ export interface ResourcesInterface {
     block_occ_extrude_input_shape: string;
     block_occ_extrude_input_direction: string;
     block_occ_extrude_description: string;
+    block_occ_loft_input_shapes: string;
+    block_occ_loft_input_make_solid: string;
+    block_occ_loft_description: string;
 
 }
