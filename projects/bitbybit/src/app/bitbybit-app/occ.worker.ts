@@ -968,14 +968,18 @@ class CacheHelper {
         const hashesFromPreviousRunKeys = Object.keys(this.hashesFromPreviousRun);
         const newArgsCache = {};
         const newUsedHashKeys = {};
+
+        // hashesToDelete = [];
         hashesFromPreviousRunKeys.forEach(hash => {
             newArgsCache[hash] = this.argCache[hash];
             newUsedHashKeys[hash] = this.usedHashes[hash];
             usedHashKeys = usedHashKeys.filter(h => h === hash);
         });
-        usedHashKeys.forEach(hash => {
-            this.argCache[hash].delete();
-        });
+        if (usedHashKeys.length > 1) {
+            usedHashKeys.forEach(hash => {
+                this.argCache[hash].delete();
+            });
+        }
         this.argCache = newArgsCache;
         this.usedHashes = newUsedHashKeys;
         this.hashesFromPreviousRun = {};

@@ -543,6 +543,7 @@ export class BitbybitAppComponent implements OnInit, OnDestroy, AfterViewInit {
         // If we'll have more workers for other libraries, this could be applied here as well
         // with Promise.all...
         this.bitByBit.occ.cleanUpCache().then((res) => {
+            // console.log(res);
             let transpiledCode = false;
             try {
                 this.clearBabylonScene();
@@ -563,11 +564,7 @@ export class BitbybitAppComponent implements OnInit, OnDestroy, AfterViewInit {
                     BitByBitBlockHandlerService: window.BitByBitBlockHandlerService,
                     BitByBitBlocklyHelperService: window.BitByBitBlocklyHelperService,
                 };
-                allTheCode();
-                async function allTheCode(){
-                    ${code}
-                }
-                `)();
+                ${code}`)();
 
                 if (this.tagService.tagsExist()) {
                     this.tagsNeedUpdate = true;

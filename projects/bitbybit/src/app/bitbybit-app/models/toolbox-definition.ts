@@ -14,6 +14,7 @@ import { sceneCategory } from './categories/scene/scene-category';
 import { tagCategory } from './categories/tag/tag-category';
 import { timeCategory } from './categories/time/time-category';
 import { solidCategory } from './categories/geometry/solid-category';
+import { occCategory } from './categories/occ/occ-category';
 
 export function toolboxDefinition(): string {
     return `
@@ -30,6 +31,7 @@ export function toolboxDefinition(): string {
     ${polylineCategory()}
     ${curveCategory()}
     ${surfaceCategory()}
+    ${occCategory()}
     ${solidCategory()}
     <sep></sep>
     ${intersectCategory()}

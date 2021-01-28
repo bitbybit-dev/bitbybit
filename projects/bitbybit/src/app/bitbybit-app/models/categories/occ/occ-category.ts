@@ -1,0 +1,122 @@
+import { ResourcesService } from '../../../../../resources';
+
+export function occCategory() {
+    const resources = ResourcesService.getResources();
+    return `
+    <category name="OCC"  categorystyle="geometry_category">
+        <block type="occ_draw_shape">
+            <value name="FaceOpacity">
+                <block type="math_number">
+                    <field name="NUM">1</field>
+                </block>
+            </value>
+            <value name="EdgeOpacity">
+                <block type="math_number">
+                    <field name="NUM">1</field>
+                </block>
+            </value>
+            <value name="FaceColour">
+                <block type="colour_picker">
+                    <field name="COLOUR">#0000ff</field>
+                </block>
+            </value>
+            <value name="EdgeColour">
+                <block type="colour_picker">
+                    <field name="COLOUR">#000000</field>
+                </block>
+            </value>
+            <value name="EdgeWidth">
+                <block type="math_number">
+                    <field name="NUM">2</field>
+                </block>
+            </value>
+            <value name="Updatable">
+                <block type="logic_boolean">
+                    <field name="BOOL">FALSE</field>
+                </block>
+            </value>
+            <value name="DrawEdges">
+                <block type="logic_boolean">
+                    <field name="BOOL">TRUE</field>
+                </block>
+            </value>
+            <value name="DrawFaces">
+                <block type="logic_boolean">
+                    <field name="BOOL">TRUE</field>
+                </block>
+            </value>
+            <value name="Precision">
+                <block type="math_number">
+                    <field name="NUM">0.05</field>
+                </block>
+            </value>
+            <value name="DrawEdgeIndexes">
+                <block type="logic_boolean">
+                    <field name="BOOL">FALSE</field>
+                </block>
+            </value>
+            <value name="EdgeIndexHeight">
+                <block type="math_number">
+                    <field name="NUM">0.06</field>
+                </block>
+            </value>
+            <value name="EdgeIndexColour">
+                <block type="colour_picker">
+                    <field name="COLOUR">#ff00ff</field>
+                </block>
+            </value>
+            <value name="DrawFaceIndexes">
+                <block type="logic_boolean">
+                    <field name="BOOL">FALSE</field>
+                </block>
+            </value>
+            <value name="FaceIndexHeight">
+                <block type="math_number">
+                    <field name="NUM">0.06</field>
+                </block>
+            </value>
+            <value name="FaceIndexColour">
+                <block type="colour_picker">
+                    <field name="COLOUR">#00ff00</field>
+                </block>
+            </value>
+        </block>
+        <block type="occ_shapes_create_box">
+            <value name="Width">
+                <block type="math_number">
+                    <field name="NUM">1</field>
+                </block>
+            </value>
+            <value name="Length">
+                <block type="math_number">
+                    <field name="NUM">1</field>
+                </block>
+            </value>
+            <value name="Height">
+                <block type="math_number">
+                    <field name="NUM">1</field>
+                </block>
+            </value>
+            <value name="Center">
+                <block type="base_geometry_point">
+                    <value name="X">
+                        <block type="math_number">
+                            <field name="NUM">0</field>
+                        </block>
+                    </value>
+                    <value name="Y">
+                        <block type="math_number">
+                            <field name="NUM">0</field>
+                        </block>
+                    </value>
+                    <value name="Z">
+                        <block type="math_number">
+                            <field name="NUM">0</field>
+                        </block>
+                    </value>
+                </block>
+            </value>
+        </block>
+    </category>
+`;
+}
