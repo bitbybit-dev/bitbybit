@@ -26,9 +26,9 @@ export class BitByBitBlockHandlerService {
                 promises.push(inputs[propName]);
             } else if (inputs[propName].length && inputs[propName].length > 0) {
                 // we also look for promises in the arrays, this is tricky, but should work for blockly scenarios
-                for(let i = 0; i < inputs[propName].length; i++){
+                for (let i = 0; i < inputs[propName].length; i++) {
                     const s = inputs[propName][i];
-                    if (s.then) {
+                    if (typeof s === 'object' && s !== null && s.then) {
                         s.then(r => {
                             inputs[propName][i] = r;
                             return r;

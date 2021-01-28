@@ -36,7 +36,7 @@ export function createRevolveBlock(): void {
             this.setOutput(true, 'OccShape');
             this.setColour('#fff');
             this.setTooltip(resources.block_occ_revolve_description);
-            this.setHelpUrl(environment.docsUrl + occConstants.occHelpUrl + '#' + 'loft');
+            this.setHelpUrl(environment.docsUrl + occConstants.occHelpUrl + '#' + 'revolve');
         }
     };
 

@@ -152,6 +152,7 @@ export const resourcesEn: ResourcesInterface = Object.freeze({
     block_toolbox_category_occ_create_wire: 'Wire',
     block_toolbox_category_occ_create_face: 'Face',
     block_toolbox_category_occ_apply: 'Apply',
+    block_toolbox_category_occ_apply_boolean: 'Boolean',
     block_number: 'Number',
     block_modulus: 'Modulus',
     block_year: 'Year',
@@ -1600,5 +1601,8 @@ export const resourcesEn: ResourcesInterface = Object.freeze({
     block_occ_chamfer_edge_input_distance: 'Distance',
     block_occ_chamfer_edge_input_edge_list: 'Edge indexes',
     block_occ_chamfer_edge_input_all: 'All',
-    block_occ_chamfer_edge_description: 'Chamfers the given edges of the shape. If all property is selected, all edges will be chamfered.'
+    block_occ_chamfer_edge_description: 'Chamfers the given edges of the shape. If all property is selected, all edges will be chamfered.',
+    block_occ_boolean_union_input_shapes: 'Union shapes',
+    block_occ_boolean_union_input_keep_edges: 'Keep edges',
+    block_occ_boolean_union_description: 'Unions multiple shapes together if they are joinable.',
 });

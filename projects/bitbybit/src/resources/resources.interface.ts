@@ -150,6 +150,7 @@ export interface ResourcesInterface {
     block_toolbox_category_occ_create_wire: string;
     block_toolbox_category_occ_create_face: string;
     block_toolbox_category_occ_apply: string;
+    block_toolbox_category_occ_apply_boolean: string;
     block_computing: string;
     block_point: string;
     block_clockwise: string;
@@ -1597,4 +1598,7 @@ export interface ResourcesInterface {
     block_occ_chamfer_edge_input_edge_list: string;
     block_occ_chamfer_edge_input_all: string;
     block_occ_chamfer_edge_description: string;
+    block_occ_boolean_union_input_shapes: string;
+    block_occ_boolean_union_input_keep_edges: string;
+    block_occ_boolean_union_description: string;
 }

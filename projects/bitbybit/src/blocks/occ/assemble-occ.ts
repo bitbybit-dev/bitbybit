@@ -10,6 +10,7 @@ import { createBoxBlock } from './shapes-create-box';
 import { createConeBlock } from './shapes-create-cone';
 import { createCylinderBlock } from './shapes-create-cylinder';
 import { createSphereBlock } from './shapes-create-sphere';
+import { createUnionBlock } from './union';
 import { createWiresCreateBezierBlock } from './wires-create-bezier';
 import { createWiresCreateBSplineBlock } from './wires-create-bspline';
 import { createWiresCreateCircleBlock } from './wires-create-circle';
@@ -30,4 +31,5 @@ export function assembleOCCBlocks(): void {
     createRevolveBlock();
     createFilletEdgesBlock();
     createChamferEdgesBlock();
+    createUnionBlock();
 }

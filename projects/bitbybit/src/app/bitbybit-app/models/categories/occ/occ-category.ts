@@ -356,6 +356,15 @@ export function occCategory(): string {
                     </block>
                 </value>
             </block>
+            <category name="${resources.block_toolbox_category_occ_apply_boolean}"  categorystyle="geometry_category">
+                <block type="occ_union">
+                    <value name="KeepEdges">
+                        <block type="logic_boolean">
+                            <field name="BOOL">TRUE</field>
+                        </block>
+                    </value>
+                </block>
+            </category>
         </category>
     </category>
 `;
