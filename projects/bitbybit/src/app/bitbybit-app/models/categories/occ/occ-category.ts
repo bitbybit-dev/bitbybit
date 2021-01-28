@@ -261,19 +261,40 @@ export function occCategory(): string {
             </category>
         </category>
         <category name="${resources.block_toolbox_category_occ_apply}"  categorystyle="geometry_category">
-                <block type="occ_offset">
-                    <value name="Distance">
-                        <block type="math_number">
-                            <field name="NUM">0.3</field>
-                        </block>
-                    </value>
-                    <value name="Tolerance">
-                        <block type="math_number">
-                            <field name="NUM">0.1</field>
-                        </block>
-                    </value>
-                </block>
-            </category>
+            <block type="occ_offset">
+                <value name="Distance">
+                    <block type="math_number">
+                        <field name="NUM">0.3</field>
+                    </block>
+                </value>
+                <value name="Tolerance">
+                    <block type="math_number">
+                        <field name="NUM">0.1</field>
+                    </block>
+                </value>
+            </block>
+            <block type="occ_extrude">
+                <value name="Direction">
+                    <block type="base_geometry_point">
+                        <value name="X">
+                            <block type="math_number">
+                                <field name="NUM">0</field>
+                            </block>
+                        </value>
+                        <value name="Y">
+                            <block type="math_number">
+                                <field name="NUM">1</field>
+                            </block>
+                        </value>
+                        <value name="Z">
+                            <block type="math_number">
+                                <field name="NUM">0</field>
+                            </block>
+                        </value>
+                    </block>
+                </value>
+            </block>
+        </category>
     </category>
 `;
 }

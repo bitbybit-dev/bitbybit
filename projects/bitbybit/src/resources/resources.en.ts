@@ -1580,4 +1580,7 @@ export const resourcesEn: ResourcesInterface = Object.freeze({
     block_occ_offset_input_distance: 'distance',
     block_occ_offset_input_tolerance: 'Tolerance',
     block_occ_offset_description: 'Offsets the shape by a given distance.',
+    block_occ_extrude_input_shape: 'Extrude OCC shape',
+    block_occ_extrude_input_direction: 'Direction',
+    block_occ_extrude_description: 'Extrudes OCC shape along the vector.'
 });

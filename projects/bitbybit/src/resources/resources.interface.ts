@@ -1576,5 +1576,8 @@ export interface ResourcesInterface {
     block_occ_offset_input_distance: string;
     block_occ_offset_input_tolerance: string;
     block_occ_offset_description: string;
+    block_occ_extrude_input_shape: string;
+    block_occ_extrude_input_direction: string;
+    block_occ_extrude_description: string;
 
 }
