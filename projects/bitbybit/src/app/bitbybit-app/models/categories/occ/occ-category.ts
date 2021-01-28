@@ -197,6 +197,13 @@ export function occCategory(): string {
                         </block>
                     </value>
                 </block>
+                <block type="occ_wires_create_bezier">
+                    <value name="Closed">
+                        <block type="logic_boolean">
+                            <field name="BOOL">FALSE</field>
+                        </block>
+                    </value>
+                </block>
                 <block type="occ_wires_create_circle">
                     <value name="Radius">
                         <block type="math_number">

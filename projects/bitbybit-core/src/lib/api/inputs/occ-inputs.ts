@@ -220,19 +220,14 @@ export namespace OCC {
     }
 
     export class BezierDto {
-        constructor(points?: number[][], weights?: number[], closed?: boolean) {
+        constructor(points?: number[][], closed?: boolean) {
             this.points = points;
-            this.weights = weights;
             this.closed = closed;
         }
         /**
          * Points through which the Bezier curve will be created
          */
         points: number[][];
-        /**
-         * Optional weight parameter
-         */
-        weights?: number[];
         /**
          * Indicates wether Bezier will be cloed
          */
