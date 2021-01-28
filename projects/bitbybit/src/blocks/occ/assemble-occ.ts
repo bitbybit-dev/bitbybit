@@ -3,6 +3,7 @@ import { createExtrudeBlock } from './extrude';
 import { createFacesCreateCircleBlock } from './faces-create-circle';
 import { createLoftBlock } from './loft';
 import { createOffsetBlock } from './offset';
+import { createRevolveBlock } from './revolve';
 import { createBoxBlock } from './shapes-create-box';
 import { createConeBlock } from './shapes-create-cone';
 import { createCylinderBlock } from './shapes-create-cylinder';
@@ -24,4 +25,5 @@ export function assembleOCCBlocks(): void {
     createOffsetBlock();
     createExtrudeBlock();
     createLoftBlock();
+    createRevolveBlock();
 }

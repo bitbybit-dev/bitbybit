@@ -285,7 +285,7 @@ export namespace OCC {
     export class RevolveDto {
         constructor(shape?: any, degrees?: number, direction?: number[], copy?: boolean) {
             this.shape = shape;
-            this.degrees = degrees;
+            this.angle = degrees;
             this.direction = direction;
             if (this.copy) {
                 this.copy = copy;
@@ -298,7 +298,7 @@ export namespace OCC {
         /**
          * Angle degrees
          */
-        degrees: number;
+        angle: number;
         /**
          * Direction vector
          */

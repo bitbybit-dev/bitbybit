@@ -301,6 +301,37 @@ export function occCategory(): string {
                     </block>
                 </value>
             </block>
+            <block type="occ_revolve">
+                <value name="Direction">
+                    <block type="base_geometry_point">
+                        <value name="X">
+                            <block type="math_number">
+                                <field name="NUM">0</field>
+                            </block>
+                        </value>
+                        <value name="Y">
+                            <block type="math_number">
+                                <field name="NUM">1</field>
+                            </block>
+                        </value>
+                        <value name="Z">
+                            <block type="math_number">
+                                <field name="NUM">0</field>
+                            </block>
+                        </value>
+                    </block>
+                </value>
+                <value name="Angle">
+                    <block type="math_number">
+                        <field name="NUM">360</field>
+                    </block>
+                </value>
+                <value name="Copy">
+                    <block type="logic_boolean">
+                        <field name="BOOL">FALSE</field>
+                    </block>
+                </value>
+            </block>
         </category>
     </category>
 `;

@@ -313,10 +313,10 @@ export class Occ {
     }
 
     revolve(inputs: Inputs.OCC.RevolveDto): any {
-        if (!inputs.degrees) { inputs.degrees = 360.0; }
+        if (!inputs.angle) { inputs.angle = 360.0; }
         if (!inputs.direction) { inputs.direction = [0, 0, 1]; }
         let result;
-        if (inputs.degrees >= 360.0) {
+        if (inputs.angle >= 360.0) {
             result = new this.occ.BRepPrimAPI_MakeRevol_2(inputs.shape,
                 new this.occ.gp_Ax1_2(new this.occ.gp_Pnt_3(0, 0, 0),
                     new this.occ.gp_Dir_4(inputs.direction[0], inputs.direction[1], inputs.direction[2])),
@@ -325,7 +325,7 @@ export class Occ {
             result = new this.occ.BRepPrimAPI_MakeRevol_1(inputs.shape,
                 new this.occ.gp_Ax1_2(new this.occ.gp_Pnt_3(0, 0, 0),
                     new this.occ.gp_Dir_4(inputs.direction[0], inputs.direction[1], inputs.direction[2])),
-                inputs.degrees * 0.0174533, inputs.copy).Shape();
+                inputs.angle * 0.0174533, inputs.copy).Shape();
         }
         return result;
     }

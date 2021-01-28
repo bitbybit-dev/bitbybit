@@ -1582,5 +1582,9 @@ export interface ResourcesInterface {
     block_occ_loft_input_shapes: string;
     block_occ_loft_input_make_solid: string;
     block_occ_loft_description: string;
-
+    block_occ_revolve_input_shape: string;
+    block_occ_revolve_input_angle: string;
+    block_occ_revolve_input_direction: string;
+    block_occ_revolve_input_copy: string;
+    block_occ_revolve_description: string;
 }
