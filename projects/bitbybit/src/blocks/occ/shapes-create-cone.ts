@@ -5,53 +5,47 @@ import { createDummyAsyncLoadingIndicator2, createStandardContextIIFE } from '..
 import { getRequired, makeRequiredValidationModelForInputs, BitByBitBlockHandlerService, ValidationEntityInterface } from '../validations';
 import { environment } from '../../environments/environment';
 import { occConstants } from './occ-constants';
-import { OCC } from '../../../../bitbybit-core/src/lib/api/inputs/occ-inputs';
+import { OCC } from 'projects/bitbybit-core/src/lib/api/inputs/occ-inputs';
 
-export function createBoxBlock(): void {
+export function createConeBlock(): void {
 
     const resources = ResourcesService.getResources();
-    const blockSelector = 'occ_shapes_create_box';
+    const blockSelector = 'occ_shapes_create_cone';
 
     Blocks[blockSelector] = {
         init(): void {
             createDummyAsyncLoadingIndicator2(this, resources);
-            this.appendValueInput('Width')
+            this.appendValueInput('RadiusOne')
                 .setCheck('Number')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_occ_shapes_create_box_input_width);
-            this.appendValueInput('Length')
+                .appendField(resources.block_occ_shapes_create_cone_input_radius_one);
+            this.appendValueInput('RadiusTwo')
                 .setCheck('Number')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_occ_shapes_create_box_input_length.toLowerCase());
+                .appendField(resources.block_occ_shapes_create_cone_input_radius_two);
             this.appendValueInput('Height')
                 .setCheck('Number')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_occ_shapes_create_box_input_height.toLowerCase());
-            this.appendValueInput('Center')
-                .setCheck('Array')
-                .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_occ_shapes_create_box_input_center.toLowerCase());
+                .appendField(resources.block_occ_shapes_create_cone_input_height.toLowerCase());
             this.setOutput(true, 'OccShape');
             this.setColour('#fff');
-            this.setTooltip(resources.block_occ_shapes_create_box_description);
-            this.setHelpUrl(environment.docsUrl + occConstants.occHelpUrl + '#' + 'createbox');
+            this.setTooltip(resources.block_occ_shapes_create_cone_description);
+            this.setHelpUrl(environment.docsUrl + occConstants.occHelpUrl + '#' + 'createcone');
         }
     };
 
     JavaScript[blockSelector] = (block: Block) => {
-        const inputs: OCC.BoxDto = {
-            width: (JavaScript as any).valueToCode(block, 'Width', (JavaScript as any).ORDER_ATOMIC),
-            length: (JavaScript as any).valueToCode(block, 'Length', (JavaScript as any).ORDER_ATOMIC),
+        const inputs: OCC.ConeDto = {
+            radius1: (JavaScript as any).valueToCode(block, 'RadiusOne', (JavaScript as any).ORDER_ATOMIC),
+            radius2: (JavaScript as any).valueToCode(block, 'RadiusTwo', (JavaScript as any).ORDER_ATOMIC),
             height: (JavaScript as any).valueToCode(block, 'Height', (JavaScript as any).ORDER_ATOMIC),
-            center: (JavaScript as any).valueToCode(block, 'Center', (JavaScript as any).ORDER_ATOMIC),
         };
 
         // this is first set of validations to check that all inputs are non empty strings
         BitByBitBlockHandlerService.validate(block, block.workspace, makeRequiredValidationModelForInputs(resources, inputs, [
-            resources.block_occ_shapes_create_box_input_width,
-            resources.block_occ_shapes_create_box_input_length,
-            resources.block_occ_shapes_create_box_input_height,
-            resources.block_occ_shapes_create_box_input_center
+            resources.block_occ_shapes_create_cone_input_radius_one,
+            resources.block_occ_shapes_create_cone_input_radius_two,
+            resources.block_occ_shapes_create_cone_input_height,
         ]));
 
         // this creates validation model to be used at runtime to evaluate real values of inputs
@@ -59,7 +53,7 @@ export function createBoxBlock(): void {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `bitbybit.occ.createBox(inputs)`, true
+            `bitbybit.occ.createCone(inputs)`, true
         );
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };
@@ -73,24 +67,20 @@ function makeRuntimeValidationModel(
     return [{
         entity: keys[0],
         validations: [
-            getRequired(resources, resources.block_occ_shapes_create_box_input_width),
+            getRequired(resources, resources.block_occ_shapes_create_cone_input_radius_one),
         ]
     }, {
         entity: keys[1],
         validations: [
-            getRequired(resources, resources.block_occ_shapes_create_box_input_length),
+            getRequired(resources, resources.block_occ_shapes_create_cone_input_radius_two),
         ]
     }, {
         entity: keys[2],
         validations: [
-            getRequired(resources, resources.block_occ_shapes_create_box_input_height),
+            getRequired(resources, resources.block_occ_shapes_create_cone_input_height),
         ]
-    }, {
-        entity: keys[3],
-        validations: [
-            getRequired(resources, resources.block_occ_shapes_create_box_input_center),
-        ]
-    }];
+    }
+    ];
 }
 
 

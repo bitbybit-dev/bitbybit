@@ -34,10 +34,6 @@ export namespace OCC {
          */
         edgeWidth = 2;
         /**
-         * Indicates wether the position of this surface will change in time
-         */
-        updatable = false;
-        /**
          * You can turn off drawing of edges via this property
          */
         drawEdges = true;
@@ -45,14 +41,6 @@ export namespace OCC {
          * You can turn off drawing of faces via this property
          */
         drawFaces = true;
-        /**
-         * Brep mesh variable in case it already exists and needs updating
-         */
-        shapeMesh?: any;
-        /**
-         * Lines mesh
-         */
-        linesMesh?: any;
         /**
          * Precision
          */

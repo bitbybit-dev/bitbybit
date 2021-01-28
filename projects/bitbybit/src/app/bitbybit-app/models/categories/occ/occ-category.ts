@@ -1,9 +1,9 @@
 import { ResourcesService } from '../../../../../resources';
 
-export function occCategory() {
+export function occCategory(): string {
     const resources = ResourcesService.getResources();
     return `
-    <category name="OCC"  categorystyle="geometry_category">
+    <category name="${resources.block_toolbox_category_occ}"  categorystyle="geometry_category">
         <block type="occ_draw_shape">
             <value name="FaceOpacity">
                 <block type="math_number">
@@ -22,17 +22,12 @@ export function occCategory() {
             </value>
             <value name="EdgeColour">
                 <block type="colour_picker">
-                    <field name="COLOUR">#000000</field>
+                    <field name="COLOUR">#bbbbff</field>
                 </block>
             </value>
             <value name="EdgeWidth">
                 <block type="math_number">
                     <field name="NUM">2</field>
-                </block>
-            </value>
-            <value name="Updatable">
-                <block type="logic_boolean">
-                    <field name="BOOL">FALSE</field>
                 </block>
             </value>
             <value name="DrawEdges">
@@ -62,7 +57,7 @@ export function occCategory() {
             </value>
             <value name="EdgeIndexColour">
                 <block type="colour_picker">
-                    <field name="COLOUR">#ff00ff</field>
+                    <field name="COLOUR">#bbbbff</field>
                 </block>
             </value>
             <value name="DrawFaceIndexes">
@@ -77,46 +72,91 @@ export function occCategory() {
             </value>
             <value name="FaceIndexColour">
                 <block type="colour_picker">
-                    <field name="COLOUR">#00ff00</field>
+                    <field name="COLOUR">#0000ff</field>
                 </block>
             </value>
         </block>
-        <block type="occ_shapes_create_box">
-            <value name="Width">
-                <block type="math_number">
-                    <field name="NUM">1</field>
-                </block>
-            </value>
-            <value name="Length">
-                <block type="math_number">
-                    <field name="NUM">1</field>
-                </block>
-            </value>
-            <value name="Height">
-                <block type="math_number">
-                    <field name="NUM">1</field>
-                </block>
-            </value>
-            <value name="Center">
-                <block type="base_geometry_point">
-                    <value name="X">
-                        <block type="math_number">
-                            <field name="NUM">0</field>
-                        </block>
-                    </value>
-                    <value name="Y">
-                        <block type="math_number">
-                            <field name="NUM">0</field>
-                        </block>
-                    </value>
-                    <value name="Z">
-                        <block type="math_number">
-                            <field name="NUM">0</field>
-                        </block>
-                    </value>
-                </block>
-            </value>
-        </block>
+        <category name="${resources.block_toolbox_category_occ_create}"  categorystyle="geometry_category">
+            <block type="occ_shapes_create_box">
+                <value name="Width">
+                    <block type="math_number">
+                        <field name="NUM">1</field>
+                    </block>
+                </value>
+                <value name="Length">
+                    <block type="math_number">
+                        <field name="NUM">1</field>
+                    </block>
+                </value>
+                <value name="Height">
+                    <block type="math_number">
+                        <field name="NUM">1</field>
+                    </block>
+                </value>
+                <value name="Center">
+                    <block type="base_geometry_point">
+                        <value name="X">
+                            <block type="math_number">
+                                <field name="NUM">0</field>
+                            </block>
+                        </value>
+                        <value name="Y">
+                            <block type="math_number">
+                                <field name="NUM">0</field>
+                            </block>
+                        </value>
+                        <value name="Z">
+                            <block type="math_number">
+                                <field name="NUM">0</field>
+                            </block>
+                        </value>
+                    </block>
+                </value>
+            </block>
+            <block type="occ_shapes_create_sphere">
+                <value name="Radius">
+                    <block type="math_number">
+                        <field name="NUM">1</field>
+                    </block>
+                </value>
+                <value name="Center">
+                    <block type="base_geometry_point">
+                        <value name="X">
+                            <block type="math_number">
+                                <field name="NUM">0</field>
+                            </block>
+                        </value>
+                        <value name="Y">
+                            <block type="math_number">
+                                <field name="NUM">0</field>
+                            </block>
+                        </value>
+                        <value name="Z">
+                            <block type="math_number">
+                                <field name="NUM">0</field>
+                            </block>
+                        </value>
+                    </block>
+                </value>
+            </block>
+            <block type="occ_shapes_create_cone">
+                <value name="RadiusOne">
+                    <block type="math_number">
+                        <field name="NUM">2</field>
+                    </block>
+                </value>
+                <value name="RadiusTwo">
+                    <block type="math_number">
+                        <field name="NUM">1</field>
+                    </block>
+                </value>
+                <value name="Height">
+                    <block type="math_number">
+                        <field name="NUM">1</field>
+                    </block>
+                </value>
+            </block>
+        </category>
     </category>
 `;
 }

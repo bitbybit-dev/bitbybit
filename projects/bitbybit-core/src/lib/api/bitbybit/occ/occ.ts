@@ -111,23 +111,23 @@ export class OCC {
         }) => {
             const shapeMesh = MeshBuilder.CreateBox('brepMesh' + Math.random(), { size: 0.01 }, this.context.scene);
             shapeMesh.isVisible = false;
-
+            let dummy;
             if (inputs.drawFaces) {
                 fe.faceList.forEach(face => {
                     const mesh = this.geometryHelper.createOrUpdateSurfaceMesh({
                         positions: face.vertex_coord,
                         normals: face.normal_coord,
                         indices: face.tri_indexes,
-                    }, inputs.shapeMesh, inputs.updatable, inputs.faceOpacity, inputs.faceColour);
-
+                    }, dummy, false, inputs.faceOpacity, inputs.faceColour);
+                    mesh.parent = shapeMesh;
                 });
             }
             if (inputs.drawEdges) {
                 fe.edgeList.forEach(edge => {
                     const mesh = this.geometryHelper.drawPolyline(
-                        inputs.linesMesh,
+                        dummy,
                         edge.vertex_coord,
-                        inputs.updatable,
+                        false,
                         inputs.edgeWidth,
                         inputs.edgeOpacity,
                         inputs.edgeColour

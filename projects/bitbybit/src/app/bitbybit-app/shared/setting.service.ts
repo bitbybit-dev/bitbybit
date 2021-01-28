@@ -98,6 +98,8 @@ export class SettingsService {
             resources.block_toolbox_category_geom_extrusion,
             resources.block_toolbox_category_geom_revolution,
             resources.block_toolbox_category_geom_sweep,
+            resources.block_toolbox_category_occ,
+            resources.block_toolbox_category_occ_create,
             resources.block_toolbox_category_geom_solid,
             resources.block_toolbox_category_create,
             resources.block_toolbox_category_2d_path,

@@ -2,7 +2,7 @@ import { ALIGN_RIGHT, Block, Blocks } from 'blockly';
 import * as JavaScript from 'blockly/javascript';
 import { ResourcesInterface, ResourcesService } from '../../resources';
 import { createDummyAsyncLoadingIndicator2, createStandardContextIIFE } from '../_shared';
-import { makeRequiredValidationModelForInputs, BitByBitBlockHandlerService, ValidationEntityInterface } from '../validations';
+import { makeRequiredValidationModelForInputs, BitByBitBlockHandlerService, ValidationEntityInterface, getRequired } from '../validations';
 import { environment } from '../../environments/environment';
 import { occConstants } from './occ-constants';
 import { OCC } from '../../../../bitbybit-core/src/lib/api/inputs/occ-inputs';
@@ -18,73 +18,69 @@ export function createDrawShapeBlock(): void {
             this.appendValueInput('OccShape')
                 .setCheck('OccShape')
                 .setAlign(ALIGN_RIGHT)
-                .appendField('Draw shape');
-            this.appendValueInput('FaceOpacity')
-                .setCheck('Number')
-                .setAlign(ALIGN_RIGHT)
-                .appendField('Face Opacity');
-            this.appendValueInput('EdgeOpacity')
-                .setCheck('Number')
-                .setAlign(ALIGN_RIGHT)
-                .appendField('Edge Opacity');
-            this.appendValueInput('FaceColour')
-                .setCheck('Colour')
-                .setAlign(ALIGN_RIGHT)
-                .appendField('Face Colour');
-            this.appendValueInput('EdgeColour')
-                .setCheck('Colour')
-                .setAlign(ALIGN_RIGHT)
-                .appendField('Edge Colour');
-            this.appendValueInput('EdgeWidth')
-                .setCheck('Number')
-                .setAlign(ALIGN_RIGHT)
-                .appendField('Edge Width');
-            this.appendValueInput('Updatable')
-                .setCheck('Boolean')
-                .setAlign(ALIGN_RIGHT)
-                .appendField('Updatable');
-            this.appendValueInput('DrawEdges')
-                .setCheck('Boolean')
-                .setAlign(ALIGN_RIGHT)
-                .appendField('Draw Edges');
-            this.appendValueInput('DrawFaces')
-                .setCheck('Boolean')
-                .setAlign(ALIGN_RIGHT)
-                .appendField('Draw Faces');
+                .appendField(resources.block_occ_draw_shape_input_shape);
             this.appendValueInput('Precision')
                 .setCheck('Number')
                 .setAlign(ALIGN_RIGHT)
-                .appendField('Precision');
-            this.appendValueInput('DrawEdgeIndexes')
+                .appendField(resources.block_occ_draw_shape_input_precision.toLowerCase());
+            this.appendValueInput('DrawFaces')
                 .setCheck('Boolean')
                 .setAlign(ALIGN_RIGHT)
-                .appendField('Draw Edge Indexes');
-            this.appendValueInput('EdgeIndexHeight')
+                .appendField(resources.block_occ_draw_shape_input_draw_faces.toLowerCase());
+            this.appendValueInput('FaceOpacity')
                 .setCheck('Number')
                 .setAlign(ALIGN_RIGHT)
-                .appendField('Edge Index Height');
-            this.appendValueInput('EdgeIndexColour')
+                .appendField(resources.block_occ_draw_shape_input_face_opacity.toLowerCase());
+            this.appendValueInput('FaceColour')
                 .setCheck('Colour')
                 .setAlign(ALIGN_RIGHT)
-                .appendField('Edge Index Colour');
+                .appendField(resources.block_occ_draw_shape_input_face_colour.toLowerCase());
             this.appendValueInput('DrawFaceIndexes')
                 .setCheck('Boolean')
                 .setAlign(ALIGN_RIGHT)
-                .appendField('Draw Face Indexes');
+                .appendField(resources.block_occ_draw_shape_input_draw_face_indexes.toLowerCase());
             this.appendValueInput('FaceIndexHeight')
                 .setCheck('Number')
                 .setAlign(ALIGN_RIGHT)
-                .appendField('Face Index Height');
+                .appendField(resources.block_occ_draw_shape_input_face_index_height.toLowerCase());
             this.appendValueInput('FaceIndexColour')
                 .setCheck('Colour')
                 .setAlign(ALIGN_RIGHT)
-                .appendField('Face Index Colour');
+                .appendField(resources.block_occ_draw_shape_input_face_index_colour.toLowerCase());
+            this.appendValueInput('DrawEdges')
+                .setCheck('Boolean')
+                .setAlign(ALIGN_RIGHT)
+                .appendField(resources.block_occ_draw_shape_input_draw_edges.toLowerCase());
+            this.appendValueInput('EdgeOpacity')
+                .setCheck('Number')
+                .setAlign(ALIGN_RIGHT)
+                .appendField(resources.block_occ_draw_shape_input_edge_opacity.toLowerCase());
+            this.appendValueInput('EdgeColour')
+                .setCheck('Colour')
+                .setAlign(ALIGN_RIGHT)
+                .appendField(resources.block_occ_draw_shape_input_edge_colour.toLowerCase());
+            this.appendValueInput('EdgeWidth')
+                .setCheck('Number')
+                .setAlign(ALIGN_RIGHT)
+                .appendField(resources.block_occ_draw_shape_input_edge_width.toLowerCase());
+            this.appendValueInput('DrawEdgeIndexes')
+                .setCheck('Boolean')
+                .setAlign(ALIGN_RIGHT)
+                .appendField(resources.block_occ_draw_shape_input_draw_edge_indexes.toLowerCase());
+            this.appendValueInput('EdgeIndexHeight')
+                .setCheck('Number')
+                .setAlign(ALIGN_RIGHT)
+                .appendField(resources.block_occ_draw_shape_input_edge_index_height.toLowerCase());
+            this.appendValueInput('EdgeIndexColour')
+                .setCheck('Colour')
+                .setAlign(ALIGN_RIGHT)
+                .appendField(resources.block_occ_draw_shape_input_edge_index_colour.toLowerCase());
             this.setOutput(false);
             this.setColour('#fff');
             this.setPreviousStatement(true, null);
             this.setNextStatement(true, null);
-            this.setTooltip(resources.block_jscad_intersect_objects_description);
-            this.setHelpUrl(environment.docsUrl + occConstants.occHelpUrl + '#' + 'createbox');
+            this.setTooltip(resources.block_occ_draw_shape_description);
+            this.setHelpUrl(environment.docsUrl + occConstants.occHelpUrl + '#' + 'drawshape');
         }
     };
 
@@ -96,11 +92,8 @@ export function createDrawShapeBlock(): void {
             faceColour: (JavaScript as any).valueToCode(block, 'FaceColour', (JavaScript as any).ORDER_ATOMIC),
             edgeColour: (JavaScript as any).valueToCode(block, 'EdgeColour', (JavaScript as any).ORDER_ATOMIC),
             edgeWidth: (JavaScript as any).valueToCode(block, 'EdgeWidth', (JavaScript as any).ORDER_ATOMIC),
-            updatable: (JavaScript as any).valueToCode(block, 'Updatable', (JavaScript as any).ORDER_ATOMIC),
             drawEdges: (JavaScript as any).valueToCode(block, 'DrawEdges', (JavaScript as any).ORDER_ATOMIC),
             drawFaces: (JavaScript as any).valueToCode(block, 'DrawFaces', (JavaScript as any).ORDER_ATOMIC),
-            shapeMesh: (JavaScript as any).valueToCode(block, 'ShapeMesh', (JavaScript as any).ORDER_ATOMIC),
-            linesMesh: (JavaScript as any).valueToCode(block, 'LinesMesh', (JavaScript as any).ORDER_ATOMIC),
             precision: (JavaScript as any).valueToCode(block, 'Precision', (JavaScript as any).ORDER_ATOMIC),
             drawEdgeIndexes: (JavaScript as any).valueToCode(block, 'DrawEdgeIndexes', (JavaScript as any).ORDER_ATOMIC),
             edgeIndexHeight: (JavaScript as any).valueToCode(block, 'EdgeIndexHeight', (JavaScript as any).ORDER_ATOMIC),
@@ -112,6 +105,21 @@ export function createDrawShapeBlock(): void {
 
         // this is first set of validations to check that all inputs are non empty strings
         BitByBitBlockHandlerService.validate(block, block.workspace, makeRequiredValidationModelForInputs(resources, inputs, [
+            resources.block_occ_draw_shape_input_shape,
+            resources.block_occ_draw_shape_input_precision,
+            resources.block_occ_draw_shape_input_draw_faces,
+            resources.block_occ_draw_shape_input_face_opacity,
+            resources.block_occ_draw_shape_input_face_colour,
+            resources.block_occ_draw_shape_input_draw_face_indexes,
+            resources.block_occ_draw_shape_input_face_index_height,
+            resources.block_occ_draw_shape_input_face_index_colour,
+            resources.block_occ_draw_shape_input_draw_edges,
+            resources.block_occ_draw_shape_input_edge_opacity,
+            resources.block_occ_draw_shape_input_edge_colour,
+            resources.block_occ_draw_shape_input_edge_width,
+            resources.block_occ_draw_shape_input_draw_edge_indexes,
+            resources.block_occ_draw_shape_input_edge_index_height,
+            resources.block_occ_draw_shape_input_edge_index_colour,
         ]));
 
         // this creates validation model to be used at runtime to evaluate real values of inputs
@@ -128,8 +136,82 @@ function makeRuntimeValidationModel(
     resources: ResourcesInterface,
     keys: string[]
 ): ValidationEntityInterface[] {
-
-    return [];
+    return [
+        {
+            entity: keys[0],
+            validations: [
+                getRequired(resources, resources.block_occ_draw_shape_input_shape),
+            ]
+        }, {
+            entity: keys[1],
+            validations: [
+                getRequired(resources, resources.block_occ_draw_shape_input_precision),
+            ]
+        }, {
+            entity: keys[2],
+            validations: [
+                getRequired(resources, resources.block_occ_draw_shape_input_draw_faces),
+            ]
+        }, {
+            entity: keys[3],
+            validations: [
+                getRequired(resources, resources.block_occ_draw_shape_input_face_opacity),
+            ]
+        }, {
+            entity: keys[4],
+            validations: [
+                getRequired(resources, resources.block_occ_draw_shape_input_face_colour),
+            ]
+        }, {
+            entity: keys[5],
+            validations: [
+                getRequired(resources, resources.block_occ_draw_shape_input_draw_face_indexes),
+            ]
+        }, {
+            entity: keys[6],
+            validations: [
+                getRequired(resources, resources.block_occ_draw_shape_input_face_index_height),
+            ]
+        }, {
+            entity: keys[7],
+            validations: [
+                getRequired(resources, resources.block_occ_draw_shape_input_face_index_colour),
+            ]
+        }, {
+            entity: keys[8],
+            validations: [
+                getRequired(resources, resources.block_occ_draw_shape_input_draw_edges),
+            ]
+        }, {
+            entity: keys[9],
+            validations: [
+                getRequired(resources, resources.block_occ_draw_shape_input_edge_opacity),
+            ]
+        }, {
+            entity: keys[10],
+            validations: [
+                getRequired(resources, resources.block_occ_draw_shape_input_edge_colour),
+            ]
+        }, {
+            entity: keys[11],
+            validations: [
+                getRequired(resources, resources.block_occ_draw_shape_input_edge_width),
+            ]
+        }, {
+            entity: keys[12],
+            validations: [
+                getRequired(resources, resources.block_occ_draw_shape_input_draw_edge_indexes),
+            ]
+        }, {
+            entity: keys[13],
+            validations: [
+                getRequired(resources, resources.block_occ_draw_shape_input_edge_index_height),
+            ]
+        }, {
+            entity: keys[14],
+            validations: [
+                getRequired(resources, resources.block_occ_draw_shape_input_edge_index_colour),
+            ]
+        }
+    ];
 }
-
-

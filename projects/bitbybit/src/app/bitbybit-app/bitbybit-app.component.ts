@@ -154,7 +154,7 @@ export class BitbybitAppComponent implements OnInit, OnDestroy, AfterViewInit {
                 const canvas = document.getElementById('renderCanvas') as HTMLCanvasElement;
                 this.engine = new Engine(canvas);
                 this.scene = new Scene(this.engine);
-                this.scene.clearColor = new Color4(1, 1, 1, 1);
+                this.scene.clearColor = new Color4(26 / 255, 28 / 255, 31 / 255, 1);
                 const tnode = new TransformNode('root', this.scene);
                 const camera = new ArcRotateCamera('Camera', 0, 10, 10, new Vector3(0, 0, 0), this.scene);
                 camera.setPosition(new Vector3(0, 10, 20));
@@ -256,6 +256,14 @@ export class BitbybitAppComponent implements OnInit, OnDestroy, AfterViewInit {
 
     }
 
+    renderLoopFunction = () => {
+        const now = Date.now();
+        const timeElapsedFromPreviousIteration = now - this.timePassedFromPreviousIteration;
+        this.timePassedFromPreviousIteration = now;
+        BitByBitBlocklyHelperService.renderLoopBag.forEach(f => f(timeElapsedFromPreviousIteration));
+        this.scene.render();
+    }
+
     private collapseExpandedMenus(): void {
         const treeRows = document.body.querySelectorAll(
             '.blocklyTreeRow');
@@ -265,14 +273,6 @@ export class BitbybitAppComponent implements OnInit, OnDestroy, AfterViewInit {
                 (element as HTMLElement).click();
             }
         });
-    }
-
-    renderLoopFunction = () => {
-        const now = Date.now();
-        const timeElapsedFromPreviousIteration = now - this.timePassedFromPreviousIteration;
-        this.timePassedFromPreviousIteration = now;
-        BitByBitBlocklyHelperService.renderLoopBag.forEach(f => f(timeElapsedFromPreviousIteration));
-        this.scene.render();
     }
 
     ngOnInit(): void {
@@ -293,9 +293,6 @@ export class BitbybitAppComponent implements OnInit, OnDestroy, AfterViewInit {
             // For Safari
             return 'Changes made to the script will be lost. Proceed?';
         };
-
-        let called = false;
-
         if (typeof Worker !== 'undefined') {
             // Create a new
             this.bitByBit.occ.setOccWorker(new Worker('./occ.worker', { type: 'module' }));
@@ -305,9 +302,6 @@ export class BitbybitAppComponent implements OnInit, OnDestroy, AfterViewInit {
             });
         } else {
             alert('Your device does not support Webworkers, this application will not be able to run correctly');
-            // TODO this app requires Webworker for OCC, better to use it on other device...
-            // Web workers are not supported in this environment.
-            // You should add a fallback so that your program still executes correctly.
         }
     }
 
@@ -613,8 +607,7 @@ export class BitbybitAppComponent implements OnInit, OnDestroy, AfterViewInit {
         BitByBitBlocklyHelperService.intervalBag.forEach(i => clearInterval(i));
         BitByBitBlocklyHelperService.timeoutBag.forEach(t => clearTimeout(t));
         BitByBitBlocklyHelperService.renderLoopBag = [];
-
-        this.scene.clearColor = new Color4(1, 1, 1, 1);
+        this.scene.clearColor = new Color4(26 / 255, 28 / 255, 31 / 255, 1);
     }
 
     clearMeshesAndMaterials(): void {
