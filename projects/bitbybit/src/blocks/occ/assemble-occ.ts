@@ -1,4 +1,5 @@
 import { createDrawShapeBlock } from './draw-shape';
+import { createFacesCreateCircleBlock } from './faces-create-circle';
 import { createBoxBlock } from './shapes-create-box';
 import { createConeBlock } from './shapes-create-cone';
 import { createCylinderBlock } from './shapes-create-cylinder';
@@ -14,4 +15,5 @@ export function assembleOCCBlocks(): void {
     createCylinderBlock();
     createWiresCreateBSplineBlock();
     createWiresCreateCircleBlock();
+    createFacesCreateCircleBlock();
 }

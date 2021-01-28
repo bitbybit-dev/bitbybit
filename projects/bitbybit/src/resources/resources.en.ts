@@ -150,6 +150,7 @@ export const resourcesEn: ResourcesInterface = Object.freeze({
     block_toolbox_category_occ_create: 'Create',
     block_toolbox_category_occ_create_solid: 'Solid',
     block_toolbox_category_occ_create_wire: 'Wire',
+    block_toolbox_category_occ_create_face: 'Face',
     block_number: 'Number',
     block_modulus: 'Modulus',
     block_year: 'Year',
@@ -1568,4 +1569,7 @@ export const resourcesEn: ResourcesInterface = Object.freeze({
     block_occ_wires_create_circle_input_radius: 'Create OCC circle of radius',
     block_occ_wires_create_circle_input_center: 'Center',
     block_occ_wires_create_circle_description: 'Creates OCC circle wire of radius',
+    block_occ_faces_create_circle_input_radius: 'Create OCC circle of radius',
+    block_occ_faces_create_circle_input_center: 'Center',
+    block_occ_faces_create_circle_description: 'Creates OCC circle face of radius',
 });
