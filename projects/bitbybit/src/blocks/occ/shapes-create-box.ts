@@ -1,7 +1,7 @@
 import { ALIGN_RIGHT, Block, Blocks } from 'blockly';
 import * as JavaScript from 'blockly/javascript';
 import { ResourcesInterface, ResourcesService } from '../../resources';
-import { createStandardContextIIFE } from '../_shared';
+import { createDummyAsyncLoadingIndicator2, createStandardContextIIFE } from '../_shared';
 import { getRequired, makeRequiredValidationModelForInputs, BitByBitBlockHandlerService, ValidationEntityInterface } from '../validations';
 import { environment } from '../../environments/environment';
 import { occConstants } from './occ-constants';
@@ -13,6 +13,7 @@ export function createBoxBlock(): void {
 
     Blocks[blockSelector] = {
         init(): void {
+            createDummyAsyncLoadingIndicator2(this, resources);
             this.appendValueInput('Width')
                 .setCheck('Number')
                 .setAlign(ALIGN_RIGHT)
@@ -54,7 +55,7 @@ export function createBoxBlock(): void {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `return bitbybit.occ.createBox(inputs);`
+            `bitbybit.occ.createBox(inputs)`, true
         );
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };

@@ -1,7 +1,7 @@
 import { ALIGN_RIGHT, Block, Blocks } from 'blockly';
 import * as JavaScript from 'blockly/javascript';
 import { ResourcesInterface, ResourcesService } from '../../resources';
-import { createStandardContextIIFE } from '../_shared';
+import { createDummyAsyncLoadingIndicator2, createStandardContextIIFE } from '../_shared';
 import { makeRequiredValidationModelForInputs, BitByBitBlockHandlerService, ValidationEntityInterface } from '../validations';
 import { environment } from '../../environments/environment';
 import { occConstants } from './occ-constants';
@@ -14,6 +14,7 @@ export function createDrawShapeBlock(): void {
 
     Blocks[blockSelector] = {
         init(): void {
+            createDummyAsyncLoadingIndicator2(this, resources);
             this.appendValueInput('OccShape')
                 .setCheck('OccShape')
                 .setAlign(ALIGN_RIGHT)
@@ -80,6 +81,8 @@ export function createDrawShapeBlock(): void {
                 .appendField('Face Index Colour');
             this.setOutput(false);
             this.setColour('#fff');
+            this.setPreviousStatement(true, null);
+            this.setNextStatement(true, null);
             this.setTooltip(resources.block_jscad_intersect_objects_description);
             this.setHelpUrl(environment.docsUrl + occConstants.occHelpUrl + '#' + 'createbox');
         }
@@ -116,13 +119,7 @@ export function createDrawShapeBlock(): void {
         (block as any).validationModel = runtimeValidationModel;
 
         return createStandardContextIIFE(block, blockSelector, inputs, false,
-            `
-            async function dummy() {
-                inputs.shape = await inputs.shape;
-                bitbybit.occ.drawShape(inputs);
-            }
-            dummy();
-            `
+            `bitbybit.occ.drawShape(inputs)`, true
         );
     };
 }

@@ -166,6 +166,7 @@ export class BitbybitAppComponent implements OnInit, OnDestroy, AfterViewInit {
 
                 this.scene.ambientColor = new Color3(0.1, 0.1, 0.1);
 
+
                 this.windowBlockly = {};
                 this.context.scene = this.scene;
                 const verb: any = {};
@@ -179,13 +180,7 @@ export class BitbybitAppComponent implements OnInit, OnDestroy, AfterViewInit {
                 this.windowBlockly.workspace = this.workspace;
                 (window as any).blockly = this.windowBlockly;
 
-                this.engine.runRenderLoop(() => {
-                    const now = Date.now();
-                    const timeElapsedFromPreviousIteration = now - this.timePassedFromPreviousIteration;
-                    this.timePassedFromPreviousIteration = now;
-                    BitByBitBlocklyHelperService.renderLoopBag.forEach(f => f(timeElapsedFromPreviousIteration));
-                    this.scene.render();
-                });
+                this.engine.runRenderLoop(this.renderLoopFunction);
 
                 this.tagsNeedUpdate = false;
 
@@ -272,6 +267,14 @@ export class BitbybitAppComponent implements OnInit, OnDestroy, AfterViewInit {
         });
     }
 
+    renderLoopFunction = () => {
+        const now = Date.now();
+        const timeElapsedFromPreviousIteration = now - this.timePassedFromPreviousIteration;
+        this.timePassedFromPreviousIteration = now;
+        BitByBitBlocklyHelperService.renderLoopBag.forEach(f => f(timeElapsedFromPreviousIteration));
+        this.scene.render();
+    }
+
     ngOnInit(): void {
 
         this.resources = ResourcesService.getResources();
@@ -298,6 +301,7 @@ export class BitbybitAppComponent implements OnInit, OnDestroy, AfterViewInit {
             this.bitByBit.occ.setOccWorker(new Worker('./occ.worker', { type: 'module' }));
             this.bitByBit.occ.occWorkerState.subscribe((state) => {
                 this.occWorkerState = state;
+                this.toggleRenderLoop(400);
             });
         } else {
             alert('Your device does not support Webworkers, this application will not be able to run correctly');
@@ -492,14 +496,17 @@ export class BitbybitAppComponent implements OnInit, OnDestroy, AfterViewInit {
     swapCanvas(): void {
         switch (this.currentUiState) {
             case UiStatesEnum.babylon:
+                this.engine.stopRenderLoop(this.renderLoopFunction);
                 this.currentUiState = this.previousUiState;
                 break;
             case UiStatesEnum.blockly:
+                this.engine.runRenderLoop(this.renderLoopFunction);
                 this.currentUiState = UiStatesEnum.babylon;
                 this.previousUiState = UiStatesEnum.blockly;
                 Blockly.hideChaff();
                 break;
             case UiStatesEnum.monaco:
+                this.engine.runRenderLoop(this.renderLoopFunction);
                 this.currentUiState = UiStatesEnum.babylon;
                 this.previousUiState = UiStatesEnum.monaco;
                 break;
@@ -569,6 +576,7 @@ export class BitbybitAppComponent implements OnInit, OnDestroy, AfterViewInit {
                 if (this.tagService.tagsExist()) {
                     this.tagsNeedUpdate = true;
                 }
+                this.toggleRenderLoop(100);
 
             } catch (e) {
                 if (transpiledCode) {
@@ -586,9 +594,17 @@ export class BitbybitAppComponent implements OnInit, OnDestroy, AfterViewInit {
                         message: `${e}`,
                     });
                 }
-
             }
         });
+    }
+
+    private toggleRenderLoop(ms: number): void {
+        setTimeout(() => {
+            this.engine.runRenderLoop(this.renderLoopFunction);
+            setTimeout(() => {
+                this.engine.stopRenderLoop(this.renderLoopFunction);
+            }, ms);
+        }, ms);
     }
 
     private clearBabylonScene(): void {
