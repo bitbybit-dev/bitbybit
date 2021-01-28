@@ -19,10 +19,9 @@ export function createStandardContextIIFE(
     };
 ${async ? `async function awaiter() {
     await BitByBitBlockHandlerService.inputAwaiter(inputs, BitByBit.blocklyWorkspace, '${block.id}');
-    console.log(inputs);
     BitByBit.BitByBitBlockHandlerService.handleBlock(BitByBit.blocklyWorkspace, '${block.id}', inputs);
     BitByBitBlockHandlerService.startedAsyncTask(BitByBit.blocklyWorkspace, '${block.id}', '#F7DAC9');
-    ${returns ? 'return ' : ''}${body}.then((r) => {BitByBitBlockHandlerService.finishedAsyncTask(BitByBit.blocklyWorkspace, '${block.id}'); console.log(r); return r;});
+    ${returns ? 'return ' : ''}${body}.then((r) => {BitByBitBlockHandlerService.finishedAsyncTask(BitByBit.blocklyWorkspace, '${block.id}'); return r;});
 }
 ${returns ? 'return ' : ''} awaiter();` : `
 BitByBit.BitByBitBlockHandlerService.handleBlock(BitByBit.blocklyWorkspace, '${block.id}', inputs)

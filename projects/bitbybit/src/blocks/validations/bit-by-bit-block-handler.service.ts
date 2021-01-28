@@ -19,7 +19,6 @@ export class BitByBitBlockHandlerService {
         const promises = [];
         inputProps.forEach((propName) => {
             if (inputs[propName].then) {
-                console.log('propName', propName);
                 inputs[propName].then(r => {
                     inputs[propName] = r;
                     return r;
