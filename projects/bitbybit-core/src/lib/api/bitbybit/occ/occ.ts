@@ -290,7 +290,6 @@ export class OCC {
         return this.genericCallToWorkerPromise('createBSpline', inputs);
     }
 
-
     /**
      * Creates OpenCascade Bezier wire
      * <div>

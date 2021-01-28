@@ -1,7 +1,7 @@
 import { ALIGN_RIGHT, Block, Blocks } from 'blockly';
 import * as JavaScript from 'blockly/javascript';
 import { ResourcesInterface, ResourcesService } from '../../resources';
-import { createDummyAsyncLoadingIndicator2, createStandardContextIIFE } from '../_shared';
+import { createDummyAsyncLoadingIndicator2, createDummyPromiseIndicator, createStandardContextIIFE } from '../_shared';
 import { getRequired, makeRequiredValidationModelForInputs, BitByBitBlockHandlerService, ValidationEntityInterface } from '../validations';
 import { environment } from '../../environments/environment';
 import { occConstants } from './occ-constants';
@@ -14,9 +14,11 @@ export function createBoxBlock(): void {
 
     Blocks[blockSelector] = {
         init(): void {
-            createDummyAsyncLoadingIndicator2(this, resources);
             this.appendValueInput('Width')
                 .setCheck('Number')
+                .appendField(createDummyPromiseIndicator(),
+                    'LoadingIndicator'
+                )
                 .setAlign(ALIGN_RIGHT)
                 .appendField(resources.block_occ_shapes_create_box_input_width);
             this.appendValueInput('Length')

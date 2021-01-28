@@ -146,6 +146,8 @@ export interface ResourcesInterface {
     block_toolbox_category_io_http: string;
     block_toolbox_category_occ: string;
     block_toolbox_category_occ_create: string;
+    block_toolbox_category_occ_create_solid: string;
+    block_toolbox_category_occ_create_wire: string;
     block_computing: string;
     block_point: string;
     block_clockwise: string;
@@ -1556,4 +1558,7 @@ export interface ResourcesInterface {
     block_occ_shapes_create_cylinder_input_height: string;
     block_occ_shapes_create_cylinder_input_center: string;
     block_occ_shapes_create_cylinder_description: string;
+    block_occ_wires_create_bspline_input_points: string;
+    block_occ_wires_create_bspline_input_closed: string;
+    block_occ_wires_create_bspline_description: string;
 }

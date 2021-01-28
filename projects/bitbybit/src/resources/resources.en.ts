@@ -148,6 +148,8 @@ export const resourcesEn: ResourcesInterface = Object.freeze({
     block_toolbox_category_io_http: 'HTTP',
     block_toolbox_category_occ: 'OCC',
     block_toolbox_category_occ_create: 'Create',
+    block_toolbox_category_occ_create_solid: 'Solid',
+    block_toolbox_category_occ_create_wire: 'Wire',
     block_number: 'Number',
     block_modulus: 'Modulus',
     block_year: 'Year',
@@ -1559,5 +1561,8 @@ export const resourcesEn: ResourcesInterface = Object.freeze({
     block_occ_shapes_create_cylinder_input_radius: 'Create OCC cylinder with radius',
     block_occ_shapes_create_cylinder_input_height: 'Height',
     block_occ_shapes_create_cylinder_input_center: 'Center',
-    block_occ_shapes_create_cylinder_description: 'Creates OCC cylinder with radius, height and the center point.'
+    block_occ_shapes_create_cylinder_description: 'Creates OCC cylinder with radius, height and the center point.',
+    block_occ_wires_create_bspline_input_points: 'Create BSpline through points',
+    block_occ_wires_create_bspline_input_closed: 'Closed',
+    block_occ_wires_create_bspline_description: 'Creates OCC BSpline wire through points',
 });

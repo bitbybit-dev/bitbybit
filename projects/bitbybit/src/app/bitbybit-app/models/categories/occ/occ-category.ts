@@ -77,116 +77,127 @@ export function occCategory(): string {
             </value>
         </block>
         <category name="${resources.block_toolbox_category_occ_create}"  categorystyle="geometry_category">
-            <block type="occ_shapes_create_box">
-                <value name="Width">
-                    <block type="math_number">
-                        <field name="NUM">1</field>
-                    </block>
-                </value>
-                <value name="Length">
-                    <block type="math_number">
-                        <field name="NUM">1</field>
-                    </block>
-                </value>
-                <value name="Height">
-                    <block type="math_number">
-                        <field name="NUM">1</field>
-                    </block>
-                </value>
-                <value name="Center">
-                    <block type="base_geometry_point">
-                        <value name="X">
-                            <block type="math_number">
-                                <field name="NUM">0</field>
-                            </block>
-                        </value>
-                        <value name="Y">
-                            <block type="math_number">
-                                <field name="NUM">0</field>
-                            </block>
-                        </value>
-                        <value name="Z">
-                            <block type="math_number">
-                                <field name="NUM">0</field>
-                            </block>
-                        </value>
-                    </block>
-                </value>
-            </block>
-            <block type="occ_shapes_create_sphere">
-                <value name="Radius">
-                    <block type="math_number">
-                        <field name="NUM">1</field>
-                    </block>
-                </value>
-                <value name="Center">
-                    <block type="base_geometry_point">
-                        <value name="X">
-                            <block type="math_number">
-                                <field name="NUM">0</field>
-                            </block>
-                        </value>
-                        <value name="Y">
-                            <block type="math_number">
-                                <field name="NUM">0</field>
-                            </block>
-                        </value>
-                        <value name="Z">
-                            <block type="math_number">
-                                <field name="NUM">0</field>
-                            </block>
-                        </value>
-                    </block>
-                </value>
-            </block>
-            <block type="occ_shapes_create_cylinder">
-                <value name="Radius">
-                    <block type="math_number">
-                        <field name="NUM">1</field>
-                    </block>
-                </value>
-                <value name="Height">
-                    <block type="math_number">
-                        <field name="NUM">2</field>
-                    </block>
-                </value>
-                <value name="Center">
-                    <block type="base_geometry_point">
-                        <value name="X">
-                            <block type="math_number">
-                                <field name="NUM">0</field>
-                            </block>
-                        </value>
-                        <value name="Y">
-                            <block type="math_number">
-                                <field name="NUM">0</field>
-                            </block>
-                        </value>
-                        <value name="Z">
-                            <block type="math_number">
-                                <field name="NUM">0</field>
-                            </block>
-                        </value>
-                    </block>
-                </value>
-            </block>
-            <block type="occ_shapes_create_cone">
-                <value name="RadiusOne">
-                    <block type="math_number">
-                        <field name="NUM">2</field>
-                    </block>
-                </value>
-                <value name="RadiusTwo">
-                    <block type="math_number">
-                        <field name="NUM">1</field>
-                    </block>
-                </value>
-                <value name="Height">
-                    <block type="math_number">
-                        <field name="NUM">1</field>
-                    </block>
-                </value>
-            </block>
+            <category name="${resources.block_toolbox_category_occ_create_solid}"  categorystyle="geometry_category">
+                <block type="occ_shapes_create_box">
+                    <value name="Width">
+                        <block type="math_number">
+                            <field name="NUM">1</field>
+                        </block>
+                    </value>
+                    <value name="Length">
+                        <block type="math_number">
+                            <field name="NUM">1</field>
+                        </block>
+                    </value>
+                    <value name="Height">
+                        <block type="math_number">
+                            <field name="NUM">1</field>
+                        </block>
+                    </value>
+                    <value name="Center">
+                        <block type="base_geometry_point">
+                            <value name="X">
+                                <block type="math_number">
+                                    <field name="NUM">0</field>
+                                </block>
+                            </value>
+                            <value name="Y">
+                                <block type="math_number">
+                                    <field name="NUM">0</field>
+                                </block>
+                            </value>
+                            <value name="Z">
+                                <block type="math_number">
+                                    <field name="NUM">0</field>
+                                </block>
+                            </value>
+                        </block>
+                    </value>
+                </block>
+                <block type="occ_shapes_create_sphere">
+                    <value name="Radius">
+                        <block type="math_number">
+                            <field name="NUM">1</field>
+                        </block>
+                    </value>
+                    <value name="Center">
+                        <block type="base_geometry_point">
+                            <value name="X">
+                                <block type="math_number">
+                                    <field name="NUM">0</field>
+                                </block>
+                            </value>
+                            <value name="Y">
+                                <block type="math_number">
+                                    <field name="NUM">0</field>
+                                </block>
+                            </value>
+                            <value name="Z">
+                                <block type="math_number">
+                                    <field name="NUM">0</field>
+                                </block>
+                            </value>
+                        </block>
+                    </value>
+                </block>
+                <block type="occ_shapes_create_cylinder">
+                    <value name="Radius">
+                        <block type="math_number">
+                            <field name="NUM">1</field>
+                        </block>
+                    </value>
+                    <value name="Height">
+                        <block type="math_number">
+                            <field name="NUM">2</field>
+                        </block>
+                    </value>
+                    <value name="Center">
+                        <block type="base_geometry_point">
+                            <value name="X">
+                                <block type="math_number">
+                                    <field name="NUM">0</field>
+                                </block>
+                            </value>
+                            <value name="Y">
+                                <block type="math_number">
+                                    <field name="NUM">0</field>
+                                </block>
+                            </value>
+                            <value name="Z">
+                                <block type="math_number">
+                                    <field name="NUM">0</field>
+                                </block>
+                            </value>
+                        </block>
+                    </value>
+                </block>
+                <block type="occ_shapes_create_cone">
+                    <value name="RadiusOne">
+                        <block type="math_number">
+                            <field name="NUM">2</field>
+                        </block>
+                    </value>
+                    <value name="RadiusTwo">
+                        <block type="math_number">
+                            <field name="NUM">1</field>
+                        </block>
+                    </value>
+                    <value name="Height">
+                        <block type="math_number">
+                            <field name="NUM">1</field>
+                        </block>
+                    </value>
+                </block>
+            </category>
+            <category name="${resources.block_toolbox_category_occ_create_wire}"  categorystyle="geometry_category">
+                <block type="occ_wires_create_bspline">
+                    <value name="Closed">
+                        <block type="logic_boolean">
+                            <field name="BOOL">FALSE</field>
+                        </block>
+                    </value>
+                </block>
+            </category>
         </category>
     </category>
 `;

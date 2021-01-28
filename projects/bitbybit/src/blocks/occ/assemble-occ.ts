@@ -3,6 +3,7 @@ import { createBoxBlock } from './shapes-create-box';
 import { createConeBlock } from './shapes-create-cone';
 import { createCylinderBlock } from './shapes-create-cylinder';
 import { createSphereBlock } from './shapes-create-sphere';
+import { createWiresCreateBSplineBlock } from './wires-create-bspline';
 
 export function assembleOCCBlocks(): void {
     createBoxBlock();
@@ -10,4 +11,5 @@ export function assembleOCCBlocks(): void {
     createSphereBlock();
     createConeBlock();
     createCylinderBlock();
+    createWiresCreateBSplineBlock();
 }

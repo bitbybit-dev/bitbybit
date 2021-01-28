@@ -27,7 +27,7 @@ export class BitByBitBlockHandlerService {
             }
         });
         if (promises.length > 0) {
-            BitByBitBlockHandlerService.startedAsyncTask(workspace, blockId, '#f8e8de');
+            BitByBitBlockHandlerService.startedAsyncTask(workspace, blockId, '#eeeeff');
         }
         if (promises.length > 0) {
             const promise = Promise.all(promises).then((s) => {
@@ -42,15 +42,11 @@ export class BitByBitBlockHandlerService {
 
     static finishedAsyncTask(workspace: Workspace, blockId: string): void {
         const block = workspace.getBlockById(blockId);
-        block.inputList[0].setVisible(true);
-        block.inputList[1].setVisible(false);
         block.setColour('#ffffff');
     }
 
     static startedAsyncTask(workspace: Workspace, blockId: string, colour: string): void {
         const block = workspace.getBlockById(blockId);
-        block.inputList[0].setVisible(false);
-        block.inputList[1].setVisible(true);
         block.setColour(colour);
     }
 
