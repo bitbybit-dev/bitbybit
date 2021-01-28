@@ -260,6 +260,20 @@ export function occCategory(): string {
                 </block>
             </category>
         </category>
+        <category name="${resources.block_toolbox_category_occ_apply}"  categorystyle="geometry_category">
+                <block type="occ_offset">
+                    <value name="Distance">
+                        <block type="math_number">
+                            <field name="NUM">0.3</field>
+                        </block>
+                    </value>
+                    <value name="Tolerance">
+                        <block type="math_number">
+                            <field name="NUM">0.1</field>
+                        </block>
+                    </value>
+                </block>
+            </category>
     </category>
 `;
 }

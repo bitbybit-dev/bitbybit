@@ -149,6 +149,7 @@ export interface ResourcesInterface {
     block_toolbox_category_occ_create_solid: string;
     block_toolbox_category_occ_create_wire: string;
     block_toolbox_category_occ_create_face: string;
+    block_toolbox_category_occ_apply: string;
     block_computing: string;
     block_point: string;
     block_clockwise: string;
@@ -1571,4 +1572,9 @@ export interface ResourcesInterface {
     block_occ_faces_create_circle_input_radius: string;
     block_occ_faces_create_circle_input_center: string;
     block_occ_faces_create_circle_description: string;
+    block_occ_offset_input_shape: string;
+    block_occ_offset_input_distance: string;
+    block_occ_offset_input_tolerance: string;
+    block_occ_offset_description: string;
+
 }
