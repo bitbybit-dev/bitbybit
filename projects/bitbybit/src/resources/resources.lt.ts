@@ -1567,4 +1567,7 @@ app_menu_more_community: 'Bendruomenė',
     block_occ_wires_create_bspline_input_points: 'BSpline kreivę per taškus',
     block_occ_wires_create_bspline_input_closed: 'Uždara',
     block_occ_wires_create_bspline_description: 'Sukuria BSpline kreivę per taškus.',
+    block_occ_wires_create_circle_input_radius: 'OCC apskritimo spindulys',
+    block_occ_wires_create_circle_input_center: 'Centras',
+    block_occ_wires_create_circle_description: 'Sukuria OCC apskritimo kreivę.',
 });

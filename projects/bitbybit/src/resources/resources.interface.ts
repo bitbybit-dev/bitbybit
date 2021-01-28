@@ -1561,4 +1561,7 @@ export interface ResourcesInterface {
     block_occ_wires_create_bspline_input_points: string;
     block_occ_wires_create_bspline_input_closed: string;
     block_occ_wires_create_bspline_description: string;
+    block_occ_wires_create_circle_input_radius: string;
+    block_occ_wires_create_circle_input_center: string;
+    block_occ_wires_create_circle_description: string;
 }

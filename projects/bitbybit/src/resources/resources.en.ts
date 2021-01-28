@@ -1565,4 +1565,7 @@ export const resourcesEn: ResourcesInterface = Object.freeze({
     block_occ_wires_create_bspline_input_points: 'Create BSpline through points',
     block_occ_wires_create_bspline_input_closed: 'Closed',
     block_occ_wires_create_bspline_description: 'Creates OCC BSpline wire through points',
+    block_occ_wires_create_circle_input_radius: 'Create OCC circle of radius',
+    block_occ_wires_create_circle_input_center: 'Center',
+    block_occ_wires_create_circle_description: 'Creates OCC circle wire of radius',
 });
