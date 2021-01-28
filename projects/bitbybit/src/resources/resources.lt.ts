@@ -1558,4 +1558,8 @@ app_menu_more_community: 'Bendruomenė',
     block_occ_shapes_create_cone_input_radius_two: 'Viršaus spindulys',
     block_occ_shapes_create_cone_input_height: 'Aukštis',
     block_occ_shapes_create_cone_description: 'Sukuria OCC kūgį.',
+    block_occ_shapes_create_cylinder_input_radius: 'OCC cilindro spindulys',
+    block_occ_shapes_create_cylinder_input_height: 'Aukštis',
+    block_occ_shapes_create_cylinder_input_center: 'Centras',
+    block_occ_shapes_create_cylinder_description: 'Sukuria OCC cilindro kūną.'
 });

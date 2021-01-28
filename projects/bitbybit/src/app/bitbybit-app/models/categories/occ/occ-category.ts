@@ -139,6 +139,37 @@ export function occCategory(): string {
                     </block>
                 </value>
             </block>
+            <block type="occ_shapes_create_cylinder">
+                <value name="Radius">
+                    <block type="math_number">
+                        <field name="NUM">1</field>
+                    </block>
+                </value>
+                <value name="Height">
+                    <block type="math_number">
+                        <field name="NUM">2</field>
+                    </block>
+                </value>
+                <value name="Center">
+                    <block type="base_geometry_point">
+                        <value name="X">
+                            <block type="math_number">
+                                <field name="NUM">0</field>
+                            </block>
+                        </value>
+                        <value name="Y">
+                            <block type="math_number">
+                                <field name="NUM">0</field>
+                            </block>
+                        </value>
+                        <value name="Z">
+                            <block type="math_number">
+                                <field name="NUM">0</field>
+                            </block>
+                        </value>
+                    </block>
+                </value>
+            </block>
             <block type="occ_shapes_create_cone">
                 <value name="RadiusOne">
                     <block type="math_number">

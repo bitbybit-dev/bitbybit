@@ -1556,4 +1556,8 @@ export const resourcesEn: ResourcesInterface = Object.freeze({
     block_occ_shapes_create_cone_input_radius_two: 'Top radius',
     block_occ_shapes_create_cone_input_height: 'Height',
     block_occ_shapes_create_cone_description: 'Creates OCC cone of the given height with base and top radius',
+    block_occ_shapes_create_cylinder_input_radius: 'Create OCC cylinder with radius',
+    block_occ_shapes_create_cylinder_input_height: 'Height',
+    block_occ_shapes_create_cylinder_input_center: 'Center',
+    block_occ_shapes_create_cylinder_description: 'Creates OCC cylinder with radius, height and the center point.'
 });

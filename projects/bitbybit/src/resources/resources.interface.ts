@@ -1552,4 +1552,8 @@ export interface ResourcesInterface {
     block_occ_shapes_create_cone_input_radius_two: string;
     block_occ_shapes_create_cone_input_height: string;
     block_occ_shapes_create_cone_description: string;
+    block_occ_shapes_create_cylinder_input_radius: string;
+    block_occ_shapes_create_cylinder_input_height: string;
+    block_occ_shapes_create_cylinder_input_center: string;
+    block_occ_shapes_create_cylinder_description: string;
 }
