@@ -1591,4 +1591,14 @@ export const resourcesEn: ResourcesInterface = Object.freeze({
     block_occ_revolve_input_direction: 'Direction',
     block_occ_revolve_input_copy: 'Copy',
     block_occ_revolve_description: 'Revolve the shape around direction by a given degrees.',
+    block_occ_fillet_edge_input_shape: 'Fillet edges of the shape',
+    block_occ_fillet_edge_input_radius: 'Radius',
+    block_occ_fillet_edge_input_edge_list: 'Edge indexes',
+    block_occ_fillet_edge_input_all: 'All',
+    block_occ_fillet_edge_description: 'Fillets the edges of the given solid shape. If all property is selected. all edges will be chamfered.',
+    block_occ_chamfer_edge_input_shape: 'Chamfer edges of the shape',
+    block_occ_chamfer_edge_input_distance: 'Distance',
+    block_occ_chamfer_edge_input_edge_list: 'Edge indexes',
+    block_occ_chamfer_edge_input_all: 'All',
+    block_occ_chamfer_edge_description: 'Chamfers the given edges of the shape. If all property is selected, all edges will be chamfered.'
 });

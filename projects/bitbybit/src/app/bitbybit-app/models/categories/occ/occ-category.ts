@@ -332,6 +332,30 @@ export function occCategory(): string {
                     </block>
                 </value>
             </block>
+            <block type="occ_fillet_edges">
+                <value name="Radius">
+                    <block type="math_number">
+                        <field name="NUM">0.3</field>
+                    </block>
+                </value>
+                <value name="All">
+                    <block type="logic_boolean">
+                        <field name="BOOL">FALSE</field>
+                    </block>
+                </value>
+            </block>
+            <block type="occ_chamfer_edges">
+                <value name="Distance">
+                    <block type="math_number">
+                        <field name="NUM">0.3</field>
+                    </block>
+                </value>
+                <value name="All">
+                    <block type="logic_boolean">
+                        <field name="BOOL">FALSE</field>
+                    </block>
+                </value>
+            </block>
         </category>
     </category>
 `;

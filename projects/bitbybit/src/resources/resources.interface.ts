@@ -1587,4 +1587,14 @@ export interface ResourcesInterface {
     block_occ_revolve_input_direction: string;
     block_occ_revolve_input_copy: string;
     block_occ_revolve_description: string;
+    block_occ_fillet_edge_input_shape: string;
+    block_occ_fillet_edge_input_radius: string;
+    block_occ_fillet_edge_input_edge_list: string;
+    block_occ_fillet_edge_input_all: string;
+    block_occ_fillet_edge_description: string;
+    block_occ_chamfer_edge_input_shape: string;
+    block_occ_chamfer_edge_input_distance: string;
+    block_occ_chamfer_edge_input_edge_list: string;
+    block_occ_chamfer_edge_input_all: string;
+    block_occ_chamfer_edge_description: string;
 }

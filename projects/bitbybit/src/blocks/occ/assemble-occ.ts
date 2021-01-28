@@ -1,6 +1,8 @@
+import { createChamferEdgesBlock } from './chamfer-edges';
 import { createDrawShapeBlock } from './draw-shape';
 import { createExtrudeBlock } from './extrude';
 import { createFacesCreateCircleBlock } from './faces-create-circle';
+import { createFilletEdgesBlock } from './fillet-edges';
 import { createLoftBlock } from './loft';
 import { createOffsetBlock } from './offset';
 import { createRevolveBlock } from './revolve';
@@ -26,4 +28,6 @@ export function assembleOCCBlocks(): void {
     createExtrudeBlock();
     createLoftBlock();
     createRevolveBlock();
+    createFilletEdgesBlock();
+    createChamferEdgesBlock();
 }
