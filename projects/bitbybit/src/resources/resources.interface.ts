@@ -1601,4 +1601,11 @@ export interface ResourcesInterface {
     block_occ_boolean_union_input_shapes: string;
     block_occ_boolean_union_input_keep_edges: string;
     block_occ_boolean_union_description: string;
+    block_occ_boolean_difference_input_shape: string;
+    block_occ_boolean_difference_input_shapes: string;
+    block_occ_boolean_difference_input_keep_edges: string;
+    block_occ_boolean_difference_description: string;
+    block_occ_boolean_intersection_input_shapes: string;
+    block_occ_boolean_intersection_input_keep_edges: string;
+    block_occ_boolean_intersection_description: string;
 }

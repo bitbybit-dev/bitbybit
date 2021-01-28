@@ -357,10 +357,24 @@ export function occCategory(): string {
                 </value>
             </block>
             <category name="${resources.block_toolbox_category_occ_apply_boolean}"  categorystyle="geometry_category">
-                <block type="occ_union">
+                <block type="occ_boolean_union">
                     <value name="KeepEdges">
                         <block type="logic_boolean">
-                            <field name="BOOL">TRUE</field>
+                            <field name="BOOL">FALSE</field>
+                        </block>
+                    </value>
+                </block>
+                <block type="occ_boolean_difference">
+                    <value name="KeepEdges">
+                        <block type="logic_boolean">
+                            <field name="BOOL">FALSE</field>
+                        </block>
+                    </value>
+                </block>
+                <block type="occ_boolean_intersection">
+                    <value name="KeepEdges">
+                        <block type="logic_boolean">
+                            <field name="BOOL">FALSE</field>
                         </block>
                     </value>
                 </block>

@@ -7,10 +7,10 @@ import { environment } from '../../environments/environment';
 import { occConstants } from './occ-constants';
 import { OCC } from 'projects/bitbybit-core/src/lib/api/inputs/occ-inputs';
 
-export function createUnionBlock(): void {
+export function createBooleanUnionBlock(): void {
 
     const resources = ResourcesService.getResources();
-    const blockSelector = 'occ_union';
+    const blockSelector = 'occ_boolean_union';
 
     Blocks[blockSelector] = {
         init(): void {

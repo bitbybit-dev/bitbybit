@@ -1,4 +1,5 @@
 import { createChamferEdgesBlock } from './chamfer-edges';
+import { createBooleanDifferenceBlock } from './boolean-difference';
 import { createDrawShapeBlock } from './draw-shape';
 import { createExtrudeBlock } from './extrude';
 import { createFacesCreateCircleBlock } from './faces-create-circle';
@@ -10,10 +11,11 @@ import { createBoxBlock } from './shapes-create-box';
 import { createConeBlock } from './shapes-create-cone';
 import { createCylinderBlock } from './shapes-create-cylinder';
 import { createSphereBlock } from './shapes-create-sphere';
-import { createUnionBlock } from './union';
+import { createBooleanUnionBlock } from './boolean-union';
 import { createWiresCreateBezierBlock } from './wires-create-bezier';
 import { createWiresCreateBSplineBlock } from './wires-create-bspline';
 import { createWiresCreateCircleBlock } from './wires-create-circle';
+import { createBooleanIntersectionBlock } from './boolean-intersection';
 
 export function assembleOCCBlocks(): void {
     createBoxBlock();
@@ -31,5 +33,7 @@ export function assembleOCCBlocks(): void {
     createRevolveBlock();
     createFilletEdgesBlock();
     createChamferEdgesBlock();
-    createUnionBlock();
+    createBooleanUnionBlock();
+    createBooleanDifferenceBlock();
+    createBooleanIntersectionBlock();
 }
