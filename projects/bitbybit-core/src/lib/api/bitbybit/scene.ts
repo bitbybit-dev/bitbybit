@@ -50,9 +50,9 @@ export class Scene {
     /**
      * Creates and draws a point light in the scene
      * <div>
-     *  <img src="../assets/images/blockly-images/scene/createPointLight.svg" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/scene/drawPointLight.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_scene.scene.html#createpointlight
+     * @link https://docs.bitbybit.dev/classes/bitbybit_scene.scene.html#drawpointlight
      * @param inputs Describes the light source
      * @returns BabylonJS point light
      */
