@@ -581,7 +581,6 @@ export class OCC {
     }
 
     private computeFaceMiddlePos(vertexCoordVec: number[][]): number[] {
-        const length = vertexCoordVec.length;
         let x = 0;
         let y = 0;
         let z = 0;
