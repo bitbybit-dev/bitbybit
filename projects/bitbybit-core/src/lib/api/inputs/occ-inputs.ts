@@ -502,4 +502,18 @@ export namespace OCC {
          */
         factor: number;
     }
+    export class SaveStepDto {
+        constructor(shape?: any, filename?: string) {
+            this.shape = shape;
+            this.filename = filename;
+        }
+        /**
+         * Shape to save
+         */
+        shape: any;
+        /**
+         * File name
+         */
+        filename: string;
+    }
 }

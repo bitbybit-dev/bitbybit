@@ -210,7 +210,7 @@ export class OCC {
      * @param inputs Polygon points
      * @returns OpenCascade polygon wire shape
      */
-    createPolygonWire(inputs: Inputs.OCC.PolygonDto): any {
+    createPolygonWire(inputs: Inputs.OCC.PolygonDto): Promise<any> {
         return this.genericCallToWorkerPromise('createPolygonWire', inputs);
     }
 
@@ -223,7 +223,7 @@ export class OCC {
      * @param inputs Polygon points
      * @returns OpenCascade polygon face
      */
-    createPolygonFace(inputs: Inputs.OCC.PolygonDto): any {
+    createPolygonFace(inputs: Inputs.OCC.PolygonDto): Promise<any> {
         return this.genericCallToWorkerPromise('createPolygonFace', inputs);
     }
 
@@ -249,7 +249,7 @@ export class OCC {
      * @param inputs Cylinder parameters
      * @returns OpenCascade Cylinder
      */
-    createCylinder(inputs: Inputs.OCC.CylinderDto): any {
+    createCylinder(inputs: Inputs.OCC.CylinderDto): Promise<any> {
         return this.genericCallToWorkerPromise('createCylinder', inputs);
     }
 
@@ -262,7 +262,7 @@ export class OCC {
      * @param inputs Points through which to make BSpline
      * @returns OpenCascade BSpline wire
      */
-    createBSpline(inputs: Inputs.OCC.BSplineDto): any {
+    createBSpline(inputs: Inputs.OCC.BSplineDto): Promise<any> {
         return this.genericCallToWorkerPromise('createBSpline', inputs);
     }
 
@@ -275,7 +275,7 @@ export class OCC {
      * @param inputs Points through which to make bezier curve
      * @returns OpenCascade Bezier wire
      */
-    createBezier(inputs: Inputs.OCC.BezierDto): any {
+    createBezier(inputs: Inputs.OCC.BezierDto): Promise<any> {
         return this.genericCallToWorkerPromise('createBezier', inputs);
     }
 
@@ -288,7 +288,7 @@ export class OCC {
      * @param inputs Circle parameters
      * @returns OpenCascade circle wire
      */
-    createCircleWire(inputs: Inputs.OCC.CircleDto): any {
+    createCircleWire(inputs: Inputs.OCC.CircleDto): Promise<any> {
         return this.genericCallToWorkerPromise('createCircleWire', inputs);
     }
 
@@ -302,7 +302,7 @@ export class OCC {
      * @returns OpenCascade circle face
      */
     // TODO
-    createCircleFace(inputs: Inputs.OCC.CircleDto): any {
+    createCircleFace(inputs: Inputs.OCC.CircleDto): Promise<any> {
         return this.genericCallToWorkerPromise('createCircleFace', inputs);
     }
 
@@ -315,7 +315,7 @@ export class OCC {
      * @param inputs Circle parameters
      * @returns Resulting loft shell
      */
-    loft(inputs: Inputs.OCC.LoftDto): any {
+    loft(inputs: Inputs.OCC.LoftDto): Promise<any> {
         return this.genericCallToWorkerPromise('loft', inputs);
     }
 
@@ -328,7 +328,7 @@ export class OCC {
      * @param inputs Shape to offset and distance with tolerance
      * @returns Resulting offset shape
      */
-    offset(inputs: Inputs.OCC.OffsetDto): any {
+    offset(inputs: Inputs.OCC.OffsetDto): Promise<any> {
         return this.genericCallToWorkerPromise('offset', inputs);
     }
 
@@ -341,7 +341,7 @@ export class OCC {
      * @param inputs Shape to extrude and direction parameter with tolerance
      * @returns Resulting extruded shape
      */
-    extrude(inputs: Inputs.OCC.ExtrudeDto): any {
+    extrude(inputs: Inputs.OCC.ExtrudeDto): Promise<any> {
         return this.genericCallToWorkerPromise('extrude', inputs);
     }
 
@@ -354,7 +354,7 @@ export class OCC {
      * @param inputs Revolve parameters
      * @returns Resulting revolved shape
      */
-    revolve(inputs: Inputs.OCC.RevolveDto): any {
+    revolve(inputs: Inputs.OCC.RevolveDto): Promise<any> {
         return this.genericCallToWorkerPromise('revolve', inputs);
     }
 
@@ -367,7 +367,7 @@ export class OCC {
      * @param inputs Sphere radius and center
      * @returns OpenCascade Sphere
      */
-    createSphere(inputs: Inputs.OCC.SphereDto): any {
+    createSphere(inputs: Inputs.OCC.SphereDto): Promise<any> {
         return this.genericCallToWorkerPromise('createSphere', inputs);
     }
 
@@ -380,7 +380,7 @@ export class OCC {
      * @param inputs Cone parameters
      * @returns OpenCascade cone shape
      */
-    createCone(inputs: Inputs.OCC.ConeDto): any {
+    createCone(inputs: Inputs.OCC.ConeDto): Promise<any> {
         return this.genericCallToWorkerPromise('createCone', inputs);
     }
 
@@ -393,7 +393,7 @@ export class OCC {
      * @param inputs Shape, radius and edge indexes to fillet
      * @returns OpenCascade shape with filleted edges
      */
-    filletEdges(inputs: Inputs.OCC.FilletDto): any {
+    filletEdges(inputs: Inputs.OCC.FilletDto): Promise<any> {
         return this.genericCallToWorkerPromise('filletEdges', inputs);
     }
 
@@ -406,7 +406,7 @@ export class OCC {
      * @param inputs Shape, distance and edge indexes to fillet
      * @returns OpenCascade shape with filleted edges
      */
-    chamferEdges(inputs: Inputs.OCC.ChamferDto): any {
+    chamferEdges(inputs: Inputs.OCC.ChamferDto): Promise<any> {
         return this.genericCallToWorkerPromise('chamferEdges', inputs);
     }
 
@@ -419,7 +419,7 @@ export class OCC {
      * @param inputs Objects to join
      * @returns OpenCascade joined shape
      */
-    union(inputs: Inputs.OCC.UnionDto): any {
+    union(inputs: Inputs.OCC.UnionDto): Promise<any> {
         return this.genericCallToWorkerPromise('union', inputs);
     }
 
@@ -432,7 +432,7 @@ export class OCC {
      * @param inputs Main shape and shapes to differ
      * @returns OpenCascade difference shape
      */
-    difference(inputs: Inputs.OCC.DifferenceDto): any {
+    difference(inputs: Inputs.OCC.DifferenceDto): Promise<any> {
         return this.genericCallToWorkerPromise('difference', inputs);
     }
 
@@ -445,7 +445,7 @@ export class OCC {
      * @param inputs Main shape and shapes to differ
      * @returns OpenCascade difference shape
      */
-    intersection(inputs: Inputs.OCC.IntersectionDto): any {
+    intersection(inputs: Inputs.OCC.IntersectionDto): Promise<any> {
         return this.genericCallToWorkerPromise('intersection', inputs);
     }
 
@@ -458,7 +458,7 @@ export class OCC {
      * @param inputs Shape
      * @returns OpenCascade shape with no internal edges
      */
-    removeInternalEdges(inputs: Inputs.OCC.ShapeDto): any {
+    removeInternalEdges(inputs: Inputs.OCC.ShapeDto): Promise<any> {
         return this.genericCallToWorkerPromise('removeInternalEdges', inputs);
     }
 
@@ -471,7 +471,7 @@ export class OCC {
      * @param inputs Shape
      * @returns OpenCascade edge
      */
-    getEdge(inputs: Inputs.OCC.ShapeIndexDto): any {
+    getEdge(inputs: Inputs.OCC.ShapeIndexDto): Promise<any> {
         return this.genericCallToWorkerPromise('getEdge', inputs);
     }
 
@@ -484,7 +484,7 @@ export class OCC {
      * @param inputs Shape
      * @returns OpenCascade wire
      */
-    getWire(inputs: Inputs.OCC.ShapeIndexDto): any {
+    getWire(inputs: Inputs.OCC.ShapeIndexDto): Promise<any> {
         return this.genericCallToWorkerPromise('getWire', inputs);
     }
 
@@ -497,7 +497,7 @@ export class OCC {
      * @param inputs Shape
      * @returns OpenCascade face
      */
-    getFace(inputs: Inputs.OCC.ShapeIndexDto): any {
+    getFace(inputs: Inputs.OCC.ShapeIndexDto): Promise<any> {
         return this.genericCallToWorkerPromise('getFace', inputs);
     }
 
@@ -510,7 +510,7 @@ export class OCC {
      * @param inputs Rotated extrusion inputs
      * @returns OpenCascade shape
      */
-    rotatedExtrude(inputs: Inputs.OCC.RotationExtrudeDto): any {
+    rotatedExtrude(inputs: Inputs.OCC.RotationExtrudeDto): Promise<any> {
         return this.genericCallToWorkerPromise('rotatedExtrude', inputs);
     }
     /**
@@ -522,7 +522,7 @@ export class OCC {
      * @param inputs Path wire and shapes along the path
      * @returns OpenCascade shape
      */
-    pipe(inputs: Inputs.OCC.PipeDto): any {
+    pipe(inputs: Inputs.OCC.PipeDto): Promise<any> {
         return this.genericCallToWorkerPromise('pipe', inputs);
     }
 
@@ -535,7 +535,7 @@ export class OCC {
      * @param inputs Transformation description
      * @returns OpenCascade shapes
      */
-    transform(inputs: Inputs.OCC.TransformDto): any {
+    transform(inputs: Inputs.OCC.TransformDto): Promise<any> {
         return this.genericCallToWorkerPromise('transform', inputs);
     }
 
@@ -549,7 +549,7 @@ export class OCC {
      * @param inputs Rotation description
      * @returns OpenCascade shapes
      */
-    rotate(inputs: Inputs.OCC.RotateDto): any {
+    rotate(inputs: Inputs.OCC.RotateDto): Promise<any> {
         return this.genericCallToWorkerPromise('rotate', inputs);
     }
 
@@ -563,7 +563,7 @@ export class OCC {
      * @param inputs Translation description
      * @returns OpenCascade shapes
      */
-    translate(inputs: Inputs.OCC.TranslateDto): any {
+    translate(inputs: Inputs.OCC.TranslateDto): Promise<any> {
         return this.genericCallToWorkerPromise('translate', inputs);
     }
 
@@ -576,8 +576,32 @@ export class OCC {
      * @param inputs Scale description
      * @returns OpenCascade shapes
      */
-    scale(inputs: Inputs.OCC.ScaleDto): any {
+    scale(inputs: Inputs.OCC.ScaleDto): Promise<any> {
         return this.genericCallToWorkerPromise('scale', inputs);
+    }
+
+    /**
+     * Saves the step file
+     * <div>
+     *  <img src="../assets/images/blockly-images/occ/scale.svg" alt="Blockly Image"/>
+     * </div>
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occ.occ.html#scale
+     * @param inputs Scale description
+     * @returns OpenCascade shapes
+     */
+    saveShapeSTEP(inputs: Inputs.OCC.SaveStepDto): Promise<string> {
+        return this.genericCallToWorkerPromise('saveShapeSTEP', inputs).then(s => {
+            const blob = new Blob([s], { type: 'text/plain' });
+            const blobUrl = URL.createObjectURL(blob);
+
+            const fileLink = document.createElement('a');
+            fileLink.href = blobUrl;
+            fileLink.target = '_self';
+            fileLink.download = 'bitbybit-dev.step';
+            fileLink.click();
+            fileLink.remove();
+            return s;
+        });
     }
 
     private computeFaceMiddlePos(vertexCoordVec: number[][]): number[] {

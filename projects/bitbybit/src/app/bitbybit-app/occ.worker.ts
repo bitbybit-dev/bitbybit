@@ -34,7 +34,7 @@ addEventListener('message', ({ data }) => {
         // we can always return already computed entity hashes. On UI side we only deal with hashes as long
         // as we don't need to render things and when we do need, we call tessellation methods with these hashes
         // and receive real objects. This cache is useful in modeling operations throughout 'run' sessions.
-        if (d.action.functionName !== 'shapeToMesh' && d.action.functionName !== 'startedTheRun') {
+        if (d.action.functionName !== 'shapeToMesh' && d.action.functionName !== 'startedTheRun' && d.action.functionName !== 'saveShapeSTEP') {
             // if inputs have shape or shapes properties, these are hashes on which the operations need to be performed.
             // We thus replace these hashes to real objects from the cache before functions are called,
             // this probably looks like smth generic but isn't, so will need to check if it works
@@ -47,9 +47,13 @@ addEventListener('message', ({ data }) => {
 
             result = cacheHelper.cacheOp(d.action, () => openCascade[d.action.functionName](d.action.inputs)).hash;
         }
+        if (d.action.functionName === 'saveShapeSTEP') {
+            d.action.inputs.shape = cacheHelper.checkCache(d.action.inputs.shape);
+            result = openCascade.saveShapeSTEP(d.action.inputs);
+        }
         if (d.action.functionName === 'shapeToMesh') {
             d.action.inputs.shape = cacheHelper.checkCache(d.action.inputs.shape);
-            result = openCascade[d.action.functionName](d.action.inputs.shape, d.action.inputs.precision);
+            result = openCascade.shapeToMesh(d.action.inputs.shape, d.action.inputs.precision);
         }
         // Only the cache that was created in previous run has to be kept, the rest needs to go
         if (d.action.functionName === 'startedTheRun') {
@@ -810,6 +814,29 @@ export class Occ {
         transformation.SetScale(gpPnt, inputs.factor);
         const scaling = new this.occ.TopLoc_Location_2(transformation);
         return inputs.shape.Moved(scaling);
+    }
+
+    saveShapeSTEP(inputs: Inputs.OCC.SaveStepDto): string {
+        inputs.filename = 'x';
+        const writer = new this.occ.STEPControl_Writer_1();
+        // Convert to a .STEP File
+        const transferResult = writer.Transfer(inputs.shape, this.occ.STEPControl_StepModelType.STEPControl_AsIs, true);
+        if (transferResult.value === 1) {
+            // Write the STEP File to the virtual Emscripten Filesystem Temporarily
+            const writeResult = writer.Write(inputs.filename);
+            if (writeResult.value === 1) {
+                // Read the STEP File from the filesystem and clean up
+                const stepFileText = this.occ.FS.readFile('/' + inputs.filename, { encoding: 'utf8' });
+                this.occ.FS.unlink('/' + inputs.filename);
+
+                // Return the contents of the STEP File
+                return stepFileText;
+            } else {
+                throw(new Error('Failed when writing step file.'));
+            }
+        } else {
+            throw(new Error('Failed when transfering to step writer.'));
+        }
     }
 
     private getNumSolidsInCompound(shape): any {
