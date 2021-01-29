@@ -5,7 +5,7 @@ module.exports = {
       {
         test: /opencascade\.wasm\.wasm$/,
         type: "javascript/auto",
-        loader: "file-loader"
+        loader: "file-loader",
       }
     ]
   },
@@ -13,4 +13,3 @@ module.exports = {
     fs: "empty"
   }
 };
-
