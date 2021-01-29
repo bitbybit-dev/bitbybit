@@ -152,6 +152,9 @@ export interface ResourcesInterface {
     block_toolbox_category_occ_apply: string;
     block_toolbox_category_occ_apply_boolean: string;
     block_toolbox_category_occ_apply_transform: string;
+    block_toolbox_category_occ_apply_edge: string;
+    block_toolbox_category_occ_apply_wire: string;
+    block_toolbox_category_occ_apply_face: string;
     block_computing: string;
     block_point: string;
     block_clockwise: string;
@@ -1636,4 +1639,13 @@ export interface ResourcesInterface {
     block_occ_pipe_input_shape: string;
     block_occ_pipe_input_shapes: string;
     block_occ_pipe_description: string;
+    block_occ_wires_get_wire_input_shape: string;
+    block_occ_wires_get_wire_input_index: string;
+    block_occ_wires_get_wire_description: string;
+    block_occ_edges_get_edge_input_shape: string;
+    block_occ_edges_get_edge_input_index: string;
+    block_occ_edges_get_edge_description: string;
+    block_occ_faces_get_face_input_shape: string;
+    block_occ_faces_get_face_input_index: string;
+    block_occ_faces_get_face_description: string;
 }

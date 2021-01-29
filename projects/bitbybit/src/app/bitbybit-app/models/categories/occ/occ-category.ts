@@ -503,6 +503,33 @@ export function occCategory(): string {
                     </value>
                 </block>
             </category>
+            <category name="${resources.block_toolbox_category_occ_apply_edge}"  categorystyle="geometry_category">
+                <block type="occ_edges_get_edge">
+                    <value name="Index">
+                        <block type="math_number">
+                            <field name="NUM">0</field>
+                        </block>
+                    </value>
+                </block>
+            </category>
+            <category name="${resources.block_toolbox_category_occ_apply_wire}"  categorystyle="geometry_category">
+                <block type="occ_wires_get_wire">
+                    <value name="Index">
+                        <block type="math_number">
+                            <field name="NUM">0</field>
+                        </block>
+                    </value>
+                </block>
+            </category>
+            <category name="${resources.block_toolbox_category_occ_apply_face}"  categorystyle="geometry_category">
+                <block type="occ_faces_get_face">
+                    <value name="Index">
+                        <block type="math_number">
+                            <field name="NUM">0</field>
+                        </block>
+                    </value>
+                </block>
+            </category>
         </category>
     </category>
 `;

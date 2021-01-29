@@ -24,6 +24,9 @@ import { createTransformTranslateBlock } from './transform-translate';
 import { createTransformTransformBlock } from './transform-transform';
 import { createRotatedExtrudeBlock } from './rotated-extrude';
 import { createPipeBlock } from './pipe';
+import { createFacesGetFaceBlock } from './faces-get-face';
+import { createEdgesGetEdgeBlock } from './edges-get-edge';
+import { createWiresGetWireBlock } from './wires-get-wire';
 
 export function assembleOCCBlocks(): void {
     createBoxBlock();
@@ -52,4 +55,7 @@ export function assembleOCCBlocks(): void {
     createTransformTransformBlock();
     createRotatedExtrudeBlock();
     createPipeBlock();
+    createFacesGetFaceBlock();
+    createEdgesGetEdgeBlock();
+    createWiresGetWireBlock();
 }
