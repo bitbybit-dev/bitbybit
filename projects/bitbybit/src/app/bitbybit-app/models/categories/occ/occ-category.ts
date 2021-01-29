@@ -78,6 +78,15 @@ export function occCategory(): string {
                 </value>
             </block>
         </category>
+        <category name="${resources.block_toolbox_category_occ_io}"  categorystyle="geometry_category">
+            <block type="occ_io_shape_to_step_file">
+                <value name="FileName">
+                    <block type="text">
+                        <field name="TEXT">bitbybit-shape.step</field>
+                    </block>
+                </value>
+            </block>
+        </category>
         <category name="${resources.block_toolbox_category_occ_create}"  categorystyle="geometry_category">
             <category name="${resources.block_toolbox_category_occ_create_wire}"  categorystyle="geometry_category">
                 <block type="occ_wires_create_bspline">

@@ -148,6 +148,7 @@ export const resourcesEn: ResourcesInterface = Object.freeze({
     block_toolbox_category_io_http: 'HTTP',
     block_toolbox_category_occ: 'OCC',
     block_toolbox_category_occ_draw: 'Draw',
+    block_toolbox_category_occ_io: 'IO',
     block_toolbox_category_occ_create: 'Create',
     block_toolbox_category_occ_create_solid: 'Solid',
     block_toolbox_category_occ_create_wire: 'Wire',
@@ -1654,4 +1655,7 @@ export const resourcesEn: ResourcesInterface = Object.freeze({
     block_occ_faces_get_face_input_shape: 'Get face of OCC shape',
     block_occ_faces_get_face_input_index: 'Index',
     block_occ_faces_get_face_description: 'Gets the face of the OCC shape at a given face index. You can enable face index visibility in "draw shape" component.',
+    block_occ_io_shape_to_file_input_shape: 'Save OCC shape to STEP file',
+    block_occ_io_shape_to_file_input_file_name: 'File name',
+    block_occ_io_shape_to_file_description: 'Saves the shape to a STEP file, which will be downloaded into your "Downloads" folder.',
 });

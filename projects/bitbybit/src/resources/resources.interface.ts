@@ -146,6 +146,7 @@ export interface ResourcesInterface {
     block_toolbox_category_io_http: string;
     block_toolbox_category_occ: string;
     block_toolbox_category_occ_draw: string;
+    block_toolbox_category_occ_io: string;
     block_toolbox_category_occ_create: string;
     block_toolbox_category_occ_create_solid: string;
     block_toolbox_category_occ_create_wire: string;
@@ -1650,4 +1651,7 @@ export interface ResourcesInterface {
     block_occ_faces_get_face_input_shape: string;
     block_occ_faces_get_face_input_index: string;
     block_occ_faces_get_face_description: string;
+    block_occ_io_shape_to_file_input_shape: string;
+    block_occ_io_shape_to_file_input_file_name: string;
+    block_occ_io_shape_to_file_description: string;
 }

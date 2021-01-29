@@ -583,11 +583,11 @@ export class OCC {
     /**
      * Saves the step file
      * <div>
-     *  <img src="../assets/images/blockly-images/occ/scale.svg" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/occ/saveShapeSTEP.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_occ.occ.html#scale
-     * @param inputs Scale description
-     * @returns OpenCascade shapes
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occ.occ.html#saveshapestep
+     * @param inputs STEP filename and shape to be saved
+     * @returns String of a step file
      */
     saveShapeSTEP(inputs: Inputs.OCC.SaveStepDto): Promise<string> {
         return this.genericCallToWorkerPromise('saveShapeSTEP', inputs).then(s => {

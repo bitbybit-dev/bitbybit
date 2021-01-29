@@ -27,6 +27,7 @@ import { createPipeBlock } from './pipe';
 import { createFacesGetFaceBlock } from './faces-get-face';
 import { createEdgesGetEdgeBlock } from './edges-get-edge';
 import { createWiresGetWireBlock } from './wires-get-wire';
+import { createIOShapeToStepFileBlock } from './io-shape-to-step-file';
 
 export function assembleOCCBlocks(): void {
     createBoxBlock();
@@ -58,4 +59,5 @@ export function assembleOCCBlocks(): void {
     createFacesGetFaceBlock();
     createEdgesGetEdgeBlock();
     createWiresGetWireBlock();
+    createIOShapeToStepFileBlock();
 }
