@@ -145,11 +145,13 @@ export interface ResourcesInterface {
     block_toolbox_category_io_json: string;
     block_toolbox_category_io_http: string;
     block_toolbox_category_occ: string;
+    block_toolbox_category_occ_draw: string;
     block_toolbox_category_occ_create: string;
     block_toolbox_category_occ_create_solid: string;
     block_toolbox_category_occ_create_wire: string;
     block_toolbox_category_occ_create_face: string;
     block_toolbox_category_occ_apply: string;
+    block_toolbox_category_occ_apply_operation: string;
     block_toolbox_category_occ_apply_boolean: string;
     block_toolbox_category_occ_apply_transform: string;
     block_toolbox_category_occ_apply_edge: string;
