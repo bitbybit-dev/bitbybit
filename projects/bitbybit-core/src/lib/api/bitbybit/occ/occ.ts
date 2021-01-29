@@ -585,14 +585,16 @@ export class OCC {
         let x = 0;
         let y = 0;
         let z = 0;
-        for (let i = 0; i < length - 1; i++) {
-            const v = vertexCoordVec[i];
+
+        let realLength = 0;
+        vertexCoordVec.forEach(v => {
             x += v[0];
             y += v[1];
             z += v[2];
-        }
+            realLength++;
+        });
 
-        return [x / length, y / length, z / length];
+        return [x / realLength, y / realLength, z / realLength];
     }
 
     private computeEdgeMiddlePos(edge: { edge_index: number; vertex_coord: number[][]; }): number[] {

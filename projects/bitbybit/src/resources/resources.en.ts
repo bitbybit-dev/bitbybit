@@ -1633,4 +1633,8 @@ export const resourcesEn: ResourcesInterface = Object.freeze({
     block_occ_transform_input_rotation_axis: 'Rotation axis',
     block_occ_transform_input_scale_factor: 'Scale factor',
     block_occ_transform_description: 'Transforms the object with scale, rotation and translation.',
+    block_occ_rotated_extrude_input_shape: 'Rotated extrude OCC shape',
+    block_occ_rotated_extrude_input_height: 'Height',
+    block_occ_rotated_extrude_input_angle: 'Angle',
+    block_occ_rotated_extrude_description: 'Extrudes OCC shape by rotating it at a given angle and height.'
 });

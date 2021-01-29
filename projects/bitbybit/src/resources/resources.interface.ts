@@ -1629,4 +1629,8 @@ export interface ResourcesInterface {
     block_occ_transform_input_rotation_axis: string;
     block_occ_transform_input_scale_factor: string;
     block_occ_transform_description: string;
+    block_occ_rotated_extrude_input_shape: string;
+    block_occ_rotated_extrude_input_height: string;
+    block_occ_rotated_extrude_input_angle: string;
+    block_occ_rotated_extrude_description: string;
 }

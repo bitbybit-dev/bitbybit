@@ -411,7 +411,7 @@ export namespace OCC {
         constructor(shape?: any, height?: number, degrees?: number) {
             this.shape = shape;
             this.height = height;
-            this.degrees = degrees;
+            this.angle = degrees;
         }
         /**
          * Wire to extrude by rotating
@@ -424,7 +424,7 @@ export namespace OCC {
         /**
          * Rotation in degrees
          */
-        degrees: number;
+        angle: number;
     }
     export class TransformDto {
         constructor(shape?: any, translation?: number[], rotationAxis?: number[], rotationDegrees?: number, scale?: number) {

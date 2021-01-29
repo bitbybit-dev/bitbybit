@@ -298,6 +298,18 @@ export function occCategory(): string {
                     </block>
                 </value>
             </block>
+            <block type="occ_rotated_extrude">
+                <value name="Angle">
+                    <block type="math_number">
+                        <field name="NUM">90</field>
+                    </block>
+                </value>
+                <value name="Height">
+                    <block type="math_number">
+                        <field name="NUM">2</field>
+                    </block>
+                </value>
+            </block>
             <block type="occ_loft">
                 <value name="MakeSolid">
                     <block type="logic_boolean">

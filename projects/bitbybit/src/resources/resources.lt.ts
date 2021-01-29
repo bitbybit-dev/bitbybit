@@ -1635,4 +1635,8 @@ app_menu_more_community: 'Bendruomenė',
     block_occ_transform_input_rotation_axis: 'Sukimo ašis',
     block_occ_transform_input_scale_factor: 'Didinimo faktorius',
     block_occ_transform_description: 'Transformuoja OCC figūrą pateikus perkėlimo, sukimo ir didinimo informaciją.',
+    block_occ_rotated_extrude_input_shape: 'Iškėlimas sukant OCC figūrą',
+    block_occ_rotated_extrude_input_height: 'Aukštis',
+    block_occ_rotated_extrude_input_angle: 'Kampas',
+    block_occ_rotated_extrude_description: 'Iškelia OCC figūrą į nurodytą aukštį sukant kampu.'
 });

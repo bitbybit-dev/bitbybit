@@ -542,7 +542,7 @@ export class Occ {
         const upperPolygon = this.rotate(
             {
                 axis: [0, 1, 0],
-                angle: inputs.degrees,
+                angle: inputs.angle,
                 shape: this.translate({
                     translation: [0, inputs.height, 0],
                     shape: inputs.shape,
@@ -564,9 +564,9 @@ export class Occ {
         for (let i = 0; i <= steps; i++) {
             const alpha = i / steps;
             aspinePoints.push([
-                20 * Math.sin(alpha * inputs.degrees * 0.0174533),
+                20 * Math.sin(alpha * inputs.angle * 0.0174533),
                 inputs.height * alpha,
-                20 * Math.cos(alpha * inputs.degrees * 0.0174533),
+                20 * Math.cos(alpha * inputs.angle * 0.0174533),
             ]);
         }
 
