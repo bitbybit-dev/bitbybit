@@ -1654,4 +1654,10 @@ export interface ResourcesInterface {
     block_occ_io_shape_to_file_input_shape: string;
     block_occ_io_shape_to_file_input_file_name: string;
     block_occ_io_shape_to_file_description: string;
+    block_scene_point_light_input_position: string;
+    block_scene_point_light_input_diffuse: string;
+    block_scene_point_light_input_specular: string;
+    block_scene_point_light_input_intensity: string;
+    block_scene_point_light_input_radius: string;
+    block_scene_point_light_description: string;
 }

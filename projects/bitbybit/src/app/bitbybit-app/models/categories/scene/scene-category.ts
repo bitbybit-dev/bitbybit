@@ -65,6 +65,47 @@ export function sceneCategory() {
         </block>
         <block type="babylon_clear_all_drawn">
         </block>
+        <block type="babylon_scene_point_light">
+            <value name="Position">
+                <block type="base_geometry_point">
+                    <value name="X">
+                        <block type="math_number">
+                            <field name="NUM">5</field>
+                        </block>
+                    </value>
+                    <value name="Y">
+                        <block type="math_number">
+                            <field name="NUM">5</field>
+                        </block>
+                    </value>
+                    <value name="Z">
+                        <block type="math_number">
+                            <field name="NUM">5</field>
+                        </block>
+                    </value>
+                </block>
+            </value>
+            <value name="Diffuse">
+                <block type="colour_picker">
+                    <field name="COLOUR">#fff</field>
+                </block>
+            </value>
+            <value name="Specular">
+                <block type="colour_picker">
+                    <field name="COLOUR">#fff</field>
+                </block>
+            </value>
+            <value name="Intensity">
+                <block type="math_number">
+                    <field name="NUM">400</field>
+                </block>
+            </value>
+            <value name="Radius">
+                <block type="math_number">
+                    <field name="NUM">0.05</field>
+                </block>
+            </value>
+        </block>
     </category>
 `;
 }

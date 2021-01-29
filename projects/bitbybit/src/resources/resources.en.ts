@@ -1658,4 +1658,10 @@ export const resourcesEn: ResourcesInterface = Object.freeze({
     block_occ_io_shape_to_file_input_shape: 'Save OCC shape to STEP file',
     block_occ_io_shape_to_file_input_file_name: 'File name',
     block_occ_io_shape_to_file_description: 'Saves the shape to a STEP file, which will be downloaded into your "Downloads" folder.',
+    block_scene_point_light_input_position: 'Create point light at position',
+    block_scene_point_light_input_diffuse: 'Diffuse colour',
+    block_scene_point_light_input_specular: 'Specular colour',
+    block_scene_point_light_input_intensity: 'Intensity',
+    block_scene_point_light_input_radius: 'Radius',
+    block_scene_point_light_description: 'Creates a point light in the scene. If radius is 0, there will be no sphere-shaped representation of the liht source.',
 });
