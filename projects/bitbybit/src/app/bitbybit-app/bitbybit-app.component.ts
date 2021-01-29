@@ -518,7 +518,11 @@ export class BitbybitAppComponent implements OnInit, OnDestroy, AfterViewInit {
     cleanCanvas(): void {
         this.workspace.clear();
         this.router.navigate(['/app']);
-        this.run();
+
+        if (this.occWorkerState.state === OccStateEnum.loaded) {
+            this.bitByBit.occ.cleanUpCache().then(() => { });
+        }
+        this.clearBabylonScene();
     }
 
     exportSvg() {
