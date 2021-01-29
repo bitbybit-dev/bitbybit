@@ -13,10 +13,10 @@
                         <mat-icon [matTooltip]="resources.app_menu_run_code" aria-label="Run the code">play_arrow
                         </mat-icon>
                     </button>
-                    <!-- <button mat-buttom mat-icon-button (click)="exportSvg()">
+                    <button mat-buttom mat-icon-button (click)="exportSvg()">
                         <mat-icon [matTooltip]="resources.app_menu_run_code" aria-label="Export png">play_arrow
                         </mat-icon>
-                    </button> -->
+                    </button>
                     <ng-container
                         *ngIf="occWorkerState.state === OccStateEnum.loading || occWorkerState.state === OccStateEnum.computing">
                         <mat-spinner [matTooltip]="resources.app_menu_workers_initialising" color="accent"

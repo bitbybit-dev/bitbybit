@@ -8,6 +8,7 @@ import { GeometryHelper } from '../../geometry-helper';
 import * as Inputs from '../../inputs/inputs';
 import { JSCADText } from '../jscad-text';
 import { Vector } from '../vector';
+import { OccInfo } from './occ-info';
 /**
  * Contains various methods for OpenCascade implementation
  * Much of the work is done by Johnathon Selstad and Sebastian Alff to port OCC to JavaScript
@@ -18,9 +19,10 @@ export declare class OCC {
     private readonly geometryHelper;
     private readonly solidText;
     private readonly vector;
-    occWorkerInitialised: Subject<void>;
+    occWorkerState: Subject<OccInfo>;
     private occWorker;
     private promisesMade;
+    private promisesResolved;
     constructor(context: Context, geometryHelper: GeometryHelper, solidText: JSCADText, vector: Vector);
     setOccWorker(worker: Worker): void;
     genericCallToWorkerPromise(functionName: string, inputs: any): Promise<any>;
@@ -34,7 +36,6 @@ export declare class OCC {
      * @returns BabylonJS Mesh
      */
     drawShape(inputs: Inputs.OCC.DrawShapeDto): Promise<Mesh>;
-    private computeEdgeMiddlePos;
     /**
      * This needs to be done before every run and the promise needs to be awaited before run executes again
      * This makes sure that cache keeps the objects and hashes from the previous run and the rest is deleted
@@ -50,7 +51,7 @@ export declare class OCC {
      * @param inputs Polygon points
      * @returns OpenCascade polygon wire shape
      */
-    createPolygonWire(inputs: Inputs.OCC.PolygonDto): any;
+    createPolygonWire(inputs: Inputs.OCC.PolygonDto): Promise<any>;
     /**
      * Creates OpenCascade Polygon face
      * <div>
@@ -60,7 +61,7 @@ export declare class OCC {
      * @param inputs Polygon points
      * @returns OpenCascade polygon face
      */
-    createPolygonFace(inputs: Inputs.OCC.PolygonDto): any;
+    createPolygonFace(inputs: Inputs.OCC.PolygonDto): Promise<any>;
     /**
      * Creates OpenCascade Box
      * <div>
@@ -80,7 +81,7 @@ export declare class OCC {
      * @param inputs Cylinder parameters
      * @returns OpenCascade Cylinder
      */
-    createCylinder(inputs: Inputs.OCC.CylinderDto): any;
+    createCylinder(inputs: Inputs.OCC.CylinderDto): Promise<any>;
     /**
      * Creates OpenCascade BSPline wire
      * <div>
@@ -90,7 +91,7 @@ export declare class OCC {
      * @param inputs Points through which to make BSpline
      * @returns OpenCascade BSpline wire
      */
-    createBSpline(inputs: Inputs.OCC.BSplineDto): any;
+    createBSpline(inputs: Inputs.OCC.BSplineDto): Promise<any>;
     /**
      * Creates OpenCascade Bezier wire
      * <div>
@@ -100,7 +101,7 @@ export declare class OCC {
      * @param inputs Points through which to make bezier curve
      * @returns OpenCascade Bezier wire
      */
-    createBezier(inputs: Inputs.OCC.BezierDto): any;
+    createBezier(inputs: Inputs.OCC.BezierDto): Promise<any>;
     /**
      * Creates OpenCascade circle wire
      * <div>
@@ -110,7 +111,7 @@ export declare class OCC {
      * @param inputs Circle parameters
      * @returns OpenCascade circle wire
      */
-    createCircleWire(inputs: Inputs.OCC.CircleDto): any;
+    createCircleWire(inputs: Inputs.OCC.CircleDto): Promise<any>;
     /**
      * Creates OpenCascade circle face
      * <div>
@@ -120,7 +121,7 @@ export declare class OCC {
      * @param inputs Circle parameters
      * @returns OpenCascade circle face
      */
-    createCircleFace(inputs: Inputs.OCC.CircleDto): any;
+    createCircleFace(inputs: Inputs.OCC.CircleDto): Promise<any>;
     /**
      * Lofts wires into a shell
      * <div>
@@ -130,7 +131,7 @@ export declare class OCC {
      * @param inputs Circle parameters
      * @returns Resulting loft shell
      */
-    loft(inputs: Inputs.OCC.LoftDto): any;
+    loft(inputs: Inputs.OCC.LoftDto): Promise<any>;
     /**
      * Offset for various shapes
      * <div>
@@ -140,17 +141,17 @@ export declare class OCC {
      * @param inputs Shape to offset and distance with tolerance
      * @returns Resulting offset shape
      */
-    offset(inputs: Inputs.OCC.OffsetDto): any;
+    offset(inputs: Inputs.OCC.OffsetDto): Promise<any>;
     /**
      * Extrudes the face along direction
      * <div>
      *  <img src="../assets/images/blockly-images/occ/extrude.svg" alt="Blockly Image"/>
      * </div>
      * @link https://docs.bitbybit.dev/classes/bitbybit_occ.occ.html#extrude
-     * @param inputs Face to extrude and direction parameter with tolerance
-     * @returns Resulting extruded solid
+     * @param inputs Shape to extrude and direction parameter with tolerance
+     * @returns Resulting extruded shape
      */
-    extrude(inputs: Inputs.OCC.ExtrudeDto): any;
+    extrude(inputs: Inputs.OCC.ExtrudeDto): Promise<any>;
     /**
      * Revolves the shape around the given direction
      * <div>
@@ -160,7 +161,7 @@ export declare class OCC {
      * @param inputs Revolve parameters
      * @returns Resulting revolved shape
      */
-    revolve(inputs: Inputs.OCC.RevolveDto): any ;
+    revolve(inputs: Inputs.OCC.RevolveDto): Promise<any>;
     /**
      * Creates OpenCascade Sphere
      * <div>
@@ -170,7 +171,7 @@ export declare class OCC {
      * @param inputs Sphere radius and center
      * @returns OpenCascade Sphere
      */
-    createSphere(inputs: Inputs.OCC.SphereDto): any;
+    createSphere(inputs: Inputs.OCC.SphereDto): Promise<any>;
     /**
      * Creates OpenCascade Cone
      * <div>
@@ -180,7 +181,7 @@ export declare class OCC {
      * @param inputs Cone parameters
      * @returns OpenCascade cone shape
      */
-    createCone(inputs: Inputs.OCC.ConeDto): any;
+    createCone(inputs: Inputs.OCC.ConeDto): Promise<any>;
     /**
      * Fillets OpenCascade Shapes
      * <div>
@@ -190,17 +191,7 @@ export declare class OCC {
      * @param inputs Shape, radius and edge indexes to fillet
      * @returns OpenCascade shape with filleted edges
      */
-    /**
-     * Pipe shapes along the wire
-     * <div>
-     *  <img src="../assets/images/blockly-images/occ/pipe.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_occ.occ.html#pipe
-     * @param inputs Path wire and shapes along the path
-     * @returns OpenCascade shape
-     */
-    pipe(inputs: Inputs.OCC.PipeDto): any;
-    filletEdges(inputs: Inputs.OCC.FilletDto): any;
+    filletEdges(inputs: Inputs.OCC.FilletDto): Promise<any>;
     /**
      * Chamfer OpenCascade Shape edges
      * <div>
@@ -210,7 +201,7 @@ export declare class OCC {
      * @param inputs Shape, distance and edge indexes to fillet
      * @returns OpenCascade shape with filleted edges
      */
-    chamferEdges(inputs: Inputs.OCC.ChamferDto): any;
+    chamferEdges(inputs: Inputs.OCC.ChamferDto): Promise<any>;
     /**
      * Joins separate objects
      * <div>
@@ -220,7 +211,7 @@ export declare class OCC {
      * @param inputs Objects to join
      * @returns OpenCascade joined shape
      */
-    union(inputs: Inputs.OCC.UnionDto): any;
+    union(inputs: Inputs.OCC.UnionDto): Promise<any>;
     /**
      * Does boolean difference operation between a main shape and given shapes
      * <div>
@@ -230,7 +221,7 @@ export declare class OCC {
      * @param inputs Main shape and shapes to differ
      * @returns OpenCascade difference shape
      */
-    difference(inputs: Inputs.OCC.DifferenceDto): any;
+    difference(inputs: Inputs.OCC.DifferenceDto): Promise<any>;
     /**
      * Does boolean intersection operation between a main shape and given shapes
      * <div>
@@ -240,7 +231,7 @@ export declare class OCC {
      * @param inputs Main shape and shapes to differ
      * @returns OpenCascade difference shape
      */
-    intersection(inputs: Inputs.OCC.IntersectionDto): any;
+    intersection(inputs: Inputs.OCC.IntersectionDto): Promise<any>;
     /**
      * Removes internal faces for the shape
      * <div>
@@ -250,7 +241,7 @@ export declare class OCC {
      * @param inputs Shape
      * @returns OpenCascade shape with no internal edges
      */
-    removeInternalEdges(inputs: Inputs.OCC.ShapeDto): any;
+    removeInternalEdges(inputs: Inputs.OCC.ShapeDto): Promise<any>;
     /**
      * Gets the edge by providing an index from the shape
      * <div>
@@ -260,7 +251,7 @@ export declare class OCC {
      * @param inputs Shape
      * @returns OpenCascade edge
      */
-    getEdge(inputs: Inputs.OCC.ShapeIndexDto): any;
+    getEdge(inputs: Inputs.OCC.ShapeIndexDto): Promise<any>;
     /**
      * Gets the wire by providing an index from the shape
      * <div>
@@ -270,7 +261,7 @@ export declare class OCC {
      * @param inputs Shape
      * @returns OpenCascade wire
      */
-    getWire(inputs: Inputs.OCC.ShapeIndexDto): any;
+    getWire(inputs: Inputs.OCC.ShapeIndexDto): Promise<any>;
     /**
      * Gets the face by providing an index from the shape
      * <div>
@@ -280,7 +271,7 @@ export declare class OCC {
      * @param inputs Shape
      * @returns OpenCascade face
      */
-    getFace(inputs: Inputs.OCC.ShapeIndexDto): any;
+    getFace(inputs: Inputs.OCC.ShapeIndexDto): Promise<any>;
     /**
      * Rotated extrude that is perofrmed on the wire shape
      * <div>
@@ -290,7 +281,17 @@ export declare class OCC {
      * @param inputs Rotated extrusion inputs
      * @returns OpenCascade shape
      */
-    rotatedExtrude(inputs: Inputs.OCC.RotationExtrudeDto): any;
+    rotatedExtrude(inputs: Inputs.OCC.RotationExtrudeDto): Promise<any>;
+    /**
+     * Pipe shapes along the wire
+     * <div>
+     *  <img src="../assets/images/blockly-images/occ/pipe.svg" alt="Blockly Image"/>
+     * </div>
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occ.occ.html#pipe
+     * @param inputs Path wire and shapes along the path
+     * @returns OpenCascade shape
+     */
+    pipe(inputs: Inputs.OCC.PipeDto): Promise<any>;
     /**
      * Transforms the array of shapes
      * <div>
@@ -300,7 +301,7 @@ export declare class OCC {
      * @param inputs Transformation description
      * @returns OpenCascade shapes
      */
-    transform(inputs: Inputs.OCC.TransformDto): any;
+    transform(inputs: Inputs.OCC.TransformDto): Promise<any>;
     /**
      * Rotate the shapes
      * <div>
@@ -310,7 +311,7 @@ export declare class OCC {
      * @param inputs Rotation description
      * @returns OpenCascade shapes
      */
-    rotate(inputs: Inputs.OCC.RotateDto): any;
+    rotate(inputs: Inputs.OCC.RotateDto): Promise<any>;
     /**
      * Translates the shapes
      * <div>
@@ -320,7 +321,7 @@ export declare class OCC {
      * @param inputs Translation description
      * @returns OpenCascade shapes
      */
-    translate(inputs: Inputs.OCC.RotationExtrudeDto): any;
+    translate(inputs: Inputs.OCC.TranslateDto): Promise<any>;
     /**
      * Scales the shapes
      * <div>
@@ -330,7 +331,19 @@ export declare class OCC {
      * @param inputs Scale description
      * @returns OpenCascade shapes
      */
-    scale(inputs: Inputs.OCC.RotationExtrudeDto): any;
+    scale(inputs: Inputs.OCC.ScaleDto): Promise<any>;
+    /**
+     * Saves the step file
+     * <div>
+     *  <img src="../assets/images/blockly-images/occ/saveShapeSTEP.svg" alt="Blockly Image"/>
+     * </div>
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occ.occ.html#saveshapestep
+     * @param inputs STEP filename and shape to be saved
+     * @returns String of a step file
+     */
+    saveShapeSTEP(inputs: Inputs.OCC.SaveStepDto): Promise<string>;
     private computeFaceMiddlePos;
+    private computeEdgeMiddlePos;
 }
+
 `);

@@ -451,9 +451,6 @@ export class OCC {
 
     /**
      * Removes internal faces for the shape
-     * <div>
-     *  <img src="../assets/images/blockly-images/occ/removeInternalEdges.svg" alt="Blockly Image"/>
-     * </div>
      * @link https://docs.bitbybit.dev/classes/bitbybit_occ.occ.html#removeinternaledges
      * @param inputs Shape
      * @returns OpenCascade shape with no internal edges

@@ -32,10 +32,6 @@ export declare namespace OCC {
          */
         edgeWidth: number;
         /**
-         * Indicates wether the position of this surface will change in time
-         */
-        updatable: boolean;
-        /**
          * You can turn off drawing of edges via this property
          */
         drawEdges: boolean;
@@ -43,14 +39,6 @@ export declare namespace OCC {
          * You can turn off drawing of faces via this property
          */
         drawFaces: boolean;
-        /**
-         * Brep mesh variable in case it already exists and needs updating
-         */
-        shapeMesh?: any;
-        /**
-         * Lines mesh
-         */
-        linesMesh?: any;
         /**
          * Precision
          */
@@ -128,7 +116,7 @@ export declare namespace OCC {
          */
         radius2: number;
         /**
-         * height of the cone
+         * Height of the cone
          */
         height: number;
     }
@@ -196,15 +184,11 @@ export declare namespace OCC {
         closed: boolean;
     }
     class BezierDto {
-        constructor(points?: number[][], weights?: number[], closed?: boolean);
+        constructor(points?: number[][], closed?: boolean);
         /**
          * Points through which the Bezier curve will be created
          */
         points: number[][];
-        /**
-         * Optional weight parameter
-         */
-        weights?: number[];
         /**
          * Indicates wether Bezier will be cloed
          */
@@ -256,7 +240,7 @@ export declare namespace OCC {
         /**
          * Angle degrees
          */
-        degrees: number;
+        angle: number;
         /**
          * Direction vector
          */
@@ -356,7 +340,7 @@ export declare namespace OCC {
         /**
          * Rotation in degrees
          */
-        degrees: number;
+        angle: number;
     }
     class TransformDto {
         constructor(shape?: any, translation?: number[], rotationAxis?: number[], rotationDegrees?: number, scale?: number);
@@ -375,11 +359,11 @@ export declare namespace OCC {
         /**
          * Rotation degrees
          */
-        rotationDegrees: number;
+        rotationAngle: number;
         /**
          * Scale factor to apply
          */
-        scale: number;
+        scaleFactor: number;
     }
     class TranslateDto {
         constructor(shape?: any, translation?: number[]);
@@ -405,7 +389,7 @@ export declare namespace OCC {
         /**
          * Rotation degrees
          */
-        degrees: number;
+        angle: number;
     }
     class ScaleDto {
         constructor(shape?: any, scale?: number);
@@ -416,7 +400,18 @@ export declare namespace OCC {
         /**
          * Scale factor to apply
          */
-        scale: number;
+        factor: number;
+    }
+    class SaveStepDto {
+        constructor(shape?: any, filename?: string);
+        /**
+         * Shape to save
+         */
+        shape: any;
+        /**
+         * File name
+         */
+        filename: string;
     }
 }
 

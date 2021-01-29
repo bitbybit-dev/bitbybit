@@ -20,10 +20,10 @@ export function createFacesCreatePolygonBlock(): void {
                     'LoadingIndicator'
                 )
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_occ_wires_create_polygon_input_points);
+                .appendField(resources.block_occ_faces_create_polygon_input_points);
             this.setOutput(true, 'OccShape');
             this.setColour('#fff');
-            this.setTooltip(resources.block_occ_wires_create_polygon_description);
+            this.setTooltip(resources.block_occ_faces_create_polygon_description);
             this.setHelpUrl(environment.docsUrl + occConstants.occHelpUrl + '#' + 'createpolygonface');
         }
     };
@@ -35,7 +35,7 @@ export function createFacesCreatePolygonBlock(): void {
 
         // this is first set of validations to check that all inputs are non empty strings
         BitByBitBlockHandlerService.validate(block, block.workspace, makeRequiredValidationModelForInputs(resources, inputs, [
-            resources.block_occ_wires_create_polygon_input_points,
+            resources.block_occ_faces_create_polygon_input_points,
         ]));
 
         // this creates validation model to be used at runtime to evaluate real values of inputs
@@ -57,7 +57,7 @@ function makeRuntimeValidationModel(
     return [{
         entity: keys[0],
         validations: [
-            getRequired(resources, resources.block_occ_wires_create_polygon_input_points),
+            getRequired(resources, resources.block_occ_faces_create_polygon_input_points),
         ]
     }
     ];
