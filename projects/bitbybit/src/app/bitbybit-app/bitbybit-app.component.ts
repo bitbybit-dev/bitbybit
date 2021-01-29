@@ -218,9 +218,8 @@ export class BitbybitAppComponent implements OnInit, OnDestroy, AfterViewInit {
                             if (xml) {
                                 this.currentUiState = UiStatesEnum.blockly;
                                 this.previousUiState = UiStatesEnum.babylon;
-                                this.workspace.clear();
+                                this.cleanCanvas();
                                 Xml.domToWorkspace(xml, this.workspace);
-                                this.clearBabylonScene();
                                 setTimeout(() => {
                                     this.workspace.zoomToFit();
                                     this.workspace.zoomCenter(-3);
