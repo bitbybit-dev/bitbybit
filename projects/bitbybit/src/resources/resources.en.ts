@@ -1636,5 +1636,8 @@ export const resourcesEn: ResourcesInterface = Object.freeze({
     block_occ_rotated_extrude_input_shape: 'Rotated extrude OCC shape',
     block_occ_rotated_extrude_input_height: 'Height',
     block_occ_rotated_extrude_input_angle: 'Angle',
-    block_occ_rotated_extrude_description: 'Extrudes OCC shape by rotating it at a given angle and height.'
+    block_occ_rotated_extrude_description: 'Extrudes OCC shape by rotating it at a given angle and height.',
+    block_occ_pipe_input_shape: 'Pipe through OCC path wire shape',
+    block_occ_pipe_input_shapes: 'Section shapes',
+    block_occ_pipe_description: 'Pipes OCC section shapes along the path wire. Pipe can be created with single or multiple sections.'
 });

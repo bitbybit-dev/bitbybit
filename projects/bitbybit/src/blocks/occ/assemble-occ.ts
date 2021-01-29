@@ -23,6 +23,7 @@ import { createTransformScaleBlock } from './transform-scale';
 import { createTransformTranslateBlock } from './transform-translate';
 import { createTransformTransformBlock } from './transform-transform';
 import { createRotatedExtrudeBlock } from './rotated-extrude';
+import { createPipeBlock } from './pipe';
 
 export function assembleOCCBlocks(): void {
     createBoxBlock();
@@ -50,4 +51,5 @@ export function assembleOCCBlocks(): void {
     createTransformTranslateBlock();
     createTransformTransformBlock();
     createRotatedExtrudeBlock();
+    createPipeBlock();
 }

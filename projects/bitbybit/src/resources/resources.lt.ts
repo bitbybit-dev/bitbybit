@@ -1638,5 +1638,8 @@ app_menu_more_community: 'Bendruomenė',
     block_occ_rotated_extrude_input_shape: 'Iškėlimas sukant OCC figūrą',
     block_occ_rotated_extrude_input_height: 'Aukštis',
     block_occ_rotated_extrude_input_angle: 'Kampas',
-    block_occ_rotated_extrude_description: 'Iškelia OCC figūrą į nurodytą aukštį sukant kampu.'
+    block_occ_rotated_extrude_description: 'Iškelia OCC figūrą į nurodytą aukštį sukant kampu.',
+    block_occ_pipe_input_shape: 'Tiesti "vamzdį" sekant OCC kreivę',
+    block_occ_pipe_input_shapes: 'Profilio figūros',
+    block_occ_pipe_description: 'Tiesia "vamzdį" sekant kelio kreivę ir profilius.'
 });

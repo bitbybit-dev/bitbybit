@@ -1633,4 +1633,7 @@ export interface ResourcesInterface {
     block_occ_rotated_extrude_input_height: string;
     block_occ_rotated_extrude_input_angle: string;
     block_occ_rotated_extrude_description: string;
+    block_occ_pipe_input_shape: string;
+    block_occ_pipe_input_shapes: string;
+    block_occ_pipe_description: string;
 }

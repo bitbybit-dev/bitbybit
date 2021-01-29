@@ -317,6 +317,8 @@ export function occCategory(): string {
                     </block>
                 </value>
             </block>
+            <block type="occ_pipe">
+            </block>
             <block type="occ_revolve">
                 <value name="Direction">
                     <block type="base_geometry_point">
