@@ -192,30 +192,6 @@ export class OCC {
         });
     }
 
-    private computeEdgeMiddlePos(edge: { edge_index: number; vertex_coord: number[][]; }) {
-        let pos;
-        if (edge.vertex_coord.length === 2) {
-            const midFloor = edge.vertex_coord[0];
-            const midCeil = edge.vertex_coord[1];
-            pos = this.vector.lerp({
-                first: midFloor,
-                second: midCeil,
-                fraction: 0.5,
-            });
-        } else if (edge.vertex_coord.length === 3) {
-            pos = edge.vertex_coord[1];
-        } else {
-            const midFloor = edge.vertex_coord[Math.floor(edge.vertex_coord.length / 2)];
-            const midCeil = edge.vertex_coord[Math.floor(edge.vertex_coord.length / 2 + 1)];
-            pos = this.vector.lerp({
-                first: midFloor,
-                second: midCeil,
-                fraction: 0.5,
-            });
-        }
-        return pos;
-    }
-
     /**
      * This needs to be done before every run and the promise needs to be awaited before run executes again
      * This makes sure that cache keeps the objects and hashes from the previous run and the rest is deleted
@@ -248,7 +224,7 @@ export class OCC {
      * @returns OpenCascade polygon face
      */
     createPolygonFace(inputs: Inputs.OCC.PolygonDto): any {
-        return new this.context.occ.BRepBuilderAPI_MakeFace(this.createPolygonWire(inputs)).Face();
+        return this.genericCallToWorkerPromise('createPolygonFace', inputs);
     }
 
     /**
@@ -617,5 +593,29 @@ export class OCC {
         }
 
         return [x / length, y / length, z / length];
+    }
+
+    private computeEdgeMiddlePos(edge: { edge_index: number; vertex_coord: number[][]; }): number[] {
+        let pos;
+        if (edge.vertex_coord.length === 2) {
+            const midFloor = edge.vertex_coord[0];
+            const midCeil = edge.vertex_coord[1];
+            pos = this.vector.lerp({
+                first: midFloor,
+                second: midCeil,
+                fraction: 0.5,
+            });
+        } else if (edge.vertex_coord.length === 3) {
+            pos = edge.vertex_coord[1];
+        } else {
+            const midFloor = edge.vertex_coord[Math.floor(edge.vertex_coord.length / 2)];
+            const midCeil = edge.vertex_coord[Math.floor(edge.vertex_coord.length / 2 + 1)];
+            pos = this.vector.lerp({
+                first: midFloor,
+                second: midCeil,
+                fraction: 0.5,
+            });
+        }
+        return pos;
     }
 }

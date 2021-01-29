@@ -592,11 +592,16 @@ export class BitbybitAppComponent implements OnInit, OnDestroy, AfterViewInit {
         });
     }
 
+    // toggle needs to happen only if babylonjs view is closed, otherwise it can accidentally stop intentionally running loop
     private toggleRenderLoop(ms: number): void {
         setTimeout(() => {
-            this.engine.runRenderLoop(this.renderLoopFunction);
+            if (this.currentUiState !== UiStatesEnum.babylon) {
+                this.engine.runRenderLoop(this.renderLoopFunction);
+            }
             setTimeout(() => {
-                this.engine.stopRenderLoop(this.renderLoopFunction);
+                if (this.currentUiState !== UiStatesEnum.babylon) {
+                    this.engine.stopRenderLoop(this.renderLoopFunction);
+                }
             }, ms);
         }, ms);
     }

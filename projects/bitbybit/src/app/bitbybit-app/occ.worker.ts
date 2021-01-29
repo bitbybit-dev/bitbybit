@@ -542,7 +542,7 @@ export class Occ {
         const upperPolygon = this.rotate(
             {
                 axis: [0, 1, 0],
-                degrees: inputs.degrees,
+                angle: inputs.degrees,
                 shape: this.translate({
                     translation: [0, inputs.height, 0],
                     shape: inputs.shape,
@@ -767,9 +767,9 @@ export class Occ {
                 translation: inputs.translation,
                 shape: this.rotate({
                     axis: inputs.rotationAxis,
-                    degrees: inputs.rotationDegrees,
+                    angle: inputs.rotationAngle,
                     shape: this.scale({
-                        scale: inputs.scale,
+                        factor: inputs.scaleFactor,
                         shape: inputs.shape,
                     })
                 })
@@ -786,7 +786,7 @@ export class Occ {
 
     rotate(inputs: Inputs.OCC.RotateDto): any {
         let rotated;
-        if (inputs.degrees === 0) {
+        if (inputs.angle === 0) {
             rotated = inputs.shape;
         } else {
             const transformation = new this.occ.gp_Trsf_1();
@@ -797,7 +797,7 @@ export class Occ {
                         new this.occ.gp_Vec_4(inputs.axis[0], inputs.axis[1], inputs.axis[2])
                     )
                 ),
-                inputs.degrees * 0.0174533);
+                inputs.angle * 0.0174533);
             const rotation = new this.occ.TopLoc_Location_2(transformation);
             rotated = inputs.shape.Moved(rotation);
         }
@@ -806,7 +806,8 @@ export class Occ {
 
     scale(inputs: Inputs.OCC.ScaleDto): any {
         const transformation = new this.occ.gp_Trsf_1();
-        transformation.SetScaleFactor(inputs.scale);
+        const gpPnt = this.och.gpPnt([0, 0, 0]);
+        transformation.SetScale(gpPnt, inputs.factor);
         const scaling = new this.occ.TopLoc_Location_2(transformation);
         return inputs.shape.Moved(scaling);
     }

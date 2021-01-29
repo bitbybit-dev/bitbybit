@@ -16,6 +16,12 @@ import { createWiresCreateBezierBlock } from './wires-create-bezier';
 import { createWiresCreateBSplineBlock } from './wires-create-bspline';
 import { createWiresCreateCircleBlock } from './wires-create-circle';
 import { createBooleanIntersectionBlock } from './boolean-intersection';
+import { createWiresCreatePolygonBlock } from './wires-create-polygon';
+import { createFacesCreatePolygonBlock } from './faces-create-polygon';
+import { createTransformRotateBlock } from './transform-rotate';
+import { createTransformScaleBlock } from './transform-scale';
+import { createTransformTranslateBlock } from './transform-translate';
+import { createTransformTransformBlock } from './transform-transform';
 
 export function assembleOCCBlocks(): void {
     createBoxBlock();
@@ -36,4 +42,10 @@ export function assembleOCCBlocks(): void {
     createBooleanUnionBlock();
     createBooleanDifferenceBlock();
     createBooleanIntersectionBlock();
+    createWiresCreatePolygonBlock();
+    createFacesCreatePolygonBlock();
+    createTransformRotateBlock();
+    createTransformScaleBlock();
+    createTransformTranslateBlock();
+    createTransformTransformBlock();
 }

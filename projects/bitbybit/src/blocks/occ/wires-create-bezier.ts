@@ -27,7 +27,7 @@ export function createWiresCreateBezierBlock(): void {
                 .appendField(resources.block_occ_wires_create_bezier_input_closed.toLowerCase());
             this.setOutput(true, 'OccShape');
             this.setColour('#fff');
-            this.setTooltip(resources.block_occ_wires_create_bspline_description);
+            this.setTooltip(resources.block_occ_wires_create_bezier_description);
             this.setHelpUrl(environment.docsUrl + occConstants.occHelpUrl + '#' + 'createbezier');
         }
     };

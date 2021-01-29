@@ -431,8 +431,8 @@ export namespace OCC {
             this.shape = shape;
             this.translation = translation;
             this.rotationAxis = rotationAxis;
-            this.rotationDegrees = rotationDegrees;
-            this.scale = scale;
+            this.rotationAngle = rotationDegrees;
+            this.scaleFactor = scale;
         }
         /**
          * Shape to transform
@@ -449,11 +449,11 @@ export namespace OCC {
         /**
          * Rotation degrees
          */
-        rotationDegrees: number;
+        rotationAngle: number;
         /**
          * Scale factor to apply
          */
-        scale: number;
+        scaleFactor: number;
     }
     export class TranslateDto {
         constructor(shape?: any, translation?: number[]) {
@@ -473,7 +473,7 @@ export namespace OCC {
         constructor(shape?: any, axis?: number[], degrees?: number) {
             this.shape = shape;
             this.axis = axis;
-            this.degrees = degrees;
+            this.angle = degrees;
         }
         /**
          * Shape to rotate
@@ -486,12 +486,12 @@ export namespace OCC {
         /**
          * Rotation degrees
          */
-        degrees: number;
+        angle: number;
     }
     export class ScaleDto {
         constructor(shape?: any, scale?: number) {
             this.shape = shape;
-            this.scale = scale;
+            this.factor = scale;
         }
         /**
          * Shape to scale
@@ -500,6 +500,6 @@ export namespace OCC {
         /**
          * Scale factor to apply
          */
-        scale: number;
+        factor: number;
     }
 }

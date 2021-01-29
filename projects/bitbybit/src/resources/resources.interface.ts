@@ -151,6 +151,7 @@ export interface ResourcesInterface {
     block_toolbox_category_occ_create_face: string;
     block_toolbox_category_occ_apply: string;
     block_toolbox_category_occ_apply_boolean: string;
+    block_toolbox_category_occ_apply_transform: string;
     block_computing: string;
     block_point: string;
     block_clockwise: string;
@@ -1608,4 +1609,24 @@ export interface ResourcesInterface {
     block_occ_boolean_intersection_input_shapes: string;
     block_occ_boolean_intersection_input_keep_edges: string;
     block_occ_boolean_intersection_description: string;
+    block_occ_wires_create_polygon_input_points: string;
+    block_occ_wires_create_polygon_description: string;
+    block_occ_faces_create_polygon_input_points: string;
+    block_occ_faces_create_polygon_description: string;
+    block_occ_rotate_input_shape: string;
+    block_occ_rotate_input_axis: string;
+    block_occ_rotate_input_angle: string;
+    block_occ_rotate_description: string;
+    block_occ_scale_input_shape: string;
+    block_occ_scale_input_factor: string;
+    block_occ_scale_description: string;
+    block_occ_translate_input_shape: string;
+    block_occ_translate_input_translation: string;
+    block_occ_translate_description: string;
+    block_occ_transform_input_shape: string;
+    block_occ_transform_input_translation: string;
+    block_occ_transform_input_rotation_angle: string;
+    block_occ_transform_input_rotation_axis: string;
+    block_occ_transform_input_scale_factor: string;
+    block_occ_transform_description: string;
 }

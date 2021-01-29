@@ -33,8 +33,6 @@ import { Intersect } from './api/bitbybit/intersect';
 import { Tag } from './api/bitbybit/tag';
 import { Time } from './api/bitbybit/time';
 import { OCC } from './api/bitbybit/occ/occ';
-import { OCCHelper } from './api/bitbybit/occ/occ-helper';
-import { OCCService } from './api/bitbybit/occ/occ-service';
 
 @NgModule({
     declarations: [],
@@ -75,8 +73,6 @@ import { OCCService } from './api/bitbybit/occ/occ-service';
         Tag,
         Time,
         OCC,
-        OCCHelper,
-        OCCService,
     ],
     exports: []
 })
