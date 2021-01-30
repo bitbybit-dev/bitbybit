@@ -24,7 +24,7 @@ export class HS {
                     return r;
                 });
                 promises.push(inputs[propName]);
-            } else if (inputs[propName].length && inputs[propName].length > 0) {
+            } else if (inputs[propName].length && inputs[propName].length > 0 && typeof inputs[propName] !== 'string') {
                 // we also look for promises in the arrays, this is tricky, but should work for blockly scenarios
                 for (let i = 0; i < inputs[propName].length; i++) {
                     const s = inputs[propName][i];
