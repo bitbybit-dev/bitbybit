@@ -1,9 +1,9 @@
 import { BitByBitBlocklyHelperService } from 'projects/bitbybit-core/src/public-api';
-import { BitByBitBlockHandlerService } from './blocks/validations';
+import { HS } from './blocks/validations';
 
 export function prepareBabylonForBlockly(): void {
     const windowBlockly = window as any;
-    if (!windowBlockly.BitByBitBlockHandlerService) {
+    if (!windowBlockly.HS) {
         Object.defineProperty(Float32Array.prototype, 'chunk', {
             value(chunkSize: number) {
                 const temporal = [];
@@ -17,6 +17,6 @@ export function prepareBabylonForBlockly(): void {
         });
     }
 
-    windowBlockly.BitByBitBlockHandlerService = BitByBitBlockHandlerService;
+    windowBlockly.HS = HS;
     windowBlockly.BitByBitBlocklyHelperService = BitByBitBlocklyHelperService;
 }

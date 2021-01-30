@@ -7,7 +7,7 @@ import {
     getRequiredAndMin,
     getRequiredAndRange,
     makeRequiredValidationModelForInputs,
-    BitByBitBlockHandlerService,
+    HS,
     ValidationEntityInterface
 } from '../../validations';
 import { environment } from 'projects/bitbybit/src/environments/environment';
@@ -61,7 +61,7 @@ export function createDraw2dPathBlock(): void {
         };
 
         // this is first set of validations to check that all inputs are non empty strings
-        BitByBitBlockHandlerService.validate(block, block.workspace, makeRequiredValidationModelForInputs(resources, inputs, [
+        HS.validate(block, block.workspace, makeRequiredValidationModelForInputs(resources, inputs, [
             resources.block_2d_path, resources.block_colour, resources.block_opacity, resources.block_width, resources.block_updatable
         ]));
 

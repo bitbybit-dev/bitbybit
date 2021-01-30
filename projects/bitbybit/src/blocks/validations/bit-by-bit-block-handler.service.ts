@@ -1,14 +1,14 @@
 import { Block, Workspace, WorkspaceSvg } from 'blockly';
 import { ValidationEntityInterface } from './validation-entity.interface';
 
-export class BitByBitBlockHandlerService {
+export class HS {
 
     static runningBlockId: string;
 
     static handleBlock(workspace: Workspace, id: string, inputs: any): void {
         const block = workspace.getBlockById(id) as { validationModel: ValidationEntityInterface[] } & Block;
-        BitByBitBlockHandlerService.runningBlockId = id;
-        BitByBitBlockHandlerService.runtimeValidation(block, inputs);
+        HS.runningBlockId = id;
+        HS.runtimeValidation(block, inputs);
     }
 
     /**
@@ -39,11 +39,11 @@ export class BitByBitBlockHandlerService {
             }
         });
         if (promises.length > 0) {
-            BitByBitBlockHandlerService.startedAsyncTask(workspace, blockId, '#eeeeff');
+            HS.startedAsyncTask(workspace, blockId, '#eeeeff');
         }
         if (promises.length > 0) {
             const promise = Promise.all(promises).then((s) => {
-                BitByBitBlockHandlerService.finishedAsyncTask(workspace, blockId);
+                HS.finishedAsyncTask(workspace, blockId);
                 return s;
             });
             return promise;
@@ -70,7 +70,7 @@ export class BitByBitBlockHandlerService {
                     validations: model.validations,
                 };
             });
-            BitByBitBlockHandlerService.validate(
+            HS.validate(
                 block,
                 inputs,
                 validationModel

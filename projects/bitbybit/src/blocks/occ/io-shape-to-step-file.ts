@@ -2,7 +2,7 @@ import { ALIGN_RIGHT, Block, Blocks } from 'blockly';
 import * as JavaScript from 'blockly/javascript';
 import { ResourcesInterface, ResourcesService } from '../../resources';
 import { createDummyPromiseIndicator, createStandardContextIIFE } from '../_shared';
-import { getRequired, makeRequiredValidationModelForInputs, BitByBitBlockHandlerService, ValidationEntityInterface } from '../validations';
+import { getRequired, makeRequiredValidationModelForInputs, HS, ValidationEntityInterface } from '../validations';
 import { environment } from '../../environments/environment';
 import { occConstants } from './occ-constants';
 import { OCC } from 'projects/bitbybit-core/src/lib/api/inputs/occ-inputs';
@@ -41,7 +41,7 @@ export function createIOShapeToStepFileBlock(): void {
         };
 
         // this is first set of validations to check that all inputs are non empty strings
-        BitByBitBlockHandlerService.validate(block, block.workspace, makeRequiredValidationModelForInputs(resources, inputs, [
+        HS.validate(block, block.workspace, makeRequiredValidationModelForInputs(resources, inputs, [
             resources.block_occ_io_shape_to_file_input_shape,
             resources.block_occ_io_shape_to_file_input_file_name,
         ]));
@@ -50,7 +50,7 @@ export function createIOShapeToStepFileBlock(): void {
         const runtimeValidationModel = makeRuntimeValidationModel(resources, Object.keys(inputs));
         (block as any).validationModel = runtimeValidationModel;
 
-        return createStandardContextIIFE(block, blockSelector, inputs, true,
+        return createStandardContextIIFE(block, blockSelector, inputs, false,
             `bitbybit.occ.saveShapeSTEP(inputs)`, true
         );
     };

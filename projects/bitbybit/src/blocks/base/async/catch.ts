@@ -2,7 +2,7 @@ import { Block, Blocks, FieldVariable, Variables, VARIABLE_CATEGORY_NAME } from 
 import * as JavaScript from 'blockly/javascript';
 import { ResourcesInterface, ResourcesService } from '../../../resources';
 import { createDummyAsyncLoadingIndicator, createStandardContextIIFE } from '../../_shared';
-import { getRequired, makeRequiredValidationModelForInputs, BitByBitBlockHandlerService, ValidationEntityInterface } from '../../validations';
+import { getRequired, makeRequiredValidationModelForInputs, HS, ValidationEntityInterface } from '../../validations';
 
 export function createCatchBlock() {
 
@@ -35,7 +35,7 @@ export function createCatchBlock() {
             statement_catch: (JavaScript as any).statementToCode(block, 'Catch'),
         };
         // this is first set of validations to check that all inputs are non empty strings
-        BitByBitBlockHandlerService.validate(block, block.workspace, [{
+        HS.validate(block, block.workspace, [{
             entity: inputs.promise,
             validations: [
                 getRequired(resources, resources.block_promise)

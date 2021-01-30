@@ -2,7 +2,7 @@ import { ALIGN_RIGHT, Block, Blocks } from 'blockly';
 import * as JavaScript from 'blockly/javascript';
 import { ResourcesInterface, ResourcesService } from '../../../resources';
 import { createDummyAsyncLoadingIndicator, createStandardContextIIFE } from '../../_shared';
-import { getRequired, BitByBitBlockHandlerService, ValidationEntityInterface } from '../../validations';
+import { getRequired, HS, ValidationEntityInterface } from '../../validations';
 
 export function createExecuteLaterBlock() {
 
@@ -36,7 +36,7 @@ export function createExecuteLaterBlock() {
             statement_then: (JavaScript as any).statementToCode(block, 'Then'),
         };
         // this is first set of validations to check that all inputs are non empty strings
-        BitByBitBlockHandlerService.validate(block, block.workspace, [{
+        HS.validate(block, block.workspace, [{
             entity: inputs.timeout,
             validations: [
                 getRequired(resources, resources.block_timeout)

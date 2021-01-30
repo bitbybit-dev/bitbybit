@@ -4,7 +4,7 @@ import { ResourcesInterface, ResourcesService } from '../../../resources';
 import { createStandardContextIIFE } from '../../_shared';
 import {
     makeRequiredValidationModelForInputs,
-    BitByBitBlockHandlerService,
+    HS,
     ValidationEntityInterface,
     getRequired,
 } from '../../validations';
@@ -56,7 +56,7 @@ export function createScenePointLightBlock(): void {
         };
 
         // this is first set of validations to check that all inputs are non empty strings
-        BitByBitBlockHandlerService.validate(block, block.workspace, makeRequiredValidationModelForInputs(resources, inputs, [
+        HS.validate(block, block.workspace, makeRequiredValidationModelForInputs(resources, inputs, [
             resources.block_scene_point_light_input_position,
             resources.block_scene_point_light_input_diffuse,
             resources.block_scene_point_light_input_specular,

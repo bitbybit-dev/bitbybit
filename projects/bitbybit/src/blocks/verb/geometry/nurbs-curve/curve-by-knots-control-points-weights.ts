@@ -2,7 +2,7 @@ import { ALIGN_RIGHT, Block, Blocks } from 'blockly';
 import * as JavaScript from 'blockly/javascript';
 import { ResourcesInterface, ResourcesService } from '../../../../resources';
 import { createStandardContextIIFE } from '../../../_shared';
-import { getRequired, makeRequiredValidationModelForInputs, BitByBitBlockHandlerService, ValidationEntityInterface } from '../../../validations';
+import { getRequired, makeRequiredValidationModelForInputs, HS, ValidationEntityInterface } from '../../../validations';
 import { environment } from 'projects/bitbybit/src/environments/environment';
 import { curveConstants } from './curve-constants';
 
@@ -45,7 +45,7 @@ export function createCurveByKnotsControlPointsWeightsBlock(): void {
         };
 
         // this is first set of validations to check that all inputs are non empty strings
-        BitByBitBlockHandlerService.validate(block, block.workspace, makeRequiredValidationModelForInputs(resources, inputs, [
+        HS.validate(block, block.workspace, makeRequiredValidationModelForInputs(resources, inputs, [
             resources.block_knots, resources.block_points, resources.block_weights, resources.block_degree
         ]));
 

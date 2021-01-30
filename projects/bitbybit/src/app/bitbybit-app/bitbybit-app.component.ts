@@ -14,7 +14,7 @@ import * as Blockly from 'blockly';
 import * as JavaScript from 'blockly/javascript';
 import * as jsonpath from 'jsonpath';
 import { PromptInterface } from '../../blocks/_shared/models/prompt.interface';
-import { BitByBitBlockHandlerService } from '../../blocks/validations';
+import { HS } from '../../blocks/validations';
 import { prepareBabylonForBlockly } from '../../babylon-to-blockly';
 import { assembleBlocks } from '../../blocks/assemble-blocks';
 import { ResourcesInterface, ResourcesService } from '../../resources';
@@ -565,7 +565,7 @@ export class BitbybitAppComponent implements OnInit, OnDestroy, AfterViewInit {
                 const Bit = window.Bit;
                 const BitByBit = {
                     blocklyWorkspace: window.blockly.workspace,
-                    BitByBitBlockHandlerService: window.BitByBitBlockHandlerService,
+                    HS: window.HS,
                     BitByBitBlocklyHelperService: window.BitByBitBlocklyHelperService,
                 };
                 ${code}`)();
@@ -583,8 +583,8 @@ export class BitbybitAppComponent implements OnInit, OnDestroy, AfterViewInit {
                         message: `${e}`,
                     });
                 } else {
-                    const blockThatWasActive = this.workspace.getBlockById(BitByBitBlockHandlerService.runningBlockId);
-                    BitByBitBlockHandlerService.handleBlockException(blockThatWasActive, e);
+                    const blockThatWasActive = this.workspace.getBlockById(HS.runningBlockId);
+                    HS.handleBlockException(blockThatWasActive, e);
                     this.openAlertDialog({
                         title: 'Code execution failed',
                         details: `Something went wrong when running the code. Check if there are no disconnected or misconfigured components on your canvas`,

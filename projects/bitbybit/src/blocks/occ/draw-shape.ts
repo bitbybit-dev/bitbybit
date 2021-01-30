@@ -2,7 +2,7 @@ import { ALIGN_RIGHT, Block, Blocks } from 'blockly';
 import * as JavaScript from 'blockly/javascript';
 import { ResourcesInterface, ResourcesService } from '../../resources';
 import { createDummyPromiseIndicator, createStandardContextIIFE } from '../_shared';
-import { makeRequiredValidationModelForInputs, BitByBitBlockHandlerService, ValidationEntityInterface, getRequired } from '../validations';
+import { makeRequiredValidationModelForInputs, HS, ValidationEntityInterface, getRequired } from '../validations';
 import { environment } from '../../environments/environment';
 import { occConstants } from './occ-constants';
 import { OCC } from '../../../../bitbybit-core/src/lib/api/inputs/occ-inputs';
@@ -106,7 +106,7 @@ export function createDrawShapeBlock(): void {
         };
 
         // this is first set of validations to check that all inputs are non empty strings
-        BitByBitBlockHandlerService.validate(block, block.workspace, makeRequiredValidationModelForInputs(resources, inputs, [
+        HS.validate(block, block.workspace, makeRequiredValidationModelForInputs(resources, inputs, [
             resources.block_occ_draw_shape_input_shape,
             resources.block_occ_draw_shape_input_precision,
             resources.block_occ_draw_shape_input_draw_faces,

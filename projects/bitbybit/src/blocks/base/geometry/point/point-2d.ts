@@ -2,7 +2,7 @@ import { ALIGN_RIGHT, Block, Blocks } from 'blockly';
 import * as JavaScript from 'blockly/javascript';
 import { ResourcesService } from '../../../../resources';
 import { createStandardContextIIFE } from '../../../_shared';
-import { makeRequiredValidationModelForInputs, BitByBitBlockHandlerService } from '../../../validations';
+import { makeRequiredValidationModelForInputs, HS } from '../../../validations';
 import { environment } from 'projects/bitbybit/src/environments/environment';
 import { pointConstants } from './point-constants';
 
@@ -36,7 +36,7 @@ export function createPoint2dBlock(): void {
         };
 
         // this is first set of validations to check that all inputs are non empty strings
-        BitByBitBlockHandlerService.validate(block, block.workspace, makeRequiredValidationModelForInputs(resources, inputs, [
+        HS.validate(block, block.workspace, makeRequiredValidationModelForInputs(resources, inputs, [
             resources.block_coordinate_x, resources.block_coordinate_y
         ]));
 

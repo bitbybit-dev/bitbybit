@@ -104,7 +104,7 @@ const monacoConfig: NgxMonacoEditorConfig = {
             const bitbybit: Bit.BitByBitBase = (window as any).BitByBitBase;
             const BitByBit = {
                 blocklyWorkspace: window.blockly.workspace,
-                BitByBitBlockHandlerService: window.BitByBitBlockHandlerService,
+                HS: window.HS,
                 BitByBitBlocklyHelperService: window.BitByBitBlocklyHelperService,
             };
         `;
