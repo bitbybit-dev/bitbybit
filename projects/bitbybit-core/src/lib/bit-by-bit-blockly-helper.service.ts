@@ -21,6 +21,7 @@ export class BitByBitBlocklyHelperService {
     static getFile(): Promise<string | ArrayBuffer> {
         return new Promise((resolve, reject) => {
             const inputFileElement = document.getElementById('fileInput') as HTMLInputElement;
+            const fileInputLabel = document.getElementById('fileInputLabel') as HTMLInputElement;
 
             inputFileElement.onchange = (e) => {
                 const file = inputFileElement.files[0];
@@ -39,7 +40,7 @@ export class BitByBitBlocklyHelperService {
                     reject();
                 }
             };
-            inputFileElement.click();
+            fileInputLabel.click();
         });
     }
 

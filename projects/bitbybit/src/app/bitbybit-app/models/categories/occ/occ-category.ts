@@ -543,6 +543,10 @@ export function occCategory(): string {
                     </value>
                 </block>
             </category>
+            <category name="${resources.block_toolbox_category_occ_apply_compound}"  categorystyle="geometry_category">
+                <block type="occ_compound_make_compound">
+                </block>
+            </category>
         </category>
     </category>
 `;

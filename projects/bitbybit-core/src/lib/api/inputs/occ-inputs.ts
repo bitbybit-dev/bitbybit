@@ -516,4 +516,37 @@ export namespace OCC {
          */
         filename: string;
     }
+    export class ImportStepIgesDto {
+        constructor(assetName?: any) {
+            this.assetName = assetName;
+        }
+        /**
+         * The name of the asset to store in the cache.
+         * This allows to store the imported objects for multiple run cycles in the cache
+         */
+        assetName: string;
+    }
+    export class ImportStepOrIgesDto {
+        constructor(filetext?: any, filename?: string) {
+            this.filetext = filetext;
+            this.filename = filename;
+        }
+        /**
+         * Shape to save
+         */
+        filetext: any;
+        /**
+         * File name
+         */
+        filename: string;
+    }
+    export class CompoundShapesDto {
+        constructor(shapes?: any[]) {
+            this.shapes = shapes;
+        }
+        /**
+         * Shapes to add to compound
+         */
+        shapes: any[];
+    }
 }

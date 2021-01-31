@@ -111,6 +111,7 @@ export class SettingsService {
             resources.block_toolbox_category_occ_apply_edge,
             resources.block_toolbox_category_occ_apply_wire,
             resources.block_toolbox_category_occ_apply_face,
+            resources.block_toolbox_category_occ_apply_compound,
             resources.block_toolbox_category_geom_solid,
             resources.block_toolbox_category_create,
             resources.block_toolbox_category_2d_path,

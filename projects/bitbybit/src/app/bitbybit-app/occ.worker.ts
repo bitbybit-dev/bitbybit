@@ -832,10 +832,51 @@ export class Occ {
                 // Return the contents of the STEP File
                 return stepFileText;
             } else {
-                throw(new Error('Failed when writing step file.'));
+                throw (new Error('Failed when writing step file.'));
             }
         } else {
-            throw(new Error('Failed when transfering to step writer.'));
+            throw (new Error('Failed when transfering to step writer.'));
+        }
+    }
+
+    makeCompound(inputs: Inputs.OCC.CompoundShapesDto): any {
+        const resCompound = new this.occ.TopoDS_Compound();
+        const builder = new this.occ.BRep_Builder();
+        builder.MakeCompound(resCompound);
+        inputs.shapes.forEach(shape => {
+            builder.Add(resCompound, shape);
+        });
+        return resCompound;
+    }
+
+    /** This function parses the ASCII contents of a `.STEP` or `.IGES`
+     * File as a Shape into the `externalShapes` dictionary.
+     */
+    importSTEPorIGES(inputs: Inputs.OCC.ImportStepOrIgesDto): any {
+        const fileName = inputs.filename;
+        const fileText = inputs.filetext;
+
+        // Writes the uploaded file to Emscripten's Virtual Filesystem
+        this.occ.FS.createDataFile('/', fileName, fileText, true, true);
+
+        // Choose the correct OpenCascade file parsers to read the CAD file
+        let reader = null; const tempFilename = fileName.toLowerCase();
+        if (tempFilename.endsWith('.step') || tempFilename.endsWith('.stp')) {
+            reader = new this.occ.STEPControl_Reader_1();
+        } else if (tempFilename.endsWith('.iges') || tempFilename.endsWith('.igs')) {
+            reader = new this.occ.IGESControl_Reader_1();
+        } else { console.error('opencascade.js can\'t parse this extension! (yet)'); }
+
+        const readResult = reader.ReadFile(fileName);            // Read the file
+        if (readResult.value === 1) {
+        reader.TransferRoots();                              // Translate all transferable roots to OpenCascade
+        const stepShape = reader.OneShape();         // Obtain the results of translation in one OCCT shape
+
+        this.occ.FS.unlink('/' + fileName);
+
+        return stepShape;
+        } else {
+            throw (new Error('Error occured while trying to read the file.'));
         }
     }
 

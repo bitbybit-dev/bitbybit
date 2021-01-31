@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Mesh, MeshBuilder } from '@babylonjs/core';
 import { Subject } from 'rxjs';
+import { BitByBitBlocklyHelperService } from '../../../bit-by-bit-blockly-helper.service';
 import { Context } from '../../context';
 import { GeometryHelper } from '../../geometry-helper';
 import * as Inputs from '../../inputs/inputs';
@@ -578,6 +579,19 @@ export class OCC {
     }
 
     /**
+     * Makes the compound shape, which can include any kind of shapes
+     * <div>
+     *  <img src="../assets/images/blockly-images/occ/makeCompound.svg" alt="Blockly Image"/>
+     * </div>
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occ.occ.html#makecompound
+     * @param inputs OpenCascade shapes
+     * @returns OpenCascade compounded shape
+     */
+    makeCompound(inputs: Inputs.OCC.ScaleDto): Promise<any> {
+        return this.genericCallToWorkerPromise('makeCompound', inputs);
+    }
+
+    /**
      * Saves the step file
      * <div>
      *  <img src="../assets/images/blockly-images/occ/saveShapeSTEP.svg" alt="Blockly Image"/>
@@ -598,6 +612,17 @@ export class OCC {
             fileLink.click();
             fileLink.remove();
             return s;
+        });
+    }
+
+    importSTEPorIGES(inputs: Inputs.OCC.ImportStepIgesDto): Promise<any> {
+        // first we should check if we have assetName loaded already
+        // if we dont have we do this, otherwise return from the cache...
+        return BitByBitBlocklyHelperService.getFile().then(s => {
+            return this.genericCallToWorkerPromise(
+                'importSTEPorIGES',
+                new Inputs.OCC.ImportStepOrIgesDto(s, inputs.assetName)
+            );
         });
     }
 

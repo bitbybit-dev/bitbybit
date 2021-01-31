@@ -28,6 +28,8 @@ import { createFacesGetFaceBlock } from './faces-get-face';
 import { createEdgesGetEdgeBlock } from './edges-get-edge';
 import { createWiresGetWireBlock } from './wires-get-wire';
 import { createIOShapeToStepFileBlock } from './io-shape-to-step-file';
+import { createIOImportStepOrIgesFileBlock } from './io-import-step-or-iges-file';
+import { createCompoundMakeCompoundBlock } from './compound-make-compound';
 
 export function assembleOCCBlocks(): void {
     createBoxBlock();
@@ -60,4 +62,6 @@ export function assembleOCCBlocks(): void {
     createEdgesGetEdgeBlock();
     createWiresGetWireBlock();
     createIOShapeToStepFileBlock();
+    createIOImportStepOrIgesFileBlock();
+    createCompoundMakeCompoundBlock();
 }

@@ -160,6 +160,7 @@ export const resourcesEn: ResourcesInterface = Object.freeze({
     block_toolbox_category_occ_apply_edge: 'Edge',
     block_toolbox_category_occ_apply_wire: 'Wire',
     block_toolbox_category_occ_apply_face: 'Face',
+    block_toolbox_category_occ_apply_compound: 'Compound',
     block_number: 'Number',
     block_modulus: 'Modulus',
     block_year: 'Year',
@@ -1664,4 +1665,8 @@ export const resourcesEn: ResourcesInterface = Object.freeze({
     block_scene_point_light_input_intensity: 'Intensity',
     block_scene_point_light_input_radius: 'Radius',
     block_scene_point_light_description: 'Creates a point light in the scene. If radius is 0, there will be no sphere-shaped representation of the liht source.',
+    block_occ_io_import_step_or_iges_file_input_asset_name: 'Import STEP or IGES file and cache with asset name',
+    block_occ_io_import_step_or_iges_file_description: 'Imports STEP or IGES file and stores it in the cache for multiple run cycles with an asset name. To access this object from the cache use a variable or get asset component.',
+    block_occ_compound_make_compound_input_shapes: 'Compound multiple OCC shapes',
+    block_occ_compound_make_compound_description: 'Compounds multiple OCC shapes into a single shape, which can include any kind of OCC shape.'
 });

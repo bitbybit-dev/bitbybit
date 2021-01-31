@@ -158,6 +158,7 @@ export interface ResourcesInterface {
     block_toolbox_category_occ_apply_edge: string;
     block_toolbox_category_occ_apply_wire: string;
     block_toolbox_category_occ_apply_face: string;
+    block_toolbox_category_occ_apply_compound: string;
     block_computing: string;
     block_point: string;
     block_clockwise: string;
@@ -1660,4 +1661,8 @@ export interface ResourcesInterface {
     block_scene_point_light_input_intensity: string;
     block_scene_point_light_input_radius: string;
     block_scene_point_light_description: string;
+    block_occ_io_import_step_or_iges_file_input_asset_name: string;
+    block_occ_io_import_step_or_iges_file_description: string;
+    block_occ_compound_make_compound_input_shapes: string;
+    block_occ_compound_make_compound_description: string;
 }
