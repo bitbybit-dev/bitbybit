@@ -768,7 +768,6 @@ export class Occ {
                 edgeList.push(thisEdge);
             }
         });
-        inctementalMeshBuilder.delete();
         return { faceList, edgeList };
     }
 
@@ -1054,7 +1053,11 @@ class CacheHelper {
 
         usedHashKeys.forEach(hash => {
             if (this.argCache[hash]) {
-                this.argCache[hash].delete();
+                try{
+                    this.argCache[hash].delete();
+                }
+                catch {
+                }
             }
         });
 
