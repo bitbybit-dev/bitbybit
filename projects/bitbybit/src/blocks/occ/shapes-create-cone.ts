@@ -24,7 +24,7 @@ export function createConeBlock(): void {
             this.appendValueInput('RadiusTwo')
                 .setCheck('Number')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_occ_shapes_create_cone_input_radius_two);
+                .appendField(resources.block_occ_shapes_create_cone_input_radius_two.toLowerCase());
             this.appendValueInput('Height')
                 .setCheck('Number')
                 .setAlign(ALIGN_RIGHT)

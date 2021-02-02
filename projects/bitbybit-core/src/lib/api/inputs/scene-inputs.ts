@@ -1,4 +1,4 @@
-import { PointLight } from '@babylonjs/core';
+import { Mesh } from '@babylonjs/core';
 
 // tslint:disable-next-line: no-namespace
 export namespace Scene {
@@ -79,5 +79,29 @@ export namespace Scene {
          * Radius of the sphere mesh representing the light bulb. If 0 light gets created without the mesh
          */
         radius: 0.1;
+    }
+    export class CameraConfigurationDto {
+        /**
+         * Position of the point light
+         */
+        position: number[];
+        /**
+         * Lets configure how far the camera can see
+         */
+        maxZ = 1000;
+        /**
+         * Panning sensibility. If large units are used for the model, this number needs to get larger
+         */
+        panningSensibility = 0.1;
+        /**
+         * Zoom precision of the wheel. If large units are used, this number needs to get smaller
+         */
+        wheelPrecision = 0.1;
+    }
+    export class MeshInstanceAndTransformDto {
+        mesh: Mesh;
+        position: number[];
+        rotation: number[];
+        scaling: number[];
     }
 }

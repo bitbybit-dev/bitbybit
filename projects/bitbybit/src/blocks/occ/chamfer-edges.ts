@@ -29,10 +29,6 @@ export function createChamferEdgesBlock(): void {
                 .setCheck('Number')
                 .setAlign(ALIGN_RIGHT)
                 .appendField(resources.block_occ_chamfer_edge_input_distance.toLowerCase());
-            this.appendValueInput('All')
-                .setCheck('Boolean')
-                .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_occ_chamfer_edge_input_all.toLowerCase());
             this.setOutput(true, 'OccShape');
             this.setColour('#fff');
             this.setTooltip(resources.block_occ_chamfer_edge_description);
@@ -45,15 +41,12 @@ export function createChamferEdgesBlock(): void {
             shape: (JavaScript as any).valueToCode(block, 'OccShape', (JavaScript as any).ORDER_ATOMIC),
             distance: (JavaScript as any).valueToCode(block, 'Distance', (JavaScript as any).ORDER_ATOMIC),
             edgeList: (JavaScript as any).valueToCode(block, 'EdgeList', (JavaScript as any).ORDER_ATOMIC),
-            all: (JavaScript as any).valueToCode(block, 'All', (JavaScript as any).ORDER_ATOMIC),
         };
 
         // this is first set of validations to check that all inputs are non empty strings
         HS.validate(block, block.workspace, makeRequiredValidationModelForInputs(resources, inputs, [
             resources.block_occ_chamfer_edge_input_shape,
             resources.block_occ_chamfer_edge_input_distance,
-            resources.block_occ_chamfer_edge_input_edge_list,
-            resources.block_occ_chamfer_edge_input_all,
         ]));
 
         // this creates validation model to be used at runtime to evaluate real values of inputs
@@ -81,16 +74,6 @@ function makeRuntimeValidationModel(
         entity: keys[1],
         validations: [
             getRequired(resources, resources.block_occ_chamfer_edge_input_distance),
-        ]
-    }, {
-        entity: keys[2],
-        validations: [
-            getRequired(resources, resources.block_occ_chamfer_edge_input_edge_list),
-        ]
-    }, {
-        entity: keys[3],
-        validations: [
-            getRequired(resources, resources.block_occ_chamfer_edge_input_all),
         ]
     }
     ];

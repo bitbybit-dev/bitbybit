@@ -25,6 +25,7 @@ export declare class OCC {
     private promisesResolved;
     constructor(context: Context, geometryHelper: GeometryHelper, solidText: JSCADText, vector: Vector);
     setOccWorker(worker: Worker): void;
+    cleanPromisesMade(): void;
     genericCallToWorkerPromise(functionName: string, inputs: any): Promise<any>;
     /**
      * Draws OpenCascade shape by going through faces and edges
@@ -41,7 +42,13 @@ export declare class OCC {
      * This makes sure that cache keeps the objects and hashes from the previous run and the rest is deleted
      * In this way it is possible to hace the cache of manageable size
      */
-    cleanUpCache(): Promise<any>;
+    startedTheRun(): Promise<any>;
+    /**
+     * This needs to be done before every run and the promise needs to be awaited before run executes again
+     * This makes sure that cache keeps the objects and hashes from the previous run and the rest is deleted
+     * In this way it is possible to hace the cache of manageable size
+     */
+    cleanAllCache(): Promise<any>;
     /**
      * Creates OpenCascade Polygon wire
      * <div>
@@ -234,9 +241,6 @@ export declare class OCC {
     intersection(inputs: Inputs.OCC.IntersectionDto): Promise<any>;
     /**
      * Removes internal faces for the shape
-     * <div>
-     *  <img src="../assets/images/blockly-images/occ/removeInternalEdges.svg" alt="Blockly Image"/>
-     * </div>
      * @link https://docs.bitbybit.dev/classes/bitbybit_occ.occ.html#removeinternaledges
      * @param inputs Shape
      * @returns OpenCascade shape with no internal edges
@@ -333,6 +337,36 @@ export declare class OCC {
      */
     scale(inputs: Inputs.OCC.ScaleDto): Promise<any>;
     /**
+     * Makes the compound shape, which can include any kind of shapes
+     * <div>
+     *  <img src="../assets/images/blockly-images/occ/makeCompound.svg" alt="Blockly Image"/>
+     * </div>
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occ.occ.html#makecompound
+     * @param inputs OpenCascade shapes
+     * @returns OpenCascade compounded shape
+     */
+    makeCompound(inputs: Inputs.OCC.ScaleDto): Promise<any>;
+    /**
+     * Thickens the shape into a solid by an offset distance
+     * <div>
+     *  <img src="../assets/images/blockly-images/occ/makeThickSolidSimple.svg" alt="Blockly Image"/>
+     * </div>
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occ.occ.html#makethicksolidsimple
+     * @param inputs OpenCascade shape
+     * @returns OpenCascade solid shape
+     */
+    makeThickSolidSimple(inputs: Inputs.OCC.ThisckSolidSimpleDto): Promise<any>;
+    /**
+     * Creates a face from wire
+     * <div>
+     *  <img src="../assets/images/blockly-images/occ/createfacefromwire.svg" alt="Blockly Image"/>
+     * </div>
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occ.occ.html#createfacefromwire
+     * @param inputs OpenCascade wire shape and indication if face should be planar
+     * @returns OpenCascade face shape
+     */
+    createFaceFromWire(inputs: Inputs.OCC.FaceFromWireDto): Promise<any>;
+    /**
      * Saves the step file
      * <div>
      *  <img src="../assets/images/blockly-images/occ/saveShapeSTEP.svg" alt="Blockly Image"/>
@@ -342,8 +376,8 @@ export declare class OCC {
      * @returns String of a step file
      */
     saveShapeSTEP(inputs: Inputs.OCC.SaveStepDto): Promise<string>;
+    importSTEPorIGES(inputs: Inputs.OCC.ImportStepIgesDto): Promise<any>;
     private computeFaceMiddlePos;
     private computeEdgeMiddlePos;
 }
-
 `);

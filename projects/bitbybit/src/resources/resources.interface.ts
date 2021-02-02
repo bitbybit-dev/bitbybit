@@ -7,7 +7,6 @@ export interface ResourcesInterface {
     app_menu_code: string;
     app_menu_visual_programming: string;
     app_menu_support_us_on_patreon: string;
-    app_menu_clean_canvas: string;
     app_menu_more: string;
     app_menu_more_about: string;
     app_menu_more_home: string;
@@ -67,6 +66,7 @@ export interface ResourcesInterface {
     app_menu_more_sponsors_email: string;
     app_menu_more_community: string;
     app_menu_more_clean_canvas: string;
+    app_menu_more_clean_all_cache: string;
     app_menu_more_export: string;
     app_menu_more_import: string;
     app_button_close: string;
@@ -1599,12 +1599,10 @@ export interface ResourcesInterface {
     block_occ_fillet_edge_input_shape: string;
     block_occ_fillet_edge_input_radius: string;
     block_occ_fillet_edge_input_edge_list: string;
-    block_occ_fillet_edge_input_all: string;
     block_occ_fillet_edge_description: string;
     block_occ_chamfer_edge_input_shape: string;
     block_occ_chamfer_edge_input_distance: string;
     block_occ_chamfer_edge_input_edge_list: string;
-    block_occ_chamfer_edge_input_all: string;
     block_occ_chamfer_edge_description: string;
     block_occ_boolean_union_input_shapes: string;
     block_occ_boolean_union_input_keep_edges: string;
@@ -1665,4 +1663,24 @@ export interface ResourcesInterface {
     block_occ_io_import_step_or_iges_file_description: string;
     block_occ_compound_make_compound_input_shapes: string;
     block_occ_compound_make_compound_description: string;
+    block_occ_solid_make_thick_solid_simple_input_shape: string;
+    block_occ_solid_make_thick_solid_simple_input_offset: string;
+    block_occ_solid_make_thick_solid_simple_description: string;
+    block_occ_faces_create_face_from_wire_input_wire: string;
+    block_occ_faces_create_face_from_wire_input_planar: string;
+    block_occ_faces_create_face_from_wire_description: string;
+    block_scene_adjust_active_arc_rotate_camera_input_position: string;
+    block_scene_adjust_active_arc_rotate_camera_input_max_z: string;
+    block_scene_adjust_active_arc_rotate_camera_input_panning_sensibility: string;
+    block_scene_adjust_active_arc_rotate_camera_input_wheel_precision: string;
+    block_scene_adjust_active_arc_rotate_camera_description: string;
+    block_base_geom_point_hex_grid_input_nr_hexagons_x: string;
+    block_base_geom_point_hex_grid_input_nr_hexagons_y: string;
+    block_base_geom_point_hex_grid_input_hexagon_radius: string;
+    block_base_geom_point_hex_grid_description: string;
+    block_scene_mesh_instance_and_transform_input_babylon_mesh: string;
+    block_scene_mesh_instance_and_transform_input_position: string;
+    block_scene_mesh_instance_and_transform_input_rotation: string;
+    block_scene_mesh_instance_and_transform_input_scaling: string;
+    block_scene_mesh_instance_and_transform_description: string;
 }

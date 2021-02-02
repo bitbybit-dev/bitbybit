@@ -1,7 +1,7 @@
 import { simplifyDeclaration } from '../simplify-declaration';
 
 export const sceneInputsString = simplifyDeclaration(`
-import { PointLight } from "@babylonjs/core";
+import { Mesh } from '@babylonjs/core';
 export declare namespace Scene {
     class SceneBackgroundColourDto {
         /**
@@ -75,12 +75,31 @@ export declare namespace Scene {
         /**
          * Radius of the sphere mesh representing the light bulb. If 0 light gets created without the mesh
          */
-        radius: number;
+        radius: 0.1;
     }
-    class DrawLightDto {
-        light: PointLight;
-        bubbleRadius: number;
+    class CameraConfigurationDto {
+        /**
+         * Position of the point light
+         */
+        position: number[];
+        /**
+         * Lets configure how far the camera can see
+         */
+        maxZ: number;
+        /**
+         * Panning sensibility. If large units are used for the model, this number needs to get larger
+         */
+        panningSensibility: number;
+        /**
+         * Zoom precision of the wheel. If large units are used, this number needs to get smaller
+         */
+        wheelPrecision: number;
+    }
+    class MeshInstanceAndTransformDto {
+        mesh: Mesh;
+        position: number[];
+        rotation: number[];
+        scaling: number[];
     }
 }
-
 `);

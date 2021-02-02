@@ -63,6 +63,101 @@ export function sceneCategory() {
                 </block>
             </value>
         </block>
+        <block type="scene_mesh_instance_and_transform">
+            <value name="Position">
+                <block type="base_geometry_point">
+                    <value name="X">
+                        <block type="math_number">
+                            <field name="NUM">0</field>
+                        </block>
+                    </value>
+                    <value name="Y">
+                        <block type="math_number">
+                            <field name="NUM">0</field>
+                        </block>
+                    </value>
+                    <value name="Z">
+                        <block type="math_number">
+                            <field name="NUM">0</field>
+                        </block>
+                    </value>
+                </block>
+            </value>
+            <value name="Rotation">
+                <block type="base_geometry_point">
+                    <value name="X">
+                        <block type="math_number">
+                            <field name="NUM">0</field>
+                        </block>
+                    </value>
+                    <value name="Y">
+                        <block type="math_number">
+                            <field name="NUM">0</field>
+                        </block>
+                    </value>
+                    <value name="Z">
+                        <block type="math_number">
+                            <field name="NUM">0</field>
+                        </block>
+                    </value>
+                </block>
+            </value>
+            <value name="Scaling">
+                <block type="base_geometry_point">
+                    <value name="X">
+                        <block type="math_number">
+                            <field name="NUM">1</field>
+                        </block>
+                    </value>
+                    <value name="Y">
+                        <block type="math_number">
+                            <field name="NUM">1</field>
+                        </block>
+                    </value>
+                    <value name="Z">
+                        <block type="math_number">
+                            <field name="NUM">1</field>
+                        </block>
+                    </value>
+                </block>
+            </value>
+        </block>
+        <block type="babylon_scene_adjust_active_arc_rotate_camera">
+            <value name="Position">
+                <block type="base_geometry_point">
+                    <value name="X">
+                        <block type="math_number">
+                            <field name="NUM">0</field>
+                        </block>
+                    </value>
+                    <value name="Y">
+                        <block type="math_number">
+                            <field name="NUM">10</field>
+                        </block>
+                    </value>
+                    <value name="Z">
+                        <block type="math_number">
+                            <field name="NUM">20</field>
+                        </block>
+                    </value>
+                </block>
+            </value>
+            <value name="MaxZ">
+                <block type="math_number">
+                    <field name="NUM">10000</field>
+                </block>
+            </value>
+            <value name="PanningSensibility">
+                <block type="math_number">
+                    <field name="NUM">1000</field>
+                </block>
+            </value>
+            <value name="WheelPrecision">
+                <block type="math_number">
+                    <field name="NUM">3</field>
+                </block>
+            </value>
+        </block>
         <block type="babylon_clear_all_drawn">
         </block>
         <block type="babylon_scene_point_light">

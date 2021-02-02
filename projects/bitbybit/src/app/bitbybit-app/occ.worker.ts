@@ -6,7 +6,7 @@ let openCascade: Occ;
 let cacheHelper: CacheHelper;
 
 initOpenCascade().then(occ => {
-    cacheHelper = new CacheHelper();
+    cacheHelper = new CacheHelper(occ);
     openCascade = new Occ(occ, new OccHelper(occ));
     postMessage('occ initialised');
 });
@@ -34,7 +34,10 @@ addEventListener('message', ({ data }) => {
         // we can always return already computed entity hashes. On UI side we only deal with hashes as long
         // as we don't need to render things and when we do need, we call tessellation methods with these hashes
         // and receive real objects. This cache is useful in modeling operations throughout 'run' sessions.
-        if (d.action.functionName !== 'shapeToMesh' && d.action.functionName !== 'startedTheRun' && d.action.functionName !== 'saveShapeSTEP') {
+        if (d.action.functionName !== 'shapeToMesh' &&
+            d.action.functionName !== 'startedTheRun' &&
+            d.action.functionName !== 'cleanAllCache' &&
+            d.action.functionName !== 'saveShapeSTEP') {
             // if inputs have shape or shapes properties, these are hashes on which the operations need to be performed.
             // We thus replace these hashes to real objects from the cache before functions are called,
             // this probably looks like smth generic but isn't, so will need to check if it works
@@ -57,24 +60,29 @@ addEventListener('message', ({ data }) => {
         }
         // Only the cache that was created in previous run has to be kept, the rest needs to go
         if (d.action.functionName === 'startedTheRun') {
-            try {
-                if (Object.keys(cacheHelper.hashesFromPreviousRun).length > 0) {
-                    cacheHelper.cleanUpCache();
-                    result = {
-                        argCache: Object.keys(cacheHelper.argCache),
-                        hashesFromPreviousRun: Object.keys(cacheHelper.hashesFromPreviousRun),
-                        usedHashes: Object.keys(cacheHelper.usedHashes),
-                    };
-                    cacheHelper.hashesFromPreviousRun = {};
-                }
-                else {
-                    result = {};
-                }
+            // if certain threshold is reacherd we clean all the cache
+            if (Object.keys(cacheHelper.usedHashes).length > 10000) {
+                cacheHelper.cleanAllCache();
             }
-            catch {
-
-            }
+            result = {};
+            // if (Object.keys(cacheHelper.hashesFromPreviousRun).length > 0) {
+            //     cacheHelper.cleanUpCache();
+            //     result = {
+            //         argCache: Object.keys(cacheHelper.argCache),
+            //         hashesFromPreviousRun: Object.keys(cacheHelper.hashesFromPreviousRun),
+            //         usedHashes: Object.keys(cacheHelper.usedHashes),
+            //     };
+            // }
+            // else {
+            //     result = {};
+            // }
         }
+
+        if (d.action.functionName === 'cleanAllCache') {
+            cacheHelper.cleanAllCache();
+            result = {};
+        }
+
         // Returns only the hash as main process can't receive pointers
         // But with hash reference we can always initiate further computations
         postMessage({
@@ -316,6 +324,11 @@ export class Occ {
         ).Shape();
     }
 
+    createFaceFromWire(inputs: Inputs.OCC.FaceFromWireDto): any {
+        const wire = new this.occ.TopoDS.Wire_1(inputs.shape);
+        return this.och.bRepBuilderAPIMakeFace(wire, inputs.planar);
+    }
+
     revolve(inputs: Inputs.OCC.RevolveDto): any {
         if (!inputs.angle) { inputs.angle = 360.0; }
         if (!inputs.direction) { inputs.direction = [0, 0, 1]; }
@@ -354,7 +367,7 @@ export class Occ {
 
 
     filletEdges(inputs: Inputs.OCC.FilletDto): any {
-        if (inputs.all) {
+        if (!inputs.edgeList || (inputs.edgeList.length && inputs.edgeList.length === 0)) {
             const mkFillet = new this.occ.BRepFilletAPI_MakeFillet(
                 inputs.shape, this.occ.ChFi3d_FilletShape.ChFi3d_Rational
             );
@@ -381,8 +394,7 @@ export class Occ {
                 }
             });
             if (foundEdges === 0) {
-                console.error('Fillet Edges Not Found!  Make sure you are looking at the object _before_ the Fillet is applied!');
-                curFillet = inputs.shape.Solid();
+                throw (new Error('Fillet Edges Not Found!  Make sure you are looking at the object _before_ the Fillet is applied!'));
             }
             else {
                 curFillet = mkFillet.Shape();
@@ -392,7 +404,7 @@ export class Occ {
     }
 
     chamferEdges(inputs: Inputs.OCC.ChamferDto): any {
-        if (inputs.all) {
+        if (!inputs.edgeList || (inputs.edgeList.length && inputs.edgeList.length === 0)) {
             const mkChamfer = new this.occ.BRepFilletAPI_MakeChamfer(
                 inputs.shape
             );
@@ -613,17 +625,12 @@ export class Occ {
             vertex_coord: number[][];
         }[] = [];
 
-        const fullShapeEdgeHashes = {};
-        const fullShapeFaceHashes = {};
-        this.forEachFace(shape, (index, face) => {
-            fullShapeFaceHashes[face.HashCode(100000000)] = index;
-        });
-        this.forEachEdge(shape, (index, edge) => {
-            fullShapeEdgeHashes[edge.HashCode(100000000)] = index;
-        });
+        // This could be made optional...
+        // Clean cached triangulation data for the shape.
+        // This allows to get lower res models out of higher res that was once computed and cached.
+        this.occ.BRepTools.Clean(shape);
 
-        // Set up the Incremental Mesh builder, with a precision
-        const inctementalMeshBuilder = new this.occ.BRepMesh_IncrementalMesh_2(shape, maxDeviation, false, maxDeviation * 5, false);
+        const inctementalMeshBuilder = new this.occ.BRepMesh_IncrementalMesh_2(shape, maxDeviation, false, 0.5, true);
 
         // Construct the edge hashes to assign proper indices to the edges
         const fullShapeEdgeHashes2 = {};
@@ -641,7 +648,7 @@ export class Occ {
                 tri_indexes: [],
                 vertex_coord_vec: [],
                 number_of_triangles: 0,
-                face_index: fullShapeFaceHashes[myFace.HashCode(100000000)]
+                face_index: faceIndex
             };
 
             const pc = new this.occ.Poly_Connect_2(myT);
@@ -717,7 +724,7 @@ export class Occ {
                         ]);
                     }
 
-                    thisEdge.edge_index = fullShapeEdgeHashes[edgeHash];
+                    thisEdge.edge_index = index;
 
                     edgeList.push(thisEdge);
                 } else {
@@ -755,13 +762,13 @@ export class Occ {
                     ]);
                 }
 
-                thisEdge.edge_index = fullShapeEdgeHashes[edgeHash];
+                thisEdge.edge_index = index;
                 fullShapeEdgeHashes2[edgeHash] = edgeHash;
 
                 edgeList.push(thisEdge);
             }
         });
-
+        inctementalMeshBuilder.delete();
         return { faceList, edgeList };
     }
 
@@ -849,6 +856,14 @@ export class Occ {
         return resCompound;
     }
 
+    makeThickSolidSimple(inputs: Inputs.OCC.ThisckSolidSimpleDto): any {
+        const maker = new this.occ.BRepOffsetAPI_MakeThickSolid_1();
+        maker.MakeThickSolidBySimple(inputs.shape, inputs.offset);
+
+        maker.Build();
+        return maker.Shape();
+    }
+
     /** This function parses the ASCII contents of a `.STEP` or `.IGES`
      * File as a Shape into the `externalShapes` dictionary.
      */
@@ -869,12 +884,12 @@ export class Occ {
 
         const readResult = reader.ReadFile(fileName);            // Read the file
         if (readResult.value === 1) {
-        reader.TransferRoots();                              // Translate all transferable roots to OpenCascade
-        const stepShape = reader.OneShape();         // Obtain the results of translation in one OCCT shape
+            reader.TransferRoots();                              // Translate all transferable roots to OpenCascade
+            const stepShape = reader.OneShape();         // Obtain the results of translation in one OCCT shape
 
-        this.occ.FS.unlink('/' + fileName);
+            this.occ.FS.unlink('/' + fileName);
 
-        return stepShape;
+            return stepShape;
         } else {
             throw (new Error('Error occured while trying to read the file.'));
         }
@@ -1032,26 +1047,51 @@ class CacheHelper {
     usedHashes = {};
     argCache = {};
 
-    cleanUpCache(): void {
-        let usedHashKeys = Object.keys(this.usedHashes);
-        const hashesFromPreviousRunKeys = Object.keys(this.hashesFromPreviousRun);
-        const newArgsCache = {};
-        const newUsedHashKeys = {};
+    constructor(private readonly occ: any) { }
 
-        // hashesToDelete = [];
-        hashesFromPreviousRunKeys.forEach(hash => {
-            newArgsCache[hash] = this.argCache[hash];
-            newUsedHashKeys[hash] = this.usedHashes[hash];
-            usedHashKeys = usedHashKeys.filter(h => h === hash);
-        });
-        if (usedHashKeys.length > 1) {
-            usedHashKeys.forEach(hash => {
+    cleanAllCache(): void {
+        const usedHashKeys = Object.keys(this.usedHashes);
+
+        usedHashKeys.forEach(hash => {
+            if (this.argCache[hash]) {
                 this.argCache[hash].delete();
-            });
-        }
-        this.argCache = newArgsCache;
-        this.usedHashes = newUsedHashKeys;
+            }
+        });
+
+        this.argCache = {};
+        this.usedHashes = {};
         this.hashesFromPreviousRun = {};
+    }
+
+    cleanUpCache(): void {
+        // TODO seems to have problems, not exactly sure what is the real cause. For now users will build up cache during the whole session.
+        // and will be able to manually clean it up if it gets out of hand.
+
+
+        // const usedHashKeys = Object.keys(this.usedHashes);
+        // const hashesFromPreviousRunKeys = Object.keys(this.hashesFromPreviousRun);
+        // const newArgsCache = {};
+        // const newUsedHashKeys = {};
+
+        // let hashesToDelete = [];
+        // if (usedHashKeys.length > 0 && hashesFromPreviousRunKeys.length > 0) {
+        //     hashesToDelete = usedHashKeys.filter(hash => !hashesFromPreviousRunKeys.includes(hash));
+        // }
+        // hashesFromPreviousRunKeys.forEach(hash => {
+        //     newArgsCache[hash] = this.argCache[hash];
+        //     newUsedHashKeys[hash] = this.usedHashes[hash];
+        // });
+
+        // if (hashesToDelete.length > 0) {
+        //     hashesToDelete.forEach(hash => {
+        //         if (this.argCache[hash]) {
+        //             this.argCache[hash].delete();
+        //         }
+        //     });
+        // }
+        // this.argCache = newArgsCache;
+        // this.usedHashes = newUsedHashKeys;
+        // this.hashesFromPreviousRun = {};
     }
 
     /** Hashes input arguments and checks the cache for that hash.
@@ -1081,8 +1121,7 @@ class CacheHelper {
     checkCache(hash): any { return this.argCache[hash] || null; }
     /** Adds this `shape` to the cache, indexable by `hash`. */
     addToCache(hash, shape): any {
-        // TODO I need to check if and why cloning is required. Having real objects in the cache can be used to free up memory?
-        // const cacheShape = new this.occ.TopoDS_Shape(shape);
+        // TODO I need to check if and why casting is required. Having real objects in the cache can be used to free up memory?
         const cacheShape = shape;
         cacheShape.hash = hash; // This is the cached version of the object
         this.argCache[hash] = cacheShape;
@@ -1122,5 +1161,25 @@ class CacheHelper {
             return el.hash !== objectToRemove.hash ||
                 el.ptr !== objectToRemove.ptr;
         });
+    }
+
+    private dupShape(shape): any {
+        if (shape.ShapeType() === this.occ.TopAbs_ShapeEnum.TopAbs_WIRE) {
+            return new this.occ.TopoDS.Wire_1(shape);
+        } else if (shape.ShapeType() === this.occ.TopAbs_ShapeEnum.TopAbs_SHELL) {
+            return new this.occ.TopoDS.Shell_1(shape);
+        } else if (shape.ShapeType() === this.occ.TopAbs_ShapeEnum.TopAbs_EDGE) {
+            return new this.occ.TopoDS.Edge_1(shape);
+        } else if (shape.ShapeType() === this.occ.TopAbs_ShapeEnum.TopAbs_SOLID) {
+            return new this.occ.TopoDS.Solid_1(shape);
+        } else if (shape.ShapeType() === this.occ.TopAbs_ShapeEnum.TopAbs_FACE) {
+            return new this.occ.TopoDS.Face_1(shape);
+        } else if (shape.ShapeType() === this.occ.TopAbs_ShapeEnum.TopAbs_COMPOUND) {
+            return new this.occ.TopoDS.Compound_1(shape);
+        } else if (shape.ShapeType() === this.occ.TopAbs_ShapeEnum.TopAbs_COMPSOLID) {
+            return new this.occ.TopoDS.CompSolid_1(shape);
+        } else if (shape.ShapeType() === this.occ.TopAbs_ShapeEnum.TopAbs_VERTEX) {
+            return new this.occ.TopoDS.Vertex_1(shape);
+        }
     }
 }

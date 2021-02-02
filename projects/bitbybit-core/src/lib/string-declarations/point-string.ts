@@ -5,6 +5,7 @@ import { Mesh } from '@babylonjs/core';
 import { Context } from '../context';
 import { GeometryHelper } from '../geometry-helper';
 import * as Inputs from '../inputs/inputs';
+import { Line } from './line';
 /**
  * Contains various methods for points. Point in bitbybit is simply an array containing 3 numbers for [x, y, z].
  * Because of this form Point can be interchanged with Vector, which also is an array in [x, y, z] form.
@@ -16,7 +17,8 @@ import * as Inputs from '../inputs/inputs';
 export declare class Point {
     private readonly context;
     private readonly geometryHelper;
-    constructor(context: Context, geometryHelper: GeometryHelper);
+    private readonly line;
+    constructor(context: Context, geometryHelper: GeometryHelper, line: Line);
     /**
      * Draws a single point
      * <div>
@@ -24,6 +26,7 @@ export declare class Point {
      * </div>
      * @link https://docs.bitbybit.dev/classes/bitbybit_point.point.html#drawpoint
      * @param inputs Contains a point to be drawn
+     * @returns Mesh that is being drawn by Babylon
      */
     drawPoint(inputs: Inputs.Point.DrawPointDto): Mesh;
     /**
@@ -33,6 +36,7 @@ export declare class Point {
      * </div>
      * @link https://docs.bitbybit.dev/classes/bitbybit_point.point.html#drawpoints
      * @param inputs Contains a point array to be drawn
+     * @returns Mesh that is being drawn by Babylon
      */
     drawPoints(inputs: Inputs.Point.DrawPointsDto): Mesh;
     /**
@@ -66,7 +70,7 @@ export declare class Point {
      */
     closestPointFromPointsDistance(inputs: Inputs.Point.ClosestPointFromPointsDto): number;
     /**
-     * Finds the closest point index between a point and a collection of points
+     * Finds the closest point index between a point and a collection of points. Caution, index is not 0 based, it starts with 1.
      * <div>
      *  <img src="../assets/images/blockly-images/point/closestPointFromPointsIndex.svg" alt="Blockly Image"/>
      * </div>
@@ -84,7 +88,7 @@ export declare class Point {
      * @param inputs Point and points collection to find the closest point in
      * @returns Closest point
      */
-    closestPointFromPoints(inputs: Inputs.Point.ClosestPointFromPointsDto): number;
+    closestPointFromPoints(inputs: Inputs.Point.ClosestPointFromPointsDto): number[];
     /**
      * Finds the distance between two points
      * <div>
@@ -145,5 +149,19 @@ export declare class Point {
      * @returns Specified number of points in the array along the spiral
      */
     spiral(inputs: Inputs.Point.SpiralDto): number[][];
+    /**
+     * Creates a flat point grid on XY plane. This grid contains center points for hexagons to be placed on.
+     * <div>
+     *  <img src="../assets/images/blockly-images/point/hexGrid.svg" alt="Blockly Image"/>
+     * </div>
+     * @link https://docs.bitbybit.dev/classes/bitbybit_point.point.html#hexgrid
+     * @param inputs Information about hexagon and the grid
+     * @returns Specified number of points in the array along the spiral
+     */
+    hexGrid(inputs: Inputs.Point.HexGridCentersDto): number[][];
+    private closestPointFromPointData;
+    private createNewMesh;
+    private updatePoints;
+    private setUpPositionsAndColours;
 }
 `);

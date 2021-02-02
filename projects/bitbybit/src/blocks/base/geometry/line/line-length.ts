@@ -35,7 +35,7 @@ export function createLineLengthBlock(): void {
         ]));
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `return bitbybit.line.length(input);`
+            `return bitbybit.line.length(inputs);`
         );
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };

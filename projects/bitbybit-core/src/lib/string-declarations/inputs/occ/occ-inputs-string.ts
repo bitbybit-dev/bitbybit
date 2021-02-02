@@ -145,13 +145,9 @@ export declare namespace OCC {
          */
         radius: number;
         /**
-         * List of edge indexes to which apply the fillet
+         * List of edge indexes to which apply the fillet, if left empty all edges will be rounded
          */
         edgeList: any[];
-        /**
-         * If this setting is set to true, edgeList will be ignored
-         */
-        all: boolean;
     }
     class ChamferDto {
         constructor(shape?: any, distance?: number, edgeList?: number[], all?: boolean);
@@ -164,13 +160,9 @@ export declare namespace OCC {
          */
         distance: number;
         /**
-         * List of edge indexes to which apply the chamfer
+         * List of edge indexes to which apply the chamfer, if left empty all edges will be chamfered
          */
         edgeList: number[];
-        /**
-         * If this setting is set to true, edgeList will be ignored
-         */
-        all: boolean;
     }
     class BSplineDto {
         constructor(points?: number[][], closed?: boolean);
@@ -412,6 +404,54 @@ export declare namespace OCC {
          * File name
          */
         filename: string;
+    }
+    class ImportStepIgesDto {
+        constructor(assetName?: any);
+        /**
+         * The name of the asset to store in the cache.
+         * This allows to store the imported objects for multiple run cycles in the cache
+         */
+        assetName: string;
+    }
+    class ImportStepOrIgesDto {
+        constructor(filetext?: any, filename?: string);
+        /**
+         * Shape to save
+         */
+        filetext: any;
+        /**
+         * File name
+         */
+        filename: string;
+    }
+    class CompoundShapesDto {
+        constructor(shapes?: any[]);
+        /**
+         * Shapes to add to compound
+         */
+        shapes: any[];
+    }
+    class ThisckSolidSimpleDto {
+        constructor(shape?: any, offset?: number);
+        /**
+         * Shape to make thick
+         */
+        shape: any;
+        /**
+         * Offset distance
+         */
+        offset: number;
+    }
+    class FaceFromWireDto {
+        constructor(shape?: any, planar?: boolean);
+        /**
+         * Wire shape to convert into a face
+         */
+        shape: any;
+        /**
+         * Should plane be planar
+         */
+        planar: boolean;
     }
 }
 

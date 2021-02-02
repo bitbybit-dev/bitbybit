@@ -48,6 +48,15 @@ export class GeometryHelper {
     }
 
     transformControlPoints(transformation: number[][] | number[][][], transformedControlPoints: number[][]): number[][] {
+        const transformationArrays = this.getFlatTransformations(transformation);
+
+        transformationArrays.forEach(transform => {
+            transformedControlPoints = this.transformPointsByMatrixArray(transformedControlPoints, transform);
+        });
+        return transformedControlPoints;
+    }
+
+    getFlatTransformations(transformation: number[][] | number[][][]): number[][] {
         let transformationArrays = [];
 
         if (this.getArrayDepth(transformation) === 2) {
@@ -58,10 +67,7 @@ export class GeometryHelper {
             transformationArrays = transformation;
         }
 
-        transformationArrays.forEach(transform => {
-            transformedControlPoints = this.transformPointsByMatrixArray(transformedControlPoints, transform);
-        });
-        return transformedControlPoints;
+        return transformationArrays;
     }
 
     getArrayDepth = (value): number => {

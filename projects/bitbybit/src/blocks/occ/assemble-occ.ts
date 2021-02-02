@@ -30,17 +30,20 @@ import { createWiresGetWireBlock } from './wires-get-wire';
 import { createIOShapeToStepFileBlock } from './io-shape-to-step-file';
 import { createIOImportStepOrIgesFileBlock } from './io-import-step-or-iges-file';
 import { createCompoundMakeCompoundBlock } from './compound-make-compound';
+import { createSolidMakeThickSolidSimpleBlock } from './solid-make-thick-solid-simple';
+import { createFacesCreateFaceFromWireBlock } from './faces-create-face-from-wire';
+import { createDrawShapeMeshBlock } from './draw-shape-mesh';
 
 export function assembleOCCBlocks(): void {
     createBoxBlock();
     createDrawShapeBlock();
+    createDrawShapeMeshBlock();
     createSphereBlock();
     createConeBlock();
     createCylinderBlock();
     createWiresCreateBSplineBlock();
     createWiresCreateBezierBlock();
     createWiresCreateCircleBlock();
-    createFacesCreateCircleBlock();
     createOffsetBlock();
     createExtrudeBlock();
     createLoftBlock();
@@ -51,6 +54,9 @@ export function assembleOCCBlocks(): void {
     createBooleanDifferenceBlock();
     createBooleanIntersectionBlock();
     createWiresCreatePolygonBlock();
+    createFacesCreateCircleBlock();
+    createFacesGetFaceBlock();
+    createFacesCreateFaceFromWireBlock();
     createFacesCreatePolygonBlock();
     createTransformRotateBlock();
     createTransformScaleBlock();
@@ -58,10 +64,10 @@ export function assembleOCCBlocks(): void {
     createTransformTransformBlock();
     createRotatedExtrudeBlock();
     createPipeBlock();
-    createFacesGetFaceBlock();
     createEdgesGetEdgeBlock();
     createWiresGetWireBlock();
     createIOShapeToStepFileBlock();
     createIOImportStepOrIgesFileBlock();
     createCompoundMakeCompoundBlock();
+    createSolidMakeThickSolidSimpleBlock();
 }

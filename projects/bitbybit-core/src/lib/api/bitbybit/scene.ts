@@ -1,8 +1,12 @@
 import { Injectable } from '@angular/core';
 import { Context } from '../context';
-import { Color4, Color3, Mesh, PointLight, Vector3, MeshBuilder, StandardMaterial, Light } from '@babylonjs/core';
+import {
+    Color4, Color3, Mesh, PointLight, Vector3,
+    MeshBuilder, StandardMaterial, Light, ArcRotateCamera, Angle
+} from '@babylonjs/core';
 import { GridMaterial } from '@babylonjs/materials';
 import * as Inputs from '../inputs/inputs';
+import { GeometryHelper } from '../geometry-helper';
 
 @Injectable()
 export class Scene {
@@ -72,7 +76,6 @@ export class Scene {
                 { diameter: inputs.radius * 2 },
                 this.context.scene
             );
-            sphere.position = pos;
             const lightMaterial = new StandardMaterial(`LightMaterial${Math.random()}`, this.context.scene);
             lightMaterial.diffuseColor = light.diffuse;
             lightMaterial.specularColor = light.diffuse;
@@ -84,6 +87,21 @@ export class Scene {
     }
 
     /**
+     * Adjusts the active arc rotate camera with configuration parameters
+     * <div>
+     *  <img src="../assets/images/blockly-images/scene/adjustActiveArcRotateCamera.svg" alt="Blockly Image"/>
+     * </div>
+     * @link https://docs.bitbybit.dev/classes/bitbybit_scene.scene.html#adjustactivearcrotatecamera
+     */
+    adjustActiveArcRotateCamera(inputs: Inputs.Scene.CameraConfigurationDto): void {
+        const camera = this.context.scene.getCameraByName('Camera') as ArcRotateCamera;
+        camera.position = new Vector3(inputs.position[0], inputs.position[1], inputs.position[2]);
+        camera.maxZ = inputs.maxZ;
+        camera.panningSensibility = inputs.panningSensibility;
+        camera.wheelPrecision = inputs.wheelPrecision;
+    }
+
+    /**
      * Clears all of the drawn objects in the 3D scene
      * <div>
      *  <img src="../assets/images/blockly-images/scene/clearAllDrawn.svg" alt="Blockly Image"/>
@@ -92,6 +110,44 @@ export class Scene {
      */
     clearAllDrawn(): void {
         this.context.bitByBitBlocklyHelperService.clearAllDrawn();
+    }
+
+    /**
+     * Creates mesh instance and transforms it for optimised rendering. These are optimised for max performance
+     * when rendering many similar objects in the scene. If the mesh has children, then every child ges a mesh instance.
+     * <div>
+     *  <img src="../assets/images/blockly-images/scene/createMeshInstanceAndTransform.svg" alt="Blockly Image"/>
+     * </div>
+     * @link https://docs.bitbybit.dev/classes/bitbybit_scene.scene.html#createmeshinstanceandtransform
+     */
+    createMeshInstanceAndTransform(inputs: Inputs.Scene.MeshInstanceAndTransformDto): Promise<any> {
+        return new Promise((resolve, reject) => {
+            if (inputs.mesh && inputs.mesh.getChildren && inputs.mesh.getChildren().length > 0) {
+                inputs.mesh.getChildren().forEach((child: Mesh) => {
+                    if (child.createInstance) {
+                        child.isVisible = false;
+
+                        const newInstance = child.createInstance(`InstanceMesh${Math.random}`);
+
+                        newInstance.position = new Vector3(inputs.position[0], inputs.position[1], inputs.position[2]);
+                        newInstance.rotation = new Vector3(inputs.rotation[0], inputs.rotation[1], inputs.rotation[2]);
+                        newInstance.scaling = new Vector3(inputs.scaling[0], inputs.scaling[1], inputs.scaling[2]);
+                    }
+                });
+            } else if (inputs.mesh) {
+                inputs.mesh.isVisible = false;
+
+                const newInstance = inputs.mesh.createInstance(`InstanceMesh${Math.random}`);
+
+                newInstance.position = new Vector3(inputs.position[0], inputs.position[1], inputs.position[2]);
+                newInstance.rotation = new Vector3(
+                    Angle.FromDegrees(inputs.rotation[0]).radians(),
+                    Angle.FromDegrees(inputs.rotation[1]).radians(),
+                    Angle.FromDegrees(inputs.rotation[2]).radians());
+                newInstance.scaling = new Vector3(inputs.scaling[0], inputs.scaling[1], inputs.scaling[2]);
+            }
+            resolve({} as any);
+        });
     }
 
 }

@@ -43,7 +43,79 @@ export function occCategory(): string {
                 </value>
                 <value name="Precision">
                     <block type="math_number">
-                        <field name="NUM">0.05</field>
+                        <field name="NUM">0.5</field>
+                    </block>
+                </value>
+                <value name="DrawEdgeIndexes">
+                    <block type="logic_boolean">
+                        <field name="BOOL">FALSE</field>
+                    </block>
+                </value>
+                <value name="EdgeIndexHeight">
+                    <block type="math_number">
+                        <field name="NUM">0.06</field>
+                    </block>
+                </value>
+                <value name="EdgeIndexColour">
+                    <block type="colour_picker">
+                        <field name="COLOUR">#bbbbff</field>
+                    </block>
+                </value>
+                <value name="DrawFaceIndexes">
+                    <block type="logic_boolean">
+                        <field name="BOOL">FALSE</field>
+                    </block>
+                </value>
+                <value name="FaceIndexHeight">
+                    <block type="math_number">
+                        <field name="NUM">0.06</field>
+                    </block>
+                </value>
+                <value name="FaceIndexColour">
+                    <block type="colour_picker">
+                        <field name="COLOUR">#0000ff</field>
+                    </block>
+                </value>
+            </block>
+            <block type="occ_draw_shape_mesh">
+                <value name="FaceOpacity">
+                    <block type="math_number">
+                        <field name="NUM">1</field>
+                    </block>
+                </value>
+                <value name="EdgeOpacity">
+                    <block type="math_number">
+                        <field name="NUM">1</field>
+                    </block>
+                </value>
+                <value name="FaceColour">
+                    <block type="colour_picker">
+                        <field name="COLOUR">#0000ff</field>
+                    </block>
+                </value>
+                <value name="EdgeColour">
+                    <block type="colour_picker">
+                        <field name="COLOUR">#bbbbff</field>
+                    </block>
+                </value>
+                <value name="EdgeWidth">
+                    <block type="math_number">
+                        <field name="NUM">2</field>
+                    </block>
+                </value>
+                <value name="DrawEdges">
+                    <block type="logic_boolean">
+                        <field name="BOOL">TRUE</field>
+                    </block>
+                </value>
+                <value name="DrawFaces">
+                    <block type="logic_boolean">
+                        <field name="BOOL">TRUE</field>
+                    </block>
+                </value>
+                <value name="Precision">
+                    <block type="math_number">
+                        <field name="NUM">0.5</field>
                     </block>
                 </value>
                 <value name="DrawEdgeIndexes">
@@ -160,6 +232,13 @@ export function occCategory(): string {
                     </value>
                 </block>
                 <block type="occ_faces_create_polygon">
+                </block>
+                <block type="occ_faces_create_face_from_wire">
+                    <value name="Planar">
+                        <block type="logic_boolean">
+                            <field name="BOOL">FALSE</field>
+                        </block>
+                    </value>
                 </block>
             </category>
             <category name="${resources.block_toolbox_category_occ_create_solid}"  categorystyle="geometry_category">
@@ -307,6 +386,13 @@ export function occCategory(): string {
                                     <field name="NUM">0</field>
                                 </block>
                             </value>
+                        </block>
+                    </value>
+                </block>
+                <block type="occ_solid_make_thick_solid_simple">
+                    <value name="Offset">
+                        <block type="math_number">
+                            <field name="NUM">0.3</field>
                         </block>
                     </value>
                 </block>
@@ -499,21 +585,11 @@ export function occCategory(): string {
                             <field name="NUM">0.3</field>
                         </block>
                     </value>
-                    <value name="All">
-                        <block type="logic_boolean">
-                            <field name="BOOL">FALSE</field>
-                        </block>
-                    </value>
                 </block>
                 <block type="occ_chamfer_edges">
                     <value name="Distance">
                         <block type="math_number">
                             <field name="NUM">0.3</field>
-                        </block>
-                    </value>
-                    <value name="All">
-                        <block type="logic_boolean">
-                            <field name="BOOL">FALSE</field>
                         </block>
                     </value>
                 </block>

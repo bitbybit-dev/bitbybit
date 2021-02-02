@@ -519,7 +519,7 @@ export class BitbybitAppComponent implements OnInit, OnDestroy, AfterViewInit {
         this.router.navigate(['/app']);
 
         if (this.occWorkerState.state === OccStateEnum.loaded) {
-            this.bitByBit.occ.cleanUpCache().then(() => { });
+            this.bitByBit.occ.startedTheRun().then(() => { });
         }
         this.clearBabylonScene();
     }
@@ -543,11 +543,15 @@ export class BitbybitAppComponent implements OnInit, OnDestroy, AfterViewInit {
         return array;
     }
 
+    cleanAllCache(): void {
+        this.bitByBit.occ.cleanAllCache().then(s => {});
+    }
+
     run(): void {
         // If we'll have more workers for other libraries, this could be applied here as well
         // with Promise.all...
-        this.bitByBit.occ.cleanUpCache().then((res) => {
-            // console.log(res);
+        this.bitByBit.occ.cleanPromisesMade();
+        this.bitByBit.occ.startedTheRun().then((res) => {
             let transpiledCode = false;
             try {
                 this.clearBabylonScene();

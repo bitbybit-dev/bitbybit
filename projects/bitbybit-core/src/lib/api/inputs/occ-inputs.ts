@@ -161,7 +161,6 @@ export namespace OCC {
             this.shape = shape;
             this.radius = radius;
             this.edgeList = edgeList;
-            this.all = all;
         }
         /**
          * Shape to apply the fillets
@@ -172,20 +171,15 @@ export namespace OCC {
          */
         radius: number;
         /**
-         * List of edge indexes to which apply the fillet
+         * List of edge indexes to which apply the fillet, if left empty all edges will be rounded
          */
         edgeList = [];
-        /**
-         * If this setting is set to true, edgeList will be ignored
-         */
-        all = false;
     }
     export class ChamferDto {
         constructor(shape?: any, distance?: number, edgeList?: number[], all?: boolean) {
             this.shape = shape;
             this.distance = distance;
             this.edgeList = edgeList;
-            this.all = all;
         }
         /**
          * Shape to apply the chamfer
@@ -196,13 +190,9 @@ export namespace OCC {
          */
         distance: number;
         /**
-         * List of edge indexes to which apply the chamfer
+         * List of edge indexes to which apply the chamfer, if left empty all edges will be chamfered
          */
         edgeList: number[];
-        /**
-         * If this setting is set to true, edgeList will be ignored
-         */
-        all = false;
     }
     export class BSplineDto {
         constructor(points?: number[][], closed?: boolean) {
@@ -548,5 +538,33 @@ export namespace OCC {
          * Shapes to add to compound
          */
         shapes: any[];
+    }
+    export class ThisckSolidSimpleDto {
+        constructor(shape?: any, offset?: number) {
+            this.shape = shape;
+            this.offset = offset;
+        }
+        /**
+         * Shape to make thick
+         */
+        shape: any;
+        /**
+         * Offset distance
+         */
+        offset: number;
+    }
+    export class FaceFromWireDto {
+        constructor(shape?: any, planar?: boolean) {
+            this.shape = shape;
+            this.planar = planar;
+        }
+        /**
+         * Wire shape to convert into a face
+         */
+        shape: any;
+        /**
+         * Should plane be planar
+         */
+        planar: boolean;
     }
 }

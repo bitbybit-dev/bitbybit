@@ -69,9 +69,14 @@
                             {{resources.app_menu_more_export}}
                         </button>
                         <button mat-menu-item *ngIf="currentUiState === UiStatesEnum.blockly" (click)="cleanCanvas()">
-                            <mat-icon aria-hidden="false" aria-label="Clean">refresh
+                            <mat-icon aria-hidden="false" aria-label="Clean Canvas">refresh
                             </mat-icon>
                             {{resources.app_menu_more_clean_canvas}}
+                        </button>
+                        <button mat-menu-item (click)="cleanAllCache()">
+                            <mat-icon aria-hidden="false" aria-label="Clean Cache">delete_outline
+                            </mat-icon>
+                            {{resources.app_menu_more_clean_all_cache}}
                         </button>
                         <button mat-menu-item [matMenuTriggerFor]="social">
                             <mat-icon aria-hidden="false" aria-label="Community">forum
@@ -228,9 +233,14 @@
                             </button>
                             <button mat-menu-item *ngIf="currentUiState === UiStatesEnum.blockly"
                                 (click)="cleanCanvas()">
-                                <mat-icon aria-hidden="false" aria-label="Export">refresh
+                                <mat-icon aria-hidden="false" aria-label="Clean canvas">refresh
                                 </mat-icon>
-                                Clean canvas
+                                {{resources.app_menu_more_clean_canvas}}
+                            </button>
+                            <button mat-menu-item (click)="cleanAllCache()">
+                                <mat-icon aria-hidden="false" aria-label="Clean Cache">delete_outline
+                                </mat-icon>
+                                {{resources.app_menu_more_clean_all_cache}}
                             </button>
                             <button mat-menu-item [matMenuTriggerFor]="social">
                                 <mat-icon aria-hidden="false" aria-label="Community">forum

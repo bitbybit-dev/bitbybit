@@ -67,8 +67,12 @@ export class OCC {
         };
     }
 
+    cleanPromisesMade(): void {
+        this.promisesMade = [];
+    }
+
     genericCallToWorkerPromise(functionName: string, inputs: any): Promise<any> {
-        const uid = `call${Math.random()}`;
+        const uid = `call${Math.random()}${Date.now()}`;
         const obj: { promise?: Promise<any>, uid: string, resolve?, reject?} = { uid };
         const prom = new Promise((resolve, reject) => {
             obj.resolve = resolve;
@@ -198,8 +202,17 @@ export class OCC {
      * This makes sure that cache keeps the objects and hashes from the previous run and the rest is deleted
      * In this way it is possible to hace the cache of manageable size
      */
-    cleanUpCache(): Promise<any> {
+    startedTheRun(): Promise<any> {
         return this.genericCallToWorkerPromise('startedTheRun', {});
+    }
+
+    /**
+     * This needs to be done before every run and the promise needs to be awaited before run executes again
+     * This makes sure that cache keeps the objects and hashes from the previous run and the rest is deleted
+     * In this way it is possible to hace the cache of manageable size
+     */
+    cleanAllCache(): Promise<any> {
+        return this.genericCallToWorkerPromise('cleanAllCache', {});
     }
 
     /**
@@ -589,6 +602,32 @@ export class OCC {
      */
     makeCompound(inputs: Inputs.OCC.ScaleDto): Promise<any> {
         return this.genericCallToWorkerPromise('makeCompound', inputs);
+    }
+
+    /**
+     * Thickens the shape into a solid by an offset distance
+     * <div>
+     *  <img src="../assets/images/blockly-images/occ/makeThickSolidSimple.svg" alt="Blockly Image"/>
+     * </div>
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occ.occ.html#makethicksolidsimple
+     * @param inputs OpenCascade shape
+     * @returns OpenCascade solid shape
+     */
+    makeThickSolidSimple(inputs: Inputs.OCC.ThisckSolidSimpleDto): Promise<any> {
+        return this.genericCallToWorkerPromise('makeThickSolidSimple', inputs);
+    }
+
+    /**
+     * Creates a face from wire
+     * <div>
+     *  <img src="../assets/images/blockly-images/occ/createfacefromwire.svg" alt="Blockly Image"/>
+     * </div>
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occ.occ.html#createfacefromwire
+     * @param inputs OpenCascade wire shape and indication if face should be planar
+     * @returns OpenCascade face shape
+     */
+    createFaceFromWire(inputs: Inputs.OCC.FaceFromWireDto): Promise<any> {
+        return this.genericCallToWorkerPromise('createFaceFromWire', inputs);
     }
 
     /**

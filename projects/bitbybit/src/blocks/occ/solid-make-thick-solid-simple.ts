@@ -7,10 +7,10 @@ import { environment } from '../../environments/environment';
 import { occConstants } from './occ-constants';
 import { OCC } from 'projects/bitbybit-core/src/lib/api/inputs/occ-inputs';
 
-export function createFilletEdgesBlock(): void {
+export function createSolidMakeThickSolidSimpleBlock(): void {
 
     const resources = ResourcesService.getResources();
-    const blockSelector = 'occ_fillet_edges';
+    const blockSelector = 'occ_solid_make_thick_solid_simple';
 
     Blocks[blockSelector] = {
         init(): void {
@@ -20,33 +20,28 @@ export function createFilletEdgesBlock(): void {
                     'LoadingIndicator'
                 )
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_occ_fillet_edge_input_shape);
-            this.appendValueInput('EdgeList')
-                .setCheck('Array')
-                .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_occ_fillet_edge_input_edge_list.toLowerCase());
-            this.appendValueInput('Radius')
+                .appendField(resources.block_occ_solid_make_thick_solid_simple_input_shape);
+            this.appendValueInput('Offset')
                 .setCheck('Number')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_occ_fillet_edge_input_radius.toLowerCase());
+                .appendField(resources.block_occ_solid_make_thick_solid_simple_input_offset.toLowerCase());
             this.setOutput(true, 'OccShape');
             this.setColour('#fff');
-            this.setTooltip(resources.block_occ_fillet_edge_description);
-            this.setHelpUrl(environment.docsUrl + occConstants.occHelpUrl + '#' + 'offset');
+            this.setTooltip(resources.block_occ_solid_make_thick_solid_simple_description);
+            this.setHelpUrl(environment.docsUrl + occConstants.occHelpUrl + '#' + 'loft');
         }
     };
 
     JavaScript[blockSelector] = (block: Block) => {
-        const inputs: OCC.FilletDto = {
+        const inputs: OCC.ThisckSolidSimpleDto = {
             shape: (JavaScript as any).valueToCode(block, 'OccShape', (JavaScript as any).ORDER_ATOMIC),
-            radius: (JavaScript as any).valueToCode(block, 'Radius', (JavaScript as any).ORDER_ATOMIC),
-            edgeList: (JavaScript as any).valueToCode(block, 'EdgeList', (JavaScript as any).ORDER_ATOMIC),
+            offset: (JavaScript as any).valueToCode(block, 'Offset', (JavaScript as any).ORDER_ATOMIC),
         };
 
         // this is first set of validations to check that all inputs are non empty strings
         HS.validate(block, block.workspace, makeRequiredValidationModelForInputs(resources, inputs, [
-            resources.block_occ_fillet_edge_input_shape,
-            resources.block_occ_fillet_edge_input_radius,
+            resources.block_occ_solid_make_thick_solid_simple_input_shape,
+            resources.block_occ_solid_make_thick_solid_simple_input_offset,
         ]));
 
         // this creates validation model to be used at runtime to evaluate real values of inputs
@@ -54,7 +49,7 @@ export function createFilletEdgesBlock(): void {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `bitbybit.occ.filletEdges(inputs)`, true
+            `bitbybit.occ.makeThickSolidSimple(inputs)`, true
         );
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };
@@ -68,15 +63,14 @@ function makeRuntimeValidationModel(
     return [{
         entity: keys[0],
         validations: [
-            getRequired(resources, resources.block_occ_fillet_edge_input_shape),
+            getRequired(resources, resources.block_occ_solid_make_thick_solid_simple_input_shape),
         ]
     }, {
         entity: keys[1],
         validations: [
-            getRequired(resources, resources.block_occ_fillet_edge_input_radius),
+            getRequired(resources, resources.block_occ_solid_make_thick_solid_simple_input_offset),
         ]
-    }
-    ];
+    }];
 }
 
 
