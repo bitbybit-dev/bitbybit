@@ -1680,7 +1680,7 @@ export const resourcesEn: ResourcesInterface = Object.freeze({
     block_scene_adjust_active_arc_rotate_camera_input_panning_sensibility: 'Panning sensibility',
     block_scene_adjust_active_arc_rotate_camera_input_wheel_precision: 'Wheel precision',
     block_scene_adjust_active_arc_rotate_camera_description: 'Adjust some basic parameters of the camera in order to support larger scale scenes',
-    block_base_geom_point_hex_grid_input_nr_hexagons_x: 'Number of hexagons in the grid on X',
+    block_base_geom_point_hex_grid_input_nr_hexagons_x: 'Number of hexagons in the grid on x',
     block_base_geom_point_hex_grid_input_nr_hexagons_y: 'Y',
     block_base_geom_point_hex_grid_input_hexagon_radius: 'Hexagon radius',
     block_base_geom_point_hex_grid_description: 'Creates a hexagon point grid. Points of the grid represent hexagon centers.',
