@@ -64,6 +64,8 @@ export const resourcesEn: ResourcesInterface = Object.freeze({
     app_menu_more_examples_ninja_living_landscape_description: 'This example demonstrates how agent based simulation can drive the behaviour of landscape geometry.',
     app_menu_more_examples_ninja_crypto_data_visualziation_title: 'Crypto currency data visualization',
     app_menu_more_examples_ninja_crypto_data_visualziation_description: '3D data visualization opens up additional layer for understanding your information. This example demonstrates 3D charts of some popular crypto currencies. Communication with coingecko api is implemented via Http components, data is assembled and visualized via 3D tags and polylines.',
+    app_menu_more_examples_ninja_opencascade_parametric_roof_title: 'OpenCascade parametric roof',
+    app_menu_more_examples_ninja_opencascade_parametric_roof_description: 'This example is showing off the possibilities of Async OpenCascade components and advanced rendering of "Bit by bit developers" application. You might need to have a more powerful GPU to have the scene rendered at good framerates.',
     app_menu_more_examples_ninja: 'Ninja',
     app_menu_more_sponsors: 'Sponsors and Partners',
     app_menu_more_sponsors_explanation: 'We are proud to have these companies as our industry partners and sponsors.',

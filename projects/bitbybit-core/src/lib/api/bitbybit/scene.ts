@@ -134,7 +134,7 @@ export class Scene {
                         newInstance.scaling = new Vector3(inputs.scaling[0], inputs.scaling[1], inputs.scaling[2]);
                     }
                 });
-            } else if (inputs.mesh) {
+            } else if (inputs.mesh && inputs.mesh.isVisible) {
                 inputs.mesh.isVisible = false;
 
                 const newInstance = inputs.mesh.createInstance(`InstanceMesh${Math.random}`);

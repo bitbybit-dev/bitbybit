@@ -121,8 +121,8 @@ export class BitbybitAppComponent implements OnInit, OnDestroy, AfterViewInit {
                     {
                         wheel: true,
                         startScale: 0.6,
-                        maxScale: 3,
-                        minScale: 0.3,
+                        maxScale: 5,
+                        minScale: 0.1,
                         scaleSpeed: 1.2
                     },
                     trashcan: true,
@@ -222,7 +222,7 @@ export class BitbybitAppComponent implements OnInit, OnDestroy, AfterViewInit {
                                 Xml.domToWorkspace(xml, this.workspace);
                                 setTimeout(() => {
                                     this.workspace.zoomToFit();
-                                    this.workspace.zoomCenter(-3);
+                                    this.workspace.zoomCenter(-4);
                                     this.onResize();
                                 }, 200);
                             }
@@ -379,7 +379,7 @@ export class BitbybitAppComponent implements OnInit, OnDestroy, AfterViewInit {
                     this.cleanCanvas();
                     Xml.domToWorkspace(xml, this.workspace);
                     this.workspace.zoomToFit();
-                    this.workspace.zoomCenter(-3);
+                    this.workspace.zoomCenter(-4);
                     this.onResize();
                 };
                 reader.onerror = (evt) => {
@@ -456,7 +456,7 @@ export class BitbybitAppComponent implements OnInit, OnDestroy, AfterViewInit {
             this.router.navigate(['/app']);
             window.dispatchEvent(new Event('resize'));
             this.workspace.zoomToFit();
-            this.workspace.zoomCenter(-3);
+            this.workspace.zoomCenter(-4);
             this.onResize();
         });
     }
@@ -510,7 +510,7 @@ export class BitbybitAppComponent implements OnInit, OnDestroy, AfterViewInit {
             window.dispatchEvent(new Event('resize'));
             this.onResize();
             this.workspace.zoomToFit();
-            this.workspace.zoomCenter(-3);
+            this.workspace.zoomCenter(-4);
         });
     }
 

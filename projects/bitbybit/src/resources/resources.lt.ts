@@ -64,6 +64,8 @@ export const resourcesLt: ResourcesInterface = Object.freeze({
     app_menu_more_examples_ninja_living_landscape_description: 'Šis pavyzdys rodo kaip agentais pagrįstos simuliacijos gali būti programuojamos mūsų platformoje. Parametrinis reljefas adaptuojasi prie sugeneruotų agentų kintantį aukštį.',
     app_menu_more_examples_ninja_crypto_data_visualziation_title: 'Kripto valiutų',
     app_menu_more_examples_ninja_crypto_data_visualziation_description: '3D data visualization opens up additional layer for understanding your information. This example demonstrates 3D charts of some popular crypto currencies. Communication with coingecko api is implemented via Http components, data is assembled and visualized via 3D tags and polylines.',
+    app_menu_more_examples_ninja_opencascade_parametric_roof_title: 'OpenCascade parametrinis stogas',
+    app_menu_more_examples_ninja_opencascade_parametric_roof_description: 'Šis pavyzdys rodo asinchroninių OpenCascade komponentų modeliavimo galimybes ir fiziškai pagrįstą "Bit by bit developers" scenos renderiavimą. Atkreipkite dėmesį, jog aukštesniems FPS reikalinga galingesnė grafikos plokštė.',
     app_menu_more_examples_ninja: 'Nindzėms',
     app_menu_more_sponsors: 'Remėjai ir Partneriai',
     app_menu_more_sponsors_explanation: 'Šiuo metu projektas remėjų neturi. Jei norėtumėte mus paremti mums būtų malonu įdėti jūsų logo šioje remėjų lentoje.',

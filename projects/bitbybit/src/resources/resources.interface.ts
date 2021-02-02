@@ -54,6 +54,8 @@ export interface ResourcesInterface {
     app_menu_more_examples_street_smart_parametric_vase_description: string;
     app_menu_more_examples_ninja_carbon_title: string;
     app_menu_more_examples_ninja_carbon_description: string;
+    app_menu_more_examples_ninja_opencascade_parametric_roof_title: string;
+    app_menu_more_examples_ninja_opencascade_parametric_roof_description: string;
     app_menu_more_examples_ninja_magic_spiral_title: string;
     app_menu_more_examples_ninja_magic_spiral_description: string;
     app_menu_more_examples_ninja_living_landscape_title: string;
