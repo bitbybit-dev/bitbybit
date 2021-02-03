@@ -78,7 +78,7 @@ export namespace Scene {
         /**
          * Radius of the sphere mesh representing the light bulb. If 0 light gets created without the mesh
          */
-        radius: 0.1;
+        radius = 0.1;
     }
     export class CameraConfigurationDto {
         /**

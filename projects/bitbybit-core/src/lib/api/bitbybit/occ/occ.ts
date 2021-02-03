@@ -600,7 +600,7 @@ export class OCC {
      * @param inputs OpenCascade shapes
      * @returns OpenCascade compounded shape
      */
-    makeCompound(inputs: Inputs.OCC.ScaleDto): Promise<any> {
+    makeCompound(inputs: Inputs.OCC.CompoundShapesDto): Promise<any> {
         return this.genericCallToWorkerPromise('makeCompound', inputs);
     }
 
