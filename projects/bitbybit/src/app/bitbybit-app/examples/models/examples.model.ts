@@ -274,6 +274,7 @@ if (downloadStl) {
             description: this.resources.app_menu_more_examples_ninja_opencascade_parametric_roof_description,
             queryParam: 'advanced-opencascade-parametric-roof',
             image: 'assets/examples/advanced/opencascade_parametric_roof.png',
+            youtubeLink: 'https://www.youtube.com/watch?v=K8gDhXYR2x0&t=1s',
             typescript: `
 start();
 
