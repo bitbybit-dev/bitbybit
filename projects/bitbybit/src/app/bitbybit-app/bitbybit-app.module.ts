@@ -7,11 +7,12 @@ import { MatDialogModule } from '@angular/material/dialog';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatGridListModule } from '@angular/material/grid-list';
 import { MatIconModule } from '@angular/material/icon';
-import {MatInputModule} from '@angular/material/input';
+import { MatInputModule } from '@angular/material/input';
 import { MatMenuModule } from '@angular/material/menu';
-import {MatSelectModule} from '@angular/material/select';
+import { MatSelectModule } from '@angular/material/select';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatTabsModule } from '@angular/material/tabs';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { AboutDialogComponent } from './components/about-dialog/about-dialog.component';
@@ -65,6 +66,7 @@ import { EnterBlocklyDialogComponent } from './components/enter-blockly-dialog/e
         MatSelectModule,
         MatInputModule,
         MonacoEditorModule,
+        MatProgressSpinnerModule,
     ],
     providers: [ExamplesService, SettingsService, TagService, BitbybitCanDeativate],
 })

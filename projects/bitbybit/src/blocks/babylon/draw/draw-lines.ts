@@ -7,7 +7,7 @@ import {
     getRequiredAndMin,
     getRequiredAndRange,
     makeRequiredValidationModelForInputs,
-    BitByBitBlockHandlerService,
+    HS,
     ValidationEntityInterface
 } from '../../validations';
 import { lineConstants } from '../../base/geometry/line/line-constants';
@@ -62,7 +62,7 @@ export function createDrawLinesBlock(): void {
         };
 
         // this is first set of validations to check that all inputs are non empty strings
-        BitByBitBlockHandlerService.validate(block, block.workspace, makeRequiredValidationModelForInputs(resources, inputs, [
+        HS.validate(block, block.workspace, makeRequiredValidationModelForInputs(resources, inputs, [
             resources.block_lines, resources.block_colour, resources.block_opacity, resources.block_width, resources.block_updatable
         ]));
 

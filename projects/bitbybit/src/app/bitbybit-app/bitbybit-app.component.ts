@@ -2,7 +2,7 @@ import { HttpHeaders, HttpParams, HttpClient } from '@angular/common/http';
 import { AfterViewInit, ChangeDetectorRef, Component, OnInit, ViewChild, OnDestroy } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ArcRotateCamera, DirectionalLight, TransformNode, HemisphericLight, WindowsMotionController } from '@babylonjs/core';
+import { ArcRotateCamera, TransformNode, HemisphericLight, Light, MeshBuilder } from '@babylonjs/core';
 import { Engine } from '@babylonjs/core/Engines/engine';
 import '@babylonjs/core/Materials/standardMaterial';
 import { Color3, Color4, Vector3 } from '@babylonjs/core/Maths/math';
@@ -14,7 +14,7 @@ import * as Blockly from 'blockly';
 import * as JavaScript from 'blockly/javascript';
 import * as jsonpath from 'jsonpath';
 import { PromptInterface } from '../../blocks/_shared/models/prompt.interface';
-import { BitByBitBlockHandlerService } from '../../blocks/validations';
+import { HS } from '../../blocks/validations';
 import { prepareBabylonForBlockly } from '../../babylon-to-blockly';
 import { assembleBlocks } from '../../blocks/assemble-blocks';
 import { ResourcesInterface, ResourcesService } from '../../resources';
@@ -34,7 +34,7 @@ import { MatDrawer } from '@angular/material/sidenav';
 import { EditorComponent } from 'ngx-monaco-editor';
 import { transpile } from 'typescript';
 import { UiStatesEnum } from './models/ui-states.enum';
-import { BitByBitBase, BitByBitBlocklyHelperService, Context, PrintSaveInterface } from 'projects/bitbybit-core/src/public-api';
+import { BitByBitBase, BitByBitBlocklyHelperService, Context, OccInfo, OccStateEnum, PrintSaveInterface } from 'projects/bitbybit-core/src/public-api';
 import * as Inputs from 'projects/bitbybit-core/src/lib/api/inputs/inputs';
 import { BaseTypes } from 'projects/bitbybit-core/src/lib/api/bitbybit/base-types';
 import { core, geom } from 'verb-nurbs-web';
@@ -66,6 +66,10 @@ export class BitbybitAppComponent implements OnInit, OnDestroy, AfterViewInit {
     UiStatesEnum = UiStatesEnum;
 
     toolboxVisible = true;
+    OccStateEnum = OccStateEnum;
+    occWorkerState: OccInfo = {
+        state: OccStateEnum.loading,
+    };
 
     timePassedFromPreviousIteration = 0;
 
@@ -117,8 +121,8 @@ export class BitbybitAppComponent implements OnInit, OnDestroy, AfterViewInit {
                     {
                         wheel: true,
                         startScale: 0.6,
-                        maxScale: 3,
-                        minScale: 0.3,
+                        maxScale: 5,
+                        minScale: 0.1,
                         scaleSpeed: 1.2
                     },
                     trashcan: true,
@@ -150,23 +154,18 @@ export class BitbybitAppComponent implements OnInit, OnDestroy, AfterViewInit {
                 const canvas = document.getElementById('renderCanvas') as HTMLCanvasElement;
                 this.engine = new Engine(canvas);
                 this.scene = new Scene(this.engine);
-                this.scene.clearColor = new Color4(1, 1, 1, 1);
+                this.scene.clearColor = new Color4(26 / 255, 28 / 255, 31 / 255, 1);
                 const tnode = new TransformNode('root', this.scene);
                 const camera = new ArcRotateCamera('Camera', 0, 10, 10, new Vector3(0, 0, 0), this.scene);
                 camera.setPosition(new Vector3(0, 10, 20));
                 camera.attachControl(canvas, true);
-                const light = new DirectionalLight('DirectionalLight', new Vector3(10, 10, 0), this.scene);
-                light.diffuse = new Color3(1, 1, 1);
-                light.specular = new Color3(1, 1, 1);
-                light.intensity = 0.6;
-                const light2 = new DirectionalLight('DirectionalLight', new Vector3(-10, 10, -10), this.scene);
-                light2.diffuse = new Color3(1, 1, 1);
-                light2.specular = new Color3(1, 1, 1);
-                light2.intensity = 0.6;
-                const light3 = new HemisphericLight('HemiLight', new Vector3(0, 1, 0), this.scene);
-                light3.intensity = 0.2;
+
+                const light = new HemisphericLight('HemiLight', new Vector3(0, 1, 0), this.scene);
+                light.intensityMode = Light.INTENSITYMODE_ILLUMINANCE;
+                light.intensity = 1;
 
                 this.scene.ambientColor = new Color3(0.1, 0.1, 0.1);
+
 
                 this.windowBlockly = {};
                 this.context.scene = this.scene;
@@ -181,13 +180,7 @@ export class BitbybitAppComponent implements OnInit, OnDestroy, AfterViewInit {
                 this.windowBlockly.workspace = this.workspace;
                 (window as any).blockly = this.windowBlockly;
 
-                this.engine.runRenderLoop(() => {
-                    const now = Date.now();
-                    const timeElapsedFromPreviousIteration = now - this.timePassedFromPreviousIteration;
-                    this.timePassedFromPreviousIteration = now;
-                    BitByBitBlocklyHelperService.renderLoopBag.forEach(f => f(timeElapsedFromPreviousIteration));
-                    this.scene.render();
-                });
+                this.engine.runRenderLoop(this.renderLoopFunction);
 
                 this.tagsNeedUpdate = false;
 
@@ -226,20 +219,24 @@ export class BitbybitAppComponent implements OnInit, OnDestroy, AfterViewInit {
                                 this.currentUiState = UiStatesEnum.blockly;
                                 this.previousUiState = UiStatesEnum.babylon;
                                 this.workspace.clear();
+                                if (this.occWorkerState.state === OccStateEnum.loaded) {
+                                    this.bitByBit.occ.startedTheRun().then(() => { });
+                                }
+                                this.clearBabylonScene();
                                 Xml.domToWorkspace(xml, this.workspace);
                                 setTimeout(() => {
                                     this.workspace.zoomToFit();
-                                    this.workspace.zoomCenter(-3);
+                                    this.workspace.zoomCenter(-4);
                                     this.onResize();
-                                    this.run();
                                 }, 200);
                             }
                         } else if (exampleParam && editorParam === 'ts') {
                             this.code = this.examplesService.getExampleTypescript(exampleParam);
+                            this.clearBabylonScene();
                             this.startMonaco();
-                            this.run();
                         } else if (editorParam === 'ts') {
                             this.code = this.examplesService.getExampleTypescript(exampleParam);
+                            this.clearBabylonScene();
                             this.startMonaco();
                             if (this.firstTimeOpen) {
                                 this.examples();
@@ -260,6 +257,14 @@ export class BitbybitAppComponent implements OnInit, OnDestroy, AfterViewInit {
                 });
             });
 
+    }
+
+    renderLoopFunction = () => {
+        const now = Date.now();
+        const timeElapsedFromPreviousIteration = now - this.timePassedFromPreviousIteration;
+        this.timePassedFromPreviousIteration = now;
+        BitByBitBlocklyHelperService.renderLoopBag.forEach(f => f(timeElapsedFromPreviousIteration));
+        this.scene.render();
     }
 
     private collapseExpandedMenus(): void {
@@ -291,6 +296,16 @@ export class BitbybitAppComponent implements OnInit, OnDestroy, AfterViewInit {
             // For Safari
             return 'Changes made to the script will be lost. Proceed?';
         };
+        if (typeof Worker !== 'undefined') {
+            // Create a new
+            this.bitByBit.occ.setOccWorker(new Worker('./occ.worker', { type: 'module' }));
+            this.bitByBit.occ.occWorkerState.subscribe((state) => {
+                this.occWorkerState = state;
+                this.toggleRenderLoop(400);
+            });
+        } else {
+            alert('Your device does not support Webworkers, this application will not be able to run correctly');
+        }
     }
 
     onResize(): void {
@@ -347,7 +362,6 @@ export class BitbybitAppComponent implements OnInit, OnDestroy, AfterViewInit {
                 reader.onload = (evt) => {
                     this.code = evt.target.result as string;
                     this.startMonaco();
-                    this.run();
                 };
                 reader.onerror = (evt) => {
                     document.getElementById('fileContents').innerHTML = 'error reading file';
@@ -369,8 +383,7 @@ export class BitbybitAppComponent implements OnInit, OnDestroy, AfterViewInit {
                     this.cleanCanvas();
                     Xml.domToWorkspace(xml, this.workspace);
                     this.workspace.zoomToFit();
-                    this.workspace.zoomCenter(-3);
-                    this.run();
+                    this.workspace.zoomCenter(-4);
                     this.onResize();
                 };
                 reader.onerror = (evt) => {
@@ -447,7 +460,7 @@ export class BitbybitAppComponent implements OnInit, OnDestroy, AfterViewInit {
             this.router.navigate(['/app']);
             window.dispatchEvent(new Event('resize'));
             this.workspace.zoomToFit();
-            this.workspace.zoomCenter(-3);
+            this.workspace.zoomCenter(-4);
             this.onResize();
         });
     }
@@ -480,26 +493,39 @@ export class BitbybitAppComponent implements OnInit, OnDestroy, AfterViewInit {
     swapCanvas(): void {
         switch (this.currentUiState) {
             case UiStatesEnum.babylon:
+                this.engine.stopRenderLoop(this.renderLoopFunction);
                 this.currentUiState = this.previousUiState;
                 break;
             case UiStatesEnum.blockly:
+                this.engine.runRenderLoop(this.renderLoopFunction);
                 this.currentUiState = UiStatesEnum.babylon;
                 this.previousUiState = UiStatesEnum.blockly;
                 Blockly.hideChaff();
                 break;
             case UiStatesEnum.monaco:
+                this.engine.runRenderLoop(this.renderLoopFunction);
                 this.currentUiState = UiStatesEnum.babylon;
                 this.previousUiState = UiStatesEnum.monaco;
                 break;
             default:
                 break;
         }
+        setTimeout(() => {
+            window.dispatchEvent(new Event('resize'));
+            this.onResize();
+            this.workspace.zoomToFit();
+            this.workspace.zoomCenter(-4);
+        });
     }
 
     cleanCanvas(): void {
         this.workspace.clear();
         this.router.navigate(['/app']);
-        this.run();
+
+        if (this.occWorkerState.state === OccStateEnum.loaded) {
+            this.bitByBit.occ.startedTheRun().then(() => { });
+        }
+        this.clearBabylonScene();
     }
 
     exportSvg() {
@@ -521,51 +547,74 @@ export class BitbybitAppComponent implements OnInit, OnDestroy, AfterViewInit {
         return array;
     }
 
+    cleanAllCache(): void {
+        this.bitByBit.occ.cleanAllCache().then(s => {});
+    }
+
     run(): void {
-        let transpiledCode = false;
-        try {
-            this.clearBabylonScene();
+        // If we'll have more workers for other libraries, this could be applied here as well
+        // with Promise.all...
+        this.bitByBit.occ.cleanPromisesMade();
+        this.bitByBit.occ.startedTheRun().then((res) => {
+            let transpiledCode = false;
+            try {
+                this.clearBabylonScene();
 
-            let code = (JavaScript as any).workspaceToCode(this.workspace);
+                let code = (JavaScript as any).workspaceToCode(this.workspace);
 
-            if (this.currentUiState === UiStatesEnum.monaco) {
-                code = transpile(this.code);
-                transpiledCode = true;
+                if (this.currentUiState === UiStatesEnum.monaco) {
+                    code = transpile(this.code);
+                    transpiledCode = true;
+                }
+
+                Function(`
+                "use strict";
+                const bitbybit = window.BitByBitBase;
+                const Bit = window.Bit;
+                const BitByBit = {
+                    blocklyWorkspace: window.blockly.workspace,
+                    HS: window.HS,
+                    BitByBitBlocklyHelperService: window.BitByBitBlocklyHelperService,
+                };
+                ${code}`)();
+
+                if (this.tagService.tagsExist()) {
+                    this.tagsNeedUpdate = true;
+                }
+                this.toggleRenderLoop(100);
+
+            } catch (e) {
+                if (transpiledCode) {
+                    this.openAlertDialog({
+                        title: 'Code execution failed',
+                        details: `Something went wrong when running the code.`,
+                        message: `${e}`,
+                    });
+                } else {
+                    const blockThatWasActive = this.workspace.getBlockById(HS.runningBlockId);
+                    HS.handleBlockException(blockThatWasActive, e);
+                    this.openAlertDialog({
+                        title: 'Code execution failed',
+                        details: `Something went wrong when running the code. Check if there are no disconnected or misconfigured components on your canvas`,
+                        message: `${e}`,
+                    });
+                }
             }
+        });
+    }
 
-            Function(`
-            "use strict";
-            const bitbybit = window.BitByBitBase;
-            const Bit = window.Bit;
-            const BitByBit = {
-                blocklyWorkspace: window.blockly.workspace,
-                BitByBitBlockHandlerService: window.BitByBitBlockHandlerService,
-                BitByBitBlocklyHelperService: window.BitByBitBlocklyHelperService,
-            };
-            ${code}`)();
-
-            if (this.tagService.tagsExist()) {
-                this.tagsNeedUpdate = true;
+    // toggle needs to happen only if babylonjs view is closed, otherwise it can accidentally stop intentionally running loop
+    private toggleRenderLoop(ms: number): void {
+        setTimeout(() => {
+            if (this.currentUiState !== UiStatesEnum.babylon) {
+                this.engine.runRenderLoop(this.renderLoopFunction);
             }
-
-        } catch (e) {
-            if (transpiledCode) {
-                this.openAlertDialog({
-                    title: 'Code execution failed',
-                    details: `Something went wrong when running the code.`,
-                    message: `${e}`,
-                });
-            } else {
-                const blockThatWasActive = this.workspace.getBlockById(BitByBitBlockHandlerService.runningBlockId);
-                BitByBitBlockHandlerService.handleBlockException(blockThatWasActive, e);
-                this.openAlertDialog({
-                    title: 'Code execution failed',
-                    details: `Something went wrong when running the code. Check if there are no disconnected or misconfigured components on your canvas`,
-                    message: `${e}`,
-                });
-            }
-
-        }
+            setTimeout(() => {
+                if (this.currentUiState !== UiStatesEnum.babylon) {
+                    this.engine.stopRenderLoop(this.renderLoopFunction);
+                }
+            }, ms);
+        }, ms);
     }
 
     private clearBabylonScene(): void {
@@ -574,8 +623,7 @@ export class BitbybitAppComponent implements OnInit, OnDestroy, AfterViewInit {
         BitByBitBlocklyHelperService.intervalBag.forEach(i => clearInterval(i));
         BitByBitBlocklyHelperService.timeoutBag.forEach(t => clearTimeout(t));
         BitByBitBlocklyHelperService.renderLoopBag = [];
-
-        this.scene.clearColor = new Color4(1, 1, 1, 1);
+        this.scene.clearColor = new Color4(26 / 255, 28 / 255, 31 / 255, 1);
     }
 
     clearMeshesAndMaterials(): void {
@@ -583,6 +631,12 @@ export class BitbybitAppComponent implements OnInit, OnDestroy, AfterViewInit {
         this.scene.meshes = [];
         this.scene.materials.forEach(m => m.dispose());
         this.scene.materials = [];
+        this.scene.lights.forEach(l => {
+            if (l.name !== 'HemiLight') {
+                l.dispose();
+            }
+        });
+        this.scene.lights = this.scene.lights.filter(i => i.name === 'HemiLight');
         this.scene.transformNodes.forEach(t => {
             if (t.name !== 'root') {
                 t.dispose();

@@ -35,9 +35,10 @@ const monacoConfig: NgxMonacoEditorConfig = {
                 ${DeclarationStrings.polylineInputsString}
                 ${DeclarationStrings.curveInputsString}
                 ${DeclarationStrings.surfaceInputsString}
-                ${DeclarationStrings.solidInputsString}
+                ${DeclarationStrings.jscadInputsString}
                 ${DeclarationStrings.intersectInputsString}
                 ${DeclarationStrings.tagInputsString}
+                ${DeclarationStrings.occInputsString}
             }
             ${DeclarationStrings.baseTypesString}
             ${DeclarationStrings.vectorString}
@@ -57,18 +58,19 @@ const monacoConfig: NgxMonacoEditorConfig = {
             ${DeclarationStrings.surfaceRevolvedString}
             ${DeclarationStrings.surfaceSphericalString}
             ${DeclarationStrings.surfaceSweepString}
-            ${DeclarationStrings.solidString}
-            ${DeclarationStrings.solidBooleansString}
-            ${DeclarationStrings.solidExpansionsString}
-            ${DeclarationStrings.solidExtrusionsString}
-            ${DeclarationStrings.solidHullsString}
-            ${DeclarationStrings.solidPathString}
-            ${DeclarationStrings.solidPolygonString}
-            ${DeclarationStrings.solidShapesString}
-            ${DeclarationStrings.solidTextString}
+            ${DeclarationStrings.jscadString}
+            ${DeclarationStrings.jscadBooleansString}
+            ${DeclarationStrings.jscadExpansionsString}
+            ${DeclarationStrings.jscadExtrusionsString}
+            ${DeclarationStrings.jscadHullsString}
+            ${DeclarationStrings.jscadPathString}
+            ${DeclarationStrings.jscadPolygonString}
+            ${DeclarationStrings.jscadShapesString}
+            ${DeclarationStrings.jscadTextString}
             ${DeclarationStrings.intersectString}
             ${DeclarationStrings.tagString}
             ${DeclarationStrings.timeString}
+            ${DeclarationStrings.occString}
 
             class BitByBitBase {
                 readonly vector: Vector;
@@ -80,10 +82,11 @@ const monacoConfig: NgxMonacoEditorConfig = {
                 readonly polyline: Polyline;
                 readonly curve: Curve;
                 readonly surface: Surface;
-                readonly solid: Solid;
+                readonly jscad: JSCAD;
                 readonly intersect: Intersect;
                 readonly tag: Tag;
                 readonly time: Time;
+                readonly occ: OCC;
             }
         }
         `;
@@ -101,7 +104,7 @@ const monacoConfig: NgxMonacoEditorConfig = {
             const bitbybit: Bit.BitByBitBase = (window as any).BitByBitBase;
             const BitByBit = {
                 blocklyWorkspace: window.blockly.workspace,
-                BitByBitBlockHandlerService: window.BitByBitBlockHandlerService,
+                HS: window.HS,
                 BitByBitBlocklyHelperService: window.BitByBitBlocklyHelperService,
             };
         `;

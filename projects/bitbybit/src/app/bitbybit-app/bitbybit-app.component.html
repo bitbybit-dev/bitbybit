@@ -8,7 +8,8 @@
             </div>
             <div class="justify-end">
                 <div class="actions">
-                    <button mat-buttom mat-icon-button (click)="run()">
+                    <button *ngIf="occWorkerState.state === OccStateEnum.loaded" mat-buttom mat-icon-button
+                        (click)="run()">
                         <mat-icon [matTooltip]="resources.app_menu_run_code" aria-label="Run the code">play_arrow
                         </mat-icon>
                     </button>
@@ -17,7 +18,12 @@
                         </mat-icon>
                     </button> -->
                     <ng-container
-                        *ngIf="currentUiState === UiStatesEnum.blockly || currentUiState === UiStatesEnum.monaco">
+                        *ngIf="occWorkerState.state === OccStateEnum.loading || occWorkerState.state === OccStateEnum.computing">
+                        <mat-spinner [matTooltip]="resources.app_menu_workers_initialising" color="accent"
+                            diameter="30"></mat-spinner>
+                    </ng-container>
+                    <ng-container
+                        *ngIf="(currentUiState === UiStatesEnum.blockly || currentUiState === UiStatesEnum.monaco)">
                         <button *ngIf="currentUiState === UiStatesEnum.blockly" mat-buttom mat-icon-button
                             (click)="toggleToolbox()">
                             <mat-icon [matTooltip]="resources.app_menu_toolbox" aria-hidden="false"
@@ -63,9 +69,14 @@
                             {{resources.app_menu_more_export}}
                         </button>
                         <button mat-menu-item *ngIf="currentUiState === UiStatesEnum.blockly" (click)="cleanCanvas()">
-                            <mat-icon aria-hidden="false" aria-label="Clean">refresh
+                            <mat-icon aria-hidden="false" aria-label="Clean Canvas">refresh
                             </mat-icon>
                             {{resources.app_menu_more_clean_canvas}}
+                        </button>
+                        <button mat-menu-item (click)="cleanAllCache()">
+                            <mat-icon aria-hidden="false" aria-label="Clean Cache">delete_outline
+                            </mat-icon>
+                            {{resources.app_menu_more_clean_all_cache}}
                         </button>
                         <button mat-menu-item [matMenuTriggerFor]="social">
                             <mat-icon aria-hidden="false" aria-label="Community">forum
@@ -161,14 +172,20 @@
                     <div class="actions">
                         <a routerLink="/home" class="logo">
                             <img [matTooltip]="resources.bit_by_bit" src="assets/logo-gold-small.png" />
-                        </a>                       
+                        </a>
                         <button mat-buttom mat-icon-button (click)="swapCanvas()">
                             <mat-icon [matTooltip]="resources.app_menu_swap_canvas" aria-label="Swap Canvas">swap_horiz
                             </mat-icon>
                         </button>
                         <ng-container
+                            *ngIf="occWorkerState.state === OccStateEnum.loading || occWorkerState.state === OccStateEnum.computing">
+                            <mat-spinner [matTooltip]="resources.app_menu_workers_initialising" color="accent"
+                                diameter="30"></mat-spinner>
+                        </ng-container>
+                        <ng-container
                             *ngIf="currentUiState === UiStatesEnum.blockly || currentUiState === UiStatesEnum.monaco">
-                            <button mat-buttom mat-icon-button (click)="run()">
+                            <button *ngIf="occWorkerState.state === OccStateEnum.loaded" mat-buttom mat-icon-button
+                                (click)="run()">
                                 <mat-icon [matTooltip]="resources.app_menu_run_code" aria-label="Run the code">
                                     play_arrow
                                 </mat-icon>
@@ -216,9 +233,14 @@
                             </button>
                             <button mat-menu-item *ngIf="currentUiState === UiStatesEnum.blockly"
                                 (click)="cleanCanvas()">
-                                <mat-icon aria-hidden="false" aria-label="Export">refresh
+                                <mat-icon aria-hidden="false" aria-label="Clean canvas">refresh
                                 </mat-icon>
-                                Clean canvas
+                                {{resources.app_menu_more_clean_canvas}}
+                            </button>
+                            <button mat-menu-item (click)="cleanAllCache()">
+                                <mat-icon aria-hidden="false" aria-label="Clean Cache">delete_outline
+                                </mat-icon>
+                                {{resources.app_menu_more_clean_all_cache}}
                             </button>
                             <button mat-menu-item [matMenuTriggerFor]="social">
                                 <mat-icon aria-hidden="false" aria-label="Community">forum

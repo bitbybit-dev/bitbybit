@@ -152,4 +152,19 @@ export namespace Point {
          */
         factor = 1;
     }
+
+    export class HexGridCentersDto {
+        /**
+         * Number of hexagons on Y direction
+         */
+        nrHexagonsY: number;
+        /**
+         * Number of Hexagons on Z direction
+         */
+        nrHexagonsX: number;
+        /**
+         * Total grid span
+         */
+        radiusHexagon: number;
+    }
 }

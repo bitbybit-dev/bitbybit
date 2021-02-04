@@ -2,7 +2,7 @@ import { ALIGN_RIGHT, Block, Blocks } from 'blockly';
 import * as JavaScript from 'blockly/javascript';
 import { ResourcesInterface, ResourcesService } from '../../resources';
 import { createStandardContextIIFE } from '../_shared';
-import { getRequired, makeRequiredValidationModelForInputs, BitByBitBlockHandlerService, ValidationEntityInterface } from '../validations';
+import { getRequired, makeRequiredValidationModelForInputs, HS, ValidationEntityInterface } from '../validations';
 import { environment } from '../../environments/environment';
 import { solidConstants } from './solid-constants';
 
@@ -16,30 +16,30 @@ export function createPrimitive2dStarBlock(): void {
             this.appendValueInput('Center')
                 .setCheck('Array')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_csg_primitive_2d_star_input_center);
+                .appendField(resources.block_jscad_primitive_2d_star_input_center);
             this.appendValueInput('Vertices')
                 .setCheck('Number')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_csg_primitive_2d_star_input_vertices.toLowerCase());
+                .appendField(resources.block_jscad_primitive_2d_star_input_vertices.toLowerCase());
             this.appendValueInput('Density')
                 .setCheck('Number')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_csg_primitive_2d_star_input_density.toLowerCase());
+                .appendField(resources.block_jscad_primitive_2d_star_input_density.toLowerCase());
             this.appendValueInput('OuterRadius')
                 .setCheck('Number')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_csg_primitive_2d_star_input_outer_radius.toLowerCase());
+                .appendField(resources.block_jscad_primitive_2d_star_input_outer_radius.toLowerCase());
             this.appendValueInput('InnerRadius')
                 .setCheck('Number')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_csg_primitive_2d_star_input_inner_radius.toLowerCase());
+                .appendField(resources.block_jscad_primitive_2d_star_input_inner_radius.toLowerCase());
             this.appendValueInput('StartAngle')
                 .setCheck('Number')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_csg_primitive_2d_star_input_start_angle.toLowerCase());
+                .appendField(resources.block_jscad_primitive_2d_star_input_start_angle.toLowerCase());
             this.setOutput(true, 'Polygon');
             this.setColour('#fff');
-            this.setTooltip(resources.block_csg_primitive_2d_star_description);
+            this.setTooltip(resources.block_jscad_primitive_2d_star_description);
             this.setHelpUrl(environment.docsUrl + solidConstants.solidPolygonHelpUrl + '#' + 'star');
         }
     };
@@ -55,7 +55,7 @@ export function createPrimitive2dStarBlock(): void {
         };
 
         // this is first set of validations to check that all inputs are non empty strings
-        BitByBitBlockHandlerService.validate(block, block.workspace, makeRequiredValidationModelForInputs(resources, inputs, [
+        HS.validate(block, block.workspace, makeRequiredValidationModelForInputs(resources, inputs, [
             resources.block_center, resources.block_vertices, resources.block_density,
             resources.block_outer_radius, resources.block_inner_radius, resources.block_start_angle,
         ]));
@@ -65,7 +65,7 @@ export function createPrimitive2dStarBlock(): void {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `return bitbybit.solid.polygon.star(inputs);`
+            `return bitbybit.jscad.polygon.star(inputs);`
         );
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };

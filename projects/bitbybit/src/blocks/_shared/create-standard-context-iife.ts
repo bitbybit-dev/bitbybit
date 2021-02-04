@@ -1,7 +1,15 @@
 import { Block } from 'blockly';
+import { HS } from '../validations';
 
-export function createStandardContextIIFE(block: Block, componentName: string, inputs: any, returns: boolean, body: string) {
-    const filteredKeys = Object.keys(inputs).filter(key => inputs[key] !== '' );
+// Async component inputs need to be awaited before body is executed and if body itself is async it also should show loading indicators
+export function createStandardContextIIFE(
+    block: Block,
+    componentName: string,
+    inputs: any,
+    returns: boolean,
+    body: string,
+    async?: boolean): string {
+    const filteredKeys = Object.keys(inputs).filter(key => inputs[key] !== '');
 
     return `
 (() => {
@@ -9,8 +17,15 @@ export function createStandardContextIIFE(block: Block, componentName: string, i
         ${filteredKeys.map(key => key.includes('statement_') ? assignStatements(key, inputs) : assignInputs(key, inputs)).join(`,
         `)}
     };
-    BitByBit.BitByBitBlockHandlerService.handleBlock(BitByBit.blocklyWorkspace, '${block.id}', inputs)
-    ${body}
+${async ? `async function awaiter() {
+    await BitByBit.HS.inputAwaiter(inputs, BitByBit.blocklyWorkspace, '${block.id}');
+    BitByBit.HS.handleBlock(BitByBit.blocklyWorkspace, '${block.id}', inputs);
+    BitByBit.HS.startedAsyncTask(BitByBit.blocklyWorkspace, '${block.id}', '#ddddff');
+    ${returns ? 'return ' : ''}${body}.then((r) => {BitByBit.HS.finishedAsyncTask(BitByBit.blocklyWorkspace, '${block.id}'); return r;});
+}
+${returns ? 'return ' : ''} awaiter();` : `
+BitByBit.HS.handleBlock(BitByBit.blocklyWorkspace, '${block.id}', inputs)
+${body}`}
 })()${returns ? '' : ';'}
 `;
 }

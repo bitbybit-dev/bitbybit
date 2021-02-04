@@ -3,6 +3,7 @@ import { Color3, Mesh, StandardMaterial, VertexBuffer, VertexData } from '@babyl
 import { Context } from '../context';
 import { GeometryHelper } from '../geometry-helper';
 import * as Inputs from '../inputs/inputs';
+import { Line } from './line';
 
 /**
  * Contains various methods for points. Point in bitbybit is simply an array containing 3 numbers for [x, y, z].
@@ -15,7 +16,7 @@ import * as Inputs from '../inputs/inputs';
 @Injectable()
 export class Point {
 
-    constructor(private readonly context: Context, private readonly geometryHelper: GeometryHelper) { }
+    constructor(private readonly context: Context, private readonly geometryHelper: GeometryHelper, private readonly line: Line) { }
 
     /**
      * Draws a single point
@@ -230,6 +231,31 @@ export class Point {
         return spiral;
     }
 
+
+    /**
+     * Creates a flat point grid on XY plane. This grid contains center points for hexagons of the given radius.
+     * Be aware that we control only the nr of hexagons to be made and not the length and width of the grid.
+     * <div>
+     *  <img src="../assets/images/blockly-images/point/hexGrid.svg" alt="Blockly Image"/>
+     * </div>
+     * @link https://docs.bitbybit.dev/classes/bitbybit_point.point.html#hexgrid
+     * @param inputs Information about hexagon and the grid
+     * @returns Points in the array on the grid
+     */
+    hexGrid(inputs: Inputs.Point.HexGridCentersDto): number[][] {
+        const xLength = Math.sqrt(Math.pow(inputs.radiusHexagon, 2) - Math.pow(inputs.radiusHexagon / 2, 2));
+        const points = [];
+        for (let ix = 0; ix < inputs.nrHexagonsX; ix++) {
+            const coordX = ix * xLength * 2;
+            for (let iy = 0; iy < inputs.nrHexagonsY; iy++) {
+                const coordY = (inputs.radiusHexagon + inputs.radiusHexagon / 2) * iy;
+                points.push([coordX + (iy % 2 === 0 ? 0 : xLength), coordY , 0]);
+            }
+        }
+
+        return points;
+    }
+
     private closestPointFromPointData(inputs: Inputs.Point.ClosestPointFromPointsDto): {
         index: number, point: number[], distance: number
     } {
@@ -279,7 +305,7 @@ export class Point {
         mesh.material.pointSize = size;
     }
 
-    private setUpPositionsAndColours(vectorPoints: number[][], colour: Color3): {positions, colors} {
+    private setUpPositionsAndColours(vectorPoints: number[][], colour: Color3): { positions, colors } {
         const positions = [];
         const colors = [];
 

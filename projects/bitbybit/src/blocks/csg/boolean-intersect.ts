@@ -2,7 +2,7 @@ import { ALIGN_RIGHT, Block, Blocks } from 'blockly';
 import * as JavaScript from 'blockly/javascript';
 import { ResourcesInterface, ResourcesService } from '../../resources';
 import { createStandardContextIIFE } from '../_shared';
-import { getRequired, makeRequiredValidationModelForInputs, BitByBitBlockHandlerService, ValidationEntityInterface } from '../validations';
+import { getRequired, makeRequiredValidationModelForInputs, HS, ValidationEntityInterface } from '../validations';
 import { environment } from '../../environments/environment';
 import { solidConstants } from './solid-constants';
 
@@ -16,14 +16,14 @@ export function createBooleanIntersectBlock(): void {
             this.appendValueInput('IntersectObject')
                 .setCheck('CsgMesh')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_csg_intersect_input_intersect_object);
+                .appendField(resources.block_jscad_intersect_input_intersect_object);
             this.appendValueInput('WithObject')
                 .setCheck('CsgMesh')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_csg_intersect_input_with_object.toLowerCase());
+                .appendField(resources.block_jscad_intersect_input_with_object.toLowerCase());
             this.setOutput(true, 'CsgMesh');
             this.setColour('#fff');
-            this.setTooltip(resources.block_csg_intersect_description);
+            this.setTooltip(resources.block_jscad_intersect_description);
             this.setHelpUrl(environment.docsUrl + solidConstants.solidBooleansHelpUrl + '#' + 'intersect');
         }
     };
@@ -35,7 +35,7 @@ export function createBooleanIntersectBlock(): void {
         };
 
         // this is first set of validations to check that all inputs are non empty strings
-        BitByBitBlockHandlerService.validate(block, block.workspace, makeRequiredValidationModelForInputs(resources, inputs, [
+        HS.validate(block, block.workspace, makeRequiredValidationModelForInputs(resources, inputs, [
             resources.block_solid, resources.block_solid
         ]));
 
@@ -44,7 +44,7 @@ export function createBooleanIntersectBlock(): void {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `return bitbybit.solid.booleans.intersect({objects: [inputs.intersectObject, inputs.withObject]});`
+            `return bitbybit.jscad.booleans.intersect({objects: [inputs.intersectObject, inputs.withObject]});`
         );
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };

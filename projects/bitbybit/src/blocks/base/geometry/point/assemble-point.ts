@@ -11,6 +11,7 @@ import { createPointZBlock } from './point-z';
 import { createPointSpiralBlock } from './points-spiral';
 import { createPointsTransformBlock } from './points-transform';
 import { createPoint2dBlock } from './point-2d';
+import { createPointHexGridBlock } from './points-hex-grid';
 
 export function assemblePointBlocks(): void {
     createPointBlock();
@@ -26,4 +27,5 @@ export function assemblePointBlocks(): void {
     createPointClosestFromPointsDistanceBlock();
     createPointClosestFromPointsIndexBlock();
     createPoint2dBlock();
+    createPointHexGridBlock();
 }

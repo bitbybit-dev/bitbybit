@@ -10,6 +10,7 @@ export class Context {
     blocklyWorkspace: Workspace;
     verb: any;
     jscad: any;
+    occ: any;
 
     bitByBitBlocklyHelperService = BitByBitBlocklyHelperService;
 

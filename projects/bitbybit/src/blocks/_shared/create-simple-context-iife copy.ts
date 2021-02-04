@@ -9,7 +9,7 @@ export function createSimpleContextIIFE(block: Block, componentName: string, inp
         ${filteredKeys.map(key => key.includes('statement_') ? assignStatements(key, inputs) : assignInputs(key, inputs)).join(`,
         `)}
     };
-    BitByBit.BitByBitBlockHandlerService.handleBlock(BitByBit.blocklyWorkspace, '${block.id}', inputs)
+    BitByBit.HS.handleBlock(BitByBit.blocklyWorkspace, '${block.id}', inputs)
     ${body}
 })()${returns ? '' : ';'}
 `;

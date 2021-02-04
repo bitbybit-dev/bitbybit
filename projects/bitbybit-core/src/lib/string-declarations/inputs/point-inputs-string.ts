@@ -147,6 +147,20 @@ export declare namespace Point {
          */
         factor: number;
     }
+    class HexGridCentersDto {
+        /**
+         * Number of hexagons on Y direction
+         */
+        nrHexagonsY: number;
+        /**
+         * Number of Hexagons on Z direction
+         */
+        nrHexagonsX: number;
+        /**
+         * Total grid span
+         */
+        radiusHexagon: number;
+    }
 }
 
 `);

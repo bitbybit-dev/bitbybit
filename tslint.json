@@ -68,6 +68,7 @@
             true,
             "single"
         ],
+        "prefer-for-of": false,
         "semicolon": {
             "options": [
                 "always"

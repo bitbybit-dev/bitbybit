@@ -1,3 +1,15 @@
+::ng-deep mat-spinner {
+    margin-right: auto;
+    margin-left: auto;
+
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+::ng-deep .mat-progress-spinner.mat-accent circle, ::ng-deep .mat-spinner.mat-accent circle {
+    stroke: #fff;
+}
+
 ::ng-deep ngx-monaco-editor {
     z-index: 1;
     height: 100% !important;
@@ -95,8 +107,13 @@
 //     display: inline-flex;
 // }
 
-.min-menu .actions button {
+.min-menu .actions button, .min-menu .actions mat-spinner {
     float: right;
+}
+
+.min-menu .actions mat-spinner{
+    margin-top: 5px;
+    margin-bottom: 5px;
 }
 ////////////////////////
 

@@ -2,7 +2,7 @@ import { ALIGN_RIGHT, Block, Blocks } from 'blockly';
 import * as JavaScript from 'blockly/javascript';
 import { ResourcesInterface, ResourcesService } from '../../resources';
 import { createStandardContextIIFE } from '../_shared';
-import { getRequired, makeRequiredValidationModelForInputs, BitByBitBlockHandlerService, ValidationEntityInterface } from '../validations';
+import { getRequired, makeRequiredValidationModelForInputs, HS, ValidationEntityInterface } from '../validations';
 import { environment } from '../../environments/environment';
 import { solidConstants } from './solid-constants';
 
@@ -16,46 +16,46 @@ export function createTextVectorSphericalTextBlock(): void {
             this.appendValueInput('InputText')
                 .setCheck('String')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_csg_text_vector_spherical_text_input_input);
+                .appendField(resources.block_jscad_text_vector_spherical_text_input_input);
             this.appendValueInput('Radius')
                 .setCheck('Number')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_csg_text_vector_spherical_text_input_radius.toLowerCase());
+                .appendField(resources.block_jscad_text_vector_spherical_text_input_radius.toLowerCase());
             this.appendValueInput('Segments')
                 .setCheck('Number')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_csg_text_vector_spherical_text_input_segments.toLowerCase());
+                .appendField(resources.block_jscad_text_vector_spherical_text_input_segments.toLowerCase());
             this.appendValueInput('XOffset')
                 .setCheck('Number')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_csg_text_vector_spherical_text_input_x_offset.toLowerCase());
+                .appendField(resources.block_jscad_text_vector_spherical_text_input_x_offset.toLowerCase());
             this.appendValueInput('YOffset')
                 .setCheck('Number')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_csg_text_vector_spherical_text_input_y_offset.toLowerCase());
+                .appendField(resources.block_jscad_text_vector_spherical_text_input_y_offset.toLowerCase());
             this.appendValueInput('Height')
                 .setCheck('Number')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_csg_text_vector_spherical_text_input_height.toLowerCase());
+                .appendField(resources.block_jscad_text_vector_spherical_text_input_height.toLowerCase());
             this.appendValueInput('LineSpacing')
                 .setCheck('Number')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_csg_text_vector_spherical_text_input_line_spacing.toLowerCase());
+                .appendField(resources.block_jscad_text_vector_spherical_text_input_line_spacing.toLowerCase());
             this.appendValueInput('LetterSpacing')
                 .setCheck('Number')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_csg_text_vector_spherical_text_input_letter_spacing.toLowerCase());
+                .appendField(resources.block_jscad_text_vector_spherical_text_input_letter_spacing.toLowerCase());
             this.appendValueInput('Align')
                 .setCheck('String')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_csg_text_vector_spherical_text_input_align.toLowerCase());
+                .appendField(resources.block_jscad_text_vector_spherical_text_input_align.toLowerCase());
             this.appendValueInput('ExtrudeOffset')
                 .setCheck('Number')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_csg_text_vector_spherical_text_input_extrude_offset.toLowerCase());
+                .appendField(resources.block_jscad_text_vector_spherical_text_input_extrude_offset.toLowerCase());
             this.setOutput(true, 'Array');
             this.setColour('#fff');
-            this.setTooltip(resources.block_csg_text_vector_spherical_text_description);
+            this.setTooltip(resources.block_jscad_text_vector_spherical_text_description);
             this.setHelpUrl(environment.docsUrl + solidConstants.solidTextHelpUrl + '#' + 'sphericaltext');
         }
     };
@@ -75,7 +75,7 @@ export function createTextVectorSphericalTextBlock(): void {
         };
 
         // this is first set of validations to check that all inputs are non empty strings
-        BitByBitBlockHandlerService.validate(block, block.workspace, makeRequiredValidationModelForInputs(resources, inputs, [
+        HS.validate(block, block.workspace, makeRequiredValidationModelForInputs(resources, inputs, [
             resources.block_input_text, resources.block_radius, resources.block_segments,
             resources.block_x_offset, resources.block_y_offset, resources.block_height,
             resources.block_line_spacing, resources.block_letter_spacing, resources.block_align, resources.block_extrude_offset
@@ -86,7 +86,7 @@ export function createTextVectorSphericalTextBlock(): void {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `return bitbybit.solid.text.sphericalText(inputs);`
+            `return bitbybit.jscad.text.sphericalText(inputs);`
         );
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };

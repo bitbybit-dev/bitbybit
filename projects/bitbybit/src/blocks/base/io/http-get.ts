@@ -1,6 +1,6 @@
 import { ALIGN_RIGHT, Block, Blocks } from 'blockly';
 import * as JavaScript from 'blockly/javascript';
-import { getRequired, BitByBitBlockHandlerService, ValidationEntityInterface } from '../../validations';
+import { getRequired, HS, ValidationEntityInterface } from '../../validations';
 import { ResourcesInterface, ResourcesService } from '../../../resources';
 import { createDummyPromiseIndicator, createStandardContextIIFE } from '../../_shared';
 
@@ -35,7 +35,7 @@ export function createHttpGetBlock() {
         };
 
         // this is first set of validations to check that all inputs are non empty strings
-        BitByBitBlockHandlerService.validate(block, block.workspace, [{
+        HS.validate(block, block.workspace, [{
             entity: inputs.url,
             validations: [
                 getRequired(resources, resources.block_url)

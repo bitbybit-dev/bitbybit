@@ -1,12 +1,14 @@
-import { simplifyDeclaration } from "./simplify-declaration";
+import { simplifyDeclaration } from './simplify-declaration';
 
 export const sceneString = simplifyDeclaration(`
 import { Context } from '../context';
-import { Mesh } from '@babylonjs/core';
+import { Mesh, PointLight } from '@babylonjs/core';
 import * as Inputs from '../inputs/inputs';
+import { GeometryHelper } from '../geometry-helper';
 export declare class Scene {
     private readonly context;
-    constructor(context: Context);
+    private readonly geometryHelper;
+    constructor(context: Context, geometryHelper: GeometryHelper);
     /**
      * Changes the scene background colour for 3D space
      * <div>
@@ -26,6 +28,24 @@ export declare class Scene {
      */
     drawGridMesh(inputs: Inputs.Scene.SceneDrawGridMeshDto): Mesh;
     /**
+     * Creates and draws a point light in the scene
+     * <div>
+     *  <img src="../assets/images/blockly-images/scene/drawPointLight.svg" alt="Blockly Image"/>
+     * </div>
+     * @link https://docs.bitbybit.dev/classes/bitbybit_scene.scene.html#drawpointlight
+     * @param inputs Describes the light source
+     * @returns BabylonJS point light
+     */
+    drawPointLight(inputs: Inputs.Scene.PointLightDto): PointLight;
+    /**
+     * Adjusts the active arc rotate camera with configuration parameters
+     * <div>
+     *  <img src="../assets/images/blockly-images/scene/adjustActiveArcRotateCamera.svg" alt="Blockly Image"/>
+     * </div>
+     * @link https://docs.bitbybit.dev/classes/bitbybit_scene.scene.html#adjustactivearcrotatecamera
+     */
+    adjustActiveArcRotateCamera(inputs: Inputs.Scene.CameraConfigurationDto): void;
+    /**
      * Clears all of the drawn objects in the 3D scene
      * <div>
      *  <img src="../assets/images/blockly-images/scene/clearAllDrawn.svg" alt="Blockly Image"/>
@@ -33,5 +53,14 @@ export declare class Scene {
      * @link https://docs.bitbybit.dev/classes/bitbybit_scene.scene.html#clearalldrawn
      */
     clearAllDrawn(): void;
+    /**
+     * Creates mesh instance and transforms it for optimised rendering. These are optimised for max performance
+     * when rendering many similar objects in the scene.
+     * <div>
+     *  <img src="../assets/images/blockly-images/scene/createMeshInstanceAndTransform.svg" alt="Blockly Image"/>
+     * </div>
+     * @link https://docs.bitbybit.dev/classes/bitbybit_scene.scene.html#createmeshinstanceandtransform
+     */
+    createMeshInstanceAndTransform(inputs: Inputs.Scene.MeshInstanceAndTransformDto): Promise<any>;
 }
 `);

@@ -15,8 +15,12 @@
             "prefix": "app",
             "architect": {
                 "build": {
-                    "builder": "@angular-devkit/build-angular:browser",
+                    "builder": "@angular-builders/custom-webpack:browser",
                     "options": {
+                        "customWebpackConfig": {
+                            "path": "./custom-webpack.config.js",
+                            "replaceDuplicatePlugins": true
+                        },
                         "outputPath": "dist/bitbybit",
                         "index": "projects/bitbybit/src/index.html",
                         "main": "projects/bitbybit/src/main.ts",
@@ -36,7 +40,8 @@
                             "node_modules/bootstrap/dist/css/bootstrap.min.css",
                             "projects/bitbybit/src/styles.scss"
                         ],
-                        "scripts": []
+                        "scripts": [],
+                        "webWorkerTsConfig": "projects/bitbybit/tsconfig.worker.json"
                     },
                     "configurations": {
                         "production": {
@@ -69,7 +74,7 @@
                     }
                 },
                 "serve": {
-                    "builder": "@angular-devkit/build-angular:dev-server",
+                    "builder": "@angular-builders/custom-webpack:dev-server",
                     "options": {
                         "browserTarget": "bitbybit:build"
                     },
@@ -108,7 +113,8 @@
                         "tsConfig": [
                             "projects/bitbybit/tsconfig.app.json",
                             "projects/bitbybit/tsconfig.spec.json",
-                            "projects/bitbybit/e2e/tsconfig.json"
+                            "projects/bitbybit/e2e/tsconfig.json",
+                            "projects/bitbybit/tsconfig.worker.json"
                         ],
                         "exclude": [
                             "**/node_modules/**"
