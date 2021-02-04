@@ -1,5 +1,9 @@
 import { Injectable } from '@angular/core';
-import { LinesMesh, Matrix, Color3, Vector3, Color4, MeshBuilder, Scene, Mesh } from '@babylonjs/core';
+import {
+    LinesMesh, Matrix, Color3, Vector3, Color4,
+    MeshBuilder, Scene, Mesh, VertexData,
+    PBRMetallicRoughnessMaterial
+} from '@babylonjs/core';
 import { Context } from './context';
 @Injectable()
 export class GeometryHelper {
@@ -8,7 +12,51 @@ export class GeometryHelper {
     private readonly tolerance = 0.00001;
     private readonly snapTolerance = 0.00001;
 
+    createOrUpdateSurfaceMesh(
+        meshDataConverted: { positions: any[]; indices: any[]; normals: any[]; },
+        mesh: Mesh, updatable: boolean, opacity: number, colour: string
+    ): Mesh {
+        const createMesh = () => {
+            const vertexData = new VertexData();
+            vertexData.positions = meshDataConverted.positions;
+            vertexData.indices = meshDataConverted.indices;
+            vertexData.normals = meshDataConverted.normals;
+            vertexData.applyToMesh(mesh, updatable);
+        };
+
+        if (mesh && updatable) {
+            mesh.dispose();
+            createMesh();
+        } else {
+            mesh = new Mesh(`surface${Math.random()}`, this.context.scene);
+            createMesh();
+            mesh.material = new PBRMetallicRoughnessMaterial('pbr', this.context.scene);
+        }
+
+        const pbr = mesh.material as PBRMetallicRoughnessMaterial;
+
+        pbr.baseColor = Color3.FromHexString(colour);
+        pbr.metallic = 1.0;
+        pbr.roughness = 0.6;
+        pbr.alpha = opacity;
+        pbr.alphaMode = 1;
+        pbr.backFaceCulling = false;
+        pbr.zOffset = 2;
+        mesh.material = pbr;
+        mesh.isPickable = false;
+        return mesh;
+    }
+
     transformControlPoints(transformation: number[][] | number[][][], transformedControlPoints: number[][]): number[][] {
+        const transformationArrays = this.getFlatTransformations(transformation);
+
+        transformationArrays.forEach(transform => {
+            transformedControlPoints = this.transformPointsByMatrixArray(transformedControlPoints, transform);
+        });
+        return transformedControlPoints;
+    }
+
+    getFlatTransformations(transformation: number[][] | number[][][]): number[][] {
         let transformationArrays = [];
 
         if (this.getArrayDepth(transformation) === 2) {
@@ -19,10 +67,7 @@ export class GeometryHelper {
             transformationArrays = transformation;
         }
 
-        transformationArrays.forEach(transform => {
-            transformedControlPoints = this.transformPointsByMatrixArray(transformedControlPoints, transform);
-        });
-        return transformedControlPoints;
+        return transformationArrays;
     }
 
     getArrayDepth = (value): number => {

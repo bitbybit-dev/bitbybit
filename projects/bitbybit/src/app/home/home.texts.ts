@@ -19,7 +19,7 @@ export function texts(): Texts {
             docs: 'API'
         },
         head: {
-            title: 'Creative Coding',
+            title: 'Creative CAD Coding',
             listElements: [
                 'Design parametric 3D models',
                 'Make data visualizations',

@@ -2,7 +2,7 @@ import { ALIGN_RIGHT, Block, Blocks } from 'blockly';
 import * as JavaScript from 'blockly/javascript';
 import { ResourcesInterface, ResourcesService } from '../../resources';
 import { createStandardContextIIFE } from '../_shared';
-import { getRequired, makeRequiredValidationModelForInputs, BitByBitBlockHandlerService, ValidationEntityInterface } from '../validations';
+import { getRequired, makeRequiredValidationModelForInputs, HS, ValidationEntityInterface } from '../validations';
 import { solidConstants } from './solid-constants';
 import { environment } from '../../environments/environment';
 
@@ -16,14 +16,14 @@ export function createBooleanUnionBlock(): void {
             this.appendValueInput('UnionObject')
                 .setCheck('CsgMesh')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_csg_union_input_union_object);
+                .appendField(resources.block_jscad_union_input_union_object);
             this.appendValueInput('WithObject')
                 .setCheck('CsgMesh')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_csg_union_input_with_object.toLowerCase());
+                .appendField(resources.block_jscad_union_input_with_object.toLowerCase());
             this.setOutput(true, 'CsgMesh');
             this.setColour('#fff');
-            this.setTooltip(resources.block_csg_union_description);
+            this.setTooltip(resources.block_jscad_union_description);
             this.setHelpUrl(environment.docsUrl + solidConstants.solidBooleansHelpUrl + '#' + 'union');
         }
     };
@@ -35,7 +35,7 @@ export function createBooleanUnionBlock(): void {
         };
 
         // this is first set of validations to check that all inputs are non empty strings
-        BitByBitBlockHandlerService.validate(block, block.workspace, makeRequiredValidationModelForInputs(resources, inputs, [
+        HS.validate(block, block.workspace, makeRequiredValidationModelForInputs(resources, inputs, [
             resources.block_solid, resources.block_solid
         ]));
 
@@ -44,7 +44,7 @@ export function createBooleanUnionBlock(): void {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `return bitbybit.solid.booleans.union({objects: [inputs.unionObject, inputs.withObject]});`
+            `return bitbybit.jscad.booleans.union({objects: [inputs.unionObject, inputs.withObject]});`
         );
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };

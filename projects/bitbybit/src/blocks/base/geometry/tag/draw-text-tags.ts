@@ -5,7 +5,7 @@ import { createStandardContextIIFE } from '../../../_shared';
 import {
     getRequired,
     makeRequiredValidationModelForInputs,
-    BitByBitBlockHandlerService,
+    HS,
     ValidationEntityInterface
 } from '../../../validations';
 import { environment } from 'projects/bitbybit/src/environments/environment';
@@ -38,12 +38,12 @@ export function createDrawTextTagsBlock(): void {
 
     JavaScript[blockSelector] = (block: Block) => {
         const inputs = {
-            textTags: (JavaScript as any).valueToCode(block, 'TextTags', (JavaScript as any).ORDER_ATOMIC),
+            tags: (JavaScript as any).valueToCode(block, 'TextTags', (JavaScript as any).ORDER_ATOMIC),
             updatable: (JavaScript as any).valueToCode(block, 'Updatable', (JavaScript as any).ORDER_ATOMIC),
         };
 
         // this is first set of validations to check that all inputs are non empty strings
-        BitByBitBlockHandlerService.validate(block, block.workspace, makeRequiredValidationModelForInputs(resources, inputs, [
+        HS.validate(block, block.workspace, makeRequiredValidationModelForInputs(resources, inputs, [
             resources.block_text_tags, resources.block_updatable
         ]));
 

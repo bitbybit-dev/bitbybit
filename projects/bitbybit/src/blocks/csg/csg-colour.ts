@@ -2,7 +2,7 @@ import { ALIGN_RIGHT, Block, Blocks } from 'blockly';
 import * as JavaScript from 'blockly/javascript';
 import { ResourcesInterface, ResourcesService } from '../../resources';
 import { createStandardContextIIFE } from '../_shared';
-import { getRequired, makeRequiredValidationModelForInputs, BitByBitBlockHandlerService, ValidationEntityInterface } from '../validations';
+import { getRequired, makeRequiredValidationModelForInputs, HS, ValidationEntityInterface } from '../validations';
 
 export function createCsgColourBlock(): void {
 
@@ -14,14 +14,14 @@ export function createCsgColourBlock(): void {
             this.appendValueInput('Colour')
                 .setCheck('Colour')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_csg_color_input_color);
+                .appendField(resources.block_jscad_color_input_color);
             this.appendValueInput('Object')
                 .setCheck('CsgMesh')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_csg_color_input_object);
+                .appendField(resources.block_jscad_color_input_object);
             this.setOutput(true, 'CsgMesh');
             this.setColour('#fff');
-            this.setTooltip(resources.block_csg_color_description);
+            this.setTooltip(resources.block_jscad_color_description);
             this.setHelpUrl('');
         }
     };
@@ -33,7 +33,7 @@ export function createCsgColourBlock(): void {
         };
 
         // this is first set of validations to check that all inputs are non empty strings
-        BitByBitBlockHandlerService.validate(block, block.workspace, makeRequiredValidationModelForInputs(resources, inputs, [
+        HS.validate(block, block.workspace, makeRequiredValidationModelForInputs(resources, inputs, [
             resources.block_colour, resources.block_mesh
         ]));
 

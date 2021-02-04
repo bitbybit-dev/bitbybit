@@ -2,7 +2,7 @@ import { ALIGN_RIGHT, Block, Blocks } from 'blockly';
 import * as JavaScript from 'blockly/javascript';
 import { ResourcesInterface, ResourcesService } from '../../resources';
 import { createStandardContextIIFE } from '../_shared';
-import { getRequired, makeRequiredValidationModelForInputs, BitByBitBlockHandlerService, ValidationEntityInterface } from '../validations';
+import { getRequired, makeRequiredValidationModelForInputs, HS, ValidationEntityInterface } from '../validations';
 import { environment } from '../../environments/environment';
 import { solidConstants } from './solid-constants';
 
@@ -16,38 +16,38 @@ export function createPrimitive2dPathAppendArcBlock(): void {
             this.appendValueInput('Path')
                 .setCheck('Path')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_csg_primitive_2d_path_append_arc_input_path);
+                .appendField(resources.block_jscad_primitive_2d_path_append_arc_input_path);
             this.appendValueInput('EndPoint')
                 .setCheck('Array')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_csg_primitive_2d_path_append_arc_input_end_point.toLowerCase());
+                .appendField(resources.block_jscad_primitive_2d_path_append_arc_input_end_point.toLowerCase());
             this.appendValueInput('RadiusX')
                 .setCheck('Number')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_csg_primitive_2d_path_append_arc_input_radius_x.toLowerCase());
+                .appendField(resources.block_jscad_primitive_2d_path_append_arc_input_radius_x.toLowerCase());
             this.appendValueInput('RadiusY')
                 .setCheck('Number')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_csg_primitive_2d_path_append_arc_input_radius_y.toLowerCase());
+                .appendField(resources.block_jscad_primitive_2d_path_append_arc_input_radius_y.toLowerCase());
             this.appendValueInput('XAxisRotation')
                 .setCheck('Number')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_csg_primitive_2d_path_append_arc_input_x_axis_rotation.toLowerCase());
+                .appendField(resources.block_jscad_primitive_2d_path_append_arc_input_x_axis_rotation.toLowerCase());
             this.appendValueInput('Clockwise')
                 .setCheck('Boolean')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_csg_primitive_2d_path_append_arc_input_clockwise.toLowerCase());
+                .appendField(resources.block_jscad_primitive_2d_path_append_arc_input_clockwise.toLowerCase());
             this.appendValueInput('Large')
                 .setCheck('Boolean')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_csg_primitive_2d_path_append_arc_input_large.toLowerCase());
+                .appendField(resources.block_jscad_primitive_2d_path_append_arc_input_large.toLowerCase());
             this.appendValueInput('Segments')
                 .setCheck('Number')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_csg_primitive_2d_path_append_arc_input_segments.toLowerCase());
+                .appendField(resources.block_jscad_primitive_2d_path_append_arc_input_segments.toLowerCase());
             this.setOutput(true, 'Path');
             this.setColour('#fff');
-            this.setTooltip(resources.block_csg_primitive_2d_path_append_arc_description);
+            this.setTooltip(resources.block_jscad_primitive_2d_path_append_arc_description);
             this.setHelpUrl(environment.docsUrl + solidConstants.solidPathHelpUrl + '#' + 'appendarc');
         }
     };
@@ -65,7 +65,7 @@ export function createPrimitive2dPathAppendArcBlock(): void {
         };
 
         // this is first set of validations to check that all inputs are non empty strings
-        BitByBitBlockHandlerService.validate(block, block.workspace, makeRequiredValidationModelForInputs(resources, inputs, [
+        HS.validate(block, block.workspace, makeRequiredValidationModelForInputs(resources, inputs, [
             resources.block_2d_path, resources.block_point, resources.block_radius_x, resources.block_radius_y,
             resources.block_x_axis_rotation, resources.block_clockwise,
             resources.block_large, resources.block_segments
@@ -76,7 +76,7 @@ export function createPrimitive2dPathAppendArcBlock(): void {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `return bitbybit.solid.path.appendArc(inputs);`
+            `return bitbybit.jscad.path.appendArc(inputs);`
         );
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };

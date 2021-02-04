@@ -176,6 +176,23 @@ export function pointCategory() {
                     </block>
                 </value>
             </block>
+            <block type="base_geometry_point_hex_grid">
+                <value name="NrHexagonsX">
+                    <block type="math_number">
+                        <field name="NUM">10</field>
+                    </block>
+                </value>
+                <value name="NrHexagonsY">
+                    <block type="math_number">
+                        <field name="NUM">10</field>
+                    </block>
+                </value>
+                <value name="RadiusHexagon">
+                    <block type="math_number">
+                        <field name="NUM">1</field>
+                    </block>
+                </value>
+            </block>
         </category>
         <category name="${resources.block_toolbox_category_apply}"  categorystyle="geometry_category">
             <block type="base_geometry_point_transform">

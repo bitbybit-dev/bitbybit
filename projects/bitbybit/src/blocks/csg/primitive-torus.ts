@@ -2,7 +2,7 @@ import { ALIGN_RIGHT, Block, Blocks } from 'blockly';
 import * as JavaScript from 'blockly/javascript';
 import { ResourcesInterface, ResourcesService } from '../../resources';
 import { createStandardContextIIFE } from '../_shared';
-import { getRequired, makeRequiredValidationModelForInputs, BitByBitBlockHandlerService, ValidationEntityInterface } from '../validations';
+import { getRequired, makeRequiredValidationModelForInputs, HS, ValidationEntityInterface } from '../validations';
 import { environment } from '../../environments/environment';
 import { solidConstants } from './solid-constants';
 
@@ -16,38 +16,38 @@ export function createPrimitiveTorusBlock(): void {
             this.appendValueInput('Center')
                 .setCheck('Array')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_csg_torus_input_center);
+                .appendField(resources.block_jscad_torus_input_center);
             this.appendValueInput('InnerRadius')
                 .setCheck('Number')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_csg_torus_input_inner_radius.toLowerCase());
+                .appendField(resources.block_jscad_torus_input_inner_radius.toLowerCase());
             this.appendValueInput('OuterRadius')
                 .setCheck('Number')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_csg_torus_input_outer_radius.toLowerCase());
+                .appendField(resources.block_jscad_torus_input_outer_radius.toLowerCase());
             this.appendValueInput('InnerSegments')
                 .setCheck('Number')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_csg_torus_input_inner_segments.toLowerCase());
+                .appendField(resources.block_jscad_torus_input_inner_segments.toLowerCase());
             this.appendValueInput('OuterSegments')
                 .setCheck('Number')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_csg_torus_input_outer_segments.toLowerCase());
+                .appendField(resources.block_jscad_torus_input_outer_segments.toLowerCase());
             this.appendValueInput('InnerRotation')
                 .setCheck('Number')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_csg_torus_input_inner_rotation.toLowerCase());
+                .appendField(resources.block_jscad_torus_input_inner_rotation.toLowerCase());
             this.appendValueInput('OuterRotation')
                 .setCheck('Number')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_csg_torus_input_outer_rotation.toLowerCase());
+                .appendField(resources.block_jscad_torus_input_outer_rotation.toLowerCase());
             this.appendValueInput('StartAngle')
                 .setCheck('Number')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_csg_torus_input_start_angle.toLowerCase());
+                .appendField(resources.block_jscad_torus_input_start_angle.toLowerCase());
             this.setOutput(true, 'CsgMesh');
             this.setColour('#fff');
-            this.setTooltip(resources.block_csg_torus_description);
+            this.setTooltip(resources.block_jscad_torus_description);
             this.setHelpUrl(environment.docsUrl + solidConstants.solidShapesHelpUrl + '#' + 'torus');
         }
     };
@@ -65,7 +65,7 @@ export function createPrimitiveTorusBlock(): void {
         };
 
         // this is first set of validations to check that all inputs are non empty strings
-        BitByBitBlockHandlerService.validate(block, block.workspace, makeRequiredValidationModelForInputs(resources, inputs, [
+        HS.validate(block, block.workspace, makeRequiredValidationModelForInputs(resources, inputs, [
             resources.block_center, resources.block_inner_radius, resources.block_outer_radius, resources.block_inner_segments,
             resources.block_outer_segments, resources.block_inner_rotation, resources.block_outer_rotation, resources.block_start_angle
         ]));
@@ -75,7 +75,7 @@ export function createPrimitiveTorusBlock(): void {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `return bitbybit.solid.shapes.torus(inputs);`
+            `return bitbybit.jscad.shapes.torus(inputs);`
         );
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };

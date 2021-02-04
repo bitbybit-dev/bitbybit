@@ -1,4 +1,4 @@
-import { BaseTypes } from "../bitbybit/base-types";
+import { BaseTypes } from '../bitbybit/base-types';
 
 // tslint:disable-next-line: no-namespace
 export namespace Intersect {

@@ -2,7 +2,7 @@ import { ALIGN_RIGHT, Block, Blocks } from 'blockly';
 import * as JavaScript from 'blockly/javascript';
 import { ResourcesInterface, ResourcesService } from '../../resources';
 import { createStandardContextIIFE } from '../_shared';
-import { getRequired, makeRequiredValidationModelForInputs, BitByBitBlockHandlerService, ValidationEntityInterface } from '../validations';
+import { getRequired, makeRequiredValidationModelForInputs, HS, ValidationEntityInterface } from '../validations';
 import { environment } from '../../environments/environment';
 import { solidConstants } from './solid-constants';
 
@@ -16,10 +16,10 @@ export function createPrimitive2dPolygonFromCurveBlock(): void {
             this.appendValueInput('Curve')
                 .setCheck('NurbsCurve')
                 .setAlign(ALIGN_RIGHT)
-                .appendField(resources.block_csg_primitive_2d_polygon_from_curve_input_curve);
+                .appendField(resources.block_jscad_primitive_2d_polygon_from_curve_input_curve);
             this.setOutput(true, 'Polygon');
             this.setColour('#fff');
-            this.setTooltip(resources.block_csg_primitive_2d_polygon_from_curve_description);
+            this.setTooltip(resources.block_jscad_primitive_2d_polygon_from_curve_description);
             this.setHelpUrl(environment.docsUrl + solidConstants.solidPolygonHelpUrl + '#' + 'createfromcurve');
         }
     };
@@ -30,7 +30,7 @@ export function createPrimitive2dPolygonFromCurveBlock(): void {
         };
 
         // this is first set of validations to check that all inputs are non empty strings
-        BitByBitBlockHandlerService.validate(block, block.workspace, makeRequiredValidationModelForInputs(resources, inputs, [
+        HS.validate(block, block.workspace, makeRequiredValidationModelForInputs(resources, inputs, [
             resources.block_curve
         ]));
 
@@ -39,7 +39,7 @@ export function createPrimitive2dPolygonFromCurveBlock(): void {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `return bitbybit.solid.polygon.createFromCurve(inputs);`
+            `return bitbybit.jscad.polygon.createFromCurve(inputs);`
         );
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };

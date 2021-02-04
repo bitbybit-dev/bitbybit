@@ -7,6 +7,7 @@ export * from './line-inputs';
 export * from './polyline-inputs';
 export * from './curve-inputs';
 export * from './surface-inputs';
-export * from './solid-inputs';
+export * from './jscad-inputs';
 export * from './intersect-inputs';
 export * from './tag-inputs';
+export * from './occ-inputs';
