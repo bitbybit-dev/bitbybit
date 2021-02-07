@@ -38,7 +38,7 @@ export function createSweptSurfaceRailBlock(): void {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `return bitbybit.surface.sweep.rail(inputs);`
+            `return bitbybit.verb.surface.sweep.rail(inputs);`
         );
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };

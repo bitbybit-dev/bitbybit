@@ -48,7 +48,7 @@ export function createSurfacePointBlock(): void {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `return bitbybit.surface.point(inputs);`);
+            `return bitbybit.verb.surface.point(inputs);`);
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };
 }

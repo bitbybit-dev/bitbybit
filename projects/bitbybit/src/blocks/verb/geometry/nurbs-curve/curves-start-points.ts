@@ -38,7 +38,7 @@ export function createCurvesStartPointsBlock(): void {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `return bitbybit.curve.startPoints(inputs);`
+            `return bitbybit.verb.curve.startPoints(inputs);`
         );
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };

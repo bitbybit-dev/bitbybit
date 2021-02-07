@@ -43,7 +43,7 @@ export function createCurvesPointsAtParamBlock(): void {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `return bitbybit.curve.pointsAtParam(inputs);`
+            `return bitbybit.verb.curve.pointsAtParam(inputs);`
         );
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };

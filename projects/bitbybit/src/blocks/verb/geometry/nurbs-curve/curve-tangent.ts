@@ -43,7 +43,7 @@ export function createCurveTangentBlock(): void {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `return bitbybit.curve.tangent(inputs);`
+            `return bitbybit.verb.curve.tangent(inputs);`
         );
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };

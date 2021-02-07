@@ -60,7 +60,7 @@ export function createSurfaceIsocurvesSubdivisionBlock(): void {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `return bitbybit.surface.isocurvesSubdivision(inputs);`);
+            `return bitbybit.verb.surface.isocurvesSubdivision(inputs);`);
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };
 }

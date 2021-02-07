@@ -38,7 +38,7 @@ export function createCircleMinAngleBlock(): void {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `return bitbybit.curve.circle.minAngle(inputs);`
+            `return bitbybit.verb.curve.circle.minAngle(inputs);`
         );
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };

@@ -38,7 +38,7 @@ export function createConicalSurfaceHeightBlock(): void {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `return bitbybit.surface.cone.height(inputs);`
+            `return bitbybit.verb.surface.cone.height(inputs);`
         );
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };

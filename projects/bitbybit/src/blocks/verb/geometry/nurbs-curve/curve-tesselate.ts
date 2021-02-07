@@ -43,7 +43,7 @@ export function createCurveTessellateBlock(): void {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `return bitbybit.curve.tessellate(inputs);`
+            `return bitbybit.verb.curve.tessellate(inputs);`
         );
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };

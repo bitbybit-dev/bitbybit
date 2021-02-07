@@ -38,7 +38,7 @@ export function createSurfaceKnotsUBlock(): void {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `return bitbybit.surface.knotsU(inputs);`);
+            `return bitbybit.verb.surface.knotsU(inputs);`);
 
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };

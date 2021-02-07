@@ -38,7 +38,7 @@ export function createCurveKnotsBlock(): void {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `return bitbybit.curve.knots(inputs);`);
+            `return bitbybit.verb.curve.knots(inputs);`);
 
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };

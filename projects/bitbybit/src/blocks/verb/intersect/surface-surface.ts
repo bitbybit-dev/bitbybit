@@ -43,7 +43,7 @@ export function createIntersectSurfaceSurfaceBlock(): void {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `return bitbybit.intersect.surfaces(inputs);`
+            `return bitbybit.verb.intersect.surfaces(inputs);`
         );
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };

@@ -43,7 +43,7 @@ export function createSurfaceByLoftingCurvesBlock(): void {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `return bitbybit.surface.createSurfaceByLoftingCurves(inputs);`
+            `return bitbybit.verb.surface.createSurfaceByLoftingCurves(inputs);`
         );
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };

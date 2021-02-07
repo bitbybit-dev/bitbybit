@@ -38,7 +38,7 @@ export function createSurfaceDomainVBlock(): void {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `return bitbybit.surface.domainV(inputs);`);
+            `return bitbybit.verb.surface.domainV(inputs);`);
 
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };

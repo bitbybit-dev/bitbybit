@@ -18,7 +18,7 @@ export class VerbSurfaceRevolved {
      * <div>
      *  <img src="../assets/images/blockly-images/surface/revolved/create.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_surface_revolved.surfacerevolved.html#create
+     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_verb_surface_revolved.verbsurfacerevolved.html#create
      * @param inputs Parameters for Nurbs revolved surface
      * @returns Revolved Nurbs surface
      */
@@ -33,7 +33,7 @@ export class VerbSurfaceRevolved {
      * <div>
      *  <img src="../assets/images/blockly-images/surface/revolved/profile.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_surface_revolved.surfacerevolved.html#profile
+     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_verb_surface_revolved.verbsurfacerevolved.html#profile
      * @param inputs Revolved Nurbs surface
      * @returns Nurbs curve
      */
@@ -46,7 +46,7 @@ export class VerbSurfaceRevolved {
      * <div>
      *  <img src="../assets/images/blockly-images/surface/revolved/center.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_surface_revolved.surfacerevolved.html#center
+     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_verb_surface_revolved.verbsurfacerevolved.html#center
      * @param inputs Revolved Nurbs surface
      * @returns Center point
      */
@@ -59,7 +59,7 @@ export class VerbSurfaceRevolved {
      * <div>
      *  <img src="../assets/images/blockly-images/surface/revolved/axis.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_surface_revolved.surfacerevolved.html#axis
+     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_verb_surface_revolved.verbsurfacerevolved.html#axis
      * @param inputs Revolved Nurbs surface
      * @returns Axis vector of rotation
      */
@@ -72,7 +72,7 @@ export class VerbSurfaceRevolved {
      * <div>
      *  <img src="../assets/images/blockly-images/surface/revolved/angle.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_surface_revolved.surfacerevolved.html#angle
+     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_verb_surface_revolved.verbsurfacerevolved.html#angle
      * @param inputs Revolved Nurbs surface
      * @returns Angle in degrees
      */

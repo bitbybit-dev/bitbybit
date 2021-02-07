@@ -38,7 +38,7 @@ export function createSurfaceReverseBlock(): void {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `return bitbybit.surface.reverse(inputs);`);
+            `return bitbybit.verb.surface.reverse(inputs);`);
 
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };

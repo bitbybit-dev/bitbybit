@@ -43,7 +43,7 @@ export function createSurfaceTransformBlock(): void {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `return bitbybit.surface.transformSurface(inputs);`);
+            `return bitbybit.verb.surface.transformSurface(inputs);`);
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };
 }

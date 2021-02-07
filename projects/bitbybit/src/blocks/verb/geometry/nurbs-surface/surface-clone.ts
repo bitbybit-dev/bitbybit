@@ -39,7 +39,7 @@ export function createSurfaceCloneBlock(): void {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `return bitbybit.surface.clone(inputs);`);
+            `return bitbybit.verb.surface.clone(inputs);`);
 
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };

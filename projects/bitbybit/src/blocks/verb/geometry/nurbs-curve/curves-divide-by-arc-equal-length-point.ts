@@ -45,7 +45,7 @@ export function createCurvesDivideByEqualArcLengthPointsBlock(): void {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `return bitbybit.curve.divideCurvesByEqualArcLengthToPoints(inputs);`
+            `return bitbybit.verb.curve.divideCurvesByEqualArcLengthToPoints(inputs);`
         );
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };

@@ -38,7 +38,7 @@ export function createCircleCenterBlock(): void {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `return bitbybit.curve.circle.center(inputs);`
+            `return bitbybit.verb.curve.circle.center(inputs);`
         );
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };

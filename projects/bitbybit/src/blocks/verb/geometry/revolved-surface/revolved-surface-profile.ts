@@ -38,7 +38,7 @@ export function createRevolvedSurfaceProfileBlock(): void {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `return bitbybit.surface.revolved.profile(inputs);`
+            `return bitbybit.verb.surface.revolved.profile(inputs);`
         );
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };

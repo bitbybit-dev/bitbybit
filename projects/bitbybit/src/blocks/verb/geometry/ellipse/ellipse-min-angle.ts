@@ -38,7 +38,7 @@ export function createEllipseMinAngleBlock(): void {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `return bitbybit.curve.ellipse.minAngle(inputs);`
+            `return bitbybit.verb.curve.ellipse.minAngle(inputs);`
         );
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };

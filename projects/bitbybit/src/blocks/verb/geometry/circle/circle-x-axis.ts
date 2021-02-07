@@ -38,7 +38,7 @@ export function createCircleXAxisBlock(): void {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `return bitbybit.curve.circle.xAxis(inputs);`
+            `return bitbybit.verb.curve.circle.xAxis(inputs);`
         );
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };

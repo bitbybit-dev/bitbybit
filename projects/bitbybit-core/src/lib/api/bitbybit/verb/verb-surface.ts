@@ -35,7 +35,7 @@ export class VerbSurface {
      * <div>
      *  <img src="../assets/images/blockly-images/surface/drawSurface.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_surface.surface.html#drawsurface
+     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_verb_surface.verbsurface.html#drawsurface
      * @param inputs Contains a surface and information for drawing
      * @returns Mesh that is being drawn by Babylon
      */
@@ -67,7 +67,7 @@ export class VerbSurface {
      * <div>
      *  <img src="../assets/images/blockly-images/surface/drawSurfaces.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_surface.surface.html#drawsurfaces
+     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_verb_surface.verbsurface.html#drawsurfaces
      * @param inputs Contains the Nurbs surfaces and information for drawing
      * @returns Mesh that is being drawn by Babylon
      */
@@ -104,7 +104,7 @@ export class VerbSurface {
      * <div>
      *  <img src="../assets/images/blockly-images/surface/drawSurfacesMultiColour.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_surface.surface.html#drawsurfacesmulticolour
+     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_verb_surface.verbsurface.html#drawsurfacesmulticolour
      * @param inputs Contains the Nurbs surfaces, colours and other information for drawing
      * @returns Mesh that is being drawn by Babylon
      */
@@ -132,7 +132,7 @@ export class VerbSurface {
      * <div>
      *  <img src="../assets/images/blockly-images/surface/boundaries.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_surface.surface.html#boundaries
+     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_verb_surface.verbsurface.html#boundaries
      * @param inputs Nurbs surface
      * @returns Array of curves
      */
@@ -145,7 +145,7 @@ export class VerbSurface {
      * <div>
      *  <img src="../assets/images/blockly-images/surface/createSurfaceByCorners.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_surface.surface.html#createsurfacebycorners
+     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_verb_surface.verbsurface.html#createsurfacebycorners
      * @param inputs 4 points
      * @returns Nurbs surface
      */
@@ -158,7 +158,7 @@ export class VerbSurface {
      * <div>
      *  <img src="../assets/images/blockly-images/surface/createSurfaceByKnotsControlPointsWeights.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_surface.surface.html#createsurfacebyknotscontrolpointsweights
+     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_verb_surface.verbsurface.html#createsurfacebyknotscontrolpointsweights
      * @param inputs Surface creation information
      * @returns Nurbs surface
      */
@@ -178,7 +178,7 @@ export class VerbSurface {
      * <div>
      *  <img src="../assets/images/blockly-images/surface/createSurfaceByLoftingCurves.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_surface.surface.html#createsurfacebyloftingcurves
+     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_verb_surface.verbsurface.html#createsurfacebyloftingcurves
      * @param inputs Curves to loft through
      * @returns Nurbs surface
      */
@@ -191,7 +191,7 @@ export class VerbSurface {
      * <div>
      *  <img src="../assets/images/blockly-images/surface/clone.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_surface.surface.html#clone
+     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_verb_surface.verbsurface.html#clone
      * @param inputs Nurbs surface
      * @returns Nurbs surface
      */
@@ -204,7 +204,7 @@ export class VerbSurface {
      * <div>
      *  <img src="../assets/images/blockly-images/surface/closestParam.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_surface.surface.html#closestparam
+     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_verb_surface.verbsurface.html#closestparam
      * @param inputs Nurbs surface with a point
      * @returns UV parameters
      */
@@ -217,7 +217,7 @@ export class VerbSurface {
      * <div>
      *  <img src="../assets/images/blockly-images/surface/closestPoint.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_surface.surface.html#closestpoint
+     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_verb_surface.verbsurface.html#closestpoint
      * @param inputs Nurbs surface with a point
      * @returns Point
      */
@@ -230,7 +230,7 @@ export class VerbSurface {
      * <div>
      *  <img src="../assets/images/blockly-images/surface/controlPoints.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_surface.surface.html#controlpoints
+     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_verb_surface.verbsurface.html#controlpoints
      * @param inputs Nurbs surface
      * @returns Two dimensional array of points
      */
@@ -243,7 +243,7 @@ export class VerbSurface {
      * <div>
      *  <img src="../assets/images/blockly-images/surface/degreeU.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_surface.surface.html#degreeu
+     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_verb_surface.verbsurface.html#degreeu
      * @param inputs Nurbs surface
      * @returns U degree
      */
@@ -256,7 +256,7 @@ export class VerbSurface {
      * <div>
      *  <img src="../assets/images/blockly-images/surface/degreeV.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_surface.surface.html#degreev
+     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_verb_surface.verbsurface.html#degreev
      * @param inputs Nurbs surface
      * @returns V degree
      */
@@ -269,7 +269,7 @@ export class VerbSurface {
      * <div>
      *  <img src="../assets/images/blockly-images/surface/derivatives.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_surface.surface.html#derivatives
+     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_verb_surface.verbsurface.html#derivatives
      * @param inputs Nurbs surface
      * @returns Two dimensional array of vectors
      */
@@ -282,7 +282,7 @@ export class VerbSurface {
      * <div>
      *  <img src="../assets/images/blockly-images/surface/domainU.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_surface.surface.html#domainu
+     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_verb_surface.verbsurface.html#domainu
      * @param inputs Nurbs surface
      * @returns U domain as interval
      */
@@ -295,7 +295,7 @@ export class VerbSurface {
      * <div>
      *  <img src="../assets/images/blockly-images/surface/domainV.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_surface.surface.html#domainv
+     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_verb_surface.verbsurface.html#domainv
      * @param inputs Nurbs surface
      * @returns V domain as interval
      */
@@ -308,7 +308,7 @@ export class VerbSurface {
      * <div>
      *  <img src="../assets/images/blockly-images/surface/isocurve.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_surface.surface.html#isocurve
+     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_verb_surface.verbsurface.html#isocurve
      * @param inputs Nurbs surface
      * @returns Nurbs curve
      */
@@ -321,7 +321,7 @@ export class VerbSurface {
      * <div>
      *  <img src="../assets/images/blockly-images/surface/isocurvesSubdivision.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_surface.surface.html#isocurvesubdivision
+     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_verb_surface.verbsurface.html#isocurvesubdivision
      * @param inputs Nurbs surface
      * @returns Nurbs curves
      */
@@ -344,7 +344,7 @@ export class VerbSurface {
      * <div>
      *  <img src="../assets/images/blockly-images/surface/isocurvesAtParams.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_surface.surface.html#isocurvesatparams
+     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_verb_surface.verbsurface.html#isocurvesatparams
      * @param inputs Nurbs surface
      * @returns Nurbs curves
      */
@@ -359,7 +359,7 @@ export class VerbSurface {
      * <div>
      *  <img src="../assets/images/blockly-images/surface/knotsU.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_surface.surface.html#knotsu
+     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_verb_surface.verbsurface.html#knotsu
      * @param inputs Nurbs surface
      * @returns Knots on u direction
      */
@@ -372,7 +372,7 @@ export class VerbSurface {
      * <div>
      *  <img src="../assets/images/blockly-images/surface/knotsV.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_surface.surface.html#knotsv
+     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_verb_surface.verbsurface.html#knotsv
      * @param inputs Nurbs surface
      * @returns Knots on v direction
      */
@@ -385,7 +385,7 @@ export class VerbSurface {
      * <div>
      *  <img src="../assets/images/blockly-images/surface/normal.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_surface.surface.html#normal
+     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_verb_surface.verbsurface.html#normal
      * @param inputs Nurbs surface
      * @returns Normal vector
      */
@@ -398,7 +398,7 @@ export class VerbSurface {
      * <div>
      *  <img src="../assets/images/blockly-images/surface/point.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_surface.surface.html#point
+     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_verb_surface.verbsurface.html#point
      * @param inputs Nurbs surface
      * @returns Point
      */
@@ -411,7 +411,7 @@ export class VerbSurface {
      * <div>
      *  <img src="../assets/images/blockly-images/surface/reverse.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_surface.surface.html#reverse
+     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_verb_surface.verbsurface.html#reverse
      * @param inputs Nurbs surface
      * @returns Nurbs surface
      */
@@ -424,7 +424,7 @@ export class VerbSurface {
      * <div>
      *  <img src="../assets/images/blockly-images/surface/split.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_surface.surface.html#split
+     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_verb_surface.verbsurface.html#split
      * @param inputs Nurbs surface
      * @returns Two Nurbs surfaces
      */
@@ -437,7 +437,7 @@ export class VerbSurface {
      * <div>
      *  <img src="../assets/images/blockly-images/surface/transformSurface.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_surface.surface.html#transformsurface
+     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_verb_surface.verbsurface.html#transformsurface
      * @param inputs Nurbs surface with transforms
      * @returns Nurbs surface
      */
@@ -464,7 +464,7 @@ export class VerbSurface {
      * <div>
      *  <img src="../assets/images/blockly-images/surface/weights.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_surface.surface.html#weights
+     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_verb_surface.verbsurface.html#weights
      * @param inputs Nurbs surface
      * @returns Two dimensional array of weights
      */

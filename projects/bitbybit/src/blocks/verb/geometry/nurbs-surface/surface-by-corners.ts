@@ -54,7 +54,7 @@ export function createSurfaceByCornersBlock(): void {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `return bitbybit.surface.createSurfaceByCorners(inputs);`);
+            `return bitbybit.verb.surface.createSurfaceByCorners(inputs);`);
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };
 }

@@ -67,14 +67,14 @@ bitbybit.scene.drawGridMesh(drawGridMeshInput);
 
 const pointsForCurve = [[0, 0, 0], [1, 2, -2], [-2, 3, -1], [0, 4, 2], [2, 2, 0], [2, 3, 0], [0, 0, 1]];
 
-const curve = bitbybit.curve.createCurveByPoints({ points: pointsForCurve, degree: 3 });
+const curve = bitbybit.verb.curve.createCurveByPoints({ points: pointsForCurve, degree: 3 });
 
 const drawCurveInput = new Inputs.Verb.DrawCurveDto(curve);
 drawCurveInput.width = 5;
 drawCurveInput.colour = greyColour;
-bitbybit.curve.drawCurve(drawCurveInput);
+bitbybit.verb.curve.drawCurve(drawCurveInput);
 
-const subdividedPoints = bitbybit.curve.divideByEqualArcLengthToPoints({
+const subdividedPoints = bitbybit.verb.curve.divideByEqualArcLengthToPoints({
     curve,
     subdivision: 20,
 });
@@ -102,7 +102,7 @@ const span = bitbybit.vector.span({
 });
 
 const circles = span.map(i => {
-    const circle = bitbybit.curve.circle.createCircle({
+    const circle = bitbybit.verb.curve.circle.createCircle({
         radius: 1,
         center: [0, 1, 0],
         xAxis: [1, 0, 0],
@@ -121,11 +121,11 @@ const circles = span.map(i => {
         }),
     ];
 
-    return bitbybit.curve.transform({ curve: circle, matrix: transforms });
+    return bitbybit.verb.curve.transform({ curve: circle, matrix: transforms });
 });
 
 const drawCurvesInput = new Bit.Inputs.Verb.DrawCurvesDto(circles);
-bitbybit.curve.drawCurves(drawCurvesInput);
+bitbybit.verb.curve.drawCurves(drawCurvesInput);
 `,
                 xml: '<xml xmlns="https://developers.google.com/blockly/xml"><variables><variable id="#m#?`4B/fIGB5f^ctze!">circles</variable><variable id="_K.Y}_:Z}Kr^6#P(R.}c">i</variable><variable id="QMjq3DdDOk8V7URR#EJR">curvesMesh</variable></variables><block type="babylon_scene_background_colour" id="-bYn/Kkkt%{aG6t7W#N3" x="-1111" y="280"><value name="Colour"><block type="colour_picker" id="fnTm;hH#|VM7lIxyq.(p"><field name="COLOUR">#cccccc</field></block></value><next><block type="variables_set" id="AD|+IhFM/R,|G~K}OUB`"><field name="VAR" id="#m#?`4B/fIGB5f^ctze!">circles</field><value name="VALUE"><block type="lists_create_with" id="/EPm)Z8HKO2RGz}:P.W@"><mutation items="0"></mutation></block></value><next><block type="controls_for" id="CUJyz{Mz/s|[b9@BQ;9#"><field name="VAR" id="_K.Y}_:Z}Kr^6#P(R.}c">i</field><value name="FROM"><block type="math_number" id=")2eo=W)n2):(A]*q~k.D"><field name="NUM">0</field></block></value><value name="TO"><block type="math_number" id="/-_?{L8D?b3SwsKxoM2;"><field name="NUM">20</field></block></value><value name="BY"><block type="math_number" id="4XWT1Jh4fG`a*YBBW}+t"><field name="NUM">0.2</field></block></value><statement name="DO"><block type="lists_setIndex" id=",9f-s]aJJBnQ^PsujJ2D"><mutation at="false"></mutation><field name="MODE">INSERT</field><field name="WHERE">LAST</field><value name="LIST"><block type="variables_get" id="Qc9uyI+i}Dm8lh5M7t+s"><field name="VAR" id="#m#?`4B/fIGB5f^ctze!">circles</field></block></value><value name="TO"><block type="verb_geometry_nurbs_curve_transform" id="RUMe7R+X^_UhLY*,3Eq?"><value name="Curve"><block type="verb_geometry_nurbs_curve_transform" id="2u@YCa+v}lEun,8kP,[`"><value name="Curve"><block type="verb_geometry_nurbs_curve_circle" id="^bG6FS(mTWzCdD4vaNAC"><value name="Center"><block type="base_geometry_point" id="*GEY}y*2y!Gh`_E3qHU6"><value name="X"><block type="math_number" id="(5/lSX.AjX~ywKr8|3d("><field name="NUM">0</field></block></value><value name="Y"><block type="math_number" id="{MjH?Q1K.]FSk)d7b`av"><field name="NUM">1</field></block></value><value name="Z"><block type="math_number" id="hridLbl#y8)VVy;fMLwM"><field name="NUM">0</field></block></value></block></value><value name="XAxis"><block type="base_geometry_point" id="tB8KB22f?SS[J4p;7DUR"><value name="X"><block type="math_number" id="=#ZL@ibCL!Q2#;7T_{xN"><field name="NUM">1</field></block></value><value name="Y"><block type="math_number" id="jxrg!G@S=V9pgyCQ~B`i"><field name="NUM">0</field></block></value><value name="Z"><block type="math_number" id="+4bp0!G*)v1z$gguEhio"><field name="NUM">0</field></block></value></block></value><value name="YAxis"><block type="base_geometry_point" id="GOkl}e_eOu$:=Z$E}NEB"><value name="X"><block type="math_number" id="H(s;1$.)w|,]s91pG-Zh"><field name="NUM">0</field></block></value><value name="Y"><block type="math_number" id="alGniX|j4;v#Q)xD.Gi3"><field name="NUM">1</field></block></value><value name="Z"><block type="math_number" id="9n)(E!dxdCqys`Mf]$m@"><field name="NUM">0</field></block></value></block></value><value name="Radius"><block type="math_number" id="7@W_5}$DiI{z{+O?SAep"><field name="NUM">1</field></block></value></block></value><value name="Matrix"><block type="babylon_transformation_scale_center_xyz" id="G7.746h;TtDFex?Wb:x0"><value name="ScaleXYZ"><block type="verb_core_vector" id="NyV1bHZMHf0P8p74:l|c"><value name="X"><block type="math_number" id="E1G$X8c]AuU2Jj~*QH#I"><field name="NUM">2</field></block></value><value name="Y"><block type="math_number" id="Xs_;pHFzI_~6{t#@)V@j"><field name="NUM">2</field></block></value><value name="Z"><block type="math_number" id="%WR2g#8oje}kgr91`/j="><field name="NUM">2</field></block></value></block><block type="verb_core_vector" id="wD-Mrx/WEj6a=BVtUjj9"><value name="X"><block type="variables_get" id="U:D9-!zM%j!x1FWDIBqU"><field name="VAR" id="_K.Y}_:Z}Kr^6#P(R.}c">i</field></block></value><value name="Y"><block type="variables_get" id="V,HvDH+%drZzk:7l1T$E"><field name="VAR" id="_K.Y}_:Z}Kr^6#P(R.}c">i</field></block></value><value name="Z"><block type="variables_get" id="|*I3?6C3kAOR++U5=3.6"><field name="VAR" id="_K.Y}_:Z}Kr^6#P(R.}c">i</field></block></value></block></value><value name="Center"><block type="verb_core_vector" id="dxEc4`76URTA_J!2{r7u"><value name="X"><block type="math_number" id="!9^RpLqJt::1:k,--eY{"><field name="NUM">0</field></block></value><value name="Y"><block type="math_number" id="6f2RH1*E/jX$u-@H,]`~"><field name="NUM">0</field></block></value><value name="Z"><block type="math_number" id="pMEau:9h5nLmIlWhKSwx"><field name="NUM">0</field></block></value></block><block type="verb_core_vector" id="afYl/=A*D8Y#)8#Z1do@"><value name="X"><block type="math_number" id="oM0C{DA27EMB7XK=A.JX"><field name="NUM">0</field></block></value><value name="Y"><block type="math_arithmetic" id="pMD/c9o~!X%aM#aQcDtA"><field name="OP">ADD</field><value name="A"><block type="math_number" id="ZvS9]63U2PpFEP56(u`8"><field name="NUM">1</field></block></value><value name="B"><block type="math_arithmetic" id="6u9D:c,.#K(r;:f.-*IW"><field name="OP">DIVIDE</field><value name="A"><block type="variables_get" id="ZH)fep/bnUC9#WGE49q6"><field name="VAR" id="_K.Y}_:Z}Kr^6#P(R.}c">i</field></block></value><value name="B"><block type="math_number" id="ific4PN.jUzb!A(xa[Sq"><field name="NUM">-100</field></block></value></block></value></block></value><value name="Z"><block type="math_number" id="xFG6I|Q.(NPI2rdF2tUb"><field name="NUM">0</field></block></value></block></value></block></value></block></value><value name="Matrix"><block type="babylon_transformation_rotation_center_axis" id="sD$Gao,r9,o:fhdX+T]6"><value name="Angle"><block type="math_number" id="]ByD4x}Tkk8O:.o$i;AP"><field name="NUM">45</field></block><block type="math_arithmetic" id="ghVq^f]([xk85]rj{MF2"><field name="OP">MULTIPLY</field><value name="A"><block type="variables_get" id="BZOI}U[1#N,GwB]IG_As"><field name="VAR" id="_K.Y}_:Z}Kr^6#P(R.}c">i</field></block></value><value name="B"><block type="variables_get" id="SLEu~UqFeR1zJ+,Yk2aE"><field name="VAR" id="_K.Y}_:Z}Kr^6#P(R.}c">i</field></block></value></block></value><value name="Axis"><block type="verb_core_vector" id="q|dY|pWxcE:!A5.p]RI1"><value name="X"><block type="math_number" id="Gem3=,$KCqbpS0:-,k:+"><field name="NUM">0</field></block></value><value name="Y"><block type="math_number" id="qc8]@+(gT.c}FG^UizSg"><field name="NUM">1</field></block></value><value name="Z"><block type="math_number" id="uM:B6tih$`z)_@xq(:V4"><field name="NUM">0</field></block></value></block></value><value name="Center"><block type="verb_core_vector" id="`xRJ,-qD$?*SBj5@|=1d"><value name="X"><block type="math_number" id="U3|Wu)uSfN$=G88,@{Pn"><field name="NUM">0</field></block></value><value name="Y"><block type="math_number" id="kkEn?JS6Y{:xP0@*ucC%"><field name="NUM">0</field></block></value><value name="Z"><block type="math_number" id="P)a;rmUnd8vR%^brQ/IZ"><field name="NUM">0</field></block></value></block></value></block></value></block></value></block></statement><next><block type="babylon_draw_curves" id="Pk,rY0/bw4.,i^%$Q8oO"><field name="DrawnCurvesMesh" id="QMjq3DdDOk8V7URR#EJR">curvesMesh</field><value name="Curves"><block type="variables_get" id="_:mVOXsXw@I,[r?Iw;#f"><field name="VAR" id="#m#?`4B/fIGB5f^ctze!">circles</field></block></value><value name="Colour"><block type="colour_picker" id="S/$/pYDwYC9Gj{}-8[^Y"><field name="COLOUR">#666666</field></block></value><value name="Opacity"><block type="math_number" id="FCfu9(UeC;Cc^PGGdvwi"><field name="NUM">1</field></block></value><value name="Width"><block type="math_number" id="$,)I2hiR{`,c5ZD-D5,T"><field name="NUM">3</field></block></value><value name="Updatable"><block type="logic_boolean" id="fP,w6B8..Iy^{/TAk5f-"><field name="BOOL">FALSE</field></block></value></block></next></block></next></block></next></block></xml>',
             },
@@ -162,39 +162,39 @@ const downloadStl = false;
 
 bitbybit.scene.backgroundColour({ colour: '#000000' });
 const profiles = [
-    bitbybit.curve.ellipse.createEllipse({
+    bitbybit.verb.curve.ellipse.createEllipse({
         center: [0, 0, 0],
         xAxis: [2, -0.5, 2],
         yAxis: [0, -0.5, 2],
     }),
-    bitbybit.curve.ellipse.createEllipse({
+    bitbybit.verb.curve.ellipse.createEllipse({
         center: [0, 3, 0],
         xAxis: [2, 0, 0],
         yAxis: [0, 0, 4],
     }),
-    bitbybit.curve.ellipse.createEllipse({
+    bitbybit.verb.curve.ellipse.createEllipse({
         center: [0, 6, 0],
         xAxis: [4, 0, 0],
         yAxis: [0, 0, 2],
     }),
-    bitbybit.curve.ellipse.createEllipse({
+    bitbybit.verb.curve.ellipse.createEllipse({
         center: [0, 12, 0],
         xAxis: [1, 0, 0],
         yAxis: [0, 0, 2],
     }),
-    bitbybit.curve.ellipse.createEllipse({
+    bitbybit.verb.curve.ellipse.createEllipse({
         center: [0, 16, 0],
         xAxis: [2, 0.5, 0],
         yAxis: [0, 0.5, 2],
     }),
 ];
 
-const surface = bitbybit.surface.createSurfaceByLoftingCurves({
+const surface = bitbybit.verb.surface.createSurfaceByLoftingCurves({
     curves: profiles,
     degreeV: 3,
 });
 
-const allIsocurves = bitbybit.surface.isocurvesSubdivision({
+const allIsocurves = bitbybit.verb.surface.isocurvesSubdivision({
     surface,
     isocurveSegments,
     includeFirst: true,
@@ -203,7 +203,7 @@ const allIsocurves = bitbybit.surface.isocurvesSubdivision({
 });
 
 const hullSolids = allIsocurves.map((curve) => {
-    const centers = bitbybit.curve.divideByEqualArcLengthToPoints({
+    const centers = bitbybit.verb.curve.divideByEqualArcLengthToPoints({
         curve,
         subdivision: isocurveSubdivisions,
     });
@@ -371,7 +371,7 @@ function verticalLinesForIntersection(hexGrid: number[][]) {
 }
 
 function createNurbsSurfaceForHexGridProjections(hexGridPoints: number[][], nrHexagonsY: number) {
-    const surface = bitbybit.surface.createSurfaceByCorners({
+    const surface = bitbybit.verb.surface.createSurfaceByCorners({
         point1: bitbybit.point.transformPoint({
             point: hexGridPoints[0], matrix: bitbybit.transforms.translationXYZ({ translation: [0, 100, 0] }),
         }),
@@ -385,7 +385,7 @@ function createNurbsSurfaceForHexGridProjections(hexGridPoints: number[][], nrHe
             point: hexGridPoints[hexGridPoints.length - nrHexagonsY], matrix: bitbybit.transforms.translationXYZ({ translation: [0, 40, 0] }),
         }),
     });
-    return bitbybit.surface.transformSurface({
+    return bitbybit.verb.surface.transformSurface({
         surface,
         matrix: [
             bitbybit.transforms.scaleXYZ({ scaleXyz: [1.5, 1, 1.5] }),
@@ -397,7 +397,7 @@ function createNurbsSurfaceForHexGridProjections(hexGridPoints: number[][], nrHe
 function findIntersectionsOnSurface(linesForIntersection: Bit.Inputs.Line.LinePointsDto[], surface: number): number[][] {
     return linesForIntersection.map(line => {
         const curve = bitbybit.line.convertToNurbsCurve({ line });
-        const intersection = bitbybit.intersect.curveAndSurface({ curve, surface });
+        const intersection = bitbybit.verb.intersect.curveAndSurface({ curve, surface });
         let result;
         if (intersection.length > 0) {
             result = intersection[0].curvePoint;
