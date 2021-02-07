@@ -54,7 +54,7 @@ export class JSCADPolygon {
      * @param inputs Nurbs curve
      * @returns Polygon
      */
-    createFromCurve(inputs: Inputs.Curve.CurveDto): any {
+    createFromCurve(inputs: Inputs.Verb.CurveDto): any {
         const twoDimensionalPoints = inputs.curve.tessellate().map(pt => [pt[0], pt[1]]);
         return this.removeDuplicatesAndCreateFromPoints(twoDimensionalPoints);
     }

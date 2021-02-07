@@ -7,7 +7,7 @@ import { RouterModule } from '@angular/router';
 import { SimplebarAngularModule } from 'simplebar-angular';
 import { MonacoEditorModule, NgxMonacoEditorConfig } from 'ngx-monaco-editor';
 import { BitbybitCoreModule } from 'projects/bitbybit-core/src/public-api';
-import * as DeclarationStrings from 'projects/bitbybit-core/src/lib/string-declarations';
+import { typescriptDeclarations } from 'projects/bitbybit-core/src/lib/api/declarations';
 
 const monacoConfig: NgxMonacoEditorConfig = {
     onMonacoLoad: () => {
@@ -23,73 +23,7 @@ const monacoConfig: NgxMonacoEditorConfig = {
 
         const uri = new window.monaco.Uri();
 
-        let libSource = `
-        declare namespace Bit {
-            namespace Inputs {
-                ${DeclarationStrings.nodeInputsString}
-                ${DeclarationStrings.sceneInputsString}
-                ${DeclarationStrings.vectorInputsString}
-                ${DeclarationStrings.transformsInputsString}
-                ${DeclarationStrings.pointInputsString}
-                ${DeclarationStrings.lineInputsString}
-                ${DeclarationStrings.polylineInputsString}
-                ${DeclarationStrings.curveInputsString}
-                ${DeclarationStrings.surfaceInputsString}
-                ${DeclarationStrings.jscadInputsString}
-                ${DeclarationStrings.intersectInputsString}
-                ${DeclarationStrings.tagInputsString}
-                ${DeclarationStrings.occInputsString}
-            }
-            ${DeclarationStrings.baseTypesString}
-            ${DeclarationStrings.vectorString}
-            ${DeclarationStrings.transformsString}
-            ${DeclarationStrings.sceneString}
-            ${DeclarationStrings.nodeString}
-            ${DeclarationStrings.pointString}
-            ${DeclarationStrings.lineString}
-            ${DeclarationStrings.polylineString}
-            ${DeclarationStrings.curveEllipseString}
-            ${DeclarationStrings.curveCircleString}
-            ${DeclarationStrings.curveString}
-            ${DeclarationStrings.surfaceString}
-            ${DeclarationStrings.surfaceConicalString}
-            ${DeclarationStrings.surfaceCylindricalString}
-            ${DeclarationStrings.surfaceExtrusionString}
-            ${DeclarationStrings.surfaceRevolvedString}
-            ${DeclarationStrings.surfaceSphericalString}
-            ${DeclarationStrings.surfaceSweepString}
-            ${DeclarationStrings.jscadString}
-            ${DeclarationStrings.jscadBooleansString}
-            ${DeclarationStrings.jscadExpansionsString}
-            ${DeclarationStrings.jscadExtrusionsString}
-            ${DeclarationStrings.jscadHullsString}
-            ${DeclarationStrings.jscadPathString}
-            ${DeclarationStrings.jscadPolygonString}
-            ${DeclarationStrings.jscadShapesString}
-            ${DeclarationStrings.jscadTextString}
-            ${DeclarationStrings.intersectString}
-            ${DeclarationStrings.tagString}
-            ${DeclarationStrings.timeString}
-            ${DeclarationStrings.occString}
-
-            class BitByBitBase {
-                readonly vector: Vector;
-                readonly scene: Scene;
-                readonly transforms: Transforms;
-                readonly node: Node;
-                readonly point: Point;
-                readonly line: Line;
-                readonly polyline: Polyline;
-                readonly curve: Curve;
-                readonly surface: Surface;
-                readonly jscad: JSCAD;
-                readonly intersect: Intersect;
-                readonly tag: Tag;
-                readonly time: Time;
-                readonly occ: OCC;
-            }
-        }
-        `;
+        let libSource = typescriptDeclarations;
 
         let libUri = 'ts:filename/base.d.ts';
         monaco.languages.typescript.typescriptDefaults.addExtraLib(libSource, libUri);
