@@ -74,31 +74,88 @@ export function solidCategory(): string {
                 </block>
             </value>
         </block>
-        <category name="${resources.block_toolbox_category_create}"  categorystyle="geometry_category">
             <category name="${resources.block_toolbox_category_2d_path}" categorystyle="geometry_category">
-                <block type="csg_primitive_2d_path_from_points">
-                    <value name="Closed">
-                        <block type="logic_boolean">
-                            <field name="BOOL">FALSE</field>
-                        </block>
-                    </value>
-                </block>
-                <block type="csg_primitive_2d_path_from_polyline">
-                    <value name="Closed">
-                        <block type="logic_boolean">
-                            <field name="BOOL">FALSE</field>
-                        </block>
-                    </value>
-                </block>
-                <block type="csg_primitive_2d_path_from_curve">
-                    <value name="Closed">
-                        <block type="logic_boolean">
-                            <field name="BOOL">FALSE</field>
-                        </block>
-                    </value>
-                </block>
-                <block type="csg_primitive_2d_path_empty">
-                </block>
+                <category name="${resources.block_toolbox_category_create}" categorystyle="geometry_category">
+                    <block type="csg_primitive_2d_path_from_points">
+                        <value name="Closed">
+                            <block type="logic_boolean">
+                                <field name="BOOL">FALSE</field>
+                            </block>
+                        </value>
+                    </block>
+                    <block type="csg_primitive_2d_path_from_polyline">
+                        <value name="Closed">
+                            <block type="logic_boolean">
+                                <field name="BOOL">FALSE</field>
+                            </block>
+                        </value>
+                    </block>
+                    <block type="csg_primitive_2d_path_from_curve">
+                        <value name="Closed">
+                            <block type="logic_boolean">
+                                <field name="BOOL">FALSE</field>
+                            </block>
+                        </value>
+                    </block>
+                    <block type="csg_primitive_2d_path_empty">
+                    </block>
+                </category>
+                <category name="${resources.block_toolbox_category_apply}" categorystyle="geometry_category">
+                    <block type="csg_primitive_2d_path_close">
+                    </block>
+                    <block type="csg_primitive_2d_path_append_points">
+                    </block>
+                    <block type="csg_primitive_2d_path_append_polyline">
+                    </block>
+                    <block type="csg_primitive_2d_path_append_curve">
+                    </block>
+                    <block type="csg_primitive_2d_path_append_arc">
+                        <value name="EndPoint">
+                            <block type="base_geometry_point_2d">
+                                <value name="X">
+                                    <block type="math_number">
+                                        <field name="NUM">0</field>
+                                    </block>
+                                </value>
+                                <value name="Y">
+                                    <block type="math_number">
+                                        <field name="NUM">0</field>
+                                    </block>
+                                </value>
+                            </block>
+                        </value>
+                        <value name="RadiusX">
+                            <block type="math_number">
+                                <field name="NUM">1</field>
+                            </block>
+                        </value>
+                        <value name="RadiusZ">
+                            <block type="math_number">
+                                <field name="NUM">1</field>
+                            </block>
+                        </value>
+                        <value name="XAxisRotation">
+                            <block type="math_number">
+                                <field name="NUM">0</field>
+                            </block>
+                        </value>
+                        <value name="Clockwise">
+                            <block type="logic_boolean">
+                                <field name="BOOL">FALSE</field>
+                            </block>
+                        </value>
+                        <value name="Large">
+                            <block type="logic_boolean">
+                                <field name="BOOL">FALSE</field>
+                            </block>
+                        </value>
+                        <value name="Segments">
+                            <block type="math_number">
+                                <field name="NUM">16</field>
+                            </block>
+                        </value>
+                    </block>
+                </category>
             </category>
             <category name="${resources.block_toolbox_category_2d_polygon}" categorystyle="geometry_category">
                 <block type="csg_primitive_2d_polygon_from_points">
@@ -1079,66 +1136,10 @@ export function solidCategory(): string {
                     </value>
                 </block>
             </category>
-        </category>
-        <category name="${resources.block_toolbox_category_apply}"  categorystyle="geometry_category">
-            <block type="csg_transform">
-            </block>
-            <block type="csg_transform_solids">
-            </block>
-            <category name="${resources.block_toolbox_category_2d_path}" categorystyle="geometry_category">
-                <block type="csg_primitive_2d_path_close">
+            <category name="${resources.block_toolbox_category_apply_transform}"  categorystyle="geometry_category">
+                <block type="csg_transform">
                 </block>
-                <block type="csg_primitive_2d_path_append_points">
-                </block>
-                <block type="csg_primitive_2d_path_append_polyline">
-                </block>
-                <block type="csg_primitive_2d_path_append_curve">
-                </block>
-                <block type="csg_primitive_2d_path_append_arc">
-                    <value name="EndPoint">
-                        <block type="base_geometry_point_2d">
-                            <value name="X">
-                                <block type="math_number">
-                                    <field name="NUM">0</field>
-                                </block>
-                            </value>
-                            <value name="Y">
-                                <block type="math_number">
-                                    <field name="NUM">0</field>
-                                </block>
-                            </value>
-                        </block>
-                    </value>
-                    <value name="RadiusX">
-                        <block type="math_number">
-                            <field name="NUM">1</field>
-                        </block>
-                    </value>
-                    <value name="RadiusZ">
-                        <block type="math_number">
-                            <field name="NUM">1</field>
-                        </block>
-                    </value>
-                    <value name="XAxisRotation">
-                        <block type="math_number">
-                            <field name="NUM">0</field>
-                        </block>
-                    </value>
-                    <value name="Clockwise">
-                        <block type="logic_boolean">
-                            <field name="BOOL">FALSE</field>
-                        </block>
-                    </value>
-                    <value name="Large">
-                        <block type="logic_boolean">
-                            <field name="BOOL">FALSE</field>
-                        </block>
-                    </value>
-                    <value name="Segments">
-                        <block type="math_number">
-                            <field name="NUM">16</field>
-                        </block>
-                    </value>
+                <block type="csg_transform_solids">
                 </block>
             </category>
             <category name="${resources.block_toolbox_category_boolean}" categorystyle="geometry_category">
@@ -1333,7 +1334,6 @@ export function solidCategory(): string {
                     </value>
                 </block>
             </category>
-        </category>
     </category>
 `;
 }

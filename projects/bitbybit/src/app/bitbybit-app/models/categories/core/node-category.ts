@@ -1,53 +1,55 @@
 import { ResourcesService } from '../../../../../resources';
 
-export function nodeCategory() {
+export function nodeCategory(): string {
     const resources = ResourcesService.getResources();
     return `
     <category name="${resources.block_toolbox_category_core_node}"  categorystyle="verb_core_category">
-        <block type="babylon_draw_node">
-            <value name="ColorX">
-                <block type="colour_picker">
-                    <field name="COLOUR">#FF0000</field>
-                </block>
-            </value>
-            <value name="ColorY">
-                <block type="colour_picker">
-                    <field name="COLOUR">#00FF00</field>
-                </block>
-            </value>
-            <value name="ColorZ">
-                <block type="colour_picker">
-                    <field name="COLOUR">#0000FF</field>
-                </block>
-            </value>
-            <value name="Size">
-                <block type="math_number">
-                    <field name="NUM">1</field>
-                </block>
-            </value>
-        </block>
-        <block type="babylon_draw_nodes">
-            <value name="ColorX">
-                <block type="colour_picker">
-                    <field name="COLOUR">#FF0000</field>
-                </block>
-            </value>
-            <value name="ColorY">
-                <block type="colour_picker">
-                    <field name="COLOUR">#00FF00</field>
-                </block>
-            </value>
-            <value name="ColorZ">
-                <block type="colour_picker">
-                    <field name="COLOUR">#0000FF</field>
-                </block>
-            </value>
-            <value name="Size">
-                <block type="math_number">
-                    <field name="NUM">1</field>
-                </block>
-            </value>
-        </block>
+        <category name="${resources.block_toolbox_category_draw}"  categorystyle="geometry_category">
+            <block type="babylon_draw_node">
+                <value name="ColorX">
+                    <block type="colour_picker">
+                        <field name="COLOUR">#FF0000</field>
+                    </block>
+                </value>
+                <value name="ColorY">
+                    <block type="colour_picker">
+                        <field name="COLOUR">#00FF00</field>
+                    </block>
+                </value>
+                <value name="ColorZ">
+                    <block type="colour_picker">
+                        <field name="COLOUR">#0000FF</field>
+                    </block>
+                </value>
+                <value name="Size">
+                    <block type="math_number">
+                        <field name="NUM">1</field>
+                    </block>
+                </value>
+            </block>
+            <block type="babylon_draw_nodes">
+                <value name="ColorX">
+                    <block type="colour_picker">
+                        <field name="COLOUR">#FF0000</field>
+                    </block>
+                </value>
+                <value name="ColorY">
+                    <block type="colour_picker">
+                        <field name="COLOUR">#00FF00</field>
+                    </block>
+                </value>
+                <value name="ColorZ">
+                    <block type="colour_picker">
+                        <field name="COLOUR">#0000FF</field>
+                    </block>
+                </value>
+                <value name="Size">
+                    <block type="math_number">
+                        <field name="NUM">1</field>
+                    </block>
+                </value>
+            </block>
+        </category>
         <category name="${resources.block_toolbox_category_create}" categorystyle="geometry_category">
             <block type="base_geometry_node_from_rotation">
                 <value name="Origin">
@@ -97,12 +99,14 @@ export function nodeCategory() {
             </block>
         </category>
         <category name="${resources.block_toolbox_category_apply}"  categorystyle="geometry_category">
-            <block type="base_geometry_node_rotate">
-            </block>
-            <block type="base_geometry_node_rotate_around">
-            </block>
-            <block type="base_geometry_node_translate">
-            </block>
+            <category name="${resources.block_toolbox_category_apply_transform}" categorystyle="geometry_category">
+                <block type="base_geometry_node_rotate">
+                </block>
+                <block type="base_geometry_node_rotate_around">
+                </block>
+                <block type="base_geometry_node_translate">
+                </block>
+            </category>
             <category name="${resources.block_toolbox_category_apply_get}" categorystyle="geometry_category">
                 <block type="base_geometry_node_get_root">
                 </block>

@@ -14,4 +14,4 @@ Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app w
 BitByBit will always keep it's Core free and opensource for its users. Principles of minimalism and simplicity are reflected in all of the design decisions we make. Application itself is frictionless, users don't need to create accounts or install browser plugins. https://bitbybit.dev/app immediately starts the empty canvas for your code and an empty 3D world. All Core algorithms will always remain opensource and will not require any backend based server  infrastructure. This will allow application to be used on various devices.
 
 # Major Dependencies
-Verbnurbs, BabylonJS, Blockly, JSCAD
+BabylonJS, Blockly, OpenCascade, JSCAD, Verbnurbs

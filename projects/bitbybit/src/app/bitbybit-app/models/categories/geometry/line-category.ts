@@ -1,117 +1,119 @@
 import { ResourcesService } from '../../../../../resources';
 
-export function lineCategory() {
+export function lineCategory(): string {
     const resources = ResourcesService.getResources();
     return `
     <category name="${resources.block_toolbox_category_geom_line}"  categorystyle="geometry_category">
-        <block type="babylon_draw_line">
-            <value name="Colour">
-                <block type="colour_picker">
-                    <field name="COLOUR">#555</field>
-                </block>
-            </value>
-            <value name="Width">
-                <block type="math_number">
-                    <field name="NUM">3</field>
-                </block>
-            </value>
-            <value name="Opacity">
-                <block type="math_number">
-                    <field name="NUM">1</field>
-                </block>
-            </value>
-            <value name="Updatable">
-                <block type="logic_boolean">
-                    <field name="BOOL">FALSE</field>
-                </block>
-            </value>
-        </block>
-        <block type="babylon_draw_line">
-            <value name="Line">
-                <block type="base_geometry_line">
-                    <value name="StartPoint">
-                        <block type="base_geometry_point">
-                            <value name="X">
-                                <block type="math_number">
-                                    <field name="NUM">-1</field>
-                                </block>
-                            </value>
-                            <value name="Y">
-                                <block type="math_number">
-                                    <field name="NUM">-1</field>
-                                </block>
-                            </value>
-                            <value name="Z">
-                                <block type="math_number">
-                                    <field name="NUM">-1</field>
-                                </block>
-                            </value>
-                        </block>
-                    </value>
-                    <value name="EndPoint">
-                        <block type="base_geometry_point">
-                            <value name="X">
-                                <block type="math_number">
-                                    <field name="NUM">1</field>
-                                </block>
-                            </value>
-                            <value name="Y">
-                                <block type="math_number">
-                                    <field name="NUM">1</field>
-                                </block>
-                            </value>
-                            <value name="Z">
-                                <block type="math_number">
-                                    <field name="NUM">1</field>
-                                </block>
-                            </value>
-                        </block>
-                    </value>
-                </block>
-            </value>
-            <value name="Colour">
-                <block type="colour_picker">
-                    <field name="COLOUR">#555</field>
-                </block>
-            </value>
-            <value name="Width">
-                <block type="math_number">
-                    <field name="NUM">3</field>
-                </block>
-            </value>
-            <value name="Opacity">
-                <block type="math_number">
-                    <field name="NUM">1</field>
-                </block>
-            </value>
-            <value name="Updatable">
-                <block type="logic_boolean">
-                    <field name="BOOL">FALSE</field>
-                </block>
-            </value>
-        </block>
-        <block type="babylon_draw_lines">
-            <value name="Colour">
-                <block type="colour_picker">
-                    <field name="COLOUR">#555</field>
-                </block>
-            </value>
-            <value name="Width">
-                <block type="math_number">
-                    <field name="NUM">3</field>
-                </block>
-            </value>
-            <value name="Opacity">
-                <block type="math_number">
-                    <field name="NUM">1</field>
-                </block>
-            </value>
-            <value name="Updatable">
-                <block type="logic_boolean">
-                    <field name="BOOL">FALSE</field>
-                </block>
-            </value>
-        </block>
+        <category name="${resources.block_toolbox_category_draw}"  categorystyle="geometry_category">
+            <block type="babylon_draw_line">
+                <value name="Colour">
+                    <block type="colour_picker">
+                        <field name="COLOUR">#555</field>
+                    </block>
+                </value>
+                <value name="Width">
+                    <block type="math_number">
+                        <field name="NUM">3</field>
+                    </block>
+                </value>
+                <value name="Opacity">
+                    <block type="math_number">
+                        <field name="NUM">1</field>
+                    </block>
+                </value>
+                <value name="Updatable">
+                    <block type="logic_boolean">
+                        <field name="BOOL">FALSE</field>
+                    </block>
+                </value>
+            </block>
+            <block type="babylon_draw_line">
+                <value name="Line">
+                    <block type="base_geometry_line">
+                        <value name="StartPoint">
+                            <block type="base_geometry_point">
+                                <value name="X">
+                                    <block type="math_number">
+                                        <field name="NUM">-1</field>
+                                    </block>
+                                </value>
+                                <value name="Y">
+                                    <block type="math_number">
+                                        <field name="NUM">-1</field>
+                                    </block>
+                                </value>
+                                <value name="Z">
+                                    <block type="math_number">
+                                        <field name="NUM">-1</field>
+                                    </block>
+                                </value>
+                            </block>
+                        </value>
+                        <value name="EndPoint">
+                            <block type="base_geometry_point">
+                                <value name="X">
+                                    <block type="math_number">
+                                        <field name="NUM">1</field>
+                                    </block>
+                                </value>
+                                <value name="Y">
+                                    <block type="math_number">
+                                        <field name="NUM">1</field>
+                                    </block>
+                                </value>
+                                <value name="Z">
+                                    <block type="math_number">
+                                        <field name="NUM">1</field>
+                                    </block>
+                                </value>
+                            </block>
+                        </value>
+                    </block>
+                </value>
+                <value name="Colour">
+                    <block type="colour_picker">
+                        <field name="COLOUR">#555</field>
+                    </block>
+                </value>
+                <value name="Width">
+                    <block type="math_number">
+                        <field name="NUM">3</field>
+                    </block>
+                </value>
+                <value name="Opacity">
+                    <block type="math_number">
+                        <field name="NUM">1</field>
+                    </block>
+                </value>
+                <value name="Updatable">
+                    <block type="logic_boolean">
+                        <field name="BOOL">FALSE</field>
+                    </block>
+                </value>
+            </block>
+            <block type="babylon_draw_lines">
+                <value name="Colour">
+                    <block type="colour_picker">
+                        <field name="COLOUR">#555</field>
+                    </block>
+                </value>
+                <value name="Width">
+                    <block type="math_number">
+                        <field name="NUM">3</field>
+                    </block>
+                </value>
+                <value name="Opacity">
+                    <block type="math_number">
+                        <field name="NUM">1</field>
+                    </block>
+                </value>
+                <value name="Updatable">
+                    <block type="logic_boolean">
+                        <field name="BOOL">FALSE</field>
+                    </block>
+                </value>
+            </block>
+        </category>
         <category name="${resources.block_toolbox_category_create}"  categorystyle="geometry_category">
             <block type="base_geometry_line">
             </block>

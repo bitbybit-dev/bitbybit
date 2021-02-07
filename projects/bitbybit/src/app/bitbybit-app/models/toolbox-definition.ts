@@ -3,12 +3,10 @@ import { transformsCategory } from './categories/core/transforms-category';
 import { typesCategory } from './categories/core/types-category';
 import { nodeCategory } from './categories/core/node-category';
 import { vectorCategory } from './categories/core/vector-category';
-import { curveCategory } from './categories/geometry/curve-category';
 import { lineCategory } from './categories/geometry/line-category';
 import { pointCategory } from './categories/geometry/point-category';
 import { polylineCategory } from './categories/geometry/polyline-category';
-import { surfaceCategory } from './categories/geometry/surface-category';
-import { intersectCategory } from './categories/intersect/intersect-category';
+import { verbCategory } from './categories/verb/verb-category';
 import { ioCategory } from './categories/io/io-category';
 import { sceneCategory } from './categories/scene/scene-category';
 import { tagCategory } from './categories/tag/tag-category';
@@ -29,12 +27,10 @@ export function toolboxDefinition(): string {
     ${pointCategory()}
     ${lineCategory()}
     ${polylineCategory()}
-    ${curveCategory()}
-    ${surfaceCategory()}
+    ${verbCategory()}
     ${occCategory()}
     ${solidCategory()}
     <sep></sep>
-    ${intersectCategory()}
     ${tagCategory()}
     <sep></sep>
     ${ioCategory()}

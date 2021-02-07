@@ -207,7 +207,6 @@ export class BitbybitAppComponent implements OnInit, OnDestroy, AfterViewInit {
                 BitByBitBlocklyHelperService.clearAllDrawn = () => this.clearMeshesAndMaterials();
 
                 this.settingsService.initSettings(this.workspace, this.changeDetectorService).subscribe(s => {
-                    this.collapseExpandedMenus();
 
                     this.route.queryParamMap.subscribe(param => {
                         const exampleParam = param.get('examples');
@@ -253,7 +252,6 @@ export class BitbybitAppComponent implements OnInit, OnDestroy, AfterViewInit {
 
                 setTimeout(() => {
                     this.onResize();
-                    this.collapseExpandedMenus();
                 });
             });
 
@@ -265,17 +263,6 @@ export class BitbybitAppComponent implements OnInit, OnDestroy, AfterViewInit {
         this.timePassedFromPreviousIteration = now;
         BitByBitBlocklyHelperService.renderLoopBag.forEach(f => f(timeElapsedFromPreviousIteration));
         this.scene.render();
-    }
-
-    private collapseExpandedMenus(): void {
-        const treeRows = document.body.querySelectorAll(
-            '.blocklyTreeRow');
-        treeRows.forEach((element) => {
-            const ariaExpanded = element.parentElement.attributes.getNamedItem('aria-expanded');
-            if (ariaExpanded) {
-                (element as HTMLElement).click();
-            }
-        });
     }
 
     ngOnInit(): void {
