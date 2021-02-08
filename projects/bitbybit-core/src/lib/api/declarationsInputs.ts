@@ -1,4 +1,14 @@
-export const inputDeclarations = `declare namespace BaseTypes {
+export const inputDeclarations = `* from './vector-inputs';
+* from './scene-inputs';
+* from './node-inputs';
+* from './transforms-inputs';
+* from './point-inputs';
+* from './line-inputs';
+* from './polyline-inputs';
+* from './verb-inputs';
+* from './jscad-inputs';
+* from './tag-inputs';
+* from './occ-inputs';declare namespace BaseTypes {
     /**
      * Interval represents an object that has two properties - min and max.
      */
@@ -92,44 +102,6 @@ export const inputDeclarations = `declare namespace BaseTypes {
          */
         dist: number;
     }
-}* from './vector-inputs';
-* from './scene-inputs';
-* from './node-inputs';
-* from './transforms-inputs';
-* from './point-inputs';
-* from './line-inputs';
-* from './polyline-inputs';
-* from './verb-inputs';
-* from './jscad-inputs';
-* from './tag-inputs';
-* from './occ-inputs';/**
- * Contains various functions for Solid booleans from JSCAD library http://openjscad.org
- * Thanks JSCAD community for developing this kernel
- */
-declare class JSCADBooleans {
-    private readonly context;
-    constructor(context: Context);
-    /**
-     * Intersect multiple solid mesh objects
-     * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_booleans.jscadbooleans.html#intersect
-     * @param inputs Contains multiple solids for intersection
-     * @returns Solid mesh
-     */
-    intersect(inputs: Inputs.JSCAD.BooleanObjectsDto): any;
-    /**
-     * Subtract multiple solid mesh objects
-     * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_booleans.jscadbooleans.html#subtract
-     * @param inputs Contains multiple solids for subtraction
-     * @returns Solid mesh
-     */
-    subtract(inputs: Inputs.JSCAD.BooleanObjectsDto): any;
-    /**
-     * Union multiple solid mesh objects
-     * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_booleans.jscadbooleans.html#union
-     * @param inputs Contains multiple solids for union
-     * @returns Solid mesh
-     */
-    union(inputs: Inputs.JSCAD.BooleanObjectsDto): any;
 }declare namespace JSCAD {
     class DrawSolidMeshDto {
         /**
@@ -938,27 +910,33 @@ declare class JSCADBooleans {
         right = "right"
     }
 }/**
- * Contains various functions for Solid expansions from JSCAD library http://openjscad.org
+ * Contains various functions for Solid booleans from JSCAD library http://openjscad.org
  * Thanks JSCAD community for developing this kernel
  */
-declare class JSCADExpansions {
+declare class JSCADBooleans {
     private readonly context;
-    private readonly geometryHelper;
-    constructor(context: Context, geometryHelper: GeometryHelper);
+    constructor(context: Context);
     /**
-     * Expand geometries of solid category
-     * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_expansions.jscadexpansions.html#expand
-     * @param inputs Contains options and geometries for expansion
-     * @returns Expanded geometry
+     * Intersect multiple solid mesh objects
+     * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_booleans.jscadbooleans.html#intersect
+     * @param inputs Contains multiple solids for intersection
+     * @returns Solid mesh
      */
-    expand(inputs: Inputs.JSCAD.ExpansionDto): any | any[];
+    intersect(inputs: Inputs.JSCAD.BooleanObjectsDto): any;
     /**
-     * Offset 2d geometries of solid category
-     * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_expansions.jscadexpansions.html#offset
-     * @param inputs Contains options and geometries for offset
-     * @returns Expanded geometry
+     * Subtract multiple solid mesh objects
+     * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_booleans.jscadbooleans.html#subtract
+     * @param inputs Contains multiple solids for subtraction
+     * @returns Solid mesh
      */
-    offset(inputs: Inputs.JSCAD.ExpansionDto): any | any[];
+    subtract(inputs: Inputs.JSCAD.BooleanObjectsDto): any;
+    /**
+     * Union multiple solid mesh objects
+     * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_booleans.jscadbooleans.html#union
+     * @param inputs Contains multiple solids for union
+     * @returns Solid mesh
+     */
+    union(inputs: Inputs.JSCAD.BooleanObjectsDto): any;
 }declare namespace Line {
     class LinePointsDto {
         /**
@@ -1087,41 +1065,27 @@ declare class JSCADExpansions {
         matrix: number[][] | number[][][];
     }
 }/**
- * Contains various functions for Solid extrusions from JSCAD library http://openjscad.org
+ * Contains various functions for Solid expansions from JSCAD library http://openjscad.org
  * Thanks JSCAD community for developing this kernel
  */
-declare class JSCADExtrusions {
+declare class JSCADExpansions {
     private readonly context;
     private readonly geometryHelper;
     constructor(context: Context, geometryHelper: GeometryHelper);
     /**
-     * Linear extrude 2D geometries of solid category
-     * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_extrusions.jscadextrusions.html#extrudelinear
-     * @param inputs Contains options and geometries for linear extrude
-     * @returns Extruded geometry
+     * Expand geometries of solid category
+     * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_expansions.jscadexpansions.html#expand
+     * @param inputs Contains options and geometries for expansion
+     * @returns Expanded geometry
      */
-    extrudeLinear(inputs: Inputs.JSCAD.ExtrudeLinearDto): any | any[];
+    expand(inputs: Inputs.JSCAD.ExpansionDto): any | any[];
     /**
-     * Rectangular extrude 2D geometries of solid category. Creates a wall-type extrusion of certain height and size.
-     * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_extrusions.jscadextrusions.html#extruderectangular
-     * @param inputs Contains options and geometries for rectangular extrude
-     * @returns Extruded geometry
+     * Offset 2d geometries of solid category
+     * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_expansions.jscadexpansions.html#offset
+     * @param inputs Contains options and geometries for offset
+     * @returns Expanded geometry
      */
-    extrudeRectangular(inputs: Inputs.JSCAD.ExtrudeRectangularDto): any | any[];
-    /**
-     * Rectangular extrude a list of 2D points. Creates a wall-type extrusion of certain height and size.
-     * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_extrusions.jscadextrusions.html#extruderectangularpoints
-     * @param inputs Contains options and points for extrusion
-     * @returns Extruded geometry
-     */
-    extrudeRectangularPoints(inputs: Inputs.JSCAD.ExtrudeRectangularPointsDto): any;
-    /**
-     * Rectangular extrude a list of 2D points. Creates a wall-type extrusion of certain height and size.
-     * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_extrusions.jscadextrusions.html#extruderotate
-     * @param inputs Contains options and points for extrusion
-     * @returns Extruded geometry
-     */
-    extrudeRotate(inputs: Inputs.JSCAD.ExtrudeRotateDto): any;
+    offset(inputs: Inputs.JSCAD.ExpansionDto): any | any[];
 }declare namespace Node {
     class NodeDto {
         /**
@@ -1244,28 +1208,41 @@ declare class JSCADExtrusions {
         size: number;
     }
 }/**
- * Contains various functions for Solid hulls from JSCAD library http://openjscad.org
+ * Contains various functions for Solid extrusions from JSCAD library http://openjscad.org
  * Thanks JSCAD community for developing this kernel
  */
-declare class JSCADHulls {
+declare class JSCADExtrusions {
     private readonly context;
-    constructor(context: Context);
+    private readonly geometryHelper;
+    constructor(context: Context, geometryHelper: GeometryHelper);
     /**
-     * Hull chain connects solids or 2d geometries by filling an empty space in between objects in order.
-     * Geometries need to be of the same type.
-     * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_hulls.jscadhulls.html#chainhull
-     * @param inputs Geometries
-     * @returns Chain hulled geometry
+     * Linear extrude 2D geometries of solid category
+     * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_extrusions.jscadextrusions.html#extrudelinear
+     * @param inputs Contains options and geometries for linear extrude
+     * @returns Extruded geometry
      */
-    hullChain(inputs: Inputs.JSCAD.HullDto): any | any[];
+    extrudeLinear(inputs: Inputs.JSCAD.ExtrudeLinearDto): any | any[];
     /**
-     * Convex hull connects solids or 2d geometries by filling an empty space in between without following order.
-     * Geometries need to be of the same type.
-     * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_hulls.jscadhulls.html#chainhull
-     * @param inputs Geometries
-     * @returns Hulled geometry
+     * Rectangular extrude 2D geometries of solid category. Creates a wall-type extrusion of certain height and size.
+     * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_extrusions.jscadextrusions.html#extruderectangular
+     * @param inputs Contains options and geometries for rectangular extrude
+     * @returns Extruded geometry
      */
-    hull(inputs: Inputs.JSCAD.HullDto): any | any[];
+    extrudeRectangular(inputs: Inputs.JSCAD.ExtrudeRectangularDto): any | any[];
+    /**
+     * Rectangular extrude a list of 2D points. Creates a wall-type extrusion of certain height and size.
+     * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_extrusions.jscadextrusions.html#extruderectangularpoints
+     * @param inputs Contains options and points for extrusion
+     * @returns Extruded geometry
+     */
+    extrudeRectangularPoints(inputs: Inputs.JSCAD.ExtrudeRectangularPointsDto): any;
+    /**
+     * Rectangular extrude a list of 2D points. Creates a wall-type extrusion of certain height and size.
+     * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_extrusions.jscadextrusions.html#extruderotate
+     * @param inputs Contains options and points for extrusion
+     * @returns Extruded geometry
+     */
+    extrudeRotate(inputs: Inputs.JSCAD.ExtrudeRotateDto): any;
 }declare namespace OCC {
     class DrawShapeDto {
         /**
@@ -1718,76 +1695,28 @@ declare class JSCADHulls {
         planar: boolean;
     }
 }/**
- * Contains various functions for Path from JSCAD library http://openjscad.org
+ * Contains various functions for Solid hulls from JSCAD library http://openjscad.org
  * Thanks JSCAD community for developing this kernel
  */
-declare class JSCADPath {
+declare class JSCADHulls {
     private readonly context;
-    private readonly geometryHelper;
-    constructor(context: Context, geometryHelper: GeometryHelper);
+    constructor(context: Context);
     /**
-     * Create a 2D path from a list of points
-     * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_path.jscadpath.html#createfrompoints
-     * @param inputs Points and indication if we want a closed path or not
-     * @returns Path
+     * Hull chain connects solids or 2d geometries by filling an empty space in between objects in order.
+     * Geometries need to be of the same type.
+     * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_hulls.jscadhulls.html#chainhull
+     * @param inputs Geometries
+     * @returns Chain hulled geometry
      */
-    createFromPoints(inputs: Inputs.JSCAD.PathFromPointsDto): any;
+    hullChain(inputs: Inputs.JSCAD.HullDto): any | any[];
     /**
-     * Create a 2D path from a polyline
-     * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_path.jscadpath.html#createfrompolyline
-     * @param inputs Polyline and indication if we want a closed path or not
-     * @returns Path
+     * Convex hull connects solids or 2d geometries by filling an empty space in between without following order.
+     * Geometries need to be of the same type.
+     * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_hulls.jscadhulls.html#chainhull
+     * @param inputs Geometries
+     * @returns Hulled geometry
      */
-    createFromPolyline(inputs: Inputs.JSCAD.PathFromPolylineDto): any;
-    /**
-     * Create a 2D path from a curve
-     * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_path.jscadpath.html#createfromcurve
-     * @param inputs Curve and indication if we want a closed path or not
-     * @returns Path
-     */
-    createFromCurve(inputs: Inputs.JSCAD.PathFromCurveDto): any;
-    /**
-     * Create empty 2D path
-     * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_path.jscadpath.html#createempty
-     * @returns Emprty path
-     */
-    createEmpty(): any;
-    /**
-     * Closes an open 2D path
-     * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_path.jscadpath.html#close
-     * @param inputs Path
-     * @returns Closed path
-     */
-    close(inputs: Inputs.JSCAD.PathDto): any;
-    /**
-     * Append the path with 2D points
-     * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_path.jscadpath.html#appendpoints
-     * @param inputs Path to append and points
-     * @returns Appended path
-     */
-    appendPoints(inputs: Inputs.JSCAD.PathAppendPointsDto): any;
-    /**
-     * Append the path with polyline
-     * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_path.jscadpath.html#appendpolyline
-     * @param inputs Path to append and polyline
-     * @returns Appended path
-     */
-    appendPolyline(inputs: Inputs.JSCAD.PathAppendPolylineDto): any;
-    /**
-     * Append the path with the curve
-     * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_path.jscadpath.html#appendcurve
-     * @param inputs Path to append and a curve
-     * @returns Appended path
-     */
-    appendCurve(inputs: Inputs.JSCAD.PathAppendCurveDto): any;
-    /**
-     * Append the arc to the path
-     * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_path.jscadpath.html#appendarc
-     * @param inputs Path and arc parameters
-     * @returns Appended path
-     */
-    appendArc(inputs: Inputs.JSCAD.PathAppendArcDto): any;
-    private removeDuplicatesAndCreateFromPoints;
+    hull(inputs: Inputs.JSCAD.HullDto): any | any[];
 }declare namespace Point {
     class PointDto {
         /**
@@ -1948,83 +1877,75 @@ declare class JSCADPath {
         radiusHexagon: number;
     }
 }/**
- * Contains various functions for Polygon from JSCAD library http://openjscad.org
+ * Contains various functions for Path from JSCAD library http://openjscad.org
  * Thanks JSCAD community for developing this kernel
  */
-declare class JSCADPolygon {
+declare class JSCADPath {
     private readonly context;
     private readonly geometryHelper;
     constructor(context: Context, geometryHelper: GeometryHelper);
     /**
-     * Create a 2D polygon from a list of points
-     * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_polygon.jscadpolygon.html#createfrompoints
-     * @param inputs Points
+     * Create a 2D path from a list of points
+     * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_path.jscadpath.html#createfrompoints
+     * @param inputs Points and indication if we want a closed path or not
      * @returns Path
      */
-    createFromPoints(inputs: Inputs.Point.PointsDto): any;
+    createFromPoints(inputs: Inputs.JSCAD.PathFromPointsDto): any;
     /**
-     * Create a 2D polygon from a polyline
-     * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_polygon.jscadpolygon.html#createfrompolyline
-     * @param inputs Polyline
-     * @returns Polygon
+     * Create a 2D path from a polyline
+     * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_path.jscadpath.html#createfrompolyline
+     * @param inputs Polyline and indication if we want a closed path or not
+     * @returns Path
      */
-    createFromPolyline(inputs: Inputs.Polyline.PolylineDto): any;
+    createFromPolyline(inputs: Inputs.JSCAD.PathFromPolylineDto): any;
     /**
-     * Create a 2D polygon from a curve
-     * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_polygon.jscadpolygon.html#createfromcurve
-     * @param inputs Nurbs curve
-     * @returns Polygon
+     * Create a 2D path from a curve
+     * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_path.jscadpath.html#createfromcurve
+     * @param inputs Curve and indication if we want a closed path or not
+     * @returns Path
      */
-    createFromCurve(inputs: Inputs.Verb.CurveDto): any;
+    createFromCurve(inputs: Inputs.JSCAD.PathFromCurveDto): any;
     /**
-     * Create a 2D polygon from a path
-     * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_polygon.jscadpolygon.html#createfrompath
+     * Create empty 2D path
+     * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_path.jscadpath.html#createempty
+     * @returns Emprty path
+     */
+    createEmpty(): any;
+    /**
+     * Closes an open 2D path
+     * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_path.jscadpath.html#close
      * @param inputs Path
-     * @returns Polygon
+     * @returns Closed path
      */
-    createFromPath(inputs: Inputs.JSCAD.PathDto): any;
+    close(inputs: Inputs.JSCAD.PathDto): any;
     /**
-     * Create a 2D polygon circle
-     * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_polygon.jscadpolygon.html#circle
-     * @param inputs Circle parameters
-     * @returns Circle polygon
+     * Append the path with 2D points
+     * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_path.jscadpath.html#appendpoints
+     * @param inputs Path to append and points
+     * @returns Appended path
      */
-    circle(inputs: Inputs.JSCAD.CircleDto): any;
+    appendPoints(inputs: Inputs.JSCAD.PathAppendPointsDto): any;
     /**
-     * Create a 2D polygon ellipse
-     * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_polygon.jscadpolygon.html#ellipse
-     * @param inputs Ellipse parameters
-     * @returns Ellipse polygon
+     * Append the path with polyline
+     * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_path.jscadpath.html#appendpolyline
+     * @param inputs Path to append and polyline
+     * @returns Appended path
      */
-    ellipse(inputs: Inputs.JSCAD.EllipseDto): any;
+    appendPolyline(inputs: Inputs.JSCAD.PathAppendPolylineDto): any;
     /**
-     * Create a 2D polygon rectangle
-     * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_polygon.jscadpolygon.html#rectangle
-     * @param inputs Rectangle parameters
-     * @returns Rectangle polygon
+     * Append the path with the curve
+     * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_path.jscadpath.html#appendcurve
+     * @param inputs Path to append and a curve
+     * @returns Appended path
      */
-    rectangle(inputs: Inputs.JSCAD.RectangleDto): any;
+    appendCurve(inputs: Inputs.JSCAD.PathAppendCurveDto): any;
     /**
-     * Create a 2D rounded rectangle
-     * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_polygon.jscadpolygon.html#roundedrectangle
-     * @param inputs Rounded rectangle parameters
-     * @returns Rounded rectangle polygon
+     * Append the arc to the path
+     * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_path.jscadpath.html#appendarc
+     * @param inputs Path and arc parameters
+     * @returns Appended path
      */
-    roundedRectangle(inputs: Inputs.JSCAD.RoundedRectangleDto): any;
-    /**
-     * Create a 2D polygon square
-     * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_polygon.jscadpolygon.html#square
-     * @param inputs Square parameters
-     * @returns Square polygon
-     */
-    square(inputs: Inputs.JSCAD.SquareDto): any;
-    /**
-     * Create a 2D polygon star
-     * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_polygon.jscadpolygon.html#star
-     * @param inputs Star parameters
-     * @returns Star polygon
-     */
-    star(inputs: Inputs.JSCAD.StarDto): any;
+    appendArc(inputs: Inputs.JSCAD.PathAppendArcDto): any;
     private removeDuplicatesAndCreateFromPoints;
 }declare namespace Polyline {
     class PolylinePropertiesDto {
@@ -2118,6 +2039,184 @@ declare class JSCADPolygon {
          * Polyline mesh variable in case it already exists and needs updating
          */
         polylinesMesh?: LinesMesh;
+    }
+}/**
+ * Contains various functions for Polygon from JSCAD library http://openjscad.org
+ * Thanks JSCAD community for developing this kernel
+ */
+declare class JSCADPolygon {
+    private readonly context;
+    private readonly geometryHelper;
+    constructor(context: Context, geometryHelper: GeometryHelper);
+    /**
+     * Create a 2D polygon from a list of points
+     * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_polygon.jscadpolygon.html#createfrompoints
+     * @param inputs Points
+     * @returns Path
+     */
+    createFromPoints(inputs: Inputs.Point.PointsDto): any;
+    /**
+     * Create a 2D polygon from a polyline
+     * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_polygon.jscadpolygon.html#createfrompolyline
+     * @param inputs Polyline
+     * @returns Polygon
+     */
+    createFromPolyline(inputs: Inputs.Polyline.PolylineDto): any;
+    /**
+     * Create a 2D polygon from a curve
+     * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_polygon.jscadpolygon.html#createfromcurve
+     * @param inputs Nurbs curve
+     * @returns Polygon
+     */
+    createFromCurve(inputs: Inputs.Verb.CurveDto): any;
+    /**
+     * Create a 2D polygon from a path
+     * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_polygon.jscadpolygon.html#createfrompath
+     * @param inputs Path
+     * @returns Polygon
+     */
+    createFromPath(inputs: Inputs.JSCAD.PathDto): any;
+    /**
+     * Create a 2D polygon circle
+     * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_polygon.jscadpolygon.html#circle
+     * @param inputs Circle parameters
+     * @returns Circle polygon
+     */
+    circle(inputs: Inputs.JSCAD.CircleDto): any;
+    /**
+     * Create a 2D polygon ellipse
+     * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_polygon.jscadpolygon.html#ellipse
+     * @param inputs Ellipse parameters
+     * @returns Ellipse polygon
+     */
+    ellipse(inputs: Inputs.JSCAD.EllipseDto): any;
+    /**
+     * Create a 2D polygon rectangle
+     * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_polygon.jscadpolygon.html#rectangle
+     * @param inputs Rectangle parameters
+     * @returns Rectangle polygon
+     */
+    rectangle(inputs: Inputs.JSCAD.RectangleDto): any;
+    /**
+     * Create a 2D rounded rectangle
+     * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_polygon.jscadpolygon.html#roundedrectangle
+     * @param inputs Rounded rectangle parameters
+     * @returns Rounded rectangle polygon
+     */
+    roundedRectangle(inputs: Inputs.JSCAD.RoundedRectangleDto): any;
+    /**
+     * Create a 2D polygon square
+     * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_polygon.jscadpolygon.html#square
+     * @param inputs Square parameters
+     * @returns Square polygon
+     */
+    square(inputs: Inputs.JSCAD.SquareDto): any;
+    /**
+     * Create a 2D polygon star
+     * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_polygon.jscadpolygon.html#star
+     * @param inputs Star parameters
+     * @returns Star polygon
+     */
+    star(inputs: Inputs.JSCAD.StarDto): any;
+    private removeDuplicatesAndCreateFromPoints;
+}declare namespace Scene {
+    class SceneBackgroundColourDto {
+        /**
+         * Provide options without default values
+         */
+        constructor(colour?: string);
+        /**
+         * Hex colour string for the scene background colour
+         */
+        colour: string;
+    }
+    class SceneDrawGridMeshDto {
+        /**
+         * Width of the grid
+         */
+        width: number;
+        /**
+         * Height of the ground
+         */
+        height: number;
+        /**
+         * Ground subdivisions
+         */
+        subdivisions: number;
+        /**
+         * The frequency of thicker lines.
+         */
+        majorUnitFrequency: number;
+        /**
+         * The visibility of minor units in the grid.
+         */
+        minorUnitVisibility: number;
+        /**
+         * The scale of the grid compared to unit.
+         */
+        gridRatio: number;
+        /**
+         * The grid opacity outside of the lines.
+         */
+        opacity: number;
+        /**
+         * Cull the back faces
+         */
+        backFaceCulling: boolean;
+        /**
+         * Main color of the grid (e.g. between lines)
+         */
+        mainColor: string;
+        /**
+         * Color of the grid lines.
+         */
+        secondaryColor: string;
+    }
+    class PointLightDto {
+        /**
+         * Position of the point light
+         */
+        position: number[];
+        /**
+         * Intensity of the point light, value between 0 and 1
+         */
+        intensity: number;
+        /**
+         * Diffuse colour of the point light
+         */
+        diffuse: string;
+        /**
+         * Specular colour of the point light
+         */
+        specular: string;
+        /**
+         * Radius of the sphere mesh representing the light bulb. If 0 light gets created without the mesh
+         */
+        radius: number;
+    }
+    class CameraConfigurationDto {
+        /**
+         * Position of the point light
+         */
+        position: number[];
+        /**
+         * Lets configure how far the camera can see
+         */
+        maxZ: number;
+        /**
+         * Panning sensibility. If large units are used for the model, this number needs to get larger
+         */
+        panningSensibility: number;
+        /**
+         * Zoom precision of the wheel. If large units are used, this number needs to get smaller
+         */
+        wheelPrecision: number;
+    }
+    class MeshInstanceAndTransformDto {
+        mesh: Mesh;
+        position: number[];
+        rotation: number[];
+        scaling: number[];
     }
 }/**
  * Contains various functions for solid 3D shapes from JSCAD library http://openjscad.org
@@ -2260,128 +2359,6 @@ declare class JSCADShapes {
      * @returns Torus solid
      */
     torus(inputs: Inputs.JSCAD.TorusDto): any;
-}declare namespace Scene {
-    class SceneBackgroundColourDto {
-        /**
-         * Provide options without default values
-         */
-        constructor(colour?: string);
-        /**
-         * Hex colour string for the scene background colour
-         */
-        colour: string;
-    }
-    class SceneDrawGridMeshDto {
-        /**
-         * Width of the grid
-         */
-        width: number;
-        /**
-         * Height of the ground
-         */
-        height: number;
-        /**
-         * Ground subdivisions
-         */
-        subdivisions: number;
-        /**
-         * The frequency of thicker lines.
-         */
-        majorUnitFrequency: number;
-        /**
-         * The visibility of minor units in the grid.
-         */
-        minorUnitVisibility: number;
-        /**
-         * The scale of the grid compared to unit.
-         */
-        gridRatio: number;
-        /**
-         * The grid opacity outside of the lines.
-         */
-        opacity: number;
-        /**
-         * Cull the back faces
-         */
-        backFaceCulling: boolean;
-        /**
-         * Main color of the grid (e.g. between lines)
-         */
-        mainColor: string;
-        /**
-         * Color of the grid lines.
-         */
-        secondaryColor: string;
-    }
-    class PointLightDto {
-        /**
-         * Position of the point light
-         */
-        position: number[];
-        /**
-         * Intensity of the point light, value between 0 and 1
-         */
-        intensity: number;
-        /**
-         * Diffuse colour of the point light
-         */
-        diffuse: string;
-        /**
-         * Specular colour of the point light
-         */
-        specular: string;
-        /**
-         * Radius of the sphere mesh representing the light bulb. If 0 light gets created without the mesh
-         */
-        radius: number;
-    }
-    class CameraConfigurationDto {
-        /**
-         * Position of the point light
-         */
-        position: number[];
-        /**
-         * Lets configure how far the camera can see
-         */
-        maxZ: number;
-        /**
-         * Panning sensibility. If large units are used for the model, this number needs to get larger
-         */
-        panningSensibility: number;
-        /**
-         * Zoom precision of the wheel. If large units are used, this number needs to get smaller
-         */
-        wheelPrecision: number;
-    }
-    class MeshInstanceAndTransformDto {
-        mesh: Mesh;
-        position: number[];
-        rotation: number[];
-        scaling: number[];
-    }
-}/**
- * Contains various functions for solid 3D texts from JSCAD library http://openjscad.org
- * Thanks JSCAD community for developing this kernel
- */
-declare class JSCADText {
-    private readonly context;
-    constructor(context: Context);
-    /**
-     * Creates a text that is based on chain hulling cylinders
-     * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_text.jscadtext.html#cylindricaltext
-     * @param inputs Cylindrical text parameters
-     * @returns List of solids for text
-     */
-    cylindricalText(inputs: Inputs.JSCAD.CylinderTextDto): any[];
-    /**
-     * Creates a text that is based on chain hulling spheres
-     * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_text.jscadtext.html#sphericalText
-     * @param inputs Spherical text parameters
-     * @returns List of solids for text
-     */
-    sphericalText(inputs: Inputs.JSCAD.SphereTextDto): any[];
-    private adjustTextToBeOnCenter;
-    createVectorText(inputs: Inputs.JSCAD.TextDto): number[][];
 }declare namespace Tag {
     class DrawTagDto {
         constructor(tag?: TagDto);
@@ -2449,70 +2426,28 @@ declare class JSCADText {
         id?: string;
     }
 }/**
- * Contains various functions for Solid meshes from JSCAD library http://openjscad.org
+ * Contains various functions for solid 3D texts from JSCAD library http://openjscad.org
  * Thanks JSCAD community for developing this kernel
  */
-declare class JSCAD {
-    readonly booleans: JSCADBooleans;
-    readonly expansions: JSCADExpansions;
-    readonly extrusions: JSCADExtrusions;
-    readonly hulls: JSCADHulls;
-    readonly path: JSCADPath;
-    readonly polygon: JSCADPolygon;
-    readonly shapes: JSCADShapes;
-    readonly text: JSCADText;
+declare class JSCADText {
     private readonly context;
-    private readonly geometryHelper;
-    constructor(booleans: JSCADBooleans, expansions: JSCADExpansions, extrusions: JSCADExtrusions, hulls: JSCADHulls, path: JSCADPath, polygon: JSCADPolygon, shapes: JSCADShapes, text: JSCADText, context: Context, geometryHelper: GeometryHelper);
+    constructor(context: Context);
     /**
-     * Draws a single solids
-     * @link https://docs.bitbybit.dev/classes/bitbybit_jscad.jscad.html#drawsolidorpolygonmesh
-     * @param inputs Contains a solid or polygon and information for drawing
-     * @returns Mesh that is being drawn by Babylon
+     * Creates a text that is based on chain hulling cylinders
+     * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_text.jscadtext.html#cylindricaltext
+     * @param inputs Cylindrical text parameters
+     * @returns List of solids for text
      */
-    drawSolidOrPolygonMesh(inputs: Inputs.JSCAD.DrawSolidMeshDto): Mesh;
+    cylindricalText(inputs: Inputs.JSCAD.CylinderTextDto): any[];
     /**
-     * Draws multiple solids
-     * @link https://docs.bitbybit.dev/classes/bitbybit_jscad.jscad.html#drawsolidorpolygonmeshes
-     * @param inputs Contains solids or polygons and information for drawing
-     * @returns Mesh that is being drawn by Babylon
+     * Creates a text that is based on chain hulling spheres
+     * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_text.jscadtext.html#sphericalText
+     * @param inputs Spherical text parameters
+     * @returns List of solids for text
      */
-    drawSolidOrPolygonMeshes(inputs: Inputs.JSCAD.DrawSolidsMeshDto): Mesh;
-    /**
-     * Draws a 2D path
-     * @link https://docs.bitbybit.dev/classes/bitbybit_jscad.jscad.html#drawpath
-     * @param inputs Contains a path and information for drawing
-     * @returns Mesh that is being drawn by Babylon
-     */
-    drawPath(inputs: Inputs.JSCAD.DrawPathDto): LinesMesh;
-    /**
-     * Transforms the Jscad solid meshes with a given list of transformations.
-     * @link https://docs.bitbybit.dev/classes/bitbybit_jscad.jscad.html#transformsolids
-     * @param inputs Solids with the transformation matrixes
-     * @returns Solids with a transformation
-     */
-    transformSolids(inputs: Inputs.JSCAD.TransformSolidsDto): any;
-    /**
-     * Transforms the Jscad solid mesh with a given list of transformations.
-     * @link https://docs.bitbybit.dev/classes/bitbybit_jscad.jscad.html#transformsolid
-     * @param inputs Solid with the transformation matrixes
-     * @returns Solid with a transformation
-     */
-    transformSolid(inputs: Inputs.JSCAD.TransformSolidDto): any;
-    /**
-     * Downloads the binary STL file from a 3D solid
-     * @link https://docs.bitbybit.dev/classes/bitbybit_jscad.jscad.html#downloadsolidstl
-     * @param inputs 3D Solid
-     */
-    downloadSolidSTL(inputs: Inputs.JSCAD.DownloadSolidDto): void;
-    /**
-     * Downloads the binary STL file from a 3D solids
-     * @link https://docs.bitbybit.dev/classes/bitbybit_jscad.jscad.html#downloadsolidsstl
-     * @param inputs 3D Solid
-     */
-    downloadSolidsSTL(inputs: Inputs.JSCAD.DownloadSolidsDto): void;
-    private downloadSTL;
-    private createMesh;
+    sphericalText(inputs: Inputs.JSCAD.SphereTextDto): any[];
+    private adjustTextToBeOnCenter;
+    createVectorText(inputs: Inputs.JSCAD.TextDto): number[][];
 }declare namespace Transforms {
     class RotationCenterAxisDto {
         /**
@@ -2593,6 +2528,140 @@ declare class JSCAD {
          * Translation vector with [x, y, z] distances
          */
         translation: number[];
+    }
+}/**
+ * Contains various functions for Solid meshes from JSCAD library http://openjscad.org
+ * Thanks JSCAD community for developing this kernel
+ */
+declare class JSCAD {
+    readonly booleans: JSCADBooleans;
+    readonly expansions: JSCADExpansions;
+    readonly extrusions: JSCADExtrusions;
+    readonly hulls: JSCADHulls;
+    readonly path: JSCADPath;
+    readonly polygon: JSCADPolygon;
+    readonly shapes: JSCADShapes;
+    readonly text: JSCADText;
+    private readonly context;
+    private readonly geometryHelper;
+    constructor(booleans: JSCADBooleans, expansions: JSCADExpansions, extrusions: JSCADExtrusions, hulls: JSCADHulls, path: JSCADPath, polygon: JSCADPolygon, shapes: JSCADShapes, text: JSCADText, context: Context, geometryHelper: GeometryHelper);
+    /**
+     * Draws a single solids
+     * @link https://docs.bitbybit.dev/classes/bitbybit_jscad.jscad.html#drawsolidorpolygonmesh
+     * @param inputs Contains a solid or polygon and information for drawing
+     * @returns Mesh that is being drawn by Babylon
+     */
+    drawSolidOrPolygonMesh(inputs: Inputs.JSCAD.DrawSolidMeshDto): Mesh;
+    /**
+     * Draws multiple solids
+     * @link https://docs.bitbybit.dev/classes/bitbybit_jscad.jscad.html#drawsolidorpolygonmeshes
+     * @param inputs Contains solids or polygons and information for drawing
+     * @returns Mesh that is being drawn by Babylon
+     */
+    drawSolidOrPolygonMeshes(inputs: Inputs.JSCAD.DrawSolidsMeshDto): Mesh;
+    /**
+     * Draws a 2D path
+     * @link https://docs.bitbybit.dev/classes/bitbybit_jscad.jscad.html#drawpath
+     * @param inputs Contains a path and information for drawing
+     * @returns Mesh that is being drawn by Babylon
+     */
+    drawPath(inputs: Inputs.JSCAD.DrawPathDto): LinesMesh;
+    /**
+     * Transforms the Jscad solid meshes with a given list of transformations.
+     * @link https://docs.bitbybit.dev/classes/bitbybit_jscad.jscad.html#transformsolids
+     * @param inputs Solids with the transformation matrixes
+     * @returns Solids with a transformation
+     */
+    transformSolids(inputs: Inputs.JSCAD.TransformSolidsDto): any;
+    /**
+     * Transforms the Jscad solid mesh with a given list of transformations.
+     * @link https://docs.bitbybit.dev/classes/bitbybit_jscad.jscad.html#transformsolid
+     * @param inputs Solid with the transformation matrixes
+     * @returns Solid with a transformation
+     */
+    transformSolid(inputs: Inputs.JSCAD.TransformSolidDto): any;
+    /**
+     * Downloads the binary STL file from a 3D solid
+     * @link https://docs.bitbybit.dev/classes/bitbybit_jscad.jscad.html#downloadsolidstl
+     * @param inputs 3D Solid
+     */
+    downloadSolidSTL(inputs: Inputs.JSCAD.DownloadSolidDto): void;
+    /**
+     * Downloads the binary STL file from a 3D solids
+     * @link https://docs.bitbybit.dev/classes/bitbybit_jscad.jscad.html#downloadsolidsstl
+     * @param inputs 3D Solid
+     */
+    downloadSolidsSTL(inputs: Inputs.JSCAD.DownloadSolidsDto): void;
+    private downloadSTL;
+    private createMesh;
+}declare namespace Vector {
+    class TwoVectorsDto {
+        /**
+         * First vector
+         */
+        first: number[];
+        /**
+         * Second vector
+         */
+        second: number[];
+    }
+    class VectorBoolDto {
+        /**
+         * Vector of booleans
+         */
+        vector: boolean[];
+    }
+    class VectorDto {
+        /**
+         * Vector array of numbers
+         */
+        vector: number[];
+    }
+    class RangeMaxDto {
+        /**
+         * Maximum range boundary
+         */
+        max: number;
+    }
+    class SpanDto extends BaseTypes.IntervalDto {
+        /**
+         * Step of the span
+         */
+        step: number;
+    }
+    class RayPointDto extends VectorDto {
+        /**
+         * Origin location of the ray
+         */
+        point: number[];
+        /**
+         * Distance to the point on the ray
+         */
+        distance: number;
+    }
+    class VectorsDto {
+        /**
+         * Vectors array
+         */
+        vectors: number[][];
+    }
+    class FractionTwoVectorsDto extends TwoVectorsDto {
+        /**
+         * Fraction number
+         */
+        fraction: number;
+    }
+    class VectorScalarDto extends VectorDto {
+        /**
+         * Scalar number
+         */
+        scalar: number;
+    }
+    class TwoVectorsReferenceDto extends TwoVectorsDto {
+        /**
+         * Reference vector
+         */
+        reference: number[];
     }
 }/**
  * Contains various methods for lines. Line in bitbybit is a simple object that has star and end point properties.
@@ -2691,220 +2760,6 @@ declare class Line {
      */
     linesBetweenStartAndEndPoints(inputs: Inputs.Line.LineStartEndPointsDto): Inputs.Line.LinePointsDto[];
     private createLineSystemMesh;
-}declare namespace Vector {
-    class TwoVectorsDto {
-        /**
-         * First vector
-         */
-        first: number[];
-        /**
-         * Second vector
-         */
-        second: number[];
-    }
-    class VectorBoolDto {
-        /**
-         * Vector of booleans
-         */
-        vector: boolean[];
-    }
-    class VectorDto {
-        /**
-         * Vector array of numbers
-         */
-        vector: number[];
-    }
-    class RangeMaxDto {
-        /**
-         * Maximum range boundary
-         */
-        max: number;
-    }
-    class SpanDto extends BaseTypes.IntervalDto {
-        /**
-         * Step of the span
-         */
-        step: number;
-    }
-    class RayPointDto extends VectorDto {
-        /**
-         * Origin location of the ray
-         */
-        point: number[];
-        /**
-         * Distance to the point on the ray
-         */
-        distance: number;
-    }
-    class VectorsDto {
-        /**
-         * Vectors array
-         */
-        vectors: number[][];
-    }
-    class FractionTwoVectorsDto extends TwoVectorsDto {
-        /**
-         * Fraction number
-         */
-        fraction: number;
-    }
-    class VectorScalarDto extends VectorDto {
-        /**
-         * Scalar number
-         */
-        scalar: number;
-    }
-    class TwoVectorsReferenceDto extends TwoVectorsDto {
-        /**
-         * Reference vector
-         */
-        reference: number[];
-    }
-}/**
- * Nodes help understand the space and construct more complicated space structures. Nodes can be nested together
- * into child parent relationships to simplify the creation of 3D objects.
- */
-declare class Node {
-    private readonly context;
-    private readonly geometryHelper;
-    constructor(context: Context, geometryHelper: GeometryHelper);
-    /**
-     * Draws a node of given size with given colours for every axis
-     * @link https://docs.bitbybit.dev/classes/bitbybit_node.node.html#drawnode
-     * @param inputs Contains node data that includes size and colour information
-     */
-    drawNode(inputs: Inputs.Node.DrawNodeDto): void;
-    /**
-     * Draws a nodes of given size with given colours for every axis
-     * @link https://docs.bitbybit.dev/classes/bitbybit_node.node.html#drawnodes
-     * @param inputs Contains node data that includes size and colour information
-     */
-    drawNodes(inputs: Inputs.Node.DrawNodesDto): void;
-    /**
-     * Creates a node on the origin with the given rotations in the parent coordinate system
-     * @link https://docs.bitbybit.dev/classes/bitbybit_node.node.html#createnodefromrotation
-     * @param inputs Contains information for origin, rotation and parent node
-     * @returns A new node
-     */
-    createNodeFromRotation(inputs: Inputs.Node.CreateNodeFromRotationDto): TransformNode;
-    /**
-     * Creates a world node which has root node as his parent
-     * @link https://docs.bitbybit.dev/classes/bitbybit_node.node.html#createworldnode
-     * @returns A new node whos parent is the root node of the scene
-     */
-    createWorldNode(): TransformNode;
-    /**
-     * Gets the absolute forward facing vector in world space
-     * @link https://docs.bitbybit.dev/classes/bitbybit_node.node.html#getabsoluteforwardvector
-     * @param inputs Node from which to get the forward vector
-     * @returns Vector as an array of numbers
-     */
-    getAbsoluteForwardVector(inputs: Inputs.Node.NodeDto): number[];
-    /**
-     * Gets the absolute right facing vector in world space
-     * @link https://docs.bitbybit.dev/classes/bitbybit_node.node.html#getabsoluterightvector
-     * @param inputs Node from which to get the right vector
-     * @returns Vector as an array of numbers
-     */
-    getAbsoluteRightVector(inputs: Inputs.Node.NodeDto): number[];
-    /**
-     * Gets the absolute up facing vector in world space
-     * @link https://docs.bitbybit.dev/classes/bitbybit_node.node.html#getabsoluteupvector
-     * @param inputs Node from which to get the up vector
-     * @returns Vector as an array of numbers
-     */
-    getAbsoluteUpVector(inputs: Inputs.Node.NodeDto): number[];
-    /**
-     * Gets the absolute position of the node as origin vector in world space
-     * @link https://docs.bitbybit.dev/classes/bitbybit_node.node.html#getabsoluteposition
-     * @param inputs Node from which to get the absolute position
-     * @returns Vector as an array of numbers indicating location of origin in world space
-     */
-    getAbsolutePosition(inputs: Inputs.Node.NodeDto): number[];
-    /**
-     * Gets the absolute rotation of the node as a transformation matrix encoded in array of 16 numbers
-     * @link https://docs.bitbybit.dev/classes/bitbybit_node.node.html#getabsoluterotationtransformation
-     * @param inputs Node from which to get the rotation transformation
-     * @returns Transformation as an array of 16 numbers
-     */
-    getAbsoluteRotationTransformation(inputs: Inputs.Node.NodeDto): number[];
-    /**
-     * Gets the rotation of the node in local parent coordinate space as a transformation matrix encoded in array of 16 numbers
-     * @link https://docs.bitbybit.dev/classes/bitbybit_node.node.html#getrotationtransformation
-     * @param inputs Node from which to get the rotation transformation
-     * @returns Transformation as an array of 16 numbers
-     */
-    getRotationTransformation(inputs: Inputs.Node.NodeDto): number[];
-    /**
-     * Gets children of the node
-     * @link https://docs.bitbybit.dev/classes/bitbybit_node.node.html#getchildren
-     * @param inputs Node from which to get the children
-     * @returns List of children nodes in the array
-     */
-    getChildren(inputs: Inputs.Node.NodeDto): BabylonNode[];
-    /**
-     * Gets parent of the node
-     * @link https://docs.bitbybit.dev/classes/bitbybit_node.node.html#getparent
-     * @param inputs Node from which to get a parent
-     * @returns Parent node
-     */
-    getParent(inputs: Inputs.Node.NodeDto): BabylonNode;
-    /**
-     * Gets the position of the node expressed in local space
-     * @link https://docs.bitbybit.dev/classes/bitbybit_node.node.html#getpositionexpressedinlocalspace
-     * @param inputs Node from which to get the position in local space
-     * @returns Position vector
-     */
-    getPositionExpressedInLocalSpace(inputs: Inputs.Node.NodeDto): number[];
-    /**
-     * Gets the root node
-     * @link https://docs.bitbybit.dev/classes/bitbybit_node.node.html#getrootnode
-     * @returns Root node
-     */
-    getRootNode(): TransformNode;
-    /**
-     * Gets the euler rotations
-     * @link https://docs.bitbybit.dev/classes/bitbybit_node.node.html#getrotation
-     * @param inputs Node from which to get rotation
-     * @returns Euler rotations of x, y and z angles in the number array
-     */
-    getRotation(inputs: Inputs.Node.NodeDto): number[];
-    /**
-     * Rotates the node around axis and given position by a given angle
-     * @link https://docs.bitbybit.dev/classes/bitbybit_node.node.html#rotatearoundaxiswithposition
-     * @param inputs Rotation around axis information
-     */
-    rotateAroundAxisWithPosition(inputs: Inputs.Node.RotateAroundAxisNodeDto): void;
-    /**
-     * Rotates the node around the origin and given axis
-     * @link https://docs.bitbybit.dev/classes/bitbybit_node.node.html#rotate
-     * @param inputs Rotation information
-     */
-    rotate(inputs: Inputs.Node.RotateNodeDto): void;
-    /**
-     * Sets the absolute position of the node
-     * @link https://docs.bitbybit.dev/classes/bitbybit_node.node.html#setabsoluteposition
-     * @param inputs Node absolute position information
-     */
-    setAbsolutePosition(inputs: Inputs.Node.NodePositionDto): void;
-    /**
-     * Sets the direction of the node
-     * @link https://docs.bitbybit.dev/classes/bitbybit_node.node.html#setdirection
-     * @param inputs Direction information
-     */
-    setDirection(inputs: Inputs.Node.NodeDirectionDto): void;
-    /**
-     * Sets the new parent to the node
-     * @link https://docs.bitbybit.dev/classes/bitbybit_node.node.html#setparent
-     * @param inputs Node parent information
-     */
-    setParent(inputs: Inputs.Node.NodeParentDto): void;
-    /**
-     * Translates the node by a given direction vector and a distance
-     * @link https://docs.bitbybit.dev/classes/bitbybit_node.node.html#translate
-     * @param inputs Node translation information
-     */
-    translate(inputs: Inputs.Node.NodeTranslationDto): void;
 }declare namespace Verb {
     class CurveDto {
         /**
