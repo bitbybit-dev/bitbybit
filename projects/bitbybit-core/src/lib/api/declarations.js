@@ -49,18 +49,19 @@ var walk = function (dir, done) {
 
 
 walk(walkPathBase, ()=> {
-    fs.writeFile('./projects/bitbybit-core/src/lib/api/declarationsBase.ts', `export const baseDeclarations = \`${completeDeclarations}\`;
+    fs.writeFileSync('./projects/bitbybit-core/src/lib/api/declarationsBase.ts', `export const baseDeclarations = \`${completeDeclarations}\`;
 `, 'utf8', ()=> {
     });
 completeDeclarations = '';
+    walk(walkPathInputs, ()=> {
+        fs.writeFileSync('./projects/bitbybit-core/src/lib/api/declarationsInputs.ts', `export const inputDeclarations = \`${completeDeclarations}\`;
+    `, 'utf8', ()=> {
+        });
+    completeDeclarations = '';
+    });
 });
 
-walk(walkPathInputs, ()=> {
-    fs.writeFile('./projects/bitbybit-core/src/lib/api/declarationsInputs.ts', `export const inputDeclarations = \`${completeDeclarations}\`;
-`, 'utf8', ()=> {
-    });
-completeDeclarations = '';
-});
+
 
 function simplifyDeclaration(declaration) {
     // declaration files for monaco don't need to export anything
