@@ -229,7 +229,7 @@ export class BitbybitAppComponent implements OnInit, OnDestroy, AfterViewInit {
                                     this.workspace.zoomToFit();
                                     this.workspace.zoomCenter(-4);
                                     this.onResize();
-                                }, 200);
+                                }, 400);
                             }
                         } else if (exampleParam && editorParam === 'ts') {
                             this.code = this.examplesService.getExampleTypescript(exampleParam);
@@ -484,6 +484,11 @@ export class BitbybitAppComponent implements OnInit, OnDestroy, AfterViewInit {
             case UiStatesEnum.babylon:
                 this.engine.stopRenderLoop(this.renderLoopFunction);
                 this.currentUiState = this.previousUiState;
+                if (this.currentUiState === UiStatesEnum.monaco) {
+                    setTimeout(() => {
+                        window.dispatchEvent(new Event('resize'));
+                    });
+                }
                 break;
             case UiStatesEnum.blockly:
                 this.engine.runRenderLoop(this.renderLoopFunction);
@@ -499,12 +504,6 @@ export class BitbybitAppComponent implements OnInit, OnDestroy, AfterViewInit {
             default:
                 break;
         }
-        setTimeout(() => {
-            window.dispatchEvent(new Event('resize'));
-            this.onResize();
-            this.workspace.zoomToFit();
-            this.workspace.zoomCenter(-4);
-        });
     }
 
     cleanCanvas(): void {
@@ -537,7 +536,7 @@ export class BitbybitAppComponent implements OnInit, OnDestroy, AfterViewInit {
     }
 
     cleanAllCache(): void {
-        this.occWorkerManager.cleanAllCache().then(s => {});
+        this.occWorkerManager.cleanAllCache().then(s => { });
     }
 
     run(): void {
