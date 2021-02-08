@@ -20,7 +20,7 @@ export const typescriptDeclarations = `
                 readonly jscad: JSCAD;
                 readonly tag: Tag;
                 readonly time: Time;
-                readonly occ: OCC;
+                readonly occt: OCCT;
             }
         }
         `;

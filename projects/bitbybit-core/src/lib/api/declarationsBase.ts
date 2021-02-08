@@ -1,172 +1,54 @@
-export const baseDeclarations = `/**
- * Nodes help understand the space and construct more complicated space structures. Nodes can be nested together
- * into child parent relationships to simplify the creation of 3D objects.
- */
-declare class Node {
-    private readonly context;
-    private readonly geometryHelper;
-    constructor(context: Context, geometryHelper: GeometryHelper);
+export const baseDeclarations = `declare class OCCTBooleans {
+    private readonly occWorkerManager;
+    constructor(occWorkerManager: OCCTWorkerManager);
     /**
-     * Draws a node of given size with given colours for every axis
-     * @link https://docs.bitbybit.dev/classes/bitbybit_node.node.html#drawnode
-     * @param inputs Contains node data that includes size and colour information
+     * Joins separate objects
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occ.occ.html#union
+     * @param inputs Objects to join
+     * @returns OpenCascade joined shape
      */
-    drawNode(inputs: Inputs.Node.DrawNodeDto): void;
+    union(inputs: Inputs.OCC.UnionDto): Promise<any>;
     /**
-     * Draws a nodes of given size with given colours for every axis
-     * @link https://docs.bitbybit.dev/classes/bitbybit_node.node.html#drawnodes
-     * @param inputs Contains node data that includes size and colour information
+     * Does boolean difference operation between a main shape and given shapes
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occ.occ.html#difference
+     * @param inputs Main shape and shapes to differ
+     * @returns OpenCascade difference shape
      */
-    drawNodes(inputs: Inputs.Node.DrawNodesDto): void;
+    difference(inputs: Inputs.OCC.DifferenceDto): Promise<any>;
     /**
-     * Creates a node on the origin with the given rotations in the parent coordinate system
-     * @link https://docs.bitbybit.dev/classes/bitbybit_node.node.html#createnodefromrotation
-     * @param inputs Contains information for origin, rotation and parent node
-     * @returns A new node
+     * Does boolean intersection operation between a main shape and given shapes
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occ.occ.html#difference
+     * @param inputs Main shape and shapes to differ
+     * @returns OpenCascade difference shape
      */
-    createNodeFromRotation(inputs: Inputs.Node.CreateNodeFromRotationDto): TransformNode;
+    intersection(inputs: Inputs.OCC.IntersectionDto): Promise<any>;
+}declare class OCCTIO {
+    private readonly occWorkerManager;
+    constructor(occWorkerManager: OCCTWorkerManager);
     /**
-     * Creates a world node which has root node as his parent
-     * @link https://docs.bitbybit.dev/classes/bitbybit_node.node.html#createworldnode
-     * @returns A new node whos parent is the root node of the scene
+     * Saves the step file
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occ.occ.html#saveshapestep
+     * @param inputs STEP filename and shape to be saved
+     * @returns String of a step file
      */
-    createWorldNode(): TransformNode;
-    /**
-     * Gets the absolute forward facing vector in world space
-     * @link https://docs.bitbybit.dev/classes/bitbybit_node.node.html#getabsoluteforwardvector
-     * @param inputs Node from which to get the forward vector
-     * @returns Vector as an array of numbers
-     */
-    getAbsoluteForwardVector(inputs: Inputs.Node.NodeDto): number[];
-    /**
-     * Gets the absolute right facing vector in world space
-     * @link https://docs.bitbybit.dev/classes/bitbybit_node.node.html#getabsoluterightvector
-     * @param inputs Node from which to get the right vector
-     * @returns Vector as an array of numbers
-     */
-    getAbsoluteRightVector(inputs: Inputs.Node.NodeDto): number[];
-    /**
-     * Gets the absolute up facing vector in world space
-     * @link https://docs.bitbybit.dev/classes/bitbybit_node.node.html#getabsoluteupvector
-     * @param inputs Node from which to get the up vector
-     * @returns Vector as an array of numbers
-     */
-    getAbsoluteUpVector(inputs: Inputs.Node.NodeDto): number[];
-    /**
-     * Gets the absolute position of the node as origin vector in world space
-     * @link https://docs.bitbybit.dev/classes/bitbybit_node.node.html#getabsoluteposition
-     * @param inputs Node from which to get the absolute position
-     * @returns Vector as an array of numbers indicating location of origin in world space
-     */
-    getAbsolutePosition(inputs: Inputs.Node.NodeDto): number[];
-    /**
-     * Gets the absolute rotation of the node as a transformation matrix encoded in array of 16 numbers
-     * @link https://docs.bitbybit.dev/classes/bitbybit_node.node.html#getabsoluterotationtransformation
-     * @param inputs Node from which to get the rotation transformation
-     * @returns Transformation as an array of 16 numbers
-     */
-    getAbsoluteRotationTransformation(inputs: Inputs.Node.NodeDto): number[];
-    /**
-     * Gets the rotation of the node in local parent coordinate space as a transformation matrix encoded in array of 16 numbers
-     * @link https://docs.bitbybit.dev/classes/bitbybit_node.node.html#getrotationtransformation
-     * @param inputs Node from which to get the rotation transformation
-     * @returns Transformation as an array of 16 numbers
-     */
-    getRotationTransformation(inputs: Inputs.Node.NodeDto): number[];
-    /**
-     * Gets children of the node
-     * @link https://docs.bitbybit.dev/classes/bitbybit_node.node.html#getchildren
-     * @param inputs Node from which to get the children
-     * @returns List of children nodes in the array
-     */
-    getChildren(inputs: Inputs.Node.NodeDto): BabylonNode[];
-    /**
-     * Gets parent of the node
-     * @link https://docs.bitbybit.dev/classes/bitbybit_node.node.html#getparent
-     * @param inputs Node from which to get a parent
-     * @returns Parent node
-     */
-    getParent(inputs: Inputs.Node.NodeDto): BabylonNode;
-    /**
-     * Gets the position of the node expressed in local space
-     * @link https://docs.bitbybit.dev/classes/bitbybit_node.node.html#getpositionexpressedinlocalspace
-     * @param inputs Node from which to get the position in local space
-     * @returns Position vector
-     */
-    getPositionExpressedInLocalSpace(inputs: Inputs.Node.NodeDto): number[];
-    /**
-     * Gets the root node
-     * @link https://docs.bitbybit.dev/classes/bitbybit_node.node.html#getrootnode
-     * @returns Root node
-     */
-    getRootNode(): TransformNode;
-    /**
-     * Gets the euler rotations
-     * @link https://docs.bitbybit.dev/classes/bitbybit_node.node.html#getrotation
-     * @param inputs Node from which to get rotation
-     * @returns Euler rotations of x, y and z angles in the number array
-     */
-    getRotation(inputs: Inputs.Node.NodeDto): number[];
-    /**
-     * Rotates the node around axis and given position by a given angle
-     * @link https://docs.bitbybit.dev/classes/bitbybit_node.node.html#rotatearoundaxiswithposition
-     * @param inputs Rotation around axis information
-     */
-    rotateAroundAxisWithPosition(inputs: Inputs.Node.RotateAroundAxisNodeDto): void;
-    /**
-     * Rotates the node around the origin and given axis
-     * @link https://docs.bitbybit.dev/classes/bitbybit_node.node.html#rotate
-     * @param inputs Rotation information
-     */
-    rotate(inputs: Inputs.Node.RotateNodeDto): void;
-    /**
-     * Sets the absolute position of the node
-     * @link https://docs.bitbybit.dev/classes/bitbybit_node.node.html#setabsoluteposition
-     * @param inputs Node absolute position information
-     */
-    setAbsolutePosition(inputs: Inputs.Node.NodePositionDto): void;
-    /**
-     * Sets the direction of the node
-     * @link https://docs.bitbybit.dev/classes/bitbybit_node.node.html#setdirection
-     * @param inputs Direction information
-     */
-    setDirection(inputs: Inputs.Node.NodeDirectionDto): void;
-    /**
-     * Sets the new parent to the node
-     * @link https://docs.bitbybit.dev/classes/bitbybit_node.node.html#setparent
-     * @param inputs Node parent information
-     */
-    setParent(inputs: Inputs.Node.NodeParentDto): void;
-    /**
-     * Translates the node by a given direction vector and a distance
-     * @link https://docs.bitbybit.dev/classes/bitbybit_node.node.html#translate
-     * @param inputs Node translation information
-     */
-    translate(inputs: Inputs.Node.NodeTranslationDto): void;
-}declare class OccInfo {
-    state: OccStateEnum;
-}declare enum OccStateEnum {
-    loading = 0,
-    loaded = 1,
-    computing = 2
+    saveShapeSTEP(inputs: Inputs.OCC.SaveStepDto): Promise<string>;
 }/**
  * Contains various methods for OpenCascade implementation
  * Much of the work is done by Johnathon Selstad and Sebastian Alff to port OCC to JavaScript
  * I'm super grateful for their work!
  */
-declare class OCC {
+declare class OCCT {
+    readonly shapes: OCCTShapes;
+    readonly transforms: OCCTransforms;
+    readonly operations: OCCTOperations;
+    readonly booleans: OCCTBooleans;
+    readonly io: OCCTIO;
     private readonly context;
     private readonly geometryHelper;
     private readonly solidText;
     private readonly vector;
-    occWorkerState: Subject<OccInfo>;
-    private occWorker;
-    private promisesMade;
-    private promisesResolved;
-    constructor(context: Context, geometryHelper: GeometryHelper, solidText: JSCADText, vector: Vector);
-    setOccWorker(worker: Worker): void;
-    cleanPromisesMade(): void;
-    genericCallToWorkerPromise(functionName: string, inputs: any): Promise<any>;
+    private readonly occWorkerManager;
+    constructor(shapes: OCCTShapes, transforms: OCCTransforms, operations: OCCTOperations, booleans: OCCTBooleans, io: OCCTIO, context: Context, geometryHelper: GeometryHelper, solidText: JSCADText, vector: Vector, occWorkerManager: OCCTWorkerManager);
     /**
      * Draws OpenCascade shape by going through faces and edges
      * @link https://docs.bitbybit.dev/classes/bitbybit_occ.occ.html#drawshape
@@ -174,74 +56,11 @@ declare class OCC {
      * @returns BabylonJS Mesh
      */
     drawShape(inputs: Inputs.OCC.DrawShapeDto): Promise<Mesh>;
-    /**
-     * This needs to be done before every run and the promise needs to be awaited before run executes again
-     * This makes sure that cache keeps the objects and hashes from the previous run and the rest is deleted
-     * In this way it is possible to hace the cache of manageable size
-     */
-    startedTheRun(): Promise<any>;
-    /**
-     * This needs to be done before every run and the promise needs to be awaited before run executes again
-     * This makes sure that cache keeps the objects and hashes from the previous run and the rest is deleted
-     * In this way it is possible to hace the cache of manageable size
-     */
-    cleanAllCache(): Promise<any>;
-    /**
-     * Creates OpenCascade Polygon wire
-     * @link https://docs.bitbybit.dev/classes/bitbybit_occ.occ.html#createpolygonwire
-     * @param inputs Polygon points
-     * @returns OpenCascade polygon wire shape
-     */
-    createPolygonWire(inputs: Inputs.OCC.PolygonDto): Promise<any>;
-    /**
-     * Creates OpenCascade Polygon face
-     * @link https://docs.bitbybit.dev/classes/bitbybit_occ.occ.html#createpolygonface
-     * @param inputs Polygon points
-     * @returns OpenCascade polygon face
-     */
-    createPolygonFace(inputs: Inputs.OCC.PolygonDto): Promise<any>;
-    /**
-     * Creates OpenCascade Box
-     * @link https://docs.bitbybit.dev/classes/bitbybit_occ.occ.html#createbox
-     * @param inputs Box size and center
-     * @returns OpenCascade Box
-     */
-    createBox(inputs: Inputs.OCC.BoxDto): Promise<any>;
-    /**
-     * Creates OpenCascade Cylinder
-     * @link https://docs.bitbybit.dev/classes/bitbybit_occ.occ.html#createcylinder
-     * @param inputs Cylinder parameters
-     * @returns OpenCascade Cylinder
-     */
-    createCylinder(inputs: Inputs.OCC.CylinderDto): Promise<any>;
-    /**
-     * Creates OpenCascade BSPline wire
-     * @link https://docs.bitbybit.dev/classes/bitbybit_occ.occ.html#createbspline
-     * @param inputs Points through which to make BSpline
-     * @returns OpenCascade BSpline wire
-     */
-    createBSpline(inputs: Inputs.OCC.BSplineDto): Promise<any>;
-    /**
-     * Creates OpenCascade Bezier wire
-     * @link https://docs.bitbybit.dev/classes/bitbybit_occ.occ.html#createbezier
-     * @param inputs Points through which to make bezier curve
-     * @returns OpenCascade Bezier wire
-     */
-    createBezier(inputs: Inputs.OCC.BezierDto): Promise<any>;
-    /**
-     * Creates OpenCascade circle wire
-     * @link https://docs.bitbybit.dev/classes/bitbybit_occ.occ.html#createcirclewire
-     * @param inputs Circle parameters
-     * @returns OpenCascade circle wire
-     */
-    createCircleWire(inputs: Inputs.OCC.CircleDto): Promise<any>;
-    /**
-     * Creates OpenCascade circle face
-     * @link https://docs.bitbybit.dev/classes/bitbybit_occ.occ.html#createcircleface
-     * @param inputs Circle parameters
-     * @returns OpenCascade circle face
-     */
-    createCircleFace(inputs: Inputs.OCC.CircleDto): Promise<any>;
+    private computeFaceMiddlePos;
+    private computeEdgeMiddlePos;
+}declare class OCCTOperations {
+    private readonly occWorkerManager;
+    constructor(occWorkerManager: OCCTWorkerManager);
     /**
      * Lofts wires into a shell
      * @link https://docs.bitbybit.dev/classes/bitbybit_occ.occ.html#loft
@@ -271,19 +90,39 @@ declare class OCC {
      */
     revolve(inputs: Inputs.OCC.RevolveDto): Promise<any>;
     /**
-     * Creates OpenCascade Sphere
-     * @link https://docs.bitbybit.dev/classes/bitbybit_occ.occ.html#createsphere
-     * @param inputs Sphere radius and center
-     * @returns OpenCascade Sphere
+     * Rotated extrude that is perofrmed on the wire shape
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occ.occ.html#rotatedextrude
+     * @param inputs Rotated extrusion inputs
+     * @returns OpenCascade shape
      */
-    createSphere(inputs: Inputs.OCC.SphereDto): Promise<any>;
+    rotatedExtrude(inputs: Inputs.OCC.RotationExtrudeDto): Promise<any>;
     /**
-     * Creates OpenCascade Cone
-     * @link https://docs.bitbybit.dev/classes/bitbybit_occ.occ.html#createcone
-     * @param inputs Cone parameters
-     * @returns OpenCascade cone shape
+     * Pipe shapes along the wire
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occ.occ.html#pipe
+     * @param inputs Path wire and shapes along the path
+     * @returns OpenCascade shape
      */
-    createCone(inputs: Inputs.OCC.ConeDto): Promise<any>;
+    pipe(inputs: Inputs.OCC.PipeDto): Promise<any>;
+    /**
+     * Thickens the shape into a solid by an offset distance
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occ.occ.html#makethicksolidsimple
+     * @param inputs OpenCascade shape
+     * @returns OpenCascade solid shape
+     */
+    makeThickSolidSimple(inputs: Inputs.OCC.ThisckSolidSimpleDto): Promise<any>;
+}declare class OCCTCompound {
+    private readonly occWorkerManager;
+    constructor(occWorkerManager: OCCTWorkerManager);
+    /**
+     * Makes the compound shape, which can include any kind of shapes
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occ.occ.html#makecompound
+     * @param inputs OpenCascade shapes
+     * @returns OpenCascade compounded shape
+     */
+    makeCompound(inputs: Inputs.OCC.CompoundShapesDto): Promise<any>;
+}declare class OCCTEdge {
+    private readonly occWorkerManager;
+    constructor(occWorkerManager: OCCTWorkerManager);
     /**
      * Fillets OpenCascade Shapes
      * @link https://docs.bitbybit.dev/classes/bitbybit_occ.occ.html#filletedges
@@ -299,27 +138,6 @@ declare class OCC {
      */
     chamferEdges(inputs: Inputs.OCC.ChamferDto): Promise<any>;
     /**
-     * Joins separate objects
-     * @link https://docs.bitbybit.dev/classes/bitbybit_occ.occ.html#union
-     * @param inputs Objects to join
-     * @returns OpenCascade joined shape
-     */
-    union(inputs: Inputs.OCC.UnionDto): Promise<any>;
-    /**
-     * Does boolean difference operation between a main shape and given shapes
-     * @link https://docs.bitbybit.dev/classes/bitbybit_occ.occ.html#difference
-     * @param inputs Main shape and shapes to differ
-     * @returns OpenCascade difference shape
-     */
-    difference(inputs: Inputs.OCC.DifferenceDto): Promise<any>;
-    /**
-     * Does boolean intersection operation between a main shape and given shapes
-     * @link https://docs.bitbybit.dev/classes/bitbybit_occ.occ.html#difference
-     * @param inputs Main shape and shapes to differ
-     * @returns OpenCascade difference shape
-     */
-    intersection(inputs: Inputs.OCC.IntersectionDto): Promise<any>;
-    /**
      * Removes internal faces for the shape
      * @link https://docs.bitbybit.dev/classes/bitbybit_occ.occ.html#removeinternaledges
      * @param inputs Shape
@@ -333,13 +151,30 @@ declare class OCC {
      * @returns OpenCascade edge
      */
     getEdge(inputs: Inputs.OCC.ShapeIndexDto): Promise<any>;
+}declare class OCCTFace {
+    private readonly occWorkerManager;
+    constructor(occWorkerManager: OCCTWorkerManager);
     /**
-     * Gets the wire by providing an index from the shape
-     * @link https://docs.bitbybit.dev/classes/bitbybit_occ.occ.html#getwire
-     * @param inputs Shape
-     * @returns OpenCascade wire
+     * Creates a face from wire
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occ.occ.html#createfacefromwire
+     * @param inputs OpenCascade wire shape and indication if face should be planar
+     * @returns OpenCascade face shape
      */
-    getWire(inputs: Inputs.OCC.ShapeIndexDto): Promise<any>;
+    createFaceFromWire(inputs: Inputs.OCC.FaceFromWireDto): Promise<any>;
+    /**
+     * Creates OpenCascade Polygon face
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occ.occ.html#createpolygonface
+     * @param inputs Polygon points
+     * @returns OpenCascade polygon face
+     */
+    createPolygonFace(inputs: Inputs.OCC.PolygonDto): Promise<any>;
+    /**
+     * Creates OpenCascade circle face
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occ.occ.html#createcircleface
+     * @param inputs Circle parameters
+     * @returns OpenCascade circle face
+     */
+    createCircleFace(inputs: Inputs.OCC.CircleDto): Promise<any>;
     /**
      * Gets the face by providing an index from the shape
      * @link https://docs.bitbybit.dev/classes/bitbybit_occ.occ.html#getface
@@ -347,20 +182,85 @@ declare class OCC {
      * @returns OpenCascade face
      */
     getFace(inputs: Inputs.OCC.ShapeIndexDto): Promise<any>;
+}declare class OCCTShapes {
+    readonly edge: OCCTEdge;
+    readonly wire: OCCTWire;
+    readonly face: OCCTFace;
+    readonly solid: OCCTSolid;
+    readonly compound: OCCTCompound;
+    constructor(edge: OCCTEdge, wire: OCCTWire, face: OCCTFace, solid: OCCTSolid, compound: OCCTCompound);
+}declare class OCCTSolid {
+    private readonly occWorkerManager;
+    constructor(occWorkerManager: OCCTWorkerManager);
     /**
-     * Rotated extrude that is perofrmed on the wire shape
-     * @link https://docs.bitbybit.dev/classes/bitbybit_occ.occ.html#rotatedextrude
-     * @param inputs Rotated extrusion inputs
-     * @returns OpenCascade shape
+     * Creates OpenCascade Box
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occ.occ.html#createbox
+     * @param inputs Box size and center
+     * @returns OpenCascade Box
      */
-    rotatedExtrude(inputs: Inputs.OCC.RotationExtrudeDto): Promise<any>;
+    createBox(inputs: Inputs.OCC.BoxDto): Promise<any>;
     /**
-     * Pipe shapes along the wire
-     * @link https://docs.bitbybit.dev/classes/bitbybit_occ.occ.html#pipe
-     * @param inputs Path wire and shapes along the path
-     * @returns OpenCascade shape
+     * Creates OpenCascade Cylinder
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occ.occ.html#createcylinder
+     * @param inputs Cylinder parameters
+     * @returns OpenCascade Cylinder
      */
-    pipe(inputs: Inputs.OCC.PipeDto): Promise<any>;
+    createCylinder(inputs: Inputs.OCC.CylinderDto): Promise<any>;
+    /**
+     * Creates OpenCascade Sphere
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occ.occ.html#createsphere
+     * @param inputs Sphere radius and center
+     * @returns OpenCascade Sphere
+     */
+    createSphere(inputs: Inputs.OCC.SphereDto): Promise<any>;
+    /**
+     * Creates OpenCascade Cone
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occ.occ.html#createcone
+     * @param inputs Cone parameters
+     * @returns OpenCascade cone shape
+     */
+    createCone(inputs: Inputs.OCC.ConeDto): Promise<any>;
+}declare class OCCTWire {
+    private readonly occWorkerManager;
+    constructor(occWorkerManager: OCCTWorkerManager);
+    /**
+     * Creates OpenCascade Polygon wire
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occ.occ.html#createpolygonwire
+     * @param inputs Polygon points
+     * @returns OpenCascade polygon wire shape
+     */
+    createPolygonWire(inputs: Inputs.OCC.PolygonDto): Promise<any>;
+    /**
+     * Creates OpenCascade BSPline wire
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occ.occ.html#createbspline
+     * @param inputs Points through which to make BSpline
+     * @returns OpenCascade BSpline wire
+     */
+    createBSpline(inputs: Inputs.OCC.BSplineDto): Promise<any>;
+    /**
+     * Creates OpenCascade Bezier wire
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occ.occ.html#createbezier
+     * @param inputs Points through which to make bezier curve
+     * @returns OpenCascade Bezier wire
+     */
+    createBezier(inputs: Inputs.OCC.BezierDto): Promise<any>;
+    /**
+     * Creates OpenCascade circle wire
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occ.occ.html#createcirclewire
+     * @param inputs Circle parameters
+     * @returns OpenCascade circle wire
+     */
+    createCircleWire(inputs: Inputs.OCC.CircleDto): Promise<any>;
+    /**
+     * Gets the wire by providing an index from the shape
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occ.occ.html#getwire
+     * @param inputs Shape
+     * @returns OpenCascade wire
+     */
+    getWire(inputs: Inputs.OCC.ShapeIndexDto): Promise<any>;
+}declare class OCCTransforms {
+    private readonly occWorkerManager;
+    constructor(occWorkerManager: OCCTWorkerManager);
     /**
      * Transforms the array of shapes
      * @link https://docs.bitbybit.dev/classes/bitbybit_occ.occ.html#transform
@@ -389,36 +289,6 @@ declare class OCC {
      * @returns OpenCascade shapes
      */
     scale(inputs: Inputs.OCC.ScaleDto): Promise<any>;
-    /**
-     * Makes the compound shape, which can include any kind of shapes
-     * @link https://docs.bitbybit.dev/classes/bitbybit_occ.occ.html#makecompound
-     * @param inputs OpenCascade shapes
-     * @returns OpenCascade compounded shape
-     */
-    makeCompound(inputs: Inputs.OCC.CompoundShapesDto): Promise<any>;
-    /**
-     * Thickens the shape into a solid by an offset distance
-     * @link https://docs.bitbybit.dev/classes/bitbybit_occ.occ.html#makethicksolidsimple
-     * @param inputs OpenCascade shape
-     * @returns OpenCascade solid shape
-     */
-    makeThickSolidSimple(inputs: Inputs.OCC.ThisckSolidSimpleDto): Promise<any>;
-    /**
-     * Creates a face from wire
-     * @link https://docs.bitbybit.dev/classes/bitbybit_occ.occ.html#createfacefromwire
-     * @param inputs OpenCascade wire shape and indication if face should be planar
-     * @returns OpenCascade face shape
-     */
-    createFaceFromWire(inputs: Inputs.OCC.FaceFromWireDto): Promise<any>;
-    /**
-     * Saves the step file
-     * @link https://docs.bitbybit.dev/classes/bitbybit_occ.occ.html#saveshapestep
-     * @param inputs STEP filename and shape to be saved
-     * @returns String of a step file
-     */
-    saveShapeSTEP(inputs: Inputs.OCC.SaveStepDto): Promise<string>;
-    private computeFaceMiddlePos;
-    private computeEdgeMiddlePos;
 }/**
  * Contains various methods for points. Point in bitbybit is simply an array containing 3 numbers for [x, y, z].
  * Because of this form Point can be interchanged with Vector, which also is an array in [x, y, z] form.
