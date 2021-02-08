@@ -17,7 +17,7 @@ export class VerbSurfaceExtrusion {
      * <div>
      *  <img src="../assets/images/blockly-images/surface/extrusion/create.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_verb_surface_extrusion.verbsurfaceextrusion.html#create
+     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_surface_extrusion.verbsurfaceextrusion.html#create
      * @param inputs Nurbs profile curve and direction vector
      * @returns Nurbs surface
      */
@@ -30,7 +30,7 @@ export class VerbSurfaceExtrusion {
      * <div>
      *  <img src="../assets/images/blockly-images/surface/extrusion/direction.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_verb_surface_extrusion.verbsurfaceextrusion.html#direction
+     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_surface_extrusion.verbsurfaceextrusion.html#direction
      * @param inputs Extruded Nurbs surface
      * @returns Vector
      */
@@ -43,7 +43,7 @@ export class VerbSurfaceExtrusion {
      * <div>
      *  <img src="../assets/images/blockly-images/surface/extrusion/profile.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_verb_surface_extrusion.verbsurfaceextrusion.html#profile
+     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_surface_extrusion.verbsurfaceextrusion.html#profile
      * @param inputs Extruded Nurbs surface
      * @returns Profile Nurbs curve
      */

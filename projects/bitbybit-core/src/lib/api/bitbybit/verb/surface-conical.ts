@@ -17,7 +17,7 @@ export class VerbSurfaceConical {
      * <div>
      *  <img src="../assets/images/blockly-images/surface/conical/create.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_verb_surface_conical.verbsurfaceconical.html#create
+     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_surface_conical.verbsurfaceconical.html#create
      * @param inputs Parameters for Nurbs conical surface
      * @returns Conical Nurbs surface
      */
@@ -30,7 +30,7 @@ export class VerbSurfaceConical {
      * <div>
      *  <img src="../assets/images/blockly-images/surface/conical/axis.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_verb_surface_conical.verbsurfaceconical.html#axis
+     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_surface_conical.verbsurfaceconical.html#axis
      * @param inputs Nurbs conical surface
      * @returns Axis vector
      */
@@ -43,7 +43,7 @@ export class VerbSurfaceConical {
      * <div>
      *  <img src="../assets/images/blockly-images/surface/conical/base.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_verb_surface_conical.verbsurfaceconical.html#base
+     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_surface_conical.verbsurfaceconical.html#base
      * @param inputs Nurbs conical surface
      * @returns Base point
      */
@@ -56,7 +56,7 @@ export class VerbSurfaceConical {
      * <div>
      *  <img src="../assets/images/blockly-images/surface/conical/height.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_verb_surface_conical.verbsurfaceconical.html#height
+     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_surface_conical.verbsurfaceconical.html#height
      * @param inputs Nurbs conical surface
      * @returns Height
      */
@@ -69,7 +69,7 @@ export class VerbSurfaceConical {
      * <div>
      *  <img src="../assets/images/blockly-images/surface/conical/radius.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_verb_surface_conical.verbsurfaceconical.html#radius
+     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_surface_conical.verbsurfaceconical.html#radius
      * @param inputs Nurbs conical surface
      * @returns Radius
      */
@@ -81,7 +81,7 @@ export class VerbSurfaceConical {
      * <div>
      *  <img src="../assets/images/blockly-images/surface/conical/xAxis.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_verb_surface_conical.verbsurfaceconical.html#xaxis
+     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_surface_conical.verbsurfaceconical.html#xaxis
      * @param inputs Nurbs conical surface
      * @returns X axis vector
      */

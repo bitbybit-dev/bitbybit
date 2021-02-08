@@ -17,7 +17,7 @@ export class VerbSurfaceCylindrical {
      * <div>
      *  <img src="../assets/images/blockly-images/surface/cylindrical/create.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_verb_surface_cylindrical.verbsurfacecylindrical.html#create
+     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_surface_cylindrical.verbsurfacecylindrical.html#create
      * @param inputs Parameters for cylindrical Nurbs surface
      * @returns Cylindrical Nurbs surface
      */
@@ -30,7 +30,7 @@ export class VerbSurfaceCylindrical {
      * <div>
      *  <img src="../assets/images/blockly-images/surface/cylindrical/axis.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_verb_surface_cylindrical.verbsurfacecylindrical.html#axis
+     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_surface_cylindrical.verbsurfacecylindrical.html#axis
      * @param inputs Nurbs cylindrical surface
      * @returns Axis vector
      */
@@ -43,7 +43,7 @@ export class VerbSurfaceCylindrical {
      * <div>
      *  <img src="../assets/images/blockly-images/surface/cylindrical/base.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_verb_surface_cylindrical.verbsurfacecylindrical.html#base
+     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_surface_cylindrical.verbsurfacecylindrical.html#base
      * @param inputs Nurbs cylindrical surface
      * @returns Base point
      */
@@ -56,7 +56,7 @@ export class VerbSurfaceCylindrical {
      * <div>
      *  <img src="../assets/images/blockly-images/surface/cylindrical/height.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_verb_surface_cylindrical.verbsurfacecylindrical.html#height
+     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_surface_cylindrical.verbsurfacecylindrical.html#height
      * @param inputs Nurbs cylindrical surface
      * @returns Height
      */
@@ -69,7 +69,7 @@ export class VerbSurfaceCylindrical {
      * <div>
      *  <img src="../assets/images/blockly-images/surface/cylindrical/radius.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_verb_surface_cylindrical.verbsurfacecylindrical.html#radius
+     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_surface_cylindrical.verbsurfacecylindrical.html#radius
      * @param inputs Nurbs cylindrical surface
      * @returns Radius
      */
@@ -82,7 +82,7 @@ export class VerbSurfaceCylindrical {
      * <div>
      *  <img src="../assets/images/blockly-images/surface/cylindrical/xAxis.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_verb_surface_cylindrical.verbsurfacecylindrical.html#xaxis
+     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_surface_cylindrical.verbsurfacecylindrical.html#xaxis
      * @param inputs Nurbs cylindrical surface
      * @returns X axis vector
      */

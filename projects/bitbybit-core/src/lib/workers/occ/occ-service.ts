@@ -262,7 +262,7 @@ export class Occ {
     /**
      * Joins separate objects
      * <div>
-     *  <img src="../assets/images/blockly-images/occ/union.svg" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/occt/union.svg" alt="Blockly Image"/>
      * </div>
      * @link https://docs.bitbybit.dev/classes/bitbybit_occ.occ.html#union
      * @param inputs Objects to join

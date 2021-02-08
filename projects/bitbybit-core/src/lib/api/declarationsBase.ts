@@ -840,56 +840,56 @@ declare class VerbCurveCircle {
     constructor(context: Context);
     /**
      * Creates the circle Nurbs curve
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_verb_curve_circle.verbcurvecircle.html#createcircle
+     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_curve_circle.verbcurvecircle.html#createcircle
      * @param inputs Circle parameters
      * @returns Circle Nurbs curve
      */
     createCircle(inputs: Inputs.Verb.CircleParametersDto): any;
     /**
      * Creates the arc Nurbs curve
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_verb_curve_circle.verbcurvecircle.html#createarc
+     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_curve_circle.verbcurvecircle.html#createarc
      * @param inputs Arc parameters
      * @returns Arc Nurbs curve
      */
     createArc(inputs: Inputs.Verb.ArcParametersDto): any;
     /**
      * Gets the center point of the circle or an arc
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_verb_curve_circle.verbcurvecircle.html#center
+     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_curve_circle.verbcurvecircle.html#center
      * @param inputs An arc or a circle Nurbs curve
      * @returns Point
      */
     center(inputs: Inputs.Verb.CircleDto): number[];
     /**
      * Gets the radius of the circle or an arc
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_verb_curve_circle.verbcurvecircle.html#radius
+     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_curve_circle.verbcurvecircle.html#radius
      * @param inputs An arc or a circle Nurbs curve
      * @returns Radius
      */
     radius(inputs: Inputs.Verb.CircleDto): number;
     /**
      * Gets the max angle of the arc in degrees
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_verb_curve_circle.verbcurvecircle.html#maxangle
+     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_curve_circle.verbcurvecircle.html#maxangle
      * @param inputs Arc
      * @returns Max angle in degrees
      */
     maxAngle(inputs: Inputs.Verb.CircleDto): number;
     /**
      * Gets the min angle of the arc in degrees
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_verb_curve_circle.verbcurvecircle.html#minangle
+     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_curve_circle.verbcurvecircle.html#minangle
      * @param inputs Arc
      * @returns Min angle in degrees
      */
     minAngle(inputs: Inputs.Verb.CircleDto): number;
     /**
      * Gets the x angle of the arc
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_verb_curve_circle.verbcurvecircle.html#xaxis
+     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_curve_circle.verbcurvecircle.html#xaxis
      * @param inputs Circle
      * @returns X axis vector
      */
     xAxis(inputs: Inputs.Verb.CircleDto): number[];
     /**
      * Gets the y angle of the arc
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_verb_curve_circle.verbcurvecircle.html#yaxis
+     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_curve_circle.verbcurvecircle.html#yaxis
      * @param inputs Circle
      * @returns Y axis vector
      */
@@ -904,49 +904,49 @@ declare class VerbCurveEllipse {
     constructor(context: Context);
     /**
      * Creates the ellipse Nurbs curve
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_verb_curve_ellipse.verbcurveellipse.html#createellipse
+     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_curve_ellipse.verbcurveellipse.html#createellipse
      * @param inputs Ellipse parameters
      * @returns Ellipse Nurbs curve
      */
     createEllipse(inputs: Inputs.Verb.EllipseParametersDto): any;
     /**
      * Creates the ellipse arc Nurbs curve
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_verb_curve_ellipse.verbcurveellipse.html#createarc
+     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_curve_ellipse.verbcurveellipse.html#createarc
      * @param inputs Ellipse arc parameters
      * @returns Ellipse arc Nurbs curve
      */
     createArc(inputs: Inputs.Verb.EllipseArcParametersDto): any;
     /**
      * Gets the center point of the ellipse or an arc
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_verb_curve_ellipse.verbcurveellipse.html#center
+     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_curve_ellipse.verbcurveellipse.html#center
      * @param inputs The arc or the ellipse Nurbs curve
      * @returns Point
      */
     center(inputs: Inputs.Verb.EllipseDto): number[];
     /**
      * Gets the max angle of the arc in degrees
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_verb_curve_ellipse.verbcurveellipse.html#maxangle
+     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_curve_ellipse.verbcurveellipse.html#maxangle
      * @param inputs Arc
      * @returns Max angle in degrees
      */
     maxAngle(inputs: Inputs.Verb.EllipseDto): number;
     /**
      * Gets the min angle of the arc in degrees
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_verb_curve_ellipse.verbcurveellipse.html#minangle
+     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_curve_ellipse.verbcurveellipse.html#minangle
      * @param inputs Arc
      * @returns Min angle in degrees
      */
     minAngle(inputs: Inputs.Verb.EllipseDto): number;
     /**
      * Gets the x angle of the arc or an ellipse
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_verb_curve_ellipse.verbcurveellipse.html#xaxis
+     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_curve_ellipse.verbcurveellipse.html#xaxis
      * @param inputs Ellipse or an arc
      * @returns X axis vector
      */
     xAxis(inputs: Inputs.Verb.EllipseDto): number[];
     /**
      * Gets the y angle of the arc or an ellipse
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_verb_curve_ellipse.verbcurveellipse.html#yaxis
+     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_curve_ellipse.verbcurveellipse.html#yaxis
      * @param inputs Ellipse or an arc
      * @returns Y axis vector
      */
@@ -964,259 +964,259 @@ declare class VerbCurve {
     constructor(circle: VerbCurveCircle, ellipse: VerbCurveEllipse, context: Context, geometryHelper: GeometryHelper);
     /**
      * Draws a single curve
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_verb_curve.verbcurve.html#drawcurve
+     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_curve.verbcurve.html#drawcurve
      * @param inputs Contains a curve to be drawn
      * @returns Lines mesh that is being drawn by Babylon
      */
     drawCurve(inputs: Inputs.Verb.DrawCurveDto): LinesMesh;
     /**
      * Draws multiple curves
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_verb_curve.verbcurve.html#drawcurves
+     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_curve.verbcurve.html#drawcurves
      * @param inputs Contains curves to be drawn
      * @returns Lines mesh that is being drawn by Babylon
      */
     drawCurves(inputs: Inputs.Verb.DrawCurvesDto): LinesMesh;
     /**
      * Creates a Nurbs curve by providing knots, control points & weights
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_verb_curve.verbcurve.html#createcurvebyknotscontrolpointsweights
+     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_curve.verbcurve.html#createcurvebyknotscontrolpointsweights
      * @param inputs Contains knots, control points and weights
      * @returns Nurbs curve
      */
     createCurveByKnotsControlPointsWeights(inputs: Inputs.Verb.CurveNurbsDataDto): any;
     /**
      * Creates a Nurbs curve by providing control points
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_verb_curve.verbcurve.html#createcurvebypoints
+     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_curve.verbcurve.html#createcurvebypoints
      * @param inputs Control points
      * @returns Nurbs curve
      */
     createCurveByPoints(inputs: Inputs.Verb.CurvePathDataDto): any;
     /**
      * Creates a Bezier Nurbs curve by providing control points and weights
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_verb_curve.verbcurve.html#createbeziercurve
+     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_curve.verbcurve.html#createbeziercurve
      * @param inputs Control points
      * @returns Bezier Nurbs curve
      */
     createBezierCurve(inputs: Inputs.Verb.BezierCurveDto): any;
     /**
      * Clone the Nurbs curve
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_verb_curve.verbcurve.html#clone
+     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_curve.verbcurve.html#clone
      * @param inputs Nurbs curve
      * @returns Nurbs curve
      */
     clone(inputs: Inputs.Verb.CurveDto): any;
     /**
      * Finds the closest param on the Nurbs curve from the point
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_verb_curve.verbcurve.html#closestparam
+     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_curve.verbcurve.html#closestparam
      * @param inputs Nurbs curve with point
      * @returns Param number
      */
     closestParam(inputs: Inputs.Verb.ClosestPointDto): number;
     /**
      * Finds the closest params on the Nurbs curve from the points
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_verb_curve.verbcurve.html#closestparams
+     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_curve.verbcurve.html#closestparams
      * @param inputs Nurbs curve with points
      * @returns Param numbers
      */
     closestParams(inputs: Inputs.Verb.ClosestPointsDto): number[];
     /**
      * Finds the closest point on the Nurbs curve from the point
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_verb_curve.verbcurve.html#closestpoint
+     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_curve.verbcurve.html#closestpoint
      * @param inputs Nurbs curve with point
      * @returns Point
      */
     closestPoint(inputs: Inputs.Verb.ClosestPointDto): number[];
     /**
      * Finds the closest points on the Nurbs curve from the list of points
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_verb_curve.verbcurve.html#closestpoints
+     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_curve.verbcurve.html#closestpoints
      * @param inputs Nurbs curve with points
      * @returns Points
      */
     closestPoints(inputs: Inputs.Verb.ClosestPointsDto): number[][];
     /**
      * Finds the control points of the Nurbs curve
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_verb_curve.verbcurve.html#controlpoints
+     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_curve.verbcurve.html#controlpoints
      * @param inputs Nurbs curve
      * @returns Points
      */
     controlPoints(inputs: Inputs.Verb.CurveDto): number[][];
     /**
      * Finds the degree of the Nurbs curve
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_verb_curve.verbcurve.html#degree
+     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_curve.verbcurve.html#degree
      * @param inputs Nurbs curve
      * @returns Degree number
      */
     degree(inputs: Inputs.Verb.CurveDto): number;
     /**
      * Finds the derivatives of the Nurbs curve at parameter
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_verb_curve.verbcurve.html#derivatives
+     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_curve.verbcurve.html#derivatives
      * @param inputs Nurbs curve with specified derivative number and parameter
      * @returns Derivatives
      */
     derivatives(inputs: Inputs.Verb.CurveDerivativesDto): number[];
     /**
      * Divides the curve by equal arc length to parameters
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_verb_curve.verbcurve.html#dividebyequalarclengthtoparams
+     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_curve.verbcurve.html#dividebyequalarclengthtoparams
      * @param inputs Nurbs curve
      * @returns Parameters
      */
     divideByEqualArcLengthToParams(inputs: Inputs.Verb.CurveSubdivisionsDto): number[];
     /**
      * Divides the curve by equal arc length to points
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_verb_curve.verbcurve.html#dividebyequalarclengthtopoints
+     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_curve.verbcurve.html#dividebyequalarclengthtopoints
      * @param inputs Nurbs curve
      * @returns Points
      */
     divideByEqualArcLengthToPoints(inputs: Inputs.Verb.CurveSubdivisionsDto): number[][];
     /**
      * Divides the curve by arc length to parameters
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_verb_curve.verbcurve.html#dividebyarclengthtoparams
+     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_curve.verbcurve.html#dividebyarclengthtoparams
      * @param inputs Nurbs curve
      * @returns Parameters
      */
     divideByArcLengthToParams(inputs: Inputs.Verb.CurveDivideLengthDto): number[];
     /**
      * Divides the curve by arc length to points
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_verb_curve.verbcurve.html#dividebyarclengthtopoints
+     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_curve.verbcurve.html#dividebyarclengthtopoints
      * @param inputs Nurbs curve
      * @returns Points
      */
     divideByArcLengthToPoints(inputs: Inputs.Verb.CurveDivideLengthDto): number[][];
     /**
      * Divides multiple curves by equal arc length to points
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_verb_curve.verbcurve.html#dividecurvesbyequalarclengthtopoints
+     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_curve.verbcurve.html#dividecurvesbyequalarclengthtopoints
      * @param inputs Nurbs curves
      * @returns Points placed for each curve in separate arrays
      */
     divideCurvesByEqualArcLengthToPoints(inputs: Inputs.Verb.CurvesSubdivisionsDto): number[][][];
     /**
      * Divides multiple curves by arc length to points
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_verb_curve.verbcurve.html#dividecurvesbyarclengthtopoints
+     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_curve.verbcurve.html#dividecurvesbyarclengthtopoints
      * @param inputs Nurbs curves
      * @returns Points placed for each curve in separate arrays
      */
     divideCurvesByArcLengthToPoints(inputs: Inputs.Verb.CurvesDivideLengthDto): number[][][];
     /**
      * Finds the domain interval of the curve parameters
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_verb_curve.verbcurve.html#domain
+     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_curve.verbcurve.html#domain
      * @param inputs Nurbs curve
      * @returns Interval domain
      */
     domain(inputs: Inputs.Verb.CurveDto): BaseTypes.IntervalDto;
     /**
      * Start point of the curve
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_verb_curve.verbcurve.html#startpoint
+     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_curve.verbcurve.html#startpoint
      * @param inputs Nurbs curve
      * @returns Start point
      */
     startPoint(inputs: Inputs.Verb.CurveDto): number[];
     /**
      * End point of the curve
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_verb_curve.verbcurve.html#endpoint
+     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_curve.verbcurve.html#endpoint
      * @param inputs Nurbs curve
      * @returns End point
      */
     endPoint(inputs: Inputs.Verb.CurveDto): number[];
     /**
      * Start points of the curves
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_verb_curve.verbcurve.html#startpoints
+     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_curve.verbcurve.html#startpoints
      * @param inputs Nurbs curves
      * @returns Start points
      */
     startPoints(inputs: Inputs.Verb.CurvesDto): number[][];
     /**
      * End points of the curves
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_verb_curve.verbcurve.html#endpoints
+     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_curve.verbcurve.html#endpoints
      * @param inputs Nurbs curves
      * @returns End points
      */
     endPoints(inputs: Inputs.Verb.CurvesDto): number[][];
     /**
      * Finds the knots of the Nurbs curve
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_verb_curve.verbcurve.html#knots
+     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_curve.verbcurve.html#knots
      * @param inputs Nurbs curve
      * @returns Knots
      */
     knots(inputs: Inputs.Verb.CurveDto): number[];
     /**
      * Gets the length of the Nurbs curve at specific parameter
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_verb_curve.verbcurve.html#lengthatparam
+     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_curve.verbcurve.html#lengthatparam
      * @param inputs Nurbs curve and parameter
      * @returns Length
      */
     lengthAtParam(inputs: Inputs.Verb.CurveParameterDto): number;
     /**
      * Gets the length of the Nurbs curve
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_verb_curve.verbcurve.html#length
+     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_curve.verbcurve.html#length
      * @param inputs Nurbs curve
      * @returns Length
      */
     length(inputs: Inputs.Verb.CurveDto): number;
     /**
      * Gets the param at specified length on the Nurbs curve
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_verb_curve.verbcurve.html#paramatlength
+     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_curve.verbcurve.html#paramatlength
      * @param inputs Nurbs curve, length and tolerance
      * @returns Parameter
      */
     paramAtLength(inputs: Inputs.Verb.CurveLengthToleranceDto): number;
     /**
      * Gets the point at specified parameter on the Nurbs curve
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_verb_curve.verbcurve.html#pointAtParam
+     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_curve.verbcurve.html#pointAtParam
      * @param inputs Nurbs curve and a parameter
      * @returns Point
      */
     pointAtParam(inputs: Inputs.Verb.CurveParameterDto): number[];
     /**
      * Gets the points at specified parameter on the Nurbs curves
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_verb_curve.verbcurve.html#pointAtParam
+     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_curve.verbcurve.html#pointAtParam
      * @param inputs Nurbs curves and a parameter
      * @returns Points in arrays for each curve
      */
     pointsAtParam(inputs: Inputs.Verb.CurvesParameterDto): number[][];
     /**
      * Reverses the Nurbs curve
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_verb_curve.verbcurve.html#reverse
+     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_curve.verbcurve.html#reverse
      * @param inputs Nurbs curve
      * @returns Reversed Nurbs curve
      */
     reverse(inputs: Inputs.Verb.CurveDto): any;
     /**
      * Splits the Nurbs curve in two at a given parameter
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_verb_curve.verbcurve.html#split
+     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_curve.verbcurve.html#split
      * @param inputs Nurbs curve with parameter
      * @returns Nurbs curves
      */
     split(inputs: Inputs.Verb.CurveParameterDto): any[];
     /**
      * Tangent of the Nurbs curve at a given parameter
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_verb_curve.verbcurve.html#tangent
+     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_curve.verbcurve.html#tangent
      * @param inputs Nurbs curve with parameter
      * @returns Tangent vector
      */
     tangent(inputs: Inputs.Verb.CurveParameterDto): number[];
     /**
      * Tessellates the Nurbs curve into a list of points
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_verb_curve.verbcurve.html#tessellate
+     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_curve.verbcurve.html#tessellate
      * @param inputs Nurbs curve with tolerance
      * @returns Points
      */
     tessellate(inputs: Inputs.Verb.CurveToleranceDto): number[][];
     /**
      * Transforms the Nurbs curve
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_verb_curve.verbcurve.html#transform
+     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_curve.verbcurve.html#transform
      * @param inputs Nurbs curve with transformation matrixes
      * @returns Transformed curve
      */
     transform(inputs: Inputs.Verb.CurveTransformDto): any;
     /**
      * Transforms the Nurbs curves
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_verb_curve.verbcurve.html#transformcurves
+     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_curve.verbcurve.html#transformcurves
      * @param inputs Nurbs curves with transformation matrixes
      * @returns Transformed curves
      */
     transformCurves(inputs: Inputs.Verb.CurvesTransformDto): any[];
     /**
      * Weights of the Nurbs curve
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_verb_curve.verbcurve.html#weights
+     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_curve.verbcurve.html#weights
      * @param inputs Nurbs curve
      * @returns Weights
      */
@@ -1230,77 +1230,77 @@ declare class VerbIntersect {
     constructor(context: Context, geometryHelper: GeometryHelper);
     /**
      * Intersects two verb Nurbs curves together and returns intersection results
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_verb_intersect.verbintersect.html#curves
+     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_intersect.verbintersect.html#curves
      * @param inputs Two Nurbs curves
      * @returns Intersection results
      */
     curves(inputs: Inputs.Verb.CurveCurveDto): BaseTypes.CurveCurveIntersection[];
     /**
      * Intersects curve and surface
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_verb_intersect.verbintersect.html#curveAndSurface
+     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_intersect.verbintersect.html#curveAndSurface
      * @param inputs Nurbs curve and a Nurbs surface
      * @returns Intersection results
      */
     curveAndSurface(inputs: Inputs.Verb.CurveSurfaceDto): BaseTypes.CurveSurfaceIntersection[];
     /**
      * Intersects two surfaces
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_verb_intersect.verbintersect.html#surfaces
+     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_intersect.verbintersect.html#surfaces
      * @param inputs Nurbs curve and a Nurbs surface
      * @returns Nurbs curves along the intersection
      */
     surfaces(inputs: Inputs.Verb.SurfaceSurfaceDto): any[];
     /**
      * Gets intersection parameters on the first curve from curve-curve intersection
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_verb_intersect.verbintersect.html#curvecurvefirstparams
+     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_intersect.verbintersect.html#curvecurvefirstparams
      * @param inputs Intersections data
      * @returns Parameters on first curve
      */
     curveCurveFirstParams(inputs: Inputs.Verb.CurveCurveIntersectionsDto): number[];
     /**
      * Gets intersection parameters on the second curve from curve-curve intersection
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_verb_intersect.verbintersect.html#curvecurvesecondparams
+     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_intersect.verbintersect.html#curvecurvesecondparams
      * @param inputs Intersections data
      * @returns Parameters on second curve
      */
     curveCurveSecondParams(inputs: Inputs.Verb.CurveCurveIntersectionsDto): number[];
     /**
      * Gets intersection points on the first curve from curve-curve intersection
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_verb_intersect.verbintersect.html#curvecurvefirstpoints
+     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_intersect.verbintersect.html#curvecurvefirstpoints
      * @param inputs Intersections data
      * @returns Points on first curve
      */
     curveCurveFirstPoints(inputs: Inputs.Verb.CurveCurveIntersectionsDto): number[][];
     /**
      * Gets intersection points on the second curve from curve-curve intersection
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_verb_intersect.verbintersect.html#curvecurvesecondpoints
+     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_intersect.verbintersect.html#curvecurvesecondpoints
      * @param inputs Intersections data
      * @returns Points on second curve
      */
     curveCurveSecondPoints(inputs: Inputs.Verb.CurveCurveIntersectionsDto): number[][];
     /**
      * Gets intersection parameters on the curve from curve-surface intersection
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_verb_intersect.verbintersect.html#curvesurfacecurveparams
+     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_intersect.verbintersect.html#curvesurfacecurveparams
      * @param inputs Intersections data
      * @returns Parameters on the curve
      */
     curveSurfaceCurveParams(inputs: Inputs.Verb.CurveSurfaceIntersectionsDto): number[];
     /**
      * Gets intersection parameters on the surface from curve-surface intersection
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_verb_intersect.verbintersect.html#curvesurfacesurfaceparams
+     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_intersect.verbintersect.html#curvesurfacesurfaceparams
      * @param inputs Intersections data
      * @returns Parameters on the surface
      */
     curveSurfaceSurfaceParams(inputs: Inputs.Verb.CurveSurfaceIntersectionsDto): BaseTypes.UVDto[];
     /**
      * Gets intersection points on the curve from curve-surface intersection
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_verb_intersect.verbintersect.html#curvesurfacecurvepoints
+     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_intersect.verbintersect.html#curvesurfacecurvepoints
      * @param inputs Intersections data
      * @returns Points on the curve
      */
     curveSurfaceCurvePoints(inputs: Inputs.Verb.CurveSurfaceIntersectionsDto): number[][];
     /**
      * Gets intersection points on the surface from curve-surface intersection
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_verb_intersect.verbintersect.html#curvesurfacesurfacepoints
+     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_intersect.verbintersect.html#curvesurfacesurfacepoints
      * @param inputs Intersections data
      * @returns Points on the surface
      */
@@ -1315,42 +1315,42 @@ declare class VerbSurfaceConical {
     constructor(context: Context);
     /**
      * Creates the conical Nurbs surface
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_verb_surface_conical.verbsurfaceconical.html#create
+     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_surface_conical.verbsurfaceconical.html#create
      * @param inputs Parameters for Nurbs conical surface
      * @returns Conical Nurbs surface
      */
     create(inputs: Inputs.Verb.ConeAndCylinderParametersDto): any;
     /**
      * Get cone axis
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_verb_surface_conical.verbsurfaceconical.html#axis
+     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_surface_conical.verbsurfaceconical.html#axis
      * @param inputs Nurbs conical surface
      * @returns Axis vector
      */
     axis(inputs: Inputs.Verb.ConeDto): number[];
     /**
      * Get cone base
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_verb_surface_conical.verbsurfaceconical.html#base
+     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_surface_conical.verbsurfaceconical.html#base
      * @param inputs Nurbs conical surface
      * @returns Base point
      */
     base(inputs: Inputs.Verb.ConeDto): number[];
     /**
      * Get cone height
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_verb_surface_conical.verbsurfaceconical.html#height
+     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_surface_conical.verbsurfaceconical.html#height
      * @param inputs Nurbs conical surface
      * @returns Height
      */
     height(inputs: Inputs.Verb.ConeDto): number;
     /**
      * Get cone radius
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_verb_surface_conical.verbsurfaceconical.html#radius
+     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_surface_conical.verbsurfaceconical.html#radius
      * @param inputs Nurbs conical surface
      * @returns Radius
      */
     radius(inputs: Inputs.Verb.ConeDto): number;
     /**
      * Get cone x axis
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_verb_surface_conical.verbsurfaceconical.html#xaxis
+     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_surface_conical.verbsurfaceconical.html#xaxis
      * @param inputs Nurbs conical surface
      * @returns X axis vector
      */
@@ -1365,42 +1365,42 @@ declare class VerbSurfaceCylindrical {
     constructor(context: Context);
     /**
      * Creates the cylindrical Nurbs surface
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_verb_surface_cylindrical.verbsurfacecylindrical.html#create
+     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_surface_cylindrical.verbsurfacecylindrical.html#create
      * @param inputs Parameters for cylindrical Nurbs surface
      * @returns Cylindrical Nurbs surface
      */
     create(inputs: Inputs.Verb.ConeAndCylinderParametersDto): any;
     /**
      * Get cylinder axis
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_verb_surface_cylindrical.verbsurfacecylindrical.html#axis
+     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_surface_cylindrical.verbsurfacecylindrical.html#axis
      * @param inputs Nurbs cylindrical surface
      * @returns Axis vector
      */
     axis(inputs: Inputs.Verb.CylinderDto): number[];
     /**
      * Get cylinder base
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_verb_surface_cylindrical.verbsurfacecylindrical.html#base
+     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_surface_cylindrical.verbsurfacecylindrical.html#base
      * @param inputs Nurbs cylindrical surface
      * @returns Base point
      */
     base(inputs: Inputs.Verb.CylinderDto): number[];
     /**
      * Get cylinder height
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_verb_surface_cylindrical.verbsurfacecylindrical.html#height
+     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_surface_cylindrical.verbsurfacecylindrical.html#height
      * @param inputs Nurbs cylindrical surface
      * @returns Height
      */
     height(inputs: Inputs.Verb.CylinderDto): number;
     /**
      * Get cylinder radius
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_verb_surface_cylindrical.verbsurfacecylindrical.html#radius
+     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_surface_cylindrical.verbsurfacecylindrical.html#radius
      * @param inputs Nurbs cylindrical surface
      * @returns Radius
      */
     radius(inputs: Inputs.Verb.CylinderDto): number;
     /**
      * Get cylinder x axis
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_verb_surface_cylindrical.verbsurfacecylindrical.html#xaxis
+     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_surface_cylindrical.verbsurfacecylindrical.html#xaxis
      * @param inputs Nurbs cylindrical surface
      * @returns X axis vector
      */
@@ -1415,21 +1415,21 @@ declare class VerbSurfaceExtrusion {
     constructor(context: Context);
     /**
      * Creates the Nurbs surface extrusion from the curve
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_verb_surface_extrusion.verbsurfaceextrusion.html#create
+     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_surface_extrusion.verbsurfaceextrusion.html#create
      * @param inputs Nurbs profile curve and direction vector
      * @returns Nurbs surface
      */
     create(inputs: Inputs.Verb.ExtrusionParametersDto): any;
     /**
      * Gets the direction vector of the extrusion
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_verb_surface_extrusion.verbsurfaceextrusion.html#direction
+     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_surface_extrusion.verbsurfaceextrusion.html#direction
      * @param inputs Extruded Nurbs surface
      * @returns Vector
      */
     direction(inputs: Inputs.Verb.ExtrusionDto): number[];
     /**
      * Gets the profile Nurbs curve of the extrusion
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_verb_surface_extrusion.verbsurfaceextrusion.html#profile
+     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_surface_extrusion.verbsurfaceextrusion.html#profile
      * @param inputs Extruded Nurbs surface
      * @returns Profile Nurbs curve
      */
@@ -1444,35 +1444,35 @@ declare class VerbSurfaceRevolved {
     constructor(context: Context);
     /**
      * Creates the revolved Nurbs surface
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_verb_surface_revolved.verbsurfacerevolved.html#create
+     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_surface_revolved.verbsurfacerevolved.html#create
      * @param inputs Parameters for Nurbs revolved surface
      * @returns Revolved Nurbs surface
      */
     create(inputs: Inputs.Verb.RevolutionParametersDto): any;
     /**
      * Get the profile Nurbs curve of the revolved Nurbs surface
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_verb_surface_revolved.verbsurfacerevolved.html#profile
+     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_surface_revolved.verbsurfacerevolved.html#profile
      * @param inputs Revolved Nurbs surface
      * @returns Nurbs curve
      */
     profile(inputs: Inputs.Verb.RevolutionDto): any;
     /**
      * Get the center Nurbs curve of the revolved Nurbs surface
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_verb_surface_revolved.verbsurfacerevolved.html#center
+     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_surface_revolved.verbsurfacerevolved.html#center
      * @param inputs Revolved Nurbs surface
      * @returns Center point
      */
     center(inputs: Inputs.Verb.RevolutionDto): number[];
     /**
      * Get the rotation axis of the revolved Nurbs surface
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_verb_surface_revolved.verbsurfacerevolved.html#axis
+     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_surface_revolved.verbsurfacerevolved.html#axis
      * @param inputs Revolved Nurbs surface
      * @returns Axis vector of rotation
      */
     axis(inputs: Inputs.Verb.RevolutionDto): number[];
     /**
      * Get the angle of rotation from revolved Nurbs surface
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_verb_surface_revolved.verbsurfacerevolved.html#angle
+     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_surface_revolved.verbsurfacerevolved.html#angle
      * @param inputs Revolved Nurbs surface
      * @returns Angle in degrees
      */
@@ -1487,21 +1487,21 @@ declare class VerbSurfaceSpherical {
     constructor(context: Context);
     /**
      * Creates the spherical Nurbs surface
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_verb_surface_spherical.verbsurfacespherical.html#create
+     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_surface_spherical.verbsurfacespherical.html#create
      * @param inputs Parameters for Nurbs spherical surface
      * @returns Spherical Nurbs surface
      */
     create(inputs: Inputs.Verb.SphericalParametersDto): any;
     /**
      * Get the radius of the spherical Nurbs surface
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_verb_surface_spherical.verbsurfacespherical.html#radius
+     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_surface_spherical.verbsurfacespherical.html#radius
      * @param inputs Spherical Nurbs surface
      * @returns Radius
      */
     radius(inputs: Inputs.Verb.SphereDto): number;
     /**
      * Get the center of the spherical Nurbs surface
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_verb_surface_spherical.verbsurfacespherical.html#center
+     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_surface_spherical.verbsurfacespherical.html#center
      * @param inputs Spherical Nurbs surface
      * @returns Center point
      */
@@ -1516,21 +1516,21 @@ declare class VerbSurfaceSweep {
     constructor(context: Context);
     /**
      * Creates the sweep Nurbs surface
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_verb_surface_sweep.verbsurfacesweep.html#create
+     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_surface_sweep.verbsurfacesweep.html#create
      * @param inputs Parameters for Nurbs sweep surface
      * @returns Sweep Nurbs surface
      */
     create(inputs: Inputs.Verb.SweepParametersDto): any;
     /**
      * Get the profile Nurbs curve of the swept Nurbs surface
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_verb_surface_sweep.verbsurfacesweep.html#profile
+     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_surface_sweep.verbsurfacesweep.html#profile
      * @param inputs Sweep Nurbs surface
      * @returns Profile Nurbs curve
      */
     profile(inputs: Inputs.Verb.SweepDto): any;
     /**
      * Get the rail Nurbs curve of the swept Nurbs surface
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_verb_surface_sweep.verbsurfacesweep.html#rail
+     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_surface_sweep.verbsurfacesweep.html#rail
      * @param inputs Sweep Nurbs surface
      * @returns Rail Nurbs curve
      */
@@ -1552,189 +1552,189 @@ declare class VerbSurface {
     constructor(cone: VerbSurfaceConical, cylinder: VerbSurfaceCylindrical, extrusion: VerbSurfaceExtrusion, sphere: VerbSurfaceSpherical, revolved: VerbSurfaceRevolved, sweep: VerbSurfaceSweep, context: Context, geometryHelper: GeometryHelper);
     /**
      * Draws a single surface
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_verb_surface.verbsurface.html#drawsurface
+     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_surface.verbsurface.html#drawsurface
      * @param inputs Contains a surface and information for drawing
      * @returns Mesh that is being drawn by Babylon
      */
     drawSurface(inputs: Inputs.Verb.DrawSurfaceDto): Mesh;
     /**
      * Draws multiple surfaces
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_verb_surface.verbsurface.html#drawsurfaces
+     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_surface.verbsurface.html#drawsurfaces
      * @param inputs Contains the Nurbs surfaces and information for drawing
      * @returns Mesh that is being drawn by Babylon
      */
     drawSurfaces(inputs: Inputs.Verb.DrawSurfacesDto): Mesh;
     /**
      * Draws multiple surfaces with multiple colours. Number of colours has to be equal to number of surfaces
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_verb_surface.verbsurface.html#drawsurfacesmulticolour
+     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_surface.verbsurface.html#drawsurfacesmulticolour
      * @param inputs Contains the Nurbs surfaces, colours and other information for drawing
      * @returns Mesh that is being drawn by Babylon
      */
     drawSurfacesMultiColour(inputs: Inputs.Verb.DrawSurfacesColoursDto): Mesh;
     /**
      * Gets the boundary edge Nurbs curves of the surface in a list
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_verb_surface.verbsurface.html#boundaries
+     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_surface.verbsurface.html#boundaries
      * @param inputs Nurbs surface
      * @returns Array of curves
      */
     boundaries(inputs: Inputs.Verb.SurfaceDto): any[];
     /**
      * Creates the surface by providing 4 points as corners
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_verb_surface.verbsurface.html#createsurfacebycorners
+     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_surface.verbsurface.html#createsurfacebycorners
      * @param inputs 4 points
      * @returns Nurbs surface
      */
     createSurfaceByCorners(inputs: Inputs.Verb.CornersDto): any;
     /**
      * Creates the Nurbs surface by providing uv knots, uv degrees, points and weights
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_verb_surface.verbsurface.html#createsurfacebyknotscontrolpointsweights
+     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_surface.verbsurface.html#createsurfacebyknotscontrolpointsweights
      * @param inputs Surface creation information
      * @returns Nurbs surface
      */
     createSurfaceByKnotsControlPointsWeights(inputs: Inputs.Verb.KnotsControlPointsWeightsDto): any;
     /**
      * Creates the Nurbs surface by lofting curves
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_verb_surface.verbsurface.html#createsurfacebyloftingcurves
+     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_surface.verbsurface.html#createsurfacebyloftingcurves
      * @param inputs Curves to loft through
      * @returns Nurbs surface
      */
     createSurfaceByLoftingCurves(inputs: Inputs.Verb.LoftCurvesDto): any;
     /**
      * Clone the Nurbs surface
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_verb_surface.verbsurface.html#clone
+     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_surface.verbsurface.html#clone
      * @param inputs Nurbs surface
      * @returns Nurbs surface
      */
     clone(inputs: Inputs.Verb.SurfaceDto): any;
     /**
      * Finds the closest parameter on the surface from the point
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_verb_surface.verbsurface.html#closestparam
+     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_surface.verbsurface.html#closestparam
      * @param inputs Nurbs surface with a point
      * @returns UV parameters
      */
     closestParam(inputs: Inputs.Verb.SurfaceParamDto): BaseTypes.UVDto;
     /**
      * Finds the closest point on the surface from the point
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_verb_surface.verbsurface.html#closestpoint
+     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_surface.verbsurface.html#closestpoint
      * @param inputs Nurbs surface with a point
      * @returns Point
      */
     closestPoint(inputs: Inputs.Verb.SurfaceParamDto): number[];
     /**
      * Gets the control points on the surface
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_verb_surface.verbsurface.html#controlpoints
+     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_surface.verbsurface.html#controlpoints
      * @param inputs Nurbs surface
      * @returns Two dimensional array of points
      */
     controlPoints(inputs: Inputs.Verb.SurfaceDto): number[][][];
     /**
      * Gets the U degree of the surface
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_verb_surface.verbsurface.html#degreeu
+     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_surface.verbsurface.html#degreeu
      * @param inputs Nurbs surface
      * @returns U degree
      */
     degreeU(inputs: Inputs.Verb.SurfaceDto): number;
     /**
      * Gets the V degree of the surface
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_verb_surface.verbsurface.html#degreev
+     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_surface.verbsurface.html#degreev
      * @param inputs Nurbs surface
      * @returns V degree
      */
     degreeV(inputs: Inputs.Verb.SurfaceDto): number;
     /**
      * Gets the derivatives of the surface at specified uv coordinate
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_verb_surface.verbsurface.html#derivatives
+     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_surface.verbsurface.html#derivatives
      * @param inputs Nurbs surface
      * @returns Two dimensional array of vectors
      */
     derivatives(inputs: Inputs.Verb.DerivativesDto): number[][][];
     /**
      * Gets the U domain of the surface
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_verb_surface.verbsurface.html#domainu
+     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_surface.verbsurface.html#domainu
      * @param inputs Nurbs surface
      * @returns U domain as interval
      */
     domainU(inputs: Inputs.Verb.SurfaceDto): BaseTypes.IntervalDto;
     /**
      * Gets the V domain of the surface
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_verb_surface.verbsurface.html#domainv
+     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_surface.verbsurface.html#domainv
      * @param inputs Nurbs surface
      * @returns V domain as interval
      */
     domainV(inputs: Inputs.Verb.SurfaceDto): BaseTypes.IntervalDto;
     /**
      * Gets the Nurbs isocurve on the surface
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_verb_surface.verbsurface.html#isocurve
+     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_surface.verbsurface.html#isocurve
      * @param inputs Nurbs surface
      * @returns Nurbs curve
      */
     isocurve(inputs: Inputs.Verb.SurfaceParameterDto): any;
     /**
      * Subdivides surface into preferred number of isocurves
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_verb_surface.verbsurface.html#isocurvesubdivision
+     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_surface.verbsurface.html#isocurvesubdivision
      * @param inputs Nurbs surface
      * @returns Nurbs curves
      */
     isocurvesSubdivision(inputs: Inputs.Verb.IsocurveSubdivisionDto): any[];
     /**
      * Subdivides surface into isocurves on specified array of parameters
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_verb_surface.verbsurface.html#isocurvesatparams
+     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_surface.verbsurface.html#isocurvesatparams
      * @param inputs Nurbs surface
      * @returns Nurbs curves
      */
     isocurvesAtParams(inputs: Inputs.Verb.IsocurvesParametersDto): any[];
     /**
      * Gets the U knots of the surface
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_verb_surface.verbsurface.html#knotsu
+     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_surface.verbsurface.html#knotsu
      * @param inputs Nurbs surface
      * @returns Knots on u direction
      */
     knotsU(inputs: Inputs.Verb.SurfaceDto): number[];
     /**
      * Gets the V knots of the surface
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_verb_surface.verbsurface.html#knotsv
+     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_surface.verbsurface.html#knotsv
      * @param inputs Nurbs surface
      * @returns Knots on v direction
      */
     knotsV(inputs: Inputs.Verb.SurfaceDto): number[];
     /**
      * Gets the normal on the surface at uv coordinate
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_verb_surface.verbsurface.html#normal
+     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_surface.verbsurface.html#normal
      * @param inputs Nurbs surface
      * @returns Normal vector
      */
     normal(inputs: Inputs.Verb.SurfaceLocationDto): number[];
     /**
      * Gets the point on the surface at uv coordinate
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_verb_surface.verbsurface.html#point
+     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_surface.verbsurface.html#point
      * @param inputs Nurbs surface
      * @returns Point
      */
     point(inputs: Inputs.Verb.SurfaceLocationDto): number[];
     /**
      * Reverse the Nurbs surface. This will reverse the UV origin and isocurve directions
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_verb_surface.verbsurface.html#reverse
+     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_surface.verbsurface.html#reverse
      * @param inputs Nurbs surface
      * @returns Nurbs surface
      */
     reverse(inputs: Inputs.Verb.SurfaceDto): any;
     /**
      * Splits the Nurbs surface in two halfs.
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_verb_surface.verbsurface.html#split
+     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_surface.verbsurface.html#split
      * @param inputs Nurbs surface
      * @returns Two Nurbs surfaces
      */
     split(inputs: Inputs.Verb.SurfaceParameterDto): any[];
     /**
      * Transforms the Nurbs surface with a given list of transformations.
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_verb_surface.verbsurface.html#transformsurface
+     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_surface.verbsurface.html#transformsurface
      * @param inputs Nurbs surface with transforms
      * @returns Nurbs surface
      */
     transformSurface(inputs: Inputs.Verb.SurfaceTransformDto): any;
     /**
      * Gets the weights of the surface
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_verb_surface.verbsurface.html#weights
+     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_surface.verbsurface.html#weights
      * @param inputs Nurbs surface
      * @returns Two dimensional array of weights
      */

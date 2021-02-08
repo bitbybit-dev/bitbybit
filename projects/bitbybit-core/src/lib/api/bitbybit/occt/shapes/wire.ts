@@ -13,7 +13,7 @@ export class OCCTWire {
     /**
      * Creates OpenCascade Polygon wire
      * <div>
-     *  <img src="../assets/images/blockly-images/occ/createPolygonWire.svg" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/occt/createPolygonWire.svg" alt="Blockly Image"/>
      * </div>
      * @link https://docs.bitbybit.dev/classes/bitbybit_occ.occ.html#createpolygonwire
      * @param inputs Polygon points
@@ -26,7 +26,7 @@ export class OCCTWire {
     /**
      * Creates OpenCascade BSPline wire
      * <div>
-     *  <img src="../assets/images/blockly-images/occ/createBSpline.svg" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/occt/createBSpline.svg" alt="Blockly Image"/>
      * </div>
      * @link https://docs.bitbybit.dev/classes/bitbybit_occ.occ.html#createbspline
      * @param inputs Points through which to make BSpline
@@ -39,7 +39,7 @@ export class OCCTWire {
     /**
      * Creates OpenCascade Bezier wire
      * <div>
-     *  <img src="../assets/images/blockly-images/occ/createBezier.svg" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/occt/createBezier.svg" alt="Blockly Image"/>
      * </div>
      * @link https://docs.bitbybit.dev/classes/bitbybit_occ.occ.html#createbezier
      * @param inputs Points through which to make bezier curve
@@ -52,7 +52,7 @@ export class OCCTWire {
     /**
      * Creates OpenCascade circle wire
      * <div>
-     *  <img src="../assets/images/blockly-images/occ/createCircleWire.svg" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/occt/createCircleWire.svg" alt="Blockly Image"/>
      * </div>
      * @link https://docs.bitbybit.dev/classes/bitbybit_occ.occ.html#createcirclewire
      * @param inputs Circle parameters
@@ -65,7 +65,7 @@ export class OCCTWire {
     /**
      * Gets the wire by providing an index from the shape
      * <div>
-     *  <img src="../assets/images/blockly-images/occ/getWire.svg" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/occt/getWire.svg" alt="Blockly Image"/>
      * </div>
      * @link https://docs.bitbybit.dev/classes/bitbybit_occ.occ.html#getwire
      * @param inputs Shape

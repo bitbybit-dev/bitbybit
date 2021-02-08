@@ -1,3 +1,3 @@
 export const curveConstants = {
-    helpUrl: '/classes/bitbybit_verb_verb_curve.verbcurve.html'
+    helpUrl: '/classes/bitbybit_verb_curve.verbcurve.html'
 };

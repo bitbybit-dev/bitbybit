@@ -1,3 +1,3 @@
 export const sweptSurfaceConstants = {
-    helpUrl: '/classes/bitbybit_verb_verb_surface_sweep.verbsurfacesweep.html'
+    helpUrl: '/classes/bitbybit_verb_surface_sweep.verbsurfacesweep.html'
 };

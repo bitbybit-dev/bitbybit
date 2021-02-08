@@ -13,7 +13,7 @@ export class OCCTOperations {
     /**
      * Lofts wires into a shell
      * <div>
-     *  <img src="../assets/images/blockly-images/occ/loft.svg" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/occt/loft.svg" alt="Blockly Image"/>
      * </div>
      * @link https://docs.bitbybit.dev/classes/bitbybit_occ.occ.html#loft
      * @param inputs Circle parameters
@@ -26,7 +26,7 @@ export class OCCTOperations {
     /**
      * Offset for various shapes
      * <div>
-     *  <img src="../assets/images/blockly-images/occ/offset.svg" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/occt/offset.svg" alt="Blockly Image"/>
      * </div>
      * @link https://docs.bitbybit.dev/classes/bitbybit_occ.occ.html#offset
      * @param inputs Shape to offset and distance with tolerance
@@ -39,7 +39,7 @@ export class OCCTOperations {
     /**
      * Extrudes the face along direction
      * <div>
-     *  <img src="../assets/images/blockly-images/occ/extrude.svg" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/occt/extrude.svg" alt="Blockly Image"/>
      * </div>
      * @link https://docs.bitbybit.dev/classes/bitbybit_occ.occ.html#extrude
      * @param inputs Shape to extrude and direction parameter with tolerance
@@ -52,7 +52,7 @@ export class OCCTOperations {
     /**
      * Revolves the shape around the given direction
      * <div>
-     *  <img src="../assets/images/blockly-images/occ/revolve.svg" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/occt/revolve.svg" alt="Blockly Image"/>
      * </div>
      * @link https://docs.bitbybit.dev/classes/bitbybit_occ.occ.html#revolve
      * @param inputs Revolve parameters
@@ -65,7 +65,7 @@ export class OCCTOperations {
     /**
      * Rotated extrude that is perofrmed on the wire shape
      * <div>
-     *  <img src="../assets/images/blockly-images/occ/rotatedExtrude.svg" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/occt/rotatedExtrude.svg" alt="Blockly Image"/>
      * </div>
      * @link https://docs.bitbybit.dev/classes/bitbybit_occ.occ.html#rotatedextrude
      * @param inputs Rotated extrusion inputs
@@ -78,7 +78,7 @@ export class OCCTOperations {
     /**
      * Pipe shapes along the wire
      * <div>
-     *  <img src="../assets/images/blockly-images/occ/pipe.svg" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/occt/pipe.svg" alt="Blockly Image"/>
      * </div>
      * @link https://docs.bitbybit.dev/classes/bitbybit_occ.occ.html#pipe
      * @param inputs Path wire and shapes along the path
@@ -91,7 +91,7 @@ export class OCCTOperations {
     /**
      * Thickens the shape into a solid by an offset distance
      * <div>
-     *  <img src="../assets/images/blockly-images/occ/makeThickSolidSimple.svg" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/occt/makeThickSolidSimple.svg" alt="Blockly Image"/>
      * </div>
      * @link https://docs.bitbybit.dev/classes/bitbybit_occ.occ.html#makethicksolidsimple
      * @param inputs OpenCascade shape

@@ -12,7 +12,7 @@ export class OCCTEdge {
     /**
      * Fillets OpenCascade Shapes
      * <div>
-     *  <img src="../assets/images/blockly-images/occ/filletEdges.svg" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/occt/filletEdges.svg" alt="Blockly Image"/>
      * </div>
      * @link https://docs.bitbybit.dev/classes/bitbybit_occ.occ.html#filletedges
      * @param inputs Shape, radius and edge indexes to fillet
@@ -25,7 +25,7 @@ export class OCCTEdge {
     /**
      * Chamfer OpenCascade Shape edges
      * <div>
-     *  <img src="../assets/images/blockly-images/occ/chamferEdges.svg" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/occt/chamferEdges.svg" alt="Blockly Image"/>
      * </div>
      * @link https://docs.bitbybit.dev/classes/bitbybit_occ.occ.html#chamferedges
      * @param inputs Shape, distance and edge indexes to fillet
@@ -48,7 +48,7 @@ export class OCCTEdge {
     /**
      * Gets the edge by providing an index from the shape
      * <div>
-     *  <img src="../assets/images/blockly-images/occ/getEdge.svg" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/occt/getEdge.svg" alt="Blockly Image"/>
      * </div>
      * @link https://docs.bitbybit.dev/classes/bitbybit_occ.occ.html#getedge
      * @param inputs Shape

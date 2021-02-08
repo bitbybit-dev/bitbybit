@@ -38,9 +38,9 @@ export class OCCT {
     /**
      * Draws OpenCascade shape by going through faces and edges
      * <div>
-     *  <img src="../assets/images/blockly-images/occ/drawShape.svg" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/occt/drawShape.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_occ.occ.html#drawshape
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occt.occt.html#drawshape
      * @param inputs Contains a shape to be drawn and additional information
      * @returns BabylonJS Mesh
      */

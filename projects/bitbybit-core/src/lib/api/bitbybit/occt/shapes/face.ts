@@ -13,7 +13,7 @@ export class OCCTFace {
     /**
      * Creates a face from wire
      * <div>
-     *  <img src="../assets/images/blockly-images/occ/createfacefromwire.svg" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/occt/createfacefromwire.svg" alt="Blockly Image"/>
      * </div>
      * @link https://docs.bitbybit.dev/classes/bitbybit_occ.occ.html#createfacefromwire
      * @param inputs OpenCascade wire shape and indication if face should be planar
@@ -26,7 +26,7 @@ export class OCCTFace {
     /**
      * Creates OpenCascade Polygon face
      * <div>
-     *  <img src="../assets/images/blockly-images/occ/createPolygonFace.svg" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/occt/createPolygonFace.svg" alt="Blockly Image"/>
      * </div>
      * @link https://docs.bitbybit.dev/classes/bitbybit_occ.occ.html#createpolygonface
      * @param inputs Polygon points
@@ -39,7 +39,7 @@ export class OCCTFace {
     /**
      * Creates OpenCascade circle face
      * <div>
-     *  <img src="../assets/images/blockly-images/occ/createCircleFace.svg" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/occt/createCircleFace.svg" alt="Blockly Image"/>
      * </div>
      * @link https://docs.bitbybit.dev/classes/bitbybit_occ.occ.html#createcircleface
      * @param inputs Circle parameters
@@ -52,7 +52,7 @@ export class OCCTFace {
     /**
      * Gets the face by providing an index from the shape
      * <div>
-     *  <img src="../assets/images/blockly-images/occ/getFace.svg" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/occt/getFace.svg" alt="Blockly Image"/>
      * </div>
      * @link https://docs.bitbybit.dev/classes/bitbybit_occ.occ.html#getface
      * @param inputs Shape

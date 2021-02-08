@@ -13,7 +13,7 @@ export class OCCTransforms {
     /**
      * Transforms the array of shapes
      * <div>
-     *  <img src="../assets/images/blockly-images/occ/transform.svg" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/occt/transform.svg" alt="Blockly Image"/>
      * </div>
      * @link https://docs.bitbybit.dev/classes/bitbybit_occ.occ.html#transform
      * @param inputs Transformation description
@@ -27,7 +27,7 @@ export class OCCTransforms {
     /**
      * Rotate the shapes
      * <div>
-     *  <img src="../assets/images/blockly-images/occ/rotate.svg" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/occt/rotate.svg" alt="Blockly Image"/>
      * </div>
      * @link https://docs.bitbybit.dev/classes/bitbybit_occ.occ.html#rotate
      * @param inputs Rotation description
@@ -41,7 +41,7 @@ export class OCCTransforms {
     /**
      * Translates the shapes
      * <div>
-     *  <img src="../assets/images/blockly-images/occ/translate.svg" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/occt/translate.svg" alt="Blockly Image"/>
      * </div>
      * @link https://docs.bitbybit.dev/classes/bitbybit_occ.occ.html#translate
      * @param inputs Translation description
@@ -54,7 +54,7 @@ export class OCCTransforms {
     /**
      * Scales the shapes
      * <div>
-     *  <img src="../assets/images/blockly-images/occ/scale.svg" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/occt/scale.svg" alt="Blockly Image"/>
      * </div>
      * @link https://docs.bitbybit.dev/classes/bitbybit_occ.occ.html#scale
      * @param inputs Scale description
