@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
-import { VerbCurve } from './verb-curve';
-import { VerbIntersect } from './verb-intersect';
-import { VerbSurface } from './verb-surface';
+import { VerbCurve } from './curve';
+import { VerbIntersect } from './intersect';
+import { VerbSurface } from './surface';
 
 /**
  * Contains various functions for Nurbs curves and surfaces.

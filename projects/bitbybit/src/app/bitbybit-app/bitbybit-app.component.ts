@@ -35,7 +35,7 @@ import { MatDrawer } from '@angular/material/sidenav';
 import { EditorComponent } from 'ngx-monaco-editor';
 import { transpile } from 'typescript';
 import { UiStatesEnum } from './models/ui-states.enum';
-import { BitByBitBase, BitByBitBlocklyHelperService, Context, OccInfo, OccStateEnum, OCCWorkerManager, PrintSaveInterface } from 'projects/bitbybit-core/src/public-api';
+import { BitByBitBase, BitByBitBlocklyHelperService, Context, OccInfo, OccStateEnum, OCCTWorkerManager, PrintSaveInterface } from 'projects/bitbybit-core/src/public-api';
 import * as Inputs from 'projects/bitbybit-core/src/lib/api/inputs/inputs';
 import { BaseTypes } from 'projects/bitbybit-core/src/lib/api/bitbybit/base-types';
 import { core, geom } from 'verb-nurbs-web';
@@ -102,7 +102,7 @@ export class BitbybitAppComponent implements OnInit, OnDestroy, AfterViewInit {
         private readonly tagService: TagService,
         private readonly context: Context,
         private readonly bitByBit: BitByBitBase,
-        private readonly occWorkerManager: OCCWorkerManager,
+        private readonly occWorkerManager: OCCTWorkerManager,
     ) {
     }
 

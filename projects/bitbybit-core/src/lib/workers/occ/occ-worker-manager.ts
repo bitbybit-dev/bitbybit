@@ -8,7 +8,7 @@ import { OccStateEnum } from './occ-state.enum';
  * and because all those CAD algorithms are quite heavy this does make a lot of sense at this time.
  */
 @Injectable()
-export class OCCWorkerManager {
+export class OCCTWorkerManager {
 
     occWorkerState: Subject<OccInfo> = new Subject();
     private occWorker: Worker;

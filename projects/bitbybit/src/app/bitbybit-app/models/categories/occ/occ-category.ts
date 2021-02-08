@@ -5,7 +5,7 @@ export function occCategory(): string {
     return `
     <category name="${resources.block_toolbox_category_occ}"  categorystyle="geometry_category">
         <category name="${resources.block_toolbox_category_occ_draw}"  categorystyle="geometry_category">
-            <block type="occ_draw_shape">
+            <block type="occt_draw_shape">
                 <value name="FaceOpacity">
                     <block type="math_number">
                         <field name="NUM">1</field>
@@ -77,7 +77,7 @@ export function occCategory(): string {
                     </block>
                 </value>
             </block>
-            <block type="occ_draw_shape_mesh">
+            <block type="occt_draw_shape_mesh">
                 <value name="FaceOpacity">
                     <block type="math_number">
                         <field name="NUM">1</field>
@@ -151,7 +151,7 @@ export function occCategory(): string {
             </block>
         </category>
         <category name="${resources.block_toolbox_category_occ_io}"  categorystyle="geometry_category">
-            <block type="occ_io_shape_to_step_file">
+            <block type="occt_io_shape_to_step_file">
                 <value name="FileName">
                     <block type="text">
                         <field name="TEXT">bitbybit-shape.step</field>
@@ -161,21 +161,21 @@ export function occCategory(): string {
         </category>
         <category name="${resources.block_toolbox_category_occ_shapes}"  categorystyle="geometry_category">
             <category name="${resources.block_toolbox_category_occ_edge}"  categorystyle="geometry_category">
-                <block type="occ_fillet_edges">
+                <block type="occt_shapes_edge_fillet_edges">
                     <value name="Radius">
                         <block type="math_number">
                             <field name="NUM">0.3</field>
                         </block>
                     </value>
                 </block>
-                <block type="occ_chamfer_edges">
+                <block type="occt_shapes_edge_chamfer_edges">
                     <value name="Distance">
                         <block type="math_number">
                             <field name="NUM">0.3</field>
                         </block>
                     </value>
                 </block>
-                <block type="occ_edges_get_edge">
+                <block type="occt_shapes_edge_get_edge">
                     <value name="Index">
                         <block type="math_number">
                             <field name="NUM">0</field>
@@ -184,21 +184,21 @@ export function occCategory(): string {
                 </block>
             </category>
                 <category name="${resources.block_toolbox_category_occ_wire}"  categorystyle="geometry_category">
-                    <block type="occ_wires_create_bspline">
+                    <block type="occt_shapes_wire_create_bspline">
                         <value name="Closed">
                             <block type="logic_boolean">
                                 <field name="BOOL">FALSE</field>
                             </block>
                         </value>
                     </block>
-                    <block type="occ_wires_create_bezier">
+                    <block type="occt_shapes_wire_create_bezier">
                         <value name="Closed">
                             <block type="logic_boolean">
                                 <field name="BOOL">FALSE</field>
                             </block>
                         </value>
                     </block>
-                    <block type="occ_wires_create_circle">
+                    <block type="occt_shapes_wire_create_circle">
                         <value name="Radius">
                             <block type="math_number">
                                 <field name="NUM">1</field>
@@ -224,9 +224,9 @@ export function occCategory(): string {
                             </block>
                         </value>
                     </block>
-                    <block type="occ_wires_create_polygon">
+                    <block type="occt_shapes_wire_create_polygon">
                     </block>
-                    <block type="occ_wires_get_wire">
+                    <block type="occt_shapes_wire_get_wire">
                         <value name="Index">
                             <block type="math_number">
                                 <field name="NUM">0</field>
@@ -235,7 +235,7 @@ export function occCategory(): string {
                     </block>
                 </category>
                 <category name="${resources.block_toolbox_category_occ_face}"  categorystyle="geometry_category">
-                    <block type="occ_faces_create_circle">
+                    <block type="occt_shapes_face_create_circle_face">
                         <value name="Radius">
                             <block type="math_number">
                                 <field name="NUM">1</field>
@@ -261,16 +261,16 @@ export function occCategory(): string {
                             </block>
                         </value>
                     </block>
-                    <block type="occ_faces_create_polygon">
+                    <block type="occt_shapes_face_create_polygon">
                     </block>
-                    <block type="occ_faces_create_face_from_wire">
+                    <block type="occt_shapes_face_create_face_from_wire">
                         <value name="Planar">
                             <block type="logic_boolean">
                                 <field name="BOOL">FALSE</field>
                             </block>
                         </value>
                     </block>
-                    <block type="occ_faces_get_face">
+                    <block type="occt_shapes_face_get_face">
                         <value name="Index">
                             <block type="math_number">
                                 <field name="NUM">0</field>
@@ -279,7 +279,7 @@ export function occCategory(): string {
                     </block>
                 </category>
                 <category name="${resources.block_toolbox_category_occ_create_solid}"  categorystyle="geometry_category">
-                    <block type="occ_shapes_create_box">
+                    <block type="occt_shapes_solid_create_box">
                         <value name="Width">
                             <block type="math_number">
                                 <field name="NUM">1</field>
@@ -315,7 +315,7 @@ export function occCategory(): string {
                             </block>
                         </value>
                     </block>
-                    <block type="occ_shapes_create_sphere">
+                    <block type="occt_shapes_solid_create_sphere">
                         <value name="Radius">
                             <block type="math_number">
                                 <field name="NUM">1</field>
@@ -341,7 +341,7 @@ export function occCategory(): string {
                             </block>
                         </value>
                     </block>
-                    <block type="occ_shapes_create_cylinder">
+                    <block type="occt_shapes_solid_create_cylinder">
                         <value name="Radius">
                             <block type="math_number">
                                 <field name="NUM">1</field>
@@ -372,7 +372,7 @@ export function occCategory(): string {
                             </block>
                         </value>
                     </block>
-                    <block type="occ_shapes_create_cone">
+                    <block type="occt_shapes_solid_create_cone">
                         <value name="RadiusOne">
                             <block type="math_number">
                                 <field name="NUM">2</field>
@@ -391,12 +391,12 @@ export function occCategory(): string {
                     </block>
                 </category>
                 <category name="${resources.block_toolbox_category_occ_apply_compound}"  categorystyle="geometry_category">
-                    <block type="occ_compound_make_compound">
+                    <block type="occt_shapes_compound_make_compound">
                     </block>
                 </category>
             </category>
             <category name="${resources.block_toolbox_category_occ_operation}"  categorystyle="geometry_category">
-                <block type="occ_offset">
+                <block type="occt_operations_offset">
                     <value name="Distance">
                         <block type="math_number">
                             <field name="NUM">0.3</field>
@@ -408,7 +408,7 @@ export function occCategory(): string {
                         </block>
                     </value>
                 </block>
-                <block type="occ_extrude">
+                <block type="occt_operations_extrude">
                     <value name="Direction">
                         <block type="base_geometry_point">
                             <value name="X">
@@ -429,14 +429,14 @@ export function occCategory(): string {
                         </block>
                     </value>
                 </block>
-                <block type="occ_solid_make_thick_solid_simple">
+                <block type="occt_operations_make_thick_solid_simple">
                     <value name="Offset">
                         <block type="math_number">
                             <field name="NUM">0.3</field>
                         </block>
                     </value>
                 </block>
-                <block type="occ_rotated_extrude">
+                <block type="occt_operations_rotated_extrude">
                     <value name="Angle">
                         <block type="math_number">
                             <field name="NUM">90</field>
@@ -448,16 +448,16 @@ export function occCategory(): string {
                         </block>
                     </value>
                 </block>
-                <block type="occ_loft">
+                <block type="occt_operations_loft">
                     <value name="MakeSolid">
                         <block type="logic_boolean">
                             <field name="BOOL">FALSE</field>
                         </block>
                     </value>
                 </block>
-                <block type="occ_pipe">
+                <block type="occt_operations_pipe">
                 </block>
-                <block type="occ_revolve">
+                <block type="occt_operations_revolve">
                     <value name="Direction">
                         <block type="base_geometry_point">
                             <value name="X">
@@ -490,21 +490,21 @@ export function occCategory(): string {
                 </block>
             </category>
             <category name="${resources.block_toolbox_category_occ_boolean}"  categorystyle="geometry_category">
-                <block type="occ_boolean_union">
+                <block type="occt_booleans_union">
                     <value name="KeepEdges">
                         <block type="logic_boolean">
                             <field name="BOOL">FALSE</field>
                         </block>
                     </value>
                 </block>
-                <block type="occ_boolean_difference">
+                <block type="occt_booleans_difference">
                     <value name="KeepEdges">
                         <block type="logic_boolean">
                             <field name="BOOL">FALSE</field>
                         </block>
                     </value>
                 </block>
-                <block type="occ_boolean_intersection">
+                <block type="occt_booleans_intersection">
                     <value name="KeepEdges">
                         <block type="logic_boolean">
                             <field name="BOOL">FALSE</field>
@@ -513,7 +513,7 @@ export function occCategory(): string {
                 </block>
             </category>
             <category name="${resources.block_toolbox_category_occ_transform}"  categorystyle="geometry_category">
-                <block type="occ_transform_rotate">
+                <block type="occt_transforms_rotate">
                     <value name="Angle">
                         <block type="math_number">
                             <field name="NUM">90</field>
@@ -539,14 +539,14 @@ export function occCategory(): string {
                         </block>
                     </value>
                 </block>
-                <block type="occ_transform_scale">
+                <block type="occt_transforms_scale">
                     <value name="Factor">
                         <block type="math_number">
                             <field name="NUM">2</field>
                         </block>
                     </value>
                 </block>
-                <block type="occ_transform_translate">
+                <block type="occt_transforms_translate">
                     <value name="Translation">
                         <block type="base_geometry_point">
                             <value name="X">
@@ -567,7 +567,7 @@ export function occCategory(): string {
                         </block>
                     </value>
                 </block>
-                <block type="occ_transform_transform">
+                <block type="occt_transforms_transform">
                     <value name="Translation">
                         <block type="base_geometry_point">
                             <value name="X">

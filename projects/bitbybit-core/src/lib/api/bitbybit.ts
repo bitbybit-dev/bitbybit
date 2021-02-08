@@ -10,7 +10,7 @@ import { Verb } from './bitbybit/verb/verb';
 import { JSCAD } from './bitbybit/jscad';
 import { Tag } from './bitbybit/tag';
 import { Time } from './bitbybit/time';
-import { OCC } from './bitbybit/occ/occ';
+import { OCCT } from './bitbybit/occt/occt';
 
 @Injectable()
 export class BitByBitBase {
@@ -26,7 +26,7 @@ export class BitByBitBase {
         public readonly jscad: JSCAD,
         public readonly tag: Tag,
         public readonly time: Time,
-        public readonly occ: OCC,
+        public readonly occt: OCCT,
     ) {
     }
 }
