@@ -1389,7 +1389,7 @@ declare class JSCADExtrusions {
         /**
          * List of edge indexes to which apply the fillet, if left empty all edges will be rounded
          */
-        edgeList: any[];
+        edgeList?: any[];
     }
     class ChamferDto {
         constructor(shape?: any, distance?: number, edgeList?: number[], all?: boolean);
@@ -1404,7 +1404,7 @@ declare class JSCADExtrusions {
         /**
          * List of edge indexes to which apply the chamfer, if left empty all edges will be chamfered
          */
-        edgeList: number[];
+        edgeList?: any[];
     }
     class BSplineDto {
         constructor(points?: number[][], closed?: boolean);

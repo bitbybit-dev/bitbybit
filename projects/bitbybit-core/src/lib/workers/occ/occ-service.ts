@@ -198,7 +198,7 @@ export class Occ {
             }
             inputs.shape = mkFillet.Shape();
             return inputs.shape;
-        } else {
+        } else if(inputs.edgeList && inputs.edgeList.length > 0) {
             const mkFillet = new this.occ.BRepFilletAPI_MakeFillet(
                 inputs.shape, this.occ.ChFi3d_FilletShape.ChFi3d_Rational
             );
@@ -235,7 +235,7 @@ export class Occ {
             }
             inputs.shape = mkChamfer.Shape();
             return inputs.shape;
-        } else {
+        } else if (inputs.edgeList && inputs.edgeList.length > 0){
             const mkChamfer = new this.occ.BRepFilletAPI_MakeChamfer(
                 inputs.shape
             );

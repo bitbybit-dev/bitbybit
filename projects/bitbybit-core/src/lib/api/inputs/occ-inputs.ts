@@ -173,7 +173,7 @@ export namespace OCC {
         /**
          * List of edge indexes to which apply the fillet, if left empty all edges will be rounded
          */
-        edgeList = [];
+        edgeList ? = [];
     }
     export class ChamferDto {
         constructor(shape?: any, distance?: number, edgeList?: number[], all?: boolean) {
@@ -192,7 +192,7 @@ export namespace OCC {
         /**
          * List of edge indexes to which apply the chamfer, if left empty all edges will be chamfered
          */
-        edgeList: number[];
+        edgeList ? = [];
     }
     export class BSplineDto {
         constructor(points?: number[][], closed?: boolean) {
