@@ -4,7 +4,7 @@ import { ResourcesInterface, ResourcesService } from '../../resources';
 import { createDummyPromiseIndicator, createStandardContextIIFE } from '../_shared';
 import { getRequired, makeRequiredValidationModelForInputs, HS, ValidationEntityInterface } from '../validations';
 import { environment } from '../../environments/environment';
-import { occConstants } from './occ-constants';
+import { occtConstants } from './occt-constants';
 import { OCC } from 'projects/bitbybit-core/src/lib/api/inputs/occ-inputs';
 
 export function createChamferEdgesBlock(): void {
@@ -32,7 +32,7 @@ export function createChamferEdgesBlock(): void {
             this.setOutput(true, 'OccShape');
             this.setColour('#fff');
             this.setTooltip(resources.block_occt_shapes_edge_chamfer_edges_description);
-            this.setHelpUrl(environment.docsUrl + occConstants.occHelpUrl + '#' + 'offset');
+            this.setHelpUrl(environment.docsUrl + occtConstants.occtShapesEdgeHelpUrl + '#' + 'chamferedges');
         }
     };
 

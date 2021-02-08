@@ -10,13 +10,12 @@ export class OCCTSolid {
     ) {
     }
 
-
     /**
      * Creates OpenCascade Box
      * <div>
-     *  <img src="../assets/images/blockly-images/occt/createBox.svg" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/occt/shapes/solid/createBox.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_occ.occ.html#createbox
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_solid.occtsolid.html#createbox
      * @param inputs Box size and center
      * @returns OpenCascade Box
      */
@@ -27,9 +26,9 @@ export class OCCTSolid {
     /**
      * Creates OpenCascade Cylinder
      * <div>
-     *  <img src="../assets/images/blockly-images/occt/createCylinder.svg" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/occt/shapes/solid/createCylinder.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_occ.occ.html#createcylinder
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_solid.occtsolid.html#createcylinder
      * @param inputs Cylinder parameters
      * @returns OpenCascade Cylinder
      */
@@ -40,9 +39,9 @@ export class OCCTSolid {
     /**
      * Creates OpenCascade Sphere
      * <div>
-     *  <img src="../assets/images/blockly-images/occt/createSphere.svg" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/occt/shapes/solid/createSphere.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_occ.occ.html#createsphere
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_solid.occtsolid.html#createsphere
      * @param inputs Sphere radius and center
      * @returns OpenCascade Sphere
      */
@@ -53,9 +52,9 @@ export class OCCTSolid {
     /**
      * Creates OpenCascade Cone
      * <div>
-     *  <img src="../assets/images/blockly-images/occt/createCone.svg" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/occt/shapes/solid/createCone.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_occ.occ.html#createcone
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_solid.occtsolid.html#createcone
      * @param inputs Cone parameters
      * @returns OpenCascade cone shape
      */

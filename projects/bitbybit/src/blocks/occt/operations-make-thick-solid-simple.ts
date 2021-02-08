@@ -4,7 +4,7 @@ import { ResourcesInterface, ResourcesService } from '../../resources';
 import { createDummyPromiseIndicator, createStandardContextIIFE } from '../_shared';
 import { getRequired, makeRequiredValidationModelForInputs, HS, ValidationEntityInterface } from '../validations';
 import { environment } from '../../environments/environment';
-import { occConstants } from './occ-constants';
+import { occtConstants } from './occt-constants';
 import { OCC } from 'projects/bitbybit-core/src/lib/api/inputs/occ-inputs';
 
 export function createSolidMakeThickSolidSimpleBlock(): void {
@@ -28,7 +28,7 @@ export function createSolidMakeThickSolidSimpleBlock(): void {
             this.setOutput(true, 'OccShape');
             this.setColour('#fff');
             this.setTooltip(resources.block_occt_operations_make_thick_solid_simple_description);
-            this.setHelpUrl(environment.docsUrl + occConstants.occHelpUrl + '#' + 'loft');
+            this.setHelpUrl(environment.docsUrl + occtConstants.occtOperationsHelpUrl + '#' + 'loft');
         }
     };
 

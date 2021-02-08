@@ -12,9 +12,9 @@ export class OCCTEdge {
     /**
      * Fillets OpenCascade Shapes
      * <div>
-     *  <img src="../assets/images/blockly-images/occt/filletEdges.svg" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/occt/shapes/edge/filletEdges.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_occ.occ.html#filletedges
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_edge.occtedge.html#filletedges
      * @param inputs Shape, radius and edge indexes to fillet
      * @returns OpenCascade shape with filleted edges
      */
@@ -25,9 +25,9 @@ export class OCCTEdge {
     /**
      * Chamfer OpenCascade Shape edges
      * <div>
-     *  <img src="../assets/images/blockly-images/occt/chamferEdges.svg" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/occt/shapes/edge/chamferEdges.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_occ.occ.html#chamferedges
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_edge.occtedge.html#chamferedges
      * @param inputs Shape, distance and edge indexes to fillet
      * @returns OpenCascade shape with filleted edges
      */
@@ -37,7 +37,7 @@ export class OCCTEdge {
 
     /**
      * Removes internal faces for the shape
-     * @link https://docs.bitbybit.dev/classes/bitbybit_occ.occ.html#removeinternaledges
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_edge.occtedge.html#removeinternaledges
      * @param inputs Shape
      * @returns OpenCascade shape with no internal edges
      */
@@ -48,9 +48,9 @@ export class OCCTEdge {
     /**
      * Gets the edge by providing an index from the shape
      * <div>
-     *  <img src="../assets/images/blockly-images/occt/getEdge.svg" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/occt/shapes/edge/getEdge.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_occ.occ.html#getedge
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_edge.occtedge.html#getedge
      * @param inputs Shape
      * @returns OpenCascade edge
      */

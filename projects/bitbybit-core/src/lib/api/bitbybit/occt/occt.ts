@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 import { Mesh, MeshBuilder } from '@babylonjs/core';
-import { BitByBitBlocklyHelperService } from '../../../bit-by-bit-blockly-helper.service';
 import { Context } from '../../context';
 import { GeometryHelper } from '../../geometry-helper';
 import * as Inputs from '../../inputs/inputs';
@@ -8,7 +7,7 @@ import { JSCADText } from '../jscad-text';
 import { Vector } from '../vector';
 import { OCCTWorkerManager } from '../../../workers/occ/occ-worker-manager';
 import { OCCTShapes } from './shapes/shapes';
-import { OCCTransforms } from './transforms';
+import { OCCTTransforms } from './transforms';
 import { OCCTOperations } from './operations';
 import { OCCTBooleans } from './booleans';
 import { OCCTIO } from './io';
@@ -23,7 +22,7 @@ export class OCCT {
 
     constructor(
         public readonly shapes: OCCTShapes,
-        public readonly transforms: OCCTransforms,
+        public readonly transforms: OCCTTransforms,
         public readonly operations: OCCTOperations,
         public readonly booleans: OCCTBooleans,
         public readonly io: OCCTIO,

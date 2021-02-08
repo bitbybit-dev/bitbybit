@@ -42,7 +42,7 @@ import { OCCTFace } from './api/bitbybit/occt/shapes/face';
 import { OCCTBooleans } from './api/bitbybit/occt/booleans';
 import { OCCTIO } from './api/bitbybit/occt/io';
 import { OCCTOperations } from './api/bitbybit/occt/operations';
-import { OCCTransforms } from './api/bitbybit/occt/transforms';
+import { OCCTTransforms } from './api/bitbybit/occt/transforms';
 import { OCCTSolid } from './api/bitbybit/occt/shapes/solid';
 import { OCCTCompound } from './api/bitbybit/occt/shapes/compound';
 
@@ -92,7 +92,7 @@ import { OCCTCompound } from './api/bitbybit/occt/shapes/compound';
         OCCTFace,
         OCCTSolid,
         OCCTCompound,
-        OCCTransforms,
+        OCCTTransforms,
         OCCTBooleans,
         OCCTIO,
         OCCTOperations,

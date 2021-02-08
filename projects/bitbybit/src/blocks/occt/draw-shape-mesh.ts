@@ -4,7 +4,7 @@ import { ResourcesInterface, ResourcesService } from '../../resources';
 import { createDummyPromiseIndicator, createStandardContextIIFE } from '../_shared';
 import { makeRequiredValidationModelForInputs, HS, ValidationEntityInterface, getRequired } from '../validations';
 import { environment } from '../../environments/environment';
-import { occConstants } from './occ-constants';
+import { occtConstants } from './occt-constants';
 import { OCC } from '../../../../bitbybit-core/src/lib/api/inputs/occ-inputs';
 
 export function createDrawShapeMeshBlock(): void {
@@ -80,7 +80,7 @@ export function createDrawShapeMeshBlock(): void {
             this.setOutput(true, 'BabylonMesh');
             this.setColour('#fff');
             this.setTooltip(resources.block_occt_draw_shape_description);
-            this.setHelpUrl(environment.docsUrl + occConstants.occHelpUrl + '#' + 'drawshape');
+            this.setHelpUrl(environment.docsUrl + occtConstants.occtHelpUrl + '#' + 'drawshape');
         }
     };
 

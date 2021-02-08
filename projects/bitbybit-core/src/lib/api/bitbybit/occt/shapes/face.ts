@@ -13,9 +13,9 @@ export class OCCTFace {
     /**
      * Creates a face from wire
      * <div>
-     *  <img src="../assets/images/blockly-images/occt/createfacefromwire.svg" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/occt/shapes/face/createfacefromwire.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_occ.occ.html#createfacefromwire
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_face.occtface.html#createfacefromwire
      * @param inputs OpenCascade wire shape and indication if face should be planar
      * @returns OpenCascade face shape
      */
@@ -26,9 +26,9 @@ export class OCCTFace {
     /**
      * Creates OpenCascade Polygon face
      * <div>
-     *  <img src="../assets/images/blockly-images/occt/createPolygonFace.svg" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/occt/shapes/createPolygonFace.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_occ.occ.html#createpolygonface
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_face.occtface.html#createpolygonface
      * @param inputs Polygon points
      * @returns OpenCascade polygon face
      */
@@ -39,9 +39,9 @@ export class OCCTFace {
     /**
      * Creates OpenCascade circle face
      * <div>
-     *  <img src="../assets/images/blockly-images/occt/createCircleFace.svg" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/occt/shapes/createCircleFace.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_occ.occ.html#createcircleface
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_face.occtface.html#createcircleface
      * @param inputs Circle parameters
      * @returns OpenCascade circle face
      */
@@ -52,9 +52,9 @@ export class OCCTFace {
     /**
      * Gets the face by providing an index from the shape
      * <div>
-     *  <img src="../assets/images/blockly-images/occt/getFace.svg" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/occt/shapes/face/getFace.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_occ.occ.html#getface
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_face.occtface.html#getface
      * @param inputs Shape
      * @returns OpenCascade face
      */

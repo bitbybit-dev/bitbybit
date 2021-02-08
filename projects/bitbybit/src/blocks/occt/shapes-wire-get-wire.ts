@@ -4,7 +4,7 @@ import { ResourcesInterface, ResourcesService } from '../../resources';
 import { createDummyPromiseIndicator, createStandardContextIIFE } from '../_shared';
 import { getRequired, makeRequiredValidationModelForInputs, HS, ValidationEntityInterface } from '../validations';
 import { environment } from '../../environments/environment';
-import { occConstants } from './occ-constants';
+import { occtConstants } from './occt-constants';
 import { OCC } from 'projects/bitbybit-core/src/lib/api/inputs/occ-inputs';
 
 export function createWiresGetWireBlock(): void {
@@ -28,7 +28,7 @@ export function createWiresGetWireBlock(): void {
             this.setOutput(true, 'OccShape');
             this.setColour('#fff');
             this.setTooltip(resources.block_occt_shapes_wire_get_wire_description);
-            this.setHelpUrl(environment.docsUrl + occConstants.occHelpUrl + '#' + 'getwire');
+            this.setHelpUrl(environment.docsUrl + occtConstants.occtShapesWireHelpUrl + '#' + 'getwire');
         }
     };
 

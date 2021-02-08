@@ -15,7 +15,7 @@ export class OCCTWire {
      * <div>
      *  <img src="../assets/images/blockly-images/occt/createPolygonWire.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_occ.occ.html#createpolygonwire
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_wire.occtwire.html#createpolygonwire
      * @param inputs Polygon points
      * @returns OpenCascade polygon wire shape
      */
@@ -26,9 +26,9 @@ export class OCCTWire {
     /**
      * Creates OpenCascade BSPline wire
      * <div>
-     *  <img src="../assets/images/blockly-images/occt/createBSpline.svg" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/occt/shapes/wire/createBSpline.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_occ.occ.html#createbspline
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_wire.occtwire.html#createbspline
      * @param inputs Points through which to make BSpline
      * @returns OpenCascade BSpline wire
      */
@@ -39,9 +39,9 @@ export class OCCTWire {
     /**
      * Creates OpenCascade Bezier wire
      * <div>
-     *  <img src="../assets/images/blockly-images/occt/createBezier.svg" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/occt/shapes/wire/createBezier.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_occ.occ.html#createbezier
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_wire.occtwire.html#createbezier
      * @param inputs Points through which to make bezier curve
      * @returns OpenCascade Bezier wire
      */
@@ -52,9 +52,9 @@ export class OCCTWire {
     /**
      * Creates OpenCascade circle wire
      * <div>
-     *  <img src="../assets/images/blockly-images/occt/createCircleWire.svg" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/occt/shapes/wire/createCircleWire.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_occ.occ.html#createcirclewire
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_wire.occtwire.html#createcirclewire
      * @param inputs Circle parameters
      * @returns OpenCascade circle wire
      */
@@ -65,9 +65,9 @@ export class OCCTWire {
     /**
      * Gets the wire by providing an index from the shape
      * <div>
-     *  <img src="../assets/images/blockly-images/occt/getWire.svg" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/occt/shapes/wire/getWire.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_occ.occ.html#getwire
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_wire.occtwire.html#getwire
      * @param inputs Shape
      * @returns OpenCascade wire
      */

@@ -14,9 +14,9 @@ export class OCCTIO {
     /**
      * Saves the step file
      * <div>
-     *  <img src="../assets/images/blockly-images/occt/saveShapeSTEP.svg" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/occt/io/saveShapeSTEP.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_occ.occ.html#saveshapestep
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occt_io.occtio.html#saveshapestep
      * @param inputs STEP filename and shape to be saved
      * @returns String of a step file
      */

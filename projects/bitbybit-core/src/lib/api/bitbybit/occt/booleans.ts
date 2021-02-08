@@ -13,9 +13,9 @@ export class OCCTBooleans {
     /**
      * Joins separate objects
      * <div>
-     *  <img src="../assets/images/blockly-images/occt/union.svg" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/occt/booleans/union.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_occ.occ.html#union
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occt_booleans.occtbooleans.html#union
      * @param inputs Objects to join
      * @returns OpenCascade joined shape
      */
@@ -26,9 +26,9 @@ export class OCCTBooleans {
     /**
      * Does boolean difference operation between a main shape and given shapes
      * <div>
-     *  <img src="../assets/images/blockly-images/occt/difference.svg" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/occt/booleans/difference.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_occ.occ.html#difference
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occt_booleans.occtbooleans.html#difference
      * @param inputs Main shape and shapes to differ
      * @returns OpenCascade difference shape
      */
@@ -39,9 +39,9 @@ export class OCCTBooleans {
     /**
      * Does boolean intersection operation between a main shape and given shapes
      * <div>
-     *  <img src="../assets/images/blockly-images/occt/difference.svg" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/occt/booleans/difference.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_occ.occ.html#difference
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occt_booleans.occtbooleans.html#difference
      * @param inputs Main shape and shapes to differ
      * @returns OpenCascade difference shape
      */

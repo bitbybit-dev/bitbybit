@@ -3,7 +3,7 @@ import * as Inputs from '../../inputs/inputs';
 import { OCCTWorkerManager } from '../../../workers/occ/occ-worker-manager';
 
 @Injectable()
-export class OCCTransforms {
+export class OCCTTransforms {
 
     constructor(
         private readonly occWorkerManager: OCCTWorkerManager,
@@ -13,9 +13,9 @@ export class OCCTransforms {
     /**
      * Transforms the array of shapes
      * <div>
-     *  <img src="../assets/images/blockly-images/occt/transform.svg" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/occt/transforms/transform.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_occ.occ.html#transform
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occt_transforms.occttransforms.html#transform
      * @param inputs Transformation description
      * @returns OpenCascade shapes
      */
@@ -27,9 +27,9 @@ export class OCCTransforms {
     /**
      * Rotate the shapes
      * <div>
-     *  <img src="../assets/images/blockly-images/occt/rotate.svg" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/occt/transforms/rotate.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_occ.occ.html#rotate
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occt_transforms.occttransforms.html#rotate
      * @param inputs Rotation description
      * @returns OpenCascade shapes
      */
@@ -41,9 +41,9 @@ export class OCCTransforms {
     /**
      * Translates the shapes
      * <div>
-     *  <img src="../assets/images/blockly-images/occt/translate.svg" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/occt/transforms/translate.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_occ.occ.html#translate
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occt_transforms.occttransforms.html#translate
      * @param inputs Translation description
      * @returns OpenCascade shapes
      */
@@ -54,9 +54,9 @@ export class OCCTransforms {
     /**
      * Scales the shapes
      * <div>
-     *  <img src="../assets/images/blockly-images/occt/scale.svg" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/occt/transforms/scale.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_occ.occ.html#scale
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occt_transforms.occttransforms.html#scale
      * @param inputs Scale description
      * @returns OpenCascade shapes
      */

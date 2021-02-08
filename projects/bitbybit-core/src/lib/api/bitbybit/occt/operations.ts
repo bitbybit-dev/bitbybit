@@ -13,9 +13,9 @@ export class OCCTOperations {
     /**
      * Lofts wires into a shell
      * <div>
-     *  <img src="../assets/images/blockly-images/occt/loft.svg" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/occt/operations/loft.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_occ.occ.html#loft
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occt_operations.occtoperations.html#loft
      * @param inputs Circle parameters
      * @returns Resulting loft shell
      */
@@ -26,9 +26,9 @@ export class OCCTOperations {
     /**
      * Offset for various shapes
      * <div>
-     *  <img src="../assets/images/blockly-images/occt/offset.svg" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/occt/operations/offset.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_occ.occ.html#offset
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occt_operations.occtoperations.html#offset
      * @param inputs Shape to offset and distance with tolerance
      * @returns Resulting offset shape
      */
@@ -39,9 +39,9 @@ export class OCCTOperations {
     /**
      * Extrudes the face along direction
      * <div>
-     *  <img src="../assets/images/blockly-images/occt/extrude.svg" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/occt/operations/extrude.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_occ.occ.html#extrude
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occt_operations.occtoperations.html#extrude
      * @param inputs Shape to extrude and direction parameter with tolerance
      * @returns Resulting extruded shape
      */
@@ -52,9 +52,9 @@ export class OCCTOperations {
     /**
      * Revolves the shape around the given direction
      * <div>
-     *  <img src="../assets/images/blockly-images/occt/revolve.svg" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/occt/operations/revolve.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_occ.occ.html#revolve
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occt_operations.occtoperations.html#revolve
      * @param inputs Revolve parameters
      * @returns Resulting revolved shape
      */
@@ -65,9 +65,9 @@ export class OCCTOperations {
     /**
      * Rotated extrude that is perofrmed on the wire shape
      * <div>
-     *  <img src="../assets/images/blockly-images/occt/rotatedExtrude.svg" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/occt/operations/rotatedExtrude.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_occ.occ.html#rotatedextrude
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occt_operations.occtoperations.html#rotatedextrude
      * @param inputs Rotated extrusion inputs
      * @returns OpenCascade shape
      */
@@ -78,9 +78,9 @@ export class OCCTOperations {
     /**
      * Pipe shapes along the wire
      * <div>
-     *  <img src="../assets/images/blockly-images/occt/pipe.svg" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/occt/operations/pipe.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_occ.occ.html#pipe
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occt_operations.occtoperations.html#pipe
      * @param inputs Path wire and shapes along the path
      * @returns OpenCascade shape
      */
@@ -91,9 +91,9 @@ export class OCCTOperations {
     /**
      * Thickens the shape into a solid by an offset distance
      * <div>
-     *  <img src="../assets/images/blockly-images/occt/makeThickSolidSimple.svg" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/occt/operations/makeThickSolidSimple.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_occ.occ.html#makethicksolidsimple
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occt_operations.occtoperations.html#makethicksolidsimple
      * @param inputs OpenCascade shape
      * @returns OpenCascade solid shape
      */

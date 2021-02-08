@@ -4,7 +4,7 @@ import { ResourcesInterface, ResourcesService } from '../../resources';
 import { createDummyPromiseIndicator, createStandardContextIIFE } from '../_shared';
 import { getRequired, makeRequiredValidationModelForInputs, HS, ValidationEntityInterface } from '../validations';
 import { environment } from '../../environments/environment';
-import { occConstants } from './occ-constants';
+import { occtConstants } from './occt-constants';
 import { OCC } from 'projects/bitbybit-core/src/lib/api/inputs/occ-inputs';
 
 export function createIOShapeToStepFileBlock(): void {
@@ -30,7 +30,7 @@ export function createIOShapeToStepFileBlock(): void {
             this.setPreviousStatement(true, null);
             this.setNextStatement(true, null);
             this.setTooltip(resources.block_occ_io_shape_to_file_description);
-            this.setHelpUrl(environment.docsUrl + occConstants.occHelpUrl + '#' + 'saveshapestep');
+            this.setHelpUrl(environment.docsUrl + occtConstants.occtIOHelpUrl + '#' + 'saveshapestep');
         }
     };
 
