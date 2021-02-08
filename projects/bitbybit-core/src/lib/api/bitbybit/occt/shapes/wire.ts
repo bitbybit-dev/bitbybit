@@ -13,7 +13,7 @@ export class OCCTWire {
     /**
      * Creates OpenCascade Polygon wire
      * <div>
-     *  <img src="../assets/images/blockly-images/occt/createPolygonWire.svg" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/occt/shapes/wire/createPolygonWire.svg" alt="Blockly Image"/>
      * </div>
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_wire.occtwire.html#createpolygonwire
      * @param inputs Polygon points
