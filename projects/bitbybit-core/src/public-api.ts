@@ -12,5 +12,6 @@ export * from './lib/api/bitbybit/node';
 export * from './lib/api/bitbybit/point';
 export * from './lib/bit-by-bit-blockly-helper.service';
 export * from './lib/models/print-save.model';
-export * from './lib/api/bitbybit/occ/occ-info';
-export * from './lib/api/bitbybit/occ/occ-state.enum';
+export * from './lib/workers/occ/occ-info';
+export * from './lib/workers/occ/occ-state.enum';
+export * from './lib/workers/occ/occ-worker-manager';

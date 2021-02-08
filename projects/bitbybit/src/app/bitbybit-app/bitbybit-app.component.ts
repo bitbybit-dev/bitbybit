@@ -34,7 +34,7 @@ import { MatDrawer } from '@angular/material/sidenav';
 import { EditorComponent } from 'ngx-monaco-editor';
 import { transpile } from 'typescript';
 import { UiStatesEnum } from './models/ui-states.enum';
-import { BitByBitBase, BitByBitBlocklyHelperService, Context, OccInfo, OccStateEnum, PrintSaveInterface } from 'projects/bitbybit-core/src/public-api';
+import { BitByBitBase, BitByBitBlocklyHelperService, Context, OccInfo, OccStateEnum, OCCWorkerManager, PrintSaveInterface } from 'projects/bitbybit-core/src/public-api';
 import * as Inputs from 'projects/bitbybit-core/src/lib/api/inputs/inputs';
 import { BaseTypes } from 'projects/bitbybit-core/src/lib/api/bitbybit/base-types';
 import { core, geom } from 'verb-nurbs-web';
@@ -101,6 +101,7 @@ export class BitbybitAppComponent implements OnInit, OnDestroy, AfterViewInit {
         private readonly tagService: TagService,
         private readonly context: Context,
         private readonly bitByBit: BitByBitBase,
+        private readonly occWorkerManager: OCCWorkerManager,
     ) {
     }
 
@@ -219,7 +220,7 @@ export class BitbybitAppComponent implements OnInit, OnDestroy, AfterViewInit {
                                 this.previousUiState = UiStatesEnum.babylon;
                                 this.workspace.clear();
                                 if (this.occWorkerState.state === OccStateEnum.loaded) {
-                                    this.bitByBit.occ.startedTheRun().then(() => { });
+                                    this.occWorkerManager.startedTheRun().then(() => { });
                                 }
                                 this.clearBabylonScene();
                                 Xml.domToWorkspace(xml, this.workspace);
@@ -285,8 +286,8 @@ export class BitbybitAppComponent implements OnInit, OnDestroy, AfterViewInit {
         };
         if (typeof Worker !== 'undefined') {
             // Create a new
-            this.bitByBit.occ.setOccWorker(new Worker('./occ.worker', { type: 'module' }));
-            this.bitByBit.occ.occWorkerState.subscribe((state) => {
+            this.occWorkerManager.setOccWorker(new Worker('./occ.worker', { type: 'module' }));
+            this.occWorkerManager.occWorkerState.subscribe((state) => {
                 this.occWorkerState = state;
                 this.toggleRenderLoop(400);
             });
@@ -510,7 +511,7 @@ export class BitbybitAppComponent implements OnInit, OnDestroy, AfterViewInit {
         this.router.navigate(['/app']);
 
         if (this.occWorkerState.state === OccStateEnum.loaded) {
-            this.bitByBit.occ.startedTheRun().then(() => { });
+            this.occWorkerManager.startedTheRun().then(() => { });
         }
         this.clearBabylonScene();
     }
@@ -535,14 +536,14 @@ export class BitbybitAppComponent implements OnInit, OnDestroy, AfterViewInit {
     }
 
     cleanAllCache(): void {
-        this.bitByBit.occ.cleanAllCache().then(s => {});
+        this.occWorkerManager.cleanAllCache().then(s => {});
     }
 
     run(): void {
         // If we'll have more workers for other libraries, this could be applied here as well
         // with Promise.all...
-        this.bitByBit.occ.cleanPromisesMade();
-        this.bitByBit.occ.startedTheRun().then((res) => {
+        this.occWorkerManager.cleanPromisesMade();
+        this.occWorkerManager.startedTheRun().then((res) => {
             let transpiledCode = false;
             try {
                 this.clearBabylonScene();

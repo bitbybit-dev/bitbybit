@@ -1,14 +1,12 @@
 import { Injectable } from '@angular/core';
 import { Mesh, MeshBuilder } from '@babylonjs/core';
-import { Subject } from 'rxjs';
 import { BitByBitBlocklyHelperService } from '../../../bit-by-bit-blockly-helper.service';
 import { Context } from '../../context';
 import { GeometryHelper } from '../../geometry-helper';
 import * as Inputs from '../../inputs/inputs';
 import { JSCADText } from '../jscad-text';
 import { Vector } from '../vector';
-import { OccInfo } from './occ-info';
-import { OccStateEnum } from './occ-state.enum';
+import { OCCWorkerManager } from '../../../workers/occ/occ-worker-manager';
 
 /**
  * Contains various methods for OpenCascade implementation
@@ -18,78 +16,15 @@ import { OccStateEnum } from './occ-state.enum';
 @Injectable()
 export class OCC {
 
-    occWorkerState: Subject<OccInfo> = new Subject();
-    private occWorker: Worker;
-    private promisesMade: { promise?: Promise<any>, uid: string, resolve?, reject?}[] = [];
-    private promisesResolved: string[] = [];
-
     constructor(
         private readonly context: Context,
         private readonly geometryHelper: GeometryHelper,
         private readonly solidText: JSCADText,
-        private readonly vector: Vector
+        private readonly vector: Vector,
+        private readonly occWorkerManager: OCCWorkerManager,
     ) {
     }
 
-    setOccWorker(worker: Worker): void {
-        this.occWorker = worker;
-        this.occWorker.onmessage = ({ data }) => {
-            if (data === 'occ initialised') {
-                this.occWorkerState.next({
-                    state: OccStateEnum.loaded,
-                });
-            } else if (data === 'busy') {
-                this.occWorkerState.next({
-                    state: OccStateEnum.computing,
-                });
-            }
-            else {
-                const promise = this.promisesMade.find(made => made.uid === data.uid);
-                if (promise && data.result && !data.error) {
-                    promise.resolve(data.result);
-                } else if (data.error) {
-                    promise.reject(data.error);
-                    alert(data.error);
-                }
-                this.promisesResolved.push(data.uid);
-                this.promisesMade = this.promisesMade.filter(i => i.uid !== data.uid);
-
-                if (this.promisesMade.length === 0) {
-                    this.occWorkerState.next({
-                        state: OccStateEnum.loaded,
-                    });
-                } else {
-                    this.occWorkerState.next({
-                        state: OccStateEnum.computing,
-                    });
-                }
-            }
-        };
-    }
-
-    cleanPromisesMade(): void {
-        this.promisesMade = [];
-    }
-
-    genericCallToWorkerPromise(functionName: string, inputs: any): Promise<any> {
-        const uid = `call${Math.random()}${Date.now()}`;
-        const obj: { promise?: Promise<any>, uid: string, resolve?, reject?} = { uid };
-        const prom = new Promise((resolve, reject) => {
-            obj.resolve = resolve;
-            obj.reject = reject;
-        });
-        obj.promise = prom;
-        this.promisesMade.push(obj);
-
-        this.occWorker.postMessage({
-            action: {
-                functionName, inputs
-            },
-            uid,
-        });
-
-        return prom;
-    }
     /**
      * Draws OpenCascade shape by going through faces and edges
      * <div>
@@ -100,7 +35,7 @@ export class OCC {
      * @returns BabylonJS Mesh
      */
     drawShape(inputs: Inputs.OCC.DrawShapeDto): Promise<Mesh> {
-        return this.genericCallToWorkerPromise('shapeToMesh', inputs).then((fe: {
+        return this.occWorkerManager.genericCallToWorkerPromise('shapeToMesh', inputs).then((fe: {
             faceList: {
                 face_index: number;
                 normal_coord: number[];
@@ -198,24 +133,6 @@ export class OCC {
     }
 
     /**
-     * This needs to be done before every run and the promise needs to be awaited before run executes again
-     * This makes sure that cache keeps the objects and hashes from the previous run and the rest is deleted
-     * In this way it is possible to hace the cache of manageable size
-     */
-    startedTheRun(): Promise<any> {
-        return this.genericCallToWorkerPromise('startedTheRun', {});
-    }
-
-    /**
-     * This needs to be done before every run and the promise needs to be awaited before run executes again
-     * This makes sure that cache keeps the objects and hashes from the previous run and the rest is deleted
-     * In this way it is possible to hace the cache of manageable size
-     */
-    cleanAllCache(): Promise<any> {
-        return this.genericCallToWorkerPromise('cleanAllCache', {});
-    }
-
-    /**
      * Creates OpenCascade Polygon wire
      * <div>
      *  <img src="../assets/images/blockly-images/occ/createPolygonWire.svg" alt="Blockly Image"/>
@@ -225,7 +142,7 @@ export class OCC {
      * @returns OpenCascade polygon wire shape
      */
     createPolygonWire(inputs: Inputs.OCC.PolygonDto): Promise<any> {
-        return this.genericCallToWorkerPromise('createPolygonWire', inputs);
+        return this.occWorkerManager.genericCallToWorkerPromise('createPolygonWire', inputs);
     }
 
     /**
@@ -238,7 +155,7 @@ export class OCC {
      * @returns OpenCascade polygon face
      */
     createPolygonFace(inputs: Inputs.OCC.PolygonDto): Promise<any> {
-        return this.genericCallToWorkerPromise('createPolygonFace', inputs);
+        return this.occWorkerManager.genericCallToWorkerPromise('createPolygonFace', inputs);
     }
 
     /**
@@ -251,7 +168,7 @@ export class OCC {
      * @returns OpenCascade Box
      */
     createBox(inputs: Inputs.OCC.BoxDto): Promise<any> {
-        return this.genericCallToWorkerPromise('createBox', inputs);
+        return this.occWorkerManager.genericCallToWorkerPromise('createBox', inputs);
     }
 
     /**
@@ -264,7 +181,7 @@ export class OCC {
      * @returns OpenCascade Cylinder
      */
     createCylinder(inputs: Inputs.OCC.CylinderDto): Promise<any> {
-        return this.genericCallToWorkerPromise('createCylinder', inputs);
+        return this.occWorkerManager.genericCallToWorkerPromise('createCylinder', inputs);
     }
 
     /**
@@ -277,7 +194,7 @@ export class OCC {
      * @returns OpenCascade BSpline wire
      */
     createBSpline(inputs: Inputs.OCC.BSplineDto): Promise<any> {
-        return this.genericCallToWorkerPromise('createBSpline', inputs);
+        return this.occWorkerManager.genericCallToWorkerPromise('createBSpline', inputs);
     }
 
     /**
@@ -290,7 +207,7 @@ export class OCC {
      * @returns OpenCascade Bezier wire
      */
     createBezier(inputs: Inputs.OCC.BezierDto): Promise<any> {
-        return this.genericCallToWorkerPromise('createBezier', inputs);
+        return this.occWorkerManager.genericCallToWorkerPromise('createBezier', inputs);
     }
 
     /**
@@ -303,7 +220,7 @@ export class OCC {
      * @returns OpenCascade circle wire
      */
     createCircleWire(inputs: Inputs.OCC.CircleDto): Promise<any> {
-        return this.genericCallToWorkerPromise('createCircleWire', inputs);
+        return this.occWorkerManager.genericCallToWorkerPromise('createCircleWire', inputs);
     }
 
     /**
@@ -315,9 +232,8 @@ export class OCC {
      * @param inputs Circle parameters
      * @returns OpenCascade circle face
      */
-    // TODO
     createCircleFace(inputs: Inputs.OCC.CircleDto): Promise<any> {
-        return this.genericCallToWorkerPromise('createCircleFace', inputs);
+        return this.occWorkerManager.genericCallToWorkerPromise('createCircleFace', inputs);
     }
 
     /**
@@ -330,7 +246,7 @@ export class OCC {
      * @returns Resulting loft shell
      */
     loft(inputs: Inputs.OCC.LoftDto): Promise<any> {
-        return this.genericCallToWorkerPromise('loft', inputs);
+        return this.occWorkerManager.genericCallToWorkerPromise('loft', inputs);
     }
 
     /**
@@ -343,7 +259,7 @@ export class OCC {
      * @returns Resulting offset shape
      */
     offset(inputs: Inputs.OCC.OffsetDto): Promise<any> {
-        return this.genericCallToWorkerPromise('offset', inputs);
+        return this.occWorkerManager.genericCallToWorkerPromise('offset', inputs);
     }
 
     /**
@@ -356,7 +272,7 @@ export class OCC {
      * @returns Resulting extruded shape
      */
     extrude(inputs: Inputs.OCC.ExtrudeDto): Promise<any> {
-        return this.genericCallToWorkerPromise('extrude', inputs);
+        return this.occWorkerManager.genericCallToWorkerPromise('extrude', inputs);
     }
 
     /**
@@ -369,7 +285,7 @@ export class OCC {
      * @returns Resulting revolved shape
      */
     revolve(inputs: Inputs.OCC.RevolveDto): Promise<any> {
-        return this.genericCallToWorkerPromise('revolve', inputs);
+        return this.occWorkerManager.genericCallToWorkerPromise('revolve', inputs);
     }
 
     /**
@@ -382,7 +298,7 @@ export class OCC {
      * @returns OpenCascade Sphere
      */
     createSphere(inputs: Inputs.OCC.SphereDto): Promise<any> {
-        return this.genericCallToWorkerPromise('createSphere', inputs);
+        return this.occWorkerManager.genericCallToWorkerPromise('createSphere', inputs);
     }
 
     /**
@@ -395,7 +311,7 @@ export class OCC {
      * @returns OpenCascade cone shape
      */
     createCone(inputs: Inputs.OCC.ConeDto): Promise<any> {
-        return this.genericCallToWorkerPromise('createCone', inputs);
+        return this.occWorkerManager.genericCallToWorkerPromise('createCone', inputs);
     }
 
     /**
@@ -408,7 +324,7 @@ export class OCC {
      * @returns OpenCascade shape with filleted edges
      */
     filletEdges(inputs: Inputs.OCC.FilletDto): Promise<any> {
-        return this.genericCallToWorkerPromise('filletEdges', inputs);
+        return this.occWorkerManager.genericCallToWorkerPromise('filletEdges', inputs);
     }
 
     /**
@@ -421,7 +337,7 @@ export class OCC {
      * @returns OpenCascade shape with filleted edges
      */
     chamferEdges(inputs: Inputs.OCC.ChamferDto): Promise<any> {
-        return this.genericCallToWorkerPromise('chamferEdges', inputs);
+        return this.occWorkerManager.genericCallToWorkerPromise('chamferEdges', inputs);
     }
 
     /**
@@ -434,7 +350,7 @@ export class OCC {
      * @returns OpenCascade joined shape
      */
     union(inputs: Inputs.OCC.UnionDto): Promise<any> {
-        return this.genericCallToWorkerPromise('union', inputs);
+        return this.occWorkerManager.genericCallToWorkerPromise('union', inputs);
     }
 
     /**
@@ -447,7 +363,7 @@ export class OCC {
      * @returns OpenCascade difference shape
      */
     difference(inputs: Inputs.OCC.DifferenceDto): Promise<any> {
-        return this.genericCallToWorkerPromise('difference', inputs);
+        return this.occWorkerManager.genericCallToWorkerPromise('difference', inputs);
     }
 
     /**
@@ -460,7 +376,7 @@ export class OCC {
      * @returns OpenCascade difference shape
      */
     intersection(inputs: Inputs.OCC.IntersectionDto): Promise<any> {
-        return this.genericCallToWorkerPromise('intersection', inputs);
+        return this.occWorkerManager.genericCallToWorkerPromise('intersection', inputs);
     }
 
     /**
@@ -470,7 +386,7 @@ export class OCC {
      * @returns OpenCascade shape with no internal edges
      */
     removeInternalEdges(inputs: Inputs.OCC.ShapeDto): Promise<any> {
-        return this.genericCallToWorkerPromise('removeInternalEdges', inputs);
+        return this.occWorkerManager.genericCallToWorkerPromise('removeInternalEdges', inputs);
     }
 
     /**
@@ -483,7 +399,7 @@ export class OCC {
      * @returns OpenCascade edge
      */
     getEdge(inputs: Inputs.OCC.ShapeIndexDto): Promise<any> {
-        return this.genericCallToWorkerPromise('getEdge', inputs);
+        return this.occWorkerManager.genericCallToWorkerPromise('getEdge', inputs);
     }
 
     /**
@@ -496,7 +412,7 @@ export class OCC {
      * @returns OpenCascade wire
      */
     getWire(inputs: Inputs.OCC.ShapeIndexDto): Promise<any> {
-        return this.genericCallToWorkerPromise('getWire', inputs);
+        return this.occWorkerManager.genericCallToWorkerPromise('getWire', inputs);
     }
 
     /**
@@ -509,7 +425,7 @@ export class OCC {
      * @returns OpenCascade face
      */
     getFace(inputs: Inputs.OCC.ShapeIndexDto): Promise<any> {
-        return this.genericCallToWorkerPromise('getFace', inputs);
+        return this.occWorkerManager.genericCallToWorkerPromise('getFace', inputs);
     }
 
     /**
@@ -522,7 +438,7 @@ export class OCC {
      * @returns OpenCascade shape
      */
     rotatedExtrude(inputs: Inputs.OCC.RotationExtrudeDto): Promise<any> {
-        return this.genericCallToWorkerPromise('rotatedExtrude', inputs);
+        return this.occWorkerManager.genericCallToWorkerPromise('rotatedExtrude', inputs);
     }
     /**
      * Pipe shapes along the wire
@@ -534,7 +450,7 @@ export class OCC {
      * @returns OpenCascade shape
      */
     pipe(inputs: Inputs.OCC.PipeDto): Promise<any> {
-        return this.genericCallToWorkerPromise('pipe', inputs);
+        return this.occWorkerManager.genericCallToWorkerPromise('pipe', inputs);
     }
 
     /**
@@ -547,7 +463,7 @@ export class OCC {
      * @returns OpenCascade shapes
      */
     transform(inputs: Inputs.OCC.TransformDto): Promise<any> {
-        return this.genericCallToWorkerPromise('transform', inputs);
+        return this.occWorkerManager.genericCallToWorkerPromise('transform', inputs);
     }
 
 
@@ -561,7 +477,7 @@ export class OCC {
      * @returns OpenCascade shapes
      */
     rotate(inputs: Inputs.OCC.RotateDto): Promise<any> {
-        return this.genericCallToWorkerPromise('rotate', inputs);
+        return this.occWorkerManager.genericCallToWorkerPromise('rotate', inputs);
     }
 
 
@@ -575,7 +491,7 @@ export class OCC {
      * @returns OpenCascade shapes
      */
     translate(inputs: Inputs.OCC.TranslateDto): Promise<any> {
-        return this.genericCallToWorkerPromise('translate', inputs);
+        return this.occWorkerManager.genericCallToWorkerPromise('translate', inputs);
     }
 
     /**
@@ -588,7 +504,7 @@ export class OCC {
      * @returns OpenCascade shapes
      */
     scale(inputs: Inputs.OCC.ScaleDto): Promise<any> {
-        return this.genericCallToWorkerPromise('scale', inputs);
+        return this.occWorkerManager.genericCallToWorkerPromise('scale', inputs);
     }
 
     /**
@@ -601,7 +517,7 @@ export class OCC {
      * @returns OpenCascade compounded shape
      */
     makeCompound(inputs: Inputs.OCC.CompoundShapesDto): Promise<any> {
-        return this.genericCallToWorkerPromise('makeCompound', inputs);
+        return this.occWorkerManager.genericCallToWorkerPromise('makeCompound', inputs);
     }
 
     /**
@@ -614,7 +530,7 @@ export class OCC {
      * @returns OpenCascade solid shape
      */
     makeThickSolidSimple(inputs: Inputs.OCC.ThisckSolidSimpleDto): Promise<any> {
-        return this.genericCallToWorkerPromise('makeThickSolidSimple', inputs);
+        return this.occWorkerManager.genericCallToWorkerPromise('makeThickSolidSimple', inputs);
     }
 
     /**
@@ -627,7 +543,7 @@ export class OCC {
      * @returns OpenCascade face shape
      */
     createFaceFromWire(inputs: Inputs.OCC.FaceFromWireDto): Promise<any> {
-        return this.genericCallToWorkerPromise('createFaceFromWire', inputs);
+        return this.occWorkerManager.genericCallToWorkerPromise('createFaceFromWire', inputs);
     }
 
     /**
@@ -640,7 +556,7 @@ export class OCC {
      * @returns String of a step file
      */
     saveShapeSTEP(inputs: Inputs.OCC.SaveStepDto): Promise<string> {
-        return this.genericCallToWorkerPromise('saveShapeSTEP', inputs).then(s => {
+        return this.occWorkerManager.genericCallToWorkerPromise('saveShapeSTEP', inputs).then(s => {
             const blob = new Blob([s], { type: 'text/plain' });
             const blobUrl = URL.createObjectURL(blob);
 
@@ -658,7 +574,7 @@ export class OCC {
         // first we should check if we have assetName loaded already
         // if we dont have we do this, otherwise return from the cache...
         return BitByBitBlocklyHelperService.getFile().then(s => {
-            return this.genericCallToWorkerPromise(
+            return this.occWorkerManager.genericCallToWorkerPromise(
                 'importSTEPorIGES',
                 new Inputs.OCC.ImportStepOrIgesDto(s, inputs.assetName)
             );

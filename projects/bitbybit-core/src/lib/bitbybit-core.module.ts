@@ -34,6 +34,7 @@ import { Tag } from './api/bitbybit/tag';
 import { Time } from './api/bitbybit/time';
 import { OCC } from './api/bitbybit/occ/occ';
 import { Verb } from './api/bitbybit/verb/verb';
+import { OCCWorkerManager } from './workers/occ/occ-worker-manager';
 
 @NgModule({
     declarations: [],
@@ -75,6 +76,7 @@ import { Verb } from './api/bitbybit/verb/verb';
         Tag,
         Time,
         OCC,
+        OCCWorkerManager
     ],
     exports: []
 })
