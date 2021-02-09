@@ -38,7 +38,7 @@ export function createCircleMaxAngleBlock(): void {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `return bitbybit.curve.circle.maxAngle(inputs);`
+            `return bitbybit.verb.curve.circle.maxAngle(inputs);`
         );
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };

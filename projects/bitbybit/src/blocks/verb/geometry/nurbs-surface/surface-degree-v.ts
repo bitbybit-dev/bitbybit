@@ -38,7 +38,7 @@ export function createSurfaceDegreeVBlock(): void {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `return bitbybit.surface.degreeV(inputs);`);
+            `return bitbybit.verb.surface.degreeV(inputs);`);
 
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };

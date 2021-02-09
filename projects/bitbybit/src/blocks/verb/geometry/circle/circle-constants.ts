@@ -1,3 +1,3 @@
 export const circleConstants = {
-    helpUrl: '/classes/bitbybit_curve_circle.curvecircle.html'
+    helpUrl: '/classes/bitbybit_verb_curve_circle.verbcurvecircle.html'
 };

@@ -43,7 +43,7 @@ export function createCurvesDivideByArcLengthPointsBlock(): void {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `return bitbybit.curve.divideCurvesByArcLengthToPoints(inputs);`
+            `return bitbybit.verb.curve.divideCurvesByArcLengthToPoints(inputs);`
         );
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };

@@ -64,7 +64,7 @@ export function createDrawSurfacesColoursBlock(): void {
 
         return createStandardContextIIFE(block, blockSelector, inputs, false,
             `inputs.surfacesMesh = ${(JavaScript as any).variableDB_.getName(block.getFieldValue('DrawnSurfaceMeshes'), VARIABLE_CATEGORY_NAME)};
-            ${(JavaScript as any).variableDB_.getName(block.getFieldValue('DrawnSurfaceMeshes'), VARIABLE_CATEGORY_NAME)} = bitbybit.surface.drawSurfacesMultiColour(inputs);`
+            ${(JavaScript as any).variableDB_.getName(block.getFieldValue('DrawnSurfaceMeshes'), VARIABLE_CATEGORY_NAME)} = bitbybit.verb.surface.drawSurfacesMultiColour(inputs);`
         );
     };
 }

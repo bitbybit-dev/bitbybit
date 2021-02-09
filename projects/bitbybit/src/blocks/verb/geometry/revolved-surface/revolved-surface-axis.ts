@@ -39,7 +39,7 @@ export function createRevolvedSurfaceAxisBlock(): void {
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
             // TODO might be a mistake in BitByBit.verb (seems to return center coord)
-            `return bitbybit.surface.revolved.axis(inputs);`
+            `return bitbybit.verb.surface.revolved.axis(inputs);`
         );
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };

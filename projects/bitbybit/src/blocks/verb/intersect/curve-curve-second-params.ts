@@ -39,7 +39,7 @@ export function createIntersectCurveCurveSecondParamsBlock(): void {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `return bitbybit.intersect.curveCurveSecondParams(inputs);`
+            `return bitbybit.verb.intersect.curveCurveSecondParams(inputs);`
         );
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };

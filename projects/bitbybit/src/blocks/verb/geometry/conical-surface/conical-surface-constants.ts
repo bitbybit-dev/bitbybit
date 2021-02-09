@@ -1,3 +1,3 @@
 export const conicalSurfaceConstants = {
-    helpUrl: '/classes/bitbybit_surface_conical.surfaceconical.html'
+    helpUrl: '/classes/bitbybit_verb_surface_conical.verbsurfaceconical.html'
 };

@@ -64,7 +64,7 @@ export function createDrawSurfaceBlock(): void {
 
         return createStandardContextIIFE(block, blockSelector, inputs, false,
             `inputs.surfaceMesh = ${(JavaScript as any).variableDB_.getName(block.getFieldValue('DrawnSurfaceMesh'), VARIABLE_CATEGORY_NAME)};
-            ${(JavaScript as any).variableDB_.getName(block.getFieldValue('DrawnSurfaceMesh'), VARIABLE_CATEGORY_NAME)} = bitbybit.surface.drawSurface(inputs);`
+            ${(JavaScript as any).variableDB_.getName(block.getFieldValue('DrawnSurfaceMesh'), VARIABLE_CATEGORY_NAME)} = bitbybit.verb.surface.drawSurface(inputs);`
         );
     };
 }

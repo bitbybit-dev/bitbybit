@@ -53,7 +53,7 @@ export function createRevolvedSurfaceBlock(): void {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `return bitbybit.surface.revolved.create(inputs);`
+            `return bitbybit.verb.surface.revolved.create(inputs);`
         );
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };

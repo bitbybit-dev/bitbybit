@@ -43,7 +43,7 @@ export function createSurfaceClosestParamBlock(): void {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `return bitbybit.surface.closestParam(inputs);`
+            `return bitbybit.verb.surface.closestParam(inputs);`
         );
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };

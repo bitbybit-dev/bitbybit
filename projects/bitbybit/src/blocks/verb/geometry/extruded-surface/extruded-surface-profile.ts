@@ -38,7 +38,7 @@ export function createExtrudedSurfaceProfileBlocks(): void {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `return bitbybit.surface.extrusion.profile(inputs);`
+            `return bitbybit.verb.surface.extrusion.profile(inputs);`
         );
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };

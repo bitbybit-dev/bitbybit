@@ -10,6 +10,7 @@ import { Mesh } from '@babylonjs/core/Meshes/mesh';
 import '@babylonjs/core/Meshes/meshBuilder';
 import { Scene } from '@babylonjs/core/scene';
 import { inject, svgResize, WorkspaceSvg, Xml } from 'blockly';
+import 'blockly/msg/en';
 import * as Blockly from 'blockly';
 import * as JavaScript from 'blockly/javascript';
 import * as jsonpath from 'jsonpath';
@@ -34,7 +35,7 @@ import { MatDrawer } from '@angular/material/sidenav';
 import { EditorComponent } from 'ngx-monaco-editor';
 import { transpile } from 'typescript';
 import { UiStatesEnum } from './models/ui-states.enum';
-import { BitByBitBase, BitByBitBlocklyHelperService, Context, OccInfo, OccStateEnum, PrintSaveInterface } from 'projects/bitbybit-core/src/public-api';
+import { BitByBitBase, BitByBitBlocklyHelperService, Context, OccInfo, OccStateEnum, OCCTWorkerManager, PrintSaveInterface } from 'projects/bitbybit-core/src/public-api';
 import * as Inputs from 'projects/bitbybit-core/src/lib/api/inputs/inputs';
 import { BaseTypes } from 'projects/bitbybit-core/src/lib/api/bitbybit/base-types';
 import { core, geom } from 'verb-nurbs-web';
@@ -101,6 +102,7 @@ export class BitbybitAppComponent implements OnInit, OnDestroy, AfterViewInit {
         private readonly tagService: TagService,
         private readonly context: Context,
         private readonly bitByBit: BitByBitBase,
+        private readonly occWorkerManager: OCCTWorkerManager,
     ) {
     }
 
@@ -207,7 +209,6 @@ export class BitbybitAppComponent implements OnInit, OnDestroy, AfterViewInit {
                 BitByBitBlocklyHelperService.clearAllDrawn = () => this.clearMeshesAndMaterials();
 
                 this.settingsService.initSettings(this.workspace, this.changeDetectorService).subscribe(s => {
-                    this.collapseExpandedMenus();
 
                     this.route.queryParamMap.subscribe(param => {
                         const exampleParam = param.get('examples');
@@ -220,7 +221,7 @@ export class BitbybitAppComponent implements OnInit, OnDestroy, AfterViewInit {
                                 this.previousUiState = UiStatesEnum.babylon;
                                 this.workspace.clear();
                                 if (this.occWorkerState.state === OccStateEnum.loaded) {
-                                    this.bitByBit.occ.startedTheRun().then(() => { });
+                                    this.occWorkerManager.startedTheRun().then(() => { });
                                 }
                                 this.clearBabylonScene();
                                 Xml.domToWorkspace(xml, this.workspace);
@@ -228,7 +229,7 @@ export class BitbybitAppComponent implements OnInit, OnDestroy, AfterViewInit {
                                     this.workspace.zoomToFit();
                                     this.workspace.zoomCenter(-4);
                                     this.onResize();
-                                }, 200);
+                                }, 400);
                             }
                         } else if (exampleParam && editorParam === 'ts') {
                             this.code = this.examplesService.getExampleTypescript(exampleParam);
@@ -253,7 +254,6 @@ export class BitbybitAppComponent implements OnInit, OnDestroy, AfterViewInit {
 
                 setTimeout(() => {
                     this.onResize();
-                    this.collapseExpandedMenus();
                 });
             });
 
@@ -265,17 +265,6 @@ export class BitbybitAppComponent implements OnInit, OnDestroy, AfterViewInit {
         this.timePassedFromPreviousIteration = now;
         BitByBitBlocklyHelperService.renderLoopBag.forEach(f => f(timeElapsedFromPreviousIteration));
         this.scene.render();
-    }
-
-    private collapseExpandedMenus(): void {
-        const treeRows = document.body.querySelectorAll(
-            '.blocklyTreeRow');
-        treeRows.forEach((element) => {
-            const ariaExpanded = element.parentElement.attributes.getNamedItem('aria-expanded');
-            if (ariaExpanded) {
-                (element as HTMLElement).click();
-            }
-        });
     }
 
     ngOnInit(): void {
@@ -298,8 +287,8 @@ export class BitbybitAppComponent implements OnInit, OnDestroy, AfterViewInit {
         };
         if (typeof Worker !== 'undefined') {
             // Create a new
-            this.bitByBit.occ.setOccWorker(new Worker('./occ.worker', { type: 'module' }));
-            this.bitByBit.occ.occWorkerState.subscribe((state) => {
+            this.occWorkerManager.setOccWorker(new Worker('./occ.worker', { type: 'module' }));
+            this.occWorkerManager.occWorkerState.subscribe((state) => {
                 this.occWorkerState = state;
                 this.toggleRenderLoop(400);
             });
@@ -495,6 +484,11 @@ export class BitbybitAppComponent implements OnInit, OnDestroy, AfterViewInit {
             case UiStatesEnum.babylon:
                 this.engine.stopRenderLoop(this.renderLoopFunction);
                 this.currentUiState = this.previousUiState;
+                if (this.currentUiState === UiStatesEnum.monaco) {
+                    setTimeout(() => {
+                        window.dispatchEvent(new Event('resize'));
+                    });
+                }
                 break;
             case UiStatesEnum.blockly:
                 this.engine.runRenderLoop(this.renderLoopFunction);
@@ -510,12 +504,6 @@ export class BitbybitAppComponent implements OnInit, OnDestroy, AfterViewInit {
             default:
                 break;
         }
-        setTimeout(() => {
-            window.dispatchEvent(new Event('resize'));
-            this.onResize();
-            this.workspace.zoomToFit();
-            this.workspace.zoomCenter(-4);
-        });
     }
 
     cleanCanvas(): void {
@@ -523,7 +511,7 @@ export class BitbybitAppComponent implements OnInit, OnDestroy, AfterViewInit {
         this.router.navigate(['/app']);
 
         if (this.occWorkerState.state === OccStateEnum.loaded) {
-            this.bitByBit.occ.startedTheRun().then(() => { });
+            this.occWorkerManager.startedTheRun().then(() => { });
         }
         this.clearBabylonScene();
     }
@@ -548,14 +536,14 @@ export class BitbybitAppComponent implements OnInit, OnDestroy, AfterViewInit {
     }
 
     cleanAllCache(): void {
-        this.bitByBit.occ.cleanAllCache().then(s => {});
+        this.occWorkerManager.cleanAllCache().then(s => { });
     }
 
     run(): void {
         // If we'll have more workers for other libraries, this could be applied here as well
         // with Promise.all...
-        this.bitByBit.occ.cleanPromisesMade();
-        this.bitByBit.occ.startedTheRun().then((res) => {
+        this.occWorkerManager.cleanPromisesMade();
+        this.occWorkerManager.startedTheRun().then((res) => {
             let transpiledCode = false;
             try {
                 this.clearBabylonScene();

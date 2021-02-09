@@ -1,3 +1,3 @@
 export const ellipseConstants = {
-    helpUrl: '/classes/bitbybit_curve_ellipse.curveellipse.html'
+    helpUrl: '/classes/bitbybit_verb_curve_ellipse.verbcurveellipse.html'
 };

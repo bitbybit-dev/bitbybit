@@ -38,7 +38,7 @@ export function createRevolvedSurfaceAngleBlock(): void {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `return bitbybit.surface.revolved.angle(inputs);`
+            `return bitbybit.verb.surface.revolved.angle(inputs);`
         );
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };

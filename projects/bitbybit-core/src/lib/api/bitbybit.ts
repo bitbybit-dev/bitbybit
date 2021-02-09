@@ -6,13 +6,11 @@ import { Node } from './bitbybit/node';
 import { Point } from './bitbybit/point';
 import { Line } from './bitbybit/line';
 import { Polyline } from './bitbybit/polyline';
-import { Curve } from './bitbybit/curve';
-import { Surface } from './bitbybit/surface';
+import { Verb } from './bitbybit/verb/verb';
 import { JSCAD } from './bitbybit/jscad';
-import { Intersect } from './bitbybit/intersect';
 import { Tag } from './bitbybit/tag';
 import { Time } from './bitbybit/time';
-import { OCC } from './bitbybit/occ/occ';
+import { OCCT } from './bitbybit/occt/occt';
 
 @Injectable()
 export class BitByBitBase {
@@ -24,13 +22,11 @@ export class BitByBitBase {
         public readonly point: Point,
         public readonly line: Line,
         public readonly polyline: Polyline,
-        public readonly curve: Curve,
-        public readonly surface: Surface,
+        public readonly verb: Verb,
         public readonly jscad: JSCAD,
-        public readonly intersect: Intersect,
         public readonly tag: Tag,
         public readonly time: Time,
-        public readonly occ: OCC,
+        public readonly occt: OCCT,
     ) {
     }
 }

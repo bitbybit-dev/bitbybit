@@ -38,7 +38,7 @@ export function createCurveWeightsBlock(): void {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `return bitbybit.curve.weights(inputs);`);
+            `return bitbybit.verb.curve.weights(inputs);`);
 
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };

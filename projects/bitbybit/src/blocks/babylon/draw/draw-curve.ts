@@ -70,7 +70,7 @@ export function createDrawCurveBlock(): void {
 
         return createStandardContextIIFE(block, blockSelector, inputs, false,
             `inputs.curveMesh = ${(JavaScript as any).variableDB_.getName(block.getFieldValue('DrawnCurveMesh'), VARIABLE_CATEGORY_NAME)};
-            ${(JavaScript as any).variableDB_.getName(block.getFieldValue('DrawnCurveMesh'), VARIABLE_CATEGORY_NAME)} = bitbybit.curve.drawCurve(inputs);`);
+            ${(JavaScript as any).variableDB_.getName(block.getFieldValue('DrawnCurveMesh'), VARIABLE_CATEGORY_NAME)} = bitbybit.verb.curve.drawCurve(inputs);`);
     };
 }
 

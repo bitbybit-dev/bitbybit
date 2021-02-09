@@ -43,7 +43,7 @@ export function createCurveLengthAtParamBlock(): void {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `return bitbybit.curve.lengthAtParam(inputs);`
+            `return bitbybit.verb.curve.lengthAtParam(inputs);`
         );
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };

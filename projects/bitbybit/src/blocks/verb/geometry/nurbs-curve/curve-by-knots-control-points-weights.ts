@@ -54,7 +54,7 @@ export function createCurveByKnotsControlPointsWeightsBlock(): void {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `return bitbybit.curve.createCurveByKnotsControlPointsWeights(inputs);`
+            `return bitbybit.verb.curve.createCurveByKnotsControlPointsWeights(inputs);`
         );
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };

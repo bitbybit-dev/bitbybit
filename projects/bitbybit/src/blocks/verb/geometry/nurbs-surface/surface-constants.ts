@@ -1,3 +1,3 @@
 export const surfaceConstants = {
-    helpUrl: '/classes/bitbybit_surface.surface.html'
+    helpUrl: '/classes/bitbybit_verb_surface.verbsurface.html'
 };

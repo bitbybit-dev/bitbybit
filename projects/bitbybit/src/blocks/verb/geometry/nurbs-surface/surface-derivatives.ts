@@ -53,7 +53,7 @@ export function createSurfaceDerivativesBlock(): void {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `return bitbybit.surface.derivatives(inputs);`);
+            `return bitbybit.verb.surface.derivatives(inputs);`);
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };
 }

@@ -43,7 +43,7 @@ export function createCurveClosestParamsBlock(): void {
         (block as any).validationModel = runtimeValidationModel;
 
         const code = createStandardContextIIFE(block, blockSelector, inputs, true,
-            `return bitbybit.curve.closestParams(inputs);`
+            `return bitbybit.verb.curve.closestParams(inputs);`
         );
         return [code, (JavaScript as any).ORDER_ATOMIC];
     };
