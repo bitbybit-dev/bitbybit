@@ -7,6 +7,7 @@ import { MatDialogModule } from '@angular/material/dialog';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatGridListModule } from '@angular/material/grid-list';
 import { MatIconModule } from '@angular/material/icon';
+import { MatExpansionModule } from '@angular/material/expansion';
 import { MatInputModule } from '@angular/material/input';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatSelectModule } from '@angular/material/select';
@@ -32,6 +33,23 @@ import { BitbybitCanDeativate } from './bitbybit-app-can-deactivate.service';
 import { MonacoEditorModule } from 'ngx-monaco-editor';
 import { EnterMonacoDialogComponent } from './components/enter-monaco-dialog/enter-monaco-dialog.component';
 import { EnterBlocklyDialogComponent } from './components/enter-blockly-dialog/enter-blockly-dialog.component';
+import { DialogService } from './shared/dialog.service';
+import { DatabaseService } from './database/database.service';
+import { ProjectsDb } from './database/projects.db';
+import { AssetsDb } from './database/assets.db';
+import { SharedDbContextService } from './database/shared-db-context';
+import { TypeScriptDb } from './database/typescript.db';
+import { BlocklyDb } from './database/blockly.db';
+import { ProjectsComponent } from './projects/projects.component';
+import { DatabaseResolver } from './database/db-resolver';
+import { AssetAddComponent } from './projects/assets/asset-add/asset-add.component';
+import { ProjectsOverviewComponent } from './projects/projects-overview/projects-overview.component';
+import { BlocklyAddComponent } from './projects/blockly/blockly-add/blockly-add.component';
+import { BlocklyEditComponent } from './projects/blockly/blockly-edit/blockly-edit.component';
+import { TypescriptAddComponent } from './projects/typescript/typescript-add/typescript-add.component';
+import { TypescriptEditComponent } from './projects/typescript/typescript-edit/typescript-edit.component';
+import { ProjectCreateComponent } from './projects/project-create/project-create.component';
+import { ProjectEditComponent } from './projects/project-edit/project-edit.component';
 
 @NgModule({
     declarations: [
@@ -45,7 +63,16 @@ import { EnterBlocklyDialogComponent } from './components/enter-blockly-dialog/e
         PromptDialogComponent,
         EnterMonacoDialogComponent,
         EnterBlocklyDialogComponent,
-    ],
+        ProjectsComponent,
+        AssetAddComponent,
+        ProjectsOverviewComponent,
+        BlocklyAddComponent,
+        BlocklyEditComponent,
+        TypescriptAddComponent,
+        TypescriptEditComponent,
+        ProjectCreateComponent,
+        ProjectEditComponent,
+   ],
     imports: [
         CommonModule,
         BitbybitAppRoutingModule,
@@ -64,10 +91,25 @@ import { EnterBlocklyDialogComponent } from './components/enter-blockly-dialog/e
         MatMenuModule,
         MatCardModule,
         MatSelectModule,
+        MatExpansionModule,
         MatInputModule,
         MonacoEditorModule,
         MatProgressSpinnerModule,
+
     ],
-    providers: [ExamplesService, SettingsService, TagService, BitbybitCanDeativate],
+    providers: [
+        ExamplesService,
+        SettingsService,
+        TagService,
+        DialogService,
+        DatabaseService,
+        ProjectsDb,
+        AssetsDb,
+        TypeScriptDb,
+        BlocklyDb,
+        SharedDbContextService,
+        BitbybitCanDeativate,
+        DatabaseResolver,
+    ],
 })
 export class BitbybitAppModule { }

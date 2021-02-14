@@ -35,10 +35,6 @@
     height: 100%;
 }
 
-.mid-content {
-    width: 5px;
-}
-
 .fill-row {
     display: flex;
     flex-direction: row;
@@ -388,4 +384,10 @@ h1 {
 
 ::ng-deep input {
     line-height: initial;
+}
+
+::ng-deep .dark-panel .mat-dialog-container{
+    background-color: #1a1c1f;
+    color:white;
+    font-weight: 400;
 }

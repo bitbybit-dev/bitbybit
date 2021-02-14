@@ -24,6 +24,8 @@ export interface ResourcesInterface {
     app_menu_more_about_sub_header_fifth: string;
     app_menu_more_settings: string;
     app_menu_more_settings_explanation_save: string;
+    app_menu_more_projects: string;
+    app_menu_more_projects_explanation: string;
     app_menu_more_examples: string;
     app_menu_more_examples_explanation: string;
     app_menu_more_examples_newbie: string;

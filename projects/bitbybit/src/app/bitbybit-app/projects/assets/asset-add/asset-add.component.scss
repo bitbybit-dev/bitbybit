@@ -1,0 +1,32 @@
+label {
+    font-weight: 400;
+}
+
+.file-label div {
+    margin-bottom: 10px;
+    margin-left: 10px;
+}
+
+.file-label {
+    margin-top: 20px;
+    margin-bottom: 20px;
+    width: 100%;
+}
+
+input[type="file"] {
+    outline:none;
+    width: 100%;
+}
+
+input[type="file"]:hover {
+    outline: 1px solid #505a69;
+}
+
+input[type="file"]:focus {
+    outline: 1px solid #505a69;
+}
+
+mat-error {
+    font-weight: 400;
+    font-size: 12px;
+}

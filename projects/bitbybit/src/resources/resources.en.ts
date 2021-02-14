@@ -28,6 +28,8 @@ export const resourcesEn: ResourcesInterface = Object.freeze({
     app_menu_more_about_sub_header_fifth: 'License',
     app_menu_more_settings: 'Settings',
     app_menu_more_settings_explanation_save: 'Setting preferences will be saved for your next visit.',
+    app_menu_more_projects: 'Projects',
+    app_menu_more_projects_explanation: 'These projects exist on your computer in the local IndexedDB instance provided by your Browser, the data you store is not synced with the cloud and is not accessible to third parties. You can export projects and import them to other browsers or share them with other people.',
     app_menu_more_examples: 'Examples',
     app_menu_more_examples_explanation: 'Provided examples give you a starting point to understanding the world of 3D algorithms.',
     app_menu_more_examples_newbie: 'Newbie',

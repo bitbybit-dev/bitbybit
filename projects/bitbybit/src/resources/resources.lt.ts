@@ -29,6 +29,8 @@ export const resourcesLt: ResourcesInterface = Object.freeze({
     app_menu_more_settings: 'Pasirinktys',
     app_menu_more_settings_explanation_save: 'Pasirinktys bus išsaugoti jūsų kitam vizitui.',
     app_menu_more_examples: 'Pavyzdžiai',
+    app_menu_more_projects: 'Projektai',
+    app_menu_more_projects_explanation: 'Šie projektai egzistuoja jūsų kompiuteryje lokalioje IndexedDB duombazėje, kurią palaiko jūsų naršyklė. Duomenys nėra sinchronizuojami su jokia debesyje esančia duomenų baze ir nėra prieinami trečiosioms šalims. Galite importuoti ir eksportuoti projektus, norint juos įkelti į kitas naršykles ar dalintis su draugais.',
     app_menu_more_examples_explanation: 'Šie pavyzdžiai padeda pažinti ir suprasti 3D algoritmų pasaulį.',
     app_menu_more_examples_newbie: 'Naujokams',
     app_menu_more_examples_newbie_polyline_between_three_points_title: 'Polilinija tarp trijų taškų',

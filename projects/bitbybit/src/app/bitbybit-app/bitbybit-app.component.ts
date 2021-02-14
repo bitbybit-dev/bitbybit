@@ -1,8 +1,7 @@
 import { HttpHeaders, HttpParams, HttpClient } from '@angular/common/http';
 import { AfterViewInit, ChangeDetectorRef, Component, OnInit, ViewChild, OnDestroy } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ArcRotateCamera, TransformNode, HemisphericLight, Light, MeshBuilder } from '@babylonjs/core';
+import { ArcRotateCamera, TransformNode, HemisphericLight, Light } from '@babylonjs/core';
 import { Engine } from '@babylonjs/core/Engines/engine';
 import '@babylonjs/core/Materials/standardMaterial';
 import { Color3, Color4, Vector3 } from '@babylonjs/core/Maths/math';
@@ -14,18 +13,9 @@ import 'blockly/msg/en';
 import * as Blockly from 'blockly';
 import * as JavaScript from 'blockly/javascript';
 import * as jsonpath from 'jsonpath';
-import { PromptInterface } from '../../blocks/_shared/models/prompt.interface';
-import { HS } from '../../blocks/validations';
 import { prepareBabylonForBlockly } from '../../babylon-to-blockly';
 import { assembleBlocks } from '../../blocks/assemble-blocks';
 import { ResourcesInterface, ResourcesService } from '../../resources';
-import { AboutDialogComponent } from './components/about-dialog/about-dialog.component';
-import { AlertDialogComponent } from './components/alert-dialog/alert-dialog.component';
-import { ExamplesDialogComponent } from './components/examples-dialog/examples-dialog.component';
-import { PrintSaveDialogComponent } from './components/print-save-dialog/print-save-dialog.component';
-import { PromptDialogComponent } from './components/prompt-dialog/prompt-dialog.component';
-import { SettingsDialogComponent } from './components/settings-dialog/settings-dialog.component';
-import { SponsorsDialogComponent } from './components/sponsors-dialog/sponsors-dialog.component';
 import { ExamplesService } from './examples/example-service';
 import { constantsModel } from './models/constants.model';
 import { toolboxDefinition } from './models/toolbox-definition';
@@ -39,9 +29,10 @@ import { BitByBitBase, BitByBitBlocklyHelperService, Context, OccInfo, OccStateE
 import * as Inputs from 'projects/bitbybit-core/src/lib/api/inputs/inputs';
 import { BaseTypes } from 'projects/bitbybit-core/src/lib/api/bitbybit/base-types';
 import { core, geom } from 'verb-nurbs-web';
-import { EnterMonacoDialogComponent } from './components/enter-monaco-dialog/enter-monaco-dialog.component';
+import { DialogService } from './shared/dialog.service';
 import { monacoDialogResultEnum } from './models/monaco-dialog-result.enum';
-import { EnterBlocklyDialogComponent } from './components/enter-blockly-dialog/enter-blockly-dialog.component';
+import { HS } from '../../blocks/validations';
+import { DatabaseService } from './database/database.service';
 
 @Component({
     selector: 'app-root',
@@ -92,7 +83,6 @@ export class BitbybitAppComponent implements OnInit, OnDestroy, AfterViewInit {
     @ViewChild('editor', { static: false }) editor: EditorComponent;
 
     constructor(
-        public dialog: MatDialog,
         public readonly router: Router,
         public readonly route: ActivatedRoute,
         public readonly examplesService: ExamplesService,
@@ -103,6 +93,8 @@ export class BitbybitAppComponent implements OnInit, OnDestroy, AfterViewInit {
         private readonly context: Context,
         private readonly bitByBit: BitByBitBase,
         private readonly occWorkerManager: OCCTWorkerManager,
+        private readonly dialogService: DialogService,
+        private readonly databaseService: DatabaseService,
     ) {
     }
 
@@ -149,7 +141,7 @@ export class BitbybitAppComponent implements OnInit, OnDestroy, AfterViewInit {
                 toolbox.clearSelection();
 
                 (Blockly.prompt as any) = (message, defaultValue, callback) => {
-                    this.openPromptDialog({ message, defaultValue, callback });
+                    this.dialogService.openPromptDialog({ message, defaultValue, callback });
                 };
 
                 svgResize(this.workspace);
@@ -199,7 +191,8 @@ export class BitbybitAppComponent implements OnInit, OnDestroy, AfterViewInit {
                     this.tagsNeedUpdate = false;
                 });
 
-                BitByBitBlocklyHelperService.promptPrintSave = (prompt: PrintSaveInterface) => this.openPrintSaveDialog(prompt);
+                BitByBitBlocklyHelperService.promptPrintSave = (prompt: PrintSaveInterface) =>
+                    this.dialogService.openPrintSaveDialog(prompt);
                 BitByBitBlocklyHelperService.angular = {
                     httpClient: this.httpClient,
                     HttpHeaders,
@@ -268,7 +261,6 @@ export class BitbybitAppComponent implements OnInit, OnDestroy, AfterViewInit {
     }
 
     ngOnInit(): void {
-
         this.resources = ResourcesService.getResources();
         prepareBabylonForBlockly();
         assembleBlocks();
@@ -418,7 +410,11 @@ export class BitbybitAppComponent implements OnInit, OnDestroy, AfterViewInit {
     }
 
     examples(): void {
-        this.openExamplesDialog();
+        this.dialogService.openExamplesDialog();
+    }
+
+    projects(): void {
+        this.router.navigate(['projects'], {relativeTo: this.route });
     }
 
     toggleToolbox(): void {
@@ -434,9 +430,42 @@ export class BitbybitAppComponent implements OnInit, OnDestroy, AfterViewInit {
     toggleCodeEditor(): void {
 
         if (this.currentUiState === UiStatesEnum.blockly) {
-            this.openEnterMonacoDialog();
+            this.dialogService.openEnterMonacoDialog().subscribe((result: monacoDialogResultEnum) => {
+                switch (result) {
+                    case monacoDialogResultEnum.saveAndContinue:
+                        this.export();
+                        this.code = `${(JavaScript as any).workspaceToCode(this.workspace)}`;
+                        this.startMonaco();
+                        this.router.navigate(['/app']);
+
+                        break;
+                    case monacoDialogResultEnum.continue:
+                        this.code = `${(JavaScript as any).workspaceToCode(this.workspace)}`;
+                        this.startMonaco();
+                        this.router.navigate(['/app']);
+                        break;
+                    case monacoDialogResultEnum.cancel:
+                        break;
+                    default:
+                        break;
+                }
+            });
         } else if (this.currentUiState === UiStatesEnum.monaco) {
-            this.openEnterBlocklyDialog();
+            this.dialogService.openEnterBlocklyDialog().subscribe((result: monacoDialogResultEnum) => {
+                switch (result) {
+                    case monacoDialogResultEnum.saveAndContinue:
+                        this.exportTypescript();
+                        this.startBlocklyEditor();
+                        break;
+                    case monacoDialogResultEnum.continue:
+                        this.startBlocklyEditor();
+                        break;
+                    case monacoDialogResultEnum.cancel:
+                        break;
+                    default:
+                        break;
+                }
+            });
         }
     }
 
@@ -468,15 +497,15 @@ export class BitbybitAppComponent implements OnInit, OnDestroy, AfterViewInit {
     }
 
     about(): void {
-        this.openAboutDialog();
+        this.dialogService.openAboutDialog();
     }
 
     settings(): void {
-        this.openSettingsDialog();
+        this.dialogService.openSettingsDialog(this.workspace);
     }
 
     sponsors(): void {
-        this.openSponsorsDialog();
+        this.dialogService.openSponsorsDialog();
     }
 
     swapCanvas(): void {
@@ -527,9 +556,9 @@ export class BitbybitAppComponent implements OnInit, OnDestroy, AfterViewInit {
     }
 
     toArray(obj): any[] {
-        let array = [];
+        const array = [];
         // iterate backwards ensuring that length is an UInt32
-        for (var i = obj.length >>> 0; i--;) {
+        for (let i = obj.length >>> 0; i--;) {
             array[i] = obj[i];
         }
         return array;
@@ -573,7 +602,7 @@ export class BitbybitAppComponent implements OnInit, OnDestroy, AfterViewInit {
 
             } catch (e) {
                 if (transpiledCode) {
-                    this.openAlertDialog({
+                    this.dialogService.openAlertDialog({
                         title: 'Code execution failed',
                         details: `Something went wrong when running the code.`,
                         message: `${e}`,
@@ -581,7 +610,7 @@ export class BitbybitAppComponent implements OnInit, OnDestroy, AfterViewInit {
                 } else {
                     const blockThatWasActive = this.workspace.getBlockById(HS.runningBlockId);
                     HS.handleBlockException(blockThatWasActive, e);
-                    this.openAlertDialog({
+                    this.dialogService.openAlertDialog({
                         title: 'Code execution failed',
                         details: `Something went wrong when running the code. Check if there are no disconnected or misconfigured components on your canvas`,
                         message: `${e}`,
@@ -643,125 +672,6 @@ export class BitbybitAppComponent implements OnInit, OnDestroy, AfterViewInit {
         fileLink.download = fileName;
         fileLink.click();
         fileLink.remove();
-    }
-
-    private openEnterMonacoDialog(): void {
-        const dialogRef = this.dialog.open(EnterMonacoDialogComponent,
-            {
-                width: '600px',
-                height: 'auto',
-                autoFocus: false,
-            });
-        dialogRef.afterClosed().subscribe((result: monacoDialogResultEnum) => {
-            switch (result) {
-                case monacoDialogResultEnum.saveAndContinue:
-                    this.export();
-                    this.code = `${(JavaScript as any).workspaceToCode(this.workspace)}`;
-                    this.startMonaco();
-                    this.router.navigate(['/app']);
-
-                    break;
-                case monacoDialogResultEnum.continue:
-                    this.code = `${(JavaScript as any).workspaceToCode(this.workspace)}`;
-                    this.startMonaco();
-                    this.router.navigate(['/app']);
-                    break;
-                case monacoDialogResultEnum.cancel:
-                    break;
-                default:
-                    break;
-            }
-        });
-    }
-
-    private openEnterBlocklyDialog(): void {
-        const dialogRef = this.dialog.open(EnterBlocklyDialogComponent,
-            {
-                width: '600px',
-                height: 'auto',
-                autoFocus: false,
-            });
-        dialogRef.afterClosed().subscribe((result: monacoDialogResultEnum) => {
-            switch (result) {
-                case monacoDialogResultEnum.saveAndContinue:
-                    this.exportTypescript();
-                    this.startBlocklyEditor();
-                    break;
-                case monacoDialogResultEnum.continue:
-                    this.startBlocklyEditor();
-                    break;
-                case monacoDialogResultEnum.cancel:
-                    break;
-                default:
-                    break;
-            }
-        });
-    }
-
-    private openAlertDialog(error: { title: string, details: string, message: string }): void {
-        this.dialog.open(AlertDialogComponent, {
-            width: '600px',
-            height: 'auto',
-            autoFocus: false,
-            data: error,
-        });
-    }
-
-    private openExamplesDialog(): void {
-        this.dialog.open(ExamplesDialogComponent, {
-            width: '600px',
-            height: 'auto',
-            autoFocus: false
-        });
-    }
-
-    private openAboutDialog(): void {
-        this.dialog.open(AboutDialogComponent, {
-            width: '600px',
-            height: 'auto',
-            autoFocus: false
-        });
-    }
-
-    private openSponsorsDialog(): void {
-        this.dialog.open(SponsorsDialogComponent, {
-            width: '700px',
-            height: 'auto',
-            autoFocus: false
-        });
-    }
-
-    private openSettingsDialog(): void {
-        this.dialog.open(SettingsDialogComponent, {
-            width: '500px',
-            height: 'auto',
-            autoFocus: false,
-            data: {
-                workspace: this.workspace
-            }
-        });
-    }
-
-    private openPrintSaveDialog(prompt: PrintSaveInterface): void {
-        this.dialog.open(PrintSaveDialogComponent, {
-            width: '500px',
-            height: 'auto',
-            autoFocus: false,
-            data: prompt
-        });
-    }
-
-    private openPromptDialog(prompt: PromptInterface): void {
-        const dialogRef = this.dialog.open(PromptDialogComponent, {
-            width: '500px',
-            height: 'auto',
-            autoFocus: false,
-            data: prompt
-        });
-
-        dialogRef.afterClosed().subscribe(result => {
-            prompt.callback(null);
-        });
     }
 
 }

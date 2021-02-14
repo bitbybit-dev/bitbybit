@@ -51,6 +51,11 @@
                             aria-label="Examples">library_books
                         </mat-icon>
                     </button>
+                    <button mat-buttom mat-icon-button (click)="projects()">
+                        <mat-icon [matTooltip]="resources.app_menu_more_projects" aria-hidden="false"
+                            aria-label="Projects">folder_open
+                        </mat-icon>
+                    </button>
                     <button [matTooltip]="resources.app_menu_more" mat-buttom mat-icon-button
                         [matMenuTriggerFor]="appMenu">
                         <mat-icon aria-hidden="false" aria-label="More">more_vert
@@ -149,8 +154,6 @@
                 </div>
             </div>
         </div>
-        <div class="fill-height-or-more mid-content d-none d-lg-flex">
-        </div>
         <div class="fill-height-or-more right-content">
             <div class="blockly-content">
                 <ngx-monaco-editor style="height: 100%"
@@ -216,6 +219,11 @@
                             <button mat-buttom mat-icon-button (click)="examples()">
                                 <mat-icon [matTooltip]="resources.app_menu_more_examples" aria-hidden="false"
                                     aria-label="Examples">library_books
+                                </mat-icon>
+                            </button>
+                            <button mat-buttom mat-icon-button (click)="projects()">
+                                <mat-icon [matTooltip]="resources.app_menu_more_projects" aria-hidden="false"
+                                    aria-label="Projects">folder_open
                                 </mat-icon>
                             </button>
                         </ng-container>

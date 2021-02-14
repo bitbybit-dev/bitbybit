@@ -1,0 +1,17 @@
+<ng-container *ngIf="project">
+    <h2>Edit The Project "{{project.title}}"</h2>
+    <form *ngIf="form" [formGroup]="form" (submit)="submit()">
+        <div>
+            <mat-form-field color="accent" appearance="fill">
+                <mat-label>Title</mat-label>
+                <input required matInput formControlName="title">
+                <mat-error *ngIf="form.controls['title'].invalid">{{getErrorMessage()}}</mat-error>
+            </mat-form-field>
+            <mat-form-field color="accent" appearance="fill">
+                <mat-label>Description</mat-label>
+                <input required matInput formControlName="description">
+            </mat-form-field>
+        </div>
+        <button class="form-submit" mat-button mat-primary-button>Submit</button>
+    </form>
+</ng-container>

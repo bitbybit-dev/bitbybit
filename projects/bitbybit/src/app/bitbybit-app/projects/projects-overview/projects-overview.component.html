@@ -1,0 +1,245 @@
+<ng-container>
+    <h2>{{resources.bit_by_bit}} {{resources.app_menu_more_projects}}</h2>
+    <p>{{resources.app_menu_more_projects_explanation}}</p>
+    <ng-container *ngIf="projects">
+        <mat-accordion>
+            <ng-container *ngFor="let project of projects">
+                <mat-expansion-panel id="project-{{project.id}}">
+                    <mat-expansion-panel-header>
+                        <mat-panel-title>
+                            {{project.title}}
+                        </mat-panel-title>
+                        <span class="actions">
+                            <button mat-mini-fab aria-label="Edit project" (click)="projectEdit(project.id, $event)">
+                                <mat-icon>edit</mat-icon>
+                            </button>
+                            <button mat-mini-fab aria-label="Delete project"
+                                (click)="projectDelete(project.id, $event)">
+                                <mat-icon>delete</mat-icon>
+                            </button>
+                        </span>
+                    </mat-expansion-panel-header>
+                    <dl>
+                        <div>
+                            <dt>Description</dt>
+                            <dd>{{project.description}}</dd>
+                        </div>
+                        <div>
+                            <dt>Date Created</dt>
+                            <dd>{{project.date | date:'medium'}}</dd>
+                        </div>
+                        <div>
+                            <dt>Last Edit Date</dt>
+                            <dd>{{project.lastEditedDate | date:'medium'}}</dd>
+                        </div>
+                    </dl>
+                    <mat-card class="category">
+                        <mat-card-title>
+                            <h4>Blockly Scripts</h4>
+                            <span class="actions">
+                                <button mat-mini-fab aria-label="Add blockly script"
+                                    (click)="blocklyAdd(project.id)">
+                                    <mat-icon>add</mat-icon>
+                                </button>
+                            </span>
+                        </mat-card-title>
+                        <ng-container *ngIf="project.blockly && project.blockly.length > 0">
+                            <ng-container *ngFor="let bs of project.blockly">
+                                <mat-card>
+                                    <mat-card-title>
+                                        <h5>{{bs.title}}</h5>
+                                        <span class="actions">
+                                            <button mat-mini-fab aria-label="Launch Blockly script"
+                                                (click)="blocklyLaunch(project.id, bs.id)">
+                                                <mat-icon>launch</mat-icon>
+                                            </button>
+                                            <button mat-mini-fab aria-label="Edit Blockly Script"
+                                                (click)="blocklyEdit(project.id, bs.id)">
+                                                <mat-icon>edit</mat-icon>
+                                            </button>
+                                            <button mat-mini-fab aria-label="Delete Blockly Script"
+                                                (click)="blocklyDelete(bs.id, project.id)">
+                                                <mat-icon>delete</mat-icon>
+                                            </button>
+                                        </span>
+                                    </mat-card-title>
+                                    <mat-card-subtitle>
+                                        <div class="row">
+                                            <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+                                                <img class="script-image"
+                                                    [src]="bs.image ? bs.image : 'assets/image-placeholder.png'" />
+                                            </div>
+                                            <div class="col-12 col-sm-6 col-md-8 col-lg-9">
+                                                <dl>
+                                                    <div>
+                                                        <dt>Date Created</dt>
+                                                        <dd>{{bs.date | date:'medium'}}</dd>
+                                                    </div>
+                                                    <div>
+                                                        <dt>Last Edit Date</dt>
+                                                        <dd>{{bs.lastEditedDate | date:'medium'}}</dd>
+                                                    </div>
+                                                </dl>
+                                            </div>
+                                        </div>
+                                    </mat-card-subtitle>
+                                </mat-card>
+                            </ng-container>
+
+                        </ng-container>
+                        <ng-container *ngIf="!project.blockly || project.blockly.length === 0">
+                            <span class="empty-list">
+                                This project does not have any Blockly scripts yet. Click + button to
+                                add a new
+                                empty
+                                script to this
+                                project.
+                            </span>
+                        </ng-container>
+                    </mat-card>
+                    <br>
+                    <mat-card class="category">
+                        <mat-card-title>
+                            <h4>TypeScript Scripts</h4>
+                            <span class="actions">
+                                <button mat-mini-fab aria-label="Add new typescript" (click)="typescriptAdd(project.id)">
+                                    <mat-icon>add</mat-icon>
+                                </button>
+                            </span>
+                        </mat-card-title>
+                        <ng-container *ngIf="project.typescript && project.typescript.length > 0">
+                            <ng-container *ngFor="let ts of project.typescript">
+                                <mat-card>
+                                    <mat-card-title>
+                                        <h5>{{ts.title}}</h5>
+                                        <span class="actions">
+                                            <button mat-mini-fab aria-label="Launch TypeScript script"
+                                                (click)="typescriptLaunch(project.id, ts.id)">
+                                                <mat-icon>launch</mat-icon>
+                                            </button>
+                                            <button mat-mini-fab aria-label="Edit TypeScript script"
+                                                (click)="typescriptEdit(project.id, ts.id)">
+                                                <mat-icon>edit</mat-icon>
+                                            </button>
+                                            <button mat-mini-fab aria-label="Delete TypeScript script"
+                                                (click)="typescriptDelete(ts.id, project.id)">
+                                                <mat-icon>delete</mat-icon>
+                                            </button>
+                                        </span>
+                                    </mat-card-title>
+                                    <mat-card-subtitle>
+                                        <div class="row">
+                                            <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+                                                <img class="script-image"
+                                                    [src]="ts.image ? ts.image : 'assets/image-placeholder.png'" />
+                                            </div>
+                                            <div class="col-12 col-sm-6 col-md-8 col-lg-9">
+                                                <dl>
+                                                    <div>
+                                                        <dt>Date Created</dt>
+                                                        <dd>{{ts.date | date:'medium'}}</dd>
+                                                    </div>
+                                                    <div>
+                                                        <dt>Last Edit Date</dt>
+                                                        <dd>{{ts.lastEditedDate | date:'medium'}}</dd>
+                                                    </div>
+                                                </dl>
+                                            </div>
+                                        </div>
+                                    </mat-card-subtitle>
+                                </mat-card>
+                            </ng-container>
+                        </ng-container>
+                        <ng-container *ngIf="!project.typescript || project.typescript.length === 0">
+                            <span class="empty-list">
+                                This project does not have any TypeScript scripts yet. Click + button to
+                                add a new
+                                empty
+                                script to this
+                                project.
+                            </span>
+                        </ng-container>
+                    </mat-card>
+                    <br>
+                    <mat-card class="category">
+                        <mat-card-title>
+                            <h4>Assets</h4>
+                            <span class="actions">
+                                <button mat-mini-fab aria-label="Add new asset" (click)="assetAdd(project.id)">
+                                    <mat-icon>add</mat-icon>
+                                </button>
+                            </span>
+                        </mat-card-title>
+                        <ng-container *ngIf="project.assets && project.assets.length > 0">
+                            <ng-container *ngFor="let asset of project.assets">
+                                <mat-card>
+                                    <mat-card-title>
+                                        <h5>{{asset.title}}</h5>
+                                        <span class="actions">
+                                            <button mat-mini-fab aria-label="Delete the asset" (click)="assetDelete(asset.id, project.id)">
+                                                <mat-icon>delete</mat-icon>
+                                            </button>
+                                        </span>
+                                    </mat-card-title>
+                                    <mat-card-subtitle>
+                                        <dl>
+                                            <div>
+                                                <dt>Date Created</dt>
+                                                <dd>{{asset.date | date:'medium'}}</dd>
+                                            </div>
+                                            <div>
+                                                <dt>Last Edit Date</dt>
+                                                <dd>{{asset.lastEditedDate | date:'medium'}}</dd>
+                                            </div>
+                                            <div>
+                                                <dt>Asset Files</dt>
+                                                <dd>
+                                                    <dl class="file-list">
+                                                        <ng-container *ngFor="let file of asset.files; let i = index">
+                                                            <div>
+                                                                <dt>
+                                                                    File Name
+                                                                </dt>
+                                                                
+                                                                <dd>
+                                                                    {{file.name}}
+                                                                </dd>
+                                                            </div>
+                                                            <div>
+                                                                <dt>
+                                                                    File Size
+                                                                </dt>
+                                                                <dd>
+                                                                    {{file.size}} Bytes
+                                                                </dd>
+                                                            </div>
+                                                            <hr *ngIf="i !== asset.files.length - 1">
+                                                        </ng-container>
+                                                    </dl>
+                                                </dd>
+                                            </div>
+                                        </dl>
+                                    </mat-card-subtitle>
+                                </mat-card>
+                            </ng-container>
+                        </ng-container>
+                        <ng-container *ngIf="!project.assets || project.assets.length === 0">
+                            <span class="empty-list">
+                                This project does not have any assets yet. Click + button to upload a
+                                new asset to
+                                this
+                                project. Assets can be uploaded to this library and cached for the
+                                lifespan of the
+                                project. You can use assets in your scripts via our Assets API.
+                            </span>
+                        </ng-container>
+                    </mat-card>
+                </mat-expansion-panel>
+            </ng-container>
+        </mat-accordion>
+        <br>
+        <button mat-button (click)="projectNew()">New Project</button>
+        <!-- <button mat-button>Import Projects</button>
+        <button mat-button>Export Projects</button> -->
+    </ng-container>
+</ng-container>
