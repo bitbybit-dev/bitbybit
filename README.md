@@ -1,5 +1,5 @@
 # BitByBit
-Platform for programming geometry on the browser.
+This repo holds core 3D algorithms used in Bit by bit developers platform.
 
 Visit https://bitbybit.dev and start your journey.
 
