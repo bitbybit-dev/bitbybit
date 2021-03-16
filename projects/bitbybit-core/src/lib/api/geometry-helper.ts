@@ -10,7 +10,7 @@ export class GeometryHelper {
     constructor(private readonly context: Context) { }
 
     private readonly tolerance = 0.00001;
-    private readonly snapTolerance = 0.00001;
+    private readonly snapTolerance = 0.0000001;
 
     createOrUpdateSurfaceMesh(
         meshDataConverted: { positions: any[]; indices: any[]; normals: any[]; },
@@ -271,7 +271,7 @@ export class GeometryHelper {
 
     private snapVec3(v3): any {
         const tolerance = this.snapTolerance;
-        const x = -(Math.round(v3[0] / tolerance) * tolerance) + 0; // no more -0
+        const x = Math.round(v3[0] / tolerance) * tolerance + 0; // no more -0
         const y = Math.round(v3[1] / tolerance) * tolerance + 0; // no more -0
         const z = Math.round(v3[2] / tolerance) * tolerance + 0; // no more -0
         return this.context.jscad.maths.vec3.fromValues(x, y, z);
