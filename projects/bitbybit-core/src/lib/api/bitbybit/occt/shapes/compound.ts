@@ -19,7 +19,7 @@ export class OCCTCompound {
      * @param inputs OpenCascade shapes
      * @returns OpenCascade compounded shape
      */
-    makeCompound(inputs: Inputs.OCC.CompoundShapesDto): Promise<any> {
+    makeCompound(inputs: Inputs.OCCT.CompoundShapesDto): Promise<any> {
         return this.occWorkerManager.genericCallToWorkerPromise('makeCompound', inputs);
     }
 

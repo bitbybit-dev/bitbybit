@@ -30,8 +30,6 @@ var walk = function (dir, done) {
                     });
                 } else {
                     // do stuff to file here
-                    console.log(file);
-
                     try {  
                         var data = fs.readFileSync(file, 'utf8');
                         completeDeclarations += simplifyDeclaration(data.toString());

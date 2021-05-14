@@ -45,7 +45,8 @@ import { OCCTOperations } from './api/bitbybit/occt/operations';
 import { OCCTTransforms } from './api/bitbybit/occt/transforms';
 import { OCCTSolid } from './api/bitbybit/occt/shapes/solid';
 import { OCCTCompound } from './api/bitbybit/occt/shapes/compound';
-
+import { AssetManager } from './asset-manager';
+import { Asset } from './api/bitbybit/asset';
 @NgModule({
     declarations: [],
     imports: [
@@ -96,7 +97,9 @@ import { OCCTCompound } from './api/bitbybit/occt/shapes/compound';
         OCCTBooleans,
         OCCTIO,
         OCCTOperations,
-        OCCTWorkerManager
+        OCCTWorkerManager,
+        Asset,
+        AssetManager
     ],
     exports: []
 })

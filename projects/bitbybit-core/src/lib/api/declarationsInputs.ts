@@ -1,4 +1,15 @@
-export const inputDeclarations = `* from './vector-inputs';
+export const inputDeclarations = `declare namespace Asset {
+    class GetAssetDto {
+        /**
+         * Provide options without default values
+         */
+        constructor(fileName?: string);
+        /**
+         * The fileName associated with the projects asset
+         */
+        fileName: string;
+    }
+}* from './vector-inputs';
 * from './scene-inputs';
 * from './node-inputs';
 * from './transforms-inputs';
@@ -8,7 +19,8 @@ export const inputDeclarations = `* from './vector-inputs';
 * from './verb-inputs';
 * from './jscad-inputs';
 * from './tag-inputs';
-* from './occ-inputs';declare namespace JSCAD {
+* from './occ-inputs';
+* from './asset-inputs';declare namespace JSCAD {
     class DrawSolidMeshDto {
         /**
          * Provide options without default values
@@ -1063,7 +1075,7 @@ export const inputDeclarations = `* from './vector-inputs';
          */
         size: number;
     }
-}declare namespace OCC {
+}declare namespace OCCT {
     class DrawShapeDto {
         /**
          * Provide options without default values
@@ -1468,13 +1480,13 @@ export const inputDeclarations = `* from './vector-inputs';
         filename: string;
     }
     class ImportStepIgesDto {
-        constructor(assetName?: any);
+        constructor(assetFile?: File);
         /**
          * The name of the asset to store in the cache.
          */
-        assetName: string;
+        assetFile: File;
     }
-    class ImportStepOrIgesDto {
+    class LoadStepOrIgesDto {
         constructor(filetext?: any, filename?: string);
         /**
          * Shape to save

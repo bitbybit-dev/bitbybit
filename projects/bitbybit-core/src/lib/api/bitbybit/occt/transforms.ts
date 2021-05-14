@@ -19,7 +19,7 @@ export class OCCTTransforms {
      * @param inputs Transformation description
      * @returns OpenCascade shapes
      */
-    transform(inputs: Inputs.OCC.TransformDto): Promise<any> {
+    transform(inputs: Inputs.OCCT.TransformDto): Promise<any> {
         return this.occWorkerManager.genericCallToWorkerPromise('transform', inputs);
     }
 
@@ -33,7 +33,7 @@ export class OCCTTransforms {
      * @param inputs Rotation description
      * @returns OpenCascade shapes
      */
-    rotate(inputs: Inputs.OCC.RotateDto): Promise<any> {
+    rotate(inputs: Inputs.OCCT.RotateDto): Promise<any> {
         return this.occWorkerManager.genericCallToWorkerPromise('rotate', inputs);
     }
 
@@ -47,7 +47,7 @@ export class OCCTTransforms {
      * @param inputs Translation description
      * @returns OpenCascade shapes
      */
-    translate(inputs: Inputs.OCC.TranslateDto): Promise<any> {
+    translate(inputs: Inputs.OCCT.TranslateDto): Promise<any> {
         return this.occWorkerManager.genericCallToWorkerPromise('translate', inputs);
     }
 
@@ -60,7 +60,7 @@ export class OCCTTransforms {
      * @param inputs Scale description
      * @returns OpenCascade shapes
      */
-    scale(inputs: Inputs.OCC.ScaleDto): Promise<any> {
+    scale(inputs: Inputs.OCCT.ScaleDto): Promise<any> {
         return this.occWorkerManager.genericCallToWorkerPromise('scale', inputs);
     }
 

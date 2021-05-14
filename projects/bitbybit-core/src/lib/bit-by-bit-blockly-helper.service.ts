@@ -1,5 +1,4 @@
 import { HttpClient } from '@angular/common/http';
-import { Vector3, Mesh, Scene, Color3, MeshBuilder } from '@babylonjs/core';
 import { PrintSaveInterface } from './models/print-save.model';
 import { OBJFileLoader } from '@babylonjs/loaders';
 export class BitByBitBlocklyHelperService {
@@ -18,29 +17,21 @@ export class BitByBitBlocklyHelperService {
         loader: new OBJFileLoader(),
     };
 
-    static getFile(): Promise<string | ArrayBuffer> {
+    static getFile(file: File): Promise<string | ArrayBuffer> {
         return new Promise((resolve, reject) => {
-            const inputFileElement = document.getElementById('fileInput') as HTMLInputElement;
-            const fileInputLabel = document.getElementById('fileInputLabel') as HTMLInputElement;
-
-            inputFileElement.onchange = (e) => {
-                const file = inputFileElement.files[0];
-
-                if (file) {
-                    const reader = new FileReader();
-                    reader.readAsText(file, 'UTF-8');
-                    reader.onload = (evt) => {
-                        const text = evt.target.result;
-                        resolve(text);
-                    };
-                    reader.onerror = (evt) => {
-                        reject();
-                    };
-                } else {
+            if (file) {
+                const reader = new FileReader();
+                reader.readAsText(file, 'UTF-8');
+                reader.onload = (evt) => {
+                    const text = evt.target.result;
+                    resolve(text);
+                };
+                reader.onerror = (evt) => {
                     reject();
-                }
-            };
-            fileInputLabel.click();
+                };
+            } else {
+                reject();
+            }
         });
     }
 

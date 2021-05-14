@@ -9,3 +9,4 @@ export * from './verb-inputs';
 export * from './jscad-inputs';
 export * from './tag-inputs';
 export * from './occ-inputs';
+export * from './asset-inputs';

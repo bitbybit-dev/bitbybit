@@ -19,7 +19,7 @@ export class OCCTOperations {
      * @param inputs Circle parameters
      * @returns Resulting loft shell
      */
-    loft(inputs: Inputs.OCC.LoftDto): Promise<any> {
+    loft(inputs: Inputs.OCCT.LoftDto): Promise<any> {
         return this.occWorkerManager.genericCallToWorkerPromise('loft', inputs);
     }
 
@@ -32,7 +32,7 @@ export class OCCTOperations {
      * @param inputs Shape to offset and distance with tolerance
      * @returns Resulting offset shape
      */
-    offset(inputs: Inputs.OCC.OffsetDto): Promise<any> {
+    offset(inputs: Inputs.OCCT.OffsetDto): Promise<any> {
         return this.occWorkerManager.genericCallToWorkerPromise('offset', inputs);
     }
 
@@ -45,7 +45,7 @@ export class OCCTOperations {
      * @param inputs Shape to extrude and direction parameter with tolerance
      * @returns Resulting extruded shape
      */
-    extrude(inputs: Inputs.OCC.ExtrudeDto): Promise<any> {
+    extrude(inputs: Inputs.OCCT.ExtrudeDto): Promise<any> {
         return this.occWorkerManager.genericCallToWorkerPromise('extrude', inputs);
     }
 
@@ -58,7 +58,7 @@ export class OCCTOperations {
      * @param inputs Revolve parameters
      * @returns Resulting revolved shape
      */
-    revolve(inputs: Inputs.OCC.RevolveDto): Promise<any> {
+    revolve(inputs: Inputs.OCCT.RevolveDto): Promise<any> {
         return this.occWorkerManager.genericCallToWorkerPromise('revolve', inputs);
     }
 
@@ -71,7 +71,7 @@ export class OCCTOperations {
      * @param inputs Rotated extrusion inputs
      * @returns OpenCascade shape
      */
-    rotatedExtrude(inputs: Inputs.OCC.RotationExtrudeDto): Promise<any> {
+    rotatedExtrude(inputs: Inputs.OCCT.RotationExtrudeDto): Promise<any> {
         return this.occWorkerManager.genericCallToWorkerPromise('rotatedExtrude', inputs);
     }
 
@@ -84,7 +84,7 @@ export class OCCTOperations {
      * @param inputs Path wire and shapes along the path
      * @returns OpenCascade shape
      */
-    pipe(inputs: Inputs.OCC.PipeDto): Promise<any> {
+    pipe(inputs: Inputs.OCCT.PipeDto): Promise<any> {
         return this.occWorkerManager.genericCallToWorkerPromise('pipe', inputs);
     }
 
@@ -97,7 +97,7 @@ export class OCCTOperations {
      * @param inputs OpenCascade shape
      * @returns OpenCascade solid shape
      */
-    makeThickSolidSimple(inputs: Inputs.OCC.ThisckSolidSimpleDto): Promise<any> {
+    makeThickSolidSimple(inputs: Inputs.OCCT.ThisckSolidSimpleDto): Promise<any> {
         return this.occWorkerManager.genericCallToWorkerPromise('makeThickSolidSimple', inputs);
     }
 }

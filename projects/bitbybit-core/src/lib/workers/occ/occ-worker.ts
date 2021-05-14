@@ -22,11 +22,10 @@ type DataInput = {
     uid: string;
 };
 
-export const onMessageInput = ( d: DataInput , postMessage) => {
+export const onMessageInput = (d: DataInput, postMessage) => {
     postMessage('busy');
 
     let result;
-
     try {
         // Ok, so this is baked in memoization as all OCC computations are potentially very expensive
         // we can always return already computed entity hashes. On UI side we only deal with hashes as long
@@ -103,5 +102,4 @@ export const onMessageInput = ( d: DataInput , postMessage) => {
                 error: `OCC computation failed when executing function ${fun}. ${props}Original message: ${e}`
             });
     }
-
 };

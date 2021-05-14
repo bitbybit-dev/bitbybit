@@ -18,7 +18,7 @@ export class OCCTEdge {
      * @param inputs Shape, radius and edge indexes to fillet
      * @returns OpenCascade shape with filleted edges
      */
-    filletEdges(inputs: Inputs.OCC.FilletDto): Promise<any> {
+    filletEdges(inputs: Inputs.OCCT.FilletDto): Promise<any> {
         return this.occWorkerManager.genericCallToWorkerPromise('filletEdges', inputs);
     }
 
@@ -31,7 +31,7 @@ export class OCCTEdge {
      * @param inputs Shape, distance and edge indexes to fillet
      * @returns OpenCascade shape with filleted edges
      */
-    chamferEdges(inputs: Inputs.OCC.ChamferDto): Promise<any> {
+    chamferEdges(inputs: Inputs.OCCT.ChamferDto): Promise<any> {
         return this.occWorkerManager.genericCallToWorkerPromise('chamferEdges', inputs);
     }
 
@@ -41,7 +41,7 @@ export class OCCTEdge {
      * @param inputs Shape
      * @returns OpenCascade shape with no internal edges
      */
-    removeInternalEdges(inputs: Inputs.OCC.ShapeDto): Promise<any> {
+    removeInternalEdges(inputs: Inputs.OCCT.ShapeDto): Promise<any> {
         return this.occWorkerManager.genericCallToWorkerPromise('removeInternalEdges', inputs);
     }
 
@@ -54,7 +54,7 @@ export class OCCTEdge {
      * @param inputs Shape
      * @returns OpenCascade edge
      */
-    getEdge(inputs: Inputs.OCC.ShapeIndexDto): Promise<any> {
+    getEdge(inputs: Inputs.OCCT.ShapeIndexDto): Promise<any> {
         return this.occWorkerManager.genericCallToWorkerPromise('getEdge', inputs);
     }
 

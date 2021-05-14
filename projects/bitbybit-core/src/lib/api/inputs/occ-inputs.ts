@@ -1,6 +1,6 @@
 
 // tslint:disable-next-line: no-namespace
-export namespace OCC {
+export namespace OCCT {
     // Can't use BabylonJS types here as that crashes worker, which tries to include them
     export class DrawShapeDto {
         /**
@@ -507,16 +507,16 @@ export namespace OCC {
         filename: string;
     }
     export class ImportStepIgesDto {
-        constructor(assetName?: any) {
-            this.assetName = assetName;
+        constructor(assetFile?: File) {
+            this.assetFile = assetFile;
         }
         /**
          * The name of the asset to store in the cache.
          * This allows to store the imported objects for multiple run cycles in the cache
          */
-        assetName: string;
+        assetFile: File;
     }
-    export class ImportStepOrIgesDto {
+    export class LoadStepOrIgesDto {
         constructor(filetext?: any, filename?: string) {
             this.filetext = filetext;
             this.filename = filename;

@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, NgZone } from '@angular/core';
 import { Subject } from 'rxjs';
 import { OccInfo } from './occ-info';
 import { OccStateEnum } from './occ-state.enum';
@@ -11,12 +11,16 @@ import { OccStateEnum } from './occ-state.enum';
 export class OCCTWorkerManager {
 
     occWorkerState: Subject<OccInfo> = new Subject();
+    errorCallback: (err: string) => void;
     private occWorker: Worker;
     private promisesMade: { promise?: Promise<any>, uid: string, resolve?, reject?}[] = [];
-    private promisesResolved: string[] = [];
 
     constructor(
     ) {
+    }
+
+    occWorkerAlreadyInitialised(): boolean {
+        return this.occWorker ? true : false;
     }
 
     setOccWorker(worker: Worker): void {
@@ -36,10 +40,11 @@ export class OCCTWorkerManager {
                 if (promise && data.result && !data.error) {
                     promise.resolve(data.result);
                 } else if (data.error) {
+                    if (this.errorCallback) {
+                        this.errorCallback(data.error);
+                    }
                     promise.reject(data.error);
-                    alert(data.error);
                 }
-                this.promisesResolved.push(data.uid);
                 this.promisesMade = this.promisesMade.filter(i => i.uid !== data.uid);
 
                 if (this.promisesMade.length === 0) {

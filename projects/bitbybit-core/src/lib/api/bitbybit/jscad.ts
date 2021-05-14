@@ -254,9 +254,8 @@ export class JSCAD {
      */
     downloadSolidSTL(inputs: Inputs.JSCAD.DownloadSolidDto): void {
         const rawData = this.context.jscad.STLSERIALIZER.serialize({ binary: true },
-            this.geometryHelper.snapGeometry(
-                this.context.jscad.transforms.mirror({ normal: [1, 0, 0] }, inputs.solid)
-            ));
+            this.context.jscad.transforms.mirror({ normal: [1, 0, 0] }, inputs.solid)
+        );
         this.downloadSTL(rawData, inputs.fileName);
     }
 
@@ -271,10 +270,7 @@ export class JSCAD {
     downloadSolidsSTL(inputs: Inputs.JSCAD.DownloadSolidsDto): void {
         const rawData = this.context.jscad.STLSERIALIZER.serialize({ binary: true },
             ...inputs.solids.map(solid => {
-                const x = this.geometryHelper.snapGeometry(
-                    this.context.jscad.transforms.mirror({ normal: [1, 0, 0] }, solid)
-                );
-                return x;
+                return this.context.jscad.transforms.mirror({ normal: [1, 0, 0] }, solid);
             }));
         this.downloadSTL(rawData, inputs.fileName);
     }
