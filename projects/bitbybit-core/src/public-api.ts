@@ -15,3 +15,4 @@ export * from './lib/models/print-save.model';
 export * from './lib/workers/occ/occ-info';
 export * from './lib/workers/occ/occ-state.enum';
 export * from './lib/workers/occ/occ-worker-manager';
+export * from './lib/asset-manager';

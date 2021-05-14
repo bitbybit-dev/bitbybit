@@ -35,15 +35,15 @@
         "@babylonjs/gui": "4.2.0",
         "@babylonjs/loaders": "4.2.0",
         "@babylonjs/materials": "4.2.0",
-        "@jscad/io-utils": "2.0.0-alpha.10",
-        "@jscad/modeling": "2.0.0-alpha.10",
-        "@jscad/stl-serializer": "2.0.0-alpha.10",
+        "@jscad/io-utils": "2.0.0-alpha.11",
+        "@jscad/modeling": "2.0.0-alpha.11",
+        "@jscad/stl-serializer": "2.0.0-alpha.11",
         "@scullyio/init": "^1.0.0-beta.3",
         "@scullyio/ng-lib": "^1.0.0-beta.2",
         "@scullyio/scully": "^1.0.0-beta.2",
         "@types/simplebar": "^5.1.1",
-        "blockly": "4.20201217.0",
         "opencascade.js": "1.1.4",
+        "blockly": "4.20201217.0",
         "bootstrap": "4.5.2",
         "earcut": "2.2.2",
         "jsonpath": "1.0.2",
@@ -79,6 +79,8 @@
         "typescript": "~4.0.5",
         "typedoc": "0.20.14",
         "@microsoft/tsdoc": "0.12.24",
-        "@microsoft/tsdoc-config": "0.13.6"
+        "@microsoft/tsdoc-config": "0.13.6",
+        "@angular-devkit/architect": ">= 0.900 < 0.1200",
+        "file-loader": "6.2.0"
     }
 }

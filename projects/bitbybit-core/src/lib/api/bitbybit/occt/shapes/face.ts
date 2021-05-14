@@ -19,7 +19,7 @@ export class OCCTFace {
      * @param inputs OpenCascade wire shape and indication if face should be planar
      * @returns OpenCascade face shape
      */
-    createFaceFromWire(inputs: Inputs.OCC.FaceFromWireDto): Promise<any> {
+    createFaceFromWire(inputs: Inputs.OCCT.FaceFromWireDto): Promise<any> {
         return this.occWorkerManager.genericCallToWorkerPromise('createFaceFromWire', inputs);
     }
 
@@ -32,7 +32,7 @@ export class OCCTFace {
      * @param inputs Polygon points
      * @returns OpenCascade polygon face
      */
-    createPolygonFace(inputs: Inputs.OCC.PolygonDto): Promise<any> {
+    createPolygonFace(inputs: Inputs.OCCT.PolygonDto): Promise<any> {
         return this.occWorkerManager.genericCallToWorkerPromise('createPolygonFace', inputs);
     }
 
@@ -45,7 +45,7 @@ export class OCCTFace {
      * @param inputs Circle parameters
      * @returns OpenCascade circle face
      */
-    createCircleFace(inputs: Inputs.OCC.CircleDto): Promise<any> {
+    createCircleFace(inputs: Inputs.OCCT.CircleDto): Promise<any> {
         return this.occWorkerManager.genericCallToWorkerPromise('createCircleFace', inputs);
     }
 
@@ -58,7 +58,7 @@ export class OCCTFace {
      * @param inputs Shape
      * @returns OpenCascade face
      */
-    getFace(inputs: Inputs.OCC.ShapeIndexDto): Promise<any> {
+    getFace(inputs: Inputs.OCCT.ShapeIndexDto): Promise<any> {
         return this.occWorkerManager.genericCallToWorkerPromise('getFace', inputs);
     }
 }

@@ -43,7 +43,7 @@ export class OCCT {
      * @param inputs Contains a shape to be drawn and additional information
      * @returns BabylonJS Mesh
      */
-    drawShape(inputs: Inputs.OCC.DrawShapeDto): Promise<Mesh> {
+    drawShape(inputs: Inputs.OCCT.DrawShapeDto): Promise<Mesh> {
         return this.occWorkerManager.genericCallToWorkerPromise('shapeToMesh', inputs).then((fe: {
             faceList: {
                 face_index: number;
@@ -67,7 +67,7 @@ export class OCCT {
                         positions: face.vertex_coord,
                         normals: face.normal_coord,
                         indices: face.tri_indexes,
-                    }, dummy, false, inputs.faceOpacity, inputs.faceColour);
+                    }, dummy, false, inputs.faceOpacity, inputs.faceColour, false);
                     mesh.parent = shapeMesh;
                 });
             }

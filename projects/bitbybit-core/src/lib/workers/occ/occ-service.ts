@@ -10,7 +10,7 @@ export class Occ {
         private readonly och: OccHelper) {
     }
 
-    createPolygonWire(inputs: Inputs.OCC.PolygonDto): any {
+    createPolygonWire(inputs: Inputs.OCCT.PolygonDto): any {
         const gpPoints = [];
         for (let ind = 0; ind < inputs.points.length; ind++) {
             gpPoints.push(this.och.gpPnt(inputs.points[ind]));
@@ -34,15 +34,15 @@ export class Occ {
         return polygonWire.Wire();
     }
 
-    createPolygonFace(inputs: Inputs.OCC.PolygonDto): any {
+    createPolygonFace(inputs: Inputs.OCCT.PolygonDto): any {
         return this.och.bRepBuilderAPIMakeFace(this.createPolygonWire(inputs), false);
     }
 
-    createBox(inputs: Inputs.OCC.BoxDto): any {
+    createBox(inputs: Inputs.OCCT.BoxDto): any {
         return this.och.bRepPrimAPIMakeBox(inputs.width, inputs.length, inputs.height, inputs.center);
     }
 
-    createCylinder(inputs: Inputs.OCC.CylinderDto): any {
+    createCylinder(inputs: Inputs.OCCT.CylinderDto): any {
         return this.och.bRepPrimAPIMakeCylinder(
             [inputs.center[0], -inputs.height / 2 + inputs.center[1], inputs.center[2]],
             [0., 1., 0.],
@@ -51,7 +51,21 @@ export class Occ {
         );
     }
 
-    createBSpline(inputs: Inputs.OCC.BSplineDto): any {
+    // createInterpolation(inputs: Inputs.OCCT.BSplineDto): any {
+    //     // ToDo unaccessible api, git issue opened on opencascade.js GeomAPI_Interpolate
+    //     const ptList = new this.occ.TColgp_Array1OfPnt_2(1, inputs.points.length + (inputs.closed ? 1 : 0));
+    //     for (let pIndex = 1; pIndex <= inputs.points.length; pIndex++) {
+    //         ptList.SetValue(pIndex, this.och.gpPnt(inputs.points[pIndex - 1]));
+    //     }
+    //     if (inputs.closed) { ptList.SetValue(inputs.points.length + 1, ptList.Value(1)); }
+    //     const geomCurveHandle = new this.occ.GeomAPI_Interpolate_1(ptList, true, 1.0e-3);
+    //     const edge = new this.occ.BRepBuilderAPI_MakeEdge_24(
+    //         new this.occ.Handle_Geom_Curve_2(geomCurveHandle.Curve().get())
+    //     ).Edge();
+    //     return new this.occ.BRepBuilderAPI_MakeWire_2(edge).Wire();
+    // }
+
+    createBSpline(inputs: Inputs.OCCT.BSplineDto): any {
         const ptList = new this.occ.TColgp_Array1OfPnt_2(1, inputs.points.length + (inputs.closed ? 1 : 0));
         for (let pIndex = 1; pIndex <= inputs.points.length; pIndex++) {
             ptList.SetValue(pIndex, this.och.gpPnt(inputs.points[pIndex - 1]));
@@ -66,7 +80,7 @@ export class Occ {
         return new this.occ.BRepBuilderAPI_MakeWire_2(edge).Wire();
     }
 
-    createBezier(inputs: Inputs.OCC.BezierDto): any {
+    createBezier(inputs: Inputs.OCCT.BezierDto): any {
         const ptList = new this.occ.TColgp_Array1OfPnt_2(1, inputs.points.length + (inputs.closed ? 1 : 0));
         for (let pIndex = 1; pIndex <= inputs.points.length; pIndex++) {
             ptList.SetValue(pIndex, this.och.gpPnt(inputs.points[pIndex - 1]));
@@ -80,22 +94,22 @@ export class Occ {
         return new this.occ.BRepBuilderAPI_MakeWire_2(edge).Wire();
     }
 
-    createCircleWire(inputs: Inputs.OCC.CircleDto): any {
+    createCircleWire(inputs: Inputs.OCCT.CircleDto): any {
         return this.createCircle(inputs.radius, inputs.center, true);
     }
 
-    createCircleFace(inputs: Inputs.OCC.CircleDto): any {
+    createCircleFace(inputs: Inputs.OCCT.CircleDto): any {
         return this.createCircle(inputs.radius, inputs.center, false);
     }
 
-    loft(inputs: Inputs.OCC.LoftDto): any {
+    loft(inputs: Inputs.OCCT.LoftDto): any {
         const pipe = new this.occ.BRepOffsetAPI_ThruSections(inputs.makeSolid, false, 1.0e-06);
         inputs.shapes.forEach((wire) => { pipe.AddWire(wire); });
         pipe.Build();
         return pipe.Shape();
     }
 
-    offset(inputs: Inputs.OCC.OffsetDto): any {
+    offset(inputs: Inputs.OCCT.OffsetDto): any {
         if (!inputs.tolerance) { inputs.tolerance = 0.1; }
         if (inputs.distance === 0.0) { return inputs.shape; }
         let offset = null;
@@ -132,7 +146,7 @@ export class Occ {
         return offsetShape;
     }
 
-    extrude(inputs: Inputs.OCC.ExtrudeDto): any {
+    extrude(inputs: Inputs.OCCT.ExtrudeDto): any {
         return new this.occ.BRepPrimAPI_MakePrism_1(
             inputs.shape,
             new this.occ.gp_Vec_4(inputs.direction[0], inputs.direction[1], inputs.direction[2]),
@@ -141,12 +155,12 @@ export class Occ {
         ).Shape();
     }
 
-    createFaceFromWire(inputs: Inputs.OCC.FaceFromWireDto): any {
+    createFaceFromWire(inputs: Inputs.OCCT.FaceFromWireDto): any {
         const wire = new this.occ.TopoDS.Wire_1(inputs.shape);
         return this.och.bRepBuilderAPIMakeFace(wire, inputs.planar);
     }
 
-    revolve(inputs: Inputs.OCC.RevolveDto): any {
+    revolve(inputs: Inputs.OCCT.RevolveDto): any {
         if (!inputs.angle) { inputs.angle = 360.0; }
         if (!inputs.direction) { inputs.direction = [0, 0, 1]; }
         let result;
@@ -164,7 +178,7 @@ export class Occ {
         return result;
     }
 
-    pipe(inputs: Inputs.OCC.PipeDto): any {
+    pipe(inputs: Inputs.OCCT.PipeDto): any {
         const pipe = new this.occ.BRepOffsetAPI_MakePipeShell(inputs.shape);
         inputs.shapes.forEach(sh => {
             pipe.Add_1(sh, false, false);
@@ -174,16 +188,16 @@ export class Occ {
         return pipe.Shape();
     }
 
-    createSphere(inputs: Inputs.OCC.SphereDto): any {
+    createSphere(inputs: Inputs.OCCT.SphereDto): any {
         return this.och.bRepPrimAPIMakeSphere(inputs.center, [0., 0., 1.], inputs.radius);
     }
 
-    createCone(inputs: Inputs.OCC.ConeDto): any {
+    createCone(inputs: Inputs.OCCT.ConeDto): any {
         return new this.occ.BRepPrimAPI_MakeCone_1(inputs.radius1, inputs.radius2, inputs.height).Shape();
     }
 
 
-    filletEdges(inputs: Inputs.OCC.FilletDto): any {
+    filletEdges(inputs: Inputs.OCCT.FilletDto): any {
         if (!inputs.edgeList || (inputs.edgeList.length && inputs.edgeList.length === 0)) {
             const mkFillet = new this.occ.BRepFilletAPI_MakeFillet(
                 inputs.shape, this.occ.ChFi3d_FilletShape.ChFi3d_Rational
@@ -198,7 +212,7 @@ export class Occ {
             }
             inputs.shape = mkFillet.Shape();
             return inputs.shape;
-        } else if(inputs.edgeList && inputs.edgeList.length > 0) {
+        } else if (inputs.edgeList && inputs.edgeList.length > 0) {
             const mkFillet = new this.occ.BRepFilletAPI_MakeFillet(
                 inputs.shape, this.occ.ChFi3d_FilletShape.ChFi3d_Rational
             );
@@ -220,7 +234,7 @@ export class Occ {
         }
     }
 
-    chamferEdges(inputs: Inputs.OCC.ChamferDto): any {
+    chamferEdges(inputs: Inputs.OCCT.ChamferDto): any {
         if (!inputs.edgeList || (inputs.edgeList.length && inputs.edgeList.length === 0)) {
             const mkChamfer = new this.occ.BRepFilletAPI_MakeChamfer(
                 inputs.shape
@@ -235,7 +249,7 @@ export class Occ {
             }
             inputs.shape = mkChamfer.Shape();
             return inputs.shape;
-        } else if (inputs.edgeList && inputs.edgeList.length > 0){
+        } else if (inputs.edgeList && inputs.edgeList.length > 0) {
             const mkChamfer = new this.occ.BRepFilletAPI_MakeChamfer(
                 inputs.shape
             );
@@ -268,7 +282,7 @@ export class Occ {
      * @param inputs Objects to join
      * @returns OpenCascade joined shape
      */
-    union(inputs: Inputs.OCC.UnionDto): any {
+    union(inputs: Inputs.OCCT.UnionDto): any {
         let combined = inputs.shapes[0];
         for (let i = 0; i < inputs.shapes.length; i++) {
             const combinedFuse = new this.occ.BRepAlgoAPI_Fuse_3(combined, inputs.shapes[i]);
@@ -285,7 +299,18 @@ export class Occ {
         return combined;
     }
 
-    difference(inputs: Inputs.OCC.DifferenceDto): any {
+    basicDifferenceTest(inputs: any) {
+        const pt1 = new this.occ.gp_Pnt_3(0, 0, 0);
+        const x1 = new this.occ.BRepPrimAPI_MakeBox_2(pt1, 1, 2, 3).Shape();
+        const pt2 = new this.occ.gp_Pnt_3(0, 1, 0);
+        const x2 = new this.occ.BRepPrimAPI_MakeBox_2(pt2, 1, 1, 1).Shape();
+
+        const differenceCut = new this.occ.BRepAlgoAPI_Cut_3(x1, x2);
+        differenceCut.Build();
+        const resShape = differenceCut.Shape();
+    }
+
+    difference(inputs: Inputs.OCCT.DifferenceDto): any {
         let difference = inputs.shape;
         const objectsToSubtract = inputs.shapes;
         for (let i = 0; i < objectsToSubtract.length; i++) {
@@ -308,7 +333,7 @@ export class Occ {
         return difference;
     }
 
-    intersection(inputs: Inputs.OCC.IntersectionDto): any {
+    intersection(inputs: Inputs.OCCT.IntersectionDto): any {
         if (inputs.shapes.length < 2) {
             throw (new Error('Less than 2 shapes provided for intersection'));
         }
@@ -329,13 +354,13 @@ export class Occ {
         return intersected;
     }
 
-    removeInternalEdges(inputs: Inputs.OCC.ShapeDto): any {
+    removeInternalEdges(inputs: Inputs.OCCT.ShapeDto): any {
         const fusor = new this.occ.ShapeUpgrade_UnifySameDomain_2(inputs.shape, true, true, false);
         fusor.Build();
         return fusor.Shape();
     }
 
-    getEdge(inputs: Inputs.OCC.ShapeIndexDto): any {
+    getEdge(inputs: Inputs.OCCT.ShapeIndexDto): any {
         if (!inputs.shape || inputs.shape.ShapeType() > this.occ.TopAbs_ShapeEnum.TopAbs_WIRE || inputs.shape.IsNull()) {
             throw (new Error('Shape is not provided or is of incorrect type'));
         }
@@ -347,7 +372,7 @@ export class Occ {
         return innerEdge;
     }
 
-    getWire(inputs: Inputs.OCC.ShapeIndexDto): any {
+    getWire(inputs: Inputs.OCCT.ShapeIndexDto): any {
         if (!inputs.shape || inputs.shape.ShapeType() > this.occ.TopAbs_ShapeEnum.TopAbs_FACE || inputs.shape.IsNull()) {
             throw (new Error('Shape is not provided or is of incorrect type'));
         }
@@ -359,7 +384,7 @@ export class Occ {
         return innerWire;
     }
 
-    getFace(inputs: Inputs.OCC.ShapeIndexDto): any {
+    getFace(inputs: Inputs.OCCT.ShapeIndexDto): any {
         if (!inputs.shape || inputs.shape.ShapeType() > this.occ.TopAbs_ShapeEnum.TopAbs_SHELL || inputs.shape.IsNull()) {
             throw (new Error('Shape is not provided or is of incorrect type'));
         }
@@ -371,7 +396,7 @@ export class Occ {
         return innerFace;
     }
 
-    rotatedExtrude(inputs: Inputs.OCC.RotationExtrudeDto): any {
+    rotatedExtrude(inputs: Inputs.OCCT.RotationExtrudeDto): any {
         const upperPolygon = this.rotate(
             {
                 axis: [0, 1, 0],
@@ -519,35 +544,36 @@ export class Occ {
             thisFace.number_of_triangles = validFaceTriCount;
             faceList.push(thisFace);
 
-            this.forEachEdge(myFace, (index, myEdge) => {
-                const edgeHash = myEdge.HashCode(100000000);
-                if (fullShapeEdgeHashes2.hasOwnProperty(edgeHash)) {
-                    const thisEdge = {
-                        vertex_coord: [],
-                        edge_index: -1
-                    };
+            // this.forEachEdge(myFace, (index, myEdge) => {
+            //     const edgeHash = myEdge.HashCode(100000000);
+            //     if (fullShapeEdgeHashes2.hasOwnProperty(edgeHash)) {
+            //         const thisEdge = {
+            //             vertex_coord: [],
+            //             edge_index: -1
+            //         };
 
-                    const myP = this.occ.BRep_Tool.PolygonOnTriangulation_1(myEdge, myT, aLocation);
-                    const edgeNodes = myP.get().Nodes();
+            //         const myP = this.occ.BRep_Tool.PolygonOnTriangulation_1(myEdge, myT, aLocation);
+            //         const edgeNodes = myP.get().Nodes();
 
-                    // write vertex buffer
-                    thisEdge.vertex_coord = [];
-                    for (let j = 0; j < edgeNodes.Length(); j++) {
-                        const vertexIndex = edgeNodes.Value(j + 1);
-                        thisEdge.vertex_coord.push([
-                            thisFace.vertex_coord[((vertexIndex - 1) * 3) + 0],
-                            thisFace.vertex_coord[((vertexIndex - 1) * 3) + 1],
-                            thisFace.vertex_coord[((vertexIndex - 1) * 3) + 2]
-                        ]);
-                    }
+            //         // write vertex buffer
+            //         thisEdge.vertex_coord = [];
+            //         for (let j = 0; j < edgeNodes.Length(); j++) {
+            //             const vertexIndex = edgeNodes.Value(j + 1);
+            //             thisEdge.vertex_coord.push([
+            //                 thisFace.vertex_coord[((vertexIndex - 1) * 3) + 0],
+            //                 thisFace.vertex_coord[((vertexIndex - 1) * 3) + 1],
+            //                 thisFace.vertex_coord[((vertexIndex - 1) * 3) + 2]
+            //             ]);
+            //         }
 
-                    thisEdge.edge_index = index;
+            //         console.log('haha ', index);
+            //         thisEdge.edge_index = index;
 
-                    edgeList.push(thisEdge);
-                } else {
-                    fullShapeEdgeHashes2[edgeHash] = edgeHash;
-                }
-            });
+            //         edgeList.push(thisEdge);
+            //     } else {
+            //         fullShapeEdgeHashes2[edgeHash] = edgeHash;
+            //     }
+            // });
             triangulations.push(myT);
         });
         // Nullify Triangulations between runs so they're not stored in the cache
@@ -578,7 +604,6 @@ export class Occ {
                         vertex.Z()
                     ]);
                 }
-
                 thisEdge.edge_index = index;
                 fullShapeEdgeHashes2[edgeHash] = edgeHash;
 
@@ -588,7 +613,7 @@ export class Occ {
         return { faceList, edgeList };
     }
 
-    transform(inputs: Inputs.OCC.TransformDto): any {
+    transform(inputs: Inputs.OCCT.TransformDto): any {
         return this.translate(
             {
                 translation: inputs.translation,
@@ -604,14 +629,14 @@ export class Occ {
         );
     }
 
-    translate(inputs: Inputs.OCC.TranslateDto): any {
+    translate(inputs: Inputs.OCCT.TranslateDto): any {
         const transformation = new this.occ.gp_Trsf_1();
         transformation.SetTranslation_1(new this.occ.gp_Vec_4(inputs.translation[0], inputs.translation[1], inputs.translation[2]));
         const translation = new this.occ.TopLoc_Location_2(transformation);
         return inputs.shape.Moved(translation);
     }
 
-    rotate(inputs: Inputs.OCC.RotateDto): any {
+    rotate(inputs: Inputs.OCCT.RotateDto): any {
         let rotated;
         if (inputs.angle === 0) {
             rotated = inputs.shape;
@@ -631,7 +656,7 @@ export class Occ {
         return rotated;
     }
 
-    scale(inputs: Inputs.OCC.ScaleDto): any {
+    scale(inputs: Inputs.OCCT.ScaleDto): any {
         const transformation = new this.occ.gp_Trsf_1();
         const gpPnt = this.och.gpPnt([0, 0, 0]);
         transformation.SetScale(gpPnt, inputs.factor);
@@ -639,7 +664,7 @@ export class Occ {
         return inputs.shape.Moved(scaling);
     }
 
-    saveShapeSTEP(inputs: Inputs.OCC.SaveStepDto): string {
+    saveShapeSTEP(inputs: Inputs.OCCT.SaveStepDto): string {
         inputs.filename = 'x';
         const writer = new this.occ.STEPControl_Writer_1();
         // Convert to a .STEP File
@@ -662,7 +687,7 @@ export class Occ {
         }
     }
 
-    makeCompound(inputs: Inputs.OCC.CompoundShapesDto): any {
+    makeCompound(inputs: Inputs.OCCT.CompoundShapesDto): any {
         const resCompound = new this.occ.TopoDS_Compound();
         const builder = new this.occ.BRep_Builder();
         builder.MakeCompound(resCompound);
@@ -672,7 +697,7 @@ export class Occ {
         return resCompound;
     }
 
-    makeThickSolidSimple(inputs: Inputs.OCC.ThisckSolidSimpleDto): any {
+    makeThickSolidSimple(inputs: Inputs.OCCT.ThisckSolidSimpleDto): any {
         const maker = new this.occ.BRepOffsetAPI_MakeThickSolid_1();
         maker.MakeThickSolidBySimple(inputs.shape, inputs.offset);
 
@@ -683,12 +708,13 @@ export class Occ {
     /** This function parses the ASCII contents of a `.STEP` or `.IGES`
      * File as a Shape into the `externalShapes` dictionary.
      */
-    importSTEPorIGES(inputs: Inputs.OCC.ImportStepOrIgesDto): any {
+    loadSTEPorIGES(inputs: Inputs.OCCT.LoadStepOrIgesDto): any {
         const fileName = inputs.filename;
         const fileText = inputs.filetext;
 
+        const fileForEmscripten = 'x';
         // Writes the uploaded file to Emscripten's Virtual Filesystem
-        this.occ.FS.createDataFile('/', fileName, fileText, true, true);
+        this.occ.FS.createDataFile('/', fileForEmscripten, fileText, true, true);
 
         // Choose the correct OpenCascade file parsers to read the CAD file
         let reader = null; const tempFilename = fileName.toLowerCase();
@@ -698,12 +724,12 @@ export class Occ {
             reader = new this.occ.IGESControl_Reader_1();
         } else { console.error('opencascade.js can\'t parse this extension! (yet)'); }
 
-        const readResult = reader.ReadFile(fileName);            // Read the file
+        const readResult = reader.ReadFile(fileForEmscripten);            // Read the file
         if (readResult.value === 1) {
             reader.TransferRoots();                              // Translate all transferable roots to OpenCascade
             const stepShape = reader.OneShape();         // Obtain the results of translation in one OCCT shape
 
-            this.occ.FS.unlink('/' + fileName);
+            this.occ.FS.unlink('/' + fileForEmscripten);
 
             return stepShape;
         } else {
@@ -784,7 +810,8 @@ export class Occ {
             const edgeHash = edge.HashCode(100000000);
             if (!edgeHashes.hasOwnProperty(edgeHash)) {
                 edgeHashes[edgeHash] = edgeIndex;
-                callback(edgeIndex++, edge);
+                edgeIndex = edgeIndex += 1;
+                callback(edgeIndex, edge);
             }
         }
         return edgeHashes;

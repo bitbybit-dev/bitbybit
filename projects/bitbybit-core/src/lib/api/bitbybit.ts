@@ -11,6 +11,7 @@ import { JSCAD } from './bitbybit/jscad';
 import { Tag } from './bitbybit/tag';
 import { Time } from './bitbybit/time';
 import { OCCT } from './bitbybit/occt/occt';
+import { Asset } from './bitbybit/asset';
 
 @Injectable()
 export class BitByBitBase {
@@ -27,6 +28,7 @@ export class BitByBitBase {
         public readonly tag: Tag,
         public readonly time: Time,
         public readonly occt: OCCT,
+        public readonly asset: Asset,
     ) {
     }
 }

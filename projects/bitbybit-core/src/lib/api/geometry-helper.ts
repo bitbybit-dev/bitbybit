@@ -14,7 +14,7 @@ export class GeometryHelper {
 
     createOrUpdateSurfaceMesh(
         meshDataConverted: { positions: any[]; indices: any[]; normals: any[]; },
-        mesh: Mesh, updatable: boolean, opacity: number, colour: string
+        mesh: Mesh, updatable: boolean, opacity: number, colour: string, doubleSided: boolean
     ): Mesh {
         const createMesh = () => {
             const vertexData = new VertexData();
@@ -41,6 +41,7 @@ export class GeometryHelper {
         pbr.alpha = opacity;
         pbr.alphaMode = 1;
         pbr.backFaceCulling = false;
+        pbr.doubleSided = doubleSided;
         pbr.zOffset = 2;
         mesh.material = pbr;
         mesh.isPickable = false;

@@ -19,7 +19,7 @@ export class OCCTSolid {
      * @param inputs Box size and center
      * @returns OpenCascade Box
      */
-    createBox(inputs: Inputs.OCC.BoxDto): Promise<any> {
+    createBox(inputs: Inputs.OCCT.BoxDto): Promise<any> {
         return this.occWorkerManager.genericCallToWorkerPromise('createBox', inputs);
     }
 
@@ -32,7 +32,7 @@ export class OCCTSolid {
      * @param inputs Cylinder parameters
      * @returns OpenCascade Cylinder
      */
-    createCylinder(inputs: Inputs.OCC.CylinderDto): Promise<any> {
+    createCylinder(inputs: Inputs.OCCT.CylinderDto): Promise<any> {
         return this.occWorkerManager.genericCallToWorkerPromise('createCylinder', inputs);
     }
 
@@ -45,7 +45,7 @@ export class OCCTSolid {
      * @param inputs Sphere radius and center
      * @returns OpenCascade Sphere
      */
-    createSphere(inputs: Inputs.OCC.SphereDto): Promise<any> {
+    createSphere(inputs: Inputs.OCCT.SphereDto): Promise<any> {
         return this.occWorkerManager.genericCallToWorkerPromise('createSphere', inputs);
     }
 
@@ -58,7 +58,11 @@ export class OCCTSolid {
      * @param inputs Cone parameters
      * @returns OpenCascade cone shape
      */
-    createCone(inputs: Inputs.OCC.ConeDto): Promise<any> {
+    createCone(inputs: Inputs.OCCT.ConeDto): Promise<any> {
         return this.occWorkerManager.genericCallToWorkerPromise('createCone', inputs);
     }
+
+    // basicDifferenceTest(inputs: any): Promise<any> {
+    //     return this.occWorkerManager.genericCallToWorkerPromise('basicDifferenceTest', inputs);
+    // }
 }

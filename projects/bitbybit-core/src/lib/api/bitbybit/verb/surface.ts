@@ -58,7 +58,8 @@ export class VerbSurface {
             inputs.surfaceMesh,
             inputs.updatable,
             inputs.opacity,
-            inputs.colour
+            inputs.colour,
+            true,
         );
     }
 
@@ -95,7 +96,8 @@ export class VerbSurface {
             inputs.surfacesMesh,
             inputs.updatable,
             inputs.opacity,
-            inputs.colour
+            inputs.colour,
+            true
         );
     }
 
@@ -477,7 +479,7 @@ export class VerbSurface {
         meshData: any,
         meshDataConverted: { positions: number[]; indices: number[]; normals: number[]; },
         countIndices: number): number {
-        faceIndices.forEach((x) => {
+        faceIndices.reverse().forEach((x) => {
             const vn = meshData.normals[x];
             meshDataConverted.normals.push(vn[0], vn[1], vn[2]);
             const pt = meshData.points[x];

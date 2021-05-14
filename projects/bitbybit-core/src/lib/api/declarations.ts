@@ -21,6 +21,7 @@ export const typescriptDeclarations = `
                 readonly tag: Tag;
                 readonly time: Time;
                 readonly occt: OCCT;
+                readonly asset: Asset;
             }
         }
         `;

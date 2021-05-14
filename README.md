@@ -1,17 +1,23 @@
-# BitByBit
-Platform for programming geometry on the browser.
+# Bit by bit developers core library
+This project contains core 3D algorithms of Bit by bit developers platform which are open-sourced under MIT license. This library was previously UI dependant and is now separated to ensure protection of our corporate identity and cloud services. Currently it is still dependant on Angular, but this will change in the future and we will be providing example app that will show you how this code could be integrated in your own projects.
 
-Visit https://bitbybit.dev and start your journey.
+Visit https://bitbybit.dev to use our full application.
 
-# About
-BitByBit is an open source, frictionless web platform that allows creators to program geometry through simple visual programming language or choose monaco typescript editor with full intellisense of bitbybit API. This tool is great for all ages and can fulfil many artistic, educational, and practical needs of its users. Through familiar programming interface used in tools such as Scratch and Blockly.Games we expose powerful 3D algorithms that make it easier to implement various parametric tasks. Our goal is to make it very simple for users to share their ideas and designs by just exporting and importing scripts, uploading designs, and participating in lively discussions on Discord. We want to encourage everyone to engage in the future of this tool.
-
-## Development
-Programming language that was implemented in BitByBit platform consists of basic building blocks that can compose various 3D shapes. Starting from simple points, lines and going into NURBS curves, surfaces and solid meshes. This model allows creators to learn by experimenting. 3D environment that is integrated in the platform provides instant feedback and gratification, which inspires users to grow and innovate.
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
+# Media Channels
+Discord: https://discord.gg/GSe3VMe
+Youtube: https://www.youtube.com/channel/UCWM0...
+Instagram: https://www.instagram.com/bitbybit.dev
+Twitter: https://twitter.com/bitbybit_dev
+LinkedIn: https://lnkd.in/gQjEQA2
+Facebook: https://www.facebook.com/bitbybitdev
+Medium: https://bitbybit-dev.medium.com/
+Patreon: https://www.patreon.com/bitbybitdev
 
 # Principles
-BitByBit will always keep it's Core free and opensource for its users. Principles of minimalism and simplicity are reflected in all of the design decisions we make. Application itself is frictionless, users don't need to create accounts or install browser plugins. https://bitbybit.dev/app immediately starts the empty canvas for your code and an empty 3D world. All Core algorithms will always remain opensource and will not require any backend based server  infrastructure. This will allow application to be used on various devices.
+Bit by bit developers company will keep these core algorithms that you can find in this repository free and opensource for its users. These algorithms are based on other open-source projects, run and are deployed on the browser, thus there is no point of closing them down from public.
+
+# About Bit by bit developers platform
+Bit by bit developers web platform allows creators to program geometry through simple visual programming language or choose monaco typescript editor with full intellisense of bitbybit API. This cloud platform can fulfil many practical, educational and artistic needs of its users. Through familiar programming interface used in tools such as Scratch and Blockly.Games we expose powerful 3D algorithms that make it easier to implement various parametric tasks. Our goal is to make it very simple for users to share their ideas and designs. We want to encourage everyone to engage in the future of this tool.
 
 # Major Dependencies
-BabylonJS, Blockly, OpenCascade, JSCAD, Verbnurbs
+BabylonJS, Blockly, OpenCascade Technology, JSCAD, Verbnurbs
