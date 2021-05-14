@@ -4,14 +4,14 @@ This project contains core 3D algorithms of Bit by bit developers platform which
 Visit https://bitbybit.dev to use our full application.
 
 # Media Channels
-Discord: https://discord.gg/GSe3VMe
-Youtube: https://www.youtube.com/channel/UCWM0...
-Instagram: https://www.instagram.com/bitbybit.dev
-Twitter: https://twitter.com/bitbybit_dev
-LinkedIn: https://lnkd.in/gQjEQA2
-Facebook: https://www.facebook.com/bitbybitdev
-Medium: https://bitbybit-dev.medium.com/
-Patreon: https://www.patreon.com/bitbybitdev
+Discord: https://discord.gg/GSe3VMe  
+Youtube: https://www.youtube.com/channel/UCWM0VODRsLYOjB2IAaFHBSQ  
+Instagram: https://www.instagram.com/bitbybit.dev  
+Twitter: https://twitter.com/bitbybit_dev  
+LinkedIn: https://lnkd.in/gQjEQA2  
+Facebook: https://www.facebook.com/bitbybitdev  
+Medium: https://bitbybit-dev.medium.com/  
+Patreon: https://www.patreon.com/bitbybitdev  
 
 # Principles
 Bit by bit developers company will keep these core algorithms that you can find in this repository free and opensource for its users. These algorithms are based on other open-source projects, run and are deployed on the browser, thus there is no point of closing them down from public.
