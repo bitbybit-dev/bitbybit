@@ -1,0 +1,21 @@
+/* To learn more about this file see: https://angular.io/config/tsconfig. */
+{
+    "compileOnSave": false,
+    "compilerOptions": {
+        "outDir": "./dist/bitbybit-core",
+        "sourceMap": false,
+        "declaration": true,
+        "downlevelIteration": true,
+        "experimentalDecorators": true,
+        "moduleResolution": "node",
+        "skipLibCheck": true,
+        "target": "es2015",
+        "module": "es2020",
+        "allowJs": true,
+        "emitDeclarationOnly": false,
+        "lib": [
+            "es2020",
+            "dom"
+        ],
+    }
+}
