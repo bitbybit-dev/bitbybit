@@ -1,6 +1,6 @@
 {
     "name": "bitbybit-core",
-    "version": "0.0.4",
+    "version": "0.0.5",
     "description": "Bit by bit developers core api",
     "main": "index.js",
     "repository": {

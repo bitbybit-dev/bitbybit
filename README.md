@@ -1,12 +1,16 @@
 # Bit by bit developers core library
 This project contains core 3D algorithms of Bit by bit developers platform which are open-sourced under MIT license. This library was previously UI dependant and is now separated to ensure protection of our corporate identity and cloud services.  
 
-Visit https://bitbybit.dev to use our full application.  
+Visit https://bitbybit.dev to use our full cloud platform.
 
 # Github
 https://github.com/bitbybit-dev/bitbybit  
 # NPM
 https://www.npmjs.com/package/bitbybit-core  
+
+# Example Applications
+https://laptop-holder.bitbybit.dev  
+Github Source Code - https://github.com/bitbybit-dev/app-examples/tree/main/angular/laptop-holder  
 
 # Build package
 tsc -p tsconfig.bitbybit.json  
