@@ -83,25 +83,25 @@ export class Occ {
         // const tCurve = new this.occ.Handle_Geom2d_Curve();
         // const cons = new this.occ.BRep_CurveOnSurface(tCurve, bas.Surface().Surface())
 
-        const surface = bas.Surface();
-        const sadapt = new this.occ.GeomAdaptor_HSurface_2(surface)
+        // const surface = bas.Surface();
+        // const sadapt = new this.occ.GeomAdaptor_Surface_2(surface);
 
-        const hsadapt = new this.occ.Handle_Adaptor3d_HSurface_2(sadapt);
+        // const hsadapt = new this.occ.Handle_Adaptor3d_Surface_2(sadapt);
 
-        const s = new this.occ.Adaptor3d_CurveOnSurface_2(hsadapt);
+        // const s = new this.occ.Adaptor3d_CurveOnSurface_2(hsadapt);
 
         // const s = new this.occ.Draw
 
-        const iso = new this.occ.Adaptor3d_IsoCurve_3(hsadapt, this.occ.GeomAbs_IsoType.GeomAbs_IsoU as GeomAbs_IsoType, 0);
+        // const iso = new this.occ.Adaptor3d_IsoCurve_3(hsadapt, this.occ.GeomAbs_IsoType.GeomAbs_IsoU as GeomAbs_IsoType, 0);
 
         // const ddd = new this.occ.
         // const ln = iso.Line();
 
         // const d= iso.OffsetCurve();
-        const isoh = new this.occ.Adaptor3d_HIsoCurve_2(iso);
-        const c = isoh.GetCurve();
-        const pt = c.Value(0.6);
-        return { result: [pt.X(), pt.Y(), pt.Z()] };
+        // const isoh = new this.occ.Adaptor3d_HIsoCurve_2(iso);
+        // const c = isoh.GetCurve();
+        // const pt = c.Value(0.6);
+        // return { result: [pt.X(), pt.Y(), pt.Z()] };
 
         // const gadc = new this.occ.GeomAdaptor_Curve_2(isoh);
         // const crv = isoh.OffsetCurve();
@@ -134,8 +134,8 @@ export class Occ {
         const pt2 = new this.occ.gp_Pnt_3(0, 1, 0);
         const x2 = new this.occ.BRepPrimAPI_MakeBox_3(pt2, 1, 1, 1).Shape();
 
-        const differenceCut = new this.occ.BRepAlgoAPI_Cut_3(x1, x2);
-        differenceCut.Build();
+        const differenceCut = new this.occ.BRepAlgoAPI_Cut_3(x1, x2, new this.occ.Message_ProgressRange_1());
+        differenceCut.Build(new this.occ.Message_ProgressRange_1());
         const resShape = differenceCut.Shape();
     }
 
@@ -147,9 +147,12 @@ export class Occ {
         // const c = this.occ.IntTools_Root;
         // const context = new this.occ.BOPTools_AlgoTools3D();
 
-        const handle = new this.occ.Handle_IntTools_Context_1();
+        const intToolsContext = new this.occ.IntTools_Context_1();
+        const handleIntTools = new this.occ.Handle_IntTools_Context_2(intToolsContext);
 
-        const res = this.occ.BOPTools_AlgoTools3D.PointInFace_2(face, edge, inputs.tEdgeParam, inputs.distance2DParam, pt, pt2d, handle)
+        const res = this.occ.BOPTools_AlgoTools3D.PointInFace_2(
+            face, edge, inputs.tEdgeParam, inputs.distance2DParam, pt, pt2d, handleIntTools
+        );
         if (res === 0) {
             return { result: [pt.X(), pt.Y(), pt.Z()] };
         } else {
@@ -187,7 +190,7 @@ export class Occ {
         // This could be made optional...
         // Clean cached triangulation data for the shape.
         // This allows to get lower res models out of higher res that was once computed and cached.
-        this.occ.BRepTools.Clean(shape);
+        this.occ.BRepTools.Clean(shape, true);
 
         const inctementalMeshBuilder = new this.occ.BRepMesh_IncrementalMesh_2(shape, maxDeviation, false, 0.5, true);
 
@@ -198,7 +201,7 @@ export class Occ {
         const triangulations = [];
         this.och.forEachFace(shape, (faceIndex, myFace) => {
             const aLocation = new this.occ.TopLoc_Location_1();
-            const myT = this.occ.BRep_Tool.Triangulation(myFace, aLocation);
+            const myT = this.occ.BRep_Tool.Triangulation(myFace, aLocation, 0);
             if (myT.IsNull()) { console.error('Encountered Null Face!'); return; }
 
             const thisFace = {
@@ -211,13 +214,13 @@ export class Occ {
             };
 
             const pc = new this.occ.Poly_Connect_2(myT);
-            const Nodes = myT.get().Nodes();
+            const triangulation = myT.get();
 
             // write vertex buffer
-            thisFace.vertex_coord = new Array(Nodes.Length() * 3);
+            thisFace.vertex_coord = new Array(triangulation.NbNodes() * 3);
             thisFace.vertex_coord_vec = [];
-            for (let i = 0; i < Nodes.Length(); i++) {
-                const p = Nodes.Value(i + 1).Transformed(aLocation.Transformation());
+            for (let i = 0; i < triangulation.NbNodes(); i++) {
+                const p = triangulation.Node(i + 1).Transformed(aLocation.Transformation());
                 thisFace.vertex_coord[(i * 3) + 0] = p.X();
                 thisFace.vertex_coord[(i * 3) + 1] = p.Y();
                 thisFace.vertex_coord[(i * 3) + 2] = p.Z();
@@ -225,8 +228,7 @@ export class Occ {
             }
 
             // write normal buffer
-            const myNormal = new this.occ.TColgp_Array1OfDir_2(Nodes.Lower(), Nodes.Upper());
-            const SST = new this.occ.StdPrs_ToolTriangulatedShape();
+            const myNormal = new this.occ.TColgp_Array1OfDir_2(1, triangulation.NbNodes());
             this.occ.StdPrs_ToolTriangulatedShape.Normal(myFace, pc, myNormal);
             thisFace.normal_coord = new Array(myNormal.Length() * 3);
             for (let i = 0; i < myNormal.Length(); i++) {

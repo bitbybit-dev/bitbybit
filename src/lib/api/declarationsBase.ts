@@ -1,6 +1,6 @@
 export const baseDeclarations = `declare class Asset {
-    private readonly assetManager;
-    constructor(assetManager: AssetManager);
+    readonly assetManager: AssetManager;
+    constructor();
     /**
      * Gets the asset file
      * @link https://docs.bitbybit.dev/classes/bitbybit_asset_get.Asset.html#getFile
@@ -23,10 +23,12 @@ export const baseDeclarations = `declare class Asset {
      * Exports the whole scene to .babylon scene format. You can then edit it further in babylonjs editors.
      * @param inputs filename
      */
+    exportBabylon(inputs: Inputs.BabylonIO.ExportSceneDto): void;
     /**
      * Exports the whole scene to .glb format. This file format has become industry standard for web models.
      * @param inputs filename
      */
+    exportGLB(inputs: Inputs.BabylonIO.ExportSceneDto): void;
 }declare class BabylonMesh {
     private readonly context;
     constructor(context: Context);
@@ -172,32 +174,42 @@ export const baseDeclarations = `declare class Asset {
  * Contains various functions that expose BABYLONJS objects
  */
 declare class Babylon {
-    readonly mesh: BabylonMesh;
-    readonly node: BabylonNode;
-    readonly scene: BabylonScene;
-    readonly transforms: BabylonTransforms;
-    readonly io: BabylonIO;
-    constructor(mesh: BabylonMesh, node: BabylonNode, scene: BabylonScene, transforms: BabylonTransforms, io: BabylonIO);
+    mesh: BabylonMesh;
+    node: BabylonNode;
+    scene: BabylonScene;
+    transforms: BabylonTransforms;
+    io: BabylonIO;
+    constructor(context: Context, geometryHelper: GeometryHelper);
 }declare class BabylonIO {
     private readonly context;
     private supportedFileFormats;
     private objectUrl;
     constructor(context: Context);
     /**
-     * Imports mesh from the asset that you have uploaded for the project. You must upload your assets to your project via project management page.
+     * Imports mesh from the asset that you have uploaded for the project.
+     * You must upload your assets to your project via project management page.
      * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_io.BabylonIO.html#loadAssetIntoScene
-     * @param inputs
      * @returns scene loaded mesh
      */
     loadAssetIntoScene(inputs: Inputs.Asset.AssetFileDto): Promise<any>;
     /**
      * Exports the whole scene to .babylon scene format. You can then edit it further in babylonjs editors.
+     * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_io.BabylonIO.html#exportBabylon
      * @param inputs filename
      */
+    exportBabylon(inputs: Inputs.BabylonIO.ExportSceneDto): void;
     /**
      * Exports the whole scene to .glb format. This file format has become industry standard for web models.
+     * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_io.BabylonIO.html#exportBabylon
      * @param inputs filename
      */
+    exportGLB(inputs: Inputs.BabylonIO.ExportSceneDto): void;
+    /**
+     * Exports the mesh or meshes to stl
+     * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_io.BabylonIO.html#exportMeshToStl
+     * @param inputs filename and the mesh
+     */
+    exportMeshToStl(inputs: Inputs.BabylonIO.ExportMeshToStlDto): Promise<any>;
 }declare class BabylonMesh {
     private readonly context;
     constructor(context: Context);
@@ -1093,6 +1105,9 @@ declare class JSCADHulls {
  * Thanks JSCAD community for developing this kernel
  */
 declare class JSCAD {
+    private readonly jscadWorkerManager;
+    private readonly context;
+    private readonly geometryHelper;
     readonly booleans: JSCADBooleans;
     readonly expansions: JSCADExpansions;
     readonly extrusions: JSCADExtrusions;
@@ -1101,10 +1116,7 @@ declare class JSCAD {
     readonly polygon: JSCADPolygon;
     readonly shapes: JSCADShapes;
     readonly text: JSCADText;
-    private readonly context;
-    private readonly geometryHelper;
-    private readonly jscadWorkerManager;
-    constructor(booleans: JSCADBooleans, expansions: JSCADExpansions, extrusions: JSCADExtrusions, hulls: JSCADHulls, path: JSCADPath, polygon: JSCADPolygon, shapes: JSCADShapes, text: JSCADText, context: Context, geometryHelper: GeometryHelper, jscadWorkerManager: JSCADWorkerManager);
+    constructor(jscadWorkerManager: JSCADWorkerManager, context: Context, geometryHelper: GeometryHelper);
     /**
      * Draws a single solids
      * @link https://docs.bitbybit.dev/classes/bitbybit_jscad.JSCAD.html#drawSolidOrPolygonMesh
@@ -2273,7 +2285,7 @@ declare class Node {
 }declare class OCCTGeom {
     readonly curves: OCCTCurves;
     readonly surfaces: OCCTSurfaces;
-    constructor(curves: OCCTCurves, surfaces: OCCTSurfaces);
+    constructor(occWorkerManager: OCCTWorkerManager);
 }declare class OCCTSurfaces {
     private readonly occWorkerManager;
     constructor(occWorkerManager: OCCTWorkerManager);
@@ -2296,7 +2308,8 @@ declare class Node {
     constructor(occWorkerManager: OCCTWorkerManager);
 }declare class OCCTIO {
     private readonly occWorkerManager;
-    constructor(occWorkerManager: OCCTWorkerManager);
+    private readonly geometryHelper;
+    constructor(occWorkerManager: OCCTWorkerManager, geometryHelper: GeometryHelper);
     /**
      * Saves the step file
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_io.OCCTIO.html#saveShapeSTEP
@@ -2310,24 +2323,31 @@ declare class Node {
      * @returns OCCT Shape
      */
     loadSTEPorIGES(inputs: Inputs.OCCT.ImportStepIgesDto): Promise<any>;
+    /**
+     * Saves the stl file
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occt_io.OCCTIO.html#saveShapeStl
+     * @param inputs STL filename and shape to be saved
+     * @returns String of a stl file
+     */
+    saveShapeStl(inputs: Inputs.OCCT.SaveStlDto): Promise<any>;
 }/**
  * Contains various methods for OpenCascade implementation
  * Much of the work is done by Johnathon Selstad and Sebastian Alff to port OCC to JavaScript
  * I'm super grateful for their work!
  */
 declare class OCCT {
+    private readonly context;
+    private readonly occWorkerManager;
+    private readonly geometryHelper;
+    private readonly solidText;
+    private readonly vector;
     readonly shapes: OCCTShapes;
     readonly geom: OCCTGeom;
     readonly transforms: OCCTTransforms;
     readonly operations: OCCTOperations;
     readonly booleans: OCCTBooleans;
     readonly io: OCCTIO;
-    private readonly context;
-    private readonly geometryHelper;
-    private readonly solidText;
-    private readonly vector;
-    private readonly occWorkerManager;
-    constructor(shapes: OCCTShapes, geom: OCCTGeom, transforms: OCCTTransforms, operations: OCCTOperations, booleans: OCCTBooleans, io: OCCTIO, context: Context, geometryHelper: GeometryHelper, solidText: JSCADText, vector: Vector, occWorkerManager: OCCTWorkerManager);
+    constructor(context: Context, occWorkerManager: OCCTWorkerManager, geometryHelper: GeometryHelper, solidText: JSCADText, vector: Vector);
     /**
      * Draws OpenCascade shape by going through faces and edges
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt.OCCT.html#drawShape
@@ -2565,7 +2585,7 @@ declare class OCCT {
     readonly face: OCCTFace;
     readonly solid: OCCTSolid;
     readonly compound: OCCTCompound;
-    constructor(edge: OCCTEdge, wire: OCCTWire, face: OCCTFace, solid: OCCTSolid, compound: OCCTCompound);
+    constructor(occWorkerManager: OCCTWorkerManager);
 }declare class OCCTSolid {
     private readonly occWorkerManager;
     constructor(occWorkerManager: OCCTWorkerManager);
@@ -3020,10 +3040,12 @@ declare class Polyline {
      * Exports the whole scene to .babylon scene format. You can then edit it further in babylonjs editors.
      * @param inputs filename
      */
+    exportBabylon(inputs: Inputs.Scene.ExportSceneDto): void;
     /**
      * Exports the whole scene to .glb format. This file format has become industry standard for web models.
      * @param inputs filename
      */
+    exportGLB(inputs: Inputs.Scene.ExportSceneDto): void;
 }/**
  * Tags help you to put text on top of your 3D objects. Tags are heavily used in data visualization scenarios
  * where you need to convery additional textual information.
@@ -3060,18 +3082,6 @@ declare class Time {
      * @param update The function to call in render loop
      */
     registerRenderFunction(update: (timePassedMs: number) => void): void;
-    /**
-     * Registers a function that listens to iframe events from external third party applications
-     * @link https://docs.bitbybit.dev/classes/bitbybit_time.Time.html#listenToIFrame
-     * @param update The function to call in render loop
-     */
-    listenToIFrame(listener: (data: any) => void): void;
-    /**
-     * Post message to parent iframe of external third party applications
-     * @link https://docs.bitbybit.dev/classes/bitbybit_time.Time.html#postFromIFrame
-     * @param data that will be transmitted
-     */
-    postFromIFrame(inputs: Inputs.Time.PostFromIframe): void;
 }/**
  * Transformations help to move, scale, rotate and mirror objects. You can combine multiple transformations
  * for object to be placed exactly into position and orientation that you want.
@@ -3480,11 +3490,11 @@ declare class VerbCurveEllipse {
  * Thanks Peter Boyer for his work.
  */
 declare class VerbCurve {
-    readonly circle: VerbCurveCircle;
-    readonly ellipse: VerbCurveEllipse;
     private readonly context;
     private readonly geometryHelper;
-    constructor(circle: VerbCurveCircle, ellipse: VerbCurveEllipse, context: Context, geometryHelper: GeometryHelper);
+    readonly circle: VerbCurveCircle;
+    readonly ellipse: VerbCurveEllipse;
+    constructor(context: Context, geometryHelper: GeometryHelper);
     /**
      * Draws a single curve
      * @link https://docs.bitbybit.dev/classes/bitbybit_verb_curve.VerbCurve.html#drawCurve
@@ -4064,15 +4074,15 @@ declare class VerbSurfaceSweep {
  * Thanks Peter Boyer for his work.
  */
 declare class VerbSurface {
+    private readonly context;
+    private readonly geometryHelper;
     readonly cone: VerbSurfaceConical;
     readonly cylinder: VerbSurfaceCylindrical;
     readonly extrusion: VerbSurfaceExtrusion;
     readonly sphere: VerbSurfaceSpherical;
     readonly revolved: VerbSurfaceRevolved;
     readonly sweep: VerbSurfaceSweep;
-    private readonly context;
-    private readonly geometryHelper;
-    constructor(cone: VerbSurfaceConical, cylinder: VerbSurfaceCylindrical, extrusion: VerbSurfaceExtrusion, sphere: VerbSurfaceSpherical, revolved: VerbSurfaceRevolved, sweep: VerbSurfaceSweep, context: Context, geometryHelper: GeometryHelper);
+    constructor(context: Context, geometryHelper: GeometryHelper);
     /**
      * Draws a single surface
      * @link https://docs.bitbybit.dev/classes/bitbybit_verb_surface.VerbSurface.html#drawSurface
@@ -4272,5 +4282,5 @@ declare class Verb {
     readonly curve: VerbCurve;
     readonly surface: VerbSurface;
     readonly intersect: VerbIntersect;
-    constructor(curve: VerbCurve, surface: VerbSurface, intersect: VerbIntersect);
+    constructor(context: Context, geometryHelper: GeometryHelper);
 }`;

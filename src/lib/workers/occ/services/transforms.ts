@@ -41,7 +41,7 @@ export class OCCTTransforms {
         const gpPnt = this.och.gpPnt([0, 0, 0]);
         transformation.SetScale(gpPnt, inputs.factor);
         const scaling = new this.occ.TopLoc_Location_2(transformation);
-        return this.och.getActualTypeOfShape(inputs.shape.Moved(scaling));
+        return this.och.getActualTypeOfShape(inputs.shape.Moved(scaling, false));
     }
 
     mirror(inputs: Inputs.OCCT.MirrorDto): any {

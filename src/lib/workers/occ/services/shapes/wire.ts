@@ -126,7 +126,8 @@ export class OCCTWire {
         return { result: [gpPnt.X(), gpPnt.Y(), gpPnt.Z()] };
     }
 
-    derivativesOnWireAtLength(inputs: Inputs.OCCT.DataOnGeometryAtLengthDto): { result: [Inputs.Base.Vector3, Inputs.Base.Vector3, Inputs.Base.Vector3] } {
+    derivativesOnWireAtLength(inputs: Inputs.OCCT.DataOnGeometryAtLengthDto):
+    { result: [Inputs.Base.Vector3, Inputs.Base.Vector3, Inputs.Base.Vector3] } {
         const wire = inputs.shape as TopoDS_Wire;
         const curve = new this.occ.BRepAdaptor_CompCurve_2(wire, false);
 
@@ -182,31 +183,31 @@ export class OCCTWire {
     }
 
     createInterpolation(inputs: Inputs.OCCT.BSplineDto): any {
-        // ToDo unaccessible api, git issue opened on opencascade.js GeomAPI_Interpolate
-        const ptList = new this.occ.TColgp_Array1OfPnt_2(1, inputs.points.length + (inputs.closed ? 1 : 0));
-        for (let pIndex = 1; pIndex <= inputs.points.length; pIndex++) {
-            ptList.SetValue(pIndex, this.och.gpPnt(inputs.points[pIndex - 1]));
-        }
+        // // ToDo unaccessible api, git issue opened on opencascade.js GeomAPI_Interpolate
+        // const ptList = new this.occ.TColgp_Array1OfPnt_2(1, inputs.points.length + (inputs.closed ? 1 : 0));
+        // for (let pIndex = 1; pIndex <= inputs.points.length; pIndex++) {
+        //     ptList.SetValue(pIndex, this.och.gpPnt(inputs.points[pIndex - 1]));
+        // }
 
-        if (inputs.closed) { ptList.SetValue(inputs.points.length + 1, ptList.Value(1)); }
-        const d = new this.occ.Handle_TColgp_HArray1OfPnt_1();
-        const tcol = d.get();
-        for (let pIndex = 1; pIndex <= inputs.points.length; pIndex++) {
-            tcol.SetValue(pIndex, this.och.gpPnt(inputs.points[pIndex - 1]));
-        }
+        // if (inputs.closed) { ptList.SetValue(inputs.points.length + 1, ptList.Value(1)); }
+        // const d = new this.occ.TColgp_Array1OfPnt();
+        // const tcol = d.get();
+        // for (let pIndex = 1; pIndex <= inputs.points.length; pIndex++) {
+        //     tcol.SetValue(pIndex, this.och.gpPnt(inputs.points[pIndex - 1]));
+        // }
 
 
-        // const d = new this.occ.Handle_TColgp_HArray1OfPnt_2(ptList);
+        // // const d = new this.occ.TColGPHArraOfP(ptList);
 
-        // const d = bitbybit.occt.shapes.wire.createInterpolation({ points: [[0,0,0], [1,1,1], [2,2,3]], closed: true})
+        // // const d = bitbybit.occt.shapes.wire.createInterpolation({ points: [[0,0,0], [1,1,1], [2,2,3]], closed: true})
 
-        // const s = new this.occ.Handle_TColgp_HArray1OfPnt_1
-        // const x = new this.occ.Handle_TColgp_HArray1OfPnt
-        const geomCurveHandle = new this.occ.GeomAPI_Interpolate_1(tcol, true, 1.0e-3);
-        const edge = new this.occ.BRepBuilderAPI_MakeEdge_24(
-            new this.occ.Handle_Geom_Curve_2(geomCurveHandle.Curve().get())
-        ).Edge();
-        return new this.occ.BRepBuilderAPI_MakeWire_2(edge).Wire();
+        // // const s = new this.occ.Handle_TColgp_HArray1OfPnt_1
+        // // const x = new this.occ.Handle_TColgp_HArray1OfPnt
+        // const geomCurveHandle = new this.occ.GeomAPI_Interpolate_1(ptList, true, 1.0e-3);
+        // const edge = new this.occ.BRepBuilderAPI_MakeEdge_24(
+        //     new this.occ.Handle_Geom_Curve_2(geomCurveHandle.Curve().get())
+        // ).Edge();
+        // return new this.occ.BRepBuilderAPI_MakeWire_2(edge).Wire();
     }
 
     createBezier(inputs: Inputs.OCCT.BezierDto): any {

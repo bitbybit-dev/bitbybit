@@ -783,6 +783,25 @@ export namespace OCCT {
          */
         filename: string;
     }
+    export class SaveStlDto {
+        constructor(shape?: any, filename?: string, precision?: number) {
+            this.shape = shape;
+            this.filename = filename;
+            this.precision = precision;
+        }
+        /**
+         * Shape to save
+         */
+        shape: any;
+        /**
+         * File name
+         */
+        filename: string;
+        /**
+         * Precision of the mesh - lower means higher res
+         */
+        precision: number;
+    }
     export class ImportStepIgesDto {
         constructor(assetFile?: File) {
             this.assetFile = assetFile;

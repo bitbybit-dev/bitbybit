@@ -16,7 +16,8 @@ export class OCCTEdge {
                 inputs.shape, (this.occ.ChFi3d_FilletShape.ChFi3d_Rational as ChFi3d_FilletShape)
             );
             const anEdgeExplorer = new this.occ.TopExp_Explorer_2(
-                inputs.shape, (this.occ.TopAbs_ShapeEnum.TopAbs_EDGE as TopAbs_ShapeEnum), (this.occ.TopAbs_ShapeEnum.TopAbs_SHAPE as TopAbs_ShapeEnum)
+                inputs.shape, (this.occ.TopAbs_ShapeEnum.TopAbs_EDGE as TopAbs_ShapeEnum),
+                (this.occ.TopAbs_ShapeEnum.TopAbs_SHAPE as TopAbs_ShapeEnum)
             );
             while (anEdgeExplorer.More()) {
                 const anEdge = this.occ.TopoDS.Edge_1(anEdgeExplorer.Current());
@@ -85,7 +86,8 @@ export class OCCTEdge {
                 inputs.shape
             );
             const anEdgeExplorer = new this.occ.TopExp_Explorer_2(
-                inputs.shape, (this.occ.TopAbs_ShapeEnum.TopAbs_EDGE as TopAbs_ShapeEnum), (this.occ.TopAbs_ShapeEnum.TopAbs_SHAPE as TopAbs_ShapeEnum)
+                inputs.shape, (this.occ.TopAbs_ShapeEnum.TopAbs_EDGE as TopAbs_ShapeEnum),
+                (this.occ.TopAbs_ShapeEnum.TopAbs_SHAPE as TopAbs_ShapeEnum)
             );
             while (anEdgeExplorer.More()) {
                 const anEdge = this.occ.TopoDS.Edge_1(anEdgeExplorer.Current());
@@ -145,7 +147,8 @@ export class OCCTEdge {
         edges.forEach((edge) => {
             const param1 = { current: 0 };
             const param2 = { current: 0 };
-            const crvHandle = this.occ.BRep_Tool.Curve_2(edge, param1, param2);
+            // TODO check if it still works
+            const crvHandle = this.occ.BRep_Tool.Curve_2(edge, param1 as any, param2 as any);
 
             try {
                 const crv = crvHandle.get();
@@ -179,6 +182,6 @@ export class OCCTEdge {
         }
         const filletedEdge = fil.Result(pt, edge1, edge2, solution);
 
-        return this.och.combineEdgesAndWiresIntoAWire({shapes: [edge1, filletedEdge, edge2]});
+        return this.och.combineEdgesAndWiresIntoAWire({ shapes: [edge1, filletedEdge, edge2] });
     }
 }

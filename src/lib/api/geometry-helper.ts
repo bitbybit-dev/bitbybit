@@ -15,7 +15,7 @@ export class GeometryHelper {
 
     createOrUpdateSurfaceMesh(
         meshDataConverted: { positions: any[]; indices: any[]; normals: any[]; },
-        mesh: Mesh, updatable: boolean, material: PBRMetallicRoughnessMaterial
+        mesh: Mesh, updatable: boolean, material: PBRMetallicRoughnessMaterial, addToScene: boolean
     ): Mesh {
         const createMesh = () => {
             const vertexData = new VertexData();
@@ -30,12 +30,20 @@ export class GeometryHelper {
             createMesh();
             mesh.flipFaces(false);
         } else {
-            mesh = new Mesh(`surface${Math.random()}`, this.context.scene);
+            let scene = null;
+            if (addToScene) {
+                scene = this.context.scene;
+            }
+            mesh = new Mesh(`surface${Math.random()}`, scene);
             createMesh();
             mesh.flipFaces(false);
+            if (material) {
+                mesh.material = material;
+            }
+        }
+        if (material) {
             mesh.material = material;
         }
-        mesh.material = material;
         mesh.isPickable = false;
         return mesh;
     }

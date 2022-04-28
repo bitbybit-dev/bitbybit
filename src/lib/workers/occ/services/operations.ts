@@ -1,4 +1,4 @@
-import { BRepFill_TypeOfContact, BRepOffset_Mode, GeomAbs_JoinType, OpenCascadeInstance } from 'opencascade.js';
+import { BRepFill_TypeOfContact, BRepOffsetAPI_MakeOffsetShape, BRepOffsetAPI_MakeOffset_1, BRepOffset_Mode, GeomAbs_JoinType, OpenCascadeInstance } from 'opencascade.js';
 import { OccHelper } from '../occ-helper';
 import * as Inputs from '../../../api/inputs/inputs';
 
@@ -17,7 +17,7 @@ export class OCCTOperations {
         // pipe.Build();
         return pipe.Shape();
     }
-    
+
     offset(inputs: Inputs.OCCT.OffsetDto): any {
         if (!inputs.tolerance) { inputs.tolerance = 0.1; }
         if (inputs.distance === 0.0) { return inputs.shape; }
@@ -31,24 +31,25 @@ export class OCCTOperations {
                 wire = inputs.shape;
             }
             offset = new this.occ.BRepOffsetAPI_MakeOffset_1();
-            offset.Init_2(this.occ.GeomAbs_JoinType.GeomAbs_Arc, false);
-            offset.AddWire(wire);
-            offset.Perform(inputs.distance, 0.0);
+            (offset as BRepOffsetAPI_MakeOffset_1).Init_2(this.occ.GeomAbs_JoinType.GeomAbs_Arc as GeomAbs_JoinType, false);
+            (offset as BRepOffsetAPI_MakeOffset_1).AddWire(wire);
+            (offset as BRepOffsetAPI_MakeOffset_1).Perform(inputs.distance, 0.0);
         } else {
             let shell = inputs.shape;
             if (inputs.shape.ShapeType() === this.occ.TopAbs_ShapeEnum.TopAbs_FACE) {
                 shell = this.och.bRepBuilderAPIMakeShell(inputs.shape);
             }
-            offset = new this.occ.BRepOffsetAPI_MakeOffsetShape_1();
-            offset.PerformByJoin(
+            offset = new this.occ.BRepOffsetAPI_MakeOffsetShape();
+            (offset as BRepOffsetAPI_MakeOffsetShape).PerformByJoin(
                 shell,
                 inputs.distance,
                 inputs.tolerance,
-                this.occ.BRepOffset_Mode.BRepOffset_Skin,
+                this.occ.BRepOffset_Mode.BRepOffset_Skin as BRepOffset_Mode,
                 false,
                 false,
-                this.occ.GeomAbs_JoinType.GeomAbs_Arc,
-                false
+                this.occ.GeomAbs_JoinType.GeomAbs_Arc as GeomAbs_JoinType,
+                false,
+                new this.occ.Message_ProgressRange_1()
             );
         }
         let offsetShape = offset.Shape();
@@ -121,7 +122,7 @@ export class OCCTOperations {
         pipe.SetMode_5(aspineWire, true, (this.occ.BRepFill_TypeOfContact.BRepFill_NoContact as BRepFill_TypeOfContact));
         pipe.Add_1(inputs.shape, false, false);
         pipe.Add_1(upperPolygon, false, false);
-        pipe.Build();
+        pipe.Build(new this.occ.Message_ProgressRange_1());
         pipe.MakeSolid();
         return pipe.Shape();
     }
@@ -131,25 +132,25 @@ export class OCCTOperations {
         inputs.shapes.forEach(sh => {
             pipe.Add_1(sh, false, false);
         });
-        pipe.Build();
+        pipe.Build(new this.occ.Message_ProgressRange_1());
         pipe.MakeSolid();
         return pipe.Shape();
     }
 
     makeThickSolidSimple(inputs: Inputs.OCCT.ThisckSolidSimpleDto): any {
-        const maker = new this.occ.BRepOffsetAPI_MakeThickSolid_1();
+        const maker = new this.occ.BRepOffsetAPI_MakeThickSolid();
         maker.MakeThickSolidBySimple(inputs.shape, inputs.offset);
 
-        maker.Build();
+        maker.Build(new this.occ.Message_ProgressRange_1());
         return maker.Shape();
     }
-   
+
     makeThickSolidByJoin(inputs: Inputs.OCCT.ThickSolidByJoinDto) {
         const facesToRemove = new this.occ.TopTools_ListOfShape_1();
         inputs.shapes.forEach(shape => {
             facesToRemove.Append_1(shape);
         })
-        const myBody = new this.occ.BRepOffsetAPI_MakeThickSolid_1();
+        const myBody = new this.occ.BRepOffsetAPI_MakeThickSolid();
         let jointType: GeomAbs_JoinType;
 
         if (inputs.joinType === Inputs.OCCT.JoinTypeEnum.arc) {
@@ -169,7 +170,8 @@ export class OCCTOperations {
             inputs.intersection,
             inputs.selfIntersection,
             jointType,
-            inputs.removeIntEdges);
+            inputs.removeIntEdges,
+            new this.occ.Message_ProgressRange_1());
         return this.och.getActualTypeOfShape(myBody.Shape());
     }
 

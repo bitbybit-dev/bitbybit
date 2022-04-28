@@ -2,13 +2,11 @@ import { HttpClient } from '@angular/common/http';
 import { PrintSaveInterface } from './models/print-save.model';
 import { OBJFileLoader } from '@babylonjs/loaders';
 
-type Listener = {
-    fn: (data) => void;
-};
-
 export class BitByBitBlocklyHelperService {
 
     static promptPrintSave: (prompt: PrintSaveInterface) => void;
+    static promptPrint: (prompt: PrintSaveInterface) => void;
+
     static clearAllDrawn: () => void;
     static tolerance = 0.00001;
     static snapTolerance = 0.00001;
@@ -17,8 +15,20 @@ export class BitByBitBlocklyHelperService {
     static tagBag: any[] = [];
     static timeoutBag: number[] = [];
     static intervalBag: number[] = [];
-    static iframeListenerBag: Listener[] = [];
     static renderLoopBag: ((timePassedFromPreviousIteration: number) => void)[] = [];
+    static keyDownBag: ({
+        key: string,
+        fn: () => void
+    })[] = [];
+    static keyUpBag: ({
+        key: string,
+        fn: () => void
+    })[] = [];
+    static keyPressBag: ({
+        key: string,
+        fn: () => void
+    })[] = [];
+
     static babylon = {
         loader: new OBJFileLoader(),
     };

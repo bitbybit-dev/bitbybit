@@ -9,12 +9,12 @@ export class OCCTBooleans {
         private readonly och: OccHelper
     ) {
     }
-    
+
     union(inputs: Inputs.OCCT.UnionDto): any {
         let combined = inputs.shapes[0];
         for (let i = 0; i < inputs.shapes.length; i++) {
-            const combinedFuse = new this.occ.BRepAlgoAPI_Fuse_3(combined, inputs.shapes[i]);
-            combinedFuse.Build();
+            const combinedFuse = new this.occ.BRepAlgoAPI_Fuse_3(combined, inputs.shapes[i], new this.occ.Message_ProgressRange_1());
+            combinedFuse.Build(new this.occ.Message_ProgressRange_1());
             combined = combinedFuse.Shape();
         }
 
@@ -32,8 +32,8 @@ export class OCCTBooleans {
         const objectsToSubtract = inputs.shapes;
         for (let i = 0; i < objectsToSubtract.length; i++) {
             if (!objectsToSubtract[i] || objectsToSubtract[i].IsNull()) { console.error('Tool in Difference is null!'); }
-            const differenceCut = new this.occ.BRepAlgoAPI_Cut_3(difference, objectsToSubtract[i]);
-            differenceCut.Build();
+            const differenceCut = new this.occ.BRepAlgoAPI_Cut_3(difference, objectsToSubtract[i], new this.occ.Message_ProgressRange_1());
+            differenceCut.Build(new this.occ.Message_ProgressRange_1());
             difference = differenceCut.Shape();
         }
 
@@ -57,8 +57,12 @@ export class OCCTBooleans {
 
         let intersected = inputs.shapes[0];
         for (let i = 1; i < inputs.shapes.length; i++) {
-            const intersectedCommon = new this.occ.BRepAlgoAPI_Common_3(intersected, inputs.shapes[i]);
-            intersectedCommon.Build();
+            const intersectedCommon = new this.occ.BRepAlgoAPI_Common_3(
+                intersected,
+                inputs.shapes[i],
+                new this.occ.Message_ProgressRange_1()
+            );
+            intersectedCommon.Build(new this.occ.Message_ProgressRange_1());
             intersected = intersectedCommon.Shape();
         }
 

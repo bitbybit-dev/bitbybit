@@ -146,7 +146,7 @@ export class OccHelper {
         const center = this.gpPnt(start);
         const vec = new this.occ.gp_Vec_5(center, this.gpPnt(end));
         const distance = vec.Magnitude();
-        const ax = this.gpAx2(start, [vec.X(),vec.Y(), vec.Z()]);
+        const ax = this.gpAx2(start, [vec.X(), vec.Y(), vec.Z()]);
         return new this.occ.BRepPrimAPI_MakeCylinder_3(ax, radius, distance).Shape();
     }
 
@@ -443,7 +443,7 @@ export class OccHelper {
         const transformation = new this.occ.gp_Trsf_1();
         transformation.SetTranslation_1(new this.occ.gp_Vec_4(inputs.translation[0], inputs.translation[1], inputs.translation[2]));
         const translation = new this.occ.TopLoc_Location_2(transformation);
-        return this.getActualTypeOfShape(inputs.shape.Moved(translation));
+        return this.getActualTypeOfShape(inputs.shape.Moved(translation, false));
     }
 
     rotate(inputs: Inputs.OCCT.RotateDto): any {
@@ -461,7 +461,7 @@ export class OccHelper {
                 ),
                 inputs.angle * 0.0174533);
             const rotation = new this.occ.TopLoc_Location_2(transformation);
-            rotated = inputs.shape.Moved(rotation);
+            rotated = (inputs.shape as TopoDS_Shape).Moved(rotation, false);
         }
         return this.getActualTypeOfShape(rotated);
     }

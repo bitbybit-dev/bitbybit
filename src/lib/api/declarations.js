@@ -67,7 +67,7 @@ function simplifyDeclaration(declaration) {
     // remove all html image data
     const arrayOfLines = declaration.match(/[^\r\n]+/g);
     const noHtml = arrayOfLines.filter(line =>
-        !(line.includes('<div>') || line.includes('<img') || line.includes('</div>') || line.includes('import') || line.includes('export'))
+        !(line.includes('<div>') || line.includes('<img') || line.includes('</div>') || line.includes('import') || line.includes('export '))
     );
     const remainder = noHtml.join('\n');
     return remainder;

@@ -72,6 +72,7 @@ export class VerbSurface {
             inputs.surfaceMesh,
             inputs.updatable,
             pbr,
+            true,
         );
     }
 
@@ -117,7 +118,8 @@ export class VerbSurface {
             meshDataConverted,
             inputs.surfacesMesh,
             inputs.updatable,
-            pbr
+            pbr,
+            true,
         );
     }
 

@@ -20,6 +20,16 @@ export const inputDeclarations = `declare namespace Asset {
          */
         filename: string;
     }
+    class ExportMeshToStlDto {
+        /**
+         * Mesh or meshes to export
+         */
+        mesh: Mesh;
+        /**
+         * File name that should be used for the scene.
+         */
+        filename: string;
+    }
 }declare namespace BabylonMesh {
     class UpdateDrawnBabylonMesh {
         /**
@@ -316,6 +326,22 @@ export const inputDeclarations = `declare namespace Asset {
         tags = 16
     }
 }* from './vector-inputs';
+* from './scene-inputs';
+* from './babylon-io-inputs';
+* from './node-inputs';
+* from './transforms-inputs';
+* from './point-inputs';
+* from './line-inputs';
+* from './polyline-inputs';
+* from './verb-inputs';
+* from './jscad-inputs';
+* from './tag-inputs';
+* from './occ-inputs';
+* from './asset-inputs';
+* from './base-inputs';
+* from './draw-inputs';
+* from './babylon-mesh-inputs';
+* from './time-inputs';* from './vector-inputs';
 * from './scene-inputs';
 * from './babylon-io-inputs';
 * from './node-inputs';
@@ -2024,6 +2050,21 @@ export const inputDeclarations = `declare namespace Asset {
          * File name
          */
         filename: string;
+    }
+    class SaveStlDto {
+        constructor(shape?: any, filename?: string, precision?: number);
+        /**
+         * Shape to save
+         */
+        shape: any;
+        /**
+         * File name
+         */
+        filename: string;
+        /**
+         * Precision of the mesh - lower means higher res
+         */
+        precision: number;
     }
     class ImportStepIgesDto {
         constructor(assetFile?: File);

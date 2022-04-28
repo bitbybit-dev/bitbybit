@@ -1,6 +1,6 @@
 {
     "name": "bitbybit-core",
-    "version": "0.0.5",
+    "version": "0.0.8",
     "description": "Bit by bit developers core api",
     "main": "index.js",
     "repository": {
@@ -17,15 +17,15 @@
     "license": "MIT",
     "types": "./index.d.ts",
     "dependencies": {
-        "@babylonjs/core": "5.0.0-beta.9",
-        "@babylonjs/gui": "5.0.0-beta.9",
-        "@babylonjs/loaders": "5.0.0-beta.9",
-        "@babylonjs/materials": "5.0.0-beta.9",
-        "@babylonjs/serializers": "5.0.0-beta.9",
+        "@babylonjs/core": "5.3.0",
+        "@babylonjs/gui": "5.3.0",
+        "@babylonjs/loaders": "5.3.0",
+        "@babylonjs/materials": "5.3.0",
+        "@babylonjs/serializers": "5.3.0",
         "@jscad/io-utils": "2.0.13",
         "@jscad/modeling": "2.7.2",
         "@jscad/stl-serializer": "2.1.3",
-        "opencascade.js": "2.0.0-beta.371bbb0",
+        "opencascade.js": "2.0.0-beta.c309d12",
         "verb-nurbs-web": "2.1.3",
         "rxjs": "7.5.5"
     }

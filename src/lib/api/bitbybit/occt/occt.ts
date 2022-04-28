@@ -40,7 +40,7 @@ export class OCCT {
         this.transforms = new OCCTTransforms(occWorkerManager);
         this.operations = new OCCTOperations(occWorkerManager);
         this.booleans = new OCCTBooleans(occWorkerManager);
-        this.io = new OCCTIO(occWorkerManager);
+        this.io = new OCCTIO(occWorkerManager, geometryHelper);
     }
 
     /**
@@ -87,7 +87,7 @@ export class OCCT {
                     positions: face.vertex_coord,
                     normals: face.normal_coord,
                     indices: face.tri_indexes,
-                }, dummy, false, pbr);
+                }, dummy, false, pbr, true);
                 mesh.parent = shapeMesh;
             });
         }
