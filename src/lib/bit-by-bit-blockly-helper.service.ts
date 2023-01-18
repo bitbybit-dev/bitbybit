@@ -8,6 +8,7 @@ export class BitByBitBlocklyHelperService {
     static promptPrint: (prompt: PrintSaveInterface) => void;
 
     static clearAllDrawn: () => void;
+    static rerenderScene: () => void;
     static tolerance = 0.00001;
     static snapTolerance = 0.00001;
     static angular: { httpClient: HttpClient, HttpHeaders: any, HttpParams: any };
@@ -28,6 +29,7 @@ export class BitByBitBlocklyHelperService {
         key: string,
         fn: () => void
     })[] = [];
+    static currentlyPressedKeys = [];
 
     static babylon = {
         loader: new OBJFileLoader(),

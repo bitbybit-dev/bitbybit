@@ -143,7 +143,7 @@ export class BabylonNode {
     getAbsoluteRotationTransformation(inputs: Inputs.BabylonNode.NodeDto): number[] {
         const rotationMatrix = new Matrix();
         inputs.node.absoluteRotationQuaternion.toRotationMatrix(rotationMatrix);
-        return rotationMatrix.toArray() as number[];
+        return [...rotationMatrix.toArray()];
     }
 
     /**
@@ -158,7 +158,7 @@ export class BabylonNode {
     getRotationTransformation(inputs: Inputs.BabylonNode.NodeDto): number[] {
         const rotationMatrix = new Matrix();
         inputs.node.rotationQuaternion.toRotationMatrix(rotationMatrix);
-        return rotationMatrix.toArray() as number[];
+        return [...rotationMatrix.toArray()];
     }
 
     /**

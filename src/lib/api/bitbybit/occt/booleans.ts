@@ -19,7 +19,7 @@ export class OCCTBooleans {
      * @param inputs Objects to join
      * @returns OpenCascade joined shape
      */
-    union(inputs: Inputs.OCCT.UnionDto): Promise<any> {
+    union(inputs: Inputs.OCCT.UnionDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.OCCT.TopoDSShapePointer> {
         return this.occWorkerManager.genericCallToWorkerPromise('booleans.union', inputs);
     }
 
@@ -32,7 +32,7 @@ export class OCCTBooleans {
      * @param inputs Main shape and shapes to differ
      * @returns OpenCascade difference shape
      */
-    difference(inputs: Inputs.OCCT.DifferenceDto): Promise<any> {
+    difference(inputs: Inputs.OCCT.DifferenceDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.OCCT.TopoDSShapePointer> {
         return this.occWorkerManager.genericCallToWorkerPromise('booleans.difference', inputs);
     }
 
@@ -45,7 +45,7 @@ export class OCCTBooleans {
      * @param inputs Main shape and shapes to differ
      * @returns OpenCascade intersection of shapes
      */
-    intersection(inputs: Inputs.OCCT.IntersectionDto): Promise<any> {
+    intersection(inputs: Inputs.OCCT.IntersectionDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.OCCT.TopoDSShapePointer> {
         return this.occWorkerManager.genericCallToWorkerPromise('booleans.intersection', inputs);
     }
 }

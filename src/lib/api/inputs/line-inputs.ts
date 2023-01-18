@@ -129,6 +129,16 @@ export namespace Line {
          */
         matrix: number[][] | number[][][];
     }
+    export class TransformsLinesDto {
+        /**
+         * Lines to transform
+         */
+        lines: LinePointsDto[];
+        /**
+         * Transformations matrix or a list of transformations matrixes
+         */
+        matrix: number[][][] | number[][][][];
+    }
     export class TransformLinesDto {
         /**
          * Lines to transform

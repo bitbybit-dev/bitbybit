@@ -1,5 +1,6 @@
 
 import { Color3, Color4, LinesMesh, Mesh, MeshBuilder, Vector3 } from '@babylonjs/core';
+import { map } from 'rxjs';
 import { Context } from '../context';
 import { GeometryHelper } from '../geometry-helper';
 import * as Inputs from '../inputs/inputs';
@@ -14,45 +15,6 @@ export class Line {
     constructor(private readonly context: Context, private readonly geometryHelper: GeometryHelper) { }
 
     /**
-     * Draws a single line
-     * @link https://docs.bitbybit.dev/classes/bitbybit_line.Line.html#drawline
-     * @param inputs Contains a line to be drawn
-     * @returns Lines mesh that is being drawn by Babylon
-     */
-    drawLine(inputs: Inputs.Line.DrawLineDto): LinesMesh {
-        const line = inputs.line;
-
-        const points = [
-            new Vector3(line.start[0], line.start[1], line.start[2]),
-            new Vector3(line.end[0], line.end[1], line.end[2])
-        ];
-
-        if (inputs.lineMesh && inputs.updatable) {
-            inputs.lineMesh = MeshBuilder.CreateLines(null,
-                {
-                    points,
-                    instance: inputs.lineMesh,
-                    useVertexAlpha: true,
-                    updatable: inputs.updatable
-                },
-                null);
-        } else {
-            inputs.lineMesh =
-                MeshBuilder.CreateLines(`lines${Math.random()}`,
-                    {
-                        points,
-                        updatable: inputs.updatable,
-                        useVertexAlpha: true
-                    },
-                    this.context.scene);
-
-        }
-
-        this.geometryHelper.edgesRendering(inputs.lineMesh, inputs.size, inputs.opacity, inputs.colours);
-        return inputs.lineMesh;
-    }
-
-    /**
      * Draws multiple lines
      * @link https://docs.bitbybit.dev/classes/bitbybit_line.Line.html#drawLines
      * @param inputs Contains a line to be drawn
@@ -61,6 +23,7 @@ export class Line {
     drawLines(inputs: Inputs.Line.DrawLinesDto): LinesMesh {
         const lines = [];
         const colors = [];
+
         inputs.lines.forEach((line, index) => {
             lines.push([
                 new Vector3(line.start[0], line.start[1], line.start[2]),
@@ -203,6 +166,27 @@ export class Line {
     }
 
     /**
+     * Transforms the lines with multiple transform for each line
+     * <div>
+     *  <img src="../assets/images/blockly-images/line/transformsForLines.svg" alt="Blockly Image"/>
+     * </div>
+     * @link https://docs.bitbybit.dev/classes/bitbybit_line.Line.html#transformsForLines
+     * @param inputs Lines to be transformed and transformations
+     * @returns Transformed lines
+     */
+    transformsForLines(inputs: Inputs.Line.TransformsLinesDto): Inputs.Line.LinePointsDto[] {
+        return inputs.lines.map((line, index) => {
+            const transformation = inputs.matrix[index];
+            let transformedControlPoints = [line.start, line.end];
+            transformedControlPoints = this.geometryHelper.transformControlPoints(transformation, transformedControlPoints);
+            return {
+                start: transformedControlPoints[0],
+                end: transformedControlPoints[1]
+            };
+        });
+    }
+
+    /**
      * Create the line
      * <div>
      *  <img src="../assets/images/blockly-images/line/create.svg" alt="Blockly Image"/>
@@ -269,19 +253,17 @@ export class Line {
     }
 
     /**
-    * Create the lines between two lists of start and end points of equal length with potential async inputs
-    * <div>
-    *  <img src="../assets/images/blockly-images/line/linesBetweenStartAndEndPoints.svg" alt="Blockly Image"/>
-    * </div>
-    * @link https://docs.bitbybit.dev/classes/bitbybit_line.Line.html#linesBetweenStartAndEndPoints
-    * @param inputs Two lists of start and end points
-    * @returns Lines
-    */
+     * Create the lines between two lists of start and end points of equal length with potential async inputs
+     * <div>
+     *  <img src="../assets/images/blockly-images/line/linesBetweenStartAndEndPoints.svg" alt="Blockly Image"/>
+     * </div>
+     * @link https://docs.bitbybit.dev/classes/bitbybit_line.Line.html#linesBetweenStartAndEndPoints
+     * @param inputs Two lists of start and end points
+     * @returns Lines
+     */
     linesBetweenStartAndEndPointsAsync(inputs: Inputs.Line.LineStartEndPointsDto): Promise<Inputs.Line.LinePointsDto[]> {
         return Promise.resolve(this.linesBetweenStartAndEndPoints(inputs));
     }
-
-
 
     private createLineSystemMesh(updatable: boolean, lines: Vector3[][], colors: Color4[][]): LinesMesh {
         return MeshBuilder.CreateLineSystem(`lines${Math.random()}`,

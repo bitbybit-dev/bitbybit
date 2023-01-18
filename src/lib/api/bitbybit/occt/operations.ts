@@ -16,11 +16,24 @@ export class OCCTOperations {
      *  <img src="../assets/images/blockly-images/occt/operations/loft.svg" alt="Blockly Image"/>
      * </div>
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_operations.OCCTOperations.html#loft
-     * @param inputs Circle parameters
+     * @param inputs Loft wires
+     * @returns Resulting loft shape
+     */
+    loft(inputs: Inputs.OCCT.LoftDto<Inputs.OCCT.TopoDSWirePointer>): Promise<Inputs.OCCT.TopoDSShapePointer> {
+        return this.occWorkerManager.genericCallToWorkerPromise('operations.loft', inputs);
+    }
+
+    /**
+     * Lofts wires into a shell by using many advanced options
+     * <div>
+     *  <img src="../assets/images/blockly-images/occt/operations/loftAdvanced.svg" alt="Blockly Image"/>
+     * </div>
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occt_operations.OCCTOperations.html#loftAdvanced
+     * @param inputs Advanced loft parameters
      * @returns Resulting loft shell
      */
-    loft(inputs: Inputs.OCCT.LoftDto): Promise<any> {
-        return this.occWorkerManager.genericCallToWorkerPromise('operations.loft', inputs);
+    loftAdvanced(inputs: Inputs.OCCT.LoftAdvancedDto<Inputs.OCCT.TopoDSWirePointer>): Promise<Inputs.OCCT.TopoDSShapePointer> {
+        return this.occWorkerManager.genericCallToWorkerPromise('operations.loftAdvanced', inputs);
     }
 
     /**
@@ -32,7 +45,7 @@ export class OCCTOperations {
      * @param inputs Shape to offset and distance with tolerance
      * @returns Resulting offset shape
      */
-    offset(inputs: Inputs.OCCT.OffsetDto): Promise<any> {
+    offset(inputs: Inputs.OCCT.OffsetDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.OCCT.TopoDSShapePointer> {
         return this.occWorkerManager.genericCallToWorkerPromise('operations.offset', inputs);
     }
 
@@ -45,8 +58,34 @@ export class OCCTOperations {
      * @param inputs Shape to extrude and direction parameter with tolerance
      * @returns Resulting extruded shape
      */
-    extrude(inputs: Inputs.OCCT.ExtrudeDto): Promise<any> {
+    extrude(inputs: Inputs.OCCT.ExtrudeDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.OCCT.TopoDSShapePointer> {
         return this.occWorkerManager.genericCallToWorkerPromise('operations.extrude', inputs);
+    }
+
+    /**
+     * Extrudes the shapes along direction
+     * <div>
+     *  <img src="../assets/images/blockly-images/occt/operations/extrudeShapes.svg" alt="Blockly Image"/>
+     * </div>
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occt_operations.OCCTOperations.html#extrudeShapes
+     * @param inputs Shapes to extrude and direction parameter with tolerance
+     * @returns Resulting extruded shapes
+     */
+    extrudeShapes(inputs: Inputs.OCCT.ExtrudeShapesDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.OCCT.TopoDSShapePointer> {
+        return this.occWorkerManager.genericCallToWorkerPromise('operations.extrudeShapes', inputs);
+    }
+
+    /**
+     * Splits the face with edges
+     * <div>
+     *  <img src="../assets/images/blockly-images/occt/operations/splitShapeWithShapes.svg" alt="Blockly Image"/>
+     * </div>
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occt_operations.OCCTOperations.html#splitShapeWithShapes
+     * @param inputs Face to split and edges to split with
+     * @returns Resulting split shape
+     */
+    splitShapeWithShapes(inputs: Inputs.OCCT.SplitDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.OCCT.TopoDSShapePointer> {
+        return this.occWorkerManager.genericCallToWorkerPromise('operations.splitShapeWithShapes', inputs);
     }
 
     /**
@@ -58,12 +97,12 @@ export class OCCTOperations {
      * @param inputs Revolve parameters
      * @returns Resulting revolved shape
      */
-    revolve(inputs: Inputs.OCCT.RevolveDto): Promise<any> {
+    revolve(inputs: Inputs.OCCT.RevolveDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.OCCT.TopoDSShapePointer> {
         return this.occWorkerManager.genericCallToWorkerPromise('operations.revolve', inputs);
     }
 
     /**
-     * Rotated extrude that is perofrmed on the wire shape
+     * Rotated extrude that is perofrmed on the shape
      * <div>
      *  <img src="../assets/images/blockly-images/occt/operations/rotatedExtrude.svg" alt="Blockly Image"/>
      * </div>
@@ -71,7 +110,7 @@ export class OCCTOperations {
      * @param inputs Rotated extrusion inputs
      * @returns OpenCascade shape
      */
-    rotatedExtrude(inputs: Inputs.OCCT.RotationExtrudeDto): Promise<any> {
+    rotatedExtrude(inputs: Inputs.OCCT.RotationExtrudeDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.OCCT.TopoDSShapePointer> {
         return this.occWorkerManager.genericCallToWorkerPromise('operations.rotatedExtrude', inputs);
     }
 
@@ -84,7 +123,7 @@ export class OCCTOperations {
      * @param inputs Path wire and shapes along the path
      * @returns OpenCascade shape
      */
-    pipe(inputs: Inputs.OCCT.ShapeShapesDto): Promise<any> {
+    pipe(inputs: Inputs.OCCT.ShapeShapesDto<Inputs.OCCT.TopoDSWirePointer, Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.OCCT.TopoDSShapePointer> {
         return this.occWorkerManager.genericCallToWorkerPromise('operations.pipe', inputs);
     }
 
@@ -97,7 +136,7 @@ export class OCCTOperations {
      * @param inputs OpenCascade shape
      * @returns OpenCascade solid shape
      */
-    makeThickSolidSimple(inputs: Inputs.OCCT.ThisckSolidSimpleDto): Promise<any> {
+    makeThickSolidSimple(inputs: Inputs.OCCT.ThisckSolidSimpleDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.OCCT.TopoDSShapePointer> {
         return this.occWorkerManager.genericCallToWorkerPromise('operations.makeThickSolidSimple', inputs);
     }
 
@@ -110,7 +149,7 @@ export class OCCTOperations {
      * @param inputs OpenCascade shape and options for thickening
      * @returns OpenCascade solid shape
      */
-    makeThickSolidByJoin(inputs: Inputs.OCCT.ThickSolidByJoinDto): Promise<any> {
+    makeThickSolidByJoin(inputs: Inputs.OCCT.ThickSolidByJoinDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.OCCT.TopoDSShapePointer> {
         return this.occWorkerManager.genericCallToWorkerPromise('operations.makeThickSolidByJoin', inputs);
     }
 }

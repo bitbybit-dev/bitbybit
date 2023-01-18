@@ -3,6 +3,7 @@ import { Color3, Mesh, StandardMaterial, VertexBuffer, VertexData } from '@babyl
 import { Context } from '../context';
 import { GeometryHelper } from '../geometry-helper';
 import * as Inputs from '../inputs/inputs';
+import { Base } from '../inputs/inputs';
 import { Line } from './line';
 
 /**
@@ -115,6 +116,24 @@ export class Point {
     transformPoints(inputs: Inputs.Point.TransformPointsDto): Inputs.Base.Point3[] {
         return this.geometryHelper.transformControlPoints(inputs.matrix, inputs.points);
     }
+    
+    /**
+     * Transforms multiple points by multiple transformations
+     * <div>
+     *  <img src="../assets/images/blockly-images/point/transformsForPoints.svg" alt="Blockly Image"/>
+     * </div>
+     * @link https://docs.bitbybit.dev/classes/bitbybit_point.Point.html#transformsForPoints
+     * @param inputs Contains points and the transformations to apply
+     * @returns Transformed points
+     */
+    transformsForPoints(inputs: Inputs.Point.TransformsForPointsDto): Inputs.Base.Point3[] {
+        if (inputs.points.length !== inputs.matrix.length) {
+            throw new Error('You must provide equal nr of points and transformations');
+        }
+        return inputs.points.map((pt, index) => {
+            return this.geometryHelper.transformControlPoints(inputs.matrix[index], [pt])[0];
+        })
+    }
 
     /**
      * Measures the closest distance between a point and a collection of points
@@ -152,7 +171,7 @@ export class Point {
      * @returns Closest point
      */
     closestPointFromPoints(inputs: Inputs.Point.ClosestPointFromPointsDto): Inputs.Base.Point3 {
-        return this.closestPointFromPointData(inputs).point as  Inputs.Base.Point3;
+        return this.closestPointFromPointData(inputs).point as Inputs.Base.Point3;
     }
 
     /**
@@ -225,6 +244,33 @@ export class Point {
     }
 
     /**
+     * Get average point of points
+     * <div>
+     *  <img src="../assets/images/blockly-images/point/averagePoint.svg" alt="Blockly Image"/>
+     * </div>
+     * @link https://docs.bitbybit.dev/classes/bitbybit_point.Point.html#averagePoint
+     * @param inputs The points
+     * @returns point
+     */
+    averagePoint(inputs: Inputs.Point.PointsDto): Base.Point3 {
+        const xVals = [];
+        const yVals = [];
+        const zVals = [];
+
+        inputs.points.forEach(pt => {
+            xVals.push(pt[0]);
+            yVals.push(pt[1]);
+            zVals.push(pt[2]);
+        })
+
+        return [
+            xVals.reduce((p, c) => p + c, 0) / inputs.points.length,
+            yVals.reduce((p, c) => p + c, 0) / inputs.points.length,
+            zVals.reduce((p, c) => p + c, 0) / inputs.points.length,
+        ];
+    }
+
+    /**
      * Creates the spiral out of multiple points
      * <div>
      *  <img src="../assets/images/blockly-images/point/spiral.svg" alt="Blockly Image"/>
@@ -284,7 +330,7 @@ export class Point {
             if (currentDist < distance) {
                 distance = currentDist;
                 closestPointIndex = i;
-                point = pt as  Inputs.Base.Point3;
+                point = pt as Inputs.Base.Point3;
             }
         }
         return { index: closestPointIndex + 1, distance, point };

@@ -3,6 +3,7 @@
     "compileOnSave": false,
     "compilerOptions": {
         "outDir": "./dist/bitbybit-core",
+        "baseUrl": "./",
         "sourceMap": false,
         "declaration": true,
         "downlevelIteration": true,
@@ -13,6 +14,10 @@
         "module": "es2020",
         "allowJs": true,
         "emitDeclarationOnly": false,
+        "paths": {
+            "projects/bitbybit-core/src/*": ["./*"],
+            "projects/bitbybit-advanced/*": ["../../bitbybit-advanced/*"]
+        },
         "lib": [
             "es2020",
             "dom"

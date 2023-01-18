@@ -1,0 +1,331 @@
+  mainBuild:
+    name: bitbybit-dev-occt.js
+    bindings:
+      - symbol: Adaptor3d_Curve
+      - symbol: Adaptor3d_Surface
+      - symbol: Approx_ParametrizationType
+      - symbol: BOPTools_AlgoTools3D
+      - symbol: BRepAdaptor_CompCurve
+      - symbol: BRepAdaptor_Curve
+      - symbol: BRepAlgoAPI_Algo
+      - symbol: BRepAlgoAPI_BooleanOperation
+      - symbol: BRepAlgoAPI_BuilderAlgo
+      - symbol: BRepAlgoAPI_Common
+      - symbol: BRepAlgoAPI_Cut
+      - symbol: BRepAlgoAPI_Fuse
+      - symbol: BRepBndLib
+      - symbol: BRepBuilderAPI_Command
+      - symbol: BRepBuilderAPI_Copy
+      - symbol: BRepBuilderAPI_GTransform
+      - symbol: BRepBuilderAPI_MakeEdge
+      - symbol: BRepBuilderAPI_MakeFace
+      - symbol: BRepBuilderAPI_MakePolygon
+      - symbol: BRepBuilderAPI_MakeShape
+      - symbol: BRepBuilderAPI_MakeShell
+      - symbol: BRepBuilderAPI_MakeSolid
+      - symbol: BRepBuilderAPI_MakeVertex
+      - symbol: BRepBuilderAPI_MakeWire
+      - symbol: BRepBuilderAPI_ModifyShape
+      - symbol: BRepBuilderAPI_Sewing
+      - symbol: BRepBuilderAPI_Transform
+      - symbol: BRepBuilderAPI_TransitionMode
+      - symbol: BRepBuilderAPI_WireError
+      - symbol: BRepCheck_Analyzer
+      - symbol: BRepFeat_Form
+      - symbol: BRepFeat_MakeDPrism
+      - symbol: BRepFeat_SplitShape
+      - symbol: BRepFill_Filling
+      - symbol: BRepFill_TypeOfContact
+      - symbol: BRepFilletAPI_LocalOperation
+      - symbol: BRepFilletAPI_MakeChamfer
+      - symbol: BRepFilletAPI_MakeFillet
+      - symbol: BRepFilletAPI_MakeFillet2d
+      - symbol: BRepGProp
+      - symbol: BRepGProp_Face
+      - symbol: BRepLib
+      - symbol: BRepMesh_DiscretRoot
+      - symbol: BRepMesh_IncrementalMesh
+      - symbol: BRepOffsetAPI_MakeFilling
+      - symbol: BRepOffsetAPI_MakeOffset
+      - symbol: BRepOffsetAPI_MakeOffsetShape
+      - symbol: BRepOffsetAPI_MakePipeShell
+      - symbol: BRepOffsetAPI_MakeThickSolid
+      - symbol: BRepOffsetAPI_ThruSections
+      - symbol: BRepOffset_Mode
+      - symbol: BRepPrimAPI_MakeBox
+      - symbol: BRepPrimAPI_MakeCone
+      - symbol: BRepPrimAPI_MakeCylinder
+      - symbol: BRepPrimAPI_MakeOneAxis
+      - symbol: BRepPrimAPI_MakePrism
+      - symbol: BRepPrimAPI_MakeRevol
+      - symbol: BRepPrimAPI_MakeRevolution
+      - symbol: BRepPrimAPI_MakeSphere
+      - symbol: BRepPrimAPI_MakeSweep
+      - symbol: BRepPrimAPI_MakeTorus
+      - symbol: BRepTools
+      - symbol: BRep_Builder
+      - symbol: BRep_Tool
+      - symbol: BitByBitDev
+      - symbol: Bnd_Box
+      - symbol: CDM_Document
+      - symbol: ChFi2d_FilletAlgo
+      - symbol: ChFi3d_FilletShape
+      - symbol: ChFiDS_ChamfMode
+      - symbol: Extrema_ExtAlgo
+      - symbol: GCE2d_MakeArcOfCircle
+      - symbol: GCE2d_MakeArcOfEllipse
+      - symbol: GCE2d_MakeSegment
+      - symbol: GCE2d_Root
+      - symbol: GCPnts_AbscissaPoint
+      - symbol: GCPnts_TangentialDeflection
+      - symbol: GC_MakeArcOfCircle
+      - symbol: GC_MakeArcOfEllipse
+      - symbol: GC_MakeCircle
+      - symbol: GC_MakeEllipse
+      - symbol: GC_MakeSegment
+      - symbol: GC_Root
+      - symbol: GProp_GProps
+      - symbol: Geom2dAPI_ExtremaCurveCurve
+      - symbol: Geom2dAPI_InterCurveCurve
+      - symbol: Geom2dAPI_Interpolate
+      - symbol: Geom2dAPI_PointsToBSpline
+      - symbol: Geom2dAPI_ProjectPointOnCurve
+      - symbol: Geom2dConvert_CompCurveToBSplineCurve
+      - symbol: Geom2d_BSplineCurve
+      - symbol: Geom2d_BezierCurve
+      - symbol: Geom2d_BoundedCurve
+      - symbol: Geom2d_CartesianPoint
+      - symbol: Geom2d_Circle
+      - symbol: Geom2d_Conic
+      - symbol: Geom2d_Curve
+      - symbol: Geom2d_Direction
+      - symbol: Geom2d_Ellipse
+      - symbol: Geom2d_Geometry
+      - symbol: Geom2d_Hyperbola
+      - symbol: Geom2d_Line
+      - symbol: Geom2d_OffsetCurve
+      - symbol: Geom2d_Parabola
+      - symbol: Geom2d_Point
+      - symbol: Geom2d_Transformation
+      - symbol: Geom2d_TrimmedCurve
+      - symbol: Geom2d_Vector
+      - symbol: Geom2d_VectorWithMagnitude
+      - symbol: GeomAPI
+      - symbol: GeomAPI_IntSS
+      - symbol: GeomAPI_PointsToBSpline
+      - symbol: GeomAbs_JoinType
+      - symbol: GeomAbs_Shape
+      - symbol: GeomLProp_SLProps
+      - symbol: GeomLib
+      - symbol: GeomPlate_BuildPlateSurface
+      - symbol: GeomPlate_CurveConstraint
+      - symbol: GeomPlate_PointConstraint
+      - symbol: Geom_BSplineCurve
+      - symbol: Geom_BezierCurve
+      - symbol: Geom_BoundedCurve
+      - symbol: Geom_Circle
+      - symbol: Geom_Conic
+      - symbol: Geom_Curve
+      - symbol: Geom_CylindricalSurface
+      - symbol: Geom_ElementarySurface
+      - symbol: Geom_Ellipse
+      - symbol: Geom_Geometry
+      - symbol: Geom_Plane
+      - symbol: Geom_Surface
+      - symbol: Geom_TrimmedCurve
+      - symbol: Handle_Geom2d_BSplineCurve
+      - symbol: Handle_Geom2d_BezierCurve
+      - symbol: Handle_Geom2d_BoundedCurve
+      - symbol: Handle_Geom2d_Circle
+      - symbol: Handle_Geom2d_Curve
+      - symbol: Handle_Geom2d_Ellipse
+      - symbol: Handle_Geom2d_Geometry
+      - symbol: Handle_Geom2d_Line
+      - symbol: Handle_Geom2d_TrimmedCurve
+      - symbol: Handle_GeomPlate_CurveConstraint
+      - symbol: Handle_GeomPlate_PointConstraint
+      - symbol: Handle_Geom_BSplineCurve
+      - symbol: Handle_Geom_BezierCurve
+      - symbol: Handle_Geom_Circle
+      - symbol: Handle_Geom_Conic
+      - symbol: Handle_Geom_Curve
+      - symbol: Handle_Geom_Ellipse
+      - symbol: Handle_Geom_Plane
+      - symbol: Handle_Geom_Surface
+      - symbol: Handle_Geom_TrimmedCurve
+      - symbol: Handle_IntTools_Context
+      - symbol: Handle_Law_Function
+      - symbol: Handle_Poly_PolygonOnTriangulation
+      - symbol: Handle_Poly_Triangulation
+      - symbol: Handle_TDF_Attribute
+      - symbol: Handle_TDocStd_Document
+      - symbol: Handle_XCAFApp_Application
+      - symbol: Handle_XCAFDoc_DocumentTool
+      - symbol: Handle_XCAFDoc_ShapeTool
+      - symbol: Handle_XCAFDoc_VisMaterial
+      - symbol: Handle_XCAFDoc_VisMaterialTool
+      - symbol: IFSelect_ReturnStatus
+      - symbol: IGESControl_Reader
+      - symbol: IntTools_Context
+      - symbol: Law_BSpFunc
+      - symbol: Law_Composite
+      - symbol: Law_Function
+      - symbol: Law_Interpol
+      - symbol: Law_Linear
+      - symbol: Law_S
+      - symbol: Message_ProgressRange
+      - symbol: NCollection_BaseList
+      - symbol: NCollection_BaseMap
+      - symbol: NCollection_BaseSequence
+      - symbol: Poly_Array1OfTriangle
+      - symbol: Poly_Connect
+      - symbol: Poly_PolygonOnTriangulation
+      - symbol: Poly_Triangle
+      - symbol: Poly_Triangulation
+      - symbol: Precision
+      - symbol: Quantity_Color
+      - symbol: Quantity_ColorRGBA
+      - symbol: RWGltf_CafWriter
+      - symbol: RWMesh_TriangulationSource
+      - symbol: STEPControl_Reader
+      - symbol: STEPControl_StepModelType
+      - symbol: STEPControl_Writer
+      - symbol: ShapeFix_Face
+      - symbol: ShapeFix_Root
+      - symbol: ShapeFix_Solid
+      - symbol: ShapeFix_Wire
+      - symbol: ShapeUpgrade_UnifySameDomain
+      - symbol: Standard_GUID
+      - symbol: Standard_Transient
+      - symbol: StdPrs_ToolTriangulatedShape
+      - symbol: StlAPI
+      - symbol: StlAPI_Reader
+      - symbol: StlAPI_Writer
+      - symbol: TColStd_Array1OfBoolean
+      - symbol: TColStd_Array1OfInteger
+      - symbol: TColStd_IndexedDataMapOfStringString
+      - symbol: TColgp_Array1OfDir
+      - symbol: TColgp_Array1OfPnt
+      - symbol: TColgp_Array1OfPnt2d
+      - symbol: TColgp_Array1OfVec
+      - symbol: TColgp_Array2OfPnt
+      - symbol: TCollection_AsciiString
+      - symbol: TCollection_ExtendedString
+      - symbol: TDF_Attribute
+      - symbol: TDF_Label
+      - symbol: TDF_LabelSequence
+      - symbol: TDataStd
+      - symbol: TDataStd_GenericEmpty
+      - symbol: TDataStd_GenericExtString
+      - symbol: TDataStd_Name
+      - symbol: TDocStd_Document
+      - symbol: TNaming_NamedShape
+      - symbol: TopAbs_Orientation
+      - symbol: TopAbs_ShapeEnum
+      - symbol: TopExp_Explorer
+      - symbol: TopLoc_Location
+      - symbol: TopTools_IndexedMapOfShape
+      - symbol: TopTools_ListOfShape
+      - symbol: TopTools_SequenceOfShape
+      - symbol: TopoDS
+      - symbol: TopoDS_Builder
+      - symbol: TopoDS_Compound
+      - symbol: TopoDS_Edge
+      - symbol: TopoDS_Face
+      - symbol: TopoDS_Iterator
+      - symbol: TopoDS_Shape
+      - symbol: TopoDS_Shell
+      - symbol: TopoDS_Solid
+      - symbol: TopoDS_Vertex
+      - symbol: TopoDS_Wire
+      - symbol: XCAFApp_Application
+      - symbol: XCAFDoc_ColorTool
+      - symbol: XCAFDoc_DocumentTool
+      - symbol: XCAFDoc_Location
+      - symbol: XCAFDoc_Material
+      - symbol: XCAFDoc_ShapeTool
+      - symbol: XCAFDoc_VisMaterial
+      - symbol: XCAFDoc_VisMaterialPBR
+      - symbol: XCAFDoc_VisMaterialTool
+      - symbol: XSControl_Reader
+      - symbol: gp
+      - symbol: gp_Ax1
+      - symbol: gp_Ax2
+      - symbol: gp_Ax22d
+      - symbol: gp_Ax2d
+      - symbol: gp_Ax3
+      - symbol: gp_Circ
+      - symbol: gp_Cylinder
+      - symbol: gp_Dir
+      - symbol: gp_Dir2d
+      - symbol: gp_Elips
+      - symbol: gp_Elips2d
+      - symbol: gp_GTrsf
+      - symbol: gp_GTrsf2d
+      - symbol: gp_Mat
+      - symbol: gp_Pln
+      - symbol: gp_Pnt
+      - symbol: gp_Pnt2d
+      - symbol: gp_Trsf
+      - symbol: gp_Trsf2d
+      - symbol: gp_Vec
+      - symbol: gp_Vec2d
+      - symbol: gp_XY
+      - symbol: gp_XYZ
+    emccFlags:
+    - -O3
+    - -sEXPORT_ES6=1
+    - -sUSE_ES6_IMPORT_META=0
+    - -sEXPORTED_RUNTIME_METHODS=['FS']
+    - -sINITIAL_MEMORY=100MB
+    - -sMAXIMUM_MEMORY=4GB
+    - -sALLOW_MEMORY_GROWTH=1
+    - -sUSE_FREETYPE=1
+  additionalCppCode: |
+    #include <GeomAPI_Interpolate.hxx>
+    #include <TColgp/TColgp_Array1OfPnt.hxx>
+    #include <TColgp/TColgp_HArray1OfPnt.hxx>
+    #include <BRepFeat_SplitShape.hxx>
+    #include <TopTools_SequenceOfShape.hxx>
+    #include <TopoDS_Shape.hxx>
+    
+    typedef Handle(IMeshTools_Context) Handle_IMeshTools_Context;
+    class BitByBitDev {
+    public:
+        static Handle(Geom_BSplineCurve) BitInterpolate(
+            const TColgp_Array1OfPnt& points,
+            const Standard_Boolean periodic,
+            const Standard_Real tolerance) {
+                TColgp_HArray1OfPnt hpoints(points.Lower(), points.Upper());
+                for (Standard_Integer i = points.Lower(); i <= points.Upper(); i++) {
+                hpoints.SetValue(i, points.Value(i));
+                }
+                Handle(TColgp_HArray1OfPnt) hpoints_handle = new TColgp_HArray1OfPnt(hpoints);
+                GeomAPI_Interpolate interp(hpoints_handle, periodic, tolerance);
+                interp.Perform();
+                return interp.Curve();
+            }
+    public:
+        static std::string ConvertAsciiString(const TCollection_AsciiString& s) {
+            return s.ToCString();
+        }
+    public:
+        static std::string GetExceptionMessage(intptr_t exceptionPtr) {
+            return std::string(reinterpret_cast<std::exception *>(exceptionPtr)->what());
+        }
+    public:
+        static TopoDS_Shape BitSplit(const TopoDS_Shape& shape, const TopTools_ListOfShape& shapesToSplitWith)
+        {
+            TopTools_SequenceOfShape shapesToSplitWithSequence;
+            for (TopTools_ListIteratorOfListOfShape it(shapesToSplitWith); it.More(); it.Next()) {
+                shapesToSplitWithSequence.Append(it.Value());
+            }
+
+            BRepFeat_SplitShape splitShape;
+            splitShape.Init(shape);
+            splitShape.Add(shapesToSplitWithSequence);
+            splitShape.Build();
+            return splitShape.Shape();
+        }
+    };
+    

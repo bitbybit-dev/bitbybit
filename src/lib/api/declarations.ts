@@ -16,6 +16,7 @@ export const typescriptDeclarations = `
                 readonly line: Line;
                 readonly polyline: Polyline;
                 readonly verb: Verb;
+                readonly color: Color;
                 readonly jscad: JSCAD;
                 readonly tag: Tag;
                 readonly time: Time;

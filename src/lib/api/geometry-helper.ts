@@ -15,7 +15,7 @@ export class GeometryHelper {
 
     createOrUpdateSurfaceMesh(
         meshDataConverted: { positions: any[]; indices: any[]; normals: any[]; },
-        mesh: Mesh, updatable: boolean, material: PBRMetallicRoughnessMaterial, addToScene: boolean
+        mesh: Mesh, updatable: boolean, material: PBRMetallicRoughnessMaterial, addToScene: boolean, hidden: boolean
     ): Mesh {
         const createMesh = () => {
             const vertexData = new VertexData();
@@ -43,6 +43,58 @@ export class GeometryHelper {
         }
         if (material) {
             mesh.material = material;
+        }
+        if (hidden) {
+            mesh.isVisible = false;
+        }
+        mesh.isPickable = false;
+        return mesh;
+    }
+
+    createOrUpdateSurfacesMesh(
+        meshDataConverted: { positions: any[]; indices: any[]; normals: any[]; }[],
+        mesh: Mesh, updatable: boolean, material: PBRMetallicRoughnessMaterial, addToScene: boolean, hidden: boolean
+    ): Mesh {
+        const createMesh = () => {
+            const first = meshDataConverted.pop()
+            const vd = new VertexData();
+            vd.positions = first.positions;
+            vd.indices = first.indices;
+            vd.normals = first.normals;
+
+            const v = [];
+            meshDataConverted.forEach(meshData => {
+                const vertexData = new VertexData();
+                vertexData.positions = meshData.positions;
+                vertexData.indices = meshData.indices;
+                vertexData.normals = meshData.normals;
+                v.push(vertexData);
+            })
+            vd.merge(v);
+            vd.applyToMesh(mesh, updatable);
+        };
+
+        if (mesh && updatable) {
+            mesh.dispose();
+            createMesh();
+            mesh.flipFaces(false);
+        } else {
+            let scene = null;
+            if (addToScene) {
+                scene = this.context.scene;
+            }
+            mesh = new Mesh(`surface${Math.random()}`, scene);
+            createMesh();
+            mesh.flipFaces(false);
+            if (material) {
+                mesh.material = material;
+            }
+        }
+        if (material) {
+            mesh.material = material;
+        }
+        if (hidden) {
+            mesh.isVisible = false;
         }
         mesh.isPickable = false;
         return mesh;
@@ -101,42 +153,44 @@ export class GeometryHelper {
         mesh.edgesColor = new Color4(edgeColor.r, edgeColor.g, edgeColor.b, opacity);
     }
 
-    drawPolyline(mesh: LinesMesh, pointsToDraw: number[][], updatable: boolean, size: number, opacity: number, colours: string | string[]): LinesMesh {
-        const points = [];
-        const colors = [];
-        pointsToDraw.forEach(pt => {
-            points.push(new Vector3(pt[0], pt[1], pt[2]));
-            colors.push(new Color4(1, 1, 1, 0));
-        });
-
-        mesh = this.drawPolylineFromPointsAndColours(mesh, updatable, points, colors, size, opacity, colours);
+    drawPolyline(mesh: LinesMesh,
+        pointsToDraw: number[][],
+        updatable: boolean, size: number, opacity: number, colours: string | string[]): LinesMesh {
+        // const points = [];
+        // const colors = [];
+        // pointsToDraw.forEach(pt => {
+        //     points.push(new Vector3(pt[0], pt[1], pt[2]));
+        //     colors.push(new Color4(1, 1, 1, 0));
+        // });
+        mesh = this.drawPolylines(mesh, [pointsToDraw], updatable, size, opacity, colours);
+        // mesh = this.drawPolylineFromPointsAndColours(mesh, updatable, points, colors, size, opacity, colours);
         return mesh;
     }
 
-    drawPolylineFromPointsAndColours(
-        mesh: LinesMesh, updatable: boolean, points: Vector3[], colors: Color4[], size: number, opacity: number, colours: string | string[]
-    ): LinesMesh {
-        if (mesh && updatable) {
+    // drawPolylineFromPointsAndColours(
+    //     mesh: LinesMesh, updatable: boolean, points: Vector3[], colors: Color4[], size: number, opacity: number, colours: string | string[]
+    // ): LinesMesh {
+    //     if (mesh && updatable) {
 
-            if (mesh.getTotalVertices() === points.length) {
-                mesh = MeshBuilder.CreateLines(null, {
-                    points,
-                    colors,
-                    instance: mesh,
-                    useVertexAlpha: true,
-                    updatable
-                }, null);
-            } else {
-                mesh.dispose();
-                mesh = this.createLines(updatable, points, colors);
-            }
-        } else {
-            mesh = this.createLines(updatable, points, colors);
-        }
+    //         if (mesh.getTotalVertices() === points.length) {
+    //             mesh = MeshBuilder.CreateLines(null, {
+    //                 points,
+    //                 colors,
+    //                 instance: mesh,
+    //                 useVertexAlpha: true,
+    //                 updatable
+    //             }, null);
+    //         } else {
+    //             mesh.dispose();
+    //             mesh = this.createLines(updatable, points, colors);
+    //         }
+    //     } else {
+    //         mesh = this.createLines(updatable, points, colors);
+    //     }
 
-        this.edgesRendering(mesh, size, opacity, colours);
-        return mesh;
-    }
+    //     this.edgesRendering(mesh, size, opacity, colours);
+    //     return mesh;
+    // }
 
     drawPolylines(
         mesh: LinesMesh, polylinePoints: number[][][], updatable: boolean,
@@ -187,15 +241,15 @@ export class GeometryHelper {
             }, this.context.scene);
     }
 
-    createLines(updatable: boolean, points: Vector3[], colors: Color4[]): LinesMesh {
-        return MeshBuilder.CreateLines(`lines${Math.random()}`,
-            {
-                points,
-                colors,
-                updatable,
-                useVertexAlpha: true
-            }, this.context.scene);
-    }
+    // createLines(updatable: boolean, points: Vector3[], colors: Color4[]): LinesMesh {
+    //     return MeshBuilder.CreateLines(`lines${Math.random()}`,
+    //         {
+    //             points,
+    //             colors,
+    //             updatable,
+    //             useVertexAlpha: true
+    //         }, this.context.scene);
+    // }
 
     removeConsecutiveDuplicates(points: number[][], checkFirstAndLast: boolean = true): number[][] {
         const pointsRemaining = [];

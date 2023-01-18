@@ -12,6 +12,9 @@ import { OCCTOperations } from './operations';
 import { OCCTBooleans } from './booleans';
 import { OCCTIO } from './io';
 import { OCCTGeom } from './geom/geom';
+import { OCCTAdvanced } from './advanced/advanced';
+import { OCCTAssembly } from './assembly/assembly';
+import { OCCTFillets } from './fillets';
 
 /**
  * Contains various methods for OpenCascade implementation
@@ -23,9 +26,12 @@ export class OCCT {
 
     public readonly shapes: OCCTShapes;
     public readonly geom: OCCTGeom;
+    public readonly assembly: OCCTAssembly;
+    public readonly fillets: OCCTFillets;
     public readonly transforms: OCCTTransforms;
     public readonly operations: OCCTOperations;
     public readonly booleans: OCCTBooleans;
+    public readonly advanced: OCCTAdvanced;
     public readonly io: OCCTIO;
 
     constructor(
@@ -37,9 +43,12 @@ export class OCCT {
     ) {
         this.shapes = new OCCTShapes(occWorkerManager);
         this.geom = new OCCTGeom(occWorkerManager);
+        this.assembly = new OCCTAssembly(occWorkerManager);
         this.transforms = new OCCTTransforms(occWorkerManager);
         this.operations = new OCCTOperations(occWorkerManager);
         this.booleans = new OCCTBooleans(occWorkerManager);
+        this.advanced = new OCCTAdvanced(occWorkerManager);
+        this.fillets = new OCCTFillets(occWorkerManager);
         this.io = new OCCTIO(occWorkerManager, geometryHelper);
     }
 
@@ -49,60 +58,65 @@ export class OCCT {
      * @param inputs Contains a shape to be drawn and additional information
      * @returns BabylonJS Mesh
      */
-    async drawShape(inputs: Inputs.OCCT.DrawShapeDto): Promise<Mesh> {
-        const fe: {
-            faceList: {
-                face_index: number;
-                normal_coord: Inputs.Base.Vector3;
-                number_of_triangles: number;
-                tri_indexes: number[];
-                vertex_coord: Inputs.Base.Point3;
-                vertex_coord_vec: Inputs.Base.Vector3[];
-            }[],
-            edgeList: {
-                edge_index: number;
-                vertex_coord: Inputs.Base.Point3[];
-            }[]
-        } = await this.occWorkerManager.genericCallToWorkerPromise('shapeToMesh', inputs);
+    async drawShape(inputs: Inputs.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Mesh> {
+        const options = { ...inputs };
+        if (inputs.faceMaterial) {
+            delete inputs.faceMaterial;
+        }
+        const fe: Inputs.OCCT.DecomposedMeshDto = await this.occWorkerManager.genericCallToWorkerPromise('shapeToMesh', inputs);
 
         const shapeMesh = MeshBuilder.CreateBox('brepMesh' + Math.random(), { size: 0.00001 }, this.context.scene);
         shapeMesh.isVisible = false;
         let dummy;
 
-        if (inputs.drawFaces) {
+        if (inputs.drawFaces && fe.faceList && fe.faceList.length) {
 
-            const pbr = new PBRMetallicRoughnessMaterial('pbr' + Math.random(), this.context.scene);
+            let pbr;
 
-            pbr.baseColor = Color3.FromHexString(Array.isArray(inputs.faceColour) ? inputs.faceColour[0] : inputs.faceColour);
-            pbr.metallic = 1.0;
-            pbr.roughness = 0.6;
-            pbr.alpha = inputs.faceOpacity;
-            pbr.alphaMode = 1;
-            pbr.backFaceCulling = true;
-            pbr.doubleSided = false;
-            pbr.zOffset = inputs.drawEdges ? 2 : 0;
+            if (options.faceMaterial) {
+                pbr = options.faceMaterial;
+                pbr.zOffset = inputs.drawEdges ? 2 : 0;
+            } else {
+                pbr = new PBRMetallicRoughnessMaterial('pbr' + Math.random(), this.context.scene);
 
-            fe.faceList.forEach(face => {
-                const mesh = this.geometryHelper.createOrUpdateSurfaceMesh({
+                pbr.baseColor = Color3.FromHexString(Array.isArray(inputs.faceColour) ? inputs.faceColour[0] : inputs.faceColour);
+                pbr.metallic = 1.0;
+                pbr.roughness = 0.6;
+                pbr.alpha = inputs.faceOpacity;
+                pbr.alphaMode = 1;
+                pbr.backFaceCulling = true;
+                pbr.doubleSided = false;
+                pbr.zOffset = inputs.drawEdges ? 2 : 0;
+            }
+
+            let meshData = fe.faceList.map(face => {
+                return {
                     positions: face.vertex_coord,
                     normals: face.normal_coord,
                     indices: face.tri_indexes,
-                }, dummy, false, pbr, true);
-                mesh.parent = shapeMesh;
+                };
             });
+
+            const mesh = this.geometryHelper.createOrUpdateSurfacesMesh(meshData, dummy, false, pbr, true, false);
+            mesh.parent = shapeMesh;
         }
         if (inputs.drawEdges) {
+            const evs = [];
             fe.edgeList.forEach(edge => {
-                const mesh = this.geometryHelper.drawPolyline(
-                    dummy,
-                    edge.vertex_coord,
-                    false,
-                    inputs.edgeWidth,
-                    inputs.edgeOpacity,
-                    inputs.edgeColour
-                );
-                mesh.parent = shapeMesh;
+                const ev = edge.vertex_coord.filter(s => s !== undefined);
+                evs.push(ev);
+                // const mesh = this.geometryHelper.drawPolyline(
+                //     dummy,
+                //     ev,
+                //     false,
+                //     inputs.edgeWidth,
+                //     inputs.edgeOpacity,
+                //     inputs.edgeColour
+                // );
+                // mesh.parent = shapeMesh;
             });
+            const mesh = this.geometryHelper.drawPolylines(dummy, evs, false, inputs.edgeWidth, inputs.edgeOpacity, inputs.edgeColour);
+            mesh.parent = shapeMesh;
         }
         if (inputs.drawEdgeIndexes) {
             const promises = fe.edgeList.map(async edge => {

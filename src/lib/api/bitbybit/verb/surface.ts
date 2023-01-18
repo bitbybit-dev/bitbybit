@@ -73,6 +73,7 @@ export class VerbSurface {
             inputs.updatable,
             pbr,
             true,
+            inputs.hidden,
         );
     }
 
@@ -120,6 +121,7 @@ export class VerbSurface {
             inputs.updatable,
             pbr,
             true,
+            inputs.hidden
         );
     }
 
@@ -142,6 +144,7 @@ export class VerbSurface {
                     colours: inputs.colours[index] ? inputs.colours[index] : inputs.colours[0],
                     updatable: inputs.updatable,
                     opacity: inputs.opacity,
+                    hidden: inputs.hidden,
                 });
                 inputs.surfacesMesh.addChild(srf);
             });
@@ -152,6 +155,7 @@ export class VerbSurface {
                     colours: inputs.colours,
                     updatable: inputs.updatable,
                     opacity: inputs.opacity,
+                    hidden: inputs.hidden,
                 });
                 inputs.surfacesMesh.addChild(srf);
             });

@@ -1,4 +1,4 @@
-import { OpenCascadeInstance } from "opencascade.js";
+import { OpenCascadeInstance } from 'opencascade.js';
 
 export class CacheHelper {
 
@@ -80,7 +80,7 @@ export class CacheHelper {
                     const itemHash = this.computeHash({ ...args, index });
                     r.hash = itemHash;
                     this.addToCache(itemHash, r);
-                })
+                });
             } else {
                 toReturn.hash = curHash;
                 this.addToCache(curHash, toReturn);
@@ -101,7 +101,7 @@ export class CacheHelper {
     }
 
     /** This function computes a 32-bit integer hash given a set of `arguments`.
-     * If `raw` is true, the raw set of sanitized arguments will be returned instead. 
+     * If `raw` is true, the raw set of sanitized arguments will be returned instead.
      */
     computeHash(args, raw?: any): any {
         let argsString = JSON.stringify(args);

@@ -18,5 +18,11 @@ export namespace Asset {
             this.assetFile = assetFile;
         }
         assetFile: File;
+        importHidden: boolean;
+    }
+    export class AssetFileByUrlDto {
+        assetFile: string;
+        rootUrl: string;
+        importHidden: boolean;
     }
 }

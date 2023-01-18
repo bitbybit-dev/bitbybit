@@ -19,7 +19,7 @@ export class OCCTSurfaces {
      * @param inputs Cylinder parameters
      * @returns OpenCascade cylindrical surface
      */
-    cylindricalSurface(inputs: Inputs.OCCT.GeomCylindricalSurfaceDto): Promise<any> {
+    cylindricalSurface(inputs: Inputs.OCCT.GeomCylindricalSurfaceDto): Promise<Inputs.OCCT.GeomSurfacePointer> {
         return this.occWorkerManager.genericCallToWorkerPromise('geom.surfaces.cylindricalSurface', inputs);
     }
 
@@ -32,7 +32,7 @@ export class OCCTSurfaces {
      * @param inputs Face shape
      * @returns OpenCascade geom surface
      */
-    surfaceFromFace(inputs: Inputs.OCCT.ShapeDto): Promise<any> {
+    surfaceFromFace(inputs: Inputs.OCCT.ShapeDto<Inputs.OCCT.TopoDSFacePointer>): Promise<Inputs.OCCT.GeomSurfacePointer> {
         return this.occWorkerManager.genericCallToWorkerPromise('geom.surfaces.surfaceFromFace', inputs);
     }
 

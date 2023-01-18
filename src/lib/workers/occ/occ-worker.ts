@@ -1,4 +1,5 @@
 import { OpenCascadeInstance } from 'opencascade.js';
+import { ShapesHelperService } from '../../api/shapes-helper.service';
 import { VectorHelperService } from '../../api/vector-helper.service';
 import { CacheHelper } from './cache-helper';
 import { OccHelper } from './occ-helper';
@@ -10,7 +11,9 @@ let cacheHelper: CacheHelper;
 export const initializationComplete = (occ: OpenCascadeInstance) => {
     cacheHelper = new CacheHelper(occ);
     const vecService = new VectorHelperService();
-    openCascade = new Occ(occ, new OccHelper(vecService, occ));
+    const shapesService = new ShapesHelperService();
+
+    openCascade = new Occ(occ, new OccHelper(vecService, shapesService, occ));
     postMessage('occ-initialised');
 };
 
@@ -43,10 +46,10 @@ export const onMessageInput = (d: DataInput, postMessage) => {
             // We thus replace these hashes to real objects from the cache before functions are called,
             // this probably looks like smth generic but isn't, so will need to check if it works
             if (d.action.inputs.shape) {
-                d.action.inputs.shape = cacheHelper.checkCache(d.action.inputs.shape);
+                d.action.inputs.shape = cacheHelper.checkCache(d.action.inputs.shape.hash);
             }
             if (d.action.inputs.shapes && d.action.inputs.shapes.length > 0) {
-                d.action.inputs.shapes = d.action.inputs.shapes.map(hash => cacheHelper.checkCache(hash));
+                d.action.inputs.shapes = d.action.inputs.shapes.map(shape => cacheHelper.checkCache(shape.hash));
             }
 
             const path = d.action.functionName.split('.');
@@ -59,22 +62,25 @@ export const onMessageInput = (d: DataInput, postMessage) => {
                 res = cacheHelper.cacheOp(d.action, () => openCascade[d.action.functionName](d.action.inputs));
             }
 
-            if (res.result) {
+            if (res.result !== undefined) {
                 result = res.result;
             }
             else if (Array.isArray(res)) {
-                result = res.map(r => r.hash); // if we return multiple shapes we should return array of cached hashes
+                console.log(res);
+
+                result = res.map(r => ({ hash: r.hash, type: 'occ-shape' })); // if we return multiple shapes we should return array of cached hashes
             } else {
-                result = res.hash;
+                console.log(res);
+                result = { hash: res.hash, type: 'occ-shape' };
             }
         }
         if (d.action.functionName === 'saveShapeSTEP') {
-            d.action.inputs.shape = cacheHelper.checkCache(d.action.inputs.shape);
+            d.action.inputs.shape = cacheHelper.checkCache(d.action.inputs.shape.hash);
             result = openCascade.io.saveShapeSTEP(d.action.inputs);
         }
         if (d.action.functionName === 'shapeToMesh') {
-            d.action.inputs.shape = cacheHelper.checkCache(d.action.inputs.shape);
-            result = openCascade.shapeToMesh(d.action.inputs.shape, d.action.inputs.precision);
+            d.action.inputs.shape = cacheHelper.checkCache(d.action.inputs.shape.hash);
+            result = openCascade.shapeToMesh(d.action.inputs.shape, d.action.inputs.precision, d.action.inputs.adjustYtoZ);
         }
         // Only the cache that was created in previous run has to be kept, the rest needs to go
         if (d.action.functionName === 'startedTheRun') {

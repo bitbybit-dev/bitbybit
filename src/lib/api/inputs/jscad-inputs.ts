@@ -28,6 +28,10 @@ export namespace JSCAD {
          */
         updatable = false;
         /**
+         * Hidden
+         */
+        hidden = false;
+        /**
          * Solid mesh variable in case it already exists and needs updating
          */
         jscadMesh?: Mesh;
@@ -55,6 +59,10 @@ export namespace JSCAD {
          * Indicates wether this solid will be transformed in time
          */
         updatable = false;
+        /**
+         * Should be hidden
+         */
+        hidden = false;
         /**
          * Solid mesh variable in case it already exists and needs updating
          */
@@ -116,7 +124,7 @@ export namespace JSCAD {
         /**
          * Solid to be downloaded
          */
-         mesh: any;
+        mesh: any;
         /**
          * File name
          */

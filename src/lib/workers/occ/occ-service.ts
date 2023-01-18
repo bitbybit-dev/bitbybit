@@ -1,17 +1,16 @@
-import {
-    GeomAbs_IsoType,
-    Geom_Curve,
-    OpenCascadeInstance,
-    TopoDS_Face
-} from 'opencascade.js';
+import { Geom_Curve, Geom_Surface, OpenCascadeInstance, TopoDS_Face } from 'opencascade.js';
 import * as Inputs from '../../api/inputs/inputs';
 import { OccHelper } from './occ-helper';
 import { OCCTBooleans } from './services/booleans';
 import { OCCTGeom } from './services/geom/geom';
+// import { OCCTAdvanced } from './services/advanced/advanced';
+import { OCCTAdvanced } from './services/advanced-mock/advanced';
 import { OCCTIO } from './services/io';
 import { OCCTOperations } from './services/operations';
 import { OCCTShapes } from './services/shapes/shapes';
 import { OCCTTransforms } from './services/transforms';
+import { OCCTAssembly } from './services/assembly/assembly';
+import { OCCTFillets } from './services/fillets';
 
 
 // Worker make an instance of this class itself
@@ -20,8 +19,12 @@ export class Occ {
     public readonly geom: OCCTGeom;
     public readonly transforms: OCCTTransforms;
     public readonly operations: OCCTOperations;
+    public readonly assembly: OCCTAssembly;
     public readonly booleans: OCCTBooleans;
+    public readonly advanced: OCCTAdvanced;
+    public readonly fillets: OCCTFillets;
     public readonly io: OCCTIO;
+    private inctementalMeshBuilder;
 
     constructor(
         private readonly occ: OpenCascadeInstance,
@@ -29,138 +32,16 @@ export class Occ {
     ) {
         this.shapes = new OCCTShapes(occ, och);
         this.geom = new OCCTGeom(occ, och);
+        this.assembly = new OCCTAssembly(occ, och);
         this.transforms = new OCCTTransforms(occ, och);
         this.operations = new OCCTOperations(occ, och);
         this.booleans = new OCCTBooleans(occ, och);
+        this.advanced = new OCCTAdvanced(occ, och);
+        this.fillets = new OCCTFillets(occ, och);
         this.io = new OCCTIO(occ, och);
     }
 
-    divideFaceToUVPointsByEqualLength(inputs: Inputs.OCCT.DivideFaceToUVPointsDto): any {
-
-        const face = inputs.shape as TopoDS_Face;
-        const bas = new this.occ.BRepAdaptor_Surface_2(face, false);
-        const surface = bas.Surface();
-
-
-        // const wire = inputs.shape as TopoDS_Wire;
-        // const curve = new this.occ.BRepAdaptor_CompCurve_2(wire, false);
-        // const curveLength = this.occ.GCPnts_AbscissaPoint.Length_5(curve, curve.FirstParameter(), curve.LastParameter());
-        // const step = curveLength / inputs.nrOfDivisions;
-
-        // const lengths = [];
-        // if (inputs.excludeEndPoints) {
-        //     for (let i = step; i < curveLength; i += step) {
-        //         lengths.push(i);
-        //     }
-        // } else {
-        //     for (let i = 0; i <= curveLength; i += step) {
-        //         lengths.push(i);
-        //     }
-        // }
-
-        // const paramsLength = lengths.map(l => {
-        //     const absc = new this.occ.GCPnts_AbscissaPoint_2(curve, l, curve.FirstParameter());
-        //     const param = absc.Parameter();
-        //     return param;
-        // })
-
-        // const points = paramsLength.map(r => {
-        //     const gpPnt = this.och.gpPnt([0, 0, 0]);
-        //     curve.D0(r, gpPnt);
-        //     return [gpPnt.X(), gpPnt.Y(), gpPnt.Z()] as Inputs.Base.Point3;
-        // });
-
-        // return { result: points };
-
-    }
-
-    isoCurveOnFaceAlongUDirOnParam(inputs: Inputs.OCCT.FaceIsoCurveAtParamDto): any {
-
-        const face = inputs.shape as TopoDS_Face;
-
-        const bas = new this.occ.BRepAdaptor_Surface_2(face, true);
-
-        // const tCurve = new this.occ.Handle_Geom2d_Curve();
-        // const cons = new this.occ.BRep_CurveOnSurface(tCurve, bas.Surface().Surface())
-
-        // const surface = bas.Surface();
-        // const sadapt = new this.occ.GeomAdaptor_Surface_2(surface);
-
-        // const hsadapt = new this.occ.Handle_Adaptor3d_Surface_2(sadapt);
-
-        // const s = new this.occ.Adaptor3d_CurveOnSurface_2(hsadapt);
-
-        // const s = new this.occ.Draw
-
-        // const iso = new this.occ.Adaptor3d_IsoCurve_3(hsadapt, this.occ.GeomAbs_IsoType.GeomAbs_IsoU as GeomAbs_IsoType, 0);
-
-        // const ddd = new this.occ.
-        // const ln = iso.Line();
-
-        // const d= iso.OffsetCurve();
-        // const isoh = new this.occ.Adaptor3d_HIsoCurve_2(iso);
-        // const c = isoh.GetCurve();
-        // const pt = c.Value(0.6);
-        // return { result: [pt.X(), pt.Y(), pt.Z()] };
-
-        // const gadc = new this.occ.GeomAdaptor_Curve_2(isoh);
-        // const crv = isoh.OffsetCurve();
-        // const o = crv.get();
-        // const h = crv.OffsetCurve();.
-        // const d = h.get();
-
-        // const x = new this.occ.Geom_Curve();
-        // const edge = new this.occ.BRepBuilderAPI_MakeEdge_24(
-        //     o.BasisCurve()
-        // ).Edge();
-        // return new this.occ.BRepBuilderAPI_MakeWire_2(edge).Wire();
-    }
-
-    fillet2D(inputs: Inputs.OCCT.FilletDto): any {
-        const res = new this.occ.BRepFilletAPI_MakeFillet2d_2(inputs.shape);
-    }
-
-    makeEdgeFromGeomCurve(inputs: Inputs.OCCT.ShapesDto) {
-
-        const curve2d = new this.occ.Handle_Geom2d_Curve_2(inputs.shapes[0]);
-        const surface = new this.occ.Handle_Geom_Surface_2(inputs.shapes[1]);
-        const res = new this.occ.BRepBuilderAPI_MakeEdge_30(curve2d, surface);
-        return this.och.getActualTypeOfShape(res.Shape());
-    }
-
-    basicDifferenceTest(inputs: any) {
-        const pt1 = new this.occ.gp_Pnt_3(0, 0, 0);
-        const x1 = new this.occ.BRepPrimAPI_MakeBox_3(pt1, 1, 2, 3).Shape();
-        const pt2 = new this.occ.gp_Pnt_3(0, 1, 0);
-        const x2 = new this.occ.BRepPrimAPI_MakeBox_3(pt2, 1, 1, 1).Shape();
-
-        const differenceCut = new this.occ.BRepAlgoAPI_Cut_3(x1, x2, new this.occ.Message_ProgressRange_1());
-        differenceCut.Build(new this.occ.Message_ProgressRange_1());
-        const resShape = differenceCut.Shape();
-    }
-
-    pointInFace(inputs: Inputs.OCCT.PointInFaceDto): any {
-        const face = inputs.shapes[0];
-        const edge = inputs.shapes[1];
-        const pt = this.och.gpPnt([0, 0, 0]);
-        const pt2d = this.och.gpPnt2d([0, 0]);
-        // const c = this.occ.IntTools_Root;
-        // const context = new this.occ.BOPTools_AlgoTools3D();
-
-        const intToolsContext = new this.occ.IntTools_Context_1();
-        const handleIntTools = new this.occ.Handle_IntTools_Context_2(intToolsContext);
-
-        const res = this.occ.BOPTools_AlgoTools3D.PointInFace_2(
-            face, edge, inputs.tEdgeParam, inputs.distance2DParam, pt, pt2d, handleIntTools
-        );
-        if (res === 0) {
-            return { result: [pt.X(), pt.Y(), pt.Z()] };
-        } else {
-            throw (new Error('Point in face was not found given criteria'));
-        }
-    }
-
-    shapeToMesh(shape, maxDeviation): {
+    shapeToMesh(shape, maxDeviation, adjustYtoZ): {
         faceList: {
             face_index: number;
             normal_coord: number[];
@@ -187,23 +68,31 @@ export class Occ {
             vertex_coord: number[][];
         }[] = [];
 
+        let shapeToUse = shape;
+
+        if (adjustYtoZ) {
+            shapeToUse = this.och.rotate({ shape, axis: [1, 0, 0], angle: -90 });
+            shapeToUse = this.och.mirrorAlongNormal(
+                { shape: shapeToUse, origin: [0, 0, 0], normal: [0, 0, 1] }
+            );
+        }
+
         // This could be made optional...
         // Clean cached triangulation data for the shape.
         // This allows to get lower res models out of higher res that was once computed and cached.
-        this.occ.BRepTools.Clean(shape, true);
+        this.occ.BRepTools.Clean(shapeToUse, true);
 
-        const inctementalMeshBuilder = new this.occ.BRepMesh_IncrementalMesh_2(shape, maxDeviation, false, 0.5, true);
+        const inctementalMeshBuilder = new this.occ.BRepMesh_IncrementalMesh_2(shapeToUse, maxDeviation, false, 0.5, true);
 
         // Construct the edge hashes to assign proper indices to the edges
         const fullShapeEdgeHashes2 = {};
 
         // Iterate through the faces and triangulate each one
         const triangulations = [];
-        this.och.forEachFace(shape, (faceIndex, myFace) => {
+        this.och.forEachFace(shapeToUse, (faceIndex, myFace: TopoDS_Face) => {
             const aLocation = new this.occ.TopLoc_Location_1();
             const myT = this.occ.BRep_Tool.Triangulation(myFace, aLocation, 0);
             if (myT.IsNull()) { console.error('Encountered Null Face!'); return; }
-
             const thisFace = {
                 vertex_coord: [],
                 normal_coord: [],
@@ -294,14 +183,18 @@ export class Occ {
             //     }
             // });
             triangulations.push(myT);
+
+            aLocation.delete();
+            pc.delete();
         });
         // Nullify Triangulations between runs so they're not stored in the cache
         for (let i = 0; i < triangulations.length; i++) {
             triangulations[i].Nullify();
+            triangulations[i].delete();
         }
 
         // Get the free edges that aren't on any triangulated face/surface
-        this.och.forEachEdge(shape, (index, myEdge) => {
+        this.och.forEachEdge(shapeToUse, (index, myEdge) => {
             const edgeHash = myEdge.HashCode(100000000);
             if (!fullShapeEdgeHashes2.hasOwnProperty(edgeHash)) {
                 const thisEdge = {
@@ -327,28 +220,15 @@ export class Occ {
                 fullShapeEdgeHashes2[edgeHash] = edgeHash;
 
                 edgeList.push(thisEdge);
+
+                aLocation.delete();
+                adaptorCurve.delete();
+                tangDef.delete();
             }
         });
+        inctementalMeshBuilder.delete();
+        
         return { faceList, edgeList };
-    }
-
-
-
-    intersectSurfaceSurface(inputs: Inputs.OCCT.ShapesWithToleranceDto): Geom_Curve[] {
-        const intss = new this.occ.GeomAPI_IntSS_2(inputs.shapes[0], inputs.shapes[1], inputs.tolerance);
-        if (intss.IsDone()) {
-            const intersectionCurves = [];
-            for (let i = 1; i <= intss.NbLines(); i++) {
-                const crv = intss.Line(i);
-                const edge = new this.occ.BRepBuilderAPI_MakeEdge_24(
-                    crv
-                ).Edge();
-                intersectionCurves.push(edge);
-            }
-            return intersectionCurves;
-        } else {
-            return [];
-        }
     }
 
 

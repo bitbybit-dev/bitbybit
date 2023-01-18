@@ -21,6 +21,7 @@ export class Draw {
     private defaultBasicOptions: Inputs.Draw.DrawBasicGeometryOptions = {
         colours: '#ff0000',
         updatable: false,
+        hidden: false,
         opacity: 1,
         size: 3,
     }
@@ -131,7 +132,7 @@ export class Draw {
      * @link https://docs.bitbybit.dev/classes/bitbybit_draw.Draw.html#drawGridMesh
      * @param inputs Describes various parameters of the grid mesh like size, colour, etc.
      */
-     drawGridMesh(inputs: Inputs.Draw.SceneDrawGridMeshDto): Mesh {
+    drawGridMesh(inputs: Inputs.Draw.SceneDrawGridMeshDto): Mesh {
         const groundMaterial = new GridMaterial(`groundMaterial${Math.random()}`, this.context.scene);
         groundMaterial.majorUnitFrequency = inputs.majorUnitFrequency;
         groundMaterial.minorUnitVisibility = inputs.minorUnitVisibility;
@@ -301,9 +302,9 @@ export class Draw {
         if (!inputs.options && inputs.babylonMesh && inputs.babylonMesh.metadata.options) {
             options = inputs.babylonMesh.metadata.options;
         }
-        let result = this.line.drawLines({
-            linesMesh: inputs.babylonMesh,
-            lines: inputs.entity,
+        let result = this.polyline.drawPolylines({
+            polylinesMesh: inputs.babylonMesh,
+            polylines: inputs.entity.map(e => ({ points: [e.start, e.end] })),
             ...options as Inputs.Draw.DrawBasicGeometryOptions
         });
         this.applyGlobalSettingsAndMetadataAndShadowCasting(Inputs.Draw.drawingTypes.lines, options, result);
@@ -400,9 +401,9 @@ export class Draw {
         if (!inputs.options && inputs.babylonMesh && inputs.babylonMesh.metadata.options) {
             options = inputs.babylonMesh.metadata.options;
         }
-        let result = this.line.drawLine({
-            lineMesh: inputs.babylonMesh,
-            line: inputs.entity,
+        let result = this.polyline.drawPolylines({
+            polylinesMesh: inputs.babylonMesh,
+            polylines: [{ points: [inputs.entity.start, inputs.entity.end] }],
             ...options as Inputs.Draw.DrawBasicGeometryOptions
         });
         this.applyGlobalSettingsAndMetadataAndShadowCasting(Inputs.Draw.drawingTypes.line, options, result);
@@ -431,6 +432,7 @@ export class Draw {
         }
         return this.occt.drawShape({
             shape: inputs.entity,
+            ...new Inputs.Draw.DrawOcctShapeOptions(),
             ...options as Inputs.Draw.DrawOcctShapeOptions
         }).then(r => {
             this.applyGlobalSettingsAndMetadataAndShadowCasting(Inputs.Draw.drawingTypes.occt, options, r);
@@ -532,7 +534,7 @@ export class Draw {
     }
 
     private detectOcctShape(entity: any): boolean {
-        return !isNaN(entity);
+        return entity?.type === 'occ-shape';
     }
 
     private detectTag(entity: any): boolean {

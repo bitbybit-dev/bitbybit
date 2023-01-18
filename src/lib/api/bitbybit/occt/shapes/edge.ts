@@ -1,6 +1,7 @@
 
 import * as Inputs from '../../../inputs/inputs';
 import { OCCTWorkerManager } from '../../../../workers/occ/occ-worker-manager';
+import { Base } from '../../../inputs/inputs';
 
 
 export class OCCTEdge {
@@ -8,31 +9,6 @@ export class OCCTEdge {
     constructor(
         private readonly occWorkerManager: OCCTWorkerManager,
     ) {
-    }
-    /**
-     * Fillets OpenCascade Shapes
-     * <div>
-     *  <img src="../assets/images/blockly-images/occt/shapes/edge/filletEdges.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_edge.OCCTEdge.html#filletEdges
-     * @param inputs Shape, radius and edge indexes to fillet
-     * @returns OpenCascade shape with filleted edges
-     */
-    filletEdges(inputs: Inputs.OCCT.FilletDto): Promise<any> {
-        return this.occWorkerManager.genericCallToWorkerPromise('shapes.edge.filletEdges', inputs);
-    }
-
-    /**
-     * Chamfer OpenCascade Shape edges
-     * <div>
-     *  <img src="../assets/images/blockly-images/occt/shapes/edge/chamferEdges.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_edge.OCCTEdge.html#chamferEdges
-     * @param inputs Shape, distance and edge indexes to fillet
-     * @returns OpenCascade shape with filleted edges
-     */
-    chamferEdges(inputs: Inputs.OCCT.ChamferDto): Promise<any> {
-        return this.occWorkerManager.genericCallToWorkerPromise('shapes.edge.chamferEdges', inputs);
     }
 
     /**
@@ -44,7 +20,7 @@ export class OCCTEdge {
      * @param inputs Two points between which edge should be created
      * @returns OpenCascade edge
      */
-    line(inputs: Inputs.OCCT.LineDto): Promise<any> {
+    line(inputs: Inputs.OCCT.LineDto): Promise<Inputs.OCCT.TopoDSEdgePointer> {
         return this.occWorkerManager.genericCallToWorkerPromise('shapes.edge.line', inputs);
     }
 
@@ -57,7 +33,7 @@ export class OCCTEdge {
      * @param inputs Shape, radius and edge indexes to fillet
      * @returns OpenCascade edge
      */
-    arcThroughThreePoints(inputs: Inputs.OCCT.ArcEdgeThreePointsDto): any {
+    arcThroughThreePoints(inputs: Inputs.OCCT.ArcEdgeThreePointsDto): Promise<Inputs.OCCT.TopoDSEdgePointer> {
         return this.occWorkerManager.genericCallToWorkerPromise('shapes.edge.arcThroughThreePoints', inputs);
     }
 
@@ -70,7 +46,7 @@ export class OCCTEdge {
      * @param inputs Circle parameters
      * @returns OpenCascade circle edge
      */
-    createCircleEdge(inputs: Inputs.OCCT.CircleDto): Promise<any> {
+    createCircleEdge(inputs: Inputs.OCCT.CircleDto): Promise<Inputs.OCCT.TopoDSEdgePointer> {
         return this.occWorkerManager.genericCallToWorkerPromise('shapes.edge.createCircleEdge', inputs);
     }
 
@@ -83,7 +59,7 @@ export class OCCTEdge {
      * @param inputs Ellipse parameters
      * @returns OpenCascade ellipse edge
      */
-    createEllipseEdge(inputs: Inputs.OCCT.EllipseDto): Promise<any> {
+    createEllipseEdge(inputs: Inputs.OCCT.EllipseDto): Promise<Inputs.OCCT.TopoDSEdgePointer> {
         return this.occWorkerManager.genericCallToWorkerPromise('shapes.edge.createEllipseEdge', inputs);
     }
 
@@ -94,7 +70,7 @@ export class OCCTEdge {
      * @param inputs Shape
      * @returns OpenCascade shape with no internal edges
      */
-    removeInternalEdges(inputs: Inputs.OCCT.ShapeDto): Promise<any> {
+    removeInternalEdges(inputs: Inputs.OCCT.ShapeDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.OCCT.TopoDSShapePointer> {
         return this.occWorkerManager.genericCallToWorkerPromise('shapes.edge.removeInternalEdges', inputs);
     }
 
@@ -107,7 +83,7 @@ export class OCCTEdge {
      * @param inputs Shape
      * @returns OpenCascade edge
      */
-    getEdge(inputs: Inputs.OCCT.ShapeIndexDto): Promise<any> {
+    getEdge(inputs: Inputs.OCCT.ShapeIndexDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.OCCT.TopoDSEdgePointer> {
         return this.occWorkerManager.genericCallToWorkerPromise('shapes.edge.getEdge', inputs);
     }
 
@@ -120,7 +96,7 @@ export class OCCTEdge {
      * @param inputs Shape
      * @returns OpenCascade edge list
      */
-    getEdges(inputs: Inputs.OCCT.ShapeDto): Promise<any[]> {
+    getEdges(inputs: Inputs.OCCT.ShapeDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.OCCT.TopoDSEdgePointer[]> {
         return this.occWorkerManager.genericCallToWorkerPromise('shapes.edge.getEdges', inputs);
     }
 
@@ -133,7 +109,8 @@ export class OCCTEdge {
      * @param inputs shapes are expected to contain 2 array elements - first is geom curve, second geom surface
      * @returns OpenCascade TopoDS_Edge
      */
-    makeEdgeFromGeom2dCurveAndSurface(inputs: Inputs.OCCT.ShapesDto) {
+    makeEdgeFromGeom2dCurveAndSurface(inputs: Inputs.OCCT.EdgeFromGeom2dCurveAndSurfaceDto<Inputs.OCCT.Geom2dCurvePointer, Inputs.OCCT.GeomSurfacePointer>): Promise<Inputs.OCCT.TopoDSEdgePointer> {
+        inputs.shapes = [inputs.curve, inputs.surface];
         return this.occWorkerManager.genericCallToWorkerPromise('shapes.edge.makeEdgeFromGeom2dCurveAndSurface', inputs);
     }
 
@@ -146,22 +123,163 @@ export class OCCTEdge {
      * @param inputs Shape that contains edges - wire, face, shell, solid
      * @returns List of points
      */
-    getCornerPointsOfEdgesForShape(inputs: Inputs.OCCT.ShapeDto): Promise<Inputs.Base.Point3[]> {
+    getCornerPointsOfEdgesForShape(inputs: Inputs.OCCT.ShapeDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.Base.Point3[]> {
         return this.occWorkerManager.genericCallToWorkerPromise('shapes.edge.getCornerPointsOfEdgesForShape', inputs);
     }
 
     /**
-     * Fillets two planar edges into a wire by providing a radius, plane, edges and possible solution index if more than one result exists
+     * Gets the edge length
      * <div>
-     *  <img src="../assets/images/blockly-images/occt/shapes/edge/filletTwoEdgesInPlaneIntoAWire.svg" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/occt/shapes/edge/getEdgeLength.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_edge.OCCTEdge.html#filletTwoEdgesInPlaneIntoAWire
-     * @param inputs Definition for fillets
-     * @returns OpenCascade wire shape if solution is found
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_edge.OCCTEdge.html#getEdgeLength
+     * @param inputs edge
+     * @returns Length
      */
-    filletTwoEdgesInPlaneIntoAWire(inputs: Inputs.OCCT.FilletTwoEdgesInPlaneDto): Promise<any> {
-        inputs.shapes = [inputs.edge1, inputs.edge2];
-        return this.occWorkerManager.genericCallToWorkerPromise('shapes.edge.filletTwoEdgesInPlaneIntoAWire', inputs);
+    getEdgeLength(inputs: Inputs.OCCT.ShapeDto<Inputs.OCCT.TopoDSEdgePointer>): Promise<number> {
+        return this.occWorkerManager.genericCallToWorkerPromise('shapes.edge.getEdgeLength', inputs);
+    }
 
+    /**
+     * Gets the lengths of the edges
+     * <div>
+     *  <img src="../assets/images/blockly-images/occt/shapes/edge/getEdgesLengths.svg" alt="Blockly Image"/>
+     * </div>
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_edge.OCCTEdge.html#getEdgesLengths
+     * @param inputs edges
+     * @returns Lengths
+     */
+    getEdgesLengths(inputs: Inputs.OCCT.ShapesDto<Inputs.OCCT.TopoDSEdgePointer>): Promise<number[]> {
+        return this.occWorkerManager.genericCallToWorkerPromise('shapes.edge.getEdgesLengths', inputs);
+    }
+
+    /**
+     * Gets the center of mass for the edge
+     * <div>
+     *  <img src="../assets/images/blockly-images/occt/shapes/edge/getEdgeCenterOfMass.svg" alt="Blockly Image"/>
+     * </div>
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_edge.OCCTEdge.html#getEdgeCenterOfMass
+     * @param inputs edge
+     * @returns Point representing center of mass
+     */
+    getEdgeCenterOfMass(inputs: Inputs.OCCT.ShapeDto<Inputs.OCCT.TopoDSEdgePointer>): Promise<Inputs.Base.Point3> {
+        return this.occWorkerManager.genericCallToWorkerPromise('shapes.edge.getEdgeCenterOfMass', inputs);
+    }
+
+    /**
+     * Gets the centers of mass for the edges
+     * <div>
+     *  <img src="../assets/images/blockly-images/occt/shapes/edge/getEdgesCentersOfMass.svg" alt="Blockly Image"/>
+     * </div>
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_edge.OCCTEdge.html#getEdgesCentersOfMass
+     * @param inputs edges
+     * @returns Points representing centers of mass
+     */
+    getEdgesCentersOfMass(inputs: Inputs.OCCT.ShapesDto<Inputs.OCCT.TopoDSEdgePointer>): Promise<Inputs.Base.Point3[]> {
+        return this.occWorkerManager.genericCallToWorkerPromise('shapes.edge.getEdgesCentersOfMass', inputs);
+    }
+
+    /**
+     * Gets the point on edge at param
+     * <div>
+     *  <img src="../assets/images/blockly-images/occt/shapes/edge/pointOnEdgeAtParam.svg" alt="Blockly Image"/>
+     * </div>
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_edge.OCCTEdge.html#pointOnEdgeAtParam
+     * @param input edge
+     * @returns Point on param
+     */
+    pointOnEdgeAtParam(inputs: Inputs.OCCT.DataOnGeometryAtParamDto<Inputs.OCCT.TopoDSEdgePointer>): Promise<Inputs.Base.Point3> {
+        return this.occWorkerManager.genericCallToWorkerPromise('shapes.edge.pointOnEdgeAtParam', inputs);
+    }
+
+    /**
+     * Gets the tangent vector on edge at param
+     * <div>
+     *  <img src="../assets/images/blockly-images/occt/shapes/edge/tangentOnEdgeAtParam.svg" alt="Blockly Image"/>
+     * </div>
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_edge.OCCTEdge.html#tangentOnEdgeAtParam
+     * @param input edge
+     * @returns Tangent vector on param
+     */
+    tangentOnEdgeAtParam(inputs: Inputs.OCCT.DataOnGeometryAtParamDto<Inputs.OCCT.TopoDSEdgePointer>): Promise<Inputs.Base.Point3> {
+        return this.occWorkerManager.genericCallToWorkerPromise('shapes.edge.tangentOnEdgeAtParam', inputs);
+    }
+
+    /**
+     * Gets the point on edge at length
+     * <div>
+     *  <img src="../assets/images/blockly-images/occt/shapes/edge/pointOnEdgeAtLength.svg" alt="Blockly Image"/>
+     * </div>
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_edge.OCCTEdge.html#pointOnEdgeAtLength
+     * @param input edge and length
+     * @returns Point on edge
+     */
+    pointOnEdgeAtLength(inputs: Inputs.OCCT.DataOnGeometryAtLengthDto<Inputs.OCCT.TopoDSEdgePointer>): Promise<Inputs.Base.Point3> {
+        return this.occWorkerManager.genericCallToWorkerPromise('shapes.edge.pointOnEdgeAtLength', inputs);
+    }
+
+    /**
+     * Gets the tangent vector on edge at length
+     * <div>
+     *  <img src="../assets/images/blockly-images/occt/shapes/edge/tangentOnEdgeAtLength.svg" alt="Blockly Image"/>
+     * </div>
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_edge.OCCTEdge.html#tangentOnEdgeAtLength
+     * @param input edge and length
+     * @returns Tangent vector on edge
+     */
+    tangentOnEdgeAtLength(inputs: Inputs.OCCT.DataOnGeometryAtLengthDto<Inputs.OCCT.TopoDSEdgePointer>): Promise<Inputs.Base.Point3> {
+        return this.occWorkerManager.genericCallToWorkerPromise('shapes.edge.tangentOnEdgeAtLength', inputs);
+    }
+
+    /**
+     * Gets the start point on edge
+     * <div>
+     *  <img src="../assets/images/blockly-images/occt/shapes/edge/startPointOnEdge.svg" alt="Blockly Image"/>
+     * </div>
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_edge.OCCTEdge.html#startPointOnEdge
+     * @param input edge
+     * @returns Start point
+     */
+    startPointOnEdge(inputs: Inputs.OCCT.ShapeDto<Inputs.OCCT.TopoDSEdgePointer>): Promise<Inputs.Base.Point3> {
+        return this.occWorkerManager.genericCallToWorkerPromise('shapes.edge.startPointOnEdge', inputs);
+    }
+
+    /**
+     * Gets the end point on edge
+     * <div>
+     *  <img src="../assets/images/blockly-images/occt/shapes/edge/endPointOnEdge.svg" alt="Blockly Image"/>
+     * </div>
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_edge.OCCTEdge.html#endPointOnEdge
+     * @param input edge
+     * @returns End point
+     */
+    endPointOnEdge(inputs: Inputs.OCCT.ShapeDto<Inputs.OCCT.TopoDSEdgePointer>): Promise<Inputs.Base.Point3> {
+        return this.occWorkerManager.genericCallToWorkerPromise('shapes.edge.endPointOnEdge', inputs);
+    }
+
+    /**
+     * Divides edge by params to points
+     * <div>
+     *  <img src="../assets/images/blockly-images/occt/shapes/edge/divideEdgeByParamsToPoints.svg" alt="Blockly Image"/>
+     * </div>
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_edge.OCCTEdge.html#divideEdgeByParamsToPoints
+     * @param input edge and division params
+     * @returns Points
+     */
+    divideEdgeByParamsToPoints(inputs: Inputs.OCCT.DivideDto<Inputs.OCCT.TopoDSEdgePointer>): Promise<Inputs.Base.Point3[]> {
+        return this.occWorkerManager.genericCallToWorkerPromise('shapes.edge.divideEdgeByParamsToPoints', inputs);
+    }
+
+    /**
+     * Divides edge by length to points
+     * <div>
+     *  <img src="../assets/images/blockly-images/occt/shapes/edge/divideEdgeByEqualDistanceToPoints.svg" alt="Blockly Image"/>
+     * </div>
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_edge.OCCTEdge.html#divideEdgeByEqualDistanceToPoints
+     * @param input edge and division params
+     * @returns Points
+     */
+    divideEdgeByEqualDistanceToPoints(inputs: Inputs.OCCT.DivideDto<Inputs.OCCT.TopoDSEdgePointer>): Promise<Inputs.Base.Point3[]> {
+        return this.occWorkerManager.genericCallToWorkerPromise('shapes.edge.divideEdgeByEqualDistanceToPoints', inputs);
     }
 }

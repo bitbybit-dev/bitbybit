@@ -99,6 +99,16 @@ export namespace Point {
          */
         matrix: number[][] | number[][][];
     }
+    export class TransformsForPointsDto {
+        /**
+         * Points to transform
+         */
+        points: Base.Point3[];
+        /**
+         * Transformations that have to match nr of points
+         */
+        matrix: number[][][] | number[][][][];
+    }
     export class ClosestPointFromPointsDto {
         /**
          * Points to transform

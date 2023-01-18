@@ -83,5 +83,10 @@ export namespace Transforms {
          */
         translation: Base.Vector3;
     }
-
+    export class TranslationsXYZDto {
+        /**
+         * Translation vectors with [x, y, z] distances
+         */
+        translations: Base.Vector3[];
+    }
 }

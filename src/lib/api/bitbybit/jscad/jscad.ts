@@ -68,7 +68,7 @@ export class JSCAD {
         return s;
     }
 
-    private makeMesh(inputs: { updatable: boolean, opacity: number, colour: string }, meshToUpdate: Mesh, res: { positions: number[]; normals: number[]; indices: number[]; transforms: []; }) {
+    private makeMesh(inputs: { updatable: boolean, opacity: number, colour: string, hidden: boolean }, meshToUpdate: Mesh, res: { positions: number[]; normals: number[]; indices: number[]; transforms: []; }) {
 
         this.createMesh(res.positions, res.indices, res.normals, meshToUpdate, res.transforms, inputs.updatable);
         meshToUpdate.material = new PBRMetallicRoughnessMaterial(`jscadMaterial${Math.random()}`, this.context.scene);
@@ -82,6 +82,9 @@ export class JSCAD {
         pbr.backFaceCulling = true;
         pbr.zOffset = 0;
         meshToUpdate.isPickable = false;
+        if(inputs.hidden){
+            meshToUpdate.isVisible = false;
+        }
         return meshToUpdate;
     }
 
@@ -142,27 +145,18 @@ export class JSCAD {
      */
     async drawPath(inputs: Inputs.JSCAD.DrawPathDto): Promise<LinesMesh> {
         return new Promise(resolve => {
-            const points = [];
-            const colors = [];
 
             if (inputs.path.points) {
-                inputs.path.points.forEach(pt => {
-                    points.push(new Vector3(pt[0], 0, pt[1]));
-                    colors.push(new Color4(1, 1, 1, 0));
-                });
-
                 if (inputs.path.isClosed) {
                     const pt = inputs.path.points[0];
-                    points.push(new Vector3(pt[0], 0, pt[1]));
-                    colors.push(new Color4(1, 1, 1, 0));
+                    inputs.path.points.push([pt[0], 0, pt[1]]);
                 }
             }
 
-            resolve(this.geometryHelper.drawPolylineFromPointsAndColours(
+            resolve(this.geometryHelper.drawPolyline(
                 inputs.pathMesh,
+                inputs.path.points,
                 inputs.updatable,
-                points,
-                colors,
                 inputs.width,
                 inputs.opacity,
                 inputs.colour

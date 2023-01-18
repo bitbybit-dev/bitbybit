@@ -13,6 +13,105 @@ export const inputDeclarations = `declare namespace Asset {
         constructor(assetFile?: File);
         assetFile: File;
     }
+    class AssetFileByUrlDto {
+        assetFile: string;
+        rootUrl: string;
+    }
+}declare namespace BabylonCamera {
+    class ArcRotateCameraDto {
+        /**
+         * Defines the camera rotation along the longitudinal axis
+         */
+        alpha: number;
+        /**
+         * Defines the camera rotation along the latitudinal axis
+         */
+        beta: number;
+        /**
+         * Defines the camera distance from its target
+         */
+        radius: number;
+        /**
+         * Target of the arc rotate camera
+         */
+        target?: Base.Point3;
+    }
+    class FreeCameraDto {
+        /**
+         * Position of the free camera
+         */
+        position: Base.Point3;
+        /**
+         * Target of the free camera
+         */
+        target: Base.Point3;
+    }
+    class TargetCameraDto {
+        /**
+         * Position of the free camera
+         */
+        position: Base.Point3;
+        /**
+         * Target of the free camera
+         */
+        target: Base.Point3;
+    }
+    class PositionDto {
+        /**
+         * Target camera
+         */
+        camera: TargetCamera;
+        /**
+         * Position of the free camera
+         */
+        position: Base.Point3;
+    }
+    class SpeedDto {
+        /**
+         * Target camera
+         */
+        camera: TargetCamera;
+        /**
+         * speed of the camera
+         */
+        speed: number;
+    }
+    class TargetDto {
+        /**
+         * Target camera
+         */
+        camera: TargetCamera;
+        /**
+         * target of the camera
+         */
+        target: Base.Point3;
+    }
+    class MinZDto {
+        /**
+         * Free camera
+         */
+        camera: Camera;
+        /**
+         * minZ of the camera
+         */
+        minZ: number;
+    }
+    class MaxZDto {
+        /**
+         * Free camera
+         */
+        camera: Camera;
+        /**
+         * maxZ of the camera
+         */
+        maxZ: number;
+    }
+    class CameraDto {
+        /**
+         * Camera
+         */
+        camera: Camera;
+    }
 }declare namespace BabylonIO {
     class ExportSceneDto {
         /**
@@ -29,6 +128,83 @@ export const inputDeclarations = `declare namespace Asset {
          * File name that should be used for the scene.
          */
         filename: string;
+    }
+}declare namespace BabylonMaterial {
+    class PBRMetallicRoughnessDto {
+        /**
+         * Name of the material
+         */
+        name: string;
+        /**
+         * Base color of the material
+         */
+        baseColor: string;
+        /**
+         * Metallic value of the material
+         */
+        metallic: number;
+        /**
+         * Roughness value of the material
+         */
+        roughness: number;
+        /**
+         * Defines the transparency of the material
+         */
+        alpha: number;
+        /**
+         * Identifies if both sides of the surface should have material applied
+         */
+        backFaceCulling: boolean;
+    }
+    class BaseColorDto {
+        /**
+         * Material to update
+         */
+        material: PBRMetallicRoughnessMaterial;
+        /**
+         * Base color of the material
+         */
+        baseColor?: string;
+    }
+    class MetallicDto {
+        /**
+         * Material to update
+         */
+        material: PBRMetallicRoughnessMaterial;
+        /**
+         * Metallic value of the material
+         */
+        metallic?: number;
+    }
+    class RoughnessDto {
+        /**
+         * Material to update
+         */
+        material: PBRMetallicRoughnessMaterial;
+        /**
+         * Roughness value of the material
+         */
+        roughness?: number;
+    }
+    class AlphaDto {
+        /**
+         * Material to update
+         */
+        material: PBRMetallicRoughnessMaterial;
+        /**
+         * Alpha value of the material
+         */
+        alpha?: number;
+    }
+    class BackFaceCullingDto {
+        /**
+         * Material to update
+         */
+        material: PBRMetallicRoughnessMaterial;
+        /**
+         * back face culling
+         */
+        backFaceCulling?: boolean;
     }
 }declare namespace BabylonMesh {
     class UpdateDrawnBabylonMesh {
@@ -93,11 +269,65 @@ export const inputDeclarations = `declare namespace Asset {
          */
         scale: Base.Vector3;
     }
+    class IntersectsMeshDto {
+        /**
+         * Babylon Mesh that needs to be updated
+         */
+        babylonMesh: Mesh | InstancedMesh;
+        /**
+         * Babylon Mesh that needs to be updated
+         */
+        babylonMesh2: Mesh | InstancedMesh;
+        /**
+         * Should check precisely
+         */
+        precise: boolean;
+        /**
+         * Check descendant intersections as well
+         */
+        includeDescendants: boolean;
+    }
+    class IntersectsPointDto {
+        /**
+         * Babylon Mesh that needs to be updated
+         */
+        babylonMesh: Mesh | InstancedMesh;
+        /**
+         * point
+         */
+        point: Base.Point3;
+    }
     class BabylonMeshDto {
         /**
          * BabylonJS mesh
          */
         babylonMesh: Mesh;
+    }
+    class ShowHideMeshDto {
+        /**
+         * BabylonJS mesh
+         */
+        babylonMesh: Mesh;
+        /**
+         * Include children when showing hiding
+         */
+        includeChildren: Boolean;
+    }
+    class CloneBabylonMeshDto {
+        /**
+         * BabylonJS mesh
+         */
+        babylonMesh: Mesh;
+    }
+    class ChildMeshesBabylonMeshDto {
+        /**
+         * BabylonJS mesh
+         */
+        babylonMesh: Mesh;
+        /**
+         * Include only direct descendants
+         */
+        directDescendantsOnly: boolean;
     }
     class TranslateBabylonMeshDto {
         /**
@@ -108,6 +338,78 @@ export const inputDeclarations = `declare namespace Asset {
          * distance to translate
          */
         distance: number;
+    }
+    class NameBabylonMeshDto {
+        /**
+         * BabylonJS mesh
+         */
+        babylonMesh?: Mesh;
+        /**
+         * name of the mesh
+         */
+        name: string;
+        /**
+         * Set name also on children
+         */
+        includeChildren?: boolean;
+    }
+    class MaterialBabylonMeshDto {
+        /**
+         * BabylonJS mesh
+         */
+        babylonMesh?: Mesh;
+        /**
+         * material of the mesh
+         */
+        material: Material;
+        /**
+         * Set material on children also
+         */
+        includeChildren: Boolean;
+    }
+    class IdBabylonMeshDto {
+        /**
+         * BabylonJS mesh
+         */
+        babylonMesh?: Mesh;
+        /**
+         * id of the mesh
+         */
+        id: string;
+    }
+    class UniqueIdBabylonMeshDto {
+        /**
+         * Unique id of the mesh
+         */
+        uniqueId: number;
+    }
+    class PickableBabylonMeshDto {
+        /**
+         * BabylonJS mesh
+         */
+        babylonMesh: Mesh;
+        /**
+         * Pickable
+         */
+        pickable: boolean;
+        /**
+         * Apply set to children also
+         */
+        includeChildren: boolean;
+    }
+    class CheckCollisionsBabylonMeshDto {
+        /**
+         * BabylonJS mesh
+         */
+        babylonMesh: Mesh;
+        /**
+         * Check collisions
+         */
+        checkCollisions: boolean;
+        /**
+         * Apply set to children also
+         */
+        includeChildren: boolean;
     }
     class RotateBabylonMeshDto {
         /**
@@ -128,6 +430,10 @@ export const inputDeclarations = `declare namespace Asset {
          * Shows mesh if 0 and shows if 1
          */
         visibility: number;
+        /**
+         * Include children
+         */
+        includeChildren: boolean;
     }
     class MeshInstanceAndTransformDto {
         mesh: Mesh;
@@ -138,11 +444,75 @@ export const inputDeclarations = `declare namespace Asset {
     class MeshInstanceDto {
         mesh: Mesh;
     }
+}declare namespace BabylonPick {
+    class RayDto {
+        /**
+         * Ray
+         */
+        ray: Ray;
+    }
+    class PickInfo {
+        /**
+         * Information about picking result
+         */
+        pickInfo: PickingInfo;
+    }
+}declare namespace BabylonRay {
+    class BaseRayDto {
+        /**
+         * Origin of the ray
+         */
+        origin: Base.Point3;
+        /**
+         * Direction of the ray
+         */
+        direction: Base.Vector3;
+        /**
+         * Length of the ray
+         */
+        length?: number;
+    }
+    class RayDto {
+        /**
+         * ray to analyze
+         */
+        ray: Ray;
+    }
+    class FromToDto {
+        /**
+         * From point
+         */
+        from: Base.Point3;
+        /**
+         * To point
+         */
+        to: Base.Point3;
+    }
+}declare namespace BabylonWebXR {
+    class DefaultWebXRWithTeleportationDto {
+        /**
+         * Create XR experience with ground meshes
+         */
+        groundMeshes: Mesh[];
+    }
 }declare namespace Base {
     type Point2 = [number, number];
     type Vector2 = [number, number];
     type Point3 = [number, number, number];
     type Vector3 = [number, number, number];
+    type Line2 = {
+        start: Base.Point2;
+        end: Base.Point2;
+    };
+    type Line3 = {
+        start: Base.Point3;
+        end: Base.Point3;
+    };
+    enum skyboxEnum {
+        default = "default",
+        clearSky = "clearSky",
+        city = "city"
+    }
 }declare namespace Draw {
     class DrawAny {
         /**
@@ -221,6 +591,10 @@ export const inputDeclarations = `declare namespace Asset {
          * If geometry needs to be updated later
          */
         updatable: boolean;
+        /**
+         * Hidden
+         */
+        hidden: boolean;
     }
     /**
      * Draw options for Nodes
@@ -265,6 +639,10 @@ export const inputDeclarations = `declare namespace Asset {
          * Hex colour string for face colour
          */
         faceColour: string;
+        /**
+         * Face material
+         */
+        faceMaterial?: any;
         /**
          * Edge width
          */
@@ -357,6 +735,11 @@ export const inputDeclarations = `declare namespace Asset {
 * from './base-inputs';
 * from './draw-inputs';
 * from './babylon-mesh-inputs';
+* from './babylon-camera-inputs';
+* from './babylon-ray-inputs';
+* from './babylon-pick-inputs';
+* from './babylon-webxr';
+* from './babylon-material-inputs';
 * from './time-inputs';declare namespace JSCAD {
     class DrawSolidMeshDto {
         /**
@@ -379,6 +762,10 @@ export const inputDeclarations = `declare namespace Asset {
          * Indicates wether this solid will be transformed in time
          */
         updatable: boolean;
+        /**
+         * Hidden
+         */
+        hidden: boolean;
         /**
          * Solid mesh variable in case it already exists and needs updating
          */
@@ -405,6 +792,10 @@ export const inputDeclarations = `declare namespace Asset {
          * Indicates wether this solid will be transformed in time
          */
         updatable: boolean;
+        /**
+         * Should be hidden
+         */
+        hidden: boolean;
         /**
          * Solid mesh variable in case it already exists and needs updating
          */
@@ -1281,6 +1672,16 @@ export const inputDeclarations = `declare namespace Asset {
          */
         matrix: number[][] | number[][][];
     }
+    class TransformsLinesDto {
+        /**
+         * Lines to transform
+         */
+        lines: LinePointsDto[];
+        /**
+         * Transformations matrix or a list of transformations matrixes
+         */
+        matrix: number[][][] | number[][][][];
+    }
     class TransformLinesDto {
         /**
          * Lines to transform
@@ -1413,19 +1814,83 @@ export const inputDeclarations = `declare namespace Asset {
         size: number;
     }
 }declare namespace OCCT {
+    type GeomCurvePointer = {
+        hash: number;
+        type: string;
+    };
+    type Geom2dCurvePointer = {
+        hash: number;
+        type: string;
+    };
+    type GeomSurfacePointer = {
+        hash: number;
+        type: string;
+    };
+    type TopoDSVertexPointer = {
+        hash: number;
+        type: string;
+    };
+    type TopoDSEdgePointer = {
+        hash: number;
+        type: string;
+    };
+    type TopoDSWirePointer = {
+        hash: number;
+        type: string;
+    };
+    type TopoDSFacePointer = {
+        hash: number;
+        type: string;
+    };
+    type TopoDSShellPointer = {
+        hash: number;
+        type: string;
+    };
+    type TopoDSSolidPointer = {
+        hash: number;
+        type: string;
+    };
+    type TopoDSCompSolidPointer = {
+        hash: number;
+        type: string;
+    };
+    type TopoDSCompoundPointer = {
+        hash: number;
+        type: string;
+    };
+    type TopoDSShapePointer = TopoDSVertexPointer | TopoDSEdgePointer | TopoDSWirePointer | TopoDSFacePointer | TopoDSShellPointer | TopoDSSolidPointer | TopoDSCompoundPointer;
     enum JoinTypeEnum {
         arc = "arc",
         intersection = "intersection",
         tangent = "tangent"
     }
-    class ShapesDto {
-        constructor(shapes?: any);
+    enum ApproxParametrizationTypeEnum {
+        approxChordLength = "approxChordLength",
+        approxCentripetal = "approxCentripetal",
+        approxIsoParametric = "approxIsoParametric"
+    }
+    type DecomposedMeshDto = {
+        faceList: {
+            face_index: number;
+            normal_coord: Base.Vector3;
+            number_of_triangles: number;
+            tri_indexes: number[];
+            vertex_coord: Base.Point3;
+            vertex_coord_vec: Base.Vector3[];
+        }[];
+        edgeList: {
+            edge_index: number;
+            vertex_coord: Base.Point3[];
+        }[];
+    };
+    class ShapesDto<T> {
+        constructor(shapes?: T[]);
         /**
          * The shapes
          */
-        shapes?: any;
+        shapes?: T[];
     }
-    class FilletTwoEdgesInPlaneDto extends ShapesDto {
+    class FilletTwoEdgesInPlaneDto<T> extends ShapesDto<T> {
         /**
          * First edge to fillet
          */
@@ -1451,29 +1916,49 @@ export const inputDeclarations = `declare namespace Asset {
          */
         solution?: number;
     }
-    class FaceFromSurfaceAndWireDto extends ShapesDto {
+    class FaceFromSurfaceAndWireDto<T, U> extends ShapesDto<T> {
         /**
          * Surface from which to create a face
          */
-        surface: any;
+        surface: T;
         /**
          * Wire that represents a boundary on the surface to delimit the face
          */
-        wire: any;
+        wire: U;
         /**
          * Indicates wether face should be created inside or outside the wire
          */
         inside: boolean;
     }
-    class DrawShapeDto {
+    class EdgeFromGeom2dCurveAndSurfaceDto<T, U> extends ShapesDto<T> {
+        /**
+         * Curve 2d
+         */
+        curve: T;
+        /**
+         * Surface on which 2d curve will be evaluated
+         */
+        surface: U;
+    }
+    class WireOnFaceDto<T, U> extends ShapesDto<T> {
+        /**
+         * Wire to place on face
+         */
+        wire: T;
+        /**
+         * Face on which the wire will be placed
+         */
+        face: U;
+    }
+    class DrawShapeDto<T> {
         /**
          * Provide options without default values
          */
-        constructor(shape?: any);
+        constructor(shape?: T);
         /**
          * Brep OpenCascade geometry
          */
-        shape: any;
+        shape: T;
         /**
          * Face opacity value between 0 and 1
          */
@@ -1486,6 +1971,10 @@ export const inputDeclarations = `declare namespace Asset {
          * Hex colour string for the edges
          */
         edgeColour: string;
+        /**
+         * Face material
+         */
+        faceMaterial?: any;
         /**
          * Hex colour string for face colour
          */
@@ -1531,12 +2020,152 @@ export const inputDeclarations = `declare namespace Asset {
          */
         faceIndexColour: string;
     }
+    class FaceSubdivisionDto<T> {
+        /**
+         * Provide options without default values
+         */
+        constructor(shape?: T);
+        /**
+         * Brep OpenCascade geometry
+         */
+        shape: T;
+        /**
+         * Number of subdivisions on U direction
+         */
+        nrDivisionsU: number;
+        /**
+         * Number of subdivisions on V direction
+         */
+        nrDivisionsV: number;
+        /**
+         * Sometimes you want to shift your points half way the step distance, especially on periodic surfaces
+         */
+        shiftHalfStepU: boolean;
+        /**
+         * Removes start edge points on U
+         */
+        removeStartEdgeU: boolean;
+        /**
+         * Removes end edge points on U
+         */
+        removeEndEdgeU: boolean;
+        /**
+         * Sometimes you want to shift your points half way the step distance, especially on periodic surfaces
+         */
+        shiftHalfStepV: boolean;
+        /**
+         * Removes start edge points on V
+         */
+        removeStartEdgeV: boolean;
+        /**
+         * Removes end edge points on V
+         */
+        removeEndEdgeV: boolean;
+    }
+    class FaceLinearSubdivisionDto<T> {
+        /**
+         * Provide options without default values
+         */
+        constructor(shape?: T);
+        /**
+         * Brep OpenCascade geometry
+         */
+        shape: T;
+        /**
+         * Linear subdivision direction true - U, false - V
+         */
+        isU: boolean;
+        /**
+         * Param on direction 0 - 1
+         */
+        param?: number;
+        /**
+         * Number of subdivisions on opposite direction
+         */
+        nrPoints: number;
+        /**
+         * Sometimes you want to shift your points half way the step distance, especially on periodic surfaces
+         */
+        shiftHalfStep: boolean;
+        /**
+         * Removes first point
+         */
+        removeStartPoint: boolean;
+        /**
+         * Removes last point
+         */
+        removeEndPoint: boolean;
+    }
+    class DataOnUVDto<T> {
+        /**
+         * Provide options without default values
+         */
+        constructor(shape?: T);
+        /**
+         * Brep OpenCascade geometry
+         */
+        shape: T;
+        /**
+         * Param on U direction 0 to 1
+         */
+        paramU: number;
+        /**
+         * Param on V direction 0 to 1
+         */
+        paramV: number;
+    }
+    class DataOnUVsDto<T> {
+        /**
+         * Provide options without default values
+         */
+        constructor(shape?: T);
+        /**
+         * Brep OpenCascade geometry
+         */
+        shape: T;
+        /**
+         * Params uv
+         */
+        paramsUV: [number, number][];
+    }
     class PolygonDto {
         constructor(points?: Base.Point3[]);
         /**
          * Points points
          */
         points: Base.Point3[];
+    }
+    class SquareDto {
+        /**
+         * size of square
+         */
+        size: number;
+        /**
+         * Center of the square
+         */
+        center: Base.Point3;
+        /**
+         * Direction of the square
+         */
+        direction: Base.Vector3;
+    }
+    class RectangleDto {
+        /**
+         * width of the rectangle
+         */
+        width: number;
+        /**
+         * Height of the rectangle
+         */
+        length: number;
+        /**
+         * Center of the rectangle
+         */
+        center: Base.Point3;
+        /**
+         * Direction of the rectangle
+         */
+        direction: Base.Vector3;
     }
     class BoxDto {
         constructor(width?: number, length?: number, height?: number, center?: Base.Point3);
@@ -1556,6 +2185,25 @@ export const inputDeclarations = `declare namespace Asset {
          * Center of the box
          */
         center: Base.Point3;
+    }
+    class BoxFromCornerDto {
+        constructor(width?: number, length?: number, height?: number, corner?: Base.Point3);
+        /**
+         * Width of the box
+         */
+        width: number;
+        /**
+         * Length of the box
+         */
+        length: number;
+        /**
+         * Height of the box
+         */
+        height: number;
+        /**
+         * Corner of the box
+         */
+        corner: Base.Point3;
     }
     class SphereDto {
         constructor(radius?: number, center?: Base.Point3);
@@ -1647,35 +2295,43 @@ export const inputDeclarations = `declare namespace Asset {
          */
         lines: Line.LinePointsDto[];
     }
-    class FilletDto {
-        constructor(shape?: any, radius?: number, edgeList?: number[], all?: boolean);
+    class FilletDto<T> {
+        constructor(shape?: T, radius?: number, indexes?: number[], all?: boolean);
         /**
          * Shape to apply the fillets
          */
-        shape: any;
+        shape: T;
         /**
          * Radius of the fillets
          */
-        radius: number;
+        radius?: number;
+        /**
+         * Radius list
+         */
+        radiusList?: number[];
         /**
          * List of edge indexes to which apply the fillet, if left empty all edges will be rounded
          */
-        edgeList?: any[];
+        indexes?: any[];
     }
-    class ChamferDto {
-        constructor(shape?: any, distance?: number, edgeList?: number[], all?: boolean);
+    class ChamferDto<T> {
+        constructor(shape?: T, distance?: number, indexes?: number[], all?: boolean);
         /**
          * Shape to apply the chamfer
          */
-        shape: any;
+        shape: T;
         /**
          * Distance for the chamfer
          */
-        distance: number;
+        distance?: number;
+        /**
+         * Distance for the chamfer
+         */
+        distanceList?: number[];
         /**
          * List of edge indexes to which apply the chamfer, if left empty all edges will be chamfered
          */
-        edgeList?: any[];
+        indexes?: any[];
     }
     class BSplineDto {
         constructor(points?: Base.Point3[], closed?: boolean);
@@ -1688,6 +2344,21 @@ export const inputDeclarations = `declare namespace Asset {
          */
         closed: boolean;
     }
+    class InterpolationDto {
+        constructor(points?: Base.Point3[], periodic?: boolean);
+        /**
+         * Points through which the BSpline will be created
+         */
+        points: Base.Point3[];
+        /**
+         * Indicates wether BSpline will be periodic
+         */
+        periodic: boolean;
+        /**
+         * tolerance
+         */
+        tolerance: number;
+    }
     class BezierDto {
         constructor(points?: Base.Point3[], closed?: boolean);
         /**
@@ -1699,33 +2370,37 @@ export const inputDeclarations = `declare namespace Asset {
          */
         closed: boolean;
     }
-    class DivideWireDto {
-        constructor(shape: any, nrOfDivisions?: number, excludeEndPoints?: boolean);
+    class DivideDto<T> {
+        constructor(shape: T, nrOfDivisions?: number, removeStartPoint?: boolean, removeEndPoint?: boolean);
         /**
          * Shape representing a wire
          */
-        shape: any;
+        shape: T;
         /**
          * The number of divisions that will be performed on the curve
          */
         nrOfDivisions: number;
         /**
-         * If true end points will not be given in the list
+         * Indicates if algorithm should remove start point
          */
-        excludeEndPoints: boolean;
+        removeStartPoint: boolean;
+        /**
+         * Indicates if algorithm should remove end point
+         */
+        removeEndPoint: boolean;
     }
-    class DataOnGeometryAtParamDto {
-        constructor(shape: any, param?: number);
+    class DataOnGeometryAtParamDto<T> {
+        constructor(shape: T, param?: number);
         /**
          * Shape representing a geometry
          */
-        shape: any;
+        shape: T;
         /**
          * 0 - 1 value
          */
         param: any;
     }
-    class PointInFaceDto extends ShapesDto {
+    class PointInFaceDto<T> extends ShapesDto<T> {
         constructor(face: any, edge: any, tEdgeParam?: number, distance2DParam?: number);
         /**
          * OCCT face to be used for calculation
@@ -1744,16 +2419,16 @@ export const inputDeclarations = `declare namespace Asset {
          */
         distance2DParam: number;
     }
-    class DataOnGeometryAtLengthDto {
-        constructor(shape: any, length?: number);
+    class DataOnGeometryAtLengthDto<T> {
+        constructor(shape: T, length?: number);
         /**
          * Shape representing a wire
          */
-        shape: any;
+        shape: T;
         /**
          * length at which to evaluate the point
          */
-        length: any;
+        length: number;
     }
     class CircleDto {
         constructor(radius?: number, center?: Base.Point3, direction?: Base.Vector3);
@@ -1770,23 +2445,74 @@ export const inputDeclarations = `declare namespace Asset {
          */
         direction: Base.Vector3;
     }
-    class LoftDto {
-        constructor(shapes?: any[], makeSolid?: boolean);
+    class LoftDto<T> {
+        constructor(shapes?: T[], makeSolid?: boolean);
         /**
          * Wires through which the loft passes
          */
-        shapes: any[];
+        shapes: T[];
         /**
          * Tries to make a solid when lofting
          */
         makeSolid: boolean;
     }
-    class OffsetDto {
-        constructor(shape?: any, distance?: number, tolerance?: number);
+    class LoftAdvancedDto<T> {
+        constructor(shapes?: T[], makeSolid?: boolean, closed?: boolean, periodic?: boolean, straight?: boolean, nrPerpendicularSections?: number, useSmoothing?: boolean, maxUDegree?: number, parType?: ApproxParametrizationTypeEnum, tolerance?: number, startVertex?: Base.Point3, endVertex?: Base.Point3);
+        /**
+         * Wires through which the loft passes
+         */
+        shapes: T[];
+        /**
+         * Tries to make a solid when lofting
+         */
+        makeSolid: boolean;
+        /**
+         * Will make a closed loft.
+         */
+        closed: boolean;
+        /**
+         * Will make a periodic loft.
+         */
+        periodic: boolean;
+        /**
+         * Indicates whether straight sections should be made out of the loft
+         */
+        straight: boolean;
+        /**
+         * This number only is used when closed non straight lofting is used
+         */
+        nrPeriodicSections: number;
+        /**
+         * Tell algorithm to use smoothing
+         */
+        useSmoothing: boolean;
+        /**
+         * Maximum u degree
+         */
+        maxUDegree: number;
+        /**
+         * Tolerance
+         */
+        tolerance: number;
+        /**
+         * Approximation parametrization type
+         */
+        parType: ApproxParametrizationTypeEnum;
+        /**
+         * Optional if loft should start with a vertex
+         */
+        startVertex: Base.Point3;
+        /**
+         * Optional if loft should end with a vertex
+         */
+        endVertex: Base.Point3;
+    }
+    class OffsetDto<T> {
+        constructor(shape?: T, distance?: number, tolerance?: number);
         /**
          * Shape to offset
          */
-        shape: any;
+        shape: T;
         /**
          * Distance of offset
          */
@@ -1796,12 +2522,12 @@ export const inputDeclarations = `declare namespace Asset {
          */
         tolerance: number;
     }
-    class RevolveDto {
-        constructor(shape?: any, degrees?: number, direction?: Base.Vector3, copy?: boolean);
+    class RevolveDto<T> {
+        constructor(shape?: T, degrees?: number, direction?: Base.Vector3, copy?: boolean);
         /**
          * Shape to revolve
          */
-        shape: any;
+        shape: T;
         /**
          * Angle degrees
          */
@@ -1815,111 +2541,133 @@ export const inputDeclarations = `declare namespace Asset {
          */
         copy: boolean;
     }
-    class ShapeShapesDto {
-        constructor(shape?: any, shapes?: any[]);
+    class ShapeShapesDto<T, U> {
+        constructor(shape?: T, shapes?: U[]);
         /**
          * The wire path
          */
-        shape: any;
+        shape: T;
         /**
          * Shapes along the path to be piped
          */
-        shapes: any[];
+        shapes: U[];
     }
-    class ExtrudeDto {
-        constructor(shape?: any, direction?: Base.Vector3);
+    class ExtrudeDto<T> {
+        constructor(shape?: T, direction?: Base.Vector3);
         /**
          * Face to extrude
          */
-        shape: any;
+        shape: T;
         /**
          * Direction vector for extrusion
          */
         direction: Base.Vector3;
     }
-    class UnionDto {
-        constructor(shapes?: any[], keepEdges?: boolean);
+    class ExtrudeShapesDto<T> {
+        constructor(shapes?: T[], direction?: Base.Vector3);
+        /**
+         * Shapes to extrude
+         */
+        shapes: T[];
+        /**
+         * Direction vector for extrusion
+         */
+        direction: Base.Vector3;
+    }
+    class SplitDto<T> {
+        constructor(shape?: T, shapes?: T[]);
+        /**
+         * Shape to split
+         */
+        shape: T;
+        /**
+         * Shapes to split from main shape
+         */
+        shapes: T[];
+    }
+    class UnionDto<T> {
+        constructor(shapes?: T[], keepEdges?: boolean);
         /**
          * Objects to be joined together
          */
-        shapes: any[];
+        shapes: T[];
         /**
          * Keeps edges
          */
         keepEdges: boolean;
     }
-    class DifferenceDto {
-        constructor(shape?: any[], shapes?: any[], keepEdges?: boolean);
+    class DifferenceDto<T> {
+        constructor(shape?: T, shapes?: T[], keepEdges?: boolean);
         /**
          * Object to subtract from
          */
-        shape: any;
+        shape: T;
         /**
          * Objects to subtract
          */
-        shapes: any[];
+        shapes: T[];
         /**
          * Keeps edges unaffected
          */
         keepEdges: boolean;
     }
-    class IntersectionDto {
-        constructor(shapes?: any[], keepEdges?: boolean);
+    class IntersectionDto<T> {
+        constructor(shapes?: T[], keepEdges?: boolean);
         /**
          * Shapes to intersect
          */
-        shapes: any[];
+        shapes: T[];
         /**
          * Keep the edges
          */
         keepEdges: boolean;
     }
-    class ShapeDto {
-        constructor(shape?: any[]);
+    class ShapeDto<T> {
+        constructor(shape?: T);
         /**
          * Shape on which action should be performed
          */
-        shape: any;
+        shape: T;
     }
-    class ShapesWithToleranceDto {
-        constructor(shapes?: any);
+    class ShapesWithToleranceDto<T> {
+        constructor(shapes?: T[]);
         /**
          * The shapes
          */
-        shapes: any;
+        shapes: T[];
         /**
          * Tolerance used for intersections
          */
         tolerance: number;
     }
-    class ShapeWithToleranceDto {
-        constructor(shape?: any);
+    class ShapeWithToleranceDto<T> {
+        constructor(shape?: T);
         /**
          * The shape
          */
-        shape: any;
+        shape: T;
         /**
          * Tolerance used for intersections
          */
         tolerance: number;
     }
-    class ShapeIndexDto {
-        constructor(shape?: any, index?: number);
+    class ShapeIndexDto<T> {
+        constructor(shape?: T, index?: number);
         /**
          * Shape
          */
-        shape: any;
+        shape: T;
         /**
          * Index of the entity
          */
         index: number;
     }
-    class RotationExtrudeDto {
-        constructor(shape?: any, height?: number, degrees?: number);
+    class RotationExtrudeDto<T> {
+        constructor(shape?: T, height?: number, degrees?: number);
         /**
          * Wire to extrude by rotating
          */
-        shape: any;
+        shape: T;
         /**
          * Height of rotation
          */
@@ -1929,16 +2677,16 @@ export const inputDeclarations = `declare namespace Asset {
          */
         angle: number;
     }
-    class ThickSolidByJoinDto {
-        constructor(shape?: any, shapes?: any[], offset?: number);
+    class ThickSolidByJoinDto<T> {
+        constructor(shape?: T, shapes?: T[], offset?: number);
         /**
          * Shape to make thick
          */
-        shape: any;
+        shape: T;
         /**
          * closing faces
          */
-        shapes: any[];
+        shapes: T[];
         /**
          * Offset to apply
          */
@@ -1965,12 +2713,12 @@ export const inputDeclarations = `declare namespace Asset {
          */
         removeIntEdges: boolean;
     }
-    class TransformDto {
-        constructor(shape?: any, translation?: Base.Vector3, rotationAxis?: Base.Vector3, rotationDegrees?: number, scale?: number);
+    class TransformDto<T> {
+        constructor(shape?: T, translation?: Base.Vector3, rotationAxis?: Base.Vector3, rotationDegrees?: number, scaleFactor?: number);
         /**
          * Shape to transform
          */
-        shape: any;
+        shape: T;
         /**
          * Translation to apply
          */
@@ -1988,23 +2736,103 @@ export const inputDeclarations = `declare namespace Asset {
          */
         scaleFactor: number;
     }
-    class TranslateDto {
-        constructor(shape?: any, translation?: Base.Vector3);
+    class TransformShapesDto<T> {
+        constructor(shapes?: T[], translation?: Base.Vector3[], rotationAxes?: Base.Vector3[], rotationDegrees?: number[], scaleFactors?: number[]);
+        /**
+         * Shape to transform
+         */
+        shapes: T[];
+        /**
+         * Translation to apply
+         */
+        translations: Base.Vector3[];
+        /**
+         * Rotation to apply
+         */
+        rotationAxes: Base.Vector3[];
+        /**
+         * Rotation degrees
+         */
+        rotationAngles: number[];
+        /**
+         * Scale factor to apply
+         */
+        scaleFactors: number[];
+    }
+    class TranslateDto<T> {
+        constructor(shape?: T, translation?: Base.Vector3);
         /**
          * Shape for translation
          */
-        shape: any;
+        shape: T;
         /**
          * Translation vector
          */
         translation: Base.Vector3;
     }
-    class MirrorDto {
-        constructor(shape?: any, origin?: Base.Point3, direction?: Base.Vector3);
+    class TranslateShapesDto<T> {
+        constructor(shapes?: T[], translations?: Base.Vector3[]);
+        /**
+         * Shape for translation
+         */
+        shapes: T[];
+        /**
+         * Translation vector
+         */
+        translations: Base.Vector3[];
+    }
+    class AlignDto<T> {
+        constructor(shape?: T, fromOrigin?: Base.Point3, fromDirection?: Base.Vector3, toOrigin?: Base.Point3, toDirection?: Base.Vector3);
+        /**
+         * Shape for translation
+         */
+        shape: T;
+        /**
+         * from origin
+         */
+        fromOrigin: Base.Point3;
+        /**
+         * From direction
+         */
+        fromDirection: Base.Vector3;
+        /**
+         * To origin
+         */
+        toOrigin: Base.Point3;
+        /**
+         * To direction
+         */
+        toDirection: Base.Vector3;
+    }
+    class AlignShapesDto<T> {
+        constructor(shapes?: T[], fromOrigins?: Base.Vector3[], fromDirections?: Base.Vector3[], toOrigins?: Base.Vector3[], toDirections?: Base.Vector3[]);
+        /**
+         * Shape for translation
+         */
+        shapes: T[];
+        /**
+         * from origin
+         */
+        fromOrigins: Base.Point3[];
+        /**
+         * From direction
+         */
+        fromDirections: Base.Vector3[];
+        /**
+         * To origin
+         */
+        toOrigins: Base.Point3[];
+        /**
+         * To direction
+         */
+        toDirections: Base.Vector3[];
+    }
+    class MirrorDto<T> {
+        constructor(shape?: T, origin?: Base.Point3, direction?: Base.Vector3);
         /**
          * Shape to mirror
          */
-        shape: any;
+        shape: T;
         /**
          * Axis origin point
          */
@@ -2014,12 +2842,57 @@ export const inputDeclarations = `declare namespace Asset {
          */
         direction: Base.Vector3;
     }
-    class RotateDto {
-        constructor(shape?: any, axis?: Base.Vector3, degrees?: number);
+    class MirrorShapesDto<T> {
+        constructor(shapes?: T[], origins?: Base.Point3[], directions?: Base.Vector3[]);
+        /**
+         * Shape to mirror
+         */
+        shapes: T[];
+        /**
+         * Axis origin point
+         */
+        origins: Base.Point3[];
+        /**
+         * Axis direction vector
+         */
+        directions: Base.Vector3[];
+    }
+    class MirrorAlongNormalDto<T> {
+        constructor(shape?: T, origin?: Base.Point3, normal?: Base.Vector3);
+        /**
+         * Shape to mirror
+         */
+        shape: T;
+        /**
+         * Axis origin point
+         */
+        origin: Base.Point3;
+        /**
+         * First normal axis direction vector
+         */
+        normal: Base.Vector3;
+    }
+    class MirrorAlongNormalShapesDto<T> {
+        constructor(shapes?: T[], origins?: Base.Point3[], normals?: Base.Vector3[]);
+        /**
+         * Shape to mirror
+         */
+        shapes: T[];
+        /**
+         * Axis origin point
+         */
+        origins: Base.Point3[];
+        /**
+         * First normal axis direction vector
+         */
+        normals: Base.Vector3[];
+    }
+    class RotateDto<T> {
+        constructor(shape?: T, axis?: Base.Vector3, degrees?: number);
         /**
          * Shape to rotate
          */
-        shape: any;
+        shape: T;
         /**
          * Axis on which to rotate
          */
@@ -2029,34 +2902,94 @@ export const inputDeclarations = `declare namespace Asset {
          */
         angle: number;
     }
-    class ScaleDto {
-        constructor(shape?: any, scale?: number);
+    class RotateShapesDto<T> {
+        constructor(shapes?: T[], axes?: Base.Vector3[], angles?: number[]);
+        /**
+         * Shape to rotate
+         */
+        shapes: T[];
+        /**
+         * Axis on which to rotate
+         */
+        axes: Base.Vector3[];
+        /**
+         * Rotation degrees
+         */
+        angles: number[];
+    }
+    class ScaleDto<T> {
+        constructor(shape?: T, scale?: number);
         /**
          * Shape to scale
          */
-        shape: any;
+        shape: T;
         /**
          * Scale factor to apply
          */
         factor: number;
     }
-    class SaveStepDto {
-        constructor(shape?: any, filename?: string);
+    class ScaleShapesDto<T> {
+        constructor(shapes?: T[], factors?: number[]);
+        /**
+         * Shape to scale
+         */
+        shapes: T[];
+        /**
+         * Scale factor to apply
+         */
+        factors: number[];
+    }
+    class Scale3DDto<T> {
+        constructor(shape?: T, scale?: Base.Vector3, center?: Base.Point3);
+        /**
+         * Shape to scale
+         */
+        shape: T;
+        /**
+         * Scale factor to apply
+         */
+        scale: Base.Vector3;
+        /**
+         * Scale from the center
+         */
+        center: Base.Point3;
+    }
+    class Scale3DShapesDto<T> {
+        constructor(shapes?: T[], scales?: Base.Vector3[], centers?: Base.Point3[]);
+        /**
+         * Shape to scale
+         */
+        shapes: T[];
+        /**
+         * Scale factor to apply
+         */
+        scales: Base.Vector3[];
+        /**
+         * Scale from the center
+         */
+        centers: Base.Point3[];
+    }
+    class SaveStepDto<T> {
+        constructor(shape?: T, filename?: string, adjustYtoZ?: boolean);
         /**
          * Shape to save
          */
-        shape: any;
+        shape: T;
         /**
          * File name
          */
         filename: string;
+        /**
+         * Adjust Y (up) coordinate system to Z (up) coordinate system
+         */
+        adjustYtoZ: boolean;
     }
-    class SaveStlDto {
-        constructor(shape?: any, filename?: string, precision?: number);
+    class SaveStlDto<T> {
+        constructor(shape?: T, filename?: string, precision?: number, adjustYtoZ?: boolean);
         /**
          * Shape to save
          */
-        shape: any;
+        shape: T;
         /**
          * File name
          */
@@ -2065,16 +2998,24 @@ export const inputDeclarations = `declare namespace Asset {
          * Precision of the mesh - lower means higher res
          */
         precision: number;
+        /**
+         * Adjust Y (up) coordinate system to Z (up) coordinate system
+         */
+        adjustYtoZ: boolean;
     }
-    class ImportStepIgesDto {
-        constructor(assetFile?: File);
+    class ImportStepIgesDto<T> {
+        constructor(assetFile?: File, adjustZtoY?: boolean);
         /**
          * The name of the asset to store in the cache.
          */
         assetFile: File;
+        /**
+         * Adjusts models that use Z coordinate as up to Y up system.
+         */
+        adjustZtoY: boolean;
     }
-    class LoadStepOrIgesDto {
-        constructor(filetext?: any, filename?: string);
+    class LoadStepOrIgesDto<T> {
+        constructor(filetext?: any, filename?: string, adjustZtoY?: boolean);
         /**
          * Shape to save
          */
@@ -2083,42 +3024,68 @@ export const inputDeclarations = `declare namespace Asset {
          * File name
          */
         filename: string;
+        /**
+         * Adjusts models that use Z coordinate as up to Y up system.
+         */
+        adjustZtoY: boolean;
     }
-    class CompoundShapesDto {
-        constructor(shapes?: any[]);
+    class CompoundShapesDto<T> {
+        constructor(shapes?: T[]);
         /**
          * Shapes to add to compound
          */
-        shapes: any[];
+        shapes: T[];
     }
-    class ThisckSolidSimpleDto {
-        constructor(shape?: any, offset?: number);
+    class ThisckSolidSimpleDto<T> {
+        constructor(shape?: T, offset?: number);
         /**
          * Shape to make thick
          */
-        shape: any;
+        shape: T;
         /**
          * Offset distance
          */
         offset: number;
     }
-    class FaceFromWireDto {
-        constructor(shape?: any, planar?: boolean);
+    class FaceFromWireDto<T> {
+        constructor(shape?: T, planar?: boolean);
         /**
          * Wire shape to convert into a face
          */
-        shape: any;
+        shape: T;
         /**
          * Should plane be planar
          */
         planar: boolean;
     }
-    class FaceIsoCurveAtParamDto {
-        constructor(shape?: any, param?: number);
+    class FacesFromWiresDto<T> {
+        constructor(shapes?: T[], planar?: boolean);
+        /**
+         * Wire shapes to convert into a faces
+         */
+        shapes: T[];
+        /**
+         * Should plane be planar
+         */
+        planar: boolean;
+    }
+    class SewDto<T> {
+        constructor(shapes: T[], tolerance?: number);
+        /**
+         * Faces to construct a shell from
+         */
+        shapes: T[];
+        /**
+         *
+         */
+        tolerance: number;
+    }
+    class FaceIsoCurveAtParamDto<T> {
+        constructor(shape?: T, param?: number);
         /**
          * Face shape
          */
-        shape: any;
+        shape: T;
         /**
          * Param at which to find isocurve
          */
@@ -2128,12 +3095,12 @@ export const inputDeclarations = `declare namespace Asset {
          */
         dir: 'u' | 'v';
     }
-    class DivideFaceToUVPointsDto {
-        constructor(shape?: any);
+    class DivideFaceToUVPointsDto<T> {
+        constructor(shape?: T);
         /**
          * Face shape
          */
-        shape: any;
+        shape: T;
         /**
          * Number of points on U direction
          */
@@ -2169,6 +3136,76 @@ export const inputDeclarations = `declare namespace Asset {
          */
         sense: boolean;
     }
+    class Geom2dCircleDto {
+        /**
+         * Center of the circle
+         */
+        center: Base.Point2;
+        /**
+         * Direction of the vector
+         */
+        direction: Base.Vector2;
+        /**
+         * Radius of the circle
+         */
+        radius: number;
+        /**
+         * If true will sense the direction
+         */
+        sense: boolean;
+    }
+    class StarDto {
+        /**
+         * Center of the circle
+         */
+        center: Base.Point3;
+        /**
+         * Direction
+         */
+        direction: Base.Vector3;
+        /**
+         * Direction of the vector
+         */
+        numRays: number;
+        /**
+         * Angle of the rays
+         */
+        outerRadius: number;
+        /**
+         * Angle of the rays
+         */
+        innerRadius: number;
+        /**
+         * Construct half of the star
+         */
+        half: boolean;
+    }
+    class ParallelogramDto {
+        /**
+         * Center of the circle
+         */
+        center: Base.Point3;
+        /**
+         * Direction
+         */
+        direction: Base.Vector3;
+        /**
+         * Indicates whether to draw the parallelogram around the center point or start from corner.
+         */
+        aroundCenter: boolean;
+        /**
+         * Width of bounding rectangle
+         */
+        width: number;
+        /**
+         * Height of bounding rectangle
+         */
+        height: number;
+        /**
+         * Sharp angle of the parallelogram
+         */
+        angle: number;
+    }
     class EllipseDto {
         /**
          * Center of the ellipse
@@ -2201,11 +3238,11 @@ export const inputDeclarations = `declare namespace Asset {
          */
         direction: Base.Vector3;
     }
-    class Geom2dTrimmedCurveDto {
+    class Geom2dTrimmedCurveDto<T> {
         /**
          * 2D Curve to trim
          */
-        shape: any;
+        shape: T;
         /**
          * First param on the curve for trimming. U1 can be greater or lower than U2. The returned curve is oriented from U1 to U2.
          */
@@ -2215,11 +3252,16 @@ export const inputDeclarations = `declare namespace Asset {
          */
         u2: number;
         /**
-         *  If the basis curve C is periodic there is an ambiguity because two parts are available. In this case by default the trimmed curve has the same orientation as the basis curve (Sense = True). If Sense = False then the orientation of the trimmed curve is opposite to the orientation of the basis curve C.
+         *  If the basis curve C is periodic there is an ambiguity because two parts are available.
+         *  In this case by default the trimmed curve has the same orientation as the basis curve (Sense = True).
+         * If Sense = False then the orientation of the trimmed curve is opposite to the orientation of the basis curve C.
          */
         sense: boolean;
         /**
-         * If the curve is closed but not periodic it is not possible to keep the part of the curve including the junction point (except if the junction point is at the beginning or at the end of the trimmed curve) because you could lose the fundamental characteristics of the basis curve which are used for example to compute the derivatives of the trimmed curve. So for a closed curve the rules are the same as for a open curve.
+         * If the curve is closed but not periodic it is not possible to keep the part of the curve including the
+         * junction point (except if the junction point is at the beginning or at the end of the trimmed curve)
+         * because you could lose the fundamental characteristics of the basis curve which are used for example
+         * to compute the derivatives of the trimmed curve. So for a closed curve the rules are the same as for a open curve.
          */
         theAdjustPeriodic: boolean;
     }
@@ -2232,6 +3274,20 @@ export const inputDeclarations = `declare namespace Asset {
          * End 2d point for segment
          */
         end: Base.Point2;
+    }
+    class SliceDto<T> {
+        /**
+         * THe shape to slice
+         */
+        shape: T;
+        /**
+         * Step at which to divide the shape
+         */
+        step: number;
+        /**
+         * Direction vector
+         */
+        direction: Base.Vector3;
     }
 }declare namespace Point {
     class PointDto {
@@ -2325,6 +3381,16 @@ export const inputDeclarations = `declare namespace Asset {
          * Transformation matrix or a list of transformation matrixes
          */
         matrix: number[][] | number[][][];
+    }
+    class TransformsForPointsDto {
+        /**
+         * Points to transform
+         */
+        points: Base.Point3[];
+        /**
+         * Transformations that have to match nr of points
+         */
+        matrix: number[][][] | number[][][][];
     }
     class ClosestPointFromPointsDto {
         /**
@@ -2530,6 +3596,15 @@ export const inputDeclarations = `declare namespace Asset {
          */
         shadowDarkness?: number;
     }
+    class ActiveCameraDto {
+        /**
+         * Camera to activate
+         */
+        camera: Camera;
+    }
+    class UseRightHandedSystemDto {
+        use: boolean;
+    }
     class DirectionalLightDto {
         /**
          * Direction of the directional light
@@ -2581,6 +3656,49 @@ export const inputDeclarations = `declare namespace Asset {
          * Zoom precision of the wheel. If large units are used, this number needs to get smaller
          */
         wheelPrecision: number;
+    }
+    class SkyboxDto {
+        /**
+         * Skybox type
+         */
+        skybox: Base.skyboxEnum;
+        /**
+         * Skybox size
+         */
+        size: number;
+        /**
+         * Identifies if skybox texture should affect scene environment
+         */
+        blur: number;
+        /**
+         * Identifies if skybox texture should affect scene environment
+         */
+        environmentIntensity: number;
+    }
+    class PointerDto {
+        statement_update: () => void;
+    }
+    class FogDto {
+        /**
+         * Fog mode
+         */
+        mode: number;
+        /**
+         * Fog color
+         */
+        color: string;
+        /**
+         * Fog density
+         */
+        density: number;
+        /**
+         * Fog start
+         */
+        start: number;
+        /**
+         * Fog end
+         */
+        end: number;
     }
 }declare namespace Tag {
     class DrawTagDto {
@@ -2739,6 +3857,12 @@ export const inputDeclarations = `declare namespace Asset {
          * Translation vector with [x, y, z] distances
          */
         translation: Base.Vector3;
+    }
+    class TranslationsXYZDto {
+        /**
+         * Translation vectors with [x, y, z] distances
+         */
+        translations: Base.Vector3[];
     }
 }declare namespace Vector {
     class TwoVectorsDto {
@@ -3316,6 +4440,10 @@ export const inputDeclarations = `declare namespace Asset {
          */
         updatable: boolean;
         /**
+         * Should be hidden
+         */
+        hidden: boolean;
+        /**
          * Surface mesh variable in case it already exists and needs updating
          */
         surfaceMesh?: Mesh;
@@ -3342,6 +4470,10 @@ export const inputDeclarations = `declare namespace Asset {
          */
         updatable: boolean;
         /**
+         * Should be hidden
+         */
+        hidden: boolean;
+        /**
          * Surfaces mesh variable in case it already exists and needs updating
          */
         surfacesMesh?: Mesh;
@@ -3367,6 +4499,10 @@ export const inputDeclarations = `declare namespace Asset {
          * Indicates wether the position of these surfaces will change in time
          */
         updatable: boolean;
+        /**
+         * Indicates if surface should be hidden
+         */
+        hidden: boolean;
         /**
          * Surfaces mesh variable in case it already exists and needs updating
          */

@@ -23,7 +23,7 @@ export class OCCTIO {
      * @param inputs STEP filename and shape to be saved
      * @returns String of a step file
      */
-    saveShapeSTEP(inputs: Inputs.OCCT.SaveStepDto): Promise<string> {
+    saveShapeSTEP(inputs: Inputs.OCCT.SaveStepDto<Inputs.OCCT.TopoDSShapePointer>): Promise<string> {
         return this.occWorkerManager.genericCallToWorkerPromise('io.saveShapeSTEP', inputs).then(s => {
             const blob = new Blob([s], { type: 'text/plain' });
             const blobUrl = URL.createObjectURL(blob);
@@ -49,13 +49,13 @@ export class OCCTIO {
      * @param inputs STEP or IGES import
      * @returns OCCT Shape
      */
-    loadSTEPorIGES(inputs: Inputs.OCCT.ImportStepIgesDto): Promise<any> {
+    loadSTEPorIGES(inputs: Inputs.OCCT.ImportStepIgesDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.OCCT.TopoDSShapePointer> {
         // first we should check if we have assetName loaded already
         // if we dont have we do this, otherwise return from the cache...
         return BitByBitBlocklyHelperService.getFile(inputs.assetFile).then(s => {
             return this.occWorkerManager.genericCallToWorkerPromise(
                 'io.loadSTEPorIGES',
-                new Inputs.OCCT.LoadStepOrIgesDto(s, inputs.assetFile.name)
+                new Inputs.OCCT.LoadStepOrIgesDto(s, inputs.assetFile.name, inputs.adjustZtoY)
             );
         });
     }
@@ -69,26 +69,13 @@ export class OCCTIO {
      * @param inputs STL filename and shape to be saved
      * @returns String of a stl file
      */
-    async saveShapeStl(inputs: Inputs.OCCT.SaveStlDto): Promise<any> {
+    async saveShapeStl(inputs: Inputs.OCCT.SaveStlDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.OCCT.DecomposedMeshDto> {
         const inp = new Inputs.OCCT.DrawShapeDto();
         inp.drawEdges = false;
         inp.shape = inputs.shape;
         inp.precision = inputs.precision;
 
-        const fe: {
-            faceList: {
-                face_index: number;
-                normal_coord: Inputs.Base.Vector3;
-                number_of_triangles: number;
-                tri_indexes: number[];
-                vertex_coord: Inputs.Base.Point3;
-                vertex_coord_vec: Inputs.Base.Vector3[];
-            }[],
-            edgeList: {
-                edge_index: number;
-                vertex_coord: Inputs.Base.Point3[];
-            }[]
-        } = await this.occWorkerManager.genericCallToWorkerPromise('shapeToMesh', inp);
+        const fe: Inputs.OCCT.DecomposedMeshDto = await this.occWorkerManager.genericCallToWorkerPromise('shapeToMesh', inp);
 
         let dummy;
 
@@ -97,7 +84,7 @@ export class OCCTIO {
                 positions: face.vertex_coord,
                 normals: face.normal_coord,
                 indices: face.tri_indexes,
-            }, dummy, false, undefined, false);
+            }, dummy, false, undefined, false, false);
             return mesh;
         });
 

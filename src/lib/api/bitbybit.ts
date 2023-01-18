@@ -11,6 +11,7 @@ import { Tag } from './bitbybit/tag';
 import { Time } from './bitbybit/time';
 import { OCCT } from './bitbybit/occt/occt';
 import { Asset } from './bitbybit/asset';
+import { Color } from './bitbybit/color';
 import { Context } from './context';
 import { GeometryHelper } from './geometry-helper';
 import { JSCADWorkerManager } from '../workers/jscad/jscad-worker-manager';
@@ -35,6 +36,7 @@ export class BitByBitBase {
     public time: Time;
     public occt: OCCT;
     public asset: Asset;
+    public color: Color;
 
     constructor(
     ) {
@@ -43,7 +45,8 @@ export class BitByBitBase {
         this.occtWorkerManager = new OCCTWorkerManager();
         const geometryHelper = new GeometryHelper(this.context);
 
-        this.babylon = new Babylon(this.context, geometryHelper);
+        this.color = new Color();
+        this.babylon = new Babylon(this.context, geometryHelper, this.color);
         this.vector = new Vector(this.context);
         this.line = new Line(this.context, geometryHelper);
         this.point = new Point(this.context, geometryHelper, this.line);

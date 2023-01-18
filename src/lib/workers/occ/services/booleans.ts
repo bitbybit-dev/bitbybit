@@ -1,5 +1,5 @@
-import { OpenCascadeInstance } from "opencascade.js";
-import { OccHelper } from "../occ-helper";
+import { OpenCascadeInstance, TopoDS_Shape } from 'opencascade.js';
+import { OccHelper } from '../occ-helper';
 import * as Inputs from '../../../api/inputs/inputs';
 
 export class OCCTBooleans {
@@ -10,7 +10,7 @@ export class OCCTBooleans {
     ) {
     }
 
-    union(inputs: Inputs.OCCT.UnionDto): any {
+    union(inputs: Inputs.OCCT.UnionDto<TopoDS_Shape>): TopoDS_Shape {
         let combined = inputs.shapes[0];
         for (let i = 0; i < inputs.shapes.length; i++) {
             const combinedFuse = new this.occ.BRepAlgoAPI_Fuse_3(combined, inputs.shapes[i], new this.occ.Message_ProgressRange_1());
@@ -27,7 +27,7 @@ export class OCCTBooleans {
         return combined;
     }
 
-    difference(inputs: Inputs.OCCT.DifferenceDto): any {
+    difference(inputs: Inputs.OCCT.DifferenceDto<TopoDS_Shape>): TopoDS_Shape {
         let difference = inputs.shape;
         const objectsToSubtract = inputs.shapes;
         for (let i = 0; i < objectsToSubtract.length; i++) {
@@ -50,29 +50,8 @@ export class OCCTBooleans {
         return difference;
     }
 
-    intersection(inputs: Inputs.OCCT.IntersectionDto): any {
-        if (inputs.shapes.length < 2) {
-            throw (new Error('Less than 2 shapes provided for intersection'));
-        }
-
-        let intersected = inputs.shapes[0];
-        for (let i = 1; i < inputs.shapes.length; i++) {
-            const intersectedCommon = new this.occ.BRepAlgoAPI_Common_3(
-                intersected,
-                inputs.shapes[i],
-                new this.occ.Message_ProgressRange_1()
-            );
-            intersectedCommon.Build(new this.occ.Message_ProgressRange_1());
-            intersected = intersectedCommon.Shape();
-        }
-
-        if (!inputs.keepEdges) {
-            const fusor = new this.occ.ShapeUpgrade_UnifySameDomain_2(intersected, true, true, false);
-            fusor.Build();
-            intersected = fusor.Shape();
-        }
-
-        return intersected;
+    intersection(inputs: Inputs.OCCT.IntersectionDto<TopoDS_Shape>): TopoDS_Shape {
+        return this.och.intersection(inputs);
     }
 
 }

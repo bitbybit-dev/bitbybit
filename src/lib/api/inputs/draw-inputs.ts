@@ -86,6 +86,10 @@ export namespace Draw {
          * If geometry needs to be updated later
          */
         updatable: boolean = false;
+        /**
+         * Hidden
+         */
+        hidden: boolean = false;
     }
 
     /**
@@ -138,6 +142,10 @@ export namespace Draw {
          * Hex colour string for face colour
          */
         faceColour = '#ff0000';
+        /**
+         * Face material
+         */
+        faceMaterial?;
         /**
          * Edge width
          */

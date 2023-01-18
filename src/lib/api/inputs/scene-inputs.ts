@@ -1,4 +1,4 @@
-import { Mesh } from '@babylonjs/core';
+import { Camera, Ray } from '@babylonjs/core';
 import { Base } from './base-inputs';
 
 // tslint:disable-next-line: no-namespace
@@ -49,6 +49,15 @@ export namespace BabylonScene {
          * Shadow darkness
          */
         shadowDarkness?= 0;
+    }
+    export class ActiveCameraDto {
+        /**
+         * Camera to activate
+         */
+        camera: Camera;
+    }
+    export class UseRightHandedSystemDto {
+        use: boolean;
     }
     export class DirectionalLightDto {
         /**
@@ -101,5 +110,49 @@ export namespace BabylonScene {
          * Zoom precision of the wheel. If large units are used, this number needs to get smaller
          */
         wheelPrecision = 0.1;
+    }
+    export class SkyboxDto {
+        /**
+         * Skybox type
+         */
+        skybox: Base.skyboxEnum;
+        /**
+         * Skybox size
+         */
+        size = 1000;
+        /**
+         * Identifies if skybox texture should affect scene environment
+         */
+        blur = 0.1;
+        /**
+         * Identifies if skybox texture should affect scene environment
+         */
+        environmentIntensity = 0.7;
+    }
+
+    export class PointerDto {
+        statement_update: () => void;
+    }
+    export class FogDto {
+        /**
+         * Fog mode
+         */
+        mode: number;
+        /**
+         * Fog color
+         */
+         color: string;
+        /**
+         * Fog density
+         */
+        density: number;
+        /**
+         * Fog start
+         */
+        start: number;
+        /**
+         * Fog end
+         */
+        end: number;
     }
 }

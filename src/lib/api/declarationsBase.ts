@@ -8,6 +8,13 @@ export const baseDeclarations = `declare class Asset {
      * @returns Blob of asset
      */
     getFile(inputs: Inputs.Asset.GetAssetDto): Promise<File>;
+    /**
+     * Gets the local asset file stored in your browser.
+     * @link https://docs.bitbybit.dev/classes/bitbybit_asset_get.Asset.html#getLocalFile
+     * @param inputs asset name to get from local assets
+     * @returns Blob of asset
+     */
+    getLocalFile(inputs: Inputs.Asset.GetAssetDto): Promise<File | File[]>;
 }declare class BabylonIO {
     private readonly context;
     private supportedFileFormats;
@@ -175,11 +182,112 @@ export const baseDeclarations = `declare class Asset {
  */
 declare class Babylon {
     mesh: BabylonMesh;
+    camera: BabylonCamera;
+    webxr: BabylonWebXR;
     node: BabylonNode;
     scene: BabylonScene;
     transforms: BabylonTransforms;
     io: BabylonIO;
-    constructor(context: Context, geometryHelper: GeometryHelper);
+    ray: BabylonRay;
+    pick: BabylonPick;
+    material: BabylonMaterial;
+    constructor(context: Context, geometryHelper: GeometryHelper, color: Color);
+}declare class BabylonArcRotateCamera {
+    private readonly context;
+    constructor(context: Context);
+    /**
+     * Creates a arc rotate camera
+     * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_camera.BabylonCamera.html#create
+     * @param inputs Describes the arc rotate camera
+     * @returns BabylonJS arc rotate camera
+     */
+    create(inputs: Inputs.BabylonCamera.ArcRotateCameraDto): ArcRotateCamera;
+}declare class BabylonCamera {
+    private readonly context;
+    free: BabylonFreeCamera;
+    arcRotate: BabylonArcRotateCamera;
+    target: BabylonTargetCamera;
+    constructor(context: Context);
+    /**
+     * Freeze projection matrix of the camera
+     * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_camera.BabylonCamera.html#freezeProjectionMatrix
+     * @param inputs Camera to freeze
+     */
+    freezeProjectionMatrix(inputs: Inputs.BabylonCamera.CameraDto): void;
+    /**
+     * Unfreeze projection matrix of the camera
+     * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_camera.BabylonCamera.html#unfreezeProjectionMatrix
+     * @param inputs Camera to freeze
+     */
+    unfreezeProjectionMatrix(inputs: Inputs.BabylonCamera.CameraDto): void;
+    /**
+     * Changes the position of a camera
+     * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_camera.BabylonCamera.html#setPosition
+     * @param inputs Changes the camera position
+     */
+    setPosition(inputs: Inputs.BabylonCamera.PositionDto): void;
+    /**
+     * Gets the position of a camera
+     * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_camera.BabylonCamera.html#getPosition
+     * @param inputs Gets the camera position
+     */
+    getPosition(inputs: Inputs.BabylonCamera.PositionDto): Base.Point3;
+    /**
+     * Changes the target of a camera
+     * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_camera.BabylonCamera.html#setTarget
+     * @param inputs Changes the camera target
+     */
+    setTarget(inputs: Inputs.BabylonCamera.TargetDto): void;
+    /**
+     * Gets the target of a camera
+     * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_camera.BabylonCamera.html#getTarget
+     * @param inputs Gets the camera position
+     */
+    getTarget(inputs: Inputs.BabylonCamera.PositionDto): Base.Point3;
+    /**
+     * Changes the speed of a camera
+     * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_camera.BabylonCamera.html#setSpeed
+     * @param inputs Changes the camera target
+     */
+    setSpeed(inputs: Inputs.BabylonCamera.SpeedDto): void;
+    /**
+     * Gets the speed of a camera
+     * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_camera.BabylonCamera.html#getTarget
+     * @param inputs Gets the camera position
+     */
+    getSpeed(inputs: Inputs.BabylonCamera.PositionDto): Base.Point3;
+    /**
+     * Changes the minZ of a camera
+     * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_camera.BabylonCamera.html#setMinZ
+     * @param inputs Changes the camera minZ
+     */
+    setMinZ(inputs: Inputs.BabylonCamera.MinZDto): void;
+    /**
+     * Changes the maxZ of a camera
+     * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_camera.BabylonCamera.html#setMaxZ
+     * @param inputs Changes the camera maxZ
+     */
+    setMaxZ(inputs: Inputs.BabylonCamera.MaxZDto): void;
+}declare class BabylonFreeCamera {
+    private readonly context;
+    constructor(context: Context);
+    /**
+     * Creates a free camera
+     * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_camera.BabylonCamera.html#create
+     * @param inputs Describes the free camera
+     * @returns BabylonJS free camera
+     */
+    create(inputs: Inputs.BabylonCamera.FreeCameraDto): FreeCamera;
+}declare class BabylonTargetCamera {
+    private readonly context;
+    constructor(context: Context);
+    /**
+     * Creates a target camera
+     * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_camera.BabylonCamera.html#create
+     * @param inputs Describes the target camera
+     * @returns BabylonJS target camera
+     */
+    create(inputs: Inputs.BabylonCamera.TargetCameraDto): TargetCamera;
 }declare class BabylonIO {
     private readonly context;
     private supportedFileFormats;
@@ -191,7 +299,9 @@ declare class Babylon {
      * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_io.BabylonIO.html#loadAssetIntoScene
      * @returns scene loaded mesh
      */
-    loadAssetIntoScene(inputs: Inputs.Asset.AssetFileDto): Promise<any>;
+    loadAssetIntoScene(inputs: Inputs.Asset.AssetFileDto): Promise<Mesh>;
+    loadAssetIntoSceneFromRootUrl(inputs: Inputs.Asset.AssetFileByUrlDto): Promise<Mesh>;
+    private loadAsset;
     /**
      * Exports the whole scene to .babylon scene format. You can then edit it further in babylonjs editors.
      * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_io.BabylonIO.html#exportBabylon
@@ -210,6 +320,76 @@ declare class Babylon {
      * @param inputs filename and the mesh
      */
     exportMeshToStl(inputs: Inputs.BabylonIO.ExportMeshToStlDto): Promise<any>;
+}declare class BabylonMaterial {
+    private readonly context;
+    private readonly color;
+    pbrMetallicRoughness: BabylonMaterialPbrMetallicRoughness;
+    constructor(context: Context, color: Color);
+}declare class BabylonMaterialPbrMetallicRoughness {
+    private readonly context;
+    private readonly color;
+    constructor(context: Context, color: Color);
+    /**
+     * Create PBR metallic roughnes material.
+     * @param inputs required to set up metallic roughness material
+     * @returns PBR metallic roughness material
+     */
+    create(inputs: Inputs.BabylonMaterial.PBRMetallicRoughnessDto): PBRMetallicRoughnessMaterial;
+    /**
+     * Sets the base color of material
+     * @param inputs base color and material
+     */
+    setBaseColor(inputs: Inputs.BabylonMaterial.BaseColorDto): void;
+    /**
+     * Sets the metallic property of material
+     * @param inputs metallic value
+     */
+    setMetallic(inputs: Inputs.BabylonMaterial.MetallicDto): void;
+    /**
+     * Sets the roughness of material
+     * @param inputs roughness value
+     */
+    setRoughness(inputs: Inputs.BabylonMaterial.RoughnessDto): void;
+    /**
+     * Sets the alpha of material
+     * @param inputs alpha value
+     */
+    setAlpha(inputs: Inputs.BabylonMaterial.AlphaDto): void;
+    /**
+     * Sets the back face culling of material
+     * @param inputs back face culling boolean
+     */
+    setBackFaceCulling(inputs: Inputs.BabylonMaterial.BackFaceCullingDto): void;
+    /**
+     * Gets the base color of material
+     * @param inputs base color and material
+     * @return base color
+     */
+    getBaseColor(inputs: Inputs.BabylonMaterial.BaseColorDto): string;
+    /**
+     * Gets the metallic property of material
+     * @param inputs metallic value
+     * @return metallic value
+     */
+    getMetallic(inputs: Inputs.BabylonMaterial.MetallicDto): number;
+    /**
+     * Gets the roughness of material
+     * @param inputs roughness value
+     * @return roughness value
+     */
+    getRoughness(inputs: Inputs.BabylonMaterial.RoughnessDto): number;
+    /**
+     * Gets the alpha of material
+     * @param inputs alpha value
+     * @return alpha value
+     */
+    getAlpha(inputs: Inputs.BabylonMaterial.AlphaDto): number;
+    /**
+     * Gets the back face culling of material
+     * @param inputs back face culling boolean
+     * @return backfaceculling boolean
+     */
+    getBackFaceCulling(inputs: Inputs.BabylonMaterial.BackFaceCullingDto): boolean;
 }declare class BabylonMesh {
     private readonly context;
     constructor(context: Context);
@@ -226,93 +406,211 @@ declare class Babylon {
     updateDrawn(inputs: Inputs.BabylonMesh.UpdateDrawnBabylonMesh): Mesh;
     /**
      * Change the visibility of a drawn BabylonJS mesh
-     * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_mesh.BabylonMesh.html#setMeshVisibility
+     * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_mesh.BabylonMesh.html#setVisibility
      * @param inputs BabylonJS mesh and parent mesh
      */
-    setMeshVisibility(inputs: Inputs.BabylonMesh.SetMeshVisibilityDto): void;
+    setVisibility(inputs: Inputs.BabylonMesh.SetMeshVisibilityDto): void;
     /**
      * Hides the mesh
      * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_mesh.BabylonMesh.html#hide
      * @param inputs BabylonJS mesh to hide
      */
-    hide(inputs: Inputs.BabylonMesh.BabylonMeshDto): void;
+    hide(inputs: Inputs.BabylonMesh.ShowHideMeshDto): void;
     /**
      * Show the mesh
      * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_mesh.BabylonMesh.html#show
      * @param inputs BabylonJS mesh to hide
      */
-    show(inputs: Inputs.BabylonMesh.BabylonMeshDto): void;
+    show(inputs: Inputs.BabylonMesh.ShowHideMeshDto): void;
     /**
      * Change the parent of the drawn mesh
-     * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_mesh.BabylonMesh.html#setParentForMesh
+     * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_mesh.BabylonMesh.html#setParent
      * @param inputs BabylonJS mesh and parent mesh
      */
-    setParentForMesh(inputs: Inputs.BabylonMesh.SetParentDto): void;
+    setParent(inputs: Inputs.BabylonMesh.SetParentDto): void;
     /**
-      * Gets the position as point of babylonjs mesh
-      * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_mesh.BabylonMesh.html#getPosition
-      * @param inputs BabylonJS mesh
-      */
-    getPosition(inputs: Inputs.BabylonMesh.BabylonMeshDto): number[];
+     * Get the parent of the drawn mesh
+     * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_mesh.BabylonMesh.html#getParent
+     * @param inputs BabylonJS mesh
+     * @returns Parent mesh
+     */
     /**
-      * Gets the rotation vector of babylonjs mesh
-      * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_mesh.BabylonMesh.html#getRotation
-      * @param inputs BabylonJS mesh
-      */
-    getRotation(inputs: Inputs.BabylonMesh.BabylonMeshDto): number[];
+     * Change the check collisions property of the drawn mesh
+     * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_mesh.BabylonMesh.html#setCheckCollisions
+     * @param inputs BabylonJS mesh and check collisions
+     */
+    setCheckCollisions(inputs: Inputs.BabylonMesh.CheckCollisionsBabylonMeshDto): void;
     /**
-      * Gets the scale vector of babylonjs mesh
-      * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_mesh.BabylonMesh.html#getScale
-      * @param inputs BabylonJS mesh
-      */
-    getScale(inputs: Inputs.BabylonMesh.BabylonMeshDto): number[];
+     * Get the check collisions property of the drawn mesh
+     * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_mesh.BabylonMesh.html#getCheckCollisions
+     * @param inputs BabylonJS mesh and check collisions
+     */
+    getCheckCollisions(inputs: Inputs.BabylonMesh.CheckCollisionsBabylonMeshDto): boolean;
     /**
-      * Moves babylonjs mesh forward in local space
-      * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_mesh.BabylonMesh.html#moveForward
-      * @param inputs BabylonJS mesh and distance
-      */
+     * Change the pickable property of the drawn mesh
+     * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_mesh.BabylonMesh.html#setPickable
+     * @param inputs BabylonJS mesh and pickable
+     */
+    setPickable(inputs: Inputs.BabylonMesh.PickableBabylonMeshDto): void;
+    /**
+     * Change the pickable property of the drawn mesh
+     * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_mesh.BabylonMesh.html#setPickable
+     * @param inputs BabylonJS mesh and pickable
+     */
+    getPickable(inputs: Inputs.BabylonMesh.BabylonMeshDto): boolean;
+    /**
+     * Gets meshes that have names which contain a given text
+     * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_mesh.BabylonMesh.html#getMeshesWhereNameContains
+     * @param inputs BabylonJS mesh and name
+     */
+    getMeshesWhereNameContains(inputs: Inputs.BabylonMesh.NameBabylonMeshDto): AbstractMesh[];
+    /**
+     * Gets child meshes
+     * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_mesh.BabylonMesh.html#getChildMeshes
+     * @param inputs BabylonJS mesh and whether to include only direct descendants
+     */
+    getChildMeshes(inputs: Inputs.BabylonMesh.ChildMeshesBabylonMeshDto): AbstractMesh[];
+    /**
+     * Gets meshes of id
+     * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_mesh.BabylonMesh.html#getMeshesOfId
+     * @param inputs BabylonJS mesh and name
+     */
+    getMeshesOfId(inputs: Inputs.BabylonMesh.IdBabylonMeshDto): AbstractMesh[];
+    /**
+     * Gets mesh of id
+     * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_mesh.BabylonMesh.html#getMeshOfId
+     * @param inputs BabylonJS mesh and name
+     */
+    getMeshOfId(inputs: Inputs.BabylonMesh.IdBabylonMeshDto): AbstractMesh;
+    /**
+     * Gets mesh of unique id
+     * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_mesh.BabylonMesh.html#getMeshOfUniqueId
+     * @param inputs BabylonJS mesh and name
+     */
+    getMeshOfUniqueId(inputs: Inputs.BabylonMesh.UniqueIdBabylonMeshDto): AbstractMesh;
+    /**
+     * Clones the mesh
+     * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_mesh.BabylonMesh.html#clone
+     * @param inputs BabylonJS mesh to clone
+     * @returns a new mesh
+     */
+    clone(inputs: Inputs.BabylonMesh.BabylonMeshDto): Mesh;
+    /**
+     * Change the id of the drawn mesh
+     * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_mesh.BabylonMesh.html#setId
+     * @param inputs BabylonJS mesh and name
+     */
+    setId(inputs: Inputs.BabylonMesh.IdBabylonMeshDto): void;
+    /**
+     * Get the id of the drawn mesh
+     * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_mesh.BabylonMesh.html#getId
+     * @param inputs BabylonJS mesh and id
+     */
+    getId(inputs: Inputs.BabylonMesh.IdBabylonMeshDto): string;
+    /**
+     * Get the unique id of the drawn mesh
+     * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_mesh.BabylonMesh.html#getUniqueId
+     * @param inputs BabylonJS mesh and id
+     * @returns unique id number
+     */
+    getUniqueId(inputs: Inputs.BabylonMesh.BabylonMeshDto): number;
+    /**
+     * Change the name of the drawn mesh
+     * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_mesh.BabylonMesh.html#setName
+     * @param inputs BabylonJS mesh and name
+     */
+    setName(inputs: Inputs.BabylonMesh.NameBabylonMeshDto): void;
+    /**
+     * Gets the name of babylon mesh
+     * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_mesh.BabylonMesh.html#getName
+     * @param inputs BabylonJS mesh and name
+     */
+    getName(inputs: Inputs.BabylonMesh.BabylonMeshDto): string;
+    /**
+     * Change the material of the drawn mesh
+     * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_mesh.BabylonMesh.html#setMaterial
+     * @param inputs BabylonJS mesh and material
+     */
+    setMaterial(inputs: Inputs.BabylonMesh.MaterialBabylonMeshDto): void;
+    /**
+     * Gets the material of babylon mesh
+     * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_mesh.BabylonMesh.html#getMaterial
+     * @param inputs BabylonJS mesh
+     */
+    getMaterial(inputs: Inputs.BabylonMesh.BabylonMeshDto): Material;
+    /**
+     * Gets the position as point of babylonjs mesh
+     * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_mesh.BabylonMesh.html#getPosition
+     * @param inputs BabylonJS mesh
+     * @returns point
+     */
+    getPosition(inputs: Inputs.BabylonMesh.BabylonMeshDto): Base.Point3;
+    /**
+     * Gets the absolute position in the world as point of babylonjs mesh
+     * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_mesh.BabylonMesh.html#getAbsolutePosition
+     * @param inputs BabylonJS mesh
+     * @returns point
+     */
+    getAbsolutePosition(inputs: Inputs.BabylonMesh.BabylonMeshDto): Base.Point3;
+    /**
+     * Gets the rotation vector of babylonjs mesh
+     * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_mesh.BabylonMesh.html#getRotation
+     * @param inputs BabylonJS mesh
+     */
+    getRotation(inputs: Inputs.BabylonMesh.BabylonMeshDto): Base.Point3;
+    /**
+     * Gets the scale vector of babylonjs mesh
+     * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_mesh.BabylonMesh.html#getScale
+     * @param inputs BabylonJS mesh
+     */
+    getScale(inputs: Inputs.BabylonMesh.BabylonMeshDto): Base.Point3;
+    /**
+     * Moves babylonjs mesh forward in local space
+     * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_mesh.BabylonMesh.html#moveForward
+     * @param inputs BabylonJS mesh and distance
+     */
     moveForward(inputs: Inputs.BabylonMesh.TranslateBabylonMeshDto): void;
     /**
-      * Moves babylonjs mesh backward in local space
-      * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_mesh.BabylonMesh.html#moveBackward
-      * @param inputs BabylonJS mesh and distance
-      */
+     * Moves babylonjs mesh backward in local space
+     * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_mesh.BabylonMesh.html#moveBackward
+     * @param inputs BabylonJS mesh and distance
+     */
     moveBackward(inputs: Inputs.BabylonMesh.TranslateBabylonMeshDto): void;
     /**
-      * Moves babylonjs mesh up in local space
-      * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_mesh.BabylonMesh.html#moveUp
-      * @param inputs BabylonJS mesh and distance
-      */
+     * Moves babylonjs mesh up in local space
+     * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_mesh.BabylonMesh.html#moveUp
+     * @param inputs BabylonJS mesh and distance
+     */
     moveUp(inputs: Inputs.BabylonMesh.TranslateBabylonMeshDto): void;
     /**
-      * Moves babylonjs mesh down in local space
-      * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_mesh.BabylonMesh.html#moveDown
-      * @param inputs BabylonJS mesh and distance
-      */
+     * Moves babylonjs mesh down in local space
+     * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_mesh.BabylonMesh.html#moveDown
+     * @param inputs BabylonJS mesh and distance
+     */
     moveDown(inputs: Inputs.BabylonMesh.TranslateBabylonMeshDto): void;
     /**
-      * Moves babylonjs mesh right in local space
-      * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_mesh.BabylonMesh.html#moveRight
-      * @param inputs BabylonJS mesh and distance
-      */
+     * Moves babylonjs mesh right in local space
+     * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_mesh.BabylonMesh.html#moveRight
+     * @param inputs BabylonJS mesh and distance
+     */
     moveRight(inputs: Inputs.BabylonMesh.TranslateBabylonMeshDto): void;
     /**
-      * Moves babylonjs mesh left in local space
-      * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_mesh.BabylonMesh.html#moveLeft
-      * @param inputs BabylonJS mesh and distance
-      */
+     * Moves babylonjs mesh left in local space
+     * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_mesh.BabylonMesh.html#moveLeft
+     * @param inputs BabylonJS mesh and distance
+     */
     moveLeft(inputs: Inputs.BabylonMesh.TranslateBabylonMeshDto): void;
     /**
-      * Rotates babylonjs mesh around local y axis
-      * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_mesh.BabylonMesh.html#yaw
-      * @param inputs BabylonJS mesh and rotation in degrees
-      */
+     * Rotates babylonjs mesh around local y axis
+     * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_mesh.BabylonMesh.html#yaw
+     * @param inputs BabylonJS mesh and rotation in degrees
+     */
     yaw(inputs: Inputs.BabylonMesh.RotateBabylonMeshDto): void;
     /**
-      * Rotates babylonjs mesh around local x axis
-      * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_mesh.BabylonMesh.html#pitch
-      * @param inputs BabylonJS mesh and rotation in degrees
-      */
+     * Rotates babylonjs mesh around local x axis
+     * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_mesh.BabylonMesh.html#pitch
+     * @param inputs BabylonJS mesh and rotation in degrees
+     */
     pitch(inputs: Inputs.BabylonMesh.RotateBabylonMeshDto): void;
     /**
      * Rotates babylonjs mesh around local z axis
@@ -338,6 +636,18 @@ declare class Babylon {
      * @param inputs BabylonJS mesh and scale vector
      */
     setScale(inputs: Inputs.BabylonMesh.UpdateDrawnBabylonMeshScaleDto): void;
+    /**
+     * Checks wether mesh intersects another mesh mesh
+     * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_mesh.BabylonMesh.html#intersectsMesh
+     * @param inputs Two BabylonJS meshes
+     */
+    intersectsMesh(inputs: Inputs.BabylonMesh.IntersectsMeshDto): boolean;
+    /**
+     * Checks wether mesh intersects point
+     * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_mesh.BabylonMesh.html#intersectsPoint
+     * @param inputs BabylonJS mesh and point
+     */
+    intersectsPoint(inputs: Inputs.BabylonMesh.IntersectsPointDto): boolean;
     /**
      * Creates mesh instance and transforms it for optimised rendering. These are optimised for max performance
      * when rendering many similar objects in the scene. If the mesh has children, then every child ges a mesh instance.
@@ -496,6 +806,112 @@ declare class BabylonNode {
      * @param inputs Node translation information
      */
     translate(inputs: Inputs.BabylonNode.NodeTranslationDto): void;
+}declare class BabylonPick {
+    private readonly context;
+    constructor(context: Context);
+    /**
+     * Get a hit result of picking with ray
+     * @param inputs ray to use for picking
+     * @returns Picking info
+     */
+    pickWithRay(inputs: Inputs.BabylonPick.RayDto): PickingInfo;
+    /**
+     * Pick with picking ray of the current mouse position in the active camera
+     * @returns Picking info
+     */
+    pickWithPickingRay(): PickingInfo;
+    /**
+     * Get the distance to the object if picking result exists
+     * @param inputs picking result
+     * @returns Distance
+     */
+    getDistance(inputs: Inputs.BabylonPick.PickInfo): number;
+    /**
+     * Get the picked mesh
+     * @param inputs picking result
+     * @returns Picked mesh
+     */
+    getPickedMesh(inputs: Inputs.BabylonPick.PickInfo): AbstractMesh;
+    /**
+     * Get the picked point
+     * @param inputs picking result
+     * @returns Picked point
+     */
+    getPickedPoint(inputs: Inputs.BabylonPick.PickInfo): Base.Point3;
+    /**
+     * Check if pick ray hit something in the scene or not
+     * @param inputs picking result
+     * @returns Indication of a hit
+     */
+    hit(inputs: Inputs.BabylonPick.PickInfo): boolean;
+    /**
+     * Gets the unique submesh id if it was picked
+     * @param inputs picking result
+     * @returns Submesh id
+     */
+    getSubMeshId(inputs: Inputs.BabylonPick.PickInfo): number;
+    /**
+     * Gets the unique submesh face id if it was picked
+     * @param inputs picking result
+     * @returns Submesh face id
+     */
+    getSubMeshFaceId(inputs: Inputs.BabylonPick.PickInfo): number;
+    /**
+     * Gets the the barycentric U coordinate that is used when calculating the texture coordinates of the collision
+     * @param inputs picking result
+     * @returns U coordinate
+     */
+    getBU(inputs: Inputs.BabylonPick.PickInfo): number;
+    /**
+     * Gets the the barycentric V coordinate that is used when calculating the texture coordinates of the collision
+     * @param inputs picking result
+     * @returns V coordinate
+     */
+    getBV(inputs: Inputs.BabylonPick.PickInfo): number;
+    /**
+     * Get the picked sprite
+     * @param inputs picking result
+     * @returns Picked sprite
+     */
+    getPickedSprite(inputs: Inputs.BabylonPick.PickInfo): Sprite;
+}declare class BabylonRay {
+    private readonly context;
+    constructor(context: Context);
+    /**
+     * Creates a picking ray of the current mouse position in the active camera
+     * @returns Ray
+     */
+    createPickingRay(): Ray;
+    /**
+     * Create a ray that start at origin, has direction vector and optionally length
+     * @param inputs origin, direction and length
+     * @returns ray
+     */
+    createRay(inputs: Inputs.BabylonRay.BaseRayDto): Ray;
+    /**
+     * Create a ray from one point to another
+     * @param inputs origin, direction and length
+     * @returns ray
+     */
+    createRayFromTo(inputs: Inputs.BabylonRay.FromToDto): Ray;
+    /**
+     * Get the origin of the ray
+     * @param inputs ray
+     * @returns origin point
+     */
+    getOrigin(inputs: Inputs.BabylonRay.RayDto): Base.Point3;
+    /**
+     * Get the direction of the ray
+     * @param inputs ray
+     * @returns direction vector
+     */
+    getDirection(inputs: Inputs.BabylonRay.RayDto): Base.Vector3;
+    /**
+     * Get the length of the ray
+     * @param inputs ray
+     * @returns length
+     */
+    getLength(inputs: Inputs.BabylonRay.RayDto): number;
 }declare class BabylonScene {
     private readonly context;
     constructor(context: Context);
@@ -506,6 +922,18 @@ declare class BabylonNode {
      */
     backgroundColour(inputs: Inputs.BabylonScene.SceneBackgroundColourDto): void;
     /**
+     * Activate camera
+     * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_scene.BabylonScene.html#activateCamera
+     * @param inputs Activates the camera
+     */
+    activateCamera(inputs: Inputs.BabylonScene.ActiveCameraDto): void;
+    /**
+     * Use right handed system
+     * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_scene.BabylonScene.html#useRightHandedSystem
+     * @param inputs Activates the camera
+     */
+    useRightHandedSystem(inputs: Inputs.BabylonScene.UseRightHandedSystemDto): void;
+    /**
      * Creates and draws a point light in the scene
      * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_scene.BabylonScene.html#drawPointLight
      * @param inputs Describes the light source
@@ -513,11 +941,11 @@ declare class BabylonNode {
      */
     drawPointLight(inputs: Inputs.BabylonScene.PointLightDto): PointLight;
     /**
-    * Creates and draws a directional light in the scene
-    * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_scene.BabylonScene.html#drawDirectionalLight
-    * @param inputs Describes the light source
-    * @returns BabylonJS directional light
-    */
+     * Creates and draws a directional light in the scene
+     * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_scene.BabylonScene.html#drawDirectionalLight
+     * @param inputs Describes the light source
+     * @returns BabylonJS directional light
+     */
     drawDirectionalLight(inputs: Inputs.BabylonScene.DirectionalLightDto): DirectionalLight;
     /**
      * Adjusts the active arc rotate camera with configuration parameters
@@ -529,6 +957,27 @@ declare class BabylonNode {
      * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_scene.BabylonScene.html#clearAllDrawn
      */
     clearAllDrawn(): void;
+    /**
+     * Enables skybox
+     * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_scene.BabylonScene.html#enableSkybox
+     */
+    enableSkybox(inputs: Inputs.BabylonScene.SkyboxDto): void;
+    /**
+     * Registers code to run when pointer is down
+     * @param inputs pointer statement
+     */
+    onPointerDown(inputs: Inputs.BabylonScene.PointerDto): void;
+    /**
+     * Registers code to run when pointer is up
+     * @param inputs pointer statement
+     */
+    onPointerUp(inputs: Inputs.BabylonScene.PointerDto): void;
+    /**
+     * Registers code to run when pointer is moving
+     * @param inputs pointer statement
+     */
+    onPointerMove(inputs: Inputs.BabylonScene.PointerDto): void;
+    fog(inputs: Inputs.BabylonScene.FogDto): void;
 }/**
  * Transformations help to move, scale, rotate and mirror objects. You can combine multiple transformations
  * for object to be placed exactly into position and orientation that you want.
@@ -605,6 +1054,22 @@ declare class BabylonTransforms {
      * @returns transformation
      */
     translationXYZ(inputs: Inputs.Transforms.TranslationXYZDto): number[][];
+    /**
+    * Creates the translation transformation
+    * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_transforms.BabylonTransforms.html#translationXYZ
+    * @param inputs Translation information
+    * @returns transformation
+    */
+    translationsXYZ(inputs: Inputs.Transforms.TranslationsXYZDto): number[][][];
+}declare class BabylonWebXR {
+    private readonly context;
+    constructor(context: Context);
+    /**
+     * Creates default XR experience with teleportation
+     * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_webxr.BabylonWebXR.html#createDefaultXRExperienceWithTeleportation
+     * @param inputs Creates default XR experience with teleportation
+     */
+    createDefaultXRExperienceWithTeleportation(inputs: Inputs.BabylonWebXR.DefaultWebXRWithTeleportationDto): Promise<void>;
 }declare class BabylonMesh {
     private readonly context;
     constructor(context: Context);
@@ -840,6 +1305,78 @@ declare class BabylonTransforms {
          */
         dist: number;
     }
+}declare class Color {
+    /**
+     * Creates rgb color from hex
+     * @link https://docs.bitbybit.dev/classes/bitbybit_color.Color.html#hexToRgb
+     * @param inputs Color hext
+     * @returns rgb color
+     */
+    hexToRgb(hex: string): {
+        r: number;
+        g: number;
+        b: number;
+    };
+    /**
+     * Creates hex color from rgb
+     * @link https://docs.bitbybit.dev/classes/bitbybit_color.Color.html#rgbToHex
+     * @param inputs Color hext
+     * @returns rgb color
+     */
+    rgbToHex: (values: any) => string;
+    /**
+     * Creates rgb color from hex and maps to 0 - 100 value
+     * @link https://docs.bitbybit.dev/classes/bitbybit_color.Color.html#hexToRgbMapped
+     * @param inputs Color hext
+     * @returns rgb color
+     */
+    hexToRgbMapped(hex: string): {
+        r: number;
+        g: number;
+        b: number;
+    };
+    /**
+     * Get red param
+     * @link https://docs.bitbybit.dev/classes/bitbybit_color.Color.html#getRedParam
+     * @param inputs Color hext
+     * @returns rgb color
+     */
+    getRedParam(hex: string): number;
+    /**
+     * Get green param
+     * @link https://docs.bitbybit.dev/classes/bitbybit_color.Color.html#getGreenParam
+     * @param inputs Color hext
+     * @returns rgb color
+     */
+    getGreenParam(hex: string): number;
+    /**
+     * Get blue param
+     * @link https://docs.bitbybit.dev/classes/bitbybit_color.Color.html#getBlueParam
+     * @param inputs Color hext
+     * @returns rgb color
+     */
+    getBlueParam(hex: string): number;
+    /**
+     * Get red 255 param
+     * @link https://docs.bitbybit.dev/classes/bitbybit_color.Color.html#getRed255Param
+     * @param inputs Color hext
+     * @returns rgb color
+     */
+    getRed255Param(hex: string): number;
+    /**
+     * Get green 255 param
+     * @link https://docs.bitbybit.dev/classes/bitbybit_color.Color.html#getGreen255Param
+     * @param inputs Color hext
+     * @returns rgb color
+     */
+    getGreen255Param(hex: string): number;
+    /**
+     * Get blue 255 param
+     * @link https://docs.bitbybit.dev/classes/bitbybit_color.Color.html#getBlue255Param
+     * @param inputs Color hext
+     * @returns rgb color
+     */
+    getBlue255Param(hex: string): number;
 }declare class Draw {
     private readonly point;
     private readonly line;
@@ -1966,13 +2503,6 @@ declare class Line {
     private readonly geometryHelper;
     constructor(context: Context, geometryHelper: GeometryHelper);
     /**
-     * Draws a single line
-     * @link https://docs.bitbybit.dev/classes/bitbybit_line.Line.html#drawline
-     * @param inputs Contains a line to be drawn
-     * @returns Lines mesh that is being drawn by Babylon
-     */
-    drawLine(inputs: Inputs.Line.DrawLineDto): LinesMesh;
-    /**
      * Draws multiple lines
      * @link https://docs.bitbybit.dev/classes/bitbybit_line.Line.html#drawLines
      * @param inputs Contains a line to be drawn
@@ -2033,6 +2563,13 @@ declare class Line {
      */
     transformLine(inputs: Inputs.Line.TransformLineDto): Inputs.Line.LinePointsDto;
     /**
+     * Transforms the lines with multiple transform for each line
+     * @link https://docs.bitbybit.dev/classes/bitbybit_line.Line.html#transformsForLines
+     * @param inputs Lines to be transformed and transformations
+     * @returns Transformed lines
+     */
+    transformsForLines(inputs: Inputs.Line.TransformsLinesDto): Inputs.Line.LinePointsDto[];
+    /**
      * Create the line
      * @link https://docs.bitbybit.dev/classes/bitbybit_line.Line.html#create
      * @param inputs Endpoints of the line
@@ -2061,11 +2598,11 @@ declare class Line {
      */
     linesBetweenStartAndEndPoints(inputs: Inputs.Line.LineStartEndPointsDto): Inputs.Line.LinePointsDto[];
     /**
-    * Create the lines between two lists of start and end points of equal length with potential async inputs
-    * @link https://docs.bitbybit.dev/classes/bitbybit_line.Line.html#linesBetweenStartAndEndPoints
-    * @param inputs Two lists of start and end points
-    * @returns Lines
-    */
+     * Create the lines between two lists of start and end points of equal length with potential async inputs
+     * @link https://docs.bitbybit.dev/classes/bitbybit_line.Line.html#linesBetweenStartAndEndPoints
+     * @param inputs Two lists of start and end points
+     * @returns Lines
+     */
     linesBetweenStartAndEndPointsAsync(inputs: Inputs.Line.LineStartEndPointsDto): Promise<Inputs.Line.LinePointsDto[]>;
     private createLineSystemMesh;
 }/**
@@ -2213,6 +2750,30 @@ declare class Node {
      * @param inputs Node translation information
      */
     translate(inputs: Inputs.Node.NodeTranslationDto): void;
+}declare class OCCTAdvanced {
+    readonly intersections: OCCTIntersections;
+    constructor(occWorkerManager: OCCTWorkerManager);
+}declare class OCCTIntersections {
+    private readonly occWorkerManager;
+    constructor(occWorkerManager: OCCTWorkerManager);
+    /**
+     * Slices the shape at a given step interval along the provided direction
+     * Source code of this method is only available in proprietary bitbybit library that is not opensourced
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occt_advanced_intersections.OCCTIntersections.html#slice
+     * @param inputs Shape to slice
+     * @returns OpenCascade intersection faces
+     */
+    slice(inputs: Inputs.OCCT.SliceDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.OCCT.TopoDSShapePointer[]>;
+}declare class OCCTAssembly {
+    private readonly occWorkerManager;
+    constructor(occWorkerManager: OCCTWorkerManager);
+    /**
+     * Scans assembly
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occt_assembly.OCCTAssembly.html#scan
+     * @param inputs Shape to scan
+     * @returns Data for assembly preview
+     */
+    scan(inputs: Inputs.OCCT.ShapeDto<Inputs.OCCT.TopoDSShapePointer>): Promise<any>;
 }declare class OCCTBooleans {
     private readonly occWorkerManager;
     constructor(occWorkerManager: OCCTWorkerManager);
@@ -2222,21 +2783,52 @@ declare class Node {
      * @param inputs Objects to join
      * @returns OpenCascade joined shape
      */
-    union(inputs: Inputs.OCCT.UnionDto): Promise<any>;
+    union(inputs: Inputs.OCCT.UnionDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.OCCT.TopoDSShapePointer>;
     /**
      * Does boolean difference operation between a main shape and given shapes
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_booleans.OCCTBooleans.html#difference
      * @param inputs Main shape and shapes to differ
      * @returns OpenCascade difference shape
      */
-    difference(inputs: Inputs.OCCT.DifferenceDto): Promise<any>;
+    difference(inputs: Inputs.OCCT.DifferenceDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.OCCT.TopoDSShapePointer>;
     /**
      * Does boolean intersection operation between a main shape and given shapes
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_booleans.OCCTBooleans.html#intersection
      * @param inputs Main shape and shapes to differ
      * @returns OpenCascade intersection of shapes
      */
-    intersection(inputs: Inputs.OCCT.IntersectionDto): Promise<any>;
+    intersection(inputs: Inputs.OCCT.IntersectionDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.OCCT.TopoDSShapePointer>;
+}declare class OCCTFillets {
+    private readonly occWorkerManager;
+    constructor(occWorkerManager: OCCTWorkerManager);
+    /**
+    * Fillets OpenCascade Shapes
+    * @link https://docs.bitbybit.dev/classes/bitbybit_occt_fillets.OCCTFillets.html#filletEdges
+    * @param inputs Shape, radius and edge indexes to fillet
+    * @returns OpenCascade shape with filleted edges
+    */
+    filletEdges(inputs: Inputs.OCCT.FilletDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.OCCT.TopoDSShapePointer>;
+    /**
+     * Chamfer OpenCascade Shape edges
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occt_fillets.OCCTFillets.html#chamferEdges
+     * @param inputs Shape, distance and edge indexes to chamfer
+     * @returns OpenCascade shape with chamfered edges
+     */
+    chamferEdges(inputs: Inputs.OCCT.ChamferDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.OCCT.TopoDSShapePointer>;
+    /**
+     * Fillets 2d wires or faces
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occt_fillets.OCCTFillets.html#fillet2d
+     * @param inputs Shape
+     * @returns OpenCascade filleted shape result
+     */
+    fillet2d(inputs: Inputs.OCCT.FilletDto<Inputs.OCCT.TopoDSWirePointer | Inputs.OCCT.TopoDSFacePointer>): Promise<Inputs.OCCT.TopoDSWirePointer | Inputs.OCCT.TopoDSFacePointer>;
+    /**
+     * Fillets two planar edges into a wire by providing a radius, plane, edges and possible solution index if more than one result exists
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occt_fillets.OCCTFillets.html#filletTwoEdgesInPlaneIntoAWire
+     * @param inputs Definition for fillets
+     * @returns OpenCascade wire shape if solution is found
+     */
+    filletTwoEdgesInPlaneIntoAWire(inputs: Inputs.OCCT.FilletTwoEdgesInPlaneDto<Inputs.OCCT.TopoDSEdgePointer>): Promise<Inputs.OCCT.TopoDSWirePointer>;
 }declare class OCCTCurves {
     private readonly occWorkerManager;
     constructor(occWorkerManager: OCCTWorkerManager);
@@ -2246,42 +2838,42 @@ declare class Node {
      * @param inputs 2D Ellipse parameters
      * @returns OpenCascade Geom2d_ellipse
      */
-    geom2dEllipse(inputs: Inputs.OCCT.Geom2dEllipseDto): Promise<any>;
+    geom2dEllipse(inputs: Inputs.OCCT.Geom2dEllipseDto): Promise<Inputs.OCCT.Geom2dCurvePointer>;
     /**
      * Creates a trimmed curve from the basis curve limited between U1 and U2. This curve can't be drawn.
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_geom_curves.OCCTCurves.html#geom2dTrimmedCurve
      * @param inputs Bounds and strategy for trimming the curve
      * @returns OpenCascade Geom2d_TrimmedCurve
      */
-    geom2dTrimmedCurve(inputs: Inputs.OCCT.Geom2dTrimmedCurveDto): Promise<any>;
+    geom2dTrimmedCurve(inputs: Inputs.OCCT.Geom2dTrimmedCurveDto<Inputs.OCCT.Geom2dCurvePointer>): Promise<Inputs.OCCT.Geom2dCurvePointer>;
     /**
      * Creates a trimmed 2d curve segment between two 2d points. This curve can't be drawn.
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_geom_curves.OCCTCurves.html#geom2dSegment
      * @param inputs Two 2d points for start and end
      * @returns OpenCascade Geom2d_Segment
      */
-    geom2dSegment(inputs: Inputs.OCCT.Geom2dSegmentDto): Promise<any>;
+    geom2dSegment(inputs: Inputs.OCCT.Geom2dSegmentDto): Promise<Inputs.OCCT.Geom2dCurvePointer>;
     /**
      * Gets 2d point represented by [number, number] on a curve at parameter.
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_geom_curves.OCCTCurves.html#get2dPointFrom2dCurveOnParam
      * @param inputs 2D Curve shape and parameter
      * @returns Point as array of 2 numbers
      */
-    get2dPointFrom2dCurveOnParam(inputs: Inputs.OCCT.DataOnGeometryAtParamDto): Promise<Inputs.Base.Point2>;
+    get2dPointFrom2dCurveOnParam(inputs: Inputs.OCCT.DataOnGeometryAtParamDto<Inputs.OCCT.Geom2dCurvePointer>): Promise<Inputs.Base.Point2>;
     /**
      * Creates a circle geom curve
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_geom_curves.OCCTCurves.html#geomCircleCurve
      * @param inputs Axis information and radius
      * @returns Opencascade Geom_Circle curve
      */
-    geomCircleCurve(inputs: Inputs.OCCT.CircleDto): any;
+    geomCircleCurve(inputs: Inputs.OCCT.CircleDto): Promise<Inputs.OCCT.GeomCurvePointer>;
     /**
      * Creates an ellipse geom curve
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_geom_curves.OCCTCurves.html#geomEllipseCurve
      * @param inputs Axis information and radius
      * @returns Opencascade Geom_Ellipse curve
      */
-    geomEllipseCurve(inputs: Inputs.OCCT.EllipseDto): Promise<any>;
+    geomEllipseCurve(inputs: Inputs.OCCT.EllipseDto): Promise<Inputs.OCCT.GeomCurvePointer>;
 }declare class OCCTGeom {
     readonly curves: OCCTCurves;
     readonly surfaces: OCCTSurfaces;
@@ -2295,17 +2887,24 @@ declare class Node {
      * @param inputs Cylinder parameters
      * @returns OpenCascade cylindrical surface
      */
-    cylindricalSurface(inputs: Inputs.OCCT.GeomCylindricalSurfaceDto): Promise<any>;
+    cylindricalSurface(inputs: Inputs.OCCT.GeomCylindricalSurfaceDto): Promise<Inputs.OCCT.GeomSurfacePointer>;
     /**
      * Creates a surface from the face
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_geom_surfaces.OCCTSurfaces.html#surfaceFromFace
      * @param inputs Face shape
      * @returns OpenCascade geom surface
      */
-    surfaceFromFace(inputs: Inputs.OCCT.ShapeDto): Promise<any>;
+    surfaceFromFace(inputs: Inputs.OCCT.ShapeDto<Inputs.OCCT.TopoDSFacePointer>): Promise<Inputs.OCCT.GeomSurfacePointer>;
 }declare class OCCTIntersections {
     private readonly occWorkerManager;
     constructor(occWorkerManager: OCCTWorkerManager);
+    /**
+     * Slices the shape at a given step interval along the provided direction
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occt_intersections.OCCTIntersections.html#slice
+     * @param inputs Shape to slice
+     * @returns OpenCascade intersection faces
+     */
+    slice(inputs: Inputs.OCCT.SliceDto): Promise<any>;
 }declare class OCCTIO {
     private readonly occWorkerManager;
     private readonly geometryHelper;
@@ -2316,20 +2915,20 @@ declare class Node {
      * @param inputs STEP filename and shape to be saved
      * @returns String of a step file
      */
-    saveShapeSTEP(inputs: Inputs.OCCT.SaveStepDto): Promise<string>;
+    saveShapeSTEP(inputs: Inputs.OCCT.SaveStepDto<Inputs.OCCT.TopoDSShapePointer>): Promise<string>;
     /**
      * Imports the step or iges asset file
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_io.OCCTIO.html#loadSTEPorIGES
      * @returns OCCT Shape
      */
-    loadSTEPorIGES(inputs: Inputs.OCCT.ImportStepIgesDto): Promise<any>;
+    loadSTEPorIGES(inputs: Inputs.OCCT.ImportStepIgesDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.OCCT.TopoDSShapePointer>;
     /**
      * Saves the stl file
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_io.OCCTIO.html#saveShapeStl
      * @param inputs STL filename and shape to be saved
      * @returns String of a stl file
      */
-    saveShapeStl(inputs: Inputs.OCCT.SaveStlDto): Promise<any>;
+    saveShapeStl(inputs: Inputs.OCCT.SaveStlDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.OCCT.DecomposedMeshDto>;
 }/**
  * Contains various methods for OpenCascade implementation
  * Much of the work is done by Johnathon Selstad and Sebastian Alff to port OCC to JavaScript
@@ -2343,9 +2942,12 @@ declare class OCCT {
     private readonly vector;
     readonly shapes: OCCTShapes;
     readonly geom: OCCTGeom;
+    readonly assembly: OCCTAssembly;
+    readonly fillets: OCCTFillets;
     readonly transforms: OCCTTransforms;
     readonly operations: OCCTOperations;
     readonly booleans: OCCTBooleans;
+    readonly advanced: OCCTAdvanced;
     readonly io: OCCTIO;
     constructor(context: Context, occWorkerManager: OCCTWorkerManager, geometryHelper: GeometryHelper, solidText: JSCADText, vector: Vector);
     /**
@@ -2354,7 +2956,7 @@ declare class OCCT {
      * @param inputs Contains a shape to be drawn and additional information
      * @returns BabylonJS Mesh
      */
-    drawShape(inputs: Inputs.OCCT.DrawShapeDto): Promise<Mesh>;
+    drawShape(inputs: Inputs.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Mesh>;
     private computeFaceMiddlePos;
     private computeEdgeMiddlePos;
 }declare class OCCTOperations {
@@ -2363,59 +2965,80 @@ declare class OCCT {
     /**
      * Lofts wires into a shell
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_operations.OCCTOperations.html#loft
-     * @param inputs Circle parameters
+     * @param inputs Loft wires
+     * @returns Resulting loft shape
+     */
+    loft(inputs: Inputs.OCCT.LoftDto<Inputs.OCCT.TopoDSWirePointer>): Promise<Inputs.OCCT.TopoDSShapePointer>;
+    /**
+     * Lofts wires into a shell by using many advanced options
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occt_operations.OCCTOperations.html#loftAdvanced
+     * @param inputs Advanced loft parameters
      * @returns Resulting loft shell
      */
-    loft(inputs: Inputs.OCCT.LoftDto): Promise<any>;
+    loftAdvanced(inputs: Inputs.OCCT.LoftAdvancedDto<Inputs.OCCT.TopoDSWirePointer>): Promise<Inputs.OCCT.TopoDSShapePointer>;
     /**
      * Offset for various shapes
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_operations.OCCTOperations.html#offset
      * @param inputs Shape to offset and distance with tolerance
      * @returns Resulting offset shape
      */
-    offset(inputs: Inputs.OCCT.OffsetDto): Promise<any>;
+    offset(inputs: Inputs.OCCT.OffsetDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.OCCT.TopoDSShapePointer>;
     /**
      * Extrudes the face along direction
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_operations.OCCTOperations.html#extrude
      * @param inputs Shape to extrude and direction parameter with tolerance
      * @returns Resulting extruded shape
      */
-    extrude(inputs: Inputs.OCCT.ExtrudeDto): Promise<any>;
+    extrude(inputs: Inputs.OCCT.ExtrudeDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.OCCT.TopoDSShapePointer>;
+    /**
+     * Extrudes the shapes along direction
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occt_operations.OCCTOperations.html#extrudeShapes
+     * @param inputs Shapes to extrude and direction parameter with tolerance
+     * @returns Resulting extruded shapes
+     */
+    extrudeShapes(inputs: Inputs.OCCT.ExtrudeShapesDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.OCCT.TopoDSShapePointer>;
+    /**
+     * Splits the face with edges
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occt_operations.OCCTOperations.html#splitShapeWithShapes
+     * @param inputs Face to split and edges to split with
+     * @returns Resulting split shape
+     */
+    splitShapeWithShapes(inputs: Inputs.OCCT.SplitDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.OCCT.TopoDSShapePointer>;
     /**
      * Revolves the shape around the given direction
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_operations.OCCTOperations.html#revolve
      * @param inputs Revolve parameters
      * @returns Resulting revolved shape
      */
-    revolve(inputs: Inputs.OCCT.RevolveDto): Promise<any>;
+    revolve(inputs: Inputs.OCCT.RevolveDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.OCCT.TopoDSShapePointer>;
     /**
-     * Rotated extrude that is perofrmed on the wire shape
+     * Rotated extrude that is perofrmed on the shape
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_operations.OCCTOperations.html#rotatedExtrude
      * @param inputs Rotated extrusion inputs
      * @returns OpenCascade shape
      */
-    rotatedExtrude(inputs: Inputs.OCCT.RotationExtrudeDto): Promise<any>;
+    rotatedExtrude(inputs: Inputs.OCCT.RotationExtrudeDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.OCCT.TopoDSShapePointer>;
     /**
      * Pipe shapes along the wire
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_operations.OCCTOperations.html#pipe
      * @param inputs Path wire and shapes along the path
      * @returns OpenCascade shape
      */
-    pipe(inputs: Inputs.OCCT.ShapeShapesDto): Promise<any>;
+    pipe(inputs: Inputs.OCCT.ShapeShapesDto<Inputs.OCCT.TopoDSWirePointer, Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.OCCT.TopoDSShapePointer>;
     /**
      * Thickens the shape into a solid by an offset distance
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_operations.OCCTOperations.html#makeThickSolidSimple
      * @param inputs OpenCascade shape
      * @returns OpenCascade solid shape
      */
-    makeThickSolidSimple(inputs: Inputs.OCCT.ThisckSolidSimpleDto): Promise<any>;
+    makeThickSolidSimple(inputs: Inputs.OCCT.ThisckSolidSimpleDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.OCCT.TopoDSShapePointer>;
     /**
      * Thickens the shape into a solid by joining
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_operations.OCCTOperations.html#makeThickSolidByJoin
      * @param inputs OpenCascade shape and options for thickening
      * @returns OpenCascade solid shape
      */
-    makeThickSolidByJoin(inputs: Inputs.OCCT.ThickSolidByJoinDto): Promise<any>;
+    makeThickSolidByJoin(inputs: Inputs.OCCT.ThickSolidByJoinDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.OCCT.TopoDSShapePointer>;
 }declare class OCCTCompound {
     private readonly occWorkerManager;
     constructor(occWorkerManager: OCCTWorkerManager);
@@ -2425,94 +3048,157 @@ declare class OCCT {
      * @param inputs OpenCascade shapes
      * @returns OpenCascade compounded shape
      */
-    makeCompound(inputs: Inputs.OCCT.CompoundShapesDto): Promise<any>;
+    makeCompound(inputs: Inputs.OCCT.CompoundShapesDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.OCCT.TopoDSCompoundPointer>;
 }declare class OCCTEdge {
     private readonly occWorkerManager;
     constructor(occWorkerManager: OCCTWorkerManager);
-    /**
-     * Fillets OpenCascade Shapes
-     * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_edge.OCCTEdge.html#filletEdges
-     * @param inputs Shape, radius and edge indexes to fillet
-     * @returns OpenCascade shape with filleted edges
-     */
-    filletEdges(inputs: Inputs.OCCT.FilletDto): Promise<any>;
-    /**
-     * Chamfer OpenCascade Shape edges
-     * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_edge.OCCTEdge.html#chamferEdges
-     * @param inputs Shape, distance and edge indexes to fillet
-     * @returns OpenCascade shape with filleted edges
-     */
-    chamferEdges(inputs: Inputs.OCCT.ChamferDto): Promise<any>;
     /**
      * Creates linear edge between two points
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_edge.OCCTEdge.html#line
      * @param inputs Two points between which edge should be created
      * @returns OpenCascade edge
      */
-    line(inputs: Inputs.OCCT.LineDto): Promise<any>;
+    line(inputs: Inputs.OCCT.LineDto): Promise<Inputs.OCCT.TopoDSEdgePointer>;
     /**
      * Creates arc edge between three points
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_edge.OCCTEdge.html#arcThroughThreePoints
      * @param inputs Shape, radius and edge indexes to fillet
      * @returns OpenCascade edge
      */
-    arcThroughThreePoints(inputs: Inputs.OCCT.ArcEdgeThreePointsDto): any;
+    arcThroughThreePoints(inputs: Inputs.OCCT.ArcEdgeThreePointsDto): Promise<Inputs.OCCT.TopoDSEdgePointer>;
     /**
      * Creates OpenCascade circle edge
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_edge.OCCTEdge.html#createCircleEdge
      * @param inputs Circle parameters
      * @returns OpenCascade circle edge
      */
-    createCircleEdge(inputs: Inputs.OCCT.CircleDto): Promise<any>;
+    createCircleEdge(inputs: Inputs.OCCT.CircleDto): Promise<Inputs.OCCT.TopoDSEdgePointer>;
     /**
      * Creates OpenCascade ellipse edge
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_edge.OCCTEdge.html#createEllipseEdge
      * @param inputs Ellipse parameters
      * @returns OpenCascade ellipse edge
      */
-    createEllipseEdge(inputs: Inputs.OCCT.EllipseDto): Promise<any>;
+    createEllipseEdge(inputs: Inputs.OCCT.EllipseDto): Promise<Inputs.OCCT.TopoDSEdgePointer>;
     /**
      * Removes internal faces for the shape
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_edge.OCCTEdge.html#removeInternalEdges
      * @param inputs Shape
      * @returns OpenCascade shape with no internal edges
      */
-    removeInternalEdges(inputs: Inputs.OCCT.ShapeDto): Promise<any>;
+    removeInternalEdges(inputs: Inputs.OCCT.ShapeDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.OCCT.TopoDSShapePointer>;
     /**
      * Gets the edge by providing an index from the shape
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_edge.OCCTEdge.html#getEdge
      * @param inputs Shape
      * @returns OpenCascade edge
      */
-    getEdge(inputs: Inputs.OCCT.ShapeIndexDto): Promise<any>;
+    getEdge(inputs: Inputs.OCCT.ShapeIndexDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.OCCT.TopoDSEdgePointer>;
     /**
      * Gets the edges of a shape in a list
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_edge.OCCTEdge.html#getEdges
      * @param inputs Shape
      * @returns OpenCascade edge list
      */
-    getEdges(inputs: Inputs.OCCT.ShapeDto): Promise<any[]>;
+    getEdges(inputs: Inputs.OCCT.ShapeDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.OCCT.TopoDSEdgePointer[]>;
     /**
      * Creates an edge from geom curve and geom surface
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_edge.OCCTEdge.html#makeEdgeFromGeom2dCurveAndSurface
      * @param inputs shapes are expected to contain 2 array elements - first is geom curve, second geom surface
      * @returns OpenCascade TopoDS_Edge
      */
-    makeEdgeFromGeom2dCurveAndSurface(inputs: Inputs.OCCT.ShapesDto): Promise<any>;
+    makeEdgeFromGeom2dCurveAndSurface(inputs: Inputs.OCCT.EdgeFromGeom2dCurveAndSurfaceDto<Inputs.OCCT.Geom2dCurvePointer, Inputs.OCCT.GeomSurfacePointer>): Promise<Inputs.OCCT.TopoDSEdgePointer>;
     /**
      * Gets corner points of edges for a shape. There's no order guarantee here. All duplicates are removed, so when three edges form one corner, that will be represented by a single point in the list.
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_edge.OCCTEdge.html#getCornerPointsOfEdgesForShape
      * @param inputs Shape that contains edges - wire, face, shell, solid
      * @returns List of points
      */
-    getCornerPointsOfEdgesForShape(inputs: Inputs.OCCT.ShapeDto): Promise<Inputs.Base.Point3[]>;
+    getCornerPointsOfEdgesForShape(inputs: Inputs.OCCT.ShapeDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.Base.Point3[]>;
     /**
-     * Fillets two planar edges into a wire by providing a radius, plane, edges and possible solution index if more than one result exists
-     * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_edge.OCCTEdge.html#filletTwoEdgesInPlaneIntoAWire
-     * @param inputs Definition for fillets
-     * @returns OpenCascade wire shape if solution is found
+     * Gets the edge length
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_edge.OCCTEdge.html#getEdgeLength
+     * @param inputs edge
+     * @returns Length
      */
-    filletTwoEdgesInPlaneIntoAWire(inputs: Inputs.OCCT.FilletTwoEdgesInPlaneDto): Promise<any>;
+    getEdgeLength(inputs: Inputs.OCCT.ShapeDto<Inputs.OCCT.TopoDSEdgePointer>): Promise<number>;
+    /**
+     * Gets the lengths of the edges
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_edge.OCCTEdge.html#getEdgesLengths
+     * @param inputs edges
+     * @returns Lengths
+     */
+    getEdgesLengths(inputs: Inputs.OCCT.ShapesDto<Inputs.OCCT.TopoDSEdgePointer>): Promise<number[]>;
+    /**
+     * Gets the center of mass for the edge
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_edge.OCCTEdge.html#getEdgeCenterOfMass
+     * @param inputs edge
+     * @returns Point representing center of mass
+     */
+    getEdgeCenterOfMass(inputs: Inputs.OCCT.ShapeDto<Inputs.OCCT.TopoDSEdgePointer>): Promise<Inputs.Base.Point3>;
+    /**
+     * Gets the centers of mass for the edges
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_edge.OCCTEdge.html#getEdgesCentersOfMass
+     * @param inputs edges
+     * @returns Points representing centers of mass
+     */
+    getEdgesCentersOfMass(inputs: Inputs.OCCT.ShapesDto<Inputs.OCCT.TopoDSEdgePointer>): Promise<Inputs.Base.Point3[]>;
+    /**
+     * Gets the point on edge at param
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_edge.OCCTEdge.html#pointOnEdgeAtParam
+     * @param input edge
+     * @returns Point on param
+     */
+    pointOnEdgeAtParam(inputs: Inputs.OCCT.DataOnGeometryAtParamDto<Inputs.OCCT.TopoDSEdgePointer>): Promise<Inputs.Base.Point3>;
+    /**
+     * Gets the tangent vector on edge at param
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_edge.OCCTEdge.html#tangentOnEdgeAtParam
+     * @param input edge
+     * @returns Tangent vector on param
+     */
+    tangentOnEdgeAtParam(inputs: Inputs.OCCT.DataOnGeometryAtParamDto<Inputs.OCCT.TopoDSEdgePointer>): Promise<Inputs.Base.Point3>;
+    /**
+     * Gets the point on edge at length
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_edge.OCCTEdge.html#pointOnEdgeAtLength
+     * @param input edge and length
+     * @returns Point on edge
+     */
+    pointOnEdgeAtLength(inputs: Inputs.OCCT.DataOnGeometryAtLengthDto<Inputs.OCCT.TopoDSEdgePointer>): Promise<Inputs.Base.Point3>;
+    /**
+     * Gets the tangent vector on edge at length
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_edge.OCCTEdge.html#tangentOnEdgeAtLength
+     * @param input edge and length
+     * @returns Tangent vector on edge
+     */
+    tangentOnEdgeAtLength(inputs: Inputs.OCCT.DataOnGeometryAtLengthDto<Inputs.OCCT.TopoDSEdgePointer>): Promise<Inputs.Base.Point3>;
+    /**
+     * Gets the start point on edge
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_edge.OCCTEdge.html#startPointOnEdge
+     * @param input edge
+     * @returns Start point
+     */
+    startPointOnEdge(inputs: Inputs.OCCT.ShapeDto<Inputs.OCCT.TopoDSEdgePointer>): Promise<Inputs.Base.Point3>;
+    /**
+     * Gets the end point on edge
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_edge.OCCTEdge.html#endPointOnEdge
+     * @param input edge
+     * @returns End point
+     */
+    endPointOnEdge(inputs: Inputs.OCCT.ShapeDto<Inputs.OCCT.TopoDSEdgePointer>): Promise<Inputs.Base.Point3>;
+    /**
+     * Divides edge by params to points
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_edge.OCCTEdge.html#divideEdgeByParamsToPoints
+     * @param input edge and division params
+     * @returns Points
+     */
+    divideEdgeByParamsToPoints(inputs: Inputs.OCCT.DivideDto<Inputs.OCCT.TopoDSEdgePointer>): Promise<Inputs.Base.Point3[]>;
+    /**
+     * Divides edge by length to points
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_edge.OCCTEdge.html#divideEdgeByEqualDistanceToPoints
+     * @param input edge and division params
+     * @returns Points
+     */
+    divideEdgeByEqualDistanceToPoints(inputs: Inputs.OCCT.DivideDto<Inputs.OCCT.TopoDSEdgePointer>): Promise<Inputs.Base.Point3[]>;
 }declare class OCCTFace {
     private readonly occWorkerManager;
     constructor(occWorkerManager: OCCTWorkerManager);
@@ -2522,108 +3208,308 @@ declare class OCCT {
      * @param inputs OpenCascade wire shape and indication if face should be planar
      * @returns OpenCascade face shape
      */
-    createFaceFromWire(inputs: Inputs.OCCT.FaceFromWireDto): Promise<any>;
+    createFaceFromWire(inputs: Inputs.OCCT.FaceFromWireDto<Inputs.OCCT.TopoDSWirePointer>): Promise<Inputs.OCCT.TopoDSFacePointer>;
+    /**
+     * Creates faces from wires
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_face.OCCTFace.html#createFacesFromWires
+     * @param inputs OpenCascade wire shape and indication if face should be planar
+     * @returns OpenCascade face shape
+     */
+    createFacesFromWires(inputs: Inputs.OCCT.FaceFromWireDto<Inputs.OCCT.TopoDSWirePointer>): Promise<Inputs.OCCT.TopoDSFacePointer[]>;
     /**
      * Creates a face from the surface
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_geom_surfaces.OCCTSurfaces.html#faceFromSurface
      * @param inputs Face shape
      * @returns OpenCascade surface
      */
-    faceFromSurface(inputs: Inputs.OCCT.ShapeDto): Promise<any>;
+    faceFromSurface(inputs: Inputs.OCCT.ShapeDto<Inputs.OCCT.GeomSurfacePointer>): Promise<Inputs.OCCT.TopoDSFacePointer>;
     /**
      * Creates a face from the surface and a wire
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_geom_surfaces.OCCTSurfaces.html#faceFromSurfaceAndWire
      * @param inputs OpenCascade surface, a wire and indication wether face should be created inside or not
      * @returns Face shape
      */
-    faceFromSurfaceAndWire(inputs: Inputs.OCCT.FaceFromSurfaceAndWireDto): Promise<any>;
+    faceFromSurfaceAndWire(inputs: Inputs.OCCT.FaceFromSurfaceAndWireDto<Inputs.OCCT.GeomSurfacePointer, Inputs.OCCT.TopoDSWirePointer>): Promise<Inputs.OCCT.TopoDSFacePointer>;
     /**
      * Creates OpenCascade Polygon face
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_face.OCCTFace.html#createPolygonFace
      * @param inputs Polygon points
      * @returns OpenCascade polygon face
      */
-    createPolygonFace(inputs: Inputs.OCCT.PolygonDto): Promise<any>;
+    createPolygonFace(inputs: Inputs.OCCT.PolygonDto): Promise<Inputs.OCCT.TopoDSFacePointer>;
     /**
      * Creates OpenCascade circle face
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_face.OCCTFace.html#createCircleFace
      * @param inputs Circle parameters
      * @returns OpenCascade circle face
      */
-    createCircleFace(inputs: Inputs.OCCT.CircleDto): Promise<any>;
+    createCircleFace(inputs: Inputs.OCCT.CircleDto): Promise<Inputs.OCCT.TopoDSFacePointer>;
     /**
      * Creates OpenCascade ellipse face
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_face.OCCTFace.html#createEllipseFace
      * @param inputs Ellipse parameters
      * @returns OpenCascade ellipse face
      */
-    createEllipseFace(inputs: Inputs.OCCT.EllipseDto): Promise<any>;
+    createEllipseFace(inputs: Inputs.OCCT.EllipseDto): Promise<Inputs.OCCT.TopoDSFacePointer>;
+    /**
+     * Creates OpenCascade square face
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_face.OCCTFace.html#createSquareFace
+     * @param inputs Square parameters
+     * @returns OpenCascade square face
+     */
+    createSquareFace(inputs: Inputs.OCCT.SquareDto): Promise<Inputs.OCCT.TopoDSFacePointer>;
+    /**
+     * Creates OpenCascade rectangle face
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_face.OCCTFace.html#createRectangleFace
+     * @param inputs rectangle parameters
+     * @returns OpenCascade rectangle
+     */
+    createRectangleFace(inputs: Inputs.OCCT.SquareDto): Promise<Inputs.OCCT.TopoDSFacePointer>;
     /**
      * Gets the face by providing an index from the shape
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_face.OCCTFace.html#getFace
      * @param inputs Shape
      * @returns OpenCascade face
      */
-    getFace(inputs: Inputs.OCCT.ShapeIndexDto): Promise<any>;
+    getFace(inputs: Inputs.OCCT.ShapeIndexDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.OCCT.TopoDSFacePointer>;
     /**
      * Gets the faces of the shape in a list
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_face.OCCTFace.html#getFaces
      * @param inputs Shape
      * @returns OpenCascade faces array
      */
-    getFaces(inputs: Inputs.OCCT.ShapeDto): Promise<any[]>;
+    getFaces(inputs: Inputs.OCCT.ShapeDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.OCCT.TopoDSFacePointer[]>;
     /**
      * Computes reversed face from input face
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_face.OCCTFace.html#reversedFace
      * @param inputs Face
      * @returns OpenCascade face
      */
-    reversedFace(inputs: Inputs.OCCT.ShapeIndexDto): Promise<any>;
+    reversedFace(inputs: Inputs.OCCT.ShapeDto<Inputs.OCCT.TopoDSFacePointer>): Promise<Inputs.OCCT.TopoDSFacePointer>;
+    /**
+     * Subdivides a face to point grid
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_face.OCCTFace.html#subdivideToPoints
+     * @param inputs Face and params for subdivision
+     * @returns points
+     */
+    subdivideToPoints(inputs: Inputs.OCCT.FaceSubdivisionDto<Inputs.OCCT.TopoDSFacePointer>): Promise<Inputs.Base.Point3[]>;
+    /**
+     * Subdivides a face to normals grid
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_face.OCCTFace.html#subdivideToNormals
+     * @param inputs Face and params for subdivision
+     * @returns normal vectors
+     */
+    subdivideToNormals(inputs: Inputs.OCCT.FaceSubdivisionDto<Inputs.OCCT.TopoDSFacePointer>): Promise<Inputs.Base.Vector3[]>;
+    /**
+     * Subdivides a face to uv grid
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_face.OCCTFace.html#subdivideToUV
+     * @param inputs Face and params for subdivision
+     * @returns uv params in array
+     */
+    subdivideToUV(inputs: Inputs.OCCT.FaceSubdivisionDto<Inputs.OCCT.TopoDSFacePointer>): Promise<Inputs.Base.Point2[]>;
+    /**
+     * Get point on UV where U and V are described between 0 and 1. These will be mapped to real bounds.
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_face.OCCTFace.html#pointOnUV
+     * @param inputs Face and params for subdivision
+     * @returns point
+     */
+    pointOnUV(inputs: Inputs.OCCT.DataOnUVDto<Inputs.OCCT.TopoDSFacePointer>): Promise<Inputs.Base.Point3>;
+    /**
+     * Get normal on UV where U and V are described between 0 and 1. These will be mapped to real bounds.
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_face.OCCTFace.html#normalOnUV
+     * @param inputs Face and params for subdivision
+     * @returns normal vector
+     */
+    normalOnUV(inputs: Inputs.OCCT.DataOnUVDto<Inputs.OCCT.TopoDSFacePointer>): Promise<Inputs.Base.Vector3>;
+    /**
+     * Get points on UVs where U and V are described between 0 and 1 in two dimensional arrays. These will be mapped to real bounds.
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_face.OCCTFace.html#pointOnUV
+     * @param inputs Face and params for subdivision
+     * @returns points
+     */
+    pointsOnUVs(inputs: Inputs.OCCT.DataOnUVsDto<Inputs.OCCT.TopoDSFacePointer>): Promise<Inputs.Base.Point3[]>;
+    /**
+     * Get normals on UVs where U and V are described between 0 and 1 in two dimensional arrays. These will be mapped to real bounds.
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_face.OCCTFace.html#normalsOnUVs
+     * @param inputs Face and params for subdivision
+     * @returns normals
+     */
+    normalsOnUVs(inputs: Inputs.OCCT.DataOnUVsDto<Inputs.OCCT.TopoDSFacePointer>): Promise<Inputs.Base.Vector3[]>;
+    /**
+     * Subdivides a face to points along a line on parameter
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_face.OCCTFace.html#subdivideToPointsOnParam
+     * @param inputs Face and params for subdivision
+     * @returns points
+     */
+    subdivideToPointsOnParam(inputs: Inputs.OCCT.FaceLinearSubdivisionDto<Inputs.OCCT.TopoDSFacePointer>): Promise<Inputs.Base.Point3[]>;
+    /**
+     * Gets the U min bound of the face
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_face.OCCTFace.html#getUMinBound
+     * @param inputs OCCT Face
+     * @returns u min bound
+     */
+    getUMinBound(inputs: Inputs.OCCT.ShapeDto<Inputs.OCCT.TopoDSFacePointer>): Promise<number>;
+    /**
+     * Gets the U max bound of the face
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_face.OCCTFace.html#getUMaxBound
+     * @param inputs OCCT Face
+     * @returns u max bound
+     */
+    getUMaxBound(inputs: Inputs.OCCT.ShapeDto<Inputs.OCCT.TopoDSFacePointer>): Promise<number>;
+    /**
+     * Gets the V min bound of the face
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_face.OCCTFace.html#getVMinBound
+     * @param inputs OCCT Face
+     * @returns v min bound
+     */
+    getVMinBound(inputs: Inputs.OCCT.ShapeDto<Inputs.OCCT.TopoDSFacePointer>): Promise<number>;
+    /**
+     * Gets the V max bound of the face
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_face.OCCTFace.html#getVMaxBound
+     * @param inputs OCCT Face
+     * @returns v max bound
+     */
+    getVMaxBound(inputs: Inputs.OCCT.ShapeDto<Inputs.OCCT.TopoDSFacePointer>): Promise<number>;
+    /**
+     * Get the area of the face
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_face.OCCTFace.html#getFaceArea
+     * @param inputs OCCT Face
+     * @returns area
+     */
+    getFaceArea(inputs: Inputs.OCCT.ShapeDto<Inputs.OCCT.TopoDSFacePointer>): Promise<number>;
+    /**
+     * Get the areas of the faces
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_face.OCCTFace.html#getFacesAreas
+     * @param inputs OCCT Faces
+     * @returns areas
+     */
+    getFacesAreas(inputs: Inputs.OCCT.ShapesDto<Inputs.OCCT.TopoDSFacePointer>): Promise<number[]>;
+    /**
+     * Get the face center of mass point
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_face.OCCTFace.html#getFaceCenterOfMass
+     * @param inputs OCCT Face
+     * @returns point
+     */
+    getFaceCenterOfMass(inputs: Inputs.OCCT.ShapeDto<Inputs.OCCT.TopoDSFacePointer>): Promise<Inputs.Base.Point3>;
+    /**
+     * Get the face center of mass point
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_face.OCCTFace.html#getFaceCenterOfMass
+     * @param inputs OCCT Faces
+     * @returns points
+     */
+    getFacesCentersOfMass(inputs: Inputs.OCCT.ShapesDto<Inputs.OCCT.TopoDSFacePointer>): Promise<Inputs.Base.Point3[]>;
 }declare class OCCTShapes {
     readonly edge: OCCTEdge;
     readonly wire: OCCTWire;
     readonly face: OCCTFace;
+    readonly shell: OCCTShell;
     readonly solid: OCCTSolid;
     readonly compound: OCCTCompound;
     constructor(occWorkerManager: OCCTWorkerManager);
+}declare class OCCTShell {
+    private readonly occWorkerManager;
+    constructor(occWorkerManager: OCCTWorkerManager);
+    /**
+     * Creates a shell from faces
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_shell.OCCTShell.html#sewFaces
+     * @param inputs OpenCascade shell and faces
+     * @returns OpenCascade shell
+     */
+    sewFaces(inputs: Inputs.OCCT.SewDto<Inputs.OCCT.TopoDSFacePointer>): Promise<Inputs.OCCT.TopoDSShellPointer>;
+    /**
+     * Get shell surface area
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_shell.OCCTShell.html#getShellSurfaceArea
+     * @param inputs shell shape
+     * @returns Surface area
+     */
+    getShellSurfaceArea(inputs: Inputs.OCCT.ShapeDto<Inputs.OCCT.TopoDSShellPointer>): Promise<number>;
 }declare class OCCTSolid {
     private readonly occWorkerManager;
     constructor(occWorkerManager: OCCTWorkerManager);
+    /**
+     * Creates Solid From shell that must be closed
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_solid.OCCTSolid.html#createBox
+     * @param inputs Closed shell to make into solid
+     * @returns OpenCascade Solid
+     */
+    fromClosedShell(inputs: Inputs.OCCT.ShapeDto<Inputs.OCCT.TopoDSShellPointer>): Promise<Inputs.OCCT.TopoDSSolidPointer>;
     /**
      * Creates OpenCascade Box
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_solid.OCCTSolid.html#createBox
      * @param inputs Box size and center
      * @returns OpenCascade Box
      */
-    createBox(inputs: Inputs.OCCT.BoxDto): Promise<any>;
+    createBox(inputs: Inputs.OCCT.BoxDto): Promise<Inputs.OCCT.TopoDSSolidPointer>;
+    /**
+     * Creates OpenCascade Box from corner
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_solid.OCCTSolid.html#createBoxFromCorner
+     * @param inputs Box size and corner coordinates
+     * @returns OpenCascade Box
+     */
+    createBoxFromCorner(inputs: Inputs.OCCT.BoxFromCornerDto): Promise<Inputs.OCCT.TopoDSSolidPointer>;
     /**
      * Creates OpenCascade Cylinder
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_solid.OCCTSolid.html#createCylinder
      * @param inputs Cylinder parameters
      * @returns OpenCascade Cylinder
      */
-    createCylinder(inputs: Inputs.OCCT.CylinderDto): Promise<any>;
+    createCylinder(inputs: Inputs.OCCT.CylinderDto): Promise<Inputs.OCCT.TopoDSSolidPointer>;
     /**
      * Creates OpenCascade Cylinders on simple bit by bit lines represented by two points
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_solid.OCCTSolid.html#createCylindersOnLines
      * @param inputs Cylinder parameters
      * @returns OpenCascade Cylinder
      */
-    createCylindersOnLines(inputs: Inputs.OCCT.CylindersOnLinesDto): Promise<any[]>;
+    createCylindersOnLines(inputs: Inputs.OCCT.CylindersOnLinesDto): Promise<Inputs.OCCT.TopoDSSolidPointer[]>;
     /**
      * Creates OpenCascade Sphere
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_solid.OCCTSolid.html#createSphere
      * @param inputs Sphere radius and center
      * @returns OpenCascade Sphere
      */
-    createSphere(inputs: Inputs.OCCT.SphereDto): Promise<any>;
+    createSphere(inputs: Inputs.OCCT.SphereDto): Promise<Inputs.OCCT.TopoDSSolidPointer>;
     /**
      * Creates OpenCascade Cone
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_solid.OCCTSolid.html#createCone
      * @param inputs Cone parameters
      * @returns OpenCascade cone shape
      */
-    createCone(inputs: Inputs.OCCT.ConeDto): Promise<any>;
+    createCone(inputs: Inputs.OCCT.ConeDto): Promise<Inputs.OCCT.TopoDSSolidPointer>;
+    /**
+     * Get solid surface area
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_solid.OCCTSolid.html#getSolidSurfaceArea
+     * @param inputs Closed solid shape
+     * @returns Surface area
+     */
+    getSolidSurfaceArea(inputs: Inputs.OCCT.ShapeDto<Inputs.OCCT.TopoDSSolidPointer>): Promise<number>;
+    /**
+    * Get solid volume
+    * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_solid.OCCTSolid.html#getSolidVolume
+    * @param inputs Closed solid shape
+    * @returns volume
+    */
+    getSolidVolume(inputs: Inputs.OCCT.ShapeDto<Inputs.OCCT.TopoDSSolidPointer>): Promise<number>;
+    /**
+    * Get solids volumes
+    * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_solid.OCCTSolid.html#getSolidsVolumes
+    * @param inputs Closed solid shapes
+    * @returns volumes
+    */
+    getSolidsVolumes(inputs: Inputs.OCCT.ShapesDto<Inputs.OCCT.TopoDSSolidPointer>): Promise<number[]>;
+    /**
+    * Get solid center of mass
+    * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_solid.OCCTSolid.html#getSolidCenterOfMass
+    * @param inputs Closed solid shape
+    * @returns center of mass point
+    */
+    getSolidCenterOfMass(inputs: Inputs.OCCT.ShapeDto<Inputs.OCCT.TopoDSSolidPointer>): Promise<Inputs.Base.Point3>;
+    /**
+     * Get centers of mass of solids
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_solid.OCCTSolid.html#getSolidsCentersOfMass
+     * @param inputs Closed solid shapes
+     * @returns Points indicating centers of mass
+     */
+    getSolidsCentersOfMass(inputs: Inputs.OCCT.ShapesDto<Inputs.OCCT.TopoDSSolidPointer>): Promise<Inputs.Base.Point3[]>;
 }declare class OCCTWire {
     private readonly occWorkerManager;
     constructor(occWorkerManager: OCCTWorkerManager);
@@ -2633,164 +3519,318 @@ declare class OCCT {
      * @param inputs Polygon points
      * @returns OpenCascade polygon wire shape
      */
-    createPolygonWire(inputs: Inputs.OCCT.PolygonDto): Promise<any>;
+    createPolygonWire(inputs: Inputs.OCCT.PolygonDto): Promise<Inputs.OCCT.TopoDSWirePointer>;
     /**
      * Combines OpenCascade edges and wires into a single wire
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_wire.OCCTWire.html#combineEdgesAndWiresIntoAWire
      * @param inputs List of shapes of edges and wires
      * @returns OpenCascade wire
      */
-    combineEdgesAndWiresIntoAWire(inputs: Inputs.OCCT.ShapesDto): any;
+    combineEdgesAndWiresIntoAWire(inputs: Inputs.OCCT.ShapesDto<Inputs.OCCT.TopoDSWirePointer | Inputs.OCCT.TopoDSEdgePointer>): Promise<Inputs.OCCT.TopoDSWirePointer>;
     /**
      * Adds OpenCascade edges and wires into another wire
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_wire.OCCTWire.html#addEdgesAndWiresToWire
      * @param inputs List of shapes of edges and wires and a single shape wire to which edges need to be added
      * @returns OpenCascade wire
      */
-    addEdgesAndWiresToWire(inputs: Inputs.OCCT.ShapeShapesDto): any;
+    addEdgesAndWiresToWire(inputs: Inputs.OCCT.ShapeShapesDto<Inputs.OCCT.TopoDSWirePointer, Inputs.OCCT.TopoDSWirePointer | Inputs.OCCT.TopoDSEdgePointer>): Promise<Inputs.OCCT.TopoDSWirePointer>;
     /**
      * Creates OpenCascade BSPline wire
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_wire.OCCTWire.html#createBSpline
      * @param inputs Points through which to make BSpline
      * @returns OpenCascade BSpline wire
      */
-    createBSpline(inputs: Inputs.OCCT.BSplineDto): Promise<any>;
+    createBSpline(inputs: Inputs.OCCT.BSplineDto): Promise<Inputs.OCCT.TopoDSWirePointer>;
     /**
     * Divides OpenCascade wire to points blindly following its parametric space
     * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_wire.OCCTWire.html#divideWireByParamsToPoints
     * @param inputs Describes into how many points should the wire be divided
     * @returns Points on wire
     */
-    divideWireByParamsToPoints(inputs: Inputs.OCCT.DivideWireDto): Promise<Inputs.Base.Point3[]>;
+    divideWireByParamsToPoints(inputs: Inputs.OCCT.DivideDto<Inputs.OCCT.TopoDSWirePointer>): Promise<Inputs.Base.Point3[]>;
     /**
     * Divides OpenCascade wire to equal distance points
     * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_wire.OCCTWire.html#divideWireByEqualDistanceToPoints
     * @param inputs Describes into how many points should the wire be divided
     * @returns Points on wire
     */
-    divideWireByEqualDistanceToPoints(inputs: Inputs.OCCT.DivideWireDto): Promise<Inputs.Base.Point3[]>;
+    divideWireByEqualDistanceToPoints(inputs: Inputs.OCCT.DivideDto<Inputs.OCCT.TopoDSWirePointer>): Promise<Inputs.Base.Point3[]>;
     /**
     * Evaluates point on a wire at parameter value between 0 and 1, being start and end points
     * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_wire.OCCTWire.html#pointOnWireAtParam
     * @param inputs Wire shape and parameter
     * @returns Point as array of 3 numbers
     */
-    pointOnWireAtParam(inputs: Inputs.OCCT.DataOnGeometryAtParamDto): Promise<Inputs.Base.Point3>;
+    pointOnWireAtParam(inputs: Inputs.OCCT.DataOnGeometryAtParamDto<Inputs.OCCT.TopoDSWirePointer>): Promise<Inputs.Base.Point3>;
     /**
     * Evaluates point on a wire at certain length
     * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_wire.OCCTWire.html#pointOnWireAtLength
     * @param inputs Wire shape and length value
     * @returns Point as array of 3 numbers
     */
-    pointOnWireAtLength(inputs: Inputs.OCCT.DataOnGeometryAtLengthDto): Promise<Inputs.Base.Point3>;
+    pointOnWireAtLength(inputs: Inputs.OCCT.DataOnGeometryAtLengthDto<Inputs.OCCT.TopoDSWirePointer>): Promise<Inputs.Base.Point3>;
+    /**
+    * Evaluates tangent vector on a wire at parameter value between 0 and 1, being start and end points
+    * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_wire.OCCTWire.html#tangentOnWireAtParam
+    * @param inputs Wire shape and parameter
+    * @returns Tangent vector as array of 3 numbers
+    */
+    tangentOnWireAtParam(inputs: Inputs.OCCT.DataOnGeometryAtParamDto<Inputs.OCCT.TopoDSWirePointer>): Promise<Inputs.Base.Vector3>;
+    /**
+    * Evaluates tangent vector on a wire at certain length
+    * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_wire.OCCTWire.html#pointOnWireAtLength
+    * @param inputs Wire shape and length value
+    * @returns Tangent vector as array of 3 numbers
+    */
+    tangentOnWireAtLength(inputs: Inputs.OCCT.DataOnGeometryAtLengthDto<Inputs.OCCT.TopoDSWirePointer>): Promise<Inputs.Base.Vector3>;
     /**
     * Computes 3 derivative vectors of a curve at a given length
     * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_wire.OCCTWire.html#derivativesOnWireAtLength
     * @param inputs Wire shape and length value
     * @returns Three arrays of vectors. Each vector represents derivatives in order - first, second, third
     */
-    derivativesOnWireAtLength(inputs: Inputs.OCCT.DataOnGeometryAtLengthDto): Promise<[Inputs.Base.Vector3, Inputs.Base.Vector3, Inputs.Base.Vector3]>;
+    derivativesOnWireAtLength(inputs: Inputs.OCCT.DataOnGeometryAtLengthDto<Inputs.OCCT.TopoDSWirePointer>): Promise<[Inputs.Base.Vector3, Inputs.Base.Vector3, Inputs.Base.Vector3]>;
     /**
     * Computes 3 derivative vectors of a curve on parameter between 0 and 1.
     * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_wire.OCCTWire.html#derivativesOnWireAtParam
     * @param inputs Wire shape and parameter value
     * @returns Three arrays of vectors. Each vector represents derivatives in order - first, second, third
     */
-    derivativesOnWireAtParam(inputs: Inputs.OCCT.DataOnGeometryAtParamDto): Promise<[Inputs.Base.Vector3, Inputs.Base.Vector3, Inputs.Base.Vector3]>;
-    /**
-    * Computes length of a given wire
-    * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_wire.OCCTWire.html#wireLength
-    * @param inputs Wire shape
-    * @returns The length of the wire
-    */
-    wireLength(inputs: Inputs.OCCT.ShapeDto): Promise<number>;
+    derivativesOnWireAtParam(inputs: Inputs.OCCT.DataOnGeometryAtParamDto<Inputs.OCCT.TopoDSWirePointer>): Promise<[Inputs.Base.Vector3, Inputs.Base.Vector3, Inputs.Base.Vector3]>;
     /**
     * Computes the star point on the wire at param 0
     * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_wire.OCCTWire.html#startPointOnWire
     * @param inputs Wire shape
     * @returns The length of the wire
     */
-    startPointOnWire(inputs: Inputs.OCCT.ShapeDto): Promise<Inputs.Base.Point3>;
+    startPointOnWire(inputs: Inputs.OCCT.ShapeDto<Inputs.OCCT.TopoDSWirePointer>): Promise<Inputs.Base.Point3>;
     /**
     * Computes the end point on the wire at param 1
     * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_wire.OCCTWire.html#endPointOnWire
     * @param inputs Wire shape
     * @returns The length of the wire
     */
-    endPointOnWire(inputs: Inputs.OCCT.ShapeDto): Promise<Inputs.Base.Point3>;
+    endPointOnWire(inputs: Inputs.OCCT.ShapeDto<Inputs.OCCT.TopoDSWirePointer>): Promise<Inputs.Base.Point3>;
     /**
      * Creates OpenCascade Bezier wire
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_wire.OCCTWire.html#createBezier
      * @param inputs Points through which to make bezier curve
      * @returns OpenCascade Bezier wire
      */
-    createBezier(inputs: Inputs.OCCT.BezierDto): Promise<any>;
+    createBezier(inputs: Inputs.OCCT.BezierDto): Promise<Inputs.OCCT.TopoDSWirePointer>;
+    /**
+     * Creates OpenCascade BSpline wire from points. This method can be used to create nicely shaped (periodic) loops.
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_wire.OCCTWire.html#interpolatePoints
+     * @param inputs Points through which to make the curve, periodic bool and tolerance
+     * @returns OpenCascade BSpline wire
+     */
+    interpolatePoints(inputs: Inputs.OCCT.InterpolationDto): Promise<Inputs.OCCT.TopoDSWirePointer>;
     /**
      * Creates OpenCascade circle wire
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_wire.OCCTWire.html#createCircleWire
      * @param inputs Circle parameters
      * @returns OpenCascade circle wire
      */
-    createCircleWire(inputs: Inputs.OCCT.CircleDto): Promise<any>;
+    createCircleWire(inputs: Inputs.OCCT.CircleDto): Promise<Inputs.OCCT.TopoDSWirePointer>;
+    /**
+     * Creates OpenCascade square wire
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_wire.OCCTWire.html#createSquareWire
+     * @param inputs Square parameters
+     * @returns OpenCascade square wire
+     */
+    createSquareWire(inputs: Inputs.OCCT.SquareDto): Promise<Inputs.OCCT.TopoDSWirePointer>;
+    /**
+     * Creates OpenCascade star wire
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_wire.OCCTWire.html#createStarWire
+     * @param inputs star parameters
+     * @returns OpenCascade star wire
+     */
+    createStarWire(inputs: Inputs.OCCT.StarDto): Promise<Inputs.OCCT.TopoDSWirePointer>;
+    /**
+     * Creates OpenCascade parallelogram wire
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_wire.OCCTWire.html#createParallelogramWire
+     * @param inputs star parameters
+     * @returns OpenCascade star wire
+     */
+    createParallelogramWire(inputs: Inputs.OCCT.ParallelogramDto): Promise<Inputs.OCCT.TopoDSWirePointer>;
+    /**
+     * Creates OpenCascade rectangle wire
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_wire.OCCTWire.html#createRectangleWire
+     * @param inputs rectangle parameters
+     * @returns OpenCascade rectangle
+     */
+    createRectangleWire(inputs: Inputs.OCCT.SquareDto): Promise<Inputs.OCCT.TopoDSWirePointer>;
     /**
      * Creates OpenCascade ellipse wire
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_wire.OCCTWire.html#createEllipseWire
      * @param inputs Ellipse parameters
      * @returns OpenCascade ellipse wire
      */
-    createEllipseWire(inputs: Inputs.OCCT.EllipseDto): Promise<any>;
+    createEllipseWire(inputs: Inputs.OCCT.EllipseDto): Promise<Inputs.OCCT.TopoDSWirePointer>;
     /**
      * Gets the wire by providing an index from the shape
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_wire.OCCTWire.html#getWire
      * @param inputs Shape
      * @returns OpenCascade wire
      */
-    getWire(inputs: Inputs.OCCT.ShapeIndexDto): Promise<any>;
+    getWire(inputs: Inputs.OCCT.ShapeIndexDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.OCCT.TopoDSWirePointer>;
+    /**
+     * Gets the wires by providing an index from the shape
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_wire.OCCTWire.html#getWires
+     * @param inputs Shape
+     * @returns OpenCascade wires
+     */
+    getWires(inputs: Inputs.OCCT.ShapeIndexDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.OCCT.TopoDSWirePointer>;
     /**
      * Computes reversed wire from input wire
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_wire.OCCTWire.html#reversedWire
      * @param inputs Shape
      * @returns OpenCascade wire
      */
-    reversedWire(inputs: Inputs.OCCT.ShapeIndexDto): Promise<any>;
+    reversedWire(inputs: Inputs.OCCT.ShapeDto<Inputs.OCCT.TopoDSWirePointer>): Promise<Inputs.OCCT.TopoDSWirePointer>;
+    /**
+     * Places a wire on the face by mapping it's 2d coordinates to UV space. Wire must be positioned on the ground XZ plane for this to work.
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_wire.OCCTWire.html#placeWireOnFace
+     * @param inputs two shapes - first a wire and second a face
+     * @returns OpenCascade wire
+     */
+    placeWireOnFace(inputs: Inputs.OCCT.WireOnFaceDto<Inputs.OCCT.TopoDSWirePointer, Inputs.OCCT.TopoDSFacePointer>): Promise<Inputs.OCCT.TopoDSWirePointer>;
+    /**
+     * Places multiple wires on the face by mapping it's 2d coordinates to UV space. Wires must be positioned on the ground XZ plane for this to work.
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_wire.OCCTWire.html#placeWiresOnFace
+     * @param inputs a face and a list of wires
+     * @returns OpenCascade wires
+     */
+    placeWiresOnFace(inputs: Inputs.OCCT.ShapeShapesDto<Inputs.OCCT.TopoDSFacePointer, Inputs.OCCT.TopoDSWirePointer>): Promise<Inputs.OCCT.TopoDSWirePointer[]>;
+    /**
+     * Gets the wire length
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_wire.OCCTWire.html#getWireLength
+     * @param inputs wire
+     * @returns Length
+     */
+    getWireLength(inputs: Inputs.OCCT.ShapeDto<Inputs.OCCT.TopoDSWirePointer>): Promise<number>;
+    /**
+     * Gets the lengths of wires
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_wire.OCCTWire.html#getWiresLengths
+     * @param inputs wires
+     * @returns Lengths
+     */
+    getWiresLengths(inputs: Inputs.OCCT.ShapesDto<Inputs.OCCT.TopoDSWirePointer>): Promise<number[]>;
 }declare class OCCTTransforms {
     private readonly occWorkerManager;
     constructor(occWorkerManager: OCCTWorkerManager);
     /**
-     * Transforms the array of shapes
+     * Transforms the shape
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_transforms.OCCTTransforms.html#transform
      * @param inputs Transformation description
-     * @returns OpenCascade shapes
+     * @returns OpenCascade shape
      */
-    transform(inputs: Inputs.OCCT.TransformDto): Promise<any>;
+    transform(inputs: Inputs.OCCT.TransformDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.OCCT.TopoDSShapePointer>;
     /**
-     * Rotate the shapes
+     * Rotate the shape
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_transforms.OCCTTransforms.html#rotate
      * @param inputs Rotation description
-     * @returns OpenCascade shapes
+     * @returns OpenCascade shape
      */
-    rotate(inputs: Inputs.OCCT.RotateDto): Promise<any>;
+    rotate(inputs: Inputs.OCCT.RotateDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.OCCT.TopoDSShapePointer>;
     /**
-     * Translates the shapes
+     * Align the shape
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occt_transforms.OCCTTransforms.html#align
+     * @param inputs Align description
+     * @returns OpenCascade shape
+     */
+    align(inputs: Inputs.OCCT.AlignDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.OCCT.TopoDSShapePointer>;
+    /**
+     * Translates the shape
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_transforms.OCCTTransforms.html#translate
      * @param inputs Translation description
-     * @returns OpenCascade shapes
+     * @returns OpenCascade shape
      */
-    translate(inputs: Inputs.OCCT.TranslateDto): Promise<any>;
+    translate(inputs: Inputs.OCCT.TranslateDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.OCCT.TopoDSShapePointer>;
     /**
-     * Scales the shapes
+     * Scales the shape
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_transforms.OCCTTransforms.html#scale
      * @param inputs Scale description
-     * @returns OpenCascade shapes
+     * @returns OpenCascade shape
      */
-    scale(inputs: Inputs.OCCT.ScaleDto): Promise<any>;
+    scale(inputs: Inputs.OCCT.ScaleDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.OCCT.TopoDSShapePointer>;
     /**
-     * Mirrors the shapes
+     * Scales the shape in 3D
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occt_transforms.OCCTTransforms.html#scale3d
+     * @param inputs Scale 3D description
+     * @returns OpenCascade scaled shape
+     */
+    scale3d(inputs: Inputs.OCCT.Scale3DDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.OCCT.TopoDSShapePointer>;
+    /**
+     * Mirrors the shape
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_transforms.OCCTTransforms.html#mirror
      * @param inputs Mirror axis origin, axis direction and shape
      * @returns OpenCascade shape
      */
-    mirror(inputs: Inputs.OCCT.MirrorDto): Promise<any>;
+    mirror(inputs: Inputs.OCCT.MirrorDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.OCCT.TopoDSShapePointer>;
+    /**
+     * Mirrors the shape along the normal and origin
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occt_transforms.OCCTTransforms.html#mirrorAlongNormal
+     * @param inputs Normal for mirroring with origin
+     * @returns OpenCascade shape
+     */
+    mirrorAlongNormal(inputs: Inputs.OCCT.MirrorAlongNormalDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.OCCT.TopoDSShapePointer>;
+    /**
+     * Transforms the array of shapes with transformations
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occt_transforms.OCCTTransforms.html#transformShapes
+     * @param inputs Transformation descriptions
+     * @returns OpenCascade shapes
+     */
+    transformShapes(inputs: Inputs.OCCT.TransformShapesDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.OCCT.TopoDSShapePointer[]>;
+    /**
+     * Rotate the shapes with rotations
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occt_transforms.OCCTTransforms.html#rotateShapes
+     * @param inputs Rotation descriptions
+     * @returns OpenCascade shapes
+     */
+    rotateShapes(inputs: Inputs.OCCT.RotateShapesDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.OCCT.TopoDSShapePointer[]>;
+    /**
+     * Align the shapes with alignments
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occt_transforms.OCCTTransforms.html#alignShapes
+     * @param inputs Align descriptions
+     * @returns OpenCascade shapes
+     */
+    alignShapes(inputs: Inputs.OCCT.AlignShapesDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.OCCT.TopoDSShapePointer[]>;
+    /**
+     * Translates the shapes with translations
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occt_transforms.OCCTTransforms.html#translateShapes
+     * @param inputs Translation descriptions
+     * @returns OpenCascade shapes
+     */
+    translateShapes(inputs: Inputs.OCCT.TranslateShapesDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.OCCT.TopoDSShapePointer[]>;
+    /**
+     * Scales the shapes with scale factors
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occt_transforms.OCCTTransforms.html#scaleShapes
+     * @param inputs Scale descriptions
+     * @returns OpenCascade shapes
+     */
+    scaleShapes(inputs: Inputs.OCCT.ScaleShapesDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.OCCT.TopoDSShapePointer[]>;
+    /**
+     * Scales the shape in 3D
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occt_transforms.OCCTTransforms.html#scale3dShapes
+     * @param inputs Scale 3D descriptions
+     * @returns OpenCascade scaled shapes
+     */
+    scale3dShapes(inputs: Inputs.OCCT.Scale3DShapesDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.OCCT.TopoDSShapePointer[]>;
+    /**
+     * Mirrors the shapes with multiple mirrors
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occt_transforms.OCCTTransforms.html#mirrorShapes
+     * @param inputs Mirror axis origins, axis directions and shapes
+     * @returns OpenCascade shapes
+     */
+    mirrorShapes(inputs: Inputs.OCCT.MirrorShapesDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.OCCT.TopoDSShapePointer[]>;
+    /**
+     * Mirrors the shapes along the normal and origin
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occt_transforms.OCCTTransforms.html#mirrorAlongNormalShapes
+     * @param inputs Normals for mirroring with origins
+     * @returns OpenCascade shapes
+     */
+    mirrorAlongNormalShapes(inputs: Inputs.OCCT.MirrorAlongNormalShapesDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.OCCT.TopoDSShapePointer[]>;
 }/**
  * Contains various methods for points. Point in bitbybit is simply an array containing 3 numbers for [x, y, z].
  * Because of this form Point can be interchanged with Vector, which also is an array in [x, y, z] form.
@@ -2836,6 +3876,13 @@ declare class Point {
      * @returns Transformed points
      */
     transformPoints(inputs: Inputs.Point.TransformPointsDto): Inputs.Base.Point3[];
+    /**
+     * Transforms multiple points by multiple transformations
+     * @link https://docs.bitbybit.dev/classes/bitbybit_point.Point.html#transformsForPoints
+     * @param inputs Contains points and the transformations to apply
+     * @returns Transformed points
+     */
+    transformsForPoints(inputs: Inputs.Point.TransformsForPointsDto): Inputs.Base.Point3[];
     /**
      * Measures the closest distance between a point and a collection of points
      * @link https://docs.bitbybit.dev/classes/bitbybit_point.Point.html#closestPointFromPointsDistance
@@ -2892,6 +3939,13 @@ declare class Point {
      * @returns Z coordinate
      */
     getZ(inputs: Inputs.Point.PointDto): number;
+    /**
+     * Get average point of points
+     * @link https://docs.bitbybit.dev/classes/bitbybit_point.Point.html#averagePoint
+     * @param inputs The points
+     * @returns point
+     */
+    averagePoint(inputs: Inputs.Point.PointsDto): Base.Point3;
     /**
      * Creates the spiral out of multiple points
      * @link https://docs.bitbybit.dev/classes/bitbybit_point.Point.html#spiral

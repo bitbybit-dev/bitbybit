@@ -1,4 +1,4 @@
-import { BRepFill_TypeOfContact, BRepOffsetAPI_MakeOffsetShape, BRepOffsetAPI_MakeOffset_1, BRepOffset_Mode, GeomAbs_JoinType, OpenCascadeInstance } from 'opencascade.js';
+import { Approx_ParametrizationType, BRepFill_TypeOfContact, BRepOffsetAPI_MakeOffsetShape, BRepOffsetAPI_MakeOffset_1, BRepOffset_Mode, GeomAbs_JoinType, OpenCascadeInstance, TopoDS_Shape, TopoDS_Wire } from 'opencascade.js';
 import { OccHelper } from '../occ-helper';
 import * as Inputs from '../../../api/inputs/inputs';
 
@@ -10,15 +10,64 @@ export class OCCTOperations {
     ) {
     }
 
-    loft(inputs: Inputs.OCCT.LoftDto): any {
+    loft(inputs: Inputs.OCCT.LoftDto<TopoDS_Wire>) {
         const pipe = new this.occ.BRepOffsetAPI_ThruSections(inputs.makeSolid, false, 1.0e-06);
         inputs.shapes.forEach((wire) => { pipe.AddWire(wire); });
         pipe.CheckCompatibility(false);
-        // pipe.Build();
-        return pipe.Shape();
+        return this.och.getActualTypeOfShape(pipe.Shape());
     }
 
-    offset(inputs: Inputs.OCCT.OffsetDto): any {
+    loftAdvanced(inputs: Inputs.OCCT.LoftAdvancedDto<TopoDS_Wire>) {
+        if (inputs.periodic && !inputs.closed) {
+            throw new Error('Cant construct periodic non closed loft.');
+        }
+        const pipe = new this.occ.BRepOffsetAPI_ThruSections(inputs.makeSolid, inputs.straight, inputs.tolerance);
+        if (inputs.startVertex) {
+            pipe.AddVertex(this.och.makeVertex(inputs.startVertex));
+        }
+        if (inputs.closed && !inputs.periodic) {
+            inputs.shapes.push(inputs.shapes[0]);
+        } else if (inputs.closed && inputs.periodic) {
+            const pointsOnCrvs = [];
+            inputs.shapes.forEach((s: TopoDS_Wire) => {
+                const pts = this.och.divideWireByParamsToPoints({ shape: s, nrOfDivisions: inputs.nrPeriodicSections, removeStartPoint: false, removeEndPoint: false });
+                pointsOnCrvs.push(pts);
+            })
+            for (let i = 0; i < inputs.nrPeriodicSections; i++) {
+                const ptsForPerpWire = pointsOnCrvs.map(p => p[i]);
+                const periodicWire = this.och.interpolatePoints({ points: ptsForPerpWire, tolerance: inputs.tolerance, periodic: true });
+                pipe.AddWire(periodicWire);
+            }
+        }
+        if (!inputs.periodic) {
+            inputs.shapes.forEach((wire) => { pipe.AddWire(wire); });
+        }
+        if (inputs.endVertex) {
+            pipe.AddVertex(this.och.makeVertex(inputs.endVertex));
+        }
+        if (inputs.useSmoothing) {
+            pipe.SetSmoothing(inputs.useSmoothing);
+        }
+        if (inputs.maxUDegree) {
+            pipe.SetMaxDegree(inputs.maxUDegree);
+        }
+        let parType: Approx_ParametrizationType;
+        if (inputs.parType === Inputs.OCCT.ApproxParametrizationTypeEnum.approxChordLength) {
+            parType = this.occ.Approx_ParametrizationType.Approx_ChordLength as Approx_ParametrizationType;
+        } else if (inputs.parType === Inputs.OCCT.ApproxParametrizationTypeEnum.approxCentripetal) {
+            parType = this.occ.Approx_ParametrizationType.Approx_Centripetal as Approx_ParametrizationType;
+        } else if (inputs.parType === Inputs.OCCT.ApproxParametrizationTypeEnum.approxIsoParametric) {
+            parType = this.occ.Approx_ParametrizationType.Approx_IsoParametric as Approx_ParametrizationType;
+        }
+        if (parType) {
+            pipe.SetParType(parType)
+        }
+        pipe.CheckCompatibility(false);
+        // pipe.Build(new this.occ.Message_ProgressRange_1());
+        return this.och.getActualTypeOfShape(pipe.Shape());
+    }
+
+    offset(inputs: Inputs.OCCT.OffsetDto<TopoDS_Shape>) {
         if (!inputs.tolerance) { inputs.tolerance = 0.1; }
         if (inputs.distance === 0.0) { return inputs.shape; }
         let offset = null;
@@ -53,10 +102,16 @@ export class OCCTOperations {
             );
         }
         let offsetShape = offset.Shape();
-        return offsetShape;
+        return this.och.getActualTypeOfShape(offsetShape);
     }
 
-    extrude(inputs: Inputs.OCCT.ExtrudeDto): any {
+    extrudeShapes(inputs: Inputs.OCCT.ExtrudeShapesDto<TopoDS_Shape>): TopoDS_Shape[] {
+        return inputs.shapes.map(shape => {
+            return this.och.getActualTypeOfShape(this.extrude({ shape, direction: inputs.direction }));
+        })
+    }
+
+    extrude(inputs: Inputs.OCCT.ExtrudeDto<TopoDS_Shape>): TopoDS_Shape {
         return new this.occ.BRepPrimAPI_MakePrism_1(
             inputs.shape,
             new this.occ.gp_Vec_4(inputs.direction[0], inputs.direction[1], inputs.direction[2]),
@@ -65,7 +120,11 @@ export class OCCTOperations {
         ).Shape();
     }
 
-    revolve(inputs: Inputs.OCCT.RevolveDto): any {
+    splitShapeWithShapes(inputs: Inputs.OCCT.SplitDto<TopoDS_Shape>) {
+        return this.och.splitShapeWithShapes(inputs);
+    }
+
+    revolve(inputs: Inputs.OCCT.RevolveDto<TopoDS_Shape>) {
         if (!inputs.angle) { inputs.angle = 360.0; }
         if (!inputs.direction) { inputs.direction = [0, 0, 1]; }
         let result;
@@ -80,10 +139,10 @@ export class OCCTOperations {
                     new this.occ.gp_Dir_4(inputs.direction[0], inputs.direction[1], inputs.direction[2])),
                 inputs.angle * 0.0174533, inputs.copy).Shape();
         }
-        return result;
+        return this.och.getActualTypeOfShape(result);
     }
 
-    rotatedExtrude(inputs: Inputs.OCCT.RotationExtrudeDto): any {
+    rotatedExtrude(inputs: Inputs.OCCT.RotationExtrudeDto<TopoDS_Shape>) {
         const upperPolygon = this.och.rotate(
             {
                 axis: [0, 1, 0],
@@ -124,28 +183,28 @@ export class OCCTOperations {
         pipe.Add_1(upperPolygon, false, false);
         pipe.Build(new this.occ.Message_ProgressRange_1());
         pipe.MakeSolid();
-        return pipe.Shape();
+        return this.och.getActualTypeOfShape(pipe.Shape());
     }
 
-    pipe(inputs: Inputs.OCCT.ShapeShapesDto): any {
+    pipe(inputs: Inputs.OCCT.ShapeShapesDto<TopoDS_Wire, TopoDS_Shape>) {
         const pipe = new this.occ.BRepOffsetAPI_MakePipeShell(inputs.shape);
         inputs.shapes.forEach(sh => {
             pipe.Add_1(sh, false, false);
         });
         pipe.Build(new this.occ.Message_ProgressRange_1());
         pipe.MakeSolid();
-        return pipe.Shape();
+        return this.och.getActualTypeOfShape(pipe.Shape());
     }
 
-    makeThickSolidSimple(inputs: Inputs.OCCT.ThisckSolidSimpleDto): any {
+    makeThickSolidSimple(inputs: Inputs.OCCT.ThisckSolidSimpleDto<TopoDS_Shape>) {
         const maker = new this.occ.BRepOffsetAPI_MakeThickSolid();
         maker.MakeThickSolidBySimple(inputs.shape, inputs.offset);
 
         maker.Build(new this.occ.Message_ProgressRange_1());
-        return maker.Shape();
+        return this.och.getActualTypeOfShape(maker.Shape());
     }
 
-    makeThickSolidByJoin(inputs: Inputs.OCCT.ThickSolidByJoinDto) {
+    makeThickSolidByJoin(inputs: Inputs.OCCT.ThickSolidByJoinDto<TopoDS_Shape>) {
         const facesToRemove = new this.occ.TopTools_ListOfShape_1();
         inputs.shapes.forEach(shape => {
             facesToRemove.Append_1(shape);

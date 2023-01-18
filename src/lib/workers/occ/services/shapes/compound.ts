@@ -1,5 +1,5 @@
-import { OpenCascadeInstance } from "opencascade.js";
-import { OccHelper } from "../../occ-helper";
+import { OpenCascadeInstance, TopoDS_Compound, TopoDS_Shape } from 'opencascade.js';
+import { OccHelper } from '../../occ-helper';
 import * as Inputs from '../../../../api/inputs/inputs';
 
 export class OCCTCompound {
@@ -10,14 +10,8 @@ export class OCCTCompound {
     ) {
     }
 
-    makeCompound(inputs: Inputs.OCCT.CompoundShapesDto): any {
-        const resCompound = new this.occ.TopoDS_Compound();
-        const builder = new this.occ.BRep_Builder();
-        builder.MakeCompound(resCompound);
-        inputs.shapes.forEach(shape => {
-            builder.Add(resCompound, shape);
-        });
-        return resCompound;
+    makeCompound(inputs: Inputs.OCCT.CompoundShapesDto<TopoDS_Shape>): TopoDS_Compound {
+        return this.och.makeCompound(inputs);
     }
 
 }

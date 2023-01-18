@@ -521,6 +521,10 @@ export namespace Verb {
          */
         updatable = false;
         /**
+         * Should be hidden
+         */
+        hidden = false;
+        /**
          * Surface mesh variable in case it already exists and needs updating
          */
         surfaceMesh?: Mesh;
@@ -548,6 +552,10 @@ export namespace Verb {
          * Indicates wether the position of these surfaces will change in time
          */
         updatable = false;
+        /**
+         * Should be hidden
+         */
+        hidden = false;
         /**
          * Surfaces mesh variable in case it already exists and needs updating
          */
@@ -577,6 +585,10 @@ export namespace Verb {
          * Indicates wether the position of these surfaces will change in time
          */
         updatable = false;
+        /**
+         * Indicates if surface should be hidden
+         */
+        hidden = false;
         /**
          * Surfaces mesh variable in case it already exists and needs updating
          */
