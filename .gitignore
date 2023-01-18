@@ -7,4 +7,5 @@ blockly
 ts-api-docs
 csg-generated.js
 *.d.ts
+!bitbybit-dev-occt.d.ts
 ts-doc-theme
