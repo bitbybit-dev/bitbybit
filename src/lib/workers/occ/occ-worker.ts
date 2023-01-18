@@ -1,4 +1,4 @@
-import { OpenCascadeInstance } from 'opencascade.js';
+import { OpenCascadeInstance } from '../../../bitbybit-dev-occt/bitbybit-dev-occt';
 import { ShapesHelperService } from '../../api/shapes-helper.service';
 import { VectorHelperService } from '../../api/vector-helper.service';
 import { CacheHelper } from './cache-helper';

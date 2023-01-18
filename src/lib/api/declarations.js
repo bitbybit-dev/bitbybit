@@ -1,7 +1,7 @@
 var fs = require('fs');
 
-var walkPathBase = './projects/bitbybit-core/src/lib/api/declarations/api/bitbybit';
-var walkPathInputs = './projects/bitbybit-core/src/lib/api/declarations/api/inputs';
+var walkPathBase = './lib/api/declarations/api/bitbybit';
+var walkPathInputs = './lib/api/declarations/api/inputs';
 
 let completeDeclarations = '';
 
@@ -47,12 +47,12 @@ var walk = function (dir, done) {
 
 
 walk(walkPathBase, ()=> {
-    fs.writeFileSync('./projects/bitbybit-core/src/lib/api/declarationsBase.ts', `export const baseDeclarations = \`${completeDeclarations}\`;
+    fs.writeFileSync('./declarationsBase.ts', `export const baseDeclarations = \`${completeDeclarations}\`;
 `, 'utf8', ()=> {
     });
 completeDeclarations = '';
     walk(walkPathInputs, ()=> {
-        fs.writeFileSync('./projects/bitbybit-core/src/lib/api/declarationsInputs.ts', `export const inputDeclarations = \`${completeDeclarations}\`;
+        fs.writeFileSync('./declarationsInputs.ts', `export const inputDeclarations = \`${completeDeclarations}\`;
     `, 'utf8', ()=> {
         });
     completeDeclarations = '';

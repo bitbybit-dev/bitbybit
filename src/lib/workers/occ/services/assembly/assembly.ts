@@ -1,7 +1,6 @@
 import { OccHelper } from '../../occ-helper';
-import { OpenCascadeInstance, TopoDS_Shape, TopoDS_Solid, XCAFApp_Application, XCAFDoc_ShapeTool } from 'opencascade.js';
+import { OpenCascadeInstance, TopoDS_Shape, TDF_Label, TDF_LabelSequence, XCAFDoc_ShapeTool } from '../../../../../bitbybit-dev-occt/bitbybit-dev-occt';
 import * as Inputs from '../../../../api/inputs/inputs';
-import { Handle_XCAFDoc_ShapeTool, TDF_Label, TDF_LabelSequence, Handle_TDF_Attribute } from 'opencascade.js';
 
 type Assembly = {
     name: string;

@@ -122,7 +122,7 @@ export namespace OCCT {
         /**
          * Brep OpenCascade geometry
          */
-        shape: T;
+        shape?: T;
         /**
          * Face opacity value between 0 and 1
          */
@@ -194,7 +194,7 @@ export namespace OCCT {
         /**
          * Brep OpenCascade geometry
          */
-        shape: T;
+        shape?: T;
         /**
          * Number of subdivisions on U direction
          */
@@ -239,7 +239,7 @@ export namespace OCCT {
         /**
          * Brep OpenCascade geometry
          */
-        shape: T;
+        shape?: T;
         /**
          * Linear subdivision direction true - U, false - V
          */
@@ -276,7 +276,7 @@ export namespace OCCT {
         /**
          * Brep OpenCascade geometry
          */
-        shape: T;
+        shape?: T;
         /**
          * Param on U direction 0 to 1
          */
@@ -296,7 +296,7 @@ export namespace OCCT {
         /**
          * Brep OpenCascade geometry
          */
-        shape: T;
+        shape?: T;
         /**
          * Params uv
          */
@@ -309,7 +309,7 @@ export namespace OCCT {
         /**
          * Points points
          */
-        points: Base.Point3[];
+        points?: Base.Point3[];
     }
     export class SquareDto {
         /**
@@ -355,15 +355,15 @@ export namespace OCCT {
         /**
          * Width of the box
          */
-        width: number;
+        width?: number;
         /**
          * Length of the box
          */
-        length: number;
+        length?: number;
         /**
          * Height of the box
          */
-        height: number;
+        height?: number;
         /**
          * Center of the box
          */
@@ -381,15 +381,15 @@ export namespace OCCT {
         /**
          * Width of the box
          */
-        width: number;
+        width?: number;
         /**
          * Length of the box
          */
-        length: number;
+        length?: number;
         /**
          * Height of the box
          */
-        height: number;
+        height?: number;
         /**
          * Corner of the box
          */

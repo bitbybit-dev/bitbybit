@@ -1,4 +1,3 @@
-import { Injectable, NgZone } from '@angular/core';
 import { Subject } from 'rxjs';
 import { OccInfo } from './occ-info';
 import { OccStateEnum } from './occ-state.enum';

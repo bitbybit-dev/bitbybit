@@ -1,4 +1,4 @@
-import { Geom_Surface, TopoDS_Face, OpenCascadeInstance, TopoDS_Wire, TopoDS_Shape, TopoDS_Edge } from 'opencascade.js';
+import { Geom_Surface, TopoDS_Face, OpenCascadeInstance, TopoDS_Wire, TopoDS_Shape, TopoDS_Edge } from '../../../../../bitbybit-dev-occt/bitbybit-dev-occt';
 import { OccHelper, typeSpecificityEnum } from '../../occ-helper';
 import * as Inputs from '../../../../api/inputs/inputs';
 
@@ -174,10 +174,12 @@ export class OCCTWire {
     }
 
     placeWireOnFace(inputs: Inputs.OCCT.ShapesDto<TopoDS_Wire | TopoDS_Face>) {
-        let wire: TopoDS_Wire = inputs.shapes[0] as TopoDS_Wire;
-        let face: TopoDS_Face = inputs.shapes[1] as TopoDS_Face;
-        const srf = this.och.surfaceFromFace({ shape: face });
-        return this.placeWire(wire, srf);
+        if(inputs.shapes){
+            let wire: TopoDS_Wire = inputs.shapes[0] as TopoDS_Wire;
+            let face: TopoDS_Face = inputs.shapes[1] as TopoDS_Face;
+            const srf = this.och.surfaceFromFace({ shape: face });
+            return this.placeWire(wire, srf);
+        }
     }
 
     placeWiresOnFace(inputs: Inputs.OCCT.ShapeShapesDto<TopoDS_Face, TopoDS_Wire>) {
@@ -190,7 +192,7 @@ export class OCCTWire {
 
     private placeWire(wire: TopoDS_Wire, surface: Geom_Surface) {
         let edges = this.och.getEdges({ shape: wire });
-        let newEdges = [];
+        let newEdges: TopoDS_Edge[] = [];
         edges.forEach(e => {
             const umin = { current: 0 };
             const umax = { current: 0 };
@@ -199,7 +201,9 @@ export class OCCTWire {
             if (!crv.IsNull()) {
                 const c2dHandle = this.occ.GeomAPI.To2d(crv, this.och.gpPln([0, 0, 0], [0, 1, 0]));
                 const newEdgeOnSrf = this.och.makeEdgeFromGeom2dCurveAndSurfaceBounded({ shapes: [c2dHandle.get(), surface] }, umin.current, umax.current);
-                newEdges.push(newEdgeOnSrf);
+                if(newEdgeOnSrf){     
+                    newEdges.push(newEdgeOnSrf);
+                }
             }
         });
         return this.och.combineEdgesAndWiresIntoAWire({ shapes: newEdges });

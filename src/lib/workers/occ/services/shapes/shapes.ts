@@ -1,4 +1,4 @@
-import { OpenCascadeInstance } from 'opencascade.js';
+import { OpenCascadeInstance } from '../../../../../bitbybit-dev-occt/bitbybit-dev-occt';
 import { OccHelper } from '../../occ-helper';
 import { OCCTCompound } from './compound';
 import { OCCTEdge } from './edge';

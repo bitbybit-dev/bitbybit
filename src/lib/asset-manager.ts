@@ -1,4 +1,3 @@
-import { Injectable, NgZone } from '@angular/core';
 /**
  * This is a manager of assets.
  */

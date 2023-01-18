@@ -1,4 +1,4 @@
-import { OpenCascadeInstance } from 'opencascade.js';
+import { OpenCascadeInstance } from '../../../bitbybit-dev-occt/bitbybit-dev-occt';
 
 export class CacheHelper {
 

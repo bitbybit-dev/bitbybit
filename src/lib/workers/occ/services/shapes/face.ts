@@ -1,4 +1,4 @@
-import { GeomAbs_Shape, Geom_Surface, OpenCascadeInstance, TopoDS_Face, TopoDS_Shape, TopoDS_Wire } from 'opencascade.js';
+import { GeomAbs_Shape, Geom_Surface, OpenCascadeInstance, TopoDS_Face, TopoDS_Shape, TopoDS_Wire } from '../../../../../bitbybit-dev-occt/bitbybit-dev-occt';
 import { OccHelper, typeSpecificityEnum } from '../../occ-helper';
 import * as Inputs from '../../../../api/inputs/inputs';
 import { Base } from '../../../../api/inputs/inputs';
@@ -61,11 +61,13 @@ export class OCCTFace {
     }
 
     faceFromSurfaceAndWire(inputs: Inputs.OCCT.FaceFromSurfaceAndWireDto<Geom_Surface | TopoDS_Wire, undefined>) {
-        const face = this.och.bRepBuilderAPIMakeFaceFromSurfaceAndWire(inputs.shapes[0] as Geom_Surface, inputs.shapes[1] as TopoDS_Wire, inputs.inside) as TopoDS_Face;
-        if (face.IsNull()) {
-            throw new Error('Could not construct a face from the surface. Check if surface is not infinite.');
-        } else {
-            return face;
+        if (inputs.shapes) {
+            const face = this.och.bRepBuilderAPIMakeFaceFromSurfaceAndWire(inputs.shapes[0] as Geom_Surface, inputs.shapes[1] as TopoDS_Wire, inputs.inside) as TopoDS_Face;
+            if (face.IsNull()) {
+                throw new Error('Could not construct a face from the surface. Check if surface is not infinite.');
+            } else {
+                return face;
+            }
         }
     }
 
@@ -98,7 +100,7 @@ export class OCCTFace {
         let handle = this.occ.BRep_Tool.Surface_2(face)
         var surface = handle.get();
         const { uMin, uMax, vMin, vMax } = this.och.getUVBounds(face);
-        const points = [];
+        const points: Base.Point3[] = [];
 
         const uStartRemoval = inputs.removeStartEdgeU ? 1 : 0;
         const uEndRemoval = inputs.removeEndEdgeU ? 1 : 0;
@@ -118,7 +120,7 @@ export class OCCTFace {
                 var v = vMin + (inputs.shiftHalfStepV ? halfStepV : 0) + stepsV;
                 const gpPnt = this.och.gpPnt([0, 0, 0]);
                 surface.D0(u, v, gpPnt);
-                points.push([parseFloat(gpPnt.X().toString()), parseFloat(gpPnt.Y().toString()), parseFloat(gpPnt.Z().toString())]);
+                points.push([gpPnt.X(), gpPnt.Y(), gpPnt.Z()]);
             }
         }
         return { result: points };
@@ -128,7 +130,7 @@ export class OCCTFace {
         const face = inputs.shape;
         let handle = this.occ.BRep_Tool.Surface_2(face)
         const { uMin, uMax, vMin, vMax } = this.och.getUVBounds(face);
-        const points = [];
+        const points: Base.Point3[] = [];
 
         const uStartRemoval = inputs.removeStartEdgeU ? 1 : 0;
         const uEndRemoval = inputs.removeEndEdgeU ? 1 : 0;
@@ -148,7 +150,7 @@ export class OCCTFace {
                 var v = vMin + (inputs.shiftHalfStepV ? halfStepV : 0) + stepsV;
                 const gpDir = this.och.gpDir([0, 1, 0]);
                 this.occ.GeomLib.NormEstim(handle, this.och.gpPnt2d([u, v]), 1e-7, gpDir);
-                points.push([parseFloat(gpDir.X().toString()), parseFloat(gpDir.Y().toString()), parseFloat(gpDir.Z().toString())]);
+                points.push([gpDir.X(), gpDir.Y(), gpDir.Z()]);
             }
         }
         return { result: points };
@@ -164,6 +166,7 @@ export class OCCTFace {
         const removeEnd = inputs.removeEndPoint ? 1 : 0;
 
         let param = inputs.param;
+        
         if (inputs.isU) {
             param = uMin + (uMax - uMin) * param;
         } else {

@@ -1,4 +1,4 @@
-import { OpenCascadeInstance, TopoDS_Face, TopoDS_Shell } from 'opencascade.js';
+import { OpenCascadeInstance, TopoDS_Face, TopoDS_Shell } from '../../../../../bitbybit-dev-occt/bitbybit-dev-occt';
 import { OccHelper } from '../../occ-helper';
 import * as Inputs from '../../../../api/inputs/inputs';
 

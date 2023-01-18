@@ -1,5 +1,5 @@
 import { OccHelper } from '../occ-helper';
-import { BRepFilletAPI_MakeFillet2d_2, ChFi3d_FilletShape, OpenCascadeInstance, TopAbs_ShapeEnum, TopoDS_Edge, TopoDS_Face, TopoDS_Shape, TopoDS_Vertex, TopoDS_Wire, XCAFDoc_ShapeTool } from 'opencascade.js';
+import { BRepFilletAPI_MakeFillet2d_2, ChFi3d_FilletShape, OpenCascadeInstance, TopAbs_ShapeEnum, TopoDS_Edge, TopoDS_Face, TopoDS_Shape, TopoDS_Vertex, TopoDS_Wire } from '../../../../bitbybit-dev-occt/bitbybit-dev-occt';
 import * as Inputs from '../../../api/inputs/inputs';
 
 export class OCCTFillets {

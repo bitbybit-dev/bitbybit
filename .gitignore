@@ -7,3 +7,4 @@ blockly
 ts-api-docs
 csg-generated.js
 *.d.ts
+ts-doc-theme

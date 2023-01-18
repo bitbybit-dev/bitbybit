@@ -1,4 +1,3 @@
-import { HttpClient } from '@angular/common/http';
 import { PrintSaveInterface } from './models/print-save.model';
 import { OBJFileLoader } from '@babylonjs/loaders';
 
@@ -11,7 +10,7 @@ export class BitByBitBlocklyHelperService {
     static rerenderScene: () => void;
     static tolerance = 0.00001;
     static snapTolerance = 0.00001;
-    static angular: { httpClient: HttpClient, HttpHeaders: any, HttpParams: any };
+    static angular: { httpClient: any, HttpHeaders: any, HttpParams: any };
     static jsonpath: any;
     static tagBag: any[] = [];
     static timeoutBag: number[] = [];
@@ -41,7 +40,7 @@ export class BitByBitBlocklyHelperService {
                 const reader = new FileReader();
                 reader.readAsText(file, 'UTF-8');
                 reader.onload = (evt) => {
-                    const text = evt.target.result;
+                    const text = (evt as any).target.result;
                     resolve(text);
                 };
                 reader.onerror = (evt) => {

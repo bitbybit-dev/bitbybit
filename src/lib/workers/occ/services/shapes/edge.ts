@@ -1,4 +1,4 @@
-import { ChFi3d_FilletShape, Geom2d_Curve, Geom_Surface, OpenCascadeInstance, TopAbs_ShapeEnum, TopoDS_Edge, TopoDS_Shape, TopoDS_Wire } from 'opencascade.js';
+import { Geom2d_Curve, Geom_Surface, OpenCascadeInstance, TopoDS_Edge, TopoDS_Shape } from '../../../../../bitbybit-dev-occt/bitbybit-dev-occt';
 import { OccHelper, typeSpecificityEnum } from '../../occ-helper';
 import * as Inputs from '../../../../api/inputs/inputs';
 import { Base } from '../../../../api/inputs/inputs';

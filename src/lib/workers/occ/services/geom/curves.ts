@@ -1,4 +1,4 @@
-import { Geom2d_Curve, Geom2d_TrimmedCurve, Geom_Curve, OpenCascadeInstance } from 'opencascade.js';
+import { Geom2d_Curve, OpenCascadeInstance } from '../../../../../bitbybit-dev-occt/bitbybit-dev-occt';
 import { OccHelper, typeSpecificityEnum } from '../../occ-helper';
 import * as Inputs from '../../../../api/inputs/inputs';
 

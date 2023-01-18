@@ -1,5 +1,5 @@
 import { OccHelper } from '../../occ-helper';
-import { OpenCascadeInstance, TopoDS_Shell, TopoDS_Solid } from 'opencascade.js';
+import { OpenCascadeInstance, TopoDS_Shell, TopoDS_Solid } from '../../../../../bitbybit-dev-occt/bitbybit-dev-occt';
 import * as Inputs from '../../../../api/inputs/inputs';
 import { Base } from '../../../../api/inputs/inputs';
 

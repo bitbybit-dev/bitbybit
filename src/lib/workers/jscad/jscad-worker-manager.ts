@@ -1,4 +1,3 @@
-import { Injectable, NgZone } from '@angular/core';
 import { Subject } from 'rxjs';
 import { JscadInfo } from './jscad-info';
 import { JscadStateEnum } from './jscad-state.enum';

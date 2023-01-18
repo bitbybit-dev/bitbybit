@@ -1,4 +1,4 @@
-import { IGESControl_Reader_1, OpenCascadeInstance, STEPControl_Reader_1, STEPControl_StepModelType, TopoDS_Shape } from 'opencascade.js';
+import { IGESControl_Reader_1, OpenCascadeInstance, STEPControl_Reader_1, STEPControl_StepModelType, TopoDS_Shape } from '../../../../bitbybit-dev-occt/bitbybit-dev-occt';
 import { OccHelper } from '../occ-helper';
 import * as Inputs from '../../../api/inputs/inputs';
 

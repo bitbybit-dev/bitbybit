@@ -1,4 +1,4 @@
-import { Approx_ParametrizationType, BRepFill_TypeOfContact, BRepOffsetAPI_MakeOffsetShape, BRepOffsetAPI_MakeOffset_1, BRepOffset_Mode, GeomAbs_JoinType, OpenCascadeInstance, TopoDS_Shape, TopoDS_Wire } from 'opencascade.js';
+import { Approx_ParametrizationType, BRepFill_TypeOfContact, BRepOffsetAPI_MakeOffsetShape, BRepOffsetAPI_MakeOffset_1, BRepOffset_Mode, GeomAbs_JoinType, OpenCascadeInstance, TopoDS_Shape, TopoDS_Wire } from '../../../../bitbybit-dev-occt/bitbybit-dev-occt';
 import { OccHelper } from '../occ-helper';
 import * as Inputs from '../../../api/inputs/inputs';
 

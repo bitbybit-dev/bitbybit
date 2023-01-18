@@ -1,4 +1,4 @@
-import { Geom_Curve, Geom_Surface, OpenCascadeInstance, TopoDS_Face } from 'opencascade.js';
+import { OpenCascadeInstance, TopoDS_Face } from '../../../bitbybit-dev-occt/bitbybit-dev-occt';
 import * as Inputs from '../../api/inputs/inputs';
 import { OccHelper } from './occ-helper';
 import { OCCTBooleans } from './services/booleans';

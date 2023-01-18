@@ -1,4 +1,4 @@
-import { gp_Trsf, OpenCascadeInstance, TopoDS_Shape } from 'opencascade.js';
+import { OpenCascadeInstance, TopoDS_Shape } from '../../../../bitbybit-dev-occt/bitbybit-dev-occt';
 import { OccHelper } from '../occ-helper';
 import * as Inputs from '../../../api/inputs/inputs';
 import { Base } from '../../../api/inputs/inputs';
