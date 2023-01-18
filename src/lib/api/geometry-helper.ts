@@ -2,8 +2,7 @@
 import {
     LinesMesh, Matrix, Color3, Vector3, Color4,
     MeshBuilder, Scene, Mesh, VertexData,
-    PBRMetallicRoughnessMaterial,
-    InputStepMode
+    PBRMetallicRoughnessMaterial
 } from '@babylonjs/core';
 import { Context } from './context';
 import { Base } from './inputs/base-inputs';
@@ -104,6 +103,7 @@ export class GeometryHelper {
         const transformationArrays = this.getFlatTransformations(transformation);
 
         transformationArrays.forEach(transform => {
+
             transformedControlPoints = this.transformPointsByMatrixArray(transformedControlPoints, transform);
         });
         return transformedControlPoints;
@@ -112,14 +112,16 @@ export class GeometryHelper {
     getFlatTransformations(transformation: number[][] | number[][][]): number[][] {
         let transformationArrays = [];
 
-        if (this.getArrayDepth(transformation) === 2) {
+        console.log('transformation get flat', transformation);
+        if (this.getArrayDepth(transformation) === 3) {
+            console.log('array depth is 2')
             transformation.forEach(transform => {
                 transformationArrays.push(...transform);
             });
         } else {
             transformationArrays = transformation;
         }
-
+        console.log(transformationArrays);
         return transformationArrays;
     }
 
@@ -130,7 +132,9 @@ export class GeometryHelper {
     }
 
     transformPointsByMatrixArray(points: Base.Point3[], transform: number[]): Base.Point3[] {
+        console.log('transform', transform);
         const transformMatrix = Matrix.FromArray(transform);
+        console.log('points', points);
         return this.transformPointsByMatrix(points, transformMatrix);
     }
 

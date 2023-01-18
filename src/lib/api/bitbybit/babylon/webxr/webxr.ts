@@ -25,7 +25,6 @@ export class BabylonWebXR {
         } else {
             this.context.scene.metadata = { xr };
         }
-        console.log(this.context.scene.metadata);
         const meshes = [];
         inputs.groundMeshes.forEach(m => {
             if (m.getChildMeshes) {

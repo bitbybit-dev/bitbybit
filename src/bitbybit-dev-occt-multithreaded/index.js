@@ -9,7 +9,6 @@ const initOpenCascade = ({
     libs = [],
     module = {},
 } = {}) => {
-    console.log(worker);
     return new Promise((resolve, reject) => {
         new mainJS({
             locateFile(path) {

@@ -66,11 +66,8 @@ export const onMessageInput = (d: DataInput, postMessage) => {
                 result = res.result;
             }
             else if (Array.isArray(res)) {
-                console.log(res);
-
                 result = res.map(r => ({ hash: r.hash, type: 'occ-shape' })); // if we return multiple shapes we should return array of cached hashes
             } else {
-                console.log(res);
                 result = { hash: res.hash, type: 'occ-shape' };
             }
         }
