@@ -1,0 +1,48 @@
+{
+    "name": "bitbybit-core",
+    "version": "0.9.6",
+    "description": "Bit by bit developers core api",
+    "main": "index.js",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/bitbybit-dev/bitbybit"
+    },
+    "directories": {
+        "lib": "lib"
+    },
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "build": "tsc -p tsconfig.bitbybit.json",
+        "build-p": "npm run build && npm run copy-package && npm run copy-occt && npm run delete-proprietary",
+        "copy-package": "cp -R ./package.json ./dist/bitbybit-core/bitbybit-core/src",
+        "copy-occt": "cp -R ./bitbybit-dev-occt ./dist/bitbybit-core/bitbybit-core/src",
+        "delete-proprietary": "rm -R ./dist/bitbybit-core/bitbybit-core/src/lib/workers/occ/services/advanced",
+        "build-occt": "node generate-prod-build-yaml.js && cd bitbybit-dev-occt && docker run --rm -it -v \"$(pwd):/src\" -u \"$(id -u):$(id -g)\" donalffons/opencascade.js bitbybit-dev-occt.yml && cd ../",
+        "build-occt-multithreaded": "node generate-prod-build-yaml-multithreaded.js && cd bitbybit-dev-occt-multithreaded && docker run --rm -it -v \"$(pwd):/src\" -u \"$(id -u):$(id -g)\" donalffons/opencascade.js:multi-threaded bitbybit-dev-occt.yml && cd ../",
+        "declarations": "tsc --project lib/api/tsconfig.bbb.json",
+        "dec": "npm run declarations && node lib/api/declarations.js",
+        "docs": "./node_modules/.bin/sass ts-doc-theme/assets/css/main.sass ts-doc-theme/assets/css/main.css && node_modules/.bin/typedoc --out ts-api-docs/ lib/api --theme ./ts-doc-theme --excludePrivate --tsconfig lib/api/tsconfig.bbb.json --media assets/images/blockly-block-images/ && node mvdocpictures"
+    },
+    "author": "Bit by bit developers",
+    "license": "MIT",
+    "types": "./index.d.ts",
+    "dependencies": {
+        "@babylonjs/core": "5.42.2",
+        "@babylonjs/gui": "5.42.2",
+        "@babylonjs/loaders": "5.42.2",
+        "@babylonjs/materials": "5.42.2",
+        "@babylonjs/serializers": "5.42.2",
+        "@jscad/io-utils": "2.0.13",
+        "@jscad/modeling": "2.7.2",
+        "@jscad/stl-serializer": "2.1.3",
+        "verb-nurbs-web": "2.1.3",
+        "rxjs": "7.5.5"
+    },
+    "devDependencies": {
+        "typedoc": "0.21.9",
+        "@microsoft/tsdoc": "0.13.2",
+        "@microsoft/tsdoc-config": "0.15.2",
+        "sass": "1.57.1",
+        "mvdir": "1.0.21"
+    }
+}
