@@ -588,7 +588,7 @@ export namespace JSCAD {
         /**
          * Segment number
          */
-        segments: number;
+        override segments: number;
     }
     export class EllipsoidDto {
         /**
@@ -672,7 +672,7 @@ export namespace JSCAD {
         /**
          * Segment number
          */
-        segments: number;
+        override segments: number;
     }
     export class SphereDto {
         /**
