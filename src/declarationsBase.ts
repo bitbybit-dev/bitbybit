@@ -15,6 +15,168 @@ export const baseDeclarations = `declare class Asset {
      * @returns Blob of asset
      */
     getLocalFile(inputs: Inputs.Asset.GetAssetDto): Promise<File | File[]>;
+}declare class BabylonIO {
+    private readonly context;
+    private supportedFileFormats;
+    private objectUrl;
+    constructor(context: Context);
+    /**
+     * Imports mesh from the asset that you have uploaded for the project. You must upload your assets to your project via project management page.
+     * @param inputs
+     * @returns scene loader result that contains lights, meshes, geometries, animation groups, particle systems and tranform nodes
+     */
+    loadAssetIntoScene(inputs: Inputs.Asset.AssetFileDto): Promise<any>;
+    /**
+     * Exports the whole scene to .babylon scene format. You can then edit it further in babylonjs editors.
+     * @param inputs filename
+     */
+    exportBabylon(inputs: Inputs.BabylonIO.ExportSceneDto): void;
+    /**
+     * Exports the whole scene to .glb format. This file format has become industry standard for web models.
+     * @param inputs filename
+     */
+    exportGLB(inputs: Inputs.BabylonIO.ExportSceneDto): void;
+}declare class BabylonMesh {
+    private readonly context;
+    constructor(context: Context);
+    /** Disposes drawn mesh object from the scene
+     * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_mesh.BabylonMesh.html#dispose
+     * @param inputs Contains BabylonJS mesh that should be disposed
+     */
+    dispose(inputs: Inputs.BabylonMesh.BabylonMeshDto): void;
+    /** Udates drawn BabylonJS mesh object without disposing it
+     * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_mesh.BabylonMesh.html#updateDrawn
+     * @param inputs Contains BabylonJS mesh that should be updated, together with position, rotation, scaling and colour info
+     * @returns BabylonJS Mesh
+     */
+    updateDrawn(inputs: Inputs.BabylonMesh.UpdateDrawnBabylonMesh): Mesh;
+    /**
+     * Change the visibility of a drawn BabylonJS mesh
+     * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_mesh.BabylonMesh.html#setMeshVisibility
+     * @param inputs BabylonJS mesh and parent mesh
+     */
+    setMeshVisibility(inputs: Inputs.BabylonMesh.SetMeshVisibilityDto): void;
+    /**
+     * Hides the mesh
+     * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_mesh.BabylonMesh.html#hide
+     * @param inputs BabylonJS mesh to hide
+     */
+    hide(inputs: Inputs.BabylonMesh.BabylonMeshDto): void;
+    /**
+     * Show the mesh
+     * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_mesh.BabylonMesh.html#show
+     * @param inputs BabylonJS mesh to hide
+     */
+    show(inputs: Inputs.BabylonMesh.BabylonMeshDto): void;
+    /**
+     * Change the parent of the drawn mesh
+     * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_mesh.BabylonMesh.html#setParentForMesh
+     * @param inputs BabylonJS mesh and parent mesh
+     */
+    setParentForMesh(inputs: Inputs.BabylonMesh.SetParentDto): void;
+    /**
+      * Gets the position as point of babylonjs mesh
+      * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_mesh.BabylonMesh.html#getPosition
+      * @param inputs BabylonJS mesh
+      */
+    getPosition(inputs: Inputs.BabylonMesh.BabylonMeshDto): number[];
+    /**
+      * Gets the rotation vector of babylonjs mesh
+      * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_mesh.BabylonMesh.html#getRotation
+      * @param inputs BabylonJS mesh
+      */
+    getRotation(inputs: Inputs.BabylonMesh.BabylonMeshDto): number[];
+    /**
+      * Gets the scale vector of babylonjs mesh
+      * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_mesh.BabylonMesh.html#getScale
+      * @param inputs BabylonJS mesh
+      */
+    getScale(inputs: Inputs.BabylonMesh.BabylonMeshDto): number[];
+    /**
+      * Moves babylonjs mesh forward in local space
+      * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_mesh.BabylonMesh.html#moveForward
+      * @param inputs BabylonJS mesh and distance
+      */
+    moveForward(inputs: Inputs.BabylonMesh.TranslateBabylonMeshDto): void;
+    /**
+      * Moves babylonjs mesh backward in local space
+      * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_mesh.BabylonMesh.html#moveBackward
+      * @param inputs BabylonJS mesh and distance
+      */
+    moveBackward(inputs: Inputs.BabylonMesh.TranslateBabylonMeshDto): void;
+    /**
+      * Moves babylonjs mesh up in local space
+      * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_mesh.BabylonMesh.html#moveUp
+      * @param inputs BabylonJS mesh and distance
+      */
+    moveUp(inputs: Inputs.BabylonMesh.TranslateBabylonMeshDto): void;
+    /**
+      * Moves babylonjs mesh down in local space
+      * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_mesh.BabylonMesh.html#moveDown
+      * @param inputs BabylonJS mesh and distance
+      */
+    moveDown(inputs: Inputs.BabylonMesh.TranslateBabylonMeshDto): void;
+    /**
+      * Moves babylonjs mesh right in local space
+      * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_mesh.BabylonMesh.html#moveRight
+      * @param inputs BabylonJS mesh and distance
+      */
+    moveRight(inputs: Inputs.BabylonMesh.TranslateBabylonMeshDto): void;
+    /**
+      * Moves babylonjs mesh left in local space
+      * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_mesh.BabylonMesh.html#moveLeft
+      * @param inputs BabylonJS mesh and distance
+      */
+    moveLeft(inputs: Inputs.BabylonMesh.TranslateBabylonMeshDto): void;
+    /**
+      * Rotates babylonjs mesh around local y axis
+      * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_mesh.BabylonMesh.html#yaw
+      * @param inputs BabylonJS mesh and rotation in degrees
+      */
+    yaw(inputs: Inputs.BabylonMesh.RotateBabylonMeshDto): void;
+    /**
+      * Rotates babylonjs mesh around local x axis
+      * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_mesh.BabylonMesh.html#pitch
+      * @param inputs BabylonJS mesh and rotation in degrees
+      */
+    pitch(inputs: Inputs.BabylonMesh.RotateBabylonMeshDto): void;
+    /**
+     * Rotates babylonjs mesh around local z axis
+     * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_mesh.BabylonMesh.html#roll
+     * @param inputs BabylonJS mesh and rotation in degrees
+     */
+    roll(inputs: Inputs.BabylonMesh.RotateBabylonMeshDto): void;
+    /**
+     * Updates the position of the BabylonJS mesh or instanced mesh
+     * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_mesh.BabylonMesh.html#setPosition
+     * @param inputs BabylonJS mesh and position point
+     */
+    setPosition(inputs: Inputs.BabylonMesh.UpdateDrawnBabylonMeshPositionDto): void;
+    /**
+     * Updates the rotation of the BabylonJS mesh or instanced mesh
+     * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_mesh.BabylonMesh.html#setRotation
+     * @param inputs BabylonJS mesh and rotation along x, y and z axis in degrees
+     */
+    setRotation(inputs: Inputs.BabylonMesh.UpdateDrawnBabylonMeshRotationDto): void;
+    /**
+     * Updates the scale of the BabylonJS mesh or instanced mesh
+     * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_mesh.BabylonMesh.html#setScale
+     * @param inputs BabylonJS mesh and scale vector
+     */
+    setScale(inputs: Inputs.BabylonMesh.UpdateDrawnBabylonMeshScaleDto): void;
+    /**
+     * Creates mesh instance and transforms it for optimised rendering. These are optimised for max performance
+     * when rendering many similar objects in the scene. If the mesh has children, then every child ges a mesh instance.
+     * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_mesh.BabylonMesh.html#createMeshInstanceAndTransform
+     */
+    createMeshInstanceAndTransform(inputs: Inputs.BabylonMesh.MeshInstanceAndTransformDto): Promise<any>;
+    /**
+     * Creates mesh instance. These are optimised for max performance
+     * when rendering many similar objects in the scene. If the mesh has children, then every child gets a mesh instance.
+     * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_mesh.BabylonMesh.html#createMeshInstance
+     */
+    createMeshInstance(inputs: Inputs.BabylonMesh.MeshInstanceDto): InstancedMesh;
+    private assignColorToMesh;
 }/**
  * Contains various functions that expose BABYLONJS objects
  */
@@ -908,6 +1070,147 @@ declare class BabylonTransforms {
      * @param inputs Creates default XR experience with teleportation
      */
     createDefaultXRExperienceWithTeleportation(inputs: Inputs.BabylonWebXR.DefaultWebXRWithTeleportationDto): Promise<void>;
+}declare class BabylonMesh {
+    private readonly context;
+    constructor(context: Context);
+    /** Disposes drawn mesh object from the scene
+     * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_mesh.BabylonMesh.html#disposeDrawn
+     * @param inputs Contains BabylonJS mesh that should be disposed
+     */
+    disposeDrawn(inputs: Inputs.BabylonMesh.BabylonMeshDto): void;
+    /** Udates drawn BabylonJS mesh object without disposing it
+     * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_mesh.BabylonMesh.html#updateDrawn
+     * @param inputs Contains BabylonJS mesh that should be updated, together with position, rotation, scaling and colour info
+     * @returns BabylonJS Mesh
+     */
+    updateDrawn(inputs: Inputs.BabylonMesh.UpdateDrawnBabylonMesh): Mesh;
+    /**
+     * Change the visibility of a drawn BabylonJS mesh
+     * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_mesh.BabylonMesh.html#setMeshVisibility
+     * @param inputs BabylonJS mesh and parent mesh
+     */
+    setMeshVisibility(inputs: Inputs.BabylonMesh.SetMeshVisibilityDto): void;
+    /**
+     * Hides the mesh
+     * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_mesh.BabylonMesh.html#hideMesh
+     * @param inputs BabylonJS mesh to hide
+     */
+    hideMesh(inputs: Inputs.BabylonMesh.BabylonMeshDto): void;
+    /**
+     * Show the mesh
+     * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_mesh.BabylonMesh.html#showMesh
+     * @param inputs BabylonJS mesh to hide
+     */
+    showMesh(inputs: Inputs.BabylonMesh.BabylonMeshDto): void;
+    /**
+     * Change the parent of the drawn mesh
+     * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_mesh.BabylonMesh.html#setParentForMesh
+     * @param inputs BabylonJS mesh and parent mesh
+     */
+    setParentForMesh(inputs: Inputs.BabylonMesh.SetParentDto): void;
+    /**
+      * Gets the position as point of babylonjs mesh
+      * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_mesh.BabylonMesh.html#getPosition
+      * @param inputs BabylonJS mesh
+      */
+    getPosition(inputs: Inputs.BabylonMesh.BabylonMeshDto): number[];
+    /**
+      * Gets the rotation vector of babylonjs mesh
+      * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_mesh.BabylonMesh.html#getRotation
+      * @param inputs BabylonJS mesh
+      */
+    getRotation(inputs: Inputs.BabylonMesh.BabylonMeshDto): number[];
+    /**
+      * Gets the scale vector of babylonjs mesh
+      * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_mesh.BabylonMesh.html#getScale
+      * @param inputs BabylonJS mesh
+      */
+    getScale(inputs: Inputs.BabylonMesh.BabylonMeshDto): number[];
+    /**
+      * Moves babylonjs mesh forward in local space
+      * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_mesh.BabylonMesh.html#moveForward
+      * @param inputs BabylonJS mesh and distance
+      */
+    moveForward(inputs: Inputs.BabylonMesh.TranslateBabylonMeshDto): void;
+    /**
+      * Moves babylonjs mesh backward in local space
+      * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_mesh.BabylonMesh.html#moveBackward
+      * @param inputs BabylonJS mesh and distance
+      */
+    moveBackward(inputs: Inputs.BabylonMesh.TranslateBabylonMeshDto): void;
+    /**
+      * Moves babylonjs mesh up in local space
+      * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_mesh.BabylonMesh.html#moveUp
+      * @param inputs BabylonJS mesh and distance
+      */
+    moveUp(inputs: Inputs.BabylonMesh.TranslateBabylonMeshDto): void;
+    /**
+      * Moves babylonjs mesh down in local space
+      * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_mesh.BabylonMesh.html#moveDown
+      * @param inputs BabylonJS mesh and distance
+      */
+    moveDown(inputs: Inputs.BabylonMesh.TranslateBabylonMeshDto): void;
+    /**
+      * Moves babylonjs mesh right in local space
+      * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_mesh.BabylonMesh.html#moveRight
+      * @param inputs BabylonJS mesh and distance
+      */
+    moveRight(inputs: Inputs.BabylonMesh.TranslateBabylonMeshDto): void;
+    /**
+      * Moves babylonjs mesh left in local space
+      * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_mesh.BabylonMesh.html#moveLeft
+      * @param inputs BabylonJS mesh and distance
+      */
+    moveLeft(inputs: Inputs.BabylonMesh.TranslateBabylonMeshDto): void;
+    /**
+      * Rotates babylonjs mesh around local y axis
+      * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_mesh.BabylonMesh.html#yaw
+      * @param inputs BabylonJS mesh and rotation in degrees
+      */
+    yaw(inputs: Inputs.BabylonMesh.RotateBabylonMeshDto): void;
+    /**
+      * Rotates babylonjs mesh around local x axis
+      * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_mesh.BabylonMesh.html#pitch
+      * @param inputs BabylonJS mesh and rotation in degrees
+      */
+    pitch(inputs: Inputs.BabylonMesh.RotateBabylonMeshDto): void;
+    /**
+     * Rotates babylonjs mesh around local z axis
+     * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_mesh.BabylonMesh.html#roll
+     * @param inputs BabylonJS mesh and rotation in degrees
+     */
+    roll(inputs: Inputs.BabylonMesh.RotateBabylonMeshDto): void;
+    /**
+     * Updates the position of the BabylonJS mesh or instanced mesh
+     * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_mesh.BabylonMesh.html#updateDrawnPosition
+     * @param inputs BabylonJS mesh and position point
+     */
+    updateDrawnPosition(inputs: Inputs.BabylonMesh.UpdateDrawnBabylonMeshPositionDto): void;
+    /**
+     * Updates the rotation of the BabylonJS mesh or instanced mesh
+     * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_mesh.BabylonMesh.html#updateDrawnRotation
+     * @param inputs BabylonJS mesh and rotation along x, y and z axis in degrees
+     */
+    updateDrawnRotation(inputs: Inputs.BabylonMesh.UpdateDrawnBabylonMeshRotationDto): void;
+    /**
+     * Updates the scale of the BabylonJS mesh or instanced mesh
+     * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_mesh.BabylonMesh.html#updateDrawnScale
+     * @param inputs BabylonJS mesh and scale vector
+     */
+    updateDrawnScale(inputs: Inputs.BabylonMesh.UpdateDrawnBabylonMeshScaleDto): void;
+    /**
+     * Creates mesh instance and transforms it for optimised rendering. These are optimised for max performance
+     * when rendering many similar objects in the scene. If the mesh has children, then every child ges a mesh instance.
+     * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_mesh.BabylonMesh.html#createMeshInstanceAndTransform
+     */
+    createMeshInstanceAndTransform(inputs: Inputs.BabylonMesh.MeshInstanceAndTransformDto): Promise<any>;
+    /**
+     * Creates mesh instance. These are optimised for max performance
+     * when rendering many similar objects in the scene. If the mesh has children, then every child gets a mesh instance.
+     * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_mesh.BabylonMesh.html#createMeshInstance
+     */
+    createMeshInstance(inputs: Inputs.BabylonMesh.MeshInstanceDto): InstancedMesh;
+    private assignColorToMesh;
 }declare namespace BaseTypes {
     /**
      * Interval represents an object that has two properties - min and max.
@@ -1128,6 +1431,84 @@ declare class BabylonTransforms {
     private handleOcctShape;
     private handleJscadMesh;
     private applyGlobalSettingsAndMetadataAndShadowCasting;
+    private detectPoint;
+    private detectPoints;
+    private detectLine;
+    private detectLines;
+    private detectPolyline;
+    private detectPolylines;
+    private detectNode;
+    private detectNodes;
+    private detectVerbCurve;
+    private detectVerbSurface;
+    private detectVerbCurves;
+    private detectVerbSurfaces;
+    private detectJscadMesh;
+    private detectJscadMeshes;
+    private detectOcctShape;
+    private detectTag;
+    private detectTags;
+    private checkIfElementsInArrayAreNumbers;
+    private checkIfElementsInArrayAreArrays;
+    private arraysInChildrenArraysContainNumbers;
+    private arraysInChildrenArraysAreOfLength3;
+}declare class Drawing {
+    private readonly point;
+    private readonly line;
+    private readonly polyline;
+    private readonly node;
+    private readonly verbCurve;
+    private readonly verbSurface;
+    private readonly jscad;
+    private readonly occt;
+    private readonly tag;
+    private defaultBasicOptions;
+    private defaultNodeOptions;
+    constructor(point: Point, line: Line, polyline: Polyline, node: Node, verbCurve: VerbCurve, verbSurface: VerbSurface, jscad: JSCAD, occt: OCCT, tag: Tag);
+    /**
+     * Draws any kind of geometry after all input promises are resolved. Inputs can also be non-promise like.
+     * @link https://docs.bitbybit.dev/classes/bitbybit_line.line.html#drawanyasync
+     * @param inputs Contains options and entities to be drawn
+     * @returns BabylonJS Mesh Promise
+     */
+    drawAnyAsync(inputs: Inputs.Draw.DrawAny): Promise<Mesh>;
+    private updateAny;
+    /** Disposes drawn mesh object from the scene
+     * @link https://docs.bitbybit.dev/classes/bitbybit_line.line.html#disposeDrawn
+     * @param inputs Contains BabylonJS mesh that should be disposed
+     */
+    disposeDrawn(inputs: Inputs.Draw.DisposeDrawnBabylonMesh): void;
+    /** Udates drawn BabylonJS mesh object without disposing it
+     * @link https://docs.bitbybit.dev/classes/bitbybit_line.line.html#updateDrawn
+     * @param inputs Contains BabylonJS mesh that should be updated, together with position, rotation, scaling and colour info
+     * @returns BabylonJS Mesh
+     */
+    updateDrawn(inputs: Inputs.Draw.UpdateDrawnBabylonMesh): Mesh;
+    /**
+     * Draws any kind of geometry. Inputs can not be promises.
+     * @link https://docs.bitbybit.dev/classes/bitbybit_line.line.html#drawAny
+     * @param inputs Contains options and entities to be drawn
+     * @returns BabylonJS Mesh
+     */
+    drawAny(inputs: Inputs.Draw.DrawAny): Mesh;
+    private assignColorToMesh;
+    private handleTags;
+    private handleTag;
+    private handleVerbSurfaces;
+    private handleVerbCurves;
+    private handleNodes;
+    private handlePoints;
+    private handleLines;
+    private handlePolylines;
+    private handleVerbSurface;
+    private handleVerbCurve;
+    private handleNode;
+    private handlePolyline;
+    private handlePoint;
+    private handleLine;
+    private handleJscadMeshes;
+    private handleOcctShape;
+    private handleJscadMesh;
     private detectPoint;
     private detectPoints;
     private detectLine;
@@ -1632,6 +2013,488 @@ declare class JSCADText {
     sphericalText(inputs: Inputs.JSCAD.SphereTextDto): Promise<any[]>;
     createVectorText(inputs: Inputs.JSCAD.TextDto): Promise<number[][]>;
 }/**
+ * Contains various functions for Solid booleans from JSCAD library http://openjscad.org
+ * Thanks JSCAD community for developing this kernel
+ */
+declare class JSCADBooleans {
+    private readonly jscadWorkerManager;
+    constructor(jscadWorkerManager: JSCADWorkerManager);
+    /**
+     * Intersect multiple solid mesh objects
+     * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_booleans.JSCADBooleans.html#intersect
+     * @param inputs Contains multiple solids for intersection
+     * @returns Solid mesh
+     */
+    intersect(inputs: Inputs.JSCAD.BooleanObjectsDto): Promise<any>;
+    /**
+     * Subtract multiple solid mesh objects
+     * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_booleans.JSCADBooleans.html#subtract
+     * @param inputs Contains multiple solids for subtraction
+     * @returns Solid mesh
+     */
+    subtract(inputs: Inputs.JSCAD.BooleanObjectsDto): Promise<any>;
+    /**
+     * Union multiple solid mesh objects
+     * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_booleans.JSCADBooleans.html#union
+     * @param inputs Contains multiple solids for union
+     * @returns Solid mesh
+     */
+    union(inputs: Inputs.JSCAD.BooleanObjectsDto): Promise<any>;
+}/**
+ * Contains various functions for Solid expansions from JSCAD library http://openjscad.org
+ * Thanks JSCAD community for developing this kernel
+ */
+declare class JSCADExpansions {
+    private readonly jscadWorkerManager;
+    constructor(jscadWorkerManager: JSCADWorkerManager);
+    /**
+     * Expand geometries of solid category
+     * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_expansions.JSCADExpansions.html#expand
+     * @param inputs Contains options and geometries for expansion
+     * @returns Expanded geometry
+     */
+    expand(inputs: Inputs.JSCAD.ExpansionDto): Promise<any | any[]>;
+    /**
+     * Offset 2d geometries of solid category
+     * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_expansions.JSCADExpansions.html#offset
+     * @param inputs Contains options and geometries for offset
+     * @returns Expanded geometry
+     */
+    offset(inputs: Inputs.JSCAD.ExpansionDto): Promise<any | any[]>;
+}/**
+ * Contains various functions for Solid extrusions from JSCAD library http://openjscad.org
+ * Thanks JSCAD community for developing this kernel
+ */
+declare class JSCADExtrusions {
+    private readonly jscadWorkerManager;
+    constructor(jscadWorkerManager: JSCADWorkerManager);
+    /**
+     * Linear extrude 2D geometries of solid category
+     * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_extrusions.JSCADExtrusions.html#extrudeLinear
+     * @param inputs Contains options and geometries for linear extrude
+     * @returns Extruded geometry
+     */
+    extrudeLinear(inputs: Inputs.JSCAD.ExtrudeLinearDto): Promise<any | any[]>;
+    /**
+     * Rectangular extrude 2D geometries of solid category. Creates a wall-type extrusion of certain height and size.
+     * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_extrusions.JSCADExtrusions.html#extrudeRectangular
+     * @param inputs Contains options and geometries for rectangular extrude
+     * @returns Extruded geometry
+     */
+    extrudeRectangular(inputs: Inputs.JSCAD.ExtrudeRectangularDto): Promise<any | any[]>;
+    /**
+     * Rectangular extrude a list of 2D points. Creates a wall-type extrusion of certain height and size.
+     * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_extrusions.JSCADExtrusions.html#extrudeRectangularPoints
+     * @param inputs Contains options and points for extrusion
+     * @returns Extruded geometry
+     */
+    extrudeRectangularPoints(inputs: Inputs.JSCAD.ExtrudeRectangularPointsDto): Promise<any>;
+    /**
+     * Rectangular extrude a list of 2D points. Creates a wall-type extrusion of certain height and size.
+     * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_extrusions.JSCADExtrusions.html#extrudeRotate
+     * @param inputs Contains options and points for extrusion
+     * @returns Extruded geometry
+     */
+    extrudeRotate(inputs: Inputs.JSCAD.ExtrudeRotateDto): Promise<any>;
+}/**
+ * Contains various functions for Solid hulls from JSCAD library http://openjscad.org
+ * Thanks JSCAD community for developing this kernel
+ */
+declare class JSCADHulls {
+    private readonly jscadWorkerManager;
+    constructor(jscadWorkerManager: JSCADWorkerManager);
+    /**
+     * Hull chain connects solids or 2d geometries by filling an empty space in between objects in order.
+     * Geometries need to be of the same type.
+     * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_hulls.JSCADHulls.html#hullChain
+     * @param inputs Geometries
+     * @returns Chain hulled geometry
+     */
+    hullChain(inputs: Inputs.JSCAD.HullDto): Promise<any | any[]>;
+    /**
+     * Convex hull connects solids or 2d geometries by filling an empty space in between without following order.
+     * Geometries need to be of the same type.
+     * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_hulls.JSCADHulls.html#hull
+     * @param inputs Geometries
+     * @returns Hulled geometry
+     */
+    hull(inputs: Inputs.JSCAD.HullDto): Promise<any | any[]>;
+}/**
+ * Contains various functions for Path from JSCAD library http://openjscad.org
+ * Thanks JSCAD community for developing this kernel
+ */
+declare class JSCADPath {
+    private readonly jscadWorkerManager;
+    constructor(jscadWorkerManager: JSCADWorkerManager);
+    /**
+     * Create a 2D path from a list of points
+     * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_path.JSCADPath.html#createFromPoints
+     * @param inputs Points and indication if we want a closed path or not
+     * @returns Path
+     */
+    createFromPoints(inputs: Inputs.JSCAD.PathFromPointsDto): Promise<any>;
+    /**
+     * Create a 2D path from a polyline
+     * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_path.JSCADPath.html#createFromPolyline
+     * @param inputs Polyline and indication if we want a closed path or not
+     * @returns Path
+     */
+    createFromPolyline(inputs: Inputs.JSCAD.PathFromPolylineDto): Promise<any>;
+    /**
+     * Create a 2D path from a curve
+     * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_path.JSCADPath.html#createFromCurve
+     * @param inputs Curve and indication if we want a closed path or not
+     * @returns Path
+     */
+    createFromCurve(inputs: Inputs.JSCAD.PathFromCurveDto): Promise<any>;
+    /**
+     * Create empty 2D path
+     * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_path.JSCADPath.html#createEmpty
+     * @returns Emprty path
+     */
+    createEmpty(): Promise<any>;
+    /**
+     * Closes an open 2D path
+     * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_path.JSCADPath.html#close
+     * @param inputs Path
+     * @returns Closed path
+     */
+    close(inputs: Inputs.JSCAD.PathDto): Promise<any>;
+    /**
+     * Append the path with 2D points
+     * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_path.JSCADPath.html#appendPoints
+     * @param inputs Path to append and points
+     * @returns Appended path
+     */
+    appendPoints(inputs: Inputs.JSCAD.PathAppendPointsDto): Promise<any>;
+    /**
+     * Append the path with polyline
+     * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_path.JSCADPath.html#appendPolyline
+     * @param inputs Path to append and polyline
+     * @returns Appended path
+     */
+    appendPolyline(inputs: Inputs.JSCAD.PathAppendPolylineDto): Promise<any>;
+    /**
+     * Append the path with the curve
+     * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_path.JSCADPath.html#appendCurve
+     * @param inputs Path to append and a curve
+     * @returns Appended path
+     */
+    appendCurve(inputs: Inputs.JSCAD.PathAppendCurveDto): Promise<any>;
+    /**
+     * Append the arc to the path
+     * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_path.JSCADPath.html#appendArc
+     * @param inputs Path and arc parameters
+     * @returns Appended path
+     */
+    appendArc(inputs: Inputs.JSCAD.PathAppendArcDto): Promise<any>;
+}/**
+ * Contains various functions for Polygon from JSCAD library http://openjscad.org
+ * Thanks JSCAD community for developing this kernel
+ */
+declare class JSCADPolygon {
+    private readonly jscadWorkerManager;
+    constructor(jscadWorkerManager: JSCADWorkerManager);
+    /**
+     * Create a 2D polygon from a list of points
+     * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_polygon.JSCADPolygon.html#createFromPoints
+     * @param inputs Points
+     * @returns Path
+     */
+    createFromPoints(inputs: Inputs.Point.PointsDto): Promise<any>;
+    /**
+     * Create a 2D polygon from a polyline
+     * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_polygon.JSCADPolygon.html#createFromPolyline
+     * @param inputs Polyline
+     * @returns Polygon
+     */
+    createFromPolyline(inputs: Inputs.Polyline.PolylineDto): Promise<any>;
+    /**
+     * Create a 2D polygon from a curve
+     * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_polygon.JSCADPolygon.html#createFromCurve
+     * @param inputs Nurbs curve
+     * @returns Polygon
+     */
+    createFromCurve(inputs: Inputs.Verb.CurveDto): Promise<any>;
+    /**
+     * Create a 2D polygon from a path
+     * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_polygon.JSCADPolygon.html#createFromPath
+     * @param inputs Path
+     * @returns Polygon
+     */
+    createFromPath(inputs: Inputs.JSCAD.PathDto): Promise<any>;
+    /**
+     * Create a 2D polygon circle
+     * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_polygon.JSCADPolygon.html#circle
+     * @param inputs Circle parameters
+     * @returns Circle polygon
+     */
+    circle(inputs: Inputs.JSCAD.CircleDto): Promise<any>;
+    /**
+     * Create a 2D polygon ellipse
+     * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_polygon.JSCADPolygon.html#ellipse
+     * @param inputs Ellipse parameters
+     * @returns Ellipse polygon
+     */
+    ellipse(inputs: Inputs.JSCAD.EllipseDto): Promise<any>;
+    /**
+     * Create a 2D polygon rectangle
+     * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_polygon.JSCADPolygon.html#rectangle
+     * @param inputs Rectangle parameters
+     * @returns Rectangle polygon
+     */
+    rectangle(inputs: Inputs.JSCAD.RectangleDto): Promise<any>;
+    /**
+     * Create a 2D rounded rectangle
+     * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_polygon.JSCADPolygon.html#roundedRectangle
+     * @param inputs Rounded rectangle parameters
+     * @returns Rounded rectangle polygon
+     */
+    roundedRectangle(inputs: Inputs.JSCAD.RoundedRectangleDto): Promise<any>;
+    /**
+     * Create a 2D polygon square
+     * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_polygon.JSCADPolygon.html#square
+     * @param inputs Square parameters
+     * @returns Square polygon
+     */
+    square(inputs: Inputs.JSCAD.SquareDto): Promise<any>;
+    /**
+     * Create a 2D polygon star
+     * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_polygon.JSCADPolygon.html#star
+     * @param inputs Star parameters
+     * @returns Star polygon
+     */
+    star(inputs: Inputs.JSCAD.StarDto): Promise<any>;
+}/**
+ * Contains various functions for solid 3D shapes from JSCAD library http://openjscad.org
+ * Thanks JSCAD community for developing this kernel
+ */
+declare class JSCADShapes {
+    private readonly jscadWorkerManager;
+    constructor(jscadWorkerManager: JSCADWorkerManager);
+    /**
+     * Create a 3D cube shape
+     * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_shapes.JSCADShapes.html#cube
+     * @param inputs Cube parameters
+     * @returns Cube solid
+     */
+    cube(inputs: Inputs.JSCAD.CubeDto): Promise<any>;
+    /**
+     * Create a 3D cubes on multiple center points
+     * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_shapes.JSCADShapes.html#cubesOnCenterPoints
+     * @param inputs Cube with multiple center points parameters
+     * @returns List of cube solids
+     */
+    cubesOnCenterPoints(inputs: Inputs.JSCAD.CubeCentersDto): Promise<any[]>;
+    /**
+     * Create a 3D cuboid shape
+     * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_shapes.JSCADShapes.html#cuboid
+     * @param inputs Cuboid parameters
+     * @returns Cuboid solid
+     */
+    cuboid(inputs: Inputs.JSCAD.CuboidDto): Promise<any>;
+    /**
+     * Create a 3D cuboids on multiple center points
+     * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_shapes.JSCADShapes.html#cuboidsOnCenterPoints
+     * @param inputs Cuboids with multiple center point parameters
+     * @returns List of cuboid solids
+     */
+    cuboidsOnCenterPoints(inputs: Inputs.JSCAD.CuboidCentersDto): Promise<any[]>;
+    /**
+     * Create a 3D elliptic cylinder solid
+     * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_shapes.JSCADShapes.html#cylinderElliptic
+     * @param inputs Elliptic cylinder parameters
+     * @returns Elliptic cylinder solid
+     */
+    cylinderElliptic(inputs: Inputs.JSCAD.CylidnerEllipticDto): Promise<any>;
+    /**
+     * Create a 3D elliptic cylinders on multiple center points
+     * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_shapes.JSCADShapes.html#cylinderEllipticOnCenterPoints
+     * @param inputs Elliptic cylinders with multiple center point parameters
+     * @returns List of elliptic cylinders solids
+     */
+    cylinderEllipticOnCenterPoints(inputs: Inputs.JSCAD.CylidnerCentersEllipticDto): Promise<any[]>;
+    /**
+     * Create a 3D cylinder solid
+     * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_shapes.JSCADShapes.html#cylinder
+     * @param inputs Cylinder parameters
+     * @returns Cylinder solid
+     */
+    cylinder(inputs: Inputs.JSCAD.CylidnerDto): Promise<any>;
+    /**
+     * Create a 3D cylinders on multiple center points
+     * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_shapes.JSCADShapes.html#cylindersOnCenterPoints
+     * @param inputs Cylinders with multiple center point parameters
+     * @returns List of cylinder solids
+     */
+    cylindersOnCenterPoints(inputs: Inputs.JSCAD.CylidnerCentersDto): Promise<any[]>;
+    /**
+     * Create a 3D ellipsoid solid
+     * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_shapes.JSCADShapes.html#ellipsoid
+     * @param inputs Ellipsoid parameters
+     * @returns Ellipsoid solid
+     */
+    ellipsoid(inputs: Inputs.JSCAD.EllipsoidDto): Promise<any>;
+    /**
+     * Create a 3D ellipsoids on multiple center points
+     * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_shapes.JSCADShapes.html#ellipsoidsOnCenterPoints
+     * @param inputs Ellipsoid parameters with multiple center points
+     * @returns List of ellipsoid solids
+     */
+    ellipsoidsOnCenterPoints(inputs: Inputs.JSCAD.EllipsoidCentersDto): Promise<any[]>;
+    /**
+     * Create a 3D geodesic sphere solid
+     * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_shapes.JSCADShapes.html#geodesicSphere
+     * @param inputs Geodesic sphere parameters
+     * @returns Geodesic sphere solid
+     */
+    geodesicSphere(inputs: Inputs.JSCAD.GeodesicSphereDto): Promise<any>;
+    /**
+     * Create a 3D geodesic spheres on multiple center points
+     * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_shapes.JSCADShapes.html#geodesicSpheresOnCenterPoints
+     * @param inputs Geodesic sphere parameters with multiple center points
+     * @returns List of geodesic spheres
+     */
+    geodesicSpheresOnCenterPoints(inputs: Inputs.JSCAD.GeodesicSphereCentersDto): Promise<any[]>;
+    /**
+     * Create a 3D rounded cuboid solid
+     * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_shapes.JSCADShapes.html#roundedCuboid
+     * @param inputs Rounded cuboid parameters
+     * @returns Rounded cuboid solid
+     */
+    roundedCuboid(inputs: Inputs.JSCAD.RoundedCuboidDto): Promise<any>;
+    /**
+     * Create a 3D rounded cuboids on multiple center points
+     * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_shapes.JSCADShapes.html#roundedCuboidsOnCenterPoints
+     * @param inputs Rounded cuboids parameters with multiple center points
+     * @returns List of rounded cuboids
+     */
+    roundedCuboidsOnCenterPoints(inputs: Inputs.JSCAD.RoundedCuboidCentersDto): Promise<any[]>;
+    /**
+     * Create a 3D rounded cylinder solid
+     * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_shapes.JSCADShapes.html#roundedCylinder
+     * @param inputs Rounded cylinder parameters
+     * @returns Rounded cylinder solid
+     */
+    roundedCylinder(inputs: Inputs.JSCAD.RoundedCylidnerDto): Promise<any>;
+    /**
+     * Create a 3D rounded cylinders on multiple center points
+     * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_shapes.JSCADShapes.html#roundedCylindersOnCenterPoints
+     * @param inputs Rounded cylinders parameters with multiple center points
+     * @returns List of rounded cylinders
+     */
+    roundedCylindersOnCenterPoints(inputs: Inputs.JSCAD.RoundedCylidnerCentersDto): Promise<any[]>;
+    /**
+     * Create a 3D sphere solid
+     * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_shapes.JSCADShapes.html#sphere
+     * @param inputs Sphere parameters
+     * @returns Sphere solid
+     */
+    sphere(inputs: Inputs.JSCAD.SphereDto): Promise<any>;
+    /**
+     * Create a 3D sphere on multiple center points
+     * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_shapes.JSCADShapes.html#spheresOnCenterPoints
+     * @param inputs Sphere parameters with multiple center points
+     * @returns List of spheres
+     */
+    spheresOnCenterPoints(inputs: Inputs.JSCAD.SphereCentersDto): Promise<any[]>;
+    /**
+     * Create a 3D torus solid
+     * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_shapes.JSCADShapes.html#torus
+     * @param inputs Torus parameters
+     * @returns Torus solid
+     */
+    torus(inputs: Inputs.JSCAD.TorusDto): Promise<any>;
+}/**
+ * Contains various functions for solid 3D texts from JSCAD library http://openjscad.org
+ * Thanks JSCAD community for developing this kernel
+ */
+declare class JSCADText {
+    private readonly jscadWorkerManager;
+    constructor(jscadWorkerManager: JSCADWorkerManager);
+    /**
+     * Creates a text that is based on chain hulling cylinders
+     * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_text.JSCADText.html#cylindricalText
+     * @param inputs Cylindrical text parameters
+     * @returns List of solids for text
+     */
+    cylindricalText(inputs: Inputs.JSCAD.CylinderTextDto): Promise<any[]>;
+    /**
+     * Creates a text that is based on chain hulling spheres
+     * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_text.JSCADText.html#sphericalText
+     * @param inputs Spherical text parameters
+     * @returns List of solids for text
+     */
+    sphericalText(inputs: Inputs.JSCAD.SphereTextDto): Promise<any[]>;
+    createVectorText(inputs: Inputs.JSCAD.TextDto): Promise<number[][]>;
+}/**
+ * Contains various functions for Solid meshes from JSCAD library http://openjscad.org
+ * Thanks JSCAD community for developing this kernel
+ */
+declare class JSCAD {
+    readonly booleans: JSCADBooleans;
+    readonly expansions: JSCADExpansions;
+    readonly extrusions: JSCADExtrusions;
+    readonly hulls: JSCADHulls;
+    readonly path: JSCADPath;
+    readonly polygon: JSCADPolygon;
+    readonly shapes: JSCADShapes;
+    readonly text: JSCADText;
+    private readonly context;
+    private readonly geometryHelper;
+    private readonly jscadWorkerManager;
+    constructor(booleans: JSCADBooleans, expansions: JSCADExpansions, extrusions: JSCADExtrusions, hulls: JSCADHulls, path: JSCADPath, polygon: JSCADPolygon, shapes: JSCADShapes, text: JSCADText, context: Context, geometryHelper: GeometryHelper, jscadWorkerManager: JSCADWorkerManager);
+    /**
+     * Draws a single solids
+     * @link https://docs.bitbybit.dev/classes/bitbybit_jscad.JSCAD.html#drawSolidOrPolygonMesh
+     * @param inputs Contains a solid or polygon and information for drawing
+     * @returns Mesh that is being drawn by Babylon
+     */
+    drawSolidOrPolygonMesh(inputs: Inputs.JSCAD.DrawSolidMeshDto): Promise<Mesh>;
+    private makeMesh;
+    /**
+     * Draws multiple solids
+     * @link https://docs.bitbybit.dev/classes/bitbybit_jscad.JSCAD.html#drawSolidOrPolygonMeshes
+     * @param inputs Contains solids or polygons and information for drawing
+     * @returns Mesh that is being drawn by Babylon
+     */
+    drawSolidOrPolygonMeshes(inputs: Inputs.JSCAD.DrawSolidMeshesDto): Promise<Mesh>;
+    /**
+     * Draws a 2D path
+     * @link https://docs.bitbybit.dev/classes/bitbybit_jscad.JSCAD.html#drawPath
+     * @param inputs Contains a path and information for drawing
+     * @returns Mesh that is being drawn by Babylon
+     */
+    drawPath(inputs: Inputs.JSCAD.DrawPathDto): Promise<LinesMesh>;
+    /**
+     * Transforms the Jscad solid meshes with a given list of transformations.
+     * @link https://docs.bitbybit.dev/classes/bitbybit_jscad.JSCAD.html#transformSolids
+     * @param inputs Solids with the transformation matrixes
+     * @returns Solids with a transformation
+     */
+    transformSolids(inputs: Inputs.JSCAD.TransformSolidsDto): Promise<any[]>;
+    /**
+     * Transforms the Jscad solid mesh with a given list of transformations.
+     * @link https://docs.bitbybit.dev/classes/bitbybit_jscad.JSCAD.html#transformSolid
+     * @param inputs Solid with the transformation matrixes
+     * @returns Solid with a transformation
+     */
+    transformSolid(inputs: Inputs.JSCAD.TransformSolidDto): Promise<any>;
+    /**
+     * Downloads the binary STL file from a 3D solid
+     * @link https://docs.bitbybit.dev/classes/bitbybit_jscad.JSCAD.html#downloadSolidSTL
+     * @param inputs 3D Solid
+     */
+    downloadSolidSTL(inputs: Inputs.JSCAD.DownloadSolidDto): Promise<void>;
+    /**
+     * Downloads the binary STL file from a 3D solids
+     * @link https://docs.bitbybit.dev/classes/bitbybit_jscad.JSCAD.html#downloadSolidsSTL
+     * @param inputs 3D Solid
+     */
+    downloadSolidsSTL(inputs: Inputs.JSCAD.DownloadSolidsDto): Promise<void>;
+    private downloadSTL;
+    private createMesh;
+}/**
  * Contains various methods for lines. Line in bitbybit is a simple object that has star and end point properties.
  * { start: [ x, y, z ], end: [ x, y, z ] }
  */
@@ -1742,6 +2605,151 @@ declare class Line {
      */
     linesBetweenStartAndEndPointsAsync(inputs: Inputs.Line.LineStartEndPointsDto): Promise<Inputs.Line.LinePointsDto[]>;
     private createLineSystemMesh;
+}/**
+ * Nodes help understand the space and construct more complicated space structures. Nodes can be nested together
+ * into child parent relationships to simplify the creation of 3D objects.
+ */
+declare class Node {
+    private readonly context;
+    private readonly geometryHelper;
+    constructor(context: Context, geometryHelper: GeometryHelper);
+    /**
+     * Draws a node of given size with given colours for every axis
+     * @link https://docs.bitbybit.dev/classes/bitbybit_node.Node.html#drawNode
+     * @param inputs Contains node data that includes size and colour information
+     */
+    drawNode(inputs: Inputs.Node.DrawNodeDto): void;
+    /**
+     * Draws a nodes of given size with given colours for every axis
+     * @link https://docs.bitbybit.dev/classes/bitbybit_node.Node.html#drawNodes
+     * @param inputs Contains node data that includes size and colour information
+     */
+    drawNodes(inputs: Inputs.Node.DrawNodesDto): void;
+    /**
+     * Creates a node on the origin with the given rotations in the parent coordinate system
+     * @link https://docs.bitbybit.dev/classes/bitbybit_node.Node.html#createNodeFromRotation
+     * @param inputs Contains information for origin, rotation and parent node
+     * @returns A new node
+     */
+    createNodeFromRotation(inputs: Inputs.Node.CreateNodeFromRotationDto): TransformNode;
+    /**
+     * Creates a world node which has root node as his parent
+     * @link https://docs.bitbybit.dev/classes/bitbybit_node.Node.html#createWorldNode
+     * @returns A new node whos parent is the root node of the scene
+     */
+    createWorldNode(): TransformNode;
+    /**
+     * Gets the absolute forward facing vector in world space
+     * @link https://docs.bitbybit.dev/classes/bitbybit_node.Node.html#getAbsoluteForwardVector
+     * @param inputs Node from which to get the forward vector
+     * @returns Vector as an array of numbers
+     */
+    getAbsoluteForwardVector(inputs: Inputs.Node.NodeDto): number[];
+    /**
+     * Gets the absolute right facing vector in world space
+     * @link https://docs.bitbybit.dev/classes/bitbybit_node.Node.html#getAbsoluteRightVector
+     * @param inputs Node from which to get the right vector
+     * @returns Vector as an array of numbers
+     */
+    getAbsoluteRightVector(inputs: Inputs.Node.NodeDto): number[];
+    /**
+     * Gets the absolute up facing vector in world space
+     * @link https://docs.bitbybit.dev/classes/bitbybit_node.Node.html#getAbsoluteUpVector
+     * @param inputs Node from which to get the up vector
+     * @returns Vector as an array of numbers
+     */
+    getAbsoluteUpVector(inputs: Inputs.Node.NodeDto): number[];
+    /**
+     * Gets the absolute position of the node as origin vector in world space
+     * @link https://docs.bitbybit.dev/classes/bitbybit_node.Node.html#getAbsolutePosition
+     * @param inputs Node from which to get the absolute position
+     * @returns Vector as an array of numbers indicating location of origin in world space
+     */
+    getAbsolutePosition(inputs: Inputs.Node.NodeDto): number[];
+    /**
+     * Gets the absolute rotation of the node as a transformation matrix encoded in array of 16 numbers
+     * @link https://docs.bitbybit.dev/classes/bitbybit_node.Node.html#getAbsoluteRotationTransformation
+     * @param inputs Node from which to get the rotation transformation
+     * @returns Transformation as an array of 16 numbers
+     */
+    getAbsoluteRotationTransformation(inputs: Inputs.Node.NodeDto): number[];
+    /**
+     * Gets the rotation of the node in local parent coordinate space as a transformation matrix encoded in array of 16 numbers
+     * @link https://docs.bitbybit.dev/classes/bitbybit_node.Node.html#getRotationTransformation
+     * @param inputs Node from which to get the rotation transformation
+     * @returns Transformation as an array of 16 numbers
+     */
+    getRotationTransformation(inputs: Inputs.Node.NodeDto): number[];
+    /**
+     * Gets children of the node
+     * @link https://docs.bitbybit.dev/classes/bitbybit_node.Node.html#getChildren
+     * @param inputs Node from which to get the children
+     * @returns List of children nodes in the array
+     */
+    getChildren(inputs: Inputs.Node.NodeDto): BabylonNode[];
+    /**
+     * Gets parent of the node
+     * @link https://docs.bitbybit.dev/classes/bitbybit_node.Node.html#getParent
+     * @param inputs Node from which to get a parent
+     * @returns Parent node
+     */
+    getParent(inputs: Inputs.Node.NodeDto): BabylonNode;
+    /**
+     * Gets the position of the node expressed in local space
+     * @link https://docs.bitbybit.dev/classes/bitbybit_node.Node.html#getPositionExpressedInLocalSpace
+     * @param inputs Node from which to get the position in local space
+     * @returns Position vector
+     */
+    getPositionExpressedInLocalSpace(inputs: Inputs.Node.NodeDto): number[];
+    /**
+     * Gets the root node
+     * @link https://docs.bitbybit.dev/classes/bitbybit_node.Node.html#getRootNode
+     * @returns Root node
+     */
+    getRootNode(): TransformNode;
+    /**
+     * Gets the euler rotations
+     * @link https://docs.bitbybit.dev/classes/bitbybit_node.Node.html#getRotation
+     * @param inputs Node from which to get rotation
+     * @returns Euler rotations of x, y and z angles in the number array
+     */
+    getRotation(inputs: Inputs.Node.NodeDto): number[];
+    /**
+     * Rotates the node around axis and given position by a given angle
+     * @link https://docs.bitbybit.dev/classes/bitbybit_node.Node.html#rotateAroundAxisWithPosition
+     * @param inputs Rotation around axis information
+     */
+    rotateAroundAxisWithPosition(inputs: Inputs.Node.RotateAroundAxisNodeDto): void;
+    /**
+     * Rotates the node around the origin and given axis
+     * @link https://docs.bitbybit.dev/classes/bitbybit_node.Node.html#rotate
+     * @param inputs Rotation information
+     */
+    rotate(inputs: Inputs.Node.RotateNodeDto): void;
+    /**
+     * Sets the absolute position of the node
+     * @link https://docs.bitbybit.dev/classes/bitbybit_node.Node.html#setAbsolutePosition
+     * @param inputs Node absolute position information
+     */
+    setAbsolutePosition(inputs: Inputs.Node.NodePositionDto): void;
+    /**
+     * Sets the direction of the node
+     * @link https://docs.bitbybit.dev/classes/bitbybit_node.Node.html#setDirection
+     * @param inputs Direction information
+     */
+    setDirection(inputs: Inputs.Node.NodeDirectionDto): void;
+    /**
+     * Sets the new parent to the node
+     * @link https://docs.bitbybit.dev/classes/bitbybit_node.Node.html#setParent
+     * @param inputs Node parent information
+     */
+    setParent(inputs: Inputs.Node.NodeParentDto): void;
+    /**
+     * Translates the node by a given direction vector and a distance
+     * @link https://docs.bitbybit.dev/classes/bitbybit_node.Node.html#translate
+     * @param inputs Node translation information
+     */
+    translate(inputs: Inputs.Node.NodeTranslationDto): void;
 }declare class OCCTAdvanced {
     readonly intersections: OCCTIntersections;
     constructor(occWorkerManager: OCCTWorkerManager);
@@ -1887,6 +2895,16 @@ declare class Line {
      * @returns OpenCascade geom surface
      */
     surfaceFromFace(inputs: Inputs.OCCT.ShapeDto<Inputs.OCCT.TopoDSFacePointer>): Promise<Inputs.OCCT.GeomSurfacePointer>;
+}declare class OCCTIntersections {
+    private readonly occWorkerManager;
+    constructor(occWorkerManager: OCCTWorkerManager);
+    /**
+     * Slices the shape at a given step interval along the provided direction
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occt_intersections.OCCTIntersections.html#slice
+     * @param inputs Shape to slice
+     * @returns OpenCascade intersection faces
+     */
+    slice(inputs: Inputs.OCCT.SliceDto): Promise<any>;
 }declare class OCCTIO {
     private readonly occWorkerManager;
     private readonly geometryHelper;
@@ -3020,6 +4038,68 @@ declare class Polyline {
      * @returns Polyline
      */
     create(inputs: Inputs.Polyline.PolylinePropertiesDto): Inputs.Polyline.PolylinePropertiesDto;
+}declare class Scene {
+    private readonly context;
+    private supportedFileFormats;
+    private objectUrl;
+    constructor(context: Context);
+    /**
+     * Changes the scene background colour for 3D space
+     * @link https://docs.bitbybit.dev/classes/bitbybit_scene.Scene.html#backgroundColour
+     * @param inputs Describes the colour of the scene background
+     */
+    backgroundColour(inputs: Inputs.Scene.SceneBackgroundColourDto): void;
+    /**
+     * Draws a grid mesh on the ground plane in 3D space. This helps to orient yourself in the world.
+     * @link https://docs.bitbybit.dev/classes/bitbybit_scene.Scene.html#drawGridMesh
+     * @param inputs Describes various parameters of the grid mesh like size, colour, etc.
+     */
+    drawGridMesh(inputs: Inputs.Scene.SceneDrawGridMeshDto): Mesh;
+    /**
+     * Creates and draws a point light in the scene
+     * @link https://docs.bitbybit.dev/classes/bitbybit_scene.Scene.html#drawPointLight
+     * @param inputs Describes the light source
+     * @returns BabylonJS point light
+     */
+    drawPointLight(inputs: Inputs.Scene.PointLightDto): PointLight;
+    /**
+    * Creates and draws a directional light in the scene
+    * @link https://docs.bitbybit.dev/classes/bitbybit_scene.Scene.html#drawDirectionalLight
+    * @param inputs Describes the light source
+    * @returns BabylonJS directional light
+    */
+    drawDirectionalLight(inputs: Inputs.Scene.DirectionalLightDto): DirectionalLight;
+    /**
+     * Adjusts the active arc rotate camera with configuration parameters
+     * @link https://docs.bitbybit.dev/classes/bitbybit_scene.Scene.html#adjustActiveArcRotateCamera
+     */
+    adjustActiveArcRotateCamera(inputs: Inputs.Scene.CameraConfigurationDto): void;
+    /**
+     * Clears all of the drawn objects in the 3D scene
+     * @link https://docs.bitbybit.dev/classes/bitbybit_scene.Scene.html#clearAllDrawn
+     */
+    clearAllDrawn(): void;
+    /**
+     * Imports mesh from the asset that you have uploaded for the project. You must upload your assets to your project via project management page.
+     * @param inputs
+     * @returns scene loader result that contains lights, meshes, geometries, animation groups, particle systems and tranform nodes
+     */
+    loadAsset(inputs: Inputs.Asset.AssetFileDto): Promise<any>;
+    /**
+     * Imports mesh from the asset that you have uploaded for the project. You must upload your assets to your project via project management page.
+     * @param inputs
+     * @returns scene loader result that contains lights, meshes, geometries, animation groups, particle systems and tranform nodes
+     */
+    /**
+     * Exports the whole scene to .babylon scene format. You can then edit it further in babylonjs editors.
+     * @param inputs filename
+     */
+    exportBabylon(inputs: Inputs.Scene.ExportSceneDto): void;
+    /**
+     * Exports the whole scene to .glb format. This file format has become industry standard for web models.
+     * @param inputs filename
+     */
+    exportGLB(inputs: Inputs.Scene.ExportSceneDto): void;
 }/**
  * Tags help you to put text on top of your 3D objects. Tags are heavily used in data visualization scenarios
  * where you need to convery additional textual information.
@@ -3056,6 +4136,82 @@ declare class Time {
      * @param update The function to call in render loop
      */
     registerRenderFunction(update: (timePassedMs: number) => void): void;
+}/**
+ * Transformations help to move, scale, rotate and mirror objects. You can combine multiple transformations
+ * for object to be placed exactly into position and orientation that you want.
+ * Contains various methods for transformations that represent 4x4 matrixes in flat 16 number arrays.
+ */
+declare class Transforms {
+    /**
+     * Creates a rotation transformations around the center and an axis
+     * @link https://docs.bitbybit.dev/classes/bitbybit_transforms.Transforms.html#rotationCenterAxis
+     * @param inputs Rotation around center with an axis information
+     * @returns array of transformations
+     */
+    rotationCenterAxis(inputs: Inputs.Transforms.RotationCenterAxisDto): number[][];
+    /**
+     * Creates a rotation transformations around the center and an X axis
+     * @link https://docs.bitbybit.dev/classes/bitbybit_transforms.Transforms.html#rotationCenterX
+     * @param inputs Rotation around center with an X axis information
+     * @returns array of transformations
+     */
+    rotationCenterX(inputs: Inputs.Transforms.RotationCenterDto): number[][];
+    /**
+     * Creates a rotation transformations around the center and an Y axis
+     * @link https://docs.bitbybit.dev/classes/bitbybit_transforms.Transforms.html#rotationCenterY
+     * @param inputs Rotation around center with an Y axis information
+     * @returns array of transformations
+     */
+    rotationCenterY(inputs: Inputs.Transforms.RotationCenterDto): number[][];
+    /**
+     * Creates a rotation transformations around the center and an Z axis
+     * @link https://docs.bitbybit.dev/classes/bitbybit_transforms.Transforms.html#rotationCenterZ
+     * @param inputs Rotation around center with an Z axis information
+     * @returns array of transformations
+     */
+    rotationCenterZ(inputs: Inputs.Transforms.RotationCenterDto): number[][];
+    /**
+     * Creates a rotation transformations with yaw pitch and roll
+     * @link https://docs.bitbybit.dev/classes/bitbybit_transforms.Transforms.html#rotationCenterYawPitchRoll
+     * @param inputs Yaw pitch roll rotation information
+     * @returns array of transformations
+     */
+    rotationCenterYawPitchRoll(inputs: Inputs.Transforms.RotationCenterYawPitchRollDto): number[][];
+    /**
+     * Scale transformation around center and xyz directions
+     * @link https://docs.bitbybit.dev/classes/bitbybit_transforms.Transforms.html#scaleCenterXYZ
+     * @param inputs Scale center xyz trnansformation
+     * @returns array of transformations
+     */
+    scaleCenterXYZ(inputs: Inputs.Transforms.ScaleCenterXYZDto): number[][];
+    /**
+     * Creates the scale transformation in x, y and z directions
+     * @link https://docs.bitbybit.dev/classes/bitbybit_transforms.Transforms.html#scaleXYZ
+     * @param inputs Scale XYZ number array information
+     * @returns transformation
+     */
+    scaleXYZ(inputs: Inputs.Transforms.ScaleXYZDto): number[][];
+    /**
+     * Creates uniform scale transformation
+     * @link https://docs.bitbybit.dev/classes/bitbybit_transforms.Transforms.html#uniformScale
+     * @param inputs Scale Dto
+     * @returns transformation
+     */
+    uniformScale(inputs: Inputs.Transforms.UniformScaleDto): number[][];
+    /**
+     * Creates uniform scale transformation from the center
+     * @link https://docs.bitbybit.dev/classes/bitbybit_transforms.Transforms.html#uniformScaleFromCenter
+     * @param inputs Scale Dto with center point information
+     * @returns array of transformations
+     */
+    uniformScaleFromCenter(inputs: Inputs.Transforms.UniformScaleFromCenterDto): number[][];
+    /**
+     * Creates the translation transformation
+     * @link https://docs.bitbybit.dev/classes/bitbybit_transforms.Transforms.html#translationXYZ
+     * @param inputs Translation information
+     * @returns transformation
+     */
+    translationXYZ(inputs: Inputs.Transforms.TranslationXYZDto): number[][];
 }/**
  * Contains various methods for vector mathematics. Vector in bitbybit is simply an array, usually containing numbers.
  * In 3D [x, y, z] form describes space, where y is the up vector.

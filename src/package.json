@@ -1,6 +1,6 @@
 {
     "name": "bitbybit-core",
-    "version": "0.9.7",
+    "version": "0.9.10",
     "description": "Bit By Bit Developers Core CAD API to Program Geometry",
     "main": "index.js",
     "repository": {
@@ -13,10 +13,11 @@
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1",
         "build": "tsc -p tsconfig.bitbybit.json",
-        "build-p": "npm run build && npm run copy-package && npm run copy-occt && npm run delete-proprietary",
-        "copy-package": "cp -R ./package.json ./dist/bitbybit-core/bitbybit-core/src",
-        "copy-occt": "cp -R ./bitbybit-dev-occt ./dist/bitbybit-core/bitbybit-core/src",
-        "delete-proprietary": "rm -R ./dist/bitbybit-core/bitbybit-core/src/lib/workers/occ/services/advanced",
+        "build-p": "npm run build && npm run copy-package && npm run copy-occt && npm run delete-proprietary && npm run delete-tsdoc",
+        "copy-package": "cp -R ./package.json ./dist/bitbybit-core",
+        "copy-occt": "cp -R ./bitbybit-dev-occt ./dist/bitbybit-core",
+        "delete-proprietary": "rm -R ./dist/bitbybit-core/lib/workers/occ/services/advanced",
+        "delete-tsdoc": "rm -R ./dist/bitbybit-core/ts-api-docs && rm -R ./dist/bitbybit-core/ts-doc-theme",
         "build-occt": "node generate-prod-build-yaml.js && cd bitbybit-dev-occt && docker run --rm -it -v \"$(pwd):/src\" -u \"$(id -u):$(id -g)\" donalffons/opencascade.js bitbybit-dev-occt.yml && cd ../",
         "build-occt-multithreaded": "node generate-prod-build-yaml-multithreaded.js && cd bitbybit-dev-occt-multithreaded && docker run --rm -it -v \"$(pwd):/src\" -u \"$(id -u):$(id -g)\" donalffons/opencascade.js:multi-threaded bitbybit-dev-occt.yml && cd ../",
         "declarations": "tsc --project lib/api/tsconfig.bbb.json",

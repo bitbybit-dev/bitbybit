@@ -4,7 +4,6 @@
       - symbol: Adaptor3d_Curve
       - symbol: Adaptor3d_Surface
       - symbol: Approx_ParametrizationType
-      - symbol: BOPTools_AlgoTools3D
       - symbol: BRepAdaptor_CompCurve
       - symbol: BRepAdaptor_Curve
       - symbol: BRepAlgoAPI_Algo
@@ -111,7 +110,6 @@
       - symbol: Geom2d_Vector
       - symbol: Geom2d_VectorWithMagnitude
       - symbol: GeomAPI
-      - symbol: GeomAPI_IntSS
       - symbol: GeomAPI_PointsToBSpline
       - symbol: GeomAbs_JoinType
       - symbol: GeomAbs_Shape
@@ -131,7 +129,6 @@
       - symbol: Geom_Ellipse
       - symbol: Geom_Geometry
       - symbol: Geom_Plane
-      - symbol: Geom_Surface
       - symbol: Geom_TrimmedCurve
       - symbol: Handle_Geom2d_BSplineCurve
       - symbol: Handle_Geom2d_BezierCurve
@@ -153,7 +150,6 @@
       - symbol: Handle_Geom_Plane
       - symbol: Handle_Geom_Surface
       - symbol: Handle_Geom_TrimmedCurve
-      - symbol: Handle_IntTools_Context
       - symbol: Handle_Law_Function
       - symbol: Handle_Poly_PolygonOnTriangulation
       - symbol: Handle_Poly_Triangulation
@@ -166,7 +162,6 @@
       - symbol: Handle_XCAFDoc_VisMaterialTool
       - symbol: IFSelect_ReturnStatus
       - symbol: IGESControl_Reader
-      - symbol: IntTools_Context
       - symbol: Law_BSpFunc
       - symbol: Law_Composite
       - symbol: Law_Function
@@ -231,13 +226,10 @@
       - symbol: TopoDS_Builder
       - symbol: TopoDS_Compound
       - symbol: TopoDS_Edge
-      - symbol: TopoDS_Face
       - symbol: TopoDS_Iterator
-      - symbol: TopoDS_Shape
       - symbol: TopoDS_Shell
       - symbol: TopoDS_Solid
       - symbol: TopoDS_Vertex
-      - symbol: TopoDS_Wire
       - symbol: XCAFApp_Application
       - symbol: XCAFDoc_ColorTool
       - symbol: XCAFDoc_DocumentTool
