@@ -13,9 +13,10 @@
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1",
         "build": "tsc -p tsconfig.bitbybit.json",
-        "build-p": "npm run build && npm run copy-package && npm run copy-occt && npm run delete-proprietary && npm run delete-tsdoc",
+        "build-p": "npm run build && npm run copy-package && npm run copy-occt && npm run copy-readme && npm run delete-proprietary && npm run delete-tsdoc",
         "copy-package": "cp -R ./package.json ./dist/bitbybit-core",
         "copy-occt": "cp -R ./bitbybit-dev-occt ./dist/bitbybit-core",
+        "copy-readme": "cp -R ../README.md ./dist/bitbybit-core",
         "delete-proprietary": "rm -R ./dist/bitbybit-core/lib/workers/occ/services/advanced",
         "delete-tsdoc": "rm -R ./dist/bitbybit-core/ts-api-docs && rm -R ./dist/bitbybit-core/ts-doc-theme",
         "build-occt": "node generate-prod-build-yaml.js && cd bitbybit-dev-occt && docker run --rm -it -v \"$(pwd):/src\" -u \"$(id -u):$(id -g)\" donalffons/opencascade.js bitbybit-dev-occt.yml && cd ../",
