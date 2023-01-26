@@ -16,6 +16,7 @@ export class OCCTFace {
         if (inputs.planar) {
             const wire = this.occ.TopoDS.Wire_1(inputs.shape);
             result = this.och.bRepBuilderAPIMakeFaceFromWire(wire, inputs.planar);
+            wire.delete();
         } else {
             const Degree = 3;
             const NbPtsOnCur = 15;
@@ -39,6 +40,8 @@ export class OCCTFace {
                 throw new Error('Could not create non planar face');
             }
             result = bs.Face();
+            bs.delete();
+            edges.forEach(e => e.delete());
         }
 
         return result;
@@ -54,6 +57,7 @@ export class OCCTFace {
     faceFromSurface(inputs: Inputs.OCCT.ShapeWithToleranceDto<Geom_Surface>) {
         const face = this.och.bRepBuilderAPIMakeFaceFromSurface(inputs.shape, inputs.tolerance) as TopoDS_Face;
         if (face.IsNull()) {
+            face.delete();
             throw new Error('Could not construct a face from the surface. Check if surface is not infinite.');
         } else {
             return face;
@@ -63,6 +67,7 @@ export class OCCTFace {
     faceFromSurfaceAndWire(inputs: Inputs.OCCT.FaceFromSurfaceAndWireDto<Geom_Surface | TopoDS_Wire, undefined>) {
         const face = this.och.bRepBuilderAPIMakeFaceFromSurfaceAndWire(inputs.shapes[0] as Geom_Surface, inputs.shapes[1] as TopoDS_Wire, inputs.inside) as TopoDS_Face;
         if (face.IsNull()) {
+            face.delete();
             throw new Error('Could not construct a face from the surface. Check if surface is not infinite.');
         } else {
             return face;
@@ -118,9 +123,13 @@ export class OCCTFace {
                 var v = vMin + (inputs.shiftHalfStepV ? halfStepV : 0) + stepsV;
                 const gpPnt = this.och.gpPnt([0, 0, 0]);
                 surface.D0(u, v, gpPnt);
-                points.push([gpPnt.X(), gpPnt.Y(), gpPnt.Z()]);
+                const pt: Base.Point3 = [gpPnt.X(), gpPnt.Y(), gpPnt.Z()];
+                points.push(pt);
+                gpPnt.delete();
             }
         }
+        surface.delete();
+        handle.delete();
         return { result: points };
     }
 
@@ -147,10 +156,15 @@ export class OCCTFace {
                 const stepsV = stepV * j;
                 var v = vMin + (inputs.shiftHalfStepV ? halfStepV : 0) + stepsV;
                 const gpDir = this.och.gpDir([0, 1, 0]);
-                this.occ.GeomLib.NormEstim(handle, this.och.gpPnt2d([u, v]), 1e-7, gpDir);
-                points.push([gpDir.X(), gpDir.Y(), gpDir.Z()]);
+                const gpUv = this.och.gpPnt2d([u, v]);
+                this.occ.GeomLib.NormEstim(handle, gpUv, 1e-7, gpDir);
+                const pt: Base.Point3 = [gpDir.X(), gpDir.Y(), gpDir.Z()];
+                points.push(pt);
+                gpDir.delete();
+                gpUv.delete();
             }
         }
+        handle.delete();
         return { result: points };
     }
 
@@ -189,8 +203,12 @@ export class OCCTFace {
             } else {
                 surface.D0(p, param, gpPnt);
             }
-            points.push([parseFloat(gpPnt.X().toString()), parseFloat(gpPnt.Y().toString()), parseFloat(gpPnt.Z().toString())]);
+            const pt = [gpPnt.X(), gpPnt.Y(), gpPnt.Z()];
+            points.push(pt);
+            gpPnt.delete();
         }
+        surface.delete();
+        handle.delete();
         return { result: points };
     }
 
@@ -277,8 +295,11 @@ export class OCCTFace {
             var v = vMin + (vMax - vMin) * uv[1];
             const gpPnt = this.och.gpPnt([0, 0, 0]);
             surface.D0(u, v, gpPnt);
-            return [parseFloat(gpPnt.X().toString()), parseFloat(gpPnt.Y().toString()), parseFloat(gpPnt.Z().toString())];
+            const pt = [gpPnt.X(), gpPnt.Y(), gpPnt.Z()];
+            gpPnt.delete();
+            return pt;
         })
+        surface.delete();
         return { result: pts };
     }
 
@@ -291,8 +312,11 @@ export class OCCTFace {
             var v = vMin + (vMax - vMin) * uv[1];
             const gpDir = this.och.gpDir([0, 1, 0]);
             this.occ.GeomLib.NormEstim(handle, this.och.gpPnt2d([u, v]), 1e-7, gpDir);
-            return [parseFloat(gpDir.X().toString()), parseFloat(gpDir.Y().toString()), parseFloat(gpDir.Z().toString())] as Base.Vector3;
+            const pt = [gpDir.X(), gpDir.Y(), gpDir.Z()];
+            gpDir.delete();
+            return pt as Base.Vector3;
         })
+        handle.delete();
         return { result: pts };
     }
 
@@ -305,7 +329,11 @@ export class OCCTFace {
         var v = vMin + (vMax - vMin) * inputs.paramV;
         const gpPnt = this.och.gpPnt([0, 0, 0]);
         surface.D0(u, v, gpPnt);
-        return { result: [parseFloat(gpPnt.X().toString()), parseFloat(gpPnt.Y().toString()), parseFloat(gpPnt.Z().toString())] };
+        const pt = [gpPnt.X(), gpPnt.Y(), gpPnt.Z()];
+        gpPnt.delete();
+        surface.delete();
+        handle.delete();
+        return { result: pt };
     }
 
     normalOnUV(inputs: Inputs.OCCT.DataOnUVDto<TopoDS_Face>) {
@@ -316,11 +344,17 @@ export class OCCTFace {
         var v = vMin + (vMax - vMin) * inputs.paramV;
         const gpDir = this.och.gpDir([0, 1, 0]);
         this.occ.GeomLib.NormEstim(handle, this.och.gpPnt2d([u, v]), 1e-7, gpDir);
-        return { result: [parseFloat(gpDir.X().toString()), parseFloat(gpDir.Y().toString()), parseFloat(gpDir.Z().toString())] };
+        const dir = [gpDir.X(), gpDir.Y(), gpDir.Z()];
+        gpDir.delete();
+        handle.delete();
+        return { result: dir };
     }
 
     createPolygonFace(inputs: Inputs.OCCT.PolygonDto) {
-        return this.och.bRepBuilderAPIMakeFaceFromWire(this.och.createPolygonWire(inputs), false);
+        const wire = this.och.createPolygonWire(inputs);
+        let result = this.och.bRepBuilderAPIMakeFaceFromWire(wire, false);
+        wire.delete();
+        return result;
     }
 
     createCircleFace(inputs: Inputs.OCCT.CircleDto): TopoDS_Face {
@@ -357,7 +391,10 @@ export class OCCTFace {
 
     reversedFace(inputs: Inputs.OCCT.ShapeDto<TopoDS_Face>): TopoDS_Face {
         const face = inputs.shape as TopoDS_Face;
-        return this.och.getActualTypeOfShape(face.Reversed());
+        const reversed = face.Reversed();
+        const result = this.och.getActualTypeOfShape(reversed);
+        reversed.delete();
+        return result;
     }
 
     getFaceArea(inputs: Inputs.OCCT.ShapeDto<TopoDS_Face>): { result: number } {

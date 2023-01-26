@@ -17,7 +17,7 @@
         "emitDeclarationOnly": false,
         "paths": {
             "projects/bitbybit-core/src/*": ["./*"],
-            "projects/bitbybit-advanced/*": ["../../bitbybit-advanced/*"]
+            "projects/bitbybit-advanced/*": ["../../../bitbybit-advanced/*"]
         },
         "lib": [
             "es2020",

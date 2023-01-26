@@ -13,15 +13,21 @@ export class OCCTBooleans {
     union(inputs: Inputs.OCCT.UnionDto<TopoDS_Shape>): TopoDS_Shape {
         let combined = inputs.shapes[0];
         for (let i = 0; i < inputs.shapes.length; i++) {
-            const combinedFuse = new this.occ.BRepAlgoAPI_Fuse_3(combined, inputs.shapes[i], new this.occ.Message_ProgressRange_1());
-            combinedFuse.Build(new this.occ.Message_ProgressRange_1());
+            const messageProgress1 = new this.occ.Message_ProgressRange_1();
+            const combinedFuse = new this.occ.BRepAlgoAPI_Fuse_3(combined, inputs.shapes[i], messageProgress1);
+            const messageProgress2 = new this.occ.Message_ProgressRange_1()
+            combinedFuse.Build(messageProgress2);
             combined = combinedFuse.Shape();
+            messageProgress1.delete();
+            messageProgress2.delete();
+            combinedFuse.delete();
         }
 
         if (!inputs.keepEdges) {
             const fusor = new this.occ.ShapeUpgrade_UnifySameDomain_2(combined, true, true, false);
             fusor.Build();
             combined = fusor.Shape();
+            fusor.delete();
         }
 
         return combined;
@@ -32,25 +38,35 @@ export class OCCTBooleans {
         const objectsToSubtract = inputs.shapes;
         for (let i = 0; i < objectsToSubtract.length; i++) {
             if (!objectsToSubtract[i] || objectsToSubtract[i].IsNull()) { console.error('Tool in Difference is null!'); }
-            const differenceCut = new this.occ.BRepAlgoAPI_Cut_3(difference, objectsToSubtract[i], new this.occ.Message_ProgressRange_1());
-            differenceCut.Build(new this.occ.Message_ProgressRange_1());
+            const messageProgress1 = new this.occ.Message_ProgressRange_1();
+            const differenceCut = new this.occ.BRepAlgoAPI_Cut_3(difference, objectsToSubtract[i], messageProgress1);
+            const messageProgress2 = new this.occ.Message_ProgressRange_1();
+            differenceCut.Build(messageProgress2);
             difference = differenceCut.Shape();
+            messageProgress1.delete();
+            messageProgress2.delete();
+            differenceCut.delete();
         }
 
         if (!inputs.keepEdges) {
             const fusor = new this.occ.ShapeUpgrade_UnifySameDomain_2(difference, true, true, false);
             fusor.Build();
-            difference = fusor.Shape();
+            let fusedShape = fusor.Shape();
+            difference.delete();
+            difference = fusedShape;
+            fusor.delete();
         }
 
         if (this.och.getNumSolidsInCompound(difference) === 1) {
-            difference = this.och.getSolidFromCompound(difference, 0);
+            let solid = this.och.getSolidFromCompound(difference, 0);
+            difference.delete();
+            difference = solid;
         }
 
         return difference;
     }
 
-    intersection(inputs: Inputs.OCCT.IntersectionDto<TopoDS_Shape>): TopoDS_Shape {
+    intersection(inputs: Inputs.OCCT.IntersectionDto<TopoDS_Shape>): TopoDS_Shape[] {
         return this.och.intersection(inputs);
     }
 

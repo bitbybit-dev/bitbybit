@@ -24,8 +24,14 @@ export class OCCTEdge {
     makeEdgeFromGeom2dCurveAndSurface(inputs: Inputs.OCCT.ShapesDto<Geom2d_Curve | Geom_Surface>) {
         const curve2d = new this.occ.Handle_Geom2d_Curve_2(inputs.shapes[0] as Geom2d_Curve);
         const surface = new this.occ.Handle_Geom_Surface_2(inputs.shapes[1] as Geom_Surface);
-        const res = new this.occ.BRepBuilderAPI_MakeEdge_30(curve2d, surface);
-        return this.och.getActualTypeOfShape(res.Shape());
+        const makeEdge = new this.occ.BRepBuilderAPI_MakeEdge_30(curve2d, surface);
+        const shape = makeEdge.Shape();
+        const result = this.och.getActualTypeOfShape(shape);
+        curve2d.delete();
+        surface.delete();
+        makeEdge.delete();
+        shape.delete();
+        return result;
     }
 
     line(inputs: Inputs.OCCT.LineDto) {
@@ -38,7 +44,15 @@ export class OCCTEdge {
         const gpPnt3 = this.och.gpPnt(inputs.end);
         const segment = new this.occ.GC_MakeArcOfCircle_4(gpPnt1, gpPnt2, gpPnt3);
         const hcurve = new this.occ.Handle_Geom_Curve_2(segment.Value().get());
-        return new this.occ.BRepBuilderAPI_MakeEdge_24(hcurve).Edge();
+        const makeEdge = new this.occ.BRepBuilderAPI_MakeEdge_24(hcurve);
+        const shape = makeEdge.Edge();
+        gpPnt1.delete();
+        gpPnt2.delete();
+        gpPnt3.delete();
+        segment.delete();
+        hcurve.delete();
+        makeEdge.delete();
+        return shape;
     }
 
     createCircleEdge(inputs: Inputs.OCCT.CircleDto) {
@@ -52,7 +66,9 @@ export class OCCTEdge {
     removeInternalEdges(inputs: Inputs.OCCT.ShapeDto<TopoDS_Shape>) {
         const fusor = new this.occ.ShapeUpgrade_UnifySameDomain_2(inputs.shape, true, true, false);
         fusor.Build();
-        return fusor.Shape();
+        const shape = fusor.Shape();
+        fusor.delete();
+        return shape;
     }
 
     getEdge(inputs: Inputs.OCCT.ShapeIndexDto<TopoDS_Shape>): any {
@@ -81,7 +97,10 @@ export class OCCTEdge {
         const curve = this.och.getGeomCurveFromEdge(edge, uMin, uMax);
         const gpPnt = this.och.gpPnt([0, 0, 0]);
         curve.D0(uMin, gpPnt);
-        return { result: [gpPnt.X(), gpPnt.Y(), gpPnt.Z()] };
+        const pt = [gpPnt.X(), gpPnt.Y(), gpPnt.Z()];
+        gpPnt.delete();
+        curve.delete();
+        return { result: pt };
     }
 
     endPointOnEdge(inputs: Inputs.OCCT.ShapeDto<TopoDS_Edge>) {
@@ -90,7 +109,10 @@ export class OCCTEdge {
         const curve = this.och.getGeomCurveFromEdge(edge, uMin, uMax);
         const gpPnt = this.och.gpPnt([0, 0, 0]);
         curve.D0(uMax, gpPnt);
-        return { result: [gpPnt.X(), gpPnt.Y(), gpPnt.Z()] };
+        const pt = [gpPnt.X(), gpPnt.Y(), gpPnt.Z()];
+        gpPnt.delete();
+        curve.delete();
+        return { result: pt };
     }
 
     pointOnEdgeAtLength(inputs: Inputs.OCCT.DataOnGeometryAtLengthDto<TopoDS_Edge>): { result: Inputs.Base.Point3 } {

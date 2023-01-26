@@ -28,11 +28,14 @@ export class OCCTWire {
                 makeWire.Add_2(shape);
             }
         });
+        let result;
         if (makeWire.IsDone()) {
-            return makeWire.Wire();
+            result = makeWire.Wire();
         } else {
-            return null;
+            result = null;
         }
+        makeWire.delete();
+        return result;
     }
 
     createBSpline(inputs: Inputs.OCCT.BSplineDto): any {
@@ -75,7 +78,14 @@ export class OCCTWire {
         const der3 = this.och.gpVec([0, 0, 0]);
 
         curve.D3(param, gpPnt, der1, der2, der3);
-        return { result: [[der1.X(), der1.Y(), der1.Z()], [der2.X(), der2.Y(), der2.Z()], [der3.X(), der3.Y(), der3.Z()]] };
+        const der: [Inputs.Base.Vector3, Inputs.Base.Vector3, Inputs.Base.Vector3] = [[der1.X(), der1.Y(), der1.Z()], [der2.X(), der2.Y(), der2.Z()], [der3.X(), der3.Y(), der3.Z()]];
+        der1.delete();
+        der2.delete();
+        der3.delete();
+        curve.delete();
+        absc.delete();
+        gpPnt.delete();
+        return { result: der };
     }
 
 
@@ -92,7 +102,13 @@ export class OCCTWire {
         const param = this.och.remap(inputs.param, 0, 1, curve.FirstParameter(), curve.LastParameter());
 
         curve.D3(param, gpPnt, der1, der2, der3);
-        return { result: [[der1.X(), der1.Y(), der1.Z()], [der2.X(), der2.Y(), der2.Z()], [der3.X(), der3.Y(), der3.Z()]] };
+        const der: [Inputs.Base.Vector3, Inputs.Base.Vector3, Inputs.Base.Vector3] = [[der1.X(), der1.Y(), der1.Z()], [der2.X(), der2.Y(), der2.Z()], [der3.X(), der3.Y(), der3.Z()]];
+        der1.delete();
+        der2.delete();
+        der3.delete();
+        curve.delete();
+        gpPnt.delete();
+        return { result: der };
     }
 
     startPointOnWire(inputs: Inputs.OCCT.ShapeDto<TopoDS_Wire>): { result: Inputs.Base.Point3 } {
@@ -109,11 +125,19 @@ export class OCCTWire {
             ptList.SetValue(pIndex, this.och.gpPnt(inputs.points[pIndex - 1]));
         }
         if (inputs.closed) { ptList.SetValue(inputs.points.length + 1, ptList.Value(1)); }
-        const geomCurveHandle = new this.occ.Geom_BezierCurve_1(ptList);
-        const edge = new this.occ.BRepBuilderAPI_MakeEdge_24(
-            new this.occ.Handle_Geom_Curve_2(geomCurveHandle)
-        ).Edge();
-        return new this.occ.BRepBuilderAPI_MakeWire_2(edge).Wire();
+        const geomBezierCurveHandle = new this.occ.Geom_BezierCurve_1(ptList);
+        const geomCurve = new this.occ.Handle_Geom_Curve_2(geomBezierCurveHandle)
+        const edgeMaker = new this.occ.BRepBuilderAPI_MakeEdge_24(geomCurve);
+        const edge = edgeMaker.Edge()
+        const makeWire = new this.occ.BRepBuilderAPI_MakeWire_2(edge);
+        const result = makeWire.Wire();
+        makeWire.delete();
+        edgeMaker.delete();
+        edge.delete();
+        geomCurve.delete();
+        geomBezierCurveHandle.delete();
+        ptList.delete();
+        return result;
     }
 
     interpolatePoints(inputs: Inputs.OCCT.InterpolationDto) {
@@ -168,16 +192,21 @@ export class OCCTWire {
         return { result: this.och.getWiresLengths(inputs) };
     }
 
-    reversedWire(inputs: Inputs.OCCT.ShapeDto<TopoDS_Wire>): any {
+    reversedWire(inputs: Inputs.OCCT.ShapeDto<TopoDS_Wire>): { result: TopoDS_Shape } {
         const wire: TopoDS_Wire = inputs.shape;
-        return this.och.getActualTypeOfShape(wire.Reversed());
+        const reversed = wire.Reversed();
+        const result = this.och.getActualTypeOfShape(reversed);
+        reversed.delete();
+        return { result };
     }
 
     placeWireOnFace(inputs: Inputs.OCCT.ShapesDto<TopoDS_Wire | TopoDS_Face>) {
         let wire: TopoDS_Wire = inputs.shapes[0] as TopoDS_Wire;
         let face: TopoDS_Face = inputs.shapes[1] as TopoDS_Face;
         const srf = this.och.surfaceFromFace({ shape: face });
-        return this.placeWire(wire, srf);
+        let result = this.placeWire(wire, srf);
+        srf.delete();
+        return result;
     }
 
     placeWiresOnFace(inputs: Inputs.OCCT.ShapeShapesDto<TopoDS_Face, TopoDS_Wire>) {
@@ -185,7 +214,9 @@ export class OCCTWire {
         let face = inputs.shape;
         const srf = this.och.surfaceFromFace({ shape: face });
 
-        return wires.map(wire => this.placeWire(wire, srf));
+        let result = wires.map(wire => this.placeWire(wire, srf));
+        srf.delete();
+        return result;
     }
 
     private placeWire(wire: TopoDS_Wire, surface: Geom_Surface) {
@@ -197,13 +228,22 @@ export class OCCTWire {
             this.occ.BRep_Tool.Range_1(e, umin as any, umax as any);
             const crv = this.occ.BRep_Tool.Curve_2(e, umin.current, umax.current);
             if (!crv.IsNull()) {
-                const c2dHandle = this.occ.GeomAPI.To2d(crv, this.och.gpPln([0, 0, 0], [0, 1, 0]));
-                const newEdgeOnSrf = this.och.makeEdgeFromGeom2dCurveAndSurfaceBounded({ shapes: [c2dHandle.get(), surface] }, umin.current, umax.current);
+                const plane = this.och.gpPln([0, 0, 0], [0, 1, 0])
+                const c2dHandle = this.occ.GeomAPI.To2d(crv, plane);
+                const c2 = c2dHandle.get();
+                const newEdgeOnSrf = this.och.makeEdgeFromGeom2dCurveAndSurfaceBounded({ shapes: [c2, surface] }, umin.current, umax.current);
                 if (newEdgeOnSrf) {
                     newEdges.push(newEdgeOnSrf);
                 }
+                plane.delete();
+                c2dHandle.delete();
+                c2.delete();
             }
+            crv.delete();
         });
-        return this.och.combineEdgesAndWiresIntoAWire({ shapes: newEdges });
+        edges.forEach(e => e.delete());
+        let res = this.och.combineEdgesAndWiresIntoAWire({ shapes: newEdges });
+        newEdges.forEach(e => e.delete());
+        return res;
     }
 }

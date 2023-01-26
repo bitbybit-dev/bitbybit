@@ -14,7 +14,10 @@ export class OCCTSolid {
     fromClosedShell(inputs: Inputs.OCCT.ShapeDto<TopoDS_Shell>): TopoDS_Solid {
         const shell = this.och.getActualTypeOfShape(inputs.shape);
         const builder = new this.occ.BRepBuilderAPI_MakeSolid_3(shell);
-        return builder.Solid();
+        let result = builder.Solid();
+        builder.delete();
+        shell.delete();
+        return result;
     }
 
     createBox(inputs: Inputs.OCCT.BoxDto): any {
@@ -24,6 +27,7 @@ export class OCCTSolid {
     createBoxFromCorner(inputs: Inputs.OCCT.BoxFromCornerDto): any {
         const box = this.och.bRepPrimAPIMakeBox(inputs.width, inputs.length, inputs.height, inputs.corner);
         const cornerBox = this.och.translate({ shape: box, translation: [inputs.width / 2, inputs.height / 2, inputs.length / 2] });
+        box.delete();
         return cornerBox;
     }
 
@@ -53,7 +57,11 @@ export class OCCTSolid {
 
     createCone(inputs: Inputs.OCCT.ConeDto): any {
         const ax = this.och.gpAx2(inputs.center, inputs.direction);
-        return new this.occ.BRepPrimAPI_MakeCone_4(ax, inputs.radius1, inputs.radius2, inputs.height, inputs.angle).Shape();
+        const makeCone = new this.occ.BRepPrimAPI_MakeCone_4(ax, inputs.radius1, inputs.radius2, inputs.height, inputs.angle);
+        const coneShape = makeCone.Shape();
+        makeCone.delete();
+        ax.delete();
+        return coneShape;
     }
 
     getSolidSurfaceArea(inputs: Inputs.OCCT.ShapeDto<TopoDS_Solid>): { result: number } {

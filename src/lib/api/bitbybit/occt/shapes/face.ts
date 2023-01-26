@@ -10,7 +10,6 @@ export class OCCTFace {
         private readonly occWorkerManager: OCCTWorkerManager,
     ) {
     }
-
     /**
      * Creates a face from wire
      * <div>

@@ -18,7 +18,6 @@ export class OccHelper {
         private readonly occ: OpenCascadeInstance) {
     }
 
-
     getCornerPointsOfEdgesForShape(inputs: Inputs.OCCT.ShapeDto<TopoDS_Shape>): Inputs.Base.Point3[] {
         const edges = this.getEdges(inputs);
         let points = [];
@@ -33,12 +32,15 @@ export class OccHelper {
                 const pt2 = crv.Value(param2.current);
                 const pt1g = [pt1.X(), pt1.Y(), pt1.Z()];
                 const pt2g = [pt2.X(), pt2.Y(), pt2.Z()];
+                pt1.delete();
+                pt2.delete();
+                crv.delete();
                 points.push(pt1g);
                 points.push(pt2g);
             } catch {
             }
+            crvHandle.delete();
         });
-        // removes all duplicates
         if (points.length > 0) {
             points = this.vecHelper.removeAllDuplicateVectors(points);
         }
@@ -61,6 +63,7 @@ export class OccHelper {
         inputs.shapes.forEach(shape => {
             builder.Add(resCompound, shape);
         });
+        // builder.delete();
         return resCompound;
     }
 
@@ -103,13 +106,20 @@ export class OccHelper {
         const pt = this.gpPnt2d(point);
         const dir1 = this.gpDir2d(direction1);
         const dir2 = this.gpDir2d(direction2);
-        return new this.occ.gp_Ax22d_2(pt, dir1, dir2);
+        let ax = new this.occ.gp_Ax22d_2(pt, dir1, dir2);
+        dir1.delete();
+        dir2.delete();
+        pt.delete();
+        return ax;
     }
 
     gpPln(point: Base.Point3, direction: Base.Vector3): gp_Pln_3 {
         const gpPnt = this.gpPnt(point);
         const gpDir = this.gpDir(direction);
-        return new this.occ.gp_Pln_3(gpPnt, gpDir);
+        let pln = new this.occ.gp_Pln_3(gpPnt, gpDir);
+        gpPnt.delete();
+        gpDir.delete();
+        return pln;
     }
 
     gpPnt2d(point: Base.Point2): gp_Pnt2d_3 {
@@ -141,68 +151,117 @@ export class OccHelper {
     }
 
     gcMakeCircle(center: Base.Point3, direction: Base.Vector3, radius: number): Geom_Circle {
-        return new this.occ.GC_MakeCircle_2(this.gpAx2(center, direction), radius).Value().get();
+        const circle = new this.occ.GC_MakeCircle_2(this.gpAx2(center, direction), radius);
+        const cirVal = circle.Value();
+        const cir = cirVal.get();
+        circle.delete();
+        return cir;
     }
 
     gcMakeEllipse(center: Base.Point3, direction: Base.Vector3, minorRadius: number, majorRadius: number): Geom_Ellipse {
-        return new this.occ.GC_MakeEllipse_2(this.gpAx2(center, direction), majorRadius, minorRadius).Value().get();
+        const ax = this.gpAx2(center, direction);
+        const ellipse = new this.occ.GC_MakeEllipse_2(ax, minorRadius, majorRadius);
+        const ellipseVal = ellipse.Value();
+        const ell = ellipseVal.get();
+        ellipse.delete();
+        ax.delete();
+        return ell;
     }
 
     bRepBuilderAPIMakeEdge(curve: Geom_Curve): TopoDS_Edge {
-        return new this.occ.BRepBuilderAPI_MakeEdge_24(this.castToHandleGeomCurve(curve)).Edge();
+        const crv = this.castToHandleGeomCurve(curve);
+        const edge = new this.occ.BRepBuilderAPI_MakeEdge_24(crv);
+        let ed = edge.Edge();
+        edge.delete();
+        crv.delete();
+        return ed;
     }
 
     bRepBuilderAPIMakeWire(edge: TopoDS_Edge): TopoDS_Wire {
-        return new this.occ.BRepBuilderAPI_MakeWire_2(edge).Wire();
+        const wire = new this.occ.BRepBuilderAPI_MakeWire_2(edge);
+        const w = wire.Wire();
+        wire.delete();
+        return w;
     }
 
     makeVertex(pt: Base.Point3): TopoDS_Vertex {
         const gpPnt = this.gpPnt(pt);
         const vert = new this.occ.BRepBuilderAPI_MakeVertex(gpPnt);
-        return vert.Vertex();
+        const vrt = vert.Vertex();
+        gpPnt.delete();
+        vert.delete();
+        return vrt;
     }
 
     bRepBuilderAPIMakeShell(face: TopoDS_Face): TopoDS_Shell {
         const srf = this.occ.BRep_Tool.Surface_2(face);
-
-        const d = new this.occ.BRepBuilderAPI_MakeShell_2(
+        const makeShell = new this.occ.BRepBuilderAPI_MakeShell_2(
             srf,
             false);
 
-        const x = d.Shell();
-        return x;
+        const shell = makeShell.Shell();
+        makeShell.delete();
+        srf.delete();
+        return shell;
     }
 
     bRepBuilderAPIMakeFaceFromWire(wire: TopoDS_Wire, planar: boolean): TopoDS_Face {
-        return new this.occ.BRepBuilderAPI_MakeFace_15(wire, planar).Face();
+        const faceMaker = new this.occ.BRepBuilderAPI_MakeFace_15(wire, planar);
+        const face = faceMaker.Face();
+        faceMaker.delete();
+        return face;
     }
 
     bRepBuilderAPIMakeFaceFromSurface(surface: Geom_Surface, tolDegen: number): TopoDS_Face {
         const hs = new this.occ.Handle_Geom_Surface_2(surface);
-        return new this.occ.BRepBuilderAPI_MakeFace_8(hs, tolDegen).Face();
+        const faceMaker = new this.occ.BRepBuilderAPI_MakeFace_8(hs, tolDegen);
+        const face = faceMaker.Face();
+        faceMaker.delete();
+        hs.delete();
+        return face;
     }
 
     bRepBuilderAPIMakeFaceFromSurfaceAndWire(surface: Geom_Surface, wire: TopoDS_Wire, inside: boolean): TopoDS_Face {
         const hs = new this.occ.Handle_Geom_Surface_2(surface);
-        return new this.occ.BRepBuilderAPI_MakeFace_21(hs, wire, inside).Face();
+        const faceMaker = new this.occ.BRepBuilderAPI_MakeFace_21(hs, wire, inside);
+        const face = faceMaker.Face();
+        faceMaker.delete();
+        hs.delete();
+        return face;
     }
 
     bRepPrimAPIMakeSphere(center: Base.Point3, direction: Base.Vector3, radius: number): TopoDS_Shape {
         const ax = this.gpAx2(center, direction);
-        return new this.occ.BRepPrimAPI_MakeSphere_9(ax, radius).Shape();
+        const sphereMaker = new this.occ.BRepPrimAPI_MakeSphere_9(ax, radius);
+        const sphere = sphereMaker.Shape();
+        sphereMaker.delete();
+        ax.delete();
+        return sphere;
     }
 
     bRepPrimAPIMakeCylinder(center: Base.Point3, direction: Base.Vector3, radius, height): TopoDS_Shape {
         const ax = this.gpAx2(center, direction);
-        return new this.occ.BRepPrimAPI_MakeCylinder_3(ax, radius, height).Shape();
+        const cylinderMaker = new this.occ.BRepPrimAPI_MakeCylinder_3(ax, radius, height);
+        const cylinder = cylinderMaker.Shape();
+        cylinderMaker.delete();
+        ax.delete();
+        return cylinder;
     }
 
     bRepPrimAPIMakeCylinderBetweenPoints(start: Base.Point3, end: Base.Point3, radius: number): TopoDS_Shape {
         const center = this.gpPnt(start);
-        const vec = new this.occ.gp_Vec_5(center, this.gpPnt(end));
+        const pt = this.gpPnt(end);
+        const vec = new this.occ.gp_Vec_5(center, pt);
         const distance = vec.Magnitude();
         const ax = this.gpAx2(start, [vec.X(), vec.Y(), vec.Z()]);
-        return new this.occ.BRepPrimAPI_MakeCylinder_3(ax, radius, distance).Shape();
+        const cylinderMaker = new this.occ.BRepPrimAPI_MakeCylinder_3(ax, radius, distance);
+        const cylinder = cylinderMaker.Shape();
+        cylinderMaker.delete();
+        ax.delete();
+        center.delete();
+        pt.delete();
+        vec.delete();
+        return cylinder;
     }
 
     bRepPrimAPIMakeBox(width: number, length: number, height: number, center: number[]): TopoDS_Shape {
@@ -211,7 +270,11 @@ export class OccHelper {
             -height / 2 + center[1],
             -length / 2 + center[2]
         ]);
-        return new this.occ.BRepPrimAPI_MakeBox_3(pt, width, height, length).Shape();
+        const boxMaker = new this.occ.BRepPrimAPI_MakeBox_3(pt, width, height, length);
+        const box = boxMaker.Shape();
+        boxMaker.delete();
+        pt.delete();
+        return box;
     }
 
     getEdges(inputs: Inputs.OCCT.ShapeDto<TopoDS_Shape>): TopoDS_Edge[] {
@@ -229,15 +292,27 @@ export class OccHelper {
         const gpPnt1 = this.gpPnt(inputs.start);
         const gpPnt2 = this.gpPnt(inputs.end);
         const segment = new this.occ.GC_MakeSegment_1(gpPnt1, gpPnt2);
-        const hcurve = new this.occ.Handle_Geom_Curve_2(segment.Value().get());
-        return new this.occ.BRepBuilderAPI_MakeEdge_24(hcurve).Edge();
+        const segVal = segment.Value();
+        const seg = segVal.get();
+        const hcurve = new this.occ.Handle_Geom_Curve_2(seg);
+        const edgeMaker = new this.occ.BRepBuilderAPI_MakeEdge_24(hcurve);
+        const edge = edgeMaker.Edge();
+        edgeMaker.delete();
+        hcurve.delete();
+        gpPnt1.delete();
+        gpPnt2.delete();
+        segVal.delete();
+        seg.delete();
+        return edge;
     }
 
     getEdgeLength(inputs: Inputs.OCCT.ShapeDto<TopoDS_Edge>) {
         const edge = inputs.shape;
         const gprops = new this.occ.GProp_GProps_1();
         this.occ.BRepGProp.LinearProperties(edge, gprops, false, false);
-        return gprops.Mass();
+        const mass = gprops.Mass();
+        gprops.delete();
+        return mass;
     }
 
     getEdgesLengths(inputs: Inputs.OCCT.ShapesDto<TopoDS_Edge>): number[] {
@@ -249,7 +324,9 @@ export class OccHelper {
         const gprops = new this.occ.GProp_GProps_1();
         this.occ.BRepGProp.LinearProperties(edge, gprops, false, false);
         const gppnt = gprops.CentreOfMass();
-        return [gppnt.X(), gppnt.Y(), gppnt.Z()];
+        const pt: Base.Point3 = [gppnt.X(), gppnt.Y(), gppnt.Z()];
+        gprops.delete();
+        return pt;
     }
 
     getEdgesCentersOfMass(inputs: Inputs.OCCT.ShapesDto<TopoDS_Edge>): Base.Point3[] {
@@ -277,7 +354,9 @@ export class OccHelper {
     getFaceArea(inputs: Inputs.OCCT.ShapeDto<TopoDS_Face>): number {
         const gprops = new this.occ.GProp_GProps_1();
         this.occ.BRepGProp.SurfaceProperties_1(inputs.shape, gprops, false, false);
-        return gprops.Mass();
+        const area = gprops.Mass();
+        gprops.delete();
+        return area;
     }
 
     getFacesAreas(inputs: Inputs.OCCT.ShapesDto<TopoDS_Face>): number[] {
@@ -288,7 +367,10 @@ export class OccHelper {
         const gprops = new this.occ.GProp_GProps_1();
         this.occ.BRepGProp.SurfaceProperties_1(inputs.shape, gprops, false, false);
         const gppnt = gprops.CentreOfMass();
-        return [gppnt.X(), gppnt.Y(), gppnt.Z()];
+        const pt: Base.Point3 = [gppnt.X(), gppnt.Y(), gppnt.Z()];
+        gprops.delete();
+        gppnt.delete();
+        return pt;
     }
 
     getFacesCentersOfMass(inputs: Inputs.OCCT.ShapesDto<TopoDS_Face>): Base.Point3[] {
@@ -298,7 +380,9 @@ export class OccHelper {
     getSolidVolume(inputs: Inputs.OCCT.ShapeDto<TopoDS_Solid>): number {
         const gprops = new this.occ.GProp_GProps_1();
         this.occ.BRepGProp.VolumeProperties_1(inputs.shape, gprops, true, false, false);
-        return gprops.Mass();
+        const vol = gprops.Mass();
+        gprops.delete();
+        return vol;
     }
 
     getShellSurfaceArea(inputs: Inputs.OCCT.ShapeDto<TopoDS_Shell>): number {
@@ -321,7 +405,10 @@ export class OccHelper {
         const gprops = new this.occ.GProp_GProps_1();
         this.occ.BRepGProp.VolumeProperties_1(inputs.shape, gprops, true, false, false);
         const gppnt = gprops.CentreOfMass();
-        return [gppnt.X(), gppnt.Y(), gppnt.Z()];
+        const pt: Base.Point3 = [gppnt.X(), gppnt.Y(), gppnt.Z()];
+        gprops.delete();
+        gppnt.delete();
+        return pt;
     }
 
     getSolidsCentersOfMass(inputs: Inputs.OCCT.ShapesDto<TopoDS_Solid>): Base.Point3[] {
@@ -363,13 +450,16 @@ export class OccHelper {
         } else {
             const edge = this.bRepBuilderAPIMakeEdge(circle);
             if (type === typeSpecificityEnum.edge) {
+                circle.delete();
                 return edge;
             } else {
                 const circleWire = this.bRepBuilderAPIMakeWire(edge);
                 if (type === typeSpecificityEnum.wire) {
+                    edge.delete();
                     return circleWire;
                 } else if (type === typeSpecificityEnum.face) {
-                    return this.bRepBuilderAPIMakeFaceFromWire(circleWire, true);
+                    const face = this.bRepBuilderAPIMakeFaceFromWire(circleWire, true);
+                    return face;
                 }
             }
         }
@@ -383,13 +473,16 @@ export class OccHelper {
         } else {
             const edge = this.bRepBuilderAPIMakeEdge(ellipse);
             if (type === typeSpecificityEnum.edge) {
+                ellipse.delete();
                 return edge;
             } else {
                 const ellipseWire = this.bRepBuilderAPIMakeWire(edge);
                 if (type === typeSpecificityEnum.wire) {
+                    edge.delete();
                     return ellipseWire;
                 } else if (type === typeSpecificityEnum.face) {
-                    return this.bRepBuilderAPIMakeFaceFromWire(ellipseWire, true);
+                    const face = this.bRepBuilderAPIMakeFaceFromWire(ellipseWire, true);
+                    return face;
                 }
             }
         }
@@ -397,11 +490,17 @@ export class OccHelper {
     }
 
     createSquareFace(inputs: Inputs.OCCT.SquareDto): TopoDS_Face {
-        return this.bRepBuilderAPIMakeFaceFromWire(this.createSquareWire(inputs), true);
+        const squareWire = this.createSquareWire(inputs);
+        const faceMakerFromWire = this.bRepBuilderAPIMakeFaceFromWire(squareWire, true);
+        squareWire.delete();
+        return faceMakerFromWire;
     }
 
     createRectangleFace(inputs: Inputs.OCCT.RectangleDto): TopoDS_Face {
-        return this.bRepBuilderAPIMakeFaceFromWire(this.createRectangleWire(inputs), true);
+        const rectangleWire = this.createRectangleWire(inputs);
+        const faceMakerFromWire = this.bRepBuilderAPIMakeFaceFromWire(rectangleWire, true);
+        rectangleWire.delete();
+        return faceMakerFromWire;
     }
 
     createRectangleWire(inputs: Inputs.OCCT.RectangleDto): TopoDS_Wire {
@@ -413,7 +512,9 @@ export class OccHelper {
         const pt4: Base.Point3 = [cw, 0, -cl];
         const points = [pt1, pt2, pt3, pt4];
         const wire = this.createPolygonWire({ points });
-        return this.alignAndTranslateShape({ shape: wire, direction: inputs.direction, center: inputs.center });
+        const alignedWire = this.alignAndTranslateShape({ shape: wire, direction: inputs.direction, center: inputs.center });
+        wire.delete();
+        return alignedWire;
     }
 
     alignAndTranslateShape(inputs: { shape: TopoDS_Shape, direction: Base.Vector3, center: Base.Vector3 }) {
@@ -432,6 +533,7 @@ export class OccHelper {
                 translation: inputs.center
             }
         );
+        alignedWire.delete();
         return translatedWire;
     }
 
@@ -451,7 +553,9 @@ export class OccHelper {
             edges.push(this.lineEdge(line));
         })
         let wire = this.combineEdgesAndWiresIntoAWire({ shapes: edges });
-        return this.alignAndTranslateShape({ shape: wire, direction: inputs.direction, center: inputs.center });
+        const alignedWire = this.alignAndTranslateShape({ shape: wire, direction: inputs.direction, center: inputs.center });
+        wire.delete();
+        return alignedWire;
     }
 
     createParallelogramWire(inputs: Inputs.OCCT.ParallelogramDto) {
@@ -461,7 +565,9 @@ export class OccHelper {
             edges.push(this.lineEdge(line));
         })
         let wire = this.combineEdgesAndWiresIntoAWire({ shapes: edges });
-        return this.alignAndTranslateShape({ shape: wire, direction: inputs.direction, center: inputs.center });
+        let aligned = this.alignAndTranslateShape({ shape: wire, direction: inputs.direction, center: inputs.center });
+        wire.delete();
+        return aligned;
     }
 
     createPolygonWire(inputs: Inputs.OCCT.PolygonDto) {
@@ -470,22 +576,41 @@ export class OccHelper {
             gpPoints.push(this.gpPnt(inputs.points[ind]));
         }
 
-        const polygonWire = new this.occ.BRepBuilderAPI_MakeWire_1();
+        const wireMaker = new this.occ.BRepBuilderAPI_MakeWire_1();
         for (let ind = 0; ind < inputs.points.length - 1; ind++) {
-            const seg = new this.occ.GC_MakeSegment_1(gpPoints[ind], gpPoints[ind + 1]).Value();
-            const edge = new this.occ.BRepBuilderAPI_MakeEdge_24(
-                new this.occ.Handle_Geom_Curve_2(seg.get())
-            ).Edge();
-            const innerWire = new this.occ.BRepBuilderAPI_MakeWire_2(edge).Wire();
-            polygonWire.Add_2(innerWire);
+            const pt1 = gpPoints[ind];
+            const pt2 = gpPoints[ind + 1];
+            const innerWire = this.makeWireBetweenTwoPoints(pt1, pt2);
+            wireMaker.Add_2(innerWire);
         }
-        const seg2 = new this.occ.GC_MakeSegment_1(gpPoints[inputs.points.length - 1], gpPoints[0]).Value();
-        const edge2 = new this.occ.BRepBuilderAPI_MakeEdge_24(
-            new this.occ.Handle_Geom_Curve_2(seg2.get())
-        ).Edge();
-        const innerWire2 = new this.occ.BRepBuilderAPI_MakeWire_2(edge2).Wire();
-        polygonWire.Add_2(innerWire2);
-        return polygonWire.Wire();
+
+        const pt1 = gpPoints[inputs.points.length - 1];
+        const pt2 = gpPoints[0];
+        const innerWire2 = this.makeWireBetweenTwoPoints(pt1, pt2);
+        wireMaker.Add_2(innerWire2);
+        const wire = wireMaker.Wire();
+        wireMaker.delete();
+        return wire;
+    }
+
+    private makeWireBetweenTwoPoints(pt1: any, pt2: any) {
+        const seg = new this.occ.GC_MakeSegment_1(pt1, pt2);
+        const segVal = seg.Value();
+        const segment = segVal.get();
+        const edgeMaker = new this.occ.BRepBuilderAPI_MakeEdge_24(
+            new this.occ.Handle_Geom_Curve_2(segment)
+        );
+        const edge = edgeMaker.Edge();
+        const wireMaker = new this.occ.BRepBuilderAPI_MakeWire_2(edge);
+        const innerWire = wireMaker.Wire();
+
+        edgeMaker.delete();
+        seg.delete();
+        segVal.delete();
+        segment.delete();
+        edge.delete();
+        wireMaker.delete();
+        return innerWire;
     }
 
     divideEdgeByParamsToPoints(inputs: Inputs.OCCT.DivideDto<TopoDS_Edge>): Inputs.Base.Point3[] {
@@ -506,12 +631,13 @@ export class OccHelper {
         const edge = inputs.shape;
         const { uMin, uMax } = this.getEdgeBounds(edge);
         const curve = this.getGeomCurveFromEdge(edge, uMin, uMax);
-        // const curve = inputs.shape;
         const gpPnt = this.gpPnt([0, 0, 0]);
         const param = this.remap(inputs.param, 0, 1, uMin, uMax);
         curve.D0(param, gpPnt);
-        return [gpPnt.X(), gpPnt.Y(), gpPnt.Z()];
-        // return this.pointOnCurveAtParam({ ...inputs, shape: curve });
+        const pt: Base.Point3 = [gpPnt.X(), gpPnt.Y(), gpPnt.Z()];
+        curve.delete();
+        gpPnt.delete();
+        return pt;
     }
 
     tangentOnEdgeAtParam(inputs: Inputs.OCCT.DataOnGeometryAtParamDto<TopoDS_Edge>): Base.Vector3 {
@@ -520,43 +646,58 @@ export class OccHelper {
         const curve = this.getGeomCurveFromEdge(edge, uMin, uMax);
         const param = this.remap(inputs.param, 0, 1, uMin, uMax);
         const vec = curve.DN(param, 1);
-        return [vec.X(), vec.Y(), vec.Z()];
+        const vector: Base.Vector3 = [vec.X(), vec.Y(), vec.Z()];
+        curve.delete();
+        vec.delete();
+        return vector;
     }
 
     pointOnEdgeAtLength(inputs: Inputs.OCCT.DataOnGeometryAtLengthDto<TopoDS_Edge>): Base.Point3 {
         const edge = inputs.shape;
         const wire = this.combineEdgesAndWiresIntoAWire({ shapes: [edge] });
-        return this.pointOnWireAtLength({ ...inputs, shape: wire });
+        const pt = this.pointOnWireAtLength({ ...inputs, shape: wire });
+        wire.delete();
+        return pt;
     }
 
     tangentOnEdgeAtLength(inputs: Inputs.OCCT.DataOnGeometryAtLengthDto<TopoDS_Edge>): Base.Point3 {
         const edge = inputs.shape;
         const wire = this.combineEdgesAndWiresIntoAWire({ shapes: [edge] });
-        return this.tangentOnWireAtLength({ ...inputs, shape: wire });
+        const tangent = this.tangentOnWireAtLength({ ...inputs, shape: wire });
+        wire.delete();
+        return tangent;
     }
 
     divideWireByParamsToPoints(inputs: Inputs.OCCT.DivideDto<TopoDS_Wire>): Inputs.Base.Point3[] {
         const wire = inputs.shape;
         const curve = new this.occ.BRepAdaptor_CompCurve_2(wire, false);
-        return this.divideCurveToNrSegments({ ...inputs, shape: curve }, curve.FirstParameter(), curve.LastParameter());
+        const points = this.divideCurveToNrSegments({ ...inputs, shape: curve }, curve.FirstParameter(), curve.LastParameter());
+        curve.delete();
+        return points;
     }
 
     divideWireByEqualDistanceToPoints(inputs: Inputs.OCCT.DivideDto<TopoDS_Wire>): Base.Point3[] {
         const wire = inputs.shape;
         const curve = new this.occ.BRepAdaptor_CompCurve_2(wire, false);
-        return this.divideCurveByEqualLengthDistance({ ...inputs, shape: curve });
+        const points = this.divideCurveByEqualLengthDistance({ ...inputs, shape: curve });
+        curve.delete();
+        return points;
     }
 
     pointOnWireAtParam(inputs: Inputs.OCCT.DataOnGeometryAtParamDto<TopoDS_Wire>): Base.Point3 {
         const wire = inputs.shape;
         const curve = new this.occ.BRepAdaptor_CompCurve_2(wire, false);
-        return this.pointOnCurveAtParam({ ...inputs, shape: curve });
+        const pt = this.pointOnCurveAtParam({ ...inputs, shape: curve });
+        curve.delete();
+        return pt;
     }
 
     tangentOnWireAtParam(inputs: Inputs.OCCT.DataOnGeometryAtParamDto<TopoDS_Wire>): Base.Point3 {
         const wire = inputs.shape;
         const curve = new this.occ.BRepAdaptor_CompCurve_2(wire, false);
-        return this.tangentOnCurveAtParam({ ...inputs, shape: curve });
+        const tangent = this.tangentOnCurveAtParam({ ...inputs, shape: curve });
+        curve.delete();
+        return tangent;
     }
 
     pointOnWireAtLength(inputs: Inputs.OCCT.DataOnGeometryAtLengthDto<TopoDS_Wire>): Base.Point3 {
@@ -568,7 +709,11 @@ export class OccHelper {
 
         const gpPnt = this.gpPnt([0, 0, 0]);
         curve.D0(param, gpPnt);
-        return [gpPnt.X(), gpPnt.Y(), gpPnt.Z()];
+        const pt: Base.Point3 = [gpPnt.X(), gpPnt.Y(), gpPnt.Z()];
+        curve.delete();
+        absc.delete();
+        gpPnt.delete();
+        return pt;
     }
 
     tangentOnWireAtLength(inputs: Inputs.OCCT.DataOnGeometryAtLengthDto<TopoDS_Wire>): Base.Point3 {
@@ -579,7 +724,11 @@ export class OccHelper {
         const param = absc.Parameter();
 
         const tanVec = curve.DN(param, 1);
-        return [tanVec.X(), tanVec.Y(), tanVec.Z()];
+        const pt: Base.Point3 = [tanVec.X(), tanVec.Y(), tanVec.Z()];
+        curve.delete();
+        absc.delete();
+        tanVec.delete();
+        return pt;
     }
 
     pointOnCurveAtParam(inputs: Inputs.OCCT.DataOnGeometryAtParamDto<Geom_Curve | BRepAdaptor_CompCurve_2>): Base.Point3 {
@@ -587,14 +736,18 @@ export class OccHelper {
         const gpPnt = this.gpPnt([0, 0, 0]);
         const param = this.remap(inputs.param, 0, 1, curve.FirstParameter(), curve.LastParameter());
         curve.D0(param, gpPnt);
-        return [gpPnt.X(), gpPnt.Y(), gpPnt.Z()];
+        const pt: Base.Point3 = [gpPnt.X(), gpPnt.Y(), gpPnt.Z()];
+        gpPnt.delete();
+        return pt;
     }
 
     tangentOnCurveAtParam(inputs: Inputs.OCCT.DataOnGeometryAtParamDto<Geom_Curve | BRepAdaptor_CompCurve_2>): Base.Point3 {
         const curve = inputs.shape;
         const param = this.remap(inputs.param, 0, 1, curve.FirstParameter(), curve.LastParameter());
         const vec = curve.DN(param, 1);
-        return [vec.X(), vec.Y(), vec.Z()];
+        const pt: Base.Point3 = [vec.X(), vec.Y(), vec.Z()];
+        vec.delete();
+        return pt;
     }
 
     divideCurveByEqualLengthDistance(inputs: Inputs.OCCT.DivideDto<Adaptor3d_Curve>): Base.Point3[] {
@@ -617,13 +770,16 @@ export class OccHelper {
         const paramsLength = lengths.map(l => {
             const absc = new this.occ.GCPnts_AbscissaPoint_2(curve, l, curve.FirstParameter());
             const param = absc.Parameter();
+            absc.delete();
             return param;
         })
 
         const points = paramsLength.map(r => {
             const gpPnt = this.gpPnt([0, 0, 0]);
             curve.D0(r, gpPnt);
-            return [gpPnt.X(), gpPnt.Y(), gpPnt.Z()] as Inputs.Base.Point3;
+            const pt = [gpPnt.X(), gpPnt.Y(), gpPnt.Z()] as Base.Point3;
+            gpPnt.delete();
+            return pt;
         });
         return points;
     }
@@ -648,7 +804,9 @@ export class OccHelper {
         const points = ranges.map(r => {
             const gpPnt = this.gpPnt([0, 0, 0]);
             curve.D0(r, gpPnt);
-            return [gpPnt.X(), gpPnt.Y(), gpPnt.Z()] as Inputs.Base.Point3;
+            const pt = [gpPnt.X(), gpPnt.Y(), gpPnt.Z()] as Base.Point3;
+            gpPnt.delete();
+            return pt;
         });
 
         return points;
@@ -656,14 +814,28 @@ export class OccHelper {
 
     interpolatePoints(inputs: Inputs.OCCT.InterpolationDto) {
         const ptList = new this.occ.TColgp_Array1OfPnt_2(1, inputs.points.length);
+        const gpPnts = [];
         for (let pIndex = 1; pIndex <= inputs.points.length; pIndex++) {
-            ptList.SetValue(pIndex, this.gpPnt(inputs.points[pIndex - 1]));
+            const gpPnt = this.gpPnt(inputs.points[pIndex - 1]);
+            gpPnts.push(gpPnt);
+            ptList.SetValue(pIndex, gpPnt);
         }
-        const geomCurveHandle = this.occ.BitByBitDev.BitInterpolate(ptList, inputs.periodic, inputs.tolerance);
-        const edge = new this.occ.BRepBuilderAPI_MakeEdge_24(
-            new this.occ.Handle_Geom_Curve_2(geomCurveHandle.get())
-        ).Edge();
-        return new this.occ.BRepBuilderAPI_MakeWire_2(edge).Wire();
+        const geomBSplineHandle = this.occ.BitByBitDev.BitInterpolate(ptList, inputs.periodic, inputs.tolerance);
+        const geomBSpline = geomBSplineHandle.get();
+        const geomCrvHandle = new this.occ.Handle_Geom_Curve_2(geomBSpline);
+        const edgeMaker = new this.occ.BRepBuilderAPI_MakeEdge_24(geomCrvHandle);
+        const edge = edgeMaker.Edge();
+        const wireMaker = new this.occ.BRepBuilderAPI_MakeWire_2(edge);
+        const wire = wireMaker.Wire();
+
+        geomBSplineHandle.delete();
+        geomCrvHandle.delete();
+        edgeMaker.delete();
+        edge.delete();
+        wireMaker.delete();
+        ptList.delete();
+        gpPnts.forEach(p => p.delete());
+        return wire;
     }
 
     getNumSolidsInCompound(shape: TopoDS_Shape): number | TopoDS_Shape {
@@ -711,6 +883,7 @@ export class OccHelper {
             (this.occ.TopAbs_ShapeEnum.TopAbs_SHAPE as TopAbs_ShapeEnum)); anExplorer.More(); anExplorer.Next()) {
             callback(solidIndex++, this.occ.TopoDS.Solid_2(anExplorer.Current()));
         }
+        anExplorer.delete();
     }
 
     getWires(inputs: Inputs.OCCT.ShapeDto<TopoDS_Wire>): TopoDS_Wire[] {
@@ -731,6 +904,7 @@ export class OccHelper {
             (this.occ.TopAbs_ShapeEnum.TopAbs_SHAPE as TopAbs_ShapeEnum)); anExplorer.More(); anExplorer.Next()) {
             callback(wireIndex++, this.occ.TopoDS.Wire_2(anExplorer.Current()));
         }
+        anExplorer.delete();
     }
 
     forEachEdge(shape: TopoDS_Shape, callback) {
@@ -752,6 +926,7 @@ export class OccHelper {
                 callback(edgeIndex, edge);
             }
         }
+        anExplorer.delete();
         return edgeHashes;
     }
 
@@ -767,6 +942,7 @@ export class OccHelper {
             anExplorer.Next()) {
             callback(faceIndex++, this.occ.TopoDS.Face_1(anExplorer.Current()));
         }
+        anExplorer.delete();
     }
 
     forEachShell(shape: TopoDS_Shape, callback): void {
@@ -781,6 +957,7 @@ export class OccHelper {
             anExplorer.Next()) {
             callback(faceIndex++, this.occ.TopoDS.Shell_1(anExplorer.Current()));
         }
+        anExplorer.delete();
     }
 
     forEachVertex(shape: TopoDS_Shape, callback): void {
@@ -796,6 +973,7 @@ export class OccHelper {
             anExplorer.Next()) {
             callback(faceIndex++, this.occ.TopoDS.Vertex_1(anExplorer.Current()));
         }
+        anExplorer.delete();
     }
 
     isArrayLike(item): boolean {
@@ -811,32 +989,45 @@ export class OccHelper {
         );
     }
 
-    intersection(inputs: Inputs.OCCT.IntersectionDto<TopoDS_Shape>): TopoDS_Shape {
+    intersection(inputs: Inputs.OCCT.IntersectionDto<TopoDS_Shape>): TopoDS_Shape[] {
         if (inputs.shapes.length < 2) {
             throw (new Error('Less than 2 shapes provided for intersection'));
         }
 
         const intersectShape = inputs.shapes[0];
-        let intersectionResult: TopoDS_Shape;
+        let intersectionResults: TopoDS_Shape[] = [];
+
+        // TODO Try to make a compound so that this loop would not be needed
         for (let i = 1; i < inputs.shapes.length; i++) {
+            let intersectionResult: TopoDS_Shape;
+            const messageProgress = new this.occ.Message_ProgressRange_1();
             const intersectedCommon = new this.occ.BRepAlgoAPI_Common_3(
                 intersectShape,
                 inputs.shapes[i],
-                new this.occ.Message_ProgressRange_1()
+                messageProgress
             );
+            const messageProgress2 = new this.occ.Message_ProgressRange_1();
             if (intersectedCommon.HasGenerated()) {
-                intersectedCommon.Build(new this.occ.Message_ProgressRange_1());
+                intersectedCommon.Build(messageProgress2);
                 intersectionResult = intersectedCommon.Shape();
+                intersectionResults.push(intersectionResult);
             }
+            messageProgress.delete();
+            intersectedCommon.delete();
+            messageProgress2.delete();
         }
 
-        if (!inputs.keepEdges && intersectionResult) {
-            const fusor = new this.occ.ShapeUpgrade_UnifySameDomain_2(intersectionResult, true, true, false);
-            fusor.Build();
-            intersectionResult = fusor.Shape();
+        if (!inputs.keepEdges && intersectionResults.length > 0) {
+            intersectionResults = intersectionResults.map(i => {
+                const fusor = new this.occ.ShapeUpgrade_UnifySameDomain_2(i, true, true, false);
+                fusor.Build();
+                let fusedShape = fusor.Shape();
+                fusor.delete();
+                return fusedShape;
+            });
         }
 
-        return intersectionResult;
+        return intersectionResults;
     }
 
     combineEdgesAndWiresIntoAWire(inputs: Inputs.OCCT.ShapesDto<TopoDS_Edge | TopoDS_Wire>): TopoDS_Wire {
@@ -850,8 +1041,11 @@ export class OccHelper {
         });
         if (makeWire.IsDone()) {
             this.occ.BRepLib.BuildCurves3d_2(makeWire.Wire());
-            return makeWire.Wire();
+            const wire = makeWire.Wire();
+            makeWire.delete();
+            return wire;
         } else {
+            makeWire.delete();
             let errorMessage;
             const error = makeWire.Error();
             if (error === this.occ.BRepBuilderAPI_WireError.BRepBuilderAPI_DisconnectedWire) {
@@ -869,37 +1063,69 @@ export class OccHelper {
 
     createBSpline(inputs: Inputs.OCCT.BSplineDto): TopoDS_Wire {
         const ptList = new this.occ.TColgp_Array1OfPnt_2(1, inputs.points.length + (inputs.closed ? 1 : 0));
+        const gpPnts = [];
         for (let pIndex = 1; pIndex <= inputs.points.length; pIndex++) {
-            ptList.SetValue(pIndex, this.gpPnt(inputs.points[pIndex - 1]));
+            const gpPnt = this.gpPnt(inputs.points[pIndex - 1]);
+            gpPnts.push(gpPnt);
+            ptList.SetValue(pIndex, gpPnt);
         }
         if (inputs.closed) { ptList.SetValue(inputs.points.length + 1, ptList.Value(1)); }
 
-        const geomCurveHandle = new this.occ.GeomAPI_PointsToBSpline_2(ptList, 3, 8,
+        const ptsToBspline = new this.occ.GeomAPI_PointsToBSpline_2(ptList, 3, 8,
             (this.occ.GeomAbs_Shape.GeomAbs_C2 as GeomAbs_Shape), 1.0e-3);
 
-        const bspline = geomCurveHandle.Curve().get();
-        const edge = new this.occ.BRepBuilderAPI_MakeEdge_24(
-            new this.occ.Handle_Geom_Curve_2(bspline)
-        ).Edge();
+        const bsplineHandle = ptsToBspline.Curve();
+        const bspline = bsplineHandle.get();
+        const bsplineCrv = new this.occ.Handle_Geom_Curve_2(bspline)
+        const edgeMaker = new this.occ.BRepBuilderAPI_MakeEdge_24(bsplineCrv);
+        const edge = edgeMaker.Edge();
+        const wireMaker = new this.occ.BRepBuilderAPI_MakeWire_2(edge);
+        const wire = wireMaker.Wire();
 
-        return new this.occ.BRepBuilderAPI_MakeWire_2(edge).Wire();
+        gpPnts.forEach(p => p.delete());
+        ptList.delete();
+        ptsToBspline.delete();
+        bsplineHandle.delete();
+        bsplineCrv.delete();
+        edgeMaker.delete();
+        edge.delete();
+        wireMaker.delete();
+
+        return wire;
     }
 
     align(inputs: Inputs.OCCT.AlignDto<TopoDS_Shape>) {
         const transformation = new this.occ.gp_Trsf_1();
+
+        const ax1 = this.gpAx3(inputs.fromOrigin, inputs.fromDirection);
+        const ax2 = this.gpAx3(inputs.toOrigin, inputs.toDirection);
+
         transformation.SetDisplacement(
-            this.gpAx3(inputs.fromOrigin, inputs.fromDirection),
-            this.gpAx3(inputs.toOrigin, inputs.toDirection),
+            ax1,
+            ax2,
         );
         const translation = new this.occ.TopLoc_Location_2(transformation);
-        return this.getActualTypeOfShape(inputs.shape.Moved(translation, false));
+        const moved = inputs.shape.Moved(translation, false);
+
+        transformation.delete();
+        ax1.delete();
+        ax2.delete();
+        const shp = this.getActualTypeOfShape(moved);
+        moved.delete();
+        return shp;
     }
 
     translate(inputs: Inputs.OCCT.TranslateDto<TopoDS_Shape>) {
         const transformation = new this.occ.gp_Trsf_1();
-        transformation.SetTranslation_1(new this.occ.gp_Vec_4(inputs.translation[0], inputs.translation[1], inputs.translation[2]));
+        const gpVec = new this.occ.gp_Vec_4(inputs.translation[0], inputs.translation[1], inputs.translation[2]);
+        transformation.SetTranslation_1(gpVec);
         const translation = new this.occ.TopLoc_Location_2(transformation);
-        return this.getActualTypeOfShape(inputs.shape.Moved(translation, false));
+        const moved = inputs.shape.Moved(translation, false);
+        const shp = this.getActualTypeOfShape(moved);
+        moved.delete();
+        transformation.delete();
+        gpVec.delete();
+        return shp;
     }
 
     mirror(inputs: Inputs.OCCT.MirrorDto<TopoDS_Shape>) {
@@ -907,7 +1133,15 @@ export class OccHelper {
         const ax1 = this.gpAx1(inputs.origin, inputs.direction);
         transformation.SetMirror_2(ax1);
         const transformed = new this.occ.BRepBuilderAPI_Transform_2(inputs.shape, transformation, true);
-        return this.getActualTypeOfShape(transformed.Shape());
+        const transformedShape = transformed.Shape();
+        const shp = this.getActualTypeOfShape(transformedShape);
+
+        transformedShape.delete();
+        transformed.delete();
+        transformation.delete();
+        ax1.delete();
+
+        return shp;
     }
 
     mirrorAlongNormal(inputs: Inputs.OCCT.MirrorAlongNormalDto<TopoDS_Shape>) {
@@ -915,7 +1149,13 @@ export class OccHelper {
         const ax = this.gpAx2(inputs.origin, inputs.normal);
         transformation.SetMirror_3(ax);
         const transformed = new this.occ.BRepBuilderAPI_Transform_2(inputs.shape, transformation, true);
-        return this.getActualTypeOfShape(transformed.Shape());
+        const transformedShape = transformed.Shape();
+        const shp = this.getActualTypeOfShape(transformedShape);
+        ax.delete();
+        transformedShape.delete();
+        transformed.delete();
+        transformation.delete();
+        return shp;
     }
 
     rotate(inputs: Inputs.OCCT.RotateDto<TopoDS_Shape>) {
@@ -924,24 +1164,32 @@ export class OccHelper {
             rotated = inputs.shape;
         } else {
             const transformation = new this.occ.gp_Trsf_1();
-            transformation.SetRotation_1(
-                new this.occ.gp_Ax1_2(
-                    new this.occ.gp_Pnt_3(0, 0, 0),
-                    new this.occ.gp_Dir_2(
-                        new this.occ.gp_Vec_4(inputs.axis[0], inputs.axis[1], inputs.axis[2])
-                    )
-                ),
-                inputs.angle * 0.0174533);
+            const pt1 = new this.occ.gp_Pnt_3(0, 0, 0);
+            const gpVec = new this.occ.gp_Vec_4(inputs.axis[0], inputs.axis[1], inputs.axis[2])
+            const dir = new this.occ.gp_Dir_2(gpVec);
+            const ax = new this.occ.gp_Ax1_2(pt1, dir);
+            transformation.SetRotation_1(ax, inputs.angle * 0.0174533);
             const rotation = new this.occ.TopLoc_Location_2(transformation);
             rotated = (inputs.shape as TopoDS_Shape).Moved(rotation, false);
+
+            transformation.delete();
+            pt1.delete();
+            gpVec.delete();
+            dir.delete();
+            ax.delete();
+            rotation.delete();
         }
-        return this.getActualTypeOfShape(rotated);
+        let actualShape = this.getActualTypeOfShape(rotated);
+        rotated.delete();
+        return actualShape;
     }
 
     surfaceFromFace(inputs: Inputs.OCCT.ShapeDto<TopoDS_Face>) {
         const face = inputs.shape;
         const surface = this.occ.BRep_Tool.Surface_2(face);
-        return surface.get();
+        const srf = surface.get();
+        surface.delete();
+        return srf;
     }
 
 
@@ -949,53 +1197,77 @@ export class OccHelper {
         const curve2d = new this.occ.Handle_Geom2d_Curve_2(inputs.shapes[0] as Geom2d_Curve);
         const surface = new this.occ.Handle_Geom_Surface_2(inputs.shapes[1] as Geom_Surface);
         const res = new this.occ.BRepBuilderAPI_MakeEdge_31(curve2d, surface, umin, umax);
-        return this.getActualTypeOfShape(res.Shape());
+        const resShape = res.Shape();
+        const r = this.getActualTypeOfShape(resShape);
+        resShape.delete();
+        res.delete();
+        curve2d.delete();
+        surface.delete();
+        return r;
     }
 
     makeEdgeFromGeom2dCurveAndSurface(inputs: Inputs.OCCT.ShapesDto<Geom2d_Curve | Geom_Surface>, umin?: number, umax?: number): TopoDS_Edge {
         const curve2d = new this.occ.Handle_Geom2d_Curve_2(inputs.shapes[0] as Geom2d_Curve);
         const surface = new this.occ.Handle_Geom_Surface_2(inputs.shapes[1] as Geom_Surface);
         const res = new this.occ.BRepBuilderAPI_MakeEdge_30(curve2d, surface);
-        return this.getActualTypeOfShape(res.Shape());
+        const resShape = res.Shape();
+        const r = this.getActualTypeOfShape(resShape);
+        resShape.delete();
+        res.delete();
+        curve2d.delete();
+        surface.delete();
+        return r;
     }
 
     startPointOnEdge(inputs: Inputs.OCCT.ShapeDto<TopoDS_Edge>): Base.Point3 {
         const edge = inputs.shape;
         const { uMin, uMax } = this.getEdgeBounds(edge);
         const curve = this.getGeomCurveFromEdge(edge, uMin, uMax);
-        return this.startPointOnCurve({ ...inputs, shape: curve });
+        let res = this.startPointOnCurve({ ...inputs, shape: curve });
+        curve.delete();
+        return res;
     }
 
     startPointOnWire(inputs: Inputs.OCCT.ShapeDto<TopoDS_Wire>): Base.Point3 {
         const wire = inputs.shape;
         const curve = new this.occ.BRepAdaptor_CompCurve_2(wire, false);
-        return this.startPointOnCurve({ ...inputs, shape: curve });
+        let res = this.startPointOnCurve({ ...inputs, shape: curve });
+        curve.delete();
+        return res;
     }
 
     endPointOnWire(inputs: Inputs.OCCT.ShapeDto<TopoDS_Wire>): Base.Point3 {
         const wire = inputs.shape;
         const curve = new this.occ.BRepAdaptor_CompCurve_2(wire, false);
-        return this.endPointOnCurve({ ...inputs, shape: curve });
+        let res = this.endPointOnCurve({ ...inputs, shape: curve });
+        curve.delete();
+        return res;
     }
 
     startPointOnCurve(inputs: Inputs.OCCT.ShapeDto<Geom_Curve | BRepAdaptor_CompCurve_2>): Inputs.Base.Point3 {
         const curve = inputs.shape;
         const gpPnt = this.gpPnt([0, 0, 0]);
         curve.D0(curve.FirstParameter(), gpPnt);
-        return [gpPnt.X(), gpPnt.Y(), gpPnt.Z()];
+        let pt: Base.Point3 = [gpPnt.X(), gpPnt.Y(), gpPnt.Z()];
+        gpPnt.delete();
+        return pt;
     }
 
     endPointOnCurve(inputs: Inputs.OCCT.ShapeDto<Geom_Curve | BRepAdaptor_CompCurve_2>): Inputs.Base.Point3 {
         const curve = inputs.shape;
         const gpPnt = this.gpPnt([0, 0, 0]);
         curve.D0(curve.LastParameter(), gpPnt);
-        return [gpPnt.X(), gpPnt.Y(), gpPnt.Z()];
+        const pt: Base.Point3 = [gpPnt.X(), gpPnt.Y(), gpPnt.Z()];
+        gpPnt.delete();
+        return pt;
     }
 
     getGeomCurveFromEdge(edge: TopoDS_Edge, uMin: number, uMax: number): Geom_Curve {
         const loc = edge.Location_1();
         const crvHandle = this.occ.BRep_Tool.Curve_1(edge, loc, uMin, uMax);
         const curve = crvHandle.get();
+        crvHandle.delete();
+        loc.delete();
         return curve;
     }
 

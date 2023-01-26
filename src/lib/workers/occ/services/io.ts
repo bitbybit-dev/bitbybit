@@ -12,21 +12,31 @@ export class OCCTIO {
 
     saveShapeSTEP(inputs: Inputs.OCCT.SaveStepDto<TopoDS_Shape>): { result: string } {
         let shapeToUse = inputs.shape;
+        let adjustedShape;
         if (inputs.adjustYtoZ) {
-            shapeToUse = this.och.rotate({ shape: inputs.shape, axis: [1, 0, 0], angle: -90 });
-            shapeToUse = this.och.mirrorAlongNormal(
-                { shape: shapeToUse, origin: [0, 0, 0], normal: [0, 0, 1] }
+            const rotatedShape = this.och.rotate({ shape: inputs.shape, axis: [1, 0, 0], angle: -90 });
+            adjustedShape = this.och.mirrorAlongNormal(
+                { shape: rotatedShape, origin: [0, 0, 0], normal: [0, 0, 1] }
             );
+            rotatedShape.delete();
         }
         inputs.filename = 'x';
         const writer = new this.occ.STEPControl_Writer_1();
+        let transferShape;
+        if (adjustedShape) {
+            transferShape = adjustedShape;
+        } else {
+            transferShape = shapeToUse;
+        }
         // Convert to a .STEP File
+        const messageProgress = new this.occ.Message_ProgressRange_1();
         const transferResult = writer.Transfer(
-            shapeToUse,
+            transferShape,
             (this.occ.STEPControl_StepModelType.STEPControl_AsIs as STEPControl_StepModelType),
             true,
-            new this.occ.Message_ProgressRange_1()
+            messageProgress
         );
+        let result;
         if (transferResult === this.occ.IFSelect_ReturnStatus.IFSelect_RetDone) {
             // Write the STEP File to the virtual Emscripten Filesystem Temporarily
             const writeResult = writer.Write(inputs.filename);
@@ -36,13 +46,19 @@ export class OCCTIO {
                 this.occ.FS.unlink('/' + inputs.filename);
 
                 // Return the contents of the STEP File
-                return { result: stepFileText };
+                result = { result: stepFileText };
             } else {
                 throw (new Error('Failed when writing step file.'));
             }
         } else {
             throw (new Error('Failed when transfering to step writer.'));
         }
+        if (adjustedShape) {
+            adjustedShape.delete();
+        }
+        messageProgress.delete();
+
+        return result;
     }
 
 
@@ -76,20 +92,27 @@ export class OCCTIO {
         const readResult = reader.ReadFile(`file.${fileType}`);            // Read the file
         if (readResult === this.occ.IFSelect_ReturnStatus.IFSelect_RetDone) {
             // Translate all transferable roots to OpenCascade
+            const messageProgress = new this.occ.Message_ProgressRange_1();
             const numRootsTransferred = reader.TransferRoots(
-                new this.occ.Message_ProgressRange_1()
+                messageProgress
             );
+            messageProgress.delete();
             let stepShape = reader.OneShape();
+            let adjustedShape;
             if (inputs.adjustZtoY) {
-                stepShape = this.och.mirrorAlongNormal(
+                let mirroredShape = this.och.mirrorAlongNormal(
                     { shape: stepShape, origin: [0, 0, 0], normal: [0, 0, 1] }
                 );
-                stepShape = this.och.rotate({ shape: stepShape, axis: [1, 0, 0], angle: 90 });
+                adjustedShape = this.och.rotate({ shape: mirroredShape, axis: [1, 0, 0], angle: 90 });
+                mirroredShape.delete();
             }
             // Out with the old, in with the new!
-
             // Remove the file when we're done (otherwise we run into errors on reupload)
             this.occ.FS.unlink(`/file.${fileType}`);
+            if(adjustedShape){
+                stepShape.delete();
+                stepShape = adjustedShape;
+            }
             return stepShape;
         } else {
             console.error('Something in OCCT went wrong trying to read ' + fileName);

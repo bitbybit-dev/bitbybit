@@ -12,9 +12,15 @@ export class OCCTOperations {
 
     loft(inputs: Inputs.OCCT.LoftDto<TopoDS_Wire>) {
         const pipe = new this.occ.BRepOffsetAPI_ThruSections(inputs.makeSolid, false, 1.0e-06);
-        inputs.shapes.forEach((wire) => { pipe.AddWire(wire); });
+        inputs.shapes.forEach((wire) => {
+            pipe.AddWire(wire);
+        });
         pipe.CheckCompatibility(false);
-        return this.och.getActualTypeOfShape(pipe.Shape());
+        let pipeShape = pipe.Shape();
+        let res = this.och.getActualTypeOfShape(pipeShape);
+        pipeShape.delete();
+        pipe.delete();
+        return res;
     }
 
     loftAdvanced(inputs: Inputs.OCCT.LoftAdvancedDto<TopoDS_Wire>) {
@@ -22,8 +28,12 @@ export class OCCTOperations {
             throw new Error('Cant construct periodic non closed loft.');
         }
         const pipe = new this.occ.BRepOffsetAPI_ThruSections(inputs.makeSolid, inputs.straight, inputs.tolerance);
+        const wires = [];
+        const vertices = [];
         if (inputs.startVertex) {
-            pipe.AddVertex(this.och.makeVertex(inputs.startVertex));
+            const v = this.och.makeVertex(inputs.startVertex);
+            pipe.AddVertex(v);
+            vertices.push(v);
         }
         if (inputs.closed && !inputs.periodic) {
             inputs.shapes.push(inputs.shapes[0]);
@@ -33,17 +43,24 @@ export class OCCTOperations {
                 const pts = this.och.divideWireByParamsToPoints({ shape: s, nrOfDivisions: inputs.nrPeriodicSections, removeStartPoint: false, removeEndPoint: false });
                 pointsOnCrvs.push(pts);
             })
+
             for (let i = 0; i < inputs.nrPeriodicSections; i++) {
                 const ptsForPerpWire = pointsOnCrvs.map(p => p[i]);
                 const periodicWire = this.och.interpolatePoints({ points: ptsForPerpWire, tolerance: inputs.tolerance, periodic: true });
                 pipe.AddWire(periodicWire);
+                wires.push(periodicWire);
             }
         }
         if (!inputs.periodic) {
-            inputs.shapes.forEach((wire) => { pipe.AddWire(wire); });
+            inputs.shapes.forEach((wire) => {
+                pipe.AddWire(wire);
+            });
         }
+        const endVertices = [];
         if (inputs.endVertex) {
-            pipe.AddVertex(this.och.makeVertex(inputs.endVertex));
+            const v = this.och.makeVertex(inputs.endVertex);
+            pipe.AddVertex(v);
+            endVertices.push(v);
         }
         if (inputs.useSmoothing) {
             pipe.SetSmoothing(inputs.useSmoothing);
@@ -63,19 +80,27 @@ export class OCCTOperations {
             pipe.SetParType(parType)
         }
         pipe.CheckCompatibility(false);
-        // pipe.Build(new this.occ.Message_ProgressRange_1());
-        return this.och.getActualTypeOfShape(pipe.Shape());
+        const pipeShape = pipe.Shape();
+        const res = this.och.getActualTypeOfShape(pipeShape);
+        pipeShape.delete();
+        pipe.delete();
+        wires.forEach(w => w.delete());
+        vertices.forEach(v => v.delete());
+        endVertices.forEach(v => v.delete());
+        return res;
     }
 
     offset(inputs: Inputs.OCCT.OffsetDto<TopoDS_Shape>) {
         if (!inputs.tolerance) { inputs.tolerance = 0.1; }
         if (inputs.distance === 0.0) { return inputs.shape; }
         let offset = null;
+        const wires = [];
         if (inputs.shape.ShapeType() === this.occ.TopAbs_ShapeEnum.TopAbs_WIRE ||
             inputs.shape.ShapeType() === this.occ.TopAbs_ShapeEnum.TopAbs_EDGE) {
             let wire;
             if (inputs.shape.ShapeType() === this.occ.TopAbs_ShapeEnum.TopAbs_EDGE) {
                 wire = this.och.bRepBuilderAPIMakeWire(inputs.shape);
+                wires.push(wire);
             } else {
                 wire = inputs.shape;
             }
@@ -101,23 +126,37 @@ export class OCCTOperations {
                 new this.occ.Message_ProgressRange_1()
             );
         }
-        let offsetShape = offset.Shape();
-        return this.och.getActualTypeOfShape(offsetShape);
+        const offsetShape = offset.Shape();
+        const result = this.och.getActualTypeOfShape(offsetShape);
+        offsetShape.delete();
+        if (offset) {
+            offset.delete();
+        }
+        wires.forEach(w => w.delete());
+        return result;
     }
 
     extrudeShapes(inputs: Inputs.OCCT.ExtrudeShapesDto<TopoDS_Shape>): TopoDS_Shape[] {
         return inputs.shapes.map(shape => {
-            return this.och.getActualTypeOfShape(this.extrude({ shape, direction: inputs.direction }));
+            let extruded = this.extrude({ shape, direction: inputs.direction });
+            let result = this.och.getActualTypeOfShape(extruded);
+            extruded.delete();
+            return result;
         })
     }
 
     extrude(inputs: Inputs.OCCT.ExtrudeDto<TopoDS_Shape>): TopoDS_Shape {
-        return new this.occ.BRepPrimAPI_MakePrism_1(
+        const gpVec = new this.occ.gp_Vec_4(inputs.direction[0], inputs.direction[1], inputs.direction[2]);
+        const prismMaker = new this.occ.BRepPrimAPI_MakePrism_1(
             inputs.shape,
-            new this.occ.gp_Vec_4(inputs.direction[0], inputs.direction[1], inputs.direction[2]),
+            gpVec,
             false,
             true
-        ).Shape();
+        );
+        const prismShape = prismMaker.Shape();
+        prismMaker.delete();
+        gpVec.delete();
+        return prismShape;
     }
 
     splitShapeWithShapes(inputs: Inputs.OCCT.SplitDto<TopoDS_Shape>) {
@@ -129,28 +168,45 @@ export class OCCTOperations {
         if (!inputs.direction) { inputs.direction = [0, 0, 1]; }
         let result;
         if (inputs.angle >= 360.0) {
-            result = new this.occ.BRepPrimAPI_MakeRevol_2(inputs.shape,
-                new this.occ.gp_Ax1_2(new this.occ.gp_Pnt_3(0, 0, 0),
-                    new this.occ.gp_Dir_4(inputs.direction[0], inputs.direction[1], inputs.direction[2])),
-                inputs.copy).Shape();
+            const pt1 = new this.occ.gp_Pnt_3(0, 0, 0);
+            const dir = new this.occ.gp_Dir_4(inputs.direction[0], inputs.direction[1], inputs.direction[2]);
+            const ax1 = new this.occ.gp_Ax1_2(pt1, dir);
+            const makeRevol = new this.occ.BRepPrimAPI_MakeRevol_2(inputs.shape,
+                ax1,
+                inputs.copy);
+            result = makeRevol.Shape();
+            makeRevol.delete();
+            pt1.delete();
+            dir.delete();
+            ax1.delete();
         } else {
-            result = new this.occ.BRepPrimAPI_MakeRevol_1(inputs.shape,
-                new this.occ.gp_Ax1_2(new this.occ.gp_Pnt_3(0, 0, 0),
-                    new this.occ.gp_Dir_4(inputs.direction[0], inputs.direction[1], inputs.direction[2])),
-                inputs.angle * 0.0174533, inputs.copy).Shape();
+            const pt1 = new this.occ.gp_Pnt_3(0, 0, 0);
+            const dir = new this.occ.gp_Dir_4(inputs.direction[0], inputs.direction[1], inputs.direction[2]);
+            const ax1 = new this.occ.gp_Ax1_2(pt1, dir);
+            const makeRevol = new this.occ.BRepPrimAPI_MakeRevol_1(inputs.shape,
+                ax1,
+                inputs.angle * 0.0174533, inputs.copy);
+            result = makeRevol.Shape();
+            makeRevol.delete();
+            pt1.delete();
+            dir.delete();
+            ax1.delete();
         }
-        return this.och.getActualTypeOfShape(result);
+        const actual = this.och.getActualTypeOfShape(result);
+        result.delete();
+        return actual;
     }
 
     rotatedExtrude(inputs: Inputs.OCCT.RotationExtrudeDto<TopoDS_Shape>) {
+        const translatedShape = this.och.translate({
+            translation: [0, inputs.height, 0],
+            shape: inputs.shape,
+        });
         const upperPolygon = this.och.rotate(
             {
                 axis: [0, 1, 0],
                 angle: inputs.angle,
-                shape: this.och.translate({
-                    translation: [0, inputs.height, 0],
-                    shape: inputs.shape,
-                })
+                shape: translatedShape
             });
 
         // Define the straight spine going up the middle of the sweep
@@ -183,7 +239,16 @@ export class OCCTOperations {
         pipe.Add_1(upperPolygon, false, false);
         pipe.Build(new this.occ.Message_ProgressRange_1());
         pipe.MakeSolid();
-        return this.och.getActualTypeOfShape(pipe.Shape());
+
+        const pipeShape = pipe.Shape();
+        const result = this.och.getActualTypeOfShape(pipeShape);
+        pipeShape.delete();
+        pipe.delete();
+        aspineWire.delete();
+        spineWire.delete();
+        upperPolygon.delete();
+        translatedShape.delete();
+        return result;
     }
 
     pipe(inputs: Inputs.OCCT.ShapeShapesDto<TopoDS_Wire, TopoDS_Shape>) {
@@ -193,15 +258,22 @@ export class OCCTOperations {
         });
         pipe.Build(new this.occ.Message_ProgressRange_1());
         pipe.MakeSolid();
-        return this.och.getActualTypeOfShape(pipe.Shape());
+        const pipeShape = pipe.Shape();
+        const result = this.och.getActualTypeOfShape(pipeShape);
+        pipeShape.delete();
+        pipe.delete();
+        return result;
     }
 
     makeThickSolidSimple(inputs: Inputs.OCCT.ThisckSolidSimpleDto<TopoDS_Shape>) {
         const maker = new this.occ.BRepOffsetAPI_MakeThickSolid();
         maker.MakeThickSolidBySimple(inputs.shape, inputs.offset);
-
         maker.Build(new this.occ.Message_ProgressRange_1());
-        return this.och.getActualTypeOfShape(maker.Shape());
+        const makerShape = maker.Shape();
+        const result = this.och.getActualTypeOfShape(makerShape);
+        maker.delete();
+        makerShape.delete();
+        return result;
     }
 
     makeThickSolidByJoin(inputs: Inputs.OCCT.ThickSolidByJoinDto<TopoDS_Shape>) {
@@ -231,7 +303,12 @@ export class OCCTOperations {
             jointType,
             inputs.removeIntEdges,
             new this.occ.Message_ProgressRange_1());
-        return this.och.getActualTypeOfShape(myBody.Shape());
+        const makeThick = myBody.Shape();
+        const result = this.och.getActualTypeOfShape(makeThick);
+        makeThick.delete();
+        myBody.delete();
+        facesToRemove.delete();
+        return result;
     }
 
 }

@@ -19,13 +19,18 @@ export class OCCTFillets {
                 inputs.shape, (this.occ.TopAbs_ShapeEnum.TopAbs_EDGE as TopAbs_ShapeEnum),
                 (this.occ.TopAbs_ShapeEnum.TopAbs_SHAPE as TopAbs_ShapeEnum)
             );
+            let edges = [];
             while (anEdgeExplorer.More()) {
                 const anEdge = this.occ.TopoDS.Edge_1(anEdgeExplorer.Current());
+                edges.push(anEdge);
                 mkFillet.Add_2(inputs.radius, anEdge);
                 anEdgeExplorer.Next();
             }
-            inputs.shape = mkFillet.Shape();
-            return inputs.shape;
+            const result = mkFillet.Shape();
+            mkFillet.delete();
+            anEdgeExplorer.delete();
+            edges.forEach(e => e.delete());
+            return result;
         } else if (inputs.indexes && inputs.indexes.length > 0) {
             const mkFillet = new this.occ.BRepFilletAPI_MakeFillet(
                 inputs.shape, (this.occ.ChFi3d_FilletShape.ChFi3d_Rational as ChFi3d_FilletShape)
@@ -50,7 +55,10 @@ export class OCCTFillets {
             else {
                 curFillet = mkFillet.Shape();
             }
-            return this.och.getActualTypeOfShape(curFillet);
+            mkFillet.delete();
+            let result = this.och.getActualTypeOfShape(curFillet);
+            curFillet.delete();
+            return result;
         }
         return undefined;
     }
@@ -64,19 +72,24 @@ export class OCCTFillets {
                 inputs.shape, (this.occ.TopAbs_ShapeEnum.TopAbs_EDGE as TopAbs_ShapeEnum),
                 (this.occ.TopAbs_ShapeEnum.TopAbs_SHAPE as TopAbs_ShapeEnum)
             );
+            const edges = [];
             while (anEdgeExplorer.More()) {
                 const anEdge = this.occ.TopoDS.Edge_1(anEdgeExplorer.Current());
+                edges.push(anEdge);
                 mkChamfer.Add_2(inputs.distance, anEdge);
                 anEdgeExplorer.Next();
             }
-            inputs.shape = mkChamfer.Shape();
-            return inputs.shape;
+            const result = mkChamfer.Shape();
+            mkChamfer.delete();
+            anEdgeExplorer.delete();
+            edges.forEach(e => e.delete());
+            return result;
         } else if (inputs.indexes && inputs.indexes.length > 0) {
             const mkChamfer = new this.occ.BRepFilletAPI_MakeChamfer(
                 inputs.shape
             );
             let foundEdges = 0;
-            let curFillet;
+            let curChamfer;
             let distanceIndex = 0;
             this.och.forEachEdge(inputs.shape, (index, edge) => {
                 if (inputs.indexes.includes(index)) {
@@ -90,13 +103,16 @@ export class OCCTFillets {
                 }
             });
             if (foundEdges === 0) {
-                console.error('Fillet Edges Not Found!  Make sure you are looking at the object _before_ the Fillet is applied!');
-                curFillet = inputs.shape;
+                console.error('Chamfer Edges Not Found!  Make sure you are looking at the object _before_ the Fillet is applied!');
+                curChamfer = inputs.shape;
             }
             else {
-                curFillet = mkChamfer.Shape();
+                curChamfer = mkChamfer.Shape();
             }
-            return this.och.getActualTypeOfShape(curFillet);
+            mkChamfer.delete();
+            let result = this.och.getActualTypeOfShape(curChamfer);
+            curChamfer.delete();
+            return result;
         }
         return undefined;
     }
@@ -115,7 +131,14 @@ export class OCCTFillets {
         }
         const filletedEdge = fil.Result(pt, edge1, edge2, solution);
 
-        return this.och.combineEdgesAndWiresIntoAWire({ shapes: [edge1, filletedEdge, edge2] });
+        let result = this.och.combineEdgesAndWiresIntoAWire({ shapes: [edge1, filletedEdge, edge2] });
+        fil.delete();
+        pt.delete();
+        pln.delete();
+        edge1.delete();
+        edge2.delete();
+        filletedEdge.delete();
+        return result;
     }
 
     fillet2d(inputs: Inputs.OCCT.FilletDto<TopoDS_Wire | TopoDS_Face>): TopoDS_Face | TopoDS_Wire {
@@ -129,8 +152,13 @@ export class OCCTFillets {
             isShapeFace = true;
         } else if (inputs.shape.ShapeType() === this.occ.TopAbs_ShapeEnum.TopAbs_WIRE) {
             const faceBuilder = new this.occ.BRepBuilderAPI_MakeFace_15(inputs.shape, true);
-            faceBuilder.Build(new this.occ.Message_ProgressRange_1());
-            face = this.och.getActualTypeOfShape(faceBuilder.Shape());
+            const messageProgress = new this.occ.Message_ProgressRange_1();
+            faceBuilder.Build(messageProgress);
+            let shape = faceBuilder.Shape();
+            face = this.och.getActualTypeOfShape(shape);
+            shape.delete();
+            messageProgress.delete();
+            faceBuilder.delete();
         } else {
             throw new Error(`You can only fillet a 2d wire or a 2d face.`);
         }
@@ -165,18 +193,25 @@ export class OCCTFillets {
                 radiusAddedCounter++;
             }
         })
-        filletMaker.Build(new this.occ.Message_ProgressRange_1());
+        const messageProgress = new this.occ.Message_ProgressRange_1();
+        filletMaker.Build(messageProgress);
+        let result;
         if (isShapeFace) {
-            return filletMaker.Shape();
+            result = filletMaker.Shape();
         } else {
             const filletedWires = this.och.getWires({ shape: filletMaker.Shape() });
             if (filletedWires.length === 1) {
-                return filletedWires[0];
+                result = filletedWires[0];
             }
             else {
                 throw new Error('There was an error when computing fillet.')
             }
         }
+        anVertexExplorer.delete();
+        filletMaker.delete();
+        messageProgress.delete();
+        cornerVertices.forEach(cvx => cvx.delete());
+        return result;
     }
 
     private applyRadiusToVertex(inputs: Inputs.OCCT.FilletDto<TopoDS_Shape>, filletMaker: BRepFilletAPI_MakeFillet2d_2, cvx: TopoDS_Vertex, index: number) {

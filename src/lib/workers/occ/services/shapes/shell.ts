@@ -18,7 +18,11 @@ export class OCCTShell {
         const messageProgress = new this.occ.Message_ProgressRange_1();
         sew.Perform(messageProgress);
         const res = sew.SewedShape();
-        return this.och.getActualTypeOfShape(res);
+        let result = this.och.getActualTypeOfShape(res);
+        sew.delete();
+        messageProgress.delete();
+        res.delete();
+        return result;
     }
 
     isClosed(inputs: Inputs.OCCT.ShapeDto<TopoDS_Shell>): { result: boolean } {
