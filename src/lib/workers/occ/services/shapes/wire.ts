@@ -135,7 +135,6 @@ export class OCCTWire {
         edgeMaker.delete();
         edge.delete();
         geomCurve.delete();
-        geomBezierCurveHandle.delete();
         ptList.delete();
         return result;
     }
@@ -205,7 +204,6 @@ export class OCCTWire {
         let face: TopoDS_Face = inputs.shapes[1] as TopoDS_Face;
         const srf = this.och.surfaceFromFace({ shape: face });
         let result = this.placeWire(wire, srf);
-        srf.delete();
         return result;
     }
 
@@ -213,9 +211,7 @@ export class OCCTWire {
         let wires = inputs.shapes;
         let face = inputs.shape;
         const srf = this.och.surfaceFromFace({ shape: face });
-
         let result = wires.map(wire => this.placeWire(wire, srf));
-        srf.delete();
         return result;
     }
 
@@ -237,7 +233,6 @@ export class OCCTWire {
                 }
                 plane.delete();
                 c2dHandle.delete();
-                c2.delete();
             }
             crv.delete();
         });

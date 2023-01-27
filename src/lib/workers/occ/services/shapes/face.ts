@@ -128,7 +128,6 @@ export class OCCTFace {
                 gpPnt.delete();
             }
         }
-        surface.delete();
         handle.delete();
         return { result: points };
     }
@@ -207,7 +206,6 @@ export class OCCTFace {
             points.push(pt);
             gpPnt.delete();
         }
-        surface.delete();
         handle.delete();
         return { result: points };
     }
@@ -331,7 +329,6 @@ export class OCCTFace {
         surface.D0(u, v, gpPnt);
         const pt = [gpPnt.X(), gpPnt.Y(), gpPnt.Z()];
         gpPnt.delete();
-        surface.delete();
         handle.delete();
         return { result: pt };
     }

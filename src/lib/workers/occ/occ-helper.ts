@@ -63,7 +63,7 @@ export class OccHelper {
         inputs.shapes.forEach(shape => {
             builder.Add(resCompound, shape);
         });
-        // builder.delete();
+        builder.delete();
         return resCompound;
     }
 
@@ -160,12 +160,16 @@ export class OccHelper {
 
     gcMakeEllipse(center: Base.Point3, direction: Base.Vector3, minorRadius: number, majorRadius: number): Geom_Ellipse {
         const ax = this.gpAx2(center, direction);
-        const ellipse = new this.occ.GC_MakeEllipse_2(ax, minorRadius, majorRadius);
-        const ellipseVal = ellipse.Value();
-        const ell = ellipseVal.get();
-        ellipse.delete();
-        ax.delete();
-        return ell;
+        const ellipse = new this.occ.GC_MakeEllipse_2(ax, majorRadius, minorRadius);
+        if (ellipse.IsDone()) {
+            const ellipseVal = ellipse.Value();
+            const ell = ellipseVal.get();
+            ellipse.delete();
+            ax.delete();
+            return ell;
+        } else {
+            throw new Error("Ellipse could not be created.");
+        }
     }
 
     bRepBuilderAPIMakeEdge(curve: Geom_Curve): TopoDS_Edge {
@@ -1180,7 +1184,9 @@ export class OccHelper {
             rotation.delete();
         }
         let actualShape = this.getActualTypeOfShape(rotated);
-        rotated.delete();
+        if (inputs.angle !== 0) {
+            rotated.delete();
+        }
         return actualShape;
     }
 
@@ -1188,7 +1194,6 @@ export class OccHelper {
         const face = inputs.shape;
         const surface = this.occ.BRep_Tool.Surface_2(face);
         const srf = surface.get();
-        surface.delete();
         return srf;
     }
 

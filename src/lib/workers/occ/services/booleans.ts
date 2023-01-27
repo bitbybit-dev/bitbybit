@@ -66,8 +66,10 @@ export class OCCTBooleans {
         return difference;
     }
 
-    intersection(inputs: Inputs.OCCT.IntersectionDto<TopoDS_Shape>): TopoDS_Shape[] {
-        return this.och.intersection(inputs);
+    intersection(inputs: Inputs.OCCT.IntersectionDto<TopoDS_Shape>): TopoDS_Shape {
+        let int = this.och.intersection(inputs);
+        const res = this.och.makeCompound({ shapes: int });
+        return res;
     }
 
 }
