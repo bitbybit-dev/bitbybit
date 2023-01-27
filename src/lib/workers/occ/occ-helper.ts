@@ -1206,8 +1206,6 @@ export class OccHelper {
         const r = this.getActualTypeOfShape(resShape);
         resShape.delete();
         res.delete();
-        curve2d.delete();
-        surface.delete();
         return r;
     }
 
@@ -1219,8 +1217,6 @@ export class OccHelper {
         const r = this.getActualTypeOfShape(resShape);
         resShape.delete();
         res.delete();
-        curve2d.delete();
-        surface.delete();
         return r;
     }
 
