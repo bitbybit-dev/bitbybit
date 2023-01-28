@@ -1,6 +1,9 @@
 /* To learn more about this file see: https://angular.io/config/tsconfig. */
 {
     "compileOnSave": false,
+    "exclude": [
+        "lib/workers/occ/services/advanced/**/*",
+    ],
     "compilerOptions": {
         "outDir": "./dist/bitbybit-core",
         "baseUrl": "./",
@@ -15,8 +18,12 @@
         "allowJs": true,
         "emitDeclarationOnly": false,
         "paths": {
-            "projects/bitbybit-core/src/*": ["./*"],
-            "projects/bitbybit-advanced/*": ["../../bitbybit-advanced/*"]
+            "projects/bitbybit-core/src/*": [
+                "./*"
+            ],
+            "projects/bitbybit-advanced/*": [
+                "../../bitbybit-advanced/*"
+            ]
         },
         "lib": [
             "es2020",

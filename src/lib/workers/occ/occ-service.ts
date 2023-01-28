@@ -3,8 +3,8 @@ import * as Inputs from '../../api/inputs/inputs';
 import { OccHelper } from './occ-helper';
 import { OCCTBooleans } from './services/booleans';
 import { OCCTGeom } from './services/geom/geom';
-import { OCCTAdvanced } from './services/advanced/advanced';
-// import { OCCTAdvanced } from './services/advanced-mock/advanced';
+// import { OCCTAdvanced } from './services/advanced/advanced';
+import { OCCTAdvanced } from './services/advanced-mock/advanced';
 import { OCCTIO } from './services/io';
 import { OCCTOperations } from './services/operations';
 import { OCCTShapes } from './services/shapes/shapes';
@@ -152,36 +152,6 @@ export class Occ {
             thisFace.number_of_triangles = validFaceTriCount;
             faceList.push(thisFace);
 
-            // this.forEachEdge(myFace, (index, myEdge) => {
-            //     const edgeHash = myEdge.HashCode(100000000);
-            //     if (fullShapeEdgeHashes2.hasOwnProperty(edgeHash)) {
-            //         const thisEdge = {
-            //             vertex_coord: [],
-            //             edge_index: -1
-            //         };
-
-            //         const myP = this.occ.BRep_Tool.PolygonOnTriangulation_1(myEdge, myT, aLocation);
-            //         const edgeNodes = myP.get().Nodes();
-
-            //         // write vertex buffer
-            //         thisEdge.vertex_coord = [];
-            //         for (let j = 0; j < edgeNodes.Length(); j++) {
-            //             const vertexIndex = edgeNodes.Value(j + 1);
-            //             thisEdge.vertex_coord.push([
-            //                 thisFace.vertex_coord[((vertexIndex - 1) * 3) + 0],
-            //                 thisFace.vertex_coord[((vertexIndex - 1) * 3) + 1],
-            //                 thisFace.vertex_coord[((vertexIndex - 1) * 3) + 2]
-            //             ]);
-            //         }
-
-            //         console.log('haha ', index);
-            //         thisEdge.edge_index = index;
-
-            //         edgeList.push(thisEdge);
-            //     } else {
-            //         fullShapeEdgeHashes2[edgeHash] = edgeHash;
-            //     }
-            // });
             triangulations.push(myT);
 
             aLocation.delete();
