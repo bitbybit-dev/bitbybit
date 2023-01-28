@@ -39,7 +39,6 @@ export class OccHelper {
                 points.push(pt2g);
             } catch {
             }
-            crvHandle.delete();
         });
         if (points.length > 0) {
             points = this.vecHelper.removeAllDuplicateVectors(points);
@@ -454,7 +453,6 @@ export class OccHelper {
         } else {
             const edge = this.bRepBuilderAPIMakeEdge(circle);
             if (type === typeSpecificityEnum.edge) {
-                circle.delete();
                 return edge;
             } else {
                 const circleWire = this.bRepBuilderAPIMakeWire(edge);
@@ -477,7 +475,6 @@ export class OccHelper {
         } else {
             const edge = this.bRepBuilderAPIMakeEdge(ellipse);
             if (type === typeSpecificityEnum.edge) {
-                ellipse.delete();
                 return edge;
             } else {
                 const ellipseWire = this.bRepBuilderAPIMakeWire(edge);
@@ -620,7 +617,8 @@ export class OccHelper {
     divideEdgeByParamsToPoints(inputs: Inputs.OCCT.DivideDto<TopoDS_Edge>): Inputs.Base.Point3[] {
         const edge = inputs.shape;
         const { uMin, uMax } = this.getEdgeBounds(edge);
-        const curve = this.getGeomCurveFromEdge(edge, uMin, uMax);
+        const wire = this.combineEdgesAndWiresIntoAWire({ shapes: [edge] });
+        const curve = new this.occ.BRepAdaptor_CompCurve_2(wire, false);
         return this.divideCurveToNrSegments({ ...inputs, shape: curve }, uMin, uMax);
     }
 
@@ -639,7 +637,6 @@ export class OccHelper {
         const param = this.remap(inputs.param, 0, 1, uMin, uMax);
         curve.D0(param, gpPnt);
         const pt: Base.Point3 = [gpPnt.X(), gpPnt.Y(), gpPnt.Z()];
-        curve.delete();
         gpPnt.delete();
         return pt;
     }
@@ -651,7 +648,6 @@ export class OccHelper {
         const param = this.remap(inputs.param, 0, 1, uMin, uMax);
         const vec = curve.DN(param, 1);
         const vector: Base.Vector3 = [vec.X(), vec.Y(), vec.Z()];
-        curve.delete();
         vec.delete();
         return vector;
     }
@@ -1222,10 +1218,15 @@ export class OccHelper {
 
     startPointOnEdge(inputs: Inputs.OCCT.ShapeDto<TopoDS_Edge>): Base.Point3 {
         const edge = inputs.shape;
-        const { uMin, uMax } = this.getEdgeBounds(edge);
-        const curve = this.getGeomCurveFromEdge(edge, uMin, uMax);
-        let res = this.startPointOnCurve({ ...inputs, shape: curve });
-        curve.delete();
+        const wire = this.combineEdgesAndWiresIntoAWire({ shapes: [edge] });
+        let res = this.pointOnWireAtParam({ shape: wire, param: 0 });
+        return res;
+    }
+
+    endPointOnEdge(inputs: Inputs.OCCT.ShapeDto<TopoDS_Edge>): Base.Point3 {
+        const edge = inputs.shape;
+        const wire = this.combineEdgesAndWiresIntoAWire({ shapes: [edge] });
+        let res = this.pointOnWireAtParam({ shape: wire, param: 1 });
         return res;
     }
 
@@ -1233,7 +1234,6 @@ export class OccHelper {
         const wire = inputs.shape;
         const curve = new this.occ.BRepAdaptor_CompCurve_2(wire, false);
         let res = this.startPointOnCurve({ ...inputs, shape: curve });
-        curve.delete();
         return res;
     }
 
@@ -1241,7 +1241,6 @@ export class OccHelper {
         const wire = inputs.shape;
         const curve = new this.occ.BRepAdaptor_CompCurve_2(wire, false);
         let res = this.endPointOnCurve({ ...inputs, shape: curve });
-        curve.delete();
         return res;
     }
 
@@ -1267,8 +1266,6 @@ export class OccHelper {
         const loc = edge.Location_1();
         const crvHandle = this.occ.BRep_Tool.Curve_1(edge, loc, uMin, uMax);
         const curve = crvHandle.get();
-        crvHandle.delete();
-        loc.delete();
         return curve;
     }
 

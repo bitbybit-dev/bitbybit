@@ -72,7 +72,7 @@ export class OCCTEdge {
     }
 
     getEdge(inputs: Inputs.OCCT.ShapeIndexDto<TopoDS_Shape>): any {
-        if (!inputs.shape || inputs.shape.ShapeType() > this.occ.TopAbs_ShapeEnum.TopAbs_WIRE || inputs.shape.IsNull()) {
+        if (!inputs.shape || (inputs.shape.ShapeType && inputs.shape.ShapeType() > this.occ.TopAbs_ShapeEnum.TopAbs_WIRE) || inputs.shape.IsNull()) {
             throw (new Error('Shape is not provided or is of incorrect type'));
         }
         if (!inputs.index) { inputs.index = 0; }
@@ -91,28 +91,12 @@ export class OCCTEdge {
         return { result: this.och.tangentOnEdgeAtParam(inputs) };
     }
 
-    startPointOnEdge(inputs: Inputs.OCCT.ShapeDto<TopoDS_Edge>) {
-        const edge = inputs.shape;
-        const { uMin, uMax } = this.och.getEdgeBounds(edge);
-        const curve = this.och.getGeomCurveFromEdge(edge, uMin, uMax);
-        const gpPnt = this.och.gpPnt([0, 0, 0]);
-        curve.D0(uMin, gpPnt);
-        const pt = [gpPnt.X(), gpPnt.Y(), gpPnt.Z()];
-        gpPnt.delete();
-        curve.delete();
-        return { result: pt };
+    startPointOnEdge(inputs: Inputs.OCCT.ShapeDto<TopoDS_Edge>) {        
+        return {result : this.och.startPointOnEdge({...inputs })};
     }
 
     endPointOnEdge(inputs: Inputs.OCCT.ShapeDto<TopoDS_Edge>) {
-        const edge = inputs.shape;
-        const { uMin, uMax } = this.och.getEdgeBounds(edge);
-        const curve = this.och.getGeomCurveFromEdge(edge, uMin, uMax);
-        const gpPnt = this.och.gpPnt([0, 0, 0]);
-        curve.D0(uMax, gpPnt);
-        const pt = [gpPnt.X(), gpPnt.Y(), gpPnt.Z()];
-        gpPnt.delete();
-        curve.delete();
-        return { result: pt };
+        return {result : this.och.endPointOnEdge({...inputs })};
     }
 
     pointOnEdgeAtLength(inputs: Inputs.OCCT.DataOnGeometryAtLengthDto<TopoDS_Edge>): { result: Inputs.Base.Point3 } {
