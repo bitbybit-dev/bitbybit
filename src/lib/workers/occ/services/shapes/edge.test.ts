@@ -10,7 +10,7 @@ describe('OCCT edge unit tests', () => {
     let geom: OCCTGeom;
     let occHelper: OccHelper
 
-    const closeToNr = 8;
+    const closeToNr = 13;
 
     beforeAll(async () => {
         const occt: OpenCascadeInstance = await (initOpenCascade as any).default();
