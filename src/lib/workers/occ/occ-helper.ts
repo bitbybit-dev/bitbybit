@@ -616,17 +616,14 @@ export class OccHelper {
 
     divideEdgeByParamsToPoints(inputs: Inputs.OCCT.DivideDto<TopoDS_Edge>): Inputs.Base.Point3[] {
         const edge = inputs.shape;
-        const { uMin, uMax } = this.getEdgeBounds(edge);
         const wire = this.combineEdgesAndWiresIntoAWire({ shapes: [edge] });
-        const curve = new this.occ.BRepAdaptor_CompCurve_2(wire, false);
-        return this.divideCurveToNrSegments({ ...inputs, shape: curve }, uMin, uMax);
+        return this.divideWireByParamsToPoints({ ...inputs, shape: wire });
     }
 
     divideEdgeByEqualDistanceToPoints(inputs: Inputs.OCCT.DivideDto<TopoDS_Edge>): Base.Point3[] {
         const edge = inputs.shape;
         const wire = this.combineEdgesAndWiresIntoAWire({ shapes: [edge] });
-        const curve = new this.occ.BRepAdaptor_CompCurve_2(wire, false);
-        return this.divideCurveByEqualLengthDistance({ ...inputs, shape: curve });
+        return this.divideWireByEqualDistanceToPoints({ ...inputs, shape: wire });
     }
 
     pointOnEdgeAtParam(inputs: Inputs.OCCT.DataOnGeometryAtParamDto<TopoDS_Edge>): Base.Point3 {
@@ -922,7 +919,7 @@ export class OccHelper {
             const edgeHash = edge.HashCode(100000000);
             if (!edgeHashes.hasOwnProperty(edgeHash)) {
                 edgeHashes[edgeHash] = edgeIndex;
-                edgeIndex = edgeIndex += 1;
+                edgeIndex++;
                 callback(edgeIndex, edge);
             }
         }

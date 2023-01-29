@@ -11,16 +11,6 @@ export class OCCTEdge {
     ) {
     }
 
-    // TODO check this
-    // filletWire(inputs: Inputs.OCCT.FilletDto): any {
-    //     let wire: TopoDS_Wire = inputs.shape;
-    //     const mkFillet = new this.occ.BRepFilletAPI_MakeFillet(
-    //         wire, (this.occ.ChFi3d_FilletShape.ChFi3d_Rational as ChFi3d_FilletShape)
-    //     );
-
-    // }
-
-
     makeEdgeFromGeom2dCurveAndSurface(inputs: Inputs.OCCT.ShapesDto<Geom2d_Curve | Geom_Surface>) {
         const curve2d = new this.occ.Handle_Geom2d_Curve_2(inputs.shapes[0] as Geom2d_Curve);
         const surface = new this.occ.Handle_Geom_Surface_2(inputs.shapes[1] as Geom_Surface);
@@ -71,16 +61,25 @@ export class OCCTEdge {
         return shape;
     }
 
-    getEdge(inputs: Inputs.OCCT.ShapeIndexDto<TopoDS_Shape>): any {
+    getEdge(inputs: Inputs.OCCT.ShapeIndexDto<TopoDS_Shape>): TopoDS_Edge {
         if (!inputs.shape || (inputs.shape.ShapeType && inputs.shape.ShapeType() > this.occ.TopAbs_ShapeEnum.TopAbs_WIRE) || inputs.shape.IsNull()) {
-            throw (new Error('Shape is not provided or is of incorrect type'));
+            throw (new Error('Edge can not be found for shape that is not provided or is of incorrect type'));
         }
         if (!inputs.index) { inputs.index = 0; }
         let innerEdge = {}; let edgesFound = 0;
+        let foundEdge = false;
         this.och.forEachEdge(inputs.shape, (i, s) => {
-            if (i === inputs.index) { innerEdge = s; } edgesFound++;
+            if (i === inputs.index) {
+                innerEdge = s;
+                foundEdge = true;
+            } edgesFound++;
         });
-        return innerEdge;
+
+        if (!foundEdge) {
+            throw (new Error(`Edge can not be found for shape on index ${inputs.index}`));
+        } else {
+            return innerEdge as TopoDS_Edge;
+        }
     }
 
     pointOnEdgeAtParam(inputs: Inputs.OCCT.DataOnGeometryAtParamDto<TopoDS_Edge>): { result: Inputs.Base.Point3 } {
@@ -91,12 +90,12 @@ export class OCCTEdge {
         return { result: this.och.tangentOnEdgeAtParam(inputs) };
     }
 
-    startPointOnEdge(inputs: Inputs.OCCT.ShapeDto<TopoDS_Edge>) {        
-        return {result : this.och.startPointOnEdge({...inputs })};
+    startPointOnEdge(inputs: Inputs.OCCT.ShapeDto<TopoDS_Edge>) {
+        return { result: this.och.startPointOnEdge({ ...inputs }) };
     }
 
     endPointOnEdge(inputs: Inputs.OCCT.ShapeDto<TopoDS_Edge>) {
-        return {result : this.och.endPointOnEdge({...inputs })};
+        return { result: this.och.endPointOnEdge({ ...inputs }) };
     }
 
     pointOnEdgeAtLength(inputs: Inputs.OCCT.DataOnGeometryAtLengthDto<TopoDS_Edge>): { result: Inputs.Base.Point3 } {
