@@ -39,7 +39,7 @@
         "rxjs": "7.5.5"
     },
     "devDependencies": {
-        "typedoc": "0.21.9",
+        "typedoc": "0.21.10",
         "@microsoft/tsdoc": "0.13.2",
         "@microsoft/tsdoc-config": "0.15.2",
         "sass": "1.57.1",
