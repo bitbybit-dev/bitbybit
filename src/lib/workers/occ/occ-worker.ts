@@ -1,11 +1,11 @@
-import { OpenCascadeInstance } from '../../../bitbybit-dev-occt/bitbybit-dev-occt';
-import { ShapesHelperService } from '../../api/shapes-helper.service';
-import { VectorHelperService } from '../../api/vector-helper.service';
+import { OpenCascadeInstance } from 'bitbybit-occt/bitbybit-dev-occt/bitbybit-dev-occt';
+import { ShapesHelperService } from 'bitbybit-occt/lib/api/shapes-helper.service';
+import { VectorHelperService } from 'bitbybit-occt/lib/api/vector-helper.service';
 import { CacheHelper } from './cache-helper';
-import { OccHelper } from './occ-helper';
-import { Occ } from './occ-service';
+import { OccHelper } from 'bitbybit-occt/lib/occ-helper';
+import { OCCTService } from 'bitbybit-occt/lib/occ-service';
 
-let openCascade: Occ;
+let openCascade: OCCTService;
 let cacheHelper: CacheHelper;
 
 export const initializationComplete = (occ: OpenCascadeInstance) => {
@@ -13,7 +13,7 @@ export const initializationComplete = (occ: OpenCascadeInstance) => {
     const vecService = new VectorHelperService();
     const shapesService = new ShapesHelperService();
 
-    openCascade = new Occ(occ, new OccHelper(vecService, shapesService, occ));
+    openCascade = new OCCTService(occ, new OccHelper(vecService, shapesService, occ));
     postMessage('occ-initialised');
 };
 

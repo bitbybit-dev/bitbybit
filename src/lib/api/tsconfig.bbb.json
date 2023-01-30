@@ -14,6 +14,11 @@
         "module": "es2020",
         "emitDeclarationOnly": false,
         "declarationDir": "declarations",
+        "paths": {
+            "bitbybit-occt/*": [
+                "../../../../bitbybit-occt"
+            ]
+        },
         "lib": [
             "es2020",
             "dom"

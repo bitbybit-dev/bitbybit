@@ -1,5 +1,5 @@
 import { Angle } from '@babylonjs/core';
-import { VectorHelperService } from '../../../api/vector-helper.service';
+import { VectorHelperService } from 'bitbybit-occt/lib/api/vector-helper.service';
 import * as Inputs from '../../../api/inputs/inputs';
 
 /**

@@ -5,7 +5,7 @@
         "lib/workers/occ/services/advanced/**/*",
     ],
     "compilerOptions": {
-        "outDir": "./dist/bitbybit-core",
+        "outDir": "./dist",
         "baseUrl": "./",
         "sourceMap": false,
         "declaration": true,
@@ -17,14 +17,6 @@
         "module": "es2020",
         "allowJs": true,
         "emitDeclarationOnly": false,
-        "paths": {
-            "projects/bitbybit-core/src/*": [
-                "./*"
-            ],
-            "projects/bitbybit-advanced/*": [
-                "../../bitbybit-advanced/*"
-            ]
-        },
         "lib": [
             "es2020",
             "dom"
