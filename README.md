@@ -9,15 +9,18 @@ https://github.com/bitbybit-dev/bitbybit
 https://www.npmjs.com/package/bitbybit-core  
 
 # Example Applications
-Laptop Holder  
-https://laptop-holder.bitbybit.dev  
+Laptop Holder
+https://app-store.bitbybit.dev/laptop-holder
 Github Source Code Angular - https://github.com/bitbybit-dev/app-examples/tree/main/angular/laptop-holder  
 Github Source Code React - https://github.com/bitbybit-dev/app-examples/tree/main/react/laptop-holder  
   
 Cup Configurator  
-https://app-cup.bitbybit.dev  
+https://app-store.bitbybit.dev/cup
 Github Source Code - https://github.com/bitbybit-dev/app-examples/tree/main/react/cup  
-  
+
+# Closed Source Example Applications
+https://app-store.bitbybit.dev/terrace-furniture
+
 # Build package
 tsc -p tsconfig.bitbybit.json  
 
