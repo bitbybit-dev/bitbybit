@@ -19,7 +19,7 @@
         "build": "tsc -p tsconfig.bitbybit.json",
         "build-p": "npm run build && npm run copy-package && npm run copy-readme && npm run delete-tsdoc",
         "copy-package": "cp -R ./package.json ./dist",
-        "copy-readme": "cp -R ../README.md ./dist",
+        "copy-readme": "cp -R ./README.md ./dist",
         "delete-tsdoc": "rm -R ./dist/ts-api-docs && rm -R ./dist/ts-doc-theme && rm -R ./dist/coverage",
         "declarations": "tsc --project lib/api/tsconfig.bbb.json",
         "dec": "npm run declarations && node lib/api/declarations.js",
