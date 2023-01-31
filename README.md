@@ -1,4 +1,5 @@
 # Bit By Bit Developers core library
+
 This project contains core 3D algorithms of Bit By Bit Developers platform which are open-sourced under MIT license. This library was previously UI dependant and is now separated to ensure protection of our corporate identity and cloud services.  
 
 Visit https://bitbybit.dev to use our full cloud platform.
@@ -9,12 +10,12 @@ https://github.com/bitbybit-dev/bitbybit
 https://www.npmjs.com/package/bitbybit-core  
 
 # Example Applications
-Laptop Holder
-https://app-store.bitbybit.dev/laptop-holder
-Github Source Code Angular - https://github.com/bitbybit-dev/app-examples/tree/main/angular/laptop-holder  
-Github Source Code React - https://github.com/bitbybit-dev/app-examples/tree/main/react/laptop-holder  
+Laptop Holder   
+https://app-store.bitbybit.dev/laptop-holder    
+Github Source Code Angular - https://github.com/bitbybit-dev/app-examples/tree/main/angular/laptop-holder   
+Github Source Code React - https://github.com/bitbybit-dev/app-examples/tree/main/react/laptop-holder   
   
-Cup Configurator  
+Cup Configurator    
 https://app-store.bitbybit.dev/cup
 Github Source Code - https://github.com/bitbybit-dev/app-examples/tree/main/react/cup  
 
