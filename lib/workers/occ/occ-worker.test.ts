@@ -34,8 +34,9 @@ describe('OCCT wire unit tests', () => {
         expect(wire.type).toEqual('occ-shape');
         const length = await callAction<Inputs.OCCT.ShapeDto<Inputs.OCCT.TopoDSWirePointer>>('shapes.wire.getWireLength', { shape: wire });
         expect(length).toBe(6.283185307179586);
+        const length2 = await callAction<Inputs.OCCT.ShapeDto<Inputs.OCCT.TopoDSWirePointer>>('shapes.wire.getWireLength', { shape: wire });
+        expect(length2).toBe(6.283185307179586);
     });
-
 
     it('should create advanced loft through straight sections', async () => {
         const loft = await createLoft(callAction);
