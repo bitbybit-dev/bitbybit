@@ -28,7 +28,7 @@ export class BitByBitBase {
     public context: Context;
     public jscadWorkerManager: JSCADWorkerManager;
     public occtWorkerManager: OCCTWorkerManager;
-
+    
     public babylon: Babylon;
     public vector: Vector;
     public point: Point;

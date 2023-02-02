@@ -2446,7 +2446,7 @@ export const inputDeclarations = `declare namespace Asset {
         direction: Base.Vector3;
     }
     class LoftDto<T> {
-        constructor(shapes?: T[], makeSolid?: boolean);
+        constructor(shapes?: T[]);
         /**
          * Wires through which the loft passes
          */
@@ -2457,7 +2457,7 @@ export const inputDeclarations = `declare namespace Asset {
         makeSolid: boolean;
     }
     class LoftAdvancedDto<T> {
-        constructor(shapes?: T[], makeSolid?: boolean, closed?: boolean, periodic?: boolean, straight?: boolean, nrPerpendicularSections?: number, useSmoothing?: boolean, maxUDegree?: number, parType?: ApproxParametrizationTypeEnum, tolerance?: number, startVertex?: Base.Point3, endVertex?: Base.Point3);
+        constructor(shapes?: T[]);
         /**
          * Wires through which the loft passes
          */

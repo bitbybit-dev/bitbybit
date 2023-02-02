@@ -8,13 +8,16 @@ import { OCCTService } from 'bitbybit-occt/lib/occ-service';
 let openCascade: OCCTService;
 let cacheHelper: CacheHelper;
 
-export const initializationComplete = (occ: OpenCascadeInstance) => {
+export const initializationComplete = (occ: OpenCascadeInstance, doNotPost?: boolean) => {
     cacheHelper = new CacheHelper(occ);
     const vecService = new VectorHelperService();
     const shapesService = new ShapesHelperService();
 
     openCascade = new OCCTService(occ, new OccHelper(vecService, shapesService, occ));
-    postMessage('occ-initialised');
+    if (!doNotPost) {
+        postMessage('occ-initialised');
+    }
+    return cacheHelper;
 };
 
 type DataInput = {
@@ -51,7 +54,6 @@ export const onMessageInput = (d: DataInput, postMessage) => {
             if (d.action.inputs.shapes && d.action.inputs.shapes.length > 0) {
                 d.action.inputs.shapes = d.action.inputs.shapes.map(shape => cacheHelper.checkCache(shape.hash));
             }
-
             const path = d.action.functionName.split('.');
             let res;
             if (path.length === 3) {
@@ -62,8 +64,8 @@ export const onMessageInput = (d: DataInput, postMessage) => {
                 res = cacheHelper.cacheOp(d.action, () => openCascade[d.action.functionName](d.action.inputs));
             }
 
-            if (res.result !== undefined) {
-                result = res.result;
+            if (!cacheHelper.isOCCTObject(res)) {
+                result = res;
             }
             else if (Array.isArray(res)) {
                 result = res.map(r => ({ hash: r.hash, type: 'occ-shape' })); // if we return multiple shapes we should return array of cached hashes

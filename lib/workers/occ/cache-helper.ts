@@ -57,6 +57,10 @@ export class CacheHelper {
         // this.hashesFromPreviousRun = {};
     }
 
+    isOCCTObject(obj): boolean {
+        return (!Array.isArray(obj) && obj.$$ !== undefined) || (Array.isArray(obj) && obj[0].$$ !== undefined)
+    }
+
     /** Hashes input arguments and checks the cache for that hash.
      * It returns a copy of the cached object if it exists, but will
      * call the `cacheMiss()` callback otherwise. The result will be
@@ -71,19 +75,27 @@ export class CacheHelper {
         if (check) {
             // TODO I need to check if and why cloning is required.
             // toReturn = new this.occ.TopoDS_Shape(check);
-            toReturn = check;
-            toReturn.hash = check.hash;
+            if (this.isOCCTObject(check)) {
+                toReturn = check;
+                toReturn.hash = check.hash;
+            } else if (check.value) {
+                toReturn = check.value;
+            }
         } else {
             toReturn = cacheMiss();
-            if (Array.isArray(toReturn)) {
+            if (Array.isArray(toReturn) && this.isOCCTObject(toReturn)) {
                 toReturn.forEach((r, index) => {
                     const itemHash = this.computeHash({ ...args, index });
                     r.hash = itemHash;
                     this.addToCache(itemHash, r);
                 });
             } else {
-                toReturn.hash = curHash;
-                this.addToCache(curHash, toReturn);
+                if (this.isOCCTObject(toReturn)) {
+                    toReturn.hash = curHash;
+                    this.addToCache(curHash, toReturn);
+                } else {
+                    this.addToCache(curHash, { value: toReturn });
+                }
             }
 
         }
