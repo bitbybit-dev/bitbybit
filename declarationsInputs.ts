@@ -730,9 +730,7 @@ export const inputDeclarations = `declare namespace Asset {
 * from './verb-inputs';
 * from './jscad-inputs';
 * from './tag-inputs';
-* from './occ-inputs';
 * from './asset-inputs';
-* from './base-inputs';
 * from './draw-inputs';
 * from './babylon-mesh-inputs';
 * from './babylon-camera-inputs';
@@ -740,7 +738,9 @@ export const inputDeclarations = `declare namespace Asset {
 * from './babylon-pick-inputs';
 * from './babylon-webxr';
 * from './babylon-material-inputs';
-* from './time-inputs';declare namespace JSCAD {
+* from './time-inputs';
+* from 'bitbybit-occt/lib/api/inputs/occ-inputs';
+* from 'bitbybit-occt/lib/api/inputs/base-inputs';declare namespace JSCAD {
     class DrawSolidMeshDto {
         /**
          * Provide options without default values

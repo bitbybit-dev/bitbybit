@@ -1887,17 +1887,10 @@ declare class Line {
      * @returns OpenCascade geom surface
      */
     surfaceFromFace(inputs: Inputs.OCCT.ShapeDto<Inputs.OCCT.TopoDSFacePointer>): Promise<Inputs.OCCT.GeomSurfacePointer>;
-}declare class OCCTIO {
-    private readonly occWorkerManager;
+}declare class OCCTIO extends BaseOCCTIO {
+    readonly occWorkerManager: OCCTWorkerManager;
     private readonly geometryHelper;
     constructor(occWorkerManager: OCCTWorkerManager, geometryHelper: GeometryHelper);
-    /**
-     * Saves the step file
-     * @link https://docs.bitbybit.dev/classes/bitbybit_occt_io.OCCTIO.html#saveShapeSTEP
-     * @param inputs STEP filename and shape to be saved
-     * @returns String of a step file
-     */
-    saveShapeSTEP(inputs: Inputs.OCCT.SaveStepDto<Inputs.OCCT.TopoDSShapePointer>): Promise<string>;
     /**
      * Imports the step or iges asset file
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_io.OCCTIO.html#loadSTEPorIGES
@@ -1913,23 +1906,13 @@ declare class Line {
     saveShapeStl(inputs: Inputs.OCCT.SaveStlDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.OCCT.DecomposedMeshDto>;
 }/**
  * Contains various methods for OpenCascade implementation
- * Much of the work is done by Johnathon Selstad and Sebastian Alff to port OCC to JavaScript
- * I'm super grateful for their work!
  */
-declare class OCCT {
+declare class OCCT extends BaseOCCT {
     private readonly context;
-    private readonly occWorkerManager;
+    readonly occWorkerManager: OCCTWorkerManager;
     private readonly geometryHelper;
     private readonly solidText;
     private readonly vector;
-    readonly shapes: OCCTShapes;
-    readonly geom: OCCTGeom;
-    readonly assembly: OCCTAssembly;
-    readonly fillets: OCCTFillets;
-    readonly transforms: OCCTTransforms;
-    readonly operations: OCCTOperations;
-    readonly booleans: OCCTBooleans;
-    readonly advanced: OCCTAdvanced;
     readonly io: OCCTIO;
     constructor(context: Context, occWorkerManager: OCCTWorkerManager, geometryHelper: GeometryHelper, solidText: JSCADText, vector: Vector);
     /**

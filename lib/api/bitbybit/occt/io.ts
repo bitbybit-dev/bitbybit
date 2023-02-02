@@ -1,43 +1,19 @@
 
 import * as Inputs from '../../inputs/inputs';
-import { OCCTWorkerManager } from '../../../workers/occ/occ-worker-manager';
+import { OCCTWorkerManager } from 'bitbybit-occt-worker/lib/occ-worker/occ-worker-manager';
+import { OCCTIO as BaseOCCTIO } from 'bitbybit-occt-worker/lib/api/occt/io';
 import { BitByBitBlocklyHelperService } from '../../../bit-by-bit-blockly-helper.service';
 import { STLExport } from '@babylonjs/serializers';
 import { GeometryHelper } from '../../geometry-helper';
 
 
-export class OCCTIO {
+export class OCCTIO extends BaseOCCTIO {
 
     constructor(
-        private readonly occWorkerManager: OCCTWorkerManager,
+        override readonly occWorkerManager: OCCTWorkerManager,
         private readonly geometryHelper: GeometryHelper,
     ) {
-    }
-
-    /**
-     * Saves the step file
-     * <div>
-     *  <img src="../assets/images/blockly-images/occt/io/saveShapeSTEP.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_occt_io.OCCTIO.html#saveShapeSTEP
-     * @param inputs STEP filename and shape to be saved
-     * @returns String of a step file
-     */
-    saveShapeSTEP(inputs: Inputs.OCCT.SaveStepDto<Inputs.OCCT.TopoDSShapePointer>): Promise<string> {
-        return this.occWorkerManager.genericCallToWorkerPromise('io.saveShapeSTEP', inputs).then(s => {
-            const blob = new Blob([s], { type: 'text/plain' });
-            const blobUrl = URL.createObjectURL(blob);
-
-            const fileName = inputs.filename ? inputs.filename : 'bitbybit-dev.step';
-
-            const fileLink = document.createElement('a');
-            fileLink.href = blobUrl;
-            fileLink.target = '_self';
-            fileLink.download = fileName;
-            fileLink.click();
-            fileLink.remove();
-            return s;
-        });
+        super(occWorkerManager);
     }
 
     /**

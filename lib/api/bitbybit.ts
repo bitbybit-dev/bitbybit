@@ -10,17 +10,14 @@ import { JSCAD } from './bitbybit/jscad/jscad';
 import { Tag } from './bitbybit/tag';
 import { Time } from './bitbybit/time';
 import { OCCT } from './bitbybit/occt/occt';
+import { OCCT as BaseOCCT } from 'bitbybit-occt-worker/lib/api/occt/occt';
 import { Asset } from './bitbybit/asset';
 import { Color } from './bitbybit/color';
 import { Context } from './context';
 import { GeometryHelper } from './geometry-helper';
 import { JSCADWorkerManager } from '../workers/jscad/jscad-worker-manager';
-import { OCCTWorkerManager } from '../workers/occ/occ-worker-manager';
+import { OCCTWorkerManager } from 'bitbybit-occt-worker/lib/occ-worker/occ-worker-manager';
 import { Scene } from '@babylonjs/core';
-import { OCCTService } from 'bitbybit-occt/lib/occ-service';
-import { OccHelper } from 'bitbybit-occt/lib/occ-helper';
-import { VectorHelperService } from 'bitbybit-occt/lib/api/vector-helper.service';
-import { ShapesHelperService } from 'bitbybit-occt/lib/api/shapes-helper.service';
 import { OpenCascadeInstance } from 'bitbybit-occt/bitbybit-dev-occt/bitbybit-dev-occt';
 
 export class BitByBitBase {
@@ -28,7 +25,7 @@ export class BitByBitBase {
     public context: Context;
     public jscadWorkerManager: JSCADWorkerManager;
     public occtWorkerManager: OCCTWorkerManager;
-    
+
     public babylon: Babylon;
     public vector: Vector;
     public point: Point;
@@ -39,7 +36,7 @@ export class BitByBitBase {
     public jscad: JSCAD;
     public tag: Tag;
     public time: Time;
-    public occt: OCCT | OCCTService;
+    public occt: OCCT & BaseOCCT;
     public asset: Asset;
     public color: Color;
 
@@ -79,11 +76,6 @@ export class BitByBitBase {
         this.context.scene = scene;
         if (occt) {
             this.occtWorkerManager.setOccWorker(occt);
-        } else if (!occt && occtInstance) {
-            const vecService = new VectorHelperService();
-            const shapesService = new ShapesHelperService();
-            const openCascade = new OCCTService(occtInstance, new OccHelper(vecService, shapesService, occtInstance));
-            this.occt = openCascade;
         }
         if (jscad) {
             this.jscadWorkerManager.setJscadWorker(jscad);
