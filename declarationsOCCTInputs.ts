@@ -676,9 +676,6 @@ var Base;
          */
         makeSolid: boolean;
     }
-    class NewTestTodoDto {
-        dada: string;
-    }
     class LoftAdvancedDto<T> {
         constructor(shapes?: T[]);
         /**
@@ -1916,12 +1913,6 @@ var OCCT;
         }
     }
     OCCT.LoftDto = LoftDto;
-    class NewTestTodoDto {
-        constructor() {
-            this.dada = 'dafa';
-        }
-    }
-    OCCT.NewTestTodoDto = NewTestTodoDto;
     class LoftAdvancedDto {
         constructor(shapes) {
             /**
