@@ -1,13 +1,13 @@
 
 import * as Inputs from '../../inputs/inputs';
 import { OCCTWorkerManager } from 'bitbybit-occt-worker/lib/occ-worker/occ-worker-manager';
-import { OCCTIO as BaseOCCTIO } from 'bitbybit-occt-worker/lib/api/occt/io';
+import { OCCTIO } from 'bitbybit-occt-worker/lib/api/occt/io';
 import { BitByBitBlocklyHelperService } from '../../../bit-by-bit-blockly-helper.service';
 import { STLExport } from '@babylonjs/serializers';
 import { GeometryHelper } from '../../geometry-helper';
 
 
-export class OCCTIO extends BaseOCCTIO {
+export class OCCTWIO extends OCCTIO {
 
     constructor(
         override readonly occWorkerManager: OCCTWorkerManager,

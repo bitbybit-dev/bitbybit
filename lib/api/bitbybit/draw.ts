@@ -11,7 +11,7 @@ import { BabylonNode } from './babylon/node';
 import { VerbCurve } from './verb/curve';
 import { VerbSurface } from './verb/surface';
 import { JSCAD } from './jscad/jscad';
-import { OCCT } from './occt/occt';
+import { OCCTW } from './occt/occt';
 import { Tag } from './tag';
 import { Context } from '../context';
 import { GridMaterial } from '@babylonjs/materials';
@@ -39,7 +39,7 @@ export class Draw {
         private readonly verbCurve: VerbCurve,
         private readonly verbSurface: VerbSurface,
         private readonly jscad: JSCAD,
-        private readonly occt: OCCT,
+        private readonly occt: OCCTW,
         private readonly tag: Tag,
         private readonly context: Context,
     ) { }

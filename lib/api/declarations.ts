@@ -1,11 +1,17 @@
-import { inputDeclarations } from './declarationsInputs';
-import { baseDeclarations } from './declarationsBase';
+import { inputDeclarations } from '../../declarationsInputs';
+import { baseDeclarations } from '../../declarationsBase';
+import { occtWorkerDeclarations } from '../../declarationsOCCTWorker';
+import { inputOCCTDeclarations } from '../../declarationsOCCTInputs';
+
 
 export const typescriptDeclarations = `
         declare namespace Bit {
             namespace Inputs {
+                ${inputOCCTDeclarations}
                 ${inputDeclarations}
             }
+
+            ${occtWorkerDeclarations}
             ${baseDeclarations}
 
             class BitByBitBase {
@@ -20,7 +26,7 @@ export const typescriptDeclarations = `
                 readonly jscad: JSCAD;
                 readonly tag: Tag;
                 readonly time: Time;
-                readonly occt: OCCT;
+                readonly occt: OCCTW & OCCT;
                 readonly asset: Asset;
             }
         }

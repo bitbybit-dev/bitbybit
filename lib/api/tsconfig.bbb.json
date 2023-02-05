@@ -35,6 +35,7 @@
             "declarations.ts",
             "declarationsBase.ts",
             "declarationsInputs.ts",
+            "declarationsOCCTWorker.ts",
             "duplication.service.ts",
             "duplication.service.ts",
             "geometry-helper.ts"

@@ -5,15 +5,15 @@ import { GeometryHelper } from '../../geometry-helper';
 import * as Inputs from '../../inputs/inputs';
 import { JSCADText } from '../jscad/text';
 import { Vector } from '../vector';
-import { OCCTIO } from './io';
+import { OCCTWIO } from './io';
 import { OCCTWorkerManager } from 'bitbybit-occt-worker/lib/occ-worker/occ-worker-manager';
-import { OCCT as BaseOCCT } from 'bitbybit-occt-worker/lib/api/occt/occt';
+import { OCCT } from 'bitbybit-occt-worker/lib/api/occt/occt';
 
 /**
  * Contains various methods for OpenCascade implementation
  */
-export class OCCT extends BaseOCCT {
-    override readonly io: OCCTIO;
+export class OCCTW extends OCCT {
+    override readonly io: OCCTWIO;
 
     constructor(
         private readonly context: Context,
@@ -23,7 +23,7 @@ export class OCCT extends BaseOCCT {
         private readonly vector: Vector,
     ) {
         super(occWorkerManager);
-        this.io = new OCCTIO(occWorkerManager, geometryHelper);
+        this.io = new OCCTWIO(occWorkerManager, geometryHelper);
     }
 
     /**
