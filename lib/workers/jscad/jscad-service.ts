@@ -107,12 +107,12 @@ export class Jscad {
     transformSolid(inputs: Inputs.JSCAD.TransformSolidDto): any {
         const transformation = inputs.matrix;
         let transformedMesh = this.jscad.geometries.geom3.clone(inputs.mesh);
-        if (this.getArrayDepth(transformation) === 1) {
+        if (this.getArrayDepth(transformation) === 2) {
             transformation.forEach(transform => {
                 transformedMesh = this.jscad.transforms.transform(transform, transformedMesh);
             });
         }
-        else if (this.getArrayDepth(transformation) === 2) {
+        else if (this.getArrayDepth(transformation) === 3) {
             transformation.forEach(transforms => {
                 transforms.forEach(mat => {
                     transformedMesh = this.jscad.transforms.transform(mat, transformedMesh);
