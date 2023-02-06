@@ -48,7 +48,7 @@ export class BabylonNode {
      * @returns A new node
      */
     createNodeFromRotation(inputs: Inputs.BabylonNode.CreateNodeFromRotationDto): TransformNode {
-        const transformNode = new TransformNode(`node${Math.random()}`);
+        const transformNode = new TransformNode(`node${Math.random()}`, this.context.scene);
         if (inputs.parent) {
             transformNode.parent = inputs.parent;
         }
