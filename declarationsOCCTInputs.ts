@@ -1441,6 +1441,24 @@ var Base;
          */
         angle: number;
     }
+    class NGonWireDto {
+        /**
+         * Center of the circle
+         */
+        center: Base.Point3;
+        /**
+         * Direction
+         */
+        direction: Base.Vector3;
+        /**
+         * How many corners to create.
+         */
+        nrCorners: number;
+        /**
+         * Radius of nGon
+         */
+        radius: number;
+    }
     class EllipseDto {
         /**
          * Center of the ellipse
@@ -2400,6 +2418,9 @@ var OCCT;
     class ParallelogramDto {
     }
     OCCT.ParallelogramDto = ParallelogramDto;
+    class NGonWireDto {
+    }
+    OCCT.NGonWireDto = NGonWireDto;
     class EllipseDto {
     }
     OCCT.EllipseDto = EllipseDto;

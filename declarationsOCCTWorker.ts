@@ -1019,7 +1019,7 @@ class OCCT {
      * @param inputs rectangle parameters
      * @returns OpenCascade rectangle
      */
-    createRectangleFace(inputs: Inputs.OCCT.SquareDto): Promise<Inputs.OCCT.TopoDSFacePointer>;
+    createRectangleFace(inputs: Inputs.OCCT.RectangleDto): Promise<Inputs.OCCT.TopoDSFacePointer>;
     /**
      * Gets the face by providing an index from the shape
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_face.OCCTFace.html#getFace
@@ -1803,9 +1803,16 @@ class OCCT {
      */
     createStarWire(inputs: Inputs.OCCT.StarDto): Promise<Inputs.OCCT.TopoDSWirePointer>;
     /**
-     * Creates OpenCascade parallelogram wire
+     * Creates OpenCascade n-gon wire
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_wire.OCCTWire.html#createNGonWire
+     * @param inputs ngon parameters
+     * @returns OpenCascade ngon wire
+     */
+    createNGonWire(inputs: Inputs.OCCT.NGonWireDto): Promise<Inputs.OCCT.TopoDSWirePointer>;
+    /**
+     * Creates n  parallelogram wire
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_wire.OCCTWire.html#createParallelogramWire
-     * @param inputs star parameters
+     * @param inputs parallelogram parameters
      * @returns OpenCascade star wire
      */
     createParallelogramWire(inputs: Inputs.OCCT.ParallelogramDto): Promise<Inputs.OCCT.TopoDSWirePointer>;
@@ -1815,7 +1822,7 @@ class OCCT {
      * @param inputs rectangle parameters
      * @returns OpenCascade rectangle
      */
-    createRectangleWire(inputs: Inputs.OCCT.SquareDto): Promise<Inputs.OCCT.TopoDSWirePointer>;
+    createRectangleWire(inputs: Inputs.OCCT.RectangleDto): Promise<Inputs.OCCT.TopoDSWirePointer>;
     /**
      * Creates OpenCascade ellipse wire
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_wire.OCCTWire.html#createEllipseWire
@@ -2057,9 +2064,18 @@ class OCCT {
         return this.occWorkerManager.genericCallToWorkerPromise('shapes.wire.createStarWire', inputs);
     }
     /**
-     * Creates OpenCascade parallelogram wire
+     * Creates OpenCascade n-gon wire
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_wire.OCCTWire.html#createNGonWire
+     * @param inputs ngon parameters
+     * @returns OpenCascade ngon wire
+     */
+    createNGonWire(inputs) {
+        return this.occWorkerManager.genericCallToWorkerPromise('shapes.wire.createNGonWire', inputs);
+    }
+    /**
+     * Creates n  parallelogram wire
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_wire.OCCTWire.html#createParallelogramWire
-     * @param inputs star parameters
+     * @param inputs parallelogram parameters
      * @returns OpenCascade star wire
      */
     createParallelogramWire(inputs) {

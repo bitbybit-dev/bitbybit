@@ -4,7 +4,6 @@ import {
     Color4, Color3, Mesh, PointLight, Vector3,
     MeshBuilder, StandardMaterial, Light, ArcRotateCamera, ShadowGenerator, DirectionalLight, CubeTexture, Matrix, Ray, PickingInfo, Scene
 } from '@babylonjs/core';
-import { GridMaterial } from '@babylonjs/materials';
 import * as Inputs from '../../inputs/inputs';
 
 
