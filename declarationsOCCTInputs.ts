@@ -239,8 +239,8 @@ var Base;
     }
     class FaceSubdivisionDto<T> {
         /**
-         * Provide options without default values
-         */
+          * Provide options without default values
+          */
         constructor(shape?: T);
         /**
          * Brep OpenCascade geometry
@@ -278,6 +278,72 @@ var Base;
          * Removes end edge points on V
          */
         removeEndEdgeV: boolean;
+    }
+    class FaceSubdivisionControlledDto<T> {
+        /**
+         * Provide options without default values
+         */
+        constructor(shape?: T);
+        /**
+         * Brep OpenCascade geometry
+         */
+        shape?: T;
+        /**
+         * Number of subdivisions on U direction
+         */
+        nrDivisionsU: number;
+        /**
+         * Number of subdivisions on V direction
+         */
+        nrDivisionsV: number;
+        /**
+         * Shift half step every nth U row
+         */
+        shiftHalfStepNthU: number;
+        /**
+         * Offset for shift half step every nth U row
+         */
+        shiftHalfStepUOffsetN: number;
+        /**
+         * Removes start edge points on U
+         */
+        removeStartEdgeNthU: number;
+        /**
+         * Offset for remove start edge points on U
+         */
+        removeStartEdgeUOffsetN: number;
+        /**
+         * Removes end edge points on U
+         */
+        removeEndEdgeNthU: number;
+        /**
+         * Offset for remove end edge points on U
+         */
+        removeEndEdgeUOffsetN: number;
+        /**
+         * Shift half step every nth V row
+         */
+        shiftHalfStepNthV: number;
+        /**
+         * Offset for shift half step every nth V row
+         */
+        shiftHalfStepVOffsetN: number;
+        /**
+         * Removes start edge points on V
+         */
+        removeStartEdgeNthV: number;
+        /**
+         * Offset for remove start edge points on V
+         */
+        removeStartEdgeVOffsetN: number;
+        /**
+         * Removes end edge points on V
+         */
+        removeEndEdgeNthV: number;
+        /**
+         * Offset for remove end edge points on V
+         */
+        removeEndEdgeVOffsetN: number;
     }
     class FaceLinearSubdivisionDto<T> {
         /**
@@ -1668,8 +1734,8 @@ var OCCT;
     OCCT.DrawShapeDto = DrawShapeDto;
     class FaceSubdivisionDto {
         /**
-         * Provide options without default values
-         */
+          * Provide options without default values
+          */
         constructor(shape) {
             /**
              * Sometimes you want to shift your points half way the step distance, especially on periodic surfaces
@@ -1699,6 +1765,39 @@ var OCCT;
         }
     }
     OCCT.FaceSubdivisionDto = FaceSubdivisionDto;
+    class FaceSubdivisionControlledDto {
+        /**
+         * Provide options without default values
+         */
+        constructor(shape) {
+            /**
+             * Offset for shift half step every nth U row
+             */
+            this.shiftHalfStepUOffsetN = 0;
+            /**
+             * Offset for remove start edge points on U
+             */
+            this.removeStartEdgeUOffsetN = 0;
+            /**
+             * Offset for remove end edge points on U
+             */
+            this.removeEndEdgeUOffsetN = 0;
+            /**
+             * Offset for shift half step every nth V row
+             */
+            this.shiftHalfStepVOffsetN = 0;
+            /**
+             * Offset for remove start edge points on V
+             */
+            this.removeStartEdgeVOffsetN = 0;
+            /**
+             * Offset for remove end edge points on V
+             */
+            this.removeEndEdgeVOffsetN = 0;
+            this.shape = shape;
+        }
+    }
+    OCCT.FaceSubdivisionControlledDto = FaceSubdivisionControlledDto;
     class FaceLinearSubdivisionDto {
         /**
          * Provide options without default values

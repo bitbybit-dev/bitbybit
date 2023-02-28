@@ -1049,6 +1049,13 @@ class OCCT {
      */
     subdivideToPoints(inputs: Inputs.OCCT.FaceSubdivisionDto<Inputs.OCCT.TopoDSFacePointer>): Promise<Inputs.Base.Point3[]>;
     /**
+     * Subdivides a face to point grid with shifts and removals on nth uv rows or columns
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_face.OCCTFace.html#subdivideToPointsControlled
+     * @param inputs Face and params for subdivision
+     * @returns points
+     */
+    subdivideToPointsControlled(inputs: Inputs.OCCT.FaceSubdivisionControlledDto<Inputs.OCCT.TopoDSFacePointer>): Promise<Inputs.Base.Point3[]>;
+    /**
      * Subdivides a face to normals grid
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_face.OCCTFace.html#subdivideToNormals
      * @param inputs Face and params for subdivision
@@ -1274,6 +1281,15 @@ class OCCT {
      */
     subdivideToPoints(inputs) {
         return this.occWorkerManager.genericCallToWorkerPromise('shapes.face.subdivideToPoints', inputs);
+    }
+    /**
+     * Subdivides a face to point grid with shifts and removals on nth uv rows or columns
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_face.OCCTFace.html#subdivideToPointsControlled
+     * @param inputs Face and params for subdivision
+     * @returns points
+     */
+    subdivideToPointsControlled(inputs) {
+        return this.occWorkerManager.genericCallToWorkerPromise('shapes.face.subdivideToPointsControlled', inputs);
     }
     /**
      * Subdivides a face to normals grid
