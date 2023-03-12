@@ -219,6 +219,27 @@ export class Line {
     }
 
     /**
+     * Gets the point on the line segment at a given param
+     * <div>
+     *  <img src="../assets/images/blockly-images/line/getPointOnLine.svg" alt="Blockly Image"/>
+     * </div>
+     * @link https://docs.bitbybit.dev/classes/bitbybit_line.Line.html#getPointOnLine
+     * @param inputs Line and parameter
+     * @returns Point on line
+     */
+    getPointOnLine(line: Inputs.Base.Line3, parameter): Inputs.Base.Point3 {
+        // Calculate direction vector of line segment
+        const point1 = line.start;
+        const point2 = line.end;
+
+        let direction = [point2[0] - point1[0], point2[1] - point1[1], point2[2] - point1[2]];
+
+        // Calculate point on line segment corresponding to parameter value
+        let point = [point1[0] + parameter * direction[0], point1[1] + parameter * direction[1], point1[2] + parameter * direction[2]] as Inputs.Base.Point3;
+        return point;
+    }
+
+    /**
      * Create the line segments between all of the points in a list
      * <div>
      *  <img src="../assets/images/blockly-images/line/linesBetweenPoints.svg" alt="Blockly Image"/>
