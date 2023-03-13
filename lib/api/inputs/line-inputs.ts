@@ -119,6 +119,16 @@ export namespace Line {
          */
         lines: LinePointsDto[];
     }
+    export class PointOnLineDto {
+        /**
+         * Line to get point on
+         */
+        line: LinePointsDto;
+        /**
+         * Param to use for point on line
+         */
+        param: number;
+    }
     export class TransformLineDto {
         /**
          * Line to transform

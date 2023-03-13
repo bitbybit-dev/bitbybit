@@ -227,10 +227,11 @@ export class Line {
      * @param inputs Line and parameter
      * @returns Point on line
      */
-    getPointOnLine(line: Inputs.Base.Line3, parameter): Inputs.Base.Point3 {
+    getPointOnLine(inputs: Inputs.Line.PointOnLineDto): Inputs.Base.Point3 {
         // Calculate direction vector of line segment
-        const point1 = line.start;
-        const point2 = line.end;
+        const point1 = inputs.line.start;
+        const point2 = inputs.line.end;
+        const parameter = inputs.param;
 
         let direction = [point2[0] - point1[0], point2[1] - point1[1], point2[2] - point1[2]];
 
