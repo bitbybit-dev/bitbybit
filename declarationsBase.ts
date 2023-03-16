@@ -1721,6 +1721,13 @@ declare class Line {
      */
     createAsync(inputs: Inputs.Line.LinePointsDto): Promise<Inputs.Line.LinePointsDto>;
     /**
+     * Gets the point on the line segment at a given param
+     * @link https://docs.bitbybit.dev/classes/bitbybit_line.Line.html#getPointOnLine
+     * @param inputs Line and parameter
+     * @returns Point on line
+     */
+    getPointOnLine(inputs: Inputs.Line.PointOnLineDto): Inputs.Base.Point3;
+    /**
      * Create the line segments between all of the points in a list
      * @link https://docs.bitbybit.dev/classes/bitbybit_line.Line.html#linesBetweenPoints
      * @param inputs Lines in a list

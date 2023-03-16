@@ -703,44 +703,7 @@ export const inputDeclarations = `declare namespace Asset {
         tag = 15,
         tags = 16
     }
-}* from './vector-inputs';
-* from './scene-inputs';
-* from './babylon-io-inputs';
-* from './node-inputs';
-* from './transforms-inputs';
-* from './point-inputs';
-* from './line-inputs';
-* from './polyline-inputs';
-* from './verb-inputs';
-* from './jscad-inputs';
-* from './tag-inputs';
-* from './asset-inputs';
-* from './draw-inputs';
-* from './babylon-mesh-inputs';
-* from './time-inputs';
-* from 'bitbybit-occt/lib/api/inputs/occ-inputs';
-* from 'bitbybit-occt/lib/api/inputs/base-inputs';* from './vector-inputs';
-* from './scene-inputs';
-* from './babylon-io-inputs';
-* from './node-inputs';
-* from './transforms-inputs';
-* from './point-inputs';
-* from './line-inputs';
-* from './polyline-inputs';
-* from './verb-inputs';
-* from './jscad-inputs';
-* from './tag-inputs';
-* from './asset-inputs';
-* from './draw-inputs';
-* from './babylon-mesh-inputs';
-* from './babylon-camera-inputs';
-* from './babylon-ray-inputs';
-* from './babylon-pick-inputs';
-* from './babylon-webxr';
-* from './babylon-material-inputs';
-* from './time-inputs';
-* from 'bitbybit-occt/lib/api/inputs/occ-inputs';
-* from 'bitbybit-occt/lib/api/inputs/base-inputs';declare namespace JSCAD {
+}declare namespace JSCAD {
     class DrawSolidMeshDto {
         /**
          * Provide options without default values
@@ -1661,6 +1624,16 @@ export const inputDeclarations = `declare namespace Asset {
          * Lines to convert
          */
         lines: LinePointsDto[];
+    }
+    class PointOnLineDto {
+        /**
+         * Line to get point on
+         */
+        line: LinePointsDto;
+        /**
+         * Param to use for point on line
+         */
+        param: number;
     }
     class TransformLineDto {
         /**
