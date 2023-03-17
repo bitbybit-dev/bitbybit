@@ -1,4 +1,6 @@
 export const inputOCCTDeclarations = `declare namespace Base {
+    type Color = string;
+    type Material = any;
     type Point2 = [number, number];
     type Vector2 = [number, number];
     type Point3 = [number, number, number];
@@ -72,7 +74,10 @@ export const inputOCCTDeclarations = `declare namespace Base {
         approxCentripetal = "approxCentripetal",
         approxIsoParametric = "approxIsoParametric"
     }
-    type DecomposedMeshDto = {
+    class DecomposedMeshDto {
+        /**
+         * Face list
+         */
         faceList: {
             face_index: number;
             normal_coord: Base.Vector3;
@@ -81,41 +86,50 @@ export const inputOCCTDeclarations = `declare namespace Base {
             vertex_coord: Base.Point3;
             vertex_coord_vec: Base.Vector3[];
         }[];
+        /**
+         * Edge list
+         */
         edgeList: {
             edge_index: number;
             vertex_coord: Base.Point3[];
         }[];
-    };
+    }
     class ShapesDto<T> {
         constructor(shapes?: T[]);
         /**
-         * The shapes
+         * The OCCT shapes
          */
         shapes?: T[];
     }
     class FilletTwoEdgesInPlaneDto<T> extends ShapesDto<T> {
         /**
-         * First edge to fillet
+         * First OCCT edge to fillet
          */
         edge1: any;
         /**
-         * Second edge to fillet
+         * Second OCCT edge to fillet
          */
         edge2: any;
         /**
          * Plane origin that is also used to find the closest solution if two solutions exist.
+         * @default [0, 0, 0]
          */
         planeOrigin: Base.Point3;
         /**
          * Plane direction for fillet
+         * @default [0, 1, 0]
          */
         planeDirection: Base.Vector3;
         /**
          * Radius of the fillet
+         * @default 0.3
+         * @minimum 0
+         * @maximum Infinity
          */
         radius: number;
         /**
          * if solution is -1 planeOrigin chooses a particular fillet in case of several fillets may be constructed (for example, a circle intersecting a segment in 2 points). Put the intersecting (or common) point of the edges
+         * @default -1
          */
         solution?: number;
     }
@@ -130,6 +144,7 @@ export const inputOCCTDeclarations = `declare namespace Base {
         wire?: U;
         /**
          * Indicates wether face should be created inside or outside the wire
+         * @default true
          */
         inside: boolean;
     }
@@ -164,64 +179,90 @@ export const inputOCCTDeclarations = `declare namespace Base {
         shape?: T;
         /**
          * Face opacity value between 0 and 1
+         * @default 1
+         * @minimum 0
+         * @maximum 1
          */
         faceOpacity: number;
         /**
          * Edge opacity value between 0 and 1
+         * @default 1
+         * @minimum 0
+         * @maximum 1
          */
         edgeOpacity: number;
         /**
          * Hex colour string for the edges
+         * @default #ffffff
          */
-        edgeColour: string;
+        edgeColour: Base.Color;
         /**
          * Face material
          */
-        faceMaterial?: any;
+        faceMaterial?: Base.Material;
         /**
          * Hex colour string for face colour
+         * @default #ff0000
          */
-        faceColour: string;
+        faceColour: Base.Color;
         /**
          * Edge width
+         * @default 2
+         * @minimum 0
+         * @maximum Infinity
          */
         edgeWidth: number;
         /**
          * You can turn off drawing of edges via this property
+         * @default true
          */
         drawEdges: boolean;
         /**
          * You can turn off drawing of faces via this property
+         * @default true
          */
         drawFaces: boolean;
         /**
-         * Precision
+         * Precision of the mesh that will be generated for the shape, lower number will mean more triangles
+         * @default 0.01
+         * @minimum 0
+         * @maximum Infinity
          */
         precision: number;
         /**
          * Draw index of edges in space
+         * @default false
          */
         drawEdgeIndexes: boolean;
         /**
          * Indicates the edge index height if they are drawn
+         * @default 0.06
+         * @minimum 0
+         * @maximum Infinity
          */
         edgeIndexHeight: number;
         /**
          * Edge index colour if the edges are drawn
+         * @default #ff00ff
          */
-        edgeIndexColour: string;
+        edgeIndexColour: Base.Color;
         /**
          * Draw indexes of faces in space
+         * @default false
          */
         drawFaceIndexes: boolean;
         /**
          * Indicates the edge index height if they are drawn
+         * @default 0.06
+         * @minimum 0
+         * @maximum Infinity
          */
         faceIndexHeight: number;
         /**
          * Edge index colour if the edges are drawn
+         * @default #0000ff
          */
-        faceIndexColour: string;
+        faceIndexColour: Base.Color;
     }
     class FaceSubdivisionDto<T> {
         /**
@@ -459,18 +500,28 @@ export const inputOCCTDeclarations = `declare namespace Base {
         constructor(width?: number, length?: number, height?: number, corner?: Base.Point3);
         /**
          * Width of the box
+         * @default 1
+         * @minimum 0
+         * @maximum Infinity
          */
         width?: number;
         /**
          * Length of the box
+         * @default 2
+         * @minimum 0
+         * @maximum Infinity
          */
         length?: number;
         /**
          * Height of the box
+         * @default 3
+         * @minimum 0
+         * @maximum Infinity
          */
         height?: number;
         /**
          * Corner of the box
+         * @default [0, 0, 0]
          */
         corner: Base.Point3;
     }
