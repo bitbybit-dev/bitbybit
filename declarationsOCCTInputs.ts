@@ -98,16 +98,19 @@ export const inputOCCTDeclarations = `declare namespace Base {
         constructor(shapes?: T[]);
         /**
          * The OCCT shapes
+         * @default undefined
          */
         shapes?: T[];
     }
     class FilletTwoEdgesInPlaneDto<T> extends ShapesDto<T> {
         /**
          * First OCCT edge to fillet
+         * @default undefined
          */
         edge1: any;
         /**
          * Second OCCT edge to fillet
+         * @default undefined
          */
         edge2: any;
         /**
@@ -136,10 +139,12 @@ export const inputOCCTDeclarations = `declare namespace Base {
     class FaceFromSurfaceAndWireDto<T, U> extends ShapesDto<T> {
         /**
          * Surface from which to create a face
+         * @default undefined
          */
         surface?: T;
         /**
          * Wire that represents a boundary on the surface to delimit the face
+         * @default undefined
          */
         wire?: U;
         /**
@@ -151,20 +156,24 @@ export const inputOCCTDeclarations = `declare namespace Base {
     class EdgeFromGeom2dCurveAndSurfaceDto<T, U> extends ShapesDto<T> {
         /**
          * Curve 2d
+         * @default undefined
          */
         curve: T;
         /**
          * Surface on which 2d curve will be evaluated
+         * @default undefined
          */
         surface: U;
     }
     class WireOnFaceDto<T, U> extends ShapesDto<T> {
         /**
          * Wire to place on face
+         * @default undefined
          */
         wire: T;
         /**
          * Face on which the wire will be placed
+         * @default undefined
          */
         face: U;
     }
@@ -175,6 +184,7 @@ export const inputOCCTDeclarations = `declare namespace Base {
         constructor(shape?: T);
         /**
          * Brep OpenCascade geometry
+         * @default undefined
          */
         shape?: T;
         /**
@@ -198,6 +208,7 @@ export const inputOCCTDeclarations = `declare namespace Base {
         edgeColour: Base.Color;
         /**
          * Face material
+         * @default undefined
          */
         faceMaterial?: Base.Material;
         /**
@@ -271,6 +282,7 @@ export const inputOCCTDeclarations = `declare namespace Base {
         constructor(shape?: T);
         /**
          * Brep OpenCascade geometry
+         * @default undefined
          */
         shape?: T;
         /**
@@ -325,6 +337,7 @@ export const inputOCCTDeclarations = `declare namespace Base {
         constructor(shape?: T);
         /**
          * Brep OpenCascade geometry
+         * @default undefined
          */
         shape?: T;
         /**
@@ -433,6 +446,7 @@ export const inputOCCTDeclarations = `declare namespace Base {
         constructor(shape?: T);
         /**
          * Brep OpenCascade geometry
+         * @default undefined
          */
         shape?: T;
         /**
@@ -477,6 +491,7 @@ export const inputOCCTDeclarations = `declare namespace Base {
         constructor(shape?: T);
         /**
          * Brep OpenCascade geometry
+         * @default undefined
          */
         shape?: T;
         /**
@@ -501,6 +516,7 @@ export const inputOCCTDeclarations = `declare namespace Base {
         constructor(shape?: T);
         /**
          * Brep OpenCascade geometry
+         * @default undefined
          */
         shape?: T;
         /**
@@ -633,6 +649,7 @@ export const inputOCCTDeclarations = `declare namespace Base {
         radius: number;
         /**
          * Center of the sphere
+         * @default [0, 0, 0]
          */
         center: Base.Point3;
     }
@@ -753,6 +770,7 @@ export const inputOCCTDeclarations = `declare namespace Base {
         constructor(shape?: T, radius?: number, indexes?: number[], all?: boolean);
         /**
          * Shape to apply the fillets
+         * @default undefined
          */
         shape: T;
         /**
@@ -777,6 +795,7 @@ export const inputOCCTDeclarations = `declare namespace Base {
         constructor(shape?: T, distance?: number, indexes?: number[], all?: boolean);
         /**
          * Shape to apply the chamfer
+         * @default undefined
          */
         shape: T;
         /**
@@ -847,6 +866,7 @@ export const inputOCCTDeclarations = `declare namespace Base {
         constructor(shape: T, nrOfDivisions?: number, removeStartPoint?: boolean, removeEndPoint?: boolean);
         /**
          * Shape representing a wire
+         * @default undefined
          */
         shape: T;
         /**
@@ -871,6 +891,7 @@ export const inputOCCTDeclarations = `declare namespace Base {
         constructor(shape: T, param?: number);
         /**
          * Shape representing a geometry
+         * @default undefined
          */
         shape: T;
         /**
@@ -885,10 +906,12 @@ export const inputOCCTDeclarations = `declare namespace Base {
         constructor(face: any, edge: any, tEdgeParam?: number, distance2DParam?: number);
         /**
          * OCCT face to be used for calculation
+         * @default undefined
          */
         face: any;
         /**
          * OCCT edge to be used for calculation
+         * @default undefined
          */
         edge: any;
         /**
@@ -910,6 +933,7 @@ export const inputOCCTDeclarations = `declare namespace Base {
         constructor(shape: T, length?: number);
         /**
          * Shape representing a wire
+         * @default undefined
          */
         shape: T;
         /**
@@ -944,6 +968,7 @@ export const inputOCCTDeclarations = `declare namespace Base {
         constructor(shapes?: T[], makeSolid?: boolean);
         /**
          * Wires through which the loft passes
+         * @default undefined
          */
         shapes: T[];
         /**
@@ -956,6 +981,7 @@ export const inputOCCTDeclarations = `declare namespace Base {
         constructor(shapes?: T[]);
         /**
          * Wires through which the loft passes
+         * @default undefined
          */
         shapes: T[];
         /**
@@ -1022,6 +1048,7 @@ export const inputOCCTDeclarations = `declare namespace Base {
         constructor(shape?: T, distance?: number, tolerance?: number);
         /**
          * Shape to offset
+         * @default undefined
          */
         shape: T;
         /**
@@ -1043,6 +1070,7 @@ export const inputOCCTDeclarations = `declare namespace Base {
         constructor(shape?: T, degrees?: number, direction?: Base.Vector3, copy?: boolean);
         /**
          * Shape to revolve
+         * @default undefined
          */
         shape: T;
         /**
@@ -1067,10 +1095,12 @@ export const inputOCCTDeclarations = `declare namespace Base {
         constructor(shape?: T, shapes?: U[]);
         /**
          * The wire path
+         * @default undefined
          */
         shape: T;
         /**
          * Shapes along the path to be piped
+         * @default undefined
          */
         shapes: U[];
     }
@@ -1078,6 +1108,7 @@ export const inputOCCTDeclarations = `declare namespace Base {
         constructor(shape?: T, direction?: Base.Vector3);
         /**
          * Face to extrude
+         * @default undefined
          */
         shape: T;
         /**
@@ -1090,6 +1121,7 @@ export const inputOCCTDeclarations = `declare namespace Base {
         constructor(shapes?: T[], direction?: Base.Vector3);
         /**
          * Shapes to extrude
+         * @default undefined
          */
         shapes: T[];
         /**
@@ -1102,10 +1134,12 @@ export const inputOCCTDeclarations = `declare namespace Base {
         constructor(shape?: T, shapes?: T[]);
         /**
          * Shape to split
+         * @default undefined
          */
         shape: T;
         /**
          * Shapes to split from main shape
+         * @default undefined
          */
         shapes: T[];
     }
@@ -1113,6 +1147,7 @@ export const inputOCCTDeclarations = `declare namespace Base {
         constructor(shapes?: T[], keepEdges?: boolean);
         /**
          * Objects to be joined together
+         * @default undefined
          */
         shapes: T[];
         /**
@@ -1125,10 +1160,12 @@ export const inputOCCTDeclarations = `declare namespace Base {
         constructor(shape?: T, shapes?: T[], keepEdges?: boolean);
         /**
          * Object to subtract from
+         * @default undefined
          */
         shape: T;
         /**
          * Objects to subtract
+         * @default undefined
          */
         shapes: T[];
         /**
@@ -1141,6 +1178,7 @@ export const inputOCCTDeclarations = `declare namespace Base {
         constructor(shapes?: T[], keepEdges?: boolean);
         /**
          * Shapes to intersect
+         * @default undefined
          */
         shapes: T[];
         /**
@@ -1153,6 +1191,7 @@ export const inputOCCTDeclarations = `declare namespace Base {
         constructor(shape?: T);
         /**
          * Shape on which action should be performed
+         * @default undefined
          */
         shape: T;
     }
@@ -1160,6 +1199,7 @@ export const inputOCCTDeclarations = `declare namespace Base {
         constructor(shapes?: T[]);
         /**
          * The shapes
+         * @default undefined
          */
         shapes: T[];
         /**
@@ -1174,6 +1214,7 @@ export const inputOCCTDeclarations = `declare namespace Base {
         constructor(shape?: T);
         /**
          * The shape
+         * @default undefined
          */
         shape: T;
         /**
@@ -1188,6 +1229,7 @@ export const inputOCCTDeclarations = `declare namespace Base {
         constructor(shape?: T, index?: number);
         /**
          * Shape
+         * @default undefined
          */
         shape: T;
         /**
@@ -1202,6 +1244,7 @@ export const inputOCCTDeclarations = `declare namespace Base {
         constructor(shape?: T, height?: number, degrees?: number);
         /**
          * Wire to extrude by rotating
+         * @default undefined
          */
         shape: T;
         /**
@@ -1223,10 +1266,12 @@ export const inputOCCTDeclarations = `declare namespace Base {
         constructor(shape?: T, shapes?: T[], offset?: number);
         /**
          * Shape to make thick
+         * @default undefined
          */
         shape: T;
         /**
          * closing faces
+         * @default undefined
          */
         shapes: T[];
         /**
@@ -1269,6 +1314,7 @@ export const inputOCCTDeclarations = `declare namespace Base {
         constructor(shape?: T, translation?: Base.Vector3, rotationAxis?: Base.Vector3, rotationDegrees?: number, scaleFactor?: number);
         /**
          * Shape to transform
+         * @default undefined
          */
         shape: T;
         /**
@@ -1300,6 +1346,7 @@ export const inputOCCTDeclarations = `declare namespace Base {
         constructor(shapes?: T[], translation?: Base.Vector3[], rotationAxes?: Base.Vector3[], rotationDegrees?: number[], scaleFactors?: number[]);
         /**
          * Shape to transform
+         * @default undefined
          */
         shapes: T[];
         /**
@@ -1327,6 +1374,7 @@ export const inputOCCTDeclarations = `declare namespace Base {
         constructor(shape?: T, translation?: Base.Vector3);
         /**
          * Shape for translation
+         * @default undefined
          */
         shape: T;
         /**
@@ -1339,6 +1387,7 @@ export const inputOCCTDeclarations = `declare namespace Base {
         constructor(shapes?: T[], translations?: Base.Vector3[]);
         /**
          * Shape for translation
+         * @default undefined
          */
         shapes: T[];
         /**
@@ -1351,6 +1400,7 @@ export const inputOCCTDeclarations = `declare namespace Base {
         constructor(shape?: T, fromOrigin?: Base.Point3, fromDirection?: Base.Vector3, toOrigin?: Base.Point3, toDirection?: Base.Vector3);
         /**
          * Shape for translation
+         * @default undefined
          */
         shape: T;
         /**
@@ -1377,6 +1427,7 @@ export const inputOCCTDeclarations = `declare namespace Base {
         constructor(shapes?: T[], fromOrigins?: Base.Vector3[], fromDirections?: Base.Vector3[], toOrigins?: Base.Vector3[], toDirections?: Base.Vector3[]);
         /**
          * Shape for translation
+         * @default undefined
          */
         shapes: T[];
         /**
@@ -1403,6 +1454,7 @@ export const inputOCCTDeclarations = `declare namespace Base {
         constructor(shape?: T, origin?: Base.Point3, direction?: Base.Vector3);
         /**
          * Shape to mirror
+         * @default undefined
          */
         shape: T;
         /**
@@ -1420,6 +1472,7 @@ export const inputOCCTDeclarations = `declare namespace Base {
         constructor(shapes?: T[], origins?: Base.Point3[], directions?: Base.Vector3[]);
         /**
          * Shape to mirror
+         * @default undefined
          */
         shapes: T[];
         /**
@@ -1437,6 +1490,7 @@ export const inputOCCTDeclarations = `declare namespace Base {
         constructor(shape?: T, origin?: Base.Point3, normal?: Base.Vector3);
         /**
          * Shape to mirror
+         * @default undefined
          */
         shape: T;
         /**
@@ -1454,6 +1508,7 @@ export const inputOCCTDeclarations = `declare namespace Base {
         constructor(shapes?: T[], origins?: Base.Point3[], normals?: Base.Vector3[]);
         /**
          * Shape to mirror
+         * @default undefined
          */
         shapes: T[];
         /**
@@ -1471,6 +1526,7 @@ export const inputOCCTDeclarations = `declare namespace Base {
         constructor(shape?: T, axis?: Base.Vector3, degrees?: number);
         /**
          * Shape to rotate
+         * @default undefined
          */
         shape: T;
         /**
@@ -1490,6 +1546,7 @@ export const inputOCCTDeclarations = `declare namespace Base {
         constructor(shapes?: T[], axes?: Base.Vector3[], angles?: number[]);
         /**
          * Shape to rotate
+         * @default undefined
          */
         shapes: T[];
         /**
@@ -1507,6 +1564,7 @@ export const inputOCCTDeclarations = `declare namespace Base {
         constructor(shape?: T, scale?: number);
         /**
          * Shape to scale
+         * @default undefined
          */
         shape: T;
         /**
@@ -1521,6 +1579,7 @@ export const inputOCCTDeclarations = `declare namespace Base {
         constructor(shapes?: T[], factors?: number[]);
         /**
          * Shape to scale
+         * @default undefined
          */
         shapes: T[];
         /**
@@ -1533,6 +1592,7 @@ export const inputOCCTDeclarations = `declare namespace Base {
         constructor(shape?: T, scale?: Base.Vector3, center?: Base.Point3);
         /**
          * Shape to scale
+         * @default undefined
          */
         shape: T;
         /**
@@ -1550,6 +1610,7 @@ export const inputOCCTDeclarations = `declare namespace Base {
         constructor(shapes?: T[], scales?: Base.Vector3[], centers?: Base.Point3[]);
         /**
          * Shape to scale
+         * @default undefined
          */
         shapes: T[];
         /**
@@ -1567,6 +1628,7 @@ export const inputOCCTDeclarations = `declare namespace Base {
         constructor(shape?: T, precision?: number, adjustYtoZ?: boolean);
         /**
          * Shape to save
+         * @default undefined
          */
         shape: T;
         /**
@@ -1586,6 +1648,7 @@ export const inputOCCTDeclarations = `declare namespace Base {
         constructor(shape?: T, filename?: string, adjustYtoZ?: boolean);
         /**
          * Shape to save
+         * @default undefined
          */
         shape: T;
         /**
@@ -1603,6 +1666,7 @@ export const inputOCCTDeclarations = `declare namespace Base {
         constructor(shape?: T, filename?: string, precision?: number, adjustYtoZ?: boolean);
         /**
          * Shape to save
+         * @default undefined
          */
         shape: T;
         /**
@@ -1625,6 +1689,7 @@ export const inputOCCTDeclarations = `declare namespace Base {
         constructor(assetFile?: File, adjustZtoY?: boolean);
         /**
          * The name of the asset to store in the cache.
+         * @default undefined
          */
         assetFile: File;
         /**
@@ -1636,7 +1701,8 @@ export const inputOCCTDeclarations = `declare namespace Base {
     class LoadStepOrIgesDto<T> {
         constructor(filetext?: any, filename?: string, adjustZtoY?: boolean);
         /**
-         * Shape to save
+         * File text
+         * @default undefined
          */
         filetext: any;
         /**
@@ -1654,6 +1720,7 @@ export const inputOCCTDeclarations = `declare namespace Base {
         constructor(shapes?: T[]);
         /**
          * Shapes to add to compound
+         * @default undefined
          */
         shapes: T[];
     }
@@ -1661,6 +1728,7 @@ export const inputOCCTDeclarations = `declare namespace Base {
         constructor(shape?: T, offset?: number);
         /**
          * Shape to make thick
+         * @default undefined
          */
         shape: T;
         /**
@@ -1675,6 +1743,7 @@ export const inputOCCTDeclarations = `declare namespace Base {
         constructor(shape?: T, planar?: boolean);
         /**
          * Wire shape to convert into a face
+         * @default undefined
          */
         shape: T;
         /**
@@ -1687,6 +1756,7 @@ export const inputOCCTDeclarations = `declare namespace Base {
         constructor(shapes?: T[], planar?: boolean);
         /**
          * Wire shapes to convert into a faces
+         * @default undefined
          */
         shapes: T[];
         /**
@@ -1699,6 +1769,7 @@ export const inputOCCTDeclarations = `declare namespace Base {
         constructor(shapes: T[], tolerance?: number);
         /**
          * Faces to construct a shell from
+         * @default undefined
          */
         shapes: T[];
         /**
@@ -1713,6 +1784,7 @@ export const inputOCCTDeclarations = `declare namespace Base {
         constructor(shape?: T, param?: number);
         /**
          * Face shape
+         * @default undefined
          */
         shape: T;
         /**
@@ -1732,6 +1804,7 @@ export const inputOCCTDeclarations = `declare namespace Base {
         constructor(shape?: T);
         /**
          * Face shape
+         * @default undefined
          */
         shape: T;
         /**
@@ -1865,7 +1938,7 @@ export const inputOCCTDeclarations = `declare namespace Base {
         aroundCenter: boolean;
         /**
          * Width of bounding rectangle
-         * @default 1
+         * @default 2
          * @minimum 0
          * @maximum Infinity
          */
@@ -1879,8 +1952,8 @@ export const inputOCCTDeclarations = `declare namespace Base {
         height: number;
         /**
          * Sharp angle of the parallelogram
-         * @default 0
-         * @minimum 0
+         * @default 15
+         * @minimum -Infinity
          * @maximum Infinity
          */
         angle: number;
@@ -1959,6 +2032,7 @@ export const inputOCCTDeclarations = `declare namespace Base {
     class Geom2dTrimmedCurveDto<T> {
         /**
          * 2D Curve to trim
+         * @default undefined
          */
         shape: T;
         /**
@@ -2006,6 +2080,7 @@ export const inputOCCTDeclarations = `declare namespace Base {
     class SliceDto<T> {
         /**
          * THe shape to slice
+         * @default undefined
          */
         shape: T;
         /**
