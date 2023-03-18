@@ -275,34 +275,46 @@ export const inputOCCTDeclarations = `declare namespace Base {
         shape?: T;
         /**
          * Number of subdivisions on U direction
+         * @default 10
+         * @minimum 1
+         * @maximum Infinity
          */
         nrDivisionsU: number;
         /**
          * Number of subdivisions on V direction
+         * @default 10
+         * @minimum 1
+         * @maximum Infinity
          */
         nrDivisionsV: number;
         /**
          * Sometimes you want to shift your points half way the step distance, especially on periodic surfaces
+         * @default false
          */
         shiftHalfStepU: boolean;
         /**
          * Removes start edge points on U
+         * @default false
          */
         removeStartEdgeU: boolean;
         /**
          * Removes end edge points on U
+         * @default false
          */
         removeEndEdgeU: boolean;
         /**
          * Sometimes you want to shift your points half way the step distance, especially on periodic surfaces
+         * @default false
          */
         shiftHalfStepV: boolean;
         /**
          * Removes start edge points on V
+         * @default false
          */
         removeStartEdgeV: boolean;
         /**
          * Removes end edge points on V
+         * @default false
          */
         removeEndEdgeV: boolean;
     }
@@ -317,58 +329,100 @@ export const inputOCCTDeclarations = `declare namespace Base {
         shape?: T;
         /**
          * Number of subdivisions on U direction
+         * @default 10
+         * @minimum 1
+         * @maximum Infinity
          */
         nrDivisionsU: number;
         /**
          * Number of subdivisions on V direction
+         * @default 10
+         * @minimum 1
+         * @maximum Infinity
          */
         nrDivisionsV: number;
         /**
          * Shift half step every nth U row
+         * @default 1
+         * @minimum 1
+         * @maximum Infinity
          */
         shiftHalfStepNthU: number;
         /**
          * Offset for shift half step every nth U row
+         * @default 1
+         * @minimum 1
+         * @maximum Infinity
          */
         shiftHalfStepUOffsetN: number;
         /**
          * Removes start edge points on U
+         * @default 1
+         * @minimum 1
+         * @maximum Infinity
          */
         removeStartEdgeNthU: number;
         /**
          * Offset for remove start edge points on U
+         * @default 1
+         * @minimum 1
+         * @maximum Infinity
          */
         removeStartEdgeUOffsetN: number;
         /**
          * Removes end edge points on U
+         * @default 1
+         * @minimum 1
+         * @maximum Infinity
          */
         removeEndEdgeNthU: number;
         /**
          * Offset for remove end edge points on U
+         * @default 1
+         * @minimum 1
+         * @maximum Infinity
          */
         removeEndEdgeUOffsetN: number;
         /**
          * Shift half step every nth V row
+         * @default 1
+         * @minimum 1
+         * @maximum Infinity
          */
         shiftHalfStepNthV: number;
         /**
          * Offset for shift half step every nth V row
+         * @default 1
+         * @minimum 1
+         * @maximum Infinity
          */
         shiftHalfStepVOffsetN: number;
         /**
          * Removes start edge points on V
+         * @default 1
+         * @minimum 1
+         * @maximum Infinity
          */
         removeStartEdgeNthV: number;
         /**
          * Offset for remove start edge points on V
+         * @default 1
+         * @minimum 1
+         * @maximum Infinity
          */
         removeStartEdgeVOffsetN: number;
         /**
          * Removes end edge points on V
+         * @default 1
+         * @minimum 1
+         * @maximum Infinity
          */
         removeEndEdgeNthV: number;
         /**
          * Offset for remove end edge points on V
+         * @default 1
+         * @minimum 1
+         * @maximum Infinity
          */
         removeEndEdgeVOffsetN: number;
     }
@@ -383,26 +437,36 @@ export const inputOCCTDeclarations = `declare namespace Base {
         shape?: T;
         /**
          * Linear subdivision direction true - U, false - V
+         * @default true
          */
         isU: boolean;
         /**
          * Param on direction 0 - 1
+         * @default 0.5
+         * @minimum 0
+         * @maximum 1
          */
         param?: number;
         /**
          * Number of subdivisions on opposite direction
+         * @default 10
+         * @minimum 1
+         * @maximum Infinity
          */
         nrPoints: number;
         /**
          * Sometimes you want to shift your points half way the step distance, especially on periodic surfaces
+         * @default false
          */
         shiftHalfStep: boolean;
         /**
          * Removes first point
+         * @default false
          */
         removeStartPoint: boolean;
         /**
          * Removes last point
+         * @default false
          */
         removeEndPoint: boolean;
     }
@@ -417,10 +481,16 @@ export const inputOCCTDeclarations = `declare namespace Base {
         shape?: T;
         /**
          * Param on U direction 0 to 1
+         * @default 0.5
+         * @minimum 0
+         * @maximum 1
          */
         paramU: number;
         /**
          * Param on V direction 0 to 1
+         * @default 0.5
+         * @minimum 0
+         * @maximum 1
          */
         paramV: number;
     }
@@ -435,6 +505,7 @@ export const inputOCCTDeclarations = `declare namespace Base {
         shape?: T;
         /**
          * Params uv
+         * @default [[0.5, 0.5]]
          */
         paramsUV: [number, number][];
     }
@@ -442,38 +513,52 @@ export const inputOCCTDeclarations = `declare namespace Base {
         constructor(points?: Base.Point3[]);
         /**
          * Points points
+         * @default []
          */
         points?: Base.Point3[];
     }
     class SquareDto {
         /**
          * size of square
+         * @default 1
+         * @minimum 0
+         * @maximum Infinity
          */
         size: number;
         /**
          * Center of the square
+         * @default [0, 0, 0]
          */
         center: Base.Point3;
         /**
          * Direction of the square
+         * @default [0, 1, 0]
          */
         direction: Base.Vector3;
     }
     class RectangleDto {
         /**
          * width of the rectangle
+         * @default 1
+         * @minimum 0
+         * @maximum Infinity
          */
         width: number;
         /**
          * Height of the rectangle
+         * @default 2
+         * @minimum 0
+         * @maximum Infinity
          */
         length: number;
         /**
          * Center of the rectangle
+         * @default [0, 0, 0]
          */
         center: Base.Point3;
         /**
          * Direction of the rectangle
+         * @default [0, 1, 0]
          */
         direction: Base.Vector3;
     }
@@ -481,18 +566,30 @@ export const inputOCCTDeclarations = `declare namespace Base {
         constructor(width?: number, length?: number, height?: number, center?: Base.Point3);
         /**
          * Width of the box
+         * @default 1
+         * @minimum 0
+         * @maximum Infinity
          */
         width?: number;
         /**
          * Length of the box
+         * @default 2
+         * @minimum 0
+         * @maximum Infinity
          */
         length?: number;
         /**
          * Height of the box
+         * @default 3
+         * @minimum 0
+         * @maximum Infinity
          */
         height?: number;
         /**
          * Center of the box
+         * @default [0, 0, 0]
+         * @minimum 0
+         * @maximum Infinity
          */
         center: Base.Point3;
     }
@@ -529,6 +626,9 @@ export const inputOCCTDeclarations = `declare namespace Base {
         constructor(radius?: number, center?: Base.Point3);
         /**
          * Radius of the sphere
+         * @default 1
+         * @minimum 0
+         * @maximum Infinity
          */
         radius: number;
         /**
@@ -540,78 +640,109 @@ export const inputOCCTDeclarations = `declare namespace Base {
         constructor(radius1?: number, radius2?: number, height?: number, angle?: number, center?: Base.Point3, direction?: Base.Point3);
         /**
          * First radius of the cone
+         * @default 2
+         * @minimum 0
+         * @maximum Infinity
          */
         radius1: number;
         /**
          * Second radius of the cone
+         * @default 1
+         * @minimum 0
+         * @maximum Infinity
          */
         radius2: number;
         /**
          * Height of the cone
+         * @default 2
+         * @minimum 0
+         * @maximum Infinity
          */
         height: number;
         /**
          * Angle of the cone
+         * @default 360
+         * @minimum 0
+         * @maximum 360
          */
         angle: number;
         /**
          * Center of the cone
+         * @default [0, 0, 0]
          */
         center: Base.Point3;
         /**
          * Direction of the cone
+         * @default [0, 1, 0]
          */
         direction: Base.Point3;
     }
     class LineDto {
         /**
          * Start of the line
+         * @default [0, 0, 0]
          */
         start: Base.Point3;
         /**
          * End of the line
+         * @default [0, 1, 0]
          */
         end: Base.Point3;
     }
     class ArcEdgeThreePointsDto {
         /**
          * Start of the arc
+         * @default [0, 0, 0]
          */
         start: Base.Point3;
         /**
         * Middle of the arc
+        * @default [0, 1, 0]
         */
         middle: Base.Point3;
         /**
          * End of the arc
+         * @default [0, 0, 1]
          */
         end: Base.Point3;
     }
     class CylinderDto {
         /**
          * Radius of the cylinder
+         * @default 1
+         * @minimum 0
+         * @maximum Infinity
          */
         radius: number;
         /**
          * Height of the cylinder
+         * @default 2
+         * @minimum 0
+         * @maximum Infinity
          */
         height: number;
         /**
          * Center of the cylinder
+         * @default [0, 0, 0]
          */
         center: Base.Point3;
         /**
          * Direction for the cylinder
+         * @default [0, 1, 0]
          */
         direction?: Base.Vector3;
     }
     class CylindersOnLinesDto {
         /**
          * Radius of the cylinder
+         * @default 1
+         * @minimum 0
+         * @maximum Infinity
          */
         radius: number;
         /**
          * Lines between which to span cylinders
+         * @default []
          */
         lines: {
             start: Base.Point3;
@@ -626,14 +757,19 @@ export const inputOCCTDeclarations = `declare namespace Base {
         shape: T;
         /**
          * Radius of the fillets
+         * @default 0.1
+         * @minimum 0
+         * @maximum Infinity
          */
         radius?: number;
         /**
          * Radius list
+         * @default undefined
          */
         radiusList?: number[];
         /**
          * List of edge indexes to which apply the fillet, if left empty all edges will be rounded
+         * @default []
          */
         indexes?: any[];
     }
@@ -645,14 +781,19 @@ export const inputOCCTDeclarations = `declare namespace Base {
         shape: T;
         /**
          * Distance for the chamfer
+         * @default 0.1
+         * @minimum 0
+         * @maximum Infinity
          */
         distance?: number;
         /**
          * Distance for the chamfer
+         * @default undefined
          */
         distanceList?: number[];
         /**
          * List of edge indexes to which apply the chamfer, if left empty all edges will be chamfered
+         * @default []
          */
         indexes?: any[];
     }
@@ -660,10 +801,12 @@ export const inputOCCTDeclarations = `declare namespace Base {
         constructor(points?: Base.Point3[], closed?: boolean);
         /**
          * Points through which the BSpline will be created
+         * @default []
          */
         points: Base.Point3[];
         /**
          * Indicates wether BSpline will be cloed
+         * @default false
          */
         closed: boolean;
     }
@@ -671,14 +814,19 @@ export const inputOCCTDeclarations = `declare namespace Base {
         constructor(points?: Base.Point3[], periodic?: boolean);
         /**
          * Points through which the BSpline will be created
+         * @default []
          */
         points: Base.Point3[];
         /**
          * Indicates wether BSpline will be periodic
+         * @default false
          */
         periodic: boolean;
         /**
          * tolerance
+         * @default 1e-7
+         * @minimum 0
+         * @maximum Infinity
          */
         tolerance: number;
     }
@@ -686,10 +834,12 @@ export const inputOCCTDeclarations = `declare namespace Base {
         constructor(points?: Base.Point3[], closed?: boolean);
         /**
          * Points through which the Bezier curve will be created
+         * @default []
          */
         points: Base.Point3[];
         /**
          * Indicates wether Bezier will be cloed
+         * @default false
          */
         closed: boolean;
     }
@@ -701,14 +851,19 @@ export const inputOCCTDeclarations = `declare namespace Base {
         shape: T;
         /**
          * The number of divisions that will be performed on the curve
+         * @default 10
+         * @minimum 1
+         * @maximum Infinity
          */
         nrOfDivisions: number;
         /**
          * Indicates if algorithm should remove start point
+         * @default false
          */
         removeStartPoint: boolean;
         /**
          * Indicates if algorithm should remove end point
+         * @default false
          */
         removeEndPoint: boolean;
     }
@@ -720,8 +875,11 @@ export const inputOCCTDeclarations = `declare namespace Base {
         shape: T;
         /**
          * 0 - 1 value
+         * @default 0.5
+         * @minimum 0
+         * @maximum 1
          */
-        param: any;
+        param: number;
     }
     class PointInFaceDto<T> extends ShapesDto<T> {
         constructor(face: any, edge: any, tEdgeParam?: number, distance2DParam?: number);
@@ -735,10 +893,16 @@ export const inputOCCTDeclarations = `declare namespace Base {
         edge: any;
         /**
          * 0 - 1 value
+         * @default 0.5
+         * @minimum 0
+         * @maximum 1
          */
         tEdgeParam: number;
         /**
          * The point will be distanced on <distance2DParam> from the 2d curve.
+         * @default 0.5
+         * @minimum -Infinity
+         * @maximum Infinity
          */
         distance2DParam: number;
     }
@@ -750,6 +914,9 @@ export const inputOCCTDeclarations = `declare namespace Base {
         shape: T;
         /**
          * length at which to evaluate the point
+         * @default 0.5
+         * @minimum -Infinity
+         * @maximum Infinity
          */
         length: number;
     }
@@ -757,14 +924,19 @@ export const inputOCCTDeclarations = `declare namespace Base {
         constructor(radius?: number, center?: Base.Point3, direction?: Base.Vector3);
         /**
          * Radius of the circle
+         * @default 1
+         * @minimum 0
+         * @maximum Infinity
          */
         radius: number;
         /**
          * Center of the circle
+         * @default [0, 0, 0]
          */
         center: Base.Point3;
         /**
          * Direction vector for circle
+         * @default [0, 1, 0]
          */
         direction: Base.Vector3;
     }
@@ -776,6 +948,7 @@ export const inputOCCTDeclarations = `declare namespace Base {
         shapes: T[];
         /**
          * Tries to make a solid when lofting
+         * @default false
          */
         makeSolid: boolean;
     }
@@ -787,48 +960,63 @@ export const inputOCCTDeclarations = `declare namespace Base {
         shapes: T[];
         /**
          * Tries to make a solid when lofting
+         * @default false
          */
         makeSolid: boolean;
         /**
          * Will make a closed loft.
+         * @default false
          */
         closed: boolean;
         /**
          * Will make a periodic loft.
+         * @default false
          */
         periodic: boolean;
         /**
          * Indicates whether straight sections should be made out of the loft
+         * @default false
          */
         straight: boolean;
         /**
          * This number only is used when closed non straight lofting is used
+         * @default 10
+         * @minimum 1
+         * @maximum Infinity
          */
         nrPeriodicSections: number;
         /**
          * Tell algorithm to use smoothing
+         * @default false
          */
         useSmoothing: boolean;
         /**
          * Maximum u degree
+         * @default 3
          */
         maxUDegree: number;
         /**
          * Tolerance
+         * @default 1.0e-7
+         * @minimum 0
+         * @maximum Infinity
          */
         tolerance: number;
         /**
          * Approximation parametrization type
+         * @default approxCentripetal
          */
         parType: ApproxParametrizationTypeEnum;
         /**
          * Optional if loft should start with a vertex
+         * @default undefined
          */
-        startVertex: Base.Point3;
+        startVertex?: Base.Point3;
         /**
          * Optional if loft should end with a vertex
+         * @default undefined
          */
-        endVertex: Base.Point3;
+        endVertex?: Base.Point3;
     }
     class OffsetDto<T> {
         constructor(shape?: T, distance?: number, tolerance?: number);
@@ -838,10 +1026,16 @@ export const inputOCCTDeclarations = `declare namespace Base {
         shape: T;
         /**
          * Distance of offset
+         * @default 0.2
+         * @minimum -Infinity
+         * @maximum Infinity
          */
         distance: number;
         /**
          * Offset tolerance
+         * @default 0.1
+         * @minimum 0
+         * @maximum Infinity
          */
         tolerance: number;
     }
@@ -853,14 +1047,19 @@ export const inputOCCTDeclarations = `declare namespace Base {
         shape: T;
         /**
          * Angle degrees
+         * @default 360
+         * @minimum 0
+         * @maximum 360
          */
         angle: number;
         /**
          * Direction vector
+         * @default [0, 1, 0]
          */
         direction: Base.Vector3;
         /**
          * Copy original shape
+         * @default false
          */
         copy: boolean;
     }
@@ -883,6 +1082,7 @@ export const inputOCCTDeclarations = `declare namespace Base {
         shape: T;
         /**
          * Direction vector for extrusion
+         * @default [0, 1, 0]
          */
         direction: Base.Vector3;
     }
@@ -894,6 +1094,7 @@ export const inputOCCTDeclarations = `declare namespace Base {
         shapes: T[];
         /**
          * Direction vector for extrusion
+         * @default [0, 1, 0]
          */
         direction: Base.Vector3;
     }
@@ -916,6 +1117,7 @@ export const inputOCCTDeclarations = `declare namespace Base {
         shapes: T[];
         /**
          * Keeps edges
+         * @default false
          */
         keepEdges: boolean;
     }
@@ -931,6 +1133,7 @@ export const inputOCCTDeclarations = `declare namespace Base {
         shapes: T[];
         /**
          * Keeps edges unaffected
+         * @default false
          */
         keepEdges: boolean;
     }
@@ -942,6 +1145,7 @@ export const inputOCCTDeclarations = `declare namespace Base {
         shapes: T[];
         /**
          * Keep the edges
+         * @default false
          */
         keepEdges: boolean;
     }
@@ -960,6 +1164,9 @@ export const inputOCCTDeclarations = `declare namespace Base {
         shapes: T[];
         /**
          * Tolerance used for intersections
+         * @default 1.0e-7
+         * @minimum 0
+         * @maximum Infinity
          */
         tolerance: number;
     }
@@ -971,6 +1178,9 @@ export const inputOCCTDeclarations = `declare namespace Base {
         shape: T;
         /**
          * Tolerance used for intersections
+         * @default 1.0e-7
+         * @minimum 0
+         * @maximum Infinity
          */
         tolerance: number;
     }
@@ -982,6 +1192,9 @@ export const inputOCCTDeclarations = `declare namespace Base {
         shape: T;
         /**
          * Index of the entity
+         * @default 0
+         * @minimum 0
+         * @maximum Infinity
          */
         index: number;
     }
@@ -993,10 +1206,16 @@ export const inputOCCTDeclarations = `declare namespace Base {
         shape: T;
         /**
          * Height of rotation
+         * @default 1
+         * @minimum 0
+         * @maximum Infinity
          */
         height: number;
         /**
          * Rotation in degrees
+         * @default 360
+         * @minimum 0
+         * @maximum 360
          */
         angle: number;
     }
@@ -1012,27 +1231,37 @@ export const inputOCCTDeclarations = `declare namespace Base {
         shapes: T[];
         /**
          * Offset to apply
+         * @default 1
+         * @minimum 0
+         * @maximum Infinity
          */
         offset: number;
         /**
          * Tolerance defines the tolerance criterion for coincidence in generated shapes
+         * @default 1.0e-3
+         * @minimum 0
+         * @maximum Infinity
          */
         tolerance: number;
         /**
          * if Intersection is false (default value), the intersection is calculated with the parallels to the two adjacent shapes
+         * @default false
          */
         intersection: boolean;
         /**
          * SelfInter tells the algorithm whether a computation to eliminate self-intersections needs to be applied to the resulting shape. However, as this functionality is not yet implemented, you should use the default value (false)
+         * @default false
          */
         selfIntersection: boolean;
         /**
          * Join defines how to fill the holes that may appear between parallels to the two adjacent faces. It may take values GeomAbs_Arc or GeomAbs_Intersection:
          * if Join is equal to GeomAbs_Arc, then pipes are generated between two free edges of two adjacent parallels, and spheres are generated on "images" of vertices; it is the default value
+         * @default arc
         */
         joinType: JoinTypeEnum;
         /**
          * if Join is equal to GeomAbs_Intersection, then the parallels to the two adjacent faces are enlarged and intersected, so that there are no free edges on parallels to faces. RemoveIntEdges flag defines whether to remove the INTERNAL edges from the result or not. Warnings Since the algorithm of MakeThickSolid is based on MakeOffsetShape algorithm, the warnings are the same as for MakeOffsetShape.
+         * @default false
          */
         removeIntEdges: boolean;
     }
@@ -1044,18 +1273,26 @@ export const inputOCCTDeclarations = `declare namespace Base {
         shape: T;
         /**
          * Translation to apply
+         * @default [0,0,0]
          */
         translation: Base.Vector3;
         /**
          * Rotation to apply
+         * @default [0,1,0]
          */
         rotationAxis: Base.Vector3;
         /**
          * Rotation degrees
+         * @default 0
+         * @minimum 0
+         * @maximum 360
          */
         rotationAngle: number;
         /**
          * Scale factor to apply
+         * @default 1
+         * @minimum 0
+         * @maximum Infinity
          */
         scaleFactor: number;
     }
@@ -1067,18 +1304,22 @@ export const inputOCCTDeclarations = `declare namespace Base {
         shapes: T[];
         /**
          * Translation to apply
+         * @default [[0,0,0]]
          */
         translations: Base.Vector3[];
         /**
          * Rotation to apply
+         * @default [[0,1,0]]
          */
         rotationAxes: Base.Vector3[];
         /**
          * Rotation degrees
+         * @default [0]
          */
         rotationAngles: number[];
         /**
          * Scale factor to apply
+         * @default [1]
          */
         scaleFactors: number[];
     }
@@ -1090,6 +1331,7 @@ export const inputOCCTDeclarations = `declare namespace Base {
         shape: T;
         /**
          * Translation vector
+         * @default [0, 0, 0]
          */
         translation: Base.Vector3;
     }
@@ -1101,6 +1343,7 @@ export const inputOCCTDeclarations = `declare namespace Base {
         shapes: T[];
         /**
          * Translation vector
+         * @default [[0, 0, 0]]
          */
         translations: Base.Vector3[];
     }
@@ -1111,18 +1354,22 @@ export const inputOCCTDeclarations = `declare namespace Base {
          */
         shape: T;
         /**
+         * @default [0, 0, 0]
          */
         fromOrigin: Base.Point3;
         /**
          * From direction
+         * @default [0, 0, 1]
          */
         fromDirection: Base.Vector3;
         /**
          * To origin
+         * @default [0, 1, 0]
          */
         toOrigin: Base.Point3;
         /**
          * To direction
+         * @default [0, 1, 0]
          */
         toDirection: Base.Vector3;
     }
@@ -1133,18 +1380,22 @@ export const inputOCCTDeclarations = `declare namespace Base {
          */
         shapes: T[];
         /**
+         * @default [[0, 0, 0]]
          */
         fromOrigins: Base.Point3[];
         /**
          * From direction
+         * @default [[0, 0, 1]]
          */
         fromDirections: Base.Vector3[];
         /**
          * To origin
+         * @default [[0, 1, 0]]
          */
         toOrigins: Base.Point3[];
         /**
          * To direction
+         * @default [[0, 1, 0]]
          */
         toDirections: Base.Vector3[];
     }
@@ -1156,10 +1407,12 @@ export const inputOCCTDeclarations = `declare namespace Base {
         shape: T;
         /**
          * Axis origin point
+         * @default [0, 0, 0]
          */
         origin: Base.Point3;
         /**
          * Axis direction vector
+         * @default [0, 0, 1]
          */
         direction: Base.Vector3;
     }
@@ -1171,10 +1424,12 @@ export const inputOCCTDeclarations = `declare namespace Base {
         shapes: T[];
         /**
          * Axis origin point
+         * @default [[0, 0, 0]]
          */
         origins: Base.Point3[];
         /**
          * Axis direction vector
+         * @default [[0, 0, 1]]
          */
         directions: Base.Vector3[];
     }
@@ -1186,10 +1441,12 @@ export const inputOCCTDeclarations = `declare namespace Base {
         shape: T;
         /**
          * Axis origin point
+         * @default [0, 0, 0]
          */
         origin: Base.Point3;
         /**
          * First normal axis direction vector
+         * @default [0, 0, 1]
          */
         normal: Base.Vector3;
     }
@@ -1201,10 +1458,12 @@ export const inputOCCTDeclarations = `declare namespace Base {
         shapes: T[];
         /**
          * Axis origin point
+         * @default [[0, 0, 0]]
          */
         origins: Base.Point3[];
         /**
          * First normal axis direction vector
+         * @default [[0, 0, 1]]
          */
         normals: Base.Vector3[];
     }
@@ -1216,10 +1475,14 @@ export const inputOCCTDeclarations = `declare namespace Base {
         shape: T;
         /**
          * Axis on which to rotate
+         * @default [0, 0, 1]
          */
         axis: Base.Vector3;
         /**
          * Rotation degrees
+         * @default 0
+         * @minimum 0
+         * @maximum 360
          */
         angle: number;
     }
@@ -1231,10 +1494,12 @@ export const inputOCCTDeclarations = `declare namespace Base {
         shapes: T[];
         /**
          * Axis on which to rotate
+         * @default [[0, 0, 1]]
          */
         axes: Base.Vector3[];
         /**
          * Rotation degrees
+         * @default [0]
          */
         angles: number[];
     }
@@ -1246,6 +1511,9 @@ export const inputOCCTDeclarations = `declare namespace Base {
         shape: T;
         /**
          * Scale factor to apply
+         * @default 1
+         * @minimum 0
+         * @maximum Infinity
          */
         factor: number;
     }
@@ -1257,6 +1525,7 @@ export const inputOCCTDeclarations = `declare namespace Base {
         shapes: T[];
         /**
          * Scale factor to apply
+         * @default [1]
          */
         factors: number[];
     }
@@ -1268,10 +1537,12 @@ export const inputOCCTDeclarations = `declare namespace Base {
         shape: T;
         /**
          * Scale factor to apply
+         * @default [1, 1, 1]
          */
         scale: Base.Vector3;
         /**
          * Scale from the center
+         * @default [0, 0, 0]
          */
         center: Base.Point3;
     }
@@ -1283,10 +1554,12 @@ export const inputOCCTDeclarations = `declare namespace Base {
         shapes: T[];
         /**
          * Scale factor to apply
+         * @default [[1, 1, 1]]
          */
         scales: Base.Vector3[];
         /**
          * Scale from the center
+         * @default [[0, 0, 0]]
          */
         centers: Base.Point3[];
     }
@@ -1297,11 +1570,15 @@ export const inputOCCTDeclarations = `declare namespace Base {
          */
         shape: T;
         /**
-         * File name
+         * Precision of the mesh
+         * @default 0.01
+         * @minimum 0
+         * @maximum Infinity
          */
         precision: number;
         /**
          * Adjust Y (up) coordinate system to Z (up) coordinate system
+         * @default false
          */
         adjustYtoZ: boolean;
     }
@@ -1313,10 +1590,12 @@ export const inputOCCTDeclarations = `declare namespace Base {
         shape: T;
         /**
          * File name
+         * @default "shape.step"
          */
         filename: string;
         /**
          * Adjust Y (up) coordinate system to Z (up) coordinate system
+         * @default false
          */
         adjustYtoZ: boolean;
     }
@@ -1328,14 +1607,17 @@ export const inputOCCTDeclarations = `declare namespace Base {
         shape: T;
         /**
          * File name
+         * @default "shape.stl"
          */
         filename: string;
         /**
          * Precision of the mesh - lower means higher res
+         * @default 0.01
          */
         precision: number;
         /**
          * Adjust Y (up) coordinate system to Z (up) coordinate system
+         * @default false
          */
         adjustYtoZ: boolean;
     }
@@ -1347,6 +1629,7 @@ export const inputOCCTDeclarations = `declare namespace Base {
         assetFile: File;
         /**
          * Adjusts models that use Z coordinate as up to Y up system.
+         * @default true
          */
         adjustZtoY: boolean;
     }
@@ -1358,10 +1641,12 @@ export const inputOCCTDeclarations = `declare namespace Base {
         filetext: any;
         /**
          * File name
+         * @default "shape.igs"
          */
         filename: string;
         /**
          * Adjusts models that use Z coordinate as up to Y up system.
+         * @default true
          */
         adjustZtoY: boolean;
     }
@@ -1380,6 +1665,9 @@ export const inputOCCTDeclarations = `declare namespace Base {
         shape: T;
         /**
          * Offset distance
+         * @default 1
+         * @minimum -Infinity
+         * @maximum Infinity
          */
         offset: number;
     }
@@ -1391,6 +1679,7 @@ export const inputOCCTDeclarations = `declare namespace Base {
         shape: T;
         /**
          * Should plane be planar
+         * @default false
          */
         planar: boolean;
     }
@@ -1402,6 +1691,7 @@ export const inputOCCTDeclarations = `declare namespace Base {
         shapes: T[];
         /**
          * Should plane be planar
+         * @default false
          */
         planar: boolean;
     }
@@ -1412,7 +1702,10 @@ export const inputOCCTDeclarations = `declare namespace Base {
          */
         shapes: T[];
         /**
-         *
+         * Tolerance of sewing
+         * @default 1.0e-7
+         * @minimum 0
+         * @maximum Infinity
          */
         tolerance: number;
     }
@@ -1424,10 +1717,14 @@ export const inputOCCTDeclarations = `declare namespace Base {
         shape: T;
         /**
          * Param at which to find isocurve
+         * @default 0.5
+         * @minimum 0
+         * @maximum Infinity
          */
         param: number;
         /**
          * Direction to find the isocurve
+         * @default u
          */
         dir: 'u' | 'v';
     }
@@ -1439,156 +1736,223 @@ export const inputOCCTDeclarations = `declare namespace Base {
         shape: T;
         /**
          * Number of points on U direction
+         * @default 10
+         * @minimum 1
+         * @maximum Infinity
          */
         nrOfPointsU: number;
         /**
          * Number of points on V direction
+         * @default 10
+         * @minimum 1
+         * @maximum Infinity
          */
         nrOfPointsV: number;
         /**
          * Flatten the output
+         * @default false
          */
         flat: boolean;
     }
     class Geom2dEllipseDto {
         /**
          * Center of the ellipse
+         * @default [0,0]
          */
         center: Base.Point2;
         /**
          * Direction of the vector
+         * @default [1,0]
          */
         direction: Base.Vector2;
         /**
          * Minor radius of an ellipse
+         * @default 1
+         * @minimum 0
+         * @maximum Infinity
          */
         radiusMinor: number;
         /**
          * Major radius of an ellipse
+         * @default 1
+         * @minimum 0
+         * @maximum Infinity
          */
         radiusMajor: number;
         /**
          * If true will sense the direction
+         * @default false
          */
         sense: boolean;
     }
     class Geom2dCircleDto {
         /**
          * Center of the circle
+         * @default [0,0]
          */
         center: Base.Point2;
         /**
          * Direction of the vector
+         * @default [1,0]
          */
         direction: Base.Vector2;
         /**
          * Radius of the circle
+         * @default 1
+         * @minimum 0
+         * @maximum Infinity
          */
         radius: number;
         /**
          * If true will sense the direction
+         * @default false
          */
         sense: boolean;
     }
     class StarDto {
         /**
          * Center of the circle
+         * @default [0,0,0]
          */
         center: Base.Point3;
         /**
          * Direction
+         * @default [0, 1, 0]
          */
         direction: Base.Vector3;
         /**
          * Direction of the vector
+         * @default 7
+         * @minimum 3
+         * @maximum Infinity
          */
         numRays: number;
         /**
          * Angle of the rays
+         * @default 2
+         * @minimum 0
+         * @maximum Infinity
          */
         outerRadius: number;
         /**
          * Angle of the rays
+         * @default 1
+         * @minimum 0
+         * @maximum Infinity
          */
         innerRadius: number;
         /**
          * Construct half of the star
+         * @default false
          */
         half: boolean;
     }
     class ParallelogramDto {
         /**
          * Center of the circle
+         * @default [0, 0, 0]
          */
         center: Base.Point3;
         /**
          * Direction
+         * @default [0, 1, 0]
          */
         direction: Base.Vector3;
         /**
          * Indicates whether to draw the parallelogram around the center point or start from corner.
+         * @default true
          */
         aroundCenter: boolean;
         /**
          * Width of bounding rectangle
+         * @default 1
+         * @minimum 0
+         * @maximum Infinity
          */
         width: number;
         /**
          * Height of bounding rectangle
+         * @default 1
+         * @minimum 0
+         * @maximum Infinity
          */
         height: number;
         /**
          * Sharp angle of the parallelogram
+         * @default 0
+         * @minimum 0
+         * @maximum Infinity
          */
         angle: number;
     }
     class NGonWireDto {
         /**
          * Center of the circle
+         * @default [0, 0, 0]
          */
         center: Base.Point3;
         /**
          * Direction
+         * @default [0, 1, 0]
          */
         direction: Base.Vector3;
         /**
          * How many corners to create.
+         * @default 6
+         * @minimum 3
+         * @maximum Infinity
          */
         nrCorners: number;
         /**
          * Radius of nGon
+         * @default 1
+         * @minimum 0
+         * @maximum Infinity
          */
         radius: number;
     }
     class EllipseDto {
         /**
          * Center of the ellipse
+         * @default [0, 0, 0]
          */
         center: Base.Point3;
         /**
          * Direction of the vector
+         * @default [0, 1, 0]
          */
         direction: Base.Vector3;
         /**
          * Minor radius of an ellipse
+         * @default 1
+         * @minimum 0
+         * @maximum Infinity
          */
         radiusMinor: number;
         /**
          * Major radius of an ellipse
+         * @default 1
+         * @minimum 0
+         * @maximum Infinity
          */
         radiusMajor: number;
     }
     class GeomCylindricalSurfaceDto {
         /**
          * Radius of the cylindrical surface
+         * @default 1
+         * @minimum 0
+         * @maximum Infinity
          */
         radius: number;
         /**
          * Center of the cylindrical surface
+         * @default [0, 0, 0]
          */
         center: Base.Point3;
         /**
          * Axis of direction for cylindrical surface
+         * @default [0, 1, 0]
          */
         direction: Base.Vector3;
     }
@@ -1599,16 +1963,23 @@ export const inputOCCTDeclarations = `declare namespace Base {
         shape: T;
         /**
          * First param on the curve for trimming. U1 can be greater or lower than U2. The returned curve is oriented from U1 to U2.
+         * @default 0
+         * @minimum 0
+         * @maximum Infinity
          */
         u1: number;
         /**
          * Second parameter on the curve for trimming
+         * @default 1
+         * @minimum 0
+         * @maximum Infinity
          */
         u2: number;
         /**
          *  If the basis curve C is periodic there is an ambiguity because two parts are available.
          *  In this case by default the trimmed curve has the same orientation as the basis curve (Sense = True).
          * If Sense = False then the orientation of the trimmed curve is opposite to the orientation of the basis curve C.
+         * @default true
          */
         sense: boolean;
         /**
@@ -1616,16 +1987,19 @@ export const inputOCCTDeclarations = `declare namespace Base {
          * junction point (except if the junction point is at the beginning or at the end of the trimmed curve)
          * because you could lose the fundamental characteristics of the basis curve which are used for example
          * to compute the derivatives of the trimmed curve. So for a closed curve the rules are the same as for a open curve.
+         * @default true
          */
         theAdjustPeriodic: boolean;
     }
     class Geom2dSegmentDto {
         /**
          * Start 2d point for segment
+         * @default [0, 0]
          */
         start: Base.Point2;
         /**
          * End 2d point for segment
+         * @default [1, 0]
          */
         end: Base.Point2;
     }
@@ -1636,10 +2010,14 @@ export const inputOCCTDeclarations = `declare namespace Base {
         shape: T;
         /**
          * Step at which to divide the shape
+         * @default 2
+         * @minimum 1
+         * @maximum Infinity
          */
         step: number;
         /**
          * Direction vector
+         * @default [0, 1, 0]
          */
         direction: Base.Vector3;
     }
