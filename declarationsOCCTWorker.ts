@@ -22,6 +22,7 @@ export const occtWorkerDeclarations = `declare class BitByBitOCCT {
      * @param inputs Objects to join
      * @returns OpenCascade joined shape
      * @shortname union
+     * @drawable true
      */
     union(inputs: Inputs.OCCT.UnionDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.OCCT.TopoDSShapePointer>;
     /**
@@ -30,6 +31,7 @@ export const occtWorkerDeclarations = `declare class BitByBitOCCT {
      * @param inputs Main shape and shapes to differ
      * @returns OpenCascade difference shape
      * @shortname difference
+     * @drawable true
      */
     difference(inputs: Inputs.OCCT.DifferenceDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.OCCT.TopoDSShapePointer>;
     /**
@@ -38,6 +40,7 @@ export const occtWorkerDeclarations = `declare class BitByBitOCCT {
      * @param inputs Main shape and shapes to differ
      * @returns OpenCascade intersection of shapes
      * @shortname intersection
+     * @drawable true
      */
     intersection(inputs: Inputs.OCCT.IntersectionDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.OCCT.TopoDSShapePointer>;
 }declare class OCCTFillets {
@@ -50,6 +53,7 @@ export const occtWorkerDeclarations = `declare class BitByBitOCCT {
     * @returns OpenCascade shape with filleted edges
     * @group 3d
     * @shortname fillet
+    * @drawable true
     */
     filletEdges(inputs: Inputs.OCCT.FilletDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.OCCT.TopoDSShapePointer>;
     /**
@@ -59,6 +63,7 @@ export const occtWorkerDeclarations = `declare class BitByBitOCCT {
      * @returns OpenCascade shape with chamfered edges
      * @group 3d
      * @shortname chamfer
+    * @drawable true
      */
     chamferEdges(inputs: Inputs.OCCT.ChamferDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.OCCT.TopoDSShapePointer>;
     /**
@@ -68,6 +73,7 @@ export const occtWorkerDeclarations = `declare class BitByBitOCCT {
      * @returns OpenCascade filleted shape result
      * @group 2d
      * @shortname fillet
+     * @drawable true
      */
     fillet2d(inputs: Inputs.OCCT.FilletDto<Inputs.OCCT.TopoDSWirePointer | Inputs.OCCT.TopoDSFacePointer>): Promise<Inputs.OCCT.TopoDSWirePointer | Inputs.OCCT.TopoDSFacePointer>;
     /**
@@ -77,6 +83,7 @@ export const occtWorkerDeclarations = `declare class BitByBitOCCT {
      * @returns OpenCascade wire shape if solution is found
      * @group 2d
      * @shortname fillet 2 edges
+     * @drawable true
      */
     filletTwoEdgesInPlaneIntoAWire(inputs: Inputs.OCCT.FilletTwoEdgesInPlaneDto<Inputs.OCCT.TopoDSEdgePointer>): Promise<Inputs.OCCT.TopoDSWirePointer>;
 }declare class OCCTCurves {
@@ -125,6 +132,7 @@ export const occtWorkerDeclarations = `declare class BitByBitOCCT {
      * @returns Opencascade Geom_Circle curve
      * @group primitives
      * @shortname circle
+     * @drawable false
      */
     geomCircleCurve(inputs: Inputs.OCCT.CircleDto): Promise<Inputs.OCCT.GeomCurvePointer>;
     /**
@@ -134,6 +142,7 @@ export const occtWorkerDeclarations = `declare class BitByBitOCCT {
      * @returns Opencascade Geom_Ellipse curve
      * @group primitives
      * @shortname ellipse
+     * @drawable false
      */
     geomEllipseCurve(inputs: Inputs.OCCT.EllipseDto): Promise<Inputs.OCCT.GeomCurvePointer>;
 }declare class OCCTGeom {
@@ -149,6 +158,7 @@ export const occtWorkerDeclarations = `declare class BitByBitOCCT {
      * @param inputs Cylinder parameters
      * @returns OpenCascade cylindrical surface
      * @shortname cylindrical
+     * @drawable false
      */
     cylindricalSurface(inputs: Inputs.OCCT.GeomCylindricalSurfaceDto): Promise<Inputs.OCCT.GeomSurfacePointer>;
     /**
@@ -157,6 +167,7 @@ export const occtWorkerDeclarations = `declare class BitByBitOCCT {
      * @param inputs Face shape
      * @returns OpenCascade geom surface
      * @shortname from face
+     * @drawable false
      */
     surfaceFromFace(inputs: Inputs.OCCT.ShapeDto<Inputs.OCCT.TopoDSFacePointer>): Promise<Inputs.OCCT.GeomSurfacePointer>;
 }declare class OCCTIO {
@@ -168,6 +179,7 @@ export const occtWorkerDeclarations = `declare class BitByBitOCCT {
      * @param inputs STEP filename and shape to be saved
      * @returns String of a step file
      * @shortname save step
+     * @drawable false
      */
     saveShapeSTEP(inputs: Inputs.OCCT.SaveStepDto<Inputs.OCCT.TopoDSShapePointer>): Promise<string>;
 }/**
@@ -189,6 +201,7 @@ declare class OCCT {
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt.OCCT.html#shapeToMesh
      * @param inputs shape
      * @shortname shape to mesh
+     * @drawable false
      */
     shapeToMesh(inputs: Inputs.OCCT.ShapeToMeshDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.OCCT.DecomposedMeshDto>;
     /**
@@ -214,6 +227,7 @@ declare class OCCT {
      * @param inputs Loft wires
      * @returns Resulting loft shape
      * @shortname loft
+     * @drawable true
      */
     loft(inputs: Inputs.OCCT.LoftDto<Inputs.OCCT.TopoDSWirePointer>): Promise<Inputs.OCCT.TopoDSShapePointer>;
     /**
@@ -222,6 +236,7 @@ declare class OCCT {
      * @param inputs Advanced loft parameters
      * @returns Resulting loft shell
      * @shortname loft adv.
+     * @drawable true
      */
     loftAdvanced(inputs: Inputs.OCCT.LoftAdvancedDto<Inputs.OCCT.TopoDSWirePointer>): Promise<Inputs.OCCT.TopoDSShapePointer>;
     /**
@@ -230,6 +245,7 @@ declare class OCCT {
      * @param inputs Shape to offset and distance with tolerance
      * @returns Resulting offset shape
      * @shortname offset
+     * @drawable true
      */
     offset(inputs: Inputs.OCCT.OffsetDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.OCCT.TopoDSShapePointer>;
     /**
@@ -238,6 +254,7 @@ declare class OCCT {
      * @param inputs Shape to extrude and direction parameter with tolerance
      * @returns Resulting extruded shape
      * @shortname extrude
+     * @drawable true
      */
     extrude(inputs: Inputs.OCCT.ExtrudeDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.OCCT.TopoDSShapePointer>;
     /**
@@ -246,6 +263,7 @@ declare class OCCT {
      * @param inputs Shapes to extrude and direction parameter with tolerance
      * @returns Resulting extruded shapes
      * @shortname extrusions
+     * @drawable true
      */
     extrudeShapes(inputs: Inputs.OCCT.ExtrudeShapesDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.OCCT.TopoDSShapePointer>;
     /**
@@ -254,6 +272,7 @@ declare class OCCT {
      * @param inputs Face to split and edges to split with
      * @returns Resulting split shape
      * @shortname split
+     * @drawable true
      */
     splitShapeWithShapes(inputs: Inputs.OCCT.SplitDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.OCCT.TopoDSShapePointer>;
     /**
@@ -262,6 +281,7 @@ declare class OCCT {
      * @param inputs Revolve parameters
      * @returns Resulting revolved shape
      * @shortname revolve
+     * @drawable true
      */
     revolve(inputs: Inputs.OCCT.RevolveDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.OCCT.TopoDSShapePointer>;
     /**
@@ -270,6 +290,7 @@ declare class OCCT {
      * @param inputs Rotated extrusion inputs
      * @returns OpenCascade shape
      * @shortname rotated extrude
+     * @drawable true
      */
     rotatedExtrude(inputs: Inputs.OCCT.RotationExtrudeDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.OCCT.TopoDSShapePointer>;
     /**
@@ -278,6 +299,7 @@ declare class OCCT {
      * @param inputs Path wire and shapes along the path
      * @returns OpenCascade shape
      * @shortname pipe
+     * @drawable true
      */
     pipe(inputs: Inputs.OCCT.ShapeShapesDto<Inputs.OCCT.TopoDSWirePointer, Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.OCCT.TopoDSShapePointer>;
     /**
@@ -286,6 +308,7 @@ declare class OCCT {
      * @param inputs OpenCascade shape
      * @returns OpenCascade solid shape
      * @shortname thicken
+     * @drawable true
      */
     makeThickSolidSimple(inputs: Inputs.OCCT.ThisckSolidSimpleDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.OCCT.TopoDSShapePointer>;
     /**
@@ -294,6 +317,7 @@ declare class OCCT {
      * @param inputs OpenCascade shape and options for thickening
      * @returns OpenCascade solid shape
      * @shortname joined thicken
+     * @drawable true
      */
     makeThickSolidByJoin(inputs: Inputs.OCCT.ThickSolidByJoinDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.OCCT.TopoDSShapePointer>;
 }declare class OCCTCompound {
@@ -304,8 +328,9 @@ declare class OCCT {
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_compound.OCCTCompound.html#makeCompound
      * @param inputs OpenCascade shapes
      * @returns OpenCascade compounded shape
-    * @group create
-    * @shortname make
+     * @group create
+     * @shortname make
+     * @drawable true
      */
     makeCompound(inputs: Inputs.OCCT.CompoundShapesDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.OCCT.TopoDSCompoundPointer>;
 }declare class OCCTEdge {
@@ -318,6 +343,7 @@ declare class OCCT {
      * @returns OpenCascade edge
      * @group primitives
      * @shortname line
+     * @drawable true
      */
     line(inputs: Inputs.OCCT.LineDto): Promise<Inputs.OCCT.TopoDSEdgePointer>;
     /**
@@ -327,6 +353,7 @@ declare class OCCT {
      * @returns OpenCascade edge
      * @group primitives
      * @shortname arc 3 points
+     * @drawable true
      */
     arcThroughThreePoints(inputs: Inputs.OCCT.ArcEdgeThreePointsDto): Promise<Inputs.OCCT.TopoDSEdgePointer>;
     /**
@@ -336,6 +363,7 @@ declare class OCCT {
      * @returns OpenCascade circle edge
      * @group primitives
      * @shortname circle
+     * @drawable true
      */
     createCircleEdge(inputs: Inputs.OCCT.CircleDto): Promise<Inputs.OCCT.TopoDSEdgePointer>;
     /**
@@ -345,6 +373,7 @@ declare class OCCT {
      * @returns OpenCascade ellipse edge
      * @group primitives
      * @shortname ellipse
+     * @drawable true
      */
     createEllipseEdge(inputs: Inputs.OCCT.EllipseDto): Promise<Inputs.OCCT.TopoDSEdgePointer>;
     /**
@@ -354,6 +383,7 @@ declare class OCCT {
      * @returns OpenCascade shape with no internal edges
      * @group shapes
      * @shortname remove internal
+     * @drawable true
      */
     removeInternalEdges(inputs: Inputs.OCCT.ShapeDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.OCCT.TopoDSShapePointer>;
     /**
@@ -363,6 +393,7 @@ declare class OCCT {
      * @returns OpenCascade edge
      * @group shapes
      * @shortname get edge
+     * @drawable true
      */
     getEdge(inputs: Inputs.OCCT.ShapeIndexDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.OCCT.TopoDSEdgePointer>;
     /**
@@ -372,6 +403,7 @@ declare class OCCT {
      * @returns OpenCascade edge list
      * @group shapes
      * @shortname get edges
+     * @drawable true
      */
     getEdges(inputs: Inputs.OCCT.ShapeDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.OCCT.TopoDSEdgePointer[]>;
     /**
@@ -381,6 +413,7 @@ declare class OCCT {
      * @returns OpenCascade TopoDS_Edge
      * @group from
      * @shortname 2d curve and surface
+     * @drawable true
      */
     makeEdgeFromGeom2dCurveAndSurface(inputs: Inputs.OCCT.EdgeFromGeom2dCurveAndSurfaceDto<Inputs.OCCT.Geom2dCurvePointer, Inputs.OCCT.GeomSurfacePointer>): Promise<Inputs.OCCT.TopoDSEdgePointer>;
     /**
@@ -390,6 +423,7 @@ declare class OCCT {
      * @returns List of points
      * @group get
      * @shortname corners
+     * @drawable true
      */
     getCornerPointsOfEdgesForShape(inputs: Inputs.OCCT.ShapeDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.Base.Point3[]>;
     /**
@@ -399,6 +433,7 @@ declare class OCCT {
      * @returns Length
      * @group get
      * @shortname length
+     * @drawable false
      */
     getEdgeLength(inputs: Inputs.OCCT.ShapeDto<Inputs.OCCT.TopoDSEdgePointer>): Promise<number>;
     /**
@@ -408,6 +443,7 @@ declare class OCCT {
      * @returns Lengths
      * @group get
      * @shortname lengths
+     * @drawable false
      */
     getEdgesLengths(inputs: Inputs.OCCT.ShapesDto<Inputs.OCCT.TopoDSEdgePointer>): Promise<number[]>;
     /**
@@ -417,6 +453,7 @@ declare class OCCT {
      * @returns Point representing center of mass
      * @group get
      * @shortname center of mass
+     * @drawable true
      */
     getEdgeCenterOfMass(inputs: Inputs.OCCT.ShapeDto<Inputs.OCCT.TopoDSEdgePointer>): Promise<Inputs.Base.Point3>;
     /**
@@ -426,6 +463,7 @@ declare class OCCT {
      * @returns Points representing centers of mass
      * @group get
      * @shortname centers of mass
+     * @drawable true
      */
     getEdgesCentersOfMass(inputs: Inputs.OCCT.ShapesDto<Inputs.OCCT.TopoDSEdgePointer>): Promise<Inputs.Base.Point3[]>;
     /**
@@ -435,6 +473,7 @@ declare class OCCT {
      * @returns Point on param
      * @group extract
      * @shortname point at param
+     * @drawable true
      */
     pointOnEdgeAtParam(inputs: Inputs.OCCT.DataOnGeometryAtParamDto<Inputs.OCCT.TopoDSEdgePointer>): Promise<Inputs.Base.Point3>;
     /**
@@ -444,6 +483,7 @@ declare class OCCT {
      * @returns Tangent vector on param
      * @group extract
      * @shortname tangent at param
+     * @drawable true
      */
     tangentOnEdgeAtParam(inputs: Inputs.OCCT.DataOnGeometryAtParamDto<Inputs.OCCT.TopoDSEdgePointer>): Promise<Inputs.Base.Point3>;
     /**
@@ -453,6 +493,7 @@ declare class OCCT {
      * @returns Point on edge
      * @group extract
      * @shortname point at length
+     * @drawable true
      */
     pointOnEdgeAtLength(inputs: Inputs.OCCT.DataOnGeometryAtLengthDto<Inputs.OCCT.TopoDSEdgePointer>): Promise<Inputs.Base.Point3>;
     /**
@@ -462,6 +503,7 @@ declare class OCCT {
      * @returns Tangent vector on edge
      * @group extract
      * @shortname tangent at length
+     * @drawable true
      */
     tangentOnEdgeAtLength(inputs: Inputs.OCCT.DataOnGeometryAtLengthDto<Inputs.OCCT.TopoDSEdgePointer>): Promise<Inputs.Base.Point3>;
     /**
@@ -471,6 +513,7 @@ declare class OCCT {
      * @returns Start point
      * @group extract
      * @shortname start point
+     * @drawable true
      */
     startPointOnEdge(inputs: Inputs.OCCT.ShapeDto<Inputs.OCCT.TopoDSEdgePointer>): Promise<Inputs.Base.Point3>;
     /**
@@ -480,6 +523,7 @@ declare class OCCT {
      * @returns End point
      * @group extract
      * @shortname end point
+     * @drawable true
      */
     endPointOnEdge(inputs: Inputs.OCCT.ShapeDto<Inputs.OCCT.TopoDSEdgePointer>): Promise<Inputs.Base.Point3>;
     /**
@@ -489,6 +533,7 @@ declare class OCCT {
      * @returns Points
      * @group extract
      * @shortname points by params
+     * @drawable true
      */
     divideEdgeByParamsToPoints(inputs: Inputs.OCCT.DivideDto<Inputs.OCCT.TopoDSEdgePointer>): Promise<Inputs.Base.Point3[]>;
     /**
@@ -498,6 +543,7 @@ declare class OCCT {
      * @returns Points
      * @group extract
      * @shortname points by distance
+     * @drawable true
      */
     divideEdgeByEqualDistanceToPoints(inputs: Inputs.OCCT.DivideDto<Inputs.OCCT.TopoDSEdgePointer>): Promise<Inputs.Base.Point3[]>;
 }declare class OCCTFace {
@@ -510,6 +556,7 @@ declare class OCCT {
      * @returns OpenCascade face shape
      * @group from
      * @shortname wire
+     * @drawable true
      */
     createFaceFromWire(inputs: Inputs.OCCT.FaceFromWireDto<Inputs.OCCT.TopoDSWirePointer>): Promise<Inputs.OCCT.TopoDSFacePointer>;
     /**
@@ -519,6 +566,7 @@ declare class OCCT {
      * @returns OpenCascade face shape
      * @group from
      * @shortname wires
+     * @drawable true
      */
     createFacesFromWires(inputs: Inputs.OCCT.FaceFromWireDto<Inputs.OCCT.TopoDSWirePointer>): Promise<Inputs.OCCT.TopoDSFacePointer[]>;
     /**
@@ -528,6 +576,7 @@ declare class OCCT {
      * @returns OpenCascade surface
      * @group from
      * @shortname surface
+     * @drawable true
      */
     faceFromSurface(inputs: Inputs.OCCT.ShapeDto<Inputs.OCCT.GeomSurfacePointer>): Promise<Inputs.OCCT.TopoDSFacePointer>;
     /**
@@ -537,6 +586,7 @@ declare class OCCT {
      * @returns Face shape
      * @group from
      * @shortname surface and wire
+     * @drawable true
      */
     faceFromSurfaceAndWire(inputs: Inputs.OCCT.FaceFromSurfaceAndWireDto<Inputs.OCCT.GeomSurfacePointer, Inputs.OCCT.TopoDSWirePointer>): Promise<Inputs.OCCT.TopoDSFacePointer>;
     /**
@@ -546,6 +596,7 @@ declare class OCCT {
      * @returns OpenCascade polygon face
      * @group primitives
      * @shortname polygon
+     * @drawable true
      */
     createPolygonFace(inputs: Inputs.OCCT.PolygonDto): Promise<Inputs.OCCT.TopoDSFacePointer>;
     /**
@@ -555,6 +606,7 @@ declare class OCCT {
      * @returns OpenCascade circle face
      * @group primitives
      * @shortname circle
+     * @drawable true
      */
     createCircleFace(inputs: Inputs.OCCT.CircleDto): Promise<Inputs.OCCT.TopoDSFacePointer>;
     /**
@@ -564,6 +616,7 @@ declare class OCCT {
      * @returns OpenCascade ellipse face
      * @group primitives
      * @shortname ellipse
+     * @drawable true
      */
     createEllipseFace(inputs: Inputs.OCCT.EllipseDto): Promise<Inputs.OCCT.TopoDSFacePointer>;
     /**
@@ -573,6 +626,7 @@ declare class OCCT {
      * @returns OpenCascade square face
      * @group primitives
      * @shortname square
+     * @drawable true
      */
     createSquareFace(inputs: Inputs.OCCT.SquareDto): Promise<Inputs.OCCT.TopoDSFacePointer>;
     /**
@@ -582,6 +636,7 @@ declare class OCCT {
      * @returns OpenCascade rectangle
      * @group primitives
      * @shortname rectangle
+     * @drawable true
      */
     createRectangleFace(inputs: Inputs.OCCT.RectangleDto): Promise<Inputs.OCCT.TopoDSFacePointer>;
     /**
@@ -591,6 +646,7 @@ declare class OCCT {
      * @returns OpenCascade face
      * @group get
      * @shortname face
+     * @drawable true
      */
     getFace(inputs: Inputs.OCCT.ShapeIndexDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.OCCT.TopoDSFacePointer>;
     /**
@@ -600,6 +656,7 @@ declare class OCCT {
      * @returns OpenCascade faces array
      * @group get
      * @shortname faces
+     * @drawable true
      */
     getFaces(inputs: Inputs.OCCT.ShapeDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.OCCT.TopoDSFacePointer[]>;
     /**
@@ -609,6 +666,7 @@ declare class OCCT {
      * @returns OpenCascade face
      * @group get
      * @shortname reversed
+     * @drawable true
      */
     reversedFace(inputs: Inputs.OCCT.ShapeDto<Inputs.OCCT.TopoDSFacePointer>): Promise<Inputs.OCCT.TopoDSFacePointer>;
     /**
@@ -618,6 +676,7 @@ declare class OCCT {
      * @returns points
      * @group extract
      * @shortname points
+     * @drawable true
      */
     subdivideToPoints(inputs: Inputs.OCCT.FaceSubdivisionDto<Inputs.OCCT.TopoDSFacePointer>): Promise<Inputs.Base.Point3[]>;
     /**
@@ -627,6 +686,7 @@ declare class OCCT {
      * @returns points
      * @group extract
      * @shortname points nth
+     * @drawable true
      */
     subdivideToPointsControlled(inputs: Inputs.OCCT.FaceSubdivisionControlledDto<Inputs.OCCT.TopoDSFacePointer>): Promise<Inputs.Base.Point3[]>;
     /**
@@ -636,6 +696,7 @@ declare class OCCT {
      * @returns normal vectors
      * @group extract
      * @shortname normals
+     * @drawable true
      */
     subdivideToNormals(inputs: Inputs.OCCT.FaceSubdivisionDto<Inputs.OCCT.TopoDSFacePointer>): Promise<Inputs.Base.Vector3[]>;
     /**
@@ -645,6 +706,7 @@ declare class OCCT {
      * @returns uv params in array
      * @group extract
      * @shortname uvs
+     * @drawable true
      */
     subdivideToUV(inputs: Inputs.OCCT.FaceSubdivisionDto<Inputs.OCCT.TopoDSFacePointer>): Promise<Inputs.Base.Point2[]>;
     /**
@@ -654,6 +716,7 @@ declare class OCCT {
      * @returns point
      * @group extract
      * @shortname point on uv
+     * @drawable true
      */
     pointOnUV(inputs: Inputs.OCCT.DataOnUVDto<Inputs.OCCT.TopoDSFacePointer>): Promise<Inputs.Base.Point3>;
     /**
@@ -663,6 +726,7 @@ declare class OCCT {
      * @returns normal vector
      * @group extract
      * @shortname normal on uv
+     * @drawable true
      */
     normalOnUV(inputs: Inputs.OCCT.DataOnUVDto<Inputs.OCCT.TopoDSFacePointer>): Promise<Inputs.Base.Vector3>;
     /**
@@ -672,6 +736,7 @@ declare class OCCT {
      * @returns points
      * @group extract
      * @shortname points on uvs
+     * @drawable true
      */
     pointsOnUVs(inputs: Inputs.OCCT.DataOnUVsDto<Inputs.OCCT.TopoDSFacePointer>): Promise<Inputs.Base.Point3[]>;
     /**
@@ -681,6 +746,7 @@ declare class OCCT {
      * @returns normals
      * @group extract
      * @shortname normals on uvs
+     * @drawable true
      */
     normalsOnUVs(inputs: Inputs.OCCT.DataOnUVsDto<Inputs.OCCT.TopoDSFacePointer>): Promise<Inputs.Base.Vector3[]>;
     /**
@@ -690,6 +756,7 @@ declare class OCCT {
      * @returns points
      * @group extract
      * @shortname points on param
+     * @drawable true
      */
     subdivideToPointsOnParam(inputs: Inputs.OCCT.FaceLinearSubdivisionDto<Inputs.OCCT.TopoDSFacePointer>): Promise<Inputs.Base.Point3[]>;
     /**
@@ -699,6 +766,7 @@ declare class OCCT {
      * @returns u min bound
      * @group get
      * @shortname u min
+     * @drawable false
      */
     getUMinBound(inputs: Inputs.OCCT.ShapeDto<Inputs.OCCT.TopoDSFacePointer>): Promise<number>;
     /**
@@ -708,6 +776,7 @@ declare class OCCT {
      * @returns u max bound
      * @group get
      * @shortname u max
+     * @drawable false
      */
     getUMaxBound(inputs: Inputs.OCCT.ShapeDto<Inputs.OCCT.TopoDSFacePointer>): Promise<number>;
     /**
@@ -717,6 +786,7 @@ declare class OCCT {
      * @returns v min bound
      * @group get
      * @shortname v min
+     * @drawable false
      */
     getVMinBound(inputs: Inputs.OCCT.ShapeDto<Inputs.OCCT.TopoDSFacePointer>): Promise<number>;
     /**
@@ -726,6 +796,7 @@ declare class OCCT {
      * @returns v max bound
      * @group get
      * @shortname v max
+     * @drawable false
      */
     getVMaxBound(inputs: Inputs.OCCT.ShapeDto<Inputs.OCCT.TopoDSFacePointer>): Promise<number>;
     /**
@@ -735,6 +806,7 @@ declare class OCCT {
      * @returns area
      * @group get
      * @shortname face area
+     * @drawable false
      */
     getFaceArea(inputs: Inputs.OCCT.ShapeDto<Inputs.OCCT.TopoDSFacePointer>): Promise<number>;
     /**
@@ -744,6 +816,7 @@ declare class OCCT {
      * @returns areas
      * @group get
      * @shortname areas of faces
+     * @drawable false
      */
     getFacesAreas(inputs: Inputs.OCCT.ShapesDto<Inputs.OCCT.TopoDSFacePointer>): Promise<number[]>;
     /**
@@ -753,6 +826,7 @@ declare class OCCT {
      * @returns point
      * @group get
      * @shortname center of mass
+     * @drawable true
      */
     getFaceCenterOfMass(inputs: Inputs.OCCT.ShapeDto<Inputs.OCCT.TopoDSFacePointer>): Promise<Inputs.Base.Point3>;
     /**
@@ -762,6 +836,7 @@ declare class OCCT {
      * @returns points
      * @group get
      * @shortname centers of mass
+     * @drawable true
      */
     getFacesCentersOfMass(inputs: Inputs.OCCT.ShapesDto<Inputs.OCCT.TopoDSFacePointer>): Promise<Inputs.Base.Point3[]>;
 }declare class OCCTShapes {
@@ -782,6 +857,7 @@ declare class OCCT {
      * @returns OpenCascade shell
      * @group create
      * @shortname sew
+     * @drawable true
      */
     sewFaces(inputs: Inputs.OCCT.SewDto<Inputs.OCCT.TopoDSFacePointer>): Promise<Inputs.OCCT.TopoDSShellPointer>;
     /**
@@ -791,6 +867,7 @@ declare class OCCT {
      * @returns Surface area
      * @group get
      * @shortname area
+     * @drawable false
      */
     getShellSurfaceArea(inputs: Inputs.OCCT.ShapeDto<Inputs.OCCT.TopoDSShellPointer>): Promise<number>;
 }declare class OCCTSolid {
@@ -803,6 +880,7 @@ declare class OCCT {
      * @returns OpenCascade Solid
      * @group from
      * @shortname shell
+     * @drawable true
      */
     fromClosedShell(inputs: Inputs.OCCT.ShapeDto<Inputs.OCCT.TopoDSShellPointer>): Promise<Inputs.OCCT.TopoDSSolidPointer>;
     /**
@@ -812,6 +890,7 @@ declare class OCCT {
      * @returns OpenCascade Box
      * @group primitives
      * @shortname box
+     * @drawable true
      */
     createBox(inputs: Inputs.OCCT.BoxDto): Promise<Inputs.OCCT.TopoDSSolidPointer>;
     /**
@@ -821,6 +900,7 @@ declare class OCCT {
      * @returns OpenCascade Box
      * @group primitives
      * @shortname box corner
+     * @drawable true
      */
     createBoxFromCorner(inputs: Inputs.OCCT.BoxFromCornerDto): Promise<Inputs.OCCT.TopoDSSolidPointer>;
     /**
@@ -830,6 +910,7 @@ declare class OCCT {
      * @returns OpenCascade Cylinder
      * @group primitives
      * @shortname cylinder
+     * @drawable true
      */
     createCylinder(inputs: Inputs.OCCT.CylinderDto): Promise<Inputs.OCCT.TopoDSSolidPointer>;
     /**
@@ -839,6 +920,7 @@ declare class OCCT {
      * @returns OpenCascade Cylinder
      * @group primitives
      * @shortname cylinders on lines
+     * @drawable true
      */
     createCylindersOnLines(inputs: Inputs.OCCT.CylindersOnLinesDto): Promise<Inputs.OCCT.TopoDSSolidPointer[]>;
     /**
@@ -848,6 +930,7 @@ declare class OCCT {
      * @returns OpenCascade Sphere
      * @group primitives
      * @shortname sphere
+     * @drawable true
      */
     createSphere(inputs: Inputs.OCCT.SphereDto): Promise<Inputs.OCCT.TopoDSSolidPointer>;
     /**
@@ -857,6 +940,7 @@ declare class OCCT {
      * @returns OpenCascade cone shape
      * @group primitives
      * @shortname cone
+     * @drawable true
      */
     createCone(inputs: Inputs.OCCT.ConeDto): Promise<Inputs.OCCT.TopoDSSolidPointer>;
     /**
@@ -866,6 +950,7 @@ declare class OCCT {
      * @returns Surface area
      * @group get
      * @shortname area
+     * @drawable false
      */
     getSolidSurfaceArea(inputs: Inputs.OCCT.ShapeDto<Inputs.OCCT.TopoDSSolidPointer>): Promise<number>;
     /**
@@ -875,6 +960,7 @@ declare class OCCT {
     * @returns volume
     * @group get
     * @shortname volume
+    * @drawable false
     */
     getSolidVolume(inputs: Inputs.OCCT.ShapeDto<Inputs.OCCT.TopoDSSolidPointer>): Promise<number>;
     /**
@@ -884,6 +970,7 @@ declare class OCCT {
     * @returns volumes
     * @group get
     * @shortname volumes
+    * @drawable false
     */
     getSolidsVolumes(inputs: Inputs.OCCT.ShapesDto<Inputs.OCCT.TopoDSSolidPointer>): Promise<number[]>;
     /**
@@ -893,6 +980,7 @@ declare class OCCT {
     * @returns center of mass point
     * @group get
     * @shortname center of mass
+    * @drawable true
     */
     getSolidCenterOfMass(inputs: Inputs.OCCT.ShapeDto<Inputs.OCCT.TopoDSSolidPointer>): Promise<Inputs.Base.Point3>;
     /**
@@ -902,6 +990,7 @@ declare class OCCT {
      * @returns Points indicating centers of mass
     * @group get
     * @shortname centers of mass
+    * @drawable true
      */
     getSolidsCentersOfMass(inputs: Inputs.OCCT.ShapesDto<Inputs.OCCT.TopoDSSolidPointer>): Promise<Inputs.Base.Point3[]>;
 }declare class OCCTWire {
@@ -914,6 +1003,7 @@ declare class OCCT {
      * @returns OpenCascade polygon wire shape
      * @group via points
      * @shortname polygon
+     * @drawable true
      */
     createPolygonWire(inputs: Inputs.OCCT.PolygonDto): Promise<Inputs.OCCT.TopoDSWirePointer>;
     /**
@@ -923,6 +1013,7 @@ declare class OCCT {
     * @returns OpenCascade Bezier wire
     * @group via points
     * @shortname bezier
+    * @drawable true
     */
     createBezier(inputs: Inputs.OCCT.BezierDto): Promise<Inputs.OCCT.TopoDSWirePointer>;
     /**
@@ -932,6 +1023,7 @@ declare class OCCT {
      * @returns OpenCascade BSpline wire
      * @group via points
      * @shortname interpolate
+     * @drawable true
      */
     interpolatePoints(inputs: Inputs.OCCT.InterpolationDto): Promise<Inputs.OCCT.TopoDSWirePointer>;
     /**
@@ -941,6 +1033,7 @@ declare class OCCT {
      * @returns OpenCascade BSpline wire
      * @group via points
      * @shortname bspline
+     * @drawable true
      */
     createBSpline(inputs: Inputs.OCCT.BSplineDto): Promise<Inputs.OCCT.TopoDSWirePointer>;
     /**
@@ -950,6 +1043,7 @@ declare class OCCT {
      * @returns OpenCascade wire
      * @group build
      * @shortname combine
+     * @drawable true
      */
     combineEdgesAndWiresIntoAWire(inputs: Inputs.OCCT.ShapesDto<Inputs.OCCT.TopoDSWirePointer | Inputs.OCCT.TopoDSEdgePointer>): Promise<Inputs.OCCT.TopoDSWirePointer>;
     /**
@@ -959,6 +1053,7 @@ declare class OCCT {
      * @returns OpenCascade wire
      * @group build
      * @shortname extend
+     * @drawable true
      */
     addEdgesAndWiresToWire(inputs: Inputs.OCCT.ShapeShapesDto<Inputs.OCCT.TopoDSWirePointer, Inputs.OCCT.TopoDSWirePointer | Inputs.OCCT.TopoDSEdgePointer>): Promise<Inputs.OCCT.TopoDSWirePointer>;
     /**
@@ -968,6 +1063,7 @@ declare class OCCT {
     * @returns Points on wire
     * @group extract
     * @shortname points by params
+    * @drawable true
     */
     divideWireByParamsToPoints(inputs: Inputs.OCCT.DivideDto<Inputs.OCCT.TopoDSWirePointer>): Promise<Inputs.Base.Point3[]>;
     /**
@@ -977,6 +1073,7 @@ declare class OCCT {
     * @returns Points on wire
     * @group extract
     * @shortname points by distance
+    * @drawable true
     */
     divideWireByEqualDistanceToPoints(inputs: Inputs.OCCT.DivideDto<Inputs.OCCT.TopoDSWirePointer>): Promise<Inputs.Base.Point3[]>;
     /**
@@ -986,6 +1083,7 @@ declare class OCCT {
     * @returns Point as array of 3 numbers
     * @group extract
     * @shortname point at param
+    * @drawable true
     */
     pointOnWireAtParam(inputs: Inputs.OCCT.DataOnGeometryAtParamDto<Inputs.OCCT.TopoDSWirePointer>): Promise<Inputs.Base.Point3>;
     /**
@@ -995,6 +1093,7 @@ declare class OCCT {
     * @returns Point as array of 3 numbers
     * @group extract
     * @shortname point at length
+    * @drawable true
     */
     pointOnWireAtLength(inputs: Inputs.OCCT.DataOnGeometryAtLengthDto<Inputs.OCCT.TopoDSWirePointer>): Promise<Inputs.Base.Point3>;
     /**
@@ -1004,6 +1103,7 @@ declare class OCCT {
     * @returns Tangent vector as array of 3 numbers
     * @group extract
     * @shortname tangent at param
+    * @drawable true
     */
     tangentOnWireAtParam(inputs: Inputs.OCCT.DataOnGeometryAtParamDto<Inputs.OCCT.TopoDSWirePointer>): Promise<Inputs.Base.Vector3>;
     /**
@@ -1013,6 +1113,7 @@ declare class OCCT {
     * @returns Tangent vector as array of 3 numbers
     * @group extract
     * @shortname tangent at length
+    * @drawable true
     */
     tangentOnWireAtLength(inputs: Inputs.OCCT.DataOnGeometryAtLengthDto<Inputs.OCCT.TopoDSWirePointer>): Promise<Inputs.Base.Vector3>;
     /**
@@ -1022,6 +1123,7 @@ declare class OCCT {
     * @returns Three arrays of vectors. Each vector represents derivatives in order - first, second, third
     * @group extract
     * @shortname derivatives at length
+    * @drawable false
     */
     derivativesOnWireAtLength(inputs: Inputs.OCCT.DataOnGeometryAtLengthDto<Inputs.OCCT.TopoDSWirePointer>): Promise<[Inputs.Base.Vector3, Inputs.Base.Vector3, Inputs.Base.Vector3]>;
     /**
@@ -1031,6 +1133,7 @@ declare class OCCT {
     * @returns Three arrays of vectors. Each vector represents derivatives in order - first, second, third
     * @group extract
     * @shortname derivatives at param
+    * @drawable false
     */
     derivativesOnWireAtParam(inputs: Inputs.OCCT.DataOnGeometryAtParamDto<Inputs.OCCT.TopoDSWirePointer>): Promise<[Inputs.Base.Vector3, Inputs.Base.Vector3, Inputs.Base.Vector3]>;
     /**
@@ -1040,6 +1143,7 @@ declare class OCCT {
     * @returns The length of the wire
     * @group extract
     * @shortname start point
+    * @drawable true
     */
     startPointOnWire(inputs: Inputs.OCCT.ShapeDto<Inputs.OCCT.TopoDSWirePointer>): Promise<Inputs.Base.Point3>;
     /**
@@ -1049,6 +1153,7 @@ declare class OCCT {
     * @returns The length of the wire
     * @group extract
     * @shortname end point
+    * @drawable true
     */
     endPointOnWire(inputs: Inputs.OCCT.ShapeDto<Inputs.OCCT.TopoDSWirePointer>): Promise<Inputs.Base.Point3>;
     /**
@@ -1058,6 +1163,7 @@ declare class OCCT {
      * @returns OpenCascade circle wire
      * @group primitives
      * @shortname circle
+     * @drawable true
      */
     createCircleWire(inputs: Inputs.OCCT.CircleDto): Promise<Inputs.OCCT.TopoDSWirePointer>;
     /**
@@ -1067,6 +1173,7 @@ declare class OCCT {
      * @returns OpenCascade square wire
      * @group primitives
      * @shortname square
+     * @drawable true
      */
     createSquareWire(inputs: Inputs.OCCT.SquareDto): Promise<Inputs.OCCT.TopoDSWirePointer>;
     /**
@@ -1076,6 +1183,7 @@ declare class OCCT {
      * @returns OpenCascade star wire
      * @group primitives
      * @shortname star
+     * @drawable true
      */
     createStarWire(inputs: Inputs.OCCT.StarDto): Promise<Inputs.OCCT.TopoDSWirePointer>;
     /**
@@ -1085,6 +1193,7 @@ declare class OCCT {
      * @returns OpenCascade ngon wire
      * @group primitives
      * @shortname n-gon
+     * @drawable true
      */
     createNGonWire(inputs: Inputs.OCCT.NGonWireDto): Promise<Inputs.OCCT.TopoDSWirePointer>;
     /**
@@ -1094,6 +1203,7 @@ declare class OCCT {
      * @returns OpenCascade star wire
      * @group primitives
      * @shortname parallelogram
+     * @drawable true
      */
     createParallelogramWire(inputs: Inputs.OCCT.ParallelogramDto): Promise<Inputs.OCCT.TopoDSWirePointer>;
     /**
@@ -1103,6 +1213,7 @@ declare class OCCT {
      * @returns OpenCascade rectangle
      * @group primitives
      * @shortname rectangle
+     * @drawable true
      */
     createRectangleWire(inputs: Inputs.OCCT.RectangleDto): Promise<Inputs.OCCT.TopoDSWirePointer>;
     /**
@@ -1112,6 +1223,7 @@ declare class OCCT {
      * @returns OpenCascade ellipse wire
      * @group primitives
      * @shortname ellipse
+     * @drawable true
      */
     createEllipseWire(inputs: Inputs.OCCT.EllipseDto): Promise<Inputs.OCCT.TopoDSWirePointer>;
     /**
@@ -1121,6 +1233,7 @@ declare class OCCT {
      * @returns OpenCascade wire
      * @group get
      * @shortname wire
+     * @drawable true
      */
     getWire(inputs: Inputs.OCCT.ShapeIndexDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.OCCT.TopoDSWirePointer>;
     /**
@@ -1130,6 +1243,7 @@ declare class OCCT {
      * @returns OpenCascade wires
      * @group get
      * @shortname wires
+     * @drawable true
      */
     getWires(inputs: Inputs.OCCT.ShapeIndexDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.OCCT.TopoDSWirePointer>;
     /**
@@ -1139,6 +1253,7 @@ declare class OCCT {
      * @returns OpenCascade wire
      * @group get
      * @shortname reversed
+     * @drawable true
      */
     reversedWire(inputs: Inputs.OCCT.ShapeDto<Inputs.OCCT.TopoDSWirePointer>): Promise<Inputs.OCCT.TopoDSWirePointer>;
     /**
@@ -1148,6 +1263,7 @@ declare class OCCT {
      * @returns Length
      * @group get
      * @shortname length
+     * @drawable false
      */
     getWireLength(inputs: Inputs.OCCT.ShapeDto<Inputs.OCCT.TopoDSWirePointer>): Promise<number>;
     /**
@@ -1157,6 +1273,7 @@ declare class OCCT {
      * @returns Lengths
      * @group get
      * @shortname lengths
+     * @drawable false
      */
     getWiresLengths(inputs: Inputs.OCCT.ShapesDto<Inputs.OCCT.TopoDSWirePointer>): Promise<number[]>;
     /**
@@ -1166,6 +1283,7 @@ declare class OCCT {
      * @returns OpenCascade wire
      * @group place
      * @shortname wire on face
+     * @drawable true
      */
     placeWireOnFace(inputs: Inputs.OCCT.WireOnFaceDto<Inputs.OCCT.TopoDSWirePointer, Inputs.OCCT.TopoDSFacePointer>): Promise<Inputs.OCCT.TopoDSWirePointer>;
     /**
@@ -1175,6 +1293,7 @@ declare class OCCT {
      * @returns OpenCascade wires
      * @group place
      * @shortname wires on face
+     * @drawable true
      */
     placeWiresOnFace(inputs: Inputs.OCCT.ShapeShapesDto<Inputs.OCCT.TopoDSFacePointer, Inputs.OCCT.TopoDSWirePointer>): Promise<Inputs.OCCT.TopoDSWirePointer[]>;
 }declare class OCCTTransforms {
@@ -1186,6 +1305,7 @@ declare class OCCT {
      * @param inputs Transformation description
      * @returns OpenCascade shape
      * @shortname transform
+     * @drawable true
      */
     transform(inputs: Inputs.OCCT.TransformDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.OCCT.TopoDSShapePointer>;
     /**
@@ -1194,6 +1314,7 @@ declare class OCCT {
      * @param inputs Rotation description
      * @returns OpenCascade shape
      * @shortname rotate
+     * @drawable true
      */
     rotate(inputs: Inputs.OCCT.RotateDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.OCCT.TopoDSShapePointer>;
     /**
@@ -1202,6 +1323,7 @@ declare class OCCT {
      * @param inputs Align description
      * @returns OpenCascade shape
      * @shortname align
+     * @drawable true
      */
     align(inputs: Inputs.OCCT.AlignDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.OCCT.TopoDSShapePointer>;
     /**
@@ -1210,6 +1332,7 @@ declare class OCCT {
      * @param inputs Translation description
      * @returns OpenCascade shape
      * @shortname translate
+     * @drawable true
      */
     translate(inputs: Inputs.OCCT.TranslateDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.OCCT.TopoDSShapePointer>;
     /**
@@ -1218,6 +1341,7 @@ declare class OCCT {
      * @param inputs Scale description
      * @returns OpenCascade shape
      * @shortname scale
+     * @drawable true
      */
     scale(inputs: Inputs.OCCT.ScaleDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.OCCT.TopoDSShapePointer>;
     /**
@@ -1226,6 +1350,7 @@ declare class OCCT {
      * @param inputs Scale 3D description
      * @returns OpenCascade scaled shape
      * @shortname scale 3d
+     * @drawable true
      */
     scale3d(inputs: Inputs.OCCT.Scale3DDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.OCCT.TopoDSShapePointer>;
     /**
@@ -1234,6 +1359,7 @@ declare class OCCT {
      * @param inputs Mirror axis origin, axis direction and shape
      * @returns OpenCascade shape
      * @shortname mirror
+     * @drawable true
      */
     mirror(inputs: Inputs.OCCT.MirrorDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.OCCT.TopoDSShapePointer>;
     /**
@@ -1242,6 +1368,7 @@ declare class OCCT {
      * @param inputs Normal for mirroring with origin
      * @returns OpenCascade shape
      * @shortname mirror normal
+     * @drawable true
      */
     mirrorAlongNormal(inputs: Inputs.OCCT.MirrorAlongNormalDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.OCCT.TopoDSShapePointer>;
     /**
@@ -1250,6 +1377,7 @@ declare class OCCT {
      * @param inputs Transformation descriptions
      * @returns OpenCascade shapes
      * @shortname transforms
+     * @drawable true
      */
     transformShapes(inputs: Inputs.OCCT.TransformShapesDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.OCCT.TopoDSShapePointer[]>;
     /**
@@ -1258,6 +1386,7 @@ declare class OCCT {
      * @param inputs Rotation descriptions
      * @returns OpenCascade shapes
      * @shortname rotations
+     * @drawable true
      */
     rotateShapes(inputs: Inputs.OCCT.RotateShapesDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.OCCT.TopoDSShapePointer[]>;
     /**
@@ -1266,6 +1395,7 @@ declare class OCCT {
      * @param inputs Align descriptions
      * @returns OpenCascade shapes
      * @shortname alignments
+     * @drawable true
      */
     alignShapes(inputs: Inputs.OCCT.AlignShapesDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.OCCT.TopoDSShapePointer[]>;
     /**
@@ -1274,6 +1404,7 @@ declare class OCCT {
      * @param inputs Translation descriptions
      * @returns OpenCascade shapes
      * @shortname translations
+     * @drawable true
      */
     translateShapes(inputs: Inputs.OCCT.TranslateShapesDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.OCCT.TopoDSShapePointer[]>;
     /**
@@ -1282,6 +1413,7 @@ declare class OCCT {
      * @param inputs Scale descriptions
      * @returns OpenCascade shapes
      * @shortname scales
+     * @drawable true
      */
     scaleShapes(inputs: Inputs.OCCT.ScaleShapesDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.OCCT.TopoDSShapePointer[]>;
     /**
@@ -1290,6 +1422,7 @@ declare class OCCT {
      * @param inputs Scale 3D descriptions
      * @returns OpenCascade scaled shapes
      * @shortname scales 3d
+     * @drawable true
      */
     scale3dShapes(inputs: Inputs.OCCT.Scale3DShapesDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.OCCT.TopoDSShapePointer[]>;
     /**
@@ -1298,6 +1431,7 @@ declare class OCCT {
      * @param inputs Mirror axis origins, axis directions and shapes
      * @returns OpenCascade shapes
      * @shortname mirrors
+     * @drawable true
      */
     mirrorShapes(inputs: Inputs.OCCT.MirrorShapesDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.OCCT.TopoDSShapePointer[]>;
     /**
@@ -1306,6 +1440,7 @@ declare class OCCT {
      * @param inputs Normals for mirroring with origins
      * @returns OpenCascade shapes
      * @shortname mirrors normal
+     * @drawable true
      */
     mirrorAlongNormalShapes(inputs: Inputs.OCCT.MirrorAlongNormalShapesDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.OCCT.TopoDSShapePointer[]>;
 }`;
