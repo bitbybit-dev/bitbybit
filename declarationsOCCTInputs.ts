@@ -531,7 +531,7 @@ export const inputOCCTDeclarations = `declare namespace Base {
         constructor(points?: Base.Point3[]);
         /**
          * Points points
-         * @default []
+         * @default undefined
          */
         points: Base.Point3[];
     }
@@ -761,7 +761,7 @@ export const inputOCCTDeclarations = `declare namespace Base {
         radius: number;
         /**
          * Lines between which to span cylinders
-         * @default []
+         * @default undefined
          */
         lines: {
             start: Base.Point3;
@@ -791,9 +791,9 @@ export const inputOCCTDeclarations = `declare namespace Base {
         radiusList?: number[];
         /**
          * List of edge indexes to which apply the fillet, if left empty all edges will be rounded
-         * @default []
+         * @default undefined
          */
-        indexes?: any[];
+        indexes?: any;
     }
     class ChamferDto<T> {
         constructor(shape?: T, distance?: number, indexes?: number[], all?: boolean);
@@ -818,15 +818,15 @@ export const inputOCCTDeclarations = `declare namespace Base {
         distanceList?: number[];
         /**
          * List of edge indexes to which apply the chamfer, if left empty all edges will be chamfered
-         * @default []
+         * @default undefined
          */
-        indexes?: any[];
+        indexes?: any;
     }
     class BSplineDto {
         constructor(points?: Base.Point3[], closed?: boolean);
         /**
          * Points through which the BSpline will be created
-         * @default []
+         * @default undefined
          */
         points: Base.Point3[];
         /**
@@ -839,7 +839,7 @@ export const inputOCCTDeclarations = `declare namespace Base {
         constructor(points?: Base.Point3[], periodic?: boolean);
         /**
          * Points through which the BSpline will be created
-         * @default []
+         * @default undefined
          */
         points: Base.Point3[];
         /**
@@ -859,7 +859,7 @@ export const inputOCCTDeclarations = `declare namespace Base {
         constructor(points?: Base.Point3[], closed?: boolean);
         /**
          * Points through which the Bezier curve will be created
-         * @default []
+         * @default undefined
          */
         points: Base.Point3[];
         /**
