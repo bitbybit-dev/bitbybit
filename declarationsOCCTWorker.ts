@@ -21,6 +21,7 @@ export const occtWorkerDeclarations = `declare class BitByBitOCCT {
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_booleans.OCCTBooleans.html#union
      * @param inputs Objects to join
      * @returns OpenCascade joined shape
+     * @shortname union
      */
     union(inputs: Inputs.OCCT.UnionDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.OCCT.TopoDSShapePointer>;
     /**
@@ -28,6 +29,7 @@ export const occtWorkerDeclarations = `declare class BitByBitOCCT {
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_booleans.OCCTBooleans.html#difference
      * @param inputs Main shape and shapes to differ
      * @returns OpenCascade difference shape
+     * @shortname difference
      */
     difference(inputs: Inputs.OCCT.DifferenceDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.OCCT.TopoDSShapePointer>;
     /**
@@ -35,6 +37,7 @@ export const occtWorkerDeclarations = `declare class BitByBitOCCT {
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_booleans.OCCTBooleans.html#intersection
      * @param inputs Main shape and shapes to differ
      * @returns OpenCascade intersection of shapes
+     * @shortname intersection
      */
     intersection(inputs: Inputs.OCCT.IntersectionDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.OCCT.TopoDSShapePointer>;
 }declare class OCCTFillets {
@@ -45,6 +48,8 @@ export const occtWorkerDeclarations = `declare class BitByBitOCCT {
     * @link https://docs.bitbybit.dev/classes/bitbybit_occt_fillets.OCCTFillets.html#filletEdges
     * @param inputs Shape, radius and edge indexes to fillet
     * @returns OpenCascade shape with filleted edges
+    * @group 3d
+    * @shortname fillet
     */
     filletEdges(inputs: Inputs.OCCT.FilletDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.OCCT.TopoDSShapePointer>;
     /**
@@ -52,6 +57,8 @@ export const occtWorkerDeclarations = `declare class BitByBitOCCT {
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_fillets.OCCTFillets.html#chamferEdges
      * @param inputs Shape, distance and edge indexes to chamfer
      * @returns OpenCascade shape with chamfered edges
+     * @group 3d
+     * @shortname chamfer
      */
     chamferEdges(inputs: Inputs.OCCT.ChamferDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.OCCT.TopoDSShapePointer>;
     /**
@@ -59,6 +66,8 @@ export const occtWorkerDeclarations = `declare class BitByBitOCCT {
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_fillets.OCCTFillets.html#fillet2d
      * @param inputs Shape
      * @returns OpenCascade filleted shape result
+     * @group 2d
+     * @shortname fillet
      */
     fillet2d(inputs: Inputs.OCCT.FilletDto<Inputs.OCCT.TopoDSWirePointer | Inputs.OCCT.TopoDSFacePointer>): Promise<Inputs.OCCT.TopoDSWirePointer | Inputs.OCCT.TopoDSFacePointer>;
     /**
@@ -66,6 +75,8 @@ export const occtWorkerDeclarations = `declare class BitByBitOCCT {
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_fillets.OCCTFillets.html#filletTwoEdgesInPlaneIntoAWire
      * @param inputs Definition for fillets
      * @returns OpenCascade wire shape if solution is found
+     * @group 2d
+     * @shortname fillet 2 edges
      */
     filletTwoEdgesInPlaneIntoAWire(inputs: Inputs.OCCT.FilletTwoEdgesInPlaneDto<Inputs.OCCT.TopoDSEdgePointer>): Promise<Inputs.OCCT.TopoDSWirePointer>;
 }declare class OCCTCurves {
@@ -76,6 +87,8 @@ export const occtWorkerDeclarations = `declare class BitByBitOCCT {
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_geom_curves.OCCTCurves.html#geom2dEllipse
      * @param inputs 2D Ellipse parameters
      * @returns OpenCascade Geom2d_ellipse
+     * @group primitives
+     * @shortname ellipse 2d
      */
     geom2dEllipse(inputs: Inputs.OCCT.Geom2dEllipseDto): Promise<Inputs.OCCT.Geom2dCurvePointer>;
     /**
@@ -83,6 +96,8 @@ export const occtWorkerDeclarations = `declare class BitByBitOCCT {
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_geom_curves.OCCTCurves.html#geom2dTrimmedCurve
      * @param inputs Bounds and strategy for trimming the curve
      * @returns OpenCascade Geom2d_TrimmedCurve
+     * @group create
+     * @shortname trimmed 2d
      */
     geom2dTrimmedCurve(inputs: Inputs.OCCT.Geom2dTrimmedCurveDto<Inputs.OCCT.Geom2dCurvePointer>): Promise<Inputs.OCCT.Geom2dCurvePointer>;
     /**
@@ -90,6 +105,8 @@ export const occtWorkerDeclarations = `declare class BitByBitOCCT {
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_geom_curves.OCCTCurves.html#geom2dSegment
      * @param inputs Two 2d points for start and end
      * @returns OpenCascade Geom2d_Segment
+     * @group primitives
+     * @shortname segment 2d
      */
     geom2dSegment(inputs: Inputs.OCCT.Geom2dSegmentDto): Promise<Inputs.OCCT.Geom2dCurvePointer>;
     /**
@@ -97,6 +114,8 @@ export const occtWorkerDeclarations = `declare class BitByBitOCCT {
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_geom_curves.OCCTCurves.html#get2dPointFrom2dCurveOnParam
      * @param inputs 2D Curve shape and parameter
      * @returns Point as array of 2 numbers
+     * @group get
+     * @shortname 2d point on curve
      */
     get2dPointFrom2dCurveOnParam(inputs: Inputs.OCCT.DataOnGeometryAtParamDto<Inputs.OCCT.Geom2dCurvePointer>): Promise<Inputs.Base.Point2>;
     /**
@@ -104,6 +123,8 @@ export const occtWorkerDeclarations = `declare class BitByBitOCCT {
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_geom_curves.OCCTCurves.html#geomCircleCurve
      * @param inputs Axis information and radius
      * @returns Opencascade Geom_Circle curve
+     * @group primitives
+     * @shortname circle
      */
     geomCircleCurve(inputs: Inputs.OCCT.CircleDto): Promise<Inputs.OCCT.GeomCurvePointer>;
     /**
@@ -111,6 +132,8 @@ export const occtWorkerDeclarations = `declare class BitByBitOCCT {
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_geom_curves.OCCTCurves.html#geomEllipseCurve
      * @param inputs Axis information and radius
      * @returns Opencascade Geom_Ellipse curve
+     * @group primitives
+     * @shortname ellipse
      */
     geomEllipseCurve(inputs: Inputs.OCCT.EllipseDto): Promise<Inputs.OCCT.GeomCurvePointer>;
 }declare class OCCTGeom {
@@ -125,6 +148,7 @@ export const occtWorkerDeclarations = `declare class BitByBitOCCT {
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_geom_surfaces.OCCTSurfaces.html#cylindricalSurface
      * @param inputs Cylinder parameters
      * @returns OpenCascade cylindrical surface
+     * @shortname cylindrical
      */
     cylindricalSurface(inputs: Inputs.OCCT.GeomCylindricalSurfaceDto): Promise<Inputs.OCCT.GeomSurfacePointer>;
     /**
@@ -132,6 +156,7 @@ export const occtWorkerDeclarations = `declare class BitByBitOCCT {
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_geom_surfaces.OCCTSurfaces.html#surfaceFromFace
      * @param inputs Face shape
      * @returns OpenCascade geom surface
+     * @shortname from face
      */
     surfaceFromFace(inputs: Inputs.OCCT.ShapeDto<Inputs.OCCT.TopoDSFacePointer>): Promise<Inputs.OCCT.GeomSurfacePointer>;
 }declare class OCCTIO {
@@ -142,6 +167,7 @@ export const occtWorkerDeclarations = `declare class BitByBitOCCT {
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_io.OCCTIO.html#saveShapeSTEP
      * @param inputs STEP filename and shape to be saved
      * @returns String of a step file
+     * @shortname save step
      */
     saveShapeSTEP(inputs: Inputs.OCCT.SaveStepDto<Inputs.OCCT.TopoDSShapePointer>): Promise<string>;
 }/**
@@ -158,8 +184,26 @@ declare class OCCT {
     readonly booleans: OCCTBooleans;
     io: OCCTIO;
     constructor(occWorkerManager: OCCTWorkerManager);
+    /**
+     * Creates mesh from the shape
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occt.OCCT.html#shapeToMesh
+     * @param inputs shape
+     * @shortname shape to mesh
+     */
     shapeToMesh(inputs: Inputs.OCCT.ShapeToMeshDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.OCCT.DecomposedMeshDto>;
+    /**
+     * Deletes shape from the cache to keep memory usage low
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occt.OCCT.html#deleteShape
+     * @param inputs shape
+     * @shortname delete shape
+     */
     deleteShape(inputs: Inputs.OCCT.ShapeDto<Inputs.OCCT.TopoDSShapePointer>): Promise<void>;
+    /**
+     * Deletes shapes from the cache to keep memory usage low
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occt.OCCT.html#deleteShapes
+     * @param inputs shape
+     * @shortname delete shapes
+     */
     deleteShapes(inputs: Inputs.OCCT.ShapesDto<Inputs.OCCT.TopoDSShapePointer>): Promise<void>;
 }declare class OCCTOperations {
     private readonly occWorkerManager;
@@ -169,6 +213,7 @@ declare class OCCT {
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_operations.OCCTOperations.html#loft
      * @param inputs Loft wires
      * @returns Resulting loft shape
+     * @shortname loft
      */
     loft(inputs: Inputs.OCCT.LoftDto<Inputs.OCCT.TopoDSWirePointer>): Promise<Inputs.OCCT.TopoDSShapePointer>;
     /**
@@ -176,6 +221,7 @@ declare class OCCT {
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_operations.OCCTOperations.html#loftAdvanced
      * @param inputs Advanced loft parameters
      * @returns Resulting loft shell
+     * @shortname loft adv.
      */
     loftAdvanced(inputs: Inputs.OCCT.LoftAdvancedDto<Inputs.OCCT.TopoDSWirePointer>): Promise<Inputs.OCCT.TopoDSShapePointer>;
     /**
@@ -183,6 +229,7 @@ declare class OCCT {
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_operations.OCCTOperations.html#offset
      * @param inputs Shape to offset and distance with tolerance
      * @returns Resulting offset shape
+     * @shortname offset
      */
     offset(inputs: Inputs.OCCT.OffsetDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.OCCT.TopoDSShapePointer>;
     /**
@@ -190,6 +237,7 @@ declare class OCCT {
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_operations.OCCTOperations.html#extrude
      * @param inputs Shape to extrude and direction parameter with tolerance
      * @returns Resulting extruded shape
+     * @shortname extrude
      */
     extrude(inputs: Inputs.OCCT.ExtrudeDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.OCCT.TopoDSShapePointer>;
     /**
@@ -197,6 +245,7 @@ declare class OCCT {
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_operations.OCCTOperations.html#extrudeShapes
      * @param inputs Shapes to extrude and direction parameter with tolerance
      * @returns Resulting extruded shapes
+     * @shortname extrusions
      */
     extrudeShapes(inputs: Inputs.OCCT.ExtrudeShapesDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.OCCT.TopoDSShapePointer>;
     /**
@@ -204,6 +253,7 @@ declare class OCCT {
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_operations.OCCTOperations.html#splitShapeWithShapes
      * @param inputs Face to split and edges to split with
      * @returns Resulting split shape
+     * @shortname split
      */
     splitShapeWithShapes(inputs: Inputs.OCCT.SplitDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.OCCT.TopoDSShapePointer>;
     /**
@@ -211,6 +261,7 @@ declare class OCCT {
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_operations.OCCTOperations.html#revolve
      * @param inputs Revolve parameters
      * @returns Resulting revolved shape
+     * @shortname revolve
      */
     revolve(inputs: Inputs.OCCT.RevolveDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.OCCT.TopoDSShapePointer>;
     /**
@@ -218,6 +269,7 @@ declare class OCCT {
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_operations.OCCTOperations.html#rotatedExtrude
      * @param inputs Rotated extrusion inputs
      * @returns OpenCascade shape
+     * @shortname rotated extrude
      */
     rotatedExtrude(inputs: Inputs.OCCT.RotationExtrudeDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.OCCT.TopoDSShapePointer>;
     /**
@@ -225,6 +277,7 @@ declare class OCCT {
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_operations.OCCTOperations.html#pipe
      * @param inputs Path wire and shapes along the path
      * @returns OpenCascade shape
+     * @shortname pipe
      */
     pipe(inputs: Inputs.OCCT.ShapeShapesDto<Inputs.OCCT.TopoDSWirePointer, Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.OCCT.TopoDSShapePointer>;
     /**
@@ -232,6 +285,7 @@ declare class OCCT {
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_operations.OCCTOperations.html#makeThickSolidSimple
      * @param inputs OpenCascade shape
      * @returns OpenCascade solid shape
+     * @shortname thicken
      */
     makeThickSolidSimple(inputs: Inputs.OCCT.ThisckSolidSimpleDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.OCCT.TopoDSShapePointer>;
     /**
@@ -239,6 +293,7 @@ declare class OCCT {
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_operations.OCCTOperations.html#makeThickSolidByJoin
      * @param inputs OpenCascade shape and options for thickening
      * @returns OpenCascade solid shape
+     * @shortname joined thicken
      */
     makeThickSolidByJoin(inputs: Inputs.OCCT.ThickSolidByJoinDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.OCCT.TopoDSShapePointer>;
 }declare class OCCTCompound {
@@ -249,6 +304,8 @@ declare class OCCT {
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_compound.OCCTCompound.html#makeCompound
      * @param inputs OpenCascade shapes
      * @returns OpenCascade compounded shape
+    * @group create
+    * @shortname make
      */
     makeCompound(inputs: Inputs.OCCT.CompoundShapesDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.OCCT.TopoDSCompoundPointer>;
 }declare class OCCTEdge {
@@ -259,6 +316,8 @@ declare class OCCT {
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_edge.OCCTEdge.html#line
      * @param inputs Two points between which edge should be created
      * @returns OpenCascade edge
+     * @group primitives
+     * @shortname line
      */
     line(inputs: Inputs.OCCT.LineDto): Promise<Inputs.OCCT.TopoDSEdgePointer>;
     /**
@@ -266,6 +325,8 @@ declare class OCCT {
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_edge.OCCTEdge.html#arcThroughThreePoints
      * @param inputs Shape, radius and edge indexes to fillet
      * @returns OpenCascade edge
+     * @group primitives
+     * @shortname arc 3 points
      */
     arcThroughThreePoints(inputs: Inputs.OCCT.ArcEdgeThreePointsDto): Promise<Inputs.OCCT.TopoDSEdgePointer>;
     /**
@@ -273,6 +334,8 @@ declare class OCCT {
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_edge.OCCTEdge.html#createCircleEdge
      * @param inputs Circle parameters
      * @returns OpenCascade circle edge
+     * @group primitives
+     * @shortname circle
      */
     createCircleEdge(inputs: Inputs.OCCT.CircleDto): Promise<Inputs.OCCT.TopoDSEdgePointer>;
     /**
@@ -280,6 +343,8 @@ declare class OCCT {
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_edge.OCCTEdge.html#createEllipseEdge
      * @param inputs Ellipse parameters
      * @returns OpenCascade ellipse edge
+     * @group primitives
+     * @shortname ellipse
      */
     createEllipseEdge(inputs: Inputs.OCCT.EllipseDto): Promise<Inputs.OCCT.TopoDSEdgePointer>;
     /**
@@ -287,6 +352,8 @@ declare class OCCT {
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_edge.OCCTEdge.html#removeInternalEdges
      * @param inputs Shape
      * @returns OpenCascade shape with no internal edges
+     * @group shapes
+     * @shortname remove internal
      */
     removeInternalEdges(inputs: Inputs.OCCT.ShapeDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.OCCT.TopoDSShapePointer>;
     /**
@@ -294,6 +361,8 @@ declare class OCCT {
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_edge.OCCTEdge.html#getEdge
      * @param inputs Shape
      * @returns OpenCascade edge
+     * @group shapes
+     * @shortname get edge
      */
     getEdge(inputs: Inputs.OCCT.ShapeIndexDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.OCCT.TopoDSEdgePointer>;
     /**
@@ -301,6 +370,8 @@ declare class OCCT {
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_edge.OCCTEdge.html#getEdges
      * @param inputs Shape
      * @returns OpenCascade edge list
+     * @group shapes
+     * @shortname get edges
      */
     getEdges(inputs: Inputs.OCCT.ShapeDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.OCCT.TopoDSEdgePointer[]>;
     /**
@@ -308,6 +379,8 @@ declare class OCCT {
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_edge.OCCTEdge.html#makeEdgeFromGeom2dCurveAndSurface
      * @param inputs shapes are expected to contain 2 array elements - first is geom curve, second geom surface
      * @returns OpenCascade TopoDS_Edge
+     * @group from
+     * @shortname 2d curve and surface
      */
     makeEdgeFromGeom2dCurveAndSurface(inputs: Inputs.OCCT.EdgeFromGeom2dCurveAndSurfaceDto<Inputs.OCCT.Geom2dCurvePointer, Inputs.OCCT.GeomSurfacePointer>): Promise<Inputs.OCCT.TopoDSEdgePointer>;
     /**
@@ -315,6 +388,8 @@ declare class OCCT {
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_edge.OCCTEdge.html#getCornerPointsOfEdgesForShape
      * @param inputs Shape that contains edges - wire, face, shell, solid
      * @returns List of points
+     * @group get
+     * @shortname corners
      */
     getCornerPointsOfEdgesForShape(inputs: Inputs.OCCT.ShapeDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.Base.Point3[]>;
     /**
@@ -322,6 +397,8 @@ declare class OCCT {
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_edge.OCCTEdge.html#getEdgeLength
      * @param inputs edge
      * @returns Length
+     * @group get
+     * @shortname length
      */
     getEdgeLength(inputs: Inputs.OCCT.ShapeDto<Inputs.OCCT.TopoDSEdgePointer>): Promise<number>;
     /**
@@ -329,6 +406,8 @@ declare class OCCT {
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_edge.OCCTEdge.html#getEdgesLengths
      * @param inputs edges
      * @returns Lengths
+     * @group get
+     * @shortname lengths
      */
     getEdgesLengths(inputs: Inputs.OCCT.ShapesDto<Inputs.OCCT.TopoDSEdgePointer>): Promise<number[]>;
     /**
@@ -336,6 +415,8 @@ declare class OCCT {
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_edge.OCCTEdge.html#getEdgeCenterOfMass
      * @param inputs edge
      * @returns Point representing center of mass
+     * @group get
+     * @shortname center of mass
      */
     getEdgeCenterOfMass(inputs: Inputs.OCCT.ShapeDto<Inputs.OCCT.TopoDSEdgePointer>): Promise<Inputs.Base.Point3>;
     /**
@@ -343,6 +424,8 @@ declare class OCCT {
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_edge.OCCTEdge.html#getEdgesCentersOfMass
      * @param inputs edges
      * @returns Points representing centers of mass
+     * @group get
+     * @shortname centers of mass
      */
     getEdgesCentersOfMass(inputs: Inputs.OCCT.ShapesDto<Inputs.OCCT.TopoDSEdgePointer>): Promise<Inputs.Base.Point3[]>;
     /**
@@ -350,6 +433,8 @@ declare class OCCT {
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_edge.OCCTEdge.html#pointOnEdgeAtParam
      * @param input edge
      * @returns Point on param
+     * @group extract
+     * @shortname point at param
      */
     pointOnEdgeAtParam(inputs: Inputs.OCCT.DataOnGeometryAtParamDto<Inputs.OCCT.TopoDSEdgePointer>): Promise<Inputs.Base.Point3>;
     /**
@@ -357,6 +442,8 @@ declare class OCCT {
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_edge.OCCTEdge.html#tangentOnEdgeAtParam
      * @param input edge
      * @returns Tangent vector on param
+     * @group extract
+     * @shortname tangent at param
      */
     tangentOnEdgeAtParam(inputs: Inputs.OCCT.DataOnGeometryAtParamDto<Inputs.OCCT.TopoDSEdgePointer>): Promise<Inputs.Base.Point3>;
     /**
@@ -364,6 +451,8 @@ declare class OCCT {
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_edge.OCCTEdge.html#pointOnEdgeAtLength
      * @param input edge and length
      * @returns Point on edge
+     * @group extract
+     * @shortname point at length
      */
     pointOnEdgeAtLength(inputs: Inputs.OCCT.DataOnGeometryAtLengthDto<Inputs.OCCT.TopoDSEdgePointer>): Promise<Inputs.Base.Point3>;
     /**
@@ -371,6 +460,8 @@ declare class OCCT {
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_edge.OCCTEdge.html#tangentOnEdgeAtLength
      * @param input edge and length
      * @returns Tangent vector on edge
+     * @group extract
+     * @shortname tangent at length
      */
     tangentOnEdgeAtLength(inputs: Inputs.OCCT.DataOnGeometryAtLengthDto<Inputs.OCCT.TopoDSEdgePointer>): Promise<Inputs.Base.Point3>;
     /**
@@ -378,6 +469,8 @@ declare class OCCT {
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_edge.OCCTEdge.html#startPointOnEdge
      * @param input edge
      * @returns Start point
+     * @group extract
+     * @shortname start point
      */
     startPointOnEdge(inputs: Inputs.OCCT.ShapeDto<Inputs.OCCT.TopoDSEdgePointer>): Promise<Inputs.Base.Point3>;
     /**
@@ -385,6 +478,8 @@ declare class OCCT {
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_edge.OCCTEdge.html#endPointOnEdge
      * @param input edge
      * @returns End point
+     * @group extract
+     * @shortname end point
      */
     endPointOnEdge(inputs: Inputs.OCCT.ShapeDto<Inputs.OCCT.TopoDSEdgePointer>): Promise<Inputs.Base.Point3>;
     /**
@@ -392,6 +487,8 @@ declare class OCCT {
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_edge.OCCTEdge.html#divideEdgeByParamsToPoints
      * @param input edge and division params
      * @returns Points
+     * @group extract
+     * @shortname points by params
      */
     divideEdgeByParamsToPoints(inputs: Inputs.OCCT.DivideDto<Inputs.OCCT.TopoDSEdgePointer>): Promise<Inputs.Base.Point3[]>;
     /**
@@ -399,6 +496,8 @@ declare class OCCT {
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_edge.OCCTEdge.html#divideEdgeByEqualDistanceToPoints
      * @param input edge and division params
      * @returns Points
+     * @group extract
+     * @shortname points by distance
      */
     divideEdgeByEqualDistanceToPoints(inputs: Inputs.OCCT.DivideDto<Inputs.OCCT.TopoDSEdgePointer>): Promise<Inputs.Base.Point3[]>;
 }declare class OCCTFace {
@@ -409,6 +508,8 @@ declare class OCCT {
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_face.OCCTFace.html#createFaceFromWire
      * @param inputs OpenCascade wire shape and indication if face should be planar
      * @returns OpenCascade face shape
+     * @group from
+     * @shortname wire
      */
     createFaceFromWire(inputs: Inputs.OCCT.FaceFromWireDto<Inputs.OCCT.TopoDSWirePointer>): Promise<Inputs.OCCT.TopoDSFacePointer>;
     /**
@@ -416,6 +517,8 @@ declare class OCCT {
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_face.OCCTFace.html#createFacesFromWires
      * @param inputs OpenCascade wire shape and indication if face should be planar
      * @returns OpenCascade face shape
+     * @group from
+     * @shortname wires
      */
     createFacesFromWires(inputs: Inputs.OCCT.FaceFromWireDto<Inputs.OCCT.TopoDSWirePointer>): Promise<Inputs.OCCT.TopoDSFacePointer[]>;
     /**
@@ -423,6 +526,8 @@ declare class OCCT {
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_geom_surfaces.OCCTSurfaces.html#faceFromSurface
      * @param inputs Face shape
      * @returns OpenCascade surface
+     * @group from
+     * @shortname surface
      */
     faceFromSurface(inputs: Inputs.OCCT.ShapeDto<Inputs.OCCT.GeomSurfacePointer>): Promise<Inputs.OCCT.TopoDSFacePointer>;
     /**
@@ -430,6 +535,8 @@ declare class OCCT {
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_geom_surfaces.OCCTSurfaces.html#faceFromSurfaceAndWire
      * @param inputs OpenCascade surface, a wire and indication wether face should be created inside or not
      * @returns Face shape
+     * @group from
+     * @shortname surface and wire
      */
     faceFromSurfaceAndWire(inputs: Inputs.OCCT.FaceFromSurfaceAndWireDto<Inputs.OCCT.GeomSurfacePointer, Inputs.OCCT.TopoDSWirePointer>): Promise<Inputs.OCCT.TopoDSFacePointer>;
     /**
@@ -437,6 +544,8 @@ declare class OCCT {
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_face.OCCTFace.html#createPolygonFace
      * @param inputs Polygon points
      * @returns OpenCascade polygon face
+     * @group primitives
+     * @shortname polygon
      */
     createPolygonFace(inputs: Inputs.OCCT.PolygonDto): Promise<Inputs.OCCT.TopoDSFacePointer>;
     /**
@@ -444,6 +553,8 @@ declare class OCCT {
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_face.OCCTFace.html#createCircleFace
      * @param inputs Circle parameters
      * @returns OpenCascade circle face
+     * @group primitives
+     * @shortname circle
      */
     createCircleFace(inputs: Inputs.OCCT.CircleDto): Promise<Inputs.OCCT.TopoDSFacePointer>;
     /**
@@ -451,6 +562,8 @@ declare class OCCT {
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_face.OCCTFace.html#createEllipseFace
      * @param inputs Ellipse parameters
      * @returns OpenCascade ellipse face
+     * @group primitives
+     * @shortname ellipse
      */
     createEllipseFace(inputs: Inputs.OCCT.EllipseDto): Promise<Inputs.OCCT.TopoDSFacePointer>;
     /**
@@ -458,6 +571,8 @@ declare class OCCT {
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_face.OCCTFace.html#createSquareFace
      * @param inputs Square parameters
      * @returns OpenCascade square face
+     * @group primitives
+     * @shortname square
      */
     createSquareFace(inputs: Inputs.OCCT.SquareDto): Promise<Inputs.OCCT.TopoDSFacePointer>;
     /**
@@ -465,6 +580,8 @@ declare class OCCT {
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_face.OCCTFace.html#createRectangleFace
      * @param inputs rectangle parameters
      * @returns OpenCascade rectangle
+     * @group primitives
+     * @shortname rectangle
      */
     createRectangleFace(inputs: Inputs.OCCT.RectangleDto): Promise<Inputs.OCCT.TopoDSFacePointer>;
     /**
@@ -472,6 +589,8 @@ declare class OCCT {
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_face.OCCTFace.html#getFace
      * @param inputs Shape
      * @returns OpenCascade face
+     * @group get
+     * @shortname face
      */
     getFace(inputs: Inputs.OCCT.ShapeIndexDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.OCCT.TopoDSFacePointer>;
     /**
@@ -479,6 +598,8 @@ declare class OCCT {
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_face.OCCTFace.html#getFaces
      * @param inputs Shape
      * @returns OpenCascade faces array
+     * @group get
+     * @shortname faces
      */
     getFaces(inputs: Inputs.OCCT.ShapeDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.OCCT.TopoDSFacePointer[]>;
     /**
@@ -486,6 +607,8 @@ declare class OCCT {
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_face.OCCTFace.html#reversedFace
      * @param inputs Face
      * @returns OpenCascade face
+     * @group get
+     * @shortname reversed
      */
     reversedFace(inputs: Inputs.OCCT.ShapeDto<Inputs.OCCT.TopoDSFacePointer>): Promise<Inputs.OCCT.TopoDSFacePointer>;
     /**
@@ -493,6 +616,8 @@ declare class OCCT {
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_face.OCCTFace.html#subdivideToPoints
      * @param inputs Face and params for subdivision
      * @returns points
+     * @group extract
+     * @shortname points
      */
     subdivideToPoints(inputs: Inputs.OCCT.FaceSubdivisionDto<Inputs.OCCT.TopoDSFacePointer>): Promise<Inputs.Base.Point3[]>;
     /**
@@ -500,6 +625,8 @@ declare class OCCT {
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_face.OCCTFace.html#subdivideToPointsControlled
      * @param inputs Face and params for subdivision
      * @returns points
+     * @group extract
+     * @shortname points nth
      */
     subdivideToPointsControlled(inputs: Inputs.OCCT.FaceSubdivisionControlledDto<Inputs.OCCT.TopoDSFacePointer>): Promise<Inputs.Base.Point3[]>;
     /**
@@ -507,6 +634,8 @@ declare class OCCT {
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_face.OCCTFace.html#subdivideToNormals
      * @param inputs Face and params for subdivision
      * @returns normal vectors
+     * @group extract
+     * @shortname normals
      */
     subdivideToNormals(inputs: Inputs.OCCT.FaceSubdivisionDto<Inputs.OCCT.TopoDSFacePointer>): Promise<Inputs.Base.Vector3[]>;
     /**
@@ -514,6 +643,8 @@ declare class OCCT {
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_face.OCCTFace.html#subdivideToUV
      * @param inputs Face and params for subdivision
      * @returns uv params in array
+     * @group extract
+     * @shortname uvs
      */
     subdivideToUV(inputs: Inputs.OCCT.FaceSubdivisionDto<Inputs.OCCT.TopoDSFacePointer>): Promise<Inputs.Base.Point2[]>;
     /**
@@ -521,6 +652,8 @@ declare class OCCT {
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_face.OCCTFace.html#pointOnUV
      * @param inputs Face and params for subdivision
      * @returns point
+     * @group extract
+     * @shortname point on uv
      */
     pointOnUV(inputs: Inputs.OCCT.DataOnUVDto<Inputs.OCCT.TopoDSFacePointer>): Promise<Inputs.Base.Point3>;
     /**
@@ -528,6 +661,8 @@ declare class OCCT {
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_face.OCCTFace.html#normalOnUV
      * @param inputs Face and params for subdivision
      * @returns normal vector
+     * @group extract
+     * @shortname normal on uv
      */
     normalOnUV(inputs: Inputs.OCCT.DataOnUVDto<Inputs.OCCT.TopoDSFacePointer>): Promise<Inputs.Base.Vector3>;
     /**
@@ -535,6 +670,8 @@ declare class OCCT {
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_face.OCCTFace.html#pointOnUV
      * @param inputs Face and params for subdivision
      * @returns points
+     * @group extract
+     * @shortname points on uvs
      */
     pointsOnUVs(inputs: Inputs.OCCT.DataOnUVsDto<Inputs.OCCT.TopoDSFacePointer>): Promise<Inputs.Base.Point3[]>;
     /**
@@ -542,6 +679,8 @@ declare class OCCT {
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_face.OCCTFace.html#normalsOnUVs
      * @param inputs Face and params for subdivision
      * @returns normals
+     * @group extract
+     * @shortname normals on uvs
      */
     normalsOnUVs(inputs: Inputs.OCCT.DataOnUVsDto<Inputs.OCCT.TopoDSFacePointer>): Promise<Inputs.Base.Vector3[]>;
     /**
@@ -549,6 +688,8 @@ declare class OCCT {
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_face.OCCTFace.html#subdivideToPointsOnParam
      * @param inputs Face and params for subdivision
      * @returns points
+     * @group extract
+     * @shortname points on param
      */
     subdivideToPointsOnParam(inputs: Inputs.OCCT.FaceLinearSubdivisionDto<Inputs.OCCT.TopoDSFacePointer>): Promise<Inputs.Base.Point3[]>;
     /**
@@ -556,6 +697,8 @@ declare class OCCT {
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_face.OCCTFace.html#getUMinBound
      * @param inputs OCCT Face
      * @returns u min bound
+     * @group get
+     * @shortname u min
      */
     getUMinBound(inputs: Inputs.OCCT.ShapeDto<Inputs.OCCT.TopoDSFacePointer>): Promise<number>;
     /**
@@ -563,6 +706,8 @@ declare class OCCT {
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_face.OCCTFace.html#getUMaxBound
      * @param inputs OCCT Face
      * @returns u max bound
+     * @group get
+     * @shortname u max
      */
     getUMaxBound(inputs: Inputs.OCCT.ShapeDto<Inputs.OCCT.TopoDSFacePointer>): Promise<number>;
     /**
@@ -570,6 +715,8 @@ declare class OCCT {
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_face.OCCTFace.html#getVMinBound
      * @param inputs OCCT Face
      * @returns v min bound
+     * @group get
+     * @shortname v min
      */
     getVMinBound(inputs: Inputs.OCCT.ShapeDto<Inputs.OCCT.TopoDSFacePointer>): Promise<number>;
     /**
@@ -577,6 +724,8 @@ declare class OCCT {
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_face.OCCTFace.html#getVMaxBound
      * @param inputs OCCT Face
      * @returns v max bound
+     * @group get
+     * @shortname v max
      */
     getVMaxBound(inputs: Inputs.OCCT.ShapeDto<Inputs.OCCT.TopoDSFacePointer>): Promise<number>;
     /**
@@ -584,6 +733,8 @@ declare class OCCT {
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_face.OCCTFace.html#getFaceArea
      * @param inputs OCCT Face
      * @returns area
+     * @group get
+     * @shortname face area
      */
     getFaceArea(inputs: Inputs.OCCT.ShapeDto<Inputs.OCCT.TopoDSFacePointer>): Promise<number>;
     /**
@@ -591,6 +742,8 @@ declare class OCCT {
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_face.OCCTFace.html#getFacesAreas
      * @param inputs OCCT Faces
      * @returns areas
+     * @group get
+     * @shortname areas of faces
      */
     getFacesAreas(inputs: Inputs.OCCT.ShapesDto<Inputs.OCCT.TopoDSFacePointer>): Promise<number[]>;
     /**
@@ -598,6 +751,8 @@ declare class OCCT {
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_face.OCCTFace.html#getFaceCenterOfMass
      * @param inputs OCCT Face
      * @returns point
+     * @group get
+     * @shortname center of mass
      */
     getFaceCenterOfMass(inputs: Inputs.OCCT.ShapeDto<Inputs.OCCT.TopoDSFacePointer>): Promise<Inputs.Base.Point3>;
     /**
@@ -605,6 +760,8 @@ declare class OCCT {
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_face.OCCTFace.html#getFaceCenterOfMass
      * @param inputs OCCT Faces
      * @returns points
+     * @group get
+     * @shortname centers of mass
      */
     getFacesCentersOfMass(inputs: Inputs.OCCT.ShapesDto<Inputs.OCCT.TopoDSFacePointer>): Promise<Inputs.Base.Point3[]>;
 }declare class OCCTShapes {
@@ -623,6 +780,8 @@ declare class OCCT {
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_shell.OCCTShell.html#sewFaces
      * @param inputs OpenCascade shell and faces
      * @returns OpenCascade shell
+     * @group create
+     * @shortname sew
      */
     sewFaces(inputs: Inputs.OCCT.SewDto<Inputs.OCCT.TopoDSFacePointer>): Promise<Inputs.OCCT.TopoDSShellPointer>;
     /**
@@ -630,6 +789,8 @@ declare class OCCT {
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_shell.OCCTShell.html#getShellSurfaceArea
      * @param inputs shell shape
      * @returns Surface area
+     * @group get
+     * @shortname area
      */
     getShellSurfaceArea(inputs: Inputs.OCCT.ShapeDto<Inputs.OCCT.TopoDSShellPointer>): Promise<number>;
 }declare class OCCTSolid {
@@ -640,6 +801,8 @@ declare class OCCT {
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_solid.OCCTSolid.html#createBox
      * @param inputs Closed shell to make into solid
      * @returns OpenCascade Solid
+     * @group from
+     * @shortname shell
      */
     fromClosedShell(inputs: Inputs.OCCT.ShapeDto<Inputs.OCCT.TopoDSShellPointer>): Promise<Inputs.OCCT.TopoDSSolidPointer>;
     /**
@@ -647,6 +810,8 @@ declare class OCCT {
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_solid.OCCTSolid.html#createBox
      * @param inputs Box size and center
      * @returns OpenCascade Box
+     * @group primitives
+     * @shortname box
      */
     createBox(inputs: Inputs.OCCT.BoxDto): Promise<Inputs.OCCT.TopoDSSolidPointer>;
     /**
@@ -654,6 +819,8 @@ declare class OCCT {
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_solid.OCCTSolid.html#createBoxFromCorner
      * @param inputs Box size and corner coordinates
      * @returns OpenCascade Box
+     * @group primitives
+     * @shortname box corner
      */
     createBoxFromCorner(inputs: Inputs.OCCT.BoxFromCornerDto): Promise<Inputs.OCCT.TopoDSSolidPointer>;
     /**
@@ -661,6 +828,8 @@ declare class OCCT {
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_solid.OCCTSolid.html#createCylinder
      * @param inputs Cylinder parameters
      * @returns OpenCascade Cylinder
+     * @group primitives
+     * @shortname cylinder
      */
     createCylinder(inputs: Inputs.OCCT.CylinderDto): Promise<Inputs.OCCT.TopoDSSolidPointer>;
     /**
@@ -668,6 +837,8 @@ declare class OCCT {
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_solid.OCCTSolid.html#createCylindersOnLines
      * @param inputs Cylinder parameters
      * @returns OpenCascade Cylinder
+     * @group primitives
+     * @shortname cylinders on lines
      */
     createCylindersOnLines(inputs: Inputs.OCCT.CylindersOnLinesDto): Promise<Inputs.OCCT.TopoDSSolidPointer[]>;
     /**
@@ -675,6 +846,8 @@ declare class OCCT {
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_solid.OCCTSolid.html#createSphere
      * @param inputs Sphere radius and center
      * @returns OpenCascade Sphere
+     * @group primitives
+     * @shortname sphere
      */
     createSphere(inputs: Inputs.OCCT.SphereDto): Promise<Inputs.OCCT.TopoDSSolidPointer>;
     /**
@@ -682,6 +855,8 @@ declare class OCCT {
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_solid.OCCTSolid.html#createCone
      * @param inputs Cone parameters
      * @returns OpenCascade cone shape
+     * @group primitives
+     * @shortname cone
      */
     createCone(inputs: Inputs.OCCT.ConeDto): Promise<Inputs.OCCT.TopoDSSolidPointer>;
     /**
@@ -689,6 +864,8 @@ declare class OCCT {
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_solid.OCCTSolid.html#getSolidSurfaceArea
      * @param inputs Closed solid shape
      * @returns Surface area
+     * @group get
+     * @shortname area
      */
     getSolidSurfaceArea(inputs: Inputs.OCCT.ShapeDto<Inputs.OCCT.TopoDSSolidPointer>): Promise<number>;
     /**
@@ -696,6 +873,8 @@ declare class OCCT {
     * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_solid.OCCTSolid.html#getSolidVolume
     * @param inputs Closed solid shape
     * @returns volume
+    * @group get
+    * @shortname volume
     */
     getSolidVolume(inputs: Inputs.OCCT.ShapeDto<Inputs.OCCT.TopoDSSolidPointer>): Promise<number>;
     /**
@@ -703,6 +882,8 @@ declare class OCCT {
     * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_solid.OCCTSolid.html#getSolidsVolumes
     * @param inputs Closed solid shapes
     * @returns volumes
+    * @group get
+    * @shortname volumes
     */
     getSolidsVolumes(inputs: Inputs.OCCT.ShapesDto<Inputs.OCCT.TopoDSSolidPointer>): Promise<number[]>;
     /**
@@ -710,6 +891,8 @@ declare class OCCT {
     * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_solid.OCCTSolid.html#getSolidCenterOfMass
     * @param inputs Closed solid shape
     * @returns center of mass point
+    * @group get
+    * @shortname center of mass
     */
     getSolidCenterOfMass(inputs: Inputs.OCCT.ShapeDto<Inputs.OCCT.TopoDSSolidPointer>): Promise<Inputs.Base.Point3>;
     /**
@@ -717,6 +900,8 @@ declare class OCCT {
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_solid.OCCTSolid.html#getSolidsCentersOfMass
      * @param inputs Closed solid shapes
      * @returns Points indicating centers of mass
+    * @group get
+    * @shortname centers of mass
      */
     getSolidsCentersOfMass(inputs: Inputs.OCCT.ShapesDto<Inputs.OCCT.TopoDSSolidPointer>): Promise<Inputs.Base.Point3[]>;
 }declare class OCCTWire {
@@ -727,13 +912,44 @@ declare class OCCT {
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_wire.OCCTWire.html#createPolygonWire
      * @param inputs Polygon points
      * @returns OpenCascade polygon wire shape
+     * @group via points
+     * @shortname polygon
      */
     createPolygonWire(inputs: Inputs.OCCT.PolygonDto): Promise<Inputs.OCCT.TopoDSWirePointer>;
+    /**
+    * Creates OpenCascade Bezier wire
+    * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_wire.OCCTWire.html#createBezier
+    * @param inputs Points through which to make bezier curve
+    * @returns OpenCascade Bezier wire
+    * @group via points
+    * @shortname bezier
+    */
+    createBezier(inputs: Inputs.OCCT.BezierDto): Promise<Inputs.OCCT.TopoDSWirePointer>;
+    /**
+     * Creates OpenCascade BSpline wire from points. This method can be used to create nicely shaped (periodic) loops.
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_wire.OCCTWire.html#interpolatePoints
+     * @param inputs Points through which to make the curve, periodic bool and tolerance
+     * @returns OpenCascade BSpline wire
+     * @group via points
+     * @shortname interpolate
+     */
+    interpolatePoints(inputs: Inputs.OCCT.InterpolationDto): Promise<Inputs.OCCT.TopoDSWirePointer>;
+    /**
+     * Creates OpenCascade BSPline wire
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_wire.OCCTWire.html#createBSpline
+     * @param inputs Points through which to make BSpline
+     * @returns OpenCascade BSpline wire
+     * @group via points
+     * @shortname bspline
+     */
+    createBSpline(inputs: Inputs.OCCT.BSplineDto): Promise<Inputs.OCCT.TopoDSWirePointer>;
     /**
      * Combines OpenCascade edges and wires into a single wire
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_wire.OCCTWire.html#combineEdgesAndWiresIntoAWire
      * @param inputs List of shapes of edges and wires
      * @returns OpenCascade wire
+     * @group build
+     * @shortname combine
      */
     combineEdgesAndWiresIntoAWire(inputs: Inputs.OCCT.ShapesDto<Inputs.OCCT.TopoDSWirePointer | Inputs.OCCT.TopoDSEdgePointer>): Promise<Inputs.OCCT.TopoDSWirePointer>;
     /**
@@ -741,20 +957,17 @@ declare class OCCT {
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_wire.OCCTWire.html#addEdgesAndWiresToWire
      * @param inputs List of shapes of edges and wires and a single shape wire to which edges need to be added
      * @returns OpenCascade wire
+     * @group build
+     * @shortname extend
      */
     addEdgesAndWiresToWire(inputs: Inputs.OCCT.ShapeShapesDto<Inputs.OCCT.TopoDSWirePointer, Inputs.OCCT.TopoDSWirePointer | Inputs.OCCT.TopoDSEdgePointer>): Promise<Inputs.OCCT.TopoDSWirePointer>;
-    /**
-     * Creates OpenCascade BSPline wire
-     * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_wire.OCCTWire.html#createBSpline
-     * @param inputs Points through which to make BSpline
-     * @returns OpenCascade BSpline wire
-     */
-    createBSpline(inputs: Inputs.OCCT.BSplineDto): Promise<Inputs.OCCT.TopoDSWirePointer>;
     /**
     * Divides OpenCascade wire to points blindly following its parametric space
     * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_wire.OCCTWire.html#divideWireByParamsToPoints
     * @param inputs Describes into how many points should the wire be divided
     * @returns Points on wire
+    * @group extract
+    * @shortname points by params
     */
     divideWireByParamsToPoints(inputs: Inputs.OCCT.DivideDto<Inputs.OCCT.TopoDSWirePointer>): Promise<Inputs.Base.Point3[]>;
     /**
@@ -762,6 +975,8 @@ declare class OCCT {
     * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_wire.OCCTWire.html#divideWireByEqualDistanceToPoints
     * @param inputs Describes into how many points should the wire be divided
     * @returns Points on wire
+    * @group extract
+    * @shortname points by distance
     */
     divideWireByEqualDistanceToPoints(inputs: Inputs.OCCT.DivideDto<Inputs.OCCT.TopoDSWirePointer>): Promise<Inputs.Base.Point3[]>;
     /**
@@ -769,6 +984,8 @@ declare class OCCT {
     * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_wire.OCCTWire.html#pointOnWireAtParam
     * @param inputs Wire shape and parameter
     * @returns Point as array of 3 numbers
+    * @group extract
+    * @shortname point at param
     */
     pointOnWireAtParam(inputs: Inputs.OCCT.DataOnGeometryAtParamDto<Inputs.OCCT.TopoDSWirePointer>): Promise<Inputs.Base.Point3>;
     /**
@@ -776,6 +993,8 @@ declare class OCCT {
     * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_wire.OCCTWire.html#pointOnWireAtLength
     * @param inputs Wire shape and length value
     * @returns Point as array of 3 numbers
+    * @group extract
+    * @shortname point at length
     */
     pointOnWireAtLength(inputs: Inputs.OCCT.DataOnGeometryAtLengthDto<Inputs.OCCT.TopoDSWirePointer>): Promise<Inputs.Base.Point3>;
     /**
@@ -783,6 +1002,8 @@ declare class OCCT {
     * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_wire.OCCTWire.html#tangentOnWireAtParam
     * @param inputs Wire shape and parameter
     * @returns Tangent vector as array of 3 numbers
+    * @group extract
+    * @shortname tangent at param
     */
     tangentOnWireAtParam(inputs: Inputs.OCCT.DataOnGeometryAtParamDto<Inputs.OCCT.TopoDSWirePointer>): Promise<Inputs.Base.Vector3>;
     /**
@@ -790,6 +1011,8 @@ declare class OCCT {
     * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_wire.OCCTWire.html#pointOnWireAtLength
     * @param inputs Wire shape and length value
     * @returns Tangent vector as array of 3 numbers
+    * @group extract
+    * @shortname tangent at length
     */
     tangentOnWireAtLength(inputs: Inputs.OCCT.DataOnGeometryAtLengthDto<Inputs.OCCT.TopoDSWirePointer>): Promise<Inputs.Base.Vector3>;
     /**
@@ -797,6 +1020,8 @@ declare class OCCT {
     * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_wire.OCCTWire.html#derivativesOnWireAtLength
     * @param inputs Wire shape and length value
     * @returns Three arrays of vectors. Each vector represents derivatives in order - first, second, third
+    * @group extract
+    * @shortname derivatives at length
     */
     derivativesOnWireAtLength(inputs: Inputs.OCCT.DataOnGeometryAtLengthDto<Inputs.OCCT.TopoDSWirePointer>): Promise<[Inputs.Base.Vector3, Inputs.Base.Vector3, Inputs.Base.Vector3]>;
     /**
@@ -804,6 +1029,8 @@ declare class OCCT {
     * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_wire.OCCTWire.html#derivativesOnWireAtParam
     * @param inputs Wire shape and parameter value
     * @returns Three arrays of vectors. Each vector represents derivatives in order - first, second, third
+    * @group extract
+    * @shortname derivatives at param
     */
     derivativesOnWireAtParam(inputs: Inputs.OCCT.DataOnGeometryAtParamDto<Inputs.OCCT.TopoDSWirePointer>): Promise<[Inputs.Base.Vector3, Inputs.Base.Vector3, Inputs.Base.Vector3]>;
     /**
@@ -811,6 +1038,8 @@ declare class OCCT {
     * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_wire.OCCTWire.html#startPointOnWire
     * @param inputs Wire shape
     * @returns The length of the wire
+    * @group extract
+    * @shortname start point
     */
     startPointOnWire(inputs: Inputs.OCCT.ShapeDto<Inputs.OCCT.TopoDSWirePointer>): Promise<Inputs.Base.Point3>;
     /**
@@ -818,27 +1047,17 @@ declare class OCCT {
     * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_wire.OCCTWire.html#endPointOnWire
     * @param inputs Wire shape
     * @returns The length of the wire
+    * @group extract
+    * @shortname end point
     */
     endPointOnWire(inputs: Inputs.OCCT.ShapeDto<Inputs.OCCT.TopoDSWirePointer>): Promise<Inputs.Base.Point3>;
-    /**
-     * Creates OpenCascade Bezier wire
-     * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_wire.OCCTWire.html#createBezier
-     * @param inputs Points through which to make bezier curve
-     * @returns OpenCascade Bezier wire
-     */
-    createBezier(inputs: Inputs.OCCT.BezierDto): Promise<Inputs.OCCT.TopoDSWirePointer>;
-    /**
-     * Creates OpenCascade BSpline wire from points. This method can be used to create nicely shaped (periodic) loops.
-     * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_wire.OCCTWire.html#interpolatePoints
-     * @param inputs Points through which to make the curve, periodic bool and tolerance
-     * @returns OpenCascade BSpline wire
-     */
-    interpolatePoints(inputs: Inputs.OCCT.InterpolationDto): Promise<Inputs.OCCT.TopoDSWirePointer>;
     /**
      * Creates OpenCascade circle wire
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_wire.OCCTWire.html#createCircleWire
      * @param inputs Circle parameters
      * @returns OpenCascade circle wire
+     * @group primitives
+     * @shortname circle
      */
     createCircleWire(inputs: Inputs.OCCT.CircleDto): Promise<Inputs.OCCT.TopoDSWirePointer>;
     /**
@@ -846,6 +1065,8 @@ declare class OCCT {
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_wire.OCCTWire.html#createSquareWire
      * @param inputs Square parameters
      * @returns OpenCascade square wire
+     * @group primitives
+     * @shortname square
      */
     createSquareWire(inputs: Inputs.OCCT.SquareDto): Promise<Inputs.OCCT.TopoDSWirePointer>;
     /**
@@ -853,6 +1074,8 @@ declare class OCCT {
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_wire.OCCTWire.html#createStarWire
      * @param inputs star parameters
      * @returns OpenCascade star wire
+     * @group primitives
+     * @shortname star
      */
     createStarWire(inputs: Inputs.OCCT.StarDto): Promise<Inputs.OCCT.TopoDSWirePointer>;
     /**
@@ -860,6 +1083,8 @@ declare class OCCT {
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_wire.OCCTWire.html#createNGonWire
      * @param inputs ngon parameters
      * @returns OpenCascade ngon wire
+     * @group primitives
+     * @shortname n-gon
      */
     createNGonWire(inputs: Inputs.OCCT.NGonWireDto): Promise<Inputs.OCCT.TopoDSWirePointer>;
     /**
@@ -867,6 +1092,8 @@ declare class OCCT {
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_wire.OCCTWire.html#createParallelogramWire
      * @param inputs parallelogram parameters
      * @returns OpenCascade star wire
+     * @group primitives
+     * @shortname parallelogram
      */
     createParallelogramWire(inputs: Inputs.OCCT.ParallelogramDto): Promise<Inputs.OCCT.TopoDSWirePointer>;
     /**
@@ -874,6 +1101,8 @@ declare class OCCT {
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_wire.OCCTWire.html#createRectangleWire
      * @param inputs rectangle parameters
      * @returns OpenCascade rectangle
+     * @group primitives
+     * @shortname rectangle
      */
     createRectangleWire(inputs: Inputs.OCCT.RectangleDto): Promise<Inputs.OCCT.TopoDSWirePointer>;
     /**
@@ -881,6 +1110,8 @@ declare class OCCT {
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_wire.OCCTWire.html#createEllipseWire
      * @param inputs Ellipse parameters
      * @returns OpenCascade ellipse wire
+     * @group primitives
+     * @shortname ellipse
      */
     createEllipseWire(inputs: Inputs.OCCT.EllipseDto): Promise<Inputs.OCCT.TopoDSWirePointer>;
     /**
@@ -888,6 +1119,8 @@ declare class OCCT {
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_wire.OCCTWire.html#getWire
      * @param inputs Shape
      * @returns OpenCascade wire
+     * @group get
+     * @shortname wire
      */
     getWire(inputs: Inputs.OCCT.ShapeIndexDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.OCCT.TopoDSWirePointer>;
     /**
@@ -895,6 +1128,8 @@ declare class OCCT {
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_wire.OCCTWire.html#getWires
      * @param inputs Shape
      * @returns OpenCascade wires
+     * @group get
+     * @shortname wires
      */
     getWires(inputs: Inputs.OCCT.ShapeIndexDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.OCCT.TopoDSWirePointer>;
     /**
@@ -902,27 +1137,17 @@ declare class OCCT {
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_wire.OCCTWire.html#reversedWire
      * @param inputs Shape
      * @returns OpenCascade wire
+     * @group get
+     * @shortname reversed
      */
     reversedWire(inputs: Inputs.OCCT.ShapeDto<Inputs.OCCT.TopoDSWirePointer>): Promise<Inputs.OCCT.TopoDSWirePointer>;
-    /**
-     * Places a wire on the face by mapping it's 2d coordinates to UV space. Wire must be positioned on the ground XZ plane for this to work.
-     * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_wire.OCCTWire.html#placeWireOnFace
-     * @param inputs two shapes - first a wire and second a face
-     * @returns OpenCascade wire
-     */
-    placeWireOnFace(inputs: Inputs.OCCT.WireOnFaceDto<Inputs.OCCT.TopoDSWirePointer, Inputs.OCCT.TopoDSFacePointer>): Promise<Inputs.OCCT.TopoDSWirePointer>;
-    /**
-     * Places multiple wires on the face by mapping it's 2d coordinates to UV space. Wires must be positioned on the ground XZ plane for this to work.
-     * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_wire.OCCTWire.html#placeWiresOnFace
-     * @param inputs a face and a list of wires
-     * @returns OpenCascade wires
-     */
-    placeWiresOnFace(inputs: Inputs.OCCT.ShapeShapesDto<Inputs.OCCT.TopoDSFacePointer, Inputs.OCCT.TopoDSWirePointer>): Promise<Inputs.OCCT.TopoDSWirePointer[]>;
     /**
      * Gets the wire length
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_wire.OCCTWire.html#getWireLength
      * @param inputs wire
      * @returns Length
+     * @group get
+     * @shortname length
      */
     getWireLength(inputs: Inputs.OCCT.ShapeDto<Inputs.OCCT.TopoDSWirePointer>): Promise<number>;
     /**
@@ -930,8 +1155,28 @@ declare class OCCT {
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_wire.OCCTWire.html#getWiresLengths
      * @param inputs wires
      * @returns Lengths
+     * @group get
+     * @shortname lengths
      */
     getWiresLengths(inputs: Inputs.OCCT.ShapesDto<Inputs.OCCT.TopoDSWirePointer>): Promise<number[]>;
+    /**
+     * Places a wire on the face by mapping it's 2d coordinates to UV space. Wire must be positioned on the ground XZ plane for this to work.
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_wire.OCCTWire.html#placeWireOnFace
+     * @param inputs two shapes - first a wire and second a face
+     * @returns OpenCascade wire
+     * @group place
+     * @shortname wire on face
+     */
+    placeWireOnFace(inputs: Inputs.OCCT.WireOnFaceDto<Inputs.OCCT.TopoDSWirePointer, Inputs.OCCT.TopoDSFacePointer>): Promise<Inputs.OCCT.TopoDSWirePointer>;
+    /**
+     * Places multiple wires on the face by mapping it's 2d coordinates to UV space. Wires must be positioned on the ground XZ plane for this to work.
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occt_shapes_wire.OCCTWire.html#placeWiresOnFace
+     * @param inputs a face and a list of wires
+     * @returns OpenCascade wires
+     * @group place
+     * @shortname wires on face
+     */
+    placeWiresOnFace(inputs: Inputs.OCCT.ShapeShapesDto<Inputs.OCCT.TopoDSFacePointer, Inputs.OCCT.TopoDSWirePointer>): Promise<Inputs.OCCT.TopoDSWirePointer[]>;
 }declare class OCCTTransforms {
     private readonly occWorkerManager;
     constructor(occWorkerManager: OCCTWorkerManager);
@@ -940,6 +1185,7 @@ declare class OCCT {
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_transforms.OCCTTransforms.html#transform
      * @param inputs Transformation description
      * @returns OpenCascade shape
+     * @shortname transform
      */
     transform(inputs: Inputs.OCCT.TransformDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.OCCT.TopoDSShapePointer>;
     /**
@@ -947,6 +1193,7 @@ declare class OCCT {
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_transforms.OCCTTransforms.html#rotate
      * @param inputs Rotation description
      * @returns OpenCascade shape
+     * @shortname rotate
      */
     rotate(inputs: Inputs.OCCT.RotateDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.OCCT.TopoDSShapePointer>;
     /**
@@ -954,6 +1201,7 @@ declare class OCCT {
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_transforms.OCCTTransforms.html#align
      * @param inputs Align description
      * @returns OpenCascade shape
+     * @shortname align
      */
     align(inputs: Inputs.OCCT.AlignDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.OCCT.TopoDSShapePointer>;
     /**
@@ -961,6 +1209,7 @@ declare class OCCT {
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_transforms.OCCTTransforms.html#translate
      * @param inputs Translation description
      * @returns OpenCascade shape
+     * @shortname translate
      */
     translate(inputs: Inputs.OCCT.TranslateDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.OCCT.TopoDSShapePointer>;
     /**
@@ -968,6 +1217,7 @@ declare class OCCT {
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_transforms.OCCTTransforms.html#scale
      * @param inputs Scale description
      * @returns OpenCascade shape
+     * @shortname scale
      */
     scale(inputs: Inputs.OCCT.ScaleDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.OCCT.TopoDSShapePointer>;
     /**
@@ -975,6 +1225,7 @@ declare class OCCT {
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_transforms.OCCTTransforms.html#scale3d
      * @param inputs Scale 3D description
      * @returns OpenCascade scaled shape
+     * @shortname scale 3d
      */
     scale3d(inputs: Inputs.OCCT.Scale3DDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.OCCT.TopoDSShapePointer>;
     /**
@@ -982,6 +1233,7 @@ declare class OCCT {
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_transforms.OCCTTransforms.html#mirror
      * @param inputs Mirror axis origin, axis direction and shape
      * @returns OpenCascade shape
+     * @shortname mirror
      */
     mirror(inputs: Inputs.OCCT.MirrorDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.OCCT.TopoDSShapePointer>;
     /**
@@ -989,6 +1241,7 @@ declare class OCCT {
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_transforms.OCCTTransforms.html#mirrorAlongNormal
      * @param inputs Normal for mirroring with origin
      * @returns OpenCascade shape
+     * @shortname mirror normal
      */
     mirrorAlongNormal(inputs: Inputs.OCCT.MirrorAlongNormalDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.OCCT.TopoDSShapePointer>;
     /**
@@ -996,6 +1249,7 @@ declare class OCCT {
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_transforms.OCCTTransforms.html#transformShapes
      * @param inputs Transformation descriptions
      * @returns OpenCascade shapes
+     * @shortname transforms
      */
     transformShapes(inputs: Inputs.OCCT.TransformShapesDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.OCCT.TopoDSShapePointer[]>;
     /**
@@ -1003,6 +1257,7 @@ declare class OCCT {
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_transforms.OCCTTransforms.html#rotateShapes
      * @param inputs Rotation descriptions
      * @returns OpenCascade shapes
+     * @shortname rotations
      */
     rotateShapes(inputs: Inputs.OCCT.RotateShapesDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.OCCT.TopoDSShapePointer[]>;
     /**
@@ -1010,6 +1265,7 @@ declare class OCCT {
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_transforms.OCCTTransforms.html#alignShapes
      * @param inputs Align descriptions
      * @returns OpenCascade shapes
+     * @shortname alignments
      */
     alignShapes(inputs: Inputs.OCCT.AlignShapesDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.OCCT.TopoDSShapePointer[]>;
     /**
@@ -1017,6 +1273,7 @@ declare class OCCT {
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_transforms.OCCTTransforms.html#translateShapes
      * @param inputs Translation descriptions
      * @returns OpenCascade shapes
+     * @shortname translations
      */
     translateShapes(inputs: Inputs.OCCT.TranslateShapesDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.OCCT.TopoDSShapePointer[]>;
     /**
@@ -1024,6 +1281,7 @@ declare class OCCT {
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_transforms.OCCTTransforms.html#scaleShapes
      * @param inputs Scale descriptions
      * @returns OpenCascade shapes
+     * @shortname scales
      */
     scaleShapes(inputs: Inputs.OCCT.ScaleShapesDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.OCCT.TopoDSShapePointer[]>;
     /**
@@ -1031,6 +1289,7 @@ declare class OCCT {
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_transforms.OCCTTransforms.html#scale3dShapes
      * @param inputs Scale 3D descriptions
      * @returns OpenCascade scaled shapes
+     * @shortname scales 3d
      */
     scale3dShapes(inputs: Inputs.OCCT.Scale3DShapesDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.OCCT.TopoDSShapePointer[]>;
     /**
@@ -1038,6 +1297,7 @@ declare class OCCT {
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_transforms.OCCTTransforms.html#mirrorShapes
      * @param inputs Mirror axis origins, axis directions and shapes
      * @returns OpenCascade shapes
+     * @shortname mirrors
      */
     mirrorShapes(inputs: Inputs.OCCT.MirrorShapesDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.OCCT.TopoDSShapePointer[]>;
     /**
@@ -1045,6 +1305,7 @@ declare class OCCT {
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_transforms.OCCTTransforms.html#mirrorAlongNormalShapes
      * @param inputs Normals for mirroring with origins
      * @returns OpenCascade shapes
+     * @shortname mirrors normal
      */
     mirrorAlongNormalShapes(inputs: Inputs.OCCT.MirrorAlongNormalShapesDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.OCCT.TopoDSShapePointer[]>;
 }`;

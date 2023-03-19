@@ -133,6 +133,7 @@ export const inputOCCTDeclarations = `declare namespace Base {
         /**
          * if solution is -1 planeOrigin chooses a particular fillet in case of several fillets may be constructed (for example, a circle intersecting a segment in 2 points). Put the intersecting (or common) point of the edges
          * @default -1
+         * @optional true
          */
         solution?: number;
     }
@@ -209,6 +210,7 @@ export const inputOCCTDeclarations = `declare namespace Base {
         /**
          * Face material
          * @default undefined
+         * @optional true
          */
         faceMaterial?: Base.Material;
         /**
@@ -460,7 +462,7 @@ export const inputOCCTDeclarations = `declare namespace Base {
          * @minimum 0
          * @maximum 1
          */
-        param?: number;
+        param: number;
         /**
          * Number of subdivisions on opposite direction
          * @default 10
@@ -531,7 +533,7 @@ export const inputOCCTDeclarations = `declare namespace Base {
          * Points points
          * @default []
          */
-        points?: Base.Point3[];
+        points: Base.Point3[];
     }
     class SquareDto {
         /**
@@ -586,21 +588,21 @@ export const inputOCCTDeclarations = `declare namespace Base {
          * @minimum 0
          * @maximum Infinity
          */
-        width?: number;
+        width: number;
         /**
          * Length of the box
          * @default 2
          * @minimum 0
          * @maximum Infinity
          */
-        length?: number;
+        length: number;
         /**
          * Height of the box
          * @default 3
          * @minimum 0
          * @maximum Infinity
          */
-        height?: number;
+        height: number;
         /**
          * Center of the box
          * @default [0, 0, 0]
@@ -617,21 +619,21 @@ export const inputOCCTDeclarations = `declare namespace Base {
          * @minimum 0
          * @maximum Infinity
          */
-        width?: number;
+        width: number;
         /**
          * Length of the box
          * @default 2
          * @minimum 0
          * @maximum Infinity
          */
-        length?: number;
+        length: number;
         /**
          * Height of the box
          * @default 3
          * @minimum 0
          * @maximum Infinity
          */
-        height?: number;
+        height: number;
         /**
          * Corner of the box
          * @default [0, 0, 0]
@@ -778,11 +780,13 @@ export const inputOCCTDeclarations = `declare namespace Base {
          * @default 0.1
          * @minimum 0
          * @maximum Infinity
+         * @optional true
          */
         radius?: number;
         /**
          * Radius list
          * @default undefined
+         * @optional true
          */
         radiusList?: number[];
         /**
@@ -803,11 +807,13 @@ export const inputOCCTDeclarations = `declare namespace Base {
          * @default 0.1
          * @minimum 0
          * @maximum Infinity
+         * @optional true
          */
         distance?: number;
         /**
          * Distance for the chamfer
          * @default undefined
+         * @optional true
          */
         distanceList?: number[];
         /**
