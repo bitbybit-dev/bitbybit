@@ -1093,6 +1093,8 @@ declare class BabylonTransforms {
      * @link https://docs.bitbybit.dev/classes/bitbybit_draw.Draw.html#drawAnyAsync
      * @param inputs Contains options and entities to be drawn
      * @returns BabylonJS Mesh Promise
+     * @group draw
+     * @shortname draw anything
      */
     drawAnyAsync(inputs: Inputs.Draw.DrawAny): Promise<Mesh>;
     private updateAny;
@@ -1100,6 +1102,8 @@ declare class BabylonTransforms {
      * Draws a grid mesh on the ground plane in 3D space. This helps to orient yourself in the world.
      * @link https://docs.bitbybit.dev/classes/bitbybit_draw.Draw.html#drawGridMesh
      * @param inputs Describes various parameters of the grid mesh like size, colour, etc.
+     * @group draw
+     * @shortname draw grid
      */
     drawGridMesh(inputs: Inputs.Draw.SceneDrawGridMeshDto): Mesh;
     /**
@@ -1109,6 +1113,33 @@ declare class BabylonTransforms {
      * @returns BabylonJS Mesh
      */
     drawAny(inputs: Inputs.Draw.DrawAny): Mesh;
+    /**
+     * Creates draw options for basic geometry types like points, lines, polylines, surfaces and jscad meshes
+     * @link https://docs.bitbybit.dev/classes/bitbybit_draw.Draw.html#optionsSimple
+     * @param inputs option definition
+     * @returns options
+     * @group options
+     * @shortname simple
+     */
+    optionsSimple(inputs: Inputs.Draw.DrawBasicGeometryOptions): Inputs.Draw.DrawBasicGeometryOptions;
+    /**
+     * Creates draw options for occt shape geometry like edges, wires, faces, shells, solids and compounds
+     * @link https://docs.bitbybit.dev/classes/bitbybit_draw.Draw.html#optionsSimple
+     * @param inputs option definition
+     * @returns options
+     * @group options
+     * @shortname occt shape
+     */
+    optionsOcctShape(inputs: Inputs.Draw.DrawOcctShapeOptions): Inputs.Draw.DrawOcctShapeOptions;
+    /**
+     * Creates draw options for babylon js nodes
+     * @link https://docs.bitbybit.dev/classes/bitbybit_draw.Draw.html#optionsSimple
+     * @param inputs option definition
+     * @returns options
+     * @group options
+     * @shortname babylon node
+     */
+    optionsBabylonNode(inputs: Inputs.Draw.DrawNodeOptions): Inputs.Draw.DrawNodeOptions;
     private assignColorToMesh;
     private handleTags;
     private handleTag;

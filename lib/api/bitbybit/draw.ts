@@ -52,6 +52,8 @@ export class Draw {
      * @link https://docs.bitbybit.dev/classes/bitbybit_draw.Draw.html#drawAnyAsync
      * @param inputs Contains options and entities to be drawn
      * @returns BabylonJS Mesh Promise
+     * @group draw
+     * @shortname draw anything
      */
     async drawAnyAsync(inputs: Inputs.Draw.DrawAny): Promise<Mesh> {
         const entity = inputs.entity;
@@ -131,6 +133,8 @@ export class Draw {
      * </div>
      * @link https://docs.bitbybit.dev/classes/bitbybit_draw.Draw.html#drawGridMesh
      * @param inputs Describes various parameters of the grid mesh like size, colour, etc.
+     * @group draw
+     * @shortname draw grid
      */
     drawGridMesh(inputs: Inputs.Draw.SceneDrawGridMeshDto): Mesh {
         const groundMaterial = new GridMaterial(`groundMaterial${Math.random()}`, this.context.scene);
@@ -159,7 +163,7 @@ export class Draw {
      * @param inputs Contains options and entities to be drawn
      * @returns BabylonJS Mesh
      */
-    drawAny(inputs: Inputs.Draw.DrawAny): Mesh {
+    private drawAny(inputs: Inputs.Draw.DrawAny): Mesh {
         let result;
 
         const entity = inputs.entity;
@@ -198,6 +202,51 @@ export class Draw {
             result = this.updateAny(inputs)
         }
         return result;
+    }
+
+    /**
+     * Creates draw options for basic geometry types like points, lines, polylines, surfaces and jscad meshes
+     * <div>
+     *  <img src="../assets/images/blockly-images/draw/optionsSimple.svg" alt="Blockly Image"/>
+     * </div>
+     * @link https://docs.bitbybit.dev/classes/bitbybit_draw.Draw.html#optionsSimple
+     * @param inputs option definition
+     * @returns options
+     * @group options
+     * @shortname simple
+     */
+    optionsSimple(inputs: Inputs.Draw.DrawBasicGeometryOptions): Inputs.Draw.DrawBasicGeometryOptions{
+        return inputs;
+    }
+
+    /**
+     * Creates draw options for occt shape geometry like edges, wires, faces, shells, solids and compounds
+     * <div>
+     *  <img src="../assets/images/blockly-images/draw/optionsSimple.svg" alt="Blockly Image"/>
+     * </div>
+     * @link https://docs.bitbybit.dev/classes/bitbybit_draw.Draw.html#optionsSimple
+     * @param inputs option definition
+     * @returns options
+     * @group options
+     * @shortname occt shape
+     */
+    optionsOcctShape(inputs: Inputs.Draw.DrawOcctShapeOptions): Inputs.Draw.DrawOcctShapeOptions{
+        return inputs;
+    }
+
+    /**
+     * Creates draw options for babylon js nodes
+     * <div>
+     *  <img src="../assets/images/blockly-images/draw/optionsSimple.svg" alt="Blockly Image"/>
+     * </div>
+     * @link https://docs.bitbybit.dev/classes/bitbybit_draw.Draw.html#optionsSimple
+     * @param inputs option definition
+     * @returns options
+     * @group options
+     * @shortname babylon node
+     */
+    optionsBabylonNode(inputs: Inputs.Draw.DrawNodeOptions): Inputs.Draw.DrawNodeOptions{
+        return inputs;
     }
 
     private assignColorToMesh(mesh, color: Color3) {

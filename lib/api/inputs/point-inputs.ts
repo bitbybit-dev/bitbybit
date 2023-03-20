@@ -16,6 +16,7 @@ export namespace Point {
          * @default 0
          * @minimum -Infinity
          * @maximum Infinity
+         * @step 0.5
          */
         x: number
         /**
@@ -23,6 +24,7 @@ export namespace Point {
          * @default 0
          * @minimum -Infinity
          * @maximum Infinity
+         * @step 0.5
          */
         y: number
         /**
@@ -30,6 +32,7 @@ export namespace Point {
         * @default 0
         * @minimum -Infinity
         * @maximum Infinity
+        * @step 0.5
         */
         z: number
     }
@@ -57,6 +60,7 @@ export namespace Point {
          * @default 1
          * @minimum 0
          * @maximum 1
+         * @step 0.1
          */
         opacity = 1;
         /**
@@ -64,6 +68,7 @@ export namespace Point {
          * @default 3
          * @minimum 0
          * @maximum Infinity
+         * @step 0.1
          */
         size = 3;
         /**
@@ -99,6 +104,7 @@ export namespace Point {
          * @default 1
          * @minimum 0
          * @maximum 1
+         * @step 0.1
          */
         opacity = 1;
         /**
@@ -106,6 +112,7 @@ export namespace Point {
          * @default 3
          * @minimum 0
          * @maximum Infinity
+         * @step 0.1
          */
         size = 3;
         /**
@@ -204,6 +211,7 @@ export namespace Point {
          * @default 0.9
          * @minimum 0
          * @maximum Infinity
+         * @step 0.1
          */
         phi = 0.9;
         /**
@@ -211,6 +219,7 @@ export namespace Point {
          * @default 200
          * @minimum 0
          * @maximum Infinity
+         * @step 10
          */
         numberPoints = 200;
         /**
@@ -218,6 +227,7 @@ export namespace Point {
          * @default 3
          * @minimum 0
          * @maximum Infinity
+         * @step 0.1
          */
         widening = 3;
         /**
@@ -225,6 +235,7 @@ export namespace Point {
          * @default 6
          * @minimum 0
          * @maximum Infinity
+         * @step 0.1
          */
         radius = 6;
         /**
@@ -232,6 +243,7 @@ export namespace Point {
          * @default 1
          * @minimum 0
          * @maximum Infinity
+         * @step 0.1
          */
         factor = 1;
     }
@@ -242,6 +254,7 @@ export namespace Point {
          * @default 20
          * @minimum 0
          * @maximum Infinity
+         * @step 1
          */
         nrHexagonsY: number = 20;
         /**
@@ -249,6 +262,7 @@ export namespace Point {
          * @default 20
          * @minimum 0
          * @maximum Infinity
+         * @step 1
          */
         nrHexagonsX: number = 20;
         /**
@@ -256,6 +270,7 @@ export namespace Point {
          * @default 0.2
          * @minimum 0
          * @maximum Infinity
+         * @step 0.1
          */
         radiusHexagon: number;
     }

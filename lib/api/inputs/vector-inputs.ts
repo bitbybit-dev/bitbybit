@@ -35,6 +35,7 @@ export namespace Vector {
          * @default 10
          * @minimum -Infinity
          * @maximum Infinity
+         * @step 1
          */
         max: number;
     }
@@ -44,6 +45,7 @@ export namespace Vector {
          * @default 0
          * @minimum -Infinity
          * @maximum Infinity
+         * @step 0.5
          */
         x: number;
         /**
@@ -51,6 +53,7 @@ export namespace Vector {
          * @default 0
          * @minimum -Infinity
          * @maximum Infinity
+         * @step 0.5
          */
         y: number;
         /**
@@ -58,6 +61,7 @@ export namespace Vector {
          * @default 0
          * @minimum -Infinity
          * @maximum Infinity
+         * @step 0.5
          */
         z: number;
     }
@@ -67,6 +71,7 @@ export namespace Vector {
          * @default 1
          * @minimum -Infinity
          * @maximum Infinity
+         * @step 1
          */
         step: number;
         /**
@@ -74,6 +79,7 @@ export namespace Vector {
         * @default 1
         * @minimum -Infinity
         * @maximum Infinity
+        * @step 1
         */
         min = 0;
         /**
@@ -81,6 +87,7 @@ export namespace Vector {
         * @default 1
         * @minimum -Infinity
         * @maximum Infinity
+        * @step 1
         */
         max = 1;
     }
@@ -95,6 +102,7 @@ export namespace Vector {
          * @default 1
          * @minimum -Infinity
          * @maximum Infinity
+         * @step 1
          */
         distance: number;
         /**
@@ -116,6 +124,7 @@ export namespace Vector {
          * @default 0.5
          * @minimum -Infinity
          * @maximum Infinity
+         * @step 0.1
          */
         fraction = 0.5;
         /**
@@ -135,6 +144,7 @@ export namespace Vector {
          * @default 1
          * @minimum -Infinity
          * @maximum Infinity
+         * @step 0.1
          */
         scalar: number;
         /**

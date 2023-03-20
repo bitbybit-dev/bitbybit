@@ -517,14 +517,19 @@ export const inputDeclarations = `declare namespace Asset {
     class DrawAny {
         /**
          * Entity to be drawn - can be a single or multiple points, lines, polylines, verb curves, verb surfaces, jscad meshes, jscad polygons, jscad paths, occt shapes, tags, nodes
+         * @default undefined
          */
         entity: any;
         /**
          * Entity to be used when updating
+         * @default undefined
+         * @optional true
          */
         babylonMesh?: any;
         /**
          * Options that help you control how your drawn objects look like. This property is optional. In order to pick the right option you need to know which entity you are going to draw. For example if you draw points, lines, polylines or jscad meshes you can use basic geometry options, but if you want to draw OCCT shapes, use OCCT options.
+         * @default undefined
+         * @optional true
          */
         options: DrawBasicGeometryOptions | DrawOcctShapeOptions | DrawNodeOptions;
     }
@@ -577,22 +582,31 @@ export const inputDeclarations = `declare namespace Asset {
     class DrawBasicGeometryOptions {
         /**
          * Basic geometry colours to use for lines, points, polylines, surfaces, jscad meshes.
+         * @default #ff0000
          */
         colours: string | string[];
         /**
          * Size affect how big the drawn points are and how wide lines are.
+         * @default 3
+         * @minimum 0
+         * @maximum Infinity
          */
         size: number;
         /**
          * Opacity of the point 0 to 1
+         * @default 1
+         * @minimum 0
+         * @maximum 1
          */
         opacity: number;
         /**
          * If geometry needs to be updated later
+         * @default false
          */
         updatable: boolean;
         /**
          * Hidden
+         * @default false
          */
         hidden: boolean;
     }
@@ -603,18 +617,24 @@ export const inputDeclarations = `declare namespace Asset {
     class DrawNodeOptions {
         /**
          * X Axis colour
+         * @default #ff0000
          */
-        colorX: string;
+        colorX: Base.Color;
         /**
          * Y Axis colour
+         * @default #00ff00
          */
-        colorY: string;
+        colorY: Base.Color;
         /**
          * Z Axis colour
+         * @default #0000ff
          */
-        colorZ: string;
+        colorZ: Base.Color;
         /**
          * Length of the node axis
+         * @default 2
+         * @minimum 0
+         * @maximum Infinity
          */
         size: number;
     }
@@ -625,64 +645,93 @@ export const inputDeclarations = `declare namespace Asset {
     class DrawOcctShapeOptions {
         /**
          * Face opacity value between 0 and 1
+         * @default 1
+         * @minimum 0
+         * @maximum Infinity
+         *
          */
         faceOpacity: number;
         /**
          * Edge opacity value between 0 and 1
+         * @default 1
+         * @minimum 0
+         * @maximum 1
          */
         edgeOpacity: number;
         /**
          * Hex colour string for the edges
+         * @default #ffffff
          */
-        edgeColour: string;
+        edgeColour: Base.Color;
         /**
          * Hex colour string for face colour
+         * @default #ff0000
          */
-        faceColour: string;
+        faceColour: Base.Color;
         /**
          * Face material
+         * @default undefined
+         * @optional true
          */
         faceMaterial?: any;
         /**
          * Edge width
+         * @default 2
+         * @minimum 0
+         * @maximum Infinity
          */
         edgeWidth: number;
         /**
          * You can turn off drawing of edges via this property
+         * @default true
          */
         drawEdges: boolean;
         /**
          * You can turn off drawing of faces via this property
+         * @default true
          */
         drawFaces: boolean;
         /**
          * Precision
+         * @default 0.01
+         * @minimum 0
+         * @maximum Infinity
          */
         precision: number;
         /**
          * Draw index of edges in space
+         * @default false
          */
         drawEdgeIndexes: boolean;
         /**
          * Indicates the edge index height if they are drawn
+         * @default 0.06
+         * @minimum 0
+         * @maximum Infinity
          */
         edgeIndexHeight: number;
         /**
          * Edge index colour if the edges are drawn
+         * @default ff00ff
          */
-        edgeIndexColour: string;
+        edgeIndexColour: Base.Color;
         /**
          * Draw indexes of faces in space
+         * @default false
          */
         drawFaceIndexes: boolean;
         /**
          * Indicates the edge index height if they are drawn
+         * @default 0.06
+         * @minimum 0
+         * @maximum Infinity
          */
         faceIndexHeight: number;
         /**
          * Edge index colour if the edges are drawn
+         * @default #0000ff
          */
-        faceIndexColour: string;
+        faceIndexColour: Base.Color;
     }
     enum drawingTypes {
         point = 0,
