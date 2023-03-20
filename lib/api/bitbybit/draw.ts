@@ -54,6 +54,7 @@ export class Draw {
      * @returns BabylonJS Mesh Promise
      * @group draw
      * @shortname draw anything
+     * @disposableOutput true
      */
     async drawAnyAsync(inputs: Inputs.Draw.DrawAny): Promise<Mesh> {
         const entity = inputs.entity;
@@ -135,6 +136,7 @@ export class Draw {
      * @param inputs Describes various parameters of the grid mesh like size, colour, etc.
      * @group draw
      * @shortname draw grid
+     * @disposableOutput true
      */
     drawGridMesh(inputs: Inputs.Draw.SceneDrawGridMeshDto): Mesh {
         const groundMaterial = new GridMaterial(`groundMaterial${Math.random()}`, this.context.scene);

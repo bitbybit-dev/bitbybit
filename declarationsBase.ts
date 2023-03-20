@@ -1095,6 +1095,7 @@ declare class BabylonTransforms {
      * @returns BabylonJS Mesh Promise
      * @group draw
      * @shortname draw anything
+     * @disposableOutput true
      */
     drawAnyAsync(inputs: Inputs.Draw.DrawAny): Promise<Mesh>;
     private updateAny;
@@ -1104,6 +1105,7 @@ declare class BabylonTransforms {
      * @param inputs Describes various parameters of the grid mesh like size, colour, etc.
      * @group draw
      * @shortname draw grid
+     * @disposableOutput true
      */
     drawGridMesh(inputs: Inputs.Draw.SceneDrawGridMeshDto): Mesh;
     /**
