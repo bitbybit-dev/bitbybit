@@ -1808,6 +1808,9 @@ declare class Point {
      * @link https://docs.bitbybit.dev/classes/bitbybit_point.Point.html#drawPoint
      * @param inputs Contains a point to be drawn
      * @returns Mesh that is being drawn by Babylon
+     * @group draw
+     * @shortname point
+     * @drawable false
      */
     drawPoint(inputs: Inputs.Point.DrawPointDto): Mesh;
     /**
@@ -1815,6 +1818,9 @@ declare class Point {
      * @link https://docs.bitbybit.dev/classes/bitbybit_point.Point.html#drawPoints
      * @param inputs Contains a point array to be drawn
      * @returns Mesh that is being drawn by Babylon
+     * @group draw
+     * @shortname points sync
+     * @drawable false
      */
     drawPoints(inputs: Inputs.Point.DrawPointsDto): Mesh;
     /**
@@ -1822,6 +1828,9 @@ declare class Point {
      * @link https://docs.bitbybit.dev/classes/bitbybit_point.Point.html#drawPointsAsync
      * @param inputs Contains a point array to be drawn
      * @returns Promise of a Mesh that will being drawn by Babylon
+     * @group draw
+     * @shortname points
+     * @drawable false
      */
     drawPointsAsync(inputs: Inputs.Point.DrawPointsDto): Promise<Mesh>;
     /**
@@ -1829,6 +1838,9 @@ declare class Point {
      * @link https://docs.bitbybit.dev/classes/bitbybit_point.Point.html#transformPoint
      * @param inputs Contains a point and the transformations to apply
      * @returns Transformed point
+     * @group transforms
+     * @shortname transform point
+     * @drawable true
      */
     transformPoint(inputs: Inputs.Point.TransformPointDto): Inputs.Base.Point3;
     /**
@@ -1836,6 +1848,9 @@ declare class Point {
      * @link https://docs.bitbybit.dev/classes/bitbybit_point.Point.html#transformPoints
      * @param inputs Contains points and the transformations to apply
      * @returns Transformed points
+     * @group transforms
+     * @shortname transform points
+     * @drawable true
      */
     transformPoints(inputs: Inputs.Point.TransformPointsDto): Inputs.Base.Point3[];
     /**
@@ -1843,6 +1858,9 @@ declare class Point {
      * @link https://docs.bitbybit.dev/classes/bitbybit_point.Point.html#transformsForPoints
      * @param inputs Contains points and the transformations to apply
      * @returns Transformed points
+     * @group transforms
+     * @shortname transforms for points
+     * @drawable true
      */
     transformsForPoints(inputs: Inputs.Point.TransformsForPointsDto): Inputs.Base.Point3[];
     /**
@@ -1850,6 +1868,9 @@ declare class Point {
      * @link https://docs.bitbybit.dev/classes/bitbybit_point.Point.html#closestPointFromPointsDistance
      * @param inputs Point from which to measure and points to measure the distance against
      * @returns Distance to closest point
+     * @group extract
+     * @shortname distance to closest pt
+     * @drawable false
      */
     closestPointFromPointsDistance(inputs: Inputs.Point.ClosestPointFromPointsDto): number;
     /**
@@ -1857,6 +1878,9 @@ declare class Point {
      * @link https://docs.bitbybit.dev/classes/bitbybit_point.Point.html#closestPointFromPointsIndex
      * @param inputs Point from which to find the index in a collection of points
      * @returns Closest point index
+     * @group extract
+     * @shortname index of closest pt
+     * @drawable false
      */
     closestPointFromPointsIndex(inputs: Inputs.Point.ClosestPointFromPointsDto): number;
     /**
@@ -1864,6 +1888,9 @@ declare class Point {
      * @link https://docs.bitbybit.dev/classes/bitbybit_point.Point.html#closestPointFromPoints
      * @param inputs Point and points collection to find the closest point in
      * @returns Closest point
+     * @group extract
+     * @shortname closest pt
+     * @drawable true
      */
     closestPointFromPoints(inputs: Inputs.Point.ClosestPointFromPointsDto): Inputs.Base.Point3;
     /**
@@ -1871,6 +1898,9 @@ declare class Point {
      * @link https://docs.bitbybit.dev/classes/bitbybit_point.Point.html#distance
      * @param inputs Coordinates of start and end points
      * @returns Distance
+     * @group measure
+     * @shortname distance
+     * @drawable false
      */
     distance(inputs: Inputs.Point.StartEndPointsDto): number;
     /**
@@ -1878,6 +1908,9 @@ declare class Point {
      * @link https://docs.bitbybit.dev/classes/bitbybit_point.Point.html#multiplyPoint
      * @param inputs The point to be multiplied and the amount of points to create
      * @returns Distance
+     * @group transforms
+     * @shortname multiply point
+     * @drawable true
      */
     multiplyPoint(inputs: Inputs.Point.MultiplyPointDto): Inputs.Base.Point3[];
     /**
@@ -1885,6 +1918,9 @@ declare class Point {
      * @link https://docs.bitbybit.dev/classes/bitbybit_point.Point.html#getX
      * @param inputs The point
      * @returns X coordinate
+     * @group get
+     * @shortname x coord
+     * @drawable false
      */
     getX(inputs: Inputs.Point.PointDto): number;
     /**
@@ -1892,6 +1928,9 @@ declare class Point {
      * @link https://docs.bitbybit.dev/classes/bitbybit_point.Point.html#getY
      * @param inputs The point
      * @returns Y coordinate
+     * @group get
+     * @shortname y coord
+     * @drawable false
      */
     getY(inputs: Inputs.Point.PointDto): number;
     /**
@@ -1899,6 +1938,9 @@ declare class Point {
      * @link https://docs.bitbybit.dev/classes/bitbybit_point.Point.html#getZ
      * @param inputs The point
      * @returns Z coordinate
+     * @group get
+     * @shortname z coord
+     * @drawable false
      */
     getZ(inputs: Inputs.Point.PointDto): number;
     /**
@@ -1906,13 +1948,29 @@ declare class Point {
      * @link https://docs.bitbybit.dev/classes/bitbybit_point.Point.html#averagePoint
      * @param inputs The points
      * @returns point
+     * @group extract
+     * @shortname average point
+     * @drawable true
      */
     averagePoint(inputs: Inputs.Point.PointsDto): Base.Point3;
+    /**
+     * Creates the xyz point
+     * @link https://docs.bitbybit.dev/classes/bitbybit_point.Point.html#pointXYZ
+     * @param inputs xyz information
+     * @returns point 3d
+     * @group create
+     * @shortname point xyz
+     * @drawable true
+     */
+    pointXYZ(inputs: Inputs.Point.PointXYZDto): Inputs.Base.Point3;
     /**
      * Creates the spiral out of multiple points
      * @link https://docs.bitbybit.dev/classes/bitbybit_point.Point.html#spiral
      * @param inputs Spiral information
      * @returns Specified number of points in the array along the spiral
+     * @group create
+     * @shortname spiral
+     * @drawable true
      */
     spiral(inputs: Inputs.Point.SpiralDto): Inputs.Base.Point3[];
     /**
@@ -1921,6 +1979,9 @@ declare class Point {
      * @link https://docs.bitbybit.dev/classes/bitbybit_point.Point.html#hexGrid
      * @param inputs Information about hexagon and the grid
      * @returns Points in the array on the grid
+     * @group create
+     * @shortname hex grid
+     * @drawable true
      */
     hexGrid(inputs: Inputs.Point.HexGridCentersDto): Inputs.Base.Point3[];
     private closestPointFromPointData;
@@ -2048,7 +2109,10 @@ declare class Vector {
      * Measures the angle between two vectors in degrees
      * @link https://docs.bitbybit.dev/classes/bitbybit_vector.Vector.html#angleBetween
      * @param inputs Contains two vectors represented as number arrays
+     * @group angles
+     * @shortname angle
      * @returns Number in degrees
+     * @drawable false
      */
     angleBetween(inputs: Inputs.Vector.TwoVectorsDto): number;
     /**
@@ -2056,6 +2120,9 @@ declare class Vector {
      * @link https://docs.bitbybit.dev/classes/bitbybit_vector.Vector.html#angleBetweenNormalized2d
      * @param inputs Contains two vectors represented as number arrays
      * @returns Number in degrees
+     * @group angles
+     * @shortname angle normalized 2d
+     * @drawable false
      */
     angleBetweenNormalized2d(inputs: Inputs.Vector.TwoVectorsDto): number;
     /**
@@ -2063,6 +2130,9 @@ declare class Vector {
      * @link https://docs.bitbybit.dev/classes/bitbybit_vector.Vector.html#positiveAngleBetween
      * @param inputs Contains information of two vectors and a reference vector
      * @returns Number in degrees
+     * @group angles
+     * @shortname positive angle
+     * @drawable false
      */
     positiveAngleBetween(inputs: Inputs.Vector.TwoVectorsReferenceDto): number;
     /**
@@ -2070,6 +2140,9 @@ declare class Vector {
      * @link https://docs.bitbybit.dev/classes/bitbybit_vector.Vector.html#addAll
      * @param inputs Vectors to be added
      * @returns New vector that has xyz values as sums of all the vectors
+     * @group sum
+     * @shortname add all
+     * @drawable false
      */
     addAll(inputs: Inputs.Vector.VectorsDto): number[];
     /**
@@ -2077,6 +2150,9 @@ declare class Vector {
      * @link https://docs.bitbybit.dev/classes/bitbybit_vector.Vector.html#add
      * @param inputs Two vectors to be added
      * @returns Number array representing vector
+     * @group sum
+     * @shortname add
+     * @drawable false
      */
     add(inputs: Inputs.Vector.TwoVectorsDto): number[];
     /**
@@ -2084,13 +2160,19 @@ declare class Vector {
      * @link https://docs.bitbybit.dev/classes/bitbybit_vector.Vector.html#all
      * @param inputs Vectors to be checked
      * @returns Boolean indicating if vector contains only true values
+     * @group sum
+     * @shortname all
+     * @drawable false
      */
     all(inputs: Inputs.Vector.VectorBoolDto): boolean;
     /**
      * Cross two vectors
      * @link https://docs.bitbybit.dev/classes/bitbybit_vector.Vector.html#cross
      * @param inputs Two vectors to be crossed
+     * @group base
+     * @shortname all
      * @returns Crossed vector
+     * @drawable false
      */
     cross(inputs: Inputs.Vector.TwoVectorsDto): number[];
     /**
@@ -2098,6 +2180,9 @@ declare class Vector {
      * @link https://docs.bitbybit.dev/classes/bitbybit_vector.Vector.html#distSquared
      * @param inputs Two vectors
      * @returns Number representing squared distance between two vectors
+     * @group distance
+     * @shortname dist squared
+     * @drawable false
      */
     distSquared(inputs: Inputs.Vector.TwoVectorsDto): number;
     /**
@@ -2105,6 +2190,9 @@ declare class Vector {
      * @link https://docs.bitbybit.dev/classes/bitbybit_vector.Vector.html#dist
      * @param inputs Two vectors
      * @returns Number representing distance between two vectors
+     * @group distance
+     * @shortname dist
+     * @drawable false
      */
     dist(inputs: Inputs.Vector.TwoVectorsDto): number;
     /**
@@ -2112,6 +2200,9 @@ declare class Vector {
      * @link https://docs.bitbybit.dev/classes/bitbybit_vector.Vector.html#div
      * @param inputs Contains vector and a scalar
      * @returns Vector that is a result of division by a scalar
+     * @group base
+     * @shortname div
+     * @drawable false
      */
     div(inputs: Inputs.Vector.VectorScalarDto): number[];
     /**
@@ -2119,6 +2210,9 @@ declare class Vector {
      * @link https://docs.bitbybit.dev/classes/bitbybit_vector.Vector.html#domain
      * @param inputs Vector information
      * @returns Number representing distance between two vectors
+     * @group base
+     * @shortname domain
+     * @drawable false
      */
     domain(inputs: Inputs.Vector.VectorDto): number;
     /**
@@ -2126,6 +2220,9 @@ declare class Vector {
      * @link https://docs.bitbybit.dev/classes/bitbybit_vector.Vector.html#dot
      * @param inputs Two vectors
      * @returns Number representing dot product of the vector
+     * @group base
+     * @shortname dot
+     * @drawable false
      */
     dot(inputs: Inputs.Vector.TwoVectorsDto): number;
     /**
@@ -2134,6 +2231,9 @@ declare class Vector {
      * @param inputs Vector with possibly infinite values
      * @returns Vector array that contains boolean values for each number in the input
      * vector that identifies if value is finite (true) or infinite (false)
+     * @group validate
+     * @shortname finite
+     * @drawable false
      */
     finite(inputs: Inputs.Vector.VectorDto): boolean[];
     /**
@@ -2141,6 +2241,9 @@ declare class Vector {
      * @link https://docs.bitbybit.dev/classes/bitbybit_vector.Vector.html#isZero
      * @param inputs Vector to be checked
      * @returns Boolean that identifies if vector is zero length
+     * @group validate
+     * @shortname isZero
+     * @drawable false
      */
     isZero(inputs: Inputs.Vector.VectorDto): boolean;
     /**
@@ -2148,6 +2251,9 @@ declare class Vector {
      * @link https://docs.bitbybit.dev/classes/bitbybit_vector.Vector.html#lerp
      * @param inputs Information for finding vector between two vectors using a fraction
      * @returns Vector that is in between two vectors
+     * @group distance
+     * @shortname lerp
+     * @drawable false
      */
     lerp(inputs: Inputs.Vector.FractionTwoVectorsDto): number[];
     /**
@@ -2155,6 +2261,9 @@ declare class Vector {
      * @link https://docs.bitbybit.dev/classes/bitbybit_vector.Vector.html#max
      * @param inputs Vector to be checked
      * @returns Largest number in the vector
+     * @group extract
+     * @shortname max
+     * @drawable false
      */
     max(inputs: Inputs.Vector.VectorDto): number;
     /**
@@ -2162,6 +2271,9 @@ declare class Vector {
      * @link https://docs.bitbybit.dev/classes/bitbybit_vector.Vector.html#min
      * @param inputs Vector to be checked
      * @returns Lowest number in the vector
+     * @group extract
+     * @shortname min
+     * @drawable false
      */
     min(inputs: Inputs.Vector.VectorDto): number;
     /**
@@ -2169,6 +2281,9 @@ declare class Vector {
      * @link https://docs.bitbybit.dev/classes/bitbybit_vector.Vector.html#mul
      * @param inputs Vector with a scalar
      * @returns Vector that results from multiplication
+     * @group base
+     * @shortname mul
+     * @drawable false
      */
     mul(inputs: Inputs.Vector.VectorScalarDto): number[];
     /**
@@ -2176,6 +2291,9 @@ declare class Vector {
      * @link https://docs.bitbybit.dev/classes/bitbybit_vector.Vector.html#neg
      * @param inputs Vector to negate
      * @returns Negative vector
+     * @group base
+     * @shortname neg
+     * @drawable false
      */
     neg(inputs: Inputs.Vector.VectorDto): number[];
     /**
@@ -2183,6 +2301,9 @@ declare class Vector {
      * @link https://docs.bitbybit.dev/classes/bitbybit_vector.Vector.html#normSquared
      * @param inputs Vector for squared norm
      * @returns Number that is squared norm
+     * @group base
+     * @shortname norm squared
+     * @drawable false
      */
     normSquared(inputs: Inputs.Vector.VectorDto): number;
     /**
@@ -2190,6 +2311,9 @@ declare class Vector {
      * @link https://docs.bitbybit.dev/classes/bitbybit_vector.Vector.html#norm
      * @param inputs Vector to compute the norm
      * @returns Number that is norm of the vector
+     * @group base
+     * @shortname norm
+     * @drawable false
      */
     norm(inputs: Inputs.Vector.VectorDto): number;
     /**
@@ -2197,6 +2321,9 @@ declare class Vector {
      * @link https://docs.bitbybit.dev/classes/bitbybit_vector.Vector.html#normalized
      * @param inputs Vector to normalize
      * @returns Unit vector that has length of 1
+     * @group base
+     * @shortname normalized
+     * @drawable false
      */
     normalized(inputs: Inputs.Vector.VectorDto): number[];
     /**
@@ -2204,13 +2331,29 @@ declare class Vector {
      * @link https://docs.bitbybit.dev/classes/bitbybit_vector.Vector.html#onRay
      * @param inputs Provide a point, vector and a distance for finding a point
      * @returns Vector representing point on the ray
+     * @group base
+     * @shortname on ray
+     * @drawable false
      */
     onRay(inputs: Inputs.Vector.RayPointDto): number[];
+    /**
+     * Create a xyz vector
+     * @link https://docs.bitbybit.dev/classes/bitbybit_vector.Vector.html#vectorXYZ
+     * @param inputs Max value for the range
+     * @returns Create a vector of xyz values
+     * @group create
+     * @shortname vector XYZ
+     * @drawable true
+     */
+    vectorXYZ(inputs: Inputs.Vector.VectorXYZDto): Inputs.Base.Vector3;
     /**
      * Creates a vector of integers between 0 and maximum ceiling integer
      * @link https://docs.bitbybit.dev/classes/bitbybit_vector.Vector.html#range
      * @param inputs Max value for the range
      * @returns Vector containing items from 0 to max
+     * @group create
+     * @shortname range
+     * @drawable false
      */
     range(inputs: Inputs.Vector.RangeMaxDto): number[];
     /**
@@ -2218,6 +2361,9 @@ declare class Vector {
      * @link https://docs.bitbybit.dev/classes/bitbybit_vector.Vector.html#signedAngleBetween
      * @param inputs Contains information of two vectors and a reference vector
      * @returns Signed angle in degrees
+     * @group angles
+     * @shortname signed angle
+     * @drawable false
      */
     signedAngleBetween(inputs: Inputs.Vector.TwoVectorsReferenceDto): number;
     /**
@@ -2225,6 +2371,9 @@ declare class Vector {
      * @link https://docs.bitbybit.dev/classes/bitbybit_vector.Vector.html#span
      * @param inputs Span information containing min, max and step values
      * @returns Vector containing number between min, max and increasing at a given step
+     * @group create
+     * @shortname span
+     * @drawable false
      */
     span(inputs: Inputs.Vector.SpanDto): number[];
     /**
@@ -2232,6 +2381,9 @@ declare class Vector {
      * @link https://docs.bitbybit.dev/classes/bitbybit_vector.Vector.html#sub
      * @param inputs Two vectors
      * @returns Vector that result by subtraction two vectors
+     * @group base
+     * @shortname sub
+     * @drawable false
      */
     sub(inputs: Inputs.Vector.TwoVectorsDto): number[];
     /**
@@ -2239,6 +2391,9 @@ declare class Vector {
      * @link https://docs.bitbybit.dev/classes/bitbybit_vector.Vector.html#sum
      * @param inputs Vector to sum
      * @returns Number that results by adding up all values in the vector
+     * @group base
+     * @shortname sum
+     * @drawable false
      */
     sum(inputs: Inputs.Vector.VectorDto): number;
 }/**

@@ -1790,12 +1790,37 @@ export const inputDeclarations = `declare namespace Asset {
     class PointDto {
         /**
          * Point
+         * @default undefined
          */
         point: Base.Point3;
+    }
+    class PointXYZDto {
+        /**
+         * Point
+         * @default 0
+         * @minimum -Infinity
+         * @maximum Infinity
+         */
+        x: number;
+        /**
+         * Point
+         * @default 0
+         * @minimum -Infinity
+         * @maximum Infinity
+         */
+        y: number;
+        /**
+        * Point
+        * @default 0
+        * @minimum -Infinity
+        * @maximum Infinity
+        */
+        z: number;
     }
     class PointsDto {
         /**
          * Points
+         * @default undefined
          */
         points: Base.Point3[];
     }
@@ -1806,26 +1831,36 @@ export const inputDeclarations = `declare namespace Asset {
         constructor(point?: Base.Point3);
         /**
          * Point
+         * @default undefined
          */
         point: Base.Point3;
         /**
          * Value between 0 and 1
+         * @default 1
+         * @minimum 0
+         * @maximum 1
          */
         opacity: number;
         /**
          * Size of the point
+         * @default 3
+         * @minimum 0
+         * @maximum Infinity
          */
         size: number;
         /**
          * Hex colour string
+         * @default #444444
          */
         colours: string | string[];
         /**
          * Indicates wether the position of this point will change in time
+         * @default false
          */
         updatable: boolean;
         /**
          * Point mesh variable in case it already exists and needs updating
+         * @default undefined
          */
         pointMesh?: Mesh;
     }
@@ -1836,122 +1871,168 @@ export const inputDeclarations = `declare namespace Asset {
         constructor(points?: Base.Point3[]);
         /**
          * Point
+         * @default undefined
          */
         points: Base.Point3[];
         /**
          * Value between 0 and 1
+         * @default 1
+         * @minimum 0
+         * @maximum 1
          */
         opacity: number;
         /**
          * Size of the points
+         * @default 3
+         * @minimum 0
+         * @maximum Infinity
          */
         size: number;
         /**
          * Hex colour string or collection of strings
+         * @default #444444
          */
         colours: string | string[];
         /**
          * Indicates wether the position of this point will change in time
+         * @default false
          */
         updatable: boolean;
         /**
          * Points mesh variable in case it already exists and needs updating
+         * @default undefined
          */
         pointsMesh?: Mesh;
     }
     class TransformPointDto {
         /**
          * Point to transform
+         * @default undefined
          */
         point: Base.Point3;
         /**
          * Transformation matrix or a list of transformation matrixes
+         * @default undefined
          */
         matrix: number[][] | number[][][];
     }
     class TransformPointsDto {
         /**
          * Points to transform
+         * @default undefined
          */
         points: Base.Point3[];
         /**
          * Transformation matrix or a list of transformation matrixes
+         * @default undefined
          */
         matrix: number[][] | number[][][];
     }
     class TransformsForPointsDto {
         /**
          * Points to transform
+         * @default undefined
          */
         points: Base.Point3[];
         /**
          * Transformations that have to match nr of points
+         * @default undefined
          */
         matrix: number[][][] | number[][][][];
     }
     class ClosestPointFromPointsDto {
         /**
          * Points to transform
+         * @default undefined
          */
         points: Base.Point3[];
         /**
          * Transformation matrix or a list of transformation matrixes
+         * @default undefined
          */
         point: Base.Point3;
     }
     class StartEndPointsDto {
         /**
          * Start point
+         * @default undefined
          */
         startPoint: Base.Point3;
         /**
          * End point
+         * @default undefined
          */
         endPoint: Base.Point3;
     }
     class MultiplyPointDto {
         /**
          * Point for multiplication
+         * @default undefined
          */
         point: Base.Point3;
         /**
          * Number of points to create in the list
+         * @default undefined
          */
         amountOfPoints: number;
     }
     class SpiralDto {
         /**
          * Identifies phi angle
+         * @default 0.9
+         * @minimum 0
+         * @maximum Infinity
          */
         phi: number;
         /**
          * Identifies how many points will be created
+         * @default 200
+         * @minimum 0
+         * @maximum Infinity
          */
         numberPoints: number;
         /**
          * Widening factor of the spiral
+         * @default 3
+         * @minimum 0
+         * @maximum Infinity
          */
         widening: number;
         /**
          * Radius of the spiral
+         * @default 6
+         * @minimum 0
+         * @maximum Infinity
          */
         radius: number;
         /**
          * Factor of the spiral
+         * @default 1
+         * @minimum 0
+         * @maximum Infinity
          */
         factor: number;
     }
     class HexGridCentersDto {
         /**
          * Number of hexagons on Y direction
+         * @default 20
+         * @minimum 0
+         * @maximum Infinity
          */
         nrHexagonsY: number;
         /**
          * Number of Hexagons on Z direction
+         * @default 20
+         * @minimum 0
+         * @maximum Infinity
          */
         nrHexagonsX: number;
         /**
-         * Total grid span
+         * radius of a single hexagon
+         * @default 0.2
+         * @minimum 0
+         * @maximum Infinity
          */
         radiusHexagon: number;
     }
@@ -2365,70 +2446,159 @@ export const inputDeclarations = `declare namespace Asset {
     class TwoVectorsDto {
         /**
          * First vector
+         * @default undefined
          */
         first: Base.Vector3;
         /**
          * Second vector
+         * @default undefined
          */
         second: Base.Vector3;
     }
     class VectorBoolDto {
         /**
          * Vector of booleans
+         * @default undefined
          */
         vector: boolean[];
     }
     class VectorDto {
         /**
          * Vector array of numbers
+         * @default undefined
          */
         vector: number[];
     }
     class RangeMaxDto {
         /**
          * Maximum range boundary
+         * @default 10
+         * @minimum -Infinity
+         * @maximum Infinity
          */
         max: number;
     }
-    class SpanDto extends BaseTypes.IntervalDto {
+    class VectorXYZDto {
+        /**
+         * X value of vector
+         * @default 0
+         * @minimum -Infinity
+         * @maximum Infinity
+         */
+        x: number;
+        /**
+         * Y value of vector
+         * @default 0
+         * @minimum -Infinity
+         * @maximum Infinity
+         */
+        y: number;
+        /**
+         * Z value of vector
+         * @default 0
+         * @minimum -Infinity
+         * @maximum Infinity
+         */
+        z: number;
+    }
+    class SpanDto {
         /**
          * Step of the span
+         * @default 1
+         * @minimum -Infinity
+         * @maximum Infinity
          */
         step: number;
+        /**
+        * Min value of the span
+        * @default 1
+        * @minimum -Infinity
+        * @maximum Infinity
+        */
+        min: number;
+        /**
+        * Max value of the span
+        * @default 1
+        * @minimum -Infinity
+        * @maximum Infinity
+        */
+        max: number;
     }
-    class RayPointDto extends VectorDto {
+    class RayPointDto {
         /**
          * Origin location of the ray
+         * @default undefined
          */
         point: Base.Point3;
         /**
          * Distance to the point on the ray
+         * @default 1
+         * @minimum -Infinity
+         * @maximum Infinity
          */
         distance: number;
+        /**
+         * Vector array of numbers
+         * @default undefined
+         */
+        vector: number[];
     }
     class VectorsDto {
         /**
          * Vectors array
+         * @default undefined
          */
         vectors: number[][];
     }
-    class FractionTwoVectorsDto extends TwoVectorsDto {
+    class FractionTwoVectorsDto {
         /**
          * Fraction number
+         * @default 0.5
+         * @minimum -Infinity
+         * @maximum Infinity
          */
         fraction: number;
+        /**
+         * First vector
+         * @default undefined
+         */
+        first: Base.Vector3;
+        /**
+         * Second vector
+         * @default undefined
+         */
+        second: Base.Vector3;
     }
-    class VectorScalarDto extends VectorDto {
+    class VectorScalarDto {
         /**
          * Scalar number
+         * @default 1
+         * @minimum -Infinity
+         * @maximum Infinity
          */
         scalar: number;
+        /**
+         * Vector array of numbers
+         * @default undefined
+         */
+        vector: number[];
     }
-    class TwoVectorsReferenceDto extends TwoVectorsDto {
+    class TwoVectorsReferenceDto {
         /**
          * Reference vector
+         * @default undefined
          */
         reference: number[];
+        /**
+         * First vector
+         * @default undefined
+         */
+        first: Base.Vector3;
+        /**
+         * Second vector
+         * @default undefined
+         */
+        second: Base.Vector3;
     }
 }declare namespace Verb {
     class CurveDto {

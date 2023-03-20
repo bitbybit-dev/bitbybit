@@ -24,6 +24,9 @@ export class Point {
      * @link https://docs.bitbybit.dev/classes/bitbybit_point.Point.html#drawPoint
      * @param inputs Contains a point to be drawn
      * @returns Mesh that is being drawn by Babylon
+     * @group draw
+     * @shortname point
+     * @drawable false
      */
     drawPoint(inputs: Inputs.Point.DrawPointDto): Mesh {
         const vectorPoints = [inputs.point];
@@ -50,6 +53,9 @@ export class Point {
      * @link https://docs.bitbybit.dev/classes/bitbybit_point.Point.html#drawPoints
      * @param inputs Contains a point array to be drawn
      * @returns Mesh that is being drawn by Babylon
+     * @group draw
+     * @shortname points sync
+     * @drawable false
      */
     drawPoints(inputs: Inputs.Point.DrawPointsDto): Mesh {
         const vectorPoints = inputs.points;
@@ -83,6 +89,9 @@ export class Point {
      * @link https://docs.bitbybit.dev/classes/bitbybit_point.Point.html#drawPointsAsync
      * @param inputs Contains a point array to be drawn
      * @returns Promise of a Mesh that will being drawn by Babylon
+     * @group draw
+     * @shortname points
+     * @drawable false
      */
     drawPointsAsync(inputs: Inputs.Point.DrawPointsDto): Promise<Mesh> {
         return Promise.resolve(this.drawPoints(inputs));
@@ -96,6 +105,9 @@ export class Point {
      * @link https://docs.bitbybit.dev/classes/bitbybit_point.Point.html#transformPoint
      * @param inputs Contains a point and the transformations to apply
      * @returns Transformed point
+     * @group transforms
+     * @shortname transform point
+     * @drawable true
      */
     transformPoint(inputs: Inputs.Point.TransformPointDto): Inputs.Base.Point3 {
         const transformation = inputs.matrix;
@@ -112,11 +124,14 @@ export class Point {
      * @link https://docs.bitbybit.dev/classes/bitbybit_point.Point.html#transformPoints
      * @param inputs Contains points and the transformations to apply
      * @returns Transformed points
+     * @group transforms
+     * @shortname transform points
+     * @drawable true
      */
     transformPoints(inputs: Inputs.Point.TransformPointsDto): Inputs.Base.Point3[] {
         return this.geometryHelper.transformControlPoints(inputs.matrix, inputs.points);
     }
-    
+
     /**
      * Transforms multiple points by multiple transformations
      * <div>
@@ -125,6 +140,9 @@ export class Point {
      * @link https://docs.bitbybit.dev/classes/bitbybit_point.Point.html#transformsForPoints
      * @param inputs Contains points and the transformations to apply
      * @returns Transformed points
+     * @group transforms
+     * @shortname transforms for points
+     * @drawable true
      */
     transformsForPoints(inputs: Inputs.Point.TransformsForPointsDto): Inputs.Base.Point3[] {
         if (inputs.points.length !== inputs.matrix.length) {
@@ -143,6 +161,9 @@ export class Point {
      * @link https://docs.bitbybit.dev/classes/bitbybit_point.Point.html#closestPointFromPointsDistance
      * @param inputs Point from which to measure and points to measure the distance against
      * @returns Distance to closest point
+     * @group extract
+     * @shortname distance to closest pt
+     * @drawable false
      */
     closestPointFromPointsDistance(inputs: Inputs.Point.ClosestPointFromPointsDto): number {
         return this.closestPointFromPointData(inputs).distance;
@@ -156,6 +177,9 @@ export class Point {
      * @link https://docs.bitbybit.dev/classes/bitbybit_point.Point.html#closestPointFromPointsIndex
      * @param inputs Point from which to find the index in a collection of points
      * @returns Closest point index
+     * @group extract
+     * @shortname index of closest pt
+     * @drawable false
      */
     closestPointFromPointsIndex(inputs: Inputs.Point.ClosestPointFromPointsDto): number {
         return this.closestPointFromPointData(inputs).index;
@@ -169,6 +193,9 @@ export class Point {
      * @link https://docs.bitbybit.dev/classes/bitbybit_point.Point.html#closestPointFromPoints
      * @param inputs Point and points collection to find the closest point in
      * @returns Closest point
+     * @group extract
+     * @shortname closest pt
+     * @drawable true
      */
     closestPointFromPoints(inputs: Inputs.Point.ClosestPointFromPointsDto): Inputs.Base.Point3 {
         return this.closestPointFromPointData(inputs).point as Inputs.Base.Point3;
@@ -182,6 +209,9 @@ export class Point {
      * @link https://docs.bitbybit.dev/classes/bitbybit_point.Point.html#distance
      * @param inputs Coordinates of start and end points
      * @returns Distance
+     * @group measure
+     * @shortname distance
+     * @drawable false
      */
     distance(inputs: Inputs.Point.StartEndPointsDto): number {
         return this.context.verb.core.Vec.dist(inputs.startPoint, inputs.endPoint);
@@ -195,6 +225,9 @@ export class Point {
      * @link https://docs.bitbybit.dev/classes/bitbybit_point.Point.html#multiplyPoint
      * @param inputs The point to be multiplied and the amount of points to create
      * @returns Distance
+     * @group transforms
+     * @shortname multiply point
+     * @drawable true
      */
     multiplyPoint(inputs: Inputs.Point.MultiplyPointDto): Inputs.Base.Point3[] {
         const points = [];
@@ -212,6 +245,9 @@ export class Point {
      * @link https://docs.bitbybit.dev/classes/bitbybit_point.Point.html#getX
      * @param inputs The point
      * @returns X coordinate
+     * @group get
+     * @shortname x coord
+     * @drawable false
      */
     getX(inputs: Inputs.Point.PointDto): number {
         return inputs.point[0];
@@ -225,6 +261,9 @@ export class Point {
      * @link https://docs.bitbybit.dev/classes/bitbybit_point.Point.html#getY
      * @param inputs The point
      * @returns Y coordinate
+     * @group get
+     * @shortname y coord
+     * @drawable false
      */
     getY(inputs: Inputs.Point.PointDto): number {
         return inputs.point[1];
@@ -238,6 +277,9 @@ export class Point {
      * @link https://docs.bitbybit.dev/classes/bitbybit_point.Point.html#getZ
      * @param inputs The point
      * @returns Z coordinate
+     * @group get
+     * @shortname z coord
+     * @drawable false
      */
     getZ(inputs: Inputs.Point.PointDto): number {
         return inputs.point[2];
@@ -251,6 +293,9 @@ export class Point {
      * @link https://docs.bitbybit.dev/classes/bitbybit_point.Point.html#averagePoint
      * @param inputs The points
      * @returns point
+     * @group extract
+     * @shortname average point
+     * @drawable true
      */
     averagePoint(inputs: Inputs.Point.PointsDto): Base.Point3 {
         const xVals = [];
@@ -271,6 +316,22 @@ export class Point {
     }
 
     /**
+     * Creates the xyz point
+     * <div>
+     *  <img src="../assets/images/blockly-images/point/pointXYZ.svg" alt="Blockly Image"/>
+     * </div>
+     * @link https://docs.bitbybit.dev/classes/bitbybit_point.Point.html#pointXYZ
+     * @param inputs xyz information
+     * @returns point 3d
+     * @group create
+     * @shortname point xyz
+     * @drawable true
+     */
+    pointXYZ(inputs: Inputs.Point.PointXYZDto): Inputs.Base.Point3 {
+        return [inputs.x, inputs.y, inputs.z];
+    }
+
+    /**
      * Creates the spiral out of multiple points
      * <div>
      *  <img src="../assets/images/blockly-images/point/spiral.svg" alt="Blockly Image"/>
@@ -278,6 +339,9 @@ export class Point {
      * @link https://docs.bitbybit.dev/classes/bitbybit_point.Point.html#spiral
      * @param inputs Spiral information
      * @returns Specified number of points in the array along the spiral
+     * @group create
+     * @shortname spiral
+     * @drawable true
      */
     spiral(inputs: Inputs.Point.SpiralDto): Inputs.Base.Point3[] {
         const phi = inputs.phi;
@@ -293,7 +357,6 @@ export class Point {
         return spiral;
     }
 
-
     /**
      * Creates a flat point grid on XY plane. This grid contains center points for hexagons of the given radius.
      * Be aware that we control only the nr of hexagons to be made and not the length and width of the grid.
@@ -303,6 +366,9 @@ export class Point {
      * @link https://docs.bitbybit.dev/classes/bitbybit_point.Point.html#hexGrid
      * @param inputs Information about hexagon and the grid
      * @returns Points in the array on the grid
+     * @group create
+     * @shortname hex grid
+     * @drawable true
      */
     hexGrid(inputs: Inputs.Point.HexGridCentersDto): Inputs.Base.Point3[] {
         const xLength = Math.sqrt(Math.pow(inputs.radiusHexagon, 2) - Math.pow(inputs.radiusHexagon / 2, 2));
