@@ -27,6 +27,7 @@ export class Point {
      * @group draw
      * @shortname point
      * @drawable false
+     * @ignore true
      */
     drawPoint(inputs: Inputs.Point.DrawPointDto): Mesh {
         const vectorPoints = [inputs.point];
@@ -56,6 +57,7 @@ export class Point {
      * @group draw
      * @shortname points sync
      * @drawable false
+     * @ignore true
      */
     drawPoints(inputs: Inputs.Point.DrawPointsDto): Mesh {
         const vectorPoints = inputs.points;
@@ -92,6 +94,7 @@ export class Point {
      * @group draw
      * @shortname points
      * @drawable false
+     * @ignore true
      */
     drawPointsAsync(inputs: Inputs.Point.DrawPointsDto): Promise<Mesh> {
         return Promise.resolve(this.drawPoints(inputs));
