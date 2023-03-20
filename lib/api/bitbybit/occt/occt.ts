@@ -31,6 +31,7 @@ export class OCCTW extends OCCT {
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt.OCCT.html#drawShape
      * @param inputs Contains a shape to be drawn and additional information
      * @returns BabylonJS Mesh
+     * @group drawing
      * @shortname draw shape
      * @drawable true
      */

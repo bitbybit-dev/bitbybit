@@ -21,6 +21,7 @@ export const occtWorkerDeclarations = `declare class BitByBitOCCT {
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_booleans.OCCTBooleans.html#union
      * @param inputs Objects to join
      * @returns OpenCascade joined shape
+     * @group booleans
      * @shortname union
      * @drawable true
      */
@@ -30,6 +31,7 @@ export const occtWorkerDeclarations = `declare class BitByBitOCCT {
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_booleans.OCCTBooleans.html#difference
      * @param inputs Main shape and shapes to differ
      * @returns OpenCascade difference shape
+     * @group booleans
      * @shortname difference
      * @drawable true
      */
@@ -39,6 +41,7 @@ export const occtWorkerDeclarations = `declare class BitByBitOCCT {
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_booleans.OCCTBooleans.html#intersection
      * @param inputs Main shape and shapes to differ
      * @returns OpenCascade intersection of shapes
+     * @group booleans
      * @shortname intersection
      * @drawable true
      */
@@ -157,6 +160,7 @@ export const occtWorkerDeclarations = `declare class BitByBitOCCT {
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_geom_surfaces.OCCTSurfaces.html#cylindricalSurface
      * @param inputs Cylinder parameters
      * @returns OpenCascade cylindrical surface
+     * @group surfaces
      * @shortname cylindrical
      * @drawable false
      */
@@ -166,6 +170,7 @@ export const occtWorkerDeclarations = `declare class BitByBitOCCT {
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_geom_surfaces.OCCTSurfaces.html#surfaceFromFace
      * @param inputs Face shape
      * @returns OpenCascade geom surface
+     * @group surfaces
      * @shortname from face
      * @drawable false
      */
@@ -178,6 +183,7 @@ export const occtWorkerDeclarations = `declare class BitByBitOCCT {
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_io.OCCTIO.html#saveShapeSTEP
      * @param inputs STEP filename and shape to be saved
      * @returns String of a step file
+     * @group io
      * @shortname save step
      * @drawable false
      */
@@ -200,6 +206,7 @@ declare class OCCT {
      * Creates mesh from the shape
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt.OCCT.html#shapeToMesh
      * @param inputs shape
+     * @group drawing
      * @shortname shape to mesh
      * @drawable false
      */
@@ -208,6 +215,7 @@ declare class OCCT {
      * Deletes shape from the cache to keep memory usage low
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt.OCCT.html#deleteShape
      * @param inputs shape
+     * @group memory management
      * @shortname delete shape
      */
     deleteShape(inputs: Inputs.OCCT.ShapeDto<Inputs.OCCT.TopoDSShapePointer>): Promise<void>;
@@ -215,6 +223,7 @@ declare class OCCT {
      * Deletes shapes from the cache to keep memory usage low
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt.OCCT.html#deleteShapes
      * @param inputs shape
+     * @group memory management
      * @shortname delete shapes
      */
     deleteShapes(inputs: Inputs.OCCT.ShapesDto<Inputs.OCCT.TopoDSShapePointer>): Promise<void>;
@@ -226,6 +235,7 @@ declare class OCCT {
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_operations.OCCTOperations.html#loft
      * @param inputs Loft wires
      * @returns Resulting loft shape
+     * @group lofts
      * @shortname loft
      * @drawable true
      */
@@ -235,24 +245,17 @@ declare class OCCT {
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_operations.OCCTOperations.html#loftAdvanced
      * @param inputs Advanced loft parameters
      * @returns Resulting loft shell
+     * @group lofts
      * @shortname loft adv.
      * @drawable true
      */
     loftAdvanced(inputs: Inputs.OCCT.LoftAdvancedDto<Inputs.OCCT.TopoDSWirePointer>): Promise<Inputs.OCCT.TopoDSShapePointer>;
     /**
-     * Offset for various shapes
-     * @link https://docs.bitbybit.dev/classes/bitbybit_occt_operations.OCCTOperations.html#offset
-     * @param inputs Shape to offset and distance with tolerance
-     * @returns Resulting offset shape
-     * @shortname offset
-     * @drawable true
-     */
-    offset(inputs: Inputs.OCCT.OffsetDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.OCCT.TopoDSShapePointer>;
-    /**
      * Extrudes the face along direction
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_operations.OCCTOperations.html#extrude
      * @param inputs Shape to extrude and direction parameter with tolerance
      * @returns Resulting extruded shape
+     * @group extrusions
      * @shortname extrude
      * @drawable true
      */
@@ -262,7 +265,8 @@ declare class OCCT {
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_operations.OCCTOperations.html#extrudeShapes
      * @param inputs Shapes to extrude and direction parameter with tolerance
      * @returns Resulting extruded shapes
-     * @shortname extrusions
+     * @group extrusions
+     * @shortname extrude shapes
      * @drawable true
      */
     extrudeShapes(inputs: Inputs.OCCT.ExtrudeShapesDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.OCCT.TopoDSShapePointer>;
@@ -271,6 +275,7 @@ declare class OCCT {
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_operations.OCCTOperations.html#splitShapeWithShapes
      * @param inputs Face to split and edges to split with
      * @returns Resulting split shape
+     * @group divisions
      * @shortname split
      * @drawable true
      */
@@ -280,6 +285,7 @@ declare class OCCT {
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_operations.OCCTOperations.html#revolve
      * @param inputs Revolve parameters
      * @returns Resulting revolved shape
+     * @group revolutions
      * @shortname revolve
      * @drawable true
      */
@@ -289,6 +295,7 @@ declare class OCCT {
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_operations.OCCTOperations.html#rotatedExtrude
      * @param inputs Rotated extrusion inputs
      * @returns OpenCascade shape
+     * @group extrusions
      * @shortname rotated extrude
      * @drawable true
      */
@@ -298,15 +305,27 @@ declare class OCCT {
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_operations.OCCTOperations.html#pipe
      * @param inputs Path wire and shapes along the path
      * @returns OpenCascade shape
+     * @group pipeing
      * @shortname pipe
      * @drawable true
      */
     pipe(inputs: Inputs.OCCT.ShapeShapesDto<Inputs.OCCT.TopoDSWirePointer, Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.OCCT.TopoDSShapePointer>;
     /**
+     * Offset for various shapes
+     * @link https://docs.bitbybit.dev/classes/bitbybit_occt_operations.OCCTOperations.html#offset
+     * @param inputs Shape to offset and distance with tolerance
+     * @returns Resulting offset shape
+     * @group offsets
+     * @shortname offset
+     * @drawable true
+     */
+    offset(inputs: Inputs.OCCT.OffsetDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.OCCT.TopoDSShapePointer>;
+    /**
      * Thickens the shape into a solid by an offset distance
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_operations.OCCTOperations.html#makeThickSolidSimple
      * @param inputs OpenCascade shape
      * @returns OpenCascade solid shape
+     * @group offsets
      * @shortname thicken
      * @drawable true
      */
@@ -316,6 +335,7 @@ declare class OCCT {
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_operations.OCCTOperations.html#makeThickSolidByJoin
      * @param inputs OpenCascade shape and options for thickening
      * @returns OpenCascade solid shape
+     * @group offsets
      * @shortname joined thicken
      * @drawable true
      */
@@ -1304,6 +1324,7 @@ declare class OCCT {
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_transforms.OCCTTransforms.html#transform
      * @param inputs Transformation description
      * @returns OpenCascade shape
+     * @group on single shape
      * @shortname transform
      * @drawable true
      */
@@ -1313,6 +1334,7 @@ declare class OCCT {
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_transforms.OCCTTransforms.html#rotate
      * @param inputs Rotation description
      * @returns OpenCascade shape
+     * @group on single shape
      * @shortname rotate
      * @drawable true
      */
@@ -1322,6 +1344,7 @@ declare class OCCT {
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_transforms.OCCTTransforms.html#align
      * @param inputs Align description
      * @returns OpenCascade shape
+     * @group on single shape
      * @shortname align
      * @drawable true
      */
@@ -1331,6 +1354,7 @@ declare class OCCT {
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_transforms.OCCTTransforms.html#translate
      * @param inputs Translation description
      * @returns OpenCascade shape
+     * @group on single shape
      * @shortname translate
      * @drawable true
      */
@@ -1340,6 +1364,7 @@ declare class OCCT {
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_transforms.OCCTTransforms.html#scale
      * @param inputs Scale description
      * @returns OpenCascade shape
+     * @group on single shape
      * @shortname scale
      * @drawable true
      */
@@ -1349,6 +1374,7 @@ declare class OCCT {
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_transforms.OCCTTransforms.html#scale3d
      * @param inputs Scale 3D description
      * @returns OpenCascade scaled shape
+     * @group on single shape
      * @shortname scale 3d
      * @drawable true
      */
@@ -1358,6 +1384,7 @@ declare class OCCT {
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_transforms.OCCTTransforms.html#mirror
      * @param inputs Mirror axis origin, axis direction and shape
      * @returns OpenCascade shape
+     * @group on single shape
      * @shortname mirror
      * @drawable true
      */
@@ -1367,6 +1394,7 @@ declare class OCCT {
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_transforms.OCCTTransforms.html#mirrorAlongNormal
      * @param inputs Normal for mirroring with origin
      * @returns OpenCascade shape
+     * @group on single shape
      * @shortname mirror normal
      * @drawable true
      */
@@ -1376,6 +1404,7 @@ declare class OCCT {
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_transforms.OCCTTransforms.html#transformShapes
      * @param inputs Transformation descriptions
      * @returns OpenCascade shapes
+     * @group on multiple shapes
      * @shortname transforms
      * @drawable true
      */
@@ -1385,6 +1414,7 @@ declare class OCCT {
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_transforms.OCCTTransforms.html#rotateShapes
      * @param inputs Rotation descriptions
      * @returns OpenCascade shapes
+     * @group on multiple shapes
      * @shortname rotations
      * @drawable true
      */
@@ -1394,6 +1424,7 @@ declare class OCCT {
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_transforms.OCCTTransforms.html#alignShapes
      * @param inputs Align descriptions
      * @returns OpenCascade shapes
+     * @group on multiple shapes
      * @shortname alignments
      * @drawable true
      */
@@ -1403,6 +1434,7 @@ declare class OCCT {
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_transforms.OCCTTransforms.html#translateShapes
      * @param inputs Translation descriptions
      * @returns OpenCascade shapes
+     * @group on multiple shapes
      * @shortname translations
      * @drawable true
      */
@@ -1412,6 +1444,7 @@ declare class OCCT {
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_transforms.OCCTTransforms.html#scaleShapes
      * @param inputs Scale descriptions
      * @returns OpenCascade shapes
+     * @group on multiple shapes
      * @shortname scales
      * @drawable true
      */
@@ -1421,6 +1454,7 @@ declare class OCCT {
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_transforms.OCCTTransforms.html#scale3dShapes
      * @param inputs Scale 3D descriptions
      * @returns OpenCascade scaled shapes
+     * @group on multiple shapes
      * @shortname scales 3d
      * @drawable true
      */
@@ -1430,6 +1464,7 @@ declare class OCCT {
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_transforms.OCCTTransforms.html#mirrorShapes
      * @param inputs Mirror axis origins, axis directions and shapes
      * @returns OpenCascade shapes
+     * @group on multiple shapes
      * @shortname mirrors
      * @drawable true
      */
@@ -1439,6 +1474,7 @@ declare class OCCT {
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_transforms.OCCTTransforms.html#mirrorAlongNormalShapes
      * @param inputs Normals for mirroring with origins
      * @returns OpenCascade shapes
+     * @group on multiple shapes
      * @shortname mirrors normal
      * @drawable true
      */

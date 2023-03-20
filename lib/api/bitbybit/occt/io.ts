@@ -23,6 +23,8 @@ export class OCCTWIO extends OCCTIO {
      * </div>
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_io.OCCTIO.html#loadSTEPorIGES
      * @param inputs STEP or IGES import
+     * @group io
+     * @shortname load step | iges
      * @returns OCCT Shape
      */
     loadSTEPorIGES(inputs: Inputs.OCCT.ImportStepIgesDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.OCCT.TopoDSShapePointer> {
@@ -43,6 +45,8 @@ export class OCCTWIO extends OCCTIO {
      * </div>
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_io.OCCTIO.html#saveShapeStl
      * @param inputs STL filename and shape to be saved
+     * @group io
+     * @shortname save stl
      * @returns String of a stl file
      */
     async saveShapeStl(inputs: Inputs.OCCT.SaveStlDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.OCCT.DecomposedMeshDto> {

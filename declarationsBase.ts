@@ -1756,6 +1756,8 @@ declare class Line {
     /**
      * Imports the step or iges asset file
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_io.OCCTIO.html#loadSTEPorIGES
+     * @group io
+     * @shortname load step | iges
      * @returns OCCT Shape
      */
     loadSTEPorIGES(inputs: Inputs.OCCT.ImportStepIgesDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.OCCT.TopoDSShapePointer>;
@@ -1763,6 +1765,8 @@ declare class Line {
      * Saves the stl file
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt_io.OCCTIO.html#saveShapeStl
      * @param inputs STL filename and shape to be saved
+     * @group io
+     * @shortname save stl
      * @returns String of a stl file
      */
     saveShapeStl(inputs: Inputs.OCCT.SaveStlDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.OCCT.DecomposedMeshDto>;
@@ -1782,6 +1786,7 @@ declare class OCCTW extends OCCT {
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt.OCCT.html#drawShape
      * @param inputs Contains a shape to be drawn and additional information
      * @returns BabylonJS Mesh
+     * @group drawing
      * @shortname draw shape
      * @drawable true
      */
