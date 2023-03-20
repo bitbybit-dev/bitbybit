@@ -14,7 +14,7 @@ export namespace Draw {
          * Entity to be used when updating
          * @default undefined
          * @optional true
-         * @hidden true
+         * @ignore true
          */
         babylonMesh?: any;
         /**

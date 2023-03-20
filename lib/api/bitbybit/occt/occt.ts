@@ -33,7 +33,8 @@ export class OCCTW extends OCCT {
      * @returns BabylonJS Mesh
      * @group drawing
      * @shortname draw shape
-     * @drawable true
+     * @drawable false
+     * @ignore true
      */
     async drawShape(inputs: Inputs.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Mesh> {
         const options = { ...inputs };

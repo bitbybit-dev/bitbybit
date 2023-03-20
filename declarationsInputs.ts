@@ -524,7 +524,7 @@ export const inputDeclarations = `declare namespace Asset {
          * Entity to be used when updating
          * @default undefined
          * @optional true
-         * @hidden true
+         * @ignore true
          */
         babylonMesh?: any;
         /**
