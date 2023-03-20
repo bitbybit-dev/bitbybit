@@ -1821,7 +1821,7 @@ declare class OCCTW extends OCCT {
      * @returns BabylonJS Mesh
      * @group drawing
      * @shortname draw shape
-     * @drawable fakse
+     * @drawable false
      * @ignore true
      */
     drawShape(inputs: Inputs.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Mesh>;
