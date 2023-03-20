@@ -128,6 +128,7 @@ export const inputOCCTDeclarations = `declare namespace Base {
          * @default 0.3
          * @minimum 0
          * @maximum Infinity
+         * @step 0.1
          */
         radius: number;
         /**
@@ -193,6 +194,7 @@ export const inputOCCTDeclarations = `declare namespace Base {
          * @default 1
          * @minimum 0
          * @maximum 1
+         * @step 0.1
          */
         faceOpacity: number;
         /**
@@ -200,6 +202,7 @@ export const inputOCCTDeclarations = `declare namespace Base {
          * @default 1
          * @minimum 0
          * @maximum 1
+         * @step 0.1
          */
         edgeOpacity: number;
         /**
@@ -223,6 +226,7 @@ export const inputOCCTDeclarations = `declare namespace Base {
          * @default 2
          * @minimum 0
          * @maximum Infinity
+         * @step 0.1
          */
         edgeWidth: number;
         /**
@@ -240,6 +244,7 @@ export const inputOCCTDeclarations = `declare namespace Base {
          * @default 0.01
          * @minimum 0
          * @maximum Infinity
+         * @step 0.01
          */
         precision: number;
         /**
@@ -252,6 +257,7 @@ export const inputOCCTDeclarations = `declare namespace Base {
          * @default 0.06
          * @minimum 0
          * @maximum Infinity
+         * @step 0.01
          */
         edgeIndexHeight: number;
         /**
@@ -269,6 +275,7 @@ export const inputOCCTDeclarations = `declare namespace Base {
          * @default 0.06
          * @minimum 0
          * @maximum Infinity
+         * @step 0.01
          */
         faceIndexHeight: number;
         /**
@@ -292,6 +299,7 @@ export const inputOCCTDeclarations = `declare namespace Base {
          * @default 10
          * @minimum 1
          * @maximum Infinity
+         * @step 1
          */
         nrDivisionsU: number;
         /**
@@ -299,6 +307,7 @@ export const inputOCCTDeclarations = `declare namespace Base {
          * @default 10
          * @minimum 1
          * @maximum Infinity
+         * @step 1
          */
         nrDivisionsV: number;
         /**
@@ -347,6 +356,7 @@ export const inputOCCTDeclarations = `declare namespace Base {
          * @default 10
          * @minimum 1
          * @maximum Infinity
+         * @step 1
          */
         nrDivisionsU: number;
         /**
@@ -354,6 +364,7 @@ export const inputOCCTDeclarations = `declare namespace Base {
          * @default 10
          * @minimum 1
          * @maximum Infinity
+         * @step 1
          */
         nrDivisionsV: number;
         /**
@@ -361,6 +372,7 @@ export const inputOCCTDeclarations = `declare namespace Base {
          * @default 1
          * @minimum 1
          * @maximum Infinity
+         * @step 1
          */
         shiftHalfStepNthU: number;
         /**
@@ -368,6 +380,7 @@ export const inputOCCTDeclarations = `declare namespace Base {
          * @default 1
          * @minimum 1
          * @maximum Infinity
+         * @step 1
          */
         shiftHalfStepUOffsetN: number;
         /**
@@ -375,6 +388,7 @@ export const inputOCCTDeclarations = `declare namespace Base {
          * @default 1
          * @minimum 1
          * @maximum Infinity
+         * @step 1
          */
         removeStartEdgeNthU: number;
         /**
@@ -382,6 +396,7 @@ export const inputOCCTDeclarations = `declare namespace Base {
          * @default 1
          * @minimum 1
          * @maximum Infinity
+         * @step 1
          */
         removeStartEdgeUOffsetN: number;
         /**
@@ -389,6 +404,7 @@ export const inputOCCTDeclarations = `declare namespace Base {
          * @default 1
          * @minimum 1
          * @maximum Infinity
+         * @step 1
          */
         removeEndEdgeNthU: number;
         /**
@@ -396,6 +412,7 @@ export const inputOCCTDeclarations = `declare namespace Base {
          * @default 1
          * @minimum 1
          * @maximum Infinity
+         * @step 1
          */
         removeEndEdgeUOffsetN: number;
         /**
@@ -403,6 +420,7 @@ export const inputOCCTDeclarations = `declare namespace Base {
          * @default 1
          * @minimum 1
          * @maximum Infinity
+         * @step 1
          */
         shiftHalfStepNthV: number;
         /**
@@ -410,6 +428,7 @@ export const inputOCCTDeclarations = `declare namespace Base {
          * @default 1
          * @minimum 1
          * @maximum Infinity
+         * @step 1
          */
         shiftHalfStepVOffsetN: number;
         /**
@@ -417,6 +436,7 @@ export const inputOCCTDeclarations = `declare namespace Base {
          * @default 1
          * @minimum 1
          * @maximum Infinity
+         * @step 1
          */
         removeStartEdgeNthV: number;
         /**
@@ -424,6 +444,7 @@ export const inputOCCTDeclarations = `declare namespace Base {
          * @default 1
          * @minimum 1
          * @maximum Infinity
+         * @step 1
          */
         removeStartEdgeVOffsetN: number;
         /**
@@ -431,6 +452,7 @@ export const inputOCCTDeclarations = `declare namespace Base {
          * @default 1
          * @minimum 1
          * @maximum Infinity
+         * @step 1
          */
         removeEndEdgeNthV: number;
         /**
@@ -438,6 +460,7 @@ export const inputOCCTDeclarations = `declare namespace Base {
          * @default 1
          * @minimum 1
          * @maximum Infinity
+         * @step 1
          */
         removeEndEdgeVOffsetN: number;
     }
@@ -461,6 +484,7 @@ export const inputOCCTDeclarations = `declare namespace Base {
          * @default 0.5
          * @minimum 0
          * @maximum 1
+         * @step 0.1
          */
         param: number;
         /**
@@ -468,6 +492,7 @@ export const inputOCCTDeclarations = `declare namespace Base {
          * @default 10
          * @minimum 1
          * @maximum Infinity
+         * @step 1
          */
         nrPoints: number;
         /**
@@ -501,6 +526,7 @@ export const inputOCCTDeclarations = `declare namespace Base {
          * @default 0.5
          * @minimum 0
          * @maximum 1
+         * @step 0.1
          */
         paramU: number;
         /**
@@ -508,6 +534,7 @@ export const inputOCCTDeclarations = `declare namespace Base {
          * @default 0.5
          * @minimum 0
          * @maximum 1
+         * @step 0.1
          */
         paramV: number;
     }
@@ -541,6 +568,7 @@ export const inputOCCTDeclarations = `declare namespace Base {
          * @default 1
          * @minimum 0
          * @maximum Infinity
+         * @step 1
          */
         size: number;
         /**
@@ -560,6 +588,7 @@ export const inputOCCTDeclarations = `declare namespace Base {
          * @default 1
          * @minimum 0
          * @maximum Infinity
+         * @step 1
          */
         width: number;
         /**
@@ -567,6 +596,7 @@ export const inputOCCTDeclarations = `declare namespace Base {
          * @default 2
          * @minimum 0
          * @maximum Infinity
+         * @step 1
          */
         length: number;
         /**
@@ -587,6 +617,7 @@ export const inputOCCTDeclarations = `declare namespace Base {
          * @default 1
          * @minimum 0
          * @maximum Infinity
+         * @step 0.1
          */
         width: number;
         /**
@@ -594,6 +625,7 @@ export const inputOCCTDeclarations = `declare namespace Base {
          * @default 2
          * @minimum 0
          * @maximum Infinity
+         * @step 0.1
          */
         length: number;
         /**
@@ -601,13 +633,12 @@ export const inputOCCTDeclarations = `declare namespace Base {
          * @default 3
          * @minimum 0
          * @maximum Infinity
+         * @step 0.1
          */
         height: number;
         /**
          * Center of the box
          * @default [0, 0, 0]
-         * @minimum 0
-         * @maximum Infinity
          */
         center: Base.Point3;
     }
@@ -618,6 +649,7 @@ export const inputOCCTDeclarations = `declare namespace Base {
          * @default 1
          * @minimum 0
          * @maximum Infinity
+         * @step 0.1
          */
         width: number;
         /**
@@ -625,6 +657,7 @@ export const inputOCCTDeclarations = `declare namespace Base {
          * @default 2
          * @minimum 0
          * @maximum Infinity
+         * @step 0.1
          */
         length: number;
         /**
@@ -632,6 +665,7 @@ export const inputOCCTDeclarations = `declare namespace Base {
          * @default 3
          * @minimum 0
          * @maximum Infinity
+         * @step 0.1
          */
         height: number;
         /**
@@ -647,6 +681,7 @@ export const inputOCCTDeclarations = `declare namespace Base {
          * @default 1
          * @minimum 0
          * @maximum Infinity
+         * @step 0.1
          */
         radius: number;
         /**
@@ -662,6 +697,7 @@ export const inputOCCTDeclarations = `declare namespace Base {
          * @default 2
          * @minimum 0
          * @maximum Infinity
+         * @step 0.1
          */
         radius1: number;
         /**
@@ -669,6 +705,7 @@ export const inputOCCTDeclarations = `declare namespace Base {
          * @default 1
          * @minimum 0
          * @maximum Infinity
+         * @step 0.1
          */
         radius2: number;
         /**
@@ -676,6 +713,7 @@ export const inputOCCTDeclarations = `declare namespace Base {
          * @default 2
          * @minimum 0
          * @maximum Infinity
+         * @step 0.1
          */
         height: number;
         /**
@@ -683,6 +721,7 @@ export const inputOCCTDeclarations = `declare namespace Base {
          * @default 360
          * @minimum 0
          * @maximum 360
+         * @step 1
          */
         angle: number;
         /**
@@ -731,6 +770,7 @@ export const inputOCCTDeclarations = `declare namespace Base {
          * @default 1
          * @minimum 0
          * @maximum Infinity
+         * @step 0.1
          */
         radius: number;
         /**
@@ -738,6 +778,7 @@ export const inputOCCTDeclarations = `declare namespace Base {
          * @default 2
          * @minimum 0
          * @maximum Infinity
+         * @step 0.1
          */
         height: number;
         /**
@@ -757,6 +798,7 @@ export const inputOCCTDeclarations = `declare namespace Base {
          * @default 1
          * @minimum 0
          * @maximum Infinity
+         * @step 0.1
          */
         radius: number;
         /**
@@ -780,6 +822,7 @@ export const inputOCCTDeclarations = `declare namespace Base {
          * @default 0.1
          * @minimum 0
          * @maximum Infinity
+         * @step 0.1
          * @optional true
          */
         radius?: number;
@@ -808,6 +851,7 @@ export const inputOCCTDeclarations = `declare namespace Base {
          * @minimum 0
          * @maximum Infinity
          * @optional true
+         * @step 0.1
          */
         distance?: number;
         /**
@@ -852,6 +896,7 @@ export const inputOCCTDeclarations = `declare namespace Base {
          * @default 1e-7
          * @minimum 0
          * @maximum Infinity
+         * @step 0.00001
          */
         tolerance: number;
     }
@@ -880,6 +925,7 @@ export const inputOCCTDeclarations = `declare namespace Base {
          * @default 10
          * @minimum 1
          * @maximum Infinity
+         * @step 1
          */
         nrOfDivisions: number;
         /**
@@ -905,6 +951,7 @@ export const inputOCCTDeclarations = `declare namespace Base {
          * @default 0.5
          * @minimum 0
          * @maximum 1
+         * @step 0.1
          */
         param: number;
     }
@@ -925,6 +972,7 @@ export const inputOCCTDeclarations = `declare namespace Base {
          * @default 0.5
          * @minimum 0
          * @maximum 1
+         * @step 0.1
          */
         tEdgeParam: number;
         /**
@@ -932,6 +980,7 @@ export const inputOCCTDeclarations = `declare namespace Base {
          * @default 0.5
          * @minimum -Infinity
          * @maximum Infinity
+         * @step 0.1
          */
         distance2DParam: number;
     }
@@ -947,6 +996,7 @@ export const inputOCCTDeclarations = `declare namespace Base {
          * @default 0.5
          * @minimum -Infinity
          * @maximum Infinity
+         * @step 0.1
          */
         length: number;
     }
@@ -957,6 +1007,7 @@ export const inputOCCTDeclarations = `declare namespace Base {
          * @default 1
          * @minimum 0
          * @maximum Infinity
+         * @step 0.1
          */
         radius: number;
         /**
@@ -1015,6 +1066,7 @@ export const inputOCCTDeclarations = `declare namespace Base {
          * @default 10
          * @minimum 1
          * @maximum Infinity
+         * @step 1
          */
         nrPeriodicSections: number;
         /**
@@ -1032,6 +1084,7 @@ export const inputOCCTDeclarations = `declare namespace Base {
          * @default 1.0e-7
          * @minimum 0
          * @maximum Infinity
+         * @step 0.000001
          */
         tolerance: number;
         /**
@@ -1062,6 +1115,7 @@ export const inputOCCTDeclarations = `declare namespace Base {
          * @default 0.2
          * @minimum -Infinity
          * @maximum Infinity
+         * @step 0.1
          */
         distance: number;
         /**
@@ -1069,6 +1123,7 @@ export const inputOCCTDeclarations = `declare namespace Base {
          * @default 0.1
          * @minimum 0
          * @maximum Infinity
+         * @step 0.01
          */
         tolerance: number;
     }
@@ -1084,6 +1139,7 @@ export const inputOCCTDeclarations = `declare namespace Base {
          * @default 360
          * @minimum 0
          * @maximum 360
+         * @step 1
          */
         angle: number;
         /**
@@ -1213,6 +1269,7 @@ export const inputOCCTDeclarations = `declare namespace Base {
          * @default 1.0e-7
          * @minimum 0
          * @maximum Infinity
+         * @step 0.000001
          */
         tolerance: number;
     }
@@ -1228,6 +1285,7 @@ export const inputOCCTDeclarations = `declare namespace Base {
          * @default 1.0e-7
          * @minimum 0
          * @maximum Infinity
+         * @step 0.000001
          */
         tolerance: number;
     }
@@ -1243,6 +1301,7 @@ export const inputOCCTDeclarations = `declare namespace Base {
          * @default 0
          * @minimum 0
          * @maximum Infinity
+         * @step 1
          */
         index: number;
     }
@@ -1258,6 +1317,7 @@ export const inputOCCTDeclarations = `declare namespace Base {
          * @default 1
          * @minimum 0
          * @maximum Infinity
+         * @step 0.1
          */
         height: number;
         /**
@@ -1265,6 +1325,7 @@ export const inputOCCTDeclarations = `declare namespace Base {
          * @default 360
          * @minimum 0
          * @maximum 360
+         * @step 1
          */
         angle: number;
     }
@@ -1285,6 +1346,7 @@ export const inputOCCTDeclarations = `declare namespace Base {
          * @default 1
          * @minimum 0
          * @maximum Infinity
+         * @step 0.1
          */
         offset: number;
         /**
@@ -1292,6 +1354,7 @@ export const inputOCCTDeclarations = `declare namespace Base {
          * @default 1.0e-3
          * @minimum 0
          * @maximum Infinity
+         * @step 0.000001
          */
         tolerance: number;
         /**
@@ -1338,6 +1401,7 @@ export const inputOCCTDeclarations = `declare namespace Base {
          * @default 0
          * @minimum 0
          * @maximum 360
+         * @step 1
          */
         rotationAngle: number;
         /**
@@ -1345,6 +1409,7 @@ export const inputOCCTDeclarations = `declare namespace Base {
          * @default 1
          * @minimum 0
          * @maximum Infinity
+         * @step 0.1
          */
         scaleFactor: number;
     }
@@ -1545,6 +1610,7 @@ export const inputOCCTDeclarations = `declare namespace Base {
          * @default 0
          * @minimum 0
          * @maximum 360
+         * @step 1
          */
         angle: number;
     }
@@ -1578,6 +1644,7 @@ export const inputOCCTDeclarations = `declare namespace Base {
          * @default 1
          * @minimum 0
          * @maximum Infinity
+         * @step 0.1
          */
         factor: number;
     }
@@ -1642,6 +1709,7 @@ export const inputOCCTDeclarations = `declare namespace Base {
          * @default 0.01
          * @minimum 0
          * @maximum Infinity
+         * @step 0.001
          */
         precision: number;
         /**
@@ -1742,6 +1810,7 @@ export const inputOCCTDeclarations = `declare namespace Base {
          * @default 1
          * @minimum -Infinity
          * @maximum Infinity
+         * @step 0.1
          */
         offset: number;
     }
@@ -1783,6 +1852,7 @@ export const inputOCCTDeclarations = `declare namespace Base {
          * @default 1.0e-7
          * @minimum 0
          * @maximum Infinity
+         * @step 0.00001
          */
         tolerance: number;
     }
@@ -1798,6 +1868,7 @@ export const inputOCCTDeclarations = `declare namespace Base {
          * @default 0.5
          * @minimum 0
          * @maximum Infinity
+         * @step 0.1
          */
         param: number;
         /**
@@ -1818,6 +1889,7 @@ export const inputOCCTDeclarations = `declare namespace Base {
          * @default 10
          * @minimum 1
          * @maximum Infinity
+         * @step 1
          */
         nrOfPointsU: number;
         /**
@@ -1825,6 +1897,7 @@ export const inputOCCTDeclarations = `declare namespace Base {
          * @default 10
          * @minimum 1
          * @maximum Infinity
+         * @step 1
          */
         nrOfPointsV: number;
         /**
@@ -1849,13 +1922,15 @@ export const inputOCCTDeclarations = `declare namespace Base {
          * @default 1
          * @minimum 0
          * @maximum Infinity
+         * @step 0.1
          */
         radiusMinor: number;
         /**
          * Major radius of an ellipse
-         * @default 1
+         * @default 2
          * @minimum 0
          * @maximum Infinity
+         * @step 0.1
          */
         radiusMajor: number;
         /**
@@ -1880,6 +1955,7 @@ export const inputOCCTDeclarations = `declare namespace Base {
          * @default 1
          * @minimum 0
          * @maximum Infinity
+         * @step 0.1
          */
         radius: number;
         /**
@@ -1904,6 +1980,7 @@ export const inputOCCTDeclarations = `declare namespace Base {
          * @default 7
          * @minimum 3
          * @maximum Infinity
+         * @step 1
          */
         numRays: number;
         /**
@@ -1911,6 +1988,7 @@ export const inputOCCTDeclarations = `declare namespace Base {
          * @default 2
          * @minimum 0
          * @maximum Infinity
+         * @step 0.1
          */
         outerRadius: number;
         /**
@@ -1918,6 +1996,7 @@ export const inputOCCTDeclarations = `declare namespace Base {
          * @default 1
          * @minimum 0
          * @maximum Infinity
+         * @step 0.1
          */
         innerRadius: number;
         /**
@@ -1947,6 +2026,7 @@ export const inputOCCTDeclarations = `declare namespace Base {
          * @default 2
          * @minimum 0
          * @maximum Infinity
+         * @step 0.1
          */
         width: number;
         /**
@@ -1954,6 +2034,7 @@ export const inputOCCTDeclarations = `declare namespace Base {
          * @default 1
          * @minimum 0
          * @maximum Infinity
+         * @step 0.1
          */
         height: number;
         /**
@@ -1961,6 +2042,7 @@ export const inputOCCTDeclarations = `declare namespace Base {
          * @default 15
          * @minimum -Infinity
          * @maximum Infinity
+         * @step 1
          */
         angle: number;
     }
@@ -1980,6 +2062,7 @@ export const inputOCCTDeclarations = `declare namespace Base {
          * @default 6
          * @minimum 3
          * @maximum Infinity
+         * @step 1
          */
         nrCorners: number;
         /**
@@ -1987,6 +2070,7 @@ export const inputOCCTDeclarations = `declare namespace Base {
          * @default 1
          * @minimum 0
          * @maximum Infinity
+         * @step 0.1
          */
         radius: number;
     }
@@ -2006,13 +2090,15 @@ export const inputOCCTDeclarations = `declare namespace Base {
          * @default 1
          * @minimum 0
          * @maximum Infinity
+         * @step 0.1
          */
         radiusMinor: number;
         /**
          * Major radius of an ellipse
-         * @default 1
+         * @default 2
          * @minimum 0
          * @maximum Infinity
+         * @step 0.1
          */
         radiusMajor: number;
     }
@@ -2022,6 +2108,7 @@ export const inputOCCTDeclarations = `declare namespace Base {
          * @default 1
          * @minimum 0
          * @maximum Infinity
+         * @step 0.1
          */
         radius: number;
         /**
@@ -2046,6 +2133,7 @@ export const inputOCCTDeclarations = `declare namespace Base {
          * @default 0
          * @minimum 0
          * @maximum Infinity
+         * @step 0.1
          */
         u1: number;
         /**
@@ -2053,6 +2141,7 @@ export const inputOCCTDeclarations = `declare namespace Base {
          * @default 1
          * @minimum 0
          * @maximum Infinity
+         * @step 0.1
          */
         u2: number;
         /**
@@ -2094,6 +2183,7 @@ export const inputOCCTDeclarations = `declare namespace Base {
          * @default 2
          * @minimum 1
          * @maximum Infinity
+         * @step 0.1
          */
         step: number;
         /**

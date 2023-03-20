@@ -524,6 +524,7 @@ export const inputDeclarations = `declare namespace Asset {
          * Entity to be used when updating
          * @default undefined
          * @optional true
+         * @hidden true
          */
         babylonMesh?: any;
         /**
@@ -536,44 +537,75 @@ export const inputDeclarations = `declare namespace Asset {
     class SceneDrawGridMeshDto {
         /**
          * Width of the grid
+         * @default 400
+         * @minimum 0
+         * @maximum Infinity
+         * @step 10
          */
         width: number;
         /**
          * Height of the ground
+         * @default 400
+         * @minimum 0
+         * @maximum Infinity
+         * @step 10
          */
         height: number;
         /**
          * Ground subdivisions
+         * @default 10
+         * @minimum 0
+         * @maximum Infinity
+         * @step 1
          */
         subdivisions: number;
         /**
          * The frequency of thicker lines.
+         * @default 10
+         * @minimum 0
+         * @maximum Infinity
+         * @step 1
          */
         majorUnitFrequency: number;
         /**
          * The visibility of minor units in the grid.
+         * @default 0.45
+         * @minimum 0
+         * @maximum 1
+         * @step 0.1
          */
         minorUnitVisibility: number;
         /**
          * The scale of the grid compared to unit.
+         * @default 0.5
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.1
          */
         gridRatio: number;
         /**
          * The grid opacity outside of the lines.
+         * @default 0.5
+         * @minimum 0
+         * @maximum 1
+         * @step 0.1
          */
         opacity: number;
         /**
          * Cull the back faces
+         * @default false
          */
         backFaceCulling: boolean;
         /**
          * Main color of the grid (e.g. between lines)
+         * @default #000000
          */
-        mainColor: string;
+        mainColor: Base.Color;
         /**
          * Color of the grid lines.
+         * @default #555555
          */
-        secondaryColor: string;
+        secondaryColor: Base.Color;
     }
     /**
      * Draw options for basic geometry types like points, lines, polylines, surfaces and jscad meshes
@@ -590,6 +622,7 @@ export const inputDeclarations = `declare namespace Asset {
          * @default 3
          * @minimum 0
          * @maximum Infinity
+         * @step 0.1
          */
         size: number;
         /**
@@ -597,6 +630,7 @@ export const inputDeclarations = `declare namespace Asset {
          * @default 1
          * @minimum 0
          * @maximum 1
+         * @step 0.1
          */
         opacity: number;
         /**
@@ -1849,6 +1883,7 @@ export const inputDeclarations = `declare namespace Asset {
          * @default 0
          * @minimum -Infinity
          * @maximum Infinity
+         * @step 0.5
          */
         x: number;
         /**
@@ -1856,6 +1891,7 @@ export const inputDeclarations = `declare namespace Asset {
          * @default 0
          * @minimum -Infinity
          * @maximum Infinity
+         * @step 0.5
          */
         y: number;
         /**
@@ -1863,6 +1899,7 @@ export const inputDeclarations = `declare namespace Asset {
         * @default 0
         * @minimum -Infinity
         * @maximum Infinity
+        * @step 0.5
         */
         z: number;
     }
@@ -1888,6 +1925,7 @@ export const inputDeclarations = `declare namespace Asset {
          * @default 1
          * @minimum 0
          * @maximum 1
+         * @step 0.1
          */
         opacity: number;
         /**
@@ -1895,6 +1933,7 @@ export const inputDeclarations = `declare namespace Asset {
          * @default 3
          * @minimum 0
          * @maximum Infinity
+         * @step 0.1
          */
         size: number;
         /**
@@ -1928,6 +1967,7 @@ export const inputDeclarations = `declare namespace Asset {
          * @default 1
          * @minimum 0
          * @maximum 1
+         * @step 0.1
          */
         opacity: number;
         /**
@@ -1935,6 +1975,7 @@ export const inputDeclarations = `declare namespace Asset {
          * @default 3
          * @minimum 0
          * @maximum Infinity
+         * @step 0.1
          */
         size: number;
         /**
@@ -2031,6 +2072,7 @@ export const inputDeclarations = `declare namespace Asset {
          * @default 0.9
          * @minimum 0
          * @maximum Infinity
+         * @step 0.1
          */
         phi: number;
         /**
@@ -2038,6 +2080,7 @@ export const inputDeclarations = `declare namespace Asset {
          * @default 200
          * @minimum 0
          * @maximum Infinity
+         * @step 10
          */
         numberPoints: number;
         /**
@@ -2045,6 +2088,7 @@ export const inputDeclarations = `declare namespace Asset {
          * @default 3
          * @minimum 0
          * @maximum Infinity
+         * @step 0.1
          */
         widening: number;
         /**
@@ -2052,6 +2096,7 @@ export const inputDeclarations = `declare namespace Asset {
          * @default 6
          * @minimum 0
          * @maximum Infinity
+         * @step 0.1
          */
         radius: number;
         /**
@@ -2059,6 +2104,7 @@ export const inputDeclarations = `declare namespace Asset {
          * @default 1
          * @minimum 0
          * @maximum Infinity
+         * @step 0.1
          */
         factor: number;
     }
@@ -2068,6 +2114,7 @@ export const inputDeclarations = `declare namespace Asset {
          * @default 20
          * @minimum 0
          * @maximum Infinity
+         * @step 1
          */
         nrHexagonsY: number;
         /**
@@ -2075,6 +2122,7 @@ export const inputDeclarations = `declare namespace Asset {
          * @default 20
          * @minimum 0
          * @maximum Infinity
+         * @step 1
          */
         nrHexagonsX: number;
         /**
@@ -2082,6 +2130,7 @@ export const inputDeclarations = `declare namespace Asset {
          * @default 0.2
          * @minimum 0
          * @maximum Infinity
+         * @step 0.1
          */
         radiusHexagon: number;
     }
@@ -2524,6 +2573,7 @@ export const inputDeclarations = `declare namespace Asset {
          * @default 10
          * @minimum -Infinity
          * @maximum Infinity
+         * @step 1
          */
         max: number;
     }
@@ -2533,6 +2583,7 @@ export const inputDeclarations = `declare namespace Asset {
          * @default 0
          * @minimum -Infinity
          * @maximum Infinity
+         * @step 0.5
          */
         x: number;
         /**
@@ -2540,6 +2591,7 @@ export const inputDeclarations = `declare namespace Asset {
          * @default 0
          * @minimum -Infinity
          * @maximum Infinity
+         * @step 0.5
          */
         y: number;
         /**
@@ -2547,6 +2599,7 @@ export const inputDeclarations = `declare namespace Asset {
          * @default 0
          * @minimum -Infinity
          * @maximum Infinity
+         * @step 0.5
          */
         z: number;
     }
@@ -2556,6 +2609,7 @@ export const inputDeclarations = `declare namespace Asset {
          * @default 1
          * @minimum -Infinity
          * @maximum Infinity
+         * @step 1
          */
         step: number;
         /**
@@ -2563,6 +2617,7 @@ export const inputDeclarations = `declare namespace Asset {
         * @default 1
         * @minimum -Infinity
         * @maximum Infinity
+        * @step 1
         */
         min: number;
         /**
@@ -2570,6 +2625,7 @@ export const inputDeclarations = `declare namespace Asset {
         * @default 1
         * @minimum -Infinity
         * @maximum Infinity
+        * @step 1
         */
         max: number;
     }
@@ -2584,6 +2640,7 @@ export const inputDeclarations = `declare namespace Asset {
          * @default 1
          * @minimum -Infinity
          * @maximum Infinity
+         * @step 1
          */
         distance: number;
         /**
@@ -2605,6 +2662,7 @@ export const inputDeclarations = `declare namespace Asset {
          * @default 0.5
          * @minimum -Infinity
          * @maximum Infinity
+         * @step 0.1
          */
         fraction: number;
         /**
@@ -2624,6 +2682,7 @@ export const inputDeclarations = `declare namespace Asset {
          * @default 1
          * @minimum -Infinity
          * @maximum Infinity
+         * @step 0.1
          */
         scalar: number;
         /**

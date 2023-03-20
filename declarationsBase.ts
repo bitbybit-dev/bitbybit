@@ -1112,7 +1112,7 @@ declare class BabylonTransforms {
      * @param inputs Contains options and entities to be drawn
      * @returns BabylonJS Mesh
      */
-    drawAny(inputs: Inputs.Draw.DrawAny): Mesh;
+    private drawAny;
     /**
      * Creates draw options for basic geometry types like points, lines, polylines, surfaces and jscad meshes
      * @link https://docs.bitbybit.dev/classes/bitbybit_draw.Draw.html#optionsSimple
