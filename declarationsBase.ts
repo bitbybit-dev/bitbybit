@@ -1782,6 +1782,8 @@ declare class OCCTW extends OCCT {
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt.OCCT.html#drawShape
      * @param inputs Contains a shape to be drawn and additional information
      * @returns BabylonJS Mesh
+     * @shortname draw shape
+     * @drawable true
      */
     drawShape(inputs: Inputs.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Mesh>;
     private computeFaceMiddlePos;
