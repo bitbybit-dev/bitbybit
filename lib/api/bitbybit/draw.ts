@@ -23,7 +23,7 @@ export class Draw {
         updatable: false,
         hidden: false,
         opacity: 1,
-        size: 3,
+        size: 6,
     }
     private defaultNodeOptions: Inputs.Draw.DrawNodeOptions = {
         colorX: '#ff0000',
