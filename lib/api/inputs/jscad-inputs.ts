@@ -1045,7 +1045,7 @@ export namespace JSCAD {
          * @default 12
          * @minimum 0
          * @maximum Infinity
-         * @step 0.1
+         * @step 1
          */
         frequency: number = 12;
     }
