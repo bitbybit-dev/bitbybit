@@ -1327,7 +1327,7 @@ export namespace JSCAD {
         text: string = "Hello World";
         /**
          * Height of the cylinder
-         * @default 1
+         * @default 0.5
          * @minimum 0
          * @maximum Infinity
          * @step 0.1
@@ -1335,7 +1335,7 @@ export namespace JSCAD {
         extrusionHeight: number = 0.5;
         /**
          * Radius of the cylinder
-         * @default 1
+         * @default 0.1
          * @minimum 0
          * @maximum Infinity
          * @step 0.1
@@ -1407,14 +1407,11 @@ export namespace JSCAD {
         /**
          * Text to write
          * @default Hello World
-         * @minimum 0
-         * @maximum Infinity
-         * @step 1
          */
         text: string = 'Hello World';
         /**
          * Radius of the spheres
-         * @default 1
+         * @default 0.1
          * @minimum 0
          * @maximum Infinity
          * @step 0.1

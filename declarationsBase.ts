@@ -1872,6 +1872,16 @@ declare class JSCADText {
      * @drawable true
      */
     sphericalText(inputs: Inputs.JSCAD.SphereTextDto): Promise<any[]>;
+    /**
+     * Creates a vector text
+     * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_text.JSCADText.html#createVectorText
+     * @param inputs Vector text parameters
+     * @returns List of polygons
+     * @group text
+     * @shortname vector
+     * @drawable true
+     * @ignore true
+     */
     createVectorText(inputs: Inputs.JSCAD.TextDto): Promise<number[][]>;
 }/**
  * Contains various methods for lines. Line in bitbybit is a simple object that has star and end point properties.

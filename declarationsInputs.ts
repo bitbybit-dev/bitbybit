@@ -1886,7 +1886,7 @@ export const inputDeclarations = `declare namespace Asset {
          * @default 12
          * @minimum 0
          * @maximum Infinity
-         * @step 0.1
+         * @step 1
          */
         frequency: number;
     }
@@ -2162,8 +2162,13 @@ export const inputDeclarations = `declare namespace Asset {
     }
     class CylinderTextDto {
         /**
+         * Text to write
+         * @default Hello World
+         */
+        text: string;
+        /**
          * Height of the cylinder
-         * @default 1
+         * @default 0.5
          * @minimum 0
          * @maximum Infinity
          * @step 0.1
@@ -2171,7 +2176,7 @@ export const inputDeclarations = `declare namespace Asset {
         extrusionHeight: number;
         /**
          * Radius of the cylinder
-         * @default 1
+         * @default 0.1
          * @minimum 0
          * @maximum Infinity
          * @step 0.1
@@ -2185,11 +2190,6 @@ export const inputDeclarations = `declare namespace Asset {
          * @step 1
          */
         segments: number;
-        /**
-         * Text to write
-         * @default Hello World
-         */
-        text: string;
         /**
          * X offset of the text
          * @default 0
@@ -2248,14 +2248,11 @@ export const inputDeclarations = `declare namespace Asset {
         /**
          * Text to write
          * @default Hello World
-         * @minimum 0
-         * @maximum Infinity
-         * @step 1
          */
         text: string;
         /**
          * Radius of the spheres
-         * @default 1
+         * @default 0.1
          * @minimum 0
          * @maximum Infinity
          * @step 0.1
