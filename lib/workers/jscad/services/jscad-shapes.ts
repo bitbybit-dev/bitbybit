@@ -193,6 +193,7 @@ export class JSCADShapes {
         });
     }
 
+    
     torus(inputs: Inputs.JSCAD.TorusDto): any {
         return this.jscad.primitives.torus({
             center: [inputs.center[0], inputs.center[1], inputs.center[2]],
