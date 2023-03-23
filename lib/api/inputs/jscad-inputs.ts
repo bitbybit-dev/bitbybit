@@ -1321,13 +1321,18 @@ export namespace JSCAD {
     }
     export class CylinderTextDto {
         /**
+         * Text to write
+         * @default Hello World
+         */
+        text: string = "Hello World";
+        /**
          * Height of the cylinder
          * @default 1
          * @minimum 0
          * @maximum Infinity
          * @step 0.1
          */
-        extrusionHeight: number = 1;
+        extrusionHeight: number = 0.5;
         /**
          * Radius of the cylinder
          * @default 1
@@ -1335,7 +1340,7 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 0.1
          */
-        extrusionSize: number = 1;
+        extrusionSize: number = 0.1;
         /**
          * Segment subdivision for cylinder
          * @default 24
@@ -1344,11 +1349,6 @@ export namespace JSCAD {
          * @step 1
          */
         segments: number = 24;
-        /**
-         * Text to write
-         * @default Hello World
-         */
-        text: string = "Hello World";
         /**
          * X offset of the text
          * @default 0
@@ -1419,7 +1419,7 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 0.1
          */
-        radius: number = 1;
+        radius: number = 0.1;
         /**
          * Segment subdivision for sphere
          * @default 24

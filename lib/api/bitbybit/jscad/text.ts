@@ -45,6 +45,18 @@ export class JSCADText {
         return this.jscadWorkerManager.genericCallToWorkerPromise('text.sphericalText', inputs);
     }
 
+    /**
+     * Creates a vector text
+     * <div>
+     *  <img src="../assets/images/blockly-images/jscad/text/createVectorText.svg" alt="Blockly Image"/>
+     * </div>
+     * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_text.JSCADText.html#createVectorText
+     * @param inputs Vector text parameters
+     * @returns List of polygons
+     * @group text
+     * @shortname vector
+     * @drawable true
+     */
     async createVectorText(inputs: Inputs.JSCAD.TextDto): Promise<number[][]> {
         return this.jscadWorkerManager.genericCallToWorkerPromise('text.createVectorText', inputs);
 
