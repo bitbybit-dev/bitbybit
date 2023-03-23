@@ -48,6 +48,9 @@ export class JSCAD {
      * @link https://docs.bitbybit.dev/classes/bitbybit_jscad.JSCAD.html#drawSolidOrPolygonMesh
      * @param inputs Contains a solid or polygon and information for drawing
      * @returns Mesh that is being drawn by Babylon
+     * @group jscad
+     * @shortname draw solid
+     * @ignore true
      */
     async drawSolidOrPolygonMesh(inputs: Inputs.JSCAD.DrawSolidMeshDto): Promise<Mesh> {
         const res: {
@@ -93,6 +96,9 @@ export class JSCAD {
      * @link https://docs.bitbybit.dev/classes/bitbybit_jscad.JSCAD.html#drawSolidOrPolygonMeshes
      * @param inputs Contains solids or polygons and information for drawing
      * @returns Mesh that is being drawn by Babylon
+     * @group jscad
+     * @shortname draw solid
+     * @ignore true
      */
     async drawSolidOrPolygonMeshes(inputs: Inputs.JSCAD.DrawSolidMeshesDto): Promise<Mesh> {
         return this.jscadWorkerManager.genericCallToWorkerPromise('shapesToMeshes', inputs).then((res: {
@@ -142,6 +148,9 @@ export class JSCAD {
      * @link https://docs.bitbybit.dev/classes/bitbybit_jscad.JSCAD.html#drawPath
      * @param inputs Contains a path and information for drawing
      * @returns Mesh that is being drawn by Babylon
+     * @group jscad
+     * @shortname draw solid
+     * @ignore true
      */
     async drawPath(inputs: Inputs.JSCAD.DrawPathDto): Promise<LinesMesh> {
         return new Promise(resolve => {
@@ -173,6 +182,9 @@ export class JSCAD {
      * @link https://docs.bitbybit.dev/classes/bitbybit_jscad.JSCAD.html#transformSolids
      * @param inputs Solids with the transformation matrixes
      * @returns Solids with a transformation
+     * @group transforms
+     * @shortname transform solids
+     * @drawable true
      */
     async transformSolids(inputs: Inputs.JSCAD.TransformSolidsDto): Promise<any[]> {
         return this.jscadWorkerManager.genericCallToWorkerPromise('transformSolids', inputs);
@@ -186,6 +198,9 @@ export class JSCAD {
      * @link https://docs.bitbybit.dev/classes/bitbybit_jscad.JSCAD.html#transformSolid
      * @param inputs Solid with the transformation matrixes
      * @returns Solid with a transformation
+     * @group transforms
+     * @shortname transform solid
+     * @drawable true
      */
     async transformSolid(inputs: Inputs.JSCAD.TransformSolidDto): Promise<any> {
         return this.jscadWorkerManager.genericCallToWorkerPromise('transformSolid', inputs);
@@ -198,6 +213,8 @@ export class JSCAD {
      * </div>
      * @link https://docs.bitbybit.dev/classes/bitbybit_jscad.JSCAD.html#downloadSolidSTL
      * @param inputs 3D Solid
+     * @group io
+     * @shortname solid to stl
      */
     async downloadSolidSTL(inputs: Inputs.JSCAD.DownloadSolidDto): Promise<void> {
         const res = await this.jscadWorkerManager.genericCallToWorkerPromise('downloadSolidSTL', inputs);
@@ -211,6 +228,8 @@ export class JSCAD {
      * </div>
      * @link https://docs.bitbybit.dev/classes/bitbybit_jscad.JSCAD.html#downloadSolidsSTL
      * @param inputs 3D Solid
+     * @group io
+     * @shortname solids to stl
      */
     async downloadSolidsSTL(inputs: Inputs.JSCAD.DownloadSolidsDto): Promise<void> {
         const res = await this.jscadWorkerManager.genericCallToWorkerPromise('downloadSolidsSTL', inputs);

@@ -1194,6 +1194,9 @@ declare class JSCADBooleans {
      * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_booleans.JSCADBooleans.html#intersect
      * @param inputs Contains multiple solids for intersection
      * @returns Solid mesh
+     * @group boolean
+     * @shortname intersect
+     * @drawable true
      */
     intersect(inputs: Inputs.JSCAD.BooleanObjectsDto): Promise<any>;
     /**
@@ -1201,6 +1204,9 @@ declare class JSCADBooleans {
      * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_booleans.JSCADBooleans.html#subtract
      * @param inputs Contains multiple solids for subtraction
      * @returns Solid mesh
+     * @group boolean
+     * @shortname intersect
+     * @drawable true
      */
     subtract(inputs: Inputs.JSCAD.BooleanObjectsDto): Promise<any>;
     /**
@@ -1208,6 +1214,9 @@ declare class JSCADBooleans {
      * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_booleans.JSCADBooleans.html#union
      * @param inputs Contains multiple solids for union
      * @returns Solid mesh
+     * @group boolean
+     * @shortname union
+     * @drawable true
      */
     union(inputs: Inputs.JSCAD.BooleanObjectsDto): Promise<any>;
 }/**
@@ -1222,6 +1231,9 @@ declare class JSCADExpansions {
      * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_expansions.JSCADExpansions.html#expand
      * @param inputs Contains options and geometries for expansion
      * @returns Expanded geometry
+     * @group expansion
+     * @shortname expand
+     * @drawable true
      */
     expand(inputs: Inputs.JSCAD.ExpansionDto): Promise<any | any[]>;
     /**
@@ -1229,6 +1241,9 @@ declare class JSCADExpansions {
      * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_expansions.JSCADExpansions.html#offset
      * @param inputs Contains options and geometries for offset
      * @returns Expanded geometry
+     * @group expansion
+     * @shortname offset
+     * @drawable true
      */
     offset(inputs: Inputs.JSCAD.ExpansionDto): Promise<any | any[]>;
 }/**
@@ -1243,6 +1258,9 @@ declare class JSCADExtrusions {
      * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_extrusions.JSCADExtrusions.html#extrudeLinear
      * @param inputs Contains options and geometries for linear extrude
      * @returns Extruded geometry
+     * @group extrude
+     * @shortname linear
+     * @drawable true
      */
     extrudeLinear(inputs: Inputs.JSCAD.ExtrudeLinearDto): Promise<any | any[]>;
     /**
@@ -1250,6 +1268,9 @@ declare class JSCADExtrusions {
      * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_extrusions.JSCADExtrusions.html#extrudeRectangular
      * @param inputs Contains options and geometries for rectangular extrude
      * @returns Extruded geometry
+     * @group extrude
+     * @shortname rectangular
+     * @drawable true
      */
     extrudeRectangular(inputs: Inputs.JSCAD.ExtrudeRectangularDto): Promise<any | any[]>;
     /**
@@ -1257,6 +1278,9 @@ declare class JSCADExtrusions {
      * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_extrusions.JSCADExtrusions.html#extrudeRectangularPoints
      * @param inputs Contains options and points for extrusion
      * @returns Extruded geometry
+     * @group extrude
+     * @shortname rectangular points
+     * @drawable true
      */
     extrudeRectangularPoints(inputs: Inputs.JSCAD.ExtrudeRectangularPointsDto): Promise<any>;
     /**
@@ -1264,6 +1288,9 @@ declare class JSCADExtrusions {
      * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_extrusions.JSCADExtrusions.html#extrudeRotate
      * @param inputs Contains options and points for extrusion
      * @returns Extruded geometry
+     * @group extrude
+     * @shortname rotational
+     * @drawable true
      */
     extrudeRotate(inputs: Inputs.JSCAD.ExtrudeRotateDto): Promise<any>;
 }/**
@@ -1279,6 +1306,9 @@ declare class JSCADHulls {
      * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_hulls.JSCADHulls.html#hullChain
      * @param inputs Geometries
      * @returns Chain hulled geometry
+     * @group hulls
+     * @shortname hullChain
+     * @drawable true
      */
     hullChain(inputs: Inputs.JSCAD.HullDto): Promise<any | any[]>;
     /**
@@ -1287,6 +1317,9 @@ declare class JSCADHulls {
      * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_hulls.JSCADHulls.html#hull
      * @param inputs Geometries
      * @returns Hulled geometry
+     * @group hulls
+     * @shortname hull
+     * @drawable true
      */
     hull(inputs: Inputs.JSCAD.HullDto): Promise<any | any[]>;
 }/**
@@ -1311,6 +1344,9 @@ declare class JSCAD {
      * @link https://docs.bitbybit.dev/classes/bitbybit_jscad.JSCAD.html#drawSolidOrPolygonMesh
      * @param inputs Contains a solid or polygon and information for drawing
      * @returns Mesh that is being drawn by Babylon
+     * @group jscad
+     * @shortname draw solid
+     * @ignore true
      */
     drawSolidOrPolygonMesh(inputs: Inputs.JSCAD.DrawSolidMeshDto): Promise<Mesh>;
     private makeMesh;
@@ -1319,6 +1355,9 @@ declare class JSCAD {
      * @link https://docs.bitbybit.dev/classes/bitbybit_jscad.JSCAD.html#drawSolidOrPolygonMeshes
      * @param inputs Contains solids or polygons and information for drawing
      * @returns Mesh that is being drawn by Babylon
+     * @group jscad
+     * @shortname draw solid
+     * @ignore true
      */
     drawSolidOrPolygonMeshes(inputs: Inputs.JSCAD.DrawSolidMeshesDto): Promise<Mesh>;
     /**
@@ -1326,6 +1365,9 @@ declare class JSCAD {
      * @link https://docs.bitbybit.dev/classes/bitbybit_jscad.JSCAD.html#drawPath
      * @param inputs Contains a path and information for drawing
      * @returns Mesh that is being drawn by Babylon
+     * @group jscad
+     * @shortname draw solid
+     * @ignore true
      */
     drawPath(inputs: Inputs.JSCAD.DrawPathDto): Promise<LinesMesh>;
     /**
@@ -1333,6 +1375,9 @@ declare class JSCAD {
      * @link https://docs.bitbybit.dev/classes/bitbybit_jscad.JSCAD.html#transformSolids
      * @param inputs Solids with the transformation matrixes
      * @returns Solids with a transformation
+     * @group transforms
+     * @shortname transform solids
+     * @drawable true
      */
     transformSolids(inputs: Inputs.JSCAD.TransformSolidsDto): Promise<any[]>;
     /**
@@ -1340,18 +1385,25 @@ declare class JSCAD {
      * @link https://docs.bitbybit.dev/classes/bitbybit_jscad.JSCAD.html#transformSolid
      * @param inputs Solid with the transformation matrixes
      * @returns Solid with a transformation
+     * @group transforms
+     * @shortname transform solid
+     * @drawable true
      */
     transformSolid(inputs: Inputs.JSCAD.TransformSolidDto): Promise<any>;
     /**
      * Downloads the binary STL file from a 3D solid
      * @link https://docs.bitbybit.dev/classes/bitbybit_jscad.JSCAD.html#downloadSolidSTL
      * @param inputs 3D Solid
+     * @group io
+     * @shortname solid to stl
      */
     downloadSolidSTL(inputs: Inputs.JSCAD.DownloadSolidDto): Promise<void>;
     /**
      * Downloads the binary STL file from a 3D solids
      * @link https://docs.bitbybit.dev/classes/bitbybit_jscad.JSCAD.html#downloadSolidsSTL
      * @param inputs 3D Solid
+     * @group io
+     * @shortname solids to stl
      */
     downloadSolidsSTL(inputs: Inputs.JSCAD.DownloadSolidsDto): Promise<void>;
     private downloadSTL;
@@ -1368,6 +1420,9 @@ declare class JSCADPath {
      * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_path.JSCADPath.html#createFromPoints
      * @param inputs Points and indication if we want a closed path or not
      * @returns Path
+     * @group from
+     * @shortname points
+     * @drawable true
      */
     createFromPoints(inputs: Inputs.JSCAD.PathFromPointsDto): Promise<any>;
     /**
@@ -1375,6 +1430,9 @@ declare class JSCADPath {
      * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_path.JSCADPath.html#createFromPolyline
      * @param inputs Polyline and indication if we want a closed path or not
      * @returns Path
+     * @group from
+     * @shortname polyline
+     * @drawable true
      */
     createFromPolyline(inputs: Inputs.JSCAD.PathFromPolylineDto): Promise<any>;
     /**
@@ -1382,12 +1440,18 @@ declare class JSCADPath {
      * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_path.JSCADPath.html#createFromCurve
      * @param inputs Curve and indication if we want a closed path or not
      * @returns Path
+     * @group from
+     * @shortname curve
+     * @drawable true
      */
     createFromCurve(inputs: Inputs.JSCAD.PathFromCurveDto): Promise<any>;
     /**
      * Create empty 2D path
      * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_path.JSCADPath.html#createEmpty
-     * @returns Emprty path
+     * @returns Empty path
+     * @group create
+     * @shortname empty
+     * @drawable false
      */
     createEmpty(): Promise<any>;
     /**
@@ -1395,6 +1459,9 @@ declare class JSCADPath {
      * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_path.JSCADPath.html#close
      * @param inputs Path
      * @returns Closed path
+     * @group edit
+     * @shortname close
+     * @drawable true
      */
     close(inputs: Inputs.JSCAD.PathDto): Promise<any>;
     /**
@@ -1402,6 +1469,9 @@ declare class JSCADPath {
      * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_path.JSCADPath.html#appendPoints
      * @param inputs Path to append and points
      * @returns Appended path
+     * @group append
+     * @shortname points
+     * @drawable true
      */
     appendPoints(inputs: Inputs.JSCAD.PathAppendPointsDto): Promise<any>;
     /**
@@ -1409,6 +1479,9 @@ declare class JSCADPath {
      * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_path.JSCADPath.html#appendPolyline
      * @param inputs Path to append and polyline
      * @returns Appended path
+     * @group append
+     * @shortname polyline
+     * @drawable true
      */
     appendPolyline(inputs: Inputs.JSCAD.PathAppendPolylineDto): Promise<any>;
     /**
@@ -1416,6 +1489,9 @@ declare class JSCADPath {
      * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_path.JSCADPath.html#appendCurve
      * @param inputs Path to append and a curve
      * @returns Appended path
+     * @group append
+     * @shortname curve
+     * @drawable true
      */
     appendCurve(inputs: Inputs.JSCAD.PathAppendCurveDto): Promise<any>;
     /**
@@ -1423,6 +1499,9 @@ declare class JSCADPath {
      * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_path.JSCADPath.html#appendArc
      * @param inputs Path and arc parameters
      * @returns Appended path
+     * @group append
+     * @shortname arc
+     * @drawable true
      */
     appendArc(inputs: Inputs.JSCAD.PathAppendArcDto): Promise<any>;
 }/**
@@ -1437,6 +1516,9 @@ declare class JSCADPolygon {
      * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_polygon.JSCADPolygon.html#createFromPoints
      * @param inputs Points
      * @returns Path
+     * @group from
+     * @shortname points
+     * @drawable true
      */
     createFromPoints(inputs: Inputs.Point.PointsDto): Promise<any>;
     /**
@@ -1444,6 +1526,9 @@ declare class JSCADPolygon {
      * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_polygon.JSCADPolygon.html#createFromPolyline
      * @param inputs Polyline
      * @returns Polygon
+     * @group from
+     * @shortname polyline
+     * @drawable true
      */
     createFromPolyline(inputs: Inputs.Polyline.PolylineDto): Promise<any>;
     /**
@@ -1451,6 +1536,9 @@ declare class JSCADPolygon {
      * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_polygon.JSCADPolygon.html#createFromCurve
      * @param inputs Nurbs curve
      * @returns Polygon
+     * @group from
+     * @shortname curve
+     * @drawable true
      */
     createFromCurve(inputs: Inputs.Verb.CurveDto): Promise<any>;
     /**
@@ -1458,6 +1546,9 @@ declare class JSCADPolygon {
      * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_polygon.JSCADPolygon.html#createFromPath
      * @param inputs Path
      * @returns Polygon
+     * @group from
+     * @shortname path
+     * @drawable true
      */
     createFromPath(inputs: Inputs.JSCAD.PathDto): Promise<any>;
     /**
@@ -1465,6 +1556,9 @@ declare class JSCADPolygon {
      * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_polygon.JSCADPolygon.html#circle
      * @param inputs Circle parameters
      * @returns Circle polygon
+     * @group primitives
+     * @shortname circle
+     * @drawable true
      */
     circle(inputs: Inputs.JSCAD.CircleDto): Promise<any>;
     /**
@@ -1472,6 +1566,9 @@ declare class JSCADPolygon {
      * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_polygon.JSCADPolygon.html#ellipse
      * @param inputs Ellipse parameters
      * @returns Ellipse polygon
+     * @group primitives
+     * @shortname ellipse
+     * @drawable true
      */
     ellipse(inputs: Inputs.JSCAD.EllipseDto): Promise<any>;
     /**
@@ -1479,6 +1576,9 @@ declare class JSCADPolygon {
      * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_polygon.JSCADPolygon.html#rectangle
      * @param inputs Rectangle parameters
      * @returns Rectangle polygon
+     * @group primitives
+     * @shortname rectangle
+     * @drawable true
      */
     rectangle(inputs: Inputs.JSCAD.RectangleDto): Promise<any>;
     /**
@@ -1486,6 +1586,9 @@ declare class JSCADPolygon {
      * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_polygon.JSCADPolygon.html#roundedRectangle
      * @param inputs Rounded rectangle parameters
      * @returns Rounded rectangle polygon
+     * @group primitives
+     * @shortname rounded rectangle
+     * @drawable true
      */
     roundedRectangle(inputs: Inputs.JSCAD.RoundedRectangleDto): Promise<any>;
     /**
@@ -1493,6 +1596,9 @@ declare class JSCADPolygon {
      * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_polygon.JSCADPolygon.html#square
      * @param inputs Square parameters
      * @returns Square polygon
+     * @group primitives
+     * @shortname square
+     * @drawable true
      */
     square(inputs: Inputs.JSCAD.SquareDto): Promise<any>;
     /**
@@ -1500,6 +1606,9 @@ declare class JSCADPolygon {
      * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_polygon.JSCADPolygon.html#star
      * @param inputs Star parameters
      * @returns Star polygon
+     * @group primitives
+     * @shortname star
+     * @drawable true
      */
     star(inputs: Inputs.JSCAD.StarDto): Promise<any>;
 }/**
@@ -1514,6 +1623,9 @@ declare class JSCADShapes {
      * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_shapes.JSCADShapes.html#cube
      * @param inputs Cube parameters
      * @returns Cube solid
+     * @group primitives
+     * @shortname cube
+     * @drawable true
      */
     cube(inputs: Inputs.JSCAD.CubeDto): Promise<any>;
     /**
@@ -1521,6 +1633,9 @@ declare class JSCADShapes {
      * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_shapes.JSCADShapes.html#cubesOnCenterPoints
      * @param inputs Cube with multiple center points parameters
      * @returns List of cube solids
+     * @group primitives on centers
+     * @shortname cubes
+     * @drawable true
      */
     cubesOnCenterPoints(inputs: Inputs.JSCAD.CubeCentersDto): Promise<any[]>;
     /**
@@ -1528,6 +1643,9 @@ declare class JSCADShapes {
      * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_shapes.JSCADShapes.html#cuboid
      * @param inputs Cuboid parameters
      * @returns Cuboid solid
+     * @group primitives
+     * @shortname cuboid
+     * @drawable true
      */
     cuboid(inputs: Inputs.JSCAD.CuboidDto): Promise<any>;
     /**
@@ -1535,6 +1653,9 @@ declare class JSCADShapes {
      * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_shapes.JSCADShapes.html#cuboidsOnCenterPoints
      * @param inputs Cuboids with multiple center point parameters
      * @returns List of cuboid solids
+     * @group primitives on centers
+     * @shortname cuboids
+     * @drawable true
      */
     cuboidsOnCenterPoints(inputs: Inputs.JSCAD.CuboidCentersDto): Promise<any[]>;
     /**
@@ -1542,6 +1663,9 @@ declare class JSCADShapes {
      * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_shapes.JSCADShapes.html#cylinderElliptic
      * @param inputs Elliptic cylinder parameters
      * @returns Elliptic cylinder solid
+     * @group primitives
+     * @shortname cylinder elliptic
+     * @drawable true
      */
     cylinderElliptic(inputs: Inputs.JSCAD.CylidnerEllipticDto): Promise<any>;
     /**
@@ -1549,6 +1673,9 @@ declare class JSCADShapes {
      * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_shapes.JSCADShapes.html#cylinderEllipticOnCenterPoints
      * @param inputs Elliptic cylinders with multiple center point parameters
      * @returns List of elliptic cylinders solids
+     * @group primitives on centers
+     * @shortname cylinder elliptic
+     * @drawable true
      */
     cylinderEllipticOnCenterPoints(inputs: Inputs.JSCAD.CylidnerCentersEllipticDto): Promise<any[]>;
     /**
@@ -1556,6 +1683,9 @@ declare class JSCADShapes {
      * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_shapes.JSCADShapes.html#cylinder
      * @param inputs Cylinder parameters
      * @returns Cylinder solid
+     * @group primitives
+     * @shortname cylinder
+     * @drawable true
      */
     cylinder(inputs: Inputs.JSCAD.CylidnerDto): Promise<any>;
     /**
@@ -1563,6 +1693,9 @@ declare class JSCADShapes {
      * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_shapes.JSCADShapes.html#cylindersOnCenterPoints
      * @param inputs Cylinders with multiple center point parameters
      * @returns List of cylinder solids
+     * @group primitives on centers
+     * @shortname cylinder
+     * @drawable true
      */
     cylindersOnCenterPoints(inputs: Inputs.JSCAD.CylidnerCentersDto): Promise<any[]>;
     /**
@@ -1570,6 +1703,9 @@ declare class JSCADShapes {
      * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_shapes.JSCADShapes.html#ellipsoid
      * @param inputs Ellipsoid parameters
      * @returns Ellipsoid solid
+     * @group primitives
+     * @shortname ellipsoid
+     * @drawable true
      */
     ellipsoid(inputs: Inputs.JSCAD.EllipsoidDto): Promise<any>;
     /**
@@ -1577,6 +1713,9 @@ declare class JSCADShapes {
      * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_shapes.JSCADShapes.html#ellipsoidsOnCenterPoints
      * @param inputs Ellipsoid parameters with multiple center points
      * @returns List of ellipsoid solids
+     * @group primitives on centers
+     * @shortname ellipsoid
+     * @drawable true
      */
     ellipsoidsOnCenterPoints(inputs: Inputs.JSCAD.EllipsoidCentersDto): Promise<any[]>;
     /**
@@ -1584,6 +1723,9 @@ declare class JSCADShapes {
      * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_shapes.JSCADShapes.html#geodesicSphere
      * @param inputs Geodesic sphere parameters
      * @returns Geodesic sphere solid
+     * @group primitives
+     * @shortname geodesic sphere
+     * @drawable true
      */
     geodesicSphere(inputs: Inputs.JSCAD.GeodesicSphereDto): Promise<any>;
     /**
@@ -1591,6 +1733,9 @@ declare class JSCADShapes {
      * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_shapes.JSCADShapes.html#geodesicSpheresOnCenterPoints
      * @param inputs Geodesic sphere parameters with multiple center points
      * @returns List of geodesic spheres
+     * @group primitives on centers
+     * @shortname geodesic sphere
+     * @drawable true
      */
     geodesicSpheresOnCenterPoints(inputs: Inputs.JSCAD.GeodesicSphereCentersDto): Promise<any[]>;
     /**
@@ -1598,6 +1743,9 @@ declare class JSCADShapes {
      * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_shapes.JSCADShapes.html#roundedCuboid
      * @param inputs Rounded cuboid parameters
      * @returns Rounded cuboid solid
+     * @group primitives
+     * @shortname rounded cuboid
+     * @drawable true
      */
     roundedCuboid(inputs: Inputs.JSCAD.RoundedCuboidDto): Promise<any>;
     /**
@@ -1605,6 +1753,9 @@ declare class JSCADShapes {
      * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_shapes.JSCADShapes.html#roundedCuboidsOnCenterPoints
      * @param inputs Rounded cuboids parameters with multiple center points
      * @returns List of rounded cuboids
+     * @group primitives on centers
+     * @shortname rounded cuboid
+     * @drawable true
      */
     roundedCuboidsOnCenterPoints(inputs: Inputs.JSCAD.RoundedCuboidCentersDto): Promise<any[]>;
     /**
@@ -1612,6 +1763,9 @@ declare class JSCADShapes {
      * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_shapes.JSCADShapes.html#roundedCylinder
      * @param inputs Rounded cylinder parameters
      * @returns Rounded cylinder solid
+     * @group primitives
+     * @shortname rounded cylinder
+     * @drawable true
      */
     roundedCylinder(inputs: Inputs.JSCAD.RoundedCylidnerDto): Promise<any>;
     /**
@@ -1619,6 +1773,9 @@ declare class JSCADShapes {
      * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_shapes.JSCADShapes.html#roundedCylindersOnCenterPoints
      * @param inputs Rounded cylinders parameters with multiple center points
      * @returns List of rounded cylinders
+     * @group primitives on centers
+     * @shortname rounded cylinder
+     * @drawable true
      */
     roundedCylindersOnCenterPoints(inputs: Inputs.JSCAD.RoundedCylidnerCentersDto): Promise<any[]>;
     /**
@@ -1626,6 +1783,9 @@ declare class JSCADShapes {
      * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_shapes.JSCADShapes.html#sphere
      * @param inputs Sphere parameters
      * @returns Sphere solid
+     * @group primitives
+     * @shortname sphere
+     * @drawable true
      */
     sphere(inputs: Inputs.JSCAD.SphereDto): Promise<any>;
     /**
@@ -1633,6 +1793,9 @@ declare class JSCADShapes {
      * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_shapes.JSCADShapes.html#spheresOnCenterPoints
      * @param inputs Sphere parameters with multiple center points
      * @returns List of spheres
+     * @group primitives on centers
+     * @shortname sphere
+     * @drawable true
      */
     spheresOnCenterPoints(inputs: Inputs.JSCAD.SphereCentersDto): Promise<any[]>;
     /**
@@ -1640,6 +1803,9 @@ declare class JSCADShapes {
      * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_shapes.JSCADShapes.html#torus
      * @param inputs Torus parameters
      * @returns Torus solid
+     * @group primitives
+     * @shortname torus
+     * @drawable true
      */
     torus(inputs: Inputs.JSCAD.TorusDto): Promise<any>;
 }/**
@@ -1654,6 +1820,9 @@ declare class JSCADText {
      * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_text.JSCADText.html#cylindricalText
      * @param inputs Cylindrical text parameters
      * @returns List of solids for text
+     * @group text
+     * @shortname cylindrical
+     * @drawable true
      */
     cylindricalText(inputs: Inputs.JSCAD.CylinderTextDto): Promise<any[]>;
     /**
@@ -1661,6 +1830,9 @@ declare class JSCADText {
      * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_text.JSCADText.html#sphericalText
      * @param inputs Spherical text parameters
      * @returns List of solids for text
+     * @group text
+     * @shortname spherical
+     * @drawable true
      */
     sphericalText(inputs: Inputs.JSCAD.SphereTextDto): Promise<any[]>;
     createVectorText(inputs: Inputs.JSCAD.TextDto): Promise<number[][]>;
@@ -1845,6 +2017,7 @@ declare class Point {
      * @group draw
      * @shortname point
      * @drawable false
+     * @ignore true
      */
     drawPoint(inputs: Inputs.Point.DrawPointDto): Mesh;
     /**
@@ -1855,6 +2028,7 @@ declare class Point {
      * @group draw
      * @shortname points sync
      * @drawable false
+     * @ignore true
      */
     drawPoints(inputs: Inputs.Point.DrawPointsDto): Mesh;
     /**
@@ -1865,6 +2039,7 @@ declare class Point {
      * @group draw
      * @shortname points
      * @drawable false
+     * @ignore true
      */
     drawPointsAsync(inputs: Inputs.Point.DrawPointsDto): Promise<Mesh>;
     /**

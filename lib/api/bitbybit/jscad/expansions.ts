@@ -26,6 +26,9 @@ export class JSCADExpansions {
      * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_expansions.JSCADExpansions.html#expand
      * @param inputs Contains options and geometries for expansion
      * @returns Expanded geometry
+     * @group expansion
+     * @shortname expand
+     * @drawable true
      */
     async expand(inputs: Inputs.JSCAD.ExpansionDto): Promise<any | any[]> {
         return this.jscadWorkerManager.genericCallToWorkerPromise('expansions.expand', inputs);
@@ -42,6 +45,9 @@ export class JSCADExpansions {
      * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_expansions.JSCADExpansions.html#offset
      * @param inputs Contains options and geometries for offset
      * @returns Expanded geometry
+     * @group expansion
+     * @shortname offset
+     * @drawable true
      */
     async offset(inputs: Inputs.JSCAD.ExpansionDto): Promise<any | any[]> {
         return this.jscadWorkerManager.genericCallToWorkerPromise('expansions.offset', inputs);

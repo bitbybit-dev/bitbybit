@@ -21,7 +21,10 @@ export class JSCADBooleans {
      * </div>
      * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_booleans.JSCADBooleans.html#intersect
      * @param inputs Contains multiple solids for intersection
-     * @returns Solid mesh
+     * @returns Solid mesh     
+     * @group boolean
+     * @shortname intersect
+     * @drawable true
      */
     async intersect(inputs: Inputs.JSCAD.BooleanObjectsDto): Promise<any> {
         return this.jscadWorkerManager.genericCallToWorkerPromise('booleans.intersect', inputs);
@@ -36,7 +39,10 @@ export class JSCADBooleans {
      * </div>
      * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_booleans.JSCADBooleans.html#subtract
      * @param inputs Contains multiple solids for subtraction
-     * @returns Solid mesh
+     * @returns Solid mesh     
+     * @group boolean
+     * @shortname intersect
+     * @drawable true
      */
     async subtract(inputs: Inputs.JSCAD.BooleanObjectsDto): Promise<any> {
         return this.jscadWorkerManager.genericCallToWorkerPromise('booleans.subtract', inputs);
@@ -51,6 +57,9 @@ export class JSCADBooleans {
      * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_booleans.JSCADBooleans.html#union
      * @param inputs Contains multiple solids for union
      * @returns Solid mesh
+     * @group boolean
+     * @shortname union
+     * @drawable true
      */
     async union(inputs: Inputs.JSCAD.BooleanObjectsDto): Promise<any> {
         return this.jscadWorkerManager.genericCallToWorkerPromise('booleans.union', inputs);

@@ -22,6 +22,9 @@ export class JSCADShapes {
      * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_shapes.JSCADShapes.html#cube
      * @param inputs Cube parameters
      * @returns Cube solid
+     * @group primitives
+     * @shortname cube
+     * @drawable true
      */
     async cube(inputs: Inputs.JSCAD.CubeDto): Promise<any> {
         return this.jscadWorkerManager.genericCallToWorkerPromise('shapes.cube', inputs);
@@ -35,6 +38,9 @@ export class JSCADShapes {
      * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_shapes.JSCADShapes.html#cubesOnCenterPoints
      * @param inputs Cube with multiple center points parameters
      * @returns List of cube solids
+     * @group primitives on centers
+     * @shortname cubes
+     * @drawable true
      */
     async cubesOnCenterPoints(inputs: Inputs.JSCAD.CubeCentersDto): Promise<any[]> {
         return this.jscadWorkerManager.genericCallToWorkerPromise('shapes.cubesOnCenterPoints', inputs);
@@ -48,6 +54,9 @@ export class JSCADShapes {
      * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_shapes.JSCADShapes.html#cuboid
      * @param inputs Cuboid parameters
      * @returns Cuboid solid
+     * @group primitives
+     * @shortname cuboid
+     * @drawable true
      */
     async cuboid(inputs: Inputs.JSCAD.CuboidDto): Promise<any> {
         return this.jscadWorkerManager.genericCallToWorkerPromise('shapes.cuboid', inputs);
@@ -61,6 +70,9 @@ export class JSCADShapes {
      * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_shapes.JSCADShapes.html#cuboidsOnCenterPoints
      * @param inputs Cuboids with multiple center point parameters
      * @returns List of cuboid solids
+     * @group primitives on centers
+     * @shortname cuboids
+     * @drawable true
      */
     async cuboidsOnCenterPoints(inputs: Inputs.JSCAD.CuboidCentersDto): Promise<any[]> {
         return this.jscadWorkerManager.genericCallToWorkerPromise('shapes.cuboidsOnCenterPoints', inputs);
@@ -74,6 +86,9 @@ export class JSCADShapes {
      * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_shapes.JSCADShapes.html#cylinderElliptic
      * @param inputs Elliptic cylinder parameters
      * @returns Elliptic cylinder solid
+     * @group primitives
+     * @shortname cylinder elliptic
+     * @drawable true
      */
     async cylinderElliptic(inputs: Inputs.JSCAD.CylidnerEllipticDto): Promise<any> {
         return this.jscadWorkerManager.genericCallToWorkerPromise('shapes.cylinderElliptic', inputs);
@@ -87,6 +102,9 @@ export class JSCADShapes {
      * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_shapes.JSCADShapes.html#cylinderEllipticOnCenterPoints
      * @param inputs Elliptic cylinders with multiple center point parameters
      * @returns List of elliptic cylinders solids
+     * @group primitives on centers
+     * @shortname cylinder elliptic
+     * @drawable true
      */
     async cylinderEllipticOnCenterPoints(inputs: Inputs.JSCAD.CylidnerCentersEllipticDto): Promise<any[]> {
         return this.jscadWorkerManager.genericCallToWorkerPromise('shapes.cylinderEllipticOnCenterPoints', inputs);
@@ -100,6 +118,9 @@ export class JSCADShapes {
      * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_shapes.JSCADShapes.html#cylinder
      * @param inputs Cylinder parameters
      * @returns Cylinder solid
+     * @group primitives
+     * @shortname cylinder
+     * @drawable true
      */
      async cylinder(inputs: Inputs.JSCAD.CylidnerDto): Promise<any> {
         return this.jscadWorkerManager.genericCallToWorkerPromise('shapes.cylinder', inputs);
@@ -113,6 +134,9 @@ export class JSCADShapes {
      * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_shapes.JSCADShapes.html#cylindersOnCenterPoints
      * @param inputs Cylinders with multiple center point parameters
      * @returns List of cylinder solids
+     * @group primitives on centers
+     * @shortname cylinder
+     * @drawable true
      */
      async cylindersOnCenterPoints(inputs: Inputs.JSCAD.CylidnerCentersDto): Promise<any[]> {
         return this.jscadWorkerManager.genericCallToWorkerPromise('shapes.cylindersOnCenterPoints', inputs);
@@ -126,6 +150,9 @@ export class JSCADShapes {
      * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_shapes.JSCADShapes.html#ellipsoid
      * @param inputs Ellipsoid parameters
      * @returns Ellipsoid solid
+     * @group primitives
+     * @shortname ellipsoid
+     * @drawable true
      */
      async ellipsoid(inputs: Inputs.JSCAD.EllipsoidDto): Promise<any> {
         return this.jscadWorkerManager.genericCallToWorkerPromise('shapes.ellipsoid', inputs);
@@ -139,6 +166,9 @@ export class JSCADShapes {
      * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_shapes.JSCADShapes.html#ellipsoidsOnCenterPoints
      * @param inputs Ellipsoid parameters with multiple center points
      * @returns List of ellipsoid solids
+     * @group primitives on centers
+     * @shortname ellipsoid
+     * @drawable true
      */
      async ellipsoidsOnCenterPoints(inputs: Inputs.JSCAD.EllipsoidCentersDto): Promise<any[]> {
         return this.jscadWorkerManager.genericCallToWorkerPromise('shapes.ellipsoidsOnCenterPoints', inputs);
@@ -152,6 +182,9 @@ export class JSCADShapes {
      * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_shapes.JSCADShapes.html#geodesicSphere
      * @param inputs Geodesic sphere parameters
      * @returns Geodesic sphere solid
+     * @group primitives
+     * @shortname geodesic sphere
+     * @drawable true
      */
      async geodesicSphere(inputs: Inputs.JSCAD.GeodesicSphereDto): Promise<any> {
         return this.jscadWorkerManager.genericCallToWorkerPromise('shapes.geodesicSphere', inputs);
@@ -165,6 +198,9 @@ export class JSCADShapes {
      * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_shapes.JSCADShapes.html#geodesicSpheresOnCenterPoints
      * @param inputs Geodesic sphere parameters with multiple center points
      * @returns List of geodesic spheres
+     * @group primitives on centers
+     * @shortname geodesic sphere
+     * @drawable true
      */
      async geodesicSpheresOnCenterPoints(inputs: Inputs.JSCAD.GeodesicSphereCentersDto): Promise<any[]> {
         return this.jscadWorkerManager.genericCallToWorkerPromise('shapes.geodesicSpheresOnCenterPoints', inputs);
@@ -178,6 +214,9 @@ export class JSCADShapes {
      * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_shapes.JSCADShapes.html#roundedCuboid
      * @param inputs Rounded cuboid parameters
      * @returns Rounded cuboid solid
+     * @group primitives
+     * @shortname rounded cuboid
+     * @drawable true
      */
     async roundedCuboid(inputs: Inputs.JSCAD.RoundedCuboidDto): Promise<any> {
         return this.jscadWorkerManager.genericCallToWorkerPromise('shapes.roundedCuboid', inputs);
@@ -192,6 +231,9 @@ export class JSCADShapes {
      * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_shapes.JSCADShapes.html#roundedCuboidsOnCenterPoints
      * @param inputs Rounded cuboids parameters with multiple center points
      * @returns List of rounded cuboids
+     * @group primitives on centers
+     * @shortname rounded cuboid
+     * @drawable true
      */
     async roundedCuboidsOnCenterPoints(inputs: Inputs.JSCAD.RoundedCuboidCentersDto): Promise<any[]> {
         return this.jscadWorkerManager.genericCallToWorkerPromise('shapes.roundedCuboidsOnCenterPoints', inputs);
@@ -205,6 +247,9 @@ export class JSCADShapes {
      * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_shapes.JSCADShapes.html#roundedCylinder
      * @param inputs Rounded cylinder parameters
      * @returns Rounded cylinder solid
+     * @group primitives
+     * @shortname rounded cylinder
+     * @drawable true
      */
     async roundedCylinder(inputs: Inputs.JSCAD.RoundedCylidnerDto): Promise<any> {
         return this.jscadWorkerManager.genericCallToWorkerPromise('shapes.roundedCylinder', inputs);
@@ -218,6 +263,9 @@ export class JSCADShapes {
      * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_shapes.JSCADShapes.html#roundedCylindersOnCenterPoints
      * @param inputs Rounded cylinders parameters with multiple center points
      * @returns List of rounded cylinders
+     * @group primitives on centers
+     * @shortname rounded cylinder
+     * @drawable true
      */
     async roundedCylindersOnCenterPoints(inputs: Inputs.JSCAD.RoundedCylidnerCentersDto): Promise<any[]> {
         return this.jscadWorkerManager.genericCallToWorkerPromise('shapes.roundedCylindersOnCenterPoints', inputs);
@@ -231,6 +279,9 @@ export class JSCADShapes {
      * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_shapes.JSCADShapes.html#sphere
      * @param inputs Sphere parameters
      * @returns Sphere solid
+     * @group primitives
+     * @shortname sphere
+     * @drawable true
      */
     async sphere(inputs: Inputs.JSCAD.SphereDto): Promise<any>{
         return this.jscadWorkerManager.genericCallToWorkerPromise('shapes.sphere', inputs);
@@ -244,6 +295,9 @@ export class JSCADShapes {
      * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_shapes.JSCADShapes.html#spheresOnCenterPoints
      * @param inputs Sphere parameters with multiple center points
      * @returns List of spheres
+     * @group primitives on centers
+     * @shortname sphere
+     * @drawable true
      */
     async spheresOnCenterPoints(inputs: Inputs.JSCAD.SphereCentersDto): Promise<any[]> {
         return this.jscadWorkerManager.genericCallToWorkerPromise('shapes.spheresOnCenterPoints', inputs);
@@ -257,6 +311,9 @@ export class JSCADShapes {
      * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_shapes.JSCADShapes.html#torus
      * @param inputs Torus parameters
      * @returns Torus solid
+     * @group primitives
+     * @shortname torus
+     * @drawable true
      */
     async torus(inputs: Inputs.JSCAD.TorusDto): Promise<any> {
         return this.jscadWorkerManager.genericCallToWorkerPromise('shapes.torus', inputs);

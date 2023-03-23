@@ -21,11 +21,13 @@ export class JSCADText {
      * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_text.JSCADText.html#cylindricalText
      * @param inputs Cylindrical text parameters
      * @returns List of solids for text
+     * @group text
+     * @shortname cylindrical
+     * @drawable true
      */
     async cylindricalText(inputs: Inputs.JSCAD.CylinderTextDto): Promise<any[]> {
         return this.jscadWorkerManager.genericCallToWorkerPromise('text.cylindricalText', inputs);
     }
-
 
     /**
      * Creates a text that is based on chain hulling spheres
@@ -35,6 +37,9 @@ export class JSCADText {
      * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_text.JSCADText.html#sphericalText
      * @param inputs Spherical text parameters
      * @returns List of solids for text
+     * @group text
+     * @shortname spherical
+     * @drawable true
      */
     async sphericalText(inputs: Inputs.JSCAD.SphereTextDto): Promise<any[]> {
         return this.jscadWorkerManager.genericCallToWorkerPromise('text.sphericalText', inputs);

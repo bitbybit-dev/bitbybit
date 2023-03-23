@@ -508,6 +508,7 @@ export const inputDeclarations = `declare namespace Asset {
         start: Base.Point3;
         end: Base.Point3;
     };
+    type JSCADEntity = any;
     enum skyboxEnum {
         default = "default",
         clearSky = "clearSky",
@@ -791,29 +792,39 @@ export const inputDeclarations = `declare namespace Asset {
         /**
          * Provide options without default values
          */
-        constructor(mesh?: any[]);
+        constructor(mesh?: Base.JSCADEntity[]);
         /**
          * Solid Jscad mesh
          */
-        mesh: any;
+        mesh: Base.JSCADEntity;
         /**
          * Value between 0 and 1
+         * @default 1
+         * @minimum 0
+         * @maximum 1
+         * @step 0.1
          */
         opacity: number;
         /**
          * Hex colour string
+         * @default #444444
          */
         colours: string | string[];
         /**
          * Indicates wether this solid will be transformed in time
+         * @default false
          */
         updatable: boolean;
         /**
          * Hidden
+         * @default false
          */
         hidden: boolean;
         /**
          * Solid mesh variable in case it already exists and needs updating
+         * @default undefined
+         * @optional true
+         * @ignore true
          */
         jscadMesh?: Mesh;
     }
@@ -821,29 +832,41 @@ export const inputDeclarations = `declare namespace Asset {
         /**
          * Provide options without default values
          */
-        constructor(meshes?: any[]);
+        constructor(meshes?: Base.JSCADEntity[]);
         /**
          * Solid Jscad meshes
+         * @default undefined
+         * @optional true
          */
-        meshes: any[];
+        meshes: Base.JSCADEntity[];
         /**
          * Value between 0 and 1
+         * @default 1
+         * @minimum 0
+         * @maximum 1
+         * @step 0.1
          */
         opacity: number;
         /**
          * Hex colour string
+         * @default #444444
          */
         colours: string | string[];
         /**
          * Indicates wether this solid will be transformed in time
+         * @default false
          */
         updatable: boolean;
         /**
          * Should be hidden
+         * @default false
          */
         hidden: boolean;
         /**
          * Solid mesh variable in case it already exists and needs updating
+         * @default undefined
+         * @optional true
+         * @ignore true
          */
         jscadMesh?: Mesh;
     }
@@ -851,727 +874,1389 @@ export const inputDeclarations = `declare namespace Asset {
         /**
          * Provide options without default values
          */
-        constructor(path?: any[]);
+        constructor(path?: Base.JSCADEntity[]);
         /**
          * 2D Path to draw
+         * @default undefined
          */
-        path: any;
+        path: Base.JSCADEntity;
         /**
          * Colour of the path
+         * @default #444444
          */
         colour: string;
         /**
          * Opacity of the path
+         * @default 1
+         * @minimum 0
+         * @maximum 1
+         * @step 0.1
          */
         opacity: number;
         /**
          * Width of the path
+         * @default 3
+         * @minimum 0
+         * @maximum Infinity
+         * @step 1
          */
         width: number;
         /**
          * Indicates wether the path will change in time
+         * @default false
          */
         updatable: boolean;
         /**
          * Path mesh variable that will be updated if updatable property is set to true
+         * @default undefined
+         * @optional true
+         * @ignore true
          */
         pathMesh?: LinesMesh;
     }
     class TransformSolidsDto {
         /**
          * Solids to be transformed
+         * @default undefined
          */
-        meshes: any[];
+        meshes: Base.JSCADEntity[];
         /**
          * Transformation matrix or a list of transformation matrixes
+         * @default undefined
          */
         matrix: number[][] | number[][][];
     }
     class TransformSolidDto {
         /**
          * Solid to be transformed
+         * @default undefined
          */
-        mesh: any;
+        mesh: Base.JSCADEntity;
         /**
          * Transformation matrix or a list of transformation matrixes
+         * @default undefined
          */
         matrix: number[][] | number[][][];
     }
     class DownloadSolidDto {
         /**
          * Solid to be downloaded
+         * @default undefined
          */
-        mesh: any;
+        mesh: Base.JSCADEntity;
         /**
          * File name
+         * @default undefined
          */
         fileName: string;
     }
     class DownloadSolidsDto {
         /**
          * Solids to be downloaded
+         * @default undefined
          */
-        meshes: any[];
+        meshes: Base.JSCADEntity[];
         /**
          * File name
+         * @default undefined
          */
         fileName: string;
     }
     class BooleanObjectsDto {
         /**
          * Contains solid Jscad mesh objects that will be used to perform boolean operation
+         * @default undefined
          */
-        meshes: any[];
+        meshes: Base.JSCADEntity[];
     }
     class ExpansionDto {
         /**
+         * Can contain various Jscad entities from Solid category
+         * @default undefined
+         */
+        geometry: Base.JSCADEntity[];
+        /**
          * Delta (+/-) of expansion
+         * @default 0.1
+         * @minimum -Infinity
+         * @maximum Infinity
+         * @step 0.1
          */
         delta: number;
         /**
          * Type of corner to create during of expansion; edge, chamfer, round
+         * @default edge
          */
         corners: SolidCornerTypeEnum;
         /**
          * Integer number of segments when creating round corners
+         * @default 24
+         * @minimum 0
+         * @maximum Infinity
+         * @step 1
          */
         segments: number;
-        /**
-         * Can contain various Jscad entities from Solid category
-         */
-        geometry: any[];
     }
     class OffsetDto {
         /**
+         * Can contain various Jscad entities from Solid category
+         * @default undefined
+         */
+        geometry: Base.JSCADEntity[];
+        /**
          * Delta (+/-) of offset
+         * @default 0.1
+         * @minimum -Infinity
+         * @maximum Infinity
+         * @step 0.1
          */
         delta: number;
         /**
          * Type of corner to create during the offset; edge, chamfer, round.
+         * @default edge
          */
         corners: SolidCornerTypeEnum;
         /**
          * Integer number of segments when creating round corners
+         * @default 24
+         * @minimum 0
+         * @maximum Infinity
+         * @step 1
          */
         segments: number;
-        /**
-         * Can contain various Jscad entities from Solid category
-         */
-        geometry: any[];
     }
     class ExtrudeLinearDto {
         /**
+         * Geometry to extrude
+         * @default undefined
+         */
+        geometry: Base.JSCADEntity | Base.JSCADEntity[];
+        /**
          * Height of linear extrude
+         * @default 1
+         * @minimum -Infinity
+         * @maximum Infinity
+         * @step 0.1
          */
         height: number;
         /**
          * Twist angle in degrees
+         * @default 90
+         * @minimum -Infinity
+         * @maximum Infinity
+         * @step 1
          */
         twistAngle: number;
         /**
          * Number of twist steps
+         * @default 15
+         * @minimum 0
+         * @maximum Infinity
+         * @step 1
          */
         twistSteps: number;
-        /**
-         * Geometry to extrude
-         */
-        geometry: any | any[];
     }
     class HullDto {
         /**
          * Geometries to use in hull
+         * @default undefined
          */
-        meshes: any[];
+        meshes: Base.JSCADEntity[];
     }
     class ExtrudeRectangularDto {
         /**
+         * Geometry to extrude
+         * @default undefined
+         */
+        geometry: Base.JSCADEntity | Base.JSCADEntity[];
+        /**
          * Height of linear extrude
+         * @default 1
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.1
          */
         height: number;
         /**
          * Size of the rectangle
+         * @default 1
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.1
          */
         size: number;
-        /**
-         * Geometry to extrude
-         */
-        geometry: any | any[];
     }
     class ExtrudeRectangularPointsDto {
         /**
+         * Points for a path
+         * @default undefined
+         */
+        points: Base.Point3[];
+        /**
          * Height of linear extrude
+         * @default 1
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.1
          */
         height: number;
         /**
          * Size of the rectangle
+         * @default 1
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.1
          */
         size: number;
-        /**
-         * Points for a path
-         */
-        points: Base.Point3[];
     }
     class ExtrudeRotateDto {
         /**
+         * Polygon to extrude
+         * @default undefined
+         */
+        polygon: Base.JSCADEntity;
+        /**
          * Angle in degrees
+         * @default 90
+         * @minimum -Infinity
+         * @maximum Infinity
+         * @step 1
          */
         angle: number;
         /**
          * Start angle in degrees
+         * @default 0
+         * @minimum -Infinity
+         * @maximum Infinity
+         * @step 1
          */
         startAngle: number;
         /**
          * Number of segments
+         * @default 24
+         * @minimum 0
+         * @maximum Infinity
+         * @step 1
          */
         segments: number;
-        /**
-         * Polygon to extrude
-         */
-        polygon: any;
     }
     class PathDto {
         /**
          * 2D path
+         * @default undefined
          */
-        path: any;
+        path: Base.JSCADEntity;
     }
     class PathFromPointsDto {
         /**
          * Points through which to create a path
+         * @default undefined
          */
         points: Base.Point3[];
         /**
          * Indicates wether we want to create a closed path
+         * @default false
          */
         closed: boolean;
     }
     class PathFromPolylineDto {
         /**
          * Polyline
+         * @default undefined
          */
         polyline: Polyline.PolylinePropertiesDto;
         /**
          * Indicates wether we want to create a closed path
+         * @default false
          */
         closed: boolean;
     }
     class PathFromCurveDto {
         /**
          * Verb Nurbs curve
+         * @default undefined
          */
-        curve: any;
+        curve: Base.JSCADEntity;
         /**
          * Indicates wether we want to create a closed path
+         * @default false
          */
         closed: boolean;
     }
     class PathAppendCurveDto {
         /**
          * Verb Nurbs curve
+         * @default undefined
          */
-        curve: any;
+        curve: Base.JSCADEntity;
         /**
          * Path to append the curve to
+         * @default undefined
          */
-        path: any;
+        path: Base.JSCADEntity;
     }
     class PathAppendPointsDto {
         /**
          * Points to append
+         * @default undefined
          */
         points: number[][];
         /**
          * Path to append the points to
+         * @default undefined
          */
-        path: any;
+        path: Base.JSCADEntity;
     }
     class PathAppendPolylineDto {
         /**
          * Polyline to append
+         * @default undefined
          */
         polyline: Polyline.PolylinePropertiesDto;
         /**
          * Path to append the polyline to
+         * @default undefined
          */
-        path: any;
+        path: Base.JSCADEntity;
     }
     class PathAppendArcDto {
         /**
          * Path to append the arc to
+         * @default undefined
          */
-        path: any;
+        path: Base.JSCADEntity;
         /**
          * End point of an arc
+         * @default [0, 1, 0]
          */
-        endPoint: number[];
+        endPoint: Base.Point3;
         /**
          * Rotation (degrees) of the X axis of the arc with respect to the X axis of the coordinate system
+         * @default 90
+         * @minimum -Infinity
+         * @maximum Infinity
+         * @step 1
          */
         xAxisRotation: number;
         /**
          * Draw an arc clockwise with respect to the center point
+         * @default true
          */
         clockwise: boolean;
         /**
          * Draw an arc longer than PI radians
+         * @default false
          */
         large: boolean;
         /**
          * Number of segments for the arc
+         * @default 24
+         * @minimum 0
+         * @maximum Infinity
+         * @step 1
          */
         segments: number;
         /**
          * X radius of an arc
+         * @default 1
+         * @minimum -Infinity
+         * @maximum Infinity
+         * @step 0.1
          */
         radiusX: number;
         /**
          * Y radius of an arc
+         * @default 1
+         * @minimum -Infinity
+         * @maximum Infinity
+         * @step 0.1
          */
         radiusY: number;
     }
     class CircleDto {
         /**
          * Center of the circle
+         * @default [0, 0, 0]
          */
         center: Base.Point3;
         /**
          * Radius of the circle
+         * @default 1
+         * @minimum -Infinity
+         * @maximum Infinity
+         * @step 0.1
          */
         radius: number;
         /**
          * Segment number
+         * @default 24
+         * @minimum 0
+         * @maximum Infinity
+         * @step 1
          */
         segments: number;
     }
     class EllipseDto {
         /**
          * Center of the circle
+         * @default [0, 0, 0]
          */
         center: Base.Point3;
         /**
          * Radius of the circle in [x, y] form
+         * @default [1, 2]
          */
         radius: Base.Point2;
         /**
          * Segment number
+         * @default 24
+         * @minimum 0
+         * @maximum Infinity
+         * @step 1
          */
         segments: number;
     }
     class SquareDto {
         /**
          * Center of the 2D square
+         * @default [0, 0, 0]
          */
         center: Base.Point3;
         /**
          * Size of the square
+         * @default 1
+         * @minimum -Infinity
+         * @maximum Infinity
+         * @step 0.1
          */
         size: number;
     }
     class RectangleDto {
         /**
          * Center of the 2D rectangle
+         * @default [0, 0, 0]
          */
         center: Base.Point3;
         /**
          * Width of the rectangle
+         * @default 1
+         * @minimum -Infinity
+         * @maximum Infinity
+         * @step 0.1
          */
         width: number;
         /**
          * Length of the rectangle
+         * @default 1
+         * @minimum -Infinity
+         * @maximum Infinity
+         * @step 0.1
          */
         length: number;
     }
-    class RoundedRectangleDto extends RectangleDto {
+    class RoundedRectangleDto {
+        /**
+         * Center of the 2D rectangle
+         * @default [0, 0, 0]
+         */
+        center: Base.Point3;
         /**
          * The radius to round the rectangle edge
+         * @default 0.2
+         * @minimum -Infinity
+         * @maximum Infinity
+         * @step 0.1
          */
         roundRadius: number;
         /**
          * Number of segments for corners
+         * @default 24
+         * @minimum 0
+         * @maximum Infinity
+         * @step 1
          */
         segments: number;
+        /**
+         * Width of the rectangle
+         * @default 1
+         * @minimum -Infinity
+         * @maximum Infinity
+         * @step 0.1
+         */
+        width: number;
+        /**
+         * Length of the rectangle
+         * @default 1
+         * @minimum -Infinity
+         * @maximum Infinity
+         * @step 0.1
+         */
+        length: number;
     }
     class StarDto {
         /**
          * Center of the 2D star
+         * @default [0, 0, 0]
          */
         center: Base.Point3;
         /**
          * Number of vertices on the star
+         * @default 10
+         * @minimum 0
+         * @maximum Infinity
+         * @step 1
          */
         vertices: number;
         /**
          * Density of the star
+         * @default 1
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.1
          */
         density: number;
         /**
          * Outer radius of the star
+         * @default 2
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.1
          */
         outerRadius: number;
         /**
          * Inner radius of the star
+         * @default 1
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.1
          */
         innerRadius: number;
         /**
          * Starting angle for first vertice, in degrees
+         * @default 0
+         * @minimum -Infinity
+         * @maximum Infinity
+         * @step 1
          */
         startAngle: number;
     }
     class CubeDto {
         /**
          * Center coordinates of the cube
+         * @default [0, 0, 0]
          */
         center: Base.Point3;
         /**
          * Size of the cube
+         * @default 1
+         * @minimum -Infinity
+         * @maximum Infinity
+         * @step 0.1
          */
         size: number;
     }
     class CubeCentersDto {
         /**
          * Center coordinates of the cubes
+         * @default undefined
          */
         centers: Base.Point3[];
         /**
          * Size of the cube
+         * @default 1
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.1
          */
         size: number;
     }
     class CuboidDto {
         /**
          * Center coordinates of the cubod
+         * @default [0, 0, 0]
          */
         center: Base.Point3;
         /**
          * Width of the cuboid
+         * @default 1
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.1
          */
         width: number;
         /**
          * Length of the cuboid
+         * @default 1
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.1
          */
         length: number;
         /**
          * Height of the cuboid
+         * @default 1
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.1
          */
         height: number;
     }
     class CuboidCentersDto {
         /**
          * Center coordinates of the cuboids
+         * @default undefined
          */
         centers: Base.Point3[];
         /**
          * Width of the cuboids
+         * @default 1
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.1
          */
         width: number;
         /**
          * Length of the cuboids
+         * @default 1
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.1
          */
         length: number;
         /**
          * Height of the cuboids
+         * @default 1
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.1
          */
         height: number;
     }
-    class RoundedCuboidDto extends CuboidDto {
+    class RoundedCuboidDto {
+        /**
+         * Center coordinates of the cubod
+         * @default [0, 0, 0]
+         */
+        center: Base.Point3;
         /**
          * Radius for rounding edges
+         * @default 0.1
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.1
          */
         roundRadius: number;
         /**
+         * Width of the cuboid
+         * @default 1
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.1
+         */
+        width: number;
+        /**
+         * Length of the cuboid
+         * @default 1
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.1
+         */
+        length: number;
+        /**
+         * Height of the cuboid
+         * @default 1
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.1
+         */
+        height: number;
+        /**
          * Segments of rounded edges
+         * @default 24
+         * @minimum 0
+         * @maximum Infinity
+         * @step 1
          */
         segments: number;
     }
-    class RoundedCuboidCentersDto extends CuboidCentersDto {
+    class RoundedCuboidCentersDto {
+        /**
+         * Center coordinates of the cuboids
+         * @default undefined
+         */
+        centers: Base.Point3[];
         /**
          * Radius for rounding edges
+         * @default 0.1
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.1
          */
         roundRadius: number;
         /**
+         * Width of the cuboids
+         * @default 1
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.1
+         */
+        width: number;
+        /**
+         * Length of the cuboids
+         * @default 1
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.1
+         */
+        length: number;
+        /**
+         * Height of the cuboids
+         * @default 1
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.1
+         */
+        height: number;
+        /**
          * Segments of rounded edges
+         * @default 24
+         * @minimum 0
+         * @maximum Infinity
+         * @step 1
          */
         segments: number;
     }
     class CylidnerEllipticDto {
         /**
          * Center of the cylinder
+         * @default [0, 0, 0]
          */
         center: Base.Point3;
         /**
          * Height of the cylinder
+         * @default 1
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.1
          */
         height: number;
         /**
          * Start radius on X and Y directions
+         * @default [1, 2]
          */
         startRadius: number[];
         /**
          * End radius on X and Y directions
+         * @default [2, 3]
          */
         endRadius: number[];
         /**
          * Subdivision segments
+         * @default 24
+         * @minimum 0
+         * @maximum Infinity
+         * @step 1
          */
         segments: number;
     }
     class CylidnerCentersEllipticDto {
         /**
          * Centers of the cylinders
+         * @default undefined
          */
         centers: Base.Point3[];
         /**
          * Height of the cylinders
+         * @default 1
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.1
          */
         height: number;
         /**
          * Start radius on X and Y directions
+         * @default [1, 2]
          */
         startRadius: Base.Point2;
         /**
          * End radius on X and Y directions
+         * @default [2, 3]
          */
         endRadius: Base.Point2;
         /**
          * Subdivision segments
+         * @default 24
+         * @minimum 0
+         * @maximum Infinity
+         * @step 1
          */
         segments: number;
     }
     class CylidnerDto {
         /**
          * Center of the cylinder
+         * @default [0, 0, 0]
          */
         center: Base.Point3;
         /**
          * Height of the cylinder
+         * @default 1
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.1
          */
         height: number;
         /**
          * Radius of the cylinder
+         * @default 1
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.1
          */
         radius: number;
         /**
          * Subdivision segments
+         * @default 24
+         * @minimum 0
+         * @maximum Infinity
+         * @step 1
          */
         segments: number;
     }
-    class RoundedCylidnerDto extends CylidnerDto {
+    class RoundedCylidnerDto {
+        /**
+         * Center of the cylinder
+         * @default [0, 0, 0]
+         */
+        center: Base.Point3;
         /**
          * Rounding radius
+         * @default 0.1
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.1
          */
         roundRadius: number;
         /**
+         * Height of the cylinder
+         * @default 1
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.1
+         */
+        height: number;
+        /**
+         * Radius of the cylinder
+         * @default 1
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.1
+         */
+        radius: number;
+        /**
          * Segment number
+         * @default 24
+         * @minimum 0
+         * @maximum Infinity
+         * @step 1
          */
         segments: number;
     }
     class EllipsoidDto {
         /**
          * Center coordinates
+         * @default [0, 0, 0]
          */
         center: Base.Point3;
         /**
          * Radius of the ellipsoid in [x, y, z] form
+         * @default [1, 2, 3]
          */
         radius: Base.Point3;
         /**
          * Segment count for ellipsoid
+         * @default 24
+         * @minimum 0
+         * @maximum Infinity
+         * @step 1
          */
         segments: number;
     }
     class EllipsoidCentersDto {
         /**
          * Center coordinates
+         * @default undefined
          */
         centers: Base.Point3[];
         /**
          * Radius of the ellipsoid in [x, y, z] form
+         * @default [1, 2, 3]
          */
         radius: Base.Point3;
         /**
          * Segment count for ellipsoid
+         * @default 24
+         * @minimum 0
+         * @maximum Infinity
+         * @step 1
          */
         segments: number;
     }
     class GeodesicSphereDto {
         /**
+         * Center coordinate of the geodesic sphere
+         * @default [0, 0, 0]
+         */
+        center: Base.Point3;
+        /**
          * Radius of the sphere
+         * @default 1
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.1
          */
         radius: number;
         /**
          * Subdivision count
+         * @default 12
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.1
          */
         frequency: number;
-        /**
-         * Center coordinate of the geodesic sphere
-         */
-        center: Base.Point3;
     }
     class GeodesicSphereCentersDto {
         /**
+         * Center coordinates of the geodesic spheres
+         * @default undefined
+         */
+        centers: Base.Point3[];
+        /**
          * Radius of the sphere
+         * @default 1
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.1
          */
         radius: number;
         /**
          * Subdivision count
+         * @default 12
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.1
          */
         frequency: number;
-        /**
-         * Center coordinates of the geodesic spheres
-         */
-        centers: Base.Point3[];
     }
     class CylidnerCentersDto {
         /**
          * Centers of the cylinders
+         * @default undefined
          */
         centers: Base.Point3[];
         /**
          * Height of the cylinders
+         * @default 1
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.1
          */
         height: number;
         /**
          * Radius of the cylinders
+         * @default 1
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.1
          */
         radius: number;
         /**
-         * Subdivision segmentss
+         * Subdivision segments
+         * @default 24
+         * @minimum 0
+         * @maximum Infinity
+         * @step 1
          */
         segments: number;
     }
-    class RoundedCylidnerCentersDto extends CylidnerCentersDto {
+    class RoundedCylidnerCentersDto {
+        /**
+         * Centers of the cylinders
+         * @default undefined
+         */
+        centers: Base.Point3[];
         /**
          * Rounding radius
+         * @default 0.1
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.1
          */
         roundRadius: number;
         /**
+         * Height of the cylinders
+         * @default 1
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.1
+         */
+        height: number;
+        /**
+         * Radius of the cylinders
+         * @default 1
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.1
+         */
+        radius: number;
+        /**
          * Segment number
+         * @default 24
+         * @minimum 0
+         * @maximum Infinity
+         * @step 1
          */
         segments: number;
     }
     class SphereDto {
         /**
          * Center point of the sphere
+         * @default [0, 0, 0]
          */
         center: Base.Point3;
         /**
          * Radius of the sphere
+         * @default 1
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.1
          */
         radius: number;
         /**
          * Segment count
+         * @default 24
+         * @minimum 0
+         * @maximum Infinity
+         * @step 1
          */
         segments: number;
     }
     class SphereCentersDto {
         /**
          * Center points of the spheres
+         * @default undefined
          */
         centers: Base.Point3[];
         /**
          * Radius of the spheres
+         * @default 1
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.1
          */
         radius: number;
         /**
          * Segment count
+         * @default 24
+         * @minimum 0
+         * @maximum Infinity
+         * @step 1
          */
         segments: number;
     }
     class TorusDto {
         /**
          * Center coordinate
+         * @default [0, 0, 0]
          */
         center: Base.Point3;
         /**
          * Inner radius
+         * @default 1
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.1
          */
         innerRadius: number;
         /**
          * Outer radius
+         * @default 2
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.1
          */
         outerRadius: number;
         /**
          * Number of inner segments
+         * @default 24
+         * @minimum 0
+         * @maximum Infinity
+         * @step 1
          */
         innerSegments: number;
         /**
          * Number of outer segments
+         * @default 24
+         * @minimum 0
+         * @maximum Infinity
+         * @step 1
          */
         outerSegments: number;
         /**
          * Inner rotation in degrees
+         * @default 0
+         * @minimum -Infinity
+         * @maximum Infinity
+         * @step 1
          */
         innerRotation: number;
         /**
          * Outer rotation in degrees
+         * @default 0
+         * @minimum -Infinity
+         * @maximum Infinity
+         * @step 1
          */
         outerRotation: number;
         /**
          * Start angle in degrees
+         * @default 0
+         * @minimum -Infinity
+         * @maximum Infinity
+         * @step 1
          */
         startAngle: number;
     }
     class TextDto {
-        constructor(text?: string);
         /**
          * Text to write
+         * @default Hello World
          */
         text: string;
         /**
          * Number of segments
+         * @default 24
+         * @minimum 0
+         * @maximum Infinity
+         * @step 1
          */
+        segments: number;
         /**
          * X offset of the text
+         * @default 0
+         * @minimum -Infinity
+         * @maximum Infinity
+         * @step 0.1
          */
         xOffset: number;
         /**
          * Y offset of the text
+         * @default 0
+         * @minimum -Infinity
+         * @maximum Infinity
+         * @step 0.1
          */
         yOffset: number;
         /**
          * Height of the text
+         * @default 1
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.1
          */
         height: number;
         /**
          * Space between lines
+         * @default 1.4
+         * @minimum -Infinity
+         * @maximum Infinity
+         * @step 0.1
          */
         lineSpacing: number;
         /**
          * Space between letters
+         * @default 1
+         * @minimum -Infinity
+         * @maximum Infinity
+         * @step 0.1
          */
         letterSpacing: number;
         /**
          * Align between left, center, right
+         * @default center
          */
         align: JSCADTextAlignEnum;
         /**
          * Offset the extrusion
+         * @default 0
+         * @minimum -Infinity
+         * @maximum Infinity
+         * @step 0.1
          */
         extrudeOffset: number;
     }
-    class CylinderTextDto extends TextDto {
+    class CylinderTextDto {
         /**
          * Height of the cylinder
+         * @default 1
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.1
          */
         extrusionHeight: number;
         /**
          * Radius of the cylinder
+         * @default 1
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.1
          */
         extrusionSize: number;
         /**
          * Segment subdivision for cylinder
+         * @default 24
+         * @minimum 0
+         * @maximum Infinity
+         * @step 1
          */
         segments: number;
+        /**
+         * Text to write
+         * @default Hello World
+         */
+        text: string;
+        /**
+         * X offset of the text
+         * @default 0
+         * @minimum -Infinity
+         * @maximum Infinity
+         * @step 0.1
+         */
+        xOffset: number;
+        /**
+         * Y offset of the text
+         * @default 0
+         * @minimum -Infinity
+         * @maximum Infinity
+         * @step 0.1
+         */
+        yOffset: number;
+        /**
+         * Height of the text
+         * @default 1
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.1
+         */
+        height: number;
+        /**
+         * Space between lines
+         * @default 1.4
+         * @minimum -Infinity
+         * @maximum Infinity
+         * @step 0.1
+         */
+        lineSpacing: number;
+        /**
+         * Space between letters
+         * @default 1
+         * @minimum -Infinity
+         * @maximum Infinity
+         * @step 0.1
+         */
+        letterSpacing: number;
+        /**
+         * Align between left, center, right
+         * @default center
+         */
+        align: JSCADTextAlignEnum;
+        /**
+         * Offset the extrusion
+         * @default 0
+         * @minimum -Infinity
+         * @maximum Infinity
+         * @step 0.1
+         */
+        extrudeOffset: number;
     }
-    class SphereTextDto extends TextDto {
+    class SphereTextDto {
+        /**
+         * Text to write
+         * @default Hello World
+         * @minimum 0
+         * @maximum Infinity
+         * @step 1
+         */
+        text: string;
         /**
          * Radius of the spheres
+         * @default 1
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.1
          */
         radius: number;
         /**
          * Segment subdivision for sphere
+         * @default 24
+         * @minimum 0
+         * @maximum Infinity
+         * @step 1
          */
         segments: number;
+        /**
+         * X offset of the text
+         * @default 0
+         * @minimum -Infinity
+         * @maximum Infinity
+         * @step 0.1
+         */
+        xOffset: number;
+        /**
+         * Y offset of the text
+         * @default 0
+         * @minimum -Infinity
+         * @maximum Infinity
+         * @step 0.1
+         */
+        yOffset: number;
+        /**
+         * Height of the text
+         * @default 1
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.1
+         */
+        height: number;
+        /**
+         * Space between lines
+         * @default 1.4
+         * @minimum -Infinity
+         * @maximum Infinity
+         * @step 0.1
+         */
+        lineSpacing: number;
+        /**
+         * Space between letters
+         * @default 1
+         * @minimum -Infinity
+         * @maximum Infinity
+         * @step 0.1
+         */
+        letterSpacing: number;
+        /**
+         * Align between left, center, right
+         * @default center
+         */
+        align: JSCADTextAlignEnum;
+        /**
+         * Offset the extrusion
+         * @default 0
+         * @minimum -Infinity
+         * @maximum Infinity
+         * @step 0.1
+         */
+        extrudeOffset: number;
     }
     enum SolidCornerTypeEnum {
         /**

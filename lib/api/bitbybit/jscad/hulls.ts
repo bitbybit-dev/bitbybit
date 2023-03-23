@@ -24,6 +24,9 @@ export class JSCADHulls {
      * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_hulls.JSCADHulls.html#hullChain
      * @param inputs Geometries
      * @returns Chain hulled geometry
+     * @group hulls
+     * @shortname hullChain
+     * @drawable true
      */
     async hullChain(inputs: Inputs.JSCAD.HullDto): Promise<any | any[]> {
         return this.jscadWorkerManager.genericCallToWorkerPromise('hulls.hullChain', inputs);
@@ -39,6 +42,9 @@ export class JSCADHulls {
      * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_hulls.JSCADHulls.html#hull
      * @param inputs Geometries
      * @returns Hulled geometry
+     * @group hulls
+     * @shortname hull
+     * @drawable true
      */
     async hull(inputs: Inputs.JSCAD.HullDto): Promise<any | any[]>{
         return this.jscadWorkerManager.genericCallToWorkerPromise('hulls.hullChain', inputs);
