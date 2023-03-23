@@ -8,6 +8,7 @@ export * from './line-inputs';
 export * from './polyline-inputs';
 export * from './verb-inputs';
 export * from './jscad-inputs';
+export * from './math-inputs';
 export * from './tag-inputs';
 export * from './asset-inputs';
 export * from  './draw-inputs';

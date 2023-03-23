@@ -2001,6 +2001,21 @@ declare class Line {
      */
     linesBetweenStartAndEndPointsAsync(inputs: Inputs.Line.LineStartEndPointsDto): Promise<Inputs.Line.LinePointsDto[]>;
     private createLineSystemMesh;
+}/**
+ * Contains various math methods.
+ */
+declare class MathBitByBit {
+    constructor();
+    /**
+     * Does basic math operations
+     * @link https://docs.bitbybit.dev/classes/bitbybit_math.Math.html#twoNrOperation
+     * @param inputs two numbers and operator
+     * @returns Result of math operation
+     * @group operations
+     * @shortname two number
+     * @drawable false
+     */
+    twoNrOperation(inputs: Inputs.Math.ActionOnTwoNumbersDto): number;
 }declare class OCCTWIO extends OCCTIO {
     readonly occWorkerManager: OCCTWorkerManager;
     private readonly geometryHelper;

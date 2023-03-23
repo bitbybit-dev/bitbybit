@@ -2495,6 +2495,37 @@ export const inputDeclarations = `declare namespace Asset {
          */
         matrix: number[][] | number[][][];
     }
+}declare namespace Math {
+    enum MathActionEnum {
+        add = "add",
+        subtract = "subtract",
+        multiply = "multiply",
+        divide = "divide",
+        power = "power"
+    }
+    class ActionOnTwoNumbersDto {
+        /**
+         * First number
+         * @default 1
+         * @minimum -Infinity
+         * @maximum Infinity
+         * @step 0.1
+         */
+        first: number;
+        /**
+         * Second number
+         * @default 1
+         * @minimum -Infinity
+         * @maximum Infinity
+         * @step 0.1
+         */
+        second: number;
+        /**
+         * Point
+         * @default add
+         */
+        action: MathActionEnum;
+    }
 }declare namespace BabylonNode {
     class NodeDto {
         /**
