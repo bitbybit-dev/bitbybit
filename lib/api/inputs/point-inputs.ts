@@ -16,25 +16,43 @@ export namespace Point {
          * @default 0
          * @minimum -Infinity
          * @maximum Infinity
-         * @step 0.5
+         * @step 0.1
          */
-        x: number
+        x: number = 0;
         /**
          * Point
          * @default 0
          * @minimum -Infinity
          * @maximum Infinity
-         * @step 0.5
+         * @step 0.1
          */
-        y: number
+        y: number = 0;
         /**
         * Point
         * @default 0
         * @minimum -Infinity
         * @maximum Infinity
-        * @step 0.5
+        * @step 0.1
         */
-        z: number
+        z: number = 0;
+    }
+    export class PointXYDto {
+        /**
+         * Point
+         * @default 0
+         * @minimum -Infinity
+         * @maximum Infinity
+         * @step 0.1
+         */
+        x: number = 0;
+        /**
+         * Point
+         * @default 0
+         * @minimum -Infinity
+         * @maximum Infinity
+         * @step 0.1
+         */
+        y: number = 0;
     }
     export class PointsDto {
         /**

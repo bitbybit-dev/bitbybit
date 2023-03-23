@@ -1,6 +1,22 @@
 import { BitByBitBlocklyHelperService } from "../../bit-by-bit-blockly-helper.service";
+import * as Inputs from '../inputs/inputs';
 
 export class Color {
+    /**
+     * Creates a hex color
+     * <div>
+     *  <img src="../assets/images/blockly-images/color/hexColor.svg" alt="Blockly Image"/>
+     * </div>
+     * @link https://docs.bitbybit.dev/classes/bitbybit_color.Color.html#hexColor
+     * @param inputs Color hex
+     * @returns color string
+     * @group create
+     * @shortname color
+     * @drawable false
+     */
+    hexColor(inputs: Inputs.Color.HexDto): Inputs.Base.Color {
+        return inputs.color;
+    }
 
     /**
      * Creates rgb color from hex
@@ -8,11 +24,14 @@ export class Color {
      *  <img src="../assets/images/blockly-images/color/hexToRgb.svg" alt="Blockly Image"/>
      * </div>
      * @link https://docs.bitbybit.dev/classes/bitbybit_color.Color.html#hexToRgb
-     * @param inputs Color hext
+     * @param inputs Color hex
      * @returns rgb color
+     * @group convert
+     * @shortname hex to rgb
+     * @drawable false
      */
-    hexToRgb(hex: string): { r: number, g: number, b: number } {
-        const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+    hexToRgb(inputs: Inputs.Color.HexDto): { r: number, g: number, b: number } {
+        const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(inputs.color);
         return result ? {
             r: parseInt(result[1], 16),
             g: parseInt(result[2], 16),
@@ -29,18 +48,17 @@ export class Color {
      * @link https://docs.bitbybit.dev/classes/bitbybit_color.Color.html#rgbToHex
      * @param inputs Color hext
      * @returns rgb color
+     * @group convert
+     * @shortname rgb to hex
+     * @drawable false
      */
-    rgbToHex = (values) => {
-        if (values.length < 3) throw new Error('values must contain R, G and B values')
-        const r = values[0];
-        const g = values[1];
-        const b = values[2];
+    rgbToHex(inputs: Inputs.Color.RGBDto) {
+        const r = inputs.r;
+        const g = inputs.g;
+        const b = inputs.b;
 
         let s = `#${Number(0x1000000 + r * 0x10000 + g * 0x100 + b).toString(16).substring(1, 7)}`
 
-        if (values.length > 3) {
-            s = s + Number(values[3]).toString(16)
-        }
         return s
     }
 
@@ -52,13 +70,16 @@ export class Color {
      * @link https://docs.bitbybit.dev/classes/bitbybit_color.Color.html#hexToRgbMapped
      * @param inputs Color hext
      * @returns rgb color
+     * @group convert
+     * @shortname hex to rgb mapped
+     * @drawable false
      */
-    hexToRgbMapped(hex: string): { r: number, g: number, b: number } {
-        const rgb = this.hexToRgb(hex);
+    hexToRgbMapped(inputs: Inputs.Color.HexDtoMapped): { r: number, g: number, b: number } {
+        const rgb = this.hexToRgb(inputs);
         return {
-            r: BitByBitBlocklyHelperService.remap(rgb.r, 0, 255, 0, 100),
-            g: BitByBitBlocklyHelperService.remap(rgb.g, 0, 255, 0, 100),
-            b: BitByBitBlocklyHelperService.remap(rgb.b, 0, 255, 0, 100),
+            r: BitByBitBlocklyHelperService.remap(rgb.r, 0, 255, inputs.from, inputs.to),
+            g: BitByBitBlocklyHelperService.remap(rgb.g, 0, 255, inputs.from, inputs.to),
+            b: BitByBitBlocklyHelperService.remap(rgb.b, 0, 255, inputs.from, inputs.to),
         }
     }
 
@@ -70,9 +91,12 @@ export class Color {
      * @link https://docs.bitbybit.dev/classes/bitbybit_color.Color.html#getRedParam
      * @param inputs Color hext
      * @returns rgb color
+     * @group hex to
+     * @shortname red
+     * @drawable false
      */
-    getRedParam(hex: string): number {
-        const rgb = this.hexToRgbMapped(hex);
+    getRedParam(inputs: Inputs.Color.HexDtoMapped): number {
+        const rgb = this.hexToRgbMapped(inputs);
         return rgb.r;
     }
 
@@ -84,9 +108,12 @@ export class Color {
      * @link https://docs.bitbybit.dev/classes/bitbybit_color.Color.html#getGreenParam
      * @param inputs Color hext
      * @returns rgb color
+     * @group hex to
+     * @shortname green
+     * @drawable false
      */
-    getGreenParam(hex: string): number {
-        const rgb = this.hexToRgbMapped(hex);
+    getGreenParam(inputs: Inputs.Color.HexDtoMapped): number {
+        const rgb = this.hexToRgbMapped(inputs);
         return rgb.g;
     }
 
@@ -97,52 +124,61 @@ export class Color {
      * </div>
      * @link https://docs.bitbybit.dev/classes/bitbybit_color.Color.html#getBlueParam
      * @param inputs Color hext
-     * @returns rgb color
+     * @returns blue param
+     * @group hex to
+     * @shortname blue
+     * @drawable false
      */
-    getBlueParam(hex: string): number {
-        const rgb = this.hexToRgbMapped(hex);
+    getBlueParam(inputs: Inputs.Color.HexDtoMapped): number {
+        const rgb = this.hexToRgbMapped(inputs);
         return rgb.b;
     }
 
     /**
-     * Get red 255 param
+     * RGB to red
      * <div>
-     *  <img src="../assets/images/blockly-images/color/getRed255Param.svg" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/color/rgbToRed.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_color.Color.html#getRed255Param
-     * @param inputs Color hext
-     * @returns rgb color
+     * @link https://docs.bitbybit.dev/classes/bitbybit_color.Color.html#rgbToRed
+     * @param inputs Color rgb
+     * @returns red param
+     * @group  rgb to
+     * @shortname red
+     * @drawable false
      */
-    getRed255Param(hex: string): number {
-        const rgb = this.hexToRgb(hex);
-        return rgb.r;
+    rgbToRed(inputs: Inputs.Color.RGBObjectDto): number {
+        return inputs.rgb.r;
     }
 
     /**
-     * Get green 255 param
+     * RGB to green
      * <div>
-     *  <img src="../assets/images/blockly-images/color/getGreen255Param.svg" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/color/rgbToGreen.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_color.Color.html#getGreen255Param
-     * @param inputs Color hext
-     * @returns rgb color
+     * @link https://docs.bitbybit.dev/classes/bitbybit_color.Color.html#rgbToGreen
+     * @param inputs Color rgb
+     * @returns green param
+     * @group rgb to
+     * @shortname green
+     * @drawable false
      */
-    getGreen255Param(hex: string): number {
-        const rgb = this.hexToRgb(hex);
-        return rgb.g;
+    rgbToGreen(inputs: Inputs.Color.RGBObjectDto): number {
+        return inputs.rgb.g;
     }
 
     /**
-     * Get blue 255 param
+     * RGB to blue
      * <div>
-     *  <img src="../assets/images/blockly-images/color/getBlue255Param.svg" alt="Blockly Image"/>
+     *  <img src="../assets/images/blockly-images/color/rgbToBlue.svg" alt="Blockly Image"/>
      * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_color.Color.html#getBlue255Param
-     * @param inputs Color hext
-     * @returns rgb color
+     * @link https://docs.bitbybit.dev/classes/bitbybit_color.Color.html#rgbToBlue
+     * @param inputs Color rgb
+     * @returns blue param
+     * @group rgb to
+     * @shortname blue
+     * @drawable false
      */
-    getBlue255Param(hex: string): number {
-        const rgb = this.hexToRgb(hex);
-        return rgb.b;
+    rgbToBlue(inputs: Inputs.Color.RGBObjectDto): number {
+        return inputs.rgb.b;
     }
 }

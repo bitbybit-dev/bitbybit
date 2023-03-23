@@ -80,7 +80,7 @@ export class BabylonMaterialPbrMetallicRoughness {
         const g = BitByBitBlocklyHelperService.remap(mat.baseColor.g, 0, 1, 0, 255);
         const b = BitByBitBlocklyHelperService.remap(mat.baseColor.b, 0, 1, 0, 255);
 
-        return this.color.rgbToHex([r, g, b]);
+        return this.color.rgbToHex({ r, g, b });
     }
 
     /**

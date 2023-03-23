@@ -11,6 +11,7 @@ export * from './jscad-inputs';
 export * from './tag-inputs';
 export * from './asset-inputs';
 export * from  './draw-inputs';
+export * from  './color-inputs';
 export * from  './babylon-mesh-inputs';
 export * from  './babylon-camera-inputs';
 export * from './babylon-ray-inputs';

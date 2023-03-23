@@ -335,6 +335,22 @@ export class Point {
     }
 
     /**
+     * Creates the xy point
+     * <div>
+     *  <img src="../assets/images/blockly-images/point/pointXY.svg" alt="Blockly Image"/>
+     * </div>
+     * @link https://docs.bitbybit.dev/classes/bitbybit_point.Point.html#pointXY
+     * @param inputs xy information
+     * @returns point 3d
+     * @group create
+     * @shortname point xy
+     * @drawable false
+     */
+    pointXY(inputs: Inputs.Point.PointXYDto): Inputs.Base.Point2 {
+        return [inputs.x, inputs.y];
+    }
+
+    /**
      * Creates the spiral out of multiple points
      * <div>
      *  <img src="../assets/images/blockly-images/point/spiral.svg" alt="Blockly Image"/>

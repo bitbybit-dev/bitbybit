@@ -1004,12 +1004,25 @@ declare class BabylonTransforms {
     }
 }declare class Color {
     /**
+     * Creates a hex color
+     * @link https://docs.bitbybit.dev/classes/bitbybit_color.Color.html#hexColor
+     * @param inputs Color hex
+     * @returns color string
+     * @group create
+     * @shortname color
+     * @drawable false
+     */
+    hexColor(inputs: Inputs.Color.HexDto): Inputs.Base.Color;
+    /**
      * Creates rgb color from hex
      * @link https://docs.bitbybit.dev/classes/bitbybit_color.Color.html#hexToRgb
-     * @param inputs Color hext
+     * @param inputs Color hex
      * @returns rgb color
+     * @group convert
+     * @shortname hex to rgb
+     * @drawable false
      */
-    hexToRgb(hex: string): {
+    hexToRgb(inputs: Inputs.Color.HexDto): {
         r: number;
         g: number;
         b: number;
@@ -1019,15 +1032,21 @@ declare class BabylonTransforms {
      * @link https://docs.bitbybit.dev/classes/bitbybit_color.Color.html#rgbToHex
      * @param inputs Color hext
      * @returns rgb color
+     * @group convert
+     * @shortname rgb to hex
+     * @drawable false
      */
-    rgbToHex: (values: any) => string;
+    rgbToHex(inputs: Inputs.Color.RGBDto): string;
     /**
      * Creates rgb color from hex and maps to 0 - 100 value
      * @link https://docs.bitbybit.dev/classes/bitbybit_color.Color.html#hexToRgbMapped
      * @param inputs Color hext
      * @returns rgb color
+     * @group convert
+     * @shortname hex to rgb mapped
+     * @drawable false
      */
-    hexToRgbMapped(hex: string): {
+    hexToRgbMapped(inputs: Inputs.Color.HexDtoMapped): {
         r: number;
         g: number;
         b: number;
@@ -1037,43 +1056,61 @@ declare class BabylonTransforms {
      * @link https://docs.bitbybit.dev/classes/bitbybit_color.Color.html#getRedParam
      * @param inputs Color hext
      * @returns rgb color
+     * @group hex to
+     * @shortname red
+     * @drawable false
      */
-    getRedParam(hex: string): number;
+    getRedParam(inputs: Inputs.Color.HexDtoMapped): number;
     /**
      * Get green param
      * @link https://docs.bitbybit.dev/classes/bitbybit_color.Color.html#getGreenParam
      * @param inputs Color hext
      * @returns rgb color
+     * @group hex to
+     * @shortname green
+     * @drawable false
      */
-    getGreenParam(hex: string): number;
+    getGreenParam(inputs: Inputs.Color.HexDtoMapped): number;
     /**
      * Get blue param
      * @link https://docs.bitbybit.dev/classes/bitbybit_color.Color.html#getBlueParam
      * @param inputs Color hext
-     * @returns rgb color
+     * @returns blue param
+     * @group hex to
+     * @shortname blue
+     * @drawable false
      */
-    getBlueParam(hex: string): number;
+    getBlueParam(inputs: Inputs.Color.HexDtoMapped): number;
     /**
-     * Get red 255 param
-     * @link https://docs.bitbybit.dev/classes/bitbybit_color.Color.html#getRed255Param
-     * @param inputs Color hext
-     * @returns rgb color
+     * RGB to red
+     * @link https://docs.bitbybit.dev/classes/bitbybit_color.Color.html#rgbToRed
+     * @param inputs Color rgb
+     * @returns red param
+     * @group  rgb to
+     * @shortname red
+     * @drawable false
      */
-    getRed255Param(hex: string): number;
+    rgbToRed(inputs: Inputs.Color.RGBObjectDto): number;
     /**
-     * Get green 255 param
-     * @link https://docs.bitbybit.dev/classes/bitbybit_color.Color.html#getGreen255Param
-     * @param inputs Color hext
-     * @returns rgb color
+     * RGB to green
+     * @link https://docs.bitbybit.dev/classes/bitbybit_color.Color.html#rgbToGreen
+     * @param inputs Color rgb
+     * @returns green param
+     * @group rgb to
+     * @shortname green
+     * @drawable false
      */
-    getGreen255Param(hex: string): number;
+    rgbToGreen(inputs: Inputs.Color.RGBObjectDto): number;
     /**
-     * Get blue 255 param
-     * @link https://docs.bitbybit.dev/classes/bitbybit_color.Color.html#getBlue255Param
-     * @param inputs Color hext
-     * @returns rgb color
+     * RGB to blue
+     * @link https://docs.bitbybit.dev/classes/bitbybit_color.Color.html#rgbToBlue
+     * @param inputs Color rgb
+     * @returns blue param
+     * @group rgb to
+     * @shortname blue
+     * @drawable false
      */
-    getBlue255Param(hex: string): number;
+    rgbToBlue(inputs: Inputs.Color.RGBObjectDto): number;
 }declare class Draw {
     private readonly point;
     private readonly line;
@@ -2172,6 +2209,16 @@ declare class Point {
      * @drawable true
      */
     pointXYZ(inputs: Inputs.Point.PointXYZDto): Inputs.Base.Point3;
+    /**
+     * Creates the xy point
+     * @link https://docs.bitbybit.dev/classes/bitbybit_point.Point.html#pointXY
+     * @param inputs xy information
+     * @returns point 3d
+     * @group create
+     * @shortname point xy
+     * @drawable false
+     */
+    pointXY(inputs: Inputs.Point.PointXYDto): Inputs.Base.Point2;
     /**
      * Creates the spiral out of multiple points
      * @link https://docs.bitbybit.dev/classes/bitbybit_point.Point.html#spiral

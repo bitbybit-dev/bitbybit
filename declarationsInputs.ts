@@ -496,6 +496,7 @@ export const inputDeclarations = `declare namespace Asset {
         groundMeshes: Mesh[];
     }
 }declare namespace Base {
+    type Color = string;
     type Point2 = [number, number];
     type Vector2 = [number, number];
     type Point3 = [number, number, number];
@@ -513,6 +514,70 @@ export const inputDeclarations = `declare namespace Asset {
         default = "default",
         clearSky = "clearSky",
         city = "city"
+    }
+}declare namespace Color {
+    class HexDto {
+        /**
+         * Color hex
+         * @default #0000ff
+         */
+        color: Base.Color;
+    }
+    class HexDtoMapped {
+        /**
+         * Color hex
+         * @default #0000ff
+         */
+        color: Base.Color;
+        /**
+         * From min bound
+         * @default 0
+         * @minimum -Infinity
+         * @maximum Infinity
+         * @step 1
+         */
+        from: number;
+        /**
+         * To max bound
+         * @default 255
+         * @minimum -Infinity
+         * @maximum Infinity
+         * @step 1
+         */
+        to: number;
+    }
+    class RGBDto {
+        /**
+         * Red value component
+         * @default 255
+         * @minimum 0
+         * @maximum 255
+         * @step 1
+         */
+        r: number;
+        /**
+         * Green value component
+         * @default 255
+         * @minimum 0
+         * @maximum 255
+         * @step 1
+         */
+        g: number;
+        /**
+        * Blue value component
+        * @default 255
+        * @minimum 0
+        * @maximum 255
+        * @step 1
+        */
+        b: number;
+    }
+    class RGBObjectDto {
+        /**
+         * Red value component
+         * @default undefined
+         */
+        rgb: RGBDto;
     }
 }declare namespace Draw {
     class DrawAny {
@@ -2568,7 +2633,7 @@ export const inputDeclarations = `declare namespace Asset {
          * @default 0
          * @minimum -Infinity
          * @maximum Infinity
-         * @step 0.5
+         * @step 0.1
          */
         x: number;
         /**
@@ -2576,7 +2641,7 @@ export const inputDeclarations = `declare namespace Asset {
          * @default 0
          * @minimum -Infinity
          * @maximum Infinity
-         * @step 0.5
+         * @step 0.1
          */
         y: number;
         /**
@@ -2584,9 +2649,27 @@ export const inputDeclarations = `declare namespace Asset {
         * @default 0
         * @minimum -Infinity
         * @maximum Infinity
-        * @step 0.5
+        * @step 0.1
         */
         z: number;
+    }
+    class PointXYDto {
+        /**
+         * Point
+         * @default 0
+         * @minimum -Infinity
+         * @maximum Infinity
+         * @step 0.1
+         */
+        x: number;
+        /**
+         * Point
+         * @default 0
+         * @minimum -Infinity
+         * @maximum Infinity
+         * @step 0.1
+         */
+        y: number;
     }
     class PointsDto {
         /**
