@@ -509,7 +509,6 @@ export const inputDeclarations = `declare namespace Asset {
         start: Base.Point3;
         end: Base.Point3;
     };
-    type JSCADEntity = any;
     enum skyboxEnum {
         default = "default",
         clearSky = "clearSky",
@@ -853,15 +852,16 @@ export const inputDeclarations = `declare namespace Asset {
         tags = 16
     }
 }declare namespace JSCAD {
+    type JSCADEntity = any;
     class DrawSolidMeshDto {
         /**
          * Provide options without default values
          */
-        constructor(mesh?: Base.JSCADEntity[]);
+        constructor(mesh?: JSCADEntity[]);
         /**
          * Solid Jscad mesh
          */
-        mesh: Base.JSCADEntity;
+        mesh: JSCADEntity;
         /**
          * Value between 0 and 1
          * @default 1
@@ -897,13 +897,13 @@ export const inputDeclarations = `declare namespace Asset {
         /**
          * Provide options without default values
          */
-        constructor(meshes?: Base.JSCADEntity[]);
+        constructor(meshes?: JSCADEntity[]);
         /**
          * Solid Jscad meshes
          * @default undefined
          * @optional true
          */
-        meshes: Base.JSCADEntity[];
+        meshes: JSCADEntity[];
         /**
          * Value between 0 and 1
          * @default 1
@@ -939,12 +939,12 @@ export const inputDeclarations = `declare namespace Asset {
         /**
          * Provide options without default values
          */
-        constructor(path?: Base.JSCADEntity[]);
+        constructor(path?: JSCADEntity[]);
         /**
          * 2D Path to draw
          * @default undefined
          */
-        path: Base.JSCADEntity;
+        path: JSCADEntity;
         /**
          * Colour of the path
          * @default #444444
@@ -984,7 +984,7 @@ export const inputDeclarations = `declare namespace Asset {
          * Solids to be transformed
          * @default undefined
          */
-        meshes: Base.JSCADEntity[];
+        meshes: JSCADEntity[];
         /**
          * Transformation matrix or a list of transformation matrixes
          * @default undefined
@@ -996,7 +996,7 @@ export const inputDeclarations = `declare namespace Asset {
          * Solid to be transformed
          * @default undefined
          */
-        mesh: Base.JSCADEntity;
+        mesh: JSCADEntity;
         /**
          * Transformation matrix or a list of transformation matrixes
          * @default undefined
@@ -1008,7 +1008,7 @@ export const inputDeclarations = `declare namespace Asset {
          * Solid to be downloaded
          * @default undefined
          */
-        mesh: Base.JSCADEntity;
+        mesh: JSCADEntity;
         /**
          * File name
          * @default undefined
@@ -1020,7 +1020,7 @@ export const inputDeclarations = `declare namespace Asset {
          * Solids to be downloaded
          * @default undefined
          */
-        meshes: Base.JSCADEntity[];
+        meshes: JSCADEntity[];
         /**
          * File name
          * @default undefined
@@ -1032,14 +1032,14 @@ export const inputDeclarations = `declare namespace Asset {
          * Contains solid Jscad mesh objects that will be used to perform boolean operation
          * @default undefined
          */
-        meshes: Base.JSCADEntity[];
+        meshes: JSCADEntity[];
     }
     class ExpansionDto {
         /**
          * Can contain various Jscad entities from Solid category
          * @default undefined
          */
-        geometry: Base.JSCADEntity[];
+        geometry: JSCADEntity[];
         /**
          * Delta (+/-) of expansion
          * @default 0.1
@@ -1067,7 +1067,7 @@ export const inputDeclarations = `declare namespace Asset {
          * Can contain various Jscad entities from Solid category
          * @default undefined
          */
-        geometry: Base.JSCADEntity[];
+        geometry: JSCADEntity[];
         /**
          * Delta (+/-) of offset
          * @default 0.1
@@ -1095,7 +1095,7 @@ export const inputDeclarations = `declare namespace Asset {
          * Geometry to extrude
          * @default undefined
          */
-        geometry: Base.JSCADEntity | Base.JSCADEntity[];
+        geometry: JSCADEntity | JSCADEntity[];
         /**
          * Height of linear extrude
          * @default 1
@@ -1126,14 +1126,14 @@ export const inputDeclarations = `declare namespace Asset {
          * Geometries to use in hull
          * @default undefined
          */
-        meshes: Base.JSCADEntity[];
+        meshes: JSCADEntity[];
     }
     class ExtrudeRectangularDto {
         /**
          * Geometry to extrude
          * @default undefined
          */
-        geometry: Base.JSCADEntity | Base.JSCADEntity[];
+        geometry: JSCADEntity | JSCADEntity[];
         /**
          * Height of linear extrude
          * @default 1
@@ -1179,7 +1179,7 @@ export const inputDeclarations = `declare namespace Asset {
          * Polygon to extrude
          * @default undefined
          */
-        polygon: Base.JSCADEntity;
+        polygon: JSCADEntity;
         /**
          * Angle in degrees
          * @default 90
@@ -1210,14 +1210,14 @@ export const inputDeclarations = `declare namespace Asset {
          * 2D path
          * @default undefined
          */
-        path: Base.JSCADEntity;
+        path: JSCADEntity;
     }
     class PathFromPointsDto {
         /**
          * Points through which to create a path
          * @default undefined
          */
-        points: Base.Point3[];
+        points: Base.Point2[];
         /**
          * Indicates wether we want to create a closed path
          * @default false
@@ -1241,7 +1241,7 @@ export const inputDeclarations = `declare namespace Asset {
          * Verb Nurbs curve
          * @default undefined
          */
-        curve: Base.JSCADEntity;
+        curve: JSCADEntity;
         /**
          * Indicates wether we want to create a closed path
          * @default false
@@ -1253,24 +1253,24 @@ export const inputDeclarations = `declare namespace Asset {
          * Verb Nurbs curve
          * @default undefined
          */
-        curve: Base.JSCADEntity;
+        curve: JSCADEntity;
         /**
          * Path to append the curve to
          * @default undefined
          */
-        path: Base.JSCADEntity;
+        path: JSCADEntity;
     }
     class PathAppendPointsDto {
         /**
          * Points to append
          * @default undefined
          */
-        points: number[][];
+        points: Base.Point2[];
         /**
          * Path to append the points to
          * @default undefined
          */
-        path: Base.JSCADEntity;
+        path: JSCADEntity;
     }
     class PathAppendPolylineDto {
         /**
@@ -1282,19 +1282,19 @@ export const inputDeclarations = `declare namespace Asset {
          * Path to append the polyline to
          * @default undefined
          */
-        path: Base.JSCADEntity;
+        path: JSCADEntity;
     }
     class PathAppendArcDto {
         /**
          * Path to append the arc to
          * @default undefined
          */
-        path: Base.JSCADEntity;
+        path: JSCADEntity;
         /**
          * End point of an arc
-         * @default [0, 1, 0]
+         * @default [1, 1]
          */
-        endPoint: Base.Point3;
+        endPoint: Base.Point2;
         /**
          * Rotation (degrees) of the X axis of the arc with respect to the X axis of the coordinate system
          * @default 90
@@ -1341,9 +1341,9 @@ export const inputDeclarations = `declare namespace Asset {
     class CircleDto {
         /**
          * Center of the circle
-         * @default [0, 0, 0]
+         * @default [0, 0]
          */
-        center: Base.Point3;
+        center: Base.Point2;
         /**
          * Radius of the circle
          * @default 1
@@ -1364,9 +1364,9 @@ export const inputDeclarations = `declare namespace Asset {
     class EllipseDto {
         /**
          * Center of the circle
-         * @default [0, 0, 0]
+         * @default [0, 0]
          */
-        center: Base.Point3;
+        center: Base.Point2;
         /**
          * Radius of the circle in [x, y] form
          * @default [1, 2]
@@ -1384,9 +1384,9 @@ export const inputDeclarations = `declare namespace Asset {
     class SquareDto {
         /**
          * Center of the 2D square
-         * @default [0, 0, 0]
+         * @default [0, 0]
          */
-        center: Base.Point3;
+        center: Base.Point2;
         /**
          * Size of the square
          * @default 1
@@ -1399,9 +1399,9 @@ export const inputDeclarations = `declare namespace Asset {
     class RectangleDto {
         /**
          * Center of the 2D rectangle
-         * @default [0, 0, 0]
+         * @default [0, 0]
          */
-        center: Base.Point3;
+        center: Base.Point2;
         /**
          * Width of the rectangle
          * @default 1
@@ -1422,9 +1422,9 @@ export const inputDeclarations = `declare namespace Asset {
     class RoundedRectangleDto {
         /**
          * Center of the 2D rectangle
-         * @default [0, 0, 0]
+         * @default [0, 0]
          */
-        center: Base.Point3;
+        center: Base.Point2;
         /**
          * The radius to round the rectangle edge
          * @default 0.2
@@ -1461,9 +1461,9 @@ export const inputDeclarations = `declare namespace Asset {
     class StarDto {
         /**
          * Center of the 2D star
-         * @default [0, 0, 0]
+         * @default [0, 0]
          */
-        center: Base.Point3;
+        center: Base.Point2;
         /**
          * Number of vertices on the star
          * @default 10

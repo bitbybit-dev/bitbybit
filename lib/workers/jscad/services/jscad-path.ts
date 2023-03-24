@@ -1,5 +1,6 @@
 import { Angle } from '@babylonjs/core';
 import { VectorHelperService } from 'bitbybit-occt/lib/api/vector-helper.service';
+import { Base } from '../../../api/inputs';
 import * as Inputs from '../../../api/inputs/jscad-inputs';
 
 /**
@@ -44,7 +45,7 @@ export class JSCADPath {
     }
 
     appendPolyline(inputs: Inputs.JSCAD.PathAppendPolylineDto): any {
-        const twoDimensionalPoints = inputs.polyline.points.map(pt => [pt[0], pt[1]]);
+        const twoDimensionalPoints = inputs.polyline.points.map(pt => [pt[0], pt[1]]) as Base.Point2[];
         return this.appendPoints({points: twoDimensionalPoints, path: inputs.path});
     }
 

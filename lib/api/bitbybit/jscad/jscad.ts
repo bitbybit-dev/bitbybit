@@ -186,7 +186,7 @@ export class JSCAD {
      * @shortname transform solids
      * @drawable true
      */
-    async transformSolids(inputs: Inputs.JSCAD.TransformSolidsDto): Promise<any[]> {
+    async transformSolids(inputs: Inputs.JSCAD.TransformSolidsDto): Promise<Inputs.JSCAD.JSCADEntity[]> {
         return this.jscadWorkerManager.genericCallToWorkerPromise('transformSolids', inputs);
     }
 
@@ -202,7 +202,7 @@ export class JSCAD {
      * @shortname transform solid
      * @drawable true
      */
-    async transformSolid(inputs: Inputs.JSCAD.TransformSolidDto): Promise<any> {
+    async transformSolid(inputs: Inputs.JSCAD.TransformSolidDto): Promise<Inputs.JSCAD.JSCADEntity> {
         return this.jscadWorkerManager.genericCallToWorkerPromise('transformSolid', inputs);
     }
 

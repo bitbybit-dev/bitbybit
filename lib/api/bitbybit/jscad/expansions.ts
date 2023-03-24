@@ -30,7 +30,7 @@ export class JSCADExpansions {
      * @shortname expand
      * @drawable true
      */
-    async expand(inputs: Inputs.JSCAD.ExpansionDto): Promise<any | any[]> {
+    async expand(inputs: Inputs.JSCAD.ExpansionDto): Promise<any> {
         return this.jscadWorkerManager.genericCallToWorkerPromise('expansions.expand', inputs);
     }
 
@@ -49,7 +49,7 @@ export class JSCADExpansions {
      * @shortname offset
      * @drawable true
      */
-    async offset(inputs: Inputs.JSCAD.ExpansionDto): Promise<any | any[]> {
+    async offset(inputs: Inputs.JSCAD.ExpansionDto): Promise<any> {
         return this.jscadWorkerManager.genericCallToWorkerPromise('expansions.offset', inputs);
     }
 }

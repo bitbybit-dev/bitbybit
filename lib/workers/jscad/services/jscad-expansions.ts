@@ -10,7 +10,7 @@ export class JSCADExpansions {
         private readonly jscad: any,
     ) { }
 
-    expand(inputs: Inputs.JSCAD.ExpansionDto): any | any[] {
+    expand(inputs: Inputs.JSCAD.ExpansionDto): any {
         const geometry = inputs.geometry.length && inputs.geometry.length > 0 ? inputs.geometry : [inputs.geometry];
         if (!inputs.corners) {
             inputs.corners = Inputs.JSCAD.SolidCornerTypeEnum.round;
@@ -23,7 +23,7 @@ export class JSCADExpansions {
         return result;
     }
 
-    offset(inputs: Inputs.JSCAD.ExpansionDto): any | any[] {
+    offset(inputs: Inputs.JSCAD.ExpansionDto): any {
         const geometry = inputs.geometry.length && inputs.geometry.length > 0 ? inputs.geometry : [inputs.geometry];
         if (!inputs.corners) {
             inputs.corners = Inputs.JSCAD.SolidCornerTypeEnum.edge;

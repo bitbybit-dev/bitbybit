@@ -13,7 +13,7 @@ export class JSCADExtrusions {
         private readonly vecHelper: VectorHelperService
     ) { }
 
-    extrudeLinear(inputs: Inputs.JSCAD.ExtrudeLinearDto): any | any[] {
+    extrudeLinear(inputs: Inputs.JSCAD.ExtrudeLinearDto): any {
         const multipleGeometries = inputs.geometry.length && inputs.geometry.length > 0;
         const geometry = multipleGeometries ? inputs.geometry : [inputs.geometry];
 
@@ -29,7 +29,7 @@ export class JSCADExtrusions {
         return extrusions;
     }
 
-    extrudeRectangular(inputs: Inputs.JSCAD.ExtrudeRectangularDto): any | any[] {
+    extrudeRectangular(inputs: Inputs.JSCAD.ExtrudeRectangularDto): any {
         const multipleGeometries = inputs.geometry.length && inputs.geometry.length > 0;
         const geometry = multipleGeometries ? inputs.geometry : [inputs.geometry];
 

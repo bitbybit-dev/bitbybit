@@ -26,7 +26,7 @@ export class JSCADExtrusions {
      * @shortname linear
      * @drawable true
      */
-    async extrudeLinear(inputs: Inputs.JSCAD.ExtrudeLinearDto): Promise<any | any[]> {
+    async extrudeLinear(inputs: Inputs.JSCAD.ExtrudeLinearDto): Promise<any> {
         return this.jscadWorkerManager.genericCallToWorkerPromise('extrusions.extrudeLinear', inputs);
     }
 
@@ -43,7 +43,7 @@ export class JSCADExtrusions {
      * @shortname rectangular
      * @drawable true
      */
-    async extrudeRectangular(inputs: Inputs.JSCAD.ExtrudeRectangularDto): Promise<any | any[]> {
+    async extrudeRectangular(inputs: Inputs.JSCAD.ExtrudeRectangularDto): Promise<any> {
         return this.jscadWorkerManager.genericCallToWorkerPromise('extrusions.extrudeRectangular', inputs);
     }
 

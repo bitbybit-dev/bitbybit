@@ -15,14 +15,14 @@ export class JSCADShapes {
         this.jscad = jscad;
     }
 
-    cube(inputs: Inputs.JSCAD.CubeDto): any {
+    cube(inputs: Inputs.JSCAD.CubeDto): Inputs.JSCAD.JSCADEntity {
         return this.jscad.primitives.cube({
             center: [inputs.center[0], inputs.center[1], inputs.center[2]],
             size: inputs.size
         });
     }
 
-    cubesOnCenterPoints(inputs: Inputs.JSCAD.CubeCentersDto): any[] {
+    cubesOnCenterPoints(inputs: Inputs.JSCAD.CubeCentersDto): Inputs.JSCAD.JSCADEntity[] {
         return inputs.centers.map(center => {
             return this.cube({ center, size: inputs.size });
         });

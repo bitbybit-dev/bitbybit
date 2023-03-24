@@ -9,7 +9,6 @@ export namespace Base {
     export type Vector3 = [number, number, number];
     export type Line2 = { start: Base.Point2, end: Base.Point2 };
     export type Line3 = { start: Base.Point3, end: Base.Point3 };
-    export type JSCADEntity = any;
     
     // tslint:disable-next-line: no-namespace
     export enum skyboxEnum {

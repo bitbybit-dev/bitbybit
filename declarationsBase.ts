@@ -1022,11 +1022,7 @@ declare class BabylonTransforms {
      * @shortname hex to rgb
      * @drawable false
      */
-    hexToRgb(inputs: Inputs.Color.HexDto): {
-        r: number;
-        g: number;
-        b: number;
-    };
+    hexToRgb(inputs: Inputs.Color.HexDto): Inputs.Color.RGBDto;
     /**
      * Creates hex color from rgb
      * @link https://docs.bitbybit.dev/classes/bitbybit_color.Color.html#rgbToHex
@@ -1036,7 +1032,7 @@ declare class BabylonTransforms {
      * @shortname rgb to hex
      * @drawable false
      */
-    rgbToHex(inputs: Inputs.Color.RGBDto): string;
+    rgbToHex(inputs: Inputs.Color.RGBDto): Inputs.Base.Color;
     /**
      * Creates rgb color from hex and maps to 0 - 100 value
      * @link https://docs.bitbybit.dev/classes/bitbybit_color.Color.html#hexToRgbMapped
@@ -1046,11 +1042,7 @@ declare class BabylonTransforms {
      * @shortname hex to rgb mapped
      * @drawable false
      */
-    hexToRgbMapped(inputs: Inputs.Color.HexDtoMapped): {
-        r: number;
-        g: number;
-        b: number;
-    };
+    hexToRgbMapped(inputs: Inputs.Color.HexDtoMapped): Inputs.Color.RGBDto;
     /**
      * Get red param
      * @link https://docs.bitbybit.dev/classes/bitbybit_color.Color.html#getRedParam
@@ -1272,7 +1264,7 @@ declare class JSCADExpansions {
      * @shortname expand
      * @drawable true
      */
-    expand(inputs: Inputs.JSCAD.ExpansionDto): Promise<any | any[]>;
+    expand(inputs: Inputs.JSCAD.ExpansionDto): Promise<any>;
     /**
      * Offset 2d geometries of solid category
      * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_expansions.JSCADExpansions.html#offset
@@ -1282,7 +1274,7 @@ declare class JSCADExpansions {
      * @shortname offset
      * @drawable true
      */
-    offset(inputs: Inputs.JSCAD.ExpansionDto): Promise<any | any[]>;
+    offset(inputs: Inputs.JSCAD.ExpansionDto): Promise<any>;
 }/**
  * Contains various functions for Solid extrusions from JSCAD library https://github.com/jscad/OpenJSCAD.org
  * Thanks JSCAD community for developing this kernel
@@ -1299,7 +1291,7 @@ declare class JSCADExtrusions {
      * @shortname linear
      * @drawable true
      */
-    extrudeLinear(inputs: Inputs.JSCAD.ExtrudeLinearDto): Promise<any | any[]>;
+    extrudeLinear(inputs: Inputs.JSCAD.ExtrudeLinearDto): Promise<any>;
     /**
      * Rectangular extrude 2D geometries of solid category. Creates a wall-type extrusion of certain height and size.
      * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_extrusions.JSCADExtrusions.html#extrudeRectangular
@@ -1309,7 +1301,7 @@ declare class JSCADExtrusions {
      * @shortname rectangular
      * @drawable true
      */
-    extrudeRectangular(inputs: Inputs.JSCAD.ExtrudeRectangularDto): Promise<any | any[]>;
+    extrudeRectangular(inputs: Inputs.JSCAD.ExtrudeRectangularDto): Promise<any>;
     /**
      * Rectangular extrude a list of 2D points. Creates a wall-type extrusion of certain height and size.
      * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_extrusions.JSCADExtrusions.html#extrudeRectangularPoints
@@ -1347,7 +1339,7 @@ declare class JSCADHulls {
      * @shortname hullChain
      * @drawable true
      */
-    hullChain(inputs: Inputs.JSCAD.HullDto): Promise<any | any[]>;
+    hullChain(inputs: Inputs.JSCAD.HullDto): Promise<any>;
     /**
      * Convex hull connects solids or 2d geometries by filling an empty space in between without following order.
      * Geometries need to be of the same type.
@@ -1358,7 +1350,7 @@ declare class JSCADHulls {
      * @shortname hull
      * @drawable true
      */
-    hull(inputs: Inputs.JSCAD.HullDto): Promise<any | any[]>;
+    hull(inputs: Inputs.JSCAD.HullDto): Promise<any>;
 }/**
  * Contains various functions for Solid meshes from JSCAD library https://github.com/jscad/OpenJSCAD.org
  * Thanks JSCAD community for developing this kernel
@@ -1416,7 +1408,7 @@ declare class JSCAD {
      * @shortname transform solids
      * @drawable true
      */
-    transformSolids(inputs: Inputs.JSCAD.TransformSolidsDto): Promise<any[]>;
+    transformSolids(inputs: Inputs.JSCAD.TransformSolidsDto): Promise<Inputs.JSCAD.JSCADEntity[]>;
     /**
      * Transforms the Jscad solid mesh with a given list of transformations.
      * @link https://docs.bitbybit.dev/classes/bitbybit_jscad.JSCAD.html#transformSolid
@@ -1426,7 +1418,7 @@ declare class JSCAD {
      * @shortname transform solid
      * @drawable true
      */
-    transformSolid(inputs: Inputs.JSCAD.TransformSolidDto): Promise<any>;
+    transformSolid(inputs: Inputs.JSCAD.TransformSolidDto): Promise<Inputs.JSCAD.JSCADEntity>;
     /**
      * Downloads the binary STL file from a 3D solid
      * @link https://docs.bitbybit.dev/classes/bitbybit_jscad.JSCAD.html#downloadSolidSTL
