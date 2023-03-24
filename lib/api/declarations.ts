@@ -28,6 +28,7 @@ export const typescriptDeclarations = `
                 readonly time: Time;
                 readonly occt: OCCTW & OCCT;
                 readonly asset: Asset;
+                readonly math: MathBitByBit;
             }
         }
         `;

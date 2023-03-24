@@ -13,6 +13,7 @@ import { OCCTW } from './bitbybit/occt/occt';
 import { OCCT as BaseOCCT } from 'bitbybit-occt-worker/lib/api/occt/occt';
 import { Asset } from './bitbybit/asset';
 import { Color } from './bitbybit/color';
+import { MathBitByBit } from './bitbybit/math';
 import { Context } from './context';
 import { GeometryHelper } from './geometry-helper';
 import { JSCADWorkerManager } from '../workers/jscad/jscad-worker-manager';
@@ -40,6 +41,7 @@ export class BitByBitBase {
     public occt: OCCTW & BaseOCCT;
     public asset: Asset;
     public color: Color;
+    public math: MathBitByBit;
 
     constructor(
     ) {
@@ -60,6 +62,7 @@ export class BitByBitBase {
         this.time = new Time();
         this.occt = new OCCTW(this.context, this.occtWorkerManager, geometryHelper, this.jscad.text, this.vector);
         this.asset = new Asset();
+        this.math = new MathBitByBit();
         this.draw = new Draw(
             this.point,
             this.line,

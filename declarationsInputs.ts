@@ -2496,12 +2496,32 @@ export const inputDeclarations = `declare namespace Asset {
         matrix: number[][] | number[][][];
     }
 }declare namespace Math {
-    enum MathActionEnum {
+    enum MathTwoNrOperatorEnum {
         add = "add",
         subtract = "subtract",
         multiply = "multiply",
         divide = "divide",
-        power = "power"
+        power = "power",
+        modulus = "modulus"
+    }
+    enum MathOneNrOperatorEnum {
+        absolute = "absolute",
+        negate = "negate",
+        ln = "ln",
+        log10 = "log10",
+        tenPow = "tenPow",
+        round = "round",
+        floor = "floor",
+        ceil = "ceil",
+        sqrt = "sqrt",
+        sin = "sin",
+        cos = "cos",
+        tan = "tan",
+        asin = "asin",
+        acos = "acos",
+        atan = "atan",
+        log = "log",
+        exp = "exp"
     }
     class ActionOnTwoNumbersDto {
         /**
@@ -2524,7 +2544,22 @@ export const inputDeclarations = `declare namespace Asset {
          * Point
          * @default add
          */
-        action: MathActionEnum;
+        action: MathTwoNrOperatorEnum;
+    }
+    class ActionOnOneNumberDto {
+        /**
+         * First number
+         * @default 1
+         * @minimum -Infinity
+         * @maximum Infinity
+         * @step 0.1
+         */
+        nr: number;
+        /**
+         * Point
+         * @default absolute
+         */
+        action: MathOneNrOperatorEnum;
     }
 }declare namespace BabylonNode {
     class NodeDto {

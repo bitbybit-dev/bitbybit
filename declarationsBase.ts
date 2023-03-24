@@ -2002,12 +2002,22 @@ declare class MathBitByBit {
      * Does basic math operations
      * @link https://docs.bitbybit.dev/classes/bitbybit_math.Math.html#twoNrOperation
      * @param inputs two numbers and operator
-     * @returns Result of math operation
+     * @returns Result of math operation action
      * @group operations
      * @shortname two number
      * @drawable false
      */
     twoNrOperation(inputs: Inputs.Math.ActionOnTwoNumbersDto): number;
+    /**
+        * Does basic math operations
+        * @link https://docs.bitbybit.dev/classes/bitbybit_math.Math.html#twoNrOperation
+        * @param inputs one numbers and operator action
+        * @returns Result of math operation
+        * @group operations
+        * @shortname one number
+        * @drawable false
+        */
+    oneNrOperation(inputs: Inputs.Math.ActionOnOneNumberDto): number;
 }declare class OCCTWIO extends OCCTIO {
     readonly occWorkerManager: OCCTWorkerManager;
     private readonly geometryHelper;
