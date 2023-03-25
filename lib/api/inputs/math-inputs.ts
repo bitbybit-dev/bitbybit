@@ -63,7 +63,7 @@ export namespace Math {
          * Point
          * @default add
          */
-        action: MathTwoNrOperatorEnum;
+        operation: MathTwoNrOperatorEnum;
     }
     export class ActionOnOneNumberDto {
         /**
@@ -78,6 +78,6 @@ export namespace Math {
          * Point
          * @default absolute
          */
-        action: MathOneNrOperatorEnum;
+        operation: MathOneNrOperatorEnum;
     }
 }

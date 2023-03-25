@@ -33,7 +33,7 @@ export class MathBitByBit {
      */
     twoNrOperation(inputs: Inputs.Math.ActionOnTwoNumbersDto): number {
         let result;
-        switch (inputs.action) {
+        switch (inputs.operation) {
             case Inputs.Math.MathTwoNrOperatorEnum.add:
                 result = inputs.first + inputs.second;
                 break;
@@ -69,7 +69,7 @@ export class MathBitByBit {
         */
     oneNrOperation(inputs: Inputs.Math.ActionOnOneNumberDto): number {
         let result;
-        switch (inputs.action) {
+        switch (inputs.operation) {
             case Inputs.Math.MathOneNrOperatorEnum.absolute:
                 result = Math.abs(inputs.nr);
                 break;
