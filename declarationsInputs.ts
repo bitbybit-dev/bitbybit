@@ -2560,7 +2560,7 @@ export const inputDeclarations = `declare namespace Asset {
          */
         times: number;
     }
-    class AddItemToListAtIndexDto {
+    class AddItemAtIndexDto {
         /**
          * The list to which item needs to be added
          * @default undefined
@@ -2580,7 +2580,22 @@ export const inputDeclarations = `declare namespace Asset {
          */
         index: number;
     }
-    class AddItemToListFirstLastDto {
+    class RemoveItemAtIndexDto {
+        /**
+        * The list from which item needs to be removed
+        * @default undefined
+        */
+        list: any[];
+        /**
+         * The index to on which remove item
+         * @default 0
+         * @minimum 0
+         * @maximum Infinity
+         * @step 1
+         */
+        index: number;
+    }
+    class AddItemFirstLastDto {
         /**
          * The list to which item needs to be added
          * @default undefined

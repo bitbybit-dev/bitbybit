@@ -2050,24 +2050,34 @@ declare class Lists {
     listLength(inputs: Inputs.Lists.ListDto): number;
     /**
      * Add item to the list
-     * @link https://docs.bitbybit.dev/classes/bitbybit_lists.Lists.html#addItemToListAtIndex
+     * @link https://docs.bitbybit.dev/classes/bitbybit_lists.Lists.html#addItemAtIndex
      * @param inputs a list, item and an index
      * @returns list with added item
      * @group add
      * @shortname item at index
      * @drawable false
      */
-    addItemToListAtIndex(inputs: Inputs.Lists.AddItemToListAtIndexDto): any;
+    addItemAtIndex(inputs: Inputs.Lists.AddItemAtIndexDto): any;
+    /**
+     * Remove item from the list
+     * @link https://docs.bitbybit.dev/classes/bitbybit_lists.Lists.html#removeItemAtIndex
+     * @param inputs a list and index
+     * @returns list with removed item
+     * @group remove
+     * @shortname item at index
+     * @drawable false
+     */
+    removeItemAtIndex(inputs: Inputs.Lists.RemoveItemAtIndexDto): any;
     /**
      * Add item to the beginning or the end of the list
-     * @link https://docs.bitbybit.dev/classes/bitbybit_lists.Lists.html#addItemToListFirstLast
+     * @link https://docs.bitbybit.dev/classes/bitbybit_lists.Lists.html#addItemFirstLast
      * @param inputs a list, item and an option for first or last position
      * @returns list with added item
      * @group add
      * @shortname item at first or last
      * @drawable false
      */
-    addItemToListFirstLast(inputs: Inputs.Lists.AddItemToListFirstLastDto): any;
+    addItemFirstLast(inputs: Inputs.Lists.AddItemFirstLastDto): any;
     /**
      * Creates an empty list
      * @link https://docs.bitbybit.dev/classes/bitbybit_lists.Lists.html#createList
@@ -2087,7 +2097,7 @@ declare class Lists {
      * @drawable false
      */
     repeat(inputs: Inputs.Lists.MultiplyItemDto): any;
-}/**
+}{};/**
  * Contains various math methods.
  */
 declare class MathBitByBit {
@@ -2539,7 +2549,7 @@ declare class Text {
     * @drawable false
     */
     toStringEach(inputs: Inputs.Text.ToStringEachDto): string[];
-}/**
+}{};/**
  * Time functions help to create various interactions which happen in time
  */
 declare class Time {
