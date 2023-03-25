@@ -20,5 +20,6 @@ export * from './babylon-pick-inputs';
 export * from './babylon-webxr';
 export * from './babylon-material-inputs';
 export * from './time-inputs';
+export * from './lists-inputs';
 export * from 'bitbybit-occt/lib/api/inputs/occ-inputs';
 export * from 'bitbybit-occt/lib/api/inputs/base-inputs';

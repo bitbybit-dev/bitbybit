@@ -21,6 +21,7 @@ import { OCCTWorkerManager } from 'bitbybit-occt-worker/lib/occ-worker/occ-worke
 import { Scene } from '@babylonjs/core';
 import { OpenCascadeInstance } from 'bitbybit-occt/bitbybit-dev-occt/bitbybit-dev-occt';
 import { core, geom } from 'verb-nurbs-web';
+import { Lists } from './bitbybit/lists';
 
 export class BitByBitBase {
 
@@ -28,8 +29,10 @@ export class BitByBitBase {
     public jscadWorkerManager: JSCADWorkerManager;
     public occtWorkerManager: OCCTWorkerManager;
 
-    public babylon: Babylon;
+    public math: MathBitByBit;
+    public lists: Lists;
     public vector: Vector;
+    public babylon: Babylon;
     public point: Point;
     public line: Line;
     public polyline: Polyline;
@@ -41,7 +44,6 @@ export class BitByBitBase {
     public occt: OCCTW & BaseOCCT;
     public asset: Asset;
     public color: Color;
-    public math: MathBitByBit;
 
     constructor(
     ) {
@@ -63,6 +65,7 @@ export class BitByBitBase {
         this.occt = new OCCTW(this.context, this.occtWorkerManager, geometryHelper, this.jscad.text, this.vector);
         this.asset = new Asset();
         this.math = new MathBitByBit();
+        this.lists = new Lists();
         this.draw = new Draw(
             this.point,
             this.line,

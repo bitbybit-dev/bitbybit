@@ -15,6 +15,8 @@ export const typescriptDeclarations = `
             ${baseDeclarations}
 
             class BitByBitBase {
+                readonly math: MathBitByBit;
+                readonly lists: Lists;
                 readonly vector: Vector;
                 readonly draw: Draw;
                 readonly babylon: Babylon;
@@ -28,7 +30,6 @@ export const typescriptDeclarations = `
                 readonly time: Time;
                 readonly occt: OCCTW & OCCT;
                 readonly asset: Asset;
-                readonly math: MathBitByBit;
             }
         }
         `;

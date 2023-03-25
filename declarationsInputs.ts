@@ -2495,6 +2495,93 @@ export const inputDeclarations = `declare namespace Asset {
          */
         matrix: number[][] | number[][][];
     }
+}declare namespace Lists {
+    enum FirstLastEnum {
+        first = "first",
+        last = "last"
+    }
+    class ListItemDto {
+        /**
+         * The list to interrogate
+         * @default undefined
+         */
+        list: any[];
+        /**
+         * Index of the item in the list - 0 means first.
+         * @default 0
+         * @minimum 0
+         * @maximum Infinity
+         * @step 1
+         */
+        index: number;
+    }
+    class SubListDto {
+        /**
+         * The list to split into a sublist
+         * @default undefined
+         */
+        list: any[];
+        /**
+         * Index from which to start the sublist - 0 means first.
+         * @default 0
+         * @minimum 0
+         * @maximum Infinity
+         * @step 1
+         */
+        indexStart: number;
+        /**
+         * Index to which to end the sublist - 0 means first.
+         * @default 1
+         * @minimum 0
+         * @maximum Infinity
+         * @step 1
+         */
+        indexEnd: number;
+    }
+    class ListDto {
+        /**
+         * The list to interrogate
+         * @default undefined
+         */
+        list: any[];
+    }
+    class AddItemToListAtIndexDto {
+        /**
+         * The list to which item needs to be added
+         * @default undefined
+         */
+        list: any[];
+        /**
+         * The item to add
+         * @default undefined
+         */
+        item: any;
+        /**
+         * The index to add the item at
+         * @default 0
+         * @minimum 0
+         * @maximum Infinity
+         * @step 1
+         */
+        index: number;
+    }
+    class AddItemToListFirstLastDto {
+        /**
+         * The list to which item needs to be added
+         * @default undefined
+         */
+        list: any[];
+        /**
+         * The item to add
+         * @default undefined
+         */
+        item: any;
+        /**
+         * The option if the item needs to be added at the beginning or the end of the list
+         * @default last
+         */
+        position: FirstLastEnum;
+    }
 }declare namespace Math {
     enum MathTwoNrOperatorEnum {
         add = "add",
