@@ -19,6 +19,9 @@ export class Lists {
      * @drawable false
      */
     getItem(inputs: Inputs.Lists.ListItemDto): any {
+        if (inputs.index < 0 || inputs.index >= inputs.list.length) {
+            throw new Error('Index out of bounds');
+        }
         return structuredClone(inputs.list[inputs.index]);
     }
 
@@ -100,14 +103,14 @@ export class Lists {
 
     /**
      * Add item to the list
-     * @link https://docs.bitbybit.dev/classes/bitbybit_lists.Lists.html#addItemToListAtIndex
+     * @link https://docs.bitbybit.dev/classes/bitbybit_lists.Lists.html#addItemAtIndex
      * @param inputs a list, item and an index
      * @returns list with added item
      * @group add
      * @shortname item at index
      * @drawable false
      */
-    addItemToListAtIndex(inputs: Inputs.Lists.AddItemToListAtIndexDto): any {
+    addItemAtIndex(inputs: Inputs.Lists.AddItemAtIndexDto): any {
         const cloned = structuredClone(inputs.list);
         if (inputs.index < 0 || inputs.index > cloned.length) {
             throw new Error('Index out of range');
@@ -118,15 +121,34 @@ export class Lists {
     }
 
     /**
+     * Remove item from the list
+     * @link https://docs.bitbybit.dev/classes/bitbybit_lists.Lists.html#removeItemAtIndex
+     * @param inputs a list and index
+     * @returns list with removed item
+     * @group remove
+     * @shortname item at index
+     * @drawable false
+     */
+    removeItemAtIndex(inputs: Inputs.Lists.RemoveItemAtIndexDto): any {
+        const cloned = structuredClone(inputs.list);
+        if (inputs.index < 0 || inputs.index >= cloned.length) {
+            throw new Error('Index out of range');
+        } else {
+            cloned.splice(inputs.index, 1);
+        }
+        return cloned;
+    }
+
+    /**
      * Add item to the beginning or the end of the list
-     * @link https://docs.bitbybit.dev/classes/bitbybit_lists.Lists.html#addItemToListFirstLast
+     * @link https://docs.bitbybit.dev/classes/bitbybit_lists.Lists.html#addItemFirstLast
      * @param inputs a list, item and an option for first or last position
      * @returns list with added item
      * @group add
      * @shortname item at first or last
      * @drawable false
      */
-    addItemToListFirstLast(inputs: Inputs.Lists.AddItemToListFirstLastDto): any {
+    addItemFirstLast(inputs: Inputs.Lists.AddItemFirstLastDto): any {
         const cloned = structuredClone(inputs.list);
         if (inputs.position === Inputs.Lists.FirstLastEnum.first) {
             cloned.unshift(inputs.item);

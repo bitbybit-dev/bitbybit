@@ -68,7 +68,7 @@ export namespace Lists {
          */
         times: number;
     }
-    export class AddItemToListAtIndexDto {
+    export class AddItemAtIndexDto {
         /**
          * The list to which item needs to be added
          * @default undefined
@@ -89,7 +89,23 @@ export namespace Lists {
         index: number = 0;
     }
 
-    export class AddItemToListFirstLastDto {
+    export class RemoveItemAtIndexDto {
+         /**
+         * The list from which item needs to be removed
+         * @default undefined
+         */
+         list: any[];
+         /**
+          * The index to on which remove item
+          * @default 0
+          * @minimum 0
+          * @maximum Infinity
+          * @step 1
+          */
+         index: number = 0;
+    }
+
+    export class AddItemFirstLastDto {
         /**
          * The list to which item needs to be added
          * @default undefined
