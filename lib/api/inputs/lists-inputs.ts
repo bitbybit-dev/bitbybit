@@ -52,6 +52,21 @@ export namespace Lists {
          * @default undefined
          */
         list: any[];
+    }  
+    export class MultiplyItemDto {
+        /**
+         * The item to multiply
+         * @default undefined
+         */
+        item: any;
+        /**
+         * Times to multiply
+         * @default 10
+         * @minimum 0
+         * @maximum Infinity
+         * @step 1
+         */
+        times: number;
     }
     export class AddItemToListAtIndexDto {
         /**

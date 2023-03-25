@@ -9,6 +9,7 @@ import { Verb } from './bitbybit/verb/verb';
 import { JSCAD } from './bitbybit/jscad/jscad';
 import { Tag } from './bitbybit/tag';
 import { Time } from './bitbybit/time';
+import { Text } from './bitbybit/text';
 import { OCCTW } from './bitbybit/occt/occt';
 import { OCCT as BaseOCCT } from 'bitbybit-occt-worker/lib/api/occt/occt';
 import { Asset } from './bitbybit/asset';
@@ -39,6 +40,7 @@ export class BitByBitBase {
     public draw: Draw;
     public verb: Verb;
     public jscad: JSCAD;
+    public text: Text;
     public tag: Tag;
     public time: Time;
     public occt: OCCTW & BaseOCCT;
@@ -65,6 +67,7 @@ export class BitByBitBase {
         this.occt = new OCCTW(this.context, this.occtWorkerManager, geometryHelper, this.jscad.text, this.vector);
         this.asset = new Asset();
         this.math = new MathBitByBit();
+        this.text = new Text();
         this.lists = new Lists();
         this.draw = new Draw(
             this.point,

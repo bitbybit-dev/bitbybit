@@ -17,6 +17,7 @@ export const typescriptDeclarations = `
             class BitByBitBase {
                 readonly math: MathBitByBit;
                 readonly lists: Lists;
+                readonly text: Text;
                 readonly vector: Vector;
                 readonly draw: Draw;
                 readonly babylon: Babylon;

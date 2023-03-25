@@ -2023,11 +2023,31 @@ declare class Lists {
      * @link https://docs.bitbybit.dev/classes/bitbybit_lists.Lists.html#reverse
      * @param inputs a list and an index
      * @returns item
-     * @group get
+     * @group edit
      * @shortname reverse
      * @drawable false
      */
     reverse(inputs: Inputs.Lists.ListDto): any;
+    /**
+     * Flip 2d lists - every nth element of each list will form a separate list
+     * @link https://docs.bitbybit.dev/classes/bitbybit_lists.Lists.html#reverse
+     * @param inputs a list of lists to flip
+     * @returns item
+     * @group edit
+     * @shortname reverse
+     * @drawable false
+     */
+    flipLists(inputs: Inputs.Lists.ListDto): any;
+    /**
+     * Gets the length of the list
+     * @link https://docs.bitbybit.dev/classes/bitbybit_lists.Lists.html#listLength
+     * @param inputs a length list
+     * @returns a number
+     * @group get
+     * @shortname list length
+     * @drawable false
+     */
+    listLength(inputs: Inputs.Lists.ListDto): number;
     /**
      * Add item to the list
      * @link https://docs.bitbybit.dev/classes/bitbybit_lists.Lists.html#addItemToListAtIndex
@@ -2049,15 +2069,24 @@ declare class Lists {
      */
     addItemToListFirstLast(inputs: Inputs.Lists.AddItemToListFirstLastDto): any;
     /**
-     * Gets the length of the list
-     * @link https://docs.bitbybit.dev/classes/bitbybit_lists.Lists.html#listLength
-     * @param inputs a length list
-     * @returns a number
-     * @group get
-     * @shortname list length
+     * Creates an empty list
+     * @link https://docs.bitbybit.dev/classes/bitbybit_lists.Lists.html#createList
+     * @returns an empty array list
+     * @group create
+     * @shortname empty list
      * @drawable false
      */
-    listLength(inputs: Inputs.Lists.ListDto): number;
+    createEmptyList(): [];
+    /**
+     * Repeat the item and add it in the new list
+     * @link https://docs.bitbybit.dev/classes/bitbybit_lists.Lists.html#multiply
+     * @param inputs an item to multiply
+     * @returns list
+     * @group create
+     * @shortname repeat
+     * @drawable false
+     */
+    repeat(inputs: Inputs.Lists.MultiplyItemDto): any;
 }/**
  * Contains various math methods.
  */
@@ -2445,6 +2474,71 @@ declare class Tag {
      * @returns Tags
      */
     drawTags(inputs: Inputs.Tag.DrawTagsDto): Inputs.Tag.TagDto[];
+}/**
+ * Contains various text methods.
+ */
+declare class Text {
+    constructor();
+    /**
+     * Creates a text
+     * @link https://docs.bitbybit.dev/classes/bitbybit_text.Text.html#create
+     * @param inputs a text
+     * @returns text
+     * @group create
+     * @shortname text
+     * @drawable false
+     */
+    create(inputs: Inputs.Text.TextDto): string;
+    /**
+    * Split the text to multiple pieces by a separator
+    * @link https://docs.bitbybit.dev/classes/bitbybit_text.Text.html#split
+    * @param inputs a text
+    * @returns text
+    * @group transform
+    * @shortname split
+    * @drawable false
+    */
+    split(inputs: Inputs.Text.TextSplitDto): string[];
+    /**
+    * Replace all occurrences of a text by another text
+    * @link https://docs.bitbybit.dev/classes/bitbybit_text.Text.html#replaceAll
+    * @param inputs a text
+    * @returns text
+    * @group transform
+    * @shortname replaceAll
+    * @drawable false
+    */
+    replaceAll(inputs: Inputs.Text.TextReplaceDto): string;
+    /**
+    * Join multiple items by a separator into text
+    * @link https://docs.bitbybit.dev/classes/bitbybit_text.Text.html#join
+    * @param inputs a list of items
+    * @returns text
+    * @group transform
+    * @shortname join
+    * @drawable false
+    */
+    join(inputs: Inputs.Text.TextJoinDto): string;
+    /**
+    * Transform any item to text
+    * @link https://docs.bitbybit.dev/classes/bitbybit_text.Text.html#toString
+    * @param inputs any item
+    * @returns text
+    * @group transform
+    * @shortname to string
+    * @drawable false
+    */
+    toString(inputs: Inputs.Text.ToStringDto): string;
+    /**
+    * Transform each item in list to text
+    * @link https://docs.bitbybit.dev/classes/bitbybit_text.Text.html#toStringEach
+    * @param inputs list of items
+    * @returns texts
+    * @group transform
+    * @shortname to string each
+    * @drawable false
+    */
+    toStringEach(inputs: Inputs.Text.ToStringEachDto): string[];
 }/**
  * Time functions help to create various interactions which happen in time
  */

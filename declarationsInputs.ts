@@ -2545,6 +2545,21 @@ export const inputDeclarations = `declare namespace Asset {
          */
         list: any[];
     }
+    class MultiplyItemDto {
+        /**
+         * The item to multiply
+         * @default undefined
+         */
+        item: any;
+        /**
+         * Times to multiply
+         * @default 10
+         * @minimum 0
+         * @maximum Infinity
+         * @step 1
+         */
+        times: number;
+    }
     class AddItemToListAtIndexDto {
         /**
          * The list to which item needs to be added
@@ -3369,6 +3384,69 @@ export const inputDeclarations = `declare namespace Asset {
          * Unique id of the tag
          */
         id?: string;
+    }
+}declare namespace Text {
+    class TextDto {
+        /**
+         * The text
+         * @default Hello World
+         */
+        text: string;
+    }
+    class TextSplitDto {
+        /**
+         * Text to split
+         * @default undefined
+         */
+        text: string;
+        /**
+         * Text to split by
+         * @default ,
+         */
+        separator: string;
+    }
+    class TextReplaceDto {
+        /**
+         * Text to replace
+         * @default undefined
+         */
+        text: string;
+        /**
+         * Text to search for
+         * @default undefined
+         */
+        search: string;
+        /**
+         * Text to replace found occurences
+         * @default undefined
+         */
+        replaceWith: string;
+    }
+    class TextJoinDto {
+        /**
+         * Text to join
+         * @default undefined
+         */
+        list: string[];
+        /**
+         * Text to join by
+         * @default undefined
+         */
+        separator: string;
+    }
+    class ToStringDto {
+        /**
+         * Item to stringify
+         * @default undefined
+         */
+        item: any;
+    }
+    class ToStringEachDto {
+        /**
+         * Item to stringify
+         * @default undefined
+         */
+        list: any[];
     }
 }declare namespace Time {
     class PostFromIframe {
