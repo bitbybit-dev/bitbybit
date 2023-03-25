@@ -32,6 +32,16 @@ export namespace Math {
         exp='exp',
     }
 
+    export class NumberDto {
+        /**
+         * First number
+         * @default 0
+         * @minimum -Infinity
+         * @maximum Infinity
+         * @step 0.1
+         */
+        number: number = 0;
+    }
     export class ActionOnTwoNumbersDto {
         /**
          * First number

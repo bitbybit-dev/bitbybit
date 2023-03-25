@@ -2523,6 +2523,16 @@ export const inputDeclarations = `declare namespace Asset {
         log = "log",
         exp = "exp"
     }
+    class NumberDto {
+        /**
+         * First number
+         * @default 0
+         * @minimum -Infinity
+         * @maximum Infinity
+         * @step 0.1
+         */
+        number: number;
+    }
     class ActionOnTwoNumbersDto {
         /**
          * First number

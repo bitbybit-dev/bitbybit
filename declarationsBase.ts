@@ -1999,19 +1999,29 @@ declare class Line {
 declare class MathBitByBit {
     constructor();
     /**
+       * Creates a number
+       * @link https://docs.bitbybit.dev/classes/bitbybit_math.Math.html#number
+       * @param inputs a number to be created
+       * @returns number
+       * @group create
+       * @shortname number
+       * @drawable false
+       */
+    number(inputs: Inputs.Math.NumberDto): number;
+    /**
      * Does basic math operations
      * @link https://docs.bitbybit.dev/classes/bitbybit_math.Math.html#twoNrOperation
      * @param inputs two numbers and operator
      * @returns Result of math operation action
      * @group operations
-     * @shortname two number
+     * @shortname two numbers
      * @drawable false
      */
     twoNrOperation(inputs: Inputs.Math.ActionOnTwoNumbersDto): number;
     /**
-        * Does basic math operations
-        * @link https://docs.bitbybit.dev/classes/bitbybit_math.Math.html#twoNrOperation
-        * @param inputs one numbers and operator action
+        * Does basic math operations on one number
+        * @link https://docs.bitbybit.dev/classes/bitbybit_math.Math.html#oneNrOperation
+        * @param inputs one number and operator action
         * @returns Result of math operation
         * @group operations
         * @shortname one number
