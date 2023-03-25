@@ -58,7 +58,7 @@ export class Lists {
      * @param inputs a list of lists to flip
      * @returns item
      * @group edit
-     * @shortname reverse
+     * @shortname flip lists
      * @drawable false
      */
     flipLists(inputs: Inputs.Lists.ListDto): any {
