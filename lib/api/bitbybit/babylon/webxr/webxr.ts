@@ -12,10 +12,6 @@ export class BabylonWebXR {
 
     /**
      * Creates default XR experience with teleportation
-     * <div>
-     *  <img src="../assets/images/blockly-images/babylon/camera/createdefaultxrexperiencewithteleportation.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_webxr.BabylonWebXR.html#createDefaultXRExperienceWithTeleportation
      * @param inputs Creates default XR experience with teleportation
      */
     async createDefaultXRExperienceWithTeleportation(inputs: Inputs.BabylonWebXR.DefaultWebXRWithTeleportationDto): Promise<void> {

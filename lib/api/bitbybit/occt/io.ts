@@ -18,10 +18,6 @@ export class OCCTWIO extends OCCTIO {
 
     /**
      * Imports the step or iges asset file
-     * <div>
-     *  <img src="../assets/images/blockly-images/occt/io/loadSTEPorIGES.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_occt_io.OCCTIO.html#loadSTEPorIGES
      * @param inputs STEP or IGES import
      * @group io
      * @shortname load step | iges
@@ -40,10 +36,6 @@ export class OCCTWIO extends OCCTIO {
 
     /**
      * Saves the stl file
-     * <div>
-     *  <img src="../assets/images/blockly-images/occt/io/saveShapeStl.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_occt_io.OCCTIO.html#saveShapeStl
      * @param inputs STL filename and shape to be saved
      * @group io
      * @shortname save stl

@@ -16,10 +16,6 @@ export class JSCADShapes {
 
     /**
      * Create a 3D cube shape
-     * <div>
-     *  <img src="../assets/images/blockly-images/jscad/shapes/cube.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_shapes.JSCADShapes.html#cube
      * @param inputs Cube parameters
      * @returns Cube solid
      * @group primitives
@@ -32,10 +28,6 @@ export class JSCADShapes {
 
     /**
      * Create a 3D cubes on multiple center points
-     * <div>
-     *  <img src="../assets/images/blockly-images/jscad/shapes/cubesOnCenterPoints.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_shapes.JSCADShapes.html#cubesOnCenterPoints
      * @param inputs Cube with multiple center points parameters
      * @returns List of cube solids
      * @group primitives on centers
@@ -48,10 +40,6 @@ export class JSCADShapes {
 
     /**
      * Create a 3D cuboid shape
-     * <div>
-     *  <img src="../assets/images/blockly-images/jscad/shapes/cuboid.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_shapes.JSCADShapes.html#cuboid
      * @param inputs Cuboid parameters
      * @returns Cuboid solid
      * @group primitives
@@ -64,10 +52,6 @@ export class JSCADShapes {
 
     /**
      * Create a 3D cuboids on multiple center points
-     * <div>
-     *  <img src="../assets/images/blockly-images/jscad/shapes/cuboidsOnCenterPoints.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_shapes.JSCADShapes.html#cuboidsOnCenterPoints
      * @param inputs Cuboids with multiple center point parameters
      * @returns List of cuboid solids
      * @group primitives on centers
@@ -80,10 +64,6 @@ export class JSCADShapes {
 
     /**
      * Create a 3D elliptic cylinder solid
-     * <div>
-     *  <img src="../assets/images/blockly-images/jscad/shapes/cylinderElliptic.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_shapes.JSCADShapes.html#cylinderElliptic
      * @param inputs Elliptic cylinder parameters
      * @returns Elliptic cylinder solid
      * @group primitives
@@ -96,10 +76,6 @@ export class JSCADShapes {
 
     /**
      * Create a 3D elliptic cylinders on multiple center points
-     * <div>
-     *  <img src="../assets/images/blockly-images/jscad/shapes/cylinderEllipticOnCenterPoints.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_shapes.JSCADShapes.html#cylinderEllipticOnCenterPoints
      * @param inputs Elliptic cylinders with multiple center point parameters
      * @returns List of elliptic cylinders solids
      * @group primitives on centers
@@ -112,10 +88,6 @@ export class JSCADShapes {
 
     /**
      * Create a 3D cylinder solid
-     * <div>
-     *  <img src="../assets/images/blockly-images/jscad/shapes/cylinder.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_shapes.JSCADShapes.html#cylinder
      * @param inputs Cylinder parameters
      * @returns Cylinder solid
      * @group primitives
@@ -128,10 +100,6 @@ export class JSCADShapes {
 
     /**
      * Create a 3D cylinders on multiple center points
-     * <div>
-     *  <img src="../assets/images/blockly-images/jscad/shapes/cylindersOnCenterPoints.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_shapes.JSCADShapes.html#cylindersOnCenterPoints
      * @param inputs Cylinders with multiple center point parameters
      * @returns List of cylinder solids
      * @group primitives on centers
@@ -144,10 +112,6 @@ export class JSCADShapes {
 
     /**
      * Create a 3D ellipsoid solid
-     * <div>
-     *  <img src="../assets/images/blockly-images/jscad/shapes/ellipsoid.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_shapes.JSCADShapes.html#ellipsoid
      * @param inputs Ellipsoid parameters
      * @returns Ellipsoid solid
      * @group primitives
@@ -160,10 +124,6 @@ export class JSCADShapes {
 
     /**
      * Create a 3D ellipsoids on multiple center points
-     * <div>
-     *  <img src="../assets/images/blockly-images/jscad/shapes/ellipsoidsOnCenterPoints.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_shapes.JSCADShapes.html#ellipsoidsOnCenterPoints
      * @param inputs Ellipsoid parameters with multiple center points
      * @returns List of ellipsoid solids
      * @group primitives on centers
@@ -176,10 +136,6 @@ export class JSCADShapes {
 
     /**
      * Create a 3D geodesic sphere solid
-     * <div>
-     *  <img src="../assets/images/blockly-images/jscad/shapes/geodesicSphere.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_shapes.JSCADShapes.html#geodesicSphere
      * @param inputs Geodesic sphere parameters
      * @returns Geodesic sphere solid
      * @group primitives
@@ -192,10 +148,6 @@ export class JSCADShapes {
 
     /**
      * Create a 3D geodesic spheres on multiple center points
-     * <div>
-     *  <img src="../assets/images/blockly-images/jscad/shapes/geodesicSpheresOnCenterPoints.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_shapes.JSCADShapes.html#geodesicSpheresOnCenterPoints
      * @param inputs Geodesic sphere parameters with multiple center points
      * @returns List of geodesic spheres
      * @group primitives on centers
@@ -208,10 +160,6 @@ export class JSCADShapes {
 
     /**
      * Create a 3D rounded cuboid solid
-     * <div>
-     *  <img src="../assets/images/blockly-images/jscad/shapes/roundedCuboid.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_shapes.JSCADShapes.html#roundedCuboid
      * @param inputs Rounded cuboid parameters
      * @returns Rounded cuboid solid
      * @group primitives
@@ -225,10 +173,6 @@ export class JSCADShapes {
 
     /**
      * Create a 3D rounded cuboids on multiple center points
-     * <div>
-     *  <img src="../assets/images/blockly-images/jscad/shapes/roundedCuboidsOnCenterPoints.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_shapes.JSCADShapes.html#roundedCuboidsOnCenterPoints
      * @param inputs Rounded cuboids parameters with multiple center points
      * @returns List of rounded cuboids
      * @group primitives on centers
@@ -241,10 +185,6 @@ export class JSCADShapes {
 
     /**
      * Create a 3D rounded cylinder solid
-     * <div>
-     *  <img src="../assets/images/blockly-images/jscad/shapes/roundedCylinder.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_shapes.JSCADShapes.html#roundedCylinder
      * @param inputs Rounded cylinder parameters
      * @returns Rounded cylinder solid
      * @group primitives
@@ -257,10 +197,6 @@ export class JSCADShapes {
 
     /**
      * Create a 3D rounded cylinders on multiple center points
-     * <div>
-     *  <img src="../assets/images/blockly-images/jscad/shapes/roundedCylindersOnCenterPoints.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_shapes.JSCADShapes.html#roundedCylindersOnCenterPoints
      * @param inputs Rounded cylinders parameters with multiple center points
      * @returns List of rounded cylinders
      * @group primitives on centers
@@ -273,10 +209,6 @@ export class JSCADShapes {
 
     /**
      * Create a 3D sphere solid
-     * <div>
-     *  <img src="../assets/images/blockly-images/jscad/shapes/sphere.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_shapes.JSCADShapes.html#sphere
      * @param inputs Sphere parameters
      * @returns Sphere solid
      * @group primitives
@@ -289,10 +221,6 @@ export class JSCADShapes {
 
     /**
      * Create a 3D sphere on multiple center points
-     * <div>
-     *  <img src="../assets/images/blockly-images/jscad/shapes/spheresOnCenterPoints.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_shapes.JSCADShapes.html#spheresOnCenterPoints
      * @param inputs Sphere parameters with multiple center points
      * @returns List of spheres
      * @group primitives on centers
@@ -305,10 +233,6 @@ export class JSCADShapes {
 
     /**
      * Create a 3D torus solid
-     * <div>
-     *  <img src="../assets/images/blockly-images/jscad/shapes/torus.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_shapes.JSCADShapes.html#torus
      * @param inputs Torus parameters
      * @returns Torus solid
      * @group primitives

@@ -15,11 +15,6 @@ export class JSCADExtrusions {
 
     /**
      * Linear extrude 2D geometries of solid category
-     * <div>
-     *  <img src="../assets/images/blockly-images/jscad/extrusions/extrudeLinear1.svg" alt="Blockly Image"/>
-     *  <img src="../assets/images/blockly-images/jscad/extrusions/extrudeLinear2.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_extrusions.JSCADExtrusions.html#extrudeLinear
      * @param inputs Contains options and geometries for linear extrude
      * @returns Extruded geometry
      * @group extrude
@@ -32,11 +27,6 @@ export class JSCADExtrusions {
 
     /**
      * Rectangular extrude 2D geometries of solid category. Creates a wall-type extrusion of certain height and size.
-     * <div>
-     *  <img src="../assets/images/blockly-images/jscad/extrusions/extrudeRectangular1.svg" alt="Blockly Image"/>
-     *  <img src="../assets/images/blockly-images/jscad/extrusions/extrudeRectangular2.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_extrusions.JSCADExtrusions.html#extrudeRectangular
      * @param inputs Contains options and geometries for rectangular extrude
      * @returns Extruded geometry
      * @group extrude
@@ -49,10 +39,6 @@ export class JSCADExtrusions {
 
     /**
      * Rectangular extrude a list of 2D points. Creates a wall-type extrusion of certain height and size.
-     * <div>
-     *  <img src="../assets/images/blockly-images/jscad/extrusions/extrudeRectangularPoints.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_extrusions.JSCADExtrusions.html#extrudeRectangularPoints
      * @param inputs Contains options and points for extrusion
      * @returns Extruded geometry
      * @group extrude
@@ -65,10 +51,6 @@ export class JSCADExtrusions {
 
     /**
      * Rectangular extrude a list of 2D points. Creates a wall-type extrusion of certain height and size.
-     * <div>
-     *  <img src="../assets/images/blockly-images/jscad/extrusions/extrudeRectangularPoints.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_extrusions.JSCADExtrusions.html#extrudeRotate
      * @param inputs Contains options and points for extrusion
      * @returns Extruded geometry
      * @group extrude

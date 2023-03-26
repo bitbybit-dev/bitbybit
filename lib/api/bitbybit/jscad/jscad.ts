@@ -45,7 +45,6 @@ export class JSCAD {
 
     /**
      * Draws a single solids
-     * @link https://docs.bitbybit.dev/classes/bitbybit_jscad.JSCAD.html#drawSolidOrPolygonMesh
      * @param inputs Contains a solid or polygon and information for drawing
      * @returns Mesh that is being drawn by Babylon
      * @group jscad
@@ -93,7 +92,6 @@ export class JSCAD {
 
     /**
      * Draws multiple solids
-     * @link https://docs.bitbybit.dev/classes/bitbybit_jscad.JSCAD.html#drawSolidOrPolygonMeshes
      * @param inputs Contains solids or polygons and information for drawing
      * @returns Mesh that is being drawn by Babylon
      * @group jscad
@@ -142,10 +140,6 @@ export class JSCAD {
 
     /**
      * Draws a 2D path
-     * <div>
-     *  <img src="../assets/images/blockly-images/jscad/drawPath.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_jscad.JSCAD.html#drawPath
      * @param inputs Contains a path and information for drawing
      * @returns Mesh that is being drawn by Babylon
      * @group jscad
@@ -176,10 +170,6 @@ export class JSCAD {
 
     /**
      * Transforms the Jscad solid meshes with a given list of transformations.
-     * <div>
-     *  <img src="../assets/images/blockly-images/jscad/transformSolids.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_jscad.JSCAD.html#transformSolids
      * @param inputs Solids with the transformation matrixes
      * @returns Solids with a transformation
      * @group transforms
@@ -192,10 +182,6 @@ export class JSCAD {
 
     /**
      * Transforms the Jscad solid mesh with a given list of transformations.
-     * <div>
-     *  <img src="../assets/images/blockly-images/jscad/transformSolid.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_jscad.JSCAD.html#transformSolid
      * @param inputs Solid with the transformation matrixes
      * @returns Solid with a transformation
      * @group transforms
@@ -208,10 +194,6 @@ export class JSCAD {
 
     /**
      * Downloads the binary STL file from a 3D solid
-     * <div>
-     *  <img src="../assets/images/blockly-images/jscad/downloadSolidSTL.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_jscad.JSCAD.html#downloadSolidSTL
      * @param inputs 3D Solid
      * @group io
      * @shortname solid to stl
@@ -223,10 +205,6 @@ export class JSCAD {
 
     /**
      * Downloads the binary STL file from a 3D solids
-     * <div>
-     *  <img src="../assets/images/blockly-images/jscad/downloadSolidsSTL.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_jscad.JSCAD.html#downloadSolidsSTL
      * @param inputs 3D Solid
      * @group io
      * @shortname solids to stl

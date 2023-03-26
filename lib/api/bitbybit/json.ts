@@ -13,7 +13,6 @@ export class JSONBitByBit {
 
     /**
      * Stringifies the input value
-     * @link https://docs.bitbybit.dev/classes/bitbybit_json.JSON.html#stringify
      * @param inputs a value to be stringified
      * @returns string
      * @group transform
@@ -26,7 +25,6 @@ export class JSONBitByBit {
 
     /**
      * Parses the input value
-     * @link https://docs.bitbybit.dev/classes/bitbybit_json.JSON.html#parse
      * @param inputs a value to be parsed
      * @returns any
      * @group transform
@@ -39,7 +37,6 @@ export class JSONBitByBit {
 
     /**
      * Queries the input value
-     * @link https://docs.bitbybit.dev/classes/bitbybit_json.JSON.html#query
      * @param inputs a value to be queried
      * @returns any
      * @group jsonpath
@@ -52,7 +49,6 @@ export class JSONBitByBit {
 
     /**
      * Sets value to the json by providing a path
-     * @link https://docs.bitbybit.dev/classes/bitbybit_json.JSON.html#setValue
      * @param inputs a value to be added, json and a path
      * @returns any
      * @group jsonpath
@@ -68,7 +64,6 @@ export class JSONBitByBit {
 
     /**
      * Find paths to elements in object matching path expression
-     * @link https://docs.bitbybit.dev/classes/bitbybit_json.JSON.html#paths
      * @param inputs a json value and a query
      * @returns any
      * @group jsonpath
@@ -81,7 +76,6 @@ export class JSONBitByBit {
 
     /**
      * Find paths to elements in object matching path expression as strings
-     * @link https://docs.bitbybit.dev/classes/bitbybit_json.JSON.html#pathsAsStrings
      * @param inputs a json value and a query
      * @returns any
      * @group jsonpath

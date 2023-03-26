@@ -7,9 +7,6 @@ import * as Inputs from '../inputs/inputs';
  * Contains various methods for vector mathematics. Vector in bitbybit is simply an array, usually containing numbers.
  * In 3D [x, y, z] form describes space, where y is the up vector.
  * Because of this form Vector can be interchanged with Point, which also is an array in [x, y, z] form.
- * <div>
- *  <img src="../assets/images/blockly-images/vector/vector.svg" alt="Blockly Image"/>
- * </div>
  */
 
 export class Vector {
@@ -17,10 +14,6 @@ export class Vector {
     constructor(private readonly context: Context) { }
     /**
      * Measures the angle between two vectors in degrees
-     * <div>
-     *  <img src="../assets/images/blockly-images/vector/angleBetween.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_vector.Vector.html#angleBetween
      * @param inputs Contains two vectors represented as number arrays
      * @group angles
      * @shortname angle
@@ -33,10 +26,6 @@ export class Vector {
 
     /**
      * Measures the normalized 2d angle between two vectors in degrees
-     * <div>
-     *  <img src="../assets/images/blockly-images/vector/angleBetweenNormalized2d.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_vector.Vector.html#angleBetweenNormalized2d
      * @param inputs Contains two vectors represented as number arrays
      * @returns Number in degrees
      * @group angles
@@ -49,10 +38,6 @@ export class Vector {
 
     /**
      * Measures a positive angle between two vectors given the reference vector in degrees
-     * <div>
-     *  <img src="../assets/images/blockly-images/vector/positiveAngleBetween.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_vector.Vector.html#positiveAngleBetween
      * @param inputs Contains information of two vectors and a reference vector
      * @returns Number in degrees
      * @group angles
@@ -65,10 +50,6 @@ export class Vector {
 
     /**
      * Adds all vector xyz values together and create a new vector
-     * <div>
-     *  <img src="../assets/images/blockly-images/vector/addAll.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_vector.Vector.html#addAll
      * @param inputs Vectors to be added
      * @returns New vector that has xyz values as sums of all the vectors
      * @group sum
@@ -81,10 +62,6 @@ export class Vector {
 
     /**
      * Adds two vectors together
-     * <div>
-     *  <img src="../assets/images/blockly-images/vector/add.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_vector.Vector.html#add
      * @param inputs Two vectors to be added
      * @returns Number array representing vector
      * @group sum
@@ -97,10 +74,6 @@ export class Vector {
 
     /**
      * Checks if the boolean array contains only true values, if there's a single false it will return false.
-     * <div>
-     *  <img src="../assets/images/blockly-images/vector/all.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_vector.Vector.html#all
      * @param inputs Vectors to be checked
      * @returns Boolean indicating if vector contains only true values
      * @group sum
@@ -113,10 +86,6 @@ export class Vector {
 
     /**
      * Cross two vectors
-     * <div>
-     *  <img src="../assets/images/blockly-images/vector/cross.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_vector.Vector.html#cross
      * @param inputs Two vectors to be crossed
      * @group base
      * @shortname all
@@ -129,10 +98,6 @@ export class Vector {
 
     /**
      * Squared distance between two vectors
-     * <div>
-     *  <img src="../assets/images/blockly-images/vector/distSquared.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_vector.Vector.html#distSquared
      * @param inputs Two vectors
      * @returns Number representing squared distance between two vectors
      * @group distance
@@ -145,10 +110,6 @@ export class Vector {
 
     /**
      * Distance between two vectors
-     * <div>
-     *  <img src="../assets/images/blockly-images/vector/dist.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_vector.Vector.html#dist
      * @param inputs Two vectors
      * @returns Number representing distance between two vectors
      * @group distance
@@ -160,11 +121,7 @@ export class Vector {
     }
 
     /**
-     * Divide the vector by a scalar value/
-     * <div>
-     *  <img src="../assets/images/blockly-images/vector/div.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_vector.Vector.html#div
+     * Divide the vector by a scalar value
      * @param inputs Contains vector and a scalar
      * @returns Vector that is a result of division by a scalar
      * @group base
@@ -177,10 +134,6 @@ export class Vector {
 
     /**
      * Computes the domain between minimum and maximum values of the vector
-     * <div>
-     *  <img src="../assets/images/blockly-images/vector/domain.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_vector.Vector.html#domain
      * @param inputs Vector information
      * @returns Number representing distance between two vectors
      * @group base
@@ -193,10 +146,6 @@ export class Vector {
 
     /**
      * Dot product between two vectors
-     * <div>
-     *  <img src="../assets/images/blockly-images/vector/dot.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_vector.Vector.html#dot
      * @param inputs Two vectors
      * @returns Number representing dot product of the vector
      * @group base
@@ -209,10 +158,6 @@ export class Vector {
 
     /**
      * Checks if vector is finite for each number and returns a boolean array
-     * <div>
-     *  <img src="../assets/images/blockly-images/vector/finite.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_vector.Vector.html#finite
      * @param inputs Vector with possibly infinite values
      * @returns Vector array that contains boolean values for each number in the input
      * vector that identifies if value is finite (true) or infinite (false)
@@ -226,10 +171,6 @@ export class Vector {
 
     /**
      * Checks if the vector is zero length
-     * <div>
-     *  <img src="../assets/images/blockly-images/vector/isZero.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_vector.Vector.html#isZero
      * @param inputs Vector to be checked
      * @returns Boolean that identifies if vector is zero length
      * @group validate
@@ -242,10 +183,6 @@ export class Vector {
 
     /**
      * Finds in between vector between two vectors by providing a fracture
-     * <div>
-     *  <img src="../assets/images/blockly-images/vector/lerp.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_vector.Vector.html#lerp
      * @param inputs Information for finding vector between two vectors using a fraction
      * @returns Vector that is in between two vectors
      * @group distance
@@ -258,10 +195,6 @@ export class Vector {
 
     /**
      * Finds the maximum value in the vector
-     * <div>
-     *  <img src="../assets/images/blockly-images/vector/max.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_vector.Vector.html#max
      * @param inputs Vector to be checked
      * @returns Largest number in the vector
      * @group extract
@@ -274,10 +207,6 @@ export class Vector {
 
     /**
      * Finds the minimum value in the vector
-     * <div>
-     *  <img src="../assets/images/blockly-images/vector/min.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_vector.Vector.html#min
      * @param inputs Vector to be checked
      * @returns Lowest number in the vector
      * @group extract
@@ -290,10 +219,6 @@ export class Vector {
 
     /**
      * Multiple vector with the scalar
-     * <div>
-     *  <img src="../assets/images/blockly-images/vector/mul.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_vector.Vector.html#mul
      * @param inputs Vector with a scalar
      * @returns Vector that results from multiplication
      * @group base
@@ -306,10 +231,6 @@ export class Vector {
 
     /**
      * Negates the vector
-     * <div>
-     *  <img src="../assets/images/blockly-images/vector/neg.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_vector.Vector.html#neg
      * @param inputs Vector to negate
      * @returns Negative vector
      * @group base
@@ -322,10 +243,6 @@ export class Vector {
 
     /**
      * Compute squared norm
-     * <div>
-     *  <img src="../assets/images/blockly-images/vector/normSquared.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_vector.Vector.html#normSquared
      * @param inputs Vector for squared norm
      * @returns Number that is squared norm
      * @group base
@@ -338,10 +255,6 @@ export class Vector {
 
     /**
      * Norm of the vector
-     * <div>
-     *  <img src="../assets/images/blockly-images/vector/norm.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_vector.Vector.html#norm
      * @param inputs Vector to compute the norm
      * @returns Number that is norm of the vector
      * @group base
@@ -354,10 +267,6 @@ export class Vector {
 
     /**
      * Normalize the vector into a unit vector, that has a length of 1
-     * <div>
-     *  <img src="../assets/images/blockly-images/vector/normalized.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_vector.Vector.html#normalized
      * @param inputs Vector to normalize
      * @returns Unit vector that has length of 1
      * @group base
@@ -370,10 +279,6 @@ export class Vector {
 
     /**
      * Finds a point coordinates on the given distance ray that spans between the point along the direction vector
-     * <div>
-     *  <img src="../assets/images/blockly-images/vector/onRay.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_vector.Vector.html#onRay
      * @param inputs Provide a point, vector and a distance for finding a point
      * @returns Vector representing point on the ray
      * @group base
@@ -386,10 +291,6 @@ export class Vector {
 
     /**
      * Create a xyz vector
-     * <div>
-     *  <img src="../assets/images/blockly-images/vector/vectorXYZ.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_vector.Vector.html#vectorXYZ
      * @param inputs Max value for the range
      * @returns Create a vector of xyz values
      * @group create
@@ -402,10 +303,6 @@ export class Vector {
 
     /**
      * Creates a vector of integers between 0 and maximum ceiling integer
-     * <div>
-     *  <img src="../assets/images/blockly-images/vector/range.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_vector.Vector.html#range
      * @param inputs Max value for the range
      * @returns Vector containing items from 0 to max
      * @group create
@@ -418,10 +315,6 @@ export class Vector {
 
     /**
      * Computes signed angle between two vectors and a reference. This will always return a smaller angle between two possible angles.
-     * <div>
-     *  <img src="../assets/images/blockly-images/vector/signedAngleBetween.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_vector.Vector.html#signedAngleBetween
      * @param inputs Contains information of two vectors and a reference vector
      * @returns Signed angle in degrees
      * @group angles
@@ -436,10 +329,6 @@ export class Vector {
 
     /**
      * Creates a vector that contains numbers spanning between minimum and maximum values at a given step
-     * <div>
-     *  <img src="../assets/images/blockly-images/vector/span.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_vector.Vector.html#span
      * @param inputs Span information containing min, max and step values
      * @returns Vector containing number between min, max and increasing at a given step
      * @group create
@@ -452,10 +341,6 @@ export class Vector {
 
     /**
      * Subtract two vectors
-     * <div>
-     *  <img src="../assets/images/blockly-images/vector/sub.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_vector.Vector.html#sub
      * @param inputs Two vectors
      * @returns Vector that result by subtraction two vectors
      * @group base
@@ -468,10 +353,6 @@ export class Vector {
 
     /**
      * Sums the values of the vector
-     * <div>
-     *  <img src="../assets/images/blockly-images/vector/sum.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_vector.Vector.html#sum
      * @param inputs Vector to sum
      * @returns Number that results by adding up all values in the vector
      * @group base

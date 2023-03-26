@@ -15,7 +15,6 @@ export class BabylonNode {
 
     /**
      * Draws a node of given size with given colours for every axis
-     * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_node.BabylonNode.html#drawNode
      * @param inputs Contains node data that includes size and colour information
      */
     drawNode(inputs: Inputs.BabylonNode.DrawNodeDto): void {
@@ -27,7 +26,6 @@ export class BabylonNode {
 
     /**
      * Draws a nodes of given size with given colours for every axis
-     * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_node.BabylonNode.html#drawNodes
      * @param inputs Contains node data that includes size and colour information
      */
     drawNodes(inputs: Inputs.BabylonNode.DrawNodesDto): void {
@@ -40,10 +38,6 @@ export class BabylonNode {
 
     /**
      * Creates a node on the origin with the given rotations in the parent coordinate system
-     * <div>
-     *  <img src="../assets/images/blockly-images/babylon/node/createNodeFromRotation.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_node.BabylonNode.html#createNodeFromRotation
      * @param inputs Contains information for origin, rotation and parent node
      * @returns A new node
      */
@@ -63,10 +57,6 @@ export class BabylonNode {
 
     /**
      * Creates a world node which has root node as his parent
-     * <div>
-     *  <img src="../assets/images/blockly-images/babylon/node/createWorldNode.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_node.BabylonNode.html#createWorldNode
      * @returns A new node whos parent is the root node of the scene
      */
     createWorldNode(): TransformNode {
@@ -77,10 +67,6 @@ export class BabylonNode {
 
     /**
      * Gets the absolute forward facing vector in world space
-     * <div>
-     *  <img src="../assets/images/blockly-images/babylon/node/getAbsoluteForwardVector.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_node.BabylonNode.html#getAbsoluteForwardVector
      * @param inputs Node from which to get the forward vector
      * @returns Vector as an array of numbers
      */
@@ -91,10 +77,6 @@ export class BabylonNode {
 
     /**
      * Gets the absolute right facing vector in world space
-     * <div>
-     *  <img src="../assets/images/blockly-images/babylon/node/getAbsoluteRightVector.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_node.BabylonNode.html#getAbsoluteRightVector
      * @param inputs Node from which to get the right vector
      * @returns Vector as an array of numbers
      */
@@ -105,10 +87,6 @@ export class BabylonNode {
 
     /**
      * Gets the absolute up facing vector in world space
-     * <div>
-     *  <img src="../assets/images/blockly-images/babylon/node/getAbsoluteUpVector.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_node.BabylonNode.html#getAbsoluteUpVector
      * @param inputs Node from which to get the up vector
      * @returns Vector as an array of numbers
      */
@@ -119,10 +97,6 @@ export class BabylonNode {
 
     /**
      * Gets the absolute position of the node as origin vector in world space
-     * <div>
-     *  <img src="../assets/images/blockly-images/babylon/node/getAbsolutePosition.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_node.BabylonNode.html#getAbsolutePosition
      * @param inputs Node from which to get the absolute position
      * @returns Vector as an array of numbers indicating location of origin in world space
      */
@@ -133,10 +107,6 @@ export class BabylonNode {
 
     /**
      * Gets the absolute rotation of the node as a transformation matrix encoded in array of 16 numbers
-     * <div>
-     *  <img src="../assets/images/blockly-images/babylon/node/getAbsoluteRotationTransformation.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_node.BabylonNode.html#getAbsoluteRotationTransformation
      * @param inputs Node from which to get the rotation transformation
      * @returns Transformation as an array of 16 numbers
      */
@@ -148,10 +118,6 @@ export class BabylonNode {
 
     /**
      * Gets the rotation of the node in local parent coordinate space as a transformation matrix encoded in array of 16 numbers
-     * <div>
-     *  <img src="../assets/images/blockly-images/babylon/node/getRotationTransformation.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_node.BabylonNode.html#getRotationTransformation
      * @param inputs Node from which to get the rotation transformation
      * @returns Transformation as an array of 16 numbers
      */
@@ -163,10 +129,6 @@ export class BabylonNode {
 
     /**
      * Gets children of the node
-     * <div>
-     *  <img src="../assets/images/blockly-images/babylon/node/getChildren.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_node.BabylonNode.html#getChildren
      * @param inputs Node from which to get the children
      * @returns List of children nodes in the array
      */
@@ -176,10 +138,6 @@ export class BabylonNode {
 
     /**
      * Gets parent of the node
-     * <div>
-     *  <img src="../assets/images/blockly-images/babylon/node/getParent.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_node.BabylonNode.html#getParent
      * @param inputs Node from which to get a parent
      * @returns Parent node
      */
@@ -189,10 +147,6 @@ export class BabylonNode {
 
     /**
      * Gets the position of the node expressed in local space
-     * <div>
-     *  <img src="../assets/images/blockly-images/babylon/node/getPositionExpressedInLocalSpace.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_node.BabylonNode.html#getPositionExpressedInLocalSpace
      * @param inputs Node from which to get the position in local space
      * @returns Position vector
      */
@@ -203,10 +157,6 @@ export class BabylonNode {
 
     /**
      * Gets the root node
-     * <div>
-     *  <img src="../assets/images/blockly-images/babylon/node/getRootNode.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_node.BabylonNode.html#getRootNode
      * @returns Root node
      */
     getRootNode(): TransformNode {
@@ -215,10 +165,6 @@ export class BabylonNode {
 
     /**
      * Gets the euler rotations
-     * <div>
-     *  <img src="../assets/images/blockly-images/babylon/node/getRotation.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_node.BabylonNode.html#getRotation
      * @param inputs Node from which to get rotation
      * @returns Euler rotations of x, y and z angles in the number array
      */
@@ -233,10 +179,6 @@ export class BabylonNode {
 
     /**
      * Rotates the node around axis and given position by a given angle
-     * <div>
-     *  <img src="../assets/images/blockly-images/babylon/node/rotateAroundAxisWithPosition.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_node.BabylonNode.html#rotateAroundAxisWithPosition
      * @param inputs Rotation around axis information
      */
     rotateAroundAxisWithPosition(inputs: Inputs.BabylonNode.RotateAroundAxisNodeDto): void {
@@ -249,10 +191,6 @@ export class BabylonNode {
 
     /**
      * Rotates the node around the origin and given axis
-     * <div>
-     *  <img src="../assets/images/blockly-images/babylon/node/rotate.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_node.BabylonNode.html#rotate
      * @param inputs Rotation information
      */
     rotate(inputs: Inputs.BabylonNode.RotateNodeDto): void {
@@ -264,10 +202,6 @@ export class BabylonNode {
 
     /**
      * Sets the absolute position of the node
-     * <div>
-     *  <img src="../assets/images/blockly-images/babylon/node/setAbsolutePosition.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_node.BabylonNode.html#setAbsolutePosition
      * @param inputs Node absolute position information
      */
     setAbsolutePosition(inputs: Inputs.BabylonNode.NodePositionDto): void {
@@ -278,10 +212,6 @@ export class BabylonNode {
 
     /**
      * Sets the direction of the node
-     * <div>
-     *  <img src="../assets/images/blockly-images/babylon/node/setDirection.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_node.BabylonNode.html#setDirection
      * @param inputs Direction information
      */
     setDirection(inputs: Inputs.BabylonNode.NodeDirectionDto): void {
@@ -292,10 +222,6 @@ export class BabylonNode {
 
     /**
      * Sets the new parent to the node
-     * <div>
-     *  <img src="../assets/images/blockly-images/babylon/node/setParent.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_node.BabylonNode.html#setParent
      * @param inputs Node parent information
      */
     setParent(inputs: Inputs.BabylonNode.NodeParentDto): void {
@@ -306,10 +232,6 @@ export class BabylonNode {
 
     /**
      * Translates the node by a given direction vector and a distance
-     * <div>
-     *  <img src="../assets/images/blockly-images/babylon/node/translate.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_node.BabylonNode.html#translate
      * @param inputs Node translation information
      */
     translate(inputs: Inputs.BabylonNode.NodeTranslationDto): void {

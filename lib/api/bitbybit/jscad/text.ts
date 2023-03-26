@@ -15,10 +15,6 @@ export class JSCADText {
 
     /**
      * Creates a text that is based on chain hulling cylinders
-     * <div>
-     *  <img src="../assets/images/blockly-images/jscad/text/cylindricalText.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_text.JSCADText.html#cylindricalText
      * @param inputs Cylindrical text parameters
      * @returns List of solids for text
      * @group text
@@ -31,10 +27,6 @@ export class JSCADText {
 
     /**
      * Creates a text that is based on chain hulling spheres
-     * <div>
-     *  <img src="../assets/images/blockly-images/jscad/text/sphericalText.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_text.JSCADText.html#sphericalText
      * @param inputs Spherical text parameters
      * @returns List of solids for text
      * @group text
@@ -47,10 +39,6 @@ export class JSCADText {
 
     /**
      * Creates a vector text
-     * <div>
-     *  <img src="../assets/images/blockly-images/jscad/text/createVectorText.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_jscad_text.JSCADText.html#createVectorText
      * @param inputs Vector text parameters
      * @returns List of polygons
      * @group text

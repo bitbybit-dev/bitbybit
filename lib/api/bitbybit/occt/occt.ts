@@ -28,7 +28,6 @@ export class OCCTW extends OCCT {
 
     /**
      * Draws OpenCascade shape by going through faces and edges
-     * @link https://docs.bitbybit.dev/classes/bitbybit_occt.OCCT.html#drawShape
      * @param inputs Contains a shape to be drawn and additional information
      * @returns BabylonJS Mesh
      * @group drawing

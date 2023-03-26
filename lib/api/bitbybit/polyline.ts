@@ -15,7 +15,6 @@ export class Polyline {
 
     /**
      * Draws a single polyline
-     * @link https://docs.bitbybit.dev/classes/bitbybit_polyline.Polyline.html#drawPolyline
      * @param inputs Contains a polyline to be drawn
      * @returns Lines mesh that is being drawn by Babylon
      */
@@ -32,7 +31,6 @@ export class Polyline {
 
     /**
      * Draws multiple polylines
-     * @link https://docs.bitbybit.dev/classes/bitbybit_polyline.Polyline.html#drawPolylines
      * @param inputs Contains a polyline to be drawn
      * @returns Lines mesh that is being drawn by Babylon
      */
@@ -50,12 +48,7 @@ export class Polyline {
 
     /**
      * Converts a polyline to a NURBS curve
-     * <div>
-     *  <img src="../assets/images/blockly-images/polyline/convertToNurbsCurve.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_polyline.Polyline.html#convertToNurbsCurve
      * Returns the verbnurbs NurbsCurve object
-     * @link http://verbnurbs.com/docs/geom/NurbsCurve/
      * @param inputs Polyline to be transformed to curve
      * @returns Verb nurbs curve
      */
@@ -65,10 +58,6 @@ export class Polyline {
 
     /**
      * Gets the length of the polyline
-     * <div>
-     *  <img src="../assets/images/blockly-images/polyline/length.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_polyline.Polyline.html#length
      * @param inputs Polyline to be queried
      * @returns Length of the polyline
      */
@@ -84,10 +73,6 @@ export class Polyline {
 
     /**
      * Gets the number of points in the polyline
-     * <div>
-     *  <img src="../assets/images/blockly-images/polyline/countPoints.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_polyline.Polyline.html#countPoints
      * @param inputs Polyline to be queried
      * @returns Number of points in polyline
      */
@@ -97,10 +82,6 @@ export class Polyline {
 
     /**
      * Gets the points of the polyline
-     * <div>
-     *  <img src="../assets/images/blockly-images/polyline/getPoints.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_polyline.Polyline.html#getPoints
      * @param inputs Polyline to be queried
      * @returns Points of the polyline
      */
@@ -110,10 +91,6 @@ export class Polyline {
 
     /**
      * Reverse the points of the polyline
-     * <div>
-     *  <img src="../assets/images/blockly-images/polyline/reverse.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_polyline.Polyline.html#reverse
      * @param inputs Polyline to be reversed
      * @returns Reversed polyline
      */
@@ -123,10 +100,6 @@ export class Polyline {
 
     /**
      * Transform the polyline
-     * <div>
-     *  <img src="../assets/images/blockly-images/polyline/transformPolyline.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_polyline.Polyline.html#transformPolyline
      * @param inputs Polyline to be transformed
      * @returns Transformed polyline
      */
@@ -139,10 +112,6 @@ export class Polyline {
 
     /**
      * Create the polyline
-     * <div>
-     *  <img src="../assets/images/blockly-images/polyline/create.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_polyline.Polyline.html#create
      * @param inputs Points of the polyline
      * @returns Polyline
      */

@@ -4,10 +4,6 @@ import * as Inputs from '../inputs/inputs';
 export class Color {
     /**
      * Creates a hex color
-     * <div>
-     *  <img src="../assets/images/blockly-images/color/hexColor.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_color.Color.html#hexColor
      * @param inputs Color hex
      * @returns color string
      * @group create
@@ -20,10 +16,6 @@ export class Color {
 
     /**
      * Creates rgb color from hex
-     * <div>
-     *  <img src="../assets/images/blockly-images/color/hexToRgb.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_color.Color.html#hexToRgb
      * @param inputs Color hex
      * @returns rgb color
      * @group convert
@@ -42,10 +34,6 @@ export class Color {
 
     /**
      * Creates hex color from rgb
-     * <div>
-     *  <img src="../assets/images/blockly-images/color/rgbToHex.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_color.Color.html#rgbToHex
      * @param inputs Color hext
      * @returns rgb color
      * @group convert
@@ -64,10 +52,6 @@ export class Color {
 
     /**
      * Creates rgb color from hex and maps to 0 - 100 value
-     * <div>
-     *  <img src="../assets/images/blockly-images/color/hexToRgbMapped.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_color.Color.html#hexToRgbMapped
      * @param inputs Color hext
      * @returns rgb color
      * @group convert
@@ -85,10 +69,6 @@ export class Color {
 
     /**
      * Get red param
-     * <div>
-     *  <img src="../assets/images/blockly-images/color/getRedParam.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_color.Color.html#getRedParam
      * @param inputs Color hext
      * @returns rgb color
      * @group hex to
@@ -102,10 +82,6 @@ export class Color {
 
     /**
      * Get green param
-     * <div>
-     *  <img src="../assets/images/blockly-images/color/getGreenParam.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_color.Color.html#getGreenParam
      * @param inputs Color hext
      * @returns rgb color
      * @group hex to
@@ -119,10 +95,6 @@ export class Color {
 
     /**
      * Get blue param
-     * <div>
-     *  <img src="../assets/images/blockly-images/color/getBlueParam.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_color.Color.html#getBlueParam
      * @param inputs Color hext
      * @returns blue param
      * @group hex to
@@ -136,10 +108,6 @@ export class Color {
 
     /**
      * RGB to red
-     * <div>
-     *  <img src="../assets/images/blockly-images/color/rgbToRed.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_color.Color.html#rgbToRed
      * @param inputs Color rgb
      * @returns red param
      * @group  rgb to
@@ -152,10 +120,6 @@ export class Color {
 
     /**
      * RGB to green
-     * <div>
-     *  <img src="../assets/images/blockly-images/color/rgbToGreen.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_color.Color.html#rgbToGreen
      * @param inputs Color rgb
      * @returns green param
      * @group rgb to
@@ -168,10 +132,6 @@ export class Color {
 
     /**
      * RGB to blue
-     * <div>
-     *  <img src="../assets/images/blockly-images/color/rgbToBlue.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_color.Color.html#rgbToBlue
      * @param inputs Color rgb
      * @returns blue param
      * @group rgb to

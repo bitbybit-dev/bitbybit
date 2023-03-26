@@ -46,10 +46,6 @@ export class Draw {
 
     /**
      * Draws any kind of geometry after all input promises are resolved. Inputs can also be non-promise like.
-     * <div>
-     *  <img src="../assets/images/blockly-images/draw/drawanyasync.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_draw.Draw.html#drawAnyAsync
      * @param inputs Contains options and entities to be drawn
      * @returns BabylonJS Mesh Promise
      * @group draw
@@ -129,10 +125,6 @@ export class Draw {
 
     /**
      * Draws a grid mesh on the ground plane in 3D space. This helps to orient yourself in the world.
-     * <div>
-     *  <img src="../assets/images/blockly-images/draw/drawGridMesh.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_draw.Draw.html#drawGridMesh
      * @param inputs Describes various parameters of the grid mesh like size, colour, etc.
      * @group draw
      * @shortname draw grid
@@ -158,10 +150,6 @@ export class Draw {
 
     /**
      * Draws any kind of geometry. Inputs can not be promises.
-     * <div>
-     *  <img src="../assets/images/blockly-images/draw/drawany.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_draw.Draw.html#drawAny
      * @param inputs Contains options and entities to be drawn
      * @returns BabylonJS Mesh
      */
@@ -208,10 +196,6 @@ export class Draw {
 
     /**
      * Creates draw options for basic geometry types like points, lines, polylines, surfaces and jscad meshes
-     * <div>
-     *  <img src="../assets/images/blockly-images/draw/optionsSimple.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_draw.Draw.html#optionsSimple
      * @param inputs option definition
      * @returns options
      * @group options
@@ -223,10 +207,6 @@ export class Draw {
 
     /**
      * Creates draw options for occt shape geometry like edges, wires, faces, shells, solids and compounds
-     * <div>
-     *  <img src="../assets/images/blockly-images/draw/optionsSimple.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_draw.Draw.html#optionsSimple
      * @param inputs option definition
      * @returns options
      * @group options
@@ -238,10 +218,6 @@ export class Draw {
 
     /**
      * Creates draw options for babylon js nodes
-     * <div>
-     *  <img src="../assets/images/blockly-images/draw/optionsSimple.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_draw.Draw.html#optionsSimple
      * @param inputs option definition
      * @returns options
      * @group options

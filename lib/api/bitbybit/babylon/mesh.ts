@@ -15,10 +15,6 @@ export class BabylonMesh {
     ) { }
 
     /** Disposes drawn mesh object from the scene
-     * <div>
-     *  <img src="../assets/images/blockly-images/babylon/mesh/dispose.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_mesh.BabylonMesh.html#dispose
      * @param inputs Contains BabylonJS mesh that should be disposed
      */
     dispose(inputs: Inputs.BabylonMesh.BabylonMeshDto): void {
@@ -29,10 +25,6 @@ export class BabylonMesh {
     }
 
     /** Udates drawn BabylonJS mesh object without disposing it
-     * <div>
-     *  <img src="../assets/images/blockly-images/babylon/mesh/updateDrawn.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_mesh.BabylonMesh.html#updateDrawn
      * @param inputs Contains BabylonJS mesh that should be updated, together with position, rotation, scaling and colour info
      * @returns BabylonJS Mesh
      */
@@ -112,10 +104,6 @@ export class BabylonMesh {
 
     /**
      * Change the visibility of a drawn BabylonJS mesh
-     * <div>
-     *  <img src="../assets/images/blockly-images/babylon/mesh/setVisibility.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_mesh.BabylonMesh.html#setVisibility
      * @param inputs BabylonJS mesh and parent mesh
      */
     setVisibility(inputs: Inputs.BabylonMesh.SetMeshVisibilityDto) {
@@ -131,10 +119,6 @@ export class BabylonMesh {
 
     /**
      * Hides the mesh
-     * <div>
-     *  <img src="../assets/images/blockly-images/babylon/mesh/hide.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_mesh.BabylonMesh.html#hide
      * @param inputs BabylonJS mesh to hide
      */
     hide(inputs: Inputs.BabylonMesh.ShowHideMeshDto) {
@@ -150,10 +134,6 @@ export class BabylonMesh {
 
     /**
      * Show the mesh
-     * <div>
-     *  <img src="../assets/images/blockly-images/babylon/mesh/show.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_mesh.BabylonMesh.html#show
      * @param inputs BabylonJS mesh to hide
      */
     show(inputs: Inputs.BabylonMesh.ShowHideMeshDto): void {
@@ -167,10 +147,6 @@ export class BabylonMesh {
 
     /**
      * Change the parent of the drawn mesh
-     * <div>
-     *  <img src="../assets/images/blockly-images/babylon/mesh/setParent.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_mesh.BabylonMesh.html#setParent
      * @param inputs BabylonJS mesh and parent mesh
      */
     setParent(inputs: Inputs.BabylonMesh.SetParentDto): void {
@@ -179,10 +155,6 @@ export class BabylonMesh {
 
     /**
      * Get the parent of the drawn mesh
-     * <div>
-     *  <img src="../assets/images/blockly-images/babylon/mesh/getParent.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_mesh.BabylonMesh.html#getParent
      * @param inputs BabylonJS mesh
      * @returns Parent mesh
      */
@@ -192,10 +164,6 @@ export class BabylonMesh {
 
     /**
      * Change the check collisions property of the drawn mesh
-     * <div>
-     *  <img src="../assets/images/blockly-images/babylon/mesh/setCheckCollisions.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_mesh.BabylonMesh.html#setCheckCollisions
      * @param inputs BabylonJS mesh and check collisions
      */
     setCheckCollisions(inputs: Inputs.BabylonMesh.CheckCollisionsBabylonMeshDto): void {
@@ -210,10 +178,6 @@ export class BabylonMesh {
 
     /**
      * Get the check collisions property of the drawn mesh
-     * <div>
-     *  <img src="../assets/images/blockly-images/babylon/mesh/getCheckCollisions.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_mesh.BabylonMesh.html#getCheckCollisions
      * @param inputs BabylonJS mesh and check collisions
      */
     getCheckCollisions(inputs: Inputs.BabylonMesh.CheckCollisionsBabylonMeshDto): boolean {
@@ -222,10 +186,6 @@ export class BabylonMesh {
 
     /**
      * Change the pickable property of the drawn mesh
-     * <div>
-     *  <img src="../assets/images/blockly-images/babylon/mesh/setPickable.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_mesh.BabylonMesh.html#setPickable
      * @param inputs BabylonJS mesh and pickable
      */
     setPickable(inputs: Inputs.BabylonMesh.PickableBabylonMeshDto): void {
@@ -240,10 +200,6 @@ export class BabylonMesh {
 
     /**
      * Change the pickable property of the drawn mesh
-     * <div>
-     *  <img src="../assets/images/blockly-images/babylon/mesh/setPickable.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_mesh.BabylonMesh.html#setPickable
      * @param inputs BabylonJS mesh and pickable
      */
     getPickable(inputs: Inputs.BabylonMesh.BabylonMeshDto): boolean {
@@ -252,10 +208,6 @@ export class BabylonMesh {
 
     /**
      * Gets meshes that have names which contain a given text
-     * <div>
-     *  <img src="../assets/images/blockly-images/babylon/mesh/getMeshesWhereNameContains.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_mesh.BabylonMesh.html#getMeshesWhereNameContains
      * @param inputs BabylonJS mesh and name
      */
     getMeshesWhereNameContains(inputs: Inputs.BabylonMesh.NameBabylonMeshDto): AbstractMesh[] {
@@ -264,10 +216,6 @@ export class BabylonMesh {
 
     /**
      * Gets child meshes
-     * <div>
-     *  <img src="../assets/images/blockly-images/babylon/mesh/getChildMeshes.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_mesh.BabylonMesh.html#getChildMeshes
      * @param inputs BabylonJS mesh and whether to include only direct descendants
      */
     getChildMeshes(inputs: Inputs.BabylonMesh.ChildMeshesBabylonMeshDto): AbstractMesh[] {
@@ -276,10 +224,6 @@ export class BabylonMesh {
 
     /**
      * Gets meshes of id
-     * <div>
-     *  <img src="../assets/images/blockly-images/babylon/mesh/getMeshesOfId.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_mesh.BabylonMesh.html#getMeshesOfId
      * @param inputs BabylonJS mesh and name
      */
     getMeshesOfId(inputs: Inputs.BabylonMesh.IdBabylonMeshDto): AbstractMesh[] {
@@ -288,10 +232,6 @@ export class BabylonMesh {
 
     /**
      * Gets mesh of id
-     * <div>
-     *  <img src="../assets/images/blockly-images/babylon/mesh/getMeshOfId.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_mesh.BabylonMesh.html#getMeshOfId
      * @param inputs BabylonJS mesh and name
      */
     getMeshOfId(inputs: Inputs.BabylonMesh.IdBabylonMeshDto): AbstractMesh {
@@ -300,10 +240,6 @@ export class BabylonMesh {
 
     /**
      * Gets mesh of unique id
-     * <div>
-     *  <img src="../assets/images/blockly-images/babylon/mesh/getMeshOfUniqueId.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_mesh.BabylonMesh.html#getMeshOfUniqueId
      * @param inputs BabylonJS mesh and name
      */
     getMeshOfUniqueId(inputs: Inputs.BabylonMesh.UniqueIdBabylonMeshDto): AbstractMesh {
@@ -312,10 +248,6 @@ export class BabylonMesh {
 
     /**
      * Clones the mesh
-     * <div>
-     *  <img src="../assets/images/blockly-images/babylon/mesh/clone.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_mesh.BabylonMesh.html#clone
      * @param inputs BabylonJS mesh to clone
      * @returns a new mesh
      */
@@ -337,10 +269,6 @@ export class BabylonMesh {
 
     /**
      * Change the id of the drawn mesh
-     * <div>
-     *  <img src="../assets/images/blockly-images/babylon/mesh/setId.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_mesh.BabylonMesh.html#setId
      * @param inputs BabylonJS mesh and name
      */
     setId(inputs: Inputs.BabylonMesh.IdBabylonMeshDto): void {
@@ -349,10 +277,6 @@ export class BabylonMesh {
 
     /**
      * Get the id of the drawn mesh
-     * <div>
-     *  <img src="../assets/images/blockly-images/babylon/mesh/getId.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_mesh.BabylonMesh.html#getId
      * @param inputs BabylonJS mesh and id
      */
     getId(inputs: Inputs.BabylonMesh.IdBabylonMeshDto): string {
@@ -361,10 +285,6 @@ export class BabylonMesh {
 
     /**
      * Get the unique id of the drawn mesh
-     * <div>
-     *  <img src="../assets/images/blockly-images/babylon/mesh/getUniqueId.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_mesh.BabylonMesh.html#getUniqueId
      * @param inputs BabylonJS mesh and id
      * @returns unique id number
      */
@@ -375,10 +295,6 @@ export class BabylonMesh {
 
     /**
      * Change the name of the drawn mesh
-     * <div>
-     *  <img src="../assets/images/blockly-images/babylon/mesh/setName.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_mesh.BabylonMesh.html#setName
      * @param inputs BabylonJS mesh and name
      */
     setName(inputs: Inputs.BabylonMesh.NameBabylonMeshDto): void {
@@ -393,10 +309,6 @@ export class BabylonMesh {
 
     /**
      * Gets the name of babylon mesh
-     * <div>
-     *  <img src="../assets/images/blockly-images/babylon/mesh/getName.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_mesh.BabylonMesh.html#getName
      * @param inputs BabylonJS mesh and name
      */
     getName(inputs: Inputs.BabylonMesh.BabylonMeshDto): string {
@@ -405,10 +317,6 @@ export class BabylonMesh {
 
     /**
      * Change the material of the drawn mesh
-     * <div>
-     *  <img src="../assets/images/blockly-images/babylon/mesh/setMaterial.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_mesh.BabylonMesh.html#setMaterial
      * @param inputs BabylonJS mesh and material
      */
     setMaterial(inputs: Inputs.BabylonMesh.MaterialBabylonMeshDto): void {
@@ -423,10 +331,6 @@ export class BabylonMesh {
 
     /**
      * Gets the material of babylon mesh
-     * <div>
-     *  <img src="../assets/images/blockly-images/babylon/mesh/getMaterial.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_mesh.BabylonMesh.html#getMaterial
      * @param inputs BabylonJS mesh
      */
     getMaterial(inputs: Inputs.BabylonMesh.BabylonMeshDto): Material {
@@ -435,10 +339,6 @@ export class BabylonMesh {
 
     /**
      * Gets the position as point of babylonjs mesh
-     * <div>
-     *  <img src="../assets/images/blockly-images/babylon/mesh/getPosition.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_mesh.BabylonMesh.html#getPosition
      * @param inputs BabylonJS mesh
      * @returns point
      */
@@ -449,10 +349,6 @@ export class BabylonMesh {
 
     /**
      * Gets the absolute position in the world as point of babylonjs mesh
-     * <div>
-     *  <img src="../assets/images/blockly-images/babylon/mesh/getAbsolutePosition.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_mesh.BabylonMesh.html#getAbsolutePosition
      * @param inputs BabylonJS mesh
      * @returns point
      */
@@ -463,10 +359,6 @@ export class BabylonMesh {
 
     /**
      * Gets the rotation vector of babylonjs mesh
-     * <div>
-     *  <img src="../assets/images/blockly-images/babylon/mesh/getRotation.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_mesh.BabylonMesh.html#getRotation
      * @param inputs BabylonJS mesh
      */
     getRotation(inputs: Inputs.BabylonMesh.BabylonMeshDto): Base.Point3 {
@@ -476,10 +368,6 @@ export class BabylonMesh {
 
     /**
      * Gets the scale vector of babylonjs mesh
-     * <div>
-     *  <img src="../assets/images/blockly-images/babylon/mesh/getScale.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_mesh.BabylonMesh.html#getScale
      * @param inputs BabylonJS mesh
      */
     getScale(inputs: Inputs.BabylonMesh.BabylonMeshDto): Base.Point3 {
@@ -489,10 +377,6 @@ export class BabylonMesh {
 
     /**
      * Moves babylonjs mesh forward in local space
-     * <div>
-     *  <img src="../assets/images/blockly-images/babylon/mesh/moveForward.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_mesh.BabylonMesh.html#moveForward
      * @param inputs BabylonJS mesh and distance
      */
     moveForward(inputs: Inputs.BabylonMesh.TranslateBabylonMeshDto): void {
@@ -502,10 +386,6 @@ export class BabylonMesh {
 
     /**
      * Moves babylonjs mesh backward in local space
-     * <div>
-     *  <img src="../assets/images/blockly-images/babylon/mesh/moveBackward.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_mesh.BabylonMesh.html#moveBackward
      * @param inputs BabylonJS mesh and distance
      */
     moveBackward(inputs: Inputs.BabylonMesh.TranslateBabylonMeshDto): void {
@@ -515,10 +395,6 @@ export class BabylonMesh {
 
     /**
      * Moves babylonjs mesh up in local space
-     * <div>
-     *  <img src="../assets/images/blockly-images/babylon/mesh/moveUp.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_mesh.BabylonMesh.html#moveUp
      * @param inputs BabylonJS mesh and distance
      */
     moveUp(inputs: Inputs.BabylonMesh.TranslateBabylonMeshDto): void {
@@ -528,10 +404,6 @@ export class BabylonMesh {
 
     /**
      * Moves babylonjs mesh down in local space
-     * <div>
-     *  <img src="../assets/images/blockly-images/babylon/mesh/moveDown.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_mesh.BabylonMesh.html#moveDown
      * @param inputs BabylonJS mesh and distance
      */
     moveDown(inputs: Inputs.BabylonMesh.TranslateBabylonMeshDto): void {
@@ -541,10 +413,6 @@ export class BabylonMesh {
 
     /**
      * Moves babylonjs mesh right in local space
-     * <div>
-     *  <img src="../assets/images/blockly-images/babylon/mesh/moveRight.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_mesh.BabylonMesh.html#moveRight
      * @param inputs BabylonJS mesh and distance
      */
     moveRight(inputs: Inputs.BabylonMesh.TranslateBabylonMeshDto): void {
@@ -554,10 +422,6 @@ export class BabylonMesh {
 
     /**
      * Moves babylonjs mesh left in local space
-     * <div>
-     *  <img src="../assets/images/blockly-images/babylon/mesh/moveLeft.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_mesh.BabylonMesh.html#moveLeft
      * @param inputs BabylonJS mesh and distance
      */
     moveLeft(inputs: Inputs.BabylonMesh.TranslateBabylonMeshDto): void {
@@ -567,10 +431,6 @@ export class BabylonMesh {
 
     /**
      * Rotates babylonjs mesh around local y axis
-     * <div>
-     *  <img src="../assets/images/blockly-images/babylon/mesh/yaw.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_mesh.BabylonMesh.html#yaw
      * @param inputs BabylonJS mesh and rotation in degrees
      */
     yaw(inputs: Inputs.BabylonMesh.RotateBabylonMeshDto): void {
@@ -581,10 +441,6 @@ export class BabylonMesh {
 
     /**
      * Rotates babylonjs mesh around local x axis
-     * <div>
-     *  <img src="../assets/images/blockly-images/babylon/mesh/pitch.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_mesh.BabylonMesh.html#pitch
      * @param inputs BabylonJS mesh and rotation in degrees
      */
     pitch(inputs: Inputs.BabylonMesh.RotateBabylonMeshDto): void {
@@ -595,10 +451,6 @@ export class BabylonMesh {
 
     /**
      * Rotates babylonjs mesh around local z axis
-     * <div>
-     *  <img src="../assets/images/blockly-images/babylon/mesh/roll.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_mesh.BabylonMesh.html#roll
      * @param inputs BabylonJS mesh and rotation in degrees
      */
     roll(inputs: Inputs.BabylonMesh.RotateBabylonMeshDto): void {
@@ -609,10 +461,6 @@ export class BabylonMesh {
 
     /**
      * Updates the position of the BabylonJS mesh or instanced mesh
-     * <div>
-     *  <img src="../assets/images/blockly-images/babylon/mesh/setPosition.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_mesh.BabylonMesh.html#setPosition
      * @param inputs BabylonJS mesh and position point
      */
     setPosition(inputs: Inputs.BabylonMesh.UpdateDrawnBabylonMeshPositionDto): void {
@@ -621,10 +469,6 @@ export class BabylonMesh {
 
     /**
      * Updates the rotation of the BabylonJS mesh or instanced mesh
-     * <div>
-     *  <img src="../assets/images/blockly-images/babylon/mesh/setRotation.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_mesh.BabylonMesh.html#setRotation
      * @param inputs BabylonJS mesh and rotation along x, y and z axis in degrees
      */
     setRotation(inputs: Inputs.BabylonMesh.UpdateDrawnBabylonMeshRotationDto): void {
@@ -637,10 +481,6 @@ export class BabylonMesh {
 
     /**
      * Updates the scale of the BabylonJS mesh or instanced mesh
-     * <div>
-     *  <img src="../assets/images/blockly-images/babylon/mesh/setScale.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_mesh.BabylonMesh.html#setScale
      * @param inputs BabylonJS mesh and scale vector
      */
     setScale(inputs: Inputs.BabylonMesh.UpdateDrawnBabylonMeshScaleDto): void {
@@ -649,10 +489,6 @@ export class BabylonMesh {
 
     /**
      * Checks wether mesh intersects another mesh mesh
-     * <div>
-     *  <img src="../assets/images/blockly-images/babylon/mesh/intersectsMesh.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_mesh.BabylonMesh.html#intersectsMesh
      * @param inputs Two BabylonJS meshes
      */
     intersectsMesh(inputs: Inputs.BabylonMesh.IntersectsMeshDto): boolean {
@@ -661,10 +497,6 @@ export class BabylonMesh {
 
     /**
      * Checks wether mesh intersects point
-     * <div>
-     *  <img src="../assets/images/blockly-images/babylon/mesh/intersectsPoint.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_mesh.BabylonMesh.html#intersectsPoint
      * @param inputs BabylonJS mesh and point
      */
     intersectsPoint(inputs: Inputs.BabylonMesh.IntersectsPointDto): boolean {
@@ -675,10 +507,6 @@ export class BabylonMesh {
     /**
      * Creates mesh instance and transforms it for optimised rendering. These are optimised for max performance
      * when rendering many similar objects in the scene. If the mesh has children, then every child ges a mesh instance.
-     * <div>
-     *  <img src="../assets/images/blockly-images/babylon/mesh/createMeshInstanceAndTransform.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_mesh.BabylonMesh.html#createMeshInstanceAndTransform
      */
     createMeshInstanceAndTransform(inputs: Inputs.BabylonMesh.MeshInstanceAndTransformDto): Promise<any> {
         return new Promise((resolve, reject) => {
@@ -724,10 +552,6 @@ export class BabylonMesh {
     /**
      * Creates mesh instance. These are optimised for max performance
      * when rendering many similar objects in the scene. If the mesh has children, then every child gets a mesh instance.
-     * <div>
-     *  <img src="../assets/images/blockly-images/babylon/mesh/createMeshInstance.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_mesh.BabylonMesh.html#createMeshInstance
      */
     createMeshInstance(inputs: Inputs.BabylonMesh.MeshInstanceDto): InstancedMesh {
         let result: InstancedMesh;

@@ -16,11 +16,6 @@ export class BabylonIO {
     /**
      * Imports mesh from the asset that you have uploaded for the project.
      * You must upload your assets to your project via project management page.
-     * <div>
-     *  <img src="../assets/images/blockly-images/babylon/io/loadAssetIntoScene1.svg" alt="Blockly Image"/>
-     *  <img src="../assets/images/blockly-images/babylon/io/loadAssetIntoScene2.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_io.BabylonIO.html#loadAssetIntoScene
      * @returns scene loaded mesh
      */
     async loadAssetIntoScene(inputs: Inputs.Asset.AssetFileDto): Promise<Mesh> {
@@ -100,10 +95,6 @@ export class BabylonIO {
 
     /**
      * Exports the whole scene to .babylon scene format. You can then edit it further in babylonjs editors.
-     * <div>
-     *  <img src="../assets/images/blockly-images/babylon/io/exportBabylon.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_io.BabylonIO.html#exportBabylon
      * @param inputs filename
      */
     exportBabylon(inputs: Inputs.BabylonIO.ExportSceneDto): void {
@@ -137,10 +128,6 @@ export class BabylonIO {
 
     /**
      * Exports the whole scene to .glb format. This file format has become industry standard for web models.
-     * <div>
-     *  <img src="../assets/images/blockly-images/babylon/io/exportBabylon.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_io.BabylonIO.html#exportBabylon
      * @param inputs filename
      */
     exportGLB(inputs: Inputs.BabylonIO.ExportSceneDto): void {
@@ -151,10 +138,6 @@ export class BabylonIO {
 
     /**
      * Exports the mesh or meshes to stl
-     * <div>
-     *  <img src="../assets/images/blockly-images/babylon/io/exportMeshToStl.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_io.BabylonIO.html#exportMeshToStl
      * @param inputs filename and the mesh
      */
     async exportMeshToStl(inputs: Inputs.BabylonIO.ExportMeshToStlDto): Promise<any> {

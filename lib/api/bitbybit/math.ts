@@ -11,7 +11,6 @@ export class MathBitByBit {
     constructor() { }
     /**
      * Creates a number
-     * @link https://docs.bitbybit.dev/classes/bitbybit_math.Math.html#number
      * @param inputs a number to be created
      * @returns number
      * @group create
@@ -24,7 +23,6 @@ export class MathBitByBit {
 
     /**
      * Does basic math operations
-     * @link https://docs.bitbybit.dev/classes/bitbybit_math.Math.html#twoNrOperation
      * @param inputs two numbers and operator
      * @returns Result of math operation action
      * @group operations
@@ -60,7 +58,6 @@ export class MathBitByBit {
 
     /**
      * Does basic math operations on one number
-     * @link https://docs.bitbybit.dev/classes/bitbybit_math.Math.html#oneNrOperation
      * @param inputs one number and operator action
      * @returns Result of math operation
      * @group operations
@@ -129,7 +126,6 @@ export class MathBitByBit {
 
     /**
     * Remaps a number from one range to another
-    * @link https://docs.bitbybit.dev/classes/bitbybit_math.Math.html#remap
     * @param inputs one number and operator action
     * @returns Result of mapping
     * @group operations

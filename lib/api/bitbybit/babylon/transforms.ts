@@ -12,10 +12,6 @@ export class BabylonTransforms {
 
     /**
      * Creates a rotation transformations around the center and an axis
-     * <div>
-     *  <img src="../assets/images/blockly-images/babylon/transforms/rotationCenterAxis.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_transforms.BabylonTransforms.html#rotationCenterAxis
      * @param inputs Rotation around center with an axis information
      * @returns array of transformations
      */
@@ -31,10 +27,6 @@ export class BabylonTransforms {
 
     /**
      * Creates a rotation transformations around the center and an X axis
-     * <div>
-     *  <img src="../assets/images/blockly-images/babylon/transforms/rotationCenterX.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_transforms.BabylonTransforms.html#rotationCenterX
      * @param inputs Rotation around center with an X axis information
      * @returns array of transformations
      */
@@ -48,10 +40,6 @@ export class BabylonTransforms {
 
     /**
      * Creates a rotation transformations around the center and an Y axis
-     * <div>
-     *  <img src="../assets/images/blockly-images/babylon/transforms/rotationCenterY.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_transforms.BabylonTransforms.html#rotationCenterY
      * @param inputs Rotation around center with an Y axis information
      * @returns array of transformations
      */
@@ -65,10 +53,6 @@ export class BabylonTransforms {
 
     /**
      * Creates a rotation transformations around the center and an Z axis
-     * <div>
-     *  <img src="../assets/images/blockly-images/babylon/transforms/rotationCenterZ.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_transforms.BabylonTransforms.html#rotationCenterZ
      * @param inputs Rotation around center with an Z axis information
      * @returns array of transformations
      */
@@ -82,10 +66,6 @@ export class BabylonTransforms {
 
     /**
      * Creates a rotation transformations with yaw pitch and roll
-     * <div>
-     *  <img src="../assets/images/blockly-images/babylon/transforms/rotationCenterYawPitchRoll.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_transforms.BabylonTransforms.html#rotationCenterYawPitchRoll
      * @param inputs Yaw pitch roll rotation information
      * @returns array of transformations
      */
@@ -102,10 +82,6 @@ export class BabylonTransforms {
 
     /**
      * Scale transformation around center and xyz directions
-     * <div>
-     *  <img src="../assets/images/blockly-images/babylon/transforms/scaleCenterXYZ.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_transforms.BabylonTransforms.html#scaleCenterXYZ
      * @param inputs Scale center xyz trnansformation
      * @returns array of transformations
      */
@@ -119,10 +95,6 @@ export class BabylonTransforms {
 
     /**
      * Creates the scale transformation in x, y and z directions
-     * <div>
-     *  <img src="../assets/images/blockly-images/babylon/transforms/scaleXYZ.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_transforms.BabylonTransforms.html#scaleXYZ
      * @param inputs Scale XYZ number array information
      * @returns transformation
      */
@@ -132,10 +104,6 @@ export class BabylonTransforms {
 
     /**
      * Creates uniform scale transformation
-     * <div>
-     *  <img src="../assets/images/blockly-images/babylon/transforms/uniformScale.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_transforms.BabylonTransforms.html#uniformScale
      * @param inputs Scale Dto
      * @returns transformation
      */
@@ -145,10 +113,6 @@ export class BabylonTransforms {
 
     /**
      * Creates uniform scale transformation from the center
-     * <div>
-     *  <img src="../assets/images/blockly-images/babylon/transforms/uniformScaleFromCenter.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_transforms.BabylonTransforms.html#uniformScaleFromCenter
      * @param inputs Scale Dto with center point information
      * @returns array of transformations
      */
@@ -162,10 +126,6 @@ export class BabylonTransforms {
 
     /**
      * Creates the translation transformation
-     * <div>
-     *  <img src="../assets/images/blockly-images/babylon/transforms/translationXYZ.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_transforms.BabylonTransforms.html#translationXYZ
      * @param inputs Translation information
      * @returns transformation
      */
@@ -175,10 +135,6 @@ export class BabylonTransforms {
 
     /**
     * Creates the translation transformation
-    * <div>
-    *  <img src="../assets/images/blockly-images/babylon/transforms/translationXYZ.svg" alt="Blockly Image"/>
-    * </div>
-    * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_transforms.BabylonTransforms.html#translationXYZ
     * @param inputs Translation information
     * @returns transformation
     */

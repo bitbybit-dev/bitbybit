@@ -10,9 +10,6 @@ import { Line } from './line';
  * Contains various methods for points. Point in bitbybit is simply an array containing 3 numbers for [x, y, z].
  * Because of this form Point can be interchanged with Vector, which also is an array in [x, y, z] form.
  * When creating 2D points, z coordinate is simply set to 0 - [x, y, 0].
- * <div>
- *  <img src="../assets/images/blockly-images/point/point.svg" alt="Blockly Image"/>
- * </div>
  */
 
 export class Point {
@@ -21,7 +18,6 @@ export class Point {
 
     /**
      * Draws a single point
-     * @link https://docs.bitbybit.dev/classes/bitbybit_point.Point.html#drawPoint
      * @param inputs Contains a point to be drawn
      * @returns Mesh that is being drawn by Babylon
      * @group draw
@@ -51,7 +47,6 @@ export class Point {
 
     /**
      * Draws multiple points
-     * @link https://docs.bitbybit.dev/classes/bitbybit_point.Point.html#drawPoints
      * @param inputs Contains a point array to be drawn
      * @returns Mesh that is being drawn by Babylon
      * @group draw
@@ -88,7 +83,6 @@ export class Point {
 
     /**
      * Draws multiple points async
-     * @link https://docs.bitbybit.dev/classes/bitbybit_point.Point.html#drawPointsAsync
      * @param inputs Contains a point array to be drawn
      * @returns Promise of a Mesh that will being drawn by Babylon
      * @group draw
@@ -102,10 +96,6 @@ export class Point {
 
     /**
      * Transforms the single point
-     * <div>
-     *  <img src="../assets/images/blockly-images/point/transformPoint.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_point.Point.html#transformPoint
      * @param inputs Contains a point and the transformations to apply
      * @returns Transformed point
      * @group transforms
@@ -121,10 +111,6 @@ export class Point {
 
     /**
      * Transforms multiple points
-     * <div>
-     *  <img src="../assets/images/blockly-images/point/transformPoints.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_point.Point.html#transformPoints
      * @param inputs Contains points and the transformations to apply
      * @returns Transformed points
      * @group transforms
@@ -137,10 +123,6 @@ export class Point {
 
     /**
      * Transforms multiple points by multiple transformations
-     * <div>
-     *  <img src="../assets/images/blockly-images/point/transformsForPoints.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_point.Point.html#transformsForPoints
      * @param inputs Contains points and the transformations to apply
      * @returns Transformed points
      * @group transforms
@@ -158,10 +140,6 @@ export class Point {
 
     /**
      * Measures the closest distance between a point and a collection of points
-     * <div>
-     *  <img src="../assets/images/blockly-images/point/closestPointFromPointsDistance.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_point.Point.html#closestPointFromPointsDistance
      * @param inputs Point from which to measure and points to measure the distance against
      * @returns Distance to closest point
      * @group extract
@@ -174,10 +152,6 @@ export class Point {
 
     /**
      * Finds the closest point index between a point and a collection of points. Caution, index is not 0 based, it starts with 1.
-     * <div>
-     *  <img src="../assets/images/blockly-images/point/closestPointFromPointsIndex.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_point.Point.html#closestPointFromPointsIndex
      * @param inputs Point from which to find the index in a collection of points
      * @returns Closest point index
      * @group extract
@@ -190,10 +164,6 @@ export class Point {
 
     /**
      * Finds the closest point in a collection
-     * <div>
-     *  <img src="../assets/images/blockly-images/point/closestPointFromPoints.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_point.Point.html#closestPointFromPoints
      * @param inputs Point and points collection to find the closest point in
      * @returns Closest point
      * @group extract
@@ -206,10 +176,6 @@ export class Point {
 
     /**
      * Finds the distance between two points
-     * <div>
-     *  <img src="../assets/images/blockly-images/point/distance.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_point.Point.html#distance
      * @param inputs Coordinates of start and end points
      * @returns Distance
      * @group measure
@@ -222,10 +188,6 @@ export class Point {
 
     /**
      * Multiply point by a specified amount
-     * <div>
-     *  <img src="../assets/images/blockly-images/point/multiplyPoint.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_point.Point.html#multiplyPoint
      * @param inputs The point to be multiplied and the amount of points to create
      * @returns Distance
      * @group transforms
@@ -242,10 +204,6 @@ export class Point {
 
     /**
      * Get x coordinate of the point
-     * <div>
-     *  <img src="../assets/images/blockly-images/point/getX.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_point.Point.html#getX
      * @param inputs The point
      * @returns X coordinate
      * @group get
@@ -258,10 +216,6 @@ export class Point {
 
     /**
      * Get y coordinate of the point
-     * <div>
-     *  <img src="../assets/images/blockly-images/point/getY.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_point.Point.html#getY
      * @param inputs The point
      * @returns Y coordinate
      * @group get
@@ -274,10 +228,6 @@ export class Point {
 
     /**
      * Get z coordinate of the point
-     * <div>
-     *  <img src="../assets/images/blockly-images/point/getZ.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_point.Point.html#getZ
      * @param inputs The point
      * @returns Z coordinate
      * @group get
@@ -290,10 +240,6 @@ export class Point {
 
     /**
      * Get average point of points
-     * <div>
-     *  <img src="../assets/images/blockly-images/point/averagePoint.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_point.Point.html#averagePoint
      * @param inputs The points
      * @returns point
      * @group extract
@@ -320,10 +266,6 @@ export class Point {
 
     /**
      * Creates the xyz point
-     * <div>
-     *  <img src="../assets/images/blockly-images/point/pointXYZ.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_point.Point.html#pointXYZ
      * @param inputs xyz information
      * @returns point 3d
      * @group create
@@ -336,10 +278,6 @@ export class Point {
 
     /**
      * Creates the xy point
-     * <div>
-     *  <img src="../assets/images/blockly-images/point/pointXY.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_point.Point.html#pointXY
      * @param inputs xy information
      * @returns point 3d
      * @group create
@@ -352,10 +290,6 @@ export class Point {
 
     /**
      * Creates the spiral out of multiple points
-     * <div>
-     *  <img src="../assets/images/blockly-images/point/spiral.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_point.Point.html#spiral
      * @param inputs Spiral information
      * @returns Specified number of points in the array along the spiral
      * @group create
@@ -379,10 +313,6 @@ export class Point {
     /**
      * Creates a flat point grid on XY plane. This grid contains center points for hexagons of the given radius.
      * Be aware that we control only the nr of hexagons to be made and not the length and width of the grid.
-     * <div>
-     *  <img src="../assets/images/blockly-images/point/hexGrid.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_point.Point.html#hexGrid
      * @param inputs Information about hexagon and the grid
      * @returns Points in the array on the grid
      * @group create

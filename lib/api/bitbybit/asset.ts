@@ -10,10 +10,6 @@ export class Asset {
 
     /**
      * Gets the asset file
-     * <div>
-     *  <img src="../assets/images/blockly-images/asset/getFile.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_asset_get.Asset.html#getFile
      * @param inputs file name to get from project assets
      * @returns Blob of asset
      */
@@ -23,10 +19,6 @@ export class Asset {
 
     /**
      * Gets the local asset file stored in your browser.
-     * <div>
-     *  <img src="../assets/images/blockly-images/asset/getLocalFile.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_asset_get.Asset.html#getLocalFile
      * @param inputs asset name to get from local assets
      * @returns Blob of asset
      */

@@ -10,10 +10,6 @@ export class BabylonTargetCamera {
 
     /**
      * Creates a target camera
-     * <div>
-     *  <img src="../assets/images/blockly-images/babylon/camera/create.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_camera.BabylonCamera.html#create
      * @param inputs Describes the target camera
      * @returns BabylonJS target camera
      */

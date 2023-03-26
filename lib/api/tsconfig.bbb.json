@@ -15,9 +15,18 @@
         "emitDeclarationOnly": false,
         "declarationDir": "declarations",
         "paths": {
+            "bitbybit-occt-worker": [
+                "../../../bitbybit-occt-worker",
+            ],
+            "bitbybit-occt-worker/*": [
+                "../../../bitbybit-occt-worker/*",
+            ],
+            "bitbybit-occt": [
+                "../../../bitbybit-occt",
+            ],
             "bitbybit-occt/*": [
-                "../../../../bitbybit-occt"
-            ]
+                "../../../bitbybit-occt/*",
+            ],
         },
         "lib": [
             "es2020",

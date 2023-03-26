@@ -11,7 +11,6 @@ export class Lists {
     constructor() { }
     /**
      * Gets an item from the list by using a 0 based index
-     * @link https://docs.bitbybit.dev/classes/bitbybit_lists.Lists.html#getItem
      * @param inputs a list and an index
      * @returns item
      * @group get
@@ -27,7 +26,6 @@ export class Lists {
 
     /**
        * Gets a sub list between start and end indexes
-       * @link https://docs.bitbybit.dev/classes/bitbybit_lists.Lists.html#getSubList
        * @param inputs a list and start and end indexes
        * @returns sub list
        * @group get
@@ -40,7 +38,6 @@ export class Lists {
 
     /**
      * Reverse the list
-     * @link https://docs.bitbybit.dev/classes/bitbybit_lists.Lists.html#reverse
      * @param inputs a list and an index
      * @returns item
      * @group edit
@@ -54,7 +51,6 @@ export class Lists {
 
     /**
      * Flip 2d lists - every nth element of each list will form a separate list
-     * @link https://docs.bitbybit.dev/classes/bitbybit_lists.Lists.html#reverse
      * @param inputs a list of lists to flip
      * @returns item
      * @group edit
@@ -90,7 +86,6 @@ export class Lists {
 
     /**
      * Gets the length of the list
-     * @link https://docs.bitbybit.dev/classes/bitbybit_lists.Lists.html#listLength
      * @param inputs a length list
      * @returns a number
      * @group get
@@ -103,7 +98,6 @@ export class Lists {
 
     /**
      * Add item to the list
-     * @link https://docs.bitbybit.dev/classes/bitbybit_lists.Lists.html#addItemAtIndex
      * @param inputs a list, item and an index
      * @returns list with added item
      * @group add
@@ -122,7 +116,6 @@ export class Lists {
 
     /**
      * Remove item from the list
-     * @link https://docs.bitbybit.dev/classes/bitbybit_lists.Lists.html#removeItemAtIndex
      * @param inputs a list and index
      * @returns list with removed item
      * @group remove
@@ -141,7 +134,6 @@ export class Lists {
 
     /**
      * Add item to the beginning or the end of the list
-     * @link https://docs.bitbybit.dev/classes/bitbybit_lists.Lists.html#addItemFirstLast
      * @param inputs a list, item and an option for first or last position
      * @returns list with added item
      * @group add
@@ -160,7 +152,6 @@ export class Lists {
 
     /**
      * Creates an empty list
-     * @link https://docs.bitbybit.dev/classes/bitbybit_lists.Lists.html#createList
      * @returns an empty array list
      * @group create
      * @shortname empty list
@@ -172,7 +163,6 @@ export class Lists {
 
     /**
      * Repeat the item and add it in the new list
-     * @link https://docs.bitbybit.dev/classes/bitbybit_lists.Lists.html#multiply
      * @param inputs an item to multiply
      * @returns list
      * @group create

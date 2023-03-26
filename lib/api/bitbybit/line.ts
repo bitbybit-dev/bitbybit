@@ -16,7 +16,6 @@ export class Line {
 
     /**
      * Draws multiple lines
-     * @link https://docs.bitbybit.dev/classes/bitbybit_line.Line.html#drawLines
      * @param inputs Contains a line to be drawn
      * @returns Lines mesh that is being drawn by Babylon
      */
@@ -66,12 +65,7 @@ export class Line {
 
     /**
      * Converts a line to a NURBS line curve
-     * <div>
-     *  <img src="../assets/images/blockly-images/line/convertToNurbsCurve.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_line.Line.html#convertToNurbsCurve
      * Returns the verbnurbs Line object
-     * @link http://verbnurbs.com/docs/geom/Line/
      * @param inputs Line to be transformed to curve
      * @returns Verb nurbs curve
      */
@@ -81,12 +75,7 @@ export class Line {
 
     /**
      * Converts lines to a NURBS curves
-     * <div>
-     *  <img src="../assets/images/blockly-images/line/convertLinesToNurbsCurves.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_line.Line.html#convertLinesToNurbsCurves
      * Returns array of the verbnurbs Line objects
-     * @link http://verbnurbs.com/docs/geom/Line/
      * @param inputs Lines to be transformed to curves
      * @returns Verb nurbs curves
      */
@@ -96,10 +85,6 @@ export class Line {
 
     /**
      * Gets the start point of the line
-     * <div>
-     *  <img src="../assets/images/blockly-images/line/getStartPoint.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_line.Line.html#getStartPoint
      * @param inputs Line to be queried
      * @returns Start point
      */
@@ -109,10 +94,6 @@ export class Line {
 
     /**
      * Gets the end point of the line
-     * <div>
-     *  <img src="../assets/images/blockly-images/line/getEndPoint.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_line.Line.html#getEndPoint
      * @param inputs Line to be queried
      * @returns End point
      */
@@ -122,10 +103,6 @@ export class Line {
 
     /**
      * Gets the length of the line
-     * <div>
-     *  <img src="../assets/images/blockly-images/line/length.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_line.Line.html#length
      * @param inputs Line to be queried
      * @returns Length of the line
      */
@@ -135,10 +112,6 @@ export class Line {
 
     /**
      * Reverse the endpoints of the line
-     * <div>
-     *  <img src="../assets/images/blockly-images/line/reverse.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_line.Line.html#reverse
      * @param inputs Line to be reversed
      * @returns Reversed line
      */
@@ -148,10 +121,6 @@ export class Line {
 
     /**
      * Transform the line
-     * <div>
-     *  <img src="../assets/images/blockly-images/line/transformLine.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_line.Line.html#transformLine
      * @param inputs Line to be transformed
      * @returns Transformed line
      */
@@ -167,10 +136,6 @@ export class Line {
 
     /**
      * Transforms the lines with multiple transform for each line
-     * <div>
-     *  <img src="../assets/images/blockly-images/line/transformsForLines.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_line.Line.html#transformsForLines
      * @param inputs Lines to be transformed and transformations
      * @returns Transformed lines
      */
@@ -188,10 +153,6 @@ export class Line {
 
     /**
      * Create the line
-     * <div>
-     *  <img src="../assets/images/blockly-images/line/create.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_line.Line.html#create
      * @param inputs Endpoints of the line
      * @returns Line
      */
@@ -204,10 +165,6 @@ export class Line {
 
     /**
      * Create the line from possibly async inputs of points
-     * <div>
-     *  <img src="../assets/images/blockly-images/line/create.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_line.Line.html#create
      * @param inputs Endpoints of the line
      * @returns Line
      */
@@ -220,10 +177,6 @@ export class Line {
 
     /**
      * Gets the point on the line segment at a given param
-     * <div>
-     *  <img src="../assets/images/blockly-images/line/getPointOnLine.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_line.Line.html#getPointOnLine
      * @param inputs Line and parameter
      * @returns Point on line
      */
@@ -242,10 +195,6 @@ export class Line {
 
     /**
      * Create the line segments between all of the points in a list
-     * <div>
-     *  <img src="../assets/images/blockly-images/line/linesBetweenPoints.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_line.Line.html#linesBetweenPoints
      * @param inputs Lines in a list
      * @returns Lines
      */
@@ -261,10 +210,6 @@ export class Line {
 
     /**
      * Create the lines between two lists of start and end points of equal length
-     * <div>
-     *  <img src="../assets/images/blockly-images/line/linesBetweenStartAndEndPoints.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_line.Line.html#linesBetweenStartAndEndPoints
      * @param inputs Two lists of start and end points
      * @returns Lines
      */
@@ -276,10 +221,6 @@ export class Line {
 
     /**
      * Create the lines between two lists of start and end points of equal length with potential async inputs
-     * <div>
-     *  <img src="../assets/images/blockly-images/line/linesBetweenStartAndEndPoints.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_line.Line.html#linesBetweenStartAndEndPoints
      * @param inputs Two lists of start and end points
      * @returns Lines
      */

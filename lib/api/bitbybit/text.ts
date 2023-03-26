@@ -11,7 +11,6 @@ export class Text {
     constructor() { }
     /**
      * Creates a text
-     * @link https://docs.bitbybit.dev/classes/bitbybit_text.Text.html#create
      * @param inputs a text
      * @returns text
      * @group create
@@ -24,7 +23,6 @@ export class Text {
 
     /**
     * Split the text to multiple pieces by a separator
-    * @link https://docs.bitbybit.dev/classes/bitbybit_text.Text.html#split
     * @param inputs a text
     * @returns text
     * @group transform
@@ -37,7 +35,6 @@ export class Text {
 
     /**
     * Replace all occurrences of a text by another text
-    * @link https://docs.bitbybit.dev/classes/bitbybit_text.Text.html#replaceAll
     * @param inputs a text
     * @returns text
     * @group transform
@@ -50,7 +47,6 @@ export class Text {
 
     /**
     * Join multiple items by a separator into text
-    * @link https://docs.bitbybit.dev/classes/bitbybit_text.Text.html#join
     * @param inputs a list of items
     * @returns text
     * @group transform
@@ -63,7 +59,6 @@ export class Text {
 
     /**
     * Transform any item to text
-    * @link https://docs.bitbybit.dev/classes/bitbybit_text.Text.html#toString
     * @param inputs any item
     * @returns text
     * @group transform
@@ -76,7 +71,6 @@ export class Text {
 
     /**
     * Transform each item in list to text
-    * @link https://docs.bitbybit.dev/classes/bitbybit_text.Text.html#toStringEach
     * @param inputs list of items
     * @returns texts
     * @group transform

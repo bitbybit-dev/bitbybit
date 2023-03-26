@@ -22,10 +22,6 @@ export class BabylonCamera {
 
     /**
      * Freeze projection matrix of the camera
-     * <div>
-     *  <img src="../assets/images/blockly-images/babylon/camera/freezeProjectionMatrix.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_camera.BabylonCamera.html#freezeProjectionMatrix
      * @param inputs Camera to freeze
      */
     freezeProjectionMatrix(inputs: Inputs.BabylonCamera.CameraDto): void {
@@ -34,10 +30,6 @@ export class BabylonCamera {
 
     /**
      * Unfreeze projection matrix of the camera
-     * <div>
-     *  <img src="../assets/images/blockly-images/babylon/camera/unfreezeProjectionMatrix.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_camera.BabylonCamera.html#unfreezeProjectionMatrix
      * @param inputs Camera to freeze
      */
     unfreezeProjectionMatrix(inputs: Inputs.BabylonCamera.CameraDto): void {
@@ -47,10 +39,6 @@ export class BabylonCamera {
 
     /**
      * Changes the position of a camera
-     * <div>
-     *  <img src="../assets/images/blockly-images/babylon/camera/setPosition.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_camera.BabylonCamera.html#setPosition
      * @param inputs Changes the camera position
      */
     setPosition(inputs: Inputs.BabylonCamera.PositionDto): void {
@@ -60,10 +48,6 @@ export class BabylonCamera {
 
     /**
      * Gets the position of a camera
-     * <div>
-     *  <img src="../assets/images/blockly-images/babylon/camera/getposition.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_camera.BabylonCamera.html#getPosition
      * @param inputs Gets the camera position
      */
     getPosition(inputs: Inputs.BabylonCamera.PositionDto): Base.Point3 {
@@ -72,10 +56,6 @@ export class BabylonCamera {
 
     /**
      * Changes the target of a camera
-     * <div>
-     *  <img src="../assets/images/blockly-images/babylon/camera/settarget.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_camera.BabylonCamera.html#setTarget
      * @param inputs Changes the camera target
      */
     setTarget(inputs: Inputs.BabylonCamera.TargetDto): void {
@@ -85,10 +65,6 @@ export class BabylonCamera {
 
     /**
      * Gets the target of a camera
-     * <div>
-     *  <img src="../assets/images/blockly-images/babylon/camera/gettarget.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_camera.BabylonCamera.html#getTarget
      * @param inputs Gets the camera position
      */
     getTarget(inputs: Inputs.BabylonCamera.PositionDto): Base.Point3 {
@@ -97,10 +73,6 @@ export class BabylonCamera {
 
     /**
      * Changes the speed of a camera
-     * <div>
-     *  <img src="../assets/images/blockly-images/babylon/camera/setspeed.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_camera.BabylonCamera.html#setSpeed
      * @param inputs Changes the camera target
      */
     setSpeed(inputs: Inputs.BabylonCamera.SpeedDto): void {
@@ -109,10 +81,6 @@ export class BabylonCamera {
 
     /**
      * Gets the speed of a camera
-     * <div>
-     *  <img src="../assets/images/blockly-images/babylon/camera/gettarget.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_camera.BabylonCamera.html#getTarget
      * @param inputs Gets the camera position
      */
     getSpeed(inputs: Inputs.BabylonCamera.PositionDto): Base.Point3 {
@@ -121,10 +89,6 @@ export class BabylonCamera {
 
     /**
      * Changes the minZ of a camera
-     * <div>
-     *  <img src="../assets/images/blockly-images/babylon/camera/setminz.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_camera.BabylonCamera.html#setMinZ
      * @param inputs Changes the camera minZ
      */
     setMinZ(inputs: Inputs.BabylonCamera.MinZDto): void {
@@ -133,10 +97,6 @@ export class BabylonCamera {
 
     /**
      * Changes the maxZ of a camera
-     * <div>
-     *  <img src="../assets/images/blockly-images/babylon/camera/setmaxz.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_camera.BabylonCamera.html#setMaxZ
      * @param inputs Changes the camera maxZ
      */
     setMaxZ(inputs: Inputs.BabylonCamera.MaxZDto): void {

@@ -13,10 +13,6 @@ export class BabylonScene {
 
     /**
      * Changes the scene background colour for 3D space
-     * <div>
-     *  <img src="../assets/images/blockly-images/babylon/scene/backgroundColour.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_scene.BabylonScene.html#backgroundColour
      * @param inputs Describes the colour of the scene background
      */
     backgroundColour(inputs: Inputs.BabylonScene.SceneBackgroundColourDto): void {
@@ -25,10 +21,6 @@ export class BabylonScene {
 
     /**
      * Activate camera
-     * <div>
-     *  <img src="../assets/images/blockly-images/babylon/scene/activatecamera.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_scene.BabylonScene.html#activateCamera
      * @param inputs Activates the camera
      */
     activateCamera(inputs: Inputs.BabylonScene.ActiveCameraDto): void {
@@ -38,10 +30,6 @@ export class BabylonScene {
 
     /**
      * Use right handed system
-     * <div>
-     *  <img src="../assets/images/blockly-images/babylon/scene/userighthandedsystem.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_scene.BabylonScene.html#useRightHandedSystem
      * @param inputs Activates the camera
      */
     useRightHandedSystem(inputs: Inputs.BabylonScene.UseRightHandedSystemDto): void {
@@ -52,10 +40,6 @@ export class BabylonScene {
 
     /**
      * Creates and draws a point light in the scene
-     * <div>
-     *  <img src="../assets/images/blockly-images/babylon/scene/drawPointLight.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_scene.BabylonScene.html#drawPointLight
      * @param inputs Describes the light source
      * @returns BabylonJS point light
      */
@@ -101,10 +85,6 @@ export class BabylonScene {
 
     /**
      * Creates and draws a directional light in the scene
-     * <div>
-     *  <img src="../assets/images/blockly-images/babylon/scene/drawDirectionalLight.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_scene.BabylonScene.html#drawDirectionalLight
      * @param inputs Describes the light source
      * @returns BabylonJS directional light
      */
@@ -138,10 +118,6 @@ export class BabylonScene {
 
     /**
      * Adjusts the active arc rotate camera with configuration parameters
-     * <div>
-     *  <img src="../assets/images/blockly-images/babylon/scene/adjustActiveArcRotateCamera.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_scene.BabylonScene.html#adjustActiveArcRotateCamera
      */
     adjustActiveArcRotateCamera(inputs: Inputs.BabylonScene.CameraConfigurationDto): void {
         const camera = this.context.scene.getCameraByName('Camera') as ArcRotateCamera;
@@ -154,10 +130,6 @@ export class BabylonScene {
 
     /**
      * Clears all of the drawn objects in the 3D scene
-     * <div>
-     *  <img src="../assets/images/blockly-images/babylon/scene/clearAllDrawn.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_scene.BabylonScene.html#clearAllDrawn
      */
     clearAllDrawn(): void {
         this.context.bitByBitBlocklyHelperService.clearAllDrawn();
@@ -165,10 +137,6 @@ export class BabylonScene {
 
     /**
      * Enables skybox
-     * <div>
-     *  <img src="../assets/images/blockly-images/babylon/scene/enableSkybox.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_babylon_scene.BabylonScene.html#enableSkybox
      */
     enableSkybox(inputs: Inputs.BabylonScene.SkyboxDto): void {
         let texture: CubeTexture;
