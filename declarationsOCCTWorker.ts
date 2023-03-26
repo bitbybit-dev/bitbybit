@@ -195,7 +195,6 @@ declare class OCCT {
     readonly occWorkerManager: OCCTWorkerManager;
     readonly shapes: OCCTShapes;
     readonly geom: OCCTGeom;
-    readonly assembly: OCCTAssembly;
     readonly fillets: OCCTFillets;
     readonly transforms: OCCTTransforms;
     readonly operations: OCCTOperations;
@@ -209,13 +208,14 @@ declare class OCCT {
      * @group drawing
      * @shortname shape to mesh
      * @drawable false
+     * @ignore true
      */
     shapeToMesh(inputs: Inputs.OCCT.ShapeToMeshDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.OCCT.DecomposedMeshDto>;
     /**
      * Deletes shape from the cache to keep memory usage low
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt.OCCT.html#deleteShape
      * @param inputs shape
-     * @group memory management
+     * @group memory
      * @shortname delete shape
      */
     deleteShape(inputs: Inputs.OCCT.ShapeDto<Inputs.OCCT.TopoDSShapePointer>): Promise<void>;
@@ -223,7 +223,7 @@ declare class OCCT {
      * Deletes shapes from the cache to keep memory usage low
      * @link https://docs.bitbybit.dev/classes/bitbybit_occt.OCCT.html#deleteShapes
      * @param inputs shape
-     * @group memory management
+     * @group memory
      * @shortname delete shapes
      */
     deleteShapes(inputs: Inputs.OCCT.ShapesDto<Inputs.OCCT.TopoDSShapePointer>): Promise<void>;

@@ -805,10 +805,7 @@ export const inputOCCTDeclarations = `declare namespace Base {
          * Lines between which to span cylinders
          * @default undefined
          */
-        lines: {
-            start: Base.Point3;
-            end: Base.Point3;
-        }[];
+        lines: Base.Line3[];
     }
     class FilletDto<T> {
         constructor(shape?: T, radius?: number, indexes?: number[], all?: boolean);
