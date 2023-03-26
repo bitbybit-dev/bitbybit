@@ -1,4 +1,3 @@
-import * as Inputs from '../inputs/inputs';
 import { JSONBitByBit } from './json';
 
 describe('JSON unit tests', () => {

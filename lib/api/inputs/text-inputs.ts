@@ -14,7 +14,7 @@ export namespace Text {
     export class TextSplitDto {
         /**
          * Text to split
-         * @default undefined
+         * @default a,b,c
          */
         text: string;
         /**
@@ -26,17 +26,17 @@ export namespace Text {
     export class TextReplaceDto {
         /**
          * Text to replace
-         * @default undefined
+         * @default a-c
          */
         text: string;
         /**
          * Text to search for
-         * @default undefined
+         * @default -
          */
         search: string;
         /**
          * Text to replace found occurences
-         * @default undefined
+         * @default b
          */
         replaceWith: string;
     }
@@ -48,7 +48,7 @@ export namespace Text {
         list: string[];
         /**
          * Text to join by
-         * @default undefined
+         * @default ,
          */
         separator: string;
     }

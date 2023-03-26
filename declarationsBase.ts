@@ -1890,7 +1890,7 @@ declare class JSONBitByBit {
      * @drawable false
      */
     stringify(inputs: Inputs.JSON.StringifyDto): string;
-}/**
+}{};/**
  * Contains various methods for lines. Line in bitbybit is a simple object that has star and end point properties.
  * { start: [ x, y, z ], end: [ x, y, z ] }
  */
