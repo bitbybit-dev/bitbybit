@@ -2354,21 +2354,21 @@ export const inputDeclarations = `declare namespace Asset {
          * Stringify value
          * @default undefined
          */
-        value: any;
+        json: any;
     }
     class ParseDto {
         /**
          * Stringify value
          * @default undefined
          */
-        value: string;
+        text: string;
     }
     class QueryDto {
         /**
          * query json structure
          * @default undefined
          */
-        value: any;
+        json: any;
         /**
          * query path
          * @default
