@@ -1,7 +1,7 @@
 import { MathBitByBit } from './math';
 import * as Inputs from '../inputs/inputs';
 
-describe('Lists unit tests', () => {
+describe('Math unit tests', () => {
     let math: MathBitByBit;
 
     beforeAll(async () => {
