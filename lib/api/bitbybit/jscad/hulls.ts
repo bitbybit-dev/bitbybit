@@ -25,7 +25,7 @@ export class JSCADHulls {
      * @param inputs Geometries
      * @returns Chain hulled geometry
      * @group hulls
-     * @shortname hullChain
+     * @shortname hull chain
      * @drawable true
      */
     async hullChain(inputs: Inputs.JSCAD.HullDto): Promise<any> {
