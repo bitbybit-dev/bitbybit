@@ -1879,7 +1879,8 @@ declare class JSCADText {
  * Contains various json path methods.
  */
 declare class JSONBitByBit {
-    constructor();
+    private readonly context;
+    constructor(context: Context);
     /**
      * Stringifies the input value
      * @link https://docs.bitbybit.dev/classes/bitbybit_json.JSON.html#stringify
@@ -1890,6 +1891,56 @@ declare class JSONBitByBit {
      * @drawable false
      */
     stringify(inputs: Inputs.JSON.StringifyDto): string;
+    /**
+     * Parses the input value
+     * @link https://docs.bitbybit.dev/classes/bitbybit_json.JSON.html#parse
+     * @param inputs a value to be parsed
+     * @returns any
+     * @group transform
+     * @shortname parse
+     * @drawable false
+     */
+    parse(inputs: Inputs.JSON.ParseDto): any;
+    /**
+     * Queries the input value
+     * @link https://docs.bitbybit.dev/classes/bitbybit_json.JSON.html#query
+     * @param inputs a value to be queried
+     * @returns any
+     * @group jsonpath
+     * @shortname query
+     * @drawable false
+     */
+    query(inputs: Inputs.JSON.QueryDto): any;
+    /**
+     * Sets value to the json by providing a path
+     * @link https://docs.bitbybit.dev/classes/bitbybit_json.JSON.html#setValue
+     * @param inputs a value to be added, json and a path
+     * @returns any
+     * @group jsonpath
+     * @shortname set value
+     * @drawable false
+     */
+    setValue(inputs: Inputs.JSON.SetValueDto): any;
+    /**
+     * Find paths to elements in object matching path expression
+     * @link https://docs.bitbybit.dev/classes/bitbybit_json.JSON.html#paths
+     * @param inputs a json value and a query
+     * @returns any
+     * @group jsonpath
+     * @shortname paths
+     * @drawable false
+     */
+    paths(inputs: Inputs.JSON.PathsDto): any;
+    /**
+     * Find paths to elements in object matching path expression as strings
+     * @link https://docs.bitbybit.dev/classes/bitbybit_json.JSON.html#pathsAsStrings
+     * @param inputs a json value and a query
+     * @returns any
+     * @group jsonpath
+     * @shortname paths as strings
+     * @drawable false
+     */
+    pathsAsStrings(inputs: Inputs.JSON.PathsDto): any;
 }{};/**
  * Contains various methods for lines. Line in bitbybit is a simple object that has star and end point properties.
  * { start: [ x, y, z ], end: [ x, y, z ] }

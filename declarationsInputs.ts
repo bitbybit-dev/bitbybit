@@ -2363,6 +2363,47 @@ export const inputDeclarations = `declare namespace Asset {
          */
         value: string;
     }
+    class QueryDto {
+        /**
+         * query json structure
+         * @default undefined
+         */
+        value: any;
+        /**
+         * query path
+         * @default
+         */
+        query: string;
+    }
+    class SetValueDto {
+        /**
+        * query json structure
+        * @default undefined
+        */
+        json: any;
+        /**
+         * query json structure
+         * @default undefined
+         */
+        value: any;
+        /**
+         * query json structure
+         * @default
+         */
+        path: string;
+    }
+    class PathsDto {
+        /**
+         * query json structure
+         * @default undefined
+         */
+        json: any;
+        /**
+         * query path
+         * @default
+         */
+        query: string;
+    }
 }declare namespace Line {
     class LinePointsDto {
         /**
