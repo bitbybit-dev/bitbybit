@@ -12,17 +12,17 @@ describe('JSON unit tests', () => {
     });
 
     it('should stringify', async () => {
-        const result = json.stringify({ value: { a: 1 } });
+        const result = json.stringify({ json: { a: 1 } });
         expect(result).toEqual('{"a":1}');
     });
 
     it('should parse', async () => {
-        const result = json.parse({ value: '{"a":1}' });
+        const result = json.parse({ text: '{"a":1}' });
         expect(result).toEqual({ a: 1 });
     });
 
     it('should query', async () => {
-        const result = json.query({ value: { a: 1 }, query: '$.a' });
+        const result = json.query({ json: { a: 1 }, query: '$.a' });
         expect(result).toEqual([1]);
     });
 
@@ -60,7 +60,7 @@ describe('JSON unit tests', () => {
         const paths = json.paths({ json: j, query: '$..author' });
         const result = paths.map(path => {
             const query = path.join('.');
-            return json.query({ value: j, query: query });
+            return json.query({ json: j, query: query });
         }).flat();
 
         expect(result).toEqual(
@@ -77,7 +77,7 @@ describe('JSON unit tests', () => {
         const j = getMockJSON();
         const paths = json.pathsAsStrings({ json: j, query: '$..author' });
         const result = paths.map(path => {
-            return json.query({ value: j, query: path });
+            return json.query({ json: j, query: path });
         }).flat();
 
         expect(result).toEqual(

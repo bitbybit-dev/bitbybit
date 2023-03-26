@@ -8,21 +8,21 @@ export namespace JSON {
          * Stringify value
          * @default undefined
          */
-        value: any;
+        json: any;
     }
     export class ParseDto {
         /**
          * Stringify value
          * @default undefined
          */
-        value: string;
+        text: string;
     }
     export class QueryDto {
         /**
          * query json structure
          * @default undefined
          */
-        value: any;
+        json: any;
         /**
          * query path
          * @default

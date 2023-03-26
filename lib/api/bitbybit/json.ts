@@ -21,7 +21,7 @@ export class JSONBitByBit {
      * @drawable false
      */
     stringify(inputs: Inputs.JSON.StringifyDto): string {
-        return JSON.stringify(inputs.value);
+        return JSON.stringify(inputs.json);
     }
 
     /**
@@ -34,7 +34,7 @@ export class JSONBitByBit {
      * @drawable false
      */
     parse(inputs: Inputs.JSON.ParseDto): any {
-        return JSON.parse(inputs.value);
+        return JSON.parse(inputs.text);
     }
 
     /**
@@ -47,7 +47,7 @@ export class JSONBitByBit {
      * @drawable false
      */
     query(inputs: Inputs.JSON.QueryDto): any {
-        return this.context.jsonpath.query(inputs.value, inputs.query);
+        return this.context.jsonpath.query(inputs.json, inputs.query);
     }
 
     /**
