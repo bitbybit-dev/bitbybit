@@ -37,6 +37,7 @@
         "@babylonjs/loaders": "5.48.0",
         "@babylonjs/materials": "5.48.0",
         "@babylonjs/serializers": "5.48.0",
+        "jsonpath": "1.1.1",
         "@jscad/io-utils": "2.0.13",
         "@jscad/modeling": "2.7.2",
         "@jscad/stl-serializer": "2.1.3",

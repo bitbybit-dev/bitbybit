@@ -17,4 +17,45 @@ export namespace JSON {
          */
         value: string;
     }
+    export class QueryDto {
+        /**
+         * query json structure
+         * @default undefined
+         */
+        value: any;
+        /**
+         * query path
+         * @default
+         */
+        query: string;
+    }
+    export class SetValueDto {
+        /**
+        * query json structure
+        * @default undefined
+        */
+        json: any;
+        /**
+         * query json structure
+         * @default undefined
+         */
+        value: any;
+        /**
+         * query json structure
+         * @default
+         */
+        path: string;
+    }
+    export class PathsDto {
+        /**
+         * query json structure
+         * @default undefined
+         */
+        json: any;
+        /**
+         * query path
+         * @default
+         */
+        query: string;
+    }
 }
