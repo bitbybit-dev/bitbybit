@@ -10,14 +10,14 @@ export class MathBitByBit {
 
     constructor() { }
     /**
-       * Creates a number
-       * @link https://docs.bitbybit.dev/classes/bitbybit_math.Math.html#number
-       * @param inputs a number to be created
-       * @returns number
-       * @group create
-       * @shortname number
-       * @drawable false
-       */
+     * Creates a number
+     * @link https://docs.bitbybit.dev/classes/bitbybit_math.Math.html#number
+     * @param inputs a number to be created
+     * @returns number
+     * @group create
+     * @shortname number
+     * @drawable false
+     */
     number(inputs: Inputs.Math.NumberDto): number {
         return inputs.number;
     }
@@ -59,71 +59,84 @@ export class MathBitByBit {
     }
 
     /**
-        * Does basic math operations on one number
-        * @link https://docs.bitbybit.dev/classes/bitbybit_math.Math.html#oneNrOperation
-        * @param inputs one number and operator action
-        * @returns Result of math operation
-        * @group operations
-        * @shortname one number
-        * @drawable false
-        */
+     * Does basic math operations on one number
+     * @link https://docs.bitbybit.dev/classes/bitbybit_math.Math.html#oneNrOperation
+     * @param inputs one number and operator action
+     * @returns Result of math operation
+     * @group operations
+     * @shortname one number
+     * @drawable false
+     */
     oneNrOperation(inputs: Inputs.Math.ActionOnOneNumberDto): number {
         let result;
         switch (inputs.operation) {
             case Inputs.Math.MathOneNrOperatorEnum.absolute:
-                result = Math.abs(inputs.nr);
+                result = Math.abs(inputs.number);
                 break;
             case Inputs.Math.MathOneNrOperatorEnum.negate:
-                result = -inputs.nr;
+                result = -inputs.number;
                 break;
             case Inputs.Math.MathOneNrOperatorEnum.ln:
-                result = Math.log(inputs.nr);
+                result = Math.log(inputs.number);
                 break;
             case Inputs.Math.MathOneNrOperatorEnum.log10:
-                result = Math.log10(inputs.nr);
+                result = Math.log10(inputs.number);
                 break;
             case Inputs.Math.MathOneNrOperatorEnum.tenPow:
-                result = Math.pow(10, inputs.nr);
+                result = Math.pow(10, inputs.number);
                 break;
             case Inputs.Math.MathOneNrOperatorEnum.round:
-                result = Math.round(inputs.nr);
+                result = Math.round(inputs.number);
                 break;
             case Inputs.Math.MathOneNrOperatorEnum.floor:
-                result = Math.floor(inputs.nr);
+                result = Math.floor(inputs.number);
                 break;
             case Inputs.Math.MathOneNrOperatorEnum.ceil:
-                result = Math.ceil(inputs.nr);
+                result = Math.ceil(inputs.number);
                 break;
             case Inputs.Math.MathOneNrOperatorEnum.sqrt:
-                result = Math.sqrt(inputs.nr);
+                result = Math.sqrt(inputs.number);
                 break;
             case Inputs.Math.MathOneNrOperatorEnum.sin:
-                result = Math.sin(inputs.nr);
+                result = Math.sin(inputs.number);
                 break;
             case Inputs.Math.MathOneNrOperatorEnum.cos:
-                result = Math.cos(inputs.nr);
+                result = Math.cos(inputs.number);
                 break;
             case Inputs.Math.MathOneNrOperatorEnum.tan:
-                result = Math.tan(inputs.nr);
+                result = Math.tan(inputs.number);
                 break;
             case Inputs.Math.MathOneNrOperatorEnum.asin:
-                result = Math.asin(inputs.nr);
+                result = Math.asin(inputs.number);
                 break;
             case Inputs.Math.MathOneNrOperatorEnum.acos:
-                result = Math.acos(inputs.nr);
+                result = Math.acos(inputs.number);
                 break;
             case Inputs.Math.MathOneNrOperatorEnum.atan:
-                result = Math.atan(inputs.nr);
+                result = Math.atan(inputs.number);
                 break;
             case Inputs.Math.MathOneNrOperatorEnum.log:
-                result = Math.log(inputs.nr);
+                result = Math.log(inputs.number);
                 break;
             case Inputs.Math.MathOneNrOperatorEnum.exp:
-                result = Math.exp(inputs.nr);
+                result = Math.exp(inputs.number);
                 break;
             default:
                 break;
         }
         return result;
+    }
+
+    /**
+    * Remaps a number from one range to another
+    * @link https://docs.bitbybit.dev/classes/bitbybit_math.Math.html#remap
+    * @param inputs one number and operator action
+    * @returns Result of mapping
+    * @group operations
+    * @shortname remap
+    * @drawable false
+    */
+    remap(inputs: Inputs.Math.RemapNumberDto): number {
+        return (inputs.number - inputs.fromLow) * (inputs.toHigh - inputs.toLow) / (inputs.fromHigh - inputs.fromLow) + inputs.toLow;
     }
 }
