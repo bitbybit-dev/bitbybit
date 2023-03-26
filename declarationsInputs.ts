@@ -2348,6 +2348,21 @@ export const inputDeclarations = `declare namespace Asset {
          */
         right = "right"
     }
+}declare namespace JSON {
+    class StringifyDto {
+        /**
+         * Stringify value
+         * @default undefined
+         */
+        value: any;
+    }
+    class ParseDto {
+        /**
+         * Stringify value
+         * @default undefined
+         */
+        value: string;
+    }
 }declare namespace Line {
     class LinePointsDto {
         /**

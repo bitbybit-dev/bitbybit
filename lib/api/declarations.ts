@@ -18,6 +18,7 @@ export const typescriptDeclarations = `
                 readonly math: MathBitByBit;
                 readonly lists: Lists;
                 readonly text: Text;
+                readonly json: JSONBitByBit;
                 readonly vector: Vector;
                 readonly draw: Draw;
                 readonly babylon: Babylon;

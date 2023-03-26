@@ -23,6 +23,7 @@ import { Scene } from '@babylonjs/core';
 import { OpenCascadeInstance } from 'bitbybit-occt/bitbybit-dev-occt/bitbybit-dev-occt';
 import { core, geom } from 'verb-nurbs-web';
 import { Lists } from './bitbybit/lists';
+import { JSONBitByBit } from './bitbybit/json';
 
 export class BitByBitBase {
 
@@ -32,6 +33,7 @@ export class BitByBitBase {
 
     public math: MathBitByBit;
     public lists: Lists;
+    public json: JSONBitByBit;
     public vector: Vector;
     public babylon: Babylon;
     public point: Point;
@@ -67,6 +69,7 @@ export class BitByBitBase {
         this.occt = new OCCTW(this.context, this.occtWorkerManager, geometryHelper, this.jscad.text, this.vector);
         this.asset = new Asset();
         this.math = new MathBitByBit();
+        this.json = new JSONBitByBit();
         this.text = new Text();
         this.lists = new Lists();
         this.draw = new Draw(

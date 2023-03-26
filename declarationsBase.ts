@@ -1876,6 +1876,21 @@ declare class JSCADText {
      */
     createVectorText(inputs: Inputs.JSCAD.TextDto): Promise<number[][]>;
 }/**
+ * Contains various json path methods.
+ */
+declare class JSONBitByBit {
+    constructor();
+    /**
+     * Stringifies the input value
+     * @link https://docs.bitbybit.dev/classes/bitbybit_json.JSON.html#stringify
+     * @param inputs a value to be stringified
+     * @returns string
+     * @group transform
+     * @shortname stringify
+     * @drawable false
+     */
+    stringify(inputs: Inputs.JSON.StringifyDto): string;
+}/**
  * Contains various methods for lines. Line in bitbybit is a simple object that has star and end point properties.
  * { start: [ x, y, z ], end: [ x, y, z ] }
  */
