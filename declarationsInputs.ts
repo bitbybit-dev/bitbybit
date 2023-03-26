@@ -2671,7 +2671,7 @@ export const inputDeclarations = `declare namespace Asset {
          * Point
          * @default add
          */
-        action: MathTwoNrOperatorEnum;
+        operation: MathTwoNrOperatorEnum;
     }
     class ActionOnOneNumberDto {
         /**
@@ -2681,12 +2681,54 @@ export const inputDeclarations = `declare namespace Asset {
          * @maximum Infinity
          * @step 0.1
          */
-        nr: number;
+        number: number;
         /**
          * Point
          * @default absolute
          */
-        action: MathOneNrOperatorEnum;
+        operation: MathOneNrOperatorEnum;
+    }
+    class RemapNumberDto {
+        /**
+         * Number to remap
+         * @default 0.5
+         * @minimum -Infinity
+         * @maximum Infinity
+         * @step 0.1
+         */
+        number: number;
+        /**
+         * First number range min
+         * @default 0
+         * @minimum -Infinity
+         * @maximum Infinity
+         * @step 0.1
+         */
+        fromLow: number;
+        /**
+        * Map to range min
+        * @default 1
+        * @minimum -Infinity
+        * @maximum Infinity
+        * @step 0.1
+        */
+        fromHigh: number;
+        /**
+         * First number range max
+         * @default 1
+         * @minimum -Infinity
+         * @maximum Infinity
+         * @step 0.1
+         */
+        toLow: number;
+        /**
+         * Map to range max
+         * @default 2
+         * @minimum -Infinity
+         * @maximum Infinity
+         * @step 0.1
+         */
+        toHigh: number;
     }
 }declare namespace BabylonNode {
     class NodeDto {

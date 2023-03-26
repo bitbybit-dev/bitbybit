@@ -2034,7 +2034,7 @@ declare class Lists {
      * @param inputs a list of lists to flip
      * @returns item
      * @group edit
-     * @shortname reverse
+     * @shortname flip lists
      * @drawable false
      */
     flipLists(inputs: Inputs.Lists.ListDto): any;
@@ -2103,14 +2103,14 @@ declare class Lists {
 declare class MathBitByBit {
     constructor();
     /**
-       * Creates a number
-       * @link https://docs.bitbybit.dev/classes/bitbybit_math.Math.html#number
-       * @param inputs a number to be created
-       * @returns number
-       * @group create
-       * @shortname number
-       * @drawable false
-       */
+     * Creates a number
+     * @link https://docs.bitbybit.dev/classes/bitbybit_math.Math.html#number
+     * @param inputs a number to be created
+     * @returns number
+     * @group create
+     * @shortname number
+     * @drawable false
+     */
     number(inputs: Inputs.Math.NumberDto): number;
     /**
      * Does basic math operations
@@ -2123,16 +2123,26 @@ declare class MathBitByBit {
      */
     twoNrOperation(inputs: Inputs.Math.ActionOnTwoNumbersDto): number;
     /**
-        * Does basic math operations on one number
-        * @link https://docs.bitbybit.dev/classes/bitbybit_math.Math.html#oneNrOperation
-        * @param inputs one number and operator action
-        * @returns Result of math operation
-        * @group operations
-        * @shortname one number
-        * @drawable false
-        */
+     * Does basic math operations on one number
+     * @link https://docs.bitbybit.dev/classes/bitbybit_math.Math.html#oneNrOperation
+     * @param inputs one number and operator action
+     * @returns Result of math operation
+     * @group operations
+     * @shortname one number
+     * @drawable false
+     */
     oneNrOperation(inputs: Inputs.Math.ActionOnOneNumberDto): number;
-}declare class OCCTWIO extends OCCTIO {
+    /**
+    * Remaps a number from one range to another
+    * @link https://docs.bitbybit.dev/classes/bitbybit_math.Math.html#remap
+    * @param inputs one number and operator action
+    * @returns Result of mapping
+    * @group operations
+    * @shortname remap
+    * @drawable false
+    */
+    remap(inputs: Inputs.Math.RemapNumberDto): number;
+}{};declare class OCCTWIO extends OCCTIO {
     readonly occWorkerManager: OCCTWorkerManager;
     private readonly geometryHelper;
     constructor(occWorkerManager: OCCTWorkerManager, geometryHelper: GeometryHelper);
