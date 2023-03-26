@@ -16,7 +16,7 @@ export namespace Text {
          * Text to split
          * @default a,b,c
          */
-        text: string;
+        text: string = 'a,b,c';
         /**
          * Text to split by
          * @default ,
@@ -28,17 +28,17 @@ export namespace Text {
          * Text to replace
          * @default a-c
          */
-        text: string;
+        text: string = 'a-c';
         /**
          * Text to search for
          * @default -
          */
-        search: string;
+        search: string = '-';
         /**
          * Text to replace found occurences
          * @default b
          */
-        replaceWith: string;
+        replaceWith: string = 'b';
     }
     export class TextJoinDto {
         /**
@@ -50,7 +50,7 @@ export namespace Text {
          * Text to join by
          * @default ,
          */
-        separator: string;
+        separator: string = ',';
     }
     export class ToStringDto {
         /**
