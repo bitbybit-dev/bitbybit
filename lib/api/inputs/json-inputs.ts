@@ -25,7 +25,7 @@ export namespace JSON {
         json: any;
         /**
          * query path
-         * @default
+         * @default undefined
          */
         query: string;
     }
@@ -42,7 +42,7 @@ export namespace JSON {
         value: any;
         /**
          * query json structure
-         * @default
+         * @default undefined
          */
         path: string;
     }
@@ -53,8 +53,8 @@ export namespace JSON {
          */
         json: any;
         /**
-         * query path
-         * @default
+         * query path 
+         * @default undefined
          */
         query: string;
     }

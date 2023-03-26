@@ -2371,7 +2371,7 @@ export const inputDeclarations = `declare namespace Asset {
         json: any;
         /**
          * query path
-         * @default
+         * @default undefined
          */
         query: string;
     }
@@ -2388,7 +2388,7 @@ export const inputDeclarations = `declare namespace Asset {
         value: any;
         /**
          * query json structure
-         * @default
+         * @default undefined
          */
         path: string;
     }
@@ -2400,7 +2400,7 @@ export const inputDeclarations = `declare namespace Asset {
         json: any;
         /**
          * query path
-         * @default
+         * @default undefined
          */
         query: string;
     }
