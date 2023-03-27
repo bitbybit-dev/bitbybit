@@ -133,76 +133,117 @@ export const inputDeclarations = `declare namespace Asset {
     class PBRMetallicRoughnessDto {
         /**
          * Name of the material
+         * @default Custom Material
          */
         name: string;
         /**
          * Base color of the material
+         * @default #0000ff
          */
-        baseColor: string;
+        baseColor: Base.Color;
         /**
          * Metallic value of the material
+         * @default 0.6
+         * @minimum 0
+         * @maximum 1
+         * @step 0.1
          */
         metallic: number;
         /**
          * Roughness value of the material
+         * @default 0.5
+         * @minimum 0
+         * @maximum 1
+         * @step 0.1
          */
         roughness: number;
         /**
          * Defines the transparency of the material
+         * @default 1
+         * @minimum 0
+         * @maximum 1
+         * @step 0.1
          */
         alpha: number;
         /**
          * Identifies if both sides of the surface should have material applied
+         * @default false
          */
         backFaceCulling: boolean;
     }
     class BaseColorDto {
         /**
          * Material to update
+         * @default undefined
          */
         material: PBRMetallicRoughnessMaterial;
         /**
          * Base color of the material
+         * @default #0000ff
          */
-        baseColor?: string;
+        baseColor?: Base.Color;
+    }
+    class MaterialPropDto {
+        /**
+         * Material to investigate
+         * @default undefined
+         */
+        material: PBRMetallicRoughnessMaterial;
     }
     class MetallicDto {
         /**
          * Material to update
+         * @default undefined
          */
         material: PBRMetallicRoughnessMaterial;
         /**
          * Metallic value of the material
+         * @default 0.5
+         * @minimum 0
+         * @maximum 1
+         * @step 0.1
          */
         metallic?: number;
     }
     class RoughnessDto {
         /**
          * Material to update
+         * @default undefined
          */
         material: PBRMetallicRoughnessMaterial;
         /**
          * Roughness value of the material
+         * @default 0.5
+         * @minimum 0
+         * @maximum 1
+         * @step 0.1
          */
         roughness?: number;
     }
     class AlphaDto {
         /**
          * Material to update
+         * @default undefined
          */
         material: PBRMetallicRoughnessMaterial;
         /**
          * Alpha value of the material
+         * @default 0.5
+         * @minimum 0
+         * @maximum 1
+         * @step 0.1
          */
         alpha?: number;
     }
     class BackFaceCullingDto {
         /**
          * Material to update
+         * @default undefined
          */
         material: PBRMetallicRoughnessMaterial;
         /**
          * back face culling
+         * @default true
          */
         backFaceCulling?: boolean;
     }

@@ -16,6 +16,9 @@ export class BabylonMaterialPbrMetallicRoughness {
      * Create PBR metallic roughnes material.
      * @param inputs required to set up metallic roughness material
      * @returns PBR metallic roughness material
+     * @group create
+     * @shortname material
+     * @disposableOutput true
      */
     create(inputs: Inputs.BabylonMaterial.PBRMetallicRoughnessDto): PBRMetallicRoughnessMaterial {
         const mat = new PBRMetallicRoughnessMaterial(inputs.name, this.context.scene);
@@ -31,6 +34,8 @@ export class BabylonMaterialPbrMetallicRoughness {
     /**
      * Sets the base color of material
      * @param inputs base color and material
+     * @group set
+     * @shortname base color
      */
     setBaseColor(inputs: Inputs.BabylonMaterial.BaseColorDto): void {
         const mat = inputs.material;
@@ -39,6 +44,8 @@ export class BabylonMaterialPbrMetallicRoughness {
     /**
      * Sets the metallic property of material
      * @param inputs metallic value
+     * @group set
+     * @shortname metallic
      */
     setMetallic(inputs: Inputs.BabylonMaterial.MetallicDto): void {
         const mat = inputs.material;
@@ -47,6 +54,8 @@ export class BabylonMaterialPbrMetallicRoughness {
     /**
      * Sets the roughness of material
      * @param inputs roughness value
+     * @group set
+     * @shortname roughness
      */
     setRoughness(inputs: Inputs.BabylonMaterial.RoughnessDto): void {
         const mat = inputs.material;
@@ -55,6 +64,8 @@ export class BabylonMaterialPbrMetallicRoughness {
     /**
      * Sets the alpha of material
      * @param inputs alpha value
+     * @group set
+     * @shortname alpha
      */
     setAlpha(inputs: Inputs.BabylonMaterial.AlphaDto): void {
         const mat = inputs.material;
@@ -63,6 +74,8 @@ export class BabylonMaterialPbrMetallicRoughness {
     /**
      * Sets the back face culling of material
      * @param inputs back face culling boolean
+     * @group set
+     * @shortname back face culling
      */
     setBackFaceCulling(inputs: Inputs.BabylonMaterial.BackFaceCullingDto): void {
         const mat = inputs.material;
@@ -73,8 +86,10 @@ export class BabylonMaterialPbrMetallicRoughness {
      * Gets the base color of material
      * @param inputs base color and material
      * @return base color
+     * @group get
+     * @shortname base color
      */
-    getBaseColor(inputs: Inputs.BabylonMaterial.BaseColorDto): string {
+    getBaseColor(inputs: Inputs.BabylonMaterial.MaterialPropDto): string {
         const mat = inputs.material;
         const r = BitByBitBlocklyHelperService.remap(mat.baseColor.r, 0, 1, 0, 255);
         const g = BitByBitBlocklyHelperService.remap(mat.baseColor.g, 0, 1, 0, 255);
@@ -87,8 +102,10 @@ export class BabylonMaterialPbrMetallicRoughness {
      * Gets the metallic property of material
      * @param inputs metallic value
      * @return metallic value
+     * @group get
+     * @shortname metallic
      */
-    getMetallic(inputs: Inputs.BabylonMaterial.MetallicDto): number {
+    getMetallic(inputs: Inputs.BabylonMaterial.MaterialPropDto): number {
         return inputs.material.metallic;
     }
 
@@ -96,8 +113,10 @@ export class BabylonMaterialPbrMetallicRoughness {
      * Gets the roughness of material
      * @param inputs roughness value
      * @return roughness value
+     * @group get
+     * @shortname roughness
      */
-    getRoughness(inputs: Inputs.BabylonMaterial.RoughnessDto): number {
+    getRoughness(inputs: Inputs.BabylonMaterial.MaterialPropDto): number {
         return inputs.material.roughness;
     }
 
@@ -105,8 +124,10 @@ export class BabylonMaterialPbrMetallicRoughness {
      * Gets the alpha of material
      * @param inputs alpha value
      * @return alpha value
+     * @group get
+     * @shortname alpha
      */
-    getAlpha(inputs: Inputs.BabylonMaterial.AlphaDto): number {
+    getAlpha(inputs: Inputs.BabylonMaterial.MaterialPropDto): number {
         return inputs.material.alpha;
     }
 
@@ -114,8 +135,10 @@ export class BabylonMaterialPbrMetallicRoughness {
      * Gets the back face culling of material
      * @param inputs back face culling boolean
      * @return backfaceculling boolean
+     * @group get
+     * @shortname back face culling
      */
-    getBackFaceCulling(inputs: Inputs.BabylonMaterial.BackFaceCullingDto): boolean {
+    getBackFaceCulling(inputs: Inputs.BabylonMaterial.MaterialPropDto): boolean {
         return inputs.material.backFaceCulling
     }
 }
