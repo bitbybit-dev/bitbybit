@@ -3,7 +3,7 @@
     "compileOnSave": false,
     "compilerOptions": {
         "baseUrl": "./",
-        "outDir": "./dist/c",
+        "outDir": "../../declarations/dist/c",
         "sourceMap": false,
         "declaration": true,
         "downlevelIteration": true,
@@ -13,7 +13,7 @@
         "target": "es2015",
         "module": "es2020",
         "emitDeclarationOnly": false,
-        "declarationDir": "declarations",
+        "declarationDir": "../../declarations/generated-dec",
         "paths": {
             "bitbybit-occt-worker": [
                 "../../../bitbybit-occt-worker",

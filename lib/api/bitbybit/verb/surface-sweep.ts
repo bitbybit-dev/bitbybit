@@ -15,10 +15,6 @@ export class VerbSurfaceSweep {
 
     /**
      * Creates the sweep Nurbs surface
-     * <div>
-     *  <img src="../assets/images/blockly-images/surface/sweep/create.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_surface_sweep.VerbSurfaceSweep.html#create
      * @param inputs Parameters for Nurbs sweep surface
      * @returns Sweep Nurbs surface
      */
@@ -28,10 +24,6 @@ export class VerbSurfaceSweep {
 
     /**
      * Get the profile Nurbs curve of the swept Nurbs surface
-     * <div>
-     *  <img src="../assets/images/blockly-images/surface/sweep/profile.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_surface_sweep.VerbSurfaceSweep.html#profile
      * @param inputs Sweep Nurbs surface
      * @returns Profile Nurbs curve
      */
@@ -41,10 +33,6 @@ export class VerbSurfaceSweep {
 
     /**
      * Get the rail Nurbs curve of the swept Nurbs surface
-     * <div>
-     *  <img src="../assets/images/blockly-images/surface/sweep/rail.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_surface_sweep.VerbSurfaceSweep.html#rail
      * @param inputs Sweep Nurbs surface
      * @returns Rail Nurbs curve
      */

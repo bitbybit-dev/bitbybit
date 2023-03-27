@@ -1,10 +1,10 @@
-import { Text } from './text';
+import { TextBitByBit } from './text';
 
 describe('Text unit tests', () => {
-    let text: Text;
+    let text: TextBitByBit;
 
     beforeAll(async () => {
-        text = new Text();
+        text = new TextBitByBit();
     });
 
     it('should create a text', async () => {

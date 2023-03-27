@@ -15,10 +15,6 @@ export class VerbCurveCircle {
 
     /**
      * Creates the circle Nurbs curve
-     * <div>
-     *  <img src="../assets/images/blockly-images/curve/circle/createCircle.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_curve_circle.VerbCurveCircle.html#createcircle
      * @param inputs Circle parameters
      * @returns Circle Nurbs curve
      */
@@ -28,10 +24,6 @@ export class VerbCurveCircle {
 
     /**
      * Creates the arc Nurbs curve
-     * <div>
-     *  <img src="../assets/images/blockly-images/curve/circle/createArc.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_curve_circle.VerbCurveCircle.html#createArc
      * @param inputs Arc parameters
      * @returns Arc Nurbs curve
      */
@@ -48,10 +40,6 @@ export class VerbCurveCircle {
 
     /**
      * Gets the center point of the circle or an arc
-     * <div>
-     *  <img src="../assets/images/blockly-images/curve/circle/center.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_curve_circle.VerbCurveCircle.html#center
      * @param inputs An arc or a circle Nurbs curve
      * @returns Point
      */
@@ -61,10 +49,6 @@ export class VerbCurveCircle {
 
     /**
      * Gets the radius of the circle or an arc
-     * <div>
-     *  <img src="../assets/images/blockly-images/curve/circle/radius.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_curve_circle.VerbCurveCircle.html#radius
      * @param inputs An arc or a circle Nurbs curve
      * @returns Radius
      */
@@ -74,10 +58,6 @@ export class VerbCurveCircle {
 
     /**
      * Gets the max angle of the arc in degrees
-     * <div>
-     *  <img src="../assets/images/blockly-images/curve/circle/maxAngle.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_curve_circle.VerbCurveCircle.html#maxAngle
      * @param inputs Arc
      * @returns Max angle in degrees
      */
@@ -87,10 +67,6 @@ export class VerbCurveCircle {
 
     /**
      * Gets the min angle of the arc in degrees
-     * <div>
-     *  <img src="../assets/images/blockly-images/curve/circle/minAngle.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_curve_circle.VerbCurveCircle.html#minAngle
      * @param inputs Arc
      * @returns Min angle in degrees
      */
@@ -100,10 +76,6 @@ export class VerbCurveCircle {
 
     /**
      * Gets the x angle of the arc
-     * <div>
-     *  <img src="../assets/images/blockly-images/curve/circle/xAxis.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_curve_circle.VerbCurveCircle.html#xAxis
      * @param inputs Circle
      * @returns X axis vector
      */
@@ -113,10 +85,6 @@ export class VerbCurveCircle {
 
     /**
      * Gets the y angle of the arc
-     * <div>
-     *  <img src="../assets/images/blockly-images/curve/circle/yAxis.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_curve_circle.VerbCurveCircle.html#yAxis
      * @param inputs Circle
      * @returns Y axis vector
      */

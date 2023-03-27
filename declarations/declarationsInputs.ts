@@ -674,7 +674,6 @@ export const inputDeclarations = `declare namespace Asset {
     }
     /**
      * Draw options for basic geometry types like points, lines, polylines, surfaces and jscad meshes
-     * @link https://docs.bitbybit.dev/classes/inputs_draw_inputs.draw.drawbasicgeometryoptions.html
      */
     class DrawBasicGeometryOptions {
         /**
@@ -711,7 +710,6 @@ export const inputDeclarations = `declare namespace Asset {
     }
     /**
      * Draw options for Nodes
-     * @link https://docs.bitbybit.dev/classes/inputs_draw_inputs.draw.drawnodeoptions.html
      */
     class DrawNodeOptions {
         /**
@@ -739,7 +737,6 @@ export const inputDeclarations = `declare namespace Asset {
     }
     /**
      * Draw options for OCCT shapes
-     * @link https://docs.bitbybit.dev/classes/inputs_draw_inputs.draw.drawocctshapeoptions.html
      */
     class DrawOcctShapeOptions {
         /**
@@ -3465,7 +3462,6 @@ export const inputDeclarations = `declare namespace Asset {
     }
     /**
      * Class representing a tag
-     * @link https://docs.bitbybit.dev/classes_api_inputs_tag_inputs.tag.tagdto.html
      */
     class TagDto {
         constructor(text?: string);

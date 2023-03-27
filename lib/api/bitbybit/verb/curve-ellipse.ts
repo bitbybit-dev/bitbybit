@@ -15,10 +15,6 @@ export class VerbCurveEllipse {
 
     /**
      * Creates the ellipse Nurbs curve
-     * <div>
-     *  <img src="../assets/images/blockly-images/curve/ellipse/createEllipse.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_curve_ellipse.VerbCurveEllipse.html#createEllipse
      * @param inputs Ellipse parameters
      * @returns Ellipse Nurbs curve
      */
@@ -28,10 +24,6 @@ export class VerbCurveEllipse {
 
     /**
      * Creates the ellipse arc Nurbs curve
-     * <div>
-     *  <img src="../assets/images/blockly-images/curve/ellipse/createArc.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_curve_ellipse.VerbCurveEllipse.html#createArc
      * @param inputs Ellipse arc parameters
      * @returns Ellipse arc Nurbs curve
      */
@@ -45,10 +37,6 @@ export class VerbCurveEllipse {
 
     /**
      * Gets the center point of the ellipse or an arc
-     * <div>
-     *  <img src="../assets/images/blockly-images/curve/ellipse/center.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_curve_ellipse.VerbCurveEllipse.html#center
      * @param inputs The arc or the ellipse Nurbs curve
      * @returns Point
      */
@@ -58,10 +46,6 @@ export class VerbCurveEllipse {
 
     /**
      * Gets the max angle of the arc in degrees
-     * <div>
-     *  <img src="../assets/images/blockly-images/curve/ellipse/maxAngle.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_curve_ellipse.VerbCurveEllipse.html#maxAngle
      * @param inputs Arc
      * @returns Max angle in degrees
      */
@@ -71,10 +55,6 @@ export class VerbCurveEllipse {
 
     /**
      * Gets the min angle of the arc in degrees
-     * <div>
-     *  <img src="../assets/images/blockly-images/curve/ellipse/minAngle.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_curve_ellipse.VerbCurveEllipse.html#minAngle
      * @param inputs Arc
      * @returns Min angle in degrees
      */
@@ -84,10 +64,6 @@ export class VerbCurveEllipse {
 
     /**
      * Gets the x angle of the arc or an ellipse
-     * <div>
-     *  <img src="../assets/images/blockly-images/curve/ellipse/xAxis.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_curve_ellipse.VerbCurveEllipse.html#xAxis
      * @param inputs Ellipse or an arc
      * @returns X axis vector
      */
@@ -97,10 +73,6 @@ export class VerbCurveEllipse {
 
     /**
      * Gets the y angle of the arc or an ellipse
-     * <div>
-     *  <img src="../assets/images/blockly-images/curve/ellipse/yAxis.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_curve_ellipse.VerbCurveEllipse.html#yAxis
      * @param inputs Ellipse or an arc
      * @returns Y axis vector
      */

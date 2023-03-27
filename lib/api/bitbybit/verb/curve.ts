@@ -27,7 +27,6 @@ export class VerbCurve {
 
     /**
      * Draws a single curve
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_curve.VerbCurve.html#drawCurve
      * @param inputs Contains a curve to be drawn
      * @returns Lines mesh that is being drawn by Babylon
      */
@@ -45,7 +44,6 @@ export class VerbCurve {
 
     /**
      * Draws multiple curves
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_curve.VerbCurve.html#drawCurves
      * @param inputs Contains curves to be drawn
      * @returns Lines mesh that is being drawn by Babylon
      */
@@ -63,10 +61,6 @@ export class VerbCurve {
 
     /**
      * Creates a Nurbs curve by providing knots, control points & weights
-     * <div>
-     *  <img src="../assets/images/blockly-images/curve/createCurveByKnotsControlPointsWeights.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_curve.VerbCurve.html#createCurveByKnotsControlPointsWeights
      * @param inputs Contains knots, control points and weights
      * @returns Nurbs curve
      */
@@ -76,10 +70,6 @@ export class VerbCurve {
 
     /**
      * Creates a Nurbs curve by providing control points
-     * <div>
-     *  <img src="../assets/images/blockly-images/curve/createCurveByPoints.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_curve.VerbCurve.html#createCurveByPoints
      * @param inputs Control points
      * @returns Nurbs curve
      */
@@ -89,10 +79,6 @@ export class VerbCurve {
 
     /**
      * Creates a Bezier Nurbs curve by providing control points and weights
-     * <div>
-     *  <img src="../assets/images/blockly-images/curve/createBezierCurve.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_curve.VerbCurve.html#createBezierCurve
      * @param inputs Control points
      * @returns Bezier Nurbs curve
      */
@@ -102,10 +88,6 @@ export class VerbCurve {
 
     /**
      * Clone the Nurbs curve
-     * <div>
-     *  <img src="../assets/images/blockly-images/curve/clone.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_curve.VerbCurve.html#clone
      * @param inputs Nurbs curve
      * @returns Nurbs curve
      */
@@ -115,10 +97,6 @@ export class VerbCurve {
 
     /**
      * Finds the closest param on the Nurbs curve from the point
-     * <div>
-     *  <img src="../assets/images/blockly-images/curve/closestParam.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_curve.VerbCurve.html#closestParam
      * @param inputs Nurbs curve with point
      * @returns Param number
      */
@@ -128,10 +106,6 @@ export class VerbCurve {
 
     /**
      * Finds the closest params on the Nurbs curve from the points
-     * <div>
-     *  <img src="../assets/images/blockly-images/curve/closestParams.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_curve.VerbCurve.html#closestParams
      * @param inputs Nurbs curve with points
      * @returns Param numbers
      */
@@ -141,10 +115,6 @@ export class VerbCurve {
 
     /**
      * Finds the closest point on the Nurbs curve from the point
-     * <div>
-     *  <img src="../assets/images/blockly-images/curve/closestPoint.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_curve.VerbCurve.html#closestPoint
      * @param inputs Nurbs curve with point
      * @returns Point
      */
@@ -154,10 +124,6 @@ export class VerbCurve {
 
     /**
      * Finds the closest points on the Nurbs curve from the list of points
-     * <div>
-     *  <img src="../assets/images/blockly-images/curve/closestPoints.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_curve.VerbCurve.html#closestPoints
      * @param inputs Nurbs curve with points
      * @returns Points
      */
@@ -167,10 +133,6 @@ export class VerbCurve {
 
     /**
      * Finds the control points of the Nurbs curve
-     * <div>
-     *  <img src="../assets/images/blockly-images/curve/controlPoints.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_curve.VerbCurve.html#controlPoints
      * @param inputs Nurbs curve
      * @returns Points
      */
@@ -180,10 +142,6 @@ export class VerbCurve {
 
     /**
      * Finds the degree of the Nurbs curve
-     * <div>
-     *  <img src="../assets/images/blockly-images/curve/degree.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_curve.VerbCurve.html#degree
      * @param inputs Nurbs curve
      * @returns Degree number
      */
@@ -193,10 +151,6 @@ export class VerbCurve {
 
     /**
      * Finds the derivatives of the Nurbs curve at parameter
-     * <div>
-     *  <img src="../assets/images/blockly-images/curve/derivatives.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_curve.VerbCurve.html#derivatives
      * @param inputs Nurbs curve with specified derivative number and parameter
      * @returns Derivatives
      */
@@ -206,10 +160,6 @@ export class VerbCurve {
 
     /**
      * Divides the curve by equal arc length to parameters
-     * <div>
-     *  <img src="../assets/images/blockly-images/curve/divideByEqualArcLengthToParams.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_curve.VerbCurve.html#divideByEqualArcLengthToParams
      * @param inputs Nurbs curve
      * @returns Parameters
      */
@@ -220,10 +170,6 @@ export class VerbCurve {
 
     /**
      * Divides the curve by equal arc length to points
-     * <div>
-     *  <img src="../assets/images/blockly-images/curve/divideByEqualArcLengthToPoints.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_curve.VerbCurve.html#divideByEqualArcLengthToPoints
      * @param inputs Nurbs curve
      * @returns Points
      */
@@ -234,10 +180,6 @@ export class VerbCurve {
 
     /**
      * Divides the curve by arc length to parameters
-     * <div>
-     *  <img src="../assets/images/blockly-images/curve/divideByArcLengthToParams.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_curve.VerbCurve.html#divideByArcLengthToParams
      * @param inputs Nurbs curve
      * @returns Parameters
      */
@@ -248,10 +190,6 @@ export class VerbCurve {
 
     /**
      * Divides the curve by arc length to points
-     * <div>
-     *  <img src="../assets/images/blockly-images/curve/divideByArcLengthToPoints.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_curve.VerbCurve.html#divideByArcLengthToPoints
      * @param inputs Nurbs curve
      * @returns Points
      */
@@ -262,10 +200,6 @@ export class VerbCurve {
 
     /**
      * Divides multiple curves by equal arc length to points
-     * <div>
-     *  <img src="../assets/images/blockly-images/curve/divideCurvesByEqualArcLengthToPoints.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_curve.VerbCurve.html#divideCurvesByEqualArcLengthToPoints
      * @param inputs Nurbs curves
      * @returns Points placed for each curve in separate arrays
      */
@@ -275,10 +209,6 @@ export class VerbCurve {
 
     /**
      * Divides multiple curves by arc length to points
-     * <div>
-     *  <img src="../assets/images/blockly-images/curve/divideCurvesByArcLengthToPoints.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_curve.VerbCurve.html#divideCurvesByArcLengthToPoints
      * @param inputs Nurbs curves
      * @returns Points placed for each curve in separate arrays
      */
@@ -288,10 +218,6 @@ export class VerbCurve {
 
     /**
      * Finds the domain interval of the curve parameters
-     * <div>
-     *  <img src="../assets/images/blockly-images/curve/domain.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_curve.VerbCurve.html#domain
      * @param inputs Nurbs curve
      * @returns Interval domain
      */
@@ -301,10 +227,6 @@ export class VerbCurve {
 
     /**
      * Start point of the curve
-     * <div>
-     *  <img src="../assets/images/blockly-images/curve/startPoint.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_curve.VerbCurve.html#startPoint
      * @param inputs Nurbs curve
      * @returns Start point
      */
@@ -314,10 +236,6 @@ export class VerbCurve {
 
     /**
      * End point of the curve
-     * <div>
-     *  <img src="../assets/images/blockly-images/curve/endPoint.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_curve.VerbCurve.html#endPoint
      * @param inputs Nurbs curve
      * @returns End point
      */
@@ -326,10 +244,6 @@ export class VerbCurve {
     }
     /**
      * Start points of the curves
-     * <div>
-     *  <img src="../assets/images/blockly-images/curve/startPoints.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_curve.VerbCurve.html#startPoints
      * @param inputs Nurbs curves
      * @returns Start points
      */
@@ -339,10 +253,6 @@ export class VerbCurve {
 
     /**
      * End points of the curves
-     * <div>
-     *  <img src="../assets/images/blockly-images/curve/endPoints.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_curve.VerbCurve.html#endPoints
      * @param inputs Nurbs curves
      * @returns End points
      */
@@ -352,10 +262,6 @@ export class VerbCurve {
 
     /**
      * Finds the knots of the Nurbs curve
-     * <div>
-     *  <img src="../assets/images/blockly-images/curve/knots.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_curve.VerbCurve.html#knots
      * @param inputs Nurbs curve
      * @returns Knots
      */
@@ -365,10 +271,6 @@ export class VerbCurve {
 
     /**
      * Gets the length of the Nurbs curve at specific parameter
-     * <div>
-     *  <img src="../assets/images/blockly-images/curve/lengthAtParam.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_curve.VerbCurve.html#lengthAtParam
      * @param inputs Nurbs curve and parameter
      * @returns Length
      */
@@ -378,10 +280,6 @@ export class VerbCurve {
 
     /**
      * Gets the length of the Nurbs curve
-     * <div>
-     *  <img src="../assets/images/blockly-images/curve/length.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_curve.VerbCurve.html#length
      * @param inputs Nurbs curve
      * @returns Length
      */
@@ -391,10 +289,6 @@ export class VerbCurve {
 
     /**
      * Gets the param at specified length on the Nurbs curve
-     * <div>
-     *  <img src="../assets/images/blockly-images/curve/paramAtLength.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_curve.VerbCurve.html#paramAtLength
      * @param inputs Nurbs curve, length and tolerance
      * @returns Parameter
      */
@@ -404,10 +298,6 @@ export class VerbCurve {
 
     /**
      * Gets the point at specified parameter on the Nurbs curve
-     * <div>
-     *  <img src="../assets/images/blockly-images/curve/pointAtParam.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_curve.VerbCurve.html#pointAtParam
      * @param inputs Nurbs curve and a parameter
      * @returns Point
      */
@@ -417,10 +307,6 @@ export class VerbCurve {
 
     /**
      * Gets the points at specified parameter on the Nurbs curves
-     * <div>
-     *  <img src="../assets/images/blockly-images/curve/pointAtParam.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_curve.VerbCurve.html#pointsAtParam
      * @param inputs Nurbs curves and a parameter
      * @returns Points in arrays for each curve
      */
@@ -430,10 +316,6 @@ export class VerbCurve {
 
     /**
      * Reverses the Nurbs curve
-     * <div>
-     *  <img src="../assets/images/blockly-images/curve/reverse.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_curve.VerbCurve.html#reverse
      * @param inputs Nurbs curve
      * @returns Reversed Nurbs curve
      */
@@ -443,10 +325,6 @@ export class VerbCurve {
 
     /**
      * Splits the Nurbs curve in two at a given parameter
-     * <div>
-     *  <img src="../assets/images/blockly-images/curve/split.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_curve.VerbCurve.html#split
      * @param inputs Nurbs curve with parameter
      * @returns Nurbs curves
      */
@@ -456,10 +334,6 @@ export class VerbCurve {
 
     /**
      * Tangent of the Nurbs curve at a given parameter
-     * <div>
-     *  <img src="../assets/images/blockly-images/curve/tangent.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_curve.VerbCurve.html#tangent
      * @param inputs Nurbs curve with parameter
      * @returns Tangent vector
      */
@@ -469,10 +343,6 @@ export class VerbCurve {
 
     /**
      * Tessellates the Nurbs curve into a list of points
-     * <div>
-     *  <img src="../assets/images/blockly-images/curve/tessellate.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_curve.VerbCurve.html#tessellate
      * @param inputs Nurbs curve with tolerance
      * @returns Points
      */
@@ -482,10 +352,6 @@ export class VerbCurve {
 
     /**
      * Transforms the Nurbs curve
-     * <div>
-     *  <img src="../assets/images/blockly-images/curve/transform.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_curve.VerbCurve.html#transform
      * @param inputs Nurbs curve with transformation matrixes
      * @returns Transformed curve
      */
@@ -499,10 +365,6 @@ export class VerbCurve {
 
     /**
      * Transforms the Nurbs curves
-     * <div>
-     *  <img src="../assets/images/blockly-images/curve/transformCurves.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_curve.VerbCurve.html#transformcurves
      * @param inputs Nurbs curves with transformation matrixes
      * @returns Transformed curves
      */
@@ -512,10 +374,6 @@ export class VerbCurve {
 
     /**
      * Weights of the Nurbs curve
-     * <div>
-     *  <img src="../assets/images/blockly-images/curve/weights.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_curve.VerbCurve.html#weights
      * @param inputs Nurbs curve
      * @returns Weights
      */

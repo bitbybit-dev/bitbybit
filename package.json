@@ -22,8 +22,8 @@
         "copy-readme": "cp -R ./README.md ./dist && cp -R ./LICENSE ./dist",
         "delete-tsdoc": "rm -R ./dist/ts-api-docs && rm -R ./dist/ts-doc-theme && rm -R ./dist/coverage",
         "declarations": "tsc --project lib/api/tsconfig.bbb.json",
-        "dec": "npm run declarations && node lib/api/declarations.js",
-        "docs": "./node_modules/.bin/sass ts-doc-theme/assets/css/main.sass ts-doc-theme/assets/css/main.css && node_modules/.bin/typedoc --out ts-api-docs/ lib/api --theme ./ts-doc-theme --excludePrivate --tsconfig lib/api/tsconfig.bbb.json --media assets/images/blockly-block-images/ && node mvdocpictures",
+        "dec": "npm run declarations && node declarations/generate-declarations.js && tsc declarations/dts-declarations.ts --skipLibCheck && node declarations/dts-declarations.js",
+        "docs": "./node_modules/.bin/sass ts-doc-theme/assets/css/main.sass ts-doc-theme/assets/css/main.css && node_modules/.bin/typedoc --out ts-api-docs/ ./type-def.d.ts --theme ./ts-doc-theme --excludePrivate --media assets/images/blockly-block-images/ && node mvdocpictures",
         "test": "NODE_OPTIONS=--experimental-specifier-resolution=node jest --watchAll=true",
         "test-c": "NODE_OPTIONS=--experimental-specifier-resolution=node jest --coverage --watchAll=false",
         "test-c-l": "NODE_OPTIONS=--experimental-specifier-resolution=node jest --coverage --watchAll=true"

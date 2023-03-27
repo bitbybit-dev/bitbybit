@@ -39,7 +39,6 @@ export class VerbSurface {
 
     /**
      * Draws a single surface
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_surface.VerbSurface.html#drawSurface
      * @param inputs Contains a surface and information for drawing
      * @returns Mesh that is being drawn by Babylon
      */
@@ -79,10 +78,6 @@ export class VerbSurface {
 
     /**
      * Draws multiple surfaces
-     * <div>
-     *  <img src="../assets/images/blockly-images/surface/drawSurfaces.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_surface.VerbSurface.html#drawSurfaces
      * @param inputs Contains the Nurbs surfaces and information for drawing
      * @returns Mesh that is being drawn by Babylon
      */
@@ -127,7 +122,6 @@ export class VerbSurface {
 
     /**
      * Draws multiple surfaces with multiple colours. Number of colours has to be equal to number of surfaces
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_surface.VerbSurface.html#drawSurfacesMultiColour
      * @param inputs Contains the Nurbs surfaces, colours and other information for drawing
      * @returns Mesh that is being drawn by Babylon
      */
@@ -166,10 +160,6 @@ export class VerbSurface {
 
     /**
      * Gets the boundary edge Nurbs curves of the surface in a list
-     * <div>
-     *  <img src="../assets/images/blockly-images/surface/boundaries.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_surface.VerbSurface.html#boundaries
      * @param inputs Nurbs surface
      * @returns Array of curves
      */
@@ -179,10 +169,6 @@ export class VerbSurface {
 
     /**
      * Creates the surface by providing 4 points as corners
-     * <div>
-     *  <img src="../assets/images/blockly-images/surface/createSurfaceByCorners.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_surface.VerbSurface.html#createSurfaceByCorners
      * @param inputs 4 points
      * @returns Nurbs surface
      */
@@ -192,10 +178,6 @@ export class VerbSurface {
 
     /**
      * Creates the Nurbs surface by providing uv knots, uv degrees, points and weights
-     * <div>
-     *  <img src="../assets/images/blockly-images/surface/createSurfaceByKnotsControlPointsWeights.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_surface.VerbSurface.html#createSurfaceByKnotsControlPointsWeights
      * @param inputs Surface creation information
      * @returns Nurbs surface
      */
@@ -212,10 +194,6 @@ export class VerbSurface {
 
     /**
      * Creates the Nurbs surface by lofting curves
-     * <div>
-     *  <img src="../assets/images/blockly-images/surface/createSurfaceByLoftingCurves.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_surface.VerbSurface.html#createSurfaceByLoftingCurves
      * @param inputs Curves to loft through
      * @returns Nurbs surface
      */
@@ -225,10 +203,6 @@ export class VerbSurface {
 
     /**
      * Clone the Nurbs surface
-     * <div>
-     *  <img src="../assets/images/blockly-images/surface/clone.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_surface.VerbSurface.html#clone
      * @param inputs Nurbs surface
      * @returns Nurbs surface
      */
@@ -238,10 +212,6 @@ export class VerbSurface {
 
     /**
      * Finds the closest parameter on the surface from the point
-     * <div>
-     *  <img src="../assets/images/blockly-images/surface/closestParam.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_surface.VerbSurface.html#closestParam
      * @param inputs Nurbs surface with a point
      * @returns UV parameters
      */
@@ -251,10 +221,6 @@ export class VerbSurface {
 
     /**
      * Finds the closest point on the surface from the point
-     * <div>
-     *  <img src="../assets/images/blockly-images/surface/closestPoint.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_surface.VerbSurface.html#closestPoint
      * @param inputs Nurbs surface with a point
      * @returns Point
      */
@@ -264,10 +230,6 @@ export class VerbSurface {
 
     /**
      * Gets the control points on the surface
-     * <div>
-     *  <img src="../assets/images/blockly-images/surface/controlPoints.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_surface.VerbSurface.html#controlPoints
      * @param inputs Nurbs surface
      * @returns Two dimensional array of points
      */
@@ -277,10 +239,6 @@ export class VerbSurface {
 
     /**
      * Gets the U degree of the surface
-     * <div>
-     *  <img src="../assets/images/blockly-images/surface/degreeU.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_surface.VerbSurface.html#degreeU
      * @param inputs Nurbs surface
      * @returns U degree
      */
@@ -290,10 +248,6 @@ export class VerbSurface {
 
     /**
      * Gets the V degree of the surface
-     * <div>
-     *  <img src="../assets/images/blockly-images/surface/degreeV.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_surface.VerbSurface.html#degreeV
      * @param inputs Nurbs surface
      * @returns V degree
      */
@@ -303,10 +257,6 @@ export class VerbSurface {
 
     /**
      * Gets the derivatives of the surface at specified uv coordinate
-     * <div>
-     *  <img src="../assets/images/blockly-images/surface/derivatives.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_surface.VerbSurface.html#derivatives
      * @param inputs Nurbs surface
      * @returns Two dimensional array of vectors
      */
@@ -316,10 +266,6 @@ export class VerbSurface {
 
     /**
      * Gets the U domain of the surface
-     * <div>
-     *  <img src="../assets/images/blockly-images/surface/domainU.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_surface.VerbSurface.html#domainU
      * @param inputs Nurbs surface
      * @returns U domain as interval
      */
@@ -329,10 +275,6 @@ export class VerbSurface {
 
     /**
      * Gets the V domain of the surface
-     * <div>
-     *  <img src="../assets/images/blockly-images/surface/domainV.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_surface.VerbSurface.html#domainV
      * @param inputs Nurbs surface
      * @returns V domain as interval
      */
@@ -342,10 +284,6 @@ export class VerbSurface {
 
     /**
      * Gets the Nurbs isocurve on the surface
-     * <div>
-     *  <img src="../assets/images/blockly-images/surface/isocurve.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_surface.VerbSurface.html#isocurve
      * @param inputs Nurbs surface
      * @returns Nurbs curve
      */
@@ -355,10 +293,6 @@ export class VerbSurface {
 
     /**
      * Subdivides surface into preferred number of isocurves
-     * <div>
-     *  <img src="../assets/images/blockly-images/surface/isocurvesSubdivision.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_surface.VerbSurface.html#isocurvesSubdivision
      * @param inputs Nurbs surface
      * @returns Nurbs curves
      */
@@ -378,10 +312,6 @@ export class VerbSurface {
 
     /**
      * Subdivides surface into isocurves on specified array of parameters
-     * <div>
-     *  <img src="../assets/images/blockly-images/surface/isocurvesAtParams.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_surface.VerbSurface.html#isocurvesAtParams
      * @param inputs Nurbs surface
      * @returns Nurbs curves
      */
@@ -393,10 +323,6 @@ export class VerbSurface {
 
     /**
      * Gets the U knots of the surface
-     * <div>
-     *  <img src="../assets/images/blockly-images/surface/knotsU.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_surface.VerbSurface.html#knotsU
      * @param inputs Nurbs surface
      * @returns Knots on u direction
      */
@@ -406,10 +332,6 @@ export class VerbSurface {
 
     /**
      * Gets the V knots of the surface
-     * <div>
-     *  <img src="../assets/images/blockly-images/surface/knotsV.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_surface.VerbSurface.html#knotsV
      * @param inputs Nurbs surface
      * @returns Knots on v direction
      */
@@ -419,10 +341,6 @@ export class VerbSurface {
 
     /**
      * Gets the normal on the surface at uv coordinate
-     * <div>
-     *  <img src="../assets/images/blockly-images/surface/normal.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_surface.VerbSurface.html#normal
      * @param inputs Nurbs surface
      * @returns Normal vector
      */
@@ -432,10 +350,6 @@ export class VerbSurface {
 
     /**
      * Gets the point on the surface at uv coordinate
-     * <div>
-     *  <img src="../assets/images/blockly-images/surface/point.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_surface.VerbSurface.html#point
      * @param inputs Nurbs surface
      * @returns Point
      */
@@ -445,10 +359,6 @@ export class VerbSurface {
 
     /**
      * Reverse the Nurbs surface. This will reverse the UV origin and isocurve directions
-     * <div>
-     *  <img src="../assets/images/blockly-images/surface/reverse.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_surface.VerbSurface.html#reverse
      * @param inputs Nurbs surface
      * @returns Nurbs surface
      */
@@ -458,10 +368,6 @@ export class VerbSurface {
 
     /**
      * Splits the Nurbs surface in two halfs.
-     * <div>
-     *  <img src="../assets/images/blockly-images/surface/split.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_surface.VerbSurface.html#split
      * @param inputs Nurbs surface
      * @returns Two Nurbs surfaces
      */
@@ -471,10 +377,6 @@ export class VerbSurface {
 
     /**
      * Transforms the Nurbs surface with a given list of transformations.
-     * <div>
-     *  <img src="../assets/images/blockly-images/surface/transformSurface.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_surface.VerbSurface.html#transformSurface
      * @param inputs Nurbs surface with transforms
      * @returns Nurbs surface
      */
@@ -498,10 +400,6 @@ export class VerbSurface {
 
     /**
      * Gets the weights of the surface
-     * <div>
-     *  <img src="../assets/images/blockly-images/surface/weights.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_surface.VerbSurface.html#weights
      * @param inputs Nurbs surface
      * @returns Two dimensional array of weights
      */

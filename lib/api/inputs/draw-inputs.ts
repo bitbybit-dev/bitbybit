@@ -101,10 +101,6 @@ export namespace Draw {
    
     /**
      * Draw options for basic geometry types like points, lines, polylines, surfaces and jscad meshes
-     * <div>
-     *  <img src="../assets/images/blockly-images/draw/drawbasicgeometryoptions.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/inputs_draw_inputs.draw.drawbasicgeometryoptions.html
      */
     export class DrawBasicGeometryOptions {
         /**
@@ -142,10 +138,6 @@ export namespace Draw {
 
     /**
      * Draw options for Nodes
-     * <div>
-     *  <img src="../assets/images/blockly-images/draw/drawnodeoptions.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/inputs_draw_inputs.draw.drawnodeoptions.html
      */
     export class DrawNodeOptions {
         /**
@@ -174,10 +166,6 @@ export namespace Draw {
 
     /**
      * Draw options for OCCT shapes
-     * <div>
-     *  <img src="../assets/images/blockly-images/draw/drawocctshapeoptions.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/inputs_draw_inputs.draw.drawocctshapeoptions.html
      */
     export class DrawOcctShapeOptions {
         /**

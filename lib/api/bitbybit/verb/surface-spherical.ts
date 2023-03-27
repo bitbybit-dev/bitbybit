@@ -14,10 +14,6 @@ export class VerbSurfaceSpherical {
 
     /**
      * Creates the spherical Nurbs surface
-     * <div>
-     *  <img src="../assets/images/blockly-images/surface/spherical/create.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_surface_spherical.VerbSurfaceSpherical.html#create
      * @param inputs Parameters for Nurbs spherical surface
      * @returns Spherical Nurbs surface
      */
@@ -27,10 +23,6 @@ export class VerbSurfaceSpherical {
 
     /**
      * Get the radius of the spherical Nurbs surface
-     * <div>
-     *  <img src="../assets/images/blockly-images/surface/spherical/radius.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_surface_spherical.VerbSurfaceSpherical.html#radius
      * @param inputs Spherical Nurbs surface
      * @returns Radius
      */
@@ -40,10 +32,6 @@ export class VerbSurfaceSpherical {
 
     /**
      * Get the center of the spherical Nurbs surface
-     * <div>
-     *  <img src="../assets/images/blockly-images/surface/spherical/center.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_surface_spherical.VerbSurfaceSpherical.html#center
      * @param inputs Spherical Nurbs surface
      * @returns Center point
      */

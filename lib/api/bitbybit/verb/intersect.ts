@@ -14,10 +14,6 @@ export class VerbIntersect {
 
     /**
      * Intersects two verb Nurbs curves together and returns intersection results
-     * <div>
-     *  <img src="../assets/images/blockly-images/intersect/curves.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_intersect.VerbIntersect.html#curves
      * @param inputs Two Nurbs curves
      * @returns Intersection results
      */
@@ -27,10 +23,6 @@ export class VerbIntersect {
 
     /**
      * Intersects curve and surface
-     * <div>
-     *  <img src="../assets/images/blockly-images/intersect/curveAndSurface.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_intersect.VerbIntersect.html#curveAndSurface
      * @param inputs Nurbs curve and a Nurbs surface
      * @returns Intersection results
      */
@@ -40,10 +32,6 @@ export class VerbIntersect {
 
     /**
      * Intersects two surfaces
-     * <div>
-     *  <img src="../assets/images/blockly-images/intersect/surfaces.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_intersect.VerbIntersect.html#surfaces
      * @param inputs Nurbs curve and a Nurbs surface
      * @returns Nurbs curves along the intersection
      */
@@ -53,10 +41,6 @@ export class VerbIntersect {
 
     /**
      * Gets intersection parameters on the first curve from curve-curve intersection
-     * <div>
-     *  <img src="../assets/images/blockly-images/intersect/curveCurveFirstParams.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_intersect.VerbIntersect.html#curveCurveFirstParams
      * @param inputs Intersections data
      * @returns Parameters on first curve
      */
@@ -66,10 +50,6 @@ export class VerbIntersect {
 
     /**
      * Gets intersection parameters on the second curve from curve-curve intersection
-     * <div>
-     *  <img src="../assets/images/blockly-images/intersect/curveCurveSecondParams.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_intersect.VerbIntersect.html#curveCurveSecondParams
      * @param inputs Intersections data
      * @returns Parameters on second curve
      */
@@ -79,10 +59,6 @@ export class VerbIntersect {
 
     /**
      * Gets intersection points on the first curve from curve-curve intersection
-     * <div>
-     *  <img src="../assets/images/blockly-images/intersect/curveCurveFirstPoints.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_intersect.VerbIntersect.html#curveCurveFirstPoints
      * @param inputs Intersections data
      * @returns Points on first curve
      */
@@ -92,10 +68,6 @@ export class VerbIntersect {
 
     /**
      * Gets intersection points on the second curve from curve-curve intersection
-     * <div>
-     *  <img src="../assets/images/blockly-images/intersect/curveCurveSecondPoints.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_intersect.VerbIntersect.html#curveCurveSecondPoints
      * @param inputs Intersections data
      * @returns Points on second curve
      */
@@ -105,10 +77,6 @@ export class VerbIntersect {
 
     /**
      * Gets intersection parameters on the curve from curve-surface intersection
-     * <div>
-     *  <img src="../assets/images/blockly-images/intersect/curveSurfaceCurveParams.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_intersect.VerbIntersect.html#curveSurfaceCurveParams
      * @param inputs Intersections data
      * @returns Parameters on the curve
      */
@@ -118,10 +86,6 @@ export class VerbIntersect {
 
     /**
      * Gets intersection parameters on the surface from curve-surface intersection
-     * <div>
-     *  <img src="../assets/images/blockly-images/intersect/curveSurfaceSurfaceParams.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_intersect.VerbIntersect.html#curveSurfaceSurfaceParams
      * @param inputs Intersections data
      * @returns Parameters on the surface
      */
@@ -131,10 +95,6 @@ export class VerbIntersect {
 
     /**
      * Gets intersection points on the curve from curve-surface intersection
-     * <div>
-     *  <img src="../assets/images/blockly-images/intersect/curveSurfaceCurvePoints.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_intersect.VerbIntersect.html#curveSurfaceCurvePoints
      * @param inputs Intersections data
      * @returns Points on the curve
      */
@@ -144,10 +104,6 @@ export class VerbIntersect {
 
     /**
      * Gets intersection points on the surface from curve-surface intersection
-     * <div>
-     *  <img src="../assets/images/blockly-images/intersect/curveSurfaceSurfacePoints.svg" alt="Blockly Image"/>
-     * </div>
-     * @link https://docs.bitbybit.dev/classes/bitbybit_verb_intersect.VerbIntersect.html#curveSurfaceSurfacePoints
      * @param inputs Intersections data
      * @returns Points on the surface
      */

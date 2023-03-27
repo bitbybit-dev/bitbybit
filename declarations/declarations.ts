@@ -1,7 +1,7 @@
-import { inputDeclarations } from '../../declarationsInputs';
-import { baseDeclarations } from '../../declarationsBase';
-import { occtWorkerDeclarations } from '../../declarationsOCCTWorker';
-import { inputOCCTDeclarations } from '../../declarationsOCCTInputs';
+import { inputDeclarations } from './declarationsInputs';
+import { baseDeclarations } from './declarationsBase';
+import { occtWorkerDeclarations } from './declarationsOCCTWorker';
+import { inputOCCTDeclarations } from './declarationsOCCTInputs';
 
 
 export const typescriptDeclarations = `
@@ -17,7 +17,7 @@ export const typescriptDeclarations = `
             class BitByBitBase {
                 readonly math: MathBitByBit;
                 readonly lists: Lists;
-                readonly text: Text;
+                readonly text: TextBitByBit;
                 readonly json: JSONBitByBit;
                 readonly vector: Vector;
                 readonly draw: Draw;

@@ -6,7 +6,7 @@ import * as Inputs from '../inputs/inputs';
  *  <img src="../assets/images/blockly-images/math/math.svg" alt="Blockly Image"/>
  * </div>
  */
-export class Text {
+export class TextBitByBit {
 
     constructor() { }
     /**

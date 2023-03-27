@@ -1,8 +1,8 @@
 var fs = require('fs');
 
 var walkPathOCCTWorker = 'node_modules/bitbybit-occt-worker/lib/api';
-var walkPathBase = './lib/api/declarations/lib/api/bitbybit';
-var walkPathInputs = './lib/api/declarations/lib/api/inputs';
+var walkPathBase = './declarations/generated-dec/bitbybit/lib/api/bitbybit';
+var walkPathInputs = './declarations/generated-dec/bitbybit/lib/api/inputs';
 var walkPathOCCTInputs = 'node_modules/bitbybit-occt/lib/api/inputs';
 
 let completeDeclarations = '';
@@ -52,25 +52,25 @@ var walk = function (dir, done) {
 
 
 walk(walkPathOCCTWorker, () => {
-    fs.writeFileSync('./declarationsOCCTWorker.ts', `export const occtWorkerDeclarations = \`${completeDeclarations}\`;
+    fs.writeFileSync('./declarations/declarationsOCCTWorker.ts', `export const occtWorkerDeclarations = \`${completeDeclarations}\`;
     `, 'utf8', () => {
     });
     completeDeclarations = '';
 
     walk(walkPathBase, () => {
-        fs.writeFileSync('./declarationsBase.ts', `export const baseDeclarations = \`${completeDeclarations}\`;
+        fs.writeFileSync('./declarations/declarationsBase.ts', `export const baseDeclarations = \`${completeDeclarations}\`;
 `, 'utf8', () => {
         });
         completeDeclarations = '';
 
         walk(walkPathInputs, () => {
-            fs.writeFileSync('./declarationsInputs.ts', `export const inputDeclarations = \`${completeDeclarations}\`;
+            fs.writeFileSync('./declarations/declarationsInputs.ts', `export const inputDeclarations = \`${completeDeclarations}\`;
     `, 'utf8', () => {
             });
             completeDeclarations = '';
 
             walk(walkPathOCCTInputs, () => {
-                fs.writeFileSync('./declarationsOCCTInputs.ts', `export const inputOCCTDeclarations = \`${completeDeclarations}\`;
+                fs.writeFileSync('./declarations/declarationsOCCTInputs.ts', `export const inputOCCTDeclarations = \`${completeDeclarations}\`;
         `, 'utf8', () => {
                 });
                 completeDeclarations = '';
