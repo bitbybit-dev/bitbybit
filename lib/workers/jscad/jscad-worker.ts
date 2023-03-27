@@ -6,6 +6,7 @@ let cacheHelper: CacheHelper;
 
 export const initializationComplete = (jcd: any) => {
     cacheHelper = new CacheHelper(jcd);
+    console.log(jcd);
     jscad = new Jscad(jcd);
     postMessage('jscad-initialised');
 };

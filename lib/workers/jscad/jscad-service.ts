@@ -1,4 +1,4 @@
-import { JSCADExpansions } from '../../api/bitbybit/jscad/expansions';
+import { JSCADExpansions } from './services/jscad-expansions';
 import { JSCADBooleans } from './services/jscad-booleans';
 import { JSCADExtrusions } from './services/jscad-extrusions';
 import { JSCADPath } from './services/jscad-path';
