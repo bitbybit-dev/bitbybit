@@ -237,225 +237,317 @@ declare class Babylon {
     constructor(context: Context);
     /** Disposes drawn mesh object from the scene
      * @param inputs Contains BabylonJS mesh that should be disposed
+     * @group memory
+     * @shortname dispose
      */
     dispose(inputs: Inputs.BabylonMesh.BabylonMeshDto): void;
     /** Udates drawn BabylonJS mesh object without disposing it
      * @param inputs Contains BabylonJS mesh that should be updated, together with position, rotation, scaling and colour info
      * @returns BabylonJS Mesh
+     * @group movement
+     * @shortname update drawn
+     * @ignore true
      */
-    updateDrawn(inputs: Inputs.BabylonMesh.UpdateDrawnBabylonMesh): Mesh;
+    updateDrawn(inputs: Inputs.BabylonMesh.UpdateDrawnBabylonMesh): void;
     /**
      * Change the visibility of a drawn BabylonJS mesh
      * @param inputs BabylonJS mesh and parent mesh
+     * @group visibility
+     * @shortname set visibility
      */
     setVisibility(inputs: Inputs.BabylonMesh.SetMeshVisibilityDto): void;
     /**
      * Hides the mesh
      * @param inputs BabylonJS mesh to hide
+     * @group visibility
+     * @shortname hide
      */
     hide(inputs: Inputs.BabylonMesh.ShowHideMeshDto): void;
     /**
      * Show the mesh
      * @param inputs BabylonJS mesh to hide
+     * @group visibility
+     * @shortname show
      */
     show(inputs: Inputs.BabylonMesh.ShowHideMeshDto): void;
     /**
      * Change the parent of the drawn mesh
      * @param inputs BabylonJS mesh and parent mesh
+     * @group set
+     * @shortname parent
      */
     setParent(inputs: Inputs.BabylonMesh.SetParentDto): void;
     /**
      * Get the parent of the drawn mesh
      * @param inputs BabylonJS mesh
      * @returns Parent mesh
+     * @group get
+     * @shortname parent
      */
     /**
      * Change the check collisions property of the drawn mesh
      * @param inputs BabylonJS mesh and check collisions
+     * @group set
+     * @shortname check collisions
      */
     setCheckCollisions(inputs: Inputs.BabylonMesh.CheckCollisionsBabylonMeshDto): void;
     /**
      * Get the check collisions property of the drawn mesh
      * @param inputs BabylonJS mesh and check collisions
+     * @group get
+     * @shortname check collisions
      */
     getCheckCollisions(inputs: Inputs.BabylonMesh.CheckCollisionsBabylonMeshDto): boolean;
     /**
      * Change the pickable property of the drawn mesh
      * @param inputs BabylonJS mesh and pickable
+     * @group get
+     * @shortname check collisions
      */
     setPickable(inputs: Inputs.BabylonMesh.PickableBabylonMeshDto): void;
     /**
      * Change the pickable property of the drawn mesh
      * @param inputs BabylonJS mesh and pickable
+     * @group get
+     * @shortname pickable
      */
     getPickable(inputs: Inputs.BabylonMesh.BabylonMeshDto): boolean;
     /**
      * Gets meshes that have names which contain a given text
      * @param inputs BabylonJS mesh and name
+     * @group get
+     * @shortname meshes where name contains
      */
     getMeshesWhereNameContains(inputs: Inputs.BabylonMesh.NameBabylonMeshDto): AbstractMesh[];
     /**
      * Gets child meshes
      * @param inputs BabylonJS mesh and whether to include only direct descendants
+     * @group get
+     * @shortname child meshes
      */
     getChildMeshes(inputs: Inputs.BabylonMesh.ChildMeshesBabylonMeshDto): AbstractMesh[];
     /**
      * Gets meshes of id
      * @param inputs BabylonJS mesh and name
+     * @group get
+     * @shortname meshes by id
      */
     getMeshesOfId(inputs: Inputs.BabylonMesh.IdBabylonMeshDto): AbstractMesh[];
     /**
      * Gets mesh of id
      * @param inputs BabylonJS mesh and name
+     * @group get
+     * @shortname mesh by id
      */
     getMeshOfId(inputs: Inputs.BabylonMesh.IdBabylonMeshDto): AbstractMesh;
     /**
      * Gets mesh of unique id
      * @param inputs BabylonJS mesh and name
+     * @group get
+     * @shortname mesh by unique id
      */
     getMeshOfUniqueId(inputs: Inputs.BabylonMesh.UniqueIdBabylonMeshDto): AbstractMesh;
     /**
      * Clones the mesh
      * @param inputs BabylonJS mesh to clone
      * @returns a new mesh
+     * @group edit
+     * @shortname clone
+     * @disposableOutput true
      */
     clone(inputs: Inputs.BabylonMesh.BabylonMeshDto): Mesh;
     /**
      * Change the id of the drawn mesh
      * @param inputs BabylonJS mesh and name
+     * @group set
+     * @shortname id
      */
     setId(inputs: Inputs.BabylonMesh.IdBabylonMeshDto): void;
     /**
      * Get the id of the drawn mesh
      * @param inputs BabylonJS mesh and id
+     * @group get
+     * @shortname id
      */
     getId(inputs: Inputs.BabylonMesh.IdBabylonMeshDto): string;
     /**
      * Get the unique id of the drawn mesh
      * @param inputs BabylonJS mesh and id
      * @returns unique id number
+     * @group get
+     * @shortname unique id
      */
     getUniqueId(inputs: Inputs.BabylonMesh.BabylonMeshDto): number;
     /**
      * Change the name of the drawn mesh
      * @param inputs BabylonJS mesh and name
+     * @group set
+     * @shortname name
      */
     setName(inputs: Inputs.BabylonMesh.NameBabylonMeshDto): void;
     /**
      * Gets the name of babylon mesh
      * @param inputs BabylonJS mesh and name
+     * @group get
+     * @shortname name
      */
     getName(inputs: Inputs.BabylonMesh.BabylonMeshDto): string;
     /**
      * Change the material of the drawn mesh
      * @param inputs BabylonJS mesh and material
+     * @group set
+     * @shortname material
      */
     setMaterial(inputs: Inputs.BabylonMesh.MaterialBabylonMeshDto): void;
     /**
      * Gets the material of babylon mesh
      * @param inputs BabylonJS mesh
+     * @group get
+     * @shortname material
      */
     getMaterial(inputs: Inputs.BabylonMesh.BabylonMeshDto): Material;
     /**
      * Gets the position as point of babylonjs mesh
      * @param inputs BabylonJS mesh
      * @returns point
+     * @group get
+     * @shortname position
      */
     getPosition(inputs: Inputs.BabylonMesh.BabylonMeshDto): Base.Point3;
     /**
      * Gets the absolute position in the world as point of babylonjs mesh
      * @param inputs BabylonJS mesh
      * @returns point
+     * @group get
+     * @shortname absolute position
      */
     getAbsolutePosition(inputs: Inputs.BabylonMesh.BabylonMeshDto): Base.Point3;
     /**
      * Gets the rotation vector of babylonjs mesh
      * @param inputs BabylonJS mesh
+     * @group get
+     * @shortname rotation
      */
     getRotation(inputs: Inputs.BabylonMesh.BabylonMeshDto): Base.Point3;
     /**
      * Gets the scale vector of babylonjs mesh
      * @param inputs BabylonJS mesh
+     * @group get
+     * @shortname scale
      */
     getScale(inputs: Inputs.BabylonMesh.BabylonMeshDto): Base.Point3;
     /**
      * Moves babylonjs mesh forward in local space
      * @param inputs BabylonJS mesh and distance
+     * @group move
+     * @shortname forward
      */
     moveForward(inputs: Inputs.BabylonMesh.TranslateBabylonMeshDto): void;
     /**
      * Moves babylonjs mesh backward in local space
      * @param inputs BabylonJS mesh and distance
+     * @group move
+     * @shortname backward
      */
     moveBackward(inputs: Inputs.BabylonMesh.TranslateBabylonMeshDto): void;
     /**
      * Moves babylonjs mesh up in local space
      * @param inputs BabylonJS mesh and distance
+     * @group move
+     * @shortname up
      */
     moveUp(inputs: Inputs.BabylonMesh.TranslateBabylonMeshDto): void;
     /**
      * Moves babylonjs mesh down in local space
      * @param inputs BabylonJS mesh and distance
+     * @group move
+     * @shortname down
      */
     moveDown(inputs: Inputs.BabylonMesh.TranslateBabylonMeshDto): void;
     /**
      * Moves babylonjs mesh right in local space
      * @param inputs BabylonJS mesh and distance
+     * @group move
+     * @shortname right
      */
     moveRight(inputs: Inputs.BabylonMesh.TranslateBabylonMeshDto): void;
     /**
      * Moves babylonjs mesh left in local space
      * @param inputs BabylonJS mesh and distance
+     * @group move
+     * @shortname left
      */
     moveLeft(inputs: Inputs.BabylonMesh.TranslateBabylonMeshDto): void;
     /**
      * Rotates babylonjs mesh around local y axis
      * @param inputs BabylonJS mesh and rotation in degrees
+     * @group move
+     * @shortname yaw
      */
     yaw(inputs: Inputs.BabylonMesh.RotateBabylonMeshDto): void;
     /**
      * Rotates babylonjs mesh around local x axis
      * @param inputs BabylonJS mesh and rotation in degrees
+     * @group move
+     * @shortname pitch
      */
     pitch(inputs: Inputs.BabylonMesh.RotateBabylonMeshDto): void;
     /**
      * Rotates babylonjs mesh around local z axis
      * @param inputs BabylonJS mesh and rotation in degrees
+     * @group move
+     * @shortname roll
      */
     roll(inputs: Inputs.BabylonMesh.RotateBabylonMeshDto): void;
     /**
      * Updates the position of the BabylonJS mesh or instanced mesh
      * @param inputs BabylonJS mesh and position point
+     * @group set
+     * @shortname position
      */
     setPosition(inputs: Inputs.BabylonMesh.UpdateDrawnBabylonMeshPositionDto): void;
     /**
      * Updates the rotation of the BabylonJS mesh or instanced mesh
      * @param inputs BabylonJS mesh and rotation along x, y and z axis in degrees
+     * @group set
+     * @shortname rotation
      */
     setRotation(inputs: Inputs.BabylonMesh.UpdateDrawnBabylonMeshRotationDto): void;
     /**
      * Updates the scale of the BabylonJS mesh or instanced mesh
      * @param inputs BabylonJS mesh and scale vector
+     * @group set
+     * @shortname scale
      */
     setScale(inputs: Inputs.BabylonMesh.UpdateDrawnBabylonMeshScaleDto): void;
     /**
      * Checks wether mesh intersects another mesh mesh
      * @param inputs Two BabylonJS meshes
+     * @group intersects
+     * @shortname mesh
      */
     intersectsMesh(inputs: Inputs.BabylonMesh.IntersectsMeshDto): boolean;
     /**
      * Checks wether mesh intersects point
      * @param inputs BabylonJS mesh and point
+     * @group intersects
+     * @shortname point
      */
     intersectsPoint(inputs: Inputs.BabylonMesh.IntersectsPointDto): boolean;
     /**
      * Creates mesh instance and transforms it for optimised rendering. These are optimised for max performance
      * when rendering many similar objects in the scene. If the mesh has children, then every child ges a mesh instance.
+     * @group instance
+     * @shortname create and transform
+     * @disposableOutput true
      */
     createMeshInstanceAndTransform(inputs: Inputs.BabylonMesh.MeshInstanceAndTransformDto): Promise<any>;
     /**
      * Creates mesh instance. These are optimised for max performance
      * when rendering many similar objects in the scene. If the mesh has children, then every child gets a mesh instance.
+     * @group instance
+     * @shortname create
+     * @disposableOutput true
      */
     createMeshInstance(inputs: Inputs.BabylonMesh.MeshInstanceDto): InstancedMesh;
     private assignColorToMesh;
@@ -727,7 +819,7 @@ declare class BabylonNode {
      * @param inputs Describes the light source
      * @returns BabylonJS directional light
      * @group lights
-     * @shortname point
+     * @shortname directional
      * @disposableOutput true
      */
     drawDirectionalLight(inputs: Inputs.BabylonScene.DirectionalLightDto): DirectionalLight;

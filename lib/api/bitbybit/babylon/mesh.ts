@@ -16,6 +16,8 @@ export class BabylonMesh {
 
     /** Disposes drawn mesh object from the scene
      * @param inputs Contains BabylonJS mesh that should be disposed
+     * @group memory
+     * @shortname dispose
      */
     dispose(inputs: Inputs.BabylonMesh.BabylonMeshDto): void {
         if (inputs.babylonMesh) {
@@ -27,10 +29,12 @@ export class BabylonMesh {
     /** Udates drawn BabylonJS mesh object without disposing it
      * @param inputs Contains BabylonJS mesh that should be updated, together with position, rotation, scaling and colour info
      * @returns BabylonJS Mesh
+     * @group movement
+     * @shortname update drawn
+     * @ignore true
      */
-    updateDrawn(inputs: Inputs.BabylonMesh.UpdateDrawnBabylonMesh): Mesh {
+    updateDrawn(inputs: Inputs.BabylonMesh.UpdateDrawnBabylonMesh): void {
         const type = inputs.babylonMesh.metadata.type as Inputs.Draw.drawingTypes;
-        let result: Mesh;
 
         inputs.babylonMesh.position = new Vector3(inputs.position[0], inputs.position[1], inputs.position[2]);
         inputs.babylonMesh.rotation = new Vector3(inputs.rotation[0], inputs.rotation[1], inputs.rotation[2]);
@@ -98,15 +102,15 @@ export class BabylonMesh {
 
             inputs.babylonMesh.setVerticesData(VertexBuffer.ColorKind, c);
         }
-
-        return result;
     }
 
     /**
      * Change the visibility of a drawn BabylonJS mesh
      * @param inputs BabylonJS mesh and parent mesh
+     * @group visibility
+     * @shortname set visibility
      */
-    setVisibility(inputs: Inputs.BabylonMesh.SetMeshVisibilityDto) {
+    setVisibility(inputs: Inputs.BabylonMesh.SetMeshVisibilityDto): void {
         inputs.babylonMesh.visibility = inputs.visibility;
         if (inputs.includeChildren) {
             if (inputs.babylonMesh.getChildMeshes) {
@@ -120,8 +124,10 @@ export class BabylonMesh {
     /**
      * Hides the mesh
      * @param inputs BabylonJS mesh to hide
+     * @group visibility
+     * @shortname hide
      */
-    hide(inputs: Inputs.BabylonMesh.ShowHideMeshDto) {
+    hide(inputs: Inputs.BabylonMesh.ShowHideMeshDto): void {
         inputs.babylonMesh.isVisible = false;
         if (inputs.includeChildren) {
             if (inputs.babylonMesh.getChildMeshes) {
@@ -135,6 +141,8 @@ export class BabylonMesh {
     /**
      * Show the mesh
      * @param inputs BabylonJS mesh to hide
+     * @group visibility
+     * @shortname show
      */
     show(inputs: Inputs.BabylonMesh.ShowHideMeshDto): void {
         inputs.babylonMesh.isVisible = true;
@@ -148,6 +156,8 @@ export class BabylonMesh {
     /**
      * Change the parent of the drawn mesh
      * @param inputs BabylonJS mesh and parent mesh
+     * @group set
+     * @shortname parent
      */
     setParent(inputs: Inputs.BabylonMesh.SetParentDto): void {
         inputs.babylonMesh.parent = inputs.parentMesh;
@@ -157,6 +167,8 @@ export class BabylonMesh {
      * Get the parent of the drawn mesh
      * @param inputs BabylonJS mesh
      * @returns Parent mesh
+     * @group get
+     * @shortname parent
      */
     getParent(inputs: Inputs.BabylonMesh.SetParentDto) {
         return inputs.babylonMesh.parent;
@@ -165,6 +177,8 @@ export class BabylonMesh {
     /**
      * Change the check collisions property of the drawn mesh
      * @param inputs BabylonJS mesh and check collisions
+     * @group set
+     * @shortname check collisions
      */
     setCheckCollisions(inputs: Inputs.BabylonMesh.CheckCollisionsBabylonMeshDto): void {
         inputs.babylonMesh.checkCollisions = inputs.checkCollisions;
@@ -179,6 +193,8 @@ export class BabylonMesh {
     /**
      * Get the check collisions property of the drawn mesh
      * @param inputs BabylonJS mesh and check collisions
+     * @group get
+     * @shortname check collisions
      */
     getCheckCollisions(inputs: Inputs.BabylonMesh.CheckCollisionsBabylonMeshDto): boolean {
         return inputs.babylonMesh.checkCollisions;
@@ -187,6 +203,8 @@ export class BabylonMesh {
     /**
      * Change the pickable property of the drawn mesh
      * @param inputs BabylonJS mesh and pickable
+     * @group get
+     * @shortname check collisions
      */
     setPickable(inputs: Inputs.BabylonMesh.PickableBabylonMeshDto): void {
         inputs.babylonMesh.isPickable = inputs.pickable;
@@ -201,6 +219,8 @@ export class BabylonMesh {
     /**
      * Change the pickable property of the drawn mesh
      * @param inputs BabylonJS mesh and pickable
+     * @group get
+     * @shortname pickable
      */
     getPickable(inputs: Inputs.BabylonMesh.BabylonMeshDto): boolean {
         return inputs.babylonMesh.isPickable;
@@ -209,6 +229,8 @@ export class BabylonMesh {
     /**
      * Gets meshes that have names which contain a given text
      * @param inputs BabylonJS mesh and name
+     * @group get
+     * @shortname meshes where name contains
      */
     getMeshesWhereNameContains(inputs: Inputs.BabylonMesh.NameBabylonMeshDto): AbstractMesh[] {
         return this.context.scene.meshes.filter(m => m.name.includes(inputs.name));
@@ -217,6 +239,8 @@ export class BabylonMesh {
     /**
      * Gets child meshes
      * @param inputs BabylonJS mesh and whether to include only direct descendants
+     * @group get
+     * @shortname child meshes
      */
     getChildMeshes(inputs: Inputs.BabylonMesh.ChildMeshesBabylonMeshDto): AbstractMesh[] {
         return inputs.babylonMesh.getChildMeshes(inputs.directDescendantsOnly);
@@ -225,6 +249,8 @@ export class BabylonMesh {
     /**
      * Gets meshes of id
      * @param inputs BabylonJS mesh and name
+     * @group get
+     * @shortname meshes by id
      */
     getMeshesOfId(inputs: Inputs.BabylonMesh.IdBabylonMeshDto): AbstractMesh[] {
         return this.context.scene.getMeshesById(inputs.id);
@@ -233,6 +259,8 @@ export class BabylonMesh {
     /**
      * Gets mesh of id
      * @param inputs BabylonJS mesh and name
+     * @group get
+     * @shortname mesh by id
      */
     getMeshOfId(inputs: Inputs.BabylonMesh.IdBabylonMeshDto): AbstractMesh {
         return this.context.scene.getMeshById(inputs.id);
@@ -241,6 +269,8 @@ export class BabylonMesh {
     /**
      * Gets mesh of unique id
      * @param inputs BabylonJS mesh and name
+     * @group get
+     * @shortname mesh by unique id
      */
     getMeshOfUniqueId(inputs: Inputs.BabylonMesh.UniqueIdBabylonMeshDto): AbstractMesh {
         return this.context.scene.getMeshByUniqueId(inputs.uniqueId);
@@ -250,6 +280,9 @@ export class BabylonMesh {
      * Clones the mesh
      * @param inputs BabylonJS mesh to clone
      * @returns a new mesh
+     * @group edit
+     * @shortname clone
+     * @disposableOutput true
      */
     clone(inputs: Inputs.BabylonMesh.BabylonMeshDto): Mesh {
         const clone = inputs.babylonMesh.clone();
@@ -270,6 +303,8 @@ export class BabylonMesh {
     /**
      * Change the id of the drawn mesh
      * @param inputs BabylonJS mesh and name
+     * @group set
+     * @shortname id
      */
     setId(inputs: Inputs.BabylonMesh.IdBabylonMeshDto): void {
         inputs.babylonMesh.id = inputs.id;
@@ -278,6 +313,8 @@ export class BabylonMesh {
     /**
      * Get the id of the drawn mesh
      * @param inputs BabylonJS mesh and id
+     * @group get
+     * @shortname id
      */
     getId(inputs: Inputs.BabylonMesh.IdBabylonMeshDto): string {
         return inputs.babylonMesh.id;
@@ -287,6 +324,8 @@ export class BabylonMesh {
      * Get the unique id of the drawn mesh
      * @param inputs BabylonJS mesh and id
      * @returns unique id number
+     * @group get
+     * @shortname unique id
      */
     getUniqueId(inputs: Inputs.BabylonMesh.BabylonMeshDto): number {
         return inputs.babylonMesh.uniqueId;
@@ -296,6 +335,8 @@ export class BabylonMesh {
     /**
      * Change the name of the drawn mesh
      * @param inputs BabylonJS mesh and name
+     * @group set
+     * @shortname name
      */
     setName(inputs: Inputs.BabylonMesh.NameBabylonMeshDto): void {
         inputs.babylonMesh.name = inputs.name;
@@ -310,6 +351,8 @@ export class BabylonMesh {
     /**
      * Gets the name of babylon mesh
      * @param inputs BabylonJS mesh and name
+     * @group get
+     * @shortname name
      */
     getName(inputs: Inputs.BabylonMesh.BabylonMeshDto): string {
         return inputs.babylonMesh.name;
@@ -318,6 +361,8 @@ export class BabylonMesh {
     /**
      * Change the material of the drawn mesh
      * @param inputs BabylonJS mesh and material
+     * @group set
+     * @shortname material
      */
     setMaterial(inputs: Inputs.BabylonMesh.MaterialBabylonMeshDto): void {
         inputs.babylonMesh.material = inputs.material;
@@ -332,6 +377,8 @@ export class BabylonMesh {
     /**
      * Gets the material of babylon mesh
      * @param inputs BabylonJS mesh
+     * @group get
+     * @shortname material
      */
     getMaterial(inputs: Inputs.BabylonMesh.BabylonMeshDto): Material {
         return inputs.babylonMesh.material;
@@ -341,6 +388,8 @@ export class BabylonMesh {
      * Gets the position as point of babylonjs mesh
      * @param inputs BabylonJS mesh
      * @returns point
+     * @group get
+     * @shortname position
      */
     getPosition(inputs: Inputs.BabylonMesh.BabylonMeshDto): Base.Point3 {
         const m = inputs.babylonMesh;
@@ -351,6 +400,8 @@ export class BabylonMesh {
      * Gets the absolute position in the world as point of babylonjs mesh
      * @param inputs BabylonJS mesh
      * @returns point
+     * @group get
+     * @shortname absolute position
      */
     getAbsolutePosition(inputs: Inputs.BabylonMesh.BabylonMeshDto): Base.Point3 {
         const m = inputs.babylonMesh;
@@ -360,6 +411,8 @@ export class BabylonMesh {
     /**
      * Gets the rotation vector of babylonjs mesh
      * @param inputs BabylonJS mesh
+     * @group get
+     * @shortname rotation
      */
     getRotation(inputs: Inputs.BabylonMesh.BabylonMeshDto): Base.Point3 {
         const m = inputs.babylonMesh;
@@ -369,6 +422,8 @@ export class BabylonMesh {
     /**
      * Gets the scale vector of babylonjs mesh
      * @param inputs BabylonJS mesh
+     * @group get
+     * @shortname scale
      */
     getScale(inputs: Inputs.BabylonMesh.BabylonMeshDto): Base.Point3 {
         const m = inputs.babylonMesh;
@@ -378,6 +433,8 @@ export class BabylonMesh {
     /**
      * Moves babylonjs mesh forward in local space
      * @param inputs BabylonJS mesh and distance
+     * @group move
+     * @shortname forward
      */
     moveForward(inputs: Inputs.BabylonMesh.TranslateBabylonMeshDto): void {
         const m = inputs.babylonMesh;
@@ -387,6 +444,8 @@ export class BabylonMesh {
     /**
      * Moves babylonjs mesh backward in local space
      * @param inputs BabylonJS mesh and distance
+     * @group move
+     * @shortname backward
      */
     moveBackward(inputs: Inputs.BabylonMesh.TranslateBabylonMeshDto): void {
         const m = inputs.babylonMesh;
@@ -396,6 +455,8 @@ export class BabylonMesh {
     /**
      * Moves babylonjs mesh up in local space
      * @param inputs BabylonJS mesh and distance
+     * @group move
+     * @shortname up
      */
     moveUp(inputs: Inputs.BabylonMesh.TranslateBabylonMeshDto): void {
         const m = inputs.babylonMesh;
@@ -405,6 +466,8 @@ export class BabylonMesh {
     /**
      * Moves babylonjs mesh down in local space
      * @param inputs BabylonJS mesh and distance
+     * @group move
+     * @shortname down
      */
     moveDown(inputs: Inputs.BabylonMesh.TranslateBabylonMeshDto): void {
         const m = inputs.babylonMesh;
@@ -414,6 +477,8 @@ export class BabylonMesh {
     /**
      * Moves babylonjs mesh right in local space
      * @param inputs BabylonJS mesh and distance
+     * @group move
+     * @shortname right
      */
     moveRight(inputs: Inputs.BabylonMesh.TranslateBabylonMeshDto): void {
         const m = inputs.babylonMesh;
@@ -423,6 +488,8 @@ export class BabylonMesh {
     /**
      * Moves babylonjs mesh left in local space
      * @param inputs BabylonJS mesh and distance
+     * @group move
+     * @shortname left
      */
     moveLeft(inputs: Inputs.BabylonMesh.TranslateBabylonMeshDto): void {
         const m = inputs.babylonMesh;
@@ -432,6 +499,8 @@ export class BabylonMesh {
     /**
      * Rotates babylonjs mesh around local y axis
      * @param inputs BabylonJS mesh and rotation in degrees
+     * @group move
+     * @shortname yaw
      */
     yaw(inputs: Inputs.BabylonMesh.RotateBabylonMeshDto): void {
         const m = inputs.babylonMesh;
@@ -442,6 +511,8 @@ export class BabylonMesh {
     /**
      * Rotates babylonjs mesh around local x axis
      * @param inputs BabylonJS mesh and rotation in degrees
+     * @group move
+     * @shortname pitch
      */
     pitch(inputs: Inputs.BabylonMesh.RotateBabylonMeshDto): void {
         const m = inputs.babylonMesh;
@@ -452,6 +523,8 @@ export class BabylonMesh {
     /**
      * Rotates babylonjs mesh around local z axis
      * @param inputs BabylonJS mesh and rotation in degrees
+     * @group move
+     * @shortname roll
      */
     roll(inputs: Inputs.BabylonMesh.RotateBabylonMeshDto): void {
         const m = inputs.babylonMesh;
@@ -462,6 +535,8 @@ export class BabylonMesh {
     /**
      * Updates the position of the BabylonJS mesh or instanced mesh
      * @param inputs BabylonJS mesh and position point
+     * @group set
+     * @shortname position
      */
     setPosition(inputs: Inputs.BabylonMesh.UpdateDrawnBabylonMeshPositionDto): void {
         inputs.babylonMesh.position = new Vector3(inputs.position[0], inputs.position[1], inputs.position[2]);
@@ -470,6 +545,8 @@ export class BabylonMesh {
     /**
      * Updates the rotation of the BabylonJS mesh or instanced mesh
      * @param inputs BabylonJS mesh and rotation along x, y and z axis in degrees
+     * @group set
+     * @shortname rotation
      */
     setRotation(inputs: Inputs.BabylonMesh.UpdateDrawnBabylonMeshRotationDto): void {
         const radX = Angle.FromDegrees(inputs.rotation[0]).radians();
@@ -482,6 +559,8 @@ export class BabylonMesh {
     /**
      * Updates the scale of the BabylonJS mesh or instanced mesh
      * @param inputs BabylonJS mesh and scale vector
+     * @group set
+     * @shortname scale
      */
     setScale(inputs: Inputs.BabylonMesh.UpdateDrawnBabylonMeshScaleDto): void {
         inputs.babylonMesh.scaling = new Vector3(inputs.scale[0], inputs.scale[1], inputs.scale[2]);
@@ -490,6 +569,8 @@ export class BabylonMesh {
     /**
      * Checks wether mesh intersects another mesh mesh
      * @param inputs Two BabylonJS meshes
+     * @group intersects
+     * @shortname mesh
      */
     intersectsMesh(inputs: Inputs.BabylonMesh.IntersectsMeshDto): boolean {
         return inputs.babylonMesh.intersectsMesh(inputs.babylonMesh2, inputs.precise, inputs.includeDescendants);
@@ -498,6 +579,8 @@ export class BabylonMesh {
     /**
      * Checks wether mesh intersects point
      * @param inputs BabylonJS mesh and point
+     * @group intersects
+     * @shortname point
      */
     intersectsPoint(inputs: Inputs.BabylonMesh.IntersectsPointDto): boolean {
         const point = new Vector3(inputs.point[0], inputs.point[1], inputs.point[2]);
@@ -507,6 +590,9 @@ export class BabylonMesh {
     /**
      * Creates mesh instance and transforms it for optimised rendering. These are optimised for max performance
      * when rendering many similar objects in the scene. If the mesh has children, then every child ges a mesh instance.
+     * @group instance
+     * @shortname create and transform
+     * @disposableOutput true
      */
     createMeshInstanceAndTransform(inputs: Inputs.BabylonMesh.MeshInstanceAndTransformDto): Promise<any> {
         return new Promise((resolve, reject) => {
@@ -552,6 +638,9 @@ export class BabylonMesh {
     /**
      * Creates mesh instance. These are optimised for max performance
      * when rendering many similar objects in the scene. If the mesh has children, then every child gets a mesh instance.
+     * @group instance
+     * @shortname create
+     * @disposableOutput true
      */
     createMeshInstance(inputs: Inputs.BabylonMesh.MeshInstanceDto): InstancedMesh {
         let result: InstancedMesh;
