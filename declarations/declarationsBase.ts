@@ -695,57 +695,85 @@ declare class BabylonNode {
     /**
      * Changes the scene background colour for 3D space
      * @param inputs Describes the colour of the scene background
+     * @group environment
+     * @shortname colour
      */
     backgroundColour(inputs: Inputs.BabylonScene.SceneBackgroundColourDto): void;
     /**
      * Activate camera
      * @param inputs Activates the camera
+     * @group camera
+     * @shortname activate
      */
     activateCamera(inputs: Inputs.BabylonScene.ActiveCameraDto): void;
     /**
      * Use right handed system
      * @param inputs Activates the camera
+     * @group system
+     * @shortname hand right
      */
     useRightHandedSystem(inputs: Inputs.BabylonScene.UseRightHandedSystemDto): void;
     /**
      * Creates and draws a point light in the scene
      * @param inputs Describes the light source
      * @returns BabylonJS point light
+     * @group lights
+     * @shortname point
+     * @disposableOutput true
      */
     drawPointLight(inputs: Inputs.BabylonScene.PointLightDto): PointLight;
     /**
      * Creates and draws a directional light in the scene
      * @param inputs Describes the light source
      * @returns BabylonJS directional light
+     * @group lights
+     * @shortname point
+     * @disposableOutput true
      */
     drawDirectionalLight(inputs: Inputs.BabylonScene.DirectionalLightDto): DirectionalLight;
     /**
      * Adjusts the active arc rotate camera with configuration parameters
+     * @group camera
+     * @shortname adjust active
      */
     adjustActiveArcRotateCamera(inputs: Inputs.BabylonScene.CameraConfigurationDto): void;
     /**
      * Clears all of the drawn objects in the 3D scene
+     * @group environment
+     * @shortname clear all drawn
      */
     clearAllDrawn(): void;
     /**
      * Enables skybox
+     * @param inputs Skybox configuration
+     * @group environment
+     * @shortname skybox
      */
     enableSkybox(inputs: Inputs.BabylonScene.SkyboxDto): void;
     /**
      * Registers code to run when pointer is down
      * @param inputs pointer statement
+     * @ignore true
      */
     onPointerDown(inputs: Inputs.BabylonScene.PointerDto): void;
     /**
      * Registers code to run when pointer is up
      * @param inputs pointer statement
+     * @ignore true
      */
     onPointerUp(inputs: Inputs.BabylonScene.PointerDto): void;
     /**
      * Registers code to run when pointer is moving
      * @param inputs pointer statement
+     * @ignore true
      */
     onPointerMove(inputs: Inputs.BabylonScene.PointerDto): void;
+    /**
+     * Enables fog mode
+     * @param inputs fog options
+     * @group environment
+     * @shortname fog
+     */
     fog(inputs: Inputs.BabylonScene.FogDto): void;
 }/**
  * Transformations help to move, scale, rotate and mirror objects. You can combine multiple transformations

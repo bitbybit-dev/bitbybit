@@ -3329,85 +3329,128 @@ export const inputDeclarations = `declare namespace Asset {
         constructor(colour?: string);
         /**
          * Hex colour string for the scene background colour
+         * @default #ffffff
          */
-        colour: string;
+        colour: Base.Color;
     }
     class PointLightDto {
         /**
          * Position of the point light
+         * @default [0, 0, 0]
          */
         position: Base.Point3;
         /**
          * Intensity of the point light, value between 0 and 1
+         * @default 0.5
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.1
          */
         intensity: number;
         /**
          * Diffuse colour of the point light
+         * @default #ffffff
          */
-        diffuse: string;
+        diffuse: Base.Color;
         /**
          * Specular colour of the point light
+         * @default #ffffff
          */
-        specular: string;
+        specular: Base.Color;
         /**
          * Radius of the sphere mesh representing the light bulb. If 0 light gets created without the mesh
+         * @default 0.1
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.1
          */
         radius: number;
         /**
          * The map size for shadow generator texture if shadows are enabled
+         * @default 1024
+         * @minimum 0
+         * @maximum Infinity
+         * @step 1
          */
         shadowGeneratorMapSize?: number;
         /**
          * Enables shadows
+         * @default true
          */
         enableShadows?: boolean;
         /**
          * Shadow darkness
+         * @default 0
+         * @minimum 0
+         * @maximum 1
+         * @step 0.1
          */
         shadowDarkness?: number;
     }
     class ActiveCameraDto {
         /**
          * Camera to activate
+         * @default undefined
          */
         camera: Camera;
     }
     class UseRightHandedSystemDto {
+        /** Indicates to use right handed system
+         * @default true
+         */
         use: boolean;
     }
     class DirectionalLightDto {
         /**
          * Direction of the directional light
+         * @default [-1, -1, -1]
          */
         direction: Base.Vector3;
         /**
          * Intensity of the point light, value between 0 and 1
+         * @default 0.5
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.1
          */
         intensity: number;
         /**
          * Diffuse colour of the point light
+         * @default #ffffff
          */
-        diffuse: string;
+        diffuse: Base.Color;
         /**
          * Specular colour of the point light
+         * @default #ffffff
          */
-        specular: string;
+        specular: Base.Color;
         /**
          * The map size for shadow generator texture if shadows are enabled
+         * @default 1024
+         * @minimum 0
+         * @maximum Infinity
+         * @step 1
          */
         shadowGeneratorMapSize?: number;
         /**
          * Enables shadows
+         * @default true
          */
         enableShadows?: boolean;
         /**
          * Shadow darkness
+         * @default 0
+         * @minimum 0
+         * @maximum 1
+         * @step 0.1
          */
         shadowDarkness?: number;
     }
     class CameraConfigurationDto {
         /**
          * Position of the point light
+         * @default [10, 10, 10]
+         *
          */
         position: Base.Point3;
         /**
@@ -3416,32 +3459,57 @@ export const inputDeclarations = `declare namespace Asset {
         lookAt: Base.Point3;
         /**
          * Lets configure how far the camera can see
+         * @default 1000
+         * @minimum 0
+         * @maximum Infinity
+         * @step 1
          */
         maxZ: number;
         /**
          * Panning sensibility. If large units are used for the model, this number needs to get larger
+         * @default 0.1
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.1
          */
         panningSensibility: number;
         /**
          * Zoom precision of the wheel. If large units are used, this number needs to get smaller
+         * @default 0.1
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.1
          */
         wheelPrecision: number;
     }
     class SkyboxDto {
         /**
          * Skybox type
+         * @default clearSky
          */
         skybox: Base.skyboxEnum;
         /**
          * Skybox size
+         * @default 1000
+         * @minimum 0
+         * @maximum Infinity
+         * @step 10
          */
         size: number;
         /**
          * Identifies if skybox texture should affect scene environment
+         * @default 0.1
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.1
          */
         blur: number;
         /**
          * Identifies if skybox texture should affect scene environment
+         * @default 0.7
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.1
          */
         environmentIntensity: number;
     }
@@ -3451,22 +3519,39 @@ export const inputDeclarations = `declare namespace Asset {
     class FogDto {
         /**
          * Fog mode
+         * @default 0
+         * @minimum 0
+         * @maximum Infinity
+         * @step 1
          */
         mode: number;
         /**
          * Fog color
+         * @default #ffffff
          */
-        color: string;
+        color: Base.Color;
         /**
          * Fog density
+         * @default 0.1
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.1
          */
         density: number;
         /**
          * Fog start
+         * @default 0
+         * @minimum 0
+         * @maximum Infinity
+         * @step 1
          */
         start: number;
         /**
          * Fog end
+         * @default 1000
+         * @minimum 0
+         * @maximum Infinity
+         * @step 1
          */
         end: number;
     }
