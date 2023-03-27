@@ -16,10 +16,18 @@
         "allowJs": true,
         "emitDeclarationOnly": false,
         "paths": {
-            "projects/bitbybit-core/src/*": ["./*"],
-            "projects/bitbybit-advanced/*": ["../../../bitbybit-advanced/*"],
-            "bitbybit-occt/*": ["../bitbybit-occt/*"],
-            "bitbybit-occt-worker/*": ["../bitbybit-occt-worker/*"]
+            "projects/bitbybit-core/src/*": [
+                "./*"
+            ],
+            "projects/bitbybit-advanced/*": [
+                "../../../bitbybit-advanced/*"
+            ],
+            "bitbybit-occt/*": [
+                "../bitbybit-occt/*"
+            ],
+            "bitbybit-occt-worker/*": [
+                "../bitbybit-occt-worker/*"
+            ]
         },
         "lib": [
             "es2020",
