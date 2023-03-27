@@ -45,23 +45,23 @@ export const typescriptDeclarationsDocs = `
             ${occtWorkerDeclarations}
             ${baseDeclarations}
         }
-        const math: Bit.MathBitByBit;
-        const lists: Bit.Lists;
-        const text: Bit.TextBitByBit;
-        const json: Bit.JSONBitByBit;
-        const vector: Bit.Vector;
-        const draw: Bit.Draw;
-        const babylon: Bit.Babylon;
-        const point: Bit.Point;
-        const line: Bit.Line;
-        const polyline: Bit.Polyline;
-        const verb: Bit.Verb;
-        const color: Bit.Color;
-        const jscad: Bit.JSCAD;
-        const tag: Bit.Tag;
-        const time: Bit.Time;
-        const occt: Bit.OCCTW & Bit.OCCT;
-        const asset: Bit.Asset;
+        export const math: Bit.MathBitByBit;
+        export const lists: Bit.Lists;
+        export const text: Bit.TextBitByBit;
+        export const json: Bit.JSONBitByBit;
+        export const vector: Bit.Vector;
+        export const draw: Bit.Draw;
+        export const babylon: Bit.Babylon;
+        export const point: Bit.Point;
+        export const line: Bit.Line;
+        export const polyline: Bit.Polyline;
+        export const verb: Bit.Verb;
+        export const color: Bit.Color;
+        export const jscad: Bit.JSCAD;
+        export const tag: Bit.Tag;
+        export const time: Bit.Time;
+        export const occt: Bit.OCCTW & Bit.OCCT;
+        export const asset: Bit.Asset;
         `;
 
 fs.writeFileSync('./declarations/bitbybit.d.ts', typescriptDeclarations);
