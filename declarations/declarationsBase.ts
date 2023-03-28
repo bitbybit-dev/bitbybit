@@ -120,25 +120,40 @@ declare class Babylon {
      * Imports mesh from the asset that you have uploaded for the project.
      * You must upload your assets to your project via project management page.
      * @returns scene loaded mesh
+     * @group load
+     * @shortname asset
      */
     loadAssetIntoScene(inputs: Inputs.Asset.AssetFileDto): Promise<Mesh>;
+    /**
+     * Imports mesh from the asset url that you have uploaded to an accessible web storage.
+     * Keep in mind that files need to be publically accessible for this to work, be sure that CORS access is enabled for the assets.
+     * @returns scene loaded mesh
+     * @group load
+     * @shortname asset from url
+     */
     loadAssetIntoSceneFromRootUrl(inputs: Inputs.Asset.AssetFileByUrlDto): Promise<Mesh>;
-    private loadAsset;
     /**
      * Exports the whole scene to .babylon scene format. You can then edit it further in babylonjs editors.
      * @param inputs filename
+     * @group export
+     * @shortname babylon scene
      */
     exportBabylon(inputs: Inputs.BabylonIO.ExportSceneDto): void;
     /**
      * Exports the whole scene to .glb format. This file format has become industry standard for web models.
      * @param inputs filename
+     * @group export
+     * @shortname gltf scene
      */
     exportGLB(inputs: Inputs.BabylonIO.ExportSceneDto): void;
     /**
      * Exports the mesh or meshes to stl
      * @param inputs filename and the mesh
+     * @group export
+     * @shortname babylon mesh to stl
      */
     exportMeshToStl(inputs: Inputs.BabylonIO.ExportMeshToStlDto): Promise<any>;
+    private loadAsset;
 }declare class BabylonMaterial {
     private readonly context;
     private readonly color;
@@ -877,66 +892,99 @@ declare class BabylonTransforms {
      * Creates a rotation transformations around the center and an axis
      * @param inputs Rotation around center with an axis information
      * @returns array of transformations
+     * @group rotation
+     * @shortname center axis
+     * @drawable false
      */
     rotationCenterAxis(inputs: Inputs.Transforms.RotationCenterAxisDto): number[][];
     /**
      * Creates a rotation transformations around the center and an X axis
      * @param inputs Rotation around center with an X axis information
      * @returns array of transformations
+     * @group rotation
+     * @shortname center x
+     * @drawable false
      */
     rotationCenterX(inputs: Inputs.Transforms.RotationCenterDto): number[][];
     /**
      * Creates a rotation transformations around the center and an Y axis
      * @param inputs Rotation around center with an Y axis information
      * @returns array of transformations
+     * @group rotation
+     * @shortname center y
+     * @drawable false
      */
     rotationCenterY(inputs: Inputs.Transforms.RotationCenterDto): number[][];
     /**
      * Creates a rotation transformations around the center and an Z axis
      * @param inputs Rotation around center with an Z axis information
      * @returns array of transformations
+     * @group rotation
+     * @shortname center z
+     * @drawable false
      */
     rotationCenterZ(inputs: Inputs.Transforms.RotationCenterDto): number[][];
     /**
      * Creates a rotation transformations with yaw pitch and roll
      * @param inputs Yaw pitch roll rotation information
      * @returns array of transformations
+     * @group rotation
+     * @shortname yaw pitch roll
+     * @drawable false
      */
     rotationCenterYawPitchRoll(inputs: Inputs.Transforms.RotationCenterYawPitchRollDto): number[][];
     /**
      * Scale transformation around center and xyz directions
      * @param inputs Scale center xyz trnansformation
      * @returns array of transformations
+     * @group rotation
+     * @shortname center xyz
+     * @drawable false
      */
     scaleCenterXYZ(inputs: Inputs.Transforms.ScaleCenterXYZDto): number[][];
     /**
      * Creates the scale transformation in x, y and z directions
      * @param inputs Scale XYZ number array information
      * @returns transformation
+     * @group scale
+     * @shortname xyz
+     * @drawable false
      */
     scaleXYZ(inputs: Inputs.Transforms.ScaleXYZDto): number[][];
     /**
      * Creates uniform scale transformation
      * @param inputs Scale Dto
      * @returns transformation
+     * @group scale
+     * @shortname uniform
+     * @drawable false
      */
     uniformScale(inputs: Inputs.Transforms.UniformScaleDto): number[][];
     /**
      * Creates uniform scale transformation from the center
      * @param inputs Scale Dto with center point information
      * @returns array of transformations
+     * @group scale
+     * @shortname uniform from center
+     * @drawable false
      */
     uniformScaleFromCenter(inputs: Inputs.Transforms.UniformScaleFromCenterDto): number[][];
     /**
      * Creates the translation transformation
      * @param inputs Translation information
      * @returns transformation
+     * @group translation
+     * @shortname xyz
+     * @drawable false
      */
     translationXYZ(inputs: Inputs.Transforms.TranslationXYZDto): number[][];
     /**
     * Creates the translation transformation
     * @param inputs Translation information
     * @returns transformation
+     * @group translations
+     * @shortname xyz
+     * @drawable false
     */
     translationsXYZ(inputs: Inputs.Transforms.TranslationsXYZDto): number[][][];
 }declare class BabylonWebXR {

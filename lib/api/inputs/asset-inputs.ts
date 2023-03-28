@@ -2,14 +2,12 @@
 // tslint:disable-next-line: no-namespace
 export namespace Asset {
     export class GetAssetDto {
-        /**
-         * Provide options without default values
-         */
         constructor(fileName?: string) {
             this.fileName = fileName;
         }
         /**
          * The fileName associated with the projects asset
+         * @default undefined
          */
         fileName: string;
     }
@@ -17,12 +15,32 @@ export namespace Asset {
         constructor(assetFile?: File) {
             this.assetFile = assetFile;
         }
+        /**
+         * Asset file that was loaded
+         * @default undefined
+         */
         assetFile: File;
-        importHidden: boolean;
+        /**
+         * Import the asset hidden
+         * @default false
+         */
+        hidden: boolean = false;
     }
     export class AssetFileByUrlDto {
+        /**
+         * Asset file name
+         * @default undefined
+         */
         assetFile: string;
+        /**
+         * Root url
+         * @default undefined
+         */
         rootUrl: string;
-        importHidden: boolean;
+        /**
+         * Import the asset hidden
+         * @default false
+         */
+        hidden: boolean = false;
     }
 }
