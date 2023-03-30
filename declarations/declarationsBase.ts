@@ -2139,6 +2139,38 @@ declare class Lists {
      */
     repeat(inputs: Inputs.Lists.MultiplyItemDto): any;
 }{};/**
+ * Contains various logic methods.
+ */
+declare class Logic {
+    constructor();
+    /**
+     * Creates a boolean
+     * @param inputs a true or false boolean
+     * @returns boolean
+     * @group create
+     * @shortname boolean
+     * @drawable false
+     */
+    boolean(inputs: Inputs.Logic.BooleanDto): boolean;
+    /**
+     * Does comparison between first and second values
+     * @param inputs two values to be compared
+     * @returns Result of the comparison
+     * @group operations
+     * @shortname compare
+     * @drawable false
+     */
+    compare(inputs: Inputs.Logic.ComparisonDto): boolean;
+    /**
+     * Transmits a value if boolean provided is true and undefined if boolean provided is false
+     * @param inputs a value and a boolean value
+     * @returns value or undefined
+     * @group operations
+     * @shortname value gate
+     * @drawable false
+     */
+    valueGate(inputs: Inputs.Logic.ValueGateDto): any;
+}/**
  * Contains various math methods.
  */
 declare class MathBitByBit {

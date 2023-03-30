@@ -25,6 +25,7 @@ import { core, geom } from 'verb-nurbs-web';
 import { Lists } from './bitbybit/lists';
 import { JSONBitByBit } from './bitbybit/json';
 import * as jsonpath from 'jsonpath';
+import { Logic } from './bitbybit/logic';
 
 export class BitByBitBase {
 
@@ -33,6 +34,7 @@ export class BitByBitBase {
     public occtWorkerManager: OCCTWorkerManager;
 
     public math: MathBitByBit;
+    public logic: Logic;
     public lists: Lists;
     public json: JSONBitByBit;
     public vector: Vector;
@@ -70,6 +72,7 @@ export class BitByBitBase {
         this.occt = new OCCTW(this.context, this.occtWorkerManager, geometryHelper, this.jscad.text, this.vector);
         this.asset = new Asset();
         this.math = new MathBitByBit();
+        this.logic = new Logic();
         this.json = new JSONBitByBit(this.context);
         this.text = new TextBitByBit();
         this.lists = new Lists();

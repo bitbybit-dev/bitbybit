@@ -2806,6 +2806,53 @@ export const inputDeclarations = `declare namespace Asset {
          */
         position: FirstLastEnum;
     }
+}declare namespace Logic {
+    enum BooleanOperatorsEnum {
+        less = "<",
+        lessOrEqual = "<=",
+        greater = ">",
+        greaterOrEqual = ">=",
+        tripleEqual = "===",
+        tripleNotEqual = "!==",
+        equal = "==",
+        notEqual = "!="
+    }
+    class ComparisonDto {
+        /**
+         * First item
+         * @default undefined
+         */
+        first: any;
+        /**
+         * Second item
+         * @default undefined
+         */
+        second: any;
+        /**
+         * Operator
+         * @default less
+         */
+        operator: BooleanOperatorsEnum;
+    }
+    class BooleanDto {
+        /**
+         * Boolean value
+         * @default false
+         */
+        boolean: boolean;
+    }
+    class ValueGateDto {
+        /**
+         * Value to transmit when gate will be released. When value is not released we will transmit undefined value
+         * @default undefined
+         */
+        value: any;
+        /**
+         * Boolean value to release the gate
+         * @default false
+         */
+        boolean: boolean;
+    }
 }declare namespace Math {
     enum MathTwoNrOperatorEnum {
         add = "add",

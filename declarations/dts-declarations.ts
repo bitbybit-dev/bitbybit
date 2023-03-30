@@ -16,6 +16,7 @@ export const typescriptDeclarations = `
 
             class BitByBitBase {
                 readonly math: MathBitByBit;
+                readonly logic: Logic;
                 readonly lists: Lists;
                 readonly text: TextBitByBit;
                 readonly json: JSONBitByBit;
@@ -46,6 +47,7 @@ export const typescriptDeclarationsDocs = `
             ${baseDeclarations}
         }
         export const math: Bit.MathBitByBit;
+        export const logic: Bit.Logic;
         export const lists: Bit.Lists;
         export const text: Bit.TextBitByBit;
         export const json: Bit.JSONBitByBit;
