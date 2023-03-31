@@ -2144,7 +2144,7 @@ declare class Lists {
 declare class Logic {
     constructor();
     /**
-     * Creates a boolean
+     * Creates a boolean value - true or false
      * @param inputs a true or false boolean
      * @returns boolean
      * @group create

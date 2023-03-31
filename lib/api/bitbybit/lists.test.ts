@@ -31,6 +31,21 @@ describe('Lists unit tests', () => {
         expect(result).toEqual([[0, 3], [1, 4], [2, 5]]);
     });
 
+    it('should flip the list', async () => {
+        const result = lists.flipLists({ list: [[0, 1, 2], [3, 4, 5]] });
+        expect(result).toEqual([[0, 3], [1, 4], [2, 5]]);
+    });
+
+    it('should flip the list', async () => {
+        const result = lists.flipLists({ list: [[[0, 1, 2], [3, 4, 5], [12, 3, 4]], [[3, 2, 2], [33, 3, 4], [12, 2, 3]]] });
+        console.log(result);
+        expect(result).toEqual([
+            [[0, 1, 2], [3, 2, 2]],
+            [[3, 4, 5], [33, 3, 4]],
+            [[12, 3, 4], [12, 2, 3]]
+        ]);
+    });
+
     it('should throw when flipping the list with different lengths', async () => {
         expect(() => lists.flipLists({ list: [[0, 1, 2], [3, 4]] })).toThrowError('Lists are not of the same length');
     });

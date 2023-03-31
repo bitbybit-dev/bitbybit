@@ -58,17 +58,17 @@ export class Lists {
      * @drawable false
      */
     flipLists(inputs: Inputs.Lists.ListDto): any {
-        if(inputs.list.length > 0) {
+        if (inputs.list.length > 0) {
             const lengthOfFirstList = inputs.list[0].length;
             let allListsSameLength = true;
             inputs.list.forEach(l => {
-                if(l.length !== lengthOfFirstList){
+                if (l.length !== lengthOfFirstList) {
                     allListsSameLength = false;
                 }
             });
-            if(allListsSameLength){
+            if (allListsSameLength) {
                 const result = [];
-                for(let i = 0; i < lengthOfFirstList; i++){
+                for (let i = 0; i < lengthOfFirstList; i++) {
                     const newList = [];
                     inputs.list.forEach(l => {
                         newList.push(l[i]);
@@ -169,7 +169,7 @@ export class Lists {
      * @shortname repeat
      * @drawable false
      */
-    repeat(inputs: Inputs.Lists.MultiplyItemDto): any {        
+    repeat(inputs: Inputs.Lists.MultiplyItemDto): any {
         let result = [];
         for (let i = 0; i < inputs.times; i++) {
             result.push(inputs.item);
