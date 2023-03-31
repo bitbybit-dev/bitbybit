@@ -1269,7 +1269,7 @@ declare class OCCT {
      * Transforms the array of shapes with transformations
      * @param inputs Transformation descriptions
      * @returns OpenCascade shapes
-     * @group on multiple shapes
+     * @group on shapes
      * @shortname transforms
      * @drawable true
      */
@@ -1278,7 +1278,7 @@ declare class OCCT {
      * Rotate the shapes with rotations
      * @param inputs Rotation descriptions
      * @returns OpenCascade shapes
-     * @group on multiple shapes
+     * @group on shapes
      * @shortname rotations
      * @drawable true
      */
@@ -1287,7 +1287,7 @@ declare class OCCT {
      * Align the shapes with alignments
      * @param inputs Align descriptions
      * @returns OpenCascade shapes
-     * @group on multiple shapes
+     * @group on shapes
      * @shortname alignments
      * @drawable true
      */
@@ -1296,7 +1296,7 @@ declare class OCCT {
      * Translates the shapes with translations
      * @param inputs Translation descriptions
      * @returns OpenCascade shapes
-     * @group on multiple shapes
+     * @group on shapes
      * @shortname translations
      * @drawable true
      */
@@ -1305,7 +1305,7 @@ declare class OCCT {
      * Scales the shapes with scale factors
      * @param inputs Scale descriptions
      * @returns OpenCascade shapes
-     * @group on multiple shapes
+     * @group on shapes
      * @shortname scales
      * @drawable true
      */
@@ -1314,7 +1314,7 @@ declare class OCCT {
      * Scales the shape in 3D
      * @param inputs Scale 3D descriptions
      * @returns OpenCascade scaled shapes
-     * @group on multiple shapes
+     * @group on shapes
      * @shortname scales 3d
      * @drawable true
      */
@@ -1323,7 +1323,7 @@ declare class OCCT {
      * Mirrors the shapes with multiple mirrors
      * @param inputs Mirror axis origins, axis directions and shapes
      * @returns OpenCascade shapes
-     * @group on multiple shapes
+     * @group on shapes
      * @shortname mirrors
      * @drawable true
      */
@@ -1332,7 +1332,7 @@ declare class OCCT {
      * Mirrors the shapes along the normal and origin
      * @param inputs Normals for mirroring with origins
      * @returns OpenCascade shapes
-     * @group on multiple shapes
+     * @group on shapes
      * @shortname mirrors normal
      * @drawable true
      */
