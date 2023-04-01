@@ -5,12 +5,16 @@ export const baseDeclarations = `declare class Asset {
      * Gets the asset file
      * @param inputs file name to get from project assets
      * @returns Blob of asset
+     * @group get
+     * @shortname cloud file
      */
     getFile(inputs: Inputs.Asset.GetAssetDto): Promise<File>;
     /**
      * Gets the local asset file stored in your browser.
      * @param inputs asset name to get from local assets
      * @returns Blob of asset
+     * @group get
+     * @shortname local file
      */
     getLocalFile(inputs: Inputs.Asset.GetAssetDto): Promise<File | File[]>;
 }/**

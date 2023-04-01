@@ -15,22 +15,23 @@ export const typescriptDeclarations = `
             ${baseDeclarations}
 
             class BitByBitBase {
-                readonly math: MathBitByBit;
-                readonly lists: Lists;
-                readonly text: TextBitByBit;
-                readonly json: JSONBitByBit;
-                readonly vector: Vector;
                 readonly draw: Draw;
                 readonly babylon: Babylon;
+                readonly vector: Vector;
                 readonly point: Point;
                 readonly line: Line;
                 readonly polyline: Polyline;
-                readonly verb: Verb;
-                readonly color: Color;
                 readonly jscad: JSCAD;
+                readonly occt: OCCTW & OCCT;
+                readonly logic: Logic;
+                readonly math: MathBitByBit;
+                readonly lists: Lists;
+                readonly color: Color;
+                readonly text: TextBitByBit;
+                readonly json: JSONBitByBit;
+                readonly verb: Verb;
                 readonly tag: Tag;
                 readonly time: Time;
-                readonly occt: OCCTW & OCCT;
                 readonly asset: Asset;
             }
         }

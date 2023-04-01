@@ -15,23 +15,23 @@ export const typescriptDeclarations = `
             ${baseDeclarations}
 
             class BitByBitBase {
-                readonly math: MathBitByBit;
-                readonly logic: Logic;
-                readonly lists: Lists;
-                readonly text: TextBitByBit;
-                readonly json: JSONBitByBit;
-                readonly vector: Vector;
                 readonly draw: Draw;
                 readonly babylon: Babylon;
+                readonly vector: Vector;
                 readonly point: Point;
                 readonly line: Line;
                 readonly polyline: Polyline;
-                readonly verb: Verb;
-                readonly color: Color;
                 readonly jscad: JSCAD;
+                readonly occt: OCCTW & OCCT;
+                readonly logic: Logic;
+                readonly math: MathBitByBit;
+                readonly lists: Lists;
+                readonly color: Color;
+                readonly text: TextBitByBit;
+                readonly json: JSONBitByBit;
+                readonly verb: Verb;
                 readonly tag: Tag;
                 readonly time: Time;
-                readonly occt: OCCTW & OCCT;
                 readonly asset: Asset;
             }
         }
@@ -46,23 +46,23 @@ export const typescriptDeclarationsDocs = `
             ${occtWorkerDeclarations}
             ${baseDeclarations}
         }
-        export const math: Bit.MathBitByBit;
-        export const logic: Bit.Logic;
-        export const lists: Bit.Lists;
-        export const text: Bit.TextBitByBit;
-        export const json: Bit.JSONBitByBit;
-        export const vector: Bit.Vector;
         export const draw: Bit.Draw;
         export const babylon: Bit.Babylon;
+        export const vector: Bit.Vector;
         export const point: Bit.Point;
         export const line: Bit.Line;
         export const polyline: Bit.Polyline;
-        export const verb: Bit.Verb;
-        export const color: Bit.Color;
         export const jscad: Bit.JSCAD;
+        export const occt: Bit.OCCTW & Bit.OCCT;
+        export const logic: Bit.Logic;
+        export const math: Bit.MathBitByBit;
+        export const lists: Bit.Lists;
+        export const color: Bit.Color;
+        export const text: Bit.TextBitByBit;
+        export const json: Bit.JSONBitByBit;
+        export const verb: Bit.Verb;
         export const tag: Bit.Tag;
         export const time: Bit.Time;
-        export const occt: Bit.OCCTW & Bit.OCCT;
         export const asset: Bit.Asset;
         `;
 
