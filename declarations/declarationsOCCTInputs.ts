@@ -1726,7 +1726,7 @@ export const inputOCCTDeclarations = `declare namespace Base {
         shape: T;
         /**
          * File name
-         * @default "shape.step"
+         * @default shape.step
          */
         filename: string;
         /**
@@ -1744,7 +1744,7 @@ export const inputOCCTDeclarations = `declare namespace Base {
         shape: T;
         /**
          * File name
-         * @default "shape.stl"
+         * @default shape.stl
          */
         filename: string;
         /**
@@ -1780,7 +1780,7 @@ export const inputOCCTDeclarations = `declare namespace Base {
         filetext: any;
         /**
          * File name
-         * @default "shape.igs"
+         * @default shape.igs
          */
         filename: string;
         /**
