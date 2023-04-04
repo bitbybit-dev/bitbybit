@@ -22,7 +22,7 @@ export class Color {
      * @shortname hex to rgb
      * @drawable false
      */
-    hexToRgb(inputs: Inputs.Color.HexDto): Inputs.Color.RGBDto {
+    hexToRgb(inputs: Inputs.Color.HexDto): Inputs.Base.ColorRGB {
         const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(inputs.color);
         return result ? {
             r: parseInt(result[1], 16),
@@ -58,7 +58,7 @@ export class Color {
      * @shortname hex to rgb mapped
      * @drawable false
      */
-    hexToRgbMapped(inputs: Inputs.Color.HexDtoMapped): Inputs.Color.RGBDto {
+    hexToRgbMapped(inputs: Inputs.Color.HexDtoMapped): Inputs.Base.ColorRGB {
         const rgb = this.hexToRgb(inputs);
         return {
             r: BitByBitBlocklyHelperService.remap(rgb.r, 0, 255, inputs.from, inputs.to),

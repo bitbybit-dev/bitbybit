@@ -21,7 +21,7 @@ export class JSCADText {
      * @shortname cylindrical
      * @drawable true
      */
-    async cylindricalText(inputs: Inputs.JSCAD.CylinderTextDto): Promise<any[]> {
+    async cylindricalText(inputs: Inputs.JSCAD.CylinderTextDto): Promise<Inputs.JSCAD.JSCADEntity[]> {
         return this.jscadWorkerManager.genericCallToWorkerPromise('text.cylindricalText', inputs);
     }
 
@@ -33,7 +33,7 @@ export class JSCADText {
      * @shortname spherical
      * @drawable true
      */
-    async sphericalText(inputs: Inputs.JSCAD.SphereTextDto): Promise<any[]> {
+    async sphericalText(inputs: Inputs.JSCAD.SphereTextDto): Promise<Inputs.JSCAD.JSCADEntity[]> {
         return this.jscadWorkerManager.genericCallToWorkerPromise('text.sphericalText', inputs);
     }
 

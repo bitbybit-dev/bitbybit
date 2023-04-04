@@ -14,30 +14,30 @@ export class JSCADPolygon {
 
     ) { }
 
-    createFromPoints(inputs: Inputs.Point.PointsDto): any {
+    createFromPoints(inputs: Inputs.Point.PointsDto): Inputs.JSCAD.JSCADEntity {
         const twoDimensionalPoints = inputs.points.map(pt => [pt[0], pt[1]]);
         return this.removeDuplicatesAndCreateFromPoints(twoDimensionalPoints);
     }
 
-    createFromPolyline(inputs: Inputs.Polyline.PolylineDto): any {
+    createFromPolyline(inputs: Inputs.Polyline.PolylineDto): Inputs.JSCAD.JSCADEntity {
         const twoDimensionalPoints = inputs.polyline.points.map(pt => [pt[0], pt[1]]);
         return this.removeDuplicatesAndCreateFromPoints(twoDimensionalPoints);
     }
 
-    createFromCurve(inputs: Inputs.Verb.CurveDto): any {
+    createFromCurve(inputs: Inputs.Verb.CurveDto): Inputs.JSCAD.JSCADEntity {
         const twoDimensionalPoints = inputs.curve.tessellate().map(pt => [pt[0], pt[1]]);
         return this.removeDuplicatesAndCreateFromPoints(twoDimensionalPoints);
     }
 
-    createFromPath(inputs: Inputs.JSCAD.PathDto): any {
+    createFromPath(inputs: Inputs.JSCAD.PathDto): Inputs.JSCAD.JSCADEntity {
         return this.removeDuplicatesAndCreateFromPoints(inputs.path.points);
     }
 
-    circle(inputs: Inputs.JSCAD.CircleDto): any {
+    circle(inputs: Inputs.JSCAD.CircleDto): Inputs.JSCAD.JSCADEntity {
         return this.jscad.primitives.circle({ center: inputs.center, radius: inputs.radius, segments: inputs.segments });
     }
 
-    ellipse(inputs: Inputs.JSCAD.EllipseDto): any {
+    ellipse(inputs: Inputs.JSCAD.EllipseDto): Inputs.JSCAD.JSCADEntity {
         return this.jscad.primitives.ellipse(
             {
                 center: inputs.center,
@@ -47,7 +47,7 @@ export class JSCADPolygon {
         );
     }
 
-    rectangle(inputs: Inputs.JSCAD.RectangleDto): any {
+    rectangle(inputs: Inputs.JSCAD.RectangleDto): Inputs.JSCAD.JSCADEntity {
         return this.jscad.primitives.rectangle(
             {
                 center: [inputs.center[0], inputs.center[1]],
@@ -56,7 +56,7 @@ export class JSCADPolygon {
         );
     }
 
-    roundedRectangle(inputs: Inputs.JSCAD.RoundedRectangleDto): any {
+    roundedRectangle(inputs: Inputs.JSCAD.RoundedRectangleDto): Inputs.JSCAD.JSCADEntity {
         return this.jscad.primitives.roundedRectangle({
             center: [inputs.center[0], inputs.center[1]],
             size: [inputs.width, inputs.length],
@@ -65,11 +65,11 @@ export class JSCADPolygon {
         });
     }
 
-    square(inputs: Inputs.JSCAD.SquareDto): any {
+    square(inputs: Inputs.JSCAD.SquareDto): Inputs.JSCAD.JSCADEntity {
         return this.jscad.primitives.square({ center: [inputs.center[0], inputs.center[1]], size: inputs.size });
     }
 
-    star(inputs: Inputs.JSCAD.StarDto): any {
+    star(inputs: Inputs.JSCAD.StarDto): Inputs.JSCAD.JSCADEntity {
         return this.jscad.primitives.star({
             center: [inputs.center[0], inputs.center[1]],
             vertices: inputs.vertices,
@@ -80,7 +80,7 @@ export class JSCADPolygon {
         });
     }
 
-    private removeDuplicatesAndCreateFromPoints(twoDimensionalPoints: number[][]): any {
+    private removeDuplicatesAndCreateFromPoints(twoDimensionalPoints: number[][]): Inputs.JSCAD.JSCADEntity {
         const duplicatePointsRemoved = this.vecHelper.removeConsecutiveDuplicates(twoDimensionalPoints);
         const polygon = this.jscad.primitives.polygon({ points: duplicatePointsRemoved });
         return polygon;

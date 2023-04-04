@@ -11,13 +11,13 @@ export class JSCADBooleans {
         private readonly jscad: any
     ) { }
 
-    intersect(inputs: Inputs.JSCAD.BooleanObjectsDto): any {
+    intersect(inputs: Inputs.JSCAD.BooleanObjectsDto): Inputs.JSCAD.JSCADEntity {
         return this.jscad.booleans.intersect(...inputs.meshes);
     }
-    subtract(inputs: Inputs.JSCAD.BooleanObjectsDto): any {
+    subtract(inputs: Inputs.JSCAD.BooleanObjectsDto): Inputs.JSCAD.JSCADEntity {
         return this.jscad.booleans.subtract(...inputs.meshes);
     }
-    union(inputs: Inputs.JSCAD.BooleanObjectsDto): any {
+    union(inputs: Inputs.JSCAD.BooleanObjectsDto): Inputs.JSCAD.JSCADEntity {
         return this.jscad.booleans.union(...inputs.meshes);
     }
 }

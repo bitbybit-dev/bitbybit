@@ -28,7 +28,7 @@ export class JSCADShapes {
         });
     }
 
-    cuboid(inputs: Inputs.JSCAD.CuboidDto): any {
+    cuboid(inputs: Inputs.JSCAD.CuboidDto): Inputs.JSCAD.JSCADEntity {
         return this.jscad.primitives.cuboid(
             {
                 center: [inputs.center[0], inputs.center[1], inputs.center[2]],
@@ -37,7 +37,7 @@ export class JSCADShapes {
         );
     }
 
-    cuboidsOnCenterPoints(inputs: Inputs.JSCAD.CuboidCentersDto): any[] {
+    cuboidsOnCenterPoints(inputs: Inputs.JSCAD.CuboidCentersDto): Inputs.JSCAD.JSCADEntity[] {
         return inputs.centers.map(center => {
             return this.cuboid({
                 center,
@@ -48,7 +48,7 @@ export class JSCADShapes {
         });
     }
 
-    cylinderElliptic(inputs: Inputs.JSCAD.CylidnerEllipticDto): any {
+    cylinderElliptic(inputs: Inputs.JSCAD.CylidnerEllipticDto): Inputs.JSCAD.JSCADEntity {
         return this.jscad.primitives.cylinderElliptic({
             center: [inputs.center[0], inputs.center[1], inputs.center[2]],
             height: inputs.height,
@@ -58,7 +58,7 @@ export class JSCADShapes {
         });
     }
 
-    cylinderEllipticOnCenterPoints(inputs: Inputs.JSCAD.CylidnerCentersEllipticDto): any[] {
+    cylinderEllipticOnCenterPoints(inputs: Inputs.JSCAD.CylidnerCentersEllipticDto): Inputs.JSCAD.JSCADEntity[] {
         return inputs.centers.map(center => {
             return this.cylinderElliptic({
                 center,
@@ -70,7 +70,7 @@ export class JSCADShapes {
         });
     }
 
-    cylinder(inputs: Inputs.JSCAD.CylidnerDto): any {
+    cylinder(inputs: Inputs.JSCAD.CylidnerDto): Inputs.JSCAD.JSCADEntity {
         return this.jscad.primitives.cylinder({
             center: [inputs.center[0], inputs.center[1], inputs.center[2]],
             height: inputs.height,
@@ -79,7 +79,7 @@ export class JSCADShapes {
         });
     }
 
-    cylindersOnCenterPoints(inputs: Inputs.JSCAD.CylidnerCentersDto): any[] {
+    cylindersOnCenterPoints(inputs: Inputs.JSCAD.CylidnerCentersDto): Inputs.JSCAD.JSCADEntity[] {
         return inputs.centers.map(center => {
             return this.cylinder({
                 center,
@@ -90,7 +90,7 @@ export class JSCADShapes {
         });
     }
 
-    ellipsoid(inputs: Inputs.JSCAD.EllipsoidDto): any {
+    ellipsoid(inputs: Inputs.JSCAD.EllipsoidDto): Inputs.JSCAD.JSCADEntity {
         return this.jscad.primitives.ellipsoid({
             center: [inputs.center[0], inputs.center[1], inputs.center[2]],
             radius: [inputs.radius[0], inputs.radius[1], inputs.radius[2]],
@@ -103,7 +103,7 @@ export class JSCADShapes {
         });
     }
 
-    ellipsoidsOnCenterPoints(inputs: Inputs.JSCAD.EllipsoidCentersDto): any[] {
+    ellipsoidsOnCenterPoints(inputs: Inputs.JSCAD.EllipsoidCentersDto): Inputs.JSCAD.JSCADEntity[] {
         return inputs.centers.map(center => {
             return this.ellipsoid({
                 center,
@@ -113,13 +113,13 @@ export class JSCADShapes {
         });
     }
 
-    geodesicSphere(inputs: Inputs.JSCAD.GeodesicSphereDto): any {
+    geodesicSphere(inputs: Inputs.JSCAD.GeodesicSphereDto): Inputs.JSCAD.JSCADEntity {
         let sphere = this.jscad.primitives.geodesicSphere({ radius: inputs.radius, frequency: inputs.frequency });
         sphere = this.jscad.transforms.translate([inputs.center[0], inputs.center[1], inputs.center[2]], sphere);
         return sphere;
     }
 
-    geodesicSpheresOnCenterPoints(inputs: Inputs.JSCAD.GeodesicSphereCentersDto): any[] {
+    geodesicSpheresOnCenterPoints(inputs: Inputs.JSCAD.GeodesicSphereCentersDto): Inputs.JSCAD.JSCADEntity[] {
         return inputs.centers.map(center => {
             return this.geodesicSphere({
                 center,
@@ -129,7 +129,7 @@ export class JSCADShapes {
         });
     }
 
-    roundedCuboid(inputs: Inputs.JSCAD.RoundedCuboidDto): any {
+    roundedCuboid(inputs: Inputs.JSCAD.RoundedCuboidDto): Inputs.JSCAD.JSCADEntity {
         return this.jscad.primitives.roundedCuboid({
             center: [inputs.center[0], inputs.center[1], inputs.center[2]],
             size: [inputs.width, inputs.height, inputs.length],
@@ -138,7 +138,7 @@ export class JSCADShapes {
         });
     }
 
-    roundedCuboidsOnCenterPoints(inputs: Inputs.JSCAD.RoundedCuboidCentersDto): any[] {
+    roundedCuboidsOnCenterPoints(inputs: Inputs.JSCAD.RoundedCuboidCentersDto): Inputs.JSCAD.JSCADEntity[] {
         return inputs.centers.map(center => {
             return this.roundedCuboid({
                 center,
@@ -151,7 +151,7 @@ export class JSCADShapes {
         });
     }
 
-    roundedCylinder(inputs: Inputs.JSCAD.RoundedCylidnerDto): any {
+    roundedCylinder(inputs: Inputs.JSCAD.RoundedCylidnerDto): Inputs.JSCAD.JSCADEntity {
         return this.jscad.primitives.roundedCylinder({
             center: [inputs.center[0], inputs.center[1], inputs.center[2]],
             height: inputs.height,
@@ -161,7 +161,7 @@ export class JSCADShapes {
         });
     }
 
-    roundedCylindersOnCenterPoints(inputs: Inputs.JSCAD.RoundedCylidnerCentersDto): any[] {
+    roundedCylindersOnCenterPoints(inputs: Inputs.JSCAD.RoundedCylidnerCentersDto): Inputs.JSCAD.JSCADEntity[] {
         return inputs.centers.map(center => {
             return this.roundedCylinder({
                 center,
@@ -173,7 +173,7 @@ export class JSCADShapes {
         });
     }
 
-    sphere(inputs: Inputs.JSCAD.SphereDto): any {
+    sphere(inputs: Inputs.JSCAD.SphereDto): Inputs.JSCAD.JSCADEntity {
         return this.jscad.primitives.sphere(
             {
                 center: [inputs.center[0], inputs.center[1], inputs.center[2]],
@@ -183,7 +183,7 @@ export class JSCADShapes {
         );
     }
 
-    spheresOnCenterPoints(inputs: Inputs.JSCAD.SphereCentersDto): any[] {
+    spheresOnCenterPoints(inputs: Inputs.JSCAD.SphereCentersDto): Inputs.JSCAD.JSCADEntity[] {
         return inputs.centers.map(center => {
             return this.sphere({
                 center,
@@ -194,7 +194,7 @@ export class JSCADShapes {
     }
 
     
-    torus(inputs: Inputs.JSCAD.TorusDto): any {
+    torus(inputs: Inputs.JSCAD.TorusDto): Inputs.JSCAD.JSCADEntity {
         return this.jscad.primitives.torus({
             center: [inputs.center[0], inputs.center[1], inputs.center[2]],
             innerRadius: inputs.innerRadius,

@@ -1107,7 +1107,7 @@ declare class BabylonTransforms {
      * @shortname hex to rgb
      * @drawable false
      */
-    hexToRgb(inputs: Inputs.Color.HexDto): Inputs.Color.RGBDto;
+    hexToRgb(inputs: Inputs.Color.HexDto): Inputs.Base.ColorRGB;
     /**
      * Creates hex color from rgb
      * @param inputs Color hext
@@ -1125,7 +1125,7 @@ declare class BabylonTransforms {
      * @shortname hex to rgb mapped
      * @drawable false
      */
-    hexToRgbMapped(inputs: Inputs.Color.HexDtoMapped): Inputs.Color.RGBDto;
+    hexToRgbMapped(inputs: Inputs.Color.HexDtoMapped): Inputs.Base.ColorRGB;
     /**
      * Get red param
      * @param inputs Color hext
@@ -1297,7 +1297,7 @@ declare class JSCADBooleans {
      * @shortname intersect
      * @drawable true
      */
-    intersect(inputs: Inputs.JSCAD.BooleanObjectsDto): Promise<any>;
+    intersect(inputs: Inputs.JSCAD.BooleanObjectsDto): Promise<Inputs.JSCAD.JSCADEntity>;
     /**
      * Subtract multiple solid mesh objects
      * @param inputs Contains multiple solids for subtraction
@@ -1306,7 +1306,7 @@ declare class JSCADBooleans {
      * @shortname intersect
      * @drawable true
      */
-    subtract(inputs: Inputs.JSCAD.BooleanObjectsDto): Promise<any>;
+    subtract(inputs: Inputs.JSCAD.BooleanObjectsDto): Promise<Inputs.JSCAD.JSCADEntity>;
     /**
      * Union multiple solid mesh objects
      * @param inputs Contains multiple solids for union
@@ -1315,7 +1315,7 @@ declare class JSCADBooleans {
      * @shortname union
      * @drawable true
      */
-    union(inputs: Inputs.JSCAD.BooleanObjectsDto): Promise<any>;
+    union(inputs: Inputs.JSCAD.BooleanObjectsDto): Promise<Inputs.JSCAD.JSCADEntity>;
 }/**
  * Contains various functions for Solid expansions from JSCAD library https://github.com/jscad/OpenJSCAD.org
  * Thanks JSCAD community for developing this kernel
@@ -1331,7 +1331,7 @@ declare class JSCADExpansions {
      * @shortname expand
      * @drawable true
      */
-    expand(inputs: Inputs.JSCAD.ExpansionDto): Promise<any>;
+    expand(inputs: Inputs.JSCAD.ExpansionDto): Promise<Inputs.JSCAD.JSCADEntity>;
     /**
      * Offset 2d geometries of solid category
      * @param inputs Contains options and geometries for offset
@@ -1340,7 +1340,7 @@ declare class JSCADExpansions {
      * @shortname offset
      * @drawable true
      */
-    offset(inputs: Inputs.JSCAD.ExpansionDto): Promise<any>;
+    offset(inputs: Inputs.JSCAD.ExpansionDto): Promise<Inputs.JSCAD.JSCADEntity>;
 }/**
  * Contains various functions for Solid extrusions from JSCAD library https://github.com/jscad/OpenJSCAD.org
  * Thanks JSCAD community for developing this kernel
@@ -1356,7 +1356,7 @@ declare class JSCADExtrusions {
      * @shortname linear
      * @drawable true
      */
-    extrudeLinear(inputs: Inputs.JSCAD.ExtrudeLinearDto): Promise<any>;
+    extrudeLinear(inputs: Inputs.JSCAD.ExtrudeLinearDto): Promise<Inputs.JSCAD.JSCADEntity>;
     /**
      * Rectangular extrude 2D geometries of solid category. Creates a wall-type extrusion of certain height and size.
      * @param inputs Contains options and geometries for rectangular extrude
@@ -1365,7 +1365,7 @@ declare class JSCADExtrusions {
      * @shortname rectangular
      * @drawable true
      */
-    extrudeRectangular(inputs: Inputs.JSCAD.ExtrudeRectangularDto): Promise<any>;
+    extrudeRectangular(inputs: Inputs.JSCAD.ExtrudeRectangularDto): Promise<Inputs.JSCAD.JSCADEntity>;
     /**
      * Rectangular extrude a list of 2D points. Creates a wall-type extrusion of certain height and size.
      * @param inputs Contains options and points for extrusion
@@ -1374,7 +1374,7 @@ declare class JSCADExtrusions {
      * @shortname rectangular points
      * @drawable true
      */
-    extrudeRectangularPoints(inputs: Inputs.JSCAD.ExtrudeRectangularPointsDto): Promise<any>;
+    extrudeRectangularPoints(inputs: Inputs.JSCAD.ExtrudeRectangularPointsDto): Promise<Inputs.JSCAD.JSCADEntity>;
     /**
      * Rectangular extrude a list of 2D points. Creates a wall-type extrusion of certain height and size.
      * @param inputs Contains options and points for extrusion
@@ -1383,7 +1383,7 @@ declare class JSCADExtrusions {
      * @shortname rotational
      * @drawable true
      */
-    extrudeRotate(inputs: Inputs.JSCAD.ExtrudeRotateDto): Promise<any>;
+    extrudeRotate(inputs: Inputs.JSCAD.ExtrudeRotateDto): Promise<Inputs.JSCAD.JSCADEntity>;
 }/**
  * Contains various functions for Solid hulls from JSCAD library https://github.com/jscad/OpenJSCAD.org
  * Thanks JSCAD community for developing this kernel
@@ -1400,7 +1400,7 @@ declare class JSCADHulls {
      * @shortname hull chain
      * @drawable true
      */
-    hullChain(inputs: Inputs.JSCAD.HullDto): Promise<any>;
+    hullChain(inputs: Inputs.JSCAD.HullDto): Promise<Inputs.JSCAD.JSCADEntity>;
     /**
      * Convex hull connects solids or 2d geometries by filling an empty space in between without following order.
      * Geometries need to be of the same type.
@@ -1410,7 +1410,7 @@ declare class JSCADHulls {
      * @shortname hull
      * @drawable true
      */
-    hull(inputs: Inputs.JSCAD.HullDto): Promise<any>;
+    hull(inputs: Inputs.JSCAD.HullDto): Promise<Inputs.JSCAD.JSCADEntity>;
 }/**
  * Contains various functions for Solid meshes from JSCAD library https://github.com/jscad/OpenJSCAD.org
  * Thanks JSCAD community for developing this kernel
@@ -1505,7 +1505,7 @@ declare class JSCADPath {
      * @shortname points
      * @drawable true
      */
-    createFromPoints(inputs: Inputs.JSCAD.PathFromPointsDto): Promise<any>;
+    createFromPoints(inputs: Inputs.JSCAD.PathFromPointsDto): Promise<Inputs.JSCAD.JSCADEntity>;
     /**
      * Create a 2D path from a polyline
      * @param inputs Polyline and indication if we want a closed path or not
@@ -1514,7 +1514,7 @@ declare class JSCADPath {
      * @shortname polyline
      * @drawable true
      */
-    createFromPolyline(inputs: Inputs.JSCAD.PathFromPolylineDto): Promise<any>;
+    createFromPolyline(inputs: Inputs.JSCAD.PathFromPolylineDto): Promise<Inputs.JSCAD.JSCADEntity>;
     /**
      * Create a 2D path from a curve
      * @param inputs Curve and indication if we want a closed path or not
@@ -1523,7 +1523,7 @@ declare class JSCADPath {
      * @shortname curve
      * @drawable true
      */
-    createFromCurve(inputs: Inputs.JSCAD.PathFromCurveDto): Promise<any>;
+    createFromCurve(inputs: Inputs.JSCAD.PathFromCurveDto): Promise<Inputs.JSCAD.JSCADEntity>;
     /**
      * Create empty 2D path
      * @returns Empty path
@@ -1531,7 +1531,7 @@ declare class JSCADPath {
      * @shortname empty
      * @drawable false
      */
-    createEmpty(): Promise<any>;
+    createEmpty(): Promise<Inputs.JSCAD.JSCADEntity>;
     /**
      * Closes an open 2D path
      * @param inputs Path
@@ -1540,7 +1540,7 @@ declare class JSCADPath {
      * @shortname close
      * @drawable true
      */
-    close(inputs: Inputs.JSCAD.PathDto): Promise<any>;
+    close(inputs: Inputs.JSCAD.PathDto): Promise<Inputs.JSCAD.JSCADEntity>;
     /**
      * Append the path with 2D points
      * @param inputs Path to append and points
@@ -1549,7 +1549,7 @@ declare class JSCADPath {
      * @shortname points
      * @drawable true
      */
-    appendPoints(inputs: Inputs.JSCAD.PathAppendPointsDto): Promise<any>;
+    appendPoints(inputs: Inputs.JSCAD.PathAppendPointsDto): Promise<Inputs.JSCAD.JSCADEntity>;
     /**
      * Append the path with polyline
      * @param inputs Path to append and polyline
@@ -1558,7 +1558,7 @@ declare class JSCADPath {
      * @shortname polyline
      * @drawable true
      */
-    appendPolyline(inputs: Inputs.JSCAD.PathAppendPolylineDto): Promise<any>;
+    appendPolyline(inputs: Inputs.JSCAD.PathAppendPolylineDto): Promise<Inputs.JSCAD.JSCADEntity>;
     /**
      * Append the path with the curve
      * @param inputs Path to append and a curve
@@ -1567,7 +1567,7 @@ declare class JSCADPath {
      * @shortname curve
      * @drawable true
      */
-    appendCurve(inputs: Inputs.JSCAD.PathAppendCurveDto): Promise<any>;
+    appendCurve(inputs: Inputs.JSCAD.PathAppendCurveDto): Promise<Inputs.JSCAD.JSCADEntity>;
     /**
      * Append the arc to the path
      * @param inputs Path and arc parameters
@@ -1576,7 +1576,7 @@ declare class JSCADPath {
      * @shortname arc
      * @drawable true
      */
-    appendArc(inputs: Inputs.JSCAD.PathAppendArcDto): Promise<any>;
+    appendArc(inputs: Inputs.JSCAD.PathAppendArcDto): Promise<Inputs.JSCAD.JSCADEntity>;
 }/**
  * Contains various functions for Polygon from JSCAD library https://github.com/jscad/OpenJSCAD.org
  * Thanks JSCAD community for developing this kernel
@@ -1592,7 +1592,7 @@ declare class JSCADPolygon {
      * @shortname points
      * @drawable true
      */
-    createFromPoints(inputs: Inputs.Point.PointsDto): Promise<any>;
+    createFromPoints(inputs: Inputs.Point.PointsDto): Promise<Inputs.JSCAD.JSCADEntity>;
     /**
      * Create a 2D polygon from a polyline
      * @param inputs Polyline
@@ -1601,7 +1601,7 @@ declare class JSCADPolygon {
      * @shortname polyline
      * @drawable true
      */
-    createFromPolyline(inputs: Inputs.Polyline.PolylineDto): Promise<any>;
+    createFromPolyline(inputs: Inputs.Polyline.PolylineDto): Promise<Inputs.JSCAD.JSCADEntity>;
     /**
      * Create a 2D polygon from a curve
      * @param inputs Nurbs curve
@@ -1610,7 +1610,7 @@ declare class JSCADPolygon {
      * @shortname curve
      * @drawable true
      */
-    createFromCurve(inputs: Inputs.Verb.CurveDto): Promise<any>;
+    createFromCurve(inputs: Inputs.Verb.CurveDto): Promise<Inputs.JSCAD.JSCADEntity>;
     /**
      * Create a 2D polygon from a path
      * @param inputs Path
@@ -1619,7 +1619,7 @@ declare class JSCADPolygon {
      * @shortname path
      * @drawable true
      */
-    createFromPath(inputs: Inputs.JSCAD.PathDto): Promise<any>;
+    createFromPath(inputs: Inputs.JSCAD.PathDto): Promise<Inputs.JSCAD.JSCADEntity>;
     /**
      * Create a 2D polygon circle
      * @param inputs Circle parameters
@@ -1628,7 +1628,7 @@ declare class JSCADPolygon {
      * @shortname circle
      * @drawable true
      */
-    circle(inputs: Inputs.JSCAD.CircleDto): Promise<any>;
+    circle(inputs: Inputs.JSCAD.CircleDto): Promise<Inputs.JSCAD.JSCADEntity>;
     /**
      * Create a 2D polygon ellipse
      * @param inputs Ellipse parameters
@@ -1637,7 +1637,7 @@ declare class JSCADPolygon {
      * @shortname ellipse
      * @drawable true
      */
-    ellipse(inputs: Inputs.JSCAD.EllipseDto): Promise<any>;
+    ellipse(inputs: Inputs.JSCAD.EllipseDto): Promise<Inputs.JSCAD.JSCADEntity>;
     /**
      * Create a 2D polygon rectangle
      * @param inputs Rectangle parameters
@@ -1646,7 +1646,7 @@ declare class JSCADPolygon {
      * @shortname rectangle
      * @drawable true
      */
-    rectangle(inputs: Inputs.JSCAD.RectangleDto): Promise<any>;
+    rectangle(inputs: Inputs.JSCAD.RectangleDto): Promise<Inputs.JSCAD.JSCADEntity>;
     /**
      * Create a 2D rounded rectangle
      * @param inputs Rounded rectangle parameters
@@ -1655,7 +1655,7 @@ declare class JSCADPolygon {
      * @shortname rounded rectangle
      * @drawable true
      */
-    roundedRectangle(inputs: Inputs.JSCAD.RoundedRectangleDto): Promise<any>;
+    roundedRectangle(inputs: Inputs.JSCAD.RoundedRectangleDto): Promise<Inputs.JSCAD.JSCADEntity>;
     /**
      * Create a 2D polygon square
      * @param inputs Square parameters
@@ -1664,7 +1664,7 @@ declare class JSCADPolygon {
      * @shortname square
      * @drawable true
      */
-    square(inputs: Inputs.JSCAD.SquareDto): Promise<any>;
+    square(inputs: Inputs.JSCAD.SquareDto): Promise<Inputs.JSCAD.JSCADEntity>;
     /**
      * Create a 2D polygon star
      * @param inputs Star parameters
@@ -1673,7 +1673,7 @@ declare class JSCADPolygon {
      * @shortname star
      * @drawable true
      */
-    star(inputs: Inputs.JSCAD.StarDto): Promise<any>;
+    star(inputs: Inputs.JSCAD.StarDto): Promise<Inputs.JSCAD.JSCADEntity>;
 }/**
  * Contains various functions for solid 3D shapes from JSCAD library https://github.com/jscad/OpenJSCAD.org
  * Thanks JSCAD community for developing this kernel
@@ -1689,7 +1689,7 @@ declare class JSCADShapes {
      * @shortname cube
      * @drawable true
      */
-    cube(inputs: Inputs.JSCAD.CubeDto): Promise<any>;
+    cube(inputs: Inputs.JSCAD.CubeDto): Promise<Inputs.JSCAD.JSCADEntity>;
     /**
      * Create a 3D cubes on multiple center points
      * @param inputs Cube with multiple center points parameters
@@ -1698,7 +1698,7 @@ declare class JSCADShapes {
      * @shortname cubes
      * @drawable true
      */
-    cubesOnCenterPoints(inputs: Inputs.JSCAD.CubeCentersDto): Promise<any[]>;
+    cubesOnCenterPoints(inputs: Inputs.JSCAD.CubeCentersDto): Promise<Inputs.JSCAD.JSCADEntity[]>;
     /**
      * Create a 3D cuboid shape
      * @param inputs Cuboid parameters
@@ -1707,7 +1707,7 @@ declare class JSCADShapes {
      * @shortname cuboid
      * @drawable true
      */
-    cuboid(inputs: Inputs.JSCAD.CuboidDto): Promise<any>;
+    cuboid(inputs: Inputs.JSCAD.CuboidDto): Promise<Inputs.JSCAD.JSCADEntity>;
     /**
      * Create a 3D cuboids on multiple center points
      * @param inputs Cuboids with multiple center point parameters
@@ -1716,7 +1716,7 @@ declare class JSCADShapes {
      * @shortname cuboids
      * @drawable true
      */
-    cuboidsOnCenterPoints(inputs: Inputs.JSCAD.CuboidCentersDto): Promise<any[]>;
+    cuboidsOnCenterPoints(inputs: Inputs.JSCAD.CuboidCentersDto): Promise<Inputs.JSCAD.JSCADEntity[]>;
     /**
      * Create a 3D elliptic cylinder solid
      * @param inputs Elliptic cylinder parameters
@@ -1725,7 +1725,7 @@ declare class JSCADShapes {
      * @shortname cylinder elliptic
      * @drawable true
      */
-    cylinderElliptic(inputs: Inputs.JSCAD.CylidnerEllipticDto): Promise<any>;
+    cylinderElliptic(inputs: Inputs.JSCAD.CylidnerEllipticDto): Promise<Inputs.JSCAD.JSCADEntity>;
     /**
      * Create a 3D elliptic cylinders on multiple center points
      * @param inputs Elliptic cylinders with multiple center point parameters
@@ -1734,7 +1734,7 @@ declare class JSCADShapes {
      * @shortname cylinder elliptic
      * @drawable true
      */
-    cylinderEllipticOnCenterPoints(inputs: Inputs.JSCAD.CylidnerCentersEllipticDto): Promise<any[]>;
+    cylinderEllipticOnCenterPoints(inputs: Inputs.JSCAD.CylidnerCentersEllipticDto): Promise<Inputs.JSCAD.JSCADEntity[]>;
     /**
      * Create a 3D cylinder solid
      * @param inputs Cylinder parameters
@@ -1743,7 +1743,7 @@ declare class JSCADShapes {
      * @shortname cylinder
      * @drawable true
      */
-    cylinder(inputs: Inputs.JSCAD.CylidnerDto): Promise<any>;
+    cylinder(inputs: Inputs.JSCAD.CylidnerDto): Promise<Inputs.JSCAD.JSCADEntity>;
     /**
      * Create a 3D cylinders on multiple center points
      * @param inputs Cylinders with multiple center point parameters
@@ -1752,7 +1752,7 @@ declare class JSCADShapes {
      * @shortname cylinder
      * @drawable true
      */
-    cylindersOnCenterPoints(inputs: Inputs.JSCAD.CylidnerCentersDto): Promise<any[]>;
+    cylindersOnCenterPoints(inputs: Inputs.JSCAD.CylidnerCentersDto): Promise<Inputs.JSCAD.JSCADEntity[]>;
     /**
      * Create a 3D ellipsoid solid
      * @param inputs Ellipsoid parameters
@@ -1761,7 +1761,7 @@ declare class JSCADShapes {
      * @shortname ellipsoid
      * @drawable true
      */
-    ellipsoid(inputs: Inputs.JSCAD.EllipsoidDto): Promise<any>;
+    ellipsoid(inputs: Inputs.JSCAD.EllipsoidDto): Promise<Inputs.JSCAD.JSCADEntity>;
     /**
      * Create a 3D ellipsoids on multiple center points
      * @param inputs Ellipsoid parameters with multiple center points
@@ -1770,7 +1770,7 @@ declare class JSCADShapes {
      * @shortname ellipsoid
      * @drawable true
      */
-    ellipsoidsOnCenterPoints(inputs: Inputs.JSCAD.EllipsoidCentersDto): Promise<any[]>;
+    ellipsoidsOnCenterPoints(inputs: Inputs.JSCAD.EllipsoidCentersDto): Promise<Inputs.JSCAD.JSCADEntity[]>;
     /**
      * Create a 3D geodesic sphere solid
      * @param inputs Geodesic sphere parameters
@@ -1779,7 +1779,7 @@ declare class JSCADShapes {
      * @shortname geodesic sphere
      * @drawable true
      */
-    geodesicSphere(inputs: Inputs.JSCAD.GeodesicSphereDto): Promise<any>;
+    geodesicSphere(inputs: Inputs.JSCAD.GeodesicSphereDto): Promise<Inputs.JSCAD.JSCADEntity>;
     /**
      * Create a 3D geodesic spheres on multiple center points
      * @param inputs Geodesic sphere parameters with multiple center points
@@ -1788,7 +1788,7 @@ declare class JSCADShapes {
      * @shortname geodesic sphere
      * @drawable true
      */
-    geodesicSpheresOnCenterPoints(inputs: Inputs.JSCAD.GeodesicSphereCentersDto): Promise<any[]>;
+    geodesicSpheresOnCenterPoints(inputs: Inputs.JSCAD.GeodesicSphereCentersDto): Promise<Inputs.JSCAD.JSCADEntity[]>;
     /**
      * Create a 3D rounded cuboid solid
      * @param inputs Rounded cuboid parameters
@@ -1797,7 +1797,7 @@ declare class JSCADShapes {
      * @shortname rounded cuboid
      * @drawable true
      */
-    roundedCuboid(inputs: Inputs.JSCAD.RoundedCuboidDto): Promise<any>;
+    roundedCuboid(inputs: Inputs.JSCAD.RoundedCuboidDto): Promise<Inputs.JSCAD.JSCADEntity>;
     /**
      * Create a 3D rounded cuboids on multiple center points
      * @param inputs Rounded cuboids parameters with multiple center points
@@ -1806,7 +1806,7 @@ declare class JSCADShapes {
      * @shortname rounded cuboid
      * @drawable true
      */
-    roundedCuboidsOnCenterPoints(inputs: Inputs.JSCAD.RoundedCuboidCentersDto): Promise<any[]>;
+    roundedCuboidsOnCenterPoints(inputs: Inputs.JSCAD.RoundedCuboidCentersDto): Promise<Inputs.JSCAD.JSCADEntity[]>;
     /**
      * Create a 3D rounded cylinder solid
      * @param inputs Rounded cylinder parameters
@@ -1815,7 +1815,7 @@ declare class JSCADShapes {
      * @shortname rounded cylinder
      * @drawable true
      */
-    roundedCylinder(inputs: Inputs.JSCAD.RoundedCylidnerDto): Promise<any>;
+    roundedCylinder(inputs: Inputs.JSCAD.RoundedCylidnerDto): Promise<Inputs.JSCAD.JSCADEntity>;
     /**
      * Create a 3D rounded cylinders on multiple center points
      * @param inputs Rounded cylinders parameters with multiple center points
@@ -1824,7 +1824,7 @@ declare class JSCADShapes {
      * @shortname rounded cylinder
      * @drawable true
      */
-    roundedCylindersOnCenterPoints(inputs: Inputs.JSCAD.RoundedCylidnerCentersDto): Promise<any[]>;
+    roundedCylindersOnCenterPoints(inputs: Inputs.JSCAD.RoundedCylidnerCentersDto): Promise<Inputs.JSCAD.JSCADEntity[]>;
     /**
      * Create a 3D sphere solid
      * @param inputs Sphere parameters
@@ -1833,7 +1833,7 @@ declare class JSCADShapes {
      * @shortname sphere
      * @drawable true
      */
-    sphere(inputs: Inputs.JSCAD.SphereDto): Promise<any>;
+    sphere(inputs: Inputs.JSCAD.SphereDto): Promise<Inputs.JSCAD.JSCADEntity>;
     /**
      * Create a 3D sphere on multiple center points
      * @param inputs Sphere parameters with multiple center points
@@ -1842,7 +1842,7 @@ declare class JSCADShapes {
      * @shortname sphere
      * @drawable true
      */
-    spheresOnCenterPoints(inputs: Inputs.JSCAD.SphereCentersDto): Promise<any[]>;
+    spheresOnCenterPoints(inputs: Inputs.JSCAD.SphereCentersDto): Promise<Inputs.JSCAD.JSCADEntity[]>;
     /**
      * Create a 3D torus solid
      * @param inputs Torus parameters
@@ -1851,7 +1851,7 @@ declare class JSCADShapes {
      * @shortname torus
      * @drawable true
      */
-    torus(inputs: Inputs.JSCAD.TorusDto): Promise<any>;
+    torus(inputs: Inputs.JSCAD.TorusDto): Promise<Inputs.JSCAD.JSCADEntity>;
 }/**
  * Contains various functions for solid 3D texts from JSCAD library https://github.com/jscad/OpenJSCAD.org
  * Thanks JSCAD community for developing this kernel
@@ -1867,7 +1867,7 @@ declare class JSCADText {
      * @shortname cylindrical
      * @drawable true
      */
-    cylindricalText(inputs: Inputs.JSCAD.CylinderTextDto): Promise<any[]>;
+    cylindricalText(inputs: Inputs.JSCAD.CylinderTextDto): Promise<Inputs.JSCAD.JSCADEntity[]>;
     /**
      * Creates a text that is based on chain hulling spheres
      * @param inputs Spherical text parameters
@@ -1876,7 +1876,7 @@ declare class JSCADText {
      * @shortname spherical
      * @drawable true
      */
-    sphericalText(inputs: Inputs.JSCAD.SphereTextDto): Promise<any[]>;
+    sphericalText(inputs: Inputs.JSCAD.SphereTextDto): Promise<Inputs.JSCAD.JSCADEntity[]>;
     /**
      * Creates a vector text
      * @param inputs Vector text parameters
@@ -1980,7 +1980,7 @@ declare class Line {
      * @param inputs Line to be queried
      * @returns Start point
      */
-    getStartPoint(inputs: Inputs.Line.LineDto): number[];
+    getStartPoint(inputs: Inputs.Line.LineDto): Inputs.Base.Point3;
     /**
      * Gets the end point of the line
      * @param inputs Line to be queried
@@ -1998,31 +1998,31 @@ declare class Line {
      * @param inputs Line to be reversed
      * @returns Reversed line
      */
-    reverse(inputs: Inputs.Line.LineDto): Inputs.Line.LinePointsDto;
+    reverse(inputs: Inputs.Line.LineDto): Inputs.Base.Line3;
     /**
      * Transform the line
      * @param inputs Line to be transformed
      * @returns Transformed line
      */
-    transformLine(inputs: Inputs.Line.TransformLineDto): Inputs.Line.LinePointsDto;
+    transformLine(inputs: Inputs.Line.TransformLineDto): Inputs.Base.Line3;
     /**
      * Transforms the lines with multiple transform for each line
      * @param inputs Lines to be transformed and transformations
      * @returns Transformed lines
      */
-    transformsForLines(inputs: Inputs.Line.TransformsLinesDto): Inputs.Line.LinePointsDto[];
+    transformsForLines(inputs: Inputs.Line.TransformsLinesDto): Inputs.Base.Line3[];
     /**
      * Create the line
      * @param inputs Endpoints of the line
      * @returns Line
      */
-    create(inputs: Inputs.Line.LinePointsDto): Inputs.Line.LinePointsDto;
+    create(inputs: Inputs.Line.LinePointsDto): Inputs.Base.Line3;
     /**
      * Create the line from possibly async inputs of points
      * @param inputs Endpoints of the line
      * @returns Line
      */
-    createAsync(inputs: Inputs.Line.LinePointsDto): Promise<Inputs.Line.LinePointsDto>;
+    createAsync(inputs: Inputs.Line.LinePointsDto): Promise<Inputs.Base.Line3>;
     /**
      * Gets the point on the line segment at a given param
      * @param inputs Line and parameter
@@ -2034,19 +2034,19 @@ declare class Line {
      * @param inputs Lines in a list
      * @returns Lines
      */
-    linesBetweenPoints(inputs: Inputs.Line.PointsLinesDto): Inputs.Line.LinePointsDto[];
+    linesBetweenPoints(inputs: Inputs.Line.PointsLinesDto): Inputs.Base.Line3[];
     /**
      * Create the lines between two lists of start and end points of equal length
      * @param inputs Two lists of start and end points
      * @returns Lines
      */
-    linesBetweenStartAndEndPoints(inputs: Inputs.Line.LineStartEndPointsDto): Inputs.Line.LinePointsDto[];
+    linesBetweenStartAndEndPoints(inputs: Inputs.Line.LineStartEndPointsDto): Inputs.Base.Line3[];
     /**
      * Create the lines between two lists of start and end points of equal length with potential async inputs
      * @param inputs Two lists of start and end points
      * @returns Lines
      */
-    linesBetweenStartAndEndPointsAsync(inputs: Inputs.Line.LineStartEndPointsDto): Promise<Inputs.Line.LinePointsDto[]>;
+    linesBetweenStartAndEndPointsAsync(inputs: Inputs.Line.LineStartEndPointsDto): Promise<Inputs.Base.Line3[]>;
     private createLineSystemMesh;
 }/**
  * Contains various list methods.

@@ -3,6 +3,7 @@
 export namespace Base {
     // Can't use BabylonJS types here as that crashes worker, which tries to include them
     export type Color = string;
+    export type ColorRGB = {r: number, g: number, b: number};
     export type Point2 = [number, number];
     export type Vector2 = [number, number];
     export type Point3 = [number, number, number];

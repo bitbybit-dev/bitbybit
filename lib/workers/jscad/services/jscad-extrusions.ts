@@ -13,7 +13,7 @@ export class JSCADExtrusions {
         private readonly vecHelper: VectorHelperService
     ) { }
 
-    extrudeLinear(inputs: Inputs.JSCAD.ExtrudeLinearDto): any {
+    extrudeLinear(inputs: Inputs.JSCAD.ExtrudeLinearDto): Inputs.JSCAD.JSCADEntity {
         const multipleGeometries = inputs.geometry.length && inputs.geometry.length > 0;
         const geometry = multipleGeometries ? inputs.geometry : [inputs.geometry];
 
@@ -29,7 +29,7 @@ export class JSCADExtrusions {
         return extrusions;
     }
 
-    extrudeRectangular(inputs: Inputs.JSCAD.ExtrudeRectangularDto): any {
+    extrudeRectangular(inputs: Inputs.JSCAD.ExtrudeRectangularDto): Inputs.JSCAD.JSCADEntity {
         const multipleGeometries = inputs.geometry.length && inputs.geometry.length > 0;
         const geometry = multipleGeometries ? inputs.geometry : [inputs.geometry];
 
@@ -40,15 +40,15 @@ export class JSCADExtrusions {
         return extrusions;
     }
 
-    extrudeRectangularPoints(inputs: Inputs.JSCAD.ExtrudeRectangularPointsDto): any {
+    extrudeRectangularPoints(inputs: Inputs.JSCAD.ExtrudeRectangularPointsDto): Inputs.JSCAD.JSCADEntity {
         const twoDimensionalPoints = inputs.points.map(pt => [pt[0], pt[1]]);
         const duplicatePointsRemoved = this.vecHelper.removeConsecutiveDuplicates(twoDimensionalPoints);
         const path = this.jscad.geometries.path2.fromPoints({}, duplicatePointsRemoved);
         const extrusion = this.extrudeRectangular({ height: inputs.height, size: inputs.size, geometry: path });
         return extrusion;
     }
-    
-    extrudeRotate(inputs: Inputs.JSCAD.ExtrudeRotateDto): any {
+
+    extrudeRotate(inputs: Inputs.JSCAD.ExtrudeRotateDto): Inputs.JSCAD.JSCADEntity {
         const options = {
             angle: Angle.FromDegrees(inputs.angle).radians(),
             startAngle: Angle.FromDegrees(inputs.startAngle).radians(),

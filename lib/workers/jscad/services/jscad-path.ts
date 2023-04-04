@@ -15,46 +15,46 @@ export class JSCADPath {
 
     ) { }
 
-    createFromPoints(inputs: Inputs.JSCAD.PathFromPointsDto): any {
+    createFromPoints(inputs: Inputs.JSCAD.PathFromPointsDto): Inputs.JSCAD.JSCADEntity {
         const twoDimensionalPoints = inputs.points.map(pt => [pt[0], pt[1]]);
         return this.removeDuplicatesAndCreateFromPoints(twoDimensionalPoints, inputs.closed);
     }
 
-    createFromPolyline(inputs: Inputs.JSCAD.PathFromPolylineDto): any {
+    createFromPolyline(inputs: Inputs.JSCAD.PathFromPolylineDto): Inputs.JSCAD.JSCADEntity {
         const twoDimensionalPoints = inputs.polyline.points.map(pt => [pt[0], pt[1]]);
         return this.removeDuplicatesAndCreateFromPoints(twoDimensionalPoints, inputs.closed);
     }
 
-    createFromCurve(inputs: Inputs.JSCAD.PathFromCurveDto): any {
+    createFromCurve(inputs: Inputs.JSCAD.PathFromCurveDto): Inputs.JSCAD.JSCADEntity {
         const twoDimensionalPoints = inputs.curve.tessellate().map(pt => [pt[0], pt[1]]);
         return this.removeDuplicatesAndCreateFromPoints(twoDimensionalPoints, inputs.closed);
     }
 
-    createEmpty(): any {
+    createEmpty(): Inputs.JSCAD.JSCADEntity {
         return this.jscad.geometries.path2.create();
     }
 
-    close(inputs: Inputs.JSCAD.PathDto): any {
+    close(inputs: Inputs.JSCAD.PathDto): Inputs.JSCAD.JSCADEntity {
         return this.jscad.geometries.path2.close(inputs.path);
     }
 
-    appendPoints(inputs: Inputs.JSCAD.PathAppendPointsDto): any {
+    appendPoints(inputs: Inputs.JSCAD.PathAppendPointsDto): Inputs.JSCAD.JSCADEntity {
         const twoDimensionalPoints = inputs.points.map(pt => [pt[0], pt[1]]);
         const duplicatePointsRemoved = this.vecHelper.removeConsecutiveDuplicates(twoDimensionalPoints);
         return this.jscad.geometries.path2.appendPoints(duplicatePointsRemoved, inputs.path);
     }
 
-    appendPolyline(inputs: Inputs.JSCAD.PathAppendPolylineDto): any {
+    appendPolyline(inputs: Inputs.JSCAD.PathAppendPolylineDto): Inputs.JSCAD.JSCADEntity {
         const twoDimensionalPoints = inputs.polyline.points.map(pt => [pt[0], pt[1]]) as Base.Point2[];
         return this.appendPoints({points: twoDimensionalPoints, path: inputs.path});
     }
 
-    appendCurve(inputs: Inputs.JSCAD.PathAppendCurveDto): any {
+    appendCurve(inputs: Inputs.JSCAD.PathAppendCurveDto): Inputs.JSCAD.JSCADEntity {
         const twoDimensionalPoints = inputs.curve.tessellate().map(pt => [pt[0], pt[1]]);
         return this.appendPoints({points: twoDimensionalPoints, path: inputs.path});
     }
 
-    appendArc(inputs: Inputs.JSCAD.PathAppendArcDto): any {
+    appendArc(inputs: Inputs.JSCAD.PathAppendArcDto): Inputs.JSCAD.JSCADEntity {
         const endpoint = [inputs.endPoint[0], inputs.endPoint[1]];
         const radius = [inputs.radiusX, inputs.radiusY];
         return this.jscad.geometries.path2.appendArc({

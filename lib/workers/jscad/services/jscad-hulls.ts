@@ -10,11 +10,11 @@ export class JSCADHulls {
         private readonly jscad: any,
     ) { }
 
-    hullChain(inputs: Inputs.JSCAD.HullDto): any {
+    hullChain(inputs: Inputs.JSCAD.HullDto): Inputs.JSCAD.JSCADEntity {
         return this.jscad.hulls.hullChain(...inputs.meshes);
     }
 
-    hull(inputs: Inputs.JSCAD.HullDto): any  {
+    hull(inputs: Inputs.JSCAD.HullDto): Inputs.JSCAD.JSCADEntity  {
         return this.jscad.hulls.hull(...inputs.meshes);
     }
 }

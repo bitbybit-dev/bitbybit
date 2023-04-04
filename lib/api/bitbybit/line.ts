@@ -88,7 +88,7 @@ export class Line {
      * @param inputs Line to be queried
      * @returns Start point
      */
-    getStartPoint(inputs: Inputs.Line.LineDto): number[] {
+    getStartPoint(inputs: Inputs.Line.LineDto): Inputs.Base.Point3 {
         return inputs.line.start;
     }
 
@@ -115,7 +115,7 @@ export class Line {
      * @param inputs Line to be reversed
      * @returns Reversed line
      */
-    reverse(inputs: Inputs.Line.LineDto): Inputs.Line.LinePointsDto {
+    reverse(inputs: Inputs.Line.LineDto): Inputs.Base.Line3 {
         return { start: inputs.line.end, end: inputs.line.start };
     }
 
@@ -124,7 +124,7 @@ export class Line {
      * @param inputs Line to be transformed
      * @returns Transformed line
      */
-    transformLine(inputs: Inputs.Line.TransformLineDto): Inputs.Line.LinePointsDto {
+    transformLine(inputs: Inputs.Line.TransformLineDto): Inputs.Base.Line3 {
         const transformation = inputs.matrix;
         let transformedControlPoints = [inputs.line.start, inputs.line.end];
         transformedControlPoints = this.geometryHelper.transformControlPoints(transformation, transformedControlPoints);
@@ -139,7 +139,7 @@ export class Line {
      * @param inputs Lines to be transformed and transformations
      * @returns Transformed lines
      */
-    transformsForLines(inputs: Inputs.Line.TransformsLinesDto): Inputs.Line.LinePointsDto[] {
+    transformsForLines(inputs: Inputs.Line.TransformsLinesDto): Inputs.Base.Line3[] {
         return inputs.lines.map((line, index) => {
             const transformation = inputs.matrix[index];
             let transformedControlPoints = [line.start, line.end];
@@ -156,7 +156,7 @@ export class Line {
      * @param inputs Endpoints of the line
      * @returns Line
      */
-    create(inputs: Inputs.Line.LinePointsDto): Inputs.Line.LinePointsDto {
+    create(inputs: Inputs.Line.LinePointsDto): Inputs.Base.Line3 {
         return {
             start: inputs.start,
             end: inputs.end,
@@ -168,7 +168,7 @@ export class Line {
      * @param inputs Endpoints of the line
      * @returns Line
      */
-    createAsync(inputs: Inputs.Line.LinePointsDto): Promise<Inputs.Line.LinePointsDto> {
+    createAsync(inputs: Inputs.Line.LinePointsDto): Promise<Inputs.Base.Line3> {
         return Promise.resolve({
             start: inputs.start,
             end: inputs.end,
@@ -198,7 +198,7 @@ export class Line {
      * @param inputs Lines in a list
      * @returns Lines
      */
-    linesBetweenPoints(inputs: Inputs.Line.PointsLinesDto): Inputs.Line.LinePointsDto[] {
+    linesBetweenPoints(inputs: Inputs.Line.PointsLinesDto): Inputs.Base.Line3[] {
         const lines = [];
         for (let i = 1; i < inputs.points.length; i++) {
             const previousPoint = inputs.points[i - 1];
@@ -213,7 +213,7 @@ export class Line {
      * @param inputs Two lists of start and end points
      * @returns Lines
      */
-    linesBetweenStartAndEndPoints(inputs: Inputs.Line.LineStartEndPointsDto): Inputs.Line.LinePointsDto[] {
+    linesBetweenStartAndEndPoints(inputs: Inputs.Line.LineStartEndPointsDto): Inputs.Base.Line3[] {
         return inputs.startPoints
             .map((s, index) => ({ start: s, end: inputs.endPoints[index] }))
             .filter(line => this.context.verb.core.Vec.dist(line.start, line.end) !== 0);
@@ -224,7 +224,7 @@ export class Line {
      * @param inputs Two lists of start and end points
      * @returns Lines
      */
-    linesBetweenStartAndEndPointsAsync(inputs: Inputs.Line.LineStartEndPointsDto): Promise<Inputs.Line.LinePointsDto[]> {
+    linesBetweenStartAndEndPointsAsync(inputs: Inputs.Line.LineStartEndPointsDto): Promise<Inputs.Base.Line3[]> {
         return Promise.resolve(this.linesBetweenStartAndEndPoints(inputs));
     }
 

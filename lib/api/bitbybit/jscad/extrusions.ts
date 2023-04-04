@@ -21,7 +21,7 @@ export class JSCADExtrusions {
      * @shortname linear
      * @drawable true
      */
-    async extrudeLinear(inputs: Inputs.JSCAD.ExtrudeLinearDto): Promise<any> {
+    async extrudeLinear(inputs: Inputs.JSCAD.ExtrudeLinearDto): Promise<Inputs.JSCAD.JSCADEntity> {
         return this.jscadWorkerManager.genericCallToWorkerPromise('extrusions.extrudeLinear', inputs);
     }
 
@@ -33,7 +33,7 @@ export class JSCADExtrusions {
      * @shortname rectangular
      * @drawable true
      */
-    async extrudeRectangular(inputs: Inputs.JSCAD.ExtrudeRectangularDto): Promise<any> {
+    async extrudeRectangular(inputs: Inputs.JSCAD.ExtrudeRectangularDto): Promise<Inputs.JSCAD.JSCADEntity> {
         return this.jscadWorkerManager.genericCallToWorkerPromise('extrusions.extrudeRectangular', inputs);
     }
 
@@ -45,7 +45,7 @@ export class JSCADExtrusions {
      * @shortname rectangular points
      * @drawable true
      */
-    async extrudeRectangularPoints(inputs: Inputs.JSCAD.ExtrudeRectangularPointsDto): Promise<any> {
+    async extrudeRectangularPoints(inputs: Inputs.JSCAD.ExtrudeRectangularPointsDto): Promise<Inputs.JSCAD.JSCADEntity> {
         return this.jscadWorkerManager.genericCallToWorkerPromise('extrusions.extrudeRectangularPoints', inputs);
     }
 
@@ -57,7 +57,7 @@ export class JSCADExtrusions {
      * @shortname rotational
      * @drawable true
      */
-    async extrudeRotate(inputs: Inputs.JSCAD.ExtrudeRotateDto): Promise<any> {
+    async extrudeRotate(inputs: Inputs.JSCAD.ExtrudeRotateDto): Promise<Inputs.JSCAD.JSCADEntity> {
         return this.jscadWorkerManager.genericCallToWorkerPromise('extrusions.extrudeRotate', inputs);
     }
 

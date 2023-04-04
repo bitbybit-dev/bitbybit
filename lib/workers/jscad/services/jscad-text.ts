@@ -8,7 +8,7 @@ export class JSCADText {
 
     constructor(private readonly jscad: any) { }
 
-    cylindricalText(inputs: Inputs.JSCAD.CylinderTextDto): any {
+    cylindricalText(inputs: Inputs.JSCAD.CylinderTextDto): Inputs.JSCAD.JSCADEntity[] {
         const text = this.createVectorText(inputs);
         this.adjustTextToBeOnCenter(text);
         return text.map(txt => {
@@ -24,7 +24,7 @@ export class JSCADText {
         });
     }
 
-    sphericalText(inputs: Inputs.JSCAD.SphereTextDto): any {
+    sphericalText(inputs: Inputs.JSCAD.SphereTextDto): Inputs.JSCAD.JSCADEntity[] {
         const text = this.createVectorText(inputs);
         this.adjustTextToBeOnCenter(text);
         return text.map(txt => {

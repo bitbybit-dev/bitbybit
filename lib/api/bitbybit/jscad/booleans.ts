@@ -21,7 +21,7 @@ export class JSCADBooleans {
      * @shortname intersect
      * @drawable true
      */
-    async intersect(inputs: Inputs.JSCAD.BooleanObjectsDto): Promise<any> {
+    async intersect(inputs: Inputs.JSCAD.BooleanObjectsDto): Promise<Inputs.JSCAD.JSCADEntity> {
         return this.jscadWorkerManager.genericCallToWorkerPromise('booleans.intersect', inputs);
     }
 
@@ -33,7 +33,7 @@ export class JSCADBooleans {
      * @shortname intersect
      * @drawable true
      */
-    async subtract(inputs: Inputs.JSCAD.BooleanObjectsDto): Promise<any> {
+    async subtract(inputs: Inputs.JSCAD.BooleanObjectsDto): Promise<Inputs.JSCAD.JSCADEntity> {
         return this.jscadWorkerManager.genericCallToWorkerPromise('booleans.subtract', inputs);
     }
 
@@ -45,7 +45,7 @@ export class JSCADBooleans {
      * @shortname union
      * @drawable true
      */
-    async union(inputs: Inputs.JSCAD.BooleanObjectsDto): Promise<any> {
+    async union(inputs: Inputs.JSCAD.BooleanObjectsDto): Promise<Inputs.JSCAD.JSCADEntity> {
         return this.jscadWorkerManager.genericCallToWorkerPromise('booleans.union', inputs);
     }
 }

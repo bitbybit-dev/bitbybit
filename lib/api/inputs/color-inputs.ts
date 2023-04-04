@@ -63,6 +63,6 @@ export namespace Color {
          * Red value component
          * @default undefined
          */
-        rgb: RGBDto;
+        rgb: Base.ColorRGB;
     }
 }
