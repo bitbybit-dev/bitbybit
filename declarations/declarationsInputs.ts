@@ -448,6 +448,13 @@ export const inputDeclarations = `declare namespace Asset {
          */
         includeChildren?: boolean;
     }
+    class ByNameBabylonMeshDto {
+        /**
+         * name of the mesh
+         * @default undefined
+         */
+        name: string;
+    }
     class MaterialBabylonMeshDto {
         /**
          * BabylonJS mesh
@@ -471,6 +478,13 @@ export const inputDeclarations = `declare namespace Asset {
          * @default undefined
          */
         babylonMesh?: Mesh;
+        /**
+         * id of the mesh
+         * @default undefined
+         */
+        id: string;
+    }
+    class ByIdBabylonMeshDto {
         /**
          * id of the mesh
          * @default undefined
@@ -655,6 +669,7 @@ export const inputDeclarations = `declare namespace Asset {
         start: Base.Point3;
         end: Base.Point3;
     };
+    type TransformMatrixes = [number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number][];
     enum skyboxEnum {
         default = "default",
         clearSky = "clearSky",
@@ -1132,7 +1147,7 @@ export const inputDeclarations = `declare namespace Asset {
          * Transformation matrix or a list of transformation matrixes
          * @default undefined
          */
-        matrix: number[][] | number[][][];
+        matrix: Base.TransformMatrixes;
     }
     class TransformSolidDto {
         /**
@@ -1144,7 +1159,7 @@ export const inputDeclarations = `declare namespace Asset {
          * Transformation matrix or a list of transformation matrixes
          * @default undefined
          */
-        matrix: number[][] | number[][][];
+        matrix: Base.TransformMatrixes;
     }
     class DownloadSolidDto {
         /**
@@ -2672,7 +2687,7 @@ export const inputDeclarations = `declare namespace Asset {
         /**
          * Transformation matrix or a list of transformation matrixes
          */
-        matrix: number[][] | number[][][];
+        matrix: Base.TransformMatrixes;
     }
     class TransformsLinesDto {
         /**
@@ -2682,7 +2697,7 @@ export const inputDeclarations = `declare namespace Asset {
         /**
          * Transformations matrix or a list of transformations matrixes
          */
-        matrix: number[][][] | number[][][][];
+        matrix: Base.TransformMatrixes[];
     }
     class TransformLinesDto {
         /**
@@ -2692,7 +2707,7 @@ export const inputDeclarations = `declare namespace Asset {
         /**
          * Transformation matrix or a list of transformation matrixes
          */
-        matrix: number[][] | number[][][];
+        matrix: Base.TransformMatrixes;
     }
 }declare namespace Lists {
     enum FirstLastEnum {
@@ -3250,7 +3265,7 @@ export const inputDeclarations = `declare namespace Asset {
          * Transformation matrix or a list of transformation matrixes
          * @default undefined
          */
-        matrix: number[][] | number[][][];
+        matrix: Base.TransformMatrixes;
     }
     class TransformPointsDto {
         /**
@@ -3262,7 +3277,7 @@ export const inputDeclarations = `declare namespace Asset {
          * Transformation matrix or a list of transformation matrixes
          * @default undefined
          */
-        matrix: number[][] | number[][][];
+        matrix: Base.TransformMatrixes;
     }
     class TransformsForPointsDto {
         /**
@@ -3274,7 +3289,7 @@ export const inputDeclarations = `declare namespace Asset {
          * Transformations that have to match nr of points
          * @default undefined
          */
-        matrix: number[][][] | number[][][][];
+        matrix: Base.TransformMatrixes[];
     }
     class ClosestPointFromPointsDto {
         /**
@@ -3411,7 +3426,7 @@ export const inputDeclarations = `declare namespace Asset {
         /**
          * Transformation matrix or a list of transformation matrixes
          */
-        matrix: number[][] | number[][][];
+        matrix: Base.TransformMatrixes;
     }
     class DrawPolylineDto {
         /**
@@ -4240,7 +4255,7 @@ export const inputDeclarations = `declare namespace Asset {
         /**
          * Transformation matrixes
          */
-        matrix: number[][] | number[][][];
+        matrix: Base.TransformMatrixes;
     }
     class CurvesTransformDto {
         /**
@@ -4250,7 +4265,7 @@ export const inputDeclarations = `declare namespace Asset {
         /**
          * Transformation matrixes
          */
-        matrix: number[][] | number[][][];
+        matrix: Base.TransformMatrixes;
     }
     class CurveToleranceDto {
         /**
@@ -4472,7 +4487,7 @@ export const inputDeclarations = `declare namespace Asset {
         /**
          * Transformations
          */
-        matrix: number[][] | number[][][];
+        matrix: Base.TransformMatrixes;
     }
     class SurfaceParameterDto {
         /**

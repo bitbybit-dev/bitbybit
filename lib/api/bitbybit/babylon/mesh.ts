@@ -232,7 +232,7 @@ export class BabylonMesh {
      * @group get
      * @shortname meshes where name contains
      */
-    getMeshesWhereNameContains(inputs: Inputs.BabylonMesh.NameBabylonMeshDto): AbstractMesh[] {
+    getMeshesWhereNameContains(inputs: Inputs.BabylonMesh.ByNameBabylonMeshDto): AbstractMesh[] {
         return this.context.scene.meshes.filter(m => m.name.includes(inputs.name));
     }
 
@@ -252,7 +252,7 @@ export class BabylonMesh {
      * @group get
      * @shortname meshes by id
      */
-    getMeshesOfId(inputs: Inputs.BabylonMesh.IdBabylonMeshDto): AbstractMesh[] {
+    getMeshesOfId(inputs: Inputs.BabylonMesh.ByIdBabylonMeshDto): AbstractMesh[] {
         return this.context.scene.getMeshesById(inputs.id);
     }
 
@@ -262,7 +262,7 @@ export class BabylonMesh {
      * @group get
      * @shortname mesh by id
      */
-    getMeshOfId(inputs: Inputs.BabylonMesh.IdBabylonMeshDto): AbstractMesh {
+    getMeshOfId(inputs: Inputs.BabylonMesh.ByIdBabylonMeshDto): AbstractMesh {
         return this.context.scene.getMeshById(inputs.id);
     }
 

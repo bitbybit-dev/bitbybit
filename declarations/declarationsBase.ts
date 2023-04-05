@@ -337,7 +337,7 @@ declare class Babylon {
      * @group get
      * @shortname meshes where name contains
      */
-    getMeshesWhereNameContains(inputs: Inputs.BabylonMesh.NameBabylonMeshDto): AbstractMesh[];
+    getMeshesWhereNameContains(inputs: Inputs.BabylonMesh.ByNameBabylonMeshDto): AbstractMesh[];
     /**
      * Gets child meshes
      * @param inputs BabylonJS mesh and whether to include only direct descendants
@@ -351,14 +351,14 @@ declare class Babylon {
      * @group get
      * @shortname meshes by id
      */
-    getMeshesOfId(inputs: Inputs.BabylonMesh.IdBabylonMeshDto): AbstractMesh[];
+    getMeshesOfId(inputs: Inputs.BabylonMesh.ByIdBabylonMeshDto): AbstractMesh[];
     /**
      * Gets mesh of id
      * @param inputs BabylonJS mesh and name
      * @group get
      * @shortname mesh by id
      */
-    getMeshOfId(inputs: Inputs.BabylonMesh.IdBabylonMeshDto): AbstractMesh;
+    getMeshOfId(inputs: Inputs.BabylonMesh.ByIdBabylonMeshDto): AbstractMesh;
     /**
      * Gets mesh of unique id
      * @param inputs BabylonJS mesh and name
@@ -900,7 +900,7 @@ declare class BabylonTransforms {
      * @shortname center axis
      * @drawable false
      */
-    rotationCenterAxis(inputs: Inputs.Transforms.RotationCenterAxisDto): number[][];
+    rotationCenterAxis(inputs: Inputs.Transforms.RotationCenterAxisDto): Base.TransformMatrixes;
     /**
      * Creates a rotation transformations around the center and an X axis
      * @param inputs Rotation around center with an X axis information
@@ -909,7 +909,7 @@ declare class BabylonTransforms {
      * @shortname center x
      * @drawable false
      */
-    rotationCenterX(inputs: Inputs.Transforms.RotationCenterDto): number[][];
+    rotationCenterX(inputs: Inputs.Transforms.RotationCenterDto): Base.TransformMatrixes;
     /**
      * Creates a rotation transformations around the center and an Y axis
      * @param inputs Rotation around center with an Y axis information
@@ -918,7 +918,7 @@ declare class BabylonTransforms {
      * @shortname center y
      * @drawable false
      */
-    rotationCenterY(inputs: Inputs.Transforms.RotationCenterDto): number[][];
+    rotationCenterY(inputs: Inputs.Transforms.RotationCenterDto): Base.TransformMatrixes;
     /**
      * Creates a rotation transformations around the center and an Z axis
      * @param inputs Rotation around center with an Z axis information
@@ -927,7 +927,7 @@ declare class BabylonTransforms {
      * @shortname center z
      * @drawable false
      */
-    rotationCenterZ(inputs: Inputs.Transforms.RotationCenterDto): number[][];
+    rotationCenterZ(inputs: Inputs.Transforms.RotationCenterDto): Base.TransformMatrixes;
     /**
      * Creates a rotation transformations with yaw pitch and roll
      * @param inputs Yaw pitch roll rotation information
@@ -936,7 +936,7 @@ declare class BabylonTransforms {
      * @shortname yaw pitch roll
      * @drawable false
      */
-    rotationCenterYawPitchRoll(inputs: Inputs.Transforms.RotationCenterYawPitchRollDto): number[][];
+    rotationCenterYawPitchRoll(inputs: Inputs.Transforms.RotationCenterYawPitchRollDto): Base.TransformMatrixes;
     /**
      * Scale transformation around center and xyz directions
      * @param inputs Scale center xyz trnansformation
@@ -945,7 +945,7 @@ declare class BabylonTransforms {
      * @shortname center xyz
      * @drawable false
      */
-    scaleCenterXYZ(inputs: Inputs.Transforms.ScaleCenterXYZDto): number[][];
+    scaleCenterXYZ(inputs: Inputs.Transforms.ScaleCenterXYZDto): Base.TransformMatrixes;
     /**
      * Creates the scale transformation in x, y and z directions
      * @param inputs Scale XYZ number array information
@@ -954,7 +954,7 @@ declare class BabylonTransforms {
      * @shortname xyz
      * @drawable false
      */
-    scaleXYZ(inputs: Inputs.Transforms.ScaleXYZDto): number[][];
+    scaleXYZ(inputs: Inputs.Transforms.ScaleXYZDto): Base.TransformMatrixes;
     /**
      * Creates uniform scale transformation
      * @param inputs Scale Dto
@@ -963,7 +963,7 @@ declare class BabylonTransforms {
      * @shortname uniform
      * @drawable false
      */
-    uniformScale(inputs: Inputs.Transforms.UniformScaleDto): number[][];
+    uniformScale(inputs: Inputs.Transforms.UniformScaleDto): Base.TransformMatrixes;
     /**
      * Creates uniform scale transformation from the center
      * @param inputs Scale Dto with center point information
@@ -972,7 +972,7 @@ declare class BabylonTransforms {
      * @shortname uniform from center
      * @drawable false
      */
-    uniformScaleFromCenter(inputs: Inputs.Transforms.UniformScaleFromCenterDto): number[][];
+    uniformScaleFromCenter(inputs: Inputs.Transforms.UniformScaleFromCenterDto): Base.TransformMatrixes;
     /**
      * Creates the translation transformation
      * @param inputs Translation information
@@ -981,7 +981,7 @@ declare class BabylonTransforms {
      * @shortname xyz
      * @drawable false
      */
-    translationXYZ(inputs: Inputs.Transforms.TranslationXYZDto): number[][];
+    translationXYZ(inputs: Inputs.Transforms.TranslationXYZDto): Base.TransformMatrixes;
     /**
     * Creates the translation transformation
     * @param inputs Translation information
@@ -990,7 +990,7 @@ declare class BabylonTransforms {
      * @shortname xyz
      * @drawable false
     */
-    translationsXYZ(inputs: Inputs.Transforms.TranslationsXYZDto): number[][][];
+    translationsXYZ(inputs: Inputs.Transforms.TranslationsXYZDto): Base.TransformMatrixes[];
 }declare class BabylonWebXR {
     private readonly context;
     constructor(context: Context);

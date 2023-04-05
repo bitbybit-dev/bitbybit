@@ -159,7 +159,7 @@ export namespace Point {
          * Transformation matrix or a list of transformation matrixes
          * @default undefined
          */
-        matrix: number[][] | number[][][];
+        matrix: Base.TransformMatrixes;
     }
     export class TransformPointsDto {
         /**
@@ -171,7 +171,7 @@ export namespace Point {
          * Transformation matrix or a list of transformation matrixes
          * @default undefined
          */
-        matrix: number[][] | number[][][];
+        matrix: Base.TransformMatrixes;
     }
     export class TransformsForPointsDto {
         /**
@@ -183,7 +183,7 @@ export namespace Point {
          * Transformations that have to match nr of points
          * @default undefined
          */
-        matrix: number[][][] | number[][][][];
+        matrix: Base.TransformMatrixes[];
     }
     export class ClosestPointFromPointsDto {
         /**

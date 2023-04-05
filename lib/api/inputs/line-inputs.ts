@@ -137,7 +137,7 @@ export namespace Line {
         /**
          * Transformation matrix or a list of transformation matrixes
          */
-        matrix: number[][] | number[][][];
+        matrix: Base.TransformMatrixes;
     }
     export class TransformsLinesDto {
         /**
@@ -147,7 +147,7 @@ export namespace Line {
         /**
          * Transformations matrix or a list of transformations matrixes
          */
-        matrix: number[][][] | number[][][][];
+        matrix: Base.TransformMatrixes[];
     }
     export class TransformLinesDto {
         /**
@@ -157,6 +157,6 @@ export namespace Line {
         /**
          * Transformation matrix or a list of transformation matrixes
          */
-        matrix: number[][] | number[][][];
+        matrix: Base.TransformMatrixes;
     }
 }

@@ -188,6 +188,13 @@ export namespace BabylonMesh {
          */
         includeChildren?: boolean = false;
     }
+    export class ByNameBabylonMeshDto {
+        /**
+         * name of the mesh
+         * @default undefined
+         */
+        name: string;
+    }
     export class MaterialBabylonMeshDto {
         /**
          * BabylonJS mesh
@@ -211,6 +218,13 @@ export namespace BabylonMesh {
          * @default undefined
          */
         babylonMesh?: Mesh;
+        /**
+         * id of the mesh
+         * @default undefined
+         */
+        id: string;
+    }
+    export class ByIdBabylonMeshDto {
         /**
          * id of the mesh
          * @default undefined

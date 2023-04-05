@@ -148,7 +148,7 @@ export namespace JSCAD {
          * Transformation matrix or a list of transformation matrixes
          * @default undefined
          */
-        matrix: number[][] | number[][][];
+        matrix: Base.TransformMatrixes;
     }
     export class TransformSolidDto {
         /**
@@ -160,7 +160,7 @@ export namespace JSCAD {
          * Transformation matrix or a list of transformation matrixes
          * @default undefined
          */
-        matrix: number[][] | number[][][];
+        matrix: Base.TransformMatrixes;
     }
     export class DownloadSolidDto {
         /**

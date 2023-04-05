@@ -1,5 +1,6 @@
 
 import { Matrix, Vector3, Angle } from '@babylonjs/core';
+import { Base } from '../../inputs/base-inputs';
 import * as Inputs from '../../inputs/inputs';
 
 /**
@@ -18,14 +19,14 @@ export class BabylonTransforms {
      * @shortname center axis
      * @drawable false
      */
-    rotationCenterAxis(inputs: Inputs.Transforms.RotationCenterAxisDto): number[][] {
+    rotationCenterAxis(inputs: Inputs.Transforms.RotationCenterAxisDto): Base.TransformMatrixes {
         return [
             [...Matrix.Translation(-inputs.center[0], -inputs.center[1], -inputs.center[2]).toArray()],
             [...Matrix.RotationAxis(
                 new Vector3(inputs.axis[0], inputs.axis[1], inputs.axis[2]),
                 Angle.FromDegrees(inputs.angle).radians()).toArray()],
             [...Matrix.Translation(inputs.center[0], inputs.center[1], inputs.center[2]).toArray()],
-        ];
+        ] as Base.TransformMatrixes;
     }
 
     /**
@@ -36,12 +37,12 @@ export class BabylonTransforms {
      * @shortname center x
      * @drawable false
      */
-    rotationCenterX(inputs: Inputs.Transforms.RotationCenterDto): number[][] {
+    rotationCenterX(inputs: Inputs.Transforms.RotationCenterDto): Base.TransformMatrixes {
         return [
             [...Matrix.Translation(-inputs.center[0], -inputs.center[1], -inputs.center[2]).toArray()],
             [...Matrix.RotationX(Angle.FromDegrees(inputs.angle).radians()).toArray()],
             [...Matrix.Translation(inputs.center[0], inputs.center[1], inputs.center[2]).toArray()],
-        ];
+        ] as Base.TransformMatrixes;
     }
 
     /**
@@ -52,12 +53,12 @@ export class BabylonTransforms {
      * @shortname center y
      * @drawable false
      */
-    rotationCenterY(inputs: Inputs.Transforms.RotationCenterDto): number[][] {
+    rotationCenterY(inputs: Inputs.Transforms.RotationCenterDto): Base.TransformMatrixes {
         return [
             [...Matrix.Translation(-inputs.center[0], -inputs.center[1], -inputs.center[2]).toArray()],
             [...Matrix.RotationY(Angle.FromDegrees(inputs.angle).radians()).toArray()],
             [...Matrix.Translation(inputs.center[0], inputs.center[1], inputs.center[2]).toArray()],
-        ];
+        ] as Base.TransformMatrixes;
     }
 
     /**
@@ -68,12 +69,12 @@ export class BabylonTransforms {
      * @shortname center z
      * @drawable false
      */
-    rotationCenterZ(inputs: Inputs.Transforms.RotationCenterDto): number[][] {
+    rotationCenterZ(inputs: Inputs.Transforms.RotationCenterDto): Base.TransformMatrixes {
         return [
             [...Matrix.Translation(-inputs.center[0], -inputs.center[1], -inputs.center[2]).toArray()],
             [...Matrix.RotationZ(Angle.FromDegrees(inputs.angle).radians()).toArray()],
             [...Matrix.Translation(inputs.center[0], inputs.center[1], inputs.center[2]).toArray()],
-        ];
+        ] as Base.TransformMatrixes;
     }
 
     /**
@@ -84,7 +85,7 @@ export class BabylonTransforms {
      * @shortname yaw pitch roll
      * @drawable false
      */
-    rotationCenterYawPitchRoll(inputs: Inputs.Transforms.RotationCenterYawPitchRollDto): number[][] {
+    rotationCenterYawPitchRoll(inputs: Inputs.Transforms.RotationCenterYawPitchRollDto): Base.TransformMatrixes {
         return [
             [...Matrix.Translation(-inputs.center[0], -inputs.center[1], -inputs.center[2]).toArray()],
             [...Matrix.RotationYawPitchRoll(
@@ -92,7 +93,7 @@ export class BabylonTransforms {
                 Angle.FromDegrees(inputs.pitch).radians(),
                 Angle.FromDegrees(inputs.roll).radians()).toArray()],
             [...Matrix.Translation(inputs.center[0], inputs.center[1], inputs.center[2]).toArray()],
-        ];
+        ] as Base.TransformMatrixes;
     }
 
     /**
@@ -103,12 +104,12 @@ export class BabylonTransforms {
      * @shortname center xyz
      * @drawable false
      */
-    scaleCenterXYZ(inputs: Inputs.Transforms.ScaleCenterXYZDto): number[][] {
+    scaleCenterXYZ(inputs: Inputs.Transforms.ScaleCenterXYZDto): Base.TransformMatrixes {
         return [
             [...Matrix.Translation(-inputs.center[0], -inputs.center[1], -inputs.center[2]).toArray()],
             [...Matrix.Scaling(inputs.scaleXyz[0], inputs.scaleXyz[1], inputs.scaleXyz[2]).toArray()],
             [...Matrix.Translation(inputs.center[0], inputs.center[1], inputs.center[2]).toArray()],
-        ];
+        ] as Base.TransformMatrixes;
     }
 
     /**
@@ -119,8 +120,8 @@ export class BabylonTransforms {
      * @shortname xyz
      * @drawable false
      */
-    scaleXYZ(inputs: Inputs.Transforms.ScaleXYZDto): number[][] {
-        return [[...Matrix.Scaling(inputs.scaleXyz[0], inputs.scaleXyz[1], inputs.scaleXyz[2]).toArray()]];
+    scaleXYZ(inputs: Inputs.Transforms.ScaleXYZDto): Base.TransformMatrixes {
+        return [[...Matrix.Scaling(inputs.scaleXyz[0], inputs.scaleXyz[1], inputs.scaleXyz[2]).toArray()]] as Base.TransformMatrixes;
     }
 
     /**
@@ -131,8 +132,8 @@ export class BabylonTransforms {
      * @shortname uniform
      * @drawable false
      */
-    uniformScale(inputs: Inputs.Transforms.UniformScaleDto): number[][] {
-        return [[...Matrix.Scaling(inputs.scale, inputs.scale, inputs.scale).toArray()]];
+    uniformScale(inputs: Inputs.Transforms.UniformScaleDto): Base.TransformMatrixes {
+        return [[...Matrix.Scaling(inputs.scale, inputs.scale, inputs.scale).toArray()]] as Base.TransformMatrixes;
     }
 
     /**
@@ -143,12 +144,12 @@ export class BabylonTransforms {
      * @shortname uniform from center
      * @drawable false
      */
-    uniformScaleFromCenter(inputs: Inputs.Transforms.UniformScaleFromCenterDto): number[][] {
+    uniformScaleFromCenter(inputs: Inputs.Transforms.UniformScaleFromCenterDto): Base.TransformMatrixes {
         return [
             [...Matrix.Translation(-inputs.center[0], -inputs.center[1], -inputs.center[2]).toArray()],
             [...Matrix.Scaling(inputs.scale, inputs.scale, inputs.scale).toArray()],
             [...Matrix.Translation(inputs.center[0], inputs.center[1], inputs.center[2]).toArray()],
-        ];
+        ] as Base.TransformMatrixes;
     }
 
     /**
@@ -159,8 +160,8 @@ export class BabylonTransforms {
      * @shortname xyz
      * @drawable false
      */
-    translationXYZ(inputs: Inputs.Transforms.TranslationXYZDto): number[][] {
-        return [[...Matrix.Translation(inputs.translation[0], inputs.translation[1], inputs.translation[2]).toArray()]];
+    translationXYZ(inputs: Inputs.Transforms.TranslationXYZDto): Base.TransformMatrixes {
+        return [[...Matrix.Translation(inputs.translation[0], inputs.translation[1], inputs.translation[2]).toArray()]] as Base.TransformMatrixes;
     }
 
     /**
@@ -171,8 +172,8 @@ export class BabylonTransforms {
      * @shortname xyz
      * @drawable false
     */
-    translationsXYZ(inputs: Inputs.Transforms.TranslationsXYZDto): number[][][] {
-        return inputs.translations.map(translation => [[...Matrix.Translation(translation[0], translation[1], translation[2]).toArray()]]);
+    translationsXYZ(inputs: Inputs.Transforms.TranslationsXYZDto): Base.TransformMatrixes[] {
+        return inputs.translations.map(translation => [[...Matrix.Translation(translation[0], translation[1], translation[2]).toArray()]]) as Base.TransformMatrixes[];
     }
 
 }
