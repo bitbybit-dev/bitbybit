@@ -638,6 +638,11 @@ export const inputDeclarations = `declare namespace Asset {
     }
 }declare namespace Base {
     type Color = string;
+    type ColorRGB = {
+        r: number;
+        g: number;
+        b: number;
+    };
     type Point2 = [number, number];
     type Vector2 = [number, number];
     type Point3 = [number, number, number];
@@ -717,7 +722,7 @@ export const inputDeclarations = `declare namespace Asset {
          * Red value component
          * @default undefined
          */
-        rgb: RGBDto;
+        rgb: Base.ColorRGB;
     }
 }declare namespace Draw {
     class DrawAny {
@@ -1177,7 +1182,7 @@ export const inputDeclarations = `declare namespace Asset {
          * Can contain various Jscad entities from Solid category
          * @default undefined
          */
-        geometry: JSCADEntity[];
+        geometry: JSCADEntity;
         /**
          * Delta (+/-) of expansion
          * @default 0.1
@@ -1205,7 +1210,7 @@ export const inputDeclarations = `declare namespace Asset {
          * Can contain various Jscad entities from Solid category
          * @default undefined
          */
-        geometry: JSCADEntity[];
+        geometry: JSCADEntity;
         /**
          * Delta (+/-) of offset
          * @default 0.1
@@ -1233,7 +1238,7 @@ export const inputDeclarations = `declare namespace Asset {
          * Geometry to extrude
          * @default undefined
          */
-        geometry: JSCADEntity | JSCADEntity[];
+        geometry: JSCADEntity;
         /**
          * Height of linear extrude
          * @default 1
@@ -1271,7 +1276,7 @@ export const inputDeclarations = `declare namespace Asset {
          * Geometry to extrude
          * @default undefined
          */
-        geometry: JSCADEntity | JSCADEntity[];
+        geometry: JSCADEntity;
         /**
          * Height of linear extrude
          * @default 1
