@@ -53,6 +53,21 @@ export namespace Lists {
          */
         list: any[];
     }  
+    export class GroupListDto {
+        /**
+         * The list of elements to group together
+         * @default undefined
+         */
+        list: any[];
+        /**
+         * The number of elements in each group
+         * @default 2
+         * @minimum 1
+         * @maximum Infinity
+         * @step 1
+         */
+        nrElements: number = 2;
+    }  
     export class MultiplyItemDto {
         /**
          * The item to multiply

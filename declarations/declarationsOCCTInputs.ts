@@ -1,5 +1,10 @@
 export const inputOCCTDeclarations = `declare namespace Base {
     type Color = string;
+    type ColorRGB = {
+        r: number;
+        g: number;
+        b: number;
+    };
     type Material = any;
     type Point2 = [number, number];
     type Vector2 = [number, number];
@@ -1094,11 +1099,13 @@ export const inputOCCTDeclarations = `declare namespace Base {
         /**
          * Optional if loft should start with a vertex
          * @default undefined
+         * @optional true
          */
         startVertex?: Base.Point3;
         /**
          * Optional if loft should end with a vertex
          * @default undefined
+         * @optional true
          */
         endVertex?: Base.Point3;
     }

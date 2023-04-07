@@ -85,6 +85,28 @@ export class Lists {
     }
 
     /**
+     * Group in lists of n elements
+     * @param inputs a list
+     * @returns items grouped in lists of n elements
+     * @group edit
+     * @shortname group elements
+     * @drawable false
+     */
+    groupNth(inputs: Inputs.Lists.GroupListDto): any {
+        const nrElementsInGroup = inputs.nrElements;
+        const result = [];
+        let currentGroup = [];
+        inputs.list.forEach((item, index) => {
+            currentGroup.push(item);
+            if ((index + 1) % nrElementsInGroup === 0) {
+                result.push(currentGroup);
+                currentGroup = [];
+            }
+        });
+        return result;
+    }
+
+    /**
      * Gets the length of the list
      * @param inputs a length list
      * @returns a number

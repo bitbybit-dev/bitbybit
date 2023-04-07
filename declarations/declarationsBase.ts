@@ -2090,6 +2090,15 @@ declare class Lists {
      */
     flipLists(inputs: Inputs.Lists.ListDto): any;
     /**
+     * Group in lists of n elements
+     * @param inputs a list
+     * @returns items grouped in lists of n elements
+     * @group edit
+     * @shortname group elements
+     * @drawable false
+     */
+    groupNth(inputs: Inputs.Lists.GroupListDto): any;
+    /**
      * Gets the length of the list
      * @param inputs a length list
      * @returns a number

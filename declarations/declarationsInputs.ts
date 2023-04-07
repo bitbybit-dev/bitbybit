@@ -2759,6 +2759,21 @@ export const inputDeclarations = `declare namespace Asset {
          */
         list: any[];
     }
+    class GroupListDto {
+        /**
+         * The list of elements to group together
+         * @default undefined
+         */
+        list: any[];
+        /**
+         * The number of elements in each group
+         * @default 2
+         * @minimum 1
+         * @maximum Infinity
+         * @step 1
+         */
+        nrElements: number;
+    }
     class MultiplyItemDto {
         /**
          * The item to multiply
