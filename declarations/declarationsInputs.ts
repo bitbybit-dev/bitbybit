@@ -190,6 +190,14 @@ export const inputDeclarations = `declare namespace Asset {
          * @default false
          */
         backFaceCulling: boolean;
+        /**
+         * Defines the z offset of the material
+         * @default 0
+         * @minimum -Infinity
+         * @maximum Infinity
+         * @step 0.1
+         */
+        zOffset: number;
     }
     class BaseColorDto {
         /**

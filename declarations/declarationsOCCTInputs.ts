@@ -374,96 +374,96 @@ export const inputOCCTDeclarations = `declare namespace Base {
         nrDivisionsV: number;
         /**
          * Shift half step every nth U row
-         * @default 1
-         * @minimum 1
+         * @default 0
+         * @minimum 0
          * @maximum Infinity
          * @step 1
          */
         shiftHalfStepNthU: number;
         /**
          * Offset for shift half step every nth U row
-         * @default 1
-         * @minimum 1
+         * @default 0
+         * @minimum 0
          * @maximum Infinity
          * @step 1
          */
         shiftHalfStepUOffsetN: number;
         /**
          * Removes start edge points on U
-         * @default 1
-         * @minimum 1
+         * @default 0
+         * @minimum 0
          * @maximum Infinity
          * @step 1
          */
         removeStartEdgeNthU: number;
         /**
          * Offset for remove start edge points on U
-         * @default 1
-         * @minimum 1
+         * @default 0
+         * @minimum 0
          * @maximum Infinity
          * @step 1
          */
         removeStartEdgeUOffsetN: number;
         /**
          * Removes end edge points on U
-         * @default 1
-         * @minimum 1
+         * @default 0
+         * @minimum 0
          * @maximum Infinity
          * @step 1
          */
         removeEndEdgeNthU: number;
         /**
          * Offset for remove end edge points on U
-         * @default 1
-         * @minimum 1
+         * @default 0
+         * @minimum 0
          * @maximum Infinity
          * @step 1
          */
         removeEndEdgeUOffsetN: number;
         /**
          * Shift half step every nth V row
-         * @default 1
-         * @minimum 1
+         * @default 0
+         * @minimum 0
          * @maximum Infinity
          * @step 1
          */
         shiftHalfStepNthV: number;
         /**
          * Offset for shift half step every nth V row
-         * @default 1
-         * @minimum 1
+         * @default 0
+         * @minimum 0
          * @maximum Infinity
          * @step 1
          */
         shiftHalfStepVOffsetN: number;
         /**
          * Removes start edge points on V
-         * @default 1
-         * @minimum 1
+         * @default 0
+         * @minimum 0
          * @maximum Infinity
          * @step 1
          */
         removeStartEdgeNthV: number;
         /**
          * Offset for remove start edge points on V
-         * @default 1
-         * @minimum 1
+         * @default 0
+         * @minimum 0
          * @maximum Infinity
          * @step 1
          */
         removeStartEdgeVOffsetN: number;
         /**
          * Removes end edge points on V
-         * @default 1
-         * @minimum 1
+         * @default 0
+         * @minimum 0
          * @maximum Infinity
          * @step 1
          */
         removeEndEdgeNthV: number;
         /**
          * Offset for remove end edge points on V
-         * @default 1
-         * @minimum 1
+         * @default 0
+         * @minimum 0
          * @maximum Infinity
          * @step 1
          */
@@ -560,6 +560,14 @@ export const inputOCCTDeclarations = `declare namespace Base {
         paramsUV: [number, number][];
     }
     class PolygonDto {
+        constructor(points?: Base.Point3[]);
+        /**
+         * Points points
+         * @default undefined
+         */
+        points: Base.Point3[];
+    }
+    class PolylineDto {
         constructor(points?: Base.Point3[]);
         /**
          * Points points

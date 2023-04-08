@@ -930,6 +930,15 @@ declare class OCCT {
      */
     createPolygonWire(inputs: Inputs.OCCT.PolygonDto): Promise<Inputs.OCCT.TopoDSWirePointer>;
     /**
+     * Creates OpenCascade polyline wire
+     * @param inputs polyline points
+     * @returns OpenCascade polyline wire shape
+     * @group via points
+     * @shortname polyline
+     * @drawable true
+     */
+    createPolylineWire(inputs: Inputs.OCCT.PolylineDto): Promise<Inputs.OCCT.TopoDSWirePointer>;
+    /**
     * Creates OpenCascade Bezier wire
     * @param inputs Points through which to make bezier curve
     * @returns OpenCascade Bezier wire

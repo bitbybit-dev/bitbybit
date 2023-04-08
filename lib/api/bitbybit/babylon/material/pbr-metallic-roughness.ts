@@ -27,6 +27,7 @@ export class BabylonMaterialPbrMetallicRoughness {
         mat.roughness = inputs.roughness;
         mat.alpha = inputs.alpha;
         mat.backFaceCulling = inputs.backFaceCulling;
+        mat.zOffset = inputs.zOffset;
         mat.alphaMode = 1;
         return mat;
     }

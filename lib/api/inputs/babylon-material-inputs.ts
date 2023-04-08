@@ -43,6 +43,14 @@ export namespace BabylonMaterial {
          * @default false
          */
         backFaceCulling = false;
+        /**
+         * Defines the z offset of the material
+         * @default 0
+         * @minimum -Infinity
+         * @maximum Infinity
+         * @step 0.1
+         */
+        zOffset = 0;
     }
 
     export class BaseColorDto {

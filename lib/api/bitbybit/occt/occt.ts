@@ -52,7 +52,6 @@ export class OCCTW extends OCCT {
 
             if (options.faceMaterial) {
                 pbr = options.faceMaterial;
-                pbr.zOffset = inputs.drawEdges ? 2 : 0;
             } else {
                 pbr = new PBRMetallicRoughnessMaterial('pbr' + Math.random(), this.context.scene);
 
