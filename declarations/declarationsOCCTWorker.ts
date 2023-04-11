@@ -229,6 +229,33 @@ declare class OCCT {
      */
     loftAdvanced(inputs: Inputs.OCCT.LoftAdvancedDto<Inputs.OCCT.TopoDSWirePointer>): Promise<Inputs.OCCT.TopoDSShapePointer>;
     /**
+     * Computes two closest points between two shapes
+     * @param inputs two shapes
+     * @returns Resulting points
+     * @group closest pts
+     * @shortname two shapes
+     * @drawable true
+     */
+    closestPointsBetweenTwoShapes(inputs: Inputs.OCCT.ClosestPointsBetweenTwoShapesDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.Base.Point3[]>;
+    /**
+     * Computes closest points between a list of points and a given shape
+     * @param inputs a list of points and a shape
+     * @returns Resulting points
+     * @group closest pts
+     * @shortname on shape
+     * @drawable true
+     */
+    closestPointsOnShapeFromPoints(inputs: Inputs.OCCT.ClosestPointsOnShapeFromPointsDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.Base.Point3[]>;
+    /**
+     * Computes closest points between a list of points and shapes
+     * @param inputs a list of points and a list of shapes
+     * @returns Resulting points
+     * @group closest pts
+     * @shortname on shapes
+     * @drawable true
+     */
+    closestPointsOnShapesFromPoints(inputs: Inputs.OCCT.ClosestPointsOnShapesFromPointsDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.Base.Point3[]>;
+    /**
      * Extrudes the face along direction
      * @param inputs Shape to extrude and direction parameter with tolerance
      * @returns Resulting extruded shape

@@ -143,6 +143,42 @@ export const inputOCCTDeclarations = `declare namespace Base {
          */
         solution?: number;
     }
+    class ClosestPointsOnShapeFromPointsDto<T> {
+        /**
+         * The OCCT shape
+         * @default undefined
+         */
+        shape: T;
+        /**
+         * The list of points
+         * @default undefined
+         */
+        points: Base.Point3[];
+    }
+    class ClosestPointsOnShapesFromPointsDto<T> {
+        /**
+         * The OCCT shapes
+         * @default undefined
+         */
+        shapes: T[];
+        /**
+         * The list of points
+         * @default undefined
+         */
+        points: Base.Point3[];
+    }
+    class ClosestPointsBetweenTwoShapesDto<T> extends ShapesDto<T> {
+        /**
+         * The OCCT shapes
+         * @default undefined
+         */
+        shape1?: T;
+        /**
+        * The OCCT shapes
+        * @default undefined
+        */
+        shape2?: T;
+    }
     class FaceFromSurfaceAndWireDto<T, U> extends ShapesDto<T> {
         /**
          * Surface from which to create a face
@@ -1140,6 +1176,36 @@ export const inputOCCTDeclarations = `declare namespace Base {
          * @step 0.01
          */
         tolerance: number;
+    }
+    class OffsetAdvancedDto<T> {
+        constructor(shape?: T, distance?: number, tolerance?: number);
+        /**
+         * Shape to offset
+         * @default undefined
+         */
+        shape: T;
+        /**
+         * Distance of offset
+         * @default 0.2
+         * @minimum -Infinity
+         * @maximum Infinity
+         * @step 0.1
+         */
+        distance: number;
+        /**
+         * Offset tolerance
+         * @default 0.1
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.01
+         */
+        tolerance: number;
+        /**
+         * Join defines how to fill the holes that may appear between parallels to the two adjacent faces. It may take values GeomAbs_Arc or GeomAbs_Intersection:
+         * if Join is equal to GeomAbs_Arc, then pipes are generated between two free edges of two adjacent parallels, and spheres are generated on "images" of vertices; it is the default value
+         * @default arc
+        */
+        joinType: JoinTypeEnum;
     }
     class RevolveDto<T> {
         constructor(shape?: T, degrees?: number, direction?: Base.Vector3, copy?: boolean);
