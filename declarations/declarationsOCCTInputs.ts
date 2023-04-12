@@ -74,6 +74,11 @@ export const inputOCCTDeclarations = `declare namespace Base {
         intersection = "intersection",
         tangent = "tangent"
     }
+    enum BRepOffsetModeEnum {
+        skin = "skin",
+        pipe = "pipe",
+        rectoVerso = "rectoVerso"
+    }
     enum ApproxParametrizationTypeEnum {
         approxChordLength = "approxChordLength",
         approxCentripetal = "approxCentripetal",
@@ -885,6 +890,40 @@ export const inputOCCTDeclarations = `declare namespace Base {
          */
         indexes?: number[];
     }
+    class Fillet3DWireDto<T> {
+        constructor(shape?: T);
+        /**
+         * Shape to apply the fillets
+         * @default undefined
+         */
+        shape: T;
+        /**
+         * Radius of the fillets
+         * @default 0.1
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.1
+         * @optional true
+         */
+        radius?: number;
+        /**
+         * Radius list
+         * @default undefined
+         * @optional true
+         */
+        radiusList?: number[];
+        /**
+         * List of edge indexes to which apply the fillet, if left empty all edges will be rounded
+         * @default undefined
+         * @optional true
+         */
+        indexes?: number[];
+        /**
+         * Orientation direction for the fillet
+         * @default [0, 1, 0]
+         */
+        direction: Base.Vector3;
+    }
     class ChamferDto<T> {
         constructor(shape?: T, distance?: number, indexes?: number[], all?: boolean);
         /**
@@ -1206,6 +1245,11 @@ export const inputOCCTDeclarations = `declare namespace Base {
          * @default arc
         */
         joinType: JoinTypeEnum;
+        /**
+         * Removes internal edges
+         * @default false
+         */
+        removeIntEdges: boolean;
     }
     class RevolveDto<T> {
         constructor(shape?: T, degrees?: number, direction?: Base.Vector3, copy?: boolean);
@@ -1245,6 +1289,62 @@ export const inputOCCTDeclarations = `declare namespace Base {
          * @default undefined
          */
         shapes: U[];
+    }
+    class PipeWiresCylindricalDto<T> {
+        constructor(shapes?: T[]);
+        /**
+         * Wire paths to pipe
+         * @default undefined
+         */
+        shapes: T[];
+        /**
+         * Radius of the cylindrical pipe
+         * @default 0.1
+         * @minimum 0
+         * @maximum Infinity
+         * @step 1
+         */
+        radius: number;
+    }
+    class PipeWireCylindricalDto<T> {
+        constructor(shapes?: T);
+        /**
+         * Wire path to pipe
+         * @default undefined
+         */
+        shape: T;
+        /**
+         * Radius of the cylindrical pipe
+         * @default 0.1
+         * @minimum 0
+         * @maximum Infinity
+         * @step 1
+         */
+        radius: number;
+    }
+    class PipePolygonWireNGonDto<T> {
+        constructor(shapes?: T);
+        /**
+         * Wire path to pipe
+         * @default undefined
+         */
+        shape: T;
+        /**
+         * Radius of the cylindrical pipe
+         * @default 0.1
+         * @minimum 0
+         * @maximum Infinity
+         * @step 1
+         */
+        radius: number;
+        /**
+         * Nr of ngon corners to be used
+         * @default 6
+         * @minimum 3
+         * @maximum Infinity
+         * @step 1
+         */
+        nrCorners: number;
     }
     class ExtrudeDto<T> {
         constructor(shape?: T, direction?: Base.Vector3);

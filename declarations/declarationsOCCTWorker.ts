@@ -55,6 +55,15 @@ export const occtWorkerDeclarations = `declare class BitByBitOCCT {
     */
     filletEdges(inputs: Inputs.OCCT.FilletDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.OCCT.TopoDSShapePointer>;
     /**
+    * Fillets OpenCascade 3d wire, this algorithm takes one guiding direction for fillets to be formed. It does not respect tangent directions on each filleted corner.
+    * @param inputs Shape, radius and edge indexes to fillet
+    * @returns OpenCascade shape with filleted edges
+    * @group 3d
+    * @shortname fillet wire
+    * @drawable true
+    */
+    fillet3DWire(inputs: Inputs.OCCT.Fillet3DWireDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.OCCT.TopoDSShapePointer>;
+    /**
      * Chamfer OpenCascade Shape edges
      * @param inputs Shape, distance and edge indexes to chamfer
      * @returns OpenCascade shape with chamfered edges
@@ -310,6 +319,33 @@ declare class OCCT {
      */
     pipe(inputs: Inputs.OCCT.ShapeShapesDto<Inputs.OCCT.TopoDSWirePointer, Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.OCCT.TopoDSShapePointer>;
     /**
+     * Pipes polyline wire with ngon profile. It's not guaranteed that straight section of the result will be exact ngon. This algorithm is based on lofting the section ngons created on average tangents of the polyline wire edges, thus it should be used in special cases where polyline corners are not too sharp.
+     * @param inputs Path polyline wire
+     * @returns OpenCascade piped shapes
+     * @group pipeing
+     * @shortname pipe polyline ngon
+     * @drawable true
+     */
+    pipePolylineWireNGon(inputs: Inputs.OCCT.PipePolygonWireNGonDto<Inputs.OCCT.TopoDSWirePointer>): Promise<Inputs.OCCT.TopoDSShapePointer>;
+    /**
+     * Pipe wires with cylindrical shape
+     * @param inputs Path wires and radius
+     * @returns OpenCascade piped shapes
+     * @group pipeing
+     * @shortname pipe wires cylindrical
+     * @drawable true
+     */
+    pipeWiresCylindrical(inputs: Inputs.OCCT.PipeWiresCylindricalDto<Inputs.OCCT.TopoDSWirePointer>): Promise<Inputs.OCCT.TopoDSShapePointer[]>;
+    /**
+     * Pipe wire with cylindrical shape
+     * @param inputs Path wire and radius
+     * @returns OpenCascade piped shapes
+     * @group pipeing
+     * @shortname pipe wire cylindrical
+     * @drawable true
+     */
+    pipeWireCylindrical(inputs: Inputs.OCCT.PipeWireCylindricalDto<Inputs.OCCT.TopoDSWirePointer>): Promise<Inputs.OCCT.TopoDSShapePointer>;
+    /**
      * Offset for various shapes
      * @param inputs Shape to offset and distance with tolerance
      * @returns Resulting offset shape
@@ -318,6 +354,15 @@ declare class OCCT {
      * @drawable true
      */
     offset(inputs: Inputs.OCCT.OffsetDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.OCCT.TopoDSShapePointer>;
+    /**
+     * Offset advanced that give more options for offset, such as joinType for edges and corners
+     * @param inputs Shape to offset and advanced parameters
+     * @returns Resulting offset shape
+     * @group offsets
+     * @shortname offset adv.
+     * @drawable true
+     */
+    offsetAdv(inputs: Inputs.OCCT.OffsetAdvancedDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.OCCT.TopoDSShapePointer>;
     /**
      * Thickens the shape into a solid by an offset distance
      * @param inputs OpenCascade shape
