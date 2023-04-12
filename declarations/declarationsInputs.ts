@@ -2781,6 +2781,11 @@ export const inputDeclarations = `declare namespace Asset {
          * @step 1
          */
         nrElements: number;
+        /**
+         * If true, the remainder of the list will be added as a separate group
+         * @default false
+         */
+        keepRemainder: boolean;
     }
     class MultiplyItemDto {
         /**
@@ -2831,6 +2836,21 @@ export const inputDeclarations = `declare namespace Asset {
          * @step 1
          */
         index: number;
+    }
+    class RemoveNthItemDto {
+        /**
+        * The list from which item needs to be removed
+        * @default undefined
+        */
+        list: any[];
+        /**
+         * The nth item to remove
+         * @default 2
+         * @minimum 1
+         * @maximum Infinity
+         * @step 1
+         */
+        nth: number;
     }
     class AddItemFirstLastDto {
         /**

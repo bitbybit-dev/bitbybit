@@ -102,6 +102,9 @@ export class Lists {
                 result.push(currentGroup);
                 currentGroup = [];
             }
+            if(inputs.keepRemainder && index === inputs.list.length - 1) {
+                result.push(currentGroup);
+            }
         });
         return result;
     }
@@ -128,9 +131,7 @@ export class Lists {
      */
     addItemAtIndex(inputs: Inputs.Lists.AddItemAtIndexDto): any {
         const cloned = structuredClone(inputs.list);
-        if (inputs.index < 0 || inputs.index > cloned.length) {
-            throw new Error('Index out of range');
-        } else {
+        if (inputs.index >= 0 && inputs.index <= cloned.length) {
             cloned.splice(inputs.index, 0, inputs.item);
         }
         return cloned;
@@ -146,12 +147,29 @@ export class Lists {
      */
     removeItemAtIndex(inputs: Inputs.Lists.RemoveItemAtIndexDto): any {
         const cloned = structuredClone(inputs.list);
-        if (inputs.index < 0 || inputs.index >= cloned.length) {
-            throw new Error('Index out of range');
-        } else {
+        if (inputs.index >= 0 && inputs.index <= cloned.length) {
             cloned.splice(inputs.index, 1);
         }
         return cloned;
+    }
+
+    /**
+     * Remove item from the list
+     * @param inputs a list and index
+     * @returns list with removed item
+     * @group remove
+     * @shortname every n-th
+     * @drawable false
+     */
+    removeNthItem(inputs: Inputs.Lists.RemoveNthItemDto): any {
+        const cloned = structuredClone(inputs.list);
+        let result = [];
+        for (let i = 0; i < cloned.length; i++) {
+            if (i % inputs.nth !== 0) {
+                result.push(cloned[i]);
+            }
+        }
+        return result;
     }
 
     /**

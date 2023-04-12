@@ -2126,6 +2126,15 @@ declare class Lists {
      */
     removeItemAtIndex(inputs: Inputs.Lists.RemoveItemAtIndexDto): any;
     /**
+     * Remove item from the list
+     * @param inputs a list and index
+     * @returns list with removed item
+     * @group remove
+     * @shortname every n-th
+     * @drawable false
+     */
+    removeNthItem(inputs: Inputs.Lists.RemoveNthItemDto): any;
+    /**
      * Add item to the beginning or the end of the list
      * @param inputs a list, item and an option for first or last position
      * @returns list with added item

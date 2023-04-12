@@ -52,7 +52,7 @@ export namespace Lists {
          * @default undefined
          */
         list: any[];
-    }  
+    }
     export class GroupListDto {
         /**
          * The list of elements to group together
@@ -67,7 +67,12 @@ export namespace Lists {
          * @step 1
          */
         nrElements: number = 2;
-    }  
+        /**
+         * If true, the remainder of the list will be added as a separate group
+         * @default false
+         */
+        keepRemainder: boolean = false;
+    }
     export class MultiplyItemDto {
         /**
          * The item to multiply
@@ -105,21 +110,35 @@ export namespace Lists {
     }
 
     export class RemoveItemAtIndexDto {
-         /**
-         * The list from which item needs to be removed
-         * @default undefined
+        /**
+        * The list from which item needs to be removed
+        * @default undefined
+        */
+        list: any[];
+        /**
+         * The index to on which remove item
+         * @default 0
+         * @minimum 0
+         * @maximum Infinity
+         * @step 1
          */
-         list: any[];
-         /**
-          * The index to on which remove item
-          * @default 0
-          * @minimum 0
-          * @maximum Infinity
-          * @step 1
-          */
-         index: number = 0;
+        index: number = 0;
     }
-
+    export class RemoveNthItemDto {
+        /**
+        * The list from which item needs to be removed
+        * @default undefined
+        */
+        list: any[];
+        /**
+         * The nth item to remove
+         * @default 2
+         * @minimum 1
+         * @maximum Infinity
+         * @step 1
+         */
+        nth: number = 2;
+    }
     export class AddItemFirstLastDto {
         /**
          * The list to which item needs to be added
