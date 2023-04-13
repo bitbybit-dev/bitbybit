@@ -319,7 +319,7 @@ declare class OCCT {
      */
     pipe(inputs: Inputs.OCCT.ShapeShapesDto<Inputs.OCCT.TopoDSWirePointer, Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.OCCT.TopoDSShapePointer>;
     /**
-     * Pipes polyline wire with ngon profile. It's not guaranteed that straight section of the result will be exact ngon. This algorithm is based on lofting the section ngons created on average tangents of the polyline wire edges, thus it should be used in special cases where polyline corners are not too sharp.
+     * Pipes polyline wire with ngon profile.
      * @param inputs Path polyline wire
      * @returns OpenCascade piped shapes
      * @group pipeing
