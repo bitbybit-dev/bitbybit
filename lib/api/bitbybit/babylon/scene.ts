@@ -64,8 +64,8 @@ export class BabylonScene {
             shadowGenerator.darkness = inputs.shadowDarkness;
             shadowGenerator.usePercentageCloserFiltering = true;
             shadowGenerator.contactHardeningLightSizeUVRatio = 0.2;
-            shadowGenerator.bias = 0.001;
-            shadowGenerator.normalBias = 0.02;
+            shadowGenerator.bias = 0.0001;
+            shadowGenerator.normalBias = 0.002;
             light.shadowMaxZ = 1000;
             light.shadowMinZ = 1;
             this.context.scene.metadata.shadowGenerators.push(shadowGenerator);
@@ -119,8 +119,8 @@ export class BabylonScene {
             shadowGenerator.darkness = inputs.shadowDarkness;
             shadowGenerator.usePercentageCloserFiltering = true;
             shadowGenerator.contactHardeningLightSizeUVRatio = 0.2;
-            shadowGenerator.bias = 0.001;
-            shadowGenerator.normalBias = 0.02;
+            shadowGenerator.bias = 0.0001;
+            shadowGenerator.normalBias = 0.002;
             light.shadowMaxZ = 1000;
             light.shadowMinZ = 1;
             this.context.scene.metadata.shadowGenerators.push(shadowGenerator);
