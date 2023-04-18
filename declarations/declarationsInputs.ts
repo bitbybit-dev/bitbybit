@@ -832,12 +832,12 @@ export const inputDeclarations = `declare namespace Asset {
         backFaceCulling: boolean;
         /**
          * Main color of the grid (e.g. between lines)
-         * @default #000000
+         * @default #ffffff
          */
         mainColor: Base.Color;
         /**
          * Color of the grid lines.
-         * @default #555555
+         * @default #ffffff
          */
         secondaryColor: Base.Color;
     }
@@ -2942,7 +2942,9 @@ export const inputDeclarations = `declare namespace Asset {
         acos = "acos",
         atan = "atan",
         log = "log",
-        exp = "exp"
+        exp = "exp",
+        radToDeg = "radToDeg",
+        degToRad = "degToRad"
     }
     class NumberDto {
         /**
@@ -3033,6 +3035,50 @@ export const inputDeclarations = `declare namespace Asset {
          * @step 0.1
          */
         toHigh: number;
+    }
+    class RandomNumberDto {
+        /**
+         * Low range of random value
+         * @default 0
+         * @minimum -Infinity
+         * @maximum Infinity
+         * @step 0.1
+         */
+        low: number;
+        /**
+         * High range of random value
+         * @default 1
+         * @minimum -Infinity
+         * @maximum Infinity
+         * @step 0.1
+         */
+        high: number;
+    }
+    class RandomNumbersDto {
+        /**
+         * Low range of random value
+         * @default 0
+         * @minimum -Infinity
+         * @maximum Infinity
+         * @step 0.1
+         */
+        low: number;
+        /**
+         * High range of random value
+         * @default 1
+         * @minimum -Infinity
+         * @maximum Infinity
+         * @step 0.1
+         */
+        high: number;
+        /**
+         * Number of produced random values
+         * @default 10
+         * @minimum -Infinity
+         * @maximum Infinity
+         * @step 1
+         */
+        count: number;
     }
 }declare namespace BabylonNode {
     class NodeDto {
@@ -4095,15 +4141,15 @@ export const inputDeclarations = `declare namespace Asset {
     class SpanDto {
         /**
          * Step of the span
-         * @default 1
+         * @default 0.1
          * @minimum -Infinity
          * @maximum Infinity
-         * @step 1
+         * @step 0.1
          */
         step: number;
         /**
         * Min value of the span
-        * @default 1
+        * @default 0
         * @minimum -Infinity
         * @maximum Infinity
         * @step 1

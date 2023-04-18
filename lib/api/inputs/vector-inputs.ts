@@ -68,15 +68,15 @@ export namespace Vector {
     export class SpanDto {
         /**
          * Step of the span
-         * @default 1
+         * @default 0.1
          * @minimum -Infinity
          * @maximum Infinity
-         * @step 1
+         * @step 0.1
          */
-        step: number;
+        step: number = 0.1;
         /**
         * Min value of the span
-        * @default 1
+        * @default 0
         * @minimum -Infinity
         * @maximum Infinity
         * @step 1

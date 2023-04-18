@@ -118,6 +118,12 @@ export class MathBitByBit {
             case Inputs.Math.MathOneNrOperatorEnum.exp:
                 result = Math.exp(inputs.number);
                 break;
+            case Inputs.Math.MathOneNrOperatorEnum.degToRad:
+                result = inputs.number * Math.PI / 180;
+                break;
+            case Inputs.Math.MathOneNrOperatorEnum.radToDeg:
+                result = inputs.number * 180 / Math.PI;
+                break;
             default:
                 break;
         }
@@ -134,5 +140,44 @@ export class MathBitByBit {
     */
     remap(inputs: Inputs.Math.RemapNumberDto): number {
         return (inputs.number - inputs.fromLow) * (inputs.toHigh - inputs.toLow) / (inputs.fromHigh - inputs.fromLow) + inputs.toLow;
+    }
+
+    /**
+    * Creates a random number between low and high value
+    * @param inputs low and high numbers
+    * @returns A random number
+    * @group generate
+    * @shortname random number
+    * @drawable false
+    */
+    randomNumber(inputs: Inputs.Math.RandomNumberDto): number {
+        return Math.random() * (inputs.high - inputs.low) + inputs.low;
+    }
+
+    /**
+    * Creates random numbers between low and high values
+    * @param inputs low and high numbers
+    * @returns A list of random numbers
+    * @group generate
+    * @shortname random numbers
+    * @drawable false
+    */
+    randomNumbers(inputs: Inputs.Math.RandomNumbersDto): number[] {
+        const result = [];
+        for (let i = 0; i < inputs.count; i++) {
+            result.push(this.randomNumber(inputs));
+        }
+        return result;
+    }
+
+    /**
+    * Creates a PI number
+    * @returns A number PI
+    * @group generate
+    * @shortname π
+    * @drawable false
+    */
+    pi(): number {
+        return Math.PI;
     }
 }

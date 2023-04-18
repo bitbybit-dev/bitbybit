@@ -30,6 +30,8 @@ export namespace Math {
         atan = 'atan',
         log = 'log',
         exp = 'exp',
+        radToDeg = 'radToDeg',
+        degToRad = 'degToRad',
     }
 
     export class NumberDto {
@@ -121,5 +123,50 @@ export namespace Math {
          * @step 0.1
          */
         toHigh: number = 2;
+    }
+    export class RandomNumberDto {
+        /**
+         * Low range of random value
+         * @default 0
+         * @minimum -Infinity
+         * @maximum Infinity
+         * @step 0.1
+         */
+        low: number = 0;
+        /**
+         * High range of random value
+         * @default 1
+         * @minimum -Infinity
+         * @maximum Infinity
+         * @step 0.1
+         */
+        high: number = 1;
+    }
+
+    export class RandomNumbersDto {
+        /**
+         * Low range of random value
+         * @default 0
+         * @minimum -Infinity
+         * @maximum Infinity
+         * @step 0.1
+         */
+        low: number = 0;
+        /**
+         * High range of random value
+         * @default 1
+         * @minimum -Infinity
+         * @maximum Infinity
+         * @step 0.1
+         */
+        high: number = 1;
+        /**
+         * Number of produced random values
+         * @default 10
+         * @minimum -Infinity
+         * @maximum Infinity
+         * @step 1
+         */
+        count: number = 10;
     }
 }

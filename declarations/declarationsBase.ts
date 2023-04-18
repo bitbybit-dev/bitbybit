@@ -2233,6 +2233,32 @@ declare class MathBitByBit {
     * @drawable false
     */
     remap(inputs: Inputs.Math.RemapNumberDto): number;
+    /**
+    * Creates a random number between low and high value
+    * @param inputs low and high numbers
+    * @returns A random number
+    * @group generate
+    * @shortname random number
+    * @drawable false
+    */
+    randomNumber(inputs: Inputs.Math.RandomNumberDto): number;
+    /**
+    * Creates random numbers between low and high values
+    * @param inputs low and high numbers
+    * @returns A list of random numbers
+    * @group generate
+    * @shortname random numbers
+    * @drawable false
+    */
+    randomNumbers(inputs: Inputs.Math.RandomNumbersDto): number[];
+    /**
+    * Creates a PI number
+    * @returns A number PI
+    * @group generate
+    * @shortname π
+    * @drawable false
+    */
+    pi(): number;
 }{};declare class OCCTWIO extends OCCTIO {
     readonly occWorkerManager: OCCTWorkerManager;
     private readonly geometryHelper;

@@ -89,14 +89,14 @@ export namespace Draw {
         backFaceCulling = false;
         /**
          * Main color of the grid (e.g. between lines)
-         * @default #000000
+         * @default #ffffff
          */
-        mainColor: Base.Color = '#000000';
+        mainColor: Base.Color = '#ffffff';
         /**
          * Color of the grid lines.
-         * @default #555555
+         * @default #ffffff
          */
-        secondaryColor: Base.Color = '#555555';
+        secondaryColor: Base.Color = '#ffffff';
     }
    
     /**
