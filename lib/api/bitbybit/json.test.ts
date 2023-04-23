@@ -90,8 +90,6 @@ describe('JSON unit tests', () => {
         );
     });
 
-
-
     const getMockJSON = () => {
         return {
             "store": {

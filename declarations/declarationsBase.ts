@@ -2072,6 +2072,42 @@ declare class Lists {
        */
     getSubList(inputs: Inputs.Lists.SubListDto): any;
     /**
+     * Gets nth item in the list
+     * @param inputs a list and index
+     * @returns list with removed item
+     * @group get
+     * @shortname every n-th
+     * @drawable false
+     */
+    getNthItem(inputs: Inputs.Lists.GetNthItemDto): any;
+    /**
+     * Gets elements by pattern
+     * @param inputs a list and index
+     * @returns list with removed item
+     * @group get
+     * @shortname by pattern
+     * @drawable false
+     */
+    getByPattern(inputs: Inputs.Lists.GetByPatternDto): any;
+    /**
+     * Merge elements of lists on a given level and flatten output if needed
+     * @param inputs lists, level and flatten data
+     * @returns list with merged lists and flattened lists
+     * @group get
+     * @shortname merge levels
+     * @drawable false
+     */
+    mergeElementsOfLists(inputs: Inputs.Lists.MergeElementsOfLists): any;
+    /**
+     * Gets the longest list length from the list of lists
+     * @param inputs a list of lists
+     * @returns number of max length
+     * @group get
+     * @shortname longest list length
+     * @drawable false
+     */
+    getLongestListLength(inputs: Inputs.Lists.GetLongestListLength): number;
+    /**
      * Reverse the list
      * @param inputs a list and an index
      * @returns item
@@ -2099,6 +2135,15 @@ declare class Lists {
      */
     groupNth(inputs: Inputs.Lists.GroupListDto): any;
     /**
+     * Get the depth of the list
+     * @param inputs a list
+     * @returns number of depth
+     * @group get
+     * @shortname max list depth
+     * @drawable false
+     */
+    getListDepth(inputs: Inputs.Lists.ListDto): number;
+    /**
      * Gets the length of the list
      * @param inputs a length list
      * @returns a number
@@ -2116,6 +2161,24 @@ declare class Lists {
      * @drawable false
      */
     addItemAtIndex(inputs: Inputs.Lists.AddItemAtIndexDto): any;
+    /**
+     * Adds item to the list of provided indexes
+     * @param inputs a list, item and an indexes
+     * @returns list with added item
+     * @group add
+     * @shortname item at indexes
+     * @drawable false
+     */
+    addItemAtIndexes(inputs: Inputs.Lists.AddItemAtIndexesDto): any;
+    /**
+     * Adds items to the list of provided indexes matching 1:1, first item will go to first index provided, etc.
+     * @param inputs a list, items and an indexes
+     * @returns list with added items
+     * @group add
+     * @shortname items at indexes
+     * @drawable false
+     */
+    addItemsAtIndexes(inputs: Inputs.Lists.AddItemsAtIndexesDto): any;
     /**
      * Remove item from the list
      * @param inputs a list and index

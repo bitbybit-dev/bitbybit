@@ -37,6 +37,143 @@ export class Lists {
     }
 
     /**
+     * Gets nth item in the list
+     * @param inputs a list and index
+     * @returns list with removed item
+     * @group get
+     * @shortname every n-th
+     * @drawable false
+     */
+    getNthItem(inputs: Inputs.Lists.GetNthItemDto): any {
+        const cloned = structuredClone(inputs.list);
+        let result = [];
+        for (let i = 0; i < cloned.length; i++) {
+            if ((i + inputs.offset) % inputs.nth === 0) {
+                result.push(cloned[i]);
+            }
+        }
+        return result;
+    }
+    /**
+     * Gets elements by pattern
+     * @param inputs a list and index
+     * @returns list with removed item
+     * @group get
+     * @shortname by pattern
+     * @drawable false
+     */
+    getByPattern(inputs: Inputs.Lists.GetByPatternDto): any {
+        const { list, pattern } = inputs;
+        if(!pattern || pattern.length === 0) {
+            throw new Error('Pattern is empty or does not exist');
+        }
+        const patternLength = pattern.length;
+        const listLength = list.length;
+        const result = [];
+        if (patternLength >= listLength) {
+            list.forEach((item, index) => {
+                if (pattern[index] === true) {
+                    result.push(item);
+                }
+            });
+        }
+        else {
+            let repeatedPattern = [];
+            const repeatPatternTimes = Math.ceil(listLength / patternLength);
+            for (let i = 0; i < repeatPatternTimes; i++) {
+                repeatedPattern.push(...pattern);
+            }
+            list.forEach((item, index) => {
+                if (repeatedPattern[index] === true) {
+                    result.push(item);
+                }
+            });
+        }
+        return result;
+    }
+
+    /**
+     * Merge elements of lists on a given level and flatten output if needed
+     * @param inputs lists, level and flatten data
+     * @returns list with merged lists and flattened lists
+     * @group get
+     * @shortname merge levels
+     * @drawable false
+     */
+    mergeElementsOfLists(inputs: Inputs.Lists.MergeElementsOfLists): any {
+        let lists = inputs.lists;
+        let level = inputs.level;
+        let flattenLevels = inputs.flattenLevels;
+
+        const elToMerge = [];
+        const result = [];
+        lists.forEach(list => {
+            // flatten to certain level;
+            const elementsToMerge = list.flat(level);
+            elToMerge.push(elementsToMerge);
+        });
+
+        const lengthMerge = this.getLongestListLength({ lists: elToMerge });
+        for (let i = 0; i < lengthMerge; i++) {
+            const temp = [];
+            for (let j = 0; j < elToMerge.length; j++) {
+                const element = elToMerge[j][i];
+                if (element !== undefined) {
+                    temp.push(element);
+                }
+            }
+            if (temp.length > 0) {
+                result.push(temp);
+            }
+        }
+
+        let final = [];
+        if (level > 0 && inputs.flattenLevels >= 0) {
+            for (let i = 0; i < level; i++) {
+                if (i === level - 1 && i !== 0) {
+                    final[i - 1].push(result);
+                } else if (i === level - 1) {
+                    final.push(result);
+                } else {
+                    final.push([]);
+                }
+            }
+            for (let j = 0; j < flattenLevels; j++) {
+                final = final.flat();
+            }
+        } else {
+            final = result;
+            for (let j = 0; j < flattenLevels; j++) {
+                final = final.flat();
+            }
+        }
+        return final;
+    }
+
+    /**
+     * Gets the longest list length from the list of lists
+     * @param inputs a list of lists
+     * @returns number of max length
+     * @group get
+     * @shortname longest list length
+     * @drawable false
+     */
+    getLongestListLength(inputs: Inputs.Lists.GetLongestListLength): number {
+        let longestSoFar = 0;
+        if (inputs.lists) {
+
+            inputs.lists.forEach(l => {
+                if (l.length > longestSoFar) {
+                    longestSoFar = l.length;
+                }
+            });
+            return longestSoFar;
+        } else {
+            return undefined;
+        }
+    }
+
+    /**
      * Reverse the list
      * @param inputs a list and an index
      * @returns item
@@ -93,20 +230,55 @@ export class Lists {
      * @drawable false
      */
     groupNth(inputs: Inputs.Lists.GroupListDto): any {
-        const nrElementsInGroup = inputs.nrElements;
-        const result = [];
-        let currentGroup = [];
-        inputs.list.forEach((item, index) => {
-            currentGroup.push(item);
-            if ((index + 1) % nrElementsInGroup === 0) {
-                result.push(currentGroup);
-                currentGroup = [];
+        const groupElements = (inputs: Inputs.Lists.GroupListDto) => {
+            const { nrElements, list, keepRemainder } = inputs;
+            const nrElementsInGroup = nrElements;
+            const result = [];
+            let currentGroup = [];
+            list.forEach((item, index) => {
+                currentGroup.push(item);
+                if ((index + 1) % nrElementsInGroup === 0) {
+                    result.push(currentGroup);
+                    currentGroup = [];
+                }
+                if (keepRemainder && index === list.length - 1) {
+                    result.push(currentGroup);
+                }
+            });
+            return result;
+        }
+        // TODO make this work on any level
+        return groupElements(inputs);
+    }
+
+    /**
+     * Get the depth of the list
+     * @param inputs a list
+     * @returns number of depth
+     * @group get
+     * @shortname max list depth
+     * @drawable false
+     */
+    getListDepth(inputs: Inputs.Lists.ListDto): number {
+        let levels = 0;
+        let deeperLevelsExist = true;
+        let flatRes = inputs.list;
+        while (deeperLevelsExist) {
+            let foundArray = false;
+            for (let i = 0; i < flatRes.length; i++) {
+                if (Array.isArray(flatRes[i])) {
+                    foundArray = true;
+                }
             }
-            if(inputs.keepRemainder && index === inputs.list.length - 1) {
-                result.push(currentGroup);
+            flatRes = flatRes.flat();
+            if (foundArray) {
+                levels++;
+            } else {
+                levels++;
+                deeperLevelsExist = false;
             }
-        });
-        return result;
+        }
+        return levels;
     }
 
     /**
@@ -138,6 +310,58 @@ export class Lists {
     }
 
     /**
+     * Adds item to the list of provided indexes
+     * @param inputs a list, item and an indexes
+     * @returns list with added item
+     * @group add
+     * @shortname item at indexes
+     * @drawable false
+     */
+    addItemAtIndexes(inputs: Inputs.Lists.AddItemAtIndexesDto): any {
+        const cloned = structuredClone(inputs.list);
+        let cloneIndexes = [...inputs.indexes];
+        cloneIndexes = cloneIndexes.filter(index => index >= 0 && index <= cloned.length);
+        cloneIndexes.sort((a, b) => a - b);
+        cloneIndexes.forEach((index, i) => {
+            if (index >= 0 && index + i <= cloned.length) {
+                cloned.splice(index + i, 0, inputs.item);
+            }
+        }
+        );
+        return cloned;
+    }
+
+    /**
+     * Adds items to the list of provided indexes matching 1:1, first item will go to first index provided, etc.
+     * @param inputs a list, items and an indexes
+     * @returns list with added items
+     * @group add
+     * @shortname items at indexes
+     * @drawable false
+     */
+    addItemsAtIndexes(inputs: Inputs.Lists.AddItemsAtIndexesDto): any {
+        if (inputs.items.length !== inputs.indexes.length) {
+            throw new Error('Items and indexes must have the same length');
+        }
+        for (let i = 0; i < inputs.indexes.length; i++) {
+            if (i > 0) {
+                let prev = inputs.indexes[i - 1];
+                if (prev > inputs.indexes[i]) {
+                    throw new Error('Indexes must be in ascending order');
+                }
+            }
+        }
+        const cloned = structuredClone(inputs.list);
+        let cloneIndexes = [...inputs.indexes];
+        cloneIndexes.forEach((index, i) => {
+            if (index >= 0 && index + i <= cloned.length) {
+                cloned.splice(index + i, 0, inputs.items[i]);
+            }
+        });
+        return cloned;
+    }
+
+    /**
      * Remove item from the list
      * @param inputs a list and index
      * @returns list with removed item
@@ -165,7 +389,7 @@ export class Lists {
         const cloned = structuredClone(inputs.list);
         let result = [];
         for (let i = 0; i < cloned.length; i++) {
-            if (i % inputs.nth !== 0) {
+            if ((i + inputs.offset) % inputs.nth !== 0) {
                 result.push(cloned[i]);
             }
         }

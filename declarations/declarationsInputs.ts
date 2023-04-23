@@ -2822,6 +2822,40 @@ export const inputDeclarations = `declare namespace Asset {
          */
         index: number;
     }
+    class AddItemAtIndexesDto {
+        /**
+         * The list to which item needs to be added
+         * @default undefined
+         */
+        list: any[];
+        /**
+         * The item to add
+         * @default undefined
+         */
+        item: any;
+        /**
+         * The index to add the item at
+         * @default [0]
+         */
+        indexes: number[];
+    }
+    class AddItemsAtIndexesDto {
+        /**
+         * The list to which item needs to be added
+         * @default undefined
+         */
+        list: any[];
+        /**
+         * The item to add
+         * @default undefined
+         */
+        items: any[];
+        /**
+         * The index to add the item at
+         * @default [0]
+         */
+        indexes: number[];
+    }
     class RemoveItemAtIndexDto {
         /**
         * The list from which item needs to be removed
@@ -2851,6 +2885,79 @@ export const inputDeclarations = `declare namespace Asset {
          * @step 1
          */
         nth: number;
+        /**
+         * The offset from which to start counting
+         * @default 0
+         * @minimum 0
+         * @maximum Infinity
+         * @step 1
+         */
+        offset: number;
+    }
+    class GetByPatternDto {
+        /**
+        * The list from which we need to get an item
+        * @default undefined
+        */
+        list: any[];
+        /**
+         * The list of booleans to be used as a pattern (true means get, false means skip)
+         * @default [true, true, false]
+         */
+        pattern: boolean[];
+    }
+    class GetNthItemDto {
+        /**
+        * The list from which we need to get an item
+        * @default undefined
+        */
+        list: any[];
+        /**
+         * The nth item to get
+         * @default 2
+         * @minimum 1
+         * @maximum Infinity
+         * @step 1
+         */
+        nth: number;
+        /**
+         * The offset from which to start counting
+         * @default 0
+         * @minimum 0
+         * @maximum Infinity
+         * @step 1
+         */
+        offset: number;
+    }
+    class GetLongestListLength {
+        /**
+         * The list from which we need to get an item
+         * @default undefined
+         */
+        lists: any[];
+    }
+    class MergeElementsOfLists {
+        /**
+        * The list from which we need to get an item
+        * @default undefined
+        */
+        lists: any[];
+        /**
+         * The level on which to merge the elements. 0 means first level
+         * @default 0
+         * @minimum 0
+         * @maximum Infinity
+         * @step 1
+         */
+        level: number;
+        /**
+         * The number of levels to flatten. 0 means do not flatten, -1 means flatten totally
+         * @default 0
+         * @minimum 0
+         * @maximum Infinity
+         * @step 1
+         */
+        flattenLevels: number;
     }
     class AddItemFirstLastDto {
         /**
