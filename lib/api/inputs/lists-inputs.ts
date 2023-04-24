@@ -237,14 +237,6 @@ export namespace Lists {
          * @step 1
          */
         level: number = 0;
-        /**
-         * The number of levels to flatten. 0 means do not flatten, -1 means flatten totally
-         * @default 0
-         * @minimum 0
-         * @maximum Infinity
-         * @step 1
-         */
-        flattenLevels: number = 0;
     }
     export class AddItemFirstLastDto {
         /**

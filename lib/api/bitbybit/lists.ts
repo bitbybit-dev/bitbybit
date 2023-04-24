@@ -64,7 +64,7 @@ export class Lists {
      */
     getByPattern(inputs: Inputs.Lists.GetByPatternDto): any {
         const { list, pattern } = inputs;
-        if(!pattern || pattern.length === 0) {
+        if (!pattern || pattern.length === 0) {
             throw new Error('Pattern is empty or does not exist');
         }
         const patternLength = pattern.length;
@@ -103,7 +103,6 @@ export class Lists {
     mergeElementsOfLists(inputs: Inputs.Lists.MergeElementsOfLists): any {
         let lists = inputs.lists;
         let level = inputs.level;
-        let flattenLevels = inputs.flattenLevels;
 
         const elToMerge = [];
         const result = [];
@@ -128,7 +127,7 @@ export class Lists {
         }
 
         let final = [];
-        if (level > 0 && inputs.flattenLevels >= 0) {
+        if (level > 0) {
             for (let i = 0; i < level; i++) {
                 if (i === level - 1 && i !== 0) {
                     final[i - 1].push(result);
@@ -138,14 +137,8 @@ export class Lists {
                     final.push([]);
                 }
             }
-            for (let j = 0; j < flattenLevels; j++) {
-                final = final.flat();
-            }
         } else {
             final = result;
-            for (let j = 0; j < flattenLevels; j++) {
-                final = final.flat();
-            }
         }
         return final;
     }

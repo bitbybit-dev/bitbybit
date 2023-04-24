@@ -270,42 +270,37 @@ describe('Lists unit tests', () => {
     });
 
     it('should merge elements of lists', async () => {
-        const result = lists.mergeElementsOfLists({ lists: [[0, 1, 2], [3, 4, 5]], level: 0, flattenLevels: 0 });
+        const result = lists.mergeElementsOfLists({ lists: [[0, 1, 2], [3, 4, 5]], level: 0});
         expect(result).toEqual([[0, 3], [1, 4], [2, 5]]);
     });
 
     it('should merge elements of lists if level does not exist - highest level will be used and additional levels will be created in result', async () => {
-        const result = lists.mergeElementsOfLists({ lists: [[0, 1, 2], [3, 4, 5]], level: 2, flattenLevels: 0 });
+        const result = lists.mergeElementsOfLists({ lists: [[0, 1, 2], [3, 4, 5]], level: 2 });
         expect(result).toEqual([[[[0, 3], [1, 4], [2, 5]]]]);
     });
 
     it('should merge elements of lists to a new structure even if pair is not available in second branch', async () => {
-        const result = lists.mergeElementsOfLists({ lists: [[0, 1, 2], [3, 4]], level: 0, flattenLevels: 0 });
+        const result = lists.mergeElementsOfLists({ lists: [[0, 1, 2], [3, 4]], level: 0 });
         expect(result).toEqual([[0, 3], [1, 4], [2]]);
     });
 
     it('should merge elements of lists to a new structure even if pair is not available in first branch', async () => {
-        const result = lists.mergeElementsOfLists({ lists: [[0, 2], [3, 4, 5]], level: 0, flattenLevels: 0 });
+        const result = lists.mergeElementsOfLists({ lists: [[0, 2], [3, 4, 5]], level: 0});
         expect(result).toEqual([[0, 3], [2, 4], [5]]);
     });
 
     it('should merge elements of lists to a new structure even if elements do not exist in first branch', async () => {
-        const result = lists.mergeElementsOfLists({ lists: [[], [3, 4, 5]], level: 0, flattenLevels: 0 });
+        const result = lists.mergeElementsOfLists({ lists: [[], [3, 4, 5]], level: 0 });
         expect(result).toEqual([[3], [4], [5]]);
     });
 
-    it('should merge elements of lists to a new structure even if elements do not exist in first branch and flatten', async () => {
-        const result = lists.mergeElementsOfLists({ lists: [[], [3, 4, 5]], level: 0, flattenLevels: 1 });
-        expect(result).toEqual([3, 4, 5]);
-    });
-
     it('should merge elements of lists on deeper levels by keeping the structure', async () => {
-        const result = lists.mergeElementsOfLists({ lists: [[[0, 1, 2]], [[3, 4, 5]]], level: 1, flattenLevels: 0 });
+        const result = lists.mergeElementsOfLists({ lists: [[[0, 1, 2]], [[3, 4, 5]]], level: 1 });
         expect(result).toEqual([[[0, 3], [1, 4], [2, 5]]]);
     });
 
     it('should merge elements of lists on deeper levels by keeping the structure in branches', async () => {
-        const result = lists.mergeElementsOfLists({ lists: [[[0, 1, 2], ['a', 'b', 'c']], [[3, 4, 5], ['d', 'e', 'f']], [[6, 7, 8], ['g', 'h', 'l']]], level: 1, flattenLevels: 0 });
+        const result = lists.mergeElementsOfLists({ lists: [[[0, 1, 2], ['a', 'b', 'c']], [[3, 4, 5], ['d', 'e', 'f']], [[6, 7, 8], ['g', 'h', 'l']]], level: 1 });
         expect(result).toEqual([
             [
                 [0, 3, 6],
@@ -318,22 +313,8 @@ describe('Lists unit tests', () => {
         ]);
     });
 
-    it('should merge elements of lists on deeper levels by keeping the structure in branches and flatten', async () => {
-        const result = lists.mergeElementsOfLists({ lists: [[[0, 1, 2], ['a', 'b', 'c']], [[3, 4, 5], ['d', 'e', 'f']], [[6, 7, 8], ['g', 'h', 'l']]], level: 1, flattenLevels: 1 });
-        expect(result).toEqual(
-            [
-                [0, 3, 6],
-                [1, 4, 7],
-                [2, 5, 8],
-                ['a', 'd', 'g'],
-                ['b', 'e', 'h'],
-                ['c', 'f', 'l']
-            ]
-        );
-    });
-
     it('should merge elements of lists on deeper levels by keeping the structure in branches on lower level', async () => {
-        const result = lists.mergeElementsOfLists({ lists: [[[0, 1, 2], ['a', 'b', 'c']], [[3, 4, 5], ['d', 'e', 'f']], [[6, 7, 8], ['g', 'h', 'l']]], level: 0, flattenLevels: 0 });
+        const result = lists.mergeElementsOfLists({ lists: [[[0, 1, 2], ['a', 'b', 'c']], [[3, 4, 5], ['d', 'e', 'f']], [[6, 7, 8], ['g', 'h', 'l']]], level: 0 });
         expect(result).toEqual(
             [
                 [
@@ -345,49 +326,9 @@ describe('Lists unit tests', () => {
         );
     });
 
-    it('should merge elements of lists on deeper levels by keeping the structure in branches on lower level and flatten', async () => {
-        const result = lists.mergeElementsOfLists({ lists: [[[0, 1, 2], ['a', 'b', 'c']], [[3, 4, 5], ['d', 'e', 'f']], [[6, 7, 8], ['g', 'h', 'l']]], level: 0, flattenLevels: 1 });
-        expect(result).toEqual(
-            [
-                [0, 1, 2], [3, 4, 5], [6, 7, 8],
-                ['a', 'b', 'c'], ['d', 'e', 'f'], ['g', 'h', 'l']
-            ]
-        );
-    });
-
     it('should merge elements of lists on deeper levels by keeping the structure on second level', async () => {
-        const result = lists.mergeElementsOfLists({ lists: [[[[0, 1, 2]]], [[[3, 4, 5]]]], level: 2, flattenLevels: 0 });
+        const result = lists.mergeElementsOfLists({ lists: [[[[0, 1, 2]]], [[[3, 4, 5]]]], level: 2});
         expect(result).toEqual([[[[0, 3], [1, 4], [2, 5]]]]);
-    });
-
-    it('should merge elements of lists on deeper levels by keeping the structure and flatten levels to the max but keep paired structure when -1 value is used', async () => {
-        const result = lists.mergeElementsOfLists({ lists: [[[[0, 1, 2]]], [[[3, 4, 5]]]], level: 2, flattenLevels: -1 });
-        expect(result).toEqual([[0, 3], [1, 4], [2, 5]]);
-    });
-
-    it('should merge elements of lists on deeper levels by keeping the structure and flatten levels to the max but keep paired structure when -1 value is used', async () => {
-        const result = lists.mergeElementsOfLists({ lists: [[[[0, 1, 2]]], [[[3, 4, 5]]]], level: 20, flattenLevels: -1 });
-        expect(result).toEqual([[0, 3], [1, 4], [2, 5]]);
-    });
-
-    it('should merge elements of lists on deeper levels by keeping the structure and flatten levels by 1', async () => {
-        const result = lists.mergeElementsOfLists({ lists: [[[[0, 1, 2]]], [[[3, 4, 5]]]], level: 2, flattenLevels: 1 });
-        expect(result).toEqual([[[0, 3], [1, 4], [2, 5]]]);
-    });
-
-    it('should merge elements of lists on deeper levels by keeping the structure and flatten levels by 2', async () => {
-        const result = lists.mergeElementsOfLists({ lists: [[[[0, 1, 2]]], [[[3, 4, 5]]]], level: 2, flattenLevels: 2 });
-        expect(result).toEqual([[0, 3], [1, 4], [2, 5]]);
-    });
-
-    it('should merge elements of lists on deeper levels by keeping the structure and flatten levels by 3', async () => {
-        const result = lists.mergeElementsOfLists({ lists: [[[[0, 1, 2]]], [[[3, 4, 5]]]], level: 2, flattenLevels: 3 });
-        expect(result).toEqual([0, 3, 1, 4, 2, 5]);
-    });
-
-    it('should merge elements of lists on deeper levels by keeping the structure and flatten levels by 1', async () => {
-        const result = lists.mergeElementsOfLists({ lists: [[[[0, 1, 2]]], [[[3, 4, 5]]]], level: 2, flattenLevels: 1 });
-        expect(result).toEqual([[[0, 3], [1, 4], [2, 5]]]);
     });
 
     it('should get longest list length', async () => {
@@ -474,5 +415,6 @@ describe('Lists unit tests', () => {
         const result = lists.listLength({ list: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10] });
         expect(result).toBe(11);
     });
+
 });
 
