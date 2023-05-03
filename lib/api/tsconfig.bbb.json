@@ -4,6 +4,7 @@
     "compilerOptions": {
         "baseUrl": "./",
         "outDir": "../../declarations/dist/c",
+        "removeComments": false,
         "sourceMap": false,
         "declaration": true,
         "downlevelIteration": true,

@@ -20,7 +20,6 @@ import { GeometryHelper } from './geometry-helper';
 import { JSCADWorkerManager } from '../workers/jscad/jscad-worker-manager';
 import { OCCTWorkerManager } from 'bitbybit-occt-worker/lib/occ-worker/occ-worker-manager';
 import { Scene } from '@babylonjs/core';
-import { OpenCascadeInstance } from 'bitbybit-occt/bitbybit-dev-occt/bitbybit-dev-occt';
 import { core, geom } from 'verb-nurbs-web';
 import { Lists } from './bitbybit/lists';
 import { JSONBitByBit } from './bitbybit/json';
@@ -89,7 +88,7 @@ export class BitByBitBase {
             this.context);
     }
 
-    init(scene: Scene, occt?: Worker, jscad?: Worker, occtInstance?: OpenCascadeInstance) {
+    init(scene: Scene, occt?: Worker, jscad?: Worker) {
         this.context.scene = scene;
         const verb = { geom, core };
         this.context.verb = verb;
