@@ -17,6 +17,20 @@
         "module": "es2020",
         "allowJs": true,
         "emitDeclarationOnly": false,
+        "paths": {
+            "bitbybit-occt": [
+                "../bitbybit-occt/dist",
+            ],
+            "bitbybit-occt/*": [
+                "../bitbybit-occt/dist/*",
+            ],
+            "bitbybit-occt-worker": [
+                "../bitbybit-occt-worker/dist",
+            ],
+            "bitbybit-occt-worker/*": [
+                "../bitbybit-occt-worker/dist/*",
+            ],
+        },
         "lib": [
             "es2020",
             "dom"
