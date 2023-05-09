@@ -51,7 +51,7 @@ export class GeometryHelper {
     }
 
     createOrUpdateSurfacesMesh(
-        meshDataConverted: { positions: any[]; indices: any[]; normals: any[]; }[],
+        meshDataConverted: { positions: any[]; indices: any[]; normals: any[]; uvs: any[] }[],
         mesh: Mesh, updatable: boolean, material: PBRMetallicRoughnessMaterial, addToScene: boolean, hidden: boolean
     ): Mesh {
         const createMesh = () => {
@@ -60,6 +60,7 @@ export class GeometryHelper {
             vd.positions = first.positions;
             vd.indices = first.indices;
             vd.normals = first.normals;
+            vd.uvs = first.uvs;
 
             const v = [];
             meshDataConverted.forEach(meshData => {
@@ -67,6 +68,7 @@ export class GeometryHelper {
                 vertexData.positions = meshData.positions;
                 vertexData.indices = meshData.indices;
                 vertexData.normals = meshData.normals;
+                vertexData.uvs = meshData.uvs;
                 v.push(vertexData);
             })
             vd.merge(v);

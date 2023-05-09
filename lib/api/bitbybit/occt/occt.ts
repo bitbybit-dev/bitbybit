@@ -70,6 +70,7 @@ export class OCCTW extends OCCT {
                     positions: face.vertex_coord,
                     normals: face.normal_coord,
                     indices: face.tri_indexes,
+                    uvs: face.uvs,
                 };
             });
 
