@@ -32,16 +32,16 @@ export class Draw {
         size: 2,
     }
     constructor(
-        private readonly point: Point,
-        private readonly line: Line,
-        private readonly polyline: Polyline,
-        private readonly node: BabylonNode,
-        private readonly verbCurve: VerbCurve,
-        private readonly verbSurface: VerbSurface,
-        private readonly jscad: JSCAD,
-        private readonly occt: OCCTW,
-        private readonly tag: Tag,
-        private readonly context: Context,
+        public readonly point: Point,
+        public readonly line: Line,
+        public readonly polyline: Polyline,
+        public readonly node: BabylonNode,
+        public readonly verbCurve: VerbCurve,
+        public readonly verbSurface: VerbSurface,
+        public readonly jscad: JSCAD,
+        public readonly occt: OCCTW,
+        public readonly tag: Tag,
+        public readonly context: Context,
     ) { }
 
     /**
