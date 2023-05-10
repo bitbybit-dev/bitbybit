@@ -32,15 +32,45 @@ export class Draw {
         size: 2,
     }
     constructor(
+        /**
+         * @ignore true
+         */
         public readonly point: Point,
+        /**
+         * @ignore true
+         */
         public readonly line: Line,
+        /**
+         * @ignore true
+         */
         public readonly polyline: Polyline,
+        /**
+         * @ignore true
+         */
         public readonly node: BabylonNode,
+        /**
+         * @ignore true
+         */
         public readonly verbCurve: VerbCurve,
+        /**
+         * @ignore true
+         */
         public readonly verbSurface: VerbSurface,
+        /**
+         * @ignore true
+         */
         public readonly jscad: JSCAD,
+        /**
+         * @ignore true
+         */
         public readonly occt: OCCTW,
+        /**
+         * @ignore true
+         */
         public readonly tag: Tag,
+        /**
+         * @ignore true
+         */
         public readonly context: Context,
     ) { }
 
@@ -201,7 +231,7 @@ export class Draw {
      * @group options
      * @shortname simple
      */
-    optionsSimple(inputs: Inputs.Draw.DrawBasicGeometryOptions): Inputs.Draw.DrawBasicGeometryOptions{
+    optionsSimple(inputs: Inputs.Draw.DrawBasicGeometryOptions): Inputs.Draw.DrawBasicGeometryOptions {
         return inputs;
     }
 
@@ -212,7 +242,7 @@ export class Draw {
      * @group options
      * @shortname occt shape
      */
-    optionsOcctShape(inputs: Inputs.Draw.DrawOcctShapeOptions): Inputs.Draw.DrawOcctShapeOptions{
+    optionsOcctShape(inputs: Inputs.Draw.DrawOcctShapeOptions): Inputs.Draw.DrawOcctShapeOptions {
         return inputs;
     }
 
@@ -223,7 +253,7 @@ export class Draw {
      * @group options
      * @shortname babylon node
      */
-    optionsBabylonNode(inputs: Inputs.Draw.DrawNodeOptions): Inputs.Draw.DrawNodeOptions{
+    optionsBabylonNode(inputs: Inputs.Draw.DrawNodeOptions): Inputs.Draw.DrawNodeOptions {
         return inputs;
     }
 
