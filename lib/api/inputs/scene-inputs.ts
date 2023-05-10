@@ -25,12 +25,12 @@ export namespace BabylonScene {
         position: Base.Point3 = [0, 0, 0];
         /**
          * Intensity of the point light, value between 0 and 1
-         * @default 0.5
+         * @default 2000
          * @minimum 0
          * @maximum Infinity
-         * @step 0.1
+         * @step 500
          */
-        intensity = 0.5;
+        intensity = 2000;
         /**
          * Diffuse colour of the point light
          * @default #ffffff
