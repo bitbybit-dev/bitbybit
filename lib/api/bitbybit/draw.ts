@@ -1,7 +1,7 @@
 
 import {
     Color3, Mesh,
-    StandardMaterial, PBRMetallicRoughnessMaterial, ShadowGenerator
+    StandardMaterial, PBRMetallicRoughnessMaterial, ShadowGenerator, MeshBuilder
 } from '@babylonjs/core';
 import * as Inputs from '../inputs/inputs';
 import { Point } from './point';
@@ -161,21 +161,33 @@ export class Draw {
      * @disposableOutput true
      */
     drawGridMesh(inputs: Inputs.Draw.SceneDrawGridMeshDto): Mesh {
-        const groundMaterial = new GridMaterial(`groundMaterial${Math.random()}`, this.context.scene);
-        groundMaterial.majorUnitFrequency = inputs.majorUnitFrequency;
-        groundMaterial.minorUnitVisibility = inputs.minorUnitVisibility;
-        groundMaterial.gridRatio = inputs.gridRatio;
-        groundMaterial.backFaceCulling = inputs.backFaceCulling;
-        groundMaterial.mainColor = Color3.FromHexString(inputs.mainColor);
-        groundMaterial.lineColor = Color3.FromHexString(inputs.secondaryColor);
-        groundMaterial.opacity = inputs.opacity;
+        try {
+            const groundMaterial = new GridMaterial(`groundMaterial${Math.random()}`, this.context.scene);
+            groundMaterial.majorUnitFrequency = inputs.majorUnitFrequency;
+            groundMaterial.minorUnitVisibility = inputs.minorUnitVisibility;
+            groundMaterial.gridRatio = inputs.gridRatio;
+            groundMaterial.backFaceCulling = inputs.backFaceCulling;
+            groundMaterial.mainColor = Color3.FromHexString(inputs.mainColor);
+            groundMaterial.lineColor = Color3.FromHexString(inputs.secondaryColor);
+            groundMaterial.opacity = inputs.opacity;
 
-        const ground = Mesh.CreateGround(`ground${Math.random()}`,
-            inputs.width, inputs.height, inputs.subdivisions, this.context.scene, false
-        );
+            const ground = MeshBuilder.CreateGround(`ground${Math.random()}`,
+                {
+                    width: inputs.width,
+                    height: inputs.height,
+                    subdivisions: inputs.subdivisions,
+                    updatable: false,
 
-        ground.material = groundMaterial;
-        return ground;
+                },
+                this.context.scene,
+            );
+
+            ground.material = groundMaterial;
+            return ground;
+        } catch (e) {
+            console.log('Error happened: ', e);
+            return MeshBuilder.CreateBox('error-ground', { size: 0.00000001 }, this.context.scene);
+        }
     }
 
     /**
