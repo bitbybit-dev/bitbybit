@@ -56,7 +56,7 @@ export class OCCTWIO extends OCCTIO {
                 positions: face.vertex_coord,
                 normals: face.normal_coord,
                 indices: face.tri_indexes,
-            }, dummy, false, undefined, false, false);
+            }, dummy, false, undefined, true, false);
             return mesh;
         });
 
