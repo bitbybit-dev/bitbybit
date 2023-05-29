@@ -60,7 +60,7 @@ export class BabylonNode {
      * @returns A new node whos parent is the root node of the scene
      */
     createWorldNode(): TransformNode {
-        const tnode = new TransformNode(`root${Math.random()}`);
+        const tnode = new TransformNode(`root${Math.random()}`, this.context.scene);
         tnode.parent = this.context.scene.getTransformNodeByID('root');
         return tnode;
     }
