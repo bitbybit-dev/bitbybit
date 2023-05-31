@@ -6,8 +6,7 @@ import * as Inputs from '../../inputs/inputs';
 import { JSCADText } from '../jscad/text';
 import { Vector } from '../vector';
 import { OCCTWIO } from './io';
-import { OCCTWorkerManager } from 'bitbybit-occt-worker/lib/occ-worker/occ-worker-manager';
-import { OCCT } from 'bitbybit-occt-worker/lib/api/occt/occt';
+import { OCCTWorkerManager, OCCT } from 'bitbybit-occt-worker';
 
 /**
  * Contains various methods for OpenCascade implementation

@@ -1,4 +1,5 @@
 
+import { OCCT as BaseOCCT, OCCTWorkerManager } from 'bitbybit-occt-worker';
 import { Babylon } from './bitbybit/babylon/babylon';
 import { Vector } from './bitbybit/vector';
 import { Point } from './bitbybit/point';
@@ -11,14 +12,12 @@ import { Tag } from './bitbybit/tag';
 import { Time } from './bitbybit/time';
 import { TextBitByBit } from './bitbybit/text';
 import { OCCTW } from './bitbybit/occt/occt';
-import { OCCT as BaseOCCT } from 'bitbybit-occt-worker/lib/api/occt/occt';
 import { Asset } from './bitbybit/asset';
 import { Color } from './bitbybit/color';
 import { MathBitByBit } from './bitbybit/math';
 import { Context } from './context';
 import { GeometryHelper } from './geometry-helper';
 import { JSCADWorkerManager } from '../workers/jscad/jscad-worker-manager';
-import { OCCTWorkerManager } from 'bitbybit-occt-worker/lib/occ-worker/occ-worker-manager';
 import { Scene } from '@babylonjs/core';
 import { core, geom } from 'verb-nurbs-web';
 import { Lists } from './bitbybit/lists';

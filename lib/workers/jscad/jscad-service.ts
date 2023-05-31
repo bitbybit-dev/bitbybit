@@ -1,3 +1,4 @@
+import { VectorHelperService } from 'bitbybit-occt';
 import { JSCADExpansions } from './services/jscad-expansions';
 import { JSCADBooleans } from './services/jscad-booleans';
 import { JSCADExtrusions } from './services/jscad-extrusions';
@@ -6,7 +7,6 @@ import { JSCADPolygon } from './services/jscad-polygon';
 import { JSCADShapes } from './services/jscad-shapes';
 import { JSCADText } from './services/jscad-text';
 import * as Inputs from '../../api/inputs/jscad-inputs';
-import { VectorHelperService } from 'bitbybit-occt/lib/api/vector-helper.service';
 import { JSCADHulls } from './services/jscad-hulls';
 
 // Worker make an instance of this class itself
