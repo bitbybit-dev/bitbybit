@@ -6,7 +6,7 @@ import {
 } from '@babylonjs/core';
 import * as Inputs from '../../../inputs/inputs';
 import { Color } from '../../color';
-import { BitByBitBlocklyHelperService } from "../../../../bit-by-bit-blockly-helper.service";
+import { BitByBitContextHelperService } from "../../../../bit-by-bit-context-helper.service";
 
 export class BabylonMaterialPbrMetallicRoughness {
 
@@ -92,9 +92,9 @@ export class BabylonMaterialPbrMetallicRoughness {
      */
     getBaseColor(inputs: Inputs.BabylonMaterial.MaterialPropDto): string {
         const mat = inputs.material;
-        const r = BitByBitBlocklyHelperService.remap(mat.baseColor.r, 0, 1, 0, 255);
-        const g = BitByBitBlocklyHelperService.remap(mat.baseColor.g, 0, 1, 0, 255);
-        const b = BitByBitBlocklyHelperService.remap(mat.baseColor.b, 0, 1, 0, 255);
+        const r = BitByBitContextHelperService.remap(mat.baseColor.r, 0, 1, 0, 255);
+        const g = BitByBitContextHelperService.remap(mat.baseColor.g, 0, 1, 0, 255);
+        const b = BitByBitContextHelperService.remap(mat.baseColor.b, 0, 1, 0, 255);
 
         return this.color.rgbToHex({ r, g, b });
     }

@@ -1,5 +1,5 @@
 
-import { BitByBitBlocklyHelperService } from '../../bit-by-bit-blockly-helper.service';
+import { BitByBitContextHelperService } from '../../bit-by-bit-context-helper.service';
 import * as Inputs from '../inputs/inputs';
 
 /**
@@ -13,7 +13,7 @@ export class Time {
      * @param update The function to call in render loop
      */
     registerRenderFunction(update: (timePassedMs: number) => void): void {
-        BitByBitBlocklyHelperService.renderLoopBag.push((timePassedMs) => {
+        BitByBitContextHelperService.renderLoopBag.push((timePassedMs) => {
             update(timePassedMs);
         });
     }

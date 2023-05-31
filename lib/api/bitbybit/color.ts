@@ -1,4 +1,4 @@
-import { BitByBitBlocklyHelperService } from "../../bit-by-bit-blockly-helper.service";
+import { BitByBitContextHelperService } from "../../bit-by-bit-context-helper.service";
 import * as Inputs from '../inputs/inputs';
 
 export class Color {
@@ -61,9 +61,9 @@ export class Color {
     hexToRgbMapped(inputs: Inputs.Color.HexDtoMapped): Inputs.Base.ColorRGB {
         const rgb = this.hexToRgb(inputs);
         return {
-            r: BitByBitBlocklyHelperService.remap(rgb.r, 0, 255, inputs.from, inputs.to),
-            g: BitByBitBlocklyHelperService.remap(rgb.g, 0, 255, inputs.from, inputs.to),
-            b: BitByBitBlocklyHelperService.remap(rgb.b, 0, 255, inputs.from, inputs.to),
+            r: BitByBitContextHelperService.remap(rgb.r, 0, 255, inputs.from, inputs.to),
+            g: BitByBitContextHelperService.remap(rgb.g, 0, 255, inputs.from, inputs.to),
+            b: BitByBitContextHelperService.remap(rgb.b, 0, 255, inputs.from, inputs.to),
         }
     }
 

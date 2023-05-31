@@ -52,13 +52,6 @@ export class BabylonWebXR {
         const near = new NearMenu('near');
         manager.addControl(near);
 
-        // const button0 = new TouchHolographicButton('button0');
-        // button0.text = 'Enter VR';
-        // button0.onPointerClickObservable.add(async () => {
-        //     await xr.baseExperience.enterXRAsync('immersive-vr', 'local-floor');
-        // });
-        // near.addButton(button0);
-
         const button1 = new TouchHolographicButton('button1');
 
         const text = new TextBlock();
@@ -70,15 +63,7 @@ export class BabylonWebXR {
         });
         near.addButton(button1);
         button1.content = text;
-        // near.isVisible = false;
-
-        // xr.enterExitUI.activeButtonChangedObservable.add(s => {
-        //     if (s && s.sessionMode === 'inline') {
-        //         near.isVisible = false;
-        //     } else if (s && s.sessionMode === 'immersive-vr') {
-        //         near.isVisible = true;
-        //     }
-        // });
+     
     }
 
 }

@@ -160,7 +160,7 @@ export class BabylonScene {
      * @shortname clear all drawn
      */
     clearAllDrawn(): void {
-        this.context.bitByBitBlocklyHelperService.clearAllDrawn();
+        this.context.BitByBitContextHelperService.clearAllDrawn();
     }
 
     /**

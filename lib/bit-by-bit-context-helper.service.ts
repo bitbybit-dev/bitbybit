@@ -1,7 +1,7 @@
 import { PrintSaveInterface } from './models/print-save.model';
 import { OBJFileLoader } from '@babylonjs/loaders';
 
-export class BitByBitBlocklyHelperService {
+export class BitByBitContextHelperService {
 
     static promptPrintSave: (prompt: PrintSaveInterface) => void;
     static promptPrint: (prompt: PrintSaveInterface) => void;

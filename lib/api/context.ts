@@ -1,6 +1,6 @@
 
 import { Engine, Scene } from '@babylonjs/core';
-import { BitByBitBlocklyHelperService } from '../../lib/bit-by-bit-blockly-helper.service';
+import { BitByBitContextHelperService } from '../../lib/bit-by-bit-context-helper.service';
 
 
 export class Context {
@@ -12,7 +12,7 @@ export class Context {
     occ: any;
     jsonpath: any;
 
-    bitByBitBlocklyHelperService = BitByBitBlocklyHelperService;
+    BitByBitContextHelperService = BitByBitContextHelperService;
 
     constructor() {}
 }
