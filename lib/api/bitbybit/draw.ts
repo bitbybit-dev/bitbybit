@@ -1,7 +1,6 @@
 
 import {
-    Color3, Mesh,
-    StandardMaterial, PBRMetallicRoughnessMaterial, ShadowGenerator, MeshBuilder
+    Color3, Mesh, ShadowGenerator, MeshBuilder
 } from '@babylonjs/core';
 import * as Inputs from '../inputs/inputs';
 import { Point } from './point';
@@ -267,15 +266,6 @@ export class Draw {
      */
     optionsBabylonNode(inputs: Inputs.Draw.DrawNodeOptions): Inputs.Draw.DrawNodeOptions {
         return inputs;
-    }
-
-    private assignColorToMesh(mesh, color: Color3) {
-        const mat = (mesh.material);
-        if (mat instanceof PBRMetallicRoughnessMaterial) {
-            mat.baseColor = color;
-        } else if (mat instanceof StandardMaterial) {
-            mat.diffuseColor = color;
-        }
     }
 
     private handleTags(inputs: Inputs.Draw.DrawAny) {

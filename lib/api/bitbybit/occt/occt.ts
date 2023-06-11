@@ -40,7 +40,6 @@ export class OCCTW extends OCCT {
             delete inputs.faceMaterial;
         }
         const fe: Inputs.OCCT.DecomposedMeshDto = await this.occWorkerManager.genericCallToWorkerPromise('shapeToMesh', inputs);
-
         const shapeMesh = MeshBuilder.CreateBox('brepMesh' + Math.random(), { size: 0.00001 }, this.context.scene);
         shapeMesh.isVisible = false;
         let dummy;

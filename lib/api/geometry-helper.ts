@@ -51,7 +51,7 @@ export class GeometryHelper {
     }
 
     createOrUpdateSurfacesMesh(
-        meshDataConverted: { positions: any[]; indices: any[]; normals: any[]; uvs: any[] }[],
+        meshDataConverted: { positions: number[]; indices: number[]; normals: number[]; uvs: number[] }[],
         mesh: Mesh, updatable: boolean, material: PBRMetallicRoughnessMaterial, addToScene: boolean, hidden: boolean
     ): Mesh {
         const createMesh = () => {
