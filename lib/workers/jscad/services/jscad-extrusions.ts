@@ -1,5 +1,5 @@
 import { Angle } from '@babylonjs/core';
-import { VectorHelperService } from 'bitbybit-occt';
+import { VectorHelperService } from '@bitbybit-dev/occt';
 import * as Inputs from '../../../api/inputs/jscad-inputs';
 
 /**

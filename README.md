@@ -9,7 +9,7 @@ Visit https://bitbybit.dev to use our full cloud platform.
 ## Github
 https://github.com/bitbybit-dev/bitbybit  
 ## NPM
-https://www.npmjs.com/package/bitbybit-core  
+https://www.npmjs.com/package/bitbybit-dev  
 
 ## Example Applications
 Laptop Holder   

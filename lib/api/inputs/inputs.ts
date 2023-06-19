@@ -25,4 +25,4 @@ export * from './transforms-inputs';
 export * from './vector-inputs';
 export * from './verb-inputs';
 export * from './base-inputs';
-export * from 'bitbybit-occt/lib/api/inputs/occ-inputs';
+export * from '@bitbybit-dev/occt/lib/api/inputs/occ-inputs';

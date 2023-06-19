@@ -1,5 +1,5 @@
 
-import { OCCT as BaseOCCT, OCCTWorkerManager } from 'bitbybit-occt-worker';
+import { OCCT as BaseOCCT, OCCTWorkerManager } from '@bitbybit-dev/occt-worker';
 import { Babylon } from './bitbybit/babylon/babylon';
 import { Vector } from './bitbybit/vector';
 import { Point } from './bitbybit/point';

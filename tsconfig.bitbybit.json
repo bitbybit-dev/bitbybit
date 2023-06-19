@@ -18,16 +18,16 @@
         "allowJs": true,
         "emitDeclarationOnly": false,
         "paths": {
-            "bitbybit-occt": [
+            "@bitbybit-dev/occt": [
                 "../bitbybit-occt/dist",
             ],
-            "bitbybit-occt/*": [
+            "@bitbybit-dev/occt/*": [
                 "../bitbybit-occt/dist/*",
             ],
-            "bitbybit-occt-worker": [
+            "@bitbybit-dev/occt-worker": [
                 "../bitbybit-occt-worker/dist",
             ],
-            "bitbybit-occt-worker/*": [
+            "@bitbybit-dev/occt-worker/*": [
                 "../bitbybit-occt-worker/dist/*",
             ],
         },

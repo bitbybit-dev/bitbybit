@@ -2,7 +2,7 @@
 {
     "compileOnSave": false,
     "compilerOptions": {
-        "outDir": "./dist/bitbybit-core",
+        "outDir": "./dist/bitbybit-dev",
         "baseUrl": "./",
         "sourceMap": false,
         "declaration": true,
@@ -15,20 +15,20 @@
         "strict": false,
         "allowJs": true,
         "emitDeclarationOnly": false,
-        // "paths": {
-        //     "projects/bitbybit-core/src/*": [
-        //         "./*"
-        //     ],
-        //     "projects/bitbybit-advanced/*": [
-        //         "../../../bitbybit-advanced/*"
-        //     ],
-        //     "bitbybit-occt/*": [
-        //         "../bitbybit-occt/*"
-        //     ],
-        //     "bitbybit-occt-worker/*": [
-        //         "../bitbybit-occt-worker/*"
-        //     ]
-        // },
+        "paths": {
+            "@bitbybit-dev/occt": [
+                "../bitbybit-occt/*"
+            ],
+            "@bitbybit-dev/occt/*": [
+                "../bitbybit-occt/*"
+            ],
+            "@bitbybit-dev/occt-worker/*": [
+                "../bitbybit-occt-worker/*"
+            ],
+            "@bitbybit-dev/occt-worker": [
+                "../bitbybit-occt-worker/*"
+            ]
+        },
         "lib": [
             "es2020",
             "dom"

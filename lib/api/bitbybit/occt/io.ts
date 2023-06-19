@@ -1,6 +1,6 @@
 
 import * as Inputs from '../../inputs/inputs';
-import { OCCTWorkerManager, OCCTIO } from 'bitbybit-occt-worker';
+import { OCCTWorkerManager, OCCTIO } from '@bitbybit-dev/occt-worker';
 import { BitByBitContextHelperService } from '../../../bit-by-bit-context-helper.service';
 import { STLExport } from '@babylonjs/serializers';
 import { GeometryHelper } from '../../geometry-helper';
