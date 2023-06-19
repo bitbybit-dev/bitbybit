@@ -3,6 +3,7 @@
     "compileOnSave": false,
     "exclude": [
         "lib/workers/occ/services/advanced/**/*",
+        "./**/*.test.ts"
     ],
     "compilerOptions": {
         "outDir": "./dist",
