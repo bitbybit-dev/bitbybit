@@ -1,6 +1,6 @@
-import { TargetCamera, Vector3 } from '@babylonjs/core';
-import { Context } from '../../../context';
-import * as Inputs from '../../../inputs/inputs';
+import { TargetCamera, Vector3 } from "@babylonjs/core";
+import { Context } from "../../../context";
+import * as Inputs from "../../../inputs/inputs";
 
 export class BabylonTargetCamera {
 
@@ -21,7 +21,7 @@ export class BabylonTargetCamera {
         );
         const target = new Vector3(inputs.target[0], inputs.target[1], inputs.target[2]);
         camera.setTarget(target)
-        const canvas = document.getElementById('renderCanvas') as HTMLCanvasElement;
+        const canvas = document.getElementById("renderCanvas") as HTMLCanvasElement;
         camera.attachControl(canvas, true);
         camera.minZ = 0;
         camera.maxZ = 1000;

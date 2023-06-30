@@ -1,6 +1,6 @@
-import { Angle } from '@babylonjs/core';
-import { VectorHelperService } from '@bitbybit-dev/occt';
-import * as Inputs from '../../../api/inputs/inputs';
+import { Angle } from "@babylonjs/core";
+import { VectorHelperService } from "@bitbybit-dev/occt";
+import * as Inputs from "../../../api/inputs/inputs";
 
 /**
  * Contains various functions for Polygon from JSCAD library https://github.com/jscad/OpenJSCAD.org

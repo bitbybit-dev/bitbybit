@@ -1,8 +1,8 @@
 
-import { LinesMesh, } from '@babylonjs/core';
-import { Context } from '../context';
-import { GeometryHelper } from '../geometry-helper';
-import * as Inputs from '../inputs/inputs';
+import { LinesMesh, } from "@babylonjs/core";
+import { Context } from "../context";
+import { GeometryHelper } from "../geometry-helper";
+import * as Inputs from "../inputs/inputs";
 
 /**
  * Contains various methods for polyline. Polyline in bitbybit is a simple object that has points property containing an array of points.

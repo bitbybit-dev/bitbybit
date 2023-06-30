@@ -1,6 +1,6 @@
 
-import * as Inputs from '../inputs/inputs';
-import { AssetManager } from '../../asset-manager';
+import * as Inputs from "../inputs/inputs";
+import { AssetManager } from "../../asset-manager";
 
 export class Asset {
     public readonly assetManager: AssetManager;

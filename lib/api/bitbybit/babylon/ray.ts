@@ -1,10 +1,10 @@
 
-import { Context } from '../../context';
+import { Context } from "../../context";
 import {
     Matrix, Ray, Vector3
-} from '@babylonjs/core';
-import * as Inputs from '../../inputs/inputs';
-import { Base } from '../../inputs/inputs';
+} from "@babylonjs/core";
+import * as Inputs from "../../inputs/inputs";
+import { Base } from "../../inputs/inputs";
 
 export class BabylonRay {
 

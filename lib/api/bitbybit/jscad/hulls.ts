@@ -1,6 +1,6 @@
 
-import { JSCADWorkerManager } from '../../../workers/jscad/jscad-worker-manager';
-import * as Inputs from '../../inputs/inputs';
+import { JSCADWorkerManager } from "../../../workers/jscad/jscad-worker-manager";
+import * as Inputs from "../../inputs/inputs";
 
 /**
  * Contains various functions for Solid hulls from JSCAD library https://github.com/jscad/OpenJSCAD.org
@@ -23,7 +23,7 @@ export class JSCADHulls {
      * @drawable true
      */
     async hullChain(inputs: Inputs.JSCAD.HullDto): Promise<Inputs.JSCAD.JSCADEntity> {
-        return this.jscadWorkerManager.genericCallToWorkerPromise('hulls.hullChain', inputs);
+        return this.jscadWorkerManager.genericCallToWorkerPromise("hulls.hullChain", inputs);
     }
     /**
      * Convex hull connects solids or 2d geometries by filling an empty space in between without following order.
@@ -35,6 +35,6 @@ export class JSCADHulls {
      * @drawable true
      */
     async hull(inputs: Inputs.JSCAD.HullDto): Promise<Inputs.JSCAD.JSCADEntity>{
-        return this.jscadWorkerManager.genericCallToWorkerPromise('hulls.hullChain', inputs);
+        return this.jscadWorkerManager.genericCallToWorkerPromise("hulls.hullChain", inputs);
     }
 }

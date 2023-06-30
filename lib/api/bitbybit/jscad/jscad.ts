@@ -1,17 +1,17 @@
 
-import { Color3, Color4, LinesMesh, Matrix, Mesh, MeshBuilder, PBRMetallicRoughnessMaterial, Vector3, VertexData } from '@babylonjs/core';
-import { JSCADWorkerManager } from '../../../workers/jscad/jscad-worker-manager';
-import { Context } from '../../context';
-import { GeometryHelper } from '../../geometry-helper';
-import * as Inputs from '../../inputs/inputs';
-import { JSCADBooleans } from './booleans';
-import { JSCADExpansions } from './expansions';
-import { JSCADExtrusions } from './extrusions';
-import { JSCADHulls } from './hulls';
-import { JSCADPath } from './path';
-import { JSCADPolygon } from './polygon';
-import { JSCADShapes } from './shapes';
-import { JSCADText } from './text';
+import { Color3, Color4, LinesMesh, Matrix, Mesh, MeshBuilder, PBRMetallicRoughnessMaterial, Vector3, VertexData } from "@babylonjs/core";
+import { JSCADWorkerManager } from "../../../workers/jscad/jscad-worker-manager";
+import { Context } from "../../context";
+import { GeometryHelper } from "../../geometry-helper";
+import * as Inputs from "../../inputs/inputs";
+import { JSCADBooleans } from "./booleans";
+import { JSCADExpansions } from "./expansions";
+import { JSCADExtrusions } from "./extrusions";
+import { JSCADHulls } from "./hulls";
+import { JSCADPath } from "./path";
+import { JSCADPolygon } from "./polygon";
+import { JSCADShapes } from "./shapes";
+import { JSCADText } from "./text";
 
 /**
  * Contains various functions for Solid meshes from JSCAD library https://github.com/jscad/OpenJSCAD.org
@@ -57,7 +57,7 @@ export class JSCAD {
             normals: number[],
             indices: number[],
             transforms: [],
-        } = await this.jscadWorkerManager.genericCallToWorkerPromise('shapeToMesh', inputs);
+        } = await this.jscadWorkerManager.genericCallToWorkerPromise("shapeToMesh", inputs);
         let meshToUpdate;
         if (inputs.jscadMesh && inputs.updatable) {
             meshToUpdate = inputs.jscadMesh;
@@ -99,7 +99,7 @@ export class JSCAD {
      * @ignore true
      */
     async drawSolidOrPolygonMeshes(inputs: Inputs.JSCAD.DrawSolidMeshesDto): Promise<Mesh> {
-        return this.jscadWorkerManager.genericCallToWorkerPromise('shapesToMeshes', inputs).then((res: {
+        return this.jscadWorkerManager.genericCallToWorkerPromise("shapesToMeshes", inputs).then((res: {
             positions: number[],
             normals: number[],
             indices: number[],
@@ -112,7 +112,7 @@ export class JSCAD {
                 const children = localOrigin.getChildMeshes();
                 children.forEach(mesh => { mesh.dispose(); localOrigin.removeChild(mesh) });
             } else {
-                localOrigin = MeshBuilder.CreateBox('local_origin' + Math.random(), { size: 1 }, this.context.scene)
+                localOrigin = MeshBuilder.CreateBox("local_origin" + Math.random(), { size: 1 }, this.context.scene)
             }
 
             localOrigin.isVisible = false;
@@ -121,7 +121,7 @@ export class JSCAD {
             const colorsAreArrays = Array.isArray(inputs.colours);
 
             res.map((r, index) => {
-                let meshToUpdate = new Mesh(`jscadMesh${Math.random()}`, this.context.scene);
+                const meshToUpdate = new Mesh(`jscadMesh${Math.random()}`, this.context.scene);
                 let colour;
                 if (colourIsArrayAndMatches) {
                     colour = inputs.colours[index];
@@ -130,7 +130,7 @@ export class JSCAD {
                 } else {
                     colour = inputs.colours;
                 }
-                let m = this.makeMesh({ ...inputs, colour }, meshToUpdate, r);
+                const m = this.makeMesh({ ...inputs, colour }, meshToUpdate, r);
                 m.parent = localOrigin;
             });
             inputs.jscadMesh = localOrigin;
@@ -177,7 +177,7 @@ export class JSCAD {
      * @drawable true
      */
     async transformSolids(inputs: Inputs.JSCAD.TransformSolidsDto): Promise<Inputs.JSCAD.JSCADEntity[]> {
-        return this.jscadWorkerManager.genericCallToWorkerPromise('transformSolids', inputs);
+        return this.jscadWorkerManager.genericCallToWorkerPromise("transformSolids", inputs);
     }
 
     /**
@@ -189,7 +189,7 @@ export class JSCAD {
      * @drawable true
      */
     async transformSolid(inputs: Inputs.JSCAD.TransformSolidDto): Promise<Inputs.JSCAD.JSCADEntity> {
-        return this.jscadWorkerManager.genericCallToWorkerPromise('transformSolid', inputs);
+        return this.jscadWorkerManager.genericCallToWorkerPromise("transformSolid", inputs);
     }
 
     /**
@@ -199,7 +199,7 @@ export class JSCAD {
      * @shortname solid to stl
      */
     async downloadSolidSTL(inputs: Inputs.JSCAD.DownloadSolidDto): Promise<void> {
-        const res = await this.jscadWorkerManager.genericCallToWorkerPromise('downloadSolidSTL', inputs);
+        const res = await this.jscadWorkerManager.genericCallToWorkerPromise("downloadSolidSTL", inputs);
         this.downloadSTL(res.blob, inputs.fileName);
     }
 
@@ -210,17 +210,17 @@ export class JSCAD {
      * @shortname solids to stl
      */
     async downloadSolidsSTL(inputs: Inputs.JSCAD.DownloadSolidsDto): Promise<void> {
-        const res = await this.jscadWorkerManager.genericCallToWorkerPromise('downloadSolidsSTL', inputs);
+        const res = await this.jscadWorkerManager.genericCallToWorkerPromise("downloadSolidsSTL", inputs);
         this.downloadSTL(res.blob, inputs.fileName);
     }
 
     private downloadSTL(blob: Blob, fileName: string): void {
         const blobUrl = URL.createObjectURL(blob);
 
-        const fileLink = document.createElement('a');
+        const fileLink = document.createElement("a");
         fileLink.href = blobUrl;
-        fileLink.target = '_self';
-        fileLink.download = fileName + '.stl';
+        fileLink.target = "_self";
+        fileLink.download = fileName + ".stl";
         fileLink.click();
         fileLink.remove();
     }

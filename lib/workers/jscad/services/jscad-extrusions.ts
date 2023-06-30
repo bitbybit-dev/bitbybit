@@ -1,6 +1,6 @@
-import { Angle } from '@babylonjs/core';
-import { VectorHelperService } from '@bitbybit-dev/occt';
-import * as Inputs from '../../../api/inputs/jscad-inputs';
+import { Angle } from "@babylonjs/core";
+import { VectorHelperService } from "@bitbybit-dev/occt";
+import * as Inputs from "../../../api/inputs/jscad-inputs";
 
 /**
  * Contains various functions for Solid extrusions from JSCAD library https://github.com/jscad/OpenJSCAD.org
@@ -52,7 +52,7 @@ export class JSCADExtrusions {
         const options = {
             angle: Angle.FromDegrees(inputs.angle).radians(),
             startAngle: Angle.FromDegrees(inputs.startAngle).radians(),
-            overflow: 'cap',
+            overflow: "cap",
             segments: inputs.segments
         };
         const extrusion = this.jscad.extrusions.extrudeRotate(options, inputs.polygon);

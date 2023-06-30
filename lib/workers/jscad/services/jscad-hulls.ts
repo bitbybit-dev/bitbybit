@@ -1,4 +1,4 @@
-import * as Inputs from '../../../api/inputs/jscad-inputs';
+import * as Inputs from "../../../api/inputs/jscad-inputs";
 
 /**
  * Contains various functions for Solid hulls from JSCAD library https://github.com/jscad/OpenJSCAD.org

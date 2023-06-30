@@ -1,8 +1,8 @@
 
-import { Angle, Matrix, TransformNode, Node, Vector3 } from '@babylonjs/core';
-import { Context } from '../../context';
-import { GeometryHelper } from '../../geometry-helper';
-import * as Inputs from '../../inputs/inputs';
+import { Angle, Matrix, TransformNode, Node, Vector3 } from "@babylonjs/core";
+import { Context } from "../../context";
+import { GeometryHelper } from "../../geometry-helper";
+import * as Inputs from "../../inputs/inputs";
 
 /**
  * Nodes help understand the space and construct more complicated space structures. Nodes can be nested together
@@ -61,7 +61,7 @@ export class BabylonNode {
      */
     createWorldNode(): TransformNode {
         const tnode = new TransformNode(`root${Math.random()}`, this.context.scene);
-        tnode.parent = this.context.scene.getTransformNodeByID('root');
+        tnode.parent = this.context.scene.getTransformNodeByID("root");
         return tnode;
     }
 
@@ -160,7 +160,7 @@ export class BabylonNode {
      * @returns Root node
      */
     getRootNode(): TransformNode {
-        return this.context.scene.getTransformNodeByID('root');
+        return this.context.scene.getTransformNodeByID("root");
     }
 
     /**

@@ -1,6 +1,6 @@
 
-import { BitByBitContextHelperService } from '../../bit-by-bit-context-helper.service';
-import * as Inputs from '../inputs/inputs';
+import { BitByBitContextHelperService } from "../../bit-by-bit-context-helper.service";
+import * as Inputs from "../inputs/inputs";
 
 /**
  * Tags help you to put text on top of your 3D objects. Tags are heavily used in data visualization scenarios
@@ -37,12 +37,12 @@ export class Tag {
             });
             tagToUpdate.needsUpdate = true;
         } else {
-            const textNode = document.createElement('span');
-            const id = '_tag' + new Date().getTime() + BitByBitContextHelperService.tagBag.length;
+            const textNode = document.createElement("span");
+            const id = "_tag" + new Date().getTime() + BitByBitContextHelperService.tagBag.length;
             inputs.tag.id = id;
             textNode.id = id;
             textNode.textContent = inputs.tag.text;
-            document.querySelector('.canvasZone').appendChild(textNode);
+            document.querySelector(".canvasZone").appendChild(textNode);
             inputs.tag.needsUpdate = true;
             BitByBitContextHelperService.tagBag.push(inputs.tag);
         }
@@ -61,11 +61,11 @@ export class Tag {
             if (inputs.tagsVariable.length < inputs.tags.length) {
                 for (let i = inputs.tagsVariable.length - 1; i < inputs.tags.length - 1; i++) {
                     const tagToCreate = inputs.tags[i];
-                    const textNode = document.createElement('span');
-                    const id = '_tag' + new Date().getTime() + BitByBitContextHelperService.tagBag.length;
+                    const textNode = document.createElement("span");
+                    const id = "_tag" + new Date().getTime() + BitByBitContextHelperService.tagBag.length;
                     tagToCreate.id = id;
                     textNode.id = id;
-                    document.querySelector('.canvasZone').appendChild(textNode);
+                    document.querySelector(".canvasZone").appendChild(textNode);
                     tagToCreate.needsUpdate = true;
                     BitByBitContextHelperService.tagBag.push(tagToCreate);
                     inputs.tagsVariable.push(tagToCreate);
@@ -90,12 +90,12 @@ export class Tag {
         } else {
             const tagsToCreate = [];
             inputs.tags.forEach((tag, index) => {
-                const textNode = document.createElement('span');
-                const id = '_tag' + new Date().getTime() + BitByBitContextHelperService.tagBag.length;
+                const textNode = document.createElement("span");
+                const id = "_tag" + new Date().getTime() + BitByBitContextHelperService.tagBag.length;
                 tag.id = id;
                 textNode.id = id;
                 textNode.textContent = tag.text;
-                document.querySelector('.canvasZone').appendChild(textNode);
+                document.querySelector(".canvasZone").appendChild(textNode);
                 tag.needsUpdate = true;
                 BitByBitContextHelperService.tagBag.push(tag);
                 tagsToCreate.push(tag);

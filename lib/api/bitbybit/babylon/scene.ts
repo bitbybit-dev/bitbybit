@@ -1,10 +1,10 @@
 
-import { Context } from '../../context';
+import { Context } from "../../context";
 import {
     Color4, Color3, PointLight, Vector3,
     MeshBuilder, StandardMaterial, Light, ArcRotateCamera, ShadowGenerator, DirectionalLight, CubeTexture, Matrix, Ray, PickingInfo, Scene
-} from '@babylonjs/core';
-import * as Inputs from '../../inputs/inputs';
+} from "@babylonjs/core";
+import * as Inputs from "../../inputs/inputs";
 
 
 export class BabylonScene {
@@ -70,7 +70,7 @@ export class BabylonScene {
             light.shadowMinZ = 1;
             this.context.scene.metadata.shadowGenerators.push(shadowGenerator);
             this.context.scene.meshes.forEach(m => {
-                if (m.name !== 'hdrSkyBox') {
+                if (m.name !== "hdrSkyBox") {
                     shadowGenerator.addShadowCaster(m, true);
                     m.receiveShadows = true;
                 }
@@ -125,7 +125,7 @@ export class BabylonScene {
             light.shadowMinZ = 1;
             this.context.scene.metadata.shadowGenerators.push(shadowGenerator);
             this.context.scene.meshes.forEach(m => {
-                if (m.name !== 'hdrSkyBox') {
+                if (m.name !== "hdrSkyBox") {
                     shadowGenerator.addShadowCaster(m, true);
                     m.receiveShadows = true;
                 }
@@ -146,7 +146,7 @@ export class BabylonScene {
      * @shortname adjust active
      */
     adjustActiveArcRotateCamera(inputs: Inputs.BabylonScene.CameraConfigurationDto): void {
-        const camera = this.context.scene.getCameraByName('Camera') as ArcRotateCamera;
+        const camera = this.context.scene.getCameraByName("Camera") as ArcRotateCamera;
         camera.position = new Vector3(inputs.position[0], inputs.position[1], inputs.position[2]);
         camera.target = new Vector3(inputs.lookAt[0], inputs.lookAt[1], inputs.lookAt[2]);
         camera.maxZ = inputs.maxZ;
@@ -172,12 +172,12 @@ export class BabylonScene {
     enableSkybox(inputs: Inputs.BabylonScene.SkyboxDto): void {
         let texture: CubeTexture;
         if (inputs.skybox === Inputs.Base.skyboxEnum.default) {
-            texture = new CubeTexture('/assets/textures/default_skybox/skybox', this.context.scene);
+            texture = new CubeTexture("/assets/textures/default_skybox/skybox", this.context.scene);
         } else if (inputs.skybox === Inputs.Base.skyboxEnum.clearSky) {
-            texture = CubeTexture.CreateFromPrefilteredData('/assets/textures/clear_sky/environment.env',
+            texture = CubeTexture.CreateFromPrefilteredData("/assets/textures/clear_sky/environment.env",
                 this.context.scene, false, false);
         } else if (inputs.skybox === Inputs.Base.skyboxEnum.city) {
-            texture = CubeTexture.CreateFromPrefilteredData('/assets/textures/city/environmentSpecular.env',
+            texture = CubeTexture.CreateFromPrefilteredData("/assets/textures/city/environmentSpecular.env",
                 this.context.scene, false, false);
         }
 

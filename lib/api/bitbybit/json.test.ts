@@ -1,8 +1,8 @@
-import { Context } from '../context';
-import { JSONBitByBit } from './json';
-import * as jsonpath from 'jsonpath';
+import { Context } from "../context";
+import { JSONBitByBit } from "./json";
+import * as jsonpath from "jsonpath";
 
-describe('JSON unit tests', () => {
+describe("JSON unit tests", () => {
     let json: JSONBitByBit;
 
     beforeAll(async () => {
@@ -11,40 +11,40 @@ describe('JSON unit tests', () => {
         json = new JSONBitByBit(context);
     });
 
-    it('should stringify', async () => {
+    it("should stringify", async () => {
         const result = json.stringify({ json: { a: 1 } });
-        expect(result).toEqual('{"a":1}');
+        expect(result).toEqual("{\"a\":1}");
     });
 
-    it('should parse', async () => {
-        const result = json.parse({ text: '{"a":1}' });
+    it("should parse", async () => {
+        const result = json.parse({ text: "{\"a\":1}" });
         expect(result).toEqual({ a: 1 });
     });
 
-    it('should query', async () => {
-        const result = json.query({ json: { a: 1 }, query: '$.a' });
+    it("should query", async () => {
+        const result = json.query({ json: { a: 1 }, query: "$.a" });
         expect(result).toEqual([1]);
     });
 
-    it('should set value', async () => {
-        const result = json.setValue({ json: { a: 1 }, path: '$.a', value: 2 });
+    it("should set value", async () => {
+        const result = json.setValue({ json: { a: 1 }, path: "$.a", value: 2 });
         expect(result).toEqual({ a: 2 });
     });
 
-    it('should find paths', async () => {
-        const result = json.paths({ json: getMockJSON(), query: '$..author' });
+    it("should find paths", async () => {
+        const result = json.paths({ json: getMockJSON(), query: "$..author" });
         expect(result).toEqual(
             [
-                ['$', 'store', 'book', 0, 'author'],
-                ['$', 'store', 'book', 1, 'author'],
-                ['$', 'store', 'book', 2, 'author'],
-                ['$', 'store', 'book', 3, 'author']
+                ["$", "store", "book", 0, "author"],
+                ["$", "store", "book", 1, "author"],
+                ["$", "store", "book", 2, "author"],
+                ["$", "store", "book", 3, "author"]
             ]
         );
     });
 
-    it('should find stringified paths', async () => {
-        const result = json.pathsAsStrings({ json: getMockJSON(), query: '$..author' });
+    it("should find stringified paths", async () => {
+        const result = json.pathsAsStrings({ json: getMockJSON(), query: "$..author" });
         expect(result).toEqual(
             [
                 "$.store.book[0].author",
@@ -55,11 +55,11 @@ describe('JSON unit tests', () => {
         );
     });
 
-    it('should find authors', async () => {
+    it("should find authors", async () => {
         const j = getMockJSON();
-        const paths = json.paths({ json: j, query: '$..author' });
+        const paths = json.paths({ json: j, query: "$..author" });
         const result = paths.map(path => {
-            const query = path.join('.');
+            const query = path.join(".");
             return json.query({ json: j, query: query });
         }).flat();
 
@@ -73,9 +73,9 @@ describe('JSON unit tests', () => {
         );
     });
 
-    it('should find authors by using paths as strings', async () => {
+    it("should find authors by using paths as strings", async () => {
         const j = getMockJSON();
-        const paths = json.pathsAsStrings({ json: j, query: '$..author' });
+        const paths = json.pathsAsStrings({ json: j, query: "$..author" });
         const result = paths.map(path => {
             return json.query({ json: j, query: path });
         }).flat();

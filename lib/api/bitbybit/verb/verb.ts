@@ -1,9 +1,9 @@
 
-import { Context } from '../../context';
-import { GeometryHelper } from '../../geometry-helper';
-import { VerbCurve } from './curve';
-import { VerbIntersect } from './intersect';
-import { VerbSurface } from './surface';
+import { Context } from "../../context";
+import { GeometryHelper } from "../../geometry-helper";
+import { VerbCurve } from "./curve";
+import { VerbIntersect } from "./intersect";
+import { VerbSurface } from "./surface";
 
 /**
  * Contains various functions for Nurbs curves and surfaces.

@@ -1,10 +1,10 @@
-import { Vector3 } from '@babylonjs/core';
-import { Context } from '../../../context';
-import * as Inputs from '../../../inputs/inputs';
-import { Base } from '../../../inputs/inputs';
-import { BabylonArcRotateCamera } from './arc-rotate-camera';
-import { BabylonFreeCamera } from './free-camera';
-import { BabylonTargetCamera } from './target-camera';
+import { Vector3 } from "@babylonjs/core";
+import { Context } from "../../../context";
+import * as Inputs from "../../../inputs/inputs";
+import { Base } from "../../../inputs/inputs";
+import { BabylonArcRotateCamera } from "./arc-rotate-camera";
+import { BabylonFreeCamera } from "./free-camera";
+import { BabylonTargetCamera } from "./target-camera";
 
 export class BabylonCamera {
 

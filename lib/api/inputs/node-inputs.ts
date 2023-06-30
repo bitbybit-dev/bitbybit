@@ -1,5 +1,5 @@
-import { TransformNode } from '@babylonjs/core';
-import { Base } from './base-inputs';
+import { TransformNode } from "@babylonjs/core";
+import { Base } from "./base-inputs";
 
 // tslint:disable-next-line: no-namespace
 export namespace BabylonNode {
@@ -95,15 +95,15 @@ export namespace BabylonNode {
         /**
          * Hex encoded color string for X axis
          */
-        colorX = '#ff0000';
+        colorX = "#ff0000";
         /**
          * Hex encoded color string for Y axis
          */
-        colorY = '#00ff00';
+        colorY = "#00ff00";
         /**
          * Hex encoded color string for Z axis
          */
-        colorZ = '#0000ff';
+        colorZ = "#0000ff";
         /**
          * Length of the node axis
          */
@@ -124,15 +124,15 @@ export namespace BabylonNode {
         /**
          * Hex encoded color string for X axis
          */
-        colorX = '#ff0000';
+        colorX = "#ff0000";
         /**
          * Hex encoded color string for Y axis
          */
-        colorY = '#00ff00';
+        colorY = "#00ff00";
         /**
          * Hex encoded color string for Z axis
          */
-        colorZ = '#0000ff';
+        colorZ = "#0000ff";
         /**
          * Length of the node axis
          */

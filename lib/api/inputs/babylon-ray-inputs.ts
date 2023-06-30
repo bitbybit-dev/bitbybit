@@ -1,5 +1,5 @@
-import { Ray } from '@babylonjs/core';
-import { Base } from './base-inputs';
+import { Ray } from "@babylonjs/core";
+import { Base } from "./base-inputs";
 
 // tslint:disable-next-line: no-namespace
 export namespace BabylonRay {

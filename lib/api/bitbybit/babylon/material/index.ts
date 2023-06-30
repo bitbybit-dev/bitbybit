@@ -1,2 +1,2 @@
-export * from './material';
-export * from './pbr-metallic-roughness';
+export * from "./material";
+export * from "./pbr-metallic-roughness";

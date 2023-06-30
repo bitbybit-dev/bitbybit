@@ -1,7 +1,7 @@
 
-import { Context } from '../../../context';
-import { Color } from '../../color';
-import { BabylonMaterialPbrMetallicRoughness } from './pbr-metallic-roughness';
+import { Context } from "../../../context";
+import { Color } from "../../color";
+import { BabylonMaterialPbrMetallicRoughness } from "./pbr-metallic-roughness";
 
 export class BabylonMaterial {
 

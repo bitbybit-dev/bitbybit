@@ -1,8 +1,8 @@
 
-import { Context } from '../../context';
-import { GeometryHelper } from '../../geometry-helper';
-import * as Inputs from '../../inputs/inputs';
-import { BaseTypes } from '../base-types';
+import { Context } from "../../context";
+import { GeometryHelper } from "../../geometry-helper";
+import * as Inputs from "../../inputs/inputs";
+import { BaseTypes } from "../base-types";
 
 /**
  * Functions that allow to intersect various geometric entities and get the results

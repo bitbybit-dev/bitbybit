@@ -14,8 +14,8 @@ export namespace Base {
     
     // tslint:disable-next-line: no-namespace
     export enum skyboxEnum {
-        default = 'default',
-        clearSky = 'clearSky',
-        city = 'city'
+        default = "default",
+        clearSky = "clearSky",
+        city = "city"
     }
 }

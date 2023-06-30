@@ -1,6 +1,6 @@
 
-import { JSCADWorkerManager } from '../../../workers/jscad/jscad-worker-manager';
-import * as Inputs from '../../inputs/inputs';
+import { JSCADWorkerManager } from "../../../workers/jscad/jscad-worker-manager";
+import * as Inputs from "../../inputs/inputs";
 
 /**
  * Contains various functions for Solid booleans from JSCAD library https://github.com/jscad/OpenJSCAD.org
@@ -22,7 +22,7 @@ export class JSCADBooleans {
      * @drawable true
      */
     async intersect(inputs: Inputs.JSCAD.BooleanObjectsDto): Promise<Inputs.JSCAD.JSCADEntity> {
-        return this.jscadWorkerManager.genericCallToWorkerPromise('booleans.intersect', inputs);
+        return this.jscadWorkerManager.genericCallToWorkerPromise("booleans.intersect", inputs);
     }
 
     /**
@@ -34,7 +34,7 @@ export class JSCADBooleans {
      * @drawable true
      */
     async subtract(inputs: Inputs.JSCAD.BooleanObjectsDto): Promise<Inputs.JSCAD.JSCADEntity> {
-        return this.jscadWorkerManager.genericCallToWorkerPromise('booleans.subtract', inputs);
+        return this.jscadWorkerManager.genericCallToWorkerPromise("booleans.subtract", inputs);
     }
 
     /**
@@ -46,6 +46,6 @@ export class JSCADBooleans {
      * @drawable true
      */
     async union(inputs: Inputs.JSCAD.BooleanObjectsDto): Promise<Inputs.JSCAD.JSCADEntity> {
-        return this.jscadWorkerManager.genericCallToWorkerPromise('booleans.union', inputs);
+        return this.jscadWorkerManager.genericCallToWorkerPromise("booleans.union", inputs);
     }
 }

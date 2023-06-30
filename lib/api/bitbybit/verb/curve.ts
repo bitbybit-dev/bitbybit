@@ -1,11 +1,11 @@
 
-import { LinesMesh } from '@babylonjs/core';
-import { Context } from '../../context';
-import { GeometryHelper } from '../../geometry-helper';
-import * as Inputs from '../../inputs/inputs';
-import { BaseTypes } from '../base-types';
-import { VerbCurveCircle } from './curve-circle';
-import { VerbCurveEllipse } from './curve-ellipse';
+import { LinesMesh } from "@babylonjs/core";
+import { Context } from "../../context";
+import { GeometryHelper } from "../../geometry-helper";
+import * as Inputs from "../../inputs/inputs";
+import { BaseTypes } from "../base-types";
+import { VerbCurveCircle } from "./curve-circle";
+import { VerbCurveEllipse } from "./curve-ellipse";
 
 /**
  * Contains various methods for nurbs curves.

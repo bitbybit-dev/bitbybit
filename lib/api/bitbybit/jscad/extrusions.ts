@@ -1,6 +1,6 @@
 
-import { JSCADWorkerManager } from '../../../workers/jscad/jscad-worker-manager';
-import * as Inputs from '../../inputs/inputs';
+import { JSCADWorkerManager } from "../../../workers/jscad/jscad-worker-manager";
+import * as Inputs from "../../inputs/inputs";
 
 /**
  * Contains various functions for Solid extrusions from JSCAD library https://github.com/jscad/OpenJSCAD.org
@@ -22,7 +22,7 @@ export class JSCADExtrusions {
      * @drawable true
      */
     async extrudeLinear(inputs: Inputs.JSCAD.ExtrudeLinearDto): Promise<Inputs.JSCAD.JSCADEntity> {
-        return this.jscadWorkerManager.genericCallToWorkerPromise('extrusions.extrudeLinear', inputs);
+        return this.jscadWorkerManager.genericCallToWorkerPromise("extrusions.extrudeLinear", inputs);
     }
 
     /**
@@ -34,7 +34,7 @@ export class JSCADExtrusions {
      * @drawable true
      */
     async extrudeRectangular(inputs: Inputs.JSCAD.ExtrudeRectangularDto): Promise<Inputs.JSCAD.JSCADEntity> {
-        return this.jscadWorkerManager.genericCallToWorkerPromise('extrusions.extrudeRectangular', inputs);
+        return this.jscadWorkerManager.genericCallToWorkerPromise("extrusions.extrudeRectangular", inputs);
     }
 
     /**
@@ -46,7 +46,7 @@ export class JSCADExtrusions {
      * @drawable true
      */
     async extrudeRectangularPoints(inputs: Inputs.JSCAD.ExtrudeRectangularPointsDto): Promise<Inputs.JSCAD.JSCADEntity> {
-        return this.jscadWorkerManager.genericCallToWorkerPromise('extrusions.extrudeRectangularPoints', inputs);
+        return this.jscadWorkerManager.genericCallToWorkerPromise("extrusions.extrudeRectangularPoints", inputs);
     }
 
     /**
@@ -58,7 +58,7 @@ export class JSCADExtrusions {
      * @drawable true
      */
     async extrudeRotate(inputs: Inputs.JSCAD.ExtrudeRotateDto): Promise<Inputs.JSCAD.JSCADEntity> {
-        return this.jscadWorkerManager.genericCallToWorkerPromise('extrusions.extrudeRotate', inputs);
+        return this.jscadWorkerManager.genericCallToWorkerPromise("extrusions.extrudeRotate", inputs);
     }
 
 }

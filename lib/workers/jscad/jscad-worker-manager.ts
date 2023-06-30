@@ -1,6 +1,6 @@
-import { Subject } from 'rxjs';
-import { JscadInfo } from './jscad-info';
-import { JscadStateEnum } from './jscad-state.enum';
+import { Subject } from "rxjs";
+import { JscadInfo } from "./jscad-info";
+import { JscadStateEnum } from "./jscad-state.enum";
 
 /**
  * This is a manager of JSCAD worker. Promisified API allows to deal with the worker in a more natural way
@@ -25,11 +25,11 @@ export class JSCADWorkerManager {
     setJscadWorker(worker: Worker): void {
         this.jscadWorker = worker;
         this.jscadWorker.onmessage = ({ data }) => {
-            if (data === 'jscad-initialised') {
+            if (data === "jscad-initialised") {
                 this.jscadWorkerState.next({
                     state: JscadStateEnum.initialised,
                 });
-            } else if (data === 'busy') {
+            } else if (data === "busy") {
                 this.jscadWorkerState.next({
                     state: JscadStateEnum.computing,
                 });
@@ -88,7 +88,7 @@ export class JSCADWorkerManager {
      * In this way it is possible to hace the cache of manageable size
      */
     startedTheRun(): Promise<any> {
-        return this.genericCallToWorkerPromise('startedTheRun', {});
+        return this.genericCallToWorkerPromise("startedTheRun", {});
     }
 
     /**
@@ -97,7 +97,7 @@ export class JSCADWorkerManager {
      * In this way it is possible to hace the cache of manageable size
      */
     cleanAllCache(): Promise<any> {
-        return this.genericCallToWorkerPromise('cleanAllCache', {});
+        return this.genericCallToWorkerPromise("cleanAllCache", {});
     }
 
 }

@@ -1,15 +1,15 @@
 
-import { Color3, Mesh, PBRMetallicRoughnessMaterial, StandardMaterial, VertexData } from '@babylonjs/core';
-import { Context } from '../../context';
-import { GeometryHelper } from '../../geometry-helper';
-import * as Inputs from '../../inputs/inputs';
-import { BaseTypes } from '../base-types';
-import { VerbSurfaceConical } from './surface-conical';
-import { VerbSurfaceCylindrical } from './surface-cylindrical';
-import { VerbSurfaceExtrusion } from './surface-extrusion';
-import { VerbSurfaceRevolved } from './surface-revolved';
-import { VerbSurfaceSpherical } from './surface-spherical';
-import { VerbSurfaceSweep } from './surface-sweep';
+import { Color3, Mesh, PBRMetallicRoughnessMaterial, StandardMaterial, VertexData } from "@babylonjs/core";
+import { Context } from "../../context";
+import { GeometryHelper } from "../../geometry-helper";
+import * as Inputs from "../../inputs/inputs";
+import { BaseTypes } from "../base-types";
+import { VerbSurfaceConical } from "./surface-conical";
+import { VerbSurfaceCylindrical } from "./surface-cylindrical";
+import { VerbSurfaceExtrusion } from "./surface-extrusion";
+import { VerbSurfaceRevolved } from "./surface-revolved";
+import { VerbSurfaceSpherical } from "./surface-spherical";
+import { VerbSurfaceSweep } from "./surface-sweep";
 
 /**
  * Contains various functions for Nurbs surfaces.
@@ -56,7 +56,7 @@ export class VerbSurface {
             countIndices = this.parseFaces(faceIndices, meshData, meshDataConverted, countIndices);
         });
 
-        const pbr = new PBRMetallicRoughnessMaterial('pbr' + Math.random(), this.context.scene);
+        const pbr = new PBRMetallicRoughnessMaterial("pbr" + Math.random(), this.context.scene);
 
         pbr.baseColor = Color3.FromHexString(Array.isArray(inputs.colours) ? inputs.colours[0] : inputs.colours);
         pbr.metallic = 1.0;
@@ -100,7 +100,7 @@ export class VerbSurface {
             });
         });
 
-        const pbr = new PBRMetallicRoughnessMaterial('pbr' + Math.random(), this.context.scene);
+        const pbr = new PBRMetallicRoughnessMaterial("pbr" + Math.random(), this.context.scene);
 
         pbr.baseColor = Color3.FromHexString(Array.isArray(inputs.colours) ? inputs.colours[0] : inputs.colours);
         pbr.metallic = 1.0;

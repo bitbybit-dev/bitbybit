@@ -95,9 +95,9 @@ export class CacheHelper {
      */
     computeHash(args, raw?: any): any {
         let argsString = JSON.stringify(args);
-        argsString = argsString.replace(/(\"ptr\"\:(-?[0-9]*?)\,)/g, '');
-        argsString = argsString.replace(/(\"ptr\"\:(-?[0-9]*))/g, '');
-        if (argsString.includes('ptr')) { console.error('YOU DONE MESSED UP YOUR REGEX.'); }
+        argsString = argsString.replace(/(\"ptr\"\:(-?[0-9]*?)\,)/g, "");
+        argsString = argsString.replace(/(\"ptr\"\:(-?[0-9]*))/g, "");
+        if (argsString.includes("ptr")) { console.error("YOU DONE MESSED UP YOUR REGEX."); }
         const hashString = Math.random.toString() + argsString;
         if (raw) { return hashString; }
         return this.stringToHash(hashString);

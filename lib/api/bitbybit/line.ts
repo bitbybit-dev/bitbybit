@@ -1,9 +1,9 @@
 
-import { Color3, Color4, LinesMesh, Mesh, MeshBuilder, Vector3 } from '@babylonjs/core';
-import { map } from 'rxjs';
-import { Context } from '../context';
-import { GeometryHelper } from '../geometry-helper';
-import * as Inputs from '../inputs/inputs';
+import { Color3, Color4, LinesMesh, Mesh, MeshBuilder, Vector3 } from "@babylonjs/core";
+import { map } from "rxjs";
+import { Context } from "../context";
+import { GeometryHelper } from "../geometry-helper";
+import * as Inputs from "../inputs/inputs";
 
 /**
  * Contains various methods for lines. Line in bitbybit is a simple object that has star and end point properties.
@@ -186,10 +186,10 @@ export class Line {
         const point2 = inputs.line.end;
         const parameter = inputs.param;
 
-        let direction = [point2[0] - point1[0], point2[1] - point1[1], point2[2] - point1[2]];
+        const direction = [point2[0] - point1[0], point2[1] - point1[1], point2[2] - point1[2]];
 
         // Calculate point on line segment corresponding to parameter value
-        let point = [point1[0] + parameter * direction[0], point1[1] + parameter * direction[1], point1[2] + parameter * direction[2]] as Inputs.Base.Point3;
+        const point = [point1[0] + parameter * direction[0], point1[1] + parameter * direction[1], point1[2] + parameter * direction[2]] as Inputs.Base.Point3;
         return point;
     }
 

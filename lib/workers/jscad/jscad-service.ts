@@ -1,13 +1,13 @@
-import { VectorHelperService } from '@bitbybit-dev/occt';
-import { JSCADExpansions } from './services/jscad-expansions';
-import { JSCADBooleans } from './services/jscad-booleans';
-import { JSCADExtrusions } from './services/jscad-extrusions';
-import { JSCADPath } from './services/jscad-path';
-import { JSCADPolygon } from './services/jscad-polygon';
-import { JSCADShapes } from './services/jscad-shapes';
-import { JSCADText } from './services/jscad-text';
-import * as Inputs from '../../api/inputs/jscad-inputs';
-import { JSCADHulls } from './services/jscad-hulls';
+import { VectorHelperService } from "@bitbybit-dev/occt";
+import { JSCADExpansions } from "./services/jscad-expansions";
+import { JSCADBooleans } from "./services/jscad-booleans";
+import { JSCADExtrusions } from "./services/jscad-extrusions";
+import { JSCADPath } from "./services/jscad-path";
+import { JSCADPolygon } from "./services/jscad-polygon";
+import { JSCADShapes } from "./services/jscad-shapes";
+import { JSCADText } from "./services/jscad-text";
+import * as Inputs from "../../api/inputs/jscad-inputs";
+import { JSCADHulls } from "./services/jscad-hulls";
 
 // Worker make an instance of this class itself
 export class Jscad {
@@ -129,7 +129,7 @@ export class Jscad {
         const rawData = this.jscad.STLSERIALIZER.serialize({ binary: true },
             this.jscad.transforms.mirror({ normal: [1, 0, 0] }, inputs.mesh)
         );
-        const madeBlob = new Blob(rawData, { type: 'application/sla' });
+        const madeBlob = new Blob(rawData, { type: "application/sla" });
         return { blob: madeBlob };
     }
 
@@ -138,12 +138,12 @@ export class Jscad {
             ...inputs.meshes.map(solid => {
                 return this.jscad.transforms.mirror({ normal: [1, 0, 0] }, solid);
             }));
-        const madeBlob = new Blob(rawData, { type: 'application/sla' });
+        const madeBlob = new Blob(rawData, { type: "application/sla" });
         return { blob: madeBlob };
     }
 
     private degrees_to_radians(degrees) {
-        var pi = Math.PI;
+        const pi = Math.PI;
         return degrees * (pi / 180);
     }
 

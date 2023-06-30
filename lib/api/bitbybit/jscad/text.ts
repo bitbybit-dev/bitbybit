@@ -1,6 +1,6 @@
 
-import { JSCADWorkerManager } from '../../../workers/jscad/jscad-worker-manager';
-import * as Inputs from '../../inputs/inputs';
+import { JSCADWorkerManager } from "../../../workers/jscad/jscad-worker-manager";
+import * as Inputs from "../../inputs/inputs";
 
 /**
  * Contains various functions for solid 3D texts from JSCAD library https://github.com/jscad/OpenJSCAD.org
@@ -22,7 +22,7 @@ export class JSCADText {
      * @drawable true
      */
     async cylindricalText(inputs: Inputs.JSCAD.CylinderTextDto): Promise<Inputs.JSCAD.JSCADEntity[]> {
-        return this.jscadWorkerManager.genericCallToWorkerPromise('text.cylindricalText', inputs);
+        return this.jscadWorkerManager.genericCallToWorkerPromise("text.cylindricalText", inputs);
     }
 
     /**
@@ -34,7 +34,7 @@ export class JSCADText {
      * @drawable true
      */
     async sphericalText(inputs: Inputs.JSCAD.SphereTextDto): Promise<Inputs.JSCAD.JSCADEntity[]> {
-        return this.jscadWorkerManager.genericCallToWorkerPromise('text.sphericalText', inputs);
+        return this.jscadWorkerManager.genericCallToWorkerPromise("text.sphericalText", inputs);
     }
 
     /**
@@ -47,7 +47,7 @@ export class JSCADText {
      * @ignore true
      */
     async createVectorText(inputs: Inputs.JSCAD.TextDto): Promise<number[][]> {
-        return this.jscadWorkerManager.genericCallToWorkerPromise('text.createVectorText', inputs);
+        return this.jscadWorkerManager.genericCallToWorkerPromise("text.createVectorText", inputs);
 
     }
 }

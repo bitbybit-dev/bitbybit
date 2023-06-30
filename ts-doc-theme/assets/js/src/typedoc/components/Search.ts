@@ -150,7 +150,7 @@ function updateResults(
     const searchText = query.value.trim();
 
     // Perform a wildcard search
-    let res = state.index.search(`*${searchText}*`);
+    const res = state.index.search(`*${searchText}*`);
 
     for (let i = 0, c = Math.min(10, res.length); i < c; i++) {
         const row = state.data.rows[Number(res[i].ref)];
@@ -253,7 +253,7 @@ const SPECIAL_HTML = {
     "<": "&lt;",
     ">": "&gt;",
     "'": "&#039;",
-    '"': "&quot;",
+    "\"": "&quot;",
 } as const;
 
 function escapeHtml(text: string) {

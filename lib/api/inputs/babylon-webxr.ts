@@ -1,5 +1,5 @@
-import { Camera, FreeCamera, Mesh, TargetCamera } from '@babylonjs/core';
-import { Base } from './base-inputs';
+import { Camera, FreeCamera, Mesh, TargetCamera } from "@babylonjs/core";
+import { Base } from "./base-inputs";
 
 // tslint:disable-next-line: no-namespace
 export namespace BabylonWebXR {

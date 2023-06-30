@@ -1,6 +1,6 @@
-import { Mesh } from '@babylonjs/core';
-import { BaseTypes } from '../bitbybit/base-types';
-import { Base } from './base-inputs';
+import { Mesh } from "@babylonjs/core";
+import { BaseTypes } from "../bitbybit/base-types";
+import { Base } from "./base-inputs";
 
 // tslint:disable-next-line: no-namespace
 export namespace Tag {
@@ -58,7 +58,7 @@ export namespace Tag {
         /**
          * Colour of the tag
          */
-        colour = '#444444';
+        colour = "#444444";
         /**
          * Text size
          */

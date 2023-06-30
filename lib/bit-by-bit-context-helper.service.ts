@@ -1,5 +1,5 @@
-import { PrintSaveInterface } from './models/print-save.model';
-import { OBJFileLoader } from '@babylonjs/loaders';
+import { PrintSaveInterface } from "./models/print-save.model";
+import { OBJFileLoader } from "@babylonjs/loaders";
 
 export class BitByBitContextHelperService {
 
@@ -38,7 +38,7 @@ export class BitByBitContextHelperService {
         return new Promise((resolve, reject) => {
             if (file) {
                 const reader = new FileReader();
-                reader.readAsText(file, 'UTF-8');
+                reader.readAsText(file, "UTF-8");
                 reader.onload = (evt) => {
                     const text = (evt as any).target.result;
                     resolve(text);

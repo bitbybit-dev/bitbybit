@@ -1,6 +1,6 @@
 
-import { JSCADWorkerManager } from '../../../workers/jscad/jscad-worker-manager';
-import * as Inputs from '../../inputs/inputs';
+import { JSCADWorkerManager } from "../../../workers/jscad/jscad-worker-manager";
+import * as Inputs from "../../inputs/inputs";
 
 /**
  * Contains various functions for solid 3D shapes from JSCAD library https://github.com/jscad/OpenJSCAD.org
@@ -23,7 +23,7 @@ export class JSCADShapes {
      * @drawable true
      */
     async cube(inputs: Inputs.JSCAD.CubeDto): Promise<Inputs.JSCAD.JSCADEntity> {
-        return this.jscadWorkerManager.genericCallToWorkerPromise('shapes.cube', inputs);
+        return this.jscadWorkerManager.genericCallToWorkerPromise("shapes.cube", inputs);
     }
 
     /**
@@ -35,7 +35,7 @@ export class JSCADShapes {
      * @drawable true
      */
     async cubesOnCenterPoints(inputs: Inputs.JSCAD.CubeCentersDto): Promise<Inputs.JSCAD.JSCADEntity[]> {
-        return this.jscadWorkerManager.genericCallToWorkerPromise('shapes.cubesOnCenterPoints', inputs);
+        return this.jscadWorkerManager.genericCallToWorkerPromise("shapes.cubesOnCenterPoints", inputs);
     }
 
     /**
@@ -47,7 +47,7 @@ export class JSCADShapes {
      * @drawable true
      */
     async cuboid(inputs: Inputs.JSCAD.CuboidDto): Promise<Inputs.JSCAD.JSCADEntity> {
-        return this.jscadWorkerManager.genericCallToWorkerPromise('shapes.cuboid', inputs);
+        return this.jscadWorkerManager.genericCallToWorkerPromise("shapes.cuboid", inputs);
     }
 
     /**
@@ -59,7 +59,7 @@ export class JSCADShapes {
      * @drawable true
      */
     async cuboidsOnCenterPoints(inputs: Inputs.JSCAD.CuboidCentersDto): Promise<Inputs.JSCAD.JSCADEntity[]> {
-        return this.jscadWorkerManager.genericCallToWorkerPromise('shapes.cuboidsOnCenterPoints', inputs);
+        return this.jscadWorkerManager.genericCallToWorkerPromise("shapes.cuboidsOnCenterPoints", inputs);
     }
 
     /**
@@ -71,7 +71,7 @@ export class JSCADShapes {
      * @drawable true
      */
     async cylinderElliptic(inputs: Inputs.JSCAD.CylidnerEllipticDto): Promise<Inputs.JSCAD.JSCADEntity> {
-        return this.jscadWorkerManager.genericCallToWorkerPromise('shapes.cylinderElliptic', inputs);
+        return this.jscadWorkerManager.genericCallToWorkerPromise("shapes.cylinderElliptic", inputs);
     }
 
     /**
@@ -83,7 +83,7 @@ export class JSCADShapes {
      * @drawable true
      */
     async cylinderEllipticOnCenterPoints(inputs: Inputs.JSCAD.CylidnerCentersEllipticDto): Promise<Inputs.JSCAD.JSCADEntity[]> {
-        return this.jscadWorkerManager.genericCallToWorkerPromise('shapes.cylinderEllipticOnCenterPoints', inputs);
+        return this.jscadWorkerManager.genericCallToWorkerPromise("shapes.cylinderEllipticOnCenterPoints", inputs);
     }
 
     /**
@@ -95,7 +95,7 @@ export class JSCADShapes {
      * @drawable true
      */
      async cylinder(inputs: Inputs.JSCAD.CylidnerDto): Promise<Inputs.JSCAD.JSCADEntity> {
-        return this.jscadWorkerManager.genericCallToWorkerPromise('shapes.cylinder', inputs);
+        return this.jscadWorkerManager.genericCallToWorkerPromise("shapes.cylinder", inputs);
     }
 
     /**
@@ -107,7 +107,7 @@ export class JSCADShapes {
      * @drawable true
      */
      async cylindersOnCenterPoints(inputs: Inputs.JSCAD.CylidnerCentersDto): Promise<Inputs.JSCAD.JSCADEntity[]> {
-        return this.jscadWorkerManager.genericCallToWorkerPromise('shapes.cylindersOnCenterPoints', inputs);
+        return this.jscadWorkerManager.genericCallToWorkerPromise("shapes.cylindersOnCenterPoints", inputs);
     }
 
     /**
@@ -119,7 +119,7 @@ export class JSCADShapes {
      * @drawable true
      */
      async ellipsoid(inputs: Inputs.JSCAD.EllipsoidDto): Promise<Inputs.JSCAD.JSCADEntity> {
-        return this.jscadWorkerManager.genericCallToWorkerPromise('shapes.ellipsoid', inputs);
+        return this.jscadWorkerManager.genericCallToWorkerPromise("shapes.ellipsoid", inputs);
     }
 
     /**
@@ -131,7 +131,7 @@ export class JSCADShapes {
      * @drawable true
      */
      async ellipsoidsOnCenterPoints(inputs: Inputs.JSCAD.EllipsoidCentersDto): Promise<Inputs.JSCAD.JSCADEntity[]> {
-        return this.jscadWorkerManager.genericCallToWorkerPromise('shapes.ellipsoidsOnCenterPoints', inputs);
+        return this.jscadWorkerManager.genericCallToWorkerPromise("shapes.ellipsoidsOnCenterPoints", inputs);
     }
 
     /**
@@ -143,7 +143,7 @@ export class JSCADShapes {
      * @drawable true
      */
      async geodesicSphere(inputs: Inputs.JSCAD.GeodesicSphereDto): Promise<Inputs.JSCAD.JSCADEntity> {
-        return this.jscadWorkerManager.genericCallToWorkerPromise('shapes.geodesicSphere', inputs);
+        return this.jscadWorkerManager.genericCallToWorkerPromise("shapes.geodesicSphere", inputs);
     }
 
     /**
@@ -155,7 +155,7 @@ export class JSCADShapes {
      * @drawable true
      */
      async geodesicSpheresOnCenterPoints(inputs: Inputs.JSCAD.GeodesicSphereCentersDto): Promise<Inputs.JSCAD.JSCADEntity[]> {
-        return this.jscadWorkerManager.genericCallToWorkerPromise('shapes.geodesicSpheresOnCenterPoints', inputs);
+        return this.jscadWorkerManager.genericCallToWorkerPromise("shapes.geodesicSpheresOnCenterPoints", inputs);
     }
 
     /**
@@ -167,7 +167,7 @@ export class JSCADShapes {
      * @drawable true
      */
     async roundedCuboid(inputs: Inputs.JSCAD.RoundedCuboidDto): Promise<Inputs.JSCAD.JSCADEntity> {
-        return this.jscadWorkerManager.genericCallToWorkerPromise('shapes.roundedCuboid', inputs);
+        return this.jscadWorkerManager.genericCallToWorkerPromise("shapes.roundedCuboid", inputs);
 
     }
 
@@ -180,7 +180,7 @@ export class JSCADShapes {
      * @drawable true
      */
     async roundedCuboidsOnCenterPoints(inputs: Inputs.JSCAD.RoundedCuboidCentersDto): Promise<Inputs.JSCAD.JSCADEntity[]> {
-        return this.jscadWorkerManager.genericCallToWorkerPromise('shapes.roundedCuboidsOnCenterPoints', inputs);
+        return this.jscadWorkerManager.genericCallToWorkerPromise("shapes.roundedCuboidsOnCenterPoints", inputs);
     }
 
     /**
@@ -192,7 +192,7 @@ export class JSCADShapes {
      * @drawable true
      */
     async roundedCylinder(inputs: Inputs.JSCAD.RoundedCylidnerDto): Promise<Inputs.JSCAD.JSCADEntity> {
-        return this.jscadWorkerManager.genericCallToWorkerPromise('shapes.roundedCylinder', inputs);
+        return this.jscadWorkerManager.genericCallToWorkerPromise("shapes.roundedCylinder", inputs);
     }
 
     /**
@@ -204,7 +204,7 @@ export class JSCADShapes {
      * @drawable true
      */
     async roundedCylindersOnCenterPoints(inputs: Inputs.JSCAD.RoundedCylidnerCentersDto): Promise<Inputs.JSCAD.JSCADEntity[]> {
-        return this.jscadWorkerManager.genericCallToWorkerPromise('shapes.roundedCylindersOnCenterPoints', inputs);
+        return this.jscadWorkerManager.genericCallToWorkerPromise("shapes.roundedCylindersOnCenterPoints", inputs);
     }
 
     /**
@@ -216,7 +216,7 @@ export class JSCADShapes {
      * @drawable true
      */
     async sphere(inputs: Inputs.JSCAD.SphereDto): Promise<Inputs.JSCAD.JSCADEntity>{
-        return this.jscadWorkerManager.genericCallToWorkerPromise('shapes.sphere', inputs);
+        return this.jscadWorkerManager.genericCallToWorkerPromise("shapes.sphere", inputs);
     }
 
     /**
@@ -228,7 +228,7 @@ export class JSCADShapes {
      * @drawable true
      */
     async spheresOnCenterPoints(inputs: Inputs.JSCAD.SphereCentersDto): Promise<Inputs.JSCAD.JSCADEntity[]> {
-        return this.jscadWorkerManager.genericCallToWorkerPromise('shapes.spheresOnCenterPoints', inputs);
+        return this.jscadWorkerManager.genericCallToWorkerPromise("shapes.spheresOnCenterPoints", inputs);
     }
 
     /**
@@ -240,6 +240,6 @@ export class JSCADShapes {
      * @drawable true
      */
     async torus(inputs: Inputs.JSCAD.TorusDto): Promise<Inputs.JSCAD.JSCADEntity> {
-        return this.jscadWorkerManager.genericCallToWorkerPromise('shapes.torus', inputs);
+        return this.jscadWorkerManager.genericCallToWorkerPromise("shapes.torus", inputs);
     }
 }

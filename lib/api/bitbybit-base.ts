@@ -1,29 +1,29 @@
 
-import { OCCT as BaseOCCT, OCCTWorkerManager } from '@bitbybit-dev/occt-worker';
-import { Babylon } from './bitbybit/babylon/babylon';
-import { Vector } from './bitbybit/vector';
-import { Point } from './bitbybit/point';
-import { Line } from './bitbybit/line';
-import { Polyline } from './bitbybit/polyline';
-import { Draw } from './bitbybit/draw';
-import { Verb } from './bitbybit/verb/verb';
-import { JSCAD } from './bitbybit/jscad/jscad';
-import { Tag } from './bitbybit/tag';
-import { Time } from './bitbybit/time';
-import { TextBitByBit } from './bitbybit/text';
-import { OCCTW } from './bitbybit/occt/occt';
-import { Asset } from './bitbybit/asset';
-import { Color } from './bitbybit/color';
-import { MathBitByBit } from './bitbybit/math';
-import { Context } from './context';
-import { GeometryHelper } from './geometry-helper';
-import { JSCADWorkerManager } from '../workers/jscad/jscad-worker-manager';
-import { Scene } from '@babylonjs/core';
-import { core, geom } from 'verb-nurbs-web';
-import { Lists } from './bitbybit/lists';
-import { JSONBitByBit } from './bitbybit/json';
-import * as jsonpath from 'jsonpath';
-import { Logic } from './bitbybit/logic';
+import { OCCT as BaseOCCT, OCCTWorkerManager } from "@bitbybit-dev/occt-worker";
+import { Babylon } from "./bitbybit/babylon/babylon";
+import { Vector } from "./bitbybit/vector";
+import { Point } from "./bitbybit/point";
+import { Line } from "./bitbybit/line";
+import { Polyline } from "./bitbybit/polyline";
+import { Draw } from "./bitbybit/draw";
+import { Verb } from "./bitbybit/verb/verb";
+import { JSCAD } from "./bitbybit/jscad/jscad";
+import { Tag } from "./bitbybit/tag";
+import { Time } from "./bitbybit/time";
+import { TextBitByBit } from "./bitbybit/text";
+import { OCCTW } from "./bitbybit/occt/occt";
+import { Asset } from "./bitbybit/asset";
+import { Color } from "./bitbybit/color";
+import { MathBitByBit } from "./bitbybit/math";
+import { Context } from "./context";
+import { GeometryHelper } from "./geometry-helper";
+import { JSCADWorkerManager } from "../workers/jscad/jscad-worker-manager";
+import { Scene } from "@babylonjs/core";
+import { core, geom } from "verb-nurbs-web";
+import { Lists } from "./bitbybit/lists";
+import { JSONBitByBit } from "./bitbybit/json";
+import * as jsonpath from "jsonpath";
+import { Logic } from "./bitbybit/logic";
 
 export class BitByBitBase {
 

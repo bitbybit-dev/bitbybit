@@ -1,7 +1,7 @@
-import { VectorHelperService } from '@bitbybit-dev/occt';
-import { Angle } from '@babylonjs/core';
-import { Base } from '../../../api/inputs';
-import * as Inputs from '../../../api/inputs/jscad-inputs';
+import { VectorHelperService } from "@bitbybit-dev/occt";
+import { Angle } from "@babylonjs/core";
+import { Base } from "../../../api/inputs";
+import * as Inputs from "../../../api/inputs/jscad-inputs";
 
 /**
  * Contains various functions for Path from JSCAD library https://github.com/jscad/OpenJSCAD.org

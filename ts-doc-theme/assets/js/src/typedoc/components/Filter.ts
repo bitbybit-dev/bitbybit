@@ -125,7 +125,7 @@ class FilterItemSelect extends FilterItem<string> {
         });
 
         const selected = this.select.querySelector<HTMLElement>(
-            'li[data-value="' + newValue + '"]'
+            "li[data-value=\"" + newValue + "\"]"
         );
         const label = this.select.querySelector<HTMLElement>(
             ".tsd-select-label"

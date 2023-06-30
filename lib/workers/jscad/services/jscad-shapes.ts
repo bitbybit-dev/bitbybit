@@ -1,5 +1,5 @@
-import { Angle } from '@babylonjs/core';
-import * as Inputs from '../../../api/inputs/inputs';
+import { Angle } from "@babylonjs/core";
+import * as Inputs from "../../../api/inputs/inputs";
 
 /**
  * Contains various functions for solid 3D shapes from JSCAD library https://github.com/jscad/OpenJSCAD.org

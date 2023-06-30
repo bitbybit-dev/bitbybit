@@ -2,10 +2,10 @@
 import {
     Color4, Color3, Mesh, Vector3,
     StandardMaterial, PBRMetallicRoughnessMaterial, VertexBuffer, ShadowGenerator, Angle, InstancedMesh, Axis, Space, AbstractMesh, Material
-} from '@babylonjs/core';
-import { Context } from '../../context';
-import * as Inputs from '../../inputs/inputs';
-import { Base } from '../../inputs/inputs';
+} from "@babylonjs/core";
+import { Context } from "../../context";
+import * as Inputs from "../../inputs/inputs";
+import { Base } from "../../inputs/inputs";
 
 
 export class BabylonMesh {
@@ -646,7 +646,7 @@ export class BabylonMesh {
         let result: InstancedMesh;
         if (inputs.mesh && inputs.mesh.getChildMeshes && inputs.mesh.getChildMeshes().length > 0) {
             inputs.mesh.setParent(null);
-            const instance = inputs.mesh.createInstance('meshCloneInstance' + Math.random());
+            const instance = inputs.mesh.createInstance("meshCloneInstance" + Math.random());
             inputs.mesh.getChildMeshes(false).forEach((child: Mesh) => {
                 if (child.createInstance && child.getTotalVertices() > 0 && child.getTotalIndices() > 0) {
                     const newInstance = child.createInstance(`InstanceMesh${Math.random()}`);

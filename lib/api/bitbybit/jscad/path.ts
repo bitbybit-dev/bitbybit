@@ -1,6 +1,6 @@
 
-import { JSCADWorkerManager } from '../../../workers/jscad/jscad-worker-manager';
-import * as Inputs from '../../inputs/inputs';
+import { JSCADWorkerManager } from "../../../workers/jscad/jscad-worker-manager";
+import * as Inputs from "../../inputs/inputs";
 
 /**
  * Contains various functions for Path from JSCAD library https://github.com/jscad/OpenJSCAD.org
@@ -22,7 +22,7 @@ export class JSCADPath {
      * @drawable true
      */
     async createFromPoints(inputs: Inputs.JSCAD.PathFromPointsDto): Promise<Inputs.JSCAD.JSCADEntity> {
-        return this.jscadWorkerManager.genericCallToWorkerPromise('path.createFromPoints', inputs);
+        return this.jscadWorkerManager.genericCallToWorkerPromise("path.createFromPoints", inputs);
     }
 
 
@@ -35,7 +35,7 @@ export class JSCADPath {
      * @drawable true
      */
     async createFromPolyline(inputs: Inputs.JSCAD.PathFromPolylineDto): Promise<Inputs.JSCAD.JSCADEntity> {
-        return this.jscadWorkerManager.genericCallToWorkerPromise('path.createFromPolyline', inputs);
+        return this.jscadWorkerManager.genericCallToWorkerPromise("path.createFromPolyline", inputs);
     }
 
     /**
@@ -47,7 +47,7 @@ export class JSCADPath {
      * @drawable true
      */
     async createFromCurve(inputs: Inputs.JSCAD.PathFromCurveDto): Promise<Inputs.JSCAD.JSCADEntity> {
-        return this.jscadWorkerManager.genericCallToWorkerPromise('path.createFromCurve', inputs);
+        return this.jscadWorkerManager.genericCallToWorkerPromise("path.createFromCurve", inputs);
     }
 
     /**
@@ -58,7 +58,7 @@ export class JSCADPath {
      * @drawable false
      */
     async createEmpty(): Promise<Inputs.JSCAD.JSCADEntity> {
-        return this.jscadWorkerManager.genericCallToWorkerPromise('path.createEmpty', {});
+        return this.jscadWorkerManager.genericCallToWorkerPromise("path.createEmpty", {});
     }
 
     /**
@@ -70,7 +70,7 @@ export class JSCADPath {
      * @drawable true
      */
     async close(inputs: Inputs.JSCAD.PathDto): Promise<Inputs.JSCAD.JSCADEntity> {
-        return this.jscadWorkerManager.genericCallToWorkerPromise('path.close', inputs);
+        return this.jscadWorkerManager.genericCallToWorkerPromise("path.close", inputs);
     }
 
     /**
@@ -82,7 +82,7 @@ export class JSCADPath {
      * @drawable true
      */
     async appendPoints(inputs: Inputs.JSCAD.PathAppendPointsDto): Promise<Inputs.JSCAD.JSCADEntity> {
-        return this.jscadWorkerManager.genericCallToWorkerPromise('path.appendPoints', inputs);
+        return this.jscadWorkerManager.genericCallToWorkerPromise("path.appendPoints", inputs);
     }
 
     /**
@@ -94,7 +94,7 @@ export class JSCADPath {
      * @drawable true
      */
     async appendPolyline(inputs: Inputs.JSCAD.PathAppendPolylineDto): Promise<Inputs.JSCAD.JSCADEntity> {
-        return this.jscadWorkerManager.genericCallToWorkerPromise('path.appendPolyline', inputs);
+        return this.jscadWorkerManager.genericCallToWorkerPromise("path.appendPolyline", inputs);
     }
 
     /**
@@ -106,7 +106,7 @@ export class JSCADPath {
      * @drawable true
      */
     async appendCurve(inputs: Inputs.JSCAD.PathAppendCurveDto): Promise<Inputs.JSCAD.JSCADEntity> {
-        return this.jscadWorkerManager.genericCallToWorkerPromise('path.appendCurve', inputs);
+        return this.jscadWorkerManager.genericCallToWorkerPromise("path.appendCurve", inputs);
     }
 
     /**
@@ -118,6 +118,6 @@ export class JSCADPath {
      * @drawable true
      */
     async appendArc(inputs: Inputs.JSCAD.PathAppendArcDto): Promise<Inputs.JSCAD.JSCADEntity> {
-        return this.jscadWorkerManager.genericCallToWorkerPromise('path.appendArc', inputs);
+        return this.jscadWorkerManager.genericCallToWorkerPromise("path.appendArc", inputs);
     }
 }

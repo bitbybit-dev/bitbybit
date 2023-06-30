@@ -1,8 +1,8 @@
 
-import { Context } from '../../context';
-import { Matrix, PickingInfo, AbstractMesh, Sprite } from '@babylonjs/core';
-import * as Inputs from '../../inputs/inputs';
-import { Base } from '../../inputs/inputs';
+import { Context } from "../../context";
+import { Matrix, PickingInfo, AbstractMesh, Sprite } from "@babylonjs/core";
+import * as Inputs from "../../inputs/inputs";
+import { Base } from "../../inputs/inputs";
 
 
 export class BabylonPick {

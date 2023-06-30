@@ -1,6 +1,6 @@
-import { LinesMesh, Mesh } from '@babylonjs/core';
-import { BaseTypes } from '../bitbybit/base-types';
-import { Base } from './base-inputs';
+import { LinesMesh, Mesh } from "@babylonjs/core";
+import { BaseTypes } from "../bitbybit/base-types";
+import { Base } from "./base-inputs";
 
 // tslint:disable-next-line: no-namespace
 export namespace Verb {
@@ -65,7 +65,7 @@ export namespace Verb {
         /**
          * Hex colour string
          */
-        colours: string | string[] = '#444444';
+        colours: string | string[] = "#444444";
         /**
          * Width of the polyline
          */
@@ -216,7 +216,7 @@ export namespace Verb {
         /**
          * Hex colour string
          */
-        colours: string | string[] = '#444444';
+        colours: string | string[] = "#444444";
         /**
          * Width of the polyline
          */
@@ -515,7 +515,7 @@ export namespace Verb {
         /**
          * Hex colour string
          */
-        colours: string | string[] = '#444444';
+        colours: string | string[] = "#444444";
         /**
          * Indicates wether the position of this surface will change in time
          */
@@ -547,7 +547,7 @@ export namespace Verb {
         /**
          * Hex colour string
          */
-        colours: string | string[] = '#444444';
+        colours: string | string[] = "#444444";
         /**
          * Indicates wether the position of these surfaces will change in time
          */

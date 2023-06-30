@@ -1,10 +1,10 @@
 
-import { Color3, Mesh, StandardMaterial, VertexBuffer, VertexData } from '@babylonjs/core';
-import { Context } from '../context';
-import { GeometryHelper } from '../geometry-helper';
-import * as Inputs from '../inputs/inputs';
-import { Base } from '../inputs/inputs';
-import { Line } from './line';
+import { Color3, Mesh, StandardMaterial, VertexBuffer, VertexData } from "@babylonjs/core";
+import { Context } from "../context";
+import { GeometryHelper } from "../geometry-helper";
+import * as Inputs from "../inputs/inputs";
+import { Base } from "../inputs/inputs";
+import { Line } from "./line";
 
 /**
  * Contains various methods for points. Point in bitbybit is simply an array containing 3 numbers for [x, y, z].
@@ -131,7 +131,7 @@ export class Point {
      */
     transformsForPoints(inputs: Inputs.Point.TransformsForPointsDto): Inputs.Base.Point3[] {
         if (inputs.points.length !== inputs.matrix.length) {
-            throw new Error('You must provide equal nr of points and transformations');
+            throw new Error("You must provide equal nr of points and transformations");
         }
         return inputs.points.map((pt, index) => {
             return this.geometryHelper.transformControlPoints(inputs.matrix[index], [pt])[0];

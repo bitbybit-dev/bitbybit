@@ -1,6 +1,6 @@
 
-import { BitByBitContextHelperService } from '../../bit-by-bit-context-helper.service';
-import * as Inputs from '../inputs/inputs';
+import { BitByBitContextHelperService } from "../../bit-by-bit-context-helper.service";
+import * as Inputs from "../inputs/inputs";
 
 /**
  * Time functions help to create various interactions which happen in time

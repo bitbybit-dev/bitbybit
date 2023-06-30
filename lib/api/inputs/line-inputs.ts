@@ -1,5 +1,5 @@
-import { InputStepMode, LinesMesh } from '@babylonjs/core';
-import { Base } from './base-inputs';
+import { InputStepMode, LinesMesh } from "@babylonjs/core";
+import { Base } from "./base-inputs";
 
 // tslint:disable-next-line: no-namespace
 export namespace Line {
@@ -55,7 +55,7 @@ export namespace Line {
         /**
          * Hex colour string
          */
-        colours: string | string[] = '#444444';
+        colours: string | string[] = "#444444";
         /**
          * Width of the line
          */
@@ -87,7 +87,7 @@ export namespace Line {
         /**
          * Hex colour string
          */
-        colours: string | string[] = '#444444';
+        colours: string | string[] = "#444444";
         /**
          * Width of the line
          */

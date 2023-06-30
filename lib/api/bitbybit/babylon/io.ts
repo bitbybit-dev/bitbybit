@@ -1,13 +1,13 @@
-import * as Inputs from '../../inputs/inputs';
-import { GLTF2Export } from '@babylonjs/serializers/glTF/2.0';
-import { LinesMesh, Mesh, MeshBuilder, SceneLoader, SceneSerializer, ShadowGenerator, Vector3 } from '@babylonjs/core';
-import { Context } from '../../context';
-import { STLExport } from '@babylonjs/serializers';
+import * as Inputs from "../../inputs/inputs";
+import { GLTF2Export } from "@babylonjs/serializers/glTF/2.0";
+import { LinesMesh, Mesh, MeshBuilder, SceneLoader, SceneSerializer, ShadowGenerator, Vector3 } from "@babylonjs/core";
+import { Context } from "../../context";
+import { STLExport } from "@babylonjs/serializers";
 
 export class BabylonIO {
 
     private supportedFileFormats = [
-        'glb', 'gltf', 'stl', 'obj',
+        "glb", "gltf", "stl", "obj",
     ];
     private objectUrl: string;
 
@@ -21,11 +21,11 @@ export class BabylonIO {
      * @shortname asset
      */
     async loadAssetIntoScene(inputs: Inputs.Asset.AssetFileDto): Promise<Mesh> {
-        const type = inputs.assetFile.name.split('.').pop();
+        const type = inputs.assetFile.name.split(".").pop();
 
         if (this.supportedFileFormats.includes(type.toLocaleLowerCase())) {
             try {
-                return await this.loadAsset('', '', inputs.assetFile, inputs.hidden);
+                return await this.loadAsset("", "", inputs.assetFile, inputs.hidden);
             }
             catch (e) {
                 throw Error(e);
@@ -43,11 +43,11 @@ export class BabylonIO {
      * @shortname asset from url
      */
     async loadAssetIntoSceneFromRootUrl(inputs: Inputs.Asset.AssetFileByUrlDto): Promise<Mesh> {
-        const type = inputs.assetFile.split('.').pop();
+        const type = inputs.assetFile.split(".").pop();
 
         if (this.supportedFileFormats.includes(type.toLocaleLowerCase())) {
             try {
-                return await this.loadAsset('', inputs.rootUrl, inputs.assetFile, inputs.hidden);
+                return await this.loadAsset("", inputs.rootUrl, inputs.assetFile, inputs.hidden);
             }
             catch (e) {
                 throw Error(e);
@@ -74,18 +74,18 @@ export class BabylonIO {
         const strScene = JSON.stringify(serializedScene);
 
         let filename = inputs.filename;
-        if (filename.toLowerCase().lastIndexOf('.babylon') !== filename.length - 8 || filename.length < 9) {
-            filename += '.babylon';
+        if (filename.toLowerCase().lastIndexOf(".babylon") !== filename.length - 8 || filename.length < 9) {
+            filename += ".babylon";
         }
 
-        const blob = new Blob([strScene], { type: 'octet/stream' });
+        const blob = new Blob([strScene], { type: "octet/stream" });
 
         // turn blob into an object URL; saved as a member, so can be cleaned out later
         this.objectUrl = (window.webkitURL || window.URL).createObjectURL(blob);
 
-        const fileLink = document.createElement('a');
+        const fileLink = document.createElement("a");
         fileLink.href = this.objectUrl;
-        fileLink.target = '_self';
+        fileLink.target = "_self";
         fileLink.download = filename;
         fileLink.click();
         fileLink.remove();
@@ -123,9 +123,9 @@ export class BabylonIO {
 
 
     private async loadAsset(meshNames: any, rootUrl: string, fileOrName: string | File, importHidden: boolean): Promise<Mesh> {
-        const res = await SceneLoader.ImportMeshAsync('', rootUrl, fileOrName, this.context.scene);
+        const res = await SceneLoader.ImportMeshAsync("", rootUrl, fileOrName, this.context.scene);
         const sgs = this.context.scene.metadata.shadowGenerators as ShadowGenerator[];
-        const container = MeshBuilder.CreateBox('ImportedMeshContainer' + Math.random(), { size: 0.000001 }, this.context.scene);
+        const container = MeshBuilder.CreateBox("ImportedMeshContainer" + Math.random(), { size: 0.000001 }, this.context.scene);
         if (sgs.length > 0) {
             res.meshes.forEach(mesh => {
                 mesh.isPickable = false;

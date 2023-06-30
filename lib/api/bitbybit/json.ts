@@ -1,5 +1,5 @@
-import { Context } from '../context';
-import * as Inputs from '../inputs/inputs';
+import { Context } from "../context";
+import * as Inputs from "../inputs/inputs";
 
 /**
  * Contains various json path methods.

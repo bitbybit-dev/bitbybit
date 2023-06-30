@@ -1,12 +1,12 @@
 
-import { Color3, Mesh, MeshBuilder, PBRMetallicRoughnessMaterial } from '@babylonjs/core';
-import { Context } from '../../context';
-import { GeometryHelper } from '../../geometry-helper';
-import * as Inputs from '../../inputs/inputs';
-import { JSCADText } from '../jscad/text';
-import { Vector } from '../vector';
-import { OCCTWIO } from './io';
-import { OCCTWorkerManager, OCCT } from '@bitbybit-dev/occt-worker';
+import { Color3, Mesh, MeshBuilder, PBRMetallicRoughnessMaterial } from "@babylonjs/core";
+import { Context } from "../../context";
+import { GeometryHelper } from "../../geometry-helper";
+import * as Inputs from "../../inputs/inputs";
+import { JSCADText } from "../jscad/text";
+import { Vector } from "../vector";
+import { OCCTWIO } from "./io";
+import { OCCTWorkerManager, OCCT } from "@bitbybit-dev/occt-worker";
 
 /**
  * Contains various methods for OpenCascade implementation
@@ -39,8 +39,8 @@ export class OCCTW extends OCCT {
         if (inputs.faceMaterial) {
             delete inputs.faceMaterial;
         }
-        const fe: Inputs.OCCT.DecomposedMeshDto = await this.occWorkerManager.genericCallToWorkerPromise('shapeToMesh', inputs);
-        const shapeMesh = MeshBuilder.CreateBox('brepMesh' + Math.random(), { size: 0.00001 }, this.context.scene);
+        const fe: Inputs.OCCT.DecomposedMeshDto = await this.occWorkerManager.genericCallToWorkerPromise("shapeToMesh", inputs);
+        const shapeMesh = MeshBuilder.CreateBox("brepMesh" + Math.random(), { size: 0.00001 }, this.context.scene);
         shapeMesh.isVisible = false;
         let dummy;
 
@@ -51,7 +51,7 @@ export class OCCTW extends OCCT {
             if (options.faceMaterial) {
                 pbr = options.faceMaterial;
             } else {
-                pbr = new PBRMetallicRoughnessMaterial('pbr' + Math.random(), this.context.scene);
+                pbr = new PBRMetallicRoughnessMaterial("pbr" + Math.random(), this.context.scene);
 
                 pbr.baseColor = Color3.FromHexString(Array.isArray(inputs.faceColour) ? inputs.faceColour[0] : inputs.faceColour);
                 pbr.metallic = 1.0;
@@ -63,7 +63,7 @@ export class OCCTW extends OCCT {
                 pbr.zOffset = inputs.drawEdges ? 2 : 0;
             }
 
-            let meshData = fe.faceList.map(face => {
+            const meshData = fe.faceList.map(face => {
                 return {
                     positions: face.vertex_coord,
                     normals: face.normal_coord,

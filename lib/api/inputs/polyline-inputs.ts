@@ -1,5 +1,5 @@
-import { LinesMesh } from '@babylonjs/core';
-import { Base } from './base-inputs';
+import { LinesMesh } from "@babylonjs/core";
+import { Base } from "./base-inputs";
 
 // tslint:disable-next-line: no-namespace
 export namespace Polyline {
@@ -55,7 +55,7 @@ export namespace Polyline {
         /**
          * Hex colour string
          */
-        colours: string | string[] = '#444444';
+        colours: string | string[] = "#444444";
         /**
          * Width of the polyline
          */
@@ -87,7 +87,7 @@ export namespace Polyline {
         /**
          * Hex colour string
          */
-        colours: string | string[] = '#444444';
+        colours: string | string[] = "#444444";
         /**
          * Width of the polyline
          */

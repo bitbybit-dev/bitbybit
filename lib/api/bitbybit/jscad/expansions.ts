@@ -1,6 +1,6 @@
 
-import { JSCADWorkerManager } from '../../../workers/jscad/jscad-worker-manager';
-import * as Inputs from '../../inputs/inputs';
+import { JSCADWorkerManager } from "../../../workers/jscad/jscad-worker-manager";
+import * as Inputs from "../../inputs/inputs";
 
 /**
  * Contains various functions for Solid expansions from JSCAD library https://github.com/jscad/OpenJSCAD.org
@@ -22,7 +22,7 @@ export class JSCADExpansions {
      * @drawable true
      */
     async expand(inputs: Inputs.JSCAD.ExpansionDto): Promise<Inputs.JSCAD.JSCADEntity> {
-        return this.jscadWorkerManager.genericCallToWorkerPromise('expansions.expand', inputs);
+        return this.jscadWorkerManager.genericCallToWorkerPromise("expansions.expand", inputs);
     }
 
     /**
@@ -34,6 +34,6 @@ export class JSCADExpansions {
      * @drawable true
      */
     async offset(inputs: Inputs.JSCAD.ExpansionDto): Promise<Inputs.JSCAD.JSCADEntity> {
-        return this.jscadWorkerManager.genericCallToWorkerPromise('expansions.offset', inputs);
+        return this.jscadWorkerManager.genericCallToWorkerPromise("expansions.offset", inputs);
     }
 }

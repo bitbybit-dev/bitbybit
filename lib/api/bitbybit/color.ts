@@ -1,5 +1,5 @@
 import { BitByBitContextHelperService } from "../../bit-by-bit-context-helper.service";
-import * as Inputs from '../inputs/inputs';
+import * as Inputs from "../inputs/inputs";
 
 export class Color {
     /**
@@ -45,7 +45,7 @@ export class Color {
         const g = inputs.g;
         const b = inputs.b;
 
-        let s = `#${Number(0x1000000 + r * 0x10000 + g * 0x100 + b).toString(16).substring(1, 7)}`
+        const s = `#${Number(0x1000000 + r * 0x10000 + g * 0x100 + b).toString(16).substring(1, 7)}`
 
         return s
     }

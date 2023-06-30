@@ -1,7 +1,7 @@
 
-import { Angle } from '@babylonjs/core';
-import { Context } from '../../context';
-import * as Inputs from '../../inputs/inputs';
+import { Angle } from "@babylonjs/core";
+import { Context } from "../../context";
+import * as Inputs from "../../inputs/inputs";
 
 /**
  * Revolved surface functions.

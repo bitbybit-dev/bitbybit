@@ -1,1 +1,1 @@
-export * from './webxr';
+export * from "./webxr";

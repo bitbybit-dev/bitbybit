@@ -1,5 +1,5 @@
-import { CacheHelper } from './cache-helper';
-import { Jscad } from './jscad-service';
+import { CacheHelper } from "./cache-helper";
+import { Jscad } from "./jscad-service";
 
 let jscad: Jscad;
 let cacheHelper: CacheHelper;
@@ -7,7 +7,7 @@ let cacheHelper: CacheHelper;
 export const initializationComplete = (jcd: any) => {
     cacheHelper = new CacheHelper(jcd);
     jscad = new Jscad(jcd);
-    postMessage('jscad-initialised');
+    postMessage("jscad-initialised");
 };
 
 type DataInput = {
@@ -23,7 +23,7 @@ type DataInput = {
 };
 
 export const onMessageInput = (d: DataInput, postMessage) => {
-    postMessage('busy');
+    postMessage("busy");
 
     let result;
     try {
@@ -32,8 +32,8 @@ export const onMessageInput = (d: DataInput, postMessage) => {
         // as we don't need to render things and when we do need, we call tessellation methods with these hashes
         // and receive real objects. This cache is useful in modeling operations throughout 'run' sessions.
 
-        if (d.action.functionName !== 'startedTheRun' &&
-            d.action.functionName !== 'cleanAllCache') {
+        if (d.action.functionName !== "startedTheRun" &&
+            d.action.functionName !== "cleanAllCache") {
 
             // if (d.action.functionName !== 'shapeToMesh' &&
             //     d.action.functionName !== 'downloadSolidSTL' &&
@@ -62,7 +62,7 @@ export const onMessageInput = (d: DataInput, postMessage) => {
             // }
 
             // this is service and path
-            const path = d.action.functionName.split('.');
+            const path = d.action.functionName.split(".");
             if (path.length === 2) {
                 // result = jscad[path[0]][path[1]](d.action.inputs);
                 result = cacheHelper.cacheOp(d.action, () => jscad[path[0]][path[1]](d.action.inputs));
@@ -110,7 +110,7 @@ export const onMessageInput = (d: DataInput, postMessage) => {
         //     }
         // }
         // Only the cache that was created in previous run has to be kept, the rest needs to go
-        if (d.action.functionName === 'startedTheRun') {
+        if (d.action.functionName === "startedTheRun") {
             // if certain threshold is reacherd we clean all the cache
             if (cacheHelper && Object.keys(cacheHelper.usedHashes).length > 10000) {
                 cacheHelper.cleanAllCache();
@@ -129,7 +129,7 @@ export const onMessageInput = (d: DataInput, postMessage) => {
             // }
         }
 
-        if (d.action.functionName === 'cleanAllCache') {
+        if (d.action.functionName === "cleanAllCache") {
             cacheHelper.cleanAllCache();
             result = {};
         }
@@ -143,7 +143,7 @@ export const onMessageInput = (d: DataInput, postMessage) => {
     } catch (e) {
         let props;
         if (d && d.action && d.action.inputs) {
-            props = `Input values were: {${Object.keys(d.action.inputs).map(key => `${key}: ${d.action.inputs[key]}`).join(',')}}. `;
+            props = `Input values were: {${Object.keys(d.action.inputs).map(key => `${key}: ${d.action.inputs[key]}`).join(",")}}. `;
         }
         let fun;
         if (d && d.action && d.action.functionName) {

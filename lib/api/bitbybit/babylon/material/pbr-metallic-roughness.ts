@@ -1,11 +1,11 @@
 
-import { Context } from '../../../context';
+import { Context } from "../../../context";
 import {
     Color3,
     Matrix, PBRMetallicRoughnessMaterial, Ray, Vector3
-} from '@babylonjs/core';
-import * as Inputs from '../../../inputs/inputs';
-import { Color } from '../../color';
+} from "@babylonjs/core";
+import * as Inputs from "../../../inputs/inputs";
+import { Color } from "../../color";
 import { BitByBitContextHelperService } from "../../../../bit-by-bit-context-helper.service";
 
 export class BabylonMaterialPbrMetallicRoughness {

@@ -1,6 +1,6 @@
-import { ArcRotateCamera, Vector3 } from '@babylonjs/core';
-import { Context } from '../../../context';
-import * as Inputs from '../../../inputs/inputs';
+import { ArcRotateCamera, Vector3 } from "@babylonjs/core";
+import { Context } from "../../../context";
+import * as Inputs from "../../../inputs/inputs";
 
 export class BabylonArcRotateCamera {
 
@@ -18,7 +18,7 @@ export class BabylonArcRotateCamera {
         const camera = new ArcRotateCamera(`arcRotateCamera${Math.random()}`, inputs.alpha, inputs.beta, inputs.radius, target,
             this.context.scene
         );
-        const canvas = document.getElementById('renderCanvas') as HTMLCanvasElement;
+        const canvas = document.getElementById("renderCanvas") as HTMLCanvasElement;
         camera.attachControl(canvas, true);
         return camera;
     }

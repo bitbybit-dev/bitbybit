@@ -1,2 +1,2 @@
-export * from './print-save.model';
-export * from './tag.interface';
+export * from "./print-save.model";
+export * from "./tag.interface";

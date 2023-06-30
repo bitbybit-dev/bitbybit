@@ -1,4 +1,4 @@
-import * as Inputs from '../../../api/inputs/inputs';
+import * as Inputs from "../../../api/inputs/inputs";
 
 /**
  * Contains various functions for solid 3D texts from JSCAD library https://github.com/jscad/OpenJSCAD.org

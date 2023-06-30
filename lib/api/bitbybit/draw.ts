@@ -1,33 +1,33 @@
 
 import {
     Color3, Mesh, ShadowGenerator, MeshBuilder
-} from '@babylonjs/core';
-import * as Inputs from '../inputs/inputs';
-import { Point } from './point';
-import { Line } from './line';
-import { Polyline } from './polyline';
-import { BabylonNode } from './babylon/node';
-import { VerbCurve } from './verb/curve';
-import { VerbSurface } from './verb/surface';
-import { JSCAD } from './jscad/jscad';
-import { OCCTW } from './occt/occt';
-import { Tag } from './tag';
-import { Context } from '../context';
-import { GridMaterial } from '@babylonjs/materials';
+} from "@babylonjs/core";
+import * as Inputs from "../inputs/inputs";
+import { Point } from "./point";
+import { Line } from "./line";
+import { Polyline } from "./polyline";
+import { BabylonNode } from "./babylon/node";
+import { VerbCurve } from "./verb/curve";
+import { VerbSurface } from "./verb/surface";
+import { JSCAD } from "./jscad/jscad";
+import { OCCTW } from "./occt/occt";
+import { Tag } from "./tag";
+import { Context } from "../context";
+import { GridMaterial } from "@babylonjs/materials";
 
 export class Draw {
 
     private defaultBasicOptions: Inputs.Draw.DrawBasicGeometryOptions = {
-        colours: '#ff0000',
+        colours: "#ff0000",
         updatable: false,
         hidden: false,
         opacity: 1,
         size: 6,
     }
     private defaultNodeOptions: Inputs.Draw.DrawNodeOptions = {
-        colorX: '#ff0000',
-        colorY: '#00ff00',
-        colorZ: '#0000ff',
+        colorX: "#ff0000",
+        colorY: "#00ff00",
+        colorZ: "#0000ff",
         size: 2,
     }
     constructor(
@@ -184,8 +184,8 @@ export class Draw {
             ground.material = groundMaterial;
             return ground;
         } catch (e) {
-            console.log('Error happened: ', e);
-            return MeshBuilder.CreateBox('error-ground', { size: 0.00000001 }, this.context.scene);
+            console.log("Error happened: ", e);
+            return MeshBuilder.CreateBox("error-ground", { size: 0.00000001 }, this.context.scene);
         }
     }
 
@@ -272,7 +272,7 @@ export class Draw {
         const options = inputs.options ? inputs.options : {
             updatable: false,
         };
-        let result = this.tag.drawTags({
+        const result = this.tag.drawTags({
             tagsVariable: inputs.babylonMesh,
             tags: inputs.entity,
             ...options as Inputs.Draw.DrawBasicGeometryOptions
@@ -289,7 +289,7 @@ export class Draw {
         if (!inputs.options && inputs.babylonMesh && inputs.babylonMesh.metadata.options) {
             options = inputs.babylonMesh.metadata.options;
         }
-        let result = this.tag.drawTag({
+        const result = this.tag.drawTag({
             tagVariable: inputs.babylonMesh,
             tag: inputs.entity,
             ...options as Inputs.Draw.DrawBasicGeometryOptions
@@ -303,7 +303,7 @@ export class Draw {
         if (!inputs.options && inputs.babylonMesh && inputs.babylonMesh.metadata.options) {
             options = inputs.babylonMesh.metadata.options;
         }
-        let result = this.verbSurface.drawSurfacesMultiColour({
+        const result = this.verbSurface.drawSurfacesMultiColour({
             surfacesMesh: inputs.babylonMesh,
             surfaces: inputs.entity,
             ...options as Inputs.Draw.DrawBasicGeometryOptions
@@ -318,7 +318,7 @@ export class Draw {
         if (!inputs.options && inputs.babylonMesh && inputs.babylonMesh.metadata.options) {
             options = inputs.babylonMesh.metadata.options;
         }
-        let result = this.verbCurve.drawCurves({
+        const result = this.verbCurve.drawCurves({
             curvesMesh: inputs.babylonMesh,
             curves: inputs.entity,
             ...options as Inputs.Draw.DrawBasicGeometryOptions
@@ -333,7 +333,7 @@ export class Draw {
         if (!inputs.options && inputs.babylonMesh && inputs.babylonMesh.metadata.options) {
             options = inputs.babylonMesh.metadata.options;
         }
-        let result = inputs.entity;
+        const result = inputs.entity;
         this.node.drawNodes({
             nodes: inputs.entity,
             ...options as Inputs.Draw.DrawNodeOptions
@@ -347,7 +347,7 @@ export class Draw {
         if (!inputs.options && inputs.babylonMesh && inputs.babylonMesh.metadata.options) {
             options = inputs.babylonMesh.metadata.options;
         }
-        let result = this.point.drawPoints({
+        const result = this.point.drawPoints({
             pointsMesh: inputs.babylonMesh,
             points: inputs.entity,
             ...options as Inputs.Draw.DrawBasicGeometryOptions
@@ -361,7 +361,7 @@ export class Draw {
         if (!inputs.options && inputs.babylonMesh && inputs.babylonMesh.metadata.options) {
             options = inputs.babylonMesh.metadata.options;
         }
-        let result = this.polyline.drawPolylines({
+        const result = this.polyline.drawPolylines({
             polylinesMesh: inputs.babylonMesh,
             polylines: inputs.entity.map(e => ({ points: [e.start, e.end] })),
             ...options as Inputs.Draw.DrawBasicGeometryOptions
@@ -375,7 +375,7 @@ export class Draw {
         if (!inputs.options && inputs.babylonMesh && inputs.babylonMesh.metadata.options) {
             options = inputs.babylonMesh.metadata.options;
         }
-        let result = this.polyline.drawPolylines({
+        const result = this.polyline.drawPolylines({
             polylinesMesh: inputs.babylonMesh,
             polylines: inputs.entity,
             ...options as Inputs.Draw.DrawBasicGeometryOptions
@@ -389,7 +389,7 @@ export class Draw {
         if (!inputs.options && inputs.babylonMesh && inputs.babylonMesh.metadata.options) {
             options = inputs.babylonMesh.metadata.options;
         }
-        let result = this.verbSurface.drawSurface({
+        const result = this.verbSurface.drawSurface({
             surfaceMesh: inputs.babylonMesh,
             surface: inputs.entity,
             ...options as Inputs.Draw.DrawBasicGeometryOptions
@@ -404,7 +404,7 @@ export class Draw {
         if (!inputs.options && inputs.babylonMesh && inputs.babylonMesh.metadata.options) {
             options = inputs.babylonMesh.metadata.options;
         }
-        let result = this.verbCurve.drawCurve({
+        const result = this.verbCurve.drawCurve({
             curveMesh: inputs.babylonMesh,
             curve: inputs.entity,
             ...options as Inputs.Draw.DrawBasicGeometryOptions
@@ -418,7 +418,7 @@ export class Draw {
         if (!inputs.options && inputs.babylonMesh && inputs.babylonMesh.metadata.options) {
             options = inputs.babylonMesh.metadata.options;
         }
-        let result = inputs.entity;
+        const result = inputs.entity;
         this.node.drawNode({
             node: inputs.entity,
             ...options as Inputs.Draw.DrawNodeOptions
@@ -432,7 +432,7 @@ export class Draw {
         if (!inputs.options && inputs.babylonMesh && inputs.babylonMesh.metadata.options) {
             options = inputs.babylonMesh.metadata.options;
         }
-        let result = this.polyline.drawPolyline({
+        const result = this.polyline.drawPolyline({
             polylineMesh: inputs.babylonMesh,
             polyline: inputs.entity,
             ...options as Inputs.Draw.DrawBasicGeometryOptions
@@ -446,7 +446,7 @@ export class Draw {
         if (!inputs.options && inputs.babylonMesh && inputs.babylonMesh.metadata.options) {
             options = inputs.babylonMesh.metadata.options;
         }
-        let result = this.point.drawPoint({
+        const result = this.point.drawPoint({
             pointMesh: inputs.babylonMesh,
             point: inputs.entity,
             ...options as Inputs.Draw.DrawBasicGeometryOptions
@@ -460,7 +460,7 @@ export class Draw {
         if (!inputs.options && inputs.babylonMesh && inputs.babylonMesh.metadata.options) {
             options = inputs.babylonMesh.metadata.options;
         }
-        let result = this.polyline.drawPolylines({
+        const result = this.polyline.drawPolylines({
             polylinesMesh: inputs.babylonMesh,
             polylines: [{ points: [inputs.entity.start, inputs.entity.end] }],
             ...options as Inputs.Draw.DrawBasicGeometryOptions
@@ -593,7 +593,7 @@ export class Draw {
     }
 
     private detectOcctShape(entity: any): boolean {
-        return entity?.type === 'occ-shape';
+        return entity?.type === "occ-shape";
     }
 
     private detectTag(entity: any): boolean {
