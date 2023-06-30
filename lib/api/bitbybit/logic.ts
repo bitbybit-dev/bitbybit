@@ -1,11 +1,10 @@
-import * as Inputs from '../inputs/inputs';
+import * as Inputs from "../inputs/inputs";
 
 /**
  * Contains various logic methods.
  */
 export class Logic {
 
-    constructor() { }
     /**
      * Creates a boolean value - true or false
      * @param inputs a true or false boolean
@@ -26,23 +25,23 @@ export class Logic {
      * @shortname compare
      * @drawable false
      */
-    compare(inputs: Inputs.Logic.ComparisonDto): boolean {
+    compare<T>(inputs: Inputs.Logic.ComparisonDto<T>): boolean {
         switch (inputs.operator) {
-            case '==':
+            case "==":
                 return inputs.first == inputs.second;
-            case '!=':
+            case "!=":
                 return inputs.first != inputs.second;
-            case '===':
+            case "===":
                 return inputs.first === inputs.second;
-            case '!==':
+            case "!==":
                 return inputs.first !== inputs.second;
-            case '<':
+            case "<":
                 return inputs.first < inputs.second;
-            case '<=':
+            case "<=":
                 return inputs.first <= inputs.second;
-            case '>':
+            case ">":
                 return inputs.first > inputs.second;
-            case '>=':
+            case ">=":
                 return inputs.first >= inputs.second;
             default:
                 return false;
@@ -57,7 +56,7 @@ export class Logic {
      * @shortname value gate
      * @drawable false
      */
-    valueGate(inputs: Inputs.Logic.ValueGateDto): any {
+    valueGate<T>(inputs: Inputs.Logic.ValueGateDto<T>): T | undefined {
         return inputs.boolean ? inputs.value : undefined;
     }
 

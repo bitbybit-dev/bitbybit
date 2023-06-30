@@ -1,5 +1,6 @@
-import { Camera, Ray } from '@babylonjs/core';
-import { Base } from './base-inputs';
+/* eslint-disable @typescript-eslint/no-namespace */
+import { Camera } from "@babylonjs/core";
+import { Base } from "./base-inputs";
 
 // tslint:disable-next-line: no-namespace
 export namespace BabylonScene {
@@ -15,7 +16,7 @@ export namespace BabylonScene {
          * Hex colour string for the scene background colour
          * @default #ffffff
          */
-        colour: Base.Color = '#ffffff';
+        colour: Base.Color = "#ffffff";
     }
     export class PointLightDto {
         /**
@@ -35,12 +36,12 @@ export namespace BabylonScene {
          * Diffuse colour of the point light
          * @default #ffffff
          */
-        diffuse: Base.Color = '#ffffff';
+        diffuse: Base.Color = "#ffffff";
         /**
          * Specular colour of the point light
          * @default #ffffff
          */
-        specular: Base.Color = '#ffffff';
+        specular: Base.Color = "#ffffff";
         /**
          * Radius of the sphere mesh representing the light bulb. If 0 light gets created without the mesh
          * @default 0.1
@@ -82,7 +83,7 @@ export namespace BabylonScene {
         /** Indicates to use right handed system
          * @default true
          */
-        use: boolean = true;
+        use = true;
     }
     export class DirectionalLightDto {
         /**
@@ -102,12 +103,12 @@ export namespace BabylonScene {
          * Diffuse colour of the point light
          * @default #ffffff
          */
-        diffuse: Base.Color = '#ffffff';
+        diffuse: Base.Color = "#ffffff";
         /**
          * Specular colour of the point light
          * @default #ffffff
          */
-        specular: Base.Color = '#ffffff';
+        specular: Base.Color = "#ffffff";
         /**
          * The map size for shadow generator texture if shadows are enabled
          * @default 1024
@@ -214,7 +215,7 @@ export namespace BabylonScene {
          * Fog color
          * @default #ffffff
          */
-         color: Base.Color = '#ffffff';
+         color: Base.Color = "#ffffff";
         /**
          * Fog density
          * @default 0.1
@@ -222,7 +223,7 @@ export namespace BabylonScene {
          * @maximum Infinity
          * @step 0.1
          */
-        density: number = 0.1;
+        density = 0.1;
         /**
          * Fog start
          * @default 0

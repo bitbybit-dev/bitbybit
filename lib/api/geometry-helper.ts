@@ -3,9 +3,9 @@ import {
     LinesMesh, Matrix, Color3, Vector3, Color4,
     MeshBuilder, Scene, Mesh, VertexData,
     PBRMetallicRoughnessMaterial
-} from '@babylonjs/core';
-import { Context } from './context';
-import { Base } from './inputs/base-inputs';
+} from "@babylonjs/core";
+import { Context } from "./context";
+import { Base } from "./inputs/base-inputs";
 
 export class GeometryHelper {
     constructor(private readonly context: Context) { }
@@ -148,7 +148,7 @@ export class GeometryHelper {
     edgesRendering(mesh: LinesMesh, size: number, opacity: number, colours: string | string[]): void {
         mesh.enableEdgesRendering();
         mesh.edgesWidth = size;
-        let colour = Array.isArray(colours) ? Color3.FromHexString(colours[0]) : Color3.FromHexString(colours);
+        const colour = Array.isArray(colours) ? Color3.FromHexString(colours[0]) : Color3.FromHexString(colours);
         const edgeColor = colour;
         mesh.color = edgeColor;
         mesh.edgesColor = new Color4(edgeColor.r, edgeColor.g, edgeColor.b, opacity);
@@ -252,7 +252,7 @@ export class GeometryHelper {
     //         }, this.context.scene);
     // }
 
-    removeConsecutiveDuplicates(points: number[][], checkFirstAndLast: boolean = true): number[][] {
+    removeConsecutiveDuplicates(points: number[][], checkFirstAndLast = true): number[][] {
         const pointsRemaining = [];
         if (points.length > 1) {
             for (let i = 1; i < points.length; i++) {
@@ -296,7 +296,7 @@ export class GeometryHelper {
     }
 
     localAxes(size: number, scene: Scene, colorXHex: string, colorYHex: string, colorZHex: string): Mesh {
-        const pilotLocalAxisX = MeshBuilder.CreateLines('pilot_local_axisX' + Math.random(), {
+        const pilotLocalAxisX = MeshBuilder.CreateLines("pilot_local_axisX" + Math.random(), {
             points: [
                 Vector3.Zero(), new Vector3(size, 0, 0), new Vector3(size * 0.95, 0.05 * size, 0),
                 new Vector3(size, 0, 0), new Vector3(size * 0.95, -0.05 * size, 0)
@@ -305,7 +305,7 @@ export class GeometryHelper {
         const colorX = Color3.FromHexString(colorXHex);
         pilotLocalAxisX.color = colorX;
 
-        const pilotLocalAxisY = MeshBuilder.CreateLines('pilot_local_axisY' + Math.random(), {
+        const pilotLocalAxisY = MeshBuilder.CreateLines("pilot_local_axisY" + Math.random(), {
             points: [
                 Vector3.Zero(), new Vector3(0, size, 0), new Vector3(-0.05 * size, size * 0.95, 0),
                 new Vector3(0, size, 0), new Vector3(0.05 * size, size * 0.95, 0)
@@ -314,7 +314,7 @@ export class GeometryHelper {
         const colorY = Color3.FromHexString(colorYHex);
         pilotLocalAxisY.color = colorY;
 
-        const pilotLocalAxisZ = MeshBuilder.CreateLines('pilot_local_axisZ' + Math.random(), {
+        const pilotLocalAxisZ = MeshBuilder.CreateLines("pilot_local_axisZ" + Math.random(), {
             points: [
                 Vector3.Zero(), new Vector3(0, 0, size), new Vector3(0, -0.05 * size, size * 0.95),
                 new Vector3(0, 0, size), new Vector3(0, 0.05 * size, size * 0.95)
@@ -323,7 +323,7 @@ export class GeometryHelper {
         const colorZ = Color3.FromHexString(colorZHex);
         pilotLocalAxisZ.color = colorZ;
 
-        const localOrigin = MeshBuilder.CreateBox('local_origin' + Math.random(), { size: 1 }, scene);
+        const localOrigin = MeshBuilder.CreateBox("local_origin" + Math.random(), { size: 1 }, scene);
         localOrigin.isVisible = false;
 
         pilotLocalAxisX.parent = localOrigin;

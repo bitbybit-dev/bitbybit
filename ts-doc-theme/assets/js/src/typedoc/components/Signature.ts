@@ -66,7 +66,7 @@ export class Signature extends Component {
     /**
      * The index of the currently displayed signature.
      */
-    private index: number = -1;
+    private index = -1;
 
     /**
      * Create a new Signature instance.

@@ -1,5 +1,6 @@
-import { AbstractMesh, InstancedMesh, Material, Mesh } from '@babylonjs/core';
-import { Base } from './base-inputs';
+/* eslint-disable @typescript-eslint/no-namespace */
+import { AbstractMesh, InstancedMesh, Material, Mesh } from "@babylonjs/core";
+import { Base } from "./base-inputs";
 
 // tslint:disable-next-line: no-namespace
 export namespace BabylonMesh {
@@ -134,7 +135,7 @@ export namespace BabylonMesh {
          * Include children when showing hiding
          * @default true
          */
-        includeChildren: boolean = true;
+        includeChildren = true;
     }
     export class CloneBabylonMeshDto {
         /**
@@ -168,7 +169,7 @@ export namespace BabylonMesh {
          * @maximum Infinity
          * @step 1
          */
-        distance: number = 0;
+        distance = 0;
     }
     export class NameBabylonMeshDto {
         /**
@@ -186,7 +187,7 @@ export namespace BabylonMesh {
          * Set name also on children
          * @default false
          */
-        includeChildren?: boolean = false;
+        includeChildren? = false;
     }
     export class ByNameBabylonMeshDto {
         /**
@@ -210,7 +211,7 @@ export namespace BabylonMesh {
          * Set material on children also
          * @default false
          */
-        includeChildren: boolean = false;
+        includeChildren = false;
     }
     export class IdBabylonMeshDto {
         /**
@@ -252,12 +253,12 @@ export namespace BabylonMesh {
          * Pickable
          * @default false
          */
-        pickable: boolean = false;
+        pickable = false;
         /**
          * Apply set to children also
          * @default false
          */
-        includeChildren: boolean = false;
+        includeChildren = false;
     }
 
     export class CheckCollisionsBabylonMeshDto {
@@ -270,12 +271,12 @@ export namespace BabylonMesh {
          * Check collisions
          * @default false
          */
-        checkCollisions: boolean = false;
+        checkCollisions = false;
         /**
          * Apply set to children also
          * @default false
          */
-        includeChildren: boolean = false;
+        includeChildren = false;
     }
     export class RotateBabylonMeshDto {
         /**
@@ -310,7 +311,7 @@ export namespace BabylonMesh {
          * Include children
          * @default false
          */
-        includeChildren: boolean = false;
+        includeChildren = false;
     }
     export class MeshInstanceAndTransformDto {
         /**

@@ -1,6 +1,7 @@
-import { LinesMesh, Mesh } from '@babylonjs/core';
-import { Base } from './base-inputs';
-import { Polyline } from './polyline-inputs';
+/* eslint-disable @typescript-eslint/no-namespace */
+import { LinesMesh, Mesh } from "@babylonjs/core";
+import { Base } from "./base-inputs";
+import { Polyline } from "./polyline-inputs";
 
 // tslint:disable-next-line: no-namespace
 export namespace JSCAD {
@@ -29,7 +30,7 @@ export namespace JSCAD {
          * Hex colour string
          * @default #444444
          */
-        colours: string | string[] = '#444444';
+        colours: string | string[] = "#444444";
         /**
          * Indicates wether this solid will be transformed in time
          * @default false
@@ -73,7 +74,7 @@ export namespace JSCAD {
          * Hex colour string
          * @default #444444
          */
-        colours: string | string[] = '#444444';
+        colours: string | string[] = "#444444";
         /**
          * Indicates wether this solid will be transformed in time
          * @default false
@@ -108,7 +109,7 @@ export namespace JSCAD {
          * Colour of the path
          * @default #444444
          */
-        colour = '#444444';
+        colour = "#444444";
         /**
          * Opacity of the path
          * @default 1
@@ -206,7 +207,7 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 0.1
          */
-        delta: number = 0.1;
+        delta = 0.1;
         /**
          * Type of corner to create during of expansion; edge, chamfer, round
          * @default edge
@@ -219,7 +220,7 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 1
          */
-        segments: number = 24;
+        segments = 24;
     }
     export class OffsetDto {
         /**
@@ -234,7 +235,7 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 0.1
          */
-        delta: number = 0.1;
+        delta = 0.1;
         /**
          * Type of corner to create during the offset; edge, chamfer, round.
          * @default edge
@@ -247,7 +248,7 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 1
          */
-        segments: number = 24;
+        segments = 24;
     }
     export class ExtrudeLinearDto {
         /**
@@ -262,7 +263,7 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 0.1
          */
-        height: number = 1;
+        height = 1;
         /**
          * Twist angle in degrees
          * @default 90
@@ -270,7 +271,7 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 1
          */
-        twistAngle: number = 90;
+        twistAngle = 90;
         /**
          * Number of twist steps
          * @default 15
@@ -278,7 +279,7 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 1
          */
-        twistSteps: number = 15;
+        twistSteps = 15;
     }
 
     export class HullDto {
@@ -301,7 +302,7 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 0.1
          */
-        height: number = 1;
+        height = 1;
         /**
          * Size of the rectangle
          * @default 1
@@ -309,7 +310,7 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 0.1
          */
-        size: number = 1;
+        size = 1;
     }
     export class ExtrudeRectangularPointsDto {
         /**
@@ -324,7 +325,7 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 0.1
          */
-        height: number = 1;
+        height = 1;
         /**
          * Size of the rectangle
          * @default 1
@@ -332,7 +333,7 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 0.1
          */
-        size: number = 1;
+        size = 1;
     }
     export class ExtrudeRotateDto {
         /**
@@ -347,7 +348,7 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 1
          */
-        angle: number = 90;
+        angle = 90;
         /**
          * Start angle in degrees
          * @default 0
@@ -355,7 +356,7 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 1
          */
-        startAngle: number = 0;
+        startAngle = 0;
         /**
          * Number of segments
          * @default 24
@@ -363,7 +364,7 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 1
          */
-        segments: number = 24;
+        segments = 24;
     }
     export class PathDto {
         /**
@@ -382,7 +383,7 @@ export namespace JSCAD {
          * Indicates wether we want to create a closed path
          * @default false
          */
-        closed: boolean = false;
+        closed = false;
     }
     export class PathFromPolylineDto {
         /**
@@ -394,7 +395,7 @@ export namespace JSCAD {
          * Indicates wether we want to create a closed path
          * @default false
          */
-        closed: boolean = false;
+        closed = false;
     }
     export class PathFromCurveDto {
         /**
@@ -406,7 +407,7 @@ export namespace JSCAD {
          * Indicates wether we want to create a closed path
          * @default false
          */
-        closed: boolean = false;
+        closed = false;
     }
     export class PathAppendCurveDto {
         /**
@@ -462,17 +463,17 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 1
          */
-        xAxisRotation: number = 90;
+        xAxisRotation = 90;
         /**
          * Draw an arc clockwise with respect to the center point
          * @default true
          */
-        clockwise: boolean = true;
+        clockwise = true;
         /**
          * Draw an arc longer than PI radians
          * @default false
          */
-        large: boolean = false;
+        large = false;
         /**
          * Number of segments for the arc
          * @default 24
@@ -480,7 +481,7 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 1
          */
-        segments: number = 24;
+        segments = 24;
         /**
          * X radius of an arc
          * @default 1
@@ -488,7 +489,7 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 0.1
          */
-        radiusX: number = 1;
+        radiusX = 1;
         /**
          * Y radius of an arc
          * @default 1
@@ -496,7 +497,7 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 0.1
          */
-        radiusY: number = 1;
+        radiusY = 1;
     }
     export class CircleDto {
         /**
@@ -511,7 +512,7 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 0.1
          */
-        radius: number = 1;
+        radius = 1;
         /**
          * Segment number
          * @default 24
@@ -519,7 +520,7 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 1
          */
-        segments: number = 24;
+        segments = 24;
     }
     export class EllipseDto {
         /**
@@ -539,7 +540,7 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 1
          */
-        segments: number = 24;
+        segments = 24;
     }
     export class SquareDto {
         /**
@@ -554,7 +555,7 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 0.1
          */
-        size: number = 1;
+        size = 1;
 
     }
     export class RectangleDto {
@@ -570,7 +571,7 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 0.1
          */
-        width: number = 1;
+        width = 1;
         /**
          * Length of the rectangle
          * @default 1
@@ -578,7 +579,7 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 0.1
          */
-        length: number = 1;
+        length = 1;
     }
     export class RoundedRectangleDto {
         /**
@@ -593,7 +594,7 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 0.1
          */
-        roundRadius: number = 0.2;
+        roundRadius = 0.2;
         /**
          * Number of segments for corners
          * @default 24
@@ -601,7 +602,7 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 1
          */
-        segments: number = 24;
+        segments = 24;
         /**
          * Width of the rectangle
          * @default 1
@@ -609,7 +610,7 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 0.1
          */
-        width: number = 1;
+        width = 1;
         /**
          * Length of the rectangle
          * @default 1
@@ -617,7 +618,7 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 0.1
          */
-        length: number = 1;
+        length = 1;
     }
     export class StarDto {
         /**
@@ -632,7 +633,7 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 1
          */
-        vertices: number = 10;
+        vertices = 10;
         /**
          * Density of the star
          * @default 1
@@ -640,7 +641,7 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 0.1
          */
-        density: number = 1;
+        density = 1;
         /**
          * Outer radius of the star
          * @default 2
@@ -648,7 +649,7 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 0.1
          */
-        outerRadius: number = 2;
+        outerRadius = 2;
         /**
          * Inner radius of the star
          * @default 1
@@ -656,7 +657,7 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 0.1
          */
-        innerRadius: number = 1;
+        innerRadius = 1;
         /**
          * Starting angle for first vertice, in degrees
          * @default 0
@@ -664,7 +665,7 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 1
          */
-        startAngle: number = 0;
+        startAngle = 0;
     }
     export class CubeDto {
         /**
@@ -679,7 +680,7 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 0.1
          */
-        size: number = 1;
+        size = 1;
     }
     export class CubeCentersDto {
         /**
@@ -694,7 +695,7 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 0.1
          */
-        size: number = 1;
+        size = 1;
     }
     export class CuboidDto {
         /**
@@ -709,7 +710,7 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 0.1
          */
-        width: number = 1;
+        width = 1;
         /**
          * Length of the cuboid
          * @default 1
@@ -717,7 +718,7 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 0.1
          */
-        length: number = 1;
+        length = 1;
         /**
          * Height of the cuboid
          * @default 1
@@ -725,7 +726,7 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 0.1
          */
-        height: number = 1;
+        height = 1;
     }
     export class CuboidCentersDto {
         /**
@@ -740,7 +741,7 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 0.1
          */
-        width: number = 1;
+        width = 1;
         /**
          * Length of the cuboids
          * @default 1
@@ -748,7 +749,7 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 0.1
          */
-        length: number = 1;
+        length = 1;
         /**
          * Height of the cuboids
          * @default 1
@@ -756,7 +757,7 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 0.1
          */
-        height: number = 1;
+        height = 1;
     }
     export class RoundedCuboidDto {
         /**
@@ -771,7 +772,7 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 0.1
          */
-        roundRadius: number = 1;
+        roundRadius = 1;
         /**
          * Width of the cuboid
          * @default 1
@@ -779,7 +780,7 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 0.1
          */
-        width: number = 1;
+        width = 1;
         /**
          * Length of the cuboid
          * @default 1
@@ -787,7 +788,7 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 0.1
          */
-        length: number = 1;
+        length = 1;
         /**
          * Height of the cuboid
          * @default 1
@@ -795,7 +796,7 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 0.1
          */
-        height: number = 1;
+        height = 1;
         /**
          * Segments of rounded edges
          * @default 24
@@ -803,7 +804,7 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 1
          */
-        segments: number = 24;
+        segments = 24;
     }
     export class RoundedCuboidCentersDto {
         /**
@@ -818,7 +819,7 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 0.1
          */
-        roundRadius: number = 0.1;
+        roundRadius = 0.1;
         /**
          * Width of the cuboids
          * @default 1
@@ -826,7 +827,7 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 0.1
          */
-        width: number = 1;
+        width = 1;
         /**
          * Length of the cuboids
          * @default 1
@@ -834,7 +835,7 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 0.1
          */
-        length: number = 1;
+        length = 1;
         /**
          * Height of the cuboids
          * @default 1
@@ -842,7 +843,7 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 0.1
          */
-        height: number = 1;
+        height = 1;
         /**
          * Segments of rounded edges
          * @default 24
@@ -850,7 +851,7 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 1
          */
-        segments: number = 24;
+        segments = 24;
     }
     export class CylidnerEllipticDto {
         /**
@@ -865,7 +866,7 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 0.1
          */
-        height: number = 1;
+        height = 1;
         /**
          * Start radius on X and Y directions
          * @default [1, 2]
@@ -883,7 +884,7 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 1
          */
-        segments: number = 24;
+        segments = 24;
     }
     export class CylidnerCentersEllipticDto {
         /**
@@ -898,7 +899,7 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 0.1
          */
-        height: number = 1;
+        height = 1;
         /**
          * Start radius on X and Y directions
          * @default [1, 2]
@@ -916,7 +917,7 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 1
          */
-        segments: number = 24;
+        segments = 24;
     }
     export class CylidnerDto {
         /**
@@ -931,7 +932,7 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 0.1
          */
-        height: number = 1;
+        height = 1;
         /**
          * Radius of the cylinder
          * @default 1
@@ -939,7 +940,7 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 0.1
          */
-        radius: number = 1;
+        radius = 1;
         /**
          * Subdivision segments
          * @default 24
@@ -947,7 +948,7 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 1
          */
-        segments: number = 24;
+        segments = 24;
     }
     export class RoundedCylidnerDto {
         /**
@@ -962,7 +963,7 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 0.1
          */
-        roundRadius: number = 0.1;
+        roundRadius = 0.1;
         /**
          * Height of the cylinder
          * @default 1
@@ -970,7 +971,7 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 0.1
          */
-        height: number = 1;
+        height = 1;
         /**
          * Radius of the cylinder
          * @default 1
@@ -978,7 +979,7 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 0.1
          */
-        radius: number = 1;
+        radius = 1;
         /**
          * Segment number
          * @default 24
@@ -986,7 +987,7 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 1
          */
-        segments: number = 24;
+        segments = 24;
     }
     export class EllipsoidDto {
         /**
@@ -1006,7 +1007,7 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 1
          */
-        segments: number = 24;
+        segments = 24;
     }
     export class EllipsoidCentersDto {
         /**
@@ -1026,7 +1027,7 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 1
          */
-        segments: number = 24;
+        segments = 24;
     }
     export class GeodesicSphereDto {
         /**
@@ -1041,7 +1042,7 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 0.1
          */
-        radius: number = 1;
+        radius = 1;
         /**
          * Subdivision count
          * @default 12
@@ -1049,7 +1050,7 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 1
          */
-        frequency: number = 12;
+        frequency = 12;
     }
     export class GeodesicSphereCentersDto {
         /**
@@ -1064,7 +1065,7 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 0.1
          */
-        radius: number = 1;
+        radius = 1;
         /**
          * Subdivision count
          * @default 12
@@ -1072,7 +1073,7 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 0.1
          */
-        frequency: number = 12;
+        frequency = 12;
     }
     export class CylidnerCentersDto {
         /**
@@ -1087,7 +1088,7 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 0.1
          */
-        height: number = 1;
+        height = 1;
         /**
          * Radius of the cylinders
          * @default 1
@@ -1095,7 +1096,7 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 0.1
          */
-        radius: number = 1;
+        radius = 1;
         /**
          * Subdivision segments
          * @default 24
@@ -1103,7 +1104,7 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 1
          */
-        segments: number = 24;
+        segments = 24;
     }
     export class RoundedCylidnerCentersDto {
         /**
@@ -1118,7 +1119,7 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 0.1
          */
-        roundRadius: number = 0.1;
+        roundRadius = 0.1;
         /**
          * Height of the cylinders
          * @default 1
@@ -1126,7 +1127,7 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 0.1
          */
-        height: number = 1;
+        height = 1;
         /**
          * Radius of the cylinders
          * @default 1
@@ -1134,7 +1135,7 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 0.1
          */
-        radius: number = 1;
+        radius = 1;
         /**
          * Segment number
          * @default 24
@@ -1142,7 +1143,7 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 1
          */
-        segments: number = 24;
+        segments = 24;
     }
     export class SphereDto {
         /**
@@ -1157,7 +1158,7 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 0.1
          */
-        radius: number = 1;
+        radius = 1;
         /**
          * Segment count
          * @default 24
@@ -1165,7 +1166,7 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 1
          */
-        segments: number = 24;
+        segments = 24;
     }
     export class SphereCentersDto {
         /**
@@ -1180,7 +1181,7 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 0.1
          */
-        radius: number = 1;
+        radius = 1;
         /**
          * Segment count
          * @default 24
@@ -1188,7 +1189,7 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 1
          */
-        segments: number = 24;
+        segments = 24;
     }
     export class TorusDto {
         /**
@@ -1203,7 +1204,7 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 0.1
          */
-        innerRadius: number = 1;
+        innerRadius = 1;
         /**
          * Outer radius
          * @default 2
@@ -1211,7 +1212,7 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 0.1
          */
-        outerRadius: number = 2;
+        outerRadius = 2;
         /**
          * Number of inner segments
          * @default 24
@@ -1219,7 +1220,7 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 1
          */
-        innerSegments: number = 24;
+        innerSegments = 24;
         /**
          * Number of outer segments
          * @default 24
@@ -1227,7 +1228,7 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 1
          */
-        outerSegments: number = 24;
+        outerSegments = 24;
         /**
          * Inner rotation in degrees
          * @default 0
@@ -1235,7 +1236,7 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 1
          */
-        innerRotation: number = 0;
+        innerRotation = 0;
         /**
          * Outer rotation in degrees
          * @default 0
@@ -1243,7 +1244,7 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 1
          */
-        outerRotation: number = 360;
+        outerRotation = 360;
         /**
          * Start angle in degrees
          * @default 0
@@ -1251,14 +1252,14 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 1
          */
-        startAngle: number = 0;
+        startAngle = 0;
     }
     export class TextDto {
         /**
          * Text to write
          * @default Hello World
          */
-        text: string = "Hello World";
+        text = "Hello World";
         /**
          * Number of segments
          * @default 24
@@ -1266,7 +1267,7 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 1
          */
-        segments: number = 24;
+        segments = 24;
         /**
          * X offset of the text
          * @default 0
@@ -1326,7 +1327,7 @@ export namespace JSCAD {
          * Text to write
          * @default Hello World
          */
-        text: string = "Hello World";
+        text = "Hello World";
         /**
          * Height of the cylinder
          * @default 0.5
@@ -1334,7 +1335,7 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 0.1
          */
-        extrusionHeight: number = 0.5;
+        extrusionHeight = 0.5;
         /**
          * Radius of the cylinder
          * @default 0.1
@@ -1342,7 +1343,7 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 0.1
          */
-        extrusionSize: number = 0.1;
+        extrusionSize = 0.1;
         /**
          * Segment subdivision for cylinder
          * @default 24
@@ -1350,7 +1351,7 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 1
          */
-        segments: number = 24;
+        segments = 24;
         /**
          * X offset of the text
          * @default 0
@@ -1410,7 +1411,7 @@ export namespace JSCAD {
          * Text to write
          * @default Hello World
          */
-        text: string = 'Hello World';
+        text = "Hello World";
         /**
          * Radius of the spheres
          * @default 0.1
@@ -1418,7 +1419,7 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 0.1
          */
-        radius: number = 0.1;
+        radius = 0.1;
         /**
          * Segment subdivision for sphere
          * @default 24
@@ -1426,7 +1427,7 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 1
          */
-        segments: number = 24;
+        segments = 24;
         /**
          * X offset of the text
          * @default 0
@@ -1485,28 +1486,28 @@ export namespace JSCAD {
         /**
          * Edges will meet at a corner
          */
-        edge = 'edge',
+        edge = "edge",
         /**
          * Edges will be rounded on the corner
          */
-        round = 'round',
+        round = "round",
         /**
          * Edges will be chamfered on the corner
          */
-        chamfer = 'chamfer',
+        chamfer = "chamfer",
     }
     export enum JSCADTextAlignEnum {
         /**
          * Aligns text to the left
          */
-        left = 'left',
+        left = "left",
         /**
          * Aligns text to the center
          */
-        center = 'center',
+        center = "center",
         /**
          * Aligns text to the right
          */
-        right = 'right',
+        right = "right",
     }
 }

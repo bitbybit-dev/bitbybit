@@ -9,17 +9,17 @@ export interface Point {
 /**
  * Event name of the pointer down event.
  */
-export let pointerDown: string = "mousedown";
+export let pointerDown = "mousedown";
 
 /**
  * Event name of the pointer move event.
  */
-export let pointerMove: string = "mousemove";
+export let pointerMove = "mousemove";
 
 /**
  * Event name of the pointer up event.
  */
-export let pointerUp: string = "mouseup";
+export let pointerUp = "mouseup";
 
 /**
  * Position the pointer was pressed at.
@@ -29,27 +29,27 @@ export const pointerDownPosition: Point = { x: 0, y: 0 };
 /**
  * Should the next click on the document be supressed?
  */
-export let preventNextClick: boolean = false;
+export let preventNextClick = false;
 
 /**
  * Is the pointer down?
  */
-export let isPointerDown: boolean = false;
+export let isPointerDown = false;
 
 /**
  * Is the pointer a touch point?
  */
-export let isPointerTouch: boolean = false;
+export let isPointerTouch = false;
 
 /**
  * Did the pointer move since the last down event?
  */
-export let hasPointerMoved: boolean = false;
+export let hasPointerMoved = false;
 
 /**
  * Is the user agent a mobile agent?
  */
-export const isMobile: boolean = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+export const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
     navigator.userAgent
 );
 document.documentElement.classList.add(isMobile ? "is-mobile" : "not-mobile");

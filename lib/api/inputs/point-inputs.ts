@@ -1,5 +1,6 @@
-import { Mesh } from '@babylonjs/core';
-import { Base } from './base-inputs';
+/* eslint-disable @typescript-eslint/no-namespace */
+import { Mesh } from "@babylonjs/core";
+import { Base } from "./base-inputs";
 
 // tslint:disable-next-line: no-namespace
 export namespace Point {
@@ -18,7 +19,7 @@ export namespace Point {
          * @maximum Infinity
          * @step 0.1
          */
-        x: number = 0;
+        x = 0;
         /**
          * Point
          * @default 0
@@ -26,7 +27,7 @@ export namespace Point {
          * @maximum Infinity
          * @step 0.1
          */
-        y: number = 0;
+        y = 0;
         /**
         * Point
         * @default 0
@@ -34,7 +35,7 @@ export namespace Point {
         * @maximum Infinity
         * @step 0.1
         */
-        z: number = 0;
+        z = 0;
     }
     export class PointXYDto {
         /**
@@ -44,7 +45,7 @@ export namespace Point {
          * @maximum Infinity
          * @step 0.1
          */
-        x: number = 0;
+        x = 0;
         /**
          * Point
          * @default 0
@@ -52,7 +53,7 @@ export namespace Point {
          * @maximum Infinity
          * @step 0.1
          */
-        y: number = 0;
+        y = 0;
     }
     export class PointsDto {
         /**
@@ -93,7 +94,7 @@ export namespace Point {
          * Hex colour string
          * @default #444444
          */
-        colours: string | string[] = '#444444';
+        colours: string | string[] = "#444444";
         /**
          * Indicates wether the position of this point will change in time
          * @default false
@@ -137,7 +138,7 @@ export namespace Point {
          * Hex colour string or collection of strings
          * @default #444444
          */
-        colours: string | string[] = '#444444';
+        colours: string | string[] = "#444444";
         /**
          * Indicates wether the position of this point will change in time
          * @default false
@@ -274,7 +275,7 @@ export namespace Point {
          * @maximum Infinity
          * @step 1
          */
-        nrHexagonsY: number = 20;
+        nrHexagonsY = 20;
         /**
          * Number of Hexagons on Z direction
          * @default 20
@@ -282,7 +283,7 @@ export namespace Point {
          * @maximum Infinity
          * @step 1
          */
-        nrHexagonsX: number = 20;
+        nrHexagonsX = 20;
         /**
          * radius of a single hexagon
          * @default 0.2

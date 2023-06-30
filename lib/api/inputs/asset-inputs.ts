@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-namespace */
 
 // tslint:disable-next-line: no-namespace
 export namespace Asset {
@@ -24,7 +25,7 @@ export namespace Asset {
          * Import the asset hidden
          * @default false
          */
-        hidden: boolean = false;
+        hidden = false;
     }
     export class AssetFileByUrlDto {
         /**
@@ -41,6 +42,6 @@ export namespace Asset {
          * Import the asset hidden
          * @default false
          */
-        hidden: boolean = false;
+        hidden = false;
     }
 }

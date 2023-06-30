@@ -34,7 +34,7 @@ export class MenuHighlight extends Component {
     /**
      * Index of the currently highlighted anchor.
      */
-    private index: number = -1;
+    private index = -1;
 
     /**
      * Create a new MenuHighlight instance.

@@ -1,9 +1,9 @@
 
-import * as Inputs from '../../inputs/inputs';
-import { OCCTWorkerManager, OCCTIO } from '@bitbybit-dev/occt-worker';
-import { BitByBitContextHelperService } from '../../../bit-by-bit-context-helper.service';
-import { STLExport } from '@babylonjs/serializers';
-import { GeometryHelper } from '../../geometry-helper';
+import * as Inputs from "../../inputs/inputs";
+import { OCCTWorkerManager, OCCTIO } from "@bitbybit-dev/occt-worker";
+import { BitByBitContextHelperService } from "../../../bit-by-bit-context-helper.service";
+import { STLExport } from "@babylonjs/serializers";
+import { GeometryHelper } from "../../geometry-helper";
 
 
 export class OCCTWIO extends OCCTIO {
@@ -22,12 +22,12 @@ export class OCCTWIO extends OCCTIO {
      * @shortname load step | iges
      * @returns OCCT Shape
      */
-    loadSTEPorIGES(inputs: Inputs.OCCT.ImportStepIgesDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.OCCT.TopoDSShapePointer> {
+    loadSTEPorIGES(inputs: Inputs.OCCT.ImportStepIgesDto): Promise<Inputs.OCCT.TopoDSShapePointer> {
         // first we should check if we have assetName loaded already
         // if we dont have we do this, otherwise return from the cache...
         return BitByBitContextHelperService.getFile(inputs.assetFile).then(s => {
             return this.occWorkerManager.genericCallToWorkerPromise(
-                'io.loadSTEPorIGES',
+                "io.loadSTEPorIGES",
                 new Inputs.OCCT.LoadStepOrIgesDto(s, inputs.assetFile.name, inputs.adjustZtoY)
             );
         });
@@ -46,7 +46,7 @@ export class OCCTWIO extends OCCTIO {
         inp.shape = inputs.shape;
         inp.precision = inputs.precision;
 
-        const fe: Inputs.OCCT.DecomposedMeshDto = await this.occWorkerManager.genericCallToWorkerPromise('shapeToMesh', inp);
+        const fe: Inputs.OCCT.DecomposedMeshDto = await this.occWorkerManager.genericCallToWorkerPromise("shapeToMesh", inp);
 
         let dummy;
 

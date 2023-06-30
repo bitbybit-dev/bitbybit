@@ -1,4 +1,5 @@
-import { Base } from './base-inputs';
+/* eslint-disable @typescript-eslint/no-namespace */
+import { Base } from "./base-inputs";
 
 // tslint:disable-next-line: no-namespace
 export namespace Color {
@@ -7,14 +8,14 @@ export namespace Color {
          * Color hex
          * @default #0000ff
          */
-        color: Base.Color = '#0000ff';
+        color: Base.Color = "#0000ff";
     }
     export class HexDtoMapped {
         /**
          * Color hex
          * @default #0000ff
          */
-        color: Base.Color = '#0000ff';
+        color: Base.Color = "#0000ff";
         /**
          * From min bound
          * @default 0
@@ -22,7 +23,7 @@ export namespace Color {
          * @maximum Infinity
          * @step 1
          */
-        from: number = 0;
+        from = 0;
         /**
          * To max bound
          * @default 255
@@ -30,7 +31,7 @@ export namespace Color {
          * @maximum Infinity
          * @step 1
          */
-        to: number = 255;
+        to = 255;
     }
     export class RGBDto {
         /**
@@ -40,7 +41,7 @@ export namespace Color {
          * @maximum 255
          * @step 1
          */
-        r: number = 255;
+        r = 255;
         /**
          * Green value component
          * @default 255
@@ -48,7 +49,7 @@ export namespace Color {
          * @maximum 255
          * @step 1
          */
-        g: number = 255;
+        g = 255;
         /**
         * Blue value component
         * @default 255
@@ -56,7 +57,7 @@ export namespace Color {
         * @maximum 255
         * @step 1
         */
-        b: number = 255;
+        b = 255;
     } 
     export class RGBObjectDto {
         /**

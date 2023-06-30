@@ -1,5 +1,5 @@
-import { BaseTypes } from '../bitbybit/base-types';
-import { Base } from './base-inputs';
+/* eslint-disable @typescript-eslint/no-namespace */
+import { Base } from "./base-inputs";
 
 // tslint:disable-next-line: no-namespace
 export namespace Vector {
@@ -73,7 +73,7 @@ export namespace Vector {
          * @maximum Infinity
          * @step 0.1
          */
-        step: number = 0.1;
+        step = 0.1;
         /**
         * Min value of the span
         * @default 0

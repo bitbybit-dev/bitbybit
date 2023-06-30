@@ -1,37 +1,38 @@
+/* eslint-disable @typescript-eslint/no-namespace */
 
 
 // tslint:disable-next-line: no-namespace
 export namespace Math {
 
     export enum MathTwoNrOperatorEnum {
-        add = 'add',
-        subtract = 'subtract',
-        multiply = 'multiply',
-        divide = 'divide',
-        power = 'power',
-        modulus = 'modulus',
+        add = "add",
+        subtract = "subtract",
+        multiply = "multiply",
+        divide = "divide",
+        power = "power",
+        modulus = "modulus",
     }
 
     export enum MathOneNrOperatorEnum {
-        absolute = 'absolute',
-        negate = 'negate',
-        ln = 'ln',
-        log10 = 'log10',
-        tenPow = 'tenPow',
-        round = 'round',
-        floor = 'floor',
-        ceil = 'ceil',
-        sqrt = 'sqrt',
-        sin = 'sin',
-        cos = 'cos',
-        tan = 'tan',
-        asin = 'asin',
-        acos = 'acos',
-        atan = 'atan',
-        log = 'log',
-        exp = 'exp',
-        radToDeg = 'radToDeg',
-        degToRad = 'degToRad',
+        absolute = "absolute",
+        negate = "negate",
+        ln = "ln",
+        log10 = "log10",
+        tenPow = "tenPow",
+        round = "round",
+        floor = "floor",
+        ceil = "ceil",
+        sqrt = "sqrt",
+        sin = "sin",
+        cos = "cos",
+        tan = "tan",
+        asin = "asin",
+        acos = "acos",
+        atan = "atan",
+        log = "log",
+        exp = "exp",
+        radToDeg = "radToDeg",
+        degToRad = "degToRad",
     }
 
     export class NumberDto {
@@ -42,7 +43,7 @@ export namespace Math {
          * @maximum Infinity
          * @step 0.1
          */
-        number: number = 0;
+        number = 0;
     }
     export class ActionOnTwoNumbersDto {
         /**
@@ -52,7 +53,7 @@ export namespace Math {
          * @maximum Infinity
          * @step 0.1
          */
-        first: number = 1;
+        first = 1;
         /**
          * Second number
          * @default 1
@@ -60,7 +61,7 @@ export namespace Math {
          * @maximum Infinity
          * @step 0.1
          */
-        second: number = 1;
+        second = 1;
         /**
          * Point
          * @default add
@@ -75,7 +76,7 @@ export namespace Math {
          * @maximum Infinity
          * @step 0.1
          */
-        number: number = 1;
+        number = 1;
         /**
          * Point
          * @default absolute
@@ -90,7 +91,7 @@ export namespace Math {
          * @maximum Infinity
          * @step 0.1
          */
-        number: number = 0.5;
+        number = 0.5;
         /**
          * First number range min
          * @default 0
@@ -98,7 +99,7 @@ export namespace Math {
          * @maximum Infinity
          * @step 0.1
          */
-        fromLow: number = 0;
+        fromLow = 0;
         /**
         * Map to range min
         * @default 1
@@ -106,7 +107,7 @@ export namespace Math {
         * @maximum Infinity
         * @step 0.1
         */
-        fromHigh: number = 1;
+        fromHigh = 1;
         /**
          * First number range max
          * @default 1
@@ -114,7 +115,7 @@ export namespace Math {
          * @maximum Infinity
          * @step 0.1
          */
-        toLow: number = 1;
+        toLow = 1;
         /**
          * Map to range max
          * @default 2
@@ -122,7 +123,7 @@ export namespace Math {
          * @maximum Infinity
          * @step 0.1
          */
-        toHigh: number = 2;
+        toHigh = 2;
     }
     export class RandomNumberDto {
         /**
@@ -132,7 +133,7 @@ export namespace Math {
          * @maximum Infinity
          * @step 0.1
          */
-        low: number = 0;
+        low = 0;
         /**
          * High range of random value
          * @default 1
@@ -140,7 +141,7 @@ export namespace Math {
          * @maximum Infinity
          * @step 0.1
          */
-        high: number = 1;
+        high = 1;
     }
 
     export class RandomNumbersDto {
@@ -151,7 +152,7 @@ export namespace Math {
          * @maximum Infinity
          * @step 0.1
          */
-        low: number = 0;
+        low = 0;
         /**
          * High range of random value
          * @default 1
@@ -159,7 +160,7 @@ export namespace Math {
          * @maximum Infinity
          * @step 0.1
          */
-        high: number = 1;
+        high = 1;
         /**
          * Number of produced random values
          * @default 10
@@ -167,6 +168,6 @@ export namespace Math {
          * @maximum Infinity
          * @step 1
          */
-        count: number = 10;
+        count = 10;
     }
 }

@@ -1,5 +1,6 @@
-import { Camera, FreeCamera, PBRMetallicRoughnessMaterial, TargetCamera } from '@babylonjs/core';
-import { Base } from './base-inputs';
+/* eslint-disable @typescript-eslint/no-namespace */
+import { PBRMetallicRoughnessMaterial } from "@babylonjs/core";
+import { Base } from "./base-inputs";
 
 // tslint:disable-next-line: no-namespace
 export namespace BabylonMaterial {
@@ -8,12 +9,12 @@ export namespace BabylonMaterial {
          * Name of the material
          * @default Custom Material
          */
-        name: string = 'Custom Material';
+        name = "Custom Material";
         /**
          * Base color of the material
          * @default #0000ff
          */
-        baseColor: Base.Color = '#0000ff';
+        baseColor: Base.Color = "#0000ff";
         /**
          * Metallic value of the material
          * @default 0.6
@@ -21,7 +22,7 @@ export namespace BabylonMaterial {
          * @maximum 1
          * @step 0.1
          */
-        metallic: number = 0.6;
+        metallic = 0.6;
         /**
          * Roughness value of the material
          * @default 0.5
@@ -29,7 +30,7 @@ export namespace BabylonMaterial {
          * @maximum 1
          * @step 0.1
          */
-        roughness: number = 0.5;
+        roughness = 0.5;
         /**
          * Defines the transparency of the material
          * @default 1
@@ -63,7 +64,7 @@ export namespace BabylonMaterial {
          * Base color of the material
          * @default #0000ff
          */
-        baseColor?: Base.Color = '#0000ff';
+        baseColor?: Base.Color = "#0000ff";
     }
     export class MaterialPropDto {
         /**
@@ -127,6 +128,6 @@ export namespace BabylonMaterial {
          * back face culling
          * @default true
          */
-        backFaceCulling?: boolean = true;
+        backFaceCulling?= true;
     }
 }

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-namespace */
 import { Mesh } from "@babylonjs/core";
 
 // tslint:disable-next-line: no-namespace
@@ -7,7 +8,7 @@ export namespace BabylonIO {
          * File name that should be used for the scene.
          * @default bitbybit-scene
          */
-        filename: string = 'bitbybit-scene';
+        filename = "bitbybit-scene";
     }
     export class ExportMeshToStlDto {
         /**

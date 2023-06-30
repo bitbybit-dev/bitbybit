@@ -1,4 +1,4 @@
-import * as Inputs from '../inputs/inputs';
+import * as Inputs from "../inputs/inputs";
 
 /**
  * Contains various list methods.
@@ -7,8 +7,6 @@ import * as Inputs from '../inputs/inputs';
  * </div>
  */
 export class Lists {
-
-    constructor() { }
     /**
      * Gets an item from the list by using a 0 based index
      * @param inputs a list and an index
@@ -17,9 +15,9 @@ export class Lists {
      * @shortname item by index
      * @drawable false
      */
-    getItem(inputs: Inputs.Lists.ListItemDto): any {
+    getItem<T>(inputs: Inputs.Lists.ListItemDto<T>): T {
         if (inputs.index < 0 || inputs.index >= inputs.list.length) {
-            throw new Error('Index out of bounds');
+            throw new Error("Index out of bounds");
         }
         return structuredClone(inputs.list[inputs.index]);
     }
@@ -32,7 +30,7 @@ export class Lists {
        * @shortname sublist
        * @drawable false
        */
-    getSubList(inputs: Inputs.Lists.SubListDto): any {
+    getSubList<T>(inputs: Inputs.Lists.SubListDto<T>): T[] {
         return structuredClone(inputs.list.slice(inputs.indexStart, inputs.indexEnd));
     }
 
@@ -44,9 +42,9 @@ export class Lists {
      * @shortname every n-th
      * @drawable false
      */
-    getNthItem(inputs: Inputs.Lists.GetNthItemDto): any {
+    getNthItem<T>(inputs: Inputs.Lists.GetNthItemDto<T>): T[] {
         const cloned = structuredClone(inputs.list);
-        let result = [];
+        const result = [];
         for (let i = 0; i < cloned.length; i++) {
             if ((i + inputs.offset) % inputs.nth === 0) {
                 result.push(cloned[i]);
@@ -62,10 +60,10 @@ export class Lists {
      * @shortname by pattern
      * @drawable false
      */
-    getByPattern(inputs: Inputs.Lists.GetByPatternDto): any {
+    getByPattern<T>(inputs: Inputs.Lists.GetByPatternDto<T>): T[] {
         const { list, pattern } = inputs;
         if (!pattern || pattern.length === 0) {
-            throw new Error('Pattern is empty or does not exist');
+            throw new Error("Pattern is empty or does not exist");
         }
         const patternLength = pattern.length;
         const listLength = list.length;
@@ -78,7 +76,7 @@ export class Lists {
             });
         }
         else {
-            let repeatedPattern = [];
+            const repeatedPattern = [];
             const repeatPatternTimes = Math.ceil(listLength / patternLength);
             for (let i = 0; i < repeatPatternTimes; i++) {
                 repeatedPattern.push(...pattern);
@@ -100,9 +98,9 @@ export class Lists {
      * @shortname merge levels
      * @drawable false
      */
-    mergeElementsOfLists(inputs: Inputs.Lists.MergeElementsOfLists): any {
-        let lists = inputs.lists;
-        let level = inputs.level;
+    mergeElementsOfLists<T>(inputs: Inputs.Lists.MergeElementsOfLists<T[]>): T[] {
+        const lists = inputs.lists;
+        const level = inputs.level;
 
         const elToMerge = [];
         const result = [];
@@ -151,7 +149,7 @@ export class Lists {
      * @shortname longest list length
      * @drawable false
      */
-    getLongestListLength(inputs: Inputs.Lists.GetLongestListLength): number {
+    getLongestListLength<T>(inputs: Inputs.Lists.GetLongestListLength<T[]>): number {
         let longestSoFar = 0;
         if (inputs.lists) {
 
@@ -174,7 +172,7 @@ export class Lists {
      * @shortname reverse
      * @drawable false
      */
-    reverse(inputs: Inputs.Lists.ListDto): any {
+    reverse<T>(inputs: Inputs.Lists.ListDto<T>): T[] {
         const cloned = structuredClone(inputs.list);
         return cloned.reverse();
     }
@@ -187,7 +185,7 @@ export class Lists {
      * @shortname flip lists
      * @drawable false
      */
-    flipLists(inputs: Inputs.Lists.ListDto): any {
+    flipLists<T>(inputs: Inputs.Lists.ListDto<T[]>): T[] {
         if (inputs.list.length > 0) {
             const lengthOfFirstList = inputs.list[0].length;
             let allListsSameLength = true;
@@ -207,10 +205,10 @@ export class Lists {
                 }
                 return result;
             } else {
-                throw new Error('Lists are not of the same length');
+                throw new Error("Lists are not of the same length");
             }
         } else {
-            throw new Error('List is empty');
+            throw new Error("List is empty");
         }
     }
 
@@ -222,8 +220,8 @@ export class Lists {
      * @shortname group elements
      * @drawable false
      */
-    groupNth(inputs: Inputs.Lists.GroupListDto): any {
-        const groupElements = (inputs: Inputs.Lists.GroupListDto) => {
+    groupNth<T>(inputs: Inputs.Lists.GroupListDto<T>): T[] {
+        const groupElements = (inputs: Inputs.Lists.GroupListDto<T>) => {
             const { nrElements, list, keepRemainder } = inputs;
             const nrElementsInGroup = nrElements;
             const result = [];
@@ -252,7 +250,7 @@ export class Lists {
      * @shortname max list depth
      * @drawable false
      */
-    getListDepth(inputs: Inputs.Lists.ListDto): number {
+    getListDepth(inputs: Inputs.Lists.ListDto<[]>): number {
         let levels = 0;
         let deeperLevelsExist = true;
         let flatRes = inputs.list;
@@ -282,7 +280,7 @@ export class Lists {
      * @shortname list length
      * @drawable false
      */
-    listLength(inputs: Inputs.Lists.ListDto): number {
+    listLength<T>(inputs: Inputs.Lists.ListDto<T>): number {
         return inputs.list.length
     }
 
@@ -294,7 +292,7 @@ export class Lists {
      * @shortname item at index
      * @drawable false
      */
-    addItemAtIndex(inputs: Inputs.Lists.AddItemAtIndexDto): any {
+    addItemAtIndex<T>(inputs: Inputs.Lists.AddItemAtIndexDto<T>): T[] {
         const cloned = structuredClone(inputs.list);
         if (inputs.index >= 0 && inputs.index <= cloned.length) {
             cloned.splice(inputs.index, 0, inputs.item);
@@ -310,7 +308,7 @@ export class Lists {
      * @shortname item at indexes
      * @drawable false
      */
-    addItemAtIndexes(inputs: Inputs.Lists.AddItemAtIndexesDto): any {
+    addItemAtIndexes<T>(inputs: Inputs.Lists.AddItemAtIndexesDto<T>): T[] {
         const cloned = structuredClone(inputs.list);
         let cloneIndexes = [...inputs.indexes];
         cloneIndexes = cloneIndexes.filter(index => index >= 0 && index <= cloned.length);
@@ -332,20 +330,20 @@ export class Lists {
      * @shortname items at indexes
      * @drawable false
      */
-    addItemsAtIndexes(inputs: Inputs.Lists.AddItemsAtIndexesDto): any {
+    addItemsAtIndexes<T>(inputs: Inputs.Lists.AddItemsAtIndexesDto<T>): T[] {
         if (inputs.items.length !== inputs.indexes.length) {
-            throw new Error('Items and indexes must have the same length');
+            throw new Error("Items and indexes must have the same length");
         }
         for (let i = 0; i < inputs.indexes.length; i++) {
             if (i > 0) {
-                let prev = inputs.indexes[i - 1];
+                const prev = inputs.indexes[i - 1];
                 if (prev > inputs.indexes[i]) {
-                    throw new Error('Indexes must be in ascending order');
+                    throw new Error("Indexes must be in ascending order");
                 }
             }
         }
         const cloned = structuredClone(inputs.list);
-        let cloneIndexes = [...inputs.indexes];
+        const cloneIndexes = [...inputs.indexes];
         cloneIndexes.forEach((index, i) => {
             if (index >= 0 && index + i <= cloned.length) {
                 cloned.splice(index + i, 0, inputs.items[i]);
@@ -362,7 +360,7 @@ export class Lists {
      * @shortname item at index
      * @drawable false
      */
-    removeItemAtIndex(inputs: Inputs.Lists.RemoveItemAtIndexDto): any {
+    removeItemAtIndex<T>(inputs: Inputs.Lists.RemoveItemAtIndexDto<T>): T[] {
         const cloned = structuredClone(inputs.list);
         if (inputs.index >= 0 && inputs.index <= cloned.length) {
             cloned.splice(inputs.index, 1);
@@ -378,9 +376,9 @@ export class Lists {
      * @shortname every n-th
      * @drawable false
      */
-    removeNthItem(inputs: Inputs.Lists.RemoveNthItemDto): any {
+    removeNthItem<T>(inputs: Inputs.Lists.RemoveNthItemDto<T>): T[] {
         const cloned = structuredClone(inputs.list);
-        let result = [];
+        const result = [];
         for (let i = 0; i < cloned.length; i++) {
             if ((i + inputs.offset) % inputs.nth !== 0) {
                 result.push(cloned[i]);
@@ -397,7 +395,7 @@ export class Lists {
      * @shortname item at first or last
      * @drawable false
      */
-    addItemFirstLast(inputs: Inputs.Lists.AddItemFirstLastDto): any {
+    addItemFirstLast<T>(inputs: Inputs.Lists.AddItemFirstLastDto<T>): T[] {
         const cloned = structuredClone(inputs.list);
         if (inputs.position === Inputs.Lists.FirstLastEnum.first) {
             cloned.unshift(inputs.item);
@@ -426,8 +424,8 @@ export class Lists {
      * @shortname repeat
      * @drawable false
      */
-    repeat(inputs: Inputs.Lists.MultiplyItemDto): any {
-        let result = [];
+    repeat<T>(inputs: Inputs.Lists.MultiplyItemDto<T>): T[] {
+        const result = [];
         for (let i = 0; i < inputs.times; i++) {
             result.push(inputs.item);
         }

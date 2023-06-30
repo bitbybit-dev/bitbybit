@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-namespace */
 import { Base } from "./base-inputs";
 
 // tslint:disable-next-line: no-namespace
@@ -11,7 +12,7 @@ export namespace Transforms {
          * @maximum Infinity
          * @step 1
          */
-        angle: number = 90;
+        angle = 90;
         /**
          * Axis vector for rotation
          * @default [0, 1, 0]
@@ -31,7 +32,7 @@ export namespace Transforms {
          * @maximum Infinity
          * @step 1
          */
-        angle: number = 90;
+        angle = 90;
         /**
          * The center from which the axis is pointing
          * @default [0, 0, 0]
@@ -46,7 +47,7 @@ export namespace Transforms {
          * @maximum Infinity
          * @step 1
          */
-        yaw: number = 0;
+        yaw = 0;
         /**
          * Pitch angle (Rotation around Y) in degrees
          * @default 0
@@ -54,7 +55,7 @@ export namespace Transforms {
          * @maximum Infinity
          * @step 1
          */
-        pitch: number = 0;
+        pitch = 0;
         /**
          * Roll angle (Rotation around Z) in degrees
          * @default 0
@@ -62,7 +63,7 @@ export namespace Transforms {
          * @maximum Infinity
          * @step 1
          */
-        roll: number = 0;
+        roll = 0;
         /**
          * The center from which the rotations are applied
          * @default [0, 0, 0]
@@ -96,7 +97,7 @@ export namespace Transforms {
          * @maximum Infinity
          * @step 0.1
          */
-        scale: number = 1;
+        scale = 1;
     }
     export class UniformScaleFromCenterDto {
         /**
@@ -106,7 +107,7 @@ export namespace Transforms {
          * @maximum Infinity
          * @step 0.1
          */
-        scale: number = 1;
+        scale = 1;
         /**
          * Center position of the scaling
          * @default [0, 0, 0]

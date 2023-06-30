@@ -1,4 +1,4 @@
-import * as Inputs from '../inputs/inputs';
+import * as Inputs from "../inputs/inputs";
 
 /**
  * Contains various text methods.
@@ -8,7 +8,6 @@ import * as Inputs from '../inputs/inputs';
  */
 export class TextBitByBit {
 
-    constructor() { }
     /**
      * Creates a text
      * @param inputs a text
@@ -65,7 +64,7 @@ export class TextBitByBit {
     * @shortname to string
     * @drawable false
     */
-    toString(inputs: Inputs.Text.ToStringDto): string {
+    toString<T>(inputs: Inputs.Text.ToStringDto<T>): string {
         return inputs.item.toString();
     }
 
@@ -77,7 +76,7 @@ export class TextBitByBit {
     * @shortname to string each
     * @drawable false
     */
-    toStringEach(inputs: Inputs.Text.ToStringEachDto): string[] {
+    toStringEach<T>(inputs: Inputs.Text.ToStringEachDto<T>): string[] {
         return inputs.list.map(i => i.toString());
     }
 }

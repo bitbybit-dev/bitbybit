@@ -10,22 +10,22 @@ export class Viewport extends EventTarget {
     /**
      * The current scroll position.
      */
-    scrollTop: number = 0;
+    scrollTop = 0;
 
     /**
      * The previous scrollTop.
      */
-    lastY: number = 0;
+    lastY = 0;
 
     /**
      * The width of the window.
      */
-    width: number = 0;
+    width = 0;
 
     /**
      * The height of the window.
      */
-    height: number = 0;
+    height = 0;
 
     /**
      * The toolbar (contains the search input).
@@ -35,7 +35,7 @@ export class Viewport extends EventTarget {
     /**
      * Boolean indicating whether the toolbar is shown.
      */
-    showToolbar: boolean = true;
+    showToolbar = true;
 
     /**
      * The sticky side nav that contains members of the current page.
