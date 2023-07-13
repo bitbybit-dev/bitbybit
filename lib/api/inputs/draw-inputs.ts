@@ -22,7 +22,7 @@ export namespace Draw {
          * @default undefined
          * @optional true
          */
-        options: DrawBasicGeometryOptions | DrawOcctShapeOptions | DrawNodeOptions;
+        options?: DrawBasicGeometryOptions | DrawOcctShapeOptions | DrawNodeOptions;
     }
 
     export class SceneDrawGridMeshDto {
