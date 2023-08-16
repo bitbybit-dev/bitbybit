@@ -182,6 +182,7 @@ export class BabylonScene {
         }
 
         const skybox = this.context.scene.createDefaultSkybox(texture, true, inputs.size, inputs.blur, true);
+        skybox.name = "skybox";
         // skybox.disableEdgesRendering();
         // this.context.scene.environmentTexture = texture;
         this.context.scene.environmentIntensity = inputs.environmentIntensity;
