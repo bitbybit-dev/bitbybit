@@ -12,7 +12,7 @@ export class CacheHelper {
 
         usedHashKeys.forEach(hash => {
             if (this.argCache[hash]) {
-                try{
+                try {
                     this.argCache[hash].delete();
                 }
                 catch {
@@ -80,7 +80,9 @@ export class CacheHelper {
         return toReturn;
     }
     /** Returns the cached object if it exists, or null otherwise. */
-    checkCache(hash): any { return this.argCache[hash] || null; }
+    checkCache(hash): any {
+        return this.argCache[hash] || null;
+    }
     /** Adds this `shape` to the cache, indexable by `hash`. */
     addToCache(hash, shape): any {
         // TODO I need to check if and why casting is required. Having real objects in the cache can be used to free up memory?
