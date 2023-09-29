@@ -9,6 +9,6 @@ export class BabylonMaterial {
 
     constructor(private readonly context: Context, private readonly color: Color) {
         this.pbrMetallicRoughness = new BabylonMaterialPbrMetallicRoughness(context, color);
-     }
+    }
 
 }

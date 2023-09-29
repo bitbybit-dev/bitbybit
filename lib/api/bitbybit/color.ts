@@ -45,9 +45,9 @@ export class Color {
         const g = inputs.g;
         const b = inputs.b;
 
-        const s = `#${Number(0x1000000 + r * 0x10000 + g * 0x100 + b).toString(16).substring(1, 7)}`
+        const s = `#${Number(0x1000000 + r * 0x10000 + g * 0x100 + b).toString(16).substring(1, 7)}`;
 
-        return s
+        return s;
     }
 
     /**
@@ -64,7 +64,7 @@ export class Color {
             r: BitByBitContextHelperService.remap(rgb.r, 0, 255, inputs.from, inputs.to),
             g: BitByBitContextHelperService.remap(rgb.g, 0, 255, inputs.from, inputs.to),
             b: BitByBitContextHelperService.remap(rgb.b, 0, 255, inputs.from, inputs.to),
-        }
+        };
     }
 
     /**

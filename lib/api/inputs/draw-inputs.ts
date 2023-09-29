@@ -161,7 +161,7 @@ export namespace Draw {
          * @minimum 0
          * @maximum Infinity
          */
-        size = 2
+        size = 2;
     }
 
     /**

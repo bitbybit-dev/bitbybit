@@ -23,13 +23,13 @@ export class Draw {
         hidden: false,
         opacity: 1,
         size: 6,
-    }
+    };
     private defaultNodeOptions: Inputs.Draw.DrawNodeOptions = {
         colorX: "#ff0000",
         colorY: "#00ff00",
         colorZ: "#0000ff",
         size: 2,
-    }
+    };
     constructor(
         /**
          * @ignore true
@@ -103,50 +103,50 @@ export class Draw {
 
             const type = inputs.babylonMesh.metadata.type as Inputs.Draw.drawingTypes;
             switch (type) {
-                case Inputs.Draw.drawingTypes.point:
-                    result = this.handlePoint(inputs);
-                    break;
-                case Inputs.Draw.drawingTypes.points:
-                    result = this.handlePoints(inputs);
-                    break;
-                case Inputs.Draw.drawingTypes.line:
-                    result = this.handleLine(inputs);
-                    break;
-                case Inputs.Draw.drawingTypes.lines:
-                    result = this.handleLines(inputs);
-                    break;
-                case Inputs.Draw.drawingTypes.polyline:
-                    result = this.handlePolyline(inputs);
-                    break;
-                case Inputs.Draw.drawingTypes.polylines:
-                    result = this.handlePolylines(inputs);
-                    break;
-                case Inputs.Draw.drawingTypes.verbCurve:
-                    result = this.handleVerbCurve(inputs);
-                    break;
-                case Inputs.Draw.drawingTypes.verbCurves:
-                    result = this.handleVerbCurves(inputs);
-                    break;
-                case Inputs.Draw.drawingTypes.verbSurface:
-                    result = this.handleVerbSurface(inputs);
-                    break;
-                case Inputs.Draw.drawingTypes.verbSurfaces:
-                    result = this.handleVerbSurfaces(inputs);
-                    break;
-                case Inputs.Draw.drawingTypes.tag:
-                    result = this.handleTag(inputs);
-                    break;
-                case Inputs.Draw.drawingTypes.tags:
-                    result = this.handleTags(inputs);
-                    break;
-                case Inputs.Draw.drawingTypes.node:
-                    result = this.handleNode(inputs);
-                    break;
-                case Inputs.Draw.drawingTypes.nodes:
-                    result = this.handleNodes(inputs);
-                    break;
-                default:
-                    break;
+            case Inputs.Draw.drawingTypes.point:
+                result = this.handlePoint(inputs);
+                break;
+            case Inputs.Draw.drawingTypes.points:
+                result = this.handlePoints(inputs);
+                break;
+            case Inputs.Draw.drawingTypes.line:
+                result = this.handleLine(inputs);
+                break;
+            case Inputs.Draw.drawingTypes.lines:
+                result = this.handleLines(inputs);
+                break;
+            case Inputs.Draw.drawingTypes.polyline:
+                result = this.handlePolyline(inputs);
+                break;
+            case Inputs.Draw.drawingTypes.polylines:
+                result = this.handlePolylines(inputs);
+                break;
+            case Inputs.Draw.drawingTypes.verbCurve:
+                result = this.handleVerbCurve(inputs);
+                break;
+            case Inputs.Draw.drawingTypes.verbCurves:
+                result = this.handleVerbCurves(inputs);
+                break;
+            case Inputs.Draw.drawingTypes.verbSurface:
+                result = this.handleVerbSurface(inputs);
+                break;
+            case Inputs.Draw.drawingTypes.verbSurfaces:
+                result = this.handleVerbSurfaces(inputs);
+                break;
+            case Inputs.Draw.drawingTypes.tag:
+                result = this.handleTag(inputs);
+                break;
+            case Inputs.Draw.drawingTypes.tags:
+                result = this.handleTags(inputs);
+                break;
+            case Inputs.Draw.drawingTypes.node:
+                result = this.handleNode(inputs);
+                break;
+            case Inputs.Draw.drawingTypes.nodes:
+                result = this.handleNodes(inputs);
+                break;
+            default:
+                break;
             }
         }
         return result;
@@ -230,7 +230,7 @@ export class Draw {
             }
         } else {
             // here types are marked on mesh metadata
-            result = this.updateAny(inputs)
+            result = this.updateAny(inputs);
         }
         return result;
     }
@@ -519,7 +519,7 @@ export class Draw {
         const sgs = this.context.scene.metadata.shadowGenerators as ShadowGenerator[];
 
         result.isPickable = false;
-        result.getChildMeshes().forEach(m => { m.isPickable = false });
+        result.getChildMeshes().forEach(m => { m.isPickable = false; });
 
         if (sgs.length > 0) {
             result.receiveShadows = true;
@@ -541,7 +541,7 @@ export class Draw {
         return Array.isArray(entity) &&
             this.checkIfElementsInArrayAreArrays(entity) &&
             this.arraysInChildrenArraysContainNumbers(entity) &&
-            this.arraysInChildrenArraysAreOfLength3(entity)
+            this.arraysInChildrenArraysAreOfLength3(entity);
     }
 
     private detectLine(entity: any): boolean {
@@ -569,11 +569,11 @@ export class Draw {
     }
 
     private detectVerbCurve(entity: any): boolean {
-        return !Array.isArray(entity) && entity._data && entity._data.controlPoints && entity._data.knots && entity._data.degree
+        return !Array.isArray(entity) && entity._data && entity._data.controlPoints && entity._data.knots && entity._data.degree;
     }
 
     private detectVerbSurface(entity: any): boolean {
-        return !Array.isArray(entity) && entity._data && entity._data.controlPoints && entity._data.degreeU && entity._data.degreeV && entity._data.knotsU && entity._data.knotsV
+        return !Array.isArray(entity) && entity._data && entity._data.controlPoints && entity._data.degreeU && entity._data.degreeV && entity._data.knotsU && entity._data.knotsV;
     }
 
     private detectVerbCurves(entity: any): boolean {

@@ -237,7 +237,7 @@ export class Lists {
                 }
             });
             return result;
-        }
+        };
         // TODO make this work on any level
         return groupElements(inputs);
     }
@@ -281,7 +281,7 @@ export class Lists {
      * @drawable false
      */
     listLength<T>(inputs: Inputs.Lists.ListDto<T>): number {
-        return inputs.list.length
+        return inputs.list.length;
     }
 
     /**

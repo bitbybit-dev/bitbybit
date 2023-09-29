@@ -94,7 +94,7 @@ export class Jscad {
 
         return {
             positions, normals, indices, transforms: inputs.mesh.transforms,
-        }
+        };
     }
 
     transformSolids(inputs: Inputs.JSCAD.TransformSolidsDto): any {
@@ -151,5 +151,5 @@ export class Jscad {
         return Array.isArray(value) ?
             1 + Math.max(...value.map(this.getArrayDepth)) :
             0;
-    }
+    };
 }

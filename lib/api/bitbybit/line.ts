@@ -30,9 +30,9 @@ export class Line {
             );
             let col;
             if (Array.isArray(inputs.colours) && inputs.colours.length === inputs.lines.length) {
-                col = Color3.FromHexString(inputs.colours[index])
+                col = Color3.FromHexString(inputs.colours[index]);
             } else if (Array.isArray(inputs.colours)) {
-                col = Color3.FromHexString(inputs.colours[0])
+                col = Color3.FromHexString(inputs.colours[0]);
             } else {
                 col = Color3.FromHexString(inputs.colours);
             }

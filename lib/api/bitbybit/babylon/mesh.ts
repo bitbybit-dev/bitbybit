@@ -50,25 +50,25 @@ export class BabylonMesh {
                 meshChildren.forEach((child, index) => {
                     const color = Color3.FromHexString(inputs.colours[index]);
                     this.assignColorToMesh(child, color);
-                })
+                });
             } else if (areColorsArray) {
                 meshChildren.forEach((child) => {
                     const color = Color3.FromHexString(inputs.colours[0]);
                     this.assignColorToMesh(child, color);
-                })
+                });
             } else {
                 meshChildren.forEach((child) => {
                     const color = Color3.FromHexString(inputs.colours as string);
                     this.assignColorToMesh(child, color);
-                })
+                });
             }
         } else {
-            const color = areColorsArray ? Color3.FromHexString(inputs.colours[0]) : Color3.FromHexString(inputs.colours as string)
+            const color = areColorsArray ? Color3.FromHexString(inputs.colours[0]) : Color3.FromHexString(inputs.colours as string);
             this.assignColorToMesh(inputs.babylonMesh, color);
         }
 
         if (inputs.babylonMesh.edgesRenderer !== null) {
-            const color = areColorsArray ? Color3.FromHexString(inputs.colours[0]) : Color3.FromHexString(inputs.colours as string)
+            const color = areColorsArray ? Color3.FromHexString(inputs.colours[0]) : Color3.FromHexString(inputs.colours as string);
             inputs.babylonMesh.edgesColor = Color4.FromColor3(color);
         }
         if ([
@@ -186,7 +186,7 @@ export class BabylonMesh {
             const children = inputs.babylonMesh.getChildMeshes();
             children.forEach(child => {
                 child.checkCollisions = inputs.checkCollisions;
-            })
+            });
         }
     }
 
@@ -212,7 +212,7 @@ export class BabylonMesh {
             const children = inputs.babylonMesh.getChildMeshes();
             children.forEach(child => {
                 child.isPickable = inputs.pickable;
-            })
+            });
         }
     }
 
@@ -344,7 +344,7 @@ export class BabylonMesh {
             const children = inputs.babylonMesh.getChildMeshes();
             children.forEach(child => {
                 child.name = inputs.name;
-            })
+            });
         }
     }
 
@@ -370,7 +370,7 @@ export class BabylonMesh {
             const children = inputs.babylonMesh.getChildMeshes();
             children.forEach(child => {
                 child.material = inputs.material;
-            })
+            });
         }
     }
 

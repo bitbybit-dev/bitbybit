@@ -55,7 +55,7 @@ export class GeometryHelper {
         mesh: Mesh, updatable: boolean, material: PBRMetallicRoughnessMaterial, addToScene: boolean, hidden: boolean
     ): Mesh {
         const createMesh = () => {
-            const first = meshDataConverted.pop()
+            const first = meshDataConverted.pop();
             const vd = new VertexData();
             vd.positions = first.positions;
             vd.indices = first.indices;
@@ -70,7 +70,7 @@ export class GeometryHelper {
                 vertexData.normals = meshData.normals;
                 vertexData.uvs = meshData.uvs;
                 v.push(vertexData);
-            })
+            });
             vd.merge(v);
             vd.applyToMesh(mesh, updatable);
         };
@@ -128,7 +128,7 @@ export class GeometryHelper {
         return Array.isArray(value) ?
             1 + Math.max(...value.map(this.getArrayDepth)) :
             0;
-    }
+    };
 
     transformPointsByMatrixArray(points: Base.Point3[], transform: number[]): Base.Point3[] {
         const transformMatrix = Matrix.FromArray(transform);
@@ -204,7 +204,7 @@ export class GeometryHelper {
 
         let col;
         if (Array.isArray(colours)) {
-            col = Color3.FromHexString(colours[0])
+            col = Color3.FromHexString(colours[0]);
         } else {
             col = Color3.FromHexString(colours);
         }

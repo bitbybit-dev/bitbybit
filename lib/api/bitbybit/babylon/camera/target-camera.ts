@@ -20,7 +20,7 @@ export class BabylonTargetCamera {
             this.context.scene
         );
         const target = new Vector3(inputs.target[0], inputs.target[1], inputs.target[2]);
-        camera.setTarget(target)
+        camera.setTarget(target);
         const canvas = document.getElementById("renderCanvas") as HTMLCanvasElement;
         camera.attachControl(canvas, true);
         camera.minZ = 0;

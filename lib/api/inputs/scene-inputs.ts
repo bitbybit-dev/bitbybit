@@ -215,7 +215,7 @@ export namespace BabylonScene {
          * Fog color
          * @default #ffffff
          */
-         color: Base.Color = "#ffffff";
+        color: Base.Color = "#ffffff";
         /**
          * Fog density
          * @default 0.1

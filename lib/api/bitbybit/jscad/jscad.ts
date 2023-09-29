@@ -110,9 +110,9 @@ export class JSCAD {
             if (inputs.jscadMesh && inputs.updatable) {
                 localOrigin = inputs.jscadMesh as Mesh;
                 const children = localOrigin.getChildMeshes();
-                children.forEach(mesh => { mesh.dispose(); localOrigin.removeChild(mesh) });
+                children.forEach(mesh => { mesh.dispose(); localOrigin.removeChild(mesh); });
             } else {
-                localOrigin = MeshBuilder.CreateBox("local_origin" + Math.random(), { size: 1 }, this.context.scene)
+                localOrigin = MeshBuilder.CreateBox("local_origin" + Math.random(), { size: 1 }, this.context.scene);
             }
 
             localOrigin.isVisible = false;
@@ -164,7 +164,7 @@ export class JSCAD {
                 inputs.opacity,
                 inputs.colour
             ));
-        })
+        });
 
     }
 

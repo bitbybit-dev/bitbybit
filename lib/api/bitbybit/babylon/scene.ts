@@ -74,7 +74,7 @@ export class BabylonScene {
                     shadowGenerator.addShadowCaster(m, true);
                     m.receiveShadows = true;
                 }
-            })
+            });
         }
 
         light.diffuse = Color3.FromHexString(inputs.diffuse);
@@ -129,7 +129,7 @@ export class BabylonScene {
                     shadowGenerator.addShadowCaster(m, true);
                     m.receiveShadows = true;
                 }
-            })
+            });
         }
 
         light.diffuse = Color3.FromHexString(inputs.diffuse);

@@ -22,7 +22,7 @@ export namespace Text {
          * Text to split by
          * @default ,
          */
-        separator = ","
+        separator = ",";
     }
     export class TextReplaceDto {
         /**

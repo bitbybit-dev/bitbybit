@@ -140,6 +140,6 @@ export class BabylonMaterialPbrMetallicRoughness {
      * @shortname back face culling
      */
     getBackFaceCulling(inputs: Inputs.BabylonMaterial.MaterialPropDto): boolean {
-        return inputs.material.backFaceCulling
+        return inputs.material.backFaceCulling;
     }
 }

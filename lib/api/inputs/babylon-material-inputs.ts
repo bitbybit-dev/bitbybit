@@ -59,7 +59,7 @@ export namespace BabylonMaterial {
          * Material to update
          * @default undefined
          */
-        material: PBRMetallicRoughnessMaterial
+        material: PBRMetallicRoughnessMaterial;
         /**
          * Base color of the material
          * @default #0000ff
@@ -71,14 +71,14 @@ export namespace BabylonMaterial {
          * Material to investigate
          * @default undefined
          */
-        material: PBRMetallicRoughnessMaterial
+        material: PBRMetallicRoughnessMaterial;
     }
     export class MetallicDto {
         /**
          * Material to update
          * @default undefined
          */
-        material: PBRMetallicRoughnessMaterial
+        material: PBRMetallicRoughnessMaterial;
         /**
          * Metallic value of the material
          * @default 0.5
@@ -93,7 +93,7 @@ export namespace BabylonMaterial {
          * Material to update
          * @default undefined
          */
-        material: PBRMetallicRoughnessMaterial
+        material: PBRMetallicRoughnessMaterial;
         /**
          * Roughness value of the material
          * @default 0.5
@@ -108,7 +108,7 @@ export namespace BabylonMaterial {
          * Material to update
          * @default undefined
          */
-        material: PBRMetallicRoughnessMaterial
+        material: PBRMetallicRoughnessMaterial;
         /**
          * Alpha value of the material
          * @default 0.5
@@ -123,7 +123,7 @@ export namespace BabylonMaterial {
          * Material to update
          * @default undefined
          */
-        material: PBRMetallicRoughnessMaterial
+        material: PBRMetallicRoughnessMaterial;
         /**
          * back face culling
          * @default true

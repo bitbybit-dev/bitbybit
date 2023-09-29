@@ -138,7 +138,7 @@ export class BabylonIO {
                     if (importHidden) {
                         c.isVisible = false;
                     }
-                })
+                });
                 if (this.context.scene.metadata.shadowGenerators.length > 0) {
                     try {
                         mesh.receiveShadows = true;

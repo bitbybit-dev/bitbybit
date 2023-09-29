@@ -30,7 +30,7 @@ export class Point {
 
         let colours;
         if (Array.isArray(inputs.colours)) {
-            colours = inputs.colours.map(colour => Color3.FromHexString(colour))
+            colours = inputs.colours.map(colour => Color3.FromHexString(colour));
         } else {
             colours = [Color3.FromHexString(inputs.colours)];
         }
@@ -59,7 +59,7 @@ export class Point {
 
         let colours;
         if (Array.isArray(inputs.colours)) {
-            colours = inputs.colours.map(colour => Color3.FromHexString(colour))
+            colours = inputs.colours.map(colour => Color3.FromHexString(colour));
         } else {
             colours = [Color3.FromHexString(inputs.colours)];
         }
@@ -135,7 +135,7 @@ export class Point {
         }
         return inputs.points.map((pt, index) => {
             return this.geometryHelper.transformControlPoints(inputs.matrix[index], [pt])[0];
-        })
+        });
     }
 
     /**
@@ -255,7 +255,7 @@ export class Point {
             xVals.push(pt[0]);
             yVals.push(pt[1]);
             zVals.push(pt[2]);
-        })
+        });
 
         return [
             xVals.reduce((p, c) => p + c, 0) / inputs.points.length,

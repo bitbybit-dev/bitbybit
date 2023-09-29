@@ -21,7 +21,7 @@ export class JSCADPolygon {
      * @shortname points
      * @drawable true
      */
-     async createFromPoints(inputs: Inputs.Point.PointsDto): Promise<Inputs.JSCAD.JSCADEntity> {
+    async createFromPoints(inputs: Inputs.Point.PointsDto): Promise<Inputs.JSCAD.JSCADEntity> {
         return this.jscadWorkerManager.genericCallToWorkerPromise("polygon.createFromPoints", inputs);
     }
 
@@ -33,7 +33,7 @@ export class JSCADPolygon {
      * @shortname polyline
      * @drawable true
      */
-     async createFromPolyline(inputs: Inputs.Polyline.PolylineDto): Promise<Inputs.JSCAD.JSCADEntity> {
+    async createFromPolyline(inputs: Inputs.Polyline.PolylineDto): Promise<Inputs.JSCAD.JSCADEntity> {
         return this.jscadWorkerManager.genericCallToWorkerPromise("polygon.createFromPolyline", inputs);
     }
 
@@ -45,7 +45,7 @@ export class JSCADPolygon {
      * @shortname curve
      * @drawable true
      */
-     async createFromCurve(inputs: Inputs.Verb.CurveDto): Promise<Inputs.JSCAD.JSCADEntity> {
+    async createFromCurve(inputs: Inputs.Verb.CurveDto): Promise<Inputs.JSCAD.JSCADEntity> {
         return this.jscadWorkerManager.genericCallToWorkerPromise("polygon.createFromCurve", inputs);
     }
 
@@ -57,7 +57,7 @@ export class JSCADPolygon {
      * @shortname path
      * @drawable true
      */
-     async createFromPath(inputs: Inputs.JSCAD.PathDto): Promise<Inputs.JSCAD.JSCADEntity> {
+    async createFromPath(inputs: Inputs.JSCAD.PathDto): Promise<Inputs.JSCAD.JSCADEntity> {
         return this.jscadWorkerManager.genericCallToWorkerPromise("polygon.createFromPath", inputs);
     }
 
@@ -69,7 +69,7 @@ export class JSCADPolygon {
      * @shortname circle
      * @drawable true
      */
-     async circle(inputs: Inputs.JSCAD.CircleDto): Promise<Inputs.JSCAD.JSCADEntity> {
+    async circle(inputs: Inputs.JSCAD.CircleDto): Promise<Inputs.JSCAD.JSCADEntity> {
         return this.jscadWorkerManager.genericCallToWorkerPromise("polygon.circle", inputs);
     }
 
@@ -81,7 +81,7 @@ export class JSCADPolygon {
      * @shortname ellipse
      * @drawable true
      */
-     async ellipse(inputs: Inputs.JSCAD.EllipseDto): Promise<Inputs.JSCAD.JSCADEntity> {
+    async ellipse(inputs: Inputs.JSCAD.EllipseDto): Promise<Inputs.JSCAD.JSCADEntity> {
         return this.jscadWorkerManager.genericCallToWorkerPromise("polygon.ellipse", inputs);
     }
 
@@ -93,7 +93,7 @@ export class JSCADPolygon {
      * @shortname rectangle
      * @drawable true
      */
-     async  rectangle(inputs: Inputs.JSCAD.RectangleDto): Promise<Inputs.JSCAD.JSCADEntity> {
+    async  rectangle(inputs: Inputs.JSCAD.RectangleDto): Promise<Inputs.JSCAD.JSCADEntity> {
         return this.jscadWorkerManager.genericCallToWorkerPromise("polygon.rectangle", inputs);
     }
 
@@ -105,7 +105,7 @@ export class JSCADPolygon {
      * @shortname rounded rectangle
      * @drawable true
      */
-     async roundedRectangle(inputs: Inputs.JSCAD.RoundedRectangleDto): Promise<Inputs.JSCAD.JSCADEntity> {
+    async roundedRectangle(inputs: Inputs.JSCAD.RoundedRectangleDto): Promise<Inputs.JSCAD.JSCADEntity> {
         return this.jscadWorkerManager.genericCallToWorkerPromise("polygon.roundedRectangle", inputs);
     }
 
@@ -117,7 +117,7 @@ export class JSCADPolygon {
      * @shortname square
      * @drawable true
      */
-     async square(inputs: Inputs.JSCAD.SquareDto): Promise<Inputs.JSCAD.JSCADEntity> {
+    async square(inputs: Inputs.JSCAD.SquareDto): Promise<Inputs.JSCAD.JSCADEntity> {
         return this.jscadWorkerManager.genericCallToWorkerPromise("polygon.square", inputs);
     }
 

@@ -123,8 +123,8 @@ describe("JSON unit tests", () => {
                     "price": 19.95
                 }
             }
-        }
-    }
+        };
+    };
 
 });
 

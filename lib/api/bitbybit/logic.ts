@@ -27,24 +27,24 @@ export class Logic {
      */
     compare<T>(inputs: Inputs.Logic.ComparisonDto<T>): boolean {
         switch (inputs.operator) {
-            case "==":
-                return inputs.first == inputs.second;
-            case "!=":
-                return inputs.first != inputs.second;
-            case "===":
-                return inputs.first === inputs.second;
-            case "!==":
-                return inputs.first !== inputs.second;
-            case "<":
-                return inputs.first < inputs.second;
-            case "<=":
-                return inputs.first <= inputs.second;
-            case ">":
-                return inputs.first > inputs.second;
-            case ">=":
-                return inputs.first >= inputs.second;
-            default:
-                return false;
+        case "==":
+            return inputs.first == inputs.second;
+        case "!=":
+            return inputs.first != inputs.second;
+        case "===":
+            return inputs.first === inputs.second;
+        case "!==":
+            return inputs.first !== inputs.second;
+        case "<":
+            return inputs.first < inputs.second;
+        case "<=":
+            return inputs.first <= inputs.second;
+        case ">":
+            return inputs.first > inputs.second;
+        case ">=":
+            return inputs.first >= inputs.second;
+        default:
+            return false;
         }
     }
 

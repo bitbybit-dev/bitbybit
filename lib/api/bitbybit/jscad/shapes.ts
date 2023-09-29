@@ -94,7 +94,7 @@ export class JSCADShapes {
      * @shortname cylinder
      * @drawable true
      */
-     async cylinder(inputs: Inputs.JSCAD.CylidnerDto): Promise<Inputs.JSCAD.JSCADEntity> {
+    async cylinder(inputs: Inputs.JSCAD.CylidnerDto): Promise<Inputs.JSCAD.JSCADEntity> {
         return this.jscadWorkerManager.genericCallToWorkerPromise("shapes.cylinder", inputs);
     }
 
@@ -106,7 +106,7 @@ export class JSCADShapes {
      * @shortname cylinder
      * @drawable true
      */
-     async cylindersOnCenterPoints(inputs: Inputs.JSCAD.CylidnerCentersDto): Promise<Inputs.JSCAD.JSCADEntity[]> {
+    async cylindersOnCenterPoints(inputs: Inputs.JSCAD.CylidnerCentersDto): Promise<Inputs.JSCAD.JSCADEntity[]> {
         return this.jscadWorkerManager.genericCallToWorkerPromise("shapes.cylindersOnCenterPoints", inputs);
     }
 
@@ -118,7 +118,7 @@ export class JSCADShapes {
      * @shortname ellipsoid
      * @drawable true
      */
-     async ellipsoid(inputs: Inputs.JSCAD.EllipsoidDto): Promise<Inputs.JSCAD.JSCADEntity> {
+    async ellipsoid(inputs: Inputs.JSCAD.EllipsoidDto): Promise<Inputs.JSCAD.JSCADEntity> {
         return this.jscadWorkerManager.genericCallToWorkerPromise("shapes.ellipsoid", inputs);
     }
 
@@ -130,7 +130,7 @@ export class JSCADShapes {
      * @shortname ellipsoid
      * @drawable true
      */
-     async ellipsoidsOnCenterPoints(inputs: Inputs.JSCAD.EllipsoidCentersDto): Promise<Inputs.JSCAD.JSCADEntity[]> {
+    async ellipsoidsOnCenterPoints(inputs: Inputs.JSCAD.EllipsoidCentersDto): Promise<Inputs.JSCAD.JSCADEntity[]> {
         return this.jscadWorkerManager.genericCallToWorkerPromise("shapes.ellipsoidsOnCenterPoints", inputs);
     }
 
@@ -142,7 +142,7 @@ export class JSCADShapes {
      * @shortname geodesic sphere
      * @drawable true
      */
-     async geodesicSphere(inputs: Inputs.JSCAD.GeodesicSphereDto): Promise<Inputs.JSCAD.JSCADEntity> {
+    async geodesicSphere(inputs: Inputs.JSCAD.GeodesicSphereDto): Promise<Inputs.JSCAD.JSCADEntity> {
         return this.jscadWorkerManager.genericCallToWorkerPromise("shapes.geodesicSphere", inputs);
     }
 
@@ -154,7 +154,7 @@ export class JSCADShapes {
      * @shortname geodesic sphere
      * @drawable true
      */
-     async geodesicSpheresOnCenterPoints(inputs: Inputs.JSCAD.GeodesicSphereCentersDto): Promise<Inputs.JSCAD.JSCADEntity[]> {
+    async geodesicSpheresOnCenterPoints(inputs: Inputs.JSCAD.GeodesicSphereCentersDto): Promise<Inputs.JSCAD.JSCADEntity[]> {
         return this.jscadWorkerManager.genericCallToWorkerPromise("shapes.geodesicSpheresOnCenterPoints", inputs);
     }
 
