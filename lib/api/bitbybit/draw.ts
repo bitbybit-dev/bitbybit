@@ -1,7 +1,5 @@
 
-import {
-    Color3, Mesh, ShadowGenerator, MeshBuilder
-} from "@babylonjs/core";
+import * as BABYLON from "@babylonjs/core";
 import * as Inputs from "../inputs/inputs";
 import { Point } from "./point";
 import { Line } from "./line";
@@ -81,7 +79,7 @@ export class Draw {
      * @shortname draw anything
      * @disposableOutput true
      */
-    async drawAnyAsync(inputs: Inputs.Draw.DrawAny): Promise<Mesh> {
+    async drawAnyAsync(inputs: Inputs.Draw.DrawAny): Promise<BABYLON.Mesh> {
         const entity = inputs.entity;
 
         // we start with async ones
@@ -97,7 +95,7 @@ export class Draw {
         }
     }
 
-    private updateAny(inputs: Inputs.Draw.DrawAny): Mesh {
+    private updateAny(inputs: Inputs.Draw.DrawAny): BABYLON.Mesh {
         let result;
         if (inputs.babylonMesh && inputs.babylonMesh.metadata) {
 
@@ -159,18 +157,18 @@ export class Draw {
      * @shortname draw grid
      * @disposableOutput true
      */
-    drawGridMesh(inputs: Inputs.Draw.SceneDrawGridMeshDto): Mesh {
+    drawGridMesh(inputs: Inputs.Draw.SceneDrawGridMeshDto): BABYLON.Mesh {
         try {
             const groundMaterial = new GridMaterial(`groundMaterial${Math.random()}`, this.context.scene);
             groundMaterial.majorUnitFrequency = inputs.majorUnitFrequency;
             groundMaterial.minorUnitVisibility = inputs.minorUnitVisibility;
             groundMaterial.gridRatio = inputs.gridRatio;
             groundMaterial.backFaceCulling = inputs.backFaceCulling;
-            groundMaterial.mainColor = Color3.FromHexString(inputs.mainColor);
-            groundMaterial.lineColor = Color3.FromHexString(inputs.secondaryColor);
+            groundMaterial.mainColor = BABYLON.Color3.FromHexString(inputs.mainColor);
+            groundMaterial.lineColor = BABYLON.Color3.FromHexString(inputs.secondaryColor);
             groundMaterial.opacity = inputs.opacity;
 
-            const ground = MeshBuilder.CreateGround(`ground${Math.random()}`,
+            const ground = BABYLON.MeshBuilder.CreateGround(`ground${Math.random()}`,
                 {
                     width: inputs.width,
                     height: inputs.height,
@@ -185,7 +183,7 @@ export class Draw {
             return ground;
         } catch (e) {
             console.log("Error happened: ", e);
-            return MeshBuilder.CreateBox("error-ground", { size: 0.00000001 }, this.context.scene);
+            return BABYLON.MeshBuilder.CreateBox("error-ground", { size: 0.00000001 }, this.context.scene);
         }
     }
 
@@ -194,7 +192,7 @@ export class Draw {
      * @param inputs Contains options and entities to be drawn
      * @returns BabylonJS Mesh
      */
-    private drawAny(inputs: Inputs.Draw.DrawAny): Mesh {
+    private drawAny(inputs: Inputs.Draw.DrawAny): BABYLON.Mesh {
         let result;
 
         const entity = inputs.entity;
@@ -514,9 +512,9 @@ export class Draw {
         });
     }
 
-    private applyGlobalSettingsAndMetadataAndShadowCasting(type: Inputs.Draw.drawingTypes, options: Inputs.Draw.DrawBasicGeometryOptions | Inputs.Draw.DrawOcctShapeOptions | Inputs.Draw.DrawNodeOptions, result: Mesh) {
+    private applyGlobalSettingsAndMetadataAndShadowCasting(type: Inputs.Draw.drawingTypes, options: Inputs.Draw.DrawBasicGeometryOptions | Inputs.Draw.DrawOcctShapeOptions | Inputs.Draw.DrawNodeOptions, result: BABYLON.Mesh) {
         const typemeta = { type, options };
-        const sgs = this.context.scene.metadata.shadowGenerators as ShadowGenerator[];
+        const sgs = this.context.scene.metadata.shadowGenerators as BABYLON.ShadowGenerator[];
 
         result.isPickable = false;
         result.getChildMeshes().forEach(m => { m.isPickable = false; });

@@ -1,6 +1,6 @@
 import * as Inputs from "../../inputs/inputs";
 import { GLTF2Export } from "@babylonjs/serializers/glTF/2.0";
-import { LinesMesh, Mesh, MeshBuilder, SceneLoader, SceneSerializer, ShadowGenerator, Vector3 } from "@babylonjs/core";
+import * as BABYLON from "@babylonjs/core";
 import { Context } from "../../context";
 import { STLExport } from "@babylonjs/serializers";
 
@@ -20,7 +20,7 @@ export class BabylonIO {
      * @group load
      * @shortname asset
      */
-    async loadAssetIntoScene(inputs: Inputs.Asset.AssetFileDto): Promise<Mesh> {
+    async loadAssetIntoScene(inputs: Inputs.Asset.AssetFileDto): Promise<BABYLON.Mesh> {
         const type = inputs.assetFile.name.split(".").pop();
 
         if (this.supportedFileFormats.includes(type.toLocaleLowerCase())) {
@@ -42,7 +42,7 @@ export class BabylonIO {
      * @group load
      * @shortname asset from url
      */
-    async loadAssetIntoSceneFromRootUrl(inputs: Inputs.Asset.AssetFileByUrlDto): Promise<Mesh> {
+    async loadAssetIntoSceneFromRootUrl(inputs: Inputs.Asset.AssetFileByUrlDto): Promise<BABYLON.Mesh> {
         const type = inputs.assetFile.split(".").pop();
 
         if (this.supportedFileFormats.includes(type.toLocaleLowerCase())) {
@@ -69,7 +69,7 @@ export class BabylonIO {
             window.URL.revokeObjectURL(this.objectUrl);
         }
 
-        const serializedScene = SceneSerializer.Serialize(this.context.scene);
+        const serializedScene = BABYLON.SceneSerializer.Serialize(this.context.scene);
         this.context.scene.metadata = metadata;
         const strScene = JSON.stringify(serializedScene);
 
@@ -113,19 +113,19 @@ export class BabylonIO {
         const allChildren = inputs.mesh.getChildMeshes();
         let childrenMeshes = [];
         if (allChildren && allChildren.length > 0) {
-            childrenMeshes = allChildren.filter(s => !(s instanceof LinesMesh));
+            childrenMeshes = allChildren.filter(s => !(s instanceof BABYLON.LinesMesh));
         }
-        let meshes: Mesh[] = [inputs.mesh, ...childrenMeshes];
+        let meshes: BABYLON.Mesh[] = [inputs.mesh, ...childrenMeshes];
         meshes = meshes.filter(m => m.isVisible);
-        STLExport.CreateSTL(meshes as Mesh[], true, inputs.filename, true, true, true);
+        STLExport.CreateSTL(meshes as BABYLON.Mesh[], true, inputs.filename, true, true, true);
         return Promise.resolve({});
     }
 
 
-    private async loadAsset(meshNames: any, rootUrl: string, fileOrName: string | File, importHidden: boolean): Promise<Mesh> {
-        const res = await SceneLoader.ImportMeshAsync("", rootUrl, fileOrName, this.context.scene);
-        const sgs = this.context.scene.metadata.shadowGenerators as ShadowGenerator[];
-        const container = MeshBuilder.CreateBox("ImportedMeshContainer" + Math.random(), { size: 0.000001 }, this.context.scene);
+    private async loadAsset(meshNames: any, rootUrl: string, fileOrName: string | File, importHidden: boolean): Promise<BABYLON.Mesh> {
+        const res = await BABYLON.SceneLoader.ImportMeshAsync("", rootUrl, fileOrName, this.context.scene);
+        const sgs = this.context.scene.metadata.shadowGenerators as BABYLON.ShadowGenerator[];
+        const container = BABYLON.MeshBuilder.CreateBox("ImportedMeshContainer" + Math.random(), { size: 0.000001 }, this.context.scene);
         if (sgs.length > 0) {
             res.meshes.forEach(mesh => {
                 mesh.isPickable = false;

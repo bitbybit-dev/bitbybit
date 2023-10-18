@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-namespace */
-import { AbstractMesh, InstancedMesh, Material, Mesh } from "@babylonjs/core";
+import * as BABYLON from "@babylonjs/core";
 import { Base } from "./base-inputs";
 
 // tslint:disable-next-line: no-namespace
@@ -10,7 +10,7 @@ export namespace BabylonMesh {
          * Babylon Mesh that needs to be updated
          * @default undefined
          */
-        babylonMesh: Mesh;
+        babylonMesh: BABYLON.Mesh;
         /**
          * Position to place the mesh into
          * @default undefined
@@ -38,19 +38,19 @@ export namespace BabylonMesh {
          * BabylonJS Mesh that needs to change it's parent
          * @default undefined
          */
-        babylonMesh: Mesh | InstancedMesh | AbstractMesh;
+        babylonMesh: BABYLON.Mesh | BABYLON.InstancedMesh | BABYLON.AbstractMesh;
         /**
          * BabylonJS Mesh to use as a parent
          * @default undefined
          */
-        parentMesh: Mesh | InstancedMesh | AbstractMesh;
+        parentMesh: BABYLON.Mesh | BABYLON.InstancedMesh | BABYLON.AbstractMesh;
     }
     export class UpdateDrawnBabylonMeshPositionDto {
         /**
          * Babylon Mesh that needs to be updated
          * @default undefined
          */
-        babylonMesh: Mesh | InstancedMesh;
+        babylonMesh: BABYLON.Mesh | BABYLON.InstancedMesh;
         /**
          * Position to place the mesh into
          * @default undefined
@@ -62,7 +62,7 @@ export namespace BabylonMesh {
          * Babylon Mesh that needs to be updated
          * @default undefined
          */
-        babylonMesh: Mesh | InstancedMesh;
+        babylonMesh: BABYLON.Mesh | BABYLON.InstancedMesh;
         /**
          * Rotation for the mesh
          * @default undefined
@@ -75,7 +75,7 @@ export namespace BabylonMesh {
          * Babylon Mesh that needs to be updated
          * @default undefined
          */
-        babylonMesh: Mesh | InstancedMesh;
+        babylonMesh: BABYLON.Mesh | BABYLON.InstancedMesh;
         /**
          * Scale for the mesh
          * @default undefined
@@ -88,12 +88,12 @@ export namespace BabylonMesh {
          * Babylon Mesh that needs to be updated
          * @default undefined
          */
-        babylonMesh: Mesh | InstancedMesh;
+        babylonMesh: BABYLON.Mesh | BABYLON.InstancedMesh;
         /**
          * Babylon Mesh that needs to be updated
          * @default undefined
          */
-        babylonMesh2: Mesh | InstancedMesh;
+        babylonMesh2: BABYLON.Mesh | BABYLON.InstancedMesh;
         /**
          * Should check precisely
          * @default false
@@ -110,7 +110,7 @@ export namespace BabylonMesh {
          * Babylon Mesh that needs to be updated
          * @default undefined
          */
-        babylonMesh: Mesh | InstancedMesh;
+        babylonMesh: BABYLON.Mesh | BABYLON.InstancedMesh;
         /**
          * point
          * @default undefined
@@ -123,14 +123,14 @@ export namespace BabylonMesh {
          * BabylonJS mesh
          * @default undefined
          */
-        babylonMesh: Mesh;
+        babylonMesh: BABYLON.Mesh;
     }
     export class ShowHideMeshDto {
         /**
          * BabylonJS mesh
          * @default undefined
          */
-        babylonMesh: Mesh;
+        babylonMesh: BABYLON.Mesh;
         /**
          * Include children when showing hiding
          * @default true
@@ -142,14 +142,14 @@ export namespace BabylonMesh {
          * BabylonJS mesh
          * @default undefined
          */
-        babylonMesh: Mesh;
+        babylonMesh: BABYLON.Mesh;
     }
     export class ChildMeshesBabylonMeshDto {
         /**
          * BabylonJS mesh
          * @default undefined
          */
-        babylonMesh: Mesh;
+        babylonMesh: BABYLON.Mesh;
         /**
          * Include only direct descendants
          * @default false
@@ -161,7 +161,7 @@ export namespace BabylonMesh {
          * BabylonJS mesh
          * @default undefined
          */
-        babylonMesh: Mesh;
+        babylonMesh: BABYLON.Mesh;
         /**
          * distance to translate
          * @default 0
@@ -177,7 +177,7 @@ export namespace BabylonMesh {
          * @default undefined
          * 
          */
-        babylonMesh?: Mesh;
+        babylonMesh?: BABYLON.Mesh;
         /**
          * name of the mesh
          * @default undefined
@@ -201,12 +201,12 @@ export namespace BabylonMesh {
          * BabylonJS mesh
          * @default undefined
          */
-        babylonMesh?: Mesh;
+        babylonMesh?: BABYLON.Mesh;
         /**
          * material of the mesh
          * @default undefined
          */
-        material: Material;
+        material: BABYLON.Material;
         /**
          * Set material on children also
          * @default false
@@ -218,7 +218,7 @@ export namespace BabylonMesh {
          * BabylonJS mesh
          * @default undefined
          */
-        babylonMesh?: Mesh;
+        babylonMesh?: BABYLON.Mesh;
         /**
          * id of the mesh
          * @default undefined
@@ -248,7 +248,7 @@ export namespace BabylonMesh {
          * BabylonJS mesh
          * @default undefined
          */
-        babylonMesh: Mesh;
+        babylonMesh: BABYLON.Mesh;
         /**
          * Pickable
          * @default false
@@ -266,7 +266,7 @@ export namespace BabylonMesh {
          * BabylonJS mesh
          * @default undefined
          */
-        babylonMesh: Mesh;
+        babylonMesh: BABYLON.Mesh;
         /**
          * Check collisions
          * @default false
@@ -283,7 +283,7 @@ export namespace BabylonMesh {
          * BabylonJS mesh
          * @default undefined
          */
-        babylonMesh: Mesh;
+        babylonMesh: BABYLON.Mesh;
         /**
          * rotate to translate
          * @default 0
@@ -298,7 +298,7 @@ export namespace BabylonMesh {
          * BabylonJS mesh
          * @default undefined
          */
-        babylonMesh: Mesh;
+        babylonMesh: BABYLON.Mesh;
         /**
          * Shows mesh if 0 and shows if 1
          * @default 0
@@ -318,7 +318,7 @@ export namespace BabylonMesh {
          * BabylonJS mesh
          * @default undefined
          */
-        mesh: Mesh;
+        mesh: BABYLON.Mesh;
         /**
          * Position
          * @default undefined
@@ -340,6 +340,6 @@ export namespace BabylonMesh {
          * BabylonJS mesh
          * @default undefined
          */
-        mesh: Mesh;
+        mesh: BABYLON.Mesh;
     }
 }

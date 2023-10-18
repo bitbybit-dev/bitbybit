@@ -1,8 +1,5 @@
 
-import {
-    Color4, Color3, Mesh, Vector3,
-    StandardMaterial, PBRMetallicRoughnessMaterial, VertexBuffer, ShadowGenerator, Angle, InstancedMesh, Axis, Space, AbstractMesh, Material
-} from "@babylonjs/core";
+import * as BABYLON from "@babylonjs/core";
 import { Context } from "../../context";
 import * as Inputs from "../../inputs/inputs";
 import { Base } from "../../inputs/inputs";
@@ -36,9 +33,9 @@ export class BabylonMesh {
     updateDrawn(inputs: Inputs.BabylonMesh.UpdateDrawnBabylonMesh): void {
         const type = inputs.babylonMesh.metadata.type as Inputs.Draw.drawingTypes;
 
-        inputs.babylonMesh.position = new Vector3(inputs.position[0], inputs.position[1], inputs.position[2]);
-        inputs.babylonMesh.rotation = new Vector3(inputs.rotation[0], inputs.rotation[1], inputs.rotation[2]);
-        inputs.babylonMesh.scaling = new Vector3(inputs.scaling[0], inputs.scaling[1], inputs.scaling[2]);
+        inputs.babylonMesh.position = new BABYLON.Vector3(inputs.position[0], inputs.position[1], inputs.position[2]);
+        inputs.babylonMesh.rotation = new BABYLON.Vector3(inputs.rotation[0], inputs.rotation[1], inputs.rotation[2]);
+        inputs.babylonMesh.scaling = new BABYLON.Vector3(inputs.scaling[0], inputs.scaling[1], inputs.scaling[2]);
 
         const areColorsArray = Array.isArray(inputs.colours);
         let meshChildren;
@@ -48,28 +45,28 @@ export class BabylonMesh {
         if (meshChildren && meshChildren.length > 0) {
             if (areColorsArray && inputs.colours.length === meshChildren.length) {
                 meshChildren.forEach((child, index) => {
-                    const color = Color3.FromHexString(inputs.colours[index]);
+                    const color = BABYLON.Color3.FromHexString(inputs.colours[index]);
                     this.assignColorToMesh(child, color);
                 });
             } else if (areColorsArray) {
                 meshChildren.forEach((child) => {
-                    const color = Color3.FromHexString(inputs.colours[0]);
+                    const color = BABYLON.Color3.FromHexString(inputs.colours[0]);
                     this.assignColorToMesh(child, color);
                 });
             } else {
                 meshChildren.forEach((child) => {
-                    const color = Color3.FromHexString(inputs.colours as string);
+                    const color = BABYLON.Color3.FromHexString(inputs.colours as string);
                     this.assignColorToMesh(child, color);
                 });
             }
         } else {
-            const color = areColorsArray ? Color3.FromHexString(inputs.colours[0]) : Color3.FromHexString(inputs.colours as string);
+            const color = areColorsArray ? BABYLON.Color3.FromHexString(inputs.colours[0]) : BABYLON.Color3.FromHexString(inputs.colours as string);
             this.assignColorToMesh(inputs.babylonMesh, color);
         }
 
         if (inputs.babylonMesh.edgesRenderer !== null) {
-            const color = areColorsArray ? Color3.FromHexString(inputs.colours[0]) : Color3.FromHexString(inputs.colours as string);
-            inputs.babylonMesh.edgesColor = Color4.FromColor3(color);
+            const color = areColorsArray ? BABYLON.Color3.FromHexString(inputs.colours[0]) : BABYLON.Color3.FromHexString(inputs.colours as string);
+            inputs.babylonMesh.edgesColor = BABYLON.Color4.FromColor3(color);
         }
         if ([
             Inputs.Draw.drawingTypes.point,
@@ -78,29 +75,29 @@ export class BabylonMesh {
             Inputs.Draw.drawingTypes.lines,
             Inputs.Draw.drawingTypes.polyline,
             Inputs.Draw.drawingTypes.polylines].includes(type)) {
-            const colors = inputs.babylonMesh.getVerticesData(VertexBuffer.ColorKind);
+            const colors = inputs.babylonMesh.getVerticesData(BABYLON.VertexBuffer.ColorKind);
             const length = colors.length / 4;
 
             const c = [];
 
             if (areColorsArray && length === inputs.colours.length) {
                 for (let i = 0; i < length; i++) {
-                    const col = Color4.FromColor3(Color3.FromHexString(inputs.colours[i]));
+                    const col = BABYLON.Color4.FromColor3(BABYLON.Color3.FromHexString(inputs.colours[i]));
                     c.push(col.r, col.g, col.b, col.a);
                 }
             } else if (areColorsArray) {
-                const col = Color4.FromColor3(Color3.FromHexString(inputs.colours[0]));
+                const col = BABYLON.Color4.FromColor3(BABYLON.Color3.FromHexString(inputs.colours[0]));
                 for (let i = 0; i < length; i++) {
                     c.push(col.r, col.g, col.b, col.a);
                 }
             } else {
-                const col = Color4.FromColor3(Color3.FromHexString(inputs.colours as string));
+                const col = BABYLON.Color4.FromColor3(BABYLON.Color3.FromHexString(inputs.colours as string));
                 for (let i = 0; i < length; i++) {
                     c.push(col.r, col.g, col.b, col.a);
                 }
             }
 
-            inputs.babylonMesh.setVerticesData(VertexBuffer.ColorKind, c);
+            inputs.babylonMesh.setVerticesData(BABYLON.VertexBuffer.ColorKind, c);
         }
     }
 
@@ -232,7 +229,7 @@ export class BabylonMesh {
      * @group get
      * @shortname meshes where name contains
      */
-    getMeshesWhereNameContains(inputs: Inputs.BabylonMesh.ByNameBabylonMeshDto): AbstractMesh[] {
+    getMeshesWhereNameContains(inputs: Inputs.BabylonMesh.ByNameBabylonMeshDto): BABYLON.AbstractMesh[] {
         return this.context.scene.meshes.filter(m => m.name.includes(inputs.name));
     }
 
@@ -242,7 +239,7 @@ export class BabylonMesh {
      * @group get
      * @shortname child meshes
      */
-    getChildMeshes(inputs: Inputs.BabylonMesh.ChildMeshesBabylonMeshDto): AbstractMesh[] {
+    getChildMeshes(inputs: Inputs.BabylonMesh.ChildMeshesBabylonMeshDto): BABYLON.AbstractMesh[] {
         return inputs.babylonMesh.getChildMeshes(inputs.directDescendantsOnly);
     }
 
@@ -252,7 +249,7 @@ export class BabylonMesh {
      * @group get
      * @shortname meshes by id
      */
-    getMeshesOfId(inputs: Inputs.BabylonMesh.ByIdBabylonMeshDto): AbstractMesh[] {
+    getMeshesOfId(inputs: Inputs.BabylonMesh.ByIdBabylonMeshDto): BABYLON.AbstractMesh[] {
         return this.context.scene.getMeshesById(inputs.id);
     }
 
@@ -262,7 +259,7 @@ export class BabylonMesh {
      * @group get
      * @shortname mesh by id
      */
-    getMeshOfId(inputs: Inputs.BabylonMesh.ByIdBabylonMeshDto): AbstractMesh {
+    getMeshOfId(inputs: Inputs.BabylonMesh.ByIdBabylonMeshDto): BABYLON.AbstractMesh {
         return this.context.scene.getMeshById(inputs.id);
     }
 
@@ -272,7 +269,7 @@ export class BabylonMesh {
      * @group get
      * @shortname mesh by unique id
      */
-    getMeshOfUniqueId(inputs: Inputs.BabylonMesh.UniqueIdBabylonMeshDto): AbstractMesh {
+    getMeshOfUniqueId(inputs: Inputs.BabylonMesh.UniqueIdBabylonMeshDto): BABYLON.AbstractMesh {
         return this.context.scene.getMeshByUniqueId(inputs.uniqueId);
     }
 
@@ -284,9 +281,9 @@ export class BabylonMesh {
      * @shortname clone
      * @disposableOutput true
      */
-    clone(inputs: Inputs.BabylonMesh.BabylonMeshDto): Mesh {
+    clone(inputs: Inputs.BabylonMesh.BabylonMeshDto): BABYLON.Mesh {
         const clone = inputs.babylonMesh.clone();
-        const sgs = this.context.scene?.metadata?.shadowGenerators as ShadowGenerator[];
+        const sgs = this.context.scene?.metadata?.shadowGenerators as BABYLON.ShadowGenerator[];
 
         if (sgs.length > 0) {
             clone.getChildMeshes().forEach(m => {
@@ -380,7 +377,7 @@ export class BabylonMesh {
      * @group get
      * @shortname material
      */
-    getMaterial(inputs: Inputs.BabylonMesh.BabylonMeshDto): Material {
+    getMaterial(inputs: Inputs.BabylonMesh.BabylonMeshDto): BABYLON.Material {
         return inputs.babylonMesh.material;
     }
 
@@ -438,7 +435,7 @@ export class BabylonMesh {
      */
     moveForward(inputs: Inputs.BabylonMesh.TranslateBabylonMeshDto): void {
         const m = inputs.babylonMesh;
-        m.translate(m.forward, inputs.distance, Space.WORLD);
+        m.translate(m.forward, inputs.distance, BABYLON.Space.WORLD);
     }
 
     /**
@@ -449,7 +446,7 @@ export class BabylonMesh {
      */
     moveBackward(inputs: Inputs.BabylonMesh.TranslateBabylonMeshDto): void {
         const m = inputs.babylonMesh;
-        m.translate(m.forward.negate(), inputs.distance, Space.WORLD);
+        m.translate(m.forward.negate(), inputs.distance, BABYLON.Space.WORLD);
     }
 
     /**
@@ -460,7 +457,7 @@ export class BabylonMesh {
      */
     moveUp(inputs: Inputs.BabylonMesh.TranslateBabylonMeshDto): void {
         const m = inputs.babylonMesh;
-        m.translate(m.up, inputs.distance, Space.WORLD);
+        m.translate(m.up, inputs.distance, BABYLON.Space.WORLD);
     }
 
     /**
@@ -471,7 +468,7 @@ export class BabylonMesh {
      */
     moveDown(inputs: Inputs.BabylonMesh.TranslateBabylonMeshDto): void {
         const m = inputs.babylonMesh;
-        m.translate(m.up.negate(), inputs.distance, Space.WORLD);
+        m.translate(m.up.negate(), inputs.distance, BABYLON.Space.WORLD);
     }
 
     /**
@@ -482,7 +479,7 @@ export class BabylonMesh {
      */
     moveRight(inputs: Inputs.BabylonMesh.TranslateBabylonMeshDto): void {
         const m = inputs.babylonMesh;
-        m.translate(m.right, inputs.distance, Space.WORLD);
+        m.translate(m.right, inputs.distance, BABYLON.Space.WORLD);
     }
 
     /**
@@ -493,7 +490,7 @@ export class BabylonMesh {
      */
     moveLeft(inputs: Inputs.BabylonMesh.TranslateBabylonMeshDto): void {
         const m = inputs.babylonMesh;
-        m.translate(m.right.negate(), inputs.distance, Space.WORLD);
+        m.translate(m.right.negate(), inputs.distance, BABYLON.Space.WORLD);
     }
 
     /**
@@ -504,8 +501,8 @@ export class BabylonMesh {
      */
     yaw(inputs: Inputs.BabylonMesh.RotateBabylonMeshDto): void {
         const m = inputs.babylonMesh;
-        const rot = Angle.FromDegrees(inputs.rotate).radians();
-        m.rotate(Axis.Y, rot, Space.LOCAL);
+        const rot = BABYLON.Angle.FromDegrees(inputs.rotate).radians();
+        m.rotate(BABYLON.Axis.Y, rot, BABYLON.Space.LOCAL);
     }
 
     /**
@@ -516,8 +513,8 @@ export class BabylonMesh {
      */
     pitch(inputs: Inputs.BabylonMesh.RotateBabylonMeshDto): void {
         const m = inputs.babylonMesh;
-        const rot = Angle.FromDegrees(inputs.rotate).radians();
-        m.rotate(Axis.X, rot, Space.LOCAL);
+        const rot = BABYLON.Angle.FromDegrees(inputs.rotate).radians();
+        m.rotate(BABYLON.Axis.X, rot, BABYLON.Space.LOCAL);
     }
 
     /**
@@ -528,8 +525,8 @@ export class BabylonMesh {
      */
     roll(inputs: Inputs.BabylonMesh.RotateBabylonMeshDto): void {
         const m = inputs.babylonMesh;
-        const rot = Angle.FromDegrees(inputs.rotate).radians();
-        m.rotate(Axis.Z, rot, Space.LOCAL);
+        const rot = BABYLON.Angle.FromDegrees(inputs.rotate).radians();
+        m.rotate(BABYLON.Axis.Z, rot, BABYLON.Space.LOCAL);
     }
 
     /**
@@ -539,7 +536,7 @@ export class BabylonMesh {
      * @shortname position
      */
     setPosition(inputs: Inputs.BabylonMesh.UpdateDrawnBabylonMeshPositionDto): void {
-        inputs.babylonMesh.position = new Vector3(inputs.position[0], inputs.position[1], inputs.position[2]);
+        inputs.babylonMesh.position = new BABYLON.Vector3(inputs.position[0], inputs.position[1], inputs.position[2]);
     }
 
     /**
@@ -549,11 +546,11 @@ export class BabylonMesh {
      * @shortname rotation
      */
     setRotation(inputs: Inputs.BabylonMesh.UpdateDrawnBabylonMeshRotationDto): void {
-        const radX = Angle.FromDegrees(inputs.rotation[0]).radians();
-        const radY = Angle.FromDegrees(inputs.rotation[1]).radians();
-        const radZ = Angle.FromDegrees(inputs.rotation[2]).radians();
+        const radX = BABYLON.Angle.FromDegrees(inputs.rotation[0]).radians();
+        const radY = BABYLON.Angle.FromDegrees(inputs.rotation[1]).radians();
+        const radZ = BABYLON.Angle.FromDegrees(inputs.rotation[2]).radians();
 
-        inputs.babylonMesh.rotation = new Vector3(radX, radY, radZ);
+        inputs.babylonMesh.rotation = new BABYLON.Vector3(radX, radY, radZ);
     }
 
     /**
@@ -563,7 +560,7 @@ export class BabylonMesh {
      * @shortname scale
      */
     setScale(inputs: Inputs.BabylonMesh.UpdateDrawnBabylonMeshScaleDto): void {
-        inputs.babylonMesh.scaling = new Vector3(inputs.scale[0], inputs.scale[1], inputs.scale[2]);
+        inputs.babylonMesh.scaling = new BABYLON.Vector3(inputs.scale[0], inputs.scale[1], inputs.scale[2]);
     }
 
     /**
@@ -583,7 +580,7 @@ export class BabylonMesh {
      * @shortname point
      */
     intersectsPoint(inputs: Inputs.BabylonMesh.IntersectsPointDto): boolean {
-        const point = new Vector3(inputs.point[0], inputs.point[1], inputs.point[2]);
+        const point = new BABYLON.Vector3(inputs.point[0], inputs.point[1], inputs.point[2]);
         return inputs.babylonMesh.intersectsPoint(point);
     }
 
@@ -596,15 +593,15 @@ export class BabylonMesh {
      */
     createMeshInstanceAndTransform(inputs: Inputs.BabylonMesh.MeshInstanceAndTransformDto): Promise<any> {
         return new Promise((resolve, reject) => {
-            const sgs = this.context.scene?.metadata?.shadowGenerators as ShadowGenerator[];
+            const sgs = this.context.scene?.metadata?.shadowGenerators as BABYLON.ShadowGenerator[];
             if (inputs.mesh && inputs.mesh.getChildMeshes && inputs.mesh.getChildMeshes().length > 0) {
-                inputs.mesh.getChildMeshes(false).forEach((child: Mesh) => {
+                inputs.mesh.getChildMeshes(false).forEach((child: BABYLON.Mesh) => {
                     if (child.createInstance) {
                         child.disableEdgesRendering();
                         const newInstance = child.createInstance(`InstanceMesh${Math.random()}`);
-                        newInstance.position = new Vector3(inputs.position[0], inputs.position[1], inputs.position[2]);
-                        newInstance.rotation = new Vector3(inputs.rotation[0], inputs.rotation[1], inputs.rotation[2]);
-                        newInstance.scaling = new Vector3(inputs.scaling[0], inputs.scaling[1], inputs.scaling[2]);
+                        newInstance.position = new BABYLON.Vector3(inputs.position[0], inputs.position[1], inputs.position[2]);
+                        newInstance.rotation = new BABYLON.Vector3(inputs.rotation[0], inputs.rotation[1], inputs.rotation[2]);
+                        newInstance.scaling = new BABYLON.Vector3(inputs.scaling[0], inputs.scaling[1], inputs.scaling[2]);
                         if (sgs.length > 0) {
                             sgs.forEach(sg => {
                                 sg.addShadowCaster(newInstance);
@@ -617,12 +614,12 @@ export class BabylonMesh {
                 inputs.mesh.isVisible = false;
                 const newInstance = inputs.mesh.createInstance(`InstanceMesh${Math.random()}`);
 
-                newInstance.position = new Vector3(inputs.position[0], inputs.position[1], inputs.position[2]);
-                newInstance.rotation = new Vector3(
-                    Angle.FromDegrees(inputs.rotation[0]).radians(),
-                    Angle.FromDegrees(inputs.rotation[1]).radians(),
-                    Angle.FromDegrees(inputs.rotation[2]).radians());
-                newInstance.scaling = new Vector3(inputs.scaling[0], inputs.scaling[1], inputs.scaling[2]);
+                newInstance.position = new BABYLON.Vector3(inputs.position[0], inputs.position[1], inputs.position[2]);
+                newInstance.rotation = new BABYLON.Vector3(
+                    BABYLON.Angle.FromDegrees(inputs.rotation[0]).radians(),
+                    BABYLON.Angle.FromDegrees(inputs.rotation[1]).radians(),
+                    BABYLON.Angle.FromDegrees(inputs.rotation[2]).radians());
+                newInstance.scaling = new BABYLON.Vector3(inputs.scaling[0], inputs.scaling[1], inputs.scaling[2]);
 
                 if (sgs.length > 0) {
                     sgs.forEach(sg => {
@@ -642,12 +639,12 @@ export class BabylonMesh {
      * @shortname create
      * @disposableOutput true
      */
-    createMeshInstance(inputs: Inputs.BabylonMesh.MeshInstanceDto): InstancedMesh {
-        let result: InstancedMesh;
+    createMeshInstance(inputs: Inputs.BabylonMesh.MeshInstanceDto): BABYLON.InstancedMesh {
+        let result: BABYLON.InstancedMesh;
         if (inputs.mesh && inputs.mesh.getChildMeshes && inputs.mesh.getChildMeshes().length > 0) {
             inputs.mesh.setParent(null);
             const instance = inputs.mesh.createInstance("meshCloneInstance" + Math.random());
-            inputs.mesh.getChildMeshes(false).forEach((child: Mesh) => {
+            inputs.mesh.getChildMeshes(false).forEach((child: BABYLON.Mesh) => {
                 if (child.createInstance && child.getTotalVertices() > 0 && child.getTotalIndices() > 0) {
                     const newInstance = child.createInstance(`InstanceMesh${Math.random()}`);
                     newInstance.parent = instance;
@@ -655,7 +652,7 @@ export class BabylonMesh {
             });
             result = instance;
 
-            const sgs = this.context.scene.metadata.shadowGenerators as ShadowGenerator[];
+            const sgs = this.context.scene.metadata.shadowGenerators as BABYLON.ShadowGenerator[];
 
             if (sgs.length > 0) {
                 result.getChildMeshes().forEach(m => {
@@ -670,11 +667,11 @@ export class BabylonMesh {
         return result;
     }
 
-    private assignColorToMesh(mesh, color: Color3) {
+    private assignColorToMesh(mesh, color: BABYLON.Color3) {
         const mat = (mesh.material);
-        if (mat instanceof PBRMetallicRoughnessMaterial) {
+        if (mat instanceof BABYLON.PBRMetallicRoughnessMaterial) {
             mat.baseColor = color;
-        } else if (mat instanceof StandardMaterial) {
+        } else if (mat instanceof BABYLON.StandardMaterial) {
             mat.diffuseColor = color;
         }
     }

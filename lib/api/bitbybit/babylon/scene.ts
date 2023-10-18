@@ -1,9 +1,6 @@
 
 import { Context } from "../../context";
-import {
-    Color4, Color3, PointLight, Vector3,
-    MeshBuilder, StandardMaterial, Light, ArcRotateCamera, ShadowGenerator, DirectionalLight, CubeTexture, Matrix, Ray, PickingInfo, Scene
-} from "@babylonjs/core";
+import * as BABYLON from "@babylonjs/core";
 import * as Inputs from "../../inputs/inputs";
 
 
@@ -12,13 +9,23 @@ export class BabylonScene {
     constructor(private readonly context: Context) { }
 
     /**
+     * Gets the scene for the current context
+     * @ignore true
+     * @group scene
+     * @shortname get scene
+     */
+    getScene(): BABYLON.Scene {
+        return this.context.scene;
+    }
+
+    /**
      * Changes the scene background colour for 3D space
      * @param inputs Describes the colour of the scene background
      * @group environment
      * @shortname colour
      */
     backgroundColour(inputs: Inputs.BabylonScene.SceneBackgroundColourDto): void {
-        this.context.scene.clearColor = Color4.FromColor3(Color3.FromHexString(inputs.colour));
+        this.context.scene.clearColor = BABYLON.Color4.FromColor3(BABYLON.Color3.FromHexString(inputs.colour));
     }
 
     /**
@@ -52,15 +59,15 @@ export class BabylonScene {
      * @shortname point
      * @disposableOutput true
      */
-    drawPointLight(inputs: Inputs.BabylonScene.PointLightDto): PointLight {
-        const pos = new Vector3(inputs.position[0], inputs.position[1], inputs.position[2]);
-        const light = new PointLight(`pointLight${Math.random()}`,
+    drawPointLight(inputs: Inputs.BabylonScene.PointLightDto): BABYLON.PointLight {
+        const pos = new BABYLON.Vector3(inputs.position[0], inputs.position[1], inputs.position[2]);
+        const light = new BABYLON.PointLight(`pointLight${Math.random()}`,
             pos,
             this.context.scene
         );
         if (inputs.enableShadows) {
             light.shadowEnabled = true;
-            const shadowGenerator = new ShadowGenerator(inputs.shadowGeneratorMapSize, light);
+            const shadowGenerator = new BABYLON.ShadowGenerator(inputs.shadowGeneratorMapSize, light);
             shadowGenerator.darkness = inputs.shadowDarkness;
             shadowGenerator.usePercentageCloserFiltering = true;
             shadowGenerator.contactHardeningLightSizeUVRatio = 0.2;
@@ -77,17 +84,17 @@ export class BabylonScene {
             });
         }
 
-        light.diffuse = Color3.FromHexString(inputs.diffuse);
-        light.specular = Color3.FromHexString(inputs.specular);
-        light.intensityMode = Light.INTENSITYMODE_LUMINOUSPOWER;
+        light.diffuse = BABYLON.Color3.FromHexString(inputs.diffuse);
+        light.specular = BABYLON.Color3.FromHexString(inputs.specular);
+        light.intensityMode = BABYLON.Light.INTENSITYMODE_LUMINOUSPOWER;
         light.intensity = inputs.intensity;
 
         if (inputs.radius > 0) {
-            const sphere = MeshBuilder.CreateSphere(`PointLightSphere${Math.random()}`,
+            const sphere = BABYLON.MeshBuilder.CreateSphere(`PointLightSphere${Math.random()}`,
                 { diameter: inputs.radius * 2 },
                 this.context.scene
             );
-            const lightMaterial = new StandardMaterial(`LightMaterial${Math.random()}`, this.context.scene);
+            const lightMaterial = new BABYLON.StandardMaterial(`LightMaterial${Math.random()}`, this.context.scene);
             lightMaterial.diffuseColor = light.diffuse;
             lightMaterial.specularColor = light.diffuse;
             lightMaterial.emissiveColor = light.diffuse;
@@ -106,16 +113,16 @@ export class BabylonScene {
      * @shortname directional
      * @disposableOutput true
      */
-    drawDirectionalLight(inputs: Inputs.BabylonScene.DirectionalLightDto): DirectionalLight {
-        const dir = new Vector3(inputs.direction[0], inputs.direction[1], inputs.direction[2]);
-        const light = new DirectionalLight(`directionalLight${Math.random()}`,
+    drawDirectionalLight(inputs: Inputs.BabylonScene.DirectionalLightDto): BABYLON.DirectionalLight {
+        const dir = new BABYLON.Vector3(inputs.direction[0], inputs.direction[1], inputs.direction[2]);
+        const light = new BABYLON.DirectionalLight(`directionalLight${Math.random()}`,
             dir,
             this.context.scene
         );
 
         if (inputs.enableShadows) {
             light.shadowEnabled = true;
-            const shadowGenerator = new ShadowGenerator(inputs.shadowGeneratorMapSize, light);
+            const shadowGenerator = new BABYLON.ShadowGenerator(inputs.shadowGeneratorMapSize, light);
             shadowGenerator.darkness = inputs.shadowDarkness;
             shadowGenerator.usePercentageCloserFiltering = true;
             shadowGenerator.contactHardeningLightSizeUVRatio = 0.2;
@@ -132,8 +139,8 @@ export class BabylonScene {
             });
         }
 
-        light.diffuse = Color3.FromHexString(inputs.diffuse);
-        light.specular = Color3.FromHexString(inputs.specular);
+        light.diffuse = BABYLON.Color3.FromHexString(inputs.diffuse);
+        light.specular = BABYLON.Color3.FromHexString(inputs.specular);
         // light.intensityMode = Light.INTENSITYMODE_LUMINOUSPOWER;
         light.intensity = inputs.intensity;
         light.shadowMaxZ = 1000;
@@ -146,9 +153,9 @@ export class BabylonScene {
      * @shortname adjust active
      */
     adjustActiveArcRotateCamera(inputs: Inputs.BabylonScene.CameraConfigurationDto): void {
-        const camera = this.context.scene.getCameraByName("Camera") as ArcRotateCamera;
-        camera.position = new Vector3(inputs.position[0], inputs.position[1], inputs.position[2]);
-        camera.target = new Vector3(inputs.lookAt[0], inputs.lookAt[1], inputs.lookAt[2]);
+        const camera = this.context.scene.getCameraByName("Camera") as BABYLON.ArcRotateCamera;
+        camera.position = new BABYLON.Vector3(inputs.position[0], inputs.position[1], inputs.position[2]);
+        camera.target = new BABYLON.Vector3(inputs.lookAt[0], inputs.lookAt[1], inputs.lookAt[2]);
         camera.maxZ = inputs.maxZ;
         camera.panningSensibility = inputs.panningSensibility;
         camera.wheelPrecision = inputs.wheelPrecision;
@@ -170,14 +177,14 @@ export class BabylonScene {
      * @shortname skybox
      */
     enableSkybox(inputs: Inputs.BabylonScene.SkyboxDto): void {
-        let texture: CubeTexture;
+        let texture: BABYLON.CubeTexture;
         if (inputs.skybox === Inputs.Base.skyboxEnum.default) {
-            texture = new CubeTexture("/assets/textures/default_skybox/skybox", this.context.scene);
+            texture = new BABYLON.CubeTexture("/assets/textures/default_skybox/skybox", this.context.scene);
         } else if (inputs.skybox === Inputs.Base.skyboxEnum.clearSky) {
-            texture = CubeTexture.CreateFromPrefilteredData("/assets/textures/clear_sky/environment.env",
+            texture = BABYLON.CubeTexture.CreateFromPrefilteredData("/assets/textures/clear_sky/environment.env",
                 this.context.scene, false, false);
         } else if (inputs.skybox === Inputs.Base.skyboxEnum.city) {
-            texture = CubeTexture.CreateFromPrefilteredData("/assets/textures/city/environmentSpecular.env",
+            texture = BABYLON.CubeTexture.CreateFromPrefilteredData("/assets/textures/city/environmentSpecular.env",
                 this.context.scene, false, false);
         }
 
@@ -226,7 +233,7 @@ export class BabylonScene {
         this.context.scene.fogDensity = inputs.density;
         this.context.scene.fogStart = inputs.start;
         this.context.scene.fogEnd = inputs.end;
-        this.context.scene.fogColor = Color3.FromHexString(inputs.color);
+        this.context.scene.fogColor = BABYLON.Color3.FromHexString(inputs.color);
 
     }
 
