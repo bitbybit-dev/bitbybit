@@ -192,7 +192,7 @@ export class Draw {
      * @param inputs Contains options and entities to be drawn
      * @returns BabylonJS Mesh
      */
-    private drawAny(inputs: Inputs.Draw.DrawAny): BABYLON.Mesh {
+    drawAny(inputs: Inputs.Draw.DrawAny): BABYLON.Mesh {
         let result;
 
         const entity = inputs.entity;

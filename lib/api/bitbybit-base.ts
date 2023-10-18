@@ -66,7 +66,7 @@ export class BitByBitBase {
         this.verb = new Verb(this.context, geometryHelper);
         this.jscad = new JSCAD(this.jscadWorkerManager, this.context, geometryHelper);
         this.tag = new Tag();
-        this.time = new Time();
+        this.time = new Time(this.context);
         this.occt = new OCCTW(this.context, this.occtWorkerManager, geometryHelper, this.jscad.text, this.vector);
         this.asset = new Asset();
         this.math = new MathBitByBit();
