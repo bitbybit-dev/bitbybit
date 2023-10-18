@@ -1,4 +1,4 @@
-import { InputStepMode, LinesMesh } from "@babylonjs/core";
+import { LinesMesh } from "@babylonjs/core";
 import { Base } from "./base-inputs";
 
 // tslint:disable-next-line: no-namespace
