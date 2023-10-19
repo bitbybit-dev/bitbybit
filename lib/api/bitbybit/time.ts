@@ -1,6 +1,5 @@
 
 import { Context } from "../context";
-import * as Inputs from "../inputs/inputs";
 
 /**
  * Time functions help to create various interactions which happen in time
@@ -8,7 +7,7 @@ import * as Inputs from "../inputs/inputs";
 
 export class Time {
 
-    context: Context;
+    private context: Context;
     constructor(context: Context) {
         this.context = context;
     }
