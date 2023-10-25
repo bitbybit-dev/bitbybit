@@ -191,6 +191,7 @@ export class Draw {
      * Draws any kind of geometry. Inputs can not be promises.
      * @param inputs Contains options and entities to be drawn
      * @returns BabylonJS Mesh
+     * @ignore true
      */
     drawAny(inputs: Inputs.Draw.DrawAny): BABYLON.Mesh {
         let result;
