@@ -19,6 +19,19 @@ export class BabylonScene {
     }
 
     /**
+     * Gets the scene for the current context
+     * @ignore true
+     * @group scene
+     * @shortname get scene
+     */
+    setAndAttachScene(inputs: Inputs.BabylonScene.SceneDto): BABYLON.Scene {
+        const scene = inputs.scene;
+        scene.metadata = { shadowGenerators: [] };
+        new BABYLON.TransformNode("root", this.context.scene);
+        return this.context.scene = inputs.scene;
+    }
+
+    /**
      * Changes the scene background colour for 3D space
      * @param inputs Describes the colour of the scene background
      * @group environment

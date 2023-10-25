@@ -3,6 +3,7 @@ import { Context } from "../../context";
 import { GeometryHelper } from "../../geometry-helper";
 import { Color } from "../color";
 import { BabylonCamera } from "./camera/camera";
+import { BabylonEngine } from "./engine";
 import { BabylonIO } from "./io";
 import { BabylonMaterial } from "./material/material";
 import { BabylonMesh } from "./mesh";
@@ -21,6 +22,7 @@ export class Babylon {
     public camera: BabylonCamera;
     public webxr: BabylonWebXR;
     public node: BabylonNode;
+    public engine: BabylonEngine;
     public scene: BabylonScene;
     public transforms: BabylonTransforms;
     public io: BabylonIO;
@@ -43,5 +45,6 @@ export class Babylon {
         this.ray = new BabylonRay(context);
         this.pick = new BabylonPick(context);
         this.material = new BabylonMaterial(context, color);
+        this.engine = new BabylonEngine(context);
     }
 }

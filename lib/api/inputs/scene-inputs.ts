@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-namespace */
 import { Camera } from "@babylonjs/core";
 import { Base } from "./base-inputs";
+import * as BABYLON from "@babylonjs/core";
 
 // tslint:disable-next-line: no-namespace
 export namespace BabylonScene {
@@ -17,6 +18,19 @@ export namespace BabylonScene {
          * @default #ffffff
          */
         colour: Base.Color = "#ffffff";
+    }
+    export class SceneDto {
+        /**
+         * Provide scene
+         */
+        constructor(scene?: BABYLON.Scene) {
+            this.scene = scene;
+        }
+        /**
+         * The babylonjs scene
+         * @default undefined
+         */
+        scene: BABYLON.Scene;
     }
     export class PointLightDto {
         /**

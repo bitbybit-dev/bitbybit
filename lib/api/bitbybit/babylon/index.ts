@@ -8,4 +8,5 @@ export * from "./node";
 export * from "./pick";
 export * from "./ray";
 export * from "./scene";
+export * from "./engine";
 export * from "./transforms";
