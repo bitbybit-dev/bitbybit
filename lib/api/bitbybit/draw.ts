@@ -101,50 +101,50 @@ export class Draw {
 
             const type = inputs.babylonMesh.metadata.type as Inputs.Draw.drawingTypes;
             switch (type) {
-            case Inputs.Draw.drawingTypes.point:
-                result = this.handlePoint(inputs);
-                break;
-            case Inputs.Draw.drawingTypes.points:
-                result = this.handlePoints(inputs);
-                break;
-            case Inputs.Draw.drawingTypes.line:
-                result = this.handleLine(inputs);
-                break;
-            case Inputs.Draw.drawingTypes.lines:
-                result = this.handleLines(inputs);
-                break;
-            case Inputs.Draw.drawingTypes.polyline:
-                result = this.handlePolyline(inputs);
-                break;
-            case Inputs.Draw.drawingTypes.polylines:
-                result = this.handlePolylines(inputs);
-                break;
-            case Inputs.Draw.drawingTypes.verbCurve:
-                result = this.handleVerbCurve(inputs);
-                break;
-            case Inputs.Draw.drawingTypes.verbCurves:
-                result = this.handleVerbCurves(inputs);
-                break;
-            case Inputs.Draw.drawingTypes.verbSurface:
-                result = this.handleVerbSurface(inputs);
-                break;
-            case Inputs.Draw.drawingTypes.verbSurfaces:
-                result = this.handleVerbSurfaces(inputs);
-                break;
-            case Inputs.Draw.drawingTypes.tag:
-                result = this.handleTag(inputs);
-                break;
-            case Inputs.Draw.drawingTypes.tags:
-                result = this.handleTags(inputs);
-                break;
-            case Inputs.Draw.drawingTypes.node:
-                result = this.handleNode(inputs);
-                break;
-            case Inputs.Draw.drawingTypes.nodes:
-                result = this.handleNodes(inputs);
-                break;
-            default:
-                break;
+                case Inputs.Draw.drawingTypes.point:
+                    result = this.handlePoint(inputs);
+                    break;
+                case Inputs.Draw.drawingTypes.points:
+                    result = this.handlePoints(inputs);
+                    break;
+                case Inputs.Draw.drawingTypes.line:
+                    result = this.handleLine(inputs);
+                    break;
+                case Inputs.Draw.drawingTypes.lines:
+                    result = this.handleLines(inputs);
+                    break;
+                case Inputs.Draw.drawingTypes.polyline:
+                    result = this.handlePolyline(inputs);
+                    break;
+                case Inputs.Draw.drawingTypes.polylines:
+                    result = this.handlePolylines(inputs);
+                    break;
+                case Inputs.Draw.drawingTypes.verbCurve:
+                    result = this.handleVerbCurve(inputs);
+                    break;
+                case Inputs.Draw.drawingTypes.verbCurves:
+                    result = this.handleVerbCurves(inputs);
+                    break;
+                case Inputs.Draw.drawingTypes.verbSurface:
+                    result = this.handleVerbSurface(inputs);
+                    break;
+                case Inputs.Draw.drawingTypes.verbSurfaces:
+                    result = this.handleVerbSurfaces(inputs);
+                    break;
+                case Inputs.Draw.drawingTypes.tag:
+                    result = this.handleTag(inputs);
+                    break;
+                case Inputs.Draw.drawingTypes.tags:
+                    result = this.handleTags(inputs);
+                    break;
+                case Inputs.Draw.drawingTypes.node:
+                    result = this.handleNode(inputs);
+                    break;
+                case Inputs.Draw.drawingTypes.nodes:
+                    result = this.handleNodes(inputs);
+                    break;
+                default:
+                    break;
             }
         }
         return result;
