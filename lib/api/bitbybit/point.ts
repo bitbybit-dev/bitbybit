@@ -1,5 +1,5 @@
 
-import { Color3, Mesh, StandardMaterial, VertexBuffer, VertexData } from "@babylonjs/core";
+import * as BABYLON from "@babylonjs/core";
 import { Context } from "../context";
 import { GeometryHelper } from "../geometry-helper";
 import * as Inputs from "../inputs/inputs";
@@ -25,21 +25,21 @@ export class Point {
      * @drawable false
      * @ignore true
      */
-    drawPoint(inputs: Inputs.Point.DrawPointDto): Mesh {
+    drawPoint(inputs: Inputs.Point.DrawPointDto): BABYLON.Mesh {
         const vectorPoints = [inputs.point];
 
-        let colours;
+        let colorsHex: string[] = [];
         if (Array.isArray(inputs.colours)) {
-            colours = inputs.colours.map(colour => Color3.FromHexString(colour));
+            colorsHex = inputs.colours;
         } else {
-            colours = [Color3.FromHexString(inputs.colours)];
+            colorsHex = [inputs.colours];
         }
-        const { positions, colors } = this.setUpPositionsAndColours(vectorPoints, colours);
+        // const { positions, colors } = this.setUpPositionsAndColours(vectorPoints, colours);
         if (inputs.pointMesh && inputs.updatable) {
-            this.updatePoints(inputs.pointMesh, inputs.opacity, inputs.size, positions, colors);
+            this.updatePointsInstances(inputs.pointMesh, vectorPoints);
         } else {
-            inputs.pointMesh = this.createNewMesh(
-                `poinsMesh${Math.random()}`, positions, colors, inputs.opacity, inputs.size, inputs.updatable
+            inputs.pointMesh = this.createPointSpheresMesh(
+                `poinsMesh${Math.random()}`, vectorPoints, colorsHex, inputs.opacity, inputs.size, inputs.updatable
             );
         }
         return inputs.pointMesh;
@@ -54,28 +54,29 @@ export class Point {
      * @drawable false
      * @ignore true
      */
-    drawPoints(inputs: Inputs.Point.DrawPointsDto): Mesh {
+    drawPoints(inputs: Inputs.Point.DrawPointsDto): BABYLON.Mesh {
         const vectorPoints = inputs.points;
-
-        let colours;
+        let coloursHex: string[] = [];
         if (Array.isArray(inputs.colours)) {
-            colours = inputs.colours.map(colour => Color3.FromHexString(colour));
+            coloursHex = inputs.colours;
+            if (coloursHex.length === 1) {
+                coloursHex = inputs.points.map(() => coloursHex[0]);
+            }
         } else {
-            colours = [Color3.FromHexString(inputs.colours)];
+            coloursHex = inputs.points.map(() => inputs.colours as string);
         }
-        const { positions, colors } = this.setUpPositionsAndColours(vectorPoints, colours);
         if (inputs.pointsMesh && inputs.updatable) {
-            if (inputs.pointsMesh.getTotalVertices() === vectorPoints.length) {
-                this.updatePoints(inputs.pointsMesh, inputs.opacity, inputs.size, positions, colors);
+            if (inputs.pointsMesh.getChildMeshes().length === vectorPoints.length) {
+                this.updatePointsInstances(inputs.pointsMesh, vectorPoints);
             } else {
                 inputs.pointsMesh.dispose();
-                inputs.pointsMesh = this.createNewMesh(
-                    `pointsMesh${Math.random()}`, positions, colors, inputs.opacity, inputs.size, inputs.updatable
+                inputs.pointsMesh = this.createPointSpheresMesh(
+                    `pointsMesh${Math.random()}`, vectorPoints, coloursHex, inputs.opacity, inputs.size, inputs.updatable
                 );
             }
         } else {
-            inputs.pointsMesh = this.createNewMesh(
-                `pointsMesh${Math.random()}`, positions, colors, inputs.opacity, inputs.size, inputs.updatable
+            inputs.pointsMesh = this.createPointSpheresMesh(
+                `pointsMesh${Math.random()}`, vectorPoints, coloursHex, inputs.opacity, inputs.size, inputs.updatable
             );
         }
         return inputs.pointsMesh;
@@ -90,7 +91,7 @@ export class Point {
      * @drawable false
      * @ignore true
      */
-    drawPointsAsync(inputs: Inputs.Point.DrawPointsDto): Promise<Mesh> {
+    drawPointsAsync(inputs: Inputs.Point.DrawPointsDto): Promise<BABYLON.Mesh> {
         return Promise.resolve(this.drawPoints(inputs));
     }
 
@@ -351,38 +352,63 @@ export class Point {
         return { index: closestPointIndex + 1, distance, point };
     }
 
-    private createNewMesh(
-        meshName: string, positions: number[], colors: number[], opacity: number, size: number, updatable: boolean): Mesh {
+    private createPointSpheresMesh(
+        meshName: string, positions: Base.Point3[], colors: string[], opacity: number, size: number, updatable: boolean): BABYLON.Mesh {
 
-        const vertexData = new VertexData();
+        const positionsModel = positions.map((pos, index) => {
+            return {
+                position: pos,
+                color: colors[index],
+                index
+            };
+        });
 
-        vertexData.positions = positions;
-        vertexData.colors = colors;
+        const colorSet = Array.from(new Set(colors));
+        const materialSet = colorSet.map((colour, index) => {
 
-        const pointsMesh = new Mesh(meshName, this.context.scene);
-        vertexData.applyToMesh(pointsMesh, updatable);
+            const mat = new BABYLON.StandardMaterial(`mat${Math.random()}`, this.context.scene);
 
-        const mat = new StandardMaterial(`mat${Math.random()}`, this.context.scene);
+            mat.disableLighting = true;
+            mat.emissiveColor = BABYLON.Color3.FromHexString(colour);
+            mat.alpha = opacity;
 
-        mat.emissiveColor = new Color3(1, 1, 1);
-        mat.disableLighting = true;
-        mat.pointsCloud = true;
-        mat.alpha = opacity;
-        mat.pointSize = size;
+            const positions = positionsModel.filter(s => s.color === colour);
 
-        pointsMesh.material = mat;
+            return { hex: colorSet, material: mat, positions };
+        });
+
+        const pointsMesh = new BABYLON.Mesh(meshName, this.context.scene);
+
+        materialSet.forEach(ms => {
+            const sphereOriginal = BABYLON.MeshBuilder.CreateSphere(`sphere${Math.random()}`, { diameter: size, segments: 6, updatable }, this.context.scene);
+            sphereOriginal.material = ms.material;
+            sphereOriginal.isVisible = false;
+            ms.positions.forEach((pos, index) => {
+                const instance = sphereOriginal.createInstance(`sphere-${index}-${Math.random()}`);
+                instance.position = new BABYLON.Vector3(pos.position[0], pos.position[1], pos.position[2]);
+                instance.metadata = { index: pos.index };
+                instance.parent = pointsMesh;
+                instance.isVisible = true;
+            });
+        });
 
         return pointsMesh;
     }
 
-    private updatePoints(mesh: Mesh, opacity: number, size: number, positions: any[], colors: any[]): void {
-        mesh.updateVerticesData(VertexBuffer.PositionKind, positions);
-        mesh.updateVerticesData(VertexBuffer.ColorKind, colors);
-        mesh.material.alpha = opacity;
-        mesh.material.pointSize = size;
+    private updatePointsInstances(mesh: BABYLON.Mesh, positions: any[]): void {
+
+        const children = mesh.getChildMeshes();
+        const po = {};
+        positions.forEach((pos, index) => {
+            po[index] = new BABYLON.Vector3(pos[0], pos[1], pos[2]);
+        });
+
+        children.forEach((child: BABYLON.InstancedMesh) => {
+            child.position = po[child.metadata.index];
+        });
     }
 
-    private setUpPositionsAndColours(vectorPoints: number[][], colours: Color3[]): { positions, colors } {
+    private setUpPositionsAndColours(vectorPoints: number[][], colours: BABYLON.Color3[]): { positions, colors } {
         const positions = [];
         const colors = [];
 

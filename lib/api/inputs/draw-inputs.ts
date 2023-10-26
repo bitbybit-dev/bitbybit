@@ -110,12 +110,12 @@ export namespace Draw {
         colours: string | string[] = "#ff0000";
         /**
          * Size affect how big the drawn points are and how wide lines are.
-         * @default 3
+         * @default 0.1
          * @minimum 0
          * @maximum Infinity
          * @step 0.1
          */
-        size = 3;
+        size = 0.1;
         /**
          * Opacity of the point 0 to 1
          * @default 1

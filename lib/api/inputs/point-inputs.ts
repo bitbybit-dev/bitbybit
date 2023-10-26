@@ -128,12 +128,12 @@ export namespace Point {
         opacity = 1;
         /**
          * Size of the points
-         * @default 3
+         * @default 0.1
          * @minimum 0
          * @maximum Infinity
          * @step 0.1
          */
-        size = 3;
+        size = 0.1;
         /**
          * Hex colour string or collection of strings
          * @default #444444
