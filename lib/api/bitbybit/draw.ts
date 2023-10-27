@@ -15,13 +15,7 @@ import { GridMaterial } from "@babylonjs/materials";
 
 export class Draw {
 
-    private defaultBasicOptions: Inputs.Draw.DrawBasicGeometryOptions = {
-        colours: "#ff0000",
-        updatable: false,
-        hidden: false,
-        opacity: 1,
-        size: 6,
-    };
+    private defaultBasicOptions = new Inputs.Draw.DrawBasicGeometryOptions();
     private defaultNodeOptions: Inputs.Draw.DrawNodeOptions = {
         colorX: "#ff0000",
         colorY: "#00ff00",
