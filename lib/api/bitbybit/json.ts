@@ -88,4 +88,15 @@ export class JSONBitByBit {
             return this.context.jsonpath.stringify(path);
         });
     }
+
+    /**
+     * Creates an empty JavaScript object
+     * @returns any
+     * @group create
+     * @shortname empty
+     * @drawable false
+     */
+    createEmpty(): any {
+        return {};
+    }
 }

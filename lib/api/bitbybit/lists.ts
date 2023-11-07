@@ -172,7 +172,7 @@ export class Lists {
      * @shortname reverse
      * @drawable false
      */
-    reverse<T>(inputs: Inputs.Lists.ListDto<T>): T[] {
+    reverse<T>(inputs: Inputs.Lists.ListDto<T>): T[] { 
         const cloned = structuredClone(inputs.list);
         return cloned.reverse();
     }
@@ -185,7 +185,7 @@ export class Lists {
      * @shortname flip lists
      * @drawable false
      */
-    flipLists<T>(inputs: Inputs.Lists.ListDto<T[]>): T[] {
+    flipLists<T>(inputs: Inputs.Lists.ListDto<T[]>): T[][] {
         if (inputs.list.length > 0) {
             const lengthOfFirstList = inputs.list[0].length;
             let allListsSameLength = true;

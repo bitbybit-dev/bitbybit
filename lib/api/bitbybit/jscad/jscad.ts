@@ -84,7 +84,7 @@ export class JSCAD {
         pbr.backFaceCulling = true;
         pbr.zOffset = 0;
         meshToUpdate.isPickable = false;
-        if(inputs.hidden){
+        if (inputs.hidden) {
             meshToUpdate.isVisible = false;
         }
         return meshToUpdate;
@@ -112,7 +112,7 @@ export class JSCAD {
                 const children = localOrigin.getChildMeshes();
                 children.forEach(mesh => { mesh.dispose(); localOrigin.removeChild(mesh); });
             } else {
-                localOrigin = MeshBuilder.CreateBox("local_origin" + Math.random(), { size: 1 }, this.context.scene);
+                localOrigin = new Mesh("local_origin" + Math.random(), this.context.scene);
             }
 
             localOrigin.isVisible = false;

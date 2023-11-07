@@ -79,8 +79,10 @@ export class Draw {
         // we start with async ones
         if (this.detectJscadMesh(entity)) {
             return this.handleJscadMesh(inputs);
-        } if (this.detectOcctShape(entity)) {
+        } else if (this.detectOcctShape(entity)) {
             return this.handleOcctShape(inputs);
+        } else if (this.detectOcctShapes(entity)) {
+            return this.handleOcctShapes(inputs);
         } else if (this.detectJscadMeshes(entity)) {
             return this.handleJscadMeshes(inputs);
         } else {
@@ -177,7 +179,7 @@ export class Draw {
             return ground;
         } catch (e) {
             console.log("Error happened: ", e);
-            return BABYLON.MeshBuilder.CreateBox("error-ground", { size: 0.00000001 }, this.context.scene);
+            return new BABYLON.Mesh("error-ground", this.context.scene);
         }
     }
 
@@ -492,6 +494,21 @@ export class Draw {
         });
     }
 
+    private handleOcctShapes(inputs: Inputs.Draw.DrawAny) {
+        let options = inputs.options ? inputs.options : new Inputs.OCCT.DrawShapeDto(inputs.entity);
+        if (!inputs.options && inputs.babylonMesh && inputs.babylonMesh.metadata.options) {
+            options = inputs.babylonMesh.metadata.options;
+        }
+        return this.occt.drawShapes({
+            shapes: inputs.entity,
+            ...new Inputs.Draw.DrawOcctShapeOptions(),
+            ...options as Inputs.Draw.DrawOcctShapeOptions
+        }).then(r => {
+            this.applyGlobalSettingsAndMetadataAndShadowCasting(Inputs.Draw.drawingTypes.occt, options, r);
+            return r;
+        });
+    }
+
     private handleJscadMesh(inputs: Inputs.Draw.DrawAny) {
         let options = inputs.options ? inputs.options : this.defaultBasicOptions;
         if (!inputs.options && inputs.babylonMesh && inputs.babylonMesh.metadata.options) {
@@ -587,6 +604,10 @@ export class Draw {
 
     private detectOcctShape(entity: any): boolean {
         return entity?.type === "occ-shape";
+    }
+
+    private detectOcctShapes(entity: any): boolean {
+        return Array.isArray(entity) && !entity.some(el => !this.detectOcctShape(el));
     }
 
     private detectTag(entity: any): boolean {

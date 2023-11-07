@@ -8,7 +8,9 @@ import { Context } from "./context";
 import { Base } from "./inputs/base-inputs";
 
 export class GeometryHelper {
-    constructor(private readonly context: Context) { }
+
+    constructor(private readonly context: Context) {
+    }
 
     private readonly tolerance = 0.00001;
 
@@ -196,50 +198,55 @@ export class GeometryHelper {
     drawPolylines(
         mesh: LinesMesh, polylinePoints: number[][][], updatable: boolean,
         size: number, opacity: number, colours: string | string[]
-    ): LinesMesh {
+    ): LinesMesh | undefined {
         const linesForRender = [];
-        polylinePoints.forEach(polyline => {
-            linesForRender.push(polyline.map(pt => new Vector3(pt[0], pt[1], pt[2])));
-        });
+        if (polylinePoints && polylinePoints.length > 0) {
+            polylinePoints.forEach(polyline => {
+                linesForRender.push(polyline.map(pt => new Vector3(pt[0], pt[1], pt[2])));
+            });
 
-        let col;
-        if (Array.isArray(colours)) {
-            col = Color3.FromHexString(colours[0]);
-        } else {
-            col = Color3.FromHexString(colours);
-        }
-
-        if (mesh && updatable) {
-            // in order to optimize this method its not enough to check if total vertices lengths match, we need a way to identify
-            if (!mesh.metadata.linesForRenderLengths.some((s, i) => s !== linesForRender[i].length)) {
-                mesh = MeshBuilder.CreateLineSystem(null,
-                    {
-                        lines: linesForRender,
-                        instance: mesh,
-                        useVertexAlpha: true,
-                        updatable
-                    }, null);
+            let col;
+            if (Array.isArray(colours)) {
+                col = Color3.FromHexString(colours[0]);
             } else {
-                mesh.dispose();
+                col = Color3.FromHexString(colours);
+            }
+
+            if (mesh && updatable) {
+                // in order to optimize this method its not enough to check if total vertices lengths match, we need a way to identify
+                if (!mesh.metadata.linesForRenderLengths.some((s, i) => s !== linesForRender[i].length)) {
+                    mesh = MeshBuilder.CreateLineSystem("line-system" + Math.random(),
+                        {
+                            lines: linesForRender,
+                            instance: mesh,
+                            useVertexAlpha: true,
+                            updatable
+                        }, this.context.scene);
+                } else {
+                    mesh.dispose();
+                    mesh = this.createLineSystem(updatable, linesForRender);
+                    mesh.metadata = { linesForRenderLengths: linesForRender.map(l => l.length) };
+                }
+            } else {
                 mesh = this.createLineSystem(updatable, linesForRender);
                 mesh.metadata = { linesForRenderLengths: linesForRender.map(l => l.length) };
             }
-        } else {
-            mesh = this.createLineSystem(updatable, linesForRender);
-            mesh.metadata = { linesForRenderLengths: linesForRender.map(l => l.length) };
-        }
 
-        this.edgesRendering(mesh, size, opacity, colours);
-        return mesh;
+            this.edgesRendering(mesh, size, opacity, colours);
+            return mesh;
+        } else {
+            return undefined;
+        }
     }
 
     createLineSystem(updatable: boolean, lines: Vector3[][]): LinesMesh {
-        return MeshBuilder.CreateLineSystem(`lineSystem${Math.random()}`,
+        const lm = MeshBuilder.CreateLineSystem(`lineSystem${Math.random()}`,
             {
                 lines,
                 useVertexAlpha: true,
                 updatable
             }, this.context.scene);
+        return lm;
     }
 
     // createLines(updatable: boolean, points: Vector3[], colors: Color4[]): LinesMesh {
@@ -323,7 +330,7 @@ export class GeometryHelper {
         const colorZ = Color3.FromHexString(colorZHex);
         pilotLocalAxisZ.color = colorZ;
 
-        const localOrigin = MeshBuilder.CreateBox("local_origin" + Math.random(), { size: 1 }, scene);
+        const localOrigin = new Mesh("local_origin" + Math.random(), scene);
         localOrigin.isVisible = false;
 
         pilotLocalAxisX.parent = localOrigin;

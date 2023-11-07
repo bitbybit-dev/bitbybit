@@ -1,5 +1,5 @@
 
-import { Color3, Mesh, MeshBuilder, PBRMetallicRoughnessMaterial } from "@babylonjs/core";
+import { Color3, Mesh, PBRMetallicRoughnessMaterial } from "@babylonjs/core";
 import { Context } from "../../context";
 import { GeometryHelper } from "../../geometry-helper";
 import * as Inputs from "../../inputs/inputs";
@@ -13,6 +13,13 @@ import { OCCTWorkerManager, OCCT } from "@bitbybit-dev/occt-worker";
  */
 export class OCCTW extends OCCT {
     override readonly io: OCCTWIO;
+
+    private usedMaterials: {
+        hex: string,
+        alpha: number,
+        zOffset: number,
+        material: PBRMetallicRoughnessMaterial
+    }[] = [];
 
     constructor(
         private readonly context: Context,
@@ -39,31 +46,72 @@ export class OCCTW extends OCCT {
         if (inputs.faceMaterial) {
             delete inputs.faceMaterial;
         }
-        const fe: Inputs.OCCT.DecomposedMeshDto = await this.occWorkerManager.genericCallToWorkerPromise("shapeToMesh", inputs);
-        const shapeMesh = MeshBuilder.CreateBox("brepMesh" + Math.random(), { size: 0.00001 }, this.context.scene);
+        const decomposedMesh: Inputs.OCCT.DecomposedMeshDto = await this.occWorkerManager.genericCallToWorkerPromise("shapeToMesh", inputs);
+        return this.handleDecomposedMesh(inputs, decomposedMesh, options);
+    }
+
+    /**
+     * Draws OpenCascade shape by going through faces and edges
+     * @param inputs Contains a shape to be drawn and additional information
+     * @returns BabylonJS Mesh
+     * @group drawing
+     * @shortname draw shape
+     * @drawable false
+     * @ignore true
+     */
+    async drawShapes(inputs: Inputs.OCCT.DrawShapesDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Mesh> {
+        const options = { ...inputs };
+        if (inputs.faceMaterial) {
+            delete inputs.faceMaterial;
+        }
+        const meshes: Inputs.OCCT.DecomposedMeshDto[] = await this.occWorkerManager.genericCallToWorkerPromise("shapesToMeshes", inputs);
+        const meshesSolved = await Promise.all(meshes.map(async decomposedMesh => this.handleDecomposedMesh(inputs, decomposedMesh, options)));
+        const shapesMeshContainer = new Mesh("shapesMeshContainer", this.context.scene);
+        meshesSolved.forEach(mesh => {
+            mesh.parent = shapesMeshContainer;
+        });
+        return shapesMeshContainer;
+    }
+
+    private async handleDecomposedMesh(inputs: Inputs.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer>, decomposedMesh: Inputs.OCCT.DecomposedMeshDto, options: { shape?: Inputs.OCCT.TopoDSShapePointer; faceOpacity: number; edgeOpacity: number; edgeColour: string; faceMaterial?: any; faceColour: string; edgeWidth: number; drawEdges: boolean; drawFaces: boolean; precision: number; drawEdgeIndexes: boolean; edgeIndexHeight: number; edgeIndexColour: string; drawFaceIndexes: boolean; faceIndexHeight: number; faceIndexColour: string; }) {
+        const shapeMesh = new Mesh("brepMesh" + Math.random(), this.context.scene);
         shapeMesh.isVisible = false;
         let dummy;
 
-        if (inputs.drawFaces && fe.faceList && fe.faceList.length) {
+        if (inputs.drawFaces && decomposedMesh && decomposedMesh.faceList && decomposedMesh.faceList.length) {
 
             let pbr;
 
             if (options.faceMaterial) {
                 pbr = options.faceMaterial;
             } else {
-                pbr = new PBRMetallicRoughnessMaterial("pbr" + Math.random(), this.context.scene);
-
-                pbr.baseColor = Color3.FromHexString(Array.isArray(inputs.faceColour) ? inputs.faceColour[0] : inputs.faceColour);
-                pbr.metallic = 1.0;
-                pbr.roughness = 0.6;
-                pbr.alpha = inputs.faceOpacity;
-                pbr.alphaMode = 1;
-                pbr.backFaceCulling = true;
-                pbr.doubleSided = false;
-                pbr.zOffset = inputs.drawEdges ? 2 : 0;
+                const hex = Array.isArray(inputs.faceColour) ? inputs.faceColour[0] : inputs.faceColour;
+                const alpha = inputs.faceOpacity;
+                const zOffset = inputs.drawEdges ? 2 : 0;
+                const materialCached = this.usedMaterials.find(s => s.hex === hex && s.alpha === alpha && s.zOffset === zOffset);
+                if (materialCached) {
+                    pbr = materialCached;
+                } else {
+                    const pbmat = new PBRMetallicRoughnessMaterial("pbr" + Math.random());
+                    pbmat.baseColor = Color3.FromHexString(hex);
+                    pbmat.metallic = 1.0;
+                    pbmat.roughness = 0.6;
+                    pbmat.alpha = alpha;
+                    pbmat.alphaMode = 1;
+                    pbmat.backFaceCulling = true;
+                    pbmat.doubleSided = false;
+                    pbmat.zOffset = zOffset;
+                    this.usedMaterials.push({
+                        hex,
+                        alpha: alpha,
+                        zOffset: zOffset,
+                        material: pbmat
+                    });
+                    pbr = pbmat;
+                }
             }
 
-            const meshData = fe.faceList.map(face => {
+            const meshData = decomposedMesh.faceList.map(face => {
                 return {
                     positions: face.vertex_coord,
                     normals: face.normal_coord,
@@ -75,26 +123,17 @@ export class OCCTW extends OCCT {
             const mesh = this.geometryHelper.createOrUpdateSurfacesMesh(meshData, dummy, false, pbr, true, false);
             mesh.parent = shapeMesh;
         }
-        if (inputs.drawEdges) {
+        if (inputs.drawEdges && decomposedMesh && decomposedMesh.edgeList && decomposedMesh.edgeList.length) {
             const evs = [];
-            fe.edgeList.forEach(edge => {
+            decomposedMesh.edgeList.forEach(edge => {
                 const ev = edge.vertex_coord.filter(s => s !== undefined);
                 evs.push(ev);
-                // const mesh = this.geometryHelper.drawPolyline(
-                //     dummy,
-                //     ev,
-                //     false,
-                //     inputs.edgeWidth,
-                //     inputs.edgeOpacity,
-                //     inputs.edgeColour
-                // );
-                // mesh.parent = shapeMesh;
             });
             const mesh = this.geometryHelper.drawPolylines(dummy, evs, false, inputs.edgeWidth, inputs.edgeOpacity, inputs.edgeColour);
             mesh.parent = shapeMesh;
         }
         if (inputs.drawEdgeIndexes) {
-            const promises = fe.edgeList.map(async edge => {
+            const promises = decomposedMesh.edgeList.map(async (edge) => {
                 const edgeMiddle = this.computeEdgeMiddlePos(edge);
                 const tdto = new Inputs.JSCAD.TextDto();
                 tdto.text = `${edge.edge_index}`;
@@ -106,7 +145,8 @@ export class OCCTW extends OCCT {
                         return [
                             c[0],
                             c[1] + 0.05,
-                            0] as Inputs.Base.Vector3;
+                            0
+                        ] as Inputs.Base.Vector3;
                     });
                     const movedOnPosition = res.map(r => this.vector.add({ first: r, second: edgeMiddle }));
                     return movedOnPosition;
@@ -122,7 +162,7 @@ export class OCCTW extends OCCT {
         }
         if (inputs.drawFaceIndexes) {
             // const textPolylines: number[][][] = [];
-            const promises = fe.faceList.map(async face => {
+            const promises = decomposedMesh.faceList.map(async (face) => {
                 const faceMiddle = this.computeFaceMiddlePos(face.vertex_coord_vec) as Inputs.Base.Point3;
                 const tdto = new Inputs.JSCAD.TextDto();
                 tdto.text = `${face.face_index}`;
@@ -134,7 +174,8 @@ export class OCCTW extends OCCT {
                         return [
                             c[0],
                             c[1] + 0.05,
-                            0] as Inputs.Base.Point3;
+                            0
+                        ] as Inputs.Base.Point3;
                     });
                     const movedOnPosition = res.map(r => this.vector.add({ first: r, second: faceMiddle }));
                     return movedOnPosition;
@@ -152,7 +193,6 @@ export class OCCTW extends OCCT {
         }
         return shapeMesh;
     }
-
 
     private computeFaceMiddlePos(vertexCoordVec: number[][]): number[] {
         let x = 0;

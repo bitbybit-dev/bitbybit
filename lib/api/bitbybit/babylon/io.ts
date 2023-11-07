@@ -125,7 +125,7 @@ export class BabylonIO {
     private async loadAsset(meshNames: any, rootUrl: string, fileOrName: string | File, importHidden: boolean): Promise<BABYLON.Mesh> {
         const res = await BABYLON.SceneLoader.ImportMeshAsync("", rootUrl, fileOrName, this.context.scene);
         const sgs = this.context.scene.metadata.shadowGenerators as BABYLON.ShadowGenerator[];
-        const container = BABYLON.MeshBuilder.CreateBox("ImportedMeshContainer" + Math.random(), { size: 0.000001 }, this.context.scene);
+        const container = new BABYLON.Mesh("ImportedMeshContainer" + Math.random(), this.context.scene);
         if (sgs.length > 0) {
             res.meshes.forEach(mesh => {
                 mesh.isPickable = false;
