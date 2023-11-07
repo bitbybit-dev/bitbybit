@@ -90,7 +90,7 @@ export class OCCTW extends OCCT {
                 const zOffset = inputs.drawEdges ? 2 : 0;
                 const materialCached = this.usedMaterials.find(s => s.hex === hex && s.alpha === alpha && s.zOffset === zOffset);
                 if (materialCached) {
-                    pbr = materialCached;
+                    pbr = materialCached.material;
                 } else {
                     const pbmat = new PBRMetallicRoughnessMaterial("pbr" + Math.random());
                     pbmat.baseColor = Color3.FromHexString(hex);
