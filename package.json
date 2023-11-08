@@ -1,6 +1,6 @@
 {
     "name": "@bitbybit-dev/core",
-    "version": "0.12.2",
+    "version": "0.12.3",
     "description": "Bit By Bit Developers Core CAD API to Program Geometry",
     "main": "index.js",
     "repository": {
@@ -34,8 +34,8 @@
         "@babylonjs/loaders": "6.28.1",
         "@babylonjs/materials": "6.28.1",
         "@babylonjs/serializers": "6.28.1",
-        "@bitbybit-dev/occt": "0.12.2",
-        "@bitbybit-dev/occt-worker": "0.12.2",
+        "@bitbybit-dev/occt": "0.12.3",
+        "@bitbybit-dev/occt-worker": "0.12.3",
         "jsonpath": "1.1.1",
         "@jscad/io-utils": "2.0.13",
         "@jscad/modeling": "2.7.2",
