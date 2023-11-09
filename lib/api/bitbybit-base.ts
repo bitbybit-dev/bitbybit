@@ -19,7 +19,7 @@ import { Context } from "./context";
 import { GeometryHelper } from "./geometry-helper";
 import { JSCADWorkerManager } from "../workers/jscad/jscad-worker-manager";
 import { Scene } from "@babylonjs/core";
-import { core, geom } from "verb-nurbs-web";
+import * as vrb from "verb-nurbs-web";
 import { Lists } from "./bitbybit/lists";
 import { JSONBitByBit } from "./bitbybit/json";
 import * as jsonpath from "jsonpath";
@@ -89,7 +89,7 @@ export class BitByBitBase {
 
     init(scene: Scene, occt?: Worker, jscad?: Worker) {
         this.context.scene = scene;
-        const verb = { geom, core };
+        const verb = { geom: vrb.geom, core: vrb.core };
         this.context.verb = verb;
         this.context.jsonpath = jsonpath;
         if (occt) {
