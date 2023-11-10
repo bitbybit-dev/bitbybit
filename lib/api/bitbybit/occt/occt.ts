@@ -15,6 +15,7 @@ export class OCCTW extends OCCT {
     override readonly io: OCCTWIO;
 
     private usedMaterials: {
+        sceneId: string,
         hex: string,
         alpha: number,
         zOffset: number,
@@ -88,11 +89,12 @@ export class OCCTW extends OCCT {
                 const hex = Array.isArray(inputs.faceColour) ? inputs.faceColour[0] : inputs.faceColour;
                 const alpha = inputs.faceOpacity;
                 const zOffset = inputs.drawEdges ? 2 : 0;
-                const materialCached = this.usedMaterials.find(s => s.hex === hex && s.alpha === alpha && s.zOffset === zOffset);
+                const materialCached = this.usedMaterials.find(s => s.sceneId === this.context.scene.uid && s.hex === hex && s.alpha === alpha && s.zOffset === zOffset);
+                this.usedMaterials = this.usedMaterials.filter(s => s.sceneId === this.context.scene.uid);
                 if (materialCached) {
                     pbr = materialCached.material;
                 } else {
-                    const pbmat = new PBRMetallicRoughnessMaterial("pbr" + Math.random());
+                    const pbmat = new PBRMetallicRoughnessMaterial("pbr" + Math.random(), this.context.scene);
                     pbmat.baseColor = Color3.FromHexString(hex);
                     pbmat.metallic = 1.0;
                     pbmat.roughness = 0.6;
@@ -102,6 +104,7 @@ export class OCCTW extends OCCT {
                     pbmat.doubleSided = false;
                     pbmat.zOffset = zOffset;
                     this.usedMaterials.push({
+                        sceneId: this.context.scene.uid,
                         hex,
                         alpha: alpha,
                         zOffset: zOffset,

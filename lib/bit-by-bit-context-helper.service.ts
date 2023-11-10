@@ -6,7 +6,6 @@ export class BitByBitContextHelperService {
     static promptPrintSave: (prompt: PrintSaveInterface) => void;
     static promptPrint: (prompt: PrintSaveInterface) => void;
 
-    static clearAllDrawn: () => void;
     static rerenderScene: () => void;
     static tolerance = 0.00001;
     static snapTolerance = 0.00001;

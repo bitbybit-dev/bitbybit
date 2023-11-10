@@ -32,6 +32,18 @@ export namespace BabylonScene {
          */
         scene: BABYLON.Scene;
     }
+    export class EnablePhysicsDto {
+        constructor(vector?: Base.Vector3) {
+            if(vector){
+                this.vector = vector;
+            }
+        }
+        /**
+         * The gravity vector
+         * @default [0, -9.81, 0]
+         */
+        vector: Base.Vector3 = [0, -9.81, 0];
+    }
     export class PointLightDto {
         /**
          * Position of the point light

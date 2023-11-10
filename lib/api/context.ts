@@ -7,6 +7,7 @@ export class Context {
 
     scene: BABYLON.Scene;
     engine: BABYLON.Engine;
+    havokPlugin: BABYLON.HavokPlugin;
     blocklyWorkspace: any;
     verb: any;
     occ: any;

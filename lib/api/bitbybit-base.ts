@@ -18,7 +18,7 @@ import { MathBitByBit } from "./bitbybit/math";
 import { Context } from "./context";
 import { GeometryHelper } from "./geometry-helper";
 import { JSCADWorkerManager } from "../workers/jscad/jscad-worker-manager";
-import { Scene } from "@babylonjs/core";
+import * as BABYLON from "@babylonjs/core";
 import * as vrb from "verb-nurbs-web";
 import { Lists } from "./bitbybit/lists";
 import { JSONBitByBit } from "./bitbybit/json";
@@ -87,8 +87,11 @@ export class BitByBitBase {
             this.context);
     }
 
-    init(scene: Scene, occt?: Worker, jscad?: Worker) {
+    init(scene: BABYLON.Scene, occt?: Worker, jscad?: Worker, havokPlugin?: BABYLON.HavokPlugin) {
         this.context.scene = scene;
+        if (havokPlugin) {
+            this.context.havokPlugin = havokPlugin;
+        }
         const verb = { geom: vrb.geom, core: vrb.core };
         this.context.verb = verb;
         this.context.jsonpath = jsonpath;

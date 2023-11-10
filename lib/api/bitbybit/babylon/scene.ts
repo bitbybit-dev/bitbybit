@@ -2,6 +2,8 @@
 import { Context } from "../../context";
 import * as BABYLON from "@babylonjs/core";
 import * as Inputs from "../../inputs/inputs";
+import { Scene } from "@babylonjs/core";
+import { GUI3DManager } from "@babylonjs/gui";
 
 
 export class BabylonScene {
@@ -117,7 +119,6 @@ export class BabylonScene {
         return light;
     }
 
-
     /**
      * Creates and draws a directional light in the scene
      * @param inputs Describes the light source
@@ -180,7 +181,69 @@ export class BabylonScene {
      * @shortname clear all drawn
      */
     clearAllDrawn(): void {
-        this.context.BitByBitContextHelperService.clearAllDrawn();
+        const scene = this.context.scene;
+        if (scene) {
+
+            if (scene.environmentTexture) {
+                scene.environmentTexture.dispose();
+            }
+            scene.environmentTexture = null;
+            scene.fogMode = Scene.FOGMODE_NONE;
+            scene.meshes.forEach(m => m.dispose());
+            scene.meshes = [];
+            scene.materials.forEach(m => m.dispose());
+            scene.materials = [];
+            scene.useRightHandedSystem = false;
+            scene.geometries.forEach((g: BABYLON.Geometry) => {
+                if (g.meshes) {
+                    g.meshes.forEach(m => m.dispose());
+                }
+                if (g.dispose) {
+                    g.dispose();
+                }
+            });
+            scene.geometries = [];
+
+            scene.lights.forEach(l => {
+                if (l.name !== "HemiLight") {
+                    l.dispose();
+                }
+            });
+            scene.lights = scene.lights.filter(i => i.name === "HemiLight");
+            if (scene.transformNodes) {
+                scene.transformNodes.forEach(t => {
+                    if (t && t.name !== "root") {
+                        t.dispose();
+                    }
+                });
+            }
+
+            if (scene.metadata) {
+                if (scene.metadata.shadowGenerators.length > 0) {
+                    const sgs = scene.metadata.shadowGenerators as BABYLON.ShadowGenerator[];
+                    sgs.forEach(sg => sg.dispose());
+                    scene.metadata.shadowGenerators = [];
+                }
+                if (scene.metadata.xr) {
+                    (scene.metadata.xr as BABYLON.WebXRDefaultExperience).dispose();
+                }
+                if (scene.metadata.guiManager) {
+                    (scene.metadata.guiManager as GUI3DManager).dispose();
+                }
+            }
+            scene.transformNodes = [scene.getTransformNodeByName("root")];
+
+            if (scene.activeCamera && scene.activeCamera.name !== "Camera") {
+                scene.cameras.forEach(cam => cam.dispose());
+                const camera = new BABYLON.ArcRotateCamera("Camera", 0, 10, 10, new BABYLON.Vector3(0, 0, 0), scene);
+                camera.lowerRadiusLimit = 0;
+                scene.setActiveCameraByName(camera.name);
+                camera.setPosition(new BABYLON.Vector3(0, 10, 20));
+                const canvas = document.getElementById("renderCanvas") as HTMLCanvasElement;
+                camera.attachControl(canvas, true);
+                camera.minZ = 0;
+            }
+        }
     }
 
     /**
@@ -248,6 +311,17 @@ export class BabylonScene {
         this.context.scene.fogEnd = inputs.end;
         this.context.scene.fogColor = BABYLON.Color3.FromHexString(inputs.color);
 
+    }
+
+    /**
+     * Enables the physics
+     * @param inputs the gravity vector
+     * @ignore true
+     * @group physics
+     * @shortname enable
+     */
+    enablePhysics(inputs: Inputs.BabylonScene.EnablePhysicsDto) {
+        this.context.scene.enablePhysics(new BABYLON.Vector3(inputs.vector[0], inputs.vector[1], inputs.vector[2]), this.context.havokPlugin);
     }
 
 }
