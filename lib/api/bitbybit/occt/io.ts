@@ -34,6 +34,20 @@ export class OCCTWIO extends OCCTIO {
     }
 
     /**
+     * Imports the step or iges asset file from text
+     * @param inputs STEP or IGES import
+     * @group io
+     * @shortname load text step | iges
+     * @returns OCCT Shape
+     */
+    loadSTEPorIGESFromText(inputs: Inputs.OCCT.ImportStepIgesFromTextDto): Promise<Inputs.OCCT.TopoDSShapePointer> {
+        return this.occWorkerManager.genericCallToWorkerPromise(
+            "io.loadSTEPorIGES",
+            new Inputs.OCCT.LoadStepOrIgesDto(inputs.text, `fake.${inputs.fileType}`, inputs.adjustZtoY)
+        );
+    }
+
+    /**
      * Saves the stl file
      * @param inputs STL filename and shape to be saved
      * @group io
