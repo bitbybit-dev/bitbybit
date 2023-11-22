@@ -596,7 +596,8 @@ export class BabylonMesh {
             const sgs = this.context.scene?.metadata?.shadowGenerators as BABYLON.ShadowGenerator[];
             if (inputs.mesh && inputs.mesh.getChildMeshes && inputs.mesh.getChildMeshes().length > 0) {
                 inputs.mesh.getChildMeshes(false).forEach((child: BABYLON.Mesh) => {
-                    if (child.createInstance) {
+                    const vertices = child.getTotalVertices();
+                    if (child.createInstance && vertices > 0) {
                         child.disableEdgesRendering();
                         const newInstance = child.createInstance(`InstanceMesh${Math.random()}`);
                         newInstance.position = new BABYLON.Vector3(inputs.position[0], inputs.position[1], inputs.position[2]);
@@ -639,18 +640,18 @@ export class BabylonMesh {
      * @shortname create
      * @disposableOutput true
      */
-    createMeshInstance(inputs: Inputs.BabylonMesh.MeshInstanceDto): BABYLON.InstancedMesh {
-        let result: BABYLON.InstancedMesh;
+    createMeshInstance(inputs: Inputs.BabylonMesh.MeshInstanceDto): BABYLON.Mesh {
+        let result: BABYLON.Mesh;
         if (inputs.mesh && inputs.mesh.getChildMeshes && inputs.mesh.getChildMeshes().length > 0) {
             inputs.mesh.setParent(null);
-            const instance = inputs.mesh.createInstance("meshCloneInstance" + Math.random());
+            const container = new BABYLON.Mesh("meshCloneContainer" + Math.random());
             inputs.mesh.getChildMeshes(false).forEach((child: BABYLON.Mesh) => {
                 if (child.createInstance && child.getTotalVertices() > 0 && child.getTotalIndices() > 0) {
                     const newInstance = child.createInstance(`InstanceMesh${Math.random()}`);
-                    newInstance.parent = instance;
+                    newInstance.parent = container;
                 }
             });
-            result = instance;
+            result = container;
 
             const sgs = this.context.scene.metadata.shadowGenerators as BABYLON.ShadowGenerator[];
 
@@ -662,7 +663,13 @@ export class BabylonMesh {
             }
         } else if (inputs.mesh) {
             inputs.mesh.setParent(null);
-            result = inputs.mesh.createInstance(`InstanceMesh${Math.random()}`);
+            const vertices = inputs.mesh.getTotalVertices();
+            if (vertices > 0) {
+                const container = new BABYLON.Mesh("meshCloneContainer" + Math.random());
+                const mesh = inputs.mesh.createInstance(`InstanceMesh${Math.random()}`);
+                mesh.parent = container;
+                result = container;
+            }
         }
         return result;
     }
