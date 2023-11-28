@@ -30,4 +30,26 @@ export class Asset {
         return this.assetManager.getLocalAsset(inputs.fileName);
     }
 
+    /**
+     * Gets and creates the url string path to your file stored in your memory.
+     * @param File or a blob
+     * @returns URL string of a file
+     * @group create
+     * @shortname object url
+     */
+    createObjectURL(inputs: Inputs.Asset.FileDto): string {
+        return URL.createObjectURL(inputs.file);
+    }
+
+    /**
+     * Gets and creates the url string paths to your files stored in your memory.
+     * @param Files or a blobs
+     * @returns URL strings for given files
+     * @group create
+     * @shortname object urls
+     */
+    createObjectURLs(inputs: Inputs.Asset.FilesDto): string[] {
+        return inputs.files.map(f => URL.createObjectURL(f));
+    }
+
 }

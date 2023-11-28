@@ -12,6 +12,26 @@ export namespace Asset {
          */
         fileName: string;
     }
+    export class FileDto {
+        constructor(file?: File | Blob) {
+            this.file ??= file;
+        }
+        /**
+         * Asset file that was loaded
+         * @default undefined
+         */
+        file: File | Blob;
+    }
+    export class FilesDto {
+        constructor(files?: (File | Blob)[]) {
+            this.files ??= files;
+        }
+        /**
+         * Asset file that was loaded
+         * @default undefined
+         */
+        files: (File | Blob)[];
+    }
     export class AssetFileDto {
         constructor(assetFile?: File) {
             this.assetFile = assetFile;
