@@ -25,11 +25,6 @@ export class JSCADPath {
         return this.removeDuplicatesAndCreateFromPoints(twoDimensionalPoints, inputs.closed);
     }
 
-    createFromCurve(inputs: Inputs.JSCAD.PathFromCurveDto): Inputs.JSCAD.JSCADEntity {
-        const twoDimensionalPoints = inputs.curve.tessellate().map(pt => [pt[0], pt[1]]);
-        return this.removeDuplicatesAndCreateFromPoints(twoDimensionalPoints, inputs.closed);
-    }
-
     createEmpty(): Inputs.JSCAD.JSCADEntity {
         return this.jscad.geometries.path2.create();
     }
@@ -46,11 +41,6 @@ export class JSCADPath {
 
     appendPolyline(inputs: Inputs.JSCAD.PathAppendPolylineDto): Inputs.JSCAD.JSCADEntity {
         const twoDimensionalPoints = inputs.polyline.points.map(pt => [pt[0], pt[1]]) as Base.Point2[];
-        return this.appendPoints({points: twoDimensionalPoints, path: inputs.path});
-    }
-
-    appendCurve(inputs: Inputs.JSCAD.PathAppendCurveDto): Inputs.JSCAD.JSCADEntity {
-        const twoDimensionalPoints = inputs.curve.tessellate().map(pt => [pt[0], pt[1]]);
         return this.appendPoints({points: twoDimensionalPoints, path: inputs.path});
     }
 

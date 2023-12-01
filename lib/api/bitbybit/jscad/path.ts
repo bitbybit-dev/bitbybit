@@ -39,18 +39,6 @@ export class JSCADPath {
     }
 
     /**
-     * Create a 2D path from a curve
-     * @param inputs Curve and indication if we want a closed path or not
-     * @returns Path
-     * @group from
-     * @shortname curve
-     * @drawable true
-     */
-    async createFromCurve(inputs: Inputs.JSCAD.PathFromCurveDto): Promise<Inputs.JSCAD.JSCADEntity> {
-        return this.jscadWorkerManager.genericCallToWorkerPromise("path.createFromCurve", inputs);
-    }
-
-    /**
      * Create empty 2D path
      * @returns Empty path
      * @group create
@@ -95,18 +83,6 @@ export class JSCADPath {
      */
     async appendPolyline(inputs: Inputs.JSCAD.PathAppendPolylineDto): Promise<Inputs.JSCAD.JSCADEntity> {
         return this.jscadWorkerManager.genericCallToWorkerPromise("path.appendPolyline", inputs);
-    }
-
-    /**
-     * Append the path with the curve
-     * @param inputs Path to append and a curve
-     * @returns Appended path
-     * @group append
-     * @shortname curve
-     * @drawable true
-     */
-    async appendCurve(inputs: Inputs.JSCAD.PathAppendCurveDto): Promise<Inputs.JSCAD.JSCADEntity> {
-        return this.jscadWorkerManager.genericCallToWorkerPromise("path.appendCurve", inputs);
     }
 
     /**

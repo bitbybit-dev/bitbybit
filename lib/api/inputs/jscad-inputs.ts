@@ -7,6 +7,34 @@ import { Polyline } from "./polyline-inputs";
 export namespace JSCAD {
     export type JSCADEntity = any;
 
+    export enum solidCornerTypeEnum {
+        /**
+         * Edges will meet at a corner
+         */
+        edge = "edge",
+        /**
+         * Edges will be rounded on the corner
+         */
+        round = "round",
+        /**
+         * Edges will be chamfered on the corner
+         */
+        chamfer = "chamfer",
+    }
+    export enum jscadTextAlignEnum {
+        /**
+         * Aligns text to the left
+         */
+        left = "left",
+        /**
+         * Aligns text to the center
+         */
+        center = "center",
+        /**
+         * Aligns text to the right
+         */
+        right = "right",
+    }
     export class DrawSolidMeshDto {
         /**
          * Provide options without default values
@@ -212,7 +240,7 @@ export namespace JSCAD {
          * Type of corner to create during of expansion; edge, chamfer, round
          * @default edge
          */
-        corners: SolidCornerTypeEnum = SolidCornerTypeEnum.edge;
+        corners: solidCornerTypeEnum = solidCornerTypeEnum.edge;
         /**
          * Integer number of segments when creating round corners         
          * @default 24
@@ -240,7 +268,7 @@ export namespace JSCAD {
          * Type of corner to create during the offset; edge, chamfer, round.
          * @default edge
          */
-        corners: SolidCornerTypeEnum = SolidCornerTypeEnum.edge;
+        corners: solidCornerTypeEnum = solidCornerTypeEnum.edge;
         /**
          * Integer number of segments when creating round corners
          * @default 24
@@ -391,18 +419,6 @@ export namespace JSCAD {
          * @default undefined
          */
         polyline: Polyline.PolylinePropertiesDto;
-        /**
-         * Indicates wether we want to create a closed path
-         * @default false
-         */
-        closed = false;
-    }
-    export class PathFromCurveDto {
-        /**
-         * Verb Nurbs curve
-         * @default undefined
-         */
-        curve: JSCADEntity;
         /**
          * Indicates wether we want to create a closed path
          * @default false
@@ -871,12 +887,12 @@ export namespace JSCAD {
          * Start radius on X and Y directions
          * @default [1, 2]
          */
-        startRadius: number[] = [1, 2];
+        startRadius: Base.Vector2 = [1, 2];
         /**
          * End radius on X and Y directions
          * @default [2, 3]
          */
-        endRadius: number[] = [2, 3];
+        endRadius: Base.Vector2 = [2, 3];
         /**
          * Subdivision segments
          * @default 24
@@ -1239,7 +1255,7 @@ export namespace JSCAD {
         innerRotation = 0;
         /**
          * Outer rotation in degrees
-         * @default 0
+         * @default 360
          * @minimum -Infinity
          * @maximum Infinity
          * @step 1
@@ -1312,7 +1328,7 @@ export namespace JSCAD {
          * Align between left, center, right
          * @default center
          */
-        align = JSCADTextAlignEnum.center;
+        align = jscadTextAlignEnum.center;
         /**
          * Offset the extrusion
          * @default 0
@@ -1396,7 +1412,7 @@ export namespace JSCAD {
          * Align between left, center, right
          * @default center
          */
-        align = JSCADTextAlignEnum.center;
+        align = jscadTextAlignEnum.center;
         /**
          * Offset the extrusion
          * @default 0
@@ -1472,7 +1488,7 @@ export namespace JSCAD {
          * Align between left, center, right
          * @default center
          */
-        align = JSCADTextAlignEnum.center;
+        align = jscadTextAlignEnum.center;
         /**
          * Offset the extrusion
          * @default 0
@@ -1482,32 +1498,5 @@ export namespace JSCAD {
          */
         extrudeOffset = 0;
     }
-    export enum SolidCornerTypeEnum {
-        /**
-         * Edges will meet at a corner
-         */
-        edge = "edge",
-        /**
-         * Edges will be rounded on the corner
-         */
-        round = "round",
-        /**
-         * Edges will be chamfered on the corner
-         */
-        chamfer = "chamfer",
-    }
-    export enum JSCADTextAlignEnum {
-        /**
-         * Aligns text to the left
-         */
-        left = "left",
-        /**
-         * Aligns text to the center
-         */
-        center = "center",
-        /**
-         * Aligns text to the right
-         */
-        right = "right",
-    }
+    
 }
