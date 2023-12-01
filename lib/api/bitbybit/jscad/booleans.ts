@@ -30,7 +30,7 @@ export class JSCADBooleans {
      * @param inputs Contains multiple solids for subtraction
      * @returns Solid mesh     
      * @group boolean
-     * @shortname intersect
+     * @shortname subtract
      * @drawable true
      */
     async subtract(inputs: Inputs.JSCAD.BooleanObjectsDto): Promise<Inputs.JSCAD.JSCADEntity> {
@@ -48,4 +48,53 @@ export class JSCADBooleans {
     async union(inputs: Inputs.JSCAD.BooleanObjectsDto): Promise<Inputs.JSCAD.JSCADEntity> {
         return this.jscadWorkerManager.genericCallToWorkerPromise("booleans.union", inputs);
     }
+
+    /**
+     * Intersect two solid mesh objects
+     * @param inputs Contains multiple solids for intersection
+     * @returns Solid mesh     
+     * @group boolean
+     * @shortname intersect two
+     * @drawable true
+     */
+    async intersectTwo(inputs: Inputs.JSCAD.BooleanTwoObjectsDto): Promise<Inputs.JSCAD.JSCADEntity> {
+        return this.jscadWorkerManager.genericCallToWorkerPromise("booleans.intersectTwo", inputs);
+    }
+
+    /**
+     * Subtract two solid mesh objects
+     * @param inputs Contains multiple solids for subtraction
+     * @returns Solid mesh     
+     * @group boolean
+     * @shortname subtract two
+     * @drawable true
+     */
+    async subtractTwo(inputs: Inputs.JSCAD.BooleanTwoObjectsDto): Promise<Inputs.JSCAD.JSCADEntity> {
+        return this.jscadWorkerManager.genericCallToWorkerPromise("booleans.subtractTwo", inputs);
+    }
+
+    /**
+     * Union two solid mesh objects
+     * @param inputs Contains multiple solids for union
+     * @returns Solid mesh
+     * @group boolean
+     * @shortname union two
+     * @drawable true
+     */
+    async unionTwo(inputs: Inputs.JSCAD.BooleanTwoObjectsDto): Promise<Inputs.JSCAD.JSCADEntity> {
+        return this.jscadWorkerManager.genericCallToWorkerPromise("booleans.unionTwo", inputs);
+    }
+
+    /**
+     * Subtract multiple meshes from one mesh object
+     * @param inputs Contains mesh from which to subtract and multiple meshes for subtraction
+     * @returns mesh     
+     * @group boolean
+     * @shortname subtract from
+     * @drawable true
+     */
+    async subtractFrom(inputs: Inputs.JSCAD.BooleanObjectsFromDto): Promise<Inputs.JSCAD.JSCADEntity> {
+        return this.jscadWorkerManager.genericCallToWorkerPromise("booleans.subtractFrom", inputs);
+    }
+
 }

@@ -73,7 +73,7 @@ export class BabylonIO {
         this.context.scene.metadata = metadata;
         const strScene = JSON.stringify(serializedScene);
 
-        let filename = inputs.filename;
+        let filename = inputs.fileName;
         if (filename.toLowerCase().lastIndexOf(".babylon") !== filename.length - 8 || filename.length < 9) {
             filename += ".babylon";
         }
@@ -98,7 +98,7 @@ export class BabylonIO {
      * @shortname gltf scene
      */
     exportGLB(inputs: Inputs.BabylonIO.ExportSceneDto): void {
-        GLTF2Export.GLBAsync(this.context.scene, inputs.filename).then((glb) => {
+        GLTF2Export.GLBAsync(this.context.scene, inputs.fileName).then((glb) => {
             glb.downloadFiles();
         });
     }
@@ -117,7 +117,7 @@ export class BabylonIO {
         }
         let meshes: BABYLON.Mesh[] = [inputs.mesh, ...childrenMeshes];
         meshes = meshes.filter(m => m.isVisible);
-        STLExport.CreateSTL(meshes as BABYLON.Mesh[], true, inputs.filename, true, true, true);
+        STLExport.CreateSTL(meshes as BABYLON.Mesh[], true, inputs.fileName, true, true, true);
         return Promise.resolve({});
     }
 

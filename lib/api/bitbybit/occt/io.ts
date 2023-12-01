@@ -54,7 +54,7 @@ export class OCCTWIO extends OCCTIO {
      * @shortname save stl
      * @returns String of a stl file
      */
-    async saveShapeStl(inputs: Inputs.OCCT.SaveStlDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.OCCT.DecomposedMeshDto> {
+    async saveShapeStl(inputs: Inputs.OCCT.SaveStlDto<Inputs.OCCT.TopoDSShapePointer>): Promise<void> {
         const inp = new Inputs.OCCT.DrawShapeDto();
         inp.drawEdges = false;
         inp.shape = inputs.shape;
@@ -73,8 +73,7 @@ export class OCCTWIO extends OCCTIO {
             return mesh;
         });
 
-        STLExport.CreateSTL(faceMeshes, true, inputs.filename, true, true, true);
+        STLExport.CreateSTL(faceMeshes, true, inputs.fileName, true, true, true);
         faceMeshes.forEach(fm => fm.dispose());
-        return fe;
     }
 }

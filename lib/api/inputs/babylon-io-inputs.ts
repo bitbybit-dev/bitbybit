@@ -8,7 +8,7 @@ export namespace BabylonIO {
          * File name that should be used for the scene.
          * @default bitbybit-scene
          */
-        filename = "bitbybit-scene";
+        fileName = "bitbybit-scene";
     }
     export class ExportMeshToStlDto {
         /**
@@ -19,6 +19,6 @@ export namespace BabylonIO {
          * File name that should be used for the scene.
          * @default bitbybit-mesh
          */
-        filename: string;
+        fileName: string;
     }
 }

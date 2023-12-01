@@ -222,6 +222,30 @@ export namespace JSCAD {
          */
         meshes: JSCADEntity[];
     }
+    export class BooleanTwoObjectsDto {
+        /**
+         * Contains Jscad Solid
+         * @default undefined
+         */
+        first: JSCADEntity;
+        /**
+         * Contains Jscad Solid
+         * @default undefined
+         */
+        second: JSCADEntity;
+    }
+    export class BooleanObjectsFromDto {
+        /**
+         * Contains Jscad Solid
+         * @default undefined
+         */
+        from: JSCADEntity;
+        /**
+         * Contains Jscad Solid
+         * @default undefined
+         */
+        meshes: JSCADEntity[];
+    }
     export class ExpansionDto {
         /**
          * Can contain various Jscad entities from Solid category
@@ -1498,5 +1522,5 @@ export namespace JSCAD {
          */
         extrudeOffset = 0;
     }
-    
+
 }
