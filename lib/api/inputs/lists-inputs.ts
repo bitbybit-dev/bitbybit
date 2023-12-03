@@ -4,7 +4,7 @@
 // tslint:disable-next-line: no-namespace
 export namespace Lists {
 
-    export enum FirstLastEnum {
+    export enum firstLastEnum {
         first = "first",
         last = "last",
     }
@@ -254,6 +254,6 @@ export namespace Lists {
          * The option if the item needs to be added at the beginning or the end of the list
          * @default last
          */
-        position: FirstLastEnum = FirstLastEnum.last;
+        position: firstLastEnum = firstLastEnum.last;
     }
 }

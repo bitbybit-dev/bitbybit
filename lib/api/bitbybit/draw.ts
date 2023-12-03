@@ -65,8 +65,21 @@ export class Draw {
         public readonly context: Context,
     ) { }
 
+
+
     /**
-     * Draws any kind of geometry after all input promises are resolved. Inputs can also be non-promise like.
+     * Draws any kind of geometry and does not return anything
+     * @param inputs Contains options and entities to be drawn
+     * @group draw
+     * @shortname draw anything no return
+     * @disposableOutput true
+     */
+    async drawAnyAsyncNoReturn(inputs: Inputs.Draw.DrawAny): Promise<void> {
+        this.drawAnyAsync(inputs);
+    }
+
+    /**
+     * Draws any kind of geometry and returns the babylon mesh
      * @param inputs Contains options and entities to be drawn
      * @returns BabylonJS Mesh Promise
      * @group draw
@@ -149,6 +162,18 @@ export class Draw {
     /**
      * Draws a grid mesh on the ground plane in 3D space. This helps to orient yourself in the world.
      * @param inputs Describes various parameters of the grid mesh like size, colour, etc.
+     * @group draw
+     * @shortname draw grid no return
+     * @disposableOutput true
+     */
+    drawGridMeshNoReturn(inputs: Inputs.Draw.SceneDrawGridMeshDto): void {
+        this.drawGridMesh(inputs);
+    }
+
+    /**
+     * Draws a grid mesh on the ground plane in 3D space. This helps to orient yourself in the world.
+     * @param inputs Describes various parameters of the grid mesh like size, colour, etc.
+     * @returns grid mesh
      * @group draw
      * @shortname draw grid
      * @disposableOutput true

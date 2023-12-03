@@ -231,12 +231,9 @@ export namespace BabylonScene {
     export class FogDto {
         /**
          * Fog mode
-         * @default 0
-         * @minimum 0
-         * @maximum Infinity
-         * @step 1
+         * @default none
          */
-        mode: number;
+        mode: Base.fogModeEnum;
         /**
          * Fog color
          * @default #ffffff

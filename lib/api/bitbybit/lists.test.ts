@@ -152,12 +152,12 @@ describe("Lists unit tests", () => {
     });
 
     it("should add item to the beginning of the list", async () => {
-        const result = lists.addItemFirstLast({ list: [0, 1, 2], item: 3, position: Inputs.Lists.FirstLastEnum.first });
+        const result = lists.addItemFirstLast({ list: [0, 1, 2], item: 3, position: Inputs.Lists.firstLastEnum.first });
         expect(result).toEqual([3, 0, 1, 2]);
     });
 
     it("should add item to the endof the list", async () => {
-        const result = lists.addItemFirstLast({ list: [0, 1, 2], item: 3, position: Inputs.Lists.FirstLastEnum.last });
+        const result = lists.addItemFirstLast({ list: [0, 1, 2], item: 3, position: Inputs.Lists.firstLastEnum.last });
         expect(result).toEqual([0, 1, 2, 3]);
     });
 

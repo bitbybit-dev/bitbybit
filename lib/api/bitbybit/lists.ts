@@ -397,7 +397,7 @@ export class Lists {
      */
     addItemFirstLast<T>(inputs: Inputs.Lists.AddItemFirstLastDto<T>): T[] {
         const cloned = structuredClone(inputs.list);
-        if (inputs.position === Inputs.Lists.FirstLastEnum.first) {
+        if (inputs.position === Inputs.Lists.firstLastEnum.first) {
             cloned.unshift(inputs.item);
         } else {
             cloned.push(inputs.item);

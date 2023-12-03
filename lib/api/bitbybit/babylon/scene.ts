@@ -305,7 +305,20 @@ export class BabylonScene {
      * @shortname fog
      */
     fog(inputs: Inputs.BabylonScene.FogDto): void {
-        this.context.scene.fogMode = +inputs.mode;
+        switch(inputs.mode){
+            case Inputs.Base.fogModeEnum.none:
+                this.context.scene.fogMode = 0;
+                break;
+            case Inputs.Base.fogModeEnum.exponential:
+                this.context.scene.fogMode = 1;
+                break;
+            case Inputs.Base.fogModeEnum.exponentialSquared:
+                this.context.scene.fogMode = 2;
+                break;
+            case Inputs.Base.fogModeEnum.linear:
+                this.context.scene.fogMode = 3;
+                break;
+        }
         this.context.scene.fogDensity = inputs.density;
         this.context.scene.fogStart = inputs.start;
         this.context.scene.fogEnd = inputs.end;

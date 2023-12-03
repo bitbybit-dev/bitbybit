@@ -1,6 +1,9 @@
 import { Camera, FreeCamera, TargetCamera } from "@babylonjs/core";
 import { Base } from "./base-inputs";
 
+/* eslint-disable @typescript-eslint/no-namespace */
+
+
 // tslint:disable-next-line: no-namespace
 export namespace BabylonCamera {
     export class ArcRotateCameraDto {

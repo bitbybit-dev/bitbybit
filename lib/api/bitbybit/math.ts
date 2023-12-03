@@ -32,22 +32,22 @@ export class MathBitByBit {
     twoNrOperation(inputs: Inputs.Math.ActionOnTwoNumbersDto): number {
         let result;
         switch (inputs.operation) {
-        case Inputs.Math.MathTwoNrOperatorEnum.add:
+        case Inputs.Math.mathTwoNrOperatorEnum.add:
             result = inputs.first + inputs.second;
             break;
-        case Inputs.Math.MathTwoNrOperatorEnum.subtract:
+        case Inputs.Math.mathTwoNrOperatorEnum.subtract:
             result = inputs.first - inputs.second;
             break;
-        case Inputs.Math.MathTwoNrOperatorEnum.multiply:
+        case Inputs.Math.mathTwoNrOperatorEnum.multiply:
             result = inputs.first * inputs.second;
             break;
-        case Inputs.Math.MathTwoNrOperatorEnum.divide:
+        case Inputs.Math.mathTwoNrOperatorEnum.divide:
             result = inputs.first / inputs.second;
             break;
-        case Inputs.Math.MathTwoNrOperatorEnum.power:
+        case Inputs.Math.mathTwoNrOperatorEnum.power:
             result = Math.pow(inputs.first, inputs.second);
             break;
-        case Inputs.Math.MathTwoNrOperatorEnum.modulus:
+        case Inputs.Math.mathTwoNrOperatorEnum.modulus:
             result = inputs.first % inputs.second;
             break;
         default:
@@ -67,61 +67,61 @@ export class MathBitByBit {
     oneNrOperation(inputs: Inputs.Math.ActionOnOneNumberDto): number {
         let result;
         switch (inputs.operation) {
-        case Inputs.Math.MathOneNrOperatorEnum.absolute:
+        case Inputs.Math.mathOneNrOperatorEnum.absolute:
             result = Math.abs(inputs.number);
             break;
-        case Inputs.Math.MathOneNrOperatorEnum.negate:
+        case Inputs.Math.mathOneNrOperatorEnum.negate:
             result = -inputs.number;
             break;
-        case Inputs.Math.MathOneNrOperatorEnum.ln:
+        case Inputs.Math.mathOneNrOperatorEnum.ln:
             result = Math.log(inputs.number);
             break;
-        case Inputs.Math.MathOneNrOperatorEnum.log10:
+        case Inputs.Math.mathOneNrOperatorEnum.log10:
             result = Math.log10(inputs.number);
             break;
-        case Inputs.Math.MathOneNrOperatorEnum.tenPow:
+        case Inputs.Math.mathOneNrOperatorEnum.tenPow:
             result = Math.pow(10, inputs.number);
             break;
-        case Inputs.Math.MathOneNrOperatorEnum.round:
+        case Inputs.Math.mathOneNrOperatorEnum.round:
             result = Math.round(inputs.number);
             break;
-        case Inputs.Math.MathOneNrOperatorEnum.floor:
+        case Inputs.Math.mathOneNrOperatorEnum.floor:
             result = Math.floor(inputs.number);
             break;
-        case Inputs.Math.MathOneNrOperatorEnum.ceil:
+        case Inputs.Math.mathOneNrOperatorEnum.ceil:
             result = Math.ceil(inputs.number);
             break;
-        case Inputs.Math.MathOneNrOperatorEnum.sqrt:
+        case Inputs.Math.mathOneNrOperatorEnum.sqrt:
             result = Math.sqrt(inputs.number);
             break;
-        case Inputs.Math.MathOneNrOperatorEnum.sin:
+        case Inputs.Math.mathOneNrOperatorEnum.sin:
             result = Math.sin(inputs.number);
             break;
-        case Inputs.Math.MathOneNrOperatorEnum.cos:
+        case Inputs.Math.mathOneNrOperatorEnum.cos:
             result = Math.cos(inputs.number);
             break;
-        case Inputs.Math.MathOneNrOperatorEnum.tan:
+        case Inputs.Math.mathOneNrOperatorEnum.tan:
             result = Math.tan(inputs.number);
             break;
-        case Inputs.Math.MathOneNrOperatorEnum.asin:
+        case Inputs.Math.mathOneNrOperatorEnum.asin:
             result = Math.asin(inputs.number);
             break;
-        case Inputs.Math.MathOneNrOperatorEnum.acos:
+        case Inputs.Math.mathOneNrOperatorEnum.acos:
             result = Math.acos(inputs.number);
             break;
-        case Inputs.Math.MathOneNrOperatorEnum.atan:
+        case Inputs.Math.mathOneNrOperatorEnum.atan:
             result = Math.atan(inputs.number);
             break;
-        case Inputs.Math.MathOneNrOperatorEnum.log:
+        case Inputs.Math.mathOneNrOperatorEnum.log:
             result = Math.log(inputs.number);
             break;
-        case Inputs.Math.MathOneNrOperatorEnum.exp:
+        case Inputs.Math.mathOneNrOperatorEnum.exp:
             result = Math.exp(inputs.number);
             break;
-        case Inputs.Math.MathOneNrOperatorEnum.degToRad:
+        case Inputs.Math.mathOneNrOperatorEnum.degToRad:
             result = inputs.number * Math.PI / 180;
             break;
-        case Inputs.Math.MathOneNrOperatorEnum.radToDeg:
+        case Inputs.Math.mathOneNrOperatorEnum.radToDeg:
             result = inputs.number * 180 / Math.PI;
             break;
         default:

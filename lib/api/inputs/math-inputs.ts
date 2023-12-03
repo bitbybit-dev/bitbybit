@@ -4,7 +4,7 @@
 // tslint:disable-next-line: no-namespace
 export namespace Math {
 
-    export enum MathTwoNrOperatorEnum {
+    export enum mathTwoNrOperatorEnum {
         add = "add",
         subtract = "subtract",
         multiply = "multiply",
@@ -13,7 +13,7 @@ export namespace Math {
         modulus = "modulus",
     }
 
-    export enum MathOneNrOperatorEnum {
+    export enum mathOneNrOperatorEnum {
         absolute = "absolute",
         negate = "negate",
         ln = "ln",
@@ -66,7 +66,7 @@ export namespace Math {
          * Point
          * @default add
          */
-        operation: MathTwoNrOperatorEnum;
+        operation: mathTwoNrOperatorEnum;
     }
     export class ActionOnOneNumberDto {
         /**
@@ -81,7 +81,7 @@ export namespace Math {
          * Point
          * @default absolute
          */
-        operation: MathOneNrOperatorEnum;
+        operation: mathOneNrOperatorEnum;
     }
     export class RemapNumberDto {
         /**
