@@ -36,6 +36,17 @@ export class BabylonIO {
     }
 
     /**
+     * Imports mesh from the asset that you have uploaded for the project.
+     * You must upload your assets to your project via project management page.
+     * @returns scene loaded mesh
+     * @group load
+     * @shortname asset
+     */
+    async loadAssetIntoSceneNoReturn(inputs: Inputs.Asset.AssetFileDto): Promise<void> {
+        this.loadAssetIntoScene(inputs);
+    }
+
+    /**
      * Imports mesh from the asset url that you have uploaded to an accessible web storage.
      * Keep in mind that files need to be publically accessible for this to work, be sure that CORS access is enabled for the assets.
      * @returns scene loaded mesh
@@ -55,6 +66,16 @@ export class BabylonIO {
         } else {
             throw Error(`Unsupported file format detected: ${type}`);
         }
+    }
+    /**
+     * Imports mesh from the asset url that you have uploaded to an accessible web storage.
+     * Keep in mind that files need to be publically accessible for this to work, be sure that CORS access is enabled for the assets.
+     * @returns scene loaded mesh
+     * @group load
+     * @shortname asset from url
+     */
+    async loadAssetIntoSceneFromRootUrlNoReturn(inputs: Inputs.Asset.AssetFileByUrlDto): Promise<void> {
+        this.loadAssetIntoSceneFromRootUrl(inputs);
     }
     /**
      * Exports the whole scene to .babylon scene format. You can then edit it further in babylonjs editors.

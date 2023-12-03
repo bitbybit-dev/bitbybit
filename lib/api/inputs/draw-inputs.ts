@@ -4,6 +4,8 @@ import { Base } from "../../api/inputs";
 // tslint:disable-next-line: no-namespace
 export namespace Draw {
 
+    export type DrawOptions = DrawBasicGeometryOptions | DrawOcctShapeOptions | DrawOcctShapeSimpleOptions | DrawOcctShapeMaterialOptions | DrawNodeOptions;
+
     export class DrawAny {
         /**
          * Entity to be drawn - can be a single or multiple points, lines, polylines, verb curves, verb surfaces, jscad meshes, jscad polygons, jscad paths, occt shapes, tags, nodes
@@ -22,7 +24,7 @@ export namespace Draw {
          * @default undefined
          * @optional true
          */
-        options?: DrawBasicGeometryOptions | DrawOcctShapeOptions | DrawNodeOptions;
+        options?: DrawOptions;
     }
 
     export class SceneDrawGridMeshDto {
@@ -98,7 +100,7 @@ export namespace Draw {
          */
         secondaryColor: Base.Color = "#ffffff";
     }
-   
+
     /**
      * Draw options for basic geometry types like points, lines, polylines, surfaces and jscad meshes
      */
@@ -257,6 +259,75 @@ export namespace Draw {
          * @default #0000ff
          */
         faceIndexColour: Base.Color = "#0000ff";
+    }
+    export class DrawOcctShapeSimpleOptions {
+        /**
+         * Precision
+         * @default 0.01
+         * @minimum 0
+         * @maximum Infinity
+         */
+        precision = 0.01;
+        /**
+         * You can turn off drawing of faces via this property
+         * @default true
+         */
+        drawFaces = true;
+        /**
+         * Hex colour string for face colour
+         * @default #ff0000
+         */
+        faceColour: Base.Color = "#ff0000";
+        /**
+        * You can turn off drawing of edges via this property
+        * @default true
+        */
+        drawEdges = true;
+        /**
+         * Hex colour string for the edges
+         * @default #ffffff
+         */
+        edgeColour: Base.Color = "#ffffff";
+        /**
+         * Edge width
+         * @default 2
+         * @minimum 0
+         * @maximum Infinity
+         */
+        edgeWidth = 2;
+    }
+
+    export class DrawOcctShapeMaterialOptions {
+        /**
+        * Precision
+        * @default 0.01
+        * @minimum 0
+        * @maximum Infinity
+        */
+        precision = 0.01;
+        /**
+         * Face material
+         * @default undefined
+         */
+        faceMaterial;
+
+        /**
+        * You can turn off drawing of edges via this property
+        * @default true
+        */
+        drawEdges = true;
+        /**
+         * Hex colour string for the edges
+         * @default #ffffff
+         */
+        edgeColour: Base.Color = "#ffffff";
+        /**
+         * Edge width
+         * @default 2
+         * @minimum 0
+         * @maximum Infinity
+         */
+        edgeWidth = 2;
     }
 
     export enum drawingTypes {

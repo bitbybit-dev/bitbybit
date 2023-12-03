@@ -278,6 +278,28 @@ export class Draw {
     }
 
     /**
+     * Creates simple draw options for occt shape geometry
+     * @param inputs option definition
+     * @returns options
+     * @group options
+     * @shortname occt shape
+     */
+    optionsOcctShapeSimple(inputs: Inputs.Draw.DrawOcctShapeSimpleOptions): Inputs.Draw.DrawOcctShapeSimpleOptions {
+        return inputs;
+    }
+
+    /**
+     * Creates simple draw options with custom face material for occt shape geometry
+     * @param inputs option definition
+     * @returns options
+     * @group options
+     * @shortname occt shape
+     */
+    optionsOcctShapeMaterial(inputs: Inputs.Draw.DrawOcctShapeMaterialOptions): Inputs.Draw.DrawOcctShapeMaterialOptions {
+        return inputs;
+    }
+
+    /**
      * Creates draw options for babylon js nodes
      * @param inputs option definition
      * @returns options
@@ -549,7 +571,7 @@ export class Draw {
         });
     }
 
-    private applyGlobalSettingsAndMetadataAndShadowCasting(type: Inputs.Draw.drawingTypes, options: Inputs.Draw.DrawBasicGeometryOptions | Inputs.Draw.DrawOcctShapeOptions | Inputs.Draw.DrawNodeOptions, result: BABYLON.Mesh) {
+    private applyGlobalSettingsAndMetadataAndShadowCasting(type: Inputs.Draw.drawingTypes, options: Inputs.Draw.DrawOptions, result: BABYLON.Mesh) {
         const typemeta = { type, options };
         const sgs = this.context.scene.metadata.shadowGenerators as BABYLON.ShadowGenerator[];
 
