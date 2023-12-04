@@ -63,6 +63,23 @@ export class JSONBitByBit {
     }
 
     /**
+     * Sets multiple values to the json by providing paths
+     * @param inputs a value to be added, json and a path
+     * @returns any
+     * @group jsonpath
+     * @shortname set value
+     * @drawable false
+     */
+    setValuesOnPaths(inputs: Inputs.JSON.SetValuesOnPathsDto): any {
+        // must be an object
+        const clonedJson = { ...structuredClone(inputs.json) };
+        inputs.paths.forEach((path, index) => {
+            this.context.jsonpath.value(clonedJson, path, inputs.values[index]);
+        });
+        return clonedJson;
+    }
+
+    /**
      * Find paths to elements in object matching path expression
      * @param inputs a json value and a query
      * @returns any
@@ -98,5 +115,31 @@ export class JSONBitByBit {
      */
     createEmpty(): any {
         return {};
+    }
+
+    /**
+     * Previews json and gives option to save it
+     * @returns any
+     * @group preview
+     * @shortname json preview and save
+     * @drawable false
+     */
+    previewAndSaveJson(inputs: Inputs.JSON.JsonDto) {
+        if(inputs.json){
+            this.context.BitByBitContextHelperService.promptPrintSave({ text: inputs.json, isJson: true, hidden: false });
+        }
+    }
+
+    /**
+     * Previews json
+     * @returns any
+     * @group preview
+     * @shortname json preview
+     * @drawable false
+     */
+    previewJson(inputs: Inputs.JSON.JsonDto) {
+        if(inputs.json){
+            this.context.BitByBitContextHelperService.promptPrint({ text: inputs.json, isJson: true, hidden: false });
+        }
     }
 }

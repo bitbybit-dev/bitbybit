@@ -32,28 +32,52 @@ export class MathBitByBit {
     twoNrOperation(inputs: Inputs.Math.ActionOnTwoNumbersDto): number {
         let result;
         switch (inputs.operation) {
-        case Inputs.Math.mathTwoNrOperatorEnum.add:
-            result = inputs.first + inputs.second;
-            break;
-        case Inputs.Math.mathTwoNrOperatorEnum.subtract:
-            result = inputs.first - inputs.second;
-            break;
-        case Inputs.Math.mathTwoNrOperatorEnum.multiply:
-            result = inputs.first * inputs.second;
-            break;
-        case Inputs.Math.mathTwoNrOperatorEnum.divide:
-            result = inputs.first / inputs.second;
-            break;
-        case Inputs.Math.mathTwoNrOperatorEnum.power:
-            result = Math.pow(inputs.first, inputs.second);
-            break;
-        case Inputs.Math.mathTwoNrOperatorEnum.modulus:
-            result = inputs.first % inputs.second;
-            break;
-        default:
-            break;
+            case Inputs.Math.mathTwoNrOperatorEnum.add:
+                result = inputs.first + inputs.second;
+                break;
+            case Inputs.Math.mathTwoNrOperatorEnum.subtract:
+                result = inputs.first - inputs.second;
+                break;
+            case Inputs.Math.mathTwoNrOperatorEnum.multiply:
+                result = inputs.first * inputs.second;
+                break;
+            case Inputs.Math.mathTwoNrOperatorEnum.divide:
+                result = inputs.first / inputs.second;
+                break;
+            case Inputs.Math.mathTwoNrOperatorEnum.power:
+                result = Math.pow(inputs.first, inputs.second);
+                break;
+            case Inputs.Math.mathTwoNrOperatorEnum.modulus:
+                result = inputs.first % inputs.second;
+                break;
+            default:
+                break;
         }
         return result;
+    }
+
+    /**
+     * Does modulus operation
+     * @param inputs two numbers and operator
+     * @returns Result of modulus operation
+     * @group operations
+     * @shortname modulus
+     * @drawable false
+     */
+    modulus(inputs: Inputs.Math.ModulusDto): number {
+        return this.twoNrOperation({ first: inputs.number, second: inputs.modulus, operation: Inputs.Math.mathTwoNrOperatorEnum.modulus });
+    }
+
+    /**
+     * Does rounding to decimals
+     * @param inputs a number and decimal places
+     * @returns Result of rounding
+     * @group operations
+     * @shortname round to decimals
+     * @drawable false
+     */
+    roundToDecimals(inputs: Inputs.Math.RoundToDecimalsDto): number {
+        return Math.round(inputs.number * Math.pow(10, inputs.decimalPlaces)) / Math.pow(10, inputs.decimalPlaces);
     }
 
     /**
@@ -67,65 +91,65 @@ export class MathBitByBit {
     oneNrOperation(inputs: Inputs.Math.ActionOnOneNumberDto): number {
         let result;
         switch (inputs.operation) {
-        case Inputs.Math.mathOneNrOperatorEnum.absolute:
-            result = Math.abs(inputs.number);
-            break;
-        case Inputs.Math.mathOneNrOperatorEnum.negate:
-            result = -inputs.number;
-            break;
-        case Inputs.Math.mathOneNrOperatorEnum.ln:
-            result = Math.log(inputs.number);
-            break;
-        case Inputs.Math.mathOneNrOperatorEnum.log10:
-            result = Math.log10(inputs.number);
-            break;
-        case Inputs.Math.mathOneNrOperatorEnum.tenPow:
-            result = Math.pow(10, inputs.number);
-            break;
-        case Inputs.Math.mathOneNrOperatorEnum.round:
-            result = Math.round(inputs.number);
-            break;
-        case Inputs.Math.mathOneNrOperatorEnum.floor:
-            result = Math.floor(inputs.number);
-            break;
-        case Inputs.Math.mathOneNrOperatorEnum.ceil:
-            result = Math.ceil(inputs.number);
-            break;
-        case Inputs.Math.mathOneNrOperatorEnum.sqrt:
-            result = Math.sqrt(inputs.number);
-            break;
-        case Inputs.Math.mathOneNrOperatorEnum.sin:
-            result = Math.sin(inputs.number);
-            break;
-        case Inputs.Math.mathOneNrOperatorEnum.cos:
-            result = Math.cos(inputs.number);
-            break;
-        case Inputs.Math.mathOneNrOperatorEnum.tan:
-            result = Math.tan(inputs.number);
-            break;
-        case Inputs.Math.mathOneNrOperatorEnum.asin:
-            result = Math.asin(inputs.number);
-            break;
-        case Inputs.Math.mathOneNrOperatorEnum.acos:
-            result = Math.acos(inputs.number);
-            break;
-        case Inputs.Math.mathOneNrOperatorEnum.atan:
-            result = Math.atan(inputs.number);
-            break;
-        case Inputs.Math.mathOneNrOperatorEnum.log:
-            result = Math.log(inputs.number);
-            break;
-        case Inputs.Math.mathOneNrOperatorEnum.exp:
-            result = Math.exp(inputs.number);
-            break;
-        case Inputs.Math.mathOneNrOperatorEnum.degToRad:
-            result = inputs.number * Math.PI / 180;
-            break;
-        case Inputs.Math.mathOneNrOperatorEnum.radToDeg:
-            result = inputs.number * 180 / Math.PI;
-            break;
-        default:
-            break;
+            case Inputs.Math.mathOneNrOperatorEnum.absolute:
+                result = Math.abs(inputs.number);
+                break;
+            case Inputs.Math.mathOneNrOperatorEnum.negate:
+                result = -inputs.number;
+                break;
+            case Inputs.Math.mathOneNrOperatorEnum.ln:
+                result = Math.log(inputs.number);
+                break;
+            case Inputs.Math.mathOneNrOperatorEnum.log10:
+                result = Math.log10(inputs.number);
+                break;
+            case Inputs.Math.mathOneNrOperatorEnum.tenPow:
+                result = Math.pow(10, inputs.number);
+                break;
+            case Inputs.Math.mathOneNrOperatorEnum.round:
+                result = Math.round(inputs.number);
+                break;
+            case Inputs.Math.mathOneNrOperatorEnum.floor:
+                result = Math.floor(inputs.number);
+                break;
+            case Inputs.Math.mathOneNrOperatorEnum.ceil:
+                result = Math.ceil(inputs.number);
+                break;
+            case Inputs.Math.mathOneNrOperatorEnum.sqrt:
+                result = Math.sqrt(inputs.number);
+                break;
+            case Inputs.Math.mathOneNrOperatorEnum.sin:
+                result = Math.sin(inputs.number);
+                break;
+            case Inputs.Math.mathOneNrOperatorEnum.cos:
+                result = Math.cos(inputs.number);
+                break;
+            case Inputs.Math.mathOneNrOperatorEnum.tan:
+                result = Math.tan(inputs.number);
+                break;
+            case Inputs.Math.mathOneNrOperatorEnum.asin:
+                result = Math.asin(inputs.number);
+                break;
+            case Inputs.Math.mathOneNrOperatorEnum.acos:
+                result = Math.acos(inputs.number);
+                break;
+            case Inputs.Math.mathOneNrOperatorEnum.atan:
+                result = Math.atan(inputs.number);
+                break;
+            case Inputs.Math.mathOneNrOperatorEnum.log:
+                result = Math.log(inputs.number);
+                break;
+            case Inputs.Math.mathOneNrOperatorEnum.exp:
+                result = Math.exp(inputs.number);
+                break;
+            case Inputs.Math.mathOneNrOperatorEnum.degToRad:
+                result = inputs.number * Math.PI / 180;
+                break;
+            case Inputs.Math.mathOneNrOperatorEnum.radToDeg:
+                result = inputs.number * 180 / Math.PI;
+                break;
+            default:
+                break;
         }
         return result;
     }
@@ -140,6 +164,17 @@ export class MathBitByBit {
     */
     remap(inputs: Inputs.Math.RemapNumberDto): number {
         return (inputs.number - inputs.fromLow) * (inputs.toHigh - inputs.toLow) / (inputs.fromHigh - inputs.fromLow) + inputs.toLow;
+    }
+
+    /**
+    * Creates a random number between 0 and 1
+    * @returns A random number between 0 and 1
+    * @group generate
+    * @shortname random 0 - 1
+    * @drawable false
+    */
+    random(): number {
+        return Math.random();
     }
 
     /**

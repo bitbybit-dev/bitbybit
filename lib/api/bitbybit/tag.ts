@@ -28,6 +28,7 @@ export class Tag {
      * Draws a single tag
      * @param inputs Information to draw the tag
      * @returns A tag
+     * @ignore true
      */
     drawTag(inputs: Inputs.Tag.DrawTagDto): Inputs.Tag.TagDto {
         if (inputs.tagVariable && inputs.updatable) {
@@ -53,6 +54,7 @@ export class Tag {
      * Draws multiple tags
      * @param inputs Information to draw the tags
      * @returns Tags
+     * @ignore true
      */
     drawTags(inputs: Inputs.Tag.DrawTagsDto): Inputs.Tag.TagDto[] {
         if (inputs.tagsVariable && inputs.updatable) {

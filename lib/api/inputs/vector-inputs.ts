@@ -65,6 +65,24 @@ export namespace Vector {
          */
         z: number;
     }
+    export class VectorXYDto {
+        /**
+         * X value of vector
+         * @default 0
+         * @minimum -Infinity
+         * @maximum Infinity
+         * @step 0.5
+         */
+        x: number;
+        /**
+         * Y value of vector
+         * @default 0
+         * @minimum -Infinity
+         * @maximum Infinity
+         * @step 0.5
+         */
+        y: number;
+    }
     export class SpanDto {
         /**
          * Step of the span

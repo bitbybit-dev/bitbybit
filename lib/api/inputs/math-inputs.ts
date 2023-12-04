@@ -45,6 +45,42 @@ export namespace Math {
          */
         number = 0;
     }
+    export class ModulusDto {
+        /**
+         * Number
+         * @default 1
+         * @minimum -Infinity
+         * @maximum Infinity
+         * @step 0.1
+         */
+        number = 1;
+        /**
+         * Modulus
+         * @default 1
+         * @minimum -Infinity
+         * @maximum Infinity
+         * @step 0.1
+         */
+        modulus = 2;
+    }
+    export class RoundToDecimalsDto{
+        /**
+         * Number to round
+         * @default 1.123456
+         * @minimum -Infinity
+         * @maximum Infinity
+         * @step 0.1
+         */
+        number = 1.123456;
+        /**
+         * Number of decimal places
+         * @default 2
+         * @minimum -Infinity
+         * @maximum Infinity
+         * @step 1
+         */
+        decimalPlaces = 2;
+    }
     export class ActionOnTwoNumbersDto {
         /**
          * First number

@@ -36,7 +36,7 @@ export namespace JSON {
         */
         json: any;
         /**
-         * query json structure
+         * value to be set
          * @default undefined
          */
         value: any;
@@ -45,6 +45,24 @@ export namespace JSON {
          * @default undefined
          */
         path: string;
+    }
+
+    export class SetValuesOnPathsDto {
+        /**
+        * query json structure
+        * @default undefined
+        */
+        json: any;
+        /**
+         * values to be set
+         * @default undefined
+         */
+        values: any[];
+        /**
+         * query json structures
+         * @default undefined
+         */
+        paths: string[];
     }
     export class PathsDto {
         /**
@@ -57,5 +75,13 @@ export namespace JSON {
          * @default undefined
          */
         query: string;
+    }
+
+    export class JsonDto {
+        /**
+         * json value
+         * @default undefined
+         */
+        json: any;
     }
 }

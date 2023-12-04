@@ -291,7 +291,7 @@ export class Vector {
 
     /**
      * Create a xyz vector
-     * @param inputs Max value for the range
+     * @param inputs Vector coordinates
      * @returns Create a vector of xyz values
      * @group create
      * @shortname vector XYZ
@@ -299,6 +299,18 @@ export class Vector {
      */
     vectorXYZ(inputs: Inputs.Vector.VectorXYZDto): Inputs.Base.Vector3 {
         return [inputs.x, inputs.y, inputs.z];
+    }
+
+    /**
+     * Create 2d xy vector
+     * @param inputs Vector coordinates
+     * @returns Create a vector of xy values
+     * @group create
+     * @shortname vector XY
+     * @drawable true
+     */
+    vectorXY(inputs: Inputs.Vector.VectorXYDto): Inputs.Base.Vector2 {
+        return [inputs.x, inputs.y];
     }
 
     /**
