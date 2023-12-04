@@ -67,6 +67,17 @@ export class BabylonScene {
     }
 
     /**
+     * Creates and draws a point light in the scene but does not output anything
+     * @param inputs Describes the light source
+     * @group lights
+     * @shortname point
+     * @disposableOutput true
+     */
+    drawPointLightNoReturn(inputs: Inputs.BabylonScene.PointLightDto): void {
+        this.drawPointLight(inputs);
+    }
+
+    /**
      * Creates and draws a point light in the scene
      * @param inputs Describes the light source
      * @returns BabylonJS point light
@@ -305,7 +316,7 @@ export class BabylonScene {
      * @shortname fog
      */
     fog(inputs: Inputs.BabylonScene.FogDto): void {
-        switch(inputs.mode){
+        switch (inputs.mode) {
             case Inputs.Base.fogModeEnum.none:
                 this.context.scene.fogMode = 0;
                 break;

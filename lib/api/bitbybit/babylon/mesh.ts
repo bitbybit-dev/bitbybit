@@ -26,9 +26,8 @@ export class BabylonMesh {
     /** Udates drawn BabylonJS mesh object without disposing it
      * @param inputs Contains BabylonJS mesh that should be updated, together with position, rotation, scaling and colour info
      * @returns BabylonJS Mesh
-     * @group movement
+     * @group updates
      * @shortname update drawn
-     * @ignore true
      */
     updateDrawn(inputs: Inputs.BabylonMesh.UpdateDrawnBabylonMesh): void {
         const type = inputs.babylonMesh.metadata.type as Inputs.Draw.drawingTypes;

@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-namespace */
+
 import { LinesMesh, Mesh } from "@babylonjs/core";
 import { BaseTypes } from "../bitbybit/base-types";
 import { Base } from "./base-inputs";
@@ -308,7 +310,7 @@ export namespace Verb {
          */
         center: Base.Point3;
     }
-    export class ArcParametersDto extends CircleParametersDto {
+    export class ArcParametersDto {
         /**
          * Minimum angle in degrees
          */
@@ -317,8 +319,24 @@ export namespace Verb {
          * Maximum angle in degrees
          */
         maxAngle: number;
+        /**
+         * X axis of the circle
+         */
+        xAxis: Base.Vector3;
+        /**
+         * Y axis of the circle
+         */
+        yAxis: Base.Vector3;
+        /**
+         * Radius of the circle
+         */
+        radius: number;
+        /**
+         * Center of the circle
+         */
+        center: Base.Point3;
     }
-    export class EllipseArcParametersDto extends EllipseParametersDto {
+    export class EllipseArcParametersDto {
         /**
          * Minimum angle in degrees
          */
@@ -327,6 +345,18 @@ export namespace Verb {
          * Maximum angle in degrees
          */
         maxAngle: number;
+        /**
+         * X axis of the circle
+         */
+        xAxis: Base.Vector3;
+        /**
+         * Y axis of the circle
+         */
+        yAxis: Base.Vector3;
+        /**
+         * Center of the circle
+         */
+        center: Base.Point3;
     }
     export class SurfaceDto {
         /**
