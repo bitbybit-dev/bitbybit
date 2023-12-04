@@ -382,7 +382,7 @@ export class VerbSurface {
      */
     transformSurface(inputs: Inputs.Verb.SurfaceTransformDto): any {
         const points = inputs.surface.controlPoints();
-        const transformation = inputs.matrix;
+        const transformation = inputs.transformation;
         const twoDimensionalPoints = [];
         points.forEach(ptCollection => {
             let transformedControlPoints = ptCollection;

@@ -357,7 +357,7 @@ export class VerbCurve {
      */
     transform(inputs: Inputs.Verb.CurveTransformDto): any {
         const points = inputs.curve.controlPoints();
-        const transformedControlPoints = this.geometryHelper.transformControlPoints(inputs.matrix, points);
+        const transformedControlPoints = this.geometryHelper.transformControlPoints(inputs.transformation, points);
         return this.context.verb.geom.NurbsCurve.byKnotsControlPointsWeights(
             inputs.curve.degree(), inputs.curve.knots(), transformedControlPoints, inputs.curve.weights()
         );
@@ -369,7 +369,7 @@ export class VerbCurve {
      * @returns Transformed curves
      */
     transformCurves(inputs: Inputs.Verb.CurvesTransformDto): any[] {
-        return inputs.curves.map(curve => this.transform({ curve, matrix: inputs.matrix }));
+        return inputs.curves.map(curve => this.transform({ curve, transformation: inputs.transformation }));
     }
 
     /**

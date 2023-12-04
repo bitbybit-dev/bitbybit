@@ -104,7 +104,7 @@ export class Point {
      * @drawable true
      */
     transformPoint(inputs: Inputs.Point.TransformPointDto): Inputs.Base.Point3 {
-        const transformation = inputs.matrix;
+        const transformation = inputs.transformation;
         let transformedControlPoints = [inputs.point];
         transformedControlPoints = this.geometryHelper.transformControlPoints(transformation, transformedControlPoints);
         return transformedControlPoints[0];
@@ -119,7 +119,7 @@ export class Point {
      * @drawable true
      */
     transformPoints(inputs: Inputs.Point.TransformPointsDto): Inputs.Base.Point3[] {
-        return this.geometryHelper.transformControlPoints(inputs.matrix, inputs.points);
+        return this.geometryHelper.transformControlPoints(inputs.transformation, inputs.points);
     }
 
     /**
@@ -131,11 +131,11 @@ export class Point {
      * @drawable true
      */
     transformsForPoints(inputs: Inputs.Point.TransformsForPointsDto): Inputs.Base.Point3[] {
-        if (inputs.points.length !== inputs.matrix.length) {
+        if (inputs.points.length !== inputs.transformation.length) {
             throw new Error("You must provide equal nr of points and transformations");
         }
         return inputs.points.map((pt, index) => {
-            return this.geometryHelper.transformControlPoints(inputs.matrix[index], [pt])[0];
+            return this.geometryHelper.transformControlPoints(inputs.transformation[index], [pt])[0];
         });
     }
 

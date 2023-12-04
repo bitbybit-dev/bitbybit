@@ -104,7 +104,7 @@ export class Polyline {
      * @returns Transformed polyline
      */
     transformPolyline(inputs: Inputs.Polyline.TransformPolylineDto): Inputs.Polyline.PolylinePropertiesDto {
-        const transformation = inputs.matrix;
+        const transformation = inputs.transformation;
         let transformedControlPoints = inputs.polyline.points;
         transformedControlPoints = this.geometryHelper.transformControlPoints(transformation, transformedControlPoints);
         return { points: transformedControlPoints };

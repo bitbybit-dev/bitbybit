@@ -125,7 +125,7 @@ export class Line {
      * @returns Transformed line
      */
     transformLine(inputs: Inputs.Line.TransformLineDto): Inputs.Base.Line3 {
-        const transformation = inputs.matrix;
+        const transformation = inputs.transformation;
         let transformedControlPoints = [inputs.line.start, inputs.line.end];
         transformedControlPoints = this.geometryHelper.transformControlPoints(transformation, transformedControlPoints);
         return {
@@ -141,7 +141,7 @@ export class Line {
      */
     transformsForLines(inputs: Inputs.Line.TransformsLinesDto): Inputs.Base.Line3[] {
         return inputs.lines.map((line, index) => {
-            const transformation = inputs.matrix[index];
+            const transformation = inputs.transformation[index];
             let transformedControlPoints = [line.start, line.end];
             transformedControlPoints = this.geometryHelper.transformControlPoints(transformation, transformedControlPoints);
             return {

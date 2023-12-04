@@ -35,7 +35,7 @@ export namespace Polyline {
         /**
          * Transformation matrix or a list of transformation matrixes
          */
-        matrix: Base.TransformMatrixes;
+        transformation: Base.TransformMatrixes;
     }
     export class DrawPolylineDto {
         /**

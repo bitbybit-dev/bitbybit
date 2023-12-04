@@ -109,7 +109,7 @@ export namespace Verb {
         /**
          * Transformation matrixes
          */
-        matrix: Base.TransformMatrixes;
+        transformation: Base.TransformMatrixes;
     }
     export class CurvesTransformDto {
         /**
@@ -119,7 +119,7 @@ export namespace Verb {
         /**
          * Transformation matrixes
          */
-        matrix: Base.TransformMatrixes;
+        transformation: Base.TransformMatrixes;
     }
     export class CurveToleranceDto {
         /**
@@ -372,7 +372,7 @@ export namespace Verb {
         /**
          * Transformations
          */
-        matrix: Base.TransformMatrixes;
+        transformation: Base.TransformMatrixes;
     }
     export class SurfaceParameterDto {
         /**
