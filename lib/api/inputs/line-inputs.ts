@@ -1,7 +1,8 @@
 import { LinesMesh } from "@babylonjs/core";
 import { Base } from "./base-inputs";
 
-// tslint:disable-next-line: no-namespace
+/* eslint-disable @typescript-eslint/no-namespace */
+
 export namespace Line {
     export class LinePointsDto {
         /**

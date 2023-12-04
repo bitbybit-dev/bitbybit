@@ -2,7 +2,7 @@ import { Mesh } from "@babylonjs/core";
 import { BaseTypes } from "../bitbybit/base-types";
 import { Base } from "./base-inputs";
 
-// tslint:disable-next-line: no-namespace
+/* eslint-disable @typescript-eslint/no-namespace */
 export namespace Tag {
     export class DrawTagDto {
         constructor(tag?: TagDto){

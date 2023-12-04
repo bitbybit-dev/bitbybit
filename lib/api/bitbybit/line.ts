@@ -1,6 +1,5 @@
 
-import { Color3, Color4, LinesMesh, Mesh, MeshBuilder, Vector3 } from "@babylonjs/core";
-import { map } from "rxjs";
+import * as BABYLON from "@babylonjs/core";
 import { Context } from "../context";
 import { GeometryHelper } from "../geometry-helper";
 import * as Inputs from "../inputs/inputs";
@@ -19,32 +18,32 @@ export class Line {
      * @param inputs Contains a line to be drawn
      * @returns Lines mesh that is being drawn by Babylon
      */
-    drawLines(inputs: Inputs.Line.DrawLinesDto): LinesMesh {
+    drawLines(inputs: Inputs.Line.DrawLinesDto): BABYLON.LinesMesh {
         const lines = [];
         const colors = [];
 
         inputs.lines.forEach((line, index) => {
             lines.push([
-                new Vector3(line.start[0], line.start[1], line.start[2]),
-                new Vector3(line.end[0], line.end[1], line.end[2])]
+                new BABYLON.Vector3(line.start[0], line.start[1], line.start[2]),
+                new BABYLON.Vector3(line.end[0], line.end[1], line.end[2])]
             );
             let col;
             if (Array.isArray(inputs.colours) && inputs.colours.length === inputs.lines.length) {
-                col = Color3.FromHexString(inputs.colours[index]);
+                col = BABYLON.Color3.FromHexString(inputs.colours[index]);
             } else if (Array.isArray(inputs.colours)) {
-                col = Color3.FromHexString(inputs.colours[0]);
+                col = BABYLON.Color3.FromHexString(inputs.colours[0]);
             } else {
-                col = Color3.FromHexString(inputs.colours);
+                col = BABYLON.Color3.FromHexString(inputs.colours);
             }
             colors.push([
-                new Color4(col.r, col.g, col.b, inputs.opacity),
-                new Color4(col.r, col.g, col.b, inputs.opacity)
+                new BABYLON.Color4(col.r, col.g, col.b, inputs.opacity),
+                new BABYLON.Color4(col.r, col.g, col.b, inputs.opacity)
             ]);
         });
 
         if (inputs.linesMesh && inputs.updatable) {
             if (inputs.linesMesh.getTotalVertices() / 2 === lines.length) {
-                inputs.linesMesh = MeshBuilder.CreateLineSystem(null,
+                inputs.linesMesh = BABYLON.MeshBuilder.CreateLineSystem(null,
                     {
                         lines,
                         instance: inputs.linesMesh,
@@ -228,8 +227,8 @@ export class Line {
         return Promise.resolve(this.linesBetweenStartAndEndPoints(inputs));
     }
 
-    private createLineSystemMesh(updatable: boolean, lines: Vector3[][], colors: Color4[][]): LinesMesh {
-        return MeshBuilder.CreateLineSystem(`lines${Math.random()}`,
+    private createLineSystemMesh(updatable: boolean, lines: BABYLON.Vector3[][], colors: BABYLON.Color4[][]): BABYLON.LinesMesh {
+        return BABYLON.MeshBuilder.CreateLineSystem(`lines${Math.random()}`,
             {
                 lines,
                 colors,

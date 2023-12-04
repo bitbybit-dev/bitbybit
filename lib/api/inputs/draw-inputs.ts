@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-namespace */
+import * as BABYLON from "@babylonjs/core";
 import { Base } from "../../api/inputs";
 
 // tslint:disable-next-line: no-namespace
@@ -13,18 +14,17 @@ export namespace Draw {
          */
         entity: any;
         /**
-         * Entity to be used when updating
-         * @default undefined
-         * @optional true
-         * @ignore true
-         */
-        babylonMesh?: any;
-        /**
          * Options that help you control how your drawn objects look like. This property is optional. In order to pick the right option you need to know which entity you are going to draw. For example if you draw points, lines, polylines or jscad meshes you can use basic geometry options, but if you want to draw OCCT shapes, use OCCT options.
          * @default undefined
          * @optional true
          */
         options?: DrawOptions;
+        /**
+         * Entity to be used when updating already drawn mesh in the render loop
+         * @default undefined
+         * @optional true
+         */
+        babylonMesh?: BABYLON.Mesh | BABYLON.LinesMesh;
     }
 
     export class SceneDrawGridMeshDto {

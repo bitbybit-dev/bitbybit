@@ -3,7 +3,6 @@ import { Camera } from "@babylonjs/core";
 import { Base } from "./base-inputs";
 import * as BABYLON from "@babylonjs/core";
 
-// tslint:disable-next-line: no-namespace
 export namespace BabylonScene {
 
     export class SceneBackgroundColourDto {

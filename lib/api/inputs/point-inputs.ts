@@ -2,7 +2,6 @@
 import { Mesh } from "@babylonjs/core";
 import { Base } from "./base-inputs";
 
-// tslint:disable-next-line: no-namespace
 export namespace Point {
     export class PointDto {
         /**

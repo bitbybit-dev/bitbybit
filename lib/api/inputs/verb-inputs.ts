@@ -4,7 +4,6 @@ import { LinesMesh, Mesh } from "@babylonjs/core";
 import { BaseTypes } from "../bitbybit/base-types";
 import { Base } from "./base-inputs";
 
-// tslint:disable-next-line: no-namespace
 export namespace Verb {
 
     export class CurveDto {

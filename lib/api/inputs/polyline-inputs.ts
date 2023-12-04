@@ -1,7 +1,7 @@
-import { LinesMesh } from "@babylonjs/core";
+/* eslint-disable @typescript-eslint/no-namespace */
+import * as BABYLON from "@babylonjs/core";
 import { Base } from "./base-inputs";
 
-// tslint:disable-next-line: no-namespace
 export namespace Polyline {
     export class PolylinePropertiesDto {
         /**
@@ -67,7 +67,7 @@ export namespace Polyline {
         /**
          * Line mesh variable in case it already exists and needs updating
          */
-        polylineMesh?: LinesMesh;
+        polylineMesh?: BABYLON.LinesMesh;
     }
     export class DrawPolylinesDto {
         /**
@@ -99,6 +99,6 @@ export namespace Polyline {
         /**
          * Polyline mesh variable in case it already exists and needs updating
          */
-        polylinesMesh?: LinesMesh;
+        polylinesMesh?: BABYLON.LinesMesh;
     }
 }

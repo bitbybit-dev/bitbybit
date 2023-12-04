@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-namespace */
 
 
-// tslint:disable-next-line: no-namespace
 export namespace Text {
 
     export class TextDto {

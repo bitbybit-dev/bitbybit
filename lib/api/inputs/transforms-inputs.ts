@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-namespace */
 import { Base } from "./base-inputs";
 
-// tslint:disable-next-line: no-namespace
 export namespace Transforms {
 
     export class RotationCenterAxisDto {

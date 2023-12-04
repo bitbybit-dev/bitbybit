@@ -209,14 +209,21 @@ export class Draw {
     }
 
     /**
-     * Draws any kind of geometry. Inputs can not be promises.
+     * Draws any kind of geometry that does not need asynchronous computing, thus it cant be used with shapes coming from occt or jscad
      * @param inputs Contains options and entities to be drawn
      * @returns BabylonJS Mesh
-     * @ignore true
+     */
+    drawAnyNoReturn(inputs: Inputs.Draw.DrawAny): void {
+        this.drawAny(inputs);
+    }
+
+    /**
+     * Draws any kind of geometry that does not need asynchronous computing, thus it cant be used with shapes coming from occt or jscad
+     * @param inputs Contains options and entities to be drawn
+     * @returns BabylonJS Mesh
      */
     drawAny(inputs: Inputs.Draw.DrawAny): BABYLON.Mesh {
         let result;
-
         const entity = inputs.entity;
         if (!inputs.babylonMesh) {
             if (this.detectLine(entity)) {
@@ -314,8 +321,9 @@ export class Draw {
         const options = inputs.options ? inputs.options : {
             updatable: false,
         };
+        // TODO look into this, seems like a bad idea to use babylon mesh for tag updates
         const result = this.tag.drawTags({
-            tagsVariable: inputs.babylonMesh,
+            tagsVariable: inputs.babylonMesh as any,
             tags: inputs.entity,
             ...options as Inputs.Draw.DrawBasicGeometryOptions
         });
@@ -332,7 +340,7 @@ export class Draw {
             options = inputs.babylonMesh.metadata.options;
         }
         const result = this.tag.drawTag({
-            tagVariable: inputs.babylonMesh,
+            tagVariable: inputs.babylonMesh as any,
             tag: inputs.entity,
             ...options as Inputs.Draw.DrawBasicGeometryOptions
         });
@@ -361,7 +369,7 @@ export class Draw {
             options = inputs.babylonMesh.metadata.options;
         }
         const result = this.verbCurve.drawCurves({
-            curvesMesh: inputs.babylonMesh,
+            curvesMesh: inputs.babylonMesh as BABYLON.LinesMesh,
             curves: inputs.entity,
             ...options as Inputs.Draw.DrawBasicGeometryOptions
         });
@@ -404,7 +412,7 @@ export class Draw {
             options = inputs.babylonMesh.metadata.options;
         }
         const result = this.polyline.drawPolylines({
-            polylinesMesh: inputs.babylonMesh,
+            polylinesMesh: inputs.babylonMesh as BABYLON.LinesMesh,
             polylines: inputs.entity.map(e => ({ points: [e.start, e.end] })),
             ...options as Inputs.Draw.DrawBasicGeometryOptions
         });
@@ -418,7 +426,7 @@ export class Draw {
             options = inputs.babylonMesh.metadata.options;
         }
         const result = this.polyline.drawPolylines({
-            polylinesMesh: inputs.babylonMesh,
+            polylinesMesh: inputs.babylonMesh as BABYLON.LinesMesh,
             polylines: inputs.entity,
             ...options as Inputs.Draw.DrawBasicGeometryOptions
         });
@@ -447,7 +455,7 @@ export class Draw {
             options = inputs.babylonMesh.metadata.options;
         }
         const result = this.verbCurve.drawCurve({
-            curveMesh: inputs.babylonMesh,
+            curveMesh: inputs.babylonMesh as BABYLON.LinesMesh,
             curve: inputs.entity,
             ...options as Inputs.Draw.DrawBasicGeometryOptions
         });
@@ -475,7 +483,7 @@ export class Draw {
             options = inputs.babylonMesh.metadata.options;
         }
         const result = this.polyline.drawPolyline({
-            polylineMesh: inputs.babylonMesh,
+            polylineMesh: inputs.babylonMesh as BABYLON.LinesMesh,
             polyline: inputs.entity,
             ...options as Inputs.Draw.DrawBasicGeometryOptions
         });
@@ -503,7 +511,7 @@ export class Draw {
             options = inputs.babylonMesh.metadata.options;
         }
         const result = this.polyline.drawPolylines({
-            polylinesMesh: inputs.babylonMesh,
+            polylinesMesh: inputs.babylonMesh as BABYLON.LinesMesh,
             polylines: [{ points: [inputs.entity.start, inputs.entity.end] }],
             ...options as Inputs.Draw.DrawBasicGeometryOptions
         });

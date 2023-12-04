@@ -1,6 +1,7 @@
 import { PickingInfo, Ray } from "@babylonjs/core";
 
-// tslint:disable-next-line: no-namespace
+/* eslint-disable @typescript-eslint/no-namespace */
+
 export namespace BabylonPick {
     export class RayDto {
         /**

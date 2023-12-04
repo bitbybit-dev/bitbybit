@@ -1,6 +1,4 @@
-
-
-// tslint:disable-next-line: no-namespace
+/* eslint-disable @typescript-eslint/no-namespace */
 export namespace JSON {
 
     export class StringifyDto {

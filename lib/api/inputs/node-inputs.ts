@@ -1,7 +1,6 @@
 import { TransformNode } from "@babylonjs/core";
 import { Base } from "./base-inputs";
-
-// tslint:disable-next-line: no-namespace
+/* eslint-disable @typescript-eslint/no-namespace */
 export namespace BabylonNode {
 
     export class NodeDto {
