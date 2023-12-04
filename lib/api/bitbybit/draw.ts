@@ -70,8 +70,8 @@ export class Draw {
     /**
      * Draws any kind of geometry and does not return anything
      * @param inputs Contains options and entities to be drawn
-     * @group draw
-     * @shortname draw anything no return
+     * @group draw async
+     * @shortname draw async void
      * @disposableOutput true
      */
     async drawAnyAsyncNoReturn(inputs: Inputs.Draw.DrawAny): Promise<void> {
@@ -82,8 +82,8 @@ export class Draw {
      * Draws any kind of geometry and returns the babylon mesh
      * @param inputs Contains options and entities to be drawn
      * @returns BabylonJS Mesh Promise
-     * @group draw
-     * @shortname draw anything
+     * @group draw async
+     * @shortname draw async
      * @disposableOutput true
      */
     async drawAnyAsync(inputs: Inputs.Draw.DrawAny): Promise<BABYLON.Mesh> {
@@ -212,6 +212,8 @@ export class Draw {
      * Draws any kind of geometry that does not need asynchronous computing, thus it cant be used with shapes coming from occt or jscad
      * @param inputs Contains options and entities to be drawn
      * @returns BabylonJS Mesh
+     * @group draw sync
+     * @shortname draw sync void
      */
     drawAnyNoReturn(inputs: Inputs.Draw.DrawAny): void {
         this.drawAny(inputs);
@@ -221,6 +223,8 @@ export class Draw {
      * Draws any kind of geometry that does not need asynchronous computing, thus it cant be used with shapes coming from occt or jscad
      * @param inputs Contains options and entities to be drawn
      * @returns BabylonJS Mesh
+     * @group draw sync
+     * @shortname draw sync
      */
     drawAny(inputs: Inputs.Draw.DrawAny): BABYLON.Mesh {
         let result;
