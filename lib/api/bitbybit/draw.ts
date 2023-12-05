@@ -160,55 +160,6 @@ export class Draw {
     }
 
     /**
-     * Draws a grid mesh on the ground plane in 3D space. This helps to orient yourself in the world.
-     * @param inputs Describes various parameters of the grid mesh like size, colour, etc.
-     * @group draw
-     * @shortname draw grid no return
-     * @disposableOutput true
-     */
-    drawGridMeshNoReturn(inputs: Inputs.Draw.SceneDrawGridMeshDto): void {
-        this.drawGridMesh(inputs);
-    }
-
-    /**
-     * Draws a grid mesh on the ground plane in 3D space. This helps to orient yourself in the world.
-     * @param inputs Describes various parameters of the grid mesh like size, colour, etc.
-     * @returns grid mesh
-     * @group draw
-     * @shortname draw grid
-     * @disposableOutput true
-     */
-    drawGridMesh(inputs: Inputs.Draw.SceneDrawGridMeshDto): BABYLON.Mesh {
-        try {
-            const groundMaterial = new GridMaterial(`groundMaterial${Math.random()}`, this.context.scene);
-            groundMaterial.majorUnitFrequency = inputs.majorUnitFrequency;
-            groundMaterial.minorUnitVisibility = inputs.minorUnitVisibility;
-            groundMaterial.gridRatio = inputs.gridRatio;
-            groundMaterial.backFaceCulling = inputs.backFaceCulling;
-            groundMaterial.mainColor = BABYLON.Color3.FromHexString(inputs.mainColor);
-            groundMaterial.lineColor = BABYLON.Color3.FromHexString(inputs.secondaryColor);
-            groundMaterial.opacity = inputs.opacity;
-
-            const ground = BABYLON.MeshBuilder.CreateGround(`ground${Math.random()}`,
-                {
-                    width: inputs.width,
-                    height: inputs.height,
-                    subdivisions: inputs.subdivisions,
-                    updatable: false,
-
-                },
-                this.context.scene,
-            );
-
-            ground.material = groundMaterial;
-            return ground;
-        } catch (e) {
-            console.log("Error happened: ", e);
-            return new BABYLON.Mesh("error-ground", this.context.scene);
-        }
-    }
-
-    /**
      * Draws any kind of geometry that does not need asynchronous computing, thus it cant be used with shapes coming from occt or jscad
      * @param inputs Contains options and entities to be drawn
      * @returns BabylonJS Mesh
@@ -266,6 +217,55 @@ export class Draw {
         return result;
     }
 
+    /**
+     * Draws a grid mesh on the ground plane in 3D space. This helps to orient yourself in the world.
+     * @param inputs Describes various parameters of the grid mesh like size, colour, etc.
+     * @group grid
+     * @shortname draw grid no return
+     * @disposableOutput true
+     */
+    drawGridMeshNoReturn(inputs: Inputs.Draw.SceneDrawGridMeshDto): void {
+        this.drawGridMesh(inputs);
+    }
+
+    /**
+     * Draws a grid mesh on the ground plane in 3D space. This helps to orient yourself in the world.
+     * @param inputs Describes various parameters of the grid mesh like size, colour, etc.
+     * @returns grid mesh
+     * @group grid
+     * @shortname draw grid
+     * @disposableOutput true
+     */
+    drawGridMesh(inputs: Inputs.Draw.SceneDrawGridMeshDto): BABYLON.Mesh {
+        try {
+            const groundMaterial = new GridMaterial(`groundMaterial${Math.random()}`, this.context.scene);
+            groundMaterial.majorUnitFrequency = inputs.majorUnitFrequency;
+            groundMaterial.minorUnitVisibility = inputs.minorUnitVisibility;
+            groundMaterial.gridRatio = inputs.gridRatio;
+            groundMaterial.backFaceCulling = inputs.backFaceCulling;
+            groundMaterial.mainColor = BABYLON.Color3.FromHexString(inputs.mainColor);
+            groundMaterial.lineColor = BABYLON.Color3.FromHexString(inputs.secondaryColor);
+            groundMaterial.opacity = inputs.opacity;
+
+            const ground = BABYLON.MeshBuilder.CreateGround(`ground${Math.random()}`,
+                {
+                    width: inputs.width,
+                    height: inputs.height,
+                    subdivisions: inputs.subdivisions,
+                    updatable: false,
+
+                },
+                this.context.scene,
+            );
+
+            ground.material = groundMaterial;
+            return ground;
+        } catch (e) {
+            console.log("Error happened: ", e);
+            return new BABYLON.Mesh("error-ground", this.context.scene);
+        }
+    }
+    
     /**
      * Creates draw options for basic geometry types like points, lines, polylines, surfaces and jscad meshes
      * @param inputs option definition
