@@ -4,7 +4,6 @@ import { Context } from "../../context";
 import * as Inputs from "../../inputs/inputs";
 import { Base } from "../../inputs/inputs";
 
-
 export class BabylonMesh {
 
     constructor(
@@ -584,51 +583,65 @@ export class BabylonMesh {
     }
 
     /**
-     * Creates mesh instance and transforms it for optimised rendering. These are optimised for max performance
-     * when rendering many similar objects in the scene. If the mesh has children, then every child ges a mesh instance.
+    * Creates mesh instance for optimised rendering. This method will check if mesh contains children and will create instances for each child.
+    *  These are optimised for max performance when rendering many similar objects in the scene. This method returns instances as childrens in a new mesh. 
+    * If the mesh has children, then every child goes a mesh instance.
+    * @group instance
+    * @shortname create and transform
+    * @disposableOutput true
+    */
+    createMeshInstanceAndTransformNoReturn(inputs: Inputs.BabylonMesh.MeshInstanceAndTransformDto): void {
+        this.createMeshInstanceAndTransform(inputs);
+    }
+
+    /**
+     * Creates mesh instance for optimised rendering. This method will check if mesh contains children and will create instances for each child.
+     *  These are optimised for max performance when rendering many similar objects in the scene. This method returns instances as childrens in a new mesh. 
+     * If the mesh has children, then every child goes a mesh instance.
      * @group instance
+     * @returns babylon mesh
      * @shortname create and transform
      * @disposableOutput true
      */
-    createMeshInstanceAndTransform(inputs: Inputs.BabylonMesh.MeshInstanceAndTransformDto): Promise<any> {
-        return new Promise((resolve, reject) => {
-            const sgs = this.context.scene?.metadata?.shadowGenerators as BABYLON.ShadowGenerator[];
-            if (inputs.mesh && inputs.mesh.getChildMeshes && inputs.mesh.getChildMeshes().length > 0) {
-                inputs.mesh.getChildMeshes(false).forEach((child: BABYLON.Mesh) => {
-                    const vertices = child.getTotalVertices();
-                    if (child.createInstance && vertices > 0) {
-                        child.disableEdgesRendering();
-                        const newInstance = child.createInstance(`InstanceMesh${Math.random()}`);
-                        newInstance.position = new BABYLON.Vector3(inputs.position[0], inputs.position[1], inputs.position[2]);
-                        newInstance.rotation = new BABYLON.Vector3(inputs.rotation[0], inputs.rotation[1], inputs.rotation[2]);
-                        newInstance.scaling = new BABYLON.Vector3(inputs.scaling[0], inputs.scaling[1], inputs.scaling[2]);
-                        if (sgs.length > 0) {
-                            sgs.forEach(sg => {
-                                sg.addShadowCaster(newInstance);
-                            });
-                        }
+    createMeshInstanceAndTransform(inputs: Inputs.BabylonMesh.MeshInstanceAndTransformDto): BABYLON.Mesh {
+        const parent = new BABYLON.Mesh("instanceContainer" + Math.random(), this.context.scene);
+        const sgs = this.context.scene?.metadata?.shadowGenerators as BABYLON.ShadowGenerator[];
+        if (inputs.mesh && inputs.mesh.getChildMeshes && inputs.mesh.getChildMeshes().length > 0) {
+            inputs.mesh.getChildMeshes(false).forEach((child: BABYLON.Mesh) => {
+                const vertices = child.getTotalVertices();
+                if (child.createInstance && vertices > 0) {
+                    child.disableEdgesRendering();
+                    const newInstance = child.createInstance(`InstanceMesh${Math.random()}`);
+                    newInstance.position = new BABYLON.Vector3(inputs.position[0], inputs.position[1], inputs.position[2]);
+                    newInstance.rotation = new BABYLON.Vector3(inputs.rotation[0], inputs.rotation[1], inputs.rotation[2]);
+                    newInstance.scaling = new BABYLON.Vector3(inputs.scaling[0], inputs.scaling[1], inputs.scaling[2]);
+                    if (sgs.length > 0) {
+                        sgs.forEach(sg => {
+                            sg.addShadowCaster(newInstance);
+                        });
                     }
-                });
-                inputs.mesh.isVisible = false;
-            } else if (inputs.mesh) {
-                inputs.mesh.isVisible = false;
-                const newInstance = inputs.mesh.createInstance(`InstanceMesh${Math.random()}`);
-
-                newInstance.position = new BABYLON.Vector3(inputs.position[0], inputs.position[1], inputs.position[2]);
-                newInstance.rotation = new BABYLON.Vector3(
-                    BABYLON.Angle.FromDegrees(inputs.rotation[0]).radians(),
-                    BABYLON.Angle.FromDegrees(inputs.rotation[1]).radians(),
-                    BABYLON.Angle.FromDegrees(inputs.rotation[2]).radians());
-                newInstance.scaling = new BABYLON.Vector3(inputs.scaling[0], inputs.scaling[1], inputs.scaling[2]);
-
-                if (sgs.length > 0) {
-                    sgs.forEach(sg => {
-                        sg.addShadowCaster(newInstance);
-                    });
+                    newInstance.parent = parent;
                 }
+            });
+            inputs.mesh.isVisible = false;
+        } else if (inputs.mesh) {
+            inputs.mesh.isVisible = false;
+            const newInstance = inputs.mesh.createInstance(`InstanceMesh${Math.random()}`);
+
+            newInstance.position = new BABYLON.Vector3(inputs.position[0], inputs.position[1], inputs.position[2]);
+            newInstance.rotation = new BABYLON.Vector3(
+                BABYLON.Angle.FromDegrees(inputs.rotation[0]).radians(),
+                BABYLON.Angle.FromDegrees(inputs.rotation[1]).radians(),
+                BABYLON.Angle.FromDegrees(inputs.rotation[2]).radians());
+            newInstance.scaling = new BABYLON.Vector3(inputs.scaling[0], inputs.scaling[1], inputs.scaling[2]);
+            newInstance.parent = parent;
+            if (sgs.length > 0) {
+                sgs.forEach(sg => {
+                    sg.addShadowCaster(newInstance);
+                });
             }
-            resolve({} as any);
-        });
+        }
+        return parent;
     }
 
 

@@ -133,6 +133,17 @@ export class BabylonScene {
     /**
      * Creates and draws a directional light in the scene
      * @param inputs Describes the light source
+     * @group lights
+     * @shortname directional
+     * @disposableOutput true
+     */
+    drawDirectionalLightNoReturn(inputs: Inputs.BabylonScene.DirectionalLightDto): void {
+        this.drawDirectionalLight(inputs);
+    }
+
+    /**
+     * Creates and draws a directional light in the scene
+     * @param inputs Describes the light source
      * @returns BabylonJS directional light
      * @group lights
      * @shortname directional
@@ -157,7 +168,7 @@ export class BabylonScene {
             light.shadowMinZ = 1;
             this.context.scene.metadata.shadowGenerators.push(shadowGenerator);
             this.context.scene.meshes.forEach(m => {
-                if (m.name !== "hdrSkyBox") {
+                if (m.name !== "hdrSkyBox" && !m.name.includes("groundMaterial")) {
                     shadowGenerator.addShadowCaster(m, true);
                     m.receiveShadows = true;
                 }
