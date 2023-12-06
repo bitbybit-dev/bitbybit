@@ -265,7 +265,7 @@ export class Draw {
             return new BABYLON.Mesh("error-ground", this.context.scene);
         }
     }
-    
+
     /**
      * Creates draw options for basic geometry types like points, lines, polylines, surfaces and jscad meshes
      * @param inputs option definition
@@ -293,7 +293,7 @@ export class Draw {
      * @param inputs option definition
      * @returns options
      * @group options
-     * @shortname occt shape
+     * @shortname occt shape simple
      */
     optionsOcctShapeSimple(inputs: Inputs.Draw.DrawOcctShapeSimpleOptions): Inputs.Draw.DrawOcctShapeSimpleOptions {
         return inputs;
@@ -304,7 +304,7 @@ export class Draw {
      * @param inputs option definition
      * @returns options
      * @group options
-     * @shortname occt shape
+     * @shortname occt shape with material
      */
     optionsOcctShapeMaterial(inputs: Inputs.Draw.DrawOcctShapeMaterialOptions): Inputs.Draw.DrawOcctShapeMaterialOptions {
         return inputs;
