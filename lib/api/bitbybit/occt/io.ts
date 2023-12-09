@@ -73,6 +73,10 @@ export class OCCTWIO extends OCCTIO {
             return mesh;
         });
 
+        if(inputs.fileName.includes(".stl")) {
+            inputs.fileName = inputs.fileName.replace(".stl", "");
+        }
+
         STLExport.CreateSTL(faceMeshes, true, inputs.fileName, true, true, true);
         faceMeshes.forEach(fm => fm.dispose());
     }
