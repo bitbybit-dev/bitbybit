@@ -10,7 +10,11 @@ export namespace BabylonNode {
         node: TransformNode;
     }
 
-    export class NodeTranslationDto extends NodeDto {
+    export class NodeTranslationDto {
+        /**
+        * Transformation node
+        */
+        node: TransformNode;
         /**
          * Direction vector expressed in [x, y, z] vector array
          */
@@ -21,28 +25,44 @@ export namespace BabylonNode {
         distance: number;
     }
 
-    export class NodeParentDto extends NodeDto {
+    export class NodeParentDto {
+        /**
+        * Transformation node
+        */
+        node: TransformNode;
         /**
          * Parent node
          */
         parentNode: TransformNode;
     }
 
-    export class NodeDirectionDto extends NodeDto {
+    export class NodeDirectionDto {
+        /**
+        * Transformation node
+        */
+        node: TransformNode;
         /**
          * Direction vector expressed in [x, y, z] vector array
          */
         direction: number[];
     }
 
-    export class NodePositionDto extends NodeDto {
+    export class NodePositionDto {
+        /**
+        * Transformation node
+        */
+        node: TransformNode;
         /**
          * Position vector expressed in [x, y, z] vector array
          */
         position: Base.Point3;
     }
 
-    export class RotateNodeDto extends NodeDto {
+    export class RotateNodeDto {
+        /**
+       * Transformation node
+       */
+        node: TransformNode;
         /**
          * Rotate around the axis expressed in [x, y, z] vector array
          */
@@ -53,7 +73,11 @@ export namespace BabylonNode {
         angle = 0;
     }
 
-    export class RotateAroundAxisNodeDto extends NodeDto {
+    export class RotateAroundAxisNodeDto {
+        /**
+        * Transformation node
+        */
+        node: TransformNode;
         /**
          * Position vector expressed in [x, y, z] vector array
          */
@@ -83,12 +107,15 @@ export namespace BabylonNode {
         rotation: Base.Vector3 = [0, 0, 0];
     }
 
-    export class DrawNodeDto extends NodeDto {
+    export class DrawNodeDto {
+        /**
+        * Transformation node
+        */
+        node: TransformNode;
         /**
          * Provide options without default values
          */
         constructor(node?: TransformNode) {
-            super();
             this.node = node;
         }
         /**

@@ -528,6 +528,20 @@ export class BabylonMesh {
     }
 
     /**
+     * Rotates the mesh around axis and given position by a given angle
+     * @param inputs Rotation around axis information    
+     * @group move
+     * @shortname rotate around axis with position
+     */
+    rotateAroundAxisWithPosition(inputs: Inputs.BabylonMesh.RotateAroundAxisNodeDto): void {
+        inputs.mesh.rotateAround(
+            new BABYLON.Vector3(inputs.position[0], inputs.position[1], inputs.position[2]),
+            new BABYLON.Vector3(inputs.axis[0], inputs.axis[1], inputs.axis[2]),
+            BABYLON.Angle.FromDegrees(inputs.angle).radians()
+        );
+    }
+
+    /**
      * Updates the position of the BabylonJS mesh or instanced mesh
      * @param inputs BabylonJS mesh and position point
      * @group set

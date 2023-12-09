@@ -187,7 +187,7 @@ export namespace BabylonMesh {
          * Set name also on children
          * @default false
          */
-        includeChildren? = false;
+        includeChildren?= false;
     }
     export class ByNameBabylonMeshDto {
         /**
@@ -341,5 +341,24 @@ export namespace BabylonMesh {
          * @default undefined
          */
         mesh: BABYLON.Mesh;
+    }
+    export class RotateAroundAxisNodeDto {
+        /**
+         * BabylonJS mesh
+         * @default undefined
+         */
+        mesh: BABYLON.Mesh;
+        /**
+         * Position vector expressed in [x, y, z] vector array
+         */
+        position: Base.Point3 = [0, 0, 0];
+        /**
+         * Rotate around the axis expressed in [x, y, z] vector array
+         */
+        axis: Base.Vector3 = [0, 1, 0];
+        /**
+         * The rotation angle expressed in degrees
+         */
+        angle = 0;
     }
 }
