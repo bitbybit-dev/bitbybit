@@ -67,7 +67,7 @@ export class OCCTW extends OCCT {
         }
         const meshes: Inputs.OCCT.DecomposedMeshDto[] = await this.occWorkerManager.genericCallToWorkerPromise("shapesToMeshes", inputs);
         const meshesSolved = await Promise.all(meshes.map(async decomposedMesh => this.handleDecomposedMesh(inputs, decomposedMesh, options)));
-        const shapesMeshContainer = new Mesh("shapesMeshContainer", this.context.scene);
+        const shapesMeshContainer = new Mesh("shapesMeshContainer" + Math.random(), this.context.scene);
         meshesSolved.forEach(mesh => {
             mesh.parent = shapesMeshContainer;
         });
