@@ -44,7 +44,7 @@ export class BabylonScene {
     }
 
     /**
-     * Activate camera
+     * Activate camera by overwriting currently active camera
      * @param inputs Activates the camera
      * @group camera
      * @shortname activate
@@ -192,9 +192,29 @@ export class BabylonScene {
         const camera = this.context.scene.getCameraByName("Camera") as BABYLON.ArcRotateCamera;
         camera.position = new BABYLON.Vector3(inputs.position[0], inputs.position[1], inputs.position[2]);
         camera.target = new BABYLON.Vector3(inputs.lookAt[0], inputs.lookAt[1], inputs.lookAt[2]);
-        camera.maxZ = inputs.maxZ;
-        camera.panningSensibility = inputs.panningSensibility;
-        camera.wheelPrecision = inputs.wheelPrecision;
+
+        if (inputs.lowerBetaLimit !== undefined) {
+            camera.lowerBetaLimit = this.getRadians(inputs.lowerBetaLimit);
+        }
+        if (inputs.upperBetaLimit !== undefined) {
+            camera.upperBetaLimit = this.getRadians(inputs.upperBetaLimit);
+        }
+        if (inputs.angularSensibilityX !== undefined) {
+            camera.angularSensibilityX = inputs.angularSensibilityX;
+        }
+        if (inputs.angularSensibilityY !== undefined) {
+            camera.angularSensibilityY = inputs.angularSensibilityY;
+        }
+        if (inputs.panningSensibility !== undefined) {
+            camera.panningSensibility = inputs.panningSensibility;
+        }
+        if (inputs.wheelPrecision !== undefined) {
+            camera.wheelPrecision = inputs.wheelPrecision;
+        }
+
+        if (inputs.maxZ !== undefined) {
+            camera.maxZ = inputs.maxZ;
+        }
     }
 
     /**
@@ -359,4 +379,11 @@ export class BabylonScene {
         this.context.scene.enablePhysics(new BABYLON.Vector3(inputs.vector[0], inputs.vector[1], inputs.vector[2]), this.context.havokPlugin);
     }
 
+    private getRadians(degrees: number): number {
+        let angle = BABYLON.Angle.FromDegrees(degrees).radians();
+        if (degrees < 0) {
+            angle = -angle;
+        }
+        return angle;
+    }
 }

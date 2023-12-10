@@ -168,7 +168,39 @@ export namespace BabylonScene {
          */
         lookAt: Base.Point3 = [0, 0, 0];
         /**
-         * Lets configure how far the camera can see
+         * Lower beta limit - camera rotation along the latitudinal (vertical) axis in degrees. This is counted from the top down, where 0 is looking from top straight down.
+         * @default 1
+         * @minimum -360
+         * @maximum 360
+         * @step 1
+         */
+        lowerBetaLimit = 1;
+        /**
+         * Upper beta limit - camera rotation along the longitudinal (vertical) axis in degrees. This is counted from the top down, where 180 is looking from bottom straight up.
+         * @default 179
+         * @minimum -360
+         * @maximum 360
+         * @step 1
+         */
+        upperBetaLimit = 179;
+        /**
+         * Angular sensibility along x (horizontal) axis of the camera. The lower this number, the faster the camera will move.
+         * @default 1000
+         * @minimum 0
+         * @maximum Infinity
+         * @step 10
+         */
+        angularSensibilityX = 1000;
+        /**
+         * Angular sensibility along y (vertical) axis of the camera. The lower this number, the faster the camera will move.
+         * @default 1000
+         * @minimum 0
+         * @maximum Infinity
+         * @step 10
+         */
+        angularSensibilityY = 1000;
+        /**
+         * Change how far the camera can see
          * @default 1000
          * @minimum 0
          * @maximum Infinity
@@ -176,21 +208,21 @@ export namespace BabylonScene {
          */
         maxZ = 1000;
         /**
-         * Panning sensibility. If large units are used for the model, this number needs to get larger
-         * @default 0.1
+         * Panning sensibility. If large units are used for the model, this number needs to get smaller
+         * @default 1000
          * @minimum 0
          * @maximum Infinity
          * @step 0.1
          */
-        panningSensibility = 0.1;
+        panningSensibility = 1000;
         /**
          * Zoom precision of the wheel. If large units are used, this number needs to get smaller
-         * @default 0.1
+         * @default 3
          * @minimum 0
          * @maximum Infinity
          * @step 0.1
          */
-        wheelPrecision = 0.1;
+        wheelPrecision = 3;
     }
     export class SkyboxDto {
         /**
