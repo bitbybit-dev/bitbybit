@@ -113,9 +113,9 @@ export namespace BabylonScene {
     export class DirectionalLightDto {
         /**
          * Direction of the directional light
-         * @default [-1, -1, -1]
+         * @default [-100, -100, -100]
          */
-        direction: Base.Vector3 = [-1, -1, -1];
+        direction: Base.Vector3 = [-100, -100, -100];
         /**
          * Intensity of the point light, value between 0 and 1
          * @default 0.5

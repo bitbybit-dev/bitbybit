@@ -100,7 +100,7 @@ export class BabylonScene {
             shadowGenerator.bias = 0.0001;
             shadowGenerator.normalBias = 0.002;
             light.shadowMaxZ = 1000;
-            light.shadowMinZ = 1;
+            light.shadowMinZ = 0;
             this.context.scene.metadata.shadowGenerators.push(shadowGenerator);
             this.context.scene.meshes.forEach(m => {
                 if (m.name !== "hdrSkyBox") {
@@ -165,7 +165,7 @@ export class BabylonScene {
             shadowGenerator.bias = 0.0001;
             shadowGenerator.normalBias = 0.002;
             light.shadowMaxZ = 1000;
-            light.shadowMinZ = 1;
+            light.shadowMinZ = 0;
             this.context.scene.metadata.shadowGenerators.push(shadowGenerator);
             this.context.scene.meshes.forEach(m => {
                 if (m.name !== "hdrSkyBox" && !m.name.includes("groundMaterial")) {
@@ -307,7 +307,7 @@ export class BabylonScene {
         }
 
         const skybox = this.context.scene.createDefaultSkybox(texture, true, inputs.size, inputs.blur, true);
-        skybox.name = "skybox";
+        skybox.name = "hdrSkyBox";
         // skybox.disableEdgesRendering();
         // this.context.scene.environmentTexture = texture;
         this.context.scene.environmentIntensity = inputs.environmentIntensity;
