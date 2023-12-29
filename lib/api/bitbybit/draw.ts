@@ -247,7 +247,7 @@ export class Draw {
             groundMaterial.lineColor = BABYLON.Color3.FromHexString(inputs.secondaryColor);
             groundMaterial.opacity = inputs.opacity;
 
-            const ground = BABYLON.MeshBuilder.CreateGround(`ground${Math.random()}`,
+            const ground = BABYLON.MeshBuilder.CreateGround(`bitbybit-ground${Math.random()}`,
                 {
                     width: inputs.width,
                     height: inputs.height,
