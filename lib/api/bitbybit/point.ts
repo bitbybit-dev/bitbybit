@@ -327,8 +327,24 @@ export class Point {
             const coordX = ix * xLength * 2;
             for (let iy = 0; iy < inputs.nrHexagonsY; iy++) {
                 const coordY = (inputs.radiusHexagon + inputs.radiusHexagon / 2) * iy;
-                points.push([coordX + (iy % 2 === 0 ? 0 : xLength), coordY, 0]);
+                const adjustX = coordX + (iy % 2 === 0 ? 0 : xLength);
+                points.push([adjustX, coordY, 0]);
             }
+        }
+
+        if (inputs.orientOnCenter) {
+            console.log(points.length);
+            const compensateX = points[points.length - 1][0] / 2;
+            const compensateY = points[points.length - 1][1] / 2;
+            points.forEach((p, index) => {
+                points[index] = [p[0] - compensateX, p[1] - compensateY, 0];
+            });
+        }
+
+        if (inputs.pointsOnGround) {
+            points.forEach((p, index) => {
+                points[index] = [p[0], 0, p[1]];
+            });
         }
 
         return points;

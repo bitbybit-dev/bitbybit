@@ -269,20 +269,20 @@ export namespace Point {
     export class HexGridCentersDto {
         /**
          * Number of hexagons on Y direction
-         * @default 20
+         * @default 21
          * @minimum 0
          * @maximum Infinity
          * @step 1
          */
-        nrHexagonsY = 20;
+        nrHexagonsY = 21;
         /**
          * Number of Hexagons on Z direction
-         * @default 20
+         * @default 21
          * @minimum 0
          * @maximum Infinity
          * @step 1
          */
-        nrHexagonsX = 20;
+        nrHexagonsX = 21;
         /**
          * radius of a single hexagon
          * @default 0.2
@@ -291,5 +291,15 @@ export namespace Point {
          * @step 0.1
          */
         radiusHexagon: number;
+        /**
+         * Orient hexagon points grid on center
+         * @default false
+         */
+        orientOnCenter = false;
+        /**
+         * Orient points on the ground
+         * @default false
+         */
+        pointsOnGround = false;
     }
 }
