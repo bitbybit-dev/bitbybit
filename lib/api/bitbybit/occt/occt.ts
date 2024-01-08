@@ -139,7 +139,7 @@ export class OCCTW extends OCCT {
             const promises = decomposedMesh.edgeList.map(async (edge) => {
                 const edgeMiddle = this.computeEdgeMiddlePos(edge);
                 const tdto = new Inputs.JSCAD.TextDto();
-                tdto.text = `${edge.edge_index}`;
+                tdto.text = `${edge.edge_index + 1}`;
                 tdto.height = inputs.edgeIndexHeight;
                 tdto.lineSpacing = 1.5;
                 const t = await this.solidText.createVectorText(tdto);
