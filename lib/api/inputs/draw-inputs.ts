@@ -5,7 +5,7 @@ import { Base } from "../../api/inputs";
 // tslint:disable-next-line: no-namespace
 export namespace Draw {
 
-    export type DrawOptions = DrawBasicGeometryOptions | DrawOcctShapeOptions | DrawOcctShapeSimpleOptions | DrawOcctShapeMaterialOptions | DrawNodeOptions;
+    export type DrawOptions = DrawBasicGeometryOptions | DrawOcctShapeOptions | DrawOcctShapeSimpleOptions | DrawOcctShapeMaterialOptions | DrawNodeOptions | any;
 
     export class DrawAny {
         /**
