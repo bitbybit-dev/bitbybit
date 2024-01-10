@@ -100,7 +100,7 @@ export class BabylonScene {
             shadowGenerator.bias = 0.0001;
             shadowGenerator.normalBias = 0.002;
             light.shadowMaxZ = 1000;
-            light.shadowMinZ = 0;
+            light.shadowMinZ = 0.01;
             this.context.scene.metadata.shadowGenerators.push(shadowGenerator);
             this.context.scene.meshes.forEach(m => {
                 if (m.name !== "bitbybit-hdrSkyBox" && !m.name.includes("bitbybit-ground")) {
