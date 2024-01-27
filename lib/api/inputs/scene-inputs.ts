@@ -229,7 +229,7 @@ export namespace BabylonScene {
          * Skybox type
          * @default clearSky
          */
-        skybox: Base.skyboxEnum;
+        skybox: Base.skyboxEnum = Base.skyboxEnum.clearSky;
         /**
          * Skybox size
          * @default 1000
