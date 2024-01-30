@@ -7,10 +7,12 @@ import { BabylonEngine } from "./engine";
 import { BabylonIO } from "./io";
 import { BabylonMaterial } from "./material/material";
 import { BabylonMesh } from "./mesh";
+import { BabylonMeshBuilder } from "./mesh-builder/mesh-builder";
 import { BabylonNode } from "./node";
 import { BabylonPick } from "./pick";
 import { BabylonRay } from "./ray";
 import { BabylonScene } from "./scene";
+import { BabylonTexture } from "./texture/texture";
 import { BabylonTransforms } from "./transforms";
 import { BabylonWebXR } from "./webxr/webxr";
 
@@ -29,6 +31,8 @@ export class Babylon {
     public ray: BabylonRay;
     public pick: BabylonPick;
     public material: BabylonMaterial;
+    public meshBuilder: BabylonMeshBuilder;
+    public texture: BabylonTexture;
 
     constructor(
         context: Context,
@@ -45,6 +49,8 @@ export class Babylon {
         this.ray = new BabylonRay(context);
         this.pick = new BabylonPick(context);
         this.material = new BabylonMaterial(context, color);
+        this.texture = new BabylonTexture(context);
+        this.meshBuilder = new BabylonMeshBuilder(context, this.mesh);
         this.engine = new BabylonEngine(context);
     }
 }

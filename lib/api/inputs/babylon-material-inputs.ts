@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-namespace */
-import { PBRMetallicRoughnessMaterial } from "@babylonjs/core";
+import * as BABYLON from "@babylonjs/core";
 import { Base } from "./base-inputs";
 
 // tslint:disable-next-line: no-namespace
@@ -59,7 +59,7 @@ export namespace BabylonMaterial {
          * Material to update
          * @default undefined
          */
-        material: PBRMetallicRoughnessMaterial;
+        material: BABYLON.PBRMetallicRoughnessMaterial;
         /**
          * Base color of the material
          * @default #0000ff
@@ -71,14 +71,14 @@ export namespace BabylonMaterial {
          * Material to investigate
          * @default undefined
          */
-        material: PBRMetallicRoughnessMaterial;
+        material: BABYLON.PBRMetallicRoughnessMaterial;
     }
     export class MetallicDto {
         /**
          * Material to update
          * @default undefined
          */
-        material: PBRMetallicRoughnessMaterial;
+        material: BABYLON.PBRMetallicRoughnessMaterial;
         /**
          * Metallic value of the material
          * @default 0.5
@@ -93,7 +93,7 @@ export namespace BabylonMaterial {
          * Material to update
          * @default undefined
          */
-        material: PBRMetallicRoughnessMaterial;
+        material: BABYLON.PBRMetallicRoughnessMaterial;
         /**
          * Roughness value of the material
          * @default 0.5
@@ -108,7 +108,7 @@ export namespace BabylonMaterial {
          * Material to update
          * @default undefined
          */
-        material: PBRMetallicRoughnessMaterial;
+        material: BABYLON.PBRMetallicRoughnessMaterial;
         /**
          * Alpha value of the material
          * @default 0.5
@@ -123,11 +123,23 @@ export namespace BabylonMaterial {
          * Material to update
          * @default undefined
          */
-        material: PBRMetallicRoughnessMaterial;
+        material: BABYLON.PBRMetallicRoughnessMaterial;
         /**
          * back face culling
          * @default true
          */
-        backFaceCulling?= true;
+        backFaceCulling? = true;
+    }
+    export class BaseTextureDto {
+        /**
+         * Material to update
+         * @default undefined
+         */
+        material: BABYLON.PBRMetallicRoughnessMaterial;
+        /**
+         * Base texture of the material
+         * @default undefined
+         */
+        baseTexture: BABYLON.Texture;
     }
 }

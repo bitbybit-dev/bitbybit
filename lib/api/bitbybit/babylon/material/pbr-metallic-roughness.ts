@@ -2,7 +2,7 @@
 import { Context } from "../../../context";
 import {
     Color3,
-    Matrix, PBRMetallicRoughnessMaterial, Ray, Vector3
+    PBRMetallicRoughnessMaterial
 } from "@babylonjs/core";
 import * as Inputs from "../../../inputs/inputs";
 import { Color } from "../../color";
@@ -81,6 +81,17 @@ export class BabylonMaterialPbrMetallicRoughness {
     setBackFaceCulling(inputs: Inputs.BabylonMaterial.BackFaceCullingDto): void {
         const mat = inputs.material;
         mat.backFaceCulling = inputs.backFaceCulling;
+    }
+
+    /**
+     * Sets the texture of material
+     * @param inputs texture and material
+     * @group set
+     * @shortname texture
+     */
+    setBaseTexture(inputs: Inputs.BabylonMaterial.BaseTextureDto): void {
+        const mat = inputs.material;
+        mat.baseTexture = inputs.baseTexture;
     }
 
     /**

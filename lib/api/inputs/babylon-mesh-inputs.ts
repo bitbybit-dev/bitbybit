@@ -5,6 +5,12 @@ import { Base } from "./base-inputs";
 // tslint:disable-next-line: no-namespace
 export namespace BabylonMesh {
 
+    export enum sideOrientationEnum {
+        frontside = "frontside",
+        backside = "backside",
+        doubleside = "doubleside"
+    }
+    
     export class UpdateDrawnBabylonMesh {
         /**
          * Babylon Mesh that needs to be updated

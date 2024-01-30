@@ -234,7 +234,9 @@ export class BabylonScene {
             scene.meshes.forEach(m => m.dispose());
             scene.meshes = [];
             scene.materials.forEach(m => m.dispose());
+            scene.textures.forEach(m => m.dispose());
             scene.materials = [];
+            scene.textures = [];
             scene.useRightHandedSystem = false;
             scene.geometries.forEach((g: BABYLON.Geometry) => {
                 if (g.meshes) {

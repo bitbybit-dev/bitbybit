@@ -699,6 +699,23 @@ export class BabylonMesh {
         }
         return result;
     }
+    
+    /**
+     * Gets side orientation
+     * @ignore true
+     */
+    getSideOrientation(sideOrientation: Inputs.BabylonMesh.sideOrientationEnum): number {
+        switch (sideOrientation) {
+            case Inputs.BabylonMesh.sideOrientationEnum.frontside:
+                return BABYLON.Mesh.FRONTSIDE;
+            case Inputs.BabylonMesh.sideOrientationEnum.backside:
+                return BABYLON.Mesh.BACKSIDE;
+            case Inputs.BabylonMesh.sideOrientationEnum.doubleside:
+                return BABYLON.Mesh.DOUBLESIDE;
+            default:
+                return BABYLON.Mesh.FRONTSIDE;
+        }
+    }
 
     private assignColorToMesh(mesh, color: BABYLON.Color3) {
         const mat = (mesh.material);

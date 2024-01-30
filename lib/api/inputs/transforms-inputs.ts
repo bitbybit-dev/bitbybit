@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-namespace */
+import { AbstractMesh, Mesh } from "@babylonjs/core";
 import { Base } from "./base-inputs";
 
 export namespace Transforms {
@@ -22,6 +23,18 @@ export namespace Transforms {
          * @default [0, 0, 0]
          */
         center: Base.Point3 = [0, 0, 0];
+    }
+    export class TransformBabylonMeshDto {
+        /**
+         * Mesh to transform
+         * @default undefined
+         */
+        mesh: Mesh;
+        /**
+         * Transformation(s) to apply
+         * @default undefined
+         */
+        transformation: Base.TransformMatrixes;
     }
     export class RotationCenterDto {
         /**

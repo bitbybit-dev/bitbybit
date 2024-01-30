@@ -5,6 +5,8 @@ export * from "./babylon-material-inputs";
 export * from "./babylon-mesh-inputs";
 export * from "./babylon-pick-inputs";
 export * from "./babylon-ray-inputs";
+export * from "./babylon-texture-inputs";
+export * from "./babylon-mesh-builder";
 export * from "./babylon-webxr";
 export * from "./color-inputs";
 export * from "./draw-inputs";
