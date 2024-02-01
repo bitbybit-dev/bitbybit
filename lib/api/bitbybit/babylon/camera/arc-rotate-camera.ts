@@ -1,4 +1,4 @@
-import { ArcRotateCamera, Vector3, Angle } from "@babylonjs/core";
+import * as BABYLON from "@babylonjs/core";
 import { Context } from "../../../context";
 import * as Inputs from "../../../inputs/inputs";
 
@@ -14,9 +14,9 @@ export class BabylonArcRotateCamera {
      * @param inputs Describes the arc rotate camera
      * @returns BabylonJS arc rotate camera
      */
-    create(inputs: Inputs.BabylonCamera.ArcRotateCameraDto): ArcRotateCamera {
-        const target = new Vector3(inputs.target[0], inputs.target[1], inputs.target[2]);
-        const camera = new ArcRotateCamera(
+    create(inputs: Inputs.BabylonCamera.ArcRotateCameraDto): BABYLON.ArcRotateCamera {
+        const target = new BABYLON.Vector3(inputs.target[0], inputs.target[1], inputs.target[2]);
+        const camera = new BABYLON.ArcRotateCamera(
             `arcRotateCamera${Math.random()}`,
             this.getRadians(inputs.alpha),
             this.getRadians(inputs.beta),
@@ -53,7 +53,7 @@ export class BabylonArcRotateCamera {
     }
 
     private getRadians(degrees: number): number {
-        let angle = Angle.FromDegrees(degrees).radians();
+        let angle = BABYLON.Angle.FromDegrees(degrees).radians();
         if (degrees < 0) {
             angle = -angle;
         }

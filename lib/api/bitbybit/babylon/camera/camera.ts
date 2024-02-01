@@ -1,4 +1,4 @@
-import { Vector3 } from "@babylonjs/core";
+import * as BABYLON from "@babylonjs/core";
 import { Context } from "../../../context";
 import * as Inputs from "../../../inputs/inputs";
 import { Base } from "../../../inputs/inputs";
@@ -42,7 +42,7 @@ export class BabylonCamera {
      * @param inputs Changes the camera position
      */
     setPosition(inputs: Inputs.BabylonCamera.PositionDto): void {
-        const pos = new Vector3(inputs.position[0], inputs.position[1], inputs.position[2]);
+        const pos = new BABYLON.Vector3(inputs.position[0], inputs.position[1], inputs.position[2]);
         inputs.camera.position = pos;
     }
 
@@ -59,7 +59,7 @@ export class BabylonCamera {
      * @param inputs Changes the camera target
      */
     setTarget(inputs: Inputs.BabylonCamera.TargetDto): void {
-        const target = new Vector3(inputs.target[0], inputs.target[1], inputs.target[2]);
+        const target = new BABYLON.Vector3(inputs.target[0], inputs.target[1], inputs.target[2]);
         inputs.camera.setTarget(target);
     }
 

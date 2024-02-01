@@ -1,5 +1,5 @@
 
-import { Angle, Matrix, TransformNode, Node, Vector3 } from "@babylonjs/core";
+import * as BABYLON from "@babylonjs/core";
 import { Context } from "../../context";
 import { GeometryHelper } from "../../geometry-helper";
 import * as Inputs from "../../inputs/inputs";
@@ -41,16 +41,16 @@ export class BabylonNode {
      * @param inputs Contains information for origin, rotation and parent node
      * @returns A new node
      */
-    createNodeFromRotation(inputs: Inputs.BabylonNode.CreateNodeFromRotationDto): TransformNode {
-        const transformNode = new TransformNode(`node${Math.random()}`, this.context.scene);
+    createNodeFromRotation(inputs: Inputs.BabylonNode.CreateNodeFromRotationDto): BABYLON.TransformNode {
+        const transformNode = new BABYLON.TransformNode(`node${Math.random()}`, this.context.scene);
         if (inputs.parent) {
             transformNode.parent = inputs.parent;
         }
-        transformNode.position = new Vector3(inputs.origin[0], inputs.origin[1], inputs.origin[2]);
-        transformNode.rotation = new Vector3(
-            Angle.FromDegrees(inputs.rotation[0]).radians(),
-            Angle.FromDegrees(inputs.rotation[1]).radians(),
-            Angle.FromDegrees(inputs.rotation[2]).radians()
+        transformNode.position = new BABYLON.Vector3(inputs.origin[0], inputs.origin[1], inputs.origin[2]);
+        transformNode.rotation = new BABYLON.Vector3(
+            BABYLON.Angle.FromDegrees(inputs.rotation[0]).radians(),
+            BABYLON.Angle.FromDegrees(inputs.rotation[1]).radians(),
+            BABYLON.Angle.FromDegrees(inputs.rotation[2]).radians()
         );
         return transformNode;
     }
@@ -59,8 +59,8 @@ export class BabylonNode {
      * Creates a world node which has root node as his parent
      * @returns A new node whos parent is the root node of the scene
      */
-    createWorldNode(): TransformNode {
-        const tnode = new TransformNode(`root${Math.random()}`, this.context.scene);
+    createWorldNode(): BABYLON.TransformNode {
+        const tnode = new BABYLON.TransformNode(`root${Math.random()}`, this.context.scene);
         tnode.parent = this.context.scene.getTransformNodeByID("root");
         return tnode;
     }
@@ -111,7 +111,7 @@ export class BabylonNode {
      * @returns Transformation as an array of 16 numbers
      */
     getAbsoluteRotationTransformation(inputs: Inputs.BabylonNode.NodeDto): number[] {
-        const rotationMatrix = new Matrix();
+        const rotationMatrix = new BABYLON.Matrix();
         inputs.node.absoluteRotationQuaternion.toRotationMatrix(rotationMatrix);
         return [...rotationMatrix.toArray()];
     }
@@ -122,7 +122,7 @@ export class BabylonNode {
      * @returns Transformation as an array of 16 numbers
      */
     getRotationTransformation(inputs: Inputs.BabylonNode.NodeDto): number[] {
-        const rotationMatrix = new Matrix();
+        const rotationMatrix = new BABYLON.Matrix();
         inputs.node.rotationQuaternion.toRotationMatrix(rotationMatrix);
         return [...rotationMatrix.toArray()];
     }
@@ -132,7 +132,7 @@ export class BabylonNode {
      * @param inputs Node from which to get the children
      * @returns List of children nodes in the array
      */
-    getChildren(inputs: Inputs.BabylonNode.NodeDto): Node[] {
+    getChildren(inputs: Inputs.BabylonNode.NodeDto): BABYLON.Node[] {
         return inputs.node.getChildren();
     }
 
@@ -141,7 +141,7 @@ export class BabylonNode {
      * @param inputs Node from which to get a parent
      * @returns Parent node
      */
-    getParent(inputs: Inputs.BabylonNode.NodeDto): Node {
+    getParent(inputs: Inputs.BabylonNode.NodeDto): BABYLON.Node {
         return inputs.node.parent;
     }
 
@@ -159,7 +159,7 @@ export class BabylonNode {
      * Gets the root node
      * @returns Root node
      */
-    getRootNode(): TransformNode {
+    getRootNode(): BABYLON.TransformNode {
         return this.context.scene.getTransformNodeByID("root");
     }
 
@@ -171,9 +171,9 @@ export class BabylonNode {
     getRotation(inputs: Inputs.BabylonNode.NodeDto): number[] {
         const vector3 = inputs.node.rotation;
         return [
-            Angle.FromRadians(vector3.x).degrees(),
-            Angle.FromRadians(vector3.y).degrees(),
-            Angle.FromRadians(vector3.z).degrees()
+            BABYLON.Angle.FromRadians(vector3.x).degrees(),
+            BABYLON.Angle.FromRadians(vector3.y).degrees(),
+            BABYLON.Angle.FromRadians(vector3.z).degrees()
         ];
     }
 
@@ -183,9 +183,9 @@ export class BabylonNode {
      */
     rotateAroundAxisWithPosition(inputs: Inputs.BabylonNode.RotateAroundAxisNodeDto): void {
         inputs.node.rotateAround(
-            new Vector3(inputs.position[0], inputs.position[1], inputs.position[2]),
-            new Vector3(inputs.axis[0], inputs.axis[1], inputs.axis[2]),
-            Angle.FromDegrees(inputs.angle).radians()
+            new BABYLON.Vector3(inputs.position[0], inputs.position[1], inputs.position[2]),
+            new BABYLON.Vector3(inputs.axis[0], inputs.axis[1], inputs.axis[2]),
+            BABYLON.Angle.FromDegrees(inputs.angle).radians()
         );
     }
 
@@ -195,8 +195,8 @@ export class BabylonNode {
      */
     rotate(inputs: Inputs.BabylonNode.RotateNodeDto): void {
         inputs.node.rotate(
-            new Vector3(inputs.axis[0], inputs.axis[1], inputs.axis[2]),
-            Angle.FromDegrees(inputs.angle).radians()
+            new BABYLON.Vector3(inputs.axis[0], inputs.axis[1], inputs.axis[2]),
+            BABYLON.Angle.FromDegrees(inputs.angle).radians()
         );
     }
 
@@ -206,7 +206,7 @@ export class BabylonNode {
      */
     setAbsolutePosition(inputs: Inputs.BabylonNode.NodePositionDto): void {
         inputs.node.setAbsolutePosition(
-            new Vector3(inputs.position[0], inputs.position[1], inputs.position[2]),
+            new BABYLON.Vector3(inputs.position[0], inputs.position[1], inputs.position[2]),
         );
     }
 
@@ -216,7 +216,7 @@ export class BabylonNode {
      */
     setDirection(inputs: Inputs.BabylonNode.NodeDirectionDto): void {
         inputs.node.setDirection(
-            new Vector3(inputs.direction[0], inputs.direction[1], inputs.direction[2]),
+            new BABYLON.Vector3(inputs.direction[0], inputs.direction[1], inputs.direction[2]),
         );
     }
 
@@ -236,7 +236,7 @@ export class BabylonNode {
      */
     translate(inputs: Inputs.BabylonNode.NodeTranslationDto): void {
         inputs.node.translate(
-            new Vector3(inputs.direction[0], inputs.direction[1], inputs.direction[2]),
+            new BABYLON.Vector3(inputs.direction[0], inputs.direction[1], inputs.direction[2]),
             inputs.distance,
         );
     }

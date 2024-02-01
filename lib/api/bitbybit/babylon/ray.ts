@@ -1,8 +1,6 @@
 
 import { Context } from "../../context";
-import {
-    Matrix, Ray, Vector3
-} from "@babylonjs/core";
+import * as BABYLON from "@babylonjs/core";
 import * as Inputs from "../../inputs/inputs";
 import { Base } from "../../inputs/inputs";
 
@@ -14,9 +12,9 @@ export class BabylonRay {
      * Creates a picking ray of the current mouse position in the active camera
      * @returns Ray
      */
-    createPickingRay(): Ray {
+    createPickingRay(): BABYLON.Ray {
         const scene = this.context.scene;
-        return scene.createPickingRay(scene.pointerX, scene.pointerY, Matrix.Identity(), this.context.scene.activeCamera, false);
+        return scene.createPickingRay(scene.pointerX, scene.pointerY, BABYLON.Matrix.Identity(), this.context.scene.activeCamera, false);
     }
 
     /**
@@ -24,14 +22,14 @@ export class BabylonRay {
      * @param inputs origin, direction and length
      * @returns ray
      */
-    createRay(inputs: Inputs.BabylonRay.BaseRayDto): Ray {
-        const or = new Vector3(inputs.origin[0], inputs.origin[1], inputs.origin[2]);
-        const dir = new Vector3(inputs.direction[0], inputs.direction[1], inputs.direction[2]);
+    createRay(inputs: Inputs.BabylonRay.BaseRayDto): BABYLON.Ray {
+        const or = new BABYLON.Vector3(inputs.origin[0], inputs.origin[1], inputs.origin[2]);
+        const dir = new BABYLON.Vector3(inputs.direction[0], inputs.direction[1], inputs.direction[2]);
         let length;
         if (inputs.length !== 0) {
             length = inputs.length;
         }
-        return new Ray(or, dir, length);
+        return new BABYLON.Ray(or, dir, length);
     }
 
     /**
@@ -39,10 +37,10 @@ export class BabylonRay {
      * @param inputs origin, direction and length
      * @returns ray
      */
-    createRayFromTo(inputs: Inputs.BabylonRay.FromToDto): Ray {
-        const or = new Vector3(inputs.from[0], inputs.from[1], inputs.from[2]);
-        const to = new Vector3(inputs.to[0], inputs.to[1], inputs.to[2]);
-        return Ray.CreateNewFromTo(or, to);
+    createRayFromTo(inputs: Inputs.BabylonRay.FromToDto): BABYLON.Ray {
+        const or = new BABYLON.Vector3(inputs.from[0], inputs.from[1], inputs.from[2]);
+        const to = new BABYLON.Vector3(inputs.to[0], inputs.to[1], inputs.to[2]);
+        return BABYLON.Ray.CreateNewFromTo(or, to);
     }
 
 

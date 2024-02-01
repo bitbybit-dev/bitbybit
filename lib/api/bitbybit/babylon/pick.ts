@@ -1,6 +1,6 @@
 
 import { Context } from "../../context";
-import { Matrix, PickingInfo, AbstractMesh, Sprite } from "@babylonjs/core";
+import * as BABYLON from "@babylonjs/core";
 import * as Inputs from "../../inputs/inputs";
 import { Base } from "../../inputs/inputs";
 
@@ -13,7 +13,7 @@ export class BabylonPick {
      * @param inputs ray to use for picking
      * @returns Picking info
      */
-    pickWithRay(inputs: Inputs.BabylonPick.RayDto): PickingInfo {
+    pickWithRay(inputs: Inputs.BabylonPick.RayDto): BABYLON.PickingInfo {
         const scene = this.context.scene;
         return scene.pickWithRay(inputs.ray);
     }
@@ -22,9 +22,9 @@ export class BabylonPick {
      * Pick with picking ray of the current mouse position in the active camera
      * @returns Picking info
      */
-    pickWithPickingRay(): PickingInfo {
+    pickWithPickingRay(): BABYLON.PickingInfo {
         const scene = this.context.scene;
-        const ray = scene.createPickingRay(scene.pointerX, scene.pointerY, Matrix.Identity(), this.context.scene.activeCamera, false);
+        const ray = scene.createPickingRay(scene.pointerX, scene.pointerY, BABYLON.Matrix.Identity(), this.context.scene.activeCamera, false);
         return scene.pickWithRay(ray);
     }
 
@@ -42,7 +42,7 @@ export class BabylonPick {
      * @param inputs picking result
      * @returns Picked mesh
      */
-    getPickedMesh(inputs: Inputs.BabylonPick.PickInfo): AbstractMesh {
+    getPickedMesh(inputs: Inputs.BabylonPick.PickInfo): BABYLON.AbstractMesh {
         return inputs.pickInfo.pickedMesh;
     }
 
@@ -106,7 +106,7 @@ export class BabylonPick {
      * @param inputs picking result
      * @returns Picked sprite
      */
-    getPickedSprite(inputs: Inputs.BabylonPick.PickInfo): Sprite {
+    getPickedSprite(inputs: Inputs.BabylonPick.PickInfo): BABYLON.Sprite {
         return inputs.pickInfo.pickedSprite;
     }
 }
