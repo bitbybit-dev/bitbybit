@@ -239,7 +239,7 @@ export namespace Draw {
         edgeIndexHeight = 0.06;
         /**
          * Edge index colour if the edges are drawn
-         * @default ff00ff
+         * @default #ff00ff
          */
         edgeIndexColour: Base.Color = "#ff00ff";
         /**
