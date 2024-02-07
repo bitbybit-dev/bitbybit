@@ -118,8 +118,19 @@ export class BabylonIO {
      * @group export
      * @shortname gltf scene
      */
-    exportGLB(inputs: Inputs.BabylonIO.ExportSceneDto): void {
-        GLTF2Export.GLBAsync(this.context.scene, inputs.fileName).then((glb) => {
+    exportGLB(inputs: Inputs.BabylonIO.ExportSceneGlbDto): void {
+        let options;
+        if (inputs.discardSkyboxAndGrid) {
+            options = {
+                shouldExportNode: (m: BABYLON.Node) => {
+                    if (m.name !== "bitbybit-hdrSkyBox" && !m.name.includes("bitbybit-ground")) {
+                        return true;
+                    }
+                    return false;
+                }
+            };
+        }
+        GLTF2Export.GLBAsync(this.context.scene, inputs.fileName, options).then((glb) => {
             glb.downloadFiles();
         });
     }
