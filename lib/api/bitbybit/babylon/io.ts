@@ -136,7 +136,7 @@ export class BabylonIO {
     }
 
     /**
-     * Exports the mesh or meshes to stl
+     * Exports the mesh with its children to stl
      * @param inputs filename and the mesh
      * @group export
      * @shortname babylon mesh to stl
@@ -149,6 +149,30 @@ export class BabylonIO {
         }
         let meshes: BABYLON.Mesh[] = [inputs.mesh, ...childrenMeshes];
         meshes = meshes.filter(m => m.isVisible);
+        STLExport.CreateSTL(meshes as BABYLON.Mesh[], true, inputs.fileName, true, true, true);
+        return Promise.resolve({});
+    }
+
+    /**
+   * Exports the meshes to stl
+   * @param inputs filename and the mesh
+   * @group export
+   * @shortname babylon meshes to stl
+   */
+    async exportMeshesToStl(inputs: Inputs.BabylonIO.ExportMeshesToStlDto): Promise<any> {
+        let meshes: BABYLON.Mesh[];
+        inputs.meshes.forEach((mesh) => {
+            const allChildren = mesh.getChildMeshes();
+            let childrenMeshes = [];
+            if (allChildren && allChildren.length > 0) {
+                childrenMeshes = allChildren.filter(s => !(s instanceof BABYLON.LinesMesh));
+            }
+            meshes.push(mesh);
+            if(childrenMeshes.length > 0) {
+                meshes.push(...childrenMeshes);
+            }
+        });
+        
         STLExport.CreateSTL(meshes as BABYLON.Mesh[], true, inputs.fileName, true, true, true);
         return Promise.resolve({});
     }

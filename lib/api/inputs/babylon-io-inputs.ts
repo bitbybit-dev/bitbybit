@@ -25,9 +25,20 @@ export namespace BabylonIO {
     }
     export class ExportMeshToStlDto {
         /**
-         * Mesh or meshes to export
+         * Mesh to export
          */
         mesh: BABYLON.Mesh;
+        /**
+         * File name that should be used for the scene.
+         * @default bitbybit-mesh
+         */
+        fileName: string;
+    }
+    export class ExportMeshesToStlDto {
+        /**
+         * Meshes to export
+         */
+        meshes: BABYLON.Mesh[];
         /**
          * File name that should be used for the scene.
          * @default bitbybit-mesh

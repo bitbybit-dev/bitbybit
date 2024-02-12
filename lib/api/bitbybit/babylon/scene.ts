@@ -78,6 +78,21 @@ export class BabylonScene {
     }
 
     /**
+     * Get shadow generators added by light sources through bitbybit
+     * @param inputs Describes the light source
+     * @group lights
+     * @shortname point
+     * @disposableOutput true
+     */
+    getShadowGenerators(): BABYLON.ShadowGenerator[] {
+        if (this.context.scene.metadata && this.context.scene.metadata.shadowGenerators) {
+            return this.context.scene.metadata.shadowGenerators;
+        } else {
+            return [];
+        }
+    }
+
+    /**
      * Creates and draws a point light in the scene
      * @param inputs Describes the light source
      * @returns BabylonJS point light
