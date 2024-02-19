@@ -344,6 +344,30 @@ export class BabylonMesh {
     }
 
     /**
+     * Gets the vertices as polygon points. These can be used with other construction methods to create meshes. Mesh must be triangulated.
+     * @param inputs BabylonJS mesh and name
+     * @group get
+     * @shortname vertices as polygon points
+     */
+    getVerticesAsPolygonPoints(inputs: Inputs.BabylonMesh.BabylonMeshDto): Base.Point3[][] {
+        const vertices = inputs.babylonMesh.getVerticesData(BABYLON.VertexBuffer.PositionKind);
+        const indices = inputs.babylonMesh.getIndices();
+        // this method implies that mesh is triangulated
+        const res = [];
+        for (let i = 0; i < indices.length; i += 3) {
+            const p1 = indices[i];
+            const p2 = indices[i + 1];
+            const p3 = indices[i + 2];
+            res.push([
+                [vertices[p1 * 3], vertices[p1 * 3 + 1], vertices[p1 * 3 + 2]],
+                [vertices[p2 * 3], vertices[p2 * 3 + 1], vertices[p2 * 3 + 2]],
+                [vertices[p3 * 3], vertices[p3 * 3 + 1], vertices[p3 * 3 + 2]],
+            ]);
+        }
+        return res;
+    }
+
+    /**
      * Gets the name of babylon mesh
      * @param inputs BabylonJS mesh and name
      * @group get
@@ -699,7 +723,7 @@ export class BabylonMesh {
         }
         return result;
     }
-    
+
     /**
      * Gets side orientation
      * @ignore true
@@ -716,6 +740,7 @@ export class BabylonMesh {
                 return BABYLON.Mesh.FRONTSIDE;
         }
     }
+
 
     private assignColorToMesh(mesh, color: BABYLON.Color3) {
         const mat = (mesh.material);

@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-namespace */
-import { LinesMesh, Mesh } from "@babylonjs/core";
+import * as BABYLON from "@babylonjs/core";
 import { Base } from "./base-inputs";
 import { Polyline } from "./polyline-inputs";
 
@@ -75,7 +75,7 @@ export namespace JSCAD {
          * @optional true
          * @ignore true
          */
-        jscadMesh?: Mesh;
+        jscadMesh?: BABYLON.Mesh;
     }
     export class DrawSolidMeshesDto {
         /**
@@ -119,7 +119,7 @@ export namespace JSCAD {
          * @optional true
          * @ignore true
          */
-        jscadMesh?: Mesh;
+        jscadMesh?: BABYLON.Mesh;
     }
     export class DrawPathDto {
         /**
@@ -165,7 +165,7 @@ export namespace JSCAD {
          * @optional true
          * @ignore true
          */
-        pathMesh?: LinesMesh;
+        pathMesh?: BABYLON.LinesMesh;
     }
     export class TransformSolidsDto {
         /**
@@ -197,6 +197,18 @@ export namespace JSCAD {
          * @default undefined
          */
         mesh: JSCADEntity;
+        /**
+         * File name
+         * @default undefined
+         */
+        fileName: string;
+    }
+    export class DownloadGeometryDto {
+        /**
+         * Solid or path to be downloaded, also supports multiple geometries in array
+         * @default undefined
+         */
+        geometry: JSCADEntity;
         /**
          * File name
          * @default undefined
@@ -1522,5 +1534,10 @@ export namespace JSCAD {
          */
         extrudeOffset = 0;
     }
-
+    export class FromPolygonPoints {
+        /**
+         * Points describing polygons
+         */
+        polygonPoints?: Base.Point3[][];
+    }
 }

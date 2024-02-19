@@ -23,6 +23,11 @@ export namespace Lists {
          * @step 1
          */
         index = 0;
+        /**
+         * Tries to make structured clone of the incoming list data in the component, sometimes it may not be possible due to circular structures or other types of error
+         * @default true
+         */
+        clone? = true;
     }
     export class SubListDto<T> {
         /**
@@ -46,6 +51,11 @@ export namespace Lists {
          * @step 1
          */
         indexEnd = 1;
+        /**
+         * Tries to clone the data in the component, sometimes it may not be possible if structure is circular
+         * @default true
+         */
+        clone? = true;
     }
     export class ListDto<T> {
         /**
@@ -53,6 +63,11 @@ export namespace Lists {
          * @default undefined
          */
         list: T[];
+        /**
+         * Tries to make structured clone of the incoming list data in the component, sometimes it may not be possible due to circular structures or other types of error
+         * @default true
+         */
+        clone? = true;
     }
     export class GroupListDto<T> {
         /**
@@ -108,6 +123,11 @@ export namespace Lists {
          * @step 1
          */
         index = 0;
+        /**
+         * Tries to make structured clone of the incoming list data in the component, sometimes it may not be possible due to circular structures or other types of error
+         * @default true
+         */
+        clone? = true;
     }
     export class AddItemAtIndexesDto<T> {
         /**
@@ -125,6 +145,11 @@ export namespace Lists {
          * @default [0]
          */
         indexes: number[] = [0];
+        /**
+         * Tries to make structured clone of the incoming list data in the component, sometimes it may not be possible due to circular structures or other types of error
+         * @default true
+         */
+        clone? = true;
     }
 
     export class AddItemsAtIndexesDto<T> {
@@ -143,6 +168,11 @@ export namespace Lists {
          * @default [0]
          */
         indexes: number[] = [0];
+        /**
+         * Tries to make structured clone of the incoming list data in the component, sometimes it may not be possible due to circular structures or other types of error
+         * @default true
+         */
+        clone? = true;
     }
     export class RemoveItemAtIndexDto<T> {
         /**
@@ -158,6 +188,11 @@ export namespace Lists {
          * @step 1
          */
         index = 0;
+        /**
+         * Tries to make structured clone of the incoming list data in the component, sometimes it may not be possible due to circular structures or other types of error
+         * @default true
+         */
+        clone? = true;
     }
     export class RemoveNthItemDto<T> {
         /**
@@ -181,6 +216,11 @@ export namespace Lists {
          * @step 1
          */
         offset = 0;
+        /**
+         * Tries to make structured clone of the incoming list data in the component, sometimes it may not be possible due to circular structures or other types of error
+         * @default true
+         */
+        clone? = true;
     }
     export class GetByPatternDto<T> {
         /**
@@ -216,6 +256,11 @@ export namespace Lists {
          * @step 1
          */
         offset = 0;
+        /**
+         * Tries to make structured clone of the incoming list data in the component, sometimes it may not be possible due to circular structures or other types of error
+         * @default true
+         */
+        clone? = true;
     }
     export class GetLongestListLength<T> {
         /**
@@ -255,5 +300,10 @@ export namespace Lists {
          * @default last
          */
         position: firstLastEnum = firstLastEnum.last;
+        /**
+         * Tries to make structured clone of the incoming list data in the component, sometimes it may not be possible due to circular structures or other types of error
+         * @default true
+         */
+        clone? = true;
     }
 }

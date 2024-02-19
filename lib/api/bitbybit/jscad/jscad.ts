@@ -1,5 +1,5 @@
 
-import { Color3, Color4, LinesMesh, Matrix, Mesh, MeshBuilder, PBRMetallicRoughnessMaterial, Vector3, VertexData } from "@babylonjs/core";
+import { Color3, LinesMesh, Matrix, Mesh, PBRMetallicRoughnessMaterial, VertexData } from "@babylonjs/core";
 import { JSCADWorkerManager } from "../../../workers/jscad/jscad-worker-manager";
 import { Context } from "../../context";
 import { GeometryHelper } from "../../geometry-helper";
@@ -200,7 +200,7 @@ export class JSCAD {
      */
     async downloadSolidSTL(inputs: Inputs.JSCAD.DownloadSolidDto): Promise<void> {
         const res = await this.jscadWorkerManager.genericCallToWorkerPromise("downloadSolidSTL", inputs);
-        this.downloadSTL(res.blob, inputs.fileName);
+        this.downloadFile(res.blob, inputs.fileName, "stl");
     }
 
     /**
@@ -211,16 +211,27 @@ export class JSCAD {
      */
     async downloadSolidsSTL(inputs: Inputs.JSCAD.DownloadSolidsDto): Promise<void> {
         const res = await this.jscadWorkerManager.genericCallToWorkerPromise("downloadSolidsSTL", inputs);
-        this.downloadSTL(res.blob, inputs.fileName);
+        this.downloadFile(res.blob, inputs.fileName, "stl");
     }
 
-    private downloadSTL(blob: Blob, fileName: string): void {
+    /**
+     * Downloads the dxf file from jscad geometry. Supports paths and meshes in array.
+     * @param inputs 3D geometry
+     * @group io
+     * @shortname geometry to dxf
+     */
+    async downloadGeometryDxf(inputs: Inputs.JSCAD.DownloadGeometryDto): Promise<void> {
+        const res = await this.jscadWorkerManager.genericCallToWorkerPromise("downloadGeometryDxf", inputs);
+        this.downloadFile(res.blob, inputs.fileName, "dxf");
+    }
+
+    private downloadFile(blob: Blob, fileName: string, extension: string): void {
         const blobUrl = URL.createObjectURL(blob);
 
         const fileLink = document.createElement("a");
         fileLink.href = blobUrl;
         fileLink.target = "_self";
-        fileLink.download = fileName + ".stl";
+        fileLink.download = fileName + "." + extension;
         fileLink.click();
         fileLink.remove();
     }

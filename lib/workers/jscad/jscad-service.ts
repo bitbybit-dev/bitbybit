@@ -38,7 +38,7 @@ export class Jscad {
 
     shapesToMeshes(inputs: Inputs.JSCAD.DrawSolidMeshesDto): { positions: number[], normals: number[], indices: number[], transforms: [] }[] {
         return inputs.meshes.map(mesh => {
-            return this.shapeToMesh({...inputs, mesh});
+            return this.shapeToMesh({ ...inputs, mesh });
         });
     }
 
@@ -130,6 +130,14 @@ export class Jscad {
             this.jscad.transforms.mirror({ normal: [1, 0, 0] }, inputs.mesh)
         );
         const madeBlob = new Blob(rawData, { type: "application/sla" });
+        return { blob: madeBlob };
+    }
+
+    downloadGeometryDxf(inputs: Inputs.JSCAD.DownloadGeometryDto): { blob: Blob } {
+        const rawData = this.jscad.DXFSERIALIZER.serialize({},
+            this.jscad.transforms.mirror({ normal: [1, 0, 0] }, inputs.geometry)
+        );
+        const madeBlob = new Blob(rawData);
         return { blob: madeBlob };
     }
 

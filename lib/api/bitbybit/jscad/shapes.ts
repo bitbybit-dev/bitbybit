@@ -215,7 +215,7 @@ export class JSCADShapes {
      * @shortname sphere
      * @drawable true
      */
-    async sphere(inputs: Inputs.JSCAD.SphereDto): Promise<Inputs.JSCAD.JSCADEntity>{
+    async sphere(inputs: Inputs.JSCAD.SphereDto): Promise<Inputs.JSCAD.JSCADEntity> {
         return this.jscadWorkerManager.genericCallToWorkerPromise("shapes.sphere", inputs);
     }
 
@@ -241,5 +241,17 @@ export class JSCADShapes {
      */
     async torus(inputs: Inputs.JSCAD.TorusDto): Promise<Inputs.JSCAD.JSCADEntity> {
         return this.jscadWorkerManager.genericCallToWorkerPromise("shapes.torus", inputs);
+    }
+
+    /**
+     * Create a 3D shape from poylgon points that have to be nested arrays of points
+     * @param inputs points
+     * @returns shape
+     * @group shapes
+     * @shortname from polygon points
+     * @drawable true
+     */
+    async fromPolygonPoints(inputs: Inputs.JSCAD.FromPolygonPoints): Promise<Inputs.JSCAD.JSCADEntity> {
+        return this.jscadWorkerManager.genericCallToWorkerPromise("shapes.fromPolygonPoints", inputs);
     }
 }

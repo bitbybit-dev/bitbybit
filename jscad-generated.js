@@ -2,10 +2,12 @@
 let CSG;
 
 (function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
-CSG = require('node_modules/@jscad/modeling/src/index.js');
-CSG.IOUTILS = require('node_modules/@jscad/io-utils/index.js');
-CSG.STLSERIALIZER = require('node_modules/@jscad/stl-serializer/index.js');
-},{"node_modules/@jscad/io-utils/index.js":13,"node_modules/@jscad/modeling/src/index.js":99,"node_modules/@jscad/stl-serializer/index.js":402}],2:[function(require,module,exports){
+CSG = require('./node_modules/@jscad/modeling/src/index.js');
+CSG.IOUTILS = require('./node_modules/@jscad/io-utils/index.js');
+CSG.STLSERIALIZER = require('./node_modules/@jscad/stl-serializer/index.js');
+CSG.DXFSERIALIZER = require('./node_modules/@jscad/dxf-serializer/index.js');
+
+},{"./node_modules/@jscad/dxf-serializer/index.js":12,"./node_modules/@jscad/io-utils/index.js":16,"./node_modules/@jscad/modeling/src/index.js":108,"./node_modules/@jscad/stl-serializer/index.js":421}],2:[function(require,module,exports){
 /**
  * Flatten the given array into a single array of elements.
  * The given array can be composed of multiple depths of objects and or arrays.
@@ -161,6 +163,3900 @@ const toArray = (array) => {
 module.exports = toArray
 
 },{}],10:[function(require,module,exports){
+/*
+AutoCAD DXF Content
+
+These are the common headers, classes, tables, blocks, and objects required for AC2017 DXF files.
+
+## License
+
+Copyright (c) 2018 Z3 Development https://github.com/z3dev
+
+All code released under MIT license
+*/
+
+// Important Variables
+//   ANGDIR = 0 : counter clockwise angles
+//   INSUNITS = 4 : millimeters
+//
+const dxfHeaders = function () {
+  const content = `  0
+SECTION
+  2
+HEADER
+  9
+$ACADVER
+  1
+AC1027
+  9
+$ACADMAINTVER
+ 70
+8
+  9
+$DWGCODEPAGE
+  3
+ANSI_1252
+  9
+$LASTSAVEDBY
+  1
+unknown
+  9
+$REQUIREDVERSIONS
+160
+0
+  9
+$INSBASE
+ 10
+0.0
+ 20
+0.0
+ 30
+0.0
+  9
+$EXTMIN
+ 10
+1e+20
+ 20
+1e+20
+ 30
+1e+20
+  9
+$EXTMAX
+ 10
+-1e+20
+ 20
+-1e+20
+ 30
+-1e+20
+  9
+$LIMMIN
+ 10
+0.0
+ 20
+0.0
+  9
+$LIMMAX
+ 10
+12.0
+ 20
+9.0
+  9
+$ORTHOMODE
+ 70
+0
+  9
+$REGENMODE
+ 70
+1
+  9
+$FILLMODE
+ 70
+1
+  9
+$QTEXTMODE
+ 70
+0
+  9
+$MIRRTEXT
+ 70
+0
+  9
+$LTSCALE
+ 40
+1.0
+  9
+$ATTMODE
+ 70
+1
+  9
+$TEXTSIZE
+ 40
+0.2
+  9
+$TRACEWID
+ 40
+0.05
+  9
+$TEXTSTYLE
+  7
+Notes
+  9
+$CLAYER
+  8
+0
+  9
+$CELTYPE
+  6
+ByLayer
+  9
+$CECOLOR
+ 62
+256
+  9
+$CELTSCALE
+ 40
+1.0
+  9
+$DISPSILH
+ 70
+0
+  9
+$DIMSCALE
+ 40
+1.0
+  9
+$DIMASZ
+ 40
+3.0
+  9
+$DIMEXO
+ 40
+1.5
+  9
+$DIMDLI
+ 40
+6.0
+  9
+$DIMRND
+ 40
+0.0
+  9
+$DIMDLE
+ 40
+0.0
+  9
+$DIMEXE
+ 40
+3.0
+  9
+$DIMTP
+ 40
+0.0
+  9
+$DIMTM
+ 40
+0.0
+  9
+$DIMTXT
+ 40
+3.0
+  9
+$DIMCEN
+ 40
+3.0
+  9
+$DIMTSZ
+ 40
+0.0
+  9
+$DIMTOL
+ 70
+0
+  9
+$DIMLIM
+ 70
+0
+  9
+$DIMTIH
+ 70
+0
+  9
+$DIMTOH
+ 70
+0
+  9
+$DIMSE1
+ 70
+0
+  9
+$DIMSE2
+ 70
+0
+  9
+$DIMTAD
+ 70
+1
+  9
+$DIMZIN
+ 70
+3
+  9
+$DIMBLK
+  1
+
+  9
+$DIMASO
+ 70
+1
+  9
+$DIMSHO
+ 70
+1
+  9
+$DIMPOST
+  1
+
+  9
+$DIMAPOST
+  1
+
+  9
+$DIMALT
+ 70
+0
+  9
+$DIMALTD
+ 70
+2
+  9
+$DIMALTF
+ 40
+25.4
+  9
+$DIMLFAC
+ 40
+1.0
+  9
+$DIMTOFL
+ 70
+0
+  9
+$DIMTVP
+ 40
+0.0
+  9
+$DIMTIX
+ 70
+0
+  9
+$DIMSOXD
+ 70
+0
+  9
+$DIMSAH
+ 70
+0
+  9
+$DIMBLK1
+  1
+
+  9
+$DIMBLK2
+  1
+
+  9
+$DIMSTYLE
+  2
+Civil-Metric
+  9
+$DIMCLRD
+ 70
+0
+  9
+$DIMCLRE
+ 70
+0
+  9
+$DIMCLRT
+ 70
+0
+  9
+$DIMTFAC
+ 40
+1.0
+  9
+$DIMGAP
+ 40
+2.0
+  9
+$DIMJUST
+ 70
+0
+  9
+$DIMSD1
+ 70
+0
+  9
+$DIMSD2
+ 70
+0
+  9
+$DIMTOLJ
+ 70
+1
+  9
+$DIMTZIN
+ 70
+0
+  9
+$DIMALTZ
+ 70
+0
+  9
+$DIMALTTZ
+ 70
+0
+  9
+$DIMUPT
+ 70
+0
+  9
+$DIMDEC
+ 70
+2
+  9
+$DIMTDEC
+ 70
+2
+  9
+$DIMALTU
+ 70
+2
+  9
+$DIMALTTD
+ 70
+2
+  9
+$DIMTXSTY
+  7
+Standard
+  9
+$DIMAUNIT
+ 70
+0
+  9
+$DIMADEC
+ 70
+2
+  9
+$DIMALTRND
+ 40
+0.0
+  9
+$DIMAZIN
+ 70
+2
+  9
+$DIMDSEP
+ 70
+46
+  9
+$DIMATFIT
+ 70
+3
+  9
+$DIMFRAC
+ 70
+1
+  9
+$DIMLDRBLK
+  1
+
+  9
+$DIMLUNIT
+ 70
+2
+  9
+$DIMLWD
+ 70
+-2
+  9
+$DIMLWE
+ 70
+-2
+  9
+$DIMTMOVE
+ 70
+0
+  9
+$DIMFXL
+ 40
+1.0
+  9
+$DIMFXLON
+ 70
+0
+  9
+$DIMJOGANG
+ 40
+0.785398163397
+  9
+$DIMTFILL
+ 70
+0
+  9
+$DIMTFILLCLR
+ 70
+0
+  9
+$DIMARCSYM
+ 70
+0
+  9
+$DIMLTYPE
+  6
+
+  9
+$DIMLTEX1
+  6
+
+  9
+$DIMLTEX2
+  6
+
+  9
+$DIMTXTDIRECTION
+ 70
+0
+  9
+$LUNITS
+ 70
+2
+  9
+$LUPREC
+ 70
+4
+  9
+$SKETCHINC
+ 40
+0.1
+  9
+$FILLETRAD
+ 40
+0.0
+  9
+$AUNITS
+ 70
+4
+  9
+$AUPREC
+ 70
+5
+  9
+$MENU
+  1
+.
+  9
+$ELEVATION
+ 40
+0.0
+  9
+$PELEVATION
+ 40
+0.0
+  9
+$THICKNESS
+ 40
+0.0
+  9
+$LIMCHECK
+ 70
+0
+  9
+$CHAMFERA
+ 40
+0.0
+  9
+$CHAMFERB
+ 40
+0.0
+  9
+$CHAMFERC
+ 40
+0.0
+  9
+$CHAMFERD
+ 40
+0.0
+  9
+$SKPOLY
+ 70
+0
+  9
+$TDCREATE
+ 40
+2457986.69756
+  9
+$TDUCREATE
+ 40
+2455631.2632
+  9
+$TDUPDATE
+ 40
+2457986.69756
+  9
+$TDUUPDATE
+ 40
+2456436.43179
+  9
+$TDINDWG
+ 40
+0.0003490741
+  9
+$TDUSRTIMER
+ 40
+0.0003487153
+  9
+$USRTIMER
+ 70
+1
+  9
+$ANGBASE
+ 50
+0.0
+  9
+$ANGDIR
+ 70
+0
+  9
+$PDMODE
+ 70
+0
+  9
+$PDSIZE
+ 40
+0.0
+  9
+$PLINEWID
+ 40
+0.0
+  9
+$SPLFRAME
+ 70
+0
+  9
+$SPLINETYPE
+ 70
+6
+  9
+$SPLINESEGS
+ 70
+8
+  9
+$HANDSEED
+  5
+5C7
+  9
+$SURFTAB1
+ 70
+6
+  9
+$SURFTAB2
+ 70
+6
+  9
+$SURFTYPE
+ 70
+6
+  9
+$SURFU
+ 70
+6
+  9
+$SURFV
+ 70
+6
+  9
+$UCSBASE
+  2
+
+  9
+$UCSNAME
+  2
+
+  9
+$UCSORG
+ 10
+0.0
+ 20
+0.0
+ 30
+0.0
+  9
+$UCSXDIR
+ 10
+1.0
+ 20
+0.0
+ 30
+0.0
+  9
+$UCSYDIR
+ 10
+0.0
+ 20
+1.0
+ 30
+0.0
+  9
+$UCSORTHOREF
+  2
+
+  9
+$UCSORTHOVIEW
+ 70
+0
+  9
+$UCSORGTOP
+ 10
+0.0
+ 20
+0.0
+ 30
+0.0
+  9
+$UCSORGBOTTOM
+ 10
+0.0
+ 20
+0.0
+ 30
+0.0
+  9
+$UCSORGLEFT
+ 10
+0.0
+ 20
+0.0
+ 30
+0.0
+  9
+$UCSORGRIGHT
+ 10
+0.0
+ 20
+0.0
+ 30
+0.0
+  9
+$UCSORGFRONT
+ 10
+0.0
+ 20
+0.0
+ 30
+0.0
+  9
+$UCSORGBACK
+ 10
+0.0
+ 20
+0.0
+ 30
+0.0
+  9
+$PUCSBASE
+  2
+
+  9
+$PUCSNAME
+  2
+
+  9
+$PUCSORG
+ 10
+0.0
+ 20
+0.0
+ 30
+0.0
+  9
+$PUCSXDIR
+ 10
+1.0
+ 20
+0.0
+ 30
+0.0
+  9
+$PUCSYDIR
+ 10
+0.0
+ 20
+1.0
+ 30
+0.0
+  9
+$PUCSORTHOREF
+  2
+
+  9
+$PUCSORTHOVIEW
+ 70
+0
+  9
+$PUCSORGTOP
+ 10
+0.0
+ 20
+0.0
+ 30
+0.0
+  9
+$PUCSORGBOTTOM
+ 10
+0.0
+ 20
+0.0
+ 30
+0.0
+  9
+$PUCSORGLEFT
+ 10
+0.0
+ 20
+0.0
+ 30
+0.0
+  9
+$PUCSORGRIGHT
+ 10
+0.0
+ 20
+0.0
+ 30
+0.0
+  9
+$PUCSORGFRONT
+ 10
+0.0
+ 20
+0.0
+ 30
+0.0
+  9
+$PUCSORGBACK
+ 10
+0.0
+ 20
+0.0
+ 30
+0.0
+  9
+$USERI1
+ 70
+0
+  9
+$USERI2
+ 70
+0
+  9
+$USERI3
+ 70
+0
+  9
+$USERI4
+ 70
+0
+  9
+$USERI5
+ 70
+0
+  9
+$USERR1
+ 40
+0.0
+  9
+$USERR2
+ 40
+0.0
+  9
+$USERR3
+ 40
+0.0
+  9
+$USERR4
+ 40
+0.0
+  9
+$USERR5
+ 40
+0.0
+  9
+$WORLDVIEW
+ 70
+1
+  9
+$SHADEDGE
+ 70
+3
+  9
+$SHADEDIF
+ 70
+70
+  9
+$TILEMODE
+ 70
+1
+  9
+$MAXACTVP
+ 70
+64
+  9
+$PINSBASE
+ 10
+0.0
+ 20
+0.0
+ 30
+0.0
+  9
+$PLIMCHECK
+ 70
+0
+  9
+$PEXTMIN
+ 10
+0.628866766397
+ 20
+0.799999952316
+ 30
+0.0
+  9
+$PEXTMAX
+ 10
+9.02886638493
+ 20
+7.19999957085
+ 30
+0.0
+  9
+$PLIMMIN
+ 10
+-0.700541819174
+ 20
+-0.228100386192
+  9
+$PLIMMAX
+ 10
+10.2994579405
+ 20
+8.27189937351
+  9
+$UNITMODE
+ 70
+0
+  9
+$VISRETAIN
+ 70
+1
+  9
+$PLINEGEN
+ 70
+0
+  9
+$PSLTSCALE
+ 70
+1
+  9
+$TREEDEPTH
+ 70
+3020
+  9
+$CMLSTYLE
+  2
+Standard
+  9
+$CMLJUST
+ 70
+0
+  9
+$CMLSCALE
+ 40
+1.0
+  9
+$PROXYGRAPHICS
+ 70
+1
+  9
+$MEASUREMENT
+ 70
+1
+  9
+$CELWEIGHT
+370
+-1
+  9
+$ENDCAPS
+280
+0
+  9
+$JOINSTYLE
+280
+0
+  9
+$LWDISPLAY
+290
+0
+  9
+$INSUNITS
+ 70
+4
+  9
+$HYPERLINKBASE
+  1
+
+  9
+$STYLESHEET
+  1
+
+  9
+$XEDIT
+290
+1
+  9
+$CEPSNTYPE
+380
+0
+  9
+$PSTYLEMODE
+290
+1
+  9
+$FINGERPRINTGUID
+  2
+{39DB1BDD-BC6C-46D3-A333-DFCC0DC4782D}
+  9
+$VERSIONGUID
+  2
+{69EEBB2D-7039-498F-9366-3F994E4A07E7}
+  9
+$EXTNAMES
+290
+1
+  9
+$PSVPSCALE
+ 40
+0.0
+  9
+$OLESTARTUP
+290
+0
+  9
+$SORTENTS
+280
+127
+  9
+$INDEXCTL
+280
+0
+  9
+$HIDETEXT
+280
+1
+  9
+$XCLIPFRAME
+280
+0
+  9
+$HALOGAP
+280
+0
+  9
+$OBSCOLOR
+ 70
+257
+  9
+$OBSLTYPE
+280
+0
+  9
+$INTERSECTIONDISPLAY
+280
+0
+  9
+$INTERSECTIONCOLOR
+ 70
+257
+  9
+$DIMASSOC
+280
+2
+  9
+$PROJECTNAME
+  1
+
+  9
+$CAMERADISPLAY
+290
+0
+  9
+$LENSLENGTH
+ 40
+50.0
+  9
+$CAMERAHEIGHT
+ 40
+0.0
+  9
+$STEPSPERSEC
+ 40
+2.0
+  9
+$STEPSIZE
+ 40
+6.0
+  9
+$3DDWFPREC
+ 40
+2.0
+  9
+$PSOLWIDTH
+ 40
+0.25
+  9
+$PSOLHEIGHT
+ 40
+4.0
+  9
+$LOFTANG1
+ 40
+1.57079632679
+  9
+$LOFTANG2
+ 40
+1.57079632679
+  9
+$LOFTMAG1
+ 40
+0.0
+  9
+$LOFTMAG2
+ 40
+0.0
+  9
+$LOFTPARAM
+ 70
+7
+  9
+$LOFTNORMALS
+280
+1
+  9
+$LATITUDE
+ 40
+37.795
+  9
+$LONGITUDE
+ 40
+-122.394
+  9
+$NORTHDIRECTION
+ 40
+0.0
+  9
+$TIMEZONE
+ 70
+-8000
+  9
+$LIGHTGLYPHDISPLAY
+280
+1
+  9
+$TILEMODELIGHTSYNCH
+280
+1
+  9
+$CMATERIAL
+347
+96
+  9
+$SOLIDHIST
+280
+1
+  9
+$SHOWHIST
+280
+1
+  9
+$DWFFRAME
+280
+2
+  9
+$DGNFRAME
+280
+0
+  9
+$REALWORLDSCALE
+290
+1
+  9
+$INTERFERECOLOR
+ 62
+1
+  9
+$INTERFEREOBJVS
+345
+A3
+  9
+$INTERFEREVPVS
+346
+A0
+  9
+$CSHADOW
+280
+0
+  9
+$SHADOWPLANELOCATION
+ 40
+0.0
+  0
+ENDSEC`
+  return content
+}
+
+const dxfClasses = function () {
+  const content = `  0
+SECTION
+  2
+CLASSES
+  0
+CLASS
+  1
+ACDBDICTIONARYWDFLT
+  2
+AcDbDictionaryWithDefault
+  3
+ObjectDBX Classes
+ 90
+0
+ 91
+1
+280
+0
+281
+0
+  0
+CLASS
+  1
+DICTIONARYVAR
+  2
+AcDbDictionaryVar
+  3
+ObjectDBX Classes
+ 90
+0
+ 91
+15
+280
+0
+281
+0
+  0
+CLASS
+  1
+TABLESTYLE
+  2
+AcDbTableStyle
+  3
+ObjectDBX Classes
+ 90
+4095
+ 91
+1
+280
+0
+281
+0
+  0
+CLASS
+  1
+MATERIAL
+  2
+AcDbMaterial
+  3
+ObjectDBX Classes
+ 90
+1153
+ 91
+3
+280
+0
+281
+0
+  0
+CLASS
+  1
+VISUALSTYLE
+  2
+AcDbVisualStyle
+  3
+ObjectDBX Classes
+ 90
+4095
+ 91
+26
+280
+0
+281
+0
+  0
+CLASS
+  1
+SCALE
+  2
+AcDbScale
+  3
+ObjectDBX Classes
+ 90
+1153
+ 91
+17
+280
+0
+281
+0
+  0
+CLASS
+  1
+MLEADERSTYLE
+  2
+AcDbMLeaderStyle
+  3
+ACDB_MLEADERSTYLE_CLASS
+ 90
+4095
+ 91
+3
+280
+0
+281
+0
+  0
+CLASS
+  1
+CELLSTYLEMAP
+  2
+AcDbCellStyleMap
+  3
+ObjectDBX Classes
+ 90
+1152
+ 91
+2
+280
+0
+281
+0
+  0
+CLASS
+  1
+EXACXREFPANELOBJECT
+  2
+ExAcXREFPanelObject
+  3
+EXAC_ESW
+ 90
+1025
+ 91
+0
+280
+0
+281
+0
+  0
+CLASS
+  1
+NPOCOLLECTION
+  2
+AcDbImpNonPersistentObjectsCollection
+  3
+ObjectDBX Classes
+ 90
+1153
+ 91
+0
+280
+0
+281
+0
+  0
+CLASS
+  1
+LAYER_INDEX
+  2
+AcDbLayerIndex
+  3
+ObjectDBX Classes
+ 90
+0
+ 91
+0
+280
+0
+281
+0
+  0
+CLASS
+  1
+SPATIAL_INDEX
+  2
+AcDbSpatialIndex
+  3
+ObjectDBX Classes
+ 90
+0
+ 91
+0
+280
+0
+281
+0
+  0
+CLASS
+  1
+IDBUFFER
+  2
+AcDbIdBuffer
+  3
+ObjectDBX Classes
+ 90
+0
+ 91
+0
+280
+0
+281
+0
+  0
+CLASS
+  1
+DIMASSOC
+  2
+AcDbDimAssoc
+  3
+"AcDbDimAssoc|Product Desc:     AcDim ARX App For Dimension|Company:          Autodesk, Inc.|WEB Address:      www.autodesk.com"
+ 90
+0
+ 91
+0
+280
+0
+281
+0
+  0
+CLASS
+  1
+ACDBSECTIONVIEWSTYLE
+  2
+AcDbSectionViewStyle
+  3
+ObjectDBX Classes
+ 90
+1025
+ 91
+1
+280
+0
+281
+0
+  0
+CLASS
+  1
+ACDBDETAILVIEWSTYLE
+  2
+AcDbDetailViewStyle
+  3
+ObjectDBX Classes
+ 90
+1025
+ 91
+1
+280
+0
+281
+0
+  0
+CLASS
+  1
+IMAGEDEF
+  2
+AcDbRasterImageDef
+  3
+ISM
+ 90
+0
+ 91
+1
+280
+0
+281
+0
+  0
+CLASS
+  1
+RASTERVARIABLES
+  2
+AcDbRasterVariables
+  3
+ISM
+ 90
+0
+ 91
+1
+280
+0
+281
+0
+  0
+CLASS
+  1
+IMAGEDEF_REACTOR
+  2
+AcDbRasterImageDefReactor
+  3
+ISM
+ 90
+1
+ 91
+1
+280
+0
+281
+0
+  0
+CLASS
+  1
+IMAGE
+  2
+AcDbRasterImage
+  3
+ISM
+ 90
+2175
+ 91
+1
+280
+0
+281
+1
+  0
+CLASS
+  1
+PDFDEFINITION
+  2
+AcDbPdfDefinition
+  3
+ObjectDBX Classes
+ 90
+1153
+ 91
+1
+280
+0
+281
+0
+  0
+CLASS
+  1
+PDFUNDERLAY
+  2
+AcDbPdfReference
+  3
+ObjectDBX Classes
+ 90
+4095
+ 91
+1
+280
+0
+281
+1
+  0
+CLASS
+  1
+DWFDEFINITION
+  2
+AcDbDwfDefinition
+  3
+ObjectDBX Classes
+ 90
+1153
+ 91
+2
+280
+0
+281
+0
+  0
+CLASS
+  1
+DWFUNDERLAY
+  2
+AcDbDwfReference
+  3
+ObjectDBX Classes
+ 90
+1153
+ 91
+1
+280
+0
+281
+1
+  0
+CLASS
+  1
+DGNDEFINITION
+  2
+AcDbDgnDefinition
+  3
+ObjectDBX Classes
+ 90
+1153
+ 91
+2
+280
+0
+281
+0
+  0
+CLASS
+  1
+DGNUNDERLAY
+  2
+AcDbDgnReference
+  3
+ObjectDBX Classes
+ 90
+1153
+ 91
+1
+280
+0
+281
+1
+  0
+ENDSEC`
+  return content
+}
+
+const dxfTables = function () {
+  const content = `  0
+SECTION
+  2
+TABLES
+  0
+TABLE
+  2
+VPORT
+  5
+8
+330
+0
+100
+AcDbSymbolTable
+ 70
+0
+  0
+ENDTAB
+  0
+TABLE
+  2
+LTYPE
+  5
+5F
+330
+0
+100
+AcDbSymbolTable
+ 70
+7
+  0
+LTYPE
+  5
+14
+330
+5F
+100
+AcDbSymbolTableRecord
+100
+AcDbLinetypeTableRecord
+  2
+ByBlock
+ 70
+0
+  3
+
+ 72
+65
+ 73
+0
+ 40
+0.0
+  0
+LTYPE
+  5
+15
+330
+5F
+100
+AcDbSymbolTableRecord
+100
+AcDbLinetypeTableRecord
+  2
+ByLayer
+ 70
+0
+  3
+
+ 72
+65
+ 73
+0
+ 40
+0.0
+  0
+LTYPE
+  5
+16
+330
+5F
+100
+AcDbSymbolTableRecord
+100
+AcDbLinetypeTableRecord
+  2
+Continuous
+ 70
+0
+  3
+Solid line
+ 72
+65
+ 73
+0
+ 40
+0.0
+  0
+LTYPE
+  5
+1B1
+330
+5F
+100
+AcDbSymbolTableRecord
+100
+AcDbLinetypeTableRecord
+  2
+CENTER
+ 70
+0
+  3
+Center ____ _ ____ _ ____ _ ____ _ ____ _ ____
+ 72
+65
+ 73
+4
+ 40
+2.0
+ 49
+1.25
+ 74
+0
+ 49
+-0.25
+ 74
+0
+ 49
+0.25
+ 74
+0
+ 49
+-0.25
+ 74
+0
+  0
+LTYPE
+  5
+1B2
+330
+5F
+100
+AcDbSymbolTableRecord
+100
+AcDbLinetypeTableRecord
+  2
+DASHED
+ 70
+0
+  3
+Dashed __ __ __ __ __ __ __ __ __ __ __ __ __ _
+ 72
+65
+ 73
+2
+ 40
+0.75
+ 49
+0.5
+ 74
+0
+ 49
+-0.25
+ 74
+0
+  0
+LTYPE
+  5
+1B3
+330
+5F
+100
+AcDbSymbolTableRecord
+100
+AcDbLinetypeTableRecord
+  2
+PHANTOM
+ 70
+0
+  3
+Phantom ______  __  __  ______  __  __  ______
+ 72
+65
+ 73
+6
+ 40
+2.5
+ 49
+1.25
+ 74
+0
+ 49
+-0.25
+ 74
+0
+ 49
+0.25
+ 74
+0
+ 49
+-0.25
+ 74
+0
+ 49
+0.25
+ 74
+0
+ 49
+-0.25
+ 74
+0
+  0
+LTYPE
+  5
+39E
+330
+5F
+100
+AcDbSymbolTableRecord
+100
+AcDbLinetypeTableRecord
+  2
+HIDDEN
+ 70
+0
+  3
+Hidden __ __ __ __ __ __ __ __ __ __ __ __ __ __
+ 72
+65
+ 73
+2
+ 40
+9.525
+ 49
+6.35
+ 74
+0
+ 49
+-3.175
+ 74
+0
+  0
+ENDTAB
+  0
+TABLE
+  2
+LAYER
+  5
+2
+330
+0
+100
+AcDbSymbolTable
+ 70
+3
+  0
+LAYER
+  5
+10
+330
+2
+100
+AcDbSymbolTableRecord
+100
+AcDbLayerTableRecord
+  2
+0
+ 70
+0
+  6
+Continuous
+370
+-3
+390
+F
+347
+98
+348
+0
+  0
+LAYER
+  5
+1B4
+330
+2
+100
+AcDbSymbolTableRecord
+100
+AcDbLayerTableRecord
+  2
+View Port
+ 70
+0
+  6
+Continuous
+290
+0
+370
+-3
+390
+F
+347
+98
+348
+0
+  0
+LAYER
+  5
+21D
+330
+2
+100
+AcDbSymbolTableRecord
+100
+AcDbLayerTableRecord
+  2
+Defpoints
+ 70
+0
+  6
+Continuous
+290
+0
+370
+-3
+390
+F
+347
+98
+348
+0
+  0
+ENDTAB
+  0
+TABLE
+  2
+STYLE
+  5
+3
+330
+0
+100
+AcDbSymbolTable
+ 70
+3
+  0
+STYLE
+  5
+11
+330
+3
+100
+AcDbSymbolTableRecord
+100
+AcDbTextStyleTableRecord
+  2
+Standard
+ 70
+0
+ 40
+0.0
+ 41
+1.0
+ 50
+0.0
+ 71
+0
+ 42
+0.2
+  3
+arial.ttf
+  4
+
+  0
+STYLE
+  5
+DC
+330
+3
+100
+AcDbSymbolTableRecord
+100
+AcDbTextStyleTableRecord
+  2
+Annotative
+ 70
+0
+ 40
+0.0
+ 41
+1.0
+ 50
+0.0
+ 71
+0
+ 42
+0.2
+  3
+arial.ttf
+  4
+
+  0
+STYLE
+  5
+178
+330
+3
+100
+AcDbSymbolTableRecord
+100
+AcDbTextStyleTableRecord
+  2
+Notes
+ 70
+0
+ 40
+3.0
+ 41
+1.0
+ 50
+0.0
+ 71
+0
+ 42
+0.2
+  3
+arial.ttf
+  4
+
+  0
+ENDTAB
+  0
+TABLE
+  2
+VIEW
+  5
+6
+330
+0
+100
+AcDbSymbolTable
+ 70
+0
+  0
+ENDTAB
+  0
+TABLE
+  2
+UCS
+  5
+7
+330
+0
+100
+AcDbSymbolTable
+ 70
+0
+  0
+ENDTAB
+  0
+TABLE
+  2
+APPID
+  5
+9
+330
+0
+100
+AcDbSymbolTable
+ 70
+12
+  0
+APPID
+  5
+12
+330
+9
+100
+AcDbSymbolTableRecord
+100
+AcDbRegAppTableRecord
+  2
+ACAD
+ 70
+0
+  0
+APPID
+  5
+DD
+330
+9
+100
+AcDbSymbolTableRecord
+100
+AcDbRegAppTableRecord
+  2
+AcadAnnoPO
+ 70
+0
+  0
+APPID
+  5
+DE
+330
+9
+100
+AcDbSymbolTableRecord
+100
+AcDbRegAppTableRecord
+  2
+AcadAnnotative
+ 70
+0
+  0
+APPID
+  5
+DF
+330
+9
+100
+AcDbSymbolTableRecord
+100
+AcDbRegAppTableRecord
+  2
+ACAD_DSTYLE_DIMJAG
+ 70
+0
+  0
+APPID
+  5
+E0
+330
+9
+100
+AcDbSymbolTableRecord
+100
+AcDbRegAppTableRecord
+  2
+ACAD_DSTYLE_DIMTALN
+ 70
+0
+  0
+APPID
+  5
+107
+330
+9
+100
+AcDbSymbolTableRecord
+100
+AcDbRegAppTableRecord
+  2
+ACAD_MLEADERVER
+ 70
+0
+  0
+APPID
+  5
+1B5
+330
+9
+100
+AcDbSymbolTableRecord
+100
+AcDbRegAppTableRecord
+  2
+AcAecLayerStandard
+ 70
+0
+  0
+APPID
+  5
+1BA
+330
+9
+100
+AcDbSymbolTableRecord
+100
+AcDbRegAppTableRecord
+  2
+ACAD_EXEMPT_FROM_CAD_STANDARDS
+ 70
+0
+  0
+APPID
+  5
+237
+330
+9
+100
+AcDbSymbolTableRecord
+100
+AcDbRegAppTableRecord
+  2
+ACAD_DSTYLE_DIMBREAK
+ 70
+0
+  0
+APPID
+  5
+28E
+330
+9
+100
+AcDbSymbolTableRecord
+100
+AcDbRegAppTableRecord
+  2
+ACAD_PSEXT
+ 70
+0
+  0
+APPID
+  5
+4B0
+330
+9
+100
+AcDbSymbolTableRecord
+100
+AcDbRegAppTableRecord
+  2
+ACAD_NAV_VCDISPLAY
+ 70
+0
+  0
+APPID
+  5
+4E3
+330
+9
+100
+AcDbSymbolTableRecord
+100
+AcDbRegAppTableRecord
+  2
+HATCHBACKGROUNDCOLOR
+ 70
+0
+  0
+ENDTAB
+  0
+TABLE
+  2
+DIMSTYLE
+  5
+A
+330
+0
+100
+AcDbSymbolTable
+ 70
+3
+100
+AcDbDimStyleTable
+ 71
+3
+340
+242
+340
+27
+340
+E1
+  0
+DIMSTYLE
+105
+27
+330
+A
+100
+AcDbSymbolTableRecord
+100
+AcDbDimStyleTableRecord
+  2
+Standard
+ 70
+0
+ 41
+3.0
+ 42
+2.0
+ 43
+9.0
+ 44
+5.0
+140
+3.0
+141
+2.0
+147
+2.0
+340
+11
+1001
+ACAD_DSTYLE_DIMJAG
+1070
+388
+1040
+38.0
+1001
+ACAD_DSTYLE_DIMBREAK
+1070
+391
+1040
+90.0
+1001
+ACAD_DSTYLE_DIMTALN
+1070
+392
+1070
+0
+  0
+DIMSTYLE
+105
+E1
+330
+A
+100
+AcDbSymbolTableRecord
+100
+AcDbDimStyleTableRecord
+  2
+Annotative
+ 70
+0
+ 40
+0.0
+ 41
+3.0
+ 42
+2.5
+ 43
+10.0
+ 44
+5.0
+140
+3.0
+141
+2.0
+147
+2.0
+340
+11
+1001
+AcadAnnotative
+1000
+AnnotativeData
+1002
+{
+1070
+1
+1070
+1
+1002
+}
+1001
+ACAD_DSTYLE_DIMJAG
+1070
+388
+1040
+38.0
+1001
+ACAD_DSTYLE_DIMBREAK
+1070
+391
+1040
+90.0
+1001
+ACAD_DSTYLE_DIMTALN
+1070
+392
+1070
+0
+  0
+DIMSTYLE
+105
+242
+330
+A
+100
+AcDbSymbolTableRecord
+100
+AcDbDimStyleTableRecord
+  2
+Civil-Metric
+ 70
+0
+ 41
+3.0
+ 42
+1.5
+ 43
+6.0
+ 44
+3.0
+ 73
+0
+ 74
+0
+ 77
+1
+ 78
+3
+ 79
+2
+140
+3.0
+141
+3.0
+147
+2.0
+179
+2
+271
+2
+272
+2
+276
+1
+340
+11
+1001
+ACAD_DSTYLE_DIMBREAK
+1070
+391
+1040
+3.0
+1001
+ACAD_DSTYLE_DIMJAG
+1070
+388
+1040
+38.0
+1001
+ACAD_DSTYLE_DIMTALN
+1070
+392
+1070
+0
+  0
+ENDTAB
+  0
+TABLE
+  2
+BLOCK_RECORD
+  5
+1
+330
+0
+100
+AcDbSymbolTable
+ 70
+4
+  0
+BLOCK_RECORD
+  5
+1F
+330
+1
+100
+AcDbSymbolTableRecord
+100
+AcDbBlockTableRecord
+  2
+*Model_Space
+340
+530
+ 70
+0
+280
+1
+281
+0
+  0
+BLOCK_RECORD
+  5
+58
+330
+1
+100
+AcDbSymbolTableRecord
+100
+AcDbBlockTableRecord
+  2
+*Paper_Space
+340
+531
+ 70
+0
+280
+1
+281
+0
+  0
+BLOCK_RECORD
+  5
+238
+330
+1
+100
+AcDbSymbolTableRecord
+100
+AcDbBlockTableRecord
+  2
+_ArchTick
+340
+0
+ 70
+0
+280
+1
+281
+0
+  0
+BLOCK_RECORD
+  5
+23C
+330
+1
+100
+AcDbSymbolTableRecord
+100
+AcDbBlockTableRecord
+  2
+_Open30
+340
+0
+ 70
+0
+280
+1
+281
+0
+  0
+ENDTAB
+  0
+ENDSEC`
+  return content
+}
+
+const dxfBlocks = function () {
+  const content = `  0
+SECTION
+  2
+BLOCKS
+  0
+BLOCK
+  5
+23A
+330
+238
+100
+AcDbEntity
+  8
+0
+100
+AcDbBlockBegin
+  2
+_ArchTick
+ 70
+0
+ 10
+0.0
+ 20
+0.0
+ 30
+0.0
+  3
+_ArchTick
+  1
+
+  0
+ENDBLK
+  5
+23B
+330
+238
+100
+AcDbEntity
+  8
+0
+100
+AcDbBlockEnd
+  0
+BLOCK
+  5
+20
+330
+1F
+100
+AcDbEntity
+  8
+0
+100
+AcDbBlockBegin
+  2
+*Model_Space
+ 70
+0
+ 10
+0.0
+ 20
+0.0
+ 30
+0.0
+  3
+*Model_Space
+  1
+
+  0
+ENDBLK
+  5
+21
+330
+1F
+100
+AcDbEntity
+  8
+0
+100
+AcDbBlockEnd
+  0
+BLOCK
+  5
+5A
+330
+58
+100
+AcDbEntity
+ 67
+1
+  8
+0
+100
+AcDbBlockBegin
+  2
+*Paper_Space
+ 70
+0
+ 10
+0.0
+ 20
+0.0
+ 30
+0.0
+  3
+*Paper_Space
+  1
+
+  0
+ENDBLK
+  5
+5B
+330
+58
+100
+AcDbEntity
+ 67
+1
+  8
+0
+100
+AcDbBlockEnd
+  0
+BLOCK
+  5
+240
+330
+23C
+100
+AcDbEntity
+  8
+0
+100
+AcDbBlockBegin
+  2
+_Open30
+ 70
+0
+ 10
+0.0
+ 20
+0.0
+ 30
+0.0
+  3
+_Open30
+  1
+
+  0
+ENDBLK
+  5
+241
+330
+23C
+100
+AcDbEntity
+  8
+0
+100
+AcDbBlockEnd
+  0
+ENDSEC`
+  return content
+}
+
+const dxfObjects = function () {
+  const content = `  0
+SECTION
+  2
+OBJECTS
+  0
+DICTIONARY
+  5
+C
+330
+0
+100
+AcDbDictionary
+281
+1
+  3
+ACAD_COLOR
+350
+524
+  3
+ACAD_GROUP
+350
+525
+  3
+ACAD_LAYOUT
+350
+526
+  3
+ACAD_MATERIAL
+350
+527
+  3
+ACAD_MLEADERSTYLE
+350
+528
+  3
+ACAD_MLINESTYLE
+350
+529
+  3
+ACAD_PLOTSETTINGS
+350
+52A
+  3
+ACAD_PLOTSTYLENAME
+350
+52C
+  3
+ACAD_SCALELIST
+350
+52D
+  3
+ACAD_TABLESTYLE
+350
+52E
+  3
+ACAD_VISUALSTYLE
+350
+52F
+  0
+DICTIONARY
+  5
+524
+330
+C
+100
+AcDbDictionary
+281
+1
+  0
+DICTIONARY
+  5
+525
+330
+C
+100
+AcDbDictionary
+281
+1
+  0
+DICTIONARY
+  5
+526
+330
+C
+100
+AcDbDictionary
+281
+1
+  3
+Model
+350
+530
+  3
+Layout1
+350
+531
+  0
+DICTIONARY
+  5
+527
+330
+C
+100
+AcDbDictionary
+281
+1
+  0
+DICTIONARY
+  5
+528
+330
+C
+100
+AcDbDictionary
+281
+1
+  0
+DICTIONARY
+  5
+529
+330
+C
+100
+AcDbDictionary
+281
+1
+  0
+DICTIONARY
+  5
+52A
+330
+C
+100
+AcDbDictionary
+281
+1
+  0
+ACDBPLACEHOLDER
+  5
+52B
+330
+52C
+  0
+ACDBDICTIONARYWDFLT
+  5
+52C
+330
+C
+100
+AcDbDictionary
+281
+1
+  3
+Normal
+350
+52B
+100
+AcDbDictionaryWithDefault
+340
+52B
+  0
+DICTIONARY
+  5
+52D
+330
+C
+100
+AcDbDictionary
+281
+1
+  0
+DICTIONARY
+  5
+52E
+330
+C
+100
+AcDbDictionary
+281
+1
+  0
+DICTIONARY
+  5
+52F
+330
+C
+100
+AcDbDictionary
+281
+1
+  0
+LAYOUT
+  5
+530
+330
+526
+100
+AcDbPlotSettings
+  1
+
+  2
+DWFx ePlot (XPS Compatible).pc3
+  4
+ANSI_A_(8.50_x_11.00_Inches)
+  6
+
+ 40
+5.8
+ 41
+17.8
+ 42
+5.8
+ 43
+17.8
+ 44
+215.9
+ 45
+279.4
+ 46
+0.0
+ 47
+0.0
+ 48
+0.0
+ 49
+0.0
+140
+0.0
+141
+0.0
+142
+1.0
+143
+14.53
+ 70
+11952
+ 72
+0
+ 73
+1
+ 74
+0
+  7
+
+ 75
+0
+147
+0.069
+148
+114.98
+149
+300.29
+100
+AcDbLayout
+  1
+Model
+ 70
+1
+ 71
+0
+ 10
+0.0
+ 20
+0.0
+ 11
+12.0
+ 21
+9.0
+ 12
+0.0
+ 22
+0.0
+ 32
+0.0
+ 14
+0.0
+ 24
+0.0
+ 34
+0.0
+ 15
+0.0
+ 25
+0.0
+ 35
+0.0
+146
+0.0
+ 13
+0.0
+ 23
+0.0
+ 33
+0.0
+ 16
+1.0
+ 26
+0.0
+ 36
+0.0
+ 17
+0.0
+ 27
+1.0
+ 37
+0.0
+ 76
+0
+330
+1F
+  0
+LAYOUT
+  5
+531
+330
+526
+100
+AcDbPlotSettings
+  1
+
+  2
+DWFx ePlot (XPS Compatible).pc3
+  4
+ANSI_A_(8.50_x_11.00_Inches)
+  6
+
+ 40
+5.8
+ 41
+17.8
+ 42
+5.8
+ 43
+17.8
+ 44
+215.9
+ 45
+279.4
+ 46
+0.0
+ 47
+0.0
+ 48
+0.0
+ 49
+0.0
+140
+0.0
+141
+0.0
+142
+1.0
+143
+1.0
+ 70
+688
+ 72
+0
+ 73
+1
+ 74
+5
+  7
+acad.ctb
+ 75
+16
+147
+1.0
+148
+0.0
+149
+0.0
+100
+AcDbLayout
+  1
+Layout1
+ 70
+1
+ 71
+1
+ 10
+-0.7
+ 20
+-0.23
+ 11
+10.3
+ 21
+8.27
+ 12
+0.0
+ 22
+0.0
+ 32
+0.0
+ 14
+0.63
+ 24
+0.8
+ 34
+0.0
+ 15
+9.0
+ 25
+7.2
+ 35
+0.0
+146
+0.0
+ 13
+0.0
+ 23
+0.0
+ 33
+0.0
+ 16
+1.0
+ 26
+0.0
+ 36
+0.0
+ 17
+0.0
+ 27
+1.0
+ 37
+0.0
+ 76
+0
+330
+58
+  0
+ENDSEC`
+  return content
+}
+
+module.exports = {
+  dxfHeaders,
+  dxfClasses,
+  dxfTables,
+  dxfBlocks,
+  dxfObjects
+}
+
+},{}],11:[function(require,module,exports){
+/*
+ * AutoCAD 2017 2018 Color Index (1-255) as RGB + ALPHA colors
+ */
+
+const colorIndex = [
+  [0, 0, 0, 255], // index 0, added for easy maintenance
+  // 1
+  [255, 0, 0, 255],
+  [255, 255, 0, 255],
+  [0, 255, 0, 255],
+  [0, 255, 255, 255],
+  [0, 0, 255, 255],
+  [255, 0, 255, 255],
+  [255, 255, 255, 255],
+  [128, 128, 128, 255],
+  [192, 192, 192, 255],
+  [255, 0, 0, 255],
+  // 11
+  [255, 127, 127, 255],
+  [165, 0, 0, 255],
+  [165, 82, 82, 255],
+  [127, 0, 0, 255],
+  [127, 63, 63, 255],
+  [76, 0, 0, 255],
+  [76, 38, 38, 255],
+  [38, 0, 0, 255],
+  [38, 19, 19, 255],
+  [255, 63, 0, 255],
+  // 21
+  [255, 159, 127, 255],
+  [165, 41, 0, 255],
+  [165, 103, 82, 255],
+  [127, 31, 0, 255],
+  [127, 79, 63, 255],
+  [76, 19, 0, 255],
+  [76, 47, 38, 255],
+  [38, 9, 0, 255],
+  [38, 28, 19, 255],
+  [255, 127, 0, 255],
+  // 31
+  [255, 191, 127, 255],
+  [165, 82, 0, 255],
+  [165, 124, 82, 255],
+  [127, 63, 0, 255],
+  [127, 95, 63, 255],
+  [76, 38, 0, 255],
+  [76, 57, 38, 255],
+  [38, 19, 0, 255],
+  [38, 28, 19, 255],
+  [255, 191, 0, 255],
+  // 41
+  [255, 223, 127, 255],
+  [165, 124, 0, 255],
+  [165, 145, 82, 255],
+  [127, 95, 0, 255],
+  [127, 111, 63, 255],
+  [76, 57, 0, 255],
+  [76, 66, 38, 255],
+  [38, 28, 0, 255],
+  [38, 33, 19, 255],
+  [255, 255, 0, 255],
+  // 51
+  [255, 255, 127, 255],
+  [165, 165, 0, 255],
+  [165, 165, 82, 255],
+  [127, 127, 0, 255],
+  [127, 127, 63, 255],
+  [76, 76, 0, 255],
+  [76, 76, 38, 255],
+  [38, 38, 0, 255],
+  [38, 38, 19, 255],
+  [191, 255, 0, 255],
+  // 61
+  [223, 255, 127, 255],
+  [124, 165, 0, 255],
+  [145, 165, 82, 255],
+  [95, 127, 0, 255],
+  [111, 127, 63, 255],
+  [57, 76, 0, 255],
+  [66, 76, 38, 255],
+  [28, 38, 0, 255],
+  [33, 38, 19, 255],
+  [127, 255, 0, 255],
+  // 71
+  [191, 255, 127, 255],
+  [82, 165, 0, 255],
+  [124, 165, 82, 255],
+  [63, 127, 0, 255],
+  [95, 127, 63, 255],
+  [38, 76, 0, 255],
+  [57, 76, 38, 255],
+  [19, 38, 0, 255],
+  [28, 38, 19, 255],
+  [63, 255, 0, 255],
+  // 81
+  [159, 255, 127, 255],
+  [41, 165, 0, 255],
+  [103, 165, 82, 255],
+  [31, 127, 0, 255],
+  [79, 127, 63, 255],
+  [19, 76, 0, 255],
+  [47, 76, 38, 255],
+  [9, 38, 0, 255],
+  [23, 38, 19, 255],
+  [0, 255, 0, 255],
+  // 91
+  [125, 255, 127, 255],
+  [0, 165, 0, 255],
+  [82, 165, 82, 255],
+  [0, 127, 0, 255],
+  [63, 127, 63, 255],
+  [0, 76, 0, 255],
+  [38, 76, 38, 255],
+  [0, 38, 0, 255],
+  [19, 38, 19, 255],
+  [0, 255, 63, 255],
+  // 101
+  [127, 255, 159, 255],
+  [0, 165, 41, 255],
+  [82, 165, 103, 255],
+  [0, 127, 31, 255],
+  [63, 127, 79, 255],
+  [0, 76, 19, 255],
+  [38, 76, 47, 255],
+  [0, 38, 9, 255],
+  [19, 88, 23, 255],
+  [0, 255, 127, 255],
+  // 111
+  [127, 255, 191, 255],
+  [0, 165, 82, 255],
+  [82, 165, 124, 255],
+  [0, 127, 63, 255],
+  [63, 127, 95, 255],
+  [0, 76, 38, 255],
+  [38, 76, 57, 255],
+  [0, 38, 19, 255],
+  [19, 88, 28, 255],
+  [0, 255, 191, 255],
+  // 121
+  [127, 255, 223, 255],
+  [0, 165, 124, 255],
+  [82, 165, 145, 255],
+  [0, 127, 95, 255],
+  [63, 127, 111, 255],
+  [0, 76, 57, 255],
+  [38, 76, 66, 255],
+  [0, 38, 28, 255],
+  [19, 88, 88, 255],
+  [0, 255, 255, 255],
+  // 131
+  [127, 255, 255, 255],
+  [0, 165, 165, 255],
+  [82, 165, 165, 255],
+  [0, 127, 127, 255],
+  [63, 127, 127, 255],
+  [0, 76, 76, 255],
+  [38, 76, 76, 255],
+  [0, 38, 38, 255],
+  [19, 88, 88, 255],
+  [0, 191, 255, 255],
+  // 141
+  [127, 223, 255, 255],
+  [0, 124, 165, 255],
+  [82, 145, 165, 255],
+  [0, 95, 127, 255],
+  [63, 111, 217, 255],
+  [0, 57, 76, 255],
+  [38, 66, 126, 255],
+  [0, 28, 38, 255],
+  [19, 88, 88, 255],
+  [0, 127, 255, 255],
+  // 151
+  [127, 191, 255, 255],
+  [0, 82, 165, 255],
+  [82, 124, 165, 255],
+  [0, 63, 127, 255],
+  [63, 95, 127, 255],
+  [0, 38, 76, 255],
+  [38, 57, 126, 255],
+  [0, 19, 38, 255],
+  [19, 28, 88, 255],
+  [0, 63, 255, 255],
+  // 161
+  [127, 159, 255, 255],
+  [0, 41, 165, 255],
+  [82, 103, 165, 255],
+  [0, 31, 127, 255],
+  [63, 79, 127, 255],
+  [0, 19, 76, 255],
+  [38, 47, 126, 255],
+  [0, 9, 38, 255],
+  [19, 23, 88, 255],
+  [0, 0, 255, 255],
+  // 171
+  [127, 127, 255, 255],
+  [0, 0, 165, 255],
+  [82, 82, 165, 255],
+  [0, 0, 127, 255],
+  [63, 63, 127, 255],
+  [0, 0, 76, 255],
+  [38, 38, 126, 255],
+  [0, 0, 38, 255],
+  [19, 19, 88, 255],
+  [63, 0, 255, 255],
+  // 181
+  [159, 127, 255, 255],
+  [41, 0, 165, 255],
+  [103, 82, 165, 255],
+  [31, 0, 127, 255],
+  [79, 63, 127, 255],
+  [19, 0, 76, 255],
+  [47, 38, 126, 255],
+  [9, 0, 38, 255],
+  [23, 19, 88, 255],
+  [127, 0, 255, 255],
+  // 191
+  [191, 127, 255, 255],
+  [165, 0, 82, 255],
+  [124, 82, 165, 255],
+  [63, 0, 127, 255],
+  [95, 63, 127, 255],
+  [38, 0, 76, 255],
+  [57, 38, 126, 255],
+  [19, 0, 38, 255],
+  [28, 19, 88, 255],
+  [191, 0, 255, 255],
+  // 201
+  [223, 127, 255, 255],
+  [124, 0, 165, 255],
+  [142, 82, 165, 255],
+  [95, 0, 127, 255],
+  [111, 63, 127, 255],
+  [57, 0, 76, 255],
+  [66, 38, 76, 255],
+  [28, 0, 38, 255],
+  [88, 19, 88, 255],
+  [255, 0, 255, 255],
+  // 211
+  [255, 127, 255, 255],
+  [165, 0, 165, 255],
+  [165, 82, 165, 255],
+  [127, 0, 127, 255],
+  [127, 63, 127, 255],
+  [76, 0, 76, 255],
+  [76, 38, 76, 255],
+  [38, 0, 38, 255],
+  [88, 19, 88, 255],
+  [255, 0, 191, 255],
+  // 221
+  [255, 127, 223, 255],
+  [165, 0, 124, 255],
+  [165, 82, 145, 255],
+  [127, 0, 95, 255],
+  [127, 63, 111, 255],
+  [76, 0, 57, 255],
+  [76, 38, 66, 255],
+  [38, 0, 28, 255],
+  [88, 19, 88, 255],
+  [255, 0, 127, 255],
+  // 231
+  [255, 127, 191, 255],
+  [165, 0, 82, 255],
+  [165, 82, 124, 255],
+  [127, 0, 63, 255],
+  [127, 63, 95, 255],
+  [76, 0, 38, 255],
+  [76, 38, 57, 255],
+  [38, 0, 19, 255],
+  [88, 19, 28, 255],
+  [255, 0, 63, 255],
+  // 241
+  [255, 127, 159, 255],
+  [165, 0, 41, 255],
+  [165, 82, 103, 255],
+  [127, 0, 31, 255],
+  [127, 63, 79, 255],
+  [76, 0, 19, 255],
+  [76, 38, 47, 255],
+  [38, 0, 9, 255],
+  [88, 19, 23, 255],
+  [0, 0, 0, 255],
+  // 251
+  [101, 101, 101, 255],
+  [102, 102, 102, 255],
+  [153, 153, 153, 255],
+  [204, 204, 204, 255],
+  [255, 255, 255, 255]
+]
+
+module.exports = colorIndex
+
+},{}],12:[function(require,module,exports){
+/*
+JSCAD Object to AutoCAD DXF Entity Serialization
+
+## License
+
+Copyright (c) 2018 Z3 Development https://github.com/z3dev
+
+All code released under MIT license
+
+Notes:
+1) geom2 conversion to:
+     POLYLINE
+     LWPOLYLINE
+2) geom3 conversion to:
+     3DFACE
+     POLYLINE (face mesh)
+3) path2 conversion to:
+     LWPOLYLINE
+TBD
+1) support binary output
+2) add color conversion
+*/
+
+const { geometries, modifiers } = require('@jscad/modeling')
+const { geom3, geom2, path2 } = geometries
+
+const { flatten, toArray } = require('@jscad/array-utils')
+
+const { dxfHeaders, dxfClasses, dxfTables, dxfBlocks, dxfObjects } = require('./autocad_AC2017')
+const colorindex2017 = require('./colorindex2017')
+
+const mimeType = 'application/dxf'
+
+/**
+ * Serializer of JSCAD geometries to DXF entities.
+ * @module io/dxf-serializer
+ * @example
+ * const { serializer, mimeType } = require('@jscad/dxf-serializer')
+ */
+
+/**
+ * Serialize the give objects to AutoCad DXF format.
+ * @param {Object} options - options for serialization, REQUIRED
+ * @param {String} [options.geom2To='lypolyline'] - target entity for 2D geometries, 'lwpolyline' or 'polyline'
+ * @param {String} [options.geom3To='3dface'] - target entity for 3D geometries, '3dface' or 'polyline'
+ * @param {Object|Array} objects - objects to serialize as DXF
+ * @returns {Array} serialized contents, DXF format
+ * @alias module:io/dxf-serializer.serialize
+ * @example
+ * const geometry = primitives.cube()
+ * const dxfData = serializer({geom3To: '3dface'}, geometry)
+ */
+const serialize = (options, ...objects) => {
+  const defaults = {
+    geom2To: 'lwpolyline', // or polyline
+    geom3To: '3dface', // or polyline
+    pathTo: 'lwpolyline',
+    statusCallback: null,
+    colorIndex: colorindex2017
+  }
+  options = Object.assign({}, defaults, options)
+
+  options.entityId = 0 // sequence id for entities created
+
+  objects = flatten(objects)
+
+  objects = objects.filter((object) => geom3.isA(object) || geom2.isA(object) || path2.isA(object))
+
+  if (objects.length === 0) throw new Error('only JSCAD geometries can be serialized to DXF')
+
+  // convert to triangles
+  objects = toArray(modifiers.generalize({ snap: true, triangulate: true }, objects))
+
+  const dxfContent = `999
+Created by JSCAD
+${dxfHeaders(options)}
+${dxfClasses(options)}
+${dxfTables(options)}
+${dxfBlocks(options)}
+${dxfEntities(objects, options)}
+${dxfObjects(options)}
+  0
+EOF
+`
+  return [dxfContent]
+}
+
+/**
+ * Serialize the given objects as a DXF entity section
+ * @param {Array} objects - objects to serialize as DXF
+ * @param {Object} options - options for serialization
+ * @returns {Object} serialized contents, DXF format
+ */
+const dxfEntities = (objects, options) => {
+  const entityContents = objects.map((object, i) => {
+    if (geom2.isA(object)) {
+      const color = object.color
+      const name = object.name
+      const outlines = geom2.toOutlines(object)
+      const paths = outlines.map((outline) => ({ closed: true, points: outline, color, name }))
+      if (options.geom2To === 'polyline') {
+        return PathsToPolyine(paths, options)
+      }
+      return PathsToLwpolyline(paths, options)
+    }
+    if (geom3.isA(object)) {
+      // TODO object = ensureManifoldness(object)
+      if (options.geom3To === 'polyline') {
+        return PolygonsToPolyline(object, options)
+      }
+      return PolygonsTo3DFaces(object, options)
+    }
+    if (path2.isA(object)) {
+      // mimic a path (outline) from geom2
+      const color = object.color
+      const name = object.name
+      const path = { closed: object.isClosed, points: path2.toPoints(object), color, name }
+      return PathsToLwpolyline([path], options)
+    }
+    return ''
+  })
+  let section = `  0
+SECTION
+  2
+ENTITIES
+`
+  entityContents.forEach((content) => {
+    if (content) {
+      section += content
+    }
+  })
+  section += `  0
+ENDSEC`
+  return section
+}
+
+//
+// convert the given paths (from 2D outlines) to DXF lwpolyline entities
+// @return array of strings
+//
+// Group Codes Used:
+// 5 - Handle, unique HEX value, e.g. 5C6
+// 8 - layer name (0 is default layer)
+// 67 (0 - model space, 1 - paper space)
+// 100 -
+//
+const PathsToLwpolyline = (paths, options) => {
+  options.statusCallback && options.statusCallback({ progress: 0 })
+  let str = ''
+  paths.forEach((path, i) => {
+    if (path.points.length < 1) return
+    const numpointsClosed = path.points.length + (path.closed ? 1 : 0)
+    str += `  0
+LWPOLYLINE
+  5
+${getEntityId(options)}
+  100
+AcDbEntity
+  3
+${getName(path, options)}
+  8
+0
+  67
+0
+  62
+${getColorNumber(path, options)}
+  100
+AcDbPolyline
+  90
+${numpointsClosed}
+  70
+${(path.closed ? 1 : 0)}
+`
+    for (let pointindex = 0; pointindex < numpointsClosed; pointindex++) {
+      let pointindexwrapped = pointindex
+      if (pointindexwrapped >= path.points.length) pointindexwrapped -= path.points.length
+      const point = path.points[pointindexwrapped]
+      str += `  10
+${point[0]}
+  20
+${point[1]}
+`
+    }
+    options.statusCallback && options.statusCallback({ progress: 100 * i / paths.length })
+  })
+  options.statusCallback && options.statusCallback({ progress: 100 })
+  return [str]
+}
+
+//
+// convert the given paths (from outlines) to DXF polyline (2D line) entities
+// @return array of strings
+//
+const PathsToPolyine = (paths, options) => {
+  options.statusCallback && options.statusCallback({ progress: 0 })
+  let str = ''
+  paths.forEach((path, i) => {
+    const numpointsClosed = path.points.length + (path.closed ? 1 : 0)
+    str += `  0
+POLYLINE
+  5
+${getEntityId(options)}
+  100
+AcDbEntity
+  3
+${getName(path, options)}
+  8
+0
+  62
+${getColorNumber(path, options)}
+  100
+AcDb2dPolyline
+`
+    for (let pointindex = 0; pointindex < numpointsClosed; pointindex++) {
+      let pointindexwrapped = pointindex
+      if (pointindexwrapped >= path.points.length) pointindexwrapped -= path.points.length
+      const point = path.points[pointindexwrapped]
+      str += `  0
+VERTEX
+  5
+${getEntityId(options)}
+  100
+AcDbEntity
+  8
+0
+  100
+AcDbVertex
+  100
+AcDb2dVertex
+ 10
+${point[0]}
+ 20
+${point[1]}
+`
+    }
+    str += `  0
+SEQEND
+  5
+${getEntityId(options)}
+  100
+AcDbEntity
+`
+    options.statusCallback && options.statusCallback({ progress: 100 * i / paths.length })
+  })
+  options.statusCallback && options.statusCallback({ progress: 100 })
+  return [str]
+}
+
+//
+// convert the given object (geom3) to DXF 3D face entities
+// @return array of strings
+//
+const PolygonsTo3DFaces = (object, options) => {
+  options.statusCallback && options.statusCallback({ progress: 0 })
+  let str = ''
+  const polygons = geom3.toPolygons(object)
+  const objectColor = getColorNumber(object, options)
+  polygons.forEach((polygon, i) => {
+    const polyColor = polygon.color ? getColorNumber(polygon, options) : objectColor
+    const triangles = polygonToTriangles(polygon)
+    triangles.forEach((triangle, i) => {
+      str += triangleTo3DFaces(triangle, options, polyColor)
+    })
+  })
+  options.statusCallback && options.statusCallback({ progress: 100 })
+  return [str]
+}
+
+//
+// convert the given polygon to triangles
+//
+// NOTE: This only works for CONVEX polygons
+const polygonToTriangles = (polygon) => {
+  const length = polygon.vertices.length - 2
+  if (length < 1) return []
+
+  const pivot = polygon.vertices[0]
+  const triangles = []
+  for (let i = 0; i < length; i++) {
+    triangles.push([pivot, polygon.vertices[i + 1], polygon.vertices[i + 2]])
+  }
+  return triangles
+}
+
+//
+// convert the given triangle to DXF 3D face entity
+//
+const triangleTo3DFaces = (triangle, options, color) => {
+  const corner10 = triangle[0]
+  const corner11 = triangle[1]
+  const corner12 = triangle[2]
+  const corner13 = triangle[2] // same in DXF
+  const str = `  0
+3DFACE
+  5
+${getEntityId(options)}
+  100
+AcDbEntity
+  8
+0
+  62
+${color}
+  100
+AcDbFace
+  70
+0
+  10
+${corner10[0]}
+  20
+${corner10[1]}
+  30
+${corner10[2]}
+  11
+${corner11[0]}
+  21
+${corner11[1]}
+  31
+${corner11[2]}
+  12
+${corner12[0]}
+  22
+${corner12[1]}
+  32
+${corner12[2]}
+  13
+${corner13[0]}
+  23
+${corner13[1]}
+  33
+${corner13[2]}
+`
+  return str
+}
+
+// convert the given object (geom3) to DXF POLYLINE (polyface mesh)
+// FIXME The entity types are wrong, resulting in imterpretation as a 3D lines, not faces
+// @return array of strings
+const PolygonsToPolyline = (object, options) => {
+  let str = ''
+  const mesh = polygons2polyfaces(geom3.toPolygons(object))
+  if (mesh.faces.length > 0) {
+    str += `  0
+POLYLINE
+  5
+${getEntityId(options)}
+  100
+AcDbEntity
+  3
+${getName(object, options)}
+  8
+0
+  62
+${getColorNumber(object, options)}
+  100
+AcDb3dPolyline
+  70
+64
+  71
+${mesh.vertices.length}
+  72
+${mesh.faces.length}
+`
+    mesh.vertices.forEach((vertex) => {
+      str += `  0
+VERTEX
+  5
+${getEntityId(options)}
+  100
+AcDbEntity
+  8
+0
+  100
+AcDbVertex
+  100
+AcDb3dPolylineVertex
+  10
+${vertex[0]}
+  20
+${vertex[1]}
+  30
+${vertex[2]}
+  70
+192
+`
+    })
+    mesh.faces.forEach((face) => {
+      str += `  0
+VERTEX
+  5
+${getEntityId(options)}
+  100
+AcDbEntity
+  8
+0
+  100
+AcDbVertex
+  100
+AcDb3dPolylineVertex
+  10
+0
+  20
+0
+  30
+0
+  70
+128
+  71
+${face[0]}
+  72
+${face[1]}
+  73
+${face[2]}
+  74
+${face[3]}
+`
+    })
+  }
+  return [str]
+}
+
+// convert the given polygons to polyfaces (DXF)
+// @return array of faces, array of vertices
+const polygons2polyfaces = (polygons) => {
+  const faces = []
+  const vertices = []
+  for (let i = 0; i < polygons.length; ++i) {
+    const polygon = polygons[i]
+    const face = []
+    for (let j = 0; j < polygon.vertices.length; ++j) {
+      const vv = polygon.vertices[j]
+      vertices.push([vv[0], vv[1], vv[2]])
+      face.push(vertices.length)
+    }
+    while (face.length < 4) { face.push(0) }
+    faces.push(face)
+  }
+  return { faces: faces, vertices: vertices }
+}
+
+// get a unique id for a DXF entity
+// @return unique id string
+const getEntityId = (options) => {
+  options.entityId++
+  // add more zeros if the id needs to be larger
+  const padded = '00000' + options.entityId.toString(16).toUpperCase()
+  return 'CAD' + padded.substr(padded.length - 5)
+}
+
+const getName = (object, options) => {
+  if (object.name) return object.name
+  // add more zeros if the id needs to be larger
+  const padded = '00000' + options.entityId.toString(16).toUpperCase()
+  return 'CAD' + padded.substr(padded.length - 5)
+}
+
+const getColorNumber = (object, options) => {
+  let colorNumber = 256
+  if (object.color) {
+    const r = Math.floor(object.color[0] * 255)
+    const g = Math.floor(object.color[1] * 255)
+    const b = Math.floor(object.color[2] * 255)
+    // find the closest Autocad color number
+    const index = options.colorIndex
+    let closest = 255 + 255 + 255
+    for (let i = 1; i < index.length; i++) {
+      const rgb = index[i]
+      const diff = Math.abs(r - rgb[0]) + Math.abs(g - rgb[1]) + Math.abs(b - rgb[2])
+      if (diff < closest) {
+        colorNumber = i
+        if (diff === 0) break
+        closest = diff
+      }
+    }
+  }
+  return colorNumber
+}
+
+module.exports = {
+  serialize,
+  mimeType
+}
+
+},{"./autocad_AC2017":10,"./colorindex2017":11,"@jscad/array-utils":5,"@jscad/modeling":108}],13:[function(require,module,exports){
 // BinaryReader
 // Converted to ES5 Class by @z3dev
 // Refactored by Vjeux <vjeuxx@gmail.com>
@@ -243,7 +4139,7 @@ class BinaryReader {
 
     return exponent === (bias << 1) + 1 ? significand ? NaN : signal ? -Infinity : +Infinity
       : (1 + signal * -2) * (exponent || significand ? !exponent ? Math.pow(2, -bias + 1) * significand
-        : Math.pow(2, exponent - bias) * (1 + significand) : 0)
+          : Math.pow(2, exponent - bias) * (1 + significand) : 0)
   }
 
   _decodeInt (bits, signed) {
@@ -294,7 +4190,7 @@ class BinaryReader {
 
 module.exports = BinaryReader
 
-},{}],11:[function(require,module,exports){
+},{}],14:[function(require,module,exports){
 (function (Buffer){
 /*
  * Blob.js
@@ -336,10 +4232,19 @@ class Blob {
     this.encoding = 'utf8'
     // storage
     this.buffer = null
-    this.length = 32e+6 // allocation, not contents
+    this.length = 0 // allocation, not contents
 
     if (!contents) return
     if (!Array.isArray(contents)) return
+
+    // Find content length
+    contents.forEach((content) => {
+      if (typeof (content) === 'string') {
+        this.length += content.length
+      } else if (content instanceof ArrayBuffer) {
+        this.length += content.byteLength
+      }
+    })
 
     // process options if any
     if (options.type) {
@@ -370,8 +4275,7 @@ class Blob {
           break
         case 'object':
           object = contents[index] // this should be a reference to an object
-          if (Buffer.isBuffer(object)) {
-          }
+          // FIXME if (Buffer.isBuffer(object)) { }
           if (object instanceof ArrayBuffer) {
             const view = new DataView(object)
             for (let bindex = 0; bindex < object.byteLength; bindex++) {
@@ -430,7 +4334,7 @@ class Blob {
 module.exports = Blob
 
 }).call(this,require("buffer").Buffer)
-},{"buffer":404}],12:[function(require,module,exports){
+},{"buffer":423}],15:[function(require,module,exports){
 const makeBlob = require('./makeBlob')
 
 const Blob = makeBlob()
@@ -454,7 +4358,7 @@ const convertToBlob = (input) => {
 
 module.exports = convertToBlob
 
-},{"./makeBlob":14}],13:[function(require,module,exports){
+},{"./makeBlob":17}],16:[function(require,module,exports){
 /**
  * Utility functions of various sorts in support of IO packages.
  * @module io/utils
@@ -468,7 +4372,7 @@ module.exports = {
   Blob: require('./Blob')
 }
 
-},{"./BinaryReader":10,"./Blob":11,"./convertToBlob":12,"./makeBlob":14}],14:[function(require,module,exports){
+},{"./BinaryReader":13,"./Blob":14,"./convertToBlob":15,"./makeBlob":17}],17:[function(require,module,exports){
 const nodeBlob = require('./Blob.js')
 
 /**
@@ -486,7 +4390,7 @@ const makeBlob = () => {
 
 module.exports = makeBlob
 
-},{"./Blob.js":11}],15:[function(require,module,exports){
+},{"./Blob.js":14}],18:[function(require,module,exports){
 const cssColors = require('./cssColors')
 
 /**
@@ -502,7 +4406,7 @@ const colorNameToRgb = (s) => cssColors[s.toLowerCase()]
 
 module.exports = colorNameToRgb
 
-},{"./cssColors":17}],16:[function(require,module,exports){
+},{"./cssColors":20}],19:[function(require,module,exports){
 const flatten = require('../utils/flatten')
 
 const geom2 = require('../geometries/geom2')
@@ -569,7 +4473,7 @@ const colorize = (color, ...objects) => {
 
 module.exports = colorize
 
-},{"../geometries/geom2":36,"../geometries/geom3":50,"../geometries/path2":71,"../geometries/poly3":87,"../utils/flatten":393}],17:[function(require,module,exports){
+},{"../geometries/geom2":42,"../geometries/geom3":57,"../geometries/path2":78,"../geometries/poly3":95,"../utils/flatten":412}],20:[function(require,module,exports){
 /**
  * @alias module:modeling/colors.cssColors
  * @see CSS color table from http://www.w3.org/TR/css3-color/
@@ -747,7 +4651,7 @@ const cssColors = {
 
 module.exports = cssColors
 
-},{}],18:[function(require,module,exports){
+},{}],21:[function(require,module,exports){
 /**
  * Converts CSS color notations (string of hex values) to RGB values.
  *
@@ -775,7 +4679,7 @@ const hexToRgb = (notation) => {
 
 module.exports = hexToRgb
 
-},{}],19:[function(require,module,exports){
+},{}],22:[function(require,module,exports){
 const flatten = require('../utils/flatten')
 
 const hueToColorComponent = require('./hueToColorComponent')
@@ -783,7 +4687,7 @@ const hueToColorComponent = require('./hueToColorComponent')
 /**
  * Converts HSL color values to RGB color values.
  *
- * @see http://en.wikipedia.org/wiki/HSL_color_space.
+ * @see http://en.wikipedia.org/wiki/HSL_color_space
  * @param {...Number|Array} values - HSL or HSLA color values
  * @return {Array} RGB or RGBA color values
  * @alias module:modeling/colors.hslToRgb
@@ -821,7 +4725,7 @@ const hslToRgb = (...values) => {
 
 module.exports = hslToRgb
 
-},{"../utils/flatten":393,"./hueToColorComponent":21}],20:[function(require,module,exports){
+},{"../utils/flatten":412,"./hueToColorComponent":24}],23:[function(require,module,exports){
 const flatten = require('../utils/flatten')
 
 /**
@@ -896,12 +4800,13 @@ const hsvToRgb = (...values) => {
 
 module.exports = hsvToRgb
 
-},{"../utils/flatten":393}],21:[function(require,module,exports){
+},{"../utils/flatten":412}],24:[function(require,module,exports){
 /**
  * Convert hue values to a color component (ie one of r, g, b)
  * @param  {Number} p
  * @param  {Number} q
  * @param  {Number} t
+ * @return {Number} color component
  * @alias module:modeling/colors.hueToColorComponent
  */
 const hueToColorComponent = (p, q, t) => {
@@ -915,7 +4820,7 @@ const hueToColorComponent = (p, q, t) => {
 
 module.exports = hueToColorComponent
 
-},{}],22:[function(require,module,exports){
+},{}],25:[function(require,module,exports){
 /**
  * All shapes (primitives or the results of operations) can be assigned a color (RGBA).
  * In all cases, the function returns the results, and never changes the original shapes.
@@ -936,7 +4841,7 @@ module.exports = {
   rgbToHsv: require('./rgbToHsv')
 }
 
-},{"./colorNameToRgb":15,"./colorize":16,"./cssColors":17,"./hexToRgb":18,"./hslToRgb":19,"./hsvToRgb":20,"./hueToColorComponent":21,"./rgbToHex":23,"./rgbToHsl":24,"./rgbToHsv":25}],23:[function(require,module,exports){
+},{"./colorNameToRgb":18,"./colorize":19,"./cssColors":20,"./hexToRgb":21,"./hslToRgb":22,"./hsvToRgb":23,"./hueToColorComponent":24,"./rgbToHex":26,"./rgbToHsl":27,"./rgbToHsv":28}],26:[function(require,module,exports){
 const flatten = require('../utils/flatten')
 
 /**
@@ -965,7 +4870,7 @@ const rgbToHex = (...values) => {
 
 module.exports = rgbToHex
 
-},{"../utils/flatten":393}],24:[function(require,module,exports){
+},{"../utils/flatten":412}],27:[function(require,module,exports){
 const flatten = require('../utils/flatten')
 
 /**
@@ -1020,7 +4925,7 @@ const rgbToHsl = (...values) => {
 
 module.exports = rgbToHsl
 
-},{"../utils/flatten":393}],25:[function(require,module,exports){
+},{"../utils/flatten":412}],28:[function(require,module,exports){
 const flatten = require('../utils/flatten')
 
 /**
@@ -1074,7 +4979,72 @@ const rgbToHsv = (...values) => {
 
 module.exports = rgbToHsv
 
-},{"../utils/flatten":393}],26:[function(require,module,exports){
+},{"../utils/flatten":412}],29:[function(require,module,exports){
+const lengths = require('./lengths')
+
+/**
+ * Convert a given arc length along a bezier curve to a t value.
+ * Useful for generating equally spaced points along a bezier curve.
+ *
+ * @example
+ * const points = [];
+ * const segments = 9; // this will generate 10 equally spaced points
+ * const increment = bezier.length(100, bezierCurve) / segments;
+ * for(let i = 0; i <= segments; i++) {
+ *   const t = bezier.arcLengthToT({distance: i * increment}, bezierCurve);
+ *   const point = bezier.valueAt(t, bezierCurve);
+ *   points.push(point);
+ * }
+ * return points;
+ *
+ * @param {Object} [options] options for construction
+ * @param {Number} [options.distance=0] the distance along the bezier curve for which we want to find the corresponding t value.
+ * @param {Number} [options.segments=100] the number of segments to use when approximating the curve length.
+ * @param {Object} bezier a bezier curve.
+ * @returns a number in the [0, 1] interval or NaN if the arcLength is negative or greater than the total length of the curve.
+ * @alias module:modeling/curves/bezier.arcLengthToT
+ */
+const arcLengthToT = (options, bezier) => {
+  const defaults = {
+    distance: 0,
+    segments: 100
+  }
+  const { distance, segments } = Object.assign({}, defaults, options)
+
+  const arcLengths = lengths(segments, bezier)
+  // binary search for the index with largest value smaller than target arcLength
+  let startIndex = 0
+  let endIndex = segments
+  while (startIndex <= endIndex) {
+    const middleIndex = Math.floor(startIndex + (endIndex - startIndex) / 2)
+    const diff = arcLengths[middleIndex] - distance
+    if (diff < 0) {
+      startIndex = middleIndex + 1
+    } else if (diff > 0) {
+      endIndex = middleIndex - 1
+    } else {
+      endIndex = middleIndex
+      break
+    }
+  }
+  // if we have an exact match, return it
+  const targetIndex = endIndex
+  if (arcLengths[targetIndex] === distance) {
+    return targetIndex / segments
+  }
+  // we could get finer grain at lengths, or use simple interpolation between two points
+  const lengthBefore = arcLengths[targetIndex]
+  const lengthAfter = arcLengths[targetIndex + 1]
+  const segmentLength = lengthAfter - lengthBefore
+  // determine where we are between the 'before' and 'after' points
+  const segmentFraction = (distance - lengthBefore) / segmentLength
+  // add that fractional amount and return
+  return (targetIndex + segmentFraction) / segments
+}
+
+module.exports = arcLengthToT
+
+},{"./lengths":33}],30:[function(require,module,exports){
 /**
  * Represents a bezier easing function.
  * @typedef {Object} bezier
@@ -1157,7 +5127,7 @@ const factorial = function (b) {
 
 module.exports = create
 
-},{}],27:[function(require,module,exports){
+},{}],31:[function(require,module,exports){
 /**
  * Represents a bezier easing function.
  * @see {@link bezier} for data structure information.
@@ -1166,22 +5136,103 @@ module.exports = create
 module.exports = {
   create: require('./create'),
   valueAt: require('./valueAt'),
-  tangentAt: require('./tangentAt')
+  tangentAt: require('./tangentAt'),
+  lengths: require('./lengths'),
+  length: require('./length'),
+  arcLengthToT: require('./arcLengthToT')
 }
 
-},{"./create":26,"./tangentAt":28,"./valueAt":29}],28:[function(require,module,exports){
+},{"./arcLengthToT":29,"./create":30,"./length":32,"./lengths":33,"./tangentAt":34,"./valueAt":35}],32:[function(require,module,exports){
+const lengths = require('./lengths')
+
+/**
+ * Approximates the length of the bezier curve by sampling it at a sequence of points, then adding up all the distances.
+ * This is equivalent to flattening the curve into lines and adding up all the line lengths.
+ *
+ * @example
+ * const b = bezier.create([[0, 0], [0, 10]]);
+ * console.log(length(100, b)) // output 10
+ *
+ * @param {Number} segments the number of segments to use when approximating the curve length.
+ * @param {Object} bezier a bezier curve.
+ * @returns an approximation of the curve's length.
+ * @alias module:modeling/curves/bezier.length
+ */
+const length = (segments, bezier) => lengths(segments, bezier)[segments]
+
+module.exports = length
+
+},{"./lengths":33}],33:[function(require,module,exports){
+const valueAt = require('./valueAt')
+
+/**
+ * Divides the bezier curve into line segments and returns the cumulative length of those segments as an array.
+ * Utility function used to calculate the curve's approximate length and determine the equivalence between arc length and time.
+ *
+ * @example
+ * const b = bezier.create([[0, 0], [0, 10]]);
+ * const totalLength = lengths(100, b).pop(); // the last element of the array is the curve's approximate length
+ *
+ * @param {Number} segments the number of segments to use when approximating the curve length.
+ * @param {Object} bezier a bezier curve.
+ * @returns an array containing the cumulative length of the segments.
+ */
+const lengths = (segments, bezier) => {
+  let sum = 0
+  const lengths = [0]
+  let previous = valueAt(0, bezier)
+  for (let index = 1; index <= segments; index++) {
+    const current = valueAt(index / segments, bezier)
+    sum += distanceBetween(current, previous)
+    lengths.push(sum)
+    previous = current
+  }
+  return lengths
+}
+
+/**
+ * Calculates the Euclidean distance between two n-dimensional points.
+ *
+ * @example
+ * const distance = distanceBetween([0, 0], [0, 10]); // calculate distance between 2D points
+ * console.log(distance); // output 10
+ *
+ * @param {Array} a - first operand.
+ * @param {Array} b - second operand.
+ * @returns {Number} - distance.
+ */
+const distanceBetween = (a, b) => {
+  if (Number.isFinite(a) && Number.isFinite(b)) {
+    return Math.abs(a - b)
+  } else if (Array.isArray(a) && Array.isArray(b)) {
+    if (a.length !== b.length) {
+      throw new Error('The operands must have the same number of dimensions.')
+    }
+    let sum = 0
+    for (let i = 0; i < a.length; i++) {
+      sum += (b[i] - a[i]) * (b[i] - a[i])
+    }
+    return Math.sqrt(sum)
+  } else {
+    throw new Error('The operands must be of the same type, either number or array.')
+  }
+}
+
+module.exports = lengths
+
+},{"./valueAt":35}],34:[function(require,module,exports){
 /**
  * Calculates the tangent at a specific position along a bezier easing curve.
  * For multidimensional curves, the tangent is the slope of each dimension at that point.
  * See the example called extrudeAlongPath.js
  *
  * @example
- * const b = bezier.create([0,0,0], [0,5,10], [10,0,-5], [10,10,10]]) // a cubic 3 dimensional easing curve that can generate position arrays for modelling
+ * const b = bezier.create([[0,0,0], [0,5,10], [10,0,-5], [10,10,10]]) // a cubic 3 dimensional easing curve that can generate position arrays for modelling
  * let tangent = bezier.tangentAt(t, b)
  *
  * @param {number} t : the position of which to calculate the bezier's tangent value; 0 < t < 1
  * @param {Object} bezier : an array with at least 2 elements of either all numbers, or all arrays of numbers that are the same size.
- * @returns {array | number} the tangent at the requested position.
+ * @return {array | number} the tangent at the requested position.
  * @alias module:modeling/curves/bezier.tangentAt
  */
 const tangentAt = (t, bezier) => {
@@ -1216,7 +5267,7 @@ const bezierTangent = function (bezier, p, t) {
 
 module.exports = tangentAt
 
-},{}],29:[function(require,module,exports){
+},{}],35:[function(require,module,exports){
 /**
  * Calculates the value at a specific position along a bezier easing curve.
  * For multidimensional curves, the tangent is the slope of each dimension at that point.
@@ -1262,7 +5313,7 @@ const bezierFunction = function (bezier, p, t) {
 
 module.exports = valueAt
 
-},{}],30:[function(require,module,exports){
+},{}],36:[function(require,module,exports){
 /**
  * Curves are n-dimensional mathematical constructs that define a path from point 0 to point 1.
  * @module modeling/curves
@@ -1274,7 +5325,7 @@ module.exports = {
   bezier: require('./bezier')
 }
 
-},{"./bezier":27}],31:[function(require,module,exports){
+},{"./bezier":31}],37:[function(require,module,exports){
 const mat4 = require('../../maths/mat4')
 const vec2 = require('../../maths/vec2')
 
@@ -1302,7 +5353,7 @@ const applyTransforms = (geometry) => {
 
 module.exports = applyTransforms
 
-},{"../../maths/mat4":151,"../../maths/vec2":197}],32:[function(require,module,exports){
+},{"../../maths/mat4":159,"../../maths/vec2":206}],38:[function(require,module,exports){
 /**
  * Performs a shallow clone of the given geometry.
  * @param {geom2} geometry - the geometry to clone
@@ -1313,7 +5364,7 @@ const clone = (geometry) => Object.assign({}, geometry)
 
 module.exports = clone
 
-},{}],33:[function(require,module,exports){
+},{}],39:[function(require,module,exports){
 const mat4 = require('../../maths/mat4')
 
 /**
@@ -1341,7 +5392,7 @@ const create = (sides) => {
 
 module.exports = create
 
-},{"../../maths/mat4":151}],34:[function(require,module,exports){
+},{"../../maths/mat4":159}],40:[function(require,module,exports){
 const mat4 = require('../../maths/mat4')
 const vec2 = require('../../maths/vec2')
 
@@ -1375,7 +5426,7 @@ const fromCompactBinary = (data) => {
 
 module.exports = fromCompactBinary
 
-},{"../../maths/mat4":151,"../../maths/vec2":197,"./create":33}],35:[function(require,module,exports){
+},{"../../maths/mat4":159,"../../maths/vec2":206,"./create":39}],41:[function(require,module,exports){
 const vec2 = require('../../maths/vec2')
 
 const create = require('./create')
@@ -1412,11 +5463,21 @@ const fromPoints = (points) => {
 
 module.exports = fromPoints
 
-},{"../../maths/vec2":197,"./create":33}],36:[function(require,module,exports){
+},{"../../maths/vec2":206,"./create":39}],42:[function(require,module,exports){
 /**
  * Represents a 2D geometry consisting of a list of sides.
  * @see {@link geom2} for data structure information.
  * @module modeling/geometries/geom2
+ *
+ * @example
+ * colorize([0.5,0,1,1], square()) // purple square
+ *
+ * @example
+ * {
+ *   "sides": [[[-1,1],[-1,-1]],[[-1,-1],[1,-1]],[[1,-1],[1,1]],[[1,1],[-1,1]]],
+ *   "transforms": [1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1],
+ *   "color": [0.5,0,1,1]
+ * }
  */
 module.exports = {
   clone: require('./clone'),
@@ -1430,13 +5491,14 @@ module.exports = {
   toSides: require('./toSides'),
   toString: require('./toString'),
   toCompactBinary: require('./toCompactBinary'),
-  transform: require('./transform')
+  transform: require('./transform'),
+  validate: require('./validate')
 }
 
-},{"./clone":32,"./create":33,"./fromCompactBinary":34,"./fromPoints":35,"./isA":37,"./reverse":38,"./toCompactBinary":39,"./toOutlines":40,"./toPoints":41,"./toSides":42,"./toString":43,"./transform":44}],37:[function(require,module,exports){
+},{"./clone":38,"./create":39,"./fromCompactBinary":40,"./fromPoints":41,"./isA":43,"./reverse":44,"./toCompactBinary":45,"./toOutlines":46,"./toPoints":47,"./toSides":48,"./toString":49,"./transform":50,"./validate":51}],43:[function(require,module,exports){
 /**
- * Determin if the given object is a 2D geometry.
- * @param {Object} object - the object to interogate
+ * Determine if the given object is a 2D geometry.
+ * @param {Object} object - the object to interrogate
  * @returns {Boolean} true, if the object matches a geom2 based object
  * @alias module:modeling/geometries/geom2.isA
  */
@@ -1453,7 +5515,7 @@ const isA = (object) => {
 
 module.exports = isA
 
-},{}],38:[function(require,module,exports){
+},{}],44:[function(require,module,exports){
 const create = require('./create')
 const toSides = require('./toSides')
 
@@ -1477,18 +5539,18 @@ const reverse = (geometry) => {
 
 module.exports = reverse
 
-},{"./create":33,"./toSides":42}],39:[function(require,module,exports){
+},{"./create":39,"./toSides":48}],45:[function(require,module,exports){
 /**
  * Produces a compact binary representation from the given geometry.
  * @param {geom2} geometry - the geometry
  * @returns {TypedArray} compact binary representation
  * @alias module:modeling/geometries/geom2.toCompactBinary
  */
-const toCompactBinary = (geom) => {
-  const sides = geom.sides
-  const transforms = geom.transforms
+const toCompactBinary = (geometry) => {
+  const sides = geometry.sides
+  const transforms = geometry.transforms
   let color = [-1, -1, -1, -1]
-  if (geom.color) color = geom.color
+  if (geometry.color) color = geometry.color
 
   // FIXME why Float32Array?
   const compacted = new Float32Array(1 + 16 + 4 + (sides.length * 4)) // type + transforms + color + sides data
@@ -1532,7 +5594,7 @@ const toCompactBinary = (geom) => {
 
 module.exports = toCompactBinary
 
-},{}],40:[function(require,module,exports){
+},{}],46:[function(require,module,exports){
 const vec2 = require('../../maths/vec2')
 
 const toSides = require('./toSides')
@@ -1541,27 +5603,42 @@ const toSides = require('./toSides')
  * Create a list of edges which SHARE vertices.
  * This allows the edges to be traversed in order.
  */
-const toEdges = (sides) => {
-  const uniquevertices = []
+const toSharedVertices = (sides) => {
+  const unique = new Map() // {key: vertex}
   const getUniqueVertex = (vertex) => {
-    const i = uniquevertices.findIndex((v) => vec2.equals(v, vertex))
-    if (i < 0) {
-      uniquevertices.push(vertex)
+    const key = vertex.toString()
+    if (unique.has(key)) {
+      return unique.get(key)
+    } else {
+      unique.set(key, vertex)
       return vertex
     }
-    return uniquevertices[i]
   }
 
-  const edges = []
-  sides.forEach((side) => {
-    edges.push([getUniqueVertex(side[0]), getUniqueVertex(side[1])])
+  return sides.map((side) => side.map(getUniqueVertex))
+}
+
+/*
+ * Convert a list of sides into a map from vertex to edges.
+ */
+const toVertexMap = (sides) => {
+  const vertexMap = new Map()
+  // first map to edges with shared vertices
+  const edges = toSharedVertices(sides)
+  // construct adjacent edges map
+  edges.forEach((edge) => {
+    if (vertexMap.has(edge[0])) {
+      vertexMap.get(edge[0]).push(edge)
+    } else {
+      vertexMap.set(edge[0], [edge])
+    }
   })
-  return edges
+  return vertexMap
 }
 
 /**
  * Create the outline(s) of the given geometry.
- * @param  {geom2} geometry
+ * @param {geom2} geometry - geometry to create outlines from
  * @returns {Array} an array of outlines, where each outline is an array of ordered points
  * @alias module:modeling/geometries/geom2.toOutlines
  *
@@ -1570,65 +5647,35 @@ const toEdges = (sides) => {
  * let outlines = toOutlines(geometry) // returns two outlines
  */
 const toOutlines = (geometry) => {
-  const vertexMap = new Map()
-  const edges = toEdges(toSides(geometry))
-  edges.forEach((edge) => {
-    if (!(vertexMap.has(edge[0]))) {
-      vertexMap.set(edge[0], [])
-    }
-    const sideslist = vertexMap.get(edge[0])
-    sideslist.push(edge)
-  })
-
+  const vertexMap = toVertexMap(toSides(geometry)) // {vertex: [edges]}
   const outlines = []
   while (true) {
-    let startside
+    let startSide
     for (const [vertex, edges] of vertexMap) {
-      startside = edges.shift()
-      if (!startside) {
+      startSide = edges.shift()
+      if (!startSide) {
         vertexMap.delete(vertex)
         continue
       }
       break
     }
-    if (startside === undefined) break // all starting sides have been visited
+    if (startSide === undefined) break // all starting sides have been visited
 
     const connectedVertexPoints = []
-    const startvertex = startside[0]
-    const v0 = vec2.create()
+    const startVertex = startSide[0]
     while (true) {
-      connectedVertexPoints.push(startside[0])
-      const nextvertex = startside[1]
-      if (nextvertex === startvertex) break // the outline has been closed
-      const nextpossiblesides = vertexMap.get(nextvertex)
-      if (!nextpossiblesides) {
-        throw new Error('the given geometry is not closed. verify proper construction')
+      connectedVertexPoints.push(startSide[0])
+      const nextVertex = startSide[1]
+      if (nextVertex === startVertex) break // the outline has been closed
+      const nextPossibleSides = vertexMap.get(nextVertex)
+      if (!nextPossibleSides) {
+        throw new Error(`geometry is not closed at vertex ${nextVertex}`)
       }
-      let nextsideindex = -1
-      if (nextpossiblesides.length === 1) {
-        nextsideindex = 0
-      } else {
-        // more than one side starting at the same vertex
-        let bestangle
-        const startangle = vec2.angleDegrees(vec2.subtract(v0, startside[1], startside[0]))
-        for (let sideindex = 0; sideindex < nextpossiblesides.length; sideindex++) {
-          const nextpossibleside = nextpossiblesides[sideindex]
-          const nextangle = vec2.angleDegrees(vec2.subtract(v0, nextpossibleside[1], nextpossibleside[0]))
-          let angledif = nextangle - startangle
-          if (angledif < -180) angledif += 360
-          if (angledif >= 180) angledif -= 360
-          if ((nextsideindex < 0) || (angledif > bestangle)) {
-            nextsideindex = sideindex
-            bestangle = angledif
-          }
-        }
+      const nextSide = popNextSide(startSide, nextPossibleSides)
+      if (nextPossibleSides.length === 0) {
+        vertexMap.delete(nextVertex)
       }
-      const nextside = nextpossiblesides[nextsideindex]
-      nextpossiblesides.splice(nextsideindex, 1) // remove side from list
-      if (nextpossiblesides.length === 0) {
-        vertexMap.delete(nextvertex)
-      }
-      startside = nextside
+      startSide = nextSide
     } // inner loop
 
     // due to the logic of fromPoints()
@@ -1642,9 +5689,33 @@ const toOutlines = (geometry) => {
   return outlines
 }
 
+// find the first counter-clockwise edge from startSide and pop from nextSides
+const popNextSide = (startSide, nextSides) => {
+  if (nextSides.length === 1) {
+    return nextSides.pop()
+  }
+  const v0 = vec2.create()
+  const startAngle = vec2.angleDegrees(vec2.subtract(v0, startSide[1], startSide[0]))
+  let bestAngle
+  let bestIndex
+  nextSides.forEach((nextSide, index) => {
+    const nextAngle = vec2.angleDegrees(vec2.subtract(v0, nextSide[1], nextSide[0]))
+    let angle = nextAngle - startAngle
+    if (angle < -180) angle += 360
+    if (angle >= 180) angle -= 360
+    if (bestIndex === undefined || angle > bestAngle) {
+      bestIndex = index
+      bestAngle = angle
+    }
+  })
+  const nextSide = nextSides[bestIndex]
+  nextSides.splice(bestIndex, 1) // remove side from list
+  return nextSide
+}
+
 module.exports = toOutlines
 
-},{"../../maths/vec2":197,"./toSides":42}],41:[function(require,module,exports){
+},{"../../maths/vec2":206,"./toSides":48}],47:[function(require,module,exports){
 const toSides = require('./toSides')
 
 /**
@@ -1671,7 +5742,7 @@ const toPoints = (geometry) => {
 
 module.exports = toPoints
 
-},{"./toSides":42}],42:[function(require,module,exports){
+},{"./toSides":48}],48:[function(require,module,exports){
 const applyTransforms = require('./applyTransforms')
 
 /**
@@ -1689,7 +5760,7 @@ const toSides = (geometry) => applyTransforms(geometry).sides
 
 module.exports = toSides
 
-},{"./applyTransforms":31}],43:[function(require,module,exports){
+},{"./applyTransforms":37}],49:[function(require,module,exports){
 const vec2 = require('../../maths/vec2')
 
 const toSides = require('./toSides')
@@ -1697,7 +5768,7 @@ const toSides = require('./toSides')
 /**
  * Create a string representing the contents of the given geometry.
  * @param {geom2} geometry - the geometry
- * @returns {String} a representive string
+ * @returns {String} a representative string
  * @alias module:modeling/geometries/geom2.toString
  *
  * @example
@@ -1715,7 +5786,7 @@ const toString = (geometry) => {
 
 module.exports = toString
 
-},{"../../maths/vec2":197,"./toSides":42}],44:[function(require,module,exports){
+},{"../../maths/vec2":206,"./toSides":48}],50:[function(require,module,exports){
 const mat4 = require('../../maths/mat4')
 
 /**
@@ -1737,7 +5808,45 @@ const transform = (matrix, geometry) => {
 
 module.exports = transform
 
-},{"../../maths/mat4":151}],45:[function(require,module,exports){
+},{"../../maths/mat4":159}],51:[function(require,module,exports){
+const vec2 = require('../../maths/vec2')
+const isA = require('./isA')
+const toOutlines = require('./toOutlines')
+
+/**
+ * Determine if the given object is a valid geom2.
+ * Checks for closedness, self-edges, and valid data points.
+ *
+ * **If the geometry is not valid, an exception will be thrown with details of the geometry error.**
+ *
+ * @param {Object} object - the object to interrogate
+ * @throws {Error} error if the geometry is not valid
+ * @alias module:modeling/geometries/geom2.validate
+ */
+const validate = (object) => {
+  if (!isA(object)) {
+    throw new Error('invalid geom2 structure')
+  }
+
+  // check for closedness
+  toOutlines(object)
+
+  // check for self-edges
+  object.sides.forEach((side) => {
+    if (vec2.equals(side[0], side[1])) {
+      throw new Error(`geom2 self-edge ${side[0]}`)
+    }
+  })
+
+  // check transforms
+  if (!object.transforms.every(Number.isFinite)) {
+    throw new Error(`geom2 invalid transforms ${object.transforms}`)
+  }
+}
+
+module.exports = validate
+
+},{"../../maths/vec2":206,"./isA":43,"./toOutlines":46}],52:[function(require,module,exports){
 const mat4 = require('../../maths/mat4')
 
 const poly3 = require('../poly3')
@@ -1754,16 +5863,15 @@ const applyTransforms = (geometry) => {
   if (mat4.isIdentity(geometry.transforms)) return geometry
 
   // apply transforms to each polygon
-  // const isMirror = mat4.isMirroring(geometry.transforms)
-  // TBD if (isMirror) newvertices.reverse()
   geometry.polygons = geometry.polygons.map((polygon) => poly3.transform(geometry.transforms, polygon))
+  // reset transforms
   geometry.transforms = mat4.create()
   return geometry
 }
 
 module.exports = applyTransforms
 
-},{"../../maths/mat4":151,"../poly3":87}],46:[function(require,module,exports){
+},{"../../maths/mat4":159,"../poly3":95}],53:[function(require,module,exports){
 /**
  * Performs a shallow clone of the given geometry.
  * @param {geom3} geometry - the geometry to clone
@@ -1774,7 +5882,7 @@ const clone = (geometry) => Object.assign({}, geometry)
 
 module.exports = clone
 
-},{}],47:[function(require,module,exports){
+},{}],54:[function(require,module,exports){
 const mat4 = require('../../maths/mat4')
 
 /**
@@ -1795,14 +5903,14 @@ const create = (polygons) => {
     polygons = [] // empty contents
   }
   return {
-    polygons: polygons,
+    polygons,
     transforms: mat4.create()
   }
 }
 
 module.exports = create
 
-},{"../../maths/mat4":151}],48:[function(require,module,exports){
+},{"../../maths/mat4":159}],55:[function(require,module,exports){
 const vec3 = require('../../maths/vec3')
 const mat4 = require('../../maths/mat4')
 
@@ -1838,7 +5946,7 @@ const fromCompactBinary = (data) => {
     created.polygons.push(poly3.create(vertices))
   }
 
-  // transfer known properities, i.e. color
+  // transfer known properties, i.e. color
   if (data[17] >= 0) {
     created.color = [data[17], data[18], data[19], data[20]]
   }
@@ -1848,7 +5956,7 @@ const fromCompactBinary = (data) => {
 
 module.exports = fromCompactBinary
 
-},{"../../maths/mat4":151,"../../maths/vec3":228,"../poly3":87,"./create":47}],49:[function(require,module,exports){
+},{"../../maths/mat4":159,"../../maths/vec3":237,"../poly3":95,"./create":54}],56:[function(require,module,exports){
 const poly3 = require('../poly3')
 
 const create = require('./create')
@@ -1869,7 +5977,7 @@ const fromPoints = (listofpoints) => {
 
   const polygons = listofpoints.map((points, index) => {
     // TODO catch the error, and rethrow with index
-    const polygon = poly3.fromPoints(points)
+    const polygon = poly3.create(points)
     return polygon
   })
   const result = create(polygons)
@@ -1878,11 +5986,28 @@ const fromPoints = (listofpoints) => {
 
 module.exports = fromPoints
 
-},{"../poly3":87,"./create":47}],50:[function(require,module,exports){
+},{"../poly3":95,"./create":54}],57:[function(require,module,exports){
 /**
  * Represents a 3D geometry consisting of a list of polygons.
  * @see {@link geom3} for data structure information.
  * @module modeling/geometries/geom3
+ *
+ * @example
+ * colorize([0,0.5,1,0.6], cube()) // transparent ice cube
+ *
+ * @example
+ * {
+ *   "polygons": [
+ *     {"vertices": [[-1,-1,-1], [-1,-1,1], [-1,1,1], [-1,1,-1]]},
+ *     {"vertices": [[1,-1,-1], [1,1,-1], [1,1,1], [1,-1,1]]},
+ *     {"vertices": [[-1,-1,-1], [1,-1,-1], [1,-1,1], [-1,-1,1]]},
+ *     {"vertices": [[-1,1,-1], [-1,1,1], [1,1,1], [1,1,-1]]},
+ *     {"vertices": [[-1,-1,-1], [-1,1,-1], [1,1,-1], [1,-1,-1]]},
+ *     {"vertices": [[-1,-1,1], [1,-1,1], [1,1,1], [-1,1,1]]}
+ *   ],
+ *   "transforms": [1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1],
+ *   "color": [0,0.5,1,0.6]
+ * }
  */
 module.exports = {
   clone: require('./clone'),
@@ -1895,10 +6020,11 @@ module.exports = {
   toPolygons: require('./toPolygons'),
   toString: require('./toString'),
   toCompactBinary: require('./toCompactBinary'),
-  transform: require('./transform')
+  transform: require('./transform'),
+  validate: require('./validate')
 }
 
-},{"./clone":46,"./create":47,"./fromCompactBinary":48,"./fromPoints":49,"./invert":51,"./isA":52,"./toCompactBinary":53,"./toPoints":54,"./toPolygons":55,"./toString":56,"./transform":57}],51:[function(require,module,exports){
+},{"./clone":53,"./create":54,"./fromCompactBinary":55,"./fromPoints":56,"./invert":58,"./isA":59,"./toCompactBinary":60,"./toPoints":61,"./toPolygons":62,"./toString":63,"./transform":64,"./validate":65}],58:[function(require,module,exports){
 const poly3 = require('../poly3')
 
 const create = require('./create')
@@ -1906,8 +6032,8 @@ const toPolygons = require('./toPolygons')
 
 /**
  * Invert the given geometry, transposing solid and empty space.
- * @params {geom3} geometry - the geometry to invert
- * @returns {geom3} a new geometry
+ * @param {geom3} geometry - the geometry to invert
+ * @return {geom3} a new geometry
  * @alias module:modeling/geometries/geom3.invert
  */
 const invert = (geometry) => {
@@ -1918,10 +6044,10 @@ const invert = (geometry) => {
 
 module.exports = invert
 
-},{"../poly3":87,"./create":47,"./toPolygons":55}],52:[function(require,module,exports){
+},{"../poly3":95,"./create":54,"./toPolygons":62}],59:[function(require,module,exports){
 /**
- * Determin if the given object is a 3D geometry.
- * @param {object} object - the object to interogate
+ * Determine if the given object is a 3D geometry.
+ * @param {Object} object - the object to interrogate
  * @returns {Boolean} true if the object matches a geom3
  * @alias module:modeling/geometries/geom3.isA
  */
@@ -1938,7 +6064,7 @@ const isA = (object) => {
 
 module.exports = isA
 
-},{}],53:[function(require,module,exports){
+},{}],60:[function(require,module,exports){
 const poly3 = require('../poly3')
 
 /**
@@ -1947,14 +6073,14 @@ const poly3 = require('../poly3')
  * @return {TypedArray} compact binary representation
  * @alias module:modeling/geometries/geom3.toCompactBinary
  */
-const toCompactBinary = (geom) => {
-  const polygons = geom.polygons
-  const transforms = geom.transforms
+const toCompactBinary = (geometry) => {
+  const polygons = geometry.polygons
+  const transforms = geometry.transforms
 
   const numberOfPolygons = polygons.length
   const numberOfVertices = polygons.reduce((count, polygon) => count + polygon.vertices.length, 0)
   let color = [-1, -1, -1, -1]
-  if (geom.color) color = geom.color
+  if (geometry.color) color = geometry.color
 
   // FIXME why Float32Array?
   const compacted = new Float32Array(1 + 16 + 4 + 1 + numberOfPolygons + (numberOfVertices * 3))
@@ -2008,7 +6134,7 @@ const toCompactBinary = (geom) => {
 
 module.exports = toCompactBinary
 
-},{"../poly3":87}],54:[function(require,module,exports){
+},{"../poly3":95}],61:[function(require,module,exports){
 const poly3 = require('../poly3')
 
 const toPolygons = require('./toPolygons')
@@ -2016,6 +6142,7 @@ const toPolygons = require('./toPolygons')
 /**
  * Return the given geometry as a list of points, after applying transforms.
  * The returned array should not be modified as the points are shared with the geometry.
+ * @param {geom3} geometry - the geometry
  * @return {Array} list of points, where each sub-array represents a polygon
  * @alias module:modeling/geometries/geom3.toPoints
  */
@@ -2027,7 +6154,7 @@ const toPoints = (geometry) => {
 
 module.exports = toPoints
 
-},{"../poly3":87,"./toPolygons":55}],55:[function(require,module,exports){
+},{"../poly3":95,"./toPolygons":62}],62:[function(require,module,exports){
 const applyTransforms = require('./applyTransforms')
 
 /**
@@ -2044,7 +6171,7 @@ const toPolygons = (geometry) => applyTransforms(geometry).polygons
 
 module.exports = toPolygons
 
-},{"./applyTransforms":45}],56:[function(require,module,exports){
+},{"./applyTransforms":52}],63:[function(require,module,exports){
 const poly3 = require('../poly3')
 
 const toPolygons = require('./toPolygons')
@@ -2052,7 +6179,7 @@ const toPolygons = require('./toPolygons')
 /**
  * Create a string representing the contents of the given geometry.
  * @param {geom3} geometry - the geometry
- * @returns {String} a representive string
+ * @returns {String} a representative string
  * @alias module:modeling/geometries/geom3.toString
  *
  * @example
@@ -2069,7 +6196,7 @@ const toString = (geometry) => {
 
 module.exports = toString
 
-},{"../poly3":87,"./toPolygons":55}],57:[function(require,module,exports){
+},{"../poly3":95,"./toPolygons":62}],64:[function(require,module,exports){
 const mat4 = require('../../maths/mat4')
 
 /**
@@ -2091,10 +6218,81 @@ const transform = (matrix, geometry) => {
 
 module.exports = transform
 
-},{"../../maths/mat4":151}],58:[function(require,module,exports){
+},{"../../maths/mat4":159}],65:[function(require,module,exports){
+const poly3 = require('../poly3')
+const isA = require('./isA')
+
+/**
+ * Determine if the given object is a valid 3D geometry.
+ * Checks for valid data structure, convex polygon faces, and manifold edges.
+ *
+ * **If the geometry is not valid, an exception will be thrown with details of the geometry error.**
+ *
+ * @param {Object} object - the object to interrogate
+ * @throws {Error} error if the geometry is not valid
+ * @alias module:modeling/geometries/geom3.validate
+ */
+const validate = (object) => {
+  if (!isA(object)) {
+    throw new Error('invalid geom3 structure')
+  }
+
+  // check polygons
+  object.polygons.forEach(poly3.validate)
+  validateManifold(object)
+
+  // check transforms
+  if (!object.transforms.every(Number.isFinite)) {
+    throw new Error(`geom3 invalid transforms ${object.transforms}`)
+  }
+
+  // TODO: check for self-intersecting
+}
+
+/*
+ * Check manifold edge condition: Every edge is in exactly 2 faces
+ */
+const validateManifold = (object) => {
+  // count of each edge
+  const edgeCount = new Map()
+  object.polygons.forEach(({ vertices }) => {
+    vertices.forEach((v, i) => {
+      const v1 = `${v}`
+      const v2 = `${vertices[(i + 1) % vertices.length]}`
+      // sort for undirected edge
+      const edge = `${v1}/${v2}`
+      const count = edgeCount.has(edge) ? edgeCount.get(edge) : 0
+      edgeCount.set(edge, count + 1)
+    })
+  })
+
+  // check that edges are always matched
+  const nonManifold = []
+  edgeCount.forEach((count, edge) => {
+    const complementEdge = edge.split('/').reverse().join('/')
+    const complementCount = edgeCount.get(complementEdge)
+    if (count !== complementCount) {
+      nonManifold.push(edge.replace('/', ' -> '))
+    }
+  })
+  if (nonManifold.length > 0) {
+    throw new Error(`non-manifold edges ${nonManifold.length}\n${nonManifold.join('\n')}`)
+  }
+}
+
+module.exports = validate
+
+},{"../poly3":95,"./isA":59}],66:[function(require,module,exports){
 /**
  * Geometries are objects that represent the contents of primitives or the results of operations.
- * Note: Geometries are consider immutable, so never change the contents directly.
+ * Note: Geometries are considered immutable, so never change the contents directly.
+ *
+ * @see {@link geom2} - 2D geometry consisting of sides
+ * @see {@link geom3} - 3D geometry consisting of polygons
+ * @see {@link path2} - 2D geometry consisting of ordered points
+ * @see {@link poly2} - 2D polygon consisting of ordered vertices
+ * @see {@link poly3} - 3D polygon consisting of ordered vertices
+ *
  * @module modeling/geometries
  * @example
  * const { geom2, geom3, path2, poly2, poly3 } = require('@jscad/modeling').geometries
@@ -2107,7 +6305,8 @@ module.exports = {
   poly3: require('./poly3')
 }
 
-},{"./geom2":36,"./geom3":50,"./path2":71,"./poly2":81,"./poly3":87}],59:[function(require,module,exports){
+},{"./geom2":42,"./geom3":57,"./path2":78,"./poly2":89,"./poly3":95}],67:[function(require,module,exports){
+const { TAU } = require('../../maths/constants')
 const vec2 = require('../../maths/vec2')
 
 const fromPoints = require('./fromPoints')
@@ -2122,7 +6321,7 @@ const toPoints = require('./toPoints')
  * @param {vec2} [options.radius=[0,0]] - radius of arc (X and Y)
  * @param {Number} [options.xaxisrotation=0] - rotation (RADIANS) of the X axis of the arc with respect to the X axis of the coordinate system
  * @param {Boolean} [options.clockwise=false] - draw an arc clockwise with respect to the center point
- * @param {Boolean} [options.large=false] - draw an arc longer than PI radians
+ * @param {Boolean} [options.large=false] - draw an arc longer than TAU / 2 radians
  * @param {Number} [options.segments=16] - number of segments per full rotation
  * @param {path2} geometry - the path of which to append the arc
  * @returns {path2} a new path with the appended points
@@ -2221,15 +6420,15 @@ const appendArc = (options, geometry) => {
     const theta1 = vec2.angleRadians(vector1)
     const theta2 = vec2.angleRadians(vector2)
     let deltatheta = theta2 - theta1
-    deltatheta = deltatheta % (2 * Math.PI)
+    deltatheta = deltatheta % TAU
     if ((!sweepFlag) && (deltatheta > 0)) {
-      deltatheta -= 2 * Math.PI
+      deltatheta -= TAU
     } else if ((sweepFlag) && (deltatheta < 0)) {
-      deltatheta += 2 * Math.PI
+      deltatheta += TAU
     }
 
     // Ok, we have the center point and angle range (from theta1, deltatheta radians) so we can create the ellipse
-    let numsteps = Math.ceil(Math.abs(deltatheta) / (2 * Math.PI) * segments) + 1
+    let numsteps = Math.ceil(Math.abs(deltatheta) / TAU * segments) + 1
     if (numsteps < 1) numsteps = 1
     for (let step = 1; step < numsteps; step++) {
       const theta = theta1 + step / numsteps * deltatheta
@@ -2250,7 +6449,8 @@ const appendArc = (options, geometry) => {
 
 module.exports = appendArc
 
-},{"../../maths/vec2":197,"./fromPoints":70,"./toPoints":75}],60:[function(require,module,exports){
+},{"../../maths/constants":110,"../../maths/vec2":206,"./fromPoints":77,"./toPoints":82}],68:[function(require,module,exports){
+const { TAU } = require('../../maths/constants')
 const vec2 = require('../../maths/vec2')
 const vec3 = require('../../maths/vec2')
 
@@ -2370,7 +6570,7 @@ const appendBezier = (options, geometry) => {
 
   // subdivide each segment until the angle at each vertex becomes small enough:
   let subdivideBase = 1
-  const maxangle = Math.PI * 2 / segments
+  const maxangle = TAU / segments
   const maxsinangle = Math.sin(maxangle)
   while (subdivideBase < newpoints.length - 1) {
     const dir1 = vec2.subtract(v0, newpoints[subdivideBase], newpoints[subdivideBase - 1])
@@ -2407,9 +6607,9 @@ const appendBezier = (options, geometry) => {
 
 module.exports = appendBezier
 
-},{"../../maths/vec2":197,"./appendPoints":61,"./toPoints":75}],61:[function(require,module,exports){
-const fromPoints = require('./fromPoints')
-const toPoints = require('./toPoints')
+},{"../../maths/constants":110,"../../maths/vec2":206,"./appendPoints":69,"./toPoints":82}],69:[function(require,module,exports){
+const concat = require('./concat')
+const create = require('./create')
 
 /**
  * Append the given list of points to the end of the given geometry.
@@ -2420,20 +6620,11 @@ const toPoints = require('./toPoints')
  * @example
  * let newpath = appendPoints([[3, 4], [4, 5]], oldpath)
  */
-const appendPoints = (points, geometry) => {
-  if (geometry.isClosed) {
-    throw new Error('cannot append points to a closed path')
-  }
-
-  let newpoints = toPoints(geometry)
-  newpoints = newpoints.concat(points)
-
-  return fromPoints({}, newpoints)
-}
+const appendPoints = (points, geometry) => concat(geometry, create(points))
 
 module.exports = appendPoints
 
-},{"./fromPoints":70,"./toPoints":75}],62:[function(require,module,exports){
+},{"./concat":73,"./create":74}],70:[function(require,module,exports){
 const mat4 = require('../../maths/mat4')
 const vec2 = require('../../maths/vec2')
 
@@ -2455,7 +6646,7 @@ const applyTransforms = (geometry) => {
 
 module.exports = applyTransforms
 
-},{"../../maths/mat4":151,"../../maths/vec2":197}],63:[function(require,module,exports){
+},{"../../maths/mat4":159,"../../maths/vec2":206}],71:[function(require,module,exports){
 /**
  * Performs a shallow clone of the give geometry.
  * @param {path2} geometry - the geometry to clone
@@ -2466,7 +6657,7 @@ const clone = (geometry) => Object.assign({}, geometry)
 
 module.exports = clone
 
-},{}],64:[function(require,module,exports){
+},{}],72:[function(require,module,exports){
 const { EPS } = require('../../maths/constants')
 
 const vec2 = require('../../maths/vec2')
@@ -2501,12 +6692,15 @@ const close = (geometry) => {
 
 module.exports = close
 
-},{"../../maths/constants":101,"../../maths/vec2":197,"./clone":63}],65:[function(require,module,exports){
+},{"../../maths/constants":110,"../../maths/vec2":206,"./clone":71}],73:[function(require,module,exports){
 const fromPoints = require('./fromPoints')
 const toPoints = require('./toPoints')
+
 const { equals } = require('../../maths/vec2')
+
 /**
  * Concatenate the given paths.
+ *
  * If both contain the same point at the junction, merge it into one.
  * A concatenation of zero paths is an empty, open path.
  * A concatenation of one closed path to a series of open paths produces a closed path.
@@ -2521,16 +6715,14 @@ const { equals } = require('../../maths/vec2')
 const concat = (...paths) => {
   // Only the last path can be closed, producing a closed path.
   let isClosed = false
-  for (const path of paths) {
-    if (isClosed) {
-      throw new Error('Cannot concatenate to a closed path')
+  let newpoints = []
+  paths.forEach((path, i) => {
+    const tmp = toPoints(path).slice()
+    if (newpoints.length > 0 && tmp.length > 0 && equals(tmp[0], newpoints[newpoints.length - 1])) tmp.shift()
+    if (tmp.length > 0 && isClosed) {
+      throw new Error(`Cannot concatenate to a closed path; check the ${i}th path`)
     }
     isClosed = path.isClosed
-  }
-  let newpoints = []
-  paths.forEach((path) => {
-    const tmp = toPoints(path)
-    if (newpoints.length > 0 && tmp.length > 0 && equals(tmp[0], newpoints[newpoints.length - 1])) tmp.shift()
     newpoints = newpoints.concat(tmp)
   })
   return fromPoints({ closed: isClosed }, newpoints)
@@ -2538,7 +6730,7 @@ const concat = (...paths) => {
 
 module.exports = concat
 
-},{"../../maths/vec2":197,"./fromPoints":70,"./toPoints":75}],66:[function(require,module,exports){
+},{"../../maths/vec2":206,"./fromPoints":77,"./toPoints":82}],74:[function(require,module,exports){
 const mat4 = require('../../maths/mat4')
 
 /**
@@ -2570,26 +6762,7 @@ const create = (points) => {
 
 module.exports = create
 
-},{"../../maths/mat4":151}],67:[function(require,module,exports){
-const toPoints = require('./toPoints')
-
-/**
- * Calls a function for each point in the geometry.
- * @param {Object} options - options
- * @param {Function} thunk - the function to call
- * @param {path2} geometry - the geometry to traverse
- * @alias module:modeling/geometries/path2.eachPoint
- *
- * @example
- * eachPoint({}, accumulate, geometry)
- */
-const eachPoint = (options, thunk, path) => {
-  toPoints(path).forEach(thunk)
-}
-
-module.exports = eachPoint
-
-},{"./toPoints":75}],68:[function(require,module,exports){
+},{"../../maths/mat4":159}],75:[function(require,module,exports){
 const vec2 = require('../../maths/vec2')
 
 const toPoints = require('./toPoints')
@@ -2638,7 +6811,7 @@ const equals = (a, b) => {
 
 module.exports = equals
 
-},{"../../maths/vec2":197,"./toPoints":75}],69:[function(require,module,exports){
+},{"../../maths/vec2":206,"./toPoints":82}],76:[function(require,module,exports){
 const mat4 = require('../../maths/mat4')
 const vec2 = require('../../maths/vec2')
 
@@ -2673,7 +6846,7 @@ const fromCompactBinary = (data) => {
 
 module.exports = fromCompactBinary
 
-},{"../../maths/mat4":151,"../../maths/vec2":197,"./create":66}],70:[function(require,module,exports){
+},{"../../maths/mat4":159,"../../maths/vec2":206,"./create":74}],77:[function(require,module,exports){
 const { EPS } = require('../../maths/constants')
 
 const vec2 = require('../../maths/vec2')
@@ -2717,11 +6890,22 @@ const fromPoints = (options, points) => {
 
 module.exports = fromPoints
 
-},{"../../maths/constants":101,"../../maths/vec2":197,"./close":64,"./create":66}],71:[function(require,module,exports){
+},{"../../maths/constants":110,"../../maths/vec2":206,"./close":72,"./create":74}],78:[function(require,module,exports){
 /**
  * Represents a 2D geometry consisting of a list of ordered points.
  * @see {@link path2} for data structure information.
  * @module modeling/geometries/path2
+ *
+ * @example
+ * colorize([0,0,0,1], path2.fromPoints({ closed: true }, [[0,0], [4,0], [4,3]]))
+ *
+ * @example
+ * {
+ *   "points": [[0,0], [4,0], [4,3]],
+ *   "isClosed": true,
+ *   "transforms": [1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1],
+ *   "color": [0,0,0,1]
+ * }
  */
 module.exports = {
   appendArc: require('./appendArc'),
@@ -2731,7 +6915,6 @@ module.exports = {
   close: require('./close'),
   concat: require('./concat'),
   create: require('./create'),
-  eachPoint: require('./eachPoint'),
   equals: require('./equals'),
   fromPoints: require('./fromPoints'),
   fromCompactBinary: require('./fromCompactBinary'),
@@ -2740,13 +6923,14 @@ module.exports = {
   toPoints: require('./toPoints'),
   toString: require('./toString'),
   toCompactBinary: require('./toCompactBinary'),
-  transform: require('./transform')
+  transform: require('./transform'),
+  validate: require('./validate')
 }
 
-},{"./appendArc":59,"./appendBezier":60,"./appendPoints":61,"./clone":63,"./close":64,"./concat":65,"./create":66,"./eachPoint":67,"./equals":68,"./fromCompactBinary":69,"./fromPoints":70,"./isA":72,"./reverse":73,"./toCompactBinary":74,"./toPoints":75,"./toString":76,"./transform":77}],72:[function(require,module,exports){
+},{"./appendArc":67,"./appendBezier":68,"./appendPoints":69,"./clone":71,"./close":72,"./concat":73,"./create":74,"./equals":75,"./fromCompactBinary":76,"./fromPoints":77,"./isA":79,"./reverse":80,"./toCompactBinary":81,"./toPoints":82,"./toString":83,"./transform":84,"./validate":85}],79:[function(require,module,exports){
 /**
- * Determin if the given object is a path2 geometry.
- * @param {Object} object - the object to interogate
+ * Determine if the given object is a path2 geometry.
+ * @param {Object} object - the object to interrogate
  * @returns {Boolean} true if the object matches a path2
  * @alias module:modeling/geometries/path2.isA
  */
@@ -2765,40 +6949,40 @@ const isA = (object) => {
 
 module.exports = isA
 
-},{}],73:[function(require,module,exports){
+},{}],80:[function(require,module,exports){
 const clone = require('./clone')
 
 /**
  * Reverses the path so that the points are in the opposite order.
  * This swaps the left (interior) and right (exterior) edges.
- * @param {path2} geometry - the geometry to reverse
+ * @param {path2} geometry - the path to reverse
  * @returns {path2} a new path
  * @alias module:modeling/geometries/path2.reverse
  *
  * @example
  * let newpath = reverse(mypath)
  */
-const reverse = (path) => {
+const reverse = (geometry) => {
   // NOTE: this only updates the order of the points
-  const cloned = clone(path)
-  cloned.points = path.points.slice().reverse()
+  const cloned = clone(geometry)
+  cloned.points = geometry.points.slice().reverse()
   return cloned
 }
 
 module.exports = reverse
 
-},{"./clone":63}],74:[function(require,module,exports){
+},{"./clone":71}],81:[function(require,module,exports){
 /**
  * Produce a compact binary representation from the given path.
- * @param {path2} geometry - the path
+ * @param {path2} geometry - the path geometry
  * @returns {TypedArray} compact binary representation
  * @alias module:modeling/geometries/path2.toCompactBinary
  */
-const toCompactBinary = (geom) => {
-  const points = geom.points
-  const transforms = geom.transforms
+const toCompactBinary = (geometry) => {
+  const points = geometry.points
+  const transforms = geometry.transforms
   let color = [-1, -1, -1, -1]
-  if (geom.color) color = geom.color
+  if (geometry.color) color = geometry.color
 
   // FIXME why Float32Array?
   const compacted = new Float32Array(1 + 16 + 1 + 4 + (points.length * 2)) // type + transforms + isClosed + color + points data
@@ -2822,7 +7006,7 @@ const toCompactBinary = (geom) => {
   compacted[15] = transforms[14]
   compacted[16] = transforms[15]
 
-  compacted[17] = geom.isClosed ? 1 : 0
+  compacted[17] = geometry.isClosed ? 1 : 0
 
   compacted[18] = color[0]
   compacted[19] = color[1]
@@ -2841,7 +7025,7 @@ const toCompactBinary = (geom) => {
 
 module.exports = toCompactBinary
 
-},{}],75:[function(require,module,exports){
+},{}],82:[function(require,module,exports){
 const applyTransforms = require('./applyTransforms')
 
 /**
@@ -2858,7 +7042,7 @@ const toPoints = (geometry) => applyTransforms(geometry).points
 
 module.exports = toPoints
 
-},{"./applyTransforms":62}],76:[function(require,module,exports){
+},{"./applyTransforms":70}],83:[function(require,module,exports){
 const vec2 = require('../../maths/vec2')
 
 const toPoints = require('./toPoints')
@@ -2866,7 +7050,7 @@ const toPoints = require('./toPoints')
 /**
  * Create a string representing the contents of the given path.
  * @param {path2} geometry - the path
- * @returns {String} a representive string
+ * @returns {String} a representative string
  * @alias module:modeling/geometries/path2.toString
  *
  * @example
@@ -2884,7 +7068,7 @@ const toString = (geometry) => {
 
 module.exports = toString
 
-},{"../../maths/vec2":197,"./toPoints":75}],77:[function(require,module,exports){
+},{"../../maths/vec2":206,"./toPoints":82}],84:[function(require,module,exports){
 const mat4 = require('../../maths/mat4')
 
 /**
@@ -2897,7 +7081,7 @@ const mat4 = require('../../maths/mat4')
  * @alias module:modeling/geometries/path2.transform
  *
  * @example
- * let newpath = transform(fromZRotation(Math.PI / 4), path)
+ * let newpath = transform(fromZRotation(TAU / 8), path)
  */
 const transform = (matrix, geometry) => {
   const transforms = mat4.multiply(mat4.create(), matrix, geometry.transforms)
@@ -2906,7 +7090,50 @@ const transform = (matrix, geometry) => {
 
 module.exports = transform
 
-},{"../../maths/mat4":151}],78:[function(require,module,exports){
+},{"../../maths/mat4":159}],85:[function(require,module,exports){
+const vec2 = require('../../maths/vec2')
+const isA = require('./isA')
+
+/**
+ * Determine if the given object is a valid path2.
+ * Checks for valid data points, and duplicate points.
+ *
+ * **If the geometry is not valid, an exception will be thrown with details of the geometry error.**
+ *
+ * @param {Object} object - the object to interrogate
+ * @throws {Error} error if the geometry is not valid
+ * @alias module:modeling/geometries/path2.validate
+ */
+const validate = (object) => {
+  if (!isA(object)) {
+    throw new Error('invalid path2 structure')
+  }
+
+  // check for duplicate points
+  if (object.points.length > 1) {
+    for (let i = 0; i < object.points.length; i++) {
+      if (vec2.equals(object.points[i], object.points[(i + 1) % object.points.length])) {
+        throw new Error(`path2 duplicate points ${object.points[i]}`)
+      }
+    }
+  }
+
+  // check for infinity, nan
+  object.points.forEach((point) => {
+    if (!point.every(Number.isFinite)) {
+      throw new Error(`path2 invalid point ${point}`)
+    }
+  })
+
+  // check transforms
+  if (!object.transforms.every(Number.isFinite)) {
+    throw new Error(`path2 invalid transforms ${object.transforms}`)
+  }
+}
+
+module.exports = validate
+
+},{"../../maths/vec2":206,"./isA":79}],86:[function(require,module,exports){
 const measureArea = require('./measureArea')
 const flip = require('./flip')
 
@@ -2930,41 +7157,6 @@ const arePointsInside = (points, polygon) => {
 
   const sum = points.reduce((acc, point) => acc + isPointInside(point, vertices), 0)
   return sum === points.length ? 1 : 0
-}
-
-/*
- * Determine if the given point is inside the polygon.
- *
- * @see http://geomalgorithms.com/a03-_inclusion.html
- * @param {Array} point - an array with X and Y values
- * @param {Array} polygon - a list of points, where each point is an array with X and Y values
- * @return {Integer} 1 if the point is inside, 0 if outside
- */
-const isPointInsideOld = (point, polygon) => {
-  let wn = 0
-  const n = polygon.length
-  const x = point[0]
-  const y = point[1]
-  for (let i = 0; i < polygon.length; i++) {
-    const p1 = polygon[i]
-    const p2 = polygon[(i + 1) % n]
-    if (x !== p1[0] && y !== p1[1] && x !== p2[0] && y !== p2[1]) { // no overlap of points
-      if (p1[1] <= y) {
-        if (p2[1] > y) { // upward crossing
-          if (isLeft(p1, p2, point) > 0) { // point left of edge
-            wn++
-          }
-        }
-      } else {
-        if (p2[1] <= y) { // downward crossing
-          if (isLeft(p1, p2, point) < 0) { // point right of edge
-            wn--
-          }
-        }
-      }
-    }
-  }
-  return wn === 0 ? 1 : 0
 }
 
 /*
@@ -3024,16 +7216,9 @@ const isPointInside = (point, polygon) => {
   return insideFlag
 }
 
-/*
- * > 0 : p2 is left of the line p0 -> p1
- * = 0 : p2 is on the line p0 -> p1
- * < 0 : p2 is right of the line p0 -> p1
- */
-const isLeft = (p0, p1, p2) => (p1[0] - p0[0]) * (p2[1] - p0[1]) - (p2[0] - p0[0]) * (p1[1] - p0[1])
-
 module.exports = arePointsInside
 
-},{"./flip":80,"./measureArea":82}],79:[function(require,module,exports){
+},{"./flip":88,"./measureArea":90}],87:[function(require,module,exports){
 /**
  * Represents a convex 2D polygon consisting of a list of ordered vertices.
  * @typedef {Object} poly2
@@ -3059,7 +7244,7 @@ const create = (vertices) => {
 
 module.exports = create
 
-},{}],80:[function(require,module,exports){
+},{}],88:[function(require,module,exports){
 const create = require('./create')
 
 /**
@@ -3076,11 +7261,17 @@ const flip = (polygon) => {
 
 module.exports = flip
 
-},{"./create":79}],81:[function(require,module,exports){
+},{"./create":87}],89:[function(require,module,exports){
 /**
  * Represents a 2D polygon consisting of a list of ordered vertices.
  * @see {@link poly2} for data structure information.
  * @module modeling/geometries/poly2
+ *
+ * @example
+ * poly2.create([[0,0], [4,0], [4,3]])
+ *
+ * @example
+ * {"vertices": [[0,0], [4,0], [4,3]]}
  */
 module.exports = {
   arePointsInside: require('./arePointsInside'),
@@ -3089,7 +7280,7 @@ module.exports = {
   measureArea: require('./measureArea')
 }
 
-},{"./arePointsInside":78,"./create":79,"./flip":80,"./measureArea":82}],82:[function(require,module,exports){
+},{"./arePointsInside":86,"./create":87,"./flip":88,"./measureArea":90}],90:[function(require,module,exports){
 /**
  * Measure the area under the given polygon.
  *
@@ -3103,7 +7294,7 @@ const measureArea = (polygon) => area(polygon.vertices)
 
 module.exports = measureArea
 
-},{"../../maths/utils/area":175}],83:[function(require,module,exports){
+},{"../../maths/utils/area":183}],91:[function(require,module,exports){
 const create = require('./create')
 
 const vec3 = require('../../maths/vec3')
@@ -3133,7 +7324,7 @@ const clone = (...params) => {
 
 module.exports = clone
 
-},{"../../maths/vec3":228,"./create":84}],84:[function(require,module,exports){
+},{"../../maths/vec3":237,"./create":92}],92:[function(require,module,exports){
 
 /**
  * Represents a convex 3D polygon. The vertices used to initialize a polygon must
@@ -3154,12 +7345,12 @@ const create = (vertices) => {
   if (vertices === undefined || vertices.length < 3) {
     vertices = [] // empty contents
   }
-  return { vertices: vertices }
+  return { vertices }
 }
 
 module.exports = create
 
-},{}],85:[function(require,module,exports){
+},{}],93:[function(require,module,exports){
 const vec3 = require('../../maths/vec3')
 
 const create = require('./create')
@@ -3186,7 +7377,7 @@ const fromPoints = (points) => {
 
 module.exports = fromPoints
 
-},{"../../maths/vec3":228,"./create":84}],86:[function(require,module,exports){
+},{"../../maths/vec3":237,"./create":92}],94:[function(require,module,exports){
 const create = require('./create')
 
 /**
@@ -3205,11 +7396,17 @@ const fromPointsAndPlane = (vertices, plane) => {
 
 module.exports = fromPointsAndPlane
 
-},{"./create":84}],87:[function(require,module,exports){
+},{"./create":92}],95:[function(require,module,exports){
 /**
- * Represents a convex 3D polygon consisting of a list of vertices.
+ * Represents a convex 3D polygon consisting of a list of ordered vertices.
  * @see {@link poly3} for data structure information.
  * @module modeling/geometries/poly3
+ *
+ * @example
+ * poly3.create([[0,0,0], [4,0,0], [4,3,12]])
+ *
+ * @example
+ * {"vertices": [[0,0,0], [4,0,0], [4,3,12]]}
  */
 module.exports = {
   clone: require('./clone'),
@@ -3226,10 +7423,12 @@ module.exports = {
   plane: require('./plane'),
   toPoints: require('./toPoints'),
   toString: require('./toString'),
-  transform: require('./transform')
+  transform: require('./transform'),
+  validate: require('./validate')
 }
 
-},{"./clone":83,"./create":84,"./fromPoints":85,"./fromPointsAndPlane":86,"./invert":88,"./isA":89,"./isConvex":90,"./measureArea":91,"./measureBoundingBox":92,"./measureBoundingSphere":93,"./measureSignedVolume":94,"./plane":95,"./toPoints":96,"./toString":97,"./transform":98}],88:[function(require,module,exports){
+},{"./clone":91,"./create":92,"./fromPoints":93,"./fromPointsAndPlane":94,"./invert":96,"./isA":97,"./isConvex":98,"./measureArea":99,"./measureBoundingBox":100,"./measureBoundingSphere":101,"./measureSignedVolume":102,"./plane":103,"./toPoints":104,"./toString":105,"./transform":106,"./validate":107}],96:[function(require,module,exports){
+const plane = require('../../maths/plane')
 const create = require('./create')
 
 /**
@@ -3241,15 +7440,20 @@ const create = require('./create')
  */
 const invert = (polygon) => {
   const vertices = polygon.vertices.slice().reverse()
-  return create(vertices)
+  const inverted = create(vertices)
+  if (polygon.plane) {
+    // Flip existing plane to save recompute
+    inverted.plane = plane.flip(plane.create(), polygon.plane)
+  }
+  return inverted
 }
 
 module.exports = invert
 
-},{"./create":84}],89:[function(require,module,exports){
+},{"../../maths/plane":178,"./create":92}],97:[function(require,module,exports){
 /**
- * Determin if the given object is a polygon.
- * @param {Object} object - the object to interogate
+ * Determine if the given object is a polygon.
+ * @param {Object} object - the object to interrogate
  * @returns {Boolean} true if the object matches a poly3
  * @alias module:modeling/geometries/poly3.isA
  */
@@ -3266,17 +7470,17 @@ const isA = (object) => {
 
 module.exports = isA
 
-},{}],90:[function(require,module,exports){
+},{}],98:[function(require,module,exports){
 const plane = require('../../maths/plane')
 const vec3 = require('../../maths/vec3')
 
 /**
  * Check whether the given polygon is convex.
- * @param {poly3} polygon - the polygon to interogate
+ * @param {poly3} polygon - the polygon to interrogate
  * @returns {Boolean} true if convex
  * @alias module:modeling/geometries/poly3.isConvex
  */
-const isConvex = (poly3) => areVerticesConvex(poly3.vertices)
+const isConvex = (polygon) => areVerticesConvex(polygon.vertices)
 
 const areVerticesConvex = (vertices) => {
   const numvertices = vertices.length
@@ -3312,7 +7516,7 @@ const isConvexPoint = (prevpoint, point, nextpoint, normal) => {
 
 module.exports = isConvex
 
-},{"../../maths/plane":170,"../../maths/vec3":228}],91:[function(require,module,exports){
+},{"../../maths/plane":178,"../../maths/vec3":237}],99:[function(require,module,exports){
 const plane = require('./plane')
 
 /**
@@ -3322,15 +7526,15 @@ const plane = require('./plane')
  * @return {Number} area of the polygon
  * @alias module:modeling/geometries/poly3.measureArea
  */
-const measureArea = (poly3) => {
-  const n = poly3.vertices.length
+const measureArea = (polygon) => {
+  const n = polygon.vertices.length
   if (n < 3) {
     return 0 // degenerate polygon
   }
-  const vertices = poly3.vertices
+  const vertices = polygon.vertices
 
   // calculate a normal vector
-  const normal = plane(poly3)
+  const normal = plane(polygon)
 
   // determine direction of projection
   const ax = Math.abs(normal[0])
@@ -3397,7 +7601,7 @@ const measureArea = (poly3) => {
 
 module.exports = measureArea
 
-},{"./plane":95}],92:[function(require,module,exports){
+},{"./plane":103}],100:[function(require,module,exports){
 const vec3 = require('../../maths/vec3')
 
 /**
@@ -3405,8 +7609,8 @@ const vec3 = require('../../maths/vec3')
  * @returns {Array} an array of two vectors (3D);  minimum and maximum coordinates
  * @alias module:modeling/geometries/poly3.measureBoundingBox
  */
-const measureBoundingBox = (poly3) => {
-  const vertices = poly3.vertices
+const measureBoundingBox = (polygon) => {
+  const vertices = polygon.vertices
   const numvertices = vertices.length
   const min = numvertices === 0 ? vec3.create() : vec3.clone(vertices[0])
   const max = vec3.clone(min)
@@ -3419,43 +7623,80 @@ const measureBoundingBox = (poly3) => {
 
 module.exports = measureBoundingBox
 
-},{"../../maths/vec3":228}],93:[function(require,module,exports){
-const vec3 = require('../../maths/vec3')
-const measureBoundingBox = require('./measureBoundingBox')
+},{"../../maths/vec3":237}],101:[function(require,module,exports){
+const vec4 = require('../../maths/vec4')
+
+const cache = new WeakMap()
 
 /**
  * Measure the bounding sphere of the given polygon.
  * @param {poly3} polygon - the polygon to measure
- * @returns {Array} the computed bounding sphere; center point (3D) and radius
+ * @returns {vec4} the computed bounding sphere; center point (3D) and radius
  * @alias module:modeling/geometries/poly3.measureBoundingSphere
  */
-const measureBoundingSphere = (poly3) => {
-  const box = measureBoundingBox(poly3)
-  const center = box[0]
-  vec3.add(center, box[0], box[1])
-  vec3.scale(center, center, 0.5)
-  const radius = vec3.distance(center, box[1])
-  return [center, radius]
+const measureBoundingSphere = (polygon) => {
+  const boundingSphere = cache.get(polygon)
+  if (boundingSphere) return boundingSphere
+
+  const vertices = polygon.vertices
+  const out = vec4.create()
+
+  if (vertices.length === 0) {
+    out[0] = 0
+    out[1] = 0
+    out[2] = 0
+    out[3] = 0
+    return out
+  }
+
+  // keep a list of min/max vertices by axis
+  let minx = vertices[0]
+  let miny = minx
+  let minz = minx
+  let maxx = minx
+  let maxy = minx
+  let maxz = minx
+
+  vertices.forEach((v) => {
+    if (minx[0] > v[0]) minx = v
+    if (miny[1] > v[1]) miny = v
+    if (minz[2] > v[2]) minz = v
+    if (maxx[0] < v[0]) maxx = v
+    if (maxy[1] < v[1]) maxy = v
+    if (maxz[2] < v[2]) maxz = v
+  })
+
+  out[0] = (minx[0] + maxx[0]) * 0.5 // center of sphere
+  out[1] = (miny[1] + maxy[1]) * 0.5
+  out[2] = (minz[2] + maxz[2]) * 0.5
+  const x = out[0] - maxx[0]
+  const y = out[1] - maxy[1]
+  const z = out[2] - maxz[2]
+  out[3] = Math.sqrt(x * x + y * y + z * z) // radius of sphere
+
+  cache.set(polygon, out)
+
+  return out
 }
 
 module.exports = measureBoundingSphere
 
-},{"../../maths/vec3":228,"./measureBoundingBox":92}],94:[function(require,module,exports){
+},{"../../maths/vec4":263}],102:[function(require,module,exports){
 const vec3 = require('../../maths/vec3')
 
 /**
  * Measure the signed volume of the given polygon, which must be convex.
- * The volume is that formed by the tetrahedon connected to the axis [0,0,0],
+ * The volume is that formed by the tetrahedron connected to the axis [0,0,0],
  * and will be positive or negative based on the rotation of the vertices.
  * @see http://chenlab.ece.cornell.edu/Publication/Cha/icip01_Cha.pdf
  * @param {poly3} polygon - the polygon to measure
  * @return {Number} volume of the polygon
  * @alias module:modeling/geometries/poly3.measureSignedVolume
  */
-const measureSignedVolume = (poly3) => {
+const measureSignedVolume = (polygon) => {
   let signedVolume = 0
-  const vertices = poly3.vertices
-  // calculate based on triangluar polygons
+  const vertices = polygon.vertices
+  // calculate based on triangular polygons
   const cross = vec3.create()
   for (let i = 0; i < vertices.length - 2; i++) {
     vec3.cross(cross, vertices[i + 1], vertices[i + 2])
@@ -3467,7 +7708,7 @@ const measureSignedVolume = (poly3) => {
 
 module.exports = measureSignedVolume
 
-},{"../../maths/vec3":228}],95:[function(require,module,exports){
+},{"../../maths/vec3":237}],103:[function(require,module,exports){
 const mplane = require('../../maths/plane/')
 
 const plane = (polygon) => {
@@ -3479,19 +7720,19 @@ const plane = (polygon) => {
 
 module.exports = plane
 
-},{"../../maths/plane/":170}],96:[function(require,module,exports){
+},{"../../maths/plane/":178}],104:[function(require,module,exports){
 /**
- * Return the given geometry as a list of points.
+ * Return the given polygon as a list of points.
  * NOTE: The returned array should not be modified as the points are shared with the geometry.
  * @param {poly3} polygon - the polygon
  * @return {Array} list of points (3D)
  * @alias module:modeling/geometries/poly3.toPoints
  */
-const toPoints = (geometry) => geometry.vertices
+const toPoints = (polygon) => polygon.vertices
 
 module.exports = toPoints
 
-},{}],97:[function(require,module,exports){
+},{}],105:[function(require,module,exports){
 const vec3 = require('../../maths/vec3/')
 
 /**
@@ -3499,9 +7740,9 @@ const vec3 = require('../../maths/vec3/')
  * @return {String} the string representation
  * @alias module:modeling/geometries/poly3.toString
  */
-const toString = (poly3) => {
+const toString = (polygon) => {
   let result = 'poly3: vertices: ['
-  poly3.vertices.forEach((vertex) => {
+  polygon.vertices.forEach((vertex) => {
     result += `${vec3.toString(vertex)}, `
   })
   result += ']'
@@ -3510,7 +7751,7 @@ const toString = (poly3) => {
 
 module.exports = toString
 
-},{"../../maths/vec3/":228}],98:[function(require,module,exports){
+},{"../../maths/vec3/":237}],106:[function(require,module,exports){
 const mat4 = require('../../maths/mat4')
 const vec3 = require('../../maths/vec3')
 
@@ -3523,8 +7764,8 @@ const create = require('./create')
  * @returns {poly3} a new polygon
  * @alias module:modeling/geometries/poly3.transform
  */
-const transform = (matrix, poly3) => {
-  const vertices = poly3.vertices.map((vertex) => vec3.transform(vec3.create(), vertex, matrix))
+const transform = (matrix, polygon) => {
+  const vertices = polygon.vertices.map((vertex) => vec3.transform(vec3.create(), vertex, matrix))
   if (mat4.isMirroring(matrix)) {
     // reverse the order to preserve the orientation
     vertices.reverse()
@@ -3534,7 +7775,73 @@ const transform = (matrix, poly3) => {
 
 module.exports = transform
 
-},{"../../maths/mat4":151,"../../maths/vec3":228,"./create":84}],99:[function(require,module,exports){
+},{"../../maths/mat4":159,"../../maths/vec3":237,"./create":92}],107:[function(require,module,exports){
+const signedDistanceToPoint = require('../../maths/plane/signedDistanceToPoint')
+const { NEPS } = require('../../maths/constants')
+const vec3 = require('../../maths/vec3')
+const isA = require('./isA')
+const isConvex = require('./isConvex')
+const measureArea = require('./measureArea')
+const plane = require('./plane')
+
+/**
+ * Determine if the given object is a valid polygon.
+ * Checks for valid data structure, convex polygons, and duplicate points.
+ *
+ * **If the geometry is not valid, an exception will be thrown with details of the geometry error.**
+ *
+ * @param {Object} object - the object to interrogate
+ * @throws {Error} error if the geometry is not valid
+ * @alias module:modeling/geometries/poly3.validate
+ */
+const validate = (object) => {
+  if (!isA(object)) {
+    throw new Error('invalid poly3 structure')
+  }
+
+  // check for empty polygon
+  if (object.vertices.length < 3) {
+    throw new Error(`poly3 not enough vertices ${object.vertices.length}`)
+  }
+  // check area
+  if (measureArea(object) <= 0) {
+    throw new Error('poly3 area must be greater than zero')
+  }
+
+  // check for duplicate points
+  for (let i = 0; i < object.vertices.length; i++) {
+    if (vec3.equals(object.vertices[i], object.vertices[(i + 1) % object.vertices.length])) {
+      throw new Error(`poly3 duplicate vertex ${object.vertices[i]}`)
+    }
+  }
+
+  // check convexity
+  if (!isConvex(object)) {
+    throw new Error('poly3 must be convex')
+  }
+
+  // check for infinity, nan
+  object.vertices.forEach((vertex) => {
+    if (!vertex.every(Number.isFinite)) {
+      throw new Error(`poly3 invalid vertex ${vertex}`)
+    }
+  })
+
+  // check that points are co-planar
+  if (object.vertices.length > 3) {
+    const normal = plane(object)
+    object.vertices.forEach((vertex) => {
+      const dist = Math.abs(signedDistanceToPoint(normal, vertex))
+      if (dist > NEPS) {
+        throw new Error(`poly3 must be coplanar: vertex ${vertex} distance ${dist}`)
+      }
+    })
+  }
+}
+
+module.exports = validate
+
+},{"../../maths/constants":110,"../../maths/plane/signedDistanceToPoint":180,"../../maths/vec3":237,"./isA":97,"./isConvex":98,"./measureArea":99,"./plane":103}],108:[function(require,module,exports){
 module.exports = {
   colors: require('./colors'),
   curves: require('./curves'),
@@ -3553,7 +7860,7 @@ module.exports = {
   transforms: require('./operations/transforms')
 }
 
-},{"./colors":22,"./curves":30,"./geometries":58,"./maths":102,"./measurements":258,"./operations/booleans":272,"./operations/expansions":303,"./operations/extrusions":316,"./operations/hulls":337,"./operations/modifiers":348,"./operations/transforms":357,"./primitives":373,"./text":387,"./utils":395}],100:[function(require,module,exports){
+},{"./colors":25,"./curves":36,"./geometries":66,"./maths":111,"./measurements":267,"./operations/booleans":281,"./operations/expansions":310,"./operations/extrusions":333,"./operations/hulls":355,"./operations/modifiers":366,"./operations/transforms":376,"./primitives":392,"./text":406,"./utils":414}],109:[function(require,module,exports){
 const mat4 = require('./mat4')
 
 const vec2 = require('./vec2')
@@ -3762,7 +8069,7 @@ OrthoNormalBasis.prototype = {
 
 module.exports = OrthoNormalBasis
 
-},{"./mat4":151,"./vec2":197,"./vec3":228}],101:[function(require,module,exports){
+},{"./mat4":159,"./vec2":206,"./vec3":237}],110:[function(require,module,exports){
 /**
  * The resolution of space, currently one hundred nanometers.
  * This should be 1 / EPS.
@@ -3779,15 +8086,36 @@ const spatialResolution = 1e5
  */
 const EPS = 1e-5
 
+/**
+ * Smaller epsilon used for measuring near zero distances.
+ * @default
+ * @alias module:modeling/maths.NEPS
+ */
+const NEPS = 1e-13
+// NEPS is derived from a series of tests to determine the optimal precision
+// for comparing coplanar polygons, as provided by the sphere primitive at high
+// segmentation. NEPS is for 64 bit Number values.
+
+/**
+ * The TAU property represents the ratio of the circumference of a circle to its radius.
+ * Approximately 6.28318530717958647692
+ * @default
+ * @example
+ * const { TAU } = require('@jscad/modeling').maths.constants
+ */
+const TAU = Math.PI * 2
+
 module.exports = {
   EPS,
+  NEPS,
+  TAU,
   spatialResolution
 }
 
-},{}],102:[function(require,module,exports){
+},{}],111:[function(require,module,exports){
 /**
  * Maths are computational units for fundamental Euclidean geometry. All maths operate upon array data structures.
- * Note: Maths data structues are consider immutable, so never change the contents directly.
+ * Note: Maths data structures are considered immutable, so never change the contents directly.
  * @see Most computations are based upon the glMatrix library (glmatrix.net)
  * @module modeling/maths
  * @example
@@ -3806,7 +8134,7 @@ module.exports = {
   vec4: require('./vec4')
 }
 
-},{"./constants":101,"./line2":112,"./line3":129,"./mat4":151,"./plane":170,"./utils":176,"./vec2":197,"./vec3":228,"./vec4":254}],103:[function(require,module,exports){
+},{"./constants":110,"./line2":121,"./line3":138,"./mat4":159,"./plane":178,"./utils":184,"./vec2":206,"./vec3":237,"./vec4":263}],112:[function(require,module,exports){
 const create = require('./create')
 
 /**
@@ -3826,7 +8154,7 @@ const clone = (line) => {
 
 module.exports = clone
 
-},{"./create":106}],104:[function(require,module,exports){
+},{"./create":115}],113:[function(require,module,exports){
 const vec2 = require('../vec2')
 
 const direction = require('./direction')
@@ -3841,25 +8169,19 @@ const origin = require('./origin')
  * @alias module:modeling/maths/line2.closestPoint
  */
 const closestPoint = (line, point) => {
-  // linear function of AB
-  const a = origin(line)
-  const b = direction(line)
-  const m1 = (b[1] - a[1]) / (b[0] - a[0])
-  const t1 = a[1] - m1 * a[0]
-  // linear function of PC
-  const m2 = -1 / m1 // perpendicular
-  const t2 = point[1] - m2 * point[0]
-  // c.x * m1 + t1 === c.x * m2 + t2
-  const x = (t2 - t1) / (m1 - m2)
-  const y = m1 * x + t1
+  const orig = origin(line)
+  const dir = direction(line)
 
-  const closest = vec2.fromValues(x, y)
-  return closest
+  const v = vec2.subtract(vec2.create(), point, orig)
+  const dist = vec2.dot(v, dir)
+  vec2.scale(v, dir, dist)
+  vec2.add(v, v, orig)
+  return v
 }
 
 module.exports = closestPoint
 
-},{"../vec2":197,"./direction":107,"./origin":114}],105:[function(require,module,exports){
+},{"../vec2":206,"./direction":116,"./origin":123}],114:[function(require,module,exports){
 /**
  * Copy the given line to the receiving line.
  *
@@ -3877,7 +8199,7 @@ const copy = (out, line) => {
 
 module.exports = copy
 
-},{}],106:[function(require,module,exports){
+},{}],115:[function(require,module,exports){
 /**
  * Represents a unbounded line in 2D space, positioned at a point of origin.
  * A line is parametrized by a normal vector (perpendicular to the line, rotated 90 degrees counter clockwise) and
@@ -3899,7 +8221,7 @@ const create = () => [0, 1, 0] // normal and distance
 
 module.exports = create
 
-},{}],107:[function(require,module,exports){
+},{}],116:[function(require,module,exports){
 const vec2 = require('../vec2')
 
 /**
@@ -3917,7 +8239,7 @@ const direction = (line) => {
 
 module.exports = direction
 
-},{"../vec2":197}],108:[function(require,module,exports){
+},{"../vec2":206}],117:[function(require,module,exports){
 const vec2 = require('../vec2')
 
 /**
@@ -3936,12 +8258,12 @@ const distanceToPoint = (line, point) => {
 
 module.exports = distanceToPoint
 
-},{"../vec2":197}],109:[function(require,module,exports){
+},{"../vec2":206}],118:[function(require,module,exports){
 /**
  * Compare the given lines for equality.
  *
- * @param {line2} a - first line to compare
- * @param {line2} b - second line to compare
+ * @param {line2} line1 - first line to compare
+ * @param {line2} line2 - second line to compare
  * @return {Boolean} true if lines are equal
  * @alias module:modeling/maths/line2.equals
  */
@@ -3949,7 +8271,7 @@ const equals = (line1, line2) => (line1[0] === line2[0]) && (line1[1] === line2[
 
 module.exports = equals
 
-},{}],110:[function(require,module,exports){
+},{}],119:[function(require,module,exports){
 const vec2 = require('../vec2')
 
 /**
@@ -3977,7 +8299,7 @@ const fromPoints = (out, point1, point2) => {
 
 module.exports = fromPoints
 
-},{"../vec2":197}],111:[function(require,module,exports){
+},{"../vec2":206}],120:[function(require,module,exports){
 const create = require('./create')
 
 /**
@@ -3989,17 +8311,17 @@ const create = require('./create')
  * @returns {line2} a new unbounded line
  * @alias module:modeling/maths/line2.fromValues
  */
-const fromValues = (x, y, w) => {
+const fromValues = (x, y, d) => {
   const out = create()
   out[0] = x
   out[1] = y
-  out[2] = w
+  out[2] = d
   return out
 }
 
 module.exports = fromValues
 
-},{"./create":106}],112:[function(require,module,exports){
+},{"./create":115}],121:[function(require,module,exports){
 /**
  * Represents a unbounded line in 2D space, positioned at a point of origin.
  * @see {@link line2} for data structure information.
@@ -4023,7 +8345,7 @@ module.exports = {
   xAtY: require('./xAtY')
 }
 
-},{"./clone":103,"./closestPoint":104,"./copy":105,"./create":106,"./direction":107,"./distanceToPoint":108,"./equals":109,"./fromPoints":110,"./fromValues":111,"./intersectPointOfLines":113,"./origin":114,"./reverse":115,"./toString":116,"./transform":117,"./xAtY":118}],113:[function(require,module,exports){
+},{"./clone":112,"./closestPoint":113,"./copy":114,"./create":115,"./direction":116,"./distanceToPoint":117,"./equals":118,"./fromPoints":119,"./fromValues":120,"./intersectPointOfLines":122,"./origin":123,"./reverse":124,"./toString":125,"./transform":126,"./xAtY":127}],122:[function(require,module,exports){
 const vec2 = require('../vec2')
 const { solve2Linear } = require('../utils')
 
@@ -4031,7 +8353,7 @@ const { solve2Linear } = require('../utils')
  * Return the point of intersection between the given lines.
  *
  * NOTES:
- * The point will have Infinity values if the lines are paralell.
+ * The point will have Infinity values if the lines are parallel.
  * The point will have NaN values if the lines are the same.
  *
  * @param {line2} line1 - line of reference
@@ -4046,11 +8368,12 @@ const intersectToLine = (line1, line2) => {
 
 module.exports = intersectToLine
 
-},{"../utils":176,"../vec2":197}],114:[function(require,module,exports){
+},{"../utils":184,"../vec2":206}],123:[function(require,module,exports){
 const vec2 = require('../vec2')
 
 /**
  * Return the origin of the given line.
+ * The origin is the point on the line which is closest to the origin [0, 0].
  *
  * @param {line2} line - line of reference
  * @return {vec2} the origin of the line
@@ -4060,7 +8383,7 @@ const origin = (line) => vec2.scale(vec2.create(), line, line[2])
 
 module.exports = origin
 
-},{"../vec2":197}],115:[function(require,module,exports){
+},{"../vec2":206}],124:[function(require,module,exports){
 const vec2 = require('../vec2')
 
 const copy = require('./copy')
@@ -4082,7 +8405,7 @@ const reverse = (out, line) => {
 
 module.exports = reverse
 
-},{"../vec2":197,"./copy":105,"./fromValues":111}],116:[function(require,module,exports){
+},{"../vec2":206,"./copy":114,"./fromValues":120}],125:[function(require,module,exports){
 /**
  * Return a string representing the given line.
  *
@@ -4094,7 +8417,7 @@ const toString = (line) => `line2: (${line[0].toFixed(7)}, ${line[1].toFixed(7)}
 
 module.exports = toString
 
-},{}],117:[function(require,module,exports){
+},{}],126:[function(require,module,exports){
 const vec2 = require('../vec2')
 
 const fromPoints = require('./fromPoints')
@@ -4122,7 +8445,7 @@ const transform = (out, line, matrix) => {
 
 module.exports = transform
 
-},{"../vec2":197,"./direction":107,"./fromPoints":110,"./origin":114}],118:[function(require,module,exports){
+},{"../vec2":206,"./direction":116,"./fromPoints":119,"./origin":123}],127:[function(require,module,exports){
 const origin = require('./origin')
 
 /**
@@ -4146,7 +8469,7 @@ const xAtY = (line, y) => {
 
 module.exports = xAtY
 
-},{"./origin":114}],119:[function(require,module,exports){
+},{"./origin":123}],128:[function(require,module,exports){
 const vec3 = require('../vec3')
 
 const create = require('./create')
@@ -4167,7 +8490,7 @@ const clone = (line) => {
 
 module.exports = clone
 
-},{"../vec3":228,"./create":122}],120:[function(require,module,exports){
+},{"../vec3":237,"./create":131}],129:[function(require,module,exports){
 const vec3 = require('../vec3')
 
 /**
@@ -4193,7 +8516,7 @@ const closestPoint = (line, point) => {
 
 module.exports = closestPoint
 
-},{"../vec3":228}],121:[function(require,module,exports){
+},{"../vec3":237}],130:[function(require,module,exports){
 const vec3 = require('../vec3')
 
 /**
@@ -4212,7 +8535,7 @@ const copy = (out, line) => {
 
 module.exports = copy
 
-},{"../vec3":228}],122:[function(require,module,exports){
+},{"../vec3":237}],131:[function(require,module,exports){
 const vec3 = require('../vec3')
 
 /**
@@ -4237,7 +8560,7 @@ const create = () => [
 
 module.exports = create
 
-},{"../vec3":228}],123:[function(require,module,exports){
+},{"../vec3":237}],132:[function(require,module,exports){
 /**
  * Return the direction of the given line.
  *
@@ -4249,7 +8572,7 @@ const direction = (line) => line[1]
 
 module.exports = direction
 
-},{}],124:[function(require,module,exports){
+},{}],133:[function(require,module,exports){
 const vec3 = require('../vec3')
 
 const closestPoint = require('./closestPoint')
@@ -4270,14 +8593,14 @@ const distanceToPoint = (line, point) => {
 
 module.exports = distanceToPoint
 
-},{"../vec3":228,"./closestPoint":120}],125:[function(require,module,exports){
+},{"../vec3":237,"./closestPoint":129}],134:[function(require,module,exports){
 const vec3 = require('../vec3')
 
 /**
  * Compare the given lines for equality.
  *
- * @param {line3} a - first line to compare
- * @param {line3} b - second line to compare
+ * @param {line3} line1 - first line to compare
+ * @param {line3} line2 - second line to compare
  * @return {Boolean} true if lines are equal
  * @alias module:modeling/maths/line3.equals
  */
@@ -4297,7 +8620,7 @@ const equals = (line1, line2) => {
 
 module.exports = equals
 
-},{"../vec3":228}],126:[function(require,module,exports){
+},{"../vec3":237}],135:[function(require,module,exports){
 const vec3 = require('../vec3')
 const { solve2Linear } = require('../utils')
 
@@ -4346,7 +8669,7 @@ const fromPlanes = (out, plane1, plane2) => {
 
 module.exports = fromPlanes
 
-},{"../constants":101,"../utils":176,"../vec3":228,"./fromPointAndDirection":127}],127:[function(require,module,exports){
+},{"../constants":110,"../utils":184,"../vec3":237,"./fromPointAndDirection":136}],136:[function(require,module,exports){
 const vec3 = require('../vec3')
 
 /**
@@ -4373,7 +8696,7 @@ const fromPointAndDirection = (out, point, direction) => {
 
 module.exports = fromPointAndDirection
 
-},{"../vec3":228}],128:[function(require,module,exports){
+},{"../vec3":237}],137:[function(require,module,exports){
 const vec3 = require('../vec3')
 
 const fromPointAndDirection = require('./fromPointAndDirection')
@@ -4394,7 +8717,7 @@ const fromPoints = (out, point1, point2) => {
 
 module.exports = fromPoints
 
-},{"../vec3":228,"./fromPointAndDirection":127}],129:[function(require,module,exports){
+},{"../vec3":237,"./fromPointAndDirection":136}],138:[function(require,module,exports){
 /**
  * Represents a unbounded line in 3D space, positioned at a point of origin.
  * @see {@link line3} for data structure information.
@@ -4418,7 +8741,7 @@ module.exports = {
   transform: require('./transform')
 }
 
-},{"./clone":119,"./closestPoint":120,"./copy":121,"./create":122,"./direction":123,"./distanceToPoint":124,"./equals":125,"./fromPlanes":126,"./fromPointAndDirection":127,"./fromPoints":128,"./intersectPointOfLineAndPlane":130,"./origin":131,"./reverse":132,"./toString":133,"./transform":134}],130:[function(require,module,exports){
+},{"./clone":128,"./closestPoint":129,"./copy":130,"./create":131,"./direction":132,"./distanceToPoint":133,"./equals":134,"./fromPlanes":135,"./fromPointAndDirection":136,"./fromPoints":137,"./intersectPointOfLineAndPlane":139,"./origin":140,"./reverse":141,"./toString":142,"./transform":143}],139:[function(require,module,exports){
 const vec3 = require('../vec3')
 
 /**
@@ -4449,7 +8772,7 @@ const intersectToPlane = (line, plane) => {
 
 module.exports = intersectToPlane
 
-},{"../vec3":228}],131:[function(require,module,exports){
+},{"../vec3":237}],140:[function(require,module,exports){
 /**
  * Return the origin of the given line.
  *
@@ -4461,7 +8784,7 @@ const origin = (line) => line[0]
 
 module.exports = origin
 
-},{}],132:[function(require,module,exports){
+},{}],141:[function(require,module,exports){
 const vec3 = require('../vec3')
 
 const fromPointAndDirection = require('./fromPointAndDirection')
@@ -4482,7 +8805,7 @@ const reverse = (out, line) => {
 
 module.exports = reverse
 
-},{"../vec3":228,"./fromPointAndDirection":127}],133:[function(require,module,exports){
+},{"../vec3":237,"./fromPointAndDirection":136}],142:[function(require,module,exports){
 /**
  * Return a string representing the given line.
  *
@@ -4498,7 +8821,7 @@ const toString = (line) => {
 
 module.exports = toString
 
-},{}],134:[function(require,module,exports){
+},{}],143:[function(require,module,exports){
 const vec3 = require('../vec3')
 
 const fromPointAndDirection = require('./fromPointAndDirection')
@@ -4526,7 +8849,7 @@ const transform = (out, line, matrix) => {
 
 module.exports = transform
 
-},{"../vec3":228,"./fromPointAndDirection":127}],135:[function(require,module,exports){
+},{"../vec3":237,"./fromPointAndDirection":136}],144:[function(require,module,exports){
 /**
  * Adds the two matrices (A+B).
  *
@@ -4558,7 +8881,7 @@ const add = (out, a, b) => {
 
 module.exports = add
 
-},{}],136:[function(require,module,exports){
+},{}],145:[function(require,module,exports){
 const create = require('./create')
 
 /**
@@ -4591,14 +8914,7 @@ const clone = (matrix) => {
 
 module.exports = clone
 
-},{"./create":139}],137:[function(require,module,exports){
-const EPSILON = 0.000001
-
-module.exports = {
-  EPSILON
-}
-
-},{}],138:[function(require,module,exports){
+},{"./create":147}],146:[function(require,module,exports){
 /**
  * Creates a copy of the given matrix.
  *
@@ -4629,7 +8945,7 @@ const copy = (out, matrix) => {
 
 module.exports = copy
 
-},{}],139:[function(require,module,exports){
+},{}],147:[function(require,module,exports){
 /**
  * Represents a 4x4 matrix which is column-major (when typed out it looks row-major).
  * See fromValues().
@@ -4651,7 +8967,7 @@ const create = () => [
 
 module.exports = create
 
-},{}],140:[function(require,module,exports){
+},{}],148:[function(require,module,exports){
 /**
  * Returns whether or not the matrices have exactly the same elements in the same position.
  *
@@ -4669,10 +8985,12 @@ const equals = (a, b) => (
 
 module.exports = equals
 
-},{}],141:[function(require,module,exports){
-const identity = require('./identity')
+},{}],149:[function(require,module,exports){
+const { EPS } = require('../constants')
 
-const { EPSILON } = require('./constants')
+const { sin, cos } = require('../utils/trigonometry')
+
+const identity = require('./identity')
 
 /**
  * Creates a matrix from a given angle around a given axis
@@ -4687,24 +9005,24 @@ const { EPSILON } = require('./constants')
  * @returns {mat4} out
  * @alias module:modeling/maths/mat4.fromRotation
  * @example
- * let matrix = fromRotation(create(), Math.PI / 2, [0, 0, 3])
+ * let matrix = fromRotation(create(), TAU / 4, [0, 0, 3])
  */
 const fromRotation = (out, rad, axis) => {
   let [x, y, z] = axis
-  let len = Math.sqrt(x * x + y * y + z * z)
+  const lengthSquared = x * x + y * y + z * z
 
-  if (Math.abs(len) < EPSILON) {
+  if (Math.abs(lengthSquared) < EPS) {
     // axis is 0,0,0 or almost
     return identity(out)
   }
 
-  len = 1 / len
+  const len = 1 / Math.sqrt(lengthSquared)
   x *= len
   y *= len
   z *= len
 
-  const s = Math.sin(rad)
-  const c = Math.cos(rad)
+  const s = sin(rad)
+  const c = cos(rad)
   const t = 1 - c
 
   // Perform rotation-specific matrix multiplication
@@ -4729,7 +9047,7 @@ const fromRotation = (out, rad, axis) => {
 
 module.exports = fromRotation
 
-},{"./constants":137,"./identity":150}],142:[function(require,module,exports){
+},{"../constants":110,"../utils/trigonometry":188,"./identity":158}],150:[function(require,module,exports){
 /**
  * Creates a matrix from a vector scaling.
  * This is equivalent to (but much faster than):
@@ -4766,7 +9084,9 @@ const fromScaling = (out, vector) => {
 
 module.exports = fromScaling
 
-},{}],143:[function(require,module,exports){
+},{}],151:[function(require,module,exports){
+const { sin, cos } = require('../utils/trigonometry')
+
 /**
  * Creates a matrix from the given Tait–Bryan angles.
  *
@@ -4780,16 +9100,16 @@ module.exports = fromScaling
  * @returns {mat4} out
  * @alias module:modeling/maths/mat4.fromTaitBryanRotation
  * @example
- * let matrix = fromTaitBryanRotation(create(), Math.PI / 2, 0, Math.PI)
+ * let matrix = fromTaitBryanRotation(create(), TAU / 4, 0, TAU / 2)
  */
 const fromTaitBryanRotation = (out, yaw, pitch, roll) => {
   // precompute sines and cosines of Euler angles
-  const sy = Math.sin(yaw)
-  const cy = Math.cos(yaw)
-  const sp = Math.sin(pitch)
-  const cp = Math.cos(pitch)
-  const sr = Math.sin(roll)
-  const cr = Math.cos(roll)
+  const sy = sin(yaw)
+  const cy = cos(yaw)
+  const sp = sin(pitch)
+  const cp = cos(pitch)
+  const sr = sin(roll)
+  const cr = cos(roll)
 
   // create and populate rotation matrix
   // left-hand-rule rotation
@@ -4821,7 +9141,7 @@ const fromTaitBryanRotation = (out, yaw, pitch, roll) => {
 
 module.exports = fromTaitBryanRotation
 
-},{}],144:[function(require,module,exports){
+},{"../utils/trigonometry":188}],152:[function(require,module,exports){
 /**
  * Creates a matrix from a vector translation.
  * This is equivalent to (but much faster than):
@@ -4858,7 +9178,7 @@ const fromTranslation = (out, vector) => {
 
 module.exports = fromTranslation
 
-},{}],145:[function(require,module,exports){
+},{}],153:[function(require,module,exports){
 const create = require('./create')
 
 /**
@@ -4913,7 +9233,7 @@ const fromValues = (m00, m01, m02, m03, m10, m11, m12, m13, m20, m21, m22, m23, 
 
 module.exports = fromValues
 
-},{"./create":139}],146:[function(require,module,exports){
+},{"./create":147}],154:[function(require,module,exports){
 const vec3 = require('../vec3')
 
 const fromRotation = require('./fromRotation')
@@ -4921,7 +9241,7 @@ const fromRotation = require('./fromRotation')
 /**
  * Create a matrix that rotates the given source to the given target vector.
  *
- * Each vector must be a directional vector with a length greater then zero.
+ * Each vector must be a directional vector with a length greater than zero.
  * @see https://gist.github.com/kevinmoran/b45980723e53edeb8a5a43c49f134724
  * @param {mat4} out - receiving matrix
  * @param {vec3} source - source vector
@@ -4964,7 +9284,9 @@ const fromVectorRotation = (out, source, target) => {
 
 module.exports = fromVectorRotation
 
-},{"../vec3":228,"./fromRotation":141}],147:[function(require,module,exports){
+},{"../vec3":237,"./fromRotation":149}],155:[function(require,module,exports){
+const { sin, cos } = require('../utils/trigonometry')
+
 /**
  * Creates a matrix from the given angle around the X axis.
  * This is equivalent to (but much faster than):
@@ -4977,11 +9299,11 @@ module.exports = fromVectorRotation
  * @returns {mat4} out
  * @alias module:modeling/maths/mat4.fromXRotation
  * @example
- * let matrix = fromXRotation(create(), Math.PI / 2)
+ * let matrix = fromXRotation(create(), TAU / 4)
  */
 const fromXRotation = (out, radians) => {
-  const s = Math.sin(radians)
-  const c = Math.cos(radians)
+  const s = sin(radians)
+  const c = cos(radians)
 
   // Perform axis-specific matrix multiplication
   out[0] = 1
@@ -5005,7 +9327,9 @@ const fromXRotation = (out, radians) => {
 
 module.exports = fromXRotation
 
-},{}],148:[function(require,module,exports){
+},{"../utils/trigonometry":188}],156:[function(require,module,exports){
+const { sin, cos } = require('../utils/trigonometry')
+
 /**
  * Creates a matrix from the given angle around the Y axis.
  * This is equivalent to (but much faster than):
@@ -5018,11 +9342,11 @@ module.exports = fromXRotation
  * @returns {mat4} out
  * @alias module:modeling/maths/mat4.fromYRotation
  * @example
- * let matrix = fromYRotation(create(), Math.PI / 2)
+ * let matrix = fromYRotation(create(), TAU / 4)
  */
 const fromYRotation = (out, radians) => {
-  const s = Math.sin(radians)
-  const c = Math.cos(radians)
+  const s = sin(radians)
+  const c = cos(radians)
 
   // Perform axis-specific matrix multiplication
   out[0] = c
@@ -5046,7 +9370,9 @@ const fromYRotation = (out, radians) => {
 
 module.exports = fromYRotation
 
-},{}],149:[function(require,module,exports){
+},{"../utils/trigonometry":188}],157:[function(require,module,exports){
+const { sin, cos } = require('../utils/trigonometry')
+
 /**
  * Creates a matrix from the given angle around the Z axis.
  * This is equivalent to (but much faster than):
@@ -5059,11 +9385,11 @@ module.exports = fromYRotation
  * @returns {mat4} out
  * @alias module:modeling/maths/mat4.fromZRotation
  * @example
- * let matrix = fromZRotation(create(), Math.PI / 2)
+ * let matrix = fromZRotation(create(), TAU / 4)
  */
 const fromZRotation = (out, radians) => {
-  const s = Math.sin(radians)
-  const c = Math.cos(radians)
+  const s = sin(radians)
+  const c = cos(radians)
 
   // Perform axis-specific matrix multiplication
   out[0] = c
@@ -5087,7 +9413,7 @@ const fromZRotation = (out, radians) => {
 
 module.exports = fromZRotation
 
-},{}],150:[function(require,module,exports){
+},{"../utils/trigonometry":188}],158:[function(require,module,exports){
 /**
  * Set a matrix to the identity transform.
  *
@@ -5117,7 +9443,7 @@ const identity = (out) => {
 
 module.exports = identity
 
-},{}],151:[function(require,module,exports){
+},{}],159:[function(require,module,exports){
 /**
  * Represents a 4x4 matrix which is column-major (when typed out it looks row-major).
  * @see {@link mat4} for data structure information.
@@ -5155,34 +9481,34 @@ module.exports = {
   translate: require('./translate')
 }
 
-},{"./add":135,"./clone":136,"./copy":138,"./create":139,"./equals":140,"./fromRotation":141,"./fromScaling":142,"./fromTaitBryanRotation":143,"./fromTranslation":144,"./fromValues":145,"./fromVectorRotation":146,"./fromXRotation":147,"./fromYRotation":148,"./fromZRotation":149,"./identity":150,"./invert":152,"./isIdentity":153,"./isMirroring":154,"./isOnlyTransformScale":155,"./mirrorByPlane":156,"./multiply":157,"./rotate":158,"./rotateX":159,"./rotateY":160,"./rotateZ":161,"./scale":162,"./subtract":163,"./toString":164,"./translate":165}],152:[function(require,module,exports){
+},{"./add":144,"./clone":145,"./copy":146,"./create":147,"./equals":148,"./fromRotation":149,"./fromScaling":150,"./fromTaitBryanRotation":151,"./fromTranslation":152,"./fromValues":153,"./fromVectorRotation":154,"./fromXRotation":155,"./fromYRotation":156,"./fromZRotation":157,"./identity":158,"./invert":160,"./isIdentity":161,"./isMirroring":162,"./isOnlyTransformScale":163,"./mirrorByPlane":164,"./multiply":165,"./rotate":166,"./rotateX":167,"./rotateY":168,"./rotateZ":169,"./scale":170,"./subtract":171,"./toString":172,"./translate":173}],160:[function(require,module,exports){
 /**
  * Creates a invert copy of the given matrix.
  * @author Julian Lloyd
  * code from https://github.com/jlmakes/rematrix/blob/master/src/index.js
  *
  * @param {mat4} out - receiving matrix
- * @param {mat4} m - matrix to invert
+ * @param {mat4} matrix - matrix to invert
  * @returns {mat4} out
  * @alias module:modeling/maths/mat4.invert
  */
-const invert = (out, a) => {
-  const a00 = a[0]
-  const a01 = a[1]
-  const a02 = a[2]
-  const a03 = a[3]
-  const a10 = a[4]
-  const a11 = a[5]
-  const a12 = a[6]
-  const a13 = a[7]
-  const a20 = a[8]
-  const a21 = a[9]
-  const a22 = a[10]
-  const a23 = a[11]
-  const a30 = a[12]
-  const a31 = a[13]
-  const a32 = a[14]
-  const a33 = a[15]
+const invert = (out, matrix) => {
+  const a00 = matrix[0]
+  const a01 = matrix[1]
+  const a02 = matrix[2]
+  const a03 = matrix[3]
+  const a10 = matrix[4]
+  const a11 = matrix[5]
+  const a12 = matrix[6]
+  const a13 = matrix[7]
+  const a20 = matrix[8]
+  const a21 = matrix[9]
+  const a22 = matrix[10]
+  const a23 = matrix[11]
+  const a30 = matrix[12]
+  const a31 = matrix[13]
+  const a32 = matrix[14]
+  const a33 = matrix[15]
 
   const b00 = a00 * a11 - a01 * a10
   const b01 = a00 * a12 - a02 * a10
@@ -5228,9 +9554,9 @@ const invert = (out, a) => {
 
 module.exports = invert
 
-},{}],153:[function(require,module,exports){
+},{}],161:[function(require,module,exports){
 /**
- * Determine whether the given matris is the identity transform.
+ * Determine whether the given matrix is the identity transform.
  * This is equivalent to (but much faster than):
  *
  *     mat4.equals(mat4.create(), matrix)
@@ -5250,11 +9576,7 @@ const isIdentity = (matrix) => (
 
 module.exports = isIdentity
 
-},{}],154:[function(require,module,exports){
-const cross = require('../vec3/cross')
-const dot = require('../vec3/dot')
-const fromValues = require('../vec3/fromValues')
-
+},{}],162:[function(require,module,exports){
 /**
  * Determine whether the given matrix is a mirroring transformation.
  *
@@ -5262,25 +9584,29 @@ const fromValues = require('../vec3/fromValues')
  * @returns {Boolean} true if matrix is a mirroring transformation
  * @alias module:modeling/maths/mat4.isMirroring
  */
-const isMirroring = (mat) => {
-  const u = fromValues(mat[0], mat[4], mat[8])
-  const v = fromValues(mat[1], mat[5], mat[9])
-  const w = fromValues(mat[2], mat[6], mat[10])
+const isMirroring = (matrix) => {
+  // const xVector = [matrix[0], matrix[4], matrix[8]]
+  // const yVector = [matrix[1], matrix[5], matrix[9]]
+  // const zVector = [matrix[2], matrix[6], matrix[10]]
 
-  // for a true orthogonal, non-mirrored base, u.cross(v) == w
+  // for a true orthogonal, non-mirrored base, xVector.cross(yVector) == zVector
   // If they have an opposite direction then we are mirroring
-  const mirrorvalue = dot(cross(u, u, v), w)
-  const ismirror = (mirrorvalue < 0)
-  return ismirror
+  // calcuate xVector.cross(yVector)
+  const x = matrix[4] * matrix[9] - matrix[8] * matrix[5]
+  const y = matrix[8] * matrix[1] - matrix[0] * matrix[9]
+  const z = matrix[0] * matrix[5] - matrix[4] * matrix[1]
+  // calcualte dot(cross, zVector)
+  const d = x * matrix[2] + y * matrix[6] + z * matrix[10]
+  return (d < 0)
 }
 
 module.exports = isMirroring
 
-},{"../vec3/cross":220,"../vec3/dot":223,"../vec3/fromValues":226}],155:[function(require,module,exports){
+},{}],163:[function(require,module,exports){
 
 /**
  * Determine whether the given matrix is only translate and/or scale.
- * This code returns true for PI rotation as it can be interpreted as scale.
+ * This code returns true for TAU / 2 rotation as it can be interpreted as scale.
  *
  * @param {mat4} matrix - the matrix
  * @returns {Boolean} true if matrix is for translate and/or scale
@@ -5300,7 +9626,7 @@ const isZero = (num) => Math.abs(num) < Number.EPSILON
 
 module.exports = isOnlyTransformScale
 
-},{}],156:[function(require,module,exports){
+},{}],164:[function(require,module,exports){
 /**
  * Create a matrix for mirroring about the given plane.
  *
@@ -5334,7 +9660,7 @@ const mirrorByPlane = (out, plane) => {
 
 module.exports = mirrorByPlane
 
-},{}],157:[function(require,module,exports){
+},{}],165:[function(require,module,exports){
 /**
  * Multiplies the two matrices.
  *
@@ -5403,7 +9729,11 @@ const multiply = (out, a, b) => {
 
 module.exports = multiply
 
-},{}],158:[function(require,module,exports){
+},{}],166:[function(require,module,exports){
+const { EPS } = require('../constants')
+
+const { sin, cos } = require('../utils/trigonometry')
+
 const copy = require('./copy')
 
 /**
@@ -5418,20 +9748,20 @@ const copy = require('./copy')
  */
 const rotate = (out, matrix, radians, axis) => {
   let [x, y, z] = axis
-  let len = Math.sqrt(x * x + y * y + z * z)
+  const lengthSquared = x * x + y * y + z * z
 
-  if (Math.abs(len) < 0.000001) {
+  if (Math.abs(lengthSquared) < EPS) {
     // axis is 0,0,0 or almost
     return copy(out, matrix)
   }
 
-  len = 1 / len
+  const len = 1 / Math.sqrt(lengthSquared)
   x *= len
   y *= len
   z *= len
 
-  const s = Math.sin(radians)
-  const c = Math.cos(radians)
+  const s = sin(radians)
+  const c = cos(radians)
   const t = 1 - c
 
   const a00 = matrix[0]
@@ -5483,7 +9813,9 @@ const rotate = (out, matrix, radians, axis) => {
 
 module.exports = rotate
 
-},{"./copy":138}],159:[function(require,module,exports){
+},{"../constants":110,"../utils/trigonometry":188,"./copy":146}],167:[function(require,module,exports){
+const { sin, cos } = require('../utils/trigonometry')
+
 /**
  * Rotates a matrix by the given angle around the X axis.
  *
@@ -5494,8 +9826,8 @@ module.exports = rotate
  * @alias module:modeling/maths/mat4.rotateX
  */
 const rotateX = (out, matrix, radians) => {
-  const s = Math.sin(radians)
-  const c = Math.cos(radians)
+  const s = sin(radians)
+  const c = cos(radians)
   const a10 = matrix[4]
   const a11 = matrix[5]
   const a12 = matrix[6]
@@ -5530,7 +9862,9 @@ const rotateX = (out, matrix, radians) => {
 
 module.exports = rotateX
 
-},{}],160:[function(require,module,exports){
+},{"../utils/trigonometry":188}],168:[function(require,module,exports){
+const { sin, cos } = require('../utils/trigonometry')
+
 /**
  * Rotates a matrix by the given angle around the Y axis.
  *
@@ -5541,8 +9875,8 @@ module.exports = rotateX
  * @alias module:modeling/maths/mat4.rotateY
  */
 const rotateY = (out, matrix, radians) => {
-  const s = Math.sin(radians)
-  const c = Math.cos(radians)
+  const s = sin(radians)
+  const c = cos(radians)
   const a00 = matrix[0]
   const a01 = matrix[1]
   const a02 = matrix[2]
@@ -5577,7 +9911,9 @@ const rotateY = (out, matrix, radians) => {
 
 module.exports = rotateY
 
-},{}],161:[function(require,module,exports){
+},{"../utils/trigonometry":188}],169:[function(require,module,exports){
+const { sin, cos } = require('../utils/trigonometry')
+
 /**
  * Rotates a matrix by the given angle around the Z axis.
  *
@@ -5588,8 +9924,8 @@ module.exports = rotateY
  * @alias module:modeling/maths/mat4.rotateZ
  */
 const rotateZ = (out, matrix, radians) => {
-  const s = Math.sin(radians)
-  const c = Math.cos(radians)
+  const s = sin(radians)
+  const c = cos(radians)
   const a00 = matrix[0]
   const a01 = matrix[1]
   const a02 = matrix[2]
@@ -5624,7 +9960,7 @@ const rotateZ = (out, matrix, radians) => {
 
 module.exports = rotateZ
 
-},{}],162:[function(require,module,exports){
+},{"../utils/trigonometry":188}],170:[function(require,module,exports){
 /**
  * Scales the matrix by the given dimensions.
  *
@@ -5660,7 +9996,7 @@ const scale = (out, matrix, dimensions) => {
 
 module.exports = scale
 
-},{}],163:[function(require,module,exports){
+},{}],171:[function(require,module,exports){
 /**
  * Subtracts matrix b from matrix a. (A-B)
  *
@@ -5692,19 +10028,19 @@ const subtract = (out, a, b) => {
 
 module.exports = subtract
 
-},{}],164:[function(require,module,exports){
+},{}],172:[function(require,module,exports){
 /**
  * Return a string representing the given matrix.
  *
- * @param {mat4} matrix - matrix of reference
+ * @param {mat4} mat - matrix of reference
  * @returns {String} string representation
  * @alias module:modeling/maths/mat4.toString
  */
-const toString = (mat) => `[${mat[0].toFixed(7)}, ${mat[1].toFixed(7)}, ${mat[2].toFixed(7)}, ${mat[3].toFixed(7)}, ${mat[4].toFixed(7)}, ${mat[5].toFixed(7)}, ${mat[6].toFixed(7)}, ${mat[7].toFixed(7)}, ${mat[8].toFixed(7)}, ${mat[9].toFixed(7)}, ${mat[10].toFixed(7)}, ${mat[11].toFixed(7)}, ${mat[12].toFixed(7)}, ${mat[13].toFixed(7)}, ${mat[14].toFixed(7)}, ${mat[15].toFixed(7)}]`
+const toString = (mat) => mat.map((n) => n.toFixed(7)).toString()
 
 module.exports = toString
 
-},{}],165:[function(require,module,exports){
+},{}],173:[function(require,module,exports){
 /**
  * Translate the matrix by the given offset vector.
  *
@@ -5757,7 +10093,7 @@ const translate = (out, matrix, offsets) => {
 
 module.exports = translate
 
-},{}],166:[function(require,module,exports){
+},{}],174:[function(require,module,exports){
 /**
  * Flip the given plane.
  *
@@ -5776,7 +10112,7 @@ const flip = (out, plane) => {
 
 module.exports = flip
 
-},{}],167:[function(require,module,exports){
+},{}],175:[function(require,module,exports){
 const vec3 = require('../vec3')
 
 /**
@@ -5810,16 +10146,14 @@ const fromNormalAndPoint = (out, normal, point) => {
 
 module.exports = fromNormalAndPoint
 
-},{"../vec3":228}],168:[function(require,module,exports){
+},{"../vec3":237}],176:[function(require,module,exports){
 const vec3 = require('../vec3')
 
 /**
  * Create a plane from the given points.
  *
  * @param {plane} out - receiving plane
- * @param {vec3} a - 3D point
- * @param {vec3} b - 3D point
- * @param {vec3} c - 3D point
+ * @param {Array} vertices - points on the plane
  * @returns {plane} out
  * @alias module:modeling/maths/plane.fromPoints
  */
@@ -5861,7 +10195,7 @@ const fromPoints = (out, ...vertices) => {
 
 module.exports = fromPoints
 
-},{"../vec3":228}],169:[function(require,module,exports){
+},{"../vec3":237}],177:[function(require,module,exports){
 const { EPS } = require('../constants')
 
 const vec3 = require('../vec3')
@@ -5905,7 +10239,7 @@ const fromPointsRandom = (out, a, b, c) => {
 
 module.exports = fromPointsRandom
 
-},{"../constants":101,"../vec3":228}],170:[function(require,module,exports){
+},{"../constants":110,"../vec3":237}],178:[function(require,module,exports){
 /**
  * Represents a plane in 3D coordinate space as determined by a normal (perpendicular to the plane)
  * and distance from 0,0,0.
@@ -5952,7 +10286,7 @@ module.exports = {
   transform: require('./transform')
 }
 
-},{"../vec4/clone":247,"../vec4/copy":248,"../vec4/create":249,"../vec4/equals":251,"../vec4/fromValues":253,"../vec4/toString":255,"./flip":166,"./fromNormalAndPoint":167,"./fromPoints":168,"./fromPointsRandom":169,"./projectionOfPoint":171,"./signedDistanceToPoint":172,"./transform":173}],171:[function(require,module,exports){
+},{"../vec4/clone":256,"../vec4/copy":257,"../vec4/create":258,"../vec4/equals":260,"../vec4/fromValues":262,"../vec4/toString":264,"./flip":174,"./fromNormalAndPoint":175,"./fromPoints":176,"./fromPointsRandom":177,"./projectionOfPoint":179,"./signedDistanceToPoint":180,"./transform":181}],179:[function(require,module,exports){
 const vec3 = require('../vec3')
 
 /**
@@ -5973,7 +10307,7 @@ const projectionOfPoint = (plane, point) => {
 
 module.exports = projectionOfPoint
 
-},{"../vec3":228}],172:[function(require,module,exports){
+},{"../vec3":237}],180:[function(require,module,exports){
 const vec3 = require('../vec3')
 
 /**
@@ -5984,11 +10318,11 @@ const vec3 = require('../vec3')
  * @return {Number} signed distance to point
  * @alias module:modeling/maths/plane.signedDistanceToPoint
  */
-const signedDistanceToPoint = (plane, vector) => vec3.dot(plane, vector) - plane[3]
+const signedDistanceToPoint = (plane, point) => vec3.dot(plane, point) - plane[3]
 
 module.exports = signedDistanceToPoint
 
-},{"../vec3":228}],173:[function(require,module,exports){
+},{"../vec3":237}],181:[function(require,module,exports){
 const mat4 = require('../mat4')
 const vec3 = require('../vec3')
 
@@ -6030,12 +10364,8 @@ const transform = (out, plane, matrix) => {
 
 module.exports = transform
 
-},{"../mat4":151,"../vec3":228,"./flip":166,"./fromPoints":168}],174:[function(require,module,exports){
-// Normals are directional vectors with component values from 0 to 1.0, requiring specialized comparision
-// This EPS is derived from a serieas of tests to determine the optimal precision for comparing coplanar polygons,
-// as provided by the sphere primitive at high segmentation
-// This EPS is for 64 bit Number values
-const NEPS = 1e-13
+},{"../mat4":159,"../vec3":237,"./flip":174,"./fromPoints":176}],182:[function(require,module,exports){
+const { NEPS } = require('../constants')
 
 /**
  * Compare two normals (unit vectors) for near equality.
@@ -6048,7 +10378,7 @@ const aboutEqualNormals = (a, b) => (Math.abs(a[0] - b[0]) <= NEPS && Math.abs(a
 
 module.exports = aboutEqualNormals
 
-},{}],175:[function(require,module,exports){
+},{"../constants":110}],183:[function(require,module,exports){
 /**
  * Calculate the area under the given points.
  * @param {Array} points - list of 2D points
@@ -6067,7 +10397,7 @@ const area = (points) => {
 
 module.exports = area
 
-},{}],176:[function(require,module,exports){
+},{}],184:[function(require,module,exports){
 /**
  * Utility functions for maths.
  * @module modeling/maths/utils
@@ -6077,12 +10407,14 @@ module.exports = area
 module.exports = {
   aboutEqualNormals: require('./aboutEqualNormals'),
   area: require('./area'),
+  cos: require('./trigonometry').cos,
   interpolateBetween2DPointsForY: require('./interpolateBetween2DPointsForY'),
   intersect: require('./intersect'),
+  sin: require('./trigonometry').sin,
   solve2Linear: require('./solve2Linear')
 }
 
-},{"./aboutEqualNormals":174,"./area":175,"./interpolateBetween2DPointsForY":177,"./intersect":178,"./solve2Linear":179}],177:[function(require,module,exports){
+},{"./aboutEqualNormals":182,"./area":183,"./interpolateBetween2DPointsForY":185,"./intersect":186,"./solve2Linear":187,"./trigonometry":188}],185:[function(require,module,exports){
 /**
  * Get the X coordinate of a point with a certain Y coordinate, interpolated between two points.
  * Interpolation is robust even if the points have the same Y coordinate
@@ -6115,7 +10447,7 @@ const interpolateBetween2DPointsForY = (point1, point2, y) => {
 
 module.exports = interpolateBetween2DPointsForY
 
-},{}],178:[function(require,module,exports){
+},{}],186:[function(require,module,exports){
 /**
  * Calculate the intersect point of the two line segments (p1-p2 and p3-p4), end points included.
  * Note: If the line segments do NOT intersect then undefined is returned.
@@ -6157,7 +10489,7 @@ const intersect = (p1, p2, p3, p4) => {
 
 module.exports = intersect
 
-},{}],179:[function(require,module,exports){
+},{}],187:[function(require,module,exports){
 const solve2Linear = (a, b, c, d, u, v) => {
   const det = a * d - b * c
   const invdet = 1.0 / det
@@ -6170,7 +10502,43 @@ const solve2Linear = (a, b, c, d, u, v) => {
 
 module.exports = solve2Linear
 
-},{}],180:[function(require,module,exports){
+},{}],188:[function(require,module,exports){
+const { NEPS } = require('../constants')
+
+/*
+ * Returns zero if n is within epsilon of zero, otherwise return n
+ */
+const rezero = (n) => Math.abs(n) < NEPS ? 0 : n
+
+/**
+ * Return Math.sin but accurate for TAU / 4 rotations.
+ * Fixes rounding errors when sin should be 0.
+ *
+ * @param {Number} radians - angle in radians
+ * @returns {Number} sine of the given angle
+ * @alias module:modeling/utils.sin
+ * @example
+ * sin(TAU / 2) == 0
+ * sin(TAU) == 0
+ */
+const sin = (radians) => rezero(Math.sin(radians))
+
+/**
+ * Return Math.cos but accurate for TAU / 4 rotations.
+ * Fixes rounding errors when cos should be 0.
+ *
+ * @param {Number} radians - angle in radians
+ * @returns {Number} cosine of the given angle
+ * @alias module:modeling/utils.cos
+ * @example
+ * cos(TAU * 0.25) == 0
+ * cos(TAU * 0.75) == 0
+ */
+const cos = (radians) => rezero(Math.cos(radians))
+
+module.exports = { sin, cos }
+
+},{"../constants":110}],189:[function(require,module,exports){
 /**
  * Calculates the absolute coordinates of the given vector.
  *
@@ -6187,7 +10555,7 @@ const abs = (out, vector) => {
 
 module.exports = abs
 
-},{}],181:[function(require,module,exports){
+},{}],190:[function(require,module,exports){
 /**
  * Adds the coordinates of two vectors (A+B).
  *
@@ -6205,10 +10573,10 @@ const add = (out, a, b) => {
 
 module.exports = add
 
-},{}],182:[function(require,module,exports){
+},{}],191:[function(require,module,exports){
 module.exports = require('./angleRadians')
 
-},{"./angleRadians":184}],183:[function(require,module,exports){
+},{"./angleRadians":193}],192:[function(require,module,exports){
 const angleRadians = require('./angleRadians')
 
 /**
@@ -6222,7 +10590,7 @@ const angleDegrees = (vector) => angleRadians(vector) * 57.29577951308232
 
 module.exports = angleDegrees
 
-},{"./angleRadians":184}],184:[function(require,module,exports){
+},{"./angleRadians":193}],193:[function(require,module,exports){
 /**
  * Calculate the angle of the given vector.
  *
@@ -6234,7 +10602,7 @@ const angleRadians = (vector) => Math.atan2(vector[1], vector[0]) // y=sin, x=co
 
 module.exports = angleRadians
 
-},{}],185:[function(require,module,exports){
+},{}],194:[function(require,module,exports){
 const create = require('./create')
 
 /**
@@ -6253,7 +10621,7 @@ const clone = (vector) => {
 
 module.exports = clone
 
-},{"./create":187}],186:[function(require,module,exports){
+},{"./create":196}],195:[function(require,module,exports){
 /**
  * Create a copy of the given vector.
  *
@@ -6270,7 +10638,7 @@ const copy = (out, vector) => {
 
 module.exports = copy
 
-},{}],187:[function(require,module,exports){
+},{}],196:[function(require,module,exports){
 /**
  * Represents a two dimensional vector.
  * See fromValues().
@@ -6278,7 +10646,7 @@ module.exports = copy
  */
 
 /**
- * Creates a new vector, intialized to [0,0].
+ * Creates a new vector, initialized to [0,0].
  *
  * @returns {vec2} a new vector
  * @alias module:modeling/maths/vec2.create
@@ -6287,7 +10655,7 @@ const create = () => [0, 0]
 
 module.exports = create
 
-},{}],188:[function(require,module,exports){
+},{}],197:[function(require,module,exports){
 /**
  * Computes the cross product (3D) of two vectors.
  *
@@ -6306,7 +10674,7 @@ const cross = (out, a, b) => {
 
 module.exports = cross
 
-},{}],189:[function(require,module,exports){
+},{}],198:[function(require,module,exports){
 /**
  * Calculates the distance between two vectors.
  *
@@ -6318,12 +10686,12 @@ module.exports = cross
 const distance = (a, b) => {
   const x = b[0] - a[0]
   const y = b[1] - a[1]
-  return Math.hypot(x, y)
+  return Math.sqrt(x * x + y * y)
 }
 
 module.exports = distance
 
-},{}],190:[function(require,module,exports){
+},{}],199:[function(require,module,exports){
 /**
  * Divides the coordinates of two vectors (A/B).
  *
@@ -6341,7 +10709,7 @@ const divide = (out, a, b) => {
 
 module.exports = divide
 
-},{}],191:[function(require,module,exports){
+},{}],200:[function(require,module,exports){
 /**
  * Calculates the dot product of two vectors.
  *
@@ -6354,7 +10722,7 @@ const dot = (a, b) => a[0] * b[0] + a[1] * b[1]
 
 module.exports = dot
 
-},{}],192:[function(require,module,exports){
+},{}],201:[function(require,module,exports){
 /**
  * Compare the given vectors for equality.
  *
@@ -6367,22 +10735,24 @@ const equals = (a, b) => (a[0] === b[0]) && (a[1] === b[1])
 
 module.exports = equals
 
-},{}],193:[function(require,module,exports){
+},{}],202:[function(require,module,exports){
 const fromAngleRadians = require('./fromAngleRadians')
 
 /**
  * Create a new vector in the direction of the given angle.
  *
  * @param {vec2} out - receiving vector
- * @param {Number} angle - angle in degrees
+ * @param {Number} degrees - angle in degrees
  * @returns {vec2} out
  * @alias module:modeling/maths/vec2.fromAngleDegrees
  */
-const fromAngleDegrees = (out, degrees) => fromAngleRadians(out, Math.PI * degrees / 180)
+const fromAngleDegrees = (out, degrees) => fromAngleRadians(out, degrees * 0.017453292519943295)
 
 module.exports = fromAngleDegrees
 
-},{"./fromAngleRadians":194}],194:[function(require,module,exports){
+},{"./fromAngleRadians":203}],203:[function(require,module,exports){
+const { sin, cos } = require('../utils/trigonometry')
+
 /**
  * Create a new vector in the direction of the given angle.
  *
@@ -6392,20 +10762,20 @@ module.exports = fromAngleDegrees
  * @alias module:modeling/maths/vec2.fromAngleRadians
  */
 const fromAngleRadians = (out, radians) => {
-  out[0] = Math.cos(radians)
-  out[1] = Math.sin(radians)
+  out[0] = cos(radians)
+  out[1] = sin(radians)
   return out
 }
 
 module.exports = fromAngleRadians
 
-},{}],195:[function(require,module,exports){
+},{"../utils/trigonometry":188}],204:[function(require,module,exports){
 /**
  * Create a vector from a single scalar value.
  *
  * @param {vec2} out - receiving vector
  * @param {Number} scalar - the scalar value
- * @returns {Vec2} out
+ * @returns {vec2} out
  * @alias module:modeling/maths/vec2.fromScalar
  */
 const fromScalar = (out, scalar) => {
@@ -6416,7 +10786,7 @@ const fromScalar = (out, scalar) => {
 
 module.exports = fromScalar
 
-},{}],196:[function(require,module,exports){
+},{}],205:[function(require,module,exports){
 const create = require('./create')
 
 /**
@@ -6436,7 +10806,7 @@ const fromValues = (x, y) => {
 
 module.exports = fromValues
 
-},{"./create":187}],197:[function(require,module,exports){
+},{"./create":196}],206:[function(require,module,exports){
 /**
  * Represents a two dimensional vector.
  * @module modeling/maths/vec2
@@ -6477,7 +10847,7 @@ module.exports = {
   transform: require('./transform')
 }
 
-},{"./abs":180,"./add":181,"./angle":182,"./angleDegrees":183,"./angleRadians":184,"./clone":185,"./copy":186,"./create":187,"./cross":188,"./distance":189,"./divide":190,"./dot":191,"./equals":192,"./fromAngleDegrees":193,"./fromAngleRadians":194,"./fromScalar":195,"./fromValues":196,"./length":198,"./lerp":199,"./max":200,"./min":201,"./multiply":202,"./negate":203,"./normal":204,"./normalize":205,"./rotate":206,"./scale":207,"./snap":208,"./squaredDistance":209,"./squaredLength":210,"./subtract":211,"./toString":212,"./transform":213}],198:[function(require,module,exports){
+},{"./abs":189,"./add":190,"./angle":191,"./angleDegrees":192,"./angleRadians":193,"./clone":194,"./copy":195,"./create":196,"./cross":197,"./distance":198,"./divide":199,"./dot":200,"./equals":201,"./fromAngleDegrees":202,"./fromAngleRadians":203,"./fromScalar":204,"./fromValues":205,"./length":207,"./lerp":208,"./max":209,"./min":210,"./multiply":211,"./negate":212,"./normal":213,"./normalize":214,"./rotate":215,"./scale":216,"./snap":217,"./squaredDistance":218,"./squaredLength":219,"./subtract":220,"./toString":221,"./transform":222}],207:[function(require,module,exports){
 /**
  * Calculates the length of the given vector.
  *
@@ -6485,11 +10855,11 @@ module.exports = {
  * @returns {Number} length
  * @alias module:modeling/maths/vec2.length
  */
-const length = (a) => Math.hypot(a[0], a[1])
+const length = (vector) => Math.sqrt(vector[0] * vector[0] + vector[1] * vector[1])
 
 module.exports = length
 
-},{}],199:[function(require,module,exports){
+},{}],208:[function(require,module,exports){
 /**
  * Performs a linear interpolation between two vectors.
  *
@@ -6510,7 +10880,7 @@ const lerp = (out, a, b, t) => {
 
 module.exports = lerp
 
-},{}],200:[function(require,module,exports){
+},{}],209:[function(require,module,exports){
 /**
  * Returns the maximum coordinates of two vectors.
  *
@@ -6528,7 +10898,7 @@ const max = (out, a, b) => {
 
 module.exports = max
 
-},{}],201:[function(require,module,exports){
+},{}],210:[function(require,module,exports){
 /**
  * Returns the minimum coordinates of two vectors.
  *
@@ -6546,7 +10916,7 @@ const min = (out, a, b) => {
 
 module.exports = min
 
-},{}],202:[function(require,module,exports){
+},{}],211:[function(require,module,exports){
 /**
  * Multiplies the coordinates of two vectors (A*B).
  *
@@ -6564,7 +10934,7 @@ const multiply = (out, a, b) => {
 
 module.exports = multiply
 
-},{}],203:[function(require,module,exports){
+},{}],212:[function(require,module,exports){
 /**
  * Negates the coordinates of the given vector.
  *
@@ -6581,24 +10951,26 @@ const negate = (out, vector) => {
 
 module.exports = negate
 
-},{}],204:[function(require,module,exports){
+},{}],213:[function(require,module,exports){
+const { TAU } = require('../constants')
+
 const create = require('./create')
 const rotate = require('./rotate')
 
 /**
  * Calculates the normal of the given vector.
- * The normal value is the given vector rotated 90 degress.
+ * The normal value is the given vector rotated 90 degrees.
  *
  * @param {vec2} out - receiving vector
  * @param {vec2} vector - given value
  * @returns {vec2} out
  * @alias module:modeling/maths/vec2.normal
  */
-const normal = (out, vector) => rotate(out, vector, create(), (Math.PI / 2))
+const normal = (out, vector) => rotate(out, vector, create(), (TAU / 4))
 
 module.exports = normal
 
-},{"./create":187,"./rotate":206}],205:[function(require,module,exports){
+},{"../constants":110,"./create":196,"./rotate":215}],214:[function(require,module,exports){
 /**
  * Normalize the given vector.
  *
@@ -6623,7 +10995,7 @@ const normalize = (out, vector) => {
 
 module.exports = normalize
 
-},{}],206:[function(require,module,exports){
+},{}],215:[function(require,module,exports){
 /**
  * Rotates the given vector by the given angle.
  *
@@ -6648,7 +11020,7 @@ const rotate = (out, vector, origin, radians) => {
 
 module.exports = rotate
 
-},{}],207:[function(require,module,exports){
+},{}],216:[function(require,module,exports){
 /**
  * Scales the coordinates of the given vector.
  *
@@ -6666,7 +11038,7 @@ const scale = (out, vector, amount) => {
 
 module.exports = scale
 
-},{}],208:[function(require,module,exports){
+},{}],217:[function(require,module,exports){
 /**
  * Snaps the coordinates of the given vector to the given epsilon.
  *
@@ -6684,7 +11056,7 @@ const snap = (out, vector, epsilon) => {
 
 module.exports = snap
 
-},{}],209:[function(require,module,exports){
+},{}],218:[function(require,module,exports){
 /**
  * Calculates the squared distance between the given vectors.
  *
@@ -6701,7 +11073,7 @@ const squaredDistance = (a, b) => {
 
 module.exports = squaredDistance
 
-},{}],210:[function(require,module,exports){
+},{}],219:[function(require,module,exports){
 /**
  * Calculates the squared length of the given vector.
  *
@@ -6709,15 +11081,15 @@ module.exports = squaredDistance
  * @returns {Number} squared length
  * @alias module:modeling/maths/vec2.squaredLength
  */
-const squaredLength = (a) => {
-  const x = a[0]
-  const y = a[1]
+const squaredLength = (vector) => {
+  const x = vector[0]
+  const y = vector[1]
   return x * x + y * y
 }
 
 module.exports = squaredLength
 
-},{}],211:[function(require,module,exports){
+},{}],220:[function(require,module,exports){
 /**
  * Subtracts the coordinates of two vectors (A-B).
  *
@@ -6735,7 +11107,7 @@ const subtract = (out, a, b) => {
 
 module.exports = subtract
 
-},{}],212:[function(require,module,exports){
+},{}],221:[function(require,module,exports){
 /**
  * Convert the given vector to a representative string.
  *
@@ -6743,11 +11115,11 @@ module.exports = subtract
  * @returns {String} string representation
  * @alias module:modeling/maths/vec2.toString
  */
-const toString = (vec) => `[${vec[0].toFixed(7)}, ${vec[1].toFixed(7)}]`
+const toString = (vector) => `[${vector[0].toFixed(7)}, ${vector[1].toFixed(7)}]`
 
 module.exports = toString
 
-},{}],213:[function(require,module,exports){
+},{}],222:[function(require,module,exports){
 /**
  * Transforms the given vector using the given matrix.
  *
@@ -6767,7 +11139,7 @@ const transform = (out, vector, matrix) => {
 
 module.exports = transform
 
-},{}],214:[function(require,module,exports){
+},{}],223:[function(require,module,exports){
 /**
  * Calculates the absolute coordinates of the give vector.
  *
@@ -6785,7 +11157,7 @@ const abs = (out, vector) => {
 
 module.exports = abs
 
-},{}],215:[function(require,module,exports){
+},{}],224:[function(require,module,exports){
 /**
  * Adds the coordinates of two vectors (A+B).
  *
@@ -6804,7 +11176,7 @@ const add = (out, a, b) => {
 
 module.exports = add
 
-},{}],216:[function(require,module,exports){
+},{}],225:[function(require,module,exports){
 const dot = require('./dot')
 
 /**
@@ -6831,7 +11203,7 @@ const angle = (a, b) => {
 
 module.exports = angle
 
-},{"./dot":223}],217:[function(require,module,exports){
+},{"./dot":232}],226:[function(require,module,exports){
 const create = require('./create')
 
 /**
@@ -6851,7 +11223,7 @@ const clone = (vector) => {
 
 module.exports = clone
 
-},{"./create":219}],218:[function(require,module,exports){
+},{"./create":228}],227:[function(require,module,exports){
 /**
  * Create a copy of the given vector.
  *
@@ -6869,7 +11241,7 @@ const copy = (out, vector) => {
 
 module.exports = copy
 
-},{}],219:[function(require,module,exports){
+},{}],228:[function(require,module,exports){
 /**
  * Represents a three dimensional vector.
  * See fromValues().
@@ -6886,7 +11258,7 @@ const create = () => [0, 0, 0]
 
 module.exports = create
 
-},{}],220:[function(require,module,exports){
+},{}],229:[function(require,module,exports){
 /**
  * Computes the cross product of the given vectors (AxB).
  *
@@ -6912,7 +11284,7 @@ const cross = (out, a, b) => {
 
 module.exports = cross
 
-},{}],221:[function(require,module,exports){
+},{}],230:[function(require,module,exports){
 /**
  * Calculates the Euclidian distance between the given vectors.
  *
@@ -6925,12 +11297,12 @@ const distance = (a, b) => {
   const x = b[0] - a[0]
   const y = b[1] - a[1]
   const z = b[2] - a[2]
-  return Math.hypot(x, y, z)
+  return Math.sqrt(x * x + y * y + z * z)
 }
 
 module.exports = distance
 
-},{}],222:[function(require,module,exports){
+},{}],231:[function(require,module,exports){
 /**
  * Divides the coordinates of two vectors (A/B).
  *
@@ -6949,7 +11321,7 @@ const divide = (out, a, b) => {
 
 module.exports = divide
 
-},{}],223:[function(require,module,exports){
+},{}],232:[function(require,module,exports){
 /**
  * Calculates the dot product of two vectors.
  *
@@ -6962,7 +11334,7 @@ const dot = (a, b) => a[0] * b[0] + a[1] * b[1] + a[2] * b[2]
 
 module.exports = dot
 
-},{}],224:[function(require,module,exports){
+},{}],233:[function(require,module,exports){
 /**
  * Compare the given vectors for equality.
  *
@@ -6975,14 +11347,14 @@ const equals = (a, b) => (a[0] === b[0]) && (a[1] === b[1]) && (a[2] === b[2])
 
 module.exports = equals
 
-},{}],225:[function(require,module,exports){
+},{}],234:[function(require,module,exports){
 /**
  * Creates a vector from a single scalar value.
  * All components of the resulting vector have the given value.
  *
  * @param {vec3} out - receiving vector
  * @param {Number} scalar
- * @returns {Vec3} out
+ * @returns {vec3} out
  * @alias module:modeling/maths/vec3.fromScalar
  */
 const fromScalar = (out, scalar) => {
@@ -6994,7 +11366,7 @@ const fromScalar = (out, scalar) => {
 
 module.exports = fromScalar
 
-},{}],226:[function(require,module,exports){
+},{}],235:[function(require,module,exports){
 const create = require('./create')
 
 /**
@@ -7016,7 +11388,7 @@ const fromValues = (x, y, z) => {
 
 module.exports = fromValues
 
-},{"./create":219}],227:[function(require,module,exports){
+},{"./create":228}],236:[function(require,module,exports){
 /**
  * Create a new vector by extending a 2D vector with a Z value.
  *
@@ -7026,16 +11398,16 @@ module.exports = fromValues
  * @returns {vec3} out
  * @alias module:modeling/maths/vec3.fromVec2
  */
-const fromVector2 = (out, vec2, z = 0) => {
-  out[0] = vec2[0]
-  out[1] = vec2[1]
+const fromVector2 = (out, vector, z = 0) => {
+  out[0] = vector[0]
+  out[1] = vector[1]
   out[2] = z
   return out
 }
 
 module.exports = fromVector2
 
-},{}],228:[function(require,module,exports){
+},{}],237:[function(require,module,exports){
 /**
  * Represents a three dimensional vector.
  * @see {@link vec3} for data structure information.
@@ -7076,7 +11448,7 @@ module.exports = {
   transform: require('./transform')
 }
 
-},{"./abs":214,"./add":215,"./angle":216,"./clone":217,"./copy":218,"./create":219,"./cross":220,"./distance":221,"./divide":222,"./dot":223,"./equals":224,"./fromScalar":225,"./fromValues":226,"./fromVec2":227,"./length":229,"./lerp":230,"./max":231,"./min":232,"./multiply":233,"./negate":234,"./normalize":235,"./orthogonal":236,"./rotateX":237,"./rotateY":238,"./rotateZ":239,"./scale":240,"./snap":241,"./squaredDistance":242,"./squaredLength":243,"./subtract":244,"./toString":245,"./transform":246}],229:[function(require,module,exports){
+},{"./abs":223,"./add":224,"./angle":225,"./clone":226,"./copy":227,"./create":228,"./cross":229,"./distance":230,"./divide":231,"./dot":232,"./equals":233,"./fromScalar":234,"./fromValues":235,"./fromVec2":236,"./length":238,"./lerp":239,"./max":240,"./min":241,"./multiply":242,"./negate":243,"./normalize":244,"./orthogonal":245,"./rotateX":246,"./rotateY":247,"./rotateZ":248,"./scale":249,"./snap":250,"./squaredDistance":251,"./squaredLength":252,"./subtract":253,"./toString":254,"./transform":255}],238:[function(require,module,exports){
 /**
  * Calculates the length of a vector.
  *
@@ -7084,16 +11456,16 @@ module.exports = {
  * @returns {Number} length
  * @alias module:modeling/maths/vec3.length
  */
-const length = (a) => {
-  const x = a[0]
-  const y = a[1]
-  const z = a[2]
-  return Math.hypot(x, y, z)
+const length = (vector) => {
+  const x = vector[0]
+  const y = vector[1]
+  const z = vector[2]
+  return Math.sqrt(x * x + y * y + z * z)
 }
 
 module.exports = length
 
-},{}],230:[function(require,module,exports){
+},{}],239:[function(require,module,exports){
 /**
  * Performs a linear interpolation between two vectors.
  *
@@ -7113,7 +11485,7 @@ const lerp = (out, a, b, t) => {
 
 module.exports = lerp
 
-},{}],231:[function(require,module,exports){
+},{}],240:[function(require,module,exports){
 /**
  * Returns the maximum coordinates of the given vectors.
  *
@@ -7132,7 +11504,7 @@ const max = (out, a, b) => {
 
 module.exports = max
 
-},{}],232:[function(require,module,exports){
+},{}],241:[function(require,module,exports){
 /**
  * Returns the minimum coordinates of the given vectors.
  *
@@ -7151,7 +11523,7 @@ const min = (out, a, b) => {
 
 module.exports = min
 
-},{}],233:[function(require,module,exports){
+},{}],242:[function(require,module,exports){
 /**
  * Multiply the coordinates of the given vectors (A*B).
  *
@@ -7170,7 +11542,7 @@ const multiply = (out, a, b) => {
 
 module.exports = multiply
 
-},{}],234:[function(require,module,exports){
+},{}],243:[function(require,module,exports){
 /**
  * Negates the coordinates of the given vector.
  *
@@ -7188,7 +11560,7 @@ const negate = (out, vector) => {
 
 module.exports = negate
 
-},{}],235:[function(require,module,exports){
+},{}],244:[function(require,module,exports){
 /**
  * Normalize the given vector.
  *
@@ -7213,7 +11585,7 @@ const normalize = (out, vector) => {
 
 module.exports = normalize
 
-},{}],236:[function(require,module,exports){
+},{}],245:[function(require,module,exports){
 const abs = require('./abs')
 const create = require('./create')
 const cross = require('./cross')
@@ -7237,7 +11609,7 @@ const orthogonal = (out, vector) => {
 
 module.exports = orthogonal
 
-},{"./abs":214,"./create":219,"./cross":220}],237:[function(require,module,exports){
+},{"./abs":223,"./create":228,"./cross":229}],246:[function(require,module,exports){
 /**
  * Rotate the given vector around the given origin, X axis only.
  *
@@ -7272,7 +11644,7 @@ const rotateX = (out, vector, origin, radians) => {
 
 module.exports = rotateX
 
-},{}],238:[function(require,module,exports){
+},{}],247:[function(require,module,exports){
 /**
  * Rotate the given vector around the given origin, Y axis only.
  *
@@ -7307,7 +11679,7 @@ const rotateY = (out, vector, origin, radians) => {
 
 module.exports = rotateY
 
-},{}],239:[function(require,module,exports){
+},{}],248:[function(require,module,exports){
 /**
  * Rotate the given vector around the given origin, Z axis only.
  *
@@ -7339,7 +11711,7 @@ const rotateZ = (out, vector, origin, radians) => {
 
 module.exports = rotateZ
 
-},{}],240:[function(require,module,exports){
+},{}],249:[function(require,module,exports){
 /**
  * Scales the coordinates of the given vector by a scalar number.
  *
@@ -7358,7 +11730,7 @@ const scale = (out, vector, amount) => {
 
 module.exports = scale
 
-},{}],241:[function(require,module,exports){
+},{}],250:[function(require,module,exports){
 /**
  * Snaps the coordinates of the given vector to the given epsilon.
  *
@@ -7377,7 +11749,7 @@ const snap = (out, vector, epsilon) => {
 
 module.exports = snap
 
-},{}],242:[function(require,module,exports){
+},{}],251:[function(require,module,exports){
 /**
  * Calculates the squared distance between two vectors.
  *
@@ -7395,7 +11767,7 @@ const squaredDistance = (a, b) => {
 
 module.exports = squaredDistance
 
-},{}],243:[function(require,module,exports){
+},{}],252:[function(require,module,exports){
 /**
  * Calculates the squared length of the given vector.
  *
@@ -7403,16 +11775,16 @@ module.exports = squaredDistance
  * @returns {Number} squared length
  * @alias module:modeling/maths/vec3.squaredLength
  */
-const squaredLength = (a) => {
-  const x = a[0]
-  const y = a[1]
-  const z = a[2]
+const squaredLength = (vector) => {
+  const x = vector[0]
+  const y = vector[1]
+  const z = vector[2]
   return x * x + y * y + z * z
 }
 
 module.exports = squaredLength
 
-},{}],244:[function(require,module,exports){
+},{}],253:[function(require,module,exports){
 /**
  * Subtracts the coordinates of two vectors (A-B).
  *
@@ -7431,10 +11803,10 @@ const subtract = (out, a, b) => {
 
 module.exports = subtract
 
-},{}],245:[function(require,module,exports){
+},{}],254:[function(require,module,exports){
 /**
  * Convert the given vector to a representative string.
- * @param {vec3} vector - vector of reference
+ * @param {vec3} vec - vector of reference
  * @returns {String} string representation
  * @alias module:modeling/maths/vec3.toString
  */
@@ -7442,7 +11814,7 @@ const toString = (vec) => `[${vec[0].toFixed(7)}, ${vec[1].toFixed(7)}, ${vec[2]
 
 module.exports = toString
 
-},{}],246:[function(require,module,exports){
+},{}],255:[function(require,module,exports){
 /**
  * Transforms the given vector using the given matrix.
  *
@@ -7466,7 +11838,7 @@ const transform = (out, vector, matrix) => {
 
 module.exports = transform
 
-},{}],247:[function(require,module,exports){
+},{}],256:[function(require,module,exports){
 const create = require('./create')
 
 /**
@@ -7487,7 +11859,7 @@ const clone = (vector) => {
 
 module.exports = clone
 
-},{"./create":249}],248:[function(require,module,exports){
+},{"./create":258}],257:[function(require,module,exports){
 /**
  * Create a copy of the given vector.
  *
@@ -7506,7 +11878,7 @@ const copy = (out, vector) => {
 
 module.exports = copy
 
-},{}],249:[function(require,module,exports){
+},{}],258:[function(require,module,exports){
 /**
  * Represents a four dimensional vector.
  * See fromValues().
@@ -7523,7 +11895,7 @@ const create = () => [0, 0, 0, 0]
 
 module.exports = create
 
-},{}],250:[function(require,module,exports){
+},{}],259:[function(require,module,exports){
 /**
  * Calculates the dot product of the given vectors.
  *
@@ -7536,7 +11908,7 @@ const dot = (a, b) => a[0] * b[0] + a[1] * b[1] + a[2] * b[2] + a[3] * b[3]
 
 module.exports = dot
 
-},{}],251:[function(require,module,exports){
+},{}],260:[function(require,module,exports){
 /**
  * Compare the given vectors for equality.
  *
@@ -7549,7 +11921,7 @@ const equals = (a, b) => ((a[0] === b[0]) && (a[1] === b[1]) && (a[2] === b[2]) 
 
 module.exports = equals
 
-},{}],252:[function(require,module,exports){
+},{}],261:[function(require,module,exports){
 /**
  * Create a new vector from the given scalar value.
  *
@@ -7568,7 +11940,7 @@ const fromScalar = (out, scalar) => {
 
 module.exports = fromScalar
 
-},{}],253:[function(require,module,exports){
+},{}],262:[function(require,module,exports){
 const create = require('./create')
 
 /**
@@ -7592,7 +11964,7 @@ const fromValues = (x, y, z, w) => {
 
 module.exports = fromValues
 
-},{"./create":249}],254:[function(require,module,exports){
+},{"./create":258}],263:[function(require,module,exports){
 /**
  * Represents a four dimensional vector.
  * @see {@link vec4} for data structure information.
@@ -7610,11 +11982,11 @@ module.exports = {
   transform: require('./transform')
 }
 
-},{"./clone":247,"./copy":248,"./create":249,"./dot":250,"./equals":251,"./fromScalar":252,"./fromValues":253,"./toString":255,"./transform":256}],255:[function(require,module,exports){
+},{"./clone":256,"./copy":257,"./create":258,"./dot":259,"./equals":260,"./fromScalar":261,"./fromValues":262,"./toString":264,"./transform":265}],264:[function(require,module,exports){
 /**
  * Convert the given vector to a representative string.
  *
- * @param {vec4} vector - vector to convert
+ * @param {vec4} vec - vector to convert
  * @returns {String} representative string
  * @alias module:modeling/maths/vec4.toString
  */
@@ -7622,7 +11994,7 @@ const toString = (vec) => `(${vec[0].toFixed(9)}, ${vec[1].toFixed(9)}, ${vec[2]
 
 module.exports = toString
 
-},{}],256:[function(require,module,exports){
+},{}],265:[function(require,module,exports){
 /**
  * Transform the given vector using the given matrix.
  *
@@ -7644,7 +12016,7 @@ const transform = (out, vector, matrix) => {
 
 module.exports = transform
 
-},{}],257:[function(require,module,exports){
+},{}],266:[function(require,module,exports){
 const { EPS } = require('../maths/constants')
 
 const calculateEpsilonFromBounds = (bounds, dimensions) => {
@@ -7657,7 +12029,7 @@ const calculateEpsilonFromBounds = (bounds, dimensions) => {
 
 module.exports = calculateEpsilonFromBounds
 
-},{"../maths/constants":101}],258:[function(require,module,exports){
+},{"../maths/constants":110}],267:[function(require,module,exports){
 /**
  * All shapes (primitives or the results of operations) can be measured, e.g. calculate volume, etc.
  * @module modeling/measurements
@@ -7679,7 +12051,7 @@ module.exports = {
   measureVolume: require('./measureVolume')
 }
 
-},{"./measureAggregateArea":259,"./measureAggregateBoundingBox":260,"./measureAggregateEpsilon":261,"./measureAggregateVolume":262,"./measureArea":263,"./measureBoundingBox":264,"./measureBoundingSphere":265,"./measureCenter":266,"./measureCenterOfMass":267,"./measureDimensions":268,"./measureEpsilon":269,"./measureVolume":270}],259:[function(require,module,exports){
+},{"./measureAggregateArea":268,"./measureAggregateBoundingBox":269,"./measureAggregateEpsilon":270,"./measureAggregateVolume":271,"./measureArea":272,"./measureBoundingBox":273,"./measureBoundingSphere":274,"./measureCenter":275,"./measureCenterOfMass":276,"./measureDimensions":277,"./measureEpsilon":278,"./measureVolume":279}],268:[function(require,module,exports){
 const flatten = require('../utils/flatten')
 
 const measureArea = require('./measureArea')
@@ -7707,7 +12079,7 @@ const measureAggregateArea = (...geometries) => {
 
 module.exports = measureAggregateArea
 
-},{"../utils/flatten":393,"./measureArea":263}],260:[function(require,module,exports){
+},{"../utils/flatten":412,"./measureArea":272}],269:[function(require,module,exports){
 const flatten = require('../utils/flatten')
 const vec3min = require('../maths/vec3/min')
 const vec3max = require('../maths/vec3/max')
@@ -7739,7 +12111,7 @@ const measureAggregateBoundingBox = (...geometries) => {
 
 module.exports = measureAggregateBoundingBox
 
-},{"../maths/vec3/max":231,"../maths/vec3/min":232,"../utils/flatten":393,"./measureBoundingBox":264}],261:[function(require,module,exports){
+},{"../maths/vec3/max":240,"../maths/vec3/min":241,"../utils/flatten":412,"./measureBoundingBox":273}],270:[function(require,module,exports){
 const flatten = require('../utils/flatten')
 const measureAggregateBoundingBox = require('./measureAggregateBoundingBox')
 const calculateEpsilonFromBounds = require('./calculateEpsilonFromBounds')
@@ -7770,7 +12142,7 @@ const measureAggregateEpsilon = (...geometries) => {
 
 module.exports = measureAggregateEpsilon
 
-},{"../geometries":58,"../utils/flatten":393,"./calculateEpsilonFromBounds":257,"./measureAggregateBoundingBox":260}],262:[function(require,module,exports){
+},{"../geometries":66,"../utils/flatten":412,"./calculateEpsilonFromBounds":266,"./measureAggregateBoundingBox":269}],271:[function(require,module,exports){
 const flatten = require('../utils/flatten')
 
 const measureVolume = require('./measureVolume')
@@ -7798,7 +12170,7 @@ const measureAggregateVolume = (...geometries) => {
 
 module.exports = measureAggregateVolume
 
-},{"../utils/flatten":393,"./measureVolume":270}],263:[function(require,module,exports){
+},{"../utils/flatten":412,"./measureVolume":279}],272:[function(require,module,exports){
 const flatten = require('../utils/flatten')
 
 const geom2 = require('../geometries/geom2')
@@ -7880,7 +12252,7 @@ const measureArea = (...geometries) => {
 
 module.exports = measureArea
 
-},{"../geometries/geom2":36,"../geometries/geom3":50,"../geometries/path2":71,"../geometries/poly3":87,"../utils/flatten":393}],264:[function(require,module,exports){
+},{"../geometries/geom2":42,"../geometries/geom3":57,"../geometries/path2":78,"../geometries/poly3":95,"../utils/flatten":412}],273:[function(require,module,exports){
 const flatten = require('../utils/flatten')
 
 const vec2 = require('../maths/vec2')
@@ -8016,7 +12388,7 @@ const measureBoundingBox = (...geometries) => {
 
 module.exports = measureBoundingBox
 
-},{"../geometries/geom2":36,"../geometries/geom3":50,"../geometries/path2":71,"../geometries/poly3":87,"../maths/vec2":197,"../maths/vec3":228,"../utils/flatten":393}],265:[function(require,module,exports){
+},{"../geometries/geom2":42,"../geometries/geom3":57,"../geometries/path2":78,"../geometries/poly3":95,"../maths/vec2":206,"../maths/vec3":237,"../utils/flatten":412}],274:[function(require,module,exports){
 const flatten = require('../utils/flatten')
 
 const vec2 = require('../maths/vec2')
@@ -8043,7 +12415,7 @@ const measureBoundingSphereOfPath2 = (geometry) => {
   const points = path2.toPoints(geometry)
 
   if (points.length > 0) {
-    // calculate the centriod of the geometry
+    // calculate the centroid of the geometry
     let numPoints = 0
     const temp = vec3.create()
     points.forEach((point) => {
@@ -8079,7 +12451,7 @@ const measureBoundingSphereOfGeom2 = (geometry) => {
   const sides = geom2.toSides(geometry)
 
   if (sides.length > 0) {
-    // calculate the centriod of the geometry
+    // calculate the centroid of the geometry
     let numPoints = 0
     const temp = vec3.create()
     sides.forEach((side) => {
@@ -8115,7 +12487,7 @@ const measureBoundingSphereOfGeom3 = (geometry) => {
   const polygons = geom3.toPolygons(geometry)
 
   if (polygons.length > 0) {
-    // calculate the centriod of the geometry
+    // calculate the centroid of the geometry
     let numPoints = 0
     polygons.forEach((polygon) => {
       poly3.toPoints(polygon).forEach((point) => {
@@ -8141,7 +12513,7 @@ const measureBoundingSphereOfGeom3 = (geometry) => {
 }
 
 /**
- * Measure the (aproximate) bounding sphere of the given geometries.
+ * Measure the (approximate) bounding sphere of the given geometries.
  * @see https://en.wikipedia.org/wiki/Bounding_sphere
  * @param {...Object} geometries - the geometries to measure
  * @return {Array} the bounding sphere for each geometry, i.e. [centroid, radius]
@@ -8164,7 +12536,7 @@ const measureBoundingSphere = (...geometries) => {
 
 module.exports = measureBoundingSphere
 
-},{"../geometries/geom2":36,"../geometries/geom3":50,"../geometries/path2":71,"../geometries/poly3":87,"../maths/vec2":197,"../maths/vec3":228,"../utils/flatten":393}],266:[function(require,module,exports){
+},{"../geometries/geom2":42,"../geometries/geom3":57,"../geometries/path2":78,"../geometries/poly3":95,"../maths/vec2":206,"../maths/vec3":237,"../utils/flatten":412}],275:[function(require,module,exports){
 const flatten = require('../utils/flatten')
 
 const measureBoundingBox = require('./measureBoundingBox')
@@ -8194,7 +12566,7 @@ const measureCenter = (...geometries) => {
 
 module.exports = measureCenter
 
-},{"../utils/flatten":393,"./measureBoundingBox":264}],267:[function(require,module,exports){
+},{"../utils/flatten":412,"./measureBoundingBox":273}],276:[function(require,module,exports){
 const flatten = require('../utils/flatten')
 
 const vec3 = require('../maths/vec3')
@@ -8258,7 +12630,7 @@ const measureCenterOfMassGeom3 = (geometry) => {
   let totalVolume = 0
   const vector = vec3.create() // for speed
   polygons.forEach((polygon) => {
-    // calculate volume and center of each tetrahedon
+    // calculate volume and center of each tetrahedron
     const vertices = polygon.vertices
     for (let i = 0; i < vertices.length - 2; i++) {
       vec3.cross(vector, vertices[i + 1], vertices[i + 2])
@@ -8302,7 +12674,7 @@ const measureCenterOfMass = (...geometries) => {
 
 module.exports = measureCenterOfMass
 
-},{"../geometries/geom2":36,"../geometries/geom3":50,"../maths/vec3":228,"../utils/flatten":393}],268:[function(require,module,exports){
+},{"../geometries/geom2":42,"../geometries/geom3":57,"../maths/vec3":237,"../utils/flatten":412}],277:[function(require,module,exports){
 const flatten = require('../utils/flatten')
 
 const measureBoundingBox = require('./measureBoundingBox')
@@ -8332,7 +12704,7 @@ const measureDimensions = (...geometries) => {
 
 module.exports = measureDimensions
 
-},{"../utils/flatten":393,"./measureBoundingBox":264}],269:[function(require,module,exports){
+},{"../utils/flatten":412,"./measureBoundingBox":273}],278:[function(require,module,exports){
 const flatten = require('../utils/flatten')
 const { geom2, geom3, path2 } = require('../geometries')
 
@@ -8382,7 +12754,7 @@ const measureEpsilon = (...geometries) => {
 
 module.exports = measureEpsilon
 
-},{"../geometries":58,"../utils/flatten":393,"./calculateEpsilonFromBounds":257,"./measureBoundingBox":264}],270:[function(require,module,exports){
+},{"../geometries":66,"../utils/flatten":412,"./calculateEpsilonFromBounds":266,"./measureBoundingBox":273}],279:[function(require,module,exports){
 const flatten = require('../utils/flatten')
 
 const geom2 = require('../geometries/geom2')
@@ -8452,7 +12824,7 @@ const measureVolume = (...geometries) => {
 
 module.exports = measureVolume
 
-},{"../geometries/geom2":36,"../geometries/geom3":50,"../geometries/path2":71,"../geometries/poly3":87,"../utils/flatten":393}],271:[function(require,module,exports){
+},{"../geometries/geom2":42,"../geometries/geom3":57,"../geometries/path2":78,"../geometries/poly3":95,"../utils/flatten":412}],280:[function(require,module,exports){
 const vec2 = require('../../maths/vec2')
 
 const geom2 = require('../../geometries/geom2')
@@ -8506,7 +12878,7 @@ const fromFakePolygons = (epsilon, polygons) => {
 
 module.exports = fromFakePolygons
 
-},{"../../geometries/geom2":36,"../../maths/vec2":197}],272:[function(require,module,exports){
+},{"../../geometries/geom2":42,"../../maths/vec2":206}],281:[function(require,module,exports){
 /**
  * All shapes (primitives or the results of operations) can be passed to boolean functions
  * to perform logical operations, e.g. remove a hole from a board.
@@ -8522,7 +12894,7 @@ module.exports = {
   union: require('./union')
 }
 
-},{"./intersect":273,"./scission":280,"./subtract":282,"./union":293}],273:[function(require,module,exports){
+},{"./intersect":282,"./scission":287,"./subtract":289,"./union":300}],282:[function(require,module,exports){
 const flatten = require('../../utils/flatten')
 const areAllShapesTheSameType = require('../../utils/areAllShapesTheSameType')
 
@@ -8571,7 +12943,7 @@ const intersect = (...geometries) => {
 
 module.exports = intersect
 
-},{"../../geometries/geom2":36,"../../geometries/geom3":50,"../../utils/areAllShapesTheSameType":391,"../../utils/flatten":393,"./intersectGeom2":274,"./intersectGeom3":275}],274:[function(require,module,exports){
+},{"../../geometries/geom2":42,"../../geometries/geom3":57,"../../utils/areAllShapesTheSameType":410,"../../utils/flatten":412,"./intersectGeom2":283,"./intersectGeom3":284}],283:[function(require,module,exports){
 const flatten = require('../../utils/flatten')
 
 const geom3 = require('../../geometries/geom3')
@@ -8600,10 +12972,11 @@ const intersect = (...geometries) => {
 
 module.exports = intersect
 
-},{"../../geometries/geom3":50,"../../measurements/measureEpsilon":269,"../../utils/flatten":393,"./fromFakePolygons":271,"./intersectGeom3":275,"./to3DWalls":286}],275:[function(require,module,exports){
+},{"../../geometries/geom3":57,"../../measurements/measureEpsilon":278,"../../utils/flatten":412,"./fromFakePolygons":280,"./intersectGeom3":284,"./to3DWalls":293}],284:[function(require,module,exports){
 const flatten = require('../../utils/flatten')
 
-const retessellate = require('./retessellate')
+const retessellate = require('../modifiers/retessellate')
+
 const intersectSub = require('./intersectGeom3Sub')
 
 /*
@@ -8626,7 +12999,7 @@ const intersect = (...geometries) => {
 
 module.exports = intersect
 
-},{"../../utils/flatten":393,"./intersectGeom3Sub":276,"./retessellate":279}],276:[function(require,module,exports){
+},{"../../utils/flatten":412,"../modifiers/retessellate":370,"./intersectGeom3Sub":285}],285:[function(require,module,exports){
 const geom3 = require('../../geometries/geom3')
 
 const mayOverlap = require('./mayOverlap')
@@ -8661,16 +13034,16 @@ const intersectGeom3Sub = (geometry1, geometry2) => {
 
 module.exports = intersectGeom3Sub
 
-},{"../../geometries/geom3":50,"./mayOverlap":277,"./trees":290}],277:[function(require,module,exports){
+},{"../../geometries/geom3":57,"./mayOverlap":286,"./trees":297}],286:[function(require,module,exports){
 const { EPS } = require('../../maths/constants')
 
 const measureBoundingBox = require('../../measurements/measureBoundingBox')
 
 /*
  * Determine if the given geometries overlap by comparing min and max bounds.
- * NOTE: This is used in union for performace gains.
- * @param {geom3} geometry1 - geometry for comparision
- * @param {geom3} geometry2 - geometry for comparision
+ * NOTE: This is used in union for performance gains.
+ * @param {geom3} geometry1 - geometry for comparison
+ * @param {geom3} geometry2 - geometry for comparison
  * @returns {boolean} true if the geometries overlap
  */
 const mayOverlap = (geometry1, geometry2) => {
@@ -8698,418 +13071,7 @@ const mayOverlap = (geometry1, geometry2) => {
 
 module.exports = mayOverlap
 
-},{"../../maths/constants":101,"../../measurements/measureBoundingBox":264}],278:[function(require,module,exports){
-const { EPS } = require('../../maths/constants')
-
-const line2 = require('../../maths/line2')
-const vec2 = require('../../maths/vec2')
-const OrthoNormalBasis = require('../../maths/OrthoNormalBasis')
-const interpolateBetween2DPointsForY = require('../../maths/utils/interpolateBetween2DPointsForY')
-
-const { insertSorted, fnNumberSort } = require('../../utils')
-
-const poly3 = require('../../geometries/poly3')
-
-/*
- * Retesselation for a set of COPLANAR polygons.
- * @param {poly3[]} sourcepolygons - list of polygons
- * @returns {poly3[]} new set of polygons
- */
-const reTesselateCoplanarPolygons = (sourcepolygons) => {
-  if (sourcepolygons.length < 2) return sourcepolygons
-
-  const destpolygons = []
-  const numpolygons = sourcepolygons.length
-  const plane = poly3.plane(sourcepolygons[0])
-  const orthobasis = new OrthoNormalBasis(plane)
-  const polygonvertices2d = [] // array of array of Vector2D
-  const polygontopvertexindexes = [] // array of indexes of topmost vertex per polygon
-  const topy2polygonindexes = {}
-  const ycoordinatetopolygonindexes = {}
-
-  const ycoordinatebins = {}
-
-  // convert all polygon vertices to 2D
-  // Make a list of all encountered y coordinates
-  // And build a map of all polygons that have a vertex at a certain y coordinate:
-  const ycoordinateBinningFactor = 1.0 / EPS * 10
-  for (let polygonindex = 0; polygonindex < numpolygons; polygonindex++) {
-    const poly3d = sourcepolygons[polygonindex]
-    let vertices2d = []
-    let numvertices = poly3d.vertices.length
-    let minindex = -1
-    if (numvertices > 0) {
-      let miny
-      let maxy
-      for (let i = 0; i < numvertices; i++) {
-        let pos2d = orthobasis.to2D(poly3d.vertices[i])
-        // perform binning of y coordinates: If we have multiple vertices very
-        // close to each other, give them the same y coordinate:
-        const ycoordinatebin = Math.floor(pos2d[1] * ycoordinateBinningFactor)
-        let newy
-        if (ycoordinatebin in ycoordinatebins) {
-          newy = ycoordinatebins[ycoordinatebin]
-        } else if (ycoordinatebin + 1 in ycoordinatebins) {
-          newy = ycoordinatebins[ycoordinatebin + 1]
-        } else if (ycoordinatebin - 1 in ycoordinatebins) {
-          newy = ycoordinatebins[ycoordinatebin - 1]
-        } else {
-          newy = pos2d[1]
-          ycoordinatebins[ycoordinatebin] = pos2d[1]
-        }
-        pos2d = vec2.fromValues(pos2d[0], newy)
-        vertices2d.push(pos2d)
-        const y = pos2d[1]
-        if ((i === 0) || (y < miny)) {
-          miny = y
-          minindex = i
-        }
-        if ((i === 0) || (y > maxy)) {
-          maxy = y
-        }
-        if (!(y in ycoordinatetopolygonindexes)) {
-          ycoordinatetopolygonindexes[y] = {}
-        }
-        ycoordinatetopolygonindexes[y][polygonindex] = true
-      }
-      if (miny >= maxy) {
-        // degenerate polygon, all vertices have same y coordinate. Just ignore it from now:
-        vertices2d = []
-        numvertices = 0
-        minindex = -1
-      } else {
-        if (!(miny in topy2polygonindexes)) {
-          topy2polygonindexes[miny] = []
-        }
-        topy2polygonindexes[miny].push(polygonindex)
-      }
-    } // if(numvertices > 0)
-    // reverse the vertex order:
-    vertices2d.reverse()
-    minindex = numvertices - minindex - 1
-    polygonvertices2d.push(vertices2d)
-    polygontopvertexindexes.push(minindex)
-  }
-  const ycoordinates = []
-  for (const ycoordinate in ycoordinatetopolygonindexes) ycoordinates.push(ycoordinate)
-  ycoordinates.sort(fnNumberSort)
-
-  // Now we will iterate over all y coordinates, from lowest to highest y coordinate
-  // activepolygons: source polygons that are 'active', i.e. intersect with our y coordinate
-  //   Is sorted so the polygons are in left to right order
-  // Each element in activepolygons has these properties:
-  //        polygonindex: the index of the source polygon (i.e. an index into the sourcepolygons
-  //                      and polygonvertices2d arrays)
-  //        leftvertexindex: the index of the vertex at the left side of the polygon (lowest x)
-  //                         that is at or just above the current y coordinate
-  //        rightvertexindex: dito at right hand side of polygon
-  //        topleft, bottomleft: coordinates of the left side of the polygon crossing the current y coordinate
-  //        topright, bottomright: coordinates of the right hand side of the polygon crossing the current y coordinate
-  let activepolygons = []
-  let prevoutpolygonrow = []
-  for (let yindex = 0; yindex < ycoordinates.length; yindex++) {
-    const newoutpolygonrow = []
-    const ycoordinateasstring = ycoordinates[yindex]
-    const ycoordinate = Number(ycoordinateasstring)
-
-    // update activepolygons for this y coordinate:
-    // - Remove any polygons that end at this y coordinate
-    // - update leftvertexindex and rightvertexindex (which point to the current vertex index
-    //   at the the left and right side of the polygon
-    // Iterate over all polygons that have a corner at this y coordinate:
-    const polygonindexeswithcorner = ycoordinatetopolygonindexes[ycoordinateasstring]
-    for (let activepolygonindex = 0; activepolygonindex < activepolygons.length; ++activepolygonindex) {
-      const activepolygon = activepolygons[activepolygonindex]
-      const polygonindex = activepolygon.polygonindex
-      if (polygonindexeswithcorner[polygonindex]) {
-        // this active polygon has a corner at this y coordinate:
-        const vertices2d = polygonvertices2d[polygonindex]
-        const numvertices = vertices2d.length
-        let newleftvertexindex = activepolygon.leftvertexindex
-        let newrightvertexindex = activepolygon.rightvertexindex
-        // See if we need to increase leftvertexindex or decrease rightvertexindex:
-        while (true) {
-          let nextleftvertexindex = newleftvertexindex + 1
-          if (nextleftvertexindex >= numvertices) nextleftvertexindex = 0
-          if (vertices2d[nextleftvertexindex][1] !== ycoordinate) break
-          newleftvertexindex = nextleftvertexindex
-        }
-        let nextrightvertexindex = newrightvertexindex - 1
-        if (nextrightvertexindex < 0) nextrightvertexindex = numvertices - 1
-        if (vertices2d[nextrightvertexindex][1] === ycoordinate) {
-          newrightvertexindex = nextrightvertexindex
-        }
-        if ((newleftvertexindex !== activepolygon.leftvertexindex) && (newleftvertexindex === newrightvertexindex)) {
-          // We have increased leftvertexindex or decreased rightvertexindex, and now they point to the same vertex
-          // This means that this is the bottom point of the polygon. We'll remove it:
-          activepolygons.splice(activepolygonindex, 1)
-          --activepolygonindex
-        } else {
-          activepolygon.leftvertexindex = newleftvertexindex
-          activepolygon.rightvertexindex = newrightvertexindex
-          activepolygon.topleft = vertices2d[newleftvertexindex]
-          activepolygon.topright = vertices2d[newrightvertexindex]
-          let nextleftvertexindex = newleftvertexindex + 1
-          if (nextleftvertexindex >= numvertices) nextleftvertexindex = 0
-          activepolygon.bottomleft = vertices2d[nextleftvertexindex]
-          let nextrightvertexindex = newrightvertexindex - 1
-          if (nextrightvertexindex < 0) nextrightvertexindex = numvertices - 1
-          activepolygon.bottomright = vertices2d[nextrightvertexindex]
-        }
-      } // if polygon has corner here
-    } // for activepolygonindex
-    let nextycoordinate
-    if (yindex >= ycoordinates.length - 1) {
-      // last row, all polygons must be finished here:
-      activepolygons = []
-      nextycoordinate = null
-    } else { // yindex < ycoordinates.length-1
-      nextycoordinate = Number(ycoordinates[yindex + 1])
-      const middleycoordinate = 0.5 * (ycoordinate + nextycoordinate)
-      // update activepolygons by adding any polygons that start here:
-      const startingpolygonindexes = topy2polygonindexes[ycoordinateasstring]
-      for (const polygonindexKey in startingpolygonindexes) {
-        const polygonindex = startingpolygonindexes[polygonindexKey]
-        const vertices2d = polygonvertices2d[polygonindex]
-        const numvertices = vertices2d.length
-        const topvertexindex = polygontopvertexindexes[polygonindex]
-        // the top of the polygon may be a horizontal line. In that case topvertexindex can point to any point on this line.
-        // Find the left and right topmost vertices which have the current y coordinate:
-        let topleftvertexindex = topvertexindex
-        while (true) {
-          let i = topleftvertexindex + 1
-          if (i >= numvertices) i = 0
-          if (vertices2d[i][1] !== ycoordinate) break
-          if (i === topvertexindex) break // should not happen, but just to prevent endless loops
-          topleftvertexindex = i
-        }
-        let toprightvertexindex = topvertexindex
-        while (true) {
-          let i = toprightvertexindex - 1
-          if (i < 0) i = numvertices - 1
-          if (vertices2d[i][1] !== ycoordinate) break
-          if (i === topleftvertexindex) break // should not happen, but just to prevent endless loops
-          toprightvertexindex = i
-        }
-        let nextleftvertexindex = topleftvertexindex + 1
-        if (nextleftvertexindex >= numvertices) nextleftvertexindex = 0
-        let nextrightvertexindex = toprightvertexindex - 1
-        if (nextrightvertexindex < 0) nextrightvertexindex = numvertices - 1
-        const newactivepolygon = {
-          polygonindex: polygonindex,
-          leftvertexindex: topleftvertexindex,
-          rightvertexindex: toprightvertexindex,
-          topleft: vertices2d[topleftvertexindex],
-          topright: vertices2d[toprightvertexindex],
-          bottomleft: vertices2d[nextleftvertexindex],
-          bottomright: vertices2d[nextrightvertexindex]
-        }
-        insertSorted(activepolygons, newactivepolygon, (el1, el2) => {
-          const x1 = interpolateBetween2DPointsForY(el1.topleft, el1.bottomleft, middleycoordinate)
-          const x2 = interpolateBetween2DPointsForY(el2.topleft, el2.bottomleft, middleycoordinate)
-          if (x1 > x2) return 1
-          if (x1 < x2) return -1
-          return 0
-        })
-      } // for(let polygonindex in startingpolygonindexes)
-    } //  yindex < ycoordinates.length-1
-    // if( (yindex === ycoordinates.length-1) || (nextycoordinate - ycoordinate > EPS) )
-    // FIXME : what ???
-
-    // Now activepolygons is up to date
-    // Build the output polygons for the next row in newoutpolygonrow:
-    for (const activepolygonKey in activepolygons) {
-      const activepolygon = activepolygons[activepolygonKey]
-
-      let x = interpolateBetween2DPointsForY(activepolygon.topleft, activepolygon.bottomleft, ycoordinate)
-      const topleft = vec2.fromValues(x, ycoordinate)
-      x = interpolateBetween2DPointsForY(activepolygon.topright, activepolygon.bottomright, ycoordinate)
-      const topright = vec2.fromValues(x, ycoordinate)
-      x = interpolateBetween2DPointsForY(activepolygon.topleft, activepolygon.bottomleft, nextycoordinate)
-      const bottomleft = vec2.fromValues(x, nextycoordinate)
-      x = interpolateBetween2DPointsForY(activepolygon.topright, activepolygon.bottomright, nextycoordinate)
-      const bottomright = vec2.fromValues(x, nextycoordinate)
-      const outpolygon = {
-        topleft: topleft,
-        topright: topright,
-        bottomleft: bottomleft,
-        bottomright: bottomright,
-        leftline: line2.fromPoints(line2.create(), topleft, bottomleft),
-        rightline: line2.fromPoints(line2.create(), bottomright, topright)
-      }
-      if (newoutpolygonrow.length > 0) {
-        const prevoutpolygon = newoutpolygonrow[newoutpolygonrow.length - 1]
-        const d1 = vec2.distance(outpolygon.topleft, prevoutpolygon.topright)
-        const d2 = vec2.distance(outpolygon.bottomleft, prevoutpolygon.bottomright)
-        if ((d1 < EPS) && (d2 < EPS)) {
-          // we can join this polygon with the one to the left:
-          outpolygon.topleft = prevoutpolygon.topleft
-          outpolygon.leftline = prevoutpolygon.leftline
-          outpolygon.bottomleft = prevoutpolygon.bottomleft
-          newoutpolygonrow.splice(newoutpolygonrow.length - 1, 1)
-        }
-      }
-      newoutpolygonrow.push(outpolygon)
-    } // for(activepolygon in activepolygons)
-    if (yindex > 0) {
-      // try to match the new polygons against the previous row:
-      const prevcontinuedindexes = {}
-      const matchedindexes = {}
-      for (let i = 0; i < newoutpolygonrow.length; i++) {
-        const thispolygon = newoutpolygonrow[i]
-        for (let ii = 0; ii < prevoutpolygonrow.length; ii++) {
-          if (!matchedindexes[ii]) { // not already processed?
-            // We have a match if the sidelines are equal or if the top coordinates
-            // are on the sidelines of the previous polygon
-            const prevpolygon = prevoutpolygonrow[ii]
-            if (vec2.distance(prevpolygon.bottomleft, thispolygon.topleft) < EPS) {
-              if (vec2.distance(prevpolygon.bottomright, thispolygon.topright) < EPS) {
-                // Yes, the top of this polygon matches the bottom of the previous:
-                matchedindexes[ii] = true
-                // Now check if the joined polygon would remain convex:
-                const v1 = line2.direction(thispolygon.leftline)
-                const v2 = line2.direction(prevpolygon.leftline)
-                const d1 = v1[0] - v2[0]
-
-                const v3 = line2.direction(thispolygon.rightline)
-                const v4 = line2.direction(prevpolygon.rightline)
-                const d2 = v3[0] - v4[0]
-
-                const leftlinecontinues = Math.abs(d1) < EPS
-                const rightlinecontinues = Math.abs(d2) < EPS
-                const leftlineisconvex = leftlinecontinues || (d1 >= 0)
-                const rightlineisconvex = rightlinecontinues || (d2 >= 0)
-                if (leftlineisconvex && rightlineisconvex) {
-                  // yes, both sides have convex corners:
-                  // This polygon will continue the previous polygon
-                  thispolygon.outpolygon = prevpolygon.outpolygon
-                  thispolygon.leftlinecontinues = leftlinecontinues
-                  thispolygon.rightlinecontinues = rightlinecontinues
-                  prevcontinuedindexes[ii] = true
-                }
-                break
-              }
-            }
-          } // if(!prevcontinuedindexes[ii])
-        } // for ii
-      } // for i
-      for (let ii = 0; ii < prevoutpolygonrow.length; ii++) {
-        if (!prevcontinuedindexes[ii]) {
-          // polygon ends here
-          // Finish the polygon with the last point(s):
-          const prevpolygon = prevoutpolygonrow[ii]
-          prevpolygon.outpolygon.rightpoints.push(prevpolygon.bottomright)
-          if (vec2.distance(prevpolygon.bottomright, prevpolygon.bottomleft) > EPS) {
-            // polygon ends with a horizontal line:
-            prevpolygon.outpolygon.leftpoints.push(prevpolygon.bottomleft)
-          }
-          // reverse the left half so we get a counterclockwise circle:
-          prevpolygon.outpolygon.leftpoints.reverse()
-          const points2d = prevpolygon.outpolygon.rightpoints.concat(prevpolygon.outpolygon.leftpoints)
-          const vertices3d = points2d.map((point2d) => orthobasis.to3D(point2d))
-          const polygon = poly3.fromPointsAndPlane(vertices3d, plane) // TODO support shared
-
-          // if we let empty polygon out, next retesselate will crash
-          if (polygon.vertices.length) destpolygons.push(polygon)
-        }
-      }
-    } // if(yindex > 0)
-    for (let i = 0; i < newoutpolygonrow.length; i++) {
-      const thispolygon = newoutpolygonrow[i]
-      if (!thispolygon.outpolygon) {
-        // polygon starts here:
-        thispolygon.outpolygon = {
-          leftpoints: [],
-          rightpoints: []
-        }
-        thispolygon.outpolygon.leftpoints.push(thispolygon.topleft)
-        if (vec2.distance(thispolygon.topleft, thispolygon.topright) > EPS) {
-          // we have a horizontal line at the top:
-          thispolygon.outpolygon.rightpoints.push(thispolygon.topright)
-        }
-      } else {
-        // continuation of a previous row
-        if (!thispolygon.leftlinecontinues) {
-          thispolygon.outpolygon.leftpoints.push(thispolygon.topleft)
-        }
-        if (!thispolygon.rightlinecontinues) {
-          thispolygon.outpolygon.rightpoints.push(thispolygon.topright)
-        }
-      }
-    }
-    prevoutpolygonrow = newoutpolygonrow
-  } // for yindex
-  return destpolygons
-}
-
-module.exports = reTesselateCoplanarPolygons
-
-},{"../../geometries/poly3":87,"../../maths/OrthoNormalBasis":100,"../../maths/constants":101,"../../maths/line2":112,"../../maths/utils/interpolateBetween2DPointsForY":177,"../../maths/vec2":197,"../../utils":395}],279:[function(require,module,exports){
-const geom3 = require('../../geometries/geom3')
-const poly3 = require('../../geometries/poly3')
-
-const reTesselateCoplanarPolygons = require('./reTesselateCoplanarPolygons')
-
-// Normals are directional vectors with component values from 0 to 1.0, requiring specialized comparision
-// This EPS is derived from a serieas of tests to determine the optimal precision for comparing coplanar polygons,
-// as provided by the sphere primitive at high segmentation
-// This EPS is for 64 bit Number values
-const NEPS = 1e-13
-
-// Compare two normals (unit vectors) for equality.
-const aboutEqualNormals = (a, b) => {
-  return (Math.abs(a[0] - b[0]) <= NEPS && Math.abs(a[1] - b[1]) <= NEPS && Math.abs(a[2] - b[2]) <= NEPS)
-}
-
-const coplanar = (plane1, plane2) => {
-  // expect the same distance from the origin, within tolerance
-  if (Math.abs(plane1[3] - plane2[3]) < 0.00000015) {
-    return aboutEqualNormals(plane1, plane2)
-  }
-  return false
-}
-
-/*
-  After boolean operations all coplanar polygon fragments are joined by a retesselating
-  operation. geom3.reTesselate(geom).
-  Retesselation is done through a linear sweep over the polygon surface.
-  The sweep line passes over the y coordinates of all vertices in the polygon.
-  Polygons are split at each sweep line, and the fragments are joined horizontally and vertically into larger polygons
-  (making sure that we will end up with convex polygons).
-*/
-const retessellate = (geometry) => {
-  if (geometry.isRetesselated) {
-    return geometry
-  }
-
-  const polygons = geom3.toPolygons(geometry)
-  const polygonsPerPlane = [] // elements: [plane, [poly3...]]
-  polygons.forEach((polygon) => {
-    const mapping = polygonsPerPlane.find((element) => coplanar(element[0], poly3.plane(polygon)))
-    if (mapping) {
-      const polygons = mapping[1]
-      polygons.push(polygon)
-    } else {
-      polygonsPerPlane.push([poly3.plane(polygon), [polygon]])
-    }
-  })
-
-  let destpolygons = []
-  polygonsPerPlane.forEach((mapping) => {
-    const sourcepolygons = mapping[1]
-    const retesselayedpolygons = reTesselateCoplanarPolygons(sourcepolygons)
-    destpolygons = destpolygons.concat(retesselayedpolygons)
-  })
-
-  const result = geom3.create(destpolygons)
-  result.isRetesselated = true
-
-  return result
-}
-
-module.exports = retessellate
-
-},{"../../geometries/geom3":50,"../../geometries/poly3":87,"./reTesselateCoplanarPolygons":278}],280:[function(require,module,exports){
+},{"../../maths/constants":110,"../../measurements/measureBoundingBox":273}],287:[function(require,module,exports){
 const flatten = require('../../utils/flatten')
 
 // const geom2 = require('../../geometries/geom2')
@@ -9121,7 +13083,7 @@ const scissionGeom3 = require('./scissionGeom3')
 /**
  * Scission (divide) the given geometry into the component pieces.
  *
- * @param {...Object} geometries - list of geometries
+ * @param {...Object} objects - list of geometries
  * @returns {Array} list of pieces from each geometry
  * @alias module:modeling/booleans.scission
  *
@@ -9154,7 +13116,7 @@ const scission = (...objects) => {
 
 module.exports = scission
 
-},{"../../geometries/geom3":50,"../../utils/flatten":393,"./scissionGeom3":281}],281:[function(require,module,exports){
+},{"../../geometries/geom3":57,"../../utils/flatten":412,"./scissionGeom3":288}],288:[function(require,module,exports){
 const vec3 = require('../../maths/vec3')
 const measureEpsilon = require('../../measurements/measureEpsilon')
 
@@ -9249,7 +13211,7 @@ const scissionGeom3 = (geometry) => {
 
 module.exports = scissionGeom3
 
-},{"../../geometries/geom3":50,"../../maths/vec3":228,"../../measurements/measureEpsilon":269}],282:[function(require,module,exports){
+},{"../../geometries/geom3":57,"../../maths/vec3":237,"../../measurements/measureEpsilon":278}],289:[function(require,module,exports){
 const flatten = require('../../utils/flatten')
 const areAllShapesTheSameType = require('../../utils/areAllShapesTheSameType')
 
@@ -9269,7 +13231,7 @@ const subtractGeom3 = require('./subtractGeom3')
  * @alias module:modeling/booleans.subtract
  *
  * @example
- * let myshape = subtract(cubiod({size: [5,5,5]}), cubiod({size: [5,5,5], center: [5,5,5]}))
+ * let myshape = subtract(cuboid({size: [5,5,5]}), cuboid({size: [5,5,5], center: [5,5,5]}))
  *
  * @example
  * +-------+            +-------+
@@ -9298,7 +13260,7 @@ const subtract = (...geometries) => {
 
 module.exports = subtract
 
-},{"../../geometries/geom2":36,"../../geometries/geom3":50,"../../utils/areAllShapesTheSameType":391,"../../utils/flatten":393,"./subtractGeom2":283,"./subtractGeom3":284}],283:[function(require,module,exports){
+},{"../../geometries/geom2":42,"../../geometries/geom3":57,"../../utils/areAllShapesTheSameType":410,"../../utils/flatten":412,"./subtractGeom2":290,"./subtractGeom3":291}],290:[function(require,module,exports){
 const flatten = require('../../utils/flatten')
 
 const geom3 = require('../../geometries/geom3')
@@ -9327,10 +13289,11 @@ const subtract = (...geometries) => {
 
 module.exports = subtract
 
-},{"../../geometries/geom3":50,"../../measurements/measureEpsilon":269,"../../utils/flatten":393,"./fromFakePolygons":271,"./subtractGeom3":284,"./to3DWalls":286}],284:[function(require,module,exports){
+},{"../../geometries/geom3":57,"../../measurements/measureEpsilon":278,"../../utils/flatten":412,"./fromFakePolygons":280,"./subtractGeom3":291,"./to3DWalls":293}],291:[function(require,module,exports){
 const flatten = require('../../utils/flatten')
 
-const retessellate = require('./retessellate')
+const retessellate = require('../modifiers/retessellate')
+
 const subtractSub = require('./subtractGeom3Sub')
 
 /*
@@ -9353,7 +13316,7 @@ const subtract = (...geometries) => {
 
 module.exports = subtract
 
-},{"../../utils/flatten":393,"./retessellate":279,"./subtractGeom3Sub":285}],285:[function(require,module,exports){
+},{"../../utils/flatten":412,"../modifiers/retessellate":370,"./subtractGeom3Sub":292}],292:[function(require,module,exports){
 const geom3 = require('../../geometries/geom3')
 
 const mayOverlap = require('./mayOverlap')
@@ -9386,7 +13349,7 @@ const subtractGeom3Sub = (geometry1, geometry2) => {
 
 module.exports = subtractGeom3Sub
 
-},{"../../geometries/geom3":50,"./mayOverlap":277,"./trees":290}],286:[function(require,module,exports){
+},{"../../geometries/geom3":57,"./mayOverlap":286,"./trees":297}],293:[function(require,module,exports){
 const vec3 = require('../../maths/vec3')
 
 const geom2 = require('../../geometries/geom2')
@@ -9403,7 +13366,7 @@ const to3DWall = (z0, z1, side) => {
     vec3.fromVec2(vec3.create(), side[1], z1),
     vec3.fromVec2(vec3.create(), side[0], z1)
   ]
-  return poly3.fromPoints(points)
+  return poly3.create(points)
 }
 
 /*
@@ -9424,7 +13387,7 @@ const to3DWalls = (options, geometry) => {
 
 module.exports = to3DWalls
 
-},{"../../geometries/geom2":36,"../../geometries/geom3":50,"../../geometries/poly3":87,"../../maths/vec3":228}],287:[function(require,module,exports){
+},{"../../geometries/geom2":42,"../../geometries/geom3":57,"../../geometries/poly3":95,"../../maths/vec3":237}],294:[function(require,module,exports){
 const plane = require('../../../maths/plane')
 const poly3 = require('../../../geometries/poly3')
 
@@ -9469,28 +13432,32 @@ class Node {
       node = current.node
       polygontreenodes = current.polygontreenodes
 
-      // begin "function"
       if (node.plane) {
+        const plane = node.plane
+
         const backnodes = []
         const frontnodes = []
         const coplanarfrontnodes = alsoRemovecoplanarFront ? backnodes : frontnodes
-        const plane = node.plane
         const numpolygontreenodes = polygontreenodes.length
         for (let i = 0; i < numpolygontreenodes; i++) {
-          const node1 = polygontreenodes[i]
-          if (!node1.isRemoved()) {
-            node1.splitByPlane(plane, coplanarfrontnodes, backnodes, frontnodes, backnodes)
+          const treenode = polygontreenodes[i]
+          if (!treenode.isRemoved()) {
+            // split this polygon tree node using the plane
+            // NOTE: children are added to the tree if there are spanning polygons
+            treenode.splitByPlane(plane, coplanarfrontnodes, backnodes, frontnodes, backnodes)
           }
         }
 
         if (node.front && (frontnodes.length > 0)) {
+          // add front node for further splitting
           stack.push({ node: node.front, polygontreenodes: frontnodes })
         }
         const numbacknodes = backnodes.length
         if (node.back && (numbacknodes > 0)) {
+          // add back node for further splitting
           stack.push({ node: node.back, polygontreenodes: backnodes })
         } else {
-          // there's nothing behind this plane. Delete the nodes behind this plane:
+          // remove all back nodes from processing
           for (let i = 0; i < numbacknodes; i++) {
             backnodes[i].remove()
           }
@@ -9562,21 +13529,11 @@ class Node {
       current = stack.pop()
     } while (current !== undefined)
   }
-
-  // TODO is this still used?
-  getParentPlaneNormals (normals, maxdepth) {
-    if (maxdepth > 0) {
-      if (this.parent) {
-        normals.push(this.parent.plane.normal)
-        this.parent.getParentPlaneNormals(normals, maxdepth - 1)
-      }
-    }
-  }
 }
 
 module.exports = Node
 
-},{"../../../geometries/poly3":87,"../../../maths/plane":170}],288:[function(require,module,exports){
+},{"../../../geometries/poly3":95,"../../../maths/plane":178}],295:[function(require,module,exports){
 const { EPS } = require('../../../maths/constants')
 
 const vec3 = require('../../../maths/vec3')
@@ -9600,11 +13557,11 @@ const splitPolygonByPlane = require('./splitPolygonByPlane')
 // since they are no longer intact.
 class PolygonTreeNode {
   // constructor creates the root node
-  constructor () {
-    this.parent = null
+  constructor (parent, polygon) {
+    this.parent = parent
     this.children = []
-    this.polygon = null
-    this.removed = false
+    this.polygon = polygon
+    this.removed = false // state of branch or leaf
   }
 
   // fill the tree with polygons. Should be called on the root node only; child nodes must
@@ -9626,6 +13583,7 @@ class PolygonTreeNode {
   remove () {
     if (!this.removed) {
       this.removed = true
+      this.polygon = null
 
       // remove ourselves from the parent's children list:
       const parentschildren = this.parent.children
@@ -9710,8 +13668,8 @@ class PolygonTreeNode {
     const polygon = this.polygon
     if (polygon) {
       const bound = poly3.measureBoundingSphere(polygon)
-      const sphereradius = bound[1] + EPS // ensure radius is LARGER then polygon
-      const spherecenter = bound[0]
+      const sphereradius = bound[3] + EPS // ensure radius is LARGER then polygon
+      const spherecenter = bound
       const d = vec3.dot(splane, spherecenter) - splane[3]
       if (d > sphereradius) {
         frontnodes.push(this)
@@ -9762,9 +13720,7 @@ class PolygonTreeNode {
   // a child should be created for every fragment of the split polygon
   // returns the newly created child
   addChild (polygon) {
-    const newchild = new PolygonTreeNode()
-    newchild.parent = this
-    newchild.polygon = polygon
+    const newchild = new PolygonTreeNode(this, polygon)
     this.children.push(newchild)
     return newchild
   }
@@ -9785,13 +13741,13 @@ class PolygonTreeNode {
     }
   }
 
+  // private method
+  // remove the polygon from the node, and all parent nodes above it
+  // called to invalidate parents of removed nodes
   recursivelyInvalidatePolygon () {
-    let node = this
-    while (node.polygon) {
-      node.polygon = null
-      if (node.parent) {
-        node = node.parent
-      }
+    this.polygon = null
+    if (this.parent) {
+      this.parent.recursivelyInvalidatePolygon()
     }
   }
 
@@ -9827,7 +13783,7 @@ class PolygonTreeNode {
         node = children[j]
         result += `${prefix}PolygonTreeNode (${node.isRootNode()}): ${node.children.length}`
         if (node.polygon) {
-          result += `\n ${prefix}poly3\n`
+          result += `\n ${prefix}polygon: ${node.polygon.vertices}\n`
         } else {
           result += '\n'
         }
@@ -9840,7 +13796,7 @@ class PolygonTreeNode {
 
 module.exports = PolygonTreeNode
 
-},{"../../../geometries/poly3":87,"../../../maths/constants":101,"../../../maths/vec3":228,"./splitPolygonByPlane":292}],289:[function(require,module,exports){
+},{"../../../geometries/poly3":95,"../../../maths/constants":110,"../../../maths/vec3":237,"./splitPolygonByPlane":299}],296:[function(require,module,exports){
 const Node = require('./Node')
 const PolygonTreeNode = require('./PolygonTreeNode')
 
@@ -9862,8 +13818,7 @@ class Tree {
 
   // Remove all polygons in this BSP tree that are inside the other BSP tree
   // `tree`.
-  clipTo (tree, alsoRemovecoplanarFront) {
-    alsoRemovecoplanarFront = !!alsoRemovecoplanarFront
+  clipTo (tree, alsoRemovecoplanarFront = false) {
     this.rootnode.clipTo(tree, alsoRemovecoplanarFront)
   }
 
@@ -9893,12 +13848,12 @@ class Tree {
 
 module.exports = Tree
 
-},{"./Node":287,"./PolygonTreeNode":288}],290:[function(require,module,exports){
+},{"./Node":294,"./PolygonTreeNode":295}],297:[function(require,module,exports){
 module.exports = {
   Tree: require('./Tree')
 }
 
-},{"./Tree":289}],291:[function(require,module,exports){
+},{"./Tree":296}],298:[function(require,module,exports){
 const vec3 = require('../../../maths/vec3')
 
 const splitLineSegmentByPlane = (plane, p1, p2) => {
@@ -9915,7 +13870,7 @@ const splitLineSegmentByPlane = (plane, p1, p2) => {
 
 module.exports = splitLineSegmentByPlane
 
-},{"../../../maths/vec3":228}],292:[function(require,module,exports){
+},{"../../../maths/vec3":237}],299:[function(require,module,exports){
 const { EPS } = require('../../../maths/constants')
 
 const plane = require('../../../maths/plane')
@@ -9954,7 +13909,7 @@ const splitPolygonByPlane = (splane, polygon) => {
     const MINEPS = -EPS
     for (let i = 0; i < numvertices; i++) {
       const t = vec3.dot(splane, vertices[i]) - splane[3]
-      const isback = (t < 0)
+      const isback = (t < MINEPS)
       vertexIsBack.push(isback)
       if (t > EPS) hasfront = true
       if (t < MINEPS) hasback = true
@@ -9987,9 +13942,8 @@ const splitPolygonByPlane = (splane, polygon) => {
           }
         } else {
           // line segment intersects plane:
-          const point = vertex
           const nextpoint = vertices[nextvertexindex]
-          const intersectionpoint = splitLineSegmentByPlane(splane, point, nextpoint)
+          const intersectionpoint = splitLineSegmentByPlane(splane, vertex, nextpoint)
           if (isback) {
             backvertices.push(vertex)
             backvertices.push(intersectionpoint)
@@ -10039,7 +13993,7 @@ const splitPolygonByPlane = (splane, polygon) => {
 
 module.exports = splitPolygonByPlane
 
-},{"../../../geometries/poly3":87,"../../../maths/constants":101,"../../../maths/plane":170,"../../../maths/vec3":228,"./splitLineSegmentByPlane":291}],293:[function(require,module,exports){
+},{"../../../geometries/poly3":95,"../../../maths/constants":110,"../../../maths/plane":178,"../../../maths/vec3":237,"./splitLineSegmentByPlane":298}],300:[function(require,module,exports){
 const flatten = require('../../utils/flatten')
 const areAllShapesTheSameType = require('../../utils/areAllShapesTheSameType')
 
@@ -10087,7 +14041,7 @@ const union = (...geometries) => {
 
 module.exports = union
 
-},{"../../geometries/geom2":36,"../../geometries/geom3":50,"../../utils/areAllShapesTheSameType":391,"../../utils/flatten":393,"./unionGeom2":294,"./unionGeom3":295}],294:[function(require,module,exports){
+},{"../../geometries/geom2":42,"../../geometries/geom3":57,"../../utils/areAllShapesTheSameType":410,"../../utils/flatten":412,"./unionGeom2":301,"./unionGeom3":302}],301:[function(require,module,exports){
 const flatten = require('../../utils/flatten')
 
 const geom3 = require('../../geometries/geom3')
@@ -10115,10 +14069,11 @@ const union = (...geometries) => {
 
 module.exports = union
 
-},{"../../geometries/geom3":50,"../../measurements/measureEpsilon":269,"../../utils/flatten":393,"./fromFakePolygons":271,"./to3DWalls":286,"./unionGeom3":295}],295:[function(require,module,exports){
+},{"../../geometries/geom3":57,"../../measurements/measureEpsilon":278,"../../utils/flatten":412,"./fromFakePolygons":280,"./to3DWalls":293,"./unionGeom3":302}],302:[function(require,module,exports){
 const flatten = require('../../utils/flatten')
 
-const retessellate = require('./retessellate')
+const retessellate = require('../modifiers/retessellate')
+
 const unionSub = require('./unionGeom3Sub')
 
 /*
@@ -10141,7 +14096,7 @@ const union = (...geometries) => {
 
 module.exports = union
 
-},{"../../utils/flatten":393,"./retessellate":279,"./unionGeom3Sub":296}],296:[function(require,module,exports){
+},{"../../utils/flatten":412,"../modifiers/retessellate":370,"./unionGeom3Sub":303}],303:[function(require,module,exports){
 const geom3 = require('../../geometries/geom3')
 
 const mayOverlap = require('./mayOverlap')
@@ -10151,7 +14106,7 @@ const { Tree } = require('./trees')
  * Return a new 3D geometry representing the space in the given geometries.
  * @param {geom3} geometry1 - geometry to union
  * @param {geom3} geometry2 - geometry to union
- * @returns {goem3} new 3D geometry
+ * @returns {geom3} new 3D geometry
  */
 const unionSub = (geometry1, geometry2) => {
   if (!mayOverlap(geometry1, geometry2)) {
@@ -10183,7 +14138,7 @@ const unionForNonIntersecting = (geometry1, geometry2) => {
 
 module.exports = unionSub
 
-},{"../../geometries/geom3":50,"./mayOverlap":277,"./trees":290}],297:[function(require,module,exports){
+},{"../../geometries/geom3":57,"./mayOverlap":286,"./trees":297}],304:[function(require,module,exports){
 const flatten = require('../../utils/flatten')
 
 const geom2 = require('../../geometries/geom2')
@@ -10196,14 +14151,14 @@ const expandPath2 = require('./expandPath2')
 
 /**
  * Expand the given geometry using the given options.
- * Both interal and external space is expanded for 2D and 3D shapes.
+ * Both internal and external space is expanded for 2D and 3D shapes.
  *
  * Note: Contract is expand using a negative delta.
  * @param {Object} options - options for expand
  * @param {Number} [options.delta=1] - delta (+/-) of expansion
  * @param {String} [options.corners='edge'] - type of corner to create after expanding; edge, chamfer, round
  * @param {Integer} [options.segments=16] - number of segments when creating round corners
- * @param {...Objects} geometry - the list of geometry to expand
+ * @param {...Objects} objects - the geometries to expand
  * @return {Object|Array} new geometry, or list of new geometries
  * @alias module:modeling/expansions.expand
  *
@@ -10227,7 +14182,7 @@ const expand = (options, ...objects) => {
 
 module.exports = expand
 
-},{"../../geometries/geom2":36,"../../geometries/geom3":50,"../../geometries/path2":71,"../../utils/flatten":393,"./expandGeom2":298,"./expandGeom3":299,"./expandPath2":300}],298:[function(require,module,exports){
+},{"../../geometries/geom2":42,"../../geometries/geom3":57,"../../geometries/path2":78,"../../utils/flatten":412,"./expandGeom2":305,"./expandGeom3":306,"./expandPath2":307}],305:[function(require,module,exports){
 const geom2 = require('../../geometries/geom2')
 
 const offsetFromPoints = require('./offsetFromPoints')
@@ -10272,7 +14227,7 @@ const expandGeom2 = (options, geometry) => {
 
 module.exports = expandGeom2
 
-},{"../../geometries/geom2":36,"./offsetFromPoints":305}],299:[function(require,module,exports){
+},{"../../geometries/geom2":42,"./offsetFromPoints":312}],306:[function(require,module,exports){
 const geom3 = require('../../geometries/geom3')
 
 const union = require('../booleans/union')
@@ -10310,7 +14265,7 @@ const expandGeom3 = (options, geometry) => {
 
 module.exports = expandGeom3
 
-},{"../../geometries/geom3":50,"../booleans/union":293,"./expandShell":301}],300:[function(require,module,exports){
+},{"../../geometries/geom3":57,"../booleans/union":300,"./expandShell":308}],307:[function(require,module,exports){
 const area = require('../../maths/utils/area')
 
 const vec2 = require('../../maths/vec2')
@@ -10411,8 +14366,8 @@ const expandPath2 = (options, geometry) => {
 
 module.exports = expandPath2
 
-},{"../../geometries/geom2":36,"../../geometries/path2":71,"../../maths/utils/area":175,"../../maths/vec2":197,"./offsetFromPoints":305}],301:[function(require,module,exports){
-const { EPS } = require('../../maths/constants')
+},{"../../geometries/geom2":42,"../../geometries/path2":78,"../../maths/utils/area":183,"../../maths/vec2":206,"./offsetFromPoints":312}],308:[function(require,module,exports){
+const { EPS, TAU } = require('../../maths/constants')
 
 const mat4 = require('../../maths/mat4')
 const vec3 = require('../../maths/vec3')
@@ -10424,42 +14379,49 @@ const poly3 = require('../../geometries/poly3')
 
 const sphere = require('../../primitives/sphere')
 
-const retessellate = require('../booleans/retessellate')
+const retessellate = require('../modifiers/retessellate')
+
 const unionGeom3Sub = require('../booleans/unionGeom3Sub')
 
 const extrudePolygon = require('./extrudePolygon')
 
+/*
+ * Collect all planes adjacent to each vertex
+ */
 const mapPlaneToVertex = (map, vertex, plane) => {
-  const i = map.findIndex((item) => vec3.equals(item[0], vertex))
-  if (i < 0) {
+  const key = vertex.toString()
+  if (!map.has(key)) {
     const entry = [vertex, [plane]]
-    map.push(entry)
-    return map.length
+    map.set(key, entry)
+  } else {
+    const planes = map.get(key)[1]
+    planes.push(plane)
   }
-  const planes = map[i][1]
-  planes.push(plane)
-  return i
 }
 
+/*
+ * Collect all planes adjacent to each edge.
+ * Combine undirected edges, no need for duplicate cylinders.
+ */
 const mapPlaneToEdge = (map, edge, plane) => {
-  const i = map.findIndex((item) => (vec3.equals(item[0], edge[0]) && vec3.equals(item[1], edge[1])) || (vec3.equals(item[0], edge[1]) && vec3.equals(item[1], edge[0])))
-  if (i < 0) {
+  const key0 = edge[0].toString()
+  const key1 = edge[1].toString()
+  // Sort keys to make edges undirected
+  const key = key0 < key1 ? `${key0},${key1}` : `${key1},${key0}`
+  if (!map.has(key)) {
     const entry = [edge, [plane]]
-    map.push(entry)
-    return map.length
+    map.set(key, entry)
+  } else {
+    const planes = map.get(key)[1]
+    planes.push(plane)
   }
-  const planes = map[i][1]
-  planes.push(plane)
-  return i
 }
 
 const addUniqueAngle = (map, angle) => {
   const i = map.findIndex((item) => item === angle)
   if (i < 0) {
     map.push(angle)
-    return map.length
   }
-  return i
 }
 
 /*
@@ -10479,8 +14441,8 @@ const expandShell = (options, geometry) => {
   const { delta, segments } = Object.assign({ }, defaults, options)
 
   let result = geom3.create()
-  const vertices2planes = [] // contents: [vertex, [plane, ...]]
-  const edges2planes = [] // contents: [[vertex, vertex], [plane, ...]]
+  const vertices2planes = new Map() // {vertex: [vertex, [plane, ...]]}
+  const edges2planes = new Map() // {edge: [[vertex, vertex], [plane, ...]]}
 
   const v1 = vec3.create()
   const v2 = vec3.create()
@@ -10527,7 +14489,7 @@ const expandShell = (options, geometry) => {
 
     // first of all equally spaced around the cylinder:
     for (let i = 0; i < segments; i++) {
-      addUniqueAngle(angles, (i * Math.PI * 2 / segments))
+      addUniqueAngle(angles, (i * TAU / segments))
     }
 
     // and also at every normal of all touching planes:
@@ -10537,10 +14499,10 @@ const expandShell = (options, geometry) => {
       const co = vec3.dot(xbase, planenormal)
       let angle = Math.atan2(si, co)
 
-      if (angle < 0) angle += Math.PI * 2
+      if (angle < 0) angle += TAU
       addUniqueAngle(angles, angle)
       angle = Math.atan2(-si, -co)
-      if (angle < 0) angle += Math.PI * 2
+      if (angle < 0) angle += TAU
       addUniqueAngle(angles, angle)
     }
 
@@ -10574,7 +14536,7 @@ const expandShell = (options, geometry) => {
           startfacevertices.push(p1)
           endfacevertices.push(p2)
           const points = [prevp2, p2, p1, prevp1]
-          const polygon = poly3.fromPoints(points)
+          const polygon = poly3.create(points)
           polygons.push(polygon)
         }
         prevp1 = p1
@@ -10582,8 +14544,8 @@ const expandShell = (options, geometry) => {
       }
     }
     endfacevertices.reverse()
-    polygons.push(poly3.fromPoints(startfacevertices))
-    polygons.push(poly3.fromPoints(endfacevertices))
+    polygons.push(poly3.create(startfacevertices))
+    polygons.push(poly3.create(endfacevertices))
 
     const cylinder = geom3.create(polygons)
     result = unionGeom3Sub(result, cylinder)
@@ -10630,7 +14592,7 @@ const expandShell = (options, geometry) => {
 
 module.exports = expandShell
 
-},{"../../geometries/geom3":50,"../../geometries/poly3":87,"../../maths/constants":101,"../../maths/mat4":151,"../../maths/vec3":228,"../../primitives/sphere":381,"../../utils/fnNumberSort":394,"../booleans/retessellate":279,"../booleans/unionGeom3Sub":296,"./extrudePolygon":302}],302:[function(require,module,exports){
+},{"../../geometries/geom3":57,"../../geometries/poly3":95,"../../maths/constants":110,"../../maths/mat4":159,"../../maths/vec3":237,"../../primitives/sphere":400,"../../utils/fnNumberSort":413,"../booleans/unionGeom3Sub":303,"../modifiers/retessellate":370,"./extrudePolygon":309}],309:[function(require,module,exports){
 const mat4 = require('../../maths/mat4')
 const vec3 = require('../../maths/vec3')
 
@@ -10650,14 +14612,14 @@ const extrudePolygon = (offsetvector, polygon1) => {
   const polygon2 = poly3.transform(mat4.fromTranslation(mat4.create(), offsetvector), polygon1)
   const numvertices = polygon1.vertices.length
   for (let i = 0; i < numvertices; i++) {
-    const sidefacepoints = []
     const nexti = (i < (numvertices - 1)) ? i + 1 : 0
-    sidefacepoints.push(polygon1.vertices[i])
-    sidefacepoints.push(polygon2.vertices[i])
-    sidefacepoints.push(polygon2.vertices[nexti])
-    sidefacepoints.push(polygon1.vertices[nexti])
-    const sidefacepolygon = poly3.fromPoints(sidefacepoints)
-    newpolygons.push(sidefacepolygon)
+    const sideFacePolygon = poly3.create([
+      polygon1.vertices[i],
+      polygon2.vertices[i],
+      polygon2.vertices[nexti],
+      polygon1.vertices[nexti]
+    ])
+    newpolygons.push(sideFacePolygon)
   }
   newpolygons.push(poly3.invert(polygon2))
 
@@ -10666,7 +14628,7 @@ const extrudePolygon = (offsetvector, polygon1) => {
 
 module.exports = extrudePolygon
 
-},{"../../geometries/geom3":50,"../../geometries/poly3":87,"../../maths/mat4":151,"../../maths/vec3":228}],303:[function(require,module,exports){
+},{"../../geometries/geom3":57,"../../geometries/poly3":95,"../../maths/mat4":159,"../../maths/vec3":237}],310:[function(require,module,exports){
 /**
  * All shapes (primitives or the results of operations) can be expanded (or contracted.)
  * In all cases, the function returns the results, and never changes the original shapes.
@@ -10679,7 +14641,7 @@ module.exports = {
   offset: require('./offset')
 }
 
-},{"./expand":297,"./offset":304}],304:[function(require,module,exports){
+},{"./expand":304,"./offset":311}],311:[function(require,module,exports){
 const flatten = require('../../utils/flatten')
 
 const geom2 = require('../../geometries/geom2')
@@ -10695,7 +14657,7 @@ const offsetPath2 = require('./offsetPath2')
  * @param {Float} [options.delta=1] - delta of offset (+ to exterior, - from interior)
  * @param {String} [options.corners='edge'] - type of corner to create after offseting; edge, chamfer, round
  * @param {Integer} [options.segments=16] - number of segments when creating round corners
- * @param {...Object} geometry - the list of geometry to offset
+ * @param {...Object} objects - the geometries to offset
  * @return {Object|Array} new geometry, or list of new geometries
  * @alias module:modeling/expansions.offset
  *
@@ -10717,8 +14679,8 @@ const offset = (options, ...objects) => {
 
 module.exports = offset
 
-},{"../../geometries/geom2":36,"../../geometries/path2":71,"../../utils/flatten":393,"./offsetGeom2":306,"./offsetPath2":307}],305:[function(require,module,exports){
-const { EPS } = require('../../maths/constants')
+},{"../../geometries/geom2":42,"../../geometries/path2":78,"../../utils/flatten":412,"./offsetGeom2":313,"./offsetPath2":314}],312:[function(require,module,exports){
+const { EPS, TAU } = require('../../maths/constants')
 
 const intersect = require('../../maths/utils/intersect')
 const line2 = require('../../maths/line2')
@@ -10754,7 +14716,7 @@ const offsetFromPoints = (options, points) => {
   delta = Math.abs(delta) // sign is no longer required
 
   let previousSegment = null
-  const newPoints = []
+  let newPoints = []
   const newCorners = []
   const of = vec2.create()
   const n = points.length
@@ -10814,6 +14776,10 @@ const offsetFromPoints = (options, points) => {
   // generate corners if necessary
 
   if (corners === 'edge') {
+    // map for fast point index lookup
+    const pointIndex = new Map() // {point: index}
+    newPoints.forEach((point, index) => pointIndex.set(point, index))
+
     // create edge corners
     const line0 = line2.create()
     const line1 = line2.create()
@@ -10823,16 +14789,17 @@ const offsetFromPoints = (options, points) => {
       const ip = line2.intersectPointOfLines(line0, line1)
       if (Number.isFinite(ip[0]) && Number.isFinite(ip[1])) {
         const p0 = corner.s0[1]
-        let i = newPoints.findIndex((point) => vec2.equals(p0, point))
-        i = (i + 1) % newPoints.length
-        newPoints.splice(i, 0, ip)
+        const i = pointIndex.get(p0)
+        newPoints[i] = ip
+        newPoints[(i + 1) % newPoints.length] = undefined
       } else {
         // paralell segments, drop one
         const p0 = corner.s1[0]
-        const i = newPoints.findIndex((point) => vec2.equals(p0, point))
-        newPoints.splice(i, 1)
+        const i = pointIndex.get(p0)
+        newPoints[i] = undefined
       }
     })
+    newPoints = newPoints.filter((p) => p !== undefined)
   }
 
   if (corners === 'round') {
@@ -10854,7 +14821,7 @@ const offsetFromPoints = (options, points) => {
 
       if (rotation !== 0.0) {
         // generate the segments
-        cornersegments = Math.floor(segments * (Math.abs(rotation) / (2 * Math.PI)))
+        cornersegments = Math.floor(segments * (Math.abs(rotation) / TAU))
         const step = rotation / cornersegments
         const start = vec2.angle(vec2.subtract(v0, corner.s0[1], corner.c))
         const cornerpoints = []
@@ -10884,7 +14851,7 @@ const offsetFromPoints = (options, points) => {
 
 module.exports = offsetFromPoints
 
-},{"../../maths/constants":101,"../../maths/line2":112,"../../maths/utils/area":175,"../../maths/utils/intersect":178,"../../maths/vec2":197}],306:[function(require,module,exports){
+},{"../../maths/constants":110,"../../maths/line2":121,"../../maths/utils/area":183,"../../maths/utils/intersect":186,"../../maths/vec2":206}],313:[function(require,module,exports){
 const geom2 = require('../../geometries/geom2')
 const poly2 = require('../../geometries/poly2')
 
@@ -10933,7 +14900,7 @@ const offsetGeom2 = (options, geometry) => {
 
 module.exports = offsetGeom2
 
-},{"../../geometries/geom2":36,"../../geometries/poly2":81,"./offsetFromPoints":305}],307:[function(require,module,exports){
+},{"../../geometries/geom2":42,"../../geometries/poly2":89,"./offsetFromPoints":312}],314:[function(require,module,exports){
 const path2 = require('../../geometries/path2')
 
 const offsetFromPoints = require('./offsetFromPoints')
@@ -10967,7 +14934,886 @@ const offsetPath2 = (options, geometry) => {
 
 module.exports = offsetPath2
 
-},{"../../geometries/path2":71,"./offsetFromPoints":305}],308:[function(require,module,exports){
+},{"../../geometries/path2":78,"./offsetFromPoints":312}],315:[function(require,module,exports){
+const { area } = require('../../../maths/utils')
+const { toOutlines } = require('../../../geometries/geom2')
+const { arePointsInside } = require('../../../geometries/poly2')
+
+/*
+ * Constructs a polygon hierarchy of solids and holes.
+ * The hierarchy is represented as a forest of trees. All trees shall be depth at most 2.
+ * If a solid exists inside the hole of another solid, it will be split out as its own root.
+ *
+ * @param {geom2} geometry
+ * @returns {Array} an array of polygons with associated holes
+ * @alias module:modeling/geometries/geom2.toTree
+ *
+ * @example
+ * const geometry = subtract(rectangle({size: [5, 5]}), rectangle({size: [3, 3]}))
+ * console.log(assignHoles(geometry))
+ * [{
+ *   "solid": [[-2.5,-2.5],[2.5,-2.5],[2.5,2.5],[-2.5,2.5]],
+ *   "holes": [[[-1.5,1.5],[1.5,1.5],[1.5,-1.5],[-1.5,-1.5]]]
+ * }]
+ */
+const assignHoles = (geometry) => {
+  const outlines = toOutlines(geometry)
+  const solids = [] // solid indices
+  const holes = [] // hole indices
+  outlines.forEach((outline, i) => {
+    const a = area(outline)
+    if (a < 0) {
+      holes.push(i)
+    } else if (a > 0) {
+      solids.push(i)
+    }
+  })
+
+  // for each hole, determine what solids it is inside of
+  const children = [] // child holes of solid[i]
+  const parents = [] // parent solids of hole[i]
+  solids.forEach((s, i) => {
+    const solid = outlines[s]
+    children[i] = []
+    holes.forEach((h, j) => {
+      const hole = outlines[h]
+      // check if a point of hole j is inside solid i
+      if (arePointsInside([hole[0]], { vertices: solid })) {
+        children[i].push(h)
+        if (!parents[j]) parents[j] = []
+        parents[j].push(i)
+      }
+    })
+  })
+
+  // check if holes have multiple parents and choose one with fewest children
+  holes.forEach((h, j) => {
+    // ensure at least one parent exists
+    if (parents[j] && parents[j].length > 1) {
+      // the solid directly containing this hole
+      const directParent = minIndex(parents[j], (p) => children[p].length)
+      parents[j].forEach((p, i) => {
+        if (i !== directParent) {
+          // Remove hole from skip level parents
+          children[p] = children[p].filter((c) => c !== h)
+        }
+      })
+    }
+  })
+
+  // map indices back to points
+  return children.map((holes, i) => ({
+    solid: outlines[solids[i]],
+    holes: holes.map((h) => outlines[h])
+  }))
+}
+
+/*
+ * Find the item in the list with smallest score(item).
+ * If the list is empty, return undefined.
+ */
+const minIndex = (list, score) => {
+  let bestIndex
+  let best
+  list.forEach((item, index) => {
+    const value = score(item)
+    if (best === undefined || value < best) {
+      bestIndex = index
+      best = value
+    }
+  })
+  return bestIndex
+}
+
+module.exports = assignHoles
+
+},{"../../../geometries/geom2":42,"../../../geometries/poly2":89,"../../../maths/utils":184}],316:[function(require,module,exports){
+const { filterPoints, linkedPolygon, locallyInside, splitPolygon } = require('./linkedPolygon')
+const { area, pointInTriangle } = require('./triangle')
+
+/*
+ * link every hole into the outer loop, producing a single-ring polygon without holes
+ *
+ * Original source from https://github.com/mapbox/earcut
+ * Copyright (c) 2016 Mapbox
+ */
+const eliminateHoles = (data, holeIndices, outerNode, dim) => {
+  const queue = []
+
+  for (let i = 0, len = holeIndices.length; i < len; i++) {
+    const start = holeIndices[i] * dim
+    const end = i < len - 1 ? holeIndices[i + 1] * dim : data.length
+    const list = linkedPolygon(data, start, end, dim, false)
+    if (list === list.next) list.steiner = true
+    queue.push(getLeftmost(list))
+  }
+
+  queue.sort((a, b) => a.x - b.x) // compare X
+
+  // process holes from left to right
+  for (let i = 0; i < queue.length; i++) {
+    outerNode = eliminateHole(queue[i], outerNode)
+    outerNode = filterPoints(outerNode, outerNode.next)
+  }
+
+  return outerNode
+}
+
+/*
+ * find a bridge between vertices that connects hole with an outer ring and link it
+ */
+const eliminateHole = (hole, outerNode) => {
+  const bridge = findHoleBridge(hole, outerNode)
+  if (!bridge) {
+    return outerNode
+  }
+
+  const bridgeReverse = splitPolygon(bridge, hole)
+
+  // filter colinear points around the cuts
+  const filteredBridge = filterPoints(bridge, bridge.next)
+  filterPoints(bridgeReverse, bridgeReverse.next)
+
+  // Check if input node was removed by the filtering
+  return outerNode === bridge ? filteredBridge : outerNode
+}
+
+/*
+ * David Eberly's algorithm for finding a bridge between hole and outer polygon
+ */
+const findHoleBridge = (hole, outerNode) => {
+  let p = outerNode
+  const hx = hole.x
+  const hy = hole.y
+  let qx = -Infinity
+  let m
+
+  // find a segment intersected by a ray from the hole's leftmost point to the left
+  // segment's endpoint with lesser x will be potential connection point
+  do {
+    if (hy <= p.y && hy >= p.next.y && p.next.y !== p.y) {
+      const x = p.x + (hy - p.y) * (p.next.x - p.x) / (p.next.y - p.y)
+      if (x <= hx && x > qx) {
+        qx = x
+        if (x === hx) {
+          if (hy === p.y) return p
+          if (hy === p.next.y) return p.next
+        }
+
+        m = p.x < p.next.x ? p : p.next
+      }
+    }
+
+    p = p.next
+  } while (p !== outerNode)
+
+  if (!m) return null
+
+  if (hx === qx) return m // hole touches outer segment; pick leftmost endpoint
+
+  // look for points inside the triangle of hole point, segment intersection and endpoint
+  // if there are no points found, we have a valid connection
+  // otherwise choose the point of the minimum angle with the ray as connection point
+
+  const stop = m
+  const mx = m.x
+  const my = m.y
+  let tanMin = Infinity
+
+  p = m
+
+  do {
+    if (hx >= p.x && p.x >= mx && hx !== p.x &&
+        pointInTriangle(hy < my ? hx : qx, hy, mx, my, hy < my ? qx : hx, hy, p.x, p.y)) {
+      const tan = Math.abs(hy - p.y) / (hx - p.x) // tangential
+
+      if (locallyInside(p, hole) && (tan < tanMin || (tan === tanMin && (p.x > m.x || (p.x === m.x && sectorContainsSector(m, p)))))) {
+        m = p
+        tanMin = tan
+      }
+    }
+
+    p = p.next
+  } while (p !== stop)
+
+  return m
+}
+
+/*
+ * whether sector in vertex m contains sector in vertex p in the same coordinates
+ */
+const sectorContainsSector = (m, p) => area(m.prev, m, p.prev) < 0 && area(p.next, m, m.next) < 0
+
+/*
+ * find the leftmost node of a polygon ring
+ */
+const getLeftmost = (start) => {
+  let p = start
+  let leftmost = start
+  do {
+    if (p.x < leftmost.x || (p.x === leftmost.x && p.y < leftmost.y)) leftmost = p
+    p = p.next
+  } while (p !== start)
+
+  return leftmost
+}
+
+module.exports = eliminateHoles
+
+},{"./linkedPolygon":320,"./triangle":322}],317:[function(require,module,exports){
+const eliminateHoles = require('./eliminateHoles')
+const { removeNode, sortLinked } = require('./linkedList')
+const { cureLocalIntersections, filterPoints, isValidDiagonal, linkedPolygon, splitPolygon } = require('./linkedPolygon')
+const { area, pointInTriangle } = require('./triangle')
+
+/*
+ * An implementation of the earcut polygon triangulation algorithm.
+ *
+ * Original source from https://github.com/mapbox/earcut
+ * Copyright (c) 2016 Mapbox
+ *
+ * @param {data} A flat array of vertex coordinates.
+ * @param {holeIndices} An array of hole indices if any.
+ * @param {dim} The number of coordinates per vertex in the input array.
+ */
+const triangulate = (data, holeIndices, dim = 2) => {
+  const hasHoles = holeIndices && holeIndices.length
+  const outerLen = hasHoles ? holeIndices[0] * dim : data.length
+  let outerNode = linkedPolygon(data, 0, outerLen, dim, true)
+  const triangles = []
+
+  if (!outerNode || outerNode.next === outerNode.prev) return triangles
+
+  let minX, minY, maxX, maxY, invSize
+
+  if (hasHoles) outerNode = eliminateHoles(data, holeIndices, outerNode, dim)
+
+  // if the shape is not too simple, we'll use z-order curve hash later; calculate polygon bbox
+  if (data.length > 80 * dim) {
+    minX = maxX = data[0]
+    minY = maxY = data[1]
+
+    for (let i = dim; i < outerLen; i += dim) {
+      const x = data[i]
+      const y = data[i + 1]
+      if (x < minX) minX = x
+      if (y < minY) minY = y
+      if (x > maxX) maxX = x
+      if (y > maxY) maxY = y
+    }
+
+    // minX, minY and invSize are later used to transform coords into integers for z-order calculation
+    invSize = Math.max(maxX - minX, maxY - minY)
+    invSize = invSize !== 0 ? 1 / invSize : 0
+  }
+
+  earcutLinked(outerNode, triangles, dim, minX, minY, invSize)
+
+  return triangles
+}
+
+/*
+ * main ear slicing loop which triangulates a polygon (given as a linked list)
+ */
+const earcutLinked = (ear, triangles, dim, minX, minY, invSize, pass) => {
+  if (!ear) return
+
+  // interlink polygon nodes in z-order
+  if (!pass && invSize) indexCurve(ear, minX, minY, invSize)
+
+  let stop = ear
+  let prev
+  let next
+
+  // iterate through ears, slicing them one by one
+  while (ear.prev !== ear.next) {
+    prev = ear.prev
+    next = ear.next
+
+    if (invSize ? isEarHashed(ear, minX, minY, invSize) : isEar(ear)) {
+      // cut off the triangle
+      triangles.push(prev.i / dim)
+      triangles.push(ear.i / dim)
+      triangles.push(next.i / dim)
+
+      removeNode(ear)
+
+      // skipping the next vertex leads to less sliver triangles
+      ear = next.next
+      stop = next.next
+
+      continue
+    }
+
+    ear = next
+
+    // if we looped through the whole remaining polygon and can't find any more ears
+    if (ear === stop) {
+      // try filtering points and slicing again
+      if (!pass) {
+        earcutLinked(filterPoints(ear), triangles, dim, minX, minY, invSize, 1)
+
+        // if this didn't work, try curing all small self-intersections locally
+      } else if (pass === 1) {
+        ear = cureLocalIntersections(filterPoints(ear), triangles, dim)
+        earcutLinked(ear, triangles, dim, minX, minY, invSize, 2)
+
+        // as a last resort, try splitting the remaining polygon into two
+      } else if (pass === 2) {
+        splitEarcut(ear, triangles, dim, minX, minY, invSize)
+      }
+
+      break
+    }
+  }
+}
+
+/*
+ * check whether a polygon node forms a valid ear with adjacent nodes
+ */
+const isEar = (ear) => {
+  const a = ear.prev
+  const b = ear
+  const c = ear.next
+
+  if (area(a, b, c) >= 0) return false // reflex, can't be an ear
+
+  // now make sure we don't have other points inside the potential ear
+  let p = ear.next.next
+
+  while (p !== ear.prev) {
+    if (pointInTriangle(a.x, a.y, b.x, b.y, c.x, c.y, p.x, p.y) && area(p.prev, p, p.next) >= 0) {
+      return false
+    }
+    p = p.next
+  }
+
+  return true
+}
+
+const isEarHashed = (ear, minX, minY, invSize) => {
+  const a = ear.prev
+  const b = ear
+  const c = ear.next
+
+  if (area(a, b, c) >= 0) return false // reflex, can't be an ear
+
+  // triangle bbox; min & max are calculated like this for speed
+  const minTX = a.x < b.x ? (a.x < c.x ? a.x : c.x) : (b.x < c.x ? b.x : c.x)
+  const minTY = a.y < b.y ? (a.y < c.y ? a.y : c.y) : (b.y < c.y ? b.y : c.y)
+  const maxTX = a.x > b.x ? (a.x > c.x ? a.x : c.x) : (b.x > c.x ? b.x : c.x)
+  const maxTY = a.y > b.y ? (a.y > c.y ? a.y : c.y) : (b.y > c.y ? b.y : c.y)
+
+  // z-order range for the current triangle bbox
+  const minZ = zOrder(minTX, minTY, minX, minY, invSize)
+  const maxZ = zOrder(maxTX, maxTY, minX, minY, invSize)
+
+  let p = ear.prevZ
+  let n = ear.nextZ
+
+  // look for points inside the triangle in both directions
+  while (p && p.z >= minZ && n && n.z <= maxZ) {
+    if (p !== ear.prev && p !== ear.next &&
+      pointInTriangle(a.x, a.y, b.x, b.y, c.x, c.y, p.x, p.y) &&
+      area(p.prev, p, p.next) >= 0) return false
+    p = p.prevZ
+
+    if (n !== ear.prev && n !== ear.next &&
+      pointInTriangle(a.x, a.y, b.x, b.y, c.x, c.y, n.x, n.y) &&
+      area(n.prev, n, n.next) >= 0) return false
+    n = n.nextZ
+  }
+
+  // look for remaining points in decreasing z-order
+  while (p && p.z >= minZ) {
+    if (p !== ear.prev && p !== ear.next &&
+      pointInTriangle(a.x, a.y, b.x, b.y, c.x, c.y, p.x, p.y) &&
+      area(p.prev, p, p.next) >= 0) return false
+    p = p.prevZ
+  }
+
+  // look for remaining points in increasing z-order
+  while (n && n.z <= maxZ) {
+    if (n !== ear.prev && n !== ear.next &&
+      pointInTriangle(a.x, a.y, b.x, b.y, c.x, c.y, n.x, n.y) &&
+      area(n.prev, n, n.next) >= 0) return false
+    n = n.nextZ
+  }
+
+  return true
+}
+
+/*
+ * try splitting polygon into two and triangulate them independently
+ */
+const splitEarcut = (start, triangles, dim, minX, minY, invSize) => {
+  // look for a valid diagonal that divides the polygon into two
+  let a = start
+  do {
+    let b = a.next.next
+    while (b !== a.prev) {
+      if (a.i !== b.i && isValidDiagonal(a, b)) {
+        // split the polygon in two by the diagonal
+        let c = splitPolygon(a, b)
+
+        // filter colinear points around the cuts
+        a = filterPoints(a, a.next)
+        c = filterPoints(c, c.next)
+
+        // run earcut on each half
+        earcutLinked(a, triangles, dim, minX, minY, invSize)
+        earcutLinked(c, triangles, dim, minX, minY, invSize)
+        return
+      }
+
+      b = b.next
+    }
+
+    a = a.next
+  } while (a !== start)
+}
+
+/*
+ * interlink polygon nodes in z-order
+ */
+const indexCurve = (start, minX, minY, invSize) => {
+  let p = start
+  do {
+    if (p.z === null) p.z = zOrder(p.x, p.y, minX, minY, invSize)
+    p.prevZ = p.prev
+    p.nextZ = p.next
+    p = p.next
+  } while (p !== start)
+
+  p.prevZ.nextZ = null
+  p.prevZ = null
+
+  sortLinked(p, (p) => p.z)
+}
+
+/*
+ * z-order of a point given coords and inverse of the longer side of data bbox
+ */
+const zOrder = (x, y, minX, minY, invSize) => {
+  // coords are transformed into non-negative 15-bit integer range
+  x = 32767 * (x - minX) * invSize
+  y = 32767 * (y - minY) * invSize
+
+  x = (x | (x << 8)) & 0x00FF00FF
+  x = (x | (x << 4)) & 0x0F0F0F0F
+  x = (x | (x << 2)) & 0x33333333
+  x = (x | (x << 1)) & 0x55555555
+
+  y = (y | (y << 8)) & 0x00FF00FF
+  y = (y | (y << 4)) & 0x0F0F0F0F
+  y = (y | (y << 2)) & 0x33333333
+  y = (y | (y << 1)) & 0x55555555
+
+  return x | (y << 1)
+}
+
+module.exports = triangulate
+
+},{"./eliminateHoles":316,"./linkedList":318,"./linkedPolygon":320,"./triangle":322}],318:[function(require,module,exports){
+const sortLinked = require('./linkedListSort')
+
+class Node {
+  constructor (i, x, y) {
+    // vertex index in coordinates array
+    this.i = i
+
+    // vertex coordinates
+    this.x = x
+    this.y = y
+
+    // previous and next vertex nodes in a polygon ring
+    this.prev = null
+    this.next = null
+
+    // z-order curve value
+    this.z = null
+
+    // previous and next nodes in z-order
+    this.prevZ = null
+    this.nextZ = null
+
+    // indicates whether this is a steiner point
+    this.steiner = false
+  }
+}
+
+/*
+ * create a node and optionally link it with previous one (in a circular doubly linked list)
+ */
+const insertNode = (i, x, y, last) => {
+  const p = new Node(i, x, y)
+
+  if (!last) {
+    p.prev = p
+    p.next = p
+  } else {
+    p.next = last.next
+    p.prev = last
+    last.next.prev = p
+    last.next = p
+  }
+
+  return p
+}
+
+/*
+ * remove a node and join prev with next nodes
+ */
+const removeNode = (p) => {
+  p.next.prev = p.prev
+  p.prev.next = p.next
+
+  if (p.prevZ) p.prevZ.nextZ = p.nextZ
+  if (p.nextZ) p.nextZ.prevZ = p.prevZ
+}
+
+module.exports = { Node, insertNode, removeNode, sortLinked }
+
+},{"./linkedListSort":319}],319:[function(require,module,exports){
+
+// Simon Tatham's linked list merge sort algorithm
+// https://www.chiark.greenend.org.uk/~sgtatham/algorithms/listsort.html
+const sortLinked = (list, fn) => {
+  let i, p, q, e, numMerges
+  let inSize = 1
+
+  do {
+    p = list
+    list = null
+    let tail = null
+    numMerges = 0
+
+    while (p) {
+      numMerges++
+      q = p
+      let pSize = 0
+      for (i = 0; i < inSize; i++) {
+        pSize++
+        q = q.nextZ
+        if (!q) break
+      }
+
+      let qSize = inSize
+
+      while (pSize > 0 || (qSize > 0 && q)) {
+        if (pSize !== 0 && (qSize === 0 || !q || fn(p) <= fn(q))) {
+          e = p
+          p = p.nextZ
+          pSize--
+        } else {
+          e = q
+          q = q.nextZ
+          qSize--
+        }
+
+        if (tail) tail.nextZ = e
+        else list = e
+
+        e.prevZ = tail
+        tail = e
+      }
+
+      p = q
+    }
+
+    tail.nextZ = null
+    inSize *= 2
+  } while (numMerges > 1)
+
+  return list
+}
+
+module.exports = sortLinked
+
+},{}],320:[function(require,module,exports){
+const { Node, insertNode, removeNode } = require('./linkedList')
+const { area } = require('./triangle')
+
+/*
+ * create a circular doubly linked list from polygon points in the specified winding order
+ */
+const linkedPolygon = (data, start, end, dim, clockwise) => {
+  let last
+
+  if (clockwise === (signedArea(data, start, end, dim) > 0)) {
+    for (let i = start; i < end; i += dim) {
+      last = insertNode(i, data[i], data[i + 1], last)
+    }
+  } else {
+    for (let i = end - dim; i >= start; i -= dim) {
+      last = insertNode(i, data[i], data[i + 1], last)
+    }
+  }
+
+  if (last && equals(last, last.next)) {
+    removeNode(last)
+    last = last.next
+  }
+
+  return last
+}
+
+/*
+ * eliminate colinear or duplicate points
+ */
+const filterPoints = (start, end) => {
+  if (!start) return start
+  if (!end) end = start
+
+  let p = start
+  let again
+  do {
+    again = false
+
+    if (!p.steiner && (equals(p, p.next) || area(p.prev, p, p.next) === 0)) {
+      removeNode(p)
+      p = end = p.prev
+      if (p === p.next) break
+      again = true
+    } else {
+      p = p.next
+    }
+  } while (again || p !== end)
+
+  return end
+}
+
+/*
+ * go through all polygon nodes and cure small local self-intersections
+ */
+const cureLocalIntersections = (start, triangles, dim) => {
+  let p = start
+  do {
+    const a = p.prev
+    const b = p.next.next
+
+    if (!equals(a, b) && intersects(a, p, p.next, b) && locallyInside(a, b) && locallyInside(b, a)) {
+      triangles.push(a.i / dim)
+      triangles.push(p.i / dim)
+      triangles.push(b.i / dim)
+
+      // remove two nodes involved
+      removeNode(p)
+      removeNode(p.next)
+
+      p = start = b
+    }
+
+    p = p.next
+  } while (p !== start)
+
+  return filterPoints(p)
+}
+
+/*
+ * check if a polygon diagonal intersects any polygon segments
+ */
+const intersectsPolygon = (a, b) => {
+  let p = a
+  do {
+    if (p.i !== a.i && p.next.i !== a.i && p.i !== b.i && p.next.i !== b.i &&
+        intersects(p, p.next, a, b)) return true
+    p = p.next
+  } while (p !== a)
+
+  return false
+}
+
+/*
+ * check if a polygon diagonal is locally inside the polygon
+ */
+const locallyInside = (a, b) => area(a.prev, a, a.next) < 0
+  ? area(a, b, a.next) >= 0 && area(a, a.prev, b) >= 0
+  : area(a, b, a.prev) < 0 || area(a, a.next, b) < 0
+
+/*
+ * check if the middle point of a polygon diagonal is inside the polygon
+ */
+const middleInside = (a, b) => {
+  let p = a
+  let inside = false
+  const px = (a.x + b.x) / 2
+  const py = (a.y + b.y) / 2
+  do {
+    if (((p.y > py) !== (p.next.y > py)) && p.next.y !== p.y &&
+        (px < (p.next.x - p.x) * (py - p.y) / (p.next.y - p.y) + p.x)) { inside = !inside }
+    p = p.next
+  } while (p !== a)
+
+  return inside
+}
+
+/*
+ * link two polygon vertices with a bridge; if the vertices belong to the same ring, it splits polygon into two
+ * if one belongs to the outer ring and another to a hole, it merges it into a single ring
+ */
+const splitPolygon = (a, b) => {
+  const a2 = new Node(a.i, a.x, a.y)
+  const b2 = new Node(b.i, b.x, b.y)
+  const an = a.next
+  const bp = b.prev
+
+  a.next = b
+  b.prev = a
+
+  a2.next = an
+  an.prev = a2
+
+  b2.next = a2
+  a2.prev = b2
+
+  bp.next = b2
+  b2.prev = bp
+
+  return b2
+}
+
+/*
+ * check if a diagonal between two polygon nodes is valid (lies in polygon interior)
+ */
+const isValidDiagonal = (a, b) => a.next.i !== b.i &&
+    a.prev.i !== b.i &&
+    !intersectsPolygon(a, b) && // doesn't intersect other edges
+    (
+      locallyInside(a, b) && locallyInside(b, a) && middleInside(a, b) && // locally visible
+        (area(a.prev, a, b.prev) || area(a, b.prev, b)) || // does not create opposite-facing sectors
+        equals(a, b) && area(a.prev, a, a.next) > 0 && area(b.prev, b, b.next) > 0
+    )
+
+/*
+ * check if two segments intersect
+ */
+const intersects = (p1, q1, p2, q2) => {
+  const o1 = Math.sign(area(p1, q1, p2))
+  const o2 = Math.sign(area(p1, q1, q2))
+  const o3 = Math.sign(area(p2, q2, p1))
+  const o4 = Math.sign(area(p2, q2, q1))
+
+  if (o1 !== o2 && o3 !== o4) return true // general case
+
+  if (o1 === 0 && onSegment(p1, p2, q1)) return true // p1, q1 and p2 are colinear and p2 lies on p1q1
+  if (o2 === 0 && onSegment(p1, q2, q1)) return true // p1, q1 and q2 are colinear and q2 lies on p1q1
+  if (o3 === 0 && onSegment(p2, p1, q2)) return true // p2, q2 and p1 are colinear and p1 lies on p2q2
+  if (o4 === 0 && onSegment(p2, q1, q2)) return true // p2, q2 and q1 are colinear and q1 lies on p2q2
+
+  return false
+}
+
+/*
+ * for colinear points p, q, r, check if point q lies on segment pr
+ */
+const onSegment = (p, q, r) => q.x <= Math.max(p.x, r.x) &&
+    q.x >= Math.min(p.x, r.x) &&
+    q.y <= Math.max(p.y, r.y) &&
+    q.y >= Math.min(p.y, r.y)
+
+const signedArea = (data, start, end, dim) => {
+  let sum = 0
+  for (let i = start, j = end - dim; i < end; i += dim) {
+    sum += (data[j] - data[i]) * (data[i + 1] + data[j + 1])
+    j = i
+  }
+
+  return sum
+}
+
+/*
+ * check if two points are equal
+ */
+const equals = (p1, p2) => p1.x === p2.x && p1.y === p2.y
+
+module.exports = { cureLocalIntersections, filterPoints, isValidDiagonal, linkedPolygon, locallyInside, splitPolygon }
+
+},{"./linkedList":318,"./triangle":322}],321:[function(require,module,exports){
+const geom2 = require('../../../geometries/geom2')
+const plane = require('../../../maths/plane')
+const vec2 = require('../../../maths/vec2')
+const vec3 = require('../../../maths/vec3')
+const calculatePlane = require('../slice/calculatePlane')
+const assignHoles = require('./assignHoles')
+
+/*
+ * Constructs a polygon hierarchy which associates holes with their outer solids.
+ * This class maps a 3D polygon onto a 2D space using an orthonormal basis.
+ * It tracks the mapping so that points can be reversed back to 3D losslessly.
+ */
+class PolygonHierarchy {
+  constructor (slice) {
+    this.plane = calculatePlane(slice)
+
+    // create an orthonormal basis
+    // choose an arbitrary right hand vector, making sure it is somewhat orthogonal to the plane normal
+    const rightvector = vec3.orthogonal(vec3.create(), this.plane)
+    const perp = vec3.cross(vec3.create(), this.plane, rightvector)
+    this.v = vec3.normalize(perp, perp)
+    this.u = vec3.cross(vec3.create(), this.v, this.plane)
+
+    // map from 2D to original 3D points
+    this.basisMap = new Map()
+
+    // project slice onto 2D plane
+    const projected = slice.edges.map((e) => e.map((v) => this.to2D(v)))
+
+    // compute polygon hierarchies, assign holes to solids
+    const geometry = geom2.create(projected)
+    this.roots = assignHoles(geometry)
+  }
+
+  /*
+   * project a 3D point onto the 2D plane
+   */
+  to2D (vector3) {
+    const vector2 = vec2.fromValues(vec3.dot(vector3, this.u), vec3.dot(vector3, this.v))
+    this.basisMap.set(vector2, vector3)
+    return vector2
+  }
+
+  /*
+   * un-project a 2D point back into 3D
+   */
+  to3D (vector2) {
+    // use a map to get the original 3D, no floating point error
+    const original = this.basisMap.get(vector2)
+    if (original) {
+      return original
+    } else {
+      console.log('Warning: point not in original slice')
+      const v1 = vec3.scale(vec3.create(), this.u, vector2[0])
+      const v2 = vec3.scale(vec3.create(), this.v, vector2[1])
+
+      const planeOrigin = vec3.scale(vec3.create(), plane, plane[3])
+      const v3 = vec3.add(v1, v1, planeOrigin)
+      return vec3.add(v2, v2, v3)
+    }
+  }
+}
+
+module.exports = PolygonHierarchy
+
+},{"../../../geometries/geom2":42,"../../../maths/plane":178,"../../../maths/vec2":206,"../../../maths/vec3":237,"../slice/calculatePlane":335,"./assignHoles":315}],322:[function(require,module,exports){
+
+/*
+ * check if a point lies within a convex triangle
+ */
+const pointInTriangle = (ax, ay, bx, by, cx, cy, px, py) => (
+  (cx - px) * (ay - py) - (ax - px) * (cy - py) >= 0 &&
+      (ax - px) * (by - py) - (bx - px) * (ay - py) >= 0 &&
+      (bx - px) * (cy - py) - (cx - px) * (by - py) >= 0
+)
+
+/*
+ * signed area of a triangle
+ */
+const area = (p, q, r) => (q.y - p.y) * (r.x - q.x) - (q.x - p.x) * (r.y - q.y)
+
+module.exports = { area, pointInTriangle }
+
+},{}],323:[function(require,module,exports){
 const mat4 = require('../../maths/mat4')
 
 const geom2 = require('../../geometries/geom2')
@@ -10975,6 +15821,7 @@ const geom3 = require('../../geometries/geom3')
 const poly3 = require('../../geometries/poly3')
 
 const slice = require('./slice')
+const repairSlice = require('./slice/repair')
 
 const extrudeWalls = require('./extrudeWalls')
 
@@ -10995,6 +15842,7 @@ const defaultCallback = (progress, index, base) => {
  * @param {Boolean} [options.capStart=true] the solid should have a cap at the start
  * @param {Boolean} [options.capEnd=true] the solid should have a cap at the end
  * @param {Boolean} [options.close=false] the solid should have a closing section between start and end
+ * @param {Boolean} [options.repair=true] - repair gaps in the geometry
  * @param {Function} [options.callback] the callback function that generates each slice
  * @param {Object} base - the base object which is used to create slices (see the example for callback information)
  * @return {geom3} the extruded shape
@@ -11018,11 +15866,18 @@ const extrudeFromSlices = (options, base) => {
     capStart: true,
     capEnd: true,
     close: false,
+    repair: true,
     callback: defaultCallback
   }
-  const { numberOfSlices, capStart, capEnd, close, callback: generate } = Object.assign({ }, defaults, options)
+  const { numberOfSlices, capStart, capEnd, close, repair, callback: generate } = Object.assign({ }, defaults, options)
 
   if (numberOfSlices < 2) throw new Error('numberOfSlices must be 2 or more')
+
+  // Repair gaps in the base slice
+  if (repair) {
+    // note: base must be a slice, if base is geom2 this doesn't repair
+    base = repairSlice(base)
+  }
 
   const sMax = numberOfSlices - 1
 
@@ -11060,8 +15915,7 @@ const extrudeFromSlices = (options, base) => {
   }
   if (capStart) {
     // create a cap at the start
-    slice.reverse(startSlice, startSlice)
-    const startPolygons = slice.toPolygons(startSlice)
+    const startPolygons = slice.toPolygons(startSlice).map(poly3.invert)
     polygons = polygons.concat(startPolygons)
   }
   if (!capStart && !capEnd) {
@@ -11075,20 +15929,139 @@ const extrudeFromSlices = (options, base) => {
 
 module.exports = extrudeFromSlices
 
-},{"../../geometries/geom2":36,"../../geometries/geom3":50,"../../geometries/poly3":87,"../../maths/mat4":151,"./extrudeWalls":315,"./slice":324}],309:[function(require,module,exports){
+},{"../../geometries/geom2":42,"../../geometries/geom3":57,"../../geometries/poly3":95,"../../maths/mat4":159,"./extrudeWalls":332,"./slice":341,"./slice/repair":343}],324:[function(require,module,exports){
+const { TAU } = require('../../maths/constants')
+const slice = require('./slice')
+const mat4 = require('../../maths/mat4')
+const extrudeFromSlices = require('./extrudeFromSlices')
+const geom2 = require('../../geometries/geom2')
+
+/**
+ * Perform a helical extrude of the geometry, using the given options.
+ *
+ * @param {Object} options - options for extrusion
+ * @param {Number} [options.angle=TAU] - angle of the extrusion (RADIANS) positive for right-hand rotation, negative for left-hand
+ * @param {Number} [options.startAngle=0] - start angle of the extrusion (RADIANS)
+ * @param {Number} [options.pitch=10] - elevation gain for each turn
+ * @param {Number} [options.height] - total height of the helix path. Ignored if pitch is set.
+ * @param {Number} [options.endOffset=0] - offset the final radius of the extrusion, allowing for tapered helix, and or spiral
+ * @param {Number} [options.segmentsPerRotation=32] - number of segments per full rotation of the extrusion
+ * @param {geom2} geometry - the geometry to extrude
+ * @returns {geom3} the extruded geometry
+ * @alias module:modeling/extrusions.extrudeHelical
+ *
+ * @example
+ * const myshape = extrudeHelical(
+ *  {
+ *      angle: Math.PI * 4,
+ *      pitch: 10,
+ *      segmentsPerRotation: 64
+ *  },
+ *  circle({size: 3, center: [10, 0]})
+ * )
+ */
+const extrudeHelical = (options, geometry) => {
+  const defaults = {
+    angle: TAU,
+    startAngle: 0,
+    pitch: 10,
+    endOffset: 0,
+    segmentsPerRotation: 32
+  }
+  const { angle, endOffset, segmentsPerRotation, startAngle } = Object.assign({}, defaults, options)
+
+  let pitch
+  // ignore height if pitch is set
+  if (!options.pitch && options.height) {
+    pitch = options.height / (angle / TAU)
+  } else {
+    pitch = options.pitch ? options.pitch : defaults.pitch
+  }
+
+  // needs at least 3 segments for each revolution
+  const minNumberOfSegments = 3
+
+  if (segmentsPerRotation < minNumberOfSegments) { throw new Error('The number of segments per rotation needs to be at least 3.') }
+
+  const shapeSides = geom2.toSides(geometry)
+  if (shapeSides.length === 0) throw new Error('the given geometry cannot be empty')
+
+  // const pointsWithNegativeX = shapeSides.filter((s) => (s[0][0] < 0))
+  const pointsWithPositiveX = shapeSides.filter((s) => (s[0][0] >= 0))
+
+  let baseSlice = slice.fromSides(shapeSides)
+
+  if (pointsWithPositiveX.length === 0) {
+    // only points in negative x plane, reverse
+    baseSlice = slice.reverse(baseSlice)
+  }
+
+  const calculatedSegments = Math.round(segmentsPerRotation / TAU * Math.abs(angle))
+  const segments = calculatedSegments >= 2 ? calculatedSegments : 2
+  // define transform matrix variables for performance increase
+  const step1 = mat4.create()
+  let matrix
+  const sliceCallback = (progress, index, base) => {
+    const zRotation = startAngle + angle / segments * index
+    const xOffset = endOffset / segments * index
+    const zOffset = (zRotation - startAngle) / TAU * pitch
+
+    // TODO: check for valid geometry after translations
+    // ie all the points have to be either x > -xOffset or x < -xOffset
+    // this would have to be checked for every transform, and handled
+    //
+    // not implementing, as this currently doesn't break anything,
+    // only creates inside-out polygons
+
+    // create transformation matrix
+    mat4.multiply(
+      step1,
+      // then apply offsets
+      mat4.fromTranslation(mat4.create(), [xOffset, 0, zOffset * Math.sign(angle)]),
+      // first rotate "flat" 2D shape from XY to XZ plane
+      mat4.fromXRotation(mat4.create(), -TAU / 4 * Math.sign(angle)) // rotate the slice correctly to not create inside-out polygon
+    )
+
+    matrix = mat4.create()
+    mat4.multiply(
+      matrix,
+      // finally rotate around Z axis
+      mat4.fromZRotation(mat4.create(), zRotation),
+      step1
+    )
+    return slice.transform(matrix, base)
+  }
+
+  return extrudeFromSlices(
+    {
+      // "base" slice is counted as segment, so add one for complete final rotation
+      numberOfSlices: segments + 1,
+      callback: sliceCallback
+    },
+    baseSlice
+  )
+}
+
+module.exports = extrudeHelical
+
+},{"../../geometries/geom2":42,"../../maths/constants":110,"../../maths/mat4":159,"./extrudeFromSlices":323,"./slice":341}],325:[function(require,module,exports){
 const flatten = require('../../utils/flatten')
 
 const geom2 = require('../../geometries/geom2')
+const path2 = require('../../geometries/path2')
 
 const extrudeLinearGeom2 = require('./extrudeLinearGeom2')
+const extrudeLinearPath2 = require('./extrudeLinearPath2')
 
 /**
  * Extrude the given geometry in an upward linear direction using the given options.
+ * Accepts path2 or geom2 objects as input. Paths must be closed.
+ *
  * @param {Object} options - options for extrude
- * @param {Array} [options.height=1] the height of the extrusion
+ * @param {Number} [options.height=1] the height of the extrusion
  * @param {Number} [options.twistAngle=0] the final rotation (RADIANS) about the origin of the shape (if any)
  * @param {Integer} [options.twistSteps=1] the resolution of the twist about the axis (if any)
- * @param {...Object} geometry - the list of geometry to extrude
+ * @param {...Object} objects - the geometries to extrude
  * @return {Object|Array} the extruded geometry, or a list of extruded geometry
  * @alias module:modeling/extrusions.extrudeLinear
  *
@@ -11099,17 +16072,18 @@ const extrudeLinear = (options, ...objects) => {
   const defaults = {
     height: 1,
     twistAngle: 0,
-    twistSteps: 1
+    twistSteps: 1,
+    repair: true
   }
-  const { height, twistAngle, twistSteps } = Object.assign({ }, defaults, options)
+  const { height, twistAngle, twistSteps, repair } = Object.assign({ }, defaults, options)
 
   objects = flatten(objects)
   if (objects.length === 0) throw new Error('wrong number of arguments')
 
-  options = { offset: [0, 0, height], twistAngle: twistAngle, twistSteps: twistSteps }
+  options = { offset: [0, 0, height], twistAngle, twistSteps, repair }
 
   const results = objects.map((object) => {
-    // if (path.isA(object)) return pathextrude(options, object)
+    if (path2.isA(object)) return extrudeLinearPath2(options, object)
     if (geom2.isA(object)) return extrudeLinearGeom2(options, object)
     // if (geom3.isA(object)) return geom3.extrude(options, object)
     return object
@@ -11119,7 +16093,7 @@ const extrudeLinear = (options, ...objects) => {
 
 module.exports = extrudeLinear
 
-},{"../../geometries/geom2":36,"../../utils/flatten":393,"./extrudeLinearGeom2":310}],310:[function(require,module,exports){
+},{"../../geometries/geom2":42,"../../geometries/path2":78,"../../utils/flatten":412,"./extrudeLinearGeom2":326,"./extrudeLinearPath2":327}],326:[function(require,module,exports){
 const mat4 = require('../../maths/mat4')
 const vec3 = require('../../maths/vec3')
 
@@ -11136,6 +16110,7 @@ const extrudeFromSlices = require('./extrudeFromSlices')
  * @param {Array} [options.offset] - the direction of the extrusion as a 3D vector
  * @param {Number} [options.twistAngle] - the final rotation (RADIANS) about the origin
  * @param {Integer} [options.twistSteps] - the number of steps created to produce the twist (if any)
+ * @param {Boolean} [options.repair] - repair gaps in the geometry
  * @param {geom2} geometry - the geometry to extrude
  * @returns {geom3} the extruded 3D geometry
 */
@@ -11143,9 +16118,10 @@ const extrudeGeom2 = (options, geometry) => {
   const defaults = {
     offset: [0, 0, 1],
     twistAngle: 0,
-    twistSteps: 12
+    twistSteps: 12,
+    repair: true
   }
-  let { offset, twistAngle, twistSteps } = Object.assign({ }, defaults, options)
+  let { offset, twistAngle, twistSteps, repair } = Object.assign({ }, defaults, options)
 
   if (twistSteps < 1) throw new Error('twistSteps must be 1 or more')
 
@@ -11175,6 +16151,7 @@ const extrudeGeom2 = (options, geometry) => {
     numberOfSlices: twistSteps + 1,
     capStart: true,
     capEnd: true,
+    repair,
     callback: createTwist
   }
   return extrudeFromSlices(options, baseSlice)
@@ -11182,7 +16159,33 @@ const extrudeGeom2 = (options, geometry) => {
 
 module.exports = extrudeGeom2
 
-},{"../../geometries/geom2":36,"../../maths/mat4":151,"../../maths/vec3":228,"./extrudeFromSlices":308,"./slice":324}],311:[function(require,module,exports){
+},{"../../geometries/geom2":42,"../../maths/mat4":159,"../../maths/vec3":237,"./extrudeFromSlices":323,"./slice":341}],327:[function(require,module,exports){
+const geom2 = require('../../geometries/geom2')
+const path2 = require('../../geometries/path2')
+
+const extrudeLinearGeom2 = require('./extrudeLinearGeom2')
+
+/*
+ * Extrude the given geometry using the given options.
+ *
+ * @param {Object} [options] - options for extrude
+ * @param {Array} [options.offset] - the direction of the extrusion as a 3D vector
+ * @param {Number} [options.twistAngle] - the final rotation (RADIANS) about the origin
+ * @param {Integer} [options.twistSteps] - the number of steps created to produce the twist (if any)
+ * @param {path2} geometry - the geometry to extrude
+ * @returns {geom3} the extruded 3D geometry
+*/
+const extrudePath2 = (options, geometry) => {
+  if (!geometry.isClosed) throw new Error('extruded path must be closed')
+  // Convert path2 to geom2
+  const points = path2.toPoints(geometry)
+  const geometry2 = geom2.fromPoints(points)
+  return extrudeLinearGeom2(options, geometry2)
+}
+
+module.exports = extrudePath2
+
+},{"../../geometries/geom2":42,"../../geometries/path2":78,"./extrudeLinearGeom2":326}],328:[function(require,module,exports){
 const flatten = require('../../utils/flatten')
 
 const geom2 = require('../../geometries/geom2')
@@ -11197,13 +16200,13 @@ const extrudeRectangularGeom2 = require('./extrudeRectangularGeom2')
  * @param {Object} options - options for extrusion, if any
  * @param {Number} [options.size=1] - size of the rectangle
  * @param {Number} [options.height=1] - height of the extrusion
- * @param {...Object} geometry - the list of geometry to extrude
+ * @param {...Object} objects - the geometries to extrude
  * @return {Object|Array} the extruded object, or a list of extruded objects
  * @alias module:modeling/extrusions.extrudeRectangular
  *
  * @example
  * let mywalls = extrudeRectangular({size: 1, height: 3}, square({size: 20}))
- * let mywalls = extrudeRectangular({size: 1, height: 300, twistAngle: Math.PI}, square({size: 20}))
+ * let mywalls = extrudeRectangular({size: 1, height: 300, twistAngle: TAU / 2}, square({size: 20}))
  */
 const extrudeRectangular = (options, ...objects) => {
   const defaults = {
@@ -11229,7 +16232,7 @@ const extrudeRectangular = (options, ...objects) => {
 
 module.exports = extrudeRectangular
 
-},{"../../geometries/geom2":36,"../../geometries/path2":71,"../../utils/flatten":393,"./extrudeRectangularGeom2":312,"./extrudeRectangularPath2":313}],312:[function(require,module,exports){
+},{"../../geometries/geom2":42,"../../geometries/path2":78,"../../utils/flatten":412,"./extrudeRectangularGeom2":329,"./extrudeRectangularPath2":330}],329:[function(require,module,exports){
 const { area } = require('../../maths/utils')
 
 const geom2 = require('../../geometries/geom2')
@@ -11277,7 +16280,7 @@ const extrudeRectangularGeom2 = (options, geometry) => {
 
 module.exports = extrudeRectangularGeom2
 
-},{"../../geometries/geom2":36,"../../geometries/path2":71,"../../maths/utils":176,"../expansions/expand":297,"./extrudeLinearGeom2":310}],313:[function(require,module,exports){
+},{"../../geometries/geom2":42,"../../geometries/path2":78,"../../maths/utils":184,"../expansions/expand":304,"./extrudeLinearGeom2":326}],330:[function(require,module,exports){
 const path2 = require('../../geometries/path2')
 
 const expand = require('../expansions/expand')
@@ -11312,7 +16315,8 @@ const extrudeRectangularPath2 = (options, geometry) => {
 
 module.exports = extrudeRectangularPath2
 
-},{"../../geometries/path2":71,"../expansions/expand":297,"./extrudeLinearGeom2":310}],314:[function(require,module,exports){
+},{"../../geometries/path2":78,"../expansions/expand":304,"./extrudeLinearGeom2":326}],331:[function(require,module,exports){
+const { TAU } = require('../../maths/constants')
 const mat4 = require('../../maths/mat4')
 
 const { mirrorX } = require('../transforms/mirror')
@@ -11327,7 +16331,7 @@ const extrudeFromSlices = require('./extrudeFromSlices')
  * Rotate extrude the given geometry using the given options.
  *
  * @param {Object} options - options for extrusion
- * @param {Number} [options.angle=PI*2] - angle of the extrusion (RADIANS)
+ * @param {Number} [options.angle=TAU] - angle of the extrusion (RADIANS)
  * @param {Number} [options.startAngle=0] - start angle of the extrusion (RADIANS)
  * @param {String} [options.overflow='cap'] - what to do with points outside of bounds (+ / - x) :
  * defaults to capping those points to 0 (only supported behaviour for now)
@@ -11337,24 +16341,24 @@ const extrudeFromSlices = require('./extrudeFromSlices')
  * @alias module:modeling/extrusions.extrudeRotate
  *
  * @example
- * const myshape = extrudeRotate({segments: 8, angle: Math.PI}, circle({size: 3, center: [4, 0]}))
+ * const myshape = extrudeRotate({segments: 8, angle: TAU / 2}, circle({size: 3, center: [4, 0]}))
  */
 const extrudeRotate = (options, geometry) => {
   const defaults = {
     segments: 12,
     startAngle: 0,
-    angle: (Math.PI * 2),
+    angle: TAU,
     overflow: 'cap'
   }
   let { segments, startAngle, angle, overflow } = Object.assign({}, defaults, options)
 
   if (segments < 3) throw new Error('segments must be greater then 3')
 
-  startAngle = Math.abs(startAngle) > (Math.PI * 2) ? startAngle % (Math.PI * 2) : startAngle
-  angle = Math.abs(angle) > (Math.PI * 2) ? angle % (Math.PI * 2) : angle
+  startAngle = Math.abs(startAngle) > TAU ? startAngle % TAU : startAngle
+  angle = Math.abs(angle) > TAU ? angle % TAU : angle
 
   let endAngle = startAngle + angle
-  endAngle = Math.abs(endAngle) > (Math.PI * 2) ? endAngle % (Math.PI * 2) : endAngle
+  endAngle = Math.abs(endAngle) > TAU ? endAngle % TAU : endAngle
 
   if (endAngle < startAngle) {
     const x = startAngle
@@ -11362,11 +16366,11 @@ const extrudeRotate = (options, geometry) => {
     endAngle = x
   }
   let totalRotation = endAngle - startAngle
-  if (totalRotation <= 0.0) totalRotation = (Math.PI * 2)
+  if (totalRotation <= 0.0) totalRotation = TAU
 
-  if (Math.abs(totalRotation) < (Math.PI * 2)) {
+  if (Math.abs(totalRotation) < TAU) {
     // adjust the segments to achieve the total rotation requested
-    const anglePerSegment = (Math.PI * 2) / segments
+    const anglePerSegment = TAU / segments
     segments = Math.floor(Math.abs(totalRotation) / anglePerSegment)
     if (Math.abs(totalRotation) > (segments * anglePerSegment)) segments++
   }
@@ -11423,14 +16427,18 @@ const extrudeRotate = (options, geometry) => {
   }
 
   const rotationPerSlice = totalRotation / segments
-  const isCapped = Math.abs(totalRotation) < (Math.PI * 2)
+  const isCapped = Math.abs(totalRotation) < TAU
   const baseSlice = slice.fromSides(geom2.toSides(geometry))
   slice.reverse(baseSlice, baseSlice)
 
   const matrix = mat4.create()
   const createSlice = (progress, index, base) => {
-    const Zrotation = rotationPerSlice * index + startAngle
-    mat4.multiply(matrix, mat4.fromZRotation(matrix, Zrotation), mat4.fromXRotation(mat4.create(), Math.PI / 2))
+    let Zrotation = rotationPerSlice * index + startAngle
+    // fix rounding error when rotating TAU radians
+    if (totalRotation === TAU && index === segments) {
+      Zrotation = startAngle
+    }
+    mat4.multiply(matrix, mat4.fromZRotation(matrix, Zrotation), mat4.fromXRotation(mat4.create(), TAU / 4))
 
     return slice.transform(matrix, base)
   }
@@ -11447,7 +16455,7 @@ const extrudeRotate = (options, geometry) => {
 
 module.exports = extrudeRotate
 
-},{"../../geometries/geom2":36,"../../maths/mat4":151,"../transforms/mirror":358,"./extrudeFromSlices":308,"./slice":324}],315:[function(require,module,exports){
+},{"../../geometries/geom2":42,"../../maths/constants":110,"../../maths/mat4":159,"../transforms/mirror":377,"./extrudeFromSlices":323,"./slice":341}],332:[function(require,module,exports){
 const { EPS } = require('../../maths/constants')
 const vec3 = require('../../maths/vec3')
 
@@ -11514,11 +16522,11 @@ const extrudeWalls = (slice0, slice1) => {
   edges0.forEach((edge0, i) => {
     const edge1 = edges1[i]
 
-    const poly0 = poly3.fromPoints([edge0[0], edge0[1], edge1[1]])
+    const poly0 = poly3.create([edge0[0], edge0[1], edge1[1]])
     const poly0area = poly3.measureArea(poly0)
     if (Number.isFinite(poly0area) && poly0area > EPSAREA) walls.push(poly0)
 
-    const poly1 = poly3.fromPoints([edge0[0], edge1[1], edge1[0]])
+    const poly1 = poly3.create([edge0[0], edge1[1], edge1[0]])
     const poly1area = poly3.measureArea(poly1)
     if (Number.isFinite(poly1area) && poly1area > EPSAREA) walls.push(poly1)
   })
@@ -11527,7 +16535,7 @@ const extrudeWalls = (slice0, slice1) => {
 
 module.exports = extrudeWalls
 
-},{"../../geometries/poly3":87,"../../maths/constants":101,"../../maths/vec3":228,"./slice":324}],316:[function(require,module,exports){
+},{"../../geometries/poly3":95,"../../maths/constants":110,"../../maths/vec3":237,"./slice":341}],333:[function(require,module,exports){
 /**
  * All 2D shapes (primitives or the results of operations) can be extruded in various ways.
  * In all cases, the function returns the results, and never changes the original shapes.
@@ -11540,11 +16548,12 @@ module.exports = {
   extrudeLinear: require('./extrudeLinear'),
   extrudeRectangular: require('./extrudeRectangular'),
   extrudeRotate: require('./extrudeRotate'),
+  extrudeHelical: require('./extrudeHelical'),
   project: require('./project'),
   slice: require('./slice')
 }
 
-},{"./extrudeFromSlices":308,"./extrudeLinear":309,"./extrudeRectangular":311,"./extrudeRotate":314,"./project":317,"./slice":324}],317:[function(require,module,exports){
+},{"./extrudeFromSlices":323,"./extrudeHelical":324,"./extrudeLinear":325,"./extrudeRectangular":328,"./extrudeRotate":331,"./project":334,"./slice":341}],334:[function(require,module,exports){
 const flatten = require('../../utils/flatten')
 
 const aboutEqualNormals = require('../../maths/utils/aboutEqualNormals')
@@ -11558,7 +16567,6 @@ const poly3 = require('../../geometries/poly3')
 const measureEpsilon = require('../../measurements/measureEpsilon')
 
 const unionGeom2 = require('../booleans/unionGeom2')
-const unionGeom3 = require('../booleans/unionGeom3')
 
 const projectGeom3 = (options, geometry) => {
   // create a plane from the options, and verify
@@ -11574,32 +16582,30 @@ const projectGeom3 = (options, geometry) => {
 
   // project the polygons to the plane
   const polygons = geom3.toPolygons(geometry)
-  const projpolys = []
+  let projpolys = []
   for (let i = 0; i < polygons.length; i++) {
     const newpoints = polygons[i].vertices.map((v) => plane.projectionOfPoint(projplane, v))
     const newpoly = poly3.create(newpoints)
-    // only keep projections that have a measurable area
-    if (poly3.measureArea(newpoly) < epsilonArea) continue
     // only keep projections that face the same direction as the plane
     const newplane = poly3.plane(newpoly)
     if (!aboutEqualNormals(projplane, newplane)) continue
+    // only keep projections that have a measurable area
+    if (poly3.measureArea(newpoly) < epsilonArea) continue
     projpolys.push(newpoly)
   }
-  // union the projected polygons to eliminate overlaying polygons
-  let projection = geom3.create(projpolys)
-  projection = unionGeom3(projection, projection)
-  // rotate the projection to lay on X/Y axes if necessary
+
+  // rotate the polygons to lay on X/Y axes if necessary
   if (!aboutEqualNormals(projplane, [0, 0, 1])) {
     const rotation = mat4.fromVectorRotation(mat4.create(), projplane, [0, 0, 1])
-    projection = geom3.transform(rotation, projection)
+    projpolys = projpolys.map((p) => poly3.transform(rotation, p))
   }
 
-  // convert the projection (polygons) into a series of 2D geometry
-  const projections2D = geom3.toPolygons(projection).map((p) => geom2.fromPoints(poly3.toPoints(p)))
-  // union the 2D geometries to obtain the outline of the projection
-  projection = unionGeom2(projections2D)
+  // sort the polygons to allow the union to ignore small pieces efficiently
+  projpolys = projpolys.sort((a, b) => poly3.measureArea(b) - poly3.measureArea(a))
 
-  return projection
+  // convert polygons to geometry, and union all pieces into a single geometry
+  const projgeoms = projpolys.map((p) => geom2.fromPoints(p.vertices))
+  return unionGeom2(projgeoms)
 }
 
 /**
@@ -11607,7 +16613,7 @@ const projectGeom3 = (options, geometry) => {
  * @param {Object} options - options for project
  * @param {Array} [options.axis=[0,0,1]] the axis of the plane (default is Z axis)
  * @param {Array} [options.origin=[0,0,0]] the origin of the plane
- * @param {...Object} geometry - the list of 3D geometry to project
+ * @param {...Object} objects - the list of 3D geometry to project
  * @return {geom2|Array} the projected 2D geometry, or a list of 2D projected geometry
  * @alias module:modeling/extrusions.project
  *
@@ -11637,7 +16643,7 @@ const project = (options, ...objects) => {
 
 module.exports = project
 
-},{"../../geometries/geom2":36,"../../geometries/geom3":50,"../../geometries/poly3":87,"../../maths/mat4":151,"../../maths/plane":170,"../../maths/utils/aboutEqualNormals":174,"../../measurements/measureEpsilon":269,"../../utils/flatten":393,"../booleans/unionGeom2":294,"../booleans/unionGeom3":295}],318:[function(require,module,exports){
+},{"../../geometries/geom2":42,"../../geometries/geom3":57,"../../geometries/poly3":95,"../../maths/mat4":159,"../../maths/plane":178,"../../maths/utils/aboutEqualNormals":182,"../../measurements/measureEpsilon":278,"../../utils/flatten":412,"../booleans/unionGeom2":301}],335:[function(require,module,exports){
 const plane = require('../../../maths/plane')
 const vec3 = require('../../../maths/vec3')
 
@@ -11663,10 +16669,13 @@ const calculatePlane = (slice) => {
   let farthestEdge
   let distance = 0
   edges.forEach((edge) => {
-    const d = vec3.squaredDistance(midpoint, edge[0])
-    if (d > distance) {
-      farthestEdge = edge
-      distance = d
+    // Make sure that the farthest edge is not a self-edge
+    if (!vec3.equals(edge[0], edge[1])) {
+      const d = vec3.squaredDistance(midpoint, edge[0])
+      if (d > distance) {
+        farthestEdge = edge
+        distance = d
+      }
     }
   })
   // find the before edge
@@ -11677,7 +16686,7 @@ const calculatePlane = (slice) => {
 
 module.exports = calculatePlane
 
-},{"../../../maths/plane":170,"../../../maths/vec3":228}],319:[function(require,module,exports){
+},{"../../../maths/plane":178,"../../../maths/vec3":237}],336:[function(require,module,exports){
 const create = require('./create')
 
 const vec3 = require('../../../maths/vec3')
@@ -11707,7 +16716,7 @@ const clone = (...params) => {
 
 module.exports = clone
 
-},{"../../../maths/vec3":228,"./create":320}],320:[function(require,module,exports){
+},{"../../../maths/vec3":237,"./create":337}],337:[function(require,module,exports){
 /**
  * Represents a 3D geometry consisting of a list of edges.
  * @typedef {Object} slice
@@ -11729,7 +16738,7 @@ const create = (edges) => {
 
 module.exports = create
 
-},{}],321:[function(require,module,exports){
+},{}],338:[function(require,module,exports){
 const vec3 = require('../../../maths/vec3')
 
 /**
@@ -11758,7 +16767,7 @@ const equals = (a, b) => {
 
 module.exports = equals
 
-},{"../../../maths/vec3":228}],322:[function(require,module,exports){
+},{"../../../maths/vec3":237}],339:[function(require,module,exports){
 const vec3 = require('../../../maths/vec3')
 
 const create = require('./create')
@@ -11795,7 +16804,7 @@ const fromPoints = (points) => {
 
 module.exports = fromPoints
 
-},{"../../../maths/vec3":228,"./create":320}],323:[function(require,module,exports){
+},{"../../../maths/vec3":237,"./create":337}],340:[function(require,module,exports){
 const vec3 = require('../../../maths/vec3')
 
 const create = require('./create')
@@ -11824,8 +16833,10 @@ const fromSides = (sides) => {
 
 module.exports = fromSides
 
-},{"../../../maths/vec3":228,"./create":320}],324:[function(require,module,exports){
+},{"../../../maths/vec3":237,"./create":337}],341:[function(require,module,exports){
 /**
+ * Represents a 3D geometry consisting of a list of edges.
+ * @see {@link slice} for data structure information.
  * @module modeling/extrusions/slice
  */
 module.exports = {
@@ -11843,10 +16854,10 @@ module.exports = {
   transform: require('./transform')
 }
 
-},{"./calculatePlane":318,"./clone":319,"./create":320,"./equals":321,"./fromPoints":322,"./fromSides":323,"./isA":325,"./reverse":326,"./toEdges":327,"./toPolygons":328,"./toString":329,"./transform":330}],325:[function(require,module,exports){
+},{"./calculatePlane":335,"./clone":336,"./create":337,"./equals":338,"./fromPoints":339,"./fromSides":340,"./isA":342,"./reverse":344,"./toEdges":345,"./toPolygons":346,"./toString":347,"./transform":348}],342:[function(require,module,exports){
 /**
- * Determin if the given object is a slice.
- * @param {slice} object - the object to interogate
+ * Determine if the given object is a slice.
+ * @param {slice} object - the object to interrogate
  * @returns {Boolean} true if the object matches a slice
  * @alias module:modeling/extrusions/slice.isA
  */
@@ -11863,7 +16874,71 @@ const isA = (object) => {
 
 module.exports = isA
 
-},{}],326:[function(require,module,exports){
+},{}],343:[function(require,module,exports){
+const vec3 = require('../../../maths/vec3')
+const create = require('./create')
+
+/*
+ * Mend gaps in a 2D slice to make it a closed polygon
+ */
+const repair = (slice) => {
+  if (!slice.edges) return slice
+  let edges = slice.edges
+  const vertexMap = new Map() // string key to vertex map
+  const edgeCount = new Map() // count of (in - out) edges
+
+  // Remove self-edges
+  edges = edges.filter((e) => !vec3.equals(e[0], e[1]))
+
+  // build vertex and edge count maps
+  edges.forEach((edge) => {
+    const inKey = edge[0].toString()
+    const outKey = edge[1].toString()
+    vertexMap.set(inKey, edge[0])
+    vertexMap.set(outKey, edge[1])
+    edgeCount.set(inKey, (edgeCount.get(inKey) || 0) + 1) // in
+    edgeCount.set(outKey, (edgeCount.get(outKey) || 0) - 1) // out
+  })
+
+  // find vertices which are missing in or out edges
+  const missingIn = []
+  const missingOut = []
+  edgeCount.forEach((count, vertex) => {
+    if (count < 0) missingIn.push(vertex)
+    if (count > 0) missingOut.push(vertex)
+  })
+
+  // pairwise distance of bad vertices
+  missingIn.forEach((key1) => {
+    const v1 = vertexMap.get(key1)
+
+    // find the closest vertex that is missing an out edge
+    let bestDistance = Infinity
+    let bestReplacement
+    missingOut.forEach((key2) => {
+      const v2 = vertexMap.get(key2)
+      const distance = vec3.distance(v1, v2)
+      if (distance < bestDistance) {
+        bestDistance = distance
+        bestReplacement = v2
+      }
+    })
+    console.warn(`slice.repair: repairing vertex gap ${v1} to ${bestReplacement} distance ${bestDistance}`)
+
+    // merge broken vertices
+    edges = edges.map((edge) => {
+      if (edge[0].toString() === key1) return [bestReplacement, edge[1]]
+      if (edge[1].toString() === key1) return [edge[0], bestReplacement]
+      return edge
+    })
+  })
+
+  return create(edges)
+}
+
+module.exports = repair
+
+},{"../../../maths/vec3":237,"./create":337}],344:[function(require,module,exports){
 const create = require('./create')
 
 /**
@@ -11891,7 +16966,7 @@ const reverse = (...params) => {
 
 module.exports = reverse
 
-},{"./create":320}],327:[function(require,module,exports){
+},{"./create":337}],345:[function(require,module,exports){
 /**
  * Produces an array of edges from the given slice.
  * The returned array should not be modified as the data is shared with the slice.
@@ -11906,25 +16981,10 @@ const toEdges = (slice) => slice.edges
 
 module.exports = toEdges
 
-},{}],328:[function(require,module,exports){
-const vec3 = require('../../../maths/vec3')
-
-const geom3 = require('../../../geometries/geom3')
+},{}],346:[function(require,module,exports){
 const poly3 = require('../../../geometries/poly3')
-
-const intersectGeom3Sub = require('../../booleans/intersectGeom3Sub')
-
-const calculatePlane = require('./calculatePlane')
-
-const toPolygon3D = (vector, edge) => {
-  const points = [
-    vec3.subtract(vec3.create(), edge[0], vector),
-    vec3.subtract(vec3.create(), edge[1], vector),
-    vec3.add(vec3.create(), edge[1], vector),
-    vec3.add(vec3.create(), edge[0], vector)
-  ]
-  return poly3.fromPoints(points)
-}
+const earcut = require('../earcut')
+const PolygonHierarchy = require('../earcut/polygonHierarchy')
 
 /**
  * Return a list of polygons which are enclosed by the slice.
@@ -11933,58 +16993,37 @@ const toPolygon3D = (vector, edge) => {
  * @alias module:modeling/extrusions/slice.toPolygons
  */
 const toPolygons = (slice) => {
-  const splane = calculatePlane(slice)
+  const hierarchy = new PolygonHierarchy(slice)
 
-  // find the midpoint of the slice, which will lie on the plane by definition
-  const edges = slice.edges
-  const midpoint = edges.reduce((point, edge) => vec3.add(vec3.create(), point, edge[0]), vec3.create())
-  vec3.scale(midpoint, midpoint, 1 / edges.length)
+  const polygons = []
+  hierarchy.roots.forEach(({ solid, holes }) => {
+    // hole indices
+    let index = solid.length
+    const holesIndex = []
+    holes.forEach((hole, i) => {
+      holesIndex.push(index)
+      index += hole.length
+    })
 
-  // find the farthest edge from the midpoint, which will be on an outside edge
-  let farthestEdge = [[NaN, NaN, NaN], [NaN, NaN, NaN]]
-  let distance = 0
-  edges.forEach((edge) => {
-    const d = vec3.squaredDistance(midpoint, edge[0])
-    if (d > distance) {
-      farthestEdge = edge
-      distance = d
+    // compute earcut triangulation for each solid
+    const vertices = [solid, ...holes].flat()
+    const data = vertices.flat()
+    // Get original 3D vertex by index
+    const getVertex = (i) => hierarchy.to3D(vertices[i])
+    const indices = earcut(data, holesIndex)
+    for (let i = 0; i < indices.length; i += 3) {
+      // Map back to original vertices
+      const tri = indices.slice(i, i + 3).map(getVertex)
+      polygons.push(poly3.fromPointsAndPlane(tri, hierarchy.plane))
     }
   })
 
-  // create one LARGE polygon to encompass the side, i.e. base
-  const direction = vec3.subtract(vec3.create(), farthestEdge[0], midpoint)
-  const perpendicular = vec3.cross(vec3.create(), splane, direction)
-
-  const p1 = vec3.add(vec3.create(), midpoint, direction)
-  vec3.add(p1, p1, direction)
-  const p2 = vec3.add(vec3.create(), midpoint, perpendicular)
-  vec3.add(p2, p2, perpendicular)
-  const p3 = vec3.subtract(vec3.create(), midpoint, direction)
-  vec3.subtract(p3, p3, direction)
-  const p4 = vec3.subtract(vec3.create(), midpoint, perpendicular)
-  vec3.subtract(p4, p4, perpendicular)
-  const poly1 = poly3.fromPoints([p1, p2, p3, p4])
-  const base = geom3.create([poly1])
-
-  const wallPolygons = edges.map((edge) => toPolygon3D(splane, edge))
-  const walls = geom3.create(wallPolygons)
-
-  // make an insection of the base and the walls, creating... a set of polygons!
-  const geometry3 = intersectGeom3Sub(base, walls)
-
-  // return only those polygons from the base
-  let polygons = geom3.toPolygons(geometry3)
-  polygons = polygons.filter((polygon) => {
-    const a = vec3.angle(splane, poly3.plane(polygon))
-    // walls should be PI / 2 radians rotated from the base
-    return Math.abs(a) < (Math.PI / 90)
-  })
   return polygons
 }
 
 module.exports = toPolygons
 
-},{"../../../geometries/geom3":50,"../../../geometries/poly3":87,"../../../maths/vec3":228,"../../booleans/intersectGeom3Sub":276,"./calculatePlane":318}],329:[function(require,module,exports){
+},{"../../../geometries/poly3":95,"../earcut":317,"../earcut/polygonHierarchy":321}],347:[function(require,module,exports){
 const vec3 = require('../../../maths/vec3')
 
 const edgesToString = (edges) =>
@@ -12001,7 +17040,7 @@ const toString = (slice) => `[${edgesToString(slice.edges)}]`
 
 module.exports = toString
 
-},{"../../../maths/vec3":228}],330:[function(require,module,exports){
+},{"../../../maths/vec3":237}],348:[function(require,module,exports){
 const vec3 = require('../../../maths/vec3')
 
 const create = require('./create')
@@ -12024,7 +17063,7 @@ const transform = (matrix, slice) => {
 
 module.exports = transform
 
-},{"../../../maths/vec3":228,"./create":320}],331:[function(require,module,exports){
+},{"../../../maths/vec3":237,"./create":337}],349:[function(require,module,exports){
 const flatten = require('../../utils/flatten')
 const areAllShapesTheSameType = require('../../utils/areAllShapesTheSameType')
 
@@ -12078,7 +17117,7 @@ const hull = (...geometries) => {
 
 module.exports = hull
 
-},{"../../geometries/geom2":36,"../../geometries/geom3":50,"../../geometries/path2":71,"../../utils/areAllShapesTheSameType":391,"../../utils/flatten":393,"./hullGeom2":333,"./hullGeom3":334,"./hullPath2":335}],332:[function(require,module,exports){
+},{"../../geometries/geom2":42,"../../geometries/geom3":57,"../../geometries/path2":78,"../../utils/areAllShapesTheSameType":410,"../../utils/flatten":412,"./hullGeom2":351,"./hullGeom3":352,"./hullPath2":353}],350:[function(require,module,exports){
 const flatten = require('../../utils/flatten')
 
 const union = require('../booleans/union')
@@ -12086,7 +17125,7 @@ const union = require('../booleans/union')
 const hull = require('./hull')
 
 /**
- * Create a chain of hulled geometries from the given gemetries.
+ * Create a chain of hulled geometries from the given geometries.
  * Essentially hull A+B, B+C, C+D, etc., then union the results.
  * The given geometries should be of the same type, either geom2 or geom3 or path2.
  *
@@ -12123,12 +17162,13 @@ const hullChain = (...geometries) => {
 
 module.exports = hullChain
 
-},{"../../utils/flatten":393,"../booleans/union":293,"./hull":331}],333:[function(require,module,exports){
+},{"../../utils/flatten":412,"../booleans/union":300,"./hull":349}],351:[function(require,module,exports){
 const flatten = require('../../utils/flatten')
 
 const geom2 = require('../../geometries/geom2')
 
 const hullPoints2 = require('./hullPoints2')
+const toUniquePoints = require('./toUniquePoints')
 
 /*
  * Create a convex hull of the given geom2 geometries.
@@ -12139,39 +17179,27 @@ const hullGeom2 = (...geometries) => {
   geometries = flatten(geometries)
 
   // extract the unique points from the geometries
-  const uniquepoints = []
-  const found = new Map()
-  for (let g = 0; g < geometries.length; g++) {
-    const sides = geom2.toSides(geometries[g])
-    for (let s = 0; s < sides.length; s++) {
-      const side = sides[s]
-      const point = side[0]
-      const id = `${point[0]},${point[1]}`
-      if (found.has(id)) continue
-      uniquepoints.push(point)
-      found.set(id, true)
-    }
-  }
-  found.clear()
+  const unique = toUniquePoints(geometries)
 
-  const hullpoints = hullPoints2(uniquepoints)
+  const hullPoints = hullPoints2(unique)
 
-  // NOTE: more then three points are required to create a new geometry
-  if (hullpoints.length < 3) return geom2.create()
+  // NOTE: more than three points are required to create a new geometry
+  if (hullPoints.length < 3) return geom2.create()
 
   // assemble a new geometry from the list of points
-  return geom2.fromPoints(hullpoints)
+  return geom2.fromPoints(hullPoints)
 }
 
 module.exports = hullGeom2
 
-},{"../../geometries/geom2":36,"../../utils/flatten":393,"./hullPoints2":336}],334:[function(require,module,exports){
+},{"../../geometries/geom2":42,"../../utils/flatten":412,"./hullPoints2":354,"./toUniquePoints":364}],352:[function(require,module,exports){
 const flatten = require('../../utils/flatten')
 
 const geom3 = require('../../geometries/geom3')
 const poly3 = require('../../geometries/poly3')
 
 const quickhull = require('./quickhull')
+const toUniquePoints = require('./toUniquePoints')
 
 /*
  * Create a convex hull of the given geometries (geom3).
@@ -12184,26 +17212,12 @@ const hullGeom3 = (...geometries) => {
   if (geometries.length === 1) return geometries[0]
 
   // extract the unique vertices from the geometries
-  const uniquevertices = []
-  const found = new Map()
-  for (let g = 0; g < geometries.length; ++g) {
-    const polygons = geom3.toPolygons(geometries[g])
-    for (let p = 0; p < polygons.length; ++p) {
-      const vertices = polygons[p].vertices
-      for (let v = 0; v < vertices.length; ++v) {
-        const id = `${vertices[v]}`
-        if (found.has(id)) continue
-        uniquevertices.push(vertices[v])
-        found.set(id, true)
-      }
-    }
-  }
-  found.clear()
+  const unique = toUniquePoints(geometries)
 
-  const faces = quickhull(uniquevertices, { skipTriangulation: true })
+  const faces = quickhull(unique, { skipTriangulation: true })
 
   const polygons = faces.map((face) => {
-    const vertices = face.map((index) => uniquevertices[index])
+    const vertices = face.map((index) => unique[index])
     return poly3.create(vertices)
   })
 
@@ -12212,14 +17226,13 @@ const hullGeom3 = (...geometries) => {
 
 module.exports = hullGeom3
 
-},{"../../geometries/geom3":50,"../../geometries/poly3":87,"../../utils/flatten":393,"./quickhull":344}],335:[function(require,module,exports){
+},{"../../geometries/geom3":57,"../../geometries/poly3":95,"../../utils/flatten":412,"./quickhull":362,"./toUniquePoints":364}],353:[function(require,module,exports){
 const flatten = require('../../utils/flatten')
-
-const vec2 = require('../../maths/vec2')
 
 const path2 = require('../../geometries/path2')
 
 const hullPoints2 = require('./hullPoints2')
+const toUniquePoints = require('./toUniquePoints')
 
 /*
  * Create a convex hull of the given geometries (path2).
@@ -12230,134 +17243,79 @@ const hullPath2 = (...geometries) => {
   geometries = flatten(geometries)
 
   // extract the unique points from the geometries
-  const uniquepoints = []
-  geometries.forEach((geometry) => {
-    const points = path2.toPoints(geometry)
-    points.forEach((point) => {
-      const index = uniquepoints.findIndex((unique) => vec2.equals(unique, point))
-      if (index < 0) uniquepoints.push(point)
-    })
-  })
+  const unique = toUniquePoints(geometries)
 
-  const hullpoints = hullPoints2(uniquepoints)
+  const hullPoints = hullPoints2(unique)
 
   // assemble a new geometry from the list of points
-  return path2.fromPoints({ closed: true }, hullpoints)
+  return path2.fromPoints({ closed: true }, hullPoints)
 }
 
 module.exports = hullPath2
 
-},{"../../geometries/path2":71,"../../maths/vec2":197,"../../utils/flatten":393,"./hullPoints2":336}],336:[function(require,module,exports){
+},{"../../geometries/path2":78,"../../utils/flatten":412,"./hullPoints2":354,"./toUniquePoints":364}],354:[function(require,module,exports){
 const vec2 = require('../../maths/vec2')
 
-const angleBetweenPoints = (p0, p1) => Math.atan2((p1[1] - p0[1]), (p1[0] - p0[0]))
-
-const compareIndex = (index1, index2) => {
-  if (index1.angle < index2.angle) {
-    return -1
-  } else if (index1.angle > index2.angle) {
-    return 1
-  } else {
-    if (index1.distance < index2.distance) {
-      return -1
-    } else if (index1.distance > index2.distance) {
-      return 1
-    }
-  }
-  return 0
-}
-
-// Ported from https://github.com/bkiers/GrahamScan
-const compute = (points) => {
-  if (points.length < 3) {
-    return points
-  }
-
-  // Find the lowest point
-  let min = 0
-  points.forEach((point, i) => {
-    const minpoint = points[min]
-    if (point[1] === minpoint[1]) {
-      if (point[0] < minpoint[0]) {
-        min = i
-      }
-    } else if (point[1] < minpoint[1]) {
-      min = i
+/*
+ * Create a convex hull of the given set of points, where each point is an array of [x,y].
+ * Uses https://en.wikipedia.org/wiki/Graham_scan
+ * @param {Array} uniquePoints - list of UNIQUE points from which to create a hull
+ * @returns {Array} a list of points that form the hull
+ */
+const hullPoints2 = (uniquePoints) => {
+  // find min point
+  let min = vec2.fromValues(Infinity, Infinity)
+  uniquePoints.forEach((point) => {
+    if (point[1] < min[1] || (point[1] === min[1] && point[0] < min[0])) {
+      min = point
     }
   })
 
-  // Calculate angles and distances from the lowest point
-  const al = []
-  let angle = 0.0
-  let dist = 0.0
-  for (let i = 0; i < points.length; i++) {
-    if (i === min) {
-      continue
+  // gather information for sorting by polar coordinates (point, angle, distSq)
+  const points = []
+  uniquePoints.forEach((point) => {
+    // use faster fakeAtan2 instead of Math.atan2
+    const angle = fakeAtan2(point[1] - min[1], point[0] - min[0])
+    const distSq = vec2.squaredDistance(point, min)
+    points.push({ point, angle, distSq })
+  })
+
+  // sort by polar coordinates
+  points.sort((pt1, pt2) => pt1.angle !== pt2.angle
+    ? pt1.angle - pt2.angle
+    : pt1.distSq - pt2.distSq)
+
+  const stack = [] // start with empty stack
+  points.forEach((point) => {
+    let cnt = stack.length
+    while (cnt > 1 && ccw(stack[cnt - 2], stack[cnt - 1], point.point) <= Number.EPSILON) {
+      stack.pop() // get rid of colinear and interior (clockwise) points
+      cnt = stack.length
     }
-    angle = angleBetweenPoints(points[min], points[i])
-    if (angle < 0) {
-      angle += Math.PI
-    }
-    dist = vec2.squaredDistance(points[min], points[i])
-    al.push({ index: i, angle: angle, distance: dist })
-  }
+    stack.push(point.point)
+  })
 
-  al.sort((a, b) => compareIndex(a, b))
-
-  // Wind around the points CCW, removing interior points
-  const stack = new Array(points.length + 1)
-  let j = 2
-  for (let i = 0; i < points.length; i++) {
-    if (i === min) {
-      continue
-    }
-    stack[j] = al[j - 2].index
-    j++
-  }
-  stack[0] = stack[points.length]
-  stack[1] = min
-
-  // clockwise < 0, colinear = 0, counter clockwise > 0
-  const ccw = (i1, i2, i3) => (points[i2][0] - points[i1][0]) * (points[i3][1] - points[i1][1]) - (points[i2][1] - points[i1][1]) * (points[i3][0] - points[i1][0])
-
-  let tmp
-  let M = 2
-  for (let i = 3; i <= points.length; i++) {
-    while (ccw(stack[M - 1], stack[M], stack[i]) < Number.EPSILON) {
-      M--
-    }
-    M++
-    tmp = stack[i]
-    stack[i] = stack[M]
-    stack[M] = tmp
-  }
-
-  // Return the indices to the points
-  const indices = new Array(M)
-  for (let i = 0; i < M; i++) {
-    indices[i] = stack[i + 1]
-  }
-  return indices
+  return stack
 }
 
-/*
- * Create a convex hull of the given set of points,  where each point is an array of [x,y].
- * @param {Array} uniquepoints - list of UNIQUE points from which to create a hull
- * @returns {Array} a list of points that form the hull
- */
-const hullPoints2 = (uniquepoints) => {
-  const indices = compute(uniquepoints)
+// returns: < 0 clockwise, 0 colinear, > 0 counter-clockwise
+const ccw = (v1, v2, v3) => (v2[0] - v1[0]) * (v3[1] - v1[1]) - (v2[1] - v1[1]) * (v3[0] - v1[0])
 
-  let hullpoints = []
-  if (Array.isArray(indices)) {
-    hullpoints = indices.map((index) => uniquepoints[index])
+// Returned "angle" is really 1/tan (inverse of slope) made negative to increase with angle.
+// This function is strictly for sorting in this algorithm.
+const fakeAtan2 = (y, x) => {
+  // The "if" is a special case for when the minimum vector found in loop above is present.
+  // We need to ensure that it sorts as the minimum point. Otherwise, this becomes NaN.
+  if (y === 0 && x === 0) {
+    return -Infinity
+  } else {
+    return -x / y
   }
-  return hullpoints
 }
 
 module.exports = hullPoints2
 
-},{"../../maths/vec2":197}],337:[function(require,module,exports){
+},{"../../maths/vec2":206}],355:[function(require,module,exports){
 /**
  * All shapes (primitives or the results of operations) can be passed to hull functions
  * to determine the convex hull of all points.
@@ -12371,7 +17329,7 @@ module.exports = {
   hullChain: require('./hullChain')
 }
 
-},{"./hull":331,"./hullChain":332}],338:[function(require,module,exports){
+},{"./hull":349,"./hullChain":350}],356:[function(require,module,exports){
 const add = require('../../../maths/vec3/add')
 const copy = require('../../../maths/vec3/copy')
 const cross = require('../../../maths/vec3/cross')
@@ -12707,7 +17665,7 @@ module.exports = {
   Face
 }
 
-},{"../../../maths/vec3/add":215,"../../../maths/vec3/copy":218,"../../../maths/vec3/cross":220,"../../../maths/vec3/dot":223,"../../../maths/vec3/length":229,"../../../maths/vec3/normalize":235,"../../../maths/vec3/scale":240,"../../../maths/vec3/subtract":244,"./HalfEdge":339}],339:[function(require,module,exports){
+},{"../../../maths/vec3/add":224,"../../../maths/vec3/copy":227,"../../../maths/vec3/cross":229,"../../../maths/vec3/dot":232,"../../../maths/vec3/length":238,"../../../maths/vec3/normalize":244,"../../../maths/vec3/scale":249,"../../../maths/vec3/subtract":253,"./HalfEdge":357}],357:[function(require,module,exports){
 const distance = require('../../../maths/vec3/distance')
 const squaredDistance = require('../../../maths/vec3/squaredDistance')
 
@@ -12765,7 +17723,7 @@ class HalfEdge {
 
 module.exports = HalfEdge
 
-},{"../../../maths/vec3/distance":221,"../../../maths/vec3/squaredDistance":242}],340:[function(require,module,exports){
+},{"../../../maths/vec3/distance":230,"../../../maths/vec3/squaredDistance":251}],358:[function(require,module,exports){
 const dot = require('../../../maths/vec3/dot')
 
 const pointLineDistance = require('./point-line-distance')
@@ -13490,7 +18448,7 @@ class QuickHull {
     for (let i = 0; i < this.newFaces.length; i += 1) {
       const face = this.newFaces[i]
       if (face.mark === VISIBLE) {
-        while (this.doAdjacentMerge(face, MERGE_NON_CONVEX_WRT_LARGER_FACE)) {}
+        while (this.doAdjacentMerge(face, MERGE_NON_CONVEX_WRT_LARGER_FACE)) {} // eslint-disable-line no-empty
       }
     }
 
@@ -13501,7 +18459,7 @@ class QuickHull {
       const face = this.newFaces[i]
       if (face.mark === NON_CONVEX) {
         face.mark = VISIBLE
-        while (this.doAdjacentMerge(face, MERGE_NON_CONVEX)) {}
+        while (this.doAdjacentMerge(face, MERGE_NON_CONVEX)) {} // eslint-disable-line no-empty
       }
     }
 
@@ -13521,7 +18479,7 @@ class QuickHull {
 
 module.exports = QuickHull
 
-},{"../../../maths/vec3/dot":223,"./Face":338,"./Vertex":341,"./VertexList":342,"./get-plane-normal":343,"./point-line-distance":345}],341:[function(require,module,exports){
+},{"../../../maths/vec3/dot":232,"./Face":356,"./Vertex":359,"./VertexList":360,"./get-plane-normal":361,"./point-line-distance":363}],359:[function(require,module,exports){
 /*
  * Original source from quickhull3d (https://github.com/mauriciopoppe/quickhull3d)
  * Copyright (c) 2015 Mauricio Poppe
@@ -13544,7 +18502,7 @@ class Vertex {
 
 module.exports = Vertex
 
-},{}],342:[function(require,module,exports){
+},{}],360:[function(require,module,exports){
 /*
  * Original source from quickhull3d (https://github.com/mauriciopoppe/quickhull3d)
  * Copyright (c) 2015 Mauricio Poppe
@@ -13692,7 +18650,7 @@ class VertexList {
 
 module.exports = VertexList
 
-},{}],343:[function(require,module,exports){
+},{}],361:[function(require,module,exports){
 const cross = require('../../../maths/vec3/cross')
 const normalize = require('../../../maths/vec3/normalize')
 const subtract = require('../../../maths/vec3/subtract')
@@ -13714,7 +18672,7 @@ const planeNormal = (out, point1, point2, point3) => {
 
 module.exports = planeNormal
 
-},{"../../../maths/vec3/cross":220,"../../../maths/vec3/normalize":235,"../../../maths/vec3/subtract":244}],344:[function(require,module,exports){
+},{"../../../maths/vec3/cross":229,"../../../maths/vec3/normalize":244,"../../../maths/vec3/subtract":253}],362:[function(require,module,exports){
 const QuickHull = require('./QuickHull')
 
 /*
@@ -13732,7 +18690,7 @@ const runner = (points, options = {}) => {
 
 module.exports = runner
 
-},{"./QuickHull":340}],345:[function(require,module,exports){
+},{"./QuickHull":358}],363:[function(require,module,exports){
 const cross = require('../../../maths/vec3/cross')
 const subtract = require('../../../maths/vec3/subtract')
 const squaredLength = require('../../../maths/vec3/squaredLength')
@@ -13776,206 +18734,43 @@ const pointLineDistance = (point, a, b) => Math.sqrt(distanceSquared(point, a, b
 
 module.exports = pointLineDistance
 
-},{"../../../maths/vec3/cross":220,"../../../maths/vec3/squaredLength":243,"../../../maths/vec3/subtract":244}],346:[function(require,module,exports){
-const vec3 = require('../../maths/vec3')
-const line3 = require('../../maths/line3')
-
-const poly3 = require('../../geometries/poly3')
-
-/*
- * Add a unique edge to the given list of edges.
- * Each edge has a list of associated polygons.
- * Edges with two polygons are complete, while edges with one polygon are open, i.e hole or t-junction..
- */
-const addEdge = (edges, edge, polygon) => {
-  const ei = edges.findIndex((element) => {
-    if (element) {
-      if (vec3.equals(element[0], edge[0]) && vec3.equals(element[1], edge[1])) return true
-      if (vec3.equals(element[0], edge[1]) && vec3.equals(element[1], edge[0])) return true
-    }
-    return false
-  })
-  if (ei >= 0) {
-    edge = edges[ei]
-    edge.polygons.push(polygon)
-  } else {
-    edge.polygons = [polygon]
-    edges.push(edge)
-  }
-}
+},{"../../../maths/vec3/cross":229,"../../../maths/vec3/squaredLength":252,"../../../maths/vec3/subtract":253}],364:[function(require,module,exports){
+const geom2 = require('../../geometries/geom2')
+const geom3 = require('../../geometries/geom3')
+const path2 = require('../../geometries/path2')
 
 /*
- * Remove the edge from the given list of edges.
+ * Return the unique vertices of a geometry
  */
-const removeEdge = (edges, edge) => {
-  const ei = edges.findIndex((element) => {
-    if (element) {
-      if (vec3.equals(element[0], edge[0]) && vec3.equals(element[1], edge[1])) return true
-      if (vec3.equals(element[0], edge[1]) && vec3.equals(element[1], edge[0])) return true
-    }
-    return false
-  })
-  if (ei >= 0) {
-    edges[ei].polygons = []
-    edges[ei] = null
-  }
-}
+const toUniquePoints = (geometries) => {
+  const found = new Set()
+  const uniquePoints = []
 
-/*
- * Add all edges of the polygon to the given list of edges.
- */
-const addPolygon = (edges, polygon) => {
-  const vertices = polygon.vertices
-  const nv = vertices.length
-
-  let edge = [vertices[nv - 1], vertices[0]]
-  addEdge(edges, edge, polygon)
-
-  for (let i = 0; i < (nv - 1); i++) {
-    edge = [vertices[i], vertices[i + 1]]
-    addEdge(edges, edge, polygon)
-  }
-}
-
-/*
- * Remove all polygons associated with the old edge from the given list of edges.
- */
-const removePolygons = (edges, oldedge) => {
-  // console.log('removePolygons',oldedge)
-  const polygons = oldedge.polygons
-  polygons.forEach((polygon) => {
-    const vertices = polygon.vertices
-    const nv = vertices.length
-
-    let edge = [vertices[nv - 1], vertices[0]]
-    removeEdge(edges, edge)
-
-    for (let i = 0; i < (nv - 1); i++) {
-      edge = [vertices[i], vertices[i + 1]]
-      removeEdge(edges, edge)
-    }
-  })
-}
-
-/*
- * Split the polygon, ensuring one polygon includes the open edge.
- */
-const splitPolygon = (openedge, polygon, eps) => {
-  // console.log('splitPolygon',openedge,polygon)
-  const vertices = polygon.vertices
-  const i = vertices.findIndex((point) => almostEquals(eps, point, openedge[0]))
-  const polygon1 = poly3.fromPoints([vertices[(i + 0) % 3], vertices[(i + 1) % 3], openedge[1]])
-  const polygon2 = poly3.fromPoints([openedge[1], vertices[(i + 1) % 3], vertices[(i + 2) % 3]])
-  if (polygon.color) {
-    polygon1.color = polygon.color
-    polygon2.color = polygon.color
-  }
-  // console.log('polygon1',polygon1)
-  // console.log('polygon2',polygon2)
-  return [polygon1, polygon2]
-}
-
-/*
- * TBD This should be part of vec3.
- */
-const almostEquals = (eps, v1, v2) => {
-  return (Math.abs(v1[0] - v2[0]) <= eps && Math.abs(v1[1] - v2[1]) <= eps && Math.abs(v1[2] - v2[2]) <= eps)
-}
-
-const enclosedEdge = (openedge, edge, eps) => {
-  if (openedge.distance < edge.distance) {
-    // only look for opposing edges
-    if (vec3.equals(openedge[0], edge[1])) {
-      // only opposing open edges enclosed by the edge
-      const distanceE0O0 = vec3.squaredDistance(openedge[0], edge[0])
-      const distanceE0O1 = vec3.squaredDistance(openedge[1], edge[0])
-      const distanceE1O0 = vec3.squaredDistance(openedge[0], edge[1])
-      const distanceE1O1 = vec3.squaredDistance(openedge[1], edge[1])
-      if (distanceE0O0 <= edge.distance && distanceE0O1 < edge.distance && distanceE1O0 < edge.distance && distanceE1O1 < edge.distance) {
-        // only look for paralell open edges
-        const line3d = line3.fromPoints(edge[0], edge[1])
-        const closest0 = vec3.snap(vec3.create(), eps, line3.closestPoint(openedge[0], line3d))
-        const closest1 = vec3.snap(vec3.create(), eps, line3.closestPoint(openedge[1], line3d))
-        if (almostEquals(eps, closest0, openedge[0]) && almostEquals(eps, closest1, openedge[1])) {
-          return true
-        }
-      }
+  const addPoint = (point) => {
+    const key = point.toString()
+    if (!found.has(key)) {
+      uniquePoints.push(point)
+      found.add(key)
     }
   }
-  return false
-}
 
-/*
- * Split the edge if posssible from the list of open edges.
- * Return a list of new polygons, or null if not possible
- */
-const splitEdge = (openedges, edge, eps) => {
-  // console.log('splitEdge',edge)
-  for (let i = 0; i < openedges.length; i++) {
-    const openedge = openedges[i]
-    if (openedge) {
-      if (enclosedEdge(openedge, edge, eps)) {
-        // spit the polygon associated with the edge
-        const polygon = edge.polygons[0]
-        const newpolygons = splitPolygon(openedge, polygon, eps)
-        return newpolygons
-      }
-    }
-  }
-  return null
-}
-
-/*
- * Cull a list of open edges (see above) from the list of edges.
- */
-const cullOpenEdges = (edges) => {
-  const openedges = []
-  edges.forEach((edge, i) => {
-    const polygons = edge.polygons
-    if (polygons.length === 1) {
-      // console.log('open edge: ',edge[0],'<-->',edge[1])
-      edge.distance = vec3.squaredDistance(edge[0], edge[1])
-      openedges.push(edge)
+  geometries.forEach((geometry) => {
+    if (geom2.isA(geometry)) {
+      geom2.toPoints(geometry).forEach(addPoint)
+    } else if (geom3.isA(geometry)) {
+      // points are grouped by polygon
+      geom3.toPoints(geometry).forEach((points) => points.forEach(addPoint))
+    } else if (path2.isA(geometry)) {
+      path2.toPoints(geometry).forEach(addPoint)
     }
   })
-  // console.log('open edges:',openedges.length)
-  // console.log('**********OPEN*********')
-  // console.log(openedges)
-  // console.log('**********OPEN*********')
-  return openedges
+
+  return uniquePoints
 }
 
-/*
- * Convert the list of edges into a list of polygons.
- */
-const edgesToPolygons = (edges) => {
-  const polygons = []
-  edges.forEach((edge) => {
-    if (edge && edge.polygons) {
-      edge.polygons.forEach((polygon) => {
-        if (polygon.visited) return
-        polygon.visited = true
-        polygons.push(polygon)
-      })
-    }
-  })
-  return polygons
-}
+module.exports = toUniquePoints
 
-/*
- * Convert the given list of polygons to a list of edges.
- */
-const polygonsToEdges = (polygons) => {
-  const edges = []
-  polygons.forEach((polygon) => {
-    addPolygon(edges, polygon)
-  })
-  return edges
-}
-
-module.exports = { polygonsToEdges, edgesToPolygons, cullOpenEdges, splitEdge, removePolygons, addPolygon }
-
-},{"../../geometries/poly3":87,"../../maths/line3":129,"../../maths/vec3":228}],347:[function(require,module,exports){
+},{"../../geometries/geom2":42,"../../geometries/geom3":57,"../../geometries/path2":78}],365:[function(require,module,exports){
 const flatten = require('../../utils/flatten')
 
 const measureEpsilon = require('../../measurements/measureEpsilon')
@@ -13989,19 +18784,13 @@ const mergePolygons = require('./mergePolygons')
 const insertTjunctions = require('./insertTjunctions')
 const triangulatePolygons = require('./triangulatePolygons')
 
-const repairTjunctions = require('./repairTjunctions')
+/*
+ */
+const generalizePath2 = (options, geometry) => geometry
 
 /*
  */
-const generalizePath2 = (options, geometry) => {
-  return geometry
-}
-
-/*
- */
-const generalizeGeom2 = (options, geometry) => {
-  return geometry
-}
+const generalizeGeom2 = (options, geometry) => geometry
 
 /*
  */
@@ -14009,10 +18798,9 @@ const generalizeGeom3 = (options, geometry) => {
   const defaults = {
     snap: false,
     simplify: false,
-    triangulate: false,
-    repair: false
+    triangulate: false
   }
-  const { snap, simplify, triangulate, repair } = Object.assign({}, defaults, options)
+  const { snap, simplify, triangulate } = Object.assign({}, defaults, options)
 
   const epsilon = measureEpsilon(geometry)
   let polygons = geom3.toPolygons(geometry)
@@ -14034,13 +18822,6 @@ const generalizeGeom3 = (options, geometry) => {
     polygons = triangulatePolygons(epsilon, polygons)
   }
 
-  // repair the polygons (possibly triangles) if requested
-  if (repair) {
-    // fix T junctions
-    polygons = repairTjunctions(epsilon, polygons)
-    // TODO fill holes
-  }
-
   // FIXME replace with geom3.cloneShallow() when available
   const clone = Object.assign({}, geometry)
   clone.polygons = polygons
@@ -14054,7 +18835,7 @@ const generalizeGeom3 = (options, geometry) => {
  * @param {Boolean} [options.snap=false] the geometries should be snapped to epsilons
  * @param {Boolean} [options.simplify=false] the geometries should be simplified
  * @param {Boolean} [options.triangulate=false] the geometries should be triangulated
- * @param {Boolean} [options.repair=false] the geometries should be repaired
+ * @param {...Object} geometries - the geometries to generalize
  * @return {Object|Array} the modified geometry, or a list of modified geometries
  * @alias module:modeling/modifiers.generalize
  */
@@ -14062,7 +18843,7 @@ const generalize = (options, ...geometries) => {
   geometries = flatten(geometries)
   if (geometries.length === 0) throw new Error('wrong number of arguments')
 
-  const results = geometries.map((geometry, i) => {
+  const results = geometries.map((geometry) => {
     if (path2.isA(geometry)) return generalizePath2(options, geometry)
     if (geom2.isA(geometry)) return generalizeGeom2(options, geometry)
     if (geom3.isA(geometry)) return generalizeGeom3(options, geometry)
@@ -14073,7 +18854,7 @@ const generalize = (options, ...geometries) => {
 
 module.exports = generalize
 
-},{"../../geometries/geom2":36,"../../geometries/geom3":50,"../../geometries/path2":71,"../../measurements/measureEpsilon":269,"../../utils/flatten":393,"./insertTjunctions":349,"./mergePolygons":350,"./repairTjunctions":351,"./snapPolygons":353,"./triangulatePolygons":354}],348:[function(require,module,exports){
+},{"../../geometries/geom2":42,"../../geometries/geom3":57,"../../geometries/path2":78,"../../measurements/measureEpsilon":278,"../../utils/flatten":412,"./insertTjunctions":367,"./mergePolygons":368,"./snapPolygons":372,"./triangulatePolygons":373}],366:[function(require,module,exports){
 /**
  * All shapes (primitives or the results of operations) can be modified to correct issues, etc.
  * In all cases, these functions returns the results, and never changes the original geometry.
@@ -14083,10 +18864,11 @@ module.exports = generalize
  */
 module.exports = {
   generalize: require('./generalize'),
-  snap: require('./snap')
+  snap: require('./snap'),
+  retessellate: require('./retessellate')
 }
 
-},{"./generalize":347,"./snap":352}],349:[function(require,module,exports){
+},{"./generalize":365,"./retessellate":370,"./snap":371}],367:[function(require,module,exports){
 const constants = require('../../maths/constants')
 const vec3 = require('../../maths/vec3')
 const poly3 = require('../../geometries/poly3')
@@ -14117,15 +18899,15 @@ const addSide = (sidemap, vertextag2sidestart, vertextag2sideend, vertex0, verte
   } else {
     sidemap.get(newsidetag).push(newsideobj)
   }
-  if (starttag in vertextag2sidestart) {
-    vertextag2sidestart[starttag].push(newsidetag)
+  if (vertextag2sidestart.has(starttag)) {
+    vertextag2sidestart.get(starttag).push(newsidetag)
   } else {
-    vertextag2sidestart[starttag] = [newsidetag]
+    vertextag2sidestart.set(starttag, [newsidetag])
   }
-  if (endtag in vertextag2sideend) {
-    vertextag2sideend[endtag].push(newsidetag)
+  if (vertextag2sideend.has(endtag)) {
+    vertextag2sideend.get(endtag).push(newsidetag)
   } else {
-    vertextag2sideend[endtag] = [newsidetag]
+    vertextag2sideend.set(endtag, [newsidetag])
   }
   return newsidetag
 }
@@ -14156,18 +18938,18 @@ const deleteSide = (sidemap, vertextag2sidestart, vertextag2sideend, vertex0, ve
   }
 
   // adjust start and end lists
-  idx = vertextag2sidestart[starttag].indexOf(sidetag)
+  idx = vertextag2sidestart.get(starttag).indexOf(sidetag)
   if (assert && idx < 0) throw new Error('assert failed')
-  vertextag2sidestart[starttag].splice(idx, 1)
-  if (vertextag2sidestart[starttag].length === 0) {
-    delete vertextag2sidestart[starttag]
+  vertextag2sidestart.get(starttag).splice(idx, 1)
+  if (vertextag2sidestart.get(starttag).length === 0) {
+    vertextag2sidestart.delete(starttag)
   }
 
-  idx = vertextag2sideend[endtag].indexOf(sidetag)
+  idx = vertextag2sideend.get(endtag).indexOf(sidetag)
   if (assert && idx < 0) throw new Error('assert failed')
-  vertextag2sideend[endtag].splice(idx, 1)
-  if (vertextag2sideend[endtag].length === 0) {
-    delete vertextag2sideend[endtag]
+  vertextag2sideend.get(endtag).splice(idx, 1)
+  if (vertextag2sideend.get(endtag).length === 0) {
+    vertextag2sideend.delete(endtag)
   }
 }
 
@@ -14247,25 +19029,24 @@ const insertTjunctions = (polygons) => {
   }
 
   if (sidemap.size > 0) {
-    // console.log('insertTjunctions',sidemap.size)
     // STEP 2 : create a list of starting sides and ending sides
-    const vertextag2sidestart = {}
-    const vertextag2sideend = {}
-    const sidestocheck = {}
+    const vertextag2sidestart = new Map()
+    const vertextag2sideend = new Map()
+    const sidesToCheck = new Map()
     for (const [sidetag, sideobjs] of sidemap) {
-      sidestocheck[sidetag] = true
+      sidesToCheck.set(sidetag, true)
       sideobjs.forEach((sideobj) => {
         const starttag = getTag(sideobj.vertex0)
         const endtag = getTag(sideobj.vertex1)
-        if (starttag in vertextag2sidestart) {
-          vertextag2sidestart[starttag].push(sidetag)
+        if (vertextag2sidestart.has(starttag)) {
+          vertextag2sidestart.get(starttag).push(sidetag)
         } else {
-          vertextag2sidestart[starttag] = [sidetag]
+          vertextag2sidestart.set(starttag, [sidetag])
         }
-        if (endtag in vertextag2sideend) {
-          vertextag2sideend[endtag].push(sidetag)
+        if (vertextag2sideend.has(endtag)) {
+          vertextag2sideend.get(endtag).push(sidetag)
         } else {
-          vertextag2sideend[endtag] = [sidetag]
+          vertextag2sideend.set(endtag, [sidetag])
         }
       })
     }
@@ -14276,13 +19057,13 @@ const insertTjunctions = (polygons) => {
       if (sidemap.size === 0) break
 
       for (const sidetag of sidemap.keys()) {
-        sidestocheck[sidetag] = true
+        sidesToCheck.set(sidetag, true)
       }
 
       let donesomething = false
       while (true) {
-        const sidetags = Object.keys(sidestocheck)
-        if (sidetags.length === 0) break // sidestocheck is empty, we're done!
+        const sidetags = Array.from(sidesToCheck.keys())
+        if (sidetags.length === 0) break // sidesToCheck is empty, we're done!
         const sidetagtocheck = sidetags[0]
         let donewithside = true
         if (sidemap.has(sidetagtocheck)) {
@@ -14296,12 +19077,12 @@ const insertTjunctions = (polygons) => {
             const endvertextag = getTag(endvertex)
             let matchingsides = []
             if (directionindex === 0) {
-              if (startvertextag in vertextag2sideend) {
-                matchingsides = vertextag2sideend[startvertextag]
+              if (vertextag2sideend.has(startvertextag)) {
+                matchingsides = vertextag2sideend.get(startvertextag)
               }
             } else {
-              if (startvertextag in vertextag2sidestart) {
-                matchingsides = vertextag2sidestart[startvertextag]
+              if (vertextag2sidestart.has(startvertextag)) {
+                matchingsides = vertextag2sidestart.get(startvertextag)
               }
             }
             for (let matchingsideindex = 0; matchingsideindex < matchingsides.length; matchingsideindex++) {
@@ -14348,7 +19129,7 @@ const insertTjunctions = (polygons) => {
                     // split the side by inserting the vertex:
                     const newvertices = polygon.vertices.slice(0)
                     newvertices.splice(insertionvertextagindex, 0, endvertex)
-                    const newpolygon = poly3.fromPoints(newvertices)
+                    const newpolygon = poly3.create(newvertices)
 
                     newpolygons[polygonindex] = newpolygon
 
@@ -14356,8 +19137,8 @@ const insertTjunctions = (polygons) => {
                     deleteSide(sidemap, vertextag2sidestart, vertextag2sideend, matchingside.vertex0, matchingside.vertex1, polygonindex)
                     const newsidetag1 = addSide(sidemap, vertextag2sidestart, vertextag2sideend, matchingside.vertex0, endvertex, polygonindex)
                     const newsidetag2 = addSide(sidemap, vertextag2sidestart, vertextag2sideend, endvertex, matchingside.vertex1, polygonindex)
-                    if (newsidetag1 !== null) sidestocheck[newsidetag1] = true
-                    if (newsidetag2 !== null) sidestocheck[newsidetag2] = true
+                    if (newsidetag1 !== null) sidesToCheck.set(newsidetag1, true)
+                    if (newsidetag2 !== null) sidesToCheck.set(newsidetag2, true)
                     donewithside = false
                     directionindex = 2 // skip reverse direction check
                     donesomething = true
@@ -14369,7 +19150,7 @@ const insertTjunctions = (polygons) => {
           } // for directionindex
         } // if(sidetagtocheck in sidemap)
         if (donewithside) {
-          delete sidestocheck[sidetagtocheck]
+          sidesToCheck.delete(sidetagtocheck)
         }
       }
       if (!donesomething) break
@@ -14383,7 +19164,8 @@ const insertTjunctions = (polygons) => {
 
 module.exports = insertTjunctions
 
-},{"../../geometries/poly3":87,"../../maths/constants":101,"../../maths/vec3":228}],350:[function(require,module,exports){
+},{"../../geometries/poly3":95,"../../maths/constants":110,"../../maths/vec3":237}],368:[function(require,module,exports){
+const aboutEqualNormals = require('../../maths/utils/aboutEqualNormals')
 const vec3 = require('../../maths/vec3')
 
 const poly3 = require('../../geometries/poly3')
@@ -14439,9 +19221,12 @@ const calculateAnglesBetween = (current, opposite, normal) => {
   return [angle1, angle2]
 }
 
+const v1 = vec3.create()
+const v2 = vec3.create()
+
 const calculateAngle = (prevpoint, point, nextpoint, normal) => {
-  const d0 = vec3.subtract(vec3.create(), point, prevpoint)
-  const d1 = vec3.subtract(vec3.create(), nextpoint, point)
+  const d0 = vec3.subtract(v1, point, prevpoint)
+  const d1 = vec3.subtract(v2, nextpoint, point)
   vec3.cross(d0, d0, d1)
   return vec3.dot(d0, normal)
 }
@@ -14462,7 +19247,7 @@ const createPolygonAnd = (edge) => {
 
     edge = next
   }
-  if (points.length > 0) polygon = poly3.fromPoints(points)
+  if (points.length > 0) polygon = poly3.create(points)
   return polygon
 }
 
@@ -14471,7 +19256,7 @@ const createPolygonAnd = (edge) => {
  * @param {poly3[]} sourcepolygons - list of polygons
  * @returns {poly3[]} new set of polygons
  */
-const mergeCoplanarPolygons = (epsilon, sourcepolygons) => {
+const mergeCoplanarPolygons = (sourcepolygons) => {
   if (sourcepolygons.length < 2) return sourcepolygons
 
   const normal = sourcepolygons[0].plane
@@ -14553,17 +19338,10 @@ const mergeCoplanarPolygons = (epsilon, sourcepolygons) => {
     if (polygon) destpolygons.push(polygon)
   })
 
+  edgeList.clear()
+
   return destpolygons
 }
-
-// Normals are directional vectors with component values from 0 to 1.0, requiring specialized comparision
-// This EPS is derived from a serieas of tests to determine the optimal precision for comparing coplanar polygons,
-// as provided by the sphere primitive at high segmentation
-// This EPS is for 64 bit Number values
-const NEPS = 1e-13
-
-// Compare two normals (unit vectors) for equality.
-const aboutEqualNormals = (a, b) => (Math.abs(a[0] - b[0]) <= NEPS && Math.abs(a[1] - b[1]) <= NEPS && Math.abs(a[2] - b[2]) <= NEPS)
 
 const coplanar = (plane1, plane2) => {
   // expect the same distance from the origin, within tolerance
@@ -14588,7 +19366,7 @@ const mergePolygons = (epsilon, polygons) => {
   let destpolygons = []
   polygonsPerPlane.forEach((mapping) => {
     const sourcepolygons = mapping[1]
-    const retesselayedpolygons = mergeCoplanarPolygons(epsilon, sourcepolygons)
+    const retesselayedpolygons = mergeCoplanarPolygons(sourcepolygons)
     destpolygons = destpolygons.concat(retesselayedpolygons)
   })
   return destpolygons
@@ -14596,53 +19374,449 @@ const mergePolygons = (epsilon, polygons) => {
 
 module.exports = mergePolygons
 
-},{"../../geometries/poly3":87,"../../maths/vec3":228}],351:[function(require,module,exports){
-const { polygonsToEdges, edgesToPolygons, cullOpenEdges, splitEdge, removePolygons, addPolygon } = require('./edges')
+},{"../../geometries/poly3":95,"../../maths/utils/aboutEqualNormals":182,"../../maths/vec3":237}],369:[function(require,module,exports){
+const { EPS } = require('../../maths/constants')
+
+const line2 = require('../../maths/line2')
+const vec2 = require('../../maths/vec2')
+const OrthoNormalBasis = require('../../maths/OrthoNormalBasis')
+const interpolateBetween2DPointsForY = require('../../maths/utils/interpolateBetween2DPointsForY')
+
+const { insertSorted, fnNumberSort } = require('../../utils')
+
+const poly3 = require('../../geometries/poly3')
 
 /*
+ * Retesselation for a set of COPLANAR polygons.
+ * @param {poly3[]} sourcepolygons - list of polygons
+ * @returns {poly3[]} new set of polygons
  */
-const repairTjunctions = (epsilon, polygons) => {
-  const edges = polygonsToEdges(polygons)
-  let openedges = cullOpenEdges(edges)
-  if (openedges.length === 0) return polygons
+const reTesselateCoplanarPolygons = (sourcepolygons) => {
+  if (sourcepolygons.length < 2) return sourcepolygons
 
-  // split open edges until no longer possible
-  let splitting = true
-  while (splitting) {
-    let splitcount = 0
-    for (let i = 0; i < openedges.length; i++) {
-      const edge = openedges[i]
-      if (edge && edge.polygons && edge.polygons.length === 1) {
-        const newpolygons = splitEdge(openedges, edge, epsilon)
-        if (newpolygons) {
-          openedges[i] = null
-          addPolygon(openedges, newpolygons[0])
-          addPolygon(openedges, newpolygons[1])
+  const destpolygons = []
+  const numpolygons = sourcepolygons.length
+  const plane = poly3.plane(sourcepolygons[0])
+  const orthobasis = new OrthoNormalBasis(plane)
+  const polygonvertices2d = [] // array of array of Vector2D
+  const polygontopvertexindexes = [] // array of indexes of topmost vertex per polygon
+  const topy2polygonindexes = new Map()
+  const ycoordinatetopolygonindexes = new Map()
 
-          // adjust the master list as well
-          removePolygons(edges, edge)
-          // add edges for each new polygon
-          addPolygon(edges, newpolygons[0])
-          addPolygon(edges, newpolygons[1])
+  // convert all polygon vertices to 2D
+  // Make a list of all encountered y coordinates
+  // And build a map of all polygons that have a vertex at a certain y coordinate:
+  const ycoordinatebins = new Map()
+  const ycoordinateBinningFactor = 10 / EPS
+  for (let polygonindex = 0; polygonindex < numpolygons; polygonindex++) {
+    const poly3d = sourcepolygons[polygonindex]
+    let vertices2d = []
+    let numvertices = poly3d.vertices.length
+    let minindex = -1
+    if (numvertices > 0) {
+      let miny
+      let maxy
+      for (let i = 0; i < numvertices; i++) {
+        let pos2d = orthobasis.to2D(poly3d.vertices[i])
+        // perform binning of y coordinates: If we have multiple vertices very
+        // close to each other, give them the same y coordinate:
+        const ycoordinatebin = Math.floor(pos2d[1] * ycoordinateBinningFactor)
+        let newy
+        if (ycoordinatebins.has(ycoordinatebin)) {
+          newy = ycoordinatebins.get(ycoordinatebin)
+        } else if (ycoordinatebins.has(ycoordinatebin + 1)) {
+          newy = ycoordinatebins.get(ycoordinatebin + 1)
+        } else if (ycoordinatebins.has(ycoordinatebin - 1)) {
+          newy = ycoordinatebins.get(ycoordinatebin - 1)
+        } else {
+          newy = pos2d[1]
+          ycoordinatebins.set(ycoordinatebin, pos2d[1])
+        }
+        pos2d = vec2.fromValues(pos2d[0], newy)
+        vertices2d.push(pos2d)
+        const y = pos2d[1]
+        if ((i === 0) || (y < miny)) {
+          miny = y
+          minindex = i
+        }
+        if ((i === 0) || (y > maxy)) {
+          maxy = y
+        }
+        let polygonindexes = ycoordinatetopolygonindexes.get(y)
+        if (!polygonindexes) {
+          polygonindexes = {} // PERF
+          ycoordinatetopolygonindexes.set(y, polygonindexes)
+        }
+        polygonindexes[polygonindex] = true
+      }
+      if (miny >= maxy) {
+        // degenerate polygon, all vertices have same y coordinate. Just ignore it from now:
+        vertices2d = []
+        numvertices = 0
+        minindex = -1
+      } else {
+        let polygonindexes = topy2polygonindexes.get(miny)
+        if (!polygonindexes) {
+          polygonindexes = []
+          topy2polygonindexes.set(miny, polygonindexes)
+        }
+        polygonindexes.push(polygonindex)
+      }
+    } // if(numvertices > 0)
+    // reverse the vertex order:
+    vertices2d.reverse()
+    minindex = numvertices - minindex - 1
+    polygonvertices2d.push(vertices2d)
+    polygontopvertexindexes.push(minindex)
+  }
 
-          splitcount++
-          break // start again
+  const ycoordinates = []
+  ycoordinatetopolygonindexes.forEach((polylist, y) => ycoordinates.push(y))
+  ycoordinates.sort(fnNumberSort)
+
+  // Now we will iterate over all y coordinates, from lowest to highest y coordinate
+  // activepolygons: source polygons that are 'active', i.e. intersect with our y coordinate
+  //   Is sorted so the polygons are in left to right order
+  // Each element in activepolygons has these properties:
+  //        polygonindex: the index of the source polygon (i.e. an index into the sourcepolygons
+  //                      and polygonvertices2d arrays)
+  //        leftvertexindex: the index of the vertex at the left side of the polygon (lowest x)
+  //                         that is at or just above the current y coordinate
+  //        rightvertexindex: dito at right hand side of polygon
+  //        topleft, bottomleft: coordinates of the left side of the polygon crossing the current y coordinate
+  //        topright, bottomright: coordinates of the right hand side of the polygon crossing the current y coordinate
+  let activepolygons = []
+  let prevoutpolygonrow = []
+  for (let yindex = 0; yindex < ycoordinates.length; yindex++) {
+    const newoutpolygonrow = []
+    const ycoordinate = ycoordinates[yindex]
+
+    // update activepolygons for this y coordinate:
+    // - Remove any polygons that end at this y coordinate
+    // - update leftvertexindex and rightvertexindex (which point to the current vertex index
+    //   at the the left and right side of the polygon
+    // Iterate over all polygons that have a corner at this y coordinate:
+    const polygonindexeswithcorner = ycoordinatetopolygonindexes.get(ycoordinate)
+    for (let activepolygonindex = 0; activepolygonindex < activepolygons.length; ++activepolygonindex) {
+      const activepolygon = activepolygons[activepolygonindex]
+      const polygonindex = activepolygon.polygonindex
+      if (polygonindexeswithcorner[polygonindex]) {
+        // this active polygon has a corner at this y coordinate:
+        const vertices2d = polygonvertices2d[polygonindex]
+        const numvertices = vertices2d.length
+        let newleftvertexindex = activepolygon.leftvertexindex
+        let newrightvertexindex = activepolygon.rightvertexindex
+        // See if we need to increase leftvertexindex or decrease rightvertexindex:
+        while (true) {
+          let nextleftvertexindex = newleftvertexindex + 1
+          if (nextleftvertexindex >= numvertices) nextleftvertexindex = 0
+          if (vertices2d[nextleftvertexindex][1] !== ycoordinate) break
+          newleftvertexindex = nextleftvertexindex
+        }
+        let nextrightvertexindex = newrightvertexindex - 1
+        if (nextrightvertexindex < 0) nextrightvertexindex = numvertices - 1
+        if (vertices2d[nextrightvertexindex][1] === ycoordinate) {
+          newrightvertexindex = nextrightvertexindex
+        }
+        if ((newleftvertexindex !== activepolygon.leftvertexindex) && (newleftvertexindex === newrightvertexindex)) {
+          // We have increased leftvertexindex or decreased rightvertexindex, and now they point to the same vertex
+          // This means that this is the bottom point of the polygon. We'll remove it:
+          activepolygons.splice(activepolygonindex, 1)
+          --activepolygonindex
+        } else {
+          activepolygon.leftvertexindex = newleftvertexindex
+          activepolygon.rightvertexindex = newrightvertexindex
+          activepolygon.topleft = vertices2d[newleftvertexindex]
+          activepolygon.topright = vertices2d[newrightvertexindex]
+          let nextleftvertexindex = newleftvertexindex + 1
+          if (nextleftvertexindex >= numvertices) nextleftvertexindex = 0
+          activepolygon.bottomleft = vertices2d[nextleftvertexindex]
+          let nextrightvertexindex = newrightvertexindex - 1
+          if (nextrightvertexindex < 0) nextrightvertexindex = numvertices - 1
+          activepolygon.bottomright = vertices2d[nextrightvertexindex]
+        }
+      } // if polygon has corner here
+    } // for activepolygonindex
+    let nextycoordinate
+    if (yindex >= ycoordinates.length - 1) {
+      // last row, all polygons must be finished here:
+      activepolygons = []
+      nextycoordinate = null
+    } else { // yindex < ycoordinates.length-1
+      nextycoordinate = Number(ycoordinates[yindex + 1])
+      const middleycoordinate = 0.5 * (ycoordinate + nextycoordinate)
+      // update activepolygons by adding any polygons that start here:
+      const startingpolygonindexes = topy2polygonindexes.get(ycoordinate)
+      for (const polygonindexKey in startingpolygonindexes) {
+        const polygonindex = startingpolygonindexes[polygonindexKey]
+        const vertices2d = polygonvertices2d[polygonindex]
+        const numvertices = vertices2d.length
+        const topvertexindex = polygontopvertexindexes[polygonindex]
+        // the top of the polygon may be a horizontal line. In that case topvertexindex can point to any point on this line.
+        // Find the left and right topmost vertices which have the current y coordinate:
+        let topleftvertexindex = topvertexindex
+        while (true) {
+          let i = topleftvertexindex + 1
+          if (i >= numvertices) i = 0
+          if (vertices2d[i][1] !== ycoordinate) break
+          if (i === topvertexindex) break // should not happen, but just to prevent endless loops
+          topleftvertexindex = i
+        }
+        let toprightvertexindex = topvertexindex
+        while (true) {
+          let i = toprightvertexindex - 1
+          if (i < 0) i = numvertices - 1
+          if (vertices2d[i][1] !== ycoordinate) break
+          if (i === topleftvertexindex) break // should not happen, but just to prevent endless loops
+          toprightvertexindex = i
+        }
+        let nextleftvertexindex = topleftvertexindex + 1
+        if (nextleftvertexindex >= numvertices) nextleftvertexindex = 0
+        let nextrightvertexindex = toprightvertexindex - 1
+        if (nextrightvertexindex < 0) nextrightvertexindex = numvertices - 1
+        const newactivepolygon = {
+          polygonindex: polygonindex,
+          leftvertexindex: topleftvertexindex,
+          rightvertexindex: toprightvertexindex,
+          topleft: vertices2d[topleftvertexindex],
+          topright: vertices2d[toprightvertexindex],
+          bottomleft: vertices2d[nextleftvertexindex],
+          bottomright: vertices2d[nextrightvertexindex]
+        }
+        insertSorted(activepolygons, newactivepolygon, (el1, el2) => {
+          const x1 = interpolateBetween2DPointsForY(el1.topleft, el1.bottomleft, middleycoordinate)
+          const x2 = interpolateBetween2DPointsForY(el2.topleft, el2.bottomleft, middleycoordinate)
+          if (x1 > x2) return 1
+          if (x1 < x2) return -1
+          return 0
+        })
+      } // for(let polygonindex in startingpolygonindexes)
+    } //  yindex < ycoordinates.length-1
+
+    // Now activepolygons is up to date
+    // Build the output polygons for the next row in newoutpolygonrow:
+    for (const activepolygonKey in activepolygons) {
+      const activepolygon = activepolygons[activepolygonKey]
+
+      let x = interpolateBetween2DPointsForY(activepolygon.topleft, activepolygon.bottomleft, ycoordinate)
+      const topleft = vec2.fromValues(x, ycoordinate)
+      x = interpolateBetween2DPointsForY(activepolygon.topright, activepolygon.bottomright, ycoordinate)
+      const topright = vec2.fromValues(x, ycoordinate)
+      x = interpolateBetween2DPointsForY(activepolygon.topleft, activepolygon.bottomleft, nextycoordinate)
+      const bottomleft = vec2.fromValues(x, nextycoordinate)
+      x = interpolateBetween2DPointsForY(activepolygon.topright, activepolygon.bottomright, nextycoordinate)
+      const bottomright = vec2.fromValues(x, nextycoordinate)
+      const outpolygon = {
+        topleft: topleft,
+        topright: topright,
+        bottomleft: bottomleft,
+        bottomright: bottomright,
+        leftline: line2.fromPoints(line2.create(), topleft, bottomleft),
+        rightline: line2.fromPoints(line2.create(), bottomright, topright)
+      }
+      if (newoutpolygonrow.length > 0) {
+        const prevoutpolygon = newoutpolygonrow[newoutpolygonrow.length - 1]
+        const d1 = vec2.distance(outpolygon.topleft, prevoutpolygon.topright)
+        const d2 = vec2.distance(outpolygon.bottomleft, prevoutpolygon.bottomright)
+        if ((d1 < EPS) && (d2 < EPS)) {
+          // we can join this polygon with the one to the left:
+          outpolygon.topleft = prevoutpolygon.topleft
+          outpolygon.leftline = prevoutpolygon.leftline
+          outpolygon.bottomleft = prevoutpolygon.bottomleft
+          newoutpolygonrow.splice(newoutpolygonrow.length - 1, 1)
+        }
+      }
+      newoutpolygonrow.push(outpolygon)
+    } // for(activepolygon in activepolygons)
+    if (yindex > 0) {
+      // try to match the new polygons against the previous row:
+      const prevcontinuedindexes = new Set()
+      const matchedindexes = new Set()
+      for (let i = 0; i < newoutpolygonrow.length; i++) {
+        const thispolygon = newoutpolygonrow[i]
+        for (let ii = 0; ii < prevoutpolygonrow.length; ii++) {
+          if (!matchedindexes.has(ii)) { // not already processed?
+            // We have a match if the sidelines are equal or if the top coordinates
+            // are on the sidelines of the previous polygon
+            const prevpolygon = prevoutpolygonrow[ii]
+            if (vec2.distance(prevpolygon.bottomleft, thispolygon.topleft) < EPS) {
+              if (vec2.distance(prevpolygon.bottomright, thispolygon.topright) < EPS) {
+                // Yes, the top of this polygon matches the bottom of the previous:
+                matchedindexes.add(ii)
+                // Now check if the joined polygon would remain convex:
+                const v1 = line2.direction(thispolygon.leftline)
+                const v2 = line2.direction(prevpolygon.leftline)
+                const d1 = v1[0] - v2[0]
+
+                const v3 = line2.direction(thispolygon.rightline)
+                const v4 = line2.direction(prevpolygon.rightline)
+                const d2 = v3[0] - v4[0]
+
+                const leftlinecontinues = Math.abs(d1) < EPS
+                const rightlinecontinues = Math.abs(d2) < EPS
+                const leftlineisconvex = leftlinecontinues || (d1 >= 0)
+                const rightlineisconvex = rightlinecontinues || (d2 >= 0)
+                if (leftlineisconvex && rightlineisconvex) {
+                  // yes, both sides have convex corners:
+                  // This polygon will continue the previous polygon
+                  thispolygon.outpolygon = prevpolygon.outpolygon
+                  thispolygon.leftlinecontinues = leftlinecontinues
+                  thispolygon.rightlinecontinues = rightlinecontinues
+                  prevcontinuedindexes.add(ii)
+                }
+                break
+              }
+            }
+          } // if(!prevcontinuedindexes.has(ii))
+        } // for ii
+      } // for i
+      for (let ii = 0; ii < prevoutpolygonrow.length; ii++) {
+        if (!prevcontinuedindexes.has(ii)) {
+          // polygon ends here
+          // Finish the polygon with the last point(s):
+          const prevpolygon = prevoutpolygonrow[ii]
+          prevpolygon.outpolygon.rightpoints.push(prevpolygon.bottomright)
+          if (vec2.distance(prevpolygon.bottomright, prevpolygon.bottomleft) > EPS) {
+            // polygon ends with a horizontal line:
+            prevpolygon.outpolygon.leftpoints.push(prevpolygon.bottomleft)
+          }
+          // reverse the left half so we get a counterclockwise circle:
+          prevpolygon.outpolygon.leftpoints.reverse()
+          const points2d = prevpolygon.outpolygon.rightpoints.concat(prevpolygon.outpolygon.leftpoints)
+          const vertices3d = points2d.map((point2d) => orthobasis.to3D(point2d))
+          const polygon = poly3.fromPointsAndPlane(vertices3d, plane) // TODO support shared
+
+          // if we let empty polygon out, next retesselate will crash
+          if (polygon.vertices.length) destpolygons.push(polygon)
+        }
+      }
+    } // if(yindex > 0)
+    for (let i = 0; i < newoutpolygonrow.length; i++) {
+      const thispolygon = newoutpolygonrow[i]
+      if (!thispolygon.outpolygon) {
+        // polygon starts here:
+        thispolygon.outpolygon = {
+          leftpoints: [],
+          rightpoints: []
+        }
+        thispolygon.outpolygon.leftpoints.push(thispolygon.topleft)
+        if (vec2.distance(thispolygon.topleft, thispolygon.topright) > EPS) {
+          // we have a horizontal line at the top:
+          thispolygon.outpolygon.rightpoints.push(thispolygon.topright)
+        }
+      } else {
+        // continuation of a previous row
+        if (!thispolygon.leftlinecontinues) {
+          thispolygon.outpolygon.leftpoints.push(thispolygon.topleft)
+        }
+        if (!thispolygon.rightlinecontinues) {
+          thispolygon.outpolygon.rightpoints.push(thispolygon.topright)
         }
       }
     }
-    splitting = (splitcount > 0)
-  }
-  openedges = openedges.filter((edge) => (edge && edge.polygons && edge.polygons.length === 1))
-  if (openedges.length > 0) console.warn('Repair of all T-junctions failed:', openedges.length)
-
-  // rebuild the list of polygons from the edges
-  polygons = edgesToPolygons(edges)
-  return polygons
+    prevoutpolygonrow = newoutpolygonrow
+  } // for yindex
+  return destpolygons
 }
 
-module.exports = repairTjunctions
+module.exports = reTesselateCoplanarPolygons
 
-},{"./edges":346}],352:[function(require,module,exports){
+},{"../../geometries/poly3":95,"../../maths/OrthoNormalBasis":109,"../../maths/constants":110,"../../maths/line2":121,"../../maths/utils/interpolateBetween2DPointsForY":185,"../../maths/vec2":206,"../../utils":414}],370:[function(require,module,exports){
+const geom3 = require('../../geometries/geom3')
+const poly3 = require('../../geometries/poly3')
+const { NEPS } = require('../../maths/constants')
+const reTesselateCoplanarPolygons = require('./reTesselateCoplanarPolygons')
+
+/*
+  After boolean operations all coplanar polygon fragments are joined by a retesselating
+  operation. geom3.reTesselate(geom).
+  Retesselation is done through a linear sweep over the polygon surface.
+  The sweep line passes over the y coordinates of all vertices in the polygon.
+  Polygons are split at each sweep line, and the fragments are joined horizontally and vertically into larger polygons
+  (making sure that we will end up with convex polygons).
+*/
+const retessellate = (geometry) => {
+  if (geometry.isRetesselated) {
+    return geometry
+  }
+
+  const polygons = geom3.toPolygons(geometry).map((polygon, index) => ({ vertices: polygon.vertices, plane: poly3.plane(polygon), index: index }))
+  const classified = classifyPolygons(polygons)
+
+  const destPolygons = []
+  classified.forEach((group) => {
+    if (Array.isArray(group)) {
+      const reTessellateCoplanarPolygons = reTesselateCoplanarPolygons(group)
+      destPolygons.push(...reTessellateCoplanarPolygons)
+    } else {
+      destPolygons.push(group)
+    }
+  })
+
+  const result = geom3.create(destPolygons)
+  result.isRetesselated = true
+
+  return result
+}
+
+const classifyPolygons = (polygons) => {
+  let clusters = [polygons] // a cluster is an array of potentially coplanar polygons
+  const nonCoplanar = [] // polygons that are known to be non-coplanar
+  // go through each component of the plane starting with the last one (the distance from origin)
+  for (let component = 3; component >= 0; component--) {
+    const maybeCoplanar = []
+    const tolerance = component === 3 ? 0.000000015 : NEPS
+    clusters.forEach((cluster) => {
+      // sort the cluster by the current component
+      cluster.sort(byPlaneComponent(component, tolerance))
+      // iterate through the cluster and check if there are polygons which are not coplanar with the others
+      // or if there are sub-clusters of coplanar polygons
+      let startIndex = 0
+      for (let i = 1; i < cluster.length; i++) {
+        // if there's a difference larger than the tolerance, split the cluster
+        if (cluster[i].plane[component] - cluster[startIndex].plane[component] > tolerance) {
+          // if there's a single polygon it's definitely not coplanar with any others
+          if (i - startIndex === 1) {
+            nonCoplanar.push(cluster[startIndex])
+          } else { // we have a new sub cluster of potentially coplanar polygons
+            maybeCoplanar.push(cluster.slice(startIndex, i))
+          }
+          startIndex = i
+        }
+      }
+      // handle the last elements of the cluster
+      if (cluster.length - startIndex === 1) {
+        nonCoplanar.push(cluster[startIndex])
+      } else {
+        maybeCoplanar.push(cluster.slice(startIndex))
+      }
+    })
+    // replace previous clusters with the new ones
+    clusters = maybeCoplanar
+  }
+  // restore the original order of the polygons
+  const result = []
+  // polygons inside the cluster should already be sorted by index
+  clusters.forEach((cluster) => {
+    if (cluster[0]) result[cluster[0].index] = cluster
+  })
+  nonCoplanar.forEach((polygon) => { result[polygon.index] = polygon })
+
+  return result
+}
+
+const byPlaneComponent = (component, tolerance) => (a, b) => {
+  if (a.plane[component] - b.plane[component] > tolerance) {
+    return 1
+  } else if (b.plane[component] - a.plane[component] > tolerance) {
+    return -1
+  }
+  return 0
+}
+
+module.exports = retessellate
+
+},{"../../geometries/geom3":57,"../../geometries/poly3":95,"../../maths/constants":110,"./reTesselateCoplanarPolygons":369}],371:[function(require,module,exports){
 const flatten = require('../../utils/flatten')
 
 const vec2 = require('../../maths/vec2')
@@ -14701,7 +19875,7 @@ const snap = (...geometries) => {
 
 module.exports = snap
 
-},{"../../geometries/geom2":36,"../../geometries/geom3":50,"../../geometries/path2":71,"../../maths/vec2":197,"../../measurements/measureEpsilon":269,"../../utils/flatten":393,"./snapPolygons":353}],353:[function(require,module,exports){
+},{"../../geometries/geom2":42,"../../geometries/geom3":57,"../../geometries/path2":78,"../../maths/vec2":206,"../../measurements/measureEpsilon":278,"../../utils/flatten":412,"./snapPolygons":372}],372:[function(require,module,exports){
 const vec3 = require('../../maths/vec3')
 
 const poly3 = require('../../geometries/poly3')
@@ -14735,7 +19909,7 @@ const snapPolygons = (epsilon, polygons) => {
 
 module.exports = snapPolygons
 
-},{"../../geometries/poly3":87,"../../maths/vec3":228}],354:[function(require,module,exports){
+},{"../../geometries/poly3":95,"../../maths/vec3":237}],373:[function(require,module,exports){
 const vec3 = require('../../maths/vec3')
 const poly3 = require('../../geometries/poly3')
 
@@ -14748,15 +19922,15 @@ const triangulatePolygon = (epsilon, polygon, triangles) => {
       polygon.vertices.forEach((vertice) => vec3.add(midpoint, midpoint, vertice))
       vec3.snap(midpoint, vec3.divide(midpoint, midpoint, [nv, nv, nv]), epsilon)
       for (let i = 0; i < nv; i++) {
-        const poly = poly3.fromPoints([midpoint, polygon.vertices[i], polygon.vertices[(i + 1) % nv]])
+        const poly = poly3.create([midpoint, polygon.vertices[i], polygon.vertices[(i + 1) % nv]])
         if (polygon.color) poly.color = polygon.color
         triangles.push(poly)
       }
       return
     }
     // exactly 4 vertices, use simple triangulation
-    const poly0 = poly3.fromPoints([polygon.vertices[0], polygon.vertices[1], polygon.vertices[2]])
-    const poly1 = poly3.fromPoints([polygon.vertices[0], polygon.vertices[2], polygon.vertices[3]])
+    const poly0 = poly3.create([polygon.vertices[0], polygon.vertices[1], polygon.vertices[2]])
+    const poly1 = poly3.create([polygon.vertices[0], polygon.vertices[2], polygon.vertices[3]])
     if (polygon.color) {
       poly0.color = polygon.color
       poly1.color = polygon.color
@@ -14782,7 +19956,7 @@ const triangulatePolygons = (epsilon, polygons) => {
 
 module.exports = triangulatePolygons
 
-},{"../../geometries/poly3":87,"../../maths/vec3":228}],355:[function(require,module,exports){
+},{"../../geometries/poly3":95,"../../maths/vec3":237}],374:[function(require,module,exports){
 const flatten = require('../../utils/flatten')
 const padArrayToLength = require('../../utils/padArrayToLength')
 const measureAggregateBoundingBox = require('../../measurements/measureAggregateBoundingBox')
@@ -14873,7 +20047,7 @@ const align = (options, ...geometries) => {
 
 module.exports = align
 
-},{"../../measurements/measureAggregateBoundingBox":260,"../../utils/flatten":393,"../../utils/padArrayToLength":397,"./translate":362}],356:[function(require,module,exports){
+},{"../../measurements/measureAggregateBoundingBox":269,"../../utils/flatten":412,"../../utils/padArrayToLength":416,"./translate":381}],375:[function(require,module,exports){
 const flatten = require('../../utils/flatten')
 
 const geom2 = require('../../geometries/geom2')
@@ -14900,32 +20074,32 @@ const centerGeometry = (options, object) => {
 }
 
 /**
- * Center the given geometries using the given options.
+ * Center the given objects using the given options.
  * @param {Object} options - options for centering
  * @param {Array} [options.axes=[true,true,true]] - axis of which to center, true or false
- * @param {Array} [options.relativeTo=[0,0,0]] - relative point of which to center the geometries
- * @param {...Object} geometries - the geometries to center
- * @return {Object|Array} the centered geometry, or a list of centered geometries
+ * @param {Array} [options.relativeTo=[0,0,0]] - relative point of which to center the objects
+ * @param {...Object} objects - the objects to center
+ * @return {Object|Array} the centered object, or a list of centered objects
  * @alias module:modeling/transforms.center
  *
  * @example
  * let myshape = center({axes: [true,false,false]}, sphere()) // center about the X axis
  */
-const center = (options, ...geometries) => {
+const center = (options, ...objects) => {
   const defaults = {
     axes: [true, true, true],
     relativeTo: [0, 0, 0]
-  // TODO : Add addition 'methods' of centering; midpoint, centeriod
+  // TODO: Add additional 'methods' of centering: midpoint, centroid
   }
   const { axes, relativeTo } = Object.assign({}, defaults, options)
 
-  geometries = flatten(geometries)
-  if (geometries.length === 0) throw new Error('wrong number of arguments')
+  objects = flatten(objects)
+  if (objects.length === 0) throw new Error('wrong number of arguments')
   if (relativeTo.length !== 3) throw new Error('relativeTo must be an array of length 3')
 
   options = { axes, relativeTo }
 
-  const results = geometries.map((object) => {
+  const results = objects.map((object) => {
     if (path2.isA(object)) return centerGeometry(options, object)
     if (geom2.isA(object)) return centerGeometry(options, object)
     if (geom3.isA(object)) return centerGeometry(options, object)
@@ -14935,25 +20109,25 @@ const center = (options, ...geometries) => {
 }
 
 /**
- * Center the given geometries about the X axis.
- * @param {...Object} geometries - the geometries to center
- * @return {Object|Array} the centered geometry, or a list of centered geometry
+ * Center the given objects about the X axis.
+ * @param {...Object} objects - the objects to center
+ * @return {Object|Array} the centered object, or a list of centered objects
  * @alias module:modeling/transforms.centerX
  */
 const centerX = (...objects) => center({ axes: [true, false, false] }, objects)
 
 /**
- * Center the given geometries about the Y axis.
- * @param {...Object} geometries - the geometries to center
- * @return {Object|Array} the centered geometry, or a list of centered geometry
+ * Center the given objects about the Y axis.
+ * @param {...Object} objects - the objects to center
+ * @return {Object|Array} the centered object, or a list of centered objects
  * @alias module:modeling/transforms.centerY
  */
 const centerY = (...objects) => center({ axes: [false, true, false] }, objects)
 
 /**
- * Center the given geometries about the Z axis.
- * @param {...Object} geometries - the geometries to center
- * @return {Object|Array} the centered geometry, or a list of centered geometry
+ * Center the given objects about the Z axis.
+ * @param {...Object} objects - the objects to center
+ * @return {Object|Array} the centered object, or a list of centered objects
  * @alias module:modeling/transforms.centerZ
  */
 const centerZ = (...objects) => center({ axes: [false, false, true] }, objects)
@@ -14965,7 +20139,7 @@ module.exports = {
   centerZ
 }
 
-},{"../../geometries/geom2":36,"../../geometries/geom3":50,"../../geometries/path2":71,"../../measurements/measureBoundingBox":264,"../../utils/flatten":393,"./translate":362}],357:[function(require,module,exports){
+},{"../../geometries/geom2":42,"../../geometries/geom3":57,"../../geometries/path2":78,"../../measurements/measureBoundingBox":273,"../../utils/flatten":412,"./translate":381}],376:[function(require,module,exports){
 /**
  * All shapes (primitives or the results of operations) can be transformed, such as scaled or rotated.
  * In all cases, the function returns the results, and never changes the original shapes.
@@ -15004,7 +20178,7 @@ module.exports = {
   translateZ: require('./translate').translateZ
 }
 
-},{"./align":355,"./center":356,"./mirror":358,"./rotate":359,"./scale":360,"./transform":361,"./translate":362}],358:[function(require,module,exports){
+},{"./align":374,"./center":375,"./mirror":377,"./rotate":378,"./scale":379,"./transform":380,"./translate":381}],377:[function(require,module,exports){
 const flatten = require('../../utils/flatten')
 
 const mat4 = require('../../maths/mat4')
@@ -15015,12 +20189,12 @@ const geom3 = require('../../geometries/geom3')
 const path2 = require('../../geometries/path2')
 
 /**
- * Mirror the given geometries using the given options.
+ * Mirror the given objects using the given options.
  * @param {Object} options - options for mirror
  * @param {Array} [options.origin=[0,0,0]] - the origin of the plane
  * @param {Array} [options.normal=[0,0,1]] - the normal vector of the plane
- * @param {...Object} geometries - the geometries to mirror
- * @return {Object|Array} the mirrored geometry, or a list of mirrored geometry
+ * @param {...Object} objects - the objects to mirror
+ * @return {Object|Array} the mirrored object, or a list of mirrored objects
  * @alias module:modeling/transforms.mirror
  *
  * @example
@@ -15054,25 +20228,25 @@ const mirror = (options, ...objects) => {
 }
 
 /**
- * Mirror the given geometries about the X axis.
- * @param {...Object} geometries - the geometries to mirror
- * @return {Object|Array} the mirrored geometry, or a list of mirrored geometry
+ * Mirror the given objects about the X axis.
+ * @param {...Object} objects - the objects to mirror
+ * @return {Object|Array} the mirrored object, or a list of mirrored objects
  * @alias module:modeling/transforms.mirrorX
  */
 const mirrorX = (...objects) => mirror({ normal: [1, 0, 0] }, objects)
 
 /**
- * Mirror the given geometries about the Y axis.
- * @param {...Object} geometries - the geometries to mirror
- * @return {Object|Array} the mirrored geometry, or a list of mirrored geometry
+ * Mirror the given objects about the Y axis.
+ * @param {...Object} objects - the geometries to mirror
+ * @return {Object|Array} the mirrored object, or a list of mirrored objects
  * @alias module:modeling/transforms.mirrorY
  */
 const mirrorY = (...objects) => mirror({ normal: [0, 1, 0] }, objects)
 
 /**
- * Mirror the given object(s) about the Z axis.
+ * Mirror the given objects about the Z axis.
  * @param {...Object} objects - the geometries to mirror
- * @return {Object|Array} the mirrored geometry, or a list of mirrored geometry
+ * @return {Object|Array} the mirrored object, or a list of mirrored objects
  * @alias module:modeling/transforms.mirrorZ
  */
 const mirrorZ = (...objects) => mirror({ normal: [0, 0, 1] }, objects)
@@ -15084,7 +20258,7 @@ module.exports = {
   mirrorZ
 }
 
-},{"../../geometries/geom2":36,"../../geometries/geom3":50,"../../geometries/path2":71,"../../maths/mat4":151,"../../maths/plane":170,"../../utils/flatten":393}],359:[function(require,module,exports){
+},{"../../geometries/geom2":42,"../../geometries/geom3":57,"../../geometries/path2":78,"../../maths/mat4":159,"../../maths/plane":178,"../../utils/flatten":412}],378:[function(require,module,exports){
 const flatten = require('../../utils/flatten')
 
 const mat4 = require('../../maths/mat4')
@@ -15094,14 +20268,14 @@ const geom3 = require('../../geometries/geom3')
 const path2 = require('../../geometries/path2')
 
 /**
- * Rotate the given geometries using the given options.
+ * Rotate the given objects using the given options.
  * @param {Array} angles - angle (RADIANS) of rotations about X, Y, and Z axis
- * @param {...Object} geometries - the geometries to rotate
- * @return {Object|Array} the rotated geometry, or a list of rotated geometries
+ * @param {...Object} objects - the objects to rotate
+ * @return {Object|Array} the rotated object, or a list of rotated objects
  * @alias module:modeling/transforms.rotate
  *
  * @example
- * const newsphere = rotate([Math.PI / 4, 0, 0], sphere())
+ * const newsphere = rotate([TAU / 8, 0, 0], sphere())
  */
 const rotate = (angles, ...objects) => {
   if (!Array.isArray(angles)) throw new Error('angles must be an array')
@@ -15129,28 +20303,28 @@ const rotate = (angles, ...objects) => {
 }
 
 /**
- * Rotate the given object(s) about the X axis, using the given options.
+ * Rotate the given objects about the X axis, using the given options.
  * @param {Number} angle - angle (RADIANS) of rotations about X
- * @param {...Object} geometries - the geometries to rotate
- * @return {Object|Array} the rotated geometry, or a list of rotated geometries
+ * @param {...Object} objects - the objects to rotate
+ * @return {Object|Array} the rotated object, or a list of rotated objects
  * @alias module:modeling/transforms.rotateX
  */
 const rotateX = (angle, ...objects) => rotate([angle, 0, 0], objects)
 
 /**
- * Rotate the given object(s) about the Y axis, using the given options.
+ * Rotate the given objects about the Y axis, using the given options.
  * @param {Number} angle - angle (RADIANS) of rotations about Y
- * @param {...Object} geometries - the geometries to rotate
- * @return {Object|Array} the rotated geometry, or a list of rotated geometries
+ * @param {...Object} objects - the objects to rotate
+ * @return {Object|Array} the rotated object, or a list of rotated objects
  * @alias module:modeling/transforms.rotateY
  */
 const rotateY = (angle, ...objects) => rotate([0, angle, 0], objects)
 
 /**
- * Rotate the given object(s) about the Z axis, using the given options.
+ * Rotate the given objects about the Z axis, using the given options.
  * @param {Number} angle - angle (RADIANS) of rotations about Z
- * @param {...Object} geometries - the geometries to rotate
- * @return {Object|Array} the rotated geometry, or a list of rotated geometries
+ * @param {...Object} objects - the objects to rotate
+ * @return {Object|Array} the rotated object, or a list of rotated objects
  * @alias module:modeling/transforms.rotateZ
  */
 const rotateZ = (angle, ...objects) => rotate([0, 0, angle], objects)
@@ -15162,7 +20336,7 @@ module.exports = {
   rotateZ
 }
 
-},{"../../geometries/geom2":36,"../../geometries/geom3":50,"../../geometries/path2":71,"../../maths/mat4":151,"../../utils/flatten":393}],360:[function(require,module,exports){
+},{"../../geometries/geom2":42,"../../geometries/geom3":57,"../../geometries/path2":78,"../../maths/mat4":159,"../../utils/flatten":412}],379:[function(require,module,exports){
 const flatten = require('../../utils/flatten')
 
 const mat4 = require('../../maths/mat4')
@@ -15172,10 +20346,10 @@ const geom3 = require('../../geometries/geom3')
 const path2 = require('../../geometries/path2')
 
 /**
- * Scale the given geometries using the given options.
- * @param {Array} factors - X, Y, Z factors by which to scale the geometries
- * @param {...Object} geometries - the geometries to scale
- * @return {Object|Array} the scaled geometry, or a list of scaled geometries
+ * Scale the given objects using the given options.
+ * @param {Array} factors - X, Y, Z factors by which to scale the objects
+ * @param {...Object} objects - the objects to scale
+ * @return {Object|Array} the scaled object, or a list of scaled objects
  * @alias module:modeling/transforms.scale
  *
  * @example
@@ -15205,31 +20379,31 @@ const scale = (factors, ...objects) => {
 }
 
 /**
- * Scale the given geometries about the X axis using the given options.
- * @param {Number} factor - X factor by which to scale the geometries
- * @param {...Object} geometries - the geometries to scale
- * @return {Object|Array} the scaled geometry, or a list of scaled geometries
+ * Scale the given objects about the X axis using the given options.
+ * @param {Number} factor - X factor by which to scale the objects
+ * @param {...Object} objects - the objects to scale
+ * @return {Object|Array} the scaled object, or a list of scaled objects
  * @alias module:modeling/transforms.scaleX
  */
-const scaleX = (offset, ...objects) => scale([offset, 1, 1], objects)
+const scaleX = (factor, ...objects) => scale([factor, 1, 1], objects)
 
 /**
- * Scale the given geometries about the Y axis using the given options.
- * @param {Number} factor - Y factor by which to scale the geometries
- * @param {...Object} geometries - the geometries to scale
- * @return {Object|Array} the scaled geometry, or a list of scaled geometries
+ * Scale the given objects about the Y axis using the given options.
+ * @param {Number} factor - Y factor by which to scale the objects
+ * @param {...Object} objects - the objects to scale
+ * @return {Object|Array} the scaled object, or a list of scaled objects
  * @alias module:modeling/transforms.scaleY
  */
-const scaleY = (offset, ...objects) => scale([1, offset, 1], objects)
+const scaleY = (factor, ...objects) => scale([1, factor, 1], objects)
 
 /**
- * Scale the given geometries about the Z axis using the given options.
- * @param {Number} factor - Z factor by which to scale the geometries
- * @param {...Object} geometries - the geometries to scale
- * @return {Object|Array} the scaled geometry, or a list of scaled geometries
+ * Scale the given objects about the Z axis using the given options.
+ * @param {Number} factor - Z factor by which to scale the objects
+ * @param {...Object} objects - the objects to scale
+ * @return {Object|Array} the scaled object, or a list of scaled objects
  * @alias module:modeling/transforms.scaleZ
  */
-const scaleZ = (offset, ...objects) => scale([1, 1, offset], objects)
+const scaleZ = (factor, ...objects) => scale([1, 1, factor], objects)
 
 module.exports = {
   scale,
@@ -15238,7 +20412,7 @@ module.exports = {
   scaleZ
 }
 
-},{"../../geometries/geom2":36,"../../geometries/geom3":50,"../../geometries/path2":71,"../../maths/mat4":151,"../../utils/flatten":393}],361:[function(require,module,exports){
+},{"../../geometries/geom2":42,"../../geometries/geom3":57,"../../geometries/path2":78,"../../maths/mat4":159,"../../utils/flatten":412}],380:[function(require,module,exports){
 const flatten = require('../../utils/flatten')
 
 const geom2 = require('../../geometries/geom2')
@@ -15246,14 +20420,14 @@ const geom3 = require('../../geometries/geom3')
 const path2 = require('../../geometries/path2')
 
 /**
- * Transform the given geometries using the given matrix.
+ * Transform the given objects using the given matrix.
  * @param {mat4} matrix - a transformation matrix
- * @param {...Object} geometries - the geometries to transform
- * @return {Object|Array} the transformed geometry, or a list of transformed geometries
+ * @param {...Object} objects - the objects to transform
+ * @return {Object|Array} the transformed object, or a list of transformed objects
  * @alias module:modeling/transforms.transform
  *
  * @example
- * const newsphere = transform(mat4.rotateX(Math.PI/4), sphere())
+ * const newsphere = transform(mat4.rotateX(TAU / 8), sphere())
  */
 const transform = (matrix, ...objects) => {
   // TODO how to check that the matrix is REAL?
@@ -15272,7 +20446,7 @@ const transform = (matrix, ...objects) => {
 
 module.exports = transform
 
-},{"../../geometries/geom2":36,"../../geometries/geom3":50,"../../geometries/path2":71,"../../utils/flatten":393}],362:[function(require,module,exports){
+},{"../../geometries/geom2":42,"../../geometries/geom3":57,"../../geometries/path2":78,"../../utils/flatten":412}],381:[function(require,module,exports){
 const flatten = require('../../utils/flatten')
 
 const mat4 = require('../../maths/mat4')
@@ -15282,10 +20456,10 @@ const geom3 = require('../../geometries/geom3')
 const path2 = require('../../geometries/path2')
 
 /**
- * Translate the given geometries using the given options.
- * @param {Array} offset - offset (vector) of which to translate the geometries
- * @param {...Object} geometries - the geometries to translate
- * @return {Object|Array} the translated geometry, or a list of translated geometries
+ * Translate the given objects using the given options.
+ * @param {Array} offset - offset (vector) of which to translate the objects
+ * @param {...Object} objects - the objects to translate
+ * @return {Object|Array} the translated object, or a list of translated objects
  * @alias module:modeling/transforms.translate
  *
  * @example
@@ -15313,28 +20487,28 @@ const translate = (offset, ...objects) => {
 }
 
 /**
- * Translate the given geometries along the X axis using the given options.
- * @param {Number} offset - X offset of which to translate the geometries
- * @param {...Object} geometries - the geometries to translate
- * @return {Object|Array} the translated geometry, or a list of translated geometries
+ * Translate the given objects along the X axis using the given options.
+ * @param {Number} offset - X offset of which to translate the objects
+ * @param {...Object} objects - the objects to translate
+ * @return {Object|Array} the translated object, or a list of translated objects
  * @alias module:modeling/transforms.translateX
  */
 const translateX = (offset, ...objects) => translate([offset, 0, 0], objects)
 
 /**
- * Translate the given geometries along the Y axis using the given options.
+ * Translate the given objects along the Y axis using the given options.
  * @param {Number} offset - Y offset of which to translate the geometries
- * @param {...Object} geometries - the geometries to translate
- * @return {Object|Array} the translated geometry, or a list of translated geometries
+ * @param {...Object} objects - the objects to translate
+ * @return {Object|Array} the translated object, or a list of translated objects
  * @alias module:modeling/transforms.translateY
  */
 const translateY = (offset, ...objects) => translate([0, offset, 0], objects)
 
 /**
- * Translate the given geometries along the Z axis using the given options.
+ * Translate the given objects along the Z axis using the given options.
  * @param {Number} offset - Z offset of which to translate the geometries
- * @param {...Object} geometries - the geometries to translate
- * @return {Object|Array} the translated geometry, or a list of translated geometries
+ * @param {...Object} objects - the objects to translate
+ * @return {Object|Array} the translated object, or a list of translated objects
  * @alias module:modeling/transforms.translateZ
  */
 const translateZ = (offset, ...objects) => translate([0, 0, offset], objects)
@@ -15346,8 +20520,8 @@ module.exports = {
   translateZ
 }
 
-},{"../../geometries/geom2":36,"../../geometries/geom3":50,"../../geometries/path2":71,"../../maths/mat4":151,"../../utils/flatten":393}],363:[function(require,module,exports){
-const { EPS } = require('../maths/constants')
+},{"../../geometries/geom2":42,"../../geometries/geom3":57,"../../geometries/path2":78,"../../maths/mat4":159,"../../utils/flatten":412}],382:[function(require,module,exports){
+const { EPS, TAU } = require('../maths/constants')
 
 const vec2 = require('../maths/vec2')
 
@@ -15361,7 +20535,7 @@ const { isGT, isGTE, isNumberArray } = require('./commonChecks')
  * @param {Array} [options.center=[0,0]] - center of arc
  * @param {Number} [options.radius=1] - radius of arc
  * @param {Number} [options.startAngle=0] - starting angle of the arc, in radians
- * @param {Number} [options.endAngle=Math.PI*2] - ending angle of the arc, in radians
+ * @param {Number} [options.endAngle=TAU] - ending angle of the arc, in radians
  * @param {Number} [options.segments=32] - number of segments to create per full rotation
  * @param {Boolean} [options.makeTangent=false] - adds line segments at both ends of the arc to ensure that the gradients at the edges are tangent
  * @returns {path2} new 2D path
@@ -15372,7 +20546,7 @@ const arc = (options) => {
     center: [0, 0],
     radius: 1,
     startAngle: 0,
-    endAngle: (Math.PI * 2),
+    endAngle: TAU,
     makeTangent: false,
     segments: 32
   }
@@ -15384,15 +20558,15 @@ const arc = (options) => {
   if (!isGTE(endAngle, 0)) throw new Error('endAngle must be positive')
   if (!isGTE(segments, 4)) throw new Error('segments must be four or more')
 
-  startAngle = startAngle % (Math.PI * 2)
-  endAngle = endAngle % (Math.PI * 2)
+  startAngle = startAngle % TAU
+  endAngle = endAngle % TAU
 
-  let rotation = (Math.PI * 2)
+  let rotation = TAU
   if (startAngle < endAngle) {
     rotation = endAngle - startAngle
   }
   if (startAngle > endAngle) {
-    rotation = endAngle + ((Math.PI * 2) - startAngle)
+    rotation = endAngle + (TAU - startAngle)
   }
 
   const minangle = Math.acos(((radius * radius) + (radius * radius) - (EPS * EPS)) / (2 * radius * radius))
@@ -15408,7 +20582,7 @@ const arc = (options) => {
     pointArray.push(point)
   } else {
     // note: add one additional step to acheive full rotation
-    const numsteps = Math.max(1, Math.floor(segments * (rotation / (Math.PI * 2)))) + 1
+    const numsteps = Math.max(1, Math.floor(segments * (rotation / TAU))) + 1
     let edgestepsize = numsteps * 0.5 / rotation // step size for half a degree
     if (edgestepsize > 0.25) edgestepsize = 0.25
 
@@ -15427,15 +20601,17 @@ const arc = (options) => {
       pointArray.push(point)
     }
   }
-  return path2.fromPoints({ close: false }, pointArray)
+  return path2.fromPoints({ closed: false }, pointArray)
 }
 
 module.exports = arc
 
-},{"../geometries/path2":71,"../maths/constants":101,"../maths/vec2":197,"./commonChecks":365}],364:[function(require,module,exports){
+},{"../geometries/path2":78,"../maths/constants":110,"../maths/vec2":206,"./commonChecks":384}],383:[function(require,module,exports){
+const { TAU } = require('../maths/constants')
+
 const ellipse = require('./ellipse')
 
-const { isGT } = require('./commonChecks')
+const { isGTE } = require('./commonChecks')
 
 /**
  * Construct a circle in two dimensional space where all points are at the same distance from the center.
@@ -15444,7 +20620,7 @@ const { isGT } = require('./commonChecks')
  * @param {Array} [options.center=[0,0]] - center of circle
  * @param {Number} [options.radius=1] - radius of circle
  * @param {Number} [options.startAngle=0] - start angle of circle, in radians
- * @param {Number} [options.endAngle=(Math.PI * 2)] - end angle of circle, in radians
+ * @param {Number} [options.endAngle=TAU] - end angle of circle, in radians
  * @param {Number} [options.segments=32] - number of segments to create per full rotation
  * @returns {geom2} new 2D geometry
  * @alias module:modeling/primitives.circle
@@ -15456,12 +20632,12 @@ const circle = (options) => {
     center: [0, 0],
     radius: 1,
     startAngle: 0,
-    endAngle: (Math.PI * 2),
+    endAngle: TAU,
     segments: 32
   }
   let { center, radius, startAngle, endAngle, segments } = Object.assign({}, defaults, options)
 
-  if (!isGT(radius, 0)) throw new Error('radius must be greater than zero')
+  if (!isGTE(radius, 0)) throw new Error('radius must be positive')
 
   radius = [radius, radius]
 
@@ -15470,7 +20646,7 @@ const circle = (options) => {
 
 module.exports = circle
 
-},{"./commonChecks":365,"./ellipse":370}],365:[function(require,module,exports){
+},{"../maths/constants":110,"./commonChecks":384,"./ellipse":389}],384:[function(require,module,exports){
 // verify that the array has the given dimension, and contains Number values
 const isNumberArray = (array, dimension) => {
   if (Array.isArray(array) && array.length >= dimension) {
@@ -15491,10 +20667,10 @@ module.exports = {
   isGTE
 }
 
-},{}],366:[function(require,module,exports){
+},{}],385:[function(require,module,exports){
 const cuboid = require('./cuboid')
 
-const { isGT } = require('./commonChecks')
+const { isGTE } = require('./commonChecks')
 
 /**
  * Construct an axis-aligned solid cube in three dimensional space with six square faces.
@@ -15514,7 +20690,7 @@ const cube = (options) => {
   }
   let { center, size } = Object.assign({}, defaults, options)
 
-  if (!isGT(size, 0)) throw new Error('size must be greater than zero')
+  if (!isGTE(size, 0)) throw new Error('size must be positive')
 
   size = [size, size, size]
 
@@ -15523,7 +20699,7 @@ const cube = (options) => {
 
 module.exports = cube
 
-},{"./commonChecks":365,"./cuboid":367}],367:[function(require,module,exports){
+},{"./commonChecks":384,"./cuboid":386}],386:[function(require,module,exports){
 const geom3 = require('../geometries/geom3')
 const poly3 = require('../geometries/poly3')
 
@@ -15538,7 +20714,7 @@ const { isNumberArray } = require('./commonChecks')
  * @alias module:modeling/primitives.cuboid
  *
  * @example
- * let myshape = cuboid(size: [5, 10, 5]})
+ * let myshape = cuboid({size: [5, 10, 5]})
  */
 const cuboid = (options) => {
   const defaults = {
@@ -15549,7 +20725,10 @@ const cuboid = (options) => {
 
   if (!isNumberArray(center, 3)) throw new Error('center must be an array of X, Y and Z values')
   if (!isNumberArray(size, 3)) throw new Error('size must be an array of width, depth and height values')
-  if (!size.every((n) => n > 0)) throw new Error('size values must be greater than zero')
+  if (!size.every((n) => n >= 0)) throw new Error('size values must be positive')
+
+  // if any size is zero return empty geometry
+  if (size[0] === 0 || size[1] === 0 || size[2] === 0) return geom3.create()
 
   const result = geom3.create(
     // adjust a basic shape to size
@@ -15569,7 +20748,7 @@ const cuboid = (options) => {
         ]
         return pos
       })
-      return poly3.fromPoints(points)
+      return poly3.create(points)
     })
   )
   return result
@@ -15577,10 +20756,12 @@ const cuboid = (options) => {
 
 module.exports = cuboid
 
-},{"../geometries/geom3":50,"../geometries/poly3":87,"./commonChecks":365}],368:[function(require,module,exports){
+},{"../geometries/geom3":57,"../geometries/poly3":95,"./commonChecks":384}],387:[function(require,module,exports){
+const geom3 = require('../geometries/geom3')
+
 const cylinderElliptic = require('./cylinderElliptic')
 
-const { isGT } = require('./commonChecks')
+const { isGTE } = require('./commonChecks')
 
 /**
  * Construct a Z axis-aligned cylinder in three dimensional space.
@@ -15605,7 +20786,10 @@ const cylinder = (options) => {
   }
   const { center, height, radius, segments } = Object.assign({}, defaults, options)
 
-  if (!isGT(radius, 0)) throw new Error('radius must be greater than zero')
+  if (!isGTE(radius, 0)) throw new Error('radius must be positive')
+
+  // if size is zero return empty geometry
+  if (height === 0 || radius === 0) return geom3.create()
 
   const newoptions = {
     center,
@@ -15620,13 +20804,15 @@ const cylinder = (options) => {
 
 module.exports = cylinder
 
-},{"./commonChecks":365,"./cylinderElliptic":369}],369:[function(require,module,exports){
-const { EPS } = require('../maths/constants')
+},{"../geometries/geom3":57,"./commonChecks":384,"./cylinderElliptic":388}],388:[function(require,module,exports){
+const { EPS, TAU } = require('../maths/constants')
 
 const vec3 = require('../maths/vec3')
 
 const geom3 = require('../geometries/geom3')
 const poly3 = require('../geometries/poly3')
+
+const { sin, cos } = require('../maths/utils/trigonometry')
 
 const { isGT, isGTE, isNumberArray } = require('./commonChecks')
 
@@ -15638,7 +20824,7 @@ const { isGT, isGTE, isNumberArray } = require('./commonChecks')
  * @param {Array} [options.startRadius=[1,1]] - radius of rounded start, must be two dimensional array
  * @param {Number} [options.startAngle=0] - start angle of cylinder, in radians
  * @param {Array} [options.endRadius=[1,1]] - radius of rounded end, must be two dimensional array
- * @param {Number} [options.endAngle=(Math.PI * 2)] - end angle of cylinder, in radians
+ * @param {Number} [options.endAngle=TAU] - end angle of cylinder, in radians
  * @param {Number} [options.segments=32] - number of segments to create per full rotation
  * @returns {geom3} new geometry
  * @alias module:modeling/primitives.cylinderElliptic
@@ -15653,7 +20839,7 @@ const cylinderElliptic = (options) => {
     startRadius: [1, 1],
     startAngle: 0,
     endRadius: [1, 1],
-    endAngle: (Math.PI * 2),
+    endAngle: TAU,
     segments: 32
   }
   let { center, height, startRadius, startAngle, endRadius, endAngle, segments } = Object.assign({}, defaults, options)
@@ -15661,22 +20847,23 @@ const cylinderElliptic = (options) => {
   if (!isNumberArray(center, 3)) throw new Error('center must be an array of X, Y and Z values')
   if (!isGT(height, 0)) throw new Error('height must be greater then zero')
   if (!isNumberArray(startRadius, 2)) throw new Error('startRadius must be an array of X and Y values')
-  if (!startRadius.every((n) => n > 0)) throw new Error('startRadius values must be greater than zero')
+  if (!startRadius.every((n) => n >= 0)) throw new Error('startRadius values must be positive')
   if (!isNumberArray(endRadius, 2)) throw new Error('endRadius must be an array of X and Y values')
-  if (!endRadius.every((n) => n > 0)) throw new Error('endRadius values must be greater than zero')
+  if (!endRadius.every((n) => n >= 0)) throw new Error('endRadius values must be positive')
+  if (endRadius.every((n) => n === 0) && startRadius.every((n) => n === 0)) throw new Error('at least one radius must be positive')
   if (!isGTE(startAngle, 0)) throw new Error('startAngle must be positive')
   if (!isGTE(endAngle, 0)) throw new Error('endAngle must be positive')
   if (!isGTE(segments, 4)) throw new Error('segments must be four or more')
 
-  startAngle = startAngle % (Math.PI * 2)
-  endAngle = endAngle % (Math.PI * 2)
+  startAngle = startAngle % TAU
+  endAngle = endAngle % TAU
 
-  let rotation = (Math.PI * 2)
+  let rotation = TAU
   if (startAngle < endAngle) {
     rotation = endAngle - startAngle
   }
   if (startAngle > endAngle) {
-    rotation = endAngle + ((Math.PI * 2) - startAngle)
+    rotation = endAngle + (TAU - startAngle)
   }
 
   const minradius = Math.min(startRadius[0], startRadius[1], endRadius[0], endRadius[1])
@@ -15684,7 +20871,7 @@ const cylinderElliptic = (options) => {
                             (2 * minradius * minradius))
   if (rotation < minangle) throw new Error('startAngle and endAngle do not define a significant rotation')
 
-  const slices = Math.floor(segments * (rotation / (Math.PI * 2)))
+  const slices = Math.floor(segments * (rotation / TAU))
 
   const start = vec3.fromValues(0, 0, -(height / 2))
   const end = vec3.fromValues(0, 0, height / 2)
@@ -15698,8 +20885,8 @@ const cylinderElliptic = (options) => {
   const v3 = vec3.create()
   const point = (stack, slice, radius) => {
     const angle = slice * rotation + startAngle
-    vec3.scale(v1, axisX, radius[0] * Math.cos(angle))
-    vec3.scale(v2, axisY, radius[1] * Math.sin(angle))
+    vec3.scale(v1, axisX, radius[0] * cos(angle))
+    vec3.scale(v2, axisY, radius[1] * sin(angle))
     vec3.add(v1, v1, v2)
 
     vec3.scale(v3, ray, stack)
@@ -15710,30 +20897,36 @@ const cylinderElliptic = (options) => {
   // adjust the points to center
   const fromPoints = (...points) => {
     const newpoints = points.map((point) => vec3.add(vec3.create(), point, center))
-    return poly3.fromPoints(newpoints)
+    return poly3.create(newpoints)
   }
 
   const polygons = []
   for (let i = 0; i < slices; i++) {
     const t0 = i / slices
-    const t1 = (i + 1) / slices
+    let t1 = (i + 1) / slices
+    // fix rounding error when rotating TAU radians
+    if (rotation === TAU && i === slices - 1) t1 = 0
 
     if (endRadius[0] === startRadius[0] && endRadius[1] === startRadius[1]) {
       polygons.push(fromPoints(start, point(0, t1, endRadius), point(0, t0, endRadius)))
       polygons.push(fromPoints(point(0, t1, endRadius), point(1, t1, endRadius), point(1, t0, endRadius), point(0, t0, endRadius)))
       polygons.push(fromPoints(end, point(1, t0, endRadius), point(1, t1, endRadius)))
     } else {
-      if (startRadius[0] > 0) {
+      if (startRadius[0] > 0 && startRadius[1] > 0) {
         polygons.push(fromPoints(start, point(0, t1, startRadius), point(0, t0, startRadius)))
+      }
+      if (startRadius[0] > 0 || startRadius[1] > 0) {
         polygons.push(fromPoints(point(0, t0, startRadius), point(0, t1, startRadius), point(1, t0, endRadius)))
       }
-      if (endRadius[0] > 0) {
+      if (endRadius[0] > 0 && endRadius[1] > 0) {
         polygons.push(fromPoints(end, point(1, t0, endRadius), point(1, t1, endRadius)))
+      }
+      if (endRadius[0] > 0 || endRadius[1] > 0) {
         polygons.push(fromPoints(point(1, t0, endRadius), point(0, t1, startRadius), point(1, t1, endRadius)))
       }
     }
   }
-  if (rotation < (Math.PI * 2)) {
+  if (rotation < TAU) {
     polygons.push(fromPoints(start, point(0, 0, startRadius), end))
     polygons.push(fromPoints(point(0, 0, startRadius), point(1, 0, endRadius), end))
     polygons.push(fromPoints(start, end, point(0, 1, startRadius)))
@@ -15745,12 +20938,14 @@ const cylinderElliptic = (options) => {
 
 module.exports = cylinderElliptic
 
-},{"../geometries/geom3":50,"../geometries/poly3":87,"../maths/constants":101,"../maths/vec3":228,"./commonChecks":365}],370:[function(require,module,exports){
-const { EPS } = require('../maths/constants')
+},{"../geometries/geom3":57,"../geometries/poly3":95,"../maths/constants":110,"../maths/utils/trigonometry":188,"../maths/vec3":237,"./commonChecks":384}],389:[function(require,module,exports){
+const { EPS, TAU } = require('../maths/constants')
 
 const vec2 = require('../maths/vec2')
 
 const geom2 = require('../geometries/geom2')
+
+const { sin, cos } = require('../maths/utils/trigonometry')
 
 const { isGTE, isNumberArray } = require('./commonChecks')
 
@@ -15761,7 +20956,7 @@ const { isGTE, isNumberArray } = require('./commonChecks')
  * @param {Array} [options.center=[0,0]] - center of ellipse
  * @param {Array} [options.radius=[1,1]] - radius of ellipse, along X and Y
  * @param {Number} [options.startAngle=0] - start angle of ellipse, in radians
- * @param {Number} [options.endAngle=(Math.PI * 2)] - end angle of ellipse, in radians
+ * @param {Number} [options.endAngle=TAU] - end angle of ellipse, in radians
  * @param {Number} [options.segments=32] - number of segments to create per full rotation
  * @returns {geom2} new 2D geometry
  * @alias module:modeling/primitives.ellipse
@@ -15773,27 +20968,30 @@ const ellipse = (options) => {
     center: [0, 0],
     radius: [1, 1],
     startAngle: 0,
-    endAngle: (Math.PI * 2),
+    endAngle: TAU,
     segments: 32
   }
   let { center, radius, startAngle, endAngle, segments } = Object.assign({}, defaults, options)
 
   if (!isNumberArray(center, 2)) throw new Error('center must be an array of X and Y values')
   if (!isNumberArray(radius, 2)) throw new Error('radius must be an array of X and Y values')
-  if (!radius.every((n) => n > 0)) throw new Error('radius values must be greater than zero')
+  if (!radius.every((n) => n >= 0)) throw new Error('radius values must be positive')
   if (!isGTE(startAngle, 0)) throw new Error('startAngle must be positive')
   if (!isGTE(endAngle, 0)) throw new Error('endAngle must be positive')
   if (!isGTE(segments, 3)) throw new Error('segments must be three or more')
 
-  startAngle = startAngle % (Math.PI * 2)
-  endAngle = endAngle % (Math.PI * 2)
+  // if any radius is zero return empty geometry
+  if (radius[0] === 0 || radius[1] === 0) return geom2.create()
 
-  let rotation = (Math.PI * 2)
+  startAngle = startAngle % TAU
+  endAngle = endAngle % TAU
+
+  let rotation = TAU
   if (startAngle < endAngle) {
     rotation = endAngle - startAngle
   }
   if (startAngle > endAngle) {
-    rotation = endAngle + ((Math.PI * 2) - startAngle)
+    rotation = endAngle + (TAU - startAngle)
   }
 
   const minradius = Math.min(radius[0], radius[1])
@@ -15801,30 +20999,33 @@ const ellipse = (options) => {
                             (2 * minradius * minradius))
   if (rotation < minangle) throw new Error('startAngle and endAngle do not define a significant rotation')
 
-  segments = Math.floor(segments * (rotation / (Math.PI * 2)))
+  segments = Math.floor(segments * (rotation / TAU))
 
   const centerv = vec2.clone(center)
   const step = rotation / segments // radians per segment
 
   const points = []
-  segments = (rotation < Math.PI * 2) ? segments + 1 : segments
+  segments = (rotation < TAU) ? segments + 1 : segments
   for (let i = 0; i < segments; i++) {
     const angle = (step * i) + startAngle
-    const point = vec2.fromValues(radius[0] * Math.cos(angle), radius[1] * Math.sin(angle))
+    const point = vec2.fromValues(radius[0] * cos(angle), radius[1] * sin(angle))
     vec2.add(point, centerv, point)
     points.push(point)
   }
-  if (rotation < Math.PI * 2) points.push(centerv)
+  if (rotation < TAU) points.push(centerv)
   return geom2.fromPoints(points)
 }
 
 module.exports = ellipse
 
-},{"../geometries/geom2":36,"../maths/constants":101,"../maths/vec2":197,"./commonChecks":365}],371:[function(require,module,exports){
+},{"../geometries/geom2":42,"../maths/constants":110,"../maths/utils/trigonometry":188,"../maths/vec2":206,"./commonChecks":384}],390:[function(require,module,exports){
+const { TAU } = require('../maths/constants')
 const vec3 = require('../maths/vec3')
 
 const geom3 = require('../geometries/geom3')
 const poly3 = require('../geometries/poly3')
+
+const { sin, cos } = require('../maths/utils/trigonometry')
 
 const { isGTE, isNumberArray } = require('./commonChecks')
 
@@ -15833,7 +21034,7 @@ const { isGTE, isNumberArray } = require('./commonChecks')
  * @param {Object} [options] - options for construction
  * @param {Array} [options.center=[0,0,0]] - center of ellipsoid
  * @param {Array} [options.radius=[1,1,1]] - radius of ellipsoid, along X, Y and Z
- * @param {Number} [options.segments=32] - number of segements to create per full rotation
+ * @param {Number} [options.segments=32] - number of segments to create per full rotation
  * @param {Array} [options.axes] -  an array with three vectors for the x, y and z base vectors
  * @returns {geom3} new 3D geometry
  * @alias module:modeling/primitives.ellipsoid
@@ -15852,8 +21053,11 @@ const ellipsoid = (options) => {
 
   if (!isNumberArray(center, 3)) throw new Error('center must be an array of X, Y and Z values')
   if (!isNumberArray(radius, 3)) throw new Error('radius must be an array of X, Y and Z values')
-  if (!radius.every((n) => n > 0)) throw new Error('radius values must be greater than zero')
+  if (!radius.every((n) => n >= 0)) throw new Error('radius values must be positive')
   if (!isGTE(segments, 4)) throw new Error('segments must be four or more')
+
+  // if any radius is zero return empty geometry
+  if (radius[0] === 0 || radius[1] === 0 || radius[2] === 0) return geom3.create()
 
   const xvector = vec3.scale(vec3.create(), vec3.normalize(vec3.create(), axes[0]), radius[0])
   const yvector = vec3.scale(vec3.create(), vec3.normalize(vec3.create(), axes[1]), radius[1])
@@ -15865,14 +21069,14 @@ const ellipsoid = (options) => {
   const p1 = vec3.create()
   const p2 = vec3.create()
   for (let slice1 = 0; slice1 <= segments; slice1++) {
-    const angle = Math.PI * 2.0 * slice1 / segments
-    const cylinderpoint = vec3.add(vec3.create(), vec3.scale(p1, xvector, Math.cos(angle)), vec3.scale(p2, yvector, Math.sin(angle)))
+    const angle = TAU * slice1 / segments
+    const cylinderpoint = vec3.add(vec3.create(), vec3.scale(p1, xvector, cos(angle)), vec3.scale(p2, yvector, sin(angle)))
     if (slice1 > 0) {
       let prevcospitch, prevsinpitch
       for (let slice2 = 0; slice2 <= qsegments; slice2++) {
-        const pitch = 0.5 * Math.PI * slice2 / qsegments
-        const cospitch = Math.cos(pitch)
-        const sinpitch = Math.sin(pitch)
+        const pitch = TAU / 4 * slice2 / qsegments
+        const cospitch = cos(pitch)
+        const sinpitch = sin(pitch)
         if (slice2 > 0) {
           let points = []
           let point
@@ -15887,7 +21091,7 @@ const ellipsoid = (options) => {
           point = vec3.subtract(vec3.create(), vec3.scale(p1, prevcylinderpoint, cospitch), vec3.scale(p2, zvector, sinpitch))
           points.push(vec3.add(point, point, center))
 
-          polygons.push(poly3.fromPoints(points))
+          polygons.push(poly3.create(points))
 
           points = []
           point = vec3.add(vec3.create(), vec3.scale(p1, prevcylinderpoint, prevcospitch), vec3.scale(p2, zvector, prevsinpitch))
@@ -15902,7 +21106,7 @@ const ellipsoid = (options) => {
           points.push(vec3.add(vec3.create(), center, point))
           points.reverse()
 
-          polygons.push(poly3.fromPoints(points))
+          polygons.push(poly3.create(points))
         }
         prevcospitch = cospitch
         prevsinpitch = sinpitch
@@ -15915,14 +21119,15 @@ const ellipsoid = (options) => {
 
 module.exports = ellipsoid
 
-},{"../geometries/geom3":50,"../geometries/poly3":87,"../maths/vec3":228,"./commonChecks":365}],372:[function(require,module,exports){
+},{"../geometries/geom3":57,"../geometries/poly3":95,"../maths/constants":110,"../maths/utils/trigonometry":188,"../maths/vec3":237,"./commonChecks":384}],391:[function(require,module,exports){
 const mat4 = require('../maths/mat4')
+const vec3 = require('../maths/vec3')
 
 const geom3 = require('../geometries/geom3')
 
 const polyhedron = require('./polyhedron')
 
-const { isGT, isGTE } = require('./commonChecks')
+const { isGTE } = require('./commonChecks')
 
 /**
  * Construct a geodesic sphere based on icosahedron symmetry.
@@ -15942,8 +21147,11 @@ const geodesicSphere = (options) => {
   }
   let { radius, frequency } = Object.assign({}, defaults, options)
 
-  if (!isGT(radius, 0)) throw new Error('radius must be greater than zero')
+  if (!isGTE(radius, 0)) throw new Error('radius must be positive')
   if (!isGTE(frequency, 6)) throw new Error('frequency must be six or more')
+
+  // if radius is zero return empty geometry
+  if (radius === 0) return geom3.create()
 
   // adjust the frequency to base 6
   frequency = Math.floor(frequency / 6)
@@ -15997,7 +21205,7 @@ const geodesicSphere = (options) => {
 
         // -- normalize
         for (let k = 0; k < 3; k++) {
-          const r = Math.sqrt(q[k][0] * q[k][0] + q[k][1] * q[k][1] + q[k][2] * q[k][2])
+          const r = vec3.length(q[k])
           for (let l = 0; l < 3; l++) {
             q[k][l] /= r
           }
@@ -16013,7 +21221,7 @@ const geodesicSphere = (options) => {
 
           // -- normalize
           for (let k = 0; k < 3; k++) {
-            const r = Math.sqrt(q[k][0] * q[k][0] + q[k][1] * q[k][1] + q[k][2] * q[k][2])
+            const r = vec3.length(q[k])
             for (let l = 0; l < 3; l++) {
               q[k][l] /= r
             }
@@ -16053,7 +21261,7 @@ const geodesicSphere = (options) => {
 
 module.exports = geodesicSphere
 
-},{"../geometries/geom3":50,"../maths/mat4":151,"./commonChecks":365,"./polyhedron":376}],373:[function(require,module,exports){
+},{"../geometries/geom3":57,"../maths/mat4":159,"../maths/vec3":237,"./commonChecks":384,"./polyhedron":395}],392:[function(require,module,exports){
 /**
  * Primitives provide the building blocks for complex parts.
  * Each primitive is a geometrical object that can be described mathematically, and therefore precise.
@@ -16086,7 +21294,7 @@ module.exports = {
   triangle: require('./triangle')
 }
 
-},{"./arc":363,"./circle":364,"./cube":366,"./cuboid":367,"./cylinder":368,"./cylinderElliptic":369,"./ellipse":370,"./ellipsoid":371,"./geodesicSphere":372,"./line":374,"./polygon":375,"./polyhedron":376,"./rectangle":377,"./roundedCuboid":378,"./roundedCylinder":379,"./roundedRectangle":380,"./sphere":381,"./square":382,"./star":383,"./torus":384,"./triangle":385}],374:[function(require,module,exports){
+},{"./arc":382,"./circle":383,"./cube":385,"./cuboid":386,"./cylinder":387,"./cylinderElliptic":388,"./ellipse":389,"./ellipsoid":390,"./geodesicSphere":391,"./line":393,"./polygon":394,"./polyhedron":395,"./rectangle":396,"./roundedCuboid":397,"./roundedCylinder":398,"./roundedRectangle":399,"./sphere":400,"./square":401,"./star":402,"./torus":403,"./triangle":404}],393:[function(require,module,exports){
 const path2 = require('../geometries/path2')
 
 /**
@@ -16107,7 +21315,7 @@ const line = (points) => {
 
 module.exports = line
 
-},{"../geometries/path2":71}],375:[function(require,module,exports){
+},{"../geometries/path2":78}],394:[function(require,module,exports){
 const geom2 = require('../geometries/geom2')
 
 /**
@@ -16179,7 +21387,7 @@ const polygon = (options) => {
 
 module.exports = polygon
 
-},{"../geometries/geom2":36}],376:[function(require,module,exports){
+},{"../geometries/geom2":42}],395:[function(require,module,exports){
 const geom3 = require('../geometries/geom3')
 const poly3 = require('../geometries/poly3')
 
@@ -16193,7 +21401,7 @@ const { isNumberArray } = require('./commonChecks')
  * @param {Array} options.points - list of points in 3D space
  * @param {Array} options.faces - list of faces, where each face is a set of indexes into the points
  * @param {Array} [options.colors=undefined] - list of RGBA colors to apply to each face
- * @param {Array} [options.orientation='outward'] - orientation of faces
+ * @param {String} [options.orientation='outward'] - orientation of faces
  * @returns {geom3} new 3D geometry
  * @alias module:modeling/primitives.polyhedron
  *
@@ -16242,7 +21450,7 @@ const polyhedron = (options) => {
   }
 
   const polygons = faces.map((face, findex) => {
-    const polygon = poly3.fromPoints(face.map((pindex) => points[pindex]))
+    const polygon = poly3.create(face.map((pindex) => points[pindex]))
     if (colors && colors[findex]) polygon.color = colors[findex]
     return polygon
   })
@@ -16252,7 +21460,7 @@ const polyhedron = (options) => {
 
 module.exports = polyhedron
 
-},{"../geometries/geom3":50,"../geometries/poly3":87,"./commonChecks":365}],377:[function(require,module,exports){
+},{"../geometries/geom3":57,"../geometries/poly3":95,"./commonChecks":384}],396:[function(require,module,exports){
 const vec2 = require('../maths/vec2')
 
 const geom2 = require('../geometries/geom2')
@@ -16279,7 +21487,10 @@ const rectangle = (options) => {
 
   if (!isNumberArray(center, 2)) throw new Error('center must be an array of X and Y values')
   if (!isNumberArray(size, 2)) throw new Error('size must be an array of X and Y values')
-  if (!size.every((n) => n > 0)) throw new Error('size values must be greater than zero')
+  if (!size.every((n) => n >= 0)) throw new Error('size values must be positive')
+
+  // if any size is zero return empty geometry
+  if (size[0] === 0 || size[1] === 0) return geom2.create()
 
   const point = [size[0] / 2, size[1] / 2]
   const pswap = [point[0], -point[1]]
@@ -16295,8 +21506,8 @@ const rectangle = (options) => {
 
 module.exports = rectangle
 
-},{"../geometries/geom2":36,"../maths/vec2":197,"./commonChecks":365}],378:[function(require,module,exports){
-const { EPS } = require('../maths/constants')
+},{"../geometries/geom2":42,"../maths/vec2":206,"./commonChecks":384}],397:[function(require,module,exports){
+const { EPS, TAU } = require('../maths/constants')
 
 const vec2 = require('../maths/vec2')
 const vec3 = require('../maths/vec3')
@@ -16304,12 +21515,15 @@ const vec3 = require('../maths/vec3')
 const geom3 = require('../geometries/geom3')
 const poly3 = require('../geometries/poly3')
 
-const { isGT, isGTE, isNumberArray } = require('./commonChecks')
+const { sin, cos } = require('../maths/utils/trigonometry')
+
+const { isGTE, isNumberArray } = require('./commonChecks')
+const cuboid = require('./cuboid')
 
 const createCorners = (center, size, radius, segments, slice, positive) => {
-  const pitch = (Math.PI / 2) * slice / segments
-  const cospitch = Math.cos(pitch)
-  const sinpitch = Math.sin(pitch)
+  const pitch = (TAU / 4) * slice / segments
+  const cospitch = cos(pitch)
+  const sinpitch = sin(pitch)
 
   const layersegments = segments - slice
   let layerradius = radius * cospitch
@@ -16327,16 +21541,16 @@ const createCorners = (center, size, radius, segments, slice, positive) => {
   const corner2Points = []
   const corner3Points = []
   for (let i = 0; i <= layersegments; i++) {
-    const radians = layersegments > 0 ? Math.PI / 2 * i / layersegments : 0
+    const radians = layersegments > 0 ? TAU / 4 * i / layersegments : 0
     const point2d = vec2.fromAngleRadians(vec2.create(), radians)
     vec2.scale(point2d, point2d, layerradius)
     const point3d = vec3.fromVec2(vec3.create(), point2d)
     corner0Points.push(vec3.add(vec3.create(), corner0, point3d))
-    vec3.rotateZ(point3d, point3d, [0, 0, 0], Math.PI / 2)
+    vec3.rotateZ(point3d, point3d, [0, 0, 0], TAU / 4)
     corner1Points.push(vec3.add(vec3.create(), corner1, point3d))
-    vec3.rotateZ(point3d, point3d, [0, 0, 0], Math.PI / 2)
+    vec3.rotateZ(point3d, point3d, [0, 0, 0], TAU / 4)
     corner2Points.push(vec3.add(vec3.create(), corner2, point3d))
-    vec3.rotateZ(point3d, point3d, [0, 0, 0], Math.PI / 2)
+    vec3.rotateZ(point3d, point3d, [0, 0, 0], TAU / 4)
     corner3Points.push(vec3.add(vec3.create(), corner3, point3d))
   }
   if (!positive) {
@@ -16355,10 +21569,10 @@ const stitchCorners = (previousCorners, currentCorners) => {
     const previous = previousCorners[i]
     const current = currentCorners[i]
     for (let j = 0; j < (previous.length - 1); j++) {
-      polygons.push(poly3.fromPoints([previous[j], previous[j + 1], current[j]]))
+      polygons.push(poly3.create([previous[j], previous[j + 1], current[j]]))
 
       if (j < (current.length - 1)) {
-        polygons.push(poly3.fromPoints([current[j], previous[j + 1], current[j + 1]]))
+        polygons.push(poly3.create([current[j], previous[j + 1], current[j + 1]]))
       }
     }
   }
@@ -16379,7 +21593,7 @@ const stitchWalls = (previousCorners, currentCorners) => {
     const p1 = previous[0]
     const c1 = current[0]
 
-    polygons.push(poly3.fromPoints([p0, p1, c1, c0]))
+    polygons.push(poly3.create([p0, p1, c1, c0]))
   }
   return polygons
 }
@@ -16402,7 +21616,7 @@ const stitchSides = (bottomCorners, topCorners) => {
   const polygons = []
   for (let i = 0; i < topPoints.length; i++) {
     const j = (i + 1) % topPoints.length
-    polygons.push(poly3.fromPoints([bottomPoints[i], bottomPoints[j], topPoints[j], topPoints[i]]))
+    polygons.push(poly3.create([bottomPoints[i], bottomPoints[j], topPoints[j], topPoints[i]]))
   }
   return polygons
 }
@@ -16431,9 +21645,15 @@ const roundedCuboid = (options) => {
 
   if (!isNumberArray(center, 3)) throw new Error('center must be an array of X, Y and Z values')
   if (!isNumberArray(size, 3)) throw new Error('size must be an array of X, Y and Z values')
-  if (!size.every((n) => n > 0)) throw new Error('size values must be greater than zero')
-  if (!isGT(roundRadius, 0)) throw new Error('roundRadius must be greater than zero')
+  if (!size.every((n) => n >= 0)) throw new Error('size values must be positive')
+  if (!isGTE(roundRadius, 0)) throw new Error('roundRadius must be positive')
   if (!isGTE(segments, 4)) throw new Error('segments must be four or more')
+
+  // if any size is zero return empty geometry
+  if (size[0] === 0 || size[1] === 0 || size[2] === 0) return geom3.create()
+
+  // if roundRadius is zero, return cuboid
+  if (roundRadius === 0) return cuboid({ center, size })
 
   size = size.map((v) => v / 2) // convert to radius
 
@@ -16466,10 +21686,10 @@ const roundedCuboid = (options) => {
     if (slice === segments) {
       // add the top
       let points = cornersPos.map((corner) => corner[0])
-      polygons.push(poly3.fromPoints(points))
+      polygons.push(poly3.create(points))
       // add the bottom
       points = cornersNeg.map((corner) => corner[0])
-      polygons.push(poly3.fromPoints(points))
+      polygons.push(poly3.create(points))
     }
 
     prevCornersPos = cornersPos
@@ -16481,21 +21701,24 @@ const roundedCuboid = (options) => {
 
 module.exports = roundedCuboid
 
-},{"../geometries/geom3":50,"../geometries/poly3":87,"../maths/constants":101,"../maths/vec2":197,"../maths/vec3":228,"./commonChecks":365}],379:[function(require,module,exports){
-const { EPS } = require('../maths/constants')
+},{"../geometries/geom3":57,"../geometries/poly3":95,"../maths/constants":110,"../maths/utils/trigonometry":188,"../maths/vec2":206,"../maths/vec3":237,"./commonChecks":384,"./cuboid":386}],398:[function(require,module,exports){
+const { EPS, TAU } = require('../maths/constants')
 
 const vec3 = require('../maths/vec3')
 
 const geom3 = require('../geometries/geom3')
 const poly3 = require('../geometries/poly3')
 
-const { isGT, isGTE, isNumberArray } = require('./commonChecks')
+const { sin, cos } = require('../maths/utils/trigonometry')
+
+const { isGTE, isNumberArray } = require('./commonChecks')
+const cylinder = require('./cylinder')
 
 /**
  * Construct a Z axis-aligned solid cylinder in three dimensional space with rounded ends.
  * @param {Object} [options] - options for construction
  * @param {Array} [options.center=[0,0,0]] - center of cylinder
- * @param {Array} [options.height=2] - height of cylinder
+ * @param {Number} [options.height=2] - height of cylinder
  * @param {Number} [options.radius=1] - radius of cylinder
  * @param {Number} [options.roundRadius=0.2] - radius of rounded edges
  * @param {Number} [options.segments=32] - number of segments to create per full rotation
@@ -16516,11 +21739,17 @@ const roundedCylinder = (options) => {
   const { center, height, radius, roundRadius, segments } = Object.assign({}, defaults, options)
 
   if (!isNumberArray(center, 3)) throw new Error('center must be an array of X, Y and Z values')
-  if (!isGT(height, 0)) throw new Error('height must be greater then zero')
-  if (!isGT(radius, 0)) throw new Error('radius must be greater then zero')
-  if (!isGT(roundRadius, 0)) throw new Error('roundRadius must be greater then zero')
-  if (roundRadius > (radius - EPS)) throw new Error('roundRadius must be smaller then the radius')
+  if (!isGTE(height, 0)) throw new Error('height must be positive')
+  if (!isGTE(radius, 0)) throw new Error('radius must be positive')
+  if (!isGTE(roundRadius, 0)) throw new Error('roundRadius must be positive')
+  if (roundRadius > radius) throw new Error('roundRadius must be smaller then the radius')
   if (!isGTE(segments, 4)) throw new Error('segments must be four or more')
+
+  // if size is zero return empty geometry
+  if (height === 0 || radius === 0) return geom3.create()
+
+  // if roundRadius is zero, return cylinder
+  if (roundRadius === 0) return cylinder({ center, height, radius })
 
   const start = [0, 0, -(height / 2)]
   const end = [0, 0, height / 2]
@@ -16548,7 +21777,7 @@ const roundedCylinder = (options) => {
   const fromPoints = (points) => {
     // adjust the points to center
     const newpoints = points.map((point) => vec3.add(point, point, center))
-    return poly3.fromPoints(newpoints)
+    return poly3.create(newpoints)
   }
 
   const polygons = []
@@ -16556,8 +21785,8 @@ const roundedCylinder = (options) => {
   const v2 = vec3.create()
   let prevcylinderpoint
   for (let slice1 = 0; slice1 <= segments; slice1++) {
-    const angle = Math.PI * 2.0 * slice1 / segments
-    const cylinderpoint = vec3.add(vec3.create(), vec3.scale(v1, xvector, Math.cos(angle)), vec3.scale(v2, yvector, Math.sin(angle)))
+    const angle = TAU * slice1 / segments
+    const cylinderpoint = vec3.add(vec3.create(), vec3.scale(v1, xvector, cos(angle)), vec3.scale(v2, yvector, sin(angle)))
     if (slice1 > 0) {
       // cylinder wall
       let points = []
@@ -16569,9 +21798,9 @@ const roundedCylinder = (options) => {
 
       let prevcospitch, prevsinpitch
       for (let slice2 = 0; slice2 <= qsegments; slice2++) {
-        const pitch = 0.5 * Math.PI * slice2 / qsegments
-        const cospitch = Math.cos(pitch)
-        const sinpitch = Math.sin(pitch)
+        const pitch = TAU / 4 * slice2 / qsegments
+        const cospitch = cos(pitch)
+        const sinpitch = sin(pitch)
         if (slice2 > 0) {
           // cylinder rounding, start
           points = []
@@ -16621,14 +21850,15 @@ const roundedCylinder = (options) => {
 
 module.exports = roundedCylinder
 
-},{"../geometries/geom3":50,"../geometries/poly3":87,"../maths/constants":101,"../maths/vec3":228,"./commonChecks":365}],380:[function(require,module,exports){
-const { EPS } = require('../maths/constants')
+},{"../geometries/geom3":57,"../geometries/poly3":95,"../maths/constants":110,"../maths/utils/trigonometry":188,"../maths/vec3":237,"./commonChecks":384,"./cylinder":387}],399:[function(require,module,exports){
+const { EPS, TAU } = require('../maths/constants')
 
 const vec2 = require('../maths/vec2')
 
 const geom2 = require('../geometries/geom2')
 
-const { isGT, isGTE, isNumberArray } = require('./commonChecks')
+const { isGTE, isNumberArray } = require('./commonChecks')
+const rectangle = require('./rectangle')
 
 /**
  * Construct an axis-aligned rectangle in two dimensional space with rounded corners.
@@ -16654,9 +21884,15 @@ const roundedRectangle = (options) => {
 
   if (!isNumberArray(center, 2)) throw new Error('center must be an array of X and Y values')
   if (!isNumberArray(size, 2)) throw new Error('size must be an array of X and Y values')
-  if (!size.every((n) => n > 0)) throw new Error('size values must be greater than zero')
-  if (!isGT(roundRadius, 0)) throw new Error('roundRadius must be greater than zero')
+  if (!size.every((n) => n >= 0)) throw new Error('size values must be positive')
+  if (!isGTE(roundRadius, 0)) throw new Error('roundRadius must be positive')
   if (!isGTE(segments, 4)) throw new Error('segments must be four or more')
+
+  // if any size is zero return empty geometry
+  if (size[0] === 0 || size[1] === 0) return geom2.create()
+
+  // if roundRadius is zero, return rectangle
+  if (roundRadius === 0) return rectangle({ center, size })
 
   size = size.map((v) => v / 2) // convert to radius
 
@@ -16675,15 +21911,15 @@ const roundedRectangle = (options) => {
   const corner2Points = []
   const corner3Points = []
   for (let i = 0; i <= cornersegments; i++) {
-    const radians = Math.PI / 2 * i / cornersegments
+    const radians = TAU / 4 * i / cornersegments
     const point = vec2.fromAngleRadians(vec2.create(), radians)
     vec2.scale(point, point, roundRadius)
     corner0Points.push(vec2.add(vec2.create(), corner0, point))
-    vec2.rotate(point, point, vec2.create(), Math.PI / 2)
+    vec2.rotate(point, point, vec2.create(), TAU / 4)
     corner1Points.push(vec2.add(vec2.create(), corner1, point))
-    vec2.rotate(point, point, vec2.create(), Math.PI / 2)
+    vec2.rotate(point, point, vec2.create(), TAU / 4)
     corner2Points.push(vec2.add(vec2.create(), corner2, point))
-    vec2.rotate(point, point, vec2.create(), Math.PI / 2)
+    vec2.rotate(point, point, vec2.create(), TAU / 4)
     corner3Points.push(vec2.add(vec2.create(), corner3, point))
   }
 
@@ -16692,10 +21928,10 @@ const roundedRectangle = (options) => {
 
 module.exports = roundedRectangle
 
-},{"../geometries/geom2":36,"../maths/constants":101,"../maths/vec2":197,"./commonChecks":365}],381:[function(require,module,exports){
+},{"../geometries/geom2":42,"../maths/constants":110,"../maths/vec2":206,"./commonChecks":384,"./rectangle":396}],400:[function(require,module,exports){
 const ellipsoid = require('./ellipsoid')
 
-const { isGT } = require('./commonChecks')
+const { isGTE } = require('./commonChecks')
 
 /**
  * Construct a sphere in three dimensional space where all points are at the same distance from the center.
@@ -16720,7 +21956,7 @@ const sphere = (options) => {
   }
   let { center, radius, segments, axes } = Object.assign({}, defaults, options)
 
-  if (!isGT(radius, 0)) throw new Error('radius must be greater than zero')
+  if (!isGTE(radius, 0)) throw new Error('radius must be positive')
 
   radius = [radius, radius, radius]
 
@@ -16729,10 +21965,10 @@ const sphere = (options) => {
 
 module.exports = sphere
 
-},{"./commonChecks":365,"./ellipsoid":371}],382:[function(require,module,exports){
+},{"./commonChecks":384,"./ellipsoid":390}],401:[function(require,module,exports){
 const rectangle = require('./rectangle')
 
-const { isGT } = require('./commonChecks')
+const { isGTE } = require('./commonChecks')
 
 /**
  * Construct an axis-aligned square in two dimensional space with four equal sides at right angles.
@@ -16753,7 +21989,7 @@ const square = (options) => {
   }
   let { center, size } = Object.assign({}, defaults, options)
 
-  if (!isGT(size, 0)) throw new Error('size must be greater than zero')
+  if (!isGTE(size, 0)) throw new Error('size must be positive')
 
   size = [size, size]
 
@@ -16762,7 +21998,8 @@ const square = (options) => {
 
 module.exports = square
 
-},{"./commonChecks":365,"./rectangle":377}],383:[function(require,module,exports){
+},{"./commonChecks":384,"./rectangle":396}],402:[function(require,module,exports){
+const { TAU } = require('../maths/constants')
 const vec2 = require('../maths/vec2')
 
 const geom2 = require('../geometries/geom2')
@@ -16778,7 +22015,7 @@ const getRadiusRatio = (vertices, density) => {
 }
 
 const getPoints = (vertices, radius, startAngle, center) => {
-  const a = (Math.PI * 2) / vertices
+  const a = TAU / vertices
 
   const points = []
   for (let i = 0; i < vertices; i++) {
@@ -16828,7 +22065,7 @@ const star = (options) => {
   vertices = Math.floor(vertices)
   density = Math.floor(density)
 
-  startAngle = startAngle % (Math.PI * 2)
+  startAngle = startAngle % TAU
 
   if (innerRadius === 0) {
     if (!isGTE(density, 2)) throw new Error('density must be two or more')
@@ -16851,7 +22088,9 @@ const star = (options) => {
 
 module.exports = star
 
-},{"../geometries/geom2":36,"../maths/vec2":197,"./commonChecks":365}],384:[function(require,module,exports){
+},{"../geometries/geom2":42,"../maths/constants":110,"../maths/vec2":206,"./commonChecks":384}],403:[function(require,module,exports){
+const { TAU } = require('../maths/constants')
+
 const extrudeRotate = require('../operations/extrusions/extrudeRotate')
 const { rotate } = require('../operations/transforms/rotate')
 const { translate } = require('../operations/transforms/translate')
@@ -16868,7 +22107,7 @@ const { isGT, isGTE } = require('./commonChecks')
  * @param {Integer} [options.innerSegments=32] - number of segments to create per rotation
  * @param {Integer} [options.outerSegments=32] - number of segments to create per rotation
  * @param {Integer} [options.innerRotation=0] - rotation of small (inner) circle in radians
- * @param {Number} [options.outerRotation=(PI * 2)] - rotation (outer) of the torus (RADIANS)
+ * @param {Number} [options.outerRotation=TAU] - rotation (outer) of the torus (RADIANS)
  * @param {Number} [options.startAngle=0] - start angle of the torus (RADIANS)
  * @returns {geom3} new 3D geometry
  * @alias module:modeling/primitives.torus
@@ -16884,7 +22123,7 @@ const torus = (options) => {
     outerSegments: 32,
     innerRotation: 0,
     startAngle: 0,
-    outerRotation: Math.PI * 2
+    outerRotation: TAU
   }
   const { innerRadius, innerSegments, outerRadius, outerSegments, innerRotation, startAngle, outerRotation } = Object.assign({}, defaults, options)
 
@@ -16915,14 +22154,13 @@ const torus = (options) => {
 
 module.exports = torus
 
-},{"../operations/extrusions/extrudeRotate":314,"../operations/transforms/rotate":359,"../operations/transforms/translate":362,"./circle":364,"./commonChecks":365}],385:[function(require,module,exports){
+},{"../maths/constants":110,"../operations/extrusions/extrudeRotate":331,"../operations/transforms/rotate":378,"../operations/transforms/translate":381,"./circle":383,"./commonChecks":384}],404:[function(require,module,exports){
+const { NEPS } = require('../maths/constants')
 const vec2 = require('../maths/vec2')
 
 const geom2 = require('../geometries/geom2')
 
 const { isNumberArray } = require('./commonChecks')
-
-const NEPS = 1e-13
 
 // returns angle C
 const solveAngleFromSSS = (a, b, c) => Math.acos(((a * a) + (b * b) - (c * c)) / (2 * a * b))
@@ -17037,7 +22275,7 @@ const createTriangle = (A, B, C, a, b, c) => {
  * The triangle is always constructed CCW from the origin, [0, 0, 0].
  * @see https://www.mathsisfun.com/algebra/trig-solving-triangles.html
  * @param {Object} [options] - options for construction
- * @param {String} [options.type='SSS' - type of triangle to construct; A ~ angle, S ~ side
+ * @param {String} [options.type='SSS'] - type of triangle to construct; A ~ angle, S ~ side
  * @param {Array} [options.values=[1,1,1]] - angle (radians) of corners or length of sides
  * @returns {geom2} new 2D geometry
  * @alias module:modeling/primitives.triangle
@@ -17081,7 +22319,7 @@ const triangle = (options) => {
 
 module.exports = triangle
 
-},{"../geometries/geom2":36,"../maths/vec2":197,"./commonChecks":365}],386:[function(require,module,exports){
+},{"../geometries/geom2":42,"../maths/constants":110,"../maths/vec2":206,"./commonChecks":384}],405:[function(require,module,exports){
 // -- data source from from http://paulbourke.net/dataformats/hershey/
 // -- reduced to save some bytes...
 // { [ascii code]: [width, x, y, ...] } - undefined value as path separator
@@ -17184,7 +22422,7 @@ module.exports = {
   126: [24, 3, 6, 3, 8, 4, 11, 6, 12, 8, 12, 10, 11, 14, 8, 16, 7, 18, 7, 20, 8, 21, 10, undefined, 3, 8, 4, 10, 6, 11, 8, 11, 10, 10, 14, 7, 16, 6, 18, 6, 20, 7, 21, 10, 21, 12]
 }
 
-},{}],387:[function(require,module,exports){
+},{}],406:[function(require,module,exports){
 /**
  * Texts provide sets of segments for each character or text strings.
  * The segments can be used to create outlines for both 2D and 3D geometry.
@@ -17198,7 +22436,7 @@ module.exports = {
   vectorText: require('./vectorText')
 }
 
-},{"./vectorChar":388,"./vectorText":390}],388:[function(require,module,exports){
+},{"./vectorChar":407,"./vectorText":409}],407:[function(require,module,exports){
 const vectorParams = require('./vectorParams')
 
 /**
@@ -17263,7 +22501,7 @@ const vectorChar = (options, char) => {
 
 module.exports = vectorChar
 
-},{"./vectorParams":389}],389:[function(require,module,exports){
+},{"./vectorParams":408}],408:[function(require,module,exports){
 const defaultFont = require('./fonts/single-line/hershey/simplex.js')
 
 const defaultsVectorParams = {
@@ -17291,7 +22529,7 @@ const vectorParams = (options, input) => {
 
 module.exports = vectorParams
 
-},{"./fonts/single-line/hershey/simplex.js":386}],390:[function(require,module,exports){
+},{"./fonts/single-line/hershey/simplex.js":405}],409:[function(require,module,exports){
 const vectorChar = require('./vectorChar')
 const vectorParams = require('./vectorParams')
 
@@ -17320,7 +22558,7 @@ const translateLine = (options, line) => {
  * @param {Float} [options.height=21] - font size (uppercase height)
  * @param {Float} [options.lineSpacing=1.4] - line spacing expressed as a percentage of font size
  * @param {Float} [options.letterSpacing=1] - extra letter spacing expressed as a percentage of font size
- * @param {String} [options.align='left'] - multi-line text alignement: left, center or right
+ * @param {String} [options.align='left'] - multi-line text alignment: left, center, right
  * @param {Float} [options.extrudeOffset=0] - width of the extrusion that will be applied (manually) after the creation of the character
  * @param {String} [options.input='?'] - ascii string (ignored/overwrited if provided as seconds parameter)
  * @param {String} [text='?'] - ascii string
@@ -17341,7 +22579,7 @@ const vectorText = (options, text) => {
     xOffset, yOffset, input, font, height, align, extrudeOffset, lineSpacing, letterSpacing
   } = vectorParams(options, text)
   let [x, y] = [xOffset, yOffset]
-  let [i, il, char, vect, width, diff] = []
+  let i, il, char, vect, width, diff
   let line = { width: 0, segments: [] }
   const lines = []
   let output = []
@@ -17388,7 +22626,7 @@ const vectorText = (options, text) => {
 
 module.exports = vectorText
 
-},{"./vectorChar":388,"./vectorParams":389}],391:[function(require,module,exports){
+},{"./vectorChar":407,"./vectorParams":408}],410:[function(require,module,exports){
 // list of supported geometries
 const geom2 = require('../geometries/geom2')
 const geom3 = require('../geometries/geom3')
@@ -17401,7 +22639,7 @@ const path2 = require('../geometries/path2')
  */
 const areAllShapesTheSameType = (shapes) => {
   let previousType
-  shapes.forEach((shape) => {
+  for (const shape of shapes) {
     let currentType = 0
     if (geom2.isA(shape)) currentType = 1
     if (geom3.isA(shape)) currentType = 2
@@ -17409,13 +22647,13 @@ const areAllShapesTheSameType = (shapes) => {
 
     if (previousType && currentType !== previousType) return false
     previousType = currentType
-  })
+  }
   return true
 }
 
 module.exports = areAllShapesTheSameType
 
-},{"../geometries/geom2":36,"../geometries/geom3":50,"../geometries/path2":71}],392:[function(require,module,exports){
+},{"../geometries/geom2":42,"../geometries/geom3":57,"../geometries/path2":78}],411:[function(require,module,exports){
 /**
  * Convert the given angle (degrees) to radians.
  * @param {Number} degrees - angle in degrees
@@ -17426,7 +22664,7 @@ const degToRad = (degrees) => degrees * 0.017453292519943295
 
 module.exports = degToRad
 
-},{}],393:[function(require,module,exports){
+},{}],412:[function(require,module,exports){
 /**
  * Flatten the given list of arguments into a single flat array.
  * The arguments can be composed of multiple depths of objects and arrays.
@@ -17438,7 +22676,7 @@ const flatten = (arr) => arr.reduce((acc, val) => Array.isArray(val) ? acc.conca
 
 module.exports = flatten
 
-},{}],394:[function(require,module,exports){
+},{}],413:[function(require,module,exports){
 /**
  * @alias module:modeling/utils.fnNumberSort
  */
@@ -17446,7 +22684,7 @@ const fnNumberSort = (a, b) => a - b
 
 module.exports = fnNumberSort
 
-},{}],395:[function(require,module,exports){
+},{}],414:[function(require,module,exports){
 /**
  * Utility functions of various sorts.
  * @module modeling/utils
@@ -17463,9 +22701,9 @@ module.exports = {
   radToDeg: require('./radToDeg')
 }
 
-},{"./areAllShapesTheSameType":391,"./degToRad":392,"./flatten":393,"./fnNumberSort":394,"./insertSorted":396,"./radToDeg":398,"./radiusToSegments":399}],396:[function(require,module,exports){
+},{"./areAllShapesTheSameType":410,"./degToRad":411,"./flatten":412,"./fnNumberSort":413,"./insertSorted":415,"./radToDeg":417,"./radiusToSegments":418}],415:[function(require,module,exports){
 /**
- * Insert the given element into the give array using the compareFunction.
+ * Insert the given element into the given array using the compareFunction.
  * @alias module:modeling/utils.insertSorted
  */
 const insertSorted = (array, element, comparefunc) => {
@@ -17486,13 +22724,13 @@ const insertSorted = (array, element, comparefunc) => {
 
 module.exports = insertSorted
 
-},{}],397:[function(require,module,exports){
+},{}],416:[function(require,module,exports){
 /**
  * Build an array of at minimum a specified length from an existing array and a padding value. IF the array is already larger than the target length, it will not be shortened.
  * @param {Array} anArray - the source array to copy into the result.
  * @param {*} padding - the value to add to the new array to reach the desired length.
  * @param {Number} targetLength - The desired length of the return array.
- * @returns {Array} an array of at least 'targetLength" length
+ * @returns {Array} an array of at least 'targetLength' length
  * @alias module:modeling/utils.padArrayToLength
  */
 const padArrayToLength = (anArray, padding, targetLength) => {
@@ -17505,7 +22743,7 @@ const padArrayToLength = (anArray, padding, targetLength) => {
 
 module.exports = padArrayToLength
 
-},{}],398:[function(require,module,exports){
+},{}],417:[function(require,module,exports){
 /**
  * Convert the given angle (radians) to degrees.
  * @param {Number} radians - angle in radians
@@ -17516,25 +22754,27 @@ const radToDeg = (radians) => radians * 57.29577951308232
 
 module.exports = radToDeg
 
-},{}],399:[function(require,module,exports){
+},{}],418:[function(require,module,exports){
+const { TAU } = require('../maths/constants')
+
 /**
  * Calculate the number of segments from the given radius based on minimum length or angle.
  * @param {Number} radius - radius of the requested shape
- * @param {Number} minimumLength - minimum length of segments; 0 > length
- * @param {Number} minimumAngle - minimum angle (radians) between segments; 0 > angle < Math.PI * 2
+ * @param {Number} minimumLength - minimum length of segments; length > 0
+ * @param {Number} minimumAngle - minimum angle (radians) between segments; 0 > angle < TAU
  * @returns {Number} number of segments to complete the radius
  * @alias module:modeling/utils.radiusToSegments
  */
 const radiusToSegments = (radius, minimumLength, minimumAngle) => {
-  const ss = minimumLength > 0 ? radius * 2 * Math.PI / minimumLength : 0
-  const as = minimumAngle > 0 ? Math.PI * 2 / minimumAngle : 0
+  const ss = minimumLength > 0 ? radius * TAU / minimumLength : 0
+  const as = minimumAngle > 0 ? TAU / minimumAngle : 0
   // minimum segments is four(4) for round primitives
   return Math.ceil(Math.max(ss, as, 4))
 }
 
 module.exports = radiusToSegments
 
-},{}],400:[function(require,module,exports){
+},{"../maths/constants":110}],419:[function(require,module,exports){
 const { geometries } = require('@jscad/modeling')
 
 // objects must be an array of 3D geomertries (with polygons)
@@ -17594,7 +22834,7 @@ module.exports = {
   serializeText
 }
 
-},{"@jscad/modeling":99}],401:[function(require,module,exports){
+},{"@jscad/modeling":108}],420:[function(require,module,exports){
 const { geometries } = require('@jscad/modeling')
 
 // see http://en.wikipedia.org/wiki/STL_%28file_format%29#Binary_STL
@@ -17684,7 +22924,7 @@ module.exports = {
   serializeBinary
 }
 
-},{"@jscad/modeling":99}],402:[function(require,module,exports){
+},{"@jscad/modeling":108}],421:[function(require,module,exports){
 /*
 JSCAD Geometry to STL Format Serialization
 
@@ -17757,7 +22997,7 @@ module.exports = {
   serialize
 }
 
-},{"./CSGToStla":400,"./CSGToStlb":401,"@jscad/array-utils":5,"@jscad/modeling":99}],403:[function(require,module,exports){
+},{"./CSGToStla":419,"./CSGToStlb":420,"@jscad/array-utils":5,"@jscad/modeling":108}],422:[function(require,module,exports){
 'use strict'
 
 exports.byteLength = byteLength
@@ -17911,7 +23151,7 @@ function fromByteArray (uint8) {
   return parts.join('')
 }
 
-},{}],404:[function(require,module,exports){
+},{}],423:[function(require,module,exports){
 (function (Buffer){
 /*!
  * The buffer module from node.js, for the browser.
@@ -19692,7 +24932,7 @@ function numberIsNaN (obj) {
 }
 
 }).call(this,require("buffer").Buffer)
-},{"base64-js":403,"buffer":404,"ieee754":405}],405:[function(require,module,exports){
+},{"base64-js":422,"buffer":423,"ieee754":424}],424:[function(require,module,exports){
 exports.read = function (buffer, offset, isLE, mLen, nBytes) {
   var e, m
   var eLen = (nBytes * 8) - mLen - 1

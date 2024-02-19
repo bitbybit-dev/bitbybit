@@ -192,7 +192,6 @@ export class JSCADShapes {
             });
         });
     }
-
     
     torus(inputs: Inputs.JSCAD.TorusDto): Inputs.JSCAD.JSCADEntity {
         return this.jscad.primitives.torus({
@@ -205,5 +204,11 @@ export class JSCADShapes {
             outerRotation: Angle.FromDegrees(inputs.outerRotation).radians(),
             startAngle: Angle.FromDegrees(inputs.startAngle).radians(),
         });
+    }
+
+    fromPolygonPoints(inputs: Inputs.JSCAD.FromPolygonPoints): Inputs.JSCAD.JSCADEntity {
+        console.log(this.jscad);
+        const pts = inputs.polygonPoints.map(vertices => vertices.reverse());
+        return this.jscad.geometries.geom3.fromPoints(pts);
     }
 }
