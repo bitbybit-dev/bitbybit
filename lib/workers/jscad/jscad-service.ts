@@ -127,7 +127,7 @@ export class Jscad {
 
     downloadSolidSTL(inputs: Inputs.JSCAD.DownloadSolidDto): { blob: Blob } {
         const rawData = this.jscad.STLSERIALIZER.serialize({ binary: true },
-            this.jscad.transforms.mirror({ normal: [1, 0, 0] }, inputs.mesh)
+            inputs.mesh
         );
         const madeBlob = new Blob(rawData, { type: "application/sla" });
         return { blob: madeBlob };
@@ -135,7 +135,7 @@ export class Jscad {
 
     downloadGeometryDxf(inputs: Inputs.JSCAD.DownloadGeometryDto): { blob: Blob } {
         const rawData = this.jscad.DXFSERIALIZER.serialize({},
-            this.jscad.transforms.mirror({ normal: [1, 0, 0] }, inputs.geometry)
+            inputs.geometry
         );
         const madeBlob = new Blob(rawData);
         return { blob: madeBlob };
@@ -143,9 +143,7 @@ export class Jscad {
 
     downloadSolidsSTL(inputs: Inputs.JSCAD.DownloadSolidsDto): { blob: Blob } {
         const rawData = this.jscad.STLSERIALIZER.serialize({ binary: true },
-            ...inputs.meshes.map(solid => {
-                return this.jscad.transforms.mirror({ normal: [1, 0, 0] }, solid);
-            }));
+            ...inputs.meshes);
         const madeBlob = new Blob(rawData, { type: "application/sla" });
         return { blob: madeBlob };
     }
