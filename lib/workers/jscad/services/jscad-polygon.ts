@@ -15,12 +15,12 @@ export class JSCADPolygon {
     ) { }
 
     createFromPoints(inputs: Inputs.Point.PointsDto): Inputs.JSCAD.JSCADEntity {
-        const twoDimensionalPoints = inputs.points.map(pt => [pt[0], pt[1]]);
+        const twoDimensionalPoints = inputs.points.map(pt => [pt[0], pt[1]]) as Inputs.Base.Point2[];
         return this.removeDuplicatesAndCreateFromPoints(twoDimensionalPoints);
     }
 
     createFromPolyline(inputs: Inputs.Polyline.PolylineDto): Inputs.JSCAD.JSCADEntity {
-        const twoDimensionalPoints = inputs.polyline.points.map(pt => [pt[0], pt[1]]);
+        const twoDimensionalPoints = inputs.polyline.points.map(pt => [pt[0], pt[1]]) as Inputs.Base.Point2[];
         return this.removeDuplicatesAndCreateFromPoints(twoDimensionalPoints);
     }
 
@@ -80,7 +80,7 @@ export class JSCADPolygon {
         });
     }
 
-    private removeDuplicatesAndCreateFromPoints(twoDimensionalPoints: number[][]): Inputs.JSCAD.JSCADEntity {
+    private removeDuplicatesAndCreateFromPoints(twoDimensionalPoints: Inputs.Base.Point2[]): Inputs.JSCAD.JSCADEntity {
         const duplicatePointsRemoved = this.vecHelper.removeConsecutiveDuplicates(twoDimensionalPoints);
         const polygon = this.jscad.primitives.polygon({ points: duplicatePointsRemoved });
         return polygon;

@@ -449,6 +449,13 @@ export namespace JSCAD {
          */
         closed = false;
     }
+    export class PathsFromPointsDto {
+        /**
+         * Points
+         * @default undefined
+         */
+        pointsLists: Base.Point3[][];
+    }
     export class PathFromPolylineDto {
         /**
          * Polyline

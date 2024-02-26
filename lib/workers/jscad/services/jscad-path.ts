@@ -20,6 +20,17 @@ export class JSCADPath {
         return this.removeDuplicatesAndCreateFromPoints(twoDimensionalPoints, inputs.closed);
     }
 
+    createPathsFromPoints(inputs: Inputs.JSCAD.PathsFromPointsDto): Inputs.JSCAD.JSCADEntity[] {
+        return inputs.pointsLists.map(points => {
+            const twoDimensionalPoints = points.map(pt => [pt[0], pt[1]]);
+            if (twoDimensionalPoints.length > 1 &&
+                this.vecHelper.vectorsTheSame(twoDimensionalPoints[0], twoDimensionalPoints[twoDimensionalPoints.length - 1], 0.00001)) {
+                return this.removeDuplicatesAndCreateFromPoints(twoDimensionalPoints, true);
+            }
+            return this.removeDuplicatesAndCreateFromPoints(twoDimensionalPoints, false);
+        });
+    }
+
     createFromPolyline(inputs: Inputs.JSCAD.PathFromPolylineDto): Inputs.JSCAD.JSCADEntity {
         const twoDimensionalPoints = inputs.polyline.points.map(pt => [pt[0], pt[1]]);
         return this.removeDuplicatesAndCreateFromPoints(twoDimensionalPoints, inputs.closed);
@@ -41,7 +52,7 @@ export class JSCADPath {
 
     appendPolyline(inputs: Inputs.JSCAD.PathAppendPolylineDto): Inputs.JSCAD.JSCADEntity {
         const twoDimensionalPoints = inputs.polyline.points.map(pt => [pt[0], pt[1]]) as Base.Point2[];
-        return this.appendPoints({points: twoDimensionalPoints, path: inputs.path});
+        return this.appendPoints({ points: twoDimensionalPoints, path: inputs.path });
     }
 
     appendArc(inputs: Inputs.JSCAD.PathAppendArcDto): Inputs.JSCAD.JSCADEntity {

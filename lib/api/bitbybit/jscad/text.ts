@@ -48,6 +48,5 @@ export class JSCADText {
      */
     async createVectorText(inputs: Inputs.JSCAD.TextDto): Promise<number[][]> {
         return this.jscadWorkerManager.genericCallToWorkerPromise("text.createVectorText", inputs);
-
     }
 }

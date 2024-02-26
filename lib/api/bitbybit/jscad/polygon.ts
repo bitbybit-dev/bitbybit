@@ -16,9 +16,9 @@ export class JSCADPolygon {
     /**
      * Create a 2D polygon from a list of points
      * @param inputs Points
-     * @returns Path
+     * @returns Polygons
      * @group from
-     * @shortname points
+     * @shortname polygon from points
      * @drawable true
      */
     async createFromPoints(inputs: Inputs.Point.PointsDto): Promise<Inputs.JSCAD.JSCADEntity> {
@@ -93,7 +93,7 @@ export class JSCADPolygon {
      * @shortname rectangle
      * @drawable true
      */
-    async  rectangle(inputs: Inputs.JSCAD.RectangleDto): Promise<Inputs.JSCAD.JSCADEntity> {
+    async rectangle(inputs: Inputs.JSCAD.RectangleDto): Promise<Inputs.JSCAD.JSCADEntity> {
         return this.jscadWorkerManager.genericCallToWorkerPromise("polygon.rectangle", inputs);
     }
 

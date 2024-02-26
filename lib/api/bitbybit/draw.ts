@@ -88,7 +88,7 @@ export class Draw {
      */
     async drawAnyAsync(inputs: Inputs.Draw.DrawAny): Promise<BABYLON.Mesh> {
         const entity = inputs.entity;
-        if(entity === undefined || (Array.isArray(entity) && entity.length === 0)) {
+        if (entity === undefined || (Array.isArray(entity) && entity.length === 0)) {
             return Promise.resolve(undefined);
         }
         // we start with async ones

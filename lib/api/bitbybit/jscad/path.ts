@@ -27,6 +27,18 @@ export class JSCADPath {
 
 
     /**
+     * Create 2D paths from a lists of points
+     * @param inputs Points lists
+     * @returns Paths
+     * @group from
+     * @shortname paths from points
+     * @drawable true
+     */
+    async createPathsFromPoints(inputs: Inputs.JSCAD.PathsFromPointsDto): Promise<Inputs.JSCAD.JSCADEntity[]> {
+        return this.jscadWorkerManager.genericCallToWorkerPromise("path.createPathsFromPoints", inputs);
+    }
+
+    /**
      * Create a 2D path from a polyline
      * @param inputs Polyline and indication if we want a closed path or not
      * @returns Path
