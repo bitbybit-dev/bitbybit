@@ -14,6 +14,10 @@ export namespace Polyline {
          * Points of the polyline
          */
         points: Base.Point3[];
+        /**
+         * Can contain is closed information
+         */
+        isClosed? = false;
     }
     export class PolylineDto {
         /**

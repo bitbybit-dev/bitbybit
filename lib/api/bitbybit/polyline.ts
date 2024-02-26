@@ -19,9 +19,14 @@ export class Polyline {
      * @returns Lines mesh that is being drawn by Babylon
      */
     drawPolyline(inputs: Inputs.Polyline.DrawPolylineDto): LinesMesh {
+        // handle jscad isClosed case
+        const points = inputs.polyline.points;
+        if (inputs.polyline.isClosed) {
+            points.push(points[0]);
+        }
         return this.geometryHelper.drawPolyline(
             inputs.polylineMesh,
-            inputs.polyline.points,
+            points,
             inputs.updatable,
             inputs.size,
             inputs.opacity,
@@ -35,7 +40,14 @@ export class Polyline {
      * @returns Lines mesh that is being drawn by Babylon
      */
     drawPolylines(inputs: Inputs.Polyline.DrawPolylinesDto): LinesMesh {
-        const points = inputs.polylines.map(s => s.points);
+        const points = inputs.polylines.map(s => {
+            const pts = s.points;
+            //handle jscad
+            if (s.isClosed) {
+                pts.push(pts[0]);
+            }
+            return pts;
+        });
         return this.geometryHelper.drawPolylines(
             inputs.polylinesMesh,
             points,
