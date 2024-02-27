@@ -4,6 +4,9 @@
 export namespace Text {
 
     export class TextDto {
+        constructor(text?: string) {
+            if (text !== undefined) { this.text = text; }
+        }
         /**
          * The text
          * @default Hello World
@@ -12,6 +15,10 @@ export namespace Text {
     }
 
     export class TextSplitDto {
+        constructor(text?: string, separator?: string) {
+            if (text !== undefined) { this.text = text; }
+            if (separator !== undefined) { this.separator = separator; }
+        }
         /**
          * Text to split
          * @default a,b,c
@@ -24,6 +31,11 @@ export namespace Text {
         separator = ",";
     }
     export class TextReplaceDto {
+        constructor(text?: string, search?: string, replaceWith?: string) {
+            if (text !== undefined) { this.text = text; }
+            if (search !== undefined) { this.search = search; }
+            if (replaceWith !== undefined) { this.replaceWith = replaceWith; }
+        }
         /**
          * Text to replace
          * @default a-c
@@ -41,6 +53,10 @@ export namespace Text {
         replaceWith = "b";
     }
     export class TextJoinDto {
+        constructor(list?: string[], separator?: string) {
+            if (list !== undefined) { this.list = list; }
+            if (separator !== undefined) { this.separator = separator; }
+        }
         /**
          * Text to join
          * @default undefined
@@ -53,6 +69,9 @@ export namespace Text {
         separator = ",";
     }
     export class ToStringDto<T> {
+        constructor(item?: T) {
+            if (item !== undefined) { this.item = item; }
+        }
         /**
          * Item to stringify
          * @default undefined
@@ -60,6 +79,9 @@ export namespace Text {
         item: T;
     }
     export class ToStringEachDto<T> {
+        constructor(list?: T[]) {
+            if (list !== undefined) { this.list = list; }
+        }
         /**
          * Item to stringify
          * @default undefined

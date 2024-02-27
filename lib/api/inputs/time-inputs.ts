@@ -2,6 +2,10 @@
 
 export namespace Time {
     export class PostFromIframe {
+        constructor(data?: any, targetOrigin?: string) {
+            if (data !== undefined) { this.data = data; }
+            if (targetOrigin !== undefined) { this.targetOrigin = targetOrigin; }
+        }
         /**
          * The data object to post
          */

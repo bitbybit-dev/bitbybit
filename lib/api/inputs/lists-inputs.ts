@@ -10,6 +10,11 @@ export namespace Lists {
     }
 
     export class ListItemDto<T> {
+        constructor(list?: T[], index?: number, clone?: boolean) {
+            if (list !== undefined) { this.list = list; }
+            if (index !== undefined) { this.index = index; }
+            if (clone !== undefined) { this.clone = clone; }
+        }
         /**
          * The list to interrogate
          * @default undefined
@@ -30,6 +35,12 @@ export namespace Lists {
         clone? = true;
     }
     export class SubListDto<T> {
+        constructor(list?: T[], indexStart?: number, indexEnd?: number, clone?: boolean) {
+            if (list !== undefined) { this.list = list; }
+            if (indexStart !== undefined) { this.indexStart = indexStart; }
+            if (indexEnd !== undefined) { this.indexEnd = indexEnd; }
+            if (clone !== undefined) { this.clone = clone; }
+        }
         /**
          * The list to split into a sublist
          * @default undefined
@@ -58,6 +69,10 @@ export namespace Lists {
         clone? = true;
     }
     export class ListDto<T> {
+        constructor(list?: T[], clone?: boolean) {
+            if (list !== undefined) { this.list = list; }
+            if (clone !== undefined) { this.clone = clone; }
+        }
         /**
          * The list to interrogate
          * @default undefined
@@ -70,6 +85,11 @@ export namespace Lists {
         clone? = true;
     }
     export class GroupListDto<T> {
+        constructor(list?: T[], nrElements?: number, keepRemainder?: boolean) {
+            if (list !== undefined) { this.list = list; }
+            if (nrElements !== undefined) { this.nrElements = nrElements; }
+            if (keepRemainder !== undefined) { this.keepRemainder = keepRemainder; }
+        }
         /**
          * The list of elements to group together
          * @default undefined
@@ -90,6 +110,10 @@ export namespace Lists {
         keepRemainder = false;
     }
     export class MultiplyItemDto<T> {
+        constructor(item?: T, times?: number) {
+            if (item !== undefined) { this.item = item; }
+            if (times !== undefined) { this.times = times; }
+        }
         /**
          * The item to multiply
          * @default undefined
@@ -105,6 +129,12 @@ export namespace Lists {
         times: number;
     }
     export class AddItemAtIndexDto<T> {
+        constructor(list?: T[], item?: T, index?: number, clone?: boolean) {
+            if (list !== undefined) { this.list = list; }
+            if (item !== undefined) { this.item = item; }
+            if (index !== undefined) { this.index = index; }
+            if (clone !== undefined) { this.clone = clone; }
+        }
         /**
          * The list to which item needs to be added
          * @default undefined
@@ -130,6 +160,12 @@ export namespace Lists {
         clone? = true;
     }
     export class AddItemAtIndexesDto<T> {
+        constructor(list?: T[], item?: T, indexes?: number[], clone?: boolean) {
+            if (list !== undefined) { this.list = list; }
+            if (item !== undefined) { this.item = item; }
+            if (indexes !== undefined) { this.indexes = indexes; }
+            if (clone !== undefined) { this.clone = clone; }
+        }
         /**
          * The list to which item needs to be added
          * @default undefined
@@ -153,6 +189,12 @@ export namespace Lists {
     }
 
     export class AddItemsAtIndexesDto<T> {
+        constructor(list?: T[], items?: T[], indexes?: number[], clone?: boolean) {
+            if (list !== undefined) { this.list = list; }
+            if (items !== undefined) { this.items = items; }
+            if (indexes !== undefined) { this.indexes = indexes; }
+            if (clone !== undefined) { this.clone = clone; }
+        }
         /**
          * The list to which item needs to be added
          * @default undefined
@@ -175,6 +217,11 @@ export namespace Lists {
         clone? = true;
     }
     export class RemoveItemAtIndexDto<T> {
+        constructor(list?: T[], index?: number, clone?: boolean) {
+            if (list !== undefined) { this.list = list; }
+            if (index !== undefined) { this.index = index; }
+            if (clone !== undefined) { this.clone = clone; }
+        }
         /**
         * The list from which item needs to be removed
         * @default undefined
@@ -195,6 +242,12 @@ export namespace Lists {
         clone? = true;
     }
     export class RemoveNthItemDto<T> {
+        constructor(list?: T[], nth?: number, offset?: number, clone?: boolean) {
+            if (list !== undefined) { this.list = list; }
+            if (nth !== undefined) { this.nth = nth; }
+            if (offset !== undefined) { this.offset = offset; }
+            if (clone !== undefined) { this.clone = clone; }
+        }
         /**
         * The list from which item needs to be removed
         * @default undefined
@@ -223,6 +276,10 @@ export namespace Lists {
         clone? = true;
     }
     export class GetByPatternDto<T> {
+        constructor(list?: T[], pattern?: boolean[]) {
+            if (list !== undefined) { this.list = list; }
+            if (pattern !== undefined) { this.pattern = pattern; }
+        }
         /**
         * The list from which we need to get an item
         * @default undefined
@@ -235,6 +292,12 @@ export namespace Lists {
         pattern: boolean[] = [true, true, false];
     }
     export class GetNthItemDto<T> {
+        constructor(list?: T[], nth?: number, offset?: number, clone?: boolean) {
+            if (list !== undefined) { this.list = list; }
+            if (nth !== undefined) { this.nth = nth; }
+            if (offset !== undefined) { this.offset = offset; }
+            if (clone !== undefined) { this.clone = clone; }
+        }
         /**
         * The list from which we need to get an item
         * @default undefined
@@ -263,6 +326,9 @@ export namespace Lists {
         clone? = true;
     }
     export class GetLongestListLength<T> {
+        constructor(lists?: T[]) {
+            if (lists !== undefined) { this.lists = lists; }
+        }
         /**
          * The list from which we need to get an item
          * @default undefined
@@ -270,6 +336,10 @@ export namespace Lists {
         lists: T[];
     }
     export class MergeElementsOfLists<T> {
+        constructor(lists?: T[], level?: number) {
+            if (lists !== undefined) { this.lists = lists; }
+            if (level !== undefined) { this.level = level; }
+        }
         /**
         * The list from which we need to get an item
         * @default undefined
@@ -285,6 +355,12 @@ export namespace Lists {
         level = 0;
     }
     export class AddItemFirstLastDto<T> {
+        constructor(list?: T[], item?: T, position?: firstLastEnum, clone?: boolean) {
+            if (list !== undefined) { this.list = list; }
+            if (item !== undefined) { this.item = item; }
+            if (position !== undefined) { this.position = position; }
+            if (clone !== undefined) { this.clone = clone; }
+        }
         /**
          * The list to which item needs to be added
          * @default undefined

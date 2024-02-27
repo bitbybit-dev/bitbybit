@@ -3,7 +3,7 @@
 export namespace Asset {
     export class GetAssetDto {
         constructor(fileName?: string) {
-            this.fileName = fileName;
+            if (fileName !== undefined) { this.fileName = fileName; }
         }
         /**
          * The fileName associated with the projects asset
@@ -13,7 +13,7 @@ export namespace Asset {
     }
     export class FileDto {
         constructor(file?: File | Blob) {
-            this.file ??= file;
+            if (file !== undefined) { this.file = file; }
         }
         /**
          * Asset file that was loaded
@@ -23,7 +23,7 @@ export namespace Asset {
     }
     export class FilesDto {
         constructor(files?: (File | Blob)[]) {
-            this.files ??= files;
+            if (files !== undefined) { this.files = files; }
         }
         /**
          * Asset file that was loaded
@@ -32,8 +32,9 @@ export namespace Asset {
         files: (File | Blob)[];
     }
     export class AssetFileDto {
-        constructor(assetFile?: File) {
-            this.assetFile = assetFile;
+        constructor(assetFile?: File, hidden?: boolean) {
+            if (assetFile !== undefined) { this.assetFile = assetFile; }
+            if (hidden !== undefined) { this.hidden = hidden; }
         }
         /**
          * Asset file that was loaded
@@ -47,6 +48,11 @@ export namespace Asset {
         hidden = false;
     }
     export class AssetFileByUrlDto {
+        constructor(assetFile?: string, rootUrl?: string, hidden?: boolean) {
+            if (assetFile !== undefined) { this.assetFile = assetFile; }
+            if (rootUrl !== undefined) { this.rootUrl = rootUrl; }
+            if (hidden !== undefined) { this.hidden = hidden; }
+        }
         /**
          * Asset file name
          * @default undefined

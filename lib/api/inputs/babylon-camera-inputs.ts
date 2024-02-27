@@ -1,9 +1,21 @@
-import { Camera, TargetCamera } from "@babylonjs/core";
+import * as BABYLON from "@babylonjs/core";
 import { Base } from "./base-inputs";
 
 /* eslint-disable @typescript-eslint/no-namespace */
 export namespace BabylonCamera {
     export class ArcRotateCameraDto {
+        constructor(radius?: number, alpha?: number, beta?: number, lowerBetaLimit?: number, upperBetaLimit?: number, angularSensibilityX?: number, angularSensibilityY?: number, panningSensibility?: number, wheelPrecision?: number, maxZ?: number) {
+            if (radius !== undefined) { this.radius = radius; }
+            if (alpha !== undefined) { this.alpha = alpha; }
+            if (beta !== undefined) { this.beta = beta; }
+            if (lowerBetaLimit !== undefined) { this.lowerBetaLimit = lowerBetaLimit; }
+            if (upperBetaLimit !== undefined) { this.upperBetaLimit = upperBetaLimit; }
+            if (angularSensibilityX !== undefined) { this.angularSensibilityX = angularSensibilityX; }
+            if (angularSensibilityY !== undefined) { this.angularSensibilityY = angularSensibilityY; }
+            if (panningSensibility !== undefined) { this.panningSensibility = panningSensibility; }
+            if (wheelPrecision !== undefined) { this.wheelPrecision = wheelPrecision; }
+            if (maxZ !== undefined) { this.maxZ = maxZ; }
+        }
         /**
          * Defines the camera distance from its target. This radius will be used to rotate the camera around the target as default.
          * @default 20
@@ -91,6 +103,10 @@ export namespace BabylonCamera {
         maxZ = 1000;
     }
     export class FreeCameraDto {
+        constructor(position?: Base.Point3, target?: Base.Point3) {
+            if (position !== undefined) { this.position = position; }
+            if (target !== undefined) { this.target = target; }
+        }
         /**
          * Position of the free camera
          */
@@ -101,6 +117,10 @@ export namespace BabylonCamera {
         target: Base.Point3 = [0, 0, 0];
     }
     export class TargetCameraDto {
+        constructor(position?: Base.Point3, target?: Base.Point3) {
+            if (position !== undefined) { this.position = position; }
+            if (target !== undefined) { this.target = target; }
+        }
         /**
          * Position of the free camera
          */
@@ -111,50 +131,70 @@ export namespace BabylonCamera {
         target: Base.Point3 = [0, 0, 0];
     }
     export class PositionDto {
+        constructor(camera?: BABYLON.TargetCamera, position?: Base.Point3) {
+            if (camera !== undefined) { this.camera = camera; }
+            if (position !== undefined) { this.position = position; }
+        }
         /**
          * Target camera
          */
-        camera: TargetCamera;
+        camera: BABYLON.TargetCamera;
         /**
          * Position of the free camera
          */
         position: Base.Point3;
     }
     export class SpeedDto {
+        constructor(camera?: BABYLON.TargetCamera, speed?: number) {
+            if (camera !== undefined) { this.camera = camera; }
+            if (speed !== undefined) { this.speed = speed; }
+        }
         /**
          * Target camera
          */
-        camera: TargetCamera;
+        camera: BABYLON.TargetCamera;
         /**
          * speed of the camera
          */
         speed: number;
     }
     export class TargetDto {
+        constructor(camera?: BABYLON.TargetCamera, target?: Base.Point3) {
+            if (camera !== undefined) { this.camera = camera; }
+            if (target !== undefined) { this.target = target; }
+        }
         /**
          * Target camera
          */
-        camera: TargetCamera;
+        camera: BABYLON.TargetCamera;
         /**
          * target of the camera
          */
         target: Base.Point3;
     }
     export class MinZDto {
+        constructor(camera?: BABYLON.Camera, minZ?: number) {
+            if (camera !== undefined) { this.camera = camera; }
+            if (minZ !== undefined) { this.minZ = minZ; }
+        }
         /**
          * Free camera
          */
-        camera: Camera;
+        camera: BABYLON.Camera;
         /**
          * minZ of the camera
          */
         minZ = 0;
     }
     export class MaxZDto {
+        constructor(camera?: BABYLON.Camera, maxZ?: number) {
+            if (camera !== undefined) { this.camera = camera; }
+            if (maxZ !== undefined) { this.maxZ = maxZ; }
+        }
         /**
          * Free camera
          */
-        camera: Camera;
+        camera: BABYLON.Camera;
         /**
          * maxZ of the camera
          */
@@ -162,9 +202,12 @@ export namespace BabylonCamera {
     }
 
     export class CameraDto {
+        constructor(camera?: BABYLON.Camera) {
+            if (camera !== undefined) { this.camera = camera; }
+        }
         /**
          * Camera
          */
-        camera: Camera;
+        camera: BABYLON.Camera;
     }
 }

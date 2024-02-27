@@ -7,18 +7,28 @@ import { Base } from "./base-inputs";
 export namespace Verb {
 
     export class CurveDto {
+        constructor(curve?: any) {
+            if (curve !== undefined) { this.curve = curve; }
+        }
         /**
          * Nurbs curve
          */
         curve: any;
     }
     export class CurvesDto {
+        constructor(curves?: any[]) {
+            if (curves !== undefined) { this.curves = curves; }
+        }
         /**
          * Nurbs curves
          */
         curves: any[];
     }
     export class ClosestPointDto {
+        constructor(curve?: any, point?: Base.Point3) {
+            if (curve !== undefined) { this.curve = curve; }
+            if (point !== undefined) { this.point = point; }
+        }
         /**
          * Nurbs curve
          */
@@ -29,6 +39,11 @@ export namespace Verb {
         point: Base.Point3;
     }
     export class ClosestPointsDto {
+        constructor(curve?: any, points?: Base.Point3[]) {
+            if (curve !== undefined) { this.curve = curve; }
+            if (points !== undefined) { this.points = points; }
+        }
+
         /**
          * Nurbs curve
          */
@@ -39,6 +54,10 @@ export namespace Verb {
         points: Base.Point3[];
     }
     export class BezierCurveDto {
+        constructor(points?: Base.Point3[], weights?: number[]) {
+            if (points !== undefined) { this.points = points; }
+            if (weights !== undefined) { this.weights = weights; }
+        }
         /**
          * Control points
          */
@@ -52,8 +71,13 @@ export namespace Verb {
         /**
          * Provide options without default values
          */
-        constructor(curve?: any) {
-            this.curve = curve;
+        constructor(curve?: any, opacity?: number, colours?: string | string[], size?: number, updatable?: boolean, curveMesh?: LinesMesh) {
+            if (curve !== undefined) { this.curve = curve; }
+            if (opacity !== undefined) { this.opacity = opacity; }
+            if (colours !== undefined) { this.colours = colours; }
+            if (size !== undefined) { this.size = size; }
+            if (updatable !== undefined) { this.updatable = updatable; }
+            if (curveMesh !== undefined) { this.curveMesh = curveMesh; }
         }
         /**
          * Nurbs curve
@@ -81,6 +105,10 @@ export namespace Verb {
         curveMesh?: LinesMesh;
     }
     export class CurveParameterDto {
+        constructor(curve?: any, parameter?: number) {
+            if (curve !== undefined) { this.curve = curve; }
+            if (parameter !== undefined) { this.parameter = parameter; }
+        }
         /**
          * Nurbs curve
          */
@@ -91,6 +119,10 @@ export namespace Verb {
         parameter: number;
     }
     export class CurvesParameterDto {
+        constructor(curves?: any[], parameter?: number) {
+            if (curves !== undefined) { this.curves = curves; }
+            if (parameter !== undefined) { this.parameter = parameter; }
+        }
         /**
          * Nurbs curve
          */
@@ -101,6 +133,10 @@ export namespace Verb {
         parameter: number;
     }
     export class CurveTransformDto {
+        constructor(curve?: any, transformation?: Base.TransformMatrixes) {
+            if (curve !== undefined) { this.curve = curve; }
+            if (transformation !== undefined) { this.transformation = transformation; }
+        }
         /**
          * Nurbs curve
          */
@@ -111,6 +147,10 @@ export namespace Verb {
         transformation: Base.TransformMatrixes;
     }
     export class CurvesTransformDto {
+        constructor(curves?: any[], transformation?: Base.TransformMatrixes) {
+            if (curves !== undefined) { this.curves = curves; }
+            if (transformation !== undefined) { this.transformation = transformation; }
+        }
         /**
          * Nurbs curve
          */
@@ -121,6 +161,10 @@ export namespace Verb {
         transformation: Base.TransformMatrixes;
     }
     export class CurveToleranceDto {
+        constructor(curve?: any, tolerance?: number) {
+            if (curve !== undefined) { this.curve = curve; }
+            if (tolerance !== undefined) { this.tolerance = tolerance; }
+        }
         /**
          * Nurbs curve
          */
@@ -132,6 +176,11 @@ export namespace Verb {
     }
 
     export class CurveLengthToleranceDto {
+        constructor(curve?: any, length?: number, tolerance?: number) {
+            if (curve !== undefined) { this.curve = curve; }
+            if (length !== undefined) { this.length = length; }
+            if (tolerance !== undefined) { this.tolerance = tolerance; }
+        }
         /**
          * Nurbs curve
          */
@@ -146,6 +195,11 @@ export namespace Verb {
         tolerance: number;
     }
     export class CurveDerivativesDto {
+        constructor(curve?: any, parameter?: number, numDerivatives?: number) {
+            if (curve !== undefined) { this.curve = curve; }
+            if (parameter !== undefined) { this.parameter = parameter; }
+            if (numDerivatives !== undefined) { this.numDerivatives = numDerivatives; }
+        }
         /**
          * Nurbs curve
          */
@@ -160,6 +214,10 @@ export namespace Verb {
         parameter: number;
     }
     export class CurveSubdivisionsDto {
+        constructor(curve?: any, subdivision?: number) {
+            if (curve !== undefined) { this.curve = curve; }
+            if (subdivision !== undefined) { this.subdivision = subdivision; }
+        }
         /**
          * Nurbs curve
          */
@@ -170,6 +228,10 @@ export namespace Verb {
         subdivision: number;
     }
     export class CurvesSubdivisionsDto {
+        constructor(curves?: any[], subdivision?: number) {
+            if (curves !== undefined) { this.curves = curves; }
+            if (subdivision !== undefined) { this.subdivision = subdivision; }
+        }
         /**
          * Nurbs curves
          */
@@ -180,6 +242,10 @@ export namespace Verb {
         subdivision: number;
     }
     export class CurvesDivideLengthDto {
+        constructor(curves?: any[], length?: number) {
+            if (curves !== undefined) { this.curves = curves; }
+            if (length !== undefined) { this.length = length; }
+        }
         /**
          * Nurbs curves
          */
@@ -190,6 +256,10 @@ export namespace Verb {
         length: number;
     }
     export class CurveDivideLengthDto {
+        constructor(curve?: any, length?: number) {
+            if (curve !== undefined) { this.curve = curve; }
+            if (length !== undefined) { this.length = length; }
+        }
         /**
          * Nurbs curve
          */
@@ -203,9 +273,15 @@ export namespace Verb {
         /**
          * Provide options without default values
          */
-        constructor(curves?: any[]) {
-            this.curves = curves;
+        constructor(curves?: any[], opacity?: number, colours?: string | string[], size?: number, updatable?: boolean, curvesMesh?: LinesMesh) {
+            if (curves !== undefined) { this.curves = curves; }
+            if (opacity !== undefined) { this.opacity = opacity; }
+            if (colours !== undefined) { this.colours = colours; }
+            if (size !== undefined) { this.size = size; }
+            if (updatable !== undefined) { this.updatable = updatable; }
+            if (curvesMesh !== undefined) { this.curvesMesh = curvesMesh; }
         }
+
         /**
          * Nurbs curves
          */
@@ -232,6 +308,12 @@ export namespace Verb {
         curvesMesh?: LinesMesh;
     }
     export class CurveNurbsDataDto {
+        constructor(degree?: number, weights?: number[], knots?: number[], points?: Base.Point3[]) {
+            if (degree !== undefined) { this.degree = degree; }
+            if (weights !== undefined) { this.weights = weights; }
+            if (knots !== undefined) { this.knots = knots; }
+            if (points !== undefined) { this.points = points; }
+        }
         /**
          * Nurbs curve degree
          */
@@ -250,6 +332,10 @@ export namespace Verb {
         points: Base.Point3[];
     }
     export class CurvePathDataDto {
+        constructor(degree?: number, points?: Base.Point3[]) {
+            if (degree !== undefined) { this.degree = degree; }
+            if (points !== undefined) { this.points = points; }
+        }
         /**
          * Nurbs curve degree
          */
@@ -260,24 +346,38 @@ export namespace Verb {
         points: Base.Point3[];
     }
     export class EllipseDto {
+        constructor(ellipse?: any) {
+            if (ellipse !== undefined) { this.ellipse = ellipse; }
+        }
         /**
          * Nurbs ellipse
          */
         ellipse: any;
     }
     export class CircleDto {
+        constructor(circle?: any) {
+            if (circle !== undefined) { this.circle = circle; }
+        }
         /**
          * Nurbs circle
          */
         circle: any;
     }
     export class ArcDto {
+        constructor(arc?: any) {
+            if (arc !== undefined) { this.arc = arc; }
+        }
         /**
          * Nurbs arc
          */
         arc: any;
     }
     export class EllipseParametersDto {
+        constructor(xAxis?: Base.Vector3, yAxis?: Base.Vector3, center?: Base.Point3) {
+            if (xAxis !== undefined) { this.xAxis = xAxis; }
+            if (yAxis !== undefined) { this.yAxis = yAxis; }
+            if (center !== undefined) { this.center = center; }
+        }
         /**
          * X axis of the circle
          */
@@ -292,6 +392,12 @@ export namespace Verb {
         center: Base.Point3;
     }
     export class CircleParametersDto {
+        constructor(xAxis?: Base.Vector3, yAxis?: Base.Vector3, radius?: number, center?: Base.Point3) {
+            if (xAxis !== undefined) { this.xAxis = xAxis; }
+            if (yAxis !== undefined) { this.yAxis = yAxis; }
+            if (radius !== undefined) { this.radius = radius; }
+            if (center !== undefined) { this.center = center; }
+        }
         /**
          * X axis of the circle
          */
@@ -310,6 +416,14 @@ export namespace Verb {
         center: Base.Point3;
     }
     export class ArcParametersDto {
+        constructor(minAngle?: number, maxAngle?: number, xAxis?: Base.Vector3, yAxis?: Base.Vector3, radius?: number, center?: Base.Point3) {
+            if (minAngle !== undefined) { this.minAngle = minAngle; }
+            if (maxAngle !== undefined) { this.maxAngle = maxAngle; }
+            if (xAxis !== undefined) { this.xAxis = xAxis; }
+            if (yAxis !== undefined) { this.yAxis = yAxis; }
+            if (radius !== undefined) { this.radius = radius; }
+            if (center !== undefined) { this.center = center; }
+        }
         /**
          * Minimum angle in degrees
          */
@@ -336,6 +450,13 @@ export namespace Verb {
         center: Base.Point3;
     }
     export class EllipseArcParametersDto {
+        constructor(minAngle?: number, maxAngle?: number, xAxis?: Base.Vector3, yAxis?: Base.Vector3, center?: Base.Point3) {
+            if (minAngle !== undefined) { this.minAngle = minAngle; }
+            if (maxAngle !== undefined) { this.maxAngle = maxAngle; }
+            if (xAxis !== undefined) { this.xAxis = xAxis; }
+            if (yAxis !== undefined) { this.yAxis = yAxis; }
+            if (center !== undefined) { this.center = center; }
+        }
         /**
          * Minimum angle in degrees
          */
@@ -358,12 +479,19 @@ export namespace Verb {
         center: Base.Point3;
     }
     export class SurfaceDto {
+        constructor(surface?: any) {
+            if (surface !== undefined) { this.surface = surface; }
+        }
         /**
          * Nurbs surface
          */
         surface: any;
     }
     export class SurfaceTransformDto {
+        constructor(surface?: any, transformation?: Base.TransformMatrixes) {
+            if (surface !== undefined) { this.surface = surface; }
+            if (transformation !== undefined) { this.transformation = transformation; }
+        }
         /**
          * Nurbs surface
          */
@@ -374,6 +502,11 @@ export namespace Verb {
         transformation: Base.TransformMatrixes;
     }
     export class SurfaceParameterDto {
+        constructor(surface?: any, parameter?: number, useV?: boolean) {
+            if (surface !== undefined) { this.surface = surface; }
+            if (parameter !== undefined) { this.parameter = parameter; }
+            if (useV !== undefined) { this.useV = useV; }
+        }
         /**
          * Nurbs surface
          */
@@ -388,6 +521,11 @@ export namespace Verb {
         useV: boolean;
     }
     export class IsocurvesParametersDto {
+        constructor(surface?: any, parameters?: number[], useV?: boolean) {
+            if (surface !== undefined) { this.surface = surface; }
+            if (parameters !== undefined) { this.parameters = parameters; }
+            if (useV !== undefined) { this.useV = useV; }
+        }
         /**
          * Nurbs surface
          */
@@ -405,9 +543,12 @@ export namespace Verb {
         /**
          * Provide undefined options
          */
-        constructor(surface?: any, isocurveSegments?: number) {
-            this.surface = surface;
-            this.isocurveSegments = isocurveSegments;
+        constructor(surface?: any, useV?: boolean, includeLast?: boolean, includeFirst?: boolean, isocurveSegments?: number) {
+            if (surface !== undefined) { this.surface = surface; }
+            if (useV !== undefined) { this.useV = useV; }
+            if (includeLast !== undefined) { this.includeLast = includeLast; }
+            if (includeFirst !== undefined) { this.includeFirst = includeFirst; }
+            if (isocurveSegments !== undefined) { this.isocurveSegments = isocurveSegments; }
         }
         /**
          * Nurbs surface
@@ -431,6 +572,12 @@ export namespace Verb {
         isocurveSegments: number;
     }
     export class DerivativesDto {
+        constructor(surface?: any, u?: number, v?: number, numDerivatives?: number) {
+            if (surface !== undefined) { this.surface = surface; }
+            if (u !== undefined) { this.u = u; }
+            if (v !== undefined) { this.v = v; }
+            if (numDerivatives !== undefined) { this.numDerivatives = numDerivatives; }
+        }
         /**
          * Nurbs surface
          */
@@ -449,6 +596,11 @@ export namespace Verb {
         numDerivatives: number;
     }
     export class SurfaceLocationDto {
+        constructor(surface?: any, u?: number, v?: number) {
+            if (surface !== undefined) { this.surface = surface; }
+            if (u !== undefined) { this.u = u; }
+            if (v !== undefined) { this.v = v; }
+        }
         /**
          * Nurbs surface
          */
@@ -463,6 +615,12 @@ export namespace Verb {
         v: number;
     }
     export class CornersDto {
+        constructor(point1?: Base.Point3, point2?: Base.Point3, point3?: Base.Point3, point4?: Base.Point3) {
+            if (point1 !== undefined) { this.point1 = point1; }
+            if (point2 !== undefined) { this.point2 = point2; }
+            if (point3 !== undefined) { this.point3 = point3; }
+            if (point4 !== undefined) { this.point4 = point4; }
+        }
         /**
          * Corner 1
          */
@@ -481,6 +639,10 @@ export namespace Verb {
         point4: Base.Point3;
     }
     export class SurfaceParamDto {
+        constructor(surface?: any, point?: Base.Point3) {
+            if (surface !== undefined) { this.surface = surface; }
+            if (point !== undefined) { this.point = point; }
+        }
         /**
          * Nurbs surface
          */
@@ -491,6 +653,14 @@ export namespace Verb {
         point: Base.Point3;
     }
     export class KnotsControlPointsWeightsDto {
+        constructor(degreeU?: number, degreeV?: number, knotsU?: number[], knotsV?: number[], points?: Base.Point3[], weights?: number[]) {
+            if (degreeU !== undefined) { this.degreeU = degreeU; }
+            if (degreeV !== undefined) { this.degreeV = degreeV; }
+            if (knotsU !== undefined) { this.knotsU = knotsU; }
+            if (knotsV !== undefined) { this.knotsV = knotsV; }
+            if (points !== undefined) { this.points = points; }
+            if (weights !== undefined) { this.weights = weights; }
+        }
         /**
          * U direction degree
          */
@@ -517,6 +687,10 @@ export namespace Verb {
         weights: number[];
     }
     export class LoftCurvesDto {
+        constructor(degreeV?: number, curves?: any[]) {
+            if (degreeV !== undefined) { this.degreeV = degreeV; }
+            if (curves !== undefined) { this.curves = curves; }
+        }
         /**
          * V direction degree
          */
@@ -530,8 +704,13 @@ export namespace Verb {
         /**
          * Provide options without default values
          */
-        constructor(surface?: any) {
-            this.surface = surface;
+        constructor(surface?: any, opacity?: number, colours?: string | string[], updatable?: boolean, hidden?: boolean, surfaceMesh?: Mesh) {
+            if (surface !== undefined) { this.surface = surface; }
+            if (opacity !== undefined) { this.opacity = opacity; }
+            if (colours !== undefined) { this.colours = colours; }
+            if (updatable !== undefined) { this.updatable = updatable; }
+            if (hidden !== undefined) { this.hidden = hidden; }
+            if (surfaceMesh !== undefined) { this.surfaceMesh = surfaceMesh; }
         }
         /**
          * Nurbs surface
@@ -562,8 +741,13 @@ export namespace Verb {
         /**
          * Provide options without default values
          */
-        constructor(surfaces?: any[]) {
-            this.surfaces = surfaces;
+        constructor(surfaces?: any[], opacity?: number, colours?: string | string[], updatable?: boolean, hidden?: boolean, surfacesMesh?: Mesh) {
+            if (surfaces !== undefined) { this.surfaces = surfaces; }
+            if (opacity !== undefined) { this.opacity = opacity; }
+            if (colours !== undefined) { this.colours = colours; }
+            if (updatable !== undefined) { this.updatable = updatable; }
+            if (hidden !== undefined) { this.hidden = hidden; }
+            if (surfacesMesh !== undefined) { this.surfacesMesh = surfacesMesh; }
         }
         /**
          * Nurbs surfaces
@@ -594,9 +778,13 @@ export namespace Verb {
         /**
          * Provide options without default values
          */
-        constructor(surfaces?: any[], colours?: string[]) {
-            this.surfaces = surfaces;
-            this.colours = colours;
+        constructor(surfaces?: any[], colours?: string[], opacity?: number, updatable?: boolean, hidden?: boolean, surfacesMesh?: Mesh) {
+            if (surfaces !== undefined) { this.surfaces = surfaces; }
+            if (colours !== undefined) { this.colours = colours; }
+            if (opacity !== undefined) { this.opacity = opacity; }
+            if (updatable !== undefined) { this.updatable = updatable; }
+            if (hidden !== undefined) { this.hidden = hidden; }
+            if (surfacesMesh !== undefined) { this.surfacesMesh = surfacesMesh; }
         }
         /**
          * Nurbs surfaces
@@ -624,6 +812,13 @@ export namespace Verb {
         surfacesMesh?: Mesh;
     }
     export class ConeAndCylinderParametersDto {
+        constructor(axis?: Base.Vector3, xAxis?: Base.Vector3, base?: Base.Point3, height?: number, radius?: number) {
+            if (axis !== undefined) { this.axis = axis; }
+            if (xAxis !== undefined) { this.xAxis = xAxis; }
+            if (base !== undefined) { this.base = base; }
+            if (height !== undefined) { this.height = height; }
+            if (radius !== undefined) { this.radius = radius; }
+        }
         /**
          * Defines main axis of the cone
          */
@@ -646,18 +841,28 @@ export namespace Verb {
         radius = 1;
     }
     export class ConeDto {
+        constructor(cone?: any) {
+            if (cone !== undefined) { this.cone = cone; }
+        }
         /**
          * Conical Nurbs surface
          */
         cone: any;
     }
     export class CylinderDto {
+        constructor(cylinder?: any) {
+            if (cylinder !== undefined) { this.cylinder = cylinder; }
+        }
         /**
          * Cylindrical Nurbs surface
          */
         cylinder: any;
     }
     export class ExtrusionParametersDto {
+        constructor(profile?: any, direction?: Base.Vector3) {
+            if (profile !== undefined) { this.profile = profile; }
+            if (direction !== undefined) { this.direction = direction; }
+        }
         /**
          * Profile Nurbs curve
          */
@@ -668,28 +873,44 @@ export namespace Verb {
         direction: Base.Vector3;
     }
     export class ExtrusionDto {
+        constructor(extrusion?: any) {
+            if (extrusion !== undefined) { this.extrusion = extrusion; }
+        }
         /**
          * Nurbs surface created through extrusion
          */
         extrusion: any;
     }
     export class SphericalParametersDto {
+        constructor(radius?: number, center?: number[]) {
+            if (radius !== undefined) { this.radius = radius; }
+            if (center !== undefined) { this.center = center; }
+        }
         /**
          * Radius of the sphere
          */
-        radius: any;
+        radius: number;
         /**
          * Center point
          */
         center: number[];
     }
     export class SphereDto {
+        constructor(sphere?: any) {
+            if (sphere !== undefined) { this.sphere = sphere; }
+        }
         /**
          * Spherical Nurbs surface
          */
         sphere: any;
     }
     export class RevolutionParametersDto {
+        constructor(profile?: any, center?: number[], axis?: number[], angle?: number) {
+            if (profile !== undefined) { this.profile = profile; }
+            if (center !== undefined) { this.center = center; }
+            if (axis !== undefined) { this.axis = axis; }
+            if (angle !== undefined) { this.angle = angle; }
+        }
         /**
          * Profile Nurbs curve
          */
@@ -708,12 +929,19 @@ export namespace Verb {
         angle: number;
     }
     export class RevolutionDto {
+        constructor(revolution?: any) {
+            if (revolution !== undefined) { this.revolution = revolution; }
+        }
         /**
          * Revolved Nurbs surface
          */
         revolution: any;
     }
     export class SweepParametersDto {
+        constructor(profile?: any, rail?: any) {
+            if (profile !== undefined) { this.profile = profile; }
+            if (rail !== undefined) { this.rail = rail; }
+        }
         /**
          * Profile Nurbs curve
          */
@@ -724,12 +952,20 @@ export namespace Verb {
         rail: any;
     }
     export class SweepDto {
+        constructor(sweep?: any) {
+            if (sweep !== undefined) { this.sweep = sweep; }
+        }
         /**
          * Revolved Nurbs surface
          */
         sweep: any;
     }
     export class CurveCurveDto {
+        constructor(firstCurve?: any, secondCurve?: any, tolerance?: number) {
+            if (firstCurve !== undefined) { this.firstCurve = firstCurve; }
+            if (secondCurve !== undefined) { this.secondCurve = secondCurve; }
+            if (tolerance !== undefined) { this.tolerance = tolerance; }
+        }
         /**
          * First Nurbs curve
          */
@@ -744,6 +980,11 @@ export namespace Verb {
         tolerance?: number;
     }
     export class CurveSurfaceDto {
+        constructor(curve?: any, surface?: any, tolerance?: number) {
+            if (curve !== undefined) { this.curve = curve; }
+            if (surface !== undefined) { this.surface = surface; }
+            if (tolerance !== undefined) { this.tolerance = tolerance; }
+        }
         /**
          * Nurbs curve
          */
@@ -758,6 +999,11 @@ export namespace Verb {
         tolerance?: number;
     }
     export class SurfaceSurfaceDto {
+        constructor(firstSurface?: any, secondSurface?: any, tolerance?: number) {
+            if (firstSurface !== undefined) { this.firstSurface = firstSurface; }
+            if (secondSurface !== undefined) { this.secondSurface = secondSurface; }
+            if (tolerance !== undefined) { this.tolerance = tolerance; }
+        }
         /**
          * Nurbs curve
          */
@@ -772,12 +1018,18 @@ export namespace Verb {
         tolerance?: number;
     }
     export class CurveCurveIntersectionsDto {
+        constructor(intersections?: BaseTypes.CurveCurveIntersection[]) {
+            if (intersections !== undefined) { this.intersections = intersections; }
+        }
         /**
          * Curve curve intersections
          */
         intersections: BaseTypes.CurveCurveIntersection[];
     }
     export class CurveSurfaceIntersectionsDto {
+        constructor(intersections?: BaseTypes.CurveSurfaceIntersection[]) {
+            if (intersections !== undefined) { this.intersections = intersections; }
+        }
         /**
          * Curve curve intersections
          */

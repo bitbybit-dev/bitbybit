@@ -39,8 +39,13 @@ export namespace JSCAD {
         /**
          * Provide options without default values
          */
-        constructor(mesh?: JSCADEntity[]) {
-            this.mesh = mesh;
+        constructor(mesh?: JSCADEntity, opacity?: number, colours?: string | string[], updatable?: boolean, hidden?: boolean, jscadMesh?: BABYLON.Mesh) {
+            if (mesh !== undefined) { this.mesh = mesh; }
+            if (opacity !== undefined) { this.opacity = opacity; }
+            if (colours !== undefined) { this.colours = colours; }
+            if (updatable !== undefined) { this.updatable = updatable; }
+            if (hidden !== undefined) { this.hidden = hidden; }
+            if (jscadMesh !== undefined) { this.jscadMesh = jscadMesh; }
         }
         /**
          * Solid Jscad mesh
@@ -81,8 +86,13 @@ export namespace JSCAD {
         /**
          * Provide options without default values
          */
-        constructor(meshes?: JSCADEntity[]) {
-            this.meshes = meshes;
+        constructor(meshes?: JSCADEntity[], opacity?: number, colours?: string | string[], updatable?: boolean, hidden?: boolean, jscadMesh?: BABYLON.Mesh) {
+            if (meshes !== undefined) { this.meshes = meshes; }
+            if (opacity !== undefined) { this.opacity = opacity; }
+            if (colours !== undefined) { this.colours = colours; }
+            if (updatable !== undefined) { this.updatable = updatable; }
+            if (hidden !== undefined) { this.hidden = hidden; }
+            if (jscadMesh !== undefined) { this.jscadMesh = jscadMesh; }
         }
         /**
          * Solid Jscad meshes
@@ -125,8 +135,13 @@ export namespace JSCAD {
         /**
          * Provide options without default values
          */
-        constructor(path?: JSCADEntity[]) {
-            this.path = path;
+        constructor(path?: JSCADEntity[], colour?: string, opacity?: number, width?: number, updatable?: boolean, pathMesh?: BABYLON.LinesMesh) {
+            if (path !== undefined) { this.path = path; }
+            if (colour !== undefined) { this.colour = colour; }
+            if (opacity !== undefined) { this.opacity = opacity; }
+            if (width !== undefined) { this.width = width; }
+            if (updatable !== undefined) { this.updatable = updatable; }
+            if (pathMesh !== undefined) { this.pathMesh = pathMesh; }
         }
         /**
          * 2D Path to draw         
@@ -168,6 +183,10 @@ export namespace JSCAD {
         pathMesh?: BABYLON.LinesMesh;
     }
     export class TransformSolidsDto {
+        constructor(meshes?: JSCADEntity[], transformation?: Base.TransformMatrixes) {
+            if (meshes !== undefined) { this.meshes = meshes; }
+            if (transformation !== undefined) { this.transformation = transformation; }
+        }
         /**
          * Solids to be transformed
          * @default undefined
@@ -180,6 +199,10 @@ export namespace JSCAD {
         transformation: Base.TransformMatrixes;
     }
     export class TransformSolidDto {
+        constructor(mesh?: JSCADEntity, transformation?: Base.TransformMatrixes) {
+            if (mesh !== undefined) { this.mesh = mesh; }
+            if (transformation !== undefined) { this.transformation = transformation; }
+        }
         /**
          * Solid to be transformed
          * @default undefined
@@ -192,6 +215,10 @@ export namespace JSCAD {
         transformation: Base.TransformMatrixes;
     }
     export class DownloadSolidDto {
+        constructor(mesh?: JSCADEntity, fileName?: string) {
+            if (mesh !== undefined) { this.mesh = mesh; }
+            if (fileName !== undefined) { this.fileName = fileName; }
+        }
         /**
          * Solid to be downloaded
          * @default undefined
@@ -204,6 +231,10 @@ export namespace JSCAD {
         fileName: string;
     }
     export class DownloadGeometryDto {
+        constructor(geometry?: JSCADEntity | JSCADEntity[], fileName?: string) {
+            if (geometry !== undefined) { this.geometry = geometry; }
+            if (fileName !== undefined) { this.fileName = fileName; }
+        }
         /**
          * Solid or path to be downloaded, also supports multiple geometries in array
          * @default undefined
@@ -216,6 +247,10 @@ export namespace JSCAD {
         fileName: string;
     }
     export class DownloadSolidsDto {
+        constructor(meshes?: JSCADEntity[], fileName?: string) {
+            if (meshes !== undefined) { this.meshes = meshes; }
+            if (fileName !== undefined) { this.fileName = fileName; }
+        }
         /**
          * Solids to be downloaded
          * @default undefined
@@ -228,6 +263,9 @@ export namespace JSCAD {
         fileName: string;
     }
     export class BooleanObjectsDto {
+        constructor(meshes?: JSCADEntity[]) {
+            if (meshes !== undefined) { this.meshes = meshes; }
+        }
         /**
          * Contains solid Jscad mesh objects that will be used to perform boolean operation
          * @default undefined
@@ -235,6 +273,10 @@ export namespace JSCAD {
         meshes: JSCADEntity[];
     }
     export class BooleanTwoObjectsDto {
+        constructor(first?: JSCADEntity, second?: JSCADEntity) {
+            if (first !== undefined) { this.first = first; }
+            if (second !== undefined) { this.second = second; }
+        }
         /**
          * Contains Jscad Solid
          * @default undefined
@@ -247,6 +289,10 @@ export namespace JSCAD {
         second: JSCADEntity;
     }
     export class BooleanObjectsFromDto {
+        constructor(from?: JSCADEntity, meshes?: JSCADEntity[]) {
+            if (from !== undefined) { this.from = from; }
+            if (meshes !== undefined) { this.meshes = meshes; }
+        }
         /**
          * Contains Jscad Solid
          * @default undefined
@@ -259,6 +305,12 @@ export namespace JSCAD {
         meshes: JSCADEntity[];
     }
     export class ExpansionDto {
+        constructor(geometry?: JSCADEntity, delta?: number, corners?: solidCornerTypeEnum, segments?: number) {
+            if (geometry !== undefined) { this.geometry = geometry; }
+            if (delta !== undefined) { this.delta = delta; }
+            if (corners !== undefined) { this.corners = corners; }
+            if (segments !== undefined) { this.segments = segments; }
+        }
         /**
          * Can contain various Jscad entities from Solid category
          * @default undefined
@@ -287,6 +339,12 @@ export namespace JSCAD {
         segments = 24;
     }
     export class OffsetDto {
+        constructor(geometry?: JSCADEntity, delta?: number, corners?: solidCornerTypeEnum, segments?: number) {
+            if (geometry !== undefined) { this.geometry = geometry; }
+            if (delta !== undefined) { this.delta = delta; }
+            if (corners !== undefined) { this.corners = corners; }
+            if (segments !== undefined) { this.segments = segments; }
+        }
         /**
          * Can contain various Jscad entities from Solid category
          * @default undefined
@@ -315,6 +373,12 @@ export namespace JSCAD {
         segments = 24;
     }
     export class ExtrudeLinearDto {
+        constructor(geometry?: JSCADEntity, height?: number, twistAngle?: number, twistSteps?: number) {
+            if (geometry !== undefined) { this.geometry = geometry; }
+            if (height !== undefined) { this.height = height; }
+            if (twistAngle !== undefined) { this.twistAngle = twistAngle; }
+            if (twistSteps !== undefined) { this.twistSteps = twistSteps; }
+        }
         /**
          * Geometry to extrude
          * @default undefined
@@ -347,6 +411,9 @@ export namespace JSCAD {
     }
 
     export class HullDto {
+        constructor(meshes?: JSCADEntity[]) {
+            if (meshes !== undefined) { this.meshes = meshes; }
+        }
         /**
          * Geometries to use in hull
          * @default undefined
@@ -354,6 +421,11 @@ export namespace JSCAD {
         meshes: JSCADEntity[];
     }
     export class ExtrudeRectangularDto {
+        constructor(geometry?: JSCADEntity, height?: number, size?: number) {
+            if (geometry !== undefined) { this.geometry = geometry; }
+            if (height !== undefined) { this.height = height; }
+            if (size !== undefined) { this.size = size; }
+        }
         /**
          * Geometry to extrude
          * @default undefined
@@ -377,6 +449,11 @@ export namespace JSCAD {
         size = 1;
     }
     export class ExtrudeRectangularPointsDto {
+        constructor(points?: Base.Point3[], height?: number, size?: number) {
+            if (points !== undefined) { this.points = points; }
+            if (height !== undefined) { this.height = height; }
+            if (size !== undefined) { this.size = size; }
+        }
         /**
          * Points for a path
          * @default undefined
@@ -400,6 +477,12 @@ export namespace JSCAD {
         size = 1;
     }
     export class ExtrudeRotateDto {
+        constructor(polygon?: JSCADEntity, angle?: number, startAngle?: number, segments?: number) {
+            if (polygon !== undefined) { this.polygon = polygon; }
+            if (angle !== undefined) { this.angle = angle; }
+            if (startAngle !== undefined) { this.startAngle = startAngle; }
+            if (segments !== undefined) { this.segments = segments; }
+        }
         /**
          * Polygon to extrude
          * @default undefined
@@ -431,6 +514,9 @@ export namespace JSCAD {
         segments = 24;
     }
     export class PathDto {
+        constructor(path?: JSCADEntity) {
+            if (path !== undefined) { this.path = path; }
+        }
         /**
          * 2D path
          * @default undefined
@@ -438,6 +524,10 @@ export namespace JSCAD {
         path: JSCADEntity;
     }
     export class PathFromPointsDto {
+        constructor(points?: Base.Point2[], closed?: boolean) {
+            if (points !== undefined) { this.points = points; }
+            if (closed !== undefined) { this.closed = closed; }
+        }
         /**
          * Points through which to create a path
          * @default undefined
@@ -450,6 +540,9 @@ export namespace JSCAD {
         closed = false;
     }
     export class PathsFromPointsDto {
+        constructor(pointsLists?: Base.Point3[][] | Base.Point2[][]) {
+            if (pointsLists !== undefined) { this.pointsLists = pointsLists; }
+        }
         /**
          * Points
          * @default undefined
@@ -457,6 +550,10 @@ export namespace JSCAD {
         pointsLists: Base.Point3[][] | Base.Point2[][];
     }
     export class PathFromPolylineDto {
+        constructor(polyline?: Polyline.PolylinePropertiesDto, closed?: boolean) {
+            if (polyline !== undefined) { this.polyline = polyline; }
+            if (closed !== undefined) { this.closed = closed; }
+        }
         /**
          * Polyline
          * @default undefined
@@ -469,6 +566,10 @@ export namespace JSCAD {
         closed = false;
     }
     export class PathAppendCurveDto {
+        constructor(curve?: JSCADEntity, path?: JSCADEntity) {
+            if (curve !== undefined) { this.curve = curve; }
+            if (path !== undefined) { this.path = path; }
+        }
         /**
          * Verb Nurbs curve
          * @default undefined
@@ -481,6 +582,10 @@ export namespace JSCAD {
         path: JSCADEntity;
     }
     export class PathAppendPointsDto {
+        constructor(points?: Base.Point2[], path?: JSCADEntity) {
+            if (points !== undefined) { this.points = points; }
+            if (path !== undefined) { this.path = path; }
+        }
         /**
          * Points to append
          * @default undefined
@@ -493,6 +598,10 @@ export namespace JSCAD {
         path: JSCADEntity;
     }
     export class PathAppendPolylineDto {
+        constructor(polyline?: Polyline.PolylinePropertiesDto, path?: JSCADEntity) {
+            if (polyline !== undefined) { this.polyline = polyline; }
+            if (path !== undefined) { this.path = path; }
+        }
         /**
          * Polyline to append
          * @default undefined
@@ -505,6 +614,16 @@ export namespace JSCAD {
         path: JSCADEntity;
     }
     export class PathAppendArcDto {
+        constructor(path?: JSCADEntity, endPoint?: Base.Point2, xAxisRotation?: number, clockwise?: boolean, large?: boolean, segments?: number, radiusX?: number, radiusY?: number) {
+            if (path !== undefined) { this.path = path; }
+            if (endPoint !== undefined) { this.endPoint = endPoint; }
+            if (xAxisRotation !== undefined) { this.xAxisRotation = xAxisRotation; }
+            if (clockwise !== undefined) { this.clockwise = clockwise; }
+            if (large !== undefined) { this.large = large; }
+            if (segments !== undefined) { this.segments = segments; }
+            if (radiusX !== undefined) { this.radiusX = radiusX; }
+            if (radiusY !== undefined) { this.radiusY = radiusY; }
+        }
         /**
          * Path to append the arc to
          * @default undefined
@@ -559,6 +678,11 @@ export namespace JSCAD {
         radiusY = 1;
     }
     export class CircleDto {
+        constructor(center?: Base.Point2, radius?: number, segments?: number) {
+            if (center !== undefined) { this.center = center; }
+            if (radius !== undefined) { this.radius = radius; }
+            if (segments !== undefined) { this.segments = segments; }
+        }
         /**
          * Center of the circle
          * @default [0, 0]
@@ -582,6 +706,11 @@ export namespace JSCAD {
         segments = 24;
     }
     export class EllipseDto {
+        constructor(center?: Base.Point2, radius?: Base.Point2, segments?: number) {
+            if (center !== undefined) { this.center = center; }
+            if (radius !== undefined) { this.radius = radius; }
+            if (segments !== undefined) { this.segments = segments; }
+        }
         /**
          * Center of the circle
          * @default [0, 0]
@@ -602,6 +731,10 @@ export namespace JSCAD {
         segments = 24;
     }
     export class SquareDto {
+        constructor(center?: Base.Point2, size?: number) {
+            if (center !== undefined) { this.center = center; }
+            if (size !== undefined) { this.size = size; }
+        }
         /**
          * Center of the 2D square
          * @default [0, 0]
@@ -618,6 +751,11 @@ export namespace JSCAD {
 
     }
     export class RectangleDto {
+        constructor(center?: Base.Point2, width?: number, length?: number) {
+            if (center !== undefined) { this.center = center; }
+            if (width !== undefined) { this.width = width; }
+            if (length !== undefined) { this.length = length; }
+        }
         /**
          * Center of the 2D rectangle
          * @default [0, 0]
@@ -641,6 +779,13 @@ export namespace JSCAD {
         length = 1;
     }
     export class RoundedRectangleDto {
+        constructor(center?: Base.Point2, roundRadius?: number, segments?: number, width?: number, length?: number) {
+            if (center !== undefined) { this.center = center; }
+            if (roundRadius !== undefined) { this.roundRadius = roundRadius; }
+            if (segments !== undefined) { this.segments = segments; }
+            if (width !== undefined) { this.width = width; }
+            if (length !== undefined) { this.length = length; }
+        }
         /**
          * Center of the 2D rectangle
          * @default [0, 0]
@@ -680,6 +825,14 @@ export namespace JSCAD {
         length = 1;
     }
     export class StarDto {
+        constructor(center?: Base.Point2, vertices?: number, density?: number, outerRadius?: number, innerRadius?: number, startAngle?: number) {
+            if (center !== undefined) { this.center = center; }
+            if (vertices !== undefined) { this.vertices = vertices; }
+            if (density !== undefined) { this.density = density; }
+            if (outerRadius !== undefined) { this.outerRadius = outerRadius; }
+            if (innerRadius !== undefined) { this.innerRadius = innerRadius; }
+            if (startAngle !== undefined) { this.startAngle = startAngle; }
+        }
         /**
          * Center of the 2D star
          * @default [0, 0]
@@ -727,6 +880,10 @@ export namespace JSCAD {
         startAngle = 0;
     }
     export class CubeDto {
+        constructor(center?: Base.Point3, size?: number) {
+            if (center !== undefined) { this.center = center; }
+            if (size !== undefined) { this.size = size; }
+        }
         /**
          * Center coordinates of the cube
          * @default [0, 0, 0]
@@ -742,6 +899,10 @@ export namespace JSCAD {
         size = 1;
     }
     export class CubeCentersDto {
+        constructor(centers?: Base.Point3[], size?: number) {
+            if (centers !== undefined) { this.centers = centers; }
+            if (size !== undefined) { this.size = size; }
+        }
         /**
          * Center coordinates of the cubes
          * @default undefined
@@ -757,6 +918,12 @@ export namespace JSCAD {
         size = 1;
     }
     export class CuboidDto {
+        constructor(center?: Base.Point3, width?: number, length?: number, height?: number) {
+            if (center !== undefined) { this.center = center; }
+            if (width !== undefined) { this.width = width; }
+            if (length !== undefined) { this.length = length; }
+            if (height !== undefined) { this.height = height; }
+        }
         /**
          * Center coordinates of the cubod
          * @default [0, 0, 0]
@@ -788,6 +955,12 @@ export namespace JSCAD {
         height = 1;
     }
     export class CuboidCentersDto {
+        constructor(centers?: Base.Point3[], width?: number, length?: number, height?: number) {
+            if (centers !== undefined) { this.centers = centers; }
+            if (width !== undefined) { this.width = width; }
+            if (length !== undefined) { this.length = length; }
+            if (height !== undefined) { this.height = height; }
+        }
         /**
          * Center coordinates of the cuboids
          * @default undefined
@@ -819,6 +992,14 @@ export namespace JSCAD {
         height = 1;
     }
     export class RoundedCuboidDto {
+        constructor(center?: Base.Point3, roundRadius?: number, width?: number, length?: number, height?: number, segments?: number) {
+            if (center !== undefined) { this.center = center; }
+            if (roundRadius !== undefined) { this.roundRadius = roundRadius; }
+            if (width !== undefined) { this.width = width; }
+            if (length !== undefined) { this.length = length; }
+            if (height !== undefined) { this.height = height; }
+            if (segments !== undefined) { this.segments = segments; }
+        }
         /**
          * Center coordinates of the cubod
          * @default [0, 0, 0]
@@ -866,6 +1047,14 @@ export namespace JSCAD {
         segments = 24;
     }
     export class RoundedCuboidCentersDto {
+        constructor(centers?: Base.Point3[], roundRadius?: number, width?: number, length?: number, height?: number, segments?: number) {
+            if (centers !== undefined) { this.centers = centers; }
+            if (roundRadius !== undefined) { this.roundRadius = roundRadius; }
+            if (width !== undefined) { this.width = width; }
+            if (length !== undefined) { this.length = length; }
+            if (height !== undefined) { this.height = height; }
+            if (segments !== undefined) { this.segments = segments; }
+        }
         /**
          * Center coordinates of the cuboids
          * @default undefined
@@ -913,6 +1102,13 @@ export namespace JSCAD {
         segments = 24;
     }
     export class CylidnerEllipticDto {
+        constructor(center?: Base.Point3, height?: number, startRadius?: Base.Point2, endRadius?: Base.Point2, segments?: number) {
+            if (center !== undefined) { this.center = center; }
+            if (height !== undefined) { this.height = height; }
+            if (startRadius !== undefined) { this.startRadius = startRadius; }
+            if (endRadius !== undefined) { this.endRadius = endRadius; }
+            if (segments !== undefined) { this.segments = segments; }
+        }
         /**
          * Center of the cylinder
          * @default [0, 0, 0]
@@ -946,6 +1142,13 @@ export namespace JSCAD {
         segments = 24;
     }
     export class CylidnerCentersEllipticDto {
+        constructor(centers?: Base.Point3[], height?: number, startRadius?: Base.Point2, endRadius?: Base.Point2, segments?: number) {
+            if (centers !== undefined) { this.centers = centers; }
+            if (height !== undefined) { this.height = height; }
+            if (startRadius !== undefined) { this.startRadius = startRadius; }
+            if (endRadius !== undefined) { this.endRadius = endRadius; }
+            if (segments !== undefined) { this.segments = segments; }
+        }
         /**
          * Centers of the cylinders
          * @default undefined
@@ -979,6 +1182,12 @@ export namespace JSCAD {
         segments = 24;
     }
     export class CylidnerDto {
+        constructor(center?: Base.Point3, height?: number, radius?: number, segments?: number) {
+            if (center !== undefined) { this.center = center; }
+            if (height !== undefined) { this.height = height; }
+            if (radius !== undefined) { this.radius = radius; }
+            if (segments !== undefined) { this.segments = segments; }
+        }
         /**
          * Center of the cylinder
          * @default [0, 0, 0]
@@ -1010,6 +1219,13 @@ export namespace JSCAD {
         segments = 24;
     }
     export class RoundedCylidnerDto {
+        constructor(center?: Base.Point3, roundRadius?: number, height?: number, radius?: number, segments?: number) {
+            if (center !== undefined) { this.center = center; }
+            if (roundRadius !== undefined) { this.roundRadius = roundRadius; }
+            if (height !== undefined) { this.height = height; }
+            if (radius !== undefined) { this.radius = radius; }
+            if (segments !== undefined) { this.segments = segments; }
+        }
         /**
          * Center of the cylinder
          * @default [0, 0, 0]
@@ -1049,6 +1265,11 @@ export namespace JSCAD {
         segments = 24;
     }
     export class EllipsoidDto {
+        constructor(center?: Base.Point3, radius?: Base.Point3, segments?: number) {
+            if (center !== undefined) { this.center = center; }
+            if (radius !== undefined) { this.radius = radius; }
+            if (segments !== undefined) { this.segments = segments; }
+        }
         /**
          * Center coordinates
          * @default [0, 0, 0]
@@ -1069,6 +1290,11 @@ export namespace JSCAD {
         segments = 24;
     }
     export class EllipsoidCentersDto {
+        constructor(centers?: Base.Point3[], radius?: Base.Point3, segments?: number) {
+            if (centers !== undefined) { this.centers = centers; }
+            if (radius !== undefined) { this.radius = radius; }
+            if (segments !== undefined) { this.segments = segments; }
+        }
         /**
          * Center coordinates
          * @default undefined
@@ -1089,6 +1315,11 @@ export namespace JSCAD {
         segments = 24;
     }
     export class GeodesicSphereDto {
+        constructor(center?: Base.Point3, radius?: number, frequency?: number) {
+            if (center !== undefined) { this.center = center; }
+            if (radius !== undefined) { this.radius = radius; }
+            if (frequency !== undefined) { this.frequency = frequency; }
+        }
         /**
          * Center coordinate of the geodesic sphere
          * @default [0, 0, 0]
@@ -1112,6 +1343,11 @@ export namespace JSCAD {
         frequency = 12;
     }
     export class GeodesicSphereCentersDto {
+        constructor(centers?: Base.Point3[], radius?: number, frequency?: number) {
+            if (centers !== undefined) { this.centers = centers; }
+            if (radius !== undefined) { this.radius = radius; }
+            if (frequency !== undefined) { this.frequency = frequency; }
+        }
         /**
          * Center coordinates of the geodesic spheres
          * @default undefined
@@ -1135,6 +1371,12 @@ export namespace JSCAD {
         frequency = 12;
     }
     export class CylidnerCentersDto {
+        constructor(centers?: Base.Point3[], height?: number, radius?: number, segments?: number) {
+            if (centers !== undefined) { this.centers = centers; }
+            if (height !== undefined) { this.height = height; }
+            if (radius !== undefined) { this.radius = radius; }
+            if (segments !== undefined) { this.segments = segments; }
+        }
         /**
          * Centers of the cylinders
          * @default undefined
@@ -1166,6 +1408,13 @@ export namespace JSCAD {
         segments = 24;
     }
     export class RoundedCylidnerCentersDto {
+        constructor(centers?: Base.Point3[], roundRadius?: number, height?: number, radius?: number, segments?: number) {
+            if (centers !== undefined) { this.centers = centers; }
+            if (roundRadius !== undefined) { this.roundRadius = roundRadius; }
+            if (height !== undefined) { this.height = height; }
+            if (radius !== undefined) { this.radius = radius; }
+            if (segments !== undefined) { this.segments = segments; }
+        }
         /**
          * Centers of the cylinders
          * @default undefined
@@ -1205,6 +1454,11 @@ export namespace JSCAD {
         segments = 24;
     }
     export class SphereDto {
+        constructor(center?: Base.Point3, radius?: number, segments?: number) {
+            if (center !== undefined) { this.center = center; }
+            if (radius !== undefined) { this.radius = radius; }
+            if (segments !== undefined) { this.segments = segments; }
+        }
         /**
          * Center point of the sphere
          * @default [0, 0, 0]
@@ -1228,6 +1482,11 @@ export namespace JSCAD {
         segments = 24;
     }
     export class SphereCentersDto {
+        constructor(centers?: Base.Point3[], radius?: number, segments?: number) {
+            if (centers !== undefined) { this.centers = centers; }
+            if (radius !== undefined) { this.radius = radius; }
+            if (segments !== undefined) { this.segments = segments; }
+        }
         /**
          * Center points of the spheres
          * @default undefined
@@ -1251,6 +1510,16 @@ export namespace JSCAD {
         segments = 24;
     }
     export class TorusDto {
+        constructor(center?: Base.Point3, innerRadius?: number, outerRadius?: number, innerSegments?: number, outerSegments?: number, innerRotation?: number, outerRotation?: number, startAngle?: number) {
+            if (center !== undefined) { this.center = center; }
+            if (innerRadius !== undefined) { this.innerRadius = innerRadius; }
+            if (outerRadius !== undefined) { this.outerRadius = outerRadius; }
+            if (innerSegments !== undefined) { this.innerSegments = innerSegments; }
+            if (outerSegments !== undefined) { this.outerSegments = outerSegments; }
+            if (innerRotation !== undefined) { this.innerRotation = innerRotation; }
+            if (outerRotation !== undefined) { this.outerRotation = outerRotation; }
+            if (startAngle !== undefined) { this.startAngle = startAngle; }
+        }
         /**
          * Center coordinate
          * @default [0, 0, 0]
@@ -1314,6 +1583,17 @@ export namespace JSCAD {
         startAngle = 0;
     }
     export class TextDto {
+        constructor(text?: string, segments?: number, xOffset?: number, yOffset?: number, height?: number, lineSpacing?: number, letterSpacing?: number, align?: jscadTextAlignEnum, extrudeOffset?: number) {
+            if (text !== undefined) { this.text = text; }
+            if (segments !== undefined) { this.segments = segments; }
+            if (xOffset !== undefined) { this.xOffset = xOffset; }
+            if (yOffset !== undefined) { this.yOffset = yOffset; }
+            if (height !== undefined) { this.height = height; }
+            if (lineSpacing !== undefined) { this.lineSpacing = lineSpacing; }
+            if (letterSpacing !== undefined) { this.letterSpacing = letterSpacing; }
+            if (align !== undefined) { this.align = align; }
+            if (extrudeOffset !== undefined) { this.extrudeOffset = extrudeOffset; }
+        }
         /**
          * Text to write
          * @default Hello World
@@ -1382,6 +1662,19 @@ export namespace JSCAD {
         extrudeOffset = 0;
     }
     export class CylinderTextDto {
+        constructor(text?: string, extrusionHeight?: number, extrusionSize?: number, segments?: number, xOffset?: number, yOffset?: number, height?: number, lineSpacing?: number, letterSpacing?: number, align?: jscadTextAlignEnum, extrudeOffset?: number) {
+            if (text !== undefined) { this.text = text; }
+            if (extrusionHeight !== undefined) { this.extrusionHeight = extrusionHeight; }
+            if (extrusionSize !== undefined) { this.extrusionSize = extrusionSize; }
+            if (segments !== undefined) { this.segments = segments; }
+            if (xOffset !== undefined) { this.xOffset = xOffset; }
+            if (yOffset !== undefined) { this.yOffset = yOffset; }
+            if (height !== undefined) { this.height = height; }
+            if (lineSpacing !== undefined) { this.lineSpacing = lineSpacing; }
+            if (letterSpacing !== undefined) { this.letterSpacing = letterSpacing; }
+            if (align !== undefined) { this.align = align; }
+            if (extrudeOffset !== undefined) { this.extrudeOffset = extrudeOffset; }
+        }
         /**
          * Text to write
          * @default Hello World
@@ -1466,6 +1759,18 @@ export namespace JSCAD {
         extrudeOffset = 0;
     }
     export class SphereTextDto {
+        constructor(text?: string, radius?: number, segments?: number, xOffset?: number, yOffset?: number, height?: number, lineSpacing?: number, letterSpacing?: number, align?: jscadTextAlignEnum, extrudeOffset?: number) {
+            if (text !== undefined) { this.text = text; }
+            if (radius !== undefined) { this.radius = radius; }
+            if (segments !== undefined) { this.segments = segments; }
+            if (xOffset !== undefined) { this.xOffset = xOffset; }
+            if (yOffset !== undefined) { this.yOffset = yOffset; }
+            if (height !== undefined) { this.height = height; }
+            if (lineSpacing !== undefined) { this.lineSpacing = lineSpacing; }
+            if (letterSpacing !== undefined) { this.letterSpacing = letterSpacing; }
+            if (align !== undefined) { this.align = align; }
+            if (extrudeOffset !== undefined) { this.extrudeOffset = extrudeOffset; }
+        }
         /**
          * Text to write
          * @default Hello World
@@ -1542,6 +1847,9 @@ export namespace JSCAD {
         extrudeOffset = 0;
     }
     export class FromPolygonPoints {
+        constructor(polygonPoints?: Base.Point3[][]) {
+            if (polygonPoints !== undefined) { this.polygonPoints = polygonPoints; }
+        }
         /**
          * Points describing polygons
          */

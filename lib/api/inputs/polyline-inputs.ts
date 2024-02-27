@@ -7,8 +7,9 @@ export namespace Polyline {
         /**
          * Provide options without default values
          */
-        constructor(points?: Base.Point3[]) {
-            this.points = points;
+        constructor(points?: Base.Point3[], isClosed?: boolean) {
+            if (points !== undefined) { this.points = points; }
+            if (isClosed !== undefined) { this.isClosed = isClosed; }
         }
         /**
          * Points of the polyline
@@ -20,18 +21,28 @@ export namespace Polyline {
         isClosed? = false;
     }
     export class PolylineDto {
+        constructor(polyline?: PolylinePropertiesDto) {
+            if (polyline !== undefined) { this.polyline = polyline; }
+        }
         /**
          * Polyline with points
          */
         polyline: PolylinePropertiesDto;
     }
     export class PolylinesDto {
+        constructor(polylines?: PolylinePropertiesDto[]) {
+            if (polylines !== undefined) { this.polylines = polylines; }
+        }
         /**
          * Polylines array
          */
         polylines: PolylinePropertiesDto[];
     }
     export class TransformPolylineDto {
+        constructor(polyline?: PolylinePropertiesDto, transformation?: Base.TransformMatrixes) {
+            if (polyline !== undefined) { this.polyline = polyline; }
+            if (transformation !== undefined) { this.transformation = transformation; }
+        }
         /**
          * Polyline to transform
          */
@@ -45,8 +56,13 @@ export namespace Polyline {
         /**
          * Provide options without default values
          */
-        constructor(polyline?: PolylinePropertiesDto) {
-            this.polyline = polyline;
+        constructor(polyline?: PolylinePropertiesDto, opacity?: number, colours?: string | string[], size?: number, updatable?: boolean, polylineMesh?: BABYLON.LinesMesh) {
+            if (polyline !== undefined) { this.polyline = polyline; }
+            if (opacity !== undefined) { this.opacity = opacity; }
+            if (colours !== undefined) { this.colours = colours; }
+            if (size !== undefined) { this.size = size; }
+            if (updatable !== undefined) { this.updatable = updatable; }
+            if (polylineMesh !== undefined) { this.polylineMesh = polylineMesh; }
         }
         /**
          * Polyline
@@ -77,8 +93,13 @@ export namespace Polyline {
         /**
          * Provide options without default values
          */
-        constructor(polylines?: PolylinePropertiesDto[]) {
-            this.polylines = polylines;
+        constructor(polylines?: PolylinePropertiesDto[], opacity?: number, colours?: string | string[], size?: number, updatable?: boolean, polylinesMesh?: BABYLON.LinesMesh) {
+            if (polylines !== undefined) { this.polylines = polylines; }
+            if (opacity !== undefined) { this.opacity = opacity; }
+            if (colours !== undefined) { this.colours = colours; }
+            if (size !== undefined) { this.size = size; }
+            if (updatable !== undefined) { this.updatable = updatable; }
+            if (polylinesMesh !== undefined) { this.polylinesMesh = polylinesMesh; }
         }
         /**
          * Polylines

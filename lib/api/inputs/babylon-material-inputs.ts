@@ -5,6 +5,15 @@ import { Base } from "./base-inputs";
 // tslint:disable-next-line: no-namespace
 export namespace BabylonMaterial {
     export class PBRMetallicRoughnessDto {
+        constructor(name?: string, baseColor?: Base.Color, metallic?: number, roughness?: number, alpha?: number, backFaceCulling?: boolean, zOffset?: number) {
+            if (name !== undefined) { this.name = name; }
+            if (baseColor !== undefined) { this.baseColor = baseColor; }
+            if (metallic !== undefined) { this.metallic = metallic; }
+            if (roughness !== undefined) { this.roughness = roughness; }
+            if (alpha !== undefined) { this.alpha = alpha; }
+            if (backFaceCulling !== undefined) { this.backFaceCulling = backFaceCulling; }
+            if (zOffset !== undefined) { this.zOffset = zOffset; }
+        }
         /**
          * Name of the material
          * @default Custom Material
@@ -55,6 +64,10 @@ export namespace BabylonMaterial {
     }
 
     export class BaseColorDto {
+        constructor(material?: BABYLON.PBRMetallicRoughnessMaterial, baseColor?: Base.Color) {
+            if (material !== undefined) { this.material = material; }
+            if (baseColor !== undefined) { this.baseColor = baseColor; }
+        }
         /**
          * Material to update
          * @default undefined
@@ -67,6 +80,9 @@ export namespace BabylonMaterial {
         baseColor?: Base.Color = "#0000ff";
     }
     export class MaterialPropDto {
+        constructor(material?: BABYLON.PBRMetallicRoughnessMaterial) {
+            if (material !== undefined) { this.material = material; }
+        }
         /**
          * Material to investigate
          * @default undefined
@@ -74,6 +90,10 @@ export namespace BabylonMaterial {
         material: BABYLON.PBRMetallicRoughnessMaterial;
     }
     export class MetallicDto {
+        constructor(material?: BABYLON.PBRMetallicRoughnessMaterial, metallic?: number) {
+            if (material !== undefined) { this.material = material; }
+            if (metallic !== undefined) { this.metallic = metallic; }
+        }
         /**
          * Material to update
          * @default undefined
@@ -89,6 +109,10 @@ export namespace BabylonMaterial {
         metallic?: number;
     }
     export class RoughnessDto {
+        constructor(material?: BABYLON.PBRMetallicRoughnessMaterial, roughness?: number) {
+            if (material !== undefined) { this.material = material; }
+            if (roughness !== undefined) { this.roughness = roughness; }
+        }
         /**
          * Material to update
          * @default undefined
@@ -104,6 +128,10 @@ export namespace BabylonMaterial {
         roughness?: number;
     }
     export class AlphaDto {
+        constructor(material?: BABYLON.PBRMetallicRoughnessMaterial, alpha?: number) {
+            if (material !== undefined) { this.material = material; }
+            if (alpha !== undefined) { this.alpha = alpha; }
+        }
         /**
          * Material to update
          * @default undefined
@@ -119,6 +147,10 @@ export namespace BabylonMaterial {
         alpha?: number;
     }
     export class BackFaceCullingDto {
+        constructor(material?: BABYLON.PBRMetallicRoughnessMaterial, backFaceCulling?: boolean) {
+            if (material !== undefined) { this.material = material; }
+            if (backFaceCulling !== undefined) { this.backFaceCulling = backFaceCulling; }
+        }
         /**
          * Material to update
          * @default undefined
@@ -131,6 +163,10 @@ export namespace BabylonMaterial {
         backFaceCulling? = true;
     }
     export class BaseTextureDto {
+        constructor(material?: BABYLON.PBRMetallicRoughnessMaterial, baseTexture?: BABYLON.Texture) {
+            if (material !== undefined) { this.material = material; }
+            if (baseTexture !== undefined) { this.baseTexture = baseTexture; }
+        }
         /**
          * Material to update
          * @default undefined

@@ -1,10 +1,15 @@
 /* eslint-disable @typescript-eslint/no-namespace */
-import { AbstractMesh, Mesh } from "@babylonjs/core";
+import * as BABYLON from "@babylonjs/core";
 import { Base } from "./base-inputs";
 
 export namespace Transforms {
 
     export class RotationCenterAxisDto {
+        constructor(angle?: number, axis?: Base.Vector3, center?: Base.Point3) {
+            if (angle !== undefined) { this.angle = angle; }
+            if (axis !== undefined) { this.axis = axis; }
+            if (center !== undefined) { this.center = center; }
+        }
         /**
          * Angle of rotation in degrees
          * @default 90
@@ -25,11 +30,15 @@ export namespace Transforms {
         center: Base.Point3 = [0, 0, 0];
     }
     export class TransformBabylonMeshDto {
+        constructor(mesh?: BABYLON.Mesh, transformation?: Base.TransformMatrixes) {
+            if (mesh !== undefined) { this.mesh = mesh; }
+            if (transformation !== undefined) { this.transformation = transformation; }
+        }
         /**
          * Mesh to transform
          * @default undefined
          */
-        mesh: Mesh;
+        mesh: BABYLON.Mesh;
         /**
          * Transformation(s) to apply
          * @default undefined
@@ -37,6 +46,10 @@ export namespace Transforms {
         transformation: Base.TransformMatrixes;
     }
     export class RotationCenterDto {
+        constructor(angle?: number, center?: Base.Point3) {
+            if (angle !== undefined) { this.angle = angle; }
+            if (center !== undefined) { this.center = center; }
+        }
         /**
          * Angle of rotation in degrees
          * @default 90
@@ -52,6 +65,12 @@ export namespace Transforms {
         center: Base.Point3 = [0, 0, 0];
     }
     export class RotationCenterYawPitchRollDto {
+        constructor(yaw?: number, pitch?: number, roll?: number, center?: Base.Point3) {
+            if (yaw !== undefined) { this.yaw = yaw; }
+            if (pitch !== undefined) { this.pitch = pitch; }
+            if (roll !== undefined) { this.roll = roll; }
+            if (center !== undefined) { this.center = center; }
+        }
         /**
          * Yaw angle (Rotation around X) in degrees
          * @default 0
@@ -83,6 +102,9 @@ export namespace Transforms {
         center: Base.Point3 = [0, 0, 0];
     }
     export class ScaleXYZDto {
+        constructor(scaleXyz?: Base.Vector3) {
+            if (scaleXyz !== undefined) { this.scaleXyz = scaleXyz; }
+        }
         /**
          * Scaling factors for each axis [1, 2, 1] means that Y axis will be scaled 200% and both x and z axis will remain on 100%
          * @default [1, 1, 1]
@@ -90,6 +112,10 @@ export namespace Transforms {
         scaleXyz: Base.Vector3 = [1, 1, 1];
     }
     export class ScaleCenterXYZDto {
+        constructor(center?: Base.Point3, scaleXyz?: Base.Vector3) {
+            if (center !== undefined) { this.center = center; }
+            if (scaleXyz !== undefined) { this.scaleXyz = scaleXyz; }
+        }
         /**
          * The center from which the scaling is applied
          * @default [0, 0, 0]
@@ -102,6 +128,9 @@ export namespace Transforms {
         scaleXyz: Base.Vector3 = [1, 1, 1];
     }
     export class UniformScaleDto {
+        constructor(scale?: number) {
+            if (scale !== undefined) { this.scale = scale; }
+        }
         /**
          * Uniform scale factor for all x, y, z directions. 1 will keep everything on original size, 2 will scale 200%;
          * @default 1
@@ -112,6 +141,10 @@ export namespace Transforms {
         scale = 1;
     }
     export class UniformScaleFromCenterDto {
+        constructor(scale?: number, center?: Base.Point3) {
+            if (scale !== undefined) { this.scale = scale; }
+            if (center !== undefined) { this.center = center; }
+        }
         /**
          * Scale factor for all x, y, z directions. 1 will keep everything on original size, 2 will scale 200%;
          * @default 1
@@ -127,6 +160,9 @@ export namespace Transforms {
         center: Base.Point3 = [0, 0, 0];
     }
     export class TranslationXYZDto {
+        constructor(translation?: Base.Vector3) {
+            if (translation !== undefined) { this.translation = translation; }
+        }
         /**
          * Translation vector with [x, y, z] distances
          * @default [0, 0, 0]
@@ -134,6 +170,9 @@ export namespace Transforms {
         translation: Base.Vector3 = [0, 0, 0];
     }
     export class TranslationsXYZDto {
+        constructor(translations?: Base.Vector3[]) {
+            if (translations !== undefined) { this.translations = translations; }
+        }
         /**
          * Translation vectors with [x, y, z] distances
          * @default undefined

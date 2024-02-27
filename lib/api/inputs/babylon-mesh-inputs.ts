@@ -10,8 +10,15 @@ export namespace BabylonMesh {
         backside = "backside",
         doubleside = "doubleside"
     }
-    
+
     export class UpdateDrawnBabylonMesh {
+        constructor(babylonMesh?: BABYLON.Mesh, position?: Base.Point3, rotation?: Base.Vector3, scaling?: Base.Vector3, colours?: string | string[]) {
+            if (babylonMesh !== undefined) { this.babylonMesh = babylonMesh; }
+            if (position !== undefined) { this.position = position; }
+            if (rotation !== undefined) { this.rotation = rotation; }
+            if (scaling !== undefined) { this.scaling = scaling; }
+            if (colours !== undefined) { this.colours = colours; }
+        }
         /**
          * Babylon Mesh that needs to be updated
          * @default undefined
@@ -40,6 +47,10 @@ export namespace BabylonMesh {
     }
 
     export class SetParentDto {
+        constructor(babylonMesh?: BABYLON.Mesh | BABYLON.InstancedMesh | BABYLON.AbstractMesh, parentMesh?: BABYLON.Mesh | BABYLON.InstancedMesh | BABYLON.AbstractMesh) {
+            if (babylonMesh !== undefined) { this.babylonMesh = babylonMesh; }
+            if (parentMesh !== undefined) { this.parentMesh = parentMesh; }
+        }
         /**
          * BabylonJS Mesh that needs to change it's parent
          * @default undefined
@@ -52,6 +63,10 @@ export namespace BabylonMesh {
         parentMesh: BABYLON.Mesh | BABYLON.InstancedMesh | BABYLON.AbstractMesh;
     }
     export class UpdateDrawnBabylonMeshPositionDto {
+        constructor(babylonMesh?: BABYLON.Mesh | BABYLON.InstancedMesh, position?: Base.Point3) {
+            if (babylonMesh !== undefined) { this.babylonMesh = babylonMesh; }
+            if (position !== undefined) { this.position = position; }
+        }
         /**
          * Babylon Mesh that needs to be updated
          * @default undefined
@@ -64,6 +79,10 @@ export namespace BabylonMesh {
         position: Base.Point3;
     }
     export class UpdateDrawnBabylonMeshRotationDto {
+        constructor(babylonMesh?: BABYLON.Mesh | BABYLON.InstancedMesh, rotation?: Base.Vector3) {
+            if (babylonMesh !== undefined) { this.babylonMesh = babylonMesh; }
+            if (rotation !== undefined) { this.rotation = rotation; }
+        }
         /**
          * Babylon Mesh that needs to be updated
          * @default undefined
@@ -77,6 +96,10 @@ export namespace BabylonMesh {
     }
 
     export class UpdateDrawnBabylonMeshScaleDto {
+        constructor(babylonMesh?: BABYLON.Mesh | BABYLON.InstancedMesh, scale?: Base.Vector3) {
+            if (babylonMesh !== undefined) { this.babylonMesh = babylonMesh; }
+            if (scale !== undefined) { this.scale = scale; }
+        }
         /**
          * Babylon Mesh that needs to be updated
          * @default undefined
@@ -90,6 +113,12 @@ export namespace BabylonMesh {
     }
 
     export class IntersectsMeshDto {
+        constructor(babylonMesh?: BABYLON.Mesh | BABYLON.InstancedMesh, babylonMesh2?: BABYLON.Mesh | BABYLON.InstancedMesh, precise?: boolean, includeDescendants?: boolean) {
+            if (babylonMesh !== undefined) { this.babylonMesh = babylonMesh; }
+            if (babylonMesh2 !== undefined) { this.babylonMesh2 = babylonMesh2; }
+            if (precise !== undefined) { this.precise = precise; }
+            if (includeDescendants !== undefined) { this.includeDescendants = includeDescendants; }
+        }
         /**
          * Babylon Mesh that needs to be updated
          * @default undefined
@@ -112,6 +141,10 @@ export namespace BabylonMesh {
         includeDescendants = false;
     }
     export class IntersectsPointDto {
+        constructor(babylonMesh?: BABYLON.Mesh | BABYLON.InstancedMesh, point?: Base.Point3) {
+            if (babylonMesh !== undefined) { this.babylonMesh = babylonMesh; }
+            if (point !== undefined) { this.point = point; }
+        }
         /**
          * Babylon Mesh that needs to be updated
          * @default undefined
@@ -125,6 +158,9 @@ export namespace BabylonMesh {
     }
 
     export class BabylonMeshDto {
+        constructor(babylonMesh?: BABYLON.Mesh) {
+            if (babylonMesh !== undefined) { this.babylonMesh = babylonMesh; }
+        }
         /**
          * BabylonJS mesh
          * @default undefined
@@ -132,6 +168,10 @@ export namespace BabylonMesh {
         babylonMesh: BABYLON.Mesh;
     }
     export class ShowHideMeshDto {
+        constructor(babylonMesh?: BABYLON.Mesh, includeChildren?: boolean) {
+            if (babylonMesh !== undefined) { this.babylonMesh = babylonMesh; }
+            if (includeChildren !== undefined) { this.includeChildren = includeChildren; }
+        }
         /**
          * BabylonJS mesh
          * @default undefined
@@ -144,6 +184,9 @@ export namespace BabylonMesh {
         includeChildren = true;
     }
     export class CloneBabylonMeshDto {
+        constructor(babylonMesh?: BABYLON.Mesh) {
+            if (babylonMesh !== undefined) { this.babylonMesh = babylonMesh; }
+        }
         /**
          * BabylonJS mesh
          * @default undefined
@@ -151,6 +194,10 @@ export namespace BabylonMesh {
         babylonMesh: BABYLON.Mesh;
     }
     export class ChildMeshesBabylonMeshDto {
+        constructor(babylonMesh?: BABYLON.Mesh, directDescendantsOnly?: boolean) {
+            if (babylonMesh !== undefined) { this.babylonMesh = babylonMesh; }
+            if (directDescendantsOnly !== undefined) { this.directDescendantsOnly = directDescendantsOnly; }
+        }
         /**
          * BabylonJS mesh
          * @default undefined
@@ -163,6 +210,10 @@ export namespace BabylonMesh {
         directDescendantsOnly = false;
     }
     export class TranslateBabylonMeshDto {
+        constructor(babylonMesh?: BABYLON.Mesh, distance?: number) {
+            if (babylonMesh !== undefined) { this.babylonMesh = babylonMesh; }
+            if (distance !== undefined) { this.distance = distance; }
+        }
         /**
          * BabylonJS mesh
          * @default undefined
@@ -178,6 +229,12 @@ export namespace BabylonMesh {
         distance = 0;
     }
     export class NameBabylonMeshDto {
+        constructor(babylonMesh?: BABYLON.Mesh, name?: string, includeChildren?: boolean) {
+            if (babylonMesh !== undefined) { this.babylonMesh = babylonMesh; }
+            if (name !== undefined) { this.name = name; }
+            if (includeChildren !== undefined) { this.includeChildren = includeChildren; }
+        }
+
         /**
          * BabylonJS mesh
          * @default undefined
@@ -193,9 +250,12 @@ export namespace BabylonMesh {
          * Set name also on children
          * @default false
          */
-        includeChildren?= false;
+        includeChildren? = false;
     }
     export class ByNameBabylonMeshDto {
+        constructor(name?: string) {
+            if (name !== undefined) { this.name = name; }
+        }
         /**
          * name of the mesh
          * @default undefined
@@ -203,6 +263,11 @@ export namespace BabylonMesh {
         name: string;
     }
     export class MaterialBabylonMeshDto {
+        constructor(babylonMesh?: BABYLON.Mesh, material?: BABYLON.Material, includeChildren?: boolean) {
+            if (babylonMesh !== undefined) { this.babylonMesh = babylonMesh; }
+            if (material !== undefined) { this.material = material; }
+            if (includeChildren !== undefined) { this.includeChildren = includeChildren; }
+        }
         /**
          * BabylonJS mesh
          * @default undefined
@@ -220,6 +285,10 @@ export namespace BabylonMesh {
         includeChildren = false;
     }
     export class IdBabylonMeshDto {
+        constructor(babylonMesh?: BABYLON.Mesh, id?: string) {
+            if (babylonMesh !== undefined) { this.babylonMesh = babylonMesh; }
+            if (id !== undefined) { this.id = id; }
+        }
         /**
          * BabylonJS mesh
          * @default undefined
@@ -232,6 +301,9 @@ export namespace BabylonMesh {
         id: string;
     }
     export class ByIdBabylonMeshDto {
+        constructor(id?: string) {
+            if (id !== undefined) { this.id = id; }
+        }
         /**
          * id of the mesh
          * @default undefined
@@ -240,6 +312,9 @@ export namespace BabylonMesh {
     }
 
     export class UniqueIdBabylonMeshDto {
+        constructor(uniqueId?: number) {
+            if (uniqueId !== undefined) { this.uniqueId = uniqueId; }
+        }
         /**
          * Unique id of the mesh
          * @default 0
@@ -250,6 +325,11 @@ export namespace BabylonMesh {
         uniqueId: number;
     }
     export class PickableBabylonMeshDto {
+        constructor(babylonMesh?: BABYLON.Mesh, pickable?: boolean, includeChildren?: boolean) {
+            if (babylonMesh !== undefined) { this.babylonMesh = babylonMesh; }
+            if (pickable !== undefined) { this.pickable = pickable; }
+            if (includeChildren !== undefined) { this.includeChildren = includeChildren; }
+        }
         /**
          * BabylonJS mesh
          * @default undefined
@@ -268,6 +348,11 @@ export namespace BabylonMesh {
     }
 
     export class CheckCollisionsBabylonMeshDto {
+        constructor(babylonMesh?: BABYLON.Mesh, checkCollisions?: boolean, includeChildren?: boolean) {
+            if (babylonMesh !== undefined) { this.babylonMesh = babylonMesh; }
+            if (checkCollisions !== undefined) { this.checkCollisions = checkCollisions; }
+            if (includeChildren !== undefined) { this.includeChildren = includeChildren; }
+        }
         /**
          * BabylonJS mesh
          * @default undefined
@@ -285,6 +370,10 @@ export namespace BabylonMesh {
         includeChildren = false;
     }
     export class RotateBabylonMeshDto {
+        constructor(babylonMesh?: BABYLON.Mesh, rotate?: number) {
+            if (babylonMesh !== undefined) { this.babylonMesh = babylonMesh; }
+            if (rotate !== undefined) { this.rotate = rotate; }
+        }
         /**
          * BabylonJS mesh
          * @default undefined
@@ -300,6 +389,11 @@ export namespace BabylonMesh {
         rotate: number;
     }
     export class SetMeshVisibilityDto {
+        constructor(babylonMesh?: BABYLON.Mesh, visibility?: number, includeChildren?: boolean) {
+            if (babylonMesh !== undefined) { this.babylonMesh = babylonMesh; }
+            if (visibility !== undefined) { this.visibility = visibility; }
+            if (includeChildren !== undefined) { this.includeChildren = includeChildren; }
+        }
         /**
          * BabylonJS mesh
          * @default undefined
@@ -320,6 +414,12 @@ export namespace BabylonMesh {
         includeChildren = false;
     }
     export class MeshInstanceAndTransformDto {
+        constructor(mesh?: BABYLON.Mesh, position?: Base.Point3, rotation?: Base.Vector3, scaling?: Base.Vector3) {
+            if (mesh !== undefined) { this.mesh = mesh; }
+            if (position !== undefined) { this.position = position; }
+            if (rotation !== undefined) { this.rotation = rotation; }
+            if (scaling !== undefined) { this.scaling = scaling; }
+        }
         /**
          * BabylonJS mesh
          * @default undefined
@@ -342,6 +442,9 @@ export namespace BabylonMesh {
         scaling: Base.Vector3;
     }
     export class MeshInstanceDto {
+        constructor(mesh?: BABYLON.Mesh) {
+            if (mesh !== undefined) { this.mesh = mesh; }
+        }
         /**
          * BabylonJS mesh
          * @default undefined
@@ -349,6 +452,12 @@ export namespace BabylonMesh {
         mesh: BABYLON.Mesh;
     }
     export class RotateAroundAxisNodeDto {
+        constructor(mesh?: BABYLON.Mesh, position?: Base.Point3, axis?: Base.Vector3, angle?: number) {
+            if (mesh !== undefined) { this.mesh = mesh; }
+            if (position !== undefined) { this.position = position; }
+            if (axis !== undefined) { this.axis = axis; }
+            if (angle !== undefined) { this.angle = angle; }
+        }
         /**
          * BabylonJS mesh
          * @default undefined

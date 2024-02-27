@@ -4,6 +4,9 @@ import { Base } from "./base-inputs";
 // tslint:disable-next-line: no-namespace
 export namespace Color {
     export class HexDto {
+        constructor(color?: Base.Color) {
+            if (color !== undefined) { this.color = color; }
+        }
         /**
          * Color hex
          * @default #0000ff
@@ -11,6 +14,11 @@ export namespace Color {
         color: Base.Color = "#0000ff";
     }
     export class HexDtoMapped {
+        constructor(color?: Base.Color, from?: number, to?: number) {
+            if (color !== undefined) { this.color = color; }
+            if (from !== undefined) { this.from = from; }
+            if (to !== undefined) { this.to = to; }
+        }
         /**
          * Color hex
          * @default #0000ff
@@ -34,6 +42,11 @@ export namespace Color {
         to = 255;
     }
     export class RGBDto {
+        constructor(r?: number, g?: number, b?: number) {
+            if (r !== undefined) { this.r = r; }
+            if (g !== undefined) { this.g = g; }
+            if (b !== undefined) { this.b = b; }
+        }
         /**
          * Red value component
          * @default 255
@@ -60,6 +73,9 @@ export namespace Color {
         b = 255;
     } 
     export class RGBObjectDto {
+        constructor(rgb?: Base.ColorRGB) {
+            if (rgb !== undefined) { this.rgb = rgb; }
+        }
         /**
          * Red value component
          * @default undefined

@@ -3,6 +3,10 @@ import { Base } from "./base-inputs";
 
 export namespace Vector {
     export class TwoVectorsDto {
+        constructor(first?: Base.Vector3, second?: Base.Vector3) {
+            if (first !== undefined) { this.first = first; }
+            if (second !== undefined) { this.second = second; }
+        }
         /**
          * First vector
          * @default undefined
@@ -15,6 +19,9 @@ export namespace Vector {
         second: Base.Vector3;
     }
     export class VectorBoolDto {
+        constructor(vector?: boolean[]) {
+            if (vector !== undefined) { this.vector = vector; }
+        }
         /**
          * Vector of booleans
          * @default undefined
@@ -22,6 +29,9 @@ export namespace Vector {
         vector: boolean[];
     }
     export class VectorDto {
+        constructor(vector?: number[]) {
+            if (vector !== undefined) { this.vector = vector; }
+        }
         /**
          * Vector array of numbers
          * @default undefined
@@ -29,6 +39,9 @@ export namespace Vector {
         vector: number[];
     }
     export class RangeMaxDto {
+        constructor(max?: number) {
+            if (max !== undefined) { this.max = max; }
+        }
         /**
          * Maximum range boundary
          * @default 10
@@ -39,6 +52,11 @@ export namespace Vector {
         max: number;
     }
     export class VectorXYZDto {
+        constructor(x?: number, y?: number, z?: number) {
+            if (x !== undefined) { this.x = x; }
+            if (y !== undefined) { this.y = y; }
+            if (z !== undefined) { this.z = z; }
+        }
         /**
          * X value of vector
          * @default 0
@@ -65,6 +83,10 @@ export namespace Vector {
         z: number;
     }
     export class VectorXYDto {
+        constructor(x?: number, y?: number) {
+            if (x !== undefined) { this.x = x; }
+            if (y !== undefined) { this.y = y; }
+        }
         /**
          * X value of vector
          * @default 0
@@ -83,6 +105,11 @@ export namespace Vector {
         y: number;
     }
     export class SpanDto {
+        constructor(step?: number, min?: number, max?: number) {
+            if (step !== undefined) { this.step = step; }
+            if (min !== undefined) { this.min = min; }
+            if (max !== undefined) { this.max = max; }
+        }
         /**
          * Step of the span
          * @default 0.1
@@ -109,6 +136,11 @@ export namespace Vector {
         max = 1;
     }
     export class RayPointDto {
+        constructor(point?: Base.Point3, distance?: number, vector?: number[]) {
+            if (point !== undefined) { this.point = point; }
+            if (distance !== undefined) { this.distance = distance; }
+            if (vector !== undefined) { this.vector = vector; }
+        }
         /**
          * Origin location of the ray
          * @default undefined
@@ -129,6 +161,9 @@ export namespace Vector {
         vector: number[];
     }
     export class VectorsDto {
+        constructor(vectors?: number[][]) {
+            if (vectors !== undefined) { this.vectors = vectors; }
+        }
         /**
          * Vectors array
          * @default undefined
@@ -136,6 +171,11 @@ export namespace Vector {
         vectors: number[][];
     }
     export class FractionTwoVectorsDto {
+        constructor(fraction?: number, first?: Base.Vector3, second?: Base.Vector3) {
+            if (fraction !== undefined) { this.fraction = fraction; }
+            if (first !== undefined) { this.first = first; }
+            if (second !== undefined) { this.second = second; }
+        }
         /**
          * Fraction number
          * @default 0.5
@@ -156,6 +196,10 @@ export namespace Vector {
         second: Base.Vector3;
     }
     export class VectorScalarDto {
+        constructor(scalar?: number, vector?: number[]) {
+            if (scalar !== undefined) { this.scalar = scalar; }
+            if (vector !== undefined) { this.vector = vector; }
+        }
         /**
          * Scalar number
          * @default 1
@@ -171,6 +215,11 @@ export namespace Vector {
         vector: number[];
     }
     export class TwoVectorsReferenceDto {
+        constructor(reference?: number[], first?: Base.Vector3, second?: Base.Vector3) {
+            if (reference !== undefined) { this.reference = reference; }
+            if (first !== undefined) { this.first = first; }
+            if (second !== undefined) { this.second = second; }
+        }
         /**
          * Reference vector
          * @default undefined

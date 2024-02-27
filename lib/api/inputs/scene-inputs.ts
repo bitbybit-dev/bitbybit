@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-namespace */
-import { Camera } from "@babylonjs/core";
-import { Base } from "./base-inputs";
 import * as BABYLON from "@babylonjs/core";
+import { Base } from "./base-inputs";
 
 export namespace BabylonScene {
 
@@ -10,7 +9,7 @@ export namespace BabylonScene {
          * Provide options without default values
          */
         constructor(colour?: string) {
-            this.colour = colour;
+            if (colour !== undefined) { this.colour = colour; }
         }
         /**
          * Hex colour string for the scene background colour
@@ -23,7 +22,7 @@ export namespace BabylonScene {
          * Provide scene
          */
         constructor(scene?: BABYLON.Scene) {
-            this.scene = scene;
+            if (scene !== undefined) { this.scene = scene; }
         }
         /**
          * The babylonjs scene
@@ -33,9 +32,7 @@ export namespace BabylonScene {
     }
     export class EnablePhysicsDto {
         constructor(vector?: Base.Vector3) {
-            if(vector){
-                this.vector = vector;
-            }
+            if (vector !== undefined) { this.vector = vector; }
         }
         /**
          * The gravity vector
@@ -44,6 +41,16 @@ export namespace BabylonScene {
         vector: Base.Vector3 = [0, -9.81, 0];
     }
     export class PointLightDto {
+        constructor(position?: Base.Point3, intensity?: number, diffuse?: Base.Color, specular?: Base.Color, radius?: number, shadowGeneratorMapSize?: number, enableShadows?: boolean, shadowDarkness?: number) {
+            if (position !== undefined) { this.position = position; }
+            if (intensity !== undefined) { this.intensity = intensity; }
+            if (diffuse !== undefined) { this.diffuse = diffuse; }
+            if (specular !== undefined) { this.specular = specular; }
+            if (radius !== undefined) { this.radius = radius; }
+            if (shadowGeneratorMapSize !== undefined) { this.shadowGeneratorMapSize = shadowGeneratorMapSize; }
+            if (enableShadows !== undefined) { this.enableShadows = enableShadows; }
+            if (shadowDarkness !== undefined) { this.shadowDarkness = shadowDarkness; }
+        }
         /**
          * Position of the point light
          * @default [0, 0, 0]
@@ -98,19 +105,34 @@ export namespace BabylonScene {
         shadowDarkness?= 0;
     }
     export class ActiveCameraDto {
+        constructor(camera?: BABYLON.Camera) {
+            if (camera !== undefined) { this.camera = camera; }
+        }
         /**
          * Camera to activate
          * @default undefined
          */
-        camera: Camera;
+        camera: BABYLON.Camera;
     }
     export class UseRightHandedSystemDto {
+        constructor(use?: boolean) {
+            if (use !== undefined) { this.use = use; }
+        }
         /** Indicates to use right handed system
          * @default true
          */
         use = true;
     }
     export class DirectionalLightDto {
+        constructor(direction?: Base.Vector3, intensity?: number, diffuse?: Base.Color, specular?: Base.Color, shadowGeneratorMapSize?: number, enableShadows?: boolean, shadowDarkness?: number) {
+            if (direction !== undefined) { this.direction = direction; }
+            if (intensity !== undefined) { this.intensity = intensity; }
+            if (diffuse !== undefined) { this.diffuse = diffuse; }
+            if (specular !== undefined) { this.specular = specular; }
+            if (shadowGeneratorMapSize !== undefined) { this.shadowGeneratorMapSize = shadowGeneratorMapSize; }
+            if (enableShadows !== undefined) { this.enableShadows = enableShadows; }
+            if (shadowDarkness !== undefined) { this.shadowDarkness = shadowDarkness; }
+        }
         /**
          * Direction of the directional light
          * @default [-100, -100, -100]
@@ -157,6 +179,17 @@ export namespace BabylonScene {
         shadowDarkness?= 0;
     }
     export class CameraConfigurationDto {
+        constructor(position?: Base.Point3, lookAt?: Base.Point3, lowerBetaLimit?: number, upperBetaLimit?: number, angularSensibilityX?: number, angularSensibilityY?: number, maxZ?: number, panningSensibility?: number, wheelPrecision?: number) {
+            if (position !== undefined) { this.position = position; }
+            if (lookAt !== undefined) { this.lookAt = lookAt; }
+            if (lowerBetaLimit !== undefined) { this.lowerBetaLimit = lowerBetaLimit; }
+            if (upperBetaLimit !== undefined) { this.upperBetaLimit = upperBetaLimit; }
+            if (angularSensibilityX !== undefined) { this.angularSensibilityX = angularSensibilityX; }
+            if (angularSensibilityY !== undefined) { this.angularSensibilityY = angularSensibilityY; }
+            if (maxZ !== undefined) { this.maxZ = maxZ; }
+            if (panningSensibility !== undefined) { this.panningSensibility = panningSensibility; }
+            if (wheelPrecision !== undefined) { this.wheelPrecision = wheelPrecision; }
+        }
         /**
          * Position of the point light
          * @default [10, 10, 10]
@@ -225,6 +258,12 @@ export namespace BabylonScene {
         wheelPrecision = 3;
     }
     export class SkyboxDto {
+        constructor(skybox?: Base.skyboxEnum, size?: number, blur?: number, environmentIntensity?: number) {
+            if (skybox !== undefined) { this.skybox = skybox; }
+            if (size !== undefined) { this.size = size; }
+            if (blur !== undefined) { this.blur = blur; }
+            if (environmentIntensity !== undefined) { this.environmentIntensity = environmentIntensity; }
+        }
         /**
          * Skybox type
          * @default clearSky
@@ -260,6 +299,13 @@ export namespace BabylonScene {
         statement_update: () => void;
     }
     export class FogDto {
+        constructor(mode?: Base.fogModeEnum, color?: Base.Color, density?: number, start?: number, end?: number) {
+            if (mode !== undefined) { this.mode = mode; }
+            if (color !== undefined) { this.color = color; }
+            if (density !== undefined) { this.density = density; }
+            if (start !== undefined) { this.start = start; }
+            if (end !== undefined) { this.end = end; }
+        }
         /**
          * Fog mode
          * @default none

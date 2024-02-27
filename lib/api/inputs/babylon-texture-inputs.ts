@@ -11,6 +11,18 @@ export namespace BabylonTexture {
     }
 
     export class TextureSimpleDto {
+        constructor(name?: string, url?: string, invertY?: boolean, invertZ?: boolean, wAng?: number, uScale?: number, vScale?: number, uOffset?: number, vOffset?: number, samplingMode?: samplingModeEnum) {
+            if (name !== undefined) { this.name = name; }
+            if (url !== undefined) { this.url = url; }
+            if (invertY !== undefined) { this.invertY = invertY; }
+            if (invertZ !== undefined) { this.invertZ = invertZ; }
+            if (wAng !== undefined) { this.wAng = wAng; }
+            if (uScale !== undefined) { this.uScale = uScale; }
+            if (vScale !== undefined) { this.vScale = vScale; }
+            if (uOffset !== undefined) { this.uOffset = uOffset; }
+            if (vOffset !== undefined) { this.vOffset = vOffset; }
+            if (samplingMode !== undefined) { this.samplingMode = samplingMode; }
+        }
         /**
          * Name of the material
          * @default Custom Texture

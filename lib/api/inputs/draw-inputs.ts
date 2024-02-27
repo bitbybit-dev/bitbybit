@@ -5,9 +5,14 @@ import { Base } from "../../api/inputs";
 // tslint:disable-next-line: no-namespace
 export namespace Draw {
 
-    export type DrawOptions = DrawBasicGeometryOptions | DrawOcctShapeOptions | DrawOcctShapeSimpleOptions | DrawOcctShapeMaterialOptions | DrawNodeOptions | any;
+    export type DrawOptions = DrawBasicGeometryOptions | DrawOcctShapeOptions | DrawOcctShapeSimpleOptions | DrawOcctShapeMaterialOptions | DrawNodeOptions;
 
     export class DrawAny {
+        constructor(entity?: any, options?: DrawOptions, babylonMesh?: BABYLON.Mesh | BABYLON.LinesMesh) {
+            if (entity !== undefined) { this.entity = entity; }
+            if (options !== undefined) { this.options = options; }
+            if (babylonMesh !== undefined) { this.babylonMesh = babylonMesh; }
+        }
         /**
          * Entity to be drawn - can be a single or multiple points, lines, polylines, verb curves, verb surfaces, jscad meshes, jscad polygons, jscad paths, occt shapes, tags, nodes
          * @default undefined
@@ -28,6 +33,18 @@ export namespace Draw {
     }
 
     export class SceneDrawGridMeshDto {
+        constructor(width?: number, height?: number, subdivisions?: number, majorUnitFrequency?: number, minorUnitVisibility?: number, gridRatio?: number, opacity?: number, backFaceCulling?: boolean, mainColor?: Base.Color, secondaryColor?: Base.Color) {
+            if (width !== undefined) { this.width = width; }
+            if (height !== undefined) { this.height = height; }
+            if (subdivisions !== undefined) { this.subdivisions = subdivisions; }
+            if (majorUnitFrequency !== undefined) { this.majorUnitFrequency = majorUnitFrequency; }
+            if (minorUnitVisibility !== undefined) { this.minorUnitVisibility = minorUnitVisibility; }
+            if (gridRatio !== undefined) { this.gridRatio = gridRatio; }
+            if (opacity !== undefined) { this.opacity = opacity; }
+            if (backFaceCulling !== undefined) { this.backFaceCulling = backFaceCulling; }
+            if (mainColor !== undefined) { this.mainColor = mainColor; }
+            if (secondaryColor !== undefined) { this.secondaryColor = secondaryColor; }
+        }
         /**
          * Width of the grid
          * @default 400
@@ -105,6 +122,13 @@ export namespace Draw {
      * Draw options for basic geometry types like points, lines, polylines, surfaces and jscad meshes
      */
     export class DrawBasicGeometryOptions {
+        constructor(colours?: string | string[], size?: number, opacity?: number, updatable?: boolean, hidden?: boolean) {
+            if (colours !== undefined) { this.colours = colours; }
+            if (size !== undefined) { this.size = size; }
+            if (opacity !== undefined) { this.opacity = opacity; }
+            if (updatable !== undefined) { this.updatable = updatable; }
+            if (hidden !== undefined) { this.hidden = hidden; }
+        }
         /**
          * Basic geometry colours to use for lines, points, polylines, surfaces, jscad meshes.
          * @default #ff0000
@@ -142,6 +166,12 @@ export namespace Draw {
      * Draw options for Nodes
      */
     export class DrawNodeOptions {
+        constructor(colourX?: Base.Color, colourY?: Base.Color, colourZ?: Base.Color, size?: number) {
+            if (colourX !== undefined) { this.colorX = colourX; }
+            if (colourY !== undefined) { this.colorY = colourY; }
+            if (colourZ !== undefined) { this.colorZ = colourZ; }
+            if (size !== undefined) { this.size = size; }
+        }
         /**
          * X Axis colour
          * @default #ff0000
@@ -170,6 +200,23 @@ export namespace Draw {
      * Draw options for OCCT shapes
      */
     export class DrawOcctShapeOptions {
+        constructor(faceOpacity?: number, edgeOpacity?: number, edgeColour?: Base.Color, faceColour?: Base.Color, faceMaterial?: any, edgeWidth?: number, drawEdges?: boolean, drawFaces?: boolean, precision?: number, drawEdgeIndexes?: boolean, edgeIndexHeight?: number, edgeIndexColour?: Base.Color, drawFaceIndexes?: boolean, faceIndexHeight?: number, faceIndexColour?: Base.Color) {
+            if (faceOpacity !== undefined) { this.faceOpacity = faceOpacity; }
+            if (edgeOpacity !== undefined) { this.edgeOpacity = edgeOpacity; }
+            if (edgeColour !== undefined) { this.edgeColour = edgeColour; }
+            if (faceColour !== undefined) { this.faceColour = faceColour; }
+            if (faceMaterial !== undefined) { this.faceMaterial = faceMaterial; }
+            if (edgeWidth !== undefined) { this.edgeWidth = edgeWidth; }
+            if (drawEdges !== undefined) { this.drawEdges = drawEdges; }
+            if (drawFaces !== undefined) { this.drawFaces = drawFaces; }
+            if (precision !== undefined) { this.precision = precision; }
+            if (drawEdgeIndexes !== undefined) { this.drawEdgeIndexes = drawEdgeIndexes; }
+            if (edgeIndexHeight !== undefined) { this.edgeIndexHeight = edgeIndexHeight; }
+            if (edgeIndexColour !== undefined) { this.edgeIndexColour = edgeIndexColour; }
+            if (drawFaceIndexes !== undefined) { this.drawFaceIndexes = drawFaceIndexes; }
+            if (faceIndexHeight !== undefined) { this.faceIndexHeight = faceIndexHeight; }
+            if (faceIndexColour !== undefined) { this.faceIndexColour = faceIndexColour; }
+        }
         /**
          * Face opacity value between 0 and 1
          * @default 1
@@ -261,6 +308,14 @@ export namespace Draw {
         faceIndexColour: Base.Color = "#0000ff";
     }
     export class DrawOcctShapeSimpleOptions {
+        constructor(precision?: number, drawFaces?: boolean, faceColour?: Base.Color, drawEdges?: boolean, edgeColour?: Base.Color, edgeWidth?: number) {
+            if (precision !== undefined) { this.precision = precision; }
+            if (drawFaces !== undefined) { this.drawFaces = drawFaces; }
+            if (faceColour !== undefined) { this.faceColour = faceColour; }
+            if (drawEdges !== undefined) { this.drawEdges = drawEdges; }
+            if (edgeColour !== undefined) { this.edgeColour = edgeColour; }
+            if (edgeWidth !== undefined) { this.edgeWidth = edgeWidth; }
+        }
         /**
          * Precision
          * @default 0.01
@@ -277,7 +332,7 @@ export namespace Draw {
          * Hex colour string for face colour
          * @default #ff0000
          */
-        faceColour: Base.Color = "#ff0000";
+        faceColour?: Base.Color = "#ff0000";
         /**
         * You can turn off drawing of edges via this property
         * @default true
@@ -298,6 +353,13 @@ export namespace Draw {
     }
 
     export class DrawOcctShapeMaterialOptions {
+        constructor(precision?: number, faceMaterial?: any, drawEdges?: boolean, edgeColour?: Base.Color, edgeWidth?: number) {
+            if (precision !== undefined) { this.precision = precision; }
+            if (faceMaterial !== undefined) { this.faceMaterial = faceMaterial; }
+            if (drawEdges !== undefined) { this.drawEdges = drawEdges; }
+            if (edgeColour !== undefined) { this.edgeColour = edgeColour; }
+            if (edgeWidth !== undefined) { this.edgeWidth = edgeWidth; }
+        }
         /**
         * Precision
         * @default 0.01

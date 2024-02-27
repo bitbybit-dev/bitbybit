@@ -4,6 +4,9 @@ import { Base } from "./base-inputs";
 
 export namespace Point {
     export class PointDto {
+        constructor(point?: Base.Point3) {
+            if (point !== undefined) { this.point = point; }
+        }
         /**
          * Point
          * @default undefined
@@ -11,6 +14,11 @@ export namespace Point {
         point: Base.Point3;
     }
     export class PointXYZDto {
+        constructor(x?: number, y?: number, z?: number) {
+            if (x !== undefined) { this.x = x; }
+            if (y !== undefined) { this.y = y; }
+            if (z !== undefined) { this.z = z; }
+        }
         /**
          * Point
          * @default 0
@@ -37,6 +45,10 @@ export namespace Point {
         z = 0;
     }
     export class PointXYDto {
+        constructor(x?: number, y?: number) {
+            if (x !== undefined) { this.x = x; }
+            if (y !== undefined) { this.y = y; }
+        }
         /**
          * Point
          * @default 0
@@ -55,6 +67,9 @@ export namespace Point {
         y = 0;
     }
     export class PointsDto {
+        constructor(points?: Base.Point3[]) {
+            if (points !== undefined) { this.points = points; }
+        }
         /**
          * Points
          * @default undefined
@@ -65,8 +80,13 @@ export namespace Point {
         /**
          * Provide options without default values
          */
-        constructor(point?: Base.Point3) {
-            this.point = point;
+        constructor(point?: Base.Point3, opacity?: number, size?: number, colours?: string | string[], updatable?: boolean, pointMesh?: Mesh) {
+            if (point !== undefined) { this.point = point; }
+            if (opacity !== undefined) { this.opacity = opacity; }
+            if (size !== undefined) { this.size = size; }
+            if (colours !== undefined) { this.colours = colours; }
+            if (updatable !== undefined) { this.updatable = updatable; }
+            if (pointMesh !== undefined) { this.pointMesh = pointMesh; }
         }
         /**
          * Point
@@ -109,8 +129,13 @@ export namespace Point {
         /**
          * Provide options without default values
          */
-        constructor(points?: Base.Point3[]) {
-            this.points = points;
+        constructor(points?: Base.Point3[], opacity?: number, size?: number, colours?: string | string[], updatable?: boolean, pointsMesh?: Mesh) {
+            if (points !== undefined) { this.points = points; }
+            if (opacity !== undefined) { this.opacity = opacity; }
+            if (size !== undefined) { this.size = size; }
+            if (colours !== undefined) { this.colours = colours; }
+            if (updatable !== undefined) { this.updatable = updatable; }
+            if (pointsMesh !== undefined) { this.pointsMesh = pointsMesh; }
         }
         /**
          * Point
@@ -150,6 +175,10 @@ export namespace Point {
         pointsMesh?: Mesh;
     }
     export class TransformPointDto {
+        constructor(point?: Base.Point3, transformation?: Base.TransformMatrixes) {
+            if (point !== undefined) { this.point = point; }
+            if (transformation !== undefined) { this.transformation = transformation; }
+        }
         /**
          * Point to transform
          * @default undefined
@@ -162,6 +191,10 @@ export namespace Point {
         transformation: Base.TransformMatrixes;
     }
     export class TransformPointsDto {
+        constructor(points?: Base.Point3[], transformation?: Base.TransformMatrixes) {
+            if (points !== undefined) { this.points = points; }
+            if (transformation !== undefined) { this.transformation = transformation; }
+        }
         /**
          * Points to transform
          * @default undefined
@@ -174,6 +207,10 @@ export namespace Point {
         transformation: Base.TransformMatrixes;
     }
     export class TransformsForPointsDto {
+        constructor(points?: Base.Point3[], transformation?: Base.TransformMatrixes[]) {
+            if (points !== undefined) { this.points = points; }
+            if (transformation !== undefined) { this.transformation = transformation; }
+        }
         /**
          * Points to transform
          * @default undefined
@@ -186,6 +223,10 @@ export namespace Point {
         transformation: Base.TransformMatrixes[];
     }
     export class ClosestPointFromPointsDto {
+        constructor(points?: Base.Point3[], point?: Base.Point3) {
+            if (points !== undefined) { this.points = points; }
+            if (point !== undefined) { this.point = point; }
+        }
         /**
          * Points to transform
          * @default undefined
@@ -198,6 +239,10 @@ export namespace Point {
         point: Base.Point3;
     }
     export class StartEndPointsDto {
+        constructor(startPoint?: Base.Point3, endPoint?: Base.Point3) {
+            if (startPoint !== undefined) { this.startPoint = startPoint; }
+            if (endPoint !== undefined) { this.endPoint = endPoint; }
+        }
         /**
          * Start point
          * @default undefined
@@ -211,6 +256,10 @@ export namespace Point {
     }
 
     export class MultiplyPointDto {
+        constructor(point?: Base.Point3, amountOfPoints?: number) {
+            if (point !== undefined) { this.point = point; }
+            if (amountOfPoints !== undefined) { this.amountOfPoints = amountOfPoints; }
+        }
         /**
          * Point for multiplication
          * @default undefined
@@ -224,6 +273,13 @@ export namespace Point {
     }
 
     export class SpiralDto {
+        constructor(radius?: number, numberPoints?: number, widening?: number, factor?: number, phi?: number) {
+            if (radius !== undefined) { this.radius = radius; }
+            if (numberPoints !== undefined) { this.numberPoints = numberPoints; }
+            if (widening !== undefined) { this.widening = widening; }
+            if (factor !== undefined) { this.factor = factor; }
+            if (phi !== undefined) { this.phi = phi; }
+        }
         /**
          * Identifies phi angle
          * @default 0.9
@@ -267,6 +323,13 @@ export namespace Point {
     }
 
     export class HexGridCentersDto {
+        constructor(nrHexagonsX?: number, nrHexagonsY?: number, radiusHexagon?: number, orientOnCenter?: boolean, pointsOnGround?: boolean) {
+            if (nrHexagonsX !== undefined) { this.nrHexagonsX = nrHexagonsX; }
+            if (nrHexagonsY !== undefined) { this.nrHexagonsY = nrHexagonsY; }
+            if (radiusHexagon !== undefined) { this.radiusHexagon = radiusHexagon; }
+            if (orientOnCenter !== undefined) { this.orientOnCenter = orientOnCenter; }
+            if (pointsOnGround !== undefined) { this.pointsOnGround = pointsOnGround; }
+        }
         /**
          * Number of hexagons on Y direction
          * @default 21

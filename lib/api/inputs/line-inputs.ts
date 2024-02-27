@@ -9,8 +9,8 @@ export namespace Line {
          * Provide options without default values
          */
         constructor(start?: Base.Point3, end?: Base.Point3) {
-            this.start = start;
-            this.end = end;
+            if (start !== undefined) { this.start = start; }
+            if (end !== undefined) { this.end = end; }
         }
         /**
          * Start point
@@ -26,8 +26,8 @@ export namespace Line {
          * Provide options without default values
          */
         constructor(startPoints?: Base.Point3[], endPoints?: Base.Point3[]) {
-            this.startPoints = startPoints;
-            this.endPoints = endPoints;
+            if (startPoints !== undefined) { this.startPoints = startPoints; }
+            if (endPoints !== undefined) { this.endPoints = endPoints; }
         }
         /**
          * Start points
@@ -42,8 +42,13 @@ export namespace Line {
         /**
          * Provide options without default values
          */
-        constructor(line?: LinePointsDto) {
-            this.line = line;
+        constructor(line?: LinePointsDto, opacity?: number, colours?: string | string[], size?: number, updatable?: boolean, lineMesh?: LinesMesh) {
+            if (line !== undefined) { this.line = line; }
+            if (opacity !== undefined) { this.opacity = opacity; }
+            if (colours !== undefined) { this.colours = colours; }
+            if (size !== undefined) { this.size = size; }
+            if (updatable !== undefined) { this.updatable = updatable; }
+            if (lineMesh !== undefined) { this.lineMesh = lineMesh; }
         }
         /**
          * Line
@@ -71,11 +76,17 @@ export namespace Line {
         lineMesh?: LinesMesh;
     }
     export class DrawLinesDto {
+
         /**
          * Provide options without default values
          */
-        constructor(lines?: LinePointsDto[]) {
-            this.lines = lines;
+        constructor(lines?: LinePointsDto[], opacity?: number, colours?: string | string[], size?: number, updatable?: boolean, linesMesh?: LinesMesh) {
+            if (lines !== undefined) { this.lines = lines; }
+            if (opacity !== undefined) { this.opacity = opacity; }
+            if (colours !== undefined) { this.colours = colours; }
+            if (size !== undefined) { this.size = size; }
+            if (updatable !== undefined) { this.updatable = updatable; }
+            if (linesMesh !== undefined) { this.linesMesh = linesMesh; }
         }
         /**
          * Lines
@@ -103,24 +114,37 @@ export namespace Line {
         linesMesh?: LinesMesh;
     }
     export class PointsLinesDto {
+        constructor(points?: Base.Point3[]) {
+            if (points !== undefined) { this.points = points; }
+        }
         /**
          * Points
          */
         points: Base.Point3[];
     }
     export class LineDto {
+        constructor(line?: LinePointsDto) {
+            if (line !== undefined) { this.line = line; }
+        }
         /**
          * Line to convert
          */
         line: LinePointsDto;
     }
     export class LinesDto {
+        constructor(lines?: LinePointsDto[]) {
+            if (lines !== undefined) { this.lines = lines; }
+        }
         /**
          * Lines to convert
          */
         lines: LinePointsDto[];
     }
     export class PointOnLineDto {
+        constructor(line?: LinePointsDto, param?: number) {
+            if (line !== undefined) { this.line = line; }
+            if (param !== undefined) { this.param = param; }
+        }
         /**
          * Line to get point on
          */
@@ -131,6 +155,10 @@ export namespace Line {
         param: number;
     }
     export class TransformLineDto {
+        constructor(line?: LinePointsDto, transformation?: Base.TransformMatrixes) {
+            if (line !== undefined) { this.line = line; }
+            if (transformation !== undefined) { this.transformation = transformation; }
+        }
         /**
          * Line to transform
          */
@@ -141,6 +169,10 @@ export namespace Line {
         transformation: Base.TransformMatrixes;
     }
     export class TransformsLinesDto {
+        constructor(lines?: LinePointsDto[], transformation?: Base.TransformMatrixes[]) {
+            if (lines !== undefined) { this.lines = lines; }
+            if (transformation !== undefined) { this.transformation = transformation; }
+        }
         /**
          * Lines to transform
          */
@@ -151,6 +183,10 @@ export namespace Line {
         transformation: Base.TransformMatrixes[];
     }
     export class TransformLinesDto {
+        constructor(lines?: LinePointsDto[], transformation?: Base.TransformMatrixes) {
+            if (lines !== undefined) { this.lines = lines; }
+            if (transformation !== undefined) { this.transformation = transformation; }
+        }
         /**
          * Lines to transform
          */

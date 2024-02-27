@@ -5,8 +5,10 @@ import { Base } from "./base-inputs";
 /* eslint-disable @typescript-eslint/no-namespace */
 export namespace Tag {
     export class DrawTagDto {
-        constructor(tag?: TagDto){
-            this.tag = tag;
+        constructor(tag?: TagDto, updatable?: boolean, tagVariable?: TagDto) {
+            if (tag !== undefined) { this.tag = tag; }
+            if (updatable !== undefined) { this.updatable = updatable; }
+            if (tagVariable !== undefined) { this.tagVariable = tagVariable; }
         }
         /**
          * Text tag to draw
@@ -22,8 +24,10 @@ export namespace Tag {
         tagVariable?: TagDto;
     }
     export class DrawTagsDto {
-        constructor(tags?: TagDto[]){
-            this.tags = tags;
+        constructor(tags?: TagDto[], updatable?: boolean, tagsVariable?: TagDto[]) {
+            if (tags !== undefined) { this.tags = tags; }
+            if (updatable !== undefined) { this.updatable = updatable; }
+            if (tagsVariable !== undefined) { this.tagsVariable = tagsVariable; }
         }
         /**
          * Text tag to draw
@@ -43,8 +47,14 @@ export namespace Tag {
      */
     export class TagDto {
 
-        constructor(text?: string){
-            this.text = text;
+        constructor(text?: string, position?: Base.Point3, colour?: string, size?: number, adaptDepth?: boolean, needsUpdate?: boolean, id?: string) {
+            if (text !== undefined) { this.text = text; }
+            if (position !== undefined) { this.position = position; }
+            if (colour !== undefined) { this.colour = colour; }
+            if (size !== undefined) { this.size = size; }
+            if (adaptDepth !== undefined) { this.adaptDepth = adaptDepth; }
+            if (needsUpdate !== undefined) { this.needsUpdate = needsUpdate; }
+            if (id !== undefined) { this.id = id; }
         }
 
         /**
