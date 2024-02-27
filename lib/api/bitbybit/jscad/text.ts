@@ -45,7 +45,7 @@ export class JSCADText {
      * @shortname vector
      * @drawable false
      */
-    async createVectorText(inputs: Inputs.JSCAD.TextDto): Promise<number[][]> {
+    async createVectorText(inputs: Inputs.JSCAD.TextDto): Promise<Inputs.Base.Point2[][]> {
         return this.jscadWorkerManager.genericCallToWorkerPromise("text.createVectorText", inputs);
     }
 }

@@ -208,7 +208,7 @@ export namespace JSCAD {
          * Solid or path to be downloaded, also supports multiple geometries in array
          * @default undefined
          */
-        geometry: JSCADEntity;
+        geometry: JSCADEntity | JSCADEntity[];
         /**
          * File name
          * @default undefined
@@ -454,7 +454,7 @@ export namespace JSCAD {
          * Points
          * @default undefined
          */
-        pointsLists: Base.Point3[][];
+        pointsLists: Base.Point3[][] | Base.Point2[][];
     }
     export class PathFromPolylineDto {
         /**
