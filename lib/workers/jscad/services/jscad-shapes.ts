@@ -207,7 +207,6 @@ export class JSCADShapes {
     }
 
     fromPolygonPoints(inputs: Inputs.JSCAD.FromPolygonPoints): Inputs.JSCAD.JSCADEntity {
-        console.log(this.jscad);
         const pts = inputs.polygonPoints.map(vertices => vertices.reverse());
         return this.jscad.geometries.geom3.fromPoints(pts);
     }

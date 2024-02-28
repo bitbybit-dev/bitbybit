@@ -333,7 +333,6 @@ export class Point {
         }
 
         if (inputs.orientOnCenter) {
-            console.log(points.length);
             const compensateX = points[points.length - 1][0] / 2;
             const compensateY = points[points.length - 1][1] / 2;
             points.forEach((p, index) => {
