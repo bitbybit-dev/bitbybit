@@ -205,13 +205,6 @@ export class GeometryHelper {
                 linesForRender.push(polyline.map(pt => new Vector3(pt[0], pt[1], pt[2])));
             });
 
-            let col;
-            if (Array.isArray(colours)) {
-                col = Color3.FromHexString(colours[0]);
-            } else {
-                col = Color3.FromHexString(colours);
-            }
-
             if (mesh && updatable) {
                 // in order to optimize this method its not enough to check if total vertices lengths match, we need a way to identify
                 if (!mesh.metadata.linesForRenderLengths.some((s, i) => s !== linesForRender[i].length)) {

@@ -163,12 +163,12 @@ export namespace JSCAD {
         opacity = 1;
         /**
          * Width of the path
-         * @default 3
+         * @default 10
          * @minimum 0
          * @maximum Infinity
          * @step 1
          */
-        width = 3;
+        width = 10;
         /**
          * Indicates wether the path will change in time
          * @default false
@@ -261,6 +261,39 @@ export namespace JSCAD {
          * @default undefined
          */
         fileName: string;
+    }
+    export class ColorizeDto {
+        constructor(geometry?: JSCADEntity, color?: string) {
+            if (geometry !== undefined) { this.geometry = geometry; }
+            if (color !== undefined) { this.color = color; }
+        }
+        /**
+         * Solid to be colorized
+         * @default undefined
+         */
+        geometry: JSCADEntity | JSCADEntity[];
+        /**
+         * Hex color string
+         * @default #0000ff
+         */
+        color = "#0000ff";
+    }
+
+    export class ColorizeEntitiesDto {
+        constructor(mesh?: JSCADEntity, color?: string) {
+            if (mesh !== undefined) { this.mesh = mesh; }
+            if (color !== undefined) { this.color = color; }
+        }
+        /**
+         * Solid to be colorized
+         * @default undefined
+         */
+        mesh: JSCADEntity[];
+        /**
+         * Hex color string
+         * @default #444444
+         */
+        color = "#444444";
     }
     export class BooleanObjectsDto {
         constructor(meshes?: JSCADEntity[]) {

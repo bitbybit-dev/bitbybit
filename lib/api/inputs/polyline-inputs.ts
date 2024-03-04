@@ -19,6 +19,10 @@ export namespace Polyline {
          * Can contain is closed information
          */
         isClosed? = false;
+        /**
+         * Can contain color information
+         */
+        color?: string | number[];
     }
     export class PolylineDto {
         constructor(polyline?: PolylinePropertiesDto) {

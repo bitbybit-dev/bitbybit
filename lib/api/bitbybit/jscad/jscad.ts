@@ -1,5 +1,5 @@
 
-import { Color3, LinesMesh, Matrix, Mesh, PBRMetallicRoughnessMaterial, VertexData } from "@babylonjs/core";
+import * as BABYLON from "@babylonjs/core";
 import { JSCADWorkerManager } from "../../../workers/jscad/jscad-worker-manager";
 import { Context } from "../../context";
 import { GeometryHelper } from "../../geometry-helper";
@@ -12,6 +12,7 @@ import { JSCADPath } from "./path";
 import { JSCADPolygon } from "./polygon";
 import { JSCADShapes } from "./shapes";
 import { JSCADText } from "./text";
+import { JSCADColors } from "./colors";
 
 /**
  * Contains various functions for Solid meshes from JSCAD library https://github.com/jscad/OpenJSCAD.org
@@ -27,6 +28,7 @@ export class JSCAD {
     public readonly polygon: JSCADPolygon;
     public readonly shapes: JSCADShapes;
     public readonly text: JSCADText;
+    public readonly colors: JSCADColors;
 
     constructor(
         private readonly jscadWorkerManager: JSCADWorkerManager,
@@ -41,6 +43,7 @@ export class JSCAD {
         this.polygon = new JSCADPolygon(jscadWorkerManager);
         this.shapes = new JSCADShapes(jscadWorkerManager);
         this.text = new JSCADText(jscadWorkerManager);
+        this.colors = new JSCADColors(jscadWorkerManager);
     }
 
     /**
@@ -51,7 +54,7 @@ export class JSCAD {
      * @shortname draw solid
      * @ignore true
      */
-    async drawSolidOrPolygonMesh(inputs: Inputs.JSCAD.DrawSolidMeshDto): Promise<Mesh> {
+    async drawSolidOrPolygonMesh(inputs: Inputs.JSCAD.DrawSolidMeshDto): Promise<BABYLON.Mesh> {
         const res: {
             positions: number[],
             normals: number[],
@@ -62,21 +65,28 @@ export class JSCAD {
         if (inputs.jscadMesh && inputs.updatable) {
             meshToUpdate = inputs.jscadMesh;
         } else {
-            meshToUpdate = new Mesh(`jscadMesh${Math.random()}`, this.context.scene);
+            meshToUpdate = new BABYLON.Mesh(`jscadMesh${Math.random()}`, this.context.scene);
+        }
+        let colour;
+        if (inputs.mesh.color && inputs.mesh.color.length > 0) {
+            // if jscad geometry is colorized and color is baked on geometry it will be used over anything that set in the draw options
+            colour = BABYLON.Color3.FromArray(inputs.mesh.color).toHexString();
+        } else {
+            colour = Array.isArray(inputs.colours) ? inputs.colours[0] : inputs.colours;
         }
 
-        const s = this.makeMesh({ ...inputs, colour: Array.isArray(inputs.colours) ? inputs.colours[0] : inputs.colours }, meshToUpdate, res);
+        const s = this.makeMesh({ ...inputs, colour }, meshToUpdate, res);
         inputs.jscadMesh = s;
         return s;
     }
 
-    private makeMesh(inputs: { updatable: boolean, opacity: number, colour: string, hidden: boolean }, meshToUpdate: Mesh, res: { positions: number[]; normals: number[]; indices: number[]; transforms: []; }) {
+    private makeMesh(inputs: { updatable: boolean, opacity: number, colour: string, hidden: boolean }, meshToUpdate: BABYLON.Mesh, res: { positions: number[]; normals: number[]; indices: number[]; transforms: []; }) {
 
         this.createMesh(res.positions, res.indices, res.normals, meshToUpdate, res.transforms, inputs.updatable);
-        meshToUpdate.material = new PBRMetallicRoughnessMaterial(`jscadMaterial${Math.random()}`, this.context.scene);
+        meshToUpdate.material = new BABYLON.PBRMetallicRoughnessMaterial(`jscadMaterial${Math.random()}`, this.context.scene);
         meshToUpdate.flipFaces(false);
-        const pbr = meshToUpdate.material as PBRMetallicRoughnessMaterial;
-        pbr.baseColor = Color3.FromHexString(inputs.colour);
+        const pbr = meshToUpdate.material as BABYLON.PBRMetallicRoughnessMaterial;
+        pbr.baseColor = BABYLON.Color3.FromHexString(inputs.colour);
         pbr.metallic = 1.0;
         pbr.roughness = 0.6;
         pbr.alpha = inputs.opacity;
@@ -98,21 +108,22 @@ export class JSCAD {
      * @shortname draw solid
      * @ignore true
      */
-    async drawSolidOrPolygonMeshes(inputs: Inputs.JSCAD.DrawSolidMeshesDto): Promise<Mesh> {
+    async drawSolidOrPolygonMeshes(inputs: Inputs.JSCAD.DrawSolidMeshesDto): Promise<BABYLON.Mesh> {
         return this.jscadWorkerManager.genericCallToWorkerPromise("shapesToMeshes", inputs).then((res: {
             positions: number[],
             normals: number[],
             indices: number[],
             transforms: [],
+            color?: number[]
         }[]) => {
 
-            let localOrigin: Mesh;
+            let localOrigin: BABYLON.Mesh;
             if (inputs.jscadMesh && inputs.updatable) {
-                localOrigin = inputs.jscadMesh as Mesh;
+                localOrigin = inputs.jscadMesh as BABYLON.Mesh;
                 const children = localOrigin.getChildMeshes();
                 children.forEach(mesh => { mesh.dispose(); localOrigin.removeChild(mesh); });
             } else {
-                localOrigin = new Mesh("local_origin" + Math.random(), this.context.scene);
+                localOrigin = new BABYLON.Mesh("local_origin" + Math.random(), this.context.scene);
             }
 
             localOrigin.isVisible = false;
@@ -121,9 +132,11 @@ export class JSCAD {
             const colorsAreArrays = Array.isArray(inputs.colours);
 
             res.map((r, index) => {
-                const meshToUpdate = new Mesh(`jscadMesh${Math.random()}`, this.context.scene);
+                const meshToUpdate = new BABYLON.Mesh(`jscadMesh${Math.random()}`, this.context.scene);
                 let colour;
-                if (colourIsArrayAndMatches) {
+                if (r.color) {
+                    colour = BABYLON.Color3.FromArray(r.color).toHexString();
+                } else if (colourIsArrayAndMatches) {
                     colour = inputs.colours[index];
                 } else if (colorsAreArrays) {
                     colour = inputs.colours[0];
@@ -146,7 +159,7 @@ export class JSCAD {
      * @shortname draw solid
      * @ignore true
      */
-    async drawPath(inputs: Inputs.JSCAD.DrawPathDto): Promise<LinesMesh> {
+    async drawPath(inputs: Inputs.JSCAD.DrawPathDto): Promise<BABYLON.LinesMesh> {
         return new Promise(resolve => {
 
             if (inputs.path.points) {
@@ -156,13 +169,18 @@ export class JSCAD {
                 }
             }
 
+            let colour = inputs.colour;
+            if (inputs.path.color) {
+                colour = BABYLON.Color3.FromArray(inputs.path.color).toHexString();
+            }
+
             resolve(this.geometryHelper.drawPolyline(
                 inputs.pathMesh,
                 inputs.path.points,
                 inputs.updatable,
                 inputs.width,
                 inputs.opacity,
-                inputs.colour
+                colour
             ));
         });
 
@@ -237,15 +255,15 @@ export class JSCAD {
     }
 
     private createMesh(
-        positions: number[], indices: number[], normals: number[], jscadMesh: Mesh, transforms: number[], updatable: boolean
+        positions: number[], indices: number[], normals: number[], jscadMesh: BABYLON.Mesh, transforms: number[], updatable: boolean
     ): void {
-        const vertexData = new VertexData();
+        const vertexData = new BABYLON.VertexData();
         vertexData.positions = positions;
         vertexData.indices = indices;
-        VertexData.ComputeNormals(positions, indices, normals, { useRightHandedSystem: true });
+        BABYLON.VertexData.ComputeNormals(positions, indices, normals, { useRightHandedSystem: true });
         vertexData.normals = normals;
 
         vertexData.applyToMesh(jscadMesh, updatable);
-        jscadMesh.setPreTransformMatrix(Matrix.FromArray(transforms));
+        jscadMesh.setPreTransformMatrix(BABYLON.Matrix.FromArray(transforms));
     }
 }

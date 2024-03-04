@@ -8,6 +8,7 @@ import { JSCADShapes } from "./services/jscad-shapes";
 import { JSCADText } from "./services/jscad-text";
 import * as Inputs from "../../api/inputs/jscad-inputs";
 import { JSCADHulls } from "./services/jscad-hulls";
+import { JSCADColors } from "./services/jscad-colors";
 
 // Worker make an instance of this class itself
 export class Jscad {
@@ -22,6 +23,7 @@ export class Jscad {
     public polygon: JSCADPolygon;
     public shapes: JSCADShapes;
     public text: JSCADText;
+    public colors: JSCADColors;
 
     constructor(jscad: any) {
         const vecHelper = new VectorHelperService();
@@ -33,6 +35,7 @@ export class Jscad {
         this.polygon = new JSCADPolygon(jscad, vecHelper);
         this.shapes = new JSCADShapes(jscad);
         this.text = new JSCADText(jscad);
+        this.colors = new JSCADColors(jscad);
         this.jscad = jscad;
     }
 
@@ -146,11 +149,6 @@ export class Jscad {
             ...inputs.meshes);
         const madeBlob = new Blob(rawData, { type: "application/sla" });
         return { blob: madeBlob };
-    }
-
-    private degrees_to_radians(degrees) {
-        const pi = Math.PI;
-        return degrees * (pi / 180);
     }
 
     private getArrayDepth = (value): number => {

@@ -1,5 +1,5 @@
 
-import { LinesMesh, } from "@babylonjs/core";
+import * as BABYLON from "@babylonjs/core";
 import { Context } from "../context";
 import { GeometryHelper } from "../geometry-helper";
 import * as Inputs from "../inputs/inputs";
@@ -18,7 +18,7 @@ export class Polyline {
      * @param inputs Contains a polyline to be drawn
      * @returns Lines mesh that is being drawn by Babylon
      */
-    drawPolyline(inputs: Inputs.Polyline.DrawPolylineDto): LinesMesh {
+    drawPolyline(inputs: Inputs.Polyline.DrawPolylineDto): BABYLON.LinesMesh {
         // handle jscad isClosed case
         const points = inputs.polyline.points;
         if (inputs.polyline.isClosed) {
@@ -39,22 +39,35 @@ export class Polyline {
      * @param inputs Contains a polyline to be drawn
      * @returns Lines mesh that is being drawn by Babylon
      */
-    drawPolylines(inputs: Inputs.Polyline.DrawPolylinesDto): LinesMesh {
-        const points = inputs.polylines.map(s => {
+    drawPolylines(inputs: Inputs.Polyline.DrawPolylinesDto): BABYLON.LinesMesh {
+        let colours = inputs.colours;
+        const points = inputs.polylines.map((s, index) => {
             const pts = s.points;
             //handle jscad
             if (s.isClosed) {
                 pts.push(pts[0]);
             }
+            // sometimes polylines can have assigned colors in case of jscad for example. Such colour will overwrite the default provided colour for that polyline.
+            if (s.color) {
+                if (!Array.isArray(colours)) {
+                    colours = [];
+                }
+                if (Array.isArray(s.color)) {
+                    colours[index] = BABYLON.Color3.FromArray(s.color).toHexString();
+                } else {
+                    colours[index] = s.color;
+                }
+            }
             return pts;
         });
+
         return this.geometryHelper.drawPolylines(
             inputs.polylinesMesh,
             points,
             inputs.updatable,
             inputs.size,
             inputs.opacity,
-            inputs.colours
+            colours
         );
     }
 
