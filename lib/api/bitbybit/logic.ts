@@ -18,6 +18,46 @@ export class Logic {
     }
 
     /**
+     * Creates a random boolean list of predefined length
+     * @param inputs a length and a threshold for randomization of true values
+     * @returns booleans
+     * @group create
+     * @shortname random booleans
+     * @drawable false
+     */
+    randomBooleans(inputs: Inputs.Logic.RandomBooleansDto): boolean[] {
+        const booleans = [];
+        for (let i = 0; i < inputs.length; i++) {
+            booleans.push(Math.random() < inputs.trueThreshold);
+        }
+        return booleans;
+    }
+
+    /**
+     * Apply not operator on the boolean
+     * @param inputs a true or false boolean
+     * @returns boolean
+     * @group edit
+     * @shortname not
+     * @drawable false
+     */
+    not(inputs: Inputs.Logic.BooleanDto): boolean {
+        return !inputs.boolean;
+    }
+
+    /**
+     * Apply not operator on a list of booleans
+     * @param inputs a list of true or false booleans
+     * @returns booleans
+     * @group edit
+     * @shortname not list
+     * @drawable false
+     */
+    notList(inputs: Inputs.Logic.BooleanListDto): boolean[] {
+        return inputs.booleans.map(b => !b);
+    }
+
+    /**
      * Does comparison between first and second values
      * @param inputs two values to be compared
      * @returns Result of the comparison
@@ -27,24 +67,24 @@ export class Logic {
      */
     compare<T>(inputs: Inputs.Logic.ComparisonDto<T>): boolean {
         switch (inputs.operator) {
-        case "==":
-            return inputs.first == inputs.second;
-        case "!=":
-            return inputs.first != inputs.second;
-        case "===":
-            return inputs.first === inputs.second;
-        case "!==":
-            return inputs.first !== inputs.second;
-        case "<":
-            return inputs.first < inputs.second;
-        case "<=":
-            return inputs.first <= inputs.second;
-        case ">":
-            return inputs.first > inputs.second;
-        case ">=":
-            return inputs.first >= inputs.second;
-        default:
-            return false;
+            case "==":
+                return inputs.first == inputs.second;
+            case "!=":
+                return inputs.first != inputs.second;
+            case "===":
+                return inputs.first === inputs.second;
+            case "!==":
+                return inputs.first !== inputs.second;
+            case "<":
+                return inputs.first < inputs.second;
+            case "<=":
+                return inputs.first <= inputs.second;
+            case ">":
+                return inputs.first > inputs.second;
+            case ">=":
+                return inputs.first >= inputs.second;
+            default:
+                return false;
         }
     }
 

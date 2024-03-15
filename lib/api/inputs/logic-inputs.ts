@@ -46,6 +46,16 @@ export namespace Logic {
          */
         boolean = false;
     }
+    export class BooleanListDto {
+        constructor(booleans?: boolean) {
+            if (booleans !== undefined) { this.booleans = booleans; }
+        }
+        /**
+         * Boolean value
+         * @default undefined
+         */
+        booleans;
+    }
     export class ValueGateDto<T> {
         constructor(value?: T, boolean?: boolean) {
             if (value !== undefined) { this.value = value; }
@@ -61,5 +71,26 @@ export namespace Logic {
          * @default false
          */
         boolean = false;
+    }
+    export class RandomBooleansDto {
+        constructor(length?: number) {
+            if (length !== undefined) { this.length = length; }
+        }
+        /**
+         * Length of the list
+         * @default 10
+         * @minimum 1
+         * @maximum Infinity
+         * @step 1
+         */
+        length = 10;
+        /**
+         * Threshold for true value between 0 and 1. The closer the value is to 1 the more true values there will be in the list.
+         * @default 0.5
+         * @minimum 0
+         * @maximum 1
+         * @step 0.1
+         */
+        trueThreshold: 0.5;
     }
 }
