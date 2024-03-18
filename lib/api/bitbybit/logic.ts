@@ -34,6 +34,94 @@ export class Logic {
     }
 
     /**
+     * Creates a random boolean list of true and false values based on a list of numbers. 
+     * All values between true threshold will be true, all values above false threshold will be false, 
+     * and the rest will be distributed between true and false based on the number of levels in a gradient pattern.
+     * That means that the closer the number gets to the false threshold the bigger the chance will be to get random false value.
+     * @param inputs a length and a threshold for randomization of true values
+     * @returns booleans
+     * @group create
+     * @shortname 2 threshold random gradient
+     * @drawable false
+     */
+    twoThresholdRandomGradient(inputs: Inputs.Logic.TwoThresholdRandomGradientDto): boolean[] {
+        const booleans = [];
+        inputs.numbers.forEach(n => {
+            if (n < inputs.thresholdTotalTrue) {
+                booleans.push(true);
+            } else if (n > inputs.thresholdTotalFalse) {
+                booleans.push(false);
+            } else {
+                const leveledNr = n - inputs.thresholdTotalTrue;
+                const step = (inputs.thresholdTotalFalse - inputs.thresholdTotalTrue) / inputs.nrLevels;
+                const whichCat = Math.ceil(leveledNr / step);
+                const bound = whichCat / inputs.nrLevels;
+                const random = Math.random();
+                if (random > bound) {
+                    booleans.push(true);
+                } else {
+                    booleans.push(false);
+                }
+            }
+        });
+        return booleans;
+    }
+
+    /**
+     * Creates a boolean list based on a list of numbers and a threshold.
+     * @param inputs a length and a threshold for randomization of true values
+     * @returns booleans
+     * @group create
+     * @shortname threshold boolean list
+     * @drawable false
+     */
+    thresholdBooleanListDto(inputs: Inputs.Logic.ThresholdBooleanListDto): boolean[] {
+        const booleans = [];
+        inputs.numbers.forEach(n => {
+            if (n < inputs.threshold) {
+                booleans.push(true);
+            } else {
+                booleans.push(false);
+            }
+        });
+        if (inputs.inverse) {
+            return booleans.map(b => !b);
+        }
+        return booleans;
+    }
+
+    /**
+     * Creates a boolean list based on a list of numbers and a gap thresholds. Gap thresholds are pairs of numbers that define a range of numbers that will be true.
+     * @param inputs a length and a threshold for randomization of true values
+     * @returns booleans
+     * @group create
+     * @shortname threshold gaps boolean list
+     * @drawable false
+     */
+    thresholdGapsBooleanList(inputs: Inputs.Logic.ThresholdGapsBooleanListDto): boolean[] {
+        const booleans = [];
+
+        inputs.numbers.forEach(n => {
+            let foundInThresholds = false;
+            inputs.gapThresholds.forEach(t => {
+                const min = t[0];
+                const max = t[1];
+                if (n >= min && n <= max) {
+                    booleans.push(true);
+                    foundInThresholds = true;
+                }
+            });
+            if (!foundInThresholds) {
+                booleans.push(false);
+            }
+        });
+        if (inputs.inverse) {
+            return booleans.map(b => !b);
+        }
+        return booleans;
+    }
+
+    /**
      * Apply not operator on the boolean
      * @param inputs a true or false boolean
      * @returns boolean

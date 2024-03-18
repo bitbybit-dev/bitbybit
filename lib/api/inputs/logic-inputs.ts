@@ -1,3 +1,5 @@
+import { Base } from "./base-inputs";
+
 /* eslint-disable @typescript-eslint/no-namespace */
 
 
@@ -92,5 +94,74 @@ export namespace Logic {
          * @step 0.1
          */
         trueThreshold: 0.5;
+    }
+    export class TwoThresholdRandomGradientDto {
+        /**
+         * Numbers to remap to bools
+         * @default undefined
+         */
+        numbers: number[];
+        /**
+         * Threshold for the numeric value until which the output will be true
+         * @default 1
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.1
+         */
+        thresholdTotalTrue: number;
+        /**
+         * Threshold for the numeric value until which the output will be true
+         * @default 2
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.1
+         */
+        thresholdTotalFalse: number;
+        /**
+         * Number of levels to go through in between thresholds for gradient
+         * @default 10
+         * @minimum 0
+         * @maximum Infinity
+         * @step 1
+         */
+        nrLevels: number;
+    }
+    export class ThresholdBooleanListDto {
+        /**
+         * Numbers to remap to bools based on threshold
+         * @default undefined
+         */
+        numbers: number[];
+        /**
+         * Threshold for the numeric value until which the output will be true. 
+         * If number in the list is larger than this threshold it will become false if inverse stays false.
+         * @default 1
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.1
+         */
+        threshold: number;
+        /**
+         * True values become false and false values become true
+         * @default false
+         */
+        inverse: boolean;
+    }
+    export class ThresholdGapsBooleanListDto {
+        /**
+         * Numbers to remap to bools based on threshold
+         * @default undefined
+         */
+        numbers: number[];
+        /**
+         * 2D arrays representing gaps of the thresholds on which numbers should be flipped from true to false if inverse is false.
+         * @default undefined
+         */
+        gapThresholds: Base.Vector2[];
+        /**
+         * True values become false and false values become true
+         * @default false
+         */
+        inverse: boolean;
     }
 }

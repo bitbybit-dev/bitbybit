@@ -184,7 +184,24 @@ export class Point {
      * @drawable false
      */
     distance(inputs: Inputs.Point.StartEndPointsDto): number {
-        return this.context.verb.core.Vec.dist(inputs.startPoint, inputs.endPoint);
+        const x = inputs.endPoint[0] - inputs.startPoint[0];
+        const y = inputs.endPoint[1] - inputs.startPoint[1];
+        const z = inputs.endPoint[2] - inputs.startPoint[2];
+        return Math.sqrt(x * x + y * y + z * z);
+    }
+
+    /**
+     * Finds the distances between the start point and multiple end points
+     * @param inputs Coordinates of start and end points
+     * @returns Distances
+     * @group measure
+     * @shortname distances to points
+     * @drawable false
+     */
+    distancesToPoints(inputs: Inputs.Point.StartEndPointsListDto): number[] {
+        return inputs.endPoints.map(pt => {
+            return this.distance({ startPoint: inputs.startPoint, endPoint: pt });
+        });
     }
 
     /**

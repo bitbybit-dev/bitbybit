@@ -254,6 +254,22 @@ export namespace Point {
          */
         endPoint: Base.Point3;
     }
+    export class StartEndPointsListDto {
+        constructor(startPoint?: Base.Point3, endPoints?: Base.Point3[]) {
+            if (startPoint !== undefined) { this.startPoint = startPoint; }
+            if (endPoints !== undefined) { this.endPoints = endPoints; }
+        }
+        /**
+         * Start point
+         * @default undefined
+         */
+        startPoint: Base.Point3;
+        /**
+         * End point
+         * @default undefined
+         */
+        endPoints: Base.Point3[];
+    }
 
     export class MultiplyPointDto {
         constructor(point?: Base.Point3, amountOfPoints?: number) {
