@@ -154,7 +154,7 @@ export namespace Logic {
          */
         numbers: number[];
         /**
-         * 2D arrays representing gaps of the thresholds on which numbers should be flipped from true to false if inverse is false.
+         * 2D arrays representing gaps of the thresholds on which numbers should be flipped from false to true if inverse is false.
          * @default undefined
          */
         gapThresholds: Base.Vector2[];
