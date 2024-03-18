@@ -75,7 +75,7 @@ export class Logic {
      * @shortname threshold boolean list
      * @drawable false
      */
-    thresholdBooleanListDto(inputs: Inputs.Logic.ThresholdBooleanListDto): boolean[] {
+    thresholdBooleanList(inputs: Inputs.Logic.ThresholdBooleanListDto): boolean[] {
         const booleans = [];
         inputs.numbers.forEach(n => {
             if (n < inputs.threshold) {
