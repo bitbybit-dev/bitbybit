@@ -13,6 +13,8 @@ export class BabylonArcRotateCamera {
      * Default inputs allow you to control most important camera properties. If you need to change other properties, you can use specific set methods.
      * @param inputs Describes the arc rotate camera
      * @returns BabylonJS arc rotate camera
+     * @group create
+     * @shortname new arc rotate camera
      */
     create(inputs: Inputs.BabylonCamera.ArcRotateCameraDto): BABYLON.ArcRotateCamera {
         const target = new BABYLON.Vector3(inputs.target[0], inputs.target[1], inputs.target[2]);

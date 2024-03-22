@@ -12,6 +12,8 @@ export class BabylonTargetCamera {
      * Creates a target camera
      * @param inputs Describes the target camera
      * @returns BabylonJS target camera
+     * @group create
+     * @shortname new target camera
      */
     create(inputs: Inputs.BabylonCamera.TargetCameraDto): BABYLON.TargetCamera {
         const pos = new BABYLON.Vector3(inputs.position[0], inputs.position[1], inputs.position[2]);

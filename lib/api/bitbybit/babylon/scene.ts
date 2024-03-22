@@ -199,15 +199,25 @@ export class BabylonScene {
     }
 
     /**
+     * Gets the active camera of the scene
+     * @group camera
+     * @shortname get active camera
+     */
+    getActiveCamera(): BABYLON.Camera {
+        return this.context.scene.activeCamera;
+    }
+
+    /**
      * Adjusts the active arc rotate camera with configuration parameters
      * @group camera
-     * @shortname adjust active
+     * @shortname adjust active camera
      */
     adjustActiveArcRotateCamera(inputs: Inputs.BabylonScene.CameraConfigurationDto): void {
         const camera = this.context.scene.getCameraByName("Camera") as BABYLON.ArcRotateCamera;
         camera.position = new BABYLON.Vector3(inputs.position[0], inputs.position[1], inputs.position[2]);
         camera.target = new BABYLON.Vector3(inputs.lookAt[0], inputs.lookAt[1], inputs.lookAt[2]);
-
+        const distance = BABYLON.Vector3.Distance(camera.position, camera.target);
+        camera.radius = distance;
         if (inputs.lowerBetaLimit !== undefined) {
             camera.lowerBetaLimit = this.getRadians(inputs.lowerBetaLimit);
         }
@@ -226,7 +236,6 @@ export class BabylonScene {
         if (inputs.wheelPrecision !== undefined) {
             camera.wheelPrecision = inputs.wheelPrecision;
         }
-
         if (inputs.maxZ !== undefined) {
             camera.maxZ = inputs.maxZ;
         }

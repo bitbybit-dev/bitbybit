@@ -201,6 +201,52 @@ export namespace BabylonCamera {
         maxZ = 0;
     }
 
+    export class OrthographicDto {
+        constructor(camera?: BABYLON.Camera, orthoLeft?: number, orthoRight?: number, orthoTop?: number, orthoBottom?: number) {
+            if (camera !== undefined) { this.camera = camera; }
+            if (orthoLeft !== undefined) { this.orthoLeft = orthoLeft; }
+            if (orthoRight !== undefined) { this.orthoRight = orthoRight; }
+            if (orthoTop !== undefined) { this.orthoTop = orthoTop; }
+            if (orthoBottom !== undefined) { this.orthoBottom = orthoBottom; }
+        }
+        /**
+         * Camera to adjust
+         */
+        camera: BABYLON.Camera;
+        /**
+         * Left side limit of the orthographic camera
+         * @default -1
+         * @minimum -Infinity
+         * @maximum Infinity
+         * @step 1
+         */
+        orthoLeft = -1;
+        /**
+         * Right side limit of the orthographic camera
+         * @default 1
+         * @minimum -Infinity
+         * @maximum Infinity
+         * @step 1
+         */
+        orthoRight = 1;
+        /**
+         * Bottom side limit of the orthographic camera
+         * @default -1
+         * @minimum -Infinity
+         * @maximum Infinity
+         * @step 1
+         */
+        orthoBottom = -1;
+        /**
+         * Top side limit of the orthographic camera
+         * @default 1
+         * @minimum -Infinity
+         * @maximum Infinity
+         * @step 1
+         */
+        orthoTop = 1;
+    }
+
     export class CameraDto {
         constructor(camera?: BABYLON.Camera) {
             if (camera !== undefined) { this.camera = camera; }

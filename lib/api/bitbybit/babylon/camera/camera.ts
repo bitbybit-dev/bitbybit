@@ -22,7 +22,9 @@ export class BabylonCamera {
 
     /**
      * Freeze projection matrix of the camera
-     * @param inputs Camera to freeze
+     * @param inputs camera to freeze
+     * @group adjust
+     * @shortname freeze projection matrix
      */
     freezeProjectionMatrix(inputs: Inputs.BabylonCamera.CameraDto): void {
         inputs.camera.freezeProjectionMatrix();
@@ -30,7 +32,9 @@ export class BabylonCamera {
 
     /**
      * Unfreeze projection matrix of the camera
-     * @param inputs Camera to freeze
+     * @param inputs camera to unfreeze
+     * @group adjust
+     * @shortname unfreeze projection matrix
      */
     unfreezeProjectionMatrix(inputs: Inputs.BabylonCamera.CameraDto): void {
         inputs.camera.unfreezeProjectionMatrix();
@@ -39,7 +43,9 @@ export class BabylonCamera {
 
     /**
      * Changes the position of a camera
-     * @param inputs Changes the camera position
+     * @param inputs camera and position
+     * @group set
+     * @shortname set camera position
      */
     setPosition(inputs: Inputs.BabylonCamera.PositionDto): void {
         const pos = new BABYLON.Vector3(inputs.position[0], inputs.position[1], inputs.position[2]);
@@ -48,7 +54,9 @@ export class BabylonCamera {
 
     /**
      * Gets the position of a camera
-     * @param inputs Gets the camera position
+     * @param inputs camera
+     * @group get
+     * @shortname get camera position
      */
     getPosition(inputs: Inputs.BabylonCamera.PositionDto): Base.Point3 {
         return [inputs.camera.position.x, inputs.camera.position.y, inputs.camera.position.z];
@@ -56,7 +64,9 @@ export class BabylonCamera {
 
     /**
      * Changes the target of a camera
-     * @param inputs Changes the camera target
+     * @param inputs camera and target
+     * @group set
+     * @shortname set camera target
      */
     setTarget(inputs: Inputs.BabylonCamera.TargetDto): void {
         const target = new BABYLON.Vector3(inputs.target[0], inputs.target[1], inputs.target[2]);
@@ -65,7 +75,9 @@ export class BabylonCamera {
 
     /**
      * Gets the target of a camera
-     * @param inputs Gets the camera position
+     * @param inputs camera
+     * @group get
+     * @shortname get camera target
      */
     getTarget(inputs: Inputs.BabylonCamera.PositionDto): Base.Point3 {
         return [inputs.camera.target.x, inputs.camera.target.y, inputs.camera.target.z];
@@ -73,7 +85,9 @@ export class BabylonCamera {
 
     /**
      * Changes the speed of a camera
-     * @param inputs Changes the camera target
+     * @param inputs camera and speed
+     * @group set
+     * @shortname set camera speed
      */
     setSpeed(inputs: Inputs.BabylonCamera.SpeedDto): void {
         inputs.camera.speed = inputs.speed;
@@ -81,7 +95,9 @@ export class BabylonCamera {
 
     /**
      * Gets the speed of a camera
-     * @param inputs Gets the camera position
+     * @param inputs camera
+     * @group get
+     * @shortname get camera speed
      */
     getSpeed(inputs: Inputs.BabylonCamera.PositionDto): Base.Point3 {
         return [inputs.camera.target.x, inputs.camera.target.y, inputs.camera.target.z];
@@ -89,7 +105,9 @@ export class BabylonCamera {
 
     /**
      * Changes the minZ of a camera
-     * @param inputs Changes the camera minZ
+     * @param inputs camera
+     * @group set
+     * @shortname set camera min z
      */
     setMinZ(inputs: Inputs.BabylonCamera.MinZDto): void {
         inputs.camera.minZ = inputs.minZ;
@@ -97,9 +115,37 @@ export class BabylonCamera {
 
     /**
      * Changes the maxZ of a camera
-     * @param inputs Changes the camera maxZ
+     * @param inputs camera and maxz value
+     * @group set
+     * @shortname camera max z
      */
     setMaxZ(inputs: Inputs.BabylonCamera.MaxZDto): void {
         inputs.camera.maxZ = inputs.maxZ;
     }
+
+    /**
+     * Changes the the mode of the camera to orthographic
+     * @param inputs the camera and orthographic properties
+     * @group adjust
+     * @shortname enable orthographic mode
+     */
+    makeCameraOrthographic(inputs: Inputs.BabylonCamera.OrthographicDto): void {
+        inputs.camera.mode = BABYLON.Camera.ORTHOGRAPHIC_CAMERA;
+        inputs.camera.orthoBottom = inputs.orthoBottom || -1;
+        inputs.camera.orthoTop = inputs.orthoTop || 1;
+        inputs.camera.orthoLeft = inputs.orthoLeft || -1;
+        inputs.camera.orthoRight = inputs.orthoRight || 1;
+    }
+
+
+    /**
+     * Changes the mode of a camera to perspective
+     * @param inputs Changes the camera maxZ
+     * @group adjust
+     * @shortname enable perspective mode
+     */
+    makeCameraPerspective(inputs: Inputs.BabylonCamera.CameraDto): void {
+        inputs.camera.mode = BABYLON.Camera.PERSPECTIVE_CAMERA;
+    }
+    
 }

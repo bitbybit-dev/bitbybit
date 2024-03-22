@@ -12,6 +12,8 @@ export class BabylonFreeCamera {
      * Creates a free camera
      * @param inputs Describes the free camera
      * @returns BabylonJS free camera
+     * @group create
+     * @shortname new free camera
      */
     create(inputs: Inputs.BabylonCamera.FreeCameraDto): BABYLON.FreeCamera {
         const pos = new BABYLON.Vector3(inputs.position[0], inputs.position[1], inputs.position[2]);
