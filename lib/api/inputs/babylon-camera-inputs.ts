@@ -109,10 +109,12 @@ export namespace BabylonCamera {
         }
         /**
          * Position of the free camera
+         * @default [20, 20, 20]
          */
-        position: Base.Point3;
+        position: Base.Point3 = [20, 20, 20];
         /**
          * Target of the free camera
+         * @default [0, 0, 0]
          */
         target: Base.Point3 = [0, 0, 0];
     }
@@ -123,10 +125,12 @@ export namespace BabylonCamera {
         }
         /**
          * Position of the free camera
+         * @default [20, 20, 20]
          */
-        position: Base.Point3;
+        position: Base.Point3 = [20, 20, 20];
         /**
          * Target of the free camera
+         * @default [0, 0, 0]
          */
         target: Base.Point3 = [0, 0, 0];
     }
@@ -141,8 +145,9 @@ export namespace BabylonCamera {
         camera: BABYLON.TargetCamera;
         /**
          * Position of the free camera
+         * @default [20, 20, 20]
          */
-        position: Base.Point3;
+        position: Base.Point3 = [20, 20, 20];
     }
     export class SpeedDto {
         constructor(camera?: BABYLON.TargetCamera, speed?: number) {
@@ -155,8 +160,12 @@ export namespace BabylonCamera {
         camera: BABYLON.TargetCamera;
         /**
          * speed of the camera
+         * @default 1
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.1
          */
-        speed: number;
+        speed = 1;
     }
     export class TargetDto {
         constructor(camera?: BABYLON.TargetCamera, target?: Base.Point3) {
@@ -169,8 +178,9 @@ export namespace BabylonCamera {
         camera: BABYLON.TargetCamera;
         /**
          * target of the camera
+         * @default [0, 0, 0]
          */
-        target: Base.Point3;
+        target: Base.Point3 = [0, 0, 0];
     }
     export class MinZDto {
         constructor(camera?: BABYLON.Camera, minZ?: number) {
@@ -183,6 +193,10 @@ export namespace BabylonCamera {
         camera: BABYLON.Camera;
         /**
          * minZ of the camera
+         * @default 0
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.01
          */
         minZ = 0;
     }
@@ -197,8 +211,12 @@ export namespace BabylonCamera {
         camera: BABYLON.Camera;
         /**
          * maxZ of the camera
+         * @default 1000
+         * @minimum 0
+         * @maximum Infinity
+         * @step 1
          */
-        maxZ = 0;
+        maxZ = 1000;
     }
 
     export class OrthographicDto {
