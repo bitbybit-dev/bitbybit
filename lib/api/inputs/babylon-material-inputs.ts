@@ -5,9 +5,10 @@ import { Base } from "./base-inputs";
 // tslint:disable-next-line: no-namespace
 export namespace BabylonMaterial {
     export class PBRMetallicRoughnessDto {
-        constructor(name?: string, baseColor?: Base.Color, metallic?: number, roughness?: number, alpha?: number, backFaceCulling?: boolean, zOffset?: number) {
+        constructor(name?: string, baseColor?: Base.Color, emissiveColor?: Base.Color, metallic?: number, roughness?: number, alpha?: number, backFaceCulling?: boolean, zOffset?: number) {
             if (name !== undefined) { this.name = name; }
             if (baseColor !== undefined) { this.baseColor = baseColor; }
+            if (emissiveColor !== undefined) { this.emissiveColor = emissiveColor; }
             if (metallic !== undefined) { this.metallic = metallic; }
             if (roughness !== undefined) { this.roughness = roughness; }
             if (alpha !== undefined) { this.alpha = alpha; }
@@ -24,6 +25,11 @@ export namespace BabylonMaterial {
          * @default #0000ff
          */
         baseColor: Base.Color = "#0000ff";
+        /**
+         * Emissive color of the material
+         * @default undefined
+         */
+        emissiveColor?: Base.Color;
         /**
          * Metallic value of the material
          * @default 0.6

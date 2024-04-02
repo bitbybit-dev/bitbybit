@@ -26,6 +26,9 @@ export class BabylonMaterialPbrMetallicRoughness {
         mat.backFaceCulling = inputs.backFaceCulling;
         mat.zOffset = inputs.zOffset;
         mat.alphaMode = 1;
+        if(inputs.emissiveColor){
+            mat.emissiveColor = BABYLON.Color3.FromHexString(inputs.emissiveColor);
+        }
         return mat;
     }
 
