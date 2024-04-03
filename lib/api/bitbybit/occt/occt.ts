@@ -135,6 +135,19 @@ export class OCCTW extends OCCT {
             const mesh = this.geometryHelper.drawPolylines(dummy, evs, false, inputs.edgeWidth, inputs.edgeOpacity, inputs.edgeColour);
             mesh.parent = shapeMesh;
         }
+
+        if (inputs.drawVertices && decomposedMesh && decomposedMesh.pointsList && decomposedMesh.pointsList.length) {
+            const mesh = this.geometryHelper.drawPoints({
+                pointsMesh: dummy,
+                points: decomposedMesh.pointsList,
+                opacity: 1,
+                size: inputs.vertexSize,
+                colours: inputs.vertexColour,
+                updatable: false,
+            });
+            mesh.parent = shapeMesh;
+        }
+
         if (inputs.drawEdgeIndexes) {
             const promises = decomposedMesh.edgeList.map(async (edge) => {
                 const edgeMiddle = this.computeEdgeMiddlePos(edge);

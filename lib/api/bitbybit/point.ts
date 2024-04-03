@@ -26,23 +26,7 @@ export class Point {
      * @ignore true
      */
     drawPoint(inputs: Inputs.Point.DrawPointDto): BABYLON.Mesh {
-        const vectorPoints = [inputs.point];
-
-        let colorsHex: string[] = [];
-        if (Array.isArray(inputs.colours)) {
-            colorsHex = inputs.colours;
-        } else {
-            colorsHex = [inputs.colours];
-        }
-        // const { positions, colors } = this.setUpPositionsAndColours(vectorPoints, colours);
-        if (inputs.pointMesh && inputs.updatable) {
-            this.updatePointsInstances(inputs.pointMesh, vectorPoints);
-        } else {
-            inputs.pointMesh = this.createPointSpheresMesh(
-                `poinsMesh${Math.random()}`, vectorPoints, colorsHex, inputs.opacity, inputs.size, inputs.updatable
-            );
-        }
-        return inputs.pointMesh;
+        return this.geometryHelper.drawPoint(inputs);
     }
 
     /**
@@ -55,31 +39,7 @@ export class Point {
      * @ignore true
      */
     drawPoints(inputs: Inputs.Point.DrawPointsDto): BABYLON.Mesh {
-        const vectorPoints = inputs.points;
-        let coloursHex: string[] = [];
-        if (Array.isArray(inputs.colours)) {
-            coloursHex = inputs.colours;
-            if (coloursHex.length === 1) {
-                coloursHex = inputs.points.map(() => coloursHex[0]);
-            }
-        } else {
-            coloursHex = inputs.points.map(() => inputs.colours as string);
-        }
-        if (inputs.pointsMesh && inputs.updatable) {
-            if (inputs.pointsMesh.getChildMeshes().length === vectorPoints.length) {
-                this.updatePointsInstances(inputs.pointsMesh, vectorPoints);
-            } else {
-                inputs.pointsMesh.dispose();
-                inputs.pointsMesh = this.createPointSpheresMesh(
-                    `pointsMesh${Math.random()}`, vectorPoints, coloursHex, inputs.opacity, inputs.size, inputs.updatable
-                );
-            }
-        } else {
-            inputs.pointsMesh = this.createPointSpheresMesh(
-                `pointsMesh${Math.random()}`, vectorPoints, coloursHex, inputs.opacity, inputs.size, inputs.updatable
-            );
-        }
-        return inputs.pointsMesh;
+        return this.geometryHelper.drawPoints(inputs);
     }
 
     /**
@@ -384,78 +344,4 @@ export class Point {
         return { index: closestPointIndex + 1, distance, point };
     }
 
-    private createPointSpheresMesh(
-        meshName: string, positions: Base.Point3[], colors: string[], opacity: number, size: number, updatable: boolean): BABYLON.Mesh {
-
-        const positionsModel = positions.map((pos, index) => {
-            return {
-                position: pos,
-                color: colors[index],
-                index
-            };
-        });
-
-        const colorSet = Array.from(new Set(colors));
-        const materialSet = colorSet.map((colour, index) => {
-
-            const mat = new BABYLON.StandardMaterial(`mat${Math.random()}`, this.context.scene);
-
-            mat.disableLighting = true;
-            mat.emissiveColor = BABYLON.Color3.FromHexString(colour);
-            mat.alpha = opacity;
-
-            const positions = positionsModel.filter(s => s.color === colour);
-
-            return { hex: colorSet, material: mat, positions };
-        });
-
-        const pointsMesh = new BABYLON.Mesh(meshName, this.context.scene);
-
-        materialSet.forEach(ms => {
-            const sphereOriginal = BABYLON.MeshBuilder.CreateSphere(`sphere${Math.random()}`, { diameter: size, segments: 6, updatable }, this.context.scene);
-            sphereOriginal.material = ms.material;
-            sphereOriginal.isVisible = false;
-            ms.positions.forEach((pos, index) => {
-                const instance = sphereOriginal.createInstance(`sphere-${index}-${Math.random()}`);
-                instance.position = new BABYLON.Vector3(pos.position[0], pos.position[1], pos.position[2]);
-                instance.metadata = { index: pos.index };
-                instance.parent = pointsMesh;
-                instance.isVisible = true;
-            });
-        });
-
-        return pointsMesh;
-    }
-
-    private updatePointsInstances(mesh: BABYLON.Mesh, positions: any[]): void {
-
-        const children = mesh.getChildMeshes();
-        const po = {};
-        positions.forEach((pos, index) => {
-            po[index] = new BABYLON.Vector3(pos[0], pos[1], pos[2]);
-        });
-
-        children.forEach((child: BABYLON.InstancedMesh) => {
-            child.position = po[child.metadata.index];
-        });
-    }
-
-    private setUpPositionsAndColours(vectorPoints: number[][], colours: BABYLON.Color3[]): { positions, colors } {
-        const positions = [];
-        const colors = [];
-
-        if (colours.length === vectorPoints.length) {
-            vectorPoints.forEach((p, index) => {
-                positions.push(...p);
-                colors.push(colours[index].r, colours[index].g, colours[index].b, 1);
-            });
-        } else {
-            vectorPoints.forEach((p, index) => {
-                positions.push(...p);
-                colors.push(colours[0].r, colours[0].g, colours[0].b, 1);
-            });
-        }
-
-        return { positions, colors };
-    }
 }

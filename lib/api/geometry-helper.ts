@@ -1,11 +1,7 @@
 
-import {
-    LinesMesh, Matrix, Color3, Vector3, Color4,
-    MeshBuilder, Scene, Mesh, VertexData,
-    PBRMetallicRoughnessMaterial
-} from "@babylonjs/core";
+import * as BABYLON from "@babylonjs/core";
 import { Context } from "./context";
-import { Base } from "./inputs/base-inputs";
+import * as Inputs from "./inputs";
 
 export class GeometryHelper {
 
@@ -16,10 +12,10 @@ export class GeometryHelper {
 
     createOrUpdateSurfaceMesh(
         meshDataConverted: { positions: any[]; indices: any[]; normals: any[]; },
-        mesh: Mesh, updatable: boolean, material: PBRMetallicRoughnessMaterial, addToScene: boolean, hidden: boolean
-    ): Mesh {
+        mesh: BABYLON.Mesh, updatable: boolean, material: BABYLON.PBRMetallicRoughnessMaterial, addToScene: boolean, hidden: boolean
+    ): BABYLON.Mesh {
         const createMesh = () => {
-            const vertexData = new VertexData();
+            const vertexData = new BABYLON.VertexData();
             vertexData.positions = meshDataConverted.positions;
             vertexData.indices = meshDataConverted.indices;
             vertexData.normals = meshDataConverted.normals;
@@ -35,7 +31,7 @@ export class GeometryHelper {
             if (addToScene) {
                 scene = this.context.scene;
             }
-            mesh = new Mesh(`surface${Math.random()}`, scene);
+            mesh = new BABYLON.Mesh(`surface${Math.random()}`, scene);
             createMesh();
             mesh.flipFaces(false);
             if (material) {
@@ -54,11 +50,11 @@ export class GeometryHelper {
 
     createOrUpdateSurfacesMesh(
         meshDataConverted: { positions: number[]; indices: number[]; normals: number[]; uvs: number[] }[],
-        mesh: Mesh, updatable: boolean, material: PBRMetallicRoughnessMaterial, addToScene: boolean, hidden: boolean
-    ): Mesh {
+        mesh: BABYLON.Mesh, updatable: boolean, material: BABYLON.PBRMetallicRoughnessMaterial, addToScene: boolean, hidden: boolean
+    ): BABYLON.Mesh {
         const createMesh = () => {
             const first = meshDataConverted.pop();
-            const vd = new VertexData();
+            const vd = new BABYLON.VertexData();
             vd.positions = first.positions;
             vd.indices = first.indices;
             vd.normals = first.normals;
@@ -66,7 +62,7 @@ export class GeometryHelper {
 
             const v = [];
             meshDataConverted.forEach(meshData => {
-                const vertexData = new VertexData();
+                const vertexData = new BABYLON.VertexData();
                 vertexData.positions = meshData.positions;
                 vertexData.indices = meshData.indices;
                 vertexData.normals = meshData.normals;
@@ -86,7 +82,7 @@ export class GeometryHelper {
             if (addToScene) {
                 scene = this.context.scene;
             }
-            mesh = new Mesh(`surface${Math.random()}`, scene);
+            mesh = new BABYLON.Mesh(`surface${Math.random()}`, scene);
             createMesh();
             mesh.flipFaces(false);
             if (material) {
@@ -103,7 +99,7 @@ export class GeometryHelper {
         return mesh;
     }
 
-    transformControlPoints(transformation: number[][] | number[][][], transformedControlPoints: Base.Point3[]): Base.Point3[] {
+    transformControlPoints(transformation: number[][] | number[][][], transformedControlPoints: Inputs.Base.Point3[]): Inputs.Base.Point3[] {
         const transformationArrays = this.getFlatTransformations(transformation);
 
         transformationArrays.forEach(transform => {
@@ -132,83 +128,51 @@ export class GeometryHelper {
             0;
     };
 
-    transformPointsByMatrixArray(points: Base.Point3[], transform: number[]): Base.Point3[] {
-        const transformMatrix = Matrix.FromArray(transform);
+    transformPointsByMatrixArray(points: Inputs.Base.Point3[], transform: number[]): Inputs.Base.Point3[] {
+        const transformMatrix = BABYLON.Matrix.FromArray(transform);
         return this.transformPointsByMatrix(points, transformMatrix);
     }
 
-    transformPointsByMatrix(points: Base.Point3[], transformMatrix: Matrix): Base.Point3[] {
+    transformPointsByMatrix(points: Inputs.Base.Point3[], transformMatrix: BABYLON.Matrix): Inputs.Base.Point3[] {
         const transformedPoints = [];
         for (const pt of points) {
-            const vector = new Vector3(pt[0], pt[1], pt[2]);
-            const transformedVector = Vector3.TransformCoordinates(vector, transformMatrix);
+            const vector = new BABYLON.Vector3(pt[0], pt[1], pt[2]);
+            const transformedVector = BABYLON.Vector3.TransformCoordinates(vector, transformMatrix);
             transformedPoints.push([transformedVector.x, transformedVector.y, transformedVector.z]);
         }
         return transformedPoints;
     }
 
-    edgesRendering(mesh: LinesMesh, size: number, opacity: number, colours: string | string[]): void {
+    edgesRendering(mesh: BABYLON.LinesMesh, size: number, opacity: number, colours: string | string[]): void {
         mesh.enableEdgesRendering();
         mesh.edgesWidth = size;
-        const colour = Array.isArray(colours) ? Color3.FromHexString(colours[0]) : Color3.FromHexString(colours);
+        const colour = Array.isArray(colours) ? BABYLON.Color3.FromHexString(colours[0]) : BABYLON.Color3.FromHexString(colours);
         const edgeColor = colour;
         mesh.color = edgeColor;
-        mesh.edgesColor = new Color4(edgeColor.r, edgeColor.g, edgeColor.b, opacity);
+        mesh.edgesColor = new BABYLON.Color4(edgeColor.r, edgeColor.g, edgeColor.b, opacity);
     }
 
-    drawPolyline(mesh: LinesMesh,
+    drawPolyline(mesh: BABYLON.LinesMesh,
         pointsToDraw: number[][],
-        updatable: boolean, size: number, opacity: number, colours: string | string[]): LinesMesh {
-        // const points = [];
-        // const colors = [];
-        // pointsToDraw.forEach(pt => {
-        //     points.push(new Vector3(pt[0], pt[1], pt[2]));
-        //     colors.push(new Color4(1, 1, 1, 0));
-        // });
+        updatable: boolean, size: number, opacity: number, colours: string | string[]): BABYLON.LinesMesh {
         mesh = this.drawPolylines(mesh, [pointsToDraw], updatable, size, opacity, colours);
-        // mesh = this.drawPolylineFromPointsAndColours(mesh, updatable, points, colors, size, opacity, colours);
         return mesh;
     }
 
-    // drawPolylineFromPointsAndColours(
-    //     mesh: LinesMesh, updatable: boolean, points: Vector3[], colors: Color4[], size: number, opacity: number, colours: string | string[]
-    // ): LinesMesh {
-    //     if (mesh && updatable) {
-
-    //         if (mesh.getTotalVertices() === points.length) {
-    //             mesh = MeshBuilder.CreateLines(null, {
-    //                 points,
-    //                 colors,
-    //                 instance: mesh,
-    //                 useVertexAlpha: true,
-    //                 updatable
-    //             }, null);
-    //         } else {
-    //             mesh.dispose();
-    //             mesh = this.createLines(updatable, points, colors);
-    //         }
-    //     } else {
-    //         mesh = this.createLines(updatable, points, colors);
-    //     }
-
-    //     this.edgesRendering(mesh, size, opacity, colours);
-    //     return mesh;
-    // }
-
     drawPolylines(
-        mesh: LinesMesh, polylinePoints: number[][][], updatable: boolean,
+        mesh: BABYLON.LinesMesh, polylinePoints: number[][][], updatable: boolean,
         size: number, opacity: number, colours: string | string[]
-    ): LinesMesh | undefined {
+    ): BABYLON.LinesMesh | undefined {
         const linesForRender = [];
         if (polylinePoints && polylinePoints.length > 0) {
             polylinePoints.forEach(polyline => {
-                linesForRender.push(polyline.map(pt => new Vector3(pt[0], pt[1], pt[2])));
+                linesForRender.push(polyline.map(pt => new BABYLON.Vector3(pt[0], pt[1], pt[2])));
             });
 
             if (mesh && updatable) {
                 // in order to optimize this method its not enough to check if total vertices lengths match, we need a way to identify
                 if (!mesh.metadata.linesForRenderLengths.some((s, i) => s !== linesForRender[i].length)) {
-                    mesh = MeshBuilder.CreateLineSystem("line-system" + Math.random(),
+                    mesh = BABYLON.MeshBuilder.CreateLineSystem("line-system" + Math.random(),
                         {
                             lines: linesForRender,
                             instance: mesh,
@@ -232,8 +196,8 @@ export class GeometryHelper {
         }
     }
 
-    createLineSystem(updatable: boolean, lines: Vector3[][]): LinesMesh {
-        const lm = MeshBuilder.CreateLineSystem(`lineSystem${Math.random()}`,
+    createLineSystem(updatable: boolean, lines: BABYLON.Vector3[][]): BABYLON.LinesMesh {
+        const lm = BABYLON.MeshBuilder.CreateLineSystem(`lineSystem${Math.random()}`,
             {
                 lines,
                 useVertexAlpha: true,
@@ -241,16 +205,6 @@ export class GeometryHelper {
             }, this.context.scene);
         return lm;
     }
-
-    // createLines(updatable: boolean, points: Vector3[], colors: Color4[]): LinesMesh {
-    //     return MeshBuilder.CreateLines(`lines${Math.random()}`,
-    //         {
-    //             points,
-    //             colors,
-    //             updatable,
-    //             useVertexAlpha: true
-    //         }, this.context.scene);
-    // }
 
     removeConsecutiveDuplicates(points: number[][], checkFirstAndLast = true): number[][] {
         const pointsRemaining = [];
@@ -295,35 +249,35 @@ export class GeometryHelper {
         return result;
     }
 
-    localAxes(size: number, scene: Scene, colorXHex: string, colorYHex: string, colorZHex: string): Mesh {
-        const pilotLocalAxisX = MeshBuilder.CreateLines("pilot_local_axisX" + Math.random(), {
+    localAxes(size: number, scene: BABYLON.Scene, colorXHex: string, colorYHex: string, colorZHex: string): BABYLON.Mesh {
+        const pilotLocalAxisX = BABYLON.MeshBuilder.CreateLines("pilot_local_axisX" + Math.random(), {
             points: [
-                Vector3.Zero(), new Vector3(size, 0, 0), new Vector3(size * 0.95, 0.05 * size, 0),
-                new Vector3(size, 0, 0), new Vector3(size * 0.95, -0.05 * size, 0)
+                BABYLON.Vector3.Zero(), new BABYLON.Vector3(size, 0, 0), new BABYLON.Vector3(size * 0.95, 0.05 * size, 0),
+                new BABYLON.Vector3(size, 0, 0), new BABYLON.Vector3(size * 0.95, -0.05 * size, 0)
             ]
         }, scene);
-        const colorX = Color3.FromHexString(colorXHex);
+        const colorX = BABYLON.Color3.FromHexString(colorXHex);
         pilotLocalAxisX.color = colorX;
 
-        const pilotLocalAxisY = MeshBuilder.CreateLines("pilot_local_axisY" + Math.random(), {
+        const pilotLocalAxisY = BABYLON.MeshBuilder.CreateLines("pilot_local_axisY" + Math.random(), {
             points: [
-                Vector3.Zero(), new Vector3(0, size, 0), new Vector3(-0.05 * size, size * 0.95, 0),
-                new Vector3(0, size, 0), new Vector3(0.05 * size, size * 0.95, 0)
+                BABYLON.Vector3.Zero(), new BABYLON.Vector3(0, size, 0), new BABYLON.Vector3(-0.05 * size, size * 0.95, 0),
+                new BABYLON.Vector3(0, size, 0), new BABYLON.Vector3(0.05 * size, size * 0.95, 0)
             ]
         }, scene);
-        const colorY = Color3.FromHexString(colorYHex);
+        const colorY = BABYLON.Color3.FromHexString(colorYHex);
         pilotLocalAxisY.color = colorY;
 
-        const pilotLocalAxisZ = MeshBuilder.CreateLines("pilot_local_axisZ" + Math.random(), {
+        const pilotLocalAxisZ = BABYLON.MeshBuilder.CreateLines("pilot_local_axisZ" + Math.random(), {
             points: [
-                Vector3.Zero(), new Vector3(0, 0, size), new Vector3(0, -0.05 * size, size * 0.95),
-                new Vector3(0, 0, size), new Vector3(0, 0.05 * size, size * 0.95)
+                BABYLON.Vector3.Zero(), new BABYLON.Vector3(0, 0, size), new BABYLON.Vector3(0, -0.05 * size, size * 0.95),
+                new BABYLON.Vector3(0, 0, size), new BABYLON.Vector3(0, 0.05 * size, size * 0.95)
             ]
         }, scene);
-        const colorZ = Color3.FromHexString(colorZHex);
+        const colorZ = BABYLON.Color3.FromHexString(colorZHex);
         pilotLocalAxisZ.color = colorZ;
 
-        const localOrigin = new Mesh("local_origin" + Math.random(), scene);
+        const localOrigin = new BABYLON.Mesh("local_origin" + Math.random(), scene);
         localOrigin.isVisible = false;
 
         pilotLocalAxisX.parent = localOrigin;
@@ -331,6 +285,130 @@ export class GeometryHelper {
         pilotLocalAxisZ.parent = localOrigin;
 
         return localOrigin;
+    }
+
+    drawPoint(inputs: Inputs.Point.DrawPointDto): BABYLON.Mesh {
+        const vectorPoints = [inputs.point];
+
+        let colorsHex: string[] = [];
+        if (Array.isArray(inputs.colours)) {
+            colorsHex = inputs.colours;
+        } else {
+            colorsHex = [inputs.colours];
+        }
+        // const { positions, colors } = this.setUpPositionsAndColours(vectorPoints, colours);
+        if (inputs.pointMesh && inputs.updatable) {
+            this.updatePointsInstances(inputs.pointMesh, vectorPoints);
+        } else {
+            inputs.pointMesh = this.createPointSpheresMesh(
+                `poinsMesh${Math.random()}`, vectorPoints, colorsHex, inputs.opacity, inputs.size, inputs.updatable
+            );
+        }
+        return inputs.pointMesh;
+    }
+
+    drawPoints(inputs: Inputs.Point.DrawPointsDto): BABYLON.Mesh {
+        const vectorPoints = inputs.points;
+        let coloursHex: string[] = [];
+        if (Array.isArray(inputs.colours)) {
+            coloursHex = inputs.colours;
+            if (coloursHex.length === 1) {
+                coloursHex = inputs.points.map(() => coloursHex[0]);
+            }
+        } else {
+            coloursHex = inputs.points.map(() => inputs.colours as string);
+        }
+        if (inputs.pointsMesh && inputs.updatable) {
+            if (inputs.pointsMesh.getChildMeshes().length === vectorPoints.length) {
+                this.updatePointsInstances(inputs.pointsMesh, vectorPoints);
+            } else {
+                inputs.pointsMesh.dispose();
+                inputs.pointsMesh = this.createPointSpheresMesh(
+                    `pointsMesh${Math.random()}`, vectorPoints, coloursHex, inputs.opacity, inputs.size, inputs.updatable
+                );
+            }
+        } else {
+            inputs.pointsMesh = this.createPointSpheresMesh(
+                `pointsMesh${Math.random()}`, vectorPoints, coloursHex, inputs.opacity, inputs.size, inputs.updatable
+            );
+        }
+        return inputs.pointsMesh;
+    }
+
+
+    updatePointsInstances(mesh: BABYLON.Mesh, positions: any[]): void {
+
+        const children = mesh.getChildMeshes();
+        const po = {};
+        positions.forEach((pos, index) => {
+            po[index] = new BABYLON.Vector3(pos[0], pos[1], pos[2]);
+        });
+
+        children.forEach((child: BABYLON.InstancedMesh) => {
+            child.position = po[child.metadata.index];
+        });
+    }
+
+    private setUpPositionsAndColours(vectorPoints: number[][], colours: BABYLON.Color3[]): { positions, colors } {
+        const positions = [];
+        const colors = [];
+
+        if (colours.length === vectorPoints.length) {
+            vectorPoints.forEach((p, index) => {
+                positions.push(...p);
+                colors.push(colours[index].r, colours[index].g, colours[index].b, 1);
+            });
+        } else {
+            vectorPoints.forEach((p, index) => {
+                positions.push(...p);
+                colors.push(colours[0].r, colours[0].g, colours[0].b, 1);
+            });
+        }
+
+        return { positions, colors };
+    }
+
+    private createPointSpheresMesh(
+        meshName: string, positions: Inputs.Base.Point3[], colors: string[], opacity: number, size: number, updatable: boolean): BABYLON.Mesh {
+
+        const positionsModel = positions.map((pos, index) => {
+            return {
+                position: pos,
+                color: colors[index],
+                index
+            };
+        });
+
+        const colorSet = Array.from(new Set(colors));
+        const materialSet = colorSet.map((colour, index) => {
+
+            const mat = new BABYLON.StandardMaterial(`mat${Math.random()}`, this.context.scene);
+
+            mat.disableLighting = true;
+            mat.emissiveColor = BABYLON.Color3.FromHexString(colour);
+            mat.alpha = opacity;
+
+            const positions = positionsModel.filter(s => s.color === colour);
+
+            return { hex: colorSet, material: mat, positions };
+        });
+
+        const pointsMesh = new BABYLON.Mesh(meshName, this.context.scene);
+
+        materialSet.forEach(ms => {
+            const sphereOriginal = BABYLON.MeshBuilder.CreateSphere(`sphere${Math.random()}`, { diameter: size, segments: 6, updatable }, this.context.scene);
+            sphereOriginal.material = ms.material;
+            sphereOriginal.isVisible = false;
+            ms.positions.forEach((pos, index) => {
+                const instance = sphereOriginal.createInstance(`sphere-${index}-${Math.random()}`);
+                instance.position = new BABYLON.Vector3(pos.position[0], pos.position[1], pos.position[2]);
+                instance.metadata = { index: pos.index };
+                instance.parent = pointsMesh;
+                instance.isVisible = true;
+            });
+        });
+
+        return pointsMesh;
     }
 
 }

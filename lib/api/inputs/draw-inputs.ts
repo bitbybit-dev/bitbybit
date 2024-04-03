@@ -200,15 +200,21 @@ export namespace Draw {
      * Draw options for OCCT shapes
      */
     export class DrawOcctShapeOptions {
-        constructor(faceOpacity?: number, edgeOpacity?: number, edgeColour?: Base.Color, faceColour?: Base.Color, faceMaterial?: any, edgeWidth?: number, drawEdges?: boolean, drawFaces?: boolean, precision?: number, drawEdgeIndexes?: boolean, edgeIndexHeight?: number, edgeIndexColour?: Base.Color, drawFaceIndexes?: boolean, faceIndexHeight?: number, faceIndexColour?: Base.Color) {
+        /**
+         * Provide options without default values
+         */
+        constructor(faceOpacity?: number, edgeOpacity?: number, edgeColour?: Base.Color, faceMaterial?: Base.Material, faceColour?: Base.Color, edgeWidth?: number, drawEdges?: boolean, drawFaces?: boolean, drawVertices?: boolean, vertexColour?: Base.Color, vertexSize?: number, precision?: number, drawEdgeIndexes?: boolean, edgeIndexHeight?: number, edgeIndexColour?: Base.Color, drawFaceIndexes?: boolean, faceIndexHeight?: number, faceIndexColour?: Base.Color) {
             if (faceOpacity !== undefined) { this.faceOpacity = faceOpacity; }
             if (edgeOpacity !== undefined) { this.edgeOpacity = edgeOpacity; }
             if (edgeColour !== undefined) { this.edgeColour = edgeColour; }
-            if (faceColour !== undefined) { this.faceColour = faceColour; }
             if (faceMaterial !== undefined) { this.faceMaterial = faceMaterial; }
+            if (faceColour !== undefined) { this.faceColour = faceColour; }
+            if (vertexColour !== undefined) { this.vertexColour = vertexColour; }
+            if (vertexSize !== undefined) { this.vertexSize = vertexSize; }
             if (edgeWidth !== undefined) { this.edgeWidth = edgeWidth; }
             if (drawEdges !== undefined) { this.drawEdges = drawEdges; }
             if (drawFaces !== undefined) { this.drawFaces = drawFaces; }
+            if (drawVertices !== undefined) { this.drawVertices = drawVertices; }
             if (precision !== undefined) { this.precision = precision; }
             if (drawEdgeIndexes !== undefined) { this.drawEdgeIndexes = drawEdgeIndexes; }
             if (edgeIndexHeight !== undefined) { this.edgeIndexHeight = edgeIndexHeight; }
@@ -221,8 +227,8 @@ export namespace Draw {
          * Face opacity value between 0 and 1
          * @default 1
          * @minimum 0
-         * @maximum Infinity
-         * 
+         * @maximum 1
+         * @step 0.1
          */
         faceOpacity = 1;
         /**
@@ -230,6 +236,7 @@ export namespace Draw {
          * @default 1
          * @minimum 0
          * @maximum 1
+         * @step 0.1
          */
         edgeOpacity = 1;
         /**
@@ -243,18 +250,32 @@ export namespace Draw {
          */
         faceColour: Base.Color = "#ff0000";
         /**
+         * Color of the vertices that will be drawn
+         * @default #ff00ff
+         */
+        vertexColour: Base.Color = "#ffaaff";
+        /**
          * Face material
          * @default undefined
          * @optional true
          */
-        faceMaterial?;
+        faceMaterial?: Base.Material;
         /**
          * Edge width
          * @default 2
          * @minimum 0
          * @maximum Infinity
+         * @step 0.1
          */
         edgeWidth = 2;
+        /**
+         * The size of a vertices that will be drawn
+         * @default 0.03
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.01
+         */
+        vertexSize = 0.03;
         /**
          * You can turn off drawing of edges via this property
          * @default true
@@ -266,10 +287,16 @@ export namespace Draw {
          */
         drawFaces = true;
         /**
-         * Precision
+         * You can turn off drawing of vertexes via this property
+         * @default false
+         */
+        drawVertices = false;
+        /**
+         * Precision of the mesh that will be generated for the shape, lower number will mean more triangles
          * @default 0.01
          * @minimum 0
          * @maximum Infinity
+         * @step 0.01
          */
         precision = 0.01;
         /**
@@ -282,6 +309,7 @@ export namespace Draw {
          * @default 0.06
          * @minimum 0
          * @maximum Infinity
+         * @step 0.01
          */
         edgeIndexHeight = 0.06;
         /**
@@ -299,6 +327,7 @@ export namespace Draw {
          * @default 0.06
          * @minimum 0
          * @maximum Infinity
+         * @step 0.01
          */
         faceIndexHeight = 0.06;
         /**
