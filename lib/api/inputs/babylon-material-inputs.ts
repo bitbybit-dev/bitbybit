@@ -27,9 +27,9 @@ export namespace BabylonMaterial {
         baseColor: Base.Color = "#0000ff";
         /**
          * Emissive color of the material
-         * @default undefined
+         * @default #000000
          */
-        emissiveColor?: Base.Color;
+        emissiveColor?: Base.Color = "#000000";
         /**
          * Metallic value of the material
          * @default 0.6
