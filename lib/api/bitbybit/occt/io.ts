@@ -54,7 +54,22 @@ export class OCCTWIO extends OCCTIO {
      * @shortname save stl
      * @returns String of a stl file
      */
-    async saveShapeStl(inputs: Inputs.OCCT.SaveStlDto<Inputs.OCCT.TopoDSShapePointer>): Promise<string | DataView> {
+    async saveShapeStl(inputs: Inputs.OCCT.SaveStlDto<Inputs.OCCT.TopoDSShapePointer>): Promise<void> {
+        this.saveStl(inputs);
+    }
+
+    /**
+     * Saves the stl file
+     * @param inputs STL filename and shape to be saved
+     * @group io
+     * @shortname save stl and return
+     * @returns String of a stl file
+     */
+    async saveShapeStlAndReturn(inputs: Inputs.OCCT.SaveStlDto<Inputs.OCCT.TopoDSShapePointer>): Promise<string | DataView> {
+        return this.saveStl(inputs);
+    }
+
+    private async saveStl(inputs: Inputs.OCCT.SaveStlDto<Inputs.OCCT.TopoDSShapePointer>): Promise<string | DataView> {
         const inp = new Inputs.OCCT.DrawShapeDto();
         inp.drawEdges = false;
         inp.shape = inputs.shape;
@@ -73,11 +88,11 @@ export class OCCTWIO extends OCCTIO {
             return mesh;
         });
 
-        if(inputs.fileName.includes(".stl")) {
+        if (inputs.fileName.includes(".stl")) {
             inputs.fileName = inputs.fileName.replace(".stl", "");
         }
         let res;
-        if(document && inputs.tryDownload){
+        if (document && inputs.tryDownload) {
             res = STLExport.CreateSTL(faceMeshes, true, inputs.fileName, inputs.binary, true, true);
         } else {
             res = STLExport.CreateSTL(faceMeshes, false, inputs.fileName, inputs.binary, true, true);
