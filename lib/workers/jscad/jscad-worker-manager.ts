@@ -1,6 +1,7 @@
 import { Subject } from "rxjs";
 import { JscadInfo } from "./jscad-info";
 import { JscadStateEnum } from "./jscad-state.enum";
+import { JSCADWorkerMock } from "./jscad-worker-mock";
 
 /**
  * This is a manager of JSCAD worker. Promisified API allows to deal with the worker in a more natural way
@@ -11,18 +12,14 @@ export class JSCADWorkerManager {
 
     jscadWorkerState: Subject<JscadInfo> = new Subject();
     errorCallback: (err: string) => void;
-    private jscadWorker: Worker;
+    private jscadWorker: Worker | JSCADWorkerMock;
     private promisesMade: { promise?: Promise<any>, uid: string, resolve?, reject?}[] = [];
-
-    constructor(
-    ) {
-    }
 
     jscadWorkerAlreadyInitialised(): boolean {
         return this.jscadWorker ? true : false;
     }
 
-    setJscadWorker(worker: Worker): void {
+    setJscadWorker(worker: Worker | JSCADWorkerMock): void {
         this.jscadWorker = worker;
         this.jscadWorker.onmessage = ({ data }) => {
             if (data === "jscad-initialised") {

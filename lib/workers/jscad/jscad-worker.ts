@@ -4,10 +4,12 @@ import { Jscad } from "./jscad-service";
 let jscad: Jscad;
 let cacheHelper: CacheHelper;
 
-export const initializationComplete = (jcd: any) => {
+export const initializationComplete = (jcd: any, plugins?: any, doNotPost?: boolean) => {
     cacheHelper = new CacheHelper(jcd);
     jscad = new Jscad(jcd);
-    postMessage("jscad-initialised");
+    if (!doNotPost) {
+        postMessage("jscad-initialised");
+    }
 };
 
 type DataInput = {
@@ -72,7 +74,7 @@ export const onMessageInput = (d: DataInput, postMessage) => {
             }
             // result = () => jscad[d.action.functionName](d.action.inputs);
         }
-       
+
         // if (d.action.functionName === 'shapeToMesh') {
         //     if (d.action.inputs.mesh) {
         //         d.action.inputs.mesh = cacheHelper.checkCache(d.action.inputs.mesh);
