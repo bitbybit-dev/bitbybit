@@ -323,12 +323,12 @@ export class BabylonScene {
     enableSkybox(inputs: Inputs.BabylonScene.SkyboxDto): void {
         let texture: BABYLON.CubeTexture;
         if (inputs.skybox === Inputs.Base.skyboxEnum.default) {
-            texture = new BABYLON.CubeTexture("/assets/textures/default_skybox/skybox", this.context.scene);
+            texture = new BABYLON.CubeTexture("https://app.bitbybit.dev/assets/textures/default_skybox/skybox", this.context.scene);
         } else if (inputs.skybox === Inputs.Base.skyboxEnum.clearSky) {
-            texture = BABYLON.CubeTexture.CreateFromPrefilteredData("/assets/textures/clear_sky/environment.env",
+            texture = BABYLON.CubeTexture.CreateFromPrefilteredData("https://app.bitbybit.dev/assets/textures/clear_sky/environment.env",
                 this.context.scene, false, false);
         } else if (inputs.skybox === Inputs.Base.skyboxEnum.city) {
-            texture = BABYLON.CubeTexture.CreateFromPrefilteredData("/assets/textures/city/environmentSpecular.env",
+            texture = BABYLON.CubeTexture.CreateFromPrefilteredData("https://app.bitbybit.dev/assets/textures/city/environmentSpecular.env",
                 this.context.scene, false, false);
         }
 
