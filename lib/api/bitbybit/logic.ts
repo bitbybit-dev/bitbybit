@@ -188,4 +188,24 @@ export class Logic {
         return inputs.boolean ? inputs.value : undefined;
     }
 
+    /**
+     * Returns first defined value out of two
+     * @param inputs two values
+     * @returns value or undefined
+     * @group operations
+     * @shortname first defined value gate
+     * @drawable false
+     */
+    firstDefinedValueGate<T, U>(inputs: Inputs.Logic.TwoValueGateDto<T, U>): T | U | undefined {
+        let res;
+        if (inputs.value1 !== undefined) {
+            res = inputs.value1;
+        } else if (inputs.value2 !== undefined) {
+            res = inputs.value2;
+        } else {
+            res = undefined;
+        }
+        return res;
+    }
+
 }

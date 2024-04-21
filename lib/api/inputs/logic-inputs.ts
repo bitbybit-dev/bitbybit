@@ -74,6 +74,24 @@ export namespace Logic {
          */
         boolean = false;
     }
+    export class TwoValueGateDto<T, U> {
+        constructor(value1?: T, value2?: U) {
+            if (value1 !== undefined) { this.value1 = value1; }
+            if (value2 !== undefined) { this.value2 = value2; }
+        }
+        /**
+         * First value to check
+         * @default undefined
+         * @optional true
+         */
+        value1?: T;
+        /**
+         * Second value to check
+         * @default undefined
+         * @optional true
+         */
+        value2?: U;
+    }
     export class RandomBooleansDto {
         constructor(length?: number) {
             if (length !== undefined) { this.length = length; }
