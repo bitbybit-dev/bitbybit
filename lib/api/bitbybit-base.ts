@@ -1,4 +1,3 @@
-
 import { OCCT as BaseOCCT, OCCTWorkerManager } from "@bitbybit-dev/occt-worker";
 import { Babylon } from "./bitbybit/babylon/babylon";
 import { Vector } from "./bitbybit/vector";
@@ -50,14 +49,13 @@ export class BitByBitBase {
     public asset: Asset;
     public color: Color;
 
-    constructor(
-    ) {
+    constructor() {
         this.context = new Context();
         this.jscadWorkerManager = new JSCADWorkerManager();
         this.occtWorkerManager = new OCCTWorkerManager();
         const geometryHelper = new GeometryHelper(this.context);
 
-        this.color = new Color();
+        this.color = new Color(this.context);
         this.babylon = new Babylon(this.context, geometryHelper, this.color);
         this.vector = new Vector(this.context);
         this.line = new Line(this.context, geometryHelper);
@@ -65,7 +63,7 @@ export class BitByBitBase {
         this.polyline = new Polyline(this.context, geometryHelper);
         this.verb = new Verb(this.context, geometryHelper);
         this.jscad = new JSCAD(this.jscadWorkerManager, this.context, geometryHelper);
-        this.tag = new Tag();
+        this.tag = new Tag(this.context);
         this.time = new Time(this.context);
         this.occt = new OCCTW(this.context, this.occtWorkerManager, geometryHelper, this.jscad.text, this.vector);
         this.asset = new Asset();

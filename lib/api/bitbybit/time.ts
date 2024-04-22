@@ -17,7 +17,7 @@ export class Time {
      * @param update The function to call in render loop
      */
     registerRenderFunction(update: (timePassedMs: number) => void): void {
-        this.context.BitByBitContextHelperService.renderLoopBag.push((timePassedMs) => {
+        this.context.renderLoopBag.push((timePassedMs) => {
             update(timePassedMs);
         });
     }

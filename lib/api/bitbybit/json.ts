@@ -126,7 +126,7 @@ export class JSONBitByBit {
      */
     previewAndSaveJson(inputs: Inputs.JSON.JsonDto) {
         if(inputs.json){
-            this.context.BitByBitContextHelperService.promptPrintSave({ text: inputs.json, isJson: true, hidden: false });
+            this.context.promptPrintSave({ text: inputs.json, isJson: true, hidden: false });
         }
     }
 
@@ -139,7 +139,7 @@ export class JSONBitByBit {
      */
     previewJson(inputs: Inputs.JSON.JsonDto) {
         if(inputs.json){
-            this.context.BitByBitContextHelperService.promptPrint({ text: inputs.json, isJson: true, hidden: false });
+            this.context.promptPrint({ text: inputs.json, isJson: true, hidden: false });
         }
     }
 }

@@ -30,7 +30,7 @@ export class OCCTW extends OCCT {
         private readonly vector: Vector,
     ) {
         super(occWorkerManager);
-        this.io = new OCCTWIO(occWorkerManager, geometryHelper);
+        this.io = new OCCTWIO(occWorkerManager, context, geometryHelper);
     }
 
     /**

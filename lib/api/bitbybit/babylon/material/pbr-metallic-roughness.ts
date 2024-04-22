@@ -3,7 +3,6 @@ import { Context } from "../../../context";
 import * as BABYLON from "@babylonjs/core";
 import * as Inputs from "../../../inputs/inputs";
 import { Color } from "../../color";
-import { BitByBitContextHelperService } from "../../../../bit-by-bit-context-helper.service";
 
 export class BabylonMaterialPbrMetallicRoughness {
 
@@ -103,9 +102,9 @@ export class BabylonMaterialPbrMetallicRoughness {
      */
     getBaseColor(inputs: Inputs.BabylonMaterial.MaterialPropDto): string {
         const mat = inputs.material;
-        const r = BitByBitContextHelperService.remap(mat.baseColor.r, 0, 1, 0, 255);
-        const g = BitByBitContextHelperService.remap(mat.baseColor.g, 0, 1, 0, 255);
-        const b = BitByBitContextHelperService.remap(mat.baseColor.b, 0, 1, 0, 255);
+        const r = this.context.remap(mat.baseColor.r, 0, 1, 0, 255);
+        const g = this.context.remap(mat.baseColor.g, 0, 1, 0, 255);
+        const b = this.context.remap(mat.baseColor.b, 0, 1, 0, 255);
 
         return this.color.rgbToHex({ r, g, b });
     }

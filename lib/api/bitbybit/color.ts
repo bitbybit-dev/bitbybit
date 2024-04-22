@@ -1,7 +1,11 @@
-import { BitByBitContextHelperService } from "../../bit-by-bit-context-helper.service";
 import * as Inputs from "../inputs/inputs";
+import { Context } from "../context";
 
 export class Color {
+
+
+    constructor(private readonly context: Context) { }
+
     /**
      * Creates a hex color
      * @param inputs Color hex
@@ -61,9 +65,9 @@ export class Color {
     hexToRgbMapped(inputs: Inputs.Color.HexDtoMapped): Inputs.Base.ColorRGB {
         const rgb = this.hexToRgb(inputs);
         return {
-            r: BitByBitContextHelperService.remap(rgb.r, 0, 255, inputs.from, inputs.to),
-            g: BitByBitContextHelperService.remap(rgb.g, 0, 255, inputs.from, inputs.to),
-            b: BitByBitContextHelperService.remap(rgb.b, 0, 255, inputs.from, inputs.to),
+            r: this.context.remap(rgb.r, 0, 255, inputs.from, inputs.to),
+            g: this.context.remap(rgb.g, 0, 255, inputs.from, inputs.to),
+            b: this.context.remap(rgb.b, 0, 255, inputs.from, inputs.to),
         };
     }
 

@@ -1,7 +1,7 @@
 
 import * as Inputs from "../../inputs/inputs";
 import { OCCTWorkerManager, OCCTIO } from "@bitbybit-dev/occt-worker";
-import { BitByBitContextHelperService } from "../../../bit-by-bit-context-helper.service";
+import { Context } from "../../context";
 import { STLExport } from "@babylonjs/serializers";
 import { GeometryHelper } from "../../geometry-helper";
 
@@ -10,6 +10,7 @@ export class OCCTWIO extends OCCTIO {
 
     constructor(
         override readonly occWorkerManager: OCCTWorkerManager,
+        private readonly context: Context,
         private readonly geometryHelper: GeometryHelper,
     ) {
         super(occWorkerManager);
@@ -25,7 +26,7 @@ export class OCCTWIO extends OCCTIO {
     loadSTEPorIGES(inputs: Inputs.OCCT.ImportStepIgesDto): Promise<Inputs.OCCT.TopoDSShapePointer> {
         // first we should check if we have assetName loaded already
         // if we dont have we do this, otherwise return from the cache...
-        return BitByBitContextHelperService.getFile(inputs.assetFile).then(s => {
+        return this.context.getFile(inputs.assetFile).then(s => {
             return this.occWorkerManager.genericCallToWorkerPromise(
                 "io.loadSTEPorIGES",
                 new Inputs.OCCT.LoadStepOrIgesDto(s, inputs.assetFile.name, inputs.adjustZtoY)
