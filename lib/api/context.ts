@@ -5,7 +5,7 @@ import { PrintSaveInterface } from "../models/print-save.model";
 export class Context {
 
     scene: BABYLON.Scene;
-    engine: BABYLON.Engine;
+    engine: BABYLON.Engine | BABYLON.WebGPUEngine;
     havokPlugin: BABYLON.HavokPlugin;
     blocklyWorkspace: any;
     verb: any;

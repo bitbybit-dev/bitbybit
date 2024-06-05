@@ -12,7 +12,7 @@ export class BabylonEngine {
      * @group engine
      * @shortname get engine
      */
-    getEngine(): BABYLON.Engine {
+    getEngine(): BABYLON.Engine | BABYLON.WebGPUEngine {
         return this.context.engine;
     }
 

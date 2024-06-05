@@ -4,6 +4,7 @@ import { GeometryHelper } from "../../geometry-helper";
 import { Color } from "../color";
 import { BabylonCamera } from "./camera/camera";
 import { BabylonEngine } from "./engine";
+import { BabylonGaussianSplatting } from "./gaussian-splatting";
 import { BabylonIO } from "./io";
 import { BabylonMaterial } from "./material/material";
 import { BabylonMesh } from "./mesh";
@@ -21,6 +22,7 @@ import { BabylonWebXR } from "./webxr/webxr";
  */
 export class Babylon {
     public mesh: BabylonMesh;
+    public gaussianSplatting: BabylonGaussianSplatting;
     public camera: BabylonCamera;
     public webxr: BabylonWebXR;
     public node: BabylonNode;
@@ -41,6 +43,7 @@ export class Babylon {
     ) {
         this.mesh = new BabylonMesh(context);
         this.camera = new BabylonCamera(context);
+        this.gaussianSplatting = new BabylonGaussianSplatting(context);
         this.node = new BabylonNode(context, geometryHelper);
         this.scene = new BabylonScene(context);
         this.webxr = new BabylonWebXR(context);
