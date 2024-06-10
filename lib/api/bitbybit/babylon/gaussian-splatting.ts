@@ -18,18 +18,7 @@ export class BabylonGaussianSplatting {
     async create(inputs: Inputs.BabylonGaussianSplatting.CreateGaussianSplattingMeshDto): Promise<BABYLON.GaussianSplattingMesh> {
         const gs = new BABYLON.GaussianSplattingMesh(`gaussian-splatting-${Math.random()}`, undefined, this.context.scene);
         await gs.loadFileAsync(inputs.url);
-        this.enableShadows(gs);
         return gs;
-    }
-
-    private enableShadows(mesh: BABYLON.Mesh) {
-        if (this.context.scene.metadata.shadowGenerators) {
-            mesh.receiveShadows = true;
-            const sgs = this.context.scene.metadata.shadowGenerators as BABYLON.ShadowGenerator[];
-            sgs.forEach(s => {
-                s.addShadowCaster(mesh);
-            });
-        }
     }
 }
 
