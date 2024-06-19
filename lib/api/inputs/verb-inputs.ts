@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-namespace */
 
-import { LinesMesh, Mesh } from "@babylonjs/core";
+import { GreasedLineMesh, Mesh } from "@babylonjs/core";
 import { BaseTypes } from "../bitbybit/base-types";
 import { Base } from "./base-inputs";
 
@@ -71,7 +71,7 @@ export namespace Verb {
         /**
          * Provide options without default values
          */
-        constructor(curve?: any, opacity?: number, colours?: string | string[], size?: number, updatable?: boolean, curveMesh?: LinesMesh) {
+        constructor(curve?: any, opacity?: number, colours?: string | string[], size?: number, updatable?: boolean, curveMesh?: GreasedLineMesh) {
             if (curve !== undefined) { this.curve = curve; }
             if (opacity !== undefined) { this.opacity = opacity; }
             if (colours !== undefined) { this.colours = colours; }
@@ -102,7 +102,7 @@ export namespace Verb {
         /**
          * Curve mesh variable in case it already exists and needs updating
          */
-        curveMesh?: LinesMesh;
+        curveMesh?: GreasedLineMesh;
     }
     export class CurveParameterDto {
         constructor(curve?: any, parameter?: number) {
@@ -273,7 +273,7 @@ export namespace Verb {
         /**
          * Provide options without default values
          */
-        constructor(curves?: any[], opacity?: number, colours?: string | string[], size?: number, updatable?: boolean, curvesMesh?: LinesMesh) {
+        constructor(curves?: any[], opacity?: number, colours?: string | string[], size?: number, updatable?: boolean, curvesMesh?: GreasedLineMesh) {
             if (curves !== undefined) { this.curves = curves; }
             if (opacity !== undefined) { this.opacity = opacity; }
             if (colours !== undefined) { this.colours = colours; }
@@ -305,7 +305,7 @@ export namespace Verb {
         /**
          * Curve mesh variable in case it already exists and needs updating
          */
-        curvesMesh?: LinesMesh;
+        curvesMesh?: GreasedLineMesh;
     }
     export class CurveNurbsDataDto {
         constructor(degree?: number, weights?: number[], knots?: number[], points?: Base.Point3[]) {

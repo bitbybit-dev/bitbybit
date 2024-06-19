@@ -152,58 +152,63 @@ export class GeometryHelper {
         mesh.edgesColor = new BABYLON.Color4(edgeColor.r, edgeColor.g, edgeColor.b, opacity);
     }
 
-    drawPolyline(mesh: BABYLON.LinesMesh,
+    drawPolyline(mesh: BABYLON.GreasedLineMesh,
         pointsToDraw: number[][],
-        updatable: boolean, size: number, opacity: number, colours: string | string[]): BABYLON.LinesMesh {
+        updatable: boolean, size: number, opacity: number, colours: string | string[]): BABYLON.GreasedLineMesh {
         mesh = this.drawPolylines(mesh, [pointsToDraw], updatable, size, opacity, colours);
         return mesh;
     }
 
     drawPolylines(
-        mesh: BABYLON.LinesMesh, polylinePoints: number[][][], updatable: boolean,
+        mesh: BABYLON.GreasedLineMesh, polylinePoints: number[][][], updatable: boolean,
         size: number, opacity: number, colours: string | string[]
-    ): BABYLON.LinesMesh | undefined {
-        const linesForRender = [];
+    ): BABYLON.GreasedLineMesh | undefined {
+        const linesForRender: number[][] = [];
         if (polylinePoints && polylinePoints.length > 0) {
             polylinePoints.forEach(polyline => {
-                linesForRender.push(polyline.map(pt => new BABYLON.Vector3(pt[0], pt[1], pt[2])));
+                const points = polyline.map(p => p.length === 2 ? [p[0], p[1], 0] : p);
+                linesForRender.push(points.flat());
             });
+            const width = size / 100;
+            const color = Array.isArray(colours) ? BABYLON.Color3.FromHexString(colours[0]) : BABYLON.Color3.FromHexString(colours);
 
             if (mesh && updatable) {
                 // in order to optimize this method its not enough to check if total vertices lengths match, we need a way to identify
-                if (!mesh.metadata.linesForRenderLengths.some((s, i) => s !== linesForRender[i].length)) {
-                    mesh = BABYLON.MeshBuilder.CreateLineSystem("line-system" + Math.random(),
-                        {
-                            lines: linesForRender,
-                            instance: mesh,
-                            useVertexAlpha: true,
-                            updatable
-                        }, this.context.scene);
+                if (!mesh?.metadata?.linesForRenderLengths.some((s, i) => s !== linesForRender[i].length)) {
+                    mesh.setPoints(linesForRender);
+                    return mesh as BABYLON.GreasedLineMesh;
                 } else {
                     mesh.dispose();
-                    mesh = this.createLineSystem(updatable, linesForRender);
+                    mesh = this.createGreasedPolylines(updatable, linesForRender, width, color, opacity);
                     mesh.metadata = { linesForRenderLengths: linesForRender.map(l => l.length) };
                 }
             } else {
-                mesh = this.createLineSystem(updatable, linesForRender);
+                mesh = this.createGreasedPolylines(updatable, linesForRender, width, color, opacity);
                 mesh.metadata = { linesForRenderLengths: linesForRender.map(l => l.length) };
             }
 
-            this.edgesRendering(mesh, size, opacity, colours);
             return mesh;
         } else {
             return undefined;
         }
     }
 
-    createLineSystem(updatable: boolean, lines: BABYLON.Vector3[][]): BABYLON.LinesMesh {
-        const lm = BABYLON.MeshBuilder.CreateLineSystem(`lineSystem${Math.random()}`,
+    createGreasedPolylines(updatable: boolean, lines: number[][], width: number, color: BABYLON.Color3, visibility: number): BABYLON.GreasedLineMesh {
+        const result = BABYLON.CreateGreasedLine(
+            `lineSystem${Math.random()}`,
             {
-                lines,
-                useVertexAlpha: true,
-                updatable
-            }, this.context.scene);
-        return lm;
+                points: lines,
+                updatable,
+            },
+            {
+                width,
+                color,
+
+            },
+            this.context.scene
+        );
+        result.material.alpha = visibility;
+        return result as BABYLON.GreasedLineMesh;
     }
 
     removeConsecutiveDuplicates(points: number[][], checkFirstAndLast = true): number[][] {

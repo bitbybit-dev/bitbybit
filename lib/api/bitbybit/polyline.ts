@@ -18,7 +18,7 @@ export class Polyline {
      * @param inputs Contains a polyline to be drawn
      * @returns Lines mesh that is being drawn by Babylon
      */
-    drawPolyline(inputs: Inputs.Polyline.DrawPolylineDto): BABYLON.LinesMesh {
+    drawPolyline(inputs: Inputs.Polyline.DrawPolylineDto): BABYLON.GreasedLineMesh {
         // handle jscad isClosed case
         const points = inputs.polyline.points;
         if (inputs.polyline.isClosed) {
@@ -39,7 +39,7 @@ export class Polyline {
      * @param inputs Contains a polyline to be drawn
      * @returns Lines mesh that is being drawn by Babylon
      */
-    drawPolylines(inputs: Inputs.Polyline.DrawPolylinesDto): BABYLON.LinesMesh {
+    drawPolylines(inputs: Inputs.Polyline.DrawPolylinesDto): BABYLON.GreasedLineMesh {
         let colours = inputs.colours;
         const points = inputs.polylines.map((s, index) => {
             const pts = s.points;

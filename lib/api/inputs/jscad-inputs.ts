@@ -135,7 +135,7 @@ export namespace JSCAD {
         /**
          * Provide options without default values
          */
-        constructor(path?: JSCADEntity[], colour?: string, opacity?: number, width?: number, updatable?: boolean, pathMesh?: BABYLON.LinesMesh) {
+        constructor(path?: JSCADEntity[], colour?: string, opacity?: number, width?: number, updatable?: boolean, pathMesh?: BABYLON.GreasedLineMesh) {
             if (path !== undefined) { this.path = path; }
             if (colour !== undefined) { this.colour = colour; }
             if (opacity !== undefined) { this.opacity = opacity; }
@@ -180,7 +180,7 @@ export namespace JSCAD {
          * @optional true
          * @ignore true
          */
-        pathMesh?: BABYLON.LinesMesh;
+        pathMesh?: BABYLON.GreasedLineMesh;
     }
     export class TransformSolidsDto {
         constructor(meshes?: JSCADEntity[], transformation?: Base.TransformMatrixes) {

@@ -159,7 +159,7 @@ export class JSCAD {
      * @shortname draw solid
      * @ignore true
      */
-    async drawPath(inputs: Inputs.JSCAD.DrawPathDto): Promise<BABYLON.LinesMesh> {
+    async drawPath(inputs: Inputs.JSCAD.DrawPathDto): Promise<BABYLON.GreasedLineMesh> {
         return new Promise(resolve => {
 
             if (inputs.path.points) {

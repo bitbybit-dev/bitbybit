@@ -60,7 +60,7 @@ export namespace Polyline {
         /**
          * Provide options without default values
          */
-        constructor(polyline?: PolylinePropertiesDto, opacity?: number, colours?: string | string[], size?: number, updatable?: boolean, polylineMesh?: BABYLON.LinesMesh) {
+        constructor(polyline?: PolylinePropertiesDto, opacity?: number, colours?: string | string[], size?: number, updatable?: boolean, polylineMesh?: BABYLON.GreasedLineMesh) {
             if (polyline !== undefined) { this.polyline = polyline; }
             if (opacity !== undefined) { this.opacity = opacity; }
             if (colours !== undefined) { this.colours = colours; }
@@ -91,13 +91,13 @@ export namespace Polyline {
         /**
          * Line mesh variable in case it already exists and needs updating
          */
-        polylineMesh?: BABYLON.LinesMesh;
+        polylineMesh?: BABYLON.GreasedLineMesh;
     }
     export class DrawPolylinesDto {
         /**
          * Provide options without default values
          */
-        constructor(polylines?: PolylinePropertiesDto[], opacity?: number, colours?: string | string[], size?: number, updatable?: boolean, polylinesMesh?: BABYLON.LinesMesh) {
+        constructor(polylines?: PolylinePropertiesDto[], opacity?: number, colours?: string | string[], size?: number, updatable?: boolean, polylinesMesh?: BABYLON.GreasedLineMesh) {
             if (polylines !== undefined) { this.polylines = polylines; }
             if (opacity !== undefined) { this.opacity = opacity; }
             if (colours !== undefined) { this.colours = colours; }
@@ -128,6 +128,6 @@ export namespace Polyline {
         /**
          * Polyline mesh variable in case it already exists and needs updating
          */
-        polylinesMesh?: BABYLON.LinesMesh;
+        polylinesMesh?: BABYLON.GreasedLineMesh;
     }
 }

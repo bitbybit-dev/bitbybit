@@ -1,5 +1,5 @@
 
-import { LinesMesh } from "@babylonjs/core";
+import { GreasedLineMesh } from "@babylonjs/core";
 import { Context } from "../../context";
 import { GeometryHelper } from "../../geometry-helper";
 import * as Inputs from "../../inputs/inputs";
@@ -30,7 +30,7 @@ export class VerbCurve {
      * @param inputs Contains a curve to be drawn
      * @returns Lines mesh that is being drawn by Babylon
      */
-    drawCurve(inputs: Inputs.Verb.DrawCurveDto): LinesMesh {
+    drawCurve(inputs: Inputs.Verb.DrawCurveDto): GreasedLineMesh {
         const points = inputs.curve.tessellate();
         return this.geometryHelper.drawPolyline(
             inputs.curveMesh,
@@ -47,7 +47,7 @@ export class VerbCurve {
      * @param inputs Contains curves to be drawn
      * @returns Lines mesh that is being drawn by Babylon
      */
-    drawCurves(inputs: Inputs.Verb.DrawCurvesDto): LinesMesh {
+    drawCurves(inputs: Inputs.Verb.DrawCurvesDto): GreasedLineMesh {
         const points = inputs.curves.map(s => s.tessellate());
         return this.geometryHelper.drawPolylines(
             inputs.curvesMesh,

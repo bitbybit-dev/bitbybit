@@ -375,7 +375,7 @@ export class Draw {
             options = inputs.babylonMesh.metadata.options;
         }
         const result = this.verbCurve.drawCurves({
-            curvesMesh: inputs.babylonMesh as BABYLON.LinesMesh,
+            curvesMesh: inputs.babylonMesh as BABYLON.GreasedLineMesh,
             curves: inputs.entity,
             ...options as Inputs.Draw.DrawBasicGeometryOptions
         });
@@ -418,7 +418,7 @@ export class Draw {
             options = inputs.babylonMesh.metadata.options;
         }
         const result = this.polyline.drawPolylines({
-            polylinesMesh: inputs.babylonMesh as BABYLON.LinesMesh,
+            polylinesMesh: inputs.babylonMesh as BABYLON.GreasedLineMesh,
             polylines: inputs.entity.map(e => ({ points: [e.start, e.end] })),
             ...options as Inputs.Draw.DrawBasicGeometryOptions
         });
@@ -432,7 +432,7 @@ export class Draw {
             options = inputs.babylonMesh.metadata.options;
         }
         const result = this.polyline.drawPolylines({
-            polylinesMesh: inputs.babylonMesh as BABYLON.LinesMesh,
+            polylinesMesh: inputs.babylonMesh as BABYLON.GreasedLineMesh,
             polylines: inputs.entity,
             ...options as Inputs.Draw.DrawBasicGeometryOptions
         });
@@ -461,7 +461,7 @@ export class Draw {
             options = inputs.babylonMesh.metadata.options;
         }
         const result = this.verbCurve.drawCurve({
-            curveMesh: inputs.babylonMesh as BABYLON.LinesMesh,
+            curveMesh: inputs.babylonMesh as BABYLON.GreasedLineMesh,
             curve: inputs.entity,
             ...options as Inputs.Draw.DrawBasicGeometryOptions
         });
@@ -489,7 +489,7 @@ export class Draw {
             options = inputs.babylonMesh.metadata.options;
         }
         const result = this.polyline.drawPolyline({
-            polylineMesh: inputs.babylonMesh as BABYLON.LinesMesh,
+            polylineMesh: inputs.babylonMesh as BABYLON.GreasedLineMesh,
             polyline: inputs.entity,
             ...options as Inputs.Draw.DrawBasicGeometryOptions
         });
@@ -517,7 +517,7 @@ export class Draw {
             options = inputs.babylonMesh.metadata.options;
         }
         const result = this.polyline.drawPolylines({
-            polylinesMesh: inputs.babylonMesh as BABYLON.LinesMesh,
+            polylinesMesh: inputs.babylonMesh as BABYLON.GreasedLineMesh,
             polylines: [{ points: [inputs.entity.start, inputs.entity.end] }],
             ...options as Inputs.Draw.DrawBasicGeometryOptions
         });

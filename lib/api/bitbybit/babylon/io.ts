@@ -145,7 +145,7 @@ export class BabylonIO {
         const allChildren = inputs.mesh.getChildMeshes();
         let childrenMeshes = [];
         if (allChildren && allChildren.length > 0) {
-            childrenMeshes = allChildren.filter(s => !(s instanceof BABYLON.LinesMesh));
+            childrenMeshes = allChildren.filter(s => !(s instanceof BABYLON.LinesMesh || s instanceof BABYLON.GreasedLineMesh));
         }
         let meshes: BABYLON.Mesh[] = [inputs.mesh, ...childrenMeshes];
         meshes = meshes.filter(m => m.isVisible);
@@ -165,7 +165,7 @@ export class BabylonIO {
             const allChildren = mesh.getChildMeshes();
             let childrenMeshes = [];
             if (allChildren && allChildren.length > 0) {
-                childrenMeshes = allChildren.filter(s => !(s instanceof BABYLON.LinesMesh));
+                childrenMeshes = allChildren.filter(s => !(s instanceof BABYLON.LinesMesh || s instanceof BABYLON.GreasedLineMesh));
             }
             meshes.push(mesh);
             if(childrenMeshes.length > 0) {
