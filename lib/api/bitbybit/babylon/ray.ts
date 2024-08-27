@@ -10,6 +10,8 @@ export class BabylonRay {
 
     /**
      * Creates a picking ray of the current mouse position in the active camera
+     * @group create
+     * @shortname create picking ray
      * @returns Ray
      */
     createPickingRay(): BABYLON.Ray {
@@ -20,6 +22,8 @@ export class BabylonRay {
     /**
      * Create a ray that start at origin, has direction vector and optionally length
      * @param inputs origin, direction and length
+     * @group create
+     * @shortname create custom ray
      * @returns ray
      */
     createRay(inputs: Inputs.BabylonRay.BaseRayDto): BABYLON.Ray {
@@ -35,6 +39,8 @@ export class BabylonRay {
     /**
      * Create a ray from one point to another
      * @param inputs origin, direction and length
+     * @group create
+     * @shortname create ray from to
      * @returns ray
      */
     createRayFromTo(inputs: Inputs.BabylonRay.FromToDto): BABYLON.Ray {
@@ -47,6 +53,8 @@ export class BabylonRay {
     /**
      * Get the origin of the ray
      * @param inputs ray
+     * @group get
+     * @shortname get ray origin
      * @returns origin point
      */
     getOrigin(inputs: Inputs.BabylonRay.RayDto): Base.Point3 {
@@ -57,6 +65,8 @@ export class BabylonRay {
     /**
      * Get the direction of the ray
      * @param inputs ray
+     * @group get
+     * @shortname get ray direction
      * @returns direction vector
      */
     getDirection(inputs: Inputs.BabylonRay.RayDto): Base.Vector3 {
@@ -67,6 +77,8 @@ export class BabylonRay {
     /**
      * Get the length of the ray
      * @param inputs ray
+     * @group get
+     * @shortname get ray length
      * @returns length
      */
     getLength(inputs: Inputs.BabylonRay.RayDto): number {
