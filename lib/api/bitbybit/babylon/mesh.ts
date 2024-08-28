@@ -212,6 +212,38 @@ export class BabylonMesh {
     }
 
     /**
+     * Force mesh to be pickable by pointer move events, default is false as it is performance heavy
+     * @param inputs BabylonJS mesh
+     * @group set
+     * @shortname enable pointer move events
+     */
+    enablePointerMoveEvents(inputs: Inputs.BabylonMesh.BabylonMeshWithChildrenDto): void {
+        inputs.babylonMesh.enablePointerMoveEvents = true;
+        if (inputs.includeChildren) {
+            const children = inputs.babylonMesh.getChildMeshes();
+            children.forEach(child => {
+                child.enablePointerMoveEvents = false;
+            });
+        }
+    }
+
+    /**
+     * Make mesh ignore pointer move events, default is false
+     * @param inputs BabylonJS mesh and pickable
+     * @group set
+     * @shortname disable pointer move events
+     */
+    disablePointerMoveEvents(inputs: Inputs.BabylonMesh.BabylonMeshWithChildrenDto): void {
+        inputs.babylonMesh.enablePointerMoveEvents = false;
+        if (inputs.includeChildren) {
+            const children = inputs.babylonMesh.getChildMeshes();
+            children.forEach(child => {
+                child.enablePointerMoveEvents = false;
+            });
+        }
+    }
+
+    /**
      * Change the pickable property of the drawn mesh
      * @param inputs BabylonJS mesh and pickable
      * @group get

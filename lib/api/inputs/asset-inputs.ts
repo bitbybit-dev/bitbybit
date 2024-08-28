@@ -11,6 +11,16 @@ export namespace Asset {
          */
         fileName: string;
     }
+    export class FetchDto {
+        constructor(url?: string) {
+            if (url !== undefined) { this.url = url; }
+        }
+        /**
+         * The url to fetch from
+         * @default undefined
+         */
+        url: string;
+    }
     export class FileDto {
         constructor(file?: File | Blob) {
             if (file !== undefined) { this.file = file; }
@@ -20,22 +30,6 @@ export namespace Asset {
          * @default undefined
          */
         file: File | Blob;
-    }
-    export class FetchDto {
-        constructor(url?: string, options?: any) {
-            if (url !== undefined) { this.url = url; }
-            if (options !== undefined) { this.options = options; }
-        }
-        /**
-         * The url to fetch the asset from
-         * @default undefined
-         */
-        url: string;
-        /**
-         * Options for the fetch
-         * @default undefined
-         */
-        options: any;
     }
     export class FilesDto {
         constructor(files?: (File | Blob)[]) {

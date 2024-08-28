@@ -68,7 +68,7 @@ export namespace Lists {
          */
         clone? = true;
     }
-    export class ListDto<T> {
+    export class ListCloneDto<T> {
         constructor(list?: T[], clone?: boolean) {
             if (list !== undefined) { this.list = list; }
             if (clone !== undefined) { this.clone = clone; }
@@ -83,6 +83,16 @@ export namespace Lists {
          * @default true
          */
         clone? = true;
+    }
+    export class ListDto<T> {
+        constructor(list?: T[]) {
+            if (list !== undefined) { this.list = list; }
+        }
+        /**
+         * The list
+         * @default undefined
+         */
+        list: T[];
     }
     export class GroupListDto<T> {
         constructor(list?: T[], nrElements?: number, keepRemainder?: boolean) {
@@ -353,6 +363,28 @@ export namespace Lists {
          * @step 1
          */
         level = 0;
+    }
+    export class AddItemDto<T> {
+        constructor(list?: T[], item?: T, clone?: boolean) {
+            if (list !== undefined) { this.list = list; }
+            if (item !== undefined) { this.item = item; }
+            if (clone !== undefined) { this.clone = clone; }
+        }
+        /**
+         * The list to which item needs to be added
+         * @default undefined
+         */
+        list: T[];
+        /**
+         * The item to add
+         * @default undefined
+         */
+        item: T;
+        /**
+         * Tries to make structured clone of the incoming list data in the component, sometimes it may not be possible due to circular structures or other types of error
+         * @default true
+         */
+        clone? = true;
     }
     export class AddItemFirstLastDto<T> {
         constructor(list?: T[], item?: T, position?: firstLastEnum, clone?: boolean) {

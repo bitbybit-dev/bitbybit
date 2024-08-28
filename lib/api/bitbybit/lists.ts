@@ -49,7 +49,7 @@ export class Lists {
     /**
      * Gets nth item in the list
      * @param inputs a list and index
-     * @returns list with removed item
+     * @returns list with filtered items
      * @group get
      * @shortname every n-th
      * @drawable false
@@ -70,7 +70,7 @@ export class Lists {
     /**
      * Gets elements by pattern
      * @param inputs a list and index
-     * @returns list with removed item
+     * @returns list with filtered items
      * @group get
      * @shortname by pattern
      * @drawable false
@@ -187,7 +187,7 @@ export class Lists {
      * @shortname reverse
      * @drawable false
      */
-    reverse<T>(inputs: Inputs.Lists.ListDto<T>): T[] {
+    reverse<T>(inputs: Inputs.Lists.ListCloneDto<T>): T[] {
         let res = inputs.list;
         if (inputs.clone) {
             res = structuredClone(inputs.list);
@@ -203,7 +203,7 @@ export class Lists {
      * @shortname flip lists
      * @drawable false
      */
-    flipLists<T>(inputs: Inputs.Lists.ListDto<T[]>): T[][] {
+    flipLists<T>(inputs: Inputs.Lists.ListCloneDto<T[]>): T[][] {
         if (inputs.list.length > 0) {
             const lengthOfFirstList = inputs.list[0].length;
             let allListsSameLength = true;
@@ -268,7 +268,7 @@ export class Lists {
      * @shortname max list depth
      * @drawable false
      */
-    getListDepth(inputs: Inputs.Lists.ListDto<[]>): number {
+    getListDepth(inputs: Inputs.Lists.ListCloneDto<[]>): number {
         let levels = 0;
         let deeperLevelsExist = true;
         let flatRes = inputs.list;
@@ -298,7 +298,7 @@ export class Lists {
      * @shortname list length
      * @drawable false
      */
-    listLength<T>(inputs: Inputs.Lists.ListDto<T>): number {
+    listLength<T>(inputs: Inputs.Lists.ListCloneDto<T>): number {
         return inputs.list.length;
     }
 
@@ -399,6 +399,19 @@ export class Lists {
     }
 
     /**
+     * Remove all items from the list
+     * @param inputs a list
+     * @returns The length is set to 0 and same array memory object is returned
+     * @group remove
+     * @shortname remove all items
+     * @drawable false
+     */
+    removeAllItems<T>(inputs: Inputs.Lists.ListDto<T>): T[] {
+        inputs.list.length = 0;
+        return inputs.list;
+    }
+
+    /**
      * Remove item from the list
      * @param inputs a list and index
      * @returns list with removed item
@@ -418,6 +431,40 @@ export class Lists {
             }
         }
         return result;
+    }
+
+    /**
+     * Add item to the end of the list
+     * @param inputs a list and an item
+     * @returns list with added item
+     * @group add
+     * @shortname add item to list
+     * @drawable false
+     */
+    addItem<T>(inputs: Inputs.Lists.AddItemDto<T>): T[] {
+        let res = inputs.list;
+        if (inputs.clone) {
+            res = structuredClone(inputs.list);
+        }
+        res.push(inputs.item);
+        return res;
+    }
+
+    /**
+     * Add item to the beginning of the list
+     * @param inputs a list and an item
+     * @returns list with added item
+     * @group add
+     * @shortname prepend item to list
+     * @drawable false
+     */
+    prependItem<T>(inputs: Inputs.Lists.AddItemDto<T>): T[] {
+        let res = inputs.list;
+        if (inputs.clone) {
+            res = structuredClone(inputs.list);
+        }
+        res.unshift(inputs.item);
+        return res;
     }
 
     /**

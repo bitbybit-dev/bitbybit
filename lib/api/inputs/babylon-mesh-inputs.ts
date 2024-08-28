@@ -166,7 +166,23 @@ export namespace BabylonMesh {
          * @default undefined
          */
         babylonMesh: BABYLON.Mesh;
+    }   
+    export class BabylonMeshWithChildrenDto {
+        constructor(babylonMesh?: BABYLON.Mesh) {
+            if (babylonMesh !== undefined) { this.babylonMesh = babylonMesh; }
+        }
+        /**
+         * BabylonJS mesh
+         * @default undefined
+         */
+        babylonMesh: BABYLON.Mesh;
+        /**
+         * Include children when performing action
+         * @default true
+         */
+        includeChildren = true;
     }
+    
     export class ShowHideMeshDto {
         constructor(babylonMesh?: BABYLON.Mesh, includeChildren?: boolean) {
             if (babylonMesh !== undefined) { this.babylonMesh = babylonMesh; }

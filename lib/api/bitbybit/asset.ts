@@ -31,6 +31,55 @@ export class Asset {
     }
 
     /**
+     * Fetches the blob from the given url, must be CORS enabled accessible endpoint
+     * @param inputs url of the asset
+     * @returns Blob
+     * @group fetch
+     * @shortname fetch blob
+     */
+    async fetchBlob(inputs: Inputs.Asset.FetchDto): Promise<Blob> {
+        const res = await fetch(inputs.url);
+        return res.blob();
+    }
+
+    /**
+     * Fetches the file from the given url, must be CORS enabled accessible endpoint
+     * @param inputs url of the asset
+     * @returns File
+     * @group fetch
+     * @shortname fetch file
+     */
+    async fetchFile(inputs: Inputs.Asset.FetchDto): Promise<File> {
+        const res = await fetch(inputs.url);
+        const blob = await res.blob();
+        return new File([blob], inputs.url.split("/").pop().split("?")[0]);
+    }
+
+    /**
+     * Fetches the json from the given url, must be CORS enabled accessible endpoint
+     * @param inputs url of the asset
+     * @returns JSON
+     * @group fetch
+     * @shortname fetch json
+     */
+    async fetchJSON(inputs: Inputs.Asset.FetchDto): Promise<any> {
+        const res = await fetch(inputs.url);
+        return res.json();
+    }
+
+    /**
+     * Fetches the json from the given url, must be CORS enabled accessible endpoint
+     * @param inputs url of the asset
+     * @returns Text
+     * @group fetch
+     * @shortname fetch text
+     */
+    async fetchText(inputs: Inputs.Asset.FetchDto): Promise<string> {
+        const res = await fetch(inputs.url);
+        return res.text();
+    }
+
+    /**
      * Gets and creates the url string path to your file stored in your memory.
      * @param File or a blob
      * @returns URL string of a file
