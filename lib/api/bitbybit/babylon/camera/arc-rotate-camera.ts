@@ -32,6 +32,18 @@ export class BabylonArcRotateCamera {
         if (inputs.angularSensibilityY !== undefined) {
             camera.angularSensibilityY = inputs.angularSensibilityY;
         }
+        if (inputs.lowerRadiusLimit !== undefined) {
+            camera.lowerRadiusLimit = inputs.lowerRadiusLimit;
+        }
+        if (inputs.upperRadiusLimit !== undefined) {
+            camera.upperRadiusLimit = inputs.upperRadiusLimit;
+        }
+        if (inputs.lowerAlphaLimit !== undefined) {
+            camera.lowerAlphaLimit = this.getRadians(inputs.lowerAlphaLimit);
+        }
+        if (inputs.upperAlphaLimit !== undefined) {
+            camera.upperAlphaLimit = this.getRadians(inputs.upperAlphaLimit);
+        }
         if (inputs.lowerBetaLimit !== undefined) {
             camera.lowerBetaLimit = this.getRadians(inputs.lowerBetaLimit);
         }

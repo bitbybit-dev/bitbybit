@@ -218,17 +218,23 @@ export class BabylonScene {
         camera.target = new BABYLON.Vector3(inputs.lookAt[0], inputs.lookAt[1], inputs.lookAt[2]);
         const distance = BABYLON.Vector3.Distance(camera.position, camera.target);
         camera.radius = distance;
-        if (inputs.lowerBetaLimit !== undefined) {
-            camera.lowerBetaLimit = this.getRadians(inputs.lowerBetaLimit);
+        if (inputs.lowerRadiusLimit !== undefined) {
+            camera.lowerRadiusLimit = inputs.lowerRadiusLimit;
         }
-        if (inputs.upperBetaLimit !== undefined) {
-            camera.upperBetaLimit = this.getRadians(inputs.upperBetaLimit);
+        if (inputs.upperRadiusLimit !== undefined) {
+            camera.upperRadiusLimit = inputs.upperRadiusLimit;
         }
         if (inputs.lowerAlphaLimit !== undefined) {
             camera.lowerAlphaLimit = this.getRadians(inputs.lowerAlphaLimit);
         }
         if (inputs.upperAlphaLimit !== undefined) {
             camera.upperAlphaLimit = this.getRadians(inputs.upperAlphaLimit);
+        }
+        if (inputs.lowerBetaLimit !== undefined) {
+            camera.lowerBetaLimit = this.getRadians(inputs.lowerBetaLimit);
+        }
+        if (inputs.upperBetaLimit !== undefined) {
+            camera.upperBetaLimit = this.getRadians(inputs.upperBetaLimit);
         }
         if (inputs.angularSensibilityX !== undefined) {
             camera.angularSensibilityX = inputs.angularSensibilityX;

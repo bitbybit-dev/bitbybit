@@ -51,36 +51,40 @@ export namespace BabylonCamera {
         beta = 70;
         /**
          * Lower radius limit - how close can the camera be to the target
-         * @default 0
+         * @default undefined
          * @minimum -Infinity
          * @maximum Infinity
          * @step 1
+         * @optional true
          */
-        lowerRadiusLimit = 0;
+        lowerRadiusLimit;
         /**
          * Upper radius limit - how far can the camera be from the target
-         * @default 10000
+         * @default undefined
          * @minimum -Infinity
          * @maximum Infinity
          * @step 1
+         * @optional true
          */
-        upperRadiusLimit = 10000;
+        upperRadiusLimit;
         /**
          * Lower alpha limit - camera rotation along the longitudinal (horizontal) axis in degrees.
-         * @default 1
+         * @default undefined
          * @minimum -360
          * @maximum 360
          * @step 1
+         * @optional true
          */
-        lowerAlphaLimit = -360;
+        lowerAlphaLimit;
         /**
          * Upper alpha limit - camera rotation along the longitudinal (horizontal) axis in degrees.
-         * @default 179
+         * @default undefined
          * @minimum -360
          * @maximum 360
          * @step 1
+         * @optional true
          */
-        upperAlphaLimit = 360;
+        upperAlphaLimit;
         /**
          * Lower beta limit - camera rotation along the latitudinal (vertical) axis in degrees. This is counted from the top down, where 0 is looking from top straight down.
          * @default 1
