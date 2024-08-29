@@ -224,6 +224,12 @@ export class BabylonScene {
         if (inputs.upperBetaLimit !== undefined) {
             camera.upperBetaLimit = this.getRadians(inputs.upperBetaLimit);
         }
+        if (inputs.lowerAlphaLimit !== undefined) {
+            camera.lowerAlphaLimit = this.getRadians(inputs.lowerAlphaLimit);
+        }
+        if (inputs.upperAlphaLimit !== undefined) {
+            camera.upperAlphaLimit = this.getRadians(inputs.upperAlphaLimit);
+        }
         if (inputs.angularSensibilityX !== undefined) {
             camera.angularSensibilityX = inputs.angularSensibilityX;
         }
@@ -323,12 +329,12 @@ export class BabylonScene {
     enableSkybox(inputs: Inputs.BabylonScene.SkyboxDto): void {
         let texture: BABYLON.CubeTexture;
         if (inputs.skybox === Inputs.Base.skyboxEnum.default) {
-            texture = new BABYLON.CubeTexture("https://cdn.jsdelivr.net/gh/bitbybit-dev/bitbybit-assets@0.15.15/textures/skybox/default_skybox/skybox", this.context.scene);
+            texture = new BABYLON.CubeTexture("https://cdn.jsdelivr.net/gh/bitbybit-dev/bitbybit-assets@0.16.0/textures/skybox/default_skybox/skybox", this.context.scene);
         } else if (inputs.skybox === Inputs.Base.skyboxEnum.clearSky) {
-            texture = BABYLON.CubeTexture.CreateFromPrefilteredData("https://cdn.jsdelivr.net/gh/bitbybit-dev/bitbybit-assets@0.15.15/textures/skybox/clear_sky/environment.env",
+            texture = BABYLON.CubeTexture.CreateFromPrefilteredData("https://cdn.jsdelivr.net/gh/bitbybit-dev/bitbybit-assets@0.16.0/textures/skybox/clear_sky/environment.env",
                 this.context.scene, false, false);
         } else if (inputs.skybox === Inputs.Base.skyboxEnum.city) {
-            texture = BABYLON.CubeTexture.CreateFromPrefilteredData("https://cdn.jsdelivr.net/gh/bitbybit-dev/bitbybit-assets@0.15.15/textures/skybox/city/environmentSpecular.env",
+            texture = BABYLON.CubeTexture.CreateFromPrefilteredData("https://cdn.jsdelivr.net/gh/bitbybit-dev/bitbybit-assets@0.16.0/textures/skybox/city/environmentSpecular.env",
                 this.context.scene, false, false);
         }
 

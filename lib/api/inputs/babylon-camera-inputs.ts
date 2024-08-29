@@ -4,10 +4,14 @@ import { Base } from "./base-inputs";
 /* eslint-disable @typescript-eslint/no-namespace */
 export namespace BabylonCamera {
     export class ArcRotateCameraDto {
-        constructor(radius?: number, alpha?: number, beta?: number, lowerBetaLimit?: number, upperBetaLimit?: number, angularSensibilityX?: number, angularSensibilityY?: number, panningSensibility?: number, wheelPrecision?: number, maxZ?: number) {
+        constructor(radius?: number, alpha?: number, beta?: number, lowerRadiusLimit?: number, upperRadiusLimit?: number, lowerAlphaLimit?: number, upperAlphaLimit?: number, lowerBetaLimit?: number, upperBetaLimit?: number, angularSensibilityX?: number, angularSensibilityY?: number, panningSensibility?: number, wheelPrecision?: number, maxZ?: number) {
             if (radius !== undefined) { this.radius = radius; }
             if (alpha !== undefined) { this.alpha = alpha; }
             if (beta !== undefined) { this.beta = beta; }
+            if (lowerRadiusLimit !== undefined) { this.lowerRadiusLimit = lowerRadiusLimit; }
+            if (upperRadiusLimit !== undefined) { this.upperRadiusLimit = upperRadiusLimit; }
+            if (lowerAlphaLimit !== undefined) { this.lowerAlphaLimit = lowerAlphaLimit; }
+            if (upperAlphaLimit !== undefined) { this.upperAlphaLimit = upperAlphaLimit; }
             if (lowerBetaLimit !== undefined) { this.lowerBetaLimit = lowerBetaLimit; }
             if (upperBetaLimit !== undefined) { this.upperBetaLimit = upperBetaLimit; }
             if (angularSensibilityX !== undefined) { this.angularSensibilityX = angularSensibilityX; }
@@ -45,6 +49,38 @@ export namespace BabylonCamera {
          * @step 1
          */
         beta = 70;
+        /**
+         * Lower radius limit - how close can the camera be to the target
+         * @default 0
+         * @minimum -Infinity
+         * @maximum Infinity
+         * @step 1
+         */
+        lowerRadiusLimit = 0;
+        /**
+         * Upper radius limit - how far can the camera be from the target
+         * @default 10000
+         * @minimum -Infinity
+         * @maximum Infinity
+         * @step 1
+         */
+        upperRadiusLimit = 10000;
+        /**
+         * Lower alpha limit - camera rotation along the longitudinal (horizontal) axis in degrees.
+         * @default 1
+         * @minimum -360
+         * @maximum 360
+         * @step 1
+         */
+        lowerAlphaLimit = -360;
+        /**
+         * Upper alpha limit - camera rotation along the longitudinal (horizontal) axis in degrees.
+         * @default 179
+         * @minimum -360
+         * @maximum 360
+         * @step 1
+         */
+        upperAlphaLimit = 360;
         /**
          * Lower beta limit - camera rotation along the latitudinal (vertical) axis in degrees. This is counted from the top down, where 0 is looking from top straight down.
          * @default 1

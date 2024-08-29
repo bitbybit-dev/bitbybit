@@ -89,12 +89,12 @@ export namespace BabylonScene {
          * @maximum Infinity
          * @step 1
          */
-        shadowGeneratorMapSize?= 1024;
+        shadowGeneratorMapSize? = 1024;
         /**
          * Enables shadows
          * @default true
          */
-        enableShadows?= true;
+        enableShadows? = true;
         /**
          * Shadow darkness
          * @default 0
@@ -102,7 +102,7 @@ export namespace BabylonScene {
          * @maximum 1
          * @step 0.1
          */
-        shadowDarkness?= 0;
+        shadowDarkness? = 0;
     }
     export class ActiveCameraDto {
         constructor(camera?: BABYLON.Camera) {
@@ -163,12 +163,12 @@ export namespace BabylonScene {
          * @maximum Infinity
          * @step 1
          */
-        shadowGeneratorMapSize?= 1024;
+        shadowGeneratorMapSize? = 1024;
         /**
          * Enables shadows
          * @default true
          */
-        enableShadows?= true;
+        enableShadows? = true;
         /**
          * Shadow darkness
          * @default 0
@@ -176,12 +176,16 @@ export namespace BabylonScene {
          * @maximum 1
          * @step 0.1
          */
-        shadowDarkness?= 0;
+        shadowDarkness? = 0;
     }
     export class CameraConfigurationDto {
-        constructor(position?: Base.Point3, lookAt?: Base.Point3, lowerBetaLimit?: number, upperBetaLimit?: number, angularSensibilityX?: number, angularSensibilityY?: number, maxZ?: number, panningSensibility?: number, wheelPrecision?: number) {
+        constructor(position?: Base.Point3, lookAt?: Base.Point3, lowerRadiusLimit?: number, upperRadiusLimit?: number, lowerAlphaLimit?: number, upperAlphaLimit?: number, lowerBetaLimit?: number, upperBetaLimit?: number, angularSensibilityX?: number, angularSensibilityY?: number, maxZ?: number, panningSensibility?: number, wheelPrecision?: number) {
             if (position !== undefined) { this.position = position; }
             if (lookAt !== undefined) { this.lookAt = lookAt; }
+            if (lowerRadiusLimit !== undefined) { this.lowerRadiusLimit = lowerRadiusLimit; }
+            if (upperRadiusLimit !== undefined) { this.upperRadiusLimit = upperRadiusLimit; }
+            if (lowerAlphaLimit !== undefined) { this.lowerAlphaLimit = lowerAlphaLimit; }
+            if (upperAlphaLimit !== undefined) { this.upperAlphaLimit = upperAlphaLimit; }
             if (lowerBetaLimit !== undefined) { this.lowerBetaLimit = lowerBetaLimit; }
             if (upperBetaLimit !== undefined) { this.upperBetaLimit = upperBetaLimit; }
             if (angularSensibilityX !== undefined) { this.angularSensibilityX = angularSensibilityX; }
@@ -200,6 +204,38 @@ export namespace BabylonScene {
          * Look at
          */
         lookAt: Base.Point3 = [0, 0, 0];
+        /**
+         * Lower radius limit - how close can the camera be to the target
+         * @default 0
+         * @minimum -Infinity
+         * @maximum Infinity
+         * @step 1
+         */
+        lowerRadiusLimit = 0;
+        /**
+         * Upper radius limit - how far can the camera be from the target
+         * @default 10000
+         * @minimum -Infinity
+         * @maximum Infinity
+         * @step 1
+         */
+        upperRadiusLimit = 10000;
+        /**
+         * Lower alpha limit - camera rotation along the longitudinal (horizontal) axis in degrees.
+         * @default 1
+         * @minimum -360
+         * @maximum 360
+         * @step 1
+         */
+        lowerAlphaLimit = -360;
+        /**
+         * Upper alpha limit - camera rotation along the longitudinal (horizontal) axis in degrees.
+         * @default 179
+         * @minimum -360
+         * @maximum 360
+         * @step 1
+         */
+        upperAlphaLimit = 360;
         /**
          * Lower beta limit - camera rotation along the latitudinal (vertical) axis in degrees. This is counted from the top down, where 0 is looking from top straight down.
          * @default 1
