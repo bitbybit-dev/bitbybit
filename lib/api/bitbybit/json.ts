@@ -48,11 +48,40 @@ export class JSONBitByBit {
     }
 
     /**
+     * Sets value on given property of the given json
+     * @param inputs a value to be added, json and a property name
+     * @returns any
+     * @group props
+     * @shortname set value on property
+     * @drawable false
+     */
+    setValueOnProp(inputs: Inputs.JSON.SetValueOnPropDto): any {
+        // must be an object
+        const clonedJson = { ...structuredClone(inputs.json) };
+        clonedJson[inputs.property] = inputs.value;
+        return clonedJson;
+    }
+
+    /**
+     * Gets value of the property in the given json
+     * @param inputs a value to be added, json and a property name
+     * @returns any
+     * @group props
+     * @shortname get value on property
+     * @drawable false
+     */
+    getValueOnProp(inputs: Inputs.JSON.GetValueOnPropDto): any {
+        // must be an object
+        const clonedJson = { ...structuredClone(inputs.json) };
+        return clonedJson[inputs.property];
+    }
+
+    /**
      * Sets value to the json by providing a path
      * @param inputs a value to be added, json and a path
      * @returns any
      * @group jsonpath
-     * @shortname set value
+     * @shortname set value on path
      * @drawable false
      */
     setValue(inputs: Inputs.JSON.SetValueDto): any {
@@ -67,7 +96,7 @@ export class JSONBitByBit {
      * @param inputs a value to be added, json and a path
      * @returns any
      * @group jsonpath
-     * @shortname set value
+     * @shortname set values on paths
      * @drawable false
      */
     setValuesOnPaths(inputs: Inputs.JSON.SetValuesOnPathsDto): any {

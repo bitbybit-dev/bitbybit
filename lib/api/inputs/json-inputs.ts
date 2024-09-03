@@ -37,6 +37,47 @@ export namespace JSON {
          */
         query: string;
     }
+
+    export class SetValueOnPropDto {
+        constructor(json?: any, value?: any, property?: string) {
+            if (json !== undefined) { this.json = json; }
+            if (value !== undefined) { this.value = value; }
+            if (property !== undefined) { this.property = property; }
+        }
+        /**
+        * query json structure
+        * @default undefined
+        */
+        json: any;
+        /**
+         * value to be set
+         * @default undefined
+         */
+        value: any;
+        /**
+         * query json structure
+         * @default propName
+         */
+        property = "propName";
+    }
+
+    export class GetValueOnPropDto {
+        constructor(json?: any, property?: string) {
+            if (json !== undefined) { this.json = json; }
+            if (property !== undefined) { this.property = property; }
+        }
+        /**
+        * query json structure
+        * @default undefined
+        */
+        json: any;
+        /**
+         * query json structure
+         * @default propName
+         */
+        property = "propName";
+    }
+
     export class SetValueDto {
         constructor(json?: any, value?: any, path?: string) {
             if (json !== undefined) { this.json = json; }
@@ -55,9 +96,9 @@ export namespace JSON {
         value: any;
         /**
          * query json structure
-         * @default undefined
+         * @default $.propertyName
          */
-        path: string;
+        path = "$.propertyName";
     }
 
     export class SetValuesOnPathsDto {
