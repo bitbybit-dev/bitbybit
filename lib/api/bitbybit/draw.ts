@@ -16,6 +16,11 @@ import { GridMaterial } from "@babylonjs/materials";
 export class Draw {
 
     private defaultBasicOptions = new Inputs.Draw.DrawBasicGeometryOptions();
+    private defaultPolylineOptions: Inputs.Draw.DrawBasicGeometryOptions = {
+        ...new Inputs.Draw.DrawBasicGeometryOptions(),
+        size: 2,
+        colours: "#ff00ff",
+    };
     private defaultNodeOptions: Inputs.Draw.DrawNodeOptions = {
         colorX: "#ff0000",
         colorY: "#00ff00",
@@ -413,7 +418,7 @@ export class Draw {
     }
 
     private handleLines(inputs: Inputs.Draw.DrawAny) {
-        let options = inputs.options ? inputs.options : this.defaultBasicOptions;
+        let options = inputs.options ? inputs.options : this.defaultPolylineOptions;
         if (!inputs.options && inputs.babylonMesh && inputs.babylonMesh.metadata.options) {
             options = inputs.babylonMesh.metadata.options;
         }
@@ -427,7 +432,7 @@ export class Draw {
     }
 
     private handlePolylines(inputs: Inputs.Draw.DrawAny) {
-        let options = inputs.options ? inputs.options : this.defaultBasicOptions;
+        let options = inputs.options ? inputs.options : this.defaultPolylineOptions;
         if (!inputs.options && inputs.babylonMesh && inputs.babylonMesh.metadata.options) {
             options = inputs.babylonMesh.metadata.options;
         }
@@ -456,7 +461,7 @@ export class Draw {
 
 
     private handleVerbCurve(inputs: Inputs.Draw.DrawAny) {
-        let options = inputs.options ? inputs.options : this.defaultBasicOptions;
+        let options = inputs.options ? inputs.options : this.defaultPolylineOptions;
         if (!inputs.options && inputs.babylonMesh && inputs.babylonMesh.metadata.options) {
             options = inputs.babylonMesh.metadata.options;
         }
@@ -484,7 +489,7 @@ export class Draw {
     }
 
     private handlePolyline(inputs: Inputs.Draw.DrawAny) {
-        let options = inputs.options ? inputs.options : this.defaultBasicOptions;
+        let options = inputs.options ? inputs.options : this.defaultPolylineOptions;
         if (!inputs.options && inputs.babylonMesh && inputs.babylonMesh.metadata.options) {
             options = inputs.babylonMesh.metadata.options;
         }
@@ -512,7 +517,7 @@ export class Draw {
     }
 
     private handleLine(inputs: Inputs.Draw.DrawAny) {
-        let options = inputs.options ? inputs.options : this.defaultBasicOptions;
+        let options = inputs.options ? inputs.options : this.defaultPolylineOptions;
         if (!inputs.options && inputs.babylonMesh && inputs.babylonMesh.metadata.options) {
             options = inputs.babylonMesh.metadata.options;
         }
@@ -526,7 +531,7 @@ export class Draw {
     }
 
     private handleJscadMeshes(inputs: Inputs.Draw.DrawAny) {
-        let options = inputs.options ? inputs.options : this.defaultBasicOptions;
+        let options = inputs.options ? inputs.options : this.defaultPolylineOptions;
         if (!inputs.options && inputs.babylonMesh && inputs.babylonMesh.metadata.options) {
             options = inputs.babylonMesh.metadata.options;
         }
