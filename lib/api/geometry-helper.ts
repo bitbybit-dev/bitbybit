@@ -399,13 +399,19 @@ export class GeometryHelper {
         });
 
         const pointsMesh = new BABYLON.Mesh(meshName, this.context.scene);
-
         materialSet.forEach(ms => {
-            const sphereOriginal = BABYLON.MeshBuilder.CreateSphere(`sphere${Math.random()}`, { diameter: size, segments: 6, updatable }, this.context.scene);
-            sphereOriginal.material = ms.material;
-            sphereOriginal.isVisible = false;
+            const segments = ms.positions.length > 1000 ? 1 : 6;
+            let pointMesh;
+            if(ms.positions.length < 10000) {
+                pointMesh = BABYLON.MeshBuilder.CreateSphere(`point${Math.random()}`, { diameter: size, segments, updatable }, this.context.scene);
+            } else {
+                pointMesh = BABYLON.MeshBuilder.CreateBox(`point${Math.random()}`, { size, updatable }, this.context.scene);
+            }
+            pointMesh.material = ms.material;
+            pointMesh.isVisible = false;
+
             ms.positions.forEach((pos, index) => {
-                const instance = sphereOriginal.createInstance(`sphere-${index}-${Math.random()}`);
+                const instance = pointMesh.createInstance(`point-${index}-${Math.random()}`);
                 instance.position = new BABYLON.Vector3(pos.position[0], pos.position[1], pos.position[2]);
                 instance.metadata = { index: pos.index };
                 instance.parent = pointsMesh;
