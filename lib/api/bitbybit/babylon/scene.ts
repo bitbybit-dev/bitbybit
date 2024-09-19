@@ -336,7 +336,9 @@ export class BabylonScene {
         let texture: BABYLON.CubeTexture;
         if (inputs.skybox === Inputs.Base.skyboxEnum.default) {
             texture = new BABYLON.CubeTexture("https://cdn.jsdelivr.net/gh/bitbybit-dev/bitbybit-assets@0.16.3/textures/skybox/default_skybox/skybox", this.context.scene);
-        } else if (inputs.skybox === Inputs.Base.skyboxEnum.clearSky) {
+        } else if (inputs.skybox === Inputs.Base.skyboxEnum.greyGradient) {
+            texture = new BABYLON.CubeTexture("https://cdn.jsdelivr.net/gh/bitbybit-dev/bitbybit-assets@0.16.3/textures/skybox/grey_gradient/skybox", this.context.scene);
+        }else if (inputs.skybox === Inputs.Base.skyboxEnum.clearSky) {
             texture = BABYLON.CubeTexture.CreateFromPrefilteredData("https://cdn.jsdelivr.net/gh/bitbybit-dev/bitbybit-assets@0.16.3/textures/skybox/clear_sky/environment.env",
                 this.context.scene, false, false);
         } else if (inputs.skybox === Inputs.Base.skyboxEnum.city) {
