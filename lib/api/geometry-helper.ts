@@ -8,8 +8,6 @@ export class GeometryHelper {
     constructor(private readonly context: Context) {
     }
 
-    private readonly tolerance = 0.00001;
-
     createOrUpdateSurfaceMesh(
         meshDataConverted: { positions: any[]; indices: any[]; normals: any[]; },
         mesh: BABYLON.Mesh, updatable: boolean, material: BABYLON.PBRMetallicRoughnessMaterial, addToScene: boolean, hidden: boolean
@@ -210,14 +208,74 @@ export class GeometryHelper {
         result.material.alpha = visibility;
         return result as BABYLON.GreasedLineMesh;
     }
+    
+    // Algorithm works with arbitrary length numeric vectors. This algorithm is more costly for longer arrays of vectors
+    removeAllDuplicateVectors(vectors: number[][], tolerance = 1e-7): number[][] {
+        const cleanVectors: number[][] = [];
+        vectors.forEach(vector => {
+            // when there are no vectors in cleanVectors array that match the current vector, push it in.
+            if (!cleanVectors.some(s => this.vectorsTheSame(vector, s, tolerance))) {
+                cleanVectors.push(vector);
+            }
+        });
+        return cleanVectors;
+    }
 
-    removeConsecutiveDuplicates(points: number[][], checkFirstAndLast = true): number[][] {
+    // Algorithm works with arbitrary length numeric vectors. 
+    removeConsecutiveVectorDuplicates(vectors: number[][], checkFirstAndLast = true, tolerance = 1e-7): number[][] {
+        const vectorsRemaining: number[][] = [];
+        if (vectors.length > 1) {
+            for (let i = 1; i < vectors.length; i++) {
+                const currentVector = vectors[i];
+                const previousVector = vectors[i - 1];
+                if (!this.vectorsTheSame(currentVector, previousVector, tolerance)) {
+                    vectorsRemaining.push(previousVector);
+                }
+                if (i === vectors.length - 1) {
+                    vectorsRemaining.push(currentVector);
+                }
+            }
+            if (checkFirstAndLast) {
+                const firstVector = vectorsRemaining[0];
+                const lastVector = vectorsRemaining[vectorsRemaining.length - 1];
+                if (this.vectorsTheSame(firstVector, lastVector, tolerance)) {
+                    vectorsRemaining.pop();
+                }
+            }
+        } else if (vectors.length === 1) {
+            vectorsRemaining.push(...vectors);
+        }
+        return vectorsRemaining;
+    }
+
+    vectorsTheSame(vec1: number[], vec2: number[], tolerance: number) {
+        let result = false;
+        if (vec1.length !== vec2.length) {
+            return result;
+        } else {
+            result = true;
+            for (let i = 0; i < vec1.length; i++) {
+                if (!this.approxEq(vec1[i], vec2[i], tolerance)) {
+                    result = false;
+                    break;
+                }
+            }
+        }
+        return result;
+    }
+
+    approxEq(num1: number, num2: number, tolerance: number): boolean {
+        const res = Math.abs(num1 - num2) < tolerance;
+        return res;
+    }
+
+    removeConsecutivePointDuplicates(points: Inputs.Base.Point3[], checkFirstAndLast = true, tolerance = 1e-7): Inputs.Base.Point3[] {
         const pointsRemaining = [];
         if (points.length > 1) {
             for (let i = 1; i < points.length; i++) {
                 const currentPoint = points[i];
                 const previousPoint = points[i - 1];
-                if (!this.arePointsTheSame(currentPoint, previousPoint, this.tolerance)) {
+                if (!this.arePointsTheSame(currentPoint, previousPoint, tolerance)) {
                     pointsRemaining.push(previousPoint);
                 }
                 if (i === points.length - 1) {
@@ -227,7 +285,7 @@ export class GeometryHelper {
             if (checkFirstAndLast) {
                 const firstPoint = pointsRemaining[0];
                 const lastPoint = pointsRemaining[pointsRemaining.length - 1];
-                if (this.arePointsTheSame(firstPoint, lastPoint, this.tolerance)) {
+                if (this.arePointsTheSame(firstPoint, lastPoint, tolerance)) {
                     pointsRemaining.pop();
                 }
             }
@@ -237,17 +295,17 @@ export class GeometryHelper {
         return pointsRemaining;
     }
 
-    arePointsTheSame(pointA: number[], pointB: number[], tolerance: number): boolean {
+    arePointsTheSame(pointA: Inputs.Base.Point3 | Inputs.Base.Point2, pointB: Inputs.Base.Point3 | Inputs.Base.Point2, tolerance: number): boolean {
         let result = false;
         if (pointA.length === 2 && pointB.length === 2) {
-            if (Math.abs(pointA[0] - pointB[0]) < tolerance
-                && Math.abs(pointA[1] - pointB[1]) < tolerance) {
+            if (this.approxEq(pointA[0], pointB[0], tolerance) &&
+                this.approxEq(pointA[1], pointB[1], tolerance)) {
                 result = true;
             }
         } else if (pointA.length === 3 && pointB.length === 3) {
-            if (Math.abs(pointA[0] - pointB[0]) < tolerance
-                && Math.abs(pointA[1] - pointB[1]) < tolerance
-                && Math.abs(pointA[2] - pointB[2]) < tolerance) {
+            if (this.approxEq(pointA[0], pointB[0], tolerance) &&
+                this.approxEq(pointA[1], pointB[1], tolerance) &&
+                this.approxEq(pointA[2], pointB[2], tolerance)) {
                 result = true;
             }
         }
@@ -402,7 +460,7 @@ export class GeometryHelper {
         materialSet.forEach(ms => {
             const segments = ms.positions.length > 1000 ? 1 : 6;
             let pointMesh;
-            if(ms.positions.length < 10000) {
+            if (ms.positions.length < 10000) {
                 pointMesh = BABYLON.MeshBuilder.CreateSphere(`point${Math.random()}`, { diameter: size, segments, updatable }, this.context.scene);
             } else {
                 pointMesh = BABYLON.MeshBuilder.CreateBox(`point${Math.random()}`, { size, updatable }, this.context.scene);

@@ -84,6 +84,78 @@ export namespace Lists {
          */
         clone? = true;
     }
+    export class RepeatInPatternDto<T> {
+        constructor(list?: T[]) {
+            if (list !== undefined) { this.list = list; }
+        }
+        /**
+         * The list to interrogate
+         * @default undefined
+         */
+        list: T[];
+        /**
+         * Tries to make structured clone of the incoming list data in the component, sometimes it may not be possible due to circular structures or other types of error
+         * @default true
+         */
+        clone? = true;
+        /**
+         * The limit of the length of the list
+         * @default 100
+         * @minimum 1
+         * @maximum Infinity
+         * @step 1
+         */
+        lengthLimit = 100;
+    }
+    export class SortDto<T> {
+        constructor(list?: T[], clone?: boolean, orderAsc?: boolean) {
+            if (list !== undefined) { this.list = list; }
+            if (clone !== undefined) { this.clone = clone; }
+            if (orderAsc !== undefined) { this.orderAsc = orderAsc; }
+        }
+        /**
+         * The list to interrogate
+         * @default undefined
+         */
+        list: T[];
+        /**
+         * Tries to make structured clone of the incoming list data in the component, sometimes it may not be possible due to circular structures or other types of error
+         * @default true
+         */
+        clone? = true;
+        /**
+         * If true, the list will be sorted in ascending order, otherwise in descending order
+         * @default true
+         */
+        orderAsc = true;
+    }
+    export class SortJsonDto<T> {
+        constructor(list?: T[], clone?: boolean, orderAsc?: boolean) {
+            if (list !== undefined) { this.list = list; }
+            if (clone !== undefined) { this.clone = clone; }
+            if (orderAsc !== undefined) { this.orderAsc = orderAsc; }
+        }
+        /**
+         * The list to interrogate
+         * @default undefined
+         */
+        list: T[];
+        /**
+         * Tries to make structured clone of the incoming list data in the component, sometimes it may not be possible due to circular structures or other types of error
+         * @default true
+         */
+        clone? = true;
+        /**
+         * If true, the list will be sorted in ascending order, otherwise in descending order
+         * @default true
+         */
+        orderAsc = true;
+        /**
+         * The property to sort by
+         * @default propName
+         */
+        property = "propName";
+    }
     export class ListDto<T> {
         constructor(list?: T[]) {
             if (list !== undefined) { this.list = list; }
@@ -279,6 +351,47 @@ export namespace Lists {
          * @step 1
          */
         offset = 0;
+        /**
+         * Tries to make structured clone of the incoming list data in the component, sometimes it may not be possible due to circular structures or other types of error
+         * @default true
+         */
+        clone? = true;
+    }
+    export class RemoveDuplicatesDto<T> {
+        constructor(list?: T[], clone?: boolean) {
+            if (list !== undefined) { this.list = list; }
+            if (clone !== undefined) { this.clone = clone; }
+        }
+        /**
+        * The list from which item needs to be removed
+        * @default undefined
+        */
+        list: T[];
+        /**
+         * Tries to make structured clone of the incoming list data in the component, sometimes it may not be possible due to circular structures or other types of error
+         * @default true
+         */
+        clone? = true;
+    }
+    export class RemoveDuplicatesToleranceDto<T> {
+        constructor(list?: T[], clone?: boolean, tolerance?: number) {
+            if (list !== undefined) { this.list = list; }
+            if (tolerance !== undefined) { this.tolerance = tolerance; }
+            if (clone !== undefined) { this.clone = clone; }
+        }
+        /**
+        * The list from which item needs to be removed
+        * @default undefined
+        */
+        list: T[];
+        /**
+         * The tolerance to apply
+         * @default 1e-7
+         * @minimum 0
+         * @maximum Infinity
+         * @step 1e-7
+         */
+        tolerance = 1e-7;
         /**
          * Tries to make structured clone of the incoming list data in the component, sometimes it may not be possible due to circular structures or other types of error
          * @default true

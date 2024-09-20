@@ -597,15 +597,20 @@ export class Draw {
         result.isPickable = false;
         result.getChildMeshes().forEach(m => { m.isPickable = false; });
 
-        if (sgs.length > 0) {
-            result.receiveShadows = true;
-            sgs.forEach(sg => sg.addShadowCaster(result));
-            result.getChildMeshes().forEach(m => {
-                m.receiveShadows = true;
-                sgs.forEach(sg => sg.addShadowCaster(m));
-            });
+        let shadowsEnabled = true;
+        if (result.metadata && result.metadata.shadows === false) {
+            shadowsEnabled = false;
         }
-
+        if (shadowsEnabled) {
+            if (sgs.length > 0) {
+                result.receiveShadows = true;
+                sgs.forEach(sg => sg.addShadowCaster(result));
+                result.getChildMeshes().forEach(m => {
+                    m.receiveShadows = true;
+                    sgs.forEach(sg => sg.addShadowCaster(m));
+                });
+            }
+        }
         result.metadata = result.metadata ? { ...result.metadata, ...typemeta } : typemeta;
     }
 

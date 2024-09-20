@@ -2,6 +2,7 @@ export * from "./asset-inputs";
 export * from "./babylon-camera-inputs";
 export * from "./babylon-io-inputs";
 export * from "./babylon-material-inputs";
+export * from "./babylon-light-inputs";
 export * from "./babylon-gaussian-splatting-inputs";
 export * from "./babylon-mesh-inputs";
 export * from "./babylon-pick-inputs";

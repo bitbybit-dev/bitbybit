@@ -315,15 +315,17 @@ export class BabylonMesh {
         const clone = inputs.babylonMesh.clone();
         const sgs = this.context.scene?.metadata?.shadowGenerators as BABYLON.ShadowGenerator[];
 
-        if (sgs.length > 0) {
-            clone.getChildMeshes().forEach(m => {
-                m.receiveShadows = true;
-                sgs.forEach(sg => sg.addShadowCaster(m));
-            });
-            clone.receiveShadows = true;
-            sgs.forEach(sg => sg.addShadowCaster(clone));
+        if (inputs.babylonMesh.metadata && inputs.babylonMesh.metadata.shadows !== false) {
+            if (sgs.length > 0) {
+                clone.getChildMeshes().forEach(m => {
+                    m.receiveShadows = true;
+                    sgs.forEach(sg => sg.addShadowCaster(m));
+                });
+                clone.receiveShadows = true;
+                sgs.forEach(sg => sg.addShadowCaster(clone));
+            }
         }
-
+        clone.metadata = { ...inputs.babylonMesh.metadata };
         return clone;
     }
 
@@ -685,11 +687,17 @@ export class BabylonMesh {
                     newInstance.position = new BABYLON.Vector3(inputs.position[0], inputs.position[1], inputs.position[2]);
                     newInstance.rotation = new BABYLON.Vector3(inputs.rotation[0], inputs.rotation[1], inputs.rotation[2]);
                     newInstance.scaling = new BABYLON.Vector3(inputs.scaling[0], inputs.scaling[1], inputs.scaling[2]);
-                    if (sgs.length > 0) {
-                        sgs.forEach(sg => {
-                            sg.addShadowCaster(newInstance);
-                        });
+
+                    if (inputs.mesh.metadata && inputs.mesh.metadata.shadows !== false) {
+                        if (sgs.length > 0) {
+                            sgs.forEach(sg => {
+                                sg.addShadowCaster(newInstance);
+                            });
+                            newInstance.receiveShadows = true;
+                        }
                     }
+
+                    parent.metadata = inputs.mesh.metadata;
                     newInstance.parent = parent;
                 }
             });
@@ -705,11 +713,15 @@ export class BabylonMesh {
                 BABYLON.Angle.FromDegrees(inputs.rotation[2]).radians());
             newInstance.scaling = new BABYLON.Vector3(inputs.scaling[0], inputs.scaling[1], inputs.scaling[2]);
             newInstance.parent = parent;
-            if (sgs.length > 0) {
-                sgs.forEach(sg => {
-                    sg.addShadowCaster(newInstance);
-                });
+            if (inputs.mesh.metadata && inputs.mesh.metadata.shadows !== false) {
+                if (sgs.length > 0) {
+                    sgs.forEach(sg => {
+                        sg.addShadowCaster(newInstance);
+                    });
+                }
+                newInstance.receiveShadows = true;
             }
+            newInstance.metadata = inputs.mesh.metadata;
         }
         return parent;
     }
@@ -734,14 +746,16 @@ export class BabylonMesh {
                 }
             });
             result = container;
-
             const sgs = this.context.scene.metadata.shadowGenerators as BABYLON.ShadowGenerator[];
-
-            if (sgs.length > 0) {
-                result.getChildMeshes().forEach(m => {
-                    sgs.forEach(sg => sg.addShadowCaster(m));
-                });
-                sgs.forEach(sg => sg.addShadowCaster(result));
+            if (inputs.mesh.metadata && inputs.mesh.metadata.shadows !== false) {
+                if (sgs.length > 0) {
+                    result.getChildMeshes().forEach(m => {
+                        sgs.forEach(sg => sg.addShadowCaster(m));
+                        m.receiveShadows = true;
+                    });
+                    sgs.forEach(sg => sg.addShadowCaster(result));
+                    result.receiveShadows = true;
+                }
             }
         } else if (inputs.mesh) {
             inputs.mesh.setParent(null);

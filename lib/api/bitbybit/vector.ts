@@ -2,6 +2,7 @@
 import { Angle } from "@babylonjs/core";
 import { Context } from "../context";
 import * as Inputs from "../inputs/inputs";
+import { GeometryHelper } from "../geometry-helper";
 
 /**
  * Contains various methods for vector mathematics. Vector in bitbybit is simply an array, usually containing numbers.
@@ -11,7 +12,31 @@ import * as Inputs from "../inputs/inputs";
 
 export class Vector {
 
-    constructor(private readonly context: Context) { }
+    constructor(private readonly context: Context, private readonly geometryHelper: GeometryHelper) { }
+
+    /**
+     * Removes all duplicate vectors from the input array
+     * @param inputs Contains vectors and a tolerance value
+     * @returns Array of vectors without duplicates
+     * @group remove
+     * @shortname remove all duplicates
+     * @drawable false
+     */
+    removeAllDuplicateVectors(inputs: Inputs.Vector.RemoveAllDuplicateVectorsDto): number[][] {
+        return this.geometryHelper.removeAllDuplicateVectors(inputs.vectors, inputs.tolerance);
+    }
+
+    /**
+     * Removes consecutive duplicate vectors from the input array
+     * @param inputs Contains vectors and a tolerance value
+     * @returns Array of vectors without duplicates
+     * @group remove
+     * @shortname remove consecutive duplicates
+     * @drawable false
+     */
+    removeConsecutiveDuplicateVectors(inputs: Inputs.Vector.RemoveConsecutiveDuplicateVectorsDto): number[][] {
+        return this.geometryHelper.removeConsecutiveVectorDuplicates(inputs.vectors, inputs.checkFirstAndLast, inputs.tolerance);
+    }
     /**
      * Measures the angle between two vectors in degrees
      * @param inputs Contains two vectors represented as number arrays

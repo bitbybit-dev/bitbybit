@@ -6,6 +6,7 @@ import { BabylonCamera } from "./camera/camera";
 import { BabylonEngine } from "./engine";
 import { BabylonGaussianSplatting } from "./gaussian-splatting";
 import { BabylonIO } from "./io";
+import { BabylonLights } from "./lights/lights";
 import { BabylonMaterial } from "./material/material";
 import { BabylonMesh } from "./mesh";
 import { BabylonMeshBuilder } from "./mesh-builder/mesh-builder";
@@ -34,6 +35,7 @@ export class Babylon {
     public ray: BabylonRay;
     public pick: BabylonPick;
     public material: BabylonMaterial;
+    public lights: BabylonLights;
     public meshBuilder: BabylonMeshBuilder;
     public texture: BabylonTexture;
     public tools: BabylonTools;
@@ -54,6 +56,7 @@ export class Babylon {
         this.ray = new BabylonRay(context);
         this.pick = new BabylonPick(context);
         this.material = new BabylonMaterial(context, color);
+        this.lights = new BabylonLights(context);
         this.texture = new BabylonTexture(context);
         this.meshBuilder = new BabylonMeshBuilder(context, this.mesh);
         this.tools = new BabylonTools(context);

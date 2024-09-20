@@ -434,6 +434,38 @@ export class Lists {
     }
 
     /**
+     * remove duplicate numbers from the list
+     * @param inputs a list of numbers
+     * @returns list with unique numbers
+     * @group remove
+     * @shortname remove duplicates
+     * @drawable false
+     */
+    removeDuplicateNumbers(inputs: Inputs.Lists.RemoveDuplicatesDto<number>): number[] {
+        let res = inputs.list;
+        if (inputs.clone) {
+            res = structuredClone(inputs.list);
+        }
+        return res.filter((value, index, self) => self.indexOf(value) === index);
+    }
+
+    /**
+     * remove duplicate numbers from the list with tolerance
+     * @param inputs a list of numbers and the tolerance
+     * @returns list with unique numbers
+     * @group remove
+     * @shortname remove duplicates tol
+     * @drawable false
+     */
+    removeDuplicateNumbersTolerance(inputs: Inputs.Lists.RemoveDuplicatesToleranceDto<number>): number[] {
+        let res = inputs.list;
+        if (inputs.clone) {
+            res = structuredClone(inputs.list);
+        }
+        return res.filter((value, index, self) => self.findIndex(s => Math.abs(s - value) < inputs.tolerance) === index);
+    }
+
+    /**
      * Add item to the end of the list
      * @param inputs a list and an item
      * @returns list with added item
@@ -514,4 +546,93 @@ export class Lists {
         }
         return result;
     }
+
+    /**
+     * Repeat the list items by adding them in the new list till the certain length of the list is reached
+     * @param inputs a list to multiply and a length limit
+     * @returns list
+     * @group create
+     * @shortname repeat in pattern
+     * @drawable false
+     */
+    repeatInPattern<T>(inputs: Inputs.Lists.RepeatInPatternDto<T>): T[] {
+        // will repeat the items provided in the patten till the certain length of the list is reached
+        let inpList = inputs.list;
+        if (inputs.clone) {
+            inpList = structuredClone(inputs.list);
+        }
+        const res = [];
+        let counter = 0;
+        let index = 0;
+        while (counter < inputs.lengthLimit) {
+            res.push(inpList[index]);
+            index++;
+            if (index === inpList.length) {
+                index = 0;
+            }
+            counter++;
+        }
+        return res;
+    }
+
+    /**
+     * Sort the list of numbers in ascending or descending order
+     * @param inputs a list of numbers to sort and an option for ascending or descending order
+     * @returns list
+     * @group sorting
+     * @shortname sort numbers
+     * @drawable false
+     */
+    sortNumber(inputs: Inputs.Lists.SortDto<number>): number[] {
+        let res = inputs.list;
+        if (inputs.clone) {
+            res = structuredClone(inputs.list);
+        }
+        if (inputs.orderAsc) {
+            return res.sort((a, b) => a - b);
+        } else {
+            return res.sort((a, b) => b - a);
+        }
+    }
+
+    /**
+     * Sort the list of texts in ascending or descending order alphabetically
+     * @param inputs a list of texts to sort and an option for ascending or descending order
+     * @returns list
+     * @group sorting
+     * @shortname sort texts
+     * @drawable false
+     */
+    sortTexts(inputs: Inputs.Lists.SortDto<string>): string[] {
+        let res = inputs.list;
+        if (inputs.clone) {
+            res = structuredClone(inputs.list);
+        }
+        if (inputs.orderAsc) {
+            return res.sort();
+        } else {
+            return res.sort().reverse();
+        }
+    }
+
+    /**
+     * Sort by numeric JSON property value
+     * @param inputs a list to sort, a property to sort by and an option for ascending or descending order
+     * @returns list
+     * @group sorting
+     * @shortname sort json objects
+     * @drawable false
+     */
+    sortByPropValue(inputs: Inputs.Lists.SortJsonDto<any>): any[] {
+        let res = inputs.list;
+        if (inputs.clone) {
+            res = structuredClone(inputs.list);
+        }
+        if (inputs.orderAsc) {
+            return res.sort((a, b) => a[inputs.property] - b[inputs.property]);
+        } else {
+            return res.sort((a, b) => b[inputs.property] - a[inputs.property]);
+        }
+    }
+
 }

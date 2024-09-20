@@ -13,7 +13,7 @@ export class BabylonMaterialPbrMetallicRoughness {
      * @param inputs required to set up metallic roughness material
      * @returns PBR metallic roughness material
      * @group create
-     * @shortname material
+     * @shortname pbr material
      * @disposableOutput true
      */
     create(inputs: Inputs.BabylonMaterial.PBRMetallicRoughnessDto): BABYLON.PBRMetallicRoughnessMaterial {

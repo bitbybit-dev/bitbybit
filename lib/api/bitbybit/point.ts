@@ -5,6 +5,7 @@ import { GeometryHelper } from "../geometry-helper";
 import * as Inputs from "../inputs/inputs";
 import { Base } from "../inputs/inputs";
 import { Line } from "./line";
+import { BabylonTransforms } from "./babylon";
 
 /**
  * Contains various methods for points. Point in bitbybit is simply an array containing 3 numbers for [x, y, z].
@@ -14,7 +15,7 @@ import { Line } from "./line";
 
 export class Point {
 
-    constructor(private readonly context: Context, private readonly geometryHelper: GeometryHelper, private readonly line: Line) { }
+    constructor(private readonly context: Context, private readonly geometryHelper: GeometryHelper, private readonly line: Line, private readonly babylonTransforms: BabylonTransforms) { }
 
     /**
      * Draws a single point
@@ -97,6 +98,76 @@ export class Point {
         return inputs.points.map((pt, index) => {
             return this.geometryHelper.transformControlPoints(inputs.transformation[index], [pt])[0];
         });
+    }
+
+    /**
+     * Translate multiple points
+     * @param inputs Contains points and the translation vector
+     * @returns Translated points
+     * @group transforms
+     * @shortname translate points
+     * @drawable true
+     */
+    translatePoints(inputs: Inputs.Point.TranslatePointsDto): Inputs.Base.Point3[] {
+        const translationTransform = this.babylonTransforms.translationXYZ({ translation: inputs.translation });
+        return this.geometryHelper.transformControlPoints(translationTransform, inputs.points);
+    }
+
+    /**
+     * Translate multiple points
+     * @param inputs Contains points and the translation vector
+     * @returns Translated points
+     * @group transforms
+     * @shortname translate points with vectors
+     * @drawable true
+     */
+    translatePointsWithVectors(inputs: Inputs.Point.TranslatePointsWithVectorsDto): Inputs.Base.Point3[] {
+        if (inputs.points.length !== inputs.translations.length) {
+            throw new Error("You must provide equal nr of points and translations");
+        }
+        const translationTransforms = this.babylonTransforms.translationsXYZ({ translations: inputs.translations });
+        return inputs.points.map((pt, index) => {
+            return this.geometryHelper.transformControlPoints(translationTransforms[index], [pt])[0];
+        });
+    }
+
+    /**
+     * Translate multiple points by x, y, z values provided
+     * @param inputs Contains points and the translation in x y and z
+     * @returns Translated points
+     * @group transforms
+     * @shortname translate xyz points
+     * @drawable true
+     */
+    translateXYZPoints(inputs: Inputs.Point.TranslateXYZPointsDto): Inputs.Base.Point3[] {
+        const translationTransform = this.babylonTransforms.translationXYZ({ translation: [inputs.x, inputs.y, inputs.z] });
+        return this.geometryHelper.transformControlPoints(translationTransform, inputs.points);
+    }
+
+    /**
+     * Scale multiple points by providing center point and x, y, z scale factors
+     * @param inputs Contains points, center point and scale factors
+     * @returns Scaled points
+     * @group transforms
+     * @shortname scale points on center
+     * @drawable true
+     */
+    scalePointsCenterXYZ(inputs: Inputs.Point.ScalePointsCenterXYZDto): Inputs.Base.Point3[] {
+        const scaleTransforms = this.babylonTransforms.scaleCenterXYZ({ center: inputs.center, scaleXyz: inputs.scaleXyz });
+        return this.geometryHelper.transformControlPoints(scaleTransforms, inputs.points);
+    }
+
+    /**
+     * Rotate multiple points by providing center point, axis and degrees of rotation
+     * @param inputs Contains points, axis, center point and angle of rotation
+     * @returns Rotated points
+     * @group transforms
+     * @shortname rotate points center axis
+     * @drawable true
+     */
+    rotatePointsCenterAxis(inputs: Inputs.Point.RotatePointsCenterAxisDto): Inputs.Base.Point3[] {
+        const rotationTransforms = this.babylonTransforms.rotationCenterAxis({ center: inputs.center, axis: inputs.axis, angle: inputs.angle });
+        return this.geometryHelper.transformControlPoints(rotationTransforms, inputs.points);
     }
 
     /**
@@ -324,6 +395,18 @@ export class Point {
         }
 
         return points;
+    }
+
+    /**
+     * Removes consecutive duplicates from the point array with tolerance
+     * @param inputs points, tolerance and check first and last
+     * @returns Points in the array without consecutive duplicates
+     * @group clean
+     * @shortname remove duplicates
+     * @drawable true
+     */
+    removeConsecutiveDuplicates(inputs: Inputs.Point.RemoveConsecutiveDuplicatesDto): Inputs.Base.Point3[] {
+        return this.geometryHelper.removeConsecutivePointDuplicates(inputs.points, inputs.checkFirstAndLast, inputs.tolerance);
     }
 
     private closestPointFromPointData(inputs: Inputs.Point.ClosestPointFromPointsDto): {

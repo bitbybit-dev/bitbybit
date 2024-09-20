@@ -31,6 +31,11 @@ export namespace BabylonMeshBuilder {
          * @default frontside
          */
         sideOrientation = BabylonMesh.sideOrientationEnum.frontside;
+        /**
+         * Enables shadows for the mesh
+         * @default true
+         */
+        enableShadows = true;
     }
 
     export class CreateCubeDto {
@@ -48,6 +53,11 @@ export namespace BabylonMeshBuilder {
          * @default frontside
          */
         sideOrientation = BabylonMesh.sideOrientationEnum.frontside;
+        /**
+         * Enables shadows for the mesh
+         * @default true
+         */
+        enableShadows = true;
     }
     export class CreateSquarePlaneDto {
         constructor(size?: number, sideOrientation?: BabylonMesh.sideOrientationEnum) {
@@ -64,6 +74,11 @@ export namespace BabylonMeshBuilder {
          * @default frontside
          */
         sideOrientation = BabylonMesh.sideOrientationEnum.frontside;
+        /**
+         * Enables shadows for the mesh
+         * @default true
+         */
+        enableShadows = true;
     }
 
     export class CreateRectanglePlaneDto {
@@ -87,5 +102,10 @@ export namespace BabylonMeshBuilder {
          * @default frontside
          */
         sideOrientation = BabylonMesh.sideOrientationEnum.frontside;
+        /**
+         * Enables shadows for the mesh
+         * @default true
+         */
+        enableShadows = true;
     }
 }

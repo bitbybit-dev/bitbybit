@@ -57,9 +57,9 @@ export class BitByBitBase {
 
         this.color = new Color(this.context);
         this.babylon = new Babylon(this.context, geometryHelper, this.color);
-        this.vector = new Vector(this.context);
+        this.vector = new Vector(this.context, geometryHelper);
         this.line = new Line(this.context, geometryHelper);
-        this.point = new Point(this.context, geometryHelper, this.line);
+        this.point = new Point(this.context, geometryHelper, this.line, this.babylon.transforms);
         this.polyline = new Polyline(this.context, geometryHelper);
         this.verb = new Verb(this.context, geometryHelper);
         this.jscad = new JSCAD(this.jscadWorkerManager, this.context, geometryHelper);

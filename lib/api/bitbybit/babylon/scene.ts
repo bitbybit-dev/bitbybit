@@ -118,7 +118,7 @@ export class BabylonScene {
             light.shadowMinZ = 0.01;
             this.context.scene.metadata.shadowGenerators.push(shadowGenerator);
             this.context.scene.meshes.forEach(m => {
-                if (m.name !== "bitbybit-hdrSkyBox" && !m.name.includes("bitbybit-ground")) {
+                if (m.name !== "bitbybit-hdrSkyBox" && !m.name.includes("bitbybit-ground") && (m.metadata && m.metadata.shadows !== false)) {
                     shadowGenerator.addShadowCaster(m, true);
                     m.receiveShadows = true;
                 }
@@ -183,7 +183,7 @@ export class BabylonScene {
             light.shadowMinZ = 0;
             this.context.scene.metadata.shadowGenerators.push(shadowGenerator);
             this.context.scene.meshes.forEach(m => {
-                if (m.name !== "bitbybit-hdrSkyBox" && !m.name.includes("bitbybit-ground")) {
+                if (m.name !== "bitbybit-hdrSkyBox" && !m.name.includes("bitbybit-ground") && (m.metadata && m.metadata.shadows !== false)) {
                     shadowGenerator.addShadowCaster(m, true);
                     m.receiveShadows = true;
                 }
@@ -338,7 +338,7 @@ export class BabylonScene {
             texture = new BABYLON.CubeTexture("https://cdn.jsdelivr.net/gh/bitbybit-dev/bitbybit-assets@0.16.4/textures/skybox/default_skybox/skybox", this.context.scene);
         } else if (inputs.skybox === Inputs.Base.skyboxEnum.greyGradient) {
             texture = new BABYLON.CubeTexture("https://cdn.jsdelivr.net/gh/bitbybit-dev/bitbybit-assets@0.16.4/textures/skybox/grey_gradient/skybox", this.context.scene);
-        }else if (inputs.skybox === Inputs.Base.skyboxEnum.clearSky) {
+        } else if (inputs.skybox === Inputs.Base.skyboxEnum.clearSky) {
             texture = BABYLON.CubeTexture.CreateFromPrefilteredData("https://cdn.jsdelivr.net/gh/bitbybit-dev/bitbybit-assets@0.16.4/textures/skybox/clear_sky/environment.env",
                 this.context.scene, false, false);
         } else if (inputs.skybox === Inputs.Base.skyboxEnum.city) {

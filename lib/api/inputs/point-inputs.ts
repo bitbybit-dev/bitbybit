@@ -206,6 +206,120 @@ export namespace Point {
          */
         transformation: Base.TransformMatrixes;
     }
+    export class TranslatePointsWithVectorsDto {
+        constructor(points?: Base.Point3[], translations?: Base.Vector3[]) {
+            if (points !== undefined) { this.points = points; }
+            if (translations !== undefined) { this.translations = translations; }
+        }
+        /**
+         * Points to transform
+         * @default undefined
+         */
+        points: Base.Point3[];
+        /**
+         * Translation vectors for each point
+         * @default undefined
+         */
+        translations: Base.Vector3[];
+    }
+    export class TranslatePointsDto {
+        constructor(points?: Base.Point3[], translation?: Base.Vector3) {
+            if (points !== undefined) { this.points = points; }
+            if (translation !== undefined) { this.translation = translation; }
+        }
+        /**
+         * Points to transform
+         * @default undefined
+         */
+        points: Base.Point3[];
+        /**
+         * Translation vector with x, y and z values
+         * @default undefined
+         */
+        translation: Base.Vector3;
+    }
+    export class TranslateXYZPointsDto {
+        constructor(points?: Base.Point3[], x?: number, y?: number, z?: number) {
+            if (points !== undefined) { this.points = points; }
+            if (x !== undefined) { this.x = x; }
+            if (y !== undefined) { this.y = y; }
+            if (z !== undefined) { this.z = z; }
+        }
+        /**
+         * Points to transform
+         * @default undefined
+         */
+        points: Base.Point3[];
+        /**
+         * X vector value
+         * @default 0
+         */
+        x = 0;
+        /**
+        * Y vector value
+        * @default 1
+        */
+        y = 1;
+        /**
+        * Z vector value
+        * @default 0
+        */
+        z = 0;
+    }
+
+    export class ScalePointsCenterXYZDto {
+        constructor(points?: Base.Point3[], center?: Base.Point3, scaleXyz?: Base.Vector3) {
+            if (points !== undefined) { this.points = points; }
+            if (center !== undefined) { this.center = center; }
+            if (scaleXyz !== undefined) { this.scaleXyz = scaleXyz; }
+        }
+        /**
+         * Points to transform
+         * @default undefined
+         */
+        points: Base.Point3[];
+        /**
+         * The center from which the scaling is applied
+         * @default [0, 0, 0]
+         */
+        center: Base.Point3 = [0, 0, 0];
+        /**
+         * Scaling factors for each axis [1, 2, 1] means that Y axis will be scaled 200% and both x and z axis will remain on 100%
+         * @default [1, 1, 1]
+         */
+        scaleXyz: Base.Vector3 = [1, 1, 1];
+    }
+    export class RotatePointsCenterAxisDto {
+        constructor(points?: Base.Point3[], angle?: number, axis?: Base.Vector3, center?: Base.Point3) {
+            if (points !== undefined) { this.points = points; }
+            if (angle !== undefined) { this.angle = angle; }
+            if (axis !== undefined) { this.axis = axis; }
+            if (center !== undefined) { this.center = center; }
+        }
+        /**
+        * Points to transform
+        * @default undefined
+        */
+        points: Base.Point3[];
+        /**
+         * Angle of rotation in degrees
+         * @default 90
+         * @minimum -Infinity
+         * @maximum Infinity
+         * @step 1
+         */
+        angle = 90;
+        /**
+         * Axis vector for rotation
+         * @default [0, 1, 0]
+         */
+        axis: Base.Vector3 = [0, 1, 0];
+        /**
+         * The center from which the axis is pointing
+         * @default [0, 0, 0]
+         */
+        center: Base.Point3 = [0, 0, 0];
+    }
     export class TransformsForPointsDto {
         constructor(points?: Base.Point3[], transformation?: Base.TransformMatrixes[]) {
             if (points !== undefined) { this.points = points; }
@@ -221,6 +335,30 @@ export namespace Point {
          * @default undefined
          */
         transformation: Base.TransformMatrixes[];
+    }
+    export class RemoveConsecutiveDuplicatesDto{
+        constructor(points?: Base.Point3[], tolerance?: number, checkFirstAndLast?: boolean) {
+            if (points !== undefined) { this.points = points; }
+            if (tolerance !== undefined) { this.tolerance = tolerance; }
+            if (checkFirstAndLast !== undefined) { this.checkFirstAndLast = checkFirstAndLast; }
+        }
+        /**
+         * Points to transform
+         * @default undefined
+         */
+        points: Base.Point3[];
+        /**
+         * Tolerance for removing duplicates
+         * @default 1e-7
+         * @minimum 0
+         * @maximum Infinity
+         * @step 1e-7
+         */
+        tolerance = 1e-7;
+        /**
+         * Check first and last point for duplicates
+         */
+        checkFirstAndLast = false;
     }
     export class ClosestPointFromPointsDto {
         constructor(points?: Base.Point3[], point?: Base.Point3) {

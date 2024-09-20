@@ -14,7 +14,7 @@ export class BabylonMeshBuilder {
      * @param inputs required to set up basic box
      * @returns Babylon mesh
      * @group create simple
-     * @shortname box
+     * @shortname create box
      * @disposableOutput true
      */
     createBox(inputs: Inputs.BabylonMeshBuilder.CreateBoxDto): BABYLON.Mesh {
@@ -24,7 +24,12 @@ export class BabylonMeshBuilder {
             depth: inputs.depth,
             sideOrientation: this.mesh.getSideOrientation(inputs.sideOrientation),
         }, this.context.scene);
-        this.enableShadows(mesh);
+
+        if (inputs.enableShadows) {
+            this.enableShadows(mesh);
+        } else {
+            mesh.metadata = { shadows: false };
+        }
         return mesh;
     }
 
@@ -33,7 +38,7 @@ export class BabylonMeshBuilder {
      * @param inputs required to set up basic cube
      * @returns Babylon mesh
      * @group create simple
-     * @shortname cube
+     * @shortname create cube
      * @disposableOutput true
      */
     createCube(inputs: Inputs.BabylonMeshBuilder.CreateCubeDto): BABYLON.Mesh {
@@ -41,7 +46,11 @@ export class BabylonMeshBuilder {
             size: inputs.size,
             sideOrientation: this.mesh.getSideOrientation(inputs.sideOrientation),
         }, this.context.scene);
-        this.enableShadows(mesh);
+        if (inputs.enableShadows) {
+            this.enableShadows(mesh);
+        } else {
+            mesh.metadata = { shadows: false };
+        }
         return mesh;
     }
 
@@ -58,7 +67,11 @@ export class BabylonMeshBuilder {
             size: inputs.size,
             sideOrientation: this.mesh.getSideOrientation(inputs.sideOrientation),
         }, this.context.scene);
-        this.enableShadows(mesh);
+        if (inputs.enableShadows) {
+            this.enableShadows(mesh);
+        } else {
+            mesh.metadata = { shadows: false };
+        }
         return mesh;
     }
 
@@ -76,7 +89,11 @@ export class BabylonMeshBuilder {
             height: inputs.height,
             sideOrientation: this.mesh.getSideOrientation(inputs.sideOrientation),
         }, this.context.scene);
-        this.enableShadows(mesh);
+        if (inputs.enableShadows) {
+            this.enableShadows(mesh);
+        } else {
+            mesh.metadata = { shadows: false };
+        }
         return mesh;
     }
 

@@ -28,6 +28,48 @@ export namespace Vector {
          */
         vector: boolean[];
     }
+    export class RemoveAllDuplicateVectorsDto {
+        constructor(vectors?: number[][], tolerance?: number) {
+            if (vectors !== undefined) { this.vectors = vectors; }
+            if (tolerance !== undefined) { this.tolerance = tolerance; }
+        }
+        /**
+         * Vectors array
+         * @default undefined
+         */
+        vectors: number[][];
+        /**
+         * Tolerance value
+         * @default 1e-7
+         * @minimum 0
+         * @maximum Infinity
+         */
+        tolerance = 1e-7;
+    }
+    export class RemoveConsecutiveDuplicateVectorsDto {
+        constructor(vectors?: number[][], checkFirstAndLast?: boolean, tolerance?: number) {
+            if (vectors !== undefined) { this.vectors = vectors; }
+            if (checkFirstAndLast !== undefined) { this.checkFirstAndLast = checkFirstAndLast; }
+            if (tolerance !== undefined) { this.tolerance = tolerance; }
+        }
+        /**
+         * Vectors array
+         * @default undefined
+         */
+        vectors: number[][];
+        /**
+         * Check first and last vectors
+         * @default false
+         */
+        checkFirstAndLast = false;
+        /**
+         * Tolerance value
+         * @default 1e-7
+         * @minimum 0
+         * @maximum Infinity
+         */
+        tolerance = 1e-7;
+    }
     export class VectorDto {
         constructor(vector?: number[]) {
             if (vector !== undefined) { this.vector = vector; }
