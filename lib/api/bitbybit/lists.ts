@@ -307,7 +307,7 @@ export class Lists {
      * @param inputs a list, item and an index
      * @returns list with added item
      * @group add
-     * @shortname item at index
+     * @shortname add item
      * @drawable false
      */
     addItemAtIndex<T>(inputs: Inputs.Lists.AddItemAtIndexDto<T>): T[] {
@@ -326,7 +326,7 @@ export class Lists {
      * @param inputs a list, item and an indexes
      * @returns list with added item
      * @group add
-     * @shortname item at indexes
+     * @shortname add item at indexes
      * @drawable false
      */
     addItemAtIndexes<T>(inputs: Inputs.Lists.AddItemAtIndexesDto<T>): T[] {
@@ -351,7 +351,7 @@ export class Lists {
      * @param inputs a list, items and an indexes
      * @returns list with added items
      * @group add
-     * @shortname items at indexes
+     * @shortname add items
      * @drawable false
      */
     addItemsAtIndexes<T>(inputs: Inputs.Lists.AddItemsAtIndexesDto<T>): T[] {
@@ -384,7 +384,7 @@ export class Lists {
      * @param inputs a list and index
      * @returns list with removed item
      * @group remove
-     * @shortname item at index
+     * @shortname remove item
      * @drawable false
      */
     removeItemAtIndex<T>(inputs: Inputs.Lists.RemoveItemAtIndexDto<T>): T[] {
@@ -395,6 +395,29 @@ export class Lists {
         if (inputs.index >= 0 && inputs.index <= res.length) {
             res.splice(inputs.index, 1);
         }
+        return res;
+    }
+
+    /**
+     * Remove items from the list of provided indexes
+     * @param inputs a list and indexes
+     * @returns list with removed items
+     * @group remove
+     * @shortname remove items
+     * @drawable false
+     */
+    removeItemsAtIndexes<T>(inputs: Inputs.Lists.RemoveItemsAtIndexesDto<T>): T[] {
+        let res = inputs.list;
+        if (inputs.clone) {
+            res = structuredClone(inputs.list);
+        }
+        const cloneIndexes = [...inputs.indexes];
+        cloneIndexes.sort((a, b) => b - a);
+        cloneIndexes.forEach(index => {
+            if (index >= 0 && index < res.length) {
+                res.splice(index, 1);
+            }
+        });
         return res;
     }
 

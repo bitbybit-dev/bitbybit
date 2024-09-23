@@ -323,6 +323,28 @@ export namespace Lists {
          */
         clone? = true;
     }
+    export class RemoveItemsAtIndexesDto<T> {
+        constructor(list?: T[], indexes?: number[], clone?: boolean) {
+            if (list !== undefined) { this.list = list; }
+            if (indexes !== undefined) { this.indexes = indexes; }
+            if (clone !== undefined) { this.clone = clone; }
+        }
+        /**
+        * The list from which item needs to be removed
+        * @default undefined
+        */
+        list: T[];
+        /**
+         * The indexes that should be removed
+         * @default undefined
+         */
+        indexes: number[];
+        /**
+         * Tries to make structured clone of the incoming list data in the component, sometimes it may not be possible due to circular structures or other types of error
+         * @default true
+         */
+        clone? = true;
+    }
     export class RemoveNthItemDto<T> {
         constructor(list?: T[], nth?: number, offset?: number, clone?: boolean) {
             if (list !== undefined) { this.list = list; }
