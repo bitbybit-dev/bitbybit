@@ -313,9 +313,9 @@ export class BabylonMesh {
      */
     clone(inputs: Inputs.BabylonMesh.BabylonMeshDto): BABYLON.Mesh {
         const clone = inputs.babylonMesh.clone();
-        const sgs = this.context.scene?.metadata?.shadowGenerators as BABYLON.ShadowGenerator[];
 
-        if (inputs.babylonMesh.metadata && inputs.babylonMesh.metadata.shadows !== false) {
+        if (!inputs.babylonMesh.metadata || (inputs.babylonMesh.metadata && inputs.babylonMesh.metadata.shadows !== false)) {
+            const sgs = this.context.scene?.metadata?.shadowGenerators as BABYLON.ShadowGenerator[];
             if (sgs.length > 0) {
                 clone.getChildMeshes().forEach(m => {
                     m.receiveShadows = true;
@@ -688,7 +688,7 @@ export class BabylonMesh {
                     newInstance.rotation = new BABYLON.Vector3(inputs.rotation[0], inputs.rotation[1], inputs.rotation[2]);
                     newInstance.scaling = new BABYLON.Vector3(inputs.scaling[0], inputs.scaling[1], inputs.scaling[2]);
 
-                    if (inputs.mesh.metadata && inputs.mesh.metadata.shadows !== false) {
+                    if (!inputs.mesh.metadata || (inputs.mesh.metadata && inputs.mesh.metadata.shadows !== false)) {
                         if (sgs.length > 0) {
                             sgs.forEach(sg => {
                                 sg.addShadowCaster(newInstance);
@@ -713,7 +713,7 @@ export class BabylonMesh {
                 BABYLON.Angle.FromDegrees(inputs.rotation[2]).radians());
             newInstance.scaling = new BABYLON.Vector3(inputs.scaling[0], inputs.scaling[1], inputs.scaling[2]);
             newInstance.parent = parent;
-            if (inputs.mesh.metadata && inputs.mesh.metadata.shadows !== false) {
+            if (!inputs.mesh.metadata || (inputs.mesh.metadata && inputs.mesh.metadata.shadows !== false)) {
                 if (sgs.length > 0) {
                     sgs.forEach(sg => {
                         sg.addShadowCaster(newInstance);
@@ -747,7 +747,7 @@ export class BabylonMesh {
             });
             result = container;
             const sgs = this.context.scene.metadata.shadowGenerators as BABYLON.ShadowGenerator[];
-            if (inputs.mesh.metadata && inputs.mesh.metadata.shadows !== false) {
+            if (!inputs.mesh.metadata || (inputs.mesh.metadata && inputs.mesh.metadata.shadows !== false)) {
                 if (sgs.length > 0) {
                     result.getChildMeshes().forEach(m => {
                         sgs.forEach(sg => sg.addShadowCaster(m));

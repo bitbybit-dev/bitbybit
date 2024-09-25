@@ -97,7 +97,7 @@ export class BabylonScene {
      * @param inputs Describes the light source
      * @returns BabylonJS point light
      * @group lights
-     * @shortname point
+     * @shortname point light
      * @disposableOutput true
      */
     drawPointLight(inputs: Inputs.BabylonScene.PointLightDto): BABYLON.PointLight {
@@ -110,12 +110,12 @@ export class BabylonScene {
             light.shadowEnabled = true;
             const shadowGenerator = new BABYLON.ShadowGenerator(inputs.shadowGeneratorMapSize, light);
             shadowGenerator.darkness = inputs.shadowDarkness;
-            shadowGenerator.usePercentageCloserFiltering = true;
-            shadowGenerator.contactHardeningLightSizeUVRatio = 0.2;
-            shadowGenerator.bias = 0.0001;
-            shadowGenerator.normalBias = 0.002;
-            light.shadowMaxZ = 1000;
-            light.shadowMinZ = 0.01;
+            shadowGenerator.usePercentageCloserFiltering = inputs.shadowUsePercentageCloserFiltering;
+            shadowGenerator.contactHardeningLightSizeUVRatio = inputs.shadowContactHardeningLightSizeUVRatio;
+            shadowGenerator.bias = inputs.shadowBias;
+            shadowGenerator.normalBias = inputs.shadowNormalBias;
+            light.shadowMaxZ = inputs.shadowMaxZ;
+            light.shadowMinZ = inputs.shadowMinZ;
             this.context.scene.metadata.shadowGenerators.push(shadowGenerator);
             this.context.scene.meshes.forEach(m => {
                 if (m.name !== "bitbybit-hdrSkyBox" && !m.name.includes("bitbybit-ground") && (m.metadata && m.metadata.shadows !== false)) {
@@ -161,7 +161,7 @@ export class BabylonScene {
      * @param inputs Describes the light source
      * @returns BabylonJS directional light
      * @group lights
-     * @shortname directional
+     * @shortname directional light
      * @disposableOutput true
      */
     drawDirectionalLight(inputs: Inputs.BabylonScene.DirectionalLightDto): BABYLON.DirectionalLight {
@@ -175,12 +175,12 @@ export class BabylonScene {
             light.shadowEnabled = true;
             const shadowGenerator = new BABYLON.ShadowGenerator(inputs.shadowGeneratorMapSize, light);
             shadowGenerator.darkness = inputs.shadowDarkness;
-            shadowGenerator.usePercentageCloserFiltering = true;
-            shadowGenerator.contactHardeningLightSizeUVRatio = 0.2;
-            shadowGenerator.bias = 0.0001;
-            shadowGenerator.normalBias = 0.002;
-            light.shadowMaxZ = 1000;
-            light.shadowMinZ = 0;
+            shadowGenerator.usePercentageCloserFiltering = inputs.shadowUsePercentageCloserFiltering;
+            shadowGenerator.contactHardeningLightSizeUVRatio = inputs.shadowContactHardeningLightSizeUVRatio;
+            shadowGenerator.bias = inputs.shadowBias;
+            shadowGenerator.normalBias = inputs.shadowNormalBias;
+            light.shadowMaxZ = inputs.shadowMaxZ;
+            light.shadowMinZ = inputs.shadowMinZ;
             this.context.scene.metadata.shadowGenerators.push(shadowGenerator);
             this.context.scene.meshes.forEach(m => {
                 if (m.name !== "bitbybit-hdrSkyBox" && !m.name.includes("bitbybit-ground") && (m.metadata && m.metadata.shadows !== false)) {
@@ -194,7 +194,7 @@ export class BabylonScene {
         light.specular = BABYLON.Color3.FromHexString(inputs.specular);
         // light.intensityMode = Light.INTENSITYMODE_LUMINOUSPOWER;
         light.intensity = inputs.intensity;
-        light.shadowMaxZ = 1000;
+        light.shadowMaxZ = inputs.shadowMaxZ;
         return light;
     }
 

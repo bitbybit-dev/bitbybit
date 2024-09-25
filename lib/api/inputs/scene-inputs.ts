@@ -41,7 +41,7 @@ export namespace BabylonScene {
         vector: Base.Vector3 = [0, -9.81, 0];
     }
     export class PointLightDto {
-        constructor(position?: Base.Point3, intensity?: number, diffuse?: Base.Color, specular?: Base.Color, radius?: number, shadowGeneratorMapSize?: number, enableShadows?: boolean, shadowDarkness?: number) {
+        constructor(position?: Base.Point3, intensity?: number, diffuse?: Base.Color, specular?: Base.Color, radius?: number, shadowGeneratorMapSize?: number, enableShadows?: boolean, shadowDarkness?: number, shadowUsePercentageCloserFiltering?: boolean, shadowContactHardeningLightSizeUVRatio?: number, shadowBias?: number, shadowNormalBias?: number, shadowMaxZ?: number, shadowMinZ?: number) {
             if (position !== undefined) { this.position = position; }
             if (intensity !== undefined) { this.intensity = intensity; }
             if (diffuse !== undefined) { this.diffuse = diffuse; }
@@ -50,6 +50,12 @@ export namespace BabylonScene {
             if (shadowGeneratorMapSize !== undefined) { this.shadowGeneratorMapSize = shadowGeneratorMapSize; }
             if (enableShadows !== undefined) { this.enableShadows = enableShadows; }
             if (shadowDarkness !== undefined) { this.shadowDarkness = shadowDarkness; }
+            if (shadowUsePercentageCloserFiltering !== undefined) { this.shadowUsePercentageCloserFiltering = shadowUsePercentageCloserFiltering; }
+            if (shadowContactHardeningLightSizeUVRatio !== undefined) { this.shadowContactHardeningLightSizeUVRatio = shadowContactHardeningLightSizeUVRatio; }
+            if (shadowBias !== undefined) { this.shadowBias = shadowBias; }
+            if (shadowNormalBias !== undefined) { this.shadowNormalBias = shadowNormalBias; }
+            if (shadowMaxZ !== undefined) { this.shadowMaxZ = shadowMaxZ; }
+            if (shadowMinZ !== undefined) { this.shadowMinZ = shadowMinZ; }
         }
         /**
          * Position of the point light
@@ -103,6 +109,52 @@ export namespace BabylonScene {
          * @step 0.1
          */
         shadowDarkness? = 0;
+
+        /**
+         * Use percentage closer filtering
+         * @default true
+         */
+        shadowUsePercentageCloserFiltering = true;
+        /**
+         * Shadow contact hardening light size UV ratio - only applies if usePercentageCloserFiltering is true
+         * @default 0.2
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.1
+         */
+        shadowContactHardeningLightSizeUVRatio = 0.2;
+        /**
+         * Shadow bias
+         * @default 0.0001
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.00001
+         */
+        shadowBias = 0.0001;
+        /**
+         * Shadow normal bias
+         * @default 0.002
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.0001
+         */
+        shadowNormalBias = 0.002;
+        /**
+         * Shadow max Z
+         * @default 1000
+         * @minimum 0
+         * @maximum Infinity
+         * @step 50
+         */
+        shadowMaxZ = 1000;
+        /**
+        * Shadow min Z
+        * @default 0
+        * @minimum 0
+        * @maximum Infinity
+        * @step 50
+        */
+        shadowMinZ = 0;
     }
     export class ActiveCameraDto {
         constructor(camera?: BABYLON.Camera) {
@@ -124,7 +176,7 @@ export namespace BabylonScene {
         use = true;
     }
     export class DirectionalLightDto {
-        constructor(direction?: Base.Vector3, intensity?: number, diffuse?: Base.Color, specular?: Base.Color, shadowGeneratorMapSize?: number, enableShadows?: boolean, shadowDarkness?: number) {
+        constructor(direction?: Base.Vector3, intensity?: number, diffuse?: Base.Color, specular?: Base.Color, shadowGeneratorMapSize?: number, enableShadows?: boolean, shadowDarkness?: number, shadowUsePercentageCloserFiltering?: boolean, shadowContactHardeningLightSizeUVRatio?: number, shadowBias?: number, shadowNormalBias?: number, shadowMaxZ?: number, shadowMinZ?: number) {
             if (direction !== undefined) { this.direction = direction; }
             if (intensity !== undefined) { this.intensity = intensity; }
             if (diffuse !== undefined) { this.diffuse = diffuse; }
@@ -132,6 +184,12 @@ export namespace BabylonScene {
             if (shadowGeneratorMapSize !== undefined) { this.shadowGeneratorMapSize = shadowGeneratorMapSize; }
             if (enableShadows !== undefined) { this.enableShadows = enableShadows; }
             if (shadowDarkness !== undefined) { this.shadowDarkness = shadowDarkness; }
+            if (shadowUsePercentageCloserFiltering !== undefined) { this.shadowUsePercentageCloserFiltering = shadowUsePercentageCloserFiltering; }
+            if (shadowContactHardeningLightSizeUVRatio !== undefined) { this.shadowContactHardeningLightSizeUVRatio = shadowContactHardeningLightSizeUVRatio; }
+            if (shadowBias !== undefined) { this.shadowBias = shadowBias; }
+            if (shadowNormalBias !== undefined) { this.shadowNormalBias = shadowNormalBias; }
+            if (shadowMaxZ !== undefined) { this.shadowMaxZ = shadowMaxZ; }
+            if (shadowMinZ !== undefined) { this.shadowMinZ = shadowMinZ; }
         }
         /**
          * Direction of the directional light
@@ -177,6 +235,51 @@ export namespace BabylonScene {
          * @step 0.1
          */
         shadowDarkness? = 0;
+        /**
+         * Use percentage closer filtering
+         * @default true
+         */
+        shadowUsePercentageCloserFiltering = true;
+        /**
+         * Shadow contact hardening light size UV ratio - only applies if usePercentageCloserFiltering is true
+         * @default 0.2
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.1
+         */
+        shadowContactHardeningLightSizeUVRatio = 0.2;
+        /**
+         * Shadow bias
+         * @default 0.0001
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.00001
+         */
+        shadowBias = 0.0001;
+        /**
+         * Shadow normal bias
+         * @default 0.002
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.0001
+         */
+        shadowNormalBias = 0.002;
+        /**
+         * Shadow max Z
+         * @default 1000
+         * @minimum 0
+         * @maximum Infinity
+         * @step 50
+         */
+        shadowMaxZ = 1000;
+        /**
+        * Shadow min Z
+        * @default 0
+        * @minimum 0
+        * @maximum Infinity
+        * @step 50
+        */
+        shadowMinZ = 0;
     }
     export class CameraConfigurationDto {
         constructor(position?: Base.Point3, lookAt?: Base.Point3, lowerRadiusLimit?: number, upperRadiusLimit?: number, lowerAlphaLimit?: number, upperAlphaLimit?: number, lowerBetaLimit?: number, upperBetaLimit?: number, angularSensibilityX?: number, angularSensibilityY?: number, maxZ?: number, panningSensibility?: number, wheelPrecision?: number) {
