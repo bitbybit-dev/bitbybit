@@ -266,9 +266,9 @@ export namespace BabylonGui {
         height?: number | string;
         /**
          * Font size of the button
-         * @default 12
+         * @default 24
          */
-        fontSize = 12;
+        fontSize = 24;
     }
 
     export class CreateSliderDto {
