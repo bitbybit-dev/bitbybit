@@ -72,8 +72,12 @@ export class JSONBitByBit {
      */
     getValueOnProp(inputs: Inputs.JSON.GetValueOnPropDto): any {
         // must be an object
-        const clonedJson = { ...structuredClone(inputs.json) };
-        return clonedJson[inputs.property];
+        try {
+            const clonedJson = { ...structuredClone(inputs.json) };
+            return clonedJson[inputs.property];
+        } catch (e) {
+            return inputs.json[inputs.property];
+        }
     }
 
     /**
@@ -154,7 +158,7 @@ export class JSONBitByBit {
      * @drawable false
      */
     previewAndSaveJson(inputs: Inputs.JSON.JsonDto) {
-        if(inputs.json){
+        if (inputs.json) {
             this.context.promptPrintSave({ text: inputs.json, isJson: true, hidden: false });
         }
     }
@@ -167,7 +171,7 @@ export class JSONBitByBit {
      * @drawable false
      */
     previewJson(inputs: Inputs.JSON.JsonDto) {
-        if(inputs.json){
+        if (inputs.json) {
             this.context.promptPrint({ text: inputs.json, isJson: true, hidden: false });
         }
     }
