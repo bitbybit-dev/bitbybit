@@ -32,6 +32,7 @@ export class BabylonGuiRadioButton {
         radioButton.checkSizeRatio = inputs.checkSizeRatio;
         radioButton.group = inputs.group;
         radioButton.color = inputs.color;
+        radioButton.isChecked = inputs.isChecked;
         radioButton.background = inputs.background;
         if (inputs.container) {
             inputs.container.addControl(radioButton);

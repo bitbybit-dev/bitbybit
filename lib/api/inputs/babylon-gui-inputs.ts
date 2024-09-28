@@ -28,6 +28,12 @@ export namespace BabylonGui {
          */
         onTextChangedObservable = "onTextChangedObservable"
     }
+    export enum checkboxObservableSelectorEnum {
+        /**
+         * Raised when the checkbox is checked or unchecked
+         */
+        onIsCheckedChangedObservable = "onIsCheckedChangedObservable"
+    }
     export enum radioButtonObservableSelectorEnum {
         /**
          * Raised when the radio button is checked or unchecked
@@ -301,6 +307,17 @@ export namespace BabylonGui {
         selector: radioButtonObservableSelectorEnum;
     }
 
+    export class CheckboxObservableSelectorDto {
+        constructor(selector: checkboxObservableSelectorEnum) {
+            this.selector = selector;
+        }
+        /**
+         * Selector for the observable
+         * @default onIsCheckedChangedObservable
+         */
+        selector: checkboxObservableSelectorEnum;
+    }
+
     export class ControlObservableSelectorDto {
         constructor(selector: controlObservableSelectorEnum) {
             this.selector = selector;
@@ -539,6 +556,176 @@ export namespace BabylonGui {
          * @default undefined
          */
         button: GUI.Button;
+    }
+
+    export class CreateCheckboxDto {
+        constructor(container?: GUI.Container, name?: string, isChecked?: boolean, checkSizeRatio?: number, color?: string, background?: string, width?: number | string, height?: number | string) {
+            if (container !== undefined) { this.container = container; }
+            if (name !== undefined) { this.name = name; }
+            if (isChecked !== undefined) { this.isChecked = isChecked; }
+            if (checkSizeRatio !== undefined) { this.checkSizeRatio = checkSizeRatio; }
+            if (color !== undefined) { this.color = color; }
+            if (background !== undefined) { this.background = background; }
+            if (width !== undefined) { this.width = width; }
+            if (height !== undefined) { this.height = height; }
+        }
+        /**
+         * Container to which the checkbox will be added
+         * @default undefined
+         * @optional true
+         */
+        container?: GUI.Container;
+        /**
+         * Name of the checkbox
+         * @default radioBtnName
+         */
+        name = "radioBtnName";
+        /**
+         * Is checked
+         * @default false
+         */
+        isChecked = false;
+        /**
+         * Check size ratio
+         * @default 0.8
+         * @minimum 0
+         * @maximum 1
+         * @step 0.05
+         */
+        checkSizeRatio = 0.8;
+        /**
+         * Color of the button
+         * @default #f0cebb
+         */
+        color = "#f0cebb";
+        /**
+         * Background of the button
+         * @default black
+         */
+        background = "black";
+        /**
+         * Width of the button
+         * @default undefined
+         * @optional true
+         */
+        width?: number | string;
+        /**
+         * Height of the button
+         * @default undefined
+         * @optional true
+         */
+        height?: number | string;
+    }
+    export class SetCheckboxHeightDto {
+        constructor(checkbox?: GUI.Checkbox, height?: number | string) {
+            if (checkbox !== undefined) { this.checkbox = checkbox; }
+            if (height !== undefined) { this.height = height; }
+        }
+        /**
+         * Checkbox to update
+         * @default undefined
+         */
+        checkbox: GUI.Checkbox;
+        /**
+         * Height of the checkbox
+         * @default undefined
+         */
+        height: number | string;
+    }
+    export class SetCheckboxWidthDto {
+        constructor(checkbox?: GUI.Checkbox, width?: number | string) {
+            if (checkbox !== undefined) { this.checkbox = checkbox; }
+            if (width !== undefined) { this.width = width; }
+        }
+        /**
+         * Checkbox to update
+         * @default undefined
+         */
+        checkbox: GUI.Checkbox;
+        /**
+         * Width of the checkbox
+         * @default undefined
+         */
+        width: number | string;
+    }
+    export class SetCheckboxColorDto {
+        constructor(checkbox?: GUI.Checkbox, color?: string) {
+            if (checkbox !== undefined) { this.checkbox = checkbox; }
+            if (color !== undefined) { this.color = color; }
+        }
+        /**
+         * Checkbox to update
+         * @default undefined
+         */
+        checkbox: GUI.Checkbox;
+        /**
+         * Color of the checkbox
+         * @default #f0cebb
+         */
+        color = "#f0cebb";
+    }
+    export class SetCheckboxBackgroundDto {
+        constructor(checkbox?: GUI.Checkbox, background?: string) {
+            if (checkbox !== undefined) { this.checkbox = checkbox; }
+            if (background !== undefined) { this.background = background; }
+        }
+        /**
+         * Checkbox to update
+         * @default undefined
+         */
+        checkbox: GUI.Checkbox;
+        /**
+         * Background of the checkbox
+         * @default black
+         */
+        background = "black";
+    }
+    export class SetCheckboxCheckSizeRatioDto {
+        constructor(checkbox?: GUI.Checkbox, checkSizeRatio?: number) {
+            if (checkbox !== undefined) { this.checkbox = checkbox; }
+            if (checkSizeRatio !== undefined) { this.checkSizeRatio = checkSizeRatio; }
+        }
+        /**
+         * Checkbox to update
+         * @default undefined
+         */
+        checkbox: GUI.Checkbox;
+        /**
+         * Check size ratio
+         * @default 0.8
+         * @minimum 0
+         * @maximum 1
+         * @step 0.05
+         */
+        checkSizeRatio = 0.8;
+    }
+
+    export class CheckboxDto {
+        constructor(checkbox?: GUI.Checkbox) {
+            if (checkbox !== undefined) { this.checkbox = checkbox; }
+        }
+        /**
+         * Checkbox to update
+         * @default undefined
+         */
+        checkbox: GUI.Checkbox;
+    }
+
+    export class SetCheckboxIsCheckedDto {
+        constructor(checkbox?: GUI.Checkbox, isChecked?: boolean) {
+            if (checkbox !== undefined) { this.checkbox = checkbox; }
+            if (isChecked !== undefined) { this.isChecked = isChecked; }
+        }
+        /**
+         * Checkbox to update
+         * @default undefined
+         */
+        checkbox: GUI.Checkbox;
+        /**
+         * Is checked
+         * @default false
+         */
+        isChecked = false;
     }
 
     export class CreateRadioButtonDto {
