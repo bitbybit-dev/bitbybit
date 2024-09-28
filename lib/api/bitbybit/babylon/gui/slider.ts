@@ -16,7 +16,7 @@ export class BabylonGuiSlider {
      * @disposableOutput true
      */
     createSlider(inputs: Inputs.BabylonGui.CreateSliderDto): GUI.Slider {
-        const slider = new GUI.Slider();
+        const slider = new GUI.Slider(inputs.name);
 
         slider.minimum = inputs.minimum;
         slider.maximum = inputs.maximum;

@@ -63,6 +63,19 @@ export class JSONBitByBit {
     }
 
     /**
+     * Gets json from array by first property match. This is very simplistic search and only returns the first match.
+     * If you need more complex search, you can use jsonpath query with filters.
+     * @param inputs an array of json objects, a property name and a value to match
+     * @returns any
+     * @group props
+     * @shortname get json from array by prop match
+     * @drawable false
+     */
+    getJsonFromArrayByFirstPropMatch(inputs: Inputs.JSON.GetJsonFromArrayByFirstPropMatchDto): any {
+        return inputs.jsonArray.find(j => j[inputs.property] === inputs.match);
+    }
+
+    /**
      * Gets value of the property in the given json
      * @param inputs a value to be added, json and a property name
      * @returns any

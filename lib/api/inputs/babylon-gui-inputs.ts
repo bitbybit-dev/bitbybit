@@ -28,6 +28,12 @@ export namespace BabylonGui {
          */
         onTextChangedObservable = "onTextChangedObservable"
     }
+    export enum radioButtonObservableSelectorEnum {
+        /**
+         * Raised when the radio button is checked or unchecked
+         */
+        onIsCheckedChangedObservable = "onIsCheckedChangedObservable"
+    }
     export enum controlObservableSelectorEnum {
         /**
          * Observable that fires whenever the accessibility event of the control has changed
@@ -284,6 +290,17 @@ export namespace BabylonGui {
          */
         selector: sliderObservableSelectorEnum;
     }
+    export class RadioButtonObservableSelectorDto {
+        constructor(selector: radioButtonObservableSelectorEnum) {
+            this.selector = selector;
+        }
+        /**
+         * Selector for the observable
+         * @default onIsCheckedChangedObservable
+         */
+        selector: radioButtonObservableSelectorEnum;
+    }
+
     export class ControlObservableSelectorDto {
         constructor(selector: controlObservableSelectorEnum) {
             this.selector = selector;
@@ -522,6 +539,182 @@ export namespace BabylonGui {
          * @default undefined
          */
         button: GUI.Button;
+    }
+
+    export class CreateRadioButtonDto {
+        constructor(container?: GUI.Container, name?: string, group?: string, isChecked?: boolean, checkSizeRatio?: number, color?: string, background?: string, width?: number | string, height?: number | string) {
+            if (container !== undefined) { this.container = container; }
+            if (name !== undefined) { this.name = name; }
+            if (group !== undefined) { this.group = group; }
+            if (isChecked !== undefined) { this.isChecked = isChecked; }
+            if (checkSizeRatio !== undefined) { this.checkSizeRatio = checkSizeRatio; }
+            if (color !== undefined) { this.color = color; }
+            if (background !== undefined) { this.background = background; }
+            if (width !== undefined) { this.width = width; }
+            if (height !== undefined) { this.height = height; }
+        }
+        /**
+         * Container to which the slider will be added
+         * @default undefined
+         * @optional true
+         */
+        container?: GUI.Container;
+        /**
+         * Name of the button
+         * @default radioBtnName
+         */
+        name = "radioBtnName";
+        /**
+         * Group of the radio button which is used when multiple radio buttons needs to be split into separate groups
+         * @default
+         * @optional true
+         */
+        group: string;
+        /**
+         * Is checked
+         * @default false
+         */
+        isChecked = false;
+        /**
+         * Check size ratio
+         * @default 0.8
+         * @minimum 0
+         * @maximum 1
+         * @step 0.05
+         */
+        checkSizeRatio = 0.8;
+        /**
+         * Color of the button
+         * @default #f0cebb
+         */
+        color = "#f0cebb";
+        /**
+         * Background of the button
+         * @default black
+         */
+        background = "black";
+        /**
+         * Width of the button
+         * @default undefined
+         * @optional true
+         */
+        width?: number | string;
+        /**
+         * Height of the button
+         * @default undefined
+         * @optional true
+         */
+        height?: number | string;
+    }
+
+    export class SetRadioButtonHeightDto {
+        constructor(radioButton?: GUI.RadioButton, height?: number | string) {
+            if (radioButton !== undefined) { this.radioButton = radioButton; }
+            if (height !== undefined) { this.height = height; }
+        }
+        /**
+         * Radio button to update
+         * @default undefined
+         */
+        radioButton: GUI.RadioButton;
+        /**
+         * Height of the radio button
+         * @default undefined
+         */
+        height: number | string;
+    }
+    export class SetRadioButtonWidthDto {
+        constructor(radioButton?: GUI.RadioButton, width?: number | string) {
+            if (radioButton !== undefined) { this.radioButton = radioButton; }
+            if (width !== undefined) { this.width = width; }
+        }
+        /**
+         * Radio button to update
+         * @default undefined
+         */
+        radioButton: GUI.RadioButton;
+        /**
+         * Width of the radio button
+         * @default undefined
+         */
+        width: number | string;
+    }
+    export class SetRadioButtonCheckSizeRatioDto {
+        constructor(radioButton?: GUI.RadioButton, checkSizeRatio?: number) {
+            if (radioButton !== undefined) { this.radioButton = radioButton; }
+            if (checkSizeRatio !== undefined) { this.checkSizeRatio = checkSizeRatio; }
+        }
+        /**
+         * Radio button to update
+         * @default undefined
+         */
+        radioButton: GUI.RadioButton;
+        /**
+         * Check size ratio
+         * @default 0.8
+         * @minimum 0
+         * @maximum 1
+         * @step 0.05
+         */
+        checkSizeRatio = 0.8;
+    }
+    export class SetRadioButtonGroupDto {
+        constructor(radioButton?: GUI.RadioButton, group?: string) {
+            if (radioButton !== undefined) { this.radioButton = radioButton; }
+            if (group !== undefined) { this.group = group; }
+        }
+        /**
+         * Radio button to update
+         * @default undefined
+         */
+        radioButton: GUI.RadioButton;
+        /**
+         * Group of the radio button
+         * @default
+         */
+        group: string;
+    }
+    export class SetRadioButtonColorDto {
+        constructor(radioButton?: GUI.RadioButton, color?: string) {
+            if (radioButton !== undefined) { this.radioButton = radioButton; }
+            if (color !== undefined) { this.color = color; }
+        }
+        /**
+         * Radio button to update
+         * @default undefined
+         */
+        radioButton: GUI.RadioButton;
+        /**
+         * Color of the radio button
+         * @default #f0cebb
+         */
+        color = "#f0cebb";
+    }
+    export class SetRadioButtonBackgroundDto {
+        constructor(radioButton?: GUI.RadioButton, background?: string) {
+            if (radioButton !== undefined) { this.radioButton = radioButton; }
+            if (background !== undefined) { this.background = background; }
+        }
+        /**
+         * Radio button to update
+         * @default undefined
+         */
+        radioButton: GUI.RadioButton;
+        /**
+         * Background of the radio button
+         * @default black
+         */
+        background = "black";
+    }
+    export class RadioButtonDto {
+        constructor(radioButton?: GUI.RadioButton) {
+            if (radioButton !== undefined) { this.radioButton = radioButton; }
+        }
+        /**
+         * Radio button to update
+         * @default undefined
+         */
+        radioButton: GUI.RadioButton;
     }
     export class CreateSliderDto {
         constructor(container?: GUI.Container, name?: string, minimum?: number, maximum?: number, value?: number, step?: number, isVertical?: boolean, color?: string, background?: string, width?: number | string, height?: number | string, displayThumb?: boolean) {

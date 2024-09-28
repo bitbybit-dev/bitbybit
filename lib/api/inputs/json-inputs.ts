@@ -61,6 +61,29 @@ export namespace JSON {
         property = "propName";
     }
 
+    export class GetJsonFromArrayByFirstPropMatchDto {
+        constructor(jsonArray?: any[], property?: string, match?: any) {
+            if (jsonArray !== undefined) { this.jsonArray = jsonArray; }
+            if (property !== undefined) { this.property = property; }
+            if (match !== undefined) { this.match = match; }
+        }
+        /**
+         * Array
+         * @default undefined
+         */
+        jsonArray: any[];
+        /**
+         * property to check
+         * @default propName
+         */
+        property = "propName";
+        /**
+         * Value to match for the property
+         * @default undefined
+         */
+        match: any;
+    }
+
     export class GetValueOnPropDto {
         constructor(json?: any, property?: string) {
             if (json !== undefined) { this.json = json; }
