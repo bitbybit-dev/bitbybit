@@ -39,7 +39,9 @@ export class BabylonGuiTextBlock {
         }
         textBlock.fontSize = inputs.fontSize;
         textBlock.color = inputs.color;
-        inputs.container.addControl(textBlock);
+        if (inputs.container) {
+            inputs.container.addControl(textBlock);
+        }
         return textBlock;
     }
 

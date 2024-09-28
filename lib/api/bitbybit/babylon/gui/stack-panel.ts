@@ -18,6 +18,9 @@ export class BabylonGuiStackPanel {
         const stackPanel = new GUI.StackPanel(inputs.name);
         stackPanel.isVertical = inputs.isVertical;
         stackPanel.spacing = inputs.spacing;
+        stackPanel.onDisposeObservable.add((s: GUI.StackPanel) => {
+            s.clearControls();
+        });
         if (inputs.width !== undefined) {
             stackPanel.width = inputs.width;
         } else {
@@ -32,7 +35,9 @@ export class BabylonGuiStackPanel {
         if (inputs.background !== undefined) {
             stackPanel.background = inputs.background;
         }
-        inputs.container.addControl(stackPanel);
+        if (inputs.container) {
+            inputs.container.addControl(stackPanel);
+        }
         return stackPanel;
     }
 

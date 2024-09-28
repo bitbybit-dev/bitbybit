@@ -124,8 +124,9 @@ export namespace BabylonGui {
         /**
          * Container to which the stack panel will be added
          * @default undefined
+         * @optional true
          */
-        container: GUI.Container;
+        container?: GUI.Container;
         /**
          * Name of stack panel
          * @default stackPanel
@@ -264,8 +265,9 @@ export namespace BabylonGui {
         /**
          * Container to which the button will be added
          * @default undefined
+         * @optional true
          */
-        container: GUI.Container;
+        container?: GUI.Container;
         /**
          * Name of the button
          * @default buttonName
@@ -430,8 +432,9 @@ export namespace BabylonGui {
         /**
          * Container to which the slider will be added
          * @default undefined
+         * @optional true
          */
-        container: GUI.Container;
+        container?: GUI.Container;
         /**
          * Name of the button
          * @default sliderName
@@ -514,8 +517,9 @@ export namespace BabylonGui {
         /**
          * Container to which the slider will be added
          * @default undefined
+         * @optional true
          */
-        container: GUI.Container;
+        container?: GUI.Container;
         /**
          * Name of the button
          * @default sliderName
