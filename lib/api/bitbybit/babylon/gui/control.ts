@@ -30,8 +30,6 @@ export class BabylonGuiControl {
         return inputs.control;
     }
 
-
-
     /**
      * Change the alignment for the control
      * @param inputs the control and the alignment values
@@ -39,7 +37,7 @@ export class BabylonGuiControl {
      * @group positioning
      * @shortname change alignment
      */
-    changeControlAlignment(inputs: Inputs.BabylonGui.AlignmentDto): GUI.Control {
+    changeControlAlignment(inputs: Inputs.BabylonGui.AlignmentDto<GUI.Control>): GUI.Control {
         switch (inputs.horizontalAlignment) {
             case "left":
                 inputs.control.horizontalAlignment = GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
@@ -66,6 +64,25 @@ export class BabylonGuiControl {
     }
 
     /**
+     * Clone control
+     * @param inputs control to clone
+     * @returns cloned control
+     * @group create
+     * @shortname clone control
+     * @disposableOutput true
+     */
+    cloneControl(inputs: Inputs.BabylonGui.CloneControlDto): GUI.Control {
+        const clonedControl = inputs.control.clone(inputs.host);
+        if (inputs.container) {
+            inputs.container.addControl(clonedControl);
+        }
+        if (inputs.name) {
+            clonedControl.name = inputs.name;
+        }
+        return clonedControl;
+    }
+
+    /**
     * Creates the selector of an observable for a control
     * @param inputs observable name
     * @group create
@@ -73,6 +90,17 @@ export class BabylonGuiControl {
     */
     createControlObservableSelector(inputs: Inputs.BabylonGui.ControlObservableSelectorDto): Inputs.BabylonGui.controlObservableSelectorEnum {
         return inputs.selector;
+    }
+
+    /**
+     * Get control by name
+     * @param inputs container and control name
+     * @returns control with the name
+     * @group get
+     * @shortname get control by name
+     */
+    getControlByName(inputs: Inputs.BabylonGui.GetControlByNameDto): GUI.Control {
+        return inputs.container.children.find(c => c.name === inputs.name);
     }
 
 }

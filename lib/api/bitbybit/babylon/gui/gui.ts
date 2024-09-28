@@ -6,6 +6,7 @@ import { BabylonGuiContainer } from "./container";
 import { BabylonGuiButton } from "./button";
 import { BabylonGuiControl } from "./control";
 import { BabylonGuiSlider } from "./slider";
+import { BabylonGuiTextBlock } from "./text-block";
 
 export class BabylonGui {
     advancedDynamicTexture: BabylonGuiAdvancedDynamicTexture;
@@ -14,6 +15,7 @@ export class BabylonGui {
     stackPanel: BabylonGuiStackPanel;
     button: BabylonGuiButton;
     slider: BabylonGuiSlider;
+    textBlock: BabylonGuiTextBlock;
 
     constructor(private readonly context: Context) {
         this.advancedDynamicTexture = new BabylonGuiAdvancedDynamicTexture(context);
@@ -22,6 +24,7 @@ export class BabylonGui {
         this.stackPanel = new BabylonGuiStackPanel(context);
         this.button = new BabylonGuiButton(context);
         this.slider = new BabylonGuiSlider(context);
+        this.textBlock = new BabylonGuiTextBlock(context);
     }
 
 }

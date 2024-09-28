@@ -17,9 +17,17 @@ export namespace BabylonGui {
     }
 
     export enum sliderObservableSelectorEnum {
+        /**
+         * Raised when the value has changed
+         */
         onValueChangedObservable = "onValueChangedObservable"
     }
-
+    export enum textBlockObservableSelectorEnum {
+        /**
+         * Raised when the text has changed
+         */
+        onTextChangedObservable = "onTextChangedObservable"
+    }
     export enum controlObservableSelectorEnum {
         /**
          * Observable that fires whenever the accessibility event of the control has changed
@@ -176,6 +184,16 @@ export namespace BabylonGui {
          */
         selector: controlObservableSelectorEnum;
     }
+    export class TextBlockObservableSelectorDto {
+        constructor(selector: textBlockObservableSelectorEnum) {
+            this.selector = selector;
+        }
+        /**
+         * Selector for the observable
+         * @default onTextChangedObservable
+         */
+        selector: textBlockObservableSelectorEnum;
+    }
     export class AddControlToContainerDto {
         constructor(container?: GUI.StackPanel, control?: GUI.Control) {
             if (container !== undefined) { this.container = container; }
@@ -191,6 +209,22 @@ export namespace BabylonGui {
          * @default undefined
          */
         control: GUI.Control;
+    }
+    export class GetControlByNameDto {
+        constructor(container?: GUI.Container, name?: string) {
+            if (container !== undefined) { this.container = container; }
+            if (name !== undefined) { this.name = name; }
+        }
+        /**
+         * Container to get control from
+         * @default undefined
+         */
+        container: GUI.Container;
+        /**
+         * Name of the control
+         * @default controlName
+         */
+        name = "controlName";
     }
 
     export class FixControlOrderInContainerDto {
@@ -361,6 +395,129 @@ export namespace BabylonGui {
          */
         displayThumb = true;
     }
+    export class CreateTextBlockDto {
+        constructor(container?: GUI.Container, name?: string, text?: string, color?: string, width?: number | string, height?: number | string) {
+            if (container !== undefined) { this.container = container; }
+            if (name !== undefined) { this.name = name; }
+            if (text !== undefined) { this.text = text; }
+            if (color !== undefined) { this.color = color; }
+            if (width !== undefined) { this.width = width; }
+            if (height !== undefined) { this.height = height; }
+        }
+        /**
+         * Container to which the slider will be added
+         * @default undefined
+         */
+        container: GUI.Container;
+        /**
+         * Name of the button
+         * @default sliderName
+         */
+        name = "sliderName";
+        /**
+        * Text of the block
+        * @default Hello World!
+        */
+        text = "Hello World!";
+        /**
+         * Color of the button
+         * @default #f0cebb
+         */
+        color = "#f0cebb";
+        /**
+         * Width of the button
+         * @default undefined
+         * @optional true
+         */
+        width?: number | string;
+        /**
+         * Height of the button
+         * @default undefined
+         * @optional true
+         */
+        height?: number | string;
+        /**
+         * Font size of the text block
+         * @default 24
+         */
+        fontSize = 24;
+    }
+
+    export class SetTextBlockTextDto {
+        constructor(textBlock?: GUI.TextBlock, text?: string) {
+            if (textBlock !== undefined) { this.textBlock = textBlock; }
+            if (text !== undefined) { this.text = text; }
+        }
+        /**
+         * Text block to update
+         * @default undefined
+         */
+        textBlock: GUI.TextBlock;
+        /**
+         * Text of the block
+         * @default undefined
+         */
+        text: string;
+    }
+
+    export class SetTextBlockResizeToFitDto {
+        constructor(textBlock?: GUI.TextBlock, resizeToFit?: boolean) {
+            if (textBlock !== undefined) { this.textBlock = textBlock; }
+            if (resizeToFit !== undefined) { this.resizeToFit = resizeToFit; }
+        }
+        /**
+         * Text block to update
+         * @default undefined
+         */
+        textBlock: GUI.TextBlock;
+        /**
+         * Resize to fit
+         * @default false
+         */
+        resizeToFit = false;
+    }
+    export class SetTextBlockTextWrappingDto {
+        constructor(textBlock?: GUI.TextBlock, textWrapping?: boolean) {
+            if (textBlock !== undefined) { this.textBlock = textBlock; }
+            if (textWrapping !== undefined) { this.textWrapping = textWrapping; }
+        }
+        /**
+         * Text block to update
+         * @default undefined
+         */
+        textBlock: GUI.TextBlock;
+        /**
+         * Text wrapping
+         * @default undefined
+         */
+        textWrapping: boolean | GUI.TextWrapping;
+    }
+    export class SetTextBlockLineSpacingDto {
+        constructor(textBlock?: GUI.TextBlock, lineSpacing?: string | number) {
+            if (textBlock !== undefined) { this.textBlock = textBlock; }
+            if (lineSpacing !== undefined) { this.lineSpacing = lineSpacing; }
+        }
+        /**
+         * Text block to update
+         * @default undefined
+         */
+        textBlock: GUI.TextBlock;
+        /**
+         * Line spacing of the text
+         * @default undefined
+         */
+        lineSpacing: string | number;
+    }
+    export class TextBlockDto {
+        constructor(textBlock?: GUI.TextBlock) {
+            if (textBlock !== undefined) { this.textBlock = textBlock; }
+        }
+        /**
+         * Text block to update
+         * @default undefined
+         */
+        textBlock: GUI.TextBlock;
+    }
 
     export class SliderThumbDto {
         constructor(slider?: GUI.Slider, isThumbCircle?: boolean, thumbColor?: string, thumbWidth?: string | number, isThumbClamped?: boolean, displayThumb?: boolean) {
@@ -442,9 +599,38 @@ export namespace BabylonGui {
          */
         paddingBottom: number | string;
     }
-
-    export class AlignmentDto {
-        constructor(control?: GUI.Control, horizontalAlignment?: horizontalAlignmentEnum, verticalAlignment?: verticalAlignmentEnum) {
+    export class CloneControlDto {
+        constructor(control?: GUI.Control, container?: GUI.Container, name?: string, host?: GUI.AdvancedDynamicTexture) {
+            if (control !== undefined) { this.control = control; }
+            if (container !== undefined) { this.container = container; }
+            if (name !== undefined) { this.name = name; }
+            if (host !== undefined) { this.host = host; }
+        }
+        /**
+         * Control to clone
+         * @default undefined
+         */
+        control: GUI.Control;
+        /**
+         * Use container to which the cloned control will be added
+         * @default undefined
+         * @optional true
+         */
+        container?: GUI.Container;
+        /**
+         * Name of the cloned control
+         * @default clonedControl
+         */
+        name = "clonedControl";
+        /**
+         * Host of the cloned control
+         * @default undefined
+         * @optional true
+         */
+        host?: GUI.AdvancedDynamicTexture;
+    }
+    export class AlignmentDto<T> {
+        constructor(control?: T, horizontalAlignment?: horizontalAlignmentEnum, verticalAlignment?: verticalAlignmentEnum) {
             if (control !== undefined) { this.control = control; }
             if (horizontalAlignment !== undefined) { this.horizontalAlignment = horizontalAlignment; }
             if (verticalAlignment !== undefined) { this.verticalAlignment = verticalAlignment; }
@@ -453,7 +639,7 @@ export namespace BabylonGui {
          * Control to change the padding
          * @default undefined
          */
-        control: GUI.Control;
+        control: T;
         /**
          * Alignment horizontal
          * @default center
@@ -464,5 +650,31 @@ export namespace BabylonGui {
          * @default center
          */
         verticalAlignment: verticalAlignmentEnum;
+    }
+
+    export class SetTextBlockTextOutlineDto {
+        constructor(textBlock?: GUI.TextBlock, outlineWidth?: number, outlineColor?: string) {
+            if (textBlock !== undefined) { this.textBlock = textBlock; }
+            if (outlineWidth !== undefined) { this.outlineWidth = outlineWidth; }
+            if (outlineColor !== undefined) { this.outlineColor = outlineColor; }
+        }
+        /**
+         * Control to change the padding
+         * @default undefined
+         */
+        textBlock: GUI.TextBlock;
+        /**
+         * Alignment horizontal
+         * @default 0
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.1
+         */
+        outlineWidth: number;
+        /**
+         * Outline color
+         * @default white
+         */
+        outlineColor: string;
     }
 }

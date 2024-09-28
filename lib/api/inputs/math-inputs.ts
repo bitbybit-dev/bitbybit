@@ -34,20 +34,6 @@ export namespace Math {
         radToDeg = "radToDeg",
         degToRad = "degToRad",
     }
-
-    export class NumberDto {
-        constructor(number?: number) {
-            if (number !== undefined) { this.number = number; }
-        }
-        /**
-         * First number
-         * @default 0
-         * @minimum -Infinity
-         * @maximum Infinity
-         * @step 0.1
-         */
-        number = 0;
-    }
     export class ModulusDto {
         constructor(number?: number, modulus?: number) {
             if (number !== undefined) { this.number = number; }
@@ -70,7 +56,20 @@ export namespace Math {
          */
         modulus = 2;
     }
-    export class RoundToDecimalsDto{
+    export class NumberDto {
+        constructor(number?: number) {
+            if (number !== undefined) { this.number = number; }
+        }
+        /**
+         * Number
+         * @default 1
+         * @minimum -Infinity
+         * @maximum Infinity
+         * @step 0.1
+         */
+        number = 1;
+    }
+    export class RoundToDecimalsDto {
         constructor(number?: number, decimalPlaces?: number) {
             if (number !== undefined) { this.number = number; }
             if (decimalPlaces !== undefined) { this.decimalPlaces = decimalPlaces; }
@@ -119,6 +118,28 @@ export namespace Math {
          * @default add
          */
         operation: mathTwoNrOperatorEnum;
+    }
+    export class TwoNumbersDto {
+        constructor(first?: number, second?: number) {
+            if (first !== undefined) { this.first = first; }
+            if (second !== undefined) { this.second = second; }
+        }
+        /**
+         * First number
+         * @default 1
+         * @minimum -Infinity
+         * @maximum Infinity
+         * @step 0.1
+         */
+        first = 1;
+        /**
+         * Second number
+         * @default 2
+         * @minimum -Infinity
+         * @maximum Infinity
+         * @step 0.1
+         */
+        second = 2;
     }
     export class ActionOnOneNumberDto {
         constructor(number?: number, operation?: mathOneNrOperatorEnum) {
@@ -241,5 +262,28 @@ export namespace Math {
          * @step 1
          */
         count = 10;
+    }
+
+    export class ToFixedDto {
+        constructor(number?: number, decimalPlaces?: number) {
+            if (number !== undefined) { this.number = number; }
+            if (decimalPlaces !== undefined) { this.decimalPlaces = decimalPlaces; }
+        }
+        /**
+         * Number to round
+         * @default undefined
+         * @minimum -Infinity
+         * @maximum Infinity
+         * @step 0.1
+         */
+        number: number;
+        /**
+         * Number of decimal places
+         * @default 2
+         * @minimum -Infinity
+         * @maximum Infinity
+         * @step 1
+         */
+        decimalPlaces = 2;
     }
 }

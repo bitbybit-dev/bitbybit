@@ -215,4 +215,293 @@ export class MathBitByBit {
     pi(): number {
         return Math.PI;
     }
+
+    /**
+     * Rounds the number to decimal places
+     * @param inputs a number to be rounded to decimal places
+     * @returns number
+     * @group operations
+     * @shortname to fixed
+     * @drawable false
+     */
+    toFixed(inputs: Inputs.Math.ToFixedDto): string {
+        return inputs.number.toFixed(inputs.decimalPlaces);
+    }
+
+    /**
+     * Adds two numbers
+     * @param inputs two numbers
+     * @returns number
+     * @group basics
+     * @shortname add
+     * @drawable false
+     */
+    add(inputs: Inputs.Math.TwoNumbersDto): number {
+        return inputs.first + inputs.second;
+    }
+
+    /**
+     * Subtracts two numbers
+     * @param inputs two numbers
+     * @returns number
+     * @group basics
+     * @shortname subtract
+     * @drawable false
+     */
+    subtract(inputs: Inputs.Math.TwoNumbersDto): number {
+        return inputs.first - inputs.second;
+    }
+
+    /**
+     * Multiplies two numbers
+     * @param inputs two numbers
+     * @returns number
+     * @group basics
+     * @shortname multiply
+     * @drawable false
+     */
+    multiply(inputs: Inputs.Math.TwoNumbersDto): number {
+        return inputs.first * inputs.second;
+    }
+
+    /**
+     * Divides two numbers
+     * @param inputs two numbers
+     * @returns number
+     * @group basics
+     * @shortname divide
+     * @drawable false
+     */
+    divide(inputs: Inputs.Math.TwoNumbersDto): number {
+        return inputs.first / inputs.second;
+    }
+
+    /**
+     * Powers a number
+     * @param inputs two numbers
+     * @returns number
+     * @group basics
+     * @shortname power
+     * @drawable false
+     */
+    power(inputs: Inputs.Math.TwoNumbersDto): number {
+        return Math.pow(inputs.first, inputs.second);
+    }
+
+    /**
+     * Gets the square root of a number
+     * @param inputs a number
+     * @returns number
+     * @group basics
+     * @shortname sqrt
+     * @drawable false
+     */
+    sqrt(inputs: Inputs.Math.NumberDto): number {
+        return Math.sqrt(inputs.number);
+    }
+
+    /**
+     * Gets the absolute value of a number
+     * @param inputs a number
+     * @returns number
+     * @group basics
+     * @shortname abs
+     * @drawable false
+     */
+    abs(inputs: Inputs.Math.NumberDto): number {
+        return Math.abs(inputs.number);
+    }
+
+    /**
+     * Rounds a number
+     * @param inputs a number
+     * @returns number
+     * @group basics
+     * @shortname round
+     * @drawable false
+     */
+    round(inputs: Inputs.Math.NumberDto): number {
+        return Math.round(inputs.number);
+    }
+
+    /**
+     * Floors a number
+     * @param inputs a number
+     * @returns number
+     * @group basics
+     * @shortname floor
+     * @drawable false
+     */
+    floor(inputs: Inputs.Math.NumberDto): number {
+        return Math.floor(inputs.number);
+    }
+
+    /**
+     * Ceils a number
+     * @param inputs a number
+     * @returns number
+     * @group basics
+     * @shortname ceil
+     * @drawable false
+     */
+    ceil(inputs: Inputs.Math.NumberDto): number {
+        return Math.ceil(inputs.number);
+    }
+
+    /**
+     * Negates a number
+     * @param inputs a number
+     * @returns number
+     * @group basics
+     * @shortname negate
+     * @drawable false
+     */
+    negate(inputs: Inputs.Math.NumberDto): number {
+        return -inputs.number;
+    }
+
+    /**
+     * Gets the natural logarithm of a number
+     * @param inputs a number
+     * @returns number
+     * @group basics
+     * @shortname ln
+     * @drawable false
+     */
+    ln(inputs: Inputs.Math.NumberDto): number {
+        return Math.log(inputs.number);
+    }
+
+    /**
+     * Gets the base 10 logarithm of a number
+     * @param inputs a number
+     * @returns number
+     * @group basics
+     * @shortname log10
+     * @drawable false
+     */
+    log10(inputs: Inputs.Math.NumberDto): number {
+        return Math.log10(inputs.number);
+    }
+
+    /**
+     * Raises 10 to the power of a number
+     * @param inputs a number
+     * @returns number
+     * @group basics
+     * @shortname ten pow
+     * @drawable false
+     */
+    tenPow(inputs: Inputs.Math.NumberDto): number {
+        return Math.pow(10, inputs.number);
+    }
+
+    /**
+     * Gets the sine of a number
+     * @param inputs a number
+     * @returns number
+     * @group basics
+     * @shortname sin
+     * @drawable false
+     */
+    sin(inputs: Inputs.Math.NumberDto): number {
+        return Math.sin(inputs.number);
+    }
+
+    /**
+     * Gets the cosine of a number
+     * @param inputs a number
+     * @returns number
+     * @group basics
+     * @shortname cos
+     * @drawable false
+     */
+    cos(inputs: Inputs.Math.NumberDto): number {
+        return Math.cos(inputs.number);
+    }
+
+    /**
+     * Gets the tangent of a number
+     * @param inputs a number
+     * @returns number
+     * @group basics
+     * @shortname tan
+     * @drawable false
+     */
+    tan(inputs: Inputs.Math.NumberDto): number {
+        return Math.tan(inputs.number);
+    }
+
+    /**
+     * Gets the arcsine of a number
+     * @param inputs a number
+     * @returns number
+     * @group basics
+     * @shortname asin
+     * @drawable false
+     */
+    asin(inputs: Inputs.Math.NumberDto): number {
+        return Math.asin(inputs.number);
+    }
+
+    /**
+     * Gets the arccosine of a number
+     * @param inputs a number
+     * @returns number
+     * @group basics
+     * @shortname acos
+     * @drawable false
+     */
+    acos(inputs: Inputs.Math.NumberDto): number {
+        return Math.acos(inputs.number);
+    }
+
+    /**
+     * Gets the arctangent of a number
+     * @param inputs a number
+     * @returns number
+     * @group basics
+     * @shortname atan
+     * @drawable false
+     */
+    atan(inputs: Inputs.Math.NumberDto): number {
+        return Math.atan(inputs.number);
+    }
+
+    /**
+     * Gets the natural exponent of a number
+     * @param inputs a number
+     * @returns number
+     * @group basics
+     * @shortname exp
+     * @drawable false
+     */
+    exp(inputs: Inputs.Math.NumberDto): number {
+        return Math.exp(inputs.number);
+    }
+
+    /**
+     * Converts degrees to radians
+     * @param inputs a number in degrees
+     * @returns number
+     * @group basics
+     * @shortname deg to rad
+     * @drawable false
+     */
+    degToRad(inputs: Inputs.Math.NumberDto): number {
+        return inputs.number * Math.PI / 180;
+    }
+
+    /**
+     * Converts radians to degrees
+     * @param inputs a number in radians
+     * @returns number
+     * @group basics
+     * @shortname rad to deg
+     * @drawable false
+     */
+    radToDeg(inputs: Inputs.Math.NumberDto): number {
+        return inputs.number * 180 / Math.PI;
+    }
+
 }

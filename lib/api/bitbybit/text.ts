@@ -73,10 +73,11 @@ export class TextBitByBit {
     * @param inputs list of items
     * @returns texts
     * @group transform
-    * @shortname to string each
+    * @shortname to strings
     * @drawable false
     */
     toStringEach<T>(inputs: Inputs.Text.ToStringEachDto<T>): string[] {
         return inputs.list.map(i => i.toString());
     }
+
 }
