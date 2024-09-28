@@ -165,6 +165,115 @@ export namespace BabylonGui {
          */
         background = "#00000055";
     }
+    export class SetStackPanelIsVerticalDto {
+        constructor(stackPanel?: GUI.StackPanel, isVertical?: boolean) {
+            if (stackPanel !== undefined) { this.stackPanel = stackPanel; }
+            if (isVertical !== undefined) { this.isVertical = isVertical; }
+        }
+        /**
+         * Stack panel to update
+         * @default undefined
+         */
+        stackPanel: GUI.StackPanel;
+        /**
+         * Is vertical
+         * @default true
+         */
+        isVertical = true;
+    }
+    export class SetStackPanelSpacingDto {
+        constructor(stackPanel?: GUI.StackPanel, spacing?: number) {
+            if (stackPanel !== undefined) { this.stackPanel = stackPanel; }
+            if (spacing !== undefined) { this.spacing = spacing; }
+        }
+        /**
+         * Stack panel to update
+         * @default undefined
+         */
+        stackPanel: GUI.StackPanel;
+        /**
+         * Spacing between each child in pixels
+         * @default 0
+         */
+        spacing = 0;
+    }
+    export class SetStackPanelWidthDto {
+        constructor(stackPanel?: GUI.StackPanel, width?: number | string) {
+            if (stackPanel !== undefined) { this.stackPanel = stackPanel; }
+            if (width !== undefined) { this.width = width; }
+        }
+        /**
+         * Stack panel to update
+         * @default undefined
+         */
+        stackPanel: GUI.StackPanel;
+        /**
+         * Width of the stack panel
+         * @default undefined
+         * @optional true
+         */
+        width: number | string;
+    }
+    export class SetStackPanelHeightDto {
+        constructor(stackPanel?: GUI.StackPanel, height?: number | string) {
+            if (stackPanel !== undefined) { this.stackPanel = stackPanel; }
+            if (height !== undefined) { this.height = height; }
+        }
+        /**
+         * Stack panel to update
+         * @default undefined
+         */
+        stackPanel: GUI.StackPanel;
+        /**
+         * Height of the stack panel.
+         * @default undefined
+         * @optional true
+         */
+        height: number | string;
+    }
+
+    export class SetStackPanelColorDto {
+        constructor(stackPanel?: GUI.StackPanel, color?: string) {
+            if (stackPanel !== undefined) { this.stackPanel = stackPanel; }
+            if (color !== undefined) { this.color = color; }
+        }
+        /**
+         * Stack panel to update
+         * @default undefined
+         */
+        stackPanel: GUI.StackPanel;
+        /**
+         * Color of the stack panel
+         * @default #00000000
+         */
+        color = "#00000000";
+    }
+    export class SetStackPanelBackgroundDto {
+        constructor(stackPanel?: GUI.StackPanel, background?: string) {
+            if (stackPanel !== undefined) { this.stackPanel = stackPanel; }
+            if (background !== undefined) { this.background = background; }
+        }
+        /**
+         * Stack panel to update
+         * @default undefined
+         */
+        stackPanel: GUI.StackPanel;
+        /**
+         * Background of the stack panel
+         * @default #00000055
+         */
+        background = "#00000055";
+    }
+    export class StackPanelDto {
+        constructor(stackPanel?: GUI.StackPanel) {
+            if (stackPanel !== undefined) { this.stackPanel = stackPanel; }
+        }
+        /**
+         * Stack panel to update
+         * @default undefined
+         */
+        stackPanel: GUI.StackPanel;
+    }
     export class SliderObservableSelectorDto {
         constructor(selector: sliderObservableSelectorEnum) {
             this.selector = selector;
