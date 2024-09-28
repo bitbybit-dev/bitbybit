@@ -304,7 +304,114 @@ export namespace BabylonGui {
          */
         fontSize = 24;
     }
-
+    export class SetButtonColorDto {
+        constructor(button?: GUI.Button, color?: string) {
+            if (button !== undefined) { this.button = button; }
+            if (color !== undefined) { this.color = color; }
+        }
+        /**
+         * Button to update
+         * @default undefined
+         */
+        button: GUI.Button;
+        /**
+         * Color of the button
+         * @default black
+         */
+        color = "black";
+    }
+    export class SetButtonBackgroundDto {
+        constructor(button?: GUI.Button, background?: string) {
+            if (button !== undefined) { this.button = button; }
+            if (background !== undefined) { this.background = background; }
+        }
+        /**
+         * Button to update
+         * @default undefined
+         */
+        button: GUI.Button;
+        /**
+         * Background of the button
+         * @default white
+         */
+        background = "white";
+    }
+    export class SetButtonFontSizeDto {
+        constructor(button?: GUI.Button, fontSize?: number) {
+            if (button !== undefined) { this.button = button; }
+            if (fontSize !== undefined) { this.fontSize = fontSize; }
+        }
+        /**
+         * Button to update
+         * @default undefined
+         */
+        button: GUI.Button;
+        /**
+         * Font size of the button
+         * @default 24
+         */
+        fontSize = 24;
+    }
+    export class SetButtonHeightDto {
+        constructor(button?: GUI.Button, height?: number | string) {
+            if (button !== undefined) { this.button = button; }
+            if (height !== undefined) { this.height = height; }
+        }
+        /**
+         * Button to update
+         * @default undefined
+         */
+        button: GUI.Button;
+        /**
+         * Height of the button
+         * @default undefined
+         * @optional true
+         */
+        height: number | string;
+    }
+    export class SetButtonWidthDto {
+        constructor(button?: GUI.Button, width?: number | string) {
+            if (button !== undefined) { this.button = button; }
+            if (width !== undefined) { this.width = width; }
+        }
+        /**
+         * Button to update
+         * @default undefined
+         */
+        button: GUI.Button;
+        /**
+         * Width of the button
+         * @default undefined
+         * @optional true
+         */
+        width: number | string;
+    }
+    export class SetButtonTextDto {
+        constructor(button?: GUI.Button, text?: string) {
+            if (button !== undefined) { this.button = button; }
+            if (text !== undefined) { this.text = text; }
+        }
+        /**
+         * Button to update
+         * @default undefined
+         */
+        button: GUI.Button;
+        /**
+         * Text of the button
+         * @default Click me!
+         */
+        text = "Click me!";
+    }
+    export class ButtonDto {
+        constructor(button?: GUI.Button) {
+            if (button !== undefined) { this.button = button; }
+        }
+        /**
+         * Button to update
+         * @default undefined
+         */
+        button: GUI.Button;
+    }
     export class CreateSliderDto {
         constructor(container?: GUI.Container, name?: string, minimum?: number, maximum?: number, value?: number, step?: number, isVertical?: boolean, color?: string, background?: string, width?: number | string, height?: number | string, displayThumb?: boolean) {
             if (container !== undefined) { this.container = container; }
