@@ -560,7 +560,119 @@ export namespace BabylonGui {
          */
         displayThumb = true;
     }
+    export class SliderDto {
+        constructor(slider?: GUI.Slider) {
+            if (slider !== undefined) { this.slider = slider; }
+        }
+        /**
+         * Slider for which the thumb needs to be updated
+         * @default undefined
+         */
+        slider: GUI.Slider;
+    }
+    export class SliderBorderColorDto {
+        constructor(slider?: GUI.Slider, borderColor?: string) {
+            if (slider !== undefined) { this.slider = slider; }
+            if (borderColor !== undefined) { this.borderColor = borderColor; }
+        }
+        /**
+         * Slider for which the thumb needs to be updated
+         * @default undefined
+         */
+        slider: GUI.Slider;
+        /**
+         * Border color of the slider
+         * @default white
+         */
+        borderColor = "white";
+    }
+    export class SliderBackgroundColorDto {
+        constructor(slider?: GUI.Slider, backgroundColor?: string) {
+            if (slider !== undefined) { this.slider = slider; }
+            if (backgroundColor !== undefined) { this.backgroundColor = backgroundColor; }
+        }
+        /**
+         * Slider for which the thumb needs to be updated
+         * @default undefined
+         */
+        slider: GUI.Slider;
+        /**
+         * Background color of the slider
+         * @default black
+         */
+        backgroundColor = "black";
+    }
 
+    export class SliderColorDto {
+        constructor(slider?: GUI.Slider, color?: string) {
+            if (slider !== undefined) { this.slider = slider; }
+            if (color !== undefined) { this.color = color; }
+        }
+        /**
+         * Slider for which the thumb needs to be updated
+         * @default undefined
+         */
+        slider: GUI.Slider;
+        /**
+         * Background color of the slider
+         * @default #f0cebb
+         */
+        color = "#f0cebb";
+    }
+
+    export class SliderHeightDto {
+        constructor(slider?: GUI.Slider, height?: number | string) {
+            if (slider !== undefined) { this.slider = slider; }
+            if (height !== undefined) { this.height = height; }
+        }
+        /**
+         * Slider for which the thumb needs to be updated
+         * @default undefined
+         */
+        slider: GUI.Slider;
+        /**
+         * Height of the slider
+         * @default undefined
+         * @optional true
+         */
+        height: number | string;
+    }
+    export class SliderWidthDto {
+        constructor(slider?: GUI.Slider, width?: number | string) {
+            if (slider !== undefined) { this.slider = slider; }
+            if (width !== undefined) { this.width = width; }
+        }
+        /**
+         * Slider for which the thumb needs to be updated
+         * @default undefined
+         */
+        slider: GUI.Slider;
+        /**
+         * Width of the slider
+         * @default undefined
+         * @optional true
+         */
+        width: number | string;
+    }
+    export class SetSliderValueDto {
+        constructor(slider?: GUI.Slider, value?: number) {
+            if (slider !== undefined) { this.slider = slider; }
+            if (value !== undefined) { this.value = value; }
+        }
+        /**
+         * Slider for which the thumb needs to be updated
+         * @default undefined
+         */
+        slider: GUI.Slider;
+        /**
+         * Value of the slider
+         * @default 5
+         * @minimum -Infinity
+         * @maximum Infinity
+         * @step 0.1
+         */
+        value: number;
+    }
     export class PaddingLeftRightTopBottomDto {
         constructor(control?: GUI.Control, paddingLeft?: number | string, paddingRight?: number | string, paddingTop?: number | string, paddingBottom?: number | string) {
             if (control !== undefined) { this.control = control; }
