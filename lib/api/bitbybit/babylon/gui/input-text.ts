@@ -39,42 +39,6 @@ export class BabylonGuiInputText {
     }
 
     /**
-     * Sets the input text height
-     * @param inputs input text and height
-     * @returns input text
-     * @group set
-     * @shortname set input text height
-     */
-    setHeight(inputs: Inputs.BabylonGui.SetInputTextHeightDto): GUI.InputText {
-        inputs.inputText.height = inputs.height;
-        return inputs.inputText;
-    }
-
-    /**
-     * Sets the input text width
-     * @param inputs input text and width
-     * @returns input text
-     * @group set
-     * @shortname set input text width
-     */
-    setWidth(inputs: Inputs.BabylonGui.SetInputTextWidthDto): GUI.InputText {
-        inputs.inputText.width = inputs.width;
-        return inputs.inputText;
-    }
-
-    /**
-     * Sets the input text color
-     * @param inputs input text and color
-     * @returns input text
-     * @group set
-     * @shortname set input text color
-     */
-    setColor(inputs: Inputs.BabylonGui.SetInputTextColorDto): GUI.InputText {
-        inputs.inputText.color = inputs.color;
-        return inputs.inputText;
-    }
-
-    /**
      * Sets the input text background
      * @param inputs input text and background
      * @returns input text
@@ -108,39 +72,6 @@ export class BabylonGuiInputText {
     setPlaceholder(inputs: Inputs.BabylonGui.SetInputTextPlaceholderDto): GUI.InputText {
         inputs.inputText.placeholderText = inputs.placeholder;
         return inputs.inputText;
-    }
-
-    /**
-     * Gets the input text height
-     * @param inputs input text
-     * @returns input text height
-     * @group get
-     * @shortname get input text height
-     */
-    getHeight(inputs: Inputs.BabylonGui.InputTextDto): string | number {
-        return inputs.inputText.height;
-    }
-
-    /**
-     * Gets the input text width
-     * @param inputs input text
-     * @returns input text width
-     * @group get
-     * @shortname get input text width
-     */
-    getWidth(inputs: Inputs.BabylonGui.InputTextDto): string | number {
-        return inputs.inputText.width;
-    }
-
-    /**
-     * Gets the input text color
-     * @param inputs input text
-     * @returns input text color
-     * @group get
-     * @shortname get input text color
-     */
-    getColor(inputs: Inputs.BabylonGui.InputTextDto): string {
-        return inputs.inputText.color;
     }
 
     /**

@@ -103,4 +103,89 @@ export class BabylonGuiControl {
         return inputs.container.children.find(c => c.name === inputs.name);
     }
 
+    /**
+     * Sets the control height
+     * @param inputs control and height
+     * @group set
+     * @shortname set control height
+     */
+    setHeight(inputs: Inputs.BabylonGui.SetControlHeightDto): GUI.Control {
+        inputs.control.height = inputs.height;
+        return inputs.control;
+    }
+
+    /**
+     * Sets the control width
+     * @param inputs control and width
+     * @group set
+     * @shortname set control width
+     */
+    setWidth(inputs: Inputs.BabylonGui.SetControlWidthDto): GUI.Control {
+        inputs.control.width = inputs.width;
+        return inputs.control;
+    }
+
+    /**
+     * Sets the control color
+     * @param inputs control and color
+     * @group set
+     * @shortname set control color
+     */
+    setColor(inputs: Inputs.BabylonGui.SetControlColorDto): GUI.Control {
+        inputs.control.color = inputs.color;
+        return inputs.control;
+    }
+
+    /**
+     * Set font size
+     * @param inputs control and font size
+     * @returns control with changed font size
+     * @group set
+     * @shortname set control font size
+     */
+    setFontSize(inputs: Inputs.BabylonGui.SetControlFontSizeDto): GUI.Control {
+        inputs.control.fontSize = inputs.fontSize;
+        return inputs.control;
+    }
+
+    /**
+     * Gets the height
+     * @param inputs control
+     * @group get
+     * @shortname get control height
+     */
+    getHeight(inputs: Inputs.BabylonGui.ControlDto): string | number {
+        return inputs.control.height;
+    }
+
+    /**
+     * Gets the width
+     * @param inputs control
+     * @group get
+     * @shortname get control width
+     */
+    getWidth(inputs: Inputs.BabylonGui.ControlDto): string | number {
+        return inputs.control.width;
+    }
+
+    /**
+     * Gets the color
+     * @param inputs control
+     * @group get
+     * @shortname get control color
+     */
+    getColor(inputs: Inputs.BabylonGui.ControlDto): string {
+        return inputs.control.color;
+    }
+
+    /**
+     * Get control font size
+     * @param inputs control
+     * @returns control font size
+     * @group get
+     * @shortname get control font size
+     */
+    getFontSize(inputs: Inputs.BabylonGui.ControlDto): string | number {
+        return inputs.control.fontSize;
+    }
 }

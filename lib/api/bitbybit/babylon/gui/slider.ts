@@ -101,42 +101,6 @@ export class BabylonGuiSlider {
     }
 
     /**
-     * Changes slider color
-     * @param inputs slider color
-     * @returns slider
-     * @group set
-     * @shortname set slider color
-     */
-    setColor(inputs: Inputs.BabylonGui.SliderColorDto): GUI.Slider {
-        inputs.slider.color = inputs.color;
-        return inputs.slider;
-    }
-
-    /**
-     * Changes slider height
-     * @param inputs slider height
-     * @returns slider
-     * @group set
-     * @shortname set slider height
-     */
-    setHeight(inputs: Inputs.BabylonGui.SliderHeightDto): GUI.Slider {
-        inputs.slider.height = inputs.height;
-        return inputs.slider;
-    }
-
-    /**
-     * Changes slider width
-     * @param inputs slider width
-     * @returns slider
-     * @group set
-     * @shortname set slider width
-     */
-    setWidth(inputs: Inputs.BabylonGui.SliderWidthDto): GUI.Slider {
-        inputs.slider.width = inputs.width;
-        return inputs.slider;
-    }
-
-    /**
      * Changes slider maximum value
      * @param inputs slider maximum value
      * @returns slider
@@ -215,39 +179,6 @@ export class BabylonGuiSlider {
      */
     getBackgroundColor(inputs: Inputs.BabylonGui.SliderDto): string {
         return inputs.slider.background;
-    }
-
-    /**
-     * Gets the slider color
-     * @param slider slider
-     * @returns slider color
-     * @group get
-     * @shortname get slider color
-     */
-    getColor(inputs: Inputs.BabylonGui.SliderDto): string {
-        return inputs.slider.color;
-    }
-
-    /**
-     * Gets the slider height
-     * @param slider slider
-     * @returns slider height
-     * @group get
-     * @shortname get slider height
-     */
-    getHeight(inputs: Inputs.BabylonGui.SliderDto): number | string {
-        return inputs.slider.height;
-    }
-
-    /**
-     * Gets the slider width
-     * @param slider slider
-     * @returns slider width
-     * @group get
-     * @shortname get slider width
-     */
-    getWidth(inputs: Inputs.BabylonGui.SliderDto): number | string {
-        return inputs.slider.width;
     }
 
     /**

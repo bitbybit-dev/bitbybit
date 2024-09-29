@@ -258,39 +258,6 @@ export namespace BabylonGui {
          */
         height: number | string;
     }
-
-    export class SetStackPanelColorDto {
-        constructor(stackPanel?: GUI.StackPanel, color?: string) {
-            if (stackPanel !== undefined) { this.stackPanel = stackPanel; }
-            if (color !== undefined) { this.color = color; }
-        }
-        /**
-         * Stack panel to update
-         * @default undefined
-         */
-        stackPanel: GUI.StackPanel;
-        /**
-         * Color of the stack panel
-         * @default #00000000
-         */
-        color = "#00000000";
-    }
-    export class SetStackPanelBackgroundDto {
-        constructor(stackPanel?: GUI.StackPanel, background?: string) {
-            if (stackPanel !== undefined) { this.stackPanel = stackPanel; }
-            if (background !== undefined) { this.background = background; }
-        }
-        /**
-         * Stack panel to update
-         * @default undefined
-         */
-        stackPanel: GUI.StackPanel;
-        /**
-         * Background of the stack panel
-         * @default #00000055
-         */
-        background = "#00000055";
-    }
     export class StackPanelDto {
         constructor(stackPanel?: GUI.StackPanel) {
             if (stackPanel !== undefined) { this.stackPanel = stackPanel; }
@@ -362,6 +329,16 @@ export namespace BabylonGui {
          * @default onTextChangedObservable
          */
         selector: textBlockObservableSelectorEnum;
+    }
+    export class ContainerDto {
+        constructor(container?: GUI.Container) {
+            if (container !== undefined) { this.container = container; }
+        }
+        /**
+         * Container to update
+         * @default undefined
+         */
+        container: GUI.Container;
     }
     export class AddControlToContainerDto {
         constructor(container?: GUI.StackPanel, control?: GUI.Control) {
@@ -474,88 +451,6 @@ export namespace BabylonGui {
          */
         fontSize = 24;
     }
-    export class SetButtonColorDto {
-        constructor(button?: GUI.Button, color?: string) {
-            if (button !== undefined) { this.button = button; }
-            if (color !== undefined) { this.color = color; }
-        }
-        /**
-         * Button to update
-         * @default undefined
-         */
-        button: GUI.Button;
-        /**
-         * Color of the button
-         * @default black
-         */
-        color = "black";
-    }
-    export class SetButtonBackgroundDto {
-        constructor(button?: GUI.Button, background?: string) {
-            if (button !== undefined) { this.button = button; }
-            if (background !== undefined) { this.background = background; }
-        }
-        /**
-         * Button to update
-         * @default undefined
-         */
-        button: GUI.Button;
-        /**
-         * Background of the button
-         * @default white
-         */
-        background = "white";
-    }
-    export class SetButtonFontSizeDto {
-        constructor(button?: GUI.Button, fontSize?: number) {
-            if (button !== undefined) { this.button = button; }
-            if (fontSize !== undefined) { this.fontSize = fontSize; }
-        }
-        /**
-         * Button to update
-         * @default undefined
-         */
-        button: GUI.Button;
-        /**
-         * Font size of the button
-         * @default 24
-         */
-        fontSize = 24;
-    }
-    export class SetButtonHeightDto {
-        constructor(button?: GUI.Button, height?: number | string) {
-            if (button !== undefined) { this.button = button; }
-            if (height !== undefined) { this.height = height; }
-        }
-        /**
-         * Button to update
-         * @default undefined
-         */
-        button: GUI.Button;
-        /**
-         * Height of the button
-         * @default undefined
-         * @optional true
-         */
-        height: number | string;
-    }
-    export class SetButtonWidthDto {
-        constructor(button?: GUI.Button, width?: number | string) {
-            if (button !== undefined) { this.button = button; }
-            if (width !== undefined) { this.width = width; }
-        }
-        /**
-         * Button to update
-         * @default undefined
-         */
-        button: GUI.Button;
-        /**
-         * Width of the button
-         * @default undefined
-         * @optional true
-         */
-        width: number | string;
-    }
     export class SetButtonTextDto {
         constructor(button?: GUI.Button, text?: string) {
             if (button !== undefined) { this.button = button; }
@@ -641,53 +536,86 @@ export namespace BabylonGui {
          */
         height?: number | string;
     }
-    export class SetCheckboxHeightDto {
-        constructor(checkbox?: GUI.Checkbox, height?: number | string) {
-            if (checkbox !== undefined) { this.checkbox = checkbox; }
+
+    export class SetControlFontSizeDto {
+        constructor(control?: GUI.Control, fontSize?: number) {
+            if (control !== undefined) { this.control = control; }
+            if (fontSize !== undefined) { this.fontSize = fontSize; }
+        }
+        /**
+         * Control to update
+         * @default undefined
+         */
+        control: GUI.Control;
+        /**
+         * Font size of the button
+         * @default 24
+         */
+        fontSize = 24;
+    }
+    export class SetControlHeightDto {
+        constructor(control?: GUI.Control, height?: number | string) {
+            if (control !== undefined) { this.control = control; }
             if (height !== undefined) { this.height = height; }
         }
         /**
-         * Checkbox to update
+         * Control to update
          * @default undefined
          */
-        checkbox: GUI.Checkbox;
+        control: GUI.Control;
         /**
          * Height of the checkbox
          * @default undefined
          */
         height: number | string;
     }
-    export class SetCheckboxWidthDto {
-        constructor(checkbox?: GUI.Checkbox, width?: number | string) {
-            if (checkbox !== undefined) { this.checkbox = checkbox; }
+    export class SetControlWidthDto {
+        constructor(control?: GUI.Control, width?: number | string) {
+            if (control !== undefined) { this.control = control; }
             if (width !== undefined) { this.width = width; }
         }
         /**
-         * Checkbox to update
+         * Control to update
          * @default undefined
          */
-        checkbox: GUI.Checkbox;
+        control: GUI.Control;
         /**
          * Width of the checkbox
          * @default undefined
          */
         width: number | string;
     }
-    export class SetCheckboxColorDto {
-        constructor(checkbox?: GUI.Checkbox, color?: string) {
-            if (checkbox !== undefined) { this.checkbox = checkbox; }
+    export class SetControlColorDto {
+        constructor(control?: GUI.Control, color?: string) {
+            if (control !== undefined) { this.control = control; }
             if (color !== undefined) { this.color = color; }
         }
         /**
-         * Checkbox to update
+         * Control to update
          * @default undefined
          */
-        checkbox: GUI.Checkbox;
+        control: GUI.Control;
         /**
          * Color of the checkbox
          * @default #f0cebb
          */
         color = "#f0cebb";
+    }
+    export class SetContainerBackgroundDto {
+        constructor(container?: GUI.Container, background?: string) {
+            if (container !== undefined) { this.container = container; }
+            if (background !== undefined) { this.background = background; }
+        }
+        /**
+         * Container to update
+         * @default undefined
+         */
+        container: GUI.Container;
+        /**
+         * Background of the checkbox
+         * @default black
+         */
+        background = "black";
     }
     export class SetCheckboxBackgroundDto {
         constructor(checkbox?: GUI.Checkbox, background?: string) {
@@ -734,6 +662,17 @@ export namespace BabylonGui {
          * @default undefined
          */
         checkbox: GUI.Checkbox;
+    }
+
+    export class ControlDto {
+        constructor(control?: GUI.Control) {
+            if (control !== undefined) { this.control = control; }
+        }
+        /**
+         * Control to update
+         * @default undefined
+         */
+        control: GUI.Control;
     }
 
     export class SetCheckboxIsCheckedDto {
@@ -805,54 +744,6 @@ export namespace BabylonGui {
          * @optional true
          */
         height?: number | string;
-    }
-    export class SetInputTextHeightDto {
-        constructor(inputText?: GUI.InputText, height?: number | string) {
-            if (inputText !== undefined) { this.inputText = inputText; }
-            if (height !== undefined) { this.height = height; }
-        }
-        /**
-         * Input text to update
-         * @default undefined
-         */
-        inputText: GUI.InputText;
-        /**
-         * Height of the input text
-         * @default undefined
-         */
-        height: number | string;
-    }
-    export class SetInputTextWidthDto {
-        constructor(inputText?: GUI.InputText, width?: number | string) {
-            if (inputText !== undefined) { this.inputText = inputText; }
-            if (width !== undefined) { this.width = width; }
-        }
-        /**
-         * Input text to update
-         * @default undefined
-         */
-        inputText: GUI.InputText;
-        /**
-         * Width of the input text
-         * @default undefined
-         */
-        width: number | string;
-    }
-    export class SetInputTextColorDto {
-        constructor(inputText?: GUI.InputText, color?: string) {
-            if (inputText !== undefined) { this.inputText = inputText; }
-            if (color !== undefined) { this.color = color; }
-        }
-        /**
-         * Input text to update
-         * @default undefined
-         */
-        inputText: GUI.InputText;
-        /**
-         * Color of the input text
-         * @default #f0cebb
-         */
-        color = "#f0cebb";
     }
     export class SetInputTextBackgroundDto {
         constructor(inputText?: GUI.InputText, background?: string) {
@@ -978,39 +869,6 @@ export namespace BabylonGui {
          */
         height?: number | string;
     }
-
-    export class SetRadioButtonHeightDto {
-        constructor(radioButton?: GUI.RadioButton, height?: number | string) {
-            if (radioButton !== undefined) { this.radioButton = radioButton; }
-            if (height !== undefined) { this.height = height; }
-        }
-        /**
-         * Radio button to update
-         * @default undefined
-         */
-        radioButton: GUI.RadioButton;
-        /**
-         * Height of the radio button
-         * @default undefined
-         */
-        height: number | string;
-    }
-    export class SetRadioButtonWidthDto {
-        constructor(radioButton?: GUI.RadioButton, width?: number | string) {
-            if (radioButton !== undefined) { this.radioButton = radioButton; }
-            if (width !== undefined) { this.width = width; }
-        }
-        /**
-         * Radio button to update
-         * @default undefined
-         */
-        radioButton: GUI.RadioButton;
-        /**
-         * Width of the radio button
-         * @default undefined
-         */
-        width: number | string;
-    }
     export class SetRadioButtonCheckSizeRatioDto {
         constructor(radioButton?: GUI.RadioButton, checkSizeRatio?: number) {
             if (radioButton !== undefined) { this.radioButton = radioButton; }
@@ -1045,22 +903,6 @@ export namespace BabylonGui {
          * @default
          */
         group: string;
-    }
-    export class SetRadioButtonColorDto {
-        constructor(radioButton?: GUI.RadioButton, color?: string) {
-            if (radioButton !== undefined) { this.radioButton = radioButton; }
-            if (color !== undefined) { this.color = color; }
-        }
-        /**
-         * Radio button to update
-         * @default undefined
-         */
-        radioButton: GUI.RadioButton;
-        /**
-         * Color of the radio button
-         * @default #f0cebb
-         */
-        color = "#f0cebb";
     }
     export class SetRadioButtonBackgroundDto {
         constructor(radioButton?: GUI.RadioButton, background?: string) {
@@ -1386,58 +1228,6 @@ export namespace BabylonGui {
          * @default black
          */
         backgroundColor = "black";
-    }
-
-    export class SliderColorDto {
-        constructor(slider?: GUI.Slider, color?: string) {
-            if (slider !== undefined) { this.slider = slider; }
-            if (color !== undefined) { this.color = color; }
-        }
-        /**
-         * Slider for which the thumb needs to be updated
-         * @default undefined
-         */
-        slider: GUI.Slider;
-        /**
-         * Background color of the slider
-         * @default #f0cebb
-         */
-        color = "#f0cebb";
-    }
-
-    export class SliderHeightDto {
-        constructor(slider?: GUI.Slider, height?: number | string) {
-            if (slider !== undefined) { this.slider = slider; }
-            if (height !== undefined) { this.height = height; }
-        }
-        /**
-         * Slider for which the thumb needs to be updated
-         * @default undefined
-         */
-        slider: GUI.Slider;
-        /**
-         * Height of the slider
-         * @default undefined
-         * @optional true
-         */
-        height: number | string;
-    }
-    export class SliderWidthDto {
-        constructor(slider?: GUI.Slider, width?: number | string) {
-            if (slider !== undefined) { this.slider = slider; }
-            if (width !== undefined) { this.width = width; }
-        }
-        /**
-         * Slider for which the thumb needs to be updated
-         * @default undefined
-         */
-        slider: GUI.Slider;
-        /**
-         * Width of the slider
-         * @default undefined
-         * @optional true
-         */
-        width: number | string;
     }
     export class SetSliderValueDto {
         constructor(slider?: GUI.Slider, value?: number) {

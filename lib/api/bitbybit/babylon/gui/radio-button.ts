@@ -41,28 +41,6 @@ export class BabylonGuiRadioButton {
     }
 
     /**
-     * Sets the radio button height
-     * @param inputs radio button and height
-     * @group set
-     * @shortname set radio button height
-     */
-    setHeight(inputs: Inputs.BabylonGui.SetRadioButtonHeightDto): GUI.RadioButton {
-        inputs.radioButton.height = inputs.height;
-        return inputs.radioButton;
-    }
-
-    /**
-     * Sets the radio button width
-     * @param inputs radio button and width
-     * @group set
-     * @shortname set radio button width
-     */
-    setWidth(inputs: Inputs.BabylonGui.SetRadioButtonWidthDto): GUI.RadioButton {
-        inputs.radioButton.width = inputs.width;
-        return inputs.radioButton;
-    }
-
-    /**
      * Sets the radio button check size ratio
      * @param inputs radio button and check size ratio
      * @group set
@@ -85,17 +63,6 @@ export class BabylonGuiRadioButton {
     }
 
     /**
-     * Sets the radio button color
-     * @param inputs radio button and color
-     * @group set
-     * @shortname set radio button color
-     */
-    setColor(inputs: Inputs.BabylonGui.SetRadioButtonColorDto): GUI.RadioButton {
-        inputs.radioButton.color = inputs.color;
-        return inputs.radioButton;
-    }
-
-    /**
      * Sets the radio button background
      * @param inputs radio button and background
      * @group set
@@ -104,26 +71,6 @@ export class BabylonGuiRadioButton {
     setBackground(inputs: Inputs.BabylonGui.SetRadioButtonBackgroundDto): GUI.RadioButton {
         inputs.radioButton.background = inputs.background;
         return inputs.radioButton;
-    }
-
-    /**
-     * Gets the radio button height
-     * @param inputs radio button
-     * @group get
-     * @shortname get radio button height
-     */
-    getHeight(inputs: Inputs.BabylonGui.RadioButtonDto): string | number {
-        return inputs.radioButton.height;
-    }
-
-    /**
-     * Gets the radio button width
-     * @param inputs radio button
-     * @group get
-     * @shortname get radio button width
-     */
-    getWidth(inputs: Inputs.BabylonGui.RadioButtonDto): string | number {
-        return inputs.radioButton.width;
     }
 
     /**
@@ -144,16 +91,6 @@ export class BabylonGuiRadioButton {
      */
     getGroup(inputs: Inputs.BabylonGui.RadioButtonDto): string {
         return inputs.radioButton.group;
-    }
-
-    /**
-     * Gets the radio button color
-     * @param inputs radio button
-     * @group get
-     * @shortname get radio button color
-     */
-    getColor(inputs: Inputs.BabylonGui.RadioButtonDto): string {
-        return inputs.radioButton.color;
     }
 
     /**

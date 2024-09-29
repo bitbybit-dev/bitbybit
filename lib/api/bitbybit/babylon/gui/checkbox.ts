@@ -40,39 +40,6 @@ export class BabylonGuiCheckbox {
     }
 
     /**
-     * Sets the checkbox height
-     * @param inputs checkbox and height
-     * @group set
-     * @shortname set checkbox height
-     */
-    setHeight(inputs: Inputs.BabylonGui.SetCheckboxHeightDto): GUI.Checkbox {
-        inputs.checkbox.height = inputs.height;
-        return inputs.checkbox;
-    }
-
-    /**
-     * Sets the checkbox width
-     * @param inputs checkbox and width
-     * @group set
-     * @shortname set checkbox width
-     */
-    setWidth(inputs: Inputs.BabylonGui.SetCheckboxWidthDto): GUI.Checkbox {
-        inputs.checkbox.width = inputs.width;
-        return inputs.checkbox;
-    }
-
-    /**
-     * Sets the checkbox color
-     * @param inputs checkbox and color
-     * @group set
-     * @shortname set checkbox color
-     */
-    setColor(inputs: Inputs.BabylonGui.SetCheckboxColorDto): GUI.Checkbox {
-        inputs.checkbox.color = inputs.color;
-        return inputs.checkbox;
-    }
-
-    /**
      * Sets the checkbox background
      * @param inputs checkbox and background
      * @group set
@@ -106,26 +73,6 @@ export class BabylonGuiCheckbox {
     }
 
     /**
-     * Gets the height
-     * @param inputs checkbox
-     * @group get
-     * @shortname get checkbox height
-     */
-    getHeight(inputs: Inputs.BabylonGui.CheckboxDto): string | number {
-        return inputs.checkbox.height;
-    }
-
-    /**
-     * Gets the width
-     * @param inputs checkbox
-     * @group get
-     * @shortname get checkbox width
-     */
-    getWidth(inputs: Inputs.BabylonGui.CheckboxDto): string | number {
-        return inputs.checkbox.width;
-    }
-
-    /**
      * Gets the check size ratio
      * @param inputs checkbox
      * @group get
@@ -143,16 +90,6 @@ export class BabylonGuiCheckbox {
      */
     getIsChecked(inputs: Inputs.BabylonGui.CheckboxDto): boolean {
         return inputs.checkbox.isChecked;
-    }
-
-    /**
-     * Gets the color
-     * @param inputs checkbox
-     * @group get
-     * @shortname get checkbox color
-     */
-    getColor(inputs: Inputs.BabylonGui.CheckboxDto): string {
-        return inputs.checkbox.color;
     }
 
     /**

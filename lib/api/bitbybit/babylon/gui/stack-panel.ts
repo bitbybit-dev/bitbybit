@@ -90,30 +90,6 @@ export class BabylonGuiStackPanel {
     }
 
     /**
-     * Set stack panel color
-     * @param inputs with stack panel and color
-     * @returns stack panel with changed color
-     * @group set
-     * @shortname set stack panel color
-     */
-    setColor(inputs: Inputs.BabylonGui.SetStackPanelColorDto): GUI.StackPanel {
-        inputs.stackPanel.color = inputs.color;
-        return inputs.stackPanel;
-    }
-
-    /**
-     * Set stack panel background
-     * @param inputs with stack panel and background
-     * @returns stack panel with changed background
-     * @group set
-     * @shortname set stack panel background
-     */
-    setBackground(inputs: Inputs.BabylonGui.SetStackPanelBackgroundDto): GUI.StackPanel {
-        inputs.stackPanel.background = inputs.background;
-        return inputs.stackPanel;
-    }
-
-    /**
      * Get stack panel is vertical
      * @param inputs with stack panel
      * @returns stack panel is vertical
@@ -156,27 +132,4 @@ export class BabylonGuiStackPanel {
     getHeight(inputs: Inputs.BabylonGui.StackPanelDto): string | number {
         return inputs.stackPanel.height;
     }
-
-    /**
-     * Get stack panel color
-     * @param inputs with stack panel
-     * @returns stack panel color
-     * @group get
-     * @shortname get stack panel color
-     */
-    getColor(inputs: Inputs.BabylonGui.StackPanelDto): string {
-        return inputs.stackPanel.color;
-    }
-
-    /**
-     * Get stack panel background
-     * @param inputs with stack panel
-     * @returns stack panel background
-     * @group get
-     * @shortname get stack panel background
-     */
-    getBackground(inputs: Inputs.BabylonGui.StackPanelDto): string {
-        return inputs.stackPanel.background;
-    }
-
 }

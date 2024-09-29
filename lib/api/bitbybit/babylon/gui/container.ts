@@ -37,4 +37,25 @@ export class BabylonGuiContainer {
         return inputs.control;
     }
 
+    /**
+     * Sets the container background
+     * @param inputs container and background
+     * @group set
+     * @shortname set container background
+     */
+    setBackground(inputs: Inputs.BabylonGui.SetContainerBackgroundDto): GUI.Container {
+        inputs.container.background = inputs.background;
+        return inputs.container;
+    }
+
+    /**
+     * Gets the container background
+     * @param inputs container
+     * @group get
+     * @shortname get container background
+     */
+    getBackground(inputs: Inputs.BabylonGui.ContainerDto): string {
+        return inputs.container.background;
+    }
+
 }
