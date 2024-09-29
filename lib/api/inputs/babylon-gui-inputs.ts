@@ -15,7 +15,20 @@ export namespace BabylonGui {
         center = "center",
         bottom = "bottom"
     }
-
+    export enum inputTextObservableSelectorEnum {
+        /** Observable raised when the text changes */
+        onTextChangedObservable = "onTextChangedObservable",
+        /** Observable raised just before an entered character is to be added */
+        onBeforeKeyAddObservable = "onBeforeKeyAddObservable",
+        /** Observable raised when the text is highlighted */
+        onTextHighlightObservable = "onTextHighlightObservable",
+        /** Observable raised when copy event is triggered */
+        onTextCopyObservable = "onTextCopyObservable",
+        /** Observable raised when cut event is triggered */
+        onTextCutObservable = "onTextCutObservable",
+        /** Observable raised when paste event is triggered */
+        onTextPasteObservable = "onTextPasteObservable"
+    }
     export enum sliderObservableSelectorEnum {
         /**
          * Raised when the value has changed
@@ -41,6 +54,8 @@ export namespace BabylonGui {
         onIsCheckedChangedObservable = "onIsCheckedChangedObservable"
     }
     export enum controlObservableSelectorEnum {
+        onFocusObservable = "onFocusObservable",
+        onBlurObservable = "onBlurObservable",
         /**
          * Observable that fires whenever the accessibility event of the control has changed
          */
@@ -295,6 +310,16 @@ export namespace BabylonGui {
          * @default onValueChangedObservable
          */
         selector: sliderObservableSelectorEnum;
+    }
+    export class InputTextObservableSelectorDto {
+        constructor(selector: inputTextObservableSelectorEnum) {
+            this.selector = selector;
+        }
+        /**
+         * Selector for the observable
+         * @default onTextChangedObservable
+         */
+        selector: inputTextObservableSelectorEnum;
     }
     export class RadioButtonObservableSelectorDto {
         constructor(selector: radioButtonObservableSelectorEnum) {
@@ -577,9 +602,9 @@ export namespace BabylonGui {
         container?: GUI.Container;
         /**
          * Name of the checkbox
-         * @default radioBtnName
+         * @default checkboxName
          */
-        name = "radioBtnName";
+        name = "checkboxName";
         /**
          * Is checked
          * @default false
@@ -726,6 +751,166 @@ export namespace BabylonGui {
          * @default false
          */
         isChecked = false;
+    }
+
+    export class CreateInputTextDto {
+        constructor(container?: GUI.Container, name?: string, color?: string, background?: string, width?: number | string, height?: number | string) {
+            if (container !== undefined) { this.container = container; }
+            if (name !== undefined) { this.name = name; }
+            if (color !== undefined) { this.color = color; }
+            if (background !== undefined) { this.background = background; }
+            if (width !== undefined) { this.width = width; }
+            if (height !== undefined) { this.height = height; }
+        }
+        /**
+         * Container to which the slider will be added
+         * @default undefined
+         * @optional true
+         */
+        container?: GUI.Container;
+        /**
+         * Name of the button
+         * @default inputName
+         */
+        name = "inputName";
+        /**
+         * Text of the input
+         * @default
+         */
+        text: string;
+        /**
+         * Placeholder of the input
+         * @default
+         */
+        placeholder: string;
+        /**
+         * Color of the button
+         * @default #f0cebb
+         */
+        color = "#f0cebb";
+        /**
+         * Background of the button
+         * @default black
+         */
+        background = "black";
+        /**
+         * Width of the button
+         * @default undefined
+         * @optional true
+         */
+        width?: number | string;
+        /**
+         * Height of the button
+         * @default undefined
+         * @optional true
+         */
+        height?: number | string;
+    }
+    export class SetInputTextHeightDto {
+        constructor(inputText?: GUI.InputText, height?: number | string) {
+            if (inputText !== undefined) { this.inputText = inputText; }
+            if (height !== undefined) { this.height = height; }
+        }
+        /**
+         * Input text to update
+         * @default undefined
+         */
+        inputText: GUI.InputText;
+        /**
+         * Height of the input text
+         * @default undefined
+         */
+        height: number | string;
+    }
+    export class SetInputTextWidthDto {
+        constructor(inputText?: GUI.InputText, width?: number | string) {
+            if (inputText !== undefined) { this.inputText = inputText; }
+            if (width !== undefined) { this.width = width; }
+        }
+        /**
+         * Input text to update
+         * @default undefined
+         */
+        inputText: GUI.InputText;
+        /**
+         * Width of the input text
+         * @default undefined
+         */
+        width: number | string;
+    }
+    export class SetInputTextColorDto {
+        constructor(inputText?: GUI.InputText, color?: string) {
+            if (inputText !== undefined) { this.inputText = inputText; }
+            if (color !== undefined) { this.color = color; }
+        }
+        /**
+         * Input text to update
+         * @default undefined
+         */
+        inputText: GUI.InputText;
+        /**
+         * Color of the input text
+         * @default #f0cebb
+         */
+        color = "#f0cebb";
+    }
+    export class SetInputTextBackgroundDto {
+        constructor(inputText?: GUI.InputText, background?: string) {
+            if (inputText !== undefined) { this.inputText = inputText; }
+            if (background !== undefined) { this.background = background; }
+        }
+        /**
+         * Input text to update
+         * @default undefined
+         */
+        inputText: GUI.InputText;
+        /**
+         * Background of the input text
+         * @default black
+         */
+        background = "black";
+    }
+    export class SetInputTextTextDto {
+        constructor(inputText?: GUI.InputText, text?: string) {
+            if (inputText !== undefined) { this.inputText = inputText; }
+            if (text !== undefined) { this.text = text; }
+        }
+        /**
+         * Input text to update
+         * @default undefined
+         */
+        inputText: GUI.InputText;
+        /**
+         * Text of the input text
+         * @default
+         */
+        text: string;
+    }
+    export class SetInputTextPlaceholderDto {
+        constructor(inputText?: GUI.InputText, placeholder?: string) {
+            if (inputText !== undefined) { this.inputText = inputText; }
+            if (placeholder !== undefined) { this.placeholder = placeholder; }
+        }
+        /**
+         * Input text to update
+         * @default undefined
+         */
+        inputText: GUI.InputText;
+        /**
+         * Placeholder of the input text
+         * @default
+         */
+        placeholder: string;
+    }
+    export class InputTextDto {
+        constructor(inputText?: GUI.InputText) {
+            if (inputText !== undefined) { this.inputText = inputText; }
+        }
+        /**
+         * Input text to update
+         * @default undefined
+         */
+        inputText: GUI.InputText;
     }
 
     export class CreateRadioButtonDto {

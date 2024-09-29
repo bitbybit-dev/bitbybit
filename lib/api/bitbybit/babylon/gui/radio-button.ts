@@ -46,8 +46,9 @@ export class BabylonGuiRadioButton {
      * @group set
      * @shortname set radio button height
      */
-    setHeight(inputs: Inputs.BabylonGui.SetRadioButtonHeightDto): void {
+    setHeight(inputs: Inputs.BabylonGui.SetRadioButtonHeightDto): GUI.RadioButton {
         inputs.radioButton.height = inputs.height;
+        return inputs.radioButton;
     }
 
     /**
@@ -56,8 +57,9 @@ export class BabylonGuiRadioButton {
      * @group set
      * @shortname set radio button width
      */
-    setWidth(inputs: Inputs.BabylonGui.SetRadioButtonWidthDto): void {
+    setWidth(inputs: Inputs.BabylonGui.SetRadioButtonWidthDto): GUI.RadioButton {
         inputs.radioButton.width = inputs.width;
+        return inputs.radioButton;
     }
 
     /**
@@ -66,8 +68,9 @@ export class BabylonGuiRadioButton {
      * @group set
      * @shortname set radio button check size ratio
      */
-    setCheckSizeRatio(inputs: Inputs.BabylonGui.SetRadioButtonCheckSizeRatioDto): void {
+    setCheckSizeRatio(inputs: Inputs.BabylonGui.SetRadioButtonCheckSizeRatioDto): GUI.RadioButton {
         inputs.radioButton.checkSizeRatio = inputs.checkSizeRatio;
+        return inputs.radioButton;
     }
 
     /**
@@ -76,8 +79,9 @@ export class BabylonGuiRadioButton {
      * @group set
      * @shortname set radio button group
      */
-    setGroup(inputs: Inputs.BabylonGui.SetRadioButtonGroupDto): void {
+    setGroup(inputs: Inputs.BabylonGui.SetRadioButtonGroupDto): GUI.RadioButton {
         inputs.radioButton.group = inputs.group;
+        return inputs.radioButton;
     }
 
     /**
@@ -86,8 +90,9 @@ export class BabylonGuiRadioButton {
      * @group set
      * @shortname set radio button color
      */
-    setColor(inputs: Inputs.BabylonGui.SetRadioButtonColorDto): void {
+    setColor(inputs: Inputs.BabylonGui.SetRadioButtonColorDto): GUI.RadioButton {
         inputs.radioButton.color = inputs.color;
+        return inputs.radioButton;
     }
 
     /**
@@ -96,8 +101,9 @@ export class BabylonGuiRadioButton {
      * @group set
      * @shortname set radio button background
      */
-    setBackground(inputs: Inputs.BabylonGui.SetRadioButtonBackgroundDto): void {
+    setBackground(inputs: Inputs.BabylonGui.SetRadioButtonBackgroundDto): GUI.RadioButton {
         inputs.radioButton.background = inputs.background;
+        return inputs.radioButton;
     }
 
     /**

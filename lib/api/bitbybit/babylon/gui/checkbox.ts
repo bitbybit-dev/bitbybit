@@ -45,8 +45,9 @@ export class BabylonGuiCheckbox {
      * @group set
      * @shortname set checkbox height
      */
-    setHeight(inputs: Inputs.BabylonGui.SetCheckboxHeightDto): void {
+    setHeight(inputs: Inputs.BabylonGui.SetCheckboxHeightDto): GUI.Checkbox {
         inputs.checkbox.height = inputs.height;
+        return inputs.checkbox;
     }
 
     /**
@@ -55,8 +56,9 @@ export class BabylonGuiCheckbox {
      * @group set
      * @shortname set checkbox width
      */
-    setWidth(inputs: Inputs.BabylonGui.SetCheckboxWidthDto): void {
+    setWidth(inputs: Inputs.BabylonGui.SetCheckboxWidthDto): GUI.Checkbox {
         inputs.checkbox.width = inputs.width;
+        return inputs.checkbox;
     }
 
     /**
@@ -65,8 +67,9 @@ export class BabylonGuiCheckbox {
      * @group set
      * @shortname set checkbox color
      */
-    setColor(inputs: Inputs.BabylonGui.SetCheckboxColorDto): void {
+    setColor(inputs: Inputs.BabylonGui.SetCheckboxColorDto): GUI.Checkbox {
         inputs.checkbox.color = inputs.color;
+        return inputs.checkbox;
     }
 
     /**
@@ -75,8 +78,9 @@ export class BabylonGuiCheckbox {
      * @group set
      * @shortname set checkbox background
      */
-    setBackground(inputs: Inputs.BabylonGui.SetCheckboxBackgroundDto): void {
+    setBackground(inputs: Inputs.BabylonGui.SetCheckboxBackgroundDto): GUI.Checkbox {
         inputs.checkbox.background = inputs.background;
+        return inputs.checkbox;
     }
 
     /**
@@ -85,8 +89,9 @@ export class BabylonGuiCheckbox {
      * @group set
      * @shortname set checkbox check size ratio
      */
-    setCheckSizeRatio(inputs: Inputs.BabylonGui.SetCheckboxCheckSizeRatioDto): void {
+    setCheckSizeRatio(inputs: Inputs.BabylonGui.SetCheckboxCheckSizeRatioDto): GUI.Checkbox {
         inputs.checkbox.checkSizeRatio = inputs.checkSizeRatio;
+        return inputs.checkbox;
     }
 
     /**
@@ -95,8 +100,9 @@ export class BabylonGuiCheckbox {
      * @group set
      * @shortname set checkbox is checked
      */
-    setIsChecked(inputs: Inputs.BabylonGui.SetCheckboxIsCheckedDto): void {
+    setIsChecked(inputs: Inputs.BabylonGui.SetCheckboxIsCheckedDto): GUI.Checkbox {
         inputs.checkbox.isChecked = inputs.isChecked;
+        return inputs.checkbox;
     }
 
     /**

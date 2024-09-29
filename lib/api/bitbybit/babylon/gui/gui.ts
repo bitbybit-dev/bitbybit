@@ -9,6 +9,7 @@ import { BabylonGuiSlider } from "./slider";
 import { BabylonGuiTextBlock } from "./text-block";
 import { BabylonGuiRadioButton } from "./radio-button";
 import { BabylonGuiCheckbox } from "./checkbox";
+import { BabylonGuiInputText } from "./input-text";
 
 export class BabylonGui {
     advancedDynamicTexture: BabylonGuiAdvancedDynamicTexture;
@@ -20,6 +21,7 @@ export class BabylonGui {
     textBlock: BabylonGuiTextBlock;
     radioButton: BabylonGuiRadioButton;
     checkbox: BabylonGuiCheckbox;
+    inputText: BabylonGuiInputText;
 
     constructor(private readonly context: Context) {
         this.advancedDynamicTexture = new BabylonGuiAdvancedDynamicTexture(context);
@@ -31,6 +33,7 @@ export class BabylonGui {
         this.textBlock = new BabylonGuiTextBlock(context);
         this.radioButton = new BabylonGuiRadioButton(context);
         this.checkbox = new BabylonGuiCheckbox(context);
+        this.inputText = new BabylonGuiInputText(context);
     }
 
 }
