@@ -41,11 +41,40 @@ export namespace Color {
          */
         to = 255;
     }
-    export class RGBDto {
-        constructor(r?: number, g?: number, b?: number) {
+    export class RGBObjectMaxDto {
+        constructor(rgb?: Base.ColorRGB, max?: number) {
+            if (rgb !== undefined) { this.rgb = rgb; }
+            if (max !== undefined) { this.max = max; }
+        }
+        /**
+         * Red value component
+         * @default undefined
+         */
+        rgb: Base.ColorRGB;
+        /**
+         * Min value of the range
+         * @default 0
+         * @minimum 0
+         * @maximum 255
+         * @step 0.1
+         */
+        min = 0;
+        /**
+         * Max value, it would automatically be remapped to whatever is needed if lower comes in
+         * @default 255
+         * @minimum 0
+         * @maximum 255
+         * @step 0.1
+         */
+        max = 255;
+    }
+    export class RGBMinMaxDto {
+        constructor(r?: number, g?: number, b?: number, min?: number, max?: number) {
             if (r !== undefined) { this.r = r; }
             if (g !== undefined) { this.g = g; }
             if (b !== undefined) { this.b = b; }
+            if (min !== undefined) { this.min = min; }
+            if (max !== undefined) { this.max = max; }
         }
         /**
          * Red value component
@@ -71,7 +100,23 @@ export namespace Color {
         * @step 1
         */
         b = 255;
-    } 
+        /**
+         * Min value of the range
+         * @default 0
+         * @minimum 0
+         * @maximum 255
+         * @step 0.1
+         */
+        min = 0;
+        /**
+         * Max value of the range
+         * @default 255
+         * @minimum 0
+         * @maximum 255
+         * @step 0.1
+         */
+        max = 255;
+    }
     export class RGBObjectDto {
         constructor(rgb?: Base.ColorRGB) {
             if (rgb !== undefined) { this.rgb = rgb; }

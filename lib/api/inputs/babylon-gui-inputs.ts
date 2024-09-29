@@ -478,6 +478,43 @@ export namespace BabylonGui {
         button: GUI.Button;
     }
 
+    export class CreateColorPickerDto {
+        constructor(container?: GUI.Container, name?: string, color?: string,  width?: number | string, height?: number | string) {
+            if (container !== undefined) { this.container = container; }
+            if (name !== undefined) { this.name = name; }
+            if (color !== undefined) { this.color = color; }
+            if (width !== undefined) { this.width = width; }
+            if (height !== undefined) { this.height = height; }
+        }
+        /**
+         * Container to which the color picker will be added
+         * @default undefined
+         * @optional true
+         */
+        container?: GUI.Container;
+        /**
+         * Name of the color picker
+         * @default colorPickerName
+         */
+        name = "colorPickerName";
+        /**
+         * Color of the color picker
+         * @default #f0cebb
+         */
+        color = "#f0cebb";
+        /**
+         * Width of the color picker
+         * @default undefined
+         * @optional true
+         */
+        width?: number | string;
+        /**
+         * Height of the color picker
+         * @default undefined
+         * @optional true
+         */
+        height?: number | string;
+    }
     export class CreateCheckboxDto {
         constructor(container?: GUI.Container, name?: string, isChecked?: boolean, checkSizeRatio?: number, color?: string, background?: string, width?: number | string, height?: number | string) {
             if (container !== undefined) { this.container = container; }
@@ -514,23 +551,23 @@ export namespace BabylonGui {
          */
         checkSizeRatio = 0.8;
         /**
-         * Color of the button
+         * Color of the checkbox
          * @default #f0cebb
          */
         color = "#f0cebb";
         /**
-         * Background of the button
+         * Background of the checkbox
          * @default black
          */
         background = "black";
         /**
-         * Width of the button
+         * Width of the checkbox
          * @default undefined
          * @optional true
          */
         width?: number | string;
         /**
-         * Height of the button
+         * Height of the checkbox
          * @default undefined
          * @optional true
          */

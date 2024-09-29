@@ -35,27 +35,47 @@ export class Color {
         } : undefined;
     }
 
-
     /**
      * Creates hex color from rgb
      * @param inputs Color hext
-     * @returns rgb color
+     * @returns hex color
      * @group convert
      * @shortname rgb to hex
      * @drawable false
      */
-    rgbToHex(inputs: Inputs.Color.RGBDto): Inputs.Base.Color {
-        const r = inputs.r;
-        const g = inputs.g;
-        const b = inputs.b;
+    rgbToHex(inputs: Inputs.Color.RGBMinMaxDto): Inputs.Base.Color {
+        let r = inputs.r;
+        let g = inputs.g;
+        let b = inputs.b;
+
+        // sometimes rgb values are in 0 - 100 or 0 - 1 ranges
+        // so we need to remap them to 0 - 255
+        if (inputs.max !== 255) {
+            r = Math.round(this.context.remap(r, inputs.min, inputs.max, 0, 255));
+            g = Math.round(this.context.remap(g, inputs.min, inputs.max, 0, 255));
+            b = Math.round(this.context.remap(b, inputs.min, inputs.max, 0, 255));
+        }
 
         const s = `#${Number(0x1000000 + r * 0x10000 + g * 0x100 + b).toString(16).substring(1, 7)}`;
 
         return s;
     }
 
+
     /**
-     * Creates rgb color from hex and maps to 0 - 100 value
+     * Creates hex color from rgb obj that contains {r, g, b} properties in certain range
+     * @param inputs Color hext
+     * @returns hex color string
+     * @group convert
+     * @shortname rgb obj to hex
+     * @drawable false
+     */
+    rgbObjToHex(inputs: Inputs.Color.RGBObjectMaxDto): Inputs.Base.Color {
+        return this.rgbToHex({ r: inputs.rgb.r, g: inputs.rgb.g, b: inputs.rgb.b, min: inputs.min, max: inputs.max });
+    }
+
+    /**
+     * Creates rgb color from hex and maps to different range if needed
      * @param inputs Color hext
      * @returns rgb color
      * @group convert

@@ -106,7 +106,7 @@ export class BabylonMaterialPbrMetallicRoughness {
         const g = this.context.remap(mat.baseColor.g, 0, 1, 0, 255);
         const b = this.context.remap(mat.baseColor.b, 0, 1, 0, 255);
 
-        return this.color.rgbToHex({ r, g, b });
+        return this.color.rgbToHex({ r, g, b, min: 0, max: 255 });
     }
 
     /**
