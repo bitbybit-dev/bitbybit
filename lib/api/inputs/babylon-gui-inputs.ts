@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-namespace */
-import * as GUI from "@babylonjs/gui";
+import * as BABYLON from "../../gui-enriched-babylon";
 
 // tslint:disable-next-line: no-namespace
 export namespace BabylonGui {
@@ -138,7 +138,7 @@ export namespace BabylonGui {
     }
 
     export class CreateStackPanelDto {
-        constructor(container?: GUI.Container, name?: string, isVertical?: boolean, spacing?: number, width?: number | string, height?: number | string, color?: string, background?: string) {
+        constructor(container?: BABYLON.GUI.Container, name?: string, isVertical?: boolean, spacing?: number, width?: number | string, height?: number | string, color?: string, background?: string) {
             if (container !== undefined) { this.container = container; }
             if (name !== undefined) { this.name = name; }
             if (isVertical !== undefined) { this.isVertical = isVertical; }
@@ -153,7 +153,7 @@ export namespace BabylonGui {
          * @default undefined
          * @optional true
          */
-        container?: GUI.Container;
+        container?: BABYLON.GUI.Container;
         /**
          * Name of stack panel
          * @default stackPanel
@@ -193,7 +193,7 @@ export namespace BabylonGui {
         background = "#00000055";
     }
     export class SetStackPanelIsVerticalDto {
-        constructor(stackPanel?: GUI.StackPanel, isVertical?: boolean) {
+        constructor(stackPanel?: BABYLON.GUI.StackPanel, isVertical?: boolean) {
             if (stackPanel !== undefined) { this.stackPanel = stackPanel; }
             if (isVertical !== undefined) { this.isVertical = isVertical; }
         }
@@ -201,7 +201,7 @@ export namespace BabylonGui {
          * Stack panel to update
          * @default undefined
          */
-        stackPanel: GUI.StackPanel;
+        stackPanel: BABYLON.GUI.StackPanel;
         /**
          * Is vertical
          * @default true
@@ -209,7 +209,7 @@ export namespace BabylonGui {
         isVertical = true;
     }
     export class SetStackPanelSpacingDto {
-        constructor(stackPanel?: GUI.StackPanel, spacing?: number) {
+        constructor(stackPanel?: BABYLON.GUI.StackPanel, spacing?: number) {
             if (stackPanel !== undefined) { this.stackPanel = stackPanel; }
             if (spacing !== undefined) { this.spacing = spacing; }
         }
@@ -217,7 +217,7 @@ export namespace BabylonGui {
          * Stack panel to update
          * @default undefined
          */
-        stackPanel: GUI.StackPanel;
+        stackPanel: BABYLON.GUI.StackPanel;
         /**
          * Spacing between each child in pixels
          * @default 0
@@ -225,7 +225,7 @@ export namespace BabylonGui {
         spacing = 0;
     }
     export class SetStackPanelWidthDto {
-        constructor(stackPanel?: GUI.StackPanel, width?: number | string) {
+        constructor(stackPanel?: BABYLON.GUI.StackPanel, width?: number | string) {
             if (stackPanel !== undefined) { this.stackPanel = stackPanel; }
             if (width !== undefined) { this.width = width; }
         }
@@ -233,7 +233,7 @@ export namespace BabylonGui {
          * Stack panel to update
          * @default undefined
          */
-        stackPanel: GUI.StackPanel;
+        stackPanel: BABYLON.GUI.StackPanel;
         /**
          * Width of the stack panel
          * @default undefined
@@ -242,7 +242,7 @@ export namespace BabylonGui {
         width: number | string;
     }
     export class SetStackPanelHeightDto {
-        constructor(stackPanel?: GUI.StackPanel, height?: number | string) {
+        constructor(stackPanel?: BABYLON.GUI.StackPanel, height?: number | string) {
             if (stackPanel !== undefined) { this.stackPanel = stackPanel; }
             if (height !== undefined) { this.height = height; }
         }
@@ -250,7 +250,7 @@ export namespace BabylonGui {
          * Stack panel to update
          * @default undefined
          */
-        stackPanel: GUI.StackPanel;
+        stackPanel: BABYLON.GUI.StackPanel;
         /**
          * Height of the stack panel.
          * @default undefined
@@ -259,14 +259,14 @@ export namespace BabylonGui {
         height: number | string;
     }
     export class StackPanelDto {
-        constructor(stackPanel?: GUI.StackPanel) {
+        constructor(stackPanel?: BABYLON.GUI.StackPanel) {
             if (stackPanel !== undefined) { this.stackPanel = stackPanel; }
         }
         /**
          * Stack panel to update
          * @default undefined
          */
-        stackPanel: GUI.StackPanel;
+        stackPanel: BABYLON.GUI.StackPanel;
     }
     export class SliderObservableSelectorDto {
         constructor(selector: sliderObservableSelectorEnum) {
@@ -331,17 +331,17 @@ export namespace BabylonGui {
         selector: textBlockObservableSelectorEnum;
     }
     export class ContainerDto {
-        constructor(container?: GUI.Container) {
+        constructor(container?: BABYLON.GUI.Container) {
             if (container !== undefined) { this.container = container; }
         }
         /**
          * Container to update
          * @default undefined
          */
-        container: GUI.Container;
+        container: BABYLON.GUI.Container;
     }
     export class AddControlToContainerDto {
-        constructor(container?: GUI.StackPanel, control?: GUI.Control) {
+        constructor(container?: BABYLON.GUI.StackPanel, control?: BABYLON.GUI.Control) {
             if (container !== undefined) { this.container = container; }
             if (control !== undefined) { this.control = control; }
         }
@@ -349,15 +349,15 @@ export namespace BabylonGui {
          * Container to add control to
          * @default undefined
          */
-        container: GUI.Container;
+        container: BABYLON.GUI.Container;
         /**
          * Control to add
          * @default undefined
          */
-        control: GUI.Control;
+        control: BABYLON.GUI.Control;
     }
     export class GetControlByNameDto {
-        constructor(container?: GUI.Container, name?: string) {
+        constructor(container?: BABYLON.GUI.Container, name?: string) {
             if (container !== undefined) { this.container = container; }
             if (name !== undefined) { this.name = name; }
         }
@@ -365,7 +365,7 @@ export namespace BabylonGui {
          * Container to get control from
          * @default undefined
          */
-        container: GUI.Container;
+        container: BABYLON.GUI.Container;
         /**
          * Name of the control
          * @default controlName
@@ -374,7 +374,7 @@ export namespace BabylonGui {
     }
 
     export class FixControlOrderInContainerDto {
-        constructor(container?: GUI.StackPanel, control?: GUI.Control, orderIndex?: number) {
+        constructor(container?: BABYLON.GUI.StackPanel, control?: BABYLON.GUI.Control, orderIndex?: number) {
             if (container !== undefined) { this.container = container; }
             if (control !== undefined) { this.control = control; }
             if (orderIndex !== undefined) { this.orderIndex = orderIndex; }
@@ -383,21 +383,89 @@ export namespace BabylonGui {
          * Container in which control needs to be fixed
          * @default undefined
          */
-        container: GUI.Container;
+        container: BABYLON.GUI.Container;
         /**
          * Control to fix
          * @default undefined
          */
-        control: GUI.Control;
+        control: BABYLON.GUI.Control;
         /**
          * Order of the control
          * @default 0
          */
         orderIndex: number;
     }
-
+    export class CreateImageDto {
+        constructor(container?: BABYLON.GUI.Container, name?: string, url?: string, color?: string, width?: number | string, height?: number | string) {
+            if (container !== undefined) { this.container = container; }
+            if (name !== undefined) { this.name = name; }
+            if (url !== undefined) { this.url = url; }
+            if (color !== undefined) { this.color = color; }
+            if (width !== undefined) { this.width = width; }
+            if (height !== undefined) { this.height = height; }
+        }
+        /**
+         * Optional container to which the image will be added
+         * @default undefined
+         * @optional true
+         */
+        container?: BABYLON.GUI.Container;
+        /**
+         * Name of the image
+         * @default imageName
+         */
+        name = "imageName";
+        /**
+         * Link to the image
+         * @default undefined
+         */
+        url: string;
+        /**
+         * Color of the image
+         * @default black
+         */
+        color = "black";
+        /**
+         * Width of the image
+         * @default undefined
+         * @optional true
+         */
+        width?: number | string;
+        /**
+         * Height of the image
+         * @default undefined
+         * @optional true
+         */
+        height?: number | string;
+    }
+    export class SetImageUrlDto {
+        constructor(image?: BABYLON.GUI.Image, url?: string) {
+            if (image !== undefined) { this.image = image; }
+            if (url !== undefined) { this.url = url; }
+        }
+        /**
+         * Image to update
+         * @default undefined
+         */
+        image: BABYLON.GUI.Image;
+        /**
+         * Link to the image
+         * @default undefined
+         */
+        url: string;
+    }
+    export class ImageDto {
+        constructor(image?: BABYLON.GUI.Image) {
+            if (image !== undefined) { this.image = image; }
+        }
+        /**
+         * Image to update
+         * @default undefined
+         */
+        image: BABYLON.GUI.Image;
+    }
     export class CreateButtonDto {
-        constructor(container?: GUI.Container, name?: string, label?: string, color?: string, background?: string, width?: number | string, height?: number | string, fontSize?: number) {
+        constructor(container?: BABYLON.GUI.Container, name?: string, label?: string, color?: string, background?: string, width?: number | string, height?: number | string, fontSize?: number) {
             if (container !== undefined) { this.container = container; }
             if (name !== undefined) { this.name = name; }
             if (label !== undefined) { this.label = label; }
@@ -412,7 +480,7 @@ export namespace BabylonGui {
          * @default undefined
          * @optional true
          */
-        container?: GUI.Container;
+        container?: BABYLON.GUI.Container;
         /**
          * Name of the button
          * @default buttonName
@@ -452,7 +520,7 @@ export namespace BabylonGui {
         fontSize = 24;
     }
     export class SetButtonTextDto {
-        constructor(button?: GUI.Button, text?: string) {
+        constructor(button?: BABYLON.GUI.Button, text?: string) {
             if (button !== undefined) { this.button = button; }
             if (text !== undefined) { this.text = text; }
         }
@@ -460,7 +528,7 @@ export namespace BabylonGui {
          * Button to update
          * @default undefined
          */
-        button: GUI.Button;
+        button: BABYLON.GUI.Button;
         /**
          * Text of the button
          * @default Click me!
@@ -468,35 +536,42 @@ export namespace BabylonGui {
         text = "Click me!";
     }
     export class ButtonDto {
-        constructor(button?: GUI.Button) {
+        constructor(button?: BABYLON.GUI.Button) {
             if (button !== undefined) { this.button = button; }
         }
         /**
          * Button to update
          * @default undefined
          */
-        button: GUI.Button;
+        button: BABYLON.GUI.Button;
     }
 
     export class CreateColorPickerDto {
-        constructor(container?: GUI.Container, name?: string, color?: string,  width?: number | string, height?: number | string) {
+        constructor(container?: BABYLON.GUI.Container, name?: string, defaultColor?: string, color?: string, width?: number | string, height?: number | string, size?: number | string) {
             if (container !== undefined) { this.container = container; }
             if (name !== undefined) { this.name = name; }
+            if (this.defaultColor !== undefined) { this.defaultColor = defaultColor; }
             if (color !== undefined) { this.color = color; }
             if (width !== undefined) { this.width = width; }
             if (height !== undefined) { this.height = height; }
+            if (size !== undefined) { this.size = size; }
         }
         /**
          * Container to which the color picker will be added
          * @default undefined
          * @optional true
          */
-        container?: GUI.Container;
+        container?: BABYLON.GUI.Container;
         /**
          * Name of the color picker
          * @default colorPickerName
          */
         name = "colorPickerName";
+        /**
+         * Default color of the color picker
+         * @default #f0cebb
+         */
+        defaultColor = "#f0cebb";
         /**
          * Color of the color picker
          * @default #f0cebb
@@ -514,9 +589,58 @@ export namespace BabylonGui {
          * @optional true
          */
         height?: number | string;
+        /**
+         * Size of the color picker
+         * @default 300px
+         * @optional true
+         */
+        size?: number | string;
+    }
+    export class SetColorPickerValueDto {
+        constructor(colorPicker?: BABYLON.GUI.ColorPicker, color?: string) {
+            if (colorPicker !== undefined) { this.colorPicker = colorPicker; }
+            if (color !== undefined) { this.color = color; }
+        }
+        /**
+         * Color picker to update
+         * @default undefined
+         */
+        colorPicker: BABYLON.GUI.ColorPicker;
+        /**
+         * Value of the color picker
+         * @default undefined
+         */
+        color: string;
+    }
+    export class SetColorPickerSizeDto {
+        constructor(colorPicker?: BABYLON.GUI.ColorPicker, size?: number | string) {
+            if (colorPicker !== undefined) { this.colorPicker = colorPicker; }
+            if (size !== undefined) { this.size = size; }
+        }
+        /**
+         * Color picker to update
+         * @default undefined
+         */
+        colorPicker: BABYLON.GUI.ColorPicker;
+        /**
+         * Size of the color picker
+         * @default 300px
+         * @optional true
+         */
+        size?: number | string;
+    }
+    export class ColorPickerDto {
+        constructor(colorPicker?: BABYLON.GUI.ColorPicker) {
+            if (colorPicker !== undefined) { this.colorPicker = colorPicker; }
+        }
+        /**
+         * Color picker to update
+         * @default undefined
+         */
+        colorPicker: BABYLON.GUI.ColorPicker;
     }
     export class CreateCheckboxDto {
-        constructor(container?: GUI.Container, name?: string, isChecked?: boolean, checkSizeRatio?: number, color?: string, background?: string, width?: number | string, height?: number | string) {
+        constructor(container?: BABYLON.GUI.Container, name?: string, isChecked?: boolean, checkSizeRatio?: number, color?: string, background?: string, width?: number | string, height?: number | string) {
             if (container !== undefined) { this.container = container; }
             if (name !== undefined) { this.name = name; }
             if (isChecked !== undefined) { this.isChecked = isChecked; }
@@ -531,7 +655,7 @@ export namespace BabylonGui {
          * @default undefined
          * @optional true
          */
-        container?: GUI.Container;
+        container?: BABYLON.GUI.Container;
         /**
          * Name of the checkbox
          * @default checkboxName
@@ -575,7 +699,7 @@ export namespace BabylonGui {
     }
 
     export class SetControlFontSizeDto {
-        constructor(control?: GUI.Control, fontSize?: number) {
+        constructor(control?: BABYLON.GUI.Control, fontSize?: number) {
             if (control !== undefined) { this.control = control; }
             if (fontSize !== undefined) { this.fontSize = fontSize; }
         }
@@ -583,7 +707,7 @@ export namespace BabylonGui {
          * Control to update
          * @default undefined
          */
-        control: GUI.Control;
+        control: BABYLON.GUI.Control;
         /**
          * Font size of the button
          * @default 24
@@ -591,7 +715,7 @@ export namespace BabylonGui {
         fontSize = 24;
     }
     export class SetControlHeightDto {
-        constructor(control?: GUI.Control, height?: number | string) {
+        constructor(control?: BABYLON.GUI.Control, height?: number | string) {
             if (control !== undefined) { this.control = control; }
             if (height !== undefined) { this.height = height; }
         }
@@ -599,7 +723,7 @@ export namespace BabylonGui {
          * Control to update
          * @default undefined
          */
-        control: GUI.Control;
+        control: BABYLON.GUI.Control;
         /**
          * Height of the checkbox
          * @default undefined
@@ -607,7 +731,7 @@ export namespace BabylonGui {
         height: number | string;
     }
     export class SetControlWidthDto {
-        constructor(control?: GUI.Control, width?: number | string) {
+        constructor(control?: BABYLON.GUI.Control, width?: number | string) {
             if (control !== undefined) { this.control = control; }
             if (width !== undefined) { this.width = width; }
         }
@@ -615,7 +739,7 @@ export namespace BabylonGui {
          * Control to update
          * @default undefined
          */
-        control: GUI.Control;
+        control: BABYLON.GUI.Control;
         /**
          * Width of the checkbox
          * @default undefined
@@ -623,7 +747,7 @@ export namespace BabylonGui {
         width: number | string;
     }
     export class SetControlColorDto {
-        constructor(control?: GUI.Control, color?: string) {
+        constructor(control?: BABYLON.GUI.Control, color?: string) {
             if (control !== undefined) { this.control = control; }
             if (color !== undefined) { this.color = color; }
         }
@@ -631,7 +755,7 @@ export namespace BabylonGui {
          * Control to update
          * @default undefined
          */
-        control: GUI.Control;
+        control: BABYLON.GUI.Control;
         /**
          * Color of the checkbox
          * @default #f0cebb
@@ -639,7 +763,7 @@ export namespace BabylonGui {
         color = "#f0cebb";
     }
     export class SetContainerBackgroundDto {
-        constructor(container?: GUI.Container, background?: string) {
+        constructor(container?: BABYLON.GUI.Container, background?: string) {
             if (container !== undefined) { this.container = container; }
             if (background !== undefined) { this.background = background; }
         }
@@ -647,7 +771,7 @@ export namespace BabylonGui {
          * Container to update
          * @default undefined
          */
-        container: GUI.Container;
+        container: BABYLON.GUI.Container;
         /**
          * Background of the checkbox
          * @default black
@@ -655,7 +779,7 @@ export namespace BabylonGui {
         background = "black";
     }
     export class SetCheckboxBackgroundDto {
-        constructor(checkbox?: GUI.Checkbox, background?: string) {
+        constructor(checkbox?: BABYLON.GUI.Checkbox, background?: string) {
             if (checkbox !== undefined) { this.checkbox = checkbox; }
             if (background !== undefined) { this.background = background; }
         }
@@ -663,7 +787,7 @@ export namespace BabylonGui {
          * Checkbox to update
          * @default undefined
          */
-        checkbox: GUI.Checkbox;
+        checkbox: BABYLON.GUI.Checkbox;
         /**
          * Background of the checkbox
          * @default black
@@ -671,7 +795,7 @@ export namespace BabylonGui {
         background = "black";
     }
     export class SetCheckboxCheckSizeRatioDto {
-        constructor(checkbox?: GUI.Checkbox, checkSizeRatio?: number) {
+        constructor(checkbox?: BABYLON.GUI.Checkbox, checkSizeRatio?: number) {
             if (checkbox !== undefined) { this.checkbox = checkbox; }
             if (checkSizeRatio !== undefined) { this.checkSizeRatio = checkSizeRatio; }
         }
@@ -679,7 +803,7 @@ export namespace BabylonGui {
          * Checkbox to update
          * @default undefined
          */
-        checkbox: GUI.Checkbox;
+        checkbox: BABYLON.GUI.Checkbox;
         /**
          * Check size ratio
          * @default 0.8
@@ -691,29 +815,29 @@ export namespace BabylonGui {
     }
 
     export class CheckboxDto {
-        constructor(checkbox?: GUI.Checkbox) {
+        constructor(checkbox?: BABYLON.GUI.Checkbox) {
             if (checkbox !== undefined) { this.checkbox = checkbox; }
         }
         /**
          * Checkbox to update
          * @default undefined
          */
-        checkbox: GUI.Checkbox;
+        checkbox: BABYLON.GUI.Checkbox;
     }
 
     export class ControlDto {
-        constructor(control?: GUI.Control) {
+        constructor(control?: BABYLON.GUI.Control) {
             if (control !== undefined) { this.control = control; }
         }
         /**
          * Control to update
          * @default undefined
          */
-        control: GUI.Control;
+        control: BABYLON.GUI.Control;
     }
 
     export class SetCheckboxIsCheckedDto {
-        constructor(checkbox?: GUI.Checkbox, isChecked?: boolean) {
+        constructor(checkbox?: BABYLON.GUI.Checkbox, isChecked?: boolean) {
             if (checkbox !== undefined) { this.checkbox = checkbox; }
             if (isChecked !== undefined) { this.isChecked = isChecked; }
         }
@@ -721,7 +845,7 @@ export namespace BabylonGui {
          * Checkbox to update
          * @default undefined
          */
-        checkbox: GUI.Checkbox;
+        checkbox: BABYLON.GUI.Checkbox;
         /**
          * Is checked
          * @default false
@@ -730,7 +854,7 @@ export namespace BabylonGui {
     }
 
     export class CreateInputTextDto {
-        constructor(container?: GUI.Container, name?: string, color?: string, background?: string, width?: number | string, height?: number | string) {
+        constructor(container?: BABYLON.GUI.Container, name?: string, color?: string, background?: string, width?: number | string, height?: number | string) {
             if (container !== undefined) { this.container = container; }
             if (name !== undefined) { this.name = name; }
             if (color !== undefined) { this.color = color; }
@@ -743,7 +867,7 @@ export namespace BabylonGui {
          * @default undefined
          * @optional true
          */
-        container?: GUI.Container;
+        container?: BABYLON.GUI.Container;
         /**
          * Name of the button
          * @default inputName
@@ -783,7 +907,7 @@ export namespace BabylonGui {
         height?: number | string;
     }
     export class SetInputTextBackgroundDto {
-        constructor(inputText?: GUI.InputText, background?: string) {
+        constructor(inputText?: BABYLON.GUI.InputText, background?: string) {
             if (inputText !== undefined) { this.inputText = inputText; }
             if (background !== undefined) { this.background = background; }
         }
@@ -791,7 +915,7 @@ export namespace BabylonGui {
          * Input text to update
          * @default undefined
          */
-        inputText: GUI.InputText;
+        inputText: BABYLON.GUI.InputText;
         /**
          * Background of the input text
          * @default black
@@ -799,7 +923,7 @@ export namespace BabylonGui {
         background = "black";
     }
     export class SetInputTextTextDto {
-        constructor(inputText?: GUI.InputText, text?: string) {
+        constructor(inputText?: BABYLON.GUI.InputText, text?: string) {
             if (inputText !== undefined) { this.inputText = inputText; }
             if (text !== undefined) { this.text = text; }
         }
@@ -807,7 +931,7 @@ export namespace BabylonGui {
          * Input text to update
          * @default undefined
          */
-        inputText: GUI.InputText;
+        inputText: BABYLON.GUI.InputText;
         /**
          * Text of the input text
          * @default
@@ -815,7 +939,7 @@ export namespace BabylonGui {
         text: string;
     }
     export class SetInputTextPlaceholderDto {
-        constructor(inputText?: GUI.InputText, placeholder?: string) {
+        constructor(inputText?: BABYLON.GUI.InputText, placeholder?: string) {
             if (inputText !== undefined) { this.inputText = inputText; }
             if (placeholder !== undefined) { this.placeholder = placeholder; }
         }
@@ -823,7 +947,7 @@ export namespace BabylonGui {
          * Input text to update
          * @default undefined
          */
-        inputText: GUI.InputText;
+        inputText: BABYLON.GUI.InputText;
         /**
          * Placeholder of the input text
          * @default
@@ -831,18 +955,18 @@ export namespace BabylonGui {
         placeholder: string;
     }
     export class InputTextDto {
-        constructor(inputText?: GUI.InputText) {
+        constructor(inputText?: BABYLON.GUI.InputText) {
             if (inputText !== undefined) { this.inputText = inputText; }
         }
         /**
          * Input text to update
          * @default undefined
          */
-        inputText: GUI.InputText;
+        inputText: BABYLON.GUI.InputText;
     }
 
     export class CreateRadioButtonDto {
-        constructor(container?: GUI.Container, name?: string, group?: string, isChecked?: boolean, checkSizeRatio?: number, color?: string, background?: string, width?: number | string, height?: number | string) {
+        constructor(container?: BABYLON.GUI.Container, name?: string, group?: string, isChecked?: boolean, checkSizeRatio?: number, color?: string, background?: string, width?: number | string, height?: number | string) {
             if (container !== undefined) { this.container = container; }
             if (name !== undefined) { this.name = name; }
             if (group !== undefined) { this.group = group; }
@@ -858,7 +982,7 @@ export namespace BabylonGui {
          * @default undefined
          * @optional true
          */
-        container?: GUI.Container;
+        container?: BABYLON.GUI.Container;
         /**
          * Name of the button
          * @default radioBtnName
@@ -907,7 +1031,7 @@ export namespace BabylonGui {
         height?: number | string;
     }
     export class SetRadioButtonCheckSizeRatioDto {
-        constructor(radioButton?: GUI.RadioButton, checkSizeRatio?: number) {
+        constructor(radioButton?: BABYLON.GUI.RadioButton, checkSizeRatio?: number) {
             if (radioButton !== undefined) { this.radioButton = radioButton; }
             if (checkSizeRatio !== undefined) { this.checkSizeRatio = checkSizeRatio; }
         }
@@ -915,7 +1039,7 @@ export namespace BabylonGui {
          * Radio button to update
          * @default undefined
          */
-        radioButton: GUI.RadioButton;
+        radioButton: BABYLON.GUI.RadioButton;
         /**
          * Check size ratio
          * @default 0.8
@@ -926,7 +1050,7 @@ export namespace BabylonGui {
         checkSizeRatio = 0.8;
     }
     export class SetRadioButtonGroupDto {
-        constructor(radioButton?: GUI.RadioButton, group?: string) {
+        constructor(radioButton?: BABYLON.GUI.RadioButton, group?: string) {
             if (radioButton !== undefined) { this.radioButton = radioButton; }
             if (group !== undefined) { this.group = group; }
         }
@@ -934,7 +1058,7 @@ export namespace BabylonGui {
          * Radio button to update
          * @default undefined
          */
-        radioButton: GUI.RadioButton;
+        radioButton: BABYLON.GUI.RadioButton;
         /**
          * Group of the radio button
          * @default
@@ -942,7 +1066,7 @@ export namespace BabylonGui {
         group: string;
     }
     export class SetRadioButtonBackgroundDto {
-        constructor(radioButton?: GUI.RadioButton, background?: string) {
+        constructor(radioButton?: BABYLON.GUI.RadioButton, background?: string) {
             if (radioButton !== undefined) { this.radioButton = radioButton; }
             if (background !== undefined) { this.background = background; }
         }
@@ -950,7 +1074,7 @@ export namespace BabylonGui {
          * Radio button to update
          * @default undefined
          */
-        radioButton: GUI.RadioButton;
+        radioButton: BABYLON.GUI.RadioButton;
         /**
          * Background of the radio button
          * @default black
@@ -958,17 +1082,17 @@ export namespace BabylonGui {
         background = "black";
     }
     export class RadioButtonDto {
-        constructor(radioButton?: GUI.RadioButton) {
+        constructor(radioButton?: BABYLON.GUI.RadioButton) {
             if (radioButton !== undefined) { this.radioButton = radioButton; }
         }
         /**
          * Radio button to update
          * @default undefined
          */
-        radioButton: GUI.RadioButton;
+        radioButton: BABYLON.GUI.RadioButton;
     }
     export class CreateSliderDto {
-        constructor(container?: GUI.Container, name?: string, minimum?: number, maximum?: number, value?: number, step?: number, isVertical?: boolean, color?: string, background?: string, width?: number | string, height?: number | string, displayThumb?: boolean) {
+        constructor(container?: BABYLON.GUI.Container, name?: string, minimum?: number, maximum?: number, value?: number, step?: number, isVertical?: boolean, color?: string, background?: string, width?: number | string, height?: number | string, displayThumb?: boolean) {
             if (container !== undefined) { this.container = container; }
             if (name !== undefined) { this.name = name; }
             if (minimum !== undefined) { this.minimum = minimum; }
@@ -987,7 +1111,7 @@ export namespace BabylonGui {
          * @default undefined
          * @optional true
          */
-        container?: GUI.Container;
+        container?: BABYLON.GUI.Container;
         /**
          * Name of the button
          * @default sliderName
@@ -1059,7 +1183,7 @@ export namespace BabylonGui {
         displayThumb = true;
     }
     export class CreateTextBlockDto {
-        constructor(container?: GUI.Container, name?: string, text?: string, color?: string, width?: number | string, height?: number | string) {
+        constructor(container?: BABYLON.GUI.Container, name?: string, text?: string, color?: string, width?: number | string, height?: number | string) {
             if (container !== undefined) { this.container = container; }
             if (name !== undefined) { this.name = name; }
             if (text !== undefined) { this.text = text; }
@@ -1072,7 +1196,7 @@ export namespace BabylonGui {
          * @default undefined
          * @optional true
          */
-        container?: GUI.Container;
+        container?: BABYLON.GUI.Container;
         /**
          * Name of the button
          * @default sliderName
@@ -1108,7 +1232,7 @@ export namespace BabylonGui {
     }
 
     export class SetTextBlockTextDto {
-        constructor(textBlock?: GUI.TextBlock, text?: string) {
+        constructor(textBlock?: BABYLON.GUI.TextBlock, text?: string) {
             if (textBlock !== undefined) { this.textBlock = textBlock; }
             if (text !== undefined) { this.text = text; }
         }
@@ -1116,7 +1240,7 @@ export namespace BabylonGui {
          * Text block to update
          * @default undefined
          */
-        textBlock: GUI.TextBlock;
+        textBlock: BABYLON.GUI.TextBlock;
         /**
          * Text of the block
          * @default undefined
@@ -1125,7 +1249,7 @@ export namespace BabylonGui {
     }
 
     export class SetTextBlockResizeToFitDto {
-        constructor(textBlock?: GUI.TextBlock, resizeToFit?: boolean) {
+        constructor(textBlock?: BABYLON.GUI.TextBlock, resizeToFit?: boolean) {
             if (textBlock !== undefined) { this.textBlock = textBlock; }
             if (resizeToFit !== undefined) { this.resizeToFit = resizeToFit; }
         }
@@ -1133,7 +1257,7 @@ export namespace BabylonGui {
          * Text block to update
          * @default undefined
          */
-        textBlock: GUI.TextBlock;
+        textBlock: BABYLON.GUI.TextBlock;
         /**
          * Resize to fit
          * @default false
@@ -1141,7 +1265,7 @@ export namespace BabylonGui {
         resizeToFit = false;
     }
     export class SetTextBlockTextWrappingDto {
-        constructor(textBlock?: GUI.TextBlock, textWrapping?: boolean) {
+        constructor(textBlock?: BABYLON.GUI.TextBlock, textWrapping?: boolean) {
             if (textBlock !== undefined) { this.textBlock = textBlock; }
             if (textWrapping !== undefined) { this.textWrapping = textWrapping; }
         }
@@ -1149,15 +1273,15 @@ export namespace BabylonGui {
          * Text block to update
          * @default undefined
          */
-        textBlock: GUI.TextBlock;
+        textBlock: BABYLON.GUI.TextBlock;
         /**
          * Text wrapping
          * @default undefined
          */
-        textWrapping: boolean | GUI.TextWrapping;
+        textWrapping: boolean | BABYLON.GUI.TextWrapping;
     }
     export class SetTextBlockLineSpacingDto {
-        constructor(textBlock?: GUI.TextBlock, lineSpacing?: string | number) {
+        constructor(textBlock?: BABYLON.GUI.TextBlock, lineSpacing?: string | number) {
             if (textBlock !== undefined) { this.textBlock = textBlock; }
             if (lineSpacing !== undefined) { this.lineSpacing = lineSpacing; }
         }
@@ -1165,7 +1289,7 @@ export namespace BabylonGui {
          * Text block to update
          * @default undefined
          */
-        textBlock: GUI.TextBlock;
+        textBlock: BABYLON.GUI.TextBlock;
         /**
          * Line spacing of the text
          * @default undefined
@@ -1173,18 +1297,18 @@ export namespace BabylonGui {
         lineSpacing: string | number;
     }
     export class TextBlockDto {
-        constructor(textBlock?: GUI.TextBlock) {
+        constructor(textBlock?: BABYLON.GUI.TextBlock) {
             if (textBlock !== undefined) { this.textBlock = textBlock; }
         }
         /**
          * Text block to update
          * @default undefined
          */
-        textBlock: GUI.TextBlock;
+        textBlock: BABYLON.GUI.TextBlock;
     }
 
     export class SliderThumbDto {
-        constructor(slider?: GUI.Slider, isThumbCircle?: boolean, thumbColor?: string, thumbWidth?: string | number, isThumbClamped?: boolean, displayThumb?: boolean) {
+        constructor(slider?: BABYLON.GUI.Slider, isThumbCircle?: boolean, thumbColor?: string, thumbWidth?: string | number, isThumbClamped?: boolean, displayThumb?: boolean) {
             if (slider !== undefined) { this.slider = slider; }
             if (isThumbCircle !== undefined) { this.isThumbCircle = isThumbCircle; }
             if (thumbColor !== undefined) { this.thumbColor = thumbColor; }
@@ -1196,7 +1320,7 @@ export namespace BabylonGui {
          * Slider for which the thumb needs to be updated
          * @default undefined
          */
-        slider: GUI.Slider;
+        slider: BABYLON.GUI.Slider;
         /**
          * Is thumb circle
          * @default false
@@ -1225,17 +1349,17 @@ export namespace BabylonGui {
         displayThumb = true;
     }
     export class SliderDto {
-        constructor(slider?: GUI.Slider) {
+        constructor(slider?: BABYLON.GUI.Slider) {
             if (slider !== undefined) { this.slider = slider; }
         }
         /**
          * Slider for which the thumb needs to be updated
          * @default undefined
          */
-        slider: GUI.Slider;
+        slider: BABYLON.GUI.Slider;
     }
     export class SliderBorderColorDto {
-        constructor(slider?: GUI.Slider, borderColor?: string) {
+        constructor(slider?: BABYLON.GUI.Slider, borderColor?: string) {
             if (slider !== undefined) { this.slider = slider; }
             if (borderColor !== undefined) { this.borderColor = borderColor; }
         }
@@ -1243,7 +1367,7 @@ export namespace BabylonGui {
          * Slider for which the thumb needs to be updated
          * @default undefined
          */
-        slider: GUI.Slider;
+        slider: BABYLON.GUI.Slider;
         /**
          * Border color of the slider
          * @default white
@@ -1251,7 +1375,7 @@ export namespace BabylonGui {
         borderColor = "white";
     }
     export class SliderBackgroundColorDto {
-        constructor(slider?: GUI.Slider, backgroundColor?: string) {
+        constructor(slider?: BABYLON.GUI.Slider, backgroundColor?: string) {
             if (slider !== undefined) { this.slider = slider; }
             if (backgroundColor !== undefined) { this.backgroundColor = backgroundColor; }
         }
@@ -1259,7 +1383,7 @@ export namespace BabylonGui {
          * Slider for which the thumb needs to be updated
          * @default undefined
          */
-        slider: GUI.Slider;
+        slider: BABYLON.GUI.Slider;
         /**
          * Background color of the slider
          * @default black
@@ -1267,7 +1391,7 @@ export namespace BabylonGui {
         backgroundColor = "black";
     }
     export class SetSliderValueDto {
-        constructor(slider?: GUI.Slider, value?: number) {
+        constructor(slider?: BABYLON.GUI.Slider, value?: number) {
             if (slider !== undefined) { this.slider = slider; }
             if (value !== undefined) { this.value = value; }
         }
@@ -1275,7 +1399,7 @@ export namespace BabylonGui {
          * Slider for which the thumb needs to be updated
          * @default undefined
          */
-        slider: GUI.Slider;
+        slider: BABYLON.GUI.Slider;
         /**
          * Value of the slider
          * @default 5
@@ -1286,7 +1410,7 @@ export namespace BabylonGui {
         value: number;
     }
     export class PaddingLeftRightTopBottomDto {
-        constructor(control?: GUI.Control, paddingLeft?: number | string, paddingRight?: number | string, paddingTop?: number | string, paddingBottom?: number | string) {
+        constructor(control?: BABYLON.GUI.Control, paddingLeft?: number | string, paddingRight?: number | string, paddingTop?: number | string, paddingBottom?: number | string) {
             if (control !== undefined) { this.control = control; }
             if (paddingLeft !== undefined) { this.paddingLeft = paddingLeft; }
             if (paddingRight !== undefined) { this.paddingRight = paddingRight; }
@@ -1297,7 +1421,7 @@ export namespace BabylonGui {
          * Control to change the padding
          * @default undefined
          */
-        control: GUI.Control;
+        control: BABYLON.GUI.Control;
         /**
          * Padding left of the stack panel
          * @default undefined
@@ -1324,7 +1448,7 @@ export namespace BabylonGui {
         paddingBottom: number | string;
     }
     export class CloneControlDto {
-        constructor(control?: GUI.Control, container?: GUI.Container, name?: string, host?: GUI.AdvancedDynamicTexture) {
+        constructor(control?: BABYLON.GUI.Control, container?: BABYLON.GUI.Container, name?: string, host?: BABYLON.GUI.AdvancedDynamicTexture) {
             if (control !== undefined) { this.control = control; }
             if (container !== undefined) { this.container = container; }
             if (name !== undefined) { this.name = name; }
@@ -1334,13 +1458,13 @@ export namespace BabylonGui {
          * Control to clone
          * @default undefined
          */
-        control: GUI.Control;
+        control: BABYLON.GUI.Control;
         /**
          * Use container to which the cloned control will be added
          * @default undefined
          * @optional true
          */
-        container?: GUI.Container;
+        container?: BABYLON.GUI.Container;
         /**
          * Name of the cloned control
          * @default clonedControl
@@ -1351,7 +1475,7 @@ export namespace BabylonGui {
          * @default undefined
          * @optional true
          */
-        host?: GUI.AdvancedDynamicTexture;
+        host?: BABYLON.GUI.AdvancedDynamicTexture;
     }
     export class AlignmentDto<T> {
         constructor(control?: T, horizontalAlignment?: horizontalAlignmentEnum, verticalAlignment?: verticalAlignmentEnum) {
@@ -1377,7 +1501,7 @@ export namespace BabylonGui {
     }
 
     export class SetTextBlockTextOutlineDto {
-        constructor(textBlock?: GUI.TextBlock, outlineWidth?: number, outlineColor?: string) {
+        constructor(textBlock?: BABYLON.GUI.TextBlock, outlineWidth?: number, outlineColor?: string) {
             if (textBlock !== undefined) { this.textBlock = textBlock; }
             if (outlineWidth !== undefined) { this.outlineWidth = outlineWidth; }
             if (outlineColor !== undefined) { this.outlineColor = outlineColor; }
@@ -1386,7 +1510,7 @@ export namespace BabylonGui {
          * Control to change the padding
          * @default undefined
          */
-        textBlock: GUI.TextBlock;
+        textBlock: BABYLON.GUI.TextBlock;
         /**
          * Alignment horizontal
          * @default 0

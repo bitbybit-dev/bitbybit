@@ -1,6 +1,6 @@
 
 import { Context } from "../../../context";
-import * as GUI from "@babylonjs/gui";
+import * as BABYLON from "../../../../gui-enriched-babylon";
 import * as Inputs from "../../../inputs/inputs";
 
 export class BabylonGuiButton {
@@ -15,8 +15,8 @@ export class BabylonGuiButton {
      * @shortname create simple button
      * @disposableOutput true
      */
-    createSimpleButton(inputs: Inputs.BabylonGui.CreateButtonDto): GUI.Button {
-        const button = GUI.Button.CreateSimpleButton(inputs.name, inputs.label);
+    createSimpleButton(inputs: Inputs.BabylonGui.CreateButtonDto): BABYLON.GUI.Button {
+        const button = BABYLON.GUI.Button.CreateSimpleButton(inputs.name, inputs.label);
 
         if (inputs.width) {
             button.width = inputs.width;
@@ -45,7 +45,7 @@ export class BabylonGuiButton {
      * @group set
      * @shortname set button text
      */
-    setButtonText(inputs: Inputs.BabylonGui.SetButtonTextDto): GUI.Button {
+    setButtonText(inputs: Inputs.BabylonGui.SetButtonTextDto): BABYLON.GUI.Button {
         inputs.button.textBlock.text = inputs.text;
         return inputs.button;
     }

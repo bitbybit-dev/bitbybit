@@ -1,6 +1,6 @@
 
 import { Context } from "../../../context";
-import * as GUI from "@babylonjs/gui";
+import * as BABYLON from "../../../../gui-enriched-babylon";
 import * as Inputs from "../../../inputs/inputs";
 
 export class BabylonGuiTextBlock {
@@ -14,8 +14,8 @@ export class BabylonGuiTextBlock {
      * @shortname create text block
      * @disposableOutput true
      */
-    createTextBlock(inputs: Inputs.BabylonGui.CreateTextBlockDto): GUI.TextBlock {
-        const textBlock = new GUI.TextBlock(inputs.name, inputs.text);
+    createTextBlock(inputs: Inputs.BabylonGui.CreateTextBlockDto): BABYLON.GUI.TextBlock {
+        const textBlock = new BABYLON.GUI.TextBlock(inputs.name, inputs.text);
 
         if (inputs.height) {
             textBlock.height = inputs.height;
@@ -52,27 +52,27 @@ export class BabylonGuiTextBlock {
      * @group positioning
      * @shortname align text block text
      */
-    alignText(inputs: Inputs.BabylonGui.AlignmentDto<GUI.TextBlock>): GUI.TextBlock {
+    alignText(inputs: Inputs.BabylonGui.AlignmentDto<BABYLON.GUI.TextBlock>): BABYLON.GUI.TextBlock {
         switch (inputs.horizontalAlignment) {
             case Inputs.BabylonGui.horizontalAlignmentEnum.left:
-                inputs.control.textHorizontalAlignment = GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
+                inputs.control.textHorizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
                 break;
             case Inputs.BabylonGui.horizontalAlignmentEnum.right:
-                inputs.control.textHorizontalAlignment = GUI.Control.HORIZONTAL_ALIGNMENT_RIGHT;
+                inputs.control.textHorizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_RIGHT;
                 break;
             case Inputs.BabylonGui.horizontalAlignmentEnum.center:
-                inputs.control.textHorizontalAlignment = GUI.Control.HORIZONTAL_ALIGNMENT_CENTER;
+                inputs.control.textHorizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_CENTER;
                 break;
         }
         switch (inputs.verticalAlignment) {
             case Inputs.BabylonGui.verticalAlignmentEnum.top:
-                inputs.control.textVerticalAlignment = GUI.Control.VERTICAL_ALIGNMENT_TOP;
+                inputs.control.textVerticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_TOP;
                 break;
             case Inputs.BabylonGui.verticalAlignmentEnum.bottom:
-                inputs.control.textVerticalAlignment = GUI.Control.VERTICAL_ALIGNMENT_BOTTOM;
+                inputs.control.textVerticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_BOTTOM;
                 break;
             case Inputs.BabylonGui.verticalAlignmentEnum.center:
-                inputs.control.textVerticalAlignment = GUI.Control.VERTICAL_ALIGNMENT_CENTER;
+                inputs.control.textVerticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_CENTER;
                 break;
         }
         return inputs.control;
@@ -85,7 +85,7 @@ export class BabylonGuiTextBlock {
    * @group set
    * @shortname text outline
    */
-    setTextOutline(inputs: Inputs.BabylonGui.SetTextBlockTextOutlineDto): GUI.TextBlock {
+    setTextOutline(inputs: Inputs.BabylonGui.SetTextBlockTextOutlineDto): BABYLON.GUI.TextBlock {
         inputs.textBlock.outlineWidth = inputs.outlineWidth;
         inputs.textBlock.outlineColor = inputs.outlineColor;
         return inputs.textBlock;
@@ -98,7 +98,7 @@ export class BabylonGuiTextBlock {
      * @group set
      * @shortname set text block text
      */
-    setText(inputs: Inputs.BabylonGui.SetTextBlockTextDto): GUI.TextBlock {
+    setText(inputs: Inputs.BabylonGui.SetTextBlockTextDto): BABYLON.GUI.TextBlock {
         inputs.textBlock.text = inputs.text;
         return inputs.textBlock;
     }
@@ -110,7 +110,7 @@ export class BabylonGuiTextBlock {
      * @group set
      * @shortname set resize to fit
      */
-    setRsizeToFit(inputs: Inputs.BabylonGui.SetTextBlockResizeToFitDto): GUI.TextBlock {
+    setRsizeToFit(inputs: Inputs.BabylonGui.SetTextBlockResizeToFitDto): BABYLON.GUI.TextBlock {
         inputs.textBlock.resizeToFit = inputs.resizeToFit;
         return inputs.textBlock;
     }
@@ -122,7 +122,7 @@ export class BabylonGuiTextBlock {
      * @group set
      * @shortname set text wrapping
      */
-    setTextWrapping(inputs: Inputs.BabylonGui.SetTextBlockTextWrappingDto): GUI.TextBlock {
+    setTextWrapping(inputs: Inputs.BabylonGui.SetTextBlockTextWrappingDto): BABYLON.GUI.TextBlock {
         inputs.textBlock.textWrapping = inputs.textWrapping;
         return inputs.textBlock;
     }
@@ -134,7 +134,7 @@ export class BabylonGuiTextBlock {
      * @group set
      * @shortname set line spacing
      */
-    setLineSpacing(inputs: Inputs.BabylonGui.SetTextBlockLineSpacingDto): GUI.TextBlock {
+    setLineSpacing(inputs: Inputs.BabylonGui.SetTextBlockLineSpacingDto): BABYLON.GUI.TextBlock {
         inputs.textBlock.lineSpacing = inputs.lineSpacing;
         return inputs.textBlock;
     }
@@ -157,7 +157,7 @@ export class BabylonGuiTextBlock {
      * @group get
      * @shortname get text wrapping
      */
-    getTextWrapping(inputs: Inputs.BabylonGui.TextBlockDto): boolean | GUI.TextWrapping {
+    getTextWrapping(inputs: Inputs.BabylonGui.TextBlockDto): boolean | BABYLON.GUI.TextWrapping {
         return inputs.textBlock.textWrapping;
     }
 

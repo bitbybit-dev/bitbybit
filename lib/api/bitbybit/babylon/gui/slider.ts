@@ -1,6 +1,6 @@
 
 import { Context } from "../../../context";
-import * as GUI from "@babylonjs/gui";
+import * as BABYLON from "../../../../gui-enriched-babylon";
 import * as Inputs from "../../../inputs/inputs";
 
 export class BabylonGuiSlider {
@@ -15,8 +15,8 @@ export class BabylonGuiSlider {
      * @shortname create slider
      * @disposableOutput true
      */
-    createSlider(inputs: Inputs.BabylonGui.CreateSliderDto): GUI.Slider {
-        const slider = new GUI.Slider(inputs.name);
+    createSlider(inputs: Inputs.BabylonGui.CreateSliderDto): BABYLON.GUI.Slider {
+        const slider = new BABYLON.GUI.Slider(inputs.name);
 
         slider.minimum = inputs.minimum;
         slider.maximum = inputs.maximum;
@@ -65,7 +65,7 @@ export class BabylonGuiSlider {
      * @group set
      * @shortname set slider thumb
      */
-    changeSliderThumb(inputs: Inputs.BabylonGui.SliderThumbDto): GUI.Slider {
+    changeSliderThumb(inputs: Inputs.BabylonGui.SliderThumbDto): BABYLON.GUI.Slider {
         inputs.slider.thumbColor = inputs.thumbColor;
         inputs.slider.isThumbCircle = inputs.isThumbCircle;
         inputs.slider.isThumbClamped = inputs.isThumbClamped;
@@ -83,7 +83,7 @@ export class BabylonGuiSlider {
      * @group set
      * @shortname set slider border color
      */
-    setBorderColor(inputs: Inputs.BabylonGui.SliderBorderColorDto): GUI.Slider {
+    setBorderColor(inputs: Inputs.BabylonGui.SliderBorderColorDto): BABYLON.GUI.Slider {
         inputs.slider.borderColor = inputs.borderColor;
         return inputs.slider;
     }
@@ -95,7 +95,7 @@ export class BabylonGuiSlider {
      * @group set
      * @shortname set slider background color
      */
-    setBackgroundColor(inputs: Inputs.BabylonGui.SliderBackgroundColorDto): GUI.Slider {
+    setBackgroundColor(inputs: Inputs.BabylonGui.SliderBackgroundColorDto): BABYLON.GUI.Slider {
         inputs.slider.background = inputs.backgroundColor;
         return inputs.slider;
     }
@@ -107,7 +107,7 @@ export class BabylonGuiSlider {
      * @group set
      * @shortname set slider maximum
      */
-    setMaximum(inputs: Inputs.BabylonGui.SetSliderValueDto): GUI.Slider {
+    setMaximum(inputs: Inputs.BabylonGui.SetSliderValueDto): BABYLON.GUI.Slider {
         inputs.slider.maximum = inputs.value;
         return inputs.slider;
     }
@@ -119,7 +119,7 @@ export class BabylonGuiSlider {
      * @group set
      * @shortname set slider minimum
      */
-    setMinimum(inputs: Inputs.BabylonGui.SetSliderValueDto): GUI.Slider {
+    setMinimum(inputs: Inputs.BabylonGui.SetSliderValueDto): BABYLON.GUI.Slider {
         inputs.slider.minimum = inputs.value;
         return inputs.slider;
     }
@@ -131,7 +131,7 @@ export class BabylonGuiSlider {
      * @group set
      * @shortname set slider step
      */
-    setStep(inputs: Inputs.BabylonGui.SetSliderValueDto): GUI.Slider {
+    setStep(inputs: Inputs.BabylonGui.SetSliderValueDto): BABYLON.GUI.Slider {
         inputs.slider.step = inputs.value;
         return inputs.slider;
     }
@@ -143,7 +143,7 @@ export class BabylonGuiSlider {
      * @group set
      * @shortname set slider value
      */
-    setValue(inputs: Inputs.BabylonGui.SetSliderValueDto): GUI.Slider {
+    setValue(inputs: Inputs.BabylonGui.SetSliderValueDto): BABYLON.GUI.Slider {
         inputs.slider.value = inputs.value;
         return inputs.slider;
     }

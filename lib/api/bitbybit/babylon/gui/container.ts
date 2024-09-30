@@ -1,6 +1,6 @@
 
 import { Context } from "../../../context";
-import * as GUI from "@babylonjs/gui";
+import * as BABYLON from "../../../../gui-enriched-babylon";
 import * as Inputs from "../../../inputs/inputs";
 
 export class BabylonGuiContainer {
@@ -14,7 +14,7 @@ export class BabylonGuiContainer {
      * @group controls
      * @shortname add control to container
      */
-    addControl(inputs: Inputs.BabylonGui.AddControlToContainerDto): GUI.Control {
+    addControl(inputs: Inputs.BabylonGui.AddControlToContainerDto): BABYLON.GUI.Control {
         inputs.container.addControl(inputs.control);
         return inputs.control;
     }
@@ -26,7 +26,7 @@ export class BabylonGuiContainer {
      * @group order
      * @shortname fix control order in container
      */
-    fixControlOrderInContainer(inputs: Inputs.BabylonGui.FixControlOrderInContainerDto): GUI.Control {
+    fixControlOrderInContainer(inputs: Inputs.BabylonGui.FixControlOrderInContainerDto): BABYLON.GUI.Control {
         inputs.container.removeControl(inputs.control);
         inputs.container.addControl(inputs.control);
         const controls = inputs.container.children;
@@ -43,7 +43,7 @@ export class BabylonGuiContainer {
      * @group set
      * @shortname set container background
      */
-    setBackground(inputs: Inputs.BabylonGui.SetContainerBackgroundDto): GUI.Container {
+    setBackground(inputs: Inputs.BabylonGui.SetContainerBackgroundDto): BABYLON.GUI.Container {
         inputs.container.background = inputs.background;
         return inputs.container;
     }

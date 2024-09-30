@@ -1,6 +1,6 @@
 
 import { Context } from "../../../context";
-import * as GUI from "@babylonjs/gui";
+import * as BABYLON from "../../../../gui-enriched-babylon";
 import * as Inputs from "../../../inputs/inputs";
 
 export class BabylonGuiControl {
@@ -14,7 +14,7 @@ export class BabylonGuiControl {
      * @group positioning
      * @shortname change padding
      */
-    changeControlPadding(inputs: Inputs.BabylonGui.PaddingLeftRightTopBottomDto): GUI.Control {
+    changeControlPadding(inputs: Inputs.BabylonGui.PaddingLeftRightTopBottomDto): BABYLON.GUI.Control {
         if (inputs.paddingLeft !== undefined) {
             inputs.control.paddingLeft = inputs.paddingLeft;
         }
@@ -37,27 +37,27 @@ export class BabylonGuiControl {
      * @group positioning
      * @shortname change alignment
      */
-    changeControlAlignment(inputs: Inputs.BabylonGui.AlignmentDto<GUI.Control>): GUI.Control {
+    changeControlAlignment(inputs: Inputs.BabylonGui.AlignmentDto<BABYLON.GUI.Control>): BABYLON.GUI.Control {
         switch (inputs.horizontalAlignment) {
             case "left":
-                inputs.control.horizontalAlignment = GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
+                inputs.control.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
                 break;
             case "right":
-                inputs.control.horizontalAlignment = GUI.Control.HORIZONTAL_ALIGNMENT_RIGHT;
+                inputs.control.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_RIGHT;
                 break;
             case "center":
-                inputs.control.horizontalAlignment = GUI.Control.HORIZONTAL_ALIGNMENT_CENTER;
+                inputs.control.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_CENTER;
                 break;
         }
         switch (inputs.verticalAlignment) {
             case "top":
-                inputs.control.verticalAlignment = GUI.Control.VERTICAL_ALIGNMENT_TOP;
+                inputs.control.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_TOP;
                 break;
             case "bottom":
-                inputs.control.verticalAlignment = GUI.Control.VERTICAL_ALIGNMENT_BOTTOM;
+                inputs.control.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_BOTTOM;
                 break;
             case "center":
-                inputs.control.verticalAlignment = GUI.Control.VERTICAL_ALIGNMENT_CENTER;
+                inputs.control.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_CENTER;
                 break;
         }
         return inputs.control;
@@ -71,7 +71,7 @@ export class BabylonGuiControl {
      * @shortname clone control
      * @disposableOutput true
      */
-    cloneControl(inputs: Inputs.BabylonGui.CloneControlDto): GUI.Control {
+    cloneControl(inputs: Inputs.BabylonGui.CloneControlDto): BABYLON.GUI.Control {
         const clonedControl = inputs.control.clone(inputs.host);
         if (inputs.container) {
             inputs.container.addControl(clonedControl);
@@ -99,7 +99,7 @@ export class BabylonGuiControl {
      * @group get
      * @shortname get control by name
      */
-    getControlByName(inputs: Inputs.BabylonGui.GetControlByNameDto): GUI.Control {
+    getControlByName(inputs: Inputs.BabylonGui.GetControlByNameDto): BABYLON.GUI.Control {
         return inputs.container.children.find(c => c.name === inputs.name);
     }
 
@@ -109,7 +109,7 @@ export class BabylonGuiControl {
      * @group set
      * @shortname set control height
      */
-    setHeight(inputs: Inputs.BabylonGui.SetControlHeightDto): GUI.Control {
+    setHeight(inputs: Inputs.BabylonGui.SetControlHeightDto): BABYLON.GUI.Control {
         inputs.control.height = inputs.height;
         return inputs.control;
     }
@@ -120,7 +120,7 @@ export class BabylonGuiControl {
      * @group set
      * @shortname set control width
      */
-    setWidth(inputs: Inputs.BabylonGui.SetControlWidthDto): GUI.Control {
+    setWidth(inputs: Inputs.BabylonGui.SetControlWidthDto): BABYLON.GUI.Control {
         inputs.control.width = inputs.width;
         return inputs.control;
     }
@@ -131,7 +131,7 @@ export class BabylonGuiControl {
      * @group set
      * @shortname set control color
      */
-    setColor(inputs: Inputs.BabylonGui.SetControlColorDto): GUI.Control {
+    setColor(inputs: Inputs.BabylonGui.SetControlColorDto): BABYLON.GUI.Control {
         inputs.control.color = inputs.color;
         return inputs.control;
     }
@@ -143,7 +143,7 @@ export class BabylonGuiControl {
      * @group set
      * @shortname set control font size
      */
-    setFontSize(inputs: Inputs.BabylonGui.SetControlFontSizeDto): GUI.Control {
+    setFontSize(inputs: Inputs.BabylonGui.SetControlFontSizeDto): BABYLON.GUI.Control {
         inputs.control.fontSize = inputs.fontSize;
         return inputs.control;
     }
@@ -181,7 +181,7 @@ export class BabylonGuiControl {
     /**
      * Get control font size
      * @param inputs control
-     * @returns control font size
+     * @returns control font size. Can be in the form of a string "24px" or a number
      * @group get
      * @shortname get control font size
      */

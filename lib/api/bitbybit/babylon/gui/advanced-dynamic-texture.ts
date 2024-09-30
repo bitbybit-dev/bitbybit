@@ -1,8 +1,6 @@
 
 import { Context } from "../../../context";
-import * as GUI from "@babylonjs/gui";
-import * as BABYLON from "@babylonjs/core";
-
+import * as BABYLON from "../../../../gui-enriched-babylon";
 import * as Inputs from "../../../inputs/inputs";
 
 export class BabylonGuiAdvancedDynamicTexture {
@@ -16,9 +14,9 @@ export class BabylonGuiAdvancedDynamicTexture {
      * @shortname create full screen ui
      * @disposableOutput true
      */
-    createFullScreenUI(inputs: Inputs.BabylonGui.CreateFullScreenUIDto): GUI.AdvancedDynamicTexture {
+    createFullScreenUI(inputs: Inputs.BabylonGui.CreateFullScreenUIDto): BABYLON.GUI.AdvancedDynamicTexture {
         const sampling = BABYLON.Texture.BILINEAR_SAMPLINGMODE;
-        const texture = GUI.AdvancedDynamicTexture.CreateFullscreenUI(inputs.name, inputs.foreground, this.context.scene, sampling, inputs.adaptiveScaling);
+        const texture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI(inputs.name, inputs.foreground, this.context.scene, sampling, inputs.adaptiveScaling);
         return texture;
     }
 

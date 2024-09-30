@@ -1,6 +1,6 @@
 
 import { Context } from "../../../context";
-import * as GUI from "@babylonjs/gui";
+import * as BABYLON from "../../../../gui-enriched-babylon";
 import * as Inputs from "../../../inputs/inputs";
 
 export class BabylonGuiColorPicker {
@@ -15,8 +15,8 @@ export class BabylonGuiColorPicker {
      * @shortname color picker
      * @disposableOutput true
      */
-    createColorPicker(inputs: Inputs.BabylonGui.CreateColorPickerDto): GUI.ColorPicker {
-        const colorPicker = new GUI.ColorPicker(inputs.name);
+    createColorPicker(inputs: Inputs.BabylonGui.CreateColorPickerDto): BABYLON.GUI.ColorPicker {
+        const colorPicker = new BABYLON.GUI.ColorPicker(inputs.name);
 
         if (inputs.height) {
             colorPicker.height = inputs.height;
@@ -28,12 +28,64 @@ export class BabylonGuiColorPicker {
         } else {
             colorPicker.width = "300px";
         }
+        if (inputs.size) {
+            colorPicker.size = inputs.size;
+        }
 
+        if (inputs.defaultColor) {
+            colorPicker.value = BABYLON.Color3.FromHexString(inputs.defaultColor);
+        }
         colorPicker.color = inputs.color;
+
         if (inputs.container) {
             inputs.container.addControl(colorPicker);
         }
         return colorPicker;
     }
 
+    /**
+     * Sets color picker value color
+     * @param inputs color picker and color
+     * @returns color picker
+     * @group set
+     * @shortname set colo picker value
+     */
+    setColorPickerValue(inputs: Inputs.BabylonGui.SetColorPickerValueDto): BABYLON.GUI.ColorPicker {
+        inputs.colorPicker.value = BABYLON.Color3.FromHexString(inputs.color);
+        return inputs.colorPicker;
+    }
+
+    /**
+     * Sets color picker size (width and height)
+     * @param inputs color picker and size
+     * @returns color picker
+     * @group set
+     * @shortname set color picker size
+     */
+    setColorPickerSize(inputs: Inputs.BabylonGui.SetColorPickerSizeDto): BABYLON.GUI.ColorPicker {
+        inputs.colorPicker.size = inputs.size;
+        return inputs.colorPicker;
+    }
+
+    /**
+     * Gets color picker value color
+     * @param inputs color picker
+     * @returns color
+     * @group get
+     * @shortname get color picker value
+     */
+    getColorPickerValue(inputs: Inputs.BabylonGui.ColorPickerDto): string {
+        return inputs.colorPicker.value.toHexString();
+    }
+
+    /**
+     * Gets color picker size
+     * @param inputs color picker
+     * @returns size
+     * @group get
+     * @shortname get color picker size
+     */
+    getColorPickerSize(inputs: Inputs.BabylonGui.ColorPickerDto): string | number {
+        return inputs.colorPicker.size;
+    }
 }

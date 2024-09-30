@@ -1,6 +1,6 @@
 
 import { Context } from "../../../context";
-import * as GUI from "@babylonjs/gui";
+import * as BABYLON from "../../../../gui-enriched-babylon";
 import * as Inputs from "../../../inputs/inputs";
 
 export class BabylonGuiCheckbox {
@@ -15,8 +15,8 @@ export class BabylonGuiCheckbox {
      * @shortname create checkbox
      * @disposableOutput true
      */
-    createCheckbox(inputs: Inputs.BabylonGui.CreateCheckboxDto): GUI.Checkbox {
-        const checkbox = new GUI.Checkbox(inputs.name);
+    createCheckbox(inputs: Inputs.BabylonGui.CreateCheckboxDto): BABYLON.GUI.Checkbox {
+        const checkbox = new BABYLON.GUI.Checkbox(inputs.name);
 
         if (inputs.height) {
             checkbox.height = inputs.height;
@@ -45,7 +45,7 @@ export class BabylonGuiCheckbox {
      * @group set
      * @shortname set checkbox background
      */
-    setBackground(inputs: Inputs.BabylonGui.SetCheckboxBackgroundDto): GUI.Checkbox {
+    setBackground(inputs: Inputs.BabylonGui.SetCheckboxBackgroundDto): BABYLON.GUI.Checkbox {
         inputs.checkbox.background = inputs.background;
         return inputs.checkbox;
     }
@@ -56,7 +56,7 @@ export class BabylonGuiCheckbox {
      * @group set
      * @shortname set checkbox check size ratio
      */
-    setCheckSizeRatio(inputs: Inputs.BabylonGui.SetCheckboxCheckSizeRatioDto): GUI.Checkbox {
+    setCheckSizeRatio(inputs: Inputs.BabylonGui.SetCheckboxCheckSizeRatioDto): BABYLON.GUI.Checkbox {
         inputs.checkbox.checkSizeRatio = inputs.checkSizeRatio;
         return inputs.checkbox;
     }
@@ -67,7 +67,7 @@ export class BabylonGuiCheckbox {
      * @group set
      * @shortname set checkbox is checked
      */
-    setIsChecked(inputs: Inputs.BabylonGui.SetCheckboxIsCheckedDto): GUI.Checkbox {
+    setIsChecked(inputs: Inputs.BabylonGui.SetCheckboxIsCheckedDto): BABYLON.GUI.Checkbox {
         inputs.checkbox.isChecked = inputs.isChecked;
         return inputs.checkbox;
     }

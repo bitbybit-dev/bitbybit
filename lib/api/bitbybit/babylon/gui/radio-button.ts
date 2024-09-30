@@ -1,6 +1,6 @@
 
 import { Context } from "../../../context";
-import * as GUI from "@babylonjs/gui";
+import * as BABYLON from "../../../../gui-enriched-babylon";
 import * as Inputs from "../../../inputs/inputs";
 
 export class BabylonGuiRadioButton {
@@ -15,8 +15,8 @@ export class BabylonGuiRadioButton {
      * @shortname create radio button
      * @disposableOutput true
      */
-    createRadioButton(inputs: Inputs.BabylonGui.CreateRadioButtonDto): GUI.RadioButton {
-        const radioButton = new GUI.RadioButton(inputs.name);
+    createRadioButton(inputs: Inputs.BabylonGui.CreateRadioButtonDto): BABYLON.GUI.RadioButton {
+        const radioButton = new BABYLON.GUI.RadioButton(inputs.name);
 
         if (inputs.height) {
             radioButton.height = inputs.height;
@@ -46,7 +46,7 @@ export class BabylonGuiRadioButton {
      * @group set
      * @shortname set radio button check size ratio
      */
-    setCheckSizeRatio(inputs: Inputs.BabylonGui.SetRadioButtonCheckSizeRatioDto): GUI.RadioButton {
+    setCheckSizeRatio(inputs: Inputs.BabylonGui.SetRadioButtonCheckSizeRatioDto): BABYLON.GUI.RadioButton {
         inputs.radioButton.checkSizeRatio = inputs.checkSizeRatio;
         return inputs.radioButton;
     }
@@ -57,7 +57,7 @@ export class BabylonGuiRadioButton {
      * @group set
      * @shortname set radio button group
      */
-    setGroup(inputs: Inputs.BabylonGui.SetRadioButtonGroupDto): GUI.RadioButton {
+    setGroup(inputs: Inputs.BabylonGui.SetRadioButtonGroupDto): BABYLON.GUI.RadioButton {
         inputs.radioButton.group = inputs.group;
         return inputs.radioButton;
     }
@@ -68,7 +68,7 @@ export class BabylonGuiRadioButton {
      * @group set
      * @shortname set radio button background
      */
-    setBackground(inputs: Inputs.BabylonGui.SetRadioButtonBackgroundDto): GUI.RadioButton {
+    setBackground(inputs: Inputs.BabylonGui.SetRadioButtonBackgroundDto): BABYLON.GUI.RadioButton {
         inputs.radioButton.background = inputs.background;
         return inputs.radioButton;
     }

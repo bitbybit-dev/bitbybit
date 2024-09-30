@@ -11,6 +11,7 @@ import { BabylonGuiRadioButton } from "./radio-button";
 import { BabylonGuiCheckbox } from "./checkbox";
 import { BabylonGuiInputText } from "./input-text";
 import { BabylonGuiColorPicker } from "./color-picker";
+import { BabylonGuiImage } from "./image";
 
 export class BabylonGui {
     advancedDynamicTexture: BabylonGuiAdvancedDynamicTexture;
@@ -24,6 +25,7 @@ export class BabylonGui {
     checkbox: BabylonGuiCheckbox;
     inputText: BabylonGuiInputText;
     colorPicker: BabylonGuiColorPicker;
+    image: BabylonGuiImage;
 
     constructor(private readonly context: Context) {
         this.advancedDynamicTexture = new BabylonGuiAdvancedDynamicTexture(context);
@@ -37,6 +39,7 @@ export class BabylonGui {
         this.checkbox = new BabylonGuiCheckbox(context);
         this.inputText = new BabylonGuiInputText(context);
         this.colorPicker = new BabylonGuiColorPicker(context);
+        this.image = new BabylonGuiImage(context);
     }
 
 }

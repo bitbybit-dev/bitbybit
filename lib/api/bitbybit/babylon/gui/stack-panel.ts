@@ -1,6 +1,6 @@
 
 import { Context } from "../../../context";
-import * as GUI from "@babylonjs/gui";
+import * as BABYLON from "../../../../gui-enriched-babylon";
 import * as Inputs from "../../../inputs/inputs";
 
 export class BabylonGuiStackPanel {
@@ -14,11 +14,11 @@ export class BabylonGuiStackPanel {
      * @shortname create stack panel
      * @disposableOutput true
      */
-    createStackPanel(inputs: Inputs.BabylonGui.CreateStackPanelDto): GUI.StackPanel {
-        const stackPanel = new GUI.StackPanel(inputs.name);
+    createStackPanel(inputs: Inputs.BabylonGui.CreateStackPanelDto): BABYLON.GUI.StackPanel {
+        const stackPanel = new BABYLON.GUI.StackPanel(inputs.name);
         stackPanel.isVertical = inputs.isVertical;
         stackPanel.spacing = inputs.spacing;
-        stackPanel.onDisposeObservable.add((s: GUI.StackPanel) => {
+        stackPanel.onDisposeObservable.add((s: BABYLON.GUI.StackPanel) => {
             s.clearControls();
         });
         if (inputs.width !== undefined) {
@@ -48,7 +48,7 @@ export class BabylonGuiStackPanel {
      * @group set
      * @shortname set stack panel is vertical
      */
-    setIsVertical(inputs: Inputs.BabylonGui.SetStackPanelIsVerticalDto): GUI.StackPanel {
+    setIsVertical(inputs: Inputs.BabylonGui.SetStackPanelIsVerticalDto): BABYLON.GUI.StackPanel {
         inputs.stackPanel.isVertical = inputs.isVertical;
         return inputs.stackPanel;
     }
@@ -60,7 +60,7 @@ export class BabylonGuiStackPanel {
      * @group set
      * @shortname set stack panel spacing
      */
-    setSpacing(inputs: Inputs.BabylonGui.SetStackPanelSpacingDto): GUI.StackPanel {
+    setSpacing(inputs: Inputs.BabylonGui.SetStackPanelSpacingDto): BABYLON.GUI.StackPanel {
         inputs.stackPanel.spacing = inputs.spacing;
         return inputs.stackPanel;
     }
@@ -72,7 +72,7 @@ export class BabylonGuiStackPanel {
      * @group set
      * @shortname set stack panel width
      */
-    setWidth(inputs: Inputs.BabylonGui.SetStackPanelWidthDto): GUI.StackPanel {
+    setWidth(inputs: Inputs.BabylonGui.SetStackPanelWidthDto): BABYLON.GUI.StackPanel {
         inputs.stackPanel.width = inputs.width;
         return inputs.stackPanel;
     }
@@ -84,7 +84,7 @@ export class BabylonGuiStackPanel {
      * @group set
      * @shortname set stack panel height
      */
-    setHeight(inputs: Inputs.BabylonGui.SetStackPanelHeightDto): GUI.StackPanel {
+    setHeight(inputs: Inputs.BabylonGui.SetStackPanelHeightDto): BABYLON.GUI.StackPanel {
         inputs.stackPanel.height = inputs.height;
         return inputs.stackPanel;
     }

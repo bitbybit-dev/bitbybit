@@ -1,10 +1,11 @@
+/* eslint-disable @typescript-eslint/no-namespace */
 
 import { Context } from "../../../context";
-import * as GUI from "@babylonjs/gui";
 import * as Inputs from "../../../inputs/inputs";
+import * as BABYLON from "../../../../gui-enriched-babylon";
 
 export class BabylonGuiInputText {
-
+    
     constructor(private readonly context: Context) { }
 
     /**
@@ -15,8 +16,8 @@ export class BabylonGuiInputText {
      * @shortname create input text
      * @disposableOutput true
      */
-    createInputText(inputs: Inputs.BabylonGui.CreateInputTextDto): GUI.InputText {
-        const inputText = new GUI.InputText(inputs.name);
+    createInputText(inputs: Inputs.BabylonGui.CreateInputTextDto): BABYLON.GUI.InputText {
+        const inputText = new BABYLON.GUI.InputText(inputs.name);
 
         if (inputs.height) {
             inputText.height = inputs.height;
@@ -45,7 +46,7 @@ export class BabylonGuiInputText {
      * @group set
      * @shortname set input text background
      */
-    setBackground(inputs: Inputs.BabylonGui.SetInputTextBackgroundDto): GUI.InputText {
+    setBackground(inputs: Inputs.BabylonGui.SetInputTextBackgroundDto): BABYLON.GUI.InputText {
         inputs.inputText.background = inputs.background;
         return inputs.inputText;
     }
@@ -57,7 +58,7 @@ export class BabylonGuiInputText {
      * @group set
      * @shortname set input text text
      */
-    setText(inputs: Inputs.BabylonGui.SetInputTextTextDto): GUI.InputText {
+    setText(inputs: Inputs.BabylonGui.SetInputTextTextDto): BABYLON.GUI.InputText {
         inputs.inputText.text = inputs.text;
         return inputs.inputText;
     }
@@ -69,7 +70,7 @@ export class BabylonGuiInputText {
      * @group set
      * @shortname set input text placeholder
      */
-    setPlaceholder(inputs: Inputs.BabylonGui.SetInputTextPlaceholderDto): GUI.InputText {
+    setPlaceholder(inputs: Inputs.BabylonGui.SetInputTextPlaceholderDto): BABYLON.GUI.InputText {
         inputs.inputText.placeholderText = inputs.placeholder;
         return inputs.inputText;
     }
