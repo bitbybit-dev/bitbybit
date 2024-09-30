@@ -34,9 +34,7 @@ export class BabylonGuiRadioButton {
         radioButton.color = inputs.color;
         radioButton.isChecked = inputs.isChecked;
         radioButton.background = inputs.background;
-        if (inputs.container) {
-            inputs.container.addControl(radioButton);
-        }
+   
         return radioButton;
     }
 

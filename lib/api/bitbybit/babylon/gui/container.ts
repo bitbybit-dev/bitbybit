@@ -8,33 +8,18 @@ export class BabylonGuiContainer {
     constructor(private readonly context: Context) { }
 
     /**
-     * Adds control to container
-     * @param inputs with container and control
-     * @returns control that was added to container
+     * Adds controls to container and keeps the order
+     * @param inputs with container and controls
+     * @returns container
      * @group controls
-     * @shortname add control to container
+     * @shortname add controls to container
      */
-    addControl(inputs: Inputs.BabylonGui.AddControlToContainerDto): BABYLON.GUI.Control {
-        inputs.container.addControl(inputs.control);
-        return inputs.control;
-    }
-
-    /**
-     * Fix control order in container based on the index provided for the control
-     * @param inputs with container and control order index
-     * @returns control that needs to fix the order
-     * @group order
-     * @shortname fix control order in container
-     */
-    fixControlOrderInContainer(inputs: Inputs.BabylonGui.FixControlOrderInContainerDto): BABYLON.GUI.Control {
-        inputs.container.removeControl(inputs.control);
-        inputs.container.addControl(inputs.control);
-        const controls = inputs.container.children;
-        const index = inputs.orderIndex;
-        if (index < controls.length) {
-            controls.splice(index, 0, controls.pop());
+    addControls(inputs: Inputs.BabylonGui.AddControlsToContainerDto): BABYLON.GUI.Container {
+        if(inputs.clearControlsFirst && inputs.container.clearControls){
+            inputs.container.clearControls();
         }
-        return inputs.control;
+        inputs.controls.forEach(control => inputs.container.addControl(control));
+        return inputs.container;
     }
 
     /**

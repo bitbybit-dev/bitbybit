@@ -33,9 +33,7 @@ export class BabylonGuiCheckbox {
         checkbox.color = inputs.color;
         checkbox.isChecked = inputs.isChecked;
         checkbox.background = inputs.background;
-        if (inputs.container) {
-            inputs.container.addControl(checkbox);
-        }
+
         return checkbox;
     }
 

@@ -88,4 +88,21 @@ export namespace Text {
          */
         list: T[];
     }
+
+    export class TextFormatDto {
+        constructor(text?: string, values?: string[]) {
+            if (text !== undefined) { this.text = text; }
+            if (values !== undefined) { this.values = values; }
+        }
+        /**
+         * Text to format
+         * @default Hello {0}
+         */
+        text = "Hello {0}";
+        /**
+         * Values to format
+         * @default ["World"]
+         */
+        values = ["World"];
+    }
 }

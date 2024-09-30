@@ -29,9 +29,7 @@ export class BabylonGuiImage {
         }
 
         image.color = inputs.color;
-        if (inputs.container) {
-            inputs.container.addControl(image);
-        }
+       
         return image;
     }
 

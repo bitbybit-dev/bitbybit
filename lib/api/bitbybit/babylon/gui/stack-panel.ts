@@ -35,9 +35,6 @@ export class BabylonGuiStackPanel {
         if (inputs.background !== undefined) {
             stackPanel.background = inputs.background;
         }
-        if (inputs.container) {
-            inputs.container.addControl(stackPanel);
-        }
         return stackPanel;
     }
 

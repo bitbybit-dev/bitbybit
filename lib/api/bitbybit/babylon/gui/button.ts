@@ -32,9 +32,7 @@ export class BabylonGuiButton {
         button.color = inputs.color;
         button.fontSize = inputs.fontSize;
         button.background = inputs.background;
-        if (inputs.container) {
-            inputs.container.addControl(button);
-        }
+
         return button;
     }
 

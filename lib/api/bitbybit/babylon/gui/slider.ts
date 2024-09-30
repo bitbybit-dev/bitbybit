@@ -52,9 +52,7 @@ export class BabylonGuiSlider {
 
         slider.color = inputs.color;
         slider.background = inputs.background;
-        if(inputs.container){
-            inputs.container.addControl(slider);
-        }
+      
         return slider;
     }
 

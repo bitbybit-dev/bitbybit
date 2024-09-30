@@ -138,8 +138,7 @@ export namespace BabylonGui {
     }
 
     export class CreateStackPanelDto {
-        constructor(container?: BABYLON.GUI.Container, name?: string, isVertical?: boolean, spacing?: number, width?: number | string, height?: number | string, color?: string, background?: string) {
-            if (container !== undefined) { this.container = container; }
+        constructor(name?: string, isVertical?: boolean, spacing?: number, width?: number | string, height?: number | string, color?: string, background?: string) {
             if (name !== undefined) { this.name = name; }
             if (isVertical !== undefined) { this.isVertical = isVertical; }
             if (spacing !== undefined) { this.spacing = spacing; }
@@ -148,12 +147,6 @@ export namespace BabylonGui {
             if (color !== undefined) { this.color = color; }
             if (background !== undefined) { this.background = background; }
         }
-        /**
-         * Container to which the stack panel will be added
-         * @default undefined
-         * @optional true
-         */
-        container?: BABYLON.GUI.Container;
         /**
          * Name of stack panel
          * @default stackPanel
@@ -340,10 +333,11 @@ export namespace BabylonGui {
          */
         container: BABYLON.GUI.Container;
     }
-    export class AddControlToContainerDto {
-        constructor(container?: BABYLON.GUI.StackPanel, control?: BABYLON.GUI.Control) {
+    export class AddControlsToContainerDto {
+        constructor(container?: BABYLON.GUI.StackPanel, controls?: BABYLON.GUI.Control[], clearControlsFirst?: boolean) {
             if (container !== undefined) { this.container = container; }
-            if (control !== undefined) { this.control = control; }
+            if (controls !== undefined) { this.controls = controls; }
+            if (clearControlsFirst !== undefined) { this.clearControlsFirst = clearControlsFirst; }
         }
         /**
          * Container to add control to
@@ -351,10 +345,15 @@ export namespace BabylonGui {
          */
         container: BABYLON.GUI.Container;
         /**
-         * Control to add
+         * Controls to add
          * @default undefined
          */
-        control: BABYLON.GUI.Control;
+        controls: BABYLON.GUI.Control[];
+        /**
+         * Clear controls first. That will preserve the order of the controls.
+         * @default true
+         */
+        clearControlsFirst = true;
     }
     export class GetControlByNameDto {
         constructor(container?: BABYLON.GUI.Container, name?: string) {
@@ -372,44 +371,14 @@ export namespace BabylonGui {
          */
         name = "controlName";
     }
-
-    export class FixControlOrderInContainerDto {
-        constructor(container?: BABYLON.GUI.StackPanel, control?: BABYLON.GUI.Control, orderIndex?: number) {
-            if (container !== undefined) { this.container = container; }
-            if (control !== undefined) { this.control = control; }
-            if (orderIndex !== undefined) { this.orderIndex = orderIndex; }
-        }
-        /**
-         * Container in which control needs to be fixed
-         * @default undefined
-         */
-        container: BABYLON.GUI.Container;
-        /**
-         * Control to fix
-         * @default undefined
-         */
-        control: BABYLON.GUI.Control;
-        /**
-         * Order of the control
-         * @default 0
-         */
-        orderIndex: number;
-    }
     export class CreateImageDto {
-        constructor(container?: BABYLON.GUI.Container, name?: string, url?: string, color?: string, width?: number | string, height?: number | string) {
-            if (container !== undefined) { this.container = container; }
+        constructor(name?: string, url?: string, color?: string, width?: number | string, height?: number | string) {
             if (name !== undefined) { this.name = name; }
             if (url !== undefined) { this.url = url; }
             if (color !== undefined) { this.color = color; }
             if (width !== undefined) { this.width = width; }
             if (height !== undefined) { this.height = height; }
         }
-        /**
-         * Optional container to which the image will be added
-         * @default undefined
-         * @optional true
-         */
-        container?: BABYLON.GUI.Container;
         /**
          * Name of the image
          * @default imageName
@@ -465,8 +434,7 @@ export namespace BabylonGui {
         image: BABYLON.GUI.Image;
     }
     export class CreateButtonDto {
-        constructor(container?: BABYLON.GUI.Container, name?: string, label?: string, color?: string, background?: string, width?: number | string, height?: number | string, fontSize?: number) {
-            if (container !== undefined) { this.container = container; }
+        constructor(name?: string, label?: string, color?: string, background?: string, width?: number | string, height?: number | string, fontSize?: number) {
             if (name !== undefined) { this.name = name; }
             if (label !== undefined) { this.label = label; }
             if (color !== undefined) { this.color = color; }
@@ -475,12 +443,6 @@ export namespace BabylonGui {
             if (height !== undefined) { this.height = height; }
             if (fontSize !== undefined) { this.fontSize = fontSize; }
         }
-        /**
-         * Container to which the button will be added
-         * @default undefined
-         * @optional true
-         */
-        container?: BABYLON.GUI.Container;
         /**
          * Name of the button
          * @default buttonName
@@ -547,8 +509,7 @@ export namespace BabylonGui {
     }
 
     export class CreateColorPickerDto {
-        constructor(container?: BABYLON.GUI.Container, name?: string, defaultColor?: string, color?: string, width?: number | string, height?: number | string, size?: number | string) {
-            if (container !== undefined) { this.container = container; }
+        constructor(name?: string, defaultColor?: string, color?: string, width?: number | string, height?: number | string, size?: number | string) {
             if (name !== undefined) { this.name = name; }
             if (this.defaultColor !== undefined) { this.defaultColor = defaultColor; }
             if (color !== undefined) { this.color = color; }
@@ -556,12 +517,6 @@ export namespace BabylonGui {
             if (height !== undefined) { this.height = height; }
             if (size !== undefined) { this.size = size; }
         }
-        /**
-         * Container to which the color picker will be added
-         * @default undefined
-         * @optional true
-         */
-        container?: BABYLON.GUI.Container;
         /**
          * Name of the color picker
          * @default colorPickerName
@@ -640,8 +595,7 @@ export namespace BabylonGui {
         colorPicker: BABYLON.GUI.ColorPicker;
     }
     export class CreateCheckboxDto {
-        constructor(container?: BABYLON.GUI.Container, name?: string, isChecked?: boolean, checkSizeRatio?: number, color?: string, background?: string, width?: number | string, height?: number | string) {
-            if (container !== undefined) { this.container = container; }
+        constructor(name?: string, isChecked?: boolean, checkSizeRatio?: number, color?: string, background?: string, width?: number | string, height?: number | string) {
             if (name !== undefined) { this.name = name; }
             if (isChecked !== undefined) { this.isChecked = isChecked; }
             if (checkSizeRatio !== undefined) { this.checkSizeRatio = checkSizeRatio; }
@@ -650,12 +604,6 @@ export namespace BabylonGui {
             if (width !== undefined) { this.width = width; }
             if (height !== undefined) { this.height = height; }
         }
-        /**
-         * Container to which the checkbox will be added
-         * @default undefined
-         * @optional true
-         */
-        container?: BABYLON.GUI.Container;
         /**
          * Name of the checkbox
          * @default checkboxName
@@ -854,20 +802,13 @@ export namespace BabylonGui {
     }
 
     export class CreateInputTextDto {
-        constructor(container?: BABYLON.GUI.Container, name?: string, color?: string, background?: string, width?: number | string, height?: number | string) {
-            if (container !== undefined) { this.container = container; }
+        constructor(name?: string, color?: string, background?: string, width?: number | string, height?: number | string) {
             if (name !== undefined) { this.name = name; }
             if (color !== undefined) { this.color = color; }
             if (background !== undefined) { this.background = background; }
             if (width !== undefined) { this.width = width; }
             if (height !== undefined) { this.height = height; }
         }
-        /**
-         * Container to which the slider will be added
-         * @default undefined
-         * @optional true
-         */
-        container?: BABYLON.GUI.Container;
         /**
          * Name of the button
          * @default inputName
@@ -966,8 +907,7 @@ export namespace BabylonGui {
     }
 
     export class CreateRadioButtonDto {
-        constructor(container?: BABYLON.GUI.Container, name?: string, group?: string, isChecked?: boolean, checkSizeRatio?: number, color?: string, background?: string, width?: number | string, height?: number | string) {
-            if (container !== undefined) { this.container = container; }
+        constructor(name?: string, group?: string, isChecked?: boolean, checkSizeRatio?: number, color?: string, background?: string, width?: number | string, height?: number | string) {
             if (name !== undefined) { this.name = name; }
             if (group !== undefined) { this.group = group; }
             if (isChecked !== undefined) { this.isChecked = isChecked; }
@@ -977,12 +917,6 @@ export namespace BabylonGui {
             if (width !== undefined) { this.width = width; }
             if (height !== undefined) { this.height = height; }
         }
-        /**
-         * Container to which the slider will be added
-         * @default undefined
-         * @optional true
-         */
-        container?: BABYLON.GUI.Container;
         /**
          * Name of the button
          * @default radioBtnName
@@ -1092,8 +1026,7 @@ export namespace BabylonGui {
         radioButton: BABYLON.GUI.RadioButton;
     }
     export class CreateSliderDto {
-        constructor(container?: BABYLON.GUI.Container, name?: string, minimum?: number, maximum?: number, value?: number, step?: number, isVertical?: boolean, color?: string, background?: string, width?: number | string, height?: number | string, displayThumb?: boolean) {
-            if (container !== undefined) { this.container = container; }
+        constructor(name?: string, minimum?: number, maximum?: number, value?: number, step?: number, isVertical?: boolean, color?: string, background?: string, width?: number | string, height?: number | string, displayThumb?: boolean) {
             if (name !== undefined) { this.name = name; }
             if (minimum !== undefined) { this.minimum = minimum; }
             if (maximum !== undefined) { this.maximum = maximum; }
@@ -1106,12 +1039,6 @@ export namespace BabylonGui {
             if (height !== undefined) { this.height = height; }
             if (displayThumb !== undefined) { this.displayThumb = displayThumb; }
         }
-        /**
-         * Container to which the slider will be added
-         * @default undefined
-         * @optional true
-         */
-        container?: BABYLON.GUI.Container;
         /**
          * Name of the button
          * @default sliderName
@@ -1183,8 +1110,7 @@ export namespace BabylonGui {
         displayThumb = true;
     }
     export class CreateTextBlockDto {
-        constructor(container?: BABYLON.GUI.Container, name?: string, text?: string, color?: string, width?: number | string, height?: number | string) {
-            if (container !== undefined) { this.container = container; }
+        constructor(name?: string, text?: string, color?: string, width?: number | string, height?: number | string) {
             if (name !== undefined) { this.name = name; }
             if (text !== undefined) { this.text = text; }
             if (color !== undefined) { this.color = color; }
@@ -1192,34 +1118,28 @@ export namespace BabylonGui {
             if (height !== undefined) { this.height = height; }
         }
         /**
-         * Container to which the slider will be added
-         * @default undefined
-         * @optional true
+         * Name of the text block
+         * @default textBlockName
          */
-        container?: BABYLON.GUI.Container;
-        /**
-         * Name of the button
-         * @default sliderName
-         */
-        name = "sliderName";
+        name = "textBlockName";
         /**
         * Text of the block
         * @default Hello World!
         */
         text = "Hello World!";
         /**
-         * Color of the button
+         * Color of the  text block
          * @default #f0cebb
          */
         color = "#f0cebb";
         /**
-         * Width of the button
+         * Width of the  text block
          * @default undefined
          * @optional true
          */
         width?: number | string;
         /**
-         * Height of the button
+         * Height of the  text block
          * @default undefined
          * @optional true
          */

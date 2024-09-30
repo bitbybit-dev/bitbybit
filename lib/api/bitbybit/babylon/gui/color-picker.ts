@@ -36,10 +36,6 @@ export class BabylonGuiColorPicker {
             colorPicker.value = BABYLON.Color3.FromHexString(inputs.defaultColor);
         }
         colorPicker.color = inputs.color;
-
-        if (inputs.container) {
-            inputs.container.addControl(colorPicker);
-        }
         return colorPicker;
     }
 

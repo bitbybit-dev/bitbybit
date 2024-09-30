@@ -33,9 +33,7 @@ export class BabylonGuiInputText {
         inputText.placeholderText = inputs.placeholder;
         inputText.color = inputs.color;
         inputText.background = inputs.background;
-        if (inputs.container) {
-            inputs.container.addControl(inputText);
-        }
+      
         return inputText;
     }
 

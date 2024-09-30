@@ -80,4 +80,18 @@ export class TextBitByBit {
         return inputs.list.map(i => i.toString());
     }
 
+    /**
+     * Format a text with values
+     * @param inputs a text and values
+     * @returns formatted text
+     * @group transform
+     * @shortname format
+     * @drawable false
+     */
+    format(inputs: Inputs.Text.TextFormatDto): string {
+        return inputs.text.replace(/{(\d+)}/g, (match, number) => {
+            return typeof inputs.values[number] !== "undefined" ? inputs.values[number] : match;
+        });
+    }
+
 }
