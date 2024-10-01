@@ -84,4 +84,15 @@ export class BabylonGuiColorPicker {
     getColorPickerSize(inputs: Inputs.BabylonGui.ColorPickerDto): string | number {
         return inputs.colorPicker.size;
     }
+
+    /**
+    * Creates the selector of an observable for color picker
+    * @param inputs observable name
+    * @returns color picker observable selector
+    * @group create
+    * @shortname color picker observable selector
+    */
+    createColorPickerObservableSelector(inputs: Inputs.BabylonGui.ColorPickerObservableSelectorDto): Inputs.BabylonGui.colorPickerObservableSelectorEnum {
+        return inputs.selector;
+    }
 }

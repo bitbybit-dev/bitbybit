@@ -13,6 +13,20 @@ export namespace Color {
          */
         color: Base.Color = "#0000ff";
     }
+    export class InvertHexDto {
+        constructor(color?: Base.Color) {
+            if (color !== undefined) { this.color = color; }
+        }
+        /**
+         * Color hex
+         * @default #0000ff
+         */
+        color: Base.Color = "#0000ff";
+        /**
+         * Choose to invert the color to black and white (useful for text color)
+         */
+        blackAndWhite = false;
+    }
     export class HexDtoMapped {
         constructor(color?: Base.Color, from?: number, to?: number) {
             if (color !== undefined) { this.color = color; }

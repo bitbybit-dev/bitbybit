@@ -165,4 +165,25 @@ export class Color {
     rgbToBlue(inputs: Inputs.Color.RGBObjectDto): number {
         return inputs.rgb.b;
     }
+
+    /**
+     * Invert color
+     * @param inputs hex color and black and white option
+     * @returns inverted color
+     * @group hex to
+     * @shortname invert color
+     * @drawable false
+     */
+    invert(inputs: Inputs.Color.InvertHexDto): Inputs.Base.Color {
+        const { r, g, b } = this.hexToRgbMapped({ color: inputs.color, from: 0, to: 255 });
+        if (inputs.blackAndWhite) {
+            return (r * 0.299 + g * 0.587 + b * 0.114) > 186
+                ? "#000000"
+                : "#ffffff";
+        }
+        const rInv = (255 - r);
+        const gInv = (255 - g);
+        const bInv = (255 - b);
+        return this.rgbToHex({ r: rInv, g: gInv, b: bInv, min: 0, max: 255 });
+    }
 }

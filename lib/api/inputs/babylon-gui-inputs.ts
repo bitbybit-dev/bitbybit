@@ -34,6 +34,12 @@ export namespace BabylonGui {
          * Raised when the value has changed
          */
         onValueChangedObservable = "onValueChangedObservable"
+    }    
+    export enum colorPickerObservableSelectorEnum {
+        /**
+         * Raised when the value has changed
+         */
+        onValueChangedObservable = "onValueChangedObservable"
     }
     export enum textBlockObservableSelectorEnum {
         /**
@@ -270,6 +276,16 @@ export namespace BabylonGui {
          * @default onValueChangedObservable
          */
         selector: sliderObservableSelectorEnum;
+    }
+    export class ColorPickerObservableSelectorDto {
+        constructor(selector: colorPickerObservableSelectorEnum) {
+            this.selector = selector;
+        }
+        /**
+         * Selector for the observable
+         * @default onValueChangedObservable
+         */
+        selector: colorPickerObservableSelectorEnum;
     }
     export class InputTextObservableSelectorDto {
         constructor(selector: inputTextObservableSelectorEnum) {

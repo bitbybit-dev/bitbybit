@@ -17,9 +17,9 @@ export namespace JSON {
         }
         /**
          * Stringify value
-         * @default undefined
+         * @default "[0, 0, 0]"
          */
-        text: string;
+        text = "[0, 0, 0]";
     }
     export class QueryDto {
         constructor(json?: any, query?: string) {

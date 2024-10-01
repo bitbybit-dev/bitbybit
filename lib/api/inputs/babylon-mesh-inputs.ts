@@ -166,7 +166,48 @@ export namespace BabylonMesh {
          * @default undefined
          */
         babylonMesh: BABYLON.Mesh;
-    }   
+    }
+    export class MergeMeshesDto {
+        constructor (arrayOfMeshes?: BABYLON.Mesh[], disposeSource?: boolean, allow32BitsIndices?: boolean, meshSubclass?: BABYLON.Mesh, subdivideWithSubMeshes?: boolean, multiMultiMaterials?: boolean) {
+            if (arrayOfMeshes !== undefined) { this.arrayOfMeshes = arrayOfMeshes; }
+            if (disposeSource !== undefined) { this.disposeSource = disposeSource; }
+            if (allow32BitsIndices !== undefined) { this.allow32BitsIndices = allow32BitsIndices; }
+            if (meshSubclass !== undefined) { this.meshSubclass = meshSubclass; }
+            if (subdivideWithSubMeshes !== undefined) { this.subdivideWithSubMeshes = subdivideWithSubMeshes; }
+            if (multiMultiMaterials !== undefined) { this.multiMultiMaterials = multiMultiMaterials; }
+        }
+        /**
+         * meshes array of meshes with the vertices to merge. Entries cannot be empty meshes.
+         * @default undefined
+         */
+        arrayOfMeshes: BABYLON.Mesh[];
+        /**
+         * disposeSource when true (default), dispose of the vertices from the source meshes.
+         * @default true
+         */
+        disposeSource = true;
+        /**
+         * allow32BitsIndices when the sum of the vertices > 64k, this must be set to true.
+         * @default false
+         */
+        allow32BitsIndices = false;
+        /**
+         * meshSubclass (optional) can be set to a Mesh where the merged vertices will be inserted.
+         * @default undefined
+         * @optional true
+         */
+        meshSubclass?: BABYLON.Mesh;
+        /**
+         * subdivideWithSubMeshes when true (false default), subdivide mesh into subMeshes.
+         * @default false
+         */
+        subdivideWithSubMeshes = false;
+        /**
+         * multiMultiMaterials when true (false default), subdivide mesh into subMeshes with multiple materials, ignores subdivideWithSubMeshes.
+         * @default false
+         */
+        multiMultiMaterials = false;
+    }
     export class BabylonMeshWithChildrenDto {
         constructor(babylonMesh?: BABYLON.Mesh) {
             if (babylonMesh !== undefined) { this.babylonMesh = babylonMesh; }

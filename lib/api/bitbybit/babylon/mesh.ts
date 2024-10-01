@@ -304,6 +304,25 @@ export class BabylonMesh {
     }
 
     /**
+     * Merges multiple meshes into one
+     * @param inputs BabylonJS meshes and options
+     * @returns a new mesh
+     * @group edit
+     * @shortname merge
+     */
+    mergeMeshes(inputs: Inputs.BabylonMesh.MergeMeshesDto): BABYLON.Mesh {
+        const newMesh = BABYLON.Mesh.MergeMeshes(
+            inputs.arrayOfMeshes,
+            inputs.disposeSource,
+            inputs.allow32BitsIndices,
+            inputs.meshSubclass,
+            inputs.subdivideWithSubMeshes,
+            inputs.multiMultiMaterials
+        );
+        return newMesh;
+    }
+
+    /**
      * Clones the mesh
      * @param inputs BabylonJS mesh to clone
      * @returns a new mesh
