@@ -167,6 +167,22 @@ export namespace BabylonMesh {
          */
         babylonMesh: BABYLON.Mesh;
     }
+    export class CloneToPositionsDto {
+        constructor(babylonMesh?: BABYLON.Mesh, positions?: Base.Point3[]) {
+            if (babylonMesh !== undefined) { this.babylonMesh = babylonMesh; }
+            if (positions !== undefined) { this.positions = positions; }
+        }
+        /**
+         * BabylonJS mesh
+         * @default undefined
+         */
+        babylonMesh: BABYLON.Mesh;
+        /**
+         * positions to clone to
+         * @default []
+         */
+        positions: Base.Point3[] = [];
+    }
     export class MergeMeshesDto {
         constructor (arrayOfMeshes?: BABYLON.Mesh[], disposeSource?: boolean, allow32BitsIndices?: boolean, meshSubclass?: BABYLON.Mesh, subdivideWithSubMeshes?: boolean, multiMultiMaterials?: boolean) {
             if (arrayOfMeshes !== undefined) { this.arrayOfMeshes = arrayOfMeshes; }

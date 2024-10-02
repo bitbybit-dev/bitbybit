@@ -359,6 +359,25 @@ export class BabylonMesh {
     }
 
     /**
+     * Clones the mesh to positions
+     * @param inputs BabylonJS mesh and positions
+     * @returns a new mesh
+     * @group edit
+     * @shortname clone to positions
+     * @disposableOutput true
+     * @drawable true
+     */
+    cloneToPositions(inputs: Inputs.BabylonMesh.CloneToPositionsDto): BABYLON.Mesh[] {
+        const clones = [];
+        inputs.positions.forEach((position) => {
+            const clone = inputs.babylonMesh.clone();
+            clone.position = new BABYLON.Vector3(position[0], position[1], position[2]);
+            clones.push(clone);
+        });
+        return clones;
+    }
+
+    /**
      * Change the id of the drawn mesh
      * @param inputs BabylonJS mesh and name
      * @group set

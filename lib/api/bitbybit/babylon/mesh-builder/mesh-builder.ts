@@ -16,6 +16,7 @@ export class BabylonMeshBuilder {
      * @group create simple
      * @shortname create box
      * @disposableOutput true
+     * @drawable true
      */
     createBox(inputs: Inputs.BabylonMeshBuilder.CreateBoxDto): BABYLON.Mesh {
         const mesh = BABYLON.MeshBuilder.CreateBox("BabylonMesh" + Math.random(), {
@@ -40,6 +41,7 @@ export class BabylonMeshBuilder {
      * @group create simple
      * @shortname create cube
      * @disposableOutput true
+     * @drawable true
      */
     createCube(inputs: Inputs.BabylonMeshBuilder.CreateCubeDto): BABYLON.Mesh {
         const mesh = BABYLON.MeshBuilder.CreateBox("BabylonMesh" + Math.random(), {
@@ -61,6 +63,7 @@ export class BabylonMeshBuilder {
      * @group create simple
      * @shortname square plane
      * @disposableOutput true
+     * @drawable true
      */
     createSquarePlane(inputs: Inputs.BabylonMeshBuilder.CreateSquarePlaneDto): BABYLON.Mesh {
         const mesh = BABYLON.MeshBuilder.CreatePlane("BabylonMesh" + Math.random(), {
@@ -82,6 +85,7 @@ export class BabylonMeshBuilder {
      * @group create simple
      * @shortname create sphere
      * @disposableOutput true
+     * @drawable true
      */
     createSphere(inputs: Inputs.BabylonMeshBuilder.CreateSphereDto): BABYLON.Mesh {
         const mesh = BABYLON.MeshBuilder.CreateSphere("BabylonMesh" + Math.random(), {
@@ -104,6 +108,7 @@ export class BabylonMeshBuilder {
      * @group create simple
      * @shortname create ico sphere
      * @disposableOutput true
+     * @drawable true
      */
     createIcoSphere(inputs: Inputs.BabylonMeshBuilder.CreateIcoSphereDto): BABYLON.Mesh {
         const mesh = BABYLON.MeshBuilder.CreateIcoSphere("BabylonMesh" + Math.random(), {
@@ -130,6 +135,7 @@ export class BabylonMeshBuilder {
      * @group create simple
      * @shortname create disc
      * @disposableOutput true
+     * @drawable true
      */
     createDisc(inputs: Inputs.BabylonMeshBuilder.CreateDiscDto): BABYLON.Mesh {
         const mesh = BABYLON.MeshBuilder.CreateDisc("BabylonMesh" + Math.random(), {
@@ -153,6 +159,7 @@ export class BabylonMeshBuilder {
      * @group create simple
      * @shortname create torus
      * @disposableOutput true
+     * @drawable true
      */
     createTorus(inputs: Inputs.BabylonMeshBuilder.CreateTorusDto): BABYLON.Mesh {
         const mesh = BABYLON.MeshBuilder.CreateTorus("BabylonMesh" + Math.random(), {
@@ -176,6 +183,7 @@ export class BabylonMeshBuilder {
      * @group create simple
      * @shortname create torus knot
      * @disposableOutput true
+     * @drawable true
      */
     createTorusKnot(inputs: Inputs.BabylonMeshBuilder.CreateTorusKnotDto): BABYLON.Mesh {
         const mesh = BABYLON.MeshBuilder.CreateTorusKnot("BabylonMesh" + Math.random(), {
@@ -202,6 +210,7 @@ export class BabylonMeshBuilder {
      * @group create simple
      * @shortname create polygon
      * @disposableOutput true
+     * @drawable true
      */
     createPolygon(inputs: Inputs.BabylonMeshBuilder.CreatePolygonDto): BABYLON.Mesh {
         const mesh = BABYLON.MeshBuilder.CreatePolygon("BabylonMesh" + Math.random(), {
@@ -228,6 +237,7 @@ export class BabylonMeshBuilder {
      * @group create simple
      * @shortname create extrude polygon
      * @disposableOutput true
+     * @drawable true
      */
     extrudePolygon(inputs: Inputs.BabylonMeshBuilder.ExtrudePolygonDto): BABYLON.Mesh {
         console.log(earcut);
@@ -254,6 +264,7 @@ export class BabylonMeshBuilder {
      * @group create simple
      * @shortname create tube
      * @disposableOutput true
+     * @drawable true
      */
     createTube(inputs: Inputs.BabylonMeshBuilder.CreateTubeDto): BABYLON.Mesh {
         const path = inputs.path.map(p => new BABYLON.Vector3(p[0], p[1], p[2]));
@@ -280,6 +291,7 @@ export class BabylonMeshBuilder {
      * @group create simple
      * @shortname create polyhedron
      * @disposableOutput true
+     * @drawable true
      */
     createPolyhedron(inputs: Inputs.BabylonMeshBuilder.CreatePolyhedronDto): BABYLON.Mesh {
         const mesh = BABYLON.MeshBuilder.CreatePolyhedron("BabylonMesh" + Math.random(), {
@@ -308,6 +320,7 @@ export class BabylonMeshBuilder {
      * @group create simple
      * @shortname create geodesic
      * @disposableOutput true
+     * @drawable true
      */
     createGeodesic(inputs: Inputs.BabylonMeshBuilder.CreateGeodesicDto): BABYLON.Mesh {
         const mesh = BABYLON.MeshBuilder.CreateGeodesic("BabylonMesh" + Math.random(), {
@@ -336,6 +349,7 @@ export class BabylonMeshBuilder {
      * @group create simple
      * @shortname create goldberg
      * @disposableOutput true
+     * @drawable true
      */
     createGoldberg(inputs: Inputs.BabylonMeshBuilder.CreateGoldbergDto): BABYLON.Mesh {
         const mesh = BABYLON.MeshBuilder.CreateGoldberg("BabylonMesh" + Math.random(), {
@@ -363,6 +377,7 @@ export class BabylonMeshBuilder {
      * @group create simple
      * @shortname create capsule
      * @disposableOutput true
+     * @drawable true
      */
     createCapsule(inputs: Inputs.BabylonMeshBuilder.CreateCapsuleDto): BABYLON.Mesh {
         const mesh = BABYLON.MeshBuilder.CreateCapsule("BabylonMesh" + Math.random(), {
@@ -394,6 +409,7 @@ export class BabylonMeshBuilder {
      * @group create simple
      * @shortname create cylinder
      * @disposableOutput true
+     * @drawable true
      */
     createCylinder(inputs: Inputs.BabylonMeshBuilder.CreateCylinderDto): BABYLON.Mesh {
         const mesh = BABYLON.MeshBuilder.CreateCylinder("BabylonMesh" + Math.random(), {
@@ -419,6 +435,7 @@ export class BabylonMeshBuilder {
      * @group create simple
      * @shortname create extruded shape
      * @disposableOutput true
+     * @drawable true
      */
     createExtrudedSahpe(inputs: Inputs.BabylonMeshBuilder.CreateExtrudedShapeDto): BABYLON.Mesh {
         const shape = inputs.shape.map(p => new BABYLON.Vector3(p[0], p[1], p[2]));
@@ -448,6 +465,7 @@ export class BabylonMeshBuilder {
      * @group create simple
      * @shortname create ribbon
      * @disposableOutput true
+     * @drawable true
      */
     createRibbon(inputs: Inputs.BabylonMeshBuilder.CreateRibbonDto): BABYLON.Mesh {
         const pathArray = inputs.pathArray.map(p => {
@@ -476,6 +494,7 @@ export class BabylonMeshBuilder {
      * @group create simple
      * @shortname create lathe
      * @disposableOutput true
+     * @drawable true
      */
     createLathe(inputs: Inputs.BabylonMeshBuilder.CreateLatheDto): BABYLON.Mesh {
         const shape = inputs.shape.map(p => new BABYLON.Vector3(p[0], p[1], p[2]));
@@ -502,6 +521,7 @@ export class BabylonMeshBuilder {
      * @group create simple
      * @shortname create ground
      * @disposableOutput true
+     * @drawable true
      */
     createGround(inputs: Inputs.BabylonMeshBuilder.CreateGroundDto): BABYLON.Mesh {
         const mesh = BABYLON.MeshBuilder.CreateGround("BabylonMesh" + Math.random(), {
@@ -519,6 +539,7 @@ export class BabylonMeshBuilder {
         return mesh;
     }
 
+    
     /**
      * Creates a rectangle plane mesh
      * @param inputs required to set up basic cube
@@ -526,6 +547,7 @@ export class BabylonMeshBuilder {
      * @group create simple
      * @shortname rectangle plane
      * @disposableOutput true
+     * @drawable true
      */
     createRectanglePlane(inputs: Inputs.BabylonMeshBuilder.CreateRectanglePlaneDto): BABYLON.Mesh {
         const mesh = BABYLON.MeshBuilder.CreatePlane("BabylonMesh" + Math.random(), {
