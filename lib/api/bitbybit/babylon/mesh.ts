@@ -322,6 +322,16 @@ export class BabylonMesh {
         return newMesh;
     }
 
+    /** Convers mesh to flat shaded mesh
+     * @param inputs BabylonJS mesh
+     * @returns a new mesh
+     * @group edit
+     * @shortname convert to flat shaded
+     */
+    convertToFlatShadedMesh(inputs: Inputs.BabylonMesh.BabylonMeshDto): BABYLON.Mesh {
+        return inputs.babylonMesh.convertToFlatShadedMesh();
+    }
+
     /**
      * Clones the mesh
      * @param inputs BabylonJS mesh to clone
