@@ -76,6 +76,28 @@ export class BabylonMeshBuilder {
     }
 
     /**
+     * Creates a sphere mesh
+     * @param inputs required to set up basic sphere
+     * @returns Babylon mesh
+     * @group create simple
+     * @shortname create sphere
+     * @disposableOutput true
+     */
+    createSphere(inputs: Inputs.BabylonMeshBuilder.CreateSphereDto): BABYLON.Mesh {
+        const mesh = BABYLON.MeshBuilder.CreateSphere("BabylonMesh" + Math.random(), {
+            diameter: inputs.radius * 2,
+            segments: inputs.segments,
+            sideOrientation: this.mesh.getSideOrientation(inputs.sideOrientation),
+        }, this.context.scene);
+        if (inputs.enableShadows) {
+            this.enableShadows(mesh);
+        } else {
+            mesh.metadata = { shadows: false };
+        }
+        return mesh;
+    }
+
+    /**
      * Creates a rectangle plane mesh
      * @param inputs required to set up basic cube
      * @returns Babylon mesh

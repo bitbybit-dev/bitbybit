@@ -80,6 +80,38 @@ export namespace BabylonMeshBuilder {
          */
         enableShadows = true;
     }
+    export class CreateSphereDto {
+        constructor(radius?: number, sideOrientation?: BabylonMesh.sideOrientationEnum) {
+            if (radius !== undefined) { this.radius = radius; }
+            if (sideOrientation !== undefined) { this.sideOrientation = sideOrientation; }
+        }
+        /**
+         * Radius of the sphere
+         * @default 1
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.1
+         */
+        radius = 1;
+        /**
+         * Segments of the sphere
+         * @default 32
+         * @minimum 0
+         * @maximum Infinity
+         * @step 1
+         */
+        segments = 32;
+        /**
+         * Side orientation of the mesh
+         * @default frontside
+         */
+        sideOrientation = BabylonMesh.sideOrientationEnum.frontside;
+        /**
+         * Enables shadows for the mesh
+         * @default true
+         */
+        enableShadows = true;
+    }
 
     export class CreateRectanglePlaneDto {
         constructor(width?: number, height?: number, sideOrientation?: BabylonMesh.sideOrientationEnum) {
