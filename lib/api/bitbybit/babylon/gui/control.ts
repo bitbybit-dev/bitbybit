@@ -103,6 +103,42 @@ export class BabylonGuiControl {
         return inputs.container.children.find(c => c.name === inputs.name);
     }
 
+    /** 
+     * Set if control is visible
+     * @param inputs control and is visible
+     * @returns control with changed visibility
+     * @group set
+     * @shortname set control is visible
+     */
+    setIsVisible(inputs: Inputs.BabylonGui.SetControlIsVisibleDto): BABYLON.GUI.Control {
+        inputs.control.isVisible = inputs.isVisible;
+        return inputs.control;
+    }
+
+    /**
+     * Set if control is readonly
+     * @param inputs control and is readonly
+     * @returns control with changed readonly
+     * @group set
+     * @shortname set control is readonly
+     */
+    setIsReadonly(inputs: Inputs.BabylonGui.SetControlIsReadonlyDto): BABYLON.GUI.Control {
+        inputs.control.isReadOnly = inputs.isReadOnly;
+        return inputs.control;
+    }
+
+    /**
+     * Set if control is enabled
+     * @param inputs control and is enabled
+     * @returns control with changed enabled
+     * @group set
+     * @shortname set control is enabled
+     */
+    setIsEnabled(inputs: Inputs.BabylonGui.SetControlIsEnabledDto): BABYLON.GUI.Control {
+        inputs.control.isEnabled = inputs.isEnabled;
+        return inputs.control;
+    }
+
     /**
      * Sets the control height
      * @param inputs control and height
@@ -187,5 +223,38 @@ export class BabylonGuiControl {
      */
     getFontSize(inputs: Inputs.BabylonGui.ControlDto): string | number {
         return inputs.control.fontSize;
+    }
+
+    /**
+     * Get control is visible
+     * @param inputs control
+     * @returns control visibility
+     * @group get
+     * @shortname get control is visible
+     */
+    getIsVisible(inputs: Inputs.BabylonGui.ControlDto): boolean {
+        return inputs.control.isVisible;
+    }
+
+    /**
+     * Get control is readonly
+     * @param inputs control
+     * @returns control readonly
+     * @group get
+     * @shortname get control is readonly
+     */
+    getIsReadonly(inputs: Inputs.BabylonGui.ControlDto): boolean {
+        return inputs.control.isReadOnly;
+    }
+
+    /**
+     * Get control is enabled
+     * @param inputs control
+     * @returns control enabled
+     * @group get
+     * @shortname get control is enabled
+     */
+    getIsEnabled(inputs: Inputs.BabylonGui.ControlDto): boolean {
+        return inputs.control.isEnabled;
     }
 }

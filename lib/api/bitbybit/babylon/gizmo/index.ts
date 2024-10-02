@@ -1,1 +1,1 @@
-export * from "./gizmo-manager";
+export * from "./gizmo";

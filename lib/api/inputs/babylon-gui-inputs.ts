@@ -387,6 +387,54 @@ export namespace BabylonGui {
          */
         name = "controlName";
     }
+    export class SetControlIsVisibleDto {
+        constructor(control?: BABYLON.GUI.Control, isVisible?: boolean) {
+            if (control !== undefined) { this.control = control; }
+            if (isVisible !== undefined) { this.isVisible = isVisible; }
+        }
+        /**
+         * Control to update
+         * @default undefined
+         */
+        control: BABYLON.GUI.Control;
+        /**
+         * Is visible
+         * @default true
+         */
+        isVisible = true;
+    }
+    export class SetControlIsReadonlyDto {
+        constructor(control?: BABYLON.GUI.Control, isReadOnly?: boolean) {
+            if (control !== undefined) { this.control = control; }
+            if (isReadOnly !== undefined) { this.isReadOnly = isReadOnly; }
+        }
+        /**
+         * Control to update
+         * @default undefined
+         */
+        control: BABYLON.GUI.Control;
+        /**
+         * Is readonly
+         * @default false
+         */
+        isReadOnly = false;
+    }
+    export class SetControlIsEnabledDto {
+        constructor(control?: BABYLON.GUI.Control, isEnabled?: boolean) {
+            if (control !== undefined) { this.control = control; }
+            if (isEnabled !== undefined) { this.isEnabled = isEnabled; }
+        }
+        /**
+         * Control to update
+         * @default undefined
+         */
+        control: BABYLON.GUI.Control;
+        /**
+         * Is enabled
+         * @default true
+         */
+        isEnabled = true;
+    }
     export class CreateImageDto {
         constructor(name?: string, url?: string, color?: string, width?: number | string, height?: number | string) {
             if (name !== undefined) { this.name = name; }
@@ -741,6 +789,22 @@ export namespace BabylonGui {
          * @default black
          */
         background = "black";
+    }
+    export class SetContainerIsReadonlyDto {
+        constructor(container?: BABYLON.GUI.Container, isReadOnly?: boolean) {
+            if (container !== undefined) { this.container = container; }
+            if (isReadOnly !== undefined) { this.isReadOnly = isReadOnly; }
+        }
+        /**
+         * Container to update
+         * @default undefined
+         */
+        container: BABYLON.GUI.Container;
+        /**
+         * Is readonly
+         * @default false
+         */
+        isReadOnly = false;
     }
     export class SetCheckboxBackgroundDto {
         constructor(checkbox?: BABYLON.GUI.Checkbox, background?: string) {

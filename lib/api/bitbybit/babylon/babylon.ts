@@ -19,6 +19,7 @@ import { BabylonTexture } from "./texture/texture";
 import { BabylonTools } from "./tools";
 import { BabylonTransforms } from "./transforms";
 import { BabylonWebXR } from "./webxr/webxr";
+import { BabylonGizmo } from "./gizmo/gizmo";
 
 /**
  * Contains various functions that expose BABYLONJS objects
@@ -41,6 +42,7 @@ export class Babylon {
     public texture: BabylonTexture;
     public tools: BabylonTools;
     public gui: BabylonGui;
+    public gizmo: BabylonGizmo;
 
     constructor(
         context: Context,
@@ -64,5 +66,6 @@ export class Babylon {
         this.meshBuilder = new BabylonMeshBuilder(context, this.mesh);
         this.tools = new BabylonTools(context);
         this.engine = new BabylonEngine(context);
+        this.gizmo = new BabylonGizmo(context);
     }
 }

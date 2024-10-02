@@ -34,6 +34,17 @@ export class BabylonGuiContainer {
     }
 
     /**
+     * Sets the container is readonly
+     * @param inputs container and is readonly
+     * @group set
+     * @shortname set container is readonly
+     */
+    setIsReadonly(inputs: Inputs.BabylonGui.SetContainerIsReadonlyDto): BABYLON.GUI.Container {
+        inputs.container.isReadOnly = inputs.isReadOnly;
+        return inputs.container;
+    }
+
+    /**
      * Gets the container background
      * @param inputs container
      * @group get
@@ -41,6 +52,16 @@ export class BabylonGuiContainer {
      */
     getBackground(inputs: Inputs.BabylonGui.ContainerDto): string {
         return inputs.container.background;
+    }
+
+    /**
+     * Gets the container is readonly
+     * @param inputs container
+     * @group get
+     * @shortname get container is readonly
+     */
+    getIsReadonly(inputs: Inputs.BabylonGui.ContainerDto): boolean {
+        return inputs.container.isReadOnly;
     }
 
 }
