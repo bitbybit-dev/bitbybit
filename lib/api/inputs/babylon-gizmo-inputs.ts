@@ -106,7 +106,35 @@ export namespace BabylonGizmo {
          */
         attachableMeshes: BABYLON.AbstractMesh[];
     }
-
+    export class GizmoDto {
+        constructor(gizmo?: BABYLON.IGizmo) {
+            if (gizmo !== undefined) { this.gizmo = gizmo; }
+        }
+        /**
+         * Gizmo to use
+         * @default undefined
+         */
+        gizmo: BABYLON.IGizmo;
+    }
+    export class SetGizmoScaleRatioDto {
+        constructor(gizmo?: BABYLON.IGizmo, scaleRatio?: number) {
+            if (gizmo !== undefined) { this.gizmo = gizmo; }
+            if (scaleRatio !== undefined) { this.scaleRatio = scaleRatio; }
+        }
+        /**
+         * gizmo
+         * @default undefined
+         */
+        gizmo: BABYLON.IGizmo;
+        /**
+         * Scale ratio
+         * @default 1
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.1
+         */
+        scaleRatio = 1;
+    }
     export class GizmoManagerDto {
         constructor(gizmoManager?: BABYLON.GizmoManager) {
             if (gizmoManager !== undefined) { this.gizmoManager = gizmoManager; }

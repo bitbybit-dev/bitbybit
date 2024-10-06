@@ -379,6 +379,31 @@ export namespace Lists {
          */
         clone? = true;
     }
+    export class RandomThresholdDto<T> {
+        constructor(list?: T[], threshold?: number, clone?: boolean) {
+            if (list !== undefined) { this.list = list; }
+            if (threshold !== undefined) { this.threshold = threshold; }
+            if (clone !== undefined) { this.clone = clone; }
+        }
+        /**
+        * The list from which item needs to be updated
+        * @default undefined
+        */
+        list: T[];
+        /**
+         * Threshold for items
+         * @default 0.5
+         * @minimum 0
+         * @maximum 1
+         * @step 1
+         */
+        threshold = 1;
+        /**
+         * Tries to make structured clone of the incoming list data in the component, sometimes it may not be possible due to circular structures or other types of error
+         * @default true
+         */
+        clone? = true;
+    }
     export class RemoveDuplicatesDto<T> {
         constructor(list?: T[], clone?: boolean) {
             if (list !== undefined) { this.list = list; }

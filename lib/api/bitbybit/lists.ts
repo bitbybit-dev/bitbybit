@@ -28,6 +28,29 @@ export class Lists {
         return result;
     }
 
+
+    /**
+     * Gets items randomly by using a threshold
+     * @param inputs a list and a threshold for randomization of items to remove
+     * @returns list with remaining items
+     * @group get
+     * @shortname random get threshold
+     * @drawable false
+     */
+    randomGetThreshold<T>(inputs: Inputs.Lists.RandomThresholdDto<T>): T[] {
+        let res = inputs.list;
+        if (inputs.clone) {
+            res = structuredClone(inputs.list);
+        }
+        const newList = [];
+        for (let i = 0; i < inputs.list.length; i++) {
+            if (Math.random() < inputs.threshold) {
+                newList.push(res[i]);
+            }
+        }
+        return newList;
+    }
+
     /**
        * Gets a sub list between start and end indexes
        * @param inputs a list and start and end indexes
@@ -454,6 +477,28 @@ export class Lists {
             }
         }
         return result;
+    }
+
+    /**
+     * Removes items randomly by using a threshold
+     * @param inputs a list and a threshold for randomization of items to remove
+     * @returns list with removed items
+     * @group remove
+     * @shortname random remove threshold
+     * @drawable false
+     */
+    randomRemoveThreshold<T>(inputs: Inputs.Lists.RandomThresholdDto<T>): T[] {
+        let res = inputs.list;
+        if (inputs.clone) {
+            res = structuredClone(inputs.list);
+        }
+        const newList = [];
+        for (let i = 0; i < inputs.list.length; i++) {
+            if (Math.random() > inputs.threshold) {
+                newList.push(res[i]);
+            }
+        }
+        return newList;
     }
 
     /**

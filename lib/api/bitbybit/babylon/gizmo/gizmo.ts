@@ -9,9 +9,10 @@ import { BabylonGizmoScaleGizmo } from "./scale-gizmo";
 import { BabylonGizmoAxisScaleGizmo } from "./axis-scale-gizmo";
 import { BabylonGizmoBoundingBoxGizmo } from "./bounding-box-gizmo";
 import { BabylonGizmoPlaneRotationGizmo } from "./plane-rotation-gizmo";
-
+import { BabylonGizmoBase } from "./gizmo-base";
 export class BabylonGizmo {
     manager: BabylonGizmoManager;
+    base: BabylonGizmoBase;
     positionGizmo: BabylonGizmoPositionGizmo;
     rotationGizmo: BabylonGizmoRotationGizmo;
     scaleGizmo: BabylonGizmoScaleGizmo;
@@ -20,9 +21,10 @@ export class BabylonGizmo {
     axisScaleGizmo: BabylonGizmoAxisScaleGizmo;
     planeDragGizmo: BabylonGizmoPlaneDragGizmo;
     planeRotationGizmo: BabylonGizmoPlaneRotationGizmo;
-    
+
     constructor(private readonly context: Context) {
         this.manager = new BabylonGizmoManager(context);
+        this.base = new BabylonGizmoBase(context);
         this.positionGizmo = new BabylonGizmoPositionGizmo(context);
         this.rotationGizmo = new BabylonGizmoRotationGizmo(context);
         this.scaleGizmo = new BabylonGizmoScaleGizmo(context);
