@@ -1,6 +1,6 @@
 export * from "./camera";
 export * from "./material";
-export * from "./webxr";
+export * from "./web-xr";
 export * from "./babylon";
 export * from "./io";
 export * from "./mesh";
