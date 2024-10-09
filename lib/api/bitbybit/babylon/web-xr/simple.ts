@@ -45,7 +45,6 @@ export class BabylonWebXRSimple {
      * @param inputs Creates default XR experience with teleportation
      * @group scene
      * @shortname simple xr with teleportation
-     * @ignore true
      */
     async createDefaultXRExperienceWithTeleportation(inputs: Inputs.BabylonWebXR.DefaultWebXRWithTeleportationDto): Promise<void> {
         this.createDefaultXRExperienceWithTeleportationReturn(inputs);
@@ -55,7 +54,7 @@ export class BabylonWebXRSimple {
      * Creates default XR experience with teleportation that is very basic and works for simple scenarios
      * @param inputs Creates default XR experience with teleportation
      * @group scene
-     * @shortname simple xr with teleportation
+     * @shortname simple xr with teleportation return
      * @disposableOutput true
      */
     async createDefaultXRExperienceWithTeleportationReturn(inputs: Inputs.BabylonWebXR.DefaultWebXRWithTeleportationDto): Promise<{

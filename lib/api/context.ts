@@ -1,6 +1,7 @@
 
 import * as BABYLON from "@babylonjs/core";
 import { PrintSaveInterface } from "../models/print-save.model";
+import { Inputs } from ".";
 
 export class Context {
 
@@ -57,6 +58,19 @@ export class Context {
 
     remap(value: number, from1: number, to1: number, from2: number, to2: number): number {
         return (value - from1) / (to1 - from1) * (to2 - from2) + from2;
+    }
+
+    getSamplingMode(samplingMode: Inputs.BabylonTexture.samplingModeEnum): number {
+        switch (samplingMode) {
+            case Inputs.BabylonTexture.samplingModeEnum.nearest:
+                return BABYLON.Texture.NEAREST_SAMPLINGMODE;
+            case Inputs.BabylonTexture.samplingModeEnum.bilinear:
+                return BABYLON.Texture.BILINEAR_SAMPLINGMODE;
+            case Inputs.BabylonTexture.samplingModeEnum.trilinear:
+                return BABYLON.Texture.TRILINEAR_SAMPLINGMODE;
+            default:
+                return BABYLON.Texture.NEAREST_SAMPLINGMODE;
+        }
     }
 
 }

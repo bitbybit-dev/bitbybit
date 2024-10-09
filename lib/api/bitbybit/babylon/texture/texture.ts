@@ -17,7 +17,7 @@ export class BabylonTexture {
      * @disposableOutput true
      */
     createSimple(inputs: Inputs.BabylonTexture.TextureSimpleDto): BABYLON.Texture {
-        const texture = new BABYLON.Texture(inputs.url, this.context.scene, undefined, inputs.invertY, this.getSamplingMode(inputs.samplingMode));
+        const texture = new BABYLON.Texture(inputs.url, this.context.scene, undefined, inputs.invertY, this.context.getSamplingMode(inputs.samplingMode));
         texture.uScale = inputs.uScale;
         texture.vScale = inputs.vScale;
         texture.wAng = inputs.wAng;
@@ -26,17 +26,5 @@ export class BabylonTexture {
         texture.vOffset = inputs.vOffset;
         return texture;
     }
-    
-    private getSamplingMode(samplingMode: Inputs.BabylonTexture.samplingModeEnum): number {
-        switch (samplingMode) {
-            case Inputs.BabylonTexture.samplingModeEnum.nearest:
-                return BABYLON.Texture.NEAREST_SAMPLINGMODE;
-            case Inputs.BabylonTexture.samplingModeEnum.bilinear:
-                return BABYLON.Texture.BILINEAR_SAMPLINGMODE;
-            case Inputs.BabylonTexture.samplingModeEnum.trilinear:
-                return BABYLON.Texture.TRILINEAR_SAMPLINGMODE;
-            default:
-                return BABYLON.Texture.NEAREST_SAMPLINGMODE;
-        }
-    }
+
 }

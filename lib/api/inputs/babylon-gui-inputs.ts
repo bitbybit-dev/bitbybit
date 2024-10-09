@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-namespace */
 import * as BABYLON from "../../gui-enriched-babylon";
+import { BabylonTexture } from "./babylon-texture-inputs";
 
 // tslint:disable-next-line: no-namespace
 export namespace BabylonGui {
@@ -34,7 +35,7 @@ export namespace BabylonGui {
          * Raised when the value has changed
          */
         onValueChangedObservable = "onValueChangedObservable"
-    }    
+    }
     export enum colorPickerObservableSelectorEnum {
         /**
          * Raised when the value has changed
@@ -141,6 +142,55 @@ export namespace BabylonGui {
          * @default false
          */
         adaptiveScaling?: boolean;
+    }
+
+    export class CreateForMeshDto {
+        constructor(mesh?: BABYLON.AbstractMesh, width?: number, height?: number, supportPointerMove?: boolean, onlyAlphaTesting?: boolean, invertY?: boolean, sampling?: BabylonTexture.samplingModeEnum) {
+            if (mesh !== undefined) { this.mesh = mesh; }
+            if (width !== undefined) { this.width = width; }
+            if (height !== undefined) { this.height = height; }
+            if (supportPointerMove !== undefined) { this.supportPointerMove = supportPointerMove; }
+            if (onlyAlphaTesting !== undefined) { this.onlyAlphaTesting = onlyAlphaTesting; }
+            if (invertY !== undefined) { this.invertY = invertY; }
+            if (sampling !== undefined) { this.sampling = sampling; }
+        }
+        /**
+         * Mesh
+         * @default undefined
+         */
+        mesh: BABYLON.AbstractMesh;
+        /**
+         * Width
+         * @default undefined
+         * @optional true
+         */
+        width?: number;
+        /**
+         * Height
+         * @default undefined
+         * @optional true
+         */
+        height?: number;
+        /**
+         * Support pointer move
+         * @default true
+         */
+        supportPointerMove = true;
+        /**
+         * Only alpha testing
+         * @default false
+         */
+        onlyAlphaTesting = false;
+        /**
+         * Invert Y
+         * @default true
+         */
+        invertY = true;
+        /**
+         * Sampling
+         * @default trilinear
+         */
+        sampling = BabylonTexture.samplingModeEnum.trilinear;
     }
 
     export class CreateStackPanelDto {
