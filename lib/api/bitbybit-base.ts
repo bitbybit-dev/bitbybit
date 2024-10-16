@@ -57,7 +57,8 @@ export class BitByBitBase {
 
         this.color = new Color(this.context);
         this.babylon = new Babylon(this.context, geometryHelper, this.color);
-        this.vector = new Vector(this.context, geometryHelper);
+        this.math = new MathBitByBit();
+        this.vector = new Vector(this.context, this.math, geometryHelper);
         this.line = new Line(this.context, geometryHelper);
         this.point = new Point(this.context, geometryHelper, this.line, this.babylon.transforms);
         this.polyline = new Polyline(this.context, geometryHelper);
@@ -67,7 +68,6 @@ export class BitByBitBase {
         this.time = new Time(this.context);
         this.occt = new OCCTW(this.context, this.occtWorkerManager, geometryHelper, this.jscad.text, this.vector);
         this.asset = new Asset();
-        this.math = new MathBitByBit();
         this.logic = new Logic();
         this.json = new JSONBitByBit(this.context);
         this.text = new TextBitByBit();

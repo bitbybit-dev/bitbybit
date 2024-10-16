@@ -34,6 +34,38 @@ export namespace Math {
         radToDeg = "radToDeg",
         degToRad = "degToRad",
     }
+    export enum easeEnum {
+        easeInSine = "easeInSine",
+        easeOutSine = "easeOutSine",
+        easeInOutSine = "easeInOutSine",
+        easeInQuad = "easeInQuad",
+        easeOutQuad = "easeOutQuad",
+        easeInOutQuad = "easeInOutQuad",
+        easeInCubic = "easeInCubic",
+        easeOutCubic = "easeOutCubic",
+        easeInOutCubic = "easeInOutCubic",
+        easeInQuart = "easeInQuart",
+        easeOutQuart = "easeOutQuart",
+        easeInOutQuart = "easeInOutQuart",
+        easeInQuint = "easeInQuint",
+        easeOutQuint = "easeOutQuint",
+        easeInOutQuint = "easeInOutQuint",
+        easeInExpo = "easeInExpo",
+        easeOutExpo = "easeOutExpo",
+        easeInOutExpo = "easeInOutExpo",
+        easeInCirc = "easeInCirc",
+        easeOutCirc = "easeOutCirc",
+        easeInOutCirc = "easeInOutCirc",
+        easeInElastic = "easeInElastic",
+        easeOutElastic = "easeOutElastic",
+        easeInOutElastic = "easeInOutElastic",
+        easeInBack = "easeInBack",
+        easeOutBack = "easeOutBack",
+        easeInOutBack = "easeInOutBack",
+        easeInBounce = "easeInBounce",
+        easeOutBounce = "easeOutBounce",
+        easeInOutBounce = "easeInOutBounce",
+    }
     export class ModulusDto {
         constructor(number?: number, modulus?: number) {
             if (number !== undefined) { this.number = number; }
@@ -68,6 +100,40 @@ export namespace Math {
          * @step 0.1
          */
         number = 1;
+    }
+    export class EaseDto {
+        constructor(x?: number) {
+            if (x !== undefined) { this.x = x; }
+        }
+        /**
+         * X value param between 0-1
+         * @default 0.5
+         * @minimum 0
+         * @maximum 1
+         * @step 0.1
+         */
+        x = 0.5;
+        /**
+         * Minimum value
+         * @default 0
+         * @minimum -Infinity
+         * @maximum Infinity
+         * @step 0.1
+         */
+        min = 0;
+        /**
+         * Maximum value
+         * @default 1
+         * @minimum -Infinity
+         * @maximum Infinity
+         * @step 0.1
+         */
+        max = 1;
+        /**
+         * Ease function
+         * @default easeInSine
+         */
+        ease: easeEnum;
     }
     export class RoundToDecimalsDto {
         constructor(number?: number, decimalPlaces?: number) {

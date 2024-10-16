@@ -16,16 +16,11 @@ export class BabylonGaussianSplatting {
      * @disposableOutput true
      */
     async create(inputs: Inputs.BabylonGaussianSplatting.CreateGaussianSplattingMeshDto): Promise<BABYLON.GaussianSplattingMesh> {
-        const gs = new BABYLON.GaussianSplattingMesh(`gaussian-splatting-${Math.random()}`, undefined, this.context.scene);
-        const prom = new Promise((resolve, reject) => {
-            gs.loadFileAsync(inputs.url).then(() => {
-                setTimeout(() => {
-                    // Timeout is needed to digest the scene with new asset, otherwise cloning and other splat commands do not work well.
-                    resolve(gs);
-                }, 0);
-            }, (err) => { reject(err); });
+        const gs = BABYLON.SceneLoader.ImportMeshAsync(null, inputs.url, undefined, this.context.scene, undefined, ".ply").then((result) => {
+            const gaussianSplattingMesh = result.meshes[0] as BABYLON.GaussianSplattingMesh;
+            gaussianSplattingMesh.name = `gaussian-splatting-${Math.random()}`;
+            return gaussianSplattingMesh;
         });
-        await prom;
         return gs;
     }
 

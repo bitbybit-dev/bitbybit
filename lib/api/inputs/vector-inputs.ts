@@ -1,7 +1,9 @@
 /* eslint-disable @typescript-eslint/no-namespace */
 import { Base } from "./base-inputs";
+import { Math } from "./inputs";
 
 export namespace Vector {
+
     export class TwoVectorsDto {
         constructor(first?: Base.Vector3, second?: Base.Vector3) {
             if (first !== undefined) { this.first = first; }
@@ -160,6 +162,79 @@ export namespace Vector {
          * @step 0.1
          */
         step = 0.1;
+        /**
+        * Min value of the span
+        * @default 0
+        * @minimum -Infinity
+        * @maximum Infinity
+        * @step 1
+        */
+        min = 0;
+        /**
+        * Max value of the span
+        * @default 1
+        * @minimum -Infinity
+        * @maximum Infinity
+        * @step 1
+        */
+        max = 1;
+    }
+    export class SpanEaseItemsDto {
+        constructor(nrItems?: number, min?: number, max?: number, ease?: Math.easeEnum) {
+            if (nrItems !== undefined) { this.nrItems = nrItems; }
+            if (min !== undefined) { this.min = min; }
+            if (max !== undefined) { this.max = max; }
+            if (ease !== undefined) { this.ease = ease; }
+        }
+        /**
+         * Nr of items in the span
+         * @default 100
+         * @minimum 2
+         * @maximum Infinity
+         * @step 1
+         */
+        nrItems = 100;
+        /**
+        * Min value of the span
+        * @default 0
+        * @minimum -Infinity
+        * @maximum Infinity
+        * @step 1
+        */
+        min = 0;
+        /**
+        * Max value of the span
+        * @default 1
+        * @minimum -Infinity
+        * @maximum Infinity
+        * @step 1
+        */
+        max = 1;
+        /**
+        * Ease type
+        * @default easeInSine
+        */
+        ease: Math.easeEnum = Math.easeEnum.easeInSine;
+        /**
+         * Indicates wether only intervals should be outputed. This will output step lengths between the values.
+         * @default false
+         */
+        intervals = false;
+    }
+    export class SpanLinearItemsDto {
+        constructor(nrItems?: number, min?: number, max?: number) {
+            if (nrItems !== undefined) { this.nrItems = nrItems; }
+            if (min !== undefined) { this.min = min; }
+            if (max !== undefined) { this.max = max; }
+        }
+        /**
+         * Nr of items in the span
+         * @default 100
+         * @minimum 2
+         * @maximum Infinity
+         * @step 1
+         */
+        nrItems = 100;
         /**
         * Min value of the span
         * @default 0

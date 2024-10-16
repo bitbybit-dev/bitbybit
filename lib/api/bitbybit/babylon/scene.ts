@@ -118,7 +118,7 @@ export class BabylonScene {
             light.shadowMinZ = inputs.shadowMinZ;
             this.context.scene.metadata.shadowGenerators.push(shadowGenerator);
             this.context.scene.meshes.forEach(m => {
-                if (m.name !== "bitbybit-hdrSkyBox" && !m.name.includes("bitbybit-ground") && (m.metadata && m.metadata.shadows !== false)) {
+                if (m.name !== "bitbybit-hdrSkyBox" && !m.name.includes("bitbybit-ground") && (!m.metadata || (m.metadata && m.metadata.shadows !== false))) {
                     shadowGenerator.addShadowCaster(m, true);
                     m.receiveShadows = true;
                 }
@@ -183,7 +183,7 @@ export class BabylonScene {
             light.shadowMinZ = inputs.shadowMinZ;
             this.context.scene.metadata.shadowGenerators.push(shadowGenerator);
             this.context.scene.meshes.forEach(m => {
-                if (m.name !== "bitbybit-hdrSkyBox" && !m.name.includes("bitbybit-ground") && (m.metadata && m.metadata.shadows !== false)) {
+                if (m.name !== "bitbybit-hdrSkyBox" && !m.name.includes("bitbybit-ground") && (!m.metadata || (m.metadata && m.metadata.shadows !== false))) {
                     shadowGenerator.addShadowCaster(m, true);
                     m.receiveShadows = true;
                 }

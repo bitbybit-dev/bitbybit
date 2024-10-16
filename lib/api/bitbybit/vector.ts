@@ -3,6 +3,7 @@ import { Angle } from "@babylonjs/core";
 import { Context } from "../context";
 import * as Inputs from "../inputs/inputs";
 import { GeometryHelper } from "../geometry-helper";
+import { MathBitByBit } from "./math";
 
 /**
  * Contains various methods for vector mathematics. Vector in bitbybit is simply an array, usually containing numbers.
@@ -12,7 +13,7 @@ import { GeometryHelper } from "../geometry-helper";
 
 export class Vector {
 
-    constructor(private readonly context: Context, private readonly geometryHelper: GeometryHelper) { }
+    constructor(private readonly context: Context, private readonly math: MathBitByBit, private readonly geometryHelper: GeometryHelper) { }
 
     /**
      * Removes all duplicate vectors from the input array
@@ -374,6 +375,44 @@ export class Vector {
      */
     span(inputs: Inputs.Vector.SpanDto): number[] {
         return this.context.verb.core.Vec.span(inputs.min, inputs.max, inputs.step);
+    }
+
+    /**
+     * Creates a vector that contains numbers spanning between minimum and maximum values at a given ease function
+     * @param inputs Span information containing min, max and ease function
+     * @returns Vector containing numbers between min, max and increasing in non-linear steps defined by nr of items in the vector and type
+     * @group create
+     * @shortname span ease items
+     * @drawable false
+     */
+    spanEaseItems(inputs: Inputs.Vector.SpanEaseItemsDto): number[] {
+        const res = [];
+        for (let i = 0; i < inputs.nrItems; i++) {
+            const x = i * 1 / (inputs.nrItems - 1);
+            res.push(this.math.ease({ x: x, ease: inputs.ease, min: inputs.min, max: inputs.max }));
+        }
+        if (inputs.intervals) {
+            return res.map((v, i, a) => i === 0 ? v : v - a[i - 1]);
+        }
+        return res;
+    }
+
+    /**
+     * Creates a vector that contains numbers spanning between minimum and maximum values by giving nr of items
+     * @param inputs Span information containing min, max and step values
+     * @returns Vector containing number between min, max by giving nr of items
+     * @group create
+     * @shortname span linear items
+     * @drawable false
+     */
+    spanLinearItems(inputs: Inputs.Vector.SpanLinearItemsDto): number[] {
+        const res = [];
+        const dist = (inputs.max - inputs.min);
+        for (let i = 0; i < inputs.nrItems; i++) {
+            const x = dist * i / (inputs.nrItems - 1);
+            res.push(x);
+        }
+        return res;
     }
 
     /**

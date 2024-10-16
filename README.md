@@ -43,4 +43,4 @@ Bit By Bit Developers company will keep these core algorithms that you can find 
 Bit By Bit Developers web platform allows creators to program geometry through simple visual programming language or choose monaco typescript editor with full intellisense of bitbybit API. This cloud platform can fulfil many practical, educational and artistic needs of its users. Through familiar programming interface used in tools such as Scratch and Blockly.Games we expose powerful 3D algorithms that make it easier to implement various parametric tasks. Our goal is to make it very simple for users to share their ideas and designs. We want to encourage everyone to engage in the future of this tool.
 
 ## Major Dependencies
-BabylonJS, Blockly, OpenCascade, JSCAD, Verbnurbs
+BabylonJS, Rete, Blockly, OpenCascade, JSCAD, Verbnurbs
