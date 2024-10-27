@@ -102,10 +102,11 @@ export namespace JSON {
     }
 
     export class SetValueDto {
-        constructor(json?: any, value?: any, path?: string) {
+        constructor(json?: any, value?: any, path?: string, prop?: string) {
             if (json !== undefined) { this.json = json; }
             if (value !== undefined) { this.value = value; }
             if (path !== undefined) { this.path = path; }
+            if (prop !== undefined) { this.prop = prop; }
         }
         /**
         * query json structure
@@ -118,10 +119,15 @@ export namespace JSON {
          */
         value: any;
         /**
-         * query json structure
-         * @default $.propertyName
+         * query to json structure elements on which given prop has to be updated
+         * @default $.pathToParent
          */
-        path = "$.propertyName";
+        path = "$.pathToParent";
+        /**
+         * property to update
+         * @default propertyName
+         */ 
+        prop = "propertyName";
     }
 
     export class SetValuesOnPathsDto {

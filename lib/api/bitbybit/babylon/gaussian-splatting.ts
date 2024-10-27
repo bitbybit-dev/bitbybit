@@ -16,12 +16,17 @@ export class BabylonGaussianSplatting {
      * @disposableOutput true
      */
     async create(inputs: Inputs.BabylonGaussianSplatting.CreateGaussianSplattingMeshDto): Promise<BABYLON.GaussianSplattingMesh> {
-        const gs = BABYLON.SceneLoader.ImportMeshAsync(null, inputs.url, undefined, this.context.scene, undefined, ".ply").then((result) => {
-            const gaussianSplattingMesh = result.meshes[0] as BABYLON.GaussianSplattingMesh;
-            gaussianSplattingMesh.name = `gaussian-splatting-${Math.random()}`;
-            return gaussianSplattingMesh;
-        });
-        return gs;
+        if (inputs.url !== undefined) {
+            const gs = BABYLON.SceneLoader.ImportMeshAsync(null, inputs.url, undefined, this.context.scene, undefined, ".ply").then((result) => {
+                const gaussianSplattingMesh = result.meshes[0] as BABYLON.GaussianSplattingMesh;
+                gaussianSplattingMesh.name = `gaussian-splatting-${Math.random()}`;
+                return gaussianSplattingMesh;
+            });
+            return gs;
+        }
+        else {
+            return undefined;
+        }
     }
 
 

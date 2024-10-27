@@ -44,7 +44,7 @@ export class JSONBitByBit {
      * @drawable false
      */
     query(inputs: Inputs.JSON.QueryDto): any {
-        return this.context.jsonpath.query(inputs.json, inputs.query);
+        return this.context.jsonpath({ path: inputs.query, json: inputs.json });
     }
 
     /**
@@ -103,9 +103,23 @@ export class JSONBitByBit {
      */
     setValue(inputs: Inputs.JSON.SetValueDto): any {
         // must be an object
-        const clonedJson = { ...structuredClone(inputs.json) };
-        this.context.jsonpath.value(clonedJson, inputs.path, inputs.value);
-        return clonedJson;
+        if (inputs.json instanceof Object) {
+            const clonedJson = { ...structuredClone(inputs.json) };
+
+            const callback = (payload) => {
+                payload[inputs.prop] = inputs.value;
+                return payload;
+            };
+            this.context.jsonpath({
+                path: inputs.path,
+                json: clonedJson,
+                callback
+            });
+            return clonedJson;
+        }
+        else {
+            throw new Error("Json must be an object");
+        }
     }
 
     /**
@@ -134,22 +148,8 @@ export class JSONBitByBit {
      * @drawable false
      */
     paths(inputs: Inputs.JSON.PathsDto): any {
-        return this.context.jsonpath.paths(inputs.json, inputs.query);
-    }
-
-    /**
-     * Find paths to elements in object matching path expression as strings
-     * @param inputs a json value and a query
-     * @returns any
-     * @group jsonpath
-     * @shortname paths as strings
-     * @drawable false
-     */
-    pathsAsStrings(inputs: Inputs.JSON.PathsDto): any {
-        const paths = this.context.jsonpath.paths(inputs.json, inputs.query);
-        return paths.map(path => {
-            return this.context.jsonpath.stringify(path);
-        });
+        const paths = this.context.jsonpath({ json: inputs.json, path: inputs.query, resultType: "path" });
+        return paths;
     }
 
     /**

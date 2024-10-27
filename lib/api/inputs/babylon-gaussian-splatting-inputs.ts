@@ -10,6 +10,7 @@ export namespace BabylonGaussianSplatting {
         }
         /**
          * Babylon Mesh that needs to be updated
+         * @default undefined
          */
         url: string;
     }

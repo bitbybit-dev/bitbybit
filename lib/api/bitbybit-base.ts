@@ -21,7 +21,7 @@ import * as BABYLON from "@babylonjs/core";
 import * as vrb from "verb-nurbs-web";
 import { Lists } from "./bitbybit/lists";
 import { JSONBitByBit } from "./bitbybit/json";
-import * as jsonpath from "jsonpath";
+import { JSONPath } from "jsonpath-plus";
 import { Logic } from "./bitbybit/logic";
 
 export class BitByBitBase {
@@ -92,7 +92,7 @@ export class BitByBitBase {
         }
         const verb = { geom: vrb.geom, core: vrb.core };
         this.context.verb = verb;
-        this.context.jsonpath = jsonpath;
+        this.context.jsonpath = JSONPath;
         if (occt) {
             this.occtWorkerManager.setOccWorker(occt);
         }

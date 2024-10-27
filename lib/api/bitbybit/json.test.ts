@@ -1,13 +1,13 @@
 import { Context } from "../context";
 import { JSONBitByBit } from "./json";
-import * as jsonpath from "jsonpath";
+import { JSONPath } from "jsonpath-plus";
 
 describe("JSON unit tests", () => {
     let json: JSONBitByBit;
 
     beforeAll(async () => {
         const context = new Context();
-        context.jsonpath = jsonpath.default;
+        context.jsonpath = JSONPath;
         json = new JSONBitByBit(context);
     });
 
@@ -26,59 +26,36 @@ describe("JSON unit tests", () => {
         expect(result).toEqual([1]);
     });
 
-    it("should set value", async () => {
-        const result = json.setValue({ json: { a: 1 }, path: "$.a", value: 2 });
+    it("should set value on the objects found by the path", async () => {
+        const result = json.setValue({ json: { a: 1 }, path: "$", value: 2, prop: "a" });
         expect(result).toEqual({ a: 2 });
+    });
+
+    it("should set value in deeper level", async () => {
+        const result = json.setValue({ json: { a: 1, b: { c: 2 } }, path: "$.b", value: 3, prop: "c" });
+        expect(result).toEqual({ a: 1, b: { c: 3 } });
+    });
+
+    it("should set value in the array by using prop as an index", async () => {
+        const result = json.setValue({ json: { a: [1, 2, 3], b: { c: 2 } }, path: "$.a", value: 3, prop: "1" });
+        expect(result).toEqual({ a: [1, 3, 3], b: { c: 2 } });
     });
 
     it("should find paths", async () => {
         const result = json.paths({ json: getMockJSON(), query: "$..author" });
         expect(result).toEqual(
             [
-                ["$", "store", "book", 0, "author"],
-                ["$", "store", "book", 1, "author"],
-                ["$", "store", "book", 2, "author"],
-                ["$", "store", "book", 3, "author"]
-            ]
-        );
-    });
-
-    it("should find stringified paths", async () => {
-        const result = json.pathsAsStrings({ json: getMockJSON(), query: "$..author" });
-        expect(result).toEqual(
-            [
-                "$.store.book[0].author",
-                "$.store.book[1].author",
-                "$.store.book[2].author",
-                "$.store.book[3].author",
+                "$['store']['book'][0]['author']",
+                "$['store']['book'][1]['author']",
+                "$['store']['book'][2]['author']",
+                "$['store']['book'][3]['author']",
             ]
         );
     });
 
     it("should find authors", async () => {
         const j = getMockJSON();
-        const paths = json.paths({ json: j, query: "$..author" });
-        const result = paths.map(path => {
-            const query = path.join(".");
-            return json.query({ json: j, query: query });
-        }).flat();
-
-        expect(result).toEqual(
-            [
-                "Nigel Rees",
-                "Evelyn Waugh",
-                "Herman Melville",
-                "J. R. R. Tolkien",
-            ]
-        );
-    });
-
-    it("should find authors by using paths as strings", async () => {
-        const j = getMockJSON();
-        const paths = json.pathsAsStrings({ json: j, query: "$..author" });
-        const result = paths.map(path => {
-            return json.query({ json: j, query: path });
-        }).flat();
+        const result = json.query({ json: j, query: "$..author" });
 
         expect(result).toEqual(
             [
