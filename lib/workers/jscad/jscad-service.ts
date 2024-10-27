@@ -137,7 +137,17 @@ export class Jscad {
     }
 
     downloadGeometryDxf(inputs: Inputs.JSCAD.DownloadGeometryDto): { blob: Blob } {
-        const rawData = this.jscad.DXFSERIALIZER.serialize({},
+        const options = inputs.options ? inputs.options : {};
+        const rawData = this.jscad.DXFSERIALIZER.serialize(options,
+            inputs.geometry
+        );
+        const madeBlob = new Blob(rawData);
+        return { blob: madeBlob };
+    }
+
+    downloadGeometry3MF(inputs: Inputs.JSCAD.DownloadGeometryDto): { blob: Blob } {
+        const options = inputs.options ? inputs.options : {};
+        const rawData = this.jscad.THREEMFSERIALIZER.serialize(options,
             inputs.geometry
         );
         const madeBlob = new Blob(rawData);

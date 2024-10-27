@@ -243,6 +243,17 @@ export class JSCAD {
         this.downloadFile(res.blob, inputs.fileName, "dxf");
     }
 
+    /**
+     * Downloads the 3MF file from jscad geometry.
+     * @param inputs 3D geometry
+     * @group io
+     * @shortname geometry to 3mf
+     */
+    async downloadGeometry3MF(inputs: Inputs.JSCAD.DownloadGeometryDto): Promise<void> {
+        const res = await this.jscadWorkerManager.genericCallToWorkerPromise("downloadGeometry3MF", inputs);
+        this.downloadFile(res.blob, inputs.fileName, "3mf");
+    }
+
     private downloadFile(blob: Blob, fileName: string, extension: string): void {
         const blobUrl = URL.createObjectURL(blob);
 

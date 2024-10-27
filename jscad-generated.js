@@ -6,8 +6,267 @@ CSG = require('./node_modules/@jscad/modeling/src/index.js');
 CSG.IOUTILS = require('./node_modules/@jscad/io-utils/index.js');
 CSG.STLSERIALIZER = require('./node_modules/@jscad/stl-serializer/index.js');
 CSG.DXFSERIALIZER = require('./node_modules/@jscad/dxf-serializer/index.js');
+CSG.THREEMFSERIALIZER = require('./node_modules/@jscad/3mf-serializer/src/index.js');
 
-},{"./node_modules/@jscad/dxf-serializer/index.js":12,"./node_modules/@jscad/io-utils/index.js":16,"./node_modules/@jscad/modeling/src/index.js":108,"./node_modules/@jscad/stl-serializer/index.js":421}],2:[function(require,module,exports){
+},{"./node_modules/@jscad/3mf-serializer/src/index.js":2,"./node_modules/@jscad/dxf-serializer/index.js":13,"./node_modules/@jscad/io-utils/index.js":418,"./node_modules/@jscad/modeling/src/index.js":511,"./node_modules/@jscad/stl-serializer/index.js":826}],2:[function(require,module,exports){
+/*
+JSCAD Object to 3MF (XML) Format Serialization
+
+## License
+
+Copyright (c) 2022 JSCAD Organization https://github.com/jscad
+
+All code released under MIT license
+
+Notes:
+1) geom2 conversion to:
+     none
+2) geom3 conversion to:
+     mesh
+3) path2 conversion to:
+     none
+*/
+
+/**
+ * Serializer of JSCAD geometries to 3D manufacturing format (XML)
+ *
+ * The serialization of the following geometries are possible.
+ * - serialization of 3D geometry (geom3) to 3MF object (a unique mesh containing both vertices and triangles)
+ *
+ * Colors are added to base materials when found on the 3D geometry, i.e. attribute color.
+ * Names are added to meshs when found on the 3D geometry, i.e. attribute name.
+ *
+ * @module io/3mf-serializer
+ * @example
+ * const { serializer, mimeType } = require('@jscad/3mf-serializer')
+ */
+
+
+const zipSync = require('fflate').zipSync
+const strToU8 = require('fflate').strToU8
+
+const stringify = require('onml/lib/stringify')
+
+const { colors, geometries, modifiers } = require('@jscad/modeling')
+const { flatten, toArray } = require('@jscad/array-utils')
+
+
+const mimeType = 'model/3mf'
+const fileExtension = '3mf'
+
+/**
+ * Serialize the give objects to 3MF contents (XML) or 3MF packaging (OPC).
+ * @see https://3mf.io/specification/
+ * @param {Object} [options] - options for serialization
+ * @param {String} [options.unit='millimeter'] - unit of design; millimeter, inch, feet, meter or micrometer
+ * @param {Boolean} [options.metadata=true] - add metadata to 3MF contents, such at CreationDate
+ * @param {Array} [options.defaultcolor=[0,0,0,1]] - default color for objects
+ * @param {Boolean} [options.compress=true] - package and compress the contents
+ * @param {Object|Array} objects - objects to serialize into 3D manufacturing format
+ * @returns {Array} serialized contents, 3MF contents (XML) or 3MF packaging (ZIP)
+ * @example
+ * const geometry = primitives.cube()
+ * const package = serializer({unit: 'meter'}, geometry) // 3MF package, ZIP format
+ */
+const serialize = (options, ...objects) => {
+  const defaults = {
+    unit: 'millimeter', // micron, millimeter, centimeter, inch, foot, meter
+    metadata: true,
+    defaultcolor: [255/255, 160/255, 0, 1], // JSCAD Orange
+    compress: true
+  }
+  options = Object.assign({}, defaults, options)
+
+  objects = flatten(objects)
+
+  // convert only 3D geometries
+  let objects3d = objects.filter((object) => geometries.geom3.isA(object))
+
+  if (objects3d.length === 0) throw new Error('only 3D geometries can be serialized to 3MF')
+  if (objects.length !== objects3d.length) console.warn('some objects could not be serialized to 3MF')
+
+  // convert to triangles
+  objects = toArray(modifiers.generalize({ snap: true, triangulate: true }, objects3d))
+
+  // construct the contents of the 3MF 'model'
+  const body = ['model',
+    {
+      unit: options.unit,
+      'xml:lang': 'und'
+    },
+    ['metadata', { name: 'Application' }, 'JSCAD']
+  ]
+  if (options.metadata) {
+    body.push(['metadata', { name: 'CreationDate' }, new Date().toISOString()])
+  }
+  body.push(translateResources(objects, options))
+  body.push(translateBuild(objects, options))
+
+  // convert the contents to 3MF (XML) format
+  const xml = `<?xml version="1.0" encoding="UTF-8"?>
+${stringify(body, 2)}`
+
+  // compress and package the contents if requested
+  if (options.compress) {
+    const data = {
+      '3D': {
+        '3dmodel.model': strToU8(xml)
+      },
+      '_rels': {
+        '.rels': strToU8(rels)
+      },
+      '[Content_Types].xml': strToU8(contenttype)
+    }
+    const opts = {
+      comment: 'created by JSCAD'
+    }
+    const zipData = zipSync(data, opts)
+    return [zipData.buffer]
+  }
+  return [xml]
+}
+
+const contenttype = `<?xml version="1.0" encoding="UTF-8" ?>
+<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">
+  <Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml">
+  </Default>
+  <Default Extension="model" ContentType="application/vnd.ms-package.3dmanufacturing-3dmodel+xml">
+  </Default>
+</Types>`
+
+const rels = `<?xml version="1.0" encoding="UTF-8" ?>
+<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
+  <Relationship Target="/3D/3dmodel.model" Id="rel0" Type="http://schemas.microsoft.com/3dmanufacturing/2013/01/3dmodel">
+  </Relationship>
+</Relationships>`
+
+const translateResources = (objects, options) => {
+  let resources = ['resources', {}, translateMaterials(objects, options)]
+  resources = resources.concat(translateObjects(objects, options))
+  return resources
+}
+
+const translateMaterials = (objects, options) => {
+  let basematerials = ['basematerials', { id: '0' }]
+
+  const materials = []
+  objects.forEach((object, i) => {
+    let srgb = colors.rgbToHex(options.defaultcolor).toUpperCase()
+    if (object.color) {
+      srgb = colors.rgbToHex(object.color).toUpperCase()
+    }
+    materials.push(['base', { name: `mat${i}`, displaycolor: srgb }])
+  })
+
+  basematerials = basematerials.concat(materials)
+  return basematerials
+}
+
+const translateObjects = (objects, options) => {
+  const contents = []
+  objects.forEach((object, i) => {
+    if (geometries.geom3.isA(object)) {
+      const polygons = geometries.geom3.toPolygons(object)
+      if (polygons.length > 0) {
+        options.id = i
+        contents.push(convertToObject(object, options))
+      }
+    }
+  })
+  return contents
+}
+
+const translateBuild = (objects, options) => {
+  let build = ['build', { }]
+
+  const items = []
+  objects.forEach((object, i) => {
+    items.push(['item', { objectid: `${i + 1}` }])
+  })
+
+  build = build.concat(items)
+  return build
+}
+
+/*
+ * This section converts each 3D geometry to object / mesh
+ */
+
+const convertToObject = (object, options) => {
+  const name = object.name ? object.name : `Part ${options.id}`
+  const contents = ['object', { id: `${options.id + 1}`, type: 'model', pid: '0', pindex: `${options.id}`, name: name }, convertToMesh(object, options)]
+  return contents
+}
+
+const convertToMesh = (object, options) => {
+  const contents = ['mesh', {}, convertToVertices(object, options), convertToVolumes(object, options)]
+  return contents
+}
+
+/*
+ * This section converts each 3D geometry to mesh vertices
+ */
+
+const convertToVertices = (object, options) => {
+  const contents = ['vertices', {}]
+
+  const vertices = []
+  const polygons = geometries.geom3.toPolygons(object)
+  polygons.forEach((polygon) => {
+    for (let i = 0; i < polygon.vertices.length; i++) {
+      vertices.push(convertToVertex(polygon.vertices[i], options))
+    }
+  })
+
+  return contents.concat(vertices)
+}
+
+const convertToVertex = (vertex, options) => {
+  const contents = ['vertex', { x: vertex[0], y: vertex[1], z: vertex[2] }]
+  return contents
+}
+
+/*
+ * This section converts each 3D geometry to mesh triangles
+ */
+
+const convertToVolumes = (object, options) => {
+  let n = 0
+  const polygons = geometries.geom3.toPolygons(object)
+
+  let contents = ['triangles', {}]
+  polygons.forEach((polygon) => {
+    if (polygon.vertices.length < 3) {
+      return
+    }
+
+    const triangles = convertToTriangles(polygon, n)
+
+    contents = contents.concat(triangles)
+
+    n += polygon.vertices.length
+  })
+  return contents
+}
+
+const convertToTriangles = (polygon, index) => {
+  const contents = []
+
+  // making sure they are all triangles (triangular polygons)
+  for (let i = 0; i < polygon.vertices.length - 2; i++) {
+    const triangle = ['triangle', { v1: index, v2: (index + i + 1), v3: (index + i + 2) }]
+    contents.push(triangle)
+  }
+  return contents
+}
+
+module.exports = {
+  serialize,
+  mimeType,
+  fileExtension
+}
+
+},{"@jscad/array-utils":6,"@jscad/modeling":511,"fflate":827,"onml/lib/stringify":829}],3:[function(require,module,exports){
 /**
  * Flatten the given array into a single array of elements.
  * The given array can be composed of multiple depths of objects and or arrays.
@@ -21,7 +280,7 @@ const flatten = (arr) => arr.reduce((acc, val) => Array.isArray(val) ? acc.conca
 
 module.exports = flatten
 
-},{}],3:[function(require,module,exports){
+},{}],4:[function(require,module,exports){
 /**
  * Compare function for sorting arrays of numbers.
  * @param {Number} a - first number
@@ -36,7 +295,7 @@ const fnNumberSort = (a, b) => a - b
 
 module.exports = fnNumberSort
 
-},{}],4:[function(require,module,exports){
+},{}],5:[function(require,module,exports){
 /**
  * Return the first element of the given array.
  * @param {*} array - anything
@@ -54,7 +313,7 @@ const head = (array) => {
 
 module.exports = head
 
-},{}],5:[function(require,module,exports){
+},{}],6:[function(require,module,exports){
 /**
  * Utility functions for arrays.
  * @module array-utils
@@ -72,7 +331,7 @@ module.exports = {
   toArray: require('./toArray')
 }
 
-},{"./flatten":2,"./fnNumberSort":3,"./head":4,"./insertSorted":6,"./nth":7,"./padToLength":8,"./toArray":9}],6:[function(require,module,exports){
+},{"./flatten":3,"./fnNumberSort":4,"./head":5,"./insertSorted":7,"./nth":8,"./padToLength":9,"./toArray":10}],7:[function(require,module,exports){
 /**
  * Insert the given element into the give array using the compareFunction.
  * @param {Array} array - array in which to insert
@@ -102,7 +361,7 @@ const insertSorted = (array, element, compareFunction) => {
 
 module.exports = insertSorted
 
-},{}],7:[function(require,module,exports){
+},{}],8:[function(require,module,exports){
 /**
  * Return the Nth element of the given array.
  * @param {*} array - anything
@@ -122,7 +381,7 @@ const nth = (array, index) => {
 
 module.exports = nth
 
-},{}],8:[function(require,module,exports){
+},{}],9:[function(require,module,exports){
 /**
  * Build an array of the given target length from an existing array and a padding value.
  * If the array is already larger than the target length, it will not be shortened.
@@ -145,7 +404,7 @@ const padToLength = (anArray, padding, targetLength) => {
 
 module.exports = padToLength
 
-},{}],9:[function(require,module,exports){
+},{}],10:[function(require,module,exports){
 /**
  * Convert the given array to an array if not already an array.
  * @param {*} array - anything
@@ -162,7 +421,7 @@ const toArray = (array) => {
 
 module.exports = toArray
 
-},{}],10:[function(require,module,exports){
+},{}],11:[function(require,module,exports){
 /*
 AutoCAD DXF Content
 
@@ -3281,7 +3540,7 @@ module.exports = {
   dxfObjects
 }
 
-},{}],11:[function(require,module,exports){
+},{}],12:[function(require,module,exports){
 /*
  * AutoCAD 2017 2018 Color Index (1-255) as RGB + ALPHA colors
  */
@@ -3573,7 +3832,7 @@ const colorIndex = [
 
 module.exports = colorIndex
 
-},{}],12:[function(require,module,exports){
+},{}],13:[function(require,module,exports){
 /*
 JSCAD Object to AutoCAD DXF Entity Serialization
 
@@ -4056,341 +4315,7 @@ module.exports = {
   mimeType
 }
 
-},{"./autocad_AC2017":10,"./colorindex2017":11,"@jscad/array-utils":5,"@jscad/modeling":108}],13:[function(require,module,exports){
-// BinaryReader
-// Converted to ES5 Class by @z3dev
-// Refactored by Vjeux <vjeuxx@gmail.com>
-// http://blog.vjeux.com/2010/javascript/javascript-binary-reader.html
-
-// Original
-// + Jonas Raoni Soares Silva
-// @ http://jsfromhell.com/classes/binary-deserializer [rev. #1]
-
-class BinaryReader {
-  /*
-   * Construct a BinaryReader from the given data.
-   * The data is a string created from the specified sequence of UTF-16 code units.
-   * See String.fromCharCode()
-   * See _readByte() below
-   */
-  constructor (data) {
-    this._buffer = data
-    this._pos = 0
-  }
-
-  /* Public */
-  readInt8 () { return this._decodeInt(8, true) }
-  readUInt8 () { return this._decodeInt(8, false) }
-  readInt16 () { return this._decodeInt(16, true) }
-  readUInt16 () { return this._decodeInt(16, false) }
-  readInt32 () { return this._decodeInt(32, true) }
-  readUInt32 () { return this._decodeInt(32, false) }
-
-  readFloat () { return this._decodeFloat(23, 8) }
-  readDouble () { return this._decodeFloat(52, 11) }
-
-  readChar () { return this.readString(1) }
-  readString (length) {
-    this._checkSize(length * 8)
-    const result = this._buffer.substr(this._pos, length)
-    this._pos += length
-    return result
-  }
-
-  seek (pos) {
-    this._pos = pos
-    this._checkSize(0)
-  }
-
-  getPosition () {
-    return this._pos
-  }
-
-  getSize () {
-    return this._buffer.length
-  }
-
-  /* Private */
-  _decodeFloat (precisionBits, exponentBits) {
-    const length = precisionBits + exponentBits + 1
-    const size = length >> 3
-    this._checkSize(length)
-
-    const bias = Math.pow(2, exponentBits - 1) - 1
-    const signal = this._readBits(precisionBits + exponentBits, 1, size)
-    const exponent = this._readBits(precisionBits, exponentBits, size)
-    let significand = 0
-    let divisor = 2
-    let curByte = 0 // length + (-precisionBits >> 3) - 1;
-    let startBit = 0
-    do {
-      const byteValue = this._readByte(++curByte, size)
-      startBit = precisionBits % 8 || 8
-      let mask = 1 << startBit
-      while ((mask >>= 1)) {
-        if (byteValue & mask) {
-          significand += 1 / divisor
-        }
-        divisor *= 2
-      }
-    } while ((precisionBits -= startBit))
-
-    this._pos += size
-
-    return exponent === (bias << 1) + 1 ? significand ? NaN : signal ? -Infinity : +Infinity
-      : (1 + signal * -2) * (exponent || significand ? !exponent ? Math.pow(2, -bias + 1) * significand
-          : Math.pow(2, exponent - bias) * (1 + significand) : 0)
-  }
-
-  _decodeInt (bits, signed) {
-    const x = this._readBits(0, bits, bits / 8)
-    const max = Math.pow(2, bits)
-    const result = signed && x >= max / 2 ? x - max : x
-
-    this._pos += bits / 8
-    return result
-  }
-
-  // shl fix: Henri Torgemane ~1996 (compressed by Jonas Raoni)
-  _shl (a, b) {
-    for (++b; --b; a = ((a %= 0x7fffffff + 1) & 0x40000000) === 0x40000000 ? a * 2 : (a - 0x40000000) * 2 + 0x7fffffff + 1);
-    return a
-  }
-
-  _readByte (i, size) {
-    return this._buffer.charCodeAt(this._pos + size - i - 1) & 0xff
-  }
-
-  _readBits (start, length, size) {
-    const offsetLeft = (start + length) % 8
-    const offsetRight = start % 8
-    const curByte = size - (start >> 3) - 1
-    let lastByte = size + (-(start + length) >> 3)
-    let diff = curByte - lastByte
-
-    let sum = (this._readByte(curByte, size) >> offsetRight) & ((1 << (diff ? 8 - offsetRight : length)) - 1)
-
-    if (diff && offsetLeft) {
-      sum += (this._readByte(lastByte++, size) & ((1 << offsetLeft) - 1)) << (diff-- << 3) - offsetRight
-    }
-
-    while (diff) {
-      sum += this._shl(this._readByte(lastByte++, size), (diff-- << 3) - offsetRight)
-    }
-
-    return sum
-  }
-
-  _checkSize (neededBits) {
-    if (!(this._pos + Math.ceil(neededBits / 8) < this._buffer.length)) {
-      // throw new Error("Index out of bound");
-    }
-  }
-}
-
-module.exports = BinaryReader
-
-},{}],14:[function(require,module,exports){
-(function (Buffer){
-/*
- * Blob.js
- *
- * Node and Browserify Compatible
- *
- * Copyright (c) 2015 by Z3 Dev (@zdev/www.z3dev.jp)
- * License: MIT License
- *
- * This implementation uses the Buffer class for all storage.
- * See https://nodejs.org/api/buffer.html
- *
- * URL.createObjectURL(blob)
- *
- * History:
- * 2020/10/07: converted to class
- * 2015/07/02: contributed to OpenJSCAD.org CLI openjscad
- */
-
-/**
- * The Blob object represents a blob, which is a file-like object of immutable, raw data; they can be read as text or binary data.
- * @see https://developer.mozilla.org/en-US/docs/Web/API/Blob
- */
-class Blob {
-  /**
-   * Returns a newly created Blob object which contains a concatenation of all of the data in the given contents.
-   * @param {Array} contents - an array of ArrayBuffer, or String objects that will be put inside the Blob.
-   */
-  constructor (contents, options) {
-    // make the optional options non-optional
-    options = options || {}
-    // the size of the byte sequence in number of bytes
-    this.size = 0 // contents, not allocation
-    // the media type, as an ASCII-encoded string in lower case, and parsable as a MIME type
-    this.type = ''
-    // readability state (CLOSED: true, OPENED: false)
-    this.isClosed = false
-    // encoding of given strings
-    this.encoding = 'utf8'
-    // storage
-    this.buffer = null
-    this.length = 0 // allocation, not contents
-
-    if (!contents) return
-    if (!Array.isArray(contents)) return
-
-    // Find content length
-    contents.forEach((content) => {
-      if (typeof (content) === 'string') {
-        this.length += content.length
-      } else if (content instanceof ArrayBuffer) {
-        this.length += content.byteLength
-      }
-    })
-
-    // process options if any
-    if (options.type) {
-      // TBD if type contains any chars outside range U+0020 to U+007E, then set type to the empty string
-      // Convert every character in type to lowercase
-      this.type = options.type.toLowerCase()
-    }
-    if (options.endings) {
-      // convert the EOL on strings
-    }
-    if (options.encoding) {
-      this.encoding = options.encoding.toLowerCase()
-    }
-    if (options.length) {
-      this.length = options.length
-    }
-
-    let wbytes
-    let object
-    // convert the contents (String, ArrayBufferView, ArrayBuffer, Blob)
-    // MAX_LENGTH : 2147483647
-    this.buffer = Buffer.allocUnsafe(this.length) // new Buffer(this.length)
-    for (let index = 0; index < contents.length; index++) {
-      switch (typeof (contents[index])) {
-        case 'string':
-          wbytes = this.buffer.write(contents[index], this.size, this.encoding)
-          this.size = this.size + wbytes
-          break
-        case 'object':
-          object = contents[index] // this should be a reference to an object
-          // FIXME if (Buffer.isBuffer(object)) { }
-          if (object instanceof ArrayBuffer) {
-            const view = new DataView(object)
-            for (let bindex = 0; bindex < object.byteLength; bindex++) {
-              const xbyte = view.getUint8(bindex)
-              wbytes = this.buffer.writeUInt8(xbyte, this.size, false)
-              this.size++
-            }
-          }
-          break
-        default:
-          break
-      }
-    }
-  }
-
-  asBuffer () {
-    // return a deep copy as blobs are written to files with full length, not size
-    return this.buffer.slice(0, this.size)
-  }
-
-  arrayBuffer () {
-    return this.buffer.slice(0, this.size)
-  }
-
-  slice (start, end, type) {
-    start = start || 0
-    end = end || this.size
-    type = type || ''
-    // TODO
-    return new Blob()
-  }
-
-  stream () {
-    // TODO
-    return null
-  }
-
-  text () {
-    // TODO
-    return ''
-  }
-
-  close () {
-    // if state of context objext is already CLOSED then return
-    if (this.isClosed) return
-    // set the readbility state of the context object to CLOSED and remove storage
-    this.isClosed = true
-  }
-
-  toString () {
-    // TODO
-    return ''
-  }
-}
-
-module.exports = Blob
-
-}).call(this,require("buffer").Buffer)
-},{"buffer":423}],15:[function(require,module,exports){
-const makeBlob = require('./makeBlob')
-
-const Blob = makeBlob()
-
-/**
- * Convert the given input into a BLOB of data for export.
- * @param {Object} input - input object to convert
- * @param {Array} input.data - array of data to be inserted into the blob, either String or ArrayBuffer
- * @param {String} input.mimeType - mime type of the data to be inserted
- * @return {Blob} a new Blob
- * @alias module:io/utils.convertToBlob
- * @example
- * const blob1 = convertToBlob({ data: ['test'], mimeType: 'text/plain' })
- * const blob2 = convertToBlob({ data: [Int32Array.from('12345').buffer], mimeType: 'application/mine' })
- */
-const convertToBlob = (input) => {
-  const { data, mimeType } = input
-  const blob = new Blob(data, { type: mimeType })
-  return blob
-}
-
-module.exports = convertToBlob
-
-},{"./makeBlob":17}],16:[function(require,module,exports){
-/**
- * Utility functions of various sorts in support of IO packages.
- * @module io/utils
- * @example
- * const { BinaryReader } = require('@jscad/io-utils')
- */
-module.exports = {
-  convertToBlob: require('./convertToBlob'),
-  makeBlob: require('./makeBlob'),
-  BinaryReader: require('./BinaryReader'),
-  Blob: require('./Blob')
-}
-
-},{"./BinaryReader":13,"./Blob":14,"./convertToBlob":15,"./makeBlob":17}],17:[function(require,module,exports){
-const nodeBlob = require('./Blob.js')
-
-/**
- * Make a constructor for Blob objects.
- * @return {Function} constructor of Blob objects
- * @alias module:io/utils.makeBlob
- * @example
- * const Blob = makeBlob()
- * const ablob = new Blob(data, { type: mimeType })
- */
-const makeBlob = () => {
-  const blob = typeof window !== 'undefined' ? window.Blob : nodeBlob
-  return blob
-}
-
-module.exports = makeBlob
-
-},{"./Blob.js":14}],18:[function(require,module,exports){
+},{"./autocad_AC2017":11,"./colorindex2017":12,"@jscad/array-utils":6,"@jscad/modeling":104}],14:[function(require,module,exports){
 const cssColors = require('./cssColors')
 
 /**
@@ -4406,7 +4331,7 @@ const colorNameToRgb = (s) => cssColors[s.toLowerCase()]
 
 module.exports = colorNameToRgb
 
-},{"./cssColors":20}],19:[function(require,module,exports){
+},{"./cssColors":16}],15:[function(require,module,exports){
 const flatten = require('../utils/flatten')
 
 const geom2 = require('../geometries/geom2')
@@ -4473,7 +4398,7 @@ const colorize = (color, ...objects) => {
 
 module.exports = colorize
 
-},{"../geometries/geom2":42,"../geometries/geom3":57,"../geometries/path2":78,"../geometries/poly3":95,"../utils/flatten":412}],20:[function(require,module,exports){
+},{"../geometries/geom2":38,"../geometries/geom3":53,"../geometries/path2":74,"../geometries/poly3":91,"../utils/flatten":408}],16:[function(require,module,exports){
 /**
  * @alias module:modeling/colors.cssColors
  * @see CSS color table from http://www.w3.org/TR/css3-color/
@@ -4651,7 +4576,7 @@ const cssColors = {
 
 module.exports = cssColors
 
-},{}],21:[function(require,module,exports){
+},{}],17:[function(require,module,exports){
 /**
  * Converts CSS color notations (string of hex values) to RGB values.
  *
@@ -4679,7 +4604,7 @@ const hexToRgb = (notation) => {
 
 module.exports = hexToRgb
 
-},{}],22:[function(require,module,exports){
+},{}],18:[function(require,module,exports){
 const flatten = require('../utils/flatten')
 
 const hueToColorComponent = require('./hueToColorComponent')
@@ -4725,7 +4650,7 @@ const hslToRgb = (...values) => {
 
 module.exports = hslToRgb
 
-},{"../utils/flatten":412,"./hueToColorComponent":24}],23:[function(require,module,exports){
+},{"../utils/flatten":408,"./hueToColorComponent":20}],19:[function(require,module,exports){
 const flatten = require('../utils/flatten')
 
 /**
@@ -4800,7 +4725,7 @@ const hsvToRgb = (...values) => {
 
 module.exports = hsvToRgb
 
-},{"../utils/flatten":412}],24:[function(require,module,exports){
+},{"../utils/flatten":408}],20:[function(require,module,exports){
 /**
  * Convert hue values to a color component (ie one of r, g, b)
  * @param  {Number} p
@@ -4820,7 +4745,7 @@ const hueToColorComponent = (p, q, t) => {
 
 module.exports = hueToColorComponent
 
-},{}],25:[function(require,module,exports){
+},{}],21:[function(require,module,exports){
 /**
  * All shapes (primitives or the results of operations) can be assigned a color (RGBA).
  * In all cases, the function returns the results, and never changes the original shapes.
@@ -4841,7 +4766,7 @@ module.exports = {
   rgbToHsv: require('./rgbToHsv')
 }
 
-},{"./colorNameToRgb":18,"./colorize":19,"./cssColors":20,"./hexToRgb":21,"./hslToRgb":22,"./hsvToRgb":23,"./hueToColorComponent":24,"./rgbToHex":26,"./rgbToHsl":27,"./rgbToHsv":28}],26:[function(require,module,exports){
+},{"./colorNameToRgb":14,"./colorize":15,"./cssColors":16,"./hexToRgb":17,"./hslToRgb":18,"./hsvToRgb":19,"./hueToColorComponent":20,"./rgbToHex":22,"./rgbToHsl":23,"./rgbToHsv":24}],22:[function(require,module,exports){
 const flatten = require('../utils/flatten')
 
 /**
@@ -4870,7 +4795,7 @@ const rgbToHex = (...values) => {
 
 module.exports = rgbToHex
 
-},{"../utils/flatten":412}],27:[function(require,module,exports){
+},{"../utils/flatten":408}],23:[function(require,module,exports){
 const flatten = require('../utils/flatten')
 
 /**
@@ -4925,7 +4850,7 @@ const rgbToHsl = (...values) => {
 
 module.exports = rgbToHsl
 
-},{"../utils/flatten":412}],28:[function(require,module,exports){
+},{"../utils/flatten":408}],24:[function(require,module,exports){
 const flatten = require('../utils/flatten')
 
 /**
@@ -4979,7 +4904,7 @@ const rgbToHsv = (...values) => {
 
 module.exports = rgbToHsv
 
-},{"../utils/flatten":412}],29:[function(require,module,exports){
+},{"../utils/flatten":408}],25:[function(require,module,exports){
 const lengths = require('./lengths')
 
 /**
@@ -5044,7 +4969,7 @@ const arcLengthToT = (options, bezier) => {
 
 module.exports = arcLengthToT
 
-},{"./lengths":33}],30:[function(require,module,exports){
+},{"./lengths":29}],26:[function(require,module,exports){
 /**
  * Represents a bezier easing function.
  * @typedef {Object} bezier
@@ -5127,7 +5052,7 @@ const factorial = function (b) {
 
 module.exports = create
 
-},{}],31:[function(require,module,exports){
+},{}],27:[function(require,module,exports){
 /**
  * Represents a bezier easing function.
  * @see {@link bezier} for data structure information.
@@ -5142,7 +5067,7 @@ module.exports = {
   arcLengthToT: require('./arcLengthToT')
 }
 
-},{"./arcLengthToT":29,"./create":30,"./length":32,"./lengths":33,"./tangentAt":34,"./valueAt":35}],32:[function(require,module,exports){
+},{"./arcLengthToT":25,"./create":26,"./length":28,"./lengths":29,"./tangentAt":30,"./valueAt":31}],28:[function(require,module,exports){
 const lengths = require('./lengths')
 
 /**
@@ -5162,7 +5087,7 @@ const length = (segments, bezier) => lengths(segments, bezier)[segments]
 
 module.exports = length
 
-},{"./lengths":33}],33:[function(require,module,exports){
+},{"./lengths":29}],29:[function(require,module,exports){
 const valueAt = require('./valueAt')
 
 /**
@@ -5220,7 +5145,7 @@ const distanceBetween = (a, b) => {
 
 module.exports = lengths
 
-},{"./valueAt":35}],34:[function(require,module,exports){
+},{"./valueAt":31}],30:[function(require,module,exports){
 /**
  * Calculates the tangent at a specific position along a bezier easing curve.
  * For multidimensional curves, the tangent is the slope of each dimension at that point.
@@ -5267,7 +5192,7 @@ const bezierTangent = function (bezier, p, t) {
 
 module.exports = tangentAt
 
-},{}],35:[function(require,module,exports){
+},{}],31:[function(require,module,exports){
 /**
  * Calculates the value at a specific position along a bezier easing curve.
  * For multidimensional curves, the tangent is the slope of each dimension at that point.
@@ -5313,7 +5238,7 @@ const bezierFunction = function (bezier, p, t) {
 
 module.exports = valueAt
 
-},{}],36:[function(require,module,exports){
+},{}],32:[function(require,module,exports){
 /**
  * Curves are n-dimensional mathematical constructs that define a path from point 0 to point 1.
  * @module modeling/curves
@@ -5325,7 +5250,7 @@ module.exports = {
   bezier: require('./bezier')
 }
 
-},{"./bezier":31}],37:[function(require,module,exports){
+},{"./bezier":27}],33:[function(require,module,exports){
 const mat4 = require('../../maths/mat4')
 const vec2 = require('../../maths/vec2')
 
@@ -5353,7 +5278,7 @@ const applyTransforms = (geometry) => {
 
 module.exports = applyTransforms
 
-},{"../../maths/mat4":159,"../../maths/vec2":206}],38:[function(require,module,exports){
+},{"../../maths/mat4":155,"../../maths/vec2":202}],34:[function(require,module,exports){
 /**
  * Performs a shallow clone of the given geometry.
  * @param {geom2} geometry - the geometry to clone
@@ -5364,7 +5289,7 @@ const clone = (geometry) => Object.assign({}, geometry)
 
 module.exports = clone
 
-},{}],39:[function(require,module,exports){
+},{}],35:[function(require,module,exports){
 const mat4 = require('../../maths/mat4')
 
 /**
@@ -5392,7 +5317,7 @@ const create = (sides) => {
 
 module.exports = create
 
-},{"../../maths/mat4":159}],40:[function(require,module,exports){
+},{"../../maths/mat4":155}],36:[function(require,module,exports){
 const mat4 = require('../../maths/mat4')
 const vec2 = require('../../maths/vec2')
 
@@ -5426,7 +5351,7 @@ const fromCompactBinary = (data) => {
 
 module.exports = fromCompactBinary
 
-},{"../../maths/mat4":159,"../../maths/vec2":206,"./create":39}],41:[function(require,module,exports){
+},{"../../maths/mat4":155,"../../maths/vec2":202,"./create":35}],37:[function(require,module,exports){
 const vec2 = require('../../maths/vec2')
 
 const create = require('./create')
@@ -5463,7 +5388,7 @@ const fromPoints = (points) => {
 
 module.exports = fromPoints
 
-},{"../../maths/vec2":206,"./create":39}],42:[function(require,module,exports){
+},{"../../maths/vec2":202,"./create":35}],38:[function(require,module,exports){
 /**
  * Represents a 2D geometry consisting of a list of sides.
  * @see {@link geom2} for data structure information.
@@ -5495,7 +5420,7 @@ module.exports = {
   validate: require('./validate')
 }
 
-},{"./clone":38,"./create":39,"./fromCompactBinary":40,"./fromPoints":41,"./isA":43,"./reverse":44,"./toCompactBinary":45,"./toOutlines":46,"./toPoints":47,"./toSides":48,"./toString":49,"./transform":50,"./validate":51}],43:[function(require,module,exports){
+},{"./clone":34,"./create":35,"./fromCompactBinary":36,"./fromPoints":37,"./isA":39,"./reverse":40,"./toCompactBinary":41,"./toOutlines":42,"./toPoints":43,"./toSides":44,"./toString":45,"./transform":46,"./validate":47}],39:[function(require,module,exports){
 /**
  * Determine if the given object is a 2D geometry.
  * @param {Object} object - the object to interrogate
@@ -5515,7 +5440,7 @@ const isA = (object) => {
 
 module.exports = isA
 
-},{}],44:[function(require,module,exports){
+},{}],40:[function(require,module,exports){
 const create = require('./create')
 const toSides = require('./toSides')
 
@@ -5539,7 +5464,7 @@ const reverse = (geometry) => {
 
 module.exports = reverse
 
-},{"./create":39,"./toSides":48}],45:[function(require,module,exports){
+},{"./create":35,"./toSides":44}],41:[function(require,module,exports){
 /**
  * Produces a compact binary representation from the given geometry.
  * @param {geom2} geometry - the geometry
@@ -5594,7 +5519,7 @@ const toCompactBinary = (geometry) => {
 
 module.exports = toCompactBinary
 
-},{}],46:[function(require,module,exports){
+},{}],42:[function(require,module,exports){
 const vec2 = require('../../maths/vec2')
 
 const toSides = require('./toSides')
@@ -5715,7 +5640,7 @@ const popNextSide = (startSide, nextSides) => {
 
 module.exports = toOutlines
 
-},{"../../maths/vec2":206,"./toSides":48}],47:[function(require,module,exports){
+},{"../../maths/vec2":202,"./toSides":44}],43:[function(require,module,exports){
 const toSides = require('./toSides')
 
 /**
@@ -5742,7 +5667,7 @@ const toPoints = (geometry) => {
 
 module.exports = toPoints
 
-},{"./toSides":48}],48:[function(require,module,exports){
+},{"./toSides":44}],44:[function(require,module,exports){
 const applyTransforms = require('./applyTransforms')
 
 /**
@@ -5760,7 +5685,7 @@ const toSides = (geometry) => applyTransforms(geometry).sides
 
 module.exports = toSides
 
-},{"./applyTransforms":37}],49:[function(require,module,exports){
+},{"./applyTransforms":33}],45:[function(require,module,exports){
 const vec2 = require('../../maths/vec2')
 
 const toSides = require('./toSides')
@@ -5786,7 +5711,7 @@ const toString = (geometry) => {
 
 module.exports = toString
 
-},{"../../maths/vec2":206,"./toSides":48}],50:[function(require,module,exports){
+},{"../../maths/vec2":202,"./toSides":44}],46:[function(require,module,exports){
 const mat4 = require('../../maths/mat4')
 
 /**
@@ -5808,7 +5733,7 @@ const transform = (matrix, geometry) => {
 
 module.exports = transform
 
-},{"../../maths/mat4":159}],51:[function(require,module,exports){
+},{"../../maths/mat4":155}],47:[function(require,module,exports){
 const vec2 = require('../../maths/vec2')
 const isA = require('./isA')
 const toOutlines = require('./toOutlines')
@@ -5846,7 +5771,7 @@ const validate = (object) => {
 
 module.exports = validate
 
-},{"../../maths/vec2":206,"./isA":43,"./toOutlines":46}],52:[function(require,module,exports){
+},{"../../maths/vec2":202,"./isA":39,"./toOutlines":42}],48:[function(require,module,exports){
 const mat4 = require('../../maths/mat4')
 
 const poly3 = require('../poly3')
@@ -5871,7 +5796,7 @@ const applyTransforms = (geometry) => {
 
 module.exports = applyTransforms
 
-},{"../../maths/mat4":159,"../poly3":95}],53:[function(require,module,exports){
+},{"../../maths/mat4":155,"../poly3":91}],49:[function(require,module,exports){
 /**
  * Performs a shallow clone of the given geometry.
  * @param {geom3} geometry - the geometry to clone
@@ -5882,7 +5807,7 @@ const clone = (geometry) => Object.assign({}, geometry)
 
 module.exports = clone
 
-},{}],54:[function(require,module,exports){
+},{}],50:[function(require,module,exports){
 const mat4 = require('../../maths/mat4')
 
 /**
@@ -5910,7 +5835,7 @@ const create = (polygons) => {
 
 module.exports = create
 
-},{"../../maths/mat4":159}],55:[function(require,module,exports){
+},{"../../maths/mat4":155}],51:[function(require,module,exports){
 const vec3 = require('../../maths/vec3')
 const mat4 = require('../../maths/mat4')
 
@@ -5956,7 +5881,7 @@ const fromCompactBinary = (data) => {
 
 module.exports = fromCompactBinary
 
-},{"../../maths/mat4":159,"../../maths/vec3":237,"../poly3":95,"./create":54}],56:[function(require,module,exports){
+},{"../../maths/mat4":155,"../../maths/vec3":233,"../poly3":91,"./create":50}],52:[function(require,module,exports){
 const poly3 = require('../poly3')
 
 const create = require('./create')
@@ -5986,7 +5911,7 @@ const fromPoints = (listofpoints) => {
 
 module.exports = fromPoints
 
-},{"../poly3":95,"./create":54}],57:[function(require,module,exports){
+},{"../poly3":91,"./create":50}],53:[function(require,module,exports){
 /**
  * Represents a 3D geometry consisting of a list of polygons.
  * @see {@link geom3} for data structure information.
@@ -6024,7 +5949,7 @@ module.exports = {
   validate: require('./validate')
 }
 
-},{"./clone":53,"./create":54,"./fromCompactBinary":55,"./fromPoints":56,"./invert":58,"./isA":59,"./toCompactBinary":60,"./toPoints":61,"./toPolygons":62,"./toString":63,"./transform":64,"./validate":65}],58:[function(require,module,exports){
+},{"./clone":49,"./create":50,"./fromCompactBinary":51,"./fromPoints":52,"./invert":54,"./isA":55,"./toCompactBinary":56,"./toPoints":57,"./toPolygons":58,"./toString":59,"./transform":60,"./validate":61}],54:[function(require,module,exports){
 const poly3 = require('../poly3')
 
 const create = require('./create')
@@ -6044,7 +5969,7 @@ const invert = (geometry) => {
 
 module.exports = invert
 
-},{"../poly3":95,"./create":54,"./toPolygons":62}],59:[function(require,module,exports){
+},{"../poly3":91,"./create":50,"./toPolygons":58}],55:[function(require,module,exports){
 /**
  * Determine if the given object is a 3D geometry.
  * @param {Object} object - the object to interrogate
@@ -6064,7 +5989,7 @@ const isA = (object) => {
 
 module.exports = isA
 
-},{}],60:[function(require,module,exports){
+},{}],56:[function(require,module,exports){
 const poly3 = require('../poly3')
 
 /**
@@ -6134,7 +6059,7 @@ const toCompactBinary = (geometry) => {
 
 module.exports = toCompactBinary
 
-},{"../poly3":95}],61:[function(require,module,exports){
+},{"../poly3":91}],57:[function(require,module,exports){
 const poly3 = require('../poly3')
 
 const toPolygons = require('./toPolygons')
@@ -6154,7 +6079,7 @@ const toPoints = (geometry) => {
 
 module.exports = toPoints
 
-},{"../poly3":95,"./toPolygons":62}],62:[function(require,module,exports){
+},{"../poly3":91,"./toPolygons":58}],58:[function(require,module,exports){
 const applyTransforms = require('./applyTransforms')
 
 /**
@@ -6171,7 +6096,7 @@ const toPolygons = (geometry) => applyTransforms(geometry).polygons
 
 module.exports = toPolygons
 
-},{"./applyTransforms":52}],63:[function(require,module,exports){
+},{"./applyTransforms":48}],59:[function(require,module,exports){
 const poly3 = require('../poly3')
 
 const toPolygons = require('./toPolygons')
@@ -6196,7 +6121,7 @@ const toString = (geometry) => {
 
 module.exports = toString
 
-},{"../poly3":95,"./toPolygons":62}],64:[function(require,module,exports){
+},{"../poly3":91,"./toPolygons":58}],60:[function(require,module,exports){
 const mat4 = require('../../maths/mat4')
 
 /**
@@ -6218,7 +6143,7 @@ const transform = (matrix, geometry) => {
 
 module.exports = transform
 
-},{"../../maths/mat4":159}],65:[function(require,module,exports){
+},{"../../maths/mat4":155}],61:[function(require,module,exports){
 const poly3 = require('../poly3')
 const isA = require('./isA')
 
@@ -6282,7 +6207,7 @@ const validateManifold = (object) => {
 
 module.exports = validate
 
-},{"../poly3":95,"./isA":59}],66:[function(require,module,exports){
+},{"../poly3":91,"./isA":55}],62:[function(require,module,exports){
 /**
  * Geometries are objects that represent the contents of primitives or the results of operations.
  * Note: Geometries are considered immutable, so never change the contents directly.
@@ -6305,7 +6230,7 @@ module.exports = {
   poly3: require('./poly3')
 }
 
-},{"./geom2":42,"./geom3":57,"./path2":78,"./poly2":89,"./poly3":95}],67:[function(require,module,exports){
+},{"./geom2":38,"./geom3":53,"./path2":74,"./poly2":85,"./poly3":91}],63:[function(require,module,exports){
 const { TAU } = require('../../maths/constants')
 const vec2 = require('../../maths/vec2')
 
@@ -6449,7 +6374,7 @@ const appendArc = (options, geometry) => {
 
 module.exports = appendArc
 
-},{"../../maths/constants":110,"../../maths/vec2":206,"./fromPoints":77,"./toPoints":82}],68:[function(require,module,exports){
+},{"../../maths/constants":106,"../../maths/vec2":202,"./fromPoints":73,"./toPoints":78}],64:[function(require,module,exports){
 const { TAU } = require('../../maths/constants')
 const vec2 = require('../../maths/vec2')
 const vec3 = require('../../maths/vec2')
@@ -6607,7 +6532,7 @@ const appendBezier = (options, geometry) => {
 
 module.exports = appendBezier
 
-},{"../../maths/constants":110,"../../maths/vec2":206,"./appendPoints":69,"./toPoints":82}],69:[function(require,module,exports){
+},{"../../maths/constants":106,"../../maths/vec2":202,"./appendPoints":65,"./toPoints":78}],65:[function(require,module,exports){
 const concat = require('./concat')
 const create = require('./create')
 
@@ -6624,7 +6549,7 @@ const appendPoints = (points, geometry) => concat(geometry, create(points))
 
 module.exports = appendPoints
 
-},{"./concat":73,"./create":74}],70:[function(require,module,exports){
+},{"./concat":69,"./create":70}],66:[function(require,module,exports){
 const mat4 = require('../../maths/mat4')
 const vec2 = require('../../maths/vec2')
 
@@ -6646,7 +6571,7 @@ const applyTransforms = (geometry) => {
 
 module.exports = applyTransforms
 
-},{"../../maths/mat4":159,"../../maths/vec2":206}],71:[function(require,module,exports){
+},{"../../maths/mat4":155,"../../maths/vec2":202}],67:[function(require,module,exports){
 /**
  * Performs a shallow clone of the give geometry.
  * @param {path2} geometry - the geometry to clone
@@ -6657,7 +6582,7 @@ const clone = (geometry) => Object.assign({}, geometry)
 
 module.exports = clone
 
-},{}],72:[function(require,module,exports){
+},{}],68:[function(require,module,exports){
 const { EPS } = require('../../maths/constants')
 
 const vec2 = require('../../maths/vec2')
@@ -6692,7 +6617,7 @@ const close = (geometry) => {
 
 module.exports = close
 
-},{"../../maths/constants":110,"../../maths/vec2":206,"./clone":71}],73:[function(require,module,exports){
+},{"../../maths/constants":106,"../../maths/vec2":202,"./clone":67}],69:[function(require,module,exports){
 const fromPoints = require('./fromPoints')
 const toPoints = require('./toPoints')
 
@@ -6730,7 +6655,7 @@ const concat = (...paths) => {
 
 module.exports = concat
 
-},{"../../maths/vec2":206,"./fromPoints":77,"./toPoints":82}],74:[function(require,module,exports){
+},{"../../maths/vec2":202,"./fromPoints":73,"./toPoints":78}],70:[function(require,module,exports){
 const mat4 = require('../../maths/mat4')
 
 /**
@@ -6762,7 +6687,7 @@ const create = (points) => {
 
 module.exports = create
 
-},{"../../maths/mat4":159}],75:[function(require,module,exports){
+},{"../../maths/mat4":155}],71:[function(require,module,exports){
 const vec2 = require('../../maths/vec2')
 
 const toPoints = require('./toPoints')
@@ -6811,7 +6736,7 @@ const equals = (a, b) => {
 
 module.exports = equals
 
-},{"../../maths/vec2":206,"./toPoints":82}],76:[function(require,module,exports){
+},{"../../maths/vec2":202,"./toPoints":78}],72:[function(require,module,exports){
 const mat4 = require('../../maths/mat4')
 const vec2 = require('../../maths/vec2')
 
@@ -6846,7 +6771,7 @@ const fromCompactBinary = (data) => {
 
 module.exports = fromCompactBinary
 
-},{"../../maths/mat4":159,"../../maths/vec2":206,"./create":74}],77:[function(require,module,exports){
+},{"../../maths/mat4":155,"../../maths/vec2":202,"./create":70}],73:[function(require,module,exports){
 const { EPS } = require('../../maths/constants')
 
 const vec2 = require('../../maths/vec2')
@@ -6890,7 +6815,7 @@ const fromPoints = (options, points) => {
 
 module.exports = fromPoints
 
-},{"../../maths/constants":110,"../../maths/vec2":206,"./close":72,"./create":74}],78:[function(require,module,exports){
+},{"../../maths/constants":106,"../../maths/vec2":202,"./close":68,"./create":70}],74:[function(require,module,exports){
 /**
  * Represents a 2D geometry consisting of a list of ordered points.
  * @see {@link path2} for data structure information.
@@ -6927,7 +6852,7 @@ module.exports = {
   validate: require('./validate')
 }
 
-},{"./appendArc":67,"./appendBezier":68,"./appendPoints":69,"./clone":71,"./close":72,"./concat":73,"./create":74,"./equals":75,"./fromCompactBinary":76,"./fromPoints":77,"./isA":79,"./reverse":80,"./toCompactBinary":81,"./toPoints":82,"./toString":83,"./transform":84,"./validate":85}],79:[function(require,module,exports){
+},{"./appendArc":63,"./appendBezier":64,"./appendPoints":65,"./clone":67,"./close":68,"./concat":69,"./create":70,"./equals":71,"./fromCompactBinary":72,"./fromPoints":73,"./isA":75,"./reverse":76,"./toCompactBinary":77,"./toPoints":78,"./toString":79,"./transform":80,"./validate":81}],75:[function(require,module,exports){
 /**
  * Determine if the given object is a path2 geometry.
  * @param {Object} object - the object to interrogate
@@ -6949,7 +6874,7 @@ const isA = (object) => {
 
 module.exports = isA
 
-},{}],80:[function(require,module,exports){
+},{}],76:[function(require,module,exports){
 const clone = require('./clone')
 
 /**
@@ -6971,7 +6896,7 @@ const reverse = (geometry) => {
 
 module.exports = reverse
 
-},{"./clone":71}],81:[function(require,module,exports){
+},{"./clone":67}],77:[function(require,module,exports){
 /**
  * Produce a compact binary representation from the given path.
  * @param {path2} geometry - the path geometry
@@ -7025,7 +6950,7 @@ const toCompactBinary = (geometry) => {
 
 module.exports = toCompactBinary
 
-},{}],82:[function(require,module,exports){
+},{}],78:[function(require,module,exports){
 const applyTransforms = require('./applyTransforms')
 
 /**
@@ -7042,7 +6967,7 @@ const toPoints = (geometry) => applyTransforms(geometry).points
 
 module.exports = toPoints
 
-},{"./applyTransforms":70}],83:[function(require,module,exports){
+},{"./applyTransforms":66}],79:[function(require,module,exports){
 const vec2 = require('../../maths/vec2')
 
 const toPoints = require('./toPoints')
@@ -7068,7 +6993,7 @@ const toString = (geometry) => {
 
 module.exports = toString
 
-},{"../../maths/vec2":206,"./toPoints":82}],84:[function(require,module,exports){
+},{"../../maths/vec2":202,"./toPoints":78}],80:[function(require,module,exports){
 const mat4 = require('../../maths/mat4')
 
 /**
@@ -7090,7 +7015,7 @@ const transform = (matrix, geometry) => {
 
 module.exports = transform
 
-},{"../../maths/mat4":159}],85:[function(require,module,exports){
+},{"../../maths/mat4":155}],81:[function(require,module,exports){
 const vec2 = require('../../maths/vec2')
 const isA = require('./isA')
 
@@ -7133,7 +7058,7 @@ const validate = (object) => {
 
 module.exports = validate
 
-},{"../../maths/vec2":206,"./isA":79}],86:[function(require,module,exports){
+},{"../../maths/vec2":202,"./isA":75}],82:[function(require,module,exports){
 const measureArea = require('./measureArea')
 const flip = require('./flip')
 
@@ -7218,7 +7143,7 @@ const isPointInside = (point, polygon) => {
 
 module.exports = arePointsInside
 
-},{"./flip":88,"./measureArea":90}],87:[function(require,module,exports){
+},{"./flip":84,"./measureArea":86}],83:[function(require,module,exports){
 /**
  * Represents a convex 2D polygon consisting of a list of ordered vertices.
  * @typedef {Object} poly2
@@ -7244,7 +7169,7 @@ const create = (vertices) => {
 
 module.exports = create
 
-},{}],88:[function(require,module,exports){
+},{}],84:[function(require,module,exports){
 const create = require('./create')
 
 /**
@@ -7261,7 +7186,7 @@ const flip = (polygon) => {
 
 module.exports = flip
 
-},{"./create":87}],89:[function(require,module,exports){
+},{"./create":83}],85:[function(require,module,exports){
 /**
  * Represents a 2D polygon consisting of a list of ordered vertices.
  * @see {@link poly2} for data structure information.
@@ -7280,7 +7205,7 @@ module.exports = {
   measureArea: require('./measureArea')
 }
 
-},{"./arePointsInside":86,"./create":87,"./flip":88,"./measureArea":90}],90:[function(require,module,exports){
+},{"./arePointsInside":82,"./create":83,"./flip":84,"./measureArea":86}],86:[function(require,module,exports){
 /**
  * Measure the area under the given polygon.
  *
@@ -7294,7 +7219,7 @@ const measureArea = (polygon) => area(polygon.vertices)
 
 module.exports = measureArea
 
-},{"../../maths/utils/area":183}],91:[function(require,module,exports){
+},{"../../maths/utils/area":179}],87:[function(require,module,exports){
 const create = require('./create')
 
 const vec3 = require('../../maths/vec3')
@@ -7324,7 +7249,7 @@ const clone = (...params) => {
 
 module.exports = clone
 
-},{"../../maths/vec3":237,"./create":92}],92:[function(require,module,exports){
+},{"../../maths/vec3":233,"./create":88}],88:[function(require,module,exports){
 
 /**
  * Represents a convex 3D polygon. The vertices used to initialize a polygon must
@@ -7350,7 +7275,7 @@ const create = (vertices) => {
 
 module.exports = create
 
-},{}],93:[function(require,module,exports){
+},{}],89:[function(require,module,exports){
 const vec3 = require('../../maths/vec3')
 
 const create = require('./create')
@@ -7377,7 +7302,7 @@ const fromPoints = (points) => {
 
 module.exports = fromPoints
 
-},{"../../maths/vec3":237,"./create":92}],94:[function(require,module,exports){
+},{"../../maths/vec3":233,"./create":88}],90:[function(require,module,exports){
 const create = require('./create')
 
 /**
@@ -7396,7 +7321,7 @@ const fromPointsAndPlane = (vertices, plane) => {
 
 module.exports = fromPointsAndPlane
 
-},{"./create":92}],95:[function(require,module,exports){
+},{"./create":88}],91:[function(require,module,exports){
 /**
  * Represents a convex 3D polygon consisting of a list of ordered vertices.
  * @see {@link poly3} for data structure information.
@@ -7427,7 +7352,7 @@ module.exports = {
   validate: require('./validate')
 }
 
-},{"./clone":91,"./create":92,"./fromPoints":93,"./fromPointsAndPlane":94,"./invert":96,"./isA":97,"./isConvex":98,"./measureArea":99,"./measureBoundingBox":100,"./measureBoundingSphere":101,"./measureSignedVolume":102,"./plane":103,"./toPoints":104,"./toString":105,"./transform":106,"./validate":107}],96:[function(require,module,exports){
+},{"./clone":87,"./create":88,"./fromPoints":89,"./fromPointsAndPlane":90,"./invert":92,"./isA":93,"./isConvex":94,"./measureArea":95,"./measureBoundingBox":96,"./measureBoundingSphere":97,"./measureSignedVolume":98,"./plane":99,"./toPoints":100,"./toString":101,"./transform":102,"./validate":103}],92:[function(require,module,exports){
 const plane = require('../../maths/plane')
 const create = require('./create')
 
@@ -7450,7 +7375,7 @@ const invert = (polygon) => {
 
 module.exports = invert
 
-},{"../../maths/plane":178,"./create":92}],97:[function(require,module,exports){
+},{"../../maths/plane":174,"./create":88}],93:[function(require,module,exports){
 /**
  * Determine if the given object is a polygon.
  * @param {Object} object - the object to interrogate
@@ -7470,7 +7395,7 @@ const isA = (object) => {
 
 module.exports = isA
 
-},{}],98:[function(require,module,exports){
+},{}],94:[function(require,module,exports){
 const plane = require('../../maths/plane')
 const vec3 = require('../../maths/vec3')
 
@@ -7516,7 +7441,7 @@ const isConvexPoint = (prevpoint, point, nextpoint, normal) => {
 
 module.exports = isConvex
 
-},{"../../maths/plane":178,"../../maths/vec3":237}],99:[function(require,module,exports){
+},{"../../maths/plane":174,"../../maths/vec3":233}],95:[function(require,module,exports){
 const plane = require('./plane')
 
 /**
@@ -7601,7 +7526,7 @@ const measureArea = (polygon) => {
 
 module.exports = measureArea
 
-},{"./plane":103}],100:[function(require,module,exports){
+},{"./plane":99}],96:[function(require,module,exports){
 const vec3 = require('../../maths/vec3')
 
 /**
@@ -7623,7 +7548,7 @@ const measureBoundingBox = (polygon) => {
 
 module.exports = measureBoundingBox
 
-},{"../../maths/vec3":237}],101:[function(require,module,exports){
+},{"../../maths/vec3":233}],97:[function(require,module,exports){
 const vec4 = require('../../maths/vec4')
 
 const cache = new WeakMap()
@@ -7681,7 +7606,7 @@ const measureBoundingSphere = (polygon) => {
 
 module.exports = measureBoundingSphere
 
-},{"../../maths/vec4":263}],102:[function(require,module,exports){
+},{"../../maths/vec4":259}],98:[function(require,module,exports){
 const vec3 = require('../../maths/vec3')
 
 /**
@@ -7708,7 +7633,7 @@ const measureSignedVolume = (polygon) => {
 
 module.exports = measureSignedVolume
 
-},{"../../maths/vec3":237}],103:[function(require,module,exports){
+},{"../../maths/vec3":233}],99:[function(require,module,exports){
 const mplane = require('../../maths/plane/')
 
 const plane = (polygon) => {
@@ -7720,7 +7645,7 @@ const plane = (polygon) => {
 
 module.exports = plane
 
-},{"../../maths/plane/":178}],104:[function(require,module,exports){
+},{"../../maths/plane/":174}],100:[function(require,module,exports){
 /**
  * Return the given polygon as a list of points.
  * NOTE: The returned array should not be modified as the points are shared with the geometry.
@@ -7732,7 +7657,7 @@ const toPoints = (polygon) => polygon.vertices
 
 module.exports = toPoints
 
-},{}],105:[function(require,module,exports){
+},{}],101:[function(require,module,exports){
 const vec3 = require('../../maths/vec3/')
 
 /**
@@ -7751,7 +7676,7 @@ const toString = (polygon) => {
 
 module.exports = toString
 
-},{"../../maths/vec3/":237}],106:[function(require,module,exports){
+},{"../../maths/vec3/":233}],102:[function(require,module,exports){
 const mat4 = require('../../maths/mat4')
 const vec3 = require('../../maths/vec3')
 
@@ -7775,7 +7700,7 @@ const transform = (matrix, polygon) => {
 
 module.exports = transform
 
-},{"../../maths/mat4":159,"../../maths/vec3":237,"./create":92}],107:[function(require,module,exports){
+},{"../../maths/mat4":155,"../../maths/vec3":233,"./create":88}],103:[function(require,module,exports){
 const signedDistanceToPoint = require('../../maths/plane/signedDistanceToPoint')
 const { NEPS } = require('../../maths/constants')
 const vec3 = require('../../maths/vec3')
@@ -7841,7 +7766,7 @@ const validate = (object) => {
 
 module.exports = validate
 
-},{"../../maths/constants":110,"../../maths/plane/signedDistanceToPoint":180,"../../maths/vec3":237,"./isA":97,"./isConvex":98,"./measureArea":99,"./plane":103}],108:[function(require,module,exports){
+},{"../../maths/constants":106,"../../maths/plane/signedDistanceToPoint":176,"../../maths/vec3":233,"./isA":93,"./isConvex":94,"./measureArea":95,"./plane":99}],104:[function(require,module,exports){
 module.exports = {
   colors: require('./colors'),
   curves: require('./curves'),
@@ -7860,7 +7785,7 @@ module.exports = {
   transforms: require('./operations/transforms')
 }
 
-},{"./colors":25,"./curves":36,"./geometries":66,"./maths":111,"./measurements":267,"./operations/booleans":281,"./operations/expansions":310,"./operations/extrusions":333,"./operations/hulls":355,"./operations/modifiers":366,"./operations/transforms":376,"./primitives":392,"./text":406,"./utils":414}],109:[function(require,module,exports){
+},{"./colors":21,"./curves":32,"./geometries":62,"./maths":107,"./measurements":263,"./operations/booleans":277,"./operations/expansions":306,"./operations/extrusions":329,"./operations/hulls":351,"./operations/modifiers":362,"./operations/transforms":372,"./primitives":388,"./text":402,"./utils":410}],105:[function(require,module,exports){
 const mat4 = require('./mat4')
 
 const vec2 = require('./vec2')
@@ -8069,7 +7994,7 @@ OrthoNormalBasis.prototype = {
 
 module.exports = OrthoNormalBasis
 
-},{"./mat4":159,"./vec2":206,"./vec3":237}],110:[function(require,module,exports){
+},{"./mat4":155,"./vec2":202,"./vec3":233}],106:[function(require,module,exports){
 /**
  * The resolution of space, currently one hundred nanometers.
  * This should be 1 / EPS.
@@ -8112,7 +8037,7 @@ module.exports = {
   spatialResolution
 }
 
-},{}],111:[function(require,module,exports){
+},{}],107:[function(require,module,exports){
 /**
  * Maths are computational units for fundamental Euclidean geometry. All maths operate upon array data structures.
  * Note: Maths data structures are considered immutable, so never change the contents directly.
@@ -8134,7 +8059,7 @@ module.exports = {
   vec4: require('./vec4')
 }
 
-},{"./constants":110,"./line2":121,"./line3":138,"./mat4":159,"./plane":178,"./utils":184,"./vec2":206,"./vec3":237,"./vec4":263}],112:[function(require,module,exports){
+},{"./constants":106,"./line2":117,"./line3":134,"./mat4":155,"./plane":174,"./utils":180,"./vec2":202,"./vec3":233,"./vec4":259}],108:[function(require,module,exports){
 const create = require('./create')
 
 /**
@@ -8154,7 +8079,7 @@ const clone = (line) => {
 
 module.exports = clone
 
-},{"./create":115}],113:[function(require,module,exports){
+},{"./create":111}],109:[function(require,module,exports){
 const vec2 = require('../vec2')
 
 const direction = require('./direction')
@@ -8181,7 +8106,7 @@ const closestPoint = (line, point) => {
 
 module.exports = closestPoint
 
-},{"../vec2":206,"./direction":116,"./origin":123}],114:[function(require,module,exports){
+},{"../vec2":202,"./direction":112,"./origin":119}],110:[function(require,module,exports){
 /**
  * Copy the given line to the receiving line.
  *
@@ -8199,7 +8124,7 @@ const copy = (out, line) => {
 
 module.exports = copy
 
-},{}],115:[function(require,module,exports){
+},{}],111:[function(require,module,exports){
 /**
  * Represents a unbounded line in 2D space, positioned at a point of origin.
  * A line is parametrized by a normal vector (perpendicular to the line, rotated 90 degrees counter clockwise) and
@@ -8221,7 +8146,7 @@ const create = () => [0, 1, 0] // normal and distance
 
 module.exports = create
 
-},{}],116:[function(require,module,exports){
+},{}],112:[function(require,module,exports){
 const vec2 = require('../vec2')
 
 /**
@@ -8239,7 +8164,7 @@ const direction = (line) => {
 
 module.exports = direction
 
-},{"../vec2":206}],117:[function(require,module,exports){
+},{"../vec2":202}],113:[function(require,module,exports){
 const vec2 = require('../vec2')
 
 /**
@@ -8258,7 +8183,7 @@ const distanceToPoint = (line, point) => {
 
 module.exports = distanceToPoint
 
-},{"../vec2":206}],118:[function(require,module,exports){
+},{"../vec2":202}],114:[function(require,module,exports){
 /**
  * Compare the given lines for equality.
  *
@@ -8271,7 +8196,7 @@ const equals = (line1, line2) => (line1[0] === line2[0]) && (line1[1] === line2[
 
 module.exports = equals
 
-},{}],119:[function(require,module,exports){
+},{}],115:[function(require,module,exports){
 const vec2 = require('../vec2')
 
 /**
@@ -8299,7 +8224,7 @@ const fromPoints = (out, point1, point2) => {
 
 module.exports = fromPoints
 
-},{"../vec2":206}],120:[function(require,module,exports){
+},{"../vec2":202}],116:[function(require,module,exports){
 const create = require('./create')
 
 /**
@@ -8321,7 +8246,7 @@ const fromValues = (x, y, d) => {
 
 module.exports = fromValues
 
-},{"./create":115}],121:[function(require,module,exports){
+},{"./create":111}],117:[function(require,module,exports){
 /**
  * Represents a unbounded line in 2D space, positioned at a point of origin.
  * @see {@link line2} for data structure information.
@@ -8345,7 +8270,7 @@ module.exports = {
   xAtY: require('./xAtY')
 }
 
-},{"./clone":112,"./closestPoint":113,"./copy":114,"./create":115,"./direction":116,"./distanceToPoint":117,"./equals":118,"./fromPoints":119,"./fromValues":120,"./intersectPointOfLines":122,"./origin":123,"./reverse":124,"./toString":125,"./transform":126,"./xAtY":127}],122:[function(require,module,exports){
+},{"./clone":108,"./closestPoint":109,"./copy":110,"./create":111,"./direction":112,"./distanceToPoint":113,"./equals":114,"./fromPoints":115,"./fromValues":116,"./intersectPointOfLines":118,"./origin":119,"./reverse":120,"./toString":121,"./transform":122,"./xAtY":123}],118:[function(require,module,exports){
 const vec2 = require('../vec2')
 const { solve2Linear } = require('../utils')
 
@@ -8368,7 +8293,7 @@ const intersectToLine = (line1, line2) => {
 
 module.exports = intersectToLine
 
-},{"../utils":184,"../vec2":206}],123:[function(require,module,exports){
+},{"../utils":180,"../vec2":202}],119:[function(require,module,exports){
 const vec2 = require('../vec2')
 
 /**
@@ -8383,7 +8308,7 @@ const origin = (line) => vec2.scale(vec2.create(), line, line[2])
 
 module.exports = origin
 
-},{"../vec2":206}],124:[function(require,module,exports){
+},{"../vec2":202}],120:[function(require,module,exports){
 const vec2 = require('../vec2')
 
 const copy = require('./copy')
@@ -8405,7 +8330,7 @@ const reverse = (out, line) => {
 
 module.exports = reverse
 
-},{"../vec2":206,"./copy":114,"./fromValues":120}],125:[function(require,module,exports){
+},{"../vec2":202,"./copy":110,"./fromValues":116}],121:[function(require,module,exports){
 /**
  * Return a string representing the given line.
  *
@@ -8417,7 +8342,7 @@ const toString = (line) => `line2: (${line[0].toFixed(7)}, ${line[1].toFixed(7)}
 
 module.exports = toString
 
-},{}],126:[function(require,module,exports){
+},{}],122:[function(require,module,exports){
 const vec2 = require('../vec2')
 
 const fromPoints = require('./fromPoints')
@@ -8445,7 +8370,7 @@ const transform = (out, line, matrix) => {
 
 module.exports = transform
 
-},{"../vec2":206,"./direction":116,"./fromPoints":119,"./origin":123}],127:[function(require,module,exports){
+},{"../vec2":202,"./direction":112,"./fromPoints":115,"./origin":119}],123:[function(require,module,exports){
 const origin = require('./origin')
 
 /**
@@ -8469,7 +8394,7 @@ const xAtY = (line, y) => {
 
 module.exports = xAtY
 
-},{"./origin":123}],128:[function(require,module,exports){
+},{"./origin":119}],124:[function(require,module,exports){
 const vec3 = require('../vec3')
 
 const create = require('./create')
@@ -8490,7 +8415,7 @@ const clone = (line) => {
 
 module.exports = clone
 
-},{"../vec3":237,"./create":131}],129:[function(require,module,exports){
+},{"../vec3":233,"./create":127}],125:[function(require,module,exports){
 const vec3 = require('../vec3')
 
 /**
@@ -8516,7 +8441,7 @@ const closestPoint = (line, point) => {
 
 module.exports = closestPoint
 
-},{"../vec3":237}],130:[function(require,module,exports){
+},{"../vec3":233}],126:[function(require,module,exports){
 const vec3 = require('../vec3')
 
 /**
@@ -8535,7 +8460,7 @@ const copy = (out, line) => {
 
 module.exports = copy
 
-},{"../vec3":237}],131:[function(require,module,exports){
+},{"../vec3":233}],127:[function(require,module,exports){
 const vec3 = require('../vec3')
 
 /**
@@ -8560,7 +8485,7 @@ const create = () => [
 
 module.exports = create
 
-},{"../vec3":237}],132:[function(require,module,exports){
+},{"../vec3":233}],128:[function(require,module,exports){
 /**
  * Return the direction of the given line.
  *
@@ -8572,7 +8497,7 @@ const direction = (line) => line[1]
 
 module.exports = direction
 
-},{}],133:[function(require,module,exports){
+},{}],129:[function(require,module,exports){
 const vec3 = require('../vec3')
 
 const closestPoint = require('./closestPoint')
@@ -8593,7 +8518,7 @@ const distanceToPoint = (line, point) => {
 
 module.exports = distanceToPoint
 
-},{"../vec3":237,"./closestPoint":129}],134:[function(require,module,exports){
+},{"../vec3":233,"./closestPoint":125}],130:[function(require,module,exports){
 const vec3 = require('../vec3')
 
 /**
@@ -8620,7 +8545,7 @@ const equals = (line1, line2) => {
 
 module.exports = equals
 
-},{"../vec3":237}],135:[function(require,module,exports){
+},{"../vec3":233}],131:[function(require,module,exports){
 const vec3 = require('../vec3')
 const { solve2Linear } = require('../utils')
 
@@ -8669,7 +8594,7 @@ const fromPlanes = (out, plane1, plane2) => {
 
 module.exports = fromPlanes
 
-},{"../constants":110,"../utils":184,"../vec3":237,"./fromPointAndDirection":136}],136:[function(require,module,exports){
+},{"../constants":106,"../utils":180,"../vec3":233,"./fromPointAndDirection":132}],132:[function(require,module,exports){
 const vec3 = require('../vec3')
 
 /**
@@ -8696,7 +8621,7 @@ const fromPointAndDirection = (out, point, direction) => {
 
 module.exports = fromPointAndDirection
 
-},{"../vec3":237}],137:[function(require,module,exports){
+},{"../vec3":233}],133:[function(require,module,exports){
 const vec3 = require('../vec3')
 
 const fromPointAndDirection = require('./fromPointAndDirection')
@@ -8717,7 +8642,7 @@ const fromPoints = (out, point1, point2) => {
 
 module.exports = fromPoints
 
-},{"../vec3":237,"./fromPointAndDirection":136}],138:[function(require,module,exports){
+},{"../vec3":233,"./fromPointAndDirection":132}],134:[function(require,module,exports){
 /**
  * Represents a unbounded line in 3D space, positioned at a point of origin.
  * @see {@link line3} for data structure information.
@@ -8741,7 +8666,7 @@ module.exports = {
   transform: require('./transform')
 }
 
-},{"./clone":128,"./closestPoint":129,"./copy":130,"./create":131,"./direction":132,"./distanceToPoint":133,"./equals":134,"./fromPlanes":135,"./fromPointAndDirection":136,"./fromPoints":137,"./intersectPointOfLineAndPlane":139,"./origin":140,"./reverse":141,"./toString":142,"./transform":143}],139:[function(require,module,exports){
+},{"./clone":124,"./closestPoint":125,"./copy":126,"./create":127,"./direction":128,"./distanceToPoint":129,"./equals":130,"./fromPlanes":131,"./fromPointAndDirection":132,"./fromPoints":133,"./intersectPointOfLineAndPlane":135,"./origin":136,"./reverse":137,"./toString":138,"./transform":139}],135:[function(require,module,exports){
 const vec3 = require('../vec3')
 
 /**
@@ -8772,7 +8697,7 @@ const intersectToPlane = (line, plane) => {
 
 module.exports = intersectToPlane
 
-},{"../vec3":237}],140:[function(require,module,exports){
+},{"../vec3":233}],136:[function(require,module,exports){
 /**
  * Return the origin of the given line.
  *
@@ -8784,7 +8709,7 @@ const origin = (line) => line[0]
 
 module.exports = origin
 
-},{}],141:[function(require,module,exports){
+},{}],137:[function(require,module,exports){
 const vec3 = require('../vec3')
 
 const fromPointAndDirection = require('./fromPointAndDirection')
@@ -8805,7 +8730,7 @@ const reverse = (out, line) => {
 
 module.exports = reverse
 
-},{"../vec3":237,"./fromPointAndDirection":136}],142:[function(require,module,exports){
+},{"../vec3":233,"./fromPointAndDirection":132}],138:[function(require,module,exports){
 /**
  * Return a string representing the given line.
  *
@@ -8821,7 +8746,7 @@ const toString = (line) => {
 
 module.exports = toString
 
-},{}],143:[function(require,module,exports){
+},{}],139:[function(require,module,exports){
 const vec3 = require('../vec3')
 
 const fromPointAndDirection = require('./fromPointAndDirection')
@@ -8849,7 +8774,7 @@ const transform = (out, line, matrix) => {
 
 module.exports = transform
 
-},{"../vec3":237,"./fromPointAndDirection":136}],144:[function(require,module,exports){
+},{"../vec3":233,"./fromPointAndDirection":132}],140:[function(require,module,exports){
 /**
  * Adds the two matrices (A+B).
  *
@@ -8881,7 +8806,7 @@ const add = (out, a, b) => {
 
 module.exports = add
 
-},{}],145:[function(require,module,exports){
+},{}],141:[function(require,module,exports){
 const create = require('./create')
 
 /**
@@ -8914,7 +8839,7 @@ const clone = (matrix) => {
 
 module.exports = clone
 
-},{"./create":147}],146:[function(require,module,exports){
+},{"./create":143}],142:[function(require,module,exports){
 /**
  * Creates a copy of the given matrix.
  *
@@ -8945,7 +8870,7 @@ const copy = (out, matrix) => {
 
 module.exports = copy
 
-},{}],147:[function(require,module,exports){
+},{}],143:[function(require,module,exports){
 /**
  * Represents a 4x4 matrix which is column-major (when typed out it looks row-major).
  * See fromValues().
@@ -8967,7 +8892,7 @@ const create = () => [
 
 module.exports = create
 
-},{}],148:[function(require,module,exports){
+},{}],144:[function(require,module,exports){
 /**
  * Returns whether or not the matrices have exactly the same elements in the same position.
  *
@@ -8985,7 +8910,7 @@ const equals = (a, b) => (
 
 module.exports = equals
 
-},{}],149:[function(require,module,exports){
+},{}],145:[function(require,module,exports){
 const { EPS } = require('../constants')
 
 const { sin, cos } = require('../utils/trigonometry')
@@ -9047,7 +8972,7 @@ const fromRotation = (out, rad, axis) => {
 
 module.exports = fromRotation
 
-},{"../constants":110,"../utils/trigonometry":188,"./identity":158}],150:[function(require,module,exports){
+},{"../constants":106,"../utils/trigonometry":184,"./identity":154}],146:[function(require,module,exports){
 /**
  * Creates a matrix from a vector scaling.
  * This is equivalent to (but much faster than):
@@ -9084,7 +9009,7 @@ const fromScaling = (out, vector) => {
 
 module.exports = fromScaling
 
-},{}],151:[function(require,module,exports){
+},{}],147:[function(require,module,exports){
 const { sin, cos } = require('../utils/trigonometry')
 
 /**
@@ -9141,7 +9066,7 @@ const fromTaitBryanRotation = (out, yaw, pitch, roll) => {
 
 module.exports = fromTaitBryanRotation
 
-},{"../utils/trigonometry":188}],152:[function(require,module,exports){
+},{"../utils/trigonometry":184}],148:[function(require,module,exports){
 /**
  * Creates a matrix from a vector translation.
  * This is equivalent to (but much faster than):
@@ -9178,7 +9103,7 @@ const fromTranslation = (out, vector) => {
 
 module.exports = fromTranslation
 
-},{}],153:[function(require,module,exports){
+},{}],149:[function(require,module,exports){
 const create = require('./create')
 
 /**
@@ -9233,7 +9158,7 @@ const fromValues = (m00, m01, m02, m03, m10, m11, m12, m13, m20, m21, m22, m23, 
 
 module.exports = fromValues
 
-},{"./create":147}],154:[function(require,module,exports){
+},{"./create":143}],150:[function(require,module,exports){
 const vec3 = require('../vec3')
 
 const fromRotation = require('./fromRotation')
@@ -9284,7 +9209,7 @@ const fromVectorRotation = (out, source, target) => {
 
 module.exports = fromVectorRotation
 
-},{"../vec3":237,"./fromRotation":149}],155:[function(require,module,exports){
+},{"../vec3":233,"./fromRotation":145}],151:[function(require,module,exports){
 const { sin, cos } = require('../utils/trigonometry')
 
 /**
@@ -9327,7 +9252,7 @@ const fromXRotation = (out, radians) => {
 
 module.exports = fromXRotation
 
-},{"../utils/trigonometry":188}],156:[function(require,module,exports){
+},{"../utils/trigonometry":184}],152:[function(require,module,exports){
 const { sin, cos } = require('../utils/trigonometry')
 
 /**
@@ -9370,7 +9295,7 @@ const fromYRotation = (out, radians) => {
 
 module.exports = fromYRotation
 
-},{"../utils/trigonometry":188}],157:[function(require,module,exports){
+},{"../utils/trigonometry":184}],153:[function(require,module,exports){
 const { sin, cos } = require('../utils/trigonometry')
 
 /**
@@ -9413,7 +9338,7 @@ const fromZRotation = (out, radians) => {
 
 module.exports = fromZRotation
 
-},{"../utils/trigonometry":188}],158:[function(require,module,exports){
+},{"../utils/trigonometry":184}],154:[function(require,module,exports){
 /**
  * Set a matrix to the identity transform.
  *
@@ -9443,7 +9368,7 @@ const identity = (out) => {
 
 module.exports = identity
 
-},{}],159:[function(require,module,exports){
+},{}],155:[function(require,module,exports){
 /**
  * Represents a 4x4 matrix which is column-major (when typed out it looks row-major).
  * @see {@link mat4} for data structure information.
@@ -9481,7 +9406,7 @@ module.exports = {
   translate: require('./translate')
 }
 
-},{"./add":144,"./clone":145,"./copy":146,"./create":147,"./equals":148,"./fromRotation":149,"./fromScaling":150,"./fromTaitBryanRotation":151,"./fromTranslation":152,"./fromValues":153,"./fromVectorRotation":154,"./fromXRotation":155,"./fromYRotation":156,"./fromZRotation":157,"./identity":158,"./invert":160,"./isIdentity":161,"./isMirroring":162,"./isOnlyTransformScale":163,"./mirrorByPlane":164,"./multiply":165,"./rotate":166,"./rotateX":167,"./rotateY":168,"./rotateZ":169,"./scale":170,"./subtract":171,"./toString":172,"./translate":173}],160:[function(require,module,exports){
+},{"./add":140,"./clone":141,"./copy":142,"./create":143,"./equals":144,"./fromRotation":145,"./fromScaling":146,"./fromTaitBryanRotation":147,"./fromTranslation":148,"./fromValues":149,"./fromVectorRotation":150,"./fromXRotation":151,"./fromYRotation":152,"./fromZRotation":153,"./identity":154,"./invert":156,"./isIdentity":157,"./isMirroring":158,"./isOnlyTransformScale":159,"./mirrorByPlane":160,"./multiply":161,"./rotate":162,"./rotateX":163,"./rotateY":164,"./rotateZ":165,"./scale":166,"./subtract":167,"./toString":168,"./translate":169}],156:[function(require,module,exports){
 /**
  * Creates a invert copy of the given matrix.
  * @author Julian Lloyd
@@ -9554,7 +9479,7 @@ const invert = (out, matrix) => {
 
 module.exports = invert
 
-},{}],161:[function(require,module,exports){
+},{}],157:[function(require,module,exports){
 /**
  * Determine whether the given matrix is the identity transform.
  * This is equivalent to (but much faster than):
@@ -9576,7 +9501,7 @@ const isIdentity = (matrix) => (
 
 module.exports = isIdentity
 
-},{}],162:[function(require,module,exports){
+},{}],158:[function(require,module,exports){
 /**
  * Determine whether the given matrix is a mirroring transformation.
  *
@@ -9602,7 +9527,7 @@ const isMirroring = (matrix) => {
 
 module.exports = isMirroring
 
-},{}],163:[function(require,module,exports){
+},{}],159:[function(require,module,exports){
 
 /**
  * Determine whether the given matrix is only translate and/or scale.
@@ -9626,7 +9551,7 @@ const isZero = (num) => Math.abs(num) < Number.EPSILON
 
 module.exports = isOnlyTransformScale
 
-},{}],164:[function(require,module,exports){
+},{}],160:[function(require,module,exports){
 /**
  * Create a matrix for mirroring about the given plane.
  *
@@ -9660,7 +9585,7 @@ const mirrorByPlane = (out, plane) => {
 
 module.exports = mirrorByPlane
 
-},{}],165:[function(require,module,exports){
+},{}],161:[function(require,module,exports){
 /**
  * Multiplies the two matrices.
  *
@@ -9729,7 +9654,7 @@ const multiply = (out, a, b) => {
 
 module.exports = multiply
 
-},{}],166:[function(require,module,exports){
+},{}],162:[function(require,module,exports){
 const { EPS } = require('../constants')
 
 const { sin, cos } = require('../utils/trigonometry')
@@ -9813,7 +9738,7 @@ const rotate = (out, matrix, radians, axis) => {
 
 module.exports = rotate
 
-},{"../constants":110,"../utils/trigonometry":188,"./copy":146}],167:[function(require,module,exports){
+},{"../constants":106,"../utils/trigonometry":184,"./copy":142}],163:[function(require,module,exports){
 const { sin, cos } = require('../utils/trigonometry')
 
 /**
@@ -9862,7 +9787,7 @@ const rotateX = (out, matrix, radians) => {
 
 module.exports = rotateX
 
-},{"../utils/trigonometry":188}],168:[function(require,module,exports){
+},{"../utils/trigonometry":184}],164:[function(require,module,exports){
 const { sin, cos } = require('../utils/trigonometry')
 
 /**
@@ -9911,7 +9836,7 @@ const rotateY = (out, matrix, radians) => {
 
 module.exports = rotateY
 
-},{"../utils/trigonometry":188}],169:[function(require,module,exports){
+},{"../utils/trigonometry":184}],165:[function(require,module,exports){
 const { sin, cos } = require('../utils/trigonometry')
 
 /**
@@ -9960,7 +9885,7 @@ const rotateZ = (out, matrix, radians) => {
 
 module.exports = rotateZ
 
-},{"../utils/trigonometry":188}],170:[function(require,module,exports){
+},{"../utils/trigonometry":184}],166:[function(require,module,exports){
 /**
  * Scales the matrix by the given dimensions.
  *
@@ -9996,7 +9921,7 @@ const scale = (out, matrix, dimensions) => {
 
 module.exports = scale
 
-},{}],171:[function(require,module,exports){
+},{}],167:[function(require,module,exports){
 /**
  * Subtracts matrix b from matrix a. (A-B)
  *
@@ -10028,7 +9953,7 @@ const subtract = (out, a, b) => {
 
 module.exports = subtract
 
-},{}],172:[function(require,module,exports){
+},{}],168:[function(require,module,exports){
 /**
  * Return a string representing the given matrix.
  *
@@ -10040,7 +9965,7 @@ const toString = (mat) => mat.map((n) => n.toFixed(7)).toString()
 
 module.exports = toString
 
-},{}],173:[function(require,module,exports){
+},{}],169:[function(require,module,exports){
 /**
  * Translate the matrix by the given offset vector.
  *
@@ -10093,7 +10018,7 @@ const translate = (out, matrix, offsets) => {
 
 module.exports = translate
 
-},{}],174:[function(require,module,exports){
+},{}],170:[function(require,module,exports){
 /**
  * Flip the given plane.
  *
@@ -10112,7 +10037,7 @@ const flip = (out, plane) => {
 
 module.exports = flip
 
-},{}],175:[function(require,module,exports){
+},{}],171:[function(require,module,exports){
 const vec3 = require('../vec3')
 
 /**
@@ -10146,7 +10071,7 @@ const fromNormalAndPoint = (out, normal, point) => {
 
 module.exports = fromNormalAndPoint
 
-},{"../vec3":237}],176:[function(require,module,exports){
+},{"../vec3":233}],172:[function(require,module,exports){
 const vec3 = require('../vec3')
 
 /**
@@ -10195,7 +10120,7 @@ const fromPoints = (out, ...vertices) => {
 
 module.exports = fromPoints
 
-},{"../vec3":237}],177:[function(require,module,exports){
+},{"../vec3":233}],173:[function(require,module,exports){
 const { EPS } = require('../constants')
 
 const vec3 = require('../vec3')
@@ -10239,7 +10164,7 @@ const fromPointsRandom = (out, a, b, c) => {
 
 module.exports = fromPointsRandom
 
-},{"../constants":110,"../vec3":237}],178:[function(require,module,exports){
+},{"../constants":106,"../vec3":233}],174:[function(require,module,exports){
 /**
  * Represents a plane in 3D coordinate space as determined by a normal (perpendicular to the plane)
  * and distance from 0,0,0.
@@ -10286,7 +10211,7 @@ module.exports = {
   transform: require('./transform')
 }
 
-},{"../vec4/clone":256,"../vec4/copy":257,"../vec4/create":258,"../vec4/equals":260,"../vec4/fromValues":262,"../vec4/toString":264,"./flip":174,"./fromNormalAndPoint":175,"./fromPoints":176,"./fromPointsRandom":177,"./projectionOfPoint":179,"./signedDistanceToPoint":180,"./transform":181}],179:[function(require,module,exports){
+},{"../vec4/clone":252,"../vec4/copy":253,"../vec4/create":254,"../vec4/equals":256,"../vec4/fromValues":258,"../vec4/toString":260,"./flip":170,"./fromNormalAndPoint":171,"./fromPoints":172,"./fromPointsRandom":173,"./projectionOfPoint":175,"./signedDistanceToPoint":176,"./transform":177}],175:[function(require,module,exports){
 const vec3 = require('../vec3')
 
 /**
@@ -10307,7 +10232,7 @@ const projectionOfPoint = (plane, point) => {
 
 module.exports = projectionOfPoint
 
-},{"../vec3":237}],180:[function(require,module,exports){
+},{"../vec3":233}],176:[function(require,module,exports){
 const vec3 = require('../vec3')
 
 /**
@@ -10322,7 +10247,7 @@ const signedDistanceToPoint = (plane, point) => vec3.dot(plane, point) - plane[3
 
 module.exports = signedDistanceToPoint
 
-},{"../vec3":237}],181:[function(require,module,exports){
+},{"../vec3":233}],177:[function(require,module,exports){
 const mat4 = require('../mat4')
 const vec3 = require('../vec3')
 
@@ -10364,7 +10289,7 @@ const transform = (out, plane, matrix) => {
 
 module.exports = transform
 
-},{"../mat4":159,"../vec3":237,"./flip":174,"./fromPoints":176}],182:[function(require,module,exports){
+},{"../mat4":155,"../vec3":233,"./flip":170,"./fromPoints":172}],178:[function(require,module,exports){
 const { NEPS } = require('../constants')
 
 /**
@@ -10378,7 +10303,7 @@ const aboutEqualNormals = (a, b) => (Math.abs(a[0] - b[0]) <= NEPS && Math.abs(a
 
 module.exports = aboutEqualNormals
 
-},{"../constants":110}],183:[function(require,module,exports){
+},{"../constants":106}],179:[function(require,module,exports){
 /**
  * Calculate the area under the given points.
  * @param {Array} points - list of 2D points
@@ -10397,7 +10322,7 @@ const area = (points) => {
 
 module.exports = area
 
-},{}],184:[function(require,module,exports){
+},{}],180:[function(require,module,exports){
 /**
  * Utility functions for maths.
  * @module modeling/maths/utils
@@ -10414,7 +10339,7 @@ module.exports = {
   solve2Linear: require('./solve2Linear')
 }
 
-},{"./aboutEqualNormals":182,"./area":183,"./interpolateBetween2DPointsForY":185,"./intersect":186,"./solve2Linear":187,"./trigonometry":188}],185:[function(require,module,exports){
+},{"./aboutEqualNormals":178,"./area":179,"./interpolateBetween2DPointsForY":181,"./intersect":182,"./solve2Linear":183,"./trigonometry":184}],181:[function(require,module,exports){
 /**
  * Get the X coordinate of a point with a certain Y coordinate, interpolated between two points.
  * Interpolation is robust even if the points have the same Y coordinate
@@ -10447,7 +10372,7 @@ const interpolateBetween2DPointsForY = (point1, point2, y) => {
 
 module.exports = interpolateBetween2DPointsForY
 
-},{}],186:[function(require,module,exports){
+},{}],182:[function(require,module,exports){
 /**
  * Calculate the intersect point of the two line segments (p1-p2 and p3-p4), end points included.
  * Note: If the line segments do NOT intersect then undefined is returned.
@@ -10489,7 +10414,7 @@ const intersect = (p1, p2, p3, p4) => {
 
 module.exports = intersect
 
-},{}],187:[function(require,module,exports){
+},{}],183:[function(require,module,exports){
 const solve2Linear = (a, b, c, d, u, v) => {
   const det = a * d - b * c
   const invdet = 1.0 / det
@@ -10502,7 +10427,7 @@ const solve2Linear = (a, b, c, d, u, v) => {
 
 module.exports = solve2Linear
 
-},{}],188:[function(require,module,exports){
+},{}],184:[function(require,module,exports){
 const { NEPS } = require('../constants')
 
 /*
@@ -10538,7 +10463,7 @@ const cos = (radians) => rezero(Math.cos(radians))
 
 module.exports = { sin, cos }
 
-},{"../constants":110}],189:[function(require,module,exports){
+},{"../constants":106}],185:[function(require,module,exports){
 /**
  * Calculates the absolute coordinates of the given vector.
  *
@@ -10555,7 +10480,7 @@ const abs = (out, vector) => {
 
 module.exports = abs
 
-},{}],190:[function(require,module,exports){
+},{}],186:[function(require,module,exports){
 /**
  * Adds the coordinates of two vectors (A+B).
  *
@@ -10573,10 +10498,10 @@ const add = (out, a, b) => {
 
 module.exports = add
 
-},{}],191:[function(require,module,exports){
+},{}],187:[function(require,module,exports){
 module.exports = require('./angleRadians')
 
-},{"./angleRadians":193}],192:[function(require,module,exports){
+},{"./angleRadians":189}],188:[function(require,module,exports){
 const angleRadians = require('./angleRadians')
 
 /**
@@ -10590,7 +10515,7 @@ const angleDegrees = (vector) => angleRadians(vector) * 57.29577951308232
 
 module.exports = angleDegrees
 
-},{"./angleRadians":193}],193:[function(require,module,exports){
+},{"./angleRadians":189}],189:[function(require,module,exports){
 /**
  * Calculate the angle of the given vector.
  *
@@ -10602,7 +10527,7 @@ const angleRadians = (vector) => Math.atan2(vector[1], vector[0]) // y=sin, x=co
 
 module.exports = angleRadians
 
-},{}],194:[function(require,module,exports){
+},{}],190:[function(require,module,exports){
 const create = require('./create')
 
 /**
@@ -10621,7 +10546,7 @@ const clone = (vector) => {
 
 module.exports = clone
 
-},{"./create":196}],195:[function(require,module,exports){
+},{"./create":192}],191:[function(require,module,exports){
 /**
  * Create a copy of the given vector.
  *
@@ -10638,7 +10563,7 @@ const copy = (out, vector) => {
 
 module.exports = copy
 
-},{}],196:[function(require,module,exports){
+},{}],192:[function(require,module,exports){
 /**
  * Represents a two dimensional vector.
  * See fromValues().
@@ -10655,7 +10580,7 @@ const create = () => [0, 0]
 
 module.exports = create
 
-},{}],197:[function(require,module,exports){
+},{}],193:[function(require,module,exports){
 /**
  * Computes the cross product (3D) of two vectors.
  *
@@ -10674,7 +10599,7 @@ const cross = (out, a, b) => {
 
 module.exports = cross
 
-},{}],198:[function(require,module,exports){
+},{}],194:[function(require,module,exports){
 /**
  * Calculates the distance between two vectors.
  *
@@ -10691,7 +10616,7 @@ const distance = (a, b) => {
 
 module.exports = distance
 
-},{}],199:[function(require,module,exports){
+},{}],195:[function(require,module,exports){
 /**
  * Divides the coordinates of two vectors (A/B).
  *
@@ -10709,7 +10634,7 @@ const divide = (out, a, b) => {
 
 module.exports = divide
 
-},{}],200:[function(require,module,exports){
+},{}],196:[function(require,module,exports){
 /**
  * Calculates the dot product of two vectors.
  *
@@ -10722,7 +10647,7 @@ const dot = (a, b) => a[0] * b[0] + a[1] * b[1]
 
 module.exports = dot
 
-},{}],201:[function(require,module,exports){
+},{}],197:[function(require,module,exports){
 /**
  * Compare the given vectors for equality.
  *
@@ -10735,7 +10660,7 @@ const equals = (a, b) => (a[0] === b[0]) && (a[1] === b[1])
 
 module.exports = equals
 
-},{}],202:[function(require,module,exports){
+},{}],198:[function(require,module,exports){
 const fromAngleRadians = require('./fromAngleRadians')
 
 /**
@@ -10750,7 +10675,7 @@ const fromAngleDegrees = (out, degrees) => fromAngleRadians(out, degrees * 0.017
 
 module.exports = fromAngleDegrees
 
-},{"./fromAngleRadians":203}],203:[function(require,module,exports){
+},{"./fromAngleRadians":199}],199:[function(require,module,exports){
 const { sin, cos } = require('../utils/trigonometry')
 
 /**
@@ -10769,7 +10694,7 @@ const fromAngleRadians = (out, radians) => {
 
 module.exports = fromAngleRadians
 
-},{"../utils/trigonometry":188}],204:[function(require,module,exports){
+},{"../utils/trigonometry":184}],200:[function(require,module,exports){
 /**
  * Create a vector from a single scalar value.
  *
@@ -10786,7 +10711,7 @@ const fromScalar = (out, scalar) => {
 
 module.exports = fromScalar
 
-},{}],205:[function(require,module,exports){
+},{}],201:[function(require,module,exports){
 const create = require('./create')
 
 /**
@@ -10806,7 +10731,7 @@ const fromValues = (x, y) => {
 
 module.exports = fromValues
 
-},{"./create":196}],206:[function(require,module,exports){
+},{"./create":192}],202:[function(require,module,exports){
 /**
  * Represents a two dimensional vector.
  * @module modeling/maths/vec2
@@ -10847,7 +10772,7 @@ module.exports = {
   transform: require('./transform')
 }
 
-},{"./abs":189,"./add":190,"./angle":191,"./angleDegrees":192,"./angleRadians":193,"./clone":194,"./copy":195,"./create":196,"./cross":197,"./distance":198,"./divide":199,"./dot":200,"./equals":201,"./fromAngleDegrees":202,"./fromAngleRadians":203,"./fromScalar":204,"./fromValues":205,"./length":207,"./lerp":208,"./max":209,"./min":210,"./multiply":211,"./negate":212,"./normal":213,"./normalize":214,"./rotate":215,"./scale":216,"./snap":217,"./squaredDistance":218,"./squaredLength":219,"./subtract":220,"./toString":221,"./transform":222}],207:[function(require,module,exports){
+},{"./abs":185,"./add":186,"./angle":187,"./angleDegrees":188,"./angleRadians":189,"./clone":190,"./copy":191,"./create":192,"./cross":193,"./distance":194,"./divide":195,"./dot":196,"./equals":197,"./fromAngleDegrees":198,"./fromAngleRadians":199,"./fromScalar":200,"./fromValues":201,"./length":203,"./lerp":204,"./max":205,"./min":206,"./multiply":207,"./negate":208,"./normal":209,"./normalize":210,"./rotate":211,"./scale":212,"./snap":213,"./squaredDistance":214,"./squaredLength":215,"./subtract":216,"./toString":217,"./transform":218}],203:[function(require,module,exports){
 /**
  * Calculates the length of the given vector.
  *
@@ -10859,7 +10784,7 @@ const length = (vector) => Math.sqrt(vector[0] * vector[0] + vector[1] * vector[
 
 module.exports = length
 
-},{}],208:[function(require,module,exports){
+},{}],204:[function(require,module,exports){
 /**
  * Performs a linear interpolation between two vectors.
  *
@@ -10880,7 +10805,7 @@ const lerp = (out, a, b, t) => {
 
 module.exports = lerp
 
-},{}],209:[function(require,module,exports){
+},{}],205:[function(require,module,exports){
 /**
  * Returns the maximum coordinates of two vectors.
  *
@@ -10898,7 +10823,7 @@ const max = (out, a, b) => {
 
 module.exports = max
 
-},{}],210:[function(require,module,exports){
+},{}],206:[function(require,module,exports){
 /**
  * Returns the minimum coordinates of two vectors.
  *
@@ -10916,7 +10841,7 @@ const min = (out, a, b) => {
 
 module.exports = min
 
-},{}],211:[function(require,module,exports){
+},{}],207:[function(require,module,exports){
 /**
  * Multiplies the coordinates of two vectors (A*B).
  *
@@ -10934,7 +10859,7 @@ const multiply = (out, a, b) => {
 
 module.exports = multiply
 
-},{}],212:[function(require,module,exports){
+},{}],208:[function(require,module,exports){
 /**
  * Negates the coordinates of the given vector.
  *
@@ -10951,7 +10876,7 @@ const negate = (out, vector) => {
 
 module.exports = negate
 
-},{}],213:[function(require,module,exports){
+},{}],209:[function(require,module,exports){
 const { TAU } = require('../constants')
 
 const create = require('./create')
@@ -10970,7 +10895,7 @@ const normal = (out, vector) => rotate(out, vector, create(), (TAU / 4))
 
 module.exports = normal
 
-},{"../constants":110,"./create":196,"./rotate":215}],214:[function(require,module,exports){
+},{"../constants":106,"./create":192,"./rotate":211}],210:[function(require,module,exports){
 /**
  * Normalize the given vector.
  *
@@ -10995,7 +10920,7 @@ const normalize = (out, vector) => {
 
 module.exports = normalize
 
-},{}],215:[function(require,module,exports){
+},{}],211:[function(require,module,exports){
 /**
  * Rotates the given vector by the given angle.
  *
@@ -11020,7 +10945,7 @@ const rotate = (out, vector, origin, radians) => {
 
 module.exports = rotate
 
-},{}],216:[function(require,module,exports){
+},{}],212:[function(require,module,exports){
 /**
  * Scales the coordinates of the given vector.
  *
@@ -11038,7 +10963,7 @@ const scale = (out, vector, amount) => {
 
 module.exports = scale
 
-},{}],217:[function(require,module,exports){
+},{}],213:[function(require,module,exports){
 /**
  * Snaps the coordinates of the given vector to the given epsilon.
  *
@@ -11056,7 +10981,7 @@ const snap = (out, vector, epsilon) => {
 
 module.exports = snap
 
-},{}],218:[function(require,module,exports){
+},{}],214:[function(require,module,exports){
 /**
  * Calculates the squared distance between the given vectors.
  *
@@ -11073,7 +10998,7 @@ const squaredDistance = (a, b) => {
 
 module.exports = squaredDistance
 
-},{}],219:[function(require,module,exports){
+},{}],215:[function(require,module,exports){
 /**
  * Calculates the squared length of the given vector.
  *
@@ -11089,7 +11014,7 @@ const squaredLength = (vector) => {
 
 module.exports = squaredLength
 
-},{}],220:[function(require,module,exports){
+},{}],216:[function(require,module,exports){
 /**
  * Subtracts the coordinates of two vectors (A-B).
  *
@@ -11107,7 +11032,7 @@ const subtract = (out, a, b) => {
 
 module.exports = subtract
 
-},{}],221:[function(require,module,exports){
+},{}],217:[function(require,module,exports){
 /**
  * Convert the given vector to a representative string.
  *
@@ -11119,7 +11044,7 @@ const toString = (vector) => `[${vector[0].toFixed(7)}, ${vector[1].toFixed(7)}]
 
 module.exports = toString
 
-},{}],222:[function(require,module,exports){
+},{}],218:[function(require,module,exports){
 /**
  * Transforms the given vector using the given matrix.
  *
@@ -11139,7 +11064,7 @@ const transform = (out, vector, matrix) => {
 
 module.exports = transform
 
-},{}],223:[function(require,module,exports){
+},{}],219:[function(require,module,exports){
 /**
  * Calculates the absolute coordinates of the give vector.
  *
@@ -11157,7 +11082,7 @@ const abs = (out, vector) => {
 
 module.exports = abs
 
-},{}],224:[function(require,module,exports){
+},{}],220:[function(require,module,exports){
 /**
  * Adds the coordinates of two vectors (A+B).
  *
@@ -11176,7 +11101,7 @@ const add = (out, a, b) => {
 
 module.exports = add
 
-},{}],225:[function(require,module,exports){
+},{}],221:[function(require,module,exports){
 const dot = require('./dot')
 
 /**
@@ -11203,7 +11128,7 @@ const angle = (a, b) => {
 
 module.exports = angle
 
-},{"./dot":232}],226:[function(require,module,exports){
+},{"./dot":228}],222:[function(require,module,exports){
 const create = require('./create')
 
 /**
@@ -11223,7 +11148,7 @@ const clone = (vector) => {
 
 module.exports = clone
 
-},{"./create":228}],227:[function(require,module,exports){
+},{"./create":224}],223:[function(require,module,exports){
 /**
  * Create a copy of the given vector.
  *
@@ -11241,7 +11166,7 @@ const copy = (out, vector) => {
 
 module.exports = copy
 
-},{}],228:[function(require,module,exports){
+},{}],224:[function(require,module,exports){
 /**
  * Represents a three dimensional vector.
  * See fromValues().
@@ -11258,7 +11183,7 @@ const create = () => [0, 0, 0]
 
 module.exports = create
 
-},{}],229:[function(require,module,exports){
+},{}],225:[function(require,module,exports){
 /**
  * Computes the cross product of the given vectors (AxB).
  *
@@ -11284,7 +11209,7 @@ const cross = (out, a, b) => {
 
 module.exports = cross
 
-},{}],230:[function(require,module,exports){
+},{}],226:[function(require,module,exports){
 /**
  * Calculates the Euclidian distance between the given vectors.
  *
@@ -11302,7 +11227,7 @@ const distance = (a, b) => {
 
 module.exports = distance
 
-},{}],231:[function(require,module,exports){
+},{}],227:[function(require,module,exports){
 /**
  * Divides the coordinates of two vectors (A/B).
  *
@@ -11321,7 +11246,7 @@ const divide = (out, a, b) => {
 
 module.exports = divide
 
-},{}],232:[function(require,module,exports){
+},{}],228:[function(require,module,exports){
 /**
  * Calculates the dot product of two vectors.
  *
@@ -11334,7 +11259,7 @@ const dot = (a, b) => a[0] * b[0] + a[1] * b[1] + a[2] * b[2]
 
 module.exports = dot
 
-},{}],233:[function(require,module,exports){
+},{}],229:[function(require,module,exports){
 /**
  * Compare the given vectors for equality.
  *
@@ -11347,7 +11272,7 @@ const equals = (a, b) => (a[0] === b[0]) && (a[1] === b[1]) && (a[2] === b[2])
 
 module.exports = equals
 
-},{}],234:[function(require,module,exports){
+},{}],230:[function(require,module,exports){
 /**
  * Creates a vector from a single scalar value.
  * All components of the resulting vector have the given value.
@@ -11366,7 +11291,7 @@ const fromScalar = (out, scalar) => {
 
 module.exports = fromScalar
 
-},{}],235:[function(require,module,exports){
+},{}],231:[function(require,module,exports){
 const create = require('./create')
 
 /**
@@ -11388,7 +11313,7 @@ const fromValues = (x, y, z) => {
 
 module.exports = fromValues
 
-},{"./create":228}],236:[function(require,module,exports){
+},{"./create":224}],232:[function(require,module,exports){
 /**
  * Create a new vector by extending a 2D vector with a Z value.
  *
@@ -11407,7 +11332,7 @@ const fromVector2 = (out, vector, z = 0) => {
 
 module.exports = fromVector2
 
-},{}],237:[function(require,module,exports){
+},{}],233:[function(require,module,exports){
 /**
  * Represents a three dimensional vector.
  * @see {@link vec3} for data structure information.
@@ -11448,7 +11373,7 @@ module.exports = {
   transform: require('./transform')
 }
 
-},{"./abs":223,"./add":224,"./angle":225,"./clone":226,"./copy":227,"./create":228,"./cross":229,"./distance":230,"./divide":231,"./dot":232,"./equals":233,"./fromScalar":234,"./fromValues":235,"./fromVec2":236,"./length":238,"./lerp":239,"./max":240,"./min":241,"./multiply":242,"./negate":243,"./normalize":244,"./orthogonal":245,"./rotateX":246,"./rotateY":247,"./rotateZ":248,"./scale":249,"./snap":250,"./squaredDistance":251,"./squaredLength":252,"./subtract":253,"./toString":254,"./transform":255}],238:[function(require,module,exports){
+},{"./abs":219,"./add":220,"./angle":221,"./clone":222,"./copy":223,"./create":224,"./cross":225,"./distance":226,"./divide":227,"./dot":228,"./equals":229,"./fromScalar":230,"./fromValues":231,"./fromVec2":232,"./length":234,"./lerp":235,"./max":236,"./min":237,"./multiply":238,"./negate":239,"./normalize":240,"./orthogonal":241,"./rotateX":242,"./rotateY":243,"./rotateZ":244,"./scale":245,"./snap":246,"./squaredDistance":247,"./squaredLength":248,"./subtract":249,"./toString":250,"./transform":251}],234:[function(require,module,exports){
 /**
  * Calculates the length of a vector.
  *
@@ -11465,7 +11390,7 @@ const length = (vector) => {
 
 module.exports = length
 
-},{}],239:[function(require,module,exports){
+},{}],235:[function(require,module,exports){
 /**
  * Performs a linear interpolation between two vectors.
  *
@@ -11485,7 +11410,7 @@ const lerp = (out, a, b, t) => {
 
 module.exports = lerp
 
-},{}],240:[function(require,module,exports){
+},{}],236:[function(require,module,exports){
 /**
  * Returns the maximum coordinates of the given vectors.
  *
@@ -11504,7 +11429,7 @@ const max = (out, a, b) => {
 
 module.exports = max
 
-},{}],241:[function(require,module,exports){
+},{}],237:[function(require,module,exports){
 /**
  * Returns the minimum coordinates of the given vectors.
  *
@@ -11523,7 +11448,7 @@ const min = (out, a, b) => {
 
 module.exports = min
 
-},{}],242:[function(require,module,exports){
+},{}],238:[function(require,module,exports){
 /**
  * Multiply the coordinates of the given vectors (A*B).
  *
@@ -11542,7 +11467,7 @@ const multiply = (out, a, b) => {
 
 module.exports = multiply
 
-},{}],243:[function(require,module,exports){
+},{}],239:[function(require,module,exports){
 /**
  * Negates the coordinates of the given vector.
  *
@@ -11560,7 +11485,7 @@ const negate = (out, vector) => {
 
 module.exports = negate
 
-},{}],244:[function(require,module,exports){
+},{}],240:[function(require,module,exports){
 /**
  * Normalize the given vector.
  *
@@ -11585,7 +11510,7 @@ const normalize = (out, vector) => {
 
 module.exports = normalize
 
-},{}],245:[function(require,module,exports){
+},{}],241:[function(require,module,exports){
 const abs = require('./abs')
 const create = require('./create')
 const cross = require('./cross')
@@ -11609,7 +11534,7 @@ const orthogonal = (out, vector) => {
 
 module.exports = orthogonal
 
-},{"./abs":223,"./create":228,"./cross":229}],246:[function(require,module,exports){
+},{"./abs":219,"./create":224,"./cross":225}],242:[function(require,module,exports){
 /**
  * Rotate the given vector around the given origin, X axis only.
  *
@@ -11644,7 +11569,7 @@ const rotateX = (out, vector, origin, radians) => {
 
 module.exports = rotateX
 
-},{}],247:[function(require,module,exports){
+},{}],243:[function(require,module,exports){
 /**
  * Rotate the given vector around the given origin, Y axis only.
  *
@@ -11679,7 +11604,7 @@ const rotateY = (out, vector, origin, radians) => {
 
 module.exports = rotateY
 
-},{}],248:[function(require,module,exports){
+},{}],244:[function(require,module,exports){
 /**
  * Rotate the given vector around the given origin, Z axis only.
  *
@@ -11711,7 +11636,7 @@ const rotateZ = (out, vector, origin, radians) => {
 
 module.exports = rotateZ
 
-},{}],249:[function(require,module,exports){
+},{}],245:[function(require,module,exports){
 /**
  * Scales the coordinates of the given vector by a scalar number.
  *
@@ -11730,7 +11655,7 @@ const scale = (out, vector, amount) => {
 
 module.exports = scale
 
-},{}],250:[function(require,module,exports){
+},{}],246:[function(require,module,exports){
 /**
  * Snaps the coordinates of the given vector to the given epsilon.
  *
@@ -11749,7 +11674,7 @@ const snap = (out, vector, epsilon) => {
 
 module.exports = snap
 
-},{}],251:[function(require,module,exports){
+},{}],247:[function(require,module,exports){
 /**
  * Calculates the squared distance between two vectors.
  *
@@ -11767,7 +11692,7 @@ const squaredDistance = (a, b) => {
 
 module.exports = squaredDistance
 
-},{}],252:[function(require,module,exports){
+},{}],248:[function(require,module,exports){
 /**
  * Calculates the squared length of the given vector.
  *
@@ -11784,7 +11709,7 @@ const squaredLength = (vector) => {
 
 module.exports = squaredLength
 
-},{}],253:[function(require,module,exports){
+},{}],249:[function(require,module,exports){
 /**
  * Subtracts the coordinates of two vectors (A-B).
  *
@@ -11803,7 +11728,7 @@ const subtract = (out, a, b) => {
 
 module.exports = subtract
 
-},{}],254:[function(require,module,exports){
+},{}],250:[function(require,module,exports){
 /**
  * Convert the given vector to a representative string.
  * @param {vec3} vec - vector of reference
@@ -11814,7 +11739,7 @@ const toString = (vec) => `[${vec[0].toFixed(7)}, ${vec[1].toFixed(7)}, ${vec[2]
 
 module.exports = toString
 
-},{}],255:[function(require,module,exports){
+},{}],251:[function(require,module,exports){
 /**
  * Transforms the given vector using the given matrix.
  *
@@ -11838,7 +11763,7 @@ const transform = (out, vector, matrix) => {
 
 module.exports = transform
 
-},{}],256:[function(require,module,exports){
+},{}],252:[function(require,module,exports){
 const create = require('./create')
 
 /**
@@ -11859,7 +11784,7 @@ const clone = (vector) => {
 
 module.exports = clone
 
-},{"./create":258}],257:[function(require,module,exports){
+},{"./create":254}],253:[function(require,module,exports){
 /**
  * Create a copy of the given vector.
  *
@@ -11878,7 +11803,7 @@ const copy = (out, vector) => {
 
 module.exports = copy
 
-},{}],258:[function(require,module,exports){
+},{}],254:[function(require,module,exports){
 /**
  * Represents a four dimensional vector.
  * See fromValues().
@@ -11895,7 +11820,7 @@ const create = () => [0, 0, 0, 0]
 
 module.exports = create
 
-},{}],259:[function(require,module,exports){
+},{}],255:[function(require,module,exports){
 /**
  * Calculates the dot product of the given vectors.
  *
@@ -11908,7 +11833,7 @@ const dot = (a, b) => a[0] * b[0] + a[1] * b[1] + a[2] * b[2] + a[3] * b[3]
 
 module.exports = dot
 
-},{}],260:[function(require,module,exports){
+},{}],256:[function(require,module,exports){
 /**
  * Compare the given vectors for equality.
  *
@@ -11921,7 +11846,7 @@ const equals = (a, b) => ((a[0] === b[0]) && (a[1] === b[1]) && (a[2] === b[2]) 
 
 module.exports = equals
 
-},{}],261:[function(require,module,exports){
+},{}],257:[function(require,module,exports){
 /**
  * Create a new vector from the given scalar value.
  *
@@ -11940,7 +11865,7 @@ const fromScalar = (out, scalar) => {
 
 module.exports = fromScalar
 
-},{}],262:[function(require,module,exports){
+},{}],258:[function(require,module,exports){
 const create = require('./create')
 
 /**
@@ -11964,7 +11889,7 @@ const fromValues = (x, y, z, w) => {
 
 module.exports = fromValues
 
-},{"./create":258}],263:[function(require,module,exports){
+},{"./create":254}],259:[function(require,module,exports){
 /**
  * Represents a four dimensional vector.
  * @see {@link vec4} for data structure information.
@@ -11982,7 +11907,7 @@ module.exports = {
   transform: require('./transform')
 }
 
-},{"./clone":256,"./copy":257,"./create":258,"./dot":259,"./equals":260,"./fromScalar":261,"./fromValues":262,"./toString":264,"./transform":265}],264:[function(require,module,exports){
+},{"./clone":252,"./copy":253,"./create":254,"./dot":255,"./equals":256,"./fromScalar":257,"./fromValues":258,"./toString":260,"./transform":261}],260:[function(require,module,exports){
 /**
  * Convert the given vector to a representative string.
  *
@@ -11994,7 +11919,7 @@ const toString = (vec) => `(${vec[0].toFixed(9)}, ${vec[1].toFixed(9)}, ${vec[2]
 
 module.exports = toString
 
-},{}],265:[function(require,module,exports){
+},{}],261:[function(require,module,exports){
 /**
  * Transform the given vector using the given matrix.
  *
@@ -12016,7 +11941,7 @@ const transform = (out, vector, matrix) => {
 
 module.exports = transform
 
-},{}],266:[function(require,module,exports){
+},{}],262:[function(require,module,exports){
 const { EPS } = require('../maths/constants')
 
 const calculateEpsilonFromBounds = (bounds, dimensions) => {
@@ -12029,7 +11954,7 @@ const calculateEpsilonFromBounds = (bounds, dimensions) => {
 
 module.exports = calculateEpsilonFromBounds
 
-},{"../maths/constants":110}],267:[function(require,module,exports){
+},{"../maths/constants":106}],263:[function(require,module,exports){
 /**
  * All shapes (primitives or the results of operations) can be measured, e.g. calculate volume, etc.
  * @module modeling/measurements
@@ -12051,7 +11976,7 @@ module.exports = {
   measureVolume: require('./measureVolume')
 }
 
-},{"./measureAggregateArea":268,"./measureAggregateBoundingBox":269,"./measureAggregateEpsilon":270,"./measureAggregateVolume":271,"./measureArea":272,"./measureBoundingBox":273,"./measureBoundingSphere":274,"./measureCenter":275,"./measureCenterOfMass":276,"./measureDimensions":277,"./measureEpsilon":278,"./measureVolume":279}],268:[function(require,module,exports){
+},{"./measureAggregateArea":264,"./measureAggregateBoundingBox":265,"./measureAggregateEpsilon":266,"./measureAggregateVolume":267,"./measureArea":268,"./measureBoundingBox":269,"./measureBoundingSphere":270,"./measureCenter":271,"./measureCenterOfMass":272,"./measureDimensions":273,"./measureEpsilon":274,"./measureVolume":275}],264:[function(require,module,exports){
 const flatten = require('../utils/flatten')
 
 const measureArea = require('./measureArea')
@@ -12079,7 +12004,7 @@ const measureAggregateArea = (...geometries) => {
 
 module.exports = measureAggregateArea
 
-},{"../utils/flatten":412,"./measureArea":272}],269:[function(require,module,exports){
+},{"../utils/flatten":408,"./measureArea":268}],265:[function(require,module,exports){
 const flatten = require('../utils/flatten')
 const vec3min = require('../maths/vec3/min')
 const vec3max = require('../maths/vec3/max')
@@ -12111,7 +12036,7 @@ const measureAggregateBoundingBox = (...geometries) => {
 
 module.exports = measureAggregateBoundingBox
 
-},{"../maths/vec3/max":240,"../maths/vec3/min":241,"../utils/flatten":412,"./measureBoundingBox":273}],270:[function(require,module,exports){
+},{"../maths/vec3/max":236,"../maths/vec3/min":237,"../utils/flatten":408,"./measureBoundingBox":269}],266:[function(require,module,exports){
 const flatten = require('../utils/flatten')
 const measureAggregateBoundingBox = require('./measureAggregateBoundingBox')
 const calculateEpsilonFromBounds = require('./calculateEpsilonFromBounds')
@@ -12142,7 +12067,7 @@ const measureAggregateEpsilon = (...geometries) => {
 
 module.exports = measureAggregateEpsilon
 
-},{"../geometries":66,"../utils/flatten":412,"./calculateEpsilonFromBounds":266,"./measureAggregateBoundingBox":269}],271:[function(require,module,exports){
+},{"../geometries":62,"../utils/flatten":408,"./calculateEpsilonFromBounds":262,"./measureAggregateBoundingBox":265}],267:[function(require,module,exports){
 const flatten = require('../utils/flatten')
 
 const measureVolume = require('./measureVolume')
@@ -12170,7 +12095,7 @@ const measureAggregateVolume = (...geometries) => {
 
 module.exports = measureAggregateVolume
 
-},{"../utils/flatten":412,"./measureVolume":279}],272:[function(require,module,exports){
+},{"../utils/flatten":408,"./measureVolume":275}],268:[function(require,module,exports){
 const flatten = require('../utils/flatten')
 
 const geom2 = require('../geometries/geom2')
@@ -12252,7 +12177,7 @@ const measureArea = (...geometries) => {
 
 module.exports = measureArea
 
-},{"../geometries/geom2":42,"../geometries/geom3":57,"../geometries/path2":78,"../geometries/poly3":95,"../utils/flatten":412}],273:[function(require,module,exports){
+},{"../geometries/geom2":38,"../geometries/geom3":53,"../geometries/path2":74,"../geometries/poly3":91,"../utils/flatten":408}],269:[function(require,module,exports){
 const flatten = require('../utils/flatten')
 
 const vec2 = require('../maths/vec2')
@@ -12388,7 +12313,7 @@ const measureBoundingBox = (...geometries) => {
 
 module.exports = measureBoundingBox
 
-},{"../geometries/geom2":42,"../geometries/geom3":57,"../geometries/path2":78,"../geometries/poly3":95,"../maths/vec2":206,"../maths/vec3":237,"../utils/flatten":412}],274:[function(require,module,exports){
+},{"../geometries/geom2":38,"../geometries/geom3":53,"../geometries/path2":74,"../geometries/poly3":91,"../maths/vec2":202,"../maths/vec3":233,"../utils/flatten":408}],270:[function(require,module,exports){
 const flatten = require('../utils/flatten')
 
 const vec2 = require('../maths/vec2')
@@ -12536,7 +12461,7 @@ const measureBoundingSphere = (...geometries) => {
 
 module.exports = measureBoundingSphere
 
-},{"../geometries/geom2":42,"../geometries/geom3":57,"../geometries/path2":78,"../geometries/poly3":95,"../maths/vec2":206,"../maths/vec3":237,"../utils/flatten":412}],275:[function(require,module,exports){
+},{"../geometries/geom2":38,"../geometries/geom3":53,"../geometries/path2":74,"../geometries/poly3":91,"../maths/vec2":202,"../maths/vec3":233,"../utils/flatten":408}],271:[function(require,module,exports){
 const flatten = require('../utils/flatten')
 
 const measureBoundingBox = require('./measureBoundingBox')
@@ -12566,7 +12491,7 @@ const measureCenter = (...geometries) => {
 
 module.exports = measureCenter
 
-},{"../utils/flatten":412,"./measureBoundingBox":273}],276:[function(require,module,exports){
+},{"../utils/flatten":408,"./measureBoundingBox":269}],272:[function(require,module,exports){
 const flatten = require('../utils/flatten')
 
 const vec3 = require('../maths/vec3')
@@ -12674,7 +12599,7 @@ const measureCenterOfMass = (...geometries) => {
 
 module.exports = measureCenterOfMass
 
-},{"../geometries/geom2":42,"../geometries/geom3":57,"../maths/vec3":237,"../utils/flatten":412}],277:[function(require,module,exports){
+},{"../geometries/geom2":38,"../geometries/geom3":53,"../maths/vec3":233,"../utils/flatten":408}],273:[function(require,module,exports){
 const flatten = require('../utils/flatten')
 
 const measureBoundingBox = require('./measureBoundingBox')
@@ -12704,7 +12629,7 @@ const measureDimensions = (...geometries) => {
 
 module.exports = measureDimensions
 
-},{"../utils/flatten":412,"./measureBoundingBox":273}],278:[function(require,module,exports){
+},{"../utils/flatten":408,"./measureBoundingBox":269}],274:[function(require,module,exports){
 const flatten = require('../utils/flatten')
 const { geom2, geom3, path2 } = require('../geometries')
 
@@ -12754,7 +12679,7 @@ const measureEpsilon = (...geometries) => {
 
 module.exports = measureEpsilon
 
-},{"../geometries":66,"../utils/flatten":412,"./calculateEpsilonFromBounds":266,"./measureBoundingBox":273}],279:[function(require,module,exports){
+},{"../geometries":62,"../utils/flatten":408,"./calculateEpsilonFromBounds":262,"./measureBoundingBox":269}],275:[function(require,module,exports){
 const flatten = require('../utils/flatten')
 
 const geom2 = require('../geometries/geom2')
@@ -12824,7 +12749,7 @@ const measureVolume = (...geometries) => {
 
 module.exports = measureVolume
 
-},{"../geometries/geom2":42,"../geometries/geom3":57,"../geometries/path2":78,"../geometries/poly3":95,"../utils/flatten":412}],280:[function(require,module,exports){
+},{"../geometries/geom2":38,"../geometries/geom3":53,"../geometries/path2":74,"../geometries/poly3":91,"../utils/flatten":408}],276:[function(require,module,exports){
 const vec2 = require('../../maths/vec2')
 
 const geom2 = require('../../geometries/geom2')
@@ -12878,7 +12803,7 @@ const fromFakePolygons = (epsilon, polygons) => {
 
 module.exports = fromFakePolygons
 
-},{"../../geometries/geom2":42,"../../maths/vec2":206}],281:[function(require,module,exports){
+},{"../../geometries/geom2":38,"../../maths/vec2":202}],277:[function(require,module,exports){
 /**
  * All shapes (primitives or the results of operations) can be passed to boolean functions
  * to perform logical operations, e.g. remove a hole from a board.
@@ -12894,7 +12819,7 @@ module.exports = {
   union: require('./union')
 }
 
-},{"./intersect":282,"./scission":287,"./subtract":289,"./union":300}],282:[function(require,module,exports){
+},{"./intersect":278,"./scission":283,"./subtract":285,"./union":296}],278:[function(require,module,exports){
 const flatten = require('../../utils/flatten')
 const areAllShapesTheSameType = require('../../utils/areAllShapesTheSameType')
 
@@ -12943,7 +12868,7 @@ const intersect = (...geometries) => {
 
 module.exports = intersect
 
-},{"../../geometries/geom2":42,"../../geometries/geom3":57,"../../utils/areAllShapesTheSameType":410,"../../utils/flatten":412,"./intersectGeom2":283,"./intersectGeom3":284}],283:[function(require,module,exports){
+},{"../../geometries/geom2":38,"../../geometries/geom3":53,"../../utils/areAllShapesTheSameType":406,"../../utils/flatten":408,"./intersectGeom2":279,"./intersectGeom3":280}],279:[function(require,module,exports){
 const flatten = require('../../utils/flatten')
 
 const geom3 = require('../../geometries/geom3')
@@ -12972,7 +12897,7 @@ const intersect = (...geometries) => {
 
 module.exports = intersect
 
-},{"../../geometries/geom3":57,"../../measurements/measureEpsilon":278,"../../utils/flatten":412,"./fromFakePolygons":280,"./intersectGeom3":284,"./to3DWalls":293}],284:[function(require,module,exports){
+},{"../../geometries/geom3":53,"../../measurements/measureEpsilon":274,"../../utils/flatten":408,"./fromFakePolygons":276,"./intersectGeom3":280,"./to3DWalls":289}],280:[function(require,module,exports){
 const flatten = require('../../utils/flatten')
 
 const retessellate = require('../modifiers/retessellate')
@@ -12999,7 +12924,7 @@ const intersect = (...geometries) => {
 
 module.exports = intersect
 
-},{"../../utils/flatten":412,"../modifiers/retessellate":370,"./intersectGeom3Sub":285}],285:[function(require,module,exports){
+},{"../../utils/flatten":408,"../modifiers/retessellate":366,"./intersectGeom3Sub":281}],281:[function(require,module,exports){
 const geom3 = require('../../geometries/geom3')
 
 const mayOverlap = require('./mayOverlap')
@@ -13034,7 +12959,7 @@ const intersectGeom3Sub = (geometry1, geometry2) => {
 
 module.exports = intersectGeom3Sub
 
-},{"../../geometries/geom3":57,"./mayOverlap":286,"./trees":297}],286:[function(require,module,exports){
+},{"../../geometries/geom3":53,"./mayOverlap":282,"./trees":293}],282:[function(require,module,exports){
 const { EPS } = require('../../maths/constants')
 
 const measureBoundingBox = require('../../measurements/measureBoundingBox')
@@ -13071,7 +12996,7 @@ const mayOverlap = (geometry1, geometry2) => {
 
 module.exports = mayOverlap
 
-},{"../../maths/constants":110,"../../measurements/measureBoundingBox":273}],287:[function(require,module,exports){
+},{"../../maths/constants":106,"../../measurements/measureBoundingBox":269}],283:[function(require,module,exports){
 const flatten = require('../../utils/flatten')
 
 // const geom2 = require('../../geometries/geom2')
@@ -13116,7 +13041,7 @@ const scission = (...objects) => {
 
 module.exports = scission
 
-},{"../../geometries/geom3":57,"../../utils/flatten":412,"./scissionGeom3":288}],288:[function(require,module,exports){
+},{"../../geometries/geom3":53,"../../utils/flatten":408,"./scissionGeom3":284}],284:[function(require,module,exports){
 const vec3 = require('../../maths/vec3')
 const measureEpsilon = require('../../measurements/measureEpsilon')
 
@@ -13211,7 +13136,7 @@ const scissionGeom3 = (geometry) => {
 
 module.exports = scissionGeom3
 
-},{"../../geometries/geom3":57,"../../maths/vec3":237,"../../measurements/measureEpsilon":278}],289:[function(require,module,exports){
+},{"../../geometries/geom3":53,"../../maths/vec3":233,"../../measurements/measureEpsilon":274}],285:[function(require,module,exports){
 const flatten = require('../../utils/flatten')
 const areAllShapesTheSameType = require('../../utils/areAllShapesTheSameType')
 
@@ -13260,7 +13185,7 @@ const subtract = (...geometries) => {
 
 module.exports = subtract
 
-},{"../../geometries/geom2":42,"../../geometries/geom3":57,"../../utils/areAllShapesTheSameType":410,"../../utils/flatten":412,"./subtractGeom2":290,"./subtractGeom3":291}],290:[function(require,module,exports){
+},{"../../geometries/geom2":38,"../../geometries/geom3":53,"../../utils/areAllShapesTheSameType":406,"../../utils/flatten":408,"./subtractGeom2":286,"./subtractGeom3":287}],286:[function(require,module,exports){
 const flatten = require('../../utils/flatten')
 
 const geom3 = require('../../geometries/geom3')
@@ -13289,7 +13214,7 @@ const subtract = (...geometries) => {
 
 module.exports = subtract
 
-},{"../../geometries/geom3":57,"../../measurements/measureEpsilon":278,"../../utils/flatten":412,"./fromFakePolygons":280,"./subtractGeom3":291,"./to3DWalls":293}],291:[function(require,module,exports){
+},{"../../geometries/geom3":53,"../../measurements/measureEpsilon":274,"../../utils/flatten":408,"./fromFakePolygons":276,"./subtractGeom3":287,"./to3DWalls":289}],287:[function(require,module,exports){
 const flatten = require('../../utils/flatten')
 
 const retessellate = require('../modifiers/retessellate')
@@ -13316,7 +13241,7 @@ const subtract = (...geometries) => {
 
 module.exports = subtract
 
-},{"../../utils/flatten":412,"../modifiers/retessellate":370,"./subtractGeom3Sub":292}],292:[function(require,module,exports){
+},{"../../utils/flatten":408,"../modifiers/retessellate":366,"./subtractGeom3Sub":288}],288:[function(require,module,exports){
 const geom3 = require('../../geometries/geom3')
 
 const mayOverlap = require('./mayOverlap')
@@ -13349,7 +13274,7 @@ const subtractGeom3Sub = (geometry1, geometry2) => {
 
 module.exports = subtractGeom3Sub
 
-},{"../../geometries/geom3":57,"./mayOverlap":286,"./trees":297}],293:[function(require,module,exports){
+},{"../../geometries/geom3":53,"./mayOverlap":282,"./trees":293}],289:[function(require,module,exports){
 const vec3 = require('../../maths/vec3')
 
 const geom2 = require('../../geometries/geom2')
@@ -13387,7 +13312,7 @@ const to3DWalls = (options, geometry) => {
 
 module.exports = to3DWalls
 
-},{"../../geometries/geom2":42,"../../geometries/geom3":57,"../../geometries/poly3":95,"../../maths/vec3":237}],294:[function(require,module,exports){
+},{"../../geometries/geom2":38,"../../geometries/geom3":53,"../../geometries/poly3":91,"../../maths/vec3":233}],290:[function(require,module,exports){
 const plane = require('../../../maths/plane')
 const poly3 = require('../../../geometries/poly3')
 
@@ -13533,7 +13458,7 @@ class Node {
 
 module.exports = Node
 
-},{"../../../geometries/poly3":95,"../../../maths/plane":178}],295:[function(require,module,exports){
+},{"../../../geometries/poly3":91,"../../../maths/plane":174}],291:[function(require,module,exports){
 const { EPS } = require('../../../maths/constants')
 
 const vec3 = require('../../../maths/vec3')
@@ -13796,7 +13721,7 @@ class PolygonTreeNode {
 
 module.exports = PolygonTreeNode
 
-},{"../../../geometries/poly3":95,"../../../maths/constants":110,"../../../maths/vec3":237,"./splitPolygonByPlane":299}],296:[function(require,module,exports){
+},{"../../../geometries/poly3":91,"../../../maths/constants":106,"../../../maths/vec3":233,"./splitPolygonByPlane":295}],292:[function(require,module,exports){
 const Node = require('./Node')
 const PolygonTreeNode = require('./PolygonTreeNode')
 
@@ -13848,12 +13773,12 @@ class Tree {
 
 module.exports = Tree
 
-},{"./Node":294,"./PolygonTreeNode":295}],297:[function(require,module,exports){
+},{"./Node":290,"./PolygonTreeNode":291}],293:[function(require,module,exports){
 module.exports = {
   Tree: require('./Tree')
 }
 
-},{"./Tree":296}],298:[function(require,module,exports){
+},{"./Tree":292}],294:[function(require,module,exports){
 const vec3 = require('../../../maths/vec3')
 
 const splitLineSegmentByPlane = (plane, p1, p2) => {
@@ -13870,7 +13795,7 @@ const splitLineSegmentByPlane = (plane, p1, p2) => {
 
 module.exports = splitLineSegmentByPlane
 
-},{"../../../maths/vec3":237}],299:[function(require,module,exports){
+},{"../../../maths/vec3":233}],295:[function(require,module,exports){
 const { EPS } = require('../../../maths/constants')
 
 const plane = require('../../../maths/plane')
@@ -13993,7 +13918,7 @@ const splitPolygonByPlane = (splane, polygon) => {
 
 module.exports = splitPolygonByPlane
 
-},{"../../../geometries/poly3":95,"../../../maths/constants":110,"../../../maths/plane":178,"../../../maths/vec3":237,"./splitLineSegmentByPlane":298}],300:[function(require,module,exports){
+},{"../../../geometries/poly3":91,"../../../maths/constants":106,"../../../maths/plane":174,"../../../maths/vec3":233,"./splitLineSegmentByPlane":294}],296:[function(require,module,exports){
 const flatten = require('../../utils/flatten')
 const areAllShapesTheSameType = require('../../utils/areAllShapesTheSameType')
 
@@ -14041,7 +13966,7 @@ const union = (...geometries) => {
 
 module.exports = union
 
-},{"../../geometries/geom2":42,"../../geometries/geom3":57,"../../utils/areAllShapesTheSameType":410,"../../utils/flatten":412,"./unionGeom2":301,"./unionGeom3":302}],301:[function(require,module,exports){
+},{"../../geometries/geom2":38,"../../geometries/geom3":53,"../../utils/areAllShapesTheSameType":406,"../../utils/flatten":408,"./unionGeom2":297,"./unionGeom3":298}],297:[function(require,module,exports){
 const flatten = require('../../utils/flatten')
 
 const geom3 = require('../../geometries/geom3')
@@ -14069,7 +13994,7 @@ const union = (...geometries) => {
 
 module.exports = union
 
-},{"../../geometries/geom3":57,"../../measurements/measureEpsilon":278,"../../utils/flatten":412,"./fromFakePolygons":280,"./to3DWalls":293,"./unionGeom3":302}],302:[function(require,module,exports){
+},{"../../geometries/geom3":53,"../../measurements/measureEpsilon":274,"../../utils/flatten":408,"./fromFakePolygons":276,"./to3DWalls":289,"./unionGeom3":298}],298:[function(require,module,exports){
 const flatten = require('../../utils/flatten')
 
 const retessellate = require('../modifiers/retessellate')
@@ -14096,7 +14021,7 @@ const union = (...geometries) => {
 
 module.exports = union
 
-},{"../../utils/flatten":412,"../modifiers/retessellate":370,"./unionGeom3Sub":303}],303:[function(require,module,exports){
+},{"../../utils/flatten":408,"../modifiers/retessellate":366,"./unionGeom3Sub":299}],299:[function(require,module,exports){
 const geom3 = require('../../geometries/geom3')
 
 const mayOverlap = require('./mayOverlap')
@@ -14138,7 +14063,7 @@ const unionForNonIntersecting = (geometry1, geometry2) => {
 
 module.exports = unionSub
 
-},{"../../geometries/geom3":57,"./mayOverlap":286,"./trees":297}],304:[function(require,module,exports){
+},{"../../geometries/geom3":53,"./mayOverlap":282,"./trees":293}],300:[function(require,module,exports){
 const flatten = require('../../utils/flatten')
 
 const geom2 = require('../../geometries/geom2')
@@ -14182,7 +14107,7 @@ const expand = (options, ...objects) => {
 
 module.exports = expand
 
-},{"../../geometries/geom2":42,"../../geometries/geom3":57,"../../geometries/path2":78,"../../utils/flatten":412,"./expandGeom2":305,"./expandGeom3":306,"./expandPath2":307}],305:[function(require,module,exports){
+},{"../../geometries/geom2":38,"../../geometries/geom3":53,"../../geometries/path2":74,"../../utils/flatten":408,"./expandGeom2":301,"./expandGeom3":302,"./expandPath2":303}],301:[function(require,module,exports){
 const geom2 = require('../../geometries/geom2')
 
 const offsetFromPoints = require('./offsetFromPoints')
@@ -14227,7 +14152,7 @@ const expandGeom2 = (options, geometry) => {
 
 module.exports = expandGeom2
 
-},{"../../geometries/geom2":42,"./offsetFromPoints":312}],306:[function(require,module,exports){
+},{"../../geometries/geom2":38,"./offsetFromPoints":308}],302:[function(require,module,exports){
 const geom3 = require('../../geometries/geom3')
 
 const union = require('../booleans/union')
@@ -14265,7 +14190,7 @@ const expandGeom3 = (options, geometry) => {
 
 module.exports = expandGeom3
 
-},{"../../geometries/geom3":57,"../booleans/union":300,"./expandShell":308}],307:[function(require,module,exports){
+},{"../../geometries/geom3":53,"../booleans/union":296,"./expandShell":304}],303:[function(require,module,exports){
 const area = require('../../maths/utils/area')
 
 const vec2 = require('../../maths/vec2')
@@ -14366,7 +14291,7 @@ const expandPath2 = (options, geometry) => {
 
 module.exports = expandPath2
 
-},{"../../geometries/geom2":42,"../../geometries/path2":78,"../../maths/utils/area":183,"../../maths/vec2":206,"./offsetFromPoints":312}],308:[function(require,module,exports){
+},{"../../geometries/geom2":38,"../../geometries/path2":74,"../../maths/utils/area":179,"../../maths/vec2":202,"./offsetFromPoints":308}],304:[function(require,module,exports){
 const { EPS, TAU } = require('../../maths/constants')
 
 const mat4 = require('../../maths/mat4')
@@ -14592,7 +14517,7 @@ const expandShell = (options, geometry) => {
 
 module.exports = expandShell
 
-},{"../../geometries/geom3":57,"../../geometries/poly3":95,"../../maths/constants":110,"../../maths/mat4":159,"../../maths/vec3":237,"../../primitives/sphere":400,"../../utils/fnNumberSort":413,"../booleans/unionGeom3Sub":303,"../modifiers/retessellate":370,"./extrudePolygon":309}],309:[function(require,module,exports){
+},{"../../geometries/geom3":53,"../../geometries/poly3":91,"../../maths/constants":106,"../../maths/mat4":155,"../../maths/vec3":233,"../../primitives/sphere":396,"../../utils/fnNumberSort":409,"../booleans/unionGeom3Sub":299,"../modifiers/retessellate":366,"./extrudePolygon":305}],305:[function(require,module,exports){
 const mat4 = require('../../maths/mat4')
 const vec3 = require('../../maths/vec3')
 
@@ -14628,7 +14553,7 @@ const extrudePolygon = (offsetvector, polygon1) => {
 
 module.exports = extrudePolygon
 
-},{"../../geometries/geom3":57,"../../geometries/poly3":95,"../../maths/mat4":159,"../../maths/vec3":237}],310:[function(require,module,exports){
+},{"../../geometries/geom3":53,"../../geometries/poly3":91,"../../maths/mat4":155,"../../maths/vec3":233}],306:[function(require,module,exports){
 /**
  * All shapes (primitives or the results of operations) can be expanded (or contracted.)
  * In all cases, the function returns the results, and never changes the original shapes.
@@ -14641,7 +14566,7 @@ module.exports = {
   offset: require('./offset')
 }
 
-},{"./expand":304,"./offset":311}],311:[function(require,module,exports){
+},{"./expand":300,"./offset":307}],307:[function(require,module,exports){
 const flatten = require('../../utils/flatten')
 
 const geom2 = require('../../geometries/geom2')
@@ -14679,7 +14604,7 @@ const offset = (options, ...objects) => {
 
 module.exports = offset
 
-},{"../../geometries/geom2":42,"../../geometries/path2":78,"../../utils/flatten":412,"./offsetGeom2":313,"./offsetPath2":314}],312:[function(require,module,exports){
+},{"../../geometries/geom2":38,"../../geometries/path2":74,"../../utils/flatten":408,"./offsetGeom2":309,"./offsetPath2":310}],308:[function(require,module,exports){
 const { EPS, TAU } = require('../../maths/constants')
 
 const intersect = require('../../maths/utils/intersect')
@@ -14851,7 +14776,7 @@ const offsetFromPoints = (options, points) => {
 
 module.exports = offsetFromPoints
 
-},{"../../maths/constants":110,"../../maths/line2":121,"../../maths/utils/area":183,"../../maths/utils/intersect":186,"../../maths/vec2":206}],313:[function(require,module,exports){
+},{"../../maths/constants":106,"../../maths/line2":117,"../../maths/utils/area":179,"../../maths/utils/intersect":182,"../../maths/vec2":202}],309:[function(require,module,exports){
 const geom2 = require('../../geometries/geom2')
 const poly2 = require('../../geometries/poly2')
 
@@ -14900,7 +14825,7 @@ const offsetGeom2 = (options, geometry) => {
 
 module.exports = offsetGeom2
 
-},{"../../geometries/geom2":42,"../../geometries/poly2":89,"./offsetFromPoints":312}],314:[function(require,module,exports){
+},{"../../geometries/geom2":38,"../../geometries/poly2":85,"./offsetFromPoints":308}],310:[function(require,module,exports){
 const path2 = require('../../geometries/path2')
 
 const offsetFromPoints = require('./offsetFromPoints')
@@ -14934,7 +14859,7 @@ const offsetPath2 = (options, geometry) => {
 
 module.exports = offsetPath2
 
-},{"../../geometries/path2":78,"./offsetFromPoints":312}],315:[function(require,module,exports){
+},{"../../geometries/path2":74,"./offsetFromPoints":308}],311:[function(require,module,exports){
 const { area } = require('../../../maths/utils')
 const { toOutlines } = require('../../../geometries/geom2')
 const { arePointsInside } = require('../../../geometries/poly2')
@@ -15027,7 +14952,7 @@ const minIndex = (list, score) => {
 
 module.exports = assignHoles
 
-},{"../../../geometries/geom2":42,"../../../geometries/poly2":89,"../../../maths/utils":184}],316:[function(require,module,exports){
+},{"../../../geometries/geom2":38,"../../../geometries/poly2":85,"../../../maths/utils":180}],312:[function(require,module,exports){
 const { filterPoints, linkedPolygon, locallyInside, splitPolygon } = require('./linkedPolygon')
 const { area, pointInTriangle } = require('./triangle')
 
@@ -15160,7 +15085,7 @@ const getLeftmost = (start) => {
 
 module.exports = eliminateHoles
 
-},{"./linkedPolygon":320,"./triangle":322}],317:[function(require,module,exports){
+},{"./linkedPolygon":316,"./triangle":318}],313:[function(require,module,exports){
 const eliminateHoles = require('./eliminateHoles')
 const { removeNode, sortLinked } = require('./linkedList')
 const { cureLocalIntersections, filterPoints, isValidDiagonal, linkedPolygon, splitPolygon } = require('./linkedPolygon')
@@ -15414,7 +15339,7 @@ const zOrder = (x, y, minX, minY, invSize) => {
 
 module.exports = triangulate
 
-},{"./eliminateHoles":316,"./linkedList":318,"./linkedPolygon":320,"./triangle":322}],318:[function(require,module,exports){
+},{"./eliminateHoles":312,"./linkedList":314,"./linkedPolygon":316,"./triangle":318}],314:[function(require,module,exports){
 const sortLinked = require('./linkedListSort')
 
 class Node {
@@ -15474,7 +15399,7 @@ const removeNode = (p) => {
 
 module.exports = { Node, insertNode, removeNode, sortLinked }
 
-},{"./linkedListSort":319}],319:[function(require,module,exports){
+},{"./linkedListSort":315}],315:[function(require,module,exports){
 
 // Simon Tatham's linked list merge sort algorithm
 // https://www.chiark.greenend.org.uk/~sgtatham/algorithms/listsort.html
@@ -15530,7 +15455,7 @@ const sortLinked = (list, fn) => {
 
 module.exports = sortLinked
 
-},{}],320:[function(require,module,exports){
+},{}],316:[function(require,module,exports){
 const { Node, insertNode, removeNode } = require('./linkedList')
 const { area } = require('./triangle')
 
@@ -15729,7 +15654,7 @@ const equals = (p1, p2) => p1.x === p2.x && p1.y === p2.y
 
 module.exports = { cureLocalIntersections, filterPoints, isValidDiagonal, linkedPolygon, locallyInside, splitPolygon }
 
-},{"./linkedList":318,"./triangle":322}],321:[function(require,module,exports){
+},{"./linkedList":314,"./triangle":318}],317:[function(require,module,exports){
 const geom2 = require('../../../geometries/geom2')
 const plane = require('../../../maths/plane')
 const vec2 = require('../../../maths/vec2')
@@ -15795,7 +15720,7 @@ class PolygonHierarchy {
 
 module.exports = PolygonHierarchy
 
-},{"../../../geometries/geom2":42,"../../../maths/plane":178,"../../../maths/vec2":206,"../../../maths/vec3":237,"../slice/calculatePlane":335,"./assignHoles":315}],322:[function(require,module,exports){
+},{"../../../geometries/geom2":38,"../../../maths/plane":174,"../../../maths/vec2":202,"../../../maths/vec3":233,"../slice/calculatePlane":331,"./assignHoles":311}],318:[function(require,module,exports){
 
 /*
  * check if a point lies within a convex triangle
@@ -15813,7 +15738,7 @@ const area = (p, q, r) => (q.y - p.y) * (r.x - q.x) - (q.x - p.x) * (r.y - q.y)
 
 module.exports = { area, pointInTriangle }
 
-},{}],323:[function(require,module,exports){
+},{}],319:[function(require,module,exports){
 const mat4 = require('../../maths/mat4')
 
 const geom2 = require('../../geometries/geom2')
@@ -15929,7 +15854,7 @@ const extrudeFromSlices = (options, base) => {
 
 module.exports = extrudeFromSlices
 
-},{"../../geometries/geom2":42,"../../geometries/geom3":57,"../../geometries/poly3":95,"../../maths/mat4":159,"./extrudeWalls":332,"./slice":341,"./slice/repair":343}],324:[function(require,module,exports){
+},{"../../geometries/geom2":38,"../../geometries/geom3":53,"../../geometries/poly3":91,"../../maths/mat4":155,"./extrudeWalls":328,"./slice":337,"./slice/repair":339}],320:[function(require,module,exports){
 const { TAU } = require('../../maths/constants')
 const slice = require('./slice')
 const mat4 = require('../../maths/mat4')
@@ -16044,7 +15969,7 @@ const extrudeHelical = (options, geometry) => {
 
 module.exports = extrudeHelical
 
-},{"../../geometries/geom2":42,"../../maths/constants":110,"../../maths/mat4":159,"./extrudeFromSlices":323,"./slice":341}],325:[function(require,module,exports){
+},{"../../geometries/geom2":38,"../../maths/constants":106,"../../maths/mat4":155,"./extrudeFromSlices":319,"./slice":337}],321:[function(require,module,exports){
 const flatten = require('../../utils/flatten')
 
 const geom2 = require('../../geometries/geom2')
@@ -16093,7 +16018,7 @@ const extrudeLinear = (options, ...objects) => {
 
 module.exports = extrudeLinear
 
-},{"../../geometries/geom2":42,"../../geometries/path2":78,"../../utils/flatten":412,"./extrudeLinearGeom2":326,"./extrudeLinearPath2":327}],326:[function(require,module,exports){
+},{"../../geometries/geom2":38,"../../geometries/path2":74,"../../utils/flatten":408,"./extrudeLinearGeom2":322,"./extrudeLinearPath2":323}],322:[function(require,module,exports){
 const mat4 = require('../../maths/mat4')
 const vec3 = require('../../maths/vec3')
 
@@ -16159,7 +16084,7 @@ const extrudeGeom2 = (options, geometry) => {
 
 module.exports = extrudeGeom2
 
-},{"../../geometries/geom2":42,"../../maths/mat4":159,"../../maths/vec3":237,"./extrudeFromSlices":323,"./slice":341}],327:[function(require,module,exports){
+},{"../../geometries/geom2":38,"../../maths/mat4":155,"../../maths/vec3":233,"./extrudeFromSlices":319,"./slice":337}],323:[function(require,module,exports){
 const geom2 = require('../../geometries/geom2')
 const path2 = require('../../geometries/path2')
 
@@ -16185,7 +16110,7 @@ const extrudePath2 = (options, geometry) => {
 
 module.exports = extrudePath2
 
-},{"../../geometries/geom2":42,"../../geometries/path2":78,"./extrudeLinearGeom2":326}],328:[function(require,module,exports){
+},{"../../geometries/geom2":38,"../../geometries/path2":74,"./extrudeLinearGeom2":322}],324:[function(require,module,exports){
 const flatten = require('../../utils/flatten')
 
 const geom2 = require('../../geometries/geom2')
@@ -16232,7 +16157,7 @@ const extrudeRectangular = (options, ...objects) => {
 
 module.exports = extrudeRectangular
 
-},{"../../geometries/geom2":42,"../../geometries/path2":78,"../../utils/flatten":412,"./extrudeRectangularGeom2":329,"./extrudeRectangularPath2":330}],329:[function(require,module,exports){
+},{"../../geometries/geom2":38,"../../geometries/path2":74,"../../utils/flatten":408,"./extrudeRectangularGeom2":325,"./extrudeRectangularPath2":326}],325:[function(require,module,exports){
 const { area } = require('../../maths/utils')
 
 const geom2 = require('../../geometries/geom2')
@@ -16280,7 +16205,7 @@ const extrudeRectangularGeom2 = (options, geometry) => {
 
 module.exports = extrudeRectangularGeom2
 
-},{"../../geometries/geom2":42,"../../geometries/path2":78,"../../maths/utils":184,"../expansions/expand":304,"./extrudeLinearGeom2":326}],330:[function(require,module,exports){
+},{"../../geometries/geom2":38,"../../geometries/path2":74,"../../maths/utils":180,"../expansions/expand":300,"./extrudeLinearGeom2":322}],326:[function(require,module,exports){
 const path2 = require('../../geometries/path2')
 
 const expand = require('../expansions/expand')
@@ -16315,7 +16240,7 @@ const extrudeRectangularPath2 = (options, geometry) => {
 
 module.exports = extrudeRectangularPath2
 
-},{"../../geometries/path2":78,"../expansions/expand":304,"./extrudeLinearGeom2":326}],331:[function(require,module,exports){
+},{"../../geometries/path2":74,"../expansions/expand":300,"./extrudeLinearGeom2":322}],327:[function(require,module,exports){
 const { TAU } = require('../../maths/constants')
 const mat4 = require('../../maths/mat4')
 
@@ -16455,7 +16380,7 @@ const extrudeRotate = (options, geometry) => {
 
 module.exports = extrudeRotate
 
-},{"../../geometries/geom2":42,"../../maths/constants":110,"../../maths/mat4":159,"../transforms/mirror":377,"./extrudeFromSlices":323,"./slice":341}],332:[function(require,module,exports){
+},{"../../geometries/geom2":38,"../../maths/constants":106,"../../maths/mat4":155,"../transforms/mirror":373,"./extrudeFromSlices":319,"./slice":337}],328:[function(require,module,exports){
 const { EPS } = require('../../maths/constants')
 const vec3 = require('../../maths/vec3')
 
@@ -16535,7 +16460,7 @@ const extrudeWalls = (slice0, slice1) => {
 
 module.exports = extrudeWalls
 
-},{"../../geometries/poly3":95,"../../maths/constants":110,"../../maths/vec3":237,"./slice":341}],333:[function(require,module,exports){
+},{"../../geometries/poly3":91,"../../maths/constants":106,"../../maths/vec3":233,"./slice":337}],329:[function(require,module,exports){
 /**
  * All 2D shapes (primitives or the results of operations) can be extruded in various ways.
  * In all cases, the function returns the results, and never changes the original shapes.
@@ -16553,7 +16478,7 @@ module.exports = {
   slice: require('./slice')
 }
 
-},{"./extrudeFromSlices":323,"./extrudeHelical":324,"./extrudeLinear":325,"./extrudeRectangular":328,"./extrudeRotate":331,"./project":334,"./slice":341}],334:[function(require,module,exports){
+},{"./extrudeFromSlices":319,"./extrudeHelical":320,"./extrudeLinear":321,"./extrudeRectangular":324,"./extrudeRotate":327,"./project":330,"./slice":337}],330:[function(require,module,exports){
 const flatten = require('../../utils/flatten')
 
 const aboutEqualNormals = require('../../maths/utils/aboutEqualNormals')
@@ -16643,7 +16568,7 @@ const project = (options, ...objects) => {
 
 module.exports = project
 
-},{"../../geometries/geom2":42,"../../geometries/geom3":57,"../../geometries/poly3":95,"../../maths/mat4":159,"../../maths/plane":178,"../../maths/utils/aboutEqualNormals":182,"../../measurements/measureEpsilon":278,"../../utils/flatten":412,"../booleans/unionGeom2":301}],335:[function(require,module,exports){
+},{"../../geometries/geom2":38,"../../geometries/geom3":53,"../../geometries/poly3":91,"../../maths/mat4":155,"../../maths/plane":174,"../../maths/utils/aboutEqualNormals":178,"../../measurements/measureEpsilon":274,"../../utils/flatten":408,"../booleans/unionGeom2":297}],331:[function(require,module,exports){
 const plane = require('../../../maths/plane')
 const vec3 = require('../../../maths/vec3')
 
@@ -16686,7 +16611,7 @@ const calculatePlane = (slice) => {
 
 module.exports = calculatePlane
 
-},{"../../../maths/plane":178,"../../../maths/vec3":237}],336:[function(require,module,exports){
+},{"../../../maths/plane":174,"../../../maths/vec3":233}],332:[function(require,module,exports){
 const create = require('./create')
 
 const vec3 = require('../../../maths/vec3')
@@ -16716,7 +16641,7 @@ const clone = (...params) => {
 
 module.exports = clone
 
-},{"../../../maths/vec3":237,"./create":337}],337:[function(require,module,exports){
+},{"../../../maths/vec3":233,"./create":333}],333:[function(require,module,exports){
 /**
  * Represents a 3D geometry consisting of a list of edges.
  * @typedef {Object} slice
@@ -16738,7 +16663,7 @@ const create = (edges) => {
 
 module.exports = create
 
-},{}],338:[function(require,module,exports){
+},{}],334:[function(require,module,exports){
 const vec3 = require('../../../maths/vec3')
 
 /**
@@ -16767,7 +16692,7 @@ const equals = (a, b) => {
 
 module.exports = equals
 
-},{"../../../maths/vec3":237}],339:[function(require,module,exports){
+},{"../../../maths/vec3":233}],335:[function(require,module,exports){
 const vec3 = require('../../../maths/vec3')
 
 const create = require('./create')
@@ -16804,7 +16729,7 @@ const fromPoints = (points) => {
 
 module.exports = fromPoints
 
-},{"../../../maths/vec3":237,"./create":337}],340:[function(require,module,exports){
+},{"../../../maths/vec3":233,"./create":333}],336:[function(require,module,exports){
 const vec3 = require('../../../maths/vec3')
 
 const create = require('./create')
@@ -16833,7 +16758,7 @@ const fromSides = (sides) => {
 
 module.exports = fromSides
 
-},{"../../../maths/vec3":237,"./create":337}],341:[function(require,module,exports){
+},{"../../../maths/vec3":233,"./create":333}],337:[function(require,module,exports){
 /**
  * Represents a 3D geometry consisting of a list of edges.
  * @see {@link slice} for data structure information.
@@ -16854,7 +16779,7 @@ module.exports = {
   transform: require('./transform')
 }
 
-},{"./calculatePlane":335,"./clone":336,"./create":337,"./equals":338,"./fromPoints":339,"./fromSides":340,"./isA":342,"./reverse":344,"./toEdges":345,"./toPolygons":346,"./toString":347,"./transform":348}],342:[function(require,module,exports){
+},{"./calculatePlane":331,"./clone":332,"./create":333,"./equals":334,"./fromPoints":335,"./fromSides":336,"./isA":338,"./reverse":340,"./toEdges":341,"./toPolygons":342,"./toString":343,"./transform":344}],338:[function(require,module,exports){
 /**
  * Determine if the given object is a slice.
  * @param {slice} object - the object to interrogate
@@ -16874,7 +16799,7 @@ const isA = (object) => {
 
 module.exports = isA
 
-},{}],343:[function(require,module,exports){
+},{}],339:[function(require,module,exports){
 const vec3 = require('../../../maths/vec3')
 const create = require('./create')
 
@@ -16938,7 +16863,7 @@ const repair = (slice) => {
 
 module.exports = repair
 
-},{"../../../maths/vec3":237,"./create":337}],344:[function(require,module,exports){
+},{"../../../maths/vec3":233,"./create":333}],340:[function(require,module,exports){
 const create = require('./create')
 
 /**
@@ -16966,7 +16891,7 @@ const reverse = (...params) => {
 
 module.exports = reverse
 
-},{"./create":337}],345:[function(require,module,exports){
+},{"./create":333}],341:[function(require,module,exports){
 /**
  * Produces an array of edges from the given slice.
  * The returned array should not be modified as the data is shared with the slice.
@@ -16981,7 +16906,7 @@ const toEdges = (slice) => slice.edges
 
 module.exports = toEdges
 
-},{}],346:[function(require,module,exports){
+},{}],342:[function(require,module,exports){
 const poly3 = require('../../../geometries/poly3')
 const earcut = require('../earcut')
 const PolygonHierarchy = require('../earcut/polygonHierarchy')
@@ -17023,7 +16948,7 @@ const toPolygons = (slice) => {
 
 module.exports = toPolygons
 
-},{"../../../geometries/poly3":95,"../earcut":317,"../earcut/polygonHierarchy":321}],347:[function(require,module,exports){
+},{"../../../geometries/poly3":91,"../earcut":313,"../earcut/polygonHierarchy":317}],343:[function(require,module,exports){
 const vec3 = require('../../../maths/vec3')
 
 const edgesToString = (edges) =>
@@ -17040,7 +16965,7 @@ const toString = (slice) => `[${edgesToString(slice.edges)}]`
 
 module.exports = toString
 
-},{"../../../maths/vec3":237}],348:[function(require,module,exports){
+},{"../../../maths/vec3":233}],344:[function(require,module,exports){
 const vec3 = require('../../../maths/vec3')
 
 const create = require('./create')
@@ -17063,7 +16988,7 @@ const transform = (matrix, slice) => {
 
 module.exports = transform
 
-},{"../../../maths/vec3":237,"./create":337}],349:[function(require,module,exports){
+},{"../../../maths/vec3":233,"./create":333}],345:[function(require,module,exports){
 const flatten = require('../../utils/flatten')
 const areAllShapesTheSameType = require('../../utils/areAllShapesTheSameType')
 
@@ -17117,7 +17042,7 @@ const hull = (...geometries) => {
 
 module.exports = hull
 
-},{"../../geometries/geom2":42,"../../geometries/geom3":57,"../../geometries/path2":78,"../../utils/areAllShapesTheSameType":410,"../../utils/flatten":412,"./hullGeom2":351,"./hullGeom3":352,"./hullPath2":353}],350:[function(require,module,exports){
+},{"../../geometries/geom2":38,"../../geometries/geom3":53,"../../geometries/path2":74,"../../utils/areAllShapesTheSameType":406,"../../utils/flatten":408,"./hullGeom2":347,"./hullGeom3":348,"./hullPath2":349}],346:[function(require,module,exports){
 const flatten = require('../../utils/flatten')
 
 const union = require('../booleans/union')
@@ -17162,7 +17087,7 @@ const hullChain = (...geometries) => {
 
 module.exports = hullChain
 
-},{"../../utils/flatten":412,"../booleans/union":300,"./hull":349}],351:[function(require,module,exports){
+},{"../../utils/flatten":408,"../booleans/union":296,"./hull":345}],347:[function(require,module,exports){
 const flatten = require('../../utils/flatten')
 
 const geom2 = require('../../geometries/geom2')
@@ -17192,7 +17117,7 @@ const hullGeom2 = (...geometries) => {
 
 module.exports = hullGeom2
 
-},{"../../geometries/geom2":42,"../../utils/flatten":412,"./hullPoints2":354,"./toUniquePoints":364}],352:[function(require,module,exports){
+},{"../../geometries/geom2":38,"../../utils/flatten":408,"./hullPoints2":350,"./toUniquePoints":360}],348:[function(require,module,exports){
 const flatten = require('../../utils/flatten')
 
 const geom3 = require('../../geometries/geom3')
@@ -17226,7 +17151,7 @@ const hullGeom3 = (...geometries) => {
 
 module.exports = hullGeom3
 
-},{"../../geometries/geom3":57,"../../geometries/poly3":95,"../../utils/flatten":412,"./quickhull":362,"./toUniquePoints":364}],353:[function(require,module,exports){
+},{"../../geometries/geom3":53,"../../geometries/poly3":91,"../../utils/flatten":408,"./quickhull":358,"./toUniquePoints":360}],349:[function(require,module,exports){
 const flatten = require('../../utils/flatten')
 
 const path2 = require('../../geometries/path2')
@@ -17253,7 +17178,7 @@ const hullPath2 = (...geometries) => {
 
 module.exports = hullPath2
 
-},{"../../geometries/path2":78,"../../utils/flatten":412,"./hullPoints2":354,"./toUniquePoints":364}],354:[function(require,module,exports){
+},{"../../geometries/path2":74,"../../utils/flatten":408,"./hullPoints2":350,"./toUniquePoints":360}],350:[function(require,module,exports){
 const vec2 = require('../../maths/vec2')
 
 /*
@@ -17315,7 +17240,7 @@ const fakeAtan2 = (y, x) => {
 
 module.exports = hullPoints2
 
-},{"../../maths/vec2":206}],355:[function(require,module,exports){
+},{"../../maths/vec2":202}],351:[function(require,module,exports){
 /**
  * All shapes (primitives or the results of operations) can be passed to hull functions
  * to determine the convex hull of all points.
@@ -17329,7 +17254,7 @@ module.exports = {
   hullChain: require('./hullChain')
 }
 
-},{"./hull":349,"./hullChain":350}],356:[function(require,module,exports){
+},{"./hull":345,"./hullChain":346}],352:[function(require,module,exports){
 const add = require('../../../maths/vec3/add')
 const copy = require('../../../maths/vec3/copy')
 const cross = require('../../../maths/vec3/cross')
@@ -17665,7 +17590,7 @@ module.exports = {
   Face
 }
 
-},{"../../../maths/vec3/add":224,"../../../maths/vec3/copy":227,"../../../maths/vec3/cross":229,"../../../maths/vec3/dot":232,"../../../maths/vec3/length":238,"../../../maths/vec3/normalize":244,"../../../maths/vec3/scale":249,"../../../maths/vec3/subtract":253,"./HalfEdge":357}],357:[function(require,module,exports){
+},{"../../../maths/vec3/add":220,"../../../maths/vec3/copy":223,"../../../maths/vec3/cross":225,"../../../maths/vec3/dot":228,"../../../maths/vec3/length":234,"../../../maths/vec3/normalize":240,"../../../maths/vec3/scale":245,"../../../maths/vec3/subtract":249,"./HalfEdge":353}],353:[function(require,module,exports){
 const distance = require('../../../maths/vec3/distance')
 const squaredDistance = require('../../../maths/vec3/squaredDistance')
 
@@ -17723,7 +17648,7 @@ class HalfEdge {
 
 module.exports = HalfEdge
 
-},{"../../../maths/vec3/distance":230,"../../../maths/vec3/squaredDistance":251}],358:[function(require,module,exports){
+},{"../../../maths/vec3/distance":226,"../../../maths/vec3/squaredDistance":247}],354:[function(require,module,exports){
 const dot = require('../../../maths/vec3/dot')
 
 const pointLineDistance = require('./point-line-distance')
@@ -18479,7 +18404,7 @@ class QuickHull {
 
 module.exports = QuickHull
 
-},{"../../../maths/vec3/dot":232,"./Face":356,"./Vertex":359,"./VertexList":360,"./get-plane-normal":361,"./point-line-distance":363}],359:[function(require,module,exports){
+},{"../../../maths/vec3/dot":228,"./Face":352,"./Vertex":355,"./VertexList":356,"./get-plane-normal":357,"./point-line-distance":359}],355:[function(require,module,exports){
 /*
  * Original source from quickhull3d (https://github.com/mauriciopoppe/quickhull3d)
  * Copyright (c) 2015 Mauricio Poppe
@@ -18502,7 +18427,7 @@ class Vertex {
 
 module.exports = Vertex
 
-},{}],360:[function(require,module,exports){
+},{}],356:[function(require,module,exports){
 /*
  * Original source from quickhull3d (https://github.com/mauriciopoppe/quickhull3d)
  * Copyright (c) 2015 Mauricio Poppe
@@ -18650,7 +18575,7 @@ class VertexList {
 
 module.exports = VertexList
 
-},{}],361:[function(require,module,exports){
+},{}],357:[function(require,module,exports){
 const cross = require('../../../maths/vec3/cross')
 const normalize = require('../../../maths/vec3/normalize')
 const subtract = require('../../../maths/vec3/subtract')
@@ -18672,7 +18597,7 @@ const planeNormal = (out, point1, point2, point3) => {
 
 module.exports = planeNormal
 
-},{"../../../maths/vec3/cross":229,"../../../maths/vec3/normalize":244,"../../../maths/vec3/subtract":253}],362:[function(require,module,exports){
+},{"../../../maths/vec3/cross":225,"../../../maths/vec3/normalize":240,"../../../maths/vec3/subtract":249}],358:[function(require,module,exports){
 const QuickHull = require('./QuickHull')
 
 /*
@@ -18690,7 +18615,7 @@ const runner = (points, options = {}) => {
 
 module.exports = runner
 
-},{"./QuickHull":358}],363:[function(require,module,exports){
+},{"./QuickHull":354}],359:[function(require,module,exports){
 const cross = require('../../../maths/vec3/cross')
 const subtract = require('../../../maths/vec3/subtract')
 const squaredLength = require('../../../maths/vec3/squaredLength')
@@ -18734,7 +18659,7 @@ const pointLineDistance = (point, a, b) => Math.sqrt(distanceSquared(point, a, b
 
 module.exports = pointLineDistance
 
-},{"../../../maths/vec3/cross":229,"../../../maths/vec3/squaredLength":252,"../../../maths/vec3/subtract":253}],364:[function(require,module,exports){
+},{"../../../maths/vec3/cross":225,"../../../maths/vec3/squaredLength":248,"../../../maths/vec3/subtract":249}],360:[function(require,module,exports){
 const geom2 = require('../../geometries/geom2')
 const geom3 = require('../../geometries/geom3')
 const path2 = require('../../geometries/path2')
@@ -18770,7 +18695,7 @@ const toUniquePoints = (geometries) => {
 
 module.exports = toUniquePoints
 
-},{"../../geometries/geom2":42,"../../geometries/geom3":57,"../../geometries/path2":78}],365:[function(require,module,exports){
+},{"../../geometries/geom2":38,"../../geometries/geom3":53,"../../geometries/path2":74}],361:[function(require,module,exports){
 const flatten = require('../../utils/flatten')
 
 const measureEpsilon = require('../../measurements/measureEpsilon')
@@ -18854,7 +18779,7 @@ const generalize = (options, ...geometries) => {
 
 module.exports = generalize
 
-},{"../../geometries/geom2":42,"../../geometries/geom3":57,"../../geometries/path2":78,"../../measurements/measureEpsilon":278,"../../utils/flatten":412,"./insertTjunctions":367,"./mergePolygons":368,"./snapPolygons":372,"./triangulatePolygons":373}],366:[function(require,module,exports){
+},{"../../geometries/geom2":38,"../../geometries/geom3":53,"../../geometries/path2":74,"../../measurements/measureEpsilon":274,"../../utils/flatten":408,"./insertTjunctions":363,"./mergePolygons":364,"./snapPolygons":368,"./triangulatePolygons":369}],362:[function(require,module,exports){
 /**
  * All shapes (primitives or the results of operations) can be modified to correct issues, etc.
  * In all cases, these functions returns the results, and never changes the original geometry.
@@ -18868,7 +18793,7 @@ module.exports = {
   retessellate: require('./retessellate')
 }
 
-},{"./generalize":365,"./retessellate":370,"./snap":371}],367:[function(require,module,exports){
+},{"./generalize":361,"./retessellate":366,"./snap":367}],363:[function(require,module,exports){
 const constants = require('../../maths/constants')
 const vec3 = require('../../maths/vec3')
 const poly3 = require('../../geometries/poly3')
@@ -19164,7 +19089,7 @@ const insertTjunctions = (polygons) => {
 
 module.exports = insertTjunctions
 
-},{"../../geometries/poly3":95,"../../maths/constants":110,"../../maths/vec3":237}],368:[function(require,module,exports){
+},{"../../geometries/poly3":91,"../../maths/constants":106,"../../maths/vec3":233}],364:[function(require,module,exports){
 const aboutEqualNormals = require('../../maths/utils/aboutEqualNormals')
 const vec3 = require('../../maths/vec3')
 
@@ -19374,7 +19299,7 @@ const mergePolygons = (epsilon, polygons) => {
 
 module.exports = mergePolygons
 
-},{"../../geometries/poly3":95,"../../maths/utils/aboutEqualNormals":182,"../../maths/vec3":237}],369:[function(require,module,exports){
+},{"../../geometries/poly3":91,"../../maths/utils/aboutEqualNormals":178,"../../maths/vec3":233}],365:[function(require,module,exports){
 const { EPS } = require('../../maths/constants')
 
 const line2 = require('../../maths/line2')
@@ -19721,7 +19646,7 @@ const reTesselateCoplanarPolygons = (sourcepolygons) => {
 
 module.exports = reTesselateCoplanarPolygons
 
-},{"../../geometries/poly3":95,"../../maths/OrthoNormalBasis":109,"../../maths/constants":110,"../../maths/line2":121,"../../maths/utils/interpolateBetween2DPointsForY":185,"../../maths/vec2":206,"../../utils":414}],370:[function(require,module,exports){
+},{"../../geometries/poly3":91,"../../maths/OrthoNormalBasis":105,"../../maths/constants":106,"../../maths/line2":117,"../../maths/utils/interpolateBetween2DPointsForY":181,"../../maths/vec2":202,"../../utils":410}],366:[function(require,module,exports){
 const geom3 = require('../../geometries/geom3')
 const poly3 = require('../../geometries/poly3')
 const { NEPS } = require('../../maths/constants')
@@ -19816,7 +19741,7 @@ const byPlaneComponent = (component, tolerance) => (a, b) => {
 
 module.exports = retessellate
 
-},{"../../geometries/geom3":57,"../../geometries/poly3":95,"../../maths/constants":110,"./reTesselateCoplanarPolygons":369}],371:[function(require,module,exports){
+},{"../../geometries/geom3":53,"../../geometries/poly3":91,"../../maths/constants":106,"./reTesselateCoplanarPolygons":365}],367:[function(require,module,exports){
 const flatten = require('../../utils/flatten')
 
 const vec2 = require('../../maths/vec2')
@@ -19875,7 +19800,7 @@ const snap = (...geometries) => {
 
 module.exports = snap
 
-},{"../../geometries/geom2":42,"../../geometries/geom3":57,"../../geometries/path2":78,"../../maths/vec2":206,"../../measurements/measureEpsilon":278,"../../utils/flatten":412,"./snapPolygons":372}],372:[function(require,module,exports){
+},{"../../geometries/geom2":38,"../../geometries/geom3":53,"../../geometries/path2":74,"../../maths/vec2":202,"../../measurements/measureEpsilon":274,"../../utils/flatten":408,"./snapPolygons":368}],368:[function(require,module,exports){
 const vec3 = require('../../maths/vec3')
 
 const poly3 = require('../../geometries/poly3')
@@ -19909,7 +19834,7 @@ const snapPolygons = (epsilon, polygons) => {
 
 module.exports = snapPolygons
 
-},{"../../geometries/poly3":95,"../../maths/vec3":237}],373:[function(require,module,exports){
+},{"../../geometries/poly3":91,"../../maths/vec3":233}],369:[function(require,module,exports){
 const vec3 = require('../../maths/vec3')
 const poly3 = require('../../geometries/poly3')
 
@@ -19956,7 +19881,7 @@ const triangulatePolygons = (epsilon, polygons) => {
 
 module.exports = triangulatePolygons
 
-},{"../../geometries/poly3":95,"../../maths/vec3":237}],374:[function(require,module,exports){
+},{"../../geometries/poly3":91,"../../maths/vec3":233}],370:[function(require,module,exports){
 const flatten = require('../../utils/flatten')
 const padArrayToLength = require('../../utils/padArrayToLength')
 const measureAggregateBoundingBox = require('../../measurements/measureAggregateBoundingBox')
@@ -20047,7 +19972,7 @@ const align = (options, ...geometries) => {
 
 module.exports = align
 
-},{"../../measurements/measureAggregateBoundingBox":269,"../../utils/flatten":412,"../../utils/padArrayToLength":416,"./translate":381}],375:[function(require,module,exports){
+},{"../../measurements/measureAggregateBoundingBox":265,"../../utils/flatten":408,"../../utils/padArrayToLength":412,"./translate":377}],371:[function(require,module,exports){
 const flatten = require('../../utils/flatten')
 
 const geom2 = require('../../geometries/geom2')
@@ -20139,7 +20064,7 @@ module.exports = {
   centerZ
 }
 
-},{"../../geometries/geom2":42,"../../geometries/geom3":57,"../../geometries/path2":78,"../../measurements/measureBoundingBox":273,"../../utils/flatten":412,"./translate":381}],376:[function(require,module,exports){
+},{"../../geometries/geom2":38,"../../geometries/geom3":53,"../../geometries/path2":74,"../../measurements/measureBoundingBox":269,"../../utils/flatten":408,"./translate":377}],372:[function(require,module,exports){
 /**
  * All shapes (primitives or the results of operations) can be transformed, such as scaled or rotated.
  * In all cases, the function returns the results, and never changes the original shapes.
@@ -20178,7 +20103,7 @@ module.exports = {
   translateZ: require('./translate').translateZ
 }
 
-},{"./align":374,"./center":375,"./mirror":377,"./rotate":378,"./scale":379,"./transform":380,"./translate":381}],377:[function(require,module,exports){
+},{"./align":370,"./center":371,"./mirror":373,"./rotate":374,"./scale":375,"./transform":376,"./translate":377}],373:[function(require,module,exports){
 const flatten = require('../../utils/flatten')
 
 const mat4 = require('../../maths/mat4')
@@ -20258,7 +20183,7 @@ module.exports = {
   mirrorZ
 }
 
-},{"../../geometries/geom2":42,"../../geometries/geom3":57,"../../geometries/path2":78,"../../maths/mat4":159,"../../maths/plane":178,"../../utils/flatten":412}],378:[function(require,module,exports){
+},{"../../geometries/geom2":38,"../../geometries/geom3":53,"../../geometries/path2":74,"../../maths/mat4":155,"../../maths/plane":174,"../../utils/flatten":408}],374:[function(require,module,exports){
 const flatten = require('../../utils/flatten')
 
 const mat4 = require('../../maths/mat4')
@@ -20336,7 +20261,7 @@ module.exports = {
   rotateZ
 }
 
-},{"../../geometries/geom2":42,"../../geometries/geom3":57,"../../geometries/path2":78,"../../maths/mat4":159,"../../utils/flatten":412}],379:[function(require,module,exports){
+},{"../../geometries/geom2":38,"../../geometries/geom3":53,"../../geometries/path2":74,"../../maths/mat4":155,"../../utils/flatten":408}],375:[function(require,module,exports){
 const flatten = require('../../utils/flatten')
 
 const mat4 = require('../../maths/mat4')
@@ -20412,7 +20337,7 @@ module.exports = {
   scaleZ
 }
 
-},{"../../geometries/geom2":42,"../../geometries/geom3":57,"../../geometries/path2":78,"../../maths/mat4":159,"../../utils/flatten":412}],380:[function(require,module,exports){
+},{"../../geometries/geom2":38,"../../geometries/geom3":53,"../../geometries/path2":74,"../../maths/mat4":155,"../../utils/flatten":408}],376:[function(require,module,exports){
 const flatten = require('../../utils/flatten')
 
 const geom2 = require('../../geometries/geom2')
@@ -20446,7 +20371,7 @@ const transform = (matrix, ...objects) => {
 
 module.exports = transform
 
-},{"../../geometries/geom2":42,"../../geometries/geom3":57,"../../geometries/path2":78,"../../utils/flatten":412}],381:[function(require,module,exports){
+},{"../../geometries/geom2":38,"../../geometries/geom3":53,"../../geometries/path2":74,"../../utils/flatten":408}],377:[function(require,module,exports){
 const flatten = require('../../utils/flatten')
 
 const mat4 = require('../../maths/mat4')
@@ -20520,7 +20445,7 @@ module.exports = {
   translateZ
 }
 
-},{"../../geometries/geom2":42,"../../geometries/geom3":57,"../../geometries/path2":78,"../../maths/mat4":159,"../../utils/flatten":412}],382:[function(require,module,exports){
+},{"../../geometries/geom2":38,"../../geometries/geom3":53,"../../geometries/path2":74,"../../maths/mat4":155,"../../utils/flatten":408}],378:[function(require,module,exports){
 const { EPS, TAU } = require('../maths/constants')
 
 const vec2 = require('../maths/vec2')
@@ -20606,7 +20531,7 @@ const arc = (options) => {
 
 module.exports = arc
 
-},{"../geometries/path2":78,"../maths/constants":110,"../maths/vec2":206,"./commonChecks":384}],383:[function(require,module,exports){
+},{"../geometries/path2":74,"../maths/constants":106,"../maths/vec2":202,"./commonChecks":380}],379:[function(require,module,exports){
 const { TAU } = require('../maths/constants')
 
 const ellipse = require('./ellipse')
@@ -20646,7 +20571,7 @@ const circle = (options) => {
 
 module.exports = circle
 
-},{"../maths/constants":110,"./commonChecks":384,"./ellipse":389}],384:[function(require,module,exports){
+},{"../maths/constants":106,"./commonChecks":380,"./ellipse":385}],380:[function(require,module,exports){
 // verify that the array has the given dimension, and contains Number values
 const isNumberArray = (array, dimension) => {
   if (Array.isArray(array) && array.length >= dimension) {
@@ -20667,7 +20592,7 @@ module.exports = {
   isGTE
 }
 
-},{}],385:[function(require,module,exports){
+},{}],381:[function(require,module,exports){
 const cuboid = require('./cuboid')
 
 const { isGTE } = require('./commonChecks')
@@ -20699,7 +20624,7 @@ const cube = (options) => {
 
 module.exports = cube
 
-},{"./commonChecks":384,"./cuboid":386}],386:[function(require,module,exports){
+},{"./commonChecks":380,"./cuboid":382}],382:[function(require,module,exports){
 const geom3 = require('../geometries/geom3')
 const poly3 = require('../geometries/poly3')
 
@@ -20756,7 +20681,7 @@ const cuboid = (options) => {
 
 module.exports = cuboid
 
-},{"../geometries/geom3":57,"../geometries/poly3":95,"./commonChecks":384}],387:[function(require,module,exports){
+},{"../geometries/geom3":53,"../geometries/poly3":91,"./commonChecks":380}],383:[function(require,module,exports){
 const geom3 = require('../geometries/geom3')
 
 const cylinderElliptic = require('./cylinderElliptic')
@@ -20804,7 +20729,7 @@ const cylinder = (options) => {
 
 module.exports = cylinder
 
-},{"../geometries/geom3":57,"./commonChecks":384,"./cylinderElliptic":388}],388:[function(require,module,exports){
+},{"../geometries/geom3":53,"./commonChecks":380,"./cylinderElliptic":384}],384:[function(require,module,exports){
 const { EPS, TAU } = require('../maths/constants')
 
 const vec3 = require('../maths/vec3')
@@ -20938,7 +20863,7 @@ const cylinderElliptic = (options) => {
 
 module.exports = cylinderElliptic
 
-},{"../geometries/geom3":57,"../geometries/poly3":95,"../maths/constants":110,"../maths/utils/trigonometry":188,"../maths/vec3":237,"./commonChecks":384}],389:[function(require,module,exports){
+},{"../geometries/geom3":53,"../geometries/poly3":91,"../maths/constants":106,"../maths/utils/trigonometry":184,"../maths/vec3":233,"./commonChecks":380}],385:[function(require,module,exports){
 const { EPS, TAU } = require('../maths/constants')
 
 const vec2 = require('../maths/vec2')
@@ -21018,7 +20943,7 @@ const ellipse = (options) => {
 
 module.exports = ellipse
 
-},{"../geometries/geom2":42,"../maths/constants":110,"../maths/utils/trigonometry":188,"../maths/vec2":206,"./commonChecks":384}],390:[function(require,module,exports){
+},{"../geometries/geom2":38,"../maths/constants":106,"../maths/utils/trigonometry":184,"../maths/vec2":202,"./commonChecks":380}],386:[function(require,module,exports){
 const { TAU } = require('../maths/constants')
 const vec3 = require('../maths/vec3')
 
@@ -21119,7 +21044,7 @@ const ellipsoid = (options) => {
 
 module.exports = ellipsoid
 
-},{"../geometries/geom3":57,"../geometries/poly3":95,"../maths/constants":110,"../maths/utils/trigonometry":188,"../maths/vec3":237,"./commonChecks":384}],391:[function(require,module,exports){
+},{"../geometries/geom3":53,"../geometries/poly3":91,"../maths/constants":106,"../maths/utils/trigonometry":184,"../maths/vec3":233,"./commonChecks":380}],387:[function(require,module,exports){
 const mat4 = require('../maths/mat4')
 const vec3 = require('../maths/vec3')
 
@@ -21261,7 +21186,7 @@ const geodesicSphere = (options) => {
 
 module.exports = geodesicSphere
 
-},{"../geometries/geom3":57,"../maths/mat4":159,"../maths/vec3":237,"./commonChecks":384,"./polyhedron":395}],392:[function(require,module,exports){
+},{"../geometries/geom3":53,"../maths/mat4":155,"../maths/vec3":233,"./commonChecks":380,"./polyhedron":391}],388:[function(require,module,exports){
 /**
  * Primitives provide the building blocks for complex parts.
  * Each primitive is a geometrical object that can be described mathematically, and therefore precise.
@@ -21294,7 +21219,7 @@ module.exports = {
   triangle: require('./triangle')
 }
 
-},{"./arc":382,"./circle":383,"./cube":385,"./cuboid":386,"./cylinder":387,"./cylinderElliptic":388,"./ellipse":389,"./ellipsoid":390,"./geodesicSphere":391,"./line":393,"./polygon":394,"./polyhedron":395,"./rectangle":396,"./roundedCuboid":397,"./roundedCylinder":398,"./roundedRectangle":399,"./sphere":400,"./square":401,"./star":402,"./torus":403,"./triangle":404}],393:[function(require,module,exports){
+},{"./arc":378,"./circle":379,"./cube":381,"./cuboid":382,"./cylinder":383,"./cylinderElliptic":384,"./ellipse":385,"./ellipsoid":386,"./geodesicSphere":387,"./line":389,"./polygon":390,"./polyhedron":391,"./rectangle":392,"./roundedCuboid":393,"./roundedCylinder":394,"./roundedRectangle":395,"./sphere":396,"./square":397,"./star":398,"./torus":399,"./triangle":400}],389:[function(require,module,exports){
 const path2 = require('../geometries/path2')
 
 /**
@@ -21315,7 +21240,7 @@ const line = (points) => {
 
 module.exports = line
 
-},{"../geometries/path2":78}],394:[function(require,module,exports){
+},{"../geometries/path2":74}],390:[function(require,module,exports){
 const geom2 = require('../geometries/geom2')
 
 /**
@@ -21387,7 +21312,7 @@ const polygon = (options) => {
 
 module.exports = polygon
 
-},{"../geometries/geom2":42}],395:[function(require,module,exports){
+},{"../geometries/geom2":38}],391:[function(require,module,exports){
 const geom3 = require('../geometries/geom3')
 const poly3 = require('../geometries/poly3')
 
@@ -21460,7 +21385,7 @@ const polyhedron = (options) => {
 
 module.exports = polyhedron
 
-},{"../geometries/geom3":57,"../geometries/poly3":95,"./commonChecks":384}],396:[function(require,module,exports){
+},{"../geometries/geom3":53,"../geometries/poly3":91,"./commonChecks":380}],392:[function(require,module,exports){
 const vec2 = require('../maths/vec2')
 
 const geom2 = require('../geometries/geom2')
@@ -21506,7 +21431,7 @@ const rectangle = (options) => {
 
 module.exports = rectangle
 
-},{"../geometries/geom2":42,"../maths/vec2":206,"./commonChecks":384}],397:[function(require,module,exports){
+},{"../geometries/geom2":38,"../maths/vec2":202,"./commonChecks":380}],393:[function(require,module,exports){
 const { EPS, TAU } = require('../maths/constants')
 
 const vec2 = require('../maths/vec2')
@@ -21701,7 +21626,7 @@ const roundedCuboid = (options) => {
 
 module.exports = roundedCuboid
 
-},{"../geometries/geom3":57,"../geometries/poly3":95,"../maths/constants":110,"../maths/utils/trigonometry":188,"../maths/vec2":206,"../maths/vec3":237,"./commonChecks":384,"./cuboid":386}],398:[function(require,module,exports){
+},{"../geometries/geom3":53,"../geometries/poly3":91,"../maths/constants":106,"../maths/utils/trigonometry":184,"../maths/vec2":202,"../maths/vec3":233,"./commonChecks":380,"./cuboid":382}],394:[function(require,module,exports){
 const { EPS, TAU } = require('../maths/constants')
 
 const vec3 = require('../maths/vec3')
@@ -21850,7 +21775,7 @@ const roundedCylinder = (options) => {
 
 module.exports = roundedCylinder
 
-},{"../geometries/geom3":57,"../geometries/poly3":95,"../maths/constants":110,"../maths/utils/trigonometry":188,"../maths/vec3":237,"./commonChecks":384,"./cylinder":387}],399:[function(require,module,exports){
+},{"../geometries/geom3":53,"../geometries/poly3":91,"../maths/constants":106,"../maths/utils/trigonometry":184,"../maths/vec3":233,"./commonChecks":380,"./cylinder":383}],395:[function(require,module,exports){
 const { EPS, TAU } = require('../maths/constants')
 
 const vec2 = require('../maths/vec2')
@@ -21928,7 +21853,7 @@ const roundedRectangle = (options) => {
 
 module.exports = roundedRectangle
 
-},{"../geometries/geom2":42,"../maths/constants":110,"../maths/vec2":206,"./commonChecks":384,"./rectangle":396}],400:[function(require,module,exports){
+},{"../geometries/geom2":38,"../maths/constants":106,"../maths/vec2":202,"./commonChecks":380,"./rectangle":392}],396:[function(require,module,exports){
 const ellipsoid = require('./ellipsoid')
 
 const { isGTE } = require('./commonChecks')
@@ -21965,7 +21890,7 @@ const sphere = (options) => {
 
 module.exports = sphere
 
-},{"./commonChecks":384,"./ellipsoid":390}],401:[function(require,module,exports){
+},{"./commonChecks":380,"./ellipsoid":386}],397:[function(require,module,exports){
 const rectangle = require('./rectangle')
 
 const { isGTE } = require('./commonChecks')
@@ -21998,7 +21923,7 @@ const square = (options) => {
 
 module.exports = square
 
-},{"./commonChecks":384,"./rectangle":396}],402:[function(require,module,exports){
+},{"./commonChecks":380,"./rectangle":392}],398:[function(require,module,exports){
 const { TAU } = require('../maths/constants')
 const vec2 = require('../maths/vec2')
 
@@ -22088,7 +22013,7 @@ const star = (options) => {
 
 module.exports = star
 
-},{"../geometries/geom2":42,"../maths/constants":110,"../maths/vec2":206,"./commonChecks":384}],403:[function(require,module,exports){
+},{"../geometries/geom2":38,"../maths/constants":106,"../maths/vec2":202,"./commonChecks":380}],399:[function(require,module,exports){
 const { TAU } = require('../maths/constants')
 
 const extrudeRotate = require('../operations/extrusions/extrudeRotate')
@@ -22154,7 +22079,7 @@ const torus = (options) => {
 
 module.exports = torus
 
-},{"../maths/constants":110,"../operations/extrusions/extrudeRotate":331,"../operations/transforms/rotate":378,"../operations/transforms/translate":381,"./circle":383,"./commonChecks":384}],404:[function(require,module,exports){
+},{"../maths/constants":106,"../operations/extrusions/extrudeRotate":327,"../operations/transforms/rotate":374,"../operations/transforms/translate":377,"./circle":379,"./commonChecks":380}],400:[function(require,module,exports){
 const { NEPS } = require('../maths/constants')
 const vec2 = require('../maths/vec2')
 
@@ -22319,7 +22244,7 @@ const triangle = (options) => {
 
 module.exports = triangle
 
-},{"../geometries/geom2":42,"../maths/constants":110,"../maths/vec2":206,"./commonChecks":384}],405:[function(require,module,exports){
+},{"../geometries/geom2":38,"../maths/constants":106,"../maths/vec2":202,"./commonChecks":380}],401:[function(require,module,exports){
 // -- data source from from http://paulbourke.net/dataformats/hershey/
 // -- reduced to save some bytes...
 // { [ascii code]: [width, x, y, ...] } - undefined value as path separator
@@ -22422,7 +22347,7 @@ module.exports = {
   126: [24, 3, 6, 3, 8, 4, 11, 6, 12, 8, 12, 10, 11, 14, 8, 16, 7, 18, 7, 20, 8, 21, 10, undefined, 3, 8, 4, 10, 6, 11, 8, 11, 10, 10, 14, 7, 16, 6, 18, 6, 20, 7, 21, 10, 21, 12]
 }
 
-},{}],406:[function(require,module,exports){
+},{}],402:[function(require,module,exports){
 /**
  * Texts provide sets of segments for each character or text strings.
  * The segments can be used to create outlines for both 2D and 3D geometry.
@@ -22436,7 +22361,7 @@ module.exports = {
   vectorText: require('./vectorText')
 }
 
-},{"./vectorChar":407,"./vectorText":409}],407:[function(require,module,exports){
+},{"./vectorChar":403,"./vectorText":405}],403:[function(require,module,exports){
 const vectorParams = require('./vectorParams')
 
 /**
@@ -22501,7 +22426,7 @@ const vectorChar = (options, char) => {
 
 module.exports = vectorChar
 
-},{"./vectorParams":408}],408:[function(require,module,exports){
+},{"./vectorParams":404}],404:[function(require,module,exports){
 const defaultFont = require('./fonts/single-line/hershey/simplex.js')
 
 const defaultsVectorParams = {
@@ -22529,7 +22454,7 @@ const vectorParams = (options, input) => {
 
 module.exports = vectorParams
 
-},{"./fonts/single-line/hershey/simplex.js":405}],409:[function(require,module,exports){
+},{"./fonts/single-line/hershey/simplex.js":401}],405:[function(require,module,exports){
 const vectorChar = require('./vectorChar')
 const vectorParams = require('./vectorParams')
 
@@ -22626,7 +22551,7 @@ const vectorText = (options, text) => {
 
 module.exports = vectorText
 
-},{"./vectorChar":407,"./vectorParams":408}],410:[function(require,module,exports){
+},{"./vectorChar":403,"./vectorParams":404}],406:[function(require,module,exports){
 // list of supported geometries
 const geom2 = require('../geometries/geom2')
 const geom3 = require('../geometries/geom3')
@@ -22653,7 +22578,7 @@ const areAllShapesTheSameType = (shapes) => {
 
 module.exports = areAllShapesTheSameType
 
-},{"../geometries/geom2":42,"../geometries/geom3":57,"../geometries/path2":78}],411:[function(require,module,exports){
+},{"../geometries/geom2":38,"../geometries/geom3":53,"../geometries/path2":74}],407:[function(require,module,exports){
 /**
  * Convert the given angle (degrees) to radians.
  * @param {Number} degrees - angle in degrees
@@ -22664,7 +22589,7 @@ const degToRad = (degrees) => degrees * 0.017453292519943295
 
 module.exports = degToRad
 
-},{}],412:[function(require,module,exports){
+},{}],408:[function(require,module,exports){
 /**
  * Flatten the given list of arguments into a single flat array.
  * The arguments can be composed of multiple depths of objects and arrays.
@@ -22676,7 +22601,7 @@ const flatten = (arr) => arr.reduce((acc, val) => Array.isArray(val) ? acc.conca
 
 module.exports = flatten
 
-},{}],413:[function(require,module,exports){
+},{}],409:[function(require,module,exports){
 /**
  * @alias module:modeling/utils.fnNumberSort
  */
@@ -22684,7 +22609,7 @@ const fnNumberSort = (a, b) => a - b
 
 module.exports = fnNumberSort
 
-},{}],414:[function(require,module,exports){
+},{}],410:[function(require,module,exports){
 /**
  * Utility functions of various sorts.
  * @module modeling/utils
@@ -22701,7 +22626,7 @@ module.exports = {
   radToDeg: require('./radToDeg')
 }
 
-},{"./areAllShapesTheSameType":410,"./degToRad":411,"./flatten":412,"./fnNumberSort":413,"./insertSorted":415,"./radToDeg":417,"./radiusToSegments":418}],415:[function(require,module,exports){
+},{"./areAllShapesTheSameType":406,"./degToRad":407,"./flatten":408,"./fnNumberSort":409,"./insertSorted":411,"./radToDeg":413,"./radiusToSegments":414}],411:[function(require,module,exports){
 /**
  * Insert the given element into the given array using the compareFunction.
  * @alias module:modeling/utils.insertSorted
@@ -22724,7 +22649,7 @@ const insertSorted = (array, element, comparefunc) => {
 
 module.exports = insertSorted
 
-},{}],416:[function(require,module,exports){
+},{}],412:[function(require,module,exports){
 /**
  * Build an array of at minimum a specified length from an existing array and a padding value. IF the array is already larger than the target length, it will not be shortened.
  * @param {Array} anArray - the source array to copy into the result.
@@ -22743,7 +22668,7 @@ const padArrayToLength = (anArray, padding, targetLength) => {
 
 module.exports = padArrayToLength
 
-},{}],417:[function(require,module,exports){
+},{}],413:[function(require,module,exports){
 /**
  * Convert the given angle (radians) to degrees.
  * @param {Number} radians - angle in radians
@@ -22754,7 +22679,7 @@ const radToDeg = (radians) => radians * 57.29577951308232
 
 module.exports = radToDeg
 
-},{}],418:[function(require,module,exports){
+},{}],414:[function(require,module,exports){
 const { TAU } = require('../maths/constants')
 
 /**
@@ -22774,7 +22699,2212 @@ const radiusToSegments = (radius, minimumLength, minimumAngle) => {
 
 module.exports = radiusToSegments
 
-},{"../maths/constants":110}],419:[function(require,module,exports){
+},{"../maths/constants":106}],415:[function(require,module,exports){
+// BinaryReader
+// Converted to ES5 Class by @z3dev
+// Refactored by Vjeux <vjeuxx@gmail.com>
+// http://blog.vjeux.com/2010/javascript/javascript-binary-reader.html
+
+// Original
+// + Jonas Raoni Soares Silva
+// @ http://jsfromhell.com/classes/binary-deserializer [rev. #1]
+
+class BinaryReader {
+  /*
+   * Construct a BinaryReader from the given data.
+   * The data is a string created from the specified sequence of UTF-16 code units.
+   * See String.fromCharCode()
+   * See _readByte() below
+   */
+  constructor (data) {
+    this._buffer = data
+    this._pos = 0
+  }
+
+  /* Public */
+  readInt8 () { return this._decodeInt(8, true) }
+  readUInt8 () { return this._decodeInt(8, false) }
+  readInt16 () { return this._decodeInt(16, true) }
+  readUInt16 () { return this._decodeInt(16, false) }
+  readInt32 () { return this._decodeInt(32, true) }
+  readUInt32 () { return this._decodeInt(32, false) }
+
+  readFloat () { return this._decodeFloat(23, 8) }
+  readDouble () { return this._decodeFloat(52, 11) }
+
+  readChar () { return this.readString(1) }
+  readString (length) {
+    this._checkSize(length * 8)
+    const result = this._buffer.substr(this._pos, length)
+    this._pos += length
+    return result
+  }
+
+  seek (pos) {
+    this._pos = pos
+    this._checkSize(0)
+  }
+
+  getPosition () {
+    return this._pos
+  }
+
+  getSize () {
+    return this._buffer.length
+  }
+
+  /* Private */
+  _decodeFloat (precisionBits, exponentBits) {
+    const length = precisionBits + exponentBits + 1
+    const size = length >> 3
+    this._checkSize(length)
+
+    const bias = Math.pow(2, exponentBits - 1) - 1
+    const signal = this._readBits(precisionBits + exponentBits, 1, size)
+    const exponent = this._readBits(precisionBits, exponentBits, size)
+    let significand = 0
+    let divisor = 2
+    let curByte = 0 // length + (-precisionBits >> 3) - 1;
+    let startBit = 0
+    do {
+      const byteValue = this._readByte(++curByte, size)
+      startBit = precisionBits % 8 || 8
+      let mask = 1 << startBit
+      while ((mask >>= 1)) {
+        if (byteValue & mask) {
+          significand += 1 / divisor
+        }
+        divisor *= 2
+      }
+    } while ((precisionBits -= startBit))
+
+    this._pos += size
+
+    return exponent === (bias << 1) + 1 ? significand ? NaN : signal ? -Infinity : +Infinity
+      : (1 + signal * -2) * (exponent || significand ? !exponent ? Math.pow(2, -bias + 1) * significand
+          : Math.pow(2, exponent - bias) * (1 + significand) : 0)
+  }
+
+  _decodeInt (bits, signed) {
+    const x = this._readBits(0, bits, bits / 8)
+    const max = Math.pow(2, bits)
+    const result = signed && x >= max / 2 ? x - max : x
+
+    this._pos += bits / 8
+    return result
+  }
+
+  // shl fix: Henri Torgemane ~1996 (compressed by Jonas Raoni)
+  _shl (a, b) {
+    for (++b; --b; a = ((a %= 0x7fffffff + 1) & 0x40000000) === 0x40000000 ? a * 2 : (a - 0x40000000) * 2 + 0x7fffffff + 1);
+    return a
+  }
+
+  _readByte (i, size) {
+    return this._buffer.charCodeAt(this._pos + size - i - 1) & 0xff
+  }
+
+  _readBits (start, length, size) {
+    const offsetLeft = (start + length) % 8
+    const offsetRight = start % 8
+    const curByte = size - (start >> 3) - 1
+    let lastByte = size + (-(start + length) >> 3)
+    let diff = curByte - lastByte
+
+    let sum = (this._readByte(curByte, size) >> offsetRight) & ((1 << (diff ? 8 - offsetRight : length)) - 1)
+
+    if (diff && offsetLeft) {
+      sum += (this._readByte(lastByte++, size) & ((1 << offsetLeft) - 1)) << (diff-- << 3) - offsetRight
+    }
+
+    while (diff) {
+      sum += this._shl(this._readByte(lastByte++, size), (diff-- << 3) - offsetRight)
+    }
+
+    return sum
+  }
+
+  _checkSize (neededBits) {
+    if (!(this._pos + Math.ceil(neededBits / 8) < this._buffer.length)) {
+      // throw new Error("Index out of bound");
+    }
+  }
+}
+
+module.exports = BinaryReader
+
+},{}],416:[function(require,module,exports){
+(function (Buffer){
+/*
+ * Blob.js
+ *
+ * Node and Browserify Compatible
+ *
+ * Copyright (c) 2015 by Z3 Dev (@zdev/www.z3dev.jp)
+ * License: MIT License
+ *
+ * This implementation uses the Buffer class for all storage.
+ * See https://nodejs.org/api/buffer.html
+ *
+ * URL.createObjectURL(blob)
+ *
+ * History:
+ * 2020/10/07: converted to class
+ * 2015/07/02: contributed to OpenJSCAD.org CLI openjscad
+ */
+
+/**
+ * The Blob object represents a blob, which is a file-like object of immutable, raw data; they can be read as text or binary data.
+ * @see https://developer.mozilla.org/en-US/docs/Web/API/Blob
+ */
+class Blob {
+  /**
+   * Returns a newly created Blob object which contains a concatenation of all of the data in the given contents.
+   * @param {Array} contents - an array of ArrayBuffer, or String objects that will be put inside the Blob.
+   */
+  constructor (contents, options) {
+    // make the optional options non-optional
+    options = options || {}
+    // the size of the byte sequence in number of bytes
+    this.size = 0 // contents, not allocation
+    // the media type, as an ASCII-encoded string in lower case, and parsable as a MIME type
+    this.type = ''
+    // readability state (CLOSED: true, OPENED: false)
+    this.isClosed = false
+    // encoding of given strings
+    this.encoding = 'utf8'
+    // storage
+    this.buffer = null
+    this.length = 0 // allocation, not contents
+
+    if (!contents) return
+    if (!Array.isArray(contents)) return
+
+    // Find content length
+    contents.forEach((content) => {
+      if (typeof (content) === 'string') {
+        this.length += content.length
+      } else if (content instanceof ArrayBuffer) {
+        this.length += content.byteLength
+      }
+    })
+
+    // process options if any
+    if (options.type) {
+      // TBD if type contains any chars outside range U+0020 to U+007E, then set type to the empty string
+      // Convert every character in type to lowercase
+      this.type = options.type.toLowerCase()
+    }
+    if (options.endings) {
+      // convert the EOL on strings
+    }
+    if (options.encoding) {
+      this.encoding = options.encoding.toLowerCase()
+    }
+    if (options.length) {
+      this.length = options.length
+    }
+
+    let wbytes
+    let object
+    // convert the contents (String, ArrayBufferView, ArrayBuffer, Blob)
+    // MAX_LENGTH : 2147483647
+    this.buffer = Buffer.allocUnsafe(this.length) // new Buffer(this.length)
+    for (let index = 0; index < contents.length; index++) {
+      switch (typeof (contents[index])) {
+        case 'string':
+          wbytes = this.buffer.write(contents[index], this.size, this.encoding)
+          this.size = this.size + wbytes
+          break
+        case 'object':
+          object = contents[index] // this should be a reference to an object
+          // FIXME if (Buffer.isBuffer(object)) { }
+          if (object instanceof ArrayBuffer) {
+            const view = new DataView(object)
+            for (let bindex = 0; bindex < object.byteLength; bindex++) {
+              const xbyte = view.getUint8(bindex)
+              wbytes = this.buffer.writeUInt8(xbyte, this.size, false)
+              this.size++
+            }
+          }
+          break
+        default:
+          break
+      }
+    }
+  }
+
+  asBuffer () {
+    // return a deep copy as blobs are written to files with full length, not size
+    return this.buffer.slice(0, this.size)
+  }
+
+  arrayBuffer () {
+    return this.buffer.slice(0, this.size)
+  }
+
+  slice (start, end, type) {
+    start = start || 0
+    end = end || this.size
+    type = type || ''
+    // TODO
+    return new Blob()
+  }
+
+  stream () {
+    // TODO
+    return null
+  }
+
+  text () {
+    // TODO
+    return ''
+  }
+
+  close () {
+    // if state of context objext is already CLOSED then return
+    if (this.isClosed) return
+    // set the readbility state of the context object to CLOSED and remove storage
+    this.isClosed = true
+  }
+
+  toString () {
+    // TODO
+    return ''
+  }
+}
+
+module.exports = Blob
+
+}).call(this,require("buffer").Buffer)
+},{"buffer":831}],417:[function(require,module,exports){
+const makeBlob = require('./makeBlob')
+
+const Blob = makeBlob()
+
+/**
+ * Convert the given input into a BLOB of data for export.
+ * @param {Object} input - input object to convert
+ * @param {Array} input.data - array of data to be inserted into the blob, either String or ArrayBuffer
+ * @param {String} input.mimeType - mime type of the data to be inserted
+ * @return {Blob} a new Blob
+ * @alias module:io/utils.convertToBlob
+ * @example
+ * const blob1 = convertToBlob({ data: ['test'], mimeType: 'text/plain' })
+ * const blob2 = convertToBlob({ data: [Int32Array.from('12345').buffer], mimeType: 'application/mine' })
+ */
+const convertToBlob = (input) => {
+  const { data, mimeType } = input
+  const blob = new Blob(data, { type: mimeType })
+  return blob
+}
+
+module.exports = convertToBlob
+
+},{"./makeBlob":419}],418:[function(require,module,exports){
+/**
+ * Utility functions of various sorts in support of IO packages.
+ * @module io/utils
+ * @example
+ * const { BinaryReader } = require('@jscad/io-utils')
+ */
+module.exports = {
+  convertToBlob: require('./convertToBlob'),
+  makeBlob: require('./makeBlob'),
+  BinaryReader: require('./BinaryReader'),
+  Blob: require('./Blob')
+}
+
+},{"./BinaryReader":415,"./Blob":416,"./convertToBlob":417,"./makeBlob":419}],419:[function(require,module,exports){
+const nodeBlob = require('./Blob.js')
+
+/**
+ * Make a constructor for Blob objects.
+ * @return {Function} constructor of Blob objects
+ * @alias module:io/utils.makeBlob
+ * @example
+ * const Blob = makeBlob()
+ * const ablob = new Blob(data, { type: mimeType })
+ */
+const makeBlob = () => {
+  const blob = typeof window !== 'undefined' ? window.Blob : nodeBlob
+  return blob
+}
+
+module.exports = makeBlob
+
+},{"./Blob.js":416}],420:[function(require,module,exports){
+arguments[4][14][0].apply(exports,arguments)
+},{"./cssColors":422,"dup":14}],421:[function(require,module,exports){
+arguments[4][15][0].apply(exports,arguments)
+},{"../geometries/geom2":444,"../geometries/geom3":460,"../geometries/path2":481,"../geometries/poly3":498,"../utils/flatten":817,"dup":15}],422:[function(require,module,exports){
+arguments[4][16][0].apply(exports,arguments)
+},{"dup":16}],423:[function(require,module,exports){
+arguments[4][17][0].apply(exports,arguments)
+},{"dup":17}],424:[function(require,module,exports){
+arguments[4][18][0].apply(exports,arguments)
+},{"../utils/flatten":817,"./hueToColorComponent":426,"dup":18}],425:[function(require,module,exports){
+arguments[4][19][0].apply(exports,arguments)
+},{"../utils/flatten":817,"dup":19}],426:[function(require,module,exports){
+arguments[4][20][0].apply(exports,arguments)
+},{"dup":20}],427:[function(require,module,exports){
+arguments[4][21][0].apply(exports,arguments)
+},{"./colorNameToRgb":420,"./colorize":421,"./cssColors":422,"./hexToRgb":423,"./hslToRgb":424,"./hsvToRgb":425,"./hueToColorComponent":426,"./rgbToHex":428,"./rgbToHsl":429,"./rgbToHsv":430,"dup":21}],428:[function(require,module,exports){
+arguments[4][22][0].apply(exports,arguments)
+},{"../utils/flatten":817,"dup":22}],429:[function(require,module,exports){
+arguments[4][23][0].apply(exports,arguments)
+},{"../utils/flatten":817,"dup":23}],430:[function(require,module,exports){
+arguments[4][24][0].apply(exports,arguments)
+},{"../utils/flatten":817,"dup":24}],431:[function(require,module,exports){
+arguments[4][25][0].apply(exports,arguments)
+},{"./lengths":435,"dup":25}],432:[function(require,module,exports){
+arguments[4][26][0].apply(exports,arguments)
+},{"dup":26}],433:[function(require,module,exports){
+arguments[4][27][0].apply(exports,arguments)
+},{"./arcLengthToT":431,"./create":432,"./length":434,"./lengths":435,"./tangentAt":436,"./valueAt":437,"dup":27}],434:[function(require,module,exports){
+arguments[4][28][0].apply(exports,arguments)
+},{"./lengths":435,"dup":28}],435:[function(require,module,exports){
+arguments[4][29][0].apply(exports,arguments)
+},{"./valueAt":437,"dup":29}],436:[function(require,module,exports){
+arguments[4][30][0].apply(exports,arguments)
+},{"dup":30}],437:[function(require,module,exports){
+arguments[4][31][0].apply(exports,arguments)
+},{"dup":31}],438:[function(require,module,exports){
+arguments[4][32][0].apply(exports,arguments)
+},{"./bezier":433,"dup":32}],439:[function(require,module,exports){
+arguments[4][33][0].apply(exports,arguments)
+},{"../../maths/mat4":562,"../../maths/vec2":610,"dup":33}],440:[function(require,module,exports){
+arguments[4][34][0].apply(exports,arguments)
+},{"dup":34}],441:[function(require,module,exports){
+arguments[4][35][0].apply(exports,arguments)
+},{"../../maths/mat4":562,"dup":35}],442:[function(require,module,exports){
+arguments[4][36][0].apply(exports,arguments)
+},{"../../maths/mat4":562,"../../maths/vec2":610,"./create":441,"dup":36}],443:[function(require,module,exports){
+arguments[4][37][0].apply(exports,arguments)
+},{"../../maths/vec2":610,"./create":441,"dup":37}],444:[function(require,module,exports){
+arguments[4][38][0].apply(exports,arguments)
+},{"./clone":440,"./create":441,"./fromCompactBinary":442,"./fromPoints":443,"./isA":445,"./reverse":446,"./toCompactBinary":447,"./toOutlines":448,"./toPoints":449,"./toSides":450,"./toString":451,"./transform":452,"./validate":453,"dup":38}],445:[function(require,module,exports){
+arguments[4][39][0].apply(exports,arguments)
+},{"dup":39}],446:[function(require,module,exports){
+arguments[4][40][0].apply(exports,arguments)
+},{"./create":441,"./toSides":450,"dup":40}],447:[function(require,module,exports){
+arguments[4][41][0].apply(exports,arguments)
+},{"dup":41}],448:[function(require,module,exports){
+arguments[4][42][0].apply(exports,arguments)
+},{"../../maths/vec2":610,"./toSides":450,"dup":42}],449:[function(require,module,exports){
+arguments[4][43][0].apply(exports,arguments)
+},{"./toSides":450,"dup":43}],450:[function(require,module,exports){
+arguments[4][44][0].apply(exports,arguments)
+},{"./applyTransforms":439,"dup":44}],451:[function(require,module,exports){
+arguments[4][45][0].apply(exports,arguments)
+},{"../../maths/vec2":610,"./toSides":450,"dup":45}],452:[function(require,module,exports){
+const mat4 = require('../../maths/mat4')
+
+const reverse = require('./reverse.js')
+
+/**
+ * Transform the given geometry using the given matrix.
+ * This is a lazy transform of the sides, as this function only adjusts the transforms.
+ * The transforms are applied when accessing the sides via toSides().
+ * @param {mat4} matrix - the matrix to transform with
+ * @param {geom2} geometry - the geometry to transform
+ * @returns {geom2} a new geometry
+ * @alias module:modeling/geometries/geom2.transform
+ *
+ * @example
+ * let newgeometry = transform(fromZRotation(degToRad(90)), geometry)
+ */
+const transform = (matrix, geometry) => {
+  const transforms = mat4.multiply(mat4.create(), matrix, geometry.transforms)
+  const transformed = Object.assign({}, geometry, { transforms })
+  // determine if the transform is mirroring in 2D
+  if (matrix[0] * matrix[5] - matrix[4] * matrix[1] < 0) {
+    // reverse the order to preserve the orientation
+    return reverse(transformed)
+  }
+  return transformed
+}
+
+module.exports = transform
+
+},{"../../maths/mat4":562,"./reverse.js":446}],453:[function(require,module,exports){
+arguments[4][47][0].apply(exports,arguments)
+},{"../../maths/vec2":610,"./isA":445,"./toOutlines":448,"dup":47}],454:[function(require,module,exports){
+arguments[4][48][0].apply(exports,arguments)
+},{"../../maths/mat4":562,"../poly3":498,"dup":48}],455:[function(require,module,exports){
+arguments[4][49][0].apply(exports,arguments)
+},{"dup":49}],456:[function(require,module,exports){
+arguments[4][50][0].apply(exports,arguments)
+},{"../../maths/mat4":562,"dup":50}],457:[function(require,module,exports){
+arguments[4][51][0].apply(exports,arguments)
+},{"../../maths/mat4":562,"../../maths/vec3":641,"../poly3":498,"./create":456,"dup":51}],458:[function(require,module,exports){
+arguments[4][52][0].apply(exports,arguments)
+},{"../poly3":498,"./create":456,"dup":52}],459:[function(require,module,exports){
+const quickhull = require('../../operations/hulls/quickhull')
+const create = require('./create')
+const poly3 = require('../poly3')
+
+/**
+ * Construct a new convex 3D geometry from a list of unique points.
+ * @param {Array} uniquePoints - list of points to construct convex 3D geometry
+ * @returns {geom3} a new geometry
+ * @alias module:modeling/geometries/geom3.fromPointsConvex
+ */
+const fromPointsConvex = (uniquePoints) => {
+  if (!Array.isArray(uniquePoints)) {
+    throw new Error('the given points must be an array')
+  }
+
+  const faces = quickhull(uniquePoints, { skipTriangulation: true })
+
+  const polygons = faces.map((face) => {
+    const vertices = face.map((index) => uniquePoints[index])
+    return poly3.create(vertices)
+  })
+
+  return create(polygons)
+}
+
+module.exports = fromPointsConvex
+
+},{"../../operations/hulls/quickhull":767,"../poly3":498,"./create":456}],460:[function(require,module,exports){
+/**
+ * Represents a 3D geometry consisting of a list of polygons.
+ * @see {@link geom3} for data structure information.
+ * @module modeling/geometries/geom3
+ *
+ * @example
+ * colorize([0,0.5,1,0.6], cube()) // transparent ice cube
+ *
+ * @example
+ * {
+ *   "polygons": [
+ *     {"vertices": [[-1,-1,-1], [-1,-1,1], [-1,1,1], [-1,1,-1]]},
+ *     {"vertices": [[1,-1,-1], [1,1,-1], [1,1,1], [1,-1,1]]},
+ *     {"vertices": [[-1,-1,-1], [1,-1,-1], [1,-1,1], [-1,-1,1]]},
+ *     {"vertices": [[-1,1,-1], [-1,1,1], [1,1,1], [1,1,-1]]},
+ *     {"vertices": [[-1,-1,-1], [-1,1,-1], [1,1,-1], [1,-1,-1]]},
+ *     {"vertices": [[-1,-1,1], [1,-1,1], [1,1,1], [-1,1,1]]}
+ *   ],
+ *   "transforms": [1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1],
+ *   "color": [0,0.5,1,0.6]
+ * }
+ */
+module.exports = {
+  clone: require('./clone'),
+  create: require('./create'),
+  fromPointsConvex: require('./fromPointsConvex'),
+  fromPoints: require('./fromPoints'),
+  fromCompactBinary: require('./fromCompactBinary'),
+  invert: require('./invert'),
+  isA: require('./isA'),
+  toPoints: require('./toPoints'),
+  toPolygons: require('./toPolygons'),
+  toString: require('./toString'),
+  toCompactBinary: require('./toCompactBinary'),
+  transform: require('./transform'),
+  validate: require('./validate')
+}
+
+},{"./clone":455,"./create":456,"./fromCompactBinary":457,"./fromPoints":458,"./fromPointsConvex":459,"./invert":461,"./isA":462,"./toCompactBinary":463,"./toPoints":464,"./toPolygons":465,"./toString":466,"./transform":467,"./validate":468}],461:[function(require,module,exports){
+arguments[4][54][0].apply(exports,arguments)
+},{"../poly3":498,"./create":456,"./toPolygons":465,"dup":54}],462:[function(require,module,exports){
+arguments[4][55][0].apply(exports,arguments)
+},{"dup":55}],463:[function(require,module,exports){
+arguments[4][56][0].apply(exports,arguments)
+},{"../poly3":498,"dup":56}],464:[function(require,module,exports){
+arguments[4][57][0].apply(exports,arguments)
+},{"../poly3":498,"./toPolygons":465,"dup":57}],465:[function(require,module,exports){
+arguments[4][58][0].apply(exports,arguments)
+},{"./applyTransforms":454,"dup":58}],466:[function(require,module,exports){
+arguments[4][59][0].apply(exports,arguments)
+},{"../poly3":498,"./toPolygons":465,"dup":59}],467:[function(require,module,exports){
+arguments[4][60][0].apply(exports,arguments)
+},{"../../maths/mat4":562,"dup":60}],468:[function(require,module,exports){
+arguments[4][61][0].apply(exports,arguments)
+},{"../poly3":498,"./isA":462,"dup":61}],469:[function(require,module,exports){
+arguments[4][62][0].apply(exports,arguments)
+},{"./geom2":444,"./geom3":460,"./path2":481,"./poly2":492,"./poly3":498,"dup":62}],470:[function(require,module,exports){
+arguments[4][63][0].apply(exports,arguments)
+},{"../../maths/constants":513,"../../maths/vec2":610,"./fromPoints":480,"./toPoints":485,"dup":63}],471:[function(require,module,exports){
+arguments[4][64][0].apply(exports,arguments)
+},{"../../maths/constants":513,"../../maths/vec2":610,"./appendPoints":472,"./toPoints":485,"dup":64}],472:[function(require,module,exports){
+arguments[4][65][0].apply(exports,arguments)
+},{"./concat":476,"./create":477,"dup":65}],473:[function(require,module,exports){
+arguments[4][66][0].apply(exports,arguments)
+},{"../../maths/mat4":562,"../../maths/vec2":610,"dup":66}],474:[function(require,module,exports){
+arguments[4][67][0].apply(exports,arguments)
+},{"dup":67}],475:[function(require,module,exports){
+arguments[4][68][0].apply(exports,arguments)
+},{"../../maths/constants":513,"../../maths/vec2":610,"./clone":474,"dup":68}],476:[function(require,module,exports){
+arguments[4][69][0].apply(exports,arguments)
+},{"../../maths/vec2":610,"./fromPoints":480,"./toPoints":485,"dup":69}],477:[function(require,module,exports){
+arguments[4][70][0].apply(exports,arguments)
+},{"../../maths/mat4":562,"dup":70}],478:[function(require,module,exports){
+arguments[4][71][0].apply(exports,arguments)
+},{"../../maths/vec2":610,"./toPoints":485,"dup":71}],479:[function(require,module,exports){
+arguments[4][72][0].apply(exports,arguments)
+},{"../../maths/mat4":562,"../../maths/vec2":610,"./create":477,"dup":72}],480:[function(require,module,exports){
+arguments[4][73][0].apply(exports,arguments)
+},{"../../maths/constants":513,"../../maths/vec2":610,"./close":475,"./create":477,"dup":73}],481:[function(require,module,exports){
+arguments[4][74][0].apply(exports,arguments)
+},{"./appendArc":470,"./appendBezier":471,"./appendPoints":472,"./clone":474,"./close":475,"./concat":476,"./create":477,"./equals":478,"./fromCompactBinary":479,"./fromPoints":480,"./isA":482,"./reverse":483,"./toCompactBinary":484,"./toPoints":485,"./toString":486,"./transform":487,"./validate":488,"dup":74}],482:[function(require,module,exports){
+arguments[4][75][0].apply(exports,arguments)
+},{"dup":75}],483:[function(require,module,exports){
+arguments[4][76][0].apply(exports,arguments)
+},{"./clone":474,"dup":76}],484:[function(require,module,exports){
+arguments[4][77][0].apply(exports,arguments)
+},{"dup":77}],485:[function(require,module,exports){
+arguments[4][78][0].apply(exports,arguments)
+},{"./applyTransforms":473,"dup":78}],486:[function(require,module,exports){
+arguments[4][79][0].apply(exports,arguments)
+},{"../../maths/vec2":610,"./toPoints":485,"dup":79}],487:[function(require,module,exports){
+arguments[4][80][0].apply(exports,arguments)
+},{"../../maths/mat4":562,"dup":80}],488:[function(require,module,exports){
+arguments[4][81][0].apply(exports,arguments)
+},{"../../maths/vec2":610,"./isA":482,"dup":81}],489:[function(require,module,exports){
+arguments[4][82][0].apply(exports,arguments)
+},{"./flip":491,"./measureArea":493,"dup":82}],490:[function(require,module,exports){
+arguments[4][83][0].apply(exports,arguments)
+},{"dup":83}],491:[function(require,module,exports){
+arguments[4][84][0].apply(exports,arguments)
+},{"./create":490,"dup":84}],492:[function(require,module,exports){
+arguments[4][85][0].apply(exports,arguments)
+},{"./arePointsInside":489,"./create":490,"./flip":491,"./measureArea":493,"dup":85}],493:[function(require,module,exports){
+arguments[4][86][0].apply(exports,arguments)
+},{"../../maths/utils/area":587,"dup":86}],494:[function(require,module,exports){
+arguments[4][87][0].apply(exports,arguments)
+},{"../../maths/vec3":641,"./create":495,"dup":87}],495:[function(require,module,exports){
+arguments[4][88][0].apply(exports,arguments)
+},{"dup":88}],496:[function(require,module,exports){
+arguments[4][89][0].apply(exports,arguments)
+},{"../../maths/vec3":641,"./create":495,"dup":89}],497:[function(require,module,exports){
+arguments[4][90][0].apply(exports,arguments)
+},{"./create":495,"dup":90}],498:[function(require,module,exports){
+arguments[4][91][0].apply(exports,arguments)
+},{"./clone":494,"./create":495,"./fromPoints":496,"./fromPointsAndPlane":497,"./invert":499,"./isA":500,"./isConvex":501,"./measureArea":502,"./measureBoundingBox":503,"./measureBoundingSphere":504,"./measureSignedVolume":505,"./plane":506,"./toPoints":507,"./toString":508,"./transform":509,"./validate":510,"dup":91}],499:[function(require,module,exports){
+arguments[4][92][0].apply(exports,arguments)
+},{"../../maths/plane":582,"./create":495,"dup":92}],500:[function(require,module,exports){
+arguments[4][93][0].apply(exports,arguments)
+},{"dup":93}],501:[function(require,module,exports){
+arguments[4][94][0].apply(exports,arguments)
+},{"../../maths/plane":582,"../../maths/vec3":641,"dup":94}],502:[function(require,module,exports){
+arguments[4][95][0].apply(exports,arguments)
+},{"./plane":506,"dup":95}],503:[function(require,module,exports){
+arguments[4][96][0].apply(exports,arguments)
+},{"../../maths/vec3":641,"dup":96}],504:[function(require,module,exports){
+arguments[4][97][0].apply(exports,arguments)
+},{"../../maths/vec4":667,"dup":97}],505:[function(require,module,exports){
+arguments[4][98][0].apply(exports,arguments)
+},{"../../maths/vec3":641,"dup":98}],506:[function(require,module,exports){
+arguments[4][99][0].apply(exports,arguments)
+},{"../../maths/plane/":582,"dup":99}],507:[function(require,module,exports){
+arguments[4][100][0].apply(exports,arguments)
+},{"dup":100}],508:[function(require,module,exports){
+arguments[4][101][0].apply(exports,arguments)
+},{"../../maths/vec3/":641,"dup":101}],509:[function(require,module,exports){
+arguments[4][102][0].apply(exports,arguments)
+},{"../../maths/mat4":562,"../../maths/vec3":641,"./create":495,"dup":102}],510:[function(require,module,exports){
+arguments[4][103][0].apply(exports,arguments)
+},{"../../maths/constants":513,"../../maths/plane/signedDistanceToPoint":584,"../../maths/vec3":641,"./isA":500,"./isConvex":501,"./measureArea":502,"./plane":506,"dup":103}],511:[function(require,module,exports){
+arguments[4][104][0].apply(exports,arguments)
+},{"./colors":427,"./curves":438,"./geometries":469,"./maths":514,"./measurements":671,"./operations/booleans":685,"./operations/expansions":714,"./operations/extrusions":737,"./operations/hulls":760,"./operations/modifiers":771,"./operations/transforms":781,"./primitives":797,"./text":811,"./utils":819,"dup":104}],512:[function(require,module,exports){
+arguments[4][105][0].apply(exports,arguments)
+},{"./mat4":562,"./vec2":610,"./vec3":641,"dup":105}],513:[function(require,module,exports){
+arguments[4][106][0].apply(exports,arguments)
+},{"dup":106}],514:[function(require,module,exports){
+arguments[4][107][0].apply(exports,arguments)
+},{"./constants":513,"./line2":524,"./line3":541,"./mat4":562,"./plane":582,"./utils":588,"./vec2":610,"./vec3":641,"./vec4":667,"dup":107}],515:[function(require,module,exports){
+arguments[4][108][0].apply(exports,arguments)
+},{"./create":518,"dup":108}],516:[function(require,module,exports){
+arguments[4][109][0].apply(exports,arguments)
+},{"../vec2":610,"./direction":519,"./origin":526,"dup":109}],517:[function(require,module,exports){
+arguments[4][110][0].apply(exports,arguments)
+},{"dup":110}],518:[function(require,module,exports){
+arguments[4][111][0].apply(exports,arguments)
+},{"dup":111}],519:[function(require,module,exports){
+arguments[4][112][0].apply(exports,arguments)
+},{"../vec2":610,"dup":112}],520:[function(require,module,exports){
+arguments[4][113][0].apply(exports,arguments)
+},{"../vec2":610,"dup":113}],521:[function(require,module,exports){
+arguments[4][114][0].apply(exports,arguments)
+},{"dup":114}],522:[function(require,module,exports){
+arguments[4][115][0].apply(exports,arguments)
+},{"../vec2":610,"dup":115}],523:[function(require,module,exports){
+arguments[4][116][0].apply(exports,arguments)
+},{"./create":518,"dup":116}],524:[function(require,module,exports){
+arguments[4][117][0].apply(exports,arguments)
+},{"./clone":515,"./closestPoint":516,"./copy":517,"./create":518,"./direction":519,"./distanceToPoint":520,"./equals":521,"./fromPoints":522,"./fromValues":523,"./intersectPointOfLines":525,"./origin":526,"./reverse":527,"./toString":528,"./transform":529,"./xAtY":530,"dup":117}],525:[function(require,module,exports){
+arguments[4][118][0].apply(exports,arguments)
+},{"../utils":588,"../vec2":610,"dup":118}],526:[function(require,module,exports){
+arguments[4][119][0].apply(exports,arguments)
+},{"../vec2":610,"dup":119}],527:[function(require,module,exports){
+arguments[4][120][0].apply(exports,arguments)
+},{"../vec2":610,"./copy":517,"./fromValues":523,"dup":120}],528:[function(require,module,exports){
+arguments[4][121][0].apply(exports,arguments)
+},{"dup":121}],529:[function(require,module,exports){
+arguments[4][122][0].apply(exports,arguments)
+},{"../vec2":610,"./direction":519,"./fromPoints":522,"./origin":526,"dup":122}],530:[function(require,module,exports){
+arguments[4][123][0].apply(exports,arguments)
+},{"./origin":526,"dup":123}],531:[function(require,module,exports){
+arguments[4][124][0].apply(exports,arguments)
+},{"../vec3":641,"./create":534,"dup":124}],532:[function(require,module,exports){
+arguments[4][125][0].apply(exports,arguments)
+},{"../vec3":641,"dup":125}],533:[function(require,module,exports){
+arguments[4][126][0].apply(exports,arguments)
+},{"../vec3":641,"dup":126}],534:[function(require,module,exports){
+arguments[4][127][0].apply(exports,arguments)
+},{"../vec3":641,"dup":127}],535:[function(require,module,exports){
+arguments[4][128][0].apply(exports,arguments)
+},{"dup":128}],536:[function(require,module,exports){
+arguments[4][129][0].apply(exports,arguments)
+},{"../vec3":641,"./closestPoint":532,"dup":129}],537:[function(require,module,exports){
+arguments[4][130][0].apply(exports,arguments)
+},{"../vec3":641,"dup":130}],538:[function(require,module,exports){
+arguments[4][131][0].apply(exports,arguments)
+},{"../constants":513,"../utils":588,"../vec3":641,"./fromPointAndDirection":539,"dup":131}],539:[function(require,module,exports){
+arguments[4][132][0].apply(exports,arguments)
+},{"../vec3":641,"dup":132}],540:[function(require,module,exports){
+arguments[4][133][0].apply(exports,arguments)
+},{"../vec3":641,"./fromPointAndDirection":539,"dup":133}],541:[function(require,module,exports){
+arguments[4][134][0].apply(exports,arguments)
+},{"./clone":531,"./closestPoint":532,"./copy":533,"./create":534,"./direction":535,"./distanceToPoint":536,"./equals":537,"./fromPlanes":538,"./fromPointAndDirection":539,"./fromPoints":540,"./intersectPointOfLineAndPlane":542,"./origin":543,"./reverse":544,"./toString":545,"./transform":546,"dup":134}],542:[function(require,module,exports){
+arguments[4][135][0].apply(exports,arguments)
+},{"../vec3":641,"dup":135}],543:[function(require,module,exports){
+arguments[4][136][0].apply(exports,arguments)
+},{"dup":136}],544:[function(require,module,exports){
+arguments[4][137][0].apply(exports,arguments)
+},{"../vec3":641,"./fromPointAndDirection":539,"dup":137}],545:[function(require,module,exports){
+arguments[4][138][0].apply(exports,arguments)
+},{"dup":138}],546:[function(require,module,exports){
+arguments[4][139][0].apply(exports,arguments)
+},{"../vec3":641,"./fromPointAndDirection":539,"dup":139}],547:[function(require,module,exports){
+arguments[4][140][0].apply(exports,arguments)
+},{"dup":140}],548:[function(require,module,exports){
+arguments[4][141][0].apply(exports,arguments)
+},{"./create":550,"dup":141}],549:[function(require,module,exports){
+arguments[4][142][0].apply(exports,arguments)
+},{"dup":142}],550:[function(require,module,exports){
+arguments[4][143][0].apply(exports,arguments)
+},{"dup":143}],551:[function(require,module,exports){
+arguments[4][144][0].apply(exports,arguments)
+},{"dup":144}],552:[function(require,module,exports){
+arguments[4][145][0].apply(exports,arguments)
+},{"../constants":513,"../utils/trigonometry":592,"./identity":561,"dup":145}],553:[function(require,module,exports){
+arguments[4][146][0].apply(exports,arguments)
+},{"dup":146}],554:[function(require,module,exports){
+arguments[4][147][0].apply(exports,arguments)
+},{"../utils/trigonometry":592,"dup":147}],555:[function(require,module,exports){
+arguments[4][148][0].apply(exports,arguments)
+},{"dup":148}],556:[function(require,module,exports){
+arguments[4][149][0].apply(exports,arguments)
+},{"./create":550,"dup":149}],557:[function(require,module,exports){
+arguments[4][150][0].apply(exports,arguments)
+},{"../vec3":641,"./fromRotation":552,"dup":150}],558:[function(require,module,exports){
+arguments[4][151][0].apply(exports,arguments)
+},{"../utils/trigonometry":592,"dup":151}],559:[function(require,module,exports){
+arguments[4][152][0].apply(exports,arguments)
+},{"../utils/trigonometry":592,"dup":152}],560:[function(require,module,exports){
+arguments[4][153][0].apply(exports,arguments)
+},{"../utils/trigonometry":592,"dup":153}],561:[function(require,module,exports){
+arguments[4][154][0].apply(exports,arguments)
+},{"dup":154}],562:[function(require,module,exports){
+arguments[4][155][0].apply(exports,arguments)
+},{"./add":547,"./clone":548,"./copy":549,"./create":550,"./equals":551,"./fromRotation":552,"./fromScaling":553,"./fromTaitBryanRotation":554,"./fromTranslation":555,"./fromValues":556,"./fromVectorRotation":557,"./fromXRotation":558,"./fromYRotation":559,"./fromZRotation":560,"./identity":561,"./invert":563,"./isIdentity":564,"./isMirroring":565,"./isOnlyTransformScale":566,"./mirrorByPlane":567,"./multiply":568,"./rotate":569,"./rotateX":570,"./rotateY":571,"./rotateZ":572,"./scale":573,"./subtract":574,"./toString":575,"./translate":576,"dup":155}],563:[function(require,module,exports){
+arguments[4][156][0].apply(exports,arguments)
+},{"dup":156}],564:[function(require,module,exports){
+arguments[4][157][0].apply(exports,arguments)
+},{"dup":157}],565:[function(require,module,exports){
+arguments[4][158][0].apply(exports,arguments)
+},{"dup":158}],566:[function(require,module,exports){
+arguments[4][159][0].apply(exports,arguments)
+},{"dup":159}],567:[function(require,module,exports){
+arguments[4][160][0].apply(exports,arguments)
+},{"dup":160}],568:[function(require,module,exports){
+arguments[4][161][0].apply(exports,arguments)
+},{"dup":161}],569:[function(require,module,exports){
+arguments[4][162][0].apply(exports,arguments)
+},{"../constants":513,"../utils/trigonometry":592,"./copy":549,"dup":162}],570:[function(require,module,exports){
+arguments[4][163][0].apply(exports,arguments)
+},{"../utils/trigonometry":592,"dup":163}],571:[function(require,module,exports){
+arguments[4][164][0].apply(exports,arguments)
+},{"../utils/trigonometry":592,"dup":164}],572:[function(require,module,exports){
+arguments[4][165][0].apply(exports,arguments)
+},{"../utils/trigonometry":592,"dup":165}],573:[function(require,module,exports){
+arguments[4][166][0].apply(exports,arguments)
+},{"dup":166}],574:[function(require,module,exports){
+arguments[4][167][0].apply(exports,arguments)
+},{"dup":167}],575:[function(require,module,exports){
+arguments[4][168][0].apply(exports,arguments)
+},{"dup":168}],576:[function(require,module,exports){
+arguments[4][169][0].apply(exports,arguments)
+},{"dup":169}],577:[function(require,module,exports){
+arguments[4][170][0].apply(exports,arguments)
+},{"dup":170}],578:[function(require,module,exports){
+const vec3 = require('../vec3')
+const fromNormalAndPoint = require('./fromNormalAndPoint')
+
+/**
+ * Create a best-fit plane from the given noisy vertices.
+ *
+ * NOTE: There are two possible orientations for every plane.
+ *       This function always produces positive orientations.
+ *
+ * See http://www.ilikebigbits.com for the original discussion
+ *
+ * @param {Plane} out - receiving plane
+ * @param {Array} vertices - list of vertices in any order or position
+ * @returns {Plane} out
+ * @alias module:modeling/maths/plane.fromNoisyPoints
+ */
+const fromNoisyPoints = (out, ...vertices) => {
+  out[0] = 0.0
+  out[1] = 0.0
+  out[2] = 0.0
+  out[3] = 0.0
+
+  // calculate the centroid of the vertices
+  // NOTE: out is the centriod
+  const n = vertices.length
+  vertices.forEach((v) => {
+    vec3.add(out, out, v)
+  })
+  vec3.scale(out, out, 1.0 / n)
+
+  // Calculate full 3x3 covariance matrix, excluding symmetries
+  let xx = 0.0
+  let xy = 0.0
+  let xz = 0.0
+  let yy = 0.0
+  let yz = 0.0
+  let zz = 0.0
+
+  const vn = vec3.create()
+  vertices.forEach((v) => {
+    // NOTE: out is the centriod
+    vec3.subtract(vn, v, out)
+    xx += vn[0] * vn[0]
+    xy += vn[0] * vn[1]
+    xz += vn[0] * vn[2]
+    yy += vn[1] * vn[1]
+    yz += vn[1] * vn[2]
+    zz += vn[2] * vn[2]
+  })
+
+  xx /= n
+  xy /= n
+  xz /= n
+  yy /= n
+  yz /= n
+  zz /= n
+
+  // Calculate the smallest Eigenvector of the covariance matrix
+  // which becomes the plane normal
+
+  vn[0] = 0.0
+  vn[1] = 0.0
+  vn[2] = 0.0
+
+  // weighted directional vector
+  const wdv = vec3.create()
+
+  // X axis
+  let det = yy * zz - yz * yz
+  wdv[0] = det
+  wdv[1] = xz * yz - xy * zz
+  wdv[2] = xy * yz - xz * yy
+
+  let weight = det * det
+  vec3.add(vn, vn, vec3.scale(wdv, wdv, weight))
+
+  // Y axis
+  det = xx * zz - xz * xz
+  wdv[0] = xz * yz - xy * zz
+  wdv[1] = det
+  wdv[2] = xy * xz - yz * xx
+
+  weight = det * det
+  if (vec3.dot(vn, wdv) < 0.0) {
+    weight = -weight
+  }
+  vec3.add(vn, vn, vec3.scale(wdv, wdv, weight))
+
+  // Z axis
+  det = xx * yy - xy * xy
+  wdv[0] = xy * yz - xz * yy
+  wdv[1] = xy * xz - yz * xx
+  wdv[2] = det
+
+  weight = det * det
+  if (vec3.dot(vn, wdv) < 0.0) {
+    weight = -weight
+  }
+  vec3.add(vn, vn, vec3.scale(wdv, wdv, weight))
+
+  // create the plane from normal and centriod
+  // NOTE: out is the centriod
+  return fromNormalAndPoint(out, vn, out)
+}
+
+module.exports = fromNoisyPoints
+
+},{"../vec3":641,"./fromNormalAndPoint":579}],579:[function(require,module,exports){
+arguments[4][171][0].apply(exports,arguments)
+},{"../vec3":641,"dup":171}],580:[function(require,module,exports){
+arguments[4][172][0].apply(exports,arguments)
+},{"../vec3":641,"dup":172}],581:[function(require,module,exports){
+arguments[4][173][0].apply(exports,arguments)
+},{"../constants":513,"../vec3":641,"dup":173}],582:[function(require,module,exports){
+/**
+ * Represents a plane in 3D coordinate space as determined by a normal (perpendicular to the plane)
+ * and distance from 0,0,0.
+ * @see {@link plane} for data structure information.
+ * @module modeling/maths/plane
+ */
+module.exports = {
+  /**
+   * @see [vec4.clone()]{@link module:modeling/maths/vec4.clone}
+   * @function clone
+   */
+  clone: require('../vec4/clone'),
+  /**
+   * @see [vec4.copy()]{@link module:modeling/maths/vec4.copy}
+   * @function copy
+   */
+  copy: require('../vec4/copy'),
+  /**
+   * @see [vec4.create()]{@link module:modeling/maths/vec4.create}
+   * @function create
+   */
+  create: require('../vec4/create'),
+  /**
+   * @see [vec4.equals()]{@link module:modeling/maths/vec4.equals}
+   * @function equals
+   */
+  equals: require('../vec4/equals'),
+  flip: require('./flip'),
+  fromNormalAndPoint: require('./fromNormalAndPoint'),
+  /**
+   * @see [vec4.fromValues()]{@link module:modeling/maths/vec4.fromValues}
+   * @function fromValues
+   */
+  fromValues: require('../vec4/fromValues'),
+  fromNoisyPoints: require('./fromNoisyPoints'),
+  fromPoints: require('./fromPoints'),
+  fromPointsRandom: require('./fromPointsRandom'),
+  projectionOfPoint: require('./projectionOfPoint'),
+  signedDistanceToPoint: require('./signedDistanceToPoint'),
+  /**
+   * @see [vec4.toString()]{@link module:modeling/maths/vec4.toString}
+   * @function toString
+   */
+  toString: require('../vec4/toString'),
+  transform: require('./transform')
+}
+
+},{"../vec4/clone":660,"../vec4/copy":661,"../vec4/create":662,"../vec4/equals":664,"../vec4/fromValues":666,"../vec4/toString":668,"./flip":577,"./fromNoisyPoints":578,"./fromNormalAndPoint":579,"./fromPoints":580,"./fromPointsRandom":581,"./projectionOfPoint":583,"./signedDistanceToPoint":584,"./transform":585}],583:[function(require,module,exports){
+arguments[4][175][0].apply(exports,arguments)
+},{"../vec3":641,"dup":175}],584:[function(require,module,exports){
+arguments[4][176][0].apply(exports,arguments)
+},{"../vec3":641,"dup":176}],585:[function(require,module,exports){
+arguments[4][177][0].apply(exports,arguments)
+},{"../mat4":562,"../vec3":641,"./flip":577,"./fromPoints":580,"dup":177}],586:[function(require,module,exports){
+arguments[4][178][0].apply(exports,arguments)
+},{"../constants":513,"dup":178}],587:[function(require,module,exports){
+arguments[4][179][0].apply(exports,arguments)
+},{"dup":179}],588:[function(require,module,exports){
+arguments[4][180][0].apply(exports,arguments)
+},{"./aboutEqualNormals":586,"./area":587,"./interpolateBetween2DPointsForY":589,"./intersect":590,"./solve2Linear":591,"./trigonometry":592,"dup":180}],589:[function(require,module,exports){
+arguments[4][181][0].apply(exports,arguments)
+},{"dup":181}],590:[function(require,module,exports){
+arguments[4][182][0].apply(exports,arguments)
+},{"dup":182}],591:[function(require,module,exports){
+arguments[4][183][0].apply(exports,arguments)
+},{"dup":183}],592:[function(require,module,exports){
+arguments[4][184][0].apply(exports,arguments)
+},{"../constants":513,"dup":184}],593:[function(require,module,exports){
+arguments[4][185][0].apply(exports,arguments)
+},{"dup":185}],594:[function(require,module,exports){
+arguments[4][186][0].apply(exports,arguments)
+},{"dup":186}],595:[function(require,module,exports){
+arguments[4][187][0].apply(exports,arguments)
+},{"./angleRadians":597,"dup":187}],596:[function(require,module,exports){
+arguments[4][188][0].apply(exports,arguments)
+},{"./angleRadians":597,"dup":188}],597:[function(require,module,exports){
+arguments[4][189][0].apply(exports,arguments)
+},{"dup":189}],598:[function(require,module,exports){
+arguments[4][190][0].apply(exports,arguments)
+},{"./create":600,"dup":190}],599:[function(require,module,exports){
+arguments[4][191][0].apply(exports,arguments)
+},{"dup":191}],600:[function(require,module,exports){
+arguments[4][192][0].apply(exports,arguments)
+},{"dup":192}],601:[function(require,module,exports){
+arguments[4][193][0].apply(exports,arguments)
+},{"dup":193}],602:[function(require,module,exports){
+arguments[4][194][0].apply(exports,arguments)
+},{"dup":194}],603:[function(require,module,exports){
+arguments[4][195][0].apply(exports,arguments)
+},{"dup":195}],604:[function(require,module,exports){
+arguments[4][196][0].apply(exports,arguments)
+},{"dup":196}],605:[function(require,module,exports){
+arguments[4][197][0].apply(exports,arguments)
+},{"dup":197}],606:[function(require,module,exports){
+arguments[4][198][0].apply(exports,arguments)
+},{"./fromAngleRadians":607,"dup":198}],607:[function(require,module,exports){
+arguments[4][199][0].apply(exports,arguments)
+},{"../utils/trigonometry":592,"dup":199}],608:[function(require,module,exports){
+arguments[4][200][0].apply(exports,arguments)
+},{"dup":200}],609:[function(require,module,exports){
+arguments[4][201][0].apply(exports,arguments)
+},{"./create":600,"dup":201}],610:[function(require,module,exports){
+arguments[4][202][0].apply(exports,arguments)
+},{"./abs":593,"./add":594,"./angle":595,"./angleDegrees":596,"./angleRadians":597,"./clone":598,"./copy":599,"./create":600,"./cross":601,"./distance":602,"./divide":603,"./dot":604,"./equals":605,"./fromAngleDegrees":606,"./fromAngleRadians":607,"./fromScalar":608,"./fromValues":609,"./length":611,"./lerp":612,"./max":613,"./min":614,"./multiply":615,"./negate":616,"./normal":617,"./normalize":618,"./rotate":619,"./scale":620,"./snap":621,"./squaredDistance":622,"./squaredLength":623,"./subtract":624,"./toString":625,"./transform":626,"dup":202}],611:[function(require,module,exports){
+arguments[4][203][0].apply(exports,arguments)
+},{"dup":203}],612:[function(require,module,exports){
+arguments[4][204][0].apply(exports,arguments)
+},{"dup":204}],613:[function(require,module,exports){
+arguments[4][205][0].apply(exports,arguments)
+},{"dup":205}],614:[function(require,module,exports){
+arguments[4][206][0].apply(exports,arguments)
+},{"dup":206}],615:[function(require,module,exports){
+arguments[4][207][0].apply(exports,arguments)
+},{"dup":207}],616:[function(require,module,exports){
+arguments[4][208][0].apply(exports,arguments)
+},{"dup":208}],617:[function(require,module,exports){
+arguments[4][209][0].apply(exports,arguments)
+},{"../constants":513,"./create":600,"./rotate":619,"dup":209}],618:[function(require,module,exports){
+arguments[4][210][0].apply(exports,arguments)
+},{"dup":210}],619:[function(require,module,exports){
+arguments[4][211][0].apply(exports,arguments)
+},{"dup":211}],620:[function(require,module,exports){
+arguments[4][212][0].apply(exports,arguments)
+},{"dup":212}],621:[function(require,module,exports){
+arguments[4][213][0].apply(exports,arguments)
+},{"dup":213}],622:[function(require,module,exports){
+arguments[4][214][0].apply(exports,arguments)
+},{"dup":214}],623:[function(require,module,exports){
+arguments[4][215][0].apply(exports,arguments)
+},{"dup":215}],624:[function(require,module,exports){
+arguments[4][216][0].apply(exports,arguments)
+},{"dup":216}],625:[function(require,module,exports){
+arguments[4][217][0].apply(exports,arguments)
+},{"dup":217}],626:[function(require,module,exports){
+arguments[4][218][0].apply(exports,arguments)
+},{"dup":218}],627:[function(require,module,exports){
+arguments[4][219][0].apply(exports,arguments)
+},{"dup":219}],628:[function(require,module,exports){
+arguments[4][220][0].apply(exports,arguments)
+},{"dup":220}],629:[function(require,module,exports){
+arguments[4][221][0].apply(exports,arguments)
+},{"./dot":636,"dup":221}],630:[function(require,module,exports){
+arguments[4][222][0].apply(exports,arguments)
+},{"./create":632,"dup":222}],631:[function(require,module,exports){
+arguments[4][223][0].apply(exports,arguments)
+},{"dup":223}],632:[function(require,module,exports){
+arguments[4][224][0].apply(exports,arguments)
+},{"dup":224}],633:[function(require,module,exports){
+arguments[4][225][0].apply(exports,arguments)
+},{"dup":225}],634:[function(require,module,exports){
+arguments[4][226][0].apply(exports,arguments)
+},{"dup":226}],635:[function(require,module,exports){
+arguments[4][227][0].apply(exports,arguments)
+},{"dup":227}],636:[function(require,module,exports){
+arguments[4][228][0].apply(exports,arguments)
+},{"dup":228}],637:[function(require,module,exports){
+arguments[4][229][0].apply(exports,arguments)
+},{"dup":229}],638:[function(require,module,exports){
+arguments[4][230][0].apply(exports,arguments)
+},{"dup":230}],639:[function(require,module,exports){
+arguments[4][231][0].apply(exports,arguments)
+},{"./create":632,"dup":231}],640:[function(require,module,exports){
+arguments[4][232][0].apply(exports,arguments)
+},{"dup":232}],641:[function(require,module,exports){
+arguments[4][233][0].apply(exports,arguments)
+},{"./abs":627,"./add":628,"./angle":629,"./clone":630,"./copy":631,"./create":632,"./cross":633,"./distance":634,"./divide":635,"./dot":636,"./equals":637,"./fromScalar":638,"./fromValues":639,"./fromVec2":640,"./length":642,"./lerp":643,"./max":644,"./min":645,"./multiply":646,"./negate":647,"./normalize":648,"./orthogonal":649,"./rotateX":650,"./rotateY":651,"./rotateZ":652,"./scale":653,"./snap":654,"./squaredDistance":655,"./squaredLength":656,"./subtract":657,"./toString":658,"./transform":659,"dup":233}],642:[function(require,module,exports){
+arguments[4][234][0].apply(exports,arguments)
+},{"dup":234}],643:[function(require,module,exports){
+arguments[4][235][0].apply(exports,arguments)
+},{"dup":235}],644:[function(require,module,exports){
+arguments[4][236][0].apply(exports,arguments)
+},{"dup":236}],645:[function(require,module,exports){
+arguments[4][237][0].apply(exports,arguments)
+},{"dup":237}],646:[function(require,module,exports){
+arguments[4][238][0].apply(exports,arguments)
+},{"dup":238}],647:[function(require,module,exports){
+arguments[4][239][0].apply(exports,arguments)
+},{"dup":239}],648:[function(require,module,exports){
+arguments[4][240][0].apply(exports,arguments)
+},{"dup":240}],649:[function(require,module,exports){
+arguments[4][241][0].apply(exports,arguments)
+},{"./abs":627,"./create":632,"./cross":633,"dup":241}],650:[function(require,module,exports){
+arguments[4][242][0].apply(exports,arguments)
+},{"dup":242}],651:[function(require,module,exports){
+arguments[4][243][0].apply(exports,arguments)
+},{"dup":243}],652:[function(require,module,exports){
+arguments[4][244][0].apply(exports,arguments)
+},{"dup":244}],653:[function(require,module,exports){
+arguments[4][245][0].apply(exports,arguments)
+},{"dup":245}],654:[function(require,module,exports){
+arguments[4][246][0].apply(exports,arguments)
+},{"dup":246}],655:[function(require,module,exports){
+arguments[4][247][0].apply(exports,arguments)
+},{"dup":247}],656:[function(require,module,exports){
+arguments[4][248][0].apply(exports,arguments)
+},{"dup":248}],657:[function(require,module,exports){
+arguments[4][249][0].apply(exports,arguments)
+},{"dup":249}],658:[function(require,module,exports){
+arguments[4][250][0].apply(exports,arguments)
+},{"dup":250}],659:[function(require,module,exports){
+arguments[4][251][0].apply(exports,arguments)
+},{"dup":251}],660:[function(require,module,exports){
+arguments[4][252][0].apply(exports,arguments)
+},{"./create":662,"dup":252}],661:[function(require,module,exports){
+arguments[4][253][0].apply(exports,arguments)
+},{"dup":253}],662:[function(require,module,exports){
+arguments[4][254][0].apply(exports,arguments)
+},{"dup":254}],663:[function(require,module,exports){
+arguments[4][255][0].apply(exports,arguments)
+},{"dup":255}],664:[function(require,module,exports){
+arguments[4][256][0].apply(exports,arguments)
+},{"dup":256}],665:[function(require,module,exports){
+arguments[4][257][0].apply(exports,arguments)
+},{"dup":257}],666:[function(require,module,exports){
+arguments[4][258][0].apply(exports,arguments)
+},{"./create":662,"dup":258}],667:[function(require,module,exports){
+arguments[4][259][0].apply(exports,arguments)
+},{"./clone":660,"./copy":661,"./create":662,"./dot":663,"./equals":664,"./fromScalar":665,"./fromValues":666,"./toString":668,"./transform":669,"dup":259}],668:[function(require,module,exports){
+arguments[4][260][0].apply(exports,arguments)
+},{"dup":260}],669:[function(require,module,exports){
+arguments[4][261][0].apply(exports,arguments)
+},{"dup":261}],670:[function(require,module,exports){
+arguments[4][262][0].apply(exports,arguments)
+},{"../maths/constants":513,"dup":262}],671:[function(require,module,exports){
+arguments[4][263][0].apply(exports,arguments)
+},{"./measureAggregateArea":672,"./measureAggregateBoundingBox":673,"./measureAggregateEpsilon":674,"./measureAggregateVolume":675,"./measureArea":676,"./measureBoundingBox":677,"./measureBoundingSphere":678,"./measureCenter":679,"./measureCenterOfMass":680,"./measureDimensions":681,"./measureEpsilon":682,"./measureVolume":683,"dup":263}],672:[function(require,module,exports){
+arguments[4][264][0].apply(exports,arguments)
+},{"../utils/flatten":817,"./measureArea":676,"dup":264}],673:[function(require,module,exports){
+arguments[4][265][0].apply(exports,arguments)
+},{"../maths/vec3/max":644,"../maths/vec3/min":645,"../utils/flatten":817,"./measureBoundingBox":677,"dup":265}],674:[function(require,module,exports){
+arguments[4][266][0].apply(exports,arguments)
+},{"../geometries":469,"../utils/flatten":817,"./calculateEpsilonFromBounds":670,"./measureAggregateBoundingBox":673,"dup":266}],675:[function(require,module,exports){
+arguments[4][267][0].apply(exports,arguments)
+},{"../utils/flatten":817,"./measureVolume":683,"dup":267}],676:[function(require,module,exports){
+arguments[4][268][0].apply(exports,arguments)
+},{"../geometries/geom2":444,"../geometries/geom3":460,"../geometries/path2":481,"../geometries/poly3":498,"../utils/flatten":817,"dup":268}],677:[function(require,module,exports){
+arguments[4][269][0].apply(exports,arguments)
+},{"../geometries/geom2":444,"../geometries/geom3":460,"../geometries/path2":481,"../geometries/poly3":498,"../maths/vec2":610,"../maths/vec3":641,"../utils/flatten":817,"dup":269}],678:[function(require,module,exports){
+arguments[4][270][0].apply(exports,arguments)
+},{"../geometries/geom2":444,"../geometries/geom3":460,"../geometries/path2":481,"../geometries/poly3":498,"../maths/vec2":610,"../maths/vec3":641,"../utils/flatten":817,"dup":270}],679:[function(require,module,exports){
+arguments[4][271][0].apply(exports,arguments)
+},{"../utils/flatten":817,"./measureBoundingBox":677,"dup":271}],680:[function(require,module,exports){
+arguments[4][272][0].apply(exports,arguments)
+},{"../geometries/geom2":444,"../geometries/geom3":460,"../maths/vec3":641,"../utils/flatten":817,"dup":272}],681:[function(require,module,exports){
+arguments[4][273][0].apply(exports,arguments)
+},{"../utils/flatten":817,"./measureBoundingBox":677,"dup":273}],682:[function(require,module,exports){
+arguments[4][274][0].apply(exports,arguments)
+},{"../geometries":469,"../utils/flatten":817,"./calculateEpsilonFromBounds":670,"./measureBoundingBox":677,"dup":274}],683:[function(require,module,exports){
+arguments[4][275][0].apply(exports,arguments)
+},{"../geometries/geom2":444,"../geometries/geom3":460,"../geometries/path2":481,"../geometries/poly3":498,"../utils/flatten":817,"dup":275}],684:[function(require,module,exports){
+arguments[4][276][0].apply(exports,arguments)
+},{"../../geometries/geom2":444,"../../maths/vec2":610,"dup":276}],685:[function(require,module,exports){
+arguments[4][277][0].apply(exports,arguments)
+},{"./intersect":686,"./scission":691,"./subtract":693,"./union":704,"dup":277}],686:[function(require,module,exports){
+arguments[4][278][0].apply(exports,arguments)
+},{"../../geometries/geom2":444,"../../geometries/geom3":460,"../../utils/areAllShapesTheSameType":815,"../../utils/flatten":817,"./intersectGeom2":687,"./intersectGeom3":688,"dup":278}],687:[function(require,module,exports){
+arguments[4][279][0].apply(exports,arguments)
+},{"../../geometries/geom3":460,"../../measurements/measureEpsilon":682,"../../utils/flatten":817,"./fromFakePolygons":684,"./intersectGeom3":688,"./to3DWalls":697,"dup":279}],688:[function(require,module,exports){
+arguments[4][280][0].apply(exports,arguments)
+},{"../../utils/flatten":817,"../modifiers/retessellate":775,"./intersectGeom3Sub":689,"dup":280}],689:[function(require,module,exports){
+arguments[4][281][0].apply(exports,arguments)
+},{"../../geometries/geom3":460,"./mayOverlap":690,"./trees":701,"dup":281}],690:[function(require,module,exports){
+arguments[4][282][0].apply(exports,arguments)
+},{"../../maths/constants":513,"../../measurements/measureBoundingBox":677,"dup":282}],691:[function(require,module,exports){
+arguments[4][283][0].apply(exports,arguments)
+},{"../../geometries/geom3":460,"../../utils/flatten":817,"./scissionGeom3":692,"dup":283}],692:[function(require,module,exports){
+arguments[4][284][0].apply(exports,arguments)
+},{"../../geometries/geom3":460,"../../maths/vec3":641,"../../measurements/measureEpsilon":682,"dup":284}],693:[function(require,module,exports){
+arguments[4][285][0].apply(exports,arguments)
+},{"../../geometries/geom2":444,"../../geometries/geom3":460,"../../utils/areAllShapesTheSameType":815,"../../utils/flatten":817,"./subtractGeom2":694,"./subtractGeom3":695,"dup":285}],694:[function(require,module,exports){
+arguments[4][286][0].apply(exports,arguments)
+},{"../../geometries/geom3":460,"../../measurements/measureEpsilon":682,"../../utils/flatten":817,"./fromFakePolygons":684,"./subtractGeom3":695,"./to3DWalls":697,"dup":286}],695:[function(require,module,exports){
+arguments[4][287][0].apply(exports,arguments)
+},{"../../utils/flatten":817,"../modifiers/retessellate":775,"./subtractGeom3Sub":696,"dup":287}],696:[function(require,module,exports){
+arguments[4][288][0].apply(exports,arguments)
+},{"../../geometries/geom3":460,"./mayOverlap":690,"./trees":701,"dup":288}],697:[function(require,module,exports){
+arguments[4][289][0].apply(exports,arguments)
+},{"../../geometries/geom2":444,"../../geometries/geom3":460,"../../geometries/poly3":498,"../../maths/vec3":641,"dup":289}],698:[function(require,module,exports){
+arguments[4][290][0].apply(exports,arguments)
+},{"../../../geometries/poly3":498,"../../../maths/plane":582,"dup":290}],699:[function(require,module,exports){
+arguments[4][291][0].apply(exports,arguments)
+},{"../../../geometries/poly3":498,"../../../maths/constants":513,"../../../maths/vec3":641,"./splitPolygonByPlane":703,"dup":291}],700:[function(require,module,exports){
+arguments[4][292][0].apply(exports,arguments)
+},{"./Node":698,"./PolygonTreeNode":699,"dup":292}],701:[function(require,module,exports){
+arguments[4][293][0].apply(exports,arguments)
+},{"./Tree":700,"dup":293}],702:[function(require,module,exports){
+arguments[4][294][0].apply(exports,arguments)
+},{"../../../maths/vec3":641,"dup":294}],703:[function(require,module,exports){
+arguments[4][295][0].apply(exports,arguments)
+},{"../../../geometries/poly3":498,"../../../maths/constants":513,"../../../maths/plane":582,"../../../maths/vec3":641,"./splitLineSegmentByPlane":702,"dup":295}],704:[function(require,module,exports){
+arguments[4][296][0].apply(exports,arguments)
+},{"../../geometries/geom2":444,"../../geometries/geom3":460,"../../utils/areAllShapesTheSameType":815,"../../utils/flatten":817,"./unionGeom2":705,"./unionGeom3":706,"dup":296}],705:[function(require,module,exports){
+arguments[4][297][0].apply(exports,arguments)
+},{"../../geometries/geom3":460,"../../measurements/measureEpsilon":682,"../../utils/flatten":817,"./fromFakePolygons":684,"./to3DWalls":697,"./unionGeom3":706,"dup":297}],706:[function(require,module,exports){
+arguments[4][298][0].apply(exports,arguments)
+},{"../../utils/flatten":817,"../modifiers/retessellate":775,"./unionGeom3Sub":707,"dup":298}],707:[function(require,module,exports){
+arguments[4][299][0].apply(exports,arguments)
+},{"../../geometries/geom3":460,"./mayOverlap":690,"./trees":701,"dup":299}],708:[function(require,module,exports){
+arguments[4][300][0].apply(exports,arguments)
+},{"../../geometries/geom2":444,"../../geometries/geom3":460,"../../geometries/path2":481,"../../utils/flatten":817,"./expandGeom2":709,"./expandGeom3":710,"./expandPath2":711,"dup":300}],709:[function(require,module,exports){
+arguments[4][301][0].apply(exports,arguments)
+},{"../../geometries/geom2":444,"./offsetFromPoints":716,"dup":301}],710:[function(require,module,exports){
+arguments[4][302][0].apply(exports,arguments)
+},{"../../geometries/geom3":460,"../booleans/union":704,"./expandShell":712,"dup":302}],711:[function(require,module,exports){
+arguments[4][303][0].apply(exports,arguments)
+},{"../../geometries/geom2":444,"../../geometries/path2":481,"../../maths/utils/area":587,"../../maths/vec2":610,"./offsetFromPoints":716,"dup":303}],712:[function(require,module,exports){
+arguments[4][304][0].apply(exports,arguments)
+},{"../../geometries/geom3":460,"../../geometries/poly3":498,"../../maths/constants":513,"../../maths/mat4":562,"../../maths/vec3":641,"../../primitives/sphere":805,"../../utils/fnNumberSort":818,"../booleans/unionGeom3Sub":707,"../modifiers/retessellate":775,"./extrudePolygon":713,"dup":304}],713:[function(require,module,exports){
+arguments[4][305][0].apply(exports,arguments)
+},{"../../geometries/geom3":460,"../../geometries/poly3":498,"../../maths/mat4":562,"../../maths/vec3":641,"dup":305}],714:[function(require,module,exports){
+arguments[4][306][0].apply(exports,arguments)
+},{"./expand":708,"./offset":715,"dup":306}],715:[function(require,module,exports){
+arguments[4][307][0].apply(exports,arguments)
+},{"../../geometries/geom2":444,"../../geometries/path2":481,"../../utils/flatten":817,"./offsetGeom2":717,"./offsetPath2":718,"dup":307}],716:[function(require,module,exports){
+arguments[4][308][0].apply(exports,arguments)
+},{"../../maths/constants":513,"../../maths/line2":524,"../../maths/utils/area":587,"../../maths/utils/intersect":590,"../../maths/vec2":610,"dup":308}],717:[function(require,module,exports){
+arguments[4][309][0].apply(exports,arguments)
+},{"../../geometries/geom2":444,"../../geometries/poly2":492,"./offsetFromPoints":716,"dup":309}],718:[function(require,module,exports){
+arguments[4][310][0].apply(exports,arguments)
+},{"../../geometries/path2":481,"./offsetFromPoints":716,"dup":310}],719:[function(require,module,exports){
+arguments[4][311][0].apply(exports,arguments)
+},{"../../../geometries/geom2":444,"../../../geometries/poly2":492,"../../../maths/utils":588,"dup":311}],720:[function(require,module,exports){
+arguments[4][312][0].apply(exports,arguments)
+},{"./linkedPolygon":724,"./triangle":726,"dup":312}],721:[function(require,module,exports){
+arguments[4][313][0].apply(exports,arguments)
+},{"./eliminateHoles":720,"./linkedList":722,"./linkedPolygon":724,"./triangle":726,"dup":313}],722:[function(require,module,exports){
+arguments[4][314][0].apply(exports,arguments)
+},{"./linkedListSort":723,"dup":314}],723:[function(require,module,exports){
+arguments[4][315][0].apply(exports,arguments)
+},{"dup":315}],724:[function(require,module,exports){
+arguments[4][316][0].apply(exports,arguments)
+},{"./linkedList":722,"./triangle":726,"dup":316}],725:[function(require,module,exports){
+arguments[4][317][0].apply(exports,arguments)
+},{"../../../geometries/geom2":444,"../../../maths/plane":582,"../../../maths/vec2":610,"../../../maths/vec3":641,"../slice/calculatePlane":739,"./assignHoles":719,"dup":317}],726:[function(require,module,exports){
+arguments[4][318][0].apply(exports,arguments)
+},{"dup":318}],727:[function(require,module,exports){
+arguments[4][319][0].apply(exports,arguments)
+},{"../../geometries/geom2":444,"../../geometries/geom3":460,"../../geometries/poly3":498,"../../maths/mat4":562,"./extrudeWalls":736,"./slice":745,"./slice/repair":747,"dup":319}],728:[function(require,module,exports){
+arguments[4][320][0].apply(exports,arguments)
+},{"../../geometries/geom2":444,"../../maths/constants":513,"../../maths/mat4":562,"./extrudeFromSlices":727,"./slice":745,"dup":320}],729:[function(require,module,exports){
+arguments[4][321][0].apply(exports,arguments)
+},{"../../geometries/geom2":444,"../../geometries/path2":481,"../../utils/flatten":817,"./extrudeLinearGeom2":730,"./extrudeLinearPath2":731,"dup":321}],730:[function(require,module,exports){
+arguments[4][322][0].apply(exports,arguments)
+},{"../../geometries/geom2":444,"../../maths/mat4":562,"../../maths/vec3":641,"./extrudeFromSlices":727,"./slice":745,"dup":322}],731:[function(require,module,exports){
+arguments[4][323][0].apply(exports,arguments)
+},{"../../geometries/geom2":444,"../../geometries/path2":481,"./extrudeLinearGeom2":730,"dup":323}],732:[function(require,module,exports){
+arguments[4][324][0].apply(exports,arguments)
+},{"../../geometries/geom2":444,"../../geometries/path2":481,"../../utils/flatten":817,"./extrudeRectangularGeom2":733,"./extrudeRectangularPath2":734,"dup":324}],733:[function(require,module,exports){
+arguments[4][325][0].apply(exports,arguments)
+},{"../../geometries/geom2":444,"../../geometries/path2":481,"../../maths/utils":588,"../expansions/expand":708,"./extrudeLinearGeom2":730,"dup":325}],734:[function(require,module,exports){
+arguments[4][326][0].apply(exports,arguments)
+},{"../../geometries/path2":481,"../expansions/expand":708,"./extrudeLinearGeom2":730,"dup":326}],735:[function(require,module,exports){
+const { TAU } = require('../../maths/constants')
+const mat4 = require('../../maths/mat4')
+
+const { mirrorX } = require('../transforms/mirror')
+
+const geom2 = require('../../geometries/geom2')
+
+const slice = require('./slice')
+
+const extrudeFromSlices = require('./extrudeFromSlices')
+
+/**
+ * Rotate extrude the given geometry using the given options.
+ *
+ * @param {Object} options - options for extrusion
+ * @param {Number} [options.angle=TAU] - angle of the extrusion (RADIANS)
+ * @param {Number} [options.startAngle=0] - start angle of the extrusion (RADIANS)
+ * @param {String} [options.overflow='cap'] - what to do with points outside of bounds (+ / - x) :
+ * defaults to capping those points to 0 (only supported behaviour for now)
+ * @param {Number} [options.segments=12] - number of segments of the extrusion
+ * @param {geom2} geometry - the geometry to extrude
+ * @returns {geom3} the extruded geometry
+ * @alias module:modeling/extrusions.extrudeRotate
+ *
+ * @example
+ * const myshape = extrudeRotate({segments: 8, angle: TAU / 2}, circle({size: 3, center: [4, 0]}))
+ */
+const extrudeRotate = (options, geometry) => {
+  const defaults = {
+    segments: 12,
+    startAngle: 0,
+    angle: TAU,
+    overflow: 'cap'
+  }
+  let { segments, startAngle, angle, overflow } = Object.assign({}, defaults, options)
+
+  if (segments < 3) throw new Error('segments must be greater then 3')
+
+  startAngle = Math.abs(startAngle) > TAU ? startAngle % TAU : startAngle
+  angle = Math.abs(angle) > TAU ? angle % TAU : angle
+
+  let endAngle = startAngle + angle
+  endAngle = Math.abs(endAngle) > TAU ? endAngle % TAU : endAngle
+
+  if (endAngle < startAngle) {
+    const x = startAngle
+    startAngle = endAngle
+    endAngle = x
+  }
+  let totalRotation = endAngle - startAngle
+  if (totalRotation <= 0.0) totalRotation = TAU
+
+  if (Math.abs(totalRotation) < TAU) {
+    // adjust the segments to achieve the total rotation requested
+    const anglePerSegment = TAU / segments
+    segments = Math.floor(Math.abs(totalRotation) / anglePerSegment)
+    if (Math.abs(totalRotation) > (segments * anglePerSegment)) segments++
+  }
+
+  // console.log('startAngle: '+startAngle)
+  // console.log('endAngle: '+endAngle)
+  // console.log(totalRotation)
+  // console.log(segments)
+
+  // convert geometry to an array of sides, easier to deal with
+  let shapeSides = geom2.toSides(geometry)
+  if (shapeSides.length === 0) throw new Error('the given geometry cannot be empty')
+
+  // determine if the rotate extrude can be computed in the first place
+  // ie all the points have to be either x > 0 or x < 0
+
+  // generic solution to always have a valid solid, even if points go beyond x/ -x
+  // 1. split points up between all those on the 'left' side of the axis (x<0) & those on the 'righ' (x>0)
+  // 2. for each set of points do the extrusion operation IN OPOSITE DIRECTIONS
+  // 3. union the two resulting solids
+
+  // 1. alt : OR : just cap of points at the axis ?
+
+  const pointsWithNegativeX = shapeSides.filter((s) => (s[0][0] < 0))
+  const pointsWithPositiveX = shapeSides.filter((s) => (s[0][0] >= 0))
+  const arePointsWithNegAndPosX = pointsWithNegativeX.length > 0 && pointsWithPositiveX.length > 0
+
+  // FIXME actually there are cases where setting X=0 will change the basic shape
+  // - Alternative #1 : don't allow shapes with both negative and positive X values
+  // - Alternative #2 : remove one half of the shape (costly)
+  if (arePointsWithNegAndPosX && overflow === 'cap') {
+    if (pointsWithNegativeX.length > pointsWithPositiveX.length) {
+      shapeSides = shapeSides.map((side) => {
+        let point0 = side[0]
+        let point1 = side[1]
+        point0 = [Math.min(point0[0], 0), point0[1]]
+        point1 = [Math.min(point1[0], 0), point1[1]]
+        return [point0, point1]
+      })
+      // recreate the geometry from the (-) capped points
+      geometry = geom2.create(shapeSides)
+      geometry = mirrorX(geometry)
+    } else if (pointsWithPositiveX.length >= pointsWithNegativeX.length) {
+      shapeSides = shapeSides.map((side) => {
+        let point0 = side[0]
+        let point1 = side[1]
+        point0 = [Math.max(point0[0], 0), point0[1]]
+        point1 = [Math.max(point1[0], 0), point1[1]]
+        return [point0, point1]
+      })
+      // recreate the geometry from the (+) capped points
+      geometry = geom2.create(shapeSides)
+    }
+  }
+
+  const rotationPerSlice = totalRotation / segments
+  const isCapped = Math.abs(totalRotation) < TAU
+  const baseSlice = slice.fromSides(geom2.toSides(geometry))
+  slice.reverse(baseSlice, baseSlice)
+
+  const matrix = mat4.create()
+  const createSlice = (progress, index, base) => {
+    let Zrotation = rotationPerSlice * index + startAngle
+    // fix rounding error when rotating TAU radians
+    if (totalRotation === TAU && index === segments) {
+      Zrotation = startAngle
+    }
+    mat4.multiply(matrix, mat4.fromZRotation(matrix, Zrotation), mat4.fromXRotation(mat4.create(), TAU / 4))
+
+    return slice.transform(matrix, base)
+  }
+
+  options = {
+    numberOfSlices: segments + 1,
+    capStart: isCapped,
+    capEnd: isCapped,
+    close: !isCapped,
+    callback: createSlice
+  }
+  return extrudeFromSlices(options, baseSlice)
+}
+
+module.exports = extrudeRotate
+
+},{"../../geometries/geom2":444,"../../maths/constants":513,"../../maths/mat4":562,"../transforms/mirror":782,"./extrudeFromSlices":727,"./slice":745}],736:[function(require,module,exports){
+arguments[4][328][0].apply(exports,arguments)
+},{"../../geometries/poly3":498,"../../maths/constants":513,"../../maths/vec3":641,"./slice":745,"dup":328}],737:[function(require,module,exports){
+arguments[4][329][0].apply(exports,arguments)
+},{"./extrudeFromSlices":727,"./extrudeHelical":728,"./extrudeLinear":729,"./extrudeRectangular":732,"./extrudeRotate":735,"./project":738,"./slice":745,"dup":329}],738:[function(require,module,exports){
+arguments[4][330][0].apply(exports,arguments)
+},{"../../geometries/geom2":444,"../../geometries/geom3":460,"../../geometries/poly3":498,"../../maths/mat4":562,"../../maths/plane":582,"../../maths/utils/aboutEqualNormals":586,"../../measurements/measureEpsilon":682,"../../utils/flatten":817,"../booleans/unionGeom2":705,"dup":330}],739:[function(require,module,exports){
+arguments[4][331][0].apply(exports,arguments)
+},{"../../../maths/plane":582,"../../../maths/vec3":641,"dup":331}],740:[function(require,module,exports){
+arguments[4][332][0].apply(exports,arguments)
+},{"../../../maths/vec3":641,"./create":741,"dup":332}],741:[function(require,module,exports){
+arguments[4][333][0].apply(exports,arguments)
+},{"dup":333}],742:[function(require,module,exports){
+arguments[4][334][0].apply(exports,arguments)
+},{"../../../maths/vec3":641,"dup":334}],743:[function(require,module,exports){
+arguments[4][335][0].apply(exports,arguments)
+},{"../../../maths/vec3":641,"./create":741,"dup":335}],744:[function(require,module,exports){
+arguments[4][336][0].apply(exports,arguments)
+},{"../../../maths/vec3":641,"./create":741,"dup":336}],745:[function(require,module,exports){
+arguments[4][337][0].apply(exports,arguments)
+},{"./calculatePlane":739,"./clone":740,"./create":741,"./equals":742,"./fromPoints":743,"./fromSides":744,"./isA":746,"./reverse":748,"./toEdges":749,"./toPolygons":750,"./toString":751,"./transform":752,"dup":337}],746:[function(require,module,exports){
+arguments[4][338][0].apply(exports,arguments)
+},{"dup":338}],747:[function(require,module,exports){
+arguments[4][339][0].apply(exports,arguments)
+},{"../../../maths/vec3":641,"./create":741,"dup":339}],748:[function(require,module,exports){
+arguments[4][340][0].apply(exports,arguments)
+},{"./create":741,"dup":340}],749:[function(require,module,exports){
+arguments[4][341][0].apply(exports,arguments)
+},{"dup":341}],750:[function(require,module,exports){
+arguments[4][342][0].apply(exports,arguments)
+},{"../../../geometries/poly3":498,"../earcut":721,"../earcut/polygonHierarchy":725,"dup":342}],751:[function(require,module,exports){
+arguments[4][343][0].apply(exports,arguments)
+},{"../../../maths/vec3":641,"dup":343}],752:[function(require,module,exports){
+arguments[4][344][0].apply(exports,arguments)
+},{"../../../maths/vec3":641,"./create":741,"dup":344}],753:[function(require,module,exports){
+arguments[4][345][0].apply(exports,arguments)
+},{"../../geometries/geom2":444,"../../geometries/geom3":460,"../../geometries/path2":481,"../../utils/areAllShapesTheSameType":815,"../../utils/flatten":817,"./hullGeom2":755,"./hullGeom3":756,"./hullPath2":757,"dup":345}],754:[function(require,module,exports){
+arguments[4][346][0].apply(exports,arguments)
+},{"../../utils/flatten":817,"../booleans/union":704,"./hull":753,"dup":346}],755:[function(require,module,exports){
+const flatten = require('../../utils/flatten')
+
+const geom2 = require('../../geometries/geom2')
+
+const hullPoints2 = require('./hullPoints2')
+const toUniquePoints = require('./toUniquePoints')
+
+/*
+ * Create a convex hull of the given geom2 geometries.
+ *
+ * NOTE: The given geometries must be valid geom2 geometries.
+ *
+ * @param {...geometries} geometries - list of geom2 geometries
+ * @returns {geom2} new geometry
+ */
+const hullGeom2 = (...geometries) => {
+  geometries = flatten(geometries)
+
+  // extract the unique points from the geometries
+  const unique = toUniquePoints(geometries)
+
+  const hullPoints = hullPoints2(unique)
+
+  // NOTE: more than three points are required to create a new geometry
+  if (hullPoints.length < 3) return geom2.create()
+
+  // assemble a new geometry from the list of points
+  return geom2.fromPoints(hullPoints)
+}
+
+module.exports = hullGeom2
+
+},{"../../geometries/geom2":444,"../../utils/flatten":817,"./hullPoints2":758,"./toUniquePoints":769}],756:[function(require,module,exports){
+const flatten = require('../../utils/flatten')
+
+const geom3 = require('../../geometries/geom3')
+
+const toUniquePoints = require('./toUniquePoints')
+const hullPoints3 = require('./hullPoints3')
+
+/*
+ * Create a convex hull of the given geom3 geometries.
+ *
+ * NOTE: The given geometries must be valid geom3 geometries.
+ *
+ * @param {...geometries} geometries - list of geom3 geometries
+ * @returns {geom3} new geometry
+ */
+const hullGeom3 = (...geometries) => {
+  geometries = flatten(geometries)
+
+  // extract the unique vertices from the geometries
+  const unique = toUniquePoints(geometries)
+
+  if (unique.length === 0) return geom3.create()
+
+  return geom3.create(hullPoints3(unique))
+}
+
+module.exports = hullGeom3
+
+},{"../../geometries/geom3":460,"../../utils/flatten":817,"./hullPoints3":759,"./toUniquePoints":769}],757:[function(require,module,exports){
+const flatten = require('../../utils/flatten')
+
+const path2 = require('../../geometries/path2')
+
+const hullPoints2 = require('./hullPoints2')
+const toUniquePoints = require('./toUniquePoints')
+
+/*
+ * Create a convex hull of the given path2 geometries.
+ *
+ * NOTE: The given geometries must be valid path2 geometry.
+ *
+ * @param {...geometries} geometries - list of path2 geometries
+ * @returns {path2} new geometry
+ */
+const hullPath2 = (...geometries) => {
+  geometries = flatten(geometries)
+
+  // extract the unique points from the geometries
+  const unique = toUniquePoints(geometries)
+
+  const hullPoints = hullPoints2(unique)
+
+  // assemble a new geometry from the list of points
+  return path2.fromPoints({ closed: true }, hullPoints)
+}
+
+module.exports = hullPath2
+
+},{"../../geometries/path2":481,"../../utils/flatten":817,"./hullPoints2":758,"./toUniquePoints":769}],758:[function(require,module,exports){
+const vec2 = require('../../maths/vec2')
+
+/**
+ * Create a convex hull of the given set of points, where each point is an array of [x,y].
+ * @see https://en.wikipedia.org/wiki/Graham_scan
+ *
+ * @param {Array} uniquePoints - list of UNIQUE points from which to create a hull
+ * @returns {Array} a list of points that form the hull
+ * @alias module:modeling/hulls.hullPoints2
+ */
+const hullPoints2 = (uniquePoints) => {
+  // find min point
+  let min = vec2.fromValues(Infinity, Infinity)
+  uniquePoints.forEach((point) => {
+    if (point[1] < min[1] || (point[1] === min[1] && point[0] < min[0])) {
+      min = point
+    }
+  })
+
+  // gather information for sorting by polar coordinates (point, angle, distSq)
+  const points = []
+  uniquePoints.forEach((point) => {
+    // use faster fakeAtan2 instead of Math.atan2
+    const angle = fakeAtan2(point[1] - min[1], point[0] - min[0])
+    const distSq = vec2.squaredDistance(point, min)
+    points.push({ point, angle, distSq })
+  })
+
+  // sort by polar coordinates
+  points.sort((pt1, pt2) => pt1.angle !== pt2.angle
+    ? pt1.angle - pt2.angle
+    : pt1.distSq - pt2.distSq)
+
+  const stack = [] // start with empty stack
+  points.forEach((point) => {
+    let cnt = stack.length
+    while (cnt > 1 && ccw(stack[cnt - 2], stack[cnt - 1], point.point) <= Number.EPSILON) {
+      stack.pop() // get rid of colinear and interior (clockwise) points
+      cnt = stack.length
+    }
+    stack.push(point.point)
+  })
+
+  return stack
+}
+
+// returns: < 0 clockwise, 0 colinear, > 0 counter-clockwise
+const ccw = (v1, v2, v3) => (v2[0] - v1[0]) * (v3[1] - v1[1]) - (v2[1] - v1[1]) * (v3[0] - v1[0])
+
+// Returned "angle" is really 1/tan (inverse of slope) made negative to increase with angle.
+// This function is strictly for sorting in this algorithm.
+const fakeAtan2 = (y, x) => {
+  // The "if" is a special case for when the minimum vector found in loop above is present.
+  // We need to ensure that it sorts as the minimum point. Otherwise, this becomes NaN.
+  if (y === 0 && x === 0) {
+    return -Infinity
+  } else {
+    return -x / y
+  }
+}
+
+module.exports = hullPoints2
+
+},{"../../maths/vec2":610}],759:[function(require,module,exports){
+const poly3 = require('../../geometries/poly3')
+
+const quickhull = require('./quickhull')
+
+/**
+ * Create a convex hull of the given set of points, where each point is an array of [x,y,z].
+ *
+ * @param {Array} uniquePoints - list of UNIQUE points from which to create a hull
+ * @returns {Array} a list of polygons (poly3)
+ * @alias module:modeling/hulls.hullPoints3
+ */
+const hullPoints3 = (uniquePoints) => {
+  const faces = quickhull(uniquePoints, { skipTriangulation: true })
+
+  const polygons = faces.map((face) => {
+    const vertices = face.map((index) => uniquePoints[index])
+    return poly3.create(vertices)
+  })
+
+  return polygons
+}
+
+module.exports = hullPoints3
+
+},{"../../geometries/poly3":498,"./quickhull":767}],760:[function(require,module,exports){
+/**
+ * All shapes (primitives or the results of operations) can be passed to hull functions
+ * to determine the convex hull of all points.
+ * In all cases, the function returns the results, and never changes the original shapes.
+ * @module modeling/hulls
+ * @example
+ * const { hull, hullChain } = require('@jscad/modeling').hulls
+ */
+module.exports = {
+  hull: require('./hull'),
+  hullChain: require('./hullChain'),
+  hullPoints2: require('./hullPoints2'),
+  hullPoints3: require('./hullPoints3')
+}
+
+},{"./hull":753,"./hullChain":754,"./hullPoints2":758,"./hullPoints3":759}],761:[function(require,module,exports){
+arguments[4][352][0].apply(exports,arguments)
+},{"../../../maths/vec3/add":628,"../../../maths/vec3/copy":631,"../../../maths/vec3/cross":633,"../../../maths/vec3/dot":636,"../../../maths/vec3/length":642,"../../../maths/vec3/normalize":648,"../../../maths/vec3/scale":653,"../../../maths/vec3/subtract":657,"./HalfEdge":762,"dup":352}],762:[function(require,module,exports){
+arguments[4][353][0].apply(exports,arguments)
+},{"../../../maths/vec3/distance":634,"../../../maths/vec3/squaredDistance":655,"dup":353}],763:[function(require,module,exports){
+arguments[4][354][0].apply(exports,arguments)
+},{"../../../maths/vec3/dot":636,"./Face":761,"./Vertex":764,"./VertexList":765,"./get-plane-normal":766,"./point-line-distance":768,"dup":354}],764:[function(require,module,exports){
+arguments[4][355][0].apply(exports,arguments)
+},{"dup":355}],765:[function(require,module,exports){
+arguments[4][356][0].apply(exports,arguments)
+},{"dup":356}],766:[function(require,module,exports){
+arguments[4][357][0].apply(exports,arguments)
+},{"../../../maths/vec3/cross":633,"../../../maths/vec3/normalize":648,"../../../maths/vec3/subtract":657,"dup":357}],767:[function(require,module,exports){
+arguments[4][358][0].apply(exports,arguments)
+},{"./QuickHull":763,"dup":358}],768:[function(require,module,exports){
+arguments[4][359][0].apply(exports,arguments)
+},{"../../../maths/vec3/cross":633,"../../../maths/vec3/squaredLength":656,"../../../maths/vec3/subtract":657,"dup":359}],769:[function(require,module,exports){
+arguments[4][360][0].apply(exports,arguments)
+},{"../../geometries/geom2":444,"../../geometries/geom3":460,"../../geometries/path2":481,"dup":360}],770:[function(require,module,exports){
+arguments[4][361][0].apply(exports,arguments)
+},{"../../geometries/geom2":444,"../../geometries/geom3":460,"../../geometries/path2":481,"../../measurements/measureEpsilon":682,"../../utils/flatten":817,"./insertTjunctions":772,"./mergePolygons":773,"./snapPolygons":777,"./triangulatePolygons":778,"dup":361}],771:[function(require,module,exports){
+arguments[4][362][0].apply(exports,arguments)
+},{"./generalize":770,"./retessellate":775,"./snap":776,"dup":362}],772:[function(require,module,exports){
+arguments[4][363][0].apply(exports,arguments)
+},{"../../geometries/poly3":498,"../../maths/constants":513,"../../maths/vec3":641,"dup":363}],773:[function(require,module,exports){
+arguments[4][364][0].apply(exports,arguments)
+},{"../../geometries/poly3":498,"../../maths/utils/aboutEqualNormals":586,"../../maths/vec3":641,"dup":364}],774:[function(require,module,exports){
+arguments[4][365][0].apply(exports,arguments)
+},{"../../geometries/poly3":498,"../../maths/OrthoNormalBasis":512,"../../maths/constants":513,"../../maths/line2":524,"../../maths/utils/interpolateBetween2DPointsForY":589,"../../maths/vec2":610,"../../utils":819,"dup":365}],775:[function(require,module,exports){
+arguments[4][366][0].apply(exports,arguments)
+},{"../../geometries/geom3":460,"../../geometries/poly3":498,"../../maths/constants":513,"./reTesselateCoplanarPolygons":774,"dup":366}],776:[function(require,module,exports){
+arguments[4][367][0].apply(exports,arguments)
+},{"../../geometries/geom2":444,"../../geometries/geom3":460,"../../geometries/path2":481,"../../maths/vec2":610,"../../measurements/measureEpsilon":682,"../../utils/flatten":817,"./snapPolygons":777,"dup":367}],777:[function(require,module,exports){
+arguments[4][368][0].apply(exports,arguments)
+},{"../../geometries/poly3":498,"../../maths/vec3":641,"dup":368}],778:[function(require,module,exports){
+arguments[4][369][0].apply(exports,arguments)
+},{"../../geometries/poly3":498,"../../maths/vec3":641,"dup":369}],779:[function(require,module,exports){
+arguments[4][370][0].apply(exports,arguments)
+},{"../../measurements/measureAggregateBoundingBox":673,"../../utils/flatten":817,"../../utils/padArrayToLength":821,"./translate":786,"dup":370}],780:[function(require,module,exports){
+arguments[4][371][0].apply(exports,arguments)
+},{"../../geometries/geom2":444,"../../geometries/geom3":460,"../../geometries/path2":481,"../../measurements/measureBoundingBox":677,"../../utils/flatten":817,"./translate":786,"dup":371}],781:[function(require,module,exports){
+arguments[4][372][0].apply(exports,arguments)
+},{"./align":779,"./center":780,"./mirror":782,"./rotate":783,"./scale":784,"./transform":785,"./translate":786,"dup":372}],782:[function(require,module,exports){
+arguments[4][373][0].apply(exports,arguments)
+},{"../../geometries/geom2":444,"../../geometries/geom3":460,"../../geometries/path2":481,"../../maths/mat4":562,"../../maths/plane":582,"../../utils/flatten":817,"dup":373}],783:[function(require,module,exports){
+arguments[4][374][0].apply(exports,arguments)
+},{"../../geometries/geom2":444,"../../geometries/geom3":460,"../../geometries/path2":481,"../../maths/mat4":562,"../../utils/flatten":817,"dup":374}],784:[function(require,module,exports){
+arguments[4][375][0].apply(exports,arguments)
+},{"../../geometries/geom2":444,"../../geometries/geom3":460,"../../geometries/path2":481,"../../maths/mat4":562,"../../utils/flatten":817,"dup":375}],785:[function(require,module,exports){
+arguments[4][376][0].apply(exports,arguments)
+},{"../../geometries/geom2":444,"../../geometries/geom3":460,"../../geometries/path2":481,"../../utils/flatten":817,"dup":376}],786:[function(require,module,exports){
+arguments[4][377][0].apply(exports,arguments)
+},{"../../geometries/geom2":444,"../../geometries/geom3":460,"../../geometries/path2":481,"../../maths/mat4":562,"../../utils/flatten":817,"dup":377}],787:[function(require,module,exports){
+arguments[4][378][0].apply(exports,arguments)
+},{"../geometries/path2":481,"../maths/constants":513,"../maths/vec2":610,"./commonChecks":789,"dup":378}],788:[function(require,module,exports){
+arguments[4][379][0].apply(exports,arguments)
+},{"../maths/constants":513,"./commonChecks":789,"./ellipse":794,"dup":379}],789:[function(require,module,exports){
+arguments[4][380][0].apply(exports,arguments)
+},{"dup":380}],790:[function(require,module,exports){
+arguments[4][381][0].apply(exports,arguments)
+},{"./commonChecks":789,"./cuboid":791,"dup":381}],791:[function(require,module,exports){
+arguments[4][382][0].apply(exports,arguments)
+},{"../geometries/geom3":460,"../geometries/poly3":498,"./commonChecks":789,"dup":382}],792:[function(require,module,exports){
+arguments[4][383][0].apply(exports,arguments)
+},{"../geometries/geom3":460,"./commonChecks":789,"./cylinderElliptic":793,"dup":383}],793:[function(require,module,exports){
+arguments[4][384][0].apply(exports,arguments)
+},{"../geometries/geom3":460,"../geometries/poly3":498,"../maths/constants":513,"../maths/utils/trigonometry":592,"../maths/vec3":641,"./commonChecks":789,"dup":384}],794:[function(require,module,exports){
+arguments[4][385][0].apply(exports,arguments)
+},{"../geometries/geom2":444,"../maths/constants":513,"../maths/utils/trigonometry":592,"../maths/vec2":610,"./commonChecks":789,"dup":385}],795:[function(require,module,exports){
+arguments[4][386][0].apply(exports,arguments)
+},{"../geometries/geom3":460,"../geometries/poly3":498,"../maths/constants":513,"../maths/utils/trigonometry":592,"../maths/vec3":641,"./commonChecks":789,"dup":386}],796:[function(require,module,exports){
+arguments[4][387][0].apply(exports,arguments)
+},{"../geometries/geom3":460,"../maths/mat4":562,"../maths/vec3":641,"./commonChecks":789,"./polyhedron":800,"dup":387}],797:[function(require,module,exports){
+arguments[4][388][0].apply(exports,arguments)
+},{"./arc":787,"./circle":788,"./cube":790,"./cuboid":791,"./cylinder":792,"./cylinderElliptic":793,"./ellipse":794,"./ellipsoid":795,"./geodesicSphere":796,"./line":798,"./polygon":799,"./polyhedron":800,"./rectangle":801,"./roundedCuboid":802,"./roundedCylinder":803,"./roundedRectangle":804,"./sphere":805,"./square":806,"./star":807,"./torus":808,"./triangle":809,"dup":388}],798:[function(require,module,exports){
+arguments[4][389][0].apply(exports,arguments)
+},{"../geometries/path2":481,"dup":389}],799:[function(require,module,exports){
+const geom2 = require('../geometries/geom2')
+
+/**
+ * Construct a polygon in two dimensional space from a list of points, or a list of points and paths.
+ *
+ * NOTE: The ordering of points is important, and must define a counter clockwise rotation of points.
+ *
+ * @param {Object} options - options for construction
+ * @param {Array} options.points - points of the polygon : either flat or nested array of 2D points
+ * @param {Array} [options.paths] - paths of the polygon : either flat or nested array of point indexes
+ * @param {String} [options.orientation='counterclockwise'] - orientation of points
+ * @returns {geom2} new 2D geometry
+ * @alias module:modeling/primitives.polygon
+ *
+ * @example
+ * let roof = [[10,11], [0,11], [5,20]]
+ * let wall = [[0,0], [10,0], [10,10], [0,10]]
+ *
+ * let poly = polygon({ points: roof })
+ * or
+ * let poly = polygon({ points: [roof, wall] })
+ * or
+ * let poly = polygon({ points: roof, paths: [0, 1, 2] })
+ * or
+ * let poly = polygon({ points: [roof, wall], paths: [[0, 1, 2], [3, 4, 5, 6]] })
+ */
+const polygon = (options) => {
+  const defaults = {
+    points: [],
+    paths: [],
+    orientation: 'counterclockwise'
+  }
+  const { points, paths, orientation } = Object.assign({}, defaults, options)
+
+  if (!(Array.isArray(points) && Array.isArray(paths))) throw new Error('points and paths must be arrays')
+
+  let listofpolys = points
+  if (Array.isArray(points[0])) {
+    if (!Array.isArray(points[0][0])) {
+      // points is an array of something... convert to list
+      listofpolys = [points]
+    }
+  }
+
+  listofpolys.forEach((list, i) => {
+    if (!Array.isArray(list)) throw new Error('list of points ' + i + ' must be an array')
+    if (list.length < 3) throw new Error('list of points ' + i + ' must contain three or more points')
+    list.forEach((point, j) => {
+      if (!Array.isArray(point)) throw new Error('list of points ' + i + ', point ' + j + ' must be an array')
+      if (point.length < 2) throw new Error('list of points ' + i + ', point ' + j + ' must contain by X and Y values')
+    })
+  })
+
+  let listofpaths = paths
+  if (paths.length === 0) {
+    // create a list of paths based on the points
+    let count = 0
+    listofpaths = listofpolys.map((list) => list.map((point) => count++))
+  }
+
+  // flatten the listofpoints for indexed access
+  const allpoints = []
+  listofpolys.forEach((list) => list.forEach((point) => allpoints.push(point)))
+
+  // convert the list of paths into a list of sides, and accumulate
+  let sides = []
+  listofpaths.forEach((path) => {
+    const setofpoints = path.map((index) => allpoints[index])
+    const geometry = geom2.fromPoints(setofpoints)
+    sides = sides.concat(geom2.toSides(geometry))
+  })
+
+  // convert the list of sides into a geometry
+  let geometry =  geom2.create(sides)
+  if (orientation == "clockwise") {
+    geometry = geom2.reverse(geometry)
+  }
+  return geometry
+}
+
+module.exports = polygon
+
+},{"../geometries/geom2":444}],800:[function(require,module,exports){
+arguments[4][391][0].apply(exports,arguments)
+},{"../geometries/geom3":460,"../geometries/poly3":498,"./commonChecks":789,"dup":391}],801:[function(require,module,exports){
+arguments[4][392][0].apply(exports,arguments)
+},{"../geometries/geom2":444,"../maths/vec2":610,"./commonChecks":789,"dup":392}],802:[function(require,module,exports){
+const { EPS, TAU } = require('../maths/constants')
+
+const vec2 = require('../maths/vec2')
+const vec3 = require('../maths/vec3')
+
+const geom3 = require('../geometries/geom3')
+const poly3 = require('../geometries/poly3')
+
+const { sin, cos } = require('../maths/utils/trigonometry')
+
+const { isGTE, isNumberArray } = require('./commonChecks')
+const cuboid = require('./cuboid')
+
+const createCorners = (center, size, radius, segments, slice, positive) => {
+  const pitch = (TAU / 4) * slice / segments
+  const cospitch = cos(pitch)
+  const sinpitch = sin(pitch)
+
+  const layersegments = segments - slice
+  let layerradius = radius * cospitch
+  let layeroffset = size[2] - (radius - (radius * sinpitch))
+  if (!positive) layeroffset = (radius - (radius * sinpitch)) - size[2]
+
+  layerradius = layerradius > EPS ? layerradius : 0
+
+  const corner0 = vec3.add(vec3.create(), center, [size[0] - radius, size[1] - radius, layeroffset])
+  const corner1 = vec3.add(vec3.create(), center, [radius - size[0], size[1] - radius, layeroffset])
+  const corner2 = vec3.add(vec3.create(), center, [radius - size[0], radius - size[1], layeroffset])
+  const corner3 = vec3.add(vec3.create(), center, [size[0] - radius, radius - size[1], layeroffset])
+  const corner0Points = []
+  const corner1Points = []
+  const corner2Points = []
+  const corner3Points = []
+  for (let i = 0; i <= layersegments; i++) {
+    const radians = layersegments > 0 ? TAU / 4 * i / layersegments : 0
+    const point2d = vec2.fromAngleRadians(vec2.create(), radians)
+    vec2.scale(point2d, point2d, layerradius)
+    const point3d = vec3.fromVec2(vec3.create(), point2d)
+    corner0Points.push(vec3.add(vec3.create(), corner0, point3d))
+    vec3.rotateZ(point3d, point3d, [0, 0, 0], TAU / 4)
+    corner1Points.push(vec3.add(vec3.create(), corner1, point3d))
+    vec3.rotateZ(point3d, point3d, [0, 0, 0], TAU / 4)
+    corner2Points.push(vec3.add(vec3.create(), corner2, point3d))
+    vec3.rotateZ(point3d, point3d, [0, 0, 0], TAU / 4)
+    corner3Points.push(vec3.add(vec3.create(), corner3, point3d))
+  }
+  if (!positive) {
+    corner0Points.reverse()
+    corner1Points.reverse()
+    corner2Points.reverse()
+    corner3Points.reverse()
+    return [corner3Points, corner2Points, corner1Points, corner0Points]
+  }
+  return [corner0Points, corner1Points, corner2Points, corner3Points]
+}
+
+const stitchCorners = (previousCorners, currentCorners) => {
+  const polygons = []
+  for (let i = 0; i < previousCorners.length; i++) {
+    const previous = previousCorners[i]
+    const current = currentCorners[i]
+    for (let j = 0; j < (previous.length - 1); j++) {
+      polygons.push(poly3.create([previous[j], previous[j + 1], current[j]]))
+
+      if (j < (current.length - 1)) {
+        polygons.push(poly3.create([current[j], previous[j + 1], current[j + 1]]))
+      }
+    }
+  }
+  return polygons
+}
+
+const stitchWalls = (previousCorners, currentCorners) => {
+  const polygons = []
+  for (let i = 0; i < previousCorners.length; i++) {
+    let previous = previousCorners[i]
+    let current = currentCorners[i]
+    const p0 = previous[previous.length - 1]
+    const c0 = current[current.length - 1]
+
+    const j = (i + 1) % previousCorners.length
+    previous = previousCorners[j]
+    current = currentCorners[j]
+    const p1 = previous[0]
+    const c1 = current[0]
+
+    polygons.push(poly3.create([p0, p1, c1, c0]))
+  }
+  return polygons
+}
+
+const stitchSides = (bottomCorners, topCorners) => {
+  // make a copy and reverse the bottom corners
+  bottomCorners = [bottomCorners[3], bottomCorners[2], bottomCorners[1], bottomCorners[0]]
+  bottomCorners = bottomCorners.map((corner) => corner.slice().reverse())
+
+  const bottomPoints = []
+  bottomCorners.forEach((corner) => {
+    corner.forEach((point) => bottomPoints.push(point))
+  })
+
+  const topPoints = []
+  topCorners.forEach((corner) => {
+    corner.forEach((point) => topPoints.push(point))
+  })
+
+  const polygons = []
+  for (let i = 0; i < topPoints.length; i++) {
+    const j = (i + 1) % topPoints.length
+    polygons.push(poly3.create([bottomPoints[i], bottomPoints[j], topPoints[j], topPoints[i]]))
+  }
+  return polygons
+}
+
+/**
+ * Construct an axis-aligned solid cuboid in three dimensional space with rounded corners.
+ * @param {Object} [options] - options for construction
+ * @param {Array} [options.center=[0,0,0]] - center of rounded cube
+ * @param {Array} [options.size=[2,2,2]] - dimension of rounded cube; width, depth, height
+ * @param {Number} [options.roundRadius=0.2] - radius of rounded edges
+ * @param {Number} [options.segments=32] - number of segments to create per full rotation
+ * @returns {geom3} new 3D geometry
+ * @alias module:modeling/primitives.roundedCuboid
+ *
+ * @example
+ * let mycube = roundedCuboid({size: [10, 20, 10], roundRadius: 2, segments: 16})
+ */
+const roundedCuboid = (options) => {
+  const defaults = {
+    center: [0, 0, 0],
+    size: [2, 2, 2],
+    roundRadius: 0.2,
+    segments: 32
+  }
+  let { center, size, roundRadius, segments } = Object.assign({}, defaults, options)
+
+  if (!isNumberArray(center, 3)) throw new Error('center must be an array of X, Y and Z values')
+  if (!isNumberArray(size, 3)) throw new Error('size must be an array of X, Y and Z values')
+  if (!size.every((n) => n >= 0)) throw new Error('size values must be positive')
+  if (!isGTE(roundRadius, 0)) throw new Error('roundRadius must be positive')
+  if (!isGTE(segments, 4)) throw new Error('segments must be four or more')
+
+  // if any size is zero return empty geometry
+  if (size[0] === 0 || size[1] === 0 || size[2] === 0) return geom3.create()
+
+  // if roundRadius is zero, return cuboid
+  if (roundRadius === 0) return cuboid({ center, size })
+
+  size = size.map((v) => v / 2) // convert to radius
+
+  if (roundRadius > (size[0] - EPS) ||
+      roundRadius > (size[1] - EPS) ||
+      roundRadius > (size[2] - EPS)) throw new Error('roundRadius must be smaller than the radius of all dimensions')
+
+  segments = Math.floor(segments / 4)
+
+  let prevCornersPos = null
+  let prevCornersNeg = null
+  let polygons = []
+  for (let slice = 0; slice <= segments; slice++) {
+    const cornersPos = createCorners(center, size, roundRadius, segments, slice, true)
+    const cornersNeg = createCorners(center, size, roundRadius, segments, slice, false)
+
+    if (slice === 0) {
+      polygons = polygons.concat(stitchSides(cornersNeg, cornersPos))
+    }
+
+    if (prevCornersPos) {
+      polygons = polygons.concat(stitchCorners(prevCornersPos, cornersPos),
+        stitchWalls(prevCornersPos, cornersPos))
+    }
+    if (prevCornersNeg) {
+      polygons = polygons.concat(stitchCorners(prevCornersNeg, cornersNeg),
+        stitchWalls(prevCornersNeg, cornersNeg))
+    }
+
+    if (slice === segments) {
+      // add the top
+      let points = cornersPos.map((corner) => corner[0])
+      polygons.push(poly3.create(points))
+      // add the bottom
+      points = cornersNeg.map((corner) => corner[0])
+      polygons.push(poly3.create(points))
+    }
+
+    prevCornersPos = cornersPos
+    prevCornersNeg = cornersNeg
+  }
+
+  return geom3.create(polygons)
+}
+
+module.exports = roundedCuboid
+
+},{"../geometries/geom3":460,"../geometries/poly3":498,"../maths/constants":513,"../maths/utils/trigonometry":592,"../maths/vec2":610,"../maths/vec3":641,"./commonChecks":789,"./cuboid":791}],803:[function(require,module,exports){
+const { EPS, TAU } = require('../maths/constants')
+
+const vec3 = require('../maths/vec3')
+
+const geom3 = require('../geometries/geom3')
+const poly3 = require('../geometries/poly3')
+
+const { sin, cos } = require('../maths/utils/trigonometry')
+
+const { isGTE, isNumberArray } = require('./commonChecks')
+const cylinder = require('./cylinder')
+
+/**
+ * Construct a Z axis-aligned solid cylinder in three dimensional space with rounded ends.
+ * @param {Object} [options] - options for construction
+ * @param {Array} [options.center=[0,0,0]] - center of cylinder
+ * @param {Number} [options.height=2] - height of cylinder
+ * @param {Number} [options.radius=1] - radius of cylinder
+ * @param {Number} [options.roundRadius=0.2] - radius of rounded edges
+ * @param {Number} [options.segments=32] - number of segments to create per full rotation
+ * @returns {geom3} new 3D geometry
+ * @alias module:modeling/primitives.roundedCylinder
+ *
+ * @example
+ * let myshape = roundedCylinder({ height: 10, radius: 2, roundRadius: 0.5 })
+ */
+const roundedCylinder = (options) => {
+  const defaults = {
+    center: [0, 0, 0],
+    height: 2,
+    radius: 1,
+    roundRadius: 0.2,
+    segments: 32
+  }
+  const { center, height, radius, roundRadius, segments } = Object.assign({}, defaults, options)
+
+  if (!isNumberArray(center, 3)) throw new Error('center must be an array of X, Y and Z values')
+  if (!isGTE(height, 0)) throw new Error('height must be positive')
+  if (!isGTE(radius, 0)) throw new Error('radius must be positive')
+  if (!isGTE(roundRadius, 0)) throw new Error('roundRadius must be positive')
+  if (roundRadius > radius) throw new Error('roundRadius must be smaller than the radius')
+  if (!isGTE(segments, 4)) throw new Error('segments must be four or more')
+
+  // if size is zero return empty geometry
+  if (height === 0 || radius === 0) return geom3.create()
+
+  // if roundRadius is zero, return cylinder
+  if (roundRadius === 0) return cylinder({ center, height, radius })
+
+  const start = [0, 0, -(height / 2)]
+  const end = [0, 0, height / 2]
+  const direction = vec3.subtract(vec3.create(), end, start)
+  const length = vec3.length(direction)
+
+  if ((2 * roundRadius) > (length - EPS)) throw new Error('height must be larger than twice roundRadius')
+
+  let defaultnormal
+  if (Math.abs(direction[0]) > Math.abs(direction[1])) {
+    defaultnormal = vec3.fromValues(0, 1, 0)
+  } else {
+    defaultnormal = vec3.fromValues(1, 0, 0)
+  }
+
+  const zvector = vec3.scale(vec3.create(), vec3.normalize(vec3.create(), direction), roundRadius)
+  const xvector = vec3.scale(vec3.create(), vec3.normalize(vec3.create(), vec3.cross(vec3.create(), zvector, defaultnormal)), radius)
+  const yvector = vec3.scale(vec3.create(), vec3.normalize(vec3.create(), vec3.cross(vec3.create(), xvector, zvector)), radius)
+
+  vec3.add(start, start, zvector)
+  vec3.subtract(end, end, zvector)
+
+  const qsegments = Math.floor(0.25 * segments)
+
+  const fromPoints = (points) => {
+    // adjust the points to center
+    const newpoints = points.map((point) => vec3.add(point, point, center))
+    return poly3.create(newpoints)
+  }
+
+  const polygons = []
+  const v1 = vec3.create()
+  const v2 = vec3.create()
+  let prevcylinderpoint
+  for (let slice1 = 0; slice1 <= segments; slice1++) {
+    const angle = TAU * slice1 / segments
+    const cylinderpoint = vec3.add(vec3.create(), vec3.scale(v1, xvector, cos(angle)), vec3.scale(v2, yvector, sin(angle)))
+    if (slice1 > 0) {
+      // cylinder wall
+      let points = []
+      points.push(vec3.add(vec3.create(), start, cylinderpoint))
+      points.push(vec3.add(vec3.create(), start, prevcylinderpoint))
+      points.push(vec3.add(vec3.create(), end, prevcylinderpoint))
+      points.push(vec3.add(vec3.create(), end, cylinderpoint))
+      polygons.push(fromPoints(points))
+
+      let prevcospitch, prevsinpitch
+      for (let slice2 = 0; slice2 <= qsegments; slice2++) {
+        const pitch = TAU / 4 * slice2 / qsegments
+        const cospitch = cos(pitch)
+        const sinpitch = sin(pitch)
+        if (slice2 > 0) {
+          // cylinder rounding, start
+          points = []
+          let point
+          point = vec3.add(vec3.create(), start, vec3.subtract(v1, vec3.scale(v1, prevcylinderpoint, prevcospitch), vec3.scale(v2, zvector, prevsinpitch)))
+          points.push(point)
+          point = vec3.add(vec3.create(), start, vec3.subtract(v1, vec3.scale(v1, cylinderpoint, prevcospitch), vec3.scale(v2, zvector, prevsinpitch)))
+          points.push(point)
+          if (slice2 < qsegments) {
+            point = vec3.add(vec3.create(), start, vec3.subtract(v1, vec3.scale(v1, cylinderpoint, cospitch), vec3.scale(v2, zvector, sinpitch)))
+            points.push(point)
+          }
+          point = vec3.add(vec3.create(), start, vec3.subtract(v1, vec3.scale(v1, prevcylinderpoint, cospitch), vec3.scale(v2, zvector, sinpitch)))
+          points.push(point)
+
+          polygons.push(fromPoints(points))
+
+          // cylinder rounding, end
+          points = []
+          point = vec3.add(vec3.create(), vec3.scale(v1, prevcylinderpoint, prevcospitch), vec3.scale(v2, zvector, prevsinpitch))
+          vec3.add(point, point, end)
+          points.push(point)
+          point = vec3.add(vec3.create(), vec3.scale(v1, cylinderpoint, prevcospitch), vec3.scale(v2, zvector, prevsinpitch))
+          vec3.add(point, point, end)
+          points.push(point)
+          if (slice2 < qsegments) {
+            point = vec3.add(vec3.create(), vec3.scale(v1, cylinderpoint, cospitch), vec3.scale(v2, zvector, sinpitch))
+            vec3.add(point, point, end)
+            points.push(point)
+          }
+          point = vec3.add(vec3.create(), vec3.scale(v1, prevcylinderpoint, cospitch), vec3.scale(v2, zvector, sinpitch))
+          vec3.add(point, point, end)
+          points.push(point)
+          points.reverse()
+
+          polygons.push(fromPoints(points))
+        }
+        prevcospitch = cospitch
+        prevsinpitch = sinpitch
+      }
+    }
+    prevcylinderpoint = cylinderpoint
+  }
+  const result = geom3.create(polygons)
+  return result
+}
+
+module.exports = roundedCylinder
+
+},{"../geometries/geom3":460,"../geometries/poly3":498,"../maths/constants":513,"../maths/utils/trigonometry":592,"../maths/vec3":641,"./commonChecks":789,"./cylinder":792}],804:[function(require,module,exports){
+const { EPS, TAU } = require('../maths/constants')
+
+const vec2 = require('../maths/vec2')
+
+const geom2 = require('../geometries/geom2')
+
+const { isGTE, isNumberArray } = require('./commonChecks')
+const rectangle = require('./rectangle')
+
+/**
+ * Construct an axis-aligned rectangle in two dimensional space with rounded corners.
+ * @param {Object} [options] - options for construction
+ * @param {Array} [options.center=[0,0]] - center of rounded rectangle
+ * @param {Array} [options.size=[2,2]] - dimension of rounded rectangle; width and length
+ * @param {Number} [options.roundRadius=0.2] - round radius of corners
+ * @param {Number} [options.segments=32] - number of segments to create per full rotation
+ * @returns {geom2} new 2D geometry
+ * @alias module:modeling/primitives.roundedRectangle
+ *
+ * @example
+ * let myshape = roundedRectangle({size: [10, 20], roundRadius: 2})
+ */
+const roundedRectangle = (options) => {
+  const defaults = {
+    center: [0, 0],
+    size: [2, 2],
+    roundRadius: 0.2,
+    segments: 32
+  }
+  let { center, size, roundRadius, segments } = Object.assign({}, defaults, options)
+
+  if (!isNumberArray(center, 2)) throw new Error('center must be an array of X and Y values')
+  if (!isNumberArray(size, 2)) throw new Error('size must be an array of X and Y values')
+  if (!size.every((n) => n >= 0)) throw new Error('size values must be positive')
+  if (!isGTE(roundRadius, 0)) throw new Error('roundRadius must be positive')
+  if (!isGTE(segments, 4)) throw new Error('segments must be four or more')
+
+  // if any size is zero return empty geometry
+  if (size[0] === 0 || size[1] === 0) return geom2.create()
+
+  // if roundRadius is zero, return rectangle
+  if (roundRadius === 0) return rectangle({ center, size })
+
+  size = size.map((v) => v / 2) // convert to radius
+
+  if (roundRadius > (size[0] - EPS) ||
+      roundRadius > (size[1] - EPS)) throw new Error('roundRadius must be smaller than the radius of all dimensions')
+
+  const cornersegments = Math.floor(segments / 4)
+
+  // create sets of points that define the corners
+  const corner0 = vec2.add(vec2.create(), center, [size[0] - roundRadius, size[1] - roundRadius])
+  const corner1 = vec2.add(vec2.create(), center, [roundRadius - size[0], size[1] - roundRadius])
+  const corner2 = vec2.add(vec2.create(), center, [roundRadius - size[0], roundRadius - size[1]])
+  const corner3 = vec2.add(vec2.create(), center, [size[0] - roundRadius, roundRadius - size[1]])
+  const corner0Points = []
+  const corner1Points = []
+  const corner2Points = []
+  const corner3Points = []
+  for (let i = 0; i <= cornersegments; i++) {
+    const radians = TAU / 4 * i / cornersegments
+    const point = vec2.fromAngleRadians(vec2.create(), radians)
+    vec2.scale(point, point, roundRadius)
+    corner0Points.push(vec2.add(vec2.create(), corner0, point))
+    vec2.rotate(point, point, vec2.create(), TAU / 4)
+    corner1Points.push(vec2.add(vec2.create(), corner1, point))
+    vec2.rotate(point, point, vec2.create(), TAU / 4)
+    corner2Points.push(vec2.add(vec2.create(), corner2, point))
+    vec2.rotate(point, point, vec2.create(), TAU / 4)
+    corner3Points.push(vec2.add(vec2.create(), corner3, point))
+  }
+
+  return geom2.fromPoints(corner0Points.concat(corner1Points, corner2Points, corner3Points))
+}
+
+module.exports = roundedRectangle
+
+},{"../geometries/geom2":444,"../maths/constants":513,"../maths/vec2":610,"./commonChecks":789,"./rectangle":801}],805:[function(require,module,exports){
+arguments[4][396][0].apply(exports,arguments)
+},{"./commonChecks":789,"./ellipsoid":795,"dup":396}],806:[function(require,module,exports){
+arguments[4][397][0].apply(exports,arguments)
+},{"./commonChecks":789,"./rectangle":801,"dup":397}],807:[function(require,module,exports){
+arguments[4][398][0].apply(exports,arguments)
+},{"../geometries/geom2":444,"../maths/constants":513,"../maths/vec2":610,"./commonChecks":789,"dup":398}],808:[function(require,module,exports){
+arguments[4][399][0].apply(exports,arguments)
+},{"../maths/constants":513,"../operations/extrusions/extrudeRotate":735,"../operations/transforms/rotate":783,"../operations/transforms/translate":786,"./circle":788,"./commonChecks":789,"dup":399}],809:[function(require,module,exports){
+arguments[4][400][0].apply(exports,arguments)
+},{"../geometries/geom2":444,"../maths/constants":513,"../maths/vec2":610,"./commonChecks":789,"dup":400}],810:[function(require,module,exports){
+arguments[4][401][0].apply(exports,arguments)
+},{"dup":401}],811:[function(require,module,exports){
+arguments[4][402][0].apply(exports,arguments)
+},{"./vectorChar":812,"./vectorText":814,"dup":402}],812:[function(require,module,exports){
+arguments[4][403][0].apply(exports,arguments)
+},{"./vectorParams":813,"dup":403}],813:[function(require,module,exports){
+arguments[4][404][0].apply(exports,arguments)
+},{"./fonts/single-line/hershey/simplex.js":810,"dup":404}],814:[function(require,module,exports){
+arguments[4][405][0].apply(exports,arguments)
+},{"./vectorChar":812,"./vectorParams":813,"dup":405}],815:[function(require,module,exports){
+arguments[4][406][0].apply(exports,arguments)
+},{"../geometries/geom2":444,"../geometries/geom3":460,"../geometries/path2":481,"dup":406}],816:[function(require,module,exports){
+arguments[4][407][0].apply(exports,arguments)
+},{"dup":407}],817:[function(require,module,exports){
+arguments[4][408][0].apply(exports,arguments)
+},{"dup":408}],818:[function(require,module,exports){
+arguments[4][409][0].apply(exports,arguments)
+},{"dup":409}],819:[function(require,module,exports){
+arguments[4][410][0].apply(exports,arguments)
+},{"./areAllShapesTheSameType":815,"./degToRad":816,"./flatten":817,"./fnNumberSort":818,"./insertSorted":820,"./radToDeg":822,"./radiusToSegments":823,"dup":410}],820:[function(require,module,exports){
+arguments[4][411][0].apply(exports,arguments)
+},{"dup":411}],821:[function(require,module,exports){
+arguments[4][412][0].apply(exports,arguments)
+},{"dup":412}],822:[function(require,module,exports){
+arguments[4][413][0].apply(exports,arguments)
+},{"dup":413}],823:[function(require,module,exports){
+arguments[4][414][0].apply(exports,arguments)
+},{"../maths/constants":513,"dup":414}],824:[function(require,module,exports){
 const { geometries } = require('@jscad/modeling')
 
 // objects must be an array of 3D geomertries (with polygons)
@@ -22834,7 +24964,7 @@ module.exports = {
   serializeText
 }
 
-},{"@jscad/modeling":108}],420:[function(require,module,exports){
+},{"@jscad/modeling":511}],825:[function(require,module,exports){
 const { geometries } = require('@jscad/modeling')
 
 // see http://en.wikipedia.org/wiki/STL_%28file_format%29#Binary_STL
@@ -22924,7 +25054,7 @@ module.exports = {
   serializeBinary
 }
 
-},{"@jscad/modeling":108}],421:[function(require,module,exports){
+},{"@jscad/modeling":511}],826:[function(require,module,exports){
 /*
 JSCAD Geometry to STL Format Serialization
 
@@ -22997,7 +25127,2694 @@ module.exports = {
   serialize
 }
 
-},{"./CSGToStla":419,"./CSGToStlb":420,"@jscad/array-utils":5,"@jscad/modeling":108}],422:[function(require,module,exports){
+},{"./CSGToStla":824,"./CSGToStlb":825,"@jscad/array-utils":6,"@jscad/modeling":511}],827:[function(require,module,exports){
+"use strict";
+// DEFLATE is a complex format; to read this code, you should probably check the RFC first:
+// https://tools.ietf.org/html/rfc1951
+// You may also wish to take a look at the guide I made about this program:
+// https://gist.github.com/101arrowz/253f31eb5abc3d9275ab943003ffecad
+// Some of the following code is similar to that of UZIP.js:
+// https://github.com/photopea/UZIP.js
+// However, the vast majority of the codebase has diverged from UZIP.js to increase performance and reduce bundle size.
+// Sometimes 0 will appear where -1 would be more appropriate. This is because using a uint
+// is better for memory in most engines (I *think*).
+var node_worker_1 = require("./node-worker.cjs");
+// aliases for shorter compressed code (most minifers don't do this)
+var u8 = Uint8Array, u16 = Uint16Array, u32 = Uint32Array;
+// fixed length extra bits
+var fleb = new u8([0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5, 5, 0, /* unused */ 0, 0, /* impossible */ 0]);
+// fixed distance extra bits
+// see fleb note
+var fdeb = new u8([0, 0, 0, 0, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 8, 8, 9, 9, 10, 10, 11, 11, 12, 12, 13, 13, /* unused */ 0, 0]);
+// code length index map
+var clim = new u8([16, 17, 18, 0, 8, 7, 9, 6, 10, 5, 11, 4, 12, 3, 13, 2, 14, 1, 15]);
+// get base, reverse index map from extra bits
+var freb = function (eb, start) {
+    var b = new u16(31);
+    for (var i = 0; i < 31; ++i) {
+        b[i] = start += 1 << eb[i - 1];
+    }
+    // numbers here are at max 18 bits
+    var r = new u32(b[30]);
+    for (var i = 1; i < 30; ++i) {
+        for (var j = b[i]; j < b[i + 1]; ++j) {
+            r[j] = ((j - b[i]) << 5) | i;
+        }
+    }
+    return [b, r];
+};
+var _a = freb(fleb, 2), fl = _a[0], revfl = _a[1];
+// we can ignore the fact that the other numbers are wrong; they never happen anyway
+fl[28] = 258, revfl[258] = 28;
+var _b = freb(fdeb, 0), fd = _b[0], revfd = _b[1];
+// map of value to reverse (assuming 16 bits)
+var rev = new u16(32768);
+for (var i = 0; i < 32768; ++i) {
+    // reverse table algorithm from SO
+    var x = ((i & 0xAAAA) >>> 1) | ((i & 0x5555) << 1);
+    x = ((x & 0xCCCC) >>> 2) | ((x & 0x3333) << 2);
+    x = ((x & 0xF0F0) >>> 4) | ((x & 0x0F0F) << 4);
+    rev[i] = (((x & 0xFF00) >>> 8) | ((x & 0x00FF) << 8)) >>> 1;
+}
+// create huffman tree from u8 "map": index -> code length for code index
+// mb (max bits) must be at most 15
+// TODO: optimize/split up?
+var hMap = (function (cd, mb, r) {
+    var s = cd.length;
+    // index
+    var i = 0;
+    // u16 "map": index -> # of codes with bit length = index
+    var l = new u16(mb);
+    // length of cd must be 288 (total # of codes)
+    for (; i < s; ++i) {
+        if (cd[i])
+            ++l[cd[i] - 1];
+    }
+    // u16 "map": index -> minimum code for bit length = index
+    var le = new u16(mb);
+    for (i = 0; i < mb; ++i) {
+        le[i] = (le[i - 1] + l[i - 1]) << 1;
+    }
+    var co;
+    if (r) {
+        // u16 "map": index -> number of actual bits, symbol for code
+        co = new u16(1 << mb);
+        // bits to remove for reverser
+        var rvb = 15 - mb;
+        for (i = 0; i < s; ++i) {
+            // ignore 0 lengths
+            if (cd[i]) {
+                // num encoding both symbol and bits read
+                var sv = (i << 4) | cd[i];
+                // free bits
+                var r_1 = mb - cd[i];
+                // start value
+                var v = le[cd[i] - 1]++ << r_1;
+                // m is end value
+                for (var m = v | ((1 << r_1) - 1); v <= m; ++v) {
+                    // every 16 bit value starting with the code yields the same result
+                    co[rev[v] >>> rvb] = sv;
+                }
+            }
+        }
+    }
+    else {
+        co = new u16(s);
+        for (i = 0; i < s; ++i) {
+            if (cd[i]) {
+                co[i] = rev[le[cd[i] - 1]++] >>> (15 - cd[i]);
+            }
+        }
+    }
+    return co;
+});
+// fixed length tree
+var flt = new u8(288);
+for (var i = 0; i < 144; ++i)
+    flt[i] = 8;
+for (var i = 144; i < 256; ++i)
+    flt[i] = 9;
+for (var i = 256; i < 280; ++i)
+    flt[i] = 7;
+for (var i = 280; i < 288; ++i)
+    flt[i] = 8;
+// fixed distance tree
+var fdt = new u8(32);
+for (var i = 0; i < 32; ++i)
+    fdt[i] = 5;
+// fixed length map
+var flm = /*#__PURE__*/ hMap(flt, 9, 0), flrm = /*#__PURE__*/ hMap(flt, 9, 1);
+// fixed distance map
+var fdm = /*#__PURE__*/ hMap(fdt, 5, 0), fdrm = /*#__PURE__*/ hMap(fdt, 5, 1);
+// find max of array
+var max = function (a) {
+    var m = a[0];
+    for (var i = 1; i < a.length; ++i) {
+        if (a[i] > m)
+            m = a[i];
+    }
+    return m;
+};
+// read d, starting at bit p and mask with m
+var bits = function (d, p, m) {
+    var o = (p / 8) | 0;
+    return ((d[o] | (d[o + 1] << 8)) >> (p & 7)) & m;
+};
+// read d, starting at bit p continuing for at least 16 bits
+var bits16 = function (d, p) {
+    var o = (p / 8) | 0;
+    return ((d[o] | (d[o + 1] << 8) | (d[o + 2] << 16)) >> (p & 7));
+};
+// get end of byte
+var shft = function (p) { return ((p + 7) / 8) | 0; };
+// typed array slice - allows garbage collector to free original reference,
+// while being more compatible than .slice
+var slc = function (v, s, e) {
+    if (s == null || s < 0)
+        s = 0;
+    if (e == null || e > v.length)
+        e = v.length;
+    // can't use .constructor in case user-supplied
+    var n = new (v.BYTES_PER_ELEMENT == 2 ? u16 : v.BYTES_PER_ELEMENT == 4 ? u32 : u8)(e - s);
+    n.set(v.subarray(s, e));
+    return n;
+};
+/**
+ * Codes for errors generated within this library
+ */
+exports.FlateErrorCode = {
+    UnexpectedEOF: 0,
+    InvalidBlockType: 1,
+    InvalidLengthLiteral: 2,
+    InvalidDistance: 3,
+    StreamFinished: 4,
+    NoStreamHandler: 5,
+    InvalidHeader: 6,
+    NoCallback: 7,
+    InvalidUTF8: 8,
+    ExtraFieldTooLong: 9,
+    InvalidDate: 10,
+    FilenameTooLong: 11,
+    StreamFinishing: 12,
+    InvalidZipData: 13,
+    UnknownCompressionMethod: 14
+};
+// error codes
+var ec = [
+    'unexpected EOF',
+    'invalid block type',
+    'invalid length/literal',
+    'invalid distance',
+    'stream finished',
+    'no stream handler',
+    ,
+    'no callback',
+    'invalid UTF-8 data',
+    'extra field too long',
+    'date not in range 1980-2099',
+    'filename too long',
+    'stream finishing',
+    'invalid zip data'
+    // determined by unknown compression method
+];
+;
+var err = function (ind, msg, nt) {
+    var e = new Error(msg || ec[ind]);
+    e.code = ind;
+    if (Error.captureStackTrace)
+        Error.captureStackTrace(e, err);
+    if (!nt)
+        throw e;
+    return e;
+};
+// expands raw DEFLATE data
+var inflt = function (dat, buf, st) {
+    // source length
+    var sl = dat.length;
+    if (!sl || (st && st.f && !st.l))
+        return buf || new u8(0);
+    // have to estimate size
+    var noBuf = !buf || st;
+    // no state
+    var noSt = !st || st.i;
+    if (!st)
+        st = {};
+    // Assumes roughly 33% compression ratio average
+    if (!buf)
+        buf = new u8(sl * 3);
+    // ensure buffer can fit at least l elements
+    var cbuf = function (l) {
+        var bl = buf.length;
+        // need to increase size to fit
+        if (l > bl) {
+            // Double or set to necessary, whichever is greater
+            var nbuf = new u8(Math.max(bl * 2, l));
+            nbuf.set(buf);
+            buf = nbuf;
+        }
+    };
+    //  last chunk         bitpos           bytes
+    var final = st.f || 0, pos = st.p || 0, bt = st.b || 0, lm = st.l, dm = st.d, lbt = st.m, dbt = st.n;
+    // total bits
+    var tbts = sl * 8;
+    do {
+        if (!lm) {
+            // BFINAL - this is only 1 when last chunk is next
+            final = bits(dat, pos, 1);
+            // type: 0 = no compression, 1 = fixed huffman, 2 = dynamic huffman
+            var type = bits(dat, pos + 1, 3);
+            pos += 3;
+            if (!type) {
+                // go to end of byte boundary
+                var s = shft(pos) + 4, l = dat[s - 4] | (dat[s - 3] << 8), t = s + l;
+                if (t > sl) {
+                    if (noSt)
+                        err(0);
+                    break;
+                }
+                // ensure size
+                if (noBuf)
+                    cbuf(bt + l);
+                // Copy over uncompressed data
+                buf.set(dat.subarray(s, t), bt);
+                // Get new bitpos, update byte count
+                st.b = bt += l, st.p = pos = t * 8, st.f = final;
+                continue;
+            }
+            else if (type == 1)
+                lm = flrm, dm = fdrm, lbt = 9, dbt = 5;
+            else if (type == 2) {
+                //  literal                            lengths
+                var hLit = bits(dat, pos, 31) + 257, hcLen = bits(dat, pos + 10, 15) + 4;
+                var tl = hLit + bits(dat, pos + 5, 31) + 1;
+                pos += 14;
+                // length+distance tree
+                var ldt = new u8(tl);
+                // code length tree
+                var clt = new u8(19);
+                for (var i = 0; i < hcLen; ++i) {
+                    // use index map to get real code
+                    clt[clim[i]] = bits(dat, pos + i * 3, 7);
+                }
+                pos += hcLen * 3;
+                // code lengths bits
+                var clb = max(clt), clbmsk = (1 << clb) - 1;
+                // code lengths map
+                var clm = hMap(clt, clb, 1);
+                for (var i = 0; i < tl;) {
+                    var r = clm[bits(dat, pos, clbmsk)];
+                    // bits read
+                    pos += r & 15;
+                    // symbol
+                    var s = r >>> 4;
+                    // code length to copy
+                    if (s < 16) {
+                        ldt[i++] = s;
+                    }
+                    else {
+                        //  copy   count
+                        var c = 0, n = 0;
+                        if (s == 16)
+                            n = 3 + bits(dat, pos, 3), pos += 2, c = ldt[i - 1];
+                        else if (s == 17)
+                            n = 3 + bits(dat, pos, 7), pos += 3;
+                        else if (s == 18)
+                            n = 11 + bits(dat, pos, 127), pos += 7;
+                        while (n--)
+                            ldt[i++] = c;
+                    }
+                }
+                //    length tree                 distance tree
+                var lt = ldt.subarray(0, hLit), dt = ldt.subarray(hLit);
+                // max length bits
+                lbt = max(lt);
+                // max dist bits
+                dbt = max(dt);
+                lm = hMap(lt, lbt, 1);
+                dm = hMap(dt, dbt, 1);
+            }
+            else
+                err(1);
+            if (pos > tbts) {
+                if (noSt)
+                    err(0);
+                break;
+            }
+        }
+        // Make sure the buffer can hold this + the largest possible addition
+        // Maximum chunk size (practically, theoretically infinite) is 2^17;
+        if (noBuf)
+            cbuf(bt + 131072);
+        var lms = (1 << lbt) - 1, dms = (1 << dbt) - 1;
+        var lpos = pos;
+        for (;; lpos = pos) {
+            // bits read, code
+            var c = lm[bits16(dat, pos) & lms], sym = c >>> 4;
+            pos += c & 15;
+            if (pos > tbts) {
+                if (noSt)
+                    err(0);
+                break;
+            }
+            if (!c)
+                err(2);
+            if (sym < 256)
+                buf[bt++] = sym;
+            else if (sym == 256) {
+                lpos = pos, lm = null;
+                break;
+            }
+            else {
+                var add = sym - 254;
+                // no extra bits needed if less
+                if (sym > 264) {
+                    // index
+                    var i = sym - 257, b = fleb[i];
+                    add = bits(dat, pos, (1 << b) - 1) + fl[i];
+                    pos += b;
+                }
+                // dist
+                var d = dm[bits16(dat, pos) & dms], dsym = d >>> 4;
+                if (!d)
+                    err(3);
+                pos += d & 15;
+                var dt = fd[dsym];
+                if (dsym > 3) {
+                    var b = fdeb[dsym];
+                    dt += bits16(dat, pos) & ((1 << b) - 1), pos += b;
+                }
+                if (pos > tbts) {
+                    if (noSt)
+                        err(0);
+                    break;
+                }
+                if (noBuf)
+                    cbuf(bt + 131072);
+                var end = bt + add;
+                for (; bt < end; bt += 4) {
+                    buf[bt] = buf[bt - dt];
+                    buf[bt + 1] = buf[bt + 1 - dt];
+                    buf[bt + 2] = buf[bt + 2 - dt];
+                    buf[bt + 3] = buf[bt + 3 - dt];
+                }
+                bt = end;
+            }
+        }
+        st.l = lm, st.p = lpos, st.b = bt, st.f = final;
+        if (lm)
+            final = 1, st.m = lbt, st.d = dm, st.n = dbt;
+    } while (!final);
+    return bt == buf.length ? buf : slc(buf, 0, bt);
+};
+// starting at p, write the minimum number of bits that can hold v to d
+var wbits = function (d, p, v) {
+    v <<= p & 7;
+    var o = (p / 8) | 0;
+    d[o] |= v;
+    d[o + 1] |= v >>> 8;
+};
+// starting at p, write the minimum number of bits (>8) that can hold v to d
+var wbits16 = function (d, p, v) {
+    v <<= p & 7;
+    var o = (p / 8) | 0;
+    d[o] |= v;
+    d[o + 1] |= v >>> 8;
+    d[o + 2] |= v >>> 16;
+};
+// creates code lengths from a frequency table
+var hTree = function (d, mb) {
+    // Need extra info to make a tree
+    var t = [];
+    for (var i = 0; i < d.length; ++i) {
+        if (d[i])
+            t.push({ s: i, f: d[i] });
+    }
+    var s = t.length;
+    var t2 = t.slice();
+    if (!s)
+        return [et, 0];
+    if (s == 1) {
+        var v = new u8(t[0].s + 1);
+        v[t[0].s] = 1;
+        return [v, 1];
+    }
+    t.sort(function (a, b) { return a.f - b.f; });
+    // after i2 reaches last ind, will be stopped
+    // freq must be greater than largest possible number of symbols
+    t.push({ s: -1, f: 25001 });
+    var l = t[0], r = t[1], i0 = 0, i1 = 1, i2 = 2;
+    t[0] = { s: -1, f: l.f + r.f, l: l, r: r };
+    // efficient algorithm from UZIP.js
+    // i0 is lookbehind, i2 is lookahead - after processing two low-freq
+    // symbols that combined have high freq, will start processing i2 (high-freq,
+    // non-composite) symbols instead
+    // see https://reddit.com/r/photopea/comments/ikekht/uzipjs_questions/
+    while (i1 != s - 1) {
+        l = t[t[i0].f < t[i2].f ? i0++ : i2++];
+        r = t[i0 != i1 && t[i0].f < t[i2].f ? i0++ : i2++];
+        t[i1++] = { s: -1, f: l.f + r.f, l: l, r: r };
+    }
+    var maxSym = t2[0].s;
+    for (var i = 1; i < s; ++i) {
+        if (t2[i].s > maxSym)
+            maxSym = t2[i].s;
+    }
+    // code lengths
+    var tr = new u16(maxSym + 1);
+    // max bits in tree
+    var mbt = ln(t[i1 - 1], tr, 0);
+    if (mbt > mb) {
+        // more algorithms from UZIP.js
+        // TODO: find out how this code works (debt)
+        //  ind    debt
+        var i = 0, dt = 0;
+        //    left            cost
+        var lft = mbt - mb, cst = 1 << lft;
+        t2.sort(function (a, b) { return tr[b.s] - tr[a.s] || a.f - b.f; });
+        for (; i < s; ++i) {
+            var i2_1 = t2[i].s;
+            if (tr[i2_1] > mb) {
+                dt += cst - (1 << (mbt - tr[i2_1]));
+                tr[i2_1] = mb;
+            }
+            else
+                break;
+        }
+        dt >>>= lft;
+        while (dt > 0) {
+            var i2_2 = t2[i].s;
+            if (tr[i2_2] < mb)
+                dt -= 1 << (mb - tr[i2_2]++ - 1);
+            else
+                ++i;
+        }
+        for (; i >= 0 && dt; --i) {
+            var i2_3 = t2[i].s;
+            if (tr[i2_3] == mb) {
+                --tr[i2_3];
+                ++dt;
+            }
+        }
+        mbt = mb;
+    }
+    return [new u8(tr), mbt];
+};
+// get the max length and assign length codes
+var ln = function (n, l, d) {
+    return n.s == -1
+        ? Math.max(ln(n.l, l, d + 1), ln(n.r, l, d + 1))
+        : (l[n.s] = d);
+};
+// length codes generation
+var lc = function (c) {
+    var s = c.length;
+    // Note that the semicolon was intentional
+    while (s && !c[--s])
+        ;
+    var cl = new u16(++s);
+    //  ind      num         streak
+    var cli = 0, cln = c[0], cls = 1;
+    var w = function (v) { cl[cli++] = v; };
+    for (var i = 1; i <= s; ++i) {
+        if (c[i] == cln && i != s)
+            ++cls;
+        else {
+            if (!cln && cls > 2) {
+                for (; cls > 138; cls -= 138)
+                    w(32754);
+                if (cls > 2) {
+                    w(cls > 10 ? ((cls - 11) << 5) | 28690 : ((cls - 3) << 5) | 12305);
+                    cls = 0;
+                }
+            }
+            else if (cls > 3) {
+                w(cln), --cls;
+                for (; cls > 6; cls -= 6)
+                    w(8304);
+                if (cls > 2)
+                    w(((cls - 3) << 5) | 8208), cls = 0;
+            }
+            while (cls--)
+                w(cln);
+            cls = 1;
+            cln = c[i];
+        }
+    }
+    return [cl.subarray(0, cli), s];
+};
+// calculate the length of output from tree, code lengths
+var clen = function (cf, cl) {
+    var l = 0;
+    for (var i = 0; i < cl.length; ++i)
+        l += cf[i] * cl[i];
+    return l;
+};
+// writes a fixed block
+// returns the new bit pos
+var wfblk = function (out, pos, dat) {
+    // no need to write 00 as type: TypedArray defaults to 0
+    var s = dat.length;
+    var o = shft(pos + 2);
+    out[o] = s & 255;
+    out[o + 1] = s >>> 8;
+    out[o + 2] = out[o] ^ 255;
+    out[o + 3] = out[o + 1] ^ 255;
+    for (var i = 0; i < s; ++i)
+        out[o + i + 4] = dat[i];
+    return (o + 4 + s) * 8;
+};
+// writes a block
+var wblk = function (dat, out, final, syms, lf, df, eb, li, bs, bl, p) {
+    wbits(out, p++, final);
+    ++lf[256];
+    var _a = hTree(lf, 15), dlt = _a[0], mlb = _a[1];
+    var _b = hTree(df, 15), ddt = _b[0], mdb = _b[1];
+    var _c = lc(dlt), lclt = _c[0], nlc = _c[1];
+    var _d = lc(ddt), lcdt = _d[0], ndc = _d[1];
+    var lcfreq = new u16(19);
+    for (var i = 0; i < lclt.length; ++i)
+        lcfreq[lclt[i] & 31]++;
+    for (var i = 0; i < lcdt.length; ++i)
+        lcfreq[lcdt[i] & 31]++;
+    var _e = hTree(lcfreq, 7), lct = _e[0], mlcb = _e[1];
+    var nlcc = 19;
+    for (; nlcc > 4 && !lct[clim[nlcc - 1]]; --nlcc)
+        ;
+    var flen = (bl + 5) << 3;
+    var ftlen = clen(lf, flt) + clen(df, fdt) + eb;
+    var dtlen = clen(lf, dlt) + clen(df, ddt) + eb + 14 + 3 * nlcc + clen(lcfreq, lct) + (2 * lcfreq[16] + 3 * lcfreq[17] + 7 * lcfreq[18]);
+    if (flen <= ftlen && flen <= dtlen)
+        return wfblk(out, p, dat.subarray(bs, bs + bl));
+    var lm, ll, dm, dl;
+    wbits(out, p, 1 + (dtlen < ftlen)), p += 2;
+    if (dtlen < ftlen) {
+        lm = hMap(dlt, mlb, 0), ll = dlt, dm = hMap(ddt, mdb, 0), dl = ddt;
+        var llm = hMap(lct, mlcb, 0);
+        wbits(out, p, nlc - 257);
+        wbits(out, p + 5, ndc - 1);
+        wbits(out, p + 10, nlcc - 4);
+        p += 14;
+        for (var i = 0; i < nlcc; ++i)
+            wbits(out, p + 3 * i, lct[clim[i]]);
+        p += 3 * nlcc;
+        var lcts = [lclt, lcdt];
+        for (var it = 0; it < 2; ++it) {
+            var clct = lcts[it];
+            for (var i = 0; i < clct.length; ++i) {
+                var len = clct[i] & 31;
+                wbits(out, p, llm[len]), p += lct[len];
+                if (len > 15)
+                    wbits(out, p, (clct[i] >>> 5) & 127), p += clct[i] >>> 12;
+            }
+        }
+    }
+    else {
+        lm = flm, ll = flt, dm = fdm, dl = fdt;
+    }
+    for (var i = 0; i < li; ++i) {
+        if (syms[i] > 255) {
+            var len = (syms[i] >>> 18) & 31;
+            wbits16(out, p, lm[len + 257]), p += ll[len + 257];
+            if (len > 7)
+                wbits(out, p, (syms[i] >>> 23) & 31), p += fleb[len];
+            var dst = syms[i] & 31;
+            wbits16(out, p, dm[dst]), p += dl[dst];
+            if (dst > 3)
+                wbits16(out, p, (syms[i] >>> 5) & 8191), p += fdeb[dst];
+        }
+        else {
+            wbits16(out, p, lm[syms[i]]), p += ll[syms[i]];
+        }
+    }
+    wbits16(out, p, lm[256]);
+    return p + ll[256];
+};
+// deflate options (nice << 13) | chain
+var deo = /*#__PURE__*/ new u32([65540, 131080, 131088, 131104, 262176, 1048704, 1048832, 2114560, 2117632]);
+// empty
+var et = /*#__PURE__*/ new u8(0);
+// compresses data into a raw DEFLATE buffer
+var dflt = function (dat, lvl, plvl, pre, post, lst) {
+    var s = dat.length;
+    var o = new u8(pre + s + 5 * (1 + Math.ceil(s / 7000)) + post);
+    // writing to this writes to the output buffer
+    var w = o.subarray(pre, o.length - post);
+    var pos = 0;
+    if (!lvl || s < 8) {
+        for (var i = 0; i <= s; i += 65535) {
+            // end
+            var e = i + 65535;
+            if (e >= s) {
+                // write final block
+                w[pos >> 3] = lst;
+            }
+            pos = wfblk(w, pos + 1, dat.subarray(i, e));
+        }
+    }
+    else {
+        var opt = deo[lvl - 1];
+        var n = opt >>> 13, c = opt & 8191;
+        var msk_1 = (1 << plvl) - 1;
+        //    prev 2-byte val map    curr 2-byte val map
+        var prev = new u16(32768), head = new u16(msk_1 + 1);
+        var bs1_1 = Math.ceil(plvl / 3), bs2_1 = 2 * bs1_1;
+        var hsh = function (i) { return (dat[i] ^ (dat[i + 1] << bs1_1) ^ (dat[i + 2] << bs2_1)) & msk_1; };
+        // 24576 is an arbitrary number of maximum symbols per block
+        // 424 buffer for last block
+        var syms = new u32(25000);
+        // length/literal freq   distance freq
+        var lf = new u16(288), df = new u16(32);
+        //  l/lcnt  exbits  index  l/lind  waitdx  bitpos
+        var lc_1 = 0, eb = 0, i = 0, li = 0, wi = 0, bs = 0;
+        for (; i < s; ++i) {
+            // hash value
+            // deopt when i > s - 3 - at end, deopt acceptable
+            var hv = hsh(i);
+            // index mod 32768    previous index mod
+            var imod = i & 32767, pimod = head[hv];
+            prev[imod] = pimod;
+            head[hv] = imod;
+            // We always should modify head and prev, but only add symbols if
+            // this data is not yet processed ("wait" for wait index)
+            if (wi <= i) {
+                // bytes remaining
+                var rem = s - i;
+                if ((lc_1 > 7000 || li > 24576) && rem > 423) {
+                    pos = wblk(dat, w, 0, syms, lf, df, eb, li, bs, i - bs, pos);
+                    li = lc_1 = eb = 0, bs = i;
+                    for (var j = 0; j < 286; ++j)
+                        lf[j] = 0;
+                    for (var j = 0; j < 30; ++j)
+                        df[j] = 0;
+                }
+                //  len    dist   chain
+                var l = 2, d = 0, ch_1 = c, dif = (imod - pimod) & 32767;
+                if (rem > 2 && hv == hsh(i - dif)) {
+                    var maxn = Math.min(n, rem) - 1;
+                    var maxd = Math.min(32767, i);
+                    // max possible length
+                    // not capped at dif because decompressors implement "rolling" index population
+                    var ml = Math.min(258, rem);
+                    while (dif <= maxd && --ch_1 && imod != pimod) {
+                        if (dat[i + l] == dat[i + l - dif]) {
+                            var nl = 0;
+                            for (; nl < ml && dat[i + nl] == dat[i + nl - dif]; ++nl)
+                                ;
+                            if (nl > l) {
+                                l = nl, d = dif;
+                                // break out early when we reach "nice" (we are satisfied enough)
+                                if (nl > maxn)
+                                    break;
+                                // now, find the rarest 2-byte sequence within this
+                                // length of literals and search for that instead.
+                                // Much faster than just using the start
+                                var mmd = Math.min(dif, nl - 2);
+                                var md = 0;
+                                for (var j = 0; j < mmd; ++j) {
+                                    var ti = (i - dif + j + 32768) & 32767;
+                                    var pti = prev[ti];
+                                    var cd = (ti - pti + 32768) & 32767;
+                                    if (cd > md)
+                                        md = cd, pimod = ti;
+                                }
+                            }
+                        }
+                        // check the previous match
+                        imod = pimod, pimod = prev[imod];
+                        dif += (imod - pimod + 32768) & 32767;
+                    }
+                }
+                // d will be nonzero only when a match was found
+                if (d) {
+                    // store both dist and len data in one Uint32
+                    // Make sure this is recognized as a len/dist with 28th bit (2^28)
+                    syms[li++] = 268435456 | (revfl[l] << 18) | revfd[d];
+                    var lin = revfl[l] & 31, din = revfd[d] & 31;
+                    eb += fleb[lin] + fdeb[din];
+                    ++lf[257 + lin];
+                    ++df[din];
+                    wi = i + l;
+                    ++lc_1;
+                }
+                else {
+                    syms[li++] = dat[i];
+                    ++lf[dat[i]];
+                }
+            }
+        }
+        pos = wblk(dat, w, lst, syms, lf, df, eb, li, bs, i - bs, pos);
+        // this is the easiest way to avoid needing to maintain state
+        if (!lst && pos & 7)
+            pos = wfblk(w, pos + 1, et);
+    }
+    return slc(o, 0, pre + shft(pos) + post);
+};
+// CRC32 table
+var crct = /*#__PURE__*/ (function () {
+    var t = new Int32Array(256);
+    for (var i = 0; i < 256; ++i) {
+        var c = i, k = 9;
+        while (--k)
+            c = ((c & 1) && -306674912) ^ (c >>> 1);
+        t[i] = c;
+    }
+    return t;
+})();
+// CRC32
+var crc = function () {
+    var c = -1;
+    return {
+        p: function (d) {
+            // closures have awful performance
+            var cr = c;
+            for (var i = 0; i < d.length; ++i)
+                cr = crct[(cr & 255) ^ d[i]] ^ (cr >>> 8);
+            c = cr;
+        },
+        d: function () { return ~c; }
+    };
+};
+// Alder32
+var adler = function () {
+    var a = 1, b = 0;
+    return {
+        p: function (d) {
+            // closures have awful performance
+            var n = a, m = b;
+            var l = d.length | 0;
+            for (var i = 0; i != l;) {
+                var e = Math.min(i + 2655, l);
+                for (; i < e; ++i)
+                    m += n += d[i];
+                n = (n & 65535) + 15 * (n >> 16), m = (m & 65535) + 15 * (m >> 16);
+            }
+            a = n, b = m;
+        },
+        d: function () {
+            a %= 65521, b %= 65521;
+            return (a & 255) << 24 | (a >>> 8) << 16 | (b & 255) << 8 | (b >>> 8);
+        }
+    };
+};
+;
+// deflate with opts
+var dopt = function (dat, opt, pre, post, st) {
+    return dflt(dat, opt.level == null ? 6 : opt.level, opt.mem == null ? Math.ceil(Math.max(8, Math.min(13, Math.log(dat.length))) * 1.5) : (12 + opt.mem), pre, post, !st);
+};
+// Walmart object spread
+var mrg = function (a, b) {
+    var o = {};
+    for (var k in a)
+        o[k] = a[k];
+    for (var k in b)
+        o[k] = b[k];
+    return o;
+};
+// worker clone
+// This is possibly the craziest part of the entire codebase, despite how simple it may seem.
+// The only parameter to this function is a closure that returns an array of variables outside of the function scope.
+// We're going to try to figure out the variable names used in the closure as strings because that is crucial for workerization.
+// We will return an object mapping of true variable name to value (basically, the current scope as a JS object).
+// The reason we can't just use the original variable names is minifiers mangling the toplevel scope.
+// This took me three weeks to figure out how to do.
+var wcln = function (fn, fnStr, td) {
+    var dt = fn();
+    var st = fn.toString();
+    var ks = st.slice(st.indexOf('[') + 1, st.lastIndexOf(']')).replace(/\s+/g, '').split(',');
+    for (var i = 0; i < dt.length; ++i) {
+        var v = dt[i], k = ks[i];
+        if (typeof v == 'function') {
+            fnStr += ';' + k + '=';
+            var st_1 = v.toString();
+            if (v.prototype) {
+                // for global objects
+                if (st_1.indexOf('[native code]') != -1) {
+                    var spInd = st_1.indexOf(' ', 8) + 1;
+                    fnStr += st_1.slice(spInd, st_1.indexOf('(', spInd));
+                }
+                else {
+                    fnStr += st_1;
+                    for (var t in v.prototype)
+                        fnStr += ';' + k + '.prototype.' + t + '=' + v.prototype[t].toString();
+                }
+            }
+            else
+                fnStr += st_1;
+        }
+        else
+            td[k] = v;
+    }
+    return [fnStr, td];
+};
+var ch = [];
+// clone bufs
+var cbfs = function (v) {
+    var tl = [];
+    for (var k in v) {
+        if (v[k].buffer) {
+            tl.push((v[k] = new v[k].constructor(v[k])).buffer);
+        }
+    }
+    return tl;
+};
+// use a worker to execute code
+var wrkr = function (fns, init, id, cb) {
+    var _a;
+    if (!ch[id]) {
+        var fnStr = '', td_1 = {}, m = fns.length - 1;
+        for (var i = 0; i < m; ++i)
+            _a = wcln(fns[i], fnStr, td_1), fnStr = _a[0], td_1 = _a[1];
+        ch[id] = wcln(fns[m], fnStr, td_1);
+    }
+    var td = mrg({}, ch[id][1]);
+    return node_worker_1["default"](ch[id][0] + ';onmessage=function(e){for(var k in e.data)self[k]=e.data[k];onmessage=' + init.toString() + '}', id, td, cbfs(td), cb);
+};
+// base async inflate fn
+var bInflt = function () { return [u8, u16, u32, fleb, fdeb, clim, fl, fd, flrm, fdrm, rev, ec, hMap, max, bits, bits16, shft, slc, err, inflt, inflateSync, pbf, gu8]; };
+var bDflt = function () { return [u8, u16, u32, fleb, fdeb, clim, revfl, revfd, flm, flt, fdm, fdt, rev, deo, et, hMap, wbits, wbits16, hTree, ln, lc, clen, wfblk, wblk, shft, slc, dflt, dopt, deflateSync, pbf]; };
+// gzip extra
+var gze = function () { return [gzh, gzhl, wbytes, crc, crct]; };
+// gunzip extra
+var guze = function () { return [gzs, gzl]; };
+// zlib extra
+var zle = function () { return [zlh, wbytes, adler]; };
+// unzlib extra
+var zule = function () { return [zlv]; };
+// post buf
+var pbf = function (msg) { return postMessage(msg, [msg.buffer]); };
+// get u8
+var gu8 = function (o) { return o && o.size && new u8(o.size); };
+// async helper
+var cbify = function (dat, opts, fns, init, id, cb) {
+    var w = wrkr(fns, init, id, function (err, dat) {
+        w.terminate();
+        cb(err, dat);
+    });
+    w.postMessage([dat, opts], opts.consume ? [dat.buffer] : []);
+    return function () { w.terminate(); };
+};
+// auto stream
+var astrm = function (strm) {
+    strm.ondata = function (dat, final) { return postMessage([dat, final], [dat.buffer]); };
+    return function (ev) { return strm.push(ev.data[0], ev.data[1]); };
+};
+// async stream attach
+var astrmify = function (fns, strm, opts, init, id) {
+    var t;
+    var w = wrkr(fns, init, id, function (err, dat) {
+        if (err)
+            w.terminate(), strm.ondata.call(strm, err);
+        else {
+            if (dat[1])
+                w.terminate();
+            strm.ondata.call(strm, err, dat[0], dat[1]);
+        }
+    });
+    w.postMessage(opts);
+    strm.push = function (d, f) {
+        if (!strm.ondata)
+            err(5);
+        if (t)
+            strm.ondata(err(4, 0, 1), null, !!f);
+        w.postMessage([d, t = f], [d.buffer]);
+    };
+    strm.terminate = function () { w.terminate(); };
+};
+// read 2 bytes
+var b2 = function (d, b) { return d[b] | (d[b + 1] << 8); };
+// read 4 bytes
+var b4 = function (d, b) { return (d[b] | (d[b + 1] << 8) | (d[b + 2] << 16) | (d[b + 3] << 24)) >>> 0; };
+var b8 = function (d, b) { return b4(d, b) + (b4(d, b + 4) * 4294967296); };
+// write bytes
+var wbytes = function (d, b, v) {
+    for (; v; ++b)
+        d[b] = v, v >>>= 8;
+};
+// gzip header
+var gzh = function (c, o) {
+    var fn = o.filename;
+    c[0] = 31, c[1] = 139, c[2] = 8, c[8] = o.level < 2 ? 4 : o.level == 9 ? 2 : 0, c[9] = 3; // assume Unix
+    if (o.mtime != 0)
+        wbytes(c, 4, Math.floor(new Date(o.mtime || Date.now()) / 1000));
+    if (fn) {
+        c[3] = 8;
+        for (var i = 0; i <= fn.length; ++i)
+            c[i + 10] = fn.charCodeAt(i);
+    }
+};
+// gzip footer: -8 to -4 = CRC, -4 to -0 is length
+// gzip start
+var gzs = function (d) {
+    if (d[0] != 31 || d[1] != 139 || d[2] != 8)
+        err(6, 'invalid gzip data');
+    var flg = d[3];
+    var st = 10;
+    if (flg & 4)
+        st += d[10] | (d[11] << 8) + 2;
+    for (var zs = (flg >> 3 & 1) + (flg >> 4 & 1); zs > 0; zs -= !d[st++])
+        ;
+    return st + (flg & 2);
+};
+// gzip length
+var gzl = function (d) {
+    var l = d.length;
+    return ((d[l - 4] | d[l - 3] << 8 | d[l - 2] << 16) | (d[l - 1] << 24)) >>> 0;
+};
+// gzip header length
+var gzhl = function (o) { return 10 + ((o.filename && (o.filename.length + 1)) || 0); };
+// zlib header
+var zlh = function (c, o) {
+    var lv = o.level, fl = lv == 0 ? 0 : lv < 6 ? 1 : lv == 9 ? 3 : 2;
+    c[0] = 120, c[1] = (fl << 6) | (fl ? (32 - 2 * fl) : 1);
+};
+// zlib valid
+var zlv = function (d) {
+    if ((d[0] & 15) != 8 || (d[0] >>> 4) > 7 || ((d[0] << 8 | d[1]) % 31))
+        err(6, 'invalid zlib data');
+    if (d[1] & 32)
+        err(6, 'invalid zlib data: preset dictionaries not supported');
+};
+function AsyncCmpStrm(opts, cb) {
+    if (!cb && typeof opts == 'function')
+        cb = opts, opts = {};
+    this.ondata = cb;
+    return opts;
+}
+// zlib footer: -4 to -0 is Adler32
+/**
+ * Streaming DEFLATE compression
+ */
+var Deflate = /*#__PURE__*/ (function () {
+    function Deflate(opts, cb) {
+        if (!cb && typeof opts == 'function')
+            cb = opts, opts = {};
+        this.ondata = cb;
+        this.o = opts || {};
+    }
+    Deflate.prototype.p = function (c, f) {
+        this.ondata(dopt(c, this.o, 0, 0, !f), f);
+    };
+    /**
+     * Pushes a chunk to be deflated
+     * @param chunk The chunk to push
+     * @param final Whether this is the last chunk
+     */
+    Deflate.prototype.push = function (chunk, final) {
+        if (!this.ondata)
+            err(5);
+        if (this.d)
+            err(4);
+        this.d = final;
+        this.p(chunk, final || false);
+    };
+    return Deflate;
+}());
+exports.Deflate = Deflate;
+/**
+ * Asynchronous streaming DEFLATE compression
+ */
+var AsyncDeflate = /*#__PURE__*/ (function () {
+    function AsyncDeflate(opts, cb) {
+        astrmify([
+            bDflt,
+            function () { return [astrm, Deflate]; }
+        ], this, AsyncCmpStrm.call(this, opts, cb), function (ev) {
+            var strm = new Deflate(ev.data);
+            onmessage = astrm(strm);
+        }, 6);
+    }
+    return AsyncDeflate;
+}());
+exports.AsyncDeflate = AsyncDeflate;
+function deflate(data, opts, cb) {
+    if (!cb)
+        cb = opts, opts = {};
+    if (typeof cb != 'function')
+        err(7);
+    return cbify(data, opts, [
+        bDflt,
+    ], function (ev) { return pbf(deflateSync(ev.data[0], ev.data[1])); }, 0, cb);
+}
+exports.deflate = deflate;
+/**
+ * Compresses data with DEFLATE without any wrapper
+ * @param data The data to compress
+ * @param opts The compression options
+ * @returns The deflated version of the data
+ */
+function deflateSync(data, opts) {
+    return dopt(data, opts || {}, 0, 0);
+}
+exports.deflateSync = deflateSync;
+/**
+ * Streaming DEFLATE decompression
+ */
+var Inflate = /*#__PURE__*/ (function () {
+    /**
+     * Creates an inflation stream
+     * @param cb The callback to call whenever data is inflated
+     */
+    function Inflate(cb) {
+        this.s = {};
+        this.p = new u8(0);
+        this.ondata = cb;
+    }
+    Inflate.prototype.e = function (c) {
+        if (!this.ondata)
+            err(5);
+        if (this.d)
+            err(4);
+        var l = this.p.length;
+        var n = new u8(l + c.length);
+        n.set(this.p), n.set(c, l), this.p = n;
+    };
+    Inflate.prototype.c = function (final) {
+        this.d = this.s.i = final || false;
+        var bts = this.s.b;
+        var dt = inflt(this.p, this.o, this.s);
+        this.ondata(slc(dt, bts, this.s.b), this.d);
+        this.o = slc(dt, this.s.b - 32768), this.s.b = this.o.length;
+        this.p = slc(this.p, (this.s.p / 8) | 0), this.s.p &= 7;
+    };
+    /**
+     * Pushes a chunk to be inflated
+     * @param chunk The chunk to push
+     * @param final Whether this is the final chunk
+     */
+    Inflate.prototype.push = function (chunk, final) {
+        this.e(chunk), this.c(final);
+    };
+    return Inflate;
+}());
+exports.Inflate = Inflate;
+/**
+ * Asynchronous streaming DEFLATE decompression
+ */
+var AsyncInflate = /*#__PURE__*/ (function () {
+    /**
+     * Creates an asynchronous inflation stream
+     * @param cb The callback to call whenever data is deflated
+     */
+    function AsyncInflate(cb) {
+        this.ondata = cb;
+        astrmify([
+            bInflt,
+            function () { return [astrm, Inflate]; }
+        ], this, 0, function () {
+            var strm = new Inflate();
+            onmessage = astrm(strm);
+        }, 7);
+    }
+    return AsyncInflate;
+}());
+exports.AsyncInflate = AsyncInflate;
+function inflate(data, opts, cb) {
+    if (!cb)
+        cb = opts, opts = {};
+    if (typeof cb != 'function')
+        err(7);
+    return cbify(data, opts, [
+        bInflt
+    ], function (ev) { return pbf(inflateSync(ev.data[0], gu8(ev.data[1]))); }, 1, cb);
+}
+exports.inflate = inflate;
+/**
+ * Expands DEFLATE data with no wrapper
+ * @param data The data to decompress
+ * @param out Where to write the data. Saves memory if you know the decompressed size and provide an output buffer of that length.
+ * @returns The decompressed version of the data
+ */
+function inflateSync(data, out) {
+    return inflt(data, out);
+}
+exports.inflateSync = inflateSync;
+// before you yell at me for not just using extends, my reason is that TS inheritance is hard to workerize.
+/**
+ * Streaming GZIP compression
+ */
+var Gzip = /*#__PURE__*/ (function () {
+    function Gzip(opts, cb) {
+        this.c = crc();
+        this.l = 0;
+        this.v = 1;
+        Deflate.call(this, opts, cb);
+    }
+    /**
+     * Pushes a chunk to be GZIPped
+     * @param chunk The chunk to push
+     * @param final Whether this is the last chunk
+     */
+    Gzip.prototype.push = function (chunk, final) {
+        Deflate.prototype.push.call(this, chunk, final);
+    };
+    Gzip.prototype.p = function (c, f) {
+        this.c.p(c);
+        this.l += c.length;
+        var raw = dopt(c, this.o, this.v && gzhl(this.o), f && 8, !f);
+        if (this.v)
+            gzh(raw, this.o), this.v = 0;
+        if (f)
+            wbytes(raw, raw.length - 8, this.c.d()), wbytes(raw, raw.length - 4, this.l);
+        this.ondata(raw, f);
+    };
+    return Gzip;
+}());
+exports.Gzip = Gzip;
+exports.Compress = Gzip;
+/**
+ * Asynchronous streaming GZIP compression
+ */
+var AsyncGzip = /*#__PURE__*/ (function () {
+    function AsyncGzip(opts, cb) {
+        astrmify([
+            bDflt,
+            gze,
+            function () { return [astrm, Deflate, Gzip]; }
+        ], this, AsyncCmpStrm.call(this, opts, cb), function (ev) {
+            var strm = new Gzip(ev.data);
+            onmessage = astrm(strm);
+        }, 8);
+    }
+    return AsyncGzip;
+}());
+exports.AsyncGzip = AsyncGzip;
+exports.AsyncCompress = AsyncGzip;
+function gzip(data, opts, cb) {
+    if (!cb)
+        cb = opts, opts = {};
+    if (typeof cb != 'function')
+        err(7);
+    return cbify(data, opts, [
+        bDflt,
+        gze,
+        function () { return [gzipSync]; }
+    ], function (ev) { return pbf(gzipSync(ev.data[0], ev.data[1])); }, 2, cb);
+}
+exports.gzip = gzip;
+exports.compress = gzip;
+/**
+ * Compresses data with GZIP
+ * @param data The data to compress
+ * @param opts The compression options
+ * @returns The gzipped version of the data
+ */
+function gzipSync(data, opts) {
+    if (!opts)
+        opts = {};
+    var c = crc(), l = data.length;
+    c.p(data);
+    var d = dopt(data, opts, gzhl(opts), 8), s = d.length;
+    return gzh(d, opts), wbytes(d, s - 8, c.d()), wbytes(d, s - 4, l), d;
+}
+exports.gzipSync = gzipSync;
+exports.compressSync = gzipSync;
+/**
+ * Streaming GZIP decompression
+ */
+var Gunzip = /*#__PURE__*/ (function () {
+    /**
+     * Creates a GUNZIP stream
+     * @param cb The callback to call whenever data is inflated
+     */
+    function Gunzip(cb) {
+        this.v = 1;
+        Inflate.call(this, cb);
+    }
+    /**
+     * Pushes a chunk to be GUNZIPped
+     * @param chunk The chunk to push
+     * @param final Whether this is the last chunk
+     */
+    Gunzip.prototype.push = function (chunk, final) {
+        Inflate.prototype.e.call(this, chunk);
+        if (this.v) {
+            var s = this.p.length > 3 ? gzs(this.p) : 4;
+            if (s >= this.p.length && !final)
+                return;
+            this.p = this.p.subarray(s), this.v = 0;
+        }
+        if (final) {
+            if (this.p.length < 8)
+                err(6, 'invalid gzip data');
+            this.p = this.p.subarray(0, -8);
+        }
+        // necessary to prevent TS from using the closure value
+        // This allows for workerization to function correctly
+        Inflate.prototype.c.call(this, final);
+    };
+    return Gunzip;
+}());
+exports.Gunzip = Gunzip;
+/**
+ * Asynchronous streaming GZIP decompression
+ */
+var AsyncGunzip = /*#__PURE__*/ (function () {
+    /**
+     * Creates an asynchronous GUNZIP stream
+     * @param cb The callback to call whenever data is deflated
+     */
+    function AsyncGunzip(cb) {
+        this.ondata = cb;
+        astrmify([
+            bInflt,
+            guze,
+            function () { return [astrm, Inflate, Gunzip]; }
+        ], this, 0, function () {
+            var strm = new Gunzip();
+            onmessage = astrm(strm);
+        }, 9);
+    }
+    return AsyncGunzip;
+}());
+exports.AsyncGunzip = AsyncGunzip;
+function gunzip(data, opts, cb) {
+    if (!cb)
+        cb = opts, opts = {};
+    if (typeof cb != 'function')
+        err(7);
+    return cbify(data, opts, [
+        bInflt,
+        guze,
+        function () { return [gunzipSync]; }
+    ], function (ev) { return pbf(gunzipSync(ev.data[0])); }, 3, cb);
+}
+exports.gunzip = gunzip;
+/**
+ * Expands GZIP data
+ * @param data The data to decompress
+ * @param out Where to write the data. GZIP already encodes the output size, so providing this doesn't save memory.
+ * @returns The decompressed version of the data
+ */
+function gunzipSync(data, out) {
+    return inflt(data.subarray(gzs(data), -8), out || new u8(gzl(data)));
+}
+exports.gunzipSync = gunzipSync;
+/**
+ * Streaming Zlib compression
+ */
+var Zlib = /*#__PURE__*/ (function () {
+    function Zlib(opts, cb) {
+        this.c = adler();
+        this.v = 1;
+        Deflate.call(this, opts, cb);
+    }
+    /**
+     * Pushes a chunk to be zlibbed
+     * @param chunk The chunk to push
+     * @param final Whether this is the last chunk
+     */
+    Zlib.prototype.push = function (chunk, final) {
+        Deflate.prototype.push.call(this, chunk, final);
+    };
+    Zlib.prototype.p = function (c, f) {
+        this.c.p(c);
+        var raw = dopt(c, this.o, this.v && 2, f && 4, !f);
+        if (this.v)
+            zlh(raw, this.o), this.v = 0;
+        if (f)
+            wbytes(raw, raw.length - 4, this.c.d());
+        this.ondata(raw, f);
+    };
+    return Zlib;
+}());
+exports.Zlib = Zlib;
+/**
+ * Asynchronous streaming Zlib compression
+ */
+var AsyncZlib = /*#__PURE__*/ (function () {
+    function AsyncZlib(opts, cb) {
+        astrmify([
+            bDflt,
+            zle,
+            function () { return [astrm, Deflate, Zlib]; }
+        ], this, AsyncCmpStrm.call(this, opts, cb), function (ev) {
+            var strm = new Zlib(ev.data);
+            onmessage = astrm(strm);
+        }, 10);
+    }
+    return AsyncZlib;
+}());
+exports.AsyncZlib = AsyncZlib;
+function zlib(data, opts, cb) {
+    if (!cb)
+        cb = opts, opts = {};
+    if (typeof cb != 'function')
+        err(7);
+    return cbify(data, opts, [
+        bDflt,
+        zle,
+        function () { return [zlibSync]; }
+    ], function (ev) { return pbf(zlibSync(ev.data[0], ev.data[1])); }, 4, cb);
+}
+exports.zlib = zlib;
+/**
+ * Compress data with Zlib
+ * @param data The data to compress
+ * @param opts The compression options
+ * @returns The zlib-compressed version of the data
+ */
+function zlibSync(data, opts) {
+    if (!opts)
+        opts = {};
+    var a = adler();
+    a.p(data);
+    var d = dopt(data, opts, 2, 4);
+    return zlh(d, opts), wbytes(d, d.length - 4, a.d()), d;
+}
+exports.zlibSync = zlibSync;
+/**
+ * Streaming Zlib decompression
+ */
+var Unzlib = /*#__PURE__*/ (function () {
+    /**
+     * Creates a Zlib decompression stream
+     * @param cb The callback to call whenever data is inflated
+     */
+    function Unzlib(cb) {
+        this.v = 1;
+        Inflate.call(this, cb);
+    }
+    /**
+     * Pushes a chunk to be unzlibbed
+     * @param chunk The chunk to push
+     * @param final Whether this is the last chunk
+     */
+    Unzlib.prototype.push = function (chunk, final) {
+        Inflate.prototype.e.call(this, chunk);
+        if (this.v) {
+            if (this.p.length < 2 && !final)
+                return;
+            this.p = this.p.subarray(2), this.v = 0;
+        }
+        if (final) {
+            if (this.p.length < 4)
+                err(6, 'invalid zlib data');
+            this.p = this.p.subarray(0, -4);
+        }
+        // necessary to prevent TS from using the closure value
+        // This allows for workerization to function correctly
+        Inflate.prototype.c.call(this, final);
+    };
+    return Unzlib;
+}());
+exports.Unzlib = Unzlib;
+/**
+ * Asynchronous streaming Zlib decompression
+ */
+var AsyncUnzlib = /*#__PURE__*/ (function () {
+    /**
+     * Creates an asynchronous Zlib decompression stream
+     * @param cb The callback to call whenever data is deflated
+     */
+    function AsyncUnzlib(cb) {
+        this.ondata = cb;
+        astrmify([
+            bInflt,
+            zule,
+            function () { return [astrm, Inflate, Unzlib]; }
+        ], this, 0, function () {
+            var strm = new Unzlib();
+            onmessage = astrm(strm);
+        }, 11);
+    }
+    return AsyncUnzlib;
+}());
+exports.AsyncUnzlib = AsyncUnzlib;
+function unzlib(data, opts, cb) {
+    if (!cb)
+        cb = opts, opts = {};
+    if (typeof cb != 'function')
+        err(7);
+    return cbify(data, opts, [
+        bInflt,
+        zule,
+        function () { return [unzlibSync]; }
+    ], function (ev) { return pbf(unzlibSync(ev.data[0], gu8(ev.data[1]))); }, 5, cb);
+}
+exports.unzlib = unzlib;
+/**
+ * Expands Zlib data
+ * @param data The data to decompress
+ * @param out Where to write the data. Saves memory if you know the decompressed size and provide an output buffer of that length.
+ * @returns The decompressed version of the data
+ */
+function unzlibSync(data, out) {
+    return inflt((zlv(data), data.subarray(2, -4)), out);
+}
+exports.unzlibSync = unzlibSync;
+/**
+ * Streaming GZIP, Zlib, or raw DEFLATE decompression
+ */
+var Decompress = /*#__PURE__*/ (function () {
+    /**
+     * Creates a decompression stream
+     * @param cb The callback to call whenever data is decompressed
+     */
+    function Decompress(cb) {
+        this.G = Gunzip;
+        this.I = Inflate;
+        this.Z = Unzlib;
+        this.ondata = cb;
+    }
+    /**
+     * Pushes a chunk to be decompressed
+     * @param chunk The chunk to push
+     * @param final Whether this is the last chunk
+     */
+    Decompress.prototype.push = function (chunk, final) {
+        if (!this.ondata)
+            err(5);
+        if (!this.s) {
+            if (this.p && this.p.length) {
+                var n = new u8(this.p.length + chunk.length);
+                n.set(this.p), n.set(chunk, this.p.length);
+            }
+            else
+                this.p = chunk;
+            if (this.p.length > 2) {
+                var _this_1 = this;
+                var cb = function () { _this_1.ondata.apply(_this_1, arguments); };
+                this.s = (this.p[0] == 31 && this.p[1] == 139 && this.p[2] == 8)
+                    ? new this.G(cb)
+                    : ((this.p[0] & 15) != 8 || (this.p[0] >> 4) > 7 || ((this.p[0] << 8 | this.p[1]) % 31))
+                        ? new this.I(cb)
+                        : new this.Z(cb);
+                this.s.push(this.p, final);
+                this.p = null;
+            }
+        }
+        else
+            this.s.push(chunk, final);
+    };
+    return Decompress;
+}());
+exports.Decompress = Decompress;
+/**
+ * Asynchronous streaming GZIP, Zlib, or raw DEFLATE decompression
+ */
+var AsyncDecompress = /*#__PURE__*/ (function () {
+    /**
+   * Creates an asynchronous decompression stream
+   * @param cb The callback to call whenever data is decompressed
+   */
+    function AsyncDecompress(cb) {
+        this.G = AsyncGunzip;
+        this.I = AsyncInflate;
+        this.Z = AsyncUnzlib;
+        this.ondata = cb;
+    }
+    /**
+     * Pushes a chunk to be decompressed
+     * @param chunk The chunk to push
+     * @param final Whether this is the last chunk
+     */
+    AsyncDecompress.prototype.push = function (chunk, final) {
+        Decompress.prototype.push.call(this, chunk, final);
+    };
+    return AsyncDecompress;
+}());
+exports.AsyncDecompress = AsyncDecompress;
+function decompress(data, opts, cb) {
+    if (!cb)
+        cb = opts, opts = {};
+    if (typeof cb != 'function')
+        err(7);
+    return (data[0] == 31 && data[1] == 139 && data[2] == 8)
+        ? gunzip(data, opts, cb)
+        : ((data[0] & 15) != 8 || (data[0] >> 4) > 7 || ((data[0] << 8 | data[1]) % 31))
+            ? inflate(data, opts, cb)
+            : unzlib(data, opts, cb);
+}
+exports.decompress = decompress;
+/**
+ * Expands compressed GZIP, Zlib, or raw DEFLATE data, automatically detecting the format
+ * @param data The data to decompress
+ * @param out Where to write the data. Saves memory if you know the decompressed size and provide an output buffer of that length.
+ * @returns The decompressed version of the data
+ */
+function decompressSync(data, out) {
+    return (data[0] == 31 && data[1] == 139 && data[2] == 8)
+        ? gunzipSync(data, out)
+        : ((data[0] & 15) != 8 || (data[0] >> 4) > 7 || ((data[0] << 8 | data[1]) % 31))
+            ? inflateSync(data, out)
+            : unzlibSync(data, out);
+}
+exports.decompressSync = decompressSync;
+// flatten a directory structure
+var fltn = function (d, p, t, o) {
+    for (var k in d) {
+        var val = d[k], n = p + k, op = o;
+        if (Array.isArray(val))
+            op = mrg(o, val[1]), val = val[0];
+        if (val instanceof u8)
+            t[n] = [val, op];
+        else {
+            t[n += '/'] = [new u8(0), op];
+            fltn(val, n, t, o);
+        }
+    }
+};
+// text encoder
+var te = typeof TextEncoder != 'undefined' && /*#__PURE__*/ new TextEncoder();
+// text decoder
+var td = typeof TextDecoder != 'undefined' && /*#__PURE__*/ new TextDecoder();
+// text decoder stream
+var tds = 0;
+try {
+    td.decode(et, { stream: true });
+    tds = 1;
+}
+catch (e) { }
+// decode UTF8
+var dutf8 = function (d) {
+    for (var r = '', i = 0;;) {
+        var c = d[i++];
+        var eb = (c > 127) + (c > 223) + (c > 239);
+        if (i + eb > d.length)
+            return [r, slc(d, i - 1)];
+        if (!eb)
+            r += String.fromCharCode(c);
+        else if (eb == 3) {
+            c = ((c & 15) << 18 | (d[i++] & 63) << 12 | (d[i++] & 63) << 6 | (d[i++] & 63)) - 65536,
+                r += String.fromCharCode(55296 | (c >> 10), 56320 | (c & 1023));
+        }
+        else if (eb & 1)
+            r += String.fromCharCode((c & 31) << 6 | (d[i++] & 63));
+        else
+            r += String.fromCharCode((c & 15) << 12 | (d[i++] & 63) << 6 | (d[i++] & 63));
+    }
+};
+/**
+ * Streaming UTF-8 decoding
+ */
+var DecodeUTF8 = /*#__PURE__*/ (function () {
+    /**
+     * Creates a UTF-8 decoding stream
+     * @param cb The callback to call whenever data is decoded
+     */
+    function DecodeUTF8(cb) {
+        this.ondata = cb;
+        if (tds)
+            this.t = new TextDecoder();
+        else
+            this.p = et;
+    }
+    /**
+     * Pushes a chunk to be decoded from UTF-8 binary
+     * @param chunk The chunk to push
+     * @param final Whether this is the last chunk
+     */
+    DecodeUTF8.prototype.push = function (chunk, final) {
+        if (!this.ondata)
+            err(5);
+        final = !!final;
+        if (this.t) {
+            this.ondata(this.t.decode(chunk, { stream: true }), final);
+            if (final) {
+                if (this.t.decode().length)
+                    err(8);
+                this.t = null;
+            }
+            return;
+        }
+        if (!this.p)
+            err(4);
+        var dat = new u8(this.p.length + chunk.length);
+        dat.set(this.p);
+        dat.set(chunk, this.p.length);
+        var _a = dutf8(dat), ch = _a[0], np = _a[1];
+        if (final) {
+            if (np.length)
+                err(8);
+            this.p = null;
+        }
+        else
+            this.p = np;
+        this.ondata(ch, final);
+    };
+    return DecodeUTF8;
+}());
+exports.DecodeUTF8 = DecodeUTF8;
+/**
+ * Streaming UTF-8 encoding
+ */
+var EncodeUTF8 = /*#__PURE__*/ (function () {
+    /**
+     * Creates a UTF-8 decoding stream
+     * @param cb The callback to call whenever data is encoded
+     */
+    function EncodeUTF8(cb) {
+        this.ondata = cb;
+    }
+    /**
+     * Pushes a chunk to be encoded to UTF-8
+     * @param chunk The string data to push
+     * @param final Whether this is the last chunk
+     */
+    EncodeUTF8.prototype.push = function (chunk, final) {
+        if (!this.ondata)
+            err(5);
+        if (this.d)
+            err(4);
+        this.ondata(strToU8(chunk), this.d = final || false);
+    };
+    return EncodeUTF8;
+}());
+exports.EncodeUTF8 = EncodeUTF8;
+/**
+ * Converts a string into a Uint8Array for use with compression/decompression methods
+ * @param str The string to encode
+ * @param latin1 Whether or not to interpret the data as Latin-1. This should
+ *               not need to be true unless decoding a binary string.
+ * @returns The string encoded in UTF-8/Latin-1 binary
+ */
+function strToU8(str, latin1) {
+    if (latin1) {
+        var ar_1 = new u8(str.length);
+        for (var i = 0; i < str.length; ++i)
+            ar_1[i] = str.charCodeAt(i);
+        return ar_1;
+    }
+    if (te)
+        return te.encode(str);
+    var l = str.length;
+    var ar = new u8(str.length + (str.length >> 1));
+    var ai = 0;
+    var w = function (v) { ar[ai++] = v; };
+    for (var i = 0; i < l; ++i) {
+        if (ai + 5 > ar.length) {
+            var n = new u8(ai + 8 + ((l - i) << 1));
+            n.set(ar);
+            ar = n;
+        }
+        var c = str.charCodeAt(i);
+        if (c < 128 || latin1)
+            w(c);
+        else if (c < 2048)
+            w(192 | (c >> 6)), w(128 | (c & 63));
+        else if (c > 55295 && c < 57344)
+            c = 65536 + (c & 1023 << 10) | (str.charCodeAt(++i) & 1023),
+                w(240 | (c >> 18)), w(128 | ((c >> 12) & 63)), w(128 | ((c >> 6) & 63)), w(128 | (c & 63));
+        else
+            w(224 | (c >> 12)), w(128 | ((c >> 6) & 63)), w(128 | (c & 63));
+    }
+    return slc(ar, 0, ai);
+}
+exports.strToU8 = strToU8;
+/**
+ * Converts a Uint8Array to a string
+ * @param dat The data to decode to string
+ * @param latin1 Whether or not to interpret the data as Latin-1. This should
+ *               not need to be true unless encoding to binary string.
+ * @returns The original UTF-8/Latin-1 string
+ */
+function strFromU8(dat, latin1) {
+    if (latin1) {
+        var r = '';
+        for (var i = 0; i < dat.length; i += 16384)
+            r += String.fromCharCode.apply(null, dat.subarray(i, i + 16384));
+        return r;
+    }
+    else if (td)
+        return td.decode(dat);
+    else {
+        var _a = dutf8(dat), out = _a[0], ext = _a[1];
+        if (ext.length)
+            err(8);
+        return out;
+    }
+}
+exports.strFromU8 = strFromU8;
+;
+// deflate bit flag
+var dbf = function (l) { return l == 1 ? 3 : l < 6 ? 2 : l == 9 ? 1 : 0; };
+// skip local zip header
+var slzh = function (d, b) { return b + 30 + b2(d, b + 26) + b2(d, b + 28); };
+// read zip header
+var zh = function (d, b, z) {
+    var fnl = b2(d, b + 28), fn = strFromU8(d.subarray(b + 46, b + 46 + fnl), !(b2(d, b + 8) & 2048)), es = b + 46 + fnl, bs = b4(d, b + 20);
+    var _a = z && bs == 4294967295 ? z64e(d, es) : [bs, b4(d, b + 24), b4(d, b + 42)], sc = _a[0], su = _a[1], off = _a[2];
+    return [b2(d, b + 10), sc, su, fn, es + b2(d, b + 30) + b2(d, b + 32), off];
+};
+// read zip64 extra field
+var z64e = function (d, b) {
+    for (; b2(d, b) != 1; b += 4 + b2(d, b + 2))
+        ;
+    return [b8(d, b + 12), b8(d, b + 4), b8(d, b + 20)];
+};
+// extra field length
+var exfl = function (ex) {
+    var le = 0;
+    if (ex) {
+        for (var k in ex) {
+            var l = ex[k].length;
+            if (l > 65535)
+                err(9);
+            le += l + 4;
+        }
+    }
+    return le;
+};
+// write zip header
+var wzh = function (d, b, f, fn, u, c, ce, co) {
+    var fl = fn.length, ex = f.extra, col = co && co.length;
+    var exl = exfl(ex);
+    wbytes(d, b, ce != null ? 0x2014B50 : 0x4034B50), b += 4;
+    if (ce != null)
+        d[b++] = 20, d[b++] = f.os;
+    d[b] = 20, b += 2; // spec compliance? what's that?
+    d[b++] = (f.flag << 1) | (c == null && 8), d[b++] = u && 8;
+    d[b++] = f.compression & 255, d[b++] = f.compression >> 8;
+    var dt = new Date(f.mtime == null ? Date.now() : f.mtime), y = dt.getFullYear() - 1980;
+    if (y < 0 || y > 119)
+        err(10);
+    wbytes(d, b, (y << 25) | ((dt.getMonth() + 1) << 21) | (dt.getDate() << 16) | (dt.getHours() << 11) | (dt.getMinutes() << 5) | (dt.getSeconds() >>> 1)), b += 4;
+    if (c != null) {
+        wbytes(d, b, f.crc);
+        wbytes(d, b + 4, c);
+        wbytes(d, b + 8, f.size);
+    }
+    wbytes(d, b + 12, fl);
+    wbytes(d, b + 14, exl), b += 16;
+    if (ce != null) {
+        wbytes(d, b, col);
+        wbytes(d, b + 6, f.attrs);
+        wbytes(d, b + 10, ce), b += 14;
+    }
+    d.set(fn, b);
+    b += fl;
+    if (exl) {
+        for (var k in ex) {
+            var exf = ex[k], l = exf.length;
+            wbytes(d, b, +k);
+            wbytes(d, b + 2, l);
+            d.set(exf, b + 4), b += 4 + l;
+        }
+    }
+    if (col)
+        d.set(co, b), b += col;
+    return b;
+};
+// write zip footer (end of central directory)
+var wzf = function (o, b, c, d, e) {
+    wbytes(o, b, 0x6054B50); // skip disk
+    wbytes(o, b + 8, c);
+    wbytes(o, b + 10, c);
+    wbytes(o, b + 12, d);
+    wbytes(o, b + 16, e);
+};
+/**
+ * A pass-through stream to keep data uncompressed in a ZIP archive.
+ */
+var ZipPassThrough = /*#__PURE__*/ (function () {
+    /**
+     * Creates a pass-through stream that can be added to ZIP archives
+     * @param filename The filename to associate with this data stream
+     */
+    function ZipPassThrough(filename) {
+        this.filename = filename;
+        this.c = crc();
+        this.size = 0;
+        this.compression = 0;
+    }
+    /**
+     * Processes a chunk and pushes to the output stream. You can override this
+     * method in a subclass for custom behavior, but by default this passes
+     * the data through. You must call this.ondata(err, chunk, final) at some
+     * point in this method.
+     * @param chunk The chunk to process
+     * @param final Whether this is the last chunk
+     */
+    ZipPassThrough.prototype.process = function (chunk, final) {
+        this.ondata(null, chunk, final);
+    };
+    /**
+     * Pushes a chunk to be added. If you are subclassing this with a custom
+     * compression algorithm, note that you must push data from the source
+     * file only, pre-compression.
+     * @param chunk The chunk to push
+     * @param final Whether this is the last chunk
+     */
+    ZipPassThrough.prototype.push = function (chunk, final) {
+        if (!this.ondata)
+            err(5);
+        this.c.p(chunk);
+        this.size += chunk.length;
+        if (final)
+            this.crc = this.c.d();
+        this.process(chunk, final || false);
+    };
+    return ZipPassThrough;
+}());
+exports.ZipPassThrough = ZipPassThrough;
+// I don't extend because TypeScript extension adds 1kB of runtime bloat
+/**
+ * Streaming DEFLATE compression for ZIP archives. Prefer using AsyncZipDeflate
+ * for better performance
+ */
+var ZipDeflate = /*#__PURE__*/ (function () {
+    /**
+     * Creates a DEFLATE stream that can be added to ZIP archives
+     * @param filename The filename to associate with this data stream
+     * @param opts The compression options
+     */
+    function ZipDeflate(filename, opts) {
+        var _this_1 = this;
+        if (!opts)
+            opts = {};
+        ZipPassThrough.call(this, filename);
+        this.d = new Deflate(opts, function (dat, final) {
+            _this_1.ondata(null, dat, final);
+        });
+        this.compression = 8;
+        this.flag = dbf(opts.level);
+    }
+    ZipDeflate.prototype.process = function (chunk, final) {
+        try {
+            this.d.push(chunk, final);
+        }
+        catch (e) {
+            this.ondata(e, null, final);
+        }
+    };
+    /**
+     * Pushes a chunk to be deflated
+     * @param chunk The chunk to push
+     * @param final Whether this is the last chunk
+     */
+    ZipDeflate.prototype.push = function (chunk, final) {
+        ZipPassThrough.prototype.push.call(this, chunk, final);
+    };
+    return ZipDeflate;
+}());
+exports.ZipDeflate = ZipDeflate;
+/**
+ * Asynchronous streaming DEFLATE compression for ZIP archives
+ */
+var AsyncZipDeflate = /*#__PURE__*/ (function () {
+    /**
+     * Creates a DEFLATE stream that can be added to ZIP archives
+     * @param filename The filename to associate with this data stream
+     * @param opts The compression options
+     */
+    function AsyncZipDeflate(filename, opts) {
+        var _this_1 = this;
+        if (!opts)
+            opts = {};
+        ZipPassThrough.call(this, filename);
+        this.d = new AsyncDeflate(opts, function (err, dat, final) {
+            _this_1.ondata(err, dat, final);
+        });
+        this.compression = 8;
+        this.flag = dbf(opts.level);
+        this.terminate = this.d.terminate;
+    }
+    AsyncZipDeflate.prototype.process = function (chunk, final) {
+        this.d.push(chunk, final);
+    };
+    /**
+     * Pushes a chunk to be deflated
+     * @param chunk The chunk to push
+     * @param final Whether this is the last chunk
+     */
+    AsyncZipDeflate.prototype.push = function (chunk, final) {
+        ZipPassThrough.prototype.push.call(this, chunk, final);
+    };
+    return AsyncZipDeflate;
+}());
+exports.AsyncZipDeflate = AsyncZipDeflate;
+// TODO: Better tree shaking
+/**
+ * A zippable archive to which files can incrementally be added
+ */
+var Zip = /*#__PURE__*/ (function () {
+    /**
+     * Creates an empty ZIP archive to which files can be added
+     * @param cb The callback to call whenever data for the generated ZIP archive
+     *           is available
+     */
+    function Zip(cb) {
+        this.ondata = cb;
+        this.u = [];
+        this.d = 1;
+    }
+    /**
+     * Adds a file to the ZIP archive
+     * @param file The file stream to add
+     */
+    Zip.prototype.add = function (file) {
+        var _this_1 = this;
+        if (!this.ondata)
+            err(5);
+        // finishing or finished
+        if (this.d & 2)
+            this.ondata(err(4 + (this.d & 1) * 8, 0, 1), null, false);
+        else {
+            var f = strToU8(file.filename), fl_1 = f.length;
+            var com = file.comment, o = com && strToU8(com);
+            var u = fl_1 != file.filename.length || (o && (com.length != o.length));
+            var hl_1 = fl_1 + exfl(file.extra) + 30;
+            if (fl_1 > 65535)
+                this.ondata(err(11, 0, 1), null, false);
+            var header = new u8(hl_1);
+            wzh(header, 0, file, f, u);
+            var chks_1 = [header];
+            var pAll_1 = function () {
+                for (var _i = 0, chks_2 = chks_1; _i < chks_2.length; _i++) {
+                    var chk = chks_2[_i];
+                    _this_1.ondata(null, chk, false);
+                }
+                chks_1 = [];
+            };
+            var tr_1 = this.d;
+            this.d = 0;
+            var ind_1 = this.u.length;
+            var uf_1 = mrg(file, {
+                f: f,
+                u: u,
+                o: o,
+                t: function () {
+                    if (file.terminate)
+                        file.terminate();
+                },
+                r: function () {
+                    pAll_1();
+                    if (tr_1) {
+                        var nxt = _this_1.u[ind_1 + 1];
+                        if (nxt)
+                            nxt.r();
+                        else
+                            _this_1.d = 1;
+                    }
+                    tr_1 = 1;
+                }
+            });
+            var cl_1 = 0;
+            file.ondata = function (err, dat, final) {
+                if (err) {
+                    _this_1.ondata(err, dat, final);
+                    _this_1.terminate();
+                }
+                else {
+                    cl_1 += dat.length;
+                    chks_1.push(dat);
+                    if (final) {
+                        var dd = new u8(16);
+                        wbytes(dd, 0, 0x8074B50);
+                        wbytes(dd, 4, file.crc);
+                        wbytes(dd, 8, cl_1);
+                        wbytes(dd, 12, file.size);
+                        chks_1.push(dd);
+                        uf_1.c = cl_1, uf_1.b = hl_1 + cl_1 + 16, uf_1.crc = file.crc, uf_1.size = file.size;
+                        if (tr_1)
+                            uf_1.r();
+                        tr_1 = 1;
+                    }
+                    else if (tr_1)
+                        pAll_1();
+                }
+            };
+            this.u.push(uf_1);
+        }
+    };
+    /**
+     * Ends the process of adding files and prepares to emit the final chunks.
+     * This *must* be called after adding all desired files for the resulting
+     * ZIP file to work properly.
+     */
+    Zip.prototype.end = function () {
+        var _this_1 = this;
+        if (this.d & 2) {
+            this.ondata(err(4 + (this.d & 1) * 8, 0, 1), null, true);
+            return;
+        }
+        if (this.d)
+            this.e();
+        else
+            this.u.push({
+                r: function () {
+                    if (!(_this_1.d & 1))
+                        return;
+                    _this_1.u.splice(-1, 1);
+                    _this_1.e();
+                },
+                t: function () { }
+            });
+        this.d = 3;
+    };
+    Zip.prototype.e = function () {
+        var bt = 0, l = 0, tl = 0;
+        for (var _i = 0, _a = this.u; _i < _a.length; _i++) {
+            var f = _a[_i];
+            tl += 46 + f.f.length + exfl(f.extra) + (f.o ? f.o.length : 0);
+        }
+        var out = new u8(tl + 22);
+        for (var _b = 0, _c = this.u; _b < _c.length; _b++) {
+            var f = _c[_b];
+            wzh(out, bt, f, f.f, f.u, f.c, l, f.o);
+            bt += 46 + f.f.length + exfl(f.extra) + (f.o ? f.o.length : 0), l += f.b;
+        }
+        wzf(out, bt, this.u.length, tl, l);
+        this.ondata(null, out, true);
+        this.d = 2;
+    };
+    /**
+     * A method to terminate any internal workers used by the stream. Subsequent
+     * calls to add() will fail.
+     */
+    Zip.prototype.terminate = function () {
+        for (var _i = 0, _a = this.u; _i < _a.length; _i++) {
+            var f = _a[_i];
+            f.t();
+        }
+        this.d = 2;
+    };
+    return Zip;
+}());
+exports.Zip = Zip;
+function zip(data, opts, cb) {
+    if (!cb)
+        cb = opts, opts = {};
+    if (typeof cb != 'function')
+        err(7);
+    var r = {};
+    fltn(data, '', r, opts);
+    var k = Object.keys(r);
+    var lft = k.length, o = 0, tot = 0;
+    var slft = lft, files = new Array(lft);
+    var term = [];
+    var tAll = function () {
+        for (var i = 0; i < term.length; ++i)
+            term[i]();
+    };
+    var cbd = function (a, b) {
+        mt(function () { cb(a, b); });
+    };
+    mt(function () { cbd = cb; });
+    var cbf = function () {
+        var out = new u8(tot + 22), oe = o, cdl = tot - o;
+        tot = 0;
+        for (var i = 0; i < slft; ++i) {
+            var f = files[i];
+            try {
+                var l = f.c.length;
+                wzh(out, tot, f, f.f, f.u, l);
+                var badd = 30 + f.f.length + exfl(f.extra);
+                var loc = tot + badd;
+                out.set(f.c, loc);
+                wzh(out, o, f, f.f, f.u, l, tot, f.m), o += 16 + badd + (f.m ? f.m.length : 0), tot = loc + l;
+            }
+            catch (e) {
+                return cbd(e, null);
+            }
+        }
+        wzf(out, o, files.length, cdl, oe);
+        cbd(null, out);
+    };
+    if (!lft)
+        cbf();
+    var _loop_1 = function (i) {
+        var fn = k[i];
+        var _a = r[fn], file = _a[0], p = _a[1];
+        var c = crc(), size = file.length;
+        c.p(file);
+        var f = strToU8(fn), s = f.length;
+        var com = p.comment, m = com && strToU8(com), ms = m && m.length;
+        var exl = exfl(p.extra);
+        var compression = p.level == 0 ? 0 : 8;
+        var cbl = function (e, d) {
+            if (e) {
+                tAll();
+                cbd(e, null);
+            }
+            else {
+                var l = d.length;
+                files[i] = mrg(p, {
+                    size: size,
+                    crc: c.d(),
+                    c: d,
+                    f: f,
+                    m: m,
+                    u: s != fn.length || (m && (com.length != ms)),
+                    compression: compression
+                });
+                o += 30 + s + exl + l;
+                tot += 76 + 2 * (s + exl) + (ms || 0) + l;
+                if (!--lft)
+                    cbf();
+            }
+        };
+        if (s > 65535)
+            cbl(err(11, 0, 1), null);
+        if (!compression)
+            cbl(null, file);
+        else if (size < 160000) {
+            try {
+                cbl(null, deflateSync(file, p));
+            }
+            catch (e) {
+                cbl(e, null);
+            }
+        }
+        else
+            term.push(deflate(file, p, cbl));
+    };
+    // Cannot use lft because it can decrease
+    for (var i = 0; i < slft; ++i) {
+        _loop_1(i);
+    }
+    return tAll;
+}
+exports.zip = zip;
+/**
+ * Synchronously creates a ZIP file. Prefer using `zip` for better performance
+ * with more than one file.
+ * @param data The directory structure for the ZIP archive
+ * @param opts The main options, merged with per-file options
+ * @returns The generated ZIP archive
+ */
+function zipSync(data, opts) {
+    if (!opts)
+        opts = {};
+    var r = {};
+    var files = [];
+    fltn(data, '', r, opts);
+    var o = 0;
+    var tot = 0;
+    for (var fn in r) {
+        var _a = r[fn], file = _a[0], p = _a[1];
+        var compression = p.level == 0 ? 0 : 8;
+        var f = strToU8(fn), s = f.length;
+        var com = p.comment, m = com && strToU8(com), ms = m && m.length;
+        var exl = exfl(p.extra);
+        if (s > 65535)
+            err(11);
+        var d = compression ? deflateSync(file, p) : file, l = d.length;
+        var c = crc();
+        c.p(file);
+        files.push(mrg(p, {
+            size: file.length,
+            crc: c.d(),
+            c: d,
+            f: f,
+            m: m,
+            u: s != fn.length || (m && (com.length != ms)),
+            o: o,
+            compression: compression
+        }));
+        o += 30 + s + exl + l;
+        tot += 76 + 2 * (s + exl) + (ms || 0) + l;
+    }
+    var out = new u8(tot + 22), oe = o, cdl = tot - o;
+    for (var i = 0; i < files.length; ++i) {
+        var f = files[i];
+        wzh(out, f.o, f, f.f, f.u, f.c.length);
+        var badd = 30 + f.f.length + exfl(f.extra);
+        out.set(f.c, f.o + badd);
+        wzh(out, o, f, f.f, f.u, f.c.length, f.o, f.m), o += 16 + badd + (f.m ? f.m.length : 0);
+    }
+    wzf(out, o, files.length, cdl, oe);
+    return out;
+}
+exports.zipSync = zipSync;
+/**
+ * Streaming pass-through decompression for ZIP archives
+ */
+var UnzipPassThrough = /*#__PURE__*/ (function () {
+    function UnzipPassThrough() {
+    }
+    UnzipPassThrough.prototype.push = function (data, final) {
+        this.ondata(null, data, final);
+    };
+    UnzipPassThrough.compression = 0;
+    return UnzipPassThrough;
+}());
+exports.UnzipPassThrough = UnzipPassThrough;
+/**
+ * Streaming DEFLATE decompression for ZIP archives. Prefer AsyncZipInflate for
+ * better performance.
+ */
+var UnzipInflate = /*#__PURE__*/ (function () {
+    /**
+     * Creates a DEFLATE decompression that can be used in ZIP archives
+     */
+    function UnzipInflate() {
+        var _this_1 = this;
+        this.i = new Inflate(function (dat, final) {
+            _this_1.ondata(null, dat, final);
+        });
+    }
+    UnzipInflate.prototype.push = function (data, final) {
+        try {
+            this.i.push(data, final);
+        }
+        catch (e) {
+            this.ondata(e, null, final);
+        }
+    };
+    UnzipInflate.compression = 8;
+    return UnzipInflate;
+}());
+exports.UnzipInflate = UnzipInflate;
+/**
+ * Asynchronous streaming DEFLATE decompression for ZIP archives
+ */
+var AsyncUnzipInflate = /*#__PURE__*/ (function () {
+    /**
+     * Creates a DEFLATE decompression that can be used in ZIP archives
+     */
+    function AsyncUnzipInflate(_, sz) {
+        var _this_1 = this;
+        if (sz < 320000) {
+            this.i = new Inflate(function (dat, final) {
+                _this_1.ondata(null, dat, final);
+            });
+        }
+        else {
+            this.i = new AsyncInflate(function (err, dat, final) {
+                _this_1.ondata(err, dat, final);
+            });
+            this.terminate = this.i.terminate;
+        }
+    }
+    AsyncUnzipInflate.prototype.push = function (data, final) {
+        if (this.i.terminate)
+            data = slc(data, 0);
+        this.i.push(data, final);
+    };
+    AsyncUnzipInflate.compression = 8;
+    return AsyncUnzipInflate;
+}());
+exports.AsyncUnzipInflate = AsyncUnzipInflate;
+/**
+ * A ZIP archive decompression stream that emits files as they are discovered
+ */
+var Unzip = /*#__PURE__*/ (function () {
+    /**
+     * Creates a ZIP decompression stream
+     * @param cb The callback to call whenever a file in the ZIP archive is found
+     */
+    function Unzip(cb) {
+        this.onfile = cb;
+        this.k = [];
+        this.o = {
+            0: UnzipPassThrough
+        };
+        this.p = et;
+    }
+    /**
+     * Pushes a chunk to be unzipped
+     * @param chunk The chunk to push
+     * @param final Whether this is the last chunk
+     */
+    Unzip.prototype.push = function (chunk, final) {
+        var _this_1 = this;
+        if (!this.onfile)
+            err(5);
+        if (!this.p)
+            err(4);
+        if (this.c > 0) {
+            var len = Math.min(this.c, chunk.length);
+            var toAdd = chunk.subarray(0, len);
+            this.c -= len;
+            if (this.d)
+                this.d.push(toAdd, !this.c);
+            else
+                this.k[0].push(toAdd);
+            chunk = chunk.subarray(len);
+            if (chunk.length)
+                return this.push(chunk, final);
+        }
+        else {
+            var f = 0, i = 0, is = void 0, buf = void 0;
+            if (!this.p.length)
+                buf = chunk;
+            else if (!chunk.length)
+                buf = this.p;
+            else {
+                buf = new u8(this.p.length + chunk.length);
+                buf.set(this.p), buf.set(chunk, this.p.length);
+            }
+            var l = buf.length, oc = this.c, add = oc && this.d;
+            var _loop_2 = function () {
+                var _a;
+                var sig = b4(buf, i);
+                if (sig == 0x4034B50) {
+                    f = 1, is = i;
+                    this_1.d = null;
+                    this_1.c = 0;
+                    var bf = b2(buf, i + 6), cmp_1 = b2(buf, i + 8), u = bf & 2048, dd = bf & 8, fnl = b2(buf, i + 26), es = b2(buf, i + 28);
+                    if (l > i + 30 + fnl + es) {
+                        var chks_3 = [];
+                        this_1.k.unshift(chks_3);
+                        f = 2;
+                        var sc_1 = b4(buf, i + 18), su_1 = b4(buf, i + 22);
+                        var fn_1 = strFromU8(buf.subarray(i + 30, i += 30 + fnl), !u);
+                        if (sc_1 == 4294967295) {
+                            _a = dd ? [-2] : z64e(buf, i), sc_1 = _a[0], su_1 = _a[1];
+                        }
+                        else if (dd)
+                            sc_1 = -1;
+                        i += es;
+                        this_1.c = sc_1;
+                        var d_1;
+                        var file_1 = {
+                            name: fn_1,
+                            compression: cmp_1,
+                            start: function () {
+                                if (!file_1.ondata)
+                                    err(5);
+                                if (!sc_1)
+                                    file_1.ondata(null, et, true);
+                                else {
+                                    var ctr = _this_1.o[cmp_1];
+                                    if (!ctr)
+                                        file_1.ondata(err(14, 'unknown compression type ' + cmp_1, 1), null, false);
+                                    d_1 = sc_1 < 0 ? new ctr(fn_1) : new ctr(fn_1, sc_1, su_1);
+                                    d_1.ondata = function (err, dat, final) { file_1.ondata(err, dat, final); };
+                                    for (var _i = 0, chks_4 = chks_3; _i < chks_4.length; _i++) {
+                                        var dat = chks_4[_i];
+                                        d_1.push(dat, false);
+                                    }
+                                    if (_this_1.k[0] == chks_3 && _this_1.c)
+                                        _this_1.d = d_1;
+                                    else
+                                        d_1.push(et, true);
+                                }
+                            },
+                            terminate: function () {
+                                if (d_1 && d_1.terminate)
+                                    d_1.terminate();
+                            }
+                        };
+                        if (sc_1 >= 0)
+                            file_1.size = sc_1, file_1.originalSize = su_1;
+                        this_1.onfile(file_1);
+                    }
+                    return "break";
+                }
+                else if (oc) {
+                    if (sig == 0x8074B50) {
+                        is = i += 12 + (oc == -2 && 8), f = 3, this_1.c = 0;
+                        return "break";
+                    }
+                    else if (sig == 0x2014B50) {
+                        is = i -= 4, f = 3, this_1.c = 0;
+                        return "break";
+                    }
+                }
+            };
+            var this_1 = this;
+            for (; i < l - 4; ++i) {
+                var state_1 = _loop_2();
+                if (state_1 === "break")
+                    break;
+            }
+            this.p = et;
+            if (oc < 0) {
+                var dat = f ? buf.subarray(0, is - 12 - (oc == -2 && 8) - (b4(buf, is - 16) == 0x8074B50 && 4)) : buf.subarray(0, i);
+                if (add)
+                    add.push(dat, !!f);
+                else
+                    this.k[+(f == 2)].push(dat);
+            }
+            if (f & 2)
+                return this.push(buf.subarray(i), final);
+            this.p = buf.subarray(i);
+        }
+        if (final) {
+            if (this.c)
+                err(13);
+            this.p = null;
+        }
+    };
+    /**
+     * Registers a decoder with the stream, allowing for files compressed with
+     * the compression type provided to be expanded correctly
+     * @param decoder The decoder constructor
+     */
+    Unzip.prototype.register = function (decoder) {
+        this.o[decoder.compression] = decoder;
+    };
+    return Unzip;
+}());
+exports.Unzip = Unzip;
+var mt = typeof queueMicrotask == 'function' ? queueMicrotask : typeof setTimeout == 'function' ? setTimeout : function (fn) { fn(); };
+function unzip(data, opts, cb) {
+    if (!cb)
+        cb = opts, opts = {};
+    if (typeof cb != 'function')
+        err(7);
+    var term = [];
+    var tAll = function () {
+        for (var i = 0; i < term.length; ++i)
+            term[i]();
+    };
+    var files = {};
+    var cbd = function (a, b) {
+        mt(function () { cb(a, b); });
+    };
+    mt(function () { cbd = cb; });
+    var e = data.length - 22;
+    for (; b4(data, e) != 0x6054B50; --e) {
+        if (!e || data.length - e > 65558) {
+            cbd(err(13, 0, 1), null);
+            return tAll;
+        }
+    }
+    ;
+    var lft = b2(data, e + 8);
+    if (lft) {
+        var c = lft;
+        var o = b4(data, e + 16);
+        var z = o == 4294967295;
+        if (z) {
+            e = b4(data, e - 12);
+            if (b4(data, e) != 0x6064B50) {
+                cbd(err(13, 0, 1), null);
+                return tAll;
+            }
+            c = lft = b4(data, e + 32);
+            o = b4(data, e + 48);
+        }
+        var fltr = opts && opts.filter;
+        var _loop_3 = function (i) {
+            var _a = zh(data, o, z), c_1 = _a[0], sc = _a[1], su = _a[2], fn = _a[3], no = _a[4], off = _a[5], b = slzh(data, off);
+            o = no;
+            var cbl = function (e, d) {
+                if (e) {
+                    tAll();
+                    cbd(e, null);
+                }
+                else {
+                    if (d)
+                        files[fn] = d;
+                    if (!--lft)
+                        cbd(null, files);
+                }
+            };
+            if (!fltr || fltr({
+                name: fn,
+                size: sc,
+                originalSize: su,
+                compression: c_1
+            })) {
+                if (!c_1)
+                    cbl(null, slc(data, b, b + sc));
+                else if (c_1 == 8) {
+                    var infl = data.subarray(b, b + sc);
+                    if (sc < 320000) {
+                        try {
+                            cbl(null, inflateSync(infl, new u8(su)));
+                        }
+                        catch (e) {
+                            cbl(e, null);
+                        }
+                    }
+                    else
+                        term.push(inflate(infl, { size: su }, cbl));
+                }
+                else
+                    cbl(err(14, 'unknown compression type ' + c_1, 1), null);
+            }
+            else
+                cbl(null, null);
+        };
+        for (var i = 0; i < c; ++i) {
+            _loop_3(i);
+        }
+    }
+    else
+        cbd(null, {});
+    return tAll;
+}
+exports.unzip = unzip;
+/**
+ * Synchronously decompresses a ZIP archive. Prefer using `unzip` for better
+ * performance with more than one file.
+ * @param data The raw compressed ZIP file
+ * @param opts The ZIP extraction options
+ * @returns The decompressed files
+ */
+function unzipSync(data, opts) {
+    var files = {};
+    var e = data.length - 22;
+    for (; b4(data, e) != 0x6054B50; --e) {
+        if (!e || data.length - e > 65558)
+            err(13);
+    }
+    ;
+    var c = b2(data, e + 8);
+    if (!c)
+        return {};
+    var o = b4(data, e + 16);
+    var z = o == 4294967295;
+    if (z) {
+        e = b4(data, e - 12);
+        if (b4(data, e) != 0x6064B50)
+            err(13);
+        c = b4(data, e + 32);
+        o = b4(data, e + 48);
+    }
+    var fltr = opts && opts.filter;
+    for (var i = 0; i < c; ++i) {
+        var _a = zh(data, o, z), c_2 = _a[0], sc = _a[1], su = _a[2], fn = _a[3], no = _a[4], off = _a[5], b = slzh(data, off);
+        o = no;
+        if (!fltr || fltr({
+            name: fn,
+            size: sc,
+            originalSize: su,
+            compression: c_2
+        })) {
+            if (!c_2)
+                files[fn] = slc(data, b, b + sc);
+            else if (c_2 == 8)
+                files[fn] = inflateSync(data.subarray(b, b + sc), new u8(su));
+            else
+                err(14, 'unknown compression type ' + c_2);
+        }
+    }
+    return files;
+}
+exports.unzipSync = unzipSync;
+
+},{"./node-worker.cjs":828}],828:[function(require,module,exports){
+"use strict";
+var ch2 = {};
+exports["default"] = (function (c, id, msg, transfer, cb) {
+    var w = new Worker(ch2[id] || (ch2[id] = URL.createObjectURL(new Blob([
+        c + ';addEventListener("error",function(e){e=e.error;postMessage({$e$:[e.message,e.code,e.stack]})})'
+    ], { type: 'text/javascript' }))));
+    w.onmessage = function (e) {
+        var d = e.data, ed = d.$e$;
+        if (ed) {
+            var err = new Error(ed[0]);
+            err['code'] = ed[1];
+            err.stack = ed[2];
+            cb(err, null);
+        }
+        else
+            cb(null, d);
+    };
+    w.postMessage(msg, transfer);
+    return w;
+});
+
+},{}],829:[function(require,module,exports){
+'use strict';
+
+function isObject (o) {
+    return o && Object.prototype.toString.call(o) === '[object Object]';
+}
+
+function indenter (indentation) {
+    var space = ' '.repeat(indentation);
+    return function (txt) {
+        var arr, res = [];
+
+        if (typeof txt !== 'string') {
+            return txt;
+        }
+
+        arr = txt.split('\n');
+
+        if (arr.length === 1) {
+            return space + txt;
+        }
+
+        arr.forEach(function (e) {
+            if (e.trim() === '') {
+                res.push(e);
+                return;
+            }
+            res.push(space + e);
+        });
+
+        return res.join('\n');
+    };
+}
+
+function clean (txt) {
+    var arr = txt.split('\n');
+    var res = [];
+    arr.forEach(function (e) {
+        if (e.trim() === '') {
+            return;
+        }
+        res.push(e);
+    });
+    return res.join('\n');
+}
+
+function stringify (a, indentation) {
+
+    var cr = '';
+    var indent = function (t) { return t; };
+
+    if (indentation > 0) {
+        cr = '\n';
+        indent = indenter(indentation);
+    }
+
+    function rec (a) {
+        var res, body, isEmpty, isFlat;
+
+        body = '';
+        isFlat = true;
+        isEmpty = a.some(function (e, i, arr) {
+            if (i === 0) {
+                res = '<' + e;
+                if (arr.length === 1) {
+                    return true;
+                }
+                return;
+            }
+
+            if (i === 1) {
+                if (isObject(e)) {
+                    Object.keys(e).forEach(function (key) {
+                        res += ' ' + key + '="' + e[key] + '"';
+                    });
+                    if (arr.length === 2) {
+                        return true;
+                    }
+                    res += '>';
+                    return;
+                } else {
+                    res += '>';
+                }
+            }
+
+            switch (typeof e) {
+            case 'string':
+            case 'number':
+            case 'boolean':
+            case 'undefined':
+                body += e + cr;
+                return;
+            }
+
+            isFlat = false;
+            body += rec(e);
+        });
+
+        if (isEmpty) {
+            return res + '/>' + cr; // short form
+        } else {
+            if (isFlat) {
+                return res + clean(body) + '</' + a[0] + '>' + cr;
+            } else {
+                return res + cr + indent(body) + '</' + a[0] + '>' + cr;
+            }
+        }
+    }
+
+    return rec(a);
+}
+
+module.exports = stringify;
+
+},{}],830:[function(require,module,exports){
 'use strict'
 
 exports.byteLength = byteLength
@@ -23151,7 +27968,7 @@ function fromByteArray (uint8) {
   return parts.join('')
 }
 
-},{}],423:[function(require,module,exports){
+},{}],831:[function(require,module,exports){
 (function (Buffer){
 /*!
  * The buffer module from node.js, for the browser.
@@ -24932,7 +29749,7 @@ function numberIsNaN (obj) {
 }
 
 }).call(this,require("buffer").Buffer)
-},{"base64-js":422,"buffer":423,"ieee754":424}],424:[function(require,module,exports){
+},{"base64-js":830,"buffer":831,"ieee754":832}],832:[function(require,module,exports){
 exports.read = function (buffer, offset, isLE, mLen, nBytes) {
   var e, m
   var eLen = (nBytes * 8) - mLen - 1

@@ -231,9 +231,10 @@ export namespace JSCAD {
         fileName: string;
     }
     export class DownloadGeometryDto {
-        constructor(geometry?: JSCADEntity | JSCADEntity[], fileName?: string) {
+        constructor(geometry?: JSCADEntity | JSCADEntity[], fileName?: string, options?: any) {
             if (geometry !== undefined) { this.geometry = geometry; }
             if (fileName !== undefined) { this.fileName = fileName; }
+            if (options !== undefined) { this.options = options; }
         }
         /**
          * Solid or path to be downloaded, also supports multiple geometries in array
@@ -242,9 +243,15 @@ export namespace JSCAD {
         geometry: JSCADEntity | JSCADEntity[];
         /**
          * File name
-         * @default undefined
+         * @default jscad-geometry
          */
-        fileName: string;
+        fileName = "jscad-geometry";
+        /**
+         * Options
+         * @default undefined
+         * @optional true
+         */
+        options;
     }
     export class DownloadSolidsDto {
         constructor(meshes?: JSCADEntity[], fileName?: string) {
