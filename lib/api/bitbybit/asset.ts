@@ -3,7 +3,7 @@ import * as Inputs from "../inputs/inputs";
 import { AssetManager } from "../../asset-manager";
 
 export class Asset {
-    public readonly assetManager: AssetManager;
+    public assetManager: AssetManager;
     constructor() {
         this.assetManager = new AssetManager();
     }
