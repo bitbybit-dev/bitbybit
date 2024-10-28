@@ -111,7 +111,7 @@ export namespace Logic {
          * @maximum 1
          * @step 0.1
          */
-        trueThreshold: 0.5;
+        trueThreshold = 0.5;
     }
     export class TwoThresholdRandomGradientDto {
         /**

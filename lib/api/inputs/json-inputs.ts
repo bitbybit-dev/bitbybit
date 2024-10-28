@@ -126,15 +126,16 @@ export namespace JSON {
         /**
          * property to update
          * @default propertyName
-         */ 
+         */
         prop = "propertyName";
     }
 
     export class SetValuesOnPathsDto {
-        constructor(json?: any, values?: any[], paths?: string[]) {
+        constructor(json?: any, values?: any[], paths?: string[], props?: []) {
             if (json !== undefined) { this.json = json; }
             if (values !== undefined) { this.values = values; }
             if (paths !== undefined) { this.paths = paths; }
+            if (props !== undefined) { this.props = props; }
         }
         /**
         * query json structure
@@ -151,6 +152,11 @@ export namespace JSON {
          * @default undefined
          */
         paths: string[];
+        /**
+         * properties to update
+         * @default undefined
+         */
+        props: string[];
     }
     export class PathsDto {
         constructor(json?: any, query?: string) {

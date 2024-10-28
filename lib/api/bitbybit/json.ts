@@ -132,9 +132,9 @@ export class JSONBitByBit {
      */
     setValuesOnPaths(inputs: Inputs.JSON.SetValuesOnPathsDto): any {
         // must be an object
-        const clonedJson = { ...structuredClone(inputs.json) };
+        let clonedJson = { ...structuredClone(inputs.json) };
         inputs.paths.forEach((path, index) => {
-            this.context.jsonpath.value(clonedJson, path, inputs.values[index]);
+            clonedJson = this.setValue({ json: clonedJson, path, value: inputs.values[index], prop: inputs.props[index] });
         });
         return clonedJson;
     }
