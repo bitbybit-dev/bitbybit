@@ -410,7 +410,7 @@ export class Vector {
         const dist = (inputs.max - inputs.min);
         for (let i = 0; i < inputs.nrItems; i++) {
             const x = dist * i / (inputs.nrItems - 1);
-            res.push(x);
+            res.push(x + inputs.min);
         }
         return res;
     }
