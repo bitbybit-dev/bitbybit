@@ -36,5 +36,20 @@ describe("Text unit tests", () => {
         const result = text.toStringEach({ list: [0, 1, 2] });
         expect(result).toEqual(["0", "1", "2"]);
     });
+
+    it("should format string", () => {
+        const result = text.format({ text: "Hello {0}, {1}", values: ["World", "Matas"] });
+        expect(result).toEqual("Hello World, Matas");
+    });
+
+    it("should not format string if there are no values", () => {
+        const result = text.format({ text: "Hello {0}, {1}", values: [] });
+        expect(result).toEqual("Hello {0}, {1}");
+    });
+
+    it("should not format string if there are no placeholders", () => {
+        const result = text.format({ text: "Hello World, Matas", values: ["dada"] });
+        expect(result).toEqual("Hello World, Matas");
+    });
 });
 

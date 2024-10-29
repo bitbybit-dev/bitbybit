@@ -89,6 +89,11 @@ describe("Vector unit tests", () => {
         expect(res).toBeCloseTo(45);
     });
 
+    it("should create normalized (unit) vector", () => {
+        const res = vector.normalized({ vector: [1, 1, 0] });
+        expect(res).toEqual([0.7071067811865475, 0.7071067811865475, 0]);
+    });
+
     it("should add all vectors", () => {
         const res = vector.addAll({ vectors: [[1, 2, 3], [3, 4, 5], [2, 3, 4]] });
         expect(res).toEqual([6, 9, 12]);
