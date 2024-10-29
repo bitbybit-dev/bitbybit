@@ -1,5 +1,4 @@
 
-import { Angle } from "@babylonjs/core";
 import { Context } from "../context";
 import * as Inputs from "../inputs/inputs";
 import { GeometryHelper } from "../geometry-helper";
@@ -47,7 +46,9 @@ export class Vector {
      * @drawable false
      */
     angleBetween(inputs: Inputs.Vector.TwoVectorsDto): number {
-        return Angle.FromRadians(this.context.verb.core.Vec.angleBetween(inputs.first, inputs.second)).degrees();
+        return this.math.radToDeg({
+            number: this.context.verb.core.Vec.angleBetween(inputs.first, inputs.second)
+        });
     }
 
     /**
@@ -59,7 +60,9 @@ export class Vector {
      * @drawable false
      */
     angleBetweenNormalized2d(inputs: Inputs.Vector.TwoVectorsDto): number {
-        return Angle.FromRadians(this.context.verb.core.Vec.angleBetweenNormalized2d(inputs.first, inputs.second)).degrees();
+        return this.math.radToDeg({
+            number: this.context.verb.core.Vec.angleBetweenNormalized2d(inputs.first, inputs.second)
+        });
     }
 
     /**
@@ -71,7 +74,9 @@ export class Vector {
      * @drawable false
      */
     positiveAngleBetween(inputs: Inputs.Vector.TwoVectorsReferenceDto): number {
-        return Angle.FromRadians(this.context.verb.core.Vec.positiveAngleBetween(inputs.first, inputs.second, inputs.reference)).degrees();
+        return this.math.radToDeg({
+            number: this.context.verb.core.Vec.positiveAngleBetween(inputs.first, inputs.second, inputs.reference)
+        });
     }
 
     /**
@@ -360,9 +365,9 @@ export class Vector {
      * @drawable false
      */
     signedAngleBetween(inputs: Inputs.Vector.TwoVectorsReferenceDto): number {
-        return Angle.FromRadians(
-            this.context.verb.core.Vec.signedAngleBetween(inputs.first, inputs.second, inputs.reference)
-        ).degrees();
+        return this.math.radToDeg({
+            number: this.context.verb.core.Vec.signedAngleBetween(inputs.first, inputs.second, inputs.reference)
+        });
     }
 
     /**

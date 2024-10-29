@@ -1,5 +1,3 @@
-
-import * as BABYLON from "@babylonjs/core";
 import { Context } from "../context";
 import { GeometryHelper } from "../geometry-helper";
 import * as Inputs from "../inputs/inputs";
@@ -16,45 +14,6 @@ import { BabylonTransforms } from "./babylon";
 export class Point {
 
     constructor(private readonly context: Context, private readonly geometryHelper: GeometryHelper, private readonly line: Line, private readonly babylonTransforms: BabylonTransforms) { }
-
-    /**
-     * Draws a single point
-     * @param inputs Contains a point to be drawn
-     * @returns Mesh that is being drawn by Babylon
-     * @group draw
-     * @shortname point
-     * @drawable false
-     * @ignore true
-     */
-    drawPoint(inputs: Inputs.Point.DrawPointDto): BABYLON.Mesh {
-        return this.geometryHelper.drawPoint(inputs);
-    }
-
-    /**
-     * Draws multiple points
-     * @param inputs Contains a point array to be drawn
-     * @returns Mesh that is being drawn by Babylon
-     * @group draw
-     * @shortname points sync
-     * @drawable false
-     * @ignore true
-     */
-    drawPoints(inputs: Inputs.Point.DrawPointsDto): BABYLON.Mesh {
-        return this.geometryHelper.drawPoints(inputs);
-    }
-
-    /**
-     * Draws multiple points async
-     * @param inputs Contains a point array to be drawn
-     * @returns Promise of a Mesh that will being drawn by Babylon
-     * @group draw
-     * @shortname points
-     * @drawable false
-     * @ignore true
-     */
-    drawPointsAsync(inputs: Inputs.Point.DrawPointsDto): Promise<BABYLON.Mesh> {
-        return Promise.resolve(this.drawPoints(inputs));
-    }
 
     /**
      * Transforms the single point

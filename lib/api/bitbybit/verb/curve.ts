@@ -26,40 +26,6 @@ export class VerbCurve {
     }
 
     /**
-     * Draws a single curve
-     * @param inputs Contains a curve to be drawn
-     * @returns Lines mesh that is being drawn by Babylon
-     */
-    drawCurve(inputs: Inputs.Verb.DrawCurveDto): GreasedLineMesh {
-        const points = inputs.curve.tessellate();
-        return this.geometryHelper.drawPolyline(
-            inputs.curveMesh,
-            points,
-            inputs.updatable,
-            inputs.size,
-            inputs.opacity,
-            inputs.colours
-        );
-    }
-
-    /**
-     * Draws multiple curves
-     * @param inputs Contains curves to be drawn
-     * @returns Lines mesh that is being drawn by Babylon
-     */
-    drawCurves(inputs: Inputs.Verb.DrawCurvesDto): GreasedLineMesh {
-        const points = inputs.curves.map(s => s.tessellate());
-        return this.geometryHelper.drawPolylines(
-            inputs.curvesMesh,
-            points,
-            inputs.updatable,
-            inputs.size,
-            inputs.opacity,
-            inputs.colours
-        );
-    }
-
-    /**
      * Creates a Nurbs curve by providing knots, control points & weights
      * @param inputs Contains knots, control points and weights
      * @returns Nurbs curve

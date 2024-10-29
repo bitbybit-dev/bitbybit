@@ -23,6 +23,7 @@ import { Lists } from "./bitbybit/lists";
 import { JSONBitByBit } from "./bitbybit/json";
 import { JSONPath } from "jsonpath-plus";
 import { Logic } from "./bitbybit/logic";
+import { DrawHelper } from "./draw-helper";
 
 export class BitByBitBase {
 
@@ -53,36 +54,32 @@ export class BitByBitBase {
         this.context = new Context();
         this.jscadWorkerManager = new JSCADWorkerManager();
         this.occtWorkerManager = new OCCTWorkerManager();
-        const geometryHelper = new GeometryHelper(this.context);
+        this.jscad = new JSCAD(this.jscadWorkerManager);
 
+        const geometryHelper = new GeometryHelper();
+        const drawHelper = new DrawHelper(this.context, this.jscad.text, this.vector, this.jscadWorkerManager, this.occtWorkerManager,);
+        this.babylon = new Babylon(this.context, drawHelper, this.color);
+        this.tag = new Tag(this.context);
+        this.draw = new Draw(
+            drawHelper,
+            this.babylon.node,
+            this.tag,
+            this.context);
+        
         this.color = new Color(this.context);
-        this.babylon = new Babylon(this.context, geometryHelper, this.color);
         this.math = new MathBitByBit();
         this.vector = new Vector(this.context, this.math, geometryHelper);
         this.line = new Line(this.context, geometryHelper);
         this.point = new Point(this.context, geometryHelper, this.line, this.babylon.transforms);
         this.polyline = new Polyline(this.context, geometryHelper);
         this.verb = new Verb(this.context, geometryHelper);
-        this.jscad = new JSCAD(this.jscadWorkerManager, this.context, geometryHelper);
-        this.tag = new Tag(this.context);
         this.time = new Time(this.context);
-        this.occt = new OCCTW(this.context, this.occtWorkerManager, geometryHelper, this.jscad.text, this.vector);
+        this.occt = new OCCTW(this.context, this.occtWorkerManager, drawHelper);
         this.asset = new Asset();
         this.logic = new Logic();
         this.json = new JSONBitByBit(this.context);
         this.text = new TextBitByBit();
         this.lists = new Lists();
-        this.draw = new Draw(
-            this.point,
-            this.line,
-            this.polyline,
-            this.babylon.node,
-            this.verb.curve,
-            this.verb.surface,
-            this.jscad,
-            this.occt,
-            this.tag,
-            this.context);
     }
 
     init(scene: BABYLON.Scene, occt?: Worker, jscad?: Worker, havokPlugin?: BABYLON.HavokPlugin) {

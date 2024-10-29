@@ -1,5 +1,3 @@
-
-import * as BABYLON from "@babylonjs/core";
 import { Context } from "../context";
 import { GeometryHelper } from "../geometry-helper";
 import * as Inputs from "../inputs/inputs";
@@ -12,55 +10,6 @@ import * as Inputs from "../inputs/inputs";
 export class Line {
 
     constructor(private readonly context: Context, private readonly geometryHelper: GeometryHelper) { }
-
-    /**
-     * Draws multiple lines
-     * @param inputs Contains a line to be drawn
-     * @returns Lines mesh that is being drawn by Babylon
-     */
-    drawLines(inputs: Inputs.Line.DrawLinesDto): BABYLON.LinesMesh {
-        const lines = [];
-        const colors = [];
-
-        inputs.lines.forEach((line, index) => {
-            lines.push([
-                new BABYLON.Vector3(line.start[0], line.start[1], line.start[2]),
-                new BABYLON.Vector3(line.end[0], line.end[1], line.end[2])]
-            );
-            let col;
-            if (Array.isArray(inputs.colours) && inputs.colours.length === inputs.lines.length) {
-                col = BABYLON.Color3.FromHexString(inputs.colours[index]);
-            } else if (Array.isArray(inputs.colours)) {
-                col = BABYLON.Color3.FromHexString(inputs.colours[0]);
-            } else {
-                col = BABYLON.Color3.FromHexString(inputs.colours);
-            }
-            colors.push([
-                new BABYLON.Color4(col.r, col.g, col.b, inputs.opacity),
-                new BABYLON.Color4(col.r, col.g, col.b, inputs.opacity)
-            ]);
-        });
-
-        if (inputs.linesMesh && inputs.updatable) {
-            if (inputs.linesMesh.getTotalVertices() / 2 === lines.length) {
-                inputs.linesMesh = BABYLON.MeshBuilder.CreateLineSystem(null,
-                    {
-                        lines,
-                        instance: inputs.linesMesh,
-                        colors, useVertexAlpha: true,
-                        updatable: inputs.updatable
-                    }, null);
-            } else {
-                inputs.linesMesh.dispose();
-                inputs.linesMesh = this.createLineSystemMesh(inputs.updatable, lines, colors);
-            }
-        } else {
-            inputs.linesMesh = this.createLineSystemMesh(inputs.updatable, lines, colors);
-        }
-
-        this.geometryHelper.edgesRendering(inputs.linesMesh, inputs.size, inputs.opacity, inputs.colours);
-        return inputs.linesMesh;
-    }
 
     /**
      * Converts a line to a NURBS line curve
@@ -225,16 +174,6 @@ export class Line {
      */
     linesBetweenStartAndEndPointsAsync(inputs: Inputs.Line.LineStartEndPointsDto): Promise<Inputs.Base.Line3[]> {
         return Promise.resolve(this.linesBetweenStartAndEndPoints(inputs));
-    }
-
-    private createLineSystemMesh(updatable: boolean, lines: BABYLON.Vector3[][], colors: BABYLON.Color4[][]): BABYLON.LinesMesh {
-        return BABYLON.MeshBuilder.CreateLineSystem(`lines${Math.random()}`,
-            {
-                lines,
-                colors,
-                useVertexAlpha: true,
-                updatable
-            }, this.context.scene);
     }
 }
 

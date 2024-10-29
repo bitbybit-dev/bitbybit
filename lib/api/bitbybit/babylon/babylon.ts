@@ -1,6 +1,6 @@
 
 import { Context } from "../../context";
-import { GeometryHelper } from "../../geometry-helper";
+import { DrawHelper } from "../../draw-helper";
 import { Color } from "../color";
 import { BabylonCamera } from "./camera/camera";
 import { BabylonEngine } from "./engine";
@@ -46,13 +46,13 @@ export class Babylon {
 
     constructor(
         context: Context,
-        geometryHelper: GeometryHelper,
+        drawHelper: DrawHelper,
         color: Color
     ) {
         this.mesh = new BabylonMesh(context);
         this.camera = new BabylonCamera(context);
         this.gaussianSplatting = new BabylonGaussianSplatting(context);
-        this.node = new BabylonNode(context, geometryHelper);
+        this.node = new BabylonNode(context, drawHelper);
         this.scene = new BabylonScene(context);
         this.webXr = new BabylonWebXR(context);
         this.gui = new BabylonGui(context);

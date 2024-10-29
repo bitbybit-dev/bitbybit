@@ -11,7 +11,7 @@ describe("Vector unit tests", () => {
     beforeAll(() => {
         const context = new Context();
         context.verb = vrb;
-        vector = new Vector(context, new MathBitByBit(), new GeometryHelper(context));
+        vector = new Vector(context, new MathBitByBit(), new GeometryHelper());
     });
 
     it("should create xyz vector", () => {

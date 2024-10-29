@@ -1,5 +1,3 @@
-
-import * as BABYLON from "@babylonjs/core";
 import { Context } from "../context";
 import { GeometryHelper } from "../geometry-helper";
 import * as Inputs from "../inputs/inputs";
@@ -12,64 +10,6 @@ import * as Inputs from "../inputs/inputs";
 export class Polyline {
 
     constructor(private readonly context: Context, private readonly geometryHelper: GeometryHelper) { }
-
-    /**
-     * Draws a single polyline
-     * @param inputs Contains a polyline to be drawn
-     * @returns Lines mesh that is being drawn by Babylon
-     */
-    drawPolyline(inputs: Inputs.Polyline.DrawPolylineDto): BABYLON.GreasedLineMesh {
-        // handle jscad isClosed case
-        const points = inputs.polyline.points;
-        if (inputs.polyline.isClosed) {
-            points.push(points[0]);
-        }
-        return this.geometryHelper.drawPolyline(
-            inputs.polylineMesh,
-            points,
-            inputs.updatable,
-            inputs.size,
-            inputs.opacity,
-            inputs.colours
-        );
-    }
-
-    /**
-     * Draws multiple polylines
-     * @param inputs Contains a polyline to be drawn
-     * @returns Lines mesh that is being drawn by Babylon
-     */
-    drawPolylines(inputs: Inputs.Polyline.DrawPolylinesDto): BABYLON.GreasedLineMesh {
-        let colours = inputs.colours;
-        const points = inputs.polylines.map((s, index) => {
-            const pts = s.points;
-            //handle jscad
-            if (s.isClosed) {
-                pts.push(pts[0]);
-            }
-            // sometimes polylines can have assigned colors in case of jscad for example. Such colour will overwrite the default provided colour for that polyline.
-            if (s.color) {
-                if (!Array.isArray(colours)) {
-                    colours = [];
-                }
-                if (Array.isArray(s.color)) {
-                    colours[index] = BABYLON.Color3.FromArray(s.color).toHexString();
-                } else {
-                    colours[index] = s.color;
-                }
-            }
-            return pts;
-        });
-
-        return this.geometryHelper.drawPolylines(
-            inputs.polylinesMesh,
-            points,
-            inputs.updatable,
-            inputs.size,
-            inputs.opacity,
-            colours
-        );
-    }
 
     /**
      * Converts a polyline to a NURBS curve

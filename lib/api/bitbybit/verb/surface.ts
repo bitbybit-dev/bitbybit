@@ -1,5 +1,3 @@
-
-import { Color3, Mesh, PBRMetallicRoughnessMaterial, StandardMaterial, VertexData } from "@babylonjs/core";
 import { Context } from "../../context";
 import { GeometryHelper } from "../../geometry-helper";
 import * as Inputs from "../../inputs/inputs";
@@ -35,127 +33,6 @@ export class VerbSurface {
         this.sphere = new VerbSurfaceSpherical(context);
         this.revolved = new VerbSurfaceRevolved(context);
         this.sweep = new VerbSurfaceSweep(context);
-    }
-
-    /**
-     * Draws a single surface
-     * @param inputs Contains a surface and information for drawing
-     * @returns Mesh that is being drawn by Babylon
-     */
-    drawSurface(inputs: Inputs.Verb.DrawSurfaceDto): Mesh {
-        const meshData = inputs.surface.tessellate();
-
-        const meshDataConverted = {
-            positions: [],
-            indices: [],
-            normals: [],
-        };
-
-        let countIndices = 0;
-        meshData.faces.forEach((faceIndices) => {
-            countIndices = this.parseFaces(faceIndices, meshData, meshDataConverted, countIndices);
-        });
-
-        const pbr = new PBRMetallicRoughnessMaterial("pbr" + Math.random(), this.context.scene);
-
-        pbr.baseColor = Color3.FromHexString(Array.isArray(inputs.colours) ? inputs.colours[0] : inputs.colours);
-        pbr.metallic = 1.0;
-        pbr.roughness = 0.6;
-        pbr.alpha = inputs.opacity;
-        pbr.alphaMode = 1;
-        pbr.backFaceCulling = false;
-        pbr.doubleSided = true;
-
-        return this.geometryHelper.createOrUpdateSurfaceMesh(
-            meshDataConverted,
-            inputs.surfaceMesh,
-            inputs.updatable,
-            pbr,
-            true,
-            inputs.hidden,
-        );
-    }
-
-    /**
-     * Draws multiple surfaces
-     * @param inputs Contains the Nurbs surfaces and information for drawing
-     * @returns Mesh that is being drawn by Babylon
-     */
-    drawSurfaces(inputs: Inputs.Verb.DrawSurfacesDto): Mesh {
-        const tessellatedSurfaces = [];
-        inputs.surfaces.forEach(srf => {
-            tessellatedSurfaces.push(srf.tessellate());
-        });
-
-        const meshDataConverted = {
-            positions: [],
-            indices: [],
-            normals: [],
-        };
-
-        let countIndices = 0;
-        tessellatedSurfaces.forEach(meshData => {
-            meshData.faces.forEach((faceIndices) => {
-                countIndices = this.parseFaces(faceIndices, meshData, meshDataConverted, countIndices);
-            });
-        });
-
-        const pbr = new PBRMetallicRoughnessMaterial("pbr" + Math.random(), this.context.scene);
-
-        pbr.baseColor = Color3.FromHexString(Array.isArray(inputs.colours) ? inputs.colours[0] : inputs.colours);
-        pbr.metallic = 1.0;
-        pbr.roughness = 0.6;
-        pbr.alpha = inputs.opacity;
-        pbr.alphaMode = 1;
-        pbr.backFaceCulling = true;
-        pbr.doubleSided = false;
-
-        return this.geometryHelper.createOrUpdateSurfaceMesh(
-            meshDataConverted,
-            inputs.surfacesMesh,
-            inputs.updatable,
-            pbr,
-            true,
-            inputs.hidden
-        );
-    }
-
-    /**
-     * Draws multiple surfaces with multiple colours. Number of colours has to be equal to number of surfaces
-     * @param inputs Contains the Nurbs surfaces, colours and other information for drawing
-     * @returns Mesh that is being drawn by Babylon
-     */
-    drawSurfacesMultiColour(inputs: Inputs.Verb.DrawSurfacesColoursDto): Mesh {
-        if (inputs.surfacesMesh && inputs.updatable) {
-            inputs.surfacesMesh.getChildren().forEach(srf => srf.dispose());
-        }
-
-        inputs.surfacesMesh = new Mesh(`ColouredSurfaces${Math.random()}`, this.context.scene);
-        if (Array.isArray(inputs.colours)) {
-            inputs.surfaces.forEach((surface, index) => {
-                const srf = this.drawSurface({
-                    surface,
-                    colours: inputs.colours[index] ? inputs.colours[index] : inputs.colours[0],
-                    updatable: inputs.updatable,
-                    opacity: inputs.opacity,
-                    hidden: inputs.hidden,
-                });
-                inputs.surfacesMesh.addChild(srf);
-            });
-        } else {
-            inputs.surfaces.forEach((surface, index) => {
-                const srf = this.drawSurface({
-                    surface,
-                    colours: inputs.colours,
-                    updatable: inputs.updatable,
-                    opacity: inputs.opacity,
-                    hidden: inputs.hidden,
-                });
-                inputs.surfacesMesh.addChild(srf);
-            });
-        }
-
-        return inputs.surfacesMesh;
     }
 
     /**
@@ -407,19 +284,4 @@ export class VerbSurface {
         return inputs.surface.weights();
     }
 
-    private parseFaces(
-        faceIndices: any,
-        meshData: any,
-        meshDataConverted: { positions: number[]; indices: number[]; normals: number[]; },
-        countIndices: number): number {
-        faceIndices.reverse().forEach((x) => {
-            const vn = meshData.normals[x];
-            meshDataConverted.normals.push(vn[0], vn[1], vn[2]);
-            const pt = meshData.points[x];
-            meshDataConverted.positions.push(pt[0], pt[1], pt[2]);
-            meshDataConverted.indices.push(countIndices);
-            countIndices++;
-        });
-        return countIndices;
-    }
 }

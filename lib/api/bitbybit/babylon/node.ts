@@ -1,7 +1,7 @@
 
 import * as BABYLON from "@babylonjs/core";
 import { Context } from "../../context";
-import { GeometryHelper } from "../../geometry-helper";
+import { DrawHelper } from "../../draw-helper";
 import * as Inputs from "../../inputs/inputs";
 
 /**
@@ -11,14 +11,14 @@ import * as Inputs from "../../inputs/inputs";
 
 export class BabylonNode {
 
-    constructor(private readonly context: Context, private readonly geometryHelper: GeometryHelper) { }
+    constructor(private readonly context: Context, private readonly drawHelper: DrawHelper) { }
 
     /**
      * Draws a node of given size with given colours for every axis
      * @param inputs Contains node data that includes size and colour information
      */
     drawNode(inputs: Inputs.BabylonNode.DrawNodeDto): void {
-        const cotAxis = this.geometryHelper.localAxes(
+        const cotAxis = this.drawHelper.localAxes(
             inputs.size, this.context.scene, inputs.colorX, inputs.colorY, inputs.colorZ
         );
         cotAxis.parent = inputs.node;
@@ -30,7 +30,7 @@ export class BabylonNode {
      */
     drawNodes(inputs: Inputs.BabylonNode.DrawNodesDto): void {
         inputs.nodes.forEach(node => {
-            const CoTAxis = this.geometryHelper.localAxes(
+            const CoTAxis = this.drawHelper.localAxes(
                 inputs.size, this.context.scene, inputs.colorX, inputs.colorY, inputs.colorZ);
             CoTAxis.parent = node;
         });

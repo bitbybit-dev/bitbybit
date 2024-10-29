@@ -2,13 +2,9 @@ import * as Inputs from "../inputs/inputs";
 
 /**
  * Contains various math methods.
- * <div>
- *  <img src="../assets/images/blockly-images/math/math.svg" alt="Blockly Image"/>
- * </div>
  */
 export class MathBitByBit {
 
-    constructor() { }
     /**
      * Creates a number
      * @param inputs a number to be created

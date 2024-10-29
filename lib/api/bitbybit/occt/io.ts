@@ -3,7 +3,7 @@ import * as Inputs from "../../inputs/inputs";
 import { OCCTWorkerManager, OCCTIO } from "@bitbybit-dev/occt-worker";
 import { Context } from "../../context";
 import { STLExport } from "@babylonjs/serializers";
-import { GeometryHelper } from "../../geometry-helper";
+import { DrawHelper } from "../../draw-helper";
 
 
 export class OCCTWIO extends OCCTIO {
@@ -11,7 +11,7 @@ export class OCCTWIO extends OCCTIO {
     constructor(
         override readonly occWorkerManager: OCCTWorkerManager,
         private readonly context: Context,
-        private readonly geometryHelper: GeometryHelper,
+        private readonly drawHelper: DrawHelper,
     ) {
         super(occWorkerManager);
     }
@@ -81,7 +81,7 @@ export class OCCTWIO extends OCCTIO {
         let dummy;
 
         const faceMeshes = fe.faceList.map(face => {
-            const mesh = this.geometryHelper.createOrUpdateSurfaceMesh({
+            const mesh = this.drawHelper.createOrUpdateSurfaceMesh({
                 positions: face.vertex_coord,
                 normals: face.normal_coord,
                 indices: face.tri_indexes,
