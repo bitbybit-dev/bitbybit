@@ -20,22 +20,22 @@
         "emitDeclarationOnly": false,
         "paths": {
             "@bitbybit-dev/core": [
-                "../core/*"
+                "../core/dist"
             ],
             "@bitbybit-dev/core/*": [
-                "../core/*"
+                "../core/dist/*"
             ],
             "@bitbybit-dev/occt": [
-                "../../../../bitbybit-occt/*"
+                "../../../../bitbybit-occt/dist",
             ],
             "@bitbybit-dev/occt/*": [
-                "../../../../bitbybit-occt/*"
-            ],
-            "@bitbybit-dev/occt-worker/*": [
-                "../../../../bitbybit-occt-worker/*"
+                "../../../../bitbybit-occt/dist/*",
             ],
             "@bitbybit-dev/occt-worker": [
-                "../../../../bitbybit-occt-worker/*"
+                "../../../../bitbybit-occt-worker/dist",
+            ],
+            "@bitbybit-dev/occt-worker/*": [
+                "../../../../bitbybit-occt-worker/dist/*",
             ]
         },
         "lib": [

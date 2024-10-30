@@ -20,16 +20,16 @@
         "emitDeclarationOnly": false,
         "paths": {
             "@bitbybit-dev/occt": [
-                "../bitbybit-occt/dist",
+                "../../../../bitbybit-occt/dist",
             ],
             "@bitbybit-dev/occt/*": [
-                "../bitbybit-occt/dist/*",
+                "../../../../bitbybit-occt/dist/*",
             ],
             "@bitbybit-dev/occt-worker": [
-                "../bitbybit-occt-worker/dist",
+                "../../../../bitbybit-occt-worker/dist",
             ],
             "@bitbybit-dev/occt-worker/*": [
-                "../bitbybit-occt-worker/dist/*",
+                "../../../../bitbybit-occt-worker/dist/*",
             ],
         },
         "lib": [
