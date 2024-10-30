@@ -1,0 +1,46 @@
+/* To learn more about this file see: https://angular.io/config/tsconfig. */
+{
+    "compileOnSave": false,
+    "exclude": [
+        "lib/workers/occ/services/advanced/**/*",
+        "./**/*.test.ts"
+    ],
+    "compilerOptions": {
+        "outDir": "./dist",
+        "baseUrl": "./",
+        "sourceMap": false,
+        "declaration": true,
+        "downlevelIteration": true,
+        "experimentalDecorators": true,
+        "moduleResolution": "node",
+        "skipLibCheck": true,
+        "target": "es2015",
+        "module": "es2020",
+        "allowJs": true,
+        "emitDeclarationOnly": false,
+        "paths": {
+            "@bitbybit-dev/core": [
+                "../core/*"
+            ],
+            "@bitbybit-dev/core/*": [
+                "../core/*"
+            ],
+            "@bitbybit-dev/occt": [
+                "../../../../bitbybit-occt/*"
+            ],
+            "@bitbybit-dev/occt/*": [
+                "../../../../bitbybit-occt/*"
+            ],
+            "@bitbybit-dev/occt-worker/*": [
+                "../../../../bitbybit-occt-worker/*"
+            ],
+            "@bitbybit-dev/occt-worker": [
+                "../../../../bitbybit-occt-worker/*"
+            ]
+        },
+        "lib": [
+            "es2020",
+            "dom"
+        ],
+    }
+}
