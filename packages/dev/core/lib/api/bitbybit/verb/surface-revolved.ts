@@ -1,7 +1,6 @@
-
-import { Angle } from "@babylonjs/core";
 import { ContextBase } from "../../context";
 import * as Inputs from "../../inputs/inputs";
+import { MathBitByBit } from "../math";
 
 /**
  * Revolved surface functions.
@@ -11,7 +10,7 @@ import * as Inputs from "../../inputs/inputs";
 
 export class VerbSurfaceRevolved {
 
-    constructor(private readonly context: ContextBase) { }
+    constructor(private readonly context: ContextBase, private readonly math: MathBitByBit) { }
 
     /**
      * Creates the revolved Nurbs surface
@@ -20,7 +19,7 @@ export class VerbSurfaceRevolved {
      */
     create(inputs: Inputs.Verb.RevolutionParametersDto): any {
         return new this.context.verb.geom.RevolvedSurface(
-            inputs.profile, inputs.center, inputs.axis, Angle.FromDegrees(inputs.angle).radians()
+            inputs.profile, inputs.center, inputs.axis, this.math.degToRad({ number: inputs.angle })
         );
     }
 
@@ -57,6 +56,6 @@ export class VerbSurfaceRevolved {
      * @returns Angle in degrees
      */
     angle(inputs: Inputs.Verb.RevolutionDto): number {
-        return Angle.FromRadians(inputs.revolution.angle()).degrees();
+        return this.math.radToDeg({ number: inputs.revolution.angle() });
     }
 }

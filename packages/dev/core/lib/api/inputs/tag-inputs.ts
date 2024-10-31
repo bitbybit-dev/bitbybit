@@ -1,5 +1,3 @@
-import { Mesh } from "@babylonjs/core";
-import { BaseTypes } from "../bitbybit/base-types";
 import { Base } from "./base-inputs";
 
 /* eslint-disable @typescript-eslint/no-namespace */

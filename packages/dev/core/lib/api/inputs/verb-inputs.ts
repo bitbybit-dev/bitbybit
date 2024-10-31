@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-namespace */
 
-import { GreasedLineMesh, Mesh } from "@babylonjs/core";
 import { BaseTypes } from "../bitbybit/base-types";
 import { Base } from "./base-inputs";
 
@@ -67,11 +66,11 @@ export namespace Verb {
          */
         weights: number[];
     }
-    export class DrawCurveDto {
+    export class DrawCurveDto<T> {
         /**
          * Provide options without default values
          */
-        constructor(curve?: any, opacity?: number, colours?: string | string[], size?: number, updatable?: boolean, curveMesh?: GreasedLineMesh) {
+        constructor(curve?: any, opacity?: number, colours?: string | string[], size?: number, updatable?: boolean, curveMesh?: T) {
             if (curve !== undefined) { this.curve = curve; }
             if (opacity !== undefined) { this.opacity = opacity; }
             if (colours !== undefined) { this.colours = colours; }
@@ -102,7 +101,7 @@ export namespace Verb {
         /**
          * Curve mesh variable in case it already exists and needs updating
          */
-        curveMesh?: GreasedLineMesh;
+        curveMesh?: T;
     }
     export class CurveParameterDto {
         constructor(curve?: any, parameter?: number) {
@@ -269,11 +268,11 @@ export namespace Verb {
          */
         length: number;
     }
-    export class DrawCurvesDto {
+    export class DrawCurvesDto<T> {
         /**
          * Provide options without default values
          */
-        constructor(curves?: any[], opacity?: number, colours?: string | string[], size?: number, updatable?: boolean, curvesMesh?: GreasedLineMesh) {
+        constructor(curves?: any[], opacity?: number, colours?: string | string[], size?: number, updatable?: boolean, curvesMesh?: T) {
             if (curves !== undefined) { this.curves = curves; }
             if (opacity !== undefined) { this.opacity = opacity; }
             if (colours !== undefined) { this.colours = colours; }
@@ -305,7 +304,7 @@ export namespace Verb {
         /**
          * Curve mesh variable in case it already exists and needs updating
          */
-        curvesMesh?: GreasedLineMesh;
+        curvesMesh?: T;
     }
     export class CurveNurbsDataDto {
         constructor(degree?: number, weights?: number[], knots?: number[], points?: Base.Point3[]) {
@@ -700,11 +699,11 @@ export namespace Verb {
          */
         curves: any[];
     }
-    export class DrawSurfaceDto {
+    export class DrawSurfaceDto<T> {
         /**
          * Provide options without default values
          */
-        constructor(surface?: any, opacity?: number, colours?: string | string[], updatable?: boolean, hidden?: boolean, surfaceMesh?: Mesh) {
+        constructor(surface?: any, opacity?: number, colours?: string | string[], updatable?: boolean, hidden?: boolean, surfaceMesh?: T) {
             if (surface !== undefined) { this.surface = surface; }
             if (opacity !== undefined) { this.opacity = opacity; }
             if (colours !== undefined) { this.colours = colours; }
@@ -735,13 +734,13 @@ export namespace Verb {
         /**
          * Surface mesh variable in case it already exists and needs updating
          */
-        surfaceMesh?: Mesh;
+        surfaceMesh?: T;
     }
-    export class DrawSurfacesDto {
+    export class DrawSurfacesDto<T> {
         /**
          * Provide options without default values
          */
-        constructor(surfaces?: any[], opacity?: number, colours?: string | string[], updatable?: boolean, hidden?: boolean, surfacesMesh?: Mesh) {
+        constructor(surfaces?: any[], opacity?: number, colours?: string | string[], updatable?: boolean, hidden?: boolean, surfacesMesh?: T) {
             if (surfaces !== undefined) { this.surfaces = surfaces; }
             if (opacity !== undefined) { this.opacity = opacity; }
             if (colours !== undefined) { this.colours = colours; }
@@ -772,13 +771,13 @@ export namespace Verb {
         /**
          * Surfaces mesh variable in case it already exists and needs updating
          */
-        surfacesMesh?: Mesh;
+        surfacesMesh?: T;
     }
-    export class DrawSurfacesColoursDto {
+    export class DrawSurfacesColoursDto<T> {
         /**
          * Provide options without default values
          */
-        constructor(surfaces?: any[], colours?: string[], opacity?: number, updatable?: boolean, hidden?: boolean, surfacesMesh?: Mesh) {
+        constructor(surfaces?: any[], colours?: string[], opacity?: number, updatable?: boolean, hidden?: boolean, surfacesMesh?: T) {
             if (surfaces !== undefined) { this.surfaces = surfaces; }
             if (colours !== undefined) { this.colours = colours; }
             if (opacity !== undefined) { this.opacity = opacity; }
@@ -809,7 +808,7 @@ export namespace Verb {
         /**
          * Surfaces mesh variable in case it already exists and needs updating
          */
-        surfacesMesh?: Mesh;
+        surfacesMesh?: T;
     }
     export class ConeAndCylinderParametersDto {
         constructor(axis?: Base.Vector3, xAxis?: Base.Vector3, base?: Base.Point3, height?: number, radius?: number) {

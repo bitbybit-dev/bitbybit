@@ -1,7 +1,6 @@
-import { Angle } from "@babylonjs/core";
 import { VectorHelperService } from "@bitbybit-dev/occt";
 import * as Inputs from "../../../api/inputs/jscad-inputs";
-
+import { MathBitByBit } from "../../../api/bitbybit/math";
 /**
  * Contains various functions for Solid extrusions from JSCAD library https://github.com/jscad/OpenJSCAD.org
  * Thanks JSCAD community for developing this kernel
@@ -10,7 +9,8 @@ export class JSCADExtrusions {
 
     constructor(
         private readonly jscad: any,
-        private readonly vecHelper: VectorHelperService
+        private readonly vecHelper: VectorHelperService,
+        private readonly math: MathBitByBit
     ) { }
 
     extrudeLinear(inputs: Inputs.JSCAD.ExtrudeLinearDto): Inputs.JSCAD.JSCADEntity {
@@ -19,7 +19,7 @@ export class JSCADExtrusions {
 
         let extrusions = this.jscad.extrusions.extrudeLinear({
             height: inputs.height,
-            twistAngle: Angle.FromDegrees(inputs.twistAngle).radians(),
+            twistAngle: this.math.degToRad({ number: inputs.twistAngle }),
             twistSteps: inputs.twistSteps
         }, ...geometry);
 
@@ -50,8 +50,8 @@ export class JSCADExtrusions {
 
     extrudeRotate(inputs: Inputs.JSCAD.ExtrudeRotateDto): Inputs.JSCAD.JSCADEntity {
         const options = {
-            angle: Angle.FromDegrees(inputs.angle).radians(),
-            startAngle: Angle.FromDegrees(inputs.startAngle).radians(),
+            angle: this.math.degToRad({ number: inputs.angle }),
+            startAngle: this.math.degToRad({ number: inputs.startAngle }),
             overflow: "cap",
             segments: inputs.segments
         };

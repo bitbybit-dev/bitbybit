@@ -1,4 +1,3 @@
-import { LinesMesh } from "@babylonjs/core";
 import { Base } from "./base-inputs";
 
 /* eslint-disable @typescript-eslint/no-namespace */
@@ -38,11 +37,11 @@ export namespace Line {
          */
         endPoints: Base.Point3[];
     }
-    export class DrawLineDto {
+    export class DrawLineDto<T> {
         /**
          * Provide options without default values
          */
-        constructor(line?: LinePointsDto, opacity?: number, colours?: string | string[], size?: number, updatable?: boolean, lineMesh?: LinesMesh) {
+        constructor(line?: LinePointsDto, opacity?: number, colours?: string | string[], size?: number, updatable?: boolean, lineMesh?: T) {
             if (line !== undefined) { this.line = line; }
             if (opacity !== undefined) { this.opacity = opacity; }
             if (colours !== undefined) { this.colours = colours; }
@@ -73,14 +72,14 @@ export namespace Line {
         /**
          * Line mesh variable in case it already exists and needs updating
          */
-        lineMesh?: LinesMesh;
+        lineMesh?: T;
     }
-    export class DrawLinesDto {
+    export class DrawLinesDto<T> {
 
         /**
          * Provide options without default values
          */
-        constructor(lines?: LinePointsDto[], opacity?: number, colours?: string | string[], size?: number, updatable?: boolean, linesMesh?: LinesMesh) {
+        constructor(lines?: LinePointsDto[], opacity?: number, colours?: string | string[], size?: number, updatable?: boolean, linesMesh?: T) {
             if (lines !== undefined) { this.lines = lines; }
             if (opacity !== undefined) { this.opacity = opacity; }
             if (colours !== undefined) { this.colours = colours; }
@@ -111,7 +110,7 @@ export namespace Line {
         /**
          * Line mesh variable in case it already exists and needs updating
          */
-        linesMesh?: LinesMesh;
+        linesMesh?: T;
     }
     export class PointsLinesDto {
         constructor(points?: Base.Point3[]) {

@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-namespace */
-import * as BABYLON from "@babylonjs/core";
 import { Base } from "./base-inputs";
 import { Polyline } from "./polyline-inputs";
 
@@ -35,11 +34,11 @@ export namespace JSCAD {
          */
         right = "right",
     }
-    export class DrawSolidMeshDto {
+    export class DrawSolidMeshDto<T> {
         /**
          * Provide options without default values
          */
-        constructor(mesh?: JSCADEntity, opacity?: number, colours?: string | string[], updatable?: boolean, hidden?: boolean, jscadMesh?: BABYLON.Mesh) {
+        constructor(mesh?: JSCADEntity, opacity?: number, colours?: string | string[], updatable?: boolean, hidden?: boolean, jscadMesh?: T) {
             if (mesh !== undefined) { this.mesh = mesh; }
             if (opacity !== undefined) { this.opacity = opacity; }
             if (colours !== undefined) { this.colours = colours; }
@@ -80,13 +79,13 @@ export namespace JSCAD {
          * @optional true
          * @ignore true
          */
-        jscadMesh?: BABYLON.Mesh;
+        jscadMesh?: T;
     }
-    export class DrawSolidMeshesDto {
+    export class DrawSolidMeshesDto<T> {
         /**
          * Provide options without default values
          */
-        constructor(meshes?: JSCADEntity[], opacity?: number, colours?: string | string[], updatable?: boolean, hidden?: boolean, jscadMesh?: BABYLON.Mesh) {
+        constructor(meshes?: JSCADEntity[], opacity?: number, colours?: string | string[], updatable?: boolean, hidden?: boolean, jscadMesh?: T) {
             if (meshes !== undefined) { this.meshes = meshes; }
             if (opacity !== undefined) { this.opacity = opacity; }
             if (colours !== undefined) { this.colours = colours; }
@@ -129,13 +128,13 @@ export namespace JSCAD {
          * @optional true
          * @ignore true
          */
-        jscadMesh?: BABYLON.Mesh;
+        jscadMesh?: T;
     }
-    export class DrawPathDto {
+    export class DrawPathDto<T> {
         /**
          * Provide options without default values
          */
-        constructor(path?: JSCADEntity[], colour?: string, opacity?: number, width?: number, updatable?: boolean, pathMesh?: BABYLON.GreasedLineMesh) {
+        constructor(path?: JSCADEntity[], colour?: string, opacity?: number, width?: number, updatable?: boolean, pathMesh?: T) {
             if (path !== undefined) { this.path = path; }
             if (colour !== undefined) { this.colour = colour; }
             if (opacity !== undefined) { this.opacity = opacity; }
@@ -180,7 +179,7 @@ export namespace JSCAD {
          * @optional true
          * @ignore true
          */
-        pathMesh?: BABYLON.GreasedLineMesh;
+        pathMesh?: T;
     }
     export class TransformSolidsDto {
         constructor(meshes?: JSCADEntity[], transformation?: Base.TransformMatrixes) {

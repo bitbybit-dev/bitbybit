@@ -2,6 +2,7 @@ import { ContextBase } from "../../context";
 import { GeometryHelper } from "../../geometry-helper";
 import * as Inputs from "../../inputs/inputs";
 import { BaseTypes } from "../base-types";
+import { MathBitByBit } from "../math";
 import { VerbSurfaceConical } from "./surface-conical";
 import { VerbSurfaceCylindrical } from "./surface-cylindrical";
 import { VerbSurfaceExtrusion } from "./surface-extrusion";
@@ -25,13 +26,14 @@ export class VerbSurface {
     public readonly sweep: VerbSurfaceSweep;
     constructor(
         private readonly context: ContextBase,
-        private readonly geometryHelper: GeometryHelper
+        private readonly geometryHelper: GeometryHelper,
+        private readonly math: MathBitByBit,
     ) {
         this.cone = new VerbSurfaceConical(context);
         this.cylinder = new VerbSurfaceCylindrical(context);
         this.extrusion = new VerbSurfaceExtrusion(context);
         this.sphere = new VerbSurfaceSpherical(context);
-        this.revolved = new VerbSurfaceRevolved(context);
+        this.revolved = new VerbSurfaceRevolved(context, math);
         this.sweep = new VerbSurfaceSweep(context);
     }
 

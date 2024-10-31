@@ -128,7 +128,7 @@ export class DrawHelper {
      * @param inputs Contains a line to be drawn
      * @returns Lines mesh that is being drawn by Babylon
      */
-    drawLines(inputs: Inputs.Line.DrawLinesDto): BABYLON.LinesMesh {
+    drawLines(inputs: Inputs.Line.DrawLinesDto<BABYLON.LinesMesh>): BABYLON.LinesMesh {
         const lines = [];
         const colors = [];
 
@@ -177,7 +177,7 @@ export class DrawHelper {
      * @param inputs Contains a polyline to be drawn
      * @returns Lines mesh that is being drawn by Babylon
      */
-    drawPolylineClose(inputs: Inputs.Polyline.DrawPolylineDto): BABYLON.GreasedLineMesh {
+    drawPolylineClose(inputs: Inputs.Polyline.DrawPolylineDto<BABYLON.GreasedLineMesh>): BABYLON.GreasedLineMesh {
         // handle jscad isClosed case
         const points = inputs.polyline.points;
         if (inputs.polyline.isClosed) {
@@ -199,7 +199,7 @@ export class DrawHelper {
      * @param inputs Contains a curve to be drawn
      * @returns Lines mesh that is being drawn by Babylon
      */
-    drawCurve(inputs: Inputs.Verb.DrawCurveDto): BABYLON.GreasedLineMesh {
+    drawCurve(inputs: Inputs.Verb.DrawCurveDto<BABYLON.GreasedLineMesh>): BABYLON.GreasedLineMesh {
         const points = inputs.curve.tessellate();
         return this.drawPolyline(
             inputs.curveMesh,
@@ -216,7 +216,7 @@ export class DrawHelper {
      * @param inputs Contains a surface and information for drawing
      * @returns Mesh that is being drawn by Babylon
      */
-    drawSurface(inputs: Inputs.Verb.DrawSurfaceDto): BABYLON.Mesh {
+    drawSurface(inputs: Inputs.Verb.DrawSurfaceDto<BABYLON.Mesh>): BABYLON.Mesh {
         const meshData = inputs.surface.tessellate();
 
         const meshDataConverted = {
@@ -255,7 +255,7 @@ export class DrawHelper {
      * @param inputs Contains the Nurbs surfaces and information for drawing
      * @returns Mesh that is being drawn by Babylon
      */
-    drawSurfaces(inputs: Inputs.Verb.DrawSurfacesDto): BABYLON.Mesh {
+    drawSurfaces(inputs: Inputs.Verb.DrawSurfacesDto<BABYLON.Mesh>): BABYLON.Mesh {
         const tessellatedSurfaces = [];
         inputs.surfaces.forEach(srf => {
             tessellatedSurfaces.push(srf.tessellate());
@@ -299,7 +299,7 @@ export class DrawHelper {
      * @param inputs Contains the Nurbs surfaces, colours and other information for drawing
      * @returns Mesh that is being drawn by Babylon
      */
-    drawSurfacesMultiColour(inputs: Inputs.Verb.DrawSurfacesColoursDto): BABYLON.Mesh {
+    drawSurfacesMultiColour(inputs: Inputs.Verb.DrawSurfacesColoursDto<BABYLON.Mesh>): BABYLON.Mesh {
         if (inputs.surfacesMesh && inputs.updatable) {
             inputs.surfacesMesh.getChildren().forEach(srf => srf.dispose());
         }
@@ -337,7 +337,7 @@ export class DrawHelper {
      * @param inputs Contains curves to be drawn
      * @returns Lines mesh that is being drawn by Babylon
      */
-    drawCurves(inputs: Inputs.Verb.DrawCurvesDto): BABYLON.GreasedLineMesh {
+    drawCurves(inputs: Inputs.Verb.DrawCurvesDto<BABYLON.GreasedLineMesh>): BABYLON.GreasedLineMesh {
         const points = inputs.curves.map(s => s.tessellate());
         return this.drawPolylines(
             inputs.curvesMesh,
@@ -356,7 +356,7 @@ export class DrawHelper {
         return mesh;
     }
 
-    drawPolylinesWithColours(inputs: Inputs.Polyline.DrawPolylinesDto) {
+    drawPolylinesWithColours(inputs: Inputs.Polyline.DrawPolylinesDto<BABYLON.GreasedLineMesh>) {
         let colours = inputs.colours;
         const points = inputs.polylines.map((s, index) => {
             const pts = s.points;
@@ -581,7 +581,7 @@ export class DrawHelper {
         return localOrigin;
     }
 
-    drawPoint(inputs: Inputs.Point.DrawPointDto): BABYLON.Mesh {
+    drawPoint(inputs: Inputs.Point.DrawPointDto<BABYLON.Mesh>): BABYLON.Mesh {
         const vectorPoints = [inputs.point];
 
         let colorsHex: string[] = [];
@@ -601,7 +601,7 @@ export class DrawHelper {
         return inputs.pointMesh;
     }
 
-    drawPoints(inputs: Inputs.Point.DrawPointsDto): BABYLON.Mesh {
+    drawPoints(inputs: Inputs.Point.DrawPointsDto<BABYLON.Mesh>): BABYLON.Mesh {
         const vectorPoints = inputs.points;
         let coloursHex: string[] = [];
         if (Array.isArray(inputs.colours)) {
@@ -719,7 +719,7 @@ export class DrawHelper {
      * @shortname draw solid
      * @ignore true
      */
-    async drawSolidOrPolygonMesh(inputs: Inputs.JSCAD.DrawSolidMeshDto): Promise<BABYLON.Mesh> {
+    async drawSolidOrPolygonMesh(inputs: Inputs.JSCAD.DrawSolidMeshDto<BABYLON.Mesh>): Promise<BABYLON.Mesh> {
         const res: {
             positions: number[],
             normals: number[],
@@ -772,7 +772,7 @@ export class DrawHelper {
      * @shortname draw solid
      * @ignore true
      */
-    async drawSolidOrPolygonMeshes(inputs: Inputs.JSCAD.DrawSolidMeshesDto): Promise<BABYLON.Mesh> {
+    async drawSolidOrPolygonMeshes(inputs: Inputs.JSCAD.DrawSolidMeshesDto<BABYLON.Mesh>): Promise<BABYLON.Mesh> {
         return this.jscadWorkerManager.genericCallToWorkerPromise("shapesToMeshes", inputs).then((res: {
             positions: number[],
             normals: number[],
@@ -823,7 +823,7 @@ export class DrawHelper {
      * @shortname draw solid
      * @ignore true
      */
-    async drawPath(inputs: Inputs.JSCAD.DrawPathDto): Promise<BABYLON.GreasedLineMesh> {
+    async drawPath(inputs: Inputs.JSCAD.DrawPathDto<BABYLON.GreasedLineMesh>): Promise<BABYLON.GreasedLineMesh> {
         return new Promise(resolve => {
 
             if (inputs.path.points) {

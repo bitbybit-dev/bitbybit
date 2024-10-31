@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-namespace */
-import { Mesh } from "@babylonjs/core";
 import { Base } from "./base-inputs";
 
 export namespace Point {
@@ -76,11 +75,11 @@ export namespace Point {
          */
         points: Base.Point3[];
     }
-    export class DrawPointDto {
+    export class DrawPointDto<T> {
         /**
          * Provide options without default values
          */
-        constructor(point?: Base.Point3, opacity?: number, size?: number, colours?: string | string[], updatable?: boolean, pointMesh?: Mesh) {
+        constructor(point?: Base.Point3, opacity?: number, size?: number, colours?: string | string[], updatable?: boolean, pointMesh?: T) {
             if (point !== undefined) { this.point = point; }
             if (opacity !== undefined) { this.opacity = opacity; }
             if (size !== undefined) { this.size = size; }
@@ -123,13 +122,13 @@ export namespace Point {
          * Point mesh variable in case it already exists and needs updating
          * @default undefined
          */
-        pointMesh?: Mesh;
+        pointMesh?: T;
     }
-    export class DrawPointsDto {
+    export class DrawPointsDto<T> {
         /**
          * Provide options without default values
          */
-        constructor(points?: Base.Point3[], opacity?: number, size?: number, colours?: string | string[], updatable?: boolean, pointsMesh?: Mesh) {
+        constructor(points?: Base.Point3[], opacity?: number, size?: number, colours?: string | string[], updatable?: boolean, pointsMesh?: T) {
             if (points !== undefined) { this.points = points; }
             if (opacity !== undefined) { this.opacity = opacity; }
             if (size !== undefined) { this.size = size; }
@@ -172,7 +171,7 @@ export namespace Point {
          * Points mesh variable in case it already exists and needs updating
          * @default undefined
          */
-        pointsMesh?: Mesh;
+        pointsMesh?: T;
     }
     export class TransformPointDto {
         constructor(point?: Base.Point3, transformation?: Base.TransformMatrixes) {

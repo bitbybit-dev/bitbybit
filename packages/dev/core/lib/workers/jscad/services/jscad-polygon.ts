@@ -1,6 +1,6 @@
-import { Angle } from "@babylonjs/core";
 import { VectorHelperService } from "@bitbybit-dev/occt";
 import * as Inputs from "../../../api/inputs/inputs";
+import { MathBitByBit } from "../../../api/bitbybit";
 
 /**
  * Contains various functions for Polygon from JSCAD library https://github.com/jscad/OpenJSCAD.org
@@ -11,6 +11,7 @@ export class JSCADPolygon {
     constructor(
         private readonly jscad: any,
         private readonly vecHelper: VectorHelperService,
+        private readonly math: MathBitByBit
 
     ) { }
 
@@ -76,7 +77,7 @@ export class JSCADPolygon {
             density: inputs.density,
             outerRadius: inputs.outerRadius,
             innerRadius: inputs.innerRadius,
-            startAngle: Angle.FromDegrees(inputs.startAngle).radians(),
+            startAngle: this.math.degToRad({number: inputs.startAngle}),
         });
     }
 

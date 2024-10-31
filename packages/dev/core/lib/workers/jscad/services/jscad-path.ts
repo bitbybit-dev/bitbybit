@@ -1,7 +1,7 @@
 import { VectorHelperService } from "@bitbybit-dev/occt";
-import { Angle } from "@babylonjs/core";
 import { Base } from "../../../api/inputs";
 import * as Inputs from "../../../api/inputs/jscad-inputs";
+import { MathBitByBit } from "../../../api/bitbybit";
 
 /**
  * Contains various functions for Path from JSCAD library https://github.com/jscad/OpenJSCAD.org
@@ -12,7 +12,7 @@ export class JSCADPath {
     constructor(
         private readonly jscad: any,
         private readonly vecHelper: VectorHelperService,
-
+        private readonly math: MathBitByBit
     ) { }
 
     createFromPoints(inputs: Inputs.JSCAD.PathFromPointsDto): Inputs.JSCAD.JSCADEntity {
@@ -61,7 +61,7 @@ export class JSCADPath {
         return this.jscad.geometries.path2.appendArc({
             endpoint,
             radius,
-            xaxisrotation: Angle.FromDegrees(inputs.xAxisRotation).radians(),
+            xaxisrotation: this.math.degToRad({number: inputs.xAxisRotation}),
             clockwise: inputs.clockwise,
             large: inputs.large,
             segments: inputs.segments,

@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-namespace */
-import * as BABYLON from "@babylonjs/core";
 import { Base } from "./base-inputs";
 
 export namespace Polyline {
@@ -56,11 +55,11 @@ export namespace Polyline {
          */
         transformation: Base.TransformMatrixes;
     }
-    export class DrawPolylineDto {
+    export class DrawPolylineDto<T> {
         /**
          * Provide options without default values
          */
-        constructor(polyline?: PolylinePropertiesDto, opacity?: number, colours?: string | string[], size?: number, updatable?: boolean, polylineMesh?: BABYLON.GreasedLineMesh) {
+        constructor(polyline?: PolylinePropertiesDto, opacity?: number, colours?: string | string[], size?: number, updatable?: boolean, polylineMesh?: T) {
             if (polyline !== undefined) { this.polyline = polyline; }
             if (opacity !== undefined) { this.opacity = opacity; }
             if (colours !== undefined) { this.colours = colours; }
@@ -91,13 +90,13 @@ export namespace Polyline {
         /**
          * Line mesh variable in case it already exists and needs updating
          */
-        polylineMesh?: BABYLON.GreasedLineMesh;
+        polylineMesh?: T;
     }
-    export class DrawPolylinesDto {
+    export class DrawPolylinesDto<T> {
         /**
          * Provide options without default values
          */
-        constructor(polylines?: PolylinePropertiesDto[], opacity?: number, colours?: string | string[], size?: number, updatable?: boolean, polylinesMesh?: BABYLON.GreasedLineMesh) {
+        constructor(polylines?: PolylinePropertiesDto[], opacity?: number, colours?: string | string[], size?: number, updatable?: boolean, polylinesMesh?: T) {
             if (polylines !== undefined) { this.polylines = polylines; }
             if (opacity !== undefined) { this.opacity = opacity; }
             if (colours !== undefined) { this.colours = colours; }
@@ -128,6 +127,6 @@ export namespace Polyline {
         /**
          * Polyline mesh variable in case it already exists and needs updating
          */
-        polylinesMesh?: BABYLON.GreasedLineMesh;
+        polylinesMesh?: T;
     }
 }

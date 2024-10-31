@@ -1,7 +1,6 @@
-
-import { Angle } from "@babylonjs/core";
 import { ContextBase } from "../../context";
 import * as Inputs from "../../inputs/inputs";
+import { MathBitByBit } from "../math";
 
 /**
  * Contains various methods for nurbs ellipse.
@@ -11,7 +10,7 @@ import * as Inputs from "../../inputs/inputs";
 
 export class VerbCurveEllipse {
 
-    constructor(private readonly context: ContextBase) { }
+    constructor(private readonly context: ContextBase, private readonly math: MathBitByBit) { }
 
     /**
      * Creates the ellipse Nurbs curve
@@ -30,8 +29,8 @@ export class VerbCurveEllipse {
     createArc(inputs: Inputs.Verb.EllipseArcParametersDto): any {
         return new this.context.verb.geom.EllipseArc(
             inputs.center, inputs.xAxis, inputs.yAxis,
-            Angle.FromDegrees(inputs.minAngle).radians(),
-            Angle.FromDegrees(inputs.maxAngle).radians()
+            this.math.degToRad({ number: inputs.minAngle }),
+            this.math.degToRad({ number: inputs.maxAngle })
         );
     }
 
@@ -50,7 +49,7 @@ export class VerbCurveEllipse {
      * @returns Max angle in degrees
      */
     maxAngle(inputs: Inputs.Verb.EllipseDto): number {
-        return Angle.FromRadians(inputs.ellipse.maxAngle()).degrees();
+        return this.math.radToDeg({ number: inputs.ellipse.maxAngle() });
     }
 
     /**
@@ -59,7 +58,7 @@ export class VerbCurveEllipse {
      * @returns Min angle in degrees
      */
     minAngle(inputs: Inputs.Verb.EllipseDto): number {
-        return Angle.FromRadians(inputs.ellipse.minAngle()).degrees();
+        return this.math.radToDeg({ number: inputs.ellipse.minAngle() });
     }
 
     /**

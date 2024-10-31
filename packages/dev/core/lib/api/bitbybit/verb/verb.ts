@@ -1,6 +1,7 @@
 
 import { ContextBase } from "../../context";
 import { GeometryHelper } from "../../geometry-helper";
+import { MathBitByBit } from "../math";
 import { VerbCurve } from "./curve";
 import { VerbIntersect } from "./intersect";
 import { VerbSurface } from "./surface";
@@ -18,10 +19,11 @@ export class Verb {
 
     constructor(
         context: ContextBase,
-        geometryHelper: GeometryHelper
+        geometryHelper: GeometryHelper,
+        private readonly math: MathBitByBit
     ) {
-        this.curve = new VerbCurve(context, geometryHelper);
-        this.surface = new VerbSurface(context, geometryHelper);
+        this.curve = new VerbCurve(context, geometryHelper, this.math);
+        this.surface = new VerbSurface(context, geometryHelper, this.math);
         this.intersect = new VerbIntersect(context, geometryHelper);
     }
 }

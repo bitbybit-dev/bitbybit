@@ -1,9 +1,8 @@
-
-import { GreasedLineMesh } from "@babylonjs/core";
 import { ContextBase } from "../../context";
 import { GeometryHelper } from "../../geometry-helper";
 import * as Inputs from "../../inputs/inputs";
 import { BaseTypes } from "../base-types";
+import { MathBitByBit } from "../math";
 import { VerbCurveCircle } from "./curve-circle";
 import { VerbCurveEllipse } from "./curve-ellipse";
 
@@ -19,10 +18,11 @@ export class VerbCurve {
 
     constructor(
         private readonly context: ContextBase,
-        private readonly geometryHelper: GeometryHelper
+        private readonly geometryHelper: GeometryHelper,
+        private readonly math: MathBitByBit,
     ) {
-        this.circle = new VerbCurveCircle(context);
-        this.ellipse = new VerbCurveEllipse(context);
+        this.circle = new VerbCurveCircle(context, this.math);
+        this.ellipse = new VerbCurveEllipse(context, this.math);
     }
 
     /**

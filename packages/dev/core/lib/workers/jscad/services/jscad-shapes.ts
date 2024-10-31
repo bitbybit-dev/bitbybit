@@ -1,4 +1,4 @@
-import { Angle } from "@babylonjs/core";
+import { MathBitByBit } from "../../../api/bitbybit";
 import * as Inputs from "../../../api/inputs/inputs";
 
 /**
@@ -11,7 +11,8 @@ export class JSCADShapes {
 
     constructor(
         jscad: any,
-    ) { 
+        private readonly math: MathBitByBit
+    ) {
         this.jscad = jscad;
     }
 
@@ -192,7 +193,7 @@ export class JSCADShapes {
             });
         });
     }
-    
+
     torus(inputs: Inputs.JSCAD.TorusDto): Inputs.JSCAD.JSCADEntity {
         return this.jscad.primitives.torus({
             center: [inputs.center[0], inputs.center[1], inputs.center[2]],
@@ -200,9 +201,9 @@ export class JSCADShapes {
             outerRadius: inputs.outerRadius,
             innerSegments: inputs.innerSegments,
             outerSegments: inputs.outerSegments,
-            innerRotation: Angle.FromDegrees(inputs.innerRotation).radians(),
-            outerRotation: Angle.FromDegrees(inputs.outerRotation).radians(),
-            startAngle: Angle.FromDegrees(inputs.startAngle).radians(),
+            innerRotation: this.math.degToRad({ number: inputs.innerRotation }),
+            outerRotation: this.math.degToRad({ number: inputs.outerRotation }),
+            startAngle: this.math.degToRad({ number: inputs.startAngle }),
         });
     }
 

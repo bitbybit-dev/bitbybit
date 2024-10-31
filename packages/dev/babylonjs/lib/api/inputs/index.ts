@@ -14,5 +14,6 @@ export * from "./babylon-mesh-builder";
 export * from "./babylon-gizmo-inputs";
 export * from "./babylon-webxr";
 export * from "./scene-inputs";
+export * from "./node-inputs";
 export * from "./draw-inputs";
 export * from "@bitbybit-dev/core/lib/api/inputs/inputs";

@@ -1,7 +1,7 @@
 
-import { Angle } from "@babylonjs/core";
 import { ContextBase } from "../../context";
 import * as Inputs from "../../inputs/inputs";
+import { MathBitByBit } from "../math";
 
 /**
  * Contains various methods for nurbs circle.
@@ -11,7 +11,7 @@ import * as Inputs from "../../inputs/inputs";
 
 export class VerbCurveCircle {
 
-    constructor(private readonly context: ContextBase) { }
+    constructor(private readonly context: ContextBase, private readonly math: MathBitByBit) { }
 
     /**
      * Creates the circle Nurbs curve
@@ -33,8 +33,8 @@ export class VerbCurveCircle {
             inputs.xAxis,
             inputs.yAxis,
             inputs.radius,
-            Angle.FromDegrees(inputs.minAngle).radians(),
-            Angle.FromDegrees(inputs.maxAngle).radians()
+            this.math.degToRad({ number: inputs.minAngle }),
+            this.math.degToRad({ number: inputs.maxAngle })
         );
     }
 
@@ -62,7 +62,7 @@ export class VerbCurveCircle {
      * @returns Max angle in degrees
      */
     maxAngle(inputs: Inputs.Verb.CircleDto): number {
-        return Angle.FromRadians(inputs.circle.maxAngle()).degrees();
+        return this.math.radToDeg({ number: inputs.circle.maxAngle() });
     }
 
     /**
@@ -71,7 +71,7 @@ export class VerbCurveCircle {
      * @returns Min angle in degrees
      */
     minAngle(inputs: Inputs.Verb.CircleDto): number {
-        return Angle.FromRadians(inputs.circle.minAngle()).degrees();
+        return this.math.radToDeg({ number: inputs.circle.minAngle() });
     }
 
     /**

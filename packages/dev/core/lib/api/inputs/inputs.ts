@@ -6,7 +6,6 @@ export * from "./line-inputs";
 export * from "./lists-inputs";
 export * from "./logic-inputs";
 export * from "./math-inputs";
-export * from "./node-inputs";
 export * from "./point-inputs";
 export * from "./polyline-inputs";
 export * from "./tag-inputs";

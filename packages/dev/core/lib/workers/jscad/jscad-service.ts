@@ -1,4 +1,5 @@
 import { VectorHelperService } from "@bitbybit-dev/occt";
+import { MathBitByBit } from "../../api/bitbybit";
 import { JSCADExpansions } from "./services/jscad-expansions";
 import { JSCADBooleans } from "./services/jscad-booleans";
 import { JSCADExtrusions } from "./services/jscad-extrusions";
@@ -27,25 +28,26 @@ export class Jscad {
 
     constructor(jscad: any) {
         const vecHelper = new VectorHelperService();
+        const math = new MathBitByBit();
         this.booleans = new JSCADBooleans(jscad);
         this.expansions = new JSCADExpansions(jscad);
-        this.extrusions = new JSCADExtrusions(jscad, vecHelper);
+        this.extrusions = new JSCADExtrusions(jscad, vecHelper, math);
         this.hulls = new JSCADHulls(jscad);
-        this.path = new JSCADPath(jscad, vecHelper);
-        this.polygon = new JSCADPolygon(jscad, vecHelper);
-        this.shapes = new JSCADShapes(jscad);
+        this.path = new JSCADPath(jscad, vecHelper, math);
+        this.polygon = new JSCADPolygon(jscad, vecHelper, math);
+        this.shapes = new JSCADShapes(jscad, math);
         this.text = new JSCADText(jscad);
         this.colors = new JSCADColors(jscad);
         this.jscad = jscad;
     }
 
-    shapesToMeshes(inputs: Inputs.JSCAD.DrawSolidMeshesDto): { positions: number[], normals: number[], indices: number[], transforms: [] }[] {
+    shapesToMeshes<T>(inputs: Inputs.JSCAD.DrawSolidMeshesDto<T>): { positions: number[], normals: number[], indices: number[], transforms: [] }[] {
         return inputs.meshes.map(mesh => {
             return this.shapeToMesh({ ...inputs, mesh });
         });
     }
 
-    shapeToMesh(inputs: Inputs.JSCAD.DrawSolidMeshDto): { positions: number[], normals: number[], indices: number[], transforms: [] } {
+    shapeToMesh<T>(inputs: Inputs.JSCAD.DrawSolidMeshDto<T>): { positions: number[], normals: number[], indices: number[], transforms: [] } {
         let polygons = [];
 
         if (inputs.mesh.toPolygons) {

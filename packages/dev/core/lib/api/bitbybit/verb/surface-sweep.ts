@@ -1,5 +1,3 @@
-
-import { Angle } from "@babylonjs/core";
 import { ContextBase } from "../../context";
 import * as Inputs from "../../inputs/inputs";
 
