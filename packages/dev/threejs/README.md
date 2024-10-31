@@ -1,8 +1,8 @@
-## Bit By Bit Developers library for BABYLONJS game engine
+## Bit By Bit Developers library for THREEJS game engine
 
 <img src="https://app.bitbybit.dev/assets/git-cover.png" alt="Picture showing bitbybit.dev platform">
 
-This project exposes 3D algorithms of Bit By Bit Developers platform through BABYLONJS game engine. Code is open-sourced under MIT license. This library was previously intertwined in core package and is now separated.
+This project exposes 3D algorithms of Bit By Bit Developers platform through THREEJS game engine. Code is open-sourced under MIT license. This library was previously intertwined in core package and is now separated.
 
 Visit https://bitbybit.dev to use our full cloud platform.
 
@@ -43,4 +43,4 @@ Bit By Bit Developers company will keep these core algorithms that you can find 
 Bit By Bit Developers web platform allows creators to program geometry through simple visual programming language or choose monaco typescript editor with full intellisense of bitbybit API. This cloud platform can fulfil many practical, educational and artistic needs of its users. Through familiar programming interface used in tools such as Scratch and Blockly.Games we expose powerful 3D algorithms that make it easier to implement various parametric tasks. Our goal is to make it very simple for users to share their ideas and designs. We want to encourage everyone to engage in the future of this tool.
 
 ## Major Dependencies
-BabylonJS, Rete, Blockly, OpenCascade, JSCAD, Verbnurbs
+THREEJS, OpenCascade, JSCAD, Verbnurbs
