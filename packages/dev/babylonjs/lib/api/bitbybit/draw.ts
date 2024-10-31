@@ -2,12 +2,12 @@
 import * as BABYLON from "@babylonjs/core";
 import * as Inputs from "../inputs/inputs";
 import { BabylonNode } from "./babylon/node";
-import { Tag } from "@bitbybit-dev/core";
+import { Tag, DrawCore } from "@bitbybit-dev/core";
 import { Context } from "../context";
 import { GridMaterial } from "@babylonjs/materials";
 import { DrawHelper } from "../draw-helper";
 
-export class Draw {
+export class Draw extends DrawCore {
 
     private defaultBasicOptions = new Inputs.Draw.DrawBasicGeometryOptions();
     private defaultPolylineOptions: Inputs.Draw.DrawBasicGeometryOptions = {
@@ -38,7 +38,9 @@ export class Draw {
          * @ignore true
          */
         public readonly context: Context,
-    ) { }
+    ) { 
+        super();
+    }
 
 
 
@@ -584,94 +586,4 @@ export class Draw {
         result.metadata = result.metadata ? { ...result.metadata, ...typemeta } : typemeta;
     }
 
-    private detectPoint(entity: any): boolean {
-        return (Array.isArray(entity) && entity.length === 3 && this.checkIfElementsInArrayAreNumbers(entity));
-    }
-
-    private detectPoints(entity: any): boolean {
-        return Array.isArray(entity) &&
-            this.checkIfElementsInArrayAreArrays(entity) &&
-            this.arraysInChildrenArraysContainNumbers(entity) &&
-            this.arraysInChildrenArraysAreOfLength3(entity);
-    }
-
-    private detectLine(entity: any): boolean {
-        return entity.start && entity.end && Array.isArray(entity.start) && Array.isArray(entity.end);
-    }
-
-    private detectLines(entity: any): boolean {
-        return Array.isArray(entity) && !entity.some(el => !this.detectLine(el));
-    }
-
-    private detectPolyline(entity: any): boolean {
-        return entity.points && Array.isArray(entity.points);
-    }
-
-    private detectPolylines(entity: any): boolean {
-        return Array.isArray(entity) && !entity.some(el => !this.detectPolyline(el));
-    }
-
-    private detectNode(entity: any): boolean {
-        return !Array.isArray(entity) && entity.id && entity.id.includes("node");
-    }
-
-    private detectNodes(entity: any): boolean {
-        return Array.isArray(entity) && !entity.some(el => !this.detectNode(el));
-    }
-
-    private detectVerbCurve(entity: any): boolean {
-        return !Array.isArray(entity) && entity._data && entity._data.controlPoints && entity._data.knots && entity._data.degree;
-    }
-
-    private detectVerbSurface(entity: any): boolean {
-        return !Array.isArray(entity) && entity._data && entity._data.controlPoints && entity._data.degreeU && entity._data.degreeV && entity._data.knotsU && entity._data.knotsV;
-    }
-
-    private detectVerbCurves(entity: any): boolean {
-        return Array.isArray(entity) && !entity.some(el => !this.detectVerbCurve(el));
-    }
-
-    private detectVerbSurfaces(entity: any): boolean {
-        return Array.isArray(entity) && !entity.some(el => !this.detectVerbSurface(el));
-    }
-
-    private detectJscadMesh(entity: any): boolean {
-        return !Array.isArray(entity) && (entity.sides || entity.polygons);
-    }
-
-    private detectJscadMeshes(entity: any): boolean {
-        return Array.isArray(entity) && !entity.some(el => !this.detectJscadMesh(el));
-    }
-
-    private detectOcctShape(entity: any): boolean {
-        return entity?.type === "occ-shape";
-    }
-
-    private detectOcctShapes(entity: any): boolean {
-        return Array.isArray(entity) && !entity.some(el => !this.detectOcctShape(el));
-    }
-
-    private detectTag(entity: any): boolean {
-        return !Array.isArray(entity) && entity.text;
-    }
-
-    private detectTags(entity: any): boolean {
-        return Array.isArray(entity) && !entity.some(el => !this.detectTag(el));
-    }
-
-    private checkIfElementsInArrayAreNumbers(array: any[]): boolean {
-        return !array.some(el => isNaN(el));
-    }
-
-    private checkIfElementsInArrayAreArrays(array: any[]): boolean {
-        return !array.some(el => !Array.isArray(el));
-    }
-
-    private arraysInChildrenArraysContainNumbers(array: any[]) {
-        return !array.some(el => !this.checkIfElementsInArrayAreNumbers(el));
-    }
-
-    private arraysInChildrenArraysAreOfLength3(array: any[]) {
-        return !array.some(el => el.length !== 3);
-    }
 }

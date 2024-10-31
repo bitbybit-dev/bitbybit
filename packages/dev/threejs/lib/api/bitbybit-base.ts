@@ -26,6 +26,7 @@ import { JSCADWorkerManager } from "@bitbybit-dev/core/lib/workers/jscad/jscad-w
 import * as vrb from "verb-nurbs-web";
 import { DrawHelper } from "./draw-helper";
 import { ThreeJS } from "./bitbybit/threejs";
+import { Scene } from "three";
 
 export class BitByBitBase {
 
@@ -60,10 +61,10 @@ export class BitByBitBase {
         this.jscad = new JSCAD(this.jscadWorkerManager);
 
         const geometryHelper = new GeometryHelper();
-        const drawHelper = new DrawHelper();
+        const drawHelper = new DrawHelper(this.context, this.vector, this.jscadWorkerManager, this.occtWorkerManager);
         this.three = new ThreeJS(drawHelper);
         this.tag = new Tag(this.context);
-        this.draw = new Draw();
+        this.draw = new Draw(drawHelper, this.context);
         this.color = new Color(this.context);
         this.math = new MathBitByBit();
         this.vector = new Vector(this.context, this.math, geometryHelper);
@@ -81,8 +82,9 @@ export class BitByBitBase {
         this.lists = new Lists();
     }
 
-    init<T>(scene: T, occt?: Worker, jscad?: Worker) {
+    init(scene: Scene, occt?: Worker, jscad?: Worker) {
         const verb = { geom: vrb.geom, core: vrb.core };
+        this.context.scene = scene;
         this.context.verb = verb;
         this.context.jsonpath = JSONPath;
         if (occt) {
