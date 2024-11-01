@@ -61,13 +61,13 @@ export class BitByBitBase {
         this.jscad = new JSCAD(this.jscadWorkerManager);
 
         const geometryHelper = new GeometryHelper();
-        const drawHelper = new DrawHelper(this.context, this.vector, this.jscadWorkerManager, this.occtWorkerManager);
+        this.math = new MathBitByBit();
+        this.vector = new Vector(this.context, this.math, geometryHelper);
+        const drawHelper = new DrawHelper(this.context, this.jscad.text, this.vector, this.jscadWorkerManager, this.occtWorkerManager);
         this.three = new ThreeJS(drawHelper);
         this.tag = new Tag(this.context);
         this.draw = new Draw(drawHelper, this.context);
         this.color = new Color(this.context);
-        this.math = new MathBitByBit();
-        this.vector = new Vector(this.context, this.math, geometryHelper);
         this.line = new Line(this.context, geometryHelper);
         this.transforms = new Transforms(this.vector, this.math);
         this.point = new Point(this.context, geometryHelper, this.line, this.transforms);

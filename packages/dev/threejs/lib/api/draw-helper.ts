@@ -1,18 +1,29 @@
 
 import { Context } from "./context";
 import * as Inputs from "./inputs";
-import { Vector } from "@bitbybit-dev/core";
+import { Vector, DrawHelperCore, JSCADText } from "@bitbybit-dev/core";
 import { JSCADWorkerManager } from "@bitbybit-dev/core/lib/workers";
 import { OCCTWorkerManager } from "@bitbybit-dev/occt-worker";
-import { BufferAttribute, BufferGeometry, Group, Mesh, MeshNormalMaterial } from "three";
+import { BufferAttribute, BufferGeometry, Color, Group, Mesh, MeshPhysicalMaterial, Vector3, Float32BufferAttribute, LineBasicMaterial, LineSegments, MeshBasicMaterial, SphereGeometry, BoxGeometry, InstancedMesh } from "three";
 
-export class DrawHelper {
+export class DrawHelper extends DrawHelperCore {
+
+    private usedMaterials: {
+        sceneId: number,
+        hex: string,
+        alpha: number,
+        zOffset: number,
+        material: MeshPhysicalMaterial
+    }[] = [];
 
     constructor(
         private readonly context: Context,
-        private readonly vector: Vector,
+        private readonly solidText: JSCADText,
+        public readonly vector: Vector,
         private readonly jscadWorkerManager: JSCADWorkerManager,
-        private readonly occWorkerManager: OCCTWorkerManager) {
+        private readonly occWorkerManager: OCCTWorkerManager
+    ) {
+        super(vector);
     }
     /**
      * Draws OpenCascade shape by going through faces and edges
@@ -32,16 +43,306 @@ export class DrawHelper {
         return this.handleDecomposedMesh(inputs, decomposedMesh, options);
     }
 
-    private async handleDecomposedMesh(inputs: Inputs.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer>, decomposedMesh: Inputs.OCCT.DecomposedMeshDto, options: { shape?: Inputs.OCCT.TopoDSShapePointer; faceOpacity: number; edgeOpacity: number; edgeColour: string; faceMaterial?: any; faceColour: string; edgeWidth: number; drawEdges: boolean; drawFaces: boolean; precision: number; drawEdgeIndexes: boolean; edgeIndexHeight: number; edgeIndexColour: string; drawFaceIndexes: boolean; faceIndexHeight: number; faceIndexColour: string; }) {
-        const material = new MeshNormalMaterial();
-        const geometries = this.createGeometries(decomposedMesh);
+    private async handleDecomposedMesh(inputs: Inputs.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer>, decomposedMesh: Inputs.OCCT.DecomposedMeshDto, options: Inputs.Draw.DrawOcctShapeOptions) {
+        const shapeGroup = new Group();
+        shapeGroup.name = "brepMesh-" + Math.random() * 10;
+        this.context.scene.add(shapeGroup);
+        let dummy;
 
-        const group = new Group();
-        geometries.forEach(geometry => {
-            group.add(new Mesh(geometry, material));
+        if (inputs.drawFaces && decomposedMesh && decomposedMesh.faceList && decomposedMesh.faceList.length) {
+
+            let pbr;
+
+            if (options.faceMaterial) {
+                pbr = options.faceMaterial;
+            } else {
+                const hex = Array.isArray(inputs.faceColour) ? inputs.faceColour[0] : inputs.faceColour;
+                const alpha = inputs.faceOpacity;
+                const zOffset = inputs.drawEdges ? 2 : 0;
+                const materialCached = this.usedMaterials.find(s => s.sceneId === this.context.scene.id && s.hex === hex && s.alpha === alpha && s.zOffset === zOffset);
+                this.usedMaterials = this.usedMaterials.filter(s => s.sceneId === this.context.scene.id);
+                if (materialCached) {
+                    pbr = materialCached.material;
+                } else {
+                    const pbmat = new MeshPhysicalMaterial();
+
+                    pbmat.color = new Color(hex);
+                    pbmat.metalness = 0.4;
+                    pbmat.roughness = 0.8;
+                    pbmat.alphaTest = alpha;
+                    pbmat.polygonOffset = true;
+                    pbmat.polygonOffsetFactor = zOffset;
+                    this.usedMaterials.push({
+                        sceneId: this.context.scene.id,
+                        hex,
+                        alpha: alpha,
+                        zOffset: zOffset,
+                        material: pbmat
+                    });
+                    pbr = pbmat;
+                }
+            }
+
+            const meshData = decomposedMesh.faceList.map(face => {
+                return {
+                    positions: face.vertex_coord,
+                    normals: face.normal_coord,
+                    indices: face.tri_indexes,
+                    uvs: face.uvs,
+                };
+            });
+
+            const mesh = this.createOrUpdateSurfacesMesh(meshData, dummy, false, pbr, true, false);
+            shapeGroup.add(mesh);
+        }
+        if (inputs.drawEdges && decomposedMesh && decomposedMesh.edgeList && decomposedMesh.edgeList.length) {
+
+            const polylineEdgePoints = [];
+            decomposedMesh.edgeList.forEach(edge => {
+                const ev = edge.vertex_coord.filter(s => s !== undefined);
+                polylineEdgePoints.push(ev);
+            });
+            const line = this.drawPolylines(polylineEdgePoints, false, inputs.edgeWidth, inputs.edgeOpacity, inputs.edgeColour);
+            shapeGroup.add(line);
+        }
+
+        if (inputs.drawVertices && decomposedMesh && decomposedMesh.pointsList && decomposedMesh.pointsList.length) {
+            const mesh = this.drawPoints({
+                points: decomposedMesh.pointsList,
+                opacity: 1,
+                size: inputs.vertexSize,
+                colours: inputs.vertexColour,
+                updatable: false,
+            });
+            shapeGroup.add(mesh);
+        }
+
+        if (inputs.drawEdgeIndexes) {
+            const promises = decomposedMesh.edgeList.map(async (edge) => {
+                const edgeMiddle = this.computeEdgeMiddlePos(edge);
+                const tdto = new Inputs.JSCAD.TextDto();
+                tdto.text = `${edge.edge_index + 1}`;
+                tdto.height = inputs.edgeIndexHeight;
+                tdto.lineSpacing = 1.5;
+                const t = await this.solidText.createVectorText(tdto);
+                const texts = t.map(s => {
+                    const res = s.map(c => {
+                        return [
+                            c[0],
+                            c[1] + 0.05,
+                            0
+                        ] as Inputs.Base.Vector3;
+                    });
+                    const movedOnPosition = res.map(r => this.vector.add({ first: r, second: edgeMiddle }));
+                    return movedOnPosition as Inputs.Base.Vector3[];
+                });
+
+                // texts.forEach(te => textPolylines.push(te));
+                return texts;
+            });
+            const textPolylines = await Promise.all(promises);
+            const edgeMesh = this.drawPolylines(textPolylines.flat(), false, 0.2, 1, inputs.edgeIndexColour);
+            shapeGroup.add(edgeMesh);
+            edgeMesh.material.polygonOffsetFactor = -2;
+        }
+        if (inputs.drawFaceIndexes) {
+            const promises = decomposedMesh.faceList.map(async (face) => {
+                const faceMiddle = this.computeFaceMiddlePos(face.vertex_coord_vec) as Inputs.Base.Point3;
+                const tdto = new Inputs.JSCAD.TextDto();
+                tdto.text = `${face.face_index}`;
+                tdto.height = inputs.faceIndexHeight;
+                tdto.lineSpacing = 1.5;
+                const t = await this.solidText.createVectorText(tdto);
+                const texts = t.map(s => {
+                    const res = s.map(c => {
+                        return [
+                            c[0],
+                            c[1] + 0.05,
+                            0
+                        ] as Inputs.Base.Point3;
+                    });
+                    const movedOnPosition = res.map(r => this.vector.add({ first: r, second: faceMiddle }));
+                    return movedOnPosition as Inputs.Base.Point3[];
+                });
+                return texts;
+            });
+            const textPolylines = await Promise.all(promises);
+
+            const faceMesh = this.drawPolylines(textPolylines.flat(), false, 0.2, 1, inputs.faceIndexColour);
+            faceMesh.parent = shapeGroup;
+            if (inputs.drawEdges) {
+                faceMesh.material.polygonOffsetFactor = -2;
+            }
+        }
+        return shapeGroup;
+    }
+
+    private drawPolylines(polylinesPoints: Inputs.Base.Vector3[][], updatable: boolean,
+        size: number, opacity: number, colours: string | string[]) {
+        const lineVertices = [];
+        polylinesPoints.forEach(pts => {
+            for (let i = 0; i < pts.length - 1; i++) {
+                const c = pts[i];
+                const n = pts[i + 1];
+
+                lineVertices.push(new Vector3(
+                    c[0],
+                    c[1],
+                    c[2]
+                ));
+                lineVertices.push(new Vector3(
+                    n[0],
+                    n[1],
+                    n[2]
+                ));
+            }
         });
-        group.name = "shape";
-        this.context.scene.add(group);
+        const lineGeometry = new BufferGeometry().setFromPoints(lineVertices);
+        const color = Array.isArray(colours) ? new Color(colours[0]) : new Color(colours);
+        const lineColors = []; for (let i = 0; i < lineVertices.length; i++) { lineColors.push(color.r, color.g, color.b); }
+        lineGeometry.setAttribute("color", new Float32BufferAttribute(lineColors, 3));
+        const lineMaterial = new LineBasicMaterial({
+            color: 0xffffff, linewidth: size, vertexColors: true
+        });
+        const line = new LineSegments(lineGeometry, lineMaterial);
+        line.name = "lines-" + Math.random() * 10;
+        return line;
+    }
+
+    drawPoints(inputs: Inputs.Point.DrawPointsDto<Group>): Group {
+        const vectorPoints = inputs.points;
+        let coloursHex: string[] = [];
+        if (Array.isArray(inputs.colours)) {
+            coloursHex = inputs.colours;
+            if (coloursHex.length === 1) {
+                coloursHex = inputs.points.map(() => coloursHex[0]);
+            }
+        } else {
+            coloursHex = inputs.points.map(() => inputs.colours as string);
+        }
+        if (inputs.pointsMesh && inputs.updatable) {
+            if (inputs.pointsMesh.children.length === vectorPoints.length) {
+                this.updatePointsInstances(inputs.pointsMesh, vectorPoints);
+            } else {
+                inputs.pointsMesh.remove();
+                inputs.pointsMesh = this.createPointSpheresMesh(
+                    `pointsMesh${Math.random()}`, vectorPoints, coloursHex, inputs.opacity, inputs.size, inputs.updatable
+                );
+            }
+        } else {
+            inputs.pointsMesh = this.createPointSpheresMesh(
+                `pointsMesh${Math.random()}`, vectorPoints, coloursHex, inputs.opacity, inputs.size, inputs.updatable
+            );
+        }
+        return inputs.pointsMesh;
+    }
+
+    updatePointsInstances(group: Group, positions: Inputs.Base.Point3[]): void {
+        const children = group.children as InstancedMesh[];
+        const po = {};
+        positions.forEach((pos, index) => {
+            po[index] = new Vector3(pos[0], pos[1], pos[2]);
+        });
+
+        children.forEach((child: InstancedMesh) => {
+            const index = child.userData.index;
+            const p = po[index];
+            child.position.set(p.x, p.y, p.z);
+        });
+    }
+
+    private createPointSpheresMesh(
+        meshName: string, positions: Inputs.Base.Point3[], colors: string[], opacity: number, size: number, updatable: boolean): Group {
+
+        const positionsModel = positions.map((pos, index) => {
+            return {
+                position: pos,
+                color: colors[index],
+                index
+            };
+        });
+
+        const colorSet = Array.from(new Set(colors));
+        const materialSet = colorSet.map((colour, index) => {
+
+            const mat = new MeshBasicMaterial({ name: `mat-${Math.random() * 10}` });
+            mat.opacity = opacity;
+            mat.color = new Color(colour);
+            const positions = positionsModel.filter(s => s.color === colour);
+
+            return { hex: colorSet, material: mat, positions };
+        });
+
+        const pointsGroup = new Group();
+        pointsGroup.name = meshName;
+        this.context.scene.add(pointsGroup);
+        materialSet.forEach(ms => {
+            const segments = ms.positions.length > 1000 ? 1 : 6;
+            let geom: SphereGeometry | BoxGeometry;
+            if (ms.positions.length < 10000) {
+                geom = new SphereGeometry(size, segments, segments);
+            } else {
+                geom = new BoxGeometry(size, size, size);
+            }
+
+            ms.positions.forEach((pos, index) => {
+                const instance = new InstancedMesh(geom, ms.material, 1);
+                instance.name = `point-${index}-${Math.random() * 10}`;
+                instance.position.set(pos.position[0], pos.position[1], pos.position[2]);
+                instance.userData = { index: pos.index };
+                instance.visible = true;
+                pointsGroup.add(instance);
+            });
+        });
+
+        return pointsGroup;
+    }
+
+    createOrUpdateSurfacesMesh(
+        meshDataConverted: { positions: number[]; indices: number[]; normals: number[]; uvs: number[] }[],
+        group: Group, updatable: boolean, material: MeshPhysicalMaterial, addToScene: boolean, hidden: boolean
+    ): Group {
+        const createMesh = () => {
+            const geometries: BufferGeometry[] = [];
+
+            meshDataConverted.forEach(mesh => {
+                const geometry = new BufferGeometry();
+                geometry.setAttribute("position", new BufferAttribute(Float32Array.from(mesh.positions), 3));
+                geometry.setAttribute("normal", new BufferAttribute(Float32Array.from(mesh.normals), 3));
+                geometry.setAttribute("uv", new BufferAttribute(Uint32Array.from(mesh.uvs), 2));
+                geometry.setAttribute("uv2", new BufferAttribute(Uint32Array.from(mesh.uvs), 2));
+                geometry.setIndex(new BufferAttribute(Uint32Array.from(mesh.indices), 1));
+                geometries.push(geometry);
+            });
+
+            return geometries;
+        };
+
+        if (group && updatable) {
+            group.remove();
+            createMesh();
+            // group.flipFaces(false);
+        } else {
+            let scene = null;
+            if (addToScene) {
+                scene = this.context.scene;
+            }
+
+            group = new Group();
+            group.name = `surface${Math.random()}`;
+            scene.add(group);
+            const geometries = createMesh();
+            geometries.forEach(geometry => {
+                if (material) {
+                    group.add(new Mesh(geometry, material));
+                } else {
+                    group.add(new Mesh(geometry));
+                }
+            });
+        }
+        if (hidden) {
+            group.visible = false;
+        }
         return group;
     }
 

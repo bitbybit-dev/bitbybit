@@ -2,11 +2,11 @@
 import * as BABYLON from "@babylonjs/core";
 import { Context } from "./context";
 import * as Inputs from "./inputs";
-import { JSCADText, Vector } from "@bitbybit-dev/core";
+import { JSCADText, Vector, DrawHelperCore } from "@bitbybit-dev/core";
 import { JSCADWorkerManager } from "@bitbybit-dev/core/lib/workers";
 import { OCCTWorkerManager } from "@bitbybit-dev/occt-worker";
 
-export class DrawHelper {
+export class DrawHelper extends DrawHelperCore {
 
     private usedMaterials: {
         sceneId: string,
@@ -19,9 +19,10 @@ export class DrawHelper {
     constructor(
         private readonly context: Context,
         private readonly solidText: JSCADText,
-        private readonly vector: Vector,
+        public readonly vector: Vector,
         private readonly jscadWorkerManager: JSCADWorkerManager,
         private readonly occWorkerManager: OCCTWorkerManager) {
+            super(vector);
     }
 
     createOrUpdateSurfaceMesh(
@@ -1026,46 +1027,6 @@ export class DrawHelper {
             }
         }
         return shapeMesh;
-    }
-
-    private computeFaceMiddlePos(vertexCoordVec: number[][]): number[] {
-        let x = 0;
-        let y = 0;
-        let z = 0;
-
-        let realLength = 0;
-        vertexCoordVec.forEach(v => {
-            x += v[0];
-            y += v[1];
-            z += v[2];
-            realLength++;
-        });
-
-        return [x / realLength, y / realLength, z / realLength];
-    }
-
-    private computeEdgeMiddlePos(edge: { edge_index: number; vertex_coord: Inputs.Base.Point3[]; }): Inputs.Base.Point3 {
-        let pos;
-        if (edge.vertex_coord.length === 2) {
-            const midFloor = edge.vertex_coord[0];
-            const midCeil = edge.vertex_coord[1];
-            pos = this.vector.lerp({
-                first: midFloor,
-                second: midCeil,
-                fraction: 0.5,
-            });
-        } else if (edge.vertex_coord.length === 3) {
-            pos = edge.vertex_coord[1];
-        } else {
-            const midFloor = edge.vertex_coord[Math.floor(edge.vertex_coord.length / 2)];
-            const midCeil = edge.vertex_coord[Math.floor(edge.vertex_coord.length / 2 + 1)];
-            pos = this.vector.lerp({
-                first: midFloor,
-                second: midCeil,
-                fraction: 0.5,
-            });
-        }
-        return pos;
     }
 
     private createLineSystemMesh(updatable: boolean, lines: BABYLON.Vector3[][], colors: BABYLON.Color4[][]): BABYLON.LinesMesh {
