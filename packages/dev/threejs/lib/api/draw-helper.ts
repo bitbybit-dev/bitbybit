@@ -154,6 +154,43 @@ export class DrawHelper extends DrawHelperCore {
         });
     }
 
+    drawPolylinesWithColours(inputs: Inputs.Polyline.DrawPolylinesDto<Group>) {
+        let colours = inputs.colours;
+        const points = inputs.polylines.map((s, index) => {
+            const pts = s.points;
+            //handle jscad
+            if (s.isClosed) {
+                pts.push(pts[0]);
+            }
+            // sometimes polylines can have assigned colors in case of jscad for example. Such colour will overwrite the default provided colour for that polyline.
+            if (s.color) {
+                if (!Array.isArray(colours)) {
+                    colours = [];
+                }
+                if (Array.isArray(s.color)) {
+                    colours[index] = new Color(...s.color).getHexString();
+                } else {
+                    colours[index] = s.color;
+                }
+            }
+            return pts;
+        });
+
+        const polylines = this.drawPolylines(
+            points,
+            inputs.updatable,
+            inputs.size,
+            inputs.opacity,
+            colours
+        );
+
+        const group = new Group();
+        group.name = `polylines-${Math.random()}`;
+        group.add(polylines);
+        this.context.scene.add(group);
+        return group;
+    }
+
     private makeMesh(inputs: { updatable: boolean, opacity: number, colour: string, hidden: boolean }, meshToUpdate: Group, res: { positions: number[]; normals: number[]; indices: number[]; transforms: []; }) {
         const pbr = new MeshPhysicalMaterial();
         pbr.name = `jscadMaterial-${Math.random()}`;

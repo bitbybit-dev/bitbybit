@@ -150,7 +150,17 @@ export class Draw extends DrawCore {
     }
 
     handleLine(inputs: Inputs.Draw.DrawAny): Group {
-        throw new Error("Method not implemented.");
+        let options = inputs.options ? inputs.options : this.defaultPolylineOptions;
+        if (!inputs.options && inputs.group && inputs.group.userData.options) {
+            options = inputs.group.userData.options;
+        }
+        const result = this.drawHelper.drawPolylinesWithColours({
+            polylinesMesh: inputs.group,
+            polylines: [{ points: [inputs.entity.start, inputs.entity.end] }],
+            ...options as Inputs.Draw.DrawBasicGeometryOptions
+        });
+        this.applyGlobalSettingsAndMetadataAndShadowCasting(Inputs.Draw.drawingTypes.line, options, result);
+        return result;
     }
 
     handlePoint(inputs: Inputs.Draw.DrawAny): Group {
