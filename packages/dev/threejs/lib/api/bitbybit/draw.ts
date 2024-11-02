@@ -163,8 +163,18 @@ export class Draw extends DrawCore {
         return result;
     }
 
-    handlePoint(inputs: Inputs.Draw.DrawAny): Group {
-        throw new Error("Method not implemented.");
+    private handlePoint(inputs: Inputs.Draw.DrawAny) {
+        let options = inputs.options ? inputs.options : this.defaultBasicOptions;
+        if (!inputs.options && inputs.group && inputs.group.userData.options) {
+            options = inputs.group.userData.options;
+        }
+        const result = this.drawHelper.drawPoint({
+            pointMesh: inputs.group,
+            point: inputs.entity,
+            ...options as Inputs.Draw.DrawBasicGeometryOptions
+        });
+        this.applyGlobalSettingsAndMetadataAndShadowCasting(Inputs.Draw.drawingTypes.point, options, result);
+        return result;
     }
 
     handlePolyline(inputs: Inputs.Draw.DrawAny): Group {

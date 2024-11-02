@@ -191,6 +191,25 @@ export class DrawHelper extends DrawHelperCore {
         return group;
     }
 
+    drawPoint(inputs: Inputs.Point.DrawPointDto<Group>): Group {
+        const vectorPoints = [inputs.point];
+
+        let colorsHex: string[] = [];
+        if (Array.isArray(inputs.colours)) {
+            colorsHex = inputs.colours;
+        } else {
+            colorsHex = [inputs.colours];
+        }
+        if (inputs.pointMesh && inputs.updatable) {
+            this.updatePointsInstances(inputs.pointMesh, vectorPoints);
+        } else {
+            inputs.pointMesh = this.createPointSpheresMesh(
+                `pointMesh-${Math.random()}`, vectorPoints, colorsHex, inputs.opacity, inputs.size, inputs.updatable
+            );
+        }
+        return inputs.pointMesh;
+    }
+
     private makeMesh(inputs: { updatable: boolean, opacity: number, colour: string, hidden: boolean }, meshToUpdate: Group, res: { positions: number[]; normals: number[]; indices: number[]; transforms: []; }) {
         const pbr = new MeshPhysicalMaterial();
         pbr.name = `jscadMaterial-${Math.random()}`;
