@@ -60,7 +60,7 @@ export class DrawHelper extends DrawHelperCore {
         const meshes: Inputs.OCCT.DecomposedMeshDto[] = await this.occWorkerManager.genericCallToWorkerPromise("shapesToMeshes", inputs);
         const meshesSolved = await Promise.all(meshes.map(async decomposedMesh => this.handleDecomposedMesh(inputs, decomposedMesh, options)));
         const shapesMeshContainer = new Group();
-        shapesMeshContainer.name = "shapesMeshContainer-" + Math.random() * 10;
+        shapesMeshContainer.name = "shapesMeshContainer-" + Math.random();
         this.context.scene.add(shapesMeshContainer);
         meshesSolved.forEach(mesh => {
             shapesMeshContainer.add(mesh);
@@ -88,7 +88,7 @@ export class DrawHelper extends DrawHelperCore {
             meshToUpdate = inputs.jscadMesh;
         } else {
             meshToUpdate = new Group();
-            meshToUpdate.name = `jscadMesh-${Math.random() * 10}`;
+            meshToUpdate.name = `jscadMesh-${Math.random()}`;
             this.context.scene.add(meshToUpdate);
         }
         let colour;
@@ -102,10 +102,61 @@ export class DrawHelper extends DrawHelperCore {
         inputs.jscadMesh = s;
         return s;
     }
+    
+    /**
+     * Draws multiple solids
+     * @param inputs Contains solids or polygons and information for drawing
+     * @returns Mesh that is being drawn by ThreeJS
+     * @group jscad
+     * @shortname draw solids
+     * @ignore true
+     */
+    async drawSolidOrPolygonMeshes(inputs: Inputs.JSCAD.DrawSolidMeshesDto<Group>): Promise<Group> {
+        return this.jscadWorkerManager.genericCallToWorkerPromise("shapesToMeshes", inputs).then((res: {
+            positions: number[],
+            normals: number[],
+            indices: number[],
+            transforms: [],
+            color?: number[]
+        }[]) => {
+
+            let localOrigin: Group;
+            if (inputs.jscadMesh && inputs.updatable) {
+                localOrigin = inputs.jscadMesh;
+                localOrigin.clear();
+            } else {
+                localOrigin = new Group();
+                localOrigin.name = `jscadMesh-${Math.random()}`;
+            }
+
+            const colourIsArrayAndMatches = Array.isArray(inputs.colours) && inputs.colours.length === res.length;
+            const colorsAreArrays = Array.isArray(inputs.colours);
+
+            res.map((r, index) => {
+                const meshToUpdate = new Group();
+                meshToUpdate.name = `jscadMesh-${Math.random()}`;
+                let colour;
+                if (r.color) {
+                    colour = new Color(...r.color).getHexString();
+                } else if (colourIsArrayAndMatches) {
+                    colour = inputs.colours[index];
+                } else if (colorsAreArrays) {
+                    colour = inputs.colours[0];
+                } else {
+                    colour = inputs.colours;
+                }
+                const m = this.makeMesh({ ...inputs, colour }, meshToUpdate, r);
+                localOrigin.add(m);
+            });
+            this.context.scene.add(localOrigin);
+            inputs.jscadMesh = localOrigin;
+            return localOrigin;
+        });
+    }
 
     private makeMesh(inputs: { updatable: boolean, opacity: number, colour: string, hidden: boolean }, meshToUpdate: Group, res: { positions: number[]; normals: number[]; indices: number[]; transforms: []; }) {
         const pbr = new MeshPhysicalMaterial();
-        pbr.name = `jscadMaterial-${Math.random() * 10}`;
+        pbr.name = `jscadMaterial-${Math.random()}`;
         pbr.color = new Color(inputs.colour);
         pbr.metalness = 0.4;
         pbr.roughness = 0.6;
@@ -135,7 +186,7 @@ export class DrawHelper extends DrawHelperCore {
 
     private async handleDecomposedMesh(inputs: Inputs.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer>, decomposedMesh: Inputs.OCCT.DecomposedMeshDto, options: Inputs.Draw.DrawOcctShapeOptions) {
         const shapeGroup = new Group();
-        shapeGroup.name = "brepMesh-" + Math.random() * 10;
+        shapeGroup.name = "brepMesh-" + Math.random();
         this.context.scene.add(shapeGroup);
         let dummy;
 
@@ -295,7 +346,7 @@ export class DrawHelper extends DrawHelperCore {
             color: 0xffffff, linewidth: size, vertexColors: true
         });
         const line = new LineSegments(lineGeometry, lineMaterial);
-        line.name = "lines-" + Math.random() * 10;
+        line.name = "lines-" + Math.random();
         return line;
     }
 
@@ -355,7 +406,7 @@ export class DrawHelper extends DrawHelperCore {
         const colorSet = Array.from(new Set(colors));
         const materialSet = colorSet.map((colour, index) => {
 
-            const mat = new MeshBasicMaterial({ name: `mat-${Math.random() * 10}` });
+            const mat = new MeshBasicMaterial({ name: `mat-${Math.random()}` });
             mat.opacity = opacity;
             mat.color = new Color(colour);
             const positions = positionsModel.filter(s => s.color === colour);
@@ -377,7 +428,7 @@ export class DrawHelper extends DrawHelperCore {
 
             ms.positions.forEach((pos, index) => {
                 const instance = new InstancedMesh(geom, ms.material, 1);
-                instance.name = `point-${index}-${Math.random() * 10}`;
+                instance.name = `point-${index}-${Math.random()}`;
                 instance.position.set(pos.position[0], pos.position[1], pos.position[2]);
                 instance.userData = { index: pos.index };
                 instance.visible = true;

@@ -6,6 +6,11 @@ import { DrawHelper } from "../draw-helper";
 
 export class Draw extends DrawCore {
     private defaultBasicOptions = new Inputs.Draw.DrawBasicGeometryOptions();
+    private defaultPolylineOptions: Inputs.Draw.DrawBasicGeometryOptions = {
+        ...new Inputs.Draw.DrawBasicGeometryOptions(),
+        size: 2,
+        colours: "#ff00ff",
+    };
 
     constructor(
         private readonly drawHelper: DrawHelper,
@@ -99,7 +104,18 @@ export class Draw extends DrawCore {
     }
 
     handleJscadMeshes(inputs: Inputs.Draw.DrawAny): Promise<Group> {
-        throw new Error("Method not implemented.");
+        let options = inputs.options ? inputs.options : this.defaultPolylineOptions;
+        if (!inputs.options && inputs.group && inputs.group.userData.options) {
+            options = inputs.group.userData.options;
+        }
+        return this.drawHelper.drawSolidOrPolygonMeshes({
+            jscadMesh: inputs.group,
+            meshes: inputs.entity,
+            ...options as Inputs.Draw.DrawBasicGeometryOptions
+        }).then(r => {
+            this.applyGlobalSettingsAndMetadataAndShadowCasting(Inputs.Draw.drawingTypes.jscadMeshes, options, r);
+            return r;
+        });
     }
 
     handleOcctShape(inputs: Inputs.Draw.DrawAny): Promise<Group> {
