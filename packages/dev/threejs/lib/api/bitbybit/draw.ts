@@ -5,13 +5,14 @@ import { Context } from "../context";
 import { DrawHelper } from "../draw-helper";
 
 export class Draw extends DrawCore {
+    private defaultBasicOptions = new Inputs.Draw.DrawBasicGeometryOptions();
+
     constructor(
         private readonly drawHelper: DrawHelper,
         private readonly context: Context,
     ) {
         super();
     }
-
 
     async drawAnyAsync(inputs: Inputs.Draw.DrawAny): Promise<Group> {
         const entity = inputs.entity;
@@ -83,7 +84,18 @@ export class Draw extends DrawCore {
     }
 
     handleJscadMesh(inputs: Inputs.Draw.DrawAny): Promise<Group> {
-        throw new Error("Method not implemented.");
+        let options = inputs.options ? inputs.options : this.defaultBasicOptions;
+        if (!inputs.options && inputs.group && inputs.group.userData.options) {
+            options = inputs.group.userData.options;
+        }
+        return this.drawHelper.drawSolidOrPolygonMesh({
+            jscadMesh: inputs.group,
+            mesh: inputs.entity,
+            ...options as Inputs.Draw.DrawBasicGeometryOptions
+        }).then(r => {
+            this.applyGlobalSettingsAndMetadataAndShadowCasting(Inputs.Draw.drawingTypes.jscadMesh, options, r);
+            return r;
+        });
     }
 
     handleJscadMeshes(inputs: Inputs.Draw.DrawAny): Promise<Group> {
@@ -107,7 +119,18 @@ export class Draw extends DrawCore {
     }
 
     handleOcctShapes(inputs: Inputs.Draw.DrawAny): Promise<Group> {
-        throw new Error("Method not implemented.");
+        let options = inputs.options ? inputs.options : new Inputs.OCCT.DrawShapeDto(inputs.entity);
+        if (!inputs.options && inputs.group && inputs.group.userData.options) {
+            options = inputs.group.userData.options;
+        }
+        return this.drawHelper.drawShapes({
+            shapes: inputs.entity,
+            ...new Inputs.Draw.DrawOcctShapeOptions(),
+            ...options as Inputs.Draw.DrawOcctShapeOptions
+        }).then(r => {
+            this.applyGlobalSettingsAndMetadataAndShadowCasting(Inputs.Draw.drawingTypes.occt, options, r);
+            return r;
+        });
     }
 
     handleLine(inputs: Inputs.Draw.DrawAny): Group {

@@ -4,7 +4,7 @@ import * as Inputs from "./inputs";
 import { Vector, DrawHelperCore, JSCADText } from "@bitbybit-dev/core";
 import { JSCADWorkerManager } from "@bitbybit-dev/core/lib/workers";
 import { OCCTWorkerManager } from "@bitbybit-dev/occt-worker";
-import { BufferAttribute, BufferGeometry, Color, Group, Mesh, MeshPhysicalMaterial, Vector3, Float32BufferAttribute, LineBasicMaterial, LineSegments, MeshBasicMaterial, SphereGeometry, BoxGeometry, InstancedMesh } from "three";
+import { BufferAttribute, BufferGeometry, Color, Group, Mesh, MeshPhysicalMaterial, Vector3, Float32BufferAttribute, LineBasicMaterial, LineSegments, MeshBasicMaterial, SphereGeometry, BoxGeometry, InstancedMesh, Matrix4Tuple, Matrix4, MeshNormalMaterial } from "three";
 
 export class DrawHelper extends DrawHelperCore {
 
@@ -41,6 +41,96 @@ export class DrawHelper extends DrawHelperCore {
         }
         const decomposedMesh: Inputs.OCCT.DecomposedMeshDto = await this.occWorkerManager.genericCallToWorkerPromise("shapeToMesh", inputs);
         return this.handleDecomposedMesh(inputs, decomposedMesh, options);
+    }
+
+    /**
+     * Draws OpenCascade shapes by going through faces and edges
+     * @param inputs Contains shapes to be drawn and additional information
+     * @returns ThreeJS Group
+     * @group drawing
+     * @shortname draw shapes
+     * @drawable false
+     * @ignore true
+     */
+    async drawShapes(inputs: Inputs.OCCT.DrawShapesDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Group> {
+        const options = { ...inputs };
+        if (inputs.faceMaterial) {
+            delete inputs.faceMaterial;
+        }
+        const meshes: Inputs.OCCT.DecomposedMeshDto[] = await this.occWorkerManager.genericCallToWorkerPromise("shapesToMeshes", inputs);
+        const meshesSolved = await Promise.all(meshes.map(async decomposedMesh => this.handleDecomposedMesh(inputs, decomposedMesh, options)));
+        const shapesMeshContainer = new Group();
+        shapesMeshContainer.name = "shapesMeshContainer-" + Math.random() * 10;
+        this.context.scene.add(shapesMeshContainer);
+        meshesSolved.forEach(mesh => {
+            shapesMeshContainer.add(mesh);
+        });
+        return shapesMeshContainer;
+    }
+
+    /**
+     * Draws a single solids
+     * @param inputs Contains a solid or polygon and information for drawing
+     * @returns Group containing mesh that is being drawn by ThreeJS
+     * @group jscad
+     * @shortname draw solid
+     * @ignore true
+     */
+    async drawSolidOrPolygonMesh(inputs: Inputs.JSCAD.DrawSolidMeshDto<Group>): Promise<Group> {
+        const res: {
+            positions: number[],
+            normals: number[],
+            indices: number[],
+            transforms: [],
+        } = await this.jscadWorkerManager.genericCallToWorkerPromise("shapeToMesh", inputs);
+        let meshToUpdate;
+        if (inputs.jscadMesh && inputs.updatable) {
+            meshToUpdate = inputs.jscadMesh;
+        } else {
+            meshToUpdate = new Group();
+            meshToUpdate.name = `jscadMesh-${Math.random() * 10}`;
+            this.context.scene.add(meshToUpdate);
+        }
+        let colour;
+        if (inputs.mesh.color && inputs.mesh.color.length > 0) {
+            // if jscad geometry is colorized and color is baked on geometry it will be used over anything that set in the draw options
+            colour = new Color(inputs.mesh.color).getHexString();
+        } else {
+            colour = Array.isArray(inputs.colours) ? inputs.colours[0] : inputs.colours;
+        }
+        const s = this.makeMesh({ ...inputs, colour }, meshToUpdate, res);
+        inputs.jscadMesh = s;
+        return s;
+    }
+
+    private makeMesh(inputs: { updatable: boolean, opacity: number, colour: string, hidden: boolean }, meshToUpdate: Group, res: { positions: number[]; normals: number[]; indices: number[]; transforms: []; }) {
+        const pbr = new MeshPhysicalMaterial();
+        pbr.name = `jscadMaterial-${Math.random() * 10}`;
+        pbr.color = new Color(inputs.colour);
+        pbr.metalness = 0.4;
+        pbr.roughness = 0.6;
+        pbr.alphaTest = inputs.opacity;
+        pbr.polygonOffsetFactor = 0;
+
+        this.createMesh(res.positions, res.indices, res.normals, meshToUpdate, res.transforms, inputs.updatable, pbr);
+        if (inputs.hidden) {
+            meshToUpdate.visible = false;
+        }
+        return meshToUpdate;
+    }
+
+    private createMesh(
+        positions: number[], indices: number[], normals: number[], jscadMesh: Group, transforms: number[], updatable: boolean, material: MeshPhysicalMaterial
+    ): void {
+        const geometry = new BufferGeometry();
+        geometry.setAttribute("position", new BufferAttribute(Float32Array.from(positions), 3));
+        geometry.setIndex(new BufferAttribute(Uint32Array.from(indices), 1));
+        geometry.computeVertexNormals();
+        const matrix4 = new Matrix4();
+        matrix4.fromArray(transforms);
+        jscadMesh.clear();
+        jscadMesh.add(new Mesh(geometry, material));
+        jscadMesh.applyMatrix4(matrix4);
     }
 
     private async handleDecomposedMesh(inputs: Inputs.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer>, decomposedMesh: Inputs.OCCT.DecomposedMeshDto, options: Inputs.Draw.DrawOcctShapeOptions) {

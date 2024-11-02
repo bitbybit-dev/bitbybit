@@ -6,7 +6,7 @@ import { Base } from "./inputs";
 // tslint:disable-next-line: no-namespace
 export namespace Draw {
 
-    export type DrawOptions = DrawOcctShapeOptions;
+    export type DrawOptions = DrawOcctShapeOptions | DrawBasicGeometryOptions;
 
     export class DrawAny {
         constructor(entity?: any, options?: DrawOptions) {
@@ -166,6 +166,50 @@ export namespace Draw {
          * @default #0000ff
          */
         faceIndexColour: Base.Color = "#0000ff";
+    }
+
+    /**
+     * Draw options for basic geometry types like points, lines, polylines, surfaces and jscad meshes
+     */
+    export class DrawBasicGeometryOptions {
+        constructor(colours?: string | string[], size?: number, opacity?: number, updatable?: boolean, hidden?: boolean) {
+            if (colours !== undefined) { this.colours = colours; }
+            if (size !== undefined) { this.size = size; }
+            if (opacity !== undefined) { this.opacity = opacity; }
+            if (updatable !== undefined) { this.updatable = updatable; }
+            if (hidden !== undefined) { this.hidden = hidden; }
+        }
+        /**
+         * Basic geometry colours to use for lines, points, polylines, surfaces, jscad meshes.
+         * @default #ff0000
+         */
+        colours: string | string[] = "#ff0000";
+        /**
+         * Size affect how big the drawn points are and how wide lines are.
+         * @default 0.1
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.1
+         */
+        size = 0.1;
+        /**
+         * Opacity of the point 0 to 1
+         * @default 1
+         * @minimum 0
+         * @maximum 1
+         * @step 0.1
+         */
+        opacity = 1;
+        /**
+         * If geometry needs to be updated later
+         * @default false
+         */
+        updatable = false;
+        /**
+         * Hidden
+         * @default false
+         */
+        hidden = false;
     }
 
     export enum drawingTypes {
