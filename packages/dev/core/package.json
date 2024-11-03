@@ -1,6 +1,6 @@
 {
     "name": "@bitbybit-dev/core",
-    "version": "0.18.0-alpha.0",
+    "version": "0.18.0-alpha.1",
     "description": "Bit By Bit Developers Core CAD API to Program Geometry",
     "main": "index.js",
     "repository": {
@@ -54,8 +54,8 @@
     "types": "./index.d.ts",
     "type": "module",
     "dependencies": {
-        "@bitbybit-dev/occt": "0.18.0-alpha.0",
-        "@bitbybit-dev/occt-worker": "0.18.0-alpha.0",
+        "@bitbybit-dev/occt": "0.18.0-alpha.1",
+        "@bitbybit-dev/occt-worker": "0.18.0-alpha.1",
         "jsonpath-plus": "10.1.0",
         "@jscad/io-utils": "2.0.28",
         "@jscad/modeling": "2.12.3",
