@@ -19,7 +19,7 @@ export class DrawHelper extends DrawHelperCore {
     constructor(
         private readonly context: Context,
         private readonly solidText: JSCADText,
-        public readonly vector: Vector,
+        override readonly vector: Vector,
         private readonly jscadWorkerManager: JSCADWorkerManager,
         private readonly occWorkerManager: OCCTWorkerManager) {
         super(vector);
