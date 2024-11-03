@@ -385,7 +385,10 @@ export class DrawHelper extends DrawHelperCore {
 
         if (inputs.drawEdgeIndexes) {
             const promises = decomposedMesh.edgeList.map(async (edge) => {
-                const edgeMiddle = this.computeEdgeMiddlePos(edge);
+                let edgeMiddle = edge.middle_point;
+                if (edgeMiddle === undefined) {
+                    edgeMiddle = this.computeEdgeMiddlePos(edge);
+                }
                 const tdto = new Inputs.JSCAD.TextDto();
                 tdto.text = `${edge.edge_index + 1}`;
                 tdto.height = inputs.edgeIndexHeight;
@@ -413,7 +416,10 @@ export class DrawHelper extends DrawHelperCore {
         }
         if (inputs.drawFaceIndexes) {
             const promises = decomposedMesh.faceList.map(async (face) => {
-                const faceMiddle = this.computeFaceMiddlePos(face.vertex_coord_vec) as Inputs.Base.Point3;
+                let faceMiddle = face.center_point;
+                if (faceMiddle === undefined) {
+                    faceMiddle = this.computeFaceMiddlePos(face.vertex_coord_vec) as Inputs.Base.Point3;
+                }
                 const tdto = new Inputs.JSCAD.TextDto();
                 tdto.text = `${face.face_index}`;
                 tdto.height = inputs.faceIndexHeight;
