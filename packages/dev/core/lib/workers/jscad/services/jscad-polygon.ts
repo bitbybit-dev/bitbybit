@@ -1,6 +1,7 @@
 import { VectorHelperService } from "@bitbybit-dev/occt";
 import * as Inputs from "../../../api/inputs/inputs";
 import { MathBitByBit } from "../../../api/bitbybit";
+import * as JSCAD from "@jscad/modeling";
 
 /**
  * Contains various functions for Polygon from JSCAD library https://github.com/jscad/OpenJSCAD.org
@@ -9,7 +10,7 @@ import { MathBitByBit } from "../../../api/bitbybit";
 export class JSCADPolygon {
 
     constructor(
-        private readonly jscad: any,
+        private readonly jscad: typeof JSCAD,
         private readonly vecHelper: VectorHelperService,
         private readonly math: MathBitByBit
 
@@ -83,7 +84,7 @@ export class JSCADPolygon {
 
     private removeDuplicatesAndCreateFromPoints(twoDimensionalPoints: Inputs.Base.Point2[]): Inputs.JSCAD.JSCADEntity {
         const duplicatePointsRemoved = this.vecHelper.removeConsecutiveDuplicates(twoDimensionalPoints);
-        const polygon = this.jscad.primitives.polygon({ points: duplicatePointsRemoved });
+        const polygon = this.jscad.primitives.polygon({ points: duplicatePointsRemoved as JSCAD.maths.vec2.Vec2[] });
         return polygon;
     }
 

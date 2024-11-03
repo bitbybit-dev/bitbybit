@@ -1,5 +1,6 @@
 import { MathBitByBit } from "../../../api/bitbybit";
 import * as Inputs from "../../../api/inputs/inputs";
+import * as JSCAD from "@jscad/modeling";
 
 /**
  * Contains various functions for solid 3D shapes from JSCAD library https://github.com/jscad/OpenJSCAD.org
@@ -7,10 +8,10 @@ import * as Inputs from "../../../api/inputs/inputs";
  */
 export class JSCADShapes {
 
-    jscad: any;
+    jscad: typeof JSCAD;
 
     constructor(
-        jscad: any,
+        jscad: typeof JSCAD,
         private readonly math: MathBitByBit
     ) {
         this.jscad = jscad;
@@ -100,7 +101,7 @@ export class JSCADShapes {
                 [-1, 0, 0],
                 [0, -1, 0],
                 [0, 0, -1],
-            ],
+            ] as any,
         });
     }
 
@@ -196,7 +197,7 @@ export class JSCADShapes {
 
     torus(inputs: Inputs.JSCAD.TorusDto): Inputs.JSCAD.JSCADEntity {
         return this.jscad.primitives.torus({
-            center: [inputs.center[0], inputs.center[1], inputs.center[2]],
+            // center: [inputs.center[0], inputs.center[1], inputs.center[2]],
             innerRadius: inputs.innerRadius,
             outerRadius: inputs.outerRadius,
             innerSegments: inputs.innerSegments,

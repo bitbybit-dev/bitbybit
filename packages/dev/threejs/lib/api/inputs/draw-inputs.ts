@@ -1,15 +1,17 @@
 /* eslint-disable @typescript-eslint/no-namespace */
 
-import { Group } from "three";
-import { Base } from "./inputs";
+import * as Inputs from "./inputs";
+import { Base } from "./base-inputs";
 
 // tslint:disable-next-line: no-namespace
 export namespace Draw {
 
     export type DrawOptions = DrawOcctShapeOptions | DrawBasicGeometryOptions;
+    export type Entity = Base.Point3 | Base.Vector3 | Base.Line3 | Base.Polyline3 | Base.VerbCurve | Base.VerbSurface | Inputs.OCCT.TopoDSShapePointer | Inputs.Tag.TagDto |
+        Base.Point3[] | Base.Vector3[] | Base.Line3[] | Base.Polyline3[] | Base.VerbCurve[] | Base.VerbSurface[] | Inputs.OCCT.TopoDSShapePointer[] | Inputs.Tag.TagDto[];
 
-    export class DrawAny {
-        constructor(entity?: any, options?: DrawOptions) {
+    export class DrawAny<U> {
+        constructor(entity?: Entity, options?: DrawOptions) {
             if (entity !== undefined) { this.entity = entity; }
             if (options !== undefined) { this.options = options; }
         }
@@ -17,7 +19,7 @@ export namespace Draw {
          * Entity to be drawn - can be a single or multiple points, lines, polylines, verb curves, verb surfaces, jscad meshes, jscad polygons, jscad paths, occt shapes, tags, nodes
          * @default undefined
          */
-        entity: any;
+        entity: Entity;
         /**
          * Options that help you control how your drawn objects look like. This property is optional. In order to pick the right option you need to know which entity you are going to draw. For example if you draw points, lines, polylines or jscad meshes you can use basic geometry options, but if you want to draw OCCT shapes, use OCCT options.
          * @default undefined
@@ -27,7 +29,7 @@ export namespace Draw {
         /**
          * Group to indicate if geometry should be updated
          */
-        group?: Group;
+        group?: U;
     }
 
     export class DrawOcctShapeOptions {
@@ -228,6 +230,7 @@ export namespace Draw {
         jscadMesh,
         jscadMeshes,
         occt,
+        occtShapes,
         tag,
         tags,
     }

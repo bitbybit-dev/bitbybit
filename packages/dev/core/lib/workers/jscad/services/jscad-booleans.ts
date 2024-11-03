@@ -1,5 +1,6 @@
 
 import * as Inputs from "../../../api/inputs/jscad-inputs";
+import * as JSCAD from "@jscad/modeling";
 
 /**
  * Contains various functions for Solid booleans from JSCAD library https://github.com/jscad/OpenJSCAD.org
@@ -8,7 +9,7 @@ import * as Inputs from "../../../api/inputs/jscad-inputs";
 export class JSCADBooleans {
 
     constructor(
-        private readonly jscad: any
+        private readonly jscad: typeof JSCAD
     ) { }
 
     intersect(inputs: Inputs.JSCAD.BooleanObjectsDto): Inputs.JSCAD.JSCADEntity {

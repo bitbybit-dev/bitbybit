@@ -5,7 +5,7 @@ import { Polyline } from "./polyline-inputs";
 // tslint:disable-next-line: no-namespace
 export namespace JSCAD {
     export type JSCADEntity = any;
-
+    
     export enum solidCornerTypeEnum {
         /**
          * Edges will meet at a corner
@@ -134,7 +134,7 @@ export namespace JSCAD {
         /**
          * Provide options without default values
          */
-        constructor(path?: JSCADEntity[], colour?: string, opacity?: number, width?: number, updatable?: boolean, pathMesh?: T) {
+        constructor(path?: JSCADEntity, colour?: string, opacity?: number, width?: number, updatable?: boolean, pathMesh?: T) {
             if (path !== undefined) { this.path = path; }
             if (colour !== undefined) { this.colour = colour; }
             if (opacity !== undefined) { this.opacity = opacity; }

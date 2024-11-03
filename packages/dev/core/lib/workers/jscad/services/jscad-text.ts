@@ -1,4 +1,5 @@
 import * as Inputs from "../../../api/inputs/inputs";
+import * as JSCAD from "@jscad/modeling";
 
 /**
  * Contains various functions for solid 3D texts from JSCAD library https://github.com/jscad/OpenJSCAD.org
@@ -6,7 +7,7 @@ import * as Inputs from "../../../api/inputs/inputs";
  */
 export class JSCADText {
 
-    constructor(private readonly jscad: any) { }
+    constructor(private readonly jscad: typeof JSCAD) { }
 
     cylindricalText(inputs: Inputs.JSCAD.CylinderTextDto): Inputs.JSCAD.JSCADEntity[] {
         const text = this.createVectorText(inputs);
@@ -58,7 +59,7 @@ export class JSCADText {
         });
     }
 
-    createVectorText(inputs: Inputs.JSCAD.TextDto): number[][] {
+    createVectorText(inputs: Inputs.JSCAD.TextDto): JSCAD.text.VectorText {
         return this.jscad.text.vectorText({
             input: inputs.text,
             xOffset: inputs.xOffset,

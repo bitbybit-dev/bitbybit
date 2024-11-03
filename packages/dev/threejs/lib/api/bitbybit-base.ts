@@ -66,7 +66,7 @@ export class BitByBitBase {
         const drawHelper = new DrawHelper(this.context, this.jscad.text, this.vector, this.jscadWorkerManager, this.occtWorkerManager);
         this.three = new ThreeJS(drawHelper);
         this.tag = new Tag(this.context);
-        this.draw = new Draw(drawHelper, this.context);
+        this.draw = new Draw(drawHelper, this.context, this.tag);
         this.color = new Color(this.context);
         this.line = new Line(this.context, geometryHelper);
         this.transforms = new Transforms(this.vector, this.math);

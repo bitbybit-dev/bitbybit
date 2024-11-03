@@ -1,4 +1,5 @@
 import * as Inputs from "../../../api/inputs/jscad-inputs";
+import * as JSCAD from "@jscad/modeling";
 
 /**
  * Contains various functions for Solid hulls from JSCAD library https://github.com/jscad/OpenJSCAD.org
@@ -7,7 +8,7 @@ import * as Inputs from "../../../api/inputs/jscad-inputs";
 export class JSCADHulls {
 
     constructor(
-        private readonly jscad: any,
+        private readonly jscad: typeof JSCAD,
     ) { }
 
     hullChain(inputs: Inputs.JSCAD.HullDto): Inputs.JSCAD.JSCADEntity {

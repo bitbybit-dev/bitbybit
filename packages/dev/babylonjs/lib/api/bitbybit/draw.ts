@@ -1,6 +1,7 @@
 
 import * as BABYLON from "@babylonjs/core";
 import * as Inputs from "../inputs/inputs";
+import { Base } from "../inputs/base-inputs";
 import { BabylonNode } from "./babylon/node";
 import { Tag, DrawCore } from "@bitbybit-dev/core";
 import { Context } from "../context";
@@ -38,7 +39,7 @@ export class Draw extends DrawCore {
          * @ignore true
          */
         public readonly context: Context,
-    ) { 
+    ) {
         super();
     }
 
@@ -307,7 +308,7 @@ export class Draw extends DrawCore {
         // TODO look into this, seems like a bad idea to use babylon mesh for tag updates
         const result = this.tag.drawTags({
             tagsVariable: inputs.babylonMesh as any,
-            tags: inputs.entity,
+            tags: inputs.entity as Inputs.Tag.TagDto[],
             ...options as Inputs.Draw.DrawBasicGeometryOptions
         });
 
@@ -324,7 +325,7 @@ export class Draw extends DrawCore {
         }
         const result = this.tag.drawTag({
             tagVariable: inputs.babylonMesh as any,
-            tag: inputs.entity,
+            tag: inputs.entity as Inputs.Tag.TagDto,
             ...options as Inputs.Draw.DrawBasicGeometryOptions
         });
         (result as any).metadata = { type: Inputs.Draw.drawingTypes.tag, options } as any;
@@ -338,7 +339,7 @@ export class Draw extends DrawCore {
         }
         const result = this.drawHelper.drawSurfacesMultiColour({
             surfacesMesh: inputs.babylonMesh,
-            surfaces: inputs.entity,
+            surfaces: inputs.entity as Base.VerbSurface[],
             ...options as Inputs.Draw.DrawBasicGeometryOptions
         });
         this.applyGlobalSettingsAndMetadataAndShadowCasting(Inputs.Draw.drawingTypes.verbSurfaces, options, result);
@@ -353,7 +354,7 @@ export class Draw extends DrawCore {
         }
         const result = this.drawHelper.drawCurves({
             curvesMesh: inputs.babylonMesh as BABYLON.GreasedLineMesh,
-            curves: inputs.entity,
+            curves: inputs.entity as Base.VerbCurve[],
             ...options as Inputs.Draw.DrawBasicGeometryOptions
         });
 
@@ -368,10 +369,10 @@ export class Draw extends DrawCore {
         }
         const result = inputs.entity;
         this.node.drawNodes({
-            nodes: inputs.entity,
+            nodes: inputs.entity as any,
             ...options as Inputs.Draw.DrawNodeOptions
         });
-        this.applyGlobalSettingsAndMetadataAndShadowCasting(Inputs.Draw.drawingTypes.nodes, options, result);
+        this.applyGlobalSettingsAndMetadataAndShadowCasting(Inputs.Draw.drawingTypes.nodes, options, result as any);
         return result;
     }
 
@@ -382,7 +383,7 @@ export class Draw extends DrawCore {
         }
         const result = this.drawHelper.drawPoints({
             pointsMesh: inputs.babylonMesh,
-            points: inputs.entity,
+            points: inputs.entity as Inputs.Base.Point3[],
             ...options as Inputs.Draw.DrawBasicGeometryOptions
         });
         this.applyGlobalSettingsAndMetadataAndShadowCasting(Inputs.Draw.drawingTypes.points, options, result);
@@ -394,9 +395,10 @@ export class Draw extends DrawCore {
         if (!inputs.options && inputs.babylonMesh && inputs.babylonMesh.metadata.options) {
             options = inputs.babylonMesh.metadata.options;
         }
-        const result =  this.drawHelper.drawPolylinesWithColours({
+        const lines = inputs.entity as Base.Line3[];
+        const result = this.drawHelper.drawPolylinesWithColours({
             polylinesMesh: inputs.babylonMesh as BABYLON.GreasedLineMesh,
-            polylines: inputs.entity.map(e => ({ points: [e.start, e.end] })),
+            polylines: lines.map(e => ({ points: [e.start, e.end] })),
             ...options as Inputs.Draw.DrawBasicGeometryOptions
         });
         this.applyGlobalSettingsAndMetadataAndShadowCasting(Inputs.Draw.drawingTypes.lines, options, result);
@@ -408,9 +410,9 @@ export class Draw extends DrawCore {
         if (!inputs.options && inputs.babylonMesh && inputs.babylonMesh.metadata.options) {
             options = inputs.babylonMesh.metadata.options;
         }
-        const result =  this.drawHelper.drawPolylinesWithColours({
+        const result = this.drawHelper.drawPolylinesWithColours({
             polylinesMesh: inputs.babylonMesh as BABYLON.GreasedLineMesh,
-            polylines: inputs.entity,
+            polylines: inputs.entity as Inputs.Base.Polyline3[],
             ...options as Inputs.Draw.DrawBasicGeometryOptions
         });
         this.applyGlobalSettingsAndMetadataAndShadowCasting(Inputs.Draw.drawingTypes.polylines, options, result);
@@ -431,7 +433,6 @@ export class Draw extends DrawCore {
         return result;
     }
 
-
     private handleVerbCurve(inputs: Inputs.Draw.DrawAny) {
         let options = inputs.options ? inputs.options : this.defaultPolylineOptions;
         if (!inputs.options && inputs.babylonMesh && inputs.babylonMesh.metadata.options) {
@@ -439,7 +440,7 @@ export class Draw extends DrawCore {
         }
         const result = this.drawHelper.drawCurve({
             curveMesh: inputs.babylonMesh as BABYLON.GreasedLineMesh,
-            curve: inputs.entity.tessellate(),
+            curve: inputs.entity,
             ...options as Inputs.Draw.DrawBasicGeometryOptions
         });
         this.applyGlobalSettingsAndMetadataAndShadowCasting(Inputs.Draw.drawingTypes.verbCurve, options, result);
@@ -453,10 +454,10 @@ export class Draw extends DrawCore {
         }
         const result = inputs.entity;
         this.node.drawNode({
-            node: inputs.entity,
+            node: inputs.entity as any,
             ...options as Inputs.Draw.DrawNodeOptions
         });
-        this.applyGlobalSettingsAndMetadataAndShadowCasting(Inputs.Draw.drawingTypes.node, options, result);
+        this.applyGlobalSettingsAndMetadataAndShadowCasting(Inputs.Draw.drawingTypes.node, options, result as any);
         return result;
     }
 
@@ -467,7 +468,7 @@ export class Draw extends DrawCore {
         }
         const result = this.drawHelper.drawPolylineClose({
             polylineMesh: inputs.babylonMesh as BABYLON.GreasedLineMesh,
-            polyline: inputs.entity,
+            polyline: inputs.entity as Inputs.Base.Polyline3,
             ...options as Inputs.Draw.DrawBasicGeometryOptions
         });
         this.applyGlobalSettingsAndMetadataAndShadowCasting(Inputs.Draw.drawingTypes.polyline, options, result);
@@ -481,7 +482,7 @@ export class Draw extends DrawCore {
         }
         const result = this.drawHelper.drawPoint({
             pointMesh: inputs.babylonMesh,
-            point: inputs.entity,
+            point: inputs.entity as Inputs.Base.Point3,
             ...options as Inputs.Draw.DrawBasicGeometryOptions
         });
         this.applyGlobalSettingsAndMetadataAndShadowCasting(Inputs.Draw.drawingTypes.point, options, result);
@@ -493,9 +494,10 @@ export class Draw extends DrawCore {
         if (!inputs.options && inputs.babylonMesh && inputs.babylonMesh.metadata.options) {
             options = inputs.babylonMesh.metadata.options;
         }
+        const line = inputs.entity as Base.Line3;
         const result = this.drawHelper.drawPolylinesWithColours({
             polylinesMesh: inputs.babylonMesh as BABYLON.GreasedLineMesh,
-            polylines: [{ points: [inputs.entity.start, inputs.entity.end] }],
+            polylines: [{ points: [line.start, line.end] }],
             ...options as Inputs.Draw.DrawBasicGeometryOptions
         });
         this.applyGlobalSettingsAndMetadataAndShadowCasting(Inputs.Draw.drawingTypes.line, options, result);
@@ -509,7 +511,7 @@ export class Draw extends DrawCore {
         }
         return this.drawHelper.drawSolidOrPolygonMeshes({
             jscadMesh: inputs.babylonMesh,
-            meshes: inputs.entity,
+            meshes: inputs.entity as any,
             ...options as Inputs.Draw.DrawBasicGeometryOptions
         }).then(r => {
             this.applyGlobalSettingsAndMetadataAndShadowCasting(Inputs.Draw.drawingTypes.jscadMeshes, options, r);
@@ -523,7 +525,7 @@ export class Draw extends DrawCore {
             options = inputs.babylonMesh.metadata.options;
         }
         return this.drawHelper.drawShape({
-            shape: inputs.entity,
+            shape: inputs.entity as Inputs.OCCT.TopoDSShapePointer,
             ...new Inputs.Draw.DrawOcctShapeOptions(),
             ...options as Inputs.Draw.DrawOcctShapeOptions
         }).then(r => {
@@ -538,7 +540,7 @@ export class Draw extends DrawCore {
             options = inputs.babylonMesh.metadata.options;
         }
         return this.drawHelper.drawShapes({
-            shapes: inputs.entity,
+            shapes: inputs.entity as Inputs.OCCT.TopoDSShapePointer[],
             ...new Inputs.Draw.DrawOcctShapeOptions(),
             ...options as Inputs.Draw.DrawOcctShapeOptions
         }).then(r => {

@@ -2,6 +2,7 @@ import { VectorHelperService } from "@bitbybit-dev/occt";
 import { Base } from "../../../api/inputs";
 import * as Inputs from "../../../api/inputs/jscad-inputs";
 import { MathBitByBit } from "../../../api/bitbybit";
+import * as JSCAD from "@jscad/modeling";
 
 /**
  * Contains various functions for Path from JSCAD library https://github.com/jscad/OpenJSCAD.org
@@ -10,7 +11,7 @@ import { MathBitByBit } from "../../../api/bitbybit";
 export class JSCADPath {
 
     constructor(
-        private readonly jscad: any,
+        private readonly jscad: typeof JSCAD,
         private readonly vecHelper: VectorHelperService,
         private readonly math: MathBitByBit
     ) { }
@@ -47,7 +48,7 @@ export class JSCADPath {
     appendPoints(inputs: Inputs.JSCAD.PathAppendPointsDto): Inputs.JSCAD.JSCADEntity {
         const twoDimensionalPoints = inputs.points.map(pt => [pt[0], pt[1]]);
         const duplicatePointsRemoved = this.vecHelper.removeConsecutiveDuplicates(twoDimensionalPoints);
-        return this.jscad.geometries.path2.appendPoints(duplicatePointsRemoved, inputs.path);
+        return this.jscad.geometries.path2.appendPoints(duplicatePointsRemoved as JSCAD.maths.vec2.Vec2[], inputs.path);
     }
 
     appendPolyline(inputs: Inputs.JSCAD.PathAppendPolylineDto): Inputs.JSCAD.JSCADEntity {
@@ -56,10 +57,10 @@ export class JSCADPath {
     }
 
     appendArc(inputs: Inputs.JSCAD.PathAppendArcDto): Inputs.JSCAD.JSCADEntity {
-        const endpoint = [inputs.endPoint[0], inputs.endPoint[1]];
-        const radius = [inputs.radiusX, inputs.radiusY];
+        const endpoint = [inputs.endPoint[0], inputs.endPoint[1]] as JSCAD.maths.vec2.Vec2;
+        const radius = [inputs.radiusX, inputs.radiusY] as JSCAD.maths.vec2.Vec2;
         return this.jscad.geometries.path2.appendArc({
-            endpoint,
+            endpoint ,
             radius,
             xaxisrotation: this.math.degToRad({number: inputs.xAxisRotation}),
             clockwise: inputs.clockwise,
@@ -70,7 +71,7 @@ export class JSCADPath {
 
     private removeDuplicatesAndCreateFromPoints(twoDimensionalPoints: number[][], closed: boolean): any {
         const duplicatePointsRemoved = this.vecHelper.removeConsecutiveDuplicates(twoDimensionalPoints);
-        let path2d = this.jscad.geometries.path2.fromPoints({}, duplicatePointsRemoved);
+        let path2d = this.jscad.geometries.path2.fromPoints({}, duplicatePointsRemoved  as JSCAD.maths.vec2.Vec2[]);
         if (closed) {
             path2d = this.jscad.geometries.path2.close(path2d);
         }

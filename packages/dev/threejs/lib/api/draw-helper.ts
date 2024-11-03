@@ -102,7 +102,7 @@ export class DrawHelper extends DrawHelperCore {
         inputs.jscadMesh = s;
         return s;
     }
-    
+
     /**
      * Draws multiple solids
      * @param inputs Contains solids or polygons and information for drawing
@@ -208,6 +208,75 @@ export class DrawHelper extends DrawHelperCore {
             );
         }
         return inputs.pointMesh;
+    }
+
+    /**
+     * Draws a single polyline and handle closed case
+     * @param inputs Contains a polyline to be drawn
+     * @returns Lines mesh that is being drawn by Babylon
+     */
+    drawPolylineClose(inputs: Inputs.Polyline.DrawPolylineDto<Group>): Group {
+        // handle jscad isClosed case
+        const points = inputs.polyline.points;
+        if (inputs.polyline.isClosed) {
+            points.push(points[0]);
+        }
+        return this.drawPolyline(
+            inputs.polylineMesh,
+            points,
+            inputs.updatable,
+            inputs.size,
+            inputs.opacity,
+            inputs.colours
+        );
+    }
+
+    drawPolyline(mesh: Group,
+        pointsToDraw: Inputs.Base.Point3[],
+        updatable: boolean, size: number, opacity: number, colours: string | string[]): Group {
+        const polylines = this.drawPolylines([pointsToDraw], updatable, size, opacity, colours);
+        if (mesh) {
+            mesh.add(polylines);
+        } else {
+            mesh = new Group();
+            mesh.name = `polyline-${Math.random()}`;
+            mesh.add(polylines);
+            this.context.scene.add(mesh);
+        }
+        return mesh;
+    }
+
+    /**
+     * Draws a single curve
+     * @param inputs Contains a curve to be drawn
+     * @returns Lines mesh that is being drawn by Babylon
+     */
+    drawCurve(inputs: Inputs.Verb.DrawCurveDto<Group>): Group {
+        const points = inputs.curve.tessellate();
+        return this.drawPolyline(
+            inputs.curveMesh,
+            points,
+            inputs.updatable,
+            inputs.size,
+            inputs.opacity,
+            inputs.colours
+        );
+    }
+
+    private parseFaces(
+        faceIndices: any,
+        meshData: any,
+        meshDataConverted: { positions: number[]; indices: number[]; normals: number[]; },
+        countIndices: number): number {
+        faceIndices.reverse().forEach((x) => {
+            const vn = meshData.normals[x];
+            meshDataConverted.normals.push(vn[0], vn[1], vn[2]);
+            const pt = meshData.points[x];
+            meshDataConverted.positions.push(pt[0], pt[1], pt[2]);
+            meshDataConverted.indices.push(countIndices);
+            countIndices++;
+        });
+        return countIndices;
     }
 
     private makeMesh(inputs: { updatable: boolean, opacity: number, colour: string, hidden: boolean }, meshToUpdate: Group, res: { positions: number[]; normals: number[]; indices: number[]; transforms: []; }) {
@@ -448,6 +517,58 @@ export class DrawHelper extends DrawHelperCore {
         });
     }
 
+    /**
+     * Draws multiple curves
+     * @param inputs Contains curves to be drawn
+     * @returns Lines mesh that is being drawn by threejs
+     */
+    drawCurves(inputs: Inputs.Verb.DrawCurvesDto<Group>): Group {
+        const points = inputs.curves.map(s => s.tessellate());
+        return this.drawPolylinesWithColours({ polylines: points, ...inputs });
+    }
+
+
+    /**
+     * Draws multiple surfaces with multiple colours. Number of colours has to be equal to number of surfaces
+     * @param inputs Contains the Nurbs surfaces, colours and other information for drawing
+     * @returns Mesh that is being drawn by Babylon
+     */
+    drawSurfacesMultiColour(inputs: Inputs.Verb.DrawSurfacesColoursDto<Group>): Group {
+        if (inputs.surfacesMesh && inputs.updatable) {
+            inputs.surfacesMesh.clear();
+        } else {
+            inputs.surfacesMesh = new Group();
+            inputs.surfacesMesh.name = `ColouredSurfaces-${Math.random()}`;
+            this.context.scene.add(inputs.surfacesMesh);
+        }
+
+        if (Array.isArray(inputs.colours)) {
+            inputs.surfaces.forEach((surface, index) => {
+                const srf = this.drawSurface({
+                    surface,
+                    colours: inputs.colours[index] ? inputs.colours[index] : inputs.colours[0],
+                    updatable: inputs.updatable,
+                    opacity: inputs.opacity,
+                    hidden: inputs.hidden,
+                });
+                inputs.surfacesMesh.add(srf);
+            });
+        } else {
+            inputs.surfaces.forEach((surface, index) => {
+                const srf = this.drawSurface({
+                    surface,
+                    colours: inputs.colours,
+                    updatable: inputs.updatable,
+                    opacity: inputs.opacity,
+                    hidden: inputs.hidden,
+                });
+                inputs.surfacesMesh.add(srf);
+            });
+        }
+
+        return inputs.surfacesMesh;
+    }
+
     private createPointSpheresMesh(
         meshName: string, positions: Inputs.Base.Point3[], colors: string[], opacity: number, size: number, updatable: boolean): Group {
 
@@ -496,7 +617,7 @@ export class DrawHelper extends DrawHelperCore {
     }
 
     createOrUpdateSurfacesMesh(
-        meshDataConverted: { positions: number[]; indices: number[]; normals: number[]; uvs: number[] }[],
+        meshDataConverted: { positions: number[]; indices: number[]; normals: number[]; uvs?: number[] }[],
         group: Group, updatable: boolean, material: MeshPhysicalMaterial, addToScene: boolean, hidden: boolean
     ): Group {
         const createMesh = () => {
@@ -506,8 +627,10 @@ export class DrawHelper extends DrawHelperCore {
                 const geometry = new BufferGeometry();
                 geometry.setAttribute("position", new BufferAttribute(Float32Array.from(mesh.positions), 3));
                 geometry.setAttribute("normal", new BufferAttribute(Float32Array.from(mesh.normals), 3));
-                geometry.setAttribute("uv", new BufferAttribute(Uint32Array.from(mesh.uvs), 2));
-                geometry.setAttribute("uv2", new BufferAttribute(Uint32Array.from(mesh.uvs), 2));
+                if (mesh.uvs) {
+                    geometry.setAttribute("uv", new BufferAttribute(Uint32Array.from(mesh.uvs), 2));
+                    geometry.setAttribute("uv2", new BufferAttribute(Uint32Array.from(mesh.uvs), 2));
+                }
                 geometry.setIndex(new BufferAttribute(Uint32Array.from(mesh.indices), 1));
                 geometries.push(geometry);
             });
@@ -543,6 +666,43 @@ export class DrawHelper extends DrawHelperCore {
         return group;
     }
 
+    /**
+     * Draws a single surface
+     * @param inputs Contains a surface and information for drawing
+     * @returns Mesh that is being drawn by Babylon
+     */
+    drawSurface(inputs: Inputs.Verb.DrawSurfaceDto<Group>): Group {
+        const meshData = inputs.surface.tessellate();
+
+        const meshDataConverted = {
+            positions: [],
+            indices: [],
+            normals: [],
+        };
+
+        let countIndices = 0;
+        meshData.faces.forEach((faceIndices) => {
+            countIndices = this.parseFaces(faceIndices, meshData, meshDataConverted, countIndices);
+        });
+
+        const pbr = new MeshPhysicalMaterial();
+        pbr.name = `pbr-${Math.random()}`;
+
+        pbr.color = new Color(Array.isArray(inputs.colours) ? inputs.colours[0] : inputs.colours);
+        pbr.metalness = 0.5;
+        pbr.roughness = 0.7;
+        pbr.opacity = inputs.opacity;
+        pbr.alphaTest = 1;
+
+        return this.createOrUpdateSurfacesMesh(
+            [meshDataConverted],
+            inputs.surfaceMesh,
+            inputs.updatable,
+            pbr,
+            true,
+            inputs.hidden,
+        );
+    }
     createGeometries(decomposedMesh: Inputs.OCCT.DecomposedMeshDto): BufferGeometry[] {
         const geometries: BufferGeometry[] = [];
         const res: Inputs.OCCT.DecomposedMeshDto = decomposedMesh;

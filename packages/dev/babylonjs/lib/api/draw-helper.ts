@@ -22,49 +22,11 @@ export class DrawHelper extends DrawHelperCore {
         public readonly vector: Vector,
         private readonly jscadWorkerManager: JSCADWorkerManager,
         private readonly occWorkerManager: OCCTWorkerManager) {
-            super(vector);
-    }
-
-    createOrUpdateSurfaceMesh(
-        meshDataConverted: { positions: any[]; indices: any[]; normals: any[]; },
-        mesh: BABYLON.Mesh, updatable: boolean, material: BABYLON.PBRMetallicRoughnessMaterial, addToScene: boolean, hidden: boolean
-    ): BABYLON.Mesh {
-        const createMesh = () => {
-            const vertexData = new BABYLON.VertexData();
-            vertexData.positions = meshDataConverted.positions;
-            vertexData.indices = meshDataConverted.indices;
-            vertexData.normals = meshDataConverted.normals;
-            vertexData.applyToMesh(mesh, updatable);
-        };
-
-        if (mesh && updatable) {
-            mesh.dispose();
-            createMesh();
-            mesh.flipFaces(false);
-        } else {
-            let scene = null;
-            if (addToScene) {
-                scene = this.context.scene;
-            }
-            mesh = new BABYLON.Mesh(`surface${Math.random()}`, scene);
-            createMesh();
-            mesh.flipFaces(false);
-            if (material) {
-                mesh.material = material;
-            }
-        }
-        if (material) {
-            mesh.material = material;
-        }
-        if (hidden) {
-            mesh.isVisible = false;
-        }
-        mesh.isPickable = false;
-        return mesh;
+        super(vector);
     }
 
     createOrUpdateSurfacesMesh(
-        meshDataConverted: { positions: number[]; indices: number[]; normals: number[]; uvs: number[] }[],
+        meshDataConverted: { positions: number[]; indices: number[]; normals: number[]; uvs?: number[] }[],
         mesh: BABYLON.Mesh, updatable: boolean, material: BABYLON.PBRMetallicRoughnessMaterial, addToScene: boolean, hidden: boolean
     ): BABYLON.Mesh {
         const createMesh = () => {
@@ -81,7 +43,9 @@ export class DrawHelper extends DrawHelperCore {
                 vertexData.positions = meshData.positions;
                 vertexData.indices = meshData.indices;
                 vertexData.normals = meshData.normals;
-                vertexData.uvs = meshData.uvs;
+                if (meshData.uvs) {
+                    vertexData.uvs = meshData.uvs;
+                }
                 v.push(vertexData);
             });
             vd.merge(v);
@@ -241,8 +205,8 @@ export class DrawHelper extends DrawHelperCore {
         pbr.backFaceCulling = false;
         pbr.doubleSided = true;
 
-        return this.createOrUpdateSurfaceMesh(
-            meshDataConverted,
+        return this.createOrUpdateSurfacesMesh(
+            [meshDataConverted],
             inputs.surfaceMesh,
             inputs.updatable,
             pbr,
@@ -285,8 +249,8 @@ export class DrawHelper extends DrawHelperCore {
         pbr.backFaceCulling = true;
         pbr.doubleSided = false;
 
-        return this.createOrUpdateSurfaceMesh(
-            meshDataConverted,
+        return this.createOrUpdateSurfacesMesh(
+            [meshDataConverted],
             inputs.surfacesMesh,
             inputs.updatable,
             pbr,
