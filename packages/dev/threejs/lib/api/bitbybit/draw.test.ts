@@ -4,7 +4,7 @@ import { DrawHelper } from "../draw-helper";
 import { Draw } from "./draw";
 import { JSCADWorkerManager } from "@bitbybit-dev/core/lib/workers";
 import { OCCTWorkerManager } from "@bitbybit-dev/occt-worker/lib";
-import { InstancedMesh, LineBasicMaterial, LineSegments, Mesh, MeshPhongMaterial, Scene } from "three";
+import { InstancedMesh, LineSegments, Mesh, MeshPhongMaterial, Scene } from "three";
 import * as Inputs from "../inputs";
 
 describe("Draw unit tests", () => {
@@ -443,6 +443,74 @@ describe("Draw unit tests", () => {
             expect(res.name).toContain("polyline");
             const lineSegments = res.children[0] as LineSegments;
             expect(lineSegments.geometry.attributes.position.array.toString()).toEqual("1,2,3,2,3,4,2,3,4,3,4,5,3,4,5,4,5,6,3,2,3,4,3,4,4,3,4,3,5,5,3,5,5,3,5,6");
+        });
+
+        it("should draw verb surface", async () => {
+            const surfaceMock = {
+                tessellate: () => {
+                    return {
+                        points: [[1, 2, 3], [2, 3, 4], [3, 4, 5], [4, 5, 6], [34, -5, 3]],
+                        normals: [[1, 2, 3], [2, 3, 4], [3, 4, 5], [4, 5, 6], [34, -5, 3]],
+                        uvs: [[1, 2], [2, 3], [3, 4], [4, 5], [34, -5]],
+                        faces: [[0, 1, 2], [1, 2, 3], [2, 3, 4]]
+                    };
+                },
+                _data: { controlPoints: [], knotsU: 3, knotsV: 4, degreeU: 3, degreeV: 4 },
+            };
+            const options = {
+                ...new Inputs.Draw.DrawBasicGeometryOptions(),
+                size: 4,
+                colours: "#ff0000",
+                updatable: true,
+            };
+            const res = await draw.drawAnyAsync({ entity: surfaceMock, options });
+            expect(res.userData.type).toBe(Inputs.Draw.drawingTypes.verbSurface);
+            expect(res).toBeDefined();
+            expect(res.name).toContain("surface");
+            expect(res.children.length).toBe(1);
+            const faceMesh = res.children[0] as Mesh;
+            const material = faceMesh.material as MeshPhongMaterial;
+            expect(material.color.getHex()).toBe(0xff0000);
+            expect(faceMesh.geometry.attributes.position.array.toString()).toEqual("3,4,5,2,3,4,1,2,3,4,5,6,3,4,5,2,3,4,34,-5,3,4,5,6,3,4,5");
+        });
+
+
+        it("should draw verb surfaces", async () => {
+            const surfaceMock1 = {
+                tessellate: () => {
+                    return {
+                        points: [[1, 2, 3], [2, 3, 4], [3, 4, 5], [4, 5, 6], [34, -5, 3]],
+                        normals: [[1, 2, 3], [2, 3, 4], [3, 4, 5], [4, 5, 6], [34, -5, 3]],
+                        uvs: [[1, 2], [2, 3], [3, 4], [4, 5], [34, -5]],
+                        faces: [[0, 1, 2], [1, 2, 3], [2, 3, 4]]
+                    };
+                },
+                _data: { controlPoints: [], knotsU: 3, knotsV: 4, degreeU: 3, degreeV: 4 },
+            };
+            const surfaceMock2 = {
+                ...surfaceMock1
+            };
+            const options = {
+                ...new Inputs.Draw.DrawBasicGeometryOptions(),
+                size: 4,
+                colours: ["#ff0000", "#00ff00"],
+                updatable: true,
+            };
+            const res = await draw.drawAnyAsync({ entity: [surfaceMock1, surfaceMock2], options });
+            expect(res.userData.type).toBe(Inputs.Draw.drawingTypes.verbSurfaces);
+            expect(res).toBeDefined();
+            expect(res.name).toContain("colouredSurfaces");
+            expect(res.children.length).toBe(2);
+            
+            const faceMesh1 = res.children[0].children[0] as Mesh;
+            const material1 = faceMesh1.material as MeshPhongMaterial;
+            expect(material1.color.getHex()).toBe(0xff0000);
+
+            const faceMesh2 = res.children[1].children[0] as Mesh;
+            const material2 = faceMesh2.material as MeshPhongMaterial;
+            expect(material2.color.getHex()).toBe(0x00ff00);
+
+            expect(faceMesh1.geometry.attributes.position.array.toString()).toEqual("3,4,5,2,3,4,1,2,3,4,5,6,3,4,5,2,3,4,34,-5,3,4,5,6,3,4,5");
         });
     });
 

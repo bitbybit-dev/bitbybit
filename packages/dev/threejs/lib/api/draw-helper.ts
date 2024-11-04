@@ -293,7 +293,7 @@ export class DrawHelper extends DrawHelperCore {
             inputs.surfacesMesh.clear();
         } else {
             inputs.surfacesMesh = new Group();
-            inputs.surfacesMesh.name = `ColouredSurfaces-${Math.random()}`;
+            inputs.surfacesMesh.name = `colouredSurfaces-${Math.random()}`;
             this.context.scene.add(inputs.surfacesMesh);
         }
 
@@ -397,7 +397,7 @@ export class DrawHelper extends DrawHelperCore {
             }
 
             group = new Group();
-            group.name = `surface${Math.random()}`;
+            group.name = `surface-${Math.random()}`;
             scene.add(group);
             const geometries = createMesh();
             geometries.forEach(geometry => {
