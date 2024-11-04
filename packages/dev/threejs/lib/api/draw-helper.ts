@@ -333,12 +333,7 @@ export class DrawHelper extends DrawHelperCore {
         this.context.scene.add(pointsGroup);
         materialSet.forEach(ms => {
             const segments = ms.positions.length > 1000 ? 1 : 6;
-            let geom: SphereGeometry | BoxGeometry;
-            if (ms.positions.length < 10000) {
-                geom = new SphereGeometry(size, segments, segments);
-            } else {
-                geom = new BoxGeometry(size, size, size);
-            }
+            const geom = new SphereGeometry(size, segments, segments);
 
             ms.positions.forEach((pos, index) => {
                 const instance = new InstancedMesh(geom, ms.material, 1);

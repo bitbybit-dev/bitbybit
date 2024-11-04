@@ -96,7 +96,7 @@ describe("Draw unit tests", () => {
         };
         const res = draw.drawAny({ entity: [-1, 2, -3], options });
         const res2 = draw.drawAny({ entity: [2, 5, 5], options, group: res });
-        
+
         expect(res.userData.type).toBe(Inputs.Draw.drawingTypes.point);
         expect(res2.userData.type).toBe(Inputs.Draw.drawingTypes.point);
 
@@ -210,4 +210,31 @@ describe("Draw unit tests", () => {
         expect(res2.children[2].position.y).toBe(-2);
         expect(res2.children[2].position.z).toBe(1.5);
     });
+
+    it("should create detailed points if there are fewer then 1000 points in the list", async () => {
+        const options = {
+            ...new Inputs.Draw.DrawBasicGeometryOptions(),
+            size: 3,
+            colours: ["#0000ff"]
+        };
+        const res = await draw.drawAnyAsync({ entity: [[1, -2, 3], [2, 3, 4], [-3, 2, -1]], options });
+        const mesh = res.children[0] as InstancedMesh;
+        expect(mesh.geometry.attributes.position.count).toEqual(49);
+    });
+
+    it("should create less detailed points if there are more then 1000 points in the list", async () => {
+        const options = {
+            ...new Inputs.Draw.DrawBasicGeometryOptions(),
+            size: 3,
+            colours: ["#0000ff"]
+        };
+        const points = [];
+        for(let i = 0; i < 1005; i++) {
+            points.push([1, i, 3]);
+        }
+        const res = await draw.drawAnyAsync({ entity: points, options });
+        const mesh = res.children[0] as InstancedMesh;
+        expect(mesh.geometry.attributes.position.count).toEqual(12);
+    });
+
 });
