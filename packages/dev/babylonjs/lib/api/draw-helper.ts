@@ -88,11 +88,6 @@ export class DrawHelper extends DrawHelperCore {
         mesh.edgesColor = new BABYLON.Color4(edgeColor.r, edgeColor.g, edgeColor.b, opacity);
     }
 
-    /**
-     * Draws multiple lines
-     * @param inputs Contains a line to be drawn
-     * @returns Lines mesh that is being drawn by Babylon
-     */
     drawLines(inputs: Inputs.Line.DrawLinesDto<BABYLON.LinesMesh>): BABYLON.LinesMesh {
         const lines = [];
         const colors = [];
@@ -137,11 +132,6 @@ export class DrawHelper extends DrawHelperCore {
         return inputs.linesMesh;
     }
 
-    /**
-     * Draws a single polyline and handle closed case
-     * @param inputs Contains a polyline to be drawn
-     * @returns Lines mesh that is being drawn by Babylon
-     */
     drawPolylineClose(inputs: Inputs.Polyline.DrawPolylineDto<BABYLON.GreasedLineMesh>): BABYLON.GreasedLineMesh {
         // handle jscad isClosed case
         const points = inputs.polyline.points;
@@ -158,12 +148,6 @@ export class DrawHelper extends DrawHelperCore {
         );
     }
 
-
-    /**
-     * Draws a single curve
-     * @param inputs Contains a curve to be drawn
-     * @returns Lines mesh that is being drawn by Babylon
-     */
     drawCurve(inputs: Inputs.Verb.DrawCurveDto<BABYLON.GreasedLineMesh>): BABYLON.GreasedLineMesh {
         const points = inputs.curve.tessellate();
         return this.drawPolyline(
@@ -176,11 +160,6 @@ export class DrawHelper extends DrawHelperCore {
         );
     }
 
-    /**
-     * Draws a single surface
-     * @param inputs Contains a surface and information for drawing
-     * @returns Mesh that is being drawn by Babylon
-     */
     drawSurface(inputs: Inputs.Verb.DrawSurfaceDto<BABYLON.Mesh>): BABYLON.Mesh {
         const meshData = inputs.surface.tessellate();
 
@@ -215,11 +194,6 @@ export class DrawHelper extends DrawHelperCore {
         );
     }
 
-    /**
-     * Draws multiple surfaces
-     * @param inputs Contains the Nurbs surfaces and information for drawing
-     * @returns Mesh that is being drawn by Babylon
-     */
     drawSurfaces(inputs: Inputs.Verb.DrawSurfacesDto<BABYLON.Mesh>): BABYLON.Mesh {
         const tessellatedSurfaces = [];
         inputs.surfaces.forEach(srf => {
@@ -259,11 +233,6 @@ export class DrawHelper extends DrawHelperCore {
         );
     }
 
-    /**
-     * Draws multiple surfaces with multiple colours. Number of colours has to be equal to number of surfaces
-     * @param inputs Contains the Nurbs surfaces, colours and other information for drawing
-     * @returns Mesh that is being drawn by Babylon
-     */
     drawSurfacesMultiColour(inputs: Inputs.Verb.DrawSurfacesColoursDto<BABYLON.Mesh>): BABYLON.Mesh {
         if (inputs.surfacesMesh && inputs.updatable) {
             inputs.surfacesMesh.getChildren().forEach(srf => srf.dispose());
@@ -297,11 +266,6 @@ export class DrawHelper extends DrawHelperCore {
         return inputs.surfacesMesh;
     }
 
-    /**
-     * Draws multiple curves
-     * @param inputs Contains curves to be drawn
-     * @returns Lines mesh that is being drawn by Babylon
-     */
     drawCurves(inputs: Inputs.Verb.DrawCurvesDto<BABYLON.GreasedLineMesh>): BABYLON.GreasedLineMesh {
         const points = inputs.curves.map(s => s.tessellate());
         return this.drawPolylines(
@@ -405,109 +369,6 @@ export class DrawHelper extends DrawHelperCore {
         return result as BABYLON.GreasedLineMesh;
     }
 
-    // Algorithm works with arbitrary length numeric vectors. This algorithm is more costly for longer arrays of vectors
-    removeAllDuplicateVectors(vectors: number[][], tolerance = 1e-7): number[][] {
-        const cleanVectors: number[][] = [];
-        vectors.forEach(vector => {
-            // when there are no vectors in cleanVectors array that match the current vector, push it in.
-            if (!cleanVectors.some(s => this.vectorsTheSame(vector, s, tolerance))) {
-                cleanVectors.push(vector);
-            }
-        });
-        return cleanVectors;
-    }
-
-    // Algorithm works with arbitrary length numeric vectors. 
-    removeConsecutiveVectorDuplicates(vectors: number[][], checkFirstAndLast = true, tolerance = 1e-7): number[][] {
-        const vectorsRemaining: number[][] = [];
-        if (vectors.length > 1) {
-            for (let i = 1; i < vectors.length; i++) {
-                const currentVector = vectors[i];
-                const previousVector = vectors[i - 1];
-                if (!this.vectorsTheSame(currentVector, previousVector, tolerance)) {
-                    vectorsRemaining.push(previousVector);
-                }
-                if (i === vectors.length - 1) {
-                    vectorsRemaining.push(currentVector);
-                }
-            }
-            if (checkFirstAndLast) {
-                const firstVector = vectorsRemaining[0];
-                const lastVector = vectorsRemaining[vectorsRemaining.length - 1];
-                if (this.vectorsTheSame(firstVector, lastVector, tolerance)) {
-                    vectorsRemaining.pop();
-                }
-            }
-        } else if (vectors.length === 1) {
-            vectorsRemaining.push(...vectors);
-        }
-        return vectorsRemaining;
-    }
-
-    vectorsTheSame(vec1: number[], vec2: number[], tolerance: number) {
-        let result = false;
-        if (vec1.length !== vec2.length) {
-            return result;
-        } else {
-            result = true;
-            for (let i = 0; i < vec1.length; i++) {
-                if (!this.approxEq(vec1[i], vec2[i], tolerance)) {
-                    result = false;
-                    break;
-                }
-            }
-        }
-        return result;
-    }
-
-    approxEq(num1: number, num2: number, tolerance: number): boolean {
-        const res = Math.abs(num1 - num2) < tolerance;
-        return res;
-    }
-
-    removeConsecutivePointDuplicates(points: Inputs.Base.Point3[], checkFirstAndLast = true, tolerance = 1e-7): Inputs.Base.Point3[] {
-        const pointsRemaining = [];
-        if (points.length > 1) {
-            for (let i = 1; i < points.length; i++) {
-                const currentPoint = points[i];
-                const previousPoint = points[i - 1];
-                if (!this.arePointsTheSame(currentPoint, previousPoint, tolerance)) {
-                    pointsRemaining.push(previousPoint);
-                }
-                if (i === points.length - 1) {
-                    pointsRemaining.push(currentPoint);
-                }
-            }
-            if (checkFirstAndLast) {
-                const firstPoint = pointsRemaining[0];
-                const lastPoint = pointsRemaining[pointsRemaining.length - 1];
-                if (this.arePointsTheSame(firstPoint, lastPoint, tolerance)) {
-                    pointsRemaining.pop();
-                }
-            }
-        } else if (points.length === 1) {
-            pointsRemaining.push(...points);
-        }
-        return pointsRemaining;
-    }
-
-    arePointsTheSame(pointA: Inputs.Base.Point3 | Inputs.Base.Point2, pointB: Inputs.Base.Point3 | Inputs.Base.Point2, tolerance: number): boolean {
-        let result = false;
-        if (pointA.length === 2 && pointB.length === 2) {
-            if (this.approxEq(pointA[0], pointB[0], tolerance) &&
-                this.approxEq(pointA[1], pointB[1], tolerance)) {
-                result = true;
-            }
-        } else if (pointA.length === 3 && pointB.length === 3) {
-            if (this.approxEq(pointA[0], pointB[0], tolerance) &&
-                this.approxEq(pointA[1], pointB[1], tolerance) &&
-                this.approxEq(pointA[2], pointB[2], tolerance)) {
-                result = true;
-            }
-        }
-        return result;
-    }
-
     localAxes(size: number, scene: BABYLON.Scene, colorXHex: string, colorYHex: string, colorZHex: string): BABYLON.Mesh {
         const pilotLocalAxisX = BABYLON.MeshBuilder.CreateLines("pilot_local_axisX" + Math.random(), {
             points: [
@@ -594,9 +455,7 @@ export class DrawHelper extends DrawHelperCore {
         return inputs.pointsMesh;
     }
 
-
     updatePointsInstances(mesh: BABYLON.Mesh, positions: any[]): void {
-
         const children = mesh.getChildMeshes();
         const po = {};
         positions.forEach((pos, index) => {
@@ -606,25 +465,6 @@ export class DrawHelper extends DrawHelperCore {
         children.forEach((child: BABYLON.InstancedMesh) => {
             child.position = po[child.metadata.index];
         });
-    }
-
-    private setUpPositionsAndColours(vectorPoints: number[][], colours: BABYLON.Color3[]): { positions, colors } {
-        const positions = [];
-        const colors = [];
-
-        if (colours.length === vectorPoints.length) {
-            vectorPoints.forEach((p, index) => {
-                positions.push(...p);
-                colors.push(colours[index].r, colours[index].g, colours[index].b, 1);
-            });
-        } else {
-            vectorPoints.forEach((p, index) => {
-                positions.push(...p);
-                colors.push(colours[0].r, colours[0].g, colours[0].b, 1);
-            });
-        }
-
-        return { positions, colors };
     }
 
     private createPointSpheresMesh(
@@ -676,14 +516,6 @@ export class DrawHelper extends DrawHelperCore {
         return pointsMesh;
     }
 
-    /**
-     * Draws a single solids
-     * @param inputs Contains a solid or polygon and information for drawing
-     * @returns Mesh that is being drawn by Babylon
-     * @group jscad
-     * @shortname draw solid
-     * @ignore true
-     */
     async drawSolidOrPolygonMesh(inputs: Inputs.JSCAD.DrawSolidMeshDto<BABYLON.Mesh>): Promise<BABYLON.Mesh> {
         const res: {
             positions: number[],
@@ -729,14 +561,6 @@ export class DrawHelper extends DrawHelperCore {
         return meshToUpdate;
     }
 
-    /**
-     * Draws multiple solids
-     * @param inputs Contains solids or polygons and information for drawing
-     * @returns Mesh that is being drawn by Babylon
-     * @group jscad
-     * @shortname draw solid
-     * @ignore true
-     */
     async drawSolidOrPolygonMeshes(inputs: Inputs.JSCAD.DrawSolidMeshesDto<BABYLON.Mesh>): Promise<BABYLON.Mesh> {
         return this.jscadWorkerManager.genericCallToWorkerPromise("shapesToMeshes", inputs).then((res: {
             positions: number[],
@@ -780,14 +604,6 @@ export class DrawHelper extends DrawHelperCore {
         });
     }
 
-    /**
-     * Draws a 2D path
-     * @param inputs Contains a path and information for drawing
-     * @returns Mesh that is being drawn by Babylon
-     * @group jscad
-     * @shortname draw solid
-     * @ignore true
-     */
     async drawPath(inputs: Inputs.JSCAD.DrawPathDto<BABYLON.GreasedLineMesh>): Promise<BABYLON.GreasedLineMesh> {
         return new Promise(resolve => {
 
@@ -815,16 +631,6 @@ export class DrawHelper extends DrawHelperCore {
 
     }
 
-
-    /**
-     * Draws OpenCascade shape by going through faces and edges
-     * @param inputs Contains a shape to be drawn and additional information
-     * @returns BabylonJS Mesh
-     * @group drawing
-     * @shortname draw shape
-     * @drawable false
-     * @ignore true
-     */
     async drawShape(inputs: Inputs.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer>): Promise<BABYLON.Mesh> {
         const options = { ...inputs };
         if (inputs.faceMaterial) {
@@ -834,15 +640,6 @@ export class DrawHelper extends DrawHelperCore {
         return this.handleDecomposedMesh(inputs, decomposedMesh, options);
     }
 
-    /**
-     * Draws OpenCascade shape by going through faces and edges
-     * @param inputs Contains a shape to be drawn and additional information
-     * @returns BabylonJS Mesh
-     * @group drawing
-     * @shortname draw shape
-     * @drawable false
-     * @ignore true
-     */
     async drawShapes(inputs: Inputs.OCCT.DrawShapesDto<Inputs.OCCT.TopoDSShapePointer>): Promise<BABYLON.Mesh> {
         const options = { ...inputs };
         if (inputs.faceMaterial) {
@@ -953,8 +750,6 @@ export class DrawHelper extends DrawHelperCore {
                     const movedOnPosition = res.map(r => this.vector.add({ first: r, second: edgeMiddle }));
                     return movedOnPosition;
                 });
-
-                // texts.forEach(te => textPolylines.push(te));
                 return texts;
             });
             const textPolylines = await Promise.all(promises);
@@ -963,7 +758,6 @@ export class DrawHelper extends DrawHelperCore {
             edgeMesh.material.zOffset = -2;
         }
         if (inputs.drawFaceIndexes) {
-            // const textPolylines: number[][][] = [];
             const promises = decomposedMesh.faceList.map(async (face) => {
                 let faceMiddle = face.center_point;
                 if (faceMiddle === undefined) {
@@ -985,7 +779,6 @@ export class DrawHelper extends DrawHelperCore {
                     const movedOnPosition = res.map(r => this.vector.add({ first: r, second: faceMiddle }));
                     return movedOnPosition;
                 });
-                // texts.forEach(te => textPolylines.push(te));
                 return texts;
             });
             const textPolylines = await Promise.all(promises);

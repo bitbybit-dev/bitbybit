@@ -4,7 +4,11 @@ import * as Inputs from "./inputs";
 import { Vector, DrawHelperCore, JSCADText } from "@bitbybit-dev/core";
 import { JSCADWorkerManager } from "@bitbybit-dev/core/lib/workers";
 import { OCCTWorkerManager } from "@bitbybit-dev/occt-worker";
-import { BufferAttribute, BufferGeometry, Color, Group, Mesh, MeshPhysicalMaterial, Vector3, Float32BufferAttribute, LineBasicMaterial, LineSegments, MeshBasicMaterial, SphereGeometry, BoxGeometry, InstancedMesh, Matrix4Tuple, Matrix4, MeshNormalMaterial } from "three";
+import {
+    BufferAttribute, BufferGeometry, Color, Group, Mesh, MeshPhysicalMaterial,
+    Vector3, Float32BufferAttribute, LineBasicMaterial, LineSegments,
+    MeshBasicMaterial, SphereGeometry, BoxGeometry, InstancedMesh, Matrix4
+} from "three";
 
 export class DrawHelper extends DrawHelperCore {
 
@@ -25,15 +29,7 @@ export class DrawHelper extends DrawHelperCore {
     ) {
         super(vector);
     }
-    /**
-     * Draws OpenCascade shape by going through faces and edges
-     * @param inputs Contains a shape to be drawn and additional information
-     * @returns ThreeJS Group
-     * @group drawing
-     * @shortname draw shape
-     * @drawable false
-     * @ignore true
-     */
+
     async drawShape(inputs: Inputs.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Group> {
         const options = { ...inputs };
         if (inputs.faceMaterial) {
@@ -43,15 +39,6 @@ export class DrawHelper extends DrawHelperCore {
         return this.handleDecomposedMesh(inputs, decomposedMesh, options);
     }
 
-    /**
-     * Draws OpenCascade shapes by going through faces and edges
-     * @param inputs Contains shapes to be drawn and additional information
-     * @returns ThreeJS Group
-     * @group drawing
-     * @shortname draw shapes
-     * @drawable false
-     * @ignore true
-     */
     async drawShapes(inputs: Inputs.OCCT.DrawShapesDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Group> {
         const options = { ...inputs };
         if (inputs.faceMaterial) {
@@ -68,14 +55,6 @@ export class DrawHelper extends DrawHelperCore {
         return shapesMeshContainer;
     }
 
-    /**
-     * Draws a single solids
-     * @param inputs Contains a solid or polygon and information for drawing
-     * @returns Group containing mesh that is being drawn by ThreeJS
-     * @group jscad
-     * @shortname draw solid
-     * @ignore true
-     */
     async drawSolidOrPolygonMesh(inputs: Inputs.JSCAD.DrawSolidMeshDto<Group>): Promise<Group> {
         const res: {
             positions: number[],
@@ -103,14 +82,6 @@ export class DrawHelper extends DrawHelperCore {
         return s;
     }
 
-    /**
-     * Draws multiple solids
-     * @param inputs Contains solids or polygons and information for drawing
-     * @returns Mesh that is being drawn by ThreeJS
-     * @group jscad
-     * @shortname draw solids
-     * @ignore true
-     */
     async drawSolidOrPolygonMeshes(inputs: Inputs.JSCAD.DrawSolidMeshesDto<Group>): Promise<Group> {
         return this.jscadWorkerManager.genericCallToWorkerPromise("shapesToMeshes", inputs).then((res: {
             positions: number[],
@@ -210,13 +181,7 @@ export class DrawHelper extends DrawHelperCore {
         return inputs.pointMesh;
     }
 
-    /**
-     * Draws a single polyline and handle closed case
-     * @param inputs Contains a polyline to be drawn
-     * @returns Lines mesh that is being drawn by Babylon
-     */
     drawPolylineClose(inputs: Inputs.Polyline.DrawPolylineDto<Group>): Group {
-        // handle jscad isClosed case
         const points = inputs.polyline.points;
         if (inputs.polyline.isClosed) {
             points.push(points[0]);
@@ -246,11 +211,6 @@ export class DrawHelper extends DrawHelperCore {
         return mesh;
     }
 
-    /**
-     * Draws a single curve
-     * @param inputs Contains a curve to be drawn
-     * @returns Lines mesh that is being drawn by Babylon
-     */
     drawCurve(inputs: Inputs.Verb.DrawCurveDto<Group>): Group {
         const points = inputs.curve.tessellate();
         return this.drawPolyline(
@@ -261,6 +221,239 @@ export class DrawHelper extends DrawHelperCore {
             inputs.opacity,
             inputs.colours
         );
+    }
+
+    drawPoints(inputs: Inputs.Point.DrawPointsDto<Group>): Group {
+        const vectorPoints = inputs.points;
+        let coloursHex: string[] = [];
+        if (Array.isArray(inputs.colours)) {
+            coloursHex = inputs.colours;
+            if (coloursHex.length === 1) {
+                coloursHex = inputs.points.map(() => coloursHex[0]);
+            }
+        } else {
+            coloursHex = inputs.points.map(() => inputs.colours as string);
+        }
+        if (inputs.pointsMesh && inputs.updatable) {
+            if (inputs.pointsMesh.children.length === vectorPoints.length) {
+                this.updatePointsInstances(inputs.pointsMesh, vectorPoints);
+            } else {
+                inputs.pointsMesh.remove();
+                inputs.pointsMesh = this.createPointSpheresMesh(
+                    `pointsMesh-${Math.random()}`, vectorPoints, coloursHex, inputs.opacity, inputs.size, inputs.updatable
+                );
+            }
+        } else {
+            inputs.pointsMesh = this.createPointSpheresMesh(
+                `pointsMesh-${Math.random()}`, vectorPoints, coloursHex, inputs.opacity, inputs.size, inputs.updatable
+            );
+        }
+        return inputs.pointsMesh;
+    }
+
+    updatePointsInstances(group: Group, positions: Inputs.Base.Point3[]): void {
+        const children = group.children as InstancedMesh[];
+        const po = {};
+        positions.forEach((pos, index) => {
+            po[index] = new Vector3(pos[0], pos[1], pos[2]);
+        });
+
+        children.forEach((child: InstancedMesh) => {
+            const index = child.userData.index;
+            const p = po[index];
+            child.position.set(p.x, p.y, p.z);
+        });
+    }
+
+    drawCurves(inputs: Inputs.Verb.DrawCurvesDto<Group>): Group {
+        const points = inputs.curves.map(s => s.tessellate());
+        return this.drawPolylinesWithColours({ polylines: points, ...inputs });
+    }
+
+    drawSurfacesMultiColour(inputs: Inputs.Verb.DrawSurfacesColoursDto<Group>): Group {
+        if (inputs.surfacesMesh && inputs.updatable) {
+            inputs.surfacesMesh.clear();
+        } else {
+            inputs.surfacesMesh = new Group();
+            inputs.surfacesMesh.name = `ColouredSurfaces-${Math.random()}`;
+            this.context.scene.add(inputs.surfacesMesh);
+        }
+
+        if (Array.isArray(inputs.colours)) {
+            inputs.surfaces.forEach((surface, index) => {
+                const srf = this.drawSurface({
+                    surface,
+                    colours: inputs.colours[index] ? inputs.colours[index] : inputs.colours[0],
+                    updatable: inputs.updatable,
+                    opacity: inputs.opacity,
+                    hidden: inputs.hidden,
+                });
+                inputs.surfacesMesh.add(srf);
+            });
+        } else {
+            inputs.surfaces.forEach((surface, index) => {
+                const srf = this.drawSurface({
+                    surface,
+                    colours: inputs.colours,
+                    updatable: inputs.updatable,
+                    opacity: inputs.opacity,
+                    hidden: inputs.hidden,
+                });
+                inputs.surfacesMesh.add(srf);
+            });
+        }
+
+        return inputs.surfacesMesh;
+    }
+
+    private createPointSpheresMesh(
+        meshName: string, positions: Inputs.Base.Point3[], colors: string[], opacity: number, size: number, updatable: boolean): Group {
+
+        const positionsModel = positions.map((pos, index) => {
+            return {
+                position: pos,
+                color: colors[index],
+                index
+            };
+        });
+
+        const colorSet = Array.from(new Set(colors));
+        const materialSet = colorSet.map((colour, index) => {
+
+            const mat = new MeshBasicMaterial({ name: `mat-${Math.random()}` });
+            mat.opacity = opacity;
+            mat.color = new Color(colour);
+            const positions = positionsModel.filter(s => s.color === colour);
+
+            return { hex: colorSet, material: mat, positions };
+        });
+
+        const pointsGroup = new Group();
+        pointsGroup.name = meshName;
+        this.context.scene.add(pointsGroup);
+        materialSet.forEach(ms => {
+            const segments = ms.positions.length > 1000 ? 1 : 6;
+            let geom: SphereGeometry | BoxGeometry;
+            if (ms.positions.length < 10000) {
+                geom = new SphereGeometry(size, segments, segments);
+            } else {
+                geom = new BoxGeometry(size, size, size);
+            }
+
+            ms.positions.forEach((pos, index) => {
+                const instance = new InstancedMesh(geom, ms.material, 1);
+                instance.name = `point-${index}-${Math.random()}`;
+                instance.position.set(pos.position[0], pos.position[1], pos.position[2]);
+                instance.userData = { index: pos.index };
+                instance.visible = true;
+                pointsGroup.add(instance);
+            });
+        });
+
+        return pointsGroup;
+    }
+
+    createOrUpdateSurfacesMesh(
+        meshDataConverted: { positions: number[]; indices: number[]; normals: number[]; uvs?: number[] }[],
+        group: Group, updatable: boolean, material: MeshPhysicalMaterial, addToScene: boolean, hidden: boolean
+    ): Group {
+        const createMesh = () => {
+            const geometries: BufferGeometry[] = [];
+
+            meshDataConverted.forEach(mesh => {
+                const geometry = new BufferGeometry();
+                geometry.setAttribute("position", new BufferAttribute(Float32Array.from(mesh.positions), 3));
+                geometry.setAttribute("normal", new BufferAttribute(Float32Array.from(mesh.normals), 3));
+                if (mesh.uvs) {
+                    geometry.setAttribute("uv", new BufferAttribute(Uint32Array.from(mesh.uvs), 2));
+                    geometry.setAttribute("uv2", new BufferAttribute(Uint32Array.from(mesh.uvs), 2));
+                }
+                geometry.setIndex(new BufferAttribute(Uint32Array.from(mesh.indices), 1));
+                geometries.push(geometry);
+            });
+
+            return geometries;
+        };
+
+        if (group && updatable) {
+            group.remove();
+            createMesh();
+        } else {
+            let scene = null;
+            if (addToScene) {
+                scene = this.context.scene;
+            }
+
+            group = new Group();
+            group.name = `surface${Math.random()}`;
+            scene.add(group);
+            const geometries = createMesh();
+            geometries.forEach(geometry => {
+                if (material) {
+                    group.add(new Mesh(geometry, material));
+                } else {
+                    group.add(new Mesh(geometry));
+                }
+            });
+        }
+        if (hidden) {
+            group.visible = false;
+        }
+        return group;
+    }
+
+    drawSurface(inputs: Inputs.Verb.DrawSurfaceDto<Group>): Group {
+        const meshData = inputs.surface.tessellate();
+
+        const meshDataConverted = {
+            positions: [],
+            indices: [],
+            normals: [],
+        };
+
+        let countIndices = 0;
+        meshData.faces.forEach((faceIndices) => {
+            countIndices = this.parseFaces(faceIndices, meshData, meshDataConverted, countIndices);
+        });
+
+        const pbr = new MeshPhysicalMaterial();
+        pbr.name = `pbr-${Math.random()}`;
+
+        pbr.color = new Color(Array.isArray(inputs.colours) ? inputs.colours[0] : inputs.colours);
+        pbr.metalness = 0.5;
+        pbr.roughness = 0.7;
+        pbr.opacity = inputs.opacity;
+        pbr.alphaTest = 1;
+
+        return this.createOrUpdateSurfacesMesh(
+            [meshDataConverted],
+            inputs.surfaceMesh,
+            inputs.updatable,
+            pbr,
+            true,
+            inputs.hidden,
+        );
+    }
+    createGeometries(decomposedMesh: Inputs.OCCT.DecomposedMeshDto): BufferGeometry[] {
+        const geometries: BufferGeometry[] = [];
+        const res: Inputs.OCCT.DecomposedMeshDto = decomposedMesh;
+        const meshData = res.faceList.map(face => {
+            return {
+                positions: face.vertex_coord,
+                normals: face.normal_coord,
+                indices: face.tri_indexes,
+            };
+        });
+
+        meshData.forEach(mesh => {
+            const geometry = new BufferGeometry();
+            geometry.setAttribute("position", new BufferAttribute(Float32Array.from(mesh.positions), 3));
+            geometry.setAttribute("normal", new BufferAttribute(Float32Array.from(mesh.normals), 3));
+            geometry.setIndex(new BufferAttribute(Uint32Array.from(mesh.indices), 1));
+            geometries.push(geometry);
+        });
+
+        return geometries;
     }
 
     private parseFaces(
@@ -471,7 +664,10 @@ export class DrawHelper extends DrawHelperCore {
         });
         const lineGeometry = new BufferGeometry().setFromPoints(lineVertices);
         const color = Array.isArray(colours) ? new Color(colours[0]) : new Color(colours);
-        const lineColors = []; for (let i = 0; i < lineVertices.length; i++) { lineColors.push(color.r, color.g, color.b); }
+        const lineColors = [];
+        for (let i = 0; i < lineVertices.length; i++) {
+            lineColors.push(color.r, color.g, color.b);
+        }
         lineGeometry.setAttribute("color", new Float32BufferAttribute(lineColors, 3));
         const lineMaterial = new LineBasicMaterial({
             color: 0xffffff, linewidth: size, vertexColors: true
@@ -479,256 +675,6 @@ export class DrawHelper extends DrawHelperCore {
         const line = new LineSegments(lineGeometry, lineMaterial);
         line.name = "lines-" + Math.random();
         return line;
-    }
-
-    drawPoints(inputs: Inputs.Point.DrawPointsDto<Group>): Group {
-        const vectorPoints = inputs.points;
-        let coloursHex: string[] = [];
-        if (Array.isArray(inputs.colours)) {
-            coloursHex = inputs.colours;
-            if (coloursHex.length === 1) {
-                coloursHex = inputs.points.map(() => coloursHex[0]);
-            }
-        } else {
-            coloursHex = inputs.points.map(() => inputs.colours as string);
-        }
-        if (inputs.pointsMesh && inputs.updatable) {
-            if (inputs.pointsMesh.children.length === vectorPoints.length) {
-                this.updatePointsInstances(inputs.pointsMesh, vectorPoints);
-            } else {
-                inputs.pointsMesh.remove();
-                inputs.pointsMesh = this.createPointSpheresMesh(
-                    `pointsMesh${Math.random()}`, vectorPoints, coloursHex, inputs.opacity, inputs.size, inputs.updatable
-                );
-            }
-        } else {
-            inputs.pointsMesh = this.createPointSpheresMesh(
-                `pointsMesh${Math.random()}`, vectorPoints, coloursHex, inputs.opacity, inputs.size, inputs.updatable
-            );
-        }
-        return inputs.pointsMesh;
-    }
-
-    updatePointsInstances(group: Group, positions: Inputs.Base.Point3[]): void {
-        const children = group.children as InstancedMesh[];
-        const po = {};
-        positions.forEach((pos, index) => {
-            po[index] = new Vector3(pos[0], pos[1], pos[2]);
-        });
-
-        children.forEach((child: InstancedMesh) => {
-            const index = child.userData.index;
-            const p = po[index];
-            child.position.set(p.x, p.y, p.z);
-        });
-    }
-
-    /**
-     * Draws multiple curves
-     * @param inputs Contains curves to be drawn
-     * @returns Lines mesh that is being drawn by threejs
-     */
-    drawCurves(inputs: Inputs.Verb.DrawCurvesDto<Group>): Group {
-        const points = inputs.curves.map(s => s.tessellate());
-        return this.drawPolylinesWithColours({ polylines: points, ...inputs });
-    }
-
-
-    /**
-     * Draws multiple surfaces with multiple colours. Number of colours has to be equal to number of surfaces
-     * @param inputs Contains the Nurbs surfaces, colours and other information for drawing
-     * @returns Mesh that is being drawn by Babylon
-     */
-    drawSurfacesMultiColour(inputs: Inputs.Verb.DrawSurfacesColoursDto<Group>): Group {
-        if (inputs.surfacesMesh && inputs.updatable) {
-            inputs.surfacesMesh.clear();
-        } else {
-            inputs.surfacesMesh = new Group();
-            inputs.surfacesMesh.name = `ColouredSurfaces-${Math.random()}`;
-            this.context.scene.add(inputs.surfacesMesh);
-        }
-
-        if (Array.isArray(inputs.colours)) {
-            inputs.surfaces.forEach((surface, index) => {
-                const srf = this.drawSurface({
-                    surface,
-                    colours: inputs.colours[index] ? inputs.colours[index] : inputs.colours[0],
-                    updatable: inputs.updatable,
-                    opacity: inputs.opacity,
-                    hidden: inputs.hidden,
-                });
-                inputs.surfacesMesh.add(srf);
-            });
-        } else {
-            inputs.surfaces.forEach((surface, index) => {
-                const srf = this.drawSurface({
-                    surface,
-                    colours: inputs.colours,
-                    updatable: inputs.updatable,
-                    opacity: inputs.opacity,
-                    hidden: inputs.hidden,
-                });
-                inputs.surfacesMesh.add(srf);
-            });
-        }
-
-        return inputs.surfacesMesh;
-    }
-
-    private createPointSpheresMesh(
-        meshName: string, positions: Inputs.Base.Point3[], colors: string[], opacity: number, size: number, updatable: boolean): Group {
-
-        const positionsModel = positions.map((pos, index) => {
-            return {
-                position: pos,
-                color: colors[index],
-                index
-            };
-        });
-
-        const colorSet = Array.from(new Set(colors));
-        const materialSet = colorSet.map((colour, index) => {
-
-            const mat = new MeshBasicMaterial({ name: `mat-${Math.random()}` });
-            mat.opacity = opacity;
-            mat.color = new Color(colour);
-            const positions = positionsModel.filter(s => s.color === colour);
-
-            return { hex: colorSet, material: mat, positions };
-        });
-
-        const pointsGroup = new Group();
-        pointsGroup.name = meshName;
-        this.context.scene.add(pointsGroup);
-        materialSet.forEach(ms => {
-            const segments = ms.positions.length > 1000 ? 1 : 6;
-            let geom: SphereGeometry | BoxGeometry;
-            if (ms.positions.length < 10000) {
-                geom = new SphereGeometry(size, segments, segments);
-            } else {
-                geom = new BoxGeometry(size, size, size);
-            }
-
-            ms.positions.forEach((pos, index) => {
-                const instance = new InstancedMesh(geom, ms.material, 1);
-                instance.name = `point-${index}-${Math.random()}`;
-                instance.position.set(pos.position[0], pos.position[1], pos.position[2]);
-                instance.userData = { index: pos.index };
-                instance.visible = true;
-                pointsGroup.add(instance);
-            });
-        });
-
-        return pointsGroup;
-    }
-
-    createOrUpdateSurfacesMesh(
-        meshDataConverted: { positions: number[]; indices: number[]; normals: number[]; uvs?: number[] }[],
-        group: Group, updatable: boolean, material: MeshPhysicalMaterial, addToScene: boolean, hidden: boolean
-    ): Group {
-        const createMesh = () => {
-            const geometries: BufferGeometry[] = [];
-
-            meshDataConverted.forEach(mesh => {
-                const geometry = new BufferGeometry();
-                geometry.setAttribute("position", new BufferAttribute(Float32Array.from(mesh.positions), 3));
-                geometry.setAttribute("normal", new BufferAttribute(Float32Array.from(mesh.normals), 3));
-                if (mesh.uvs) {
-                    geometry.setAttribute("uv", new BufferAttribute(Uint32Array.from(mesh.uvs), 2));
-                    geometry.setAttribute("uv2", new BufferAttribute(Uint32Array.from(mesh.uvs), 2));
-                }
-                geometry.setIndex(new BufferAttribute(Uint32Array.from(mesh.indices), 1));
-                geometries.push(geometry);
-            });
-
-            return geometries;
-        };
-
-        if (group && updatable) {
-            group.remove();
-            createMesh();
-            // group.flipFaces(false);
-        } else {
-            let scene = null;
-            if (addToScene) {
-                scene = this.context.scene;
-            }
-
-            group = new Group();
-            group.name = `surface${Math.random()}`;
-            scene.add(group);
-            const geometries = createMesh();
-            geometries.forEach(geometry => {
-                if (material) {
-                    group.add(new Mesh(geometry, material));
-                } else {
-                    group.add(new Mesh(geometry));
-                }
-            });
-        }
-        if (hidden) {
-            group.visible = false;
-        }
-        return group;
-    }
-
-    /**
-     * Draws a single surface
-     * @param inputs Contains a surface and information for drawing
-     * @returns Mesh that is being drawn by Babylon
-     */
-    drawSurface(inputs: Inputs.Verb.DrawSurfaceDto<Group>): Group {
-        const meshData = inputs.surface.tessellate();
-
-        const meshDataConverted = {
-            positions: [],
-            indices: [],
-            normals: [],
-        };
-
-        let countIndices = 0;
-        meshData.faces.forEach((faceIndices) => {
-            countIndices = this.parseFaces(faceIndices, meshData, meshDataConverted, countIndices);
-        });
-
-        const pbr = new MeshPhysicalMaterial();
-        pbr.name = `pbr-${Math.random()}`;
-
-        pbr.color = new Color(Array.isArray(inputs.colours) ? inputs.colours[0] : inputs.colours);
-        pbr.metalness = 0.5;
-        pbr.roughness = 0.7;
-        pbr.opacity = inputs.opacity;
-        pbr.alphaTest = 1;
-
-        return this.createOrUpdateSurfacesMesh(
-            [meshDataConverted],
-            inputs.surfaceMesh,
-            inputs.updatable,
-            pbr,
-            true,
-            inputs.hidden,
-        );
-    }
-    createGeometries(decomposedMesh: Inputs.OCCT.DecomposedMeshDto): BufferGeometry[] {
-        const geometries: BufferGeometry[] = [];
-        const res: Inputs.OCCT.DecomposedMeshDto = decomposedMesh;
-        const meshData = res.faceList.map(face => {
-            return {
-                positions: face.vertex_coord,
-                normals: face.normal_coord,
-                indices: face.tri_indexes,
-            };
-        });
-
-        meshData.forEach(mesh => {
-            const geometry = new BufferGeometry();
-            geometry.setAttribute("position", new BufferAttribute(Float32Array.from(mesh.positions), 3));
-            geometry.setAttribute("normal", new BufferAttribute(Float32Array.from(mesh.normals), 3));
-            geometry.setIndex(new BufferAttribute(Uint32Array.from(mesh.indices), 1));
-            geometries.push(geometry);
-        });
-
-        return geometries;
     }
 
 }
