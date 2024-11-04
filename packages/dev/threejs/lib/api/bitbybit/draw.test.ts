@@ -352,6 +352,24 @@ describe("Draw unit tests", () => {
             expect(lineSegments1.geometry.attributes.position.array.toString()).toEqual("1,-3,3,0,-3,4,0,-3,4,3,4,5");
         });
 
+        it("should create a closed polyline with color via draw any with options", () => {
+            const options = {
+                ...new Inputs.Draw.DrawBasicGeometryOptions(),
+                size: 4,
+                colours: "#ff00ff",
+                updatable: false,
+            };
+            const res = draw.drawAny({ entity: [
+                { points: [[1, -3, 3], [0, -3, 4], [3, 4, 5]], isClosed: true, color: [1, 0, 1] },
+                { points: [[1, -3, 3], [0, -3, 4], [3, 4, 5]], isClosed: false, color: [1, 1, 1] }
+            ], options });
+
+            expect(res.userData.type).toBe(Inputs.Draw.drawingTypes.polylines);
+
+            const lineSegments1 = res.children[0] as LineSegments;
+            expect(lineSegments1.geometry.attributes.position.array.toString()).toEqual("1,-3,3,0,-3,4,0,-3,4,3,4,5,3,4,5,1,-3,3,1,-3,3,0,-3,4,0,-3,4,3,4,5");
+        });
+
         it("should update a polyline via draw any with options", () => {
             const options = {
                 ...new Inputs.Draw.DrawBasicGeometryOptions(),
@@ -501,7 +519,7 @@ describe("Draw unit tests", () => {
             expect(res).toBeDefined();
             expect(res.name).toContain("colouredSurfaces");
             expect(res.children.length).toBe(2);
-            
+
             const faceMesh1 = res.children[0].children[0] as Mesh;
             const material1 = faceMesh1.material as MeshPhongMaterial;
             expect(material1.color.getHex()).toBe(0xff0000);

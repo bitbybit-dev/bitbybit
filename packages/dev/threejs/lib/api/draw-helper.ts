@@ -139,7 +139,7 @@ export class DrawHelper extends DrawHelperCore {
                     colours = [];
                 }
                 if (Array.isArray(s.color)) {
-                    colours[index] = new Color(...s.color).getHexString();
+                    colours[index] = "#" + new Color(s.color[0], s.color[1], s.color[2]).getHexString();
                 } else {
                     colours[index] = s.color;
                 }
@@ -284,7 +284,7 @@ export class DrawHelper extends DrawHelperCore {
     }
 
     drawCurves(inputs: Inputs.Verb.DrawCurvesDto<Group>): Group {
-        const points = inputs.curves.map(s => ({points: s.tessellate()}));
+        const points = inputs.curves.map(s => ({ points: s.tessellate() }));
         return this.drawPolylinesWithColours({ polylines: points, ...inputs });
     }
 
