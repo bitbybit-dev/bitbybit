@@ -7,7 +7,7 @@ import { OCCTWorkerManager } from "@bitbybit-dev/occt-worker";
 import {
     BufferAttribute, BufferGeometry, Color, Group, Mesh, MeshPhysicalMaterial,
     Vector3, Float32BufferAttribute, LineBasicMaterial, LineSegments,
-    MeshBasicMaterial, SphereGeometry, BoxGeometry, InstancedMesh, Matrix4
+    MeshBasicMaterial, SphereGeometry, InstancedMesh, Matrix4
 } from "three";
 
 export class DrawHelper extends DrawHelperCore {
@@ -147,19 +147,35 @@ export class DrawHelper extends DrawHelperCore {
             return pts;
         });
 
+        let lineSegments: LineSegments;
+        if (inputs.polylinesMesh && inputs.updatable) {
+            lineSegments = inputs.polylinesMesh.children[0] as LineSegments;
+        }
         const polylines = this.drawPolylines(
+            lineSegments,
             points,
             inputs.updatable,
             inputs.size,
             inputs.opacity,
             colours
         );
-
-        const group = new Group();
-        group.name = `polylines-${Math.random()}`;
-        group.add(polylines);
-        this.context.scene.add(group);
-        return group;
+        if (inputs.polylinesMesh && inputs.updatable) {
+            if (inputs.polylinesMesh.children[0].name !== polylines.name) {
+                const group = new Group();
+                group.name = `polylines-${Math.random()}`;
+                group.add(polylines);
+                this.context.scene.add(group);
+                return group;
+            } else {
+                return inputs.polylinesMesh;
+            }
+        } else {
+            const group = new Group();
+            group.name = `polylines-${Math.random()}`;
+            group.add(polylines);
+            this.context.scene.add(group);
+            return group;
+        }
     }
 
     drawPoint(inputs: Inputs.Point.DrawPointDto<Group>): Group {
@@ -199,10 +215,12 @@ export class DrawHelper extends DrawHelperCore {
     drawPolyline(mesh: Group,
         pointsToDraw: Inputs.Base.Point3[],
         updatable: boolean, size: number, opacity: number, colours: string | string[]): Group {
-        const polylines = this.drawPolylines([pointsToDraw], updatable, size, opacity, colours);
-        if (mesh) {
-            mesh.add(polylines);
-        } else {
+        let lineSegments: LineSegments;
+        if (mesh && mesh.children.length > 0) {
+            lineSegments = mesh.children[0] as LineSegments;
+        }
+        const polylines = this.drawPolylines(lineSegments, [pointsToDraw], updatable, size, opacity, colours);
+        if (!mesh) {
             mesh = new Group();
             mesh.name = `polyline-${Math.random()}`;
             mesh.add(polylines);
@@ -555,7 +573,7 @@ export class DrawHelper extends DrawHelperCore {
                 const ev = edge.vertex_coord.filter(s => s !== undefined);
                 polylineEdgePoints.push(ev);
             });
-            const line = this.drawPolylines(polylineEdgePoints, false, inputs.edgeWidth, inputs.edgeOpacity, inputs.edgeColour);
+            const line = this.drawPolylines(undefined, polylineEdgePoints, false, inputs.edgeWidth, inputs.edgeOpacity, inputs.edgeColour);
             shapeGroup.add(line);
         }
 
@@ -597,9 +615,8 @@ export class DrawHelper extends DrawHelperCore {
                 return texts;
             });
             const textPolylines = await Promise.all(promises);
-            const edgeMesh = this.drawPolylines(textPolylines.flat(), false, 0.2, 1, inputs.edgeIndexColour);
+            const edgeMesh = this.drawPolylines(undefined, textPolylines.flat(), false, 0.2, 1, inputs.edgeIndexColour);
             shapeGroup.add(edgeMesh);
-            edgeMesh.material.polygonOffsetFactor = -2;
         }
         if (inputs.drawFaceIndexes) {
             const promises = decomposedMesh.faceList.map(async (face) => {
@@ -627,41 +644,65 @@ export class DrawHelper extends DrawHelperCore {
             });
             const textPolylines = await Promise.all(promises);
 
-            const faceMesh = this.drawPolylines(textPolylines.flat(), false, 0.2, 1, inputs.faceIndexColour);
+            const faceMesh = this.drawPolylines(undefined, textPolylines.flat(), false, 0.2, 1, inputs.faceIndexColour);
             faceMesh.parent = shapeGroup;
-            if (inputs.drawEdges) {
-                faceMesh.material.polygonOffsetFactor = -2;
-            }
         }
         return shapeGroup;
     }
 
-    private drawPolylines(polylinesPoints: Inputs.Base.Vector3[][], updatable: boolean,
+    private drawPolylines(lineSegments: LineSegments, polylinesPoints: Inputs.Base.Vector3[][], updatable: boolean,
         size: number, opacity: number, colours: string | string[]) {
-        const lineVertices = [];
-        polylinesPoints.forEach(pts => {
-            for (let i = 0; i < pts.length - 1; i++) {
-                const c = pts[i];
-                const n = pts[i + 1];
+        if (polylinesPoints && polylinesPoints.length > 0) {
+            const lineVertices = [];
 
-                lineVertices.push(new Vector3(
-                    c[0],
-                    c[1],
-                    c[2]
-                ));
-                lineVertices.push(new Vector3(
-                    n[0],
-                    n[1],
-                    n[2]
-                ));
+            polylinesPoints.forEach(pts => {
+                for (let i = 0; i < pts.length - 1; i++) {
+                    const c = pts[i];
+                    const n = pts[i + 1];
+
+                    lineVertices.push(new Vector3(
+                        c[0],
+                        c[1],
+                        c[2]
+                    ));
+                    lineVertices.push(new Vector3(
+                        n[0],
+                        n[1],
+                        n[2]
+                    ));
+                }
+            });
+            let lines: LineSegments;
+            if (lineSegments && updatable) {
+                if (lineSegments?.userData?.linesForRenderLengths === polylinesPoints.map(l => l.length).toString()) {
+                    lineSegments.geometry.clearGroups();
+                    lineSegments.geometry.setFromPoints(lineVertices);
+                    return lineSegments;
+                } else {
+                    lines = this.createLineGeometry(lineVertices, colours, size);
+                    lines.userData = { linesForRenderLengths: polylinesPoints.map(l => l.length).toString() };
+                    return lines;
+                }
+            } else {
+                lines = this.createLineGeometry(lineVertices, colours, size);
+                lines.userData = { linesForRenderLengths: polylinesPoints.map(l => l.length).toString() };
+                return lines;
             }
-        });
+        } else {
+            return undefined;
+        }
+    }
+
+    private createLineGeometry(lineVertices: any[], colours: string | string[], size: number) {
         const lineGeometry = new BufferGeometry().setFromPoints(lineVertices);
+
         const color = Array.isArray(colours) ? new Color(colours[0]) : new Color(colours);
+
         const lineColors = [];
         for (let i = 0; i < lineVertices.length; i++) {
             lineColors.push(color.r, color.g, color.b);
         }
+
         lineGeometry.setAttribute("color", new Float32BufferAttribute(lineColors, 3));
         const lineMaterial = new LineBasicMaterial({
             color: 0xffffff, linewidth: size, vertexColors: true
@@ -670,5 +711,4 @@ export class DrawHelper extends DrawHelperCore {
         line.name = "lines-" + Math.random();
         return line;
     }
-
 }
