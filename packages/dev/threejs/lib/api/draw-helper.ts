@@ -284,7 +284,7 @@ export class DrawHelper extends DrawHelperCore {
     }
 
     drawCurves(inputs: Inputs.Verb.DrawCurvesDto<Group>): Group {
-        const points = inputs.curves.map(s => s.tessellate());
+        const points = inputs.curves.map(s => ({points: s.tessellate()}));
         return this.drawPolylinesWithColours({ polylines: points, ...inputs });
     }
 
