@@ -229,12 +229,43 @@ describe("Draw unit tests", () => {
             colours: ["#0000ff"]
         };
         const points = [];
-        for(let i = 0; i < 1005; i++) {
+        for (let i = 0; i < 1005; i++) {
             points.push([1, i, 3]);
         }
         const res = await draw.drawAnyAsync({ entity: points, options });
         const mesh = res.children[0] as InstancedMesh;
         expect(mesh.geometry.attributes.position.count).toEqual(12);
+    });
+
+    it("should create coloured points", async () => {
+        const options = {
+            ...new Inputs.Draw.DrawBasicGeometryOptions(),
+            size: 3,
+            colours: ["#0000ff", "#ff0000", "#00ff00"]
+        };
+        const res = await draw.drawAnyAsync({ entity: [[1, -2, 3], [2, 3, 4], [-3, 2, -1]], options });
+        const mat1 = (res.children[0] as InstancedMesh).material as MeshPhongMaterial;
+        const mat2 = (res.children[1] as InstancedMesh).material as MeshPhongMaterial;
+        const mat3 = (res.children[2] as InstancedMesh).material as MeshPhongMaterial;
+        expect(mat1.color.getHex()).toBe(0x0000ff);
+        expect(mat2.color.getHex()).toBe(0xff0000);
+        expect(mat3.color.getHex()).toBe(0x00ff00);
+    });
+
+    it("should create all points of the same colour if lengths of positions and colours do not match", async () => {
+        const options = {
+            ...new Inputs.Draw.DrawBasicGeometryOptions(),
+            size: 3,
+            colours: ["#0000ff", "#ff0000"]
+        };
+        const res = await draw.drawAnyAsync({ entity: [[1, -2, 3], [2, 3, 4], [-3, 2, -1]], options });
+
+        const mat1 = (res.children[0] as InstancedMesh).material as MeshPhongMaterial;
+        const mat2 = (res.children[1] as InstancedMesh).material as MeshPhongMaterial;
+        const mat3 = (res.children[2] as InstancedMesh).material as MeshPhongMaterial;
+        expect(mat1.color.getHex()).toBe(0x0000ff);
+        expect(mat2.color.getHex()).toBe(0x0000ff);
+        expect(mat3.color.getHex()).toBe(0x0000ff);
     });
 
 });

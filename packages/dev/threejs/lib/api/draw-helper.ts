@@ -228,7 +228,7 @@ export class DrawHelper extends DrawHelperCore {
         let coloursHex: string[] = [];
         if (Array.isArray(inputs.colours)) {
             coloursHex = inputs.colours;
-            if (coloursHex.length === 1) {
+            if (coloursHex.length !== inputs.points.length) {
                 coloursHex = inputs.points.map(() => coloursHex[0]);
             }
         } else {
@@ -308,7 +308,6 @@ export class DrawHelper extends DrawHelperCore {
 
     private createPointSpheresMesh(
         meshName: string, positions: Inputs.Base.Point3[], colors: string[], opacity: number, size: number, updatable: boolean): Group {
-
         const positionsModel = positions.map((pos, index) => {
             return {
                 position: pos,
