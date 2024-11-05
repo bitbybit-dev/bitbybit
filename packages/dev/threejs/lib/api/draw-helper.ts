@@ -73,7 +73,8 @@ export class DrawHelper extends DrawHelperCore {
         let colour;
         if (inputs.mesh.color && inputs.mesh.color.length > 0) {
             // if jscad geometry is colorized and color is baked on geometry it will be used over anything that set in the draw options
-            colour = new Color(inputs.mesh.color).getHexString();
+            const c = inputs.mesh.color;
+            colour = "#" + new Color(c[0], c[1], c[2]).getHexString();
         } else {
             colour = Array.isArray(inputs.colours) ? inputs.colours[0] : inputs.colours;
         }
@@ -97,7 +98,7 @@ export class DrawHelper extends DrawHelperCore {
                 localOrigin.clear();
             } else {
                 localOrigin = new Group();
-                localOrigin.name = `jscadMesh-${Math.random()}`;
+                localOrigin.name = `jscadMeshes-${Math.random()}`;
             }
 
             const colourIsArrayAndMatches = Array.isArray(inputs.colours) && inputs.colours.length === res.length;
@@ -105,10 +106,11 @@ export class DrawHelper extends DrawHelperCore {
 
             res.map((r, index) => {
                 const meshToUpdate = new Group();
-                meshToUpdate.name = `jscadMesh-${Math.random()}`;
+                meshToUpdate.name = `jscadMeshes-${Math.random()}`;
                 let colour;
                 if (r.color) {
-                    colour = new Color(...r.color).getHexString();
+                    const c = r.color;
+                    colour = "#" + new Color(c[0], c[1], c[2]).getHexString();
                 } else if (colourIsArrayAndMatches) {
                     colour = inputs.colours[index];
                 } else if (colorsAreArrays) {
@@ -452,27 +454,6 @@ export class DrawHelper extends DrawHelperCore {
             true,
             inputs.hidden,
         );
-    }
-    createGeometries(decomposedMesh: Inputs.OCCT.DecomposedMeshDto): BufferGeometry[] {
-        const geometries: BufferGeometry[] = [];
-        const res: Inputs.OCCT.DecomposedMeshDto = decomposedMesh;
-        const meshData = res.faceList.map(face => {
-            return {
-                positions: face.vertex_coord,
-                normals: face.normal_coord,
-                indices: face.tri_indexes,
-            };
-        });
-
-        meshData.forEach(mesh => {
-            const geometry = new BufferGeometry();
-            geometry.setAttribute("position", new BufferAttribute(Float32Array.from(mesh.positions), 3));
-            geometry.setAttribute("normal", new BufferAttribute(Float32Array.from(mesh.normals), 3));
-            geometry.setIndex(new BufferAttribute(Uint32Array.from(mesh.indices), 1));
-            geometries.push(geometry);
-        });
-
-        return geometries;
     }
 
     private parseFaces(

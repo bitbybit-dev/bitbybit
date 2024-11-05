@@ -22,7 +22,7 @@ describe("Draw unit tests", () => {
         const solidText = new JSCADText(jscadWorkerManager);
         const math = new MathBitByBit();
         const geometryHelper = new GeometryHelper();
-        
+
         vector = new Vector(context, math, geometryHelper);
 
         const drawHelper = new DrawHelper(context, solidText, vector, jscadWorkerManager, occtWorkerManager);
@@ -686,7 +686,7 @@ describe("Draw unit tests", () => {
             options.drawFaceIndexes = true;
             occtWorkerManager.genericCallToWorkerPromise = jest.fn().mockResolvedValue(mockOCCTBoxDecomposedMesh());
             jscadWorkerManager.genericCallToWorkerPromise = jest.fn().mockResolvedValue([[[0.5, 0.3, 0.2], [0.5, 0.3, 0.2], [0.5, 0.3, 0.2], [0.5, 0.3, 0.2]]]);
-            vector.add = jest.fn().mockReturnValue([[[1, 2, 3],[1, 2, 3]], [[1, 2, 3],[1, 2, 3]]]);
+            vector.add = jest.fn().mockReturnValue([[[1, 2, 3], [1, 2, 3]], [[1, 2, 3], [1, 2, 3]]]);
             const res = await draw.drawAnyAsync({ entity: { type: "occ-shape", hash: 12314455 }, options });
             expect(res.userData.type).toBe(Inputs.Draw.drawingTypes.occt);
             expect(res).toBeDefined();
@@ -722,6 +722,84 @@ describe("Draw unit tests", () => {
             expect(material.color.getHexString()).toEqual("ff00ff");
         });
     });
+
+    describe("Draw JSCAD meshes", () => {
+
+        it("should draw a JSCAD mesh with default options", async () => {
+            const options = new Inputs.Draw.DrawBasicGeometryOptions();
+            jscadWorkerManager.genericCallToWorkerPromise = jest.fn().mockResolvedValue(mockJSCADBoxDecomposedMesh());
+            const res = await draw.drawAnyAsync({ entity: { polygons: [] } as any, options });
+            expect(res.userData.type).toBe(Inputs.Draw.drawingTypes.jscadMesh);
+            expect(res).toBeDefined();
+            expect(res.name).toContain("jscadMesh");
+            expect(res.children.length).toBe(1);
+        });
+
+        it("should draw a JSCAD mesh with specified color options", async () => {
+            const options = new Inputs.Draw.DrawBasicGeometryOptions();
+            jscadWorkerManager.genericCallToWorkerPromise = jest.fn().mockResolvedValue({ ...mockJSCADBoxDecomposedMesh() });
+            const res = await draw.drawAnyAsync({ entity: { polygons: [], color: [0, 1, 0] } as any, options });
+            expect(res.userData.type).toBe(Inputs.Draw.drawingTypes.jscadMesh);
+            expect(res).toBeDefined();
+            expect(res.name).toContain("jscadMesh");
+            expect(res.children.length).toBe(1);
+            const mesh = res.children[0] as Mesh;
+            const material = mesh.material as MeshPhongMaterial;
+            expect(material.color.getHexString()).toEqual("00ff00");
+        });
+
+        it("should draw a JSCAD mesh with specified color options", async () => {
+            const options = new Inputs.Draw.DrawBasicGeometryOptions();
+            options.colours = "#00ffff";
+            jscadWorkerManager.genericCallToWorkerPromise = jest.fn().mockResolvedValue({ ...mockJSCADBoxDecomposedMesh() });
+            const res = await draw.drawAnyAsync({ entity: { polygons: [] } as any, options });
+            expect(res.userData.type).toBe(Inputs.Draw.drawingTypes.jscadMesh);
+            expect(res).toBeDefined();
+            expect(res.name).toContain("jscadMesh");
+            expect(res.children.length).toBe(1);
+            const mesh = res.children[0] as Mesh;
+            const material = mesh.material as MeshPhongMaterial;
+            expect(material.color.getHexString()).toEqual("00ffff");
+        });
+
+        it("should draw jscad mesh with native color and ignor options color", async () => {
+            const options = new Inputs.Draw.DrawBasicGeometryOptions();
+            options.colours = "#00ffff";
+            jscadWorkerManager.genericCallToWorkerPromise = jest.fn().mockResolvedValue({ ...mockJSCADBoxDecomposedMesh() });
+            const res = await draw.drawAnyAsync({ entity: { polygons: [], color: [0, 0, 1] } as any, options });
+            expect(res.userData.type).toBe(Inputs.Draw.drawingTypes.jscadMesh);
+            expect(res).toBeDefined();
+            expect(res.name).toContain("jscadMesh");
+            expect(res.children.length).toBe(1);
+            const mesh = res.children[0] as Mesh;
+            const material = mesh.material as MeshPhongMaterial;
+            expect(material.color.getHexString()).toEqual("0000ff");
+        });
+
+        it("should draw multiple JSCAD meshes with default options", async () => {
+            const options = new Inputs.Draw.DrawBasicGeometryOptions();
+            jscadWorkerManager.genericCallToWorkerPromise = jest.fn().mockResolvedValue([mockJSCADBoxDecomposedMesh(), mockJSCADBoxDecomposedMesh()]);
+            const res = await draw.drawAnyAsync({ entity: [{ polygons: [] } as any, { polygons: [] } as any], options });
+            expect(res.userData.type).toBe(Inputs.Draw.drawingTypes.jscadMeshes);
+            expect(res).toBeDefined();
+            expect(res.name).toContain("jscadMesh");
+            expect(res.children.length).toBe(2);
+        });
+
+        it("should draw multiple JSCAD meshes with custom color", async () => {
+            const options = new Inputs.Draw.DrawBasicGeometryOptions();
+            jscadWorkerManager.genericCallToWorkerPromise = jest.fn().mockResolvedValue([mockJSCADBoxDecomposedMesh(), { ...mockJSCADBoxDecomposedMesh(), color: [0, 0, 1] }]);
+            const res = await draw.drawAnyAsync({ entity: [{ polygons: [] } as any, { polygons: [] } as any], options });
+            expect(res.userData.type).toBe(Inputs.Draw.drawingTypes.jscadMeshes);
+            expect(res).toBeDefined();
+            expect(res.name).toContain("jscadMesh");
+            expect(res.children.length).toBe(2);
+            const mesh = res.children[1].children[0] as Mesh;
+            const material = mesh.material as MeshPhongMaterial;
+            expect(material.color.getHexString()).toEqual("0000ff");
+
+        });
+    });
 });
 
 
@@ -755,4 +833,8 @@ function createSurfaceMock2() {
 
 function mockOCCTBoxDecomposedMesh() {
     return { "faceList": [{ "vertex_coord": [-0.5, -1, -1.5, -0.5, -1, 1.5, -0.5, 1, -1.5, -0.5, 1, 1.5], "normal_coord": [-1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0], "uvs": [0, 0, 3, 0, 0, -2, 3, -2], "tri_indexes": [0, 1, 2, 2, 1, 3], "vertex_coord_vec": [[-0.5, -1, -1.5], [-0.5, -1, 1.5], [-0.5, 1, -1.5], [-0.5, 1, 1.5]], "number_of_triangles": 2, "center_point": [-0.5, 0, 0], "center_normal": [-1, 0, 0], "face_index": 0 }, { "vertex_coord": [0.5, -1, -1.5, 0.5, -1, 1.5, 0.5, 1, -1.5, 0.5, 1, 1.5], "normal_coord": [1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0], "uvs": [0, 0, 3, 0, 0, -2, 3, -2], "tri_indexes": [1, 0, 2, 1, 2, 3], "vertex_coord_vec": [[0.5, -1, -1.5], [0.5, -1, 1.5], [0.5, 1, -1.5], [0.5, 1, 1.5]], "number_of_triangles": 2, "center_point": [0.5, 0, 0], "center_normal": [1, 0, 0], "face_index": 1 }, { "vertex_coord": [-0.5, -1, -1.5, 0.5, -1, -1.5, -0.5, -1, 1.5, 0.5, -1, 1.5], "normal_coord": [0, -1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0], "uvs": [0, 0, 0, 1, 3, 0, 3, 1], "tri_indexes": [1, 3, 0, 0, 3, 2], "vertex_coord_vec": [[-0.5, -1, -1.5], [0.5, -1, -1.5], [-0.5, -1, 1.5], [0.5, -1, 1.5]], "number_of_triangles": 2, "center_point": [0, -1, 0], "center_normal": [0, -1, 0], "face_index": 2 }, { "vertex_coord": [-0.5, 1, -1.5, 0.5, 1, -1.5, -0.5, 1, 1.5, 0.5, 1, 1.5], "normal_coord": [0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0], "uvs": [0, 0, 0, 1, 3, 0, 3, 1], "tri_indexes": [3, 1, 0, 3, 0, 2], "vertex_coord_vec": [[-0.5, 1, -1.5], [0.5, 1, -1.5], [-0.5, 1, 1.5], [0.5, 1, 1.5]], "number_of_triangles": 2, "center_point": [0, 1, 0], "center_normal": [0, 1, 0], "face_index": 3 }, { "vertex_coord": [-0.5, -1, -1.5, -0.5, 1, -1.5, 0.5, -1, -1.5, 0.5, 1, -1.5], "normal_coord": [0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0, -1], "uvs": [0, 0, 0, 2, 1, 0, 1, 2], "tri_indexes": [1, 3, 0, 0, 3, 2], "vertex_coord_vec": [[-0.5, -1, -1.5], [-0.5, 1, -1.5], [0.5, -1, -1.5], [0.5, 1, -1.5]], "number_of_triangles": 2, "center_point": [0, 0, -1.5], "center_normal": [0, 0, -1], "face_index": 4 }, { "vertex_coord": [-0.5, -1, 1.5, -0.5, 1, 1.5, 0.5, -1, 1.5, 0.5, 1, 1.5], "normal_coord": [0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1], "uvs": [0, 0, 0, 2, 1, 0, 1, 2], "tri_indexes": [3, 1, 0, 3, 0, 2], "vertex_coord_vec": [[-0.5, -1, 1.5], [-0.5, 1, 1.5], [0.5, -1, 1.5], [0.5, 1, 1.5]], "number_of_triangles": 2, "center_point": [0, 0, 1.5], "center_normal": [0, 0, 1], "face_index": 5 }], "edgeList": [{ "vertex_coord": [[-0.5, -1, -1.5], [-0.5, -1, 1.5]], "middle_point": [-0.5, -1, 0], "edge_index": 0 }, { "vertex_coord": [[-0.5, -1, 1.5], [-0.5, 1, 1.5]], "middle_point": [-0.5, 0, 1.5], "edge_index": 1 }, { "vertex_coord": [[-0.5, 1, -1.5], [-0.5, 1, 1.5]], "middle_point": [-0.5, 1, 0], "edge_index": 2 }, { "vertex_coord": [[-0.5, -1, -1.5], [-0.5, 1, -1.5]], "middle_point": [-0.5, 0, -1.5], "edge_index": 3 }, { "vertex_coord": [[0.5, -1, -1.5], [0.5, -1, 1.5]], "middle_point": [0.5, -1, 0], "edge_index": 4 }, { "vertex_coord": [[0.5, -1, 1.5], [0.5, 1, 1.5]], "middle_point": [0.5, 0, 1.5], "edge_index": 5 }, { "vertex_coord": [[0.5, 1, -1.5], [0.5, 1, 1.5]], "middle_point": [0.5, 1, 0], "edge_index": 6 }, { "vertex_coord": [[0.5, -1, -1.5], [0.5, 1, -1.5]], "middle_point": [0.5, 0, -1.5], "edge_index": 7 }, { "vertex_coord": [[-0.5, -1, -1.5], [0.5, -1, -1.5]], "middle_point": [0, -1, -1.5], "edge_index": 8 }, { "vertex_coord": [[-0.5, -1, 1.5], [0.5, -1, 1.5]], "middle_point": [0, -1, 1.5], "edge_index": 9 }, { "vertex_coord": [[-0.5, 1, -1.5], [0.5, 1, -1.5]], "middle_point": [0, 1, -1.5], "edge_index": 10 }, { "vertex_coord": [[-0.5, 1, 1.5], [0.5, 1, 1.5]], "middle_point": [0, 1, 1.5], "edge_index": 11 }], "pointsList": [[-0.5, -1, 1.5], [-0.5, -1, -1.5], [-0.5, 1, 1.5], [-0.5, -1, 1.5], [-0.5, 1, 1.5], [-0.5, 1, -1.5], [-0.5, 1, -1.5], [-0.5, -1, -1.5], [0.5, -1, 1.5], [0.5, -1, -1.5], [0.5, 1, 1.5], [0.5, -1, 1.5], [0.5, 1, 1.5], [0.5, 1, -1.5], [0.5, 1, -1.5], [0.5, -1, -1.5], [0.5, -1, -1.5], [-0.5, -1, -1.5], [0.5, -1, 1.5], [0.5, -1, -1.5], [0.5, -1, 1.5], [-0.5, -1, 1.5], [-0.5, -1, 1.5], [-0.5, -1, -1.5], [0.5, 1, -1.5], [-0.5, 1, -1.5], [0.5, 1, 1.5], [0.5, 1, -1.5], [0.5, 1, 1.5], [-0.5, 1, 1.5], [-0.5, 1, 1.5], [-0.5, 1, -1.5], [-0.5, 1, -1.5], [-0.5, -1, -1.5], [0.5, 1, -1.5], [-0.5, 1, -1.5], [0.5, 1, -1.5], [0.5, -1, -1.5], [0.5, -1, -1.5], [-0.5, -1, -1.5], [-0.5, 1, 1.5], [-0.5, -1, 1.5], [0.5, 1, 1.5], [-0.5, 1, 1.5], [0.5, 1, 1.5], [0.5, -1, 1.5], [0.5, -1, 1.5], [-0.5, -1, 1.5]] };
+}
+
+function mockJSCADBoxDecomposedMesh() {
+    return { "positions": [-0.5, -1, -1.5, -0.5, 1, 1.5, -0.5, 1, -1.5, -0.5, -1, -1.5, -0.5, -1, 1.5, -0.5, 1, 1.5, 0.5, -1, -1.5, 0.5, 1, 1.5, 0.5, -1, 1.5, 0.5, -1, -1.5, 0.5, 1, -1.5, 0.5, 1, 1.5, -0.5, -1, -1.5, 0.5, -1, 1.5, -0.5, -1, 1.5, -0.5, -1, -1.5, 0.5, -1, -1.5, 0.5, -1, 1.5, -0.5, 1, -1.5, 0.5, 1, 1.5, 0.5, 1, -1.5, -0.5, 1, -1.5, -0.5, 1, 1.5, 0.5, 1, 1.5, -0.5, -1, -1.5, 0.5, 1, -1.5, 0.5, -1, -1.5, -0.5, -1, -1.5, -0.5, 1, -1.5, 0.5, 1, -1.5, -0.5, -1, 1.5, 0.5, 1, 1.5, -0.5, 1, 1.5, -0.5, -1, 1.5, 0.5, -1, 1.5, 0.5, 1, 1.5], "normals": [], "indices": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35], "transforms": [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1], "hash": -1894319935 };
 }
