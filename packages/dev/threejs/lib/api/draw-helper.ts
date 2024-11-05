@@ -9,7 +9,7 @@ import {
     Vector3, Float32BufferAttribute, LineBasicMaterial, LineSegments,
     MeshBasicMaterial, SphereGeometry, InstancedMesh, Matrix4
 } from "three";
-
+import * as BufferGeometryUtils from "three/examples/jsm/utils/BufferGeometryUtils";
 export class DrawHelper extends DrawHelperCore {
 
     private usedMaterials: {
@@ -385,20 +385,18 @@ export class DrawHelper extends DrawHelperCore {
                 geometry.setIndex(new BufferAttribute(Uint32Array.from(mesh.indices), 1));
                 geometries.push(geometry);
             });
-
-            return geometries;
+            const geometry = BufferGeometryUtils.mergeGeometries(geometries, false);
+            return geometry;
         };
 
         if (group && updatable) {
             group.clear();
-            const geometries = createMesh();
-            geometries.forEach(geometry => {
-                if (material) {
-                    group.add(new Mesh(geometry, material));
-                } else {
-                    group.add(new Mesh(geometry));
-                }
-            });
+            const geometry = createMesh();
+            if (material) {
+                group.add(new Mesh(geometry, material));
+            } else {
+                group.add(new Mesh(geometry));
+            }
         } else {
             let scene = null;
             if (addToScene) {
@@ -408,14 +406,12 @@ export class DrawHelper extends DrawHelperCore {
             group = new Group();
             group.name = `surface-${Math.random()}`;
             scene.add(group);
-            const geometries = createMesh();
-            geometries.forEach(geometry => {
-                if (material) {
-                    group.add(new Mesh(geometry, material));
-                } else {
-                    group.add(new Mesh(geometry));
-                }
-            });
+            const geometry = createMesh();
+            if (material) {
+                group.add(new Mesh(geometry, material));
+            } else {
+                group.add(new Mesh(geometry));
+            }
         }
         if (hidden) {
             group.visible = false;

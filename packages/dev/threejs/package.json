@@ -82,7 +82,10 @@
             ".ts"
         ],
         "transformIgnorePatterns": [
-            "node_modules/(?!@threejs|@bitbybit-dev)"
+            "node_modules/(?!threejs)/",
+            "node_modules/(?!threejs/examples/jsm)/",
+            "node_modules/verb-nurbs-web/",
+            "node_modules/(?!@bitbybit-dev)/"
         ],
         "collectCoverageFrom": [
             "lib/api/**/*"
