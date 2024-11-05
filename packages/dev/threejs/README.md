@@ -11,10 +11,10 @@ https://github.com/bitbybit-dev/bitbybit/tree/master/packages/dev/threejs
 ## NPM
 https://www.npmjs.com/package/@bitbybit-dev/threejs
 
-# THREEJS Example Applications
-Vase
-https://app-store.bitbybit.dev/vase
-Github Source Code - https://github.com/bitbybit-dev/app-examples/tree/main/react/threejs/vase
+## THREEJS Example Applications
+Vase   
+https://app-store.bitbybit.dev/vase   
+Github Source Code - https://github.com/bitbybit-dev/app-examples/tree/main/react/threejs/vase   
 
 ## Other Example Applications
 Laptop Holder   
