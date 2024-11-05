@@ -10,16 +10,21 @@ import * as Inputs from "../inputs";
 describe("Draw unit tests", () => {
     let draw: Draw;
     let tag: Tag;
+    let occtWorkerManager: OCCTWorkerManager;
+    let jscadWorkerManager: JSCADWorkerManager;
+    let vector: Vector;
 
     beforeAll(async () => {
         const context = new Context();
-        const jscadWorkerManager = new JSCADWorkerManager();
-        const occtWorkerManager = new OCCTWorkerManager();
+        jscadWorkerManager = new JSCADWorkerManager();
+        occtWorkerManager = new OCCTWorkerManager();
 
         const solidText = new JSCADText(jscadWorkerManager);
         const math = new MathBitByBit();
         const geometryHelper = new GeometryHelper();
-        const vector = new Vector(context, math, geometryHelper);
+        
+        vector = new Vector(context, math, geometryHelper);
+
         const drawHelper = new DrawHelper(context, solidText, vector, jscadWorkerManager, occtWorkerManager);
         context.scene = new Scene();
         tag = new Tag(context);
@@ -320,6 +325,23 @@ describe("Draw unit tests", () => {
             expect(ptMesh.geometry.attributes.position.array.toString()).toEqual("1,-3,3,0,-3,4,1,3,3,0,3,-4");
         });
 
+        it("should update lines via draw any with options", () => {
+            const options = {
+                ...new Inputs.Draw.DrawBasicGeometryOptions(),
+                size: 4,
+                colours: "#ff0000",
+                updatable: true,
+            };
+            const res = draw.drawAny({ entity: [{ start: [1, -3, 3], end: [0, -3, 4] }, { start: [1, 3, 3], end: [0, 3, -4] }], options });
+            const res2 = draw.drawAny({ entity: [{ start: [3, -4, 4], end: [1, -4, 5] }, { start: [2, 4, 4], end: [1, 4, -5] }], options, group: res });
+
+            expect(res.userData.type).toBe(Inputs.Draw.drawingTypes.lines);
+            expect(res2.name).toEqual(res.name);
+            const ptMesh = res.children[0] as LineSegments;
+            expect(res.name).toContain("polylines");
+            expect(ptMesh.geometry.attributes.position.array.toString()).toEqual("3,-4,4,1,-4,5,2,4,4,1,4,-5");
+        });
+
         it("should update a line via draw any with options", () => {
             const options = {
                 ...new Inputs.Draw.DrawBasicGeometryOptions(),
@@ -352,6 +374,22 @@ describe("Draw unit tests", () => {
             expect(lineSegments1.geometry.attributes.position.array.toString()).toEqual("1,-3,3,0,-3,4,0,-3,4,3,4,5");
         });
 
+        it("should update a polyline via draw any with options", () => {
+            const options = {
+                ...new Inputs.Draw.DrawBasicGeometryOptions(),
+                size: 4,
+                colours: "#ff00ff",
+                updatable: true,
+            };
+            const res = draw.drawAny({ entity: { points: [[1, -3, 3], [0, -3, 4], [3, 4, 5]] }, options });
+            const res2 = draw.drawAny({ entity: { points: [[2, -4, 4], [1, -4, 3], [4, 5, 6]] }, options, group: res });
+
+            expect(res.userData.type).toBe(Inputs.Draw.drawingTypes.polyline);
+            expect(res.name).toEqual(res2.name);
+            const lineSegments1 = res.children[0] as LineSegments;
+            expect(lineSegments1.geometry.attributes.position.array.toString()).toEqual("2,-4,4,1,-4,3,1,-4,3,4,5,6");
+        });
+
         it("should create a closed polyline with color via draw any with options", () => {
             const options = {
                 ...new Inputs.Draw.DrawBasicGeometryOptions(),
@@ -359,10 +397,12 @@ describe("Draw unit tests", () => {
                 colours: "#ff00ff",
                 updatable: false,
             };
-            const res = draw.drawAny({ entity: [
-                { points: [[1, -3, 3], [0, -3, 4], [3, 4, 5]], isClosed: true, color: [1, 0, 1] },
-                { points: [[1, -3, 3], [0, -3, 4], [3, 4, 5]], isClosed: false, color: [1, 1, 1] }
-            ], options });
+            const res = draw.drawAny({
+                entity: [
+                    { points: [[1, -3, 3], [0, -3, 4], [3, 4, 5]], isClosed: true, color: [1, 0, 1] },
+                    { points: [[1, -3, 3], [0, -3, 4], [3, 4, 5]], isClosed: false, color: [1, 1, 1] }
+                ], options
+            });
 
             expect(res.userData.type).toBe(Inputs.Draw.drawingTypes.polylines);
 
@@ -526,17 +566,7 @@ describe("Draw unit tests", () => {
         });
 
         it("should draw verb surface", async () => {
-            const surfaceMock = {
-                tessellate: () => {
-                    return {
-                        points: [[1, 2, 3], [2, 3, 4], [3, 4, 5], [4, 5, 6], [34, -5, 3]],
-                        normals: [[1, 2, 3], [2, 3, 4], [3, 4, 5], [4, 5, 6], [34, -5, 3]],
-                        uvs: [[1, 2], [2, 3], [3, 4], [4, 5], [34, -5]],
-                        faces: [[0, 1, 2], [1, 2, 3], [2, 3, 4]]
-                    };
-                },
-                _data: { controlPoints: [], knotsU: 3, knotsV: 4, degreeU: 3, degreeV: 4 },
-            };
+            const surfaceMock = createSurfaceMock();
             const options = {
                 ...new Inputs.Draw.DrawBasicGeometryOptions(),
                 size: 4,
@@ -554,29 +584,22 @@ describe("Draw unit tests", () => {
             expect(faceMesh.geometry.attributes.position.array.toString()).toEqual("3,4,5,2,3,4,1,2,3,4,5,6,3,4,5,2,3,4,34,-5,3,4,5,6,3,4,5");
         });
 
+        it("should draw verb surface and hide it", async () => {
+            const surfaceMock = createSurfaceMock();
+            const options = {
+                ...new Inputs.Draw.DrawBasicGeometryOptions(),
+                size: 4,
+                colours: "#ff0000",
+                updatable: true,
+                hidden: true,
+            };
+            const res = await draw.drawAnyAsync({ entity: surfaceMock, options });
+            expect(res.visible).toBe(false);
+        });
+
         it("should create new verb surface mesh in the older group when updating as that is not meant for real time updates", async () => {
-            const surfaceMock1 = {
-                tessellate: () => {
-                    return {
-                        points: [[1, 2, 3], [2, 3, 4], [3, 4, 5], [4, 5, 6], [34, -5, 3]],
-                        normals: [[1, 2, 3], [2, 3, 4], [3, 4, 5], [4, 5, 6], [34, -5, 3]],
-                        uvs: [[1, 2], [2, 3], [3, 4], [4, 5], [34, -5]],
-                        faces: [[0, 1, 2], [1, 2, 3], [2, 3, 4]]
-                    };
-                },
-                _data: { controlPoints: [], knotsU: 3, knotsV: 4, degreeU: 3, degreeV: 4 },
-            };
-            const surfaceMock2 = {
-                tessellate: () => {
-                    return {
-                        points: [[1, 3, 3], [2, 5, 4], [3, 6, 5], [3, 5, 6], [3, -5, 3]],
-                        normals: [[1, 2, 3], [2, 3, 4], [3, 4, 5], [4, 5, 6], [34, -5, 3]],
-                        uvs: [[1, 2], [2, 3], [3, 4], [4, 5], [34, -5]],
-                        faces: [[0, 1, 2], [1, 2, 3], [2, 3, 4]]
-                    };
-                },
-                _data: { controlPoints: [], knotsU: 3, knotsV: 4, degreeU: 3, degreeV: 4 },
-            };
+            const surfaceMock1 = createSurfaceMock();
+            const surfaceMock2 = createSurfaceMock2();
             const options = {
                 ...new Inputs.Draw.DrawBasicGeometryOptions(),
                 size: 4,
@@ -598,17 +621,7 @@ describe("Draw unit tests", () => {
         });
 
         it("should draw verb surfaces", async () => {
-            const surfaceMock1 = {
-                tessellate: () => {
-                    return {
-                        points: [[1, 2, 3], [2, 3, 4], [3, 4, 5], [4, 5, 6], [34, -5, 3]],
-                        normals: [[1, 2, 3], [2, 3, 4], [3, 4, 5], [4, 5, 6], [34, -5, 3]],
-                        uvs: [[1, 2], [2, 3], [3, 4], [4, 5], [34, -5]],
-                        faces: [[0, 1, 2], [1, 2, 3], [2, 3, 4]]
-                    };
-                },
-                _data: { controlPoints: [], knotsU: 3, knotsV: 4, degreeU: 3, degreeV: 4 },
-            };
+            const surfaceMock1 = createSurfaceMock();
             const surfaceMock2 = {
                 ...surfaceMock1
             };
@@ -636,5 +649,110 @@ describe("Draw unit tests", () => {
         });
     });
 
+    describe("Draw OCCT geometry tests", () => {
 
+        it("should draw a cube mesh with default options", async () => {
+            const options = new Inputs.Draw.DrawOcctShapeOptions();
+            occtWorkerManager.genericCallToWorkerPromise = jest.fn().mockResolvedValue(mockOCCTBoxDecomposedMesh());
+
+            const res = await draw.drawAnyAsync({ entity: { type: "occ-shape", hash: 12314455 }, options });
+            expect(res.userData.type).toBe(Inputs.Draw.drawingTypes.occt);
+            expect(res).toBeDefined();
+            expect(res.name).toContain("brepMesh");
+            expect(res.children.length).toBe(2);
+        });
+
+        it("should draw a cube mesh with custom material", async () => {
+            const options = new Inputs.Draw.DrawOcctShapeOptions();
+            const customMaterial = new MeshPhongMaterial({ color: 0xff00ff });
+            options.faceMaterial = customMaterial;
+
+            occtWorkerManager.genericCallToWorkerPromise = jest.fn().mockResolvedValue(mockOCCTBoxDecomposedMesh());
+
+            const res = await draw.drawAnyAsync({ entity: { type: "occ-shape", hash: 12314455 }, options });
+            expect(res.userData.type).toBe(Inputs.Draw.drawingTypes.occt);
+            expect(res).toBeDefined();
+            expect(res.name).toContain("brepMesh");
+            expect(res.children.length).toBe(2);
+            const face = res.children[0].children[0] as Mesh;
+            const material = face.material as MeshPhongMaterial;
+            expect(material.color.getHexString()).toEqual("ff00ff");
+        });
+
+        it("should draw a cube mesh with specific options", async () => {
+            const options = new Inputs.Draw.DrawOcctShapeOptions();
+            options.drawVertices = true;
+            options.drawEdgeIndexes = true;
+            options.drawFaceIndexes = true;
+            occtWorkerManager.genericCallToWorkerPromise = jest.fn().mockResolvedValue(mockOCCTBoxDecomposedMesh());
+            jscadWorkerManager.genericCallToWorkerPromise = jest.fn().mockResolvedValue([[[0.5, 0.3, 0.2], [0.5, 0.3, 0.2], [0.5, 0.3, 0.2], [0.5, 0.3, 0.2]]]);
+            vector.add = jest.fn().mockReturnValue([[[1, 2, 3],[1, 2, 3]], [[1, 2, 3],[1, 2, 3]]]);
+            const res = await draw.drawAnyAsync({ entity: { type: "occ-shape", hash: 12314455 }, options });
+            expect(res.userData.type).toBe(Inputs.Draw.drawingTypes.occt);
+            expect(res).toBeDefined();
+            expect(res.name).toContain("brepMesh");
+            expect(res.children.length).toBe(4);
+        });
+
+        it("should draw multiple cubes mesh with default options", async () => {
+            const options = new Inputs.Draw.DrawOcctShapeOptions();
+            occtWorkerManager.genericCallToWorkerPromise = jest.fn().mockResolvedValue([mockOCCTBoxDecomposedMesh(), mockOCCTBoxDecomposedMesh()]);
+
+            const res = await draw.drawAnyAsync({ entity: [{ type: "occ-shape", hash: 12314455 }, { type: "occ-shape", hash: 12314455 }], options });
+            expect(res.userData.type).toBe(Inputs.Draw.drawingTypes.occtShapes);
+            expect(res).toBeDefined();
+            expect(res.name).toContain("shapesMeshContainer");
+            expect(res.children.length).toBe(2);
+        });
+
+        it("should draw multiple cubes with custom material with default options", async () => {
+            const options = new Inputs.Draw.DrawOcctShapeOptions();
+            const customMaterial = new MeshPhongMaterial({ color: 0xff00ff });
+            options.faceMaterial = customMaterial;
+            occtWorkerManager.genericCallToWorkerPromise = jest.fn().mockResolvedValue([mockOCCTBoxDecomposedMesh(), mockOCCTBoxDecomposedMesh()]);
+
+            const res = await draw.drawAnyAsync({ entity: [{ type: "occ-shape", hash: 12314455 }, { type: "occ-shape", hash: 12314455 }], options });
+            expect(res.userData.type).toBe(Inputs.Draw.drawingTypes.occtShapes);
+            expect(res).toBeDefined();
+            expect(res.name).toContain("shapesMeshContainer");
+            expect(res.children.length).toBe(2);
+            const face = res.children[0].children[0].children[0] as Mesh;
+            const material = face.material as MeshPhongMaterial;
+
+            expect(material.color.getHexString()).toEqual("ff00ff");
+        });
+    });
 });
+
+
+function createSurfaceMock() {
+    return {
+        tessellate: () => {
+            return {
+                points: [[1, 2, 3], [2, 3, 4], [3, 4, 5], [4, 5, 6], [34, -5, 3]],
+                normals: [[1, 2, 3], [2, 3, 4], [3, 4, 5], [4, 5, 6], [34, -5, 3]],
+                uvs: [[1, 2], [2, 3], [3, 4], [4, 5], [34, -5]],
+                faces: [[0, 1, 2], [1, 2, 3], [2, 3, 4]]
+            };
+        },
+        _data: { controlPoints: [], knotsU: 3, knotsV: 4, degreeU: 3, degreeV: 4 },
+    };
+}
+
+function createSurfaceMock2() {
+    return {
+        tessellate: () => {
+            return {
+                points: [[1, 3, 3], [2, 5, 4], [3, 6, 5], [3, 5, 6], [3, -5, 3]],
+                normals: [[1, 2, 3], [2, 3, 4], [3, 4, 5], [4, 5, 6], [34, -5, 3]],
+                uvs: [[1, 2], [2, 3], [3, 4], [4, 5], [34, -5]],
+                faces: [[0, 1, 2], [1, 2, 3], [2, 3, 4]]
+            };
+        },
+        _data: { controlPoints: [], knotsU: 3, knotsV: 4, degreeU: 3, degreeV: 4 },
+    };
+}
+
+function mockOCCTBoxDecomposedMesh() {
+    return { "faceList": [{ "vertex_coord": [-0.5, -1, -1.5, -0.5, -1, 1.5, -0.5, 1, -1.5, -0.5, 1, 1.5], "normal_coord": [-1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0], "uvs": [0, 0, 3, 0, 0, -2, 3, -2], "tri_indexes": [0, 1, 2, 2, 1, 3], "vertex_coord_vec": [[-0.5, -1, -1.5], [-0.5, -1, 1.5], [-0.5, 1, -1.5], [-0.5, 1, 1.5]], "number_of_triangles": 2, "center_point": [-0.5, 0, 0], "center_normal": [-1, 0, 0], "face_index": 0 }, { "vertex_coord": [0.5, -1, -1.5, 0.5, -1, 1.5, 0.5, 1, -1.5, 0.5, 1, 1.5], "normal_coord": [1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0], "uvs": [0, 0, 3, 0, 0, -2, 3, -2], "tri_indexes": [1, 0, 2, 1, 2, 3], "vertex_coord_vec": [[0.5, -1, -1.5], [0.5, -1, 1.5], [0.5, 1, -1.5], [0.5, 1, 1.5]], "number_of_triangles": 2, "center_point": [0.5, 0, 0], "center_normal": [1, 0, 0], "face_index": 1 }, { "vertex_coord": [-0.5, -1, -1.5, 0.5, -1, -1.5, -0.5, -1, 1.5, 0.5, -1, 1.5], "normal_coord": [0, -1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0], "uvs": [0, 0, 0, 1, 3, 0, 3, 1], "tri_indexes": [1, 3, 0, 0, 3, 2], "vertex_coord_vec": [[-0.5, -1, -1.5], [0.5, -1, -1.5], [-0.5, -1, 1.5], [0.5, -1, 1.5]], "number_of_triangles": 2, "center_point": [0, -1, 0], "center_normal": [0, -1, 0], "face_index": 2 }, { "vertex_coord": [-0.5, 1, -1.5, 0.5, 1, -1.5, -0.5, 1, 1.5, 0.5, 1, 1.5], "normal_coord": [0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0], "uvs": [0, 0, 0, 1, 3, 0, 3, 1], "tri_indexes": [3, 1, 0, 3, 0, 2], "vertex_coord_vec": [[-0.5, 1, -1.5], [0.5, 1, -1.5], [-0.5, 1, 1.5], [0.5, 1, 1.5]], "number_of_triangles": 2, "center_point": [0, 1, 0], "center_normal": [0, 1, 0], "face_index": 3 }, { "vertex_coord": [-0.5, -1, -1.5, -0.5, 1, -1.5, 0.5, -1, -1.5, 0.5, 1, -1.5], "normal_coord": [0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0, -1], "uvs": [0, 0, 0, 2, 1, 0, 1, 2], "tri_indexes": [1, 3, 0, 0, 3, 2], "vertex_coord_vec": [[-0.5, -1, -1.5], [-0.5, 1, -1.5], [0.5, -1, -1.5], [0.5, 1, -1.5]], "number_of_triangles": 2, "center_point": [0, 0, -1.5], "center_normal": [0, 0, -1], "face_index": 4 }, { "vertex_coord": [-0.5, -1, 1.5, -0.5, 1, 1.5, 0.5, -1, 1.5, 0.5, 1, 1.5], "normal_coord": [0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1], "uvs": [0, 0, 0, 2, 1, 0, 1, 2], "tri_indexes": [3, 1, 0, 3, 0, 2], "vertex_coord_vec": [[-0.5, -1, 1.5], [-0.5, 1, 1.5], [0.5, -1, 1.5], [0.5, 1, 1.5]], "number_of_triangles": 2, "center_point": [0, 0, 1.5], "center_normal": [0, 0, 1], "face_index": 5 }], "edgeList": [{ "vertex_coord": [[-0.5, -1, -1.5], [-0.5, -1, 1.5]], "middle_point": [-0.5, -1, 0], "edge_index": 0 }, { "vertex_coord": [[-0.5, -1, 1.5], [-0.5, 1, 1.5]], "middle_point": [-0.5, 0, 1.5], "edge_index": 1 }, { "vertex_coord": [[-0.5, 1, -1.5], [-0.5, 1, 1.5]], "middle_point": [-0.5, 1, 0], "edge_index": 2 }, { "vertex_coord": [[-0.5, -1, -1.5], [-0.5, 1, -1.5]], "middle_point": [-0.5, 0, -1.5], "edge_index": 3 }, { "vertex_coord": [[0.5, -1, -1.5], [0.5, -1, 1.5]], "middle_point": [0.5, -1, 0], "edge_index": 4 }, { "vertex_coord": [[0.5, -1, 1.5], [0.5, 1, 1.5]], "middle_point": [0.5, 0, 1.5], "edge_index": 5 }, { "vertex_coord": [[0.5, 1, -1.5], [0.5, 1, 1.5]], "middle_point": [0.5, 1, 0], "edge_index": 6 }, { "vertex_coord": [[0.5, -1, -1.5], [0.5, 1, -1.5]], "middle_point": [0.5, 0, -1.5], "edge_index": 7 }, { "vertex_coord": [[-0.5, -1, -1.5], [0.5, -1, -1.5]], "middle_point": [0, -1, -1.5], "edge_index": 8 }, { "vertex_coord": [[-0.5, -1, 1.5], [0.5, -1, 1.5]], "middle_point": [0, -1, 1.5], "edge_index": 9 }, { "vertex_coord": [[-0.5, 1, -1.5], [0.5, 1, -1.5]], "middle_point": [0, 1, -1.5], "edge_index": 10 }, { "vertex_coord": [[-0.5, 1, 1.5], [0.5, 1, 1.5]], "middle_point": [0, 1, 1.5], "edge_index": 11 }], "pointsList": [[-0.5, -1, 1.5], [-0.5, -1, -1.5], [-0.5, 1, 1.5], [-0.5, -1, 1.5], [-0.5, 1, 1.5], [-0.5, 1, -1.5], [-0.5, 1, -1.5], [-0.5, -1, -1.5], [0.5, -1, 1.5], [0.5, -1, -1.5], [0.5, 1, 1.5], [0.5, -1, 1.5], [0.5, 1, 1.5], [0.5, 1, -1.5], [0.5, 1, -1.5], [0.5, -1, -1.5], [0.5, -1, -1.5], [-0.5, -1, -1.5], [0.5, -1, 1.5], [0.5, -1, -1.5], [0.5, -1, 1.5], [-0.5, -1, 1.5], [-0.5, -1, 1.5], [-0.5, -1, -1.5], [0.5, 1, -1.5], [-0.5, 1, -1.5], [0.5, 1, 1.5], [0.5, 1, -1.5], [0.5, 1, 1.5], [-0.5, 1, 1.5], [-0.5, 1, 1.5], [-0.5, 1, -1.5], [-0.5, 1, -1.5], [-0.5, -1, -1.5], [0.5, 1, -1.5], [-0.5, 1, -1.5], [0.5, 1, -1.5], [0.5, -1, -1.5], [0.5, -1, -1.5], [-0.5, -1, -1.5], [-0.5, 1, 1.5], [-0.5, -1, 1.5], [0.5, 1, 1.5], [-0.5, 1, 1.5], [0.5, 1, 1.5], [0.5, -1, 1.5], [0.5, -1, 1.5], [-0.5, -1, 1.5]] };
+}
