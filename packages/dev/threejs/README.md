@@ -1,17 +1,22 @@
-## Bit By Bit Developers library for THREEJS game engine
+## Bit By Bit Developers CAD library for THREEJS game engine
 
 <img src="https://app.bitbybit.dev/assets/git-cover.png" alt="Picture showing bitbybit.dev platform">
 
-This project exposes 3D algorithms of Bit By Bit Developers platform through THREEJS game engine. Code is open-sourced under MIT license. This library was previously intertwined in core package and is now separated.
+This project exposes 3D algorithms of Bit By Bit Developers platform through THREEJS game engine. Code is open-sourced under MIT license.
 
 Visit https://bitbybit.dev to use our full cloud platform.
 
 ## Github
-https://github.com/bitbybit-dev/bitbybit  
+https://github.com/bitbybit-dev/bitbybit/tree/master/packages/dev/threejs
 ## NPM
-https://www.npmjs.com/package/@bitbybit-dev/core
+https://www.npmjs.com/package/@bitbybit-dev/threejs
 
-## Example Applications
+# THREEJS Example Applications
+Vase
+https://app-store.bitbybit.dev/vase
+Github Source Code - https://github.com/bitbybit-dev/app-examples/tree/main/react/threejs/vase
+
+## Other Example Applications
 Laptop Holder   
 https://app-store.bitbybit.dev/laptop-holder    
 Github Source Code Angular - https://github.com/bitbybit-dev/app-examples/tree/main/angular/laptop-holder   
@@ -25,7 +30,16 @@ Github Source Code - https://github.com/bitbybit-dev/app-examples/tree/main/reac
 https://app-store.bitbybit.dev/terrace-furniture
 
 ## Build package
-tsc -p tsconfig.bitbybit.json  
+npm run build-p
+
+## Run unit tests and generate test coverage
+npm run test-c
+
+## Run live unit tests and generate test coverage on save
+npm run test-c-l
+
+## Unit test coverage report online
+https://tests.bitbybit.dev/threejs
 
 ## Media Channels
 Discord: https://discord.gg/GSe3VMe  
