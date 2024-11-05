@@ -463,6 +463,68 @@ describe("Draw unit tests", () => {
             expect(lineSegments.geometry.attributes.position.array.toString()).toEqual("1,2,3,2,3,4,2,3,4,3,4,5,3,4,5,4,5,6,3,2,3,4,3,4,4,3,4,3,5,5,3,5,5,3,5,6");
         });
 
+        it("should update drawn curves", async () => {
+            const curveMock1 = {
+                tessellate: () => {
+                    return [[1, 2, 3], [2, 3, 4], [3, 4, 5], [4, 5, 6]];
+                },
+                _data: { controlPoints: [], knots: 3, degree: 3 },
+            };
+            const curveMock2 = {
+                tessellate: () => {
+                    return [[3, 2, 3], [4, 3, 4], [3, 5, 5], [3, 5, 6]];
+                },
+                _data: { controlPoints: [], knots: 3, degree: 3 },
+            };
+            const options = {
+                ...new Inputs.Draw.DrawBasicGeometryOptions(),
+                size: 4,
+                colours: "#ff0000",
+                updatable: true,
+            };
+            const res = await draw.drawAnyAsync({ entity: [curveMock1, curveMock2], options });
+            const res2 = await draw.drawAnyAsync({ entity: [curveMock2, curveMock1], options, group: res });
+
+            expect(res.userData.type).toBe(Inputs.Draw.drawingTypes.verbCurves);
+            expect(res).toBeDefined();
+            expect(res.name).toContain("polyline");
+            expect(res.name).toEqual(res2.name);
+            const lineSegments = res.children[0] as LineSegments;
+            expect(lineSegments.geometry.attributes.position.array.toString()).toEqual("3,2,3,4,3,4,4,3,4,3,5,5,3,5,5,3,5,6,1,2,3,2,3,4,2,3,4,3,4,5,3,4,5,4,5,6");
+        });
+
+        it("should create new verb curve", async () => {
+            const curveMock1 = {
+                tessellate: () => {
+                    return [[1, 2, 3], [2, 3, 4], [3, 4, 5], [4, 5, 6]];
+                },
+                _data: { controlPoints: [], knots: 3, degree: 3 },
+            };
+            const curveMock2 = {
+                tessellate: () => {
+                    return [[3, 2, 3], [4, 3, 4], [3, 5, 5], [3, 5, 6]];
+                },
+                _data: { controlPoints: [], knots: 3, degree: 3 },
+            };
+            const options = {
+                ...new Inputs.Draw.DrawBasicGeometryOptions(),
+                size: 4,
+                colours: "#ff0000",
+                updatable: true,
+            };
+            const res = await draw.drawAnyAsync({ entity: curveMock1, options });
+            const res2 = await draw.drawAnyAsync({ entity: curveMock2, options, group: res });
+
+            expect(res.userData.type).toBe(Inputs.Draw.drawingTypes.verbCurve);
+            expect(res).toBeDefined();
+            expect(res.name).toContain("polyline");
+            expect(res.name).toEqual(res2.name);
+            const lineSegments1 = res.children[0] as LineSegments;
+            expect(lineSegments1.geometry.attributes.position.array.toString()).toEqual("3,2,3,4,3,4,4,3,4,3,5,5,3,5,5,3,5,6");
+            const lineSegments2 = res2.children[0] as LineSegments;
+            expect(lineSegments2.geometry.attributes.position.array.toString()).toEqual("3,2,3,4,3,4,4,3,4,3,5,5,3,5,5,3,5,6");
+        });
+
         it("should draw verb surface", async () => {
             const surfaceMock = {
                 tessellate: () => {
@@ -492,6 +554,48 @@ describe("Draw unit tests", () => {
             expect(faceMesh.geometry.attributes.position.array.toString()).toEqual("3,4,5,2,3,4,1,2,3,4,5,6,3,4,5,2,3,4,34,-5,3,4,5,6,3,4,5");
         });
 
+        it("should create new verb surface mesh in the older group when updating as that is not meant for real time updates", async () => {
+            const surfaceMock1 = {
+                tessellate: () => {
+                    return {
+                        points: [[1, 2, 3], [2, 3, 4], [3, 4, 5], [4, 5, 6], [34, -5, 3]],
+                        normals: [[1, 2, 3], [2, 3, 4], [3, 4, 5], [4, 5, 6], [34, -5, 3]],
+                        uvs: [[1, 2], [2, 3], [3, 4], [4, 5], [34, -5]],
+                        faces: [[0, 1, 2], [1, 2, 3], [2, 3, 4]]
+                    };
+                },
+                _data: { controlPoints: [], knotsU: 3, knotsV: 4, degreeU: 3, degreeV: 4 },
+            };
+            const surfaceMock2 = {
+                tessellate: () => {
+                    return {
+                        points: [[1, 3, 3], [2, 5, 4], [3, 6, 5], [3, 5, 6], [3, -5, 3]],
+                        normals: [[1, 2, 3], [2, 3, 4], [3, 4, 5], [4, 5, 6], [34, -5, 3]],
+                        uvs: [[1, 2], [2, 3], [3, 4], [4, 5], [34, -5]],
+                        faces: [[0, 1, 2], [1, 2, 3], [2, 3, 4]]
+                    };
+                },
+                _data: { controlPoints: [], knotsU: 3, knotsV: 4, degreeU: 3, degreeV: 4 },
+            };
+            const options = {
+                ...new Inputs.Draw.DrawBasicGeometryOptions(),
+                size: 4,
+                colours: "#ff0000",
+                updatable: true,
+            };
+            const res = await draw.drawAnyAsync({ entity: surfaceMock1, options });
+            const res2 = await draw.drawAnyAsync({ entity: surfaceMock2, options, group: res });
+
+            expect(res.userData.type).toBe(Inputs.Draw.drawingTypes.verbSurface);
+            expect(res).toBeDefined();
+            expect(res.name).toContain("surface");
+            expect(res.children.length).toBe(1);
+            expect(res2.name).toEqual(res.name);
+            const faceMesh = res.children[0] as Mesh;
+            const material = faceMesh.material as MeshPhongMaterial;
+            expect(material.color.getHex()).toBe(0xff0000);
+            expect(faceMesh.geometry.attributes.position.array.toString()).toEqual("3,6,5,2,5,4,1,3,3,3,5,6,3,6,5,2,5,4,3,-5,3,3,5,6,3,6,5");
+        });
 
         it("should draw verb surfaces", async () => {
             const surfaceMock1 = {

@@ -285,7 +285,7 @@ export class DrawHelper extends DrawHelperCore {
 
     drawCurves(inputs: Inputs.Verb.DrawCurvesDto<Group>): Group {
         const points = inputs.curves.map(s => ({ points: s.tessellate() }));
-        return this.drawPolylinesWithColours({ polylines: points, ...inputs });
+        return this.drawPolylinesWithColours({ polylines: points, polylinesMesh: inputs.curvesMesh, ...inputs });
     }
 
     drawSurfacesMultiColour(inputs: Inputs.Verb.DrawSurfacesColoursDto<Group>): Group {
@@ -388,8 +388,15 @@ export class DrawHelper extends DrawHelperCore {
         };
 
         if (group && updatable) {
-            group.remove();
-            createMesh();
+            group.clear();
+            const geometries = createMesh();
+            geometries.forEach(geometry => {
+                if (material) {
+                    group.add(new Mesh(geometry, material));
+                } else {
+                    group.add(new Mesh(geometry));
+                }
+            });
         } else {
             let scene = null;
             if (addToScene) {
