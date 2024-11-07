@@ -24,10 +24,7 @@ https://app-store.bitbybit.dev/cup
 Github Source Code - https://github.com/bitbybit-dev/app-examples/tree/main/react/cup  
 
 ## Closed Source Example Applications
-https://app-store.bitbybit.dev/terrace-furniture
-
-## Build package
-tsc -p tsconfig.bitbybit.json  
+https://app-store.bitbybit.dev/terrace-furniture   
 
 ## Media Channels
 Discord: https://discord.gg/GSe3VMe  
