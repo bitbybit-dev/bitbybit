@@ -10,6 +10,7 @@ Visit https://bitbybit.dev to use our full cloud platform.
 https://github.com/bitbybit-dev/bitbybit  
 ## NPM Packages
 https://www.npmjs.com/package/@bitbybit-dev/babylonjs
+https://www.npmjs.com/package/@bitbybit-dev/threejs
 https://www.npmjs.com/package/@bitbybit-dev/core
 
 ## Example Applications

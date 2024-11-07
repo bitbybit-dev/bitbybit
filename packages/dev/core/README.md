@@ -5,7 +5,7 @@
 ## IMPORTANT
 If you used this npm package prior to v0.18.0, please use @bitbybit-dev/babylonjs package.
 
-This project contains core 3D algorithms of Bit By Bit Developers platform which are open-sourced under MIT license. This library was previously UI dependant and is now separated to ensure protection of our corporate identity and cloud services.
+This project contains core 3D algorithms of Bit By Bit Developers platform which are open-sourced under MIT license.
 
 Visit https://bitbybit.dev to use our full cloud platform.
 
