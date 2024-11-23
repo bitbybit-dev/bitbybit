@@ -25,4 +25,27 @@ export class ManifoldOperations {
         return this.manifoldWorkerManager.genericCallToWorkerPromise("manifold.operations.hull", inputs);
     }
 
+    /**
+     * Creates a slice cross section of the manifold on the given height
+     * @param inputs manifold and height
+     * @returns sliced cross section
+     * @group cross sections
+     * @shortname slice
+     * @drawable true
+     */
+    async slice(inputs: Inputs.Manifold.SliceDto<Inputs.Manifold.ManifoldPointer>): Promise<Inputs.Manifold.CrossSectionPointer> {
+        return this.manifoldWorkerManager.genericCallToWorkerPromise("manifold.operations.slice", inputs);
+    }
+        
+    /**
+     * Creates a projection on xy plane from the shape outline
+     * @param inputs manifold
+     * @returns projected cross section
+     * @group cross sections
+     * @shortname project
+     * @drawable true
+     */
+    async project(inputs: Inputs.Manifold.ManifoldDto<Inputs.Manifold.ManifoldPointer>): Promise<Inputs.Manifold.CrossSectionPointer> {
+        return this.manifoldWorkerManager.genericCallToWorkerPromise("manifold.operations.project", inputs);
+    }
 }

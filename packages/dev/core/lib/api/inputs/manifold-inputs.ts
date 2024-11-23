@@ -239,6 +239,23 @@ export namespace Manifold {
          */
         manifold: T;
     }
+    export class SliceDto<T> {
+        constructor(manifold?: T) {
+            if (manifold !== undefined) { this.manifold = manifold; }
+        }
+        /**
+         * Manifold shape
+         */
+        manifold: T;
+        /**
+         * Height of the slice
+         * @default 0.5
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.1
+         */
+        height = 0.5;
+    }
     export class CrossSectionDto<T> {
         constructor(crossSection?: T) {
             if (crossSection !== undefined) { this.crossSection = crossSection; }

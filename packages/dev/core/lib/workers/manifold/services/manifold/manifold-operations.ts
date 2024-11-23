@@ -13,7 +13,11 @@ export class ManifoldOperations {
         return inputs.manifold.hull();
     }
 
-    extrude(inputs: Inputs.Manifold.ExtrudeDto<Manifold3D.CrossSection>): Manifold3D.Manifold {
-        return inputs.crossSection.extrude(inputs.height, inputs.nDivisions, inputs.twistDegrees, [inputs.scaleTopX, inputs.scaleTopY], inputs.center);
+    slice(inputs: Inputs.Manifold.SliceDto<Manifold3D.Manifold>): Manifold3D.CrossSection {
+        return inputs.manifold.slice(inputs.height);
+    }
+
+    project(inputs: Inputs.Manifold.ManifoldDto<Manifold3D.Manifold>): Manifold3D.CrossSection {
+        return inputs.manifold.project();
     }
 }
