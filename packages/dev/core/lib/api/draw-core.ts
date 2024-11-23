@@ -67,6 +67,14 @@ export class DrawCore {
         return Array.isArray(entity) && !entity.some(el => !this.detectOcctShape(el));
     }
 
+    detectManifoldShape(entity: any): boolean {
+        return entity?.type === "manifold-shape";
+    }
+
+    detectManifoldShapes(entity: any): boolean {
+        return Array.isArray(entity) && !entity.some(el => !this.detectManifoldShape(el));
+    }
+
     detectTag(entity: any): boolean {
         return !Array.isArray(entity) && entity.text;
     }

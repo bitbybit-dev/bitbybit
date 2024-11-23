@@ -5,7 +5,7 @@ export class CacheHelper {
     usedHashes = {};
     argCache = {};
 
-    constructor(private readonly jscad: any) { }
+    constructor() { }
 
     cleanAllCache(): void {
         const usedHashKeys = Object.keys(this.usedHashes);
@@ -15,6 +15,7 @@ export class CacheHelper {
                 try {
                     this.argCache[hash].delete();
                 }
+                // eslint-disable-next-line no-empty
                 catch {
                 }
             }
@@ -25,42 +26,7 @@ export class CacheHelper {
         this.hashesFromPreviousRun = {};
     }
 
-    cleanUpCache(): void {
-        // TODO seems to have problems, not exactly sure what is the real cause. For now users will build up cache during the whole session.
-        // and will be able to manually clean it up if it gets out of hand.
 
-
-        // const usedHashKeys = Object.keys(this.usedHashes);
-        // const hashesFromPreviousRunKeys = Object.keys(this.hashesFromPreviousRun);
-        // const newArgsCache = {};
-        // const newUsedHashKeys = {};
-
-        // let hashesToDelete = [];
-        // if (usedHashKeys.length > 0 && hashesFromPreviousRunKeys.length > 0) {
-        //     hashesToDelete = usedHashKeys.filter(hash => !hashesFromPreviousRunKeys.includes(hash));
-        // }
-        // hashesFromPreviousRunKeys.forEach(hash => {
-        //     newArgsCache[hash] = this.argCache[hash];
-        //     newUsedHashKeys[hash] = this.usedHashes[hash];
-        // });
-
-        // if (hashesToDelete.length > 0) {
-        //     hashesToDelete.forEach(hash => {
-        //         if (this.argCache[hash]) {
-        //             this.argCache[hash].delete();
-        //         }
-        //     });
-        // }
-        // this.argCache = newArgsCache;
-        // this.usedHashes = newUsedHashKeys;
-        // this.hashesFromPreviousRun = {};
-    }
-
-    /** Hashes input arguments and checks the cache for that hash.
-     * It returns a copy of the cached object if it exists, but will
-     * call the `cacheMiss()` callback otherwise. The result will be
-     * added to the cache if `GUIState["Cache?"]` is true.
-     */
     cacheOp(args, cacheMiss): any {
         let toReturn = null;
         const curHash = this.computeHash(args);
@@ -85,9 +51,8 @@ export class CacheHelper {
     }
     /** Adds this `shape` to the cache, indexable by `hash`. */
     addToCache(hash, shape): any {
-        // TODO I need to check if and why casting is required. Having real objects in the cache can be used to free up memory?
         const cacheShape = shape;
-        cacheShape.hash = hash; // This is the cached version of the object
+        cacheShape.hash = hash;
         this.argCache[hash] = cacheShape;
         return hash;
     }
@@ -127,23 +92,4 @@ export class CacheHelper {
         });
     }
 
-    private dupShape(shape): any {
-        if (shape.ShapeType() === this.jscad.TopAbs_ShapeEnum.TopAbs_WIRE) {
-            return this.jscad.TopoDS.Wire_1(shape);
-        } else if (shape.ShapeType() === this.jscad.TopAbs_ShapeEnum.TopAbs_SHELL) {
-            return this.jscad.TopoDS.Shell_1(shape);
-        } else if (shape.ShapeType() === this.jscad.TopAbs_ShapeEnum.TopAbs_EDGE) {
-            return this.jscad.TopoDS.Edge_1(shape);
-        } else if (shape.ShapeType() === this.jscad.TopAbs_ShapeEnum.TopAbs_SOLID) {
-            return this.jscad.TopoDS.Solid_1(shape);
-        } else if (shape.ShapeType() === this.jscad.TopAbs_ShapeEnum.TopAbs_FACE) {
-            return this.jscad.TopoDS.Face_1(shape);
-        } else if (shape.ShapeType() === this.jscad.TopAbs_ShapeEnum.TopAbs_COMPOUND) {
-            return this.jscad.TopoDS.Compound_1(shape);
-        } else if (shape.ShapeType() === this.jscad.TopAbs_ShapeEnum.TopAbs_COMPSOLID) {
-            return this.jscad.TopoDS.CompSolid_1(shape);
-        } else if (shape.ShapeType() === this.jscad.TopAbs_ShapeEnum.TopAbs_VERTEX) {
-            return this.jscad.TopoDS.Vertex_1(shape);
-        }
-    }
 }

@@ -8,6 +8,7 @@ import {
     Polyline,
     Verb,
     JSCAD,
+    ManifoldBitByBit,
     Tag,
     Time,
     TextBitByBit,
@@ -24,6 +25,7 @@ import {
 import { Draw } from "./bitbybit/draw";
 import { Context } from "./context";
 import { JSCADWorkerManager } from "@bitbybit-dev/core/lib/workers/jscad/jscad-worker-manager";
+import { ManifoldWorkerManager } from "@bitbybit-dev/core/lib/workers/manifold/manifold-worker-manager";
 import * as BABYLON from "@babylonjs/core";
 import * as vrb from "verb-nurbs-web";
 import { DrawHelper } from "./draw-helper";
@@ -32,6 +34,7 @@ export class BitByBitBase {
 
     public context: Context;
     public jscadWorkerManager: JSCADWorkerManager;
+    public manifoldWorkerManager: ManifoldWorkerManager;
     public occtWorkerManager: OCCTWorkerManager;
 
     public math: MathBitByBit;
@@ -47,6 +50,7 @@ export class BitByBitBase {
     public draw: Draw;
     public verb: Verb;
     public jscad: JSCAD;
+    public manifold: ManifoldBitByBit;
     public text: TextBitByBit;
     public tag: Tag;
     public time: Time;
@@ -57,13 +61,15 @@ export class BitByBitBase {
     constructor() {
         this.context = new Context();
         this.jscadWorkerManager = new JSCADWorkerManager();
+        this.manifoldWorkerManager = new ManifoldWorkerManager();
         this.occtWorkerManager = new OCCTWorkerManager();
         this.jscad = new JSCAD(this.jscadWorkerManager);
+        this.manifold = new ManifoldBitByBit(this.manifoldWorkerManager);
 
         const geometryHelper = new GeometryHelper();
         this.math = new MathBitByBit();
         this.vector = new Vector(this.context, this.math, geometryHelper);
-        const drawHelper = new DrawHelper(this.context, this.jscad.text, this.vector, this.jscadWorkerManager, this.occtWorkerManager,);
+        const drawHelper = new DrawHelper(this.context, this.jscad.text, this.vector, this.jscadWorkerManager, this.manifoldWorkerManager, this.occtWorkerManager,);
         this.babylon = new Babylon(this.context, drawHelper, this.color);
         this.tag = new Tag(this.context);
         this.draw = new Draw(

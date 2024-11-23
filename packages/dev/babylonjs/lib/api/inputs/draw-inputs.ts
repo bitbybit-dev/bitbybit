@@ -6,7 +6,7 @@ import { Base } from "./base-inputs";
 // tslint:disable-next-line: no-namespace
 export namespace Draw {
 
-    export type DrawOptions = DrawBasicGeometryOptions | DrawOcctShapeOptions | DrawOcctShapeSimpleOptions | DrawOcctShapeMaterialOptions | DrawNodeOptions;
+    export type DrawOptions = DrawBasicGeometryOptions | DrawManifoldOptions | DrawOcctShapeOptions | DrawOcctShapeSimpleOptions | DrawOcctShapeMaterialOptions | DrawNodeOptions;
     export type Entity = Base.Point3 | Base.Vector3 | Base.Line3 | Base.Polyline3 | Base.VerbCurve | Base.VerbSurface | Inputs.OCCT.TopoDSShapePointer | Inputs.Tag.TagDto | { type: string, name: string } |
     Base.Point3[] | Base.Vector3[] | Base.Line3[] | Base.Polyline3[] | Base.VerbCurve[] | Base.VerbSurface[] | Inputs.OCCT.TopoDSShapePointer[] | Inputs.Tag.TagDto[] | { type: string[], name: string };
 
@@ -198,7 +198,35 @@ export namespace Draw {
          */
         size = 2;
     }
-
+    export class DrawManifoldOptions {
+        /**
+         * Provide options without default values
+         */
+        constructor(faceOpacity?: number, faceMaterial?: Base.Material, faceColour?: Base.Color) {
+            if (faceOpacity !== undefined) { this.faceOpacity = faceOpacity; }
+            if (faceMaterial !== undefined) { this.faceMaterial = faceMaterial; }
+            if (faceColour !== undefined) { this.faceColour = faceColour; }
+        }
+        /**
+         * Face opacity value between 0 and 1
+         * @default 1
+         * @minimum 0
+         * @maximum 1
+         * @step 0.1
+         */
+        faceOpacity = 1;
+        /**
+         * Hex colour string for face colour
+         * @default #ff0000
+         */
+        faceColour: Base.Color = "#ff0000";
+        /**
+         * Face material
+         * @default undefined
+         * @optional true
+         */
+        faceMaterial?: Base.Material;
+    }
     /**
      * Draw options for OCCT shapes
      */
@@ -440,6 +468,7 @@ export namespace Draw {
         jscadMesh,
         jscadMeshes,
         occt,
+        manifold,
         tag,
         tags,
     }

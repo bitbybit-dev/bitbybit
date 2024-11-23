@@ -2,8 +2,9 @@ import * as BABYLON from "@babylonjs/core";
 import { Context } from "./context";
 import * as Inputs from "./inputs";
 import { JSCADText, Vector, DrawHelperCore } from "@bitbybit-dev/core";
-import { JSCADWorkerManager } from "@bitbybit-dev/core/lib/workers";
+import { JscadWorker, ManifoldWorker } from "@bitbybit-dev/core/lib/workers";
 import { OCCTWorkerManager } from "@bitbybit-dev/occt-worker";
+import * as Manifold3D from "manifold-3d";
 
 export class DrawHelper extends DrawHelperCore {
 
@@ -19,7 +20,8 @@ export class DrawHelper extends DrawHelperCore {
         private readonly context: Context,
         private readonly solidText: JSCADText,
         override readonly vector: Vector,
-        private readonly jscadWorkerManager: JSCADWorkerManager,
+        private readonly jscadWorkerManager: JscadWorker.JSCADWorkerManager,
+        private readonly manifoldWorkerManager: ManifoldWorker.ManifoldWorkerManager,
         private readonly occWorkerManager: OCCTWorkerManager) {
         super(vector);
     }
@@ -630,6 +632,11 @@ export class DrawHelper extends DrawHelperCore {
 
     }
 
+    async drawManifold(inputs: Inputs.Manifold.DrawManifoldDto<Inputs.Manifold.ManifoldPointer, BABYLON.PBRMetallicRoughnessMaterial>): Promise<BABYLON.Mesh> {
+        const decomposedMesh: Manifold3D.Mesh = await this.manifoldWorkerManager.genericCallToWorkerPromise("manifoldToMesh", inputs);
+        return this.handleDecomposedManifoldMesh(inputs, decomposedMesh);
+    }
+
     async drawShape(inputs: Inputs.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer>): Promise<BABYLON.Mesh> {
         const options = { ...inputs };
         if (inputs.faceMaterial) {
@@ -653,7 +660,7 @@ export class DrawHelper extends DrawHelperCore {
         return shapesMeshContainer;
     }
 
-    private async handleDecomposedMesh(inputs: Inputs.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer>, decomposedMesh: Inputs.OCCT.DecomposedMeshDto, options: { shape?: Inputs.OCCT.TopoDSShapePointer; faceOpacity: number; edgeOpacity: number; edgeColour: string; faceMaterial?: any; faceColour: string; edgeWidth: number; drawEdges: boolean; drawFaces: boolean; precision: number; drawEdgeIndexes: boolean; edgeIndexHeight: number; edgeIndexColour: string; drawFaceIndexes: boolean; faceIndexHeight: number; faceIndexColour: string; }) {
+    private async handleDecomposedMesh(inputs: Inputs.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer>, decomposedMesh: Inputs.OCCT.DecomposedMeshDto, options: Inputs.Draw.DrawOcctShapeOptions): Promise<BABYLON.Mesh> {
         const shapeMesh = new BABYLON.Mesh("brepMesh" + Math.random(), this.context.scene);
         shapeMesh.isVisible = false;
         let dummy;
@@ -790,6 +797,82 @@ export class DrawHelper extends DrawHelperCore {
         }
         return shapeMesh;
     }
+
+    private handleDecomposedManifoldMesh(inputs: Inputs.Manifold.DrawManifoldDto<Inputs.Manifold.ManifoldPointer, BABYLON.PBRMetallicRoughnessMaterial>, decomposedMesh: Manifold3D.Mesh): BABYLON.Mesh {
+        const mesh = new BABYLON.Mesh(`surface${Math.random()}`, this.context.scene);
+
+        const vertexData = new BABYLON.VertexData();
+
+        vertexData.indices = decomposedMesh.triVerts.length > 65535 ? new Uint32Array(decomposedMesh.triVerts) : new Uint16Array(decomposedMesh.triVerts);
+
+        for (let i = 0; i < decomposedMesh.triVerts.length; i += 3) {
+            vertexData.indices[i] = decomposedMesh.triVerts[i + 2];
+            vertexData.indices[i + 1] = decomposedMesh.triVerts[i + 1];
+            vertexData.indices[i + 2] = decomposedMesh.triVerts[i];
+        }
+
+        const vertexCount = decomposedMesh.vertProperties.length / decomposedMesh.numProp;
+
+        // Attributes
+        let offset = 0;
+        for (let componentIndex = 0; componentIndex < 1; componentIndex++) {
+            const component = { stride: 3, kind: "position" };
+
+            const data = new Float32Array(vertexCount * component.stride);
+            for (let i = 0; i < vertexCount; i++) {
+                for (let strideIndex = 0; strideIndex < component.stride; strideIndex++) {
+                    data[i * component.stride + strideIndex] = decomposedMesh.vertProperties[i * decomposedMesh.numProp + offset + strideIndex];
+                }
+            }
+            vertexData.set(data, component.kind);
+            offset += component.stride;
+        }
+
+        vertexData.applyToMesh(mesh, false);
+
+        if (inputs.faceMaterial === undefined) {
+            const material = new BABYLON.PBRMetallicRoughnessMaterial("pbr" + Math.random(), this.context.scene);
+            material.baseColor = BABYLON.Color3.FromHexString(inputs.faceColour);
+            material.metallic = 1.0;
+            material.roughness = 0.6;
+            material.alpha = inputs.faceOpacity;
+            material.alphaMode = 1;
+            material.backFaceCulling = true;
+            material.doubleSided = false;
+            mesh.material = material;
+        } else {
+            mesh.material = inputs.faceMaterial;
+        }
+
+        return mesh;
+    }
+
+    // mesh2geometry(mesh: Mesh) {
+    //     const geometry = new BufferGeometry();
+    //     // Assign buffers
+    //     geometry.setAttribute(
+    //         'position', new BufferAttribute(mesh.vertProperties, 3));
+    //     geometry.setIndex(new BufferAttribute(mesh.triVerts, 1));
+    //     // Create a group (material) for each ID. Note that there may be multiple
+    //     // triangle runs returned with the same ID, though these will always be
+    //     // sequential since they are sorted by ID. In this example there are two runs
+    //     // for the MeshNormalMaterial, one corresponding to each input mesh that had
+    //     // this ID. This allows runTransform to return the total transformation matrix
+    //     // applied to each triangle run from its input mesh - even after many
+    //     // consecutive operations.
+    //     let id = mesh.runOriginalID[0];
+    //     let start = mesh.runIndex[0];
+    //     for (let run = 0; run < mesh.numRun; ++run) {
+    //         const nextID = mesh.runOriginalID[run + 1];
+    //         if (nextID !== id) {
+    //             const end = mesh.runIndex[run + 1];
+    //             geometry.addGroup(start, end - start, id2matIndex.get(id));
+    //             id = nextID;
+    //             start = end;
+    //         }
+    //     }
+    //     return geometry;
+    // }
 
     private createLineSystemMesh(updatable: boolean, lines: BABYLON.Vector3[][], colors: BABYLON.Color4[][]): BABYLON.LinesMesh {
         return BABYLON.MeshBuilder.CreateLineSystem(`lines${Math.random()}`,

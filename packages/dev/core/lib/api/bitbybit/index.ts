@@ -1,4 +1,5 @@
 export * from "./jscad";
+export * from "./manifold";
 export * from "./occt";
 export * from "./verb";
 export * from "./asset";
