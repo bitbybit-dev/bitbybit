@@ -28,7 +28,7 @@ export class ManifoldBitByBit {
      * @shortname decompose m or cs
      * @drawable false
      */
-    async decomposeManifoldOrCrossSection(inputs: Inputs.Manifold.ManifoldToMeshDto<Inputs.Manifold.ManifoldPointer | Inputs.Manifold.ManifoldCrossSectionPointer>): Promise<Manifold3D.Mesh | Manifold3D.SimplePolygon[]> {
+    async decomposeManifoldOrCrossSection(inputs: Inputs.Manifold.DecomposeManifoldOrCrossSectionDto<Inputs.Manifold.ManifoldPointer | Inputs.Manifold.CrossSectionPointer>): Promise<Manifold3D.Mesh | Manifold3D.SimplePolygon[]> {
         return this.manifoldWorkerManager.genericCallToWorkerPromise("decomposeManifoldOrCrossSection", inputs);
     }
 
@@ -40,7 +40,7 @@ export class ManifoldBitByBit {
      * @shortname decompose m's or cs's
      * @drawable false
      */
-    async decomposeManifoldsOrCrossSections(inputs: Inputs.Manifold.ManifoldsToMeshesDto<Inputs.Manifold.ManifoldPointer | Inputs.Manifold.ManifoldCrossSectionPointer>): Promise<(Manifold3D.Mesh | Manifold3D.SimplePolygon)[]> {
+    async decomposeManifoldsOrCrossSections(inputs: Inputs.Manifold.DecomposeManifoldsOrCrossSectionsDto<Inputs.Manifold.ManifoldPointer | Inputs.Manifold.CrossSectionPointer>): Promise<(Manifold3D.Mesh | Manifold3D.SimplePolygon)[]> {
         return this.manifoldWorkerManager.genericCallToWorkerPromise("decomposeManifoldsOrCrossSections", inputs);
     }
 

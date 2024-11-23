@@ -632,8 +632,8 @@ export class DrawHelper extends DrawHelperCore {
 
     }
 
-    async drawManifold(inputs: Inputs.Manifold.DrawManifoldDto<Inputs.Manifold.ManifoldPointer, BABYLON.PBRMetallicRoughnessMaterial>): Promise<BABYLON.Mesh> {
-        const decomposedMesh: Manifold3D.Mesh = await this.manifoldWorkerManager.genericCallToWorkerPromise("manifoldToMesh", inputs);
+    async drawManifoldOrCrossSection(inputs: Inputs.Manifold.DrawManifoldOrCrossSectionDto<Inputs.Manifold.ManifoldPointer | Inputs.Manifold.CrossSectionPointer, BABYLON.PBRMetallicRoughnessMaterial>): Promise<BABYLON.Mesh> {
+        const decomposedMesh: Manifold3D.Mesh = await this.manifoldWorkerManager.genericCallToWorkerPromise("decomposeManifoldOrCrossSection", inputs);
         return this.handleDecomposedManifold(inputs, decomposedMesh);
     }
 
@@ -799,7 +799,7 @@ export class DrawHelper extends DrawHelperCore {
     }
 
     private handleDecomposedManifold(
-        inputs: Inputs.Manifold.DrawManifoldDto<Inputs.Manifold.ManifoldPointer, BABYLON.PBRMetallicRoughnessMaterial>,
+        inputs: Inputs.Manifold.DrawManifoldOrCrossSectionDto<Inputs.Manifold.ManifoldPointer, BABYLON.PBRMetallicRoughnessMaterial>,
         decomposedManifold: Manifold3D.Mesh | Manifold3D.SimplePolygon[]): BABYLON.Mesh {
         if ((decomposedManifold as Manifold3D.Mesh).vertProperties) {
             const decomposedMesh = decomposedManifold as Manifold3D.Mesh;

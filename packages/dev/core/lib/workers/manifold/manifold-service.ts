@@ -15,19 +15,19 @@ export class ManifoldService {
         this.manifold = new Manifold(wasm);
     }
 
-    decomposeManifoldOrCrossSection(inputs: Inputs.Manifold.ManifoldToMeshDto<Manifold3D.Manifold | Manifold3D.CrossSection>): Manifold3D.Mesh | Manifold3D.SimplePolygon[] {
-        if ((inputs.manifold as Manifold3D.Manifold).getMesh) {
-            return (inputs.manifold as Manifold3D.Manifold).getMesh(inputs.normalIdx);
+    decomposeManifoldOrCrossSection(inputs: Inputs.Manifold.DecomposeManifoldOrCrossSectionDto<Manifold3D.Manifold | Manifold3D.CrossSection>): Manifold3D.Mesh | Manifold3D.SimplePolygon[] {
+        if ((inputs.manifoldOrCrossSection as Manifold3D.Manifold).getMesh) {
+            return (inputs.manifoldOrCrossSection as Manifold3D.Manifold).getMesh(inputs.normalIdx);
         } else {
-            return (inputs.manifold as Manifold3D.CrossSection).toPolygons();
+            return (inputs.manifoldOrCrossSection as Manifold3D.CrossSection).toPolygons();
         }
     }
 
-    decomposeManifoldsOrCrossSections(inputs: Inputs.Manifold.ManifoldsToMeshesDto<Manifold3D.Manifold | Manifold3D.CrossSection>): (Manifold3D.Mesh | Manifold3D.SimplePolygon[])[] {
-        return inputs.manifolds.map((manifold, index) => {
+    decomposeManifoldsOrCrossSections(inputs: Inputs.Manifold.DecomposeManifoldsOrCrossSectionsDto<Manifold3D.Manifold | Manifold3D.CrossSection>): (Manifold3D.Mesh | Manifold3D.SimplePolygon[])[] {
+        return inputs.manifoldsOrCrossSections.map((manifoldOrCrossSection, index) => {
             const normalIdx = inputs.normalIdx ? inputs.normalIdx[index] : undefined;
             return this.decomposeManifoldOrCrossSection({
-                manifold,
+                manifoldOrCrossSection,
                 normalIdx
             });
         });

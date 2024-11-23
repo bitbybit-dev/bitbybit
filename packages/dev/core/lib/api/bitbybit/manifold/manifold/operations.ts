@@ -25,16 +25,4 @@ export class ManifoldOperations {
         return this.manifoldWorkerManager.genericCallToWorkerPromise("manifold.operations.hull", inputs);
     }
 
-    /**
-     * Extrude the cross section to create a 3D shape
-     * @param inputs cross section and extrusion parameters
-     * @returns extruded manifold shape
-     * @group extrusions
-     * @shortname extrude
-     * @drawable true
-     */
-    async extrude(inputs: Inputs.Manifold.ExtrudeDto<Inputs.Manifold.ManifoldCrossSectionPointer>): Promise<Inputs.Manifold.ManifoldPointer> {
-        return this.manifoldWorkerManager.genericCallToWorkerPromise("manifold.operations.extrude", inputs);
-    }
-
 }

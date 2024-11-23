@@ -10,19 +10,31 @@ export class CrossSectionOperations {
 
     constructor(
         private readonly manifoldWorkerManager: ManifoldWorkerManager,
-
     ) { }
 
     /**
      * Extrude the cross section to create a 3D shape
      * @param inputs cross section and extrusion parameters
      * @returns extruded manifold shape
-     * @group extrusions
+     * @group basic
      * @shortname extrude
      * @drawable true
      */
-    async extrude(inputs: Inputs.Manifold.ExtrudeDto<Inputs.Manifold.ManifoldCrossSectionPointer>): Promise<Inputs.Manifold.ManifoldPointer> {
+    async extrude(inputs: Inputs.Manifold.ExtrudeDto<Inputs.Manifold.CrossSectionPointer>): Promise<Inputs.Manifold.ManifoldPointer> {
         return this.manifoldWorkerManager.genericCallToWorkerPromise("crossSection.operations.extrude", inputs);
     }
+
+    /**
+     * Revolve the cross section to create a 3D shape
+     * @param inputs cross section and extrusion parameters
+     * @returns extruded manifold shape
+     * @group basic
+     * @shortname revolve
+     * @drawable true
+     */
+    async revolve(inputs: Inputs.Manifold.RevolveDto<Inputs.Manifold.CrossSectionPointer>): Promise<Inputs.Manifold.ManifoldPointer> {
+        return this.manifoldWorkerManager.genericCallToWorkerPromise("crossSection.operations.revolve", inputs);
+    }
+
 
 }

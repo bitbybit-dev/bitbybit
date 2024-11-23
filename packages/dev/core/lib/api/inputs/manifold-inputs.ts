@@ -4,14 +4,21 @@ import { Base } from "./base-inputs";
 // tslint:disable-next-line: no-namespace
 export namespace Manifold {
     export type ManifoldPointer = { hash: number, type: string };
-    export type ManifoldCrossSectionPointer = { hash: number, type: string };
+    export type CrossSectionPointer = { hash: number, type: string };
 
-    export class DrawManifoldDto<T, M> {
+    export enum fillRuleEnum {
+        evenOdd = "EvenOdd",
+        nonZero = "NonZero",
+        positive = "Positive",
+        negative = "Negative"
+    }
+
+    export class DrawManifoldOrCrossSectionDto<T, M> {
         /**
          * Provide options without default values
          */
-        constructor(manifold?: T, faceOpacity?: number, faceMaterial?: M, faceColour?: Base.Color) {
-            if (manifold !== undefined) { this.manifold = manifold; }
+        constructor(manifoldOrCrossSection?: T, faceOpacity?: number, faceMaterial?: M, faceColour?: Base.Color) {
+            if (manifoldOrCrossSection !== undefined) { this.manifoldOrCrossSection = manifoldOrCrossSection; }
             if (faceOpacity !== undefined) { this.faceOpacity = faceOpacity; }
             if (faceMaterial !== undefined) { this.faceMaterial = faceMaterial; }
             if (faceColour !== undefined) { this.faceColour = faceColour; }
@@ -20,7 +27,7 @@ export namespace Manifold {
          * Manifold geometry
          * @default undefined
          */
-        manifold?: T;
+        manifoldOrCrossSection?: T;
         /**
          * Face opacity value between 0 and 1
          * @default 1
@@ -69,6 +76,22 @@ export namespace Manifold {
          * @step 0.1
          */
         size = 1;
+    }
+    export class CreateContourSectionDto {
+        constructor(polygons?: Base.Vector2[][], fillRule?: fillRuleEnum) {
+            if (polygons !== undefined) { this.polygons = polygons; }
+            if (fillRule !== undefined) { this.fillRule = fillRule; }
+        }
+        /**
+         * Polygons to use for the contour section
+         * @default undefined
+         */
+        polygons: Base.Vector2[][];
+        /**
+         * Fill rule for the contour section
+         * @default EvenOdd
+         */
+        fillRule: fillRuleEnum = fillRuleEnum.evenOdd;
     }
     export class SquareDto {
         constructor(center?: boolean, size?: number) {
@@ -221,9 +244,19 @@ export namespace Manifold {
             if (crossSection !== undefined) { this.crossSection = crossSection; }
         }
         /**
-         * Manifold cross section shape
+         * Cross section
          */
         crossSection: T;
+    }
+
+    export class CrossSectionsDto<T> {
+        constructor(crossSections?: T[]) {
+            if (crossSections !== undefined) { this.crossSections = crossSections; }
+        }
+        /**
+         * Cross sections
+         */
+        crossSections: T[];
     }
     export class ExtrudeDto<T> {
         constructor(crossSection?: T) {
@@ -278,6 +311,149 @@ export namespace Manifold {
          * @default true
         */
         center = true;
+    }
+
+    export class RevolveDto<T> {
+        constructor(crossSection?: T, revolveDegrees?: number, circularSegments?: number) {
+            if (crossSection !== undefined) { this.crossSection = crossSection; }
+            if (revolveDegrees !== undefined) { this.revolveDegrees = revolveDegrees; }
+            if (circularSegments !== undefined) { this.circularSegments = circularSegments; }
+        }
+        /**
+         * Revolve cross section shape
+         */
+        crossSection: T;
+        /**
+         * Extrude cross section shape
+         * @default 360
+         * @minimum 0
+         * @maximum Infinity
+         * @step 1
+         */
+        revolveDegrees: number;
+        /**
+         * Circular segments
+         * @default 32
+         * @minimum 0
+         * @maximum Infinity
+         * @step 1
+         */
+        circularSegments = 32;
+    }
+    export class MirrorCrossSectionDto<T> {
+        constructor(crossSection?: T, normal?: Base.Vector2) {
+            if (crossSection !== undefined) { this.crossSection = crossSection; }
+            if (normal !== undefined) { this.normal = normal; }
+        }
+        /**
+         * Manifold shape
+         */
+        crossSection: T;
+        /**
+         * The normal vector of the plane to be mirrored over
+         * @default [1,0]
+         */
+        normal: Base.Vector2 = [1, 0];
+    }
+    export class Scale2DCrossSectionDto<T> {
+        constructor(crossSection?: T, vector?: Base.Vector2) {
+            if (crossSection !== undefined) { this.crossSection = crossSection; }
+            if (vector !== undefined) { this.vector = vector; }
+        }
+        /**
+         * Manifold shape
+         */
+        crossSection: T;
+        /**
+         * The normal vector of the plane to be mirrored over
+         * @default [2,2]
+         */
+        vector: Base.Vector2 = [2, 2];
+    }
+    export class TranslateCrossSectionDto<T> {
+        constructor(crossSection?: T, vector?: Base.Vector2) {
+            if (crossSection !== undefined) { this.crossSection = crossSection; }
+            if (vector !== undefined) { this.vector = vector; }
+        }
+        /**
+         * Manifold shape
+         */
+        crossSection: T;
+        /**
+         * The translation vector
+         * @default undefined
+         */
+        vector: Base.Vector2;
+    }
+    export class RotateCrossSectionDto<T> {
+        constructor(crossSection?: T, degrees?: number) {
+            if (crossSection !== undefined) { this.crossSection = crossSection; }
+            if (degrees !== undefined) { this.degrees = degrees; }
+        }
+        /**
+         * Manifold shape
+         */
+        crossSection: T;
+        /**
+         * The rotation vector in eulers
+         * @default 45
+         * @minimum -Infinity
+         * @maximum Infinity
+         * @step 1
+         */
+        degrees: number;
+    }
+    export class ScaleCrossSectionDto<T> {
+        constructor(crossSection?: T, factor?: number) {
+            if (crossSection !== undefined) { this.crossSection = crossSection; }
+            if (factor !== undefined) { this.factor = factor; }
+        }
+        /**
+         * Manifold shape
+         */
+        crossSection: T;
+        /**
+         * The normal vector of the plane to be mirrored over
+         * @default 2
+         */
+        factor = 2;
+    }
+    export class TranslateXYCrossSectionDto<T> {
+        constructor(crossSection?: T, x?: number, y?: number) {
+            if (crossSection !== undefined) { this.crossSection = crossSection; }
+            if (x !== undefined) { this.x = x; }
+            if (y !== undefined) { this.y = y; }
+        }
+        /**
+         * Manifold shape
+         */
+        crossSection: T;
+        /**
+         * The translation X axis
+         * @default undefined
+         */
+        x = 0;
+        /**
+         * The translation Y axis
+         * @default undefined
+         */
+        y = 0;
+    }
+
+    export class TransformCrossSectionDto<T> {
+        constructor(crossSection?: T, transform?: Base.TransformMatrix3x3) {
+            if (crossSection !== undefined) { this.crossSection = crossSection; }
+            if (transform !== undefined) { this.transform = transform; }
+        }
+        /**
+         * Cross section
+         */
+        crossSection: T;
+        /**
+         * The transform matrix to apply
+         * @default undefined
+         */
+        transform: Base.TransformMatrix3x3;
     }
     export class MirrorDto<T> {
         constructor(manifold?: T, normal?: Base.Vector3) {
@@ -485,6 +661,34 @@ export namespace Manifold {
          * Manifold shape
          */
         manifolds: T[];
+        /**
+         * Optional normal indexes
+         */
+        normalIdx?: number[];
+    }
+    export class DecomposeManifoldOrCrossSectionDto<T> {
+        constructor(manifoldOrCrossSection?: T, normalIdx?: number) {
+            if (manifoldOrCrossSection !== undefined) { this.manifoldOrCrossSection = manifoldOrCrossSection; }
+            if (normalIdx !== undefined) { this.normalIdx = normalIdx; }
+        }
+        /**
+         * Manifold shape
+         */
+        manifoldOrCrossSection: T;
+        /**
+         * Optional normal index
+         */
+        normalIdx?: number;
+    }
+    export class DecomposeManifoldsOrCrossSectionsDto<T> {
+        constructor(manifoldsOrCrossSections?: T[], normalIdx?: number[]) {
+            if (manifoldsOrCrossSections !== undefined) { this.manifoldsOrCrossSections = manifoldsOrCrossSections; }
+            if (normalIdx !== undefined) { this.normalIdx = normalIdx; }
+        }
+        /**
+         * Manifold shape
+         */
+        manifoldsOrCrossSections: T[];
         /**
          * Optional normal indexes
          */

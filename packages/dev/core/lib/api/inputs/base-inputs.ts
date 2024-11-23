@@ -25,6 +25,8 @@ export namespace Base {
     export type Polyline2 = { points: Base.Point2[], isClosed?: boolean };
     export type VerbCurve = { tessellate: (options: any) => any };
     export type VerbSurface = { tessellate: (options: any) => any };
+    export type TransformMatrix3x3 = [number, number, number, number, number, number, number, number, number];
+    export type TransformMatrixes3x3 = TransformMatrix3x3[];
     export type TransformMatrix = [number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number];
     export type TransformMatrixes = TransformMatrix[];
 }

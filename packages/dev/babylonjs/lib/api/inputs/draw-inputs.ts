@@ -6,7 +6,7 @@ import { Base } from "./base-inputs";
 // tslint:disable-next-line: no-namespace
 export namespace Draw {
 
-    export type DrawOptions = DrawBasicGeometryOptions | DrawManifoldOptions | DrawOcctShapeOptions | DrawOcctShapeSimpleOptions | DrawOcctShapeMaterialOptions | DrawNodeOptions;
+    export type DrawOptions = DrawBasicGeometryOptions | DrawManifoldOrCrossSectionOptions | DrawOcctShapeOptions | DrawOcctShapeSimpleOptions | DrawOcctShapeMaterialOptions | DrawNodeOptions;
     export type Entity = Base.Point3 | Base.Vector3 | Base.Line3 | Base.Polyline3 | Base.VerbCurve | Base.VerbSurface | Inputs.OCCT.TopoDSShapePointer | Inputs.Tag.TagDto | { type: string, name: string } |
         Base.Point3[] | Base.Vector3[] | Base.Line3[] | Base.Polyline3[] | Base.VerbCurve[] | Base.VerbSurface[] | Inputs.OCCT.TopoDSShapePointer[] | Inputs.Tag.TagDto[] | { type: string[], name: string };
 
@@ -198,14 +198,16 @@ export namespace Draw {
          */
         size = 2;
     }
-    export class DrawManifoldOptions {
+    export class DrawManifoldOrCrossSectionOptions {
         /**
          * Provide options without default values
          */
-        constructor(faceOpacity?: number, faceMaterial?: Base.Material, faceColour?: Base.Color) {
+        constructor(faceOpacity?: number, faceMaterial?: Base.Material, faceColour?: Base.Color, crossSectionColour?: Base.Color, crossSectionWidth?: number) {
             if (faceOpacity !== undefined) { this.faceOpacity = faceOpacity; }
             if (faceMaterial !== undefined) { this.faceMaterial = faceMaterial; }
             if (faceColour !== undefined) { this.faceColour = faceColour; }
+            if (crossSectionColour !== undefined) { this.crossSectionColour = crossSectionColour; }
+            if (crossSectionWidth !== undefined) { this.crossSectionWidth = crossSectionWidth; }
         }
         /**
          * Face opacity value between 0 and 1

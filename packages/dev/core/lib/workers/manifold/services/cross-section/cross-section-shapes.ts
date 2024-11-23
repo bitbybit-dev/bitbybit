@@ -9,6 +9,11 @@ export class CrossSectionShapes {
         this.manifold = wasm;
     }
 
+    create(inputs: Inputs.Manifold.CreateContourSectionDto): Manifold3D.CrossSection {
+        const { CrossSection } = this.manifold;
+        return new CrossSection(inputs.polygons, inputs.fillRule);
+    }
+
     square(inputs: Inputs.Manifold.SquareDto): Manifold3D.CrossSection {
         const { CrossSection } = this.manifold;
         const { square } = CrossSection;

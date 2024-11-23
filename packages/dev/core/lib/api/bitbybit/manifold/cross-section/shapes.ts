@@ -3,7 +3,7 @@ import { ManifoldWorkerManager } from "../../../../workers/manifold/manifold-wor
 import * as Inputs from "../../../inputs/inputs";
 
 /**
- * Contains various functions for Solid meshes from Manifold library https://github.com/elalish/manifold
+ * Contains various functions for making shapes Manifold library https://github.com/elalish/manifold
  * Thanks Manifold community for developing this kernel
  */
 export class CrossSectionShapes {
@@ -15,13 +15,25 @@ export class CrossSectionShapes {
 
     /**
      * Create a 2D square cross section
+     * @param inputs polygons and fill rule
+     * @returns cross section
+     * @group base
+     * @shortname create
+     * @drawable true
+     */
+    async create(inputs: Inputs.Manifold.CreateContourSectionDto): Promise<Inputs.Manifold.CrossSectionPointer> {
+        return this.manifoldWorkerManager.genericCallToWorkerPromise("crossSection.shapes.create", inputs);
+    }
+
+    /**
+     * Create a 2D square cross section
      * @param inputs Square parameters
      * @returns square cross section
      * @group primitives
      * @shortname square
      * @drawable true
      */
-    async square(inputs: Inputs.Manifold.SquareDto): Promise<Inputs.Manifold.ManifoldCrossSectionPointer> {
+    async square(inputs: Inputs.Manifold.SquareDto): Promise<Inputs.Manifold.CrossSectionPointer> {
         return this.manifoldWorkerManager.genericCallToWorkerPromise("crossSection.shapes.square", inputs);
     }
 
@@ -33,7 +45,7 @@ export class CrossSectionShapes {
      * @shortname circle
      * @drawable true
      */
-    async circle(inputs: Inputs.Manifold.CircleDto): Promise<Inputs.Manifold.ManifoldCrossSectionPointer> {
+    async circle(inputs: Inputs.Manifold.CircleDto): Promise<Inputs.Manifold.CrossSectionPointer> {
         return this.manifoldWorkerManager.genericCallToWorkerPromise("crossSection.shapes.circle", inputs);
     }
 
@@ -45,7 +57,8 @@ export class CrossSectionShapes {
      * @shortname rectangle
      * @drawable true
      */
-    async rectangle(inputs: Inputs.Manifold.RectangleDto): Promise<Inputs.Manifold.ManifoldCrossSectionPointer> {
+    async rectangle(inputs: Inputs.Manifold.RectangleDto): Promise<Inputs.Manifold.CrossSectionPointer> {
         return this.manifoldWorkerManager.genericCallToWorkerPromise("crossSection.shapes.rectangle", inputs);
     }
+
 }

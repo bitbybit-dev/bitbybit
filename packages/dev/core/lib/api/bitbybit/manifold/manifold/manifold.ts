@@ -32,7 +32,7 @@ export class Manifold {
      * @param inputs Manifold shape
      * @returns Decomposed mesh definition
      * @group meshing
-     * @shortname shape to mesh
+     * @shortname manifold to mesh
      * @drawable false
      */
     async manifoldToMesh(inputs: Inputs.Manifold.ManifoldToMeshDto<Inputs.Manifold.ManifoldPointer>): Promise<Manifold3D.Mesh> {
@@ -44,7 +44,7 @@ export class Manifold {
      * @param inputs Manifold shapes
      * @returns Decomposed mesh definitions
      * @group meshing
-     * @shortname shapes to meshes
+     * @shortname manifolds to meshes
      * @drawable false
      */
     async manifoldsToMeshes(inputs: Inputs.Manifold.ManifoldsToMeshesDto<Inputs.Manifold.ManifoldPointer>): Promise<Manifold3D.Mesh[]> {

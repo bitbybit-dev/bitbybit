@@ -43,8 +43,6 @@ export class Draw extends DrawCore {
         super();
     }
 
-
-
     /**
      * Draws any kind of geometry and does not return anything
      * @param inputs Contains options and entities to be drawn
@@ -292,7 +290,6 @@ export class Draw extends DrawCore {
         return inputs;
     }
 
-
     /**
      * Creates draw options for manifold gemetry
      * @param inputs option definition
@@ -300,7 +297,7 @@ export class Draw extends DrawCore {
      * @group options
      * @shortname manifold shape draw options
      */
-    optionsManifoldShapeMaterial(inputs: Inputs.Draw.DrawManifoldOptions): Inputs.Draw.DrawManifoldOptions {
+    optionsManifoldShapeMaterial(inputs: Inputs.Draw.DrawManifoldOrCrossSectionOptions): Inputs.Draw.DrawManifoldOrCrossSectionOptions {
         return inputs;
     }
 
@@ -534,14 +531,14 @@ export class Draw extends DrawCore {
     }
 
     private handleManifoldShape(inputs: Inputs.Draw.DrawAny) {
-        let options = inputs.options ? inputs.options : new Inputs.Manifold.DrawManifoldDto(inputs.entity);
+        let options = inputs.options ? inputs.options : new Inputs.Manifold.DrawManifoldOrCrossSectionDto(inputs.entity);
         if (!inputs.options && inputs.babylonMesh && inputs.babylonMesh.metadata.options) {
             options = inputs.babylonMesh.metadata.options;
         }
-        return this.drawHelper.drawManifold({
-            manifold: inputs.entity as Inputs.Manifold.ManifoldPointer,
-            ...new Inputs.Draw.DrawManifoldOptions(),
-            ...options as Inputs.Draw.DrawManifoldOptions
+        return this.drawHelper.drawManifoldOrCrossSection({
+            manifoldOrCrossSection: inputs.entity as Inputs.Manifold.ManifoldPointer,
+            ...new Inputs.Draw.DrawManifoldOrCrossSectionOptions(),
+            ...options as Inputs.Draw.DrawManifoldOrCrossSectionOptions
         }).then(r => {
             this.applyGlobalSettingsAndMetadataAndShadowCasting(Inputs.Draw.drawingTypes.manifold, options, r);
             return r;
