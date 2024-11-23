@@ -1,6 +1,6 @@
 
-import { ManifoldWorkerManager } from "../../../workers/manifold/manifold-worker-manager";
-import * as Inputs from "../../inputs/inputs";
+import { ManifoldWorkerManager } from "../../../../workers/manifold/manifold-worker-manager";
+import * as Inputs from "../../../inputs/inputs";
 
 /**
  * Contains various functions for Solid meshes from Manifold library https://github.com/elalish/manifold
@@ -22,7 +22,7 @@ export class ManifoldBooleans {
      * @drawable true
      */
     async subtract(inputs: Inputs.Manifold.TwoManifoldsDto<Inputs.Manifold.ManifoldPointer>): Promise<Inputs.Manifold.ManifoldPointer> {
-        return this.manifoldWorkerManager.genericCallToWorkerPromise("booleans.subtract", inputs);
+        return this.manifoldWorkerManager.genericCallToWorkerPromise("manifold.booleans.subtract", inputs);
     }
 
     /**
@@ -34,7 +34,7 @@ export class ManifoldBooleans {
      * @drawable true
      */
     async add(inputs: Inputs.Manifold.TwoManifoldsDto<Inputs.Manifold.ManifoldPointer>): Promise<Inputs.Manifold.ManifoldPointer> {
-        return this.manifoldWorkerManager.genericCallToWorkerPromise("booleans.add", inputs);
+        return this.manifoldWorkerManager.genericCallToWorkerPromise("manifold.booleans.add", inputs);
     }
 
     /**
@@ -46,7 +46,7 @@ export class ManifoldBooleans {
      * @drawable true
      */
     async intersect(inputs: Inputs.Manifold.TwoManifoldsDto<Inputs.Manifold.ManifoldPointer>): Promise<Inputs.Manifold.ManifoldPointer> {
-        return this.manifoldWorkerManager.genericCallToWorkerPromise("booleans.intersect", inputs);
+        return this.manifoldWorkerManager.genericCallToWorkerPromise("manifold.booleans.intersect", inputs);
     }
 
     /**
@@ -58,7 +58,7 @@ export class ManifoldBooleans {
      * @drawable true
      */
     async differenceTwo(inputs: Inputs.Manifold.TwoManifoldsDto<Inputs.Manifold.ManifoldPointer>): Promise<Inputs.Manifold.ManifoldPointer> {
-        return this.manifoldWorkerManager.genericCallToWorkerPromise("booleans.differenceTwo", inputs);
+        return this.manifoldWorkerManager.genericCallToWorkerPromise("manifold.booleans.differenceTwo", inputs);
     }
 
     /**
@@ -70,7 +70,7 @@ export class ManifoldBooleans {
      * @drawable true
      */
     async unionTwo(inputs: Inputs.Manifold.TwoManifoldsDto<Inputs.Manifold.ManifoldPointer>): Promise<Inputs.Manifold.ManifoldPointer> {
-        return this.manifoldWorkerManager.genericCallToWorkerPromise("booleans.unionTwo", inputs);
+        return this.manifoldWorkerManager.genericCallToWorkerPromise("manifold.booleans.unionTwo", inputs);
     }
 
     /**
@@ -82,7 +82,7 @@ export class ManifoldBooleans {
      * @drawable true
      */
     async intersectionTwo(inputs: Inputs.Manifold.TwoManifoldsDto<Inputs.Manifold.ManifoldPointer>): Promise<Inputs.Manifold.ManifoldPointer> {
-        return this.manifoldWorkerManager.genericCallToWorkerPromise("booleans.intersectionTwo", inputs);
+        return this.manifoldWorkerManager.genericCallToWorkerPromise("manifold.booleans.intersectionTwo", inputs);
     }
 
     /**
@@ -94,7 +94,7 @@ export class ManifoldBooleans {
      * @drawable true
      */
     async difference(inputs: Inputs.Manifold.ManifoldsDto<Inputs.Manifold.ManifoldPointer>): Promise<Inputs.Manifold.ManifoldPointer> {
-        return this.manifoldWorkerManager.genericCallToWorkerPromise("booleans.difference", inputs);
+        return this.manifoldWorkerManager.genericCallToWorkerPromise("manifold.booleans.difference", inputs);
     }
 
     /**
@@ -106,7 +106,7 @@ export class ManifoldBooleans {
      * @drawable true
      */
     async union(inputs: Inputs.Manifold.ManifoldsDto<Inputs.Manifold.ManifoldPointer>): Promise<Inputs.Manifold.ManifoldPointer> {
-        return this.manifoldWorkerManager.genericCallToWorkerPromise("booleans.union", inputs);
+        return this.manifoldWorkerManager.genericCallToWorkerPromise("manifold.booleans.union", inputs);
     }
 
     /**
@@ -118,7 +118,7 @@ export class ManifoldBooleans {
      * @drawable true
      */
     async intersection(inputs: Inputs.Manifold.ManifoldsDto<Inputs.Manifold.ManifoldPointer>): Promise<Inputs.Manifold.ManifoldPointer> {
-        return this.manifoldWorkerManager.genericCallToWorkerPromise("booleans.intersection", inputs);
+        return this.manifoldWorkerManager.genericCallToWorkerPromise("manifold.booleans.intersection", inputs);
     }
 
 }

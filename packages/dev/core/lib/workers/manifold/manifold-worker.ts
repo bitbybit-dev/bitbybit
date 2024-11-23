@@ -95,7 +95,7 @@ export const onMessageInput = (d: DataInput, postMessage) => {
         }
         if (d.action.functionName === "manifoldToMesh") {
             d.action.inputs.manifold = cacheHelper.checkCache(d.action.inputs.manifold.hash);
-            result = manifold.manifoldToMesh(d.action.inputs);
+            result = manifold.decomposeManifoldOrCrossSection(d.action.inputs);
         }
         if (d.action.functionName === "manifoldsToMeshes") {
             if (d.action.inputs.manifolds && d.action.inputs.manifolds.length > 0) {
@@ -103,7 +103,7 @@ export const onMessageInput = (d: DataInput, postMessage) => {
             } else {
                 throw new Error("No manifolds detected");
             }
-            result = manifold.manifoldsToMeshes(d.action.inputs);
+            result = manifold.decomposeManifoldsOrCrossSections(d.action.inputs);
         }
         if (d.action.functionName === "deleteShape") {
             cacheHelper.cleanCacheForHash(d.action.inputs.shape.hash);

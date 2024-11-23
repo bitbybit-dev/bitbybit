@@ -1,6 +1,6 @@
 
-import { ManifoldWorkerManager } from "../../../workers/manifold/manifold-worker-manager";
-import * as Inputs from "../../inputs/inputs";
+import { ManifoldWorkerManager } from "../../../../workers/manifold/manifold-worker-manager";
+import * as Inputs from "../../../inputs/inputs";
 
 /**
  * Contains various functions for Solid meshes from Manifold library https://github.com/elalish/manifold
@@ -22,7 +22,7 @@ export class ManifoldTransforms {
      * @drawable true
      */
     async scale3D(inputs: Inputs.Manifold.Scale3DDto<Inputs.Manifold.ManifoldPointer>): Promise<Inputs.Manifold.ManifoldPointer> {
-        return this.manifoldWorkerManager.genericCallToWorkerPromise("transforms.scale3D", inputs);
+        return this.manifoldWorkerManager.genericCallToWorkerPromise("manifold.transforms.scale3D", inputs);
     }
 
     /**
@@ -34,7 +34,7 @@ export class ManifoldTransforms {
      * @drawable true
      */
     async scale(inputs: Inputs.Manifold.ScaleDto<Inputs.Manifold.ManifoldPointer>): Promise<Inputs.Manifold.ManifoldPointer> {
-        return this.manifoldWorkerManager.genericCallToWorkerPromise("transforms.scale", inputs);
+        return this.manifoldWorkerManager.genericCallToWorkerPromise("manifold.transforms.scale", inputs);
     }
 
     /**
@@ -46,7 +46,7 @@ export class ManifoldTransforms {
      * @drawable true
      */
     async mirror(inputs: Inputs.Manifold.MirrorDto<Inputs.Manifold.ManifoldPointer>): Promise<Inputs.Manifold.ManifoldPointer> {
-        return this.manifoldWorkerManager.genericCallToWorkerPromise("transforms.mirror", inputs);
+        return this.manifoldWorkerManager.genericCallToWorkerPromise("manifold.transforms.mirror", inputs);
     }
 
     /**
@@ -58,7 +58,7 @@ export class ManifoldTransforms {
     * @drawable true
     */
     async translate(inputs: Inputs.Manifold.TranslateDto<Inputs.Manifold.ManifoldPointer>): Promise<Inputs.Manifold.ManifoldPointer> {
-        return this.manifoldWorkerManager.genericCallToWorkerPromise("transforms.translate", inputs);
+        return this.manifoldWorkerManager.genericCallToWorkerPromise("manifold.transforms.translate", inputs);
     }
 
     /**
@@ -70,7 +70,7 @@ export class ManifoldTransforms {
      * @drawable true
      */
     async translateXYZ(inputs: Inputs.Manifold.TranslateXYZDto<Inputs.Manifold.ManifoldPointer>): Promise<Inputs.Manifold.ManifoldPointer> {
-        return this.manifoldWorkerManager.genericCallToWorkerPromise("transforms.translateXYZ", inputs);
+        return this.manifoldWorkerManager.genericCallToWorkerPromise("manifold.transforms.translateXYZ", inputs);
     }
 
     /**
@@ -82,7 +82,7 @@ export class ManifoldTransforms {
      * @drawable true
      */
     async rotate(inputs: Inputs.Manifold.RotateDto<Inputs.Manifold.ManifoldPointer>): Promise<Inputs.Manifold.ManifoldPointer> {
-        return this.manifoldWorkerManager.genericCallToWorkerPromise("transforms.rotate", inputs);
+        return this.manifoldWorkerManager.genericCallToWorkerPromise("manifold.transforms.rotate", inputs);
     }
 
     /**
@@ -94,7 +94,7 @@ export class ManifoldTransforms {
      * @drawable true
      */
     async rotateXYZ(inputs: Inputs.Manifold.RotateXYZDto<Inputs.Manifold.ManifoldPointer>): Promise<Inputs.Manifold.ManifoldPointer> {
-        return this.manifoldWorkerManager.genericCallToWorkerPromise("transforms.rotateXYZ", inputs);
+        return this.manifoldWorkerManager.genericCallToWorkerPromise("manifold.transforms.rotateXYZ", inputs);
     }
 
     /**
@@ -106,7 +106,7 @@ export class ManifoldTransforms {
      * @drawable true
      */
     async transform(inputs: Inputs.Manifold.TransformDto<Inputs.Manifold.ManifoldPointer>): Promise<Inputs.Manifold.ManifoldPointer> {
-        return this.manifoldWorkerManager.genericCallToWorkerPromise("transforms.transform", inputs);
+        return this.manifoldWorkerManager.genericCallToWorkerPromise("manifold.transforms.transform", inputs);
     }
 
     /**
@@ -118,7 +118,7 @@ export class ManifoldTransforms {
      * @drawable true
      */
     async transforms(inputs: Inputs.Manifold.TransformsDto<Inputs.Manifold.ManifoldPointer>): Promise<Inputs.Manifold.ManifoldPointer> {
-        return this.manifoldWorkerManager.genericCallToWorkerPromise("transforms.transforms", inputs);
+        return this.manifoldWorkerManager.genericCallToWorkerPromise("manifold.transforms.transforms", inputs);
     }
 
 }

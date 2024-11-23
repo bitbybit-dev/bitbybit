@@ -4,6 +4,7 @@ import { Base } from "./base-inputs";
 // tslint:disable-next-line: no-namespace
 export namespace Manifold {
     export type ManifoldPointer = { hash: number, type: string };
+    export type ManifoldCrossSectionPointer = { hash: number, type: string };
 
     export class DrawManifoldDto<T, M> {
         /**
@@ -76,9 +77,9 @@ export namespace Manifold {
         }
         /**
          * Place cube on the center
-         * @default true
+         * @default false
          */
-        center = true;
+        center = false;
         /**
          * Size of the cube
          * @default 1
@@ -110,7 +111,7 @@ export namespace Manifold {
           */
         circularSegments: number;
     }
-    export class CylinderDto{
+    export class CylinderDto {
         constructor(height?: number, radiusLow?: number, radiusHigh?: number, circularSegments?: number, center?: boolean) {
             if (height !== undefined) { this.height = height; }
             if (radiusLow !== undefined) { this.radiusLow = radiusLow; }
@@ -156,6 +157,56 @@ export namespace Manifold {
          */
         center = true;
     }
+    export class CircleDto {
+        constructor(radius?: number, circularSegments?: number) {
+            if (radius !== undefined) { this.radius = radius; }
+            if (circularSegments !== undefined) { this.circularSegments = circularSegments; }
+        }
+        /**
+         * Radius of the cylinder
+         * @default 1
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.1
+         */
+        radius = 1;
+        /**
+         * Circular segments of the cylinder
+         * @default 32
+         * @minimum 0
+         * @maximum Infinity
+         * @step 1
+         */
+        circularSegments = 32;
+    }
+    export class RectangleDto {
+        constructor(length?: number, height?: number, center?: boolean) {
+            if (length !== undefined) { this.length = length; }
+            if (height !== undefined) { this.height = height; }
+            if (center !== undefined) { this.center = center; }
+        }
+        /**
+         * Length of the rectangle
+         * @default 1
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.1
+         */
+        length = 1;
+        /**
+         * Height of the rectangle
+         * @default 1
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.1
+         */
+        height = 1;
+        /**
+         * Place rectangle on the center
+         * @default false
+         */
+        center = false;
+    }
     export class ManifoldDto<T> {
         constructor(manifold?: T) {
             if (manifold !== undefined) { this.manifold = manifold; }
@@ -164,6 +215,69 @@ export namespace Manifold {
          * Manifold shape
          */
         manifold: T;
+    }
+    export class CrossSectionDto<T> {
+        constructor(crossSection?: T) {
+            if (crossSection !== undefined) { this.crossSection = crossSection; }
+        }
+        /**
+         * Manifold cross section shape
+         */
+        crossSection: T;
+    }
+    export class ExtrudeDto<T> {
+        constructor(crossSection?: T) {
+            if (crossSection !== undefined) { this.crossSection = crossSection; }
+        }
+        /**
+         * Extrude cross section shape
+         */
+        crossSection: T;
+        /**
+         * Height of the extrusion
+         * @default 1
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.1
+         */
+        height = 1;
+        /**
+         * Number of divisions
+         * @default 1
+         * @minimum 0
+         * @maximum Infinity
+         * @step 1
+         */
+        nDivisions = 1;
+        /**
+         * Twist degrees
+         * @default 0
+         * @minimum -Infinity
+         * @maximum Infinity
+         * @step 1
+         */
+        twistDegrees = 0;
+        /**
+         * Scale top
+         * @default 1
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.1
+         */
+        scaleTopX = 1;
+        /**
+         * Scale top
+         * @default 1
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.1
+         */
+        scaleTopY = 1;
+        /**
+         * Center the extrusion
+         * @default true
+        */
+        center = true;
     }
     export class MirrorDto<T> {
         constructor(manifold?: T, normal?: Base.Vector3) {

@@ -1,24 +1,22 @@
 
-import { ManifoldWorkerManager } from "../../../workers/manifold/manifold-worker-manager";
+import { ManifoldWorkerManager } from "../../../../workers/manifold/manifold-worker-manager";
 import { ManifoldShapes } from "./shapes";
-import * as Inputs from "../../inputs/inputs";
+import * as Inputs from "../../../inputs/inputs";
 import { ManifoldBooleans } from "./booleans";
 import * as Manifold3D from "manifold-3d";
 import { ManifoldOperations } from "./operations";
 import { ManifoldTransforms } from "./transforms";
-import { ManifoldCrossSection } from "./cross-section";
 
 /**
  * Contains various functions for Solid meshes from Manifold library https://github.com/elalish/manifold
  * Thanks Manifold community for developing this kernel
  */
-export class ManifoldBitByBit {
+export class Manifold {
 
     public readonly shapes: ManifoldShapes;
     public readonly booleans: ManifoldBooleans;
     public readonly operations: ManifoldOperations;
     public readonly transforms: ManifoldTransforms;
-    public readonly crossSection: ManifoldCrossSection;
 
     constructor(
         private readonly manifoldWorkerManager: ManifoldWorkerManager,
@@ -27,7 +25,6 @@ export class ManifoldBitByBit {
         this.booleans = new ManifoldBooleans(manifoldWorkerManager);
         this.operations = new ManifoldOperations(manifoldWorkerManager);
         this.transforms = new ManifoldTransforms(manifoldWorkerManager);
-        this.crossSection = new ManifoldCrossSection(manifoldWorkerManager);
     }
 
     /**
@@ -39,7 +36,7 @@ export class ManifoldBitByBit {
      * @drawable false
      */
     async manifoldToMesh(inputs: Inputs.Manifold.ManifoldToMeshDto<Inputs.Manifold.ManifoldPointer>): Promise<Manifold3D.Mesh> {
-        return this.manifoldWorkerManager.genericCallToWorkerPromise("manifoldToMesh", inputs);
+        return this.manifoldWorkerManager.genericCallToWorkerPromise("manifold.manifoldToMesh", inputs);
     }
 
     /**
@@ -51,7 +48,7 @@ export class ManifoldBitByBit {
      * @drawable false
      */
     async manifoldsToMeshes(inputs: Inputs.Manifold.ManifoldsToMeshesDto<Inputs.Manifold.ManifoldPointer>): Promise<Manifold3D.Mesh[]> {
-        return this.manifoldWorkerManager.genericCallToWorkerPromise("manifoldsToMeshes", inputs);
+        return this.manifoldWorkerManager.genericCallToWorkerPromise("manifold.manifoldsToMeshes", inputs);
     }
 
 }

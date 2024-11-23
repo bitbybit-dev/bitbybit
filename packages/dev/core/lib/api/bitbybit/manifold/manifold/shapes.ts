@@ -1,6 +1,6 @@
 
-import { ManifoldWorkerManager } from "../../../workers/manifold/manifold-worker-manager";
-import * as Inputs from "../../inputs/inputs";
+import { ManifoldWorkerManager } from "../../../../workers/manifold/manifold-worker-manager";
+import * as Inputs from "../../../inputs/inputs";
 
 /**
  * Contains various functions for Solid meshes from Manifold library https://github.com/elalish/manifold
@@ -22,7 +22,7 @@ export class ManifoldShapes {
      * @drawable true
      */
     async cube(inputs: Inputs.Manifold.CubeDto): Promise<Inputs.Manifold.ManifoldPointer> {
-        return this.manifoldWorkerManager.genericCallToWorkerPromise("shapes.cube", inputs);
+        return this.manifoldWorkerManager.genericCallToWorkerPromise("manifold.shapes.cube", inputs);
     }
 
     /**
@@ -34,7 +34,7 @@ export class ManifoldShapes {
      * @drawable true
      */
     async sphere(inputs: Inputs.Manifold.SphereDto): Promise<Inputs.Manifold.ManifoldPointer> {
-        return this.manifoldWorkerManager.genericCallToWorkerPromise("shapes.sphere", inputs);
+        return this.manifoldWorkerManager.genericCallToWorkerPromise("manifold.shapes.sphere", inputs);
     }
 
     /**
@@ -45,7 +45,7 @@ export class ManifoldShapes {
      * @drawable true
      */
     async tetrahedron(): Promise<Inputs.Manifold.ManifoldPointer> {
-        return this.manifoldWorkerManager.genericCallToWorkerPromise("shapes.tetrahedron", {});
+        return this.manifoldWorkerManager.genericCallToWorkerPromise("manifold.shapes.tetrahedron", {});
     }
 
     /**
@@ -57,6 +57,6 @@ export class ManifoldShapes {
      * @drawable true
      */
     async cylinder(inputs: Inputs.Manifold.CylinderDto): Promise<Inputs.Manifold.ManifoldPointer> {
-        return this.manifoldWorkerManager.genericCallToWorkerPromise("shapes.cylinder", inputs);
+        return this.manifoldWorkerManager.genericCallToWorkerPromise("manifold.shapes.cylinder", inputs);
     }
 }

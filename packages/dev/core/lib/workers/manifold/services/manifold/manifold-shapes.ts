@@ -1,4 +1,4 @@
-import * as Inputs from "../../../api/inputs/manifold-inputs";
+import * as Inputs from "../../../../api/inputs/manifold-inputs";
 import * as Manifold3D from "manifold-3d";
 
 export class ManifoldShapes {

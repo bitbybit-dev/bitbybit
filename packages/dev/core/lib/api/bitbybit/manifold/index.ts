@@ -1,1 +1,1 @@
-export * from "./manifold";
+export * from "./manifold-bitbybit";

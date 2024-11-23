@@ -1,4 +1,3 @@
-export * from "./services";
 export * from "./cache-helper";
 export * from "./manifold-info";
 export * from "./manifold-service";

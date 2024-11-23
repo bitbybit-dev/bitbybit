@@ -634,7 +634,7 @@ export class DrawHelper extends DrawHelperCore {
 
     async drawManifold(inputs: Inputs.Manifold.DrawManifoldDto<Inputs.Manifold.ManifoldPointer, BABYLON.PBRMetallicRoughnessMaterial>): Promise<BABYLON.Mesh> {
         const decomposedMesh: Manifold3D.Mesh = await this.manifoldWorkerManager.genericCallToWorkerPromise("manifoldToMesh", inputs);
-        return this.handleDecomposedManifoldMesh(inputs, decomposedMesh);
+        return this.handleDecomposedManifold(inputs, decomposedMesh);
     }
 
     async drawShape(inputs: Inputs.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer>): Promise<BABYLON.Mesh> {
@@ -798,53 +798,76 @@ export class DrawHelper extends DrawHelperCore {
         return shapeMesh;
     }
 
-    private handleDecomposedManifoldMesh(inputs: Inputs.Manifold.DrawManifoldDto<Inputs.Manifold.ManifoldPointer, BABYLON.PBRMetallicRoughnessMaterial>, decomposedMesh: Manifold3D.Mesh): BABYLON.Mesh {
-        const mesh = new BABYLON.Mesh(`surface${Math.random()}`, this.context.scene);
+    private handleDecomposedManifold(
+        inputs: Inputs.Manifold.DrawManifoldDto<Inputs.Manifold.ManifoldPointer, BABYLON.PBRMetallicRoughnessMaterial>,
+        decomposedManifold: Manifold3D.Mesh | Manifold3D.SimplePolygon[]): BABYLON.Mesh {
+        if ((decomposedManifold as Manifold3D.Mesh).vertProperties) {
+            const decomposedMesh = decomposedManifold as Manifold3D.Mesh;
+            const mesh = new BABYLON.Mesh(`manifold-${Math.random()}`, this.context.scene);
 
-        const vertexData = new BABYLON.VertexData();
+            const vertexData = new BABYLON.VertexData();
 
-        vertexData.indices = decomposedMesh.triVerts.length > 65535 ? new Uint32Array(decomposedMesh.triVerts) : new Uint16Array(decomposedMesh.triVerts);
+            vertexData.indices = decomposedMesh.triVerts.length > 65535 ? new Uint32Array(decomposedMesh.triVerts) : new Uint16Array(decomposedMesh.triVerts);
 
-        for (let i = 0; i < decomposedMesh.triVerts.length; i += 3) {
-            vertexData.indices[i] = decomposedMesh.triVerts[i + 2];
-            vertexData.indices[i + 1] = decomposedMesh.triVerts[i + 1];
-            vertexData.indices[i + 2] = decomposedMesh.triVerts[i];
-        }
-
-        const vertexCount = decomposedMesh.vertProperties.length / decomposedMesh.numProp;
-
-        // Attributes
-        let offset = 0;
-        for (let componentIndex = 0; componentIndex < 1; componentIndex++) {
-            const component = { stride: 3, kind: "position" };
-
-            const data = new Float32Array(vertexCount * component.stride);
-            for (let i = 0; i < vertexCount; i++) {
-                for (let strideIndex = 0; strideIndex < component.stride; strideIndex++) {
-                    data[i * component.stride + strideIndex] = decomposedMesh.vertProperties[i * decomposedMesh.numProp + offset + strideIndex];
-                }
+            for (let i = 0; i < decomposedMesh.triVerts.length; i += 3) {
+                vertexData.indices[i] = decomposedMesh.triVerts[i + 2];
+                vertexData.indices[i + 1] = decomposedMesh.triVerts[i + 1];
+                vertexData.indices[i + 2] = decomposedMesh.triVerts[i];
             }
-            vertexData.set(data, component.kind);
-            offset += component.stride;
-        }
 
-        vertexData.applyToMesh(mesh, false);
+            const vertexCount = decomposedMesh.vertProperties.length / decomposedMesh.numProp;
 
-        if (inputs.faceMaterial === undefined) {
-            const material = new BABYLON.PBRMetallicRoughnessMaterial("pbr" + Math.random(), this.context.scene);
-            material.baseColor = BABYLON.Color3.FromHexString(inputs.faceColour);
-            material.metallic = 1.0;
-            material.roughness = 0.6;
-            material.alpha = inputs.faceOpacity;
-            material.alphaMode = 1;
-            material.backFaceCulling = true;
-            material.doubleSided = false;
-            mesh.material = material;
+            // Attributes
+            let offset = 0;
+            for (let componentIndex = 0; componentIndex < 1; componentIndex++) {
+                const component = { stride: 3, kind: "position" };
+
+                const data = new Float32Array(vertexCount * component.stride);
+                for (let i = 0; i < vertexCount; i++) {
+                    for (let strideIndex = 0; strideIndex < component.stride; strideIndex++) {
+                        data[i * component.stride + strideIndex] = decomposedMesh.vertProperties[i * decomposedMesh.numProp + offset + strideIndex];
+                    }
+                }
+                vertexData.set(data, component.kind);
+                offset += component.stride;
+            }
+
+            vertexData.applyToMesh(mesh, false);
+
+            if (inputs.faceMaterial === undefined) {
+                const material = new BABYLON.PBRMetallicRoughnessMaterial("pbr" + Math.random(), this.context.scene);
+                material.baseColor = BABYLON.Color3.FromHexString(inputs.faceColour);
+                material.metallic = 1.0;
+                material.roughness = 0.6;
+                material.alpha = inputs.faceOpacity;
+                material.alphaMode = 1;
+                material.backFaceCulling = true;
+                material.doubleSided = false;
+                mesh.material = material;
+            } else {
+                mesh.material = inputs.faceMaterial;
+            }
+
+            return mesh;
         } else {
-            mesh.material = inputs.faceMaterial;
+            const mesh = new BABYLON.Mesh(`manifold-cross-section-${Math.random()}`, this.context.scene);
+            const decompsoedPolygons = decomposedManifold as Manifold3D.SimplePolygon[];
+            const polylines = decompsoedPolygons.map(polygon => ({
+                points: polygon.map(p => [p[0], p[1], 0] as Inputs.Base.Point3),
+                isClosed: true
+            }));
+            const polylineMesh = this.drawPolylinesWithColours({
+                polylinesMesh: undefined,
+                polylines,
+                updatable: false,
+                size: inputs.crossSectionWidth,
+                opacity: 1,
+                colours: inputs.crossSectionColour
+            });
+            polylineMesh.parent = mesh;
+            return mesh;
         }
 
-        return mesh;
     }
 
     // mesh2geometry(mesh: Mesh) {
