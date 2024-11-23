@@ -12,7 +12,11 @@ export namespace Manifold {
         positive = "Positive",
         negative = "Negative"
     }
-
+    export enum manifoldJoinTypeEnum {
+        square = "Square",
+        round = "Round",
+        miter = "Miter"
+    }
     export class DrawManifoldOrCrossSectionDto<T, M> {
         /**
          * Provide options without default values
@@ -356,6 +360,67 @@ export namespace Manifold {
          * @step 1
          */
         circularSegments = 32;
+    }
+    export class OffsetDto<T> {
+        constructor(crossSection?: T, delta?: number, joinType?: manifoldJoinTypeEnum, miterLimit?: number, circularSegments?: number) {
+            if (crossSection !== undefined) { this.crossSection = crossSection; }
+            if (delta !== undefined) { this.delta = delta; }
+            if (joinType !== undefined) { this.joinType = joinType; }
+            if (miterLimit !== undefined) { this.miterLimit = miterLimit; }
+            if (circularSegments !== undefined) { this.circularSegments = circularSegments; }
+        }
+        /**
+         * Revolve cross section shape
+         */
+        crossSection: T;
+        /**
+         * Extrude cross section shape
+         * @default 1
+         * @minimum -Infinity
+         * @maximum Infinity
+         * @step 0.1
+         */
+        delta: number;
+        /**
+         * Join type
+         * @default round
+         */
+        joinType: manifoldJoinTypeEnum = manifoldJoinTypeEnum.round;
+        /**
+         * Circular segments
+         * @default 2
+         * @minimum 2
+         * @maximum Infinity
+         * @step 0.1
+         */
+        miterLimit = 2;
+        /**
+         * Circular segments
+         * @default 32
+         * @minimum 0
+         * @maximum Infinity
+         * @step 1
+         */
+        circularSegments = 32;
+    }
+
+    export class SimplifyDto<T> {
+        constructor(crossSection?: T, epsilon?: number) {
+            if (crossSection !== undefined) { this.crossSection = crossSection; }
+            if (epsilon !== undefined) { this.epsilon = epsilon; }
+        }
+        /**
+         * Revolve cross section shape
+         */
+        crossSection: T;
+        /**
+         * Extrude cross section shape
+         * @default 1e-6
+         * @minimum 0
+         * @maximum Infinity
+         * @step 1e-7
+         */
+        epsilon = 1e-6;
     }
     export class MirrorCrossSectionDto<T> {
         constructor(crossSection?: T, normal?: Base.Vector2) {

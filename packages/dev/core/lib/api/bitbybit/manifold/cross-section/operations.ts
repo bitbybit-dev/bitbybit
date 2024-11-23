@@ -36,5 +36,31 @@ export class CrossSectionOperations {
         return this.manifoldWorkerManager.genericCallToWorkerPromise("crossSection.operations.revolve", inputs);
     }
 
+    /**
+     * Offsets the cross section to create a new cross section with a given delta (uses Clipper2 algorithm behind)
+     * @param inputs cross section and offset parameters
+     * @returns offset cross section
+     * @group basic
+     * @shortname offset
+     * @drawable true
+     */
+    async offset(inputs: Inputs.Manifold.OffsetDto<Inputs.Manifold.CrossSectionPointer>): Promise<Inputs.Manifold.CrossSectionPointer> {
+        return this.manifoldWorkerManager.genericCallToWorkerPromise("crossSection.operations.offset", inputs);
+    }
 
+    /**
+     * Remove vertices from the contours in this CrossSection that are less than
+     * the specified distance epsilon from an imaginary line that passes through
+     * its two adjacent vertices. Near duplicate vertices and collinear points
+     * will be removed at lower epsilons, with elimination of line segments
+     * becoming increasingly aggressive with larger epsilons.
+     * @param inputs cross section and epsilon parameters
+     * @returns simplified cross section
+     * @group basic
+     * @shortname simplify
+     * @drawable true
+     */
+    async simplify(inputs: Inputs.Manifold.SimplifyDto<Inputs.Manifold.CrossSectionPointer>): Promise<Inputs.Manifold.CrossSectionPointer> {
+        return this.manifoldWorkerManager.genericCallToWorkerPromise("crossSection.operations.simplify", inputs);
+    }
 }
