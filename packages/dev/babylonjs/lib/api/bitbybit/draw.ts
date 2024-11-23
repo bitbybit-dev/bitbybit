@@ -292,6 +292,18 @@ export class Draw extends DrawCore {
         return inputs;
     }
 
+
+    /**
+     * Creates draw options for manifold gemetry
+     * @param inputs option definition
+     * @returns options
+     * @group options
+     * @shortname manifold shape draw options
+     */
+    optionsManifoldShapeMaterial(inputs: Inputs.Draw.DrawManifoldOptions): Inputs.Draw.DrawManifoldOptions {
+        return inputs;
+    }
+
     /**
      * Creates draw options for babylon js nodes
      * @param inputs option definition

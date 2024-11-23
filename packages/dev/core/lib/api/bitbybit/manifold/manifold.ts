@@ -6,6 +6,7 @@ import { ManifoldBooleans } from "./booleans";
 import * as Manifold3D from "manifold-3d";
 import { ManifoldOperations } from "./operations";
 import { ManifoldTransforms } from "./transforms";
+import { ManifoldCrossSection } from "./cross-section";
 
 /**
  * Contains various functions for Solid meshes from Manifold library https://github.com/elalish/manifold
@@ -17,6 +18,7 @@ export class ManifoldBitByBit {
     public readonly booleans: ManifoldBooleans;
     public readonly operations: ManifoldOperations;
     public readonly transforms: ManifoldTransforms;
+    public readonly crossSection: ManifoldCrossSection;
 
     constructor(
         private readonly manifoldWorkerManager: ManifoldWorkerManager,
@@ -25,6 +27,7 @@ export class ManifoldBitByBit {
         this.booleans = new ManifoldBooleans(manifoldWorkerManager);
         this.operations = new ManifoldOperations(manifoldWorkerManager);
         this.transforms = new ManifoldTransforms(manifoldWorkerManager);
+        this.crossSection = new ManifoldCrossSection(manifoldWorkerManager);
     }
 
     /**

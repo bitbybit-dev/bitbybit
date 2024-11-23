@@ -39,8 +39,37 @@ export namespace Manifold {
          * @default #ff0000
          */
         faceColour: Base.Color = "#ff0000";
+        /**
+         * Hex colour string for cross section drawing
+         * @default #ff00ff
+         */
+        crossSectionColour: Base.Color = "#ff00ff";
+        /**
+         * Width of cross section lines
+         * @default 2
+         */
+        crossSectionWidth = 2;
     }
     export class CubeDto {
+        constructor(center?: boolean, size?: number) {
+            if (center !== undefined) { this.center = center; }
+            if (size !== undefined) { this.size = size; }
+        }
+        /**
+         * Place cube on the center
+         * @default true
+         */
+        center = true;
+        /**
+         * Size of the cube
+         * @default 1
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.1
+         */
+        size = 1;
+    }
+    export class SquareDto {
         constructor(center?: boolean, size?: number) {
             if (center !== undefined) { this.center = center; }
             if (size !== undefined) { this.size = size; }

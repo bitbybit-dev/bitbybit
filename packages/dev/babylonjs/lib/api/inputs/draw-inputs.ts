@@ -8,7 +8,7 @@ export namespace Draw {
 
     export type DrawOptions = DrawBasicGeometryOptions | DrawManifoldOptions | DrawOcctShapeOptions | DrawOcctShapeSimpleOptions | DrawOcctShapeMaterialOptions | DrawNodeOptions;
     export type Entity = Base.Point3 | Base.Vector3 | Base.Line3 | Base.Polyline3 | Base.VerbCurve | Base.VerbSurface | Inputs.OCCT.TopoDSShapePointer | Inputs.Tag.TagDto | { type: string, name: string } |
-    Base.Point3[] | Base.Vector3[] | Base.Line3[] | Base.Polyline3[] | Base.VerbCurve[] | Base.VerbSurface[] | Inputs.OCCT.TopoDSShapePointer[] | Inputs.Tag.TagDto[] | { type: string[], name: string };
+        Base.Point3[] | Base.Vector3[] | Base.Line3[] | Base.Polyline3[] | Base.VerbCurve[] | Base.VerbSurface[] | Inputs.OCCT.TopoDSShapePointer[] | Inputs.Tag.TagDto[] | { type: string[], name: string };
 
     export class DrawAny {
         constructor(entity?: Entity, options?: DrawOptions, babylonMesh?: BABYLON.Mesh | BABYLON.LinesMesh) {
@@ -226,6 +226,16 @@ export namespace Draw {
          * @optional true
          */
         faceMaterial?: Base.Material;
+        /**
+         * Hex colour string for cross section drawing
+         * @default #ff00ff
+         */
+        crossSectionColour: Base.Color = "#ff00ff";
+        /**
+         * Width of cross section lines
+         * @default 2
+         */
+        crossSectionWidth = 2;
     }
     /**
      * Draw options for OCCT shapes
