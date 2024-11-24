@@ -36,8 +36,8 @@ export const onMessageInput = (d: DataInput, postMessage) => {
         // and receive real objects. This cache is useful in modeling operations throughout 'run' sessions.
         if (d.action.functionName !== "manifoldToMesh" &&
             d.action.functionName !== "manifoldsToMeshes" &&
-            d.action.functionName !== "deleteShape" &&
-            d.action.functionName !== "deleteShapes" &&
+            d.action.functionName !== "deleteManifoldOrCrossSection" &&
+            d.action.functionName !== "deleteManifoldsOrCrossSections" &&
             d.action.functionName !== "startedTheRun" &&
             d.action.functionName !== "cleanAllCache" &&
             d.action.functionName !== "addManifoldPluginDependency") {
@@ -69,7 +69,7 @@ export const onMessageInput = (d: DataInput, postMessage) => {
             }
 
             if (!cacheHelper.isManifoldObject(res)) {
-                if (res.compound && res.data && res.manifolds && res.manifolds.length > 0) {
+                if (res && res.compound && res.data && res.manifolds && res.manifolds.length > 0) {
                     const r: ObjectDefinition<any, any> = res;
                     r.manifolds = r.manifolds.map(s => ({ id: s.id, manifold: { hash: s.manifold.hash, type: "manifold-shape" } }));
                     r.compound = { hash: r.compound.hash, type: "manifold-shape" };
@@ -105,12 +105,12 @@ export const onMessageInput = (d: DataInput, postMessage) => {
             }
             result = manifold.decomposeManifoldsOrCrossSections(d.action.inputs);
         }
-        if (d.action.functionName === "deleteShape") {
-            cacheHelper.cleanCacheForHash(d.action.inputs.shape.hash);
+        if (d.action.functionName === "deleteManifoldOrCrossSection") {
+            cacheHelper.cleanCacheForHash(d.action.inputs.manifoldOrCrossSection.hash);
             result = {};
         }
-        if (d.action.functionName === "deleteShapes") {
-            d.action.inputs.manifolds.forEach(manifold => cacheHelper.cleanCacheForHash(manifold.hash));
+        if (d.action.functionName === "deleteManifoldsOrCrossSections") {
+            d.action.inputs.manifoldsOrCrossSections.forEach(manifold => cacheHelper.cleanCacheForHash(manifold.hash));
             result = {};
         }
         // Only the cache that was created in previous run has to be kept, the rest needs to go

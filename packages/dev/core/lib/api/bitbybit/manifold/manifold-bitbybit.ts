@@ -44,4 +44,26 @@ export class ManifoldBitByBit {
         return this.manifoldWorkerManager.genericCallToWorkerPromise("decomposeManifoldsOrCrossSections", inputs);
     }
 
+    /**
+     * Delete manifold or cross section from memory
+     * @param inputs manifold or cross section
+     * @group cleanup
+     * @shortname delete m or cs
+     * @drawable false
+     */
+    async deleteManifoldOrCrossSection(inputs: Inputs.Manifold.ManifoldOrCrossSectionDto<Inputs.Manifold.CrossSectionPointer>): Promise<void> {
+        return this.manifoldWorkerManager.genericCallToWorkerPromise("deleteManifoldOrCrossSection", inputs);
+    }
+
+    /**
+     * Delete manifolds or cross sections from memory
+     * @param inputs manifolds or cross sections
+     * @group cleanup
+     * @shortname delete m's or cs's
+     * @drawable false
+     */
+    async deleteManifoldsOrCrossSections(inputs: Inputs.Manifold.ManifoldsOrCrossSectionsDto<Inputs.Manifold.CrossSectionPointer>): Promise<void> {
+        return this.manifoldWorkerManager.genericCallToWorkerPromise("deleteManifoldsOrCrossSections", inputs);
+    }
+
 }

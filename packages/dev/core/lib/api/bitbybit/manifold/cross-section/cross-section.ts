@@ -5,6 +5,8 @@ import { CrossSectionShapes } from "./shapes";
 import * as Inputs from "../../../inputs/inputs";
 import * as Manifold3D from "manifold-3d";
 import { CrossSectionTransforms } from "./transforms";
+import { CrossSectionBooleans } from "./booleans";
+import { CrossSectionEvaluate } from "./evaluate";
 
 /**
  * Contains various functions for Solid meshes from Manifold library https://github.com/elalish/manifold
@@ -14,14 +16,18 @@ export class ManifoldCrossSection{
 
     shapes: CrossSectionShapes;
     operations: CrossSectionOperations;
+    booleans: CrossSectionBooleans;
     transforms: CrossSectionTransforms;
+    evaluate: CrossSectionEvaluate;
 
     constructor(
         private readonly manifoldWorkerManager: ManifoldWorkerManager,
     ) { 
         this.shapes = new CrossSectionShapes(manifoldWorkerManager);
         this.operations = new CrossSectionOperations(manifoldWorkerManager);
+        this.booleans = new CrossSectionBooleans(manifoldWorkerManager);
         this.transforms = new CrossSectionTransforms(manifoldWorkerManager);
+        this.evaluate = new CrossSectionEvaluate(manifoldWorkerManager);
     }
 
 

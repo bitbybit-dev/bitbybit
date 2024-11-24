@@ -6,7 +6,6 @@ export class ManifoldBooleans {
     private manifold: Manifold3D.ManifoldToplevel;
 
     constructor(wasm: Manifold3D.ManifoldToplevel) {
-        console.log(wasm);
         this.manifold = wasm;
     }
 

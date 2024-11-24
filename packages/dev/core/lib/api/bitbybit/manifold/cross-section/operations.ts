@@ -13,6 +13,17 @@ export class CrossSectionOperations {
     ) { }
 
     /**
+     * Compute convex hull for the cross section
+     * @param inputs cross section
+     * @returns hulled cross section
+     * @group basic
+     * @shortname hull
+     * @drawable true
+     */
+    async hull(inputs: Inputs.Manifold.CrossSectionDto<Inputs.Manifold.CrossSectionPointer>): Promise<Inputs.Manifold.CrossSectionPointer> {
+        return this.manifoldWorkerManager.genericCallToWorkerPromise("crossSection.operations.hull", inputs);
+    }
+    /**
      * Extrude the cross section to create a 3D shape
      * @param inputs cross section and extrusion parameters
      * @returns extruded manifold shape
@@ -62,5 +73,31 @@ export class CrossSectionOperations {
      */
     async simplify(inputs: Inputs.Manifold.SimplifyDto<Inputs.Manifold.CrossSectionPointer>): Promise<Inputs.Manifold.CrossSectionPointer> {
         return this.manifoldWorkerManager.genericCallToWorkerPromise("crossSection.operations.simplify", inputs);
+    }
+
+    /**
+     * Composes multiple cross sections or polygons into a single cross section
+     * @param inputs cross sections or polygons
+     * @returns composed cross section
+     * @group composition
+     * @shortname compose
+     * @drawable true
+     */
+    async compose(inputs: Inputs.Manifold.ComposeDto<(Inputs.Manifold.CrossSectionPointer | Inputs.Base.Vector2[])[]>): Promise<Inputs.Manifold.CrossSectionPointer> {
+        return this.manifoldWorkerManager.genericCallToWorkerPromise("crossSection.operations.compose", inputs);
+    }
+
+    /**
+     * Decompose cross sections that are topologically
+     * disconnected, each containing one outline contour with zero or more
+     * holes.
+     * @param inputs cross section
+     * @returns decomposed cross sections
+     * @group composition
+     * @shortname decompose
+     * @drawable true
+     */
+    async decompose(inputs: Inputs.Manifold.CrossSectionDto<Inputs.Manifold.CrossSectionPointer>): Promise<Inputs.Manifold.CrossSectionPointer[]> {
+        return this.manifoldWorkerManager.genericCallToWorkerPromise("crossSection.operations.decompose", inputs);
     }
 }

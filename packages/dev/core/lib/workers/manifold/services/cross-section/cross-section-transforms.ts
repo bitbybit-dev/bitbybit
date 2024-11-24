@@ -25,12 +25,12 @@ export class CrossSectionTransforms {
         return inputs.crossSection.translate(inputs.vector);
     }
 
-    rotate(inputs: Inputs.Manifold.RotateCrossSectionDto<Manifold3D.CrossSection>): Manifold3D.CrossSection {
-        return inputs.crossSection.rotate(inputs.degrees);
+    translateXY(inputs: Inputs.Manifold.TranslateXYCrossSectionDto<Manifold3D.CrossSection>): Manifold3D.CrossSection {
+        return inputs.crossSection.translate([inputs.x, inputs.y]);
     }
 
-    translateXYZ(inputs: Inputs.Manifold.TranslateXYCrossSectionDto<Manifold3D.CrossSection>): Manifold3D.CrossSection {
-        return inputs.crossSection.translate(inputs.x, inputs.y);
+    rotate(inputs: Inputs.Manifold.RotateCrossSectionDto<Manifold3D.CrossSection>): Manifold3D.CrossSection {
+        return inputs.crossSection.rotate(inputs.degrees);
     }
 
     transform(inputs: Inputs.Manifold.TransformCrossSectionDto<Manifold3D.CrossSection>): Manifold3D.CrossSection {

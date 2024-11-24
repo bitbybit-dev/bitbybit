@@ -9,6 +9,10 @@ export class CrossSectionOperations {
         this.manifold = wasm;
     }
 
+    hull(inputs: Inputs.Manifold.CrossSectionDto<Manifold3D.CrossSection>): Manifold3D.CrossSection {
+        return inputs.crossSection.hull();
+    }
+
     extrude(inputs: Inputs.Manifold.ExtrudeDto<Manifold3D.CrossSection>): Manifold3D.Manifold {
         return inputs.crossSection.extrude(inputs.height, inputs.nDivisions, inputs.twistDegrees, [inputs.scaleTopX, inputs.scaleTopY], inputs.center);
     }
@@ -23,5 +27,15 @@ export class CrossSectionOperations {
 
     simplify(inputs: Inputs.Manifold.SimplifyDto<Manifold3D.CrossSection>): Manifold3D.CrossSection {
         return inputs.crossSection.simplify(inputs.epsilon);
+    }
+
+    compose(inputs: Inputs.Manifold.ComposeDto<(Manifold3D.CrossSection | Manifold3D.Polygons)[]>): Manifold3D.CrossSection {
+        const { CrossSection } = this.manifold;
+        const { compose } = CrossSection;
+        return compose(inputs.polygons);
+    }
+
+    decompose(inputs: Inputs.Manifold.CrossSectionDto<Manifold3D.CrossSection>): Manifold3D.CrossSection[] {
+        return inputs.crossSection.decompose();
     }
 }

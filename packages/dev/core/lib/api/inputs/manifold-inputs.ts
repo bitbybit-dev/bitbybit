@@ -269,7 +269,6 @@ export namespace Manifold {
          */
         crossSection: T;
     }
-
     export class CrossSectionsDto<T> {
         constructor(crossSections?: T[]) {
             if (crossSections !== undefined) { this.crossSections = crossSections; }
@@ -422,6 +421,16 @@ export namespace Manifold {
          */
         epsilon = 1e-6;
     }
+
+    export class ComposeDto<T> {
+        constructor(polygons?: T) {
+            if (polygons !== undefined) { this.polygons = polygons; }
+        }
+        /**
+         * Polygons to compose
+         */
+        polygons: T;
+    }
     export class MirrorCrossSectionDto<T> {
         constructor(crossSection?: T, normal?: Base.Vector2) {
             if (crossSection !== undefined) { this.crossSection = crossSection; }
@@ -512,12 +521,18 @@ export namespace Manifold {
         crossSection: T;
         /**
          * The translation X axis
-         * @default undefined
+         * @default 0
+         * @minimum -Infinity
+         * @maximum Infinity
+         * @step 1
          */
         x = 0;
         /**
          * The translation Y axis
-         * @default undefined
+         * @default 0
+         * @minimum -Infinity
+         * @maximum Infinity
+         * @step 1
          */
         y = 0;
     }
@@ -610,17 +625,26 @@ export namespace Manifold {
         manifold: T;
         /**
          * The rotation vector in eulers on X axis
-         * @default undefined
+         * @default 0
+         * @minimum -Infinity
+         * @maximum Infinity
+         * @step 1
          */
         x = 0;
         /**
          * The rotation vector in eulers on Y axis
-         * @default undefined
+         * @default 0
+         * @minimum -Infinity
+         * @maximum Infinity
+         * @step 1
          */
         y = 0;
         /**
          * The rotation vector in eulers on Z axis
-         * @default undefined
+         * @default 0
+         * @minimum -Infinity
+         * @maximum Infinity
+         * @step 1
          */
         z = 0;
     }
@@ -652,17 +676,26 @@ export namespace Manifold {
         manifold: T;
         /**
          * The translation X axis
-         * @default undefined
+         * @default 0
+         * @minimum -Infinity
+         * @maximum Infinity
+         * @step 1
          */
         x = 0;
         /**
          * The translation Y axis
-         * @default undefined
+         * @default 0
+         * @minimum -Infinity
+         * @maximum Infinity
+         * @step 1
          */
         y = 0;
         /**
          * The translation Z axis
-         * @default undefined
+         * @default 0
+         * @minimum -Infinity
+         * @maximum Infinity
+         * @step 1
          */
         z = 0;
     }
@@ -695,6 +728,20 @@ export namespace Manifold {
          * @default undefined
          */
         transforms: Base.TransformMatrixes;
+    }
+    export class TwoCrossSectionsDto<T> {
+        constructor(crossSection1?: T, crossSection2?: T) {
+            if (crossSection1 !== undefined) { this.crossSection1 = crossSection1; }
+            if (crossSection2 !== undefined) { this.crossSection2 = crossSection2; }
+        }
+        /**
+         * Manifold shape
+         */
+        crossSection1: T;
+        /**
+         * Manifold shape
+         */
+        crossSection2: T;
     }
     export class TwoManifoldsDto<T> {
         constructor(manifold1?: T, manifold2?: T) {
@@ -761,6 +808,24 @@ export namespace Manifold {
          * Optional normal index
          */
         normalIdx?: number;
+    }
+    export class ManifoldOrCrossSectionDto<T> {
+        constructor(manifoldOrCrossSection?: T) {
+            if (manifoldOrCrossSection !== undefined) { this.manifoldOrCrossSection = manifoldOrCrossSection; }
+        }
+        /**
+         * Manifold or cross section
+         */
+        manifoldOrCrossSection: T;
+    }
+    export class ManifoldsOrCrossSectionsDto<T> {
+        constructor(manifoldsOrCrossSections?: T[]) {
+            if (manifoldsOrCrossSections !== undefined) { this.manifoldsOrCrossSections = manifoldsOrCrossSections; }
+        }
+        /**
+         * Manifolds or cross sections
+         */
+        manifoldsOrCrossSections: T[];
     }
     export class DecomposeManifoldsOrCrossSectionsDto<T> {
         constructor(manifoldsOrCrossSections?: T[], normalIdx?: number[]) {

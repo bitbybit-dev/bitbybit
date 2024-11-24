@@ -32,7 +32,7 @@ export class ManifoldWorkerManager {
             }
             else {
                 const promise = this.promisesMade.find(made => made.uid === data.uid);
-                if (promise && data.result && !data.error) {
+                if (promise && data.result !== undefined && !data.error) {
                     promise.resolve(data.result);
                 } else if (data.error) {
                     if (this.errorCallback) {
