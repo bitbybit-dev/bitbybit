@@ -14,12 +14,7 @@ export class CrossSectionEvaluate {
     }
 
     isEmpty(inputs: Inputs.Manifold.CrossSectionDto<Manifold3D.CrossSection>): boolean {
-        const isEmpty = inputs.crossSection.isEmpty();
-        let result = true;
-        if(isEmpty === null || isEmpty === false){
-            result = false;
-        }
-        return result;
+        return inputs.crossSection.isEmpty();
     }
 
     numVert(inputs: Inputs.Manifold.CrossSectionDto<Manifold3D.CrossSection>): number {

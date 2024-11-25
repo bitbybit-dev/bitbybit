@@ -38,6 +38,7 @@ export const onMessageInput = (d: DataInput, postMessage) => {
             d.action.functionName !== "manifoldsToMeshes" &&
             d.action.functionName !== "deleteManifoldOrCrossSection" &&
             d.action.functionName !== "deleteManifoldsOrCrossSections" &&
+            d.action.functionName !== "manifoldToMeshPointer" &&
             d.action.functionName !== "startedTheRun" &&
             d.action.functionName !== "cleanAllCache" &&
             d.action.functionName !== "addManifoldPluginDependency") {
@@ -97,6 +98,13 @@ export const onMessageInput = (d: DataInput, postMessage) => {
             d.action.inputs.manifold = cacheHelper.checkCache(d.action.inputs.manifold.hash);
             result = manifold.decomposeManifoldOrCrossSection(d.action.inputs);
         }
+        if (d.action.functionName === "manifoldToMeshPointer") {
+            d.action.inputs.manifold = cacheHelper.checkCache(d.action.inputs.manifold.hash);
+            const r = manifold.manifold.manifoldToMesh(d.action.inputs);
+            const hash = cacheHelper.computeHash(d.action);
+            cacheHelper.addToCache(hash, r);
+            result = { hash, type: "manifold-shape" };
+        }
         if (d.action.functionName === "manifoldsToMeshes") {
             if (d.action.inputs.manifolds && d.action.inputs.manifolds.length > 0) {
                 d.action.inputs.manifolds = d.action.inputs.manifolds.map(manifold => cacheHelper.checkCache(manifold.hash));
@@ -142,7 +150,7 @@ export const onMessageInput = (d: DataInput, postMessage) => {
         if (d && d.action && d.action.functionName) {
             fun = `- ${d.action.functionName}`;
         }
-        
+
         postMessage({
             uid: d.uid,
             result: undefined,

@@ -26,7 +26,7 @@ export class ManifoldOperations {
     }
 
     /**
-     * Hull points
+     * Hull points or manifolds
      * @param inputs manifold
      * @returns manifold
      * @group hulls
@@ -38,7 +38,10 @@ export class ManifoldOperations {
     }
 
     /**
-     * Creates a slice cross section of the manifold on the given height
+     * Returns the cross section of this object parallel to the X-Y plane at the
+     * specified height. Using a height equal to the bottom
+     * of the bounding box will return the bottom faces, while using a height
+     * equal to the top of the bounding box will return empty.
      * @param inputs manifold and height
      * @returns sliced cross section
      * @group cross sections
@@ -62,7 +65,8 @@ export class ManifoldOperations {
     }
 
     /**
-     * Set tolerance of the manifold
+     * Return a copy of the manifold with the set tolerance value.
+     * This performs mesh simplification when the tolerance value is increased.
      * @param inputs manifold and tolerance
      * @returns manifold with new tolerance
      * @group basic
@@ -86,7 +90,17 @@ export class ManifoldOperations {
     }
 
     /**
-     * Get the original manifold
+     * If you copy a manifold, but you want this new copy to have new properties
+     * (e.g. a different UV mapping), you can reset its IDs to a new original,
+     * meaning it will now be referenced by its descendants instead of the meshes
+     * it was built from, allowing you to differentiate the copies when applying
+     * your properties to the final result.
+     *
+     * This function also condenses all coplanar faces in the relation, and
+     * collapses those edges. If you want to have inconsistent properties across
+     * these faces, meaning you want to preserve some of these edges, you should
+     * instead call GetMesh(), calculate your properties and use these to
+     * construct a new manifold.
      * @param inputs manifold
      * @returns original manifold
      * @group basic
@@ -98,7 +112,8 @@ export class ManifoldOperations {
     }
 
     /**
-     * Composes multiple manifolds into a single manifold
+     * Construct a CrossSection from a vector of other Polygons (batch
+     * boolean union).
      * @param inputs manifold shapes
      * @returns composed manifold
      * @group composition
@@ -110,7 +125,9 @@ export class ManifoldOperations {
     }
 
     /**
-     * Decompose manifold that are topologically disconnected
+     * This operation returns a vector of CrossSections that are topologically
+     * disconnected, each containing one outline contour with zero or more
+     * holes.
      * @param inputs manifold
      * @returns decomposed manifold shapes
      * @group composition

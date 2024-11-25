@@ -5,6 +5,7 @@ import { Base } from "./base-inputs";
 export namespace Manifold {
     export type ManifoldPointer = { hash: number, type: string };
     export type CrossSectionPointer = { hash: number, type: string };
+    export type MeshPointer = { hash: number, type: string };
 
     export enum fillRuleEnum {
         evenOdd = "EvenOdd",
@@ -397,6 +398,88 @@ export namespace Manifold {
          * @step 0.1
          */
         height = 0.5;
+    }
+    export class MeshDto<T> {
+        constructor(mesh?: T) {
+            if (mesh !== undefined) { this.mesh = mesh; }
+        }
+        /**
+         * Mesh
+         */
+        mesh: T;
+    }
+
+    export class MeshVertexIndexDto<T> {
+        constructor(mesh?: T, vertexIndex?: number) {
+            if (mesh !== undefined) { this.mesh = mesh; }
+            if (vertexIndex !== undefined) { this.vertexIndex = vertexIndex; }
+        }
+        /**
+         * Mesh
+         */
+        mesh: T;
+        /**
+         * Vertex index
+         * @default 0
+         * @minimum 0
+         * @maximum Infinity
+         * @step 1
+         */
+        vertexIndex: number;
+    }
+    export class MeshTriangleRunIndexDto<T> {
+        constructor(mesh?: T, triangleRunIndex?: number) {
+            if (mesh !== undefined) { this.mesh = mesh; }
+            if (triangleRunIndex !== undefined) { this.triangleRunIndex = triangleRunIndex; }
+        }
+        /**
+         * Mesh
+         */
+        mesh: T;
+        /**
+         * Triangle run index
+         * @default 0
+         * @minimum 0
+         * @maximum Infinity
+         * @step 1
+         */
+        triangleRunIndex: number;
+    }
+    export class MeshHalfEdgeIndexDto<T> {
+        constructor(mesh?: T, halfEdgeIndex?: number) {
+            if (mesh !== undefined) { this.mesh = mesh; }
+            if (halfEdgeIndex !== undefined) { this.halfEdgeIndex = halfEdgeIndex; }
+        }
+        /**
+         * Mesh
+         */
+        mesh: T;
+        /**
+         * Half edge index
+         * @default 0
+         * @minimum 0
+         * @maximum Infinity
+         * @step 1
+         */
+        halfEdgeIndex: number;
+    }
+    export class MeshTriangleIndexDto<T> {
+        constructor(mesh?: T, triangleIndex?: number) {
+            if (mesh !== undefined) { this.mesh = mesh; }
+            if (triangleIndex !== undefined) { this.triangleIndex = triangleIndex; }
+        }
+        /**
+         * Mesh
+         */
+        mesh: T;
+        /**
+         * Triangle index
+         * @default 0
+         * @minimum 0
+         * @maximum Infinity
+         * @step 1
+         */
+        triangleIndex: number;
     }
     export class CrossSectionDto<T> {
         constructor(crossSection?: T) {
@@ -900,6 +983,68 @@ export namespace Manifold {
          * Manifold shape
          */
         manifold2: T;
+    }
+    export class SplitManifoldsDto<T> {
+        constructor(manifoldToSplit?: T, manifoldCutter?: T) {
+            if (manifoldToSplit !== undefined) { this.manifoldToSplit = manifoldToSplit; }
+            if (manifoldCutter !== undefined) { this.manifoldCutter = manifoldCutter; }
+        }
+        /**
+         * Manifold that will be split
+         */
+        manifoldToSplit: T;
+        /**
+         * Manifold cutter
+         */
+        manifoldCutter: T;
+    }
+    export class TrimByPlaneDto<T> {
+        constructor(manifold?: T, normal?: Base.Vector3, originOffset?: number) {
+            if (manifold !== undefined) { this.manifold = manifold; }
+            if (normal !== undefined) { this.normal = normal; }
+            if (originOffset !== undefined) { this.originOffset = originOffset; }
+        }
+        /**
+         * Manifold that will be trimmed
+         */
+        manifold: T;
+        /**
+         * The normal vector of the plane to be mirrored over
+         * @default [1,0,0]
+         */
+        normal: Base.Vector3 = [1, 0, 0];
+        /**
+         * The offset from the origin
+         * @default 0
+         * @minimum -Infinity
+         * @maximum Infinity
+         * @step 0.1
+         */
+        originOffset = 0;
+    }
+    export class SplitByPlaneDto<T> {
+        constructor(manifold?: T, normal?: Base.Vector3, originOffset?: number) {
+            if (manifold !== undefined) { this.manifold = manifold; }
+            if (normal !== undefined) { this.normal = normal; }
+            if (originOffset !== undefined) { this.originOffset = originOffset; }
+        }
+        /**
+         * Manifold that will be split
+         */
+        manifold: T;
+        /**
+         * The normal vector of the plane to be mirrored over
+         * @default [1,0,0]
+         */
+        normal: Base.Vector3 = [1, 0, 0];
+        /**
+         * The offset from the origin
+         * @default 0
+         * @minimum -Infinity
+         * @maximum Infinity
+         * @step 0.1
+         */
+        originOffset = 0;
     }
     export class ManifoldsDto<T> {
         constructor(manifolds?: T[]) {

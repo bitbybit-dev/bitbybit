@@ -4,6 +4,7 @@ import * as Inputs from "../../inputs/inputs";
 import * as Manifold3D from "manifold-3d";
 import { Manifold } from "./manifold/manifold";
 import { ManifoldCrossSection } from "./cross-section/cross-section";
+import { Mesh } from "./mesh/mesh";
 
 /**
  * Contains various functions for Solid meshes from Manifold library https://github.com/elalish/manifold
@@ -12,12 +13,26 @@ import { ManifoldCrossSection } from "./cross-section/cross-section";
 export class ManifoldBitByBit {
     public readonly manifold: Manifold;
     public readonly crossSection: ManifoldCrossSection;
+    public readonly mesh: Mesh;
 
     constructor(
         private readonly manifoldWorkerManager: ManifoldWorkerManager,
     ) {
         this.manifold = new Manifold(manifoldWorkerManager);
         this.crossSection = new ManifoldCrossSection(manifoldWorkerManager);
+        this.mesh = new Mesh(manifoldWorkerManager);
+    }
+
+    /**
+      * Turns manifold shape into a mesh pointer that lives in worker's memory. This pointer can be used with bitbybit.manifold.mesh functions
+      * @param inputs Manifold shape
+      * @returns Pointer to manifold mesh definition
+      * @group meshing
+      * @shortname manifold to mesh pointer
+      * @drawable false
+      */
+    async manifoldToMeshPointer(inputs: Inputs.Manifold.ManifoldToMeshDto<Inputs.Manifold.ManifoldPointer>): Promise<Inputs.Manifold.MeshPointer> {
+        return this.manifoldWorkerManager.genericCallToWorkerPromise("manifoldToMeshPointer", inputs);
     }
 
     /**

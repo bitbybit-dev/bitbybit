@@ -13,6 +13,7 @@ export class ManifoldBooleans {
 
     ) { }
 
+
     /**
      * Subtract two manifold shapes
      * @param inputs two shapes
@@ -121,4 +122,39 @@ export class ManifoldBooleans {
         return this.manifoldWorkerManager.genericCallToWorkerPromise("manifold.booleans.intersection", inputs);
     }
 
+    /**
+     * Split manifold by another manifold
+     * @param inputs manifold to split and manifold cutter
+     * @returns split manifold
+     * @group split
+     * @shortname split
+     * @drawable true
+     */
+    split(inputs: Inputs.Manifold.SplitManifoldsDto<Inputs.Manifold.ManifoldPointer>): Promise<Inputs.Manifold.ManifoldPointer[]> {
+        return this.manifoldWorkerManager.genericCallToWorkerPromise("manifold.booleans.split", inputs);
+    }
+
+    /**
+     * Split manifold by plane
+     * @param inputs manifold and plane
+     * @returns split manifold
+     * @group split
+     * @shortname split by plane
+     * @drawable true
+     */
+    splitByPlane(inputs: Inputs.Manifold.SplitByPlaneDto<Inputs.Manifold.SplitByPlaneDto<Inputs.Manifold.ManifoldPointer>>): Promise<Inputs.Manifold.ManifoldPointer[]> {
+        return this.manifoldWorkerManager.genericCallToWorkerPromise("manifold.booleans.splitByPlane", inputs);
+    }
+
+    /**
+     * Trim manifold by plane
+     * @param inputs manifold and plane
+     * @returns trimmed manifold
+     * @group trim
+     * @shortname trim by plane
+     * @drawable true
+     */
+    trimByPlane(inputs: Inputs.Manifold.TrimByPlaneDto<Inputs.Manifold.ManifoldPointer>): Promise<Inputs.Manifold.ManifoldPointer> {
+        return this.manifoldWorkerManager.genericCallToWorkerPromise("manifold.booleans.trimByPlane", inputs);
+    }
 }

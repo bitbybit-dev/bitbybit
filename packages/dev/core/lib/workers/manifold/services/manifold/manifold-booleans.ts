@@ -9,6 +9,18 @@ export class ManifoldBooleans {
         this.manifold = wasm;
     }
 
+    split(inputs: Inputs.Manifold.SplitManifoldsDto<Manifold3D.Manifold>): Manifold3D.Manifold[] {
+        return inputs.manifoldToSplit.split(inputs.manifoldCutter);
+    }
+
+    splitByPlane(inputs: Inputs.Manifold.SplitByPlaneDto<Manifold3D.Manifold>): Manifold3D.Manifold[] {
+        return inputs.manifold.splitByPlane(inputs.normal, inputs.originOffset);
+    }
+
+    trimByPlane(inputs: Inputs.Manifold.TrimByPlaneDto<Manifold3D.Manifold>): Manifold3D.Manifold {
+        return inputs.manifold.asOriginal().trimByPlane(inputs.normal, inputs.originOffset);
+    }
+
     subtract(inputs: Inputs.Manifold.TwoManifoldsDto<Manifold3D.Manifold>): Manifold3D.Manifold {
         return inputs.manifold1.subtract(inputs.manifold2);
     }

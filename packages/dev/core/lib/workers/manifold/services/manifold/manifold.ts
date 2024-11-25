@@ -24,9 +24,9 @@ export class Manifold {
         this.transforms = new ManifoldTransforms(wasm);
         this.evaluate = new ManifoldEvaluate(wasm);
     }
-
+    
     manifoldToMesh(inputs: Inputs.Manifold.ManifoldToMeshDto<Manifold3D.Manifold>): Manifold3D.Mesh {
-        return (inputs.manifold as Manifold3D.Manifold).getMesh(inputs.normalIdx);
+        return inputs.manifold.getMesh(inputs.normalIdx);
     }
 
     manifoldsToMeshes(inputs: Inputs.Manifold.ManifoldsToMeshesDto<Manifold3D.Manifold>): (Manifold3D.Mesh)[] {

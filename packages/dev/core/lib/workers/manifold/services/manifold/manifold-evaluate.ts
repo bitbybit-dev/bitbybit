@@ -18,12 +18,7 @@ export class ManifoldEvaluate {
     }
 
     isEmpty(inputs: Inputs.Manifold.ManifoldDto<Manifold3D.Manifold>): boolean {
-        const isEmpty = inputs.manifold.isEmpty();
-        let result = true;
-        if (isEmpty === null || isEmpty === false) {
-            result = false;
-        }
-        return result;
+        return inputs.manifold.isEmpty();
     }
 
     numVert(inputs: Inputs.Manifold.ManifoldDto<Manifold3D.Manifold>): number {

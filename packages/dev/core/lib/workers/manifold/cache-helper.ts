@@ -78,7 +78,6 @@ export class CacheHelper {
                 });
             } else {
                 if (this.isManifoldObject(toReturn)) {
-                    toReturn.hash = curHash;
                     this.addToCache(curHash, toReturn);
                 } else if (toReturn.compound && toReturn.data && toReturn.manifolds && toReturn.manifolds.length > 0) {
                     const objDef: ObjectDefinition<any, any> = toReturn;
@@ -105,8 +104,8 @@ export class CacheHelper {
         return this.argCache[hash] || null;
     }
     /** Adds this `manifold` to the cache, indexable by `hash`. */
-    addToCache(hash, manifold): any {
-        const cacheShape = manifold;
+    addToCache(hash, object): any {
+        const cacheShape = object;
         cacheShape.hash = hash;
         this.argCache[hash] = cacheShape;
         return hash;

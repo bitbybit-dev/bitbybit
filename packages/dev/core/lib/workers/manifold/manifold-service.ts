@@ -2,6 +2,7 @@ import * as Manifold3D from "manifold-3d";
 import * as Inputs from "../../api/inputs";
 import { Manifold } from "./services/manifold/manifold";
 import { CrossSection } from "./services/cross-section/cross-section";
+import { Mesh } from "./services/mesh/mesh";
 
 // Worker make an instance of this class itself
 export class ManifoldService {
@@ -9,10 +10,12 @@ export class ManifoldService {
     
     public crossSection: CrossSection;
     public manifold: Manifold;
+    mesh: Mesh;
 
     constructor(wasm: Manifold3D.ManifoldToplevel) {
         this.crossSection = new CrossSection(wasm);
         this.manifold = new Manifold(wasm);
+        this.mesh = new Mesh(wasm);
     }
 
     decomposeManifoldOrCrossSection(inputs: Inputs.Manifold.DecomposeManifoldOrCrossSectionDto<Manifold3D.Manifold | Manifold3D.CrossSection>): Manifold3D.Mesh | Manifold3D.SimplePolygon[] {
