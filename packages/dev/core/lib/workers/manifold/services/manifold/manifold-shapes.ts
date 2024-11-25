@@ -38,5 +38,4 @@ export class ManifoldShapes {
         return cylinder(inputs.height, inputs.radiusLow, inputs.radiusHigh, inputs.circularSegments, inputs.center);
     }
 
-
 }
