@@ -25,6 +25,12 @@ export class ManifoldTransforms {
         return inputs.manifold.translate(inputs.vector);
     }
 
+    translateByVectors(inputs: Inputs.Manifold.TranslateByVectorsDto<Manifold3D.Manifold>): Manifold3D.Manifold[] {
+        return inputs.vectors.map(vector => {
+            return inputs.manifold.translate(vector);
+        });
+    }
+
     rotate(inputs: Inputs.Manifold.RotateDto<Manifold3D.Manifold>): Manifold3D.Manifold {
         return inputs.manifold.rotate(inputs.vector);
     }

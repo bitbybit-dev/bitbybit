@@ -62,6 +62,18 @@ export class ManifoldTransforms {
     }
 
     /**
+    * Translates a manifold shape along by multiple vectors
+    * @param inputs manifold and trnaslation vectors
+    * @returns Translated manifold shapes
+    * @group multiple
+    * @shortname translate by vectors
+    * @drawable true
+    */
+    async translateByVectors(inputs: Inputs.Manifold.TranslateByVectorsDto<Inputs.Manifold.ManifoldPointer>): Promise<Inputs.Manifold.ManifoldPointer[]> {
+        return this.manifoldWorkerManager.genericCallToWorkerPromise("manifold.transforms.translateByVectors", inputs);
+    }
+
+    /**
      * Translates a manifold shape along x, y, z
      * @param inputs manifold and trnaslation coordinates
      * @returns Translated manifold shape
@@ -120,5 +132,6 @@ export class ManifoldTransforms {
     async transforms(inputs: Inputs.Manifold.TransformsDto<Inputs.Manifold.ManifoldPointer>): Promise<Inputs.Manifold.ManifoldPointer> {
         return this.manifoldWorkerManager.genericCallToWorkerPromise("manifold.transforms.transforms", inputs);
     }
+
 
 }

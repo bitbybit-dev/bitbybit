@@ -1014,6 +1014,22 @@ export namespace Manifold {
          */
         vector: Base.Vector3;
     }
+
+    export class TranslateByVectorsDto<T> {
+        constructor(manifold?: T, vectors?: Base.Vector3[]) {
+            if (manifold !== undefined) { this.manifold = manifold; }
+            if (vectors !== undefined) { this.vectors = vectors; }
+        }
+        /**
+         * Manifold shape
+         */
+        manifold: T;
+        /**
+         * The translation vector
+         * @default undefined
+         */
+        vectors: Base.Vector3[];
+    }
     export class RotateDto<T> {
         constructor(manifold?: T, vector?: Base.Vector3) {
             if (manifold !== undefined) { this.manifold = manifold; }
