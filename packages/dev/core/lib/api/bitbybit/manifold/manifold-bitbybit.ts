@@ -1,7 +1,6 @@
 
 import { ManifoldWorkerManager } from "../../../workers/manifold/manifold-worker-manager";
 import * as Inputs from "../../inputs/inputs";
-import * as Manifold3D from "manifold-3d";
 import { Manifold } from "./manifold/manifold";
 import { ManifoldCrossSection } from "./cross-section/cross-section";
 import { Mesh } from "./mesh/mesh";
@@ -43,7 +42,7 @@ export class ManifoldBitByBit {
      * @shortname decompose m or cs
      * @drawable false
      */
-    async decomposeManifoldOrCrossSection(inputs: Inputs.Manifold.DecomposeManifoldOrCrossSectionDto<Inputs.Manifold.ManifoldPointer | Inputs.Manifold.CrossSectionPointer>): Promise<Manifold3D.Mesh | Manifold3D.SimplePolygon[]> {
+    async decomposeManifoldOrCrossSection(inputs: Inputs.Manifold.DecomposeManifoldOrCrossSectionDto<Inputs.Manifold.ManifoldPointer | Inputs.Manifold.CrossSectionPointer>): Promise<Inputs.Manifold.DecomposedManifoldMesh | Inputs.Base.Vector2[][]> {
         return this.manifoldWorkerManager.genericCallToWorkerPromise("decomposeManifoldOrCrossSection", inputs);
     }
 
@@ -55,7 +54,7 @@ export class ManifoldBitByBit {
      * @shortname decompose m's or cs's
      * @drawable false
      */
-    async decomposeManifoldsOrCrossSections(inputs: Inputs.Manifold.DecomposeManifoldsOrCrossSectionsDto<Inputs.Manifold.ManifoldPointer | Inputs.Manifold.CrossSectionPointer>): Promise<(Manifold3D.Mesh | Manifold3D.SimplePolygon)[]> {
+    async decomposeManifoldsOrCrossSections(inputs: Inputs.Manifold.DecomposeManifoldsOrCrossSectionsDto<Inputs.Manifold.ManifoldPointer | Inputs.Manifold.CrossSectionPointer>): Promise<(Inputs.Manifold.DecomposedManifoldMesh | Inputs.Base.Vector2[][])[]> {
         return this.manifoldWorkerManager.genericCallToWorkerPromise("decomposeManifoldsOrCrossSections", inputs);
     }
 

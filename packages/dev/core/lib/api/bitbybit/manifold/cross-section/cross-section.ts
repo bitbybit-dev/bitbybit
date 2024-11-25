@@ -3,7 +3,6 @@ import { ManifoldWorkerManager } from "../../../../workers/manifold/manifold-wor
 import { CrossSectionOperations } from "./operations";
 import { CrossSectionShapes } from "./shapes";
 import * as Inputs from "../../../inputs/inputs";
-import * as Manifold3D from "manifold-3d";
 import { CrossSectionTransforms } from "./transforms";
 import { CrossSectionBooleans } from "./booleans";
 import { CrossSectionEvaluate } from "./evaluate";
@@ -39,7 +38,7 @@ export class ManifoldCrossSection{
      * @shortname cross section to polygons
      * @drawable false
      */
-    async crossSectionToPolygons(inputs: Inputs.Manifold.CrossSectionDto<Inputs.Manifold.CrossSectionPointer>): Promise<Manifold3D.SimplePolygon[]> {
+    async crossSectionToPolygons(inputs: Inputs.Manifold.CrossSectionDto<Inputs.Manifold.CrossSectionPointer>): Promise<Inputs.Base.Vector2[][]> {
         return this.manifoldWorkerManager.genericCallToWorkerPromise("crossSection.crossSectionToPolygons", inputs);
     }
 
@@ -51,7 +50,7 @@ export class ManifoldCrossSection{
      * @shortname cross sections to polygons
      * @drawable false
      */
-    async crossSectionsToPolygons(inputs: Inputs.Manifold.CrossSectionsDto<Inputs.Manifold.CrossSectionPointer>): Promise<Manifold3D.SimplePolygon[][]> {
+    async crossSectionsToPolygons(inputs: Inputs.Manifold.CrossSectionsDto<Inputs.Manifold.CrossSectionPointer>): Promise<Inputs.Base.Vector2[][][]> {
         return this.manifoldWorkerManager.genericCallToWorkerPromise("crossSection.crossSectionsToPolygons", inputs);
     }
 

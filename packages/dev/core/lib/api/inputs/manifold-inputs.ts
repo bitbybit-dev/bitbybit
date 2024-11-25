@@ -18,6 +18,18 @@ export namespace Manifold {
         round = "Round",
         miter = "Miter"
     }
+    export class DecomposedManifoldMesh {
+        numProp: number;
+        vertProperties: Float32Array;
+        triVerts: Uint32Array;
+        mergeFromVert?: Uint32Array;
+        mergeToVert?: Uint32Array;
+        runIndex?: Uint32Array;
+        runOriginalID?: Uint32Array;
+        runTransform?: Float32Array;
+        faceID?: Uint32Array;
+        halfedgeTangent?: Float32Array;
+    }
     export class DrawManifoldOrCrossSectionDto<T, M> {
         /**
          * Provide options without default values

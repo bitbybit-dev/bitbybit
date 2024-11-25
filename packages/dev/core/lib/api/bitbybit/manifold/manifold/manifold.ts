@@ -3,7 +3,6 @@ import { ManifoldWorkerManager } from "../../../../workers/manifold/manifold-wor
 import { ManifoldShapes } from "./shapes";
 import * as Inputs from "../../../inputs/inputs";
 import { ManifoldBooleans } from "./booleans";
-import * as Manifold3D from "manifold-3d";
 import { ManifoldOperations } from "./operations";
 import { ManifoldTransforms } from "./transforms";
 import { ManifoldEvaluate } from "./evaluate";
@@ -38,7 +37,7 @@ export class Manifold {
      * @shortname manifold to mesh
      * @drawable false
      */
-    async manifoldToMesh(inputs: Inputs.Manifold.ManifoldToMeshDto<Inputs.Manifold.ManifoldPointer>): Promise<Manifold3D.Mesh> {
+    async manifoldToMesh(inputs: Inputs.Manifold.ManifoldToMeshDto<Inputs.Manifold.ManifoldPointer>): Promise<Inputs.Manifold.DecomposedManifoldMesh> {
         return this.manifoldWorkerManager.genericCallToWorkerPromise("manifold.manifoldToMesh", inputs);
     }
 
@@ -50,7 +49,7 @@ export class Manifold {
      * @shortname manifolds to meshes
      * @drawable false
      */
-    async manifoldsToMeshes(inputs: Inputs.Manifold.ManifoldsToMeshesDto<Inputs.Manifold.ManifoldPointer>): Promise<Manifold3D.Mesh[]> {
+    async manifoldsToMeshes(inputs: Inputs.Manifold.ManifoldsToMeshesDto<Inputs.Manifold.ManifoldPointer>): Promise<Inputs.Manifold.DecomposedManifoldMesh[]> {
         return this.manifoldWorkerManager.genericCallToWorkerPromise("manifold.manifoldsToMeshes", inputs);
     }
 
