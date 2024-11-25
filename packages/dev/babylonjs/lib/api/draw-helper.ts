@@ -629,7 +629,16 @@ export class DrawHelper extends DrawHelperCore {
                 colour
             ));
         });
+    }
 
+    async drawManifoldsOrCrossSections(inputs: Inputs.Manifold.DrawManifoldsOrCrossSectionsDto<Inputs.Manifold.ManifoldPointer | Inputs.Manifold.CrossSectionPointer, BABYLON.PBRMetallicRoughnessMaterial>): Promise<BABYLON.Mesh> {
+        const decomposedMesh: Manifold3D.Mesh[] = await this.manifoldWorkerManager.genericCallToWorkerPromise("decomposeManifoldsOrCrossSections", inputs);
+        const meshes = decomposedMesh.map(dec => this.handleDecomposedManifold(inputs, dec));
+        const manifoldMeshContainer = new BABYLON.Mesh("manifoldMeshContainer" + Math.random(), this.context.scene);
+        meshes.forEach(mesh => {
+            mesh.parent = manifoldMeshContainer;
+        });
+        return manifoldMeshContainer;
     }
 
     async drawManifoldOrCrossSection(inputs: Inputs.Manifold.DrawManifoldOrCrossSectionDto<Inputs.Manifold.ManifoldPointer | Inputs.Manifold.CrossSectionPointer, BABYLON.PBRMetallicRoughnessMaterial>): Promise<BABYLON.Mesh> {
@@ -831,7 +840,11 @@ export class DrawHelper extends DrawHelperCore {
                 vertexData.set(data, component.kind);
                 offset += component.stride;
             }
-
+            if (inputs.computeNormals) {
+                const normals = [];
+                BABYLON.VertexData.ComputeNormals(vertexData.positions, vertexData.indices, normals);
+                vertexData.normals = normals;
+            }
             vertexData.applyToMesh(mesh, false);
 
             if (inputs.faceMaterial === undefined) {
@@ -861,7 +874,7 @@ export class DrawHelper extends DrawHelperCore {
                 polylines,
                 updatable: false,
                 size: inputs.crossSectionWidth,
-                opacity: 1,
+                opacity: inputs.crossSectionOpacity,
                 colours: inputs.crossSectionColour
             });
             polylineMesh.parent = mesh;

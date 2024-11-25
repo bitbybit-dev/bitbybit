@@ -18,7 +18,12 @@ export class CrossSectionOperations {
     }
 
     revolve(inputs: Inputs.Manifold.RevolveDto<Manifold3D.CrossSection>): Manifold3D.Manifold {
-        return inputs.crossSection.revolve(inputs.circularSegments, inputs.revolveDegrees);
+        const res = inputs.crossSection.revolve(inputs.circularSegments, inputs.revolveDegrees);
+        if (inputs.matchProfile) {
+            return res.rotate([90, 0, 0]);
+        } else {
+            return res;
+        }
     }
 
     offset(inputs: Inputs.Manifold.OffsetDto<Manifold3D.CrossSection>): Manifold3D.CrossSection {

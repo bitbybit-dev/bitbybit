@@ -78,6 +78,8 @@ export class Draw extends DrawCore {
             return this.handleJscadMeshes(inputs);
         } else if (this.detectManifoldShape(entity)) {
             return this.handleManifoldShape(inputs);
+        } else if (this.detectManifoldShapes(entity)) {
+            return this.handleManifoldShapes(inputs);
         } else {
             // here we have all sync drawer functions
             return Promise.resolve(this.drawAny(inputs));
@@ -544,22 +546,21 @@ export class Draw extends DrawCore {
             return r;
         });
     }
-    
-    private handleManifoldShapes(inputs: Inputs.Draw.DrawAny) {
-        // let options = inputs.options ? inputs.options : new Inputs.OCCT.DrawShapeDto(inputs.entity);
-        // if (!inputs.options && inputs.babylonMesh && inputs.babylonMesh.metadata.options) {
-        //     options = inputs.babylonMesh.metadata.options;
-        // }
-        // return this.drawHelper.draw({
-        //     shapes: inputs.entity as Inputs.OCCT.TopoDSShapePointer[],
-        //     ...new Inputs.Draw.DrawOcctShapeOptions(),
-        //     ...options as Inputs.Draw.DrawOcctShapeOptions
-        // }).then(r => {
-        //     this.applyGlobalSettingsAndMetadataAndShadowCasting(Inputs.Draw.drawingTypes.occt, options, r);
-        //     return r;
-        // });
-    }
 
+    private handleManifoldShapes(inputs: Inputs.Draw.DrawAny) {
+        let options = inputs.options ? inputs.options : new Inputs.Manifold.DrawManifoldOrCrossSectionDto(inputs.entity);
+        if (!inputs.options && inputs.babylonMesh && inputs.babylonMesh.metadata.options) {
+            options = inputs.babylonMesh.metadata.options;
+        }
+        return this.drawHelper.drawManifoldsOrCrossSections({
+            manifoldsOrCrossSections: inputs.entity as Inputs.Manifold.ManifoldPointer[],
+            ...new Inputs.Manifold.DrawManifoldOrCrossSectionDto(),
+            ...options as Inputs.Draw.DrawManifoldOrCrossSectionOptions
+        }).then(r => {
+            this.applyGlobalSettingsAndMetadataAndShadowCasting(Inputs.Draw.drawingTypes.manifold, options, r);
+            return r;
+        });
+    }
 
     private handleOcctShape(inputs: Inputs.Draw.DrawAny) {
         let options = inputs.options ? inputs.options : new Inputs.OCCT.DrawShapeDto(inputs.entity);

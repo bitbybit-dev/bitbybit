@@ -21,11 +21,15 @@ export namespace Manifold {
         /**
          * Provide options without default values
          */
-        constructor(manifoldOrCrossSection?: T, faceOpacity?: number, faceMaterial?: M, faceColour?: Base.Color) {
+        constructor(manifoldOrCrossSection?: T, faceOpacity?: number, faceMaterial?: M, faceColour?: Base.Color, crossSectionColour?: Base.Color, crossSectionWidth?: number, crossSectionOpacity?: number, computeNormals?: boolean) {
             if (manifoldOrCrossSection !== undefined) { this.manifoldOrCrossSection = manifoldOrCrossSection; }
             if (faceOpacity !== undefined) { this.faceOpacity = faceOpacity; }
             if (faceMaterial !== undefined) { this.faceMaterial = faceMaterial; }
             if (faceColour !== undefined) { this.faceColour = faceColour; }
+            if (crossSectionColour !== undefined) { this.crossSectionColour = crossSectionColour; }
+            if (crossSectionWidth !== undefined) { this.crossSectionWidth = crossSectionWidth; }
+            if (crossSectionOpacity !== undefined) { this.crossSectionOpacity = crossSectionOpacity; }
+            if (computeNormals !== undefined) { this.computeNormals = computeNormals; }
         }
         /**
          * Manifold geometry
@@ -61,6 +65,81 @@ export namespace Manifold {
          * @default 2
          */
         crossSectionWidth = 2;
+        /**
+         * Cross section opacity value between 0 and 1
+         * @default 1
+         * @minimum 0
+         * @maximum 1
+         * @step 0.1
+         */
+        crossSectionOpacity = 1;
+        /**
+         * Compute normals for the shape
+         * @default false
+         */
+        computeNormals = false;
+    }
+    export class DrawManifoldsOrCrossSectionsDto<T, M> {
+        /**
+         * Provide options without default values
+         */
+        constructor(manifoldsOrCrossSections?: T[], faceOpacity?: number, faceMaterial?: M, faceColour?: Base.Color, crossSectionColour?: Base.Color, crossSectionWidth?: number, crossSectionOpacity?: number, computeNormals?: boolean) {
+            if (manifoldsOrCrossSections !== undefined) { this.manifoldsOrCrossSections = manifoldsOrCrossSections; }
+            if (faceOpacity !== undefined) { this.faceOpacity = faceOpacity; }
+            if (faceMaterial !== undefined) { this.faceMaterial = faceMaterial; }
+            if (faceColour !== undefined) { this.faceColour = faceColour; }
+            if (crossSectionColour !== undefined) { this.crossSectionColour = crossSectionColour; }
+            if (crossSectionWidth !== undefined) { this.crossSectionWidth = crossSectionWidth; }
+            if (crossSectionOpacity !== undefined) { this.crossSectionOpacity = crossSectionOpacity; }
+            if (computeNormals !== undefined) { this.computeNormals = computeNormals; }
+        }
+        /**
+         * Manifold geometry
+         * @default undefined
+         */
+        manifoldsOrCrossSections?: T[];
+        /**
+         * Face material
+         * @default undefined
+         * @optional true
+         */
+        faceMaterial?: M;
+        /**
+         * Hex colour string for face colour
+         * @default #ff0000
+         */
+        faceColour: Base.Color = "#ff0000";
+        /**
+         * Face opacity value between 0 and 1
+         * @default 1
+         * @minimum 0
+         * @maximum 1
+         * @step 0.1
+         */
+        faceOpacity = 1;
+        /**
+         * Hex colour string for cross section drawing
+         * @default #ff00ff
+         */
+        crossSectionColour: Base.Color = "#ff00ff";
+        /**
+         * Width of cross section lines
+         * @default 2
+         */
+        crossSectionWidth = 2;
+        /**
+         * Cross section opacity value between 0 and 1
+         * @default 1
+         * @minimum 0
+         * @maximum 1
+         * @step 0.1
+         */
+        crossSectionOpacity = 1;
+        /**
+         * Compute normals for the shape
+         * @default false
+         */
+        computeNormals = false;
     }
     export class CubeDto {
         constructor(center?: boolean, size?: number) {
@@ -393,9 +472,10 @@ export namespace Manifold {
     }
 
     export class RevolveDto<T> {
-        constructor(crossSection?: T, revolveDegrees?: number, circularSegments?: number) {
+        constructor(crossSection?: T, revolveDegrees?: number, matchProfile?: boolean, circularSegments?: number) {
             if (crossSection !== undefined) { this.crossSection = crossSection; }
             if (revolveDegrees !== undefined) { this.revolveDegrees = revolveDegrees; }
+            if (matchProfile !== undefined) { this.matchProfile = matchProfile; }
             if (circularSegments !== undefined) { this.circularSegments = circularSegments; }
         }
         /**
@@ -410,6 +490,11 @@ export namespace Manifold {
          * @step 1
          */
         revolveDegrees: number;
+        /**
+         * Default manifold library will adjust profile when generating revolved shape. We prefer it to be matching the profile by default. Set to false to use default manifold library behavior.
+         * @default true
+         */
+        matchProfile = true;
         /**
          * Circular segments
          * @default 32
