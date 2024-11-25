@@ -803,7 +803,7 @@ export class DrawHelper extends DrawHelperCore {
         decomposedManifold: Manifold3D.Mesh | Manifold3D.SimplePolygon[]): BABYLON.Mesh {
         if ((decomposedManifold as Manifold3D.Mesh).vertProperties) {
             const decomposedMesh = decomposedManifold as Manifold3D.Mesh;
-            const mesh = new BABYLON.Mesh(`manifold-${Math.random()}`, this.context.scene);
+            const mesh = new BABYLON.Mesh(`manifoldMesh-${Math.random()}`, this.context.scene);
 
             const vertexData = new BABYLON.VertexData();
 
@@ -850,7 +850,7 @@ export class DrawHelper extends DrawHelperCore {
 
             return mesh;
         } else {
-            const mesh = new BABYLON.Mesh(`manifold-cross-section-${Math.random()}`, this.context.scene);
+            const mesh = new BABYLON.Mesh(`manifoldCrossSection-${Math.random()}`, this.context.scene);
             const decompsoedPolygons = decomposedManifold as Manifold3D.SimplePolygon[];
             const polylines = decompsoedPolygons.map(polygon => ({
                 points: polygon.map(p => [p[0], p[1], 0] as Inputs.Base.Point3),

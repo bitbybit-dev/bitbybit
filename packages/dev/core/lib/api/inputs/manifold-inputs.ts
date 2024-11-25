@@ -243,6 +243,65 @@ export namespace Manifold {
          */
         manifold: T;
     }
+    export class CountDto {
+        constructor(count?: number) {
+            if (count !== undefined) { this.count = count; }
+        }
+        /**
+         * Nr to count
+         */
+        count: number;
+    }
+    export class ManifoldsMinGapDto<T> {
+        constructor(manifold1?: T, manifold2?: T, searchLength?: number) {
+            if (manifold1 !== undefined) { this.manifold1 = manifold1; }
+            if (manifold2 !== undefined) { this.manifold2 = manifold2; }
+            if (searchLength !== undefined) { this.searchLength = searchLength; }
+        }
+        /**
+         * Manifold shape
+         */
+        manifold1: T;
+        /**
+         * Manifold shape
+         */
+        manifold2: T;
+        /**
+         * Length of the search gap
+         * @default 100
+         * @minimum 0
+         * @maximum Infinity
+         * @step 10
+         */
+        searchLength = 100;
+    }
+    export class ManifoldToleranceDto<T> {
+        constructor(manifold?: T, tolerance?: number) {
+            if (manifold !== undefined) { this.manifold = manifold; }
+            if (tolerance !== undefined) { this.tolerance = tolerance; }
+        }
+        /**
+         * Manifold shape
+         */
+        manifold: T;
+        /**
+         * Tolerance value
+         * @default 1e-6
+         * @minimum 0
+         * @maximum Infinity
+         * @step 1e-7
+         */
+        tolerance = 1e-6;
+    }
+    export class HullPointsDto<T> {
+        constructor(points?: T) {
+            if (points !== undefined) { this.points = points; }
+        }
+        /**
+         * Points to hull
+         */
+        points: T;
+    }
     export class SliceDto<T> {
         constructor(manifold?: T) {
             if (manifold !== undefined) { this.manifold = manifold; }

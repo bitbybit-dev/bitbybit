@@ -6,6 +6,7 @@ import { ManifoldBooleans } from "./booleans";
 import * as Manifold3D from "manifold-3d";
 import { ManifoldOperations } from "./operations";
 import { ManifoldTransforms } from "./transforms";
+import { ManifoldEvaluate } from "./evaluate";
 
 /**
  * Contains various functions for Solid meshes from Manifold library https://github.com/elalish/manifold
@@ -17,6 +18,7 @@ export class Manifold {
     public readonly booleans: ManifoldBooleans;
     public readonly operations: ManifoldOperations;
     public readonly transforms: ManifoldTransforms;
+    public readonly evaluate: ManifoldEvaluate;
 
     constructor(
         private readonly manifoldWorkerManager: ManifoldWorkerManager,
@@ -25,6 +27,7 @@ export class Manifold {
         this.booleans = new ManifoldBooleans(manifoldWorkerManager);
         this.operations = new ManifoldOperations(manifoldWorkerManager);
         this.transforms = new ManifoldTransforms(manifoldWorkerManager);
+        this.evaluate = new ManifoldEvaluate(manifoldWorkerManager);
     }
 
     /**
