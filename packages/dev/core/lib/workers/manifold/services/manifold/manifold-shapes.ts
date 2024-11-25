@@ -9,6 +9,11 @@ export class ManifoldShapes {
         this.manifold = wasm;
     }
 
+    manifoldFromMesh(inputs: Inputs.Manifold.CreateFromMeshDto): Manifold3D.Manifold {
+        const { Manifold } = this.manifold;
+        return new Manifold(inputs.mesh as Manifold3D.Mesh);
+    }
+
     cube(inputs: Inputs.Manifold.CubeDto): Manifold3D.Manifold {
         const { Manifold } = this.manifold;
         const { cube } = Manifold;
@@ -32,5 +37,6 @@ export class ManifoldShapes {
         const { cylinder } = Manifold;
         return cylinder(inputs.height, inputs.radiusLow, inputs.radiusHigh, inputs.circularSegments, inputs.center);
     }
+
 
 }

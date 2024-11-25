@@ -27,7 +27,7 @@ export class ManifoldOperations {
         return inputs.manifold.project();
     }
 
-    setTolerance(inputs: Inputs.Manifold.ManifoldToleranceDto<Manifold3D.Manifold>): Manifold3D.Manifold {
+    setTolerance(inputs: Inputs.Manifold.ManifoldRefineToleranceDto<Manifold3D.Manifold>): Manifold3D.Manifold {
         return inputs.manifold.setTolerance(inputs.tolerance);
     }
 
@@ -49,5 +49,33 @@ export class ManifoldOperations {
 
     decompose(inputs: Inputs.Manifold.ManifoldDto<Manifold3D.Manifold>): Manifold3D.Manifold[] {
         return inputs.manifold.decompose();
+    }
+
+    calculateNormals(inputs: Inputs.Manifold.CalculateNormalsDto<Manifold3D.Manifold>): Manifold3D.Manifold {
+        return inputs.manifold.calculateNormals(inputs.normalIdx, inputs.minSharpAngle);
+    }
+
+    calculateCurvature(inputs: Inputs.Manifold.CalculateCurvatureDto<Manifold3D.Manifold>): Manifold3D.Manifold {
+        return inputs.manifold.calculateCurvature(inputs.gaussianIdx, inputs.meanIdx);
+    }
+
+    refineToTolerance(inputs: Inputs.Manifold.ManifoldRefineToleranceDto<Manifold3D.Manifold>): Manifold3D.Manifold {
+        return inputs.manifold.refineToTolerance(inputs.tolerance);
+    }
+
+    refineToLength(inputs: Inputs.Manifold.ManifoldRefineLengthDto<Manifold3D.Manifold>): Manifold3D.Manifold {
+        return inputs.manifold.refineToLength(inputs.length);
+    }
+
+    refine(inputs: Inputs.Manifold.ManifoldRefineDto<Manifold3D.Manifold>): Manifold3D.Manifold {
+        return inputs.manifold.refine(inputs.number);
+    }
+
+    smoothOut(inputs: Inputs.Manifold.ManifoldSmoothOutDto<Manifold3D.Manifold>): Manifold3D.Manifold {
+        return inputs.manifold.smoothOut(inputs.minSharpAngle, inputs.minSmoothness);
+    }
+
+    smoothByNormals(inputs: Inputs.Manifold.ManifoldSmoothByNormalsDto<Manifold3D.Manifold>): Manifold3D.Manifold {
+        return inputs.manifold.smoothByNormals(inputs.normalIdx);
     }
 }

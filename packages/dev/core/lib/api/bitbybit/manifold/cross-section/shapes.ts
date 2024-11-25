@@ -14,7 +14,10 @@ export class CrossSectionShapes {
     ) { }
 
     /**
-     * Create a 2D square cross section
+     * Create a 2d cross-section from a set of contours (complex polygons). A
+     * boolean union operation (with Positive filling rule by default) is
+     * performed to combine overlapping polygons and ensure the resulting
+     * CrossSection is free of intersections.
      * @param inputs polygons and fill rule
      * @returns cross section
      * @group base

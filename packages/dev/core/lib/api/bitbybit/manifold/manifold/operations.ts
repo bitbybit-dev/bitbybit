@@ -73,7 +73,7 @@ export class ManifoldOperations {
      * @shortname set tolerance
      * @drawable false
      */
-    async setTolerance(inputs: Inputs.Manifold.ManifoldToleranceDto<Inputs.Manifold.ManifoldPointer>): Promise<Inputs.Manifold.ManifoldPointer> {
+    async setTolerance(inputs: Inputs.Manifold.ManifoldRefineToleranceDto<Inputs.Manifold.ManifoldPointer>): Promise<Inputs.Manifold.ManifoldPointer> {
         return this.manifoldWorkerManager.genericCallToWorkerPromise("manifold.operations.setTolerance", inputs);
     }
 
@@ -112,8 +112,9 @@ export class ManifoldOperations {
     }
 
     /**
-     * Construct a CrossSection from a vector of other Polygons (batch
-     * boolean union).
+     * Constructs a new manifold from a list of other manifolds. This is a purely
+     * topological operation, so care should be taken to avoid creating
+     * overlapping results. It is the inverse operation of Decompose().
      * @param inputs manifold shapes
      * @returns composed manifold
      * @group composition
@@ -125,9 +126,10 @@ export class ManifoldOperations {
     }
 
     /**
-     * This operation returns a vector of CrossSections that are topologically
-     * disconnected, each containing one outline contour with zero or more
-     * holes.
+     * This operation returns a vector of Manifolds that are topologically
+     * disconnected. If everything is connected, the vector is length one,
+     * containing a copy of the original. It is the inverse operation of
+     * Compose().
      * @param inputs manifold
      * @returns decomposed manifold shapes
      * @group composition
@@ -136,6 +138,118 @@ export class ManifoldOperations {
      */
     async decompose(inputs: Inputs.Manifold.ManifoldDto<Inputs.Manifold.ManifoldPointer>): Promise<Inputs.Manifold.ManifoldPointer[]> {
         return this.manifoldWorkerManager.genericCallToWorkerPromise("manifold.operations.decompose", inputs);
+    }
+
+    /**
+     * Fills in vertex properties for normal vectors, calculated from the mesh
+     * geometry. Flat faces composed of three or more triangles will remain flat.
+     * @param inputs manifold and normal index with minimum sharp angle
+     * @returns manifold with calculated normals
+     * @group adjustments
+     * @shortname calculate normals
+     * @drawable true
+     */
+    async calculateNormals(inputs: Inputs.Manifold.CalculateNormalsDto<Inputs.Manifold.ManifoldPointer>): Promise<Inputs.Manifold.ManifoldPointer> {
+        return this.manifoldWorkerManager.genericCallToWorkerPromise("manifold.operations.calculateNormals", inputs);
+    }
+
+    /**
+     * Curvature is the inverse of the radius of curvature, and signed such that
+     * positive is convex and negative is concave. There are two orthogonal
+     * principal curvatures at any point on a manifold, with one maximum and the
+     * other minimum. Gaussian curvature is their product, while mean
+     * curvature is their sum. This approximates them for every vertex and assigns
+     * them as vertex properties on the given channels.
+     * @param inputs manifold and gaussian and mean index
+     * @returns manifold with calculated curvature
+     * @group adjustments
+     * @shortname calculate curvature
+     * @drawable true
+     */
+    async calculateCurvature(inputs: Inputs.Manifold.CalculateCurvatureDto<Inputs.Manifold.ManifoldPointer>): Promise<Inputs.Manifold.ManifoldPointer> {
+        return this.manifoldWorkerManager.genericCallToWorkerPromise("manifold.operations.calculateCurvature", inputs);
+    }
+
+    /**
+     * Increase the density of the mesh by splitting each edge into pieces such
+     * that any point on the resulting triangles is roughly within tolerance of
+     * the smoothly curved surface defined by the tangent vectors. This means
+     * tightly curving regions will be divided more finely than smoother regions.
+     * If halfedgeTangents are not present, the result will simply be a copy of
+     * the original. Quads will ignore their interior triangle bisector.
+     * @param inputs manifold and tolerance
+     * @returns refined manifold
+     * @group adjustments
+     * @shortname refine to tolerance
+     * @drawable true
+     */
+
+    async refineToTolerance(inputs: Inputs.Manifold.ManifoldRefineToleranceDto<Inputs.Manifold.ManifoldPointer>): Promise<Inputs.Manifold.ManifoldPointer> {
+        return this.manifoldWorkerManager.genericCallToWorkerPromise("manifold.operations.refineToTolerance", inputs);
+    }
+
+    /**
+     * Increase the density of the mesh by splitting each edge into pieces of
+     * roughly the input length. Interior verts are added to keep the rest of the
+     * triangulation edges also of roughly the same length. If halfedgeTangents
+     * are present (e.g. from the Smooth() constructor), the new vertices will be
+     * moved to the interpolated surface according to their barycentric
+     * coordinates.
+     * @param inputs manifold and length
+     * @returns refined manifold
+     * @group adjustments
+     * @shortname refine to length
+     * @drawable true
+     */
+    async refineToLength(inputs: Inputs.Manifold.ManifoldRefineLengthDto<Inputs.Manifold.ManifoldPointer>): Promise<Inputs.Manifold.ManifoldPointer> {
+        return this.manifoldWorkerManager.genericCallToWorkerPromise("manifold.operations.refineToLength", inputs);
+    }
+
+    /**
+     * Increase the density of the mesh by splitting every edge into n pieces. For
+     * instance, with n = 2, each triangle will be split into 4 triangles. These
+     * will all be coplanar (and will not be immediately collapsed) unless the
+     * Mesh/Manifold has halfedgeTangents specified (e.g. from the Smooth()
+     * constructor), in which case the new vertices will be moved to the
+     * interpolated surface according to their barycentric coordinates.
+     * @param inputs manifold and count
+     * @returns refined manifold
+     * @group adjustments
+     * @shortname refine
+     * @drawable true
+     */
+    async refine(inputs: Inputs.Manifold.ManifoldRefineDto<Inputs.Manifold.ManifoldPointer>): Promise<Inputs.Manifold.ManifoldPointer> {
+        return this.manifoldWorkerManager.genericCallToWorkerPromise("manifold.operations.refine", inputs);
+    }
+
+    /**
+     * Smooths out the Manifold by filling in the halfedgeTangent vectors. The
+     * geometry will remain unchanged until Refine or RefineToLength is called to
+     * interpolate the surface. This version uses the geometry of the triangles
+     * and pseudo-normals to define the tangent vectors.
+     * @param inputs manifold and minimum sharp angle and minimum smoothness
+     * @returns smoothed manifold
+     * @group adjustments
+     * @shortname smooth out
+     * @drawable true
+     */
+    async smoothOut(inputs: Inputs.Manifold.ManifoldSmoothOutDto<Inputs.Manifold.ManifoldPointer>): Promise<Inputs.Manifold.ManifoldPointer> {
+        return this.manifoldWorkerManager.genericCallToWorkerPromise("manifold.operations.smoothOut", inputs);
+    }
+
+    /**
+     * Smooths out the Manifold by filling in the halfedgeTangent vectors. The
+     * geometry will remain unchanged until Refine or RefineToLength is called to
+     * interpolate the surface. This version uses the supplied vertex normal
+     * properties to define the tangent vectors.
+     * @param inputs manifold and normal index
+     * @returns smoothed manifold
+     * @group adjustments
+     * @shortname smooth by normals
+     * @drawable true
+     */
+    async smoothByNormals(inputs: Inputs.Manifold.ManifoldSmoothByNormalsDto<Inputs.Manifold.ManifoldPointer>): Promise<Inputs.Manifold.ManifoldPointer> {
+        return this.manifoldWorkerManager.genericCallToWorkerPromise("manifold.operations.smoothByNormals", inputs);
     }
 
 }

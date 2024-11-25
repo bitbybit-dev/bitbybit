@@ -14,6 +14,26 @@ export class ManifoldShapes {
     ) { }
 
     /**
+     * Convert a Mesh into a Manifold, retaining its properties and merging only
+     * the positions according to the merge vectors. Will throw an error if the
+     * result is not an oriented 2-manifold. Will collapse degenerate triangles
+     * and unnecessary vertices.
+     *
+     * All fields are read, making this structure suitable for a lossless
+     * round-trip of data from manifoldToMesh(). For multi-material input, use
+     * reserveIDs() to set a unique originalID for each material, and sort the
+     * materials into triangle runs.
+     * @param inputs mesh definition
+     * @returns manifold
+     * @group create
+     * @shortname manifold from mesh
+     * @drawable true
+     */
+    manifoldFromMesh(inputs: Inputs.Manifold.CreateFromMeshDto): Promise<Inputs.Manifold.ManifoldPointer> {
+        return this.manifoldWorkerManager.genericCallToWorkerPromise("manifold.shapes.manifoldFromMesh", inputs);
+    }
+
+    /**
      * Create a 3D cube shape
      * @param inputs Cube parameters
      * @returns Cube solid

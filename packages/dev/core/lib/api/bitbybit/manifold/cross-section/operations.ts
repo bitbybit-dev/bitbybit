@@ -48,7 +48,7 @@ export class CrossSectionOperations {
     }
 
     /**
-     * Offsets the cross section to create a new cross section with a given delta (uses Clipper2 algorithm behind)
+     * Offsets the cross section to create a new cross section with a given delta (uses Clipper2 algorithm behind).
      * @param inputs cross section and offset parameters
      * @returns offset cross section
      * @group basic
@@ -65,6 +65,11 @@ export class CrossSectionOperations {
      * its two adjacent vertices. Near duplicate vertices and collinear points
      * will be removed at lower epsilons, with elimination of line segments
      * becoming increasingly aggressive with larger epsilons.
+     *
+     * It is recommended to apply this function following Offset, in order to
+     * clean up any spurious tiny line segments introduced that do not improve
+     * quality in any meaningful way. This is particularly important if further
+     * offseting operations are to be performed, which would compound the issue.
      * @param inputs cross section and epsilon parameters
      * @returns simplified cross section
      * @group basic

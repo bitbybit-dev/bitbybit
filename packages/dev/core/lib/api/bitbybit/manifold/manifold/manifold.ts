@@ -37,7 +37,7 @@ export class Manifold {
      * @shortname manifold to mesh
      * @drawable false
      */
-    async manifoldToMesh(inputs: Inputs.Manifold.ManifoldToMeshDto<Inputs.Manifold.ManifoldPointer>): Promise<Inputs.Manifold.DecomposedManifoldMesh> {
+    async manifoldToMesh(inputs: Inputs.Manifold.ManifoldToMeshDto<Inputs.Manifold.ManifoldPointer>): Promise<Inputs.Manifold.DecomposedManifoldMeshDto> {
         return this.manifoldWorkerManager.genericCallToWorkerPromise("manifold.manifoldToMesh", inputs);
     }
 
@@ -49,7 +49,7 @@ export class Manifold {
      * @shortname manifolds to meshes
      * @drawable false
      */
-    async manifoldsToMeshes(inputs: Inputs.Manifold.ManifoldsToMeshesDto<Inputs.Manifold.ManifoldPointer>): Promise<Inputs.Manifold.DecomposedManifoldMesh[]> {
+    async manifoldsToMeshes(inputs: Inputs.Manifold.ManifoldsToMeshesDto<Inputs.Manifold.ManifoldPointer>): Promise<Inputs.Manifold.DecomposedManifoldMeshDto[]> {
         return this.manifoldWorkerManager.genericCallToWorkerPromise("manifold.manifoldsToMeshes", inputs);
     }
 

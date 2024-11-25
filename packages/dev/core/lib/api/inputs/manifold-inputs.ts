@@ -18,7 +18,7 @@ export namespace Manifold {
         round = "Round",
         miter = "Miter"
     }
-    export class DecomposedManifoldMesh {
+    export class DecomposedManifoldMeshDto {
         numProp: number;
         vertProperties: Float32Array;
         triVerts: Uint32Array;
@@ -153,6 +153,15 @@ export namespace Manifold {
          * @default false
          */
         computeNormals = false;
+    }
+    export class CreateFromMeshDto {
+        constructor(mesh?: DecomposedManifoldMeshDto) {
+            if (mesh !== undefined) { this.mesh = mesh; }
+        }
+        /**
+         * Mesh definition
+         */
+        mesh: DecomposedManifoldMeshDto;
     }
     export class CubeDto {
         constructor(center?: boolean, size?: number) {
@@ -335,6 +344,72 @@ export namespace Manifold {
          */
         manifold: T;
     }
+    export class CalculateNormalsDto<T> {
+        constructor(manifold?: T, normalIdx?: number, minSharpAngle?: number) {
+            if (manifold !== undefined) { this.manifold = manifold; }
+            if (normalIdx !== undefined) { this.normalIdx = normalIdx; }
+            if (minSharpAngle !== undefined) { this.minSharpAngle = minSharpAngle; }
+        }
+        /**
+         * Manifold shape
+         */
+        manifold: T;
+        /**
+         * The property channel in which to store the X
+        * values of the normals. The X, Y, and Z channels will be sequential. The
+        * property set will be automatically expanded to include up through normalIdx
+        * + 2.
+         * @default 0
+         * @minimum 0
+         * @maximum Infinity
+         * @step 1
+         */
+        normalIdx = 0;
+        /**
+         * Any edges with angles greater than this value will
+         * remain sharp, getting different normal vector properties on each side of
+         * the edge. By default, no edges are sharp and all normals are shared. With a
+         * value of zero, the model is faceted and all normals match their triangle
+         * normals, but in this case it would be better not to calculate normals at
+         * all. The value is in degrees.
+         * @default 0
+         * @minimum 0
+         * @maximum Infinity
+         * @step 1
+         */
+        minSharpAngle = 0;
+    }
+    export class CalculateCurvatureDto<T> {
+        constructor(manifold?: T) {
+            if (manifold !== undefined) { this.manifold = manifold; }
+        }
+        /**
+         * Manifold shape
+         */
+        manifold: T;
+        /**
+         * The property channel index in which to store the
+         * Gaussian curvature. An index < 0 will be ignored (stores nothing). The
+         * property set will be automatically expanded to include the channel
+         * index specified.
+         * @default 0
+         * @minimum 0
+         * @maximum Infinity
+         * @step 1
+         */
+        gaussianIdx: number;
+        /**
+         * The property channel index in which to store the mean
+         * curvature. An index < 0 will be ignored (stores nothing). The property
+         * set will be automatically expanded to include the channel index
+         * specified. The mean curvature is a scalar value that describes the
+         * @default 1
+         * @minimum 0
+         * @maximum Infinity
+         * @step 1
+         */
+        meanIdx: number;
+    }
     export class CountDto {
         constructor(count?: number) {
             if (count !== undefined) { this.count = count; }
@@ -367,7 +442,7 @@ export namespace Manifold {
          */
         searchLength = 100;
     }
-    export class ManifoldToleranceDto<T> {
+    export class ManifoldRefineToleranceDto<T> {
         constructor(manifold?: T, tolerance?: number) {
             if (manifold !== undefined) { this.manifold = manifold; }
             if (tolerance !== undefined) { this.tolerance = tolerance; }
@@ -377,13 +452,105 @@ export namespace Manifold {
          */
         manifold: T;
         /**
-         * Tolerance value
+         * The desired maximum distance between the faceted mesh
+         * produced and the exact smoothly curving surface. All vertices are exactly
+         * on the surface, within rounding error.
          * @default 1e-6
          * @minimum 0
          * @maximum Infinity
          * @step 1e-7
          */
         tolerance = 1e-6;
+    }
+    export class ManifoldRefineLengthDto<T> {
+        constructor(manifold?: T, length?: number) {
+            if (manifold !== undefined) { this.manifold = manifold; }
+            if (length !== undefined) { this.length = length; }
+        }
+        /**
+         * Manifold shape
+         */
+        manifold: T;
+        /**
+         * Length of the manifold
+         * @default 0.1
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.1
+         */
+        length = 0.1;
+    }
+    export class ManifoldRefineDto<T> {
+        constructor(manifold?: T, number?: number) {
+            if (manifold !== undefined) { this.manifold = manifold; }
+            if (number !== undefined) { this.number = number; }
+        }
+        /**
+         * Manifold shape
+         */
+        manifold: T;
+        /**
+         * The number of pieces to split every edge into. Must be > 1.
+         * @default 1
+         * @minimum 0
+         * @maximum Infinity
+         * @step 1
+         */
+        number = 1;
+    }
+    export class ManifoldSmoothByNormalsDto<T>{
+        constructor(manifold?: T, normalIdx?: number) {
+            if (manifold !== undefined) { this.manifold = manifold; }
+            if (normalIdx !== undefined) { this.normalIdx = normalIdx; }
+        }
+        /**
+         * Manifold shape
+         */
+        manifold: T;
+        /**
+         * The first property channel of the normals. NumProp must be
+         * at least normalIdx + 3. Any vertex where multiple normals exist and don't
+         * agree will result in a sharp edge.
+         * @default 0
+         * @minimum 0
+         * @maximum Infinity
+         * @step 1
+         */
+        normalIdx = 0;
+    }
+    export class ManifoldSmoothOutDto<T> {
+        constructor(manifold?: T, minSharpAngle?: number, minSmoothness?: number) {
+            if (manifold !== undefined) { this.manifold = manifold; }
+            if (minSharpAngle !== undefined) { this.minSharpAngle = minSharpAngle; }
+            if (minSmoothness !== undefined) { this.minSmoothness = minSmoothness; }
+        }
+        /**
+         * Manifold shape
+         */
+        manifold: T;
+        /**
+         * Any edges with angles greater
+         * than this value will remain sharp. The rest will be smoothed to G1
+         * continuity, with the caveat that flat faces of three or more triangles will
+         * always remain flat. With a value of zero, the model is faceted, but in this
+         * case there is no point in smoothing.
+         * @default 60
+         * @minimum -Infinity
+         * @maximum Infinity
+         * @step 1
+         */
+        minSharpAngle = 60;
+        /**
+         * The smoothness applied to
+         * sharp angles. The default gives a hard edge, while values > 0 will give a
+         * small fillet on these sharp edges. A value of 1 is equivalent to a
+         * minSharpAngle of 180 - all edges will be smooth.
+         * @default 0
+         * @minimum 0
+         * @maximum 1
+         * @step 0.1
+         */
+        minSmoothness = 0;
     }
     export class HullPointsDto<T> {
         constructor(points?: T) {
@@ -612,7 +779,9 @@ export namespace Manifold {
          */
         crossSection: T;
         /**
-         * Extrude cross section shape
+         * Positive deltas will cause the expansion of outlining contours
+         * to expand, and retraction of inner (hole) contours. Negative deltas will
+         * have the opposite effect.
          * @default 1
          * @minimum -Infinity
          * @maximum Infinity
@@ -620,12 +789,18 @@ export namespace Manifold {
          */
         delta: number;
         /**
-         * Join type
+         * The join type specifying the treatment of contour joins
+         * (corners).
          * @default round
          */
         joinType: manifoldJoinTypeEnum = manifoldJoinTypeEnum.round;
         /**
-         * Circular segments
+         * The maximum distance in multiples of delta that vertices
+         * can be offset from their original positions with before squaring is
+         * applied, **when the join type is Miter** (default is 2, which is the
+         * minimum allowed). See the [Clipper2
+         * MiterLimit](http://www.angusj.com/clipper2/Docs/Units/Clipper.Offset/Classes/ClipperOffset/Properties/MiterLimit.htm)
+         * page for a visual example.
          * @default 2
          * @minimum 2
          * @maximum Infinity
@@ -633,7 +808,10 @@ export namespace Manifold {
          */
         miterLimit = 2;
         /**
-         * Circular segments
+         * Number of segments per 360 degrees of
+         * <B>JoinType::Round</B> corners (roughly, the number of vertices that
+         * will be added to each contour). Default is calculated by the static Quality
+         * defaults according to the radius.
          * @default 32
          * @minimum 0
          * @maximum Infinity

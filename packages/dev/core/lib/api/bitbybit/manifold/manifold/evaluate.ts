@@ -37,7 +37,7 @@ export class ManifoldEvaluate {
     }
 
     /**
-      * Check if manifold is empty
+      * Check if manifold contains triangles
       * @param inputs manifold
       * @returns boolean indicating emptyness
       * @group basic
@@ -97,7 +97,9 @@ export class ManifoldEvaluate {
     }
 
     /**
-     * Get number of prop vertices in manifold
+     * The number of property vertices in the Manifold. This will always be >=
+     * numVert, as some physical vertices may be duplicated to account for
+     * different properties on different neighboring triangles.
      * @param inputs manifold
      * @returns number of properties of manifold
      * @group basic
@@ -109,7 +111,7 @@ export class ManifoldEvaluate {
     }
 
     /**
-     * Get the bounding box min and max points of manifold
+     * Returns the axis-aligned bounding box of all the Manifold's vertices.
      * @param inputs manifold
      * @returns bounding box corner vectors of manifold
      * @group basic
@@ -121,7 +123,12 @@ export class ManifoldEvaluate {
     }
 
     /**
-     * Get tolerance of manifold
+     * Returns the tolerance of this Manifold's vertices, which tracks the
+     * approximate rounding error over all the transforms and operations that have
+     * led to this state. Any triangles that are colinear within this tolerance
+     * are considered degenerate and removed. This is the value of &epsilon;
+     * defining
+     * [&epsilon;-valid](https://github.com/elalish/manifold/wiki/Manifold-Library#definition-of-%CE%B5-valid).
      * @param inputs manifold
      * @returns tolerance of manifold
      * @group basic
@@ -133,7 +140,9 @@ export class ManifoldEvaluate {
     }
 
     /**
-     * Get genus of manifold
+     * The genus is a topological property of the manifold, representing the
+     * number of "handles". A sphere is 0, torus 1, etc. It is only meaningful for
+     * a single mesh, so it is best to call Decompose() first.
      * @param inputs manifold
      * @returns genus of manifold
      * @group basic
@@ -145,7 +154,8 @@ export class ManifoldEvaluate {
     }
     
     /**
-     * Get minimum gap between two manifolds
+     * Returns the minimum gap between two manifolds. Returns a float between
+     * 0 and searchLength.
      * @param inputs two manifolds and search length
      * @returns minimum
      * @group basic
@@ -157,7 +167,9 @@ export class ManifoldEvaluate {
     }
 
     /**
-     * Get original ID of manifold
+     * If this mesh is an original, this returns its ID that can be referenced
+     * by product manifolds. If this manifold is a product, this
+     * returns -1.
      * @param inputs manifold
      * @returns original ID of manifold
      * @group basic

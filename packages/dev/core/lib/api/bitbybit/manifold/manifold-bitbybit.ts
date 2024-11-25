@@ -42,7 +42,7 @@ export class ManifoldBitByBit {
      * @shortname decompose m or cs
      * @drawable false
      */
-    async decomposeManifoldOrCrossSection(inputs: Inputs.Manifold.DecomposeManifoldOrCrossSectionDto<Inputs.Manifold.ManifoldPointer | Inputs.Manifold.CrossSectionPointer>): Promise<Inputs.Manifold.DecomposedManifoldMesh | Inputs.Base.Vector2[][]> {
+    async decomposeManifoldOrCrossSection(inputs: Inputs.Manifold.DecomposeManifoldOrCrossSectionDto<Inputs.Manifold.ManifoldPointer | Inputs.Manifold.CrossSectionPointer>): Promise<Inputs.Manifold.DecomposedManifoldMeshDto | Inputs.Base.Vector2[][]> {
         return this.manifoldWorkerManager.genericCallToWorkerPromise("decomposeManifoldOrCrossSection", inputs);
     }
 
@@ -54,7 +54,7 @@ export class ManifoldBitByBit {
      * @shortname decompose m's or cs's
      * @drawable false
      */
-    async decomposeManifoldsOrCrossSections(inputs: Inputs.Manifold.DecomposeManifoldsOrCrossSectionsDto<Inputs.Manifold.ManifoldPointer | Inputs.Manifold.CrossSectionPointer>): Promise<(Inputs.Manifold.DecomposedManifoldMesh | Inputs.Base.Vector2[][])[]> {
+    async decomposeManifoldsOrCrossSections(inputs: Inputs.Manifold.DecomposeManifoldsOrCrossSectionsDto<Inputs.Manifold.ManifoldPointer | Inputs.Manifold.CrossSectionPointer>): Promise<(Inputs.Manifold.DecomposedManifoldMeshDto | Inputs.Base.Vector2[][])[]> {
         return this.manifoldWorkerManager.genericCallToWorkerPromise("decomposeManifoldsOrCrossSections", inputs);
     }
 
