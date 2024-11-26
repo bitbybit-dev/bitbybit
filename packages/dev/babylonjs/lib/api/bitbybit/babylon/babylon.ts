@@ -1,4 +1,4 @@
-import { Color } from "@bitbybit-dev/core";
+import { Color } from "@bitbybit-dev/base";
 import { Context } from "../../context";
 import { DrawHelper } from "../../draw-helper";
 import { BabylonCamera } from "./camera/camera";

@@ -1,8 +1,10 @@
 import * as BABYLON from "@babylonjs/core";
 import { Context } from "./context";
 import * as Inputs from "./inputs";
-import { JSCADText, Vector, DrawHelperCore } from "@bitbybit-dev/core";
-import { JscadWorker, ManifoldWorker } from "@bitbybit-dev/core/lib/workers";
+import { DrawHelperCore } from "@bitbybit-dev/core";
+import { Vector } from "@bitbybit-dev/base";
+import { JSCADWorkerManager, JSCADText } from "@bitbybit-dev/jscad-worker";
+import { ManifoldWorkerManager } from "@bitbybit-dev/manifold-worker";
 import { OCCTWorkerManager } from "@bitbybit-dev/occt-worker";
 
 export class DrawHelper extends DrawHelperCore {
@@ -19,8 +21,8 @@ export class DrawHelper extends DrawHelperCore {
         private readonly context: Context,
         private readonly solidText: JSCADText,
         override readonly vector: Vector,
-        private readonly jscadWorkerManager: JscadWorker.JSCADWorkerManager,
-        private readonly manifoldWorkerManager: ManifoldWorker.ManifoldWorkerManager,
+        private readonly jscadWorkerManager: JSCADWorkerManager,
+        private readonly manifoldWorkerManager: ManifoldWorkerManager,
         private readonly occWorkerManager: OCCTWorkerManager) {
         super(vector);
     }

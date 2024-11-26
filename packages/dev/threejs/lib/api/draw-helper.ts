@@ -1,8 +1,11 @@
 
 import { Context } from "./context";
 import * as Inputs from "./inputs";
-import { Vector, DrawHelperCore, JSCADText } from "@bitbybit-dev/core";
-import { JscadWorker, ManifoldWorker } from "@bitbybit-dev/core/lib/workers";
+import { DrawHelperCore } from "@bitbybit-dev/core";
+import { JSCADText } from "@bitbybit-dev/jscad-worker";
+import { Vector } from "@bitbybit-dev/base";
+import { JSCADWorkerManager } from "@bitbybit-dev/jscad-worker";
+import { ManifoldWorkerManager } from "@bitbybit-dev/manifold-worker";
 import { OCCTWorkerManager } from "@bitbybit-dev/occt-worker";
 import {
     BufferAttribute, BufferGeometry, Color, Group, Mesh, MeshPhysicalMaterial,
@@ -24,8 +27,8 @@ export class DrawHelper extends DrawHelperCore {
         private readonly context: Context,
         private readonly solidText: JSCADText,
         public readonly vector: Vector,
-        private readonly jscadWorkerManager: JscadWorker.JSCADWorkerManager,
-        private readonly manifoldWorkerManager: ManifoldWorker.ManifoldWorkerManager,
+        private readonly jscadWorkerManager: JSCADWorkerManager,
+        private readonly manifoldWorkerManager: ManifoldWorkerManager,
         private readonly occWorkerManager: OCCTWorkerManager
     ) {
         super(vector);

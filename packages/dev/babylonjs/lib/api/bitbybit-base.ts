@@ -2,30 +2,34 @@ import { OCCT as BaseOCCT, OCCTWorkerManager } from "@bitbybit-dev/occt-worker";
 import { JSONPath } from "jsonpath-plus";
 import { Babylon } from "./bitbybit/babylon/babylon";
 import {
-    Vector,
-    Point,
     Line,
     Polyline,
     Verb,
-    JSCAD,
-    ManifoldBitByBit,
     Tag,
     Time,
-    TextBitByBit,
     OCCTW,
     Asset,
+    JSONBitByBit,
+} from "@bitbybit-dev/core";
+import {
+    Vector,
+    Point,
+    TextBitByBit,
     Color,
     MathBitByBit,
     GeometryHelper,
     Lists,
-    JSONBitByBit,
     Logic,
-    Transforms,
-} from "@bitbybit-dev/core";
+    Transforms
+} from "@bitbybit-dev/base";
+import {
+    JSCAD
+} from "@bitbybit-dev/jscad-worker";
+import { ManifoldBitByBit } from "@bitbybit-dev/manifold-worker";
 import { Draw } from "./bitbybit/draw";
 import { Context } from "./context";
-import { JSCADWorkerManager } from "@bitbybit-dev/core/lib/workers/jscad/jscad-worker-manager";
-import { ManifoldWorkerManager } from "@bitbybit-dev/core/lib/workers/manifold/manifold-worker-manager";
+import { JSCADWorkerManager } from "@bitbybit-dev/jscad-worker";
+import { ManifoldWorkerManager } from "@bitbybit-dev/manifold-worker";
 import * as BABYLON from "@babylonjs/core";
 import * as vrb from "verb-nurbs-web";
 import { DrawHelper } from "./draw-helper";
@@ -68,7 +72,7 @@ export class BitByBitBase {
 
         const geometryHelper = new GeometryHelper();
         this.math = new MathBitByBit();
-        this.vector = new Vector(this.context, this.math, geometryHelper);
+        this.vector = new Vector(this.math, geometryHelper);
         const drawHelper = new DrawHelper(this.context, this.jscad.text, this.vector, this.jscadWorkerManager, this.manifoldWorkerManager, this.occtWorkerManager,);
         this.babylon = new Babylon(this.context, drawHelper, this.color);
         this.tag = new Tag(this.context);
@@ -78,10 +82,10 @@ export class BitByBitBase {
             this.tag,
             this.context);
 
-        this.color = new Color(this.context);
+        this.color = new Color(this.math);
         this.line = new Line(this.context, geometryHelper);
         this.transforms = new Transforms(this.vector, this.math);
-        this.point = new Point(this.context, geometryHelper, this.line, this.transforms);
+        this.point = new Point(geometryHelper, this.transforms);
         this.polyline = new Polyline(this.context, geometryHelper);
         this.verb = new Verb(this.context, geometryHelper, this.math);
         this.time = new Time(this.context);

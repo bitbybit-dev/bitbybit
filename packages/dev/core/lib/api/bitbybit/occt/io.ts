@@ -2,9 +2,6 @@
 import * as Inputs from "../../inputs/inputs";
 import { OCCTWorkerManager, OCCTIO } from "@bitbybit-dev/occt-worker";
 import { ContextBase } from "../../context";
-import { STLExport } from "@babylonjs/serializers";
-// import { DrawHelper } from "../../draw-helper";
-
 
 export class OCCTWIO extends OCCTIO {
 

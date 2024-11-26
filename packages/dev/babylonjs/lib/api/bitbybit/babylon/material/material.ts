@@ -1,6 +1,6 @@
 
 import { Context } from "../../../context";
-import { Color } from "@bitbybit-dev/core";
+import { Color } from "@bitbybit-dev/base";
 import { BabylonMaterialPbrMetallicRoughness } from "./pbr-metallic-roughness";
 import { BabylonMaterialSky } from "./sky-material";
 

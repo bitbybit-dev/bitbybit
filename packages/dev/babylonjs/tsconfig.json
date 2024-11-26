@@ -16,11 +16,29 @@
         "allowJs": true,
         "emitDeclarationOnly": false,
         "paths": {
+            "@bitbybit-dev/base": [
+                "../base/dist"
+            ],
+            "@bitbybit-dev/base/*": [
+                "../base/dist/*"
+            ],
             "@bitbybit-dev/core": [
                 "../core/dist"
             ],
             "@bitbybit-dev/core/*": [
                 "../core/dist/*"
+            ],
+            "@bitbybit-dev/manifold": [
+                "../manifold/dist"
+            ],
+            "@bitbybit-dev/manifold/*": [
+                "../manifold/dist/*"
+            ],
+            "@bitbybit-dev/manifold-worker": [
+                "../manifold-worker/dist"
+            ],
+            "@bitbybit-dev/manifold-worker/*": [
+                "../manifold-worker/dist/*"
             ],
             "@bitbybit-dev/occt": [
                 "../../../../bitbybit-occt/dist"

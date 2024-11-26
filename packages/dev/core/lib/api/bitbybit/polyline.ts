@@ -1,5 +1,5 @@
 import { ContextBase } from "../context";
-import { GeometryHelper } from "../geometry-helper";
+import { GeometryHelper } from "@bitbybit-dev/base";
 import * as Inputs from "../inputs/inputs";
 
 /**

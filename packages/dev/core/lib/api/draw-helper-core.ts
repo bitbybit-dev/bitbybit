@@ -1,5 +1,5 @@
 import { Base } from "./inputs/base-inputs";
-import { Vector } from "./bitbybit";
+import { Vector } from "@bitbybit-dev/base";
 
 export class DrawHelperCore {
 

@@ -1,8 +1,7 @@
 import { ContextBase } from "../../context";
-import { GeometryHelper } from "../../geometry-helper";
+import { MathBitByBit, GeometryHelper } from "@bitbybit-dev/base";
 import * as Inputs from "../../inputs/inputs";
 import { BaseTypes } from "../base-types";
-import { MathBitByBit } from "../math";
 import { VerbSurfaceConical } from "./surface-conical";
 import { VerbSurfaceCylindrical } from "./surface-cylindrical";
 import { VerbSurfaceExtrusion } from "./surface-extrusion";

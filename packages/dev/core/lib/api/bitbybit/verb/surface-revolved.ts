@@ -1,6 +1,6 @@
 import { ContextBase } from "../../context";
 import * as Inputs from "../../inputs/inputs";
-import { MathBitByBit } from "../math";
+import { MathBitByBit } from "@bitbybit-dev/base";
 
 /**
  * Revolved surface functions.

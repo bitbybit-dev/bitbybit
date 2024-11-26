@@ -2,7 +2,7 @@
 import { Context } from "../../../context";
 import * as BABYLON from "@babylonjs/core";
 import * as Inputs from "../../../inputs/inputs";
-import { Color } from "@bitbybit-dev/core";
+import { Color } from "@bitbybit-dev/base";
 
 export class BabylonMaterialPbrMetallicRoughness {
 
