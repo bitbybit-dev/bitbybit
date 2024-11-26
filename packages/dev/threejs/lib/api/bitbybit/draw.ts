@@ -35,6 +35,10 @@ export class Draw extends DrawCore {
             return this.handleOcctShapes(inputs);
         } else if (this.detectJscadMeshes(entity)) {
             return this.handleJscadMeshes(inputs);
+        }else if (this.detectManifoldShape(entity)) {
+            return this.handleManifoldShape(inputs);
+        } else if (this.detectManifoldShapes(entity)) {
+            return this.handleManifoldShapes(inputs);
         } else {
             // here we have all sync drawer functions
             return Promise.resolve(this.drawAny(inputs));
@@ -102,6 +106,26 @@ export class Draw extends DrawCore {
                 ...options as Inputs.Draw.DrawBasicGeometryOptions
             });
         }, Inputs.Draw.drawingTypes.jscadMeshes);
+    }
+
+    private handleManifoldShape(inputs: Inputs.Draw.DrawAny<Group>): Promise<Group> {
+        return this.handleAsync(inputs, new Inputs.Manifold.DrawManifoldOrCrossSectionDto(inputs.entity), (options) => {
+            return this.drawHelper.drawManifoldOrCrossSection({
+                manifoldOrCrossSection: inputs.entity as Inputs.Manifold.ManifoldPointer | Inputs.Manifold.CrossSectionPointer,
+                ...new Inputs.Draw.DrawManifoldOrCrossSectionOptions(),
+                ...options as Inputs.Draw.DrawManifoldOrCrossSectionOptions
+            });
+        }, Inputs.Draw.drawingTypes.occt);
+    }
+
+    private handleManifoldShapes(inputs: Inputs.Draw.DrawAny<Group>): Promise<Group> {
+        return this.handleAsync(inputs, new Inputs.Manifold.DrawManifoldOrCrossSectionDto(inputs.entity), (options) => {
+            return this.drawHelper.drawManifoldsOrCrossSections({
+                manifoldsOrCrossSections: inputs.entity as (Inputs.Manifold.ManifoldPointer | Inputs.Manifold.CrossSectionPointer)[],
+                ...new Inputs.Draw.DrawManifoldOrCrossSectionOptions(),
+                ...options as Inputs.Draw.DrawManifoldOrCrossSectionOptions
+            });
+        }, Inputs.Draw.drawingTypes.occt);
     }
 
     private handleOcctShape(inputs: Inputs.Draw.DrawAny<Group>): Promise<Group> {

@@ -6,7 +6,7 @@ import { Base } from "./base-inputs";
 // tslint:disable-next-line: no-namespace
 export namespace Draw {
 
-    export type DrawOptions = DrawOcctShapeOptions | DrawBasicGeometryOptions;
+    export type DrawOptions = DrawOcctShapeOptions | DrawBasicGeometryOptions | DrawManifoldOrCrossSectionOptions;
     export type Entity = Base.Point3 | Base.Vector3 | Base.Line3 | Base.Polyline3 | Base.VerbCurve | Base.VerbSurface | Inputs.OCCT.TopoDSShapePointer | Inputs.Tag.TagDto |
         Base.Point3[] | Base.Vector3[] | Base.Line3[] | Base.Polyline3[] | Base.VerbCurve[] | Base.VerbSurface[] | Inputs.OCCT.TopoDSShapePointer[] | Inputs.Tag.TagDto[];
 
@@ -31,7 +31,62 @@ export namespace Draw {
          */
         group?: U;
     }
-
+    export class DrawManifoldOrCrossSectionOptions {
+        /**
+         * Provide options without default values
+         */
+        constructor(faceOpacity?: number, faceMaterial?: Base.Material, faceColour?: Base.Color, crossSectionColour?: Base.Color, crossSectionWidth?: number, crossSectionOpacity?: number, computeNormals?: boolean) {
+            if (faceOpacity !== undefined) { this.faceOpacity = faceOpacity; }
+            if (faceMaterial !== undefined) { this.faceMaterial = faceMaterial; }
+            if (faceColour !== undefined) { this.faceColour = faceColour; }
+            if (crossSectionColour !== undefined) { this.crossSectionColour = crossSectionColour; }
+            if (crossSectionWidth !== undefined) { this.crossSectionWidth = crossSectionWidth; }
+            if (crossSectionOpacity !== undefined) { this.crossSectionOpacity = crossSectionOpacity; }
+            if (computeNormals !== undefined) { this.computeNormals = computeNormals; }
+        }
+        /**
+         * Face opacity value between 0 and 1
+         * @default 1
+         * @minimum 0
+         * @maximum 1
+         * @step 0.1
+         */
+        faceOpacity = 1;
+        /**
+         * Hex colour string for face colour
+         * @default #ff0000
+         */
+        faceColour: Base.Color = "#ff0000";
+        /**
+         * Face material
+         * @default undefined
+         * @optional true
+         */
+        faceMaterial?: Base.Material;
+        /**
+         * Hex colour string for cross section drawing
+         * @default #ff00ff
+         */
+        crossSectionColour: Base.Color = "#ff00ff";
+        /**
+         * Width of cross section lines
+         * @default 2
+         */
+        crossSectionWidth = 2;
+        /**
+         * Cross section opacity value between 0 and 1
+         * @default 1
+         * @minimum 0
+         * @maximum 1
+         * @step 0.1
+         */
+        crossSectionOpacity: number;
+        /**
+         * Compute normals for the shape
+         * @default false
+         */
+        computeNormals = false;
+    }
     export class DrawOcctShapeOptions {
         /**
          * Provide options without default values

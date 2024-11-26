@@ -9,7 +9,7 @@ import { ManifoldWorkerMock } from "./manifold-worker-mock";
  */
 export class ManifoldWorkerManager {
 
-    manifoldWorkerState: Subject<ManifoldInfo> = new Subject();
+    manifoldWorkerState$: Subject<ManifoldInfo> = new Subject();
     errorCallback: (err: string) => void;
     private manifoldWorker: Worker | ManifoldWorkerMock;
     private promisesMade: { promise?: Promise<any>, uid: string, resolve?, reject?}[] = [];
@@ -22,11 +22,11 @@ export class ManifoldWorkerManager {
         this.manifoldWorker = worker;
         this.manifoldWorker.onmessage = ({ data }) => {
             if (data === "manifold-initialised") {
-                this.manifoldWorkerState.next({
+                this.manifoldWorkerState$.next({
                     state: ManifoldStateEnum.initialised,
                 });
             } else if (data === "busy") {
-                this.manifoldWorkerState.next({
+                this.manifoldWorkerState$.next({
                     state: ManifoldStateEnum.computing,
                 });
             }
@@ -43,11 +43,11 @@ export class ManifoldWorkerManager {
                 this.promisesMade = this.promisesMade.filter(i => i.uid !== data.uid);
 
                 if (this.promisesMade.length === 0) {
-                    this.manifoldWorkerState.next({
+                    this.manifoldWorkerState$.next({
                         state: ManifoldStateEnum.loaded,
                     });
                 } else {
-                    this.manifoldWorkerState.next({
+                    this.manifoldWorkerState$.next({
                         state: ManifoldStateEnum.computing,
                     });
                 }

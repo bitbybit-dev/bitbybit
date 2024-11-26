@@ -69,7 +69,7 @@ export class BitByBitBase {
         const geometryHelper = new GeometryHelper();
         this.math = new MathBitByBit();
         this.vector = new Vector(this.context, this.math, geometryHelper);
-        const drawHelper = new DrawHelper(this.context, this.jscad.text, this.vector, this.jscadWorkerManager, this.occtWorkerManager);
+        const drawHelper = new DrawHelper(this.context, this.jscad.text, this.vector, this.jscadWorkerManager, this.manifoldWorkerManager, this.occtWorkerManager);
         this.three = new ThreeJS(drawHelper);
         this.tag = new Tag(this.context);
         this.draw = new Draw(drawHelper, this.context, this.tag);
@@ -88,7 +88,7 @@ export class BitByBitBase {
         this.lists = new Lists();
     }
 
-    init(scene: Scene, occt?: Worker, jscad?: Worker) {
+    init(scene: Scene, occt?: Worker, jscad?: Worker, manifold?: Worker) {
         const verb = { geom: vrb.geom, core: vrb.core };
         this.context.scene = scene;
         this.context.verb = verb;
@@ -98,6 +98,9 @@ export class BitByBitBase {
         }
         if (jscad) {
             this.jscadWorkerManager.setJscadWorker(jscad);
+        }
+        if(manifold){
+            this.manifoldWorkerManager.setManifoldWorker(manifold);
         }
     }
 }

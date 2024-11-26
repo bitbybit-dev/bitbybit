@@ -10,7 +10,7 @@ import { JSCADWorkerMock } from "./jscad-worker-mock";
 
 export class JSCADWorkerManager {
 
-    jscadWorkerState: Subject<JscadInfo> = new Subject();
+    jscadWorkerState$: Subject<JscadInfo> = new Subject();
     errorCallback: (err: string) => void;
     private jscadWorker: Worker | JSCADWorkerMock;
     private promisesMade: { promise?: Promise<any>, uid: string, resolve?, reject?}[] = [];
@@ -23,11 +23,11 @@ export class JSCADWorkerManager {
         this.jscadWorker = worker;
         this.jscadWorker.onmessage = ({ data }) => {
             if (data === "jscad-initialised") {
-                this.jscadWorkerState.next({
+                this.jscadWorkerState$.next({
                     state: JscadStateEnum.initialised,
                 });
             } else if (data === "busy") {
-                this.jscadWorkerState.next({
+                this.jscadWorkerState$.next({
                     state: JscadStateEnum.computing,
                 });
             }
@@ -44,11 +44,11 @@ export class JSCADWorkerManager {
                 this.promisesMade = this.promisesMade.filter(i => i.uid !== data.uid);
 
                 if (this.promisesMade.length === 0) {
-                    this.jscadWorkerState.next({
+                    this.jscadWorkerState$.next({
                         state: JscadStateEnum.loaded,
                     });
                 } else {
-                    this.jscadWorkerState.next({
+                    this.jscadWorkerState$.next({
                         state: JscadStateEnum.computing,
                     });
                 }

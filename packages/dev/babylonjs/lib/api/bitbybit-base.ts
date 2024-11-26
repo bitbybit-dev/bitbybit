@@ -93,7 +93,7 @@ export class BitByBitBase {
         this.lists = new Lists();
     }
 
-    init(scene: BABYLON.Scene, occt?: Worker, jscad?: Worker, havokPlugin?: BABYLON.HavokPlugin) {
+    init(scene: BABYLON.Scene, occt?: Worker, jscad?: Worker, manifold?: Worker, havokPlugin?: BABYLON.HavokPlugin) {
         this.context.scene = scene;
         if (havokPlugin) {
             this.context.havokPlugin = havokPlugin;
@@ -106,6 +106,9 @@ export class BitByBitBase {
         }
         if (jscad) {
             this.jscadWorkerManager.setJscadWorker(jscad);
+        }
+        if(manifold){
+            this.manifoldWorkerManager.setManifoldWorker(manifold);
         }
     }
 }

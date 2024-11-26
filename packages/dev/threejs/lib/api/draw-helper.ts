@@ -2,7 +2,7 @@
 import { Context } from "./context";
 import * as Inputs from "./inputs";
 import { Vector, DrawHelperCore, JSCADText } from "@bitbybit-dev/core";
-import { JSCADWorkerManager } from "@bitbybit-dev/core/lib/workers";
+import { JscadWorker, ManifoldWorker } from "@bitbybit-dev/core/lib/workers";
 import { OCCTWorkerManager } from "@bitbybit-dev/occt-worker";
 import {
     BufferAttribute, BufferGeometry, Color, Group, Mesh, MeshPhysicalMaterial,
@@ -24,10 +24,28 @@ export class DrawHelper extends DrawHelperCore {
         private readonly context: Context,
         private readonly solidText: JSCADText,
         public readonly vector: Vector,
-        private readonly jscadWorkerManager: JSCADWorkerManager,
+        private readonly jscadWorkerManager: JscadWorker.JSCADWorkerManager,
+        private readonly manifoldWorkerManager: ManifoldWorker.ManifoldWorkerManager,
         private readonly occWorkerManager: OCCTWorkerManager
     ) {
         super(vector);
+    }
+
+    async drawManifoldsOrCrossSections(inputs: Inputs.Manifold.DrawManifoldsOrCrossSectionsDto<Inputs.Manifold.ManifoldPointer | Inputs.Manifold.CrossSectionPointer, MeshPhysicalMaterial>): Promise<Group> {
+        const decomposedMesh: Inputs.Manifold.DecomposedManifoldMeshDto[] = await this.manifoldWorkerManager.genericCallToWorkerPromise("decomposeManifoldsOrCrossSections", inputs);
+        const meshes = decomposedMesh.map(dec => this.handleDecomposedManifold(inputs, dec));
+        const manifoldMeshContainer = new Group();
+        manifoldMeshContainer.name = "manifoldMeshContainer-" + Math.random();
+        meshes.forEach(mesh => {
+            mesh.parent = manifoldMeshContainer;
+        });
+        this.context.scene.add(manifoldMeshContainer);
+        return manifoldMeshContainer;
+    }
+
+    async drawManifoldOrCrossSection(inputs: Inputs.Manifold.DrawManifoldOrCrossSectionDto<Inputs.Manifold.ManifoldPointer | Inputs.Manifold.CrossSectionPointer, MeshPhysicalMaterial>): Promise<Group> {
+        const decomposedMesh: Inputs.Manifold.DecomposedManifoldMeshDto = await this.manifoldWorkerManager.genericCallToWorkerPromise("decomposeManifoldOrCrossSection", inputs);
+        return this.handleDecomposedManifold(inputs, decomposedMesh);
     }
 
     async drawShape(inputs: Inputs.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Group> {
@@ -694,5 +712,61 @@ export class DrawHelper extends DrawHelperCore {
         const line = new LineSegments(lineGeometry, lineMaterial);
         line.name = "lines-" + Math.random();
         return line;
+    }
+
+    private handleDecomposedManifold(
+        inputs: Inputs.Manifold.DrawManifoldOrCrossSectionDto<Inputs.Manifold.ManifoldPointer, MeshPhysicalMaterial>,
+        decomposedManifold: Inputs.Manifold.DecomposedManifoldMeshDto | Inputs.Base.Vector2[][]): Group {
+        if ((decomposedManifold as Inputs.Manifold.DecomposedManifoldMeshDto).vertProperties) {
+            const decomposedMesh = decomposedManifold as Inputs.Manifold.DecomposedManifoldMeshDto;
+
+            const geometry = new BufferGeometry();
+            geometry.setAttribute("position", new BufferAttribute(decomposedMesh.vertProperties, 3));
+            geometry.setIndex(new BufferAttribute(decomposedMesh.triVerts, 1));
+            geometry.computeVertexNormals();
+
+            const group = new Group();
+            group.name = `manifoldMesh-${Math.random()}`;
+
+            if (inputs.faceMaterial === undefined) {
+                const material = new MeshPhysicalMaterial();
+                material.name = `pbr-${Math.random()}`;
+
+                material.color = new Color(inputs.faceColour);
+                material.metalness = 0.5;
+                material.roughness = 0.7;
+                material.opacity = inputs.faceOpacity;
+                material.alphaTest = 1;
+                if (!inputs.computeNormals) {
+                    material.flatShading = true;
+                }
+                group.add(new Mesh(geometry, material));
+            } else {
+                group.add(new Mesh(geometry));
+            }
+            this.context.scene.add(group);
+            return group;
+        } else {
+            const group = new Group();
+            group.name = `manifoldCrossSection-${Math.random()}`;
+
+            const decompsoedPolygons = decomposedManifold as Inputs.Base.Vector2[][];
+            const polylines = decompsoedPolygons.map(polygon => ({
+                points: polygon.map(p => [p[0], p[1], 0] as Inputs.Base.Point3),
+                isClosed: true
+            }));
+            const polylineMesh = this.drawPolylinesWithColours({
+                polylinesMesh: undefined,
+                polylines,
+                updatable: false,
+                size: inputs.crossSectionWidth,
+                opacity: inputs.crossSectionOpacity,
+                colours: inputs.crossSectionColour
+            });
+            polylineMesh.parent = group;
+            this.context.scene.add(group);
+            return group;
+        }
+
     }
 }

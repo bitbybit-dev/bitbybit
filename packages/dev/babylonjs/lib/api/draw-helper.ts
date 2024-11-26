@@ -4,7 +4,6 @@ import * as Inputs from "./inputs";
 import { JSCADText, Vector, DrawHelperCore } from "@bitbybit-dev/core";
 import { JscadWorker, ManifoldWorker } from "@bitbybit-dev/core/lib/workers";
 import { OCCTWorkerManager } from "@bitbybit-dev/occt-worker";
-import * as Manifold3D from "manifold-3d";
 
 export class DrawHelper extends DrawHelperCore {
 
@@ -632,7 +631,7 @@ export class DrawHelper extends DrawHelperCore {
     }
 
     async drawManifoldsOrCrossSections(inputs: Inputs.Manifold.DrawManifoldsOrCrossSectionsDto<Inputs.Manifold.ManifoldPointer | Inputs.Manifold.CrossSectionPointer, BABYLON.PBRMetallicRoughnessMaterial>): Promise<BABYLON.Mesh> {
-        const decomposedMesh: Manifold3D.Mesh[] = await this.manifoldWorkerManager.genericCallToWorkerPromise("decomposeManifoldsOrCrossSections", inputs);
+        const decomposedMesh: Inputs.Manifold.DecomposedManifoldMeshDto[] = await this.manifoldWorkerManager.genericCallToWorkerPromise("decomposeManifoldsOrCrossSections", inputs);
         const meshes = decomposedMesh.map(dec => this.handleDecomposedManifold(inputs, dec));
         const manifoldMeshContainer = new BABYLON.Mesh("manifoldMeshContainer" + Math.random(), this.context.scene);
         meshes.forEach(mesh => {
@@ -642,7 +641,7 @@ export class DrawHelper extends DrawHelperCore {
     }
 
     async drawManifoldOrCrossSection(inputs: Inputs.Manifold.DrawManifoldOrCrossSectionDto<Inputs.Manifold.ManifoldPointer | Inputs.Manifold.CrossSectionPointer, BABYLON.PBRMetallicRoughnessMaterial>): Promise<BABYLON.Mesh> {
-        const decomposedMesh: Manifold3D.Mesh = await this.manifoldWorkerManager.genericCallToWorkerPromise("decomposeManifoldOrCrossSection", inputs);
+        const decomposedMesh: Inputs.Manifold.DecomposedManifoldMeshDto = await this.manifoldWorkerManager.genericCallToWorkerPromise("decomposeManifoldOrCrossSection", inputs);
         return this.handleDecomposedManifold(inputs, decomposedMesh);
     }
 
@@ -809,9 +808,9 @@ export class DrawHelper extends DrawHelperCore {
 
     private handleDecomposedManifold(
         inputs: Inputs.Manifold.DrawManifoldOrCrossSectionDto<Inputs.Manifold.ManifoldPointer, BABYLON.PBRMetallicRoughnessMaterial>,
-        decomposedManifold: Manifold3D.Mesh | Manifold3D.SimplePolygon[]): BABYLON.Mesh {
-        if ((decomposedManifold as Manifold3D.Mesh).vertProperties) {
-            const decomposedMesh = decomposedManifold as Manifold3D.Mesh;
+        decomposedManifold: Inputs.Manifold.DecomposedManifoldMeshDto | Inputs.Base.Vector2[][]): BABYLON.Mesh {
+        if ((decomposedManifold as Inputs.Manifold.DecomposedManifoldMeshDto).vertProperties) {
+            const decomposedMesh = decomposedManifold as Inputs.Manifold.DecomposedManifoldMeshDto;
             const mesh = new BABYLON.Mesh(`manifoldMesh-${Math.random()}`, this.context.scene);
 
             const vertexData = new BABYLON.VertexData();
@@ -864,7 +863,7 @@ export class DrawHelper extends DrawHelperCore {
             return mesh;
         } else {
             const mesh = new BABYLON.Mesh(`manifoldCrossSection-${Math.random()}`, this.context.scene);
-            const decompsoedPolygons = decomposedManifold as Manifold3D.SimplePolygon[];
+            const decompsoedPolygons = decomposedManifold as Inputs.Base.Vector2[][];
             const polylines = decompsoedPolygons.map(polygon => ({
                 points: polygon.map(p => [p[0], p[1], 0] as Inputs.Base.Point3),
                 isClosed: true
@@ -882,33 +881,6 @@ export class DrawHelper extends DrawHelperCore {
         }
 
     }
-
-    // mesh2geometry(mesh: Mesh) {
-    //     const geometry = new BufferGeometry();
-    //     // Assign buffers
-    //     geometry.setAttribute(
-    //         'position', new BufferAttribute(mesh.vertProperties, 3));
-    //     geometry.setIndex(new BufferAttribute(mesh.triVerts, 1));
-    //     // Create a group (material) for each ID. Note that there may be multiple
-    //     // triangle runs returned with the same ID, though these will always be
-    //     // sequential since they are sorted by ID. In this example there are two runs
-    //     // for the MeshNormalMaterial, one corresponding to each input mesh that had
-    //     // this ID. This allows runTransform to return the total transformation matrix
-    //     // applied to each triangle run from its input mesh - even after many
-    //     // consecutive operations.
-    //     let id = mesh.runOriginalID[0];
-    //     let start = mesh.runIndex[0];
-    //     for (let run = 0; run < mesh.numRun; ++run) {
-    //         const nextID = mesh.runOriginalID[run + 1];
-    //         if (nextID !== id) {
-    //             const end = mesh.runIndex[run + 1];
-    //             geometry.addGroup(start, end - start, id2matIndex.get(id));
-    //             id = nextID;
-    //             start = end;
-    //         }
-    //     }
-    //     return geometry;
-    // }
 
     private createLineSystemMesh(updatable: boolean, lines: BABYLON.Vector3[][], colors: BABYLON.Color4[][]): BABYLON.LinesMesh {
         return BABYLON.MeshBuilder.CreateLineSystem(`lines${Math.random()}`,
