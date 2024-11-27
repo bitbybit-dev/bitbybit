@@ -1,0 +1,34 @@
+/* To learn more about this file see: https://angular.io/config/tsconfig. */
+{
+    "compileOnSave": false,
+    "compilerOptions": {
+        "outDir": "./dist/bitbybit-dev",
+        "baseUrl": "./",
+        "sourceMap": false,
+        "declaration": true,
+        "downlevelIteration": true,
+        "experimentalDecorators": true,
+        "moduleResolution": "node",
+        "skipLibCheck": true,
+        "target": "es2015",
+        "module": "es2020",
+        "strict": false,
+        "allowJs": true,
+        "emitDeclarationOnly": false,
+        "paths": {
+            "@bitbybit-dev/occt": [
+                "../bitbybit-occt",
+            ],
+            "@bitbybit-dev/occt/*": [
+                "../bitbybit-occt/*",
+            ],
+        },
+        "lib": [
+            "es2020",
+            "dom"
+        ],
+    },
+    "exclude": [
+        "**/*.test.ts"
+    ]
+}

@@ -1,0 +1,93 @@
+{
+    "name": "@bitbybit-dev/occt-worker",
+    "version": "0.19.0-alpha.0",
+    "description": "Bit By Bit Developers CAD algorithms using OpenCascade Technology kernel adapted for WebWorker",
+    "main": "index.js",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/bitbybit-dev/bitbybit-occt-worker"
+    },
+    "directories": {
+        "lib": "lib"
+    },
+    "keywords": [
+        "Bit By Bit Developers",
+        "bitbybit",
+        "bitbybit.dev",
+        "Geometry",
+        "CAD",
+        "3D",
+        "OCCT",
+        "OpenCascade",
+        "Parametric",
+        "Modeling",
+        "Browser",
+        "Node",
+        "3D algorithms",
+        "STEP",
+        "STP",
+        "3D modeling",
+        "3D printing",
+        "3D printing algorithms",
+        "3D software",
+        "OpenCascade Technology",
+        "AEC",
+        "Automotive",
+        "Engineering",
+        "CAE",
+        "CAM",
+        "Worker",
+        "WebWorker",
+        "WASM"
+    ],
+    "scripts": {
+        "build": "tsc -p tsconfig.bitbybit.json",
+        "build-p": "npm run build && npm run copy-package && npm run copy-readme-license && npm run delete-coverage",
+        "copy-package": "cp -R ./package.json ./dist",
+        "copy-readme-license": "cp -R ./README.md ./dist && cp -R ./LICENSE ./dist",
+        "delete-coverage": "rm -R ./dist/coverage",
+        "docs": "./node_modules/.bin/sass ts-doc-theme/assets/css/main.sass ts-doc-theme/assets/css/main.css && node_modules/.bin/typedoc --out ts-api-docs/ lib/api --theme ./ts-doc-theme --excludePrivate --tsconfig lib/api/tsconfig.bbb.json --media assets/images/blockly-block-images/",
+        "test": "set NODE_OPTIONS=--experimental-specifier-resolution=node && jest --watchAll=true",
+        "test-c": "set NODE_OPTIONS=--experimental-specifier-resolution=node && jest --coverage --watchAll=false",
+        "test-c-l": "set NODE_OPTIONS=--experimental-specifier-resolution=node && jest --coverage --watchAll=true"
+    },
+    "author": "Bit by bit developers",
+    "license": "MIT",
+    "types": "./index.d.ts",
+    "type": "module",
+    "dependencies": {
+        "@bitbybit-dev/occt": "0.19.0-alpha.0",
+        "rxjs": "7.5.5"
+    },
+    "devDependencies": {
+        "sass": "1.57.1",
+        "@testing-library/jest-dom": "5.14.1",
+        "mvdir": "1.0.21",
+        "jest": "29.4.1",
+        "ts-node": "10.9.1",
+        "ts-jest": "29.0.0",
+        "typescript": "4.8.2",
+        "@types/jest": "29.0.0",
+        "babel-jest": "29.0.0",
+        "@babel/core": "7.16.0",
+        "@babel/preset-env": "7.16.0",
+        "@babel/preset-typescript": "7.16.0",
+        "jest-html-reporters": "3.0.11"
+    },
+    "jest": {
+        "preset": "ts-jest",
+        "transform": {
+            "\\.[jt]sx?$": "babel-jest"
+        },
+        "extensionsToTreatAsEsm": [
+            ".ts"
+        ],
+        "transformIgnorePatterns": [
+            "node_modules/(?!@babylonjs|@bitbybit-dev)"
+        ],
+        "collectCoverageFrom": [
+            "lib/occ-worker/**/*.ts",
+            "lib/api/**/*.ts"
+        ]
+    }
+}
