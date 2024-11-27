@@ -8,10 +8,34 @@ Visit https://bitbybit.dev to use our full cloud platform.
 
 ## Github
 https://github.com/bitbybit-dev/bitbybit  
+
 ## NPM Packages
-https://www.npmjs.com/package/@bitbybit-dev/babylonjs
-https://www.npmjs.com/package/@bitbybit-dev/threejs
-https://www.npmjs.com/package/@bitbybit-dev/core
+
+[@bitbybit-dev/babylonjs](https://www.npmjs.com/package/@bitbybit-dev/babylonjs)v
+BabylonJS game engine integration that allows easy drawing of geometry constructed by JSCAD, Manifold and OCCT kernels.   
+[@bitbybit-dev/threejs](https://www.npmjs.com/package/@bitbybit-dev/threejs)   
+ThreeJS game engine integration that allows easy drawing of geometry constructed by JSCAD, Manifold and OCCT kernels.   
+[@bitbybit-dev/core](https://www.npmjs.com/package/@bitbybit-dev/core)   
+Assembles various packages and provides additional features that may combine all CAD kernels   
+[@bitbybit-dev/jscad](https://www.npmjs.com/package/@bitbybit-dev/jscad)   
+Wraps JSCAD with additional algorithms offered by bitbybit.dev   
+[@bitbybit-dev/jscad-worker](https://www.npmjs.com/package/@bitbybit-dev/jscad-worker)   
+Exposes @bitbybit-dev/jscad package via webworker and makes all calls asynchronouse and non-blocking   
+[@bitbybit-dev/manifold](https://www.npmjs.com/package/@bitbybit-dev/manifold)   
+Wraps MANIFOLD with additional algorithms offered by bitbybit.dev   
+[@bitbybit-dev/manifold-worker](https://www.npmjs.com/package/@bitbybit-dev/manifold-worker)   
+Exposes @bitbybit-dev/manifold package via webworker and makes all calls asynchronouse and non-blocking   
+[@bitbybit-dev/occt](https://www.npmjs.com/package/@bitbybit-dev/occt)   
+Wraps OpenCascade with additional algorithms offered by bitbybit.dev   
+[@bitbybit-dev/occt-worker](https://www.npmjs.com/package/@bitbybit-dev/occt-worker)   
+Exposes @bitbybit-dev/occt package via webworker and makes all calls asynchronouse and non-blocking      
+[@bitbybit-dev/base](https://www.npmjs.com/package/@bitbybit-dev/base)   
+Contains various base algorithms used in all other layers, such as vector math.   
+
+To understand the structure of these packages better we provided this diagram:
+
+## NPM Package Architecture
+<img src="https://app.bitbybit.dev/assets/npm-package-architecture.jpeg" alt="Schematic diagram showing the architecture of all NPM packages">
 
 ## Example Applications
 Laptop Holder   
