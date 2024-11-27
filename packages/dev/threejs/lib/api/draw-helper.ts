@@ -741,7 +741,7 @@ export class DrawHelper extends DrawHelperCore {
                     }
                     group.add(new Mesh(geometry, material));
                 } else {
-                    group.add(new Mesh(geometry));
+                    group.add(new Mesh(geometry, options.faceMaterial));
                 }
                 this.context.scene.add(group);
                 return group;
