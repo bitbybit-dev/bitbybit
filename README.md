@@ -11,7 +11,7 @@ https://github.com/bitbybit-dev/bitbybit
 
 ## NPM Packages
 
-[@bitbybit-dev/babylonjs](https://www.npmjs.com/package/@bitbybit-dev/babylonjs)v
+[@bitbybit-dev/babylonjs](https://www.npmjs.com/package/@bitbybit-dev/babylonjs)   
 BabylonJS game engine integration that allows easy drawing of geometry constructed by JSCAD, Manifold and OCCT kernels.   
 [@bitbybit-dev/threejs](https://www.npmjs.com/package/@bitbybit-dev/threejs)   
 ThreeJS game engine integration that allows easy drawing of geometry constructed by JSCAD, Manifold and OCCT kernels.   
@@ -40,12 +40,15 @@ To understand the structure of these packages better we provided this diagram:
 ## Example Applications
 Laptop Holder   
 https://app-store.bitbybit.dev/laptop-holder    
-Github Source Code Angular - https://github.com/bitbybit-dev/app-examples/tree/main/angular/laptop-holder
-Github Source Code React - https://github.com/bitbybit-dev/app-examples/tree/main/react/laptop-holder
+Github Source Code Angular   
+https://github.com/bitbybit-dev/app-examples/tree/main/angular/laptop-holder   
+Github Source Code React   
+https://github.com/bitbybit-dev/app-examples/tree/main/react/laptop-holder   
   
 Cup Configurator    
-https://app-store.bitbybit.dev/cup
-Github Source Code - https://github.com/bitbybit-dev/app-examples/tree/main/react/cup  
+https://app-store.bitbybit.dev/cup   
+Github Source Code   
+https://github.com/bitbybit-dev/app-examples/tree/main/react/cup  
 
 ## Closed Source Example Applications
 https://app-store.bitbybit.dev/terrace-furniture   
@@ -66,4 +69,4 @@ Bit By Bit Developers company will keep these core algorithms that you can find 
 Bit By Bit Developers web platform allows creators to program geometry through simple visual programming language or choose monaco typescript editor with full intellisense of bitbybit API. This cloud platform can fulfil many practical, educational and artistic needs of its users. Through familiar programming interface used in tools such as Scratch and Blockly.Games we expose powerful 3D algorithms that make it easier to implement various parametric tasks. Our goal is to make it very simple for users to share their ideas and designs. We want to encourage everyone to engage in the future of this tool.
 
 ## Major Dependencies
-BabylonJS, ThreeJS, OpenCascade, JSCAD, Verbnurbs
+BabylonJS, ThreeJS, OpenCascade, Manifold, JSCAD, Verbnurbs
