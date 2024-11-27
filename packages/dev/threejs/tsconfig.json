@@ -53,17 +53,17 @@
                 "../manifold-worker/dist/*"
             ],
             "@bitbybit-dev/occt": [
-                "../../../../bitbybit-occt/dist"
+                 "../occt/dist"
             ],
             "@bitbybit-dev/occt/*": [
-                "../../../../bitbybit-occt/dist/*"
-            ],
-            "@bitbybit-dev/occt-worker/*": [
-                "../../../../bitbybit-occt-worker/dist/*"
+                "../occt/dist/*"
             ],
             "@bitbybit-dev/occt-worker": [
-                "../../../../bitbybit-occt-worker/dist"
-            ]
+                "../occt-worker/dist"
+            ],
+            "@bitbybit-dev/occt-worker/*": [
+                "../occt-worker/dist"
+            ],
         },
         "lib": [
             "es2020",

@@ -17,10 +17,10 @@
         "emitDeclarationOnly": false,
         "paths": {
             "@bitbybit-dev/occt": [
-                "../bitbybit-occt",
+                "../occt",
             ],
             "@bitbybit-dev/occt/*": [
-                "../bitbybit-occt/*",
+                "../occt/*",
             ],
         },
         "lib": [

@@ -25,8 +25,14 @@
             "@bitbybit-dev/base/*": [
                 "../base/dist/*"
             ],
+            "@bitbybit-dev/core": [
+                "../core/dist"
+            ],
+            "@bitbybit-dev/core/*": [
+                "../core/dist/*"
+            ],
             "@bitbybit-dev/jscad": [
-                "../jscad/dist"
+                "../manifold/dist"
             ],
             "@bitbybit-dev/jscad/*": [
                 "../jscad/dist/*"
@@ -50,16 +56,16 @@
                 "../manifold-worker/dist/*"
             ],
             "@bitbybit-dev/occt": [
-                "../../../../bitbybit-occt/dist",
+                 "../occt/dist"
             ],
             "@bitbybit-dev/occt/*": [
-                "../../../../bitbybit-occt/dist/*",
+                "../occt/dist/*"
             ],
             "@bitbybit-dev/occt-worker": [
-                "../../../../bitbybit-occt-worker/dist",
+                "../occt-worker/dist"
             ],
             "@bitbybit-dev/occt-worker/*": [
-                "../../../../bitbybit-occt-worker/dist/*",
+                "../occt-worker/dist"
             ],
         },
         "lib": [

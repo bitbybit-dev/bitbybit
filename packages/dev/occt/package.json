@@ -5,7 +5,7 @@
     "main": "index.js",
     "repository": {
         "type": "git",
-        "url": "https://github.com/bitbybit-dev/bitbybit-occt"
+        "url": "https://github.com/bitbybit-dev/bitbybit/tree/master/packages/dev/occt"
     },
     "directories": {
         "lib": "lib"
