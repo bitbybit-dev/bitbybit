@@ -2,19 +2,21 @@
 
 <img src="https://app.bitbybit.dev/assets/git-cover.png" alt="Picture showing bitbybit.dev platform">
 
-This genericc package contains base algorithms for our CAD platform. It has various helper functions for math, text, lists, vectors, matrix operations. It also contains some base types used accross bitbybit.dev platform on higher levels. This layer should be kept as lightweight as possible and ideally not contain any third-party dependencies as they just add to the weight and complexity.
+This package contains base algorithms for our CAD platform. It has various helper functions for math, text, lists, vectors, matrix operations. It also contains some base types used accross bitbybit.dev platform on higher levels. This layer should be kept as lightweight as possible and ideally not contain any third-party dependencies as they just add to the weight and complexity.
 
 This package is already used or will be used in these packages:
 
-@bitbybit-dev/occt
-@bitbybit-dev/occt-worker
-@bitbybit-dev/jscad
-@bitbybit-dev/jscad-worker
-@bitbybit-dev/manifold
-@bitbybit-dev/manifold-worker
-@bitbybit-dev/core
-@bitbybit-dev/babylonjs
-@bitbybit-dev/threejs
+
+[@bitbybit-dev/babylonjs](https://www.npmjs.com/package/@bitbybit-dev/babylonjs)   
+[@bitbybit-dev/threejs](https://www.npmjs.com/package/@bitbybit-dev/threejs)   
+[@bitbybit-dev/core](https://www.npmjs.com/package/@bitbybit-dev/core)   
+[@bitbybit-dev/jscad](https://www.npmjs.com/package/@bitbybit-dev/jscad)   
+[@bitbybit-dev/jscad-worker](https://www.npmjs.com/package/@bitbybit-dev/jscad-worker)   
+[@bitbybit-dev/manifold](https://www.npmjs.com/package/@bitbybit-dev/manifold)   
+[@bitbybit-dev/manifold-worker](https://www.npmjs.com/package/@bitbybit-dev/manifold-worker)   
+[@bitbybit-dev/occt](https://www.npmjs.com/package/@bitbybit-dev/occt)   
+[@bitbybit-dev/occt-worker](https://www.npmjs.com/package/@bitbybit-dev/occt-worker)   
+[@bitbybit-dev/base](https://www.npmjs.com/package/@bitbybit-dev/base)   
 
 This package should work in Node and browser based applications and should provide generic layer which could be helpful to all higher-level CAD algorithms and kernels. Algorithms of this base layer are also exposed on our bitbybit.dev Rete, Blockly & Monaco editors.
 
