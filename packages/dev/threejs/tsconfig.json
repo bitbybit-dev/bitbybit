@@ -29,7 +29,7 @@
                 "../core/dist/*"
             ],
             "@bitbybit-dev/jscad": [
-                "../manifold/dist"
+                "../jscad/dist"
             ],
             "@bitbybit-dev/jscad/*": [
                 "../jscad/dist/*"
