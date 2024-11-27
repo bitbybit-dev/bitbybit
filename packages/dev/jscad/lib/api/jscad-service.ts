@@ -1,4 +1,4 @@
-import { VectorHelperService } from "@bitbybit-dev/occt";
+import { GeometryHelper } from "@bitbybit-dev/base";
 import { MathBitByBit } from "@bitbybit-dev/base";
 import { JSCADExpansions } from "./services/jscad-expansions";
 import { JSCADBooleans } from "./services/jscad-booleans";
@@ -29,14 +29,14 @@ export class Jscad {
     public colors: JSCADColors;
 
     constructor(jscad: typeof JSCAD) {
-        const vecHelper = new VectorHelperService();
+        const geometryHelper = new GeometryHelper();
         const math = new MathBitByBit();
         this.booleans = new JSCADBooleans(jscad);
         this.expansions = new JSCADExpansions(jscad);
-        this.extrusions = new JSCADExtrusions(jscad, vecHelper, math);
+        this.extrusions = new JSCADExtrusions(jscad, geometryHelper, math);
         this.hulls = new JSCADHulls(jscad);
-        this.path = new JSCADPath(jscad, vecHelper, math);
-        this.polygon = new JSCADPolygon(jscad, vecHelper, math);
+        this.path = new JSCADPath(jscad, geometryHelper, math);
+        this.polygon = new JSCADPolygon(jscad, geometryHelper, math);
         this.shapes = new JSCADShapes(jscad, math);
         this.text = new JSCADText(jscad);
         this.colors = new JSCADColors(jscad);

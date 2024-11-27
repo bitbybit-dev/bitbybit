@@ -607,28 +607,30 @@ export class Draw extends DrawCore {
         });
     }
 
-    private applyGlobalSettingsAndMetadataAndShadowCasting(type: Inputs.Draw.drawingTypes, options: Inputs.Draw.DrawOptions, result: BABYLON.Mesh) {
-        const typemeta = { type, options };
-        const sgs = this.context.scene.metadata.shadowGenerators as BABYLON.ShadowGenerator[];
+    private applyGlobalSettingsAndMetadataAndShadowCasting(type: Inputs.Draw.drawingTypes, options: Inputs.Draw.DrawOptions, result: BABYLON.Mesh | undefined) {
+        if (result) {
+            const typemeta = { type, options };
+            const sgs = this.context.scene.metadata.shadowGenerators as BABYLON.ShadowGenerator[];
 
-        result.isPickable = false;
-        result.getChildMeshes().forEach(m => { m.isPickable = false; });
+            result.isPickable = false;
+            result.getChildMeshes().forEach(m => { m.isPickable = false; });
 
-        let shadowsEnabled = true;
-        if (result.metadata && result.metadata.shadows === false) {
-            shadowsEnabled = false;
-        }
-        if (shadowsEnabled) {
-            if (sgs.length > 0) {
-                result.receiveShadows = true;
-                sgs.forEach(sg => sg.addShadowCaster(result));
-                result.getChildMeshes().forEach(m => {
-                    m.receiveShadows = true;
-                    sgs.forEach(sg => sg.addShadowCaster(m));
-                });
+            let shadowsEnabled = true;
+            if (result.metadata && result.metadata.shadows === false) {
+                shadowsEnabled = false;
             }
+            if (shadowsEnabled) {
+                if (sgs.length > 0) {
+                    result.receiveShadows = true;
+                    sgs.forEach(sg => sg.addShadowCaster(result));
+                    result.getChildMeshes().forEach(m => {
+                        m.receiveShadows = true;
+                        sgs.forEach(sg => sg.addShadowCaster(m));
+                    });
+                }
+            }
+            result.metadata = result.metadata ? { ...result.metadata, ...typemeta } : typemeta;
         }
-        result.metadata = result.metadata ? { ...result.metadata, ...typemeta } : typemeta;
     }
 
 }

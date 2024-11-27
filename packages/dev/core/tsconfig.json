@@ -22,6 +22,18 @@
             "@bitbybit-dev/base/*": [
                 "../base/dist/*"
             ],
+            "@bitbybit-dev/jscad": [
+                "../jscad/dist"
+            ],
+            "@bitbybit-dev/jscad/*": [
+                "../jscad/dist/*"
+            ],
+            "@bitbybit-dev/jscad-worker": [
+                "../jscad-worker/dist"
+            ],
+            "@bitbybit-dev/jscad-worker/*": [
+                "../jscad-worker/dist/*"
+            ],
             "@bitbybit-dev/manifold": [
                 "../manifold/dist"
             ],

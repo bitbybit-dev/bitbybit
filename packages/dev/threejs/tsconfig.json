@@ -16,7 +16,7 @@
         "allowJs": true,
         "emitDeclarationOnly": false,
         "paths": {
-"@bitbybit-dev/base": [
+            "@bitbybit-dev/base": [
                 "../base/dist"
             ],
             "@bitbybit-dev/base/*": [
@@ -27,6 +27,18 @@
             ],
             "@bitbybit-dev/core/*": [
                 "../core/dist/*"
+            ],
+            "@bitbybit-dev/jscad": [
+                "../manifold/dist"
+            ],
+            "@bitbybit-dev/jscad/*": [
+                "../jscad/dist/*"
+            ],
+            "@bitbybit-dev/jscad-worker": [
+                "../jscad-worker/dist"
+            ],
+            "@bitbybit-dev/jscad-worker/*": [
+                "../jscad-worker/dist/*"
             ],
             "@bitbybit-dev/manifold": [
                 "../manifold/dist"

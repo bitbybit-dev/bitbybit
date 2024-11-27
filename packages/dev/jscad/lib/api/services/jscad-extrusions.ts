@@ -1,4 +1,4 @@
-import { VectorHelperService } from "@bitbybit-dev/occt";
+import { GeometryHelper } from "@bitbybit-dev/base";
 import * as Inputs from "../inputs/jscad-inputs";
 import { MathBitByBit } from "@bitbybit-dev/base";
 import * as JSCAD from "@jscad/modeling";
@@ -11,7 +11,7 @@ export class JSCADExtrusions {
 
     constructor(
         private readonly jscad: typeof JSCAD,
-        private readonly vecHelper: VectorHelperService,
+        private readonly geometryHelper: GeometryHelper,
         private readonly math: MathBitByBit
     ) { }
 
@@ -39,7 +39,7 @@ export class JSCADExtrusions {
 
     extrudeRectangularPoints(inputs: Inputs.JSCAD.ExtrudeRectangularPointsDto): Inputs.JSCAD.JSCADEntity {
         const twoDimensionalPoints = inputs.points.map(pt => [pt[0], pt[1]]);
-        const duplicatePointsRemoved = this.vecHelper.removeConsecutiveDuplicates(twoDimensionalPoints);
+        const duplicatePointsRemoved = this.geometryHelper.removeConsecutiveVectorDuplicates(twoDimensionalPoints);
         const path = this.jscad.geometries.path2.fromPoints({}, duplicatePointsRemoved as JSCAD.maths.vec2.Vec2[]);
         const extrusion = this.extrudeRectangular({ height: inputs.height, size: inputs.size, geometry: path });
         return extrusion;

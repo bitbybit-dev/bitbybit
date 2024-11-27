@@ -141,8 +141,20 @@ export class ManifoldBooleans {
      * @shortname split by plane
      * @drawable true
      */
-    splitByPlane(inputs: Inputs.Manifold.SplitByPlaneDto<Inputs.Manifold.SplitByPlaneDto<Inputs.Manifold.ManifoldPointer>>): Promise<Inputs.Manifold.ManifoldPointer[]> {
+    splitByPlane(inputs: Inputs.Manifold.SplitByPlaneDto<Inputs.Manifold.ManifoldPointer>): Promise<Inputs.Manifold.ManifoldPointer[]> {
         return this.manifoldWorkerManager.genericCallToWorkerPromise("manifold.booleans.splitByPlane", inputs);
+    }
+
+    /**
+     * Split manifold by plane on various offsets
+     * @param inputs manifold, plane and the list of offsets
+     * @returns splitted manifolds
+     * @group split
+     * @shortname split by plane on offsets
+     * @drawable true
+     */
+    splitByPlaneOnOffsets(inputs: Inputs.Manifold.SplitByPlaneOnOffsetsDto<Inputs.Manifold.ManifoldPointer>): Promise<Inputs.Manifold.ManifoldPointer[]> {
+        return this.manifoldWorkerManager.genericCallToWorkerPromise("manifold.booleans.splitByPlaneOnOffsets", inputs);
     }
 
     /**

@@ -1,4 +1,4 @@
-import { VectorHelperService } from "@bitbybit-dev/occt";
+import { GeometryHelper } from "@bitbybit-dev/base";
 import * as Inputs from "../inputs";
 import { MathBitByBit } from "@bitbybit-dev/base";
 import * as JSCAD from "@jscad/modeling";
@@ -11,7 +11,7 @@ export class JSCADPolygon {
 
     constructor(
         private readonly jscad: typeof JSCAD,
-        private readonly vecHelper: VectorHelperService,
+        private readonly geometryHelper: GeometryHelper,
         private readonly math: MathBitByBit
 
     ) { }
@@ -84,7 +84,7 @@ export class JSCADPolygon {
     }
 
     private removeDuplicatesAndCreateFromPoints(twoDimensionalPoints: Inputs.Base.Point2[]): Inputs.JSCAD.JSCADEntity {
-        const duplicatePointsRemoved = this.vecHelper.removeConsecutiveDuplicates(twoDimensionalPoints);
+        const duplicatePointsRemoved = this.geometryHelper.removeConsecutiveVectorDuplicates(twoDimensionalPoints);
         const polygon = this.jscad.primitives.polygon({ points: duplicatePointsRemoved as JSCAD.maths.vec2.Vec2[] });
         return polygon;
     }

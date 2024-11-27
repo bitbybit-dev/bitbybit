@@ -1,4 +1,4 @@
-import { VectorHelperService } from "@bitbybit-dev/occt";
+import { GeometryHelper } from "@bitbybit-dev/base";
 import { Base } from "../inputs/inputs";
 import * as Inputs from "../inputs/jscad-inputs";
 import { MathBitByBit } from "@bitbybit-dev/base";
@@ -12,7 +12,7 @@ export class JSCADPath {
 
     constructor(
         private readonly jscad: typeof JSCAD,
-        private readonly vecHelper: VectorHelperService,
+        private readonly geometryHelper: GeometryHelper,
         private readonly math: MathBitByBit
     ) { }
 
@@ -25,7 +25,7 @@ export class JSCADPath {
         return inputs.pointsLists.map(points => {
             const twoDimensionalPoints = points.map(pt => [pt[0], pt[1]]);
             if (twoDimensionalPoints.length > 1 &&
-                this.vecHelper.vectorsTheSame(twoDimensionalPoints[0], twoDimensionalPoints[twoDimensionalPoints.length - 1], 0.00001)) {
+                this.geometryHelper.vectorsTheSame(twoDimensionalPoints[0], twoDimensionalPoints[twoDimensionalPoints.length - 1], 0.00001)) {
                 return this.removeDuplicatesAndCreateFromPoints(twoDimensionalPoints, true);
             }
             return this.removeDuplicatesAndCreateFromPoints(twoDimensionalPoints, false);
@@ -47,7 +47,7 @@ export class JSCADPath {
 
     appendPoints(inputs: Inputs.JSCAD.PathAppendPointsDto): Inputs.JSCAD.JSCADEntity {
         const twoDimensionalPoints = inputs.points.map(pt => [pt[0], pt[1]]);
-        const duplicatePointsRemoved = this.vecHelper.removeConsecutiveDuplicates(twoDimensionalPoints);
+        const duplicatePointsRemoved = this.geometryHelper.removeConsecutiveVectorDuplicates(twoDimensionalPoints);
         return this.jscad.geometries.path2.appendPoints(duplicatePointsRemoved as JSCAD.maths.vec2.Vec2[], inputs.path);
     }
 
@@ -70,7 +70,7 @@ export class JSCADPath {
     }
 
     private removeDuplicatesAndCreateFromPoints(twoDimensionalPoints: number[][], closed: boolean): any {
-        const duplicatePointsRemoved = this.vecHelper.removeConsecutiveDuplicates(twoDimensionalPoints);
+        const duplicatePointsRemoved = this.geometryHelper.removeConsecutiveVectorDuplicates(twoDimensionalPoints);
         let path2d = this.jscad.geometries.path2.fromPoints({}, duplicatePointsRemoved  as JSCAD.maths.vec2.Vec2[]);
         if (closed) {
             path2d = this.jscad.geometries.path2.close(path2d);

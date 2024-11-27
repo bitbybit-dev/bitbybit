@@ -1,17 +1,15 @@
-## Bit By Bit Developers Manifold based CAD library
+## Bit By Bit Developers JSCAD based CAD library
 
 <img src="https://app.bitbybit.dev/assets/git-cover.png" alt="Picture showing bitbybit.dev platform">
 
-This project exposes 3D algorithms based on manifold-3d 3D CAD kernel, developed by Emmett Lalish, which you can find on https://github.com/elalish/manifold. Bit By Bit Developers platform integrates this kernel into it's platform via this library. Currently we try to expose Manifold library 1:1 in terms of functionality through our structured API, but as time goes we will have more unique algorithms in this package, which will be tuned specifically to our users.
-
-This package should work in Node and browser based applications. If you want to use this package in your browser based applications we highly suggest to use @bitbybit-dev/manifold-webworker npm package, which wraps this lib into promisified non-blocking API.
+This project exposes 3D algorithms based on OPENJSCAD 3D CAD kernel, which you can find on https://github.com/jscad. Bit By Bit Developers platform integrates this kernel into it's platform via this library. Currently we try to expose JSCAD library 1:1 in terms of functionality through our structured API, but as time goes we will have more unique algorithms in this package, which will be tuned specifically to our users.
 
 Visit https://bitbybit.dev to use our full cloud platform.
 
 ## Github
-https://github.com/bitbybit-dev/bitbybit/tree/master/packages/dev/manifold
+https://github.com/bitbybit-dev/bitbybit/tree/master/packages/dev/jscad
 ## NPM
-https://www.npmjs.com/package/@bitbybit-dev/manifold
+https://www.npmjs.com/package/@bitbybit-dev/jscad
 
 ## THREEJS Example Applications
 Vase   
@@ -59,5 +57,5 @@ Bit By Bit Developers company will keep these core algorithms that you can find 
 Bit By Bit Developers web platform allows creators to program geometry through simple visual programming language or choose monaco typescript editor with full intellisense of bitbybit API. This cloud platform can fulfil many practical, educational and artistic needs of its users. Through familiar programming interface used in tools such as Scratch and Blockly.Games we expose powerful 3D algorithms that make it easier to implement various parametric tasks. Our goal is to make it very simple for users to share their ideas and designs. We want to encourage everyone to engage in the future of this tool.
 
 ## Major Dependencies
-Manifold
-https://github.com/elalish/manifold
+JSCAD
+https://github.com/jscad

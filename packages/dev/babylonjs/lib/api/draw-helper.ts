@@ -633,34 +633,30 @@ export class DrawHelper extends DrawHelperCore {
     }
 
     async drawManifoldsOrCrossSections(inputs: Inputs.Manifold.DrawManifoldsOrCrossSectionsDto<Inputs.Manifold.ManifoldPointer | Inputs.Manifold.CrossSectionPointer, BABYLON.PBRMetallicRoughnessMaterial>): Promise<BABYLON.Mesh> {
+        const options = this.deleteFaceMaterialForWorker(inputs);
         const decomposedMesh: Inputs.Manifold.DecomposedManifoldMeshDto[] = await this.manifoldWorkerManager.genericCallToWorkerPromise("decomposeManifoldsOrCrossSections", inputs);
-        const meshes = decomposedMesh.map(dec => this.handleDecomposedManifold(inputs, dec));
+        const meshes = decomposedMesh.map(dec => this.handleDecomposedManifold(dec, options));
         const manifoldMeshContainer = new BABYLON.Mesh("manifoldMeshContainer" + Math.random(), this.context.scene);
-        meshes.forEach(mesh => {
+        meshes.filter(s => s !== undefined).forEach(mesh => {
             mesh.parent = manifoldMeshContainer;
         });
         return manifoldMeshContainer;
     }
 
     async drawManifoldOrCrossSection(inputs: Inputs.Manifold.DrawManifoldOrCrossSectionDto<Inputs.Manifold.ManifoldPointer | Inputs.Manifold.CrossSectionPointer, BABYLON.PBRMetallicRoughnessMaterial>): Promise<BABYLON.Mesh> {
+        const options = this.deleteFaceMaterialForWorker(inputs);
         const decomposedMesh: Inputs.Manifold.DecomposedManifoldMeshDto = await this.manifoldWorkerManager.genericCallToWorkerPromise("decomposeManifoldOrCrossSection", inputs);
-        return this.handleDecomposedManifold(inputs, decomposedMesh);
+        return this.handleDecomposedManifold(decomposedMesh, options);
     }
 
     async drawShape(inputs: Inputs.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer>): Promise<BABYLON.Mesh> {
-        const options = { ...inputs };
-        if (inputs.faceMaterial) {
-            delete inputs.faceMaterial;
-        }
+        const options = this.deleteFaceMaterialForWorker(inputs);
         const decomposedMesh: Inputs.OCCT.DecomposedMeshDto = await this.occWorkerManager.genericCallToWorkerPromise("shapeToMesh", inputs);
         return this.handleDecomposedMesh(inputs, decomposedMesh, options);
     }
 
     async drawShapes(inputs: Inputs.OCCT.DrawShapesDto<Inputs.OCCT.TopoDSShapePointer>): Promise<BABYLON.Mesh> {
-        const options = { ...inputs };
-        if (inputs.faceMaterial) {
-            delete inputs.faceMaterial;
-        }
+        const options = this.deleteFaceMaterialForWorker(inputs);
         const meshes: Inputs.OCCT.DecomposedMeshDto[] = await this.occWorkerManager.genericCallToWorkerPromise("shapesToMeshes", inputs);
         const meshesSolved = await Promise.all(meshes.map(async decomposedMesh => this.handleDecomposedMesh(inputs, decomposedMesh, options)));
         const shapesMeshContainer = new BABYLON.Mesh("shapesMeshContainer" + Math.random(), this.context.scene);
@@ -809,79 +805,85 @@ export class DrawHelper extends DrawHelperCore {
     }
 
     private handleDecomposedManifold(
-        inputs: Inputs.Manifold.DrawManifoldOrCrossSectionDto<Inputs.Manifold.ManifoldPointer, BABYLON.PBRMetallicRoughnessMaterial>,
-        decomposedManifold: Inputs.Manifold.DecomposedManifoldMeshDto | Inputs.Base.Vector2[][]): BABYLON.Mesh {
+        decomposedManifold: Inputs.Manifold.DecomposedManifoldMeshDto | Inputs.Base.Vector2[][], options: Inputs.Draw.DrawManifoldOrCrossSectionOptions): BABYLON.Mesh {
         if ((decomposedManifold as Inputs.Manifold.DecomposedManifoldMeshDto).vertProperties) {
             const decomposedMesh = decomposedManifold as Inputs.Manifold.DecomposedManifoldMeshDto;
-            const mesh = new BABYLON.Mesh(`manifoldMesh-${Math.random()}`, this.context.scene);
+            if (decomposedMesh.triVerts.length > 0) {
+                const mesh = new BABYLON.Mesh(`manifoldMesh-${Math.random()}`, this.context.scene);
 
-            const vertexData = new BABYLON.VertexData();
+                const vertexData = new BABYLON.VertexData();
 
-            vertexData.indices = decomposedMesh.triVerts.length > 65535 ? new Uint32Array(decomposedMesh.triVerts) : new Uint16Array(decomposedMesh.triVerts);
+                vertexData.indices = decomposedMesh.triVerts.length > 65535 ? new Uint32Array(decomposedMesh.triVerts) : new Uint16Array(decomposedMesh.triVerts);
 
-            for (let i = 0; i < decomposedMesh.triVerts.length; i += 3) {
-                vertexData.indices[i] = decomposedMesh.triVerts[i + 2];
-                vertexData.indices[i + 1] = decomposedMesh.triVerts[i + 1];
-                vertexData.indices[i + 2] = decomposedMesh.triVerts[i];
-            }
-
-            const vertexCount = decomposedMesh.vertProperties.length / decomposedMesh.numProp;
-
-            // Attributes
-            let offset = 0;
-            for (let componentIndex = 0; componentIndex < 1; componentIndex++) {
-                const component = { stride: 3, kind: "position" };
-
-                const data = new Float32Array(vertexCount * component.stride);
-                for (let i = 0; i < vertexCount; i++) {
-                    for (let strideIndex = 0; strideIndex < component.stride; strideIndex++) {
-                        data[i * component.stride + strideIndex] = decomposedMesh.vertProperties[i * decomposedMesh.numProp + offset + strideIndex];
-                    }
+                for (let i = 0; i < decomposedMesh.triVerts.length; i += 3) {
+                    vertexData.indices[i] = decomposedMesh.triVerts[i + 2];
+                    vertexData.indices[i + 1] = decomposedMesh.triVerts[i + 1];
+                    vertexData.indices[i + 2] = decomposedMesh.triVerts[i];
                 }
-                vertexData.set(data, component.kind);
-                offset += component.stride;
-            }
-            if (inputs.computeNormals) {
-                const normals = [];
-                BABYLON.VertexData.ComputeNormals(vertexData.positions, vertexData.indices, normals);
-                vertexData.normals = normals;
-            }
-            vertexData.applyToMesh(mesh, false);
 
-            if (inputs.faceMaterial === undefined) {
-                const material = new BABYLON.PBRMetallicRoughnessMaterial("pbr" + Math.random(), this.context.scene);
-                material.baseColor = BABYLON.Color3.FromHexString(inputs.faceColour);
-                material.metallic = 1.0;
-                material.roughness = 0.6;
-                material.alpha = inputs.faceOpacity;
-                material.alphaMode = 1;
-                material.backFaceCulling = true;
-                material.doubleSided = false;
-                mesh.material = material;
+                const vertexCount = decomposedMesh.vertProperties.length / decomposedMesh.numProp;
+
+                // Attributes
+                let offset = 0;
+                for (let componentIndex = 0; componentIndex < 1; componentIndex++) {
+                    const component = { stride: 3, kind: "position" };
+
+                    const data = new Float32Array(vertexCount * component.stride);
+                    for (let i = 0; i < vertexCount; i++) {
+                        for (let strideIndex = 0; strideIndex < component.stride; strideIndex++) {
+                            data[i * component.stride + strideIndex] = decomposedMesh.vertProperties[i * decomposedMesh.numProp + offset + strideIndex];
+                        }
+                    }
+                    vertexData.set(data, component.kind);
+                    offset += component.stride;
+                }
+                if (options.computeNormals) {
+                    const normals = [];
+                    BABYLON.VertexData.ComputeNormals(vertexData.positions, vertexData.indices, normals);
+                    vertexData.normals = normals;
+                }
+                vertexData.applyToMesh(mesh, false);
+
+                if (options.faceMaterial === undefined) {
+                    const material = new BABYLON.PBRMetallicRoughnessMaterial("pbr" + Math.random(), this.context.scene);
+                    material.baseColor = BABYLON.Color3.FromHexString(options.faceColour);
+                    material.metallic = 1.0;
+                    material.roughness = 0.6;
+                    material.alpha = options.faceOpacity;
+                    material.alphaMode = 1;
+                    material.backFaceCulling = true;
+                    material.doubleSided = false;
+                    mesh.material = material;
+                } else {
+                    mesh.material = options.faceMaterial;
+                }
+
+                return mesh;
             } else {
-                mesh.material = inputs.faceMaterial;
+                return undefined;
             }
-
-            return mesh;
         } else {
-            const mesh = new BABYLON.Mesh(`manifoldCrossSection-${Math.random()}`, this.context.scene);
-            const decompsoedPolygons = decomposedManifold as Inputs.Base.Vector2[][];
-            const polylines = decompsoedPolygons.map(polygon => ({
-                points: polygon.map(p => [p[0], p[1], 0] as Inputs.Base.Point3),
-                isClosed: true
-            }));
-            const polylineMesh = this.drawPolylinesWithColours({
-                polylinesMesh: undefined,
-                polylines,
-                updatable: false,
-                size: inputs.crossSectionWidth,
-                opacity: inputs.crossSectionOpacity,
-                colours: inputs.crossSectionColour
-            });
-            polylineMesh.parent = mesh;
-            return mesh;
+            if ((decomposedManifold as Inputs.Base.Vector2[][]).length > 0) {
+                const mesh = new BABYLON.Mesh(`manifoldCrossSection-${Math.random()}`, this.context.scene);
+                const decompsoedPolygons = decomposedManifold as Inputs.Base.Vector2[][];
+                const polylines = decompsoedPolygons.map(polygon => ({
+                    points: polygon.map(p => [p[0], p[1], 0] as Inputs.Base.Point3),
+                    isClosed: true
+                }));
+                const polylineMesh = this.drawPolylinesWithColours({
+                    polylinesMesh: undefined,
+                    polylines,
+                    updatable: false,
+                    size: options.crossSectionWidth,
+                    opacity: options.crossSectionOpacity,
+                    colours: options.crossSectionColour
+                });
+                polylineMesh.parent = mesh;
+                return mesh;
+            } else {
+                return undefined;
+            }
         }
-
     }
 
     private createLineSystemMesh(updatable: boolean, lines: BABYLON.Vector3[][], colors: BABYLON.Color4[][]): BABYLON.LinesMesh {
@@ -922,5 +924,14 @@ export class DrawHelper extends DrawHelperCore {
             countIndices++;
         });
         return countIndices;
+    }
+
+    // sometimes we must delete face material property for the web worker not to complain about complex (circular) objects and use cloned object later
+    private deleteFaceMaterialForWorker(inputs: any) {
+        const options = { ...inputs };
+        if (inputs.faceMaterial) {
+            delete inputs.faceMaterial;
+        }
+        return options;
     }
 }

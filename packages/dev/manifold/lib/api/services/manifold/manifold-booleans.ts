@@ -17,6 +17,23 @@ export class ManifoldBooleans {
         return inputs.manifold.splitByPlane(inputs.normal, inputs.originOffset);
     }
 
+    splitByPlaneOnOffsets(inputs: Inputs.Manifold.SplitByPlaneOnOffsetsDto<Manifold3D.Manifold>): Manifold3D.Manifold[] {
+        const pieces = [];
+
+        const clone = inputs.manifold.asOriginal();
+        const remainders = [clone];
+
+        // original should not be deleted
+        inputs.originOffsets.forEach((s, i) => {
+            const halfs = remainders[i].splitByPlane(inputs.normal, s);
+            pieces.push(halfs[1]);
+            remainders.push(halfs[0]);
+        });
+        // release remainders
+        remainders.forEach(r => r.delete());
+        return pieces;
+    }
+
     trimByPlane(inputs: Inputs.Manifold.TrimByPlaneDto<Manifold3D.Manifold>): Manifold3D.Manifold {
         return inputs.manifold.asOriginal().trimByPlane(inputs.normal, inputs.originOffset);
     }

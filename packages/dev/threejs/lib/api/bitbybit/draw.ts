@@ -35,7 +35,7 @@ export class Draw extends DrawCore {
             return this.handleOcctShapes(inputs);
         } else if (this.detectJscadMeshes(entity)) {
             return this.handleJscadMeshes(inputs);
-        }else if (this.detectManifoldShape(entity)) {
+        } else if (this.detectManifoldShape(entity)) {
             return this.handleManifoldShape(inputs);
         } else if (this.detectManifoldShapes(entity)) {
             return this.handleManifoldShapes(inputs);
@@ -347,8 +347,10 @@ export class Draw extends DrawCore {
         });
     }
 
-    private applyGlobalSettingsAndMetadataAndShadowCasting(type: Inputs.Draw.drawingTypes, options: Inputs.Draw.DrawOptions, result: Group) {
-        const typemeta = { type, options };
-        result.userData = result.userData ? { ...result.userData, ...typemeta } : typemeta;
+    private applyGlobalSettingsAndMetadataAndShadowCasting(type: Inputs.Draw.drawingTypes, options: Inputs.Draw.DrawOptions, result: Group | undefined) {
+        if (result) {
+            const typemeta = { type, options };
+            result.userData = result.userData ? { ...result.userData, ...typemeta } : typemeta;
+        }
     }
 }

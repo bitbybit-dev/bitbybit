@@ -347,10 +347,9 @@ export class BabylonScene {
                 this.context.scene, false, false);
         }
 
+        this.context.scene.getMeshByName("bitbybit-hdrSkyBox")?.dispose(false, true);
         const skybox = this.context.scene.createDefaultSkybox(texture, true, inputs.size, inputs.blur, true);
         skybox.name = "bitbybit-hdrSkyBox";
-        // skybox.disableEdgesRendering();
-        // this.context.scene.environmentTexture = texture;
         this.context.scene.environmentIntensity = inputs.environmentIntensity;
     }
 

@@ -35,8 +35,9 @@ export class DrawHelper extends DrawHelperCore {
     }
 
     async drawManifoldsOrCrossSections(inputs: Inputs.Manifold.DrawManifoldsOrCrossSectionsDto<Inputs.Manifold.ManifoldPointer | Inputs.Manifold.CrossSectionPointer, MeshPhysicalMaterial>): Promise<Group> {
+        const options = this.deleteFaceMaterialForWorker(inputs);
         const decomposedMesh: Inputs.Manifold.DecomposedManifoldMeshDto[] = await this.manifoldWorkerManager.genericCallToWorkerPromise("decomposeManifoldsOrCrossSections", inputs);
-        const meshes = decomposedMesh.map(dec => this.handleDecomposedManifold(inputs, dec));
+        const meshes = decomposedMesh.map(dec => this.handleDecomposedManifold(dec, options)).filter(s => s !== undefined);
         const manifoldMeshContainer = new Group();
         manifoldMeshContainer.name = "manifoldMeshContainer-" + Math.random();
         meshes.forEach(mesh => {
@@ -47,24 +48,19 @@ export class DrawHelper extends DrawHelperCore {
     }
 
     async drawManifoldOrCrossSection(inputs: Inputs.Manifold.DrawManifoldOrCrossSectionDto<Inputs.Manifold.ManifoldPointer | Inputs.Manifold.CrossSectionPointer, MeshPhysicalMaterial>): Promise<Group> {
+        const options = this.deleteFaceMaterialForWorker(inputs);
         const decomposedMesh: Inputs.Manifold.DecomposedManifoldMeshDto = await this.manifoldWorkerManager.genericCallToWorkerPromise("decomposeManifoldOrCrossSection", inputs);
-        return this.handleDecomposedManifold(inputs, decomposedMesh);
+        return this.handleDecomposedManifold(decomposedMesh, options);
     }
 
     async drawShape(inputs: Inputs.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Group> {
-        const options = { ...inputs };
-        if (inputs.faceMaterial) {
-            delete inputs.faceMaterial;
-        }
+        const options = this.deleteFaceMaterialForWorker(inputs);
         const decomposedMesh: Inputs.OCCT.DecomposedMeshDto = await this.occWorkerManager.genericCallToWorkerPromise("shapeToMesh", inputs);
         return this.handleDecomposedMesh(inputs, decomposedMesh, options);
     }
 
     async drawShapes(inputs: Inputs.OCCT.DrawShapesDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Group> {
-        const options = { ...inputs };
-        if (inputs.faceMaterial) {
-            delete inputs.faceMaterial;
-        }
+        const options = this.deleteFaceMaterialForWorker(inputs);
         const meshes: Inputs.OCCT.DecomposedMeshDto[] = await this.occWorkerManager.genericCallToWorkerPromise("shapesToMeshes", inputs);
         const meshesSolved = await Promise.all(meshes.map(async decomposedMesh => this.handleDecomposedMesh(inputs, decomposedMesh, options)));
         const shapesMeshContainer = new Group();
@@ -718,58 +714,75 @@ export class DrawHelper extends DrawHelperCore {
     }
 
     private handleDecomposedManifold(
-        inputs: Inputs.Manifold.DrawManifoldOrCrossSectionDto<Inputs.Manifold.ManifoldPointer, MeshPhysicalMaterial>,
-        decomposedManifold: Inputs.Manifold.DecomposedManifoldMeshDto | Inputs.Base.Vector2[][]): Group {
+        decomposedManifold: Inputs.Manifold.DecomposedManifoldMeshDto | Inputs.Base.Vector2[][],
+        options: Inputs.Draw.DrawManifoldOrCrossSectionOptions): Group {
         if ((decomposedManifold as Inputs.Manifold.DecomposedManifoldMeshDto).vertProperties) {
             const decomposedMesh = decomposedManifold as Inputs.Manifold.DecomposedManifoldMeshDto;
+            if (decomposedMesh.triVerts.length !== 0) {
+                const geometry = new BufferGeometry();
+                geometry.setAttribute("position", new BufferAttribute(decomposedMesh.vertProperties, 3));
+                geometry.setIndex(new BufferAttribute(decomposedMesh.triVerts, 1));
+                geometry.computeVertexNormals();
 
-            const geometry = new BufferGeometry();
-            geometry.setAttribute("position", new BufferAttribute(decomposedMesh.vertProperties, 3));
-            geometry.setIndex(new BufferAttribute(decomposedMesh.triVerts, 1));
-            geometry.computeVertexNormals();
+                const group = new Group();
+                group.name = `manifoldMesh-${Math.random()}`;
 
-            const group = new Group();
-            group.name = `manifoldMesh-${Math.random()}`;
+                if (options.faceMaterial === undefined) {
+                    const material = new MeshPhysicalMaterial();
+                    material.name = `pbr-${Math.random()}`;
 
-            if (inputs.faceMaterial === undefined) {
-                const material = new MeshPhysicalMaterial();
-                material.name = `pbr-${Math.random()}`;
-
-                material.color = new Color(inputs.faceColour);
-                material.metalness = 0.5;
-                material.roughness = 0.7;
-                material.opacity = inputs.faceOpacity;
-                material.alphaTest = 1;
-                if (!inputs.computeNormals) {
-                    material.flatShading = true;
+                    material.color = new Color(options.faceColour);
+                    material.metalness = 0.5;
+                    material.roughness = 0.7;
+                    material.opacity = options.faceOpacity;
+                    material.alphaTest = 1;
+                    if (!options.computeNormals) {
+                        material.flatShading = true;
+                    }
+                    group.add(new Mesh(geometry, material));
+                } else {
+                    group.add(new Mesh(geometry));
                 }
-                group.add(new Mesh(geometry, material));
+                this.context.scene.add(group);
+                return group;
             } else {
-                group.add(new Mesh(geometry));
+                return undefined;
             }
-            this.context.scene.add(group);
-            return group;
         } else {
-            const group = new Group();
-            group.name = `manifoldCrossSection-${Math.random()}`;
-
             const decompsoedPolygons = decomposedManifold as Inputs.Base.Vector2[][];
-            const polylines = decompsoedPolygons.map(polygon => ({
-                points: polygon.map(p => [p[0], p[1], 0] as Inputs.Base.Point3),
-                isClosed: true
-            }));
-            const polylineMesh = this.drawPolylinesWithColours({
-                polylinesMesh: undefined,
-                polylines,
-                updatable: false,
-                size: inputs.crossSectionWidth,
-                opacity: inputs.crossSectionOpacity,
-                colours: inputs.crossSectionColour
-            });
-            polylineMesh.parent = group;
-            this.context.scene.add(group);
-            return group;
+            if (decompsoedPolygons.length > 0) {
+
+                const group = new Group();
+                group.name = `manifoldCrossSection-${Math.random()}`;
+                const polylines = decompsoedPolygons.map(polygon => ({
+                    points: polygon.map(p => [p[0], p[1], 0] as Inputs.Base.Point3),
+                    isClosed: true
+                }));
+                const polylineMesh = this.drawPolylinesWithColours({
+                    polylinesMesh: undefined,
+                    polylines,
+                    updatable: false,
+                    size: options.crossSectionWidth,
+                    opacity: options.crossSectionOpacity,
+                    colours: options.crossSectionColour
+                });
+                polylineMesh.parent = group;
+                this.context.scene.add(group);
+                return group;
+            }
+            else {
+                return undefined;
+            }
         }
 
+    }
+
+    // sometimes we must delete face material property for the web worker not to complain about complex (circular) objects and use cloned object later
+    private deleteFaceMaterialForWorker(inputs: any) {
+        const options = { ...inputs };
+        if (inputs.faceMaterial) {
+            delete inputs.faceMaterial;
+        }
+        return options;
     }
 }

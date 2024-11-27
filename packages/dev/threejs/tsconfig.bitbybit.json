@@ -19,23 +19,53 @@
         "allowJs": true,
         "emitDeclarationOnly": false,
         "paths": {
+            "@bitbybit-dev/base": [
+                "../base/dist"
+            ],
+            "@bitbybit-dev/base/*": [
+                "../base/dist/*"
+            ],
             "@bitbybit-dev/core": [
                 "../core/dist"
             ],
             "@bitbybit-dev/core/*": [
                 "../core/dist/*"
             ],
+            "@bitbybit-dev/jscad": [
+                "../manifold/dist"
+            ],
+            "@bitbybit-dev/jscad/*": [
+                "../jscad/dist/*"
+            ],
+            "@bitbybit-dev/jscad-worker": [
+                "../jscad-worker/dist"
+            ],
+            "@bitbybit-dev/jscad-worker/*": [
+                "../jscad-worker/dist/*"
+            ],
+            "@bitbybit-dev/manifold": [
+                "../manifold/dist"
+            ],
+            "@bitbybit-dev/manifold/*": [
+                "../manifold/dist/*"
+            ],
+            "@bitbybit-dev/manifold-worker": [
+                "../manifold-worker/dist"
+            ],
+            "@bitbybit-dev/manifold-worker/*": [
+                "../manifold-worker/dist/*"
+            ],
             "@bitbybit-dev/occt": [
-                "../../../../bitbybit-occt/dist",
+                "../../../../bitbybit-occt/dist"
             ],
             "@bitbybit-dev/occt/*": [
-                "../../../../bitbybit-occt/dist/*",
-            ],
-            "@bitbybit-dev/occt-worker": [
-                "../../../../bitbybit-occt-worker/dist",
+                "../../../../bitbybit-occt/dist/*"
             ],
             "@bitbybit-dev/occt-worker/*": [
-                "../../../../bitbybit-occt-worker/dist/*",
+                "../../../../bitbybit-occt-worker/dist/*"
+            ],
+            "@bitbybit-dev/occt-worker": [
+                "../../../../bitbybit-occt-worker/dist"
             ]
         },
         "lib": [

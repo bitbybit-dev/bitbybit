@@ -1252,6 +1252,27 @@ export namespace Manifold {
          */
         originOffset = 0;
     }
+    export class SplitByPlaneOnOffsetsDto<T> {
+        constructor(manifold?: T, normal?: Base.Vector3, originOffsets?: number[]) {
+            if (manifold !== undefined) { this.manifold = manifold; }
+            if (normal !== undefined) { this.normal = normal; }
+            if (originOffsets !== undefined) { this.originOffsets = originOffsets; }
+        }
+        /**
+         * Manifold that will be split
+         */
+        manifold: T;
+        /**
+         * The normal vector of the plane to be mirrored over
+         * @default [1,0,0]
+         */
+        normal: Base.Vector3 = [1, 0, 0];
+        /**
+         * The offsets from the origin
+         * @default [0]
+         */
+        originOffsets = [0];
+    }
     export class ManifoldsDto<T> {
         constructor(manifolds?: T[]) {
             if (manifolds !== undefined) { this.manifolds = manifolds; }
