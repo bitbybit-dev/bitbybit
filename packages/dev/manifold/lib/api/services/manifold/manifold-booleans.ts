@@ -22,15 +22,27 @@ export class ManifoldBooleans {
 
         const clone = inputs.manifold.asOriginal();
         const remainders = [clone];
+        const junk = [];
 
-        // original should not be deleted
         inputs.originOffsets.forEach((s, i) => {
-            const halfs = remainders[i].splitByPlane(inputs.normal, s);
-            pieces.push(halfs[1]);
-            remainders.push(halfs[0]);
+            if (remainders[i]) {
+                const halfs = remainders[i].splitByPlane(inputs.normal, s);
+                if (!halfs[1].isEmpty() && !halfs[0].isEmpty()) {
+                    pieces.push(halfs[1]);
+                    remainders.push(halfs[0]);
+                } else if (halfs[1].isEmpty() && !halfs[0].isEmpty()) {
+                    remainders.push(halfs[0]);
+                    junk.push(halfs[1]);
+                } else if (!halfs[1].isEmpty() && halfs[0].isEmpty()) {
+                    pieces.push(halfs[1]);
+                    junk.push(halfs[0]);
+                } else if (halfs[0].isEmpty() && halfs[1].isEmpty()) {
+                    junk.push(...halfs);
+                }
+            }
         });
-        // release remainders
         remainders.forEach(r => r.delete());
+        junk.forEach(j => j.delete());
         return pieces;
     }
 
