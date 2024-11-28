@@ -8,7 +8,7 @@
         "ci-occt": "cd packages/dev/occt && npm ci",
         "ci-core": "cd packages/dev/core && npm ci",
         "ci-jscad": "cd packages/dev/jscad && npm ci",
-        "ci-manifold": "cd packages/dev/manifold && ci",
+        "ci-manifold": "cd packages/dev/manifold && npm ci",
         "ci-packages": "npm run ci-base && npm run ci-occt && npm run ci-core && npm run ci-jscad && npm run ci-manifold",
         "test-base": "cd packages/dev/base && npm run test-c",
         "test-occt": "cd packages/dev/occt && npm run test-c",
