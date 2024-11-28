@@ -13,23 +13,24 @@ https://github.com/bitbybit-dev/bitbybit/tree/master/packages/dev/manifold
 ## NPM
 https://www.npmjs.com/package/@bitbybit-dev/manifold
 
-## THREEJS Example Applications
-Vase   
-https://app-store.bitbybit.dev/vase   
-Github Source Code - https://github.com/bitbybit-dev/app-examples/tree/main/react/threejs/vase   
+## THREEJS Example Applications Using Manifold  
+[Manifold Sliced Mesh](https://app-store.bitbybit.dev/manifold-sliced-mesh/)   
+[Github Source Code](https://github.com/bitbybit-dev/app-examples/blob/main/webpack/threejs/src/code/manifold-sliced-mesh.ts)   
+
+## Other THREEJS Applications   
+[Vase](https://app-store.bitbybit.dev/vase)
+[Github source code](https://github.com/bitbybit-dev/app-examples/tree/main/react/threejs/vase)
 
 ## Other Example Applications
-Laptop Holder   
-https://app-store.bitbybit.dev/laptop-holder    
-Github Source Code Angular - https://github.com/bitbybit-dev/app-examples/tree/main/angular/laptop-holder   
-Github Source Code React - https://github.com/bitbybit-dev/app-examples/tree/main/react/laptop-holder   
+[Laptop Holder](https://app-store.bitbybit.dev/laptop-holder)   
+[Github Source Code Angular](https://github.com/bitbybit-dev/app-examples/tree/main/angular/laptop-holder)   
+[Github Source Code React](https://github.com/bitbybit-dev/app-examples/tree/main/react/laptop-holder)   
   
-Cup Configurator    
-https://app-store.bitbybit.dev/cup
-Github Source Code - https://github.com/bitbybit-dev/app-examples/tree/main/react/cup  
+[Cup Configurator](https://app-store.bitbybit.dev/cup)    
+[Github Source Code](https://github.com/bitbybit-dev/app-examples/tree/main/react/cup)
 
 ## Closed Source Example Applications
-https://app-store.bitbybit.dev/terrace-furniture
+[Terrace Furniture](https://app-store.bitbybit.dev/terrace-furniture)
 
 ## Build package
 npm run build-p
