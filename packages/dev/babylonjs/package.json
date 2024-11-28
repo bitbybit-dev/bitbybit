@@ -44,7 +44,7 @@
         "build-p": "npm run build && npm run copy-package && npm run copy-readme && npm run delete-coverage",
         "copy-package": "cp -R ./package.json ./dist",
         "copy-readme": "cp -R ./README.md ./dist && cp -R ./LICENSE ./dist",
-        "delete-coverage": "rm -R ./dist/coverage",
+        "delete-coverage": "rm -rf ./dist/coverage || true",
         "test": "set NODE_OPTIONS=--experimental-specifier-resolution=node && jest --watchAll=true",
         "test-c": "set NODE_OPTIONS=--experimental-specifier-resolution=node && jest --coverage --watchAll=false",
         "test-c-l": "set NODE_OPTIONS=--experimental-specifier-resolution=node && jest --coverage --watchAll=true"

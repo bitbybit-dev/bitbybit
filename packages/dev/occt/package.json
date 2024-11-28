@@ -21,7 +21,7 @@
         "copy-package": "cp -R ./package.json ./dist/package.json",
         "copy-occt": "cp -R ./bitbybit-dev-occt ./dist",
         "copy-readme-license": "cp -R ./README.md ./dist && cp -R ./LICENSE ./dist",
-        "delete-coverage": "rm -R ./dist/coverage",
+        "delete-coverage": "rm -rf ./dist/coverage || true",
         "build-occt": "node generate-prod-build-yaml.js && cd bitbybit-dev-occt && docker run --rm -it -v \"$(pwd):/src\" -u \"$(id -u):$(id -g)\" donalffons/opencascade.js bitbybit-dev-occt.yml && cd ../",
         "build-occt-multithreaded": "node generate-prod-build-yaml-multithreaded.js && cd bitbybit-dev-occt-multithreaded && docker run --rm -it -v \"$(pwd):/src\" -u \"$(id -u):$(id -g)\" donalffons/opencascade.js:multi-threaded bitbybit-dev-occt.yml && cd ../",
         "test": "set NODE_OPTIONS=--experimental-specifier-resolution=node && jest --watchAll=true",
