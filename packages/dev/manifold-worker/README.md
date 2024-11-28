@@ -2,34 +2,35 @@
 
 <img src="https://app.bitbybit.dev/assets/git-cover.png" alt="Picture showing bitbybit.dev platform">
 
-This project exposes 3D algorithms based on manifold-3d 3D CAD kernel via webworker. Manifold project is developed by Emmett Lalish, you can find it on https://github.com/elalish/manifold. Bit By Bit Developers platform integrates this kernel into it's platform via this library. Currently we try to expose Manifold library 1:1 in terms of functionality through our structured API, but as time goes we will have more unique algorithms in this package, which will be tuned specifically to our users.
+This project exposes 3D algorithms based on manifold-3d 3D CAD kernel via webworker. Manifold project is developed by Emmett Lalish and Chun Kit LAM, you can find it on https://github.com/elalish/manifold. Bit By Bit Developers platform integrates this kernel into it's platform via this library. Currently we try to expose Manifold library 1:1 in terms of functionality through our structured API, but as time goes we will have more unique algorithms in this package, which will be tuned specifically to our users.
 
 This package should be used in browser based applications. If you want to use our manifold library in Node apps, consider checking @bitbybit-dev/manifold npm package, which this library wraps through webworker.
 
 Visit https://bitbybit.dev to use our full cloud platform.
 
 ## Github
-https://github.com/bitbybit-dev/bitbybit/tree/master/packages/dev/manifold
+https://github.com/bitbybit-dev/bitbybit/tree/master/packages/dev/manifold-worker
 ## NPM
-https://www.npmjs.com/package/@bitbybit-dev/manifold
+https://www.npmjs.com/package/@bitbybit-dev/manifold-worker
 
-## THREEJS Example Applications
-Vase   
-https://app-store.bitbybit.dev/vase   
-Github Source Code - https://github.com/bitbybit-dev/app-examples/tree/main/react/threejs/vase   
+## THREEJS Example Applications Using Manifold  
+[Manifold Sliced Mesh](https://app-store.bitbybit.dev/manifold-sliced-mesh/)   
+[Github Source Code](https://github.com/bitbybit-dev/app-examples/blob/main/webpack/threejs/src/code/manifold-sliced-mesh.ts)   
+
+## Other THREEJS Applications   
+[Vase](https://app-store.bitbybit.dev/vase)
+[Github source code](https://github.com/bitbybit-dev/app-examples/tree/main/react/threejs/vase)
 
 ## Other Example Applications
-Laptop Holder   
-https://app-store.bitbybit.dev/laptop-holder    
-Github Source Code Angular - https://github.com/bitbybit-dev/app-examples/tree/main/angular/laptop-holder   
-Github Source Code React - https://github.com/bitbybit-dev/app-examples/tree/main/react/laptop-holder   
+[Laptop Holder](https://app-store.bitbybit.dev/laptop-holder)   
+[Github Source Code Angular](https://github.com/bitbybit-dev/app-examples/tree/main/angular/laptop-holder)   
+[Github Source Code React](https://github.com/bitbybit-dev/app-examples/tree/main/react/laptop-holder)   
   
-Cup Configurator    
-https://app-store.bitbybit.dev/cup
-Github Source Code - https://github.com/bitbybit-dev/app-examples/tree/main/react/cup  
+[Cup Configurator](https://app-store.bitbybit.dev/cup)    
+[Github Source Code](https://github.com/bitbybit-dev/app-examples/tree/main/react/cup)
 
 ## Closed Source Example Applications
-https://app-store.bitbybit.dev/terrace-furniture
+[Terrace Furniture](https://app-store.bitbybit.dev/terrace-furniture)
 
 ## Build package
 npm run build-p

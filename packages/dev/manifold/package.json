@@ -74,6 +74,7 @@
         "@babel/core": "7.16.0",
         "@babel/preset-env": "7.16.0",
         "@babel/preset-typescript": "7.16.0",
+        "babel-plugin-transform-import-meta": "2.2.1",
         "jest-html-reporters": "3.0.11"
     },
     "jest": {

@@ -1,0 +1,39 @@
+{
+    "name": "bitbybit",
+    "version": "0.19.0",
+    "description": "Monorepo for browser CAD which holds bitbybit.dev npm packages",
+    "main": "index.js",
+    "scripts": {
+        "test-base": "cd packages/dev/base && npm run test-c",
+        "test-occt": "cd packages/dev/occt && npm run test-c",
+        "test-core": "cd packages/dev/core && npm run test-c",
+        "test-jscad": "cd packages/dev/jscad && npm run test-c",
+        "test-manifold": "cd packages/dev/manifold && npm run test-c",
+        "test": "npm run test-occt && npm run test-base && npm run test-core && npm run test-jscad && npm run test-manifold"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/bitbybit-dev/bitbybit.git"
+    },
+    "keywords": [
+        "CAD",
+        "3D",
+        "Geometry",
+        "OCCT",
+        "JSCAD",
+        "Manifold",
+        "ThreeJS",
+        "BabylonJS",
+        "Automotive",
+        "AEC"
+    ],
+    "author": "Bit By Bit Developers",
+    "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/bitbybit-dev/bitbybit/issues"
+    },
+    "homepage": "https://bitbybit.dev",
+    "devDependencies": {
+        "typescript": "^4.3.5"
+    }
+}
