@@ -2,7 +2,7 @@
 
 <img src="https://app.bitbybit.dev/assets/git-cover.png" alt="Picture showing bitbybit.dev platform">
 
-This project exposes 3D algorithms based on manifold-3d 3D CAD kernel, developed by Emmett Lalish, which you can find on https://github.com/elalish/manifold. Bit By Bit Developers platform integrates this kernel into it's platform via this library. Currently we try to expose Manifold library 1:1 in terms of functionality through our structured API, but as time goes we will have more unique algorithms in this package, which will be tuned specifically to our users.
+This project exposes 3D algorithms based on manifold-3d 3D CAD kernel, developed by Emmett Lalish and Chun Kit LAM, which you can find on https://github.com/elalish/manifold. Bit By Bit Developers platform integrates this kernel into it's platform via this library. Currently we try to expose Manifold library 1:1 in terms of functionality through our structured API, but as time goes we will have more unique algorithms in this package, which will be tuned specifically to our users.
 
 This package should work in Node and browser based applications. If you want to use this package in your browser based applications we highly suggest to use @bitbybit-dev/manifold-webworker npm package, which wraps this lib into promisified non-blocking API.
 
