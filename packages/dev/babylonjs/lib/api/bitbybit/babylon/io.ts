@@ -1,8 +1,7 @@
 import * as Inputs from "../../inputs/inputs";
-import { GLTF2Export } from "@babylonjs/serializers/glTF/2.0";
+import * as SERIALIZERS from "@babylonjs/serializers";
 import * as BABYLON from "@babylonjs/core";
 import { Context } from "../../context";
-import { STLExport } from "@babylonjs/serializers";
 
 export class BabylonIO {
 
@@ -130,7 +129,7 @@ export class BabylonIO {
                 }
             };
         }
-        GLTF2Export.GLBAsync(this.context.scene, inputs.fileName, options).then((glb) => {
+        SERIALIZERS.GLTF2Export.GLBAsync(this.context.scene, inputs.fileName, options).then((glb) => {
             glb.downloadFiles();
         });
     }
@@ -149,7 +148,7 @@ export class BabylonIO {
         }
         let meshes: BABYLON.Mesh[] = [inputs.mesh, ...childrenMeshes];
         meshes = meshes.filter(m => m.isVisible);
-        STLExport.CreateSTL(meshes as BABYLON.Mesh[], true, inputs.fileName, true, true, true);
+        SERIALIZERS.STLExport.CreateSTL(meshes as BABYLON.Mesh[], true, inputs.fileName, true, true, true);
         return Promise.resolve({});
     }
 
@@ -173,7 +172,7 @@ export class BabylonIO {
             }
         });
         
-        STLExport.CreateSTL(meshes as BABYLON.Mesh[], true, inputs.fileName, true, true, true);
+        SERIALIZERS.STLExport.CreateSTL(meshes as BABYLON.Mesh[], true, inputs.fileName, true, true, true);
         return Promise.resolve({});
     }
 

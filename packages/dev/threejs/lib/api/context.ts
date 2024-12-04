@@ -1,6 +1,6 @@
 import { ContextBase } from "@bitbybit-dev/core";
-import { Scene } from "three";
+import * as THREEJS from "three";
 
 export class Context extends ContextBase {
-    scene: Scene;
+    scene: THREEJS.Scene;
 }

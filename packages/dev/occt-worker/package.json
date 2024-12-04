@@ -1,6 +1,6 @@
 {
     "name": "@bitbybit-dev/occt-worker",
-    "version": "0.19.0",
+    "version": "0.19.1",
     "description": "Bit By Bit Developers CAD algorithms using OpenCascade Technology kernel adapted for WebWorker",
     "main": "index.js",
     "repository": {
@@ -45,7 +45,7 @@
         "build-p": "npm run build && npm run copy-package && npm run copy-readme-license && npm run delete-coverage",
         "copy-package": "cp -R ./package.json ./dist",
         "copy-readme-license": "cp -R ./README.md ./dist && cp -R ./LICENSE ./dist",
-        "delete-coverage": "rm -R ./dist/coverage",
+        "delete-coverage": "rm -rf ./dist/coverage || true",
         "docs": "./node_modules/.bin/sass ts-doc-theme/assets/css/main.sass ts-doc-theme/assets/css/main.css && node_modules/.bin/typedoc --out ts-api-docs/ lib/api --theme ./ts-doc-theme --excludePrivate --tsconfig lib/api/tsconfig.bbb.json --media assets/images/blockly-block-images/",
         "test": "set NODE_OPTIONS=--experimental-specifier-resolution=node && jest --watchAll=true",
         "test-c": "set NODE_OPTIONS=--experimental-specifier-resolution=node && jest --coverage --watchAll=false",
@@ -56,7 +56,7 @@
     "types": "./index.d.ts",
     "type": "module",
     "dependencies": {
-        "@bitbybit-dev/occt": "0.19.0",
+        "@bitbybit-dev/occt": "0.19.1",
         "rxjs": "7.5.5"
     },
     "devDependencies": {

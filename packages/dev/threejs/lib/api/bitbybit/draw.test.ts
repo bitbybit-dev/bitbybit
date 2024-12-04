@@ -1,31 +1,37 @@
-import { GeometryHelper, JSCADText, MathBitByBit, Tag, Vector } from "@bitbybit-dev/core";
+import { Tag } from "@bitbybit-dev/core";
+import { JSCADText } from "@bitbybit-dev/jscad-worker";
+import { GeometryHelper, MathBitByBit, Vector } from "@bitbybit-dev/base";
 import { Context } from "../context";
 import { DrawHelper } from "../draw-helper";
 import { Draw } from "./draw";
-import { JSCADWorkerManager } from "@bitbybit-dev/core/lib/workers";
+import { JSCADWorkerManager } from "@bitbybit-dev/jscad-worker";
 import { OCCTWorkerManager } from "@bitbybit-dev/occt-worker/lib";
 import { InstancedMesh, LineSegments, Mesh, MeshPhongMaterial, Scene } from "three";
 import * as Inputs from "../inputs";
+import { ManifoldWorkerManager } from "@bitbybit-dev/manifold-worker";
 
 describe("Draw unit tests", () => {
     let draw: Draw;
     let tag: Tag;
     let occtWorkerManager: OCCTWorkerManager;
     let jscadWorkerManager: JSCADWorkerManager;
+    let manifoldWorkerManager: ManifoldWorkerManager;
     let vector: Vector;
 
     beforeAll(async () => {
         const context = new Context();
         jscadWorkerManager = new JSCADWorkerManager();
         occtWorkerManager = new OCCTWorkerManager();
+        manifoldWorkerManager = new ManifoldWorkerManager();
 
         const solidText = new JSCADText(jscadWorkerManager);
+
         const math = new MathBitByBit();
         const geometryHelper = new GeometryHelper();
 
-        vector = new Vector(context, math, geometryHelper);
+        vector = new Vector(math, geometryHelper);
 
-        const drawHelper = new DrawHelper(context, solidText, vector, jscadWorkerManager, occtWorkerManager);
+        const drawHelper = new DrawHelper(context, solidText, vector, jscadWorkerManager, manifoldWorkerManager, occtWorkerManager);
         context.scene = new Scene();
         tag = new Tag(context);
         draw = new Draw(drawHelper, context, tag);

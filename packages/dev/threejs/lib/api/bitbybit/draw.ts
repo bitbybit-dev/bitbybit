@@ -1,4 +1,4 @@
-import { Group } from "three";
+import * as THREEJS from "three";
 import { DrawCore, Tag } from "@bitbybit-dev/core";
 import * as Inputs from "../inputs";
 import { Base } from "@bitbybit-dev/core/lib/api/inputs/base-inputs";
@@ -14,14 +14,14 @@ export class Draw extends DrawCore {
     };
 
     constructor(
-        private readonly drawHelper: DrawHelper,
-        private readonly context: Context,
-        private readonly tag: Tag
+        public readonly drawHelper: DrawHelper,
+        public readonly context: Context,
+        public readonly tag: Tag
     ) {
         super();
     }
 
-    async drawAnyAsync(inputs: Inputs.Draw.DrawAny<Group>): Promise<Group> {
+    async drawAnyAsync(inputs: Inputs.Draw.DrawAny<THREEJS.Group>): Promise<THREEJS.Group> {
         const entity = inputs.entity;
         if (entity === undefined || (Array.isArray(entity) && entity.length === 0)) {
             return Promise.resolve(undefined);
@@ -52,7 +52,7 @@ export class Draw extends DrawCore {
      * @group draw sync
      * @shortname draw sync
      */
-    drawAny(inputs: Inputs.Draw.DrawAny<Group>): Group {
+    drawAny(inputs: Inputs.Draw.DrawAny<THREEJS.Group>): THREEJS.Group {
         let result;
         const entity = inputs.entity;
         if (!inputs.group) {
@@ -88,7 +88,7 @@ export class Draw extends DrawCore {
         return result;
     }
 
-    private handleJscadMesh(inputs: Inputs.Draw.DrawAny<Group>): Promise<Group> {
+    private handleJscadMesh(inputs: Inputs.Draw.DrawAny<THREEJS.Group>): Promise<THREEJS.Group> {
         return this.handleAsync(inputs, this.defaultPolylineOptions, (options) => {
             return this.drawHelper.drawSolidOrPolygonMesh({
                 jscadMesh: inputs.group,
@@ -98,7 +98,7 @@ export class Draw extends DrawCore {
         }, Inputs.Draw.drawingTypes.jscadMesh);
     }
 
-    private handleJscadMeshes(inputs: Inputs.Draw.DrawAny<Group>): Promise<Group> {
+    private handleJscadMeshes(inputs: Inputs.Draw.DrawAny<THREEJS.Group>): Promise<THREEJS.Group> {
         return this.handleAsync(inputs, this.defaultPolylineOptions, (options) => {
             return this.drawHelper.drawSolidOrPolygonMeshes({
                 jscadMesh: inputs.group,
@@ -108,7 +108,7 @@ export class Draw extends DrawCore {
         }, Inputs.Draw.drawingTypes.jscadMeshes);
     }
 
-    private handleManifoldShape(inputs: Inputs.Draw.DrawAny<Group>): Promise<Group> {
+    private handleManifoldShape(inputs: Inputs.Draw.DrawAny<THREEJS.Group>): Promise<THREEJS.Group> {
         return this.handleAsync(inputs, new Inputs.Manifold.DrawManifoldOrCrossSectionDto(inputs.entity), (options) => {
             return this.drawHelper.drawManifoldOrCrossSection({
                 manifoldOrCrossSection: inputs.entity as Inputs.Manifold.ManifoldPointer | Inputs.Manifold.CrossSectionPointer,
@@ -118,7 +118,7 @@ export class Draw extends DrawCore {
         }, Inputs.Draw.drawingTypes.occt);
     }
 
-    private handleManifoldShapes(inputs: Inputs.Draw.DrawAny<Group>): Promise<Group> {
+    private handleManifoldShapes(inputs: Inputs.Draw.DrawAny<THREEJS.Group>): Promise<THREEJS.Group> {
         return this.handleAsync(inputs, new Inputs.Manifold.DrawManifoldOrCrossSectionDto(inputs.entity), (options) => {
             return this.drawHelper.drawManifoldsOrCrossSections({
                 manifoldsOrCrossSections: inputs.entity as (Inputs.Manifold.ManifoldPointer | Inputs.Manifold.CrossSectionPointer)[],
@@ -128,7 +128,7 @@ export class Draw extends DrawCore {
         }, Inputs.Draw.drawingTypes.occt);
     }
 
-    private handleOcctShape(inputs: Inputs.Draw.DrawAny<Group>): Promise<Group> {
+    private handleOcctShape(inputs: Inputs.Draw.DrawAny<THREEJS.Group>): Promise<THREEJS.Group> {
         return this.handleAsync(inputs, new Inputs.OCCT.DrawShapeDto(inputs.entity), (options) => {
             return this.drawHelper.drawShape({
                 shape: inputs.entity as Inputs.OCCT.TopoDSShapePointer,
@@ -138,7 +138,7 @@ export class Draw extends DrawCore {
         }, Inputs.Draw.drawingTypes.occt);
     }
 
-    private handleOcctShapes(inputs: Inputs.Draw.DrawAny<Group>): Promise<Group> {
+    private handleOcctShapes(inputs: Inputs.Draw.DrawAny<THREEJS.Group>): Promise<THREEJS.Group> {
         return this.handleAsync(inputs, new Inputs.OCCT.DrawShapeDto(inputs.entity), (options) => {
             return this.drawHelper.drawShapes({
                 shapes: inputs.entity as Inputs.OCCT.TopoDSShapePointer[],
@@ -148,7 +148,7 @@ export class Draw extends DrawCore {
         }, Inputs.Draw.drawingTypes.occtShapes);
     }
 
-    private handleLine(inputs: Inputs.Draw.DrawAny<Group>): Group {
+    private handleLine(inputs: Inputs.Draw.DrawAny<THREEJS.Group>): THREEJS.Group {
         return this.handle(inputs, this.defaultPolylineOptions, (options) => {
             const line = inputs.entity as Inputs.Base.Line3;
             return this.drawHelper.drawPolylinesWithColours({
@@ -159,7 +159,7 @@ export class Draw extends DrawCore {
         }, Inputs.Draw.drawingTypes.line);
     }
 
-    private handlePoint(inputs: Inputs.Draw.DrawAny<Group>) {
+    private handlePoint(inputs: Inputs.Draw.DrawAny<THREEJS.Group>) {
         return this.handle(inputs, this.defaultBasicOptions, (options) => {
             return this.drawHelper.drawPoint({
                 pointMesh: inputs.group,
@@ -169,7 +169,7 @@ export class Draw extends DrawCore {
         }, Inputs.Draw.drawingTypes.point);
     }
 
-    private handlePolyline(inputs: Inputs.Draw.DrawAny<Group>): Group {
+    private handlePolyline(inputs: Inputs.Draw.DrawAny<THREEJS.Group>): THREEJS.Group {
         return this.handle(inputs, this.defaultPolylineOptions, (options) => {
             return this.drawHelper.drawPolylineClose({
                 polylineMesh: inputs.group,
@@ -179,7 +179,7 @@ export class Draw extends DrawCore {
         }, Inputs.Draw.drawingTypes.polyline);
     }
 
-    private handleVerbCurve(inputs: Inputs.Draw.DrawAny<Group>): Group {
+    private handleVerbCurve(inputs: Inputs.Draw.DrawAny<THREEJS.Group>): THREEJS.Group {
         return this.handle(inputs, this.defaultPolylineOptions, (options) => {
             return this.drawHelper.drawCurve({
                 curveMesh: inputs.group,
@@ -189,7 +189,7 @@ export class Draw extends DrawCore {
         }, Inputs.Draw.drawingTypes.verbCurve);
     }
 
-    private handleVerbSurface(inputs: Inputs.Draw.DrawAny<Group>): Group {
+    private handleVerbSurface(inputs: Inputs.Draw.DrawAny<THREEJS.Group>): THREEJS.Group {
         return this.handle(inputs, this.defaultPolylineOptions, (options) => {
             return this.drawHelper.drawSurface({
                 surfaceMesh: inputs.group,
@@ -199,7 +199,7 @@ export class Draw extends DrawCore {
         }, Inputs.Draw.drawingTypes.verbSurface);
     }
 
-    private handlePolylines(inputs: Inputs.Draw.DrawAny<Group>): Group {
+    private handlePolylines(inputs: Inputs.Draw.DrawAny<THREEJS.Group>): THREEJS.Group {
         return this.handle(inputs, this.defaultPolylineOptions, (options) => {
             return this.drawHelper.drawPolylinesWithColours({
                 polylinesMesh: inputs.group,
@@ -209,7 +209,7 @@ export class Draw extends DrawCore {
         }, Inputs.Draw.drawingTypes.polylines);
     }
 
-    private handleLines(inputs: Inputs.Draw.DrawAny<Group>): Group {
+    private handleLines(inputs: Inputs.Draw.DrawAny<THREEJS.Group>): THREEJS.Group {
         return this.handle(inputs, this.defaultPolylineOptions, (options) => {
             const lines = inputs.entity as Inputs.Base.Line3[];
             return this.drawHelper.drawPolylinesWithColours({
@@ -220,7 +220,7 @@ export class Draw extends DrawCore {
         }, Inputs.Draw.drawingTypes.lines);
     }
 
-    private handlePoints(inputs: Inputs.Draw.DrawAny<Group>): Group {
+    private handlePoints(inputs: Inputs.Draw.DrawAny<THREEJS.Group>): THREEJS.Group {
         return this.handle(inputs, this.defaultPolylineOptions, (options) => {
             return this.drawHelper.drawPoints({
                 pointsMesh: inputs.group,
@@ -230,7 +230,7 @@ export class Draw extends DrawCore {
         }, Inputs.Draw.drawingTypes.points);
     }
 
-    private handleVerbCurves(inputs: Inputs.Draw.DrawAny<Group>) {
+    private handleVerbCurves(inputs: Inputs.Draw.DrawAny<THREEJS.Group>) {
         return this.handle(inputs, this.defaultPolylineOptions, (options) => {
             return this.drawHelper.drawCurves({
                 curvesMesh: inputs.group,
@@ -240,7 +240,7 @@ export class Draw extends DrawCore {
         }, Inputs.Draw.drawingTypes.verbCurves);
     }
 
-    private handleVerbSurfaces(inputs: Inputs.Draw.DrawAny<Group>): Group {
+    private handleVerbSurfaces(inputs: Inputs.Draw.DrawAny<THREEJS.Group>): THREEJS.Group {
         return this.handle(inputs, this.defaultBasicOptions, (options) => {
             return this.drawHelper.drawSurfacesMultiColour({
                 surfacesMesh: inputs.group,
@@ -250,7 +250,7 @@ export class Draw extends DrawCore {
         }, Inputs.Draw.drawingTypes.verbSurfaces);
     }
 
-    private handleTag(inputs: Inputs.Draw.DrawAny<Group>) {
+    private handleTag(inputs: Inputs.Draw.DrawAny<THREEJS.Group>) {
         const options = inputs.options ? inputs.options : {
             updatable: false,
         };
@@ -263,7 +263,7 @@ export class Draw extends DrawCore {
         return result;
     }
 
-    private handleTags(inputs: Inputs.Draw.DrawAny<Group>) {
+    private handleTags(inputs: Inputs.Draw.DrawAny<THREEJS.Group>) {
         const options = inputs.options ? inputs.options : {
             updatable: false,
         };
@@ -277,7 +277,7 @@ export class Draw extends DrawCore {
         return result;
     }
 
-    private updateAny(inputs: Inputs.Draw.DrawAny<Group>): Group {
+    private updateAny(inputs: Inputs.Draw.DrawAny<THREEJS.Group>): THREEJS.Group {
         let result;
         if (inputs.group && inputs.group.userData) {
             const type = inputs.group.userData.type as Inputs.Draw.drawingTypes;
@@ -325,7 +325,7 @@ export class Draw extends DrawCore {
         return result;
     }
 
-    private handle(inputs: Inputs.Draw.DrawAny<Group>, defaultOptions: Inputs.Draw.DrawOptions, action: (inputs) => Group, type: Inputs.Draw.drawingTypes): Group {
+    private handle(inputs: Inputs.Draw.DrawAny<THREEJS.Group>, defaultOptions: Inputs.Draw.DrawOptions, action: (inputs) => THREEJS.Group, type: Inputs.Draw.drawingTypes): THREEJS.Group {
         let options = inputs.options ? inputs.options : defaultOptions;
         if (!inputs.options && inputs.group && inputs.group.userData.options) {
             options = inputs.group.userData.options;
@@ -335,7 +335,7 @@ export class Draw extends DrawCore {
         return result;
     }
 
-    private async handleAsync(inputs: Inputs.Draw.DrawAny<Group>, defaultOptions: Inputs.Draw.DrawOptions, action: (inputs) => Promise<Group>, type: Inputs.Draw.drawingTypes): Promise<Group> {
+    private async handleAsync(inputs: Inputs.Draw.DrawAny<THREEJS.Group>, defaultOptions: Inputs.Draw.DrawOptions, action: (inputs) => Promise<THREEJS.Group>, type: Inputs.Draw.drawingTypes): Promise<THREEJS.Group> {
         let options = inputs.options ? inputs.options : defaultOptions;
         if (!inputs.options && inputs.group && inputs.group.userData.options) {
             options = inputs.group.userData.options;
@@ -347,7 +347,7 @@ export class Draw extends DrawCore {
         });
     }
 
-    private applyGlobalSettingsAndMetadataAndShadowCasting(type: Inputs.Draw.drawingTypes, options: Inputs.Draw.DrawOptions, result: Group | undefined) {
+    private applyGlobalSettingsAndMetadataAndShadowCasting(type: Inputs.Draw.drawingTypes, options: Inputs.Draw.DrawOptions, result: THREEJS.Group | undefined) {
         if (result) {
             const typemeta = { type, options };
             result.userData = result.userData ? { ...result.userData, ...typemeta } : typemeta;

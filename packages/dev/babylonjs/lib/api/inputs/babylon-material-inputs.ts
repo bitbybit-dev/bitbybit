@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-namespace */
 import * as BABYLON from "@babylonjs/core";
 import { Base } from "./base-inputs";
-import { SkyMaterial } from "@babylonjs/materials";
+import * as MATERIALS from "@babylonjs/materials";
 
 // tslint:disable-next-line: no-namespace
 export namespace BabylonMaterial {
@@ -97,14 +97,14 @@ export namespace BabylonMaterial {
         material: BABYLON.PBRMetallicRoughnessMaterial;
     }
     export class SkyMaterialPropDto {
-        constructor(skyMaterial?: SkyMaterial) {
+        constructor(skyMaterial?: MATERIALS.SkyMaterial) {
             if (skyMaterial !== undefined) { this.skyMaterial = skyMaterial; }
         }
         /**
          * Material to investigate
          * @default undefined
          */
-        skyMaterial: SkyMaterial;
+        skyMaterial: MATERIALS.SkyMaterial;
     }
     export class MetallicDto {
         constructor(material?: BABYLON.PBRMetallicRoughnessMaterial, metallic?: number) {
@@ -312,7 +312,7 @@ export namespace BabylonMaterial {
         dithering = false;
     }
     export class LuminanceDto {
-        constructor(material?: SkyMaterial, luminance?: number) {
+        constructor(material?: MATERIALS.SkyMaterial, luminance?: number) {
             if (material !== undefined) { this.material = material; }
             if (luminance !== undefined) { this.luminance = luminance; }
         }
@@ -320,7 +320,7 @@ export namespace BabylonMaterial {
          * Material to update
          * @default undefined
          */
-        material: SkyMaterial;
+        material: MATERIALS.SkyMaterial;
         /**
          * Defines the overall luminance of sky in interval ]0, 1[.
          * @default 1
@@ -331,7 +331,7 @@ export namespace BabylonMaterial {
         luminance?: number;
     }
     export class TurbidityDto {
-        constructor(material?: SkyMaterial, turbidity?: number) {
+        constructor(material?: MATERIALS.SkyMaterial, turbidity?: number) {
             if (material !== undefined) { this.material = material; }
             if (turbidity !== undefined) { this.turbidity = turbidity; }
         }
@@ -339,7 +339,7 @@ export namespace BabylonMaterial {
          * Material to update
          * @default undefined
          */
-        material: SkyMaterial;
+        material: MATERIALS.SkyMaterial;
         /**
          * Defines the amount (scattering) of haze as opposed to molecules in atmosphere.
          * @default 10
@@ -350,7 +350,7 @@ export namespace BabylonMaterial {
         turbidity?: number;
     }
     export class RayleighDto {
-        constructor(material?: SkyMaterial, rayleigh?: number) {
+        constructor(material?: MATERIALS.SkyMaterial, rayleigh?: number) {
             if (material !== undefined) { this.material = material; }
             if (rayleigh !== undefined) { this.rayleigh = rayleigh; }
         }
@@ -358,7 +358,7 @@ export namespace BabylonMaterial {
          * Material to update
          * @default undefined
          */
-        material: SkyMaterial;
+        material: MATERIALS.SkyMaterial;
         /**
          * Defines the sky appearance (light intensity).
          * @default 2
@@ -369,7 +369,7 @@ export namespace BabylonMaterial {
         rayleigh?: number;
     }
     export class MieCoefficientDto {
-        constructor(material?: SkyMaterial, mieCoefficient?: number) {
+        constructor(material?: MATERIALS.SkyMaterial, mieCoefficient?: number) {
             if (material !== undefined) { this.material = material; }
             if (mieCoefficient !== undefined) { this.mieCoefficient = mieCoefficient; }
         }
@@ -377,7 +377,7 @@ export namespace BabylonMaterial {
          * Material to update
          * @default undefined
          */
-        material: SkyMaterial;
+        material: MATERIALS.SkyMaterial;
         /**
          * Defines the mieCoefficient in interval [0, 0.1] which affects the property .mieDirectionalG.
          * @default 0.005
@@ -388,7 +388,7 @@ export namespace BabylonMaterial {
         mieCoefficient?: number;
     }
     export class MieDirectionalGDto {
-        constructor(material?: SkyMaterial, mieDirectionalG?: number) {
+        constructor(material?: MATERIALS.SkyMaterial, mieDirectionalG?: number) {
             if (material !== undefined) { this.material = material; }
             if (mieDirectionalG !== undefined) { this.mieDirectionalG = mieDirectionalG; }
         }
@@ -396,7 +396,7 @@ export namespace BabylonMaterial {
          * Material to update
          * @default undefined
          */
-        material: SkyMaterial;
+        material: MATERIALS.SkyMaterial;
         /**
          * Defines the amount of haze particles following the Mie scattering theory.
          * @default 0.8
@@ -407,7 +407,7 @@ export namespace BabylonMaterial {
         mieDirectionalG?: number;
     }
     export class DistanceDto {
-        constructor(material?: SkyMaterial, distance?: number) {
+        constructor(material?: MATERIALS.SkyMaterial, distance?: number) {
             if (material !== undefined) { this.material = material; }
             if (distance !== undefined) { this.distance = distance; }
         }
@@ -415,7 +415,7 @@ export namespace BabylonMaterial {
          * Material to update
          * @default undefined
          */
-        material: SkyMaterial;
+        material: MATERIALS.SkyMaterial;
         /**
          * Defines the distance of the sun according to the active scene camera.
          * @default 500
@@ -426,7 +426,7 @@ export namespace BabylonMaterial {
         distance?: number;
     }
     export class InclinationDto {
-        constructor(material?: SkyMaterial, inclination?: number) {
+        constructor(material?: MATERIALS.SkyMaterial, inclination?: number) {
             if (material !== undefined) { this.material = material; }
             if (inclination !== undefined) { this.inclination = inclination; }
         }
@@ -434,7 +434,7 @@ export namespace BabylonMaterial {
          * Material to update
          * @default undefined
          */
-        material: SkyMaterial;
+        material: MATERIALS.SkyMaterial;
         /**
          * Defines the sun inclination, in interval [-0.5, 0.5]. When the inclination is not 0, the sun is said
          * "inclined".
@@ -446,7 +446,7 @@ export namespace BabylonMaterial {
         inclination?: number;
     }
     export class AzimuthDto {
-        constructor(material?: SkyMaterial, azimuth?: number) {
+        constructor(material?: MATERIALS.SkyMaterial, azimuth?: number) {
             if (material !== undefined) { this.material = material; }
             if (azimuth !== undefined) { this.azimuth = azimuth; }
         }
@@ -454,7 +454,7 @@ export namespace BabylonMaterial {
          * Material to update
          * @default undefined
          */
-        material: SkyMaterial;
+        material: MATERIALS.SkyMaterial;
         /**
          * Defines the solar azimuth in interval [0, 1]. The azimuth is the angle in the horizontal plan between
          * an object direction and a reference direction.
@@ -466,7 +466,7 @@ export namespace BabylonMaterial {
         azimuth?: number;
     }
     export class SunPositionDto {
-        constructor(material?: SkyMaterial, sunPosition?: Base.Vector3) {
+        constructor(material?: MATERIALS.SkyMaterial, sunPosition?: Base.Vector3) {
             if (material !== undefined) { this.material = material; }
             if (sunPosition !== undefined) { this.sunPosition = sunPosition; }
         }
@@ -474,7 +474,7 @@ export namespace BabylonMaterial {
          * Material to update
          * @default undefined
          */
-        material: SkyMaterial;
+        material: MATERIALS.SkyMaterial;
         /**
          * Defines the sun position in the sky on (x,y,z). If the property .useSunPosition is set to false, then
          * the property is overridden by the inclination and the azimuth and can be read at any moment.
@@ -483,7 +483,7 @@ export namespace BabylonMaterial {
         sunPosition?: Base.Vector3;
     }
     export class UseSunPositionDto {
-        constructor(material?: SkyMaterial, useSunPosition?: boolean) {
+        constructor(material?: MATERIALS.SkyMaterial, useSunPosition?: boolean) {
             if (material !== undefined) { this.material = material; }
             if (useSunPosition !== undefined) { this.useSunPosition = useSunPosition; }
         }
@@ -491,7 +491,7 @@ export namespace BabylonMaterial {
          * Material to update
          * @default undefined
          */
-        material: SkyMaterial;
+        material: MATERIALS.SkyMaterial;
         /**
          * Defines if the sun position should be computed (inclination and azimuth) according to the given
          * .sunPosition property.
@@ -500,7 +500,7 @@ export namespace BabylonMaterial {
         useSunPosition?: boolean;
     }
     export class CameraOffsetDto {
-        constructor(material?: SkyMaterial, cameraOffset?: Base.Vector3) {
+        constructor(material?: MATERIALS.SkyMaterial, cameraOffset?: Base.Vector3) {
             if (material !== undefined) { this.material = material; }
             if (cameraOffset !== undefined) { this.cameraOffset = cameraOffset; }
         }
@@ -508,7 +508,7 @@ export namespace BabylonMaterial {
          * Material to update
          * @default undefined
          */
-        material: SkyMaterial;
+        material: MATERIALS.SkyMaterial;
         /**
          * Defines an offset vector used to get a horizon offset.
          * @example skyMaterial.cameraOffset.y = camera.globalPosition.y // Set horizon relative to 0 on the Y axis
@@ -517,7 +517,7 @@ export namespace BabylonMaterial {
         cameraOffset?: Base.Vector3;
     }
     export class UpDto {
-        constructor(material?: SkyMaterial, up?: Base.Vector3) {
+        constructor(material?: MATERIALS.SkyMaterial, up?: Base.Vector3) {
             if (material !== undefined) { this.material = material; }
             if (up !== undefined) { this.up = up; }
         }
@@ -525,7 +525,7 @@ export namespace BabylonMaterial {
          * Material to update
          * @default undefined
          */
-        material: SkyMaterial;
+        material: MATERIALS.SkyMaterial;
         /**
          * Defines the vector the skyMaterial should consider as up. (default is Vector3(0, 1, 0) as returned by Vector3.Up())
          * @default undefined
@@ -533,7 +533,7 @@ export namespace BabylonMaterial {
         up?: Base.Vector3;
     }
     export class DitheringDto {
-        constructor(material?: SkyMaterial, dithering?: boolean) {
+        constructor(material?: MATERIALS.SkyMaterial, dithering?: boolean) {
             if (material !== undefined) { this.material = material; }
             if (dithering !== undefined) { this.dithering = dithering; }
         }
@@ -541,7 +541,7 @@ export namespace BabylonMaterial {
          * Material to update
          * @default undefined
          */
-        material: SkyMaterial;
+        material: MATERIALS.SkyMaterial;
         /**
          * Defines if sky should be dithered.
          * @default false
