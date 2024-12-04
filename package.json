@@ -36,14 +36,16 @@
         "build-jscad": "cd packages/dev/jscad && npm run build-p",
         "build-manifold-worker": "cd packages/dev/manifold-worker && npm run build-p",
         "build-manifold": "cd packages/dev/manifold && npm run build-p",
-        "build-packages": "npm run build-base && npm run build-occt && npm run build-core && npm run build-jscad && npm run build-manifold",
-        "install-rebuild-all-packages": "npm run ci-packages && npm run rm-dist-packages && npm run build-packages",
+        "build-packages": "npm run build-base && npm run build-occt && npm run build-jscad && npm run build-manifold && npm run build-occt-worker && npm run build-jscad-worker && npm run build-manifold-worker && npm run build-core && npm run build-babylonjs && npm run build-threejs",
+        "rebuild-all-packages": "npm run rm-dist-packages && npm run build-packages", 
+        "install-rebuild-all-packages": "npm run ci-packages && npm run rebuild-all-packages",
         "test-base": "cd packages/dev/base && npm run test-c",
         "test-occt": "cd packages/dev/occt && npm run test-c",
         "test-core": "cd packages/dev/core && npm run test-c",
         "test-jscad": "cd packages/dev/jscad && npm run test-c",
         "test-manifold": "cd packages/dev/manifold && npm run test-c",
-        "test": "npm run test-occt && npm run test-base && npm run test-core && npm run test-jscad && npm run test-manifold"
+        "test-threejs": "cd packages/dev/threejs && npm run test-c",
+        "test": "npm run test-occt && npm run test-base && npm run test-core && npm run test-jscad && npm run test-manifold && npm run test-threejs"
     },
     "repository": {
         "type": "git",

@@ -18,7 +18,7 @@ describe("Draw unit tests", () => {
         const solidText = new JSCADText(jscadWorkerManager);
         const math = new MathBitByBit();
         const geometryHelper = new GeometryHelper();
-        const vector = new Vector(context, math, geometryHelper);
+        const vector = new Vector(math, geometryHelper);
         drawHelper = new DrawHelper(context, solidText, vector, jscadWorkerManager, manifoldWorkerManager, occtWorkerManager);
         context.scene = new Scene();
     });

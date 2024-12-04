@@ -1,20 +1,20 @@
-import { TransformNode } from "@babylonjs/core";
+import * as BABYLON from "@babylonjs/core";
 import { Base } from "./base-inputs";
 /* eslint-disable @typescript-eslint/no-namespace */
 export namespace BabylonNode {
 
     export class NodeDto {
-        constructor(node?: TransformNode) {
+        constructor(node?: BABYLON.TransformNode) {
             if (node !== undefined) { this.node = node; }
         }
         /**
          * Transformation node
          */
-        node: TransformNode;
+        node: BABYLON.TransformNode;
     }
 
     export class NodeTranslationDto {
-        constructor(node?: TransformNode, direction?: Base.Vector3, distance?: number) {
+        constructor(node?: BABYLON.TransformNode, direction?: Base.Vector3, distance?: number) {
             if (node !== undefined) { this.node = node; }
             if (direction !== undefined) { this.direction = direction; }
             if (distance !== undefined) { this.distance = distance; }
@@ -22,7 +22,7 @@ export namespace BabylonNode {
         /**
         * Transformation node
         */
-        node: TransformNode;
+        node: BABYLON.TransformNode;
         /**
          * Direction vector expressed in [x, y, z] vector array
          */
@@ -34,29 +34,29 @@ export namespace BabylonNode {
     }
 
     export class NodeParentDto {
-        constructor(node?: TransformNode, parentNode?: TransformNode) {
+        constructor(node?: BABYLON.TransformNode, parentNode?: BABYLON.TransformNode) {
             if (node !== undefined) { this.node = node; }
             if (parentNode !== undefined) { this.parentNode = parentNode; }
         }
         /**
         * Transformation node
         */
-        node: TransformNode;
+        node: BABYLON.TransformNode;
         /**
          * Parent node
          */
-        parentNode: TransformNode;
+        parentNode: BABYLON.TransformNode;
     }
 
     export class NodeDirectionDto {
-        constructor(node?: TransformNode, direction?: Base.Vector3) {
+        constructor(node?: BABYLON.TransformNode, direction?: Base.Vector3) {
             if (node !== undefined) { this.node = node; }
             if (direction !== undefined) { this.direction = direction; }
         }
         /**
         * Transformation node
         */
-        node: TransformNode;
+        node: BABYLON.TransformNode;
         /**
          * Direction vector expressed in [x, y, z] vector array
          */
@@ -64,14 +64,14 @@ export namespace BabylonNode {
     }
 
     export class NodePositionDto {
-        constructor(node?: TransformNode, position?: Base.Point3) {
+        constructor(node?: BABYLON.TransformNode, position?: Base.Point3) {
             if (node !== undefined) { this.node = node; }
             if (position !== undefined) { this.position = position; }
         }
         /**
         * Transformation node
         */
-        node: TransformNode;
+        node: BABYLON.TransformNode;
         /**
          * Position vector expressed in [x, y, z] vector array
          */
@@ -79,7 +79,7 @@ export namespace BabylonNode {
     }
 
     export class RotateNodeDto {
-        constructor(node?: TransformNode, axis?: Base.Vector3, angle?: number) {
+        constructor(node?: BABYLON.TransformNode, axis?: Base.Vector3, angle?: number) {
             if (node !== undefined) { this.node = node; }
             if (axis !== undefined) { this.axis = axis; }
             if (angle !== undefined) { this.angle = angle; }
@@ -87,7 +87,7 @@ export namespace BabylonNode {
         /**
        * Transformation node
        */
-        node: TransformNode;
+        node: BABYLON.TransformNode;
         /**
          * Rotate around the axis expressed in [x, y, z] vector array
          */
@@ -99,7 +99,7 @@ export namespace BabylonNode {
     }
 
     export class RotateAroundAxisNodeDto {
-        constructor(node?: TransformNode, position?: Base.Point3, axis?: Base.Vector3, angle?: number) {
+        constructor(node?: BABYLON.TransformNode, position?: Base.Point3, axis?: Base.Vector3, angle?: number) {
             if (node !== undefined) { this.node = node; }
             if (position !== undefined) { this.position = position; }
             if (axis !== undefined) { this.axis = axis; }
@@ -108,7 +108,7 @@ export namespace BabylonNode {
         /**
         * Transformation node
         */
-        node: TransformNode;
+        node: BABYLON.TransformNode;
         /**
          * Position vector expressed in [x, y, z] vector array
          */
@@ -124,7 +124,7 @@ export namespace BabylonNode {
     }
 
     export class CreateNodeFromRotationDto {
-        constructor(parent?: TransformNode, origin?: Base.Point3, rotation?: Base.Vector3) {
+        constructor(parent?: BABYLON.TransformNode, origin?: Base.Point3, rotation?: Base.Vector3) {
             if (parent !== undefined) { this.parent = parent; }
             if (origin !== undefined) { this.origin = origin; }
             if (rotation !== undefined) { this.rotation = rotation; }
@@ -132,7 +132,7 @@ export namespace BabylonNode {
         /**
          * Optional parent node
          */
-        parent: TransformNode | null;
+        parent: BABYLON.TransformNode | null;
         /**
          * Oirigin of the node
          */
@@ -144,7 +144,7 @@ export namespace BabylonNode {
     }
 
     export class DrawNodeDto {
-        constructor(node?: TransformNode, colorX?: string, colorY?: string, colorZ?: string, size?: number) {
+        constructor(node?: BABYLON.TransformNode, colorX?: string, colorY?: string, colorZ?: string, size?: number) {
             if (node !== undefined) { this.node = node; }
             if (colorX !== undefined) { this.colorX = colorX; }
             if (colorY !== undefined) { this.colorY = colorY; }
@@ -154,7 +154,7 @@ export namespace BabylonNode {
         /**
         * Transformation node
         */
-        node: TransformNode;
+        node: BABYLON.TransformNode;
         /**
          * Hex encoded color string for X axis
          */
@@ -174,7 +174,7 @@ export namespace BabylonNode {
     }
 
     export class DrawNodesDto {
-        constructor(nodes?: TransformNode[], colorX?: string, colorY?: string, colorZ?: string, size?: number) {
+        constructor(nodes?: BABYLON.TransformNode[], colorX?: string, colorY?: string, colorZ?: string, size?: number) {
             if (nodes !== undefined) { this.nodes = nodes; }
             if (colorX !== undefined) { this.colorX = colorX; }
             if (colorY !== undefined) { this.colorY = colorY; }
@@ -184,7 +184,7 @@ export namespace BabylonNode {
         /**
          * Nodes that will be drawn
          */
-        nodes: TransformNode[];
+        nodes: BABYLON.TransformNode[];
         /**
          * Hex encoded color string for X axis
          */

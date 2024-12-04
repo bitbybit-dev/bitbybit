@@ -1,10 +1,9 @@
 
 import { Context } from "../../context";
 import * as BABYLON from "@babylonjs/core";
+import * as GUI from "@babylonjs/gui";
 import * as Inputs from "../../inputs/inputs";
 import { Base } from "../../inputs/base-inputs";
-import { Scene } from "@babylonjs/core";
-import { GUI3DManager } from "@babylonjs/gui";
 
 
 export class BabylonScene {
@@ -267,7 +266,7 @@ export class BabylonScene {
                 scene.environmentTexture.dispose();
             }
             scene.environmentTexture = null;
-            scene.fogMode = Scene.FOGMODE_NONE;
+            scene.fogMode = BABYLON.Scene.FOGMODE_NONE;
             scene.meshes.forEach(m => m.dispose());
             scene.meshes = [];
             scene.materials.forEach(m => m.dispose());
@@ -309,7 +308,7 @@ export class BabylonScene {
                     (scene.metadata.xr as BABYLON.WebXRDefaultExperience).dispose();
                 }
                 if (scene.metadata.guiManager) {
-                    (scene.metadata.guiManager as GUI3DManager).dispose();
+                    (scene.metadata.guiManager as GUI.GUI3DManager).dispose();
                 }
             }
             scene.transformNodes = [scene.getTransformNodeByName("root")];

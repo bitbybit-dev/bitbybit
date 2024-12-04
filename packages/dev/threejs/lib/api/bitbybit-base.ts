@@ -25,7 +25,7 @@ import { ManifoldWorkerManager } from "@bitbybit-dev/manifold-worker";
 import * as vrb from "verb-nurbs-web";
 import { DrawHelper } from "./draw-helper";
 import { ThreeJS } from "./bitbybit/threejs";
-import { Scene } from "three";
+import * as THREEJS from "three";
 
 export class BitByBitBase {
 
@@ -85,7 +85,7 @@ export class BitByBitBase {
         this.lists = new Lists();
     }
 
-    init(scene: Scene, occt?: Worker, jscad?: Worker, manifold?: Worker) {
+    init(scene: THREEJS.Scene, occt?: Worker, jscad?: Worker, manifold?: Worker) {
         const verb = { geom: vrb.geom, core: vrb.core };
         this.context.scene = scene;
         this.context.verb = verb;
