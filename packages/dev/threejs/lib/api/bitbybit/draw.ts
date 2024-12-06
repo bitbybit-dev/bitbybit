@@ -88,6 +88,28 @@ export class Draw extends DrawCore {
         return result;
     }
 
+    /**
+     * Creates draw options for basic geometry types like points, lines, polylines, surfaces and jscad meshes
+     * @param inputs option definition
+     * @returns options
+     * @group options
+     * @shortname simple
+     */
+    optionsSimple(inputs: Inputs.Draw.DrawBasicGeometryOptions): Inputs.Draw.DrawBasicGeometryOptions {
+        return inputs;
+    }
+
+    /**
+     * Creates draw options for occt shape geometry like edges, wires, faces, shells, solids and compounds
+     * @param inputs option definition
+     * @returns options
+     * @group options
+     * @shortname occt shape
+     */
+    optionsOcctShape(inputs: Inputs.Draw.DrawOcctShapeOptions): Inputs.Draw.DrawOcctShapeOptions {
+        return inputs;
+    }
+
     private handleJscadMesh(inputs: Inputs.Draw.DrawAny<THREEJS.Group>): Promise<THREEJS.Group> {
         return this.handleAsync(inputs, this.defaultPolylineOptions, (options) => {
             return this.drawHelper.drawSolidOrPolygonMesh({
