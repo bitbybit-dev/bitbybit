@@ -54,11 +54,11 @@
     "types": "./index.d.ts",
     "type": "module",
     "dependencies": {
-        "@babylonjs/core": "7.40.2",
-        "@babylonjs/gui": "7.40.2",
-        "@babylonjs/loaders": "7.40.2",
-        "@babylonjs/materials": "7.40.2",
-        "@babylonjs/serializers": "7.40.2",
+        "@babylonjs/core": "7.37.1",
+        "@babylonjs/gui": "7.37.1",
+        "@babylonjs/loaders": "7.37.1",
+        "@babylonjs/materials": "7.37.1",
+        "@babylonjs/serializers": "7.37.1",
         "@babylonjs/havok": "1.3.10",
         "@bitbybit-dev/core": "0.19.1",
         "earcut": "2.2.3"
