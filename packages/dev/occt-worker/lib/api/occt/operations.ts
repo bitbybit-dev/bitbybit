@@ -81,7 +81,7 @@ export class OCCTOperations {
     }
 
     /**
-     * Extrudes the face along direction
+     * Extrudes the shape along direction - wire will produce shell, face will produce solid
      * @param inputs Shape to extrude and direction parameter with tolerance
      * @returns Resulting extruded shape
      * @group extrusions

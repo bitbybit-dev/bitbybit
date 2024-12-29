@@ -1,11 +1,15 @@
 ## Bit By Bit Developers Base Algorithms for CAD library
 
+Best way to support us - [Silver or Gold plan subscription](https://bitbybit.dev/auth/pick-plan)    
+Check out [3D Bits app for Shopify](https://apps.shopify.com/3d-bits-1)   
+Visit https://bitbybit.dev to use our full cloud platform.
+
 <img src="https://app.bitbybit.dev/assets/git-cover.png" alt="Picture showing bitbybit.dev platform">
 
 This package contains base algorithms for our CAD platform. It has various helper functions for math, text, lists, vectors, matrix operations. It also contains some base types used accross bitbybit.dev platform on higher levels. This layer should be kept as lightweight as possible and ideally not contain any third-party dependencies as they just add to the weight and complexity.
 
-This package is already used or will be used in these packages:
 
+This package is already used or will be used in these packages:
 
 [@bitbybit-dev/babylonjs](https://www.npmjs.com/package/@bitbybit-dev/babylonjs)   
 [@bitbybit-dev/threejs](https://www.npmjs.com/package/@bitbybit-dev/threejs)   

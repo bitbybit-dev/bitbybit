@@ -1,10 +1,15 @@
 ## Bit By Bit Developers monorepo
 
+Best way to support us - [Silver or Gold plan subscription](https://bitbybit.dev/auth/pick-plan)    
+Check out [3D Bits app for Shopify](https://apps.shopify.com/3d-bits-1)   
+Visit https://bitbybit.dev to use our full cloud platform.
+
 <img src="https://app.bitbybit.dev/assets/git-cover.png" alt="Picture showing bitbybit.dev platform">
 
-This git repo contains multiple bitbybit packages and contains code for 3D algorithms of Bit By Bit Developers platform which are open-sourced under MIT license. This library was previously UI dependant and was heaviy intertwined with BabylonJS game engine. It is now decoupled from our editors to ensure protection of our corporate identity and cloud services. BabylonJS layer is now also separated into special package @bitbybit-dev/babylonjs - this will cause the breaking change in v0.18.0. If you are using the version prior to v0.18.0 and depend on the @bitbybit-dev/core package, please consider updating to use @bitbybit-dev/babylonjs NPM package. @bitbybit-dev/core is now game engine independent layer.
+This git repo contains multiple bitbybit packages and contains code for 3D algorithms of Bit By Bit Developers platform which are open-sourced under MIT license. 
 
-Visit https://bitbybit.dev to use our full cloud platform.
+This library was previously UI dependant and was heaviy intertwined with BabylonJS game engine. It is now decoupled from our editors to ensure protection of our corporate identity and cloud services. BabylonJS layer is now also separated into special package @bitbybit-dev/babylonjs - this will cause the breaking change in v0.18.0. If you are using the version prior to v0.18.0 and depend on the @bitbybit-dev/core package, please consider updating to use @bitbybit-dev/babylonjs NPM package. @bitbybit-dev/core is now game engine independent layer.
+
 
 ## Github
 https://github.com/bitbybit-dev/bitbybit  
