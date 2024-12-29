@@ -7,6 +7,7 @@ If you used this npm package prior to v0.18.0, please use @bitbybit-dev/babylonj
 
 This project contains core 3D algorithms of Bit By Bit Developers platform which are open-sourced under MIT license.
 
+Best way to support us - [Silver or Gold plan subscription](https://bitbybit.dev/auth/pick-plan)
 Visit https://bitbybit.dev to use our full cloud platform.
 
 ## Github

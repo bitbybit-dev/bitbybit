@@ -4,6 +4,7 @@
 
 This project exposes 3D algorithms of Bit By Bit Developers platform through THREEJS game engine. Code is open-sourced under MIT license.
 
+Best way to support us - [Silver or Gold plan subscription](https://bitbybit.dev/auth/pick-plan)
 Visit https://bitbybit.dev to use our full cloud platform.
 
 ## Github

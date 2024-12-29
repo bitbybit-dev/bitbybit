@@ -4,6 +4,7 @@
 
 This project exposes core OCCT 3D algorithms of Bit By Bit Developers platform via webworker. This code is open-sourced under MIT license. This package is independent of rendering frameworks such as BabylonJS or ThreeJS. You can build your own rendering pipeline in WebGL or WebGPU. While webworkers have their implementation in Node environment, this code is meant to be used in the browser environment. For Node environment check bitbybit-occt library.
 
+Best way to support us - [Silver or Gold plan subscription](https://bitbybit.dev/auth/pick-plan)
 Visit https://bitbybit.dev to use our full cloud platform.
 
 # Github

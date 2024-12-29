@@ -4,8 +4,10 @@
 
 This package contains base algorithms for our CAD platform. It has various helper functions for math, text, lists, vectors, matrix operations. It also contains some base types used accross bitbybit.dev platform on higher levels. This layer should be kept as lightweight as possible and ideally not contain any third-party dependencies as they just add to the weight and complexity.
 
-This package is already used or will be used in these packages:
+Best way to support us - [Silver or Gold plan subscription](https://bitbybit.dev/auth/pick-plan)
+Visit https://bitbybit.dev to use our full cloud platform.
 
+This package is already used or will be used in these packages:
 
 [@bitbybit-dev/babylonjs](https://www.npmjs.com/package/@bitbybit-dev/babylonjs)   
 [@bitbybit-dev/threejs](https://www.npmjs.com/package/@bitbybit-dev/threejs)   
