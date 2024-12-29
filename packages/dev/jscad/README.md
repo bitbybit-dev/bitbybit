@@ -1,11 +1,11 @@
 ## Bit By Bit Developers JSCAD based CAD library
 
+Best way to support us - [Silver or Gold plan subscription](https://bitbybit.dev/auth/pick-plan)    
+Visit https://bitbybit.dev to use our full cloud platform.
+
 <img src="https://app.bitbybit.dev/assets/git-cover.png" alt="Picture showing bitbybit.dev platform">
 
 This project exposes 3D algorithms based on OPENJSCAD 3D CAD kernel, which you can find on https://github.com/jscad. Bit By Bit Developers platform integrates this kernel into it's platform via this library. Currently we try to expose JSCAD library 1:1 in terms of functionality through our structured API, but as time goes we will have more unique algorithms in this package, which will be tuned specifically to our users.
-
-Best way to support us - [Silver or Gold plan subscription](https://bitbybit.dev/auth/pick-plan)
-Visit https://bitbybit.dev to use our full cloud platform.
 
 ## Github
 https://github.com/bitbybit-dev/bitbybit/tree/master/packages/dev/jscad

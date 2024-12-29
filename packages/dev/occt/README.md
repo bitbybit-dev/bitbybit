@@ -1,11 +1,11 @@
 # Bit By Bit Developers CAD algorithms using OpenCascade Technology kernel
 
+Best way to support us - [Silver or Gold plan subscription](https://bitbybit.dev/auth/pick-plan)    
+Visit https://bitbybit.dev to use our full cloud platform.
+
 <img src="https://app.bitbybit.dev/assets/git-cover.png" alt="Picture showing bitbybit.dev platform">
 
 This project contains core OCCT 3D algorithms of Bit By Bit Developers platform which are open-sourced under MIT license. This package is independent of rendering frameworks such as BabylonJS or ThreeJS. You can build your own rendering pipeline in WebGL or WebGPU. This code potentially can also be used alongside other OCCT libraries. This library can also run in NodeJS environments.
-
-Best way to support us - [Silver or Gold plan subscription](https://bitbybit.dev/auth/pick-plan)
-Visit https://bitbybit.dev to use our full cloud platform.
 
 # Github
 https://github.com/bitbybit-dev
