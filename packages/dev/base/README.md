@@ -24,8 +24,6 @@ This package is already used or will be used in these packages:
 
 This package should work in Node and browser based applications and should provide generic layer which could be helpful to all higher-level CAD algorithms and kernels. Algorithms of this base layer are also exposed on our bitbybit.dev Rete, Blockly & Monaco editors.
 
-Visit [bitbybit.dev](https://bitbybit.dev) to use our full cloud platform.
-
 ## Github
 https://github.com/bitbybit-dev/bitbybit/tree/master/packages/dev/base
 ## NPM
