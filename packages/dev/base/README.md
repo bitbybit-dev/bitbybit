@@ -1,8 +1,8 @@
 ## Bit By Bit Developers Base Algorithms for CAD library
 
+Visit [bitbybit.dev](https://bitbybit.dev) to use our full cloud platform.   
 Best way to support us - [Silver or Gold plan subscription](https://bitbybit.dev/auth/pick-plan)    
 Check out [3D Bits app for Shopify](https://apps.shopify.com/3d-bits-1)   
-Visit https://bitbybit.dev to use our full cloud platform.
 
 <img src="https://app.bitbybit.dev/assets/git-cover.png" alt="Picture showing bitbybit.dev platform">
 
@@ -23,8 +23,6 @@ This package is already used or will be used in these packages:
 [@bitbybit-dev/base](https://www.npmjs.com/package/@bitbybit-dev/base)   
 
 This package should work in Node and browser based applications and should provide generic layer which could be helpful to all higher-level CAD algorithms and kernels. Algorithms of this base layer are also exposed on our bitbybit.dev Rete, Blockly & Monaco editors.
-
-Visit https://bitbybit.dev to use our full cloud platform.
 
 ## Github
 https://github.com/bitbybit-dev/bitbybit/tree/master/packages/dev/base
