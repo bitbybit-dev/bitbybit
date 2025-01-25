@@ -58,8 +58,10 @@ export class OCCTIO {
                 const blob = new Blob([s], { type: "text/plain" });
                 const blobUrl = URL.createObjectURL(blob);
 
-                const fileName = inputs.fileName ? inputs.fileName : "bitbybit-dev.step";
-
+                let fileName = inputs.fileName ? inputs.fileName : "bitbybit-dev.step";
+                if(!fileName.toLowerCase().includes(".step")) {
+                    fileName += ".step";
+                }
                 const fileLink = document.createElement("a");
                 fileLink.href = blobUrl;
                 fileLink.target = "_self";

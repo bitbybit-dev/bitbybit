@@ -113,7 +113,7 @@ export class CacheHelper {
                 if (this.isOCCTObject(toReturn)) {
                     toReturn.hash = curHash;
                     this.addToCache(curHash, toReturn);
-                } else if (toReturn.compound && toReturn.data && toReturn.shapes && toReturn.shapes.length > 0) {
+                } else if (toReturn && toReturn.compound && toReturn.data && toReturn.shapes && toReturn.shapes.length > 0) {
                     const objDef: ObjectDefinition<any, any> = toReturn;
                     const compoundHash = this.computeHash({ ...args, index: "compound" });
                     objDef.compound.hash = compoundHash;
