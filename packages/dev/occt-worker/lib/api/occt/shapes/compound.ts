@@ -20,4 +20,15 @@ export class OCCTCompound {
         return this.occWorkerManager.genericCallToWorkerPromise("shapes.compound.makeCompound", inputs);
     }
 
+    /**
+     * Gets the shapes that compound is made of
+     * @param inputs OpenCascade shapes
+     * @returns OpenCascade compounded shape
+     * @group get
+     * @shortname get shapes of compound
+     * @drawable true
+     */
+    getShapesOfCompound(inputs: Inputs.OCCT.ShapeDto<Inputs.OCCT.TopoDSCompoundPointer>): Promise<Inputs.OCCT.TopoDSShapePointer[]> {
+        return this.occWorkerManager.genericCallToWorkerPromise("shapes.compound.getShapesOfCompound", inputs);
+    }
 }

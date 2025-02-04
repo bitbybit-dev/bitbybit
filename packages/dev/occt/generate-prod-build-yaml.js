@@ -104,6 +104,30 @@ async function start() {
         "GeomPlate_PointConstraint",
         "BRepFill_Filling",
         "BRepFeat_SplitShape",
+        "BOPAlgo_Algo",
+        "BOPAlgo_ArgumentAnalyzer",
+        "BOPAlgo_BOP",
+        "BOPAlgo_Builder",
+        "BOPAlgo_BuilderArea",
+        "BOPAlgo_BuilderFace",
+        "BOPAlgo_BuilderShape",
+        "BOPAlgo_BuilderSolid",
+        "BOPAlgo_CellsBuilder",
+        "BOPAlgo_CheckResult",
+        "BOPAlgo_CheckStatus",
+        "BOPAlgo_CheckerSI",
+        "BOPAlgo_GlueEnum",
+        "BOPAlgo_ListOfCheckResult",
+        "BOPAlgo_MakerVolume",
+        "BOPAlgo_Operation",
+        "BOPAlgo_Options",
+        "BOPAlgo_Section",
+        "BOPAlgo_SectionAttribute",
+        "BOPAlgo_ShellSplitter",
+        "BOPAlgo_Splitter",
+        "BOPAlgo_Tools",
+        "BOPAlgo_WireEdgeSet",
+        "BOPAlgo_WireSplitter",
         "GeomLProp_SLProps",
         "gp",
         "gp_XYZ",
@@ -252,6 +276,8 @@ async function start() {
         "BRepClass_Edge",
         "BRepFeat_MakeDPrism",
         "BRepFeat_Form",
+        "BRepFeat_Builder",
+        "BRepFeat_MakeCylindricalHole",
         "ChFiDS_ChamfMode",
         "Extrema_ExtAlgo",
         "ShapeFix_Root",
@@ -484,6 +510,7 @@ async function start() {
     #include <BRepFeat_SplitShape.hxx>
     #include <TopTools_SequenceOfShape.hxx>
     #include <TopoDS_Shape.hxx>
+    #include <vector>
     
     typedef Handle(IMeshTools_Context) Handle_IMeshTools_Context;
     class BitByBitDev {
@@ -522,6 +549,22 @@ async function start() {
             splitShape.Add(shapesToSplitWithSequence);
             splitShape.Build();
             return splitShape.Shape();
+        }
+    public:
+        static TopoDS_Compound BitListOfShapesToCompound(const TopTools_ListOfShape& shapesToSplitWith) {
+            BRep_Builder builder;
+            TopoDS_Compound compound;
+            builder.MakeCompound(compound); // Initialize the compound shape
+
+            try {
+                for (TopTools_ListIteratorOfListOfShape it(shapesToSplitWith); it.More(); it.Next()) {
+                    builder.Add(compound, it.Value()); // Add each shape to the compound
+                }
+            } catch (...) {
+                return TopoDS_Compound(); // Return an empty compound on failure
+            }
+
+            return compound; // Return the resulting compound shape
         }
     };
     `;

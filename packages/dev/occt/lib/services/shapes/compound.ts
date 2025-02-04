@@ -14,4 +14,8 @@ export class OCCTCompound {
         return this.och.converterService.makeCompound(inputs);
     }
 
+    getShapesOfCompound(inputs: Inputs.OCCT.ShapeDto<TopoDS_Compound>): TopoDS_Shape[] {
+        return this.och.shapeGettersService.getShapesOfCompound(inputs);
+    }
+
 }

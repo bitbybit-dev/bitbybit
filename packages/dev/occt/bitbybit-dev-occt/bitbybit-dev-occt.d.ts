@@ -3901,6 +3901,413 @@ export declare class TColStd_IndexedDataMapOfStringString extends NCollection_Ba
     constructor(theOther: TColStd_IndexedDataMapOfStringString);
   }
 
+export declare type BOPAlgo_GlueEnum = {
+  BOPAlgo_GlueOff: {};
+  BOPAlgo_GlueShift: {};
+  BOPAlgo_GlueFull: {};
+}
+
+export declare class BOPAlgo_Algo extends BOPAlgo_Options {
+  Perform(theRange: Message_ProgressRange): void;
+  delete(): void;
+}
+
+export declare class BOPAlgo_WireEdgeSet {
+  Clear(): void;
+  SetFace(aF: TopoDS_Face): void;
+  Face(): TopoDS_Face;
+  AddStartElement(sS: TopoDS_Shape): void;
+  StartElements(): TopTools_ListOfShape;
+  AddShape(sS: TopoDS_Shape): void;
+  Shapes(): TopTools_ListOfShape;
+  delete(): void;
+}
+
+  export declare class BOPAlgo_WireEdgeSet_1 extends BOPAlgo_WireEdgeSet {
+    constructor();
+  }
+
+  export declare class BOPAlgo_WireEdgeSet_2 extends BOPAlgo_WireEdgeSet {
+    constructor(theAllocator: Handle_NCollection_BaseAllocator);
+  }
+
+export declare class BOPAlgo_WireSplitter extends BOPAlgo_Algo {
+  SetWES(theWES: BOPAlgo_WireEdgeSet): void;
+  WES(): BOPAlgo_WireEdgeSet;
+  SetContext(theContext: Handle_IntTools_Context): void;
+  Context(): Handle_IntTools_Context;
+  Perform(theRange: Message_ProgressRange): void;
+  static MakeWire(theLE: TopTools_ListOfShape, theW: TopoDS_Wire): void;
+  static SplitBlock(theF: TopoDS_Face, theCB: BOPTools_ConnexityBlock, theContext: Handle_IntTools_Context): void;
+  delete(): void;
+}
+
+  export declare class BOPAlgo_WireSplitter_1 extends BOPAlgo_WireSplitter {
+    constructor();
+  }
+
+  export declare class BOPAlgo_WireSplitter_2 extends BOPAlgo_WireSplitter {
+    constructor(theAllocator: Handle_NCollection_BaseAllocator);
+  }
+
+export declare class BOPAlgo_ListOfCheckResult extends NCollection_BaseList {
+  begin(): any;
+  end(): any;
+  cbegin(): any;
+  cend(): any;
+  Size(): Standard_Integer;
+  Assign(theOther: BOPAlgo_ListOfCheckResult): BOPAlgo_ListOfCheckResult;
+  Clear(theAllocator: Handle_NCollection_BaseAllocator): void;
+  First_1(): BOPAlgo_CheckResult;
+  First_2(): BOPAlgo_CheckResult;
+  Last_1(): BOPAlgo_CheckResult;
+  Last_2(): BOPAlgo_CheckResult;
+  Append_1(theItem: BOPAlgo_CheckResult): BOPAlgo_CheckResult;
+  Append_3(theOther: BOPAlgo_ListOfCheckResult): void;
+  Prepend_1(theItem: BOPAlgo_CheckResult): BOPAlgo_CheckResult;
+  Prepend_2(theOther: BOPAlgo_ListOfCheckResult): void;
+  RemoveFirst(): void;
+  Reverse(): void;
+  delete(): void;
+}
+
+  export declare class BOPAlgo_ListOfCheckResult_1 extends BOPAlgo_ListOfCheckResult {
+    constructor();
+  }
+
+  export declare class BOPAlgo_ListOfCheckResult_2 extends BOPAlgo_ListOfCheckResult {
+    constructor(theAllocator: Handle_NCollection_BaseAllocator);
+  }
+
+  export declare class BOPAlgo_ListOfCheckResult_3 extends BOPAlgo_ListOfCheckResult {
+    constructor(theOther: BOPAlgo_ListOfCheckResult);
+  }
+
+export declare class BOPAlgo_SectionAttribute {
+  Approximation_1(theApprox: Standard_Boolean): void;
+  PCurveOnS1_1(thePCurveOnS1: Standard_Boolean): void;
+  PCurveOnS2_1(thePCurveOnS2: Standard_Boolean): void;
+  Approximation_2(): Standard_Boolean;
+  PCurveOnS1_2(): Standard_Boolean;
+  PCurveOnS2_2(): Standard_Boolean;
+  delete(): void;
+}
+
+  export declare class BOPAlgo_SectionAttribute_1 extends BOPAlgo_SectionAttribute {
+    constructor();
+  }
+
+  export declare class BOPAlgo_SectionAttribute_2 extends BOPAlgo_SectionAttribute {
+    constructor(theAproximation: Standard_Boolean, thePCurveOnS1: Standard_Boolean, thePCurveOnS2: Standard_Boolean);
+  }
+
+export declare class BOPAlgo_ArgumentAnalyzer extends BOPAlgo_Algo {
+  constructor()
+  SetShape1(TheShape: TopoDS_Shape): void;
+  SetShape2(TheShape: TopoDS_Shape): void;
+  GetShape1(): TopoDS_Shape;
+  GetShape2(): TopoDS_Shape;
+  OperationType(): BOPAlgo_Operation;
+  StopOnFirstFaulty(): Standard_Boolean;
+  ArgumentTypeMode(): Standard_Boolean;
+  SelfInterMode(): Standard_Boolean;
+  SmallEdgeMode(): Standard_Boolean;
+  RebuildFaceMode(): Standard_Boolean;
+  TangentMode(): Standard_Boolean;
+  MergeVertexMode(): Standard_Boolean;
+  MergeEdgeMode(): Standard_Boolean;
+  ContinuityMode(): Standard_Boolean;
+  CurveOnSurfaceMode(): Standard_Boolean;
+  Perform(theRange: Message_ProgressRange): void;
+  HasFaulty(): Standard_Boolean;
+  GetCheckResult(): BOPAlgo_ListOfCheckResult;
+  delete(): void;
+}
+
+export declare class BOPAlgo_BuilderFace extends BOPAlgo_BuilderArea {
+  SetFace(theFace: TopoDS_Face): void;
+  Face(): TopoDS_Face;
+  Perform(theRange: Message_ProgressRange): void;
+  Orientation(): TopAbs_Orientation;
+  delete(): void;
+}
+
+  export declare class BOPAlgo_BuilderFace_1 extends BOPAlgo_BuilderFace {
+    constructor();
+  }
+
+  export declare class BOPAlgo_BuilderFace_2 extends BOPAlgo_BuilderFace {
+    constructor(theAllocator: Handle_NCollection_BaseAllocator);
+  }
+
+export declare type BOPAlgo_CheckStatus = {
+  BOPAlgo_CheckUnknown: {};
+  BOPAlgo_BadType: {};
+  BOPAlgo_SelfIntersect: {};
+  BOPAlgo_TooSmallEdge: {};
+  BOPAlgo_NonRecoverableFace: {};
+  BOPAlgo_IncompatibilityOfVertex: {};
+  BOPAlgo_IncompatibilityOfEdge: {};
+  BOPAlgo_IncompatibilityOfFace: {};
+  BOPAlgo_OperationAborted: {};
+  BOPAlgo_GeomAbs_C0: {};
+  BOPAlgo_InvalidCurveOnSurface: {};
+  BOPAlgo_NotValid: {};
+}
+
+export declare class BOPAlgo_Builder extends BOPAlgo_BuilderShape {
+  Clear(): void;
+  PPaveFiller(): BOPAlgo_PPaveFiller;
+  PDS(): BOPDS_PDS;
+  Context(): Handle_IntTools_Context;
+  AddArgument(theShape: TopoDS_Shape): void;
+  SetArguments(theLS: TopTools_ListOfShape): void;
+  Arguments(): TopTools_ListOfShape;
+  SetNonDestructive(theFlag: Standard_Boolean): void;
+  NonDestructive(): Standard_Boolean;
+  SetGlue(theGlue: BOPAlgo_GlueEnum): void;
+  Glue(): BOPAlgo_GlueEnum;
+  SetCheckInverted(theCheck: Standard_Boolean): void;
+  CheckInverted(): Standard_Boolean;
+  Perform(theRange: Message_ProgressRange): void;
+  PerformWithFiller(theFiller: BOPAlgo_PaveFiller, theRange: Message_ProgressRange): void;
+  BuildBOP_1(theObjects: TopTools_ListOfShape, theObjState: TopAbs_State, theTools: TopTools_ListOfShape, theToolsState: TopAbs_State, theRange: Message_ProgressRange, theReport: Handle_Message_Report): void;
+  BuildBOP_2(theObjects: TopTools_ListOfShape, theTools: TopTools_ListOfShape, theOperation: BOPAlgo_Operation, theRange: Message_ProgressRange, theReport: Handle_Message_Report): void;
+  Images(): TopTools_DataMapOfShapeListOfShape;
+  Origins(): TopTools_DataMapOfShapeListOfShape;
+  ShapesSD(): TopTools_DataMapOfShapeShape;
+  delete(): void;
+}
+
+  export declare class BOPAlgo_Builder_1 extends BOPAlgo_Builder {
+    constructor();
+  }
+
+  export declare class BOPAlgo_Builder_2 extends BOPAlgo_Builder {
+    constructor(theAllocator: Handle_NCollection_BaseAllocator);
+  }
+
+export declare class BOPAlgo_Section extends BOPAlgo_Builder {
+  delete(): void;
+}
+
+  export declare class BOPAlgo_Section_1 extends BOPAlgo_Section {
+    constructor();
+  }
+
+  export declare class BOPAlgo_Section_2 extends BOPAlgo_Section {
+    constructor(theAllocator: Handle_NCollection_BaseAllocator);
+  }
+
+export declare class BOPAlgo_BuilderArea extends BOPAlgo_Algo {
+  SetContext(theContext: Handle_IntTools_Context): void;
+  Shapes(): TopTools_ListOfShape;
+  SetShapes(theLS: TopTools_ListOfShape): void;
+  Loops(): TopTools_ListOfShape;
+  Areas(): TopTools_ListOfShape;
+  SetAvoidInternalShapes(theAvoidInternal: Standard_Boolean): void;
+  IsAvoidInternalShapes(): Standard_Boolean;
+  delete(): void;
+}
+
+export declare class BOPAlgo_BuilderSolid extends BOPAlgo_BuilderArea {
+  Perform(theRange: Message_ProgressRange): void;
+  GetBoxesMap(): TopTools_DataMapOfShapeBox;
+  delete(): void;
+}
+
+  export declare class BOPAlgo_BuilderSolid_1 extends BOPAlgo_BuilderSolid {
+    constructor();
+  }
+
+  export declare class BOPAlgo_BuilderSolid_2 extends BOPAlgo_BuilderSolid {
+    constructor(theAllocator: Handle_NCollection_BaseAllocator);
+  }
+
+export declare class BOPAlgo_BuilderShape extends BOPAlgo_Algo {
+  Shape(): TopoDS_Shape;
+  Modified(theS: TopoDS_Shape): TopTools_ListOfShape;
+  Generated(theS: TopoDS_Shape): TopTools_ListOfShape;
+  IsDeleted(theS: TopoDS_Shape): Standard_Boolean;
+  HasModified(): Standard_Boolean;
+  HasGenerated(): Standard_Boolean;
+  HasDeleted(): Standard_Boolean;
+  History(): Handle_BRepTools_History;
+  SetToFillHistory(theHistFlag: Standard_Boolean): void;
+  HasHistory(): Standard_Boolean;
+  delete(): void;
+}
+
+export declare class BOPAlgo_CheckResult {
+  constructor()
+  SetShape1(TheShape: TopoDS_Shape): void;
+  AddFaultyShape1(TheShape: TopoDS_Shape): void;
+  SetShape2(TheShape: TopoDS_Shape): void;
+  AddFaultyShape2(TheShape: TopoDS_Shape): void;
+  GetShape1(): TopoDS_Shape;
+  GetShape2(): TopoDS_Shape;
+  GetFaultyShapes1(): TopTools_ListOfShape;
+  GetFaultyShapes2(): TopTools_ListOfShape;
+  SetCheckStatus(TheStatus: BOPAlgo_CheckStatus): void;
+  GetCheckStatus(): BOPAlgo_CheckStatus;
+  SetMaxDistance1(theDist: Standard_Real): void;
+  SetMaxDistance2(theDist: Standard_Real): void;
+  SetMaxParameter1(thePar: Standard_Real): void;
+  SetMaxParameter2(thePar: Standard_Real): void;
+  GetMaxDistance1(): Standard_Real;
+  GetMaxDistance2(): Standard_Real;
+  GetMaxParameter1(): Standard_Real;
+  GetMaxParameter2(): Standard_Real;
+  delete(): void;
+}
+
+export declare class BOPAlgo_MakerVolume extends BOPAlgo_Builder {
+  Clear(): void;
+  SetIntersect(bIntersect: Standard_Boolean): void;
+  IsIntersect(): Standard_Boolean;
+  Box(): TopoDS_Solid;
+  Faces(): TopTools_ListOfShape;
+  SetAvoidInternalShapes(theAvoidInternal: Standard_Boolean): void;
+  IsAvoidInternalShapes(): Standard_Boolean;
+  Perform(theRange: Message_ProgressRange): void;
+  delete(): void;
+}
+
+  export declare class BOPAlgo_MakerVolume_1 extends BOPAlgo_MakerVolume {
+    constructor();
+  }
+
+  export declare class BOPAlgo_MakerVolume_2 extends BOPAlgo_MakerVolume {
+    constructor(theAllocator: Handle_NCollection_BaseAllocator);
+  }
+
+export declare class BOPAlgo_ShellSplitter extends BOPAlgo_Algo {
+  AddStartElement(theS: TopoDS_Shape): void;
+  StartElements(): TopTools_ListOfShape;
+  Perform(theRange: Message_ProgressRange): void;
+  Shells(): TopTools_ListOfShape;
+  static SplitBlock(theCB: BOPTools_ConnexityBlock): void;
+  delete(): void;
+}
+
+  export declare class BOPAlgo_ShellSplitter_1 extends BOPAlgo_ShellSplitter {
+    constructor();
+  }
+
+  export declare class BOPAlgo_ShellSplitter_2 extends BOPAlgo_ShellSplitter {
+    constructor(theAllocator: Handle_NCollection_BaseAllocator);
+  }
+
+export declare type BOPAlgo_Operation = {
+  BOPAlgo_COMMON: {};
+  BOPAlgo_FUSE: {};
+  BOPAlgo_CUT: {};
+  BOPAlgo_CUT21: {};
+  BOPAlgo_SECTION: {};
+  BOPAlgo_UNKNOWN: {};
+}
+
+export declare class BOPAlgo_CellsBuilder extends BOPAlgo_Builder {
+  Clear(): void;
+  AddToResult(theLSToTake: TopTools_ListOfShape, theLSToAvoid: TopTools_ListOfShape, theMaterial: Graphic3d_ZLayerId, theUpdate: Standard_Boolean): void;
+  AddAllToResult(theMaterial: Graphic3d_ZLayerId, theUpdate: Standard_Boolean): void;
+  RemoveFromResult(theLSToTake: TopTools_ListOfShape, theLSToAvoid: TopTools_ListOfShape): void;
+  RemoveAllFromResult(): void;
+  RemoveInternalBoundaries(): void;
+  GetAllParts(): TopoDS_Shape;
+  MakeContainers(): void;
+  delete(): void;
+}
+
+  export declare class BOPAlgo_CellsBuilder_1 extends BOPAlgo_CellsBuilder {
+    constructor();
+  }
+
+  export declare class BOPAlgo_CellsBuilder_2 extends BOPAlgo_CellsBuilder {
+    constructor(theAllocator: Handle_NCollection_BaseAllocator);
+  }
+
+export declare class BOPAlgo_BOP extends BOPAlgo_ToolsProvider {
+  Clear(): void;
+  SetOperation(theOperation: BOPAlgo_Operation): void;
+  Operation(): BOPAlgo_Operation;
+  Perform(theRange: Message_ProgressRange): void;
+  delete(): void;
+}
+
+  export declare class BOPAlgo_BOP_1 extends BOPAlgo_BOP {
+    constructor();
+  }
+
+  export declare class BOPAlgo_BOP_2 extends BOPAlgo_BOP {
+    constructor(theAllocator: Handle_NCollection_BaseAllocator);
+  }
+
+export declare class BOPAlgo_CheckerSI extends BOPAlgo_PaveFiller {
+  constructor()
+  Perform(theRange: Message_ProgressRange): void;
+  SetLevelOfCheck(theLevel: Graphic3d_ZLayerId): void;
+  delete(): void;
+}
+
+export declare class BOPAlgo_Splitter extends BOPAlgo_ToolsProvider {
+  Perform(theRange: Message_ProgressRange): void;
+  delete(): void;
+}
+
+  export declare class BOPAlgo_Splitter_1 extends BOPAlgo_Splitter {
+    constructor();
+  }
+
+  export declare class BOPAlgo_Splitter_2 extends BOPAlgo_Splitter {
+    constructor(theAllocator: Handle_NCollection_BaseAllocator);
+  }
+
+export declare class BOPAlgo_Tools {
+  constructor();
+  static FillMap_2(thePB1: Handle_BOPDS_PaveBlock, theF: Graphic3d_ZLayerId, theMILI: BOPDS_IndexedDataMapOfPaveBlockListOfInteger, theAllocator: Handle_NCollection_BaseAllocator): void;
+  static ComputeToleranceOfCB(theCB: Handle_BOPDS_CommonBlock, theDS: BOPDS_PDS, theContext: Handle_IntTools_Context): Standard_Real;
+  static EdgesToWires(theEdges: TopoDS_Shape, theWires: TopoDS_Shape, theShared: Standard_Boolean, theAngTol: Standard_Real): Graphic3d_ZLayerId;
+  static WiresToFaces(theWires: TopoDS_Shape, theFaces: TopoDS_Shape, theAngTol: Standard_Real): Standard_Boolean;
+  static IntersectVertices(theVertices: TopTools_IndexedDataMapOfShapeReal, theFuzzyValue: Standard_Real, theChains: TopTools_ListOfListOfShape): void;
+  static ClassifyFaces(theFaces: TopTools_ListOfShape, theSolids: TopTools_ListOfShape, theRunParallel: Standard_Boolean, theContext: Handle_IntTools_Context, theInParts: TopTools_IndexedDataMapOfShapeListOfShape, theShapeBoxMap: TopTools_DataMapOfShapeBox, theSolidsIF: TopTools_DataMapOfShapeListOfShape, theRange: Message_ProgressRange): void;
+  static FillInternals(theSolids: TopTools_ListOfShape, theParts: TopTools_ListOfShape, theImages: TopTools_DataMapOfShapeListOfShape, theContext: Handle_IntTools_Context): void;
+  static TrsfToPoint(theBox1: Bnd_Box, theBox2: Bnd_Box, theTrsf: gp_Trsf, thePoint: gp_Pnt, theCriteria: Standard_Real): Standard_Boolean;
+  delete(): void;
+}
+
+export declare class BOPAlgo_Options {
+  Allocator(): Handle_NCollection_BaseAllocator;
+  Clear(): void;
+  AddError(theAlert: Handle_Message_Alert): void;
+  AddWarning(theAlert: Handle_Message_Alert): void;
+  HasErrors(): Standard_Boolean;
+  HasError(theType: Handle_Standard_Type): Standard_Boolean;
+  HasWarnings(): Standard_Boolean;
+  HasWarning(theType: Handle_Standard_Type): Standard_Boolean;
+  GetReport(): Handle_Message_Report;
+  DumpErrors(theOS: Standard_OStream): void;
+  DumpWarnings(theOS: Standard_OStream): void;
+  ClearWarnings(): void;
+  static GetParallelMode(): Standard_Boolean;
+  static SetParallelMode(theNewMode: Standard_Boolean): void;
+  SetRunParallel(theFlag: Standard_Boolean): void;
+  RunParallel(): Standard_Boolean;
+  SetFuzzyValue(theFuzz: Standard_Real): void;
+  FuzzyValue(): Standard_Real;
+  SetUseOBB(theUseOBB: Standard_Boolean): void;
+  UseOBB(): Standard_Boolean;
+  delete(): void;
+}
+
+  export declare class BOPAlgo_Options_1 extends BOPAlgo_Options {
+    constructor();
+  }
+
+  export declare class BOPAlgo_Options_2 extends BOPAlgo_Options {
+    constructor(theAllocator: Handle_NCollection_BaseAllocator);
+  }
+
 export declare type IFSelect_ReturnStatus = {
   IFSelect_RetVoid: {};
   IFSelect_RetDone: {};
@@ -8970,6 +9377,39 @@ export declare class BRepFeat_Form extends BRepBuilderAPI_MakeShape {
   delete(): void;
 }
 
+export declare class BRepFeat_Builder extends BOPAlgo_BOP {
+  constructor()
+  Clear(): void;
+  Init_1(theShape: TopoDS_Shape): void;
+  Init_2(theShape: TopoDS_Shape, theTool: TopoDS_Shape): void;
+  SetOperation_1(theFuse: Graphic3d_ZLayerId): void;
+  SetOperation_2(theFuse: Graphic3d_ZLayerId, theFlag: Standard_Boolean): void;
+  PartsOfTool(theLT: TopTools_ListOfShape): void;
+  KeepParts(theIm: TopTools_ListOfShape): void;
+  KeepPart(theS: TopoDS_Shape): void;
+  PerformResult(theRange: Message_ProgressRange): void;
+  RebuildFaces(): void;
+  RebuildEdge(theE: TopoDS_Shape, theF: TopoDS_Face, theME: TopTools_MapOfShape, aLEIm: TopTools_ListOfShape): void;
+  CheckSolidImages(): void;
+  FillRemoved_1(): void;
+  FillRemoved_2(theS: TopoDS_Shape, theM: TopTools_MapOfShape): void;
+  delete(): void;
+}
+
+export declare class BRepFeat_MakeCylindricalHole extends BRepFeat_Builder {
+  constructor()
+  Init_1(Axis: gp_Ax1): void;
+  Init_2(S: TopoDS_Shape, Axis: gp_Ax1): void;
+  Perform_1(Radius: Standard_Real): void;
+  Perform_2(Radius: Standard_Real, PFrom: Standard_Real, PTo: Standard_Real, WithControl: Standard_Boolean): void;
+  PerformThruNext(Radius: Standard_Real, WithControl: Standard_Boolean): void;
+  PerformUntilEnd(Radius: Standard_Real, WithControl: Standard_Boolean): void;
+  PerformBlind(Radius: Standard_Real, Length: Standard_Real, WithControl: Standard_Boolean): void;
+  Status(): BRepFeat_Status;
+  Build(): void;
+  delete(): void;
+}
+
 export declare class TNaming_NamedShape extends TDF_Attribute {
   constructor()
   static GetID(): Standard_GUID;
@@ -9774,6 +10214,7 @@ export declare class BitByBitDev {
   static ConvertAsciiString(s: XCAFDoc_PartId): string;
   static GetExceptionMessage(exceptionPtr: intptr_t): string;
   static BitSplit(shape: TopoDS_Shape, shapesToSplitWith: TopTools_ListOfShape): TopoDS_Shape;
+  static BitListOfShapesToCompound(shapesToSplitWith: TopTools_ListOfShape): TopoDS_Compound;
   delete(): void;
 }
 
@@ -10312,6 +10753,59 @@ export type OpenCascadeInstance = {FS: typeof FS} & {
   TColStd_IndexedDataMapOfStringString_1: typeof TColStd_IndexedDataMapOfStringString_1;
   TColStd_IndexedDataMapOfStringString_2: typeof TColStd_IndexedDataMapOfStringString_2;
   TColStd_IndexedDataMapOfStringString_3: typeof TColStd_IndexedDataMapOfStringString_3;
+  BOPAlgo_GlueEnum: BOPAlgo_GlueEnum;
+  BOPAlgo_Algo: typeof BOPAlgo_Algo;
+  BOPAlgo_WireEdgeSet: typeof BOPAlgo_WireEdgeSet;
+  BOPAlgo_WireEdgeSet_1: typeof BOPAlgo_WireEdgeSet_1;
+  BOPAlgo_WireEdgeSet_2: typeof BOPAlgo_WireEdgeSet_2;
+  BOPAlgo_WireSplitter: typeof BOPAlgo_WireSplitter;
+  BOPAlgo_WireSplitter_1: typeof BOPAlgo_WireSplitter_1;
+  BOPAlgo_WireSplitter_2: typeof BOPAlgo_WireSplitter_2;
+  BOPAlgo_ListOfCheckResult: typeof BOPAlgo_ListOfCheckResult;
+  BOPAlgo_ListOfCheckResult_1: typeof BOPAlgo_ListOfCheckResult_1;
+  BOPAlgo_ListOfCheckResult_2: typeof BOPAlgo_ListOfCheckResult_2;
+  BOPAlgo_ListOfCheckResult_3: typeof BOPAlgo_ListOfCheckResult_3;
+  BOPAlgo_SectionAttribute: typeof BOPAlgo_SectionAttribute;
+  BOPAlgo_SectionAttribute_1: typeof BOPAlgo_SectionAttribute_1;
+  BOPAlgo_SectionAttribute_2: typeof BOPAlgo_SectionAttribute_2;
+  BOPAlgo_ArgumentAnalyzer: typeof BOPAlgo_ArgumentAnalyzer;
+  BOPAlgo_BuilderFace: typeof BOPAlgo_BuilderFace;
+  BOPAlgo_BuilderFace_1: typeof BOPAlgo_BuilderFace_1;
+  BOPAlgo_BuilderFace_2: typeof BOPAlgo_BuilderFace_2;
+  BOPAlgo_CheckStatus: BOPAlgo_CheckStatus;
+  BOPAlgo_Builder: typeof BOPAlgo_Builder;
+  BOPAlgo_Builder_1: typeof BOPAlgo_Builder_1;
+  BOPAlgo_Builder_2: typeof BOPAlgo_Builder_2;
+  BOPAlgo_Section: typeof BOPAlgo_Section;
+  BOPAlgo_Section_1: typeof BOPAlgo_Section_1;
+  BOPAlgo_Section_2: typeof BOPAlgo_Section_2;
+  BOPAlgo_BuilderArea: typeof BOPAlgo_BuilderArea;
+  BOPAlgo_BuilderSolid: typeof BOPAlgo_BuilderSolid;
+  BOPAlgo_BuilderSolid_1: typeof BOPAlgo_BuilderSolid_1;
+  BOPAlgo_BuilderSolid_2: typeof BOPAlgo_BuilderSolid_2;
+  BOPAlgo_BuilderShape: typeof BOPAlgo_BuilderShape;
+  BOPAlgo_CheckResult: typeof BOPAlgo_CheckResult;
+  BOPAlgo_MakerVolume: typeof BOPAlgo_MakerVolume;
+  BOPAlgo_MakerVolume_1: typeof BOPAlgo_MakerVolume_1;
+  BOPAlgo_MakerVolume_2: typeof BOPAlgo_MakerVolume_2;
+  BOPAlgo_ShellSplitter: typeof BOPAlgo_ShellSplitter;
+  BOPAlgo_ShellSplitter_1: typeof BOPAlgo_ShellSplitter_1;
+  BOPAlgo_ShellSplitter_2: typeof BOPAlgo_ShellSplitter_2;
+  BOPAlgo_Operation: BOPAlgo_Operation;
+  BOPAlgo_CellsBuilder: typeof BOPAlgo_CellsBuilder;
+  BOPAlgo_CellsBuilder_1: typeof BOPAlgo_CellsBuilder_1;
+  BOPAlgo_CellsBuilder_2: typeof BOPAlgo_CellsBuilder_2;
+  BOPAlgo_BOP: typeof BOPAlgo_BOP;
+  BOPAlgo_BOP_1: typeof BOPAlgo_BOP_1;
+  BOPAlgo_BOP_2: typeof BOPAlgo_BOP_2;
+  BOPAlgo_CheckerSI: typeof BOPAlgo_CheckerSI;
+  BOPAlgo_Splitter: typeof BOPAlgo_Splitter;
+  BOPAlgo_Splitter_1: typeof BOPAlgo_Splitter_1;
+  BOPAlgo_Splitter_2: typeof BOPAlgo_Splitter_2;
+  BOPAlgo_Tools: typeof BOPAlgo_Tools;
+  BOPAlgo_Options: typeof BOPAlgo_Options;
+  BOPAlgo_Options_1: typeof BOPAlgo_Options_1;
+  BOPAlgo_Options_2: typeof BOPAlgo_Options_2;
   IFSelect_ReturnStatus: IFSelect_ReturnStatus;
   XCAFApp_Application: typeof XCAFApp_Application;
   Handle_XCAFApp_Application: typeof Handle_XCAFApp_Application;
@@ -10943,6 +11437,8 @@ export type OpenCascadeInstance = {FS: typeof FS} & {
   BRepFeat_MakeDPrism_1: typeof BRepFeat_MakeDPrism_1;
   BRepFeat_MakeDPrism_2: typeof BRepFeat_MakeDPrism_2;
   BRepFeat_Form: typeof BRepFeat_Form;
+  BRepFeat_Builder: typeof BRepFeat_Builder;
+  BRepFeat_MakeCylindricalHole: typeof BRepFeat_MakeCylindricalHole;
   TNaming_NamedShape: typeof TNaming_NamedShape;
   GeomPlate_CurveConstraint: typeof GeomPlate_CurveConstraint;
   GeomPlate_CurveConstraint_1: typeof GeomPlate_CurveConstraint_1;

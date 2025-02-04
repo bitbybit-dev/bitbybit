@@ -1,6 +1,6 @@
 import {
     OpenCascadeInstance, TopoDS_Edge, TopoDS_Face,
-    TopoDS_Shape, TopoDS_Solid, TopoDS_Vertex, TopoDS_Wire
+    TopoDS_Shape, TopoDS_Solid, TopoDS_Vertex, TopoDS_Wire, TopoDS_Compound
 } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import * as Inputs from "../../api/inputs/inputs";
 import { EnumService } from "./enum.service";
@@ -167,6 +167,12 @@ export class ShapeGettersService {
             vertices.push(vertex);
         });
         return vertices;
+    }
+
+    getShapesOfCompound(inputs: Inputs.OCCT.ShapeDto<TopoDS_Compound>): TopoDS_Shape[] {
+        const shapes: TopoDS_Shape[] = [];
+        this.iteratorService.forEachShapeInCompound(inputs.shape, (_, shape) => { shapes.push(shape); });
+        return shapes;
     }
 
 }

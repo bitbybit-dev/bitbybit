@@ -125,4 +125,40 @@ export class IteratorService {
         anExplorer.delete();
     }
 
+    forEachCompound(shape: TopoDS_Shape, callback: (index: number, shape: TopoDS_Shape) => void): void {
+        let solidIndex = 0;
+        const anExplorer = new this.occ.TopExp_Explorer_2(shape,
+            (this.occ.TopAbs_ShapeEnum.TopAbs_COMPOUND as TopAbs_ShapeEnum),
+            (this.occ.TopAbs_ShapeEnum.TopAbs_SHAPE as TopAbs_ShapeEnum));
+        for (anExplorer.Init(shape,
+            (this.occ.TopAbs_ShapeEnum.TopAbs_COMPOUND as TopAbs_ShapeEnum),
+            (this.occ.TopAbs_ShapeEnum.TopAbs_SHAPE as TopAbs_ShapeEnum)); anExplorer.More(); anExplorer.Next()) {
+            callback(solidIndex++, anExplorer.Current());
+        }
+        anExplorer.delete();
+    }
+
+    forEachCompSolid(shape: TopoDS_Shape, callback: (index: number, shape: TopoDS_Shape) => void): void {
+        let solidIndex = 0;
+        const anExplorer = new this.occ.TopExp_Explorer_2(shape,
+            (this.occ.TopAbs_ShapeEnum.TopAbs_COMPSOLID as TopAbs_ShapeEnum),
+            (this.occ.TopAbs_ShapeEnum.TopAbs_SHAPE as TopAbs_ShapeEnum));
+        for (anExplorer.Init(shape,
+            (this.occ.TopAbs_ShapeEnum.TopAbs_COMPSOLID as TopAbs_ShapeEnum),
+            (this.occ.TopAbs_ShapeEnum.TopAbs_SHAPE as TopAbs_ShapeEnum)); anExplorer.More(); anExplorer.Next()) {
+            callback(solidIndex++, anExplorer.Current());
+        }
+        anExplorer.delete();
+    }
+    
+    forEachShapeInCompound(shape: TopoDS_Shape, callback: (index: number, shape: TopoDS_Shape) => void): void {
+        let solidIndex = 0;
+        const iterator = new this.occ.TopoDS_Iterator_1();
+    
+        for (iterator.Initialize(shape, true, true); iterator.More(); iterator.Next()) {
+            callback(solidIndex++, iterator.Value());
+        }
+        iterator.delete();
+    }
+
 }

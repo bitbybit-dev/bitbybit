@@ -3554,6 +3554,19 @@ export namespace OCCT {
          * @default undefined
          */
         shapes: T[];
+        /**
+         * Local fuzzy tolerance used for splitting
+         * @default 1.0e-4
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.000001
+         */
+        localFuzzyTolerance = 1.0e-4;
+        /**
+         * Set to true if you want to split the shape non-destructively
+         * @default true
+         */
+        nonDestructive = true;
     }
     export class UnionDto<T> {
         constructor(shapes?: T[], keepEdges?: boolean) {

@@ -302,13 +302,26 @@ export class OperationsService {
         return prismShape;
     }
 
-    splitShapeWithShapes(inputs: Inputs.OCCT.SplitDto<TopoDS_Shape>): TopoDS_Shape {
-        const listOfShapes = new this.occ.TopTools_ListOfShape_1();
-        inputs.shapes.forEach(shape => {
-            listOfShapes.Append_1(shape);
+    splitShapeWithShapes(inputs: Inputs.OCCT.SplitDto<TopoDS_Shape>): TopoDS_Shape[] {
+        const bopalgoBuilder = new this.occ.BOPAlgo_Builder_1();
+        bopalgoBuilder.SetNonDestructive(inputs.nonDestructive);
+        bopalgoBuilder.SetFuzzyValue(inputs.localFuzzyTolerance);
+        bopalgoBuilder.AddArgument(inputs.shape);
+        inputs.shapes.forEach(s => {
+            bopalgoBuilder.AddArgument(s);
         });
-        const shape = this.occ.BitByBitDev.BitSplit(inputs.shape, listOfShapes);
-        return shape;
+        bopalgoBuilder.Perform(new this.occ.Message_ProgressRange_1());
+        let shapes;
+        if(!inputs.nonDestructive){
+            const res = bopalgoBuilder.Modified(inputs.shape);
+            const shapeCompound = this.occ.BitByBitDev.BitListOfShapesToCompound(res);
+            shapes = this.shapeGettersService.getShapesOfCompound({shape: shapeCompound});
+        } else {
+            const res = bopalgoBuilder.Shape();
+            shapes = this.shapeGettersService.getShapesOfCompound({shape: res});
+        }
+
+        return shapes;
     }
 
     revolve(inputs: Inputs.OCCT.RevolveDto<TopoDS_Shape>) {

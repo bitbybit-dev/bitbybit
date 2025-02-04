@@ -105,14 +105,14 @@ export class OCCTOperations {
     }
 
     /**
-     * Splits the face with edges
-     * @param inputs Face to split and edges to split with
-     * @returns Resulting split shape
+     * Splits the shape with shapes
+     * @param inputs Shape to split and shapes to split with
+     * @returns Resulting shapes
      * @group divisions
      * @shortname split
      * @drawable true
      */
-    splitShapeWithShapes(inputs: Inputs.OCCT.SplitDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.OCCT.TopoDSShapePointer> {
+    splitShapeWithShapes(inputs: Inputs.OCCT.SplitDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.OCCT.TopoDSShapePointer[]> {
         return this.occWorkerManager.genericCallToWorkerPromise("operations.splitShapeWithShapes", inputs);
     }
 
