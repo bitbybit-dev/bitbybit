@@ -362,11 +362,13 @@ export class DrawHelper extends DrawHelperCore {
             },
             {
                 width,
+                materialType: BABYLON.GreasedLineMeshMaterialType.MATERIAL_TYPE_PBR,
                 color,
-
+                createAndAssignMaterial: true,
             },
             this.context.scene
         );
+        (result.material as BABYLON.PBRMaterial).albedoColor = color;
         result.material.alpha = visibility;
         return result as BABYLON.GreasedLineMesh;
     }
