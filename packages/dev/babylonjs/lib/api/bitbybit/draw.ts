@@ -49,6 +49,7 @@ export class Draw extends DrawCore {
      * @group draw async
      * @shortname draw async void
      * @disposableOutput true
+     * @drawable true
      */
     async drawAnyAsyncNoReturn(inputs: Inputs.Draw.DrawAny): Promise<void> {
         this.drawAnyAsync(inputs);
@@ -60,6 +61,7 @@ export class Draw extends DrawCore {
      * @returns BabylonJS Mesh Promise
      * @group draw async
      * @shortname draw async
+     * @drawable true
      * @disposableOutput true
      */
     async drawAnyAsync(inputs: Inputs.Draw.DrawAny): Promise<BABYLON.Mesh> {

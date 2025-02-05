@@ -4,6 +4,30 @@
       - symbol: Adaptor3d_Curve
       - symbol: Adaptor3d_Surface
       - symbol: Approx_ParametrizationType
+      - symbol: BOPAlgo_Algo
+      - symbol: BOPAlgo_ArgumentAnalyzer
+      - symbol: BOPAlgo_BOP
+      - symbol: BOPAlgo_Builder
+      - symbol: BOPAlgo_BuilderArea
+      - symbol: BOPAlgo_BuilderFace
+      - symbol: BOPAlgo_BuilderShape
+      - symbol: BOPAlgo_BuilderSolid
+      - symbol: BOPAlgo_CellsBuilder
+      - symbol: BOPAlgo_CheckResult
+      - symbol: BOPAlgo_CheckStatus
+      - symbol: BOPAlgo_CheckerSI
+      - symbol: BOPAlgo_GlueEnum
+      - symbol: BOPAlgo_ListOfCheckResult
+      - symbol: BOPAlgo_MakerVolume
+      - symbol: BOPAlgo_Operation
+      - symbol: BOPAlgo_Options
+      - symbol: BOPAlgo_Section
+      - symbol: BOPAlgo_SectionAttribute
+      - symbol: BOPAlgo_ShellSplitter
+      - symbol: BOPAlgo_Splitter
+      - symbol: BOPAlgo_Tools
+      - symbol: BOPAlgo_WireEdgeSet
+      - symbol: BOPAlgo_WireSplitter
       - symbol: BRepAdaptor_CompCurve
       - symbol: BRepAdaptor_Curve
       - symbol: BRepAlgoAPI_Algo
@@ -53,7 +77,9 @@
       - symbol: BRepExtrema_SolutionElem
       - symbol: BRepExtrema_SupportType
       - symbol: BRepExtrema_TriangleSet
+      - symbol: BRepFeat_Builder
       - symbol: BRepFeat_Form
+      - symbol: BRepFeat_MakeCylindricalHole
       - symbol: BRepFeat_MakeDPrism
       - symbol: BRepFeat_SplitShape
       - symbol: BRepFill_Filling
@@ -352,6 +378,7 @@
     #include <BRepFeat_SplitShape.hxx>
     #include <TopTools_SequenceOfShape.hxx>
     #include <TopoDS_Shape.hxx>
+    #include <vector>
     
     typedef Handle(IMeshTools_Context) Handle_IMeshTools_Context;
     class BitByBitDev {
@@ -390,6 +417,22 @@
             splitShape.Add(shapesToSplitWithSequence);
             splitShape.Build();
             return splitShape.Shape();
+        }
+    public:
+        static TopoDS_Compound BitListOfShapesToCompound(const TopTools_ListOfShape& shapesToSplitWith) {
+            BRep_Builder builder;
+            TopoDS_Compound compound;
+            builder.MakeCompound(compound); // Initialize the compound shape
+
+            try {
+                for (TopTools_ListIteratorOfListOfShape it(shapesToSplitWith); it.More(); it.Next()) {
+                    builder.Add(compound, it.Value()); // Add each shape to the compound
+                }
+            } catch (...) {
+                return TopoDS_Compound(); // Return an empty compound on failure
+            }
+
+            return compound; // Return the resulting compound shape
         }
     };
     
