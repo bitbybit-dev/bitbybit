@@ -2,6 +2,7 @@
 
 Visit [bitbybit.dev](https://bitbybit.dev) to use our full cloud platform.   
 Best way to support us - [Silver or Gold plan subscription](https://bitbybit.dev/auth/pick-plan)    
+Buy unique designs from our [Crafts shop](https://crafts.bitbybit.dev)       
 Check out [3D Bits app for Shopify](https://apps.shopify.com/3d-bits-1)   
 
 <img src="https://app.bitbybit.dev/assets/git-cover.png" alt="Picture showing bitbybit.dev platform">
