@@ -2034,6 +2034,40 @@ export namespace OCCT {
          */
         indexes?: number[];
     }
+    export class FilletShapesDto<T> {
+        constructor(shapes?: T[], radius?: number, radiusList?: number[], indexes?: number[]) {
+            if (shapes !== undefined) { this.shapes = shapes; }
+            if (radius !== undefined) { this.radius = radius; }
+            if (radiusList !== undefined) { this.radiusList = radiusList; }
+            if (indexes !== undefined) { this.indexes = indexes; }
+        }
+        /**
+         * Shapes to apply the fillets
+         * @default undefined
+         */
+        shapes: T[];
+        /**
+         * Radius of the fillets
+         * @default 0.1
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.1
+         * @optional true
+         */
+        radius? = 0.1;
+        /**
+         * Radius list
+         * @default undefined
+         * @optional true
+         */
+        radiusList?: number[];
+        /**
+         * List of edge indexes to which apply the fillet, if left empty all edges will be rounded
+         * @default undefined
+         * @optional true
+         */
+        indexes?: number[];
+    }
     export class FilletEdgesListDto<T, U> {
         constructor(shape?: T, edges?: U[], radiusList?: number[]) {
             if (shape !== undefined) { this.shape = shape; }
@@ -2166,6 +2200,47 @@ export namespace OCCT {
          * @default undefined
          */
         paramsU: number[];
+    }
+
+    export class Fillet3DWiresDto<T> {
+        constructor(shapes?: T[], radius?: number, direction?: Base.Vector3, radiusList?: number[], indexes?: number[],) {
+            if (shapes !== undefined) { this.shapes = shapes; }
+            if (radius !== undefined) { this.radius = radius; }
+            if (direction !== undefined) { this.direction = direction; }
+            if (radiusList !== undefined) { this.radiusList = radiusList; }
+            if (indexes !== undefined) { this.indexes = indexes; }
+        }
+        /**
+         * Shapes to apply the fillets on
+         * @default undefined
+         */
+        shapes: T[];
+        /**
+         * Radius of the fillets
+         * @default 0.1
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.1
+         * @optional true
+         */
+        radius? = 0.1;
+        /**
+         * Radius list
+         * @default undefined
+         * @optional true
+         */
+        radiusList?: number[];
+        /**
+         * List of edge indexes to which apply the fillet, if left empty all edges will be rounded
+         * @default undefined
+         * @optional true
+         */
+        indexes?: number[];
+        /**
+         * Orientation direction for the fillet
+         * @default [0, 1, 0]
+         */
+        direction: Base.Vector3 = [0, 1, 0];
     }
     export class Fillet3DWireDto<T> {
         constructor(shape?: T, radius?: number, direction?: Base.Vector3, radiusList?: number[], indexes?: number[],) {

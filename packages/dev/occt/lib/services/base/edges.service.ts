@@ -185,6 +185,13 @@ export class EdgesService {
         return length;
     }
 
+    getEdgeLengthsOfShape(inputs: Inputs.OCCT.ShapeDto<TopoDS_Edge>): number[] {
+        const edgesOnShape = this.shapeGettersService.getEdges({ shape: inputs.shape });
+        return edgesOnShape.map(edge => {
+            return this.getEdgeLength({ shape: edge });
+        });
+    }
+
     getEdgesLengths(inputs: Inputs.OCCT.ShapesDto<TopoDS_Edge>): number[] {
         if (inputs.shapes === undefined) {
             throw (Error(("Shapes are not defined")));

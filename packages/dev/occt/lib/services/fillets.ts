@@ -90,12 +90,31 @@ export class OCCTFillets {
         return result;
     }
 
+    fillet3DWires(inputs: Inputs.OCCT.Fillet3DWiresDto<TopoDS_Wire>) {
+        return inputs.shapes.map(shape => this.och.filletsService.fillet3DWire({
+            shape,
+            radius: inputs.radius,
+            radiusList: inputs.radiusList,
+            indexes: inputs.indexes,
+            direction: inputs.direction
+        }));
+    }
+
     fillet3DWire(inputs: Inputs.OCCT.Fillet3DWireDto<TopoDS_Wire>) {
         return this.och.filletsService.fillet3DWire(inputs);
     }
 
     fillet2d(inputs: Inputs.OCCT.FilletDto<TopoDS_Wire | TopoDS_Face>): TopoDS_Face | TopoDS_Wire {
         return this.och.filletsService.fillet2d(inputs);
+    }
+
+    fillet2dShapes(inputs: Inputs.OCCT.FilletShapesDto<TopoDS_Wire | TopoDS_Face>): TopoDS_Face[] | TopoDS_Wire[] {
+        return inputs.shapes.map(shape => this.och.filletsService.fillet2d({
+            shape,
+            radius: inputs.radius,
+            radiusList: inputs.radiusList,
+            indexes: inputs.indexes
+        }));
     }
 
 }
