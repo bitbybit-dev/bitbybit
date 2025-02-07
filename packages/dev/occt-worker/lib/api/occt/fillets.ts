@@ -96,6 +96,21 @@ export class OCCTFillets {
     }
 
     /**
+    * Fillets OpenCascade 3d wires, this algorithm takes one guiding direction for fillets to be formed. 
+    * It does not respect tangent directions on each filleted corner. This algorithm is based on extruding wires along the given direction
+    * to form a shell, then filleting the shell and finally extracting the filleted wire from the shell itself.
+    * Make sure you provide a direction that is not parallel to the wire and that forms high enough extrusion for the fillet to succeed.
+    * @param inputs Shapes, radius and edge indexes to fillet
+    * @returns OpenCascade shape with filleted edges
+    * @group 3d fillets
+    * @shortname fillet 3d wires
+    * @drawable true
+    */
+    fillet3DWires(inputs: Inputs.OCCT.Fillet3DWiresDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.OCCT.TopoDSShapePointer[]> {
+        return this.occWorkerManager.genericCallToWorkerPromise("fillets.fillet3DWires", inputs);
+    }
+
+    /**
      * Chamfer OpenCascade Shape edges
      * @param inputs Shape, distance and edge indexes to chamfer
      * @returns OpenCascade shape with chamfered edges
@@ -192,7 +207,7 @@ export class OCCTFillets {
     }
 
     /**
-     * Fillets 2d wires or faces
+     * Fillets 2d wire or face
      * @param inputs Shape
      * @returns OpenCascade filleted shape result
      * @group 2d fillets
@@ -201,6 +216,18 @@ export class OCCTFillets {
      */
     fillet2d(inputs: Inputs.OCCT.FilletDto<Inputs.OCCT.TopoDSWirePointer | Inputs.OCCT.TopoDSFacePointer>): Promise<Inputs.OCCT.TopoDSShapePointer> {
         return this.occWorkerManager.genericCallToWorkerPromise("fillets.fillet2d", inputs);
+    }
+
+    /**
+     * Fillets 2d wires or faces
+     * @param inputs Shapes
+     * @returns OpenCascade filleted shapes result
+     * @group 2d fillets
+     * @shortname fillet 2d wires or faces
+     * @drawable true
+     */
+    fillet2dShapes(inputs: Inputs.OCCT.FilletShapesDto<Inputs.OCCT.TopoDSWirePointer | Inputs.OCCT.TopoDSFacePointer>): Promise<Inputs.OCCT.TopoDSShapePointer[]> {
+        return this.occWorkerManager.genericCallToWorkerPromise("fillets.fillet2dShapes", inputs);
     }
 
     /**

@@ -122,6 +122,10 @@ export class OCCTEdge {
         return this.och.edgesService.getEdgeLength(inputs);
     }
 
+    getEdgeLengthsOfShape(inputs: Inputs.OCCT.ShapeDto<TopoDS_Edge>): number[] {
+        return this.och.edgesService.getEdgeLengthsOfShape(inputs);
+    }
+
     getEdgesLengths(inputs: Inputs.OCCT.ShapesDto<TopoDS_Edge>): number[] {
         return this.och.edgesService.getEdgesLengths(inputs);
     }

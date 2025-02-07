@@ -206,11 +206,23 @@ export class OCCTEdge {
      * @param inputs edge
      * @returns Length
      * @group get
-     * @shortname length
+     * @shortname edge length
      * @drawable false
      */
     getEdgeLength(inputs: Inputs.OCCT.ShapeDto<Inputs.OCCT.TopoDSEdgePointer>): Promise<number> {
         return this.occWorkerManager.genericCallToWorkerPromise("shapes.edge.getEdgeLength", inputs);
+    }
+
+    /**
+     * Gets the edge lengths of the shape
+     * @param inputs shape
+     * @returns Lengths
+     * @group get
+     * @shortname edge lengths of shape
+     * @drawable false
+     */
+    getEdgeLengthsOfShape(inputs: Inputs.OCCT.ShapeDto<Inputs.OCCT.TopoDSShapePointer>): Promise<number[]> {
+        return this.occWorkerManager.genericCallToWorkerPromise("shapes.edge.getEdgeLengthsOfShape", inputs);
     }
 
     /**
