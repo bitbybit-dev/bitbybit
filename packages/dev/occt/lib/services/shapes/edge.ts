@@ -73,33 +73,73 @@ export class OCCTEdge {
     pointOnEdgeAtParam(inputs: Inputs.OCCT.DataOnGeometryAtParamDto<TopoDS_Edge>): Inputs.Base.Point3 {
         return this.och.edgesService.pointOnEdgeAtParam(inputs);
     }
+    
+    pointsOnEdgesAtParam(inputs: Inputs.OCCT.DataOnGeometryesAtParamDto<TopoDS_Edge>): Inputs.Base.Point3[] {
+        return inputs.shapes.map((shape) => this.och.edgesService.pointOnEdgeAtParam({ shape, param: inputs.param }));
+    }
 
     tangentOnEdgeAtParam(inputs: Inputs.OCCT.DataOnGeometryAtParamDto<TopoDS_Edge>): Inputs.Base.Vector3 {
         return this.och.edgesService.tangentOnEdgeAtParam(inputs);
+    }
+
+    tangentsOnEdgesAtParam(inputs: Inputs.OCCT.DataOnGeometryesAtParamDto<TopoDS_Edge>): Inputs.Base.Point3[] {
+        return inputs.shapes.map((shape) => this.och.edgesService.tangentOnEdgeAtParam({ shape, param: inputs.param }));
     }
 
     startPointOnEdge(inputs: Inputs.OCCT.ShapeDto<TopoDS_Edge>): Inputs.Base.Point3 {
         return this.och.edgesService.startPointOnEdge(inputs);
     }
 
+    startPointsOnEdges(inputs: Inputs.OCCT.ShapesDto<TopoDS_Edge>): Inputs.Base.Point3[] {
+        return inputs.shapes.map(shape => this.och.edgesService.startPointOnEdge({ shape }));
+    }
+
     endPointOnEdge(inputs: Inputs.OCCT.ShapeDto<TopoDS_Edge>): Inputs.Base.Point3 {
         return this.och.edgesService.endPointOnEdge(inputs);
+    }
+
+    endPointsOnEdges(inputs: Inputs.OCCT.ShapesDto<TopoDS_Edge>): Inputs.Base.Point3[] {
+        return inputs.shapes.map(shape => this.och.edgesService.endPointOnEdge({ shape }));
     }
 
     pointOnEdgeAtLength(inputs: Inputs.OCCT.DataOnGeometryAtLengthDto<TopoDS_Edge>): Inputs.Base.Point3 {
         return this.och.edgesService.pointOnEdgeAtLength(inputs);
     }
 
+    pointsOnEdgesAtLength(inputs: Inputs.OCCT.DataOnGeometryesAtLengthDto<TopoDS_Edge>): Inputs.Base.Point3[] {
+        return inputs.shapes.map((shape) => this.och.edgesService.pointOnEdgeAtLength({ shape, length: inputs.length }));
+    }
+
     tangentOnEdgeAtLength(inputs: Inputs.OCCT.DataOnGeometryAtLengthDto<TopoDS_Edge>): Inputs.Base.Vector3 {
         return this.och.edgesService.tangentOnEdgeAtLength(inputs);
+    }
+
+    tangentsOnEdgesAtLength(inputs: Inputs.OCCT.DataOnGeometryesAtLengthDto<TopoDS_Edge>): Inputs.Base.Vector3[] {
+        return inputs.shapes.map((shape) => this.och.edgesService.tangentOnEdgeAtLength({ shape, length: inputs.length }));
     }
 
     divideEdgeByParamsToPoints(inputs: Inputs.OCCT.DivideDto<TopoDS_Edge>): Inputs.Base.Point3[] {
         return this.och.edgesService.divideEdgeByParamsToPoints(inputs);
     }
 
+    divideEdgesByParamsToPoints(inputs: Inputs.OCCT.DivideShapesDto<TopoDS_Edge>): Inputs.Base.Point3[][] {
+        return inputs.shapes.map(shape => this.divideEdgeByParamsToPoints({ shape, nrOfDivisions: inputs.nrOfDivisions, removeEndPoint: inputs.removeEndPoint, removeStartPoint: inputs.removeStartPoint }));
+    }
+
     divideEdgeByEqualDistanceToPoints(inputs: Inputs.OCCT.DivideDto<TopoDS_Edge>): Inputs.Base.Point3[] {
         return this.och.edgesService.divideEdgeByEqualDistanceToPoints(inputs);
+    }
+
+    divideEdgesByEqualDistanceToPoints(inputs: Inputs.OCCT.DivideShapesDto<TopoDS_Edge>): Inputs.Base.Point3[][] {
+        return inputs.shapes.map(shape => this.divideEdgeByEqualDistanceToPoints({ shape, nrOfDivisions: inputs.nrOfDivisions, removeEndPoint: inputs.removeEndPoint, removeStartPoint: inputs.removeStartPoint }));
+    }
+
+    isEdgeLinear(inputs: Inputs.OCCT.ShapeDto<TopoDS_Shape>){
+        return this.och.edgesService.isEdgeLinear(inputs);
+    }
+
+    isEdgeCircular(inputs: Inputs.OCCT.ShapeDto<TopoDS_Shape>){
+        return this.och.edgesService.isEdgeCircular(inputs);
     }
 
     getEdges(inputs: Inputs.OCCT.ShapeDto<TopoDS_Shape>) {

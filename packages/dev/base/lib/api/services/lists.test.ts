@@ -1,5 +1,5 @@
 import { Lists } from "./lists";
-import * as Inputs from "../inputs/inputs";
+import * as Inputs from "../inputs";
 
 describe("Lists unit tests", () => {
     let lists: Lists;

@@ -6,3 +6,4 @@ export * from "./point-inputs";
 export * from "./text-inputs";
 export * from "./vector-inputs";
 export * from "./transforms-inputs";
+export * from "./base-inputs";

@@ -1,6 +1,5 @@
 import { GeometryHelper } from "./geometry-helper";
-import * as Inputs from "../inputs/inputs";
-import { Base } from "../inputs/inputs";
+import * as Inputs from "../inputs";
 import { Transforms } from "./transforms";
 
 /**
@@ -252,7 +251,7 @@ export class Point {
      * @shortname average point
      * @drawable true
      */
-    averagePoint(inputs: Inputs.Point.PointsDto): Base.Point3 {
+    averagePoint(inputs: Inputs.Point.PointsDto): Inputs.Base.Point3 {
         const xVals = [];
         const yVals = [];
         const zVals = [];

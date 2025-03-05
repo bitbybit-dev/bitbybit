@@ -186,4 +186,12 @@ export class OCCTFace {
     filterFacePoints(inputs: Inputs.OCCT.FilterFacePointsDto<TopoDS_Face>): Base.Point3[] {
         return this.och.facesService.filterFacePoints(inputs);
     }
+
+    filterFacesPoints(inputs: Inputs.OCCT.FilterFacesPointsDto<TopoDS_Face>): Base.Point3[] | Base.Point3[][] {
+        let res: Base.Point3[] | Base.Point3[][] = inputs.shapes.map(s => this.och.facesService.filterFacePoints({ ...inputs, shape: s }));
+        if (inputs.flatPointsArray) {
+            res = res.flat();
+        }
+        return res;
+    }
 }

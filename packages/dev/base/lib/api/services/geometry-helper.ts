@@ -1,4 +1,4 @@
-import * as Inputs from "../inputs/inputs";
+import * as Inputs from "../inputs";
 
 export class GeometryHelper {
 
