@@ -371,7 +371,7 @@ describe("OCCT edge unit tests", () => {
     });
 
     it("should get edge lengths", async () => {
-        const cylinder = occHelper.entitiesService.bRepPrimAPIMakeCylinder([0, 0, 0], [0, 1, 0], 1, 2);
+        const cylinder = occHelper.entitiesService.bRepPrimAPIMakeCylinder([0, 0, 0], [0, 1, 0], 1, 2, Math.PI * 2);
         const edges = edge.getEdges({ shape: cylinder });
         const lengths = edge.getEdgesLengths({ shapes: edges });
         expect(lengths.length).toBe(3);

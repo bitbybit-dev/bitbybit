@@ -1,4 +1,4 @@
-import * as Inputs from "../inputs/inputs";
+import * as Inputs from "../inputs";
 import { MathBitByBit } from "./math";
 
 export class Color {

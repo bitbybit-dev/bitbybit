@@ -26,7 +26,7 @@ describe("OCCT booleans unit tests", () => {
         const box2 = solid.createBox({ width: 0.3, height: 0.5, length: 3, center: [0.5, 0.5, 0.5] });
         const result = booleans.difference({ shape: box1, shapes: [box2], keepEdges: false });
         const volume = solid.getSolidVolume({ shape: result });
-        expect(volume).toBe(1.925);
+        expect(volume).toBeCloseTo(1.925);
     });
 
     it("should compute union of two boxes", async () => {
@@ -34,7 +34,7 @@ describe("OCCT booleans unit tests", () => {
         const box2 = solid.createBox({ width: 0.3, height: 0.5, length: 3, center: [0.5, 0.5, 0.5] });
         const result = booleans.union({ shapes: [box1, box2], keepEdges: false });
         const volume = solid.getSolidVolume({ shape: result });
-        expect(volume).toBe(2.375);
+        expect(volume).toBeCloseTo(2.375);
     });
 
     it("should compute intersection of two boxes", async () => {

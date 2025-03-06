@@ -902,7 +902,7 @@ export class EdgesService {
     }
 
 
-    private isEdgeCircular(inputs: Inputs.OCCT.ShapeDto<TopoDS_Edge>) {
+    isEdgeCircular(inputs: Inputs.OCCT.ShapeDto<TopoDS_Edge>) {
         const curve = new this.occ.BRepAdaptor_Curve_2(inputs.shape);
         try {
             curve.Circle();
@@ -913,7 +913,7 @@ export class EdgesService {
         }
     }
 
-    private isEdgeLinear(inputs: Inputs.OCCT.ShapeDto<TopoDS_Edge>) {
+    isEdgeLinear(inputs: Inputs.OCCT.ShapeDto<TopoDS_Edge>) {
         const curve = new this.occ.BRepAdaptor_Curve_2(inputs.shape);
         try {
             curve.Line();

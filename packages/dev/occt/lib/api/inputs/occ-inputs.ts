@@ -1616,11 +1616,12 @@ export namespace OCCT {
         direction: Base.Vector3 = [0, 1, 0];
     }
     export class BoxDto {
-        constructor(width?: number, length?: number, height?: number, center?: Base.Point3) {
+        constructor(width?: number, length?: number, height?: number, center?: Base.Point3, originOnCenter?: boolean) {
             if (width !== undefined) { this.width = width; }
             if (length !== undefined) { this.length = length; }
             if (height !== undefined) { this.height = height; }
             if (center !== undefined) { this.center = center; }
+            if (originOnCenter !== undefined) { this.originOnCenter = originOnCenter; }
         }
         /**
          * Width of the box
@@ -1651,11 +1652,17 @@ export namespace OCCT {
          * @default [0, 0, 0]
          */
         center: Base.Point3 = [0, 0, 0];
+        /**
+         * Force origin to be on the center of the cube
+         * @default true
+         */
+        originOnCenter? = true;
     }
     export class CubeDto {
-        constructor(size?: number, center?: Base.Point3) {
+        constructor(size?: number, center?: Base.Point3, originOnCenter?: boolean) {
             if (size !== undefined) { this.size = size; }
             if (center !== undefined) { this.center = center; }
+            if (originOnCenter !== undefined) { this.originOnCenter = originOnCenter; }
         }
         /**
          * Size of the cube
@@ -1670,6 +1677,11 @@ export namespace OCCT {
          * @default [0, 0, 0]
          */
         center: Base.Point3 = [0, 0, 0];
+        /**
+         * Force origin to be on the center of the cube
+         * @default true
+         */
+        originOnCenter? = true;
     }
     export class BoxFromCornerDto {
         constructor(width?: number, length?: number, height?: number, corner?: Base.Point3) {
@@ -1948,11 +1960,13 @@ export namespace OCCT {
         end: Base.Point3 = [0, 0, 1];
     }
     export class CylinderDto {
-        constructor(radius?: number, height?: number, center?: Base.Point3, direction?: Base.Vector3) {
+        constructor(radius?: number, height?: number, center?: Base.Point3, direction?: Base.Vector3, angle?: number, originOnCenter?: boolean) {
             if (radius !== undefined) { this.radius = radius; }
             if (height !== undefined) { this.height = height; }
             if (center !== undefined) { this.center = center; }
             if (direction !== undefined) { this.direction = direction; }
+            if (angle !== undefined) { this.angle = angle; }
+            if (originOnCenter !== undefined) { this.originOnCenter = originOnCenter; }
         }
         /**
          * Radius of the cylinder
@@ -1980,6 +1994,19 @@ export namespace OCCT {
          * @default [0, 1, 0]
          */
         direction?: Base.Vector3 = [0, 1, 0];
+        /**
+         * Angle of the cylinder pie
+         * @default 360
+         * @minimum 0
+         * @maximum Infinity
+         * @step 1
+         */
+        angle? = 360;
+        /**
+         * Force origin to be on the center of cylinder
+         * @default false
+         */
+        originOnCenter? = false;
     }
     export class CylindersOnLinesDto {
         constructor(radius?: number, lines?: Base.Line3[]) {
@@ -3099,6 +3126,25 @@ export namespace OCCT {
          */
         param = 0.5;
     }
+    export class DataOnGeometryesAtParamDto<T> {
+        constructor(shapes: T[], param?: number) {
+            if (shapes !== undefined) { this.shapes = shapes; }
+            if (param !== undefined) { this.param = param; }
+        }
+        /**
+         * Shapes representing a geometry
+         * @default undefined
+         */
+        shapes: T[];
+        /**
+         * 0 - 1 value
+         * @default 0.5
+         * @minimum 0
+         * @maximum 1
+         * @step 0.1
+         */
+        param = 0.5;
+    }
     export class PointInFaceDto<T> {
         constructor(face: T, edge: T, tEdgeParam?: number, distance2DParam?: number) {
             if (face !== undefined) { this.face = face; }
@@ -3213,10 +3259,30 @@ export namespace OCCT {
             if (length !== undefined) { this.length = length; }
         }
         /**
-         * Shape representing a wire
+         * Shape
          * @default undefined
          */
         shape: T;
+        /**
+         * length at which to evaluate the point
+         * @default 0.5
+         * @minimum -Infinity
+         * @maximum Infinity
+         * @step 0.1
+         */
+        length = 0.5;
+    }
+
+    export class DataOnGeometryesAtLengthDto<T> {
+        constructor(shapes: T[], length?: number) {
+            if (shapes !== undefined) { this.shapes = shapes; }
+            if (length !== undefined) { this.length = length; }
+        }
+        /**
+         * Shapes
+         * @default undefined
+         */
+        shapes: T[];
         /**
          * length at which to evaluate the point
          * @default 0.5
@@ -4288,6 +4354,79 @@ export namespace OCCT {
         * @default true
         */
         concatBSplines = true;
+    }
+
+    export class FilterFacesPointsDto<T> {
+        constructor(shapes?: T[], points?: Base.Point3[], tolerance?: number, useBndBox?: boolean, gapTolerance?: number, keepIn?: boolean, keepOn?: boolean, keepOut?: boolean, keepUnknown?: boolean, flatPointsArray?: boolean) {
+            if (shapes !== undefined) { this.shapes = shapes; }
+            if (points !== undefined) { this.points = points; }
+            if (tolerance !== undefined) { this.tolerance = tolerance; }
+            if (useBndBox !== undefined) { this.useBndBox = useBndBox; }
+            if (gapTolerance !== undefined) { this.gapTolerance = gapTolerance; }
+            if (keepIn !== undefined) { this.keepIn = keepIn; }
+            if (keepOn !== undefined) { this.keepOn = keepOn; }
+            if (keepOut !== undefined) { this.keepOut = keepOut; }
+            if (keepUnknown !== undefined) { this.keepUnknown = keepUnknown; }
+            if (flatPointsArray !== undefined) { this.flatPointsArray = flatPointsArray; }
+        }
+        /**
+         * Face that will be used to filter points
+         * @default undefined
+         */
+        shapes: T[];
+        /**
+         * Points to filter
+         * @default undefined
+         */
+        points: Base.Point3[];
+        /**
+         * Tolerance used for filter
+         * @default 1.0e-4
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.000001
+         */
+        tolerance = 1.0e-4;
+        /**
+        * If true, the bounding box will be used to prefilter the points so that there are less points to check on actual face.
+        * Recommended to enable if face has more than 10 edges and geometry is mostly spline.
+        * This might be faster, but if it is known that points are withing bounding box, this may not be faster.
+        * @default false
+        */
+        useBndBox = false;
+        /**
+         * Gap tolerance
+         * @default 0.1
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.01
+         */
+        gapTolerance = 0.1;
+        /**
+        * Return points that are inside the face
+        * @default true
+        */
+        keepIn = true;
+        /**
+        * Return points that are on the border of the face
+        * @default true
+        */
+        keepOn = true;
+        /**
+        * Return points that are outside the borders of the face
+        * @default false
+        */
+        keepOut = false;
+        /**
+        * Return points that are classified as unknown
+        * @default false
+        */
+        keepUnknown = false;
+        /**
+         * Returns flat points array by default, otherwise returns points for each face in order provided
+         * @default true
+         */
+        flatPointsArray = true;
     }
     export class FilterFacePointsDto<T> {
         constructor(shape?: T, points?: Base.Point3[], tolerance?: number, useBndBox?: boolean, gapTolerance?: number, keepIn?: boolean, keepOn?: boolean, keepOut?: boolean, keepUnknown?: boolean) {

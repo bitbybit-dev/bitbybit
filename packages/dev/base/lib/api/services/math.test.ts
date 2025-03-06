@@ -1,5 +1,5 @@
 import { MathBitByBit } from "./math";
-import * as Inputs from "../inputs/inputs";
+import * as Inputs from "../inputs";
 
 describe("Math unit tests", () => {
     let math: MathBitByBit;

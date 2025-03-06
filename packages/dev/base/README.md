@@ -2,8 +2,8 @@
 
 Visit [bitbybit.dev](https://bitbybit.dev) to use our full cloud platform.   
 Best way to support us - [Silver or Gold plan subscription](https://bitbybit.dev/auth/pick-plan)    
-Buy unique designs from our [Crafts shop](https://crafts.bitbybit.dev)       
-Check out [3D Bits app for Shopify](https://apps.shopify.com/3d-bits-1)   
+Buy unique products from our [Crafts shop](https://crafts.bitbybit.dev) all designed with Bitbybit algorithms       
+Check out [3D Bits app for Shopify](https://apps.shopify.com/3d-bits-1) also used in our Crafts shop   
 
 <img src="https://app.bitbybit.dev/assets/git-cover.png" alt="Picture showing bitbybit.dev platform">
 
@@ -21,7 +21,6 @@ This package is already used or will be used in these packages:
 [@bitbybit-dev/manifold-worker](https://www.npmjs.com/package/@bitbybit-dev/manifold-worker)   
 [@bitbybit-dev/occt](https://www.npmjs.com/package/@bitbybit-dev/occt)   
 [@bitbybit-dev/occt-worker](https://www.npmjs.com/package/@bitbybit-dev/occt-worker)   
-[@bitbybit-dev/base](https://www.npmjs.com/package/@bitbybit-dev/base)   
 
 This package should work in Node and browser based applications and should provide generic layer which could be helpful to all higher-level CAD algorithms and kernels. Algorithms of this base layer are also exposed on our bitbybit.dev Rete, Blockly & Monaco editors.
 

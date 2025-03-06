@@ -1,6 +1,6 @@
 {
     "name": "@bitbybit-dev/occt",
-    "version": "0.19.4",
+    "version": "0.19.6",
     "description": "Bit By Bit Developers CAD algorithms using OpenCascade Technology kernel. Run in Node and in Browser.",
     "main": "index.js",
     "repository": {

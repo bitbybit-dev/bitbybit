@@ -64,7 +64,7 @@ describe("OCCT solid unit tests", () => {
     });
 
     it("should create a cylinder solid", async () => {
-        const cylinder = solid.createCylinder({ radius: 2, height: 2, center: [0, 0, 0], direction: [0, 0, 1] });
+        const cylinder = solid.createCylinder({ radius: 2, height: 2, center: [0, 0, 0], direction: [0, 0, 1], angle: 360 });
         expect(solid.getSolidVolume({ shape: cylinder })).toBeCloseTo(25.13274122871834);
         cylinder.delete();
     });

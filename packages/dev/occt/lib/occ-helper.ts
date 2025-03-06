@@ -72,7 +72,7 @@ export class OccHelper {
         this.shellsService = new ShellsService(occ, this.shapeGettersService, this.converterService, this.facesService);
 
         this.solidsService = new SolidsService(occ, this.shapeGettersService, this.facesService, this.enumService,
-            this.entitiesService, this.converterService, this.transformsService);
+            this.entitiesService, this.converterService, this.transformsService, this.vecHelper);
 
         this.operationsService = new OperationsService(occ, this.enumService, this.entitiesService, this.converterService,
             this.booleansService, this.shapeGettersService, this.edgesService, this.transformsService,

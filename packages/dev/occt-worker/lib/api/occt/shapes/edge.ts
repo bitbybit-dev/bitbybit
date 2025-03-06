@@ -310,6 +310,18 @@ export class OCCTEdge {
     }
 
     /**
+     * Gets the points on edges at param
+     * @param input edges
+     * @returns Points on param
+     * @group extract
+     * @shortname points on edges at param
+     * @drawable true
+     */
+    pointsOnEdgesAtParam(inputs: Inputs.OCCT.DataOnGeometryesAtParamDto<Inputs.OCCT.TopoDSEdgePointer>): Promise<Inputs.Base.Point3[]> {
+        return this.occWorkerManager.genericCallToWorkerPromise("shapes.edge.pointsOnEdgesAtParam", inputs);
+    }
+
+    /**
      * Gets the points of all edges from a shape in separate lists for each edge
      * @param inputs Shape
      * @returns OpenCascade points lists
@@ -346,6 +358,18 @@ export class OCCTEdge {
     }
 
     /**
+     * Gets the tangent vectors on edges at param
+     * @param input edges
+     * @returns Tangent vectors on param
+     * @group extract
+     * @shortname tangents on edges at param
+     * @drawable true
+     */
+    tangentsOnEdgesAtParam(inputs: Inputs.OCCT.DataOnGeometryesAtParamDto<Inputs.OCCT.TopoDSEdgePointer>): Promise<Inputs.Base.Point3[]> {
+        return this.occWorkerManager.genericCallToWorkerPromise("shapes.edge.tangentsOnEdgesAtParam", inputs);
+    }
+
+    /**
      * Gets the point on edge at length
      * @param input edge and length
      * @returns Point on edge
@@ -355,6 +379,18 @@ export class OCCTEdge {
      */
     pointOnEdgeAtLength(inputs: Inputs.OCCT.DataOnGeometryAtLengthDto<Inputs.OCCT.TopoDSEdgePointer>): Promise<Inputs.Base.Point3> {
         return this.occWorkerManager.genericCallToWorkerPromise("shapes.edge.pointOnEdgeAtLength", inputs);
+    }
+
+    /**
+     * Gets the points on edges at length
+     * @param input edges and length
+     * @returns Points on edges
+     * @group extract
+     * @shortname points at length
+     * @drawable true
+     */
+    pointsOnEdgesAtLength(inputs: Inputs.OCCT.DataOnGeometryesAtLengthDto<Inputs.OCCT.TopoDSEdgePointer>): Promise<Inputs.Base.Point3[]> {
+        return this.occWorkerManager.genericCallToWorkerPromise("shapes.edge.pointsOnEdgesAtLength", inputs);
     }
 
     /**
@@ -370,6 +406,18 @@ export class OCCTEdge {
     }
 
     /**
+     * Gets the tangent vectors on edges at length
+     * @param input edges and length
+     * @returns Tangent vectors on edges
+     * @group extract
+     * @shortname tangents at length
+     * @drawable true
+     */
+    tangentsOnEdgesAtLength(inputs: Inputs.OCCT.DataOnGeometryesAtLengthDto<Inputs.OCCT.TopoDSEdgePointer>): Promise<Inputs.Base.Point3[]> {
+        return this.occWorkerManager.genericCallToWorkerPromise("shapes.edge.tangentsOnEdgesAtLength", inputs);
+    }
+
+    /**
      * Gets the start point on edge
      * @param input edge
      * @returns Start point
@@ -379,6 +427,18 @@ export class OCCTEdge {
      */
     startPointOnEdge(inputs: Inputs.OCCT.ShapeDto<Inputs.OCCT.TopoDSEdgePointer>): Promise<Inputs.Base.Point3> {
         return this.occWorkerManager.genericCallToWorkerPromise("shapes.edge.startPointOnEdge", inputs);
+    }
+
+    /**
+     * Gets the start points on edges
+     * @param input edges
+     * @returns Start points
+     * @group extract
+     * @shortname start points
+     * @drawable true
+     */
+    startPointsOnEdges(inputs: Inputs.OCCT.ShapesDto<Inputs.OCCT.TopoDSEdgePointer>): Promise<Inputs.Base.Point3[]> {
+        return this.occWorkerManager.genericCallToWorkerPromise("shapes.edge.startPointsOnEdges", inputs);
     }
 
     /**
@@ -394,6 +454,18 @@ export class OCCTEdge {
     }
 
     /**
+     * Gets the end points on edges
+     * @param input edges
+     * @returns End points
+     * @group extract
+     * @shortname end points
+     * @drawable true
+     */
+    endPointsOnEdges(inputs: Inputs.OCCT.ShapesDto<Inputs.OCCT.TopoDSEdgePointer>): Promise<Inputs.Base.Point3[]> {
+        return this.occWorkerManager.genericCallToWorkerPromise("shapes.edge.endPointsOnEdges", inputs);
+    }
+
+    /**
      * Divides edge by params to points
      * @param input edge and division params
      * @returns Points
@@ -406,6 +478,18 @@ export class OCCTEdge {
     }
 
     /**
+     * Divides edges by params to points
+     * @param input edges and division params
+     * @returns Points
+     * @group extract
+     * @shortname points by params on edges
+     * @drawable false
+     */
+    divideEdgesByParamsToPoints(inputs: Inputs.OCCT.DivideShapesDto<Inputs.OCCT.TopoDSEdgePointer>): Promise<Inputs.Base.Point3[][]> {
+        return this.occWorkerManager.genericCallToWorkerPromise("shapes.edge.divideEdgesByParamsToPoints", inputs);
+    }
+
+    /**
      * Divides edge by length to points
      * @param input edge and division params
      * @returns Points
@@ -415,6 +499,18 @@ export class OCCTEdge {
      */
     divideEdgeByEqualDistanceToPoints(inputs: Inputs.OCCT.DivideDto<Inputs.OCCT.TopoDSEdgePointer>): Promise<Inputs.Base.Point3[]> {
         return this.occWorkerManager.genericCallToWorkerPromise("shapes.edge.divideEdgeByEqualDistanceToPoints", inputs);
+    }
+
+    /**
+     * Divides edges by length to points
+     * @param input edges and division params
+     * @returns Points
+     * @group extract
+     * @shortname points by distance on edges
+     * @drawable false
+     */
+    divideEdgesByEqualDistanceToPoints(inputs: Inputs.OCCT.DivideShapesDto<Inputs.OCCT.TopoDSEdgePointer>): Promise<Inputs.Base.Point3[][]> {
+        return this.occWorkerManager.genericCallToWorkerPromise("shapes.edge.divideEdgesByEqualDistanceToPoints", inputs);
     }
 
     /**
@@ -476,4 +572,30 @@ export class OCCTEdge {
     constraintTanCirclesOnCircleAndPnt(inputs: Inputs.OCCT.ConstraintTanCirclesOnCircleAndPntDto<Inputs.OCCT.TopoDSEdgePointer>): Promise<Inputs.OCCT.TopoDSShapePointer[]> {
         return this.occWorkerManager.genericCallToWorkerPromise("shapes.edge.constraintTanCirclesOnCircleAndPnt", inputs);
     }
+
+    /**
+     * Checks whether an edge is linear
+     * @param input edge
+     * @returns boolean if is linear
+     * @group is
+     * @shortname is edge linear
+     * @drawable false
+     */
+    isEdgeLinear(inputs: Inputs.OCCT.ShapeDto<Inputs.OCCT.TopoDSEdgePointer>): Promise<boolean> {
+        return this.occWorkerManager.genericCallToWorkerPromise("shapes.edge.isEdgeLinear", inputs);
+    }
+
+    /**
+     * Checks whether an edge is circular
+     * @param input edge
+     * @returns boolean if is circular
+     * @group is
+     * @shortname is edge circular
+     * @drawable false
+     */
+    isEdgeCircular(inputs: Inputs.OCCT.ShapeDto<Inputs.OCCT.TopoDSEdgePointer>): Promise<boolean> {
+        return this.occWorkerManager.genericCallToWorkerPromise("shapes.edge.isEdgeCircular", inputs);
+    }
+
+
 }

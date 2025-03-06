@@ -282,9 +282,9 @@ export class EntitiesService {
         return pln;
     }
 
-    bRepPrimAPIMakeCylinder(center: Base.Point3, direction: Base.Vector3, radius, height): TopoDS_Shape {
+    bRepPrimAPIMakeCylinder(center: Base.Point3, direction: Base.Vector3, radius: number, height: number, angle: number): TopoDS_Shape {
         const ax = this.gpAx2(center, direction);
-        const cylinderMaker = new this.occ.BRepPrimAPI_MakeCylinder_3(ax, radius, height);
+        const cylinderMaker = new this.occ.BRepPrimAPI_MakeCylinder_4(ax, radius, height, angle);
         const cylinder = cylinderMaker.Shape();
         cylinderMaker.delete();
         ax.delete();

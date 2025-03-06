@@ -1,4 +1,4 @@
-import * as Inputs from "../inputs/inputs";
+import * as Inputs from "../inputs";
 import { GeometryHelper } from "./geometry-helper";
 import { MathBitByBit } from "./math";
 import { Vector } from "./vector";

@@ -1,5 +1,5 @@
 import { Logic } from "./logic";
-import * as Inputs from "../inputs/inputs";
+import * as Inputs from "../inputs";
 
 describe("Logic unit tests", () => {
     let logic: Logic;

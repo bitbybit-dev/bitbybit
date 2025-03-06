@@ -7,7 +7,7 @@ import { EntitiesService } from "./entities.service";
 import { EnumService } from "./enum.service";
 import { ConverterService } from "./converter.service";
 import { TransformsService } from "./transforms.service";
-
+import { VectorHelperService } from "../../api/vector-helper.service";
 export class SolidsService {
 
     constructor(
@@ -18,6 +18,7 @@ export class SolidsService {
         private readonly entitiesService: EntitiesService,
         private readonly converterService: ConverterService,
         private readonly transformsService: TransformsService,
+        private readonly vectorHelperService: VectorHelperService
     ) { }
 
     fromClosedShell(inputs: Inputs.OCCT.ShapeDto<TopoDS_Shell>): TopoDS_Solid {
@@ -30,11 +31,25 @@ export class SolidsService {
     }
 
     createBox(inputs: Inputs.OCCT.BoxDto): TopoDS_Solid {
-        return this.entitiesService.bRepPrimAPIMakeBox(inputs.width, inputs.length, inputs.height, inputs.center);
+        let center = [...inputs.center];
+        if (inputs.originOnCenter === undefined) {
+            inputs.originOnCenter = true;
+        }
+        if (!inputs.originOnCenter) {
+            center = [center[0], center[1] + inputs.height / 2, center[2]];
+        }
+        return this.entitiesService.bRepPrimAPIMakeBox(inputs.width, inputs.length, inputs.height, center);
     }
 
     createCube(inputs: Inputs.OCCT.CubeDto): TopoDS_Solid {
-        return this.entitiesService.bRepPrimAPIMakeBox(inputs.size, inputs.size, inputs.size, inputs.center);
+        let center = [...inputs.center];
+        if (inputs.originOnCenter === undefined) {
+            inputs.originOnCenter = true;
+        }
+        if (!inputs.originOnCenter) {
+            center = [center[0], center[1] + inputs.size / 2, center[2]];
+        }
+        return this.entitiesService.bRepPrimAPIMakeBox(inputs.size, inputs.size, inputs.size, center);
     }
 
     createBoxFromCorner(inputs: Inputs.OCCT.BoxFromCornerDto): TopoDS_Solid {
@@ -45,12 +60,31 @@ export class SolidsService {
     }
 
     createCylinder(inputs: Inputs.OCCT.CylinderDto): TopoDS_Solid {
-        return this.entitiesService.bRepPrimAPIMakeCylinder(
+        const dir = inputs.direction ? inputs.direction : [0., 1., 0.];
+        let result;
+        let angle;
+        if (inputs.angle === undefined) {
+            angle = Math.PI * 2;
+        } else {
+            angle = this.vectorHelperService.degToRad(inputs.angle);
+        }
+        const cyl = this.entitiesService.bRepPrimAPIMakeCylinder(
             inputs.center,
-            inputs.direction ? inputs.direction : [0., 1., 0.],
+            dir as Base.Vector3,
             inputs.radius,
-            inputs.height
+            inputs.height,
+            angle
         );
+        if (inputs.originOnCenter) {
+            const halfHeight = -(inputs.height / 2);
+            const normDir = this.vectorHelperService.normalize(dir);
+            result = this.transformsService.translate({ shape: cyl, translation: [normDir[0] * halfHeight, normDir[1] * halfHeight, normDir[2] * halfHeight] });
+            cyl.delete();
+        }
+        else {
+            result = cyl;
+        }
+        return result;
     }
 
     createCylindersOnLines(inputs: Inputs.OCCT.CylindersOnLinesDto): TopoDS_Solid[] {
