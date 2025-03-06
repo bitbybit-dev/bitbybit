@@ -21,7 +21,6 @@ This package is already used or will be used in these packages:
 [@bitbybit-dev/manifold-worker](https://www.npmjs.com/package/@bitbybit-dev/manifold-worker)   
 [@bitbybit-dev/occt](https://www.npmjs.com/package/@bitbybit-dev/occt)   
 [@bitbybit-dev/occt-worker](https://www.npmjs.com/package/@bitbybit-dev/occt-worker)   
-[@bitbybit-dev/base](https://www.npmjs.com/package/@bitbybit-dev/base)   
 
 This package should work in Node and browser based applications and should provide generic layer which could be helpful to all higher-level CAD algorithms and kernels. Algorithms of this base layer are also exposed on our bitbybit.dev Rete, Blockly & Monaco editors.
 
