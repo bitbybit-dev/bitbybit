@@ -32,6 +32,9 @@ export class SolidsService {
 
     createBox(inputs: Inputs.OCCT.BoxDto): TopoDS_Solid {
         let center = [...inputs.center];
+        if (inputs.originOnCenter === undefined) {
+            inputs.originOnCenter = true;
+        }
         if (!inputs.originOnCenter) {
             center = [center[0], center[1] + inputs.height / 2, center[2]];
         }
@@ -40,6 +43,9 @@ export class SolidsService {
 
     createCube(inputs: Inputs.OCCT.CubeDto): TopoDS_Solid {
         let center = [...inputs.center];
+        if (inputs.originOnCenter === undefined) {
+            inputs.originOnCenter = true;
+        }
         if (!inputs.originOnCenter) {
             center = [center[0], center[1] + inputs.size / 2, center[2]];
         }
@@ -56,7 +62,12 @@ export class SolidsService {
     createCylinder(inputs: Inputs.OCCT.CylinderDto): TopoDS_Solid {
         const dir = inputs.direction ? inputs.direction : [0., 1., 0.];
         let result;
-        const angle = this.vectorHelperService.degToRad(inputs.angle);
+        let angle;
+        if (inputs.angle === undefined) {
+            angle = Math.PI * 2;
+        } else {
+            angle = this.vectorHelperService.degToRad(inputs.angle);
+        }
         const cyl = this.entitiesService.bRepPrimAPIMakeCylinder(
             inputs.center,
             dir as Base.Vector3,
