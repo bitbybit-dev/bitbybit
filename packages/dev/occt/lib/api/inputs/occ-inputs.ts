@@ -3581,9 +3581,11 @@ export namespace OCCT {
         face: U;
     }
     export class PipeWiresCylindricalDto<T> {
-        constructor(shapes?: T[], radius?: number) {
+        constructor(shapes?: T[], radius?: number, withContact?: boolean, withCorrection?: boolean) {
             if (shapes !== undefined) { this.shapes = shapes; }
             if (radius !== undefined) { this.radius = radius; }
+            if (withContact !== undefined) { this.withContact = withContact; }
+            if (withCorrection !== undefined) { this.withCorrection; }
         }
         /**
          * Wire paths to pipe
@@ -3598,11 +3600,23 @@ export namespace OCCT {
          * @step 1
          */
         radius = 0.1;
+        /**
+         * If withContact is true, the section is translated to be in contact with the spine.
+         * @default false
+         */
+        withContact = false;
+        /**
+         * If withCorrection is true, the section is rotated to be orthogonal to the spine's tangent in the correspondent point.
+         * @default false
+         */
+        withCorrection = false;
     }
     export class PipeWireCylindricalDto<T> {
-        constructor(shape?: T, radius?: number) {
+        constructor(shape?: T, radius?: number, withContact?: boolean, withCorrection?: boolean) {
             if (shape !== undefined) { this.shape = shape; }
             if (radius !== undefined) { this.radius = radius; }
+            if (withContact !== undefined) { this.withContact = withContact; }
+            if (withCorrection !== undefined) { this.withCorrection; }
         }
         /**
          * Wire path to pipe
@@ -3617,12 +3631,24 @@ export namespace OCCT {
          * @step 1
          */
         radius = 0.1;
+        /**
+         * If withContact is true, the section is translated to be in contact with the spine.
+         * @default false
+         */
+        withContact = false;
+        /**
+         * If withCorrection is true, the section is rotated to be orthogonal to the spine's tangent in the correspondent point.
+         * @default false
+         */
+        withCorrection = false;
     }
     export class PipePolygonWireNGonDto<T> {
-        constructor(shapes?: T, radius?: number, nrCorners?: number) {
+        constructor(shapes?: T, radius?: number, nrCorners?: number, withContact?: boolean, withCorrection?: boolean) {
             if (shapes !== undefined) { this.shape = shapes; }
             if (radius !== undefined) { this.radius = radius; }
             if (nrCorners !== undefined) { this.nrCorners = nrCorners; }
+            if (withContact !== undefined) { this.withContact = withContact; }
+            if (withCorrection !== undefined) { this.withCorrection; }
         }
         /**
          * Wire path to pipe
@@ -3645,6 +3671,16 @@ export namespace OCCT {
          * @step 1
          */
         nrCorners = 6;
+        /**
+         * If withContact is true, the section is translated to be in contact with the spine.
+         * @default false
+         */
+        withContact = false;
+        /**
+         * If withCorrection is true, the section is rotated to be orthogonal to the spine's tangent in the correspondent point.
+         * @default false
+         */
+        withCorrection = false;
     }
     export class ExtrudeDto<T> {
         constructor(shape?: T, direction?: Base.Vector3) {
@@ -3954,10 +3990,11 @@ export namespace OCCT {
         index = 1;
     }
     export class RotationExtrudeDto<T> {
-        constructor(shape?: T, height?: number, angle?: number) {
+        constructor(shape?: T, height?: number, angle?: number, makeSolid?: boolean) {
             if (shape !== undefined) { this.shape = shape; }
             if (height !== undefined) { this.height = height; }
             if (angle !== undefined) { this.angle = angle; }
+            if (makeSolid !== undefined) { this.makeSolid = makeSolid; }
         }
         /**
          * Wire to extrude by rotating
@@ -3980,6 +4017,11 @@ export namespace OCCT {
          * @step 1
          */
         angle = 360;
+        /**
+         * Make solid of the result
+         * @default true
+         */
+        makeSolid = true;
     }
 
     // Threading : Create Surfaces

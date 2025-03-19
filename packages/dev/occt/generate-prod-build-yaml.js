@@ -143,6 +143,7 @@ async function start() {
         "GeomLib",
         "GeomAPI",
         "GeomAPI_PointsToBSpline",
+        "GeomAPI_ProjectPointOnCurve",
         "Geom_BezierCurve",
         "BitByBitDev",
         "gp_Trsf2d",

@@ -91,7 +91,7 @@ export class WiresService {
         reversedEdges.forEach(e => e.delete());
         return result;
     }
-    
+
     createChristmasTreeWire(inputs: Inputs.OCCT.ChristmasTreeDto) {
         const frameInner = this.createLineWire({
             start: [inputs.innerDist, 0, 0],
@@ -492,84 +492,303 @@ export class WiresService {
 
     }
 
-    splitOnPoints(inputs: Inputs.OCCT.SplitWireOnPointsDto<TopoDS_Wire>): TopoDS_Wire[] {
-
+    isWireClosed(inputs: Inputs.OCCT.ShapeDto<TopoDS_Wire>): boolean {
         const tolerance = 1.0e-7;
         const startPointOnWire = this.startPointOnWire({ shape: inputs.shape });
         const endPointOnWire = this.endPointOnWire({ shape: inputs.shape });
 
         // This is needed to make follow up algorithm to work properly on open wires
         const wireIsClosed = this.vecHelper.vectorsTheSame(endPointOnWire, startPointOnWire, tolerance);
-        if (!wireIsClosed) {
-            if (!inputs.points.some(p => this.vecHelper.vectorsTheSame(p, startPointOnWire, tolerance))) {
-                inputs.points.push(startPointOnWire);
-            }
+        return wireIsClosed;
+    }
 
-            if (!inputs.points.some(p => this.vecHelper.vectorsTheSame(p, endPointOnWire, tolerance))) {
-                inputs.points.push(endPointOnWire);
-            }
-        }
-
-        const shortLines = this.createLines({
-            lines: inputs.points.map(p => ({ start: p, end: [p[0], p[1] + tolerance, p[2]] as Inputs.Base.Point3 })),
-            returnCompound: false
-        }) as TopoDS_Wire[];
-
-        const diff = this.booleansService.difference({ shape: inputs.shape, shapes: shortLines, keepEdges: true });
-        const edges = this.shapeGettersService.getEdges({ shape: diff });
-
-        const groupedEdges: TopoDS_Edge[][] = [];
-        edges.forEach((e) => {
-            const latestArray = groupedEdges[groupedEdges.length - 1];
-
-            // direction of edges seem to be reversed, but it does not matter for this algorithm
-            // better not to start reversing things and just deal with it
-            const endPointOnEdge = this.edgesService.endPointOnEdge({ shape: e });
-            const startPointOnEdge = this.edgesService.startPointOnEdge({ shape: e });
-            const pointExistsOnEdgeEnd = inputs.points.some(p => this.vecHelper.vectorsTheSame(endPointOnEdge, p, tolerance));
-            const pointExistsOnEdgeStart = inputs.points.some(p => this.vecHelper.vectorsTheSame(startPointOnEdge, p, tolerance));
-
-            if (pointExistsOnEdgeEnd && !pointExistsOnEdgeStart) {
-                groupedEdges.push([e]);
-            } else if (!pointExistsOnEdgeEnd && pointExistsOnEdgeStart) {
-                if (latestArray) {
-                    latestArray.push(e);
-                } else {
-                    groupedEdges.push([e]);
+    splitOnPoints(inputs: Inputs.OCCT.SplitWireOnPointsDto<TopoDS_Wire>): TopoDS_Wire[] {
+        const wire = inputs.shape;
+        const splitPoints = inputs.points;
+        
+        // 1. Get the list of edges from the wire
+        const edges = this.shapeGettersService.getEdges({ shape: wire });
+        if (edges.length === 0) return [];
+        
+        // 2. Collect split locations as {edgeIndex, parameter}
+        const splitLocations: { edgeIndex: number; parameter: number }[] = [];
+        
+        // Add the wire's start point
+        const firstEdge = edges[0];
+        let first = { current: 0 };
+        let last = { current: 0 };
+        this.occRefReturns.BRep_Tool_Curve_2(firstEdge, first, last);
+        splitLocations.push({ edgeIndex: 0, parameter: first.current });
+        
+        // Project each split point onto the wire
+        splitPoints.forEach((pt) => {
+            let minDist = Infinity;
+            let bestEdgeIndex = -1;
+            let bestParam = 0;
+        
+            edges.forEach((edge, index) => {
+                const first = { current: 0 };
+                const last = { current: 0 };
+                const curve = this.occRefReturns.BRep_Tool_Curve_2(edge, first, last);
+                const firstVal = first.current;
+                const lastVal = last.current;
+        
+                const gpPnt = this.entitiesService.gpPnt(pt);
+                const projector = new this.occ.GeomAPI_ProjectPointOnCurve_2(gpPnt, curve);
+                if (projector.NbPoints() > 0) {
+                    const param = projector.LowerDistanceParameter();
+                    // Clamp the parameter to the edge's range
+                    const clampedParam = Math.max(firstVal, Math.min(lastVal, param));
+                    const dist = projector.Distance(1); // Use the first projection point
+                    if (dist < minDist) {
+                        minDist = dist;
+                        bestEdgeIndex = index;
+                        bestParam = clampedParam;
+                    }
                 }
-            } else if (pointExistsOnEdgeEnd && pointExistsOnEdgeStart) {
-                groupedEdges.push([e]);
-            } else if (!pointExistsOnEdgeEnd && !pointExistsOnEdgeStart) {
-                if (latestArray) {
-                    latestArray.push(e);
-                } else {
-                    groupedEdges.push([e]);
-                }
-            }
-        });
-
-        const wires = [];
-
-        groupedEdges.forEach(g => {
-            const wire = this.converterService.combineEdgesAndWiresIntoAWire({
-                shapes: g
             });
-            wires.push(wire);
+        
+            if (bestEdgeIndex >= 0) {
+                splitLocations.push({ edgeIndex: bestEdgeIndex, parameter: bestParam });
+            }
         });
-        // when wire is closed and first wire and last wire share the corner, they need to be combined if there's no split point that matches that corner
-        if (wireIsClosed && wires.length > 1) {
-            const endPointOnFirstWire = this.endPointOnWire({ shape: wires[0] });
-            const startPointOnLastWire = this.startPointOnWire({ shape: wires[wires.length - 1] });
-            if (this.vecHelper.vectorsTheSame(endPointOnFirstWire, startPointOnLastWire, tolerance)) {
-                const pt = inputs.points.find(p => this.vecHelper.vectorsTheSame(p, endPointOnFirstWire, tolerance));
-                if (!pt) {
-                    const combined = this.addEdgesAndWiresToWire({ shape: wires[wires.length - 1], shapes: [wires[0]] });
-                    wires[0] = combined;
-                    wires.pop();
+        
+        // Add the wire's end point
+        const lastEdge = edges[edges.length - 1];
+        first = { current: 0 };
+        last = { current: 0 };
+        this.occRefReturns.BRep_Tool_Curve_2(lastEdge, first, last);
+        splitLocations.push({ edgeIndex: edges.length - 1, parameter: last.current });
+        
+        // 3. Remove duplicates and sort split locations by edgeIndex, then parameter
+        const uniqueLocations = splitLocations.filter((loc, index, self) =>
+            index === self.findIndex((t) => t.edgeIndex === loc.edgeIndex && t.parameter === loc.parameter)
+        );
+        uniqueLocations.sort((a, b) => {
+            if (a.edgeIndex !== b.edgeIndex) return a.edgeIndex - b.edgeIndex;
+            return a.parameter - b.parameter;
+        });
+        
+        // 4. Create new wires between consecutive split locations
+        const newWires: TopoDS_Wire[] = [];
+        for (let i = 0; i < uniqueLocations.length - 1; i++) {
+            const startLoc = uniqueLocations[i];
+            const endLoc = uniqueLocations[i + 1];
+            const wireBuilder = new this.occ.BRepBuilderAPI_MakeWire_1();
+        
+            if (startLoc.edgeIndex === endLoc.edgeIndex) {
+                // Same edge: create a single trimmed edge
+                const edge = edges[startLoc.edgeIndex];
+                const first = { current: 0 };
+                const last = { current: 0 };
+                const curve = this.occRefReturns.BRep_Tool_Curve_2(edge, first, last);
+        
+                // Avoid zero-length segments
+                if (startLoc.parameter === endLoc.parameter) continue;
+        
+                const trimmedCurve = new this.occ.Geom_TrimmedCurve(
+                    curve,
+                    startLoc.parameter,
+                    endLoc.parameter,
+                    true,
+                    true
+                );
+                const handleTrimmedCurve = new this.occ.Handle_Geom_Curve_2(trimmedCurve);
+                const newEdge = new this.occ.BRepBuilderAPI_MakeEdge_24(handleTrimmedCurve).Edge();
+                wireBuilder.Add_1(newEdge);
+            } else {
+                // Spans multiple edges
+                // Trim the start edge
+                const startEdge = edges[startLoc.edgeIndex];
+                const startFirst = { current: 0 };
+                const startLast = { current: 0 };
+                const startCurve = this.occRefReturns.BRep_Tool_Curve_2(startEdge, startFirst, startLast);
+                const startLastVal = startLast.current;
+        
+                if (startLoc.parameter < startLastVal) {
+                    const trimmedStartCurve = new this.occ.Geom_TrimmedCurve(
+                        startCurve,
+                        startLoc.parameter,
+                        startLastVal,
+                        true,
+                        true
+                    );
+                    const handleTrimmedStartCurve = new this.occ.Handle_Geom_Curve_2(trimmedStartCurve);
+                    const newStartEdge = new this.occ.BRepBuilderAPI_MakeEdge_24(handleTrimmedStartCurve).Edge();
+                    wireBuilder.Add_1(newStartEdge);
+                }
+        
+                // Add full edges in between
+                for (let j = startLoc.edgeIndex + 1; j < endLoc.edgeIndex; j++) {
+                    wireBuilder.Add_1(edges[j]);
+                }
+        
+                // Trim the end edge
+                const endEdge = edges[endLoc.edgeIndex];
+                const endFirst = { current: 0 };
+                const endLast = { current: 0 };
+                const endCurve = this.occRefReturns.BRep_Tool_Curve_2(endEdge, endFirst, endLast);
+                const endFirstVal = endFirst.current;
+        
+                if (endLoc.parameter > endFirstVal) {
+                    const trimmedEndCurve = new this.occ.Geom_TrimmedCurve(
+                        endCurve,
+                        endFirstVal,
+                        endLoc.parameter,
+                        true,
+                        true
+                    );
+                    const handleTrimmedEndCurve = new this.occ.Handle_Geom_Curve_2(trimmedEndCurve);
+                    const newEndEdge = new this.occ.BRepBuilderAPI_MakeEdge_24(handleTrimmedEndCurve).Edge();
+                    wireBuilder.Add_1(newEndEdge);
                 }
             }
+        
+            if (wireBuilder.IsDone()) {
+                const newWire = wireBuilder.Wire();
+                newWires.push(newWire);
+            }
         }
-        return wires;
+        
+        return newWires;
+
+        //////// FIRST VAR
+        // const wire = inputs.shape;
+        // const splitPoints = inputs.points;
+
+        // // 1. Get the list of edges from the wire
+        // const edges = this.shapeGettersService.getEdges({ shape: wire });
+        // if (edges.length === 0) return [];
+
+        // // 2. Collect split locations as {edgeIndex, parameter}
+        // const splitLocations: { edgeIndex: number; parameter: number }[] = [];
+
+        // // Add the wire's start point
+        // const firstEdge = edges[0];
+        // let first = { current: 0 };
+        // let last = { current: 0 };
+        // this.occRefReturns.BRep_Tool_Curve_2(firstEdge, first, last);
+        // splitLocations.push({ edgeIndex: 0, parameter: first.current });
+
+        // // Project each split point onto the wire
+        // splitPoints.forEach((pt) => {
+        //     let minDist = Infinity;
+        //     let bestEdgeIndex = -1;
+        //     let bestParam = 0;
+
+        //     edges.forEach((edge, index) => {
+        //         const first = { current: 0 };
+        //         const last = { current: 0 };
+        //         const curve = this.occRefReturns.BRep_Tool_Curve_2(edge, first, last);
+        //         const firstVal = first.current;
+        //         const lastVal = last.current;
+
+        //         const gpPnt = this.entitiesService.gpPnt(pt);
+        //         const projector = new this.occ.GeomAPI_ProjectPointOnCurve_2(gpPnt, curve);
+        //         if (projector.NbPoints() > 0) {
+        //             const param = projector.LowerDistanceParameter();
+        //             // Ensure the parameter is within the edge's range
+        //             if (param >= firstVal && param <= lastVal) {
+        //                 const dist = projector.LowerDistance();
+        //                 if (dist < minDist) {
+        //                     minDist = dist;
+        //                     bestEdgeIndex = index;
+        //                     bestParam = param;
+        //                 }
+        //             }
+        //         }
+        //     });
+
+        //     if (bestEdgeIndex >= 0) {
+        //         splitLocations.push({ edgeIndex: bestEdgeIndex, parameter: bestParam });
+        //     }
+        // });
+
+        // // Add the wire's end point
+        // const lastEdge = edges[edges.length - 1];
+        // first = { current: 0 };
+        // last = { current: 0 };
+        // const curveLast = this.occRefReturns.BRep_Tool_Curve_2(lastEdge, first, last);
+        // const lastLastVal = last.current;
+        // splitLocations.push({ edgeIndex: edges.length - 1, parameter: lastLastVal });
+
+        // // 3. Sort split locations by edgeIndex, then parameter
+        // splitLocations.sort((a, b) => {
+        //     if (a.edgeIndex !== b.edgeIndex) return a.edgeIndex - b.edgeIndex;
+        //     return a.parameter - b.parameter;
+        // });
+
+        // // 4. Create new wires between consecutive split locations
+        // const newWires: TopoDS_Wire[] = [];
+        // for (let i = 0; i < splitLocations.length - 1; i++) {
+        //     const startLoc = splitLocations[i];
+        //     const endLoc = splitLocations[i + 1];
+        //     const wireBuilder = new this.occ.BRepBuilderAPI_MakeWire_1();
+
+        //     if (startLoc.edgeIndex === endLoc.edgeIndex) {
+        //         // Same edge: create a single trimmed edge
+        //         const edge = edges[startLoc.edgeIndex];
+        //         const first = { current: 0 };
+        //         const last = { current: 0 };
+        //         const curve = this.occRefReturns.BRep_Tool_Curve_2(edge, first, last);
+        //         const trimmedCurve = new this.occ.Geom_TrimmedCurve(
+        //             curve,
+        //             startLoc.parameter,
+        //             endLoc.parameter,
+        //             true,
+        //             true
+        //         );
+        //         const handleTrimmedCurve = new this.occ.Handle_Geom_Curve_2(trimmedCurve);
+        //         const newEdge = new this.occ.BRepBuilderAPI_MakeEdge_24(handleTrimmedCurve).Edge();
+        //         wireBuilder.Add_1(newEdge);
+        //     } else {
+        //         // Spans multiple edges
+        //         // Trim the start edge
+        //         const startEdge = edges[startLoc.edgeIndex];
+        //         const startFirst = { current: 0 };
+        //         const startLast = { current: 0 };
+        //         const startCurve = this.occRefReturns.BRep_Tool_Curve_2(startEdge, startFirst, startLast);
+        //         const startLastVal = startLast.current;
+        //         const trimmedStartCurve = new this.occ.Geom_TrimmedCurve(
+        //             startCurve,
+        //             startLoc.parameter,
+        //             startLastVal,
+        //             true,
+        //             true
+        //         );
+        //         const handleTrimmedStartCurve = new this.occ.Handle_Geom_Curve_2(trimmedStartCurve);
+
+        //         const newStartEdge = new this.occ.BRepBuilderAPI_MakeEdge_24(handleTrimmedStartCurve).Edge();
+        //         wireBuilder.Add_1(newStartEdge);
+
+        //         // Add full edges in between
+        //         for (let j = startLoc.edgeIndex + 1; j < endLoc.edgeIndex; j++) {
+        //             wireBuilder.Add_1(edges[j]);
+        //         }
+
+        //         // Trim the end edge
+        //         const endEdge = edges[endLoc.edgeIndex];
+        //         const endFirst = { current: 0 };
+        //         const endLast = { current: 0 };
+        //         const endCurve = this.occRefReturns.BRep_Tool_Curve_2(endEdge, endFirst, endLast);
+        //         const endFirstVal = endFirst.current;
+        //         const trimmedEndCurve = new this.occ.Geom_TrimmedCurve(
+        //             endCurve,
+        //             endFirstVal,
+        //             endLoc.parameter,
+        //             true,
+        //             true,
+        //         );
+        //         const handleTrimmedEndCurve = new this.occ.Handle_Geom_Curve_2(trimmedEndCurve);
+        //         const newEndEdge = new this.occ.BRepBuilderAPI_MakeEdge_24(handleTrimmedEndCurve).Edge();
+        //         wireBuilder.Add_1(newEndEdge);
+        //     }
+
+        //     const newWire = wireBuilder.Wire();
+        //     newWires.push(newWire);
+        // }
+
+        // return newWires;
     }
 
     createLines(inputs: Inputs.OCCT.LinesDto): TopoDS_Wire[] | TopoDS_Compound {
