@@ -2,7 +2,7 @@ import ocFullJS from "./bitbybit-dev-occt.js";
 
 const initOpenCascade = ({
   mainJS = ocFullJS,
-  mainWasm = "https://cdn.jsdelivr.net/gh/bitbybit-dev/bitbybit-assets@0.19.6/wasm/bitbybit-dev-occt.a9520351.wasm",
+  mainWasm = "https://cdn.jsdelivr.net/gh/bitbybit-dev/bitbybit-assets@0.19.7/wasm/bitbybit-dev-occt.0e7dc0dc.wasm",
   worker = undefined,
   libs = [],
   module = {},
