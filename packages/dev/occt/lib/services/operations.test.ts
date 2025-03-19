@@ -752,7 +752,7 @@ describe("OCCT operations unit tests", () => {
             tolerance: 1e-7,
             periodic: false
         });
-        const res = operations.pipePolylineWireNGon({ shape: interpolatedWire, nrCorners: 6, radius: 0.2 });
+        const res = operations.pipePolylineWireNGon({ shape: interpolatedWire, nrCorners: 6, radius: 0.2, withContact: false, withCorrection: false });
         const vol = solid.getSolidVolume({ shape: res });
         expect(vol).toEqual(0.518460713602639);
         interpolatedWire.delete();
@@ -769,9 +769,9 @@ describe("OCCT operations unit tests", () => {
                 [0, 4, 0],
             ]
         });
-        const res = operations.pipePolylineWireNGon({ shape: polyline, nrCorners: 6, radius: 0.2 });
+        const res = operations.pipePolylineWireNGon({ shape: polyline, nrCorners: 6, radius: 0.2, withContact: false, withCorrection: false });
         const vol = solid.getSolidVolume({ shape: res });
-        expect(vol).toEqual(0.49841360246611033);
+        expect(vol).toEqual(0.5099367481546556);
         polyline.delete();
         res.delete();
     });
@@ -788,7 +788,7 @@ describe("OCCT operations unit tests", () => {
             tolerance: 1e-7,
             periodic: false
         });
-        const res = operations.pipeWireCylindrical({ shape: interpolatedWire, radius: 0.2 });
+        const res = operations.pipeWireCylindrical({ shape: interpolatedWire, radius: 0.2, withContact: false, withCorrection: false });
         const vol = solid.getSolidVolume({ shape: res });
         expect(vol).toEqual(0.6269224771598202);
         interpolatedWire.delete();
@@ -805,9 +805,9 @@ describe("OCCT operations unit tests", () => {
                 [0, 4, 0],
             ]
         });
-        const res = operations.pipeWireCylindrical({ shape: polyline, radius: 0.2 });
+        const res = operations.pipeWireCylindrical({ shape: polyline, radius: 0.2, withContact: false, withCorrection: false });
         const vol = solid.getSolidVolume({ shape: res });
-        expect(vol).toEqual(0.6034549016876298);
+        expect(vol).toEqual(0.6178829238950824);
         polyline.delete();
         res.delete();
     });
@@ -834,9 +834,9 @@ describe("OCCT operations unit tests", () => {
             tolerance: 1e-7,
             periodic: false
         });
-        const res = operations.pipeWiresCylindrical({ shapes: [polyline, interpolatedWire], radius: 0.2 });
+        const res = operations.pipeWiresCylindrical({ shapes: [polyline, interpolatedWire], radius: 0.2, withContact: false, withCorrection: false });
         const vols = res.map(s => solid.getSolidVolume({ shape: s }));
-        expect(vols).toEqual([0.6034549016876298, 0.62692247715982,]);
+        expect(vols).toEqual([0.6178829238950824, 0.62692247715982,]);
         polyline.delete();
         res.forEach(s => s.delete());
     });

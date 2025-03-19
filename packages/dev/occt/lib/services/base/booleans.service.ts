@@ -75,7 +75,6 @@ export class BooleansService {
 
         if (this.shapeGettersService.getNumSolidsInCompound(difference) === 1) {
             const solid = this.shapeGettersService.getSolidFromCompound(difference, 0);
-            difference.delete();
             difference = solid;
         }
 

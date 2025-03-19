@@ -2071,6 +2071,35 @@ export declare class GeomAPI {
   delete(): void;
 }
 
+export declare class GeomAPI_ProjectPointOnCurve {
+  Init_1(P: gp_Pnt, Curve: Handle_Geom_Curve): void;
+  Init_2(P: gp_Pnt, Curve: Handle_Geom_Curve, Umin: Standard_Real, Usup: Standard_Real): void;
+  Init_3(Curve: Handle_Geom_Curve, Umin: Standard_Real, Usup: Standard_Real): void;
+  Perform(P: gp_Pnt): void;
+  NbPoints(): Graphic3d_ZLayerId;
+  Point(Index: Graphic3d_ZLayerId): gp_Pnt;
+  Parameter_1(Index: Graphic3d_ZLayerId): Standard_Real;
+  Parameter_2(Index: Graphic3d_ZLayerId, U: Standard_Real): void;
+  Distance(Index: Graphic3d_ZLayerId): Standard_Real;
+  NearestPoint(): gp_Pnt;
+  LowerDistanceParameter(): Standard_Real;
+  LowerDistance(): Standard_Real;
+  Extrema(): Extrema_ExtPC;
+  delete(): void;
+}
+
+  export declare class GeomAPI_ProjectPointOnCurve_1 extends GeomAPI_ProjectPointOnCurve {
+    constructor();
+  }
+
+  export declare class GeomAPI_ProjectPointOnCurve_2 extends GeomAPI_ProjectPointOnCurve {
+    constructor(P: gp_Pnt, Curve: Handle_Geom_Curve);
+  }
+
+  export declare class GeomAPI_ProjectPointOnCurve_3 extends GeomAPI_ProjectPointOnCurve {
+    constructor(P: gp_Pnt, Curve: Handle_Geom_Curve, Umin: Standard_Real, Usup: Standard_Real);
+  }
+
 export declare class GeomAPI_PointsToBSpline {
   Init_1(Points: TColgp_Array1OfPnt, DegMin: Graphic3d_ZLayerId, DegMax: Graphic3d_ZLayerId, Continuity: GeomAbs_Shape, Tol3D: Standard_Real): void;
   Init_2(Points: TColgp_Array1OfPnt, ParType: Approx_ParametrizationType, DegMin: Graphic3d_ZLayerId, DegMax: Graphic3d_ZLayerId, Continuity: GeomAbs_Shape, Tol3D: Standard_Real): void;
@@ -10595,6 +10624,10 @@ export type OpenCascadeInstance = {FS: typeof FS} & {
   ShapeUpgrade_UnifySameDomain_1: typeof ShapeUpgrade_UnifySameDomain_1;
   ShapeUpgrade_UnifySameDomain_2: typeof ShapeUpgrade_UnifySameDomain_2;
   GeomAPI: typeof GeomAPI;
+  GeomAPI_ProjectPointOnCurve: typeof GeomAPI_ProjectPointOnCurve;
+  GeomAPI_ProjectPointOnCurve_1: typeof GeomAPI_ProjectPointOnCurve_1;
+  GeomAPI_ProjectPointOnCurve_2: typeof GeomAPI_ProjectPointOnCurve_2;
+  GeomAPI_ProjectPointOnCurve_3: typeof GeomAPI_ProjectPointOnCurve_3;
   GeomAPI_PointsToBSpline: typeof GeomAPI_PointsToBSpline;
   GeomAPI_PointsToBSpline_1: typeof GeomAPI_PointsToBSpline_1;
   GeomAPI_PointsToBSpline_2: typeof GeomAPI_PointsToBSpline_2;

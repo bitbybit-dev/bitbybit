@@ -191,6 +191,7 @@
       - symbol: Geom2d_VectorWithMagnitude
       - symbol: GeomAPI
       - symbol: GeomAPI_PointsToBSpline
+      - symbol: GeomAPI_ProjectPointOnCurve
       - symbol: GeomAbs_JoinType
       - symbol: GeomAbs_Shape
       - symbol: GeomLProp_SLProps

@@ -1062,8 +1062,8 @@ describe("OCCT wire unit tests", () => {
     });
 
     it("should split circle wire by points", () => {
-        const circle = wire.createSquareWire({
-            size: 1,
+        const circle = wire.createCircleWire({
+            radius: 1,
             center: [0, 0, 0],
             direction: [0, 1, 0]
         });
@@ -1077,14 +1077,13 @@ describe("OCCT wire unit tests", () => {
         expect(split.length).toBe(10);
         const segmentLengths = split.map((s) => wire.getWireLength({ shape: s }));
         segmentLengths.forEach(l => {
-            expect(l).toBeCloseTo(0.4, 10);
+            expect(l).toBeCloseTo(0.6283185307179586, 10);
         });
     });
 
-
     it("should split circle wire by points", () => {
-        const circle = wire.createSquareWire({
-            size: 1,
+        const circle = wire.createCircleWire({
+            radius: 1,
             center: [0, 0, 0],
             direction: [0, 1, 0]
         });
@@ -1095,18 +1094,48 @@ describe("OCCT wire unit tests", () => {
             nrOfDivisions: 10
         });
         const split = wire.splitOnPoints({ shape: circle, points: pts });
-        expect(split.length).toBe(9);
+        expect(split.length).toBe(10);
         const segmentLengths = split.map((s) => wire.getWireLength({ shape: s }));
-        expect(segmentLengths).toEqual([
-            0.8000000000000003,
-            0.3999999999999999,
-            0.39999999999999986,
-            0.3999999999999999,
-            0.3999999999999999,
-            0.3999999999999999,
-            0.3999999999999999,
-            0.40000000000000013,
-            0.4]);
+        expect(segmentLengths).toEqual([0.6283185307179586, 0.6283185307179586, 0.6283185307179588, 0.6283185307179584, 0.6283185307179586, 0.6283185307179586, 0.6283185307179595, 0.6283185307179577, 0.6283185307179586, 0.6283185307179586]);
+    });
+
+    it("should split square wire by points", () => {
+        const square = wire.createSquareWire({
+            size: 1,
+            center: [0, 0, 0],
+            direction: [0, 1, 0]
+        });
+        const pts = wire.divideWireByEqualDistanceToPoints({
+            shape: square,
+            removeEndPoint: false,
+            removeStartPoint: false,
+            nrOfDivisions: 10
+        });
+        const split = wire.splitOnPoints({ shape: square, points: pts });
+        expect(split.length).toBe(10);
+        const segmentLengths = split.map((s) => wire.getWireLength({ shape: s }));
+        segmentLengths.forEach(l => {
+            expect(l).toBeCloseTo(0.4, 10);
+        });
+    });
+
+
+    it("should split square wire by points", () => {
+        const square = wire.createSquareWire({
+            size: 1,
+            center: [0, 0, 0],
+            direction: [0, 1, 0]
+        });
+        const pts = wire.divideWireByEqualDistanceToPoints({
+            shape: square,
+            removeEndPoint: true,
+            removeStartPoint: true,
+            nrOfDivisions: 10
+        });
+        const split = wire.splitOnPoints({ shape: square, points: pts });
+        expect(split.length).toBe(10);
+        const segmentLengths = split.map((s) => wire.getWireLength({ shape: s }));
+        expect(segmentLengths).toEqual([0.4, 0.4, 0.40000000000000013, 0.3999999999999999, 0.3999999999999999, 0.3999999999999999, 0.3999999999999999, 0.39999999999999986, 0.3999999999999999, 0.4000000000000003]);
     });
 
     it("should split heart wire by points", () => {
@@ -1236,10 +1265,10 @@ describe("OCCT wire unit tests", () => {
         });
         expect(edges.length).toBe(10);
         const lengths = edges.map(e => e.length);
-        expect(lengths).toEqual([1, 1, 1, 2, 1, 1, 1, 1, 2, 1]);
+        expect(lengths).toEqual([1, 1, 2, 1, 1, 1, 1, 2, 1, 1]);
     });
 
-    it("should create less wires than there are edges on the wire and group edges correctly even if end point is not added to the wire", () => {
+    it("should create wires that contain few edges on the wire and group edges correctly even if end point is not added to the wire", () => {
         const rectangle = wire.createRectangleWire({
             width: 2,
             length: 2,
@@ -1260,10 +1289,10 @@ describe("OCCT wire unit tests", () => {
         });
         expect(edges.length).toBe(10);
         const lengths = edges.map(e => e.length);
-        expect(lengths).toEqual([1, 1, 1, 2, 1, 1, 1, 1, 2, 1]);
+        expect(lengths).toEqual([1, 1, 2, 1, 1, 1, 1, 2, 1, 1]);
     });
 
-    it("should create less wires than there are edges on the wire and group edges correctly even if start and end point is not added to the wire", () => {
+    it("should create wires that contain few edges on the wire and group edges correctly even if start and end point is not added to the wire", () => {
         const rectangle = wire.createRectangleWire({
             width: 2,
             length: 2,
@@ -1277,14 +1306,15 @@ describe("OCCT wire unit tests", () => {
             nrOfDivisions: 10
         });
         const split = wire.splitOnPoints({ shape: rectangle, points: pts });
-        expect(split.length).toBe(9);
+        expect(split.length).toBe(10);
         const edges = [];
         split.forEach(s => {
             edges.push(edge.getEdges({ shape: s }));
         });
-        expect(edges.length).toBe(9);
+        expect(edges.length).toBe(10);
         const lengths = edges.map(e => e.length);
-        expect(lengths).toEqual([2, 1, 2, 1, 1, 1, 1, 2, 1]);
+        expect(lengths).toEqual([1, 1, 2, 1, 1, 1, 1, 2, 1, 1]);
+
     });
 
     it("should split star wire by points", () => {
@@ -1303,18 +1333,9 @@ describe("OCCT wire unit tests", () => {
             nrOfDivisions: 10
         });
         const split = wire.splitOnPoints({ shape: star, points: pts });
-        expect(split.length).toBe(9);
+        expect(split.length).toBe(10);
         const segmentLengths = split.map((s) => wire.getWireLength({ shape: s }));
-        expect(segmentLengths).toEqual([
-            9.369811423392672,
-            4.684905711696324,
-            4.6849057116963175,
-            4.684905711696346,
-            4.684905711696367,
-            4.68490571169632,
-            4.684905711696342,
-            4.684905711696341,
-            4.684905711696342]);
+        expect(segmentLengths).toEqual([4.684905711696341, 4.684905711696342, 4.684905711696341, 4.684905711696342, 4.68490571169632, 4.684905711696367, 4.684905711696346, 4.6849057116963175, 4.684905711696324, 4.684905711696332]);
     });
 
     it("should close open wire", () => {

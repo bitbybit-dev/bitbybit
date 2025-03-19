@@ -312,13 +312,13 @@ export class OperationsService {
         });
         bopalgoBuilder.Perform(new this.occ.Message_ProgressRange_1());
         let shapes;
-        if(!inputs.nonDestructive){
+        if (!inputs.nonDestructive) {
             const res = bopalgoBuilder.Modified(inputs.shape);
             const shapeCompound = this.occ.BitByBitDev.BitListOfShapesToCompound(res);
-            shapes = this.shapeGettersService.getShapesOfCompound({shape: shapeCompound});
+            shapes = this.shapeGettersService.getShapesOfCompound({ shape: shapeCompound });
         } else {
             const res = bopalgoBuilder.Shape();
-            shapes = this.shapeGettersService.getShapesOfCompound({shape: res});
+            shapes = this.shapeGettersService.getShapesOfCompound({ shape: res });
         }
 
         return shapes;
@@ -399,7 +399,11 @@ export class OperationsService {
         pipe.Add_1(inputs.shape, false, false);
         pipe.Add_1(upperPolygon, false, false);
         pipe.Build(new this.occ.Message_ProgressRange_1());
-        pipe.MakeSolid();
+
+        // default should be to make the solid for backwards compatibility
+        if (inputs.makeSolid || inputs.makeSolid === undefined) {
+            pipe.MakeSolid();
+        }
 
         const pipeShape = pipe.Shape();
         const result = this.converterService.getActualTypeOfShape(pipeShape);
@@ -430,30 +434,52 @@ export class OperationsService {
         const wire = inputs.shape;
         const shapesToPassThrough: TopoDS_Shape[] = [];
         const edges = this.shapeGettersService.getEdges({ shape: wire });
+
+        // Check if the wire is closed
+        const isClosed = this.wiresService.isWireClosed({ shape: wire }); // Assuming such a method exists
+
         edges.forEach((e, index) => {
             const edgeStartPt = this.edgesService.startPointOnEdge({ shape: e });
             const tangent = this.edgesService.tangentOnEdgeAtParam({ shape: e, param: 0 });
-            let tangentPreviousEdgeEnd: Inputs.Base.Vector3;
             let averageTangentVec = tangent;
 
-            if (index > 0 && index < edges.length - 1) {
-                const previousEdge = edges[index - 1];
-                tangentPreviousEdgeEnd = this.edgesService.tangentOnEdgeAtParam({ shape: previousEdge, param: 1 });
-                averageTangentVec = [tangent[0] + tangentPreviousEdgeEnd[0] / 2, tangent[1] + tangentPreviousEdgeEnd[1] / 2, tangent[2] + tangentPreviousEdgeEnd[2] / 2];
+            if (edges.length > 1) { // Only average tangents if there’s more than one edge
+                if (index > 0 || (isClosed && index === 0)) {
+                    const previousEdge = edges[(index - 1 + edges.length) % edges.length]; // Wrap around for closed wires
+                    const tangentPreviousEdgeEnd = this.edgesService.tangentOnEdgeAtParam({ shape: previousEdge, param: 1 });
+                    averageTangentVec = [
+                        (tangent[0] + tangentPreviousEdgeEnd[0]) / 2,
+                        (tangent[1] + tangentPreviousEdgeEnd[1]) / 2,
+                        (tangent[2] + tangentPreviousEdgeEnd[2]) / 2
+                    ];
+                }
             }
-            const ngon = this.wiresService.createNGonWire({ radius: inputs.radius, center: edgeStartPt, direction: averageTangentVec, nrCorners: inputs.nrCorners }) as TopoDS_Wire;
+
+            const ngon = this.wiresService.createNGonWire({
+                radius: inputs.radius,
+                center: edgeStartPt,
+                direction: averageTangentVec,
+                nrCorners: inputs.nrCorners
+            }) as TopoDS_Wire;
             shapesToPassThrough.push(ngon);
-            if (index === edges.length - 1) {
+
+            // For open wires, add a final n-gon at the end of the last edge
+            if (!isClosed && index === edges.length - 1) {
                 const edgeEndPt = this.edgesService.endPointOnEdge({ shape: e });
                 const tangentEndPt = this.edgesService.tangentOnEdgeAtParam({ shape: e, param: 1 });
-                const ngon = this.wiresService.createNGonWire({ radius: inputs.radius, center: edgeEndPt, direction: tangentEndPt, nrCorners: inputs.nrCorners }) as TopoDS_Wire;
+                const ngon = this.wiresService.createNGonWire({
+                    radius: inputs.radius,
+                    center: edgeEndPt,
+                    direction: tangentEndPt,
+                    nrCorners: inputs.nrCorners
+                }) as TopoDS_Wire;
                 shapesToPassThrough.push(ngon);
             }
         });
 
         const pipe = new this.occ.BRepOffsetAPI_MakePipeShell(wire);
         shapesToPassThrough.forEach(s => {
-            pipe.Add_1(s, false, false);
+            pipe.Add_1(s, inputs.withContact === true ? true : false, inputs.withCorrection === true ? true : false);
         });
 
         pipe.Build(new this.occ.Message_ProgressRange_1());
@@ -469,30 +495,52 @@ export class OperationsService {
         const wire = inputs.shape;
         const shapesToPassThrough: TopoDS_Shape[] = [];
         const edges = this.shapeGettersService.getEdges({ shape: wire });
+
+        // Check if the wire is closed
+        const isClosed = this.wiresService.isWireClosed({ shape: wire }); // Assuming such a method exists
+
         edges.forEach((e, index) => {
             const edgeStartPt = this.edgesService.startPointOnEdge({ shape: e });
             const tangent = this.edgesService.tangentOnEdgeAtParam({ shape: e, param: 0 });
-            let tangentPreviousEdgeEnd: Inputs.Base.Vector3;
             let averageTangentVec = tangent;
 
-            if (index > 0 && index < edges.length - 1) {
-                const previousEdge = edges[index - 1];
-                tangentPreviousEdgeEnd = this.edgesService.tangentOnEdgeAtParam({ shape: previousEdge, param: 1 });
-                averageTangentVec = [tangent[0] + tangentPreviousEdgeEnd[0] / 2, tangent[1] + tangentPreviousEdgeEnd[1] / 2, tangent[2] + tangentPreviousEdgeEnd[2] / 2];
+            if (edges.length > 1) { // Only average tangents if there’s more than one edge
+                if (index > 0 || (isClosed && index === 0)) {
+                    const previousEdge = edges[(index - 1 + edges.length) % edges.length]; // Wrap around for closed wires
+                    const tangentPreviousEdgeEnd = this.edgesService.tangentOnEdgeAtParam({ shape: previousEdge, param: 1 });
+                    averageTangentVec = [
+                        (tangent[0] + tangentPreviousEdgeEnd[0]) / 2,
+                        (tangent[1] + tangentPreviousEdgeEnd[1]) / 2,
+                        (tangent[2] + tangentPreviousEdgeEnd[2]) / 2
+                    ];
+                }
             }
-            const circle = this.entitiesService.createCircle(inputs.radius, edgeStartPt, averageTangentVec, Inputs.OCCT.typeSpecificityEnum.wire) as TopoDS_Wire;
+
+            const circle = this.entitiesService.createCircle(
+                inputs.radius,
+                edgeStartPt,
+                averageTangentVec,
+                Inputs.OCCT.typeSpecificityEnum.wire
+            ) as TopoDS_Wire;
             shapesToPassThrough.push(circle);
-            if (index === edges.length - 1) {
+
+            // For open wires, add a final circle at the end of the last edge
+            if (!isClosed && index === edges.length - 1) {
                 const edgeEndPt = this.edgesService.endPointOnEdge({ shape: e });
                 const tangentEndPt = this.edgesService.tangentOnEdgeAtParam({ shape: e, param: 1 });
-                const line = this.entitiesService.createCircle(inputs.radius, edgeEndPt, tangentEndPt, Inputs.OCCT.typeSpecificityEnum.wire) as TopoDS_Wire;
-                shapesToPassThrough.push(line);
+                const circle = this.entitiesService.createCircle(
+                    inputs.radius,
+                    edgeEndPt,
+                    tangentEndPt,
+                    Inputs.OCCT.typeSpecificityEnum.wire
+                ) as TopoDS_Wire;
+                shapesToPassThrough.push(circle);
             }
         });
 
         const pipe = new this.occ.BRepOffsetAPI_MakePipeShell(wire);
         shapesToPassThrough.forEach(s => {
-            pipe.Add_1(s, false, false);
+            pipe.Add_1(s, inputs.withContact === true ? true : false, inputs.withCorrection === true ? true : false);
         });
 
         pipe.Build(new this.occ.Message_ProgressRange_1());
@@ -506,7 +554,7 @@ export class OperationsService {
 
     pipeWiresCylindrical(inputs: Inputs.OCCT.PipeWiresCylindricalDto<TopoDS_Wire>) {
         return inputs.shapes.map(wire => {
-            return this.pipeWireCylindrical({ shape: wire, radius: inputs.radius });
+            return this.pipeWireCylindrical({ shape: wire, radius: inputs.radius, withContact: inputs.withContact, withCorrection: inputs.withCorrection });
         });
     }
 
