@@ -1,6 +1,6 @@
 {
     "name": "@bitbybit-dev/threejs",
-    "version": "0.19.7",
+    "version": "0.19.9",
     "description": "Bit By Bit Developers THREEJS CAD Library to Program Geometry",
     "main": "index.js",
     "repository": {
@@ -55,7 +55,7 @@
     "type": "module",
     "dependencies": {
         "three": "0.174.0",
-        "@bitbybit-dev/core": "0.19.7"
+        "@bitbybit-dev/core": "0.19.9"
     },
     "devDependencies": {
         "sass": "1.57.1",
