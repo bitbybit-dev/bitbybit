@@ -431,130 +431,87 @@ export class OperationsService {
     }
 
     pipePolylineWireNGon(inputs: Inputs.OCCT.PipePolygonWireNGonDto<TopoDS_Wire>) {
+        // Input wire (the spine)
         const wire = inputs.shape;
-        const shapesToPassThrough: TopoDS_Shape[] = [];
-        const edges = this.shapeGettersService.getEdges({ shape: wire });
 
-        // Check if the wire is closed
-        const isClosed = this.wiresService.isWireClosed({ shape: wire }); // Assuming such a method exists
+        // Get the edges of the wire
+        const edge = this.shapeGettersService.getEdge({ shape: wire, index: 1 });
 
-        edges.forEach((e, index) => {
-            const edgeStartPt = this.edgesService.startPointOnEdge({ shape: e });
-            const tangent = this.edgesService.tangentOnEdgeAtParam({ shape: e, param: 0 });
-            let averageTangentVec = tangent;
+        // Get the start point and tangent of the first edge
+        const startPoint = this.edgesService.pointOnEdgeAtParam({ shape: edge, param: 0 });
+        const tangent = this.edgesService.tangentOnEdgeAtParam({ shape: edge, param: 0 });
+        const ngon = this.wiresService.createNGonWire({
+            radius: inputs.radius,
+            center: startPoint,
+            direction: tangent,
+            nrCorners: inputs.nrCorners
+        }) as TopoDS_Wire;
 
-            if (edges.length > 1) { // Only average tangents if there’s more than one edge
-                if (index > 0 || (isClosed && index === 0)) {
-                    const previousEdge = edges[(index - 1 + edges.length) % edges.length]; // Wrap around for closed wires
-                    const tangentPreviousEdgeEnd = this.edgesService.tangentOnEdgeAtParam({ shape: previousEdge, param: 1 });
-                    averageTangentVec = [
-                        (tangent[0] + tangentPreviousEdgeEnd[0]) / 2,
-                        (tangent[1] + tangentPreviousEdgeEnd[1]) / 2,
-                        (tangent[2] + tangentPreviousEdgeEnd[2]) / 2
-                    ];
-                }
-            }
-
-            const ngon = this.wiresService.createNGonWire({
-                radius: inputs.radius,
-                center: edgeStartPt,
-                direction: averageTangentVec,
-                nrCorners: inputs.nrCorners
-            }) as TopoDS_Wire;
-            shapesToPassThrough.push(ngon);
-
-            // For open wires, add a final n-gon at the end of the last edge
-            if (!isClosed && index === edges.length - 1) {
-                const edgeEndPt = this.edgesService.endPointOnEdge({ shape: e });
-                const tangentEndPt = this.edgesService.tangentOnEdgeAtParam({ shape: e, param: 1 });
-                const ngon = this.wiresService.createNGonWire({
-                    radius: inputs.radius,
-                    center: edgeEndPt,
-                    direction: tangentEndPt,
-                    nrCorners: inputs.nrCorners
-                }) as TopoDS_Wire;
-                shapesToPassThrough.push(ngon);
-            }
+        const reversedNgon = this.wiresService.reversedWire({
+            shape: ngon
         });
 
-        const pipe = new this.occ.BRepOffsetAPI_MakePipeShell(wire);
-        shapesToPassThrough.forEach(s => {
-            pipe.Add_1(s, inputs.withContact === true ? true : false, inputs.withCorrection === true ? true : false);
-        });
+        let shape = reversedNgon;
+        if (inputs.makeSolid) {
+            shape = this.facesService.createFaceFromWire({
+                shape: reversedNgon,
+                planar: true,
+            });
+        }
 
+        const geomFillTrihedron = this.enumService.getGeomFillTrihedronEnumOCCTValue(inputs.trihedronEnum);
+
+        const pipe = new this.occ.BRepOffsetAPI_MakePipe_2(wire, shape, geomFillTrihedron, inputs.forceApproxC1 ? true : false);
         pipe.Build(new this.occ.Message_ProgressRange_1());
-        pipe.MakeSolid();
         const pipeShape = pipe.Shape();
+
+        // Convert and clean up
         const result = this.converterService.getActualTypeOfShape(pipeShape);
         pipeShape.delete();
         pipe.delete();
+        ngon.delete();
+        reversedNgon.delete();
         return result;
     }
 
     pipeWireCylindrical(inputs: Inputs.OCCT.PipeWireCylindricalDto<TopoDS_Wire>) {
+        // Input wire (the spine)
         const wire = inputs.shape;
-        const shapesToPassThrough: TopoDS_Shape[] = [];
+
+        // Get the edges of the wire
         const edges = this.shapeGettersService.getEdges({ shape: wire });
 
-        // Check if the wire is closed
-        const isClosed = this.wiresService.isWireClosed({ shape: wire }); // Assuming such a method exists
+        // Get the start point and tangent of the first edge
+        const firstEdge = edges[0];
+        const startPoint = this.edgesService.startPointOnEdge({ shape: firstEdge });
+        const tangent = this.edgesService.tangentOnEdgeAtParam({ shape: firstEdge, param: 0 });
 
-        edges.forEach((e, index) => {
-            const edgeStartPt = this.edgesService.startPointOnEdge({ shape: e });
-            const tangent = this.edgesService.tangentOnEdgeAtParam({ shape: e, param: 0 });
-            let averageTangentVec = tangent;
+        const circle = this.entitiesService.createCircle(
+            inputs.radius,
+            startPoint,
+            tangent,
+            inputs.makeSolid ? Inputs.OCCT.typeSpecificityEnum.face : Inputs.OCCT.typeSpecificityEnum.wire
+        ) as TopoDS_Wire;
 
-            if (edges.length > 1) { // Only average tangents if there’s more than one edge
-                if (index > 0 || (isClosed && index === 0)) {
-                    const previousEdge = edges[(index - 1 + edges.length) % edges.length]; // Wrap around for closed wires
-                    const tangentPreviousEdgeEnd = this.edgesService.tangentOnEdgeAtParam({ shape: previousEdge, param: 1 });
-                    averageTangentVec = [
-                        (tangent[0] + tangentPreviousEdgeEnd[0]) / 2,
-                        (tangent[1] + tangentPreviousEdgeEnd[1]) / 2,
-                        (tangent[2] + tangentPreviousEdgeEnd[2]) / 2
-                    ];
-                }
-            }
 
-            const circle = this.entitiesService.createCircle(
-                inputs.radius,
-                edgeStartPt,
-                averageTangentVec,
-                Inputs.OCCT.typeSpecificityEnum.wire
-            ) as TopoDS_Wire;
-            shapesToPassThrough.push(circle);
-
-            // For open wires, add a final circle at the end of the last edge
-            if (!isClosed && index === edges.length - 1) {
-                const edgeEndPt = this.edgesService.endPointOnEdge({ shape: e });
-                const tangentEndPt = this.edgesService.tangentOnEdgeAtParam({ shape: e, param: 1 });
-                const circle = this.entitiesService.createCircle(
-                    inputs.radius,
-                    edgeEndPt,
-                    tangentEndPt,
-                    Inputs.OCCT.typeSpecificityEnum.wire
-                ) as TopoDS_Wire;
-                shapesToPassThrough.push(circle);
-            }
-        });
-
-        const pipe = new this.occ.BRepOffsetAPI_MakePipeShell(wire);
-        shapesToPassThrough.forEach(s => {
-            pipe.Add_1(s, inputs.withContact === true ? true : false, inputs.withCorrection === true ? true : false);
-        });
-
+        // Create the pipe by sweeping the profile along the wire
+        const geomFillTrihedron = this.enumService.getGeomFillTrihedronEnumOCCTValue(inputs.trihedronEnum);
+        const pipe = new this.occ.BRepOffsetAPI_MakePipe_2(wire, circle, geomFillTrihedron, inputs.forceApproxC1 ? true : false);
         pipe.Build(new this.occ.Message_ProgressRange_1());
-        pipe.MakeSolid();
         const pipeShape = pipe.Shape();
+
+        // Convert and clean up
         const result = this.converterService.getActualTypeOfShape(pipeShape);
         pipeShape.delete();
         pipe.delete();
+        circle.delete();
+
         return result;
     }
 
     pipeWiresCylindrical(inputs: Inputs.OCCT.PipeWiresCylindricalDto<TopoDS_Wire>) {
         return inputs.shapes.map(wire => {
-            return this.pipeWireCylindrical({ shape: wire, radius: inputs.radius, withContact: inputs.withContact, withCorrection: inputs.withCorrection });
+            return this.pipeWireCylindrical({ shape: wire, radius: inputs.radius, makeSolid: inputs.makeSolid, trihedronEnum: inputs.trihedronEnum, forceApproxC1: inputs.forceApproxC1 });
         });
     }
 

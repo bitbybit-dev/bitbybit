@@ -116,6 +116,19 @@ export namespace OCCT {
         furthest = "furthest",
         closestAndFurthest = "closestAndFurthest",
     }
+    export enum geomFillTrihedronEnum {
+        isCorrectedFrenet = "isCorrectedFrenet",
+        isFixed = "isFixed",
+        isFrenet = "isFrenet",
+        isConstantNormal = "isConstantNormal",
+        isDarboux = "isDarboux",
+        isGuideAC = "isGuideAC",
+        isGuidePlan = "isGuidePlan",
+        isGuideACWithContact = "isGuideACWithContact",
+        isGuidePlanWithContact = "isGuidePlanWithContact",
+        isDiscreteTrihedron = "isDiscreteTrihedron",
+
+    }
     export class DecomposedMeshDto {
         constructor(faceList?: DecomposedFaceDto[], edgeList?: DecomposedEdgeDto[]) {
             if (faceList !== undefined) { this.faceList = faceList; }
@@ -3581,11 +3594,12 @@ export namespace OCCT {
         face: U;
     }
     export class PipeWiresCylindricalDto<T> {
-        constructor(shapes?: T[], radius?: number, withContact?: boolean, withCorrection?: boolean) {
+        constructor(shapes?: T[], radius?: number, makeSolid?: boolean, trihedronEnum?: geomFillTrihedronEnum, forceApproxC1?: boolean) {
             if (shapes !== undefined) { this.shapes = shapes; }
             if (radius !== undefined) { this.radius = radius; }
-            if (withContact !== undefined) { this.withContact = withContact; }
-            if (withCorrection !== undefined) { this.withCorrection; }
+            if (makeSolid !== undefined) { this.makeSolid = makeSolid; }
+            if (trihedronEnum !== undefined) { this.trihedronEnum = trihedronEnum; }
+            if (forceApproxC1 !== undefined) { this.forceApproxC1 = forceApproxC1; }
         }
         /**
          * Wire paths to pipe
@@ -3601,22 +3615,28 @@ export namespace OCCT {
          */
         radius = 0.1;
         /**
-         * If withContact is true, the section is translated to be in contact with the spine.
-         * @default false
+         * Make solid result by closing start and end parts
+         * @default true
          */
-        withContact = false;
+        makeSolid = true;
         /**
-         * If withCorrection is true, the section is rotated to be orthogonal to the spine's tangent in the correspondent point.
+         * Goemetry Fill Trihedron Options
+         * @default isConstantNormal
+         */
+        trihedronEnum = geomFillTrihedronEnum.isConstantNormal;
+        /**
+         * Attempt to approximate a C1-continuous surface if a swept surface proved to be C0
          * @default false
          */
-        withCorrection = false;
+        forceApproxC1 = false;
     }
     export class PipeWireCylindricalDto<T> {
-        constructor(shape?: T, radius?: number, withContact?: boolean, withCorrection?: boolean) {
+        constructor(shape?: T, radius?: number, makeSolid?: boolean, trihedronEnum?: geomFillTrihedronEnum, forceApproxC1?: boolean) {
             if (shape !== undefined) { this.shape = shape; }
             if (radius !== undefined) { this.radius = radius; }
-            if (withContact !== undefined) { this.withContact = withContact; }
-            if (withCorrection !== undefined) { this.withCorrection; }
+            if (makeSolid !== undefined) { this.makeSolid = makeSolid; }
+            if (trihedronEnum !== undefined) { this.trihedronEnum = trihedronEnum; }
+            if (forceApproxC1 !== undefined) { this.forceApproxC1 = forceApproxC1; }
         }
         /**
          * Wire path to pipe
@@ -3632,23 +3652,29 @@ export namespace OCCT {
          */
         radius = 0.1;
         /**
-         * If withContact is true, the section is translated to be in contact with the spine.
-         * @default false
+         * Make solid result by closing start and end parts
+         * @default true
          */
-        withContact = false;
+        makeSolid = true;
         /**
-         * If withCorrection is true, the section is rotated to be orthogonal to the spine's tangent in the correspondent point.
+         * Goemetry Fill Trihedron Options
+         * @default isConstantNormal
+         */
+        trihedronEnum = geomFillTrihedronEnum.isConstantNormal;
+        /**
+         * Attempt to approximate a C1-continuous surface if a swept surface proved to be C0
          * @default false
          */
-        withCorrection = false;
+        forceApproxC1 = false;
     }
     export class PipePolygonWireNGonDto<T> {
-        constructor(shapes?: T, radius?: number, nrCorners?: number, withContact?: boolean, withCorrection?: boolean) {
+        constructor(shapes?: T, radius?: number, nrCorners?: number, makeSolid?: boolean, trihedronEnum?: geomFillTrihedronEnum, forceApproxC1?: boolean) {
             if (shapes !== undefined) { this.shape = shapes; }
             if (radius !== undefined) { this.radius = radius; }
             if (nrCorners !== undefined) { this.nrCorners = nrCorners; }
-            if (withContact !== undefined) { this.withContact = withContact; }
-            if (withCorrection !== undefined) { this.withCorrection; }
+            if (makeSolid !== undefined) { this.makeSolid = makeSolid; }
+            if (trihedronEnum !== undefined) { this.trihedronEnum = trihedronEnum; }
+            if (forceApproxC1 !== undefined) { this.forceApproxC1 = forceApproxC1; }
         }
         /**
          * Wire path to pipe
@@ -3672,15 +3698,20 @@ export namespace OCCT {
          */
         nrCorners = 6;
         /**
-         * If withContact is true, the section is translated to be in contact with the spine.
-         * @default false
+         * Make solid result by closing start and end parts
+         * @default true
          */
-        withContact = false;
+        makeSolid = true;
         /**
-         * If withCorrection is true, the section is rotated to be orthogonal to the spine's tangent in the correspondent point.
+         * Goemetry Fill Trihedron Options
+         * @default isConstantNormal
+         */
+        trihedronEnum = geomFillTrihedronEnum.isConstantNormal;
+        /**
+         * Attempt to approximate a C1-continuous surface if a swept surface proved to be C0
          * @default false
          */
-        withCorrection = false;
+        forceApproxC1 = false;
     }
     export class ExtrudeDto<T> {
         constructor(shape?: T, direction?: Base.Vector3) {
