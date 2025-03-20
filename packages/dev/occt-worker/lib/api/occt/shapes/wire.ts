@@ -623,6 +623,18 @@ export class OCCTWire {
     }
 
     /**
+     * Checks whether wire is closed
+     * @param inputs wire
+     * @returns boolean
+     * @group get
+     * @shortname is wire closed
+     * @drawable false
+     */
+    isWireClosed(inputs: Inputs.OCCT.ShapeDto<Inputs.OCCT.TopoDSWirePointer>): Promise<boolean> {
+        return this.occWorkerManager.genericCallToWorkerPromise("shapes.wire.isWireClosed", inputs);
+    }
+
+    /**
      * Gets the wire length
      * @param inputs wire
      * @returns Length

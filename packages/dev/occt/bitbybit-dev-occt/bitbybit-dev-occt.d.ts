@@ -28,6 +28,19 @@ export declare class BRepFill_Filling {
   delete(): void;
 }
 
+export declare type GeomFill_Trihedron = {
+  GeomFill_IsCorrectedFrenet: {};
+  GeomFill_IsFixed: {};
+  GeomFill_IsFrenet: {};
+  GeomFill_IsConstantNormal: {};
+  GeomFill_IsDarboux: {};
+  GeomFill_IsGuideAC: {};
+  GeomFill_IsGuidePlan: {};
+  GeomFill_IsGuideACWithContact: {};
+  GeomFill_IsGuidePlanWithContact: {};
+  GeomFill_IsDiscreteTrihedron: {};
+}
+
 export declare class BRepMesh_DiscretRoot extends Standard_Transient {
   SetShape(theShape: TopoDS_Shape): void;
   Shape(): TopoDS_Shape;
@@ -1609,6 +1622,23 @@ export declare class GccEnt_QualifiedLin {
   delete(): void;
 }
 
+export declare class BRepOffsetAPI_MakeEvolved extends BRepBuilderAPI_MakeShape {
+  Evolved(): BRepFill_Evolved;
+  Build(theRange: Message_ProgressRange): void;
+  GeneratedShapes(SpineShape: TopoDS_Shape, ProfShape: TopoDS_Shape): TopTools_ListOfShape;
+  Top(): TopoDS_Shape;
+  Bottom(): TopoDS_Shape;
+  delete(): void;
+}
+
+  export declare class BRepOffsetAPI_MakeEvolved_1 extends BRepOffsetAPI_MakeEvolved {
+    constructor();
+  }
+
+  export declare class BRepOffsetAPI_MakeEvolved_2 extends BRepOffsetAPI_MakeEvolved {
+    constructor(theSpine: TopoDS_Shape, theProfile: TopoDS_Wire, theJoinType: GeomAbs_JoinType, theIsAxeProf: Standard_Boolean, theIsSolid: Standard_Boolean, theIsProfOnSpine: Standard_Boolean, theTol: Standard_Real, theIsVolume: Standard_Boolean, theRunInParallel: Standard_Boolean);
+  }
+
 export declare class BRepOffsetAPI_MakePipeShell extends BRepPrimAPI_MakeSweep {
   constructor(Spine: TopoDS_Wire)
   SetMode_1(IsFrenet: Standard_Boolean): void;
@@ -1640,6 +1670,25 @@ export declare class BRepOffsetAPI_MakePipeShell extends BRepPrimAPI_MakeSweep {
   Spine(): TopoDS_Wire;
   delete(): void;
 }
+
+export declare class BRepOffsetAPI_MakePipe extends BRepPrimAPI_MakeSweep {
+  Pipe(): BRepFill_Pipe;
+  Build(theRange: Message_ProgressRange): void;
+  FirstShape(): TopoDS_Shape;
+  LastShape(): TopoDS_Shape;
+  Generated_1(S: TopoDS_Shape): TopTools_ListOfShape;
+  Generated_2(SSpine: TopoDS_Shape, SProfile: TopoDS_Shape): TopoDS_Shape;
+  ErrorOnSurface(): Standard_Real;
+  delete(): void;
+}
+
+  export declare class BRepOffsetAPI_MakePipe_1 extends BRepOffsetAPI_MakePipe {
+    constructor(Spine: TopoDS_Wire, Profile: TopoDS_Shape);
+  }
+
+  export declare class BRepOffsetAPI_MakePipe_2 extends BRepOffsetAPI_MakePipe {
+    constructor(Spine: TopoDS_Wire, Profile: TopoDS_Shape, aMode: GeomFill_Trihedron, ForceApproxC1: Standard_Boolean);
+  }
 
 export declare class BRepOffsetAPI_ThruSections extends BRepBuilderAPI_MakeShape {
   constructor(isSolid: Standard_Boolean, ruled: Standard_Boolean, pres3d: Standard_Real)
@@ -1696,6 +1745,24 @@ export declare class BRepOffsetAPI_MakeOffset extends BRepBuilderAPI_MakeShape {
   export declare class BRepOffsetAPI_MakeOffset_3 extends BRepOffsetAPI_MakeOffset {
     constructor(Spine: TopoDS_Wire, Join: GeomAbs_JoinType, IsOpenResult: Standard_Boolean);
   }
+
+export declare class BRepOffsetAPI_MakeDraft extends BRepBuilderAPI_MakeShape {
+  constructor(Shape: TopoDS_Shape, Dir: gp_Dir, Angle: Standard_Real)
+  SetOptions(Style: BRepBuilderAPI_TransitionMode, AngleMin: Standard_Real, AngleMax: Standard_Real): void;
+  SetDraft(IsInternal: Standard_Boolean): void;
+  Perform_1(LengthMax: Standard_Real): void;
+  Perform_2(Surface: Handle_Geom_Surface, KeepInsideSurface: Standard_Boolean): void;
+  Perform_3(StopShape: TopoDS_Shape, KeepOutSide: Standard_Boolean): void;
+  Shell(): TopoDS_Shell;
+  Generated(S: TopoDS_Shape): TopTools_ListOfShape;
+  delete(): void;
+}
+
+export declare class BRepOffsetAPI_MiddlePath extends BRepBuilderAPI_MakeShape {
+  constructor(aShape: TopoDS_Shape, StartShape: TopoDS_Shape, EndShape: TopoDS_Shape)
+  Build(theRange: Message_ProgressRange): void;
+  delete(): void;
+}
 
 export declare class BRepOffsetAPI_MakeFilling extends BRepBuilderAPI_MakeShape {
   constructor(Degree: Graphic3d_ZLayerId, NbPtsOnCur: Graphic3d_ZLayerId, NbIter: Graphic3d_ZLayerId, Anisotropie: Standard_Boolean, Tol2d: Standard_Real, Tol3d: Standard_Real, TolAng: Standard_Real, TolCurv: Standard_Real, MaxDeg: Graphic3d_ZLayerId, MaxSegments: Graphic3d_ZLayerId)
@@ -10406,6 +10473,7 @@ declare namespace FS {
 export type OpenCascadeInstance = {FS: typeof FS} & {
   BRepFill_TypeOfContact: BRepFill_TypeOfContact;
   BRepFill_Filling: typeof BRepFill_Filling;
+  GeomFill_Trihedron: GeomFill_Trihedron;
   BRepMesh_DiscretRoot: typeof BRepMesh_DiscretRoot;
   BRepMesh_IncrementalMesh: typeof BRepMesh_IncrementalMesh;
   BRepMesh_IncrementalMesh_1: typeof BRepMesh_IncrementalMesh_1;
@@ -10554,13 +10622,21 @@ export type OpenCascadeInstance = {FS: typeof FS} & {
   GccEnt_Array1OfPosition_5: typeof GccEnt_Array1OfPosition_5;
   GccEnt: typeof GccEnt;
   GccEnt_QualifiedLin: typeof GccEnt_QualifiedLin;
+  BRepOffsetAPI_MakeEvolved: typeof BRepOffsetAPI_MakeEvolved;
+  BRepOffsetAPI_MakeEvolved_1: typeof BRepOffsetAPI_MakeEvolved_1;
+  BRepOffsetAPI_MakeEvolved_2: typeof BRepOffsetAPI_MakeEvolved_2;
   BRepOffsetAPI_MakePipeShell: typeof BRepOffsetAPI_MakePipeShell;
+  BRepOffsetAPI_MakePipe: typeof BRepOffsetAPI_MakePipe;
+  BRepOffsetAPI_MakePipe_1: typeof BRepOffsetAPI_MakePipe_1;
+  BRepOffsetAPI_MakePipe_2: typeof BRepOffsetAPI_MakePipe_2;
   BRepOffsetAPI_ThruSections: typeof BRepOffsetAPI_ThruSections;
   BRepOffsetAPI_MakeThickSolid: typeof BRepOffsetAPI_MakeThickSolid;
   BRepOffsetAPI_MakeOffset: typeof BRepOffsetAPI_MakeOffset;
   BRepOffsetAPI_MakeOffset_1: typeof BRepOffsetAPI_MakeOffset_1;
   BRepOffsetAPI_MakeOffset_2: typeof BRepOffsetAPI_MakeOffset_2;
   BRepOffsetAPI_MakeOffset_3: typeof BRepOffsetAPI_MakeOffset_3;
+  BRepOffsetAPI_MakeDraft: typeof BRepOffsetAPI_MakeDraft;
+  BRepOffsetAPI_MiddlePath: typeof BRepOffsetAPI_MiddlePath;
   BRepOffsetAPI_MakeFilling: typeof BRepOffsetAPI_MakeFilling;
   BRepOffsetAPI_MakeOffsetShape: typeof BRepOffsetAPI_MakeOffsetShape;
   ChFiDS_ChamfMode: ChFiDS_ChamfMode;

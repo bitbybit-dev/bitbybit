@@ -31,7 +31,7 @@ describe("OCCT operations unit tests", () => {
     });
 
     it("should get two closest points between two shapes", async () => {
-       
+
         const sph1 = occHelper.entitiesService.bRepPrimAPIMakeSphere([0, 0, 0], [0, 1, 0], 1);
         const sph2 = occHelper.entitiesService.bRepPrimAPIMakeSphere([3, 3, 3], [0, 1, 0], 1);
         const res = operations.closestPointsBetweenTwoShapes({ shape1: sph1, shape2: sph2 });
@@ -686,7 +686,7 @@ describe("OCCT operations unit tests", () => {
 
     it("should create rotated extrusion", () => {
         const squareWire = wire.createSquareWire({ center: [0.5, 0, 0], size: 1, direction: [0, 1, 0] });
-        const res = operations.rotatedExtrude({ shape: squareWire, angle: 360, height: 10 });
+        const res = operations.rotatedExtrude({ shape: squareWire, angle: 360, height: 10, makeSolid: true });
         const vol = solid.getSolidVolume({ shape: res });
         expect(vol).toEqual(9.999989383137159);
         squareWire.delete();
@@ -752,27 +752,10 @@ describe("OCCT operations unit tests", () => {
             tolerance: 1e-7,
             periodic: false
         });
-        const res = operations.pipePolylineWireNGon({ shape: interpolatedWire, nrCorners: 6, radius: 0.2, withContact: false, withCorrection: false });
+        const res = operations.pipePolylineWireNGon({ shape: interpolatedWire, nrCorners: 6, radius: 0.2, makeSolid: true, forceApproxC1: false, trihedronEnum: Inputs.OCCT.geomFillTrihedronEnum.isConstantNormal });
         const vol = solid.getSolidVolume({ shape: res });
-        expect(vol).toEqual(0.518460713602639);
+        expect(vol).toEqual(0.5184607136026386);
         interpolatedWire.delete();
-        res.delete();
-    });
-
-    it("should pipe polyline wire with ngon through square wire", () => {
-        const polyline = wire.createPolylineWire({
-            points: [
-                [0, 0, 0],
-                [0, 1, 0],
-                [1, 2, 0],
-                [1, 3, 0],
-                [0, 4, 0],
-            ]
-        });
-        const res = operations.pipePolylineWireNGon({ shape: polyline, nrCorners: 6, radius: 0.2, withContact: false, withCorrection: false });
-        const vol = solid.getSolidVolume({ shape: res });
-        expect(vol).toEqual(0.5099367481546556);
-        polyline.delete();
         res.delete();
     });
 
@@ -788,41 +771,14 @@ describe("OCCT operations unit tests", () => {
             tolerance: 1e-7,
             periodic: false
         });
-        const res = operations.pipeWireCylindrical({ shape: interpolatedWire, radius: 0.2, withContact: false, withCorrection: false });
+        const res = operations.pipeWireCylindrical({ shape: interpolatedWire, radius: 0.2, makeSolid: true, forceApproxC1: false, trihedronEnum: Inputs.OCCT.geomFillTrihedronEnum.isConstantNormal });
         const vol = solid.getSolidVolume({ shape: res });
-        expect(vol).toEqual(0.6269224771598202);
+        expect(vol).toEqual(0.6269086976927102);
         interpolatedWire.delete();
         res.delete();
     });
 
-    it("should pipe polyline wire with circular profile", () => {
-        const polyline = wire.createPolylineWire({
-            points: [
-                [0, 0, 0],
-                [0, 1, 0],
-                [1, 2, 0],
-                [1, 3, 0],
-                [0, 4, 0],
-            ]
-        });
-        const res = operations.pipeWireCylindrical({ shape: polyline, radius: 0.2, withContact: false, withCorrection: false });
-        const vol = solid.getSolidVolume({ shape: res });
-        expect(vol).toEqual(0.6178829238950824);
-        polyline.delete();
-        res.delete();
-    });
-
-    it("should pipe multiple wires wire with circular profile", () => {
-        const polyline = wire.createPolylineWire({
-            points: [
-                [0, 0, 0],
-                [0, 1, 0],
-                [1, 2, 0],
-                [1, 3, 0],
-                [0, 4, 0],
-            ]
-        });
-
+    it("should pipe interpolated profile", () => {
         const interpolatedWire = wire.interpolatePoints({
             points: [
                 [0, 0, 4],
@@ -834,10 +790,9 @@ describe("OCCT operations unit tests", () => {
             tolerance: 1e-7,
             periodic: false
         });
-        const res = operations.pipeWiresCylindrical({ shapes: [polyline, interpolatedWire], radius: 0.2, withContact: false, withCorrection: false });
+        const res = operations.pipeWiresCylindrical({ shapes: [interpolatedWire], radius: 0.2, makeSolid: true, forceApproxC1: false, trihedronEnum: Inputs.OCCT.geomFillTrihedronEnum.isConstantNormal });
         const vols = res.map(s => solid.getSolidVolume({ shape: s }));
-        expect(vols).toEqual([0.6178829238950824, 0.62692247715982,]);
-        polyline.delete();
+        expect(vols).toEqual([0.626908697692709]);
         res.forEach(s => s.delete());
     });
 

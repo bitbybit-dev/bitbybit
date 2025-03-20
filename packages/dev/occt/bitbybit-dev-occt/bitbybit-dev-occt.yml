@@ -93,11 +93,15 @@
       - symbol: BRepLib
       - symbol: BRepMesh_DiscretRoot
       - symbol: BRepMesh_IncrementalMesh
+      - symbol: BRepOffsetAPI_MakeDraft
+      - symbol: BRepOffsetAPI_MakeEvolved
       - symbol: BRepOffsetAPI_MakeFilling
       - symbol: BRepOffsetAPI_MakeOffset
       - symbol: BRepOffsetAPI_MakeOffsetShape
+      - symbol: BRepOffsetAPI_MakePipe
       - symbol: BRepOffsetAPI_MakePipeShell
       - symbol: BRepOffsetAPI_MakeThickSolid
+      - symbol: BRepOffsetAPI_MiddlePath
       - symbol: BRepOffsetAPI_ThruSections
       - symbol: BRepOffset_Mode
       - symbol: BRepPrimAPI_MakeBox
@@ -194,6 +198,7 @@
       - symbol: GeomAPI_ProjectPointOnCurve
       - symbol: GeomAbs_JoinType
       - symbol: GeomAbs_Shape
+      - symbol: GeomFill_Trihedron
       - symbol: GeomLProp_SLProps
       - symbol: GeomLib
       - symbol: GeomPlate_BuildPlateSurface

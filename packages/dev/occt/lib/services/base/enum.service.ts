@@ -1,5 +1,5 @@
 import {
-    GccEnt_Position, OpenCascadeInstance, TopAbs_State, TopoDS_Shape
+    GccEnt_Position, GeomFill_Trihedron, OpenCascadeInstance, TopAbs_State, TopoDS_Shape
 } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import * as Inputs from "../../api/inputs/inputs";
 
@@ -78,6 +78,32 @@ export class EnumService {
             return Inputs.OCCT.twoCircleInclusionEnum.outsideInside;
         } else {
             return Inputs.OCCT.twoCircleInclusionEnum.none;
+        }
+    }
+
+    getGeomFillTrihedronEnumOCCTValue(value: Inputs.OCCT.geomFillTrihedronEnum): GeomFill_Trihedron {
+        if (value === Inputs.OCCT.geomFillTrihedronEnum.isConstantNormal) {
+            return this.occ.GeomFill_Trihedron.GeomFill_IsConstantNormal as GeomFill_Trihedron;
+        } else if (value === Inputs.OCCT.geomFillTrihedronEnum.isCorrectedFrenet) {
+            return this.occ.GeomFill_Trihedron.GeomFill_IsCorrectedFrenet as GeomFill_Trihedron;
+        } else if (value === Inputs.OCCT.geomFillTrihedronEnum.isDarboux) {
+            return this.occ.GeomFill_Trihedron.GeomFill_IsDarboux as GeomFill_Trihedron;
+        } else if (value === Inputs.OCCT.geomFillTrihedronEnum.isDiscreteTrihedron) {
+            return this.occ.GeomFill_Trihedron.GeomFill_IsDiscreteTrihedron as GeomFill_Trihedron;
+        } else if (value === Inputs.OCCT.geomFillTrihedronEnum.isFixed) {
+            return this.occ.GeomFill_Trihedron.GeomFill_IsFixed as GeomFill_Trihedron;
+        } else if (value === Inputs.OCCT.geomFillTrihedronEnum.isFrenet) {
+            return this.occ.GeomFill_Trihedron.GeomFill_IsFrenet as GeomFill_Trihedron;
+        } else if (value === Inputs.OCCT.geomFillTrihedronEnum.isGuideAC) {
+            return this.occ.GeomFill_Trihedron.GeomFill_IsGuideAC as GeomFill_Trihedron;
+        } else if (value === Inputs.OCCT.geomFillTrihedronEnum.isGuideACWithContact) {
+            return this.occ.GeomFill_Trihedron.GeomFill_IsGuideACWithContact as GeomFill_Trihedron;
+        } else if (value === Inputs.OCCT.geomFillTrihedronEnum.isGuidePlan) {
+            return this.occ.GeomFill_Trihedron.GeomFill_IsGuidePlan as GeomFill_Trihedron;
+        } else if (value === Inputs.OCCT.geomFillTrihedronEnum.isGuidePlanWithContact) {
+            return this.occ.GeomFill_Trihedron.GeomFill_IsGuidePlanWithContact as GeomFill_Trihedron;
+        } else {
+            return this.occ.GeomFill_Trihedron.GeomFill_IsConstantNormal as GeomFill_Trihedron;
         }
     }
 
