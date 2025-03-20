@@ -241,6 +241,10 @@ export class OCCTWire {
         return this.och.wiresService.getWiresLengths(inputs);
     }
 
+    isWireClosed(inputs: Inputs.OCCT.ShapeDto<TopoDS_Wire>): boolean {
+        return this.och.wiresService.isWireClosed(inputs);
+    }
+
     getWireCenterOfMass(inputs: Inputs.OCCT.ShapeDto<TopoDS_Wire>): Inputs.Base.Point3 {
         return this.och.wiresService.getWireCenterOfMass(inputs);
     }
