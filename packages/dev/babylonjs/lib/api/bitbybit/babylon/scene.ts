@@ -135,6 +135,7 @@ export class BabylonScene {
                 { diameter: inputs.radius * 2 },
                 this.context.scene
             );
+            sphere.metadata = { shadows: false };
             const lightMaterial = new BABYLON.StandardMaterial(`LightMaterial${Math.random()}`, this.context.scene);
             lightMaterial.diffuseColor = light.diffuse;
             lightMaterial.specularColor = light.diffuse;
