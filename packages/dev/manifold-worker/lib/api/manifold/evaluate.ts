@@ -140,7 +140,7 @@ export class ManifoldEvaluate {
 
     /**
      * The genus is a topological property of the manifold, representing the
-     * number of "handles". A sphere is 0, torus 1, etc. It is only meaningful for
+     * number of handles. A sphere is 0, torus 1, etc. It is only meaningful for
      * a single mesh, so it is best to call Decompose() first.
      * @param inputs manifold
      * @returns genus of manifold
