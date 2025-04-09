@@ -16,7 +16,7 @@ import {
     Vector,
     Point, TextBitByBit, Color,
     MathBitByBit, GeometryHelper,
-    Lists, Logic, Transforms
+    Lists, Logic, Transforms, Dates
 } from "@bitbybit-dev/base";
 import { Draw } from "./bitbybit/draw";
 import { Context } from "./context";
@@ -49,6 +49,7 @@ export class BitByBitBase {
     public jscad: JSCAD;
     public manifold: ManifoldBitByBit;
     public text: TextBitByBit;
+    public dates: Dates;
     public tag: Tag;
     public time: Time;
     public occt: OCCTW & BaseOCCT;
@@ -82,6 +83,7 @@ export class BitByBitBase {
         this.logic = new Logic();
         this.json = new JSONBitByBit(this.context);
         this.text = new TextBitByBit();
+        this.dates = new Dates();
         this.lists = new Lists();
     }
 

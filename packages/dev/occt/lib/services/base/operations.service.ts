@@ -16,6 +16,7 @@ import { EdgesService } from "./edges.service";
 import { WiresService } from "./wires.service";
 import { FacesService } from "./faces.service";
 import { ShellsService } from "./shells.service";
+import { SolidsService } from "./solids.service";
 
 export class OperationsService {
 
@@ -31,6 +32,7 @@ export class OperationsService {
         private readonly vecHelper: VectorHelperService,
         private readonly wiresService: WiresService,
         private readonly facesService: FacesService,
+        private readonly solidsService: SolidsService,
         private readonly shellsService: ShellsService,
 
     ) { }
@@ -148,6 +150,62 @@ export class OperationsService {
         const pointsOnShape = vertexes.map(v => this.closestPointsBetweenTwoShapes(v, inputs.shape));
         return pointsOnShape.map(p => {
             return this.vecHelper.distanceBetweenPoints(p[0], p[1]);
+        });
+    }
+
+    boundingBoxOfShape(inputs: Inputs.OCCT.ShapeDto<TopoDS_Shape>): Inputs.OCCT.BoundingBoxPropsDto {
+        const bbox = new this.occ.Bnd_Box_1();
+        this.occ.BRepBndLib.Add(inputs.shape, bbox, false);
+        const cornerMin = bbox.CornerMin();
+        const cornerMax = bbox.CornerMax();
+        const min = [cornerMin.X(), cornerMin.Y(), cornerMin.Z()] as Inputs.Base.Point3;
+        const max = [cornerMax.X(), cornerMax.Y(), cornerMax.Z()] as Inputs.Base.Point3;
+        const center = [
+            (cornerMin.X() + cornerMax.X()) / 2,
+            (cornerMin.Y() + cornerMax.Y()) / 2,
+            (cornerMin.Z() + cornerMax.Z()) / 2
+        ] as Inputs.Base.Point3;
+        const size = [
+            cornerMax.X() - cornerMin.X(),
+            cornerMax.Y() - cornerMin.Y(),
+            cornerMax.Z() - cornerMin.Z()
+        ] as Inputs.Base.Vector3;
+        bbox.delete();
+        const result = {
+            min,
+            max,
+            center,
+            size
+        };
+        return result;
+    }
+
+    boundingBoxShapeOfShape(inputs: Inputs.OCCT.ShapeDto<TopoDS_Shape>): TopoDS_Shape {
+        const bbox = this.boundingBoxOfShape(inputs);
+        return this.solidsService.createBoxFromCorner({
+            corner: bbox.min,
+            width: bbox.size[0],
+            height: bbox.size[1],
+            length: bbox.size[2],
+        });
+    }
+
+    boundingSphereOfShape(inputs: Inputs.OCCT.ShapeDto<TopoDS_Shape>): Inputs.OCCT.BoundingSpherePropsDto {
+        const bbox = this.boundingBoxOfShape(inputs);
+        const center = bbox.center;
+        const radius = this.vecHelper.distanceBetweenPoints(bbox.min, center);
+        const result = {
+            center,
+            radius
+        };
+        return result;
+    }
+
+    boundingSphereShapeOfShape(inputs: Inputs.OCCT.ShapeDto<TopoDS_Shape>): TopoDS_Shape {
+        const bbox = this.boundingSphereOfShape(inputs);
+        return this.solidsService.createSphere({
+            center: bbox.center,
+            radius: bbox.radius,
         });
     }
 

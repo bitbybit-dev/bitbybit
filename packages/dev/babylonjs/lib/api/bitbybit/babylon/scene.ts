@@ -135,6 +135,7 @@ export class BabylonScene {
                 { diameter: inputs.radius * 2 },
                 this.context.scene
             );
+            sphere.metadata = { shadows: false };
             const lightMaterial = new BABYLON.StandardMaterial(`LightMaterial${Math.random()}`, this.context.scene);
             lightMaterial.diffuseColor = light.diffuse;
             lightMaterial.specularColor = light.diffuse;
@@ -335,14 +336,14 @@ export class BabylonScene {
     enableSkybox(inputs: Inputs.BabylonScene.SkyboxDto): void {
         let texture: BABYLON.CubeTexture;
         if (inputs.skybox === Inputs.Base.skyboxEnum.default) {
-            texture = new BABYLON.CubeTexture("https://cdn.jsdelivr.net/gh/bitbybit-dev/bitbybit-assets@0.19.9/textures/skybox/default_skybox/skybox", this.context.scene);
+            texture = new BABYLON.CubeTexture("https://cdn.jsdelivr.net/gh/bitbybit-dev/bitbybit-assets@0.20.0/textures/skybox/default_skybox/skybox", this.context.scene);
         } else if (inputs.skybox === Inputs.Base.skyboxEnum.greyGradient) {
-            texture = new BABYLON.CubeTexture("https://cdn.jsdelivr.net/gh/bitbybit-dev/bitbybit-assets@0.19.9/textures/skybox/grey_gradient/skybox", this.context.scene);
+            texture = new BABYLON.CubeTexture("https://cdn.jsdelivr.net/gh/bitbybit-dev/bitbybit-assets@0.20.0/textures/skybox/grey_gradient/skybox", this.context.scene);
         } else if (inputs.skybox === Inputs.Base.skyboxEnum.clearSky) {
-            texture = BABYLON.CubeTexture.CreateFromPrefilteredData("https://cdn.jsdelivr.net/gh/bitbybit-dev/bitbybit-assets@0.19.9/textures/skybox/clear_sky/environment.env",
+            texture = BABYLON.CubeTexture.CreateFromPrefilteredData("https://cdn.jsdelivr.net/gh/bitbybit-dev/bitbybit-assets@0.20.0/textures/skybox/clear_sky/environment.env",
                 this.context.scene, false, false);
         } else if (inputs.skybox === Inputs.Base.skyboxEnum.city) {
-            texture = BABYLON.CubeTexture.CreateFromPrefilteredData("https://cdn.jsdelivr.net/gh/bitbybit-dev/bitbybit-assets@0.19.9/textures/skybox/city/environmentSpecular.env",
+            texture = BABYLON.CubeTexture.CreateFromPrefilteredData("https://cdn.jsdelivr.net/gh/bitbybit-dev/bitbybit-assets@0.20.0/textures/skybox/city/environmentSpecular.env",
                 this.context.scene, false, false);
         }
 

@@ -4,6 +4,7 @@ export * from "./logic";
 export * from "./math";
 export * from "./point";
 export * from "./text";
+export * from "./dates";
 export * from "./vector";
 export * from "./transforms";
 export * from "./geometry-helper";

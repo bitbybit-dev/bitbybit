@@ -490,6 +490,63 @@ export namespace OCCT {
          */
         points: Base.Point3[];
     }
+    export class BoundingBoxDto {
+        constructor(bbox?: BoundingBoxPropsDto) {
+            if (bbox !== undefined) { this.bbox = bbox; }
+        }
+        /**
+         * Bounding box
+         * @default undefined
+         */
+        bbox?: BoundingBoxPropsDto;
+    }
+    export class BoundingBoxPropsDto {
+        constructor(min?: Base.Point3, max?: Base.Point3, center?: Base.Point3, size?: Base.Vector3) {
+            if (min !== undefined) { this.min = min; }
+            if (max !== undefined) { this.max = max; }
+            if (center !== undefined) { this.center = center; }
+            if (size !== undefined) { this.size = size; }
+        }
+        /**
+         * Minimum point of the bounding box
+         * @default [0, 0, 0]
+         */
+        min: Base.Point3 = [0, 0, 0];
+        /**
+         * Maximum point of the bounding box
+         * @default [0, 0, 0]
+         */
+        max: Base.Point3 = [0, 0, 0];
+        /**
+         * Center point of the bounding box
+         * @default [0, 0, 0]
+         */
+        center: Base.Point3 = [0, 0, 0];
+        /**
+         * Size of the bounding box
+         * @default [0, 0, 0]
+         */
+        size: Base.Vector3 = [0, 0, 0];
+    }
+    export class BoundingSpherePropsDto {
+        constructor(center?: Base.Point3, radius?: number) {
+            if (center !== undefined) { this.center = center; }
+            if (radius !== undefined) { this.radius = radius; }
+        }
+        /**
+         * Center point of the bounding box
+         * @default [0, 0, 0]
+         */
+        center: Base.Point3 = [0, 0, 0];
+        /**
+         * Radius of the bounding sphere
+         * @default 0
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.1
+         */
+        radius = 0;
+    }
     export class SplitWireOnPointsDto<T> {
         constructor(shape?: T, points?: Base.Point3[]) {
             if (shape !== undefined) { this.shape = shape; }

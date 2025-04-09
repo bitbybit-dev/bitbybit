@@ -149,12 +149,12 @@ export namespace BabylonScene {
         shadowMaxZ = 1000;
         /**
         * Shadow min Z
-        * @default 0
+        * @default 0.1
         * @minimum 0
         * @maximum Infinity
         * @step 50
         */
-        shadowMinZ = 0;
+        shadowMinZ = 0.1;
     }
     export class ActiveCameraDto {
         constructor(camera?: BABYLON.Camera) {

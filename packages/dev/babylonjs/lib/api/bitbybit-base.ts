@@ -20,7 +20,8 @@ import {
     GeometryHelper,
     Lists,
     Logic,
-    Transforms
+    Transforms,
+    Dates,
 } from "@bitbybit-dev/base";
 import {
     JSCAD
@@ -56,6 +57,7 @@ export class BitByBitBase {
     public jscad: JSCAD;
     public manifold: ManifoldBitByBit;
     public text: TextBitByBit;
+    public dates: Dates;
     public tag: Tag;
     public time: Time;
     public occt: OCCTW & BaseOCCT;
@@ -94,6 +96,7 @@ export class BitByBitBase {
         this.logic = new Logic();
         this.json = new JSONBitByBit(this.context);
         this.text = new TextBitByBit();
+        this.dates = new Dates();
         this.lists = new Lists();
     }
 
