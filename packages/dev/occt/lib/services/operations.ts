@@ -28,6 +28,52 @@ export class OCCTOperations {
         return this.och.operationsService.distancesToShapeFromPoints(inputs);
     }
 
+    boundingBoxOfShape(inputs: Inputs.OCCT.ShapeDto<TopoDS_Shape>): Inputs.OCCT.BoundingBoxPropsDto {
+        return this.och.operationsService.boundingBoxOfShape(inputs);
+    }
+
+    boundingBoxMinOfShape(inputs: Inputs.OCCT.ShapeDto<TopoDS_Shape>): Inputs.Base.Point3 {
+        const bbox = this.och.operationsService.boundingBoxOfShape(inputs);
+        return bbox.min;
+    }
+
+    boundingBoxMaxOfShape(inputs: Inputs.OCCT.ShapeDto<TopoDS_Shape>): Inputs.Base.Point3 {
+        const bbox = this.och.operationsService.boundingBoxOfShape(inputs);
+        return bbox.max;
+    }
+
+    boundingBoxCenterOfShape(inputs: Inputs.OCCT.ShapeDto<TopoDS_Shape>): Inputs.Base.Point3 {
+        const bbox = this.och.operationsService.boundingBoxOfShape(inputs);
+        return bbox.center;
+    }
+
+    boundingBoxSizeOfShape(inputs: Inputs.OCCT.ShapeDto<TopoDS_Shape>): Inputs.Base.Vector3 {
+        const bbox = this.och.operationsService.boundingBoxOfShape(inputs);
+        return bbox.size;
+    }
+
+    boundingBoxShapeOfShape(inputs: Inputs.OCCT.ShapeDto<TopoDS_Shape>): TopoDS_Shape {
+        return this.och.operationsService.boundingBoxShapeOfShape(inputs);
+    }
+
+    boundingSphereOfShape(inputs: Inputs.OCCT.ShapeDto<TopoDS_Shape>): Inputs.OCCT.BoundingSpherePropsDto {
+        return this.och.operationsService.boundingSphereOfShape(inputs);
+    }
+
+    boundingSphereCenterOfShape(inputs: Inputs.OCCT.ShapeDto<TopoDS_Shape>): Inputs.Base.Point3 {
+        const sphere = this.och.operationsService.boundingSphereOfShape(inputs);
+        return sphere.center;
+    }
+
+    boundingSphereRadiusOfShape(inputs: Inputs.OCCT.ShapeDto<TopoDS_Shape>): number {
+        const sphere = this.och.operationsService.boundingSphereOfShape(inputs);
+        return sphere.radius;
+    }
+
+    boundingSphereShapeOfShape(inputs: Inputs.OCCT.ShapeDto<TopoDS_Shape>): TopoDS_Shape {
+        return this.och.operationsService.boundingSphereShapeOfShape(inputs);
+    }
+
     loft(inputs: Inputs.OCCT.LoftDto<TopoDS_Wire | TopoDS_Edge>) {
         return this.och.operationsService.loft(inputs);
     }

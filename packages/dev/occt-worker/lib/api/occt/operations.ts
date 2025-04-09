@@ -81,6 +81,126 @@ export class OCCTOperations {
     }
 
     /**
+     * Computes bounding box parameters of the shape
+     * @param inputs a shape
+     * @returns Min, max center and size of the bounding box
+     * @group measure
+     * @shortname bbox of shape
+     * @drawable false
+     */
+    boundingBoxOfShape(inputs: Inputs.OCCT.ShapeDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.OCCT.BoundingBoxPropsDto> {
+        return this.occWorkerManager.genericCallToWorkerPromise("operations.boundingBoxOfShape", inputs);
+    }
+
+    /**
+     * Get min point of the bounding box of the shape
+     * @param inputs a shape
+     * @returns Min point of the bounding box
+     * @group measure
+     * @shortname bbox min of shape
+     * @drawable false
+     */
+    boundingBoxMinOfShape(inputs: Inputs.OCCT.ShapeDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.Base.Point3> {
+        return this.occWorkerManager.genericCallToWorkerPromise("operations.boundingBoxMinOfShape", inputs);
+    }
+
+    /**
+     * Get max point of the bounding box of the shape
+     * @param inputs a shape
+     * @returns Max point of the bounding box
+     * @group measure
+     * @shortname bbox max of shape
+     * @drawable false
+     */
+    boundingBoxMaxOfShape(inputs: Inputs.OCCT.ShapeDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.Base.Point3> {
+        return this.occWorkerManager.genericCallToWorkerPromise("operations.boundingBoxMaxOfShape", inputs);
+    }
+
+    /**
+     * Get center point of the bounding box of the shape
+     * @param inputs a shape
+     * @returns Center point of the bounding box
+     * @group measure
+     * @shortname bbox center of shape
+     * @drawable false
+     */
+    boundingBoxCenterOfShape(inputs: Inputs.OCCT.ShapeDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.Base.Point3> {
+        return this.occWorkerManager.genericCallToWorkerPromise("operations.boundingBoxCenterOfShape", inputs);
+    }
+
+    /**
+     * Get size point of the bounding box of the shape
+     * @param inputs a shape
+     * @returns Center point of the bounding box
+     * @group measure
+     * @shortname bbox size of shape
+     * @drawable false
+     */
+    boundingBoxSizeOfShape(inputs: Inputs.OCCT.ShapeDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.Base.Vector3> {
+        return this.occWorkerManager.genericCallToWorkerPromise("operations.boundingBoxSizeOfShape", inputs);
+    }
+
+    /**
+     * Get bounding box shape of the shape
+     * @param inputs a shape
+     * @returns shape of the bounding box
+     * @group measure
+     * @shortname bbox shape of shape
+     * @drawable true
+     */
+    boundingBoxShapeOfShape(inputs: Inputs.OCCT.ShapeDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.OCCT.TopoDSShapePointer> {
+        return this.occWorkerManager.genericCallToWorkerPromise("operations.boundingBoxShapeOfShape", inputs);
+    }
+
+    /**
+     * Computes bounding sphere parameters of the shape
+     * @param inputs a shape
+     * @returns Center and radius of the bounding sphere
+     * @group measure
+     * @shortname bsphere of shape
+     * @drawable false
+     */
+    boundingSphereOfShape(inputs: Inputs.OCCT.ShapeDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.OCCT.BoundingSpherePropsDto> {
+        return this.occWorkerManager.genericCallToWorkerPromise("operations.boundingSphereOfShape", inputs);
+    }
+
+    /**
+     * Get center point of the bounding sphere of the shape
+     * @param inputs a shape
+     * @returns Center point of the bounding sphere
+     * @group measure
+     * @shortname bsphere center of shape
+     * @drawable false
+     */
+    boundingSphereCenterOfShape(inputs: Inputs.OCCT.ShapeDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.Base.Point3> {
+        return this.occWorkerManager.genericCallToWorkerPromise("operations.boundingSphereCenterOfShape", inputs);
+    }
+
+    /**
+     * Get radius of the bounding sphere of the shape
+     * @param inputs a shape
+     * @returns Radius of the bounding sphere
+     * @group measure
+     * @shortname bsphere radius of shape
+     * @drawable false
+     */
+    boundingSphereRadiusOfShape(inputs: Inputs.OCCT.ShapeDto<Inputs.OCCT.TopoDSShapePointer>): Promise<number> {
+        return this.occWorkerManager.genericCallToWorkerPromise("operations.boundingSphereRadiusOfShape", inputs);
+    }
+
+    /**
+     * Get bounding sphere shape of the shape
+     * @param inputs a shape
+     * @returns shape of the bounding sphere
+     * @group measure
+     * @shortname bsphere shape of shape
+     * @drawable true
+     */
+    boundingSphereShapeOfShape(inputs: Inputs.OCCT.ShapeDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.OCCT.TopoDSShapePointer> {
+        return this.occWorkerManager.genericCallToWorkerPromise("operations.boundingSphereShapeOfShape", inputs);
+    }
+
+    /**
      * Extrudes the shape along direction - wire will produce shell, face will produce solid
      * @param inputs Shape to extrude and direction parameter with tolerance
      * @returns Resulting extruded shape

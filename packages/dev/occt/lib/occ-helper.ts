@@ -76,7 +76,7 @@ export class OccHelper {
 
         this.operationsService = new OperationsService(occ, this.enumService, this.entitiesService, this.converterService,
             this.booleansService, this.shapeGettersService, this.edgesService, this.transformsService,
-            this.vecHelper, this.wiresService, this.facesService, this.shellsService);
+            this.vecHelper, this.wiresService, this.facesService, this.solidsService, this.shellsService);
 
         this.filletsService = new FilletsService(occ, this.vecHelper, this.iteratorService, this.converterService, this.entitiesService,
             this.transformsService, this.shapeGettersService, this.edgesService, this.operationsService, this.facesService);
