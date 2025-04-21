@@ -5718,12 +5718,12 @@ export namespace OCCT {
         lineSpacing? = 2;
         /**
          * The letter spacing offset
-         * @default 1
+         * @default 0
          * @minimum -Infinity
          * @maximum Infinity
          * @step 0.1
          */
-        letterSpacing? = 1;
+        letterSpacing? = 0;
         /**
          * The extrude offset
          * @default left
