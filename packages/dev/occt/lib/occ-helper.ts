@@ -19,10 +19,18 @@ import { VerticesService } from "./services/base/vertices.service";
 import { ShellsService } from "./services/base/shells.service";
 import { FilletsService } from "./services/base/fillets.service";
 import { SolidsService } from "./services/base/solids.service";
+import { TextBitByBit, Point, GeometryHelper, Transforms, Vector, MathBitByBit } from "@bitbybit-dev/base";
 
 export class OccHelper {
 
     private readonly occRefReturns: OCCReferencedReturns;
+
+    private readonly geometryHelper: GeometryHelper;
+    private readonly vector: Vector;
+    private readonly math: MathBitByBit;
+    private readonly transforms: Transforms;
+    private readonly point: Point;
+    private readonly textService: TextBitByBit;
 
     public readonly iteratorService: IteratorService;
     public readonly converterService: ConverterService;
@@ -42,11 +50,19 @@ export class OccHelper {
     public readonly operationsService: OperationsService;
     public readonly filletsService: FilletsService;
 
+
     constructor(
         public readonly vecHelper: VectorHelperService,
         public readonly shapesHelperService: ShapesHelperService,
         public readonly occ: OpenCascadeInstance,
     ) {
+        this.geometryHelper = new GeometryHelper();
+        this.math = new MathBitByBit();
+        this.vector = new Vector(this.math, this.geometryHelper);
+        this.transforms = new Transforms(this.vector, this.math);
+        this.point = new Point(this.geometryHelper, this.transforms);
+        this.textService = new TextBitByBit(this.point);
+
         this.occRefReturns = new OCCReferencedReturns(occ);
         this.iteratorService = new IteratorService(occ);
         this.enumService = new EnumService(occ);
@@ -63,7 +79,7 @@ export class OccHelper {
             this.iteratorService, this.converterService, this.enumService, this.geomService, this.transformsService, this.vecHelper);
 
         this.wiresService = new WiresService(occ, this.occRefReturns, this.vecHelper, this.shapesHelperService, this.shapeGettersService, this.transformsService,
-            this.enumService, this.entitiesService, this.converterService, this.geomService, this.edgesService, this.booleansService);
+            this.enumService, this.entitiesService, this.converterService, this.geomService, this.edgesService, this.textService);
         this.verticesService.wiresService = this.wiresService;
 
         this.facesService = new FacesService(occ, this.occRefReturns, this.entitiesService, this.enumService,

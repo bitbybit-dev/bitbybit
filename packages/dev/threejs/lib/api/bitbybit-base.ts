@@ -82,7 +82,7 @@ export class BitByBitBase {
         this.asset = new Asset();
         this.logic = new Logic();
         this.json = new JSONBitByBit(this.context);
-        this.text = new TextBitByBit();
+        this.text = new TextBitByBit(this.point);
         this.dates = new Dates();
         this.lists = new Lists();
     }

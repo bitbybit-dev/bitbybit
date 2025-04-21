@@ -2,8 +2,7 @@
 import { Context } from "../../context";
 import * as BABYLON from "@babylonjs/core";
 import * as GUI from "@babylonjs/gui";
-import * as Inputs from "../../inputs/inputs";
-import { Base } from "../../inputs/base-inputs";
+import * as Inputs from "../../inputs";
 
 
 export class BabylonScene {
@@ -388,16 +387,16 @@ export class BabylonScene {
      */
     fog(inputs: Inputs.BabylonScene.FogDto): void {
         switch (inputs.mode) {
-            case Base.fogModeEnum.none:
+            case Inputs.Base.fogModeEnum.none:
                 this.context.scene.fogMode = 0;
                 break;
-            case Base.fogModeEnum.exponential:
+            case Inputs.Base.fogModeEnum.exponential:
                 this.context.scene.fogMode = 1;
                 break;
-            case Base.fogModeEnum.exponentialSquared:
+            case Inputs.Base.fogModeEnum.exponentialSquared:
                 this.context.scene.fogMode = 2;
                 break;
-            case Base.fogModeEnum.linear:
+            case Inputs.Base.fogModeEnum.linear:
                 this.context.scene.fogMode = 3;
                 break;
         }

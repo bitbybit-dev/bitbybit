@@ -1,7 +1,6 @@
 
 import * as BABYLON from "@babylonjs/core";
-import * as Inputs from "../inputs/inputs";
-import { Base } from "../inputs/base-inputs";
+import * as Inputs from "../inputs";
 import { BabylonNode } from "./babylon/node";
 import { Tag, DrawCore } from "@bitbybit-dev/core";
 import { Context } from "../context";
@@ -354,7 +353,7 @@ export class Draw extends DrawCore {
         }
         const result = this.drawHelper.drawSurfacesMultiColour({
             surfacesMesh: inputs.babylonMesh,
-            surfaces: inputs.entity as Base.VerbSurface[],
+            surfaces: inputs.entity as Inputs.Base.VerbSurface[],
             ...options as Inputs.Draw.DrawBasicGeometryOptions
         });
         this.applyGlobalSettingsAndMetadataAndShadowCasting(Inputs.Draw.drawingTypes.verbSurfaces, options, result);
@@ -369,7 +368,7 @@ export class Draw extends DrawCore {
         }
         const result = this.drawHelper.drawCurves({
             curvesMesh: inputs.babylonMesh as BABYLON.GreasedLineMesh,
-            curves: inputs.entity as Base.VerbCurve[],
+            curves: inputs.entity as Inputs.Base.VerbCurve[],
             ...options as Inputs.Draw.DrawBasicGeometryOptions
         });
 
@@ -410,7 +409,7 @@ export class Draw extends DrawCore {
         if (!inputs.options && inputs.babylonMesh && inputs.babylonMesh.metadata.options) {
             options = inputs.babylonMesh.metadata.options;
         }
-        const lines = inputs.entity as Base.Line3[];
+        const lines = inputs.entity as Inputs.Base.Line3[];
         const result = this.drawHelper.drawPolylinesWithColours({
             polylinesMesh: inputs.babylonMesh as BABYLON.GreasedLineMesh,
             polylines: lines.map(e => ({ points: [e.start, e.end] })),
@@ -509,7 +508,7 @@ export class Draw extends DrawCore {
         if (!inputs.options && inputs.babylonMesh && inputs.babylonMesh.metadata.options) {
             options = inputs.babylonMesh.metadata.options;
         }
-        const line = inputs.entity as Base.Line3;
+        const line = inputs.entity as Inputs.Base.Line3;
         const result = this.drawHelper.drawPolylinesWithColours({
             polylinesMesh: inputs.babylonMesh as BABYLON.GreasedLineMesh,
             polylines: [{ points: [line.start, line.end] }],

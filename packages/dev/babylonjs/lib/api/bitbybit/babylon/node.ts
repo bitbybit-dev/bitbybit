@@ -2,7 +2,7 @@
 import * as BABYLON from "@babylonjs/core";
 import { Context } from "../../context";
 import { DrawHelper } from "../../draw-helper";
-import * as Inputs from "../../inputs/inputs";
+import * as Inputs from "../../inputs";
 
 /**
  * Nodes help understand the space and construct more complicated space structures. Nodes can be nested together

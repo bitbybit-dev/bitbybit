@@ -18,6 +18,14 @@
         "module": "NodeNext",
         "allowJs": true,
         "emitDeclarationOnly": false,
+        "paths": {
+            "@bitbybit-dev/base": [
+                "../base/dist"
+            ],
+            "@bitbybit-dev/base/*": [
+                "../base/dist/*"
+            ],
+        },
         "lib": [
             "es2020",
             "dom"

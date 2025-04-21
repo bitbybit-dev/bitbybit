@@ -193,6 +193,9 @@ export class OCCTWire {
         return this.och.entitiesService.createEllipse(inputs.radiusMinor, inputs.radiusMajor, inputs.center, inputs.direction, Inputs.OCCT.typeSpecificityEnum.wire) as TopoDS_Wire;
     }
 
+    textWires(inputs: Inputs.OCCT.TextWiresDto) {
+        return this.och.wiresService.textWires(inputs);
+    }
     createSquareWire(inputs: Inputs.OCCT.SquareDto): TopoDS_Wire {
         return this.och.wiresService.createSquareWire(inputs);
     }

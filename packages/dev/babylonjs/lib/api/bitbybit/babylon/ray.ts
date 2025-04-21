@@ -2,7 +2,7 @@
 import { Context } from "../../context";
 import * as BABYLON from "@babylonjs/core";
 import * as Inputs from "../../inputs/inputs";
-import { Base } from "../../inputs/inputs";
+import { Base } from "../../inputs";
 
 export class BabylonRay {
 

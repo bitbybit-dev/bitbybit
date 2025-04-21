@@ -34,7 +34,9 @@
     "license": "MIT",
     "types": "./index.d.ts",
     "type": "module",
-    "dependencies": {},
+    "dependencies": {
+        "@bitbybit-dev/base": "0.20.0"
+    },
     "devDependencies": {
         "sass": "1.57.1",
         "@testing-library/jest-dom": "5.14.1",

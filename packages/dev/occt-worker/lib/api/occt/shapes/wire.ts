@@ -551,6 +551,18 @@ export class OCCTWire {
     }
 
     /**
+     * Creates OpenCascade text wires based on simplex font created by Dr. A. V. Hershey
+     * @param inputs Text parameters
+     * @returns OpenCascade text wires
+     * @group primitives
+     * @shortname text wires
+     * @drawable true
+     */
+    textWires(inputs: Inputs.OCCT.TextWiresDto): Promise<Inputs.OCCT.TopoDSWirePointer[]> {
+        return this.occWorkerManager.genericCallToWorkerPromise("shapes.wire.textWires", inputs);
+    }
+
+    /**
      * Gets the wire by providing an index from the shape
      * @param inputs Shape
      * @returns OpenCascade wire

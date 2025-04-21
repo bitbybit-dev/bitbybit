@@ -1,7 +1,7 @@
 
 import { Context } from "../../../context";
 import * as BABYLON from "@babylonjs/core";
-import * as Inputs from "../../../inputs/inputs";
+import * as Inputs from "../../../inputs";
 import { BabylonMesh } from "../mesh";
 import * as earcut from "earcut";
 export class BabylonMeshBuilder {

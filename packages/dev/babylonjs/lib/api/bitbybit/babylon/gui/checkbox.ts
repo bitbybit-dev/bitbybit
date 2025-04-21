@@ -1,7 +1,7 @@
 
 import { Context } from "../../../context";
 import * as BABYLON from "../../../../gui-enriched-babylon";
-import * as Inputs from "../../../inputs/inputs";
+import * as Inputs from "../../../inputs";
 
 export class BabylonGuiCheckbox {
 

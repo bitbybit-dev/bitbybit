@@ -1,10 +1,20 @@
+import { GeometryHelper } from "./geometry-helper";
+import { MathBitByBit } from "./math";
+import { Point } from "./point";
 import { TextBitByBit } from "./text";
+import { Transforms } from "./transforms";
+import { Vector } from "./vector";
 
 describe("Text unit tests", () => {
     let text: TextBitByBit;
 
     beforeAll(async () => {
-        text = new TextBitByBit();
+        const geometryHelper = new GeometryHelper();
+        const math = new MathBitByBit();
+        const vector = new Vector(math, geometryHelper);
+        const transforms = new Transforms(vector, math);
+        const points = new Point(geometryHelper, transforms);
+        text = new TextBitByBit(points);
     });
 
     it("should create a text", async () => {

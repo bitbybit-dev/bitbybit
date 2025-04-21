@@ -5668,6 +5668,76 @@ export namespace OCCT {
          */
         radiusMajor = 2;
     }
+    export class TextWiresDto {
+        constructor(text?: string, xOffset?: number, yOffset?: number, height?: number, lineSpacing?: number, letterSpacing?: number, align?: Base.horizontalAlignEnum, extrudeOffset?: number) {
+            if (text !== undefined) { this.text = text; }
+            if (xOffset !== undefined) { this.xOffset = xOffset; }
+            if (yOffset !== undefined) { this.yOffset = yOffset; }
+            if (height !== undefined) { this.height = height; }
+            if (lineSpacing !== undefined) { this.lineSpacing = lineSpacing; }
+            if (letterSpacing !== undefined) { this.letterSpacing = letterSpacing; }
+            if (align !== undefined) { this.align = align; }
+            if (extrudeOffset !== undefined) { this.extrudeOffset = extrudeOffset; }
+        }
+        /**
+         * The text
+         * @default Hello World
+         */
+        text?: string;
+        /**
+         * The x offset
+         * @default 0
+         * @minimum -Infinity
+         * @maximum Infinity
+         * @step 0.1
+         */
+        xOffset? = 0;
+        /**
+         * The y offset
+         * @default 0
+         * @minimum -Infinity
+         * @maximum Infinity
+         * @step 0.1
+         */
+        yOffset? = 0;
+        /**
+         * The height of the text
+         * @default 1
+         * @minimum -Infinity
+         * @maximum Infinity
+         * @step 0.1
+         */
+        height? = 1;
+        /**
+         * The line spacing
+         * @default 2
+         * @minimum -Infinity
+         * @maximum Infinity
+         * @step 0.1
+         */
+        lineSpacing? = 2;
+        /**
+         * The letter spacing offset
+         * @default 1
+         * @minimum -Infinity
+         * @maximum Infinity
+         * @step 0.1
+         */
+        letterSpacing? = 1;
+        /**
+         * The extrude offset
+         * @default left
+         */
+        align?: Base.horizontalAlignEnum;
+        /**
+         * The extrude offset
+         * @default 0
+         * @minimum -Infinity
+         * @maximum Infinity
+         * @step 0.1
+         */
+        extrudeOffset? = 0;
+    }
     export class GeomCylindricalSurfaceDto {
         constructor(radius?: number, center?: Base.Point3, direction?: Base.Vector3) {
             if (radius !== undefined) { this.radius = radius; }
