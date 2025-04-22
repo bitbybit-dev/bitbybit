@@ -1,6 +1,6 @@
 
 import { Context } from "./context";
-import * as Inputs from "./inputs";
+import * as Inputs from "./inputs/inputs";
 import { DrawHelperCore } from "@bitbybit-dev/core";
 import { JSCADText } from "@bitbybit-dev/jscad-worker";
 import { Vector } from "@bitbybit-dev/base";
