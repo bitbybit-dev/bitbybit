@@ -22,6 +22,12 @@
             "@bitbybit-dev/occt/*": [
                 "../occt/*",
             ],
+            "@bitbybit-dev/base": [
+                "../base/dist"
+            ],
+            "@bitbybit-dev/base/*": [
+                "../base/dist/*"
+            ]
         },
         "lib": [
             "es2020",

@@ -1,6 +1,6 @@
 import { OpenCascadeInstance, TopoDS_Face, TopoDS_Shape, TopoDS_Shell, TopoDS_Solid } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import * as Inputs from "../../api/inputs/inputs";
-import { Base } from "../../api/inputs/base-inputs";
+import { Base } from "../../api/inputs/inputs";
 import { ShapeGettersService } from "./shape-getters";
 import { FacesService } from "./faces.service";
 import { EntitiesService } from "./entities.service";

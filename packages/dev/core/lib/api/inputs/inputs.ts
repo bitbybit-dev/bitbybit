@@ -8,5 +8,4 @@ export * from "./verb-inputs";
 export * from "@bitbybit-dev/jscad/lib/api/inputs/jscad-inputs";
 export * from "@bitbybit-dev/manifold/lib/api/inputs/manifold-inputs";
 export * from "@bitbybit-dev/occt/lib/api/inputs/occ-inputs";
-export * from "@bitbybit-dev/occt/lib/api/inputs/base-inputs";
 export * from "@bitbybit-dev/base/lib/api/inputs/inputs";

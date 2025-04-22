@@ -1,5 +1,7 @@
 /* eslint-disable @typescript-eslint/no-namespace */
 
+import { Base } from "./base-inputs";
+
 
 export namespace Text {
 
@@ -105,4 +107,165 @@ export namespace Text {
          */
         values = ["World"];
     }
+    export class VectorCharDto {
+        constructor(char?: string, xOffset?: number, yOffset?: number, height?: number, extrudeOffset?: number) {
+            if (char !== undefined) { this.char = char; }
+            if (xOffset !== undefined) { this.xOffset = xOffset; }
+            if (yOffset !== undefined) { this.yOffset = yOffset; }
+            if (height !== undefined) { this.height = height; }
+            if (extrudeOffset !== undefined) { this.extrudeOffset = extrudeOffset; }
+        }
+        /**
+         * The text
+         * @default A
+         */
+        char = "A";
+        /**
+         * The x offset
+         * @default 0
+         * @minimum -Infinity
+         * @maximum Infinity
+         * @step 0.1
+         */
+        xOffset? = 0;
+        /**
+         * The y offset
+         * @minimum -Infinity
+         * @maximum Infinity
+         * @step 0.1
+         */
+        yOffset? = 0;
+        /**
+         * The height of the text
+         * @default 1
+         * @minimum -Infinity
+         * @maximum Infinity
+         * @step 0.1
+         */
+        height? = 1;
+        /**
+         * The extrude offset
+         * @default 0
+         * @minimum -Infinity
+         * @maximum Infinity
+         * @step 0.1
+         */
+        extrudeOffset? = 0;
+    }
+    export class VectorCharResultDto {
+        constructor(width?: number, height?: number, paths?: Base.Point3[][]) {
+            if (width !== undefined) { this.width = width; }
+            if (height !== undefined) { this.height = height; }
+            if (paths !== undefined) { this.paths = paths; }
+        }
+        /**
+         * The width of the char
+         * @default undefined
+         */
+        width?: number;
+        /**
+         * The height of the char
+         * @default undefined
+         */
+        height?: number;
+        /**
+         * The segments of the char
+         * @default undefined
+         */
+        paths?: Base.Point3[][];
+    }
+
+    export class VectorTextResultDto {
+        constructor(width?: number, height?: number, chars?: VectorCharResultDto[]) {
+            if (width !== undefined) { this.width = width; }
+            if (height !== undefined) { this.height = height; }
+            if (chars !== undefined) { this.chars = chars; }
+        }
+        /**
+         * The width of the char
+         * @default undefined
+         */
+        width?: number;
+        /**
+         * The height of the char
+         * @default undefined
+         */
+        height?: number;
+        /**
+         * The segments of the char
+         * @default undefined
+         */
+        chars?: VectorCharResultDto[];
+    }
+    export class VectorTextDto {
+        constructor(text?: string, xOffset?: number, yOffset?: number, height?: number, lineSpacing?: number, letterSpacing?: number, align?: Base.horizontalAlignEnum, extrudeOffset?: number) {
+            if (text !== undefined) { this.text = text; }
+            if (xOffset !== undefined) { this.xOffset = xOffset; }
+            if (yOffset !== undefined) { this.yOffset = yOffset; }
+            if (height !== undefined) { this.height = height; }
+            if (lineSpacing !== undefined) { this.lineSpacing = lineSpacing; }
+            if (letterSpacing !== undefined) { this.letterSpacing = letterSpacing; }
+            if (align !== undefined) { this.align = align; }
+            if (extrudeOffset !== undefined) { this.extrudeOffset = extrudeOffset; }
+        }
+        /**
+         * The text
+         * @default Hello World
+         */
+        text?: string;
+        /**
+         * The x offset
+         * @default 0
+         * @minimum -Infinity
+         * @maximum Infinity
+         * @step 0.1
+         */
+        xOffset? = 0;
+        /**
+         * The y offset
+         * @default 0
+         * @minimum -Infinity
+         * @maximum Infinity
+         * @step 0.1
+         */
+        yOffset? = 0;
+        /**
+         * The height of the text
+         * @default 1
+         * @minimum -Infinity
+         * @maximum Infinity
+         * @step 0.1
+         */
+        height? = 1;
+        /**
+         * The line spacing
+         * @default 1.4
+         * @minimum -Infinity
+         * @maximum Infinity
+         * @step 0.1
+         */
+        lineSpacing? = 1.4;
+        /**
+         * The letter spacing offset
+         * @default 0
+         * @minimum -Infinity
+         * @maximum Infinity
+         * @step 0.1
+         */
+        letterSpacing? = 0;
+        /**
+         * The extrude offset
+         * @default left
+         */
+        align?: Base.horizontalAlignEnum;
+        /**
+         * The extrude offset
+         * @default 0
+         * @minimum -Infinity
+         * @maximum Infinity
+         * @step 0.1
+         */
+        extrudeOffset? = 0;
+    }
+
 }

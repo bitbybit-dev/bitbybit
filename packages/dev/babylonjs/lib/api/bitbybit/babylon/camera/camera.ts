@@ -1,7 +1,7 @@
 import * as BABYLON from "@babylonjs/core";
 import { Context } from "../../../context";
 import * as Inputs from "../../../inputs/inputs";
-import { Base } from "../../../inputs/inputs";
+import { Base } from "../../../inputs";
 import { BabylonArcRotateCamera } from "./arc-rotate-camera";
 import { BabylonFreeCamera } from "./free-camera";
 import { BabylonTargetCamera } from "./target-camera";

@@ -1,4 +1,4 @@
-import { Base } from "./inputs";
+import { Base } from "./inputs/inputs";
 
 export class ShapesHelperService {
 

@@ -1,6 +1,6 @@
 import { ContextBase } from "../../context";
 import { GeometryHelper, MathBitByBit } from "@bitbybit-dev/base";
-import * as Inputs from "../../inputs/inputs";
+import * as Inputs from "../../inputs";
 import { BaseTypes } from "../base-types";
 import { VerbCurveCircle } from "./curve-circle";
 import { VerbCurveEllipse } from "./curve-ellipse";

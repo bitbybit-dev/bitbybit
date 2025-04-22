@@ -5,7 +5,7 @@ import {
 } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import { VectorHelperService } from "../../api/vector-helper.service";
 import * as Inputs from "../../api/inputs/inputs";
-import { Base } from "../../api/inputs/base-inputs";
+import { Base } from "../../api/inputs/inputs";
 import { EnumService } from "./enum.service";
 import { EntitiesService } from "./entities.service";
 import { ConverterService } from "./converter.service";

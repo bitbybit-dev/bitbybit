@@ -15,4 +15,18 @@ export namespace Base {
     export type TransformMatrixes3x3 = TransformMatrix3x3[];
     export type TransformMatrix = [number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number];
     export type TransformMatrixes = TransformMatrix[];
+    export enum horizontalAlignEnum {
+        /**
+         * Aligns to the left
+         */
+        left = "left",
+        /**
+         * Aligns to the center
+         */
+        center = "center",
+        /**
+         * Aligns to the right
+         */
+        right = "right",
+    }
 }

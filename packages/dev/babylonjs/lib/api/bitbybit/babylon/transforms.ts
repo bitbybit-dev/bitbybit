@@ -1,7 +1,7 @@
 
 import * as BABYLON from "@babylonjs/core";
 import { Base } from "../../inputs/base-inputs";
-import * as Inputs from "../../inputs/inputs";
+import * as Inputs from "../../inputs";
 
 /**
  * Transformations help to move, scale, rotate and mirror objects. You can combine multiple transformations

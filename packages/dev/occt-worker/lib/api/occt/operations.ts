@@ -98,7 +98,7 @@ export class OCCTOperations {
      * @returns Min point of the bounding box
      * @group measure
      * @shortname bbox min of shape
-     * @drawable false
+     * @drawable true
      */
     boundingBoxMinOfShape(inputs: Inputs.OCCT.ShapeDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.Base.Point3> {
         return this.occWorkerManager.genericCallToWorkerPromise("operations.boundingBoxMinOfShape", inputs);
@@ -110,7 +110,7 @@ export class OCCTOperations {
      * @returns Max point of the bounding box
      * @group measure
      * @shortname bbox max of shape
-     * @drawable false
+     * @drawable true
      */
     boundingBoxMaxOfShape(inputs: Inputs.OCCT.ShapeDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.Base.Point3> {
         return this.occWorkerManager.genericCallToWorkerPromise("operations.boundingBoxMaxOfShape", inputs);
@@ -122,7 +122,7 @@ export class OCCTOperations {
      * @returns Center point of the bounding box
      * @group measure
      * @shortname bbox center of shape
-     * @drawable false
+     * @drawable true
      */
     boundingBoxCenterOfShape(inputs: Inputs.OCCT.ShapeDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.Base.Point3> {
         return this.occWorkerManager.genericCallToWorkerPromise("operations.boundingBoxCenterOfShape", inputs);

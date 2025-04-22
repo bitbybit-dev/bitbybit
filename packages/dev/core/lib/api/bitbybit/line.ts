@@ -1,6 +1,6 @@
 import { ContextBase } from "../context";
 import { GeometryHelper } from "@bitbybit-dev/base";
-import * as Inputs from "../inputs/inputs";
+import * as Inputs from "../inputs";
 
 /**
  * Contains various methods for lines. Line in bitbybit is a simple object that has star and end point properties.

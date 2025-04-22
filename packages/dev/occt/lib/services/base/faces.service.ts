@@ -1,6 +1,6 @@
 import { GeomAbs_Shape, Geom_Surface, OpenCascadeInstance, TopoDS_Face, TopoDS_Shape, TopoDS_Wire } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import * as Inputs from "../../api/inputs/inputs";
-import { Base } from "../../api/inputs/base-inputs";
+import { Base } from "../../api/inputs/inputs";
 import { OCCReferencedReturns } from "../../occ-referenced-returns";
 import { ShapeGettersService } from "./shape-getters";
 import { EntitiesService } from "./entities.service";

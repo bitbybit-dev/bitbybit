@@ -2,7 +2,7 @@
 import { Context } from "../../../context";
 import * as BABYLON from "@babylonjs/core";
 import { SkyMaterial } from "@babylonjs/materials";
-import * as Inputs from "../../../inputs/inputs";
+import * as Inputs from "../../../inputs";
 
 export class BabylonMaterialSky {
 

@@ -3,7 +3,7 @@ import {
     TopoDS_Edge, TopoDS_Shape, TopoDS_Wire, gp_Circ2d
 } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import * as Inputs from "../../api/inputs/inputs";
-import { Base } from "../../api/inputs/base-inputs";
+import { Base } from "../../api/inputs/inputs";
 import { VectorHelperService } from "../../api/vector-helper.service";
 import { ConverterService } from "./converter.service";
 import { EntitiesService } from "./entities.service";

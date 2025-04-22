@@ -1,6 +1,6 @@
 import { Adaptor3d_Curve, BRepAdaptor_CompCurve_2, Geom_Curve, OpenCascadeInstance, TopoDS_Shape } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import * as Inputs from "../../api/inputs/inputs";
-import { Base } from "../../api/inputs/base-inputs";
+import { Base } from "../../api/inputs/inputs";
 import { VectorHelperService } from "../../api/vector-helper.service";
 import { EntitiesService } from "./entities.service";
 
