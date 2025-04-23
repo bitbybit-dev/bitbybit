@@ -20,7 +20,6 @@ export class OCCTTransforms {
         return translatedShape;
     }
 
-
     rotate(inputs: Inputs.OCCT.RotateDto<TopoDS_Shape>): TopoDS_Shape {
         return this.och.transformsService.rotate(inputs);
     }
@@ -37,6 +36,10 @@ export class OCCTTransforms {
 
     align(inputs: Inputs.OCCT.AlignDto<TopoDS_Shape>): TopoDS_Shape {
         return this.och.transformsService.align(inputs);
+    }
+
+    alignNormAndAxis(inputs: Inputs.OCCT.AlignNormAndAxisDto<TopoDS_Shape>): TopoDS_Shape {
+        return this.och.transformsService.alignNormAndAxis(inputs);
     }
 
     alignAndTranslate(inputs: Inputs.OCCT.AlignAndTranslateDto<TopoDS_Shape>): TopoDS_Shape {

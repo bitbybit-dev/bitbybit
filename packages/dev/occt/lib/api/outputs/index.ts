@@ -1,1 +1,1 @@
-export * from "./occ-outputs";
+export * as OCCT from "./bucket";

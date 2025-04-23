@@ -1,5 +1,5 @@
 import { OpenCascadeInstance } from "@bitbybit-dev/occt/bitbybit-dev-occt/bitbybit-dev-occt";
-import { ShapesHelperService, VectorHelperService, OccHelper, OCCTService, ObjectDefinition } from "@bitbybit-dev/occt";
+import { ShapesHelperService, VectorHelperService, OccHelper, OCCTService, Outputs } from "@bitbybit-dev/occt";
 import { CacheHelper } from "./cache-helper";
 
 let openCascade: OCCTService;
@@ -85,7 +85,7 @@ export const onMessageInput = (d: DataInput, postMessage) => {
 
             if (!cacheHelper.isOCCTObject(res)) {
                 if (res.compound && res.data && res.shapes && res.shapes.length > 0) {
-                    const r: ObjectDefinition<any, any> = res;
+                    const r: Outputs.OCCT.ObjectDefinition<any, any> = res;
                     r.shapes = r.shapes.map(s => ({ id: s.id, shape: { hash: s.shape.hash, type: "occ-shape" } }));
                     r.compound = { hash: r.compound.hash, type: "occ-shape" };
                     result = r;

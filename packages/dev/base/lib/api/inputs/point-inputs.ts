@@ -351,6 +351,33 @@ export namespace Point {
          */
         transformation: Base.TransformMatrixes[];
     }
+    export class ThreePointsNormalDto {
+        constructor(point1?: Base.Point3, point2?: Base.Point3, point3?: Base.Point3) {
+            if (point1 !== undefined) { this.point1 = point1; }
+            if (point2 !== undefined) { this.point2 = point2; }
+            if (point3 !== undefined) { this.point3 = point3; }
+        }
+        /**
+         * Point 1
+         * @default undefined
+         */
+        point1: Base.Point3;
+        /**
+         * Point 2
+         * @default undefined
+         */
+        point2: Base.Point3;
+        /**
+         * Point 3
+         * @default undefined
+         */
+        point3: Base.Point3;
+        /**
+         * Reverse normal direction
+         * @default false
+         */
+        reverseNormal = false;
+    }
     export class RemoveConsecutiveDuplicatesDto {
         constructor(points?: Base.Point3[], tolerance?: number, checkFirstAndLast?: boolean) {
             if (points !== undefined) { this.points = points; }

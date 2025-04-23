@@ -11,7 +11,7 @@ export class OCCTSurfaces {
     }
 
     cylindricalSurface(inputs: Inputs.OCCT.GeomCylindricalSurfaceDto) {
-        const ax = this.och.entitiesService.gpAx3(inputs.center, inputs.direction);
+        const ax = this.och.entitiesService.gpAx3_4(inputs.center, inputs.direction);
         const res = new this.occ.Geom_CylindricalSurface_1(ax, inputs.radius);
         ax.delete();
         return res;

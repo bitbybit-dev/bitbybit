@@ -32,6 +32,10 @@ export class OCCTWire {
         return this.och.wiresService.createLineWire(inputs);
     }
 
+    createLineWireWithExtensions(inputs: Inputs.OCCT.LineWithExtensionsDto): TopoDS_Wire {
+        return this.och.wiresService.createLineWireWithExtensions(inputs);
+    }
+
     createLines(inputs: Inputs.OCCT.LinesDto): TopoDS_Wire[] | TopoDS_Compound {
         const wires = inputs.lines.map(p => this.createLineWire(p)).filter(s => s !== undefined);
         return this.och.converterService.makeCompoundIfNeeded(wires, inputs.returnCompound);
@@ -181,6 +185,10 @@ export class OCCTWire {
         return this.och.wiresService.startPointOnWire(inputs);
     }
 
+    midPointOnWire(inputs: Inputs.OCCT.ShapeDto<TopoDS_Wire>): Inputs.Base.Point3 {
+        return this.och.wiresService.midPointOnWire(inputs);
+    }
+
     endPointOnWire(inputs: Inputs.OCCT.ShapeDto<TopoDS_Wire>): Inputs.Base.Point3 {
         return this.och.wiresService.endPointOnWire(inputs);
     }
@@ -196,6 +204,11 @@ export class OCCTWire {
     textWires(inputs: Inputs.OCCT.TextWiresDto) {
         return this.och.wiresService.textWires(inputs);
     }
+
+    textWiresWithData(inputs: Inputs.OCCT.TextWiresDto) {
+        return this.och.wiresService.textWiresWithData(inputs);
+    }
+
     createSquareWire(inputs: Inputs.OCCT.SquareDto): TopoDS_Wire {
         return this.och.wiresService.createSquareWire(inputs);
     }

@@ -198,7 +198,7 @@ export namespace Text {
         chars?: VectorCharResultDto[];
     }
     export class VectorTextDto {
-        constructor(text?: string, xOffset?: number, yOffset?: number, height?: number, lineSpacing?: number, letterSpacing?: number, align?: Base.horizontalAlignEnum, extrudeOffset?: number) {
+        constructor(text?: string, xOffset?: number, yOffset?: number, height?: number, lineSpacing?: number, letterSpacing?: number, align?: Base.horizontalAlignEnum, extrudeOffset?: number, centerOnOrigin?: boolean) {
             if (text !== undefined) { this.text = text; }
             if (xOffset !== undefined) { this.xOffset = xOffset; }
             if (yOffset !== undefined) { this.yOffset = yOffset; }
@@ -207,6 +207,7 @@ export namespace Text {
             if (letterSpacing !== undefined) { this.letterSpacing = letterSpacing; }
             if (align !== undefined) { this.align = align; }
             if (extrudeOffset !== undefined) { this.extrudeOffset = extrudeOffset; }
+            if (centerOnOrigin !== undefined) { this.centerOnOrigin = centerOnOrigin; }
         }
         /**
          * The text
@@ -266,6 +267,11 @@ export namespace Text {
          * @step 0.1
          */
         extrudeOffset? = 0;
+        /**
+         * Will center text on 0, 0, 0
+         * @default false
+         */
+        centerOnOrigin = false;
     }
 
 }

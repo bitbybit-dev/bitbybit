@@ -20,6 +20,7 @@ import { ShellsService } from "./services/base/shells.service";
 import { FilletsService } from "./services/base/fillets.service";
 import { SolidsService } from "./services/base/solids.service";
 import { TextBitByBit, Point, GeometryHelper, Transforms, Vector, MathBitByBit } from "@bitbybit-dev/base";
+import { DimensionsService } from "./services/base/dimensions.service";
 
 export class OccHelper {
 
@@ -50,6 +51,8 @@ export class OccHelper {
     public readonly operationsService: OperationsService;
     public readonly filletsService: FilletsService;
 
+    public readonly dimensionsService: DimensionsService;
+
 
     constructor(
         public readonly vecHelper: VectorHelperService,
@@ -78,8 +81,12 @@ export class OccHelper {
         this.edgesService = new EdgesService(occ, this.occRefReturns, this.shapeGettersService, this.entitiesService,
             this.iteratorService, this.converterService, this.enumService, this.geomService, this.transformsService, this.vecHelper);
 
-        this.wiresService = new WiresService(occ, this.occRefReturns, this.vecHelper, this.shapesHelperService, this.shapeGettersService, this.transformsService,
-            this.enumService, this.entitiesService, this.converterService, this.geomService, this.edgesService, this.textService);
+        this.wiresService = new WiresService(occ, this.occRefReturns, this.vector, this.shapesHelperService, this.shapeGettersService, this.transformsService,
+            this.enumService, this.entitiesService, this.converterService, this.geomService, this.edgesService, this.textService, this.operationsService);
+
+        this.dimensionsService = new DimensionsService(occ, this.occRefReturns, this.vector, this.point, this.shapesHelperService, this.shapeGettersService, this.transformsService,
+            this.enumService, this.entitiesService, this.converterService, this.geomService, this.edgesService, this.wiresService);
+
         this.verticesService.wiresService = this.wiresService;
 
         this.facesService = new FacesService(occ, this.occRefReturns, this.entitiesService, this.enumService,
@@ -93,6 +100,8 @@ export class OccHelper {
         this.operationsService = new OperationsService(occ, this.enumService, this.entitiesService, this.converterService,
             this.booleansService, this.shapeGettersService, this.edgesService, this.transformsService,
             this.vecHelper, this.wiresService, this.facesService, this.solidsService, this.shellsService);
+
+        this.wiresService.operationsService = this.operationsService;
 
         this.filletsService = new FilletsService(occ, this.vecHelper, this.iteratorService, this.converterService, this.entitiesService,
             this.transformsService, this.shapeGettersService, this.edgesService, this.operationsService, this.facesService);

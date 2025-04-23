@@ -72,6 +72,30 @@ export namespace Vector {
          */
         tolerance = 1e-7;
     }
+    export class VectorsTheSameDto {
+        constructor(vec1?: number[], vec2?: number[], tolerance?: number) {
+            if (vec1 !== undefined) { this.vec1 = vec1; }
+            if (vec2 !== undefined) { this.vec2 = vec2; }
+            if (tolerance !== undefined) { this.tolerance = tolerance; }
+        }
+        /**
+         * First vector
+         * @default undefined
+         */
+        vec1: number[];
+        /**
+         * Second vector
+         * @default undefined
+         */
+        vec2: number[];
+        /**
+         * Tolerance value
+         * @default 1e-7
+         * @minimum 0
+         * @maximum Infinity
+         */
+        tolerance = 1e-7;
+    }
     export class VectorDto {
         constructor(vector?: number[]) {
             if (vector !== undefined) { this.vector = vector; }

@@ -135,8 +135,28 @@ export class TransformsService {
     align(inputs: Inputs.OCCT.AlignDto<TopoDS_Shape>) {
         const transformation = new this.occ.gp_Trsf_1();
 
-        const ax1 = this.entitiesService.gpAx3(inputs.fromOrigin, inputs.fromDirection);
-        const ax2 = this.entitiesService.gpAx3(inputs.toOrigin, inputs.toDirection);
+        const ax1 = this.entitiesService.gpAx3_4(inputs.fromOrigin, inputs.fromDirection);
+        const ax2 = this.entitiesService.gpAx3_4(inputs.toOrigin, inputs.toDirection);
+
+        transformation.SetDisplacement(
+            ax1,
+            ax2,
+        );
+        const translation = new this.occ.TopLoc_Location_2(transformation);
+        const moved = inputs.shape.Moved(translation, false);
+
+        transformation.delete();
+        ax1.delete();
+        ax2.delete();
+        const shp = this.converterService.getActualTypeOfShape(moved);
+        moved.delete();
+        return shp;
+    }
+
+    alignNormAndAxis(inputs: Inputs.OCCT.AlignNormAndAxisDto<TopoDS_Shape>) {
+        const transformation = new this.occ.gp_Trsf_1();
+        const ax1 = this.entitiesService.gpAx3_3(inputs.fromOrigin, inputs.fromNorm, inputs.fromAx);
+        const ax2 = this.entitiesService.gpAx3_3(inputs.toOrigin, inputs.toNorm, inputs.toAx);
 
         transformation.SetDisplacement(
             ax1,

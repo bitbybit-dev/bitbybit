@@ -1,6 +1,6 @@
-import { Inputs } from "@bitbybit-dev/occt";
+import { Inputs, Outputs } from "@bitbybit-dev/occt";
+import { ShapeParser } from "../../../shape-parser";
 import { OCCTWorkerManager } from "../../../occ-worker/occ-worker-manager";
-
 export class OCCTWire {
 
     constructor(
@@ -40,8 +40,20 @@ export class OCCTWire {
      * @shortname line
      * @drawable true
      */
-    createLineWire(inputs: Inputs.OCCT.LineDto): Promise<Inputs.OCCT.TopoDSWirePointer | Inputs.OCCT.TopoDSCompoundPointer> {
+    createLineWire(inputs: Inputs.OCCT.LineDto): Promise<Inputs.OCCT.TopoDSWirePointer> {
         return this.occWorkerManager.genericCallToWorkerPromise("shapes.wire.createLineWire", inputs);
+    }
+
+    /**
+     * Creates OpenCascade line wire with extensions
+     * @param inputs line start and end point and extension lengths for both start and end
+     * @returns OpenCascade line wire shape
+     * @group via points
+     * @shortname line with extensions
+     * @drawable true
+     */
+    createLineWireWithExtensions(inputs: Inputs.OCCT.LineWithExtensionsDto): Promise<Inputs.OCCT.TopoDSWirePointer> {
+        return this.occWorkerManager.genericCallToWorkerPromise("shapes.wire.createLineWireWithExtensions", inputs);
     }
 
     /**
@@ -409,13 +421,25 @@ export class OCCTWire {
     /**
     * Computes the start point on the wire at param 0
     * @param inputs Wire shape
-    * @returns The length of the wire
+    * @returns The start point on wire
     * @group extract
     * @shortname start point
     * @drawable true
     */
     startPointOnWire(inputs: Inputs.OCCT.ShapeDto<Inputs.OCCT.TopoDSWirePointer>): Promise<Inputs.Base.Point3> {
         return this.occWorkerManager.genericCallToWorkerPromise("shapes.wire.startPointOnWire", inputs);
+    }
+
+    /**
+     * Computes the middle point on the wire at param 0.5
+     * @param inputs Wire shape
+     * @returns The middle point on wire
+     * @group extract
+     * @shortname mid point
+     * @drawable true
+     */
+    midPointOnWire(inputs: Inputs.OCCT.ShapeDto<Inputs.OCCT.TopoDSWirePointer>): Promise<Inputs.Base.Point3> {
+        return this.occWorkerManager.genericCallToWorkerPromise("shapes.wire.midPointOnWire", inputs);
     }
 
     /**
@@ -560,6 +584,27 @@ export class OCCTWire {
      */
     textWires(inputs: Inputs.OCCT.TextWiresDto): Promise<Inputs.OCCT.TopoDSWirePointer[]> {
         return this.occWorkerManager.genericCallToWorkerPromise("shapes.wire.textWires", inputs);
+    }
+
+    /**
+     * Creates OpenCascade compound out of text wires and returns additional information based on simplex font created by Dr. A. V. Hershey
+     * @param inputs Text parameters
+     * @returns OpenCascade text compound derivative data
+     * @group primitives
+     * @shortname text wires deriv
+     * @drawable true
+     */
+    async textWiresWithData(inputs: Inputs.OCCT.TextWiresDto): Promise<Outputs.OCCT.TextWiresDataDto<Inputs.OCCT.TopoDSCompoundPointer>> {
+        const res: Outputs.OCCT.ObjectDefinition<Outputs.OCCT.TextWiresDataDto<Inputs.OCCT.TopoDSCompoundPointer>, Inputs.OCCT.TopoDSShapePointer> = await this.occWorkerManager.genericCallToWorkerPromise("shapes.wire.textWiresWithData", inputs);
+        const mapped = ShapeParser.parse(res.data, res.shapes);
+        const r: Outputs.OCCT.TextWiresDataDto<Inputs.OCCT.TopoDSShapePointer> = {
+            ...mapped,
+            type: res.data.type,
+            name: res.data.name,
+            shapes: res.shapes,
+            compound: res.compound,
+        };
+        return r;
     }
 
     /**

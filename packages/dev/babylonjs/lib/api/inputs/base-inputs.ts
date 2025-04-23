@@ -20,6 +20,7 @@ export namespace Base {
     export type Vector2 = [number, number];
     export type Point3 = [number, number, number];
     export type Vector3 = [number, number, number];
+    export type BoundingBox = { min: Base.Point3, max: Base.Point3, center?: Base.Point3, width?: number, height?: number, length?: number };
     export type Line2 = { start: Base.Point2, end: Base.Point2 };
     export type Line3 = { start: Base.Point3, end: Base.Point3 };
     export type Polyline3 = { points: Base.Point3[], isClosed?: boolean };
