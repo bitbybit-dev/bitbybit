@@ -17,5 +17,10 @@ export class OCCTDimensions {
     simpleAngularDimension(inputs: Inputs.OCCT.SimpleAngularDimensionDto): TopoDS_Compound {
         return this.och.dimensionsService.simpleAngularDimension(inputs);
     }
+
+    pinWithLabel(inputs: Inputs.OCCT.PinWithLabelDto): TopoDS_Compound {
+        return this.och.dimensionsService.pinWithLabel(inputs);
+    }
+    
     
 }

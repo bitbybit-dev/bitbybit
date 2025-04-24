@@ -7,13 +7,14 @@ import * as Inputs from "../../api/inputs/inputs";
 import { TransformsService } from "./transforms.service";
 import { ConverterService } from "./converter.service";
 import { WiresService } from "./wires.service";
-import { Point, Vector } from "@bitbybit-dev/base";
+import { MathBitByBit, Point, Vector } from "@bitbybit-dev/base";
 import { EdgesService } from "./edges.service";
 import { EntitiesService } from "./entities.service";
 
 export class DimensionsService {
 
     constructor(
+        private readonly math: MathBitByBit,
         private readonly vector: Vector,
         private readonly point: Point,
         private readonly transformsService: TransformsService,
@@ -189,13 +190,17 @@ export class DimensionsService {
         const wireArc = this.wiresService.createWireFromEdge({ shape: arc });
 
         const midPt = this.wiresService.midPointOnWire({ shape: wireArc });
-        const angleDeg = this.vector.angleBetween({
+        let angle = this.vector.angleBetween({
             first: inputs.direction1,
             second: inputs.direction2,
         }) as number;
 
+        if (inputs.radians) {
+            angle = this.math.degToRad({number: angle});
+        }
+
         const txtOpt = new Inputs.OCCT.TextWiresDto();
-        txtOpt.text = angleDeg.toFixed(inputs.decimalPlaces) + " " + inputs.labelSuffix;
+        txtOpt.text = angle.toFixed(inputs.decimalPlaces) + " " + inputs.labelSuffix;
         txtOpt.xOffset = 0;
         txtOpt.yOffset = 0;
         txtOpt.height = inputs.labelSize;
@@ -236,6 +241,30 @@ export class DimensionsService {
             shape.delete();
         });
 
+        return res;
+    }
+
+    pinWithLabel(inputs: Inputs.OCCT.PinWithLabelDto): TopoDS_Compound {
+        const pinLine = this.wiresService.createLineWireWithExtensions({
+            start: inputs.startPoint,
+            end: inputs.endPoint,
+            extensionStart: -inputs.offsetFromStart,
+            extensionEnd: 0,
+        });
+
+        const text = this.wiresService.textWiresWithData({
+            text: inputs.label,
+            xOffset: 0,
+            yOffset: 0,
+            height: inputs.labelSize,
+            centerOnOrigin: true,
+        });
+        const labelTransformed = this.transformsService.translate({
+            shape: text.compound,
+            translation: inputs.endPoint,
+        });
+
+        const res = this.converterService.makeCompound({ shapes: [pinLine, labelTransformed] });
         return res;
     }
 

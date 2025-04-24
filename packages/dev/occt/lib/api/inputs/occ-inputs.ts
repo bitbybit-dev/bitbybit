@@ -6035,7 +6035,7 @@ export namespace OCCT {
             if (direction1 !== undefined) { this.direction1 = direction1; }
             if (direction2 !== undefined) { this.direction2 = direction2; }
             if (center !== undefined) { this.center = center; }
-            if( radius !== undefined) { this.radius = radius; }
+            if (radius !== undefined) { this.radius = radius; }
             if (offsetFromCenter !== undefined) { this.offsetFromCenter = offsetFromCenter; }
             if (crossingSize !== undefined) { this.extraSize = crossingSize; }
             if (radians !== undefined) { this.radians = radians; }
@@ -6117,5 +6117,60 @@ export namespace OCCT {
          * @default false
          */
         radians = false;
+    }
+    export class PinWithLabelDto {
+        constructor(startPoint?: Base.Point3, endPoint?: Base.Point3, direction?: Base.Vector3, offsetFromStart?: number, label?: string, labelOffset?: number, labelSize?: number) {
+            if (startPoint !== undefined) { this.startPoint = startPoint; }
+            if (endPoint !== undefined) { this.endPoint = endPoint; }
+            if (direction !== undefined) { this.direction = direction; }
+            if (offsetFromStart !== undefined) { this.offsetFromStart = offsetFromStart; }
+            if (label !== undefined) { this.label = label; }
+            if (labelOffset !== undefined) { this.labelOffset = labelOffset; }
+            if (labelSize !== undefined) { this.labelSize = labelSize; }
+        }
+        /**
+         * The start point for dimension
+         * @default [0, 0, 0]
+         */
+        startPoint: Base.Point3 = [0, 0, 0];
+        /**
+         * The end point for dimension
+         * @default [0, 5, 2]
+         */
+        endPoint?: Base.Point3 = [0, 5, 2];
+        /**
+         * The dimension direction (must include length)
+         * @default [0, 0, 1]
+         */
+        direction?: Base.Vector3 = [0, 0, 1];
+        /**
+         * Offset from the start point
+         * @default 0
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.1
+         */
+        offsetFromStart? = 0;
+        /**
+         * The dimension label
+         * @default Pin
+         */
+        label? = "Pin";
+        /**
+         * The dimension label offset
+         * @default 0.3
+         * @minimum -Infinity
+         * @maximum Infinity
+         * @step 0.1
+         */
+        labelOffset? = 0.3;
+        /**
+         * The dimension label size
+         * @default 0.1
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.1
+         */
+        labelSize? = 0.1;
     }
 }
