@@ -352,10 +352,11 @@ export namespace Point {
         transformation: Base.TransformMatrixes[];
     }
     export class ThreePointsNormalDto {
-        constructor(point1?: Base.Point3, point2?: Base.Point3, point3?: Base.Point3) {
+        constructor(point1?: Base.Point3, point2?: Base.Point3, point3?: Base.Point3, reverseNormal?: boolean) {
             if (point1 !== undefined) { this.point1 = point1; }
             if (point2 !== undefined) { this.point2 = point2; }
             if (point3 !== undefined) { this.point3 = point3; }
+            if (reverseNormal !== undefined) { this.reverseNormal = reverseNormal; }
         }
         /**
          * Point 1

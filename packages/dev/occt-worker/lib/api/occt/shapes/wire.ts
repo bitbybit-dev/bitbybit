@@ -1,4 +1,4 @@
-import { Inputs, Outputs } from "@bitbybit-dev/occt";
+import { Inputs, Models } from "@bitbybit-dev/occt";
 import { ShapeParser } from "../../../shape-parser";
 import { OCCTWorkerManager } from "../../../occ-worker/occ-worker-manager";
 export class OCCTWire {
@@ -594,10 +594,10 @@ export class OCCTWire {
      * @shortname text wires deriv
      * @drawable true
      */
-    async textWiresWithData(inputs: Inputs.OCCT.TextWiresDto): Promise<Outputs.OCCT.TextWiresDataDto<Inputs.OCCT.TopoDSCompoundPointer>> {
-        const res: Outputs.OCCT.ObjectDefinition<Outputs.OCCT.TextWiresDataDto<Inputs.OCCT.TopoDSCompoundPointer>, Inputs.OCCT.TopoDSShapePointer> = await this.occWorkerManager.genericCallToWorkerPromise("shapes.wire.textWiresWithData", inputs);
+    async textWiresWithData(inputs: Inputs.OCCT.TextWiresDto): Promise<Models.OCCT.TextWiresDataDto<Inputs.OCCT.TopoDSCompoundPointer>> {
+        const res: Models.OCCT.ObjectDefinition<Models.OCCT.TextWiresDataDto<Inputs.OCCT.TopoDSCompoundPointer>, Inputs.OCCT.TopoDSShapePointer> = await this.occWorkerManager.genericCallToWorkerPromise("shapes.wire.textWiresWithData", inputs);
         const mapped = ShapeParser.parse(res.data, res.shapes);
-        const r: Outputs.OCCT.TextWiresDataDto<Inputs.OCCT.TopoDSShapePointer> = {
+        const r: Models.OCCT.TextWiresDataDto<Inputs.OCCT.TopoDSShapePointer> = {
             ...mapped,
             type: res.data.type,
             name: res.data.name,

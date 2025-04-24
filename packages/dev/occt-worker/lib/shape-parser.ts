@@ -1,7 +1,7 @@
-import { Inputs, Outputs } from "@bitbybit-dev/occt";
+import { Inputs, Models } from "@bitbybit-dev/occt";
 
 export class ShapeParser {
-    static parse(obj, partShapes: Outputs.OCCT.ShapeWithId<Inputs.OCCT.TopoDSShapePointer>[]) {
+    static parse(obj, partShapes: Models.OCCT.ShapeWithId<Inputs.OCCT.TopoDSShapePointer>[]) {
         const stack = [obj];
         const visited = new Set();
 

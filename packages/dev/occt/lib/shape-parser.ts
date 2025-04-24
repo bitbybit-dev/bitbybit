@@ -1,9 +1,9 @@
 import { TopoDS_Shape } from "../bitbybit-dev-occt/bitbybit-dev-occt";
-import { Inputs, OCCTTransforms, Outputs } from "./index";
+import { Inputs, OCCTTransforms, Models } from "./index";
 
 export class ShapeParser {
 
-    static parse(obj, partShapes: Outputs.OCCT.ShapeWithId<TopoDS_Shape>[], prefix: string) {
+    static parse(obj, partShapes: Models.OCCT.ShapeWithId<TopoDS_Shape>[], prefix: string) {
         const stack = [obj];
         let index = 0;
         while (stack.length > 0) {
