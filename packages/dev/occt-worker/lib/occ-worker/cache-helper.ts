@@ -1,5 +1,5 @@
 import { OpenCascadeInstance } from "@bitbybit-dev/occt/bitbybit-dev-occt/bitbybit-dev-occt";
-import { ObjectDefinition } from "@bitbybit-dev/occt";
+import { Models } from "@bitbybit-dev/occt";
 
 export class CacheHelper {
 
@@ -114,7 +114,7 @@ export class CacheHelper {
                     toReturn.hash = curHash;
                     this.addToCache(curHash, toReturn);
                 } else if (toReturn && toReturn.compound && toReturn.data && toReturn.shapes && toReturn.shapes.length > 0) {
-                    const objDef: ObjectDefinition<any, any> = toReturn;
+                    const objDef: Models.OCCT.ObjectDefinition<any, any> = toReturn;
                     const compoundHash = this.computeHash({ ...args, index: "compound" });
                     objDef.compound.hash = compoundHash;
                     this.addToCache(compoundHash, objDef.compound);

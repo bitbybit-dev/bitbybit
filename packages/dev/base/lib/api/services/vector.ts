@@ -35,6 +35,19 @@ export class Vector {
     removeConsecutiveDuplicateVectors(inputs: Inputs.Vector.RemoveConsecutiveDuplicateVectorsDto): number[][] {
         return this.geometryHelper.removeConsecutiveVectorDuplicates(inputs.vectors, inputs.checkFirstAndLast, inputs.tolerance);
     }
+
+    /**
+     * Checks if two vectors are the same within a given tolerance
+     * @param inputs Contains two vectors and a tolerance value
+     * @returns Boolean indicating if vectors are the same
+     * @group validate
+     * @shortname vectors the same
+     * @drawable false
+     */
+    vectorsTheSame(inputs: Inputs.Vector.VectorsTheSameDto): boolean {
+        return this.geometryHelper.vectorsTheSame(inputs.vec1, inputs.vec2, inputs.tolerance);
+    }
+
     /**
      * Measures the angle between two vectors in degrees
      * @param inputs Contains two vectors represented as number arrays

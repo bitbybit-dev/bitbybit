@@ -1878,6 +1878,41 @@ export namespace OCCT {
          */
         end: Base.Point3 = [0, 1, 0];
     }
+
+    export class LineWithExtensionsDto {
+        constructor(start?: Base.Point3, end?: Base.Point3, extensionStart?: number, extensionEnd?: number) {
+            if (start !== undefined) { this.start = start; }
+            if (end !== undefined) { this.end = end; }
+            if (extensionStart !== undefined) { this.extensionStart = extensionStart; }
+            if (extensionEnd !== undefined) { this.extensionEnd = extensionEnd; }
+        }
+        /**
+         * Start of the line
+         * @default [0, 0, 0]
+         */
+        start: Base.Point3 = [0, 0, 0];
+        /**
+         * End of the line
+         * @default [0, 1, 0]
+         */
+        end: Base.Point3 = [0, 1, 0];
+        /**
+         * Extension of the line on the start
+         * @default 0.1
+         * @minimum -Infinity
+         * @maximum Infinity
+         * @step 0.1
+         */
+        extensionStart = 0.1;
+        /**
+         * Extension of the line on the end
+         * @default 0.1
+         * @minimum -Infinity
+         * @maximum Infinity
+         * @step 0.1
+         */
+        extensionEnd = 0.1;
+    }
     export class LinesDto {
         constructor(lines?: LineDto[], returnCompound?: boolean) {
             if (lines !== undefined) { this.lines = lines; }
@@ -4278,7 +4313,52 @@ export namespace OCCT {
          */
         translations: Base.Vector3[] = [[0, 0, 0]];
     }
-
+    export class AlignNormAndAxisDto<T> {
+        constructor(shape?: T, fromOrigin?: Base.Point3, fromNorm?: Base.Vector3, fromAx?: Base.Vector3, toOrigin?: Base.Point3, toNorm?: Base.Vector3, toAx?: Base.Vector3) {
+            if (shape !== undefined) { this.shape = shape; }
+            if (fromOrigin !== undefined) { this.fromOrigin = fromOrigin; }
+            if (fromNorm !== undefined) { this.fromNorm = fromNorm; }
+            if (fromAx !== undefined) { this.fromAx = fromAx; }
+            if (toOrigin !== undefined) { this.toOrigin = toOrigin; }
+            if (toNorm !== undefined) { this.toNorm = toNorm; }
+            if (toAx !== undefined) { this.toAx = toAx; }
+        }
+        /**
+         * Shape for translation
+         * @default undefined
+         */
+        shape: T;
+        /**
+         * from origin
+         * @default [0, 0, 0]
+         */
+        fromOrigin: Base.Point3 = [0, 0, 0];
+        /**
+         * From direction 1
+         * @default [0, 0, 1]
+         */
+        fromNorm: Base.Vector3 = [1, 0, 0];
+        /**
+         * From direction 2
+         * @default [0, 0, 1]
+         */
+        fromAx: Base.Vector3 = [0, 0, 1];
+        /**
+         * To origin
+         * @default [0, 1, 0]
+         */
+        toOrigin: Base.Point3 = [0, 1, 0];
+        /**
+         * To direction 1
+         * @default [0, 1, 0]
+         */
+        toNorm: Base.Vector3 = [0, 1, 0];
+        /**
+         * To direction 2
+         * @default [0, 0, 1]
+         */
+        toAx: Base.Vector3 = [0, 1, 0];
+    }
     export class AlignDto<T> {
         constructor(shape?: T, fromOrigin?: Base.Point3, fromDirection?: Base.Vector3, toOrigin?: Base.Point3, toDirection?: Base.Vector3) {
             if (shape !== undefined) { this.shape = shape; }
@@ -5669,7 +5749,7 @@ export namespace OCCT {
         radiusMajor = 2;
     }
     export class TextWiresDto {
-        constructor(text?: string, xOffset?: number, yOffset?: number, height?: number, lineSpacing?: number, letterSpacing?: number, align?: Base.horizontalAlignEnum, extrudeOffset?: number) {
+        constructor(text?: string, xOffset?: number, yOffset?: number, height?: number, lineSpacing?: number, letterSpacing?: number, align?: Base.horizontalAlignEnum, extrudeOffset?: number, origin?: Base.Point3, rotation?: number, direction?: Base.Vector3, centerOnOrigin?: boolean) {
             if (text !== undefined) { this.text = text; }
             if (xOffset !== undefined) { this.xOffset = xOffset; }
             if (yOffset !== undefined) { this.yOffset = yOffset; }
@@ -5678,12 +5758,13 @@ export namespace OCCT {
             if (letterSpacing !== undefined) { this.letterSpacing = letterSpacing; }
             if (align !== undefined) { this.align = align; }
             if (extrudeOffset !== undefined) { this.extrudeOffset = extrudeOffset; }
+            if (centerOnOrigin !== undefined) { this.centerOnOrigin = centerOnOrigin; }
         }
         /**
          * The text
          * @default Hello World
          */
-        text?: string;
+        text? = "Hello World";
         /**
          * The x offset
          * @default 0
@@ -5737,6 +5818,11 @@ export namespace OCCT {
          * @step 0.1
          */
         extrudeOffset? = 0;
+        /**
+         * Indicates whether to center text on origin
+         * @default false
+         */
+        centerOnOrigin = false;
     }
     export class GeomCylindricalSurfaceDto {
         constructor(radius?: number, center?: Base.Point3, direction?: Base.Vector3) {
@@ -5871,5 +5957,220 @@ export namespace OCCT {
          * @default [0, 1, 0]
          */
         direction: Base.Vector3 = [0, 1, 0];
+    }
+    export class SimpleLinearLengthDimensionDto {
+        constructor(start?: Base.Point3, end?: Base.Point3, direction?: Base.Vector3, offsetFromPoints?: number, crossingSize?: number, labelSuffix?: string, labelSize?: number, labelOffset?: number) {
+            if (start !== undefined) { this.start = start; }
+            if (end !== undefined) { this.end = end; }
+            if (direction !== undefined) { this.direction = direction; }
+            if (offsetFromPoints !== undefined) { this.offsetFromPoints = offsetFromPoints; }
+            if (crossingSize !== undefined) { this.crossingSize = crossingSize; }
+            if (labelSuffix !== undefined) { this.labelSuffix = labelSuffix; }
+            if (labelSize !== undefined) { this.labelSize = labelSize; }
+            if (labelOffset !== undefined) { this.labelOffset = labelOffset; }
+        }
+        /**
+         * The start point for dimension
+         * @default undefined
+         */
+        start: Base.Point3;
+        /**
+         * The end point for dimension
+         * @default undefined
+         */
+        end?: Base.Point3;
+        /**
+         * The dimension direction (must include length)
+         * @default undefined
+         */
+        direction?: Base.Vector3;
+        /**
+         * The dimension label
+         * @default 0
+         * @minimum -Infinity
+         * @maximum Infinity
+         * @step 0.1
+         */
+        offsetFromPoints? = 0;
+        /**
+         * The dimension crossing size
+         * @default 0
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.1
+         */
+        crossingSize? = 0.2;
+        /**
+         * The dimension label decimal places
+         * @default 2
+         * @minimum 0
+         * @maximum Infinity
+         * @step 1
+         */
+        decimalPlaces? = 2;
+        /**
+         * The dimension label suffix
+         * @default (cm)
+         */
+        labelSuffix? = "(cm)";
+        /**
+         * The dimension label size
+         * @default 0.1
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.1
+         */
+        labelSize? = 0.1;
+        /**
+         * The dimension label offset
+         * @default 0.3
+         * @minimum -Infinity
+         * @maximum Infinity
+         * @step 0.1
+         */
+        labelOffset? = 0.3;
+    }
+    export class SimpleAngularDimensionDto {
+        constructor(direction1?: Base.Point3, direction2?: Base.Point3, center?: Base.Point3, radius?: number, offsetFromCenter?: number, crossingSize?: number, radians?: boolean, labelSuffix?: string, labelSize?: number, labelOffset?: number) {
+            if (direction1 !== undefined) { this.direction1 = direction1; }
+            if (direction2 !== undefined) { this.direction2 = direction2; }
+            if (center !== undefined) { this.center = center; }
+            if (radius !== undefined) { this.radius = radius; }
+            if (offsetFromCenter !== undefined) { this.offsetFromCenter = offsetFromCenter; }
+            if (crossingSize !== undefined) { this.extraSize = crossingSize; }
+            if (radians !== undefined) { this.radians = radians; }
+            if (labelSuffix !== undefined) { this.labelSuffix = labelSuffix; }
+            if (labelSize !== undefined) { this.labelSize = labelSize; }
+            if (labelOffset !== undefined) { this.labelOffset = labelOffset; }
+        }
+
+        /**
+         * The first direction for dimension
+         * @default [1, 0, 0]
+         */
+        direction1: Base.Point3 = [1, 0, 0];
+        /**
+         * The second direction for dimension
+         * @default [0, 0, 1]
+         */
+        direction2: Base.Point3 = [0, 0, 1];
+        /**
+         * The center point for dimension
+         * @default [0, 0, 0]
+         */
+        center: Base.Point3 = [0, 0, 0];
+        /**
+         * The dimension radius
+         * @default 4
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.1
+         */
+        radius = 4;
+        /**
+         * Offset from center
+         * @default 0.5
+         * @minimum -Infinity
+         * @maximum Infinity
+         * @step 0.1
+         */
+        offsetFromCenter = 0.5;
+        /**
+         * The dimension crossing size
+         * @default 0
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.1
+         */
+        extraSize = 0;
+        /**
+         * The dimension label decimal places
+         * @default 2
+         * @minimum 0
+         * @maximum Infinity
+         * @step 1
+         */
+        decimalPlaces = 2;
+        /**
+         * The dimension label suffix
+         * @default (deg)
+         */
+        labelSuffix = "(deg)";
+        /**
+         * The dimension label size
+         * @default 0.1
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.1
+         */
+        labelSize = 0.1;
+        /**
+         * The dimension label offset
+         * @default 0.3
+         * @minimum -Infinity
+         * @maximum Infinity
+         * @step 0.1
+         */
+        labelOffset = 0.3;
+        /**
+         * If true the angle is in radians
+         * @default false
+         */
+        radians = false;
+    }
+    export class PinWithLabelDto {
+        constructor(startPoint?: Base.Point3, endPoint?: Base.Point3, direction?: Base.Vector3, offsetFromStart?: number, label?: string, labelOffset?: number, labelSize?: number) {
+            if (startPoint !== undefined) { this.startPoint = startPoint; }
+            if (endPoint !== undefined) { this.endPoint = endPoint; }
+            if (direction !== undefined) { this.direction = direction; }
+            if (offsetFromStart !== undefined) { this.offsetFromStart = offsetFromStart; }
+            if (label !== undefined) { this.label = label; }
+            if (labelOffset !== undefined) { this.labelOffset = labelOffset; }
+            if (labelSize !== undefined) { this.labelSize = labelSize; }
+        }
+        /**
+         * The start point for dimension
+         * @default [0, 0, 0]
+         */
+        startPoint: Base.Point3 = [0, 0, 0];
+        /**
+         * The end point for dimension
+         * @default [0, 5, 2]
+         */
+        endPoint?: Base.Point3 = [0, 5, 2];
+        /**
+         * The dimension direction (must include length)
+         * @default [0, 0, 1]
+         */
+        direction?: Base.Vector3 = [0, 0, 1];
+        /**
+         * Offset from the start point
+         * @default 0
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.1
+         */
+        offsetFromStart? = 0;
+        /**
+         * The dimension label
+         * @default Pin
+         */
+        label? = "Pin";
+        /**
+         * The dimension label offset
+         * @default 0.3
+         * @minimum -Infinity
+         * @maximum Infinity
+         * @step 0.1
+         */
+        labelOffset? = 0.3;
+        /**
+         * The dimension label size
+         * @default 0.1
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.1
+         */
+        labelSize? = 0.1;
     }
 }

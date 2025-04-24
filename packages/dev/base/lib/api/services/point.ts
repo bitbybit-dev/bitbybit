@@ -1,6 +1,7 @@
 import { GeometryHelper } from "./geometry-helper";
 import * as Inputs from "../inputs";
 import { Transforms } from "./transforms";
+import { Vector } from "./vector";
 
 /**
  * Contains various methods for points. Point in bitbybit is simply an array containing 3 numbers for [x, y, z].
@@ -10,7 +11,7 @@ import { Transforms } from "./transforms";
 
 export class Point {
 
-    constructor(private readonly geometryHelper: GeometryHelper, private readonly transforms: Transforms) { }
+    constructor(private readonly geometryHelper: GeometryHelper, private readonly transforms: Transforms, private readonly vector: Vector) { }
 
     /**
      * Transforms the single point
@@ -124,6 +125,45 @@ export class Point {
     rotatePointsCenterAxis(inputs: Inputs.Point.RotatePointsCenterAxisDto): Inputs.Base.Point3[] {
         const rotationTransforms = this.transforms.rotationCenterAxis({ center: inputs.center, axis: inputs.axis, angle: inputs.angle });
         return this.geometryHelper.transformControlPoints(rotationTransforms, inputs.points);
+    }
+
+    /**
+     * Gets a bounding box of the points
+     * @param inputs Points
+     * @returns Bounding box of points
+     * @group extract
+     * @shortname bounding box pts
+     * @drawable true
+     */
+    boundingBoxOfPoints(inputs: Inputs.Point.PointsDto): Inputs.Base.BoundingBox {
+        const xVals = [];
+        const yVals = [];
+        const zVals = [];
+
+        inputs.points.forEach(pt => {
+            xVals.push(pt[0]);
+            yVals.push(pt[1]);
+            zVals.push(pt[2]);
+        });
+
+        const min = [Math.min(...xVals), Math.min(...yVals), Math.min(...zVals)] as Inputs.Base.Point3;
+        const max = [Math.max(...xVals), Math.max(...yVals), Math.max(...zVals)] as Inputs.Base.Point3;
+        const center = [
+            (min[0] + max[0]) / 2,
+            (min[1] + max[1]) / 2,
+            (min[2] + max[2]) / 2,
+        ] as Inputs.Base.Point3;
+        const width = max[0] - min[0];
+        const height = max[1] - min[1];
+        const length = max[2] - min[2];
+        return {
+            min,
+            max,
+            center,
+            width,
+            height,
+            length,
+        };
     }
 
     /**
@@ -363,6 +403,55 @@ export class Point {
      */
     removeConsecutiveDuplicates(inputs: Inputs.Point.RemoveConsecutiveDuplicatesDto): Inputs.Base.Point3[] {
         return this.geometryHelper.removeConsecutivePointDuplicates(inputs.points, inputs.checkFirstAndLast, inputs.tolerance);
+    }
+
+    /**
+     * Creates a normal vector from 3 points
+     * @param inputs Three points and the reverse normal flag
+     * @returns Normal vector
+     * @group create
+     * @shortname normal from 3 points
+     * @drawable true
+     */
+    normalFromThreePoints(inputs: Inputs.Point.ThreePointsNormalDto): Inputs.Base.Vector3 {
+        const p1 = inputs.point1;
+        const p2 = inputs.point2;
+        const p3 = inputs.point3;
+
+        if (!p1 || !p2 || !p3 || p1.length !== 3 || p2.length !== 3 || p3.length !== 3) {
+            throw new Error("All points must be arrays of 3 numbers [x, y, z]");
+        }
+
+        // Calculate vector A = p2 - p1
+        const ax = p2[0] - p1[0];
+        const ay = p2[1] - p1[1];
+        const az = p2[2] - p1[2];
+
+        // Calculate vector B = p3 - p1
+        const bx = p3[0] - p1[0];
+        const by = p3[1] - p1[1];
+        const bz = p3[2] - p1[2];
+
+        // Calculate the cross product N = A x B
+        let nx = (ay * bz) - (az * by);
+        let ny = (az * bx) - (ax * bz);
+        let nz = (ax * by) - (ay * bx);
+
+        // Check for collinear points (resulting in a zero vector)
+        // A zero vector indicates the points don't form a unique plane.
+        // You might want to handle this case depending on your application.
+        if (nx === 0 && ny === 0 && nz === 0) {
+            console.warn("Points are collinear or coincident; cannot calculate a unique normal.");
+            return undefined; // Or return [0, 0, 0] if that's acceptable
+        }
+
+        if (inputs.reverseNormal) {
+            nx = -nx;
+            ny = -ny;
+            nz = -nz;
+        }
+
+        return this.vector.normalized({ vector: [nx, ny, nz] }) as Inputs.Base.Vector3;
     }
 
     private closestPointFromPointData(inputs: Inputs.Point.ClosestPointFromPointsDto): {

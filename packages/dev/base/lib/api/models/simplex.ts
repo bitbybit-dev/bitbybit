@@ -4,7 +4,7 @@
 // { [ascii code]: [width, x, y, ...] } - undefined value as path separator
 
 export const simplex = {
-    height: 14,
+    height: 21,
     32: [16],
     33: [10, 5, 21, 5, 7, undefined, 5, 2, 4, 1, 5, 0, 6, 1, 5, 2],
     34: [16, 4, 21, 4, 14, undefined, 12, 21, 12, 14],
@@ -108,7 +108,7 @@ export const defaultsVectorParams = {
     input: "?",
     align: "left",
     font: simplex,
-    height: 14, // == old vector_xxx simplex font height
+    height: 21, // == old vector_xxx simplex font height
     lineSpacing: 2.142857142857143, // == 30/14 == old vector_xxx ratio
     letterSpacing: 1,
     extrudeOffset: 0

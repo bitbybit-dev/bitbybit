@@ -129,8 +129,12 @@ export class BabylonIO {
                 }
             };
         }
+        // we need to handle metadata otherwise gltf files may fail due to circular JSON structures
+        const metadata = this.context.scene.metadata;
+        delete this.context.scene.metadata;
         SERIALIZERS.GLTF2Export.GLBAsync(this.context.scene, inputs.fileName, options).then((glb) => {
             glb.downloadFiles();
+            this.context.scene.metadata = metadata;
         });
     }
 
@@ -167,11 +171,11 @@ export class BabylonIO {
                 childrenMeshes = allChildren.filter(s => !(s instanceof BABYLON.LinesMesh || s instanceof BABYLON.GreasedLineMesh));
             }
             meshes.push(mesh);
-            if(childrenMeshes.length > 0) {
+            if (childrenMeshes.length > 0) {
                 meshes.push(...childrenMeshes);
             }
         });
-        
+
         SERIALIZERS.STLExport.CreateSTL(meshes as BABYLON.Mesh[], true, inputs.fileName, true, true, true);
         return Promise.resolve({});
     }

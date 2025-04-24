@@ -227,7 +227,15 @@ export class EntitiesService {
         return sphere;
     }
 
-    gpAx3(point: Base.Point3, direction: Base.Vector3): gp_Ax3 {
+    gpAx3_3(point: Base.Point3, normal: Base.Vector3, direction: Base.Vector3): gp_Ax3 {
+        return new this.occ.gp_Ax3_3(
+            this.gpPnt(point),
+            this.gpDir(normal),
+            this.gpDir(direction)
+        );
+    }
+
+    gpAx3_4(point: Base.Point3, direction: Base.Vector3): gp_Ax3 {
         return new this.occ.gp_Ax3_4(
             this.gpPnt(point),
             this.gpDir(direction)

@@ -13,7 +13,7 @@ describe("Text unit tests", () => {
         const math = new MathBitByBit();
         const vector = new Vector(math, geometryHelper);
         const transforms = new Transforms(vector, math);
-        const points = new Point(geometryHelper, transforms);
+        const points = new Point(geometryHelper, transforms, vector);
         text = new TextBitByBit(points);
     });
 

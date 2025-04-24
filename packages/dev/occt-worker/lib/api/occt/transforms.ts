@@ -58,6 +58,18 @@ export class OCCTTransforms {
     }
 
     /**
+     * Align the shape with normal and axis
+     * @param inputs Align description
+     * @returns OpenCascade shape
+     * @group on single shape
+     * @shortname align normal and axis
+     * @drawable true
+     */
+    alignNormAndAxis(inputs: Inputs.OCCT.AlignNormAndAxisDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.OCCT.TopoDSShapePointer> {
+        return this.occWorkerManager.genericCallToWorkerPromise("transforms.alignNormAndAxis", inputs);
+    }
+
+    /**
      * Align and translates the shape
      * @param inputs Align description
      * @returns OpenCascade shape

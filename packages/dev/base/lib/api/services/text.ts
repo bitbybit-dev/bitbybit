@@ -1,4 +1,5 @@
 import * as Inputs from "../inputs";
+import * as Models from "../models";
 import { defaultsVectorParams } from "../models/simplex";
 import { Point } from "./point";
 
@@ -6,7 +7,7 @@ import { Point } from "./point";
  * Contains various text methods.
  */
 export class TextBitByBit {
-    constructor(private readonly point: Point) { 
+    constructor(private readonly point: Point) {
     }
 
     /**
@@ -103,7 +104,7 @@ export class TextBitByBit {
      * @shortname vector char
      * @drawable false
      */
-    vectorChar(inputs: Inputs.Text.VectorCharDto): Inputs.Text.VectorCharResultDto {
+    vectorChar(inputs: Inputs.Text.VectorCharDto): Models.Text.VectorCharData {
         const {
             xOffset, yOffset, font, input, height, extrudeOffset
         } = this.vectorParamsChar(inputs);
@@ -142,7 +143,7 @@ export class TextBitByBit {
      * @shortname vector text
      * @drawable false
      */
-    vectorText(inputs: Inputs.Text.VectorTextDto): Inputs.Text.VectorTextResultDto[] {
+    vectorText(inputs: Inputs.Text.VectorTextDto): Models.Text.VectorTextData[] {
         const {
             xOffset, yOffset, height, align, extrudeOffset, lineSpacing, letterSpacing
         } = Object.assign({}, defaultsVectorParams, inputs);
@@ -155,8 +156,9 @@ export class TextBitByBit {
 
         // manage the list of lines
         let maxWidth = 0; // keep track of max width for final alignment
-        let line = { width: 0, height: 0, chars: [] };
-        let lines = [];
+        type Line = { width: number, height: number, chars: Models.Text.VectorCharData[] };
+        let line: Line = { width: 0, height: 0, chars: [] };
+        let lines: Line[] = [];
 
         const pushLine = () => {
             maxWidth = Math.max(maxWidth, line.width);
@@ -206,6 +208,41 @@ export class TextBitByBit {
                 return line;
             }
         });
+
+        if (inputs.centerOnOrigin) {
+            const pointsFlat: Inputs.Base.Point3[] = [];
+
+            // flatten the lines into a single array of points
+            lines.forEach((line) => {
+                line.chars.forEach((vchar) => {
+                    vchar.paths.forEach((path) => {
+                        pointsFlat.push(...path);
+                    });
+                });
+            });
+
+            const bbox = this.point.boundingBoxOfPoints({
+                points: pointsFlat,
+            });
+
+            lines.forEach((line) => {
+                line.chars.forEach((vchar) => {
+                    vchar.paths = vchar.paths.map((path) => {
+                        const pts = this.point.translatePoints({
+                            points: path,
+                            translation: [
+                                -bbox.center[0],
+                                -bbox.center[1],
+                                -bbox.center[2],
+                            ],
+                        });
+                        return pts;
+                    });
+                    return vchar;
+                });
+            });
+        }
+
         return lines;
     }
 

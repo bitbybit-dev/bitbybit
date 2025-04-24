@@ -2,7 +2,7 @@ import initOpenCascade, { OpenCascadeInstance, TopoDS_Wire } from "../../bitbybi
 import { OccHelper } from "../occ-helper";
 import { VectorHelperService } from "../api/vector-helper.service";
 import { ShapesHelperService } from "../api/shapes-helper.service";
-import { Inputs } from "../api";
+import * as Inputs from "../api/inputs/inputs";
 import { OCCTFillets } from "./fillets";
 import { OCCTEdge, OCCTSolid, OCCTWire } from "./shapes";
 
