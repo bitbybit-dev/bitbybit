@@ -1,5 +1,6 @@
 import { TopoDS_Shape } from "../bitbybit-dev-occt/bitbybit-dev-occt";
-import { Inputs, OCCTTransforms, Models } from "./index";
+import { Inputs, OCCTTransforms } from "./index";
+import * as Models from "./api/models";
 
 export class ShapeParser {
 

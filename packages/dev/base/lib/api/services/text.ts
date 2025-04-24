@@ -1,4 +1,5 @@
 import * as Inputs from "../inputs";
+import * as Models from "../models";
 import { defaultsVectorParams } from "../models/simplex";
 import { Point } from "./point";
 
@@ -103,7 +104,7 @@ export class TextBitByBit {
      * @shortname vector char
      * @drawable false
      */
-    vectorChar(inputs: Inputs.Text.VectorCharDto): Inputs.Text.VectorCharResultDto {
+    vectorChar(inputs: Inputs.Text.VectorCharDto): Models.Text.VectorCharData {
         const {
             xOffset, yOffset, font, input, height, extrudeOffset
         } = this.vectorParamsChar(inputs);
@@ -142,7 +143,7 @@ export class TextBitByBit {
      * @shortname vector text
      * @drawable false
      */
-    vectorText(inputs: Inputs.Text.VectorTextDto): Inputs.Text.VectorTextResultDto[] {
+    vectorText(inputs: Inputs.Text.VectorTextDto): Models.Text.VectorTextData[] {
         const {
             xOffset, yOffset, height, align, extrudeOffset, lineSpacing, letterSpacing
         } = Object.assign({}, defaultsVectorParams, inputs);
@@ -155,7 +156,7 @@ export class TextBitByBit {
 
         // manage the list of lines
         let maxWidth = 0; // keep track of max width for final alignment
-        type Line = { width: number, height: number, chars: Inputs.Text.VectorCharResultDto[] };
+        type Line = { width: number, height: number, chars: Models.Text.VectorCharData[] };
         let line: Line = { width: 0, height: 0, chars: [] };
         let lines: Line[] = [];
 
