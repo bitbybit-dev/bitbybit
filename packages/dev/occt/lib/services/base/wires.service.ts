@@ -14,7 +14,7 @@ import { TransformsService } from "./transforms.service";
 import { ConverterService } from "./converter.service";
 import { EnumService } from "./enum.service";
 import { TextBitByBit, Vector } from "@bitbybit-dev/base";
-import { TextWiresDataDto, ObjectDefinition } from "../../api/outputs/bucket";
+import { TextWiresDataDto, ObjectDefinition } from "../../api/models/bucket";
 import { OperationsService } from "./operations.service";
 import { ShapeParser } from "../../shape-parser";
 
