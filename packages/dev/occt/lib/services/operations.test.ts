@@ -1,6 +1,5 @@
-import { Inputs } from "../api";
 import initOpenCascade, { OpenCascadeInstance, TopoDS_Face, TopoDS_Shape, TopoDS_Wire } from "../../bitbybit-dev-occt/bitbybit-dev-occt";
-import { Base } from "../api/inputs/base-inputs";
+import * as Inputs from "../api/inputs/inputs";
 import { ShapesHelperService } from "../api/shapes-helper.service";
 import { VectorHelperService } from "../api/vector-helper.service";
 import { OccHelper } from "../occ-helper";
@@ -49,7 +48,7 @@ describe("OCCT operations unit tests", () => {
             [2, -2, 2],
             [-3, 3, 3],
             [4, 4, -4],
-        ] as Base.Point3[];
+        ] as Inputs.Base.Point3[];
         const sph = occHelper.entitiesService.bRepPrimAPIMakeSphere([0, 0, 0], [0, 1, 0], 1);
         const res = operations.closestPointsOnShapeFromPoints({ shape: sph, points });
         expect(res.length).toBe(5);
@@ -69,7 +68,7 @@ describe("OCCT operations unit tests", () => {
             [2, -2, 2],
             [-3, 3, 3],
             [4, 4, -4],
-        ] as Base.Point3[];
+        ] as Inputs.Base.Point3[];
         const sph1 = occHelper.entitiesService.bRepPrimAPIMakeSphere([0, 10, 0], [0, 1, 0], 1);
         const sph2 = occHelper.entitiesService.bRepPrimAPIMakeSphere([0, 0, 10], [0, 1, 0], 2);
 
