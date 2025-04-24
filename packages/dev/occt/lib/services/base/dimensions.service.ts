@@ -196,7 +196,7 @@ export class DimensionsService {
         }) as number;
 
         if (inputs.radians) {
-            angle = this.math.degToRad({number: angle});
+            angle = this.math.degToRad({ number: angle });
         }
 
         const txtOpt = new Inputs.OCCT.TextWiresDto();
@@ -252,19 +252,75 @@ export class DimensionsService {
             extensionEnd: 0,
         });
 
-        const text = this.wiresService.textWiresWithData({
-            text: inputs.label,
-            xOffset: 0,
-            yOffset: 0,
-            height: inputs.labelSize,
-            centerOnOrigin: true,
-        });
-        const labelTransformed = this.transformsService.translate({
-            shape: text.compound,
-            translation: inputs.endPoint,
+        const txtOpt = new Inputs.OCCT.TextWiresDto();
+        txtOpt.text = inputs.label;
+        txtOpt.xOffset = 0;
+        txtOpt.yOffset = 0;
+        txtOpt.height = inputs.labelSize;
+        txtOpt.centerOnOrigin = true;
+
+        const text = this.wiresService.textWiresWithData(txtOpt);
+
+        const textWidth = text.data.width;
+        const dirNorm = this.vector.normalized({ vector: inputs.direction });
+        const offsetLabelVec = this.vector.mul({ vector: dirNorm, scalar: textWidth / 2 + inputs.labelOffset });
+        // const translateTxtVec = this.vector.add({ first: inputs.direction, second: offsetLabelVec }) as Inputs.Base.Vector3;
+
+        const endPtLabelLine = this.point.translatePoints({
+            points: [inputs.endPoint],
+            translation: inputs.direction,
+        })[0];
+
+        const lineBeneathLabel = this.wiresService.createLineWireWithExtensions({
+            start: inputs.endPoint,
+            end: endPtLabelLine,
+            extensionStart: 0,
+            extensionEnd: 0,
         });
 
-        const res = this.converterService.makeCompound({ shapes: [pinLine, labelTransformed] });
+        const normalThreePoints = this.point.normalFromThreePoints({
+            point1: inputs.startPoint,
+            point2: inputs.endPoint,
+            point3: endPtLabelLine,
+            reverseNormal: false,
+        });
+        const rotated = this.transformsService.rotate({
+            shape: text.compound,
+            angle: -90,
+            axis: [0, 1, 0],
+        });
+
+        const shapesToDelete = text.shapes.map((s) => s.shape);
+
+        const alignedLabelTxtToDir = this.transformsService.alignNormAndAxis({
+            shape: rotated,
+            fromOrigin: [0, 0, 0],
+            fromNorm: [0, 1, 0],
+            fromAx: [0, 0, 1],
+            toOrigin: [0, 0, 0],
+            toNorm: normalThreePoints,
+            toAx: dirNorm as Inputs.Base.Vector3,
+        });
+
+        shapesToDelete.push(rotated);
+
+        const addToDir = this.vector.add({
+            first: endPtLabelLine,
+            second: offsetLabelVec,
+        }) as Inputs.Base.Vector3;
+
+        const labelTransformed = this.transformsService.translate({
+            shape: alignedLabelTxtToDir,
+            translation: addToDir,
+        });
+        shapesToDelete.push(alignedLabelTxtToDir);
+
+        const res = this.converterService.makeCompound({ shapes: [pinLine, labelTransformed, lineBeneathLabel] });
+
+        // delete shapes
+        shapesToDelete.forEach((shape) => {
+            shape.delete();
+        });
         return res;
     }
 
