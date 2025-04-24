@@ -20,4 +20,16 @@ export class OCCTDimensions {
     simpleLinearLengthDimension(inputs: Inputs.OCCT.SimpleLinearLengthDimensionDto): Promise<Inputs.OCCT.TopoDSCompoundPointer> {
         return this.occWorkerManager.genericCallToWorkerPromise("dimensions.simpleLinearLengthDimension", inputs);
     }
+
+    /**
+     * Creates simple angular dimension
+     * @param inputs two points, direction, label size, label normal direction, offset, and unit suffix, decimal rounding place
+     * @returns compound wires representing dimension
+     * @group simple
+     * @shortname angular dimension
+     * @drawable true
+     */
+    simpleAngularDimension(inputs: Inputs.OCCT.SimpleAngularDimensionDto): Promise<Inputs.OCCT.TopoDSCompoundPointer> {
+        return this.occWorkerManager.genericCallToWorkerPromise("dimensions.simpleAngularDimension", inputs);
+    }
 }

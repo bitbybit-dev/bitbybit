@@ -74,7 +74,7 @@ export class BitByBitBase {
         this.color = new Color(this.math);
         this.line = new Line(this.context, geometryHelper);
         this.transforms = new Transforms(this.vector, this.math);
-        this.point = new Point(geometryHelper,  this.transforms);
+        this.point = new Point(geometryHelper,  this.transforms, this.vector);
         this.polyline = new Polyline(this.context, geometryHelper);
         this.verb = new Verb(this.context, geometryHelper, this.math);
         this.time = new Time(this.context);

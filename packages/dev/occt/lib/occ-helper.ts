@@ -63,7 +63,7 @@ export class OccHelper {
         this.math = new MathBitByBit();
         this.vector = new Vector(this.math, this.geometryHelper);
         this.transforms = new Transforms(this.vector, this.math);
-        this.point = new Point(this.geometryHelper, this.transforms);
+        this.point = new Point(this.geometryHelper, this.transforms, this.vector);
         this.textService = new TextBitByBit(this.point);
 
         this.occRefReturns = new OCCReferencedReturns(occ);
@@ -85,7 +85,7 @@ export class OccHelper {
             this.enumService, this.entitiesService, this.converterService, this.geomService, this.edgesService, this.textService, this.operationsService);
 
         this.dimensionsService = new DimensionsService(this.vector, this.point, this.transformsService,
-            this.converterService, this.wiresService);
+            this.converterService, this.entitiesService, this.edgesService, this.wiresService);
 
         this.verticesService.wiresService = this.wiresService;
 

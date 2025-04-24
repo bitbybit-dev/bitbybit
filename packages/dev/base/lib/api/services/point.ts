@@ -1,6 +1,7 @@
 import { GeometryHelper } from "./geometry-helper";
 import * as Inputs from "../inputs";
 import { Transforms } from "./transforms";
+import { Vector } from "./vector";
 
 /**
  * Contains various methods for points. Point in bitbybit is simply an array containing 3 numbers for [x, y, z].
@@ -10,7 +11,7 @@ import { Transforms } from "./transforms";
 
 export class Point {
 
-    constructor(private readonly geometryHelper: GeometryHelper, private readonly transforms: Transforms) { }
+    constructor(private readonly geometryHelper: GeometryHelper, private readonly transforms: Transforms, private readonly vector: Vector) { }
 
     /**
      * Transforms the single point
@@ -450,7 +451,7 @@ export class Point {
             nz = -nz;
         }
 
-        return [nx, ny, nz];
+        return this.vector.normalized({ vector: [nx, ny, nz] }) as Inputs.Base.Vector3;
     }
 
     private closestPointFromPointData(inputs: Inputs.Point.ClosestPointFromPointsDto): {

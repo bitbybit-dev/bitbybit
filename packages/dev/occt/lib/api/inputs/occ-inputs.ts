@@ -6029,6 +6029,93 @@ export namespace OCCT {
          * @step 0.1
          */
         labelOffset? = 0.3;
+    }
+    export class SimpleAngularDimensionDto {
+        constructor(direction1?: Base.Point3, direction2?: Base.Point3, center?: Base.Point3, radius?: number, offsetFromCenter?: number, crossingSize?: number, radians?: boolean, labelSuffix?: string, labelSize?: number, labelOffset?: number) {
+            if (direction1 !== undefined) { this.direction1 = direction1; }
+            if (direction2 !== undefined) { this.direction2 = direction2; }
+            if (center !== undefined) { this.center = center; }
+            if( radius !== undefined) { this.radius = radius; }
+            if (offsetFromCenter !== undefined) { this.offsetFromCenter = offsetFromCenter; }
+            if (crossingSize !== undefined) { this.extraSize = crossingSize; }
+            if (radians !== undefined) { this.radians = radians; }
+            if (labelSuffix !== undefined) { this.labelSuffix = labelSuffix; }
+            if (labelSize !== undefined) { this.labelSize = labelSize; }
+            if (labelOffset !== undefined) { this.labelOffset = labelOffset; }
+        }
 
+        /**
+         * The first direction for dimension
+         * @default [1, 0, 0]
+         */
+        direction1: Base.Point3 = [1, 0, 0];
+        /**
+         * The second direction for dimension
+         * @default [0, 0, 1]
+         */
+        direction2: Base.Point3 = [0, 0, 1];
+        /**
+         * The center point for dimension
+         * @default [0, 0, 0]
+         */
+        center: Base.Point3 = [0, 0, 0];
+        /**
+         * The dimension radius
+         * @default 4
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.1
+         */
+        radius = 4;
+        /**
+         * Offset from center
+         * @default 0.5
+         * @minimum -Infinity
+         * @maximum Infinity
+         * @step 0.1
+         */
+        offsetFromCenter = 0.5;
+        /**
+         * The dimension crossing size
+         * @default 0
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.1
+         */
+        extraSize = 0;
+        /**
+         * The dimension label decimal places
+         * @default 2
+         * @minimum 0
+         * @maximum Infinity
+         * @step 1
+         */
+        decimalPlaces = 2;
+        /**
+         * The dimension label suffix
+         * @default (deg)
+         */
+        labelSuffix = "(deg)";
+        /**
+         * The dimension label size
+         * @default 0.1
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.1
+         */
+        labelSize = 0.1;
+        /**
+         * The dimension label offset
+         * @default 0.3
+         * @minimum -Infinity
+         * @maximum Infinity
+         * @step 0.1
+         */
+        labelOffset = 0.3;
+        /**
+         * If true the angle is in radians
+         * @default false
+         */
+        radians = false;
     }
 }

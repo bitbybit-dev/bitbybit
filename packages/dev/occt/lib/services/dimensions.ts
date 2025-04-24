@@ -14,4 +14,8 @@ export class OCCTDimensions {
         return this.och.dimensionsService.simpleLinearLengthDimension(inputs);
     }
 
+    simpleAngularDimension(inputs: Inputs.OCCT.SimpleAngularDimensionDto): TopoDS_Compound {
+        return this.och.dimensionsService.simpleAngularDimension(inputs);
+    }
+    
 }

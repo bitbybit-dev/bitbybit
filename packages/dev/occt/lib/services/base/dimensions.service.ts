@@ -1,11 +1,14 @@
 import {
     TopoDS_Compound,
+    TopoDS_Edge,
 } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import * as Inputs from "../../api/inputs/inputs";
 import { TransformsService } from "./transforms.service";
 import { ConverterService } from "./converter.service";
 import { WiresService } from "./wires.service";
 import { Point, Vector } from "@bitbybit-dev/base";
+import { EdgesService } from "./edges.service";
+import { EntitiesService } from "./entities.service";
 
 export class DimensionsService {
 
@@ -14,6 +17,8 @@ export class DimensionsService {
         private readonly point: Point,
         private readonly transformsService: TransformsService,
         private readonly converterService: ConverterService,
+        private readonly entitiesService: EntitiesService,
+        private readonly edgesService: EdgesService,
         private readonly wiresService: WiresService
     ) { }
 
@@ -112,6 +117,99 @@ export class DimensionsService {
 
         const res = this.converterService.makeCompound({ shapes: [translatedLine, startLineToTranslatedPoint, endLineToTranslatedPoint, labelTransformed] });
 
+        return res;
+    }
+
+    simpleAngularDimension(inputs: Inputs.OCCT.SimpleAngularDimensionDto): TopoDS_Compound {
+        const normDir1 = this.vector.normalized({ vector: inputs.direction1 });
+        const endVec = this.vector.mul({ vector: normDir1, scalar: inputs.radius }) as Inputs.Base.Point3;
+        const endPt = this.point.translatePoints({
+            points: [endVec],
+            translation: inputs.center,
+        })[0];
+        const line1WithExt = this.wiresService.createLineWireWithExtensions({
+            start: inputs.center,
+            end: endPt,
+            extensionStart: -inputs.offsetFromCenter,
+            extensionEnd: inputs.extraSize,
+        });
+
+        const normDir2 = this.vector.normalized({ vector: inputs.direction2 });
+        const endVec2 = this.vector.mul({ vector: normDir2, scalar: inputs.radius }) as Inputs.Base.Point3;
+        const endPt2 = this.point.translatePoints({
+            points: [endVec2],
+            translation: inputs.center,
+        })[0];
+        const line2WithExt = this.wiresService.createLineWireWithExtensions({
+            start: inputs.center,
+            end: endPt2,
+            extensionStart: -inputs.offsetFromCenter,
+            extensionEnd: inputs.extraSize,
+        });
+
+        const normalThreePoints = this.point.normalFromThreePoints({
+            point1: inputs.center,
+            point2: endPt,
+            point3: endPt2,
+            reverseNormal: true,
+        });
+        
+        const normalThreePointsRev = this.point.normalFromThreePoints({
+            point1: inputs.center,
+            point2: endPt,
+            point3: endPt2,
+            reverseNormal: false,
+        });
+
+        const circ = this.entitiesService.createCircle(inputs.radius, inputs.center, normalThreePointsRev, Inputs.OCCT.typeSpecificityEnum.edge) as TopoDS_Edge;
+        const arc = this.edgesService.arcFromCircleAndTwoPoints({
+            circle: circ,
+            start: endPt,
+            end: endPt2,
+            sense: false,
+        });
+        const wireArc = this.wiresService.createWireFromEdge({ shape: arc });
+
+        const midPt = this.wiresService.midPointOnWire({ shape: wireArc });
+        const angleDeg = this.vector.angleBetween({
+            first: inputs.direction1,
+            second: inputs.direction2,
+        }) as number;
+
+        const txtOpt = new Inputs.OCCT.TextWiresDto();
+        txtOpt.text = angleDeg.toFixed(inputs.decimalPlaces) + " " + inputs.labelSuffix;
+        txtOpt.xOffset = 0;
+        txtOpt.yOffset = 0;
+        txtOpt.height = inputs.labelSize;
+        txtOpt.centerOnOrigin = true;
+        const txt = this.wiresService.textWiresWithData(txtOpt);
+       
+        const vectorToMid = this.vector.sub({
+            first: midPt,
+            second: inputs.center,
+        }) as Inputs.Base.Vector3;
+        const normVecToMid = this.vector.normalized({ vector: vectorToMid }) as Inputs.Base.Vector3;
+        
+        const alignedLabelTxtToDir = this.transformsService.alignNormAndAxis({
+            shape: txt.compound,
+            fromOrigin: [0, 0, 0],
+            fromNorm: [0, 1, 0],
+            fromAx: [0, 0, 1],
+            toOrigin: [0, 0, 0],
+            toNorm: normalThreePoints,
+            toAx: normVecToMid,
+        });
+        const offsetLabelVec = this.vector.mul({ vector: normVecToMid, scalar: inputs.labelOffset });
+        const addToDir = this.vector.add({
+            first: midPt,
+            second: offsetLabelVec,
+        }) as Inputs.Base.Vector3;
+        const labelTransformed = this.transformsService.translate({
+            shape: alignedLabelTxtToDir,
+            translation: addToDir
+        });
+
+        const res = this.converterService.makeCompound({ shapes: [line1WithExt, line2WithExt, wireArc, labelTransformed] });
         return res;
     }
 
