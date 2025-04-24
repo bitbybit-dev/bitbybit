@@ -84,8 +84,8 @@ export class OccHelper {
         this.wiresService = new WiresService(occ, this.occRefReturns, this.vector, this.shapesHelperService, this.shapeGettersService, this.transformsService,
             this.enumService, this.entitiesService, this.converterService, this.geomService, this.edgesService, this.textService, this.operationsService);
 
-        this.dimensionsService = new DimensionsService(occ, this.occRefReturns, this.vector, this.point, this.shapesHelperService, this.shapeGettersService, this.transformsService,
-            this.enumService, this.entitiesService, this.converterService, this.geomService, this.edgesService, this.wiresService);
+        this.dimensionsService = new DimensionsService(this.vector, this.point, this.transformsService,
+            this.converterService, this.wiresService);
 
         this.verticesService.wiresService = this.wiresService;
 

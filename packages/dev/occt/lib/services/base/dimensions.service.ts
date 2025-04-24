@@ -1,37 +1,20 @@
 import {
-    OpenCascadeInstance,
     TopoDS_Compound,
 } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import * as Inputs from "../../api/inputs/inputs";
-import { ShapesHelperService } from "../../api/shapes-helper.service";
-import { OCCReferencedReturns } from "../../occ-referenced-returns";
-import { EdgesService } from "./edges.service";
-import { ShapeGettersService } from "./shape-getters";
-import { EntitiesService } from "./entities.service";
-import { GeomService } from "./geom.service";
 import { TransformsService } from "./transforms.service";
 import { ConverterService } from "./converter.service";
-import { EnumService } from "./enum.service";
 import { WiresService } from "./wires.service";
 import { Point, Vector } from "@bitbybit-dev/base";
 
 export class DimensionsService {
 
     constructor(
-        private readonly occ: OpenCascadeInstance,
-        private readonly occRefReturns: OCCReferencedReturns,
         private readonly vector: Vector,
         private readonly point: Point,
-        private readonly shapesHelperService: ShapesHelperService,
-        private readonly shapeGettersService: ShapeGettersService,
         private readonly transformsService: TransformsService,
-        private readonly enumService: EnumService,
-        private readonly entitiesService: EntitiesService,
         private readonly converterService: ConverterService,
-        private readonly geomService: GeomService,
-        private readonly edgesService: EdgesService,
         private readonly wiresService: WiresService
-
     ) { }
 
     simpleLinearLengthDimension(inputs: Inputs.OCCT.SimpleLinearLengthDimensionDto): TopoDS_Compound {
