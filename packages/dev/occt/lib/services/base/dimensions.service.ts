@@ -1,6 +1,7 @@
 import {
     TopoDS_Compound,
     TopoDS_Edge,
+    TopoDS_Shape,
 } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import * as Inputs from "../../api/inputs/inputs";
 import { TransformsService } from "./transforms.service";
@@ -23,13 +24,14 @@ export class DimensionsService {
     ) { }
 
     simpleLinearLengthDimension(inputs: Inputs.OCCT.SimpleLinearLengthDimensionDto): TopoDS_Compound {
-
+        const shapesToDelete: TopoDS_Shape[] = [];
         const lineBetweenPoints = this.wiresService.createLineWireWithExtensions({
             start: inputs.start,
             end: inputs.end,
             extensionStart: inputs.crossingSize,
             extensionEnd: inputs.crossingSize,
         });
+        shapesToDelete.push(lineBetweenPoints);
 
         const translatedLine = this.transformsService.translate({
             shape: lineBetweenPoints,
@@ -92,6 +94,8 @@ export class DimensionsService {
             axis: [0, 1, 0],
         });
 
+        shapesToDelete.push(...txt.shapes.map((s) => s.shape));
+
         const alignedLabelTxtToDir = this.transformsService.alignNormAndAxis({
             shape: rotated,
             fromOrigin: [0, 0, 0],
@@ -101,6 +105,8 @@ export class DimensionsService {
             toNorm: normalThreePoints,
             toAx: dirStartEnd,
         });
+
+        shapesToDelete.push(rotated);
 
         const normDir = this.vector.normalized({ vector: inputs.direction });
         const offsetLabelVec = this.vector.mul({ vector: normDir, scalar: inputs.labelOffset });
@@ -115,18 +121,28 @@ export class DimensionsService {
             translation: addToDir
         });
 
+        shapesToDelete.push(alignedLabelTxtToDir);
+
         const res = this.converterService.makeCompound({ shapes: [translatedLine, startLineToTranslatedPoint, endLineToTranslatedPoint, labelTransformed] });
+
+        // delete shapes
+        shapesToDelete.forEach((shape) => {
+            shape.delete();
+        });
 
         return res;
     }
 
     simpleAngularDimension(inputs: Inputs.OCCT.SimpleAngularDimensionDto): TopoDS_Compound {
+        const shapesToDelete: TopoDS_Shape[] = [];
+
         const normDir1 = this.vector.normalized({ vector: inputs.direction1 });
         const endVec = this.vector.mul({ vector: normDir1, scalar: inputs.radius }) as Inputs.Base.Point3;
         const endPt = this.point.translatePoints({
             points: [endVec],
             translation: inputs.center,
         })[0];
+
         const line1WithExt = this.wiresService.createLineWireWithExtensions({
             start: inputs.center,
             end: endPt,
@@ -153,7 +169,7 @@ export class DimensionsService {
             point3: endPt2,
             reverseNormal: true,
         });
-        
+
         const normalThreePointsRev = this.point.normalFromThreePoints({
             point1: inputs.center,
             point2: endPt,
@@ -162,12 +178,14 @@ export class DimensionsService {
         });
 
         const circ = this.entitiesService.createCircle(inputs.radius, inputs.center, normalThreePointsRev, Inputs.OCCT.typeSpecificityEnum.edge) as TopoDS_Edge;
+        shapesToDelete.push(circ);
         const arc = this.edgesService.arcFromCircleAndTwoPoints({
             circle: circ,
             start: endPt,
             end: endPt2,
             sense: false,
         });
+        shapesToDelete.push(arc);
         const wireArc = this.wiresService.createWireFromEdge({ shape: arc });
 
         const midPt = this.wiresService.midPointOnWire({ shape: wireArc });
@@ -183,13 +201,13 @@ export class DimensionsService {
         txtOpt.height = inputs.labelSize;
         txtOpt.centerOnOrigin = true;
         const txt = this.wiresService.textWiresWithData(txtOpt);
-       
+
         const vectorToMid = this.vector.sub({
             first: midPt,
             second: inputs.center,
         }) as Inputs.Base.Vector3;
         const normVecToMid = this.vector.normalized({ vector: vectorToMid }) as Inputs.Base.Vector3;
-        
+
         const alignedLabelTxtToDir = this.transformsService.alignNormAndAxis({
             shape: txt.compound,
             fromOrigin: [0, 0, 0],
@@ -199,6 +217,7 @@ export class DimensionsService {
             toNorm: normalThreePoints,
             toAx: normVecToMid,
         });
+        shapesToDelete.push(...txt.shapes.map((s) => s.shape));
         const offsetLabelVec = this.vector.mul({ vector: normVecToMid, scalar: inputs.labelOffset });
         const addToDir = this.vector.add({
             first: midPt,
@@ -208,8 +227,15 @@ export class DimensionsService {
             shape: alignedLabelTxtToDir,
             translation: addToDir
         });
+        shapesToDelete.push(alignedLabelTxtToDir);
 
         const res = this.converterService.makeCompound({ shapes: [line1WithExt, line2WithExt, wireArc, labelTransformed] });
+
+        // delete shapes
+        shapesToDelete.forEach((shape) => {
+            shape.delete();
+        });
+
         return res;
     }
 
