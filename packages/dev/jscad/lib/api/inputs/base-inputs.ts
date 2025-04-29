@@ -8,6 +8,12 @@ export namespace Base {
     export type Vector3 = [number, number, number];
     export type Axis3 = {origin: Base.Point3, direction: Base.Vector3};
     export type Axis2 = {origin: Base.Point2, direction: Base.Vector2};
+    export type Segment2 = [Point2, Point2];
+    export type Segment3 = [Point3, Point3];
+    // Triangle plane is efficient defininition described by a normal vector and d value (N dot X = d)
+    export type TrianglePlane3 = { normal: Vector3; d: number; }
+    export type Triangle3 = [Base.Point3, Base.Point3, Base.Point3];
+    export type Mesh3 = Triangle3[];
     export type Plane3 = { origin: Base.Point3, normal: Base.Vector3, direction: Base.Vector3 };
     export type BoundingBox = { min: Base.Point3, max: Base.Point3, center?: Base.Point3, width?: number, height?: number, length?: number };
     export type Line2 = { start: Base.Point2, end: Base.Point2 };
