@@ -1,13 +1,13 @@
 ## Bit By Bit Developers library for BABYLONJS game engine
 
+This project exposes core 3D algorithms of Bitbybit platform through BABYLONJS game engine. Code is open-sourced under MIT license. This library was previously intertwined in core package and is now separated.
+
+<img src="https://app.bitbybit.dev/assets/git-cover.png" alt="Picture showing bitbybit.dev platform">
+
 Visit [bitbybit.dev](https://bitbybit.dev) to use our full cloud platform.   
 Best way to support us - [Silver or Gold plan subscription](https://bitbybit.dev/auth/pick-plan)    
 Buy unique products from our [Crafts shop](https://crafts.bitbybit.dev) all designed with Bitbybit algorithms       
 Check out [3D Bits app for Shopify](https://apps.shopify.com/3d-bits-1) also used in our Crafts shop   
-
-<img src="https://app.bitbybit.dev/assets/git-cover.png" alt="Picture showing bitbybit.dev platform">
-
-This project exposes 3D algorithms of Bit By Bit Developers platform through BABYLONJS game engine. Code is open-sourced under MIT license. This library was previously intertwined in core package and is now separated.
 
 ## Github
 https://github.com/bitbybit-dev/bitbybit  

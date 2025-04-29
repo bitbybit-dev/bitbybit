@@ -42,11 +42,36 @@ export class OCCTService {
         this.io = new OCCTIO(occ, och);
     }
 
-    shapesToMeshes(inputs: { shapes: TopoDS_Shape[], precision: number, adjustYtoZ: boolean }): Inputs.OCCT.DecomposedMeshDto[] {
-        return inputs.shapes.map(shape => this.shapeToMesh({shape, precision: inputs.precision, adjustYtoZ: inputs.adjustYtoZ}));
+    shapeFacesToPolygonPoints(inputs: Inputs.OCCT.ShapeFacesToPolygonPointsDto<TopoDS_Shape>): Inputs.Base.Point3[][] {
+        const def = this.shapeToMesh(inputs);
+        const res = [];
+        def.faceList.forEach(face => {
+            const vertices = face.vertex_coord;
+            const indices = face.tri_indexes;
+            for (let i = 0; i < indices.length; i += 3) {
+                const p1 = indices[i];
+                const p2 = indices[i + 1];
+                const p3 = indices[i + 2];
+                let pts =[
+                    [vertices[p1 * 3], vertices[p1 * 3 + 1], vertices[p1 * 3 + 2]],
+                    [vertices[p2 * 3], vertices[p2 * 3 + 1], vertices[p2 * 3 + 2]],
+                    [vertices[p3 * 3], vertices[p3 * 3 + 1], vertices[p3 * 3 + 2]],
+                ]; 
+                if(inputs.reversedPoints){
+                    pts = pts.reverse();
+                }
+                res.push(pts);
+            }
+        });
+
+        return res;
     }
 
-    shapeToMesh(inputs: { shape: TopoDS_Shape, precision: number, adjustYtoZ: boolean }): Inputs.OCCT.DecomposedMeshDto {
+    shapesToMeshes(inputs: Inputs.OCCT.ShapesToMeshesDto<TopoDS_Shape>): Inputs.OCCT.DecomposedMeshDto[] {
+        return inputs.shapes.map(shape => this.shapeToMesh({ shape, precision: inputs.precision, adjustYtoZ: inputs.adjustYtoZ }));
+    }
+
+    shapeToMesh(inputs: Inputs.OCCT.ShapeToMeshDto<TopoDS_Shape>): Inputs.OCCT.DecomposedMeshDto {
 
         const faceList: Inputs.OCCT.DecomposedFaceDto[] = [];
         const edgeList: Inputs.OCCT.DecomposedEdgeDto[] = [];
