@@ -2,8 +2,6 @@ import { OCCT as BaseOCCT, OCCTWorkerManager } from "@bitbybit-dev/occt-worker";
 import { JSONPath } from "jsonpath-plus";
 import { Babylon } from "./bitbybit/babylon/babylon";
 import {
-    Line,
-    Polyline,
     Verb,
     Tag,
     Time,
@@ -14,6 +12,8 @@ import {
 import {
     Vector,
     Point,
+    Line,
+    Polyline,
     TextBitByBit,
     Color,
     MathBitByBit,
@@ -22,6 +22,7 @@ import {
     Logic,
     Transforms,
     Dates,
+    MeshBitByBit,
 } from "@bitbybit-dev/base";
 import {
     JSCAD
@@ -60,6 +61,7 @@ export class BitByBitBase {
     public dates: Dates;
     public tag: Tag;
     public time: Time;
+    public mesh: MeshBitByBit;
     public occt: OCCTW & BaseOCCT;
     public asset: Asset;
     public color: Color;
@@ -85,10 +87,10 @@ export class BitByBitBase {
             this.context);
 
         this.color = new Color(this.math);
-        this.line = new Line(this.context, geometryHelper);
         this.transforms = new Transforms(this.vector, this.math);
         this.point = new Point(geometryHelper, this.transforms, this.vector);
-        this.polyline = new Polyline(this.context, geometryHelper);
+        this.line = new Line(this.point, geometryHelper);
+        this.polyline = new Polyline(this.vector, this.point, geometryHelper);
         this.verb = new Verb(this.context, geometryHelper, this.math);
         this.time = new Time(this.context);
         this.occt = new OCCTW(this.context, this.occtWorkerManager);
@@ -98,6 +100,7 @@ export class BitByBitBase {
         this.text = new TextBitByBit(this.point);
         this.dates = new Dates();
         this.lists = new Lists();
+        this.mesh = new MeshBitByBit(this.vector, this.polyline);
     }
 
     init(scene: BABYLON.Scene, occt?: Worker, jscad?: Worker, manifold?: Worker, havokPlugin?: BABYLON.HavokPlugin) {
@@ -114,7 +117,7 @@ export class BitByBitBase {
         if (jscad) {
             this.jscadWorkerManager.setJscadWorker(jscad);
         }
-        if(manifold){
+        if (manifold) {
             this.manifoldWorkerManager.setManifoldWorker(manifold);
         }
     }

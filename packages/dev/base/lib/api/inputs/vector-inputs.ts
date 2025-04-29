@@ -106,6 +106,16 @@ export namespace Vector {
          */
         vector: number[];
     }
+    export class Vector3Dto {
+        constructor(vector?: Base.Vector3) {
+            if (vector !== undefined) { this.vector = vector; }
+        }
+        /**
+         * Vector array of 3 numbers
+         * @default undefined
+         */
+        vector: Base.Vector3;
+    }
     export class RangeMaxDto {
         constructor(max?: number) {
             if (max !== undefined) { this.max = max; }

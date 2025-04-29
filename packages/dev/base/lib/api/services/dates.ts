@@ -321,7 +321,9 @@ export class Dates {
      * @drawable false
      * */
     setYear(inputs: Inputs.Dates.DateYearDto): Date {
-        return new Date(inputs.date.setFullYear(inputs.year));
+        const dateCopy = new Date(inputs.date.getTime());
+        dateCopy.setFullYear(inputs.year);
+        return dateCopy;
     }
 
     /**
@@ -333,7 +335,9 @@ export class Dates {
      * @drawable false
      * */
     setMonth(inputs: Inputs.Dates.DateMonthDto): Date {
-        return new Date(inputs.date.setMonth(inputs.month));
+        const dateCopy = new Date(inputs.date.getTime());
+        dateCopy.setMonth(inputs.month);
+        return dateCopy;
     }
 
     /**
@@ -345,7 +349,9 @@ export class Dates {
      * @drawable false
      */
     setDayOfMonth(inputs: Inputs.Dates.DateDayDto): Date {
-        return new Date(inputs.date.setDate(inputs.day));
+        const dateCopy = new Date(inputs.date.getTime());
+        dateCopy.setDate(inputs.day);
+        return dateCopy;
     }
 
     /**
@@ -357,7 +363,9 @@ export class Dates {
      * @drawable false
      * */
     setHours(inputs: Inputs.Dates.DateHoursDto): Date {
-        return new Date(inputs.date.setHours(inputs.hours));
+        const dateCopy = new Date(inputs.date.getTime());
+        dateCopy.setHours(inputs.hours);
+        return dateCopy;
     }
 
     /**
@@ -369,7 +377,9 @@ export class Dates {
      * @drawable false
      * */
     setMinutes(inputs: Inputs.Dates.DateMinutesDto): Date {
-        return new Date(inputs.date.setMinutes(inputs.minutes));
+        const dateCopy = new Date(inputs.date.getTime());
+        dateCopy.setMinutes(inputs.minutes);
+        return dateCopy;
     }
 
     /**
@@ -381,7 +391,9 @@ export class Dates {
      * @drawable false
      */
     setSeconds(inputs: Inputs.Dates.DateSecondsDto): Date {
-        return new Date(inputs.date.setSeconds(inputs.seconds));
+        const dateCopy = new Date(inputs.date.getTime());
+        dateCopy.setSeconds(inputs.seconds);
+        return dateCopy;
     }
 
     /**
@@ -393,7 +405,9 @@ export class Dates {
      * @drawable false
      */
     setMilliseconds(inputs: Inputs.Dates.DateMillisecondsDto): Date {
-        return new Date(inputs.date.setMilliseconds(inputs.milliseconds));
+        const dateCopy = new Date(inputs.date.getTime());
+        dateCopy.setMilliseconds(inputs.milliseconds);
+        return dateCopy;
     }
 
     /**
@@ -405,7 +419,9 @@ export class Dates {
      * @drawable false
      */
     setTime(inputs: Inputs.Dates.DateTimeDto): Date {
-        return new Date(inputs.date.setTime(inputs.time));
+        const dateCopy = new Date(inputs.date.getTime());
+        dateCopy.setTime(inputs.time);
+        return dateCopy;
     }
 
 
@@ -418,7 +434,9 @@ export class Dates {
      * @drawable false
      * */
     setUTCYear(inputs: Inputs.Dates.DateYearDto): Date {
-        return new Date(inputs.date.setUTCFullYear(inputs.year));
+        const dateCopy = new Date(inputs.date.getTime());
+        dateCopy.setUTCFullYear(inputs.year);
+        return dateCopy;
     }
 
     /**
@@ -430,7 +448,9 @@ export class Dates {
      * @drawable false
      * */
     setUTCMonth(inputs: Inputs.Dates.DateMonthDto): Date {
-        return new Date(inputs.date.setUTCMonth(inputs.month));
+        const dateCopy = new Date(inputs.date.getTime());
+        dateCopy.setUTCMonth(inputs.month);
+        return dateCopy;
     }
 
     /**
@@ -442,7 +462,9 @@ export class Dates {
      * @drawable false
      */
     setUTCDay(inputs: Inputs.Dates.DateDayDto): Date {
-        return new Date(inputs.date.setUTCDate(inputs.day));
+        const dateCopy = new Date(inputs.date.getTime());
+        dateCopy.setUTCDate(inputs.day);
+        return dateCopy;
     }
 
     /**
@@ -454,7 +476,9 @@ export class Dates {
      * @drawable false
      * */
     setUTCHours(inputs: Inputs.Dates.DateHoursDto): Date {
-        return new Date(inputs.date.setUTCHours(inputs.hours));
+        const dateCopy = new Date(inputs.date.getTime());
+        dateCopy.setUTCHours(inputs.hours);
+        return dateCopy;
     }
 
     /**
@@ -466,7 +490,9 @@ export class Dates {
      * @drawable false
      * */
     setUTCMinutes(inputs: Inputs.Dates.DateMinutesDto): Date {
-        return new Date(inputs.date.setUTCMinutes(inputs.minutes));
+        const dateCopy = new Date(inputs.date.getTime());
+        dateCopy.setUTCMinutes(inputs.minutes);
+        return dateCopy;
     }
 
     /**
@@ -478,7 +504,9 @@ export class Dates {
      * @drawable false
      */
     setUTCSeconds(inputs: Inputs.Dates.DateSecondsDto): Date {
-        return new Date(inputs.date.setUTCSeconds(inputs.seconds));
+        const dateCopy = new Date(inputs.date.getTime());
+        dateCopy.setUTCSeconds(inputs.seconds);
+        return dateCopy;
     }
 
     /**
@@ -490,7 +518,9 @@ export class Dates {
      * @drawable false
      */
     setUTCMilliseconds(inputs: Inputs.Dates.DateMillisecondsDto): Date {
-        return new Date(inputs.date.setUTCMilliseconds(inputs.milliseconds));
+        const dateCopy = new Date(inputs.date.getTime());
+        dateCopy.setUTCMilliseconds(inputs.milliseconds);
+        return dateCopy;
     }
 
 }

@@ -1,40 +1,22 @@
-import { ContextBase } from "../context";
-import { GeometryHelper } from "@bitbybit-dev/base";
+import { GeometryHelper } from "./geometry-helper";
 import * as Inputs from "../inputs";
+import { Point } from "./point";
 
 /**
- * Contains various methods for lines. Line in bitbybit is a simple object that has star and end point properties.
+ * Contains various methods for lines and segments. Line in bitbybit is a simple object that has start and end point properties.
  * { start: [ x, y, z ], end: [ x, y, z ] }
  */
-
 export class Line {
 
-    constructor(private readonly context: ContextBase, private readonly geometryHelper: GeometryHelper) { }
-
-    /**
-     * Converts a line to a NURBS line curve
-     * Returns the verbnurbs Line object
-     * @param inputs Line to be transformed to curve
-     * @returns Verb nurbs curve
-     */
-    convertToNurbsCurve(inputs: Inputs.Line.LineDto): any {
-        return new this.context.verb.geom.Line(inputs.line.start, inputs.line.end);
-    }
-
-    /**
-     * Converts lines to a NURBS curves
-     * Returns array of the verbnurbs Line objects
-     * @param inputs Lines to be transformed to curves
-     * @returns Verb nurbs curves
-     */
-    convertLinesToNurbsCurves(inputs: Inputs.Line.LinesDto): any[] {
-        return inputs.lines.map(line => new this.context.verb.geom.Line(line.start, line.end));
-    }
+    constructor(private readonly point: Point, private readonly geometryHelper: GeometryHelper) { }
 
     /**
      * Gets the start point of the line
-     * @param inputs Line to be queried
-     * @returns Start point
+     * @param inputs a line
+     * @returns start point
+     * @group get
+     * @shortname line start point
+     * @drawable true
      */
     getStartPoint(inputs: Inputs.Line.LineDto): Inputs.Base.Point3 {
         return inputs.line.start;
@@ -42,8 +24,11 @@ export class Line {
 
     /**
      * Gets the end point of the line
-     * @param inputs Line to be queried
-     * @returns End point
+     * @param inputs a line
+     * @returns end point
+     * @group get
+     * @shortname line end point
+     * @drawable true
      */
     getEndPoint(inputs: Inputs.Line.LineDto): Inputs.Base.Point3 {
         return inputs.line.end;
@@ -51,17 +36,23 @@ export class Line {
 
     /**
      * Gets the length of the line
-     * @param inputs Line to be queried
-     * @returns Length of the line
+     * @param inputs a line
+     * @returns line length
+     * @group get
+     * @shortname line length
+     * @drawable false
      */
     length(inputs: Inputs.Line.LineDto): number {
-        return this.context.verb.core.Vec.dist(inputs.line.start, inputs.line.end);
+        return this.point.distance({ startPoint: inputs.line.start, endPoint: inputs.line.end });
     }
 
     /**
      * Reverse the endpoints of the line
-     * @param inputs Line to be reversed
-     * @returns Reversed line
+     * @param inputs a line
+     * @returns reversed line
+     * @group operations
+     * @shortname reversed line
+     * @drawable true
      */
     reverse(inputs: Inputs.Line.LineDto): Inputs.Base.Line3 {
         return { start: inputs.line.end, end: inputs.line.start };
@@ -69,8 +60,11 @@ export class Line {
 
     /**
      * Transform the line
-     * @param inputs Line to be transformed
-     * @returns Transformed line
+     * @param inputs a line
+     * @returns transformed line
+     * @group transforms
+     * @shortname transform line
+     * @drawable true
      */
     transformLine(inputs: Inputs.Line.TransformLineDto): Inputs.Base.Line3 {
         const transformation = inputs.transformation;
@@ -84,8 +78,11 @@ export class Line {
 
     /**
      * Transforms the lines with multiple transform for each line
-     * @param inputs Lines to be transformed and transformations
-     * @returns Transformed lines
+     * @param inputs lines
+     * @returns transformed lines
+     * @group transforms
+     * @shortname transform lines
+     * @drawable true
      */
     transformsForLines(inputs: Inputs.Line.TransformsLinesDto): Inputs.Base.Line3[] {
         return inputs.lines.map((line, index) => {
@@ -101,8 +98,11 @@ export class Line {
 
     /**
      * Create the line
-     * @param inputs Endpoints of the line
-     * @returns Line
+     * @param inputs start and end points of the line
+     * @returns line
+     * @group create
+     * @shortname line
+     * @drawable true
      */
     create(inputs: Inputs.Line.LinePointsDto): Inputs.Base.Line3 {
         return {
@@ -112,21 +112,12 @@ export class Line {
     }
 
     /**
-     * Create the line from possibly async inputs of points
-     * @param inputs Endpoints of the line
-     * @returns Line
-     */
-    createAsync(inputs: Inputs.Line.LinePointsDto): Promise<Inputs.Base.Line3> {
-        return Promise.resolve({
-            start: inputs.start,
-            end: inputs.end,
-        });
-    }
-
-    /**
      * Gets the point on the line segment at a given param
-     * @param inputs Line and parameter
-     * @returns Point on line
+     * @param inputs line
+     * @returns point on line
+     * @group get
+     * @shortname point on line
+     * @drawable true
      */
     getPointOnLine(inputs: Inputs.Line.PointOnLineDto): Inputs.Base.Point3 {
         // Calculate direction vector of line segment
@@ -142,9 +133,12 @@ export class Line {
     }
 
     /**
-     * Create the line segments between all of the points in a list
-     * @param inputs Lines in a list
-     * @returns Lines
+     * Create the lines segments between all of the points in a list
+     * @param inputs points
+     * @returns lines
+     * @group create
+     * @shortname lines between points
+     * @drawable true
      */
     linesBetweenPoints(inputs: Inputs.Line.PointsLinesDto): Inputs.Base.Line3[] {
         const lines = [];
@@ -157,23 +151,66 @@ export class Line {
     }
 
     /**
-     * Create the lines between two lists of start and end points of equal length
-     * @param inputs Two lists of start and end points
-     * @returns Lines
+     * Create the lines between start and end points
+     * @param inputs start points and end points
+     * @returns lines
+     * @group create
+     * @shortname start and end points to lines
+     * @drawable true
      */
     linesBetweenStartAndEndPoints(inputs: Inputs.Line.LineStartEndPointsDto): Inputs.Base.Line3[] {
         return inputs.startPoints
             .map((s, index) => ({ start: s, end: inputs.endPoints[index] }))
-            .filter(line => this.context.verb.core.Vec.dist(line.start, line.end) !== 0);
+            .filter(line => this.point.distance({ startPoint: line.start, endPoint: line.end }) !== 0);
     }
 
     /**
-     * Create the lines between two lists of start and end points of equal length with potential async inputs
-     * @param inputs Two lists of start and end points
-     * @returns Lines
+     * Convert the line to segment
+     * @param inputs line
+     * @returns segment
+     * @group convert
+     * @shortname line to segment
+     * @drawable false
      */
-    linesBetweenStartAndEndPointsAsync(inputs: Inputs.Line.LineStartEndPointsDto): Promise<Inputs.Base.Line3[]> {
-        return Promise.resolve(this.linesBetweenStartAndEndPoints(inputs));
+    lineToSegment(inputs: Inputs.Line.LineDto): Inputs.Base.Segment3 {
+        return [inputs.line.start, inputs.line.end];
     }
+
+    /**
+     * Converts the lines to segments
+     * @param inputs lines
+     * @returns segments
+     * @group convert
+     * @shortname lines to segments
+     * @drawable false
+     */
+    linesToSegments(inputs: Inputs.Line.LinesDto): Inputs.Base.Segment3[] {
+        return inputs.lines.map(line => [line.start, line.end]);
+    }
+
+    /**
+     * Converts the segment to line
+     * @param inputs segment
+     * @returns line
+     * @group convert
+     * @shortname segment to line
+     * @drawable true
+     */
+    segmentToLine(inputs: Inputs.Line.SegmentDto): Inputs.Base.Line3 {
+        return { start: inputs.segment[0], end: inputs.segment[1] };
+    }
+
+    /**
+     * Converts the segments to lines
+     * @param inputs segments
+     * @returns lines
+     * @group convert
+     * @shortname segments to lines
+     * @drawable true
+     */
+    segmentsToLines(inputs: Inputs.Line.SegmentsDto): Inputs.Base.Line3[] {
+        return inputs.segments.map(segment => ({ start: segment[0], end: segment[1] }));
+    }
+    
 }
 

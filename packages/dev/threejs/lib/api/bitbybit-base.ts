@@ -1,8 +1,6 @@
 import { OCCT as BaseOCCT, OCCTWorkerManager } from "@bitbybit-dev/occt-worker";
 import { JSONPath } from "jsonpath-plus";
 import {
-    Line,
-    Polyline,
     Verb,
     Tag,
     Time,
@@ -14,9 +12,11 @@ import { JSCAD } from "@bitbybit-dev/jscad-worker";
 import { ManifoldBitByBit } from "@bitbybit-dev/manifold-worker";
 import {
     Vector,
-    Point, TextBitByBit, Color,
+    Point,
+    Line,
+    Polyline, TextBitByBit, Color,
     MathBitByBit, GeometryHelper,
-    Lists, Logic, Transforms, Dates
+    Lists, Logic, Transforms, Dates, MeshBitByBit
 } from "@bitbybit-dev/base";
 import { Draw } from "./bitbybit/draw";
 import { Context } from "./context";
@@ -53,6 +53,7 @@ export class BitByBitBase {
     public tag: Tag;
     public time: Time;
     public occt: OCCTW & BaseOCCT;
+    public mesh: MeshBitByBit;
     public asset: Asset;
     public color: Color;
 
@@ -72,10 +73,10 @@ export class BitByBitBase {
         this.tag = new Tag(this.context);
         this.draw = new Draw(drawHelper, this.context, this.tag);
         this.color = new Color(this.math);
-        this.line = new Line(this.context, geometryHelper);
+        this.line = new Line(this.point, geometryHelper);
         this.transforms = new Transforms(this.vector, this.math);
-        this.point = new Point(geometryHelper,  this.transforms, this.vector);
-        this.polyline = new Polyline(this.context, geometryHelper);
+        this.point = new Point(geometryHelper, this.transforms, this.vector);
+        this.polyline = new Polyline(this.vector, this.point, geometryHelper);
         this.verb = new Verb(this.context, geometryHelper, this.math);
         this.time = new Time(this.context);
         this.occt = new OCCTW(this.context, this.occtWorkerManager);
@@ -85,6 +86,7 @@ export class BitByBitBase {
         this.text = new TextBitByBit(this.point);
         this.dates = new Dates();
         this.lists = new Lists();
+        this.mesh = new MeshBitByBit(this.vector, this.polyline);
     }
 
     init(scene: THREEJS.Scene, occt?: Worker, jscad?: Worker, manifold?: Worker) {
