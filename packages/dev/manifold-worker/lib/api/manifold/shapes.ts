@@ -33,6 +33,18 @@ export class ManifoldShapes {
     }
 
     /**
+     * Create a Manifold from a set of polygon points describing triangles.
+     * @param inputs Polygon points
+     * @returns Manifold
+     * @group create
+     * @shortname from polygon points
+     * @drawable true
+     */
+    fromPolygonPoints(inputs: Inputs.Manifold.FromPolygonPointsDto): Promise<Inputs.Manifold.ManifoldPointer> {
+        return this.manifoldWorkerManager.genericCallToWorkerPromise("manifold.shapes.fromPolygonPoints", inputs);
+    }
+
+    /**
      * Create a 3D cube shape
      * @param inputs Cube parameters
      * @returns Cube solid

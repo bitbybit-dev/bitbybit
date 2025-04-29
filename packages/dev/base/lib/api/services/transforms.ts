@@ -179,6 +179,17 @@ export class Transforms {
         return inputs.translations.map(translation => [this.translation(translation[0], translation[1], translation[2])]) as Base.TransformMatrixes[];
     }
 
+    /**
+     * Creates the identity transformation
+     * @returns transformation
+     * @group identity
+     * @shortname identity
+     * @drawable false
+     */
+    identity(): Base.TransformMatrix {
+        return [1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0];
+    }
+
     private translation(x: number, y: number, z: number) {
         return [1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, x, y, z, 1.0];
     }
@@ -187,9 +198,6 @@ export class Transforms {
         return [x, 0.0, 0.0, 0.0, 0.0, y, 0.0, 0.0, 0.0, 0.0, z, 0.0, 0.0, 0.0, 0.0, 1.0];
     }
 
-    private identity() {
-        return [1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0];
-    }
 
     private rotationAxis(axis: Base.Vector3, angle: number) {
         const s = Math.sin(-angle);

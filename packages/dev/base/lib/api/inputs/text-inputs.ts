@@ -227,7 +227,7 @@ export namespace Text {
          * Will center text on 0, 0, 0
          * @default false
          */
-        centerOnOrigin = false;
+        centerOnOrigin? = false;
     }
 
 }

@@ -1,7 +1,5 @@
 export * from "./asset-inputs";
 export * from "./json-inputs";
-export * from "./line-inputs";
-export * from "./polyline-inputs";
 export * from "./tag-inputs";
 export * from "./time-inputs";
 export * from "./verb-inputs";

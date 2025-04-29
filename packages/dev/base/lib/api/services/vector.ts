@@ -516,4 +516,17 @@ export class Vector {
     sum(inputs: Inputs.Vector.VectorDto): number {
         return inputs.vector.reduce((a, b) => a + b, 0);
     }
+
+    /**
+     * Computes the squared length of the vector
+     * @param inputs Vector to compute the length
+     * @returns Number that is squared length of the vector
+     * @group base
+     * @shortname length squared
+     * @drawable false
+     */
+    lengthSq(inputs: Inputs.Vector.Vector3Dto): number {
+        const v = inputs.vector;
+        return v[0] * v[0] + v[1] * v[1] + v[2] * v[2];
+    }
 }

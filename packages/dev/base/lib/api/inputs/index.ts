@@ -8,3 +8,6 @@ export * from "./vector-inputs";
 export * from "./transforms-inputs";
 export * from "./base-inputs";
 export * from "./dates-inputs";
+export * from "./line-inputs";
+export * from "./polyline-inputs";
+export * from "./mesh-inputs";

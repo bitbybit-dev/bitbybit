@@ -3,7 +3,5 @@ export * from "./verb";
 export * from "./asset";
 export * from "./base-types";
 export * from "./json";
-export * from "./line";
-export * from "./polyline";
 export * from "./tag";
 export * from "./time";

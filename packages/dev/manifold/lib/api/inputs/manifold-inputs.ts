@@ -163,6 +163,15 @@ export namespace Manifold {
          */
         mesh: DecomposedManifoldMeshDto;
     }
+    export class FromPolygonPointsDto {
+        constructor(polygonPoints?: Base.Point3[][]) {
+            if (polygonPoints !== undefined) { this.polygonPoints = polygonPoints; }
+        }
+        /**
+         * Points describing polygons
+         */
+        polygonPoints?: Base.Point3[][];
+    }
     export class CubeDto {
         constructor(center?: boolean, size?: number) {
             if (center !== undefined) { this.center = center; }
@@ -498,7 +507,7 @@ export namespace Manifold {
          */
         number = 1;
     }
-    export class ManifoldSmoothByNormalsDto<T>{
+    export class ManifoldSmoothByNormalsDto<T> {
         constructor(manifold?: T, normalIdx?: number) {
             if (manifold !== undefined) { this.manifold = manifold; }
             if (normalIdx !== undefined) { this.normalIdx = normalIdx; }

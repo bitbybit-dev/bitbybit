@@ -86,7 +86,7 @@
             "node_modules/(?!@bitbybit-dev)/"
         ],
         "collectCoverageFrom": [
-            "lib/api/**/*"
+            "lib/api/services/**/*"
         ]
     }
 }

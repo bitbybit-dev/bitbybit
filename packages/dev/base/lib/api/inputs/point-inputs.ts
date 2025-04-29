@@ -419,6 +419,31 @@ export namespace Point {
          */
         point: Base.Point3;
     }
+    export class TwoPointsToleranceDto {
+        constructor(point1?: Base.Point3, point2?: Base.Point3, tolerance?: number) {
+            if (point1 !== undefined) { this.point1 = point1; }
+            if (point2 !== undefined) { this.point2 = point2; }
+            if (tolerance !== undefined) { this.tolerance = tolerance; }
+        }
+        /**
+         * First point to compare
+         * @default undefined
+         */
+        point1?: Base.Point3;
+        /**
+         * Second point to compare
+         * @default undefined
+         */
+        point2?: Base.Point3;
+        /**
+         * Tolerance for the calculation
+         * @default 1e-7
+         * @minimum -Infinity
+         * @maximum Infinity
+         * @step 1e-7
+         */
+        tolerance? = 1e-7;
+    }
     export class StartEndPointsDto {
         constructor(startPoint?: Base.Point3, endPoint?: Base.Point3) {
             if (startPoint !== undefined) { this.startPoint = startPoint; }

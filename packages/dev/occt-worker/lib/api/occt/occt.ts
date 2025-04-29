@@ -40,12 +40,22 @@ export class OCCT {
     }
 
     /**
+     * Creates polygon points from the shape faces
+     * @param inputs shape
+     * @group convert
+     * @shortname faces to polygon points
+     * @drawable false
+     */
+    async shapeFacesToPolygonPoints(inputs: Inputs.OCCT.ShapeFacesToPolygonPointsDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.Base.Point3[][]> {
+        return await this.occWorkerManager.genericCallToWorkerPromise("shapeFacesToPolygonPoints", inputs);
+    }
+
+    /**
      * Creates mesh from the shape
      * @param inputs shape
-     * @group drawing
+     * @group convert
      * @shortname shape to mesh
      * @drawable false
-     * @ignore true
      */
     async shapeToMesh(inputs: Inputs.OCCT.ShapeToMeshDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.OCCT.DecomposedMeshDto> {
         return await this.occWorkerManager.genericCallToWorkerPromise("shapeToMesh", inputs);
@@ -54,10 +64,9 @@ export class OCCT {
     /**
      * Creates mesh from the shape
      * @param inputs shape
-     * @group drawing
+     * @group convert
      * @shortname shape to mesh
      * @drawable false
-     * @ignore true
      */
     async shapesToMeshes(inputs: Inputs.OCCT.ShapesToMeshesDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.OCCT.DecomposedMeshDto[]> {
         return await this.occWorkerManager.genericCallToWorkerPromise("shapesToMeshes", inputs);

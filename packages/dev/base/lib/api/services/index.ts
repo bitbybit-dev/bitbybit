@@ -8,3 +8,6 @@ export * from "./dates";
 export * from "./vector";
 export * from "./transforms";
 export * from "./geometry-helper";
+export * from "./line";
+export * from "./polyline";
+export * from "./mesh";

@@ -472,4 +472,19 @@ export class Point {
         return { index: closestPointIndex + 1, distance, point };
     }
 
+    /**
+     * Checks if two points are almost equal
+     * @param inputs Two points and the tolerance
+     * @returns true if the points are almost equal
+     * @group measure
+     * @shortname two points almost equal
+     * @drawable false
+     */
+    twoPointsAlmostEqual(inputs: Inputs.Point.TwoPointsToleranceDto): boolean {
+        const p1 = inputs.point1;
+        const p2 = inputs.point2;
+        const dist = this.distance({ startPoint: p1, endPoint: p2 });
+        return dist < inputs.tolerance;
+    }
+
 }

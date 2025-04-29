@@ -4981,6 +4981,37 @@ export namespace OCCT {
          */
         adjustYtoZ = false;
     }
+    export class ShapeFacesToPolygonPointsDto<T> {
+        constructor(shape?: T, precision?: number, adjustYtoZ?: boolean, reversedPoints?: boolean) {
+            if (shape !== undefined) { this.shape = shape; }
+            if (precision !== undefined) { this.precision = precision; }
+            if (adjustYtoZ !== undefined) { this.adjustYtoZ = adjustYtoZ; }
+            if (reversedPoints !== undefined) { this.reversedPoints = reversedPoints; }
+        }
+        /**
+         * Shape to save
+         * @default undefined
+         */
+        shape: T;
+        /**
+         * Precision of the mesh
+         * @default 0.01
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.001
+         */
+        precision = 0.01;
+        /**
+         * Adjust Y (up) coordinate system to Z (up) coordinate system
+         * @default false
+         */
+        adjustYtoZ = false;
+        /**
+         * Reverse the order of the points describing the polygon because some CAD kernels use the opposite order
+         * @default false
+         */
+        reversedPoints = false;
+    }
     export class ShapesToMeshesDto<T> {
         constructor(shapes?: T[], precision?: number, adjustYtoZ?: boolean) {
             if (shapes !== undefined) { this.shapes = shapes; }
