@@ -4,8 +4,11 @@ import { Point } from "./point";
 import { Transforms } from "./transforms";
 import { Vector } from "./vector";
 import * as Inputs from "../inputs";
+import { UnitTestHelper } from "../unit-test-helper";
 
 describe("Point unit tests", () => {
+    const uh = new UnitTestHelper();
+
     let geometryHelper: GeometryHelper;
     let math: MathBitByBit;
     let vector: Vector;
@@ -20,8 +23,6 @@ describe("Point unit tests", () => {
         point = new Point(geometryHelper, transforms, vector);
     });
 
-    const TOLERANCE = 1e-7;
-
     describe("Point Class Unit Tests (Integration)", () => {
 
         describe("transformPoint", () => {
@@ -30,7 +31,7 @@ describe("Point unit tests", () => {
                 const translationVec: Inputs.Base.Vector3 = [10, -5, 2];
                 const transformation = transforms.translationXYZ({ translation: translationVec });
                 const result = point.transformPoint({ point: p, transformation });
-                expectPointCloseTo(result, [11, -3, 5]);
+                uh.expectPointCloseTo(result, [11, -3, 5]);
             });
 
             it("should rotate a point around Z axis", () => {
@@ -41,7 +42,7 @@ describe("Point unit tests", () => {
                     angle: 90
                 });
                 const result = point.transformPoint({ point: p, transformation });
-                expectPointCloseTo(result, [0, 1, 5]);
+                uh.expectPointCloseTo(result, [0, 1, 5]);
             });
 
             it("should scale a point relative to origin", () => {
@@ -51,7 +52,7 @@ describe("Point unit tests", () => {
                     scaleXyz: [2, 0.5, 1]
                 });
                 const result = point.transformPoint({ point: p, transformation });
-                expectPointCloseTo(result, [4, 1.5, 4]);
+                uh.expectPointCloseTo(result, [4, 1.5, 4]);
             });
         });
 
@@ -61,7 +62,7 @@ describe("Point unit tests", () => {
                 const translationVec: Inputs.Base.Vector3 = [5, -5, 0];
                 const transformation = transforms.translationXYZ({ translation: translationVec });
                 const result = point.transformPoints({ points: pts, transformation });
-                expectPointsCloseTo(result, [[6, -3, 3], [15, 5, 10]]);
+                uh.expectPointsCloseTo(result, [[6, -3, 3], [15, 5, 10]]);
             });
 
             it("should rotate multiple points", () => {
@@ -72,7 +73,7 @@ describe("Point unit tests", () => {
                     angle: -90
                 });
                 const result = point.transformPoints({ points: pts, transformation });
-                expectPointsCloseTo(result, [[0, -1, 0], [1, 0, 5]]);
+                uh.expectPointsCloseTo(result, [[0, -1, 0], [1, 0, 5]]);
             });
 
             it("should handle empty points array", () => {
@@ -91,7 +92,7 @@ describe("Point unit tests", () => {
                     transforms.translationXYZ({ translation: [1, 1, 1] })
                 ];
                 const result = point.transformsForPoints({ points: pts, transformation: transformations });
-                expectPointsCloseTo(result, [[0, 1, 0], [6, 6, 6]]);
+                uh.expectPointsCloseTo(result, [[0, 1, 0], [6, 6, 6]]);
             });
 
             it("should throw an error if points and transformations lengths differ", () => {
@@ -115,7 +116,7 @@ describe("Point unit tests", () => {
                 const pts: Inputs.Base.Point3[] = [[0, 0, 0], [1, -1, 2]];
                 const translation: Inputs.Base.Vector3 = [10, 20, 30];
                 const result = point.translatePoints({ points: pts, translation });
-                expectPointsCloseTo(result, [[10, 20, 30], [11, 19, 32]]);
+                uh.expectPointsCloseTo(result, [[10, 20, 30], [11, 19, 32]]);
             });
         });
 
@@ -124,7 +125,7 @@ describe("Point unit tests", () => {
                 const pts: Inputs.Base.Point3[] = [[1, 1, 1], [5, 5, 5]];
                 const translations: Inputs.Base.Vector3[] = [[10, 0, 0], [0, 20, 0]];
                 const result = point.translatePointsWithVectors({ points: pts, translations });
-                expectPointsCloseTo(result, [[11, 1, 1], [5, 25, 5]]);
+                uh.expectPointsCloseTo(result, [[11, 1, 1], [5, 25, 5]]);
             });
 
             it("should throw an error if points and translations lengths differ", () => {
@@ -141,33 +142,32 @@ describe("Point unit tests", () => {
                 const pts: Inputs.Base.Point3[] = [[0, 0, 0], [1, -1, 2]];
                 const x = -1, y = 2, z = -3;
                 const result = point.translateXYZPoints({ points: pts, x, y, z });
-                expectPointsCloseTo(result, [[-1, 2, -3], [0, 1, -1]]);
+                uh.expectPointsCloseTo(result, [[-1, 2, -3], [0, 1, -1]]);
             });
         });
 
         describe("scalePointsCenterXYZ", () => {
             it("should scale points relative to a center", () => {
                 const pts: Inputs.Base.Point3[] = [[2, 2, 2], [0, 0, 0]];
-                const center: Inputs.Base.Point3 = [1, 1, 1]; // Center of scaling
+                const center: Inputs.Base.Point3 = [1, 1, 1];
                 const scaleXyz: Inputs.Base.Vector3 = [2, 3, 0.5];
                 const result = point.scalePointsCenterXYZ({ points: pts, center, scaleXyz });
-                expectPointsCloseTo(result, [[3, 4, 1.5], [-1, -2, 0.5]]);
+                uh.expectPointsCloseTo(result, [[3, 4, 1.5], [-1, -2, 0.5]]);
             });
         });
 
         describe("rotatePointsCenterAxis", () => {
             it("should rotate points around a center and axis", () => {
-                const pts: Inputs.Base.Point3[] = [[2, 1, 5], [1, 1, 0]]; // P1 is offset from center
-                const center: Inputs.Base.Point3 = [1, 1, 5]; // Center of rotation
-                const axis: Inputs.Base.Vector3 = [0, 0, 1]; // Z-axis
+                const pts: Inputs.Base.Point3[] = [[2, 1, 5], [1, 1, 0]];
+                const center: Inputs.Base.Point3 = [1, 1, 5];
+                const axis: Inputs.Base.Vector3 = [0, 0, 1];
                 const angle = 90;
                 const result = point.rotatePointsCenterAxis({ points: pts, center, axis, angle });
-                expectPointsCloseTo(result, [[1, 2, 5], [1, 1, 0]]);
+                uh.expectPointsCloseTo(result, [[1, 2, 5], [1, 1, 0]]);
             });
         });
 
         describe("boundingBoxOfPoints", () => {
-            // These tests don't rely on external dependencies, same as before
             it("should calculate the correct bounding box for multiple points", () => {
                 const points: Inputs.Base.Point3[] = [[1, 2, 3], [4, -1, 6], [0, 5, -2]];
                 const expectedBBox: Inputs.Base.BoundingBox = {
@@ -181,7 +181,7 @@ describe("Point unit tests", () => {
                 const result = point.boundingBoxOfPoints({ points });
                 expect(result.min).toEqual(expectedBBox.min);
                 expect(result.max).toEqual(expectedBBox.max);
-                expectPointCloseTo(result.center, expectedBBox.center);
+                uh.expectPointCloseTo(result.center, expectedBBox.center);
                 expect(result.width).toBeCloseTo(expectedBBox.width);
                 expect(result.height).toBeCloseTo(expectedBBox.height);
                 expect(result.length).toBeCloseTo(expectedBBox.length);
@@ -214,13 +214,12 @@ describe("Point unit tests", () => {
         });
 
         describe("closestPointFromPoints methods", () => {
-            // These tests rely only on distance, which is internal or uses basic math
             const sourcePoint: Inputs.Base.Point3 = [0, 0, 0];
             const targetPoints: Inputs.Base.Point3[] = [
-                [10, 0, 0], // dist 10
-                [0, 5, 0],  // dist 5 - closest
-                [0, 0, -7], // dist 7
-                [3, 4, 0],  // dist 5 - first one at index 1 (-> 2) should be picked
+                [10, 0, 0],
+                [0, 5, 0],
+                [0, 0, -7],
+                [3, 4, 0],
             ];
             const expectedClosestPoint: Inputs.Base.Point3 = [0, 5, 0];
             const expectedClosestIndex = 2; // 1-based index
@@ -331,17 +330,14 @@ describe("Point unit tests", () => {
         describe("averagePoint", () => {
             it("should calculate the average of multiple points", () => {
                 const pts: Inputs.Base.Point3[] = [[1, 1, 1], [3, 5, -1], [5, 0, 6]];
-                // AvgX = (1+3+5)/3 = 9/3 = 3
-                // AvgY = (1+5+0)/3 = 6/3 = 2
-                // AvgZ = (1-1+6)/3 = 6/3 = 2
                 const result = point.averagePoint({ points: pts });
-                expectPointCloseTo(result, [3, 2, 2]);
+                uh.expectPointCloseTo(result, [3, 2, 2]);
             });
 
             it("should return the point itself if only one point is provided", () => {
                 const pts: Inputs.Base.Point3[] = [[10, 20, 30]];
                 const result = point.averagePoint({ points: pts });
-                expectPointCloseTo(result, [10, 20, 30]);
+                uh.expectPointCloseTo(result, [10, 20, 30]);
             });
 
             it("should return NaN components if points array is empty", () => {
@@ -408,7 +404,7 @@ describe("Point unit tests", () => {
             it("should generate points on XY plane by default", () => {
                 const result = point.hexGrid({ radiusHexagon: 1, nrHexagonsX: 2, nrHexagonsY: 2, orientOnCenter: false, pointsOnGround: false });
                 expect(result.length).toBe(4);
-                result.forEach(p => expect(p[2]).toBe(0)); // Z should be 0
+                result.forEach(p => expect(p[2]).toBe(0));
             });
 
             it("should place points on XZ plane if pointsOnGround is true", () => {
@@ -435,7 +431,7 @@ describe("Point unit tests", () => {
 
                 expect(avgX).toBeCloseTo(0.577);
                 expect(avgY).toBeCloseTo(0);
-                expect(avgZ).toBeCloseTo(0); 
+                expect(avgZ).toBeCloseTo(0);
 
                 expect(resultCenter).not.toEqual(resultNoCenter);
             });
@@ -446,43 +442,43 @@ describe("Point unit tests", () => {
                 const pts: Inputs.Base.Point3[] = [[0, 0, 0], [0, 0, 1e-9], [1, 1, 1], [1, 1, 1 + 1e-4], [2, 2, 2]];
                 const tolerance = 1e-5;
                 const result = point.removeConsecutiveDuplicates({ points: pts, tolerance, checkFirstAndLast: false });
-                expectPointsCloseTo(result, [[0, 0, 0], [1, 1, 1], [1, 1, 1 + 1e-4], [2, 2, 2]]);
+                uh.expectPointsCloseTo(result, [[0, 0, 0], [1, 1, 1], [1, 1, 1 + 1e-4], [2, 2, 2]]);
             });
 
             it("should remove consecutive duplicate points with default tolerance", () => {
                 const pts: Inputs.Base.Point3[] = [[0, 0, 0], [0, 0, 1e-8], [1, 1, 1], [1, 1, 1 + 1e-3], [2, 2, 2]];
                 const result = point.removeConsecutiveDuplicates({ points: pts, tolerance: undefined, checkFirstAndLast: false });
-                expectPointsCloseTo(result, [[0, 0, 0], [1, 1, 1], [1, 1, 1 + 1e-3], [2, 2, 2]]);
+                uh.expectPointsCloseTo(result, [[0, 0, 0], [1, 1, 1], [1, 1, 1 + 1e-3], [2, 2, 2]]);
             });
 
             it("should keep all points if no consecutive duplicates exist", () => {
                 const pts: Inputs.Base.Point3[] = [[0, 0, 0], [1, 0, 0], [1, 1, 0], [0, 1, 0]];
                 const result = point.removeConsecutiveDuplicates({ points: pts, tolerance: 1e-5, checkFirstAndLast: false });
-                expectPointsCloseTo(result, pts);
+                uh.expectPointsCloseTo(result, pts);
             });
 
             it("should handle checkFirstAndLast correctly for open polyline", () => {
                 const pts: Inputs.Base.Point3[] = [[0, 0, 0], [1, 1, 1], [2, 2, 2], [0, 0, 1e-9]];
                 const result = point.removeConsecutiveDuplicates({ points: pts, checkFirstAndLast: true, tolerance: 1e-5 });
-                expectPointsCloseTo(result, [[0, 0, 0], [1, 1, 1], [2, 2, 2]]);
+                uh.expectPointsCloseTo(result, [[0, 0, 0], [1, 1, 1], [2, 2, 2]]);
             });
 
             it("should handle checkFirstAndLast correctly for closed polyline (already duplicated)", () => {
                 const pts: Inputs.Base.Point3[] = [[0, 0, 0], [1, 1, 1], [2, 2, 2], [0, 0, 0]];
                 const result = point.removeConsecutiveDuplicates({ points: pts, checkFirstAndLast: true, tolerance: 1e-5 });
-                expectPointsCloseTo(result, [[0, 0, 0], [1, 1, 1], [2, 2, 2]]);
+                uh.expectPointsCloseTo(result, [[0, 0, 0], [1, 1, 1], [2, 2, 2]]);
             });
 
             it("should handle checkFirstAndLast=false", () => {
                 const pts: Inputs.Base.Point3[] = [[0, 0, 0], [1, 1, 1], [2, 2, 2], [0, 0, 1e-9]]; // Last point close to first
                 const result = point.removeConsecutiveDuplicates({ points: pts, checkFirstAndLast: false, tolerance: 1e-5 });
-                expectPointsCloseTo(result, [[0, 0, 0], [1, 1, 1], [2, 2, 2], [0, 0, 1e-9]]);
+                uh.expectPointsCloseTo(result, [[0, 0, 0], [1, 1, 1], [2, 2, 2], [0, 0, 1e-9]]);
             });
 
             it("should handle single point array", () => {
                 const pts: Inputs.Base.Point3[] = [[1, 2, 3]];
                 const result = point.removeConsecutiveDuplicates({ points: pts, tolerance: 1e-5, checkFirstAndLast: false });
-                expectPointsCloseTo(result, pts);
+                uh.expectPointsCloseTo(result, pts);
             });
 
             it("should handle empty point array", () => {
@@ -498,23 +494,23 @@ describe("Point unit tests", () => {
                 const p2: Inputs.Base.Point3 = [1, 0, 0];
                 const p3: Inputs.Base.Point3 = [0, 1, 0];
                 const normal = point.normalFromThreePoints({ point1: p1, point2: p2, point3: p3, reverseNormal: false });
-                expectPointCloseTo(normal, [0, 0, 1]);
+                uh.expectPointCloseTo(normal, [0, 0, 1]);
             });
 
             it("should calculate the normal vector for non-collinear points (off-axis)", () => {
                 const p1: Inputs.Base.Point3 = [1, 1, 1];
-                const p2: Inputs.Base.Point3 = [2, 1, 1]; // P2-P1 = [1,0,0]
-                const p3: Inputs.Base.Point3 = [1, 2, 1]; // P3-P1 = [0,1,0]
+                const p2: Inputs.Base.Point3 = [2, 1, 1];
+                const p3: Inputs.Base.Point3 = [1, 2, 1];
                 const normal = point.normalFromThreePoints({ point1: p1, point2: p2, point3: p3, reverseNormal: false });
-                expectPointCloseTo(normal, [0, 0, 1]);
+                uh.expectPointCloseTo(normal, [0, 0, 1]);
             });
 
             it("should calculate the normal vector for points forming XZ plane", () => {
                 const p1: Inputs.Base.Point3 = [0, 0, 0];
-                const p2: Inputs.Base.Point3 = [1, 0, 0]; // V1=[1,0,0]
-                const p3: Inputs.Base.Point3 = [0, 0, 1]; // V2=[0,0,1]
+                const p2: Inputs.Base.Point3 = [1, 0, 0];
+                const p3: Inputs.Base.Point3 = [0, 0, 1];
                 const normal = point.normalFromThreePoints({ point1: p1, point2: p2, point3: p3, reverseNormal: false });
-                expectPointCloseTo(normal, [0, -1, 0]);
+                uh.expectPointCloseTo(normal, [0, -1, 0]);
             });
 
             it("should reverse the normal if reverseNormal is true", () => {
@@ -522,16 +518,13 @@ describe("Point unit tests", () => {
                 const p2: Inputs.Base.Point3 = [1, 0, 0];
                 const p3: Inputs.Base.Point3 = [0, 1, 0];
                 const normal = point.normalFromThreePoints({ point1: p1, point2: p2, point3: p3, reverseNormal: true });
-                expectPointCloseTo(normal, [0, 0, -1]);
+                uh.expectPointCloseTo(normal, [0, 0, -1]);
             });
 
             it("should return undefined for collinear points", () => {
                 const p1: Inputs.Base.Point3 = [0, 0, 0];
                 const p2: Inputs.Base.Point3 = [1, 1, 1];
-                const p3: Inputs.Base.Point3 = [2, 2, 2]; // p3 = p1 + 2*(p2-p1)
-                // V1 = [1,1,1], V2 = [2,2,2]
-                // Cross = [1*2-1*2, 1*2-1*2, 1*2-1*2] = [0,0,0]
-                // Should log warning and return undefined
+                const p3: Inputs.Base.Point3 = [2, 2, 2];
                 const consoleWarnSpy = jest.spyOn(console, "warn").mockImplementation();
                 const normal = point.normalFromThreePoints({ point1: p1, point2: p2, point3: p3, reverseNormal: false });
                 expect(normal).toBeUndefined();
@@ -581,7 +574,6 @@ describe("Point unit tests", () => {
             });
 
             it("should return false for points equal to tolerance distance", () => {
-                // distance < tolerance, so if distance === tolerance, should be false
                 const p1: Inputs.Base.Point3 = [1, 1, 1];
                 const p2: Inputs.Base.Point3 = [1, 1, 1 + 1e-5];
                 const tolerance = 1e-5;
@@ -591,27 +583,92 @@ describe("Point unit tests", () => {
 
     });
 
-    // Helper to compare points/vectors with tolerance
-    const expectPointCloseTo = (
-        received: Inputs.Base.Point3 | Inputs.Base.Vector3 | undefined,
-        expected: Inputs.Base.Point3 | Inputs.Base.Vector3
-    ) => {
-        expect(received).toBeDefined();
-        if (!received) return; // Guard for TS
-        expect(received.length).toEqual(expected.length);
-        expect(received[0]).toBeCloseTo(expected[0], TOLERANCE);
-        expect(received[1]).toBeCloseTo(expected[1], TOLERANCE);
-        if (expected.length > 2 && received.length > 2) {
-            expect(received[2]).toBeCloseTo(expected[2], TOLERANCE);
-        }
-    };
+    describe("PointService.sortPoints", () => {
 
-    // Helper to compare arrays of points/vectors with tolerance
-    const expectPointsCloseTo = (
-        received: Inputs.Base.Point3[] | Inputs.Base.Vector3[],
-        expected: Inputs.Base.Point3[] | Inputs.Base.Vector3[]
-    ) => {
-        expect(received.length).toEqual(expected.length);
-        received.forEach((p, i) => expectPointCloseTo(p, expected[i]));
-    };
+        it("should return an empty array when given an empty array", () => {
+            const input: Inputs.Point.PointsDto = { points: [] };
+            const result = point.sortPoints(input);
+            expect(result).toEqual([]);
+        });
+
+        it("should return the same array when given an array with a single point", () => {
+            const pt: Inputs.Base.Point3 = [1, 2, 3];
+            const input: Inputs.Point.PointsDto = { points: [pt] };
+            const result = point.sortPoints(input);
+            expect(result).toEqual([pt]);
+        });
+
+        it("should not modify the original input array (immutability)", () => {
+            const originalPoints: Inputs.Base.Point3[] = [[3, 0, 0], [1, 0, 0], [2, 0, 0]];
+            const input: Inputs.Point.PointsDto = { points: originalPoints };
+            const originalCopy = [...originalPoints];
+            const result = point.sortPoints(input);
+            expect(result).not.toBe(originalPoints);
+            expect(originalPoints).toEqual(originalCopy);
+        });
+
+        it("should correctly sort points primarily by the X coordinate", () => {
+            const input: Inputs.Point.PointsDto = { points: [[3, 0, 0], [1, 5, 5], [2, -1, -1]] };
+            const expected: Inputs.Base.Point3[] = [[1, 5, 5], [2, -1, -1], [3, 0, 0]];
+            const result = point.sortPoints(input);
+            expect(result).toEqual(expected);
+        });
+
+        it("should correctly sort points with the same X coordinate by the Y coordinate", () => {
+            const input: Inputs.Point.PointsDto = { points: [[1, 5, 0], [2, 0, 0], [1, 2, 5], [1, 8, -1]] };
+            const expected: Inputs.Base.Point3[] = [[1, 2, 5], [1, 5, 0], [1, 8, -1], [2, 0, 0]];
+            const result = point.sortPoints(input);
+            expect(result).toEqual(expected);
+        });
+
+        it("should correctly sort points with the same X and Y coordinates by the Z coordinate", () => {
+            const input: Inputs.Point.PointsDto = { points: [[1, 5, 10], [2, 0, 0], [1, 5, -2], [1, 5, 0]] };
+            const expected: Inputs.Base.Point3[] = [[1, 5, -2], [1, 5, 0], [1, 5, 10], [2, 0, 0]];
+            const result = point.sortPoints(input);
+            expect(result).toEqual(expected);
+        });
+
+        it("should handle a mix of points with various coordinates including negatives", () => {
+            const input: Inputs.Point.PointsDto = {
+                points: [
+                    [2, 1, 5], [1, 5, 0], [2, 1, 0], [-1, 10, 0], [1, 0, 0], [2, 0, 0], [-1, -5, 10]
+                ]
+            };
+            const expected: Inputs.Base.Point3[] = [
+                [-1, -5, 10], [-1, 10, 0], [1, 0, 0], [1, 5, 0], [2, 0, 0], [2, 1, 0], [2, 1, 5]
+            ];
+            const result = point.sortPoints(input);
+            expect(result).toEqual(expected);
+        });
+
+        it("should handle already sorted points correctly", () => {
+            const expected: Inputs.Base.Point3[] = [[1, 2, 3], [1, 2, 4], [1, 3, 0], [2, 0, 0]];
+            const input: Inputs.Point.PointsDto = { points: [...expected] };
+            const result = point.sortPoints(input);
+            expect(result).toEqual(expected);
+        });
+
+        it("should handle reverse sorted points correctly", () => {
+            const input: Inputs.Point.PointsDto = { points: [[3, 0, 0], [2, 0, 0], [1, 0, 0]] };
+            const expected: Inputs.Base.Point3[] = [[1, 0, 0], [2, 0, 0], [3, 0, 0]];
+            const result = point.sortPoints(input);
+            expect(result).toEqual(expected);
+        });
+
+        it("should handle duplicate points", () => {
+            const input: Inputs.Point.PointsDto = { points: [[1, 1, 1], [0, 0, 0], [2, 2, 2], [0, 0, 0], [1, 1, 1]] };
+            const expected: Inputs.Base.Point3[] = [[0, 0, 0], [0, 0, 0], [1, 1, 1], [1, 1, 1], [2, 2, 2]];
+            const result = point.sortPoints(input);
+            expect(result).toEqual(expected);
+        });
+
+        it("should handle floating point numbers correctly", () => {
+            const input: Inputs.Point.PointsDto = { points: [[1.5, 0.1, 0], [1.1, 0.2, 0], [1.5, 0, 0], [1.1, 0.1, 0]] };
+            const expected: Inputs.Base.Point3[] = [[1.1, 0.1, 0], [1.1, 0.2, 0], [1.5, 0, 0], [1.5, 0.1, 0]];
+            const result = point.sortPoints(input);
+            expect(result).toEqual(expected);
+        });
+
+
+    });
 });

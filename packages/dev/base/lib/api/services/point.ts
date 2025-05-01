@@ -2,6 +2,7 @@ import { GeometryHelper } from "./geometry-helper";
 import * as Inputs from "../inputs";
 import { Transforms } from "./transforms";
 import { Vector } from "./vector";
+import * as Models from "../models";
 
 /**
  * Contains various methods for points. Point in bitbybit is simply an array containing 3 numbers for [x, y, z].
@@ -112,6 +113,19 @@ export class Point {
     scalePointsCenterXYZ(inputs: Inputs.Point.ScalePointsCenterXYZDto): Inputs.Base.Point3[] {
         const scaleTransforms = this.transforms.scaleCenterXYZ({ center: inputs.center, scaleXyz: inputs.scaleXyz });
         return this.geometryHelper.transformControlPoints(scaleTransforms, inputs.points);
+    }
+
+    /**
+     * Stretch multiple points by providing center point, direction and uniform scale factor
+     * @param inputs Contains points, center point, direction and scale factor
+     * @returns Stretched points
+     * @group transforms
+     * @shortname stretch points dir from center
+     * @drawable true
+     */
+    stretchPointsDirFromCenter(inputs: Inputs.Point.StretchPointsDirFromCenterDto): Inputs.Base.Point3[] {
+        const stretchTransforms = this.transforms.stretchDirFromCenter({ center: inputs.center, scale: inputs.scale, direction: inputs.direction });
+        return this.geometryHelper.transformControlPoints(stretchTransforms, inputs.points);
     }
 
     /**
@@ -393,6 +407,210 @@ export class Point {
         return points;
     }
 
+
+    /**
+     * Creates a flat-top hexagon grid, scaling hexagons to fit specified dimensions exactly.
+     * Returns both center points and the vertices of each (potentially scaled) hexagon.
+     * Hexagons are ordered column-first, then row-first.
+     *
+     * @param inputs Information about the desired grid dimensions and hexagon counts.
+     * @returns An object containing the array of center points and an array of hexagon vertex arrays.
+     * @group create
+     * @shortname scaled hex grid to fit
+     * @drawable true
+     */
+    hexGridScaledToFit(inputs: Inputs.Point.HexGridScaledToFitDto): Models.Point.HexGridData {
+        const {
+            width,
+            height,
+            nrHexagonsU,
+            nrHexagonsV,
+            extendTop = false,
+            extendBottom = false,
+            extendLeft = false,
+            extendRight = false,
+            centerGrid = false,
+            pointsOnGround = false
+        } = inputs;
+
+        // --- Input Validation ---
+        if (width <= 0 || height <= 0 || nrHexagonsU < 1 || nrHexagonsV < 1) {
+            console.warn("Hex grid dimensions and counts must be positive.");
+            return { points: [], hexagons: [] };
+        }
+
+        // --- Step 1: Generate Unscaled Regular Grid Centers (Radius = 1) ---
+        // Use the *existing* hexGrid function, ensuring it doesn't center or project yet.
+        const BASE_RADIUS = 1.0;
+        const unscaledCenters = this.hexGrid({ // CALLING YOUR ORIGINAL FUNCTION
+            radiusHexagon: BASE_RADIUS,
+            nrHexagonsX: nrHexagonsU,
+            nrHexagonsY: nrHexagonsV,
+            orientOnCenter: false, // Important: Do not center here
+            pointsOnGround: false  // Keep on XY plane for now
+        });
+
+        if (unscaledCenters.length === 0) {
+            return { points: [], hexagons: [] }; // Return empty if base grid failed
+        }
+
+        // --- Step 2: Generate Unscaled Regular Hexagon Vertices (Radius = 1) ---
+        const unscaledHexagons: Inputs.Base.Point3[][] = unscaledCenters.map(center =>
+            this.getRegularHexagonVertices(center, BASE_RADIUS)
+        );
+
+        // --- Step 3: Determine Dimensions of the Unscaled Grid Bounding Box ---
+        let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
+        for (const hex of unscaledHexagons) {
+            for (const vertex of hex) {
+                if (vertex[0] < minX) minX = vertex[0];
+                if (vertex[0] > maxX) maxX = vertex[0];
+                if (vertex[1] < minY) minY = vertex[1];
+                if (vertex[1] > maxY) maxY = vertex[1];
+            }
+        }
+
+        const unscaledWidth = maxX - minX;
+        const unscaledHeight = maxY - minY;
+
+        // --- Step 4: Calculate Scaling Factors ---
+        // Handle potential zero dimensions if only 1 hex (W/H would be based on hex size)
+        const scaleX = (unscaledWidth > 1e-9) ? width / unscaledWidth : 1;
+        const scaleY = (unscaledHeight > 1e-9) ? height / unscaledHeight : 1;
+        // If unscaled W/H is 0 (e.g., 1x1 grid), scale=1 means the final hex will have
+        // width/height derived from its regular R=1 shape, not fitting totalW/H.
+        // This might need adjustment if a single hex *must* fill the total W/H.
+        // For now, assume nrU/nrV > 1 or accept R=1 size for single hex.
+
+        // --- Step 5: Scale Centers and Vertices ---
+        // Scale relative to the min corner of the unscaled grid (minX, minY)
+        const scaledCenters: Inputs.Base.Point3[] = unscaledCenters.map(p => [
+            (p[0] - minX) * scaleX,
+            (p[1] - minY) * scaleY,
+            0 // Keep Z=0 for now
+        ]);
+
+        let scaledHexagons: Inputs.Base.Point3[][] = unscaledHexagons.map(hex =>
+            hex.map(v => [
+                (v[0] - minX) * scaleX,
+                (v[1] - minY) * scaleY,
+                0 // Keep Z=0 for now
+            ])
+        );
+
+        // --- Step 6: Extensions
+        if (extendTop || extendBottom || extendLeft || extendRight) {
+            if (scaledHexagons.length !== 0) {
+                const firstHex = scaledHexagons[0];
+                console.log("FIRST HEX", firstHex);
+                const pt1Pointy = firstHex[0];
+                const pt2Pointy = firstHex[1];
+                const cellHeight = pt1Pointy[1] - pt2Pointy[1];
+                const cellWidth = pt2Pointy[0] - pt1Pointy[0];
+                console.log("CELL WIDTH", cellHeight);
+                if (extendTop && !extendBottom) {
+                    scaledHexagons = scaledHexagons.map(hex => {
+                        return this.stretchPointsDirFromCenter({
+                            points: hex,
+                            center: [0, 0, 0],
+                            direction: [0, 1, 0],
+                            scale: height / (height - cellHeight),
+                        });
+                    });
+                }
+                if(extendBottom && !extendTop) {
+                    scaledHexagons = scaledHexagons.map(hex => {
+                        return this.stretchPointsDirFromCenter({
+                            points: hex,
+                            center: [0, height, 0],
+                            direction: [0, -1, 0],
+                            scale: height / (height - cellHeight),
+                        });
+                    });
+                }
+                if(extendTop && extendBottom){
+                    scaledHexagons = scaledHexagons.map(hex => {
+                        return this.stretchPointsDirFromCenter({
+                            points: hex,
+                            center: [0, height / 2, 0],
+                            direction: [0, 1, 0],
+                            scale: height / (height - cellHeight * 2),
+                        });
+                    });
+                }
+                if (extendLeft && !extendRight) {
+                    scaledHexagons = scaledHexagons.map(hex => {
+                        return this.stretchPointsDirFromCenter({
+                            points: hex,
+                            center: [width, 0, 0],
+                            direction: [1, 0, 0],
+                            scale: width / (width - cellWidth),
+                        });
+                    });
+                }
+                if(extendRight && !extendLeft) {
+                    scaledHexagons = scaledHexagons.map(hex => {
+                        return this.stretchPointsDirFromCenter({
+                            points: hex,
+                            center: [0, 0, 0],
+                            direction: [1, 0, 0],
+                            scale: width / (width - cellWidth),
+                        });
+                    });
+                }
+                if(extendLeft && extendRight){
+                    scaledHexagons = scaledHexagons.map(hex => {
+                        return this.stretchPointsDirFromCenter({
+                            points: hex,
+                            center: [width / 2, 0, 0],
+                            direction: [1, 0, 0],
+                            scale: width / (width - cellWidth * 2),
+                        });
+                    });
+                }
+            }
+        }
+
+        // --- Step 6: Apply Optional Centering ---
+        // Center the scaled grid (currently starting at [0,0]) around [0,0]
+        if (centerGrid) {
+            const shiftX = width / 2;
+            const shiftY = height / 2;
+
+            for (let i = 0; i < scaledCenters.length; i++) {
+                scaledCenters[i][0] -= shiftX;
+                scaledCenters[i][1] -= shiftY;
+            }
+            for (let i = 0; i < scaledHexagons.length; i++) {
+                for (let j = 0; j < scaledHexagons[i].length; j++) {
+                    scaledHexagons[i][j][0] -= shiftX;
+                    scaledHexagons[i][j][1] -= shiftY;
+                }
+            }
+        }
+
+        
+
+
+        // --- Step 7: Apply Optional Ground Projection ---
+        if (pointsOnGround) {
+            for (let i = 0; i < scaledCenters.length; i++) {
+                scaledCenters[i] = [scaledCenters[i][0], 0, scaledCenters[i][1]];
+            }
+            for (let i = 0; i < scaledHexagons.length; i++) {
+                for (let j = 0; j < scaledHexagons[i].length; j++) {
+                    scaledHexagons[i][j] = [scaledHexagons[i][j][0], 0, scaledHexagons[i][j][1]];
+                }
+            }
+        }
+
+        // --- Step 8: Return Result ---
+        return {
+            points: scaledCenters,
+            hexagons: scaledHexagons
+        };
+    }
+
     /**
      * Removes consecutive duplicates from the point array with tolerance
      * @param inputs points, tolerance and check first and last
@@ -487,4 +705,44 @@ export class Point {
         return dist < inputs.tolerance;
     }
 
+    /**
+     * Sorts points lexicographically (X, then Y, then Z) 
+     * @param inputs points
+     * @returns sorted points
+     * @group sort
+     * @shortname sort points
+     * @drawable true
+     */
+    sortPoints(inputs: Inputs.Point.PointsDto): Inputs.Base.Point3[] {
+        return [...inputs.points].sort((a, b) => {
+            if (a[0] !== b[0]) return a[0] - b[0];
+            if (a[1] !== b[1]) return a[1] - b[1];
+            return a[2] - b[2];
+        });
+    }
+
+    /**
+     * Calculates the 6 vertices of a regular flat-top hexagon.
+     * @param center The center point [x, y, z].
+     * @param radius The radius (distance from center to vertex).
+     * @returns An array of 6 Point3 vertices in counter-clockwise order.
+     */
+    private getRegularHexagonVertices(center: Inputs.Base.Point3, radius: number): Inputs.Base.Point3[] {
+        const vertices: Inputs.Base.Point3[] = [];
+        const cx = center[0];
+        const cy = center[1];
+        const cz = center[2];
+
+        const angleStep = Math.PI / 3;
+
+        for (let i = 0; i < 6; i++) {
+            const angle = angleStep * i;
+            vertices.push([
+                cx + radius * Math.sin(angle),
+                cy + radius * Math.cos(angle),
+                cz // Maintain original Z
+            ]);
+        }
+        return vertices;
+    }
 }

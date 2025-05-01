@@ -90,7 +90,7 @@ export class OccHelper {
         this.verticesService.wiresService = this.wiresService;
 
         this.facesService = new FacesService(occ, this.occRefReturns, this.entitiesService, this.enumService,
-            this.shapeGettersService, this.converterService, this.booleansService, this.wiresService, this.transformsService, this.vecHelper, this.filletsService);
+            this.shapeGettersService, this.converterService, this.booleansService, this.wiresService, this.transformsService, this.vecHelper, this.point, this.filletsService);
 
         this.shellsService = new ShellsService(occ, this.shapeGettersService, this.converterService, this.facesService);
 

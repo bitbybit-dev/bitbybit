@@ -1,6 +1,7 @@
 import { GeometryHelper } from "./geometry-helper";
 import * as Inputs from "../inputs";
 import { Point } from "./point";
+import { Vector } from "./vector";
 
 /**
  * Contains various methods for lines and segments. Line in bitbybit is a simple object that has start and end point properties.
@@ -8,7 +9,7 @@ import { Point } from "./point";
  */
 export class Line {
 
-    constructor(private readonly point: Point, private readonly geometryHelper: GeometryHelper) { }
+    constructor(private readonly vector: Vector, private readonly point: Point, private readonly geometryHelper: GeometryHelper) { }
 
     /**
      * Gets the start point of the line
@@ -211,6 +212,146 @@ export class Line {
     segmentsToLines(inputs: Inputs.Line.SegmentsDto): Inputs.Base.Line3[] {
         return inputs.segments.map(segment => ({ start: segment[0], end: segment[1] }));
     }
+
+    /**
+     * If two lines intersect return the intersection point
+     * @param inputs line1 and line2
+     * @returns intersection point or undefined if no intersection
+     * @group intersection
+     * @shortname line-line int
+     * @drawable true
+     */
+    lineLineIntersection(inputs: Inputs.Line.LineLineIntersectionDto): Inputs.Base.Point3 | undefined {
+        const epsilon = inputs.tolerance || 1e-6; // Default tolerance
+        const checkSegments = inputs.checkSegmentsOnly;
     
+        const line1 = inputs.line1;
+        const line2 = inputs.line2;
+    
+        // Input validation
+        if (!line1?.start || !line1.end || !line2?.start || !line2.end ||
+            line1.start.length !== 3 || line1.end.length !== 3 ||
+            line2.start.length !== 3 || line2.end.length !== 3) {
+            console.error("Invalid line input to lineLineIntersection");
+            return undefined;
+        }
+    
+        const p1 = line1.start;
+        const d1 = this.vector.sub({ first: line1.end, second: line1.start }); // Direction vector line 1
+        const p2 = line2.start;
+        const d2 = this.vector.sub({ first: line2.end, second: line2.start }); // Direction vector line 2
+        const p21 = this.vector.sub({ first: p2, second: p1 });              // Vector between start points
+    
+        // --- Check for Zero-Length Segments ---
+        const lenSq1 = this.vector.lengthSq({ vector: d1 as Inputs.Base.Vector3 });
+        const lenSq2 = this.vector.lengthSq({ vector: d2 as Inputs.Base.Vector3 });
+    
+        // Compare squared length against squared epsilon
+        if (lenSq1 < epsilon * epsilon || lenSq2 < epsilon * epsilon) {
+            return undefined;
+        }
+    
+        // --- Check for Parallelism ---
+        const d1_cross_d2 = this.vector.cross({ first: d1, second: d2 });
+        const crossMagSq = this.vector.lengthSq({ vector: d1_cross_d2 as Inputs.Base.Vector3 });
+    
+        // Check if squared magnitude of cross product is near zero (relative to segment lengths)
+        // Use epsilon squared as a base tolerance, potentially scale by magnitudes
+        const parallel_tolerance_sq = epsilon * epsilon; // May need adjustment: * lenSq1 * lenSq2;
+        if (crossMagSq < parallel_tolerance_sq) {
+            // Potentially Parallel or Collinear
+            // Check if collinear: p21 must be parallel to d1
+            const p21_cross_d1 = this.vector.cross({ first: p21, second: d1 });
+            // Use similar tolerance logic for collinear check
+            const collinear_tolerance_sq = epsilon * epsilon * lenSq1; // Scale by line1 length
+            if (this.vector.lengthSq({ vector: p21_cross_d1 as Inputs.Base.Vector3 }) < collinear_tolerance_sq) {
+                // Collinear
+                if (!checkSegments) {
+                    return p1; // Infinite lines intersect everywhere, return p1 arbitrarily
+                } else {
+                    // --- Check for Segment Overlap (Collinear case) ---
+                    const d1d1 = lenSq1; // Reuse calculated squared length
+                     // Avoid division by zero if lenSq1 is extremely small (should be caught earlier)
+                    const safe_d1d1 = (d1d1 < epsilon * epsilon) ? 1.0 : d1d1;
+                    const d1p21 = this.vector.dot({ first: d1, second: p21 }); // Dot product d1·(p2-p1)
+                    const t_p2 = d1p21 / safe_d1d1; // Parameter for p2 projected onto line1's frame
+                    const vec_e2_p1 = this.vector.sub({ first: line2.end, second: p1 });
+                    const t_e2 = this.vector.dot({ first: d1, second: vec_e2_p1 }) / safe_d1d1; // Param for e2
+    
+                    const interval2_t = [Math.min(t_p2, t_e2), Math.max(t_p2, t_e2)];
+                    const interval1_t = [0, 1]; // Line1 segment parameter range
+    
+                    const overlap_start = Math.max(interval1_t[0], interval2_t[0]);
+                    const overlap_end = Math.min(interval1_t[1], interval2_t[1]);
+    
+                    // Check for overlap including tolerance
+                    if (overlap_start <= overlap_end + epsilon) {
+                         // Overlap exists, but intersection is a segment, not a single point
+                        return undefined;
+                    } else {
+                        // Collinear but segments do not overlap
+                        return undefined;
+                    }
+                }
+            } else {
+                // Parallel but not collinear
+                return undefined;
+            }
+        }
+    
+        // --- Lines are NOT Parallel - Check for Skewness using Scalar Triple Product ---
+        const scalarTripleProduct = this.vector.dot({ first: p21, second: d1_cross_d2 });
+    
+        // If the scalar triple product is significantly non-zero, the lines are skew.
+        // Tolerance needs consideration - relates to the "volume" formed by the vectors.
+        // A simple absolute check against epsilon^3 or similar might work for typical scales.
+        // Consider scaling tolerance if coordinates can be very large/small.
+        const skew_tolerance = epsilon * epsilon * epsilon;
+        if (Math.abs(scalarTripleProduct) > skew_tolerance) {
+            // Lines are Skew
+            return undefined;
+        }
+    
+        // --- Lines are Intersecting (Coplanar and Non-Parallel) ---
+        // Calculate intersection parameters t (for line1) and u (for line2)
+        // We can use the formulas derived earlier, which are valid for intersecting lines.
+        const d1d1 = lenSq1;
+        const d2d2 = lenSq2;
+        const d1d2 = this.vector.dot({ first: d1, second: d2 });
+        const d1p21 = this.vector.dot({ first: d1, second: p21 });
+        const d2p21 = this.vector.dot({ first: d2, second: p21 });
+    
+        // Denominator for parameter calculation (same as crossMagSq, essentially)
+        const denominator = d1d1 * d2d2 - d1d2 * d1d2;
+    
+        // Denominator *should* be non-zero based on the parallelism check above,
+        // but add a defensive check.
+        if (Math.abs(denominator) < epsilon * epsilon) {
+             console.error("Internal error: Denominator near zero after non-parallel check.");
+             return undefined; // Should not happen
+        }
+    
+        const t = (d2d2 * d1p21 - d1d2 * d2p21) / denominator;
+        const u = (d1d2 * d1p21 - d1d1 * d2p21) / denominator;
+    
+        // --- Optional check: Is intersection within segment bounds? ---
+        if (checkSegments) {
+            // Check if t and u are within the range [0, 1] (using tolerance)
+            if (t < -epsilon || t > 1.0 + epsilon || u < -epsilon || u > 1.0 + epsilon) {
+                return undefined; // Intersection point is outside one or both segments
+            }
+        }
+    
+        // --- Calculate Intersection Point ---
+        const intersectionPoint = this.getPointOnLine({ param: t, line: line1 });
+    
+        // Clip near-zero results based on the input epsilon
+        return [
+            Math.abs(intersectionPoint[0]) < epsilon ? 0 : intersectionPoint[0],
+            Math.abs(intersectionPoint[1]) < epsilon ? 0 : intersectionPoint[1],
+            Math.abs(intersectionPoint[2]) < epsilon ? 0 : intersectionPoint[2],
+        ] as Inputs.Base.Point3;
+    }
+
 }
 

@@ -271,6 +271,18 @@ export class OCCTFace {
     subdivideToRectangleHoles(inputs: Inputs.OCCT.FaceSubdivideToRectangleHolesDto<Inputs.OCCT.TopoDSFacePointer>): Promise<Inputs.OCCT.TopoDSFacePointer[]> {
         return this.occWorkerManager.genericCallToWorkerPromise("shapes.face.subdivideToRectangleHoles", inputs);
     }
+    
+    /**
+     * Subdivides a face to hexagon wires
+     * @param inputs Face and options for subdivision
+     * @returns wires
+     * @group patterns
+     * @shortname hexagon wires on face
+     * @drawable true
+     */
+    subdivideToHexagonWires(inputs: Inputs.OCCT.FaceSubdivideToHexagonWiresDto<Inputs.OCCT.TopoDSFacePointer>): Promise<Inputs.OCCT.TopoDSWirePointer[]> {
+        return this.occWorkerManager.genericCallToWorkerPromise("shapes.face.subdivideToHexagonWires", inputs);
+    }
 
     /**
      * Subdivides a face to point grid with shifts and removals on nth uv rows or columns

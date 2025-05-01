@@ -150,7 +150,7 @@ export class MeshBitByBit {
             // This can happen if triangles touch at a vertex or edge without crossing planes,
             // or due to numerical precision near edges/vertices.
             // console.log("Intersection appears to be edge/vertex contact or numerical issue.");
-            return undefined; // Treat touch as no intersection segment for now
+            return undefined; // Treat touch as no intersection segment
         }
 
         // Calculate a robust origin ON the intersection line

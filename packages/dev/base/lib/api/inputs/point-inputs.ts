@@ -304,6 +304,38 @@ export namespace Point {
          */
         scaleXyz: Base.Vector3 = [1, 1, 1];
     }
+
+    export class StretchPointsDirFromCenterDto {
+        constructor(points?: Base.Point3[], center?: Base.Point3, direction?: Base.Vector3, scale?: number) {
+            if (points !== undefined) { this.points = points; }
+            if (center !== undefined) { this.center = center; }
+            if (direction !== undefined) { this.direction = direction; }
+            if (scale !== undefined) { this.scale = scale; }
+        }
+        /**
+         * Points to transform
+         * @default undefined
+         */
+        points?: Base.Point3[];
+        /**
+         * The center from which the scaling is applied
+         * @default [0, 0, 0]
+         */
+        center?: Base.Point3 = [0, 0, 0];
+        /**
+         * Stretch direction vector
+         * @default [0, 0, 1]
+         */
+        direction?: Base.Vector3 = [0, 0, 1];
+        /**
+         * The scale factor to apply along the direction vector. 1.0 means no change.
+         * @default 2
+         * @minimum -Infinity
+         * @maximum Infinity
+         * @step 0.1
+         */
+        scale? = 2;
+    }
     export class RotatePointsCenterAxisDto {
         constructor(points?: Base.Point3[], angle?: number, axis?: Base.Vector3, center?: Base.Point3) {
             if (points !== undefined) { this.points = points; }
@@ -543,7 +575,68 @@ export namespace Point {
          */
         factor = 1;
     }
-
+    export class HexGridScaledToFitDto {
+        constructor(wdith?: number, height?: number, nrHexagonsU?: number, nrHexagonsV?: number, centerGrid?: boolean, pointsOnGround?: boolean) {
+            if (wdith !== undefined) { this.width = wdith; }
+            if (height !== undefined) { this.height = height; }
+            if (nrHexagonsU !== undefined) { this.nrHexagonsU = nrHexagonsU; }
+            if (nrHexagonsV !== undefined) { this.nrHexagonsV = nrHexagonsV; }
+            if (centerGrid !== undefined) { this.centerGrid = centerGrid; }
+            if (pointsOnGround !== undefined) { this.pointsOnGround = pointsOnGround; }
+        }
+        /** Total desired width for the grid area. The hexagon size will be derived from this and nrHexagonsU.
+         * @default 10
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.1
+         */
+        width? = 10;
+        /** Total desired height for the grid area. Note: due to hexagon geometry, the actual grid height might differ slightly if maintaining regular hexagons based on width.
+         * @default 10
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.1
+        */
+        height? = 10;
+        /** Number of hexagons desired horizontally (U direction).
+         * @default 10
+         * @minimum 0
+         * @maximum Infinity
+         * @step 1
+         */
+        nrHexagonsU? = 10;
+        /** Number of hexagons desired vertically (V direction).
+         * @default 10
+         * @minimum 0
+         * @maximum Infinity
+         * @step 1
+         */
+        nrHexagonsV? = 10;
+        /** If true, shift the entire grid up by half hex height. 
+         * @default false
+        */
+        extendTop? = false;
+        /** If true, shift the entire grid down by half hex height. 
+         * @default false
+        */
+        extendBottom? = false;
+        /** If true, shift the entire grid left by half hex width. 
+         * @default false
+        */
+        extendLeft? = false;
+        /** If true, shift the entire grid right by half hex width. 
+         * @default false
+        */
+        extendRight? = false;
+        /** If true, the grid center (based on totalWidth/totalHeight) will be at [0,0,0].
+         * @default false
+         */
+        centerGrid? = false;
+        /** If true, swaps Y and Z coordinates and sets Y to 0, placing points on the XZ ground plane.
+         * @default false
+         */
+        pointsOnGround? = false;
+    }
     export class HexGridCentersDto {
         constructor(nrHexagonsX?: number, nrHexagonsY?: number, radiusHexagon?: number, orientOnCenter?: boolean, pointsOnGround?: boolean) {
             if (nrHexagonsX !== undefined) { this.nrHexagonsX = nrHexagonsX; }
