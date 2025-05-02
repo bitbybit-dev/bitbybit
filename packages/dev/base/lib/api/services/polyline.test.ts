@@ -746,5 +746,98 @@ describe("Polyline unit tests", () => {
         });
     });
 
+    describe("calculatePolylineMaxFillets", () => {
+        const precision = 6;
+        it("should return an empty array for fewer than 3 points", () => {
+            const points: Inputs.Base.Point3[] = [[0, 0, 0], [1, 1, 0]];
+            const input: Inputs.Polyline.PolylineToleranceDto = { polyline: { points } };
+            expect(polyline.polylineMaxFilletRadii(input)).toEqual([]);
+        });
+
+        it("should calculate fillet for the single corner of a 3-point open polyline", () => {
+            const points: Inputs.Base.Point3[] = [[0, 0, 0], [5, 0, 0], [5, 3, 0]]; // 90 deg corner at [5,0,0]
+            const input: Inputs.Polyline.PolylineToleranceDto = { polyline: { points, isClosed: false } };
+            const expectedRadii = [1.5];
+
+            const result = polyline.polylineMaxFilletRadii(input);
+            uh.expectFloatArraysClose(result, expectedRadii, precision);
+        });
+
+        it("should calculate fillets for the two corners of a 4-point open polyline", () => {
+            const points: Inputs.Base.Point3[] = [[0, 0, 0], [5, 0, 0], [5, 3, 0], [2, 3, 0]];
+            const input: Inputs.Polyline.PolylineToleranceDto = { polyline: { points, isClosed: false } };
+            const expectedRadii = [1.5, 1.5];
+
+            const result = polyline.polylineMaxFilletRadii(input);
+            uh.expectFloatArraysClose(result, expectedRadii, precision);
+        });
+
+        it("should calculate fillets for all 3 corners of a 3-point closed polyline (triangle)", () => {
+            const points: Inputs.Base.Point3[] = [[0,0,0], [4,0,0], [0,3,0]]; // Right-angle triangle
+            const input: Inputs.Polyline.PolylineToleranceDto = { polyline: { points, isClosed: true } };
+            const expectedRadii = [2/3, 1.5, 0.75];
+
+            const result = polyline.polylineMaxFilletRadii(input);
+            uh.expectFloatArraysClose(result, expectedRadii, precision);
+        });
+
+        it("should calculate fillets for all 4 corners of a 4-point closed polyline (rectangle)", () => {
+            const points: Inputs.Base.Point3[] = [[0, 0, 0], [5, 0, 0], [5, 3, 0], [0, 3, 0]]; // Rectangle
+            const input: Inputs.Polyline.PolylineToleranceDto = { polyline: { points, isClosed: true } };
+            const expectedRadii = [1.5, 1.5, 1.5, 1.5];
+
+            const result = polyline.polylineMaxFilletRadii(input);
+            uh.expectFloatArraysClose(result, expectedRadii, precision);
+        });
+
+        it("should return 0 for corners where segments are collinear", () => {
+            const points: Inputs.Base.Point3[] = [[0, 0, 0], [5, 0, 0], [10, 0, 0], [10, 3, 0]]; // Collinear segment P0-P1-P2
+            const input: Inputs.Polyline.PolylineToleranceDto = { polyline: { points, isClosed: false } };
+            const expectedRadii = [0.0, 1.5];
+
+            const result = polyline.polylineMaxFilletRadii(input);
+            uh.expectFloatArraysClose(result, expectedRadii, precision);
+        });
+
+        it("should use the provided tolerance", () => {
+            const customTolerance = 1e-4;
+            const points: Inputs.Base.Point3[] = [[0, 0, 0], [customTolerance / 2, 0, 0], [1, 1, 0]];
+            const input: Inputs.Polyline.PolylineToleranceDto = { polyline: { points, isClosed: false }, tolerance: customTolerance };
+            const expectedRadii = [0.0];
+
+            const result = polyline.polylineMaxFilletRadii(input);
+            uh.expectFloatArraysClose(result, expectedRadii, precision);
+        });
+
+    });
+
+    describe("calculateSafestPolylineFillet", () => {
+        const precision = 6;
+        it("should return 0 if calculatePolylineMaxFillets returns an empty array", () => {
+            const points: Inputs.Base.Point3[] = [[0, 0, 0], [1, 1, 0]];
+            const input: Inputs.Polyline.PolylineToleranceDto = { polyline: { points } };
+            expect(polyline.safestPolylineFilletRadius(input)).toBe(0);
+        });
+
+        it("should return the minimum of the calculated radii", () => {
+            const points: Inputs.Base.Point3[] = [[0,0,0], [4,0,0], [0,3,0]];
+            const input: Inputs.Polyline.PolylineToleranceDto = { polyline: { points, isClosed: true } };
+            const expectedSafest = 2/3;
+            expect(polyline.safestPolylineFilletRadius(input)).toBeCloseTo(expectedSafest, precision);
+        });
+
+        it("should return 0 if any calculated radius is 0", () => {
+            const points: Inputs.Base.Point3[] = [[0, 0, 0], [5, 0, 0], [10, 0, 0], [10, 3, 0]];
+            const input: Inputs.Polyline.PolylineToleranceDto = { polyline: { points, isClosed: false } };
+            expect(polyline.safestPolylineFilletRadius(input)).toBeCloseTo(0.0, precision);
+        });
+
+        it("should return the single radius if only one corner exists", () => {
+            const points: Inputs.Base.Point3[] = [[0, 0, 0], [5, 0, 0], [5, 3, 0]];
+            const input: Inputs.Polyline.PolylineToleranceDto = { polyline: { points, isClosed: false } };
+            expect(polyline.safestPolylineFilletRadius(input)).toBeCloseTo(1.5, precision);
+        });
+    });
+
 });
 

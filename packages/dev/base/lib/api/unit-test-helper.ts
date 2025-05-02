@@ -153,4 +153,12 @@ export class UnitTestHelper {
         });
     }
 
+    expectFloatArraysClose(actual: number[], expected: number[], precision: number) {
+        expect(actual.length).toBe(expected.length);
+        actual.forEach((val, index) => {
+            expect(val).toBeCloseTo(expected[index], precision);
+        });
+    };
+
+
 }

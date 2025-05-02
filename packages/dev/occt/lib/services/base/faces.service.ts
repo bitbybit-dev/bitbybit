@@ -739,11 +739,20 @@ export class FacesService {
         const scaleU = (uMax - uMin);
         const scaleV = (vMax - vMin);
 
+        const width = scaleV * (1 / scaleX) * (1 - inputs.offsetFromBorderV * 2);
+        const height = scaleU * (1 / scaleZ) * (1 - inputs.offsetFromBorderU * 2);
+
+        const widthWithoutOffset = scaleV * (1 / scaleX);
+        const heightWithoutOffset = scaleU * (1 / scaleZ);
+
+        const translateWidth = (widthWithoutOffset - width) / 2;
+        const translateHeight = (heightWithoutOffset - height) / 2;
+
         const hex = this.point.hexGridScaledToFit({
-            width: scaleV * (1 - inputs.offsetFromBorderV * 2),
-            height: scaleU  * (1 - inputs.offsetFromBorderU * 2),
-            nrHexagonsU: inputs.nrHexagonsU,
-            nrHexagonsV: inputs.nrHexagonsV,
+            width,
+            height,
+            nrHexagonsInHeight: inputs.nrHexagonsU,
+            nrHexagonsInWidth: inputs.nrHexagonsV,
             centerGrid: false,
             pointsOnGround: true,
             extendTop: inputs.extendUUp,
@@ -757,14 +766,18 @@ export class FacesService {
                 points: hex
             });
         });
-        // const translation = [paramsV[j] * scaleV + vMin, 0, paramsU[i] * scaleU + uMin] as Base.Vector3;
 
+        const translation = [vMin + translateWidth, 0, uMin + translateHeight] as Base.Vector3;
         const hexWiresTranslated = hexWires.map(h => {
-            const translation = [uMin, 0, vMin] as Base.Vector3;
             return this.transformsService.translate({
                 shape: h,
                 translation
             });
+        });
+
+        const hexCenters = this.point.translatePoints({
+            points: hex.centers,
+            translation
         });
 
         const wires = [];
@@ -817,62 +830,43 @@ export class FacesService {
                 }
 
                 if (include) {
-
-                    const width = stepV * scaleFromPatternV;
-                    const length = stepU * scaleFromPatternU;
-                    const minForFillet = Math.min(width * scaleV * scaleX, length * scaleU * scaleZ);
-                    if (minForFillet === width * scaleV * scaleX) {
-                        fillet = minForFillet / 2 * fillet;
-                    } else if (minForFillet === length * scaleU * scaleZ) {
-                        fillet = minForFillet / 2 * fillet;
-                    }
-
-                    // const translation = [paramsV[j] * scaleV + vMin, 0, paramsU[i] * scaleU + uMin] as Base.Vector3;
+                    fillet = hex.maxFilletRadius * fillet;
 
                     const hexagon = hexWiresTranslated[i * paramsV.length + j];
+                    const hexagonCenter = hexCenters[i * paramsV.length + j];
 
                     if (fillet > 0) {
-                        const scaleVec2 = [scaleV * scaleX, 1, scaleU * scaleZ] as Base.Vector3;
-                        const scaledRec2 = this.transformsService.scale3d({
-                            shape: hexagon,
-                            center: [0, 0, 0],
-                            scale: scaleVec2,
-                        });
-
                         const filletRectangle = this.filletsService.fillet2d({
-                            shape: scaledRec2,
+                            shape: hexagon,
                             radius: fillet,
                         });
 
-                        const scaleVec3 = [1 / scaleX, 1, 1 / scaleZ] as Base.Vector3;
-                        let scaledRec3 = filletRectangle;
-                        if (!this.vectorService.vectorsTheSame(scaleVec3, [1, 1, 1], 1e-7)) {
-                            scaledRec3 = this.transformsService.scale3d({
+                        const scaleVec2 = [scaleFromPatternV, 1, scaleFromPatternU] as Base.Vector3;
+                        let hexScaled = filletRectangle;
+                        if (scaleFromPatternU !== 1 || scaleFromPatternV !== 1) {
+                            hexScaled = this.transformsService.scale3d({
                                 shape: filletRectangle,
-                                center: [0, 0, 0],
-                                scale: scaleVec3,
+                                center: hexagonCenter,
+                                scale: scaleVec2,
                             });
                         }
 
-                        // const translated = this.transformsService.translate({
-                        //     shape: scaledRec3,
-                        //     translation,
-                        // });
-                        // shapesToDelete.push(hexagon);
-
-                        const placedRec = this.wiresService.placeWire(scaledRec3, surface);
+                        const placedRec = this.wiresService.placeWire(hexScaled, surface);
                         wires.push(placedRec);
-                        cachedHexWires.push({ id: `${width}-${length}-${fillet}`, shape: scaledRec3 });
                     } else {
 
-                        // const translated = this.transformsService.translate({
-                        //     shape: scaledRec,
-                        //     translation,
-                        // });
-                        // shapesToDelete.push(hexagon);
-                        const placedRec = this.wiresService.placeWire(hexagon, surface);
+                        const scaleVec2 = [scaleFromPatternV, 1, scaleFromPatternU] as Base.Vector3;
+                        let hexScaled = hexagon;
+                        if (scaleFromPatternU !== 1 || scaleFromPatternV !== 1) {
+                            hexScaled = this.transformsService.scale3d({
+                                shape: hexagon,
+                                center: hexagonCenter,
+                                scale: scaleVec2,
+                            });
+                        }
+                       
+                        const placedRec = this.wiresService.placeWire(hexScaled, surface);
                         wires.push(placedRec);
-                        cachedHexWires.push({ id: `${width}-${length}-${fillet}`, shape: hexagon });
                     }
                 }
             }

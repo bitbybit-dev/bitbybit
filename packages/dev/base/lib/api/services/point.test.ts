@@ -668,7 +668,184 @@ describe("Point unit tests", () => {
             const result = point.sortPoints(input);
             expect(result).toEqual(expected);
         });
+    });
 
+    describe("calculateMaxFilletRadius", () => {
+        const defaultTolerance = 1e-7; // Default tolerance for the function if not provided
+        const precision = 6;           // Decimal places for toBeCloseTo assertions
 
+        // Helper to create input object matching the confusing naming convention
+        const createInput = (p1: Inputs.Base.Point3, corner: Inputs.Base.Point3, p2: Inputs.Base.Point3, tolerance: number = defaultTolerance): Inputs.Point.ThreePointsToleranceDto => ({
+            start: p1,
+            center: p2,
+            end: corner,
+            tolerance: tolerance
+        });
+
+        it("should calculate correct radius for a simple 90-degree corner (2D)", () => {
+            const geoP1: Inputs.Base.Point3 = [5, 0, 0];
+            const geoC: Inputs.Base.Point3 = [0, 0, 0];
+            const geoP2: Inputs.Base.Point3 = [0, 3, 0];
+            const input = createInput(geoP1, geoC, geoP2);
+            expect(point.maxFilletRadius(input)).toBeCloseTo(3.0, precision);
+        });
+
+        it("should calculate correct radius for a symmetric 90-degree corner (2D)", () => {
+            const geoP1: Inputs.Base.Point3 = [4, 0, 0];
+            const geoC: Inputs.Base.Point3 = [0, 0, 0];
+            const geoP2: Inputs.Base.Point3 = [0, 4, 0];
+            const input = createInput(geoP1, geoC, geoP2);
+            expect(point.maxFilletRadius(input)).toBeCloseTo(4.0, precision);
+        });
+
+        it("should calculate correct radius for an acute angle (60 degrees, 2D)", () => {
+            const geoP1: Inputs.Base.Point3 = [5, 0, 0];
+            const geoC: Inputs.Base.Point3 = [0, 0, 0];
+            const geoP2: Inputs.Base.Point3 = [5 * Math.cos(Math.PI / 3), 5 * Math.sin(Math.PI / 3), 0];
+            const input = createInput(geoP1, geoC, geoP2);
+            const expected = 5 * Math.tan(Math.PI / 6);
+            expect(point.maxFilletRadius(input)).toBeCloseTo(expected, precision);
+        });
+
+        it("should calculate correct radius for an obtuse angle (120 degrees, 2D)", () => {
+            const geoP1: Inputs.Base.Point3 = [4, 0, 0];
+            const geoC: Inputs.Base.Point3 = [0, 0, 0];
+            const geoP2: Inputs.Base.Point3 = [6 * Math.cos(2 * Math.PI / 3), 6 * Math.sin(2 * Math.PI / 3), 0];
+            const input = createInput(geoP1, geoC, geoP2);
+            const expected = 4 * Math.tan(Math.PI / 3);
+            expect(point.maxFilletRadius(input)).toBeCloseTo(expected, precision);
+        });
+
+        it("should return 0 for collinear points (0 degrees)", () => {
+            const geoP1: Inputs.Base.Point3 = [5, 0, 0];
+            const geoC: Inputs.Base.Point3 = [0, 0, 0];
+            const geoP2: Inputs.Base.Point3 = [10, 0, 0];
+            const input = createInput(geoP1, geoC, geoP2);
+            expect(point.maxFilletRadius(input)).toBeCloseTo(0, precision);
+        });
+
+        it("should return 0 for collinear points (180 degrees)", () => {
+            const geoP1: Inputs.Base.Point3 = [5, 0, 0];
+            const geoC: Inputs.Base.Point3 = [0, 0, 0];
+            const geoP2: Inputs.Base.Point3 = [-3, 0, 0];
+            const input = createInput(geoP1, geoC, geoP2);
+            expect(point.maxFilletRadius(input)).toBeCloseTo(0, precision);
+        });
+
+        it("should return 0 if one segment has near-zero length (P1=C)", () => {
+            const geoP1: Inputs.Base.Point3 = [defaultTolerance / 2, 0, 0]; // Very close to C
+            const geoC: Inputs.Base.Point3 = [0, 0, 0];
+            const geoP2: Inputs.Base.Point3 = [0, 3, 0];
+            const input = createInput(geoP1, geoC, geoP2);
+            expect(point.maxFilletRadius(input)).toBeCloseTo(0, precision);
+        });
+
+        it("should return 0 if one segment has near-zero length (P2=C)", () => {
+            const geoP1: Inputs.Base.Point3 = [5, 0, 0];
+            const geoC: Inputs.Base.Point3 = [0, 0, 0];
+            const geoP2: Inputs.Base.Point3 = [0, defaultTolerance / 3, 0]; // Very close to C
+            const input = createInput(geoP1, geoC, geoP2);
+            expect(point.maxFilletRadius(input)).toBeCloseTo(0, precision);
+        });
+
+        it("should use the provided tolerance if specified", () => {
+            const customTolerance = 1e-4;
+            const geoP1: Inputs.Base.Point3 = [customTolerance / 2, 0, 0]; // Near zero relative to custom tolerance
+            const geoC: Inputs.Base.Point3 = [0, 0, 0];
+            const geoP2: Inputs.Base.Point3 = [0, 3, 0];
+            const input = createInput(geoP1, geoC, geoP2, customTolerance);
+            // Expect 0 because len1 < customTolerance
+            expect(point.maxFilletRadius(input)).toBeCloseTo(0, precision);
+
+            const geoP1_ok: Inputs.Base.Point3 = [customTolerance * 2, 0, 0]; // OK relative to custom tolerance
+            const input_ok = createInput(geoP1_ok, geoC, geoP2, customTolerance);
+            // Expect non-zero result here
+            expect(point.maxFilletRadius(input_ok)).toBeGreaterThan(0);
+        });
+
+        it("should return 0 if all points coincide", () => {
+            const geoP1: Inputs.Base.Point3 = [0, 0, 0];
+            const geoC: Inputs.Base.Point3 = [0, 0, 0];
+            const geoP2: Inputs.Base.Point3 = [0, 0, 0];
+            const input = createInput(geoP1, geoC, geoP2);
+            expect(point.maxFilletRadius(input)).toBeCloseTo(0, precision);
+        });
+
+        it("should calculate correct radius for a corner in 3D space", () => {
+            const geoP1: Inputs.Base.Point3 = [1, 1, 0];
+            const geoC: Inputs.Base.Point3 = [0, 0, 0];
+            const geoP2: Inputs.Base.Point3 = [0, 2, 0];
+            const input = createInput(geoP1, geoC, geoP2);
+            const expected = Math.sqrt(2) * Math.tan(Math.PI / 8);
+            expect(point.maxFilletRadius(input)).toBeCloseTo(expected, precision);
+        });
+    });
+
+    describe("calculateMaxFilletRadiusHalfLine", () => {
+        const defaultTolerance = 1e-7;
+        const precision = 6;
+
+        const createInput = (p1: Inputs.Base.Point3, corner: Inputs.Base.Point3, p2: Inputs.Base.Point3, tolerance: number = defaultTolerance): Inputs.Point.ThreePointsToleranceDto => ({
+            start: p1, center: p2, end: corner, tolerance: tolerance
+        });
+
+        it("should calculate correct radius for a simple 90-degree corner (2D)", () => {
+            const geoP1: Inputs.Base.Point3 = [5, 0, 0];
+            const geoC: Inputs.Base.Point3 = [0, 0, 0];
+            const geoP2: Inputs.Base.Point3 = [0, 3, 0];
+            const input = createInput(geoP1, geoC, geoP2);
+            expect(point.maxFilletRadiusHalfLine(input)).toBeCloseTo(1.5, precision);
+        });
+
+        it("should calculate correct radius for a symmetric 90-degree corner (2D)", () => {
+            const geoP1: Inputs.Base.Point3 = [4, 0, 0];
+            const geoC: Inputs.Base.Point3 = [0, 0, 0];
+            const geoP2: Inputs.Base.Point3 = [0, 4, 0];
+            const input = createInput(geoP1, geoC, geoP2);
+            expect(point.maxFilletRadiusHalfLine(input)).toBeCloseTo(2.0, precision);
+        });
+
+        it("should calculate correct radius for an acute angle (60 degrees, 2D)", () => {
+            const geoP1: Inputs.Base.Point3 = [6, 0, 0];
+            const geoC: Inputs.Base.Point3 = [0, 0, 0];
+            const geoP2: Inputs.Base.Point3 = [4 * Math.cos(Math.PI / 3), 4 * Math.sin(Math.PI / 3), 0];
+            const input = createInput(geoP1, geoC, geoP2);
+            const expected = 2 * Math.tan(Math.PI / 6);
+            expect(point.maxFilletRadiusHalfLine(input)).toBeCloseTo(expected, precision);
+        });
+
+        it("should calculate correct radius for an obtuse angle (120 degrees, 2D)", () => {
+            const geoP1: Inputs.Base.Point3 = [4, 0, 0];
+            const geoC: Inputs.Base.Point3 = [0, 0, 0];
+            const geoP2: Inputs.Base.Point3 = [6 * Math.cos(2 * Math.PI / 3), 6 * Math.sin(2 * Math.PI / 3), 0];
+            const input = createInput(geoP1, geoC, geoP2);
+            const expected = 2 * Math.tan(Math.PI / 3);
+            expect(point.maxFilletRadiusHalfLine(input)).toBeCloseTo(expected, precision);
+        });
+
+        it("should return 0 for collinear points (0 degrees)", () => {
+            const geoP1: Inputs.Base.Point3 = [5, 0, 0];
+            const geoC: Inputs.Base.Point3 = [0, 0, 0];
+            const geoP2: Inputs.Base.Point3 = [10, 0, 0];
+            const input = createInput(geoP1, geoC, geoP2);
+            expect(point.maxFilletRadiusHalfLine(input)).toBeCloseTo(0, precision);
+        });
+
+        it("should return 0 if one segment has near-zero length", () => {
+            const geoP1: Inputs.Base.Point3 = [5, 0, 0];
+            const geoC: Inputs.Base.Point3 = [0, 0, 0];
+            const geoP2: Inputs.Base.Point3 = [0, defaultTolerance / 3, 0];
+            const input = createInput(geoP1, geoC, geoP2);
+            expect(point.maxFilletRadiusHalfLine(input)).toBeCloseTo(0, precision);
+        });
+
+        it("should calculate correct radius for a corner in 3D space", () => {
+            const geoP1: Inputs.Base.Point3 = [1, 1, 0];
+            const geoC: Inputs.Base.Point3 = [0, 0, 0];
+            const geoP2: Inputs.Base.Point3 = [0, 2, 0];
+            const input = createInput(geoP1, geoC, geoP2);
+            const expected = (Math.sqrt(2) / 2.0) * Math.tan(Math.PI / 8);
+            expect(point.maxFilletRadiusHalfLine(input)).toBeCloseTo(expected, precision);
+        });
     });
 });

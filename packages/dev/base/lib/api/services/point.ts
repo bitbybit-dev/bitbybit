@@ -407,24 +407,22 @@ export class Point {
         return points;
     }
 
-
     /**
-     * Creates a flat-top hexagon grid, scaling hexagons to fit specified dimensions exactly.
+     * Creates a pointy-top hexagon grid, scaling hexagons to fit specified dimensions exactly.
      * Returns both center points and the vertices of each (potentially scaled) hexagon.
      * Hexagons are ordered column-first, then row-first.
-     *
      * @param inputs Information about the desired grid dimensions and hexagon counts.
      * @returns An object containing the array of center points and an array of hexagon vertex arrays.
      * @group create
      * @shortname scaled hex grid to fit
-     * @drawable true
+     * @drawable false
      */
     hexGridScaledToFit(inputs: Inputs.Point.HexGridScaledToFitDto): Models.Point.HexGridData {
         const {
             width,
             height,
-            nrHexagonsU,
-            nrHexagonsV,
+            nrHexagonsInHeight,
+            nrHexagonsInWidth,
             extendTop = false,
             extendBottom = false,
             extendLeft = false,
@@ -434,32 +432,32 @@ export class Point {
         } = inputs;
 
         // --- Input Validation ---
-        if (width <= 0 || height <= 0 || nrHexagonsU < 1 || nrHexagonsV < 1) {
+        if (width <= 0 || height <= 0 || nrHexagonsInWidth < 1 || nrHexagonsInHeight < 1) {
             console.warn("Hex grid dimensions and counts must be positive.");
-            return { points: [], hexagons: [] };
+            return { centers: [], hexagons: [], shortestDistEdge: undefined, longestDistEdge: undefined, maxFilletRadius: undefined };
         }
 
-        // --- Step 1: Generate Unscaled Regular Grid Centers (Radius = 1) ---
+        // --- Generate Unscaled Regular Grid Centers (Radius = 1) ---
         // Use the *existing* hexGrid function, ensuring it doesn't center or project yet.
         const BASE_RADIUS = 1.0;
-        const unscaledCenters = this.hexGrid({ // CALLING YOUR ORIGINAL FUNCTION
+        const unscaledCenters = this.hexGrid({
             radiusHexagon: BASE_RADIUS,
-            nrHexagonsX: nrHexagonsU,
-            nrHexagonsY: nrHexagonsV,
+            nrHexagonsX: nrHexagonsInWidth,
+            nrHexagonsY: nrHexagonsInHeight,
             orientOnCenter: false, // Important: Do not center here
             pointsOnGround: false  // Keep on XY plane for now
         });
 
         if (unscaledCenters.length === 0) {
-            return { points: [], hexagons: [] }; // Return empty if base grid failed
+            return { centers: [], hexagons: [], shortestDistEdge: undefined, longestDistEdge: undefined, maxFilletRadius: undefined }; // Return empty if base grid failed
         }
 
-        // --- Step 2: Generate Unscaled Regular Hexagon Vertices (Radius = 1) ---
+        // --- Generate Unscaled Regular Hexagon Vertices (Radius = 1) ---
         const unscaledHexagons: Inputs.Base.Point3[][] = unscaledCenters.map(center =>
             this.getRegularHexagonVertices(center, BASE_RADIUS)
         );
 
-        // --- Step 3: Determine Dimensions of the Unscaled Grid Bounding Box ---
+        // --- Determine Dimensions of the Unscaled Grid Bounding Box ---
         let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
         for (const hex of unscaledHexagons) {
             for (const vertex of hex) {
@@ -482,7 +480,7 @@ export class Point {
         // This might need adjustment if a single hex *must* fill the total W/H.
         // For now, assume nrU/nrV > 1 or accept R=1 size for single hex.
 
-        // --- Step 5: Scale Centers and Vertices ---
+        // --- Scale Centers and Vertices ---
         // Scale relative to the min corner of the unscaled grid (minX, minY)
         const scaledCenters: Inputs.Base.Point3[] = unscaledCenters.map(p => [
             (p[0] - minX) * scaleX,
@@ -498,16 +496,36 @@ export class Point {
             ])
         );
 
-        // --- Step 6: Extensions
-        if (extendTop || extendBottom || extendLeft || extendRight) {
-            if (scaledHexagons.length !== 0) {
-                const firstHex = scaledHexagons[0];
-                console.log("FIRST HEX", firstHex);
+        let shortestDistEdge = Infinity;
+        let longestDistEdge = -Infinity;
+        let maxFilletRadius = 0;
+
+        // --- Calculate Shortes/Longest & Extensions ---
+        if (scaledHexagons.length !== 0) {
+            const firstHex = scaledHexagons[0];
+            maxFilletRadius = this.safestPointsMaxFilletHalfLine({
+                points: firstHex,
+                checkLastWithFirst: true,
+                tolerance: 1e-7
+            });
+            // Calculate the shortest and longest edge distances
+            firstHex.forEach((pt, index) => {
+                const nextPt = firstHex[(index + 1) % firstHex.length];
+                const dist = this.distance({ startPoint: pt, endPoint: nextPt });
+                if (dist < shortestDistEdge) {
+                    shortestDistEdge = dist;
+                }
+                if (dist > longestDistEdge) {
+                    longestDistEdge = dist;
+                }
+            });
+
+            if (extendTop || extendBottom || extendLeft || extendRight) {
                 const pt1Pointy = firstHex[0];
                 const pt2Pointy = firstHex[1];
                 const cellHeight = pt1Pointy[1] - pt2Pointy[1];
                 const cellWidth = pt2Pointy[0] - pt1Pointy[0];
-                console.log("CELL WIDTH", cellHeight);
+
                 if (extendTop && !extendBottom) {
                     scaledHexagons = scaledHexagons.map(hex => {
                         return this.stretchPointsDirFromCenter({
@@ -518,7 +536,7 @@ export class Point {
                         });
                     });
                 }
-                if(extendBottom && !extendTop) {
+                if (extendBottom && !extendTop) {
                     scaledHexagons = scaledHexagons.map(hex => {
                         return this.stretchPointsDirFromCenter({
                             points: hex,
@@ -528,7 +546,7 @@ export class Point {
                         });
                     });
                 }
-                if(extendTop && extendBottom){
+                if (extendTop && extendBottom) {
                     scaledHexagons = scaledHexagons.map(hex => {
                         return this.stretchPointsDirFromCenter({
                             points: hex,
@@ -548,7 +566,7 @@ export class Point {
                         });
                     });
                 }
-                if(extendRight && !extendLeft) {
+                if (extendRight && !extendLeft) {
                     scaledHexagons = scaledHexagons.map(hex => {
                         return this.stretchPointsDirFromCenter({
                             points: hex,
@@ -558,7 +576,7 @@ export class Point {
                         });
                     });
                 }
-                if(extendLeft && extendRight){
+                if (extendLeft && extendRight) {
                     scaledHexagons = scaledHexagons.map(hex => {
                         return this.stretchPointsDirFromCenter({
                             points: hex,
@@ -571,7 +589,7 @@ export class Point {
             }
         }
 
-        // --- Step 6: Apply Optional Centering ---
+        // --- Apply Optional Centering ---
         // Center the scaled grid (currently starting at [0,0]) around [0,0]
         if (centerGrid) {
             const shiftX = width / 2;
@@ -589,10 +607,7 @@ export class Point {
             }
         }
 
-        
-
-
-        // --- Step 7: Apply Optional Ground Projection ---
+        // --- Apply Optional Ground Projection ---
         if (pointsOnGround) {
             for (let i = 0; i < scaledCenters.length; i++) {
                 scaledCenters[i] = [scaledCenters[i][0], 0, scaledCenters[i][1]];
@@ -604,11 +619,233 @@ export class Point {
             }
         }
 
-        // --- Step 8: Return Result ---
+        // --- Return Result ---
         return {
-            points: scaledCenters,
-            hexagons: scaledHexagons
+            centers: scaledCenters,
+            hexagons: scaledHexagons,
+            shortestDistEdge,
+            longestDistEdge,
+            maxFilletRadius
         };
+    }
+
+    /**
+     * Calculates the maximum possible fillet radius at a corner formed by two line segments
+     * sharing an endpoint (C), such that the fillet arc is tangent to both segments
+     * and lies entirely within them.
+     * @param inputs three points and the tolerance
+     * @returns the maximum fillet radius
+     * @group fillet
+     * @shortname max fillet radius
+     * @drawable false
+     */
+    maxFilletRadius(
+        inputs: Inputs.Point.ThreePointsToleranceDto
+    ): number {
+        const { start: p1, center: p2, end: c, tolerance = 1e-7 } = inputs;
+
+        const v1 = this.vector.sub({ first: p1, second: c }) as Inputs.Base.Vector3;
+        const v2 = this.vector.sub({ first: p2, second: c }) as Inputs.Base.Vector3;
+
+        const len1 = this.vector.length({ vector: v1 });
+        const len2 = this.vector.length({ vector: v2 });
+
+        if (len1 < tolerance || len2 < tolerance) {
+            return 0;
+        }
+
+        const normV1 = this.vector.normalized({ vector: v1 });
+        const normV2 = this.vector.normalized({ vector: v2 });
+        if (!normV1 || !normV2) {
+            return 0;
+        }
+
+        // Calculate the cosine of the angle between the vectors
+        // Clamp to [-1, 1] to avoid potential domain errors with acos due to floating point inaccuracies
+        const cosAlpha = Math.max(-1.0, Math.min(1.0, this.vector.dot({ first: normV1, second: normV2 })));
+
+        // Check for collinearity
+        // If vectors point in the same direction (angle ~ 0), no fillet
+        if (cosAlpha > 1.0 - tolerance) {
+            return 0;
+        }
+        // If vectors point in opposite directions (angle ~ 180 deg), no corner for a fillet
+        if (cosAlpha < -1.0 + tolerance) {
+            return 0;
+        }
+
+        // Calculate the angle alpha (0 < alpha < PI)
+        const alpha = Math.acos(cosAlpha);
+
+        // Calculate tan(alpha / 2)
+        // alpha/2 is between 0 and PI/2, so tan is positive and non-zero
+        const tanHalfAlpha = Math.tan(alpha / 2.0);
+
+        // If tanHalfAlpha is extremely small (alpha near 0, shouldn't happen due to collinearity check), return 0
+        if (tanHalfAlpha < tolerance) {
+            return 0;
+        }
+
+        // The distance 'd' from corner C to the tangent point must be less than or equal to the segment lengths.
+        // d = r / tan(alpha/2) <= min(len1, len2)
+        // r <= min(len1, len2) * tan(alpha/2)
+        const maxRadius = Math.min(len1, len2) * tanHalfAlpha;
+
+        return maxRadius;
+    }
+
+    /**
+     * Calculates the maximum possible fillet radius at a corner C, such that the fillet arc
+     * is tangent to both segments (P1-C, P2-C) and the tangent points lie within
+     * the first half of each segment (measured from C).
+     * @param inputs three points and the tolerance
+     * @returns the maximum fillet radius
+     * @group fillet
+     * @shortname max fillet radius half line
+     * @drawable false
+     */
+    maxFilletRadiusHalfLine(
+        inputs: Inputs.Point.ThreePointsToleranceDto
+    ): number {
+        const { start: p1, center: p2, end: c, tolerance = 1e-7 } = inputs;
+
+        const v1 = this.vector.sub({ first: p1, second: c }) as Inputs.Base.Vector3;
+        const v2 = this.vector.sub({ first: p2, second: c }) as Inputs.Base.Vector3;
+
+        const len1 = this.vector.length({ vector: v1 });
+        const len2 = this.vector.length({ vector: v2 });
+
+        if (len1 < tolerance || len2 < tolerance) {
+            return 0;
+        }
+
+        const normV1 = this.vector.normalized({ vector: v1 });
+        const normV2 = this.vector.normalized({ vector: v2 });
+
+        if (!normV1 || !normV2) {
+            return 0;
+        }
+
+        const cosAlpha = Math.max(-1.0, Math.min(1.0, this.vector.dot({ first: normV1, second: normV2 })));
+
+        if (cosAlpha > 1.0 - tolerance || cosAlpha < -1.0 + tolerance) {
+            return 0; // Collinear
+        }
+
+        const alpha = Math.acos(cosAlpha);
+        const tanHalfAlpha = Math.tan(alpha / 2.0);
+
+        if (tanHalfAlpha < tolerance) {
+            return 0;
+        }
+
+        // The distance 'd' from corner C to the tangent point must be less than or equal
+        // to HALF the length of each segment.
+        // d = r / tan(alpha/2) <= min(len1 / 2, len2 / 2)
+        // r <= min(len1 / 2, len2 / 2) * tan(alpha/2)
+        const maxRadius = Math.min(len1 / 2.0, len2 / 2.0) * tanHalfAlpha;
+
+        return maxRadius;
+    }
+
+    /**
+     * Calculates the maximum possible fillet radius at each corner of a polyline formed by 
+     * formed by a series of points. The fillet radius is calculated for each internal
+     * corner and optionally for the closing corners if the polyline is closed.
+     * @param inputs Points, checkLastWithFirst flag, and tolerance
+     * @returns Array of maximum fillet radii for each corner
+     * @group fillet
+     * @shortname max fillet radius half line
+     * @drawable false
+     */
+    pointsMaxFilletsHalfLine(
+        inputs: Inputs.Point.PointsMaxFilletsHalfLineDto
+    ): number[] {
+        const { points, checkLastWithFirst = false, tolerance = 1e-7 } = inputs;
+        const n = points.length;
+        const results: number[] = [];
+
+        // Need at least 3 points to form a corner
+        if (n < 3) {
+            return results;
+        }
+
+        // 1. Calculate fillets for internal corners (P[1] to P[n-2])
+        for (let i = 1; i < n - 1; i++) {
+            const p_prev = points[i - 1];
+            const p_corner = points[i];
+            const p_next = points[i + 1];
+
+            // Map geometric points to the DTO structure used by calculateMaxFilletRadiusHalfLine
+            // DTO: { start: P_prev, center: P_next, end: P_corner, tolerance }
+            const cornerInput: Inputs.Point.ThreePointsToleranceDto = {
+                start: p_prev,
+                center: p_next,
+                end: p_corner,
+                tolerance: tolerance
+            };
+            results.push(this.maxFilletRadiusHalfLine(cornerInput));
+        }
+
+        // 2. Calculate fillets for closing corners if it's a closed polyline
+        if (checkLastWithFirst && n >= 3) {
+            // Corner at P[0] (formed by P[n-1]-P[0] and P[1]-P[0])
+            const p_prev_start = points[n - 1]; // Previous point is the last point
+            const p_corner_start = points[0];
+            const p_next_start = points[1];
+            const startCornerInput: Inputs.Point.ThreePointsToleranceDto = {
+                start: p_prev_start,
+                center: p_next_start,
+                end: p_corner_start,
+                tolerance: tolerance
+            };
+            results.push(this.maxFilletRadiusHalfLine(startCornerInput));
+
+            // Corner at P[n-1] (formed by P[n-2]-P[n-1] and P[0]-P[n-1])
+            const p_prev_end = points[n - 2];
+            const p_corner_end = points[n - 1];
+            const p_next_end = points[0];     // Next point wraps around to the first point
+            const endCornerInput: Inputs.Point.ThreePointsToleranceDto = {
+                start: p_prev_end,
+                center: p_next_end,
+                end: p_corner_end,
+                tolerance: tolerance
+            };
+            results.push(this.maxFilletRadiusHalfLine(endCornerInput));
+        }
+
+        return results;
+    }
+
+    /**
+     * Calculates the single safest maximum fillet radius that can be applied
+     * uniformly to all corners of collection of points, based on the 'half-line' constraint.
+     * This is determined by finding the minimum of the maximum possible fillet
+     * radii calculated for each individual corner.
+     * @param inputs Defines the points, whether it's closed, and an optional tolerance.
+     * @returns The smallest value from the results of pointsMaxFilletsHalfLine.
+     *          Returns 0 if the polyline has fewer than 3 points or if any
+     *          calculated maximum radius is 0.
+     * @group fillet
+     * @shortname safest fillet radii points
+     * @drawable false
+     */
+    safestPointsMaxFilletHalfLine(
+        inputs: Inputs.Point.PointsMaxFilletsHalfLineDto
+    ): number {
+        const allMaxRadii = this.pointsMaxFilletsHalfLine(inputs);
+
+        if (allMaxRadii.length === 0) {
+            // No corners, or fewer than 3 points. No fillet possible.
+            return 0;
+        }
+
+        // Find the minimum radius among all calculated maximums.
+        // If any corner calculation resulted in 0, the safest radius is 0.
+        const safestRadius = Math.min(...allMaxRadii);
+
+        // Ensure we don't return a negative radius if Math.min had weird input (shouldn't happen here)
+        return Math.max(0, safestRadius);
     }
 
     /**

@@ -411,6 +411,62 @@ export namespace Point {
          */
         reverseNormal = false;
     }
+    export class ThreePointsToleranceDto {
+        constructor(start?: Base.Point3, center?: Base.Point3, end?: Base.Point3, tolerance?: number) {
+            if (start !== undefined) { this.start = start; }
+            if (center !== undefined) { this.center = center; }
+            if (end !== undefined) { this.end = end; }
+            if (tolerance !== undefined) { this.tolerance = tolerance; }
+        }
+        /**
+         * Start point
+         * @default undefined
+         */
+        start?: Base.Point3;
+        /**
+         * Center point
+         * @default undefined
+         */
+        center?: Base.Point3;
+        /**
+         * End point
+         * @default undefined
+         */
+        end?: Base.Point3;
+        /**
+         * Tolerance for the calculation
+         * @default 1e-7
+         * @minimum -Infinity
+         * @maximum Infinity
+         * @step 1e-7
+         */
+        tolerance = 1e-7;
+    }
+    export class PointsMaxFilletsHalfLineDto {
+        constructor(points?: Base.Point3[], checkLastWithFirst?: boolean, tolerance?: number) {
+            if (points !== undefined) { this.points = points; }
+            if (checkLastWithFirst !== undefined) { this.checkLastWithFirst = checkLastWithFirst; }
+            if (tolerance !== undefined) { this.tolerance = tolerance; }
+        }
+        /**
+         * Points to transform
+         * @default undefined
+         */
+        points?: Base.Point3[];
+        /**
+         * Check first and last point for duplicates
+         * @default false
+         */
+        checkLastWithFirst? = false;
+        /**
+         * Tolerance for the calculation
+         * @default 1e-7
+         * @minimum -Infinity
+         * @maximum Infinity
+         * @step 1e-7
+         */
+        tolerance? = 1e-7;
+    }
     export class RemoveConsecutiveDuplicatesDto {
         constructor(points?: Base.Point3[], tolerance?: number, checkFirstAndLast?: boolean) {
             if (points !== undefined) { this.points = points; }
@@ -579,8 +635,8 @@ export namespace Point {
         constructor(wdith?: number, height?: number, nrHexagonsU?: number, nrHexagonsV?: number, centerGrid?: boolean, pointsOnGround?: boolean) {
             if (wdith !== undefined) { this.width = wdith; }
             if (height !== undefined) { this.height = height; }
-            if (nrHexagonsU !== undefined) { this.nrHexagonsU = nrHexagonsU; }
-            if (nrHexagonsV !== undefined) { this.nrHexagonsV = nrHexagonsV; }
+            if (nrHexagonsU !== undefined) { this.nrHexagonsInHeight = nrHexagonsU; }
+            if (nrHexagonsV !== undefined) { this.nrHexagonsInWidth = nrHexagonsV; }
             if (centerGrid !== undefined) { this.centerGrid = centerGrid; }
             if (pointsOnGround !== undefined) { this.pointsOnGround = pointsOnGround; }
         }
@@ -598,20 +654,20 @@ export namespace Point {
          * @step 0.1
         */
         height? = 10;
-        /** Number of hexagons desired horizontally (U direction).
+        /** Number of hexagons desired in width.
          * @default 10
          * @minimum 0
          * @maximum Infinity
          * @step 1
          */
-        nrHexagonsU? = 10;
-        /** Number of hexagons desired vertically (V direction).
+        nrHexagonsInWidth? = 10;
+        /** Number of hexagons desired in height.
          * @default 10
          * @minimum 0
          * @maximum Infinity
          * @step 1
          */
-        nrHexagonsV? = 10;
+        nrHexagonsInHeight? = 10;
         /** If true, shift the entire grid up by half hex height. 
          * @default false
         */

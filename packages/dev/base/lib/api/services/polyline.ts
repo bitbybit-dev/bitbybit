@@ -205,6 +205,14 @@ export class Polyline {
         return selfIntersectionPoints;
     }
 
+    /**
+     * Finds the intersection points between two polylines
+     * @param inputs two polylines and tolerance
+     * @returns points
+     * @group intersection
+     * @shortname two polyline intersection
+     * @drawable true
+     */
     twoPolylineIntersection(inputs: Inputs.Polyline.TwoPolylinesToleranceDto): Inputs.Base.Point3[] {
         const { polyline1, polyline2, tolerance } = inputs;
         const lines1 = this.polylineToLines({ polyline: polyline1 });
@@ -441,6 +449,65 @@ export class Polyline {
         return results;
     }
 
+    /**
+     * Calculates the maximum possible half-line fillet radius for each corner
+     * of a given polyline. For a closed polyline, it includes the corners
+     * connecting the last segment back to the first.
+     *
+     * The calculation uses the 'half-line' constraint, meaning the fillet's
+     * tangent points must lie within the first half of each segment connected
+     * to the corner.
+     *
+     * @param inputs Defines the polyline points, whether it's closed, and an optional tolerance.
+     * @returns An array containing the maximum fillet radius calculated for each corner.
+     *          The order corresponds to corners P[1]...P[n-2] for open polylines,
+     *          and P[1]...P[n-2], P[0], P[n-1] for closed polylines.
+     *          Returns an empty array if the polyline has fewer than 3 points.
+     * @group fillet
+     * @shortname polyline max fillet radii
+     * @drawable false
+     */
+    polylineMaxFilletRadii(
+        inputs: Inputs.Polyline.PolylineToleranceDto
+    ): number[] {
+        return this.point.pointsMaxFilletsHalfLine({
+            points: inputs.polyline.points,
+            checkLastWithFirst: inputs.polyline.isClosed,
+            tolerance: inputs.tolerance,
+        });
+    }
+
+    /**
+     * Calculates the single safest maximum fillet radius that can be applied
+     * uniformly to all corners of a polyline, based on the 'half-line' constraint.
+     * This is determined by finding the minimum of the maximum possible fillet
+     * radii calculated for each individual corner.
+     *
+     * @param inputs Defines the polyline points, whether it's closed, and an optional tolerance.
+     * @returns The smallest value from the results of calculatePolylineMaxFillets.
+     *          Returns 0 if the polyline has fewer than 3 points or if any
+     *          calculated maximum radius is 0.
+     * @group fillet
+     * @shortname polyline safest fillet radius
+     * @drawable false
+     */
+    safestPolylineFilletRadius(
+        inputs: Inputs.Polyline.PolylineToleranceDto
+    ): number {
+        const allMaxRadii = this.polylineMaxFilletRadii(inputs);
+
+        if (allMaxRadii.length === 0) {
+            // No corners, or fewer than 3 points. No fillet possible.
+            return 0;
+        }
+
+        // Find the minimum radius among all calculated maximums.
+        // If any corner calculation resulted in 0, the safest radius is 0.
+        const safestRadius = Math.min(...allMaxRadii);
+
+        // Ensure we don't return a negative radius if Math.min had weird input (shouldn't happen here)
+        return Math.max(0, safestRadius);
+    }
 
 }
 
