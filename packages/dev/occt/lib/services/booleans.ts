@@ -1,4 +1,4 @@
-import { OpenCascadeInstance, TopoDS_Shape } from "../../bitbybit-dev-occt/bitbybit-dev-occt";
+import { OpenCascadeInstance, TopoDS_Shape,TopoDS_Wire } from "../../bitbybit-dev-occt/bitbybit-dev-occt";
 import { OccHelper } from "../occ-helper";
 import * as Inputs from "../api/inputs/inputs";
 
@@ -23,5 +23,23 @@ export class OCCTBooleans {
         const res = this.och.converterService.makeCompound({ shapes: int });
         return res;
     }
+
+    meshMeshIntersectionWires(inputs: Inputs.OCCT.MeshMeshIntersectionTwoShapesDto<TopoDS_Shape>): TopoDS_Wire[] {
+        return this.och.meshingService.meshMeshIntersectionWires(inputs);
+    }
+
+    meshMeshIntersectionPoints(inputs: Inputs.OCCT.MeshMeshIntersectionTwoShapesDto<TopoDS_Shape>): Inputs.Base.Point3[][] {
+        return this.och.meshingService.meshMeshIntersectionPoints(inputs);
+    }
+
+    meshMeshIntersectionOfShapesWires(inputs: Inputs.OCCT.MeshMeshesIntersectionOfShapesDto<TopoDS_Shape>): TopoDS_Wire[] {
+        return this.och.meshingService.meshMeshIntersectionOfShapesWires(inputs);
+    }
+
+    meshMeshIntersectionOfShapesPoints(inputs: Inputs.OCCT.MeshMeshesIntersectionOfShapesDto<TopoDS_Shape>): Inputs.Base.Point3[][] {
+        return this.och.meshingService.meshMeshIntersectionOfShapesPoints(inputs);
+    }
+
+
 
 }

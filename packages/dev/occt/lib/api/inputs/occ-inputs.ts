@@ -4040,6 +4040,75 @@ export namespace OCCT {
          */
         shape: T;
     }
+    export class MeshMeshIntersectionTwoShapesDto<T> {
+        constructor(shape1?: T, shape2?: T, precision1?: number, precision2?: number) {
+            if (shape1 !== undefined) { this.shape1 = shape1; }
+            if (shape2 !== undefined) { this.shape2 = shape2; }
+            if (precision1 !== undefined) { this.precision1 = precision1; }
+            if (precision2 !== undefined) { this.precision2 = precision2; }
+        }
+        /**
+         * First shape to be used for intersection
+         * @default undefined
+         */
+        shape1: T;
+        /**
+         * Precision of first shape to be used for meshing and computing intersection. 
+         * Keep in mind that the lower this value is, the more triangles will be produced and thus the slower the computation.
+         * @default 0.01
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.01
+         */
+        precision1? = 0.01;
+        /**
+         * Second shape to be used for intersection
+         * @default undefined
+         */
+        shape2: T;
+        /**
+         * Precision of second shape to be used for meshing and computing intersection. 
+         * Keep in mind that the lower this value is, the more triangles will be produced and thus the slower the computation.
+         * @default 0.01
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.01
+         */
+        precision2? = 0.01;
+    }
+    export class MeshMeshesIntersectionOfShapesDto<T> {
+        constructor(shape?: T, shapes?: T[], precision?: number, precisionShapes?: number[]) {
+            if (shape !== undefined) { this.shape = shape; }
+            if (shapes !== undefined) { this.shapes = shapes; }
+            if (precision !== undefined) { this.precision = precision; }
+            if (precisionShapes !== undefined) { this.precisionShapes = precisionShapes; }
+        }
+        /**
+         * Shape to use for the base of computations
+         * @default undefined
+         */
+        shape?: T;
+        /**
+         * Precision of first shape to be used for meshing and computing intersection. 
+         * Keep in mind that the lower this value is, the more triangles will be produced and thus the slower the computation.
+         * @default 0.01
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.01
+         */
+        precision? = 0.01;
+        /**
+         * Second shape to be used for intersection
+         * @default undefined
+         */
+        shapes?: T[];
+        /**
+         * Precision of shapes to be used, if undefined, a universal precision will be used of the first shape
+         * @default undefined
+         * @optional true
+         */
+        precisionShapes?: number[];
+    }
     export class CompareShapesDto<T> {
         constructor(shape?: T, otherShape?: T) {
             if (shape !== undefined) { this.shape = shape; }

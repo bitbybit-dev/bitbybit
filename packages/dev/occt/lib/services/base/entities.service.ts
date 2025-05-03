@@ -332,4 +332,6 @@ export class EntitiesService {
         return new this.occ.Handle_Geom_Curve_2(curve);
     }
 
+    
+
 }

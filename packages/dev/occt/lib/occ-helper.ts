@@ -19,8 +19,9 @@ import { VerticesService } from "./services/base/vertices.service";
 import { ShellsService } from "./services/base/shells.service";
 import { FilletsService } from "./services/base/fillets.service";
 import { SolidsService } from "./services/base/solids.service";
-import { TextBitByBit, Point, GeometryHelper, Transforms, Vector, MathBitByBit } from "@bitbybit-dev/base";
+import { TextBitByBit, Point, GeometryHelper, Transforms, Vector, MathBitByBit, MeshBitByBit, Polyline, Line } from "@bitbybit-dev/base";
 import { DimensionsService } from "./services/base/dimensions.service";
+import { MeshingService } from "./services/base/meshing.service";
 
 export class OccHelper {
 
@@ -31,6 +32,9 @@ export class OccHelper {
     private readonly math: MathBitByBit;
     private readonly transforms: Transforms;
     private readonly point: Point;
+    private readonly line: Line;
+    private readonly polyline: Polyline;
+    private readonly mesh: MeshBitByBit;
     private readonly textService: TextBitByBit;
 
     public readonly iteratorService: IteratorService;
@@ -50,6 +54,7 @@ export class OccHelper {
     public readonly solidsService: SolidsService;
     public readonly operationsService: OperationsService;
     public readonly filletsService: FilletsService;
+    public readonly meshingService: MeshingService;
 
     public readonly dimensionsService: DimensionsService;
 
@@ -64,7 +69,10 @@ export class OccHelper {
         this.vector = new Vector(this.math, this.geometryHelper);
         this.transforms = new Transforms(this.vector, this.math);
         this.point = new Point(this.geometryHelper, this.transforms, this.vector);
+        this.line = new Line(this.vector, this.point, this.geometryHelper);
+        this.polyline = new Polyline(this.vector, this.point, this.line, this.geometryHelper);
         this.textService = new TextBitByBit(this.point);
+        this.mesh = new MeshBitByBit(this.vector, this.polyline);
 
         this.occRefReturns = new OCCReferencedReturns(occ);
         this.iteratorService = new IteratorService(occ);
@@ -73,7 +81,6 @@ export class OccHelper {
         this.entitiesService = new EntitiesService(occ);
         this.shapeGettersService = new ShapeGettersService(occ, this.enumService, this.iteratorService);
         this.geomService = new GeomService(occ, this.vecHelper, this.entitiesService);
-        this.booleansService = new BooleansService(occ, this.shapeGettersService);
         this.transformsService = new TransformsService(occ, this.converterService, this.entitiesService, this.vecHelper);
 
         this.verticesService = new VerticesService(occ, this.entitiesService, this.converterService, this.shapeGettersService, this.wiresService, this.booleansService);
@@ -91,6 +98,10 @@ export class OccHelper {
 
         this.facesService = new FacesService(occ, this.occRefReturns, this.entitiesService, this.enumService,
             this.shapeGettersService, this.converterService, this.booleansService, this.wiresService, this.transformsService, this.vecHelper, this.point, this.filletsService);
+
+        this.meshingService = new MeshingService(occ, this.shapeGettersService, this.transformsService, this.edgesService, this.facesService, this.wiresService, this.mesh);
+       
+        this.booleansService = new BooleansService(occ, this.shapeGettersService);
 
         this.shellsService = new ShellsService(occ, this.shapeGettersService, this.converterService, this.facesService);
 
