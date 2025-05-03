@@ -467,10 +467,10 @@ export class Polyline {
      * @shortname polyline max fillet radii
      * @drawable false
      */
-    polylineMaxFilletRadii(
+    maxFilletsHalfLine(
         inputs: Inputs.Polyline.PolylineToleranceDto
     ): number[] {
-        return this.point.pointsMaxFilletsHalfLine({
+        return this.point.maxFilletsHalfLine({
             points: inputs.polyline.points,
             checkLastWithFirst: inputs.polyline.isClosed,
             tolerance: inputs.tolerance,
@@ -491,10 +491,10 @@ export class Polyline {
      * @shortname polyline safest fillet radius
      * @drawable false
      */
-    safestPolylineFilletRadius(
+    safestFilletRadius(
         inputs: Inputs.Polyline.PolylineToleranceDto
     ): number {
-        const allMaxRadii = this.polylineMaxFilletRadii(inputs);
+        const allMaxRadii = this.maxFilletsHalfLine(inputs);
 
         if (allMaxRadii.length === 0) {
             // No corners, or fewer than 3 points. No fillet possible.

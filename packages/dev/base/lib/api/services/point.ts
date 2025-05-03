@@ -755,10 +755,10 @@ export class Point {
      * @param inputs Points, checkLastWithFirst flag, and tolerance
      * @returns Array of maximum fillet radii for each corner
      * @group fillet
-     * @shortname max fillet radius half line
+     * @shortname max fillets half line
      * @drawable false
      */
-    pointsMaxFilletsHalfLine(
+    maxFilletsHalfLine(
         inputs: Inputs.Point.PointsMaxFilletsHalfLineDto
     ): number[] {
         const { points, checkLastWithFirst = false, tolerance = 1e-7 } = inputs;
@@ -833,7 +833,7 @@ export class Point {
     safestPointsMaxFilletHalfLine(
         inputs: Inputs.Point.PointsMaxFilletsHalfLineDto
     ): number {
-        const allMaxRadii = this.pointsMaxFilletsHalfLine(inputs);
+        const allMaxRadii = this.maxFilletsHalfLine(inputs);
 
         if (allMaxRadii.length === 0) {
             // No corners, or fewer than 3 points. No fillet possible.
