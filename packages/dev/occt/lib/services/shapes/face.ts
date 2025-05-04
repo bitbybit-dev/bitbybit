@@ -35,6 +35,7 @@ export class OCCTFace {
         return this.och.facesService.createFaceFromWiresOnFace(inputs);
     }
 
+
     faceFromSurface(inputs: Inputs.OCCT.ShapeWithToleranceDto<Geom_Surface>) {
         return this.och.facesService.faceFromSurface(inputs);
     }
@@ -133,6 +134,11 @@ export class OCCTFace {
 
     createCircleFace(inputs: Inputs.OCCT.CircleDto): TopoDS_Face {
         return this.och.entitiesService.createCircle(inputs.radius, inputs.center, inputs.direction, Inputs.OCCT.typeSpecificityEnum.face) as TopoDS_Face;
+    }
+
+    hexagonsInGrid(inputs: Inputs.OCCT.HexagonsInGridDto): TopoDS_Face[] {
+        const hexagonWires = this.och.wiresService.hexagonsInGrid(inputs);
+        return this.och.facesService.createFacesFromWires({ shapes: hexagonWires, planar: true });
     }
 
     createEllipseFace(inputs: Inputs.OCCT.EllipseDto): TopoDS_Face {

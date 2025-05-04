@@ -789,7 +789,6 @@ export class FacesService {
 
         // potentially each rectangle can have unique fillets and scale factors due to patterns applied
         // we can though optimise this by using cached rectangles to speed up the algorithm
-        const cachedHexWires: { id: string, shape: TopoDS_Wire }[] = [];
 
         for (let i = 0; i < paramsU.length; i++) {
             for (let j = 0; j < paramsV.length; j++) {

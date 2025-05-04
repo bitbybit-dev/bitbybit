@@ -1145,7 +1145,7 @@ export namespace OCCT {
          */
         shape?: T;
         /**
-         * Number of rectangles on U direction
+         * Number of hexagons on U direction
          * @default 10
          * @minimum 1
          * @maximum Infinity
@@ -1153,7 +1153,7 @@ export namespace OCCT {
          */
         nrHexagonsU? = 10;
         /**
-         * Number of rectangles on V direction
+         * Number of hexagons on V direction
          * @default 10
          * @minimum 1
          * @maximum Infinity
@@ -1161,33 +1161,33 @@ export namespace OCCT {
          */
         nrHexagonsV? = 10;
         /**
-         * Rectangle scale pattern on u direction - numbers between 0 and 1, if 1 or undefined is used, no scaling is applied
+         * Hexagon scale pattern on u direction - numbers between 0 and 1, if 1 or undefined is used, no scaling is applied
          * @default undefined
          * @optional true
          */
         scalePatternU?: number[];
         /**
-         * Rectangle scale pattern on v direction - numbers between 0 and 1, if 1 or undefined is used, no scaling is applied
+         * Hexagon scale pattern on v direction - numbers between 0 and 1, if 1 or undefined is used, no scaling is applied
          * @default undefined
          * @optional true
          */
         scalePatternV?: number[];
         /**
-         * Rectangle fillet scale pattern - numbers between 0 and 1, if 0 is used, no fillet is applied, 
-         * if 1 is used, the fillet will be exactly half of the length of the shorter side of the rectangle
+         * Hexagon fillet scale pattern - numbers between 0 and 1, if 0 is used, no fillet is applied, 
+         * if 1 is used, the fillet will be exactly half of the length of the shortest segment of the hexagon
          * @default undefined
          * @optional true
          */
         filletPattern?: number[];
         /**
-         * Rectangle inclusion pattern - true means that the rectangle will be included, 
-         * false means that the rectangle will be removed from the face
+         * Hexagon inclusion pattern - true means that the hexagon will be included, 
+         * false means that the hexagon will be removed from the face
          * @default undefined
          * @optional true
          */
         inclusionPattern?: boolean[];
         /**
-         * If offset on U is bigger then 0 we will use a smaller space for rectangles to be placed. This means that even rectangle of U param 1 will be offset from the face border
+         * If offset on U is bigger then 0 we will use a smaller space for hexagons to be placed. This means that even hexagon of U param 1 will be offset from the face border
          * That is often required to create a pattern that is not too close to the face border
          * It should not be bigger then half of the total width of the face as that will create problems
          * @default 0
@@ -1197,7 +1197,7 @@ export namespace OCCT {
          */
         offsetFromBorderU? = 0;
         /**
-         * If offset on V is bigger then 0 we will use a smaller space for rectangles to be placed. This means that even rectangle of V param 1 will be offset from the face border
+         * If offset on V is bigger then 0 we will use a smaller space for hexagons to be placed. This means that even hexagon of V param 1 will be offset from the face border
          * That is often required to create a pattern that is not too close to the face border
          * It should not be bigger then half of the total width of the face as that will create problems
          * @default 0
@@ -3545,6 +3545,97 @@ export namespace OCCT {
          * @default [0, 1, 0]
          */
         direction: Base.Vector3 = [0, 1, 0];
+    }
+    export class HexagonsInGridDto {
+        constructor(wdith?: number, height?: number, nrHexagonsInHeight?: number, nrHexagonsInWidth?: number, flatTop?: boolean, extendTop?: boolean, extendBottom?: boolean, extendLeft?: boolean, extendRight?: boolean, scalePatternWidth?: number[], scalePatternHeight?: number[], filletPattern?: number[], inclusionPattern?: boolean[]) {
+            if (wdith !== undefined) { this.width = wdith; }
+            if (height !== undefined) { this.height = height; }
+            if (nrHexagonsInHeight !== undefined) { this.nrHexagonsInHeight = nrHexagonsInHeight; }
+            if (nrHexagonsInWidth !== undefined) { this.nrHexagonsInWidth = nrHexagonsInWidth; }
+            if (flatTop !== undefined) { this.flatTop = flatTop; }
+            if (extendTop !== undefined) { this.extendTop = extendTop; }
+            if (extendBottom !== undefined) { this.extendBottom = extendBottom; }
+            if (extendLeft !== undefined) { this.extendLeft = extendLeft; }
+            if (extendRight !== undefined) { this.extendRight = extendRight; }
+            if (scalePatternWidth !== undefined) { this.scalePatternWidth = scalePatternWidth; }
+            if (scalePatternHeight !== undefined) { this.scalePatternHeight = scalePatternHeight; }
+            if (filletPattern !== undefined) { this.filletPattern = filletPattern; }
+            if (inclusionPattern !== undefined) { this.inclusionPattern = inclusionPattern; }
+        }
+        /** Total desired width for the grid area. The hexagon size will be derived from this and nrHexagonsU.
+         * @default 10
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.1
+         */
+        width? = 10;
+        /** Total desired height for the grid area. Note: due to hexagon geometry, the actual grid height might differ slightly if maintaining regular hexagons based on width.
+         * @default 10
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.1
+        */
+        height? = 10;
+        /** Number of hexagons desired in width.
+         * @default 10
+         * @minimum 0
+         * @maximum Infinity
+         * @step 1
+         */
+        nrHexagonsInWidth? = 10;
+        /** Number of hexagons desired in height.
+         * @default 10
+         * @minimum 0
+         * @maximum Infinity
+         * @step 1
+         */
+        nrHexagonsInHeight? = 10;
+        /** If true, the hexagons will be oriented with their flat sides facing up and down. 
+         * @default false
+         */
+        flatTop? = false;
+        /** If true, shift the entire grid up by half hex height. 
+         * @default false
+        */
+        extendTop? = false;
+        /** If true, shift the entire grid down by half hex height. 
+         * @default false
+        */
+        extendBottom? = false;
+        /** If true, shift the entire grid left by half hex width. 
+         * @default false
+        */
+        extendLeft? = false;
+        /** If true, shift the entire grid right by half hex width. 
+         * @default false
+        */
+        extendRight? = false;
+        /**
+         * Hex scale pattern on width direction - numbers between 0 and 1, if 1 or undefined is used, no scaling is applied
+         * @default undefined
+         * @optional true
+         */
+        scalePatternWidth?: number[];
+        /**
+         * Hex scale pattern on height direction - numbers between 0 and 1, if 1 or undefined is used, no scaling is applied
+         * @default undefined
+         * @optional true
+         */
+        scalePatternHeight?: number[];
+        /**
+         * Hex fillet scale pattern - numbers between 0 and 1, if 0 is used, no fillet is applied, 
+         * if 1 is used, the fillet will be exactly half of the length of the shorter side of the hex
+         * @default undefined
+         * @optional true
+         */
+        filletPattern?: number[];
+        /**
+         * Inclusion pattern - true means that the hex will be included, 
+         * false means that the hex will be removed
+         * @default undefined
+         * @optional true
+         */
+        inclusionPattern?: boolean[];
     }
     export class LoftDto<T> {
         constructor(shapes?: T[], makeSolid?: boolean) {

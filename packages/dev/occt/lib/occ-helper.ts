@@ -90,8 +90,8 @@ export class OccHelper {
         this.edgesService = new EdgesService(occ, this.occRefReturns, this.shapeGettersService, this.entitiesService,
             this.iteratorService, this.converterService, this.enumService, this.geomService, this.transformsService, this.vecHelper);
 
-        this.wiresService = new WiresService(occ, this.occRefReturns, this.vector, this.shapesHelperService, this.shapeGettersService, this.transformsService,
-            this.enumService, this.entitiesService, this.converterService, this.geomService, this.edgesService, this.textService, this.operationsService);
+        this.wiresService = new WiresService(occ, this.occRefReturns, this.vector, this.point, this.shapesHelperService, this.shapeGettersService, this.transformsService,
+            this.enumService, this.entitiesService, this.converterService, this.geomService, this.edgesService, this.textService, this.filletsService, this.operationsService);
 
         this.dimensionsService = new DimensionsService(this.math, this.vector, this.point, this.transformsService,
             this.converterService, this.entitiesService, this.edgesService, this.wiresService);
@@ -101,7 +101,7 @@ export class OccHelper {
         this.booleansService = new BooleansService(occ, this.shapeGettersService);
         this.verticesService.wiresService = this.wiresService;
         this.verticesService.booleansService = this.booleansService;
-        
+
         this.facesService = new FacesService(occ, this.occRefReturns, this.entitiesService, this.enumService,
             this.shapeGettersService, this.converterService, this.booleansService, this.wiresService, this.transformsService, this.vecHelper, this.point, this.filletsService);
         this.meshingService.facesService = this.facesService;
@@ -118,7 +118,7 @@ export class OccHelper {
 
         this.filletsService = new FilletsService(occ, this.vecHelper, this.iteratorService, this.converterService, this.entitiesService,
             this.transformsService, this.shapeGettersService, this.edgesService, this.operationsService, this.facesService);
-
+        this.wiresService.filletsService = this.filletsService;
         // cross reference
         this.facesService.filletsService = this.filletsService;
     }
