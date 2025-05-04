@@ -418,18 +418,39 @@ export class Point {
      * @drawable false
      */
     hexGridScaledToFit(inputs: Inputs.Point.HexGridScaledToFitDto): Models.Point.HexGridData {
+        let width = inputs.width;
+        let height = inputs.height;
+        let nrHexagonsInHeight = inputs.nrHexagonsInHeight;
+        let nrHexagonsInWidth = inputs.nrHexagonsInWidth;
+        let extendTop = inputs.extendTop ?? false;
+        let extendBottom = inputs.extendBottom ?? false;
+        let extendLeft = inputs.extendLeft ?? false;
+        let extendRight = inputs.extendRight ?? false;
         const {
-            width,
-            height,
-            nrHexagonsInHeight,
-            nrHexagonsInWidth,
-            extendTop = false,
-            extendBottom = false,
-            extendLeft = false,
-            extendRight = false,
+
+            flatTop = false,
             centerGrid = false,
             pointsOnGround = false
         } = inputs;
+
+        // we flip the width and height if the hexagons are flat-topped and will then rotate resuls afterwards as default
+        // computes pointy-top hexagons
+        if (flatTop) {
+            const oldWidth = width;
+            width = inputs.height;
+            height = oldWidth;
+            const oldNrHexagonsInWidth = nrHexagonsInWidth;
+            nrHexagonsInWidth = nrHexagonsInHeight;
+            nrHexagonsInHeight = oldNrHexagonsInWidth;
+            const extendTopOld = extendTop;
+            const extendBottomOld = extendBottom;
+            const extendLeftOld = extendLeft;
+            const extendRightOld = extendRight;
+            extendTop = extendLeftOld;
+            extendBottom = extendRightOld;
+            extendLeft = extendBottomOld;
+            extendRight = extendTopOld;
+        }
 
         // --- Input Validation ---
         if (width <= 0 || height <= 0 || nrHexagonsInWidth < 1 || nrHexagonsInHeight < 1) {
@@ -482,7 +503,7 @@ export class Point {
 
         // --- Scale Centers and Vertices ---
         // Scale relative to the min corner of the unscaled grid (minX, minY)
-        const scaledCenters: Inputs.Base.Point3[] = unscaledCenters.map(p => [
+        let scaledCenters: Inputs.Base.Point3[] = unscaledCenters.map(p => [
             (p[0] - minX) * scaleX,
             (p[1] - minY) * scaleY,
             0 // Keep Z=0 for now
@@ -527,73 +548,131 @@ export class Point {
                 const cellWidth = pt2Pointy[0] - pt1Pointy[0];
 
                 if (extendTop && !extendBottom) {
+                    const transform: Inputs.Point.StretchPointsDirFromCenterDto = {
+                        center: [0, 0, 0],
+                        direction: [0, 1, 0],
+                        scale: height / (height - cellHeight),
+                    };
                     scaledHexagons = scaledHexagons.map(hex => {
-                        return this.stretchPointsDirFromCenter({
-                            points: hex,
-                            center: [0, 0, 0],
-                            direction: [0, 1, 0],
-                            scale: height / (height - cellHeight),
-                        });
+                        transform.points = hex;
+                        return this.stretchPointsDirFromCenter(transform);
                     });
+                    transform.points = scaledCenters;
+                    scaledCenters = this.stretchPointsDirFromCenter(transform);
                 }
                 if (extendBottom && !extendTop) {
+                    const transform: Inputs.Point.StretchPointsDirFromCenterDto = {
+                        center: [0, height, 0],
+                        direction: [0, -1, 0],
+                        scale: height / (height - cellHeight),
+                    };
                     scaledHexagons = scaledHexagons.map(hex => {
-                        return this.stretchPointsDirFromCenter({
-                            points: hex,
-                            center: [0, height, 0],
-                            direction: [0, -1, 0],
-                            scale: height / (height - cellHeight),
-                        });
+                        transform.points = hex;
+                        return this.stretchPointsDirFromCenter(transform);
                     });
+                    transform.points = scaledCenters;
+                    scaledCenters = this.stretchPointsDirFromCenter(transform);
                 }
                 if (extendTop && extendBottom) {
+                    const transform: Inputs.Point.StretchPointsDirFromCenterDto = {
+                        center: [0, height / 2, 0],
+                        direction: [0, 1, 0],
+                        scale: height / (height - cellHeight * 2),
+                    };
                     scaledHexagons = scaledHexagons.map(hex => {
-                        return this.stretchPointsDirFromCenter({
-                            points: hex,
-                            center: [0, height / 2, 0],
-                            direction: [0, 1, 0],
-                            scale: height / (height - cellHeight * 2),
-                        });
+                        transform.points = hex;
+                        return this.stretchPointsDirFromCenter(transform);
                     });
+                    transform.points = scaledCenters;
+                    scaledCenters = this.stretchPointsDirFromCenter(transform);
                 }
                 if (extendLeft && !extendRight) {
+                    const transform: Inputs.Point.StretchPointsDirFromCenterDto = {
+                        center: [width, 0, 0],
+                        direction: [1, 0, 0],
+                        scale: width / (width - cellWidth),
+                    };
                     scaledHexagons = scaledHexagons.map(hex => {
-                        return this.stretchPointsDirFromCenter({
-                            points: hex,
-                            center: [width, 0, 0],
-                            direction: [1, 0, 0],
-                            scale: width / (width - cellWidth),
-                        });
+                        transform.points = hex;
+                        return this.stretchPointsDirFromCenter(transform);
                     });
+                    transform.points = scaledCenters;
+                    scaledCenters = this.stretchPointsDirFromCenter(transform);
                 }
                 if (extendRight && !extendLeft) {
+                    const transform: Inputs.Point.StretchPointsDirFromCenterDto = {
+                        center: [0, 0, 0],
+                        direction: [1, 0, 0],
+                        scale: width / (width - cellWidth),
+                    };
                     scaledHexagons = scaledHexagons.map(hex => {
-                        return this.stretchPointsDirFromCenter({
-                            points: hex,
-                            center: [0, 0, 0],
-                            direction: [1, 0, 0],
-                            scale: width / (width - cellWidth),
-                        });
+                        transform.points = hex;
+                        return this.stretchPointsDirFromCenter(transform);
                     });
+                    transform.points = scaledCenters;
+                    scaledCenters = this.stretchPointsDirFromCenter(transform);
                 }
                 if (extendLeft && extendRight) {
+                    const transform: Inputs.Point.StretchPointsDirFromCenterDto = {
+                        center: [width / 2, 0, 0],
+                        direction: [1, 0, 0],
+                        scale: width / (width - cellWidth * 2),
+                    };
                     scaledHexagons = scaledHexagons.map(hex => {
-                        return this.stretchPointsDirFromCenter({
-                            points: hex,
-                            center: [width / 2, 0, 0],
-                            direction: [1, 0, 0],
-                            scale: width / (width - cellWidth * 2),
-                        });
+                        transform.points = hex;
+                        return this.stretchPointsDirFromCenter(transform);
                     });
+                    transform.points = scaledCenters;
+                    scaledCenters = this.stretchPointsDirFromCenter(transform);
                 }
             }
         }
 
+        if (flatTop) {
+            // width and height are swapped
+            scaledCenters = this.rotatePointsCenterAxis({
+                points: scaledCenters,
+                center: [width / 2, height / 2, 0],
+                axis: [0, 0, 1],
+                angle: 90
+            });
+            scaledHexagons = scaledHexagons.map(hex => {
+                return this.rotatePointsCenterAxis({
+                    points: hex,
+                    center: [width / 2, height / 2, 0],
+                    axis: [0, 0, 1],
+                    angle: 90
+                });
+            });
+
+            // translate to new center
+            const vecTranslation = this.vector.sub({
+                first: [height / 2, width / 2, 0],
+                second: [width / 2, height / 2, 0]
+            }) as Inputs.Base.Vector3;
+            scaledCenters = this.translatePoints({
+                points: scaledCenters,
+                translation: vecTranslation
+            });
+            scaledHexagons = scaledHexagons.map(hex => {
+                return this.translatePoints({
+                    points: hex,
+                    translation: vecTranslation
+                });
+            });
+        }
+
+
         // --- Apply Optional Centering ---
         // Center the scaled grid (currently starting at [0,0]) around [0,0]
         if (centerGrid) {
-            const shiftX = width / 2;
-            const shiftY = height / 2;
+            let shiftX = width / 2;
+            let shiftY = height / 2;
+
+            if(flatTop) {
+                shiftX = height / 2;
+                shiftY = width / 2;
+            }
 
             for (let i = 0; i < scaledCenters.length; i++) {
                 scaledCenters[i][0] -= shiftX;

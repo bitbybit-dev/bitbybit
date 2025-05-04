@@ -668,6 +668,10 @@ export namespace Point {
          * @step 1
          */
         nrHexagonsInHeight? = 10;
+        /** If true, the hexagons will be oriented with their flat sides facing up and down. 
+         * @default false
+         */
+        flatTop? = false;
         /** If true, shift the entire grid up by half hex height. 
          * @default false
         */
