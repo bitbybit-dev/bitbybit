@@ -5,6 +5,7 @@ import { TextBitByBit } from "./text";
 import { Transforms } from "./transforms";
 import { Vector } from "./vector";
 import * as Inputs from "../inputs";
+import { Lists } from "./lists";
 
 
 describe("Text unit tests", () => {
@@ -78,7 +79,8 @@ describe("Text unit tests", () => {
         const math = new MathBitByBit();
         const vector = new Vector(math, geometryHelper);
         const transforms = new Transforms(vector, math);
-        const points = new Point(geometryHelper, transforms, vector);
+        const lists = new Lists();
+        const points = new Point(geometryHelper, transforms, vector, lists);
         text = new TextBitByBit(points);
     });
 

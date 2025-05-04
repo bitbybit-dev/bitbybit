@@ -19,7 +19,7 @@ import { VerticesService } from "./services/base/vertices.service";
 import { ShellsService } from "./services/base/shells.service";
 import { FilletsService } from "./services/base/fillets.service";
 import { SolidsService } from "./services/base/solids.service";
-import { TextBitByBit, Point, GeometryHelper, Transforms, Vector, MathBitByBit, MeshBitByBit, Polyline, Line } from "@bitbybit-dev/base";
+import { TextBitByBit, Point, GeometryHelper, Transforms, Vector, MathBitByBit, MeshBitByBit, Polyline, Line, Lists } from "@bitbybit-dev/base";
 import { DimensionsService } from "./services/base/dimensions.service";
 import { MeshingService } from "./services/base/meshing.service";
 
@@ -31,6 +31,7 @@ export class OccHelper {
     private readonly vector: Vector;
     private readonly math: MathBitByBit;
     private readonly transforms: Transforms;
+    private readonly lists: Lists;
     private readonly point: Point;
     private readonly line: Line;
     private readonly polyline: Polyline;
@@ -68,7 +69,8 @@ export class OccHelper {
         this.math = new MathBitByBit();
         this.vector = new Vector(this.math, this.geometryHelper);
         this.transforms = new Transforms(this.vector, this.math);
-        this.point = new Point(this.geometryHelper, this.transforms, this.vector);
+        this.lists = new Lists();
+        this.point = new Point(this.geometryHelper, this.transforms, this.vector, this.lists);
         this.line = new Line(this.vector, this.point, this.geometryHelper);
         this.polyline = new Polyline(this.vector, this.point, this.line, this.geometryHelper);
         this.textService = new TextBitByBit(this.point);
@@ -100,7 +102,7 @@ export class OccHelper {
             this.shapeGettersService, this.converterService, this.booleansService, this.wiresService, this.transformsService, this.vecHelper, this.point, this.filletsService);
 
         this.meshingService = new MeshingService(occ, this.shapeGettersService, this.transformsService, this.edgesService, this.facesService, this.wiresService, this.mesh);
-       
+
         this.booleansService = new BooleansService(occ, this.shapeGettersService);
 
         this.shellsService = new ShellsService(occ, this.shapeGettersService, this.converterService, this.facesService);

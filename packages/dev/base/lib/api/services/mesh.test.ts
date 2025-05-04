@@ -8,6 +8,7 @@ import * as Inputs from "../inputs";
 import { MeshBitByBit } from "./mesh";
 import { TOLERANCE, UnitTestHelper } from "../unit-test-helper";
 import { Line } from "./line";
+import { Lists } from "./lists";
 
 describe("Mesh unit tests", () => {
     const uh = new UnitTestHelper();
@@ -18,6 +19,7 @@ describe("Mesh unit tests", () => {
     let transforms: Transforms;
     let point:Point;
     let line: Line;
+    let lists: Lists;
     let polyline: Polyline;
     let meshBitByBit: MeshBitByBit;
 
@@ -27,7 +29,8 @@ describe("Mesh unit tests", () => {
         math = new MathBitByBit();
         vector = new Vector(math, geometryHelper);
         transforms = new Transforms(vector, math);
-        point = new Point(geometryHelper, transforms, vector);
+        lists = new Lists();
+        point = new Point(geometryHelper, transforms, vector, lists);
         line = new Line(vector, point, geometryHelper);
         polyline = new Polyline(vector, point, line, geometryHelper);
         meshBitByBit = new MeshBitByBit(vector, polyline);

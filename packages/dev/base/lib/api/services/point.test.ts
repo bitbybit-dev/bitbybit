@@ -5,6 +5,7 @@ import { Transforms } from "./transforms";
 import { Vector } from "./vector";
 import * as Inputs from "../inputs";
 import { UnitTestHelper } from "../unit-test-helper";
+import { Lists } from "./lists";
 
 describe("Point unit tests", () => {
     const uh = new UnitTestHelper();
@@ -13,6 +14,7 @@ describe("Point unit tests", () => {
     let math: MathBitByBit;
     let vector: Vector;
     let point: Point;
+    let lists: Lists;
     let transforms: Transforms;
 
     beforeAll(() => {
@@ -20,7 +22,8 @@ describe("Point unit tests", () => {
         math = new MathBitByBit();
         vector = new Vector(math, geometryHelper);
         transforms = new Transforms(vector, math);
-        point = new Point(geometryHelper, transforms, vector);
+        lists = new Lists();
+        point = new Point(geometryHelper, transforms, vector, lists);
     });
 
     describe("Point Class Unit Tests (Integration)", () => {

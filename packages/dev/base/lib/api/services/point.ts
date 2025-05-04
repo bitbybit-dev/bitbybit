@@ -3,6 +3,7 @@ import * as Inputs from "../inputs";
 import { Transforms } from "./transforms";
 import { Vector } from "./vector";
 import * as Models from "../models";
+import { Lists } from "./lists";
 
 /**
  * Contains various methods for points. Point in bitbybit is simply an array containing 3 numbers for [x, y, z].
@@ -12,7 +13,7 @@ import * as Models from "../models";
 
 export class Point {
 
-    constructor(private readonly geometryHelper: GeometryHelper, private readonly transforms: Transforms, private readonly vector: Vector) { }
+    constructor(private readonly geometryHelper: GeometryHelper, private readonly transforms: Transforms, private readonly vector: Vector, private readonly lists: Lists) { }
 
     /**
      * Transforms the single point
@@ -408,7 +409,7 @@ export class Point {
     }
 
     /**
-     * Creates a pointy-top hexagon grid, scaling hexagons to fit specified dimensions exactly.
+     * Creates a pointy-top or flat-top hexagon grid, scaling hexagons to fit specified dimensions exactly.
      * Returns both center points and the vertices of each (potentially scaled) hexagon.
      * Hexagons are ordered column-first, then row-first.
      * @param inputs Information about the desired grid dimensions and hexagon counts.
@@ -669,7 +670,7 @@ export class Point {
             let shiftX = width / 2;
             let shiftY = height / 2;
 
-            if(flatTop) {
+            if (flatTop) {
                 shiftX = height / 2;
                 shiftY = width / 2;
             }
@@ -696,6 +697,31 @@ export class Point {
                     scaledHexagons[i][j] = [scaledHexagons[i][j][0], 0, scaledHexagons[i][j][1]];
                 }
             }
+        }
+
+        // We need to adjust orders to be column first and then row first if we choose flat top
+        if(flatTop){
+            const grouped = this.lists.groupNth<Inputs.Base.Point3[]>({
+                list: scaledHexagons.reverse(),
+                nrElements: inputs.nrHexagonsInWidth,
+                keepRemainder: true,
+            });
+            const res = this.lists.flipLists({
+                list: grouped
+            });
+            res.forEach(s => s.reverse());
+            scaledHexagons = res.flat();
+
+            const groupedCenters = this.lists.groupNth<Inputs.Base.Point3>({
+                list: scaledCenters.reverse(),
+                nrElements: inputs.nrHexagonsInWidth,
+                keepRemainder: true,
+            });
+            const resCenters = this.lists.flipLists({
+                list: groupedCenters
+            });
+            resCenters.forEach(s => s.reverse());
+            scaledCenters = resCenters.flat();
         }
 
         // --- Return Result ---

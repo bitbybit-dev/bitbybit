@@ -2,6 +2,7 @@ import { GeometryHelper } from "./geometry-helper";
 import { MathBitByBit } from "./math";
 import { Point } from "./point";
 import { Line } from "./line";
+import { Lists } from "./lists";
 import { Transforms } from "./transforms";
 import { Vector } from "./vector";
 import * as Inputs from "../inputs";
@@ -16,6 +17,7 @@ describe("Line unit tests", () => {
     let vector: Vector;
     let point: Point;
     let line: Line;
+    let lists: Lists;
     let transforms: Transforms;
 
 
@@ -28,7 +30,8 @@ describe("Line unit tests", () => {
         math = new MathBitByBit();
         vector = new Vector(math, geometryHelper);
         transforms = new Transforms(vector, math);
-        point = new Point(geometryHelper, transforms, vector);
+        lists = new Lists();
+        point = new Point(geometryHelper, transforms, vector, lists);
         line = new Line(vector, point, geometryHelper);
     });
 
