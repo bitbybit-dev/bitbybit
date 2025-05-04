@@ -96,15 +96,15 @@ export class OccHelper {
         this.dimensionsService = new DimensionsService(this.math, this.vector, this.point, this.transformsService,
             this.converterService, this.entitiesService, this.edgesService, this.wiresService);
 
-        this.verticesService.wiresService = this.wiresService;
-
-        this.facesService = new FacesService(occ, this.occRefReturns, this.entitiesService, this.enumService,
-            this.shapeGettersService, this.converterService, this.booleansService, this.wiresService, this.transformsService, this.vecHelper, this.point, this.filletsService);
-
         this.meshingService = new MeshingService(occ, this.shapeGettersService, this.transformsService, this.edgesService, this.facesService, this.wiresService, this.mesh);
 
         this.booleansService = new BooleansService(occ, this.shapeGettersService);
-
+        this.verticesService.wiresService = this.wiresService;
+        this.verticesService.booleansService = this.booleansService;
+        
+        this.facesService = new FacesService(occ, this.occRefReturns, this.entitiesService, this.enumService,
+            this.shapeGettersService, this.converterService, this.booleansService, this.wiresService, this.transformsService, this.vecHelper, this.point, this.filletsService);
+        this.meshingService.facesService = this.facesService;
         this.shellsService = new ShellsService(occ, this.shapeGettersService, this.converterService, this.facesService);
 
         this.solidsService = new SolidsService(occ, this.shapeGettersService, this.facesService, this.enumService,

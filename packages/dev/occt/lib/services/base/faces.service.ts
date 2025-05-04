@@ -22,7 +22,7 @@ export class FacesService {
         private readonly enumService: EnumService,
         private readonly shapeGettersService: ShapeGettersService,
         private readonly converterService: ConverterService,
-        private readonly booleansService: BooleansService,
+        public booleansService: BooleansService,
         private readonly wiresService: WiresService,
         private readonly transformsService: TransformsService,
         private readonly vectorService: VectorHelperService,

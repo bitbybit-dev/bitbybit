@@ -18,7 +18,7 @@ export class MeshingService {
         public readonly shapeGettersService: ShapeGettersService,
         public readonly transformsService: TransformsService,
         public readonly edgesService: EdgesService,
-        public readonly facesService: FacesService,
+        public facesService: FacesService,
         public readonly wiresService: WiresService,
         public readonly mesh: MeshBitByBit
     ) { }
