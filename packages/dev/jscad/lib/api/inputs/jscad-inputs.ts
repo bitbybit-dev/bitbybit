@@ -54,6 +54,25 @@ export namespace JSCAD {
          */
         right = "right",
     }
+    export class MeshDto {
+        constructor(mesh?: JSCADEntity) {
+            if (mesh !== undefined) { this.mesh = mesh; }
+        }
+        /**
+        * Solid Jscad mesh
+        */
+        mesh: JSCADEntity;
+    }
+
+    export class MeshesDto {
+        constructor(meshes?: JSCADEntity[]) {
+            if (meshes !== undefined) { this.meshes = meshes; }
+        }
+        /**
+        * Solid Jscad mesh
+        */
+        meshes: JSCADEntity[];
+    }
     export class DrawSolidMeshDto<T> {
         /**
          * Provide options without default values

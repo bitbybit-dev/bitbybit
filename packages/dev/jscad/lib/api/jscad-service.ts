@@ -8,6 +8,7 @@ import { JSCADPolygon } from "./services/jscad-polygon";
 import { JSCADShapes } from "./services/jscad-shapes";
 import { JSCADText } from "./services/jscad-text";
 import * as Inputs from "./inputs/jscad-inputs";
+import { Base } from "./inputs/base-inputs";
 import { JSCADHulls } from "./services/jscad-hulls";
 import { JSCADColors } from "./services/jscad-colors";
 import * as JSCAD from "@jscad/modeling";
@@ -43,13 +44,83 @@ export class Jscad {
         this.jscad = jscad;
     }
 
-    shapesToMeshes<T>(inputs: Inputs.JSCAD.DrawSolidMeshesDto<T>): { positions: number[], normals: number[], indices: number[], transforms: [] }[] {
+    toPolygonPoints(inputs: Inputs.JSCAD.MeshDto): Base.Mesh3 {
+        const mesh = this.shapeToMesh(inputs);
+
+        // --- Input Validation ---
+        if (!mesh || !mesh.positions || !mesh.indices) {
+            throw new Error("Invalid input: 'data', 'data.positions', and 'data.indices' must be provided.");
+        }
+
+        const { positions, indices } = mesh;
+
+        if (positions.length % 3 !== 0) {
+            throw new Error(`Invalid input: 'positions' array length (${positions.length}) must be a multiple of 3.`);
+        }
+
+        if (indices.length % 3 !== 0) {
+            throw new Error(`Invalid input: 'indices' array length (${indices.length}) must be a multiple of 3.`);
+        }
+
+        if (positions.length === 0) {
+            // No vertices, therefore no polygons
+            return [];
+        }
+        if (indices.length === 0) {
+            // Vertices exist, but no triangles defined
+            return [];
+        }
+
+        // Note: We are intentionally ignoring data.normals and data.transforms based on the requirement.
+        // If transforms needed to be applied, it would happen here before extracting points.
+
+        const polygons: Base.Mesh3 = [];
+        const numVertices = positions.length / 3;
+
+        // --- Triangle Reconstruction ---
+        for (let i = 0; i < indices.length; i += 3) {
+            // Get the indices for the 3 vertices of the current triangle
+            const index1 = indices[i];
+            const index2 = indices[i + 1];
+            const index3 = indices[i + 2];
+
+            // --- Index Bounds Validation ---
+            if (index1 >= numVertices || index2 >= numVertices || index3 >= numVertices ||
+                index1 < 0 || index2 < 0 || index3 < 0) { // Check for negative indices too
+                console.error(`Invalid vertex index found in 'indices' array at triangle starting at index ${i}. Max vertex index is ${numVertices - 1}. Indices: ${index1}, ${index2}, ${index3}. Skipping triangle.`);
+                // Optionally throw an error instead of skipping:
+                // throw new Error(`Invalid vertex index encountered: ${index1}, ${index2}, or ${index3}. Max index is ${numVertices - 1}.`);
+                continue; // Skip this triangle if an index is out of bounds
+            }
+
+            // Calculate the starting offset in the 'positions' array for each vertex
+            // Each vertex position takes up 3 slots in the array (x, y, z).
+            const offset1 = index1 * 3;
+            const offset2 = index2 * 3;
+            const offset3 = index3 * 3;
+
+            // Extract the [x, y, z] coordinates for each vertex
+            const point1: Base.Point3 = [positions[offset1], positions[offset1 + 1], positions[offset1 + 2]];
+            const point2: Base.Point3 = [positions[offset2], positions[offset2 + 1], positions[offset2 + 2]];
+            const point3: Base.Point3 = [positions[offset3], positions[offset3 + 1], positions[offset3 + 2]];
+
+            // Create the triangle array in the desired format [[x,y,z], [x,y,z], [x,y,z]]
+            const triangle: Base.Triangle3 = [point1, point2, point3];
+
+            // Add the reconstructed triangle to the list
+            polygons.push(triangle);
+        }
+
+        return polygons;
+    }
+
+    shapesToMeshes(inputs: Inputs.JSCAD.MeshesDto): { positions: number[], normals: number[], indices: number[], transforms: [] }[] {
         return inputs.meshes.map(mesh => {
             return this.shapeToMesh({ ...inputs, mesh });
         });
     }
 
-    shapeToMesh<T>(inputs: Inputs.JSCAD.DrawSolidMeshDto<T>): { positions: number[], normals: number[], indices: number[], transforms: [] } {
+    shapeToMesh(inputs: Inputs.JSCAD.MeshDto): { positions: number[], normals: number[], indices: number[], transforms: [] } {
         let polygons = [];
 
         if (inputs.mesh.toPolygons) {
