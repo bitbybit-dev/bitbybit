@@ -261,25 +261,24 @@ export class Lists {
      * @shortname group elements
      * @drawable false
      */
-    groupNth<T>(inputs: Inputs.Lists.GroupListDto<T>): T[] {
+    groupNth<T>(inputs: Inputs.Lists.GroupListDto<T>): T[][] {
         const groupElements = (inputs: Inputs.Lists.GroupListDto<T>) => {
             const { nrElements, list, keepRemainder } = inputs;
             const nrElementsInGroup = nrElements;
-            const result = [];
-            let currentGroup = [];
+            const result: T[][] = [];
+            let currentGroup: T[] = [];
             list.forEach((item, index) => {
                 currentGroup.push(item);
                 if ((index + 1) % nrElementsInGroup === 0) {
                     result.push(currentGroup);
                     currentGroup = [];
                 }
-                if (keepRemainder && index === list.length - 1) {
+                if (currentGroup.length > 0 && keepRemainder && index === list.length - 1) {
                     result.push(currentGroup);
                 }
             });
             return result;
         };
-        // TODO make this work on any level
         return groupElements(inputs);
     }
 

@@ -2,57 +2,27 @@ import { GeometryHelper } from "./geometry-helper";
 import { MathBitByBit } from "./math";
 import { Point } from "./point";
 import { Line } from "./line";
+import { Lists } from "./lists";
 import { Transforms } from "./transforms";
 import { Vector } from "./vector";
 import * as Inputs from "../inputs";
+import { UnitTestHelper } from "../unit-test-helper";
 
 describe("Line unit tests", () => {
+
+    const uh = new UnitTestHelper();
 
     let geometryHelper: GeometryHelper;
     let math: MathBitByBit;
     let vector: Vector;
     let point: Point;
     let line: Line;
+    let lists: Lists;
     let transforms: Transforms;
 
 
     // Precision for floating point comparisons
     const TOLERANCE = 1e-7;
-
-    // Helper to compare points/vectors with tolerance
-    const expectPointCloseTo = (
-        received: Inputs.Base.Point3 | Inputs.Base.Vector3 | undefined,
-        expected: Inputs.Base.Point3 | Inputs.Base.Vector3
-    ) => {
-        expect(received).toBeDefined();
-        if (!received) return; // Guard for TS
-        expect(received.length).toEqual(expected.length);
-        expect(received[0]).toBeCloseTo(expected[0], TOLERANCE);
-        expect(received[1]).toBeCloseTo(expected[1], TOLERANCE);
-        if (expected.length > 2 && received.length > 2) {
-            expect(received[2]).toBeCloseTo(expected[2], TOLERANCE);
-        }
-    };
-
-    // Helper to compare lines with tolerance
-    const expectLineCloseTo = (
-        received: Inputs.Base.Line3 | undefined,
-        expected: Inputs.Base.Line3
-    ) => {
-        expect(received).toBeDefined();
-        if (!received) return;
-        expectPointCloseTo(received.start, expected.start);
-        expectPointCloseTo(received.end, expected.end);
-    };
-
-    // Helper to compare arrays of lines with tolerance
-    const expectLinesCloseTo = (
-        received: Inputs.Base.Line3[],
-        expected: Inputs.Base.Line3[]
-    ) => {
-        expect(received.length).toEqual(expected.length);
-        received.forEach((l, i) => expectLineCloseTo(l, expected[i]));
-    };
 
 
     beforeAll(() => {
@@ -60,8 +30,9 @@ describe("Line unit tests", () => {
         math = new MathBitByBit();
         vector = new Vector(math, geometryHelper);
         transforms = new Transforms(vector, math);
-        point = new Point(geometryHelper, transforms, vector);
-        line = new Line(point, geometryHelper);
+        lists = new Lists();
+        point = new Point(geometryHelper, transforms, vector, lists);
+        line = new Line(vector, point, geometryHelper);
     });
 
 
@@ -115,7 +86,7 @@ describe("Line unit tests", () => {
                 const transformation = transforms.translationXYZ({ translation: [10, 5, -2] });
                 const result = line.transformLine({ line: inputLine, transformation });
                 const expectedLine: Inputs.Base.Line3 = { start: [10, 5, -2], end: [11, 5, -2] };
-                expectLineCloseTo(result, expectedLine);
+                uh.expectLineCloseTo(result, expectedLine);
             });
 
             it("should rotate the line", () => {
@@ -123,7 +94,7 @@ describe("Line unit tests", () => {
                 const transformation = transforms.rotationCenterAxis({ center: [0, 0, 0], axis: [0, 0, 1], angle: 90 });
                 const result = line.transformLine({ line: inputLine, transformation });
                 const expectedLine: Inputs.Base.Line3 = { start: [0, 1, 0], end: [0, 2, 5] };
-                expectLineCloseTo(result, expectedLine);
+                uh.expectLineCloseTo(result, expectedLine);
             });
 
             it("should return a new object", () => {
@@ -151,7 +122,7 @@ describe("Line unit tests", () => {
                     { start: [0, 10, 0], end: [1, 10, 0] },
                     { start: [5, 5, 5], end: [5, 5, 6] } // Rotation around X maps Y=1 -> Z=1
                 ];
-                expectLinesCloseTo(result, expectedLines);
+                uh.expectLinesCloseTo(result, expectedLines);
             });
 
             it("should handle empty input arrays", () => {
@@ -179,32 +150,32 @@ describe("Line unit tests", () => {
 
             it("should return the start point when param is 0", () => {
                 const result = line.getPointOnLine({ line: testLine, param: 0 });
-                expectPointCloseTo(result, testLine.start);
+                uh.expectPointCloseTo(result, testLine.start);
             });
 
             it("should return the end point when param is 1", () => {
                 const result = line.getPointOnLine({ line: testLine, param: 1 });
-                expectPointCloseTo(result, testLine.end);
+                uh.expectPointCloseTo(result, testLine.end);
             });
 
             it("should return the midpoint when param is 0.5", () => {
                 const result = line.getPointOnLine({ line: testLine, param: 0.5 });
                 const expectedMidpoint: Inputs.Base.Point3 = [5, 10, -15];
-                expectPointCloseTo(result, expectedMidpoint);
+                uh.expectPointCloseTo(result, expectedMidpoint);
             });
 
             it("should extrapolate backward when param is < 0", () => {
                 const result = line.getPointOnLine({ line: testLine, param: -0.5 });
                 // Direction = [10, 20, -30]. Start + (-0.5)*Dir = [0,0,0] + [-5, -10, 15]
                 const expectedPoint: Inputs.Base.Point3 = [-5, -10, 15];
-                expectPointCloseTo(result, expectedPoint);
+                uh.expectPointCloseTo(result, expectedPoint);
             });
 
             it("should extrapolate forward when param is > 1", () => {
                 const result = line.getPointOnLine({ line: testLine, param: 1.2 });
                 // Start + (1.2)*Dir = [0,0,0] + [12, 24, -36]
                 const expectedPoint: Inputs.Base.Point3 = [12, 24, -36];
-                expectPointCloseTo(result, expectedPoint);
+                uh.expectPointCloseTo(result, expectedPoint);
             });
         });
 
@@ -329,6 +300,210 @@ describe("Line unit tests", () => {
             });
         });
 
+    });
+
+    describe("lineLineIntersection", () => {
+
+        // --- Test Data ---
+        const ORIGIN: Inputs.Base.Point3 = [0, 0, 0];
+
+        // Basic intersecting lines (X and Y axes)
+        const lineX: Inputs.Base.Line3 = { start: [-5, 0, 0], end: [5, 0, 0] };
+        const lineY: Inputs.Base.Line3 = { start: [0, -5, 0], end: [0, 5, 0] };
+        const expectedXYIntersect: Inputs.Base.Point3 = [0, 0, 0];
+
+        // Lines intersecting outside segments
+        const lineXshort: Inputs.Base.Line3 = { start: [1, 0, 0], end: [5, 0, 0] };
+        const lineYshort: Inputs.Base.Line3 = { start: [0, 1, 0], end: [0, 5, 0] };
+
+        // Lines intersecting at endpoint
+        const lineXoriginEnd: Inputs.Base.Line3 = { start: [-5, 0, 0], end: [0, 0, 0] };
+        const lineYoriginStart: Inputs.Base.Line3 = { start: [0, 0, 0], end: [0, 5, 0] };
+
+        // Skew lines
+        const lineXoffsetY: Inputs.Base.Line3 = { start: [-5, 1, 0], end: [5, 1, 0] };
+        const lineY_offsetZ: Inputs.Base.Line3 = { start: [0, -5, 1], end: [0, 5, 1] };
+        const lineSkewDiag: Inputs.Base.Line3 = { start: [-5, -5, 5], end: [5, 5, 10] };
+
+        // Parallel non-collinear lines
+        const lineXoffsetZ: Inputs.Base.Line3 = { start: [-5, 0, 1], end: [5, 0, 1] };
+
+        // Collinear lines
+        const lineX_0_10: Inputs.Base.Line3 = { start: [0, 0, 0], end: [10, 0, 0] };
+        const lineX_5_15: Inputs.Base.Line3 = { start: [5, 0, 0], end: [15, 0, 0] };
+        const lineX_10_20: Inputs.Base.Line3 = { start: [10, 0, 0], end: [20, 0, 0] };
+        const lineX_11_20: Inputs.Base.Line3 = { start: [11, 0, 0], end: [20, 0, 0] };
+        const lineX_neg10_neg5: Inputs.Base.Line3 = { start: [-10, 0, 0], end: [-5, 0, 0] };
+
+        // Zero length line
+        const zeroLine: Inputs.Base.Line3 = { start: [1, 1, 1], end: [1, 1, 1] };
+
+        describe("Intersecting Lines", () => {
+            it("should find intersection within segments (checkSegmentsOnly = true)", () => {
+                const result = line.lineLineIntersection({ line1: lineX, line2: lineY, checkSegmentsOnly: true });
+                uh.expectPointCloseTo(result, expectedXYIntersect);
+            });
+
+            it("should find intersection within segments (checkSegmentsOnly = false)", () => {
+                const result = line.lineLineIntersection({ line1: lineX, line2: lineY, checkSegmentsOnly: false });
+                uh.expectPointCloseTo(result, expectedXYIntersect);
+            });
+
+            it("should find intersection at endpoints (checkSegmentsOnly = true)", () => {
+                const result = line.lineLineIntersection({ line1: lineXoriginEnd, line2: lineYoriginStart, checkSegmentsOnly: true });
+                uh.expectPointCloseTo(result, ORIGIN);
+            });
+
+            it("should find intersection at endpoints (checkSegmentsOnly = false)", () => {
+                const result = line.lineLineIntersection({ line1: lineXoriginEnd, line2: lineYoriginStart, checkSegmentsOnly: false });
+                uh.expectPointCloseTo(result, ORIGIN);
+            });
+
+            it("should NOT find intersection when outside segments (checkSegmentsOnly = true)", () => {
+                const result = line.lineLineIntersection({ line1: lineXshort, line2: lineYshort, checkSegmentsOnly: true });
+                expect(result).toBeUndefined();
+            });
+
+            it("should find intersection when outside segments (checkSegmentsOnly = false)", () => {
+                const result = line.lineLineIntersection({ line1: lineXshort, line2: lineYshort, checkSegmentsOnly: false });
+                uh.expectPointCloseTo(result, ORIGIN); // The intersection of infinite lines is origin
+            });
+
+            it("should handle near-zero results by clipping them", () => {
+                const line1: Inputs.Base.Line3 = { start: [-1, 1e-10, 0], end: [1, -1e-10, 0] }; // Crosses Y=0 at X=0
+                const line2: Inputs.Base.Line3 = { start: [0, -1, 0], end: [0, 1, 0] }; // Y axis
+                const expected: Inputs.Base.Point3 = [0, 0, 0];
+                const result = line.lineLineIntersection({ line1, line2, checkSegmentsOnly: true, tolerance: 1e-8 });
+                uh.expectPointCloseTo(result, expected);
+            });
+
+            it("should handle tolerance based intersection", () => {
+                const line1: Inputs.Base.Line3 = { start: [-5, 0, 0], end: [5, 0, 0] };
+                const line2: Inputs.Base.Line3 = { start: [0, -5, 1e-10], end: [0, 5, 1e-10] };
+                const expected: Inputs.Base.Point3 = [0, 0, 0];
+                // Keep in mind that we use epsilon cubes for tolerance - otherwise this case would be considered skewed
+                const result = line.lineLineIntersection({ line1, line2, checkSegmentsOnly: true, tolerance: 1e-2 });
+                uh.expectPointCloseTo(result, expected);
+            });
+        });
+
+        describe("Skew Lines", () => {
+            it("should return undefined for skew lines (offset parallel) (checkSegmentsOnly = true)", () => {
+                const result = line.lineLineIntersection({ line1: lineX, line2: lineY_offsetZ, checkSegmentsOnly: true });
+                expect(result).toBeUndefined();
+            });
+
+            it("should return undefined for skew lines (offset parallel) (checkSegmentsOnly = false)", () => {
+                const result = line.lineLineIntersection({ line1: lineX, line2: lineY_offsetZ, checkSegmentsOnly: false });
+                expect(result).toBeUndefined();
+            });
+
+            it("should return undefined for skew lines (diagonal) (checkSegmentsOnly = true)", () => {
+                const result = line.lineLineIntersection({ line1: lineX, line2: lineSkewDiag, checkSegmentsOnly: true });
+                expect(result).toBeUndefined();
+            });
+
+            it("should return undefined for skew lines (diagonal) (checkSegmentsOnly = false)", () => {
+                const result = line.lineLineIntersection({ line1: lineX, line2: lineSkewDiag, checkSegmentsOnly: false });
+                expect(result).toBeUndefined();
+            });
+
+            it("should return undefined for another skew case (checkSegmentsOnly = true)", () => {
+                const result = line.lineLineIntersection({ line1: lineX, line2: lineXoffsetY, checkSegmentsOnly: true });
+                expect(result).toBeUndefined();
+            });
+
+            it("should return undefined for another skew case (checkSegmentsOnly = false)", () => {
+                const result = line.lineLineIntersection({ line1: lineX, line2: lineXoffsetY, checkSegmentsOnly: false });
+                expect(result).toBeUndefined();
+            });
+        });
+
+        describe("Parallel Lines", () => {
+            it("should return undefined for parallel non-collinear lines (checkSegmentsOnly = true)", () => {
+                const result = line.lineLineIntersection({ line1: lineX, line2: lineXoffsetZ, checkSegmentsOnly: true });
+                expect(result).toBeUndefined();
+            });
+
+            it("should return undefined for parallel non-collinear lines (checkSegmentsOnly = false)", () => {
+                const result = line.lineLineIntersection({ line1: lineX, line2: lineXoffsetZ, checkSegmentsOnly: false });
+                expect(result).toBeUndefined();
+            });
+        });
+
+        describe("Collinear Lines", () => {
+
+            it("should return undefined for overlapping collinear segments (checkSegmentsOnly = true)", () => {
+                const result = line.lineLineIntersection({ line1: lineX_0_10, line2: lineX_5_15, checkSegmentsOnly: true });
+                expect(result).toBeUndefined(); // Intersection is a segment [5,0,0] to [10,0,0]
+            });
+            it("should return undefined for fully contained collinear segments (checkSegmentsOnly = true)", () => {
+                const result = line.lineLineIntersection({ line1: lineX_0_10, line2: { start: [2, 0, 0], end: [8, 0, 0] }, checkSegmentsOnly: true });
+                expect(result).toBeUndefined();
+            });
+            it("should return undefined for touching collinear segments (checkSegmentsOnly = true)", () => {
+                const result = line.lineLineIntersection({ line1: lineX_0_10, line2: lineX_10_20, checkSegmentsOnly: true });
+                expect(result).toBeUndefined();
+            });
+            it("should return undefined for separate collinear segments (checkSegmentsOnly = true)", () => {
+                const result = line.lineLineIntersection({ line1: lineX_0_10, line2: lineX_11_20, checkSegmentsOnly: true });
+                expect(result).toBeUndefined();
+            });
+
+            it("should return start point of line1 for overlapping collinear segments (checkSegmentsOnly = false)", () => {
+                const result = line.lineLineIntersection({ line1: lineX_0_10, line2: lineX_5_15, checkSegmentsOnly: false });
+                uh.expectPointCloseTo(result, lineX_0_10.start);
+            });
+
+            it("should return start point of line1 for fully contained collinear segments (checkSegmentsOnly = false)", () => {
+                const result = line.lineLineIntersection({ line1: lineX_0_10, line2: { start: [2, 0, 0], end: [8, 0, 0] }, checkSegmentsOnly: false });
+                uh.expectPointCloseTo(result, lineX_0_10.start);
+            });
+
+            it("should return start point of line1 for touching collinear segments (checkSegmentsOnly = false)", () => {
+                const result = line.lineLineIntersection({ line1: lineX_0_10, line2: lineX_10_20, checkSegmentsOnly: false });
+                uh.expectPointCloseTo(result, lineX_0_10.start);
+            });
+
+            it("should return start point of line1 for separate collinear segments (checkSegmentsOnly = false)", () => {
+                const result = line.lineLineIntersection({ line1: lineX_0_10, line2: lineX_11_20, checkSegmentsOnly: false });
+                uh.expectPointCloseTo(result, lineX_0_10.start);
+            });
+
+            it("should return start point of line1 for separate collinear segments (negative side) (checkSegmentsOnly = false)", () => {
+                const result = line.lineLineIntersection({ line1: lineX_0_10, line2: lineX_neg10_neg5, checkSegmentsOnly: false });
+                uh.expectPointCloseTo(result, lineX_0_10.start);
+            });
+        });
+
+        describe("Edge Cases", () => {
+
+            it("should return undefined if line1 has zero length", () => {
+                const result = line.lineLineIntersection({ line1: zeroLine, line2: lineX, checkSegmentsOnly: true });
+                expect(result).toBeUndefined();
+            });
+
+            it("should return undefined if line2 has zero length", () => {
+                const result = line.lineLineIntersection({ line1: lineX, line2: zeroLine, checkSegmentsOnly: false });
+                expect(result).toBeUndefined();
+            });
+
+            it("should return undefined if both lines have zero length", () => {
+                const result = line.lineLineIntersection({ line1: zeroLine, line2: zeroLine, checkSegmentsOnly: true });
+                expect(result).toBeUndefined();
+            });
+
+            it("should distinguish near-intersecting skew lines based on tolerance", () => {
+                const line1: Inputs.Base.Line3 = { start: [0, 0, 0], end: [10, 0, 0] };
+                const tiny_offset = 1e-5;
+                const line2_skew: Inputs.Base.Line3 = { start: [5 + tiny_offset, -5, tiny_offset], end: [5 + tiny_offset, 5, tiny_offset] };
+                const resultSkewTight = line.lineLineIntersection({ line1, line2: line2_skew, checkSegmentsOnly: true, tolerance: 1e-7 });
+                expect(resultSkewTight).toBeUndefined();
+                const resultIntersectLoose = line.lineLineIntersection({ line1, line2: line2_skew, checkSegmentsOnly: true, tolerance: 1e-1 });
+                expect(resultIntersectLoose).toEqual([5.00001, 0, 0]);
+            });
+
+        });
     });
 });
 

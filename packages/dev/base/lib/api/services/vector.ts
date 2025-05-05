@@ -358,6 +358,10 @@ export class Vector {
      * @drawable false
      */
     normalized(inputs: Inputs.Vector.VectorDto): number[] {
+        const len = this.length({vector: inputs.vector as Inputs.Base.Vector3});
+        if (len <= 1e-8) {
+            return undefined;
+        }
         return this.div({ scalar: this.norm(inputs), vector: inputs.vector });
     }
 
@@ -528,5 +532,17 @@ export class Vector {
     lengthSq(inputs: Inputs.Vector.Vector3Dto): number {
         const v = inputs.vector;
         return v[0] * v[0] + v[1] * v[1] + v[2] * v[2];
+    }
+
+    /**
+     * Computes the length of the vector
+     * @param inputs Vector to compute the length
+     * @returns Number that is length of the vector
+     * @group base
+     * @shortname length
+     * @drawable false
+     */
+    length(inputs: Inputs.Vector.Vector3Dto): number {
+        return Math.sqrt(this.lengthSq(inputs));
     }
 }

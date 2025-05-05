@@ -1120,6 +1120,215 @@ export namespace OCCT {
          */
         offsetFromBorderV = 0;
     }
+    export class FaceSubdivideToHexagonWiresDto<T> {
+        /**
+          * Provide options without default values
+          */
+        constructor(shape?: T, nrHexagonsU?: number, nrHexagonsV?: number, flatU?: boolean, scalePatternU?: number[], scalePatternV?: number[], filletPattern?: number[], inclusionPattern?: boolean[], offsetFromBorderU?: number, offsetFromBorderV?: number, extendUUp?: boolean, extendUBottom?: boolean, extendVUp?: boolean, extendVBottom?: boolean) {
+            if (shape !== undefined) { this.shape = shape; }
+            if (nrHexagonsU !== undefined) { this.nrHexagonsU = nrHexagonsU; }
+            if (nrHexagonsV !== undefined) { this.nrHexagonsU = nrHexagonsV; }
+            if (flatU !== undefined) { this.flatU = flatU; }
+            if (scalePatternU !== undefined) { this.scalePatternU = scalePatternU; }
+            if (scalePatternV !== undefined) { this.scalePatternV = scalePatternV; }
+            if (filletPattern !== undefined) { this.filletPattern = filletPattern; }
+            if (inclusionPattern !== undefined) { this.inclusionPattern = inclusionPattern; }
+            if (offsetFromBorderU !== undefined) { this.offsetFromBorderU = offsetFromBorderU; }
+            if (offsetFromBorderV !== undefined) { this.offsetFromBorderV = offsetFromBorderV; }
+            if (extendUUp !== undefined) { this.extendUUp = extendUUp; }
+            if (extendUBottom !== undefined) { this.extendUBottom = extendUBottom; }
+            if (extendVUp !== undefined) { this.extendVUp = extendVUp; }
+            if (extendVBottom !== undefined) { this.extendVBottom = extendVBottom; }
+        }
+        /**
+         * Openascade Face
+         * @default undefined
+         */
+        shape?: T;
+        /**
+         * Number of hexagons on U direction
+         * @default 10
+         * @minimum 1
+         * @maximum Infinity
+         * @step 1
+         */
+        nrHexagonsU? = 10;
+        /**
+         * Number of hexagons on V direction
+         * @default 10
+         * @minimum 1
+         * @maximum Infinity
+         * @step 1
+         */
+        nrHexagonsV? = 10;
+        // /**
+        //  * If true, we will create hexagons with flat tops on U direction
+        //  * @default false
+        //  */
+        flatU = false;
+        /**
+         * Hexagon scale pattern on u direction - numbers between 0 and 1, if 1 or undefined is used, no scaling is applied
+         * @default undefined
+         * @optional true
+         */
+        scalePatternU?: number[];
+        /**
+         * Hexagon scale pattern on v direction - numbers between 0 and 1, if 1 or undefined is used, no scaling is applied
+         * @default undefined
+         * @optional true
+         */
+        scalePatternV?: number[];
+        /**
+         * Hexagon fillet scale pattern - numbers between 0 and 1, if 0 is used, no fillet is applied, 
+         * if 1 is used, the fillet will be exactly half of the length of the shortest segment of the hexagon
+         * @default undefined
+         * @optional true
+         */
+        filletPattern?: number[];
+        /**
+         * Hexagon inclusion pattern - true means that the hexagon will be included, 
+         * false means that the hexagon will be removed from the face
+         * @default undefined
+         * @optional true
+         */
+        inclusionPattern?: boolean[];
+        /**
+         * If offset on U is bigger then 0 we will use a smaller space for hexagons to be placed. This means that even hexagon of U param 1 will be offset from the face border
+         * That is often required to create a pattern that is not too close to the face border
+         * It should not be bigger then half of the total width of the face as that will create problems
+         * @default 0
+         * @minimum 0
+         * @maximum 0.5
+         * @step 0.01
+         */
+        offsetFromBorderU? = 0;
+        /**
+         * If offset on V is bigger then 0 we will use a smaller space for hexagons to be placed. This means that even hexagon of V param 1 will be offset from the face border
+         * That is often required to create a pattern that is not too close to the face border
+         * It should not be bigger then half of the total width of the face as that will create problems
+         * @default 0
+         * @minimum 0
+         * @maximum 0.5
+         * @step 0.01
+         */
+        offsetFromBorderV? = 0;
+        /**
+         * If true, we will extend the hexagons beyond the face u up border by their pointy tops
+         * @default false
+         */
+        extendUUp? = false;
+        /**
+         * If true, we will extend the hexagons beyond the face u bottom border by their pointy tops
+         * @default false
+         */
+        extendUBottom? = false;
+        /**
+         * If true, we will extend the hexagons beyond the face v upper border by their half width
+         * @default false
+         */
+        extendVUp? = false;
+        /**
+         * If true, we will extend the hexagons beyond the face v bottom border by their half width
+         * @default false
+         */
+        extendVBottom? = false;
+    }
+
+    export class FaceSubdivideToHexagonHolesDto<T> {
+        /**
+          * Provide options without default values
+          */
+        constructor(shape?: T, nrHexagonsU?: number, nrHexagonsV?: number, flatU?: boolean, holesToFaces?: boolean, scalePatternU?: number[], scalePatternV?: number[], filletPattern?: number[], inclusionPattern?: boolean[], offsetFromBorderU?: number, offsetFromBorderV?: number) {
+            if (shape !== undefined) { this.shape = shape; }
+            if (nrHexagonsU !== undefined) { this.nrHexagonsU = nrHexagonsU; }
+            if (nrHexagonsV !== undefined) { this.nrHexagonsU = nrHexagonsV; }
+            if (flatU !== undefined) { this.flatU = flatU; }
+            if (holesToFaces !== undefined) { this.holesToFaces = holesToFaces; }
+            if (scalePatternU !== undefined) { this.scalePatternU = scalePatternU; }
+            if (scalePatternV !== undefined) { this.scalePatternV = scalePatternV; }
+            if (filletPattern !== undefined) { this.filletPattern = filletPattern; }
+            if (inclusionPattern !== undefined) { this.inclusionPattern = inclusionPattern; }
+            if (offsetFromBorderU !== undefined) { this.offsetFromBorderU = offsetFromBorderU; }
+            if (offsetFromBorderV !== undefined) { this.offsetFromBorderV = offsetFromBorderV; }
+        }
+        /**
+         * Openascade Face
+         * @default undefined
+         */
+        shape?: T;
+        /**
+         * Number of hexagons on U direction
+         * @default 10
+         * @minimum 1
+         * @maximum Infinity
+         * @step 1
+         */
+        nrHexagonsU? = 10;
+        /**
+         * Number of hexagons on V direction
+         * @default 10
+         * @minimum 1
+         * @maximum Infinity
+         * @step 1
+         */
+        nrHexagonsV? = 10;
+        // /**
+        //  * If true, we will create hexagons with flat tops on U direction
+        //  * @default false
+        //  */
+        flatU = false;
+        /**
+         * If true, we will also create holes as faces
+         * @default false
+         */
+        holesToFaces? = false;
+        /**
+         * Hexagon scale pattern on u direction - numbers between 0 and 1, if 1 or undefined is used, no scaling is applied
+         * @default undefined
+         * @optional true
+         */
+        scalePatternU?: number[];
+        /**
+         * Hexagon scale pattern on v direction - numbers between 0 and 1, if 1 or undefined is used, no scaling is applied
+         * @default undefined
+         * @optional true
+         */
+        scalePatternV?: number[];
+        /**
+         * Hexagon fillet scale pattern - numbers between 0 and 1, if 0 is used, no fillet is applied, 
+         * if 1 is used, the fillet will be exactly half of the length of the shortest segment of the hexagon
+         * @default undefined
+         * @optional true
+         */
+        filletPattern?: number[];
+        /**
+         * Hexagon inclusion pattern - true means that the hexagon will be included, 
+         * false means that the hexagon will be removed from the face
+         * @default undefined
+         * @optional true
+         */
+        inclusionPattern?: boolean[];
+        /**
+         * If offset on U is bigger then 0 we will use a smaller space for hexagons to be placed. This means that even hexagon of U param 1 will be offset from the face border
+         * That is often required to create a pattern that is not too close to the face border
+         * It should not be bigger then half of the total width of the face as that will create problems
+         * @default 0
+         * @minimum 0
+         * @maximum 0.5
+         * @step 0.01
+         */
+        offsetFromBorderU? = 0;
+        /**
+         * If offset on V is bigger then 0 we will use a smaller space for hexagons to be placed. This means that even hexagon of V param 1 will be offset from the face border
+         * That is often required to create a pattern that is not too close to the face border
+         * It should not be bigger then half of the total width of the face as that will create problems
+         * @default 0
+         * @minimum 0
+         * @maximum 0.5
+         * @step 0.01
+         */
+        offsetFromBorderV? = 0;
+    }
 
     export class FaceSubdivideToRectangleHolesDto<T> {
         /**
@@ -3439,6 +3648,97 @@ export namespace OCCT {
          */
         direction: Base.Vector3 = [0, 1, 0];
     }
+    export class HexagonsInGridDto {
+        constructor(wdith?: number, height?: number, nrHexagonsInHeight?: number, nrHexagonsInWidth?: number, flatTop?: boolean, extendTop?: boolean, extendBottom?: boolean, extendLeft?: boolean, extendRight?: boolean, scalePatternWidth?: number[], scalePatternHeight?: number[], filletPattern?: number[], inclusionPattern?: boolean[]) {
+            if (wdith !== undefined) { this.width = wdith; }
+            if (height !== undefined) { this.height = height; }
+            if (nrHexagonsInHeight !== undefined) { this.nrHexagonsInHeight = nrHexagonsInHeight; }
+            if (nrHexagonsInWidth !== undefined) { this.nrHexagonsInWidth = nrHexagonsInWidth; }
+            if (flatTop !== undefined) { this.flatTop = flatTop; }
+            if (extendTop !== undefined) { this.extendTop = extendTop; }
+            if (extendBottom !== undefined) { this.extendBottom = extendBottom; }
+            if (extendLeft !== undefined) { this.extendLeft = extendLeft; }
+            if (extendRight !== undefined) { this.extendRight = extendRight; }
+            if (scalePatternWidth !== undefined) { this.scalePatternWidth = scalePatternWidth; }
+            if (scalePatternHeight !== undefined) { this.scalePatternHeight = scalePatternHeight; }
+            if (filletPattern !== undefined) { this.filletPattern = filletPattern; }
+            if (inclusionPattern !== undefined) { this.inclusionPattern = inclusionPattern; }
+        }
+        /** Total desired width for the grid area. The hexagon size will be derived from this and nrHexagonsU.
+         * @default 10
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.1
+         */
+        width? = 10;
+        /** Total desired height for the grid area. Note: due to hexagon geometry, the actual grid height might differ slightly if maintaining regular hexagons based on width.
+         * @default 10
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.1
+        */
+        height? = 10;
+        /** Number of hexagons desired in width.
+         * @default 10
+         * @minimum 0
+         * @maximum Infinity
+         * @step 1
+         */
+        nrHexagonsInWidth? = 10;
+        /** Number of hexagons desired in height.
+         * @default 10
+         * @minimum 0
+         * @maximum Infinity
+         * @step 1
+         */
+        nrHexagonsInHeight? = 10;
+        /** If true, the hexagons will be oriented with their flat sides facing up and down. 
+         * @default false
+         */
+        flatTop? = false;
+        /** If true, shift the entire grid up by half hex height. 
+         * @default false
+        */
+        extendTop? = false;
+        /** If true, shift the entire grid down by half hex height. 
+         * @default false
+        */
+        extendBottom? = false;
+        /** If true, shift the entire grid left by half hex width. 
+         * @default false
+        */
+        extendLeft? = false;
+        /** If true, shift the entire grid right by half hex width. 
+         * @default false
+        */
+        extendRight? = false;
+        /**
+         * Hex scale pattern on width direction - numbers between 0 and 1, if 1 or undefined is used, no scaling is applied
+         * @default undefined
+         * @optional true
+         */
+        scalePatternWidth?: number[];
+        /**
+         * Hex scale pattern on height direction - numbers between 0 and 1, if 1 or undefined is used, no scaling is applied
+         * @default undefined
+         * @optional true
+         */
+        scalePatternHeight?: number[];
+        /**
+         * Hex fillet scale pattern - numbers between 0 and 1, if 0 is used, no fillet is applied, 
+         * if 1 is used, the fillet will be exactly half of the length of the shorter side of the hex
+         * @default undefined
+         * @optional true
+         */
+        filletPattern?: number[];
+        /**
+         * Inclusion pattern - true means that the hex will be included, 
+         * false means that the hex will be removed
+         * @default undefined
+         * @optional true
+         */
+        inclusionPattern?: boolean[];
+    }
     export class LoftDto<T> {
         constructor(shapes?: T[], makeSolid?: boolean) {
             if (shapes !== undefined) { this.shapes = shapes; }
@@ -3932,6 +4232,75 @@ export namespace OCCT {
          * @default undefined
          */
         shape: T;
+    }
+    export class MeshMeshIntersectionTwoShapesDto<T> {
+        constructor(shape1?: T, shape2?: T, precision1?: number, precision2?: number) {
+            if (shape1 !== undefined) { this.shape1 = shape1; }
+            if (shape2 !== undefined) { this.shape2 = shape2; }
+            if (precision1 !== undefined) { this.precision1 = precision1; }
+            if (precision2 !== undefined) { this.precision2 = precision2; }
+        }
+        /**
+         * First shape to be used for intersection
+         * @default undefined
+         */
+        shape1: T;
+        /**
+         * Precision of first shape to be used for meshing and computing intersection. 
+         * Keep in mind that the lower this value is, the more triangles will be produced and thus the slower the computation.
+         * @default 0.01
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.01
+         */
+        precision1? = 0.01;
+        /**
+         * Second shape to be used for intersection
+         * @default undefined
+         */
+        shape2: T;
+        /**
+         * Precision of second shape to be used for meshing and computing intersection. 
+         * Keep in mind that the lower this value is, the more triangles will be produced and thus the slower the computation.
+         * @default 0.01
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.01
+         */
+        precision2? = 0.01;
+    }
+    export class MeshMeshesIntersectionOfShapesDto<T> {
+        constructor(shape?: T, shapes?: T[], precision?: number, precisionShapes?: number[]) {
+            if (shape !== undefined) { this.shape = shape; }
+            if (shapes !== undefined) { this.shapes = shapes; }
+            if (precision !== undefined) { this.precision = precision; }
+            if (precisionShapes !== undefined) { this.precisionShapes = precisionShapes; }
+        }
+        /**
+         * Shape to use for the base of computations
+         * @default undefined
+         */
+        shape?: T;
+        /**
+         * Precision of first shape to be used for meshing and computing intersection. 
+         * Keep in mind that the lower this value is, the more triangles will be produced and thus the slower the computation.
+         * @default 0.01
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.01
+         */
+        precision? = 0.01;
+        /**
+         * Second shape to be used for intersection
+         * @default undefined
+         */
+        shapes?: T[];
+        /**
+         * Precision of shapes to be used, if undefined, a universal precision will be used of the first shape
+         * @default undefined
+         * @optional true
+         */
+        precisionShapes?: number[];
     }
     export class CompareShapesDto<T> {
         constructor(shape?: T, otherShape?: T) {

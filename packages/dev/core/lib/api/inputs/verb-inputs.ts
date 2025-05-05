@@ -14,6 +14,42 @@ export namespace Verb {
          */
         curve: any;
     }
+    export class LineDto {
+        constructor(line?: Base.Line3) {
+            if (line !== undefined) { this.line = line; }
+        }
+        /**
+         * Basic line
+         */
+        line: Base.Line3;
+    }
+    export class LinesDto {
+        constructor(lines?: Base.Line3[]) {
+            if (lines !== undefined) { this.lines = lines; }
+        }
+        /**
+         * Basic lines
+         */
+        lines: Base.Line3[];
+    }
+    export class PolylineDto {
+        constructor(polyline?: Base.Polyline3) {
+            if (polyline !== undefined) { this.polyline = polyline; }
+        }
+        /**
+         * Basic polyline
+         */
+        polyline: Base.Polyline3;
+    }
+    export class PolylinesDto {
+        constructor(polylines?: Base.Polyline3[]) {
+            if (polylines !== undefined) { this.polylines = polylines; }
+        }
+        /**
+         * Basic polyline
+         */
+        polylines: Base.Polyline3[];
+    }
     export class CurvesDto {
         constructor(curves?: any[]) {
             if (curves !== undefined) { this.curves = curves; }

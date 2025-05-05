@@ -46,6 +46,18 @@ export class ManifoldBitByBit {
     }
 
     /**
+     * Turns manifold shape into a collection of polygon points representing the mesh.
+     * @param inputs Manifold shape
+     * @returns polygon points
+     * @group decompose
+     * @shortname to polygon points
+     * @drawable false
+     */
+    async toPolygonPoints(inputs: Inputs.Manifold.ManifoldDto<Inputs.Manifold.ManifoldPointer>): Promise<Inputs.Base.Mesh3> {
+        return this.manifoldWorkerManager.genericCallToWorkerPromise("toPolygonPoints", inputs);
+    }
+
+    /**
      * Decomposes manifold or cross section shape into a mesh or simple polygons
      * @param inputs Manifold shapes or cross sections
      * @returns Decomposed mesh definitions or a list of simple polygons

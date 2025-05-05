@@ -467,6 +467,18 @@ export class OCCTWire {
     }
 
     /**
+     * Creates OpenCascade hexagon wires in grid
+     * @param inputs grid parameters
+     * @returns OpenCascade hexagon wires
+     * @group primitives
+     * @shortname hegagons in grid
+     * @drawable true
+     */
+    hexagonsInGrid(inputs: Inputs.OCCT.HexagonsInGridDto): Promise<Inputs.OCCT.TopoDSWirePointer[]> {
+        return this.occWorkerManager.genericCallToWorkerPromise("shapes.wire.hexagonsInGrid", inputs);
+    }
+
+    /**
      * Creates OpenCascade square wire
      * @param inputs Square parameters
      * @returns OpenCascade square wire

@@ -6,76 +6,40 @@ import { Transforms } from "./transforms";
 import { Vector } from "./vector";
 import * as Inputs from "../inputs";
 import { MeshBitByBit } from "./mesh";
+import { TOLERANCE, UnitTestHelper } from "../unit-test-helper";
+import { Line } from "./line";
+import { Lists } from "./lists";
 
 describe("Mesh unit tests", () => {
-    let geometryHelper = new GeometryHelper();
-    let math = new MathBitByBit();
-    let vector = new Vector(math, geometryHelper);
-    let transforms = new Transforms(vector, math);
-    let point = new Point(geometryHelper, transforms, vector);
-    let polyline = new Polyline(vector, point, geometryHelper);
-    let meshBitByBit = new MeshBitByBit(vector, polyline);
+    const uh = new UnitTestHelper();
 
-    const TOLERANCE = 1e-7;
+    let geometryHelper: GeometryHelper;
+    let math: MathBitByBit;
+    let vector: Vector;
+    let transforms: Transforms;
+    let point:Point;
+    let line: Line;
+    let lists: Lists;
+    let polyline: Polyline;
+    let meshBitByBit: MeshBitByBit;
 
-    const expectPointCloseTo = (
-        received: Inputs.Base.Point3 | Inputs.Base.Vector3 | undefined,
-        expected: Inputs.Base.Point3 | Inputs.Base.Vector3,
-        precision = TOLERANCE
-    ) => {
-        expect(received).toBeDefined();
-        if (!received) return;
-        expect(received.length).toEqual(expected.length);
-        expect(received[0]).toBeCloseTo(expected[0], precision);
-        expect(received[1]).toBeCloseTo(expected[1], precision);
-        if (expected.length > 2 && received.length > 2) {
-            expect(received[2]).toBeCloseTo(expected[2], precision);
-        }
-    };
-    const expectSegmentCloseTo = (
-        received: Inputs.Base.Segment3 | undefined,
-        expected: Inputs.Base.Segment3,
-        precision = TOLERANCE
-    ) => {
-        expect(received).toBeDefined();
-        if (!received) return;
-        expect(received).toHaveLength(2);
-        const order1Matches = Math.abs(vector.dist({ first: received[0], second: expected[0] })) < precision &&
-            Math.abs(vector.dist({ first: received[1], second: expected[1] })) < precision;
-        const order2Matches = Math.abs(vector.dist({ first: received[0], second: expected[1] })) < precision &&
-            Math.abs(vector.dist({ first: received[1], second: expected[0] })) < precision;
-        expect(order1Matches || order2Matches).toBe(true);
-    };
-
-    const expectPlaneCloseTo = (
-        received: Inputs.Base.TrianglePlane3 | undefined,
-        expected: Inputs.Base.TrianglePlane3,
-        precision = TOLERANCE
-    ) => {
-        expect(received).toBeDefined();
-        if (!received) return;
-        const normalDir1 = vector.sub({ first: received.normal, second: expected.normal });
-        const normalDir2 = vector.add({ first: received.normal, second: expected.normal });
-        const dir1Match = vector.lengthSq({ vector: normalDir1 as Inputs.Base.Vector3 }) < precision * precision;
-        const dir2Match = vector.lengthSq({ vector: normalDir2 as Inputs.Base.Vector3 }) < precision * precision;
-        expect(dir1Match || dir2Match).toBe(true);
-        expect(received.d).toBeCloseTo(dir1Match ? expected.d : -expected.d, precision);
-    };
 
     beforeAll(() => {
         geometryHelper = new GeometryHelper();
         math = new MathBitByBit();
         vector = new Vector(math, geometryHelper);
         transforms = new Transforms(vector, math);
-        point = new Point(geometryHelper, transforms, vector);
-        polyline = new Polyline(vector, point, geometryHelper);
+        lists = new Lists();
+        point = new Point(geometryHelper, transforms, vector, lists);
+        line = new Line(vector, point, geometryHelper);
+        polyline = new Polyline(vector, point, line, geometryHelper);
         meshBitByBit = new MeshBitByBit(vector, polyline);
     });
 
     // Simple plane definitions
     const xyPlane: Inputs.Base.TrianglePlane3 = { normal: [0, 0, 1], d: 0 }; // Z=0 plane
     const xyPlaneOffset: Inputs.Base.TrianglePlane3 = { normal: [0, 0, 1], d: 5 }; // Z=5 plane
-    const slantedPlane: Inputs.Base.TrianglePlane3 = { normal: vector.normalized({ vector: [1, 1, 1] }) as Inputs.Base.Vector3, d: 0 }; // X+Y+Z=0 plane through origin
+    const slantedPlane: Inputs.Base.TrianglePlane3 = { normal: uh.vector.normalized({ vector: [1, 1, 1] }) as Inputs.Base.Vector3, d: 0 }; // X+Y+Z=0 plane through origin
 
     // Simple triangles
     const triXY1: Inputs.Base.Triangle3 = [[0, 0, 0], [1, 0, 0], [0, 1, 0]]; // On XY plane, normal ~[0,0,1]
@@ -121,18 +85,18 @@ describe("Mesh unit tests", () => {
     describe("calculateTrianglePlane", () => {
         it("should calculate plane for simple XY triangle", () => {
             const plane = meshBitByBit.calculateTrianglePlane({ triangle: triXY1 });
-            expectPlaneCloseTo(plane, xyPlane);
+            uh.expectPlaneCloseTo(plane, xyPlane);
         });
 
         it("should calculate plane for offset XY triangle", () => {
             const plane = meshBitByBit.calculateTrianglePlane({ triangle: triXYOffset });
-            expectPlaneCloseTo(plane, xyPlaneOffset);
+            uh.expectPlaneCloseTo(plane, xyPlaneOffset);
         });
 
         it("should calculate plane for XZ triangle", () => {
             const plane = meshBitByBit.calculateTrianglePlane({ triangle: triXZ });
             const expectedPlane: Inputs.Base.TrianglePlane3 = { normal: [0, -1, 0], d: 0 };
-            expectPlaneCloseTo(plane, expectedPlane);
+            uh.expectPlaneCloseTo(plane, expectedPlane);
         });
 
         it("should calculate plane for slanted triangle", () => {
@@ -140,7 +104,7 @@ describe("Mesh unit tests", () => {
             const expectedNormal = vector.normalized({ vector: [1, 1, 1] }) as Inputs.Base.Vector3;
             const expectedD = vector.dot({ first: expectedNormal, second: [1, 0, 0] });
             const expectedPlane: Inputs.Base.TrianglePlane3 = { normal: expectedNormal, d: expectedD };
-            expectPlaneCloseTo(plane, expectedPlane);
+            uh.expectPlaneCloseTo(plane, expectedPlane);
         });
 
         it("should return undefined for degenerate collinear triangle", () => {
@@ -170,7 +134,7 @@ describe("Mesh unit tests", () => {
             expect(plane).toBeDefined();
              if (plane) {
                 const normalMagnitude = Math.sign(plane.normal[2]);
-                expectPointCloseTo(plane.normal, [0, 0, 1 * normalMagnitude], TOLERANCE);
+                uh.expectPointCloseTo(plane.normal, [0, 0, 1 * normalMagnitude]);
                 expect(plane.d).toBeCloseTo(0, TOLERANCE);
              }
         });
@@ -229,21 +193,21 @@ describe("Mesh unit tests", () => {
         it("should return correct segment for simple orthogonal intersection (XY and XZ)", () => {
             const expectedSegment: Inputs.Base.Segment3 = [[0, 0, 0], [1, 0, 0]];
             const result = meshBitByBit.triangleTriangleIntersection({ triangle1: triXY1, triangle2: triXZ });
-            expectSegmentCloseTo(result, expectedSegment);
+            uh.expectSegmentCloseTo(result, expectedSegment);
         });
 
         it("should return correct segment for shifted orthogonal intersection", () => {
             const triXZ_Shifted: Inputs.Base.Triangle3 = [[0.5, 0, 0], [1.5, 0, 0], [0.5, 0, 1]]; // Y=0 plane, X from 0.5 to 1.5
             const expectedSegment: Inputs.Base.Segment3 = [[0.5, 0, 0], [1.0, 0, 0]];
             const result = meshBitByBit.triangleTriangleIntersection({ triangle1: triXY1, triangle2: triXZ_Shifted });
-            expectSegmentCloseTo(result, expectedSegment);
+            uh.expectSegmentCloseTo(result, expectedSegment);
         });
 
         it("should return correct segment for piercing intersection", () => {
             const triPiercing: Inputs.Base.Triangle3 = [[1, -1, -1], [1, 1, 1], [1, 3, -1]]; // On X=1 plane
             const expectedSegment: Inputs.Base.Segment3 = [[1, 0, 0], [1, 1, 0]];
             const result = meshBitByBit.triangleTriangleIntersection({ triangle1: [[0, 0, 0], [2, 0, 0], [0, 2, 0]], triangle2: triPiercing });
-            expectSegmentCloseTo(result, expectedSegment);
+            uh.expectSegmentCloseTo(result, expectedSegment);
         });
 
     });

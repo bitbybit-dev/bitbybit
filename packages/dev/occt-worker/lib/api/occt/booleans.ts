@@ -43,4 +43,56 @@ export class OCCTBooleans {
     intersection(inputs: Inputs.OCCT.IntersectionDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.OCCT.TopoDSShapePointer> {
         return this.occWorkerManager.genericCallToWorkerPromise("booleans.intersection", inputs);
     }
+
+    /**
+     * Does mesh mesh intersection operation between two shapes - both shapes can have their own  meshing precision.
+     * This algorithm intersects the meshes and returns the wires of the intersection, which are polylines or polygons.
+     * @param inputs Two shapes to intersect
+     * @returns Wires where shapes intersect
+     * @group mesh based
+     * @shortname mesh mesh intersection as wires
+     * @drawable true
+     */
+    meshMeshIntersectionWires(inputs: Inputs.OCCT.MeshMeshIntersectionTwoShapesDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.OCCT.TopoDSWirePointer[]>{
+        return this.occWorkerManager.genericCallToWorkerPromise("booleans.meshMeshIntersectionWires", inputs);
+    }
+
+    /**
+     * Does mesh mesh intersection operation between two shapes - both shapes can have their own  meshing precision.
+     * This algorithm intersects the meshes and returns the points of the intersection, which are polylines or polygons.
+     * @param inputs Two shapes to intersect
+     * @returns Points where shapes intersect
+     * @group mesh based
+     * @shortname mesh mesh intersection as points
+     * @drawable true
+     */
+    meshMeshIntersectionPoints(inputs: Inputs.OCCT.MeshMeshIntersectionTwoShapesDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.Base.Point3[][]>{
+        return this.occWorkerManager.genericCallToWorkerPromise("booleans.meshMeshIntersectionPoints", inputs);
+    }
+
+    /**
+     * Does mesh mesh intersection operation between the shape and multiple other shapes - all shapes can have their own meshing precision.
+     * This algorithm intersects the meshes and returns the wires of the intersection, which are polylines or polygons.
+     * @param inputs Two shapes to intersect
+     * @returns Wires where shapes intersect
+     * @group mesh based
+     * @shortname mesh mesh intersection of shapes as wires
+     * @drawable true
+     */
+    meshMeshIntersectionOfShapesWires(inputs: Inputs.OCCT.MeshMeshesIntersectionOfShapesDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.OCCT.TopoDSWirePointer[]>{
+        return this.occWorkerManager.genericCallToWorkerPromise("booleans.meshMeshIntersectionOfShapesWires", inputs);
+    }
+
+    /**
+     * Does mesh mesh intersection operation between the shape and multiple other shapes - all shapes can have their own meshing precision.
+     * This algorithm intersects the meshes and returns the points of the intersection.
+     * @param inputs Two shapes to intersect
+     * @returns Wires where shapes intersect
+     * @group mesh based
+     * @shortname mesh mesh intersection of shapes as points
+     * @drawable true
+     */
+    meshMeshIntersectionOfShapesPoints(inputs: Inputs.OCCT.MeshMeshesIntersectionOfShapesDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.Base.Point3[][]>{
+        return this.occWorkerManager.genericCallToWorkerPromise("booleans.meshMeshIntersectionOfShapesPoints", inputs);
+    }
 }

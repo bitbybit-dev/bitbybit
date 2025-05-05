@@ -153,6 +153,18 @@ export class OCCTFace {
     }
 
     /**
+     * Creates OpenCascade hexagons in grid
+     * @param inputs Hexagon parameters
+     * @returns OpenCascade hexagons in grid
+     * @group primitives
+     * @shortname hexagons in grid
+     * @drawable true
+     */
+    hexagonsInGrid(inputs: Inputs.OCCT.HexagonsInGridDto): Promise<Inputs.OCCT.TopoDSFacePointer[]> {
+        return this.occWorkerManager.genericCallToWorkerPromise("shapes.face.hexagonsInGrid", inputs);
+    }
+
+    /**
      * Creates OpenCascade ellipse face
      * @param inputs Ellipse parameters
      * @returns OpenCascade ellipse face
@@ -270,6 +282,30 @@ export class OCCTFace {
      */
     subdivideToRectangleHoles(inputs: Inputs.OCCT.FaceSubdivideToRectangleHolesDto<Inputs.OCCT.TopoDSFacePointer>): Promise<Inputs.OCCT.TopoDSFacePointer[]> {
         return this.occWorkerManager.genericCallToWorkerPromise("shapes.face.subdivideToRectangleHoles", inputs);
+    }
+
+    /**
+     * Subdivides a face to hexagon wires
+     * @param inputs Face and options for subdivision
+     * @returns wires
+     * @group patterns
+     * @shortname hexagon wires on face
+     * @drawable true
+     */
+    subdivideToHexagonWires(inputs: Inputs.OCCT.FaceSubdivideToHexagonWiresDto<Inputs.OCCT.TopoDSFacePointer>): Promise<Inputs.OCCT.TopoDSWirePointer[]> {
+        return this.occWorkerManager.genericCallToWorkerPromise("shapes.face.subdivideToHexagonWires", inputs);
+    }
+
+    /**
+     * Subdivides a face to hexagon holes
+     * @param inputs Face and options for subdivision
+     * @returns faces
+     * @group patterns
+     * @shortname hexagon holes on face
+     * @drawable true
+     */
+    subdivideToHexagonHoles(inputs: Inputs.OCCT.FaceSubdivideToHexagonHolesDto<Inputs.OCCT.TopoDSFacePointer>): Promise<Inputs.OCCT.TopoDSFacePointer[]> {
+        return this.occWorkerManager.genericCallToWorkerPromise("shapes.face.subdivideToHexagonHoles", inputs);
     }
 
     /**

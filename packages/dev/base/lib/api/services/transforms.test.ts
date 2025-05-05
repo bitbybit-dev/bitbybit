@@ -3,34 +3,16 @@ import { MathBitByBit } from "./math";
 import { Transforms } from "./transforms";
 import { Vector } from "./vector";
 import * as Inputs from "../inputs";
+import { UnitTestHelper } from "../unit-test-helper";
 
 describe("Transforms unit tests", () => {
+
+    const uh = new UnitTestHelper();
+
     let geometryHelper: GeometryHelper;
     let math: MathBitByBit;
     let vector: Vector;
     let transforms: Transforms;
-
-    // Precision for floating point comparisons
-    const TOLERANCE = 1e-7;
-
-    // Helper to compare two 4x4 matrices (16-element arrays) with tolerance
-    const expectMatrixCloseTo = (received: Inputs.Base.TransformMatrix | undefined, expected: Inputs.Base.TransformMatrix) => {
-        expect(received).toBeDefined();
-        if (!received) return;
-        expect(received).toHaveLength(16);
-        expect(expected).toHaveLength(16);
-        for (let i = 0; i < 16; i++) {
-            expect(received[i]).toBeCloseTo(expected[i], TOLERANCE);
-        }
-    };
-
-    // Helper to compare arrays of matrices (like those returned by center-based operations)
-    const expectMatrixesCloseTo = (received: Inputs.Base.TransformMatrixes | undefined, expected: Inputs.Base.TransformMatrixes) => {
-        expect(received).toBeDefined();
-        if (!received) return;
-        expect(received.length).toEqual(expected.length);
-        received.forEach((matrix, i) => expectMatrixCloseTo(matrix, expected[i]));
-    };
 
     beforeAll(() => {
         geometryHelper = new GeometryHelper();
@@ -65,7 +47,7 @@ describe("Transforms unit tests", () => {
         describe("identity", () => {
             it("should return the identity matrix", () => {
                 const result = transforms.identity();
-                expectMatrixCloseTo(result, identityMatrix);
+                uh.expectMatrixCloseTo(result, identityMatrix);
             });
         });
 
@@ -75,7 +57,7 @@ describe("Transforms unit tests", () => {
                 const result = transforms.translationXYZ({ translation: translationVec });
                 expect(result).toBeInstanceOf(Array);
                 expect(result).toHaveLength(1);
-                expectMatrixCloseTo(result[0], translationMatrix(5, -10, 15));
+                uh.expectMatrixCloseTo(result[0], translationMatrix(5, -10, 15));
             });
         });
 
@@ -89,8 +71,8 @@ describe("Transforms unit tests", () => {
                 expect(result[0]).toHaveLength(1);
                 expect(result[1]).toBeInstanceOf(Array);
                 expect(result[1]).toHaveLength(1);
-                expectMatrixCloseTo(result[0][0], translationMatrix(1, 2, 3));
-                expectMatrixCloseTo(result[1][0], translationMatrix(4, 5, 6));
+                uh.expectMatrixCloseTo(result[0][0], translationMatrix(1, 2, 3));
+                uh.expectMatrixCloseTo(result[1][0], translationMatrix(4, 5, 6));
             });
 
             it("should return an empty array for empty input", () => {
@@ -104,7 +86,7 @@ describe("Transforms unit tests", () => {
                 const scaleVec: Inputs.Base.Vector3 = [2, 0.5, -1];
                 const result = transforms.scaleXYZ({ scaleXyz: scaleVec });
                 expect(result).toHaveLength(1);
-                expectMatrixCloseTo(result[0], scalingMatrix(2, 0.5, -1));
+                uh.expectMatrixCloseTo(result[0], scalingMatrix(2, 0.5, -1));
             });
         });
 
@@ -113,7 +95,7 @@ describe("Transforms unit tests", () => {
                 const scaleFactor = 3.5;
                 const result = transforms.uniformScale({ scale: scaleFactor });
                 expect(result).toHaveLength(1);
-                expectMatrixCloseTo(result[0], scalingMatrix(3.5, 3.5, 3.5));
+                uh.expectMatrixCloseTo(result[0], scalingMatrix(3.5, 3.5, 3.5));
             });
         });
 
@@ -128,7 +110,7 @@ describe("Transforms unit tests", () => {
                     scalingMatrix(scaleVec[0], scaleVec[1], scaleVec[2]),
                     translationMatrix(centerPoint[0], centerPoint[1], centerPoint[2]),
                 ];
-                expectMatrixesCloseTo(result, expected);
+                uh.expectMatrixesCloseTo(result, expected);
             });
         });
 
@@ -143,7 +125,7 @@ describe("Transforms unit tests", () => {
                     scalingMatrix(scaleFactor, scaleFactor, scaleFactor),
                     translationMatrix(centerPoint[0], centerPoint[1], centerPoint[2]),
                 ];
-                expectMatrixesCloseTo(result, expected);
+                uh.expectMatrixesCloseTo(result, expected);
             });
         });
 
@@ -159,7 +141,7 @@ describe("Transforms unit tests", () => {
                     rotationXMatrix(angleRad),
                     translationMatrix(centerPoint[0], centerPoint[1], centerPoint[2]),
                 ];
-                expectMatrixesCloseTo(result, expected);
+                uh.expectMatrixesCloseTo(result, expected);
             });
         });
 
@@ -175,7 +157,7 @@ describe("Transforms unit tests", () => {
                     rotationYMatrix(angleRad),
                     translationMatrix(centerPoint[0], centerPoint[1], centerPoint[2]),
                 ];
-                expectMatrixesCloseTo(result, expected);
+                uh.expectMatrixesCloseTo(result, expected);
             });
         });
 
@@ -191,7 +173,7 @@ describe("Transforms unit tests", () => {
                     rotationZMatrix(angleRad),
                     translationMatrix(centerPoint[0], centerPoint[1], centerPoint[2]),
                 ];
-                expectMatrixesCloseTo(result, expected);
+                uh.expectMatrixesCloseTo(result, expected);
             });
         });
 
@@ -211,7 +193,7 @@ describe("Transforms unit tests", () => {
                     expectedMiddleMatrix,
                     translationMatrix(centerPoint[0], centerPoint[1], centerPoint[2]),
                 ];
-                expectMatrixesCloseTo(result, expected);
+                uh.expectMatrixesCloseTo(result, expected);
             });
 
             it("should handle non-unit axis vector by normalizing it", () => {
@@ -229,7 +211,7 @@ describe("Transforms unit tests", () => {
                     expectedMiddleMatrix,
                     translationMatrix(centerPoint[0], centerPoint[1], centerPoint[2]),
                 ];
-                expectMatrixesCloseTo(result, expected);
+                uh.expectMatrixesCloseTo(result, expected);
             });
 
         });
@@ -286,7 +268,7 @@ describe("Transforms unit tests", () => {
                     expectedMiddleMatrix,
                     translationMatrix(centerPoint[0], centerPoint[1], centerPoint[2]),
                 ];
-                expectMatrixesCloseTo(result, expected);
+                uh.expectMatrixesCloseTo(result, expected);
             });
 
             it("should create translate-rotateYPR-translate matrices for pure Roll (Z rot)", () => {
@@ -303,22 +285,17 @@ describe("Transforms unit tests", () => {
                     expectedMiddleMatrix,
                     translationMatrix(centerPoint[0], centerPoint[1], centerPoint[2]),
                 ];
-                expectMatrixesCloseTo(result, expected);
+                uh.expectMatrixesCloseTo(result, expected);
             });
 
 
             it("should handle combined rotations", () => {
-                // Calculating the combined matrix manually is complex.
-                // We'll check the structure and the translation components.
                 const yaw = 45, pitch = 30, roll = 60;
                 const result = transforms.rotationCenterYawPitchRoll({ center: centerPoint, yaw, pitch, roll });
                 expect(result).toHaveLength(3);
-                expectMatrixCloseTo(result[0], translationMatrix(-centerPoint[0], -centerPoint[1], -centerPoint[2]));
-                expectMatrixCloseTo(result[2], translationMatrix(centerPoint[0], centerPoint[1], centerPoint[2]));
-                // Check the middle matrix is not identity (it should be a rotation)
+                uh.expectMatrixCloseTo(result[0], translationMatrix(-centerPoint[0], -centerPoint[1], -centerPoint[2]));
+                uh.expectMatrixCloseTo(result[2], translationMatrix(centerPoint[0], centerPoint[1], centerPoint[2]));
                 expect(result[1]).not.toEqual(identityMatrix);
-                // TODO: For a more robust test, apply the resulting transform to a known point
-                // and verify its final position after YPR rotation. This tests the effect.
             });
         });
 

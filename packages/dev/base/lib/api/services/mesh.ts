@@ -39,7 +39,7 @@ export class MeshBitByBit {
             return undefined; // Degenerate triangle
         }
 
-        // Defensive copy if normalize modifies in-place, otherwise remove .slice()
+        // Defensive copy if normalize modifies in-place
         const normalizedNormal = this.vector.normalized({ vector: normal }) as Inputs.Base.Vector3;
         const d = this.vector.dot({ first: normalizedNormal, second: inputs.triangle[0] });
         return { normal: normalizedNormal, d: d };
@@ -91,7 +91,6 @@ export class MeshBitByBit {
         const allDistQZero = distQ_Plane1.every(d => Math.abs(d) < EPSILON);
 
         if (allDistPZero && allDistQZero) {
-            // console.warn("Coplanar case detected, not handled.");
             return undefined; // Explicitly not handling coplanar intersection areas
         }
 
@@ -99,7 +98,6 @@ export class MeshBitByBit {
         const det = this.vector.dot({ first: lineDir, second: lineDir }); // det = |lineDir|^2
 
         if (det < EPSILON * EPSILON) {
-            // console.warn("Planes are parallel or near parallel.");
             return undefined; // Planes parallel, no line intersection (coplanar case handled above)
         }
 
@@ -149,8 +147,7 @@ export class MeshBitByBit {
         if (t1_intersection_points_3d.length < 2 || t2_intersection_points_3d.length < 2) {
             // This can happen if triangles touch at a vertex or edge without crossing planes,
             // or due to numerical precision near edges/vertices.
-            // console.log("Intersection appears to be edge/vertex contact or numerical issue.");
-            return undefined; // Treat touch as no intersection segment for now
+            return undefined; // Treat touch as no intersection segment
         }
 
         // Calculate a robust origin ON the intersection line
@@ -167,7 +164,6 @@ export class MeshBitByBit {
 
 
         // Project the 3D intersection points onto the lineDir, relative to lineOrigin
-        // param = dot(point - lineOrigin, lineDir)
         const t1_params = t1_intersection_points_3d.map(p =>
             this.vector.dot({ first: this.vector.sub({ first: p, second: lineOrigin }), second: lineDir })
         );
@@ -242,6 +238,25 @@ export class MeshBitByBit {
     meshMeshIntersectionPolylines(inputs: Inputs.Mesh.MeshMeshToleranceDto): Inputs.Base.Polyline3[] {
         const segments = this.meshMeshIntersectionSegments(inputs);
         return this.polyline.sortSegmentsIntoPolylines({ segments, tolerance: inputs.tolerance });
+    }
+
+    /**
+     * Computes the intersection points of two meshes.
+     * @param inputs first mesh, second mesh, and tolerance
+     * @returns array of intersection points
+     * @group mesh
+     * @shortname mesh-mesh int points
+     * @drawable false
+     */
+    meshMeshIntersectionPoints(inputs: Inputs.Mesh.MeshMeshToleranceDto): Inputs.Base.Point3[][] {
+        const polylines = this.meshMeshIntersectionPolylines(inputs);
+        return polylines.map(polyline => {
+            if(polyline.isClosed){
+                return [...polyline.points, polyline.points[0]];
+            } else {
+                return polyline.points;
+            }
+        });
     }
 
     private computeIntersectionPoint(u: Inputs.Base.Point3, v: Inputs.Base.Point3, t: number) {

@@ -41,6 +41,18 @@ export class JSCAD {
     }
 
     /**
+      * Converts the Jscad mesh to polygon points representing triangles of the mesh.
+      * @param inputs Jscad mesh
+      * @returns polygon points
+      * @group conversions
+      * @shortname to polygon points
+      * @drawable false
+      */
+    async toPolygonPoints(inputs: Inputs.JSCAD.MeshDto): Promise<Inputs.Base.Mesh3> {
+        return this.jscadWorkerManager.genericCallToWorkerPromise("toPolygonPoints", inputs);
+    }
+
+    /**
      * Transforms the Jscad solid meshes with a given list of transformations.
      * @param inputs Solids with the transformation matrixes
      * @returns Solids with a transformation

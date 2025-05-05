@@ -2,6 +2,7 @@ import { GeometryHelper } from "./geometry-helper";
 import * as Inputs from "../inputs";
 import { Point } from "./point";
 import { Vector } from "./vector";
+import { Line } from "./line";
 
 /**
  * Contains various methods for polyline. Polyline in bitbybit is a simple object that has points property containing an array of points.
@@ -9,7 +10,7 @@ import { Vector } from "./vector";
  */
 export class Polyline {
 
-    constructor(private readonly vector: Vector, private readonly point: Point, private readonly geometryHelper: GeometryHelper) { }
+    constructor(private readonly vector: Vector, private readonly point: Point, private readonly line: Line, private readonly geometryHelper: GeometryHelper) { }
 
     /**
      * Gets the length of the polyline
@@ -92,6 +93,164 @@ export class Polyline {
         return {
             points: inputs.points,
         };
+    }
+
+    /**
+     * Create the lines from the polyline
+     * @param inputs polyline
+     * @returns lines
+     * @group convert
+     * @shortname polyline to lines
+     * @drawable true
+     */
+    polylineToLines(inputs: Inputs.Polyline.PolylineDto): Inputs.Base.Line3[] {
+        const segments = this.polylineToSegments(inputs);
+        return segments.map((segment) => ({
+            start: segment[0],
+            end: segment[1],
+        }));
+    }
+
+    /**
+     * Create the segments from the polyline
+     * @param inputs polyline
+     * @returns segments
+     * @group convert
+     * @shortname polyline to segments
+     * @drawable false
+     */
+    polylineToSegments(inputs: Inputs.Polyline.PolylineDto): Inputs.Base.Segment3[] {
+        const polyline = inputs.polyline;
+
+        const segments: Inputs.Base.Segment3[] = [];
+        const points = polyline.points;
+        const numPoints = points.length;
+
+        if (numPoints < 2) {
+            return segments;
+        }
+
+        // Create segments between consecutive points
+        for (let i = 0; i < numPoints - 1; i++) {
+            segments.push([points[i], points[i + 1]]);
+        }
+
+        // Add closing segment if the polyline is closed and has enough points
+        if (polyline.isClosed && numPoints >= 2) {
+            if (!this.point.twoPointsAlmostEqual({ point1: points[numPoints - 1], point2: points[0], tolerance: 1e-9 })) {
+                segments.push([points[numPoints - 1], points[0]]);
+            }
+        }
+
+        return segments;
+    }
+
+    /**
+     * Finds the points of self intersection of the polyline
+     * @param inputs points of self intersection
+     * @returns polyline
+     * @group intersections
+     * @shortname polyline self intersections
+     * @drawable true
+     */
+    polylineSelfIntersection(inputs: Inputs.Polyline.PolylineToleranceDto): Inputs.Base.Point3[] {
+        const { polyline, tolerance } = inputs;
+        const lines = this.polylineToLines({ polyline });
+        const numSegments = lines.length;
+
+        if (numSegments < 3) {
+            return [];
+        }
+
+        const selfIntersectionPoints: Inputs.Base.Point3[] = [];
+        const defaultTolerance = tolerance ?? 1e-6;
+
+        for (let i = 0; i < numSegments; i++) {
+            for (let j = i + 1; j < numSegments; j++) {
+                let areAdjacent = (j === i + 1);
+                if (!areAdjacent && polyline.isClosed && i === 0 && j === numSegments - 1) {
+                    areAdjacent = true;
+                }
+
+                if (areAdjacent) {
+                    continue;
+                }
+
+                const intersection = this.line.lineLineIntersection({
+                    line1: lines[i],
+                    line2: lines[j],
+                    checkSegmentsOnly: true,
+                    tolerance: defaultTolerance,
+                });
+
+                if (intersection) {
+                    let foundClose = false;
+                    for (const existingPoint of selfIntersectionPoints) {
+                        if (this.point.twoPointsAlmostEqual({
+                            point1: intersection,
+                            point2: existingPoint,
+                            tolerance: defaultTolerance
+                        })) {
+                            foundClose = true;
+                            break;
+                        }
+                    }
+                    if (!foundClose) {
+                        selfIntersectionPoints.push(intersection);
+                    }
+                }
+            }
+        }
+
+        return selfIntersectionPoints;
+    }
+
+    /**
+     * Finds the intersection points between two polylines
+     * @param inputs two polylines and tolerance
+     * @returns points
+     * @group intersection
+     * @shortname two polyline intersection
+     * @drawable true
+     */
+    twoPolylineIntersection(inputs: Inputs.Polyline.TwoPolylinesToleranceDto): Inputs.Base.Point3[] {
+        const { polyline1, polyline2, tolerance } = inputs;
+        const lines1 = this.polylineToLines({ polyline: polyline1 });
+        const lines2 = this.polylineToLines({ polyline: polyline2 });
+
+        const intersectionPoints: Inputs.Base.Point3[] = [];
+        const defaultTolerance = tolerance ?? 1e-6;
+
+        for (const seg1 of lines1) {
+            for (const seg2 of lines2) {
+                const intersection = this.line.lineLineIntersection({
+                    line1: seg1,
+                    line2: seg2,
+                    checkSegmentsOnly: true,
+                    tolerance: defaultTolerance,
+                });
+
+                if (intersection) {
+                    let foundClose = false;
+                    for (const existingPoint of intersectionPoints) {
+                        if (this.point.twoPointsAlmostEqual({
+                            point1: intersection,
+                            point2: existingPoint,
+                            tolerance: defaultTolerance
+                        })) {
+                            foundClose = true;
+                            break;
+                        }
+                    }
+
+                    if (!foundClose) {
+                        intersectionPoints.push(intersection);
+                    }
+                }
+            }
+        }
+
+        return intersectionPoints;
     }
 
     /**
@@ -185,11 +344,11 @@ export class Polyline {
                     // Only consider segments not already used in *any* polyline
                     if (!used[candidate.segmentIndex]) {
                         const diffVector = this.vector.sub({ first: candidate.coords, second: pointToMatch });
-                        const distSq = this.vector.lengthSq({ vector: diffVector as Inputs.Base.Vector3});
+                        const distSq = this.vector.lengthSq({ vector: diffVector as Inputs.Base.Vector3 });
 
                         if (distSq < minDistanceSq) {
-                           // Check with precise method if it's a potential best match
-                            if (this.point.twoPointsAlmostEqual({point1: candidate.coords, point2: pointToMatch, tolerance: tolerance})){
+                            // Check with precise method if it's a potential best match
+                            if (this.point.twoPointsAlmostEqual({ point1: candidate.coords, point2: pointToMatch, tolerance: tolerance })) {
                                 bestMatch = candidate;
                                 minDistanceSq = distSq; // Update min distance found
                             }
@@ -198,10 +357,10 @@ export class Polyline {
                 }
             }
             // No need for final check here, already done inside the loop
-             if(bestMatch && !used[bestMatch.segmentIndex]) { // Double check used status
+            if (bestMatch && !used[bestMatch.segmentIndex]) { // Double check used status
                 return bestMatch;
-             }
-             return undefined;
+            }
+            return undefined;
         };
 
 
@@ -269,15 +428,15 @@ export class Polyline {
             // Final closure check (might be redundant now, but harmless)
             // This catches cases like A->B, B->A which form a 2-point closed loop
             if (!isClosed && currentPoints.length >= 2) {
-                 isClosed = this.point.twoPointsAlmostEqual({ point1: currentHead, point2: currentTail, tolerance: tolerance });
+                isClosed = this.point.twoPointsAlmostEqual({ point1: currentHead, point2: currentTail, tolerance: tolerance });
             }
 
             // Remove duplicate point for closed loops with more than 2 points
             if (isClosed && currentPoints.length > 2) {
-                 // Check if the first and last points are indeed the ones needing merging
-                 if (this.point.twoPointsAlmostEqual({ point1: currentPoints[currentPoints.length - 1], point2: currentPoints[0], tolerance: tolerance })) {
-                     currentPoints.pop();
-                 }
+                // Check if the first and last points are indeed the ones needing merging
+                if (this.point.twoPointsAlmostEqual({ point1: currentPoints[currentPoints.length - 1], point2: currentPoints[0], tolerance: tolerance })) {
+                    currentPoints.pop();
+                }
             }
 
             // Add the completed polyline (even if it's just the starting segment)
@@ -290,6 +449,65 @@ export class Polyline {
         return results;
     }
 
+    /**
+     * Calculates the maximum possible half-line fillet radius for each corner
+     * of a given polyline. For a closed polyline, it includes the corners
+     * connecting the last segment back to the first.
+     *
+     * The calculation uses the 'half-line' constraint, meaning the fillet's
+     * tangent points must lie within the first half of each segment connected
+     * to the corner.
+     *
+     * @param inputs Defines the polyline points, whether it's closed, and an optional tolerance.
+     * @returns An array containing the maximum fillet radius calculated for each corner.
+     *          The order corresponds to corners P[1]...P[n-2] for open polylines,
+     *          and P[1]...P[n-2], P[0], P[n-1] for closed polylines.
+     *          Returns an empty array if the polyline has fewer than 3 points.
+     * @group fillet
+     * @shortname polyline max fillet radii
+     * @drawable false
+     */
+    maxFilletsHalfLine(
+        inputs: Inputs.Polyline.PolylineToleranceDto
+    ): number[] {
+        return this.point.maxFilletsHalfLine({
+            points: inputs.polyline.points,
+            checkLastWithFirst: inputs.polyline.isClosed,
+            tolerance: inputs.tolerance,
+        });
+    }
+
+    /**
+     * Calculates the single safest maximum fillet radius that can be applied
+     * uniformly to all corners of a polyline, based on the 'half-line' constraint.
+     * This is determined by finding the minimum of the maximum possible fillet
+     * radii calculated for each individual corner.
+     *
+     * @param inputs Defines the polyline points, whether it's closed, and an optional tolerance.
+     * @returns The smallest value from the results of calculatePolylineMaxFillets.
+     *          Returns 0 if the polyline has fewer than 3 points or if any
+     *          calculated maximum radius is 0.
+     * @group fillet
+     * @shortname polyline safest fillet radius
+     * @drawable false
+     */
+    safestFilletRadius(
+        inputs: Inputs.Polyline.PolylineToleranceDto
+    ): number {
+        const allMaxRadii = this.maxFilletsHalfLine(inputs);
+
+        if (allMaxRadii.length === 0) {
+            // No corners, or fewer than 3 points. No fillet possible.
+            return 0;
+        }
+
+        // Find the minimum radius among all calculated maximums.
+        // If any corner calculation resulted in 0, the safest radius is 0.
+        const safestRadius = Math.min(...allMaxRadii);
+
+        // Ensure we don't return a negative radius if Math.min had weird input (shouldn't happen here)
+        return Math.max(0, safestRadius);
+    }
 
 }
 

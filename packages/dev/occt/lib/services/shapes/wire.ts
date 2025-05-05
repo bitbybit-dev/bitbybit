@@ -88,6 +88,10 @@ export class OCCTWire {
         return this.och.converterService.makeCompoundIfNeeded(wires, inputs.returnCompound);
     }
 
+    hexagonsInGrid(inputs: Inputs.OCCT.HexagonsInGridDto): TopoDS_Wire[] {
+        return this.och.wiresService.hexagonsInGrid(inputs);
+    }
+
     createZigZagBetweenTwoWires(inputs: Inputs.OCCT.ZigZagBetweenTwoWiresDto<TopoDS_Wire>): TopoDS_Wire {
         return this.och.wiresService.createZigZagBetweenTwoWires(inputs);
     }

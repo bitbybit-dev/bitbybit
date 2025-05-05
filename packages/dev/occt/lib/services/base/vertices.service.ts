@@ -14,7 +14,7 @@ export class VerticesService {
         private readonly converterService: ConverterService,
         private readonly shapeGettersService: ShapeGettersService,
         public wiresService: WiresService,
-        private readonly booleansService: BooleansService,
+        public booleansService: BooleansService,
     ) { }
 
 

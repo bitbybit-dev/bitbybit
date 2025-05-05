@@ -128,6 +128,24 @@ export class Transforms {
     }
 
     /**
+     * Creates a stretch transformation along a specific direction, relative to a center point.
+     * This scales points along the given direction vector while leaving points in the
+     * plane perpendicular to the direction (passing through the center) unchanged.
+     * @param inputs Defines the center, direction, and scale factor for the stretch.
+     * @returns Array of transformations: [Translate To Origin, Stretch, Translate Back].
+     * @group scale
+     * @shortname stretch dir center
+     * @drawable false
+     */
+    stretchDirFromCenter(inputs: Inputs.Transforms.StretchDirCenterDto): Base.TransformMatrixes {
+        return [
+            this.translation(-inputs.center[0], -inputs.center[1], -inputs.center[2]),
+            this.stretchDirection(inputs.direction, inputs.scale),
+            this.translation(inputs.center[0], inputs.center[1], inputs.center[2]),
+        ] as Base.TransformMatrixes;
+    }
+
+    /**
      * Creates uniform scale transformation
      * @param inputs Scale Dto
      * @returns transformation
@@ -307,4 +325,53 @@ export class Transforms {
         m[15] = 1.0;
         return m;
     }
+
+    /**
+     * Creates a 4x4 matrix that scales along a given direction vector.
+     * @param direction The direction vector (will be normalized).
+     * @param scale The scale factor along the direction.
+     * @returns A 4x4 column-major transformation matrix.
+     */
+    private stretchDirection(direction: Base.Vector3, scale: number): Base.TransformMatrix {
+        const d = this.vector.normalized({ vector: direction });
+        const [dx, dy, dz] = d;
+
+        // Handle potential zero vector after normalization (if input was zero)
+        if (isNaN(dx) || (dx === 0 && dy === 0 && dz === 0)) {
+            console.warn("Stretch direction vector is zero or invalid. Returning identity matrix.");
+            return this.identity();
+        }
+
+        const s = scale;
+        const sMinus1 = s - 1.0;
+
+        // Calculate elements of the 3x3 directional scaling part
+        const m11 = 1.0 + sMinus1 * dx * dx;
+        const m12 = sMinus1 * dx * dy;
+        const m13 = sMinus1 * dx * dz;
+        // m14 = 0
+
+        const m21 = sMinus1 * dy * dx;
+        const m22 = 1.0 + sMinus1 * dy * dy;
+        const m23 = sMinus1 * dy * dz;
+        // m24 = 0
+
+        const m31 = sMinus1 * dz * dx;
+        const m32 = sMinus1 * dz * dy;
+        const m33 = 1.0 + sMinus1 * dz * dz;
+        // m34 = 0
+
+        // m41, m42, m43 = 0, m44 = 1
+
+        // Assemble the 4x4 matrix in COLUMN-MAJOR order
+        const m: Base.TransformMatrix = [
+            m11, m21, m31, 0.0, // Column 1
+            m12, m22, m32, 0.0, // Column 2
+            m13, m23, m33, 0.0, // Column 3
+            0.0, 0.0, 0.0, 1.0  // Column 4
+        ];
+
+        return m;
+    }
+
 }

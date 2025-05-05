@@ -197,4 +197,48 @@ export namespace Polyline {
          */
         tolerance? = 1e-5;
     }
+    export class PolylineToleranceDto {
+        constructor(polyline?: PolylinePropertiesDto, tolerance?: number) {
+            if (polyline !== undefined) { this.polyline = polyline; }
+            if (tolerance !== undefined) { this.tolerance = tolerance; }
+        }
+        /**
+         * Polyline to check
+         * @default undefined
+         */
+        polyline?: PolylinePropertiesDto;
+        /**
+         * Tolerance for the calculation
+         * @default 1e-5
+         * @minimum -Infinity
+         * @maximum Infinity
+         * @step 1e-5
+         */
+        tolerance? = 1e-5;
+    }
+    export class TwoPolylinesToleranceDto {
+        constructor(polyline1?: PolylinePropertiesDto, polyline2?: PolylinePropertiesDto, tolerance?: number) {
+            if (polyline1 !== undefined) { this.polyline1 = polyline1; }
+            if (polyline2 !== undefined) { this.polyline2 = polyline2; }
+            if (tolerance !== undefined) { this.tolerance = tolerance; }
+        }
+        /**
+         * First polyline to check
+         * @default undefined
+         */
+        polyline1?: PolylinePropertiesDto;
+        /**
+         * Second polyline to check
+         * @default undefined
+         */
+        polyline2?: PolylinePropertiesDto;
+        /**
+         * Tolerance for the calculation
+         * @default 1e-5
+         * @minimum -Infinity
+         * @maximum Infinity
+         * @step 1e-5
+         */
+        tolerance? = 1e-5;
+    }
 }

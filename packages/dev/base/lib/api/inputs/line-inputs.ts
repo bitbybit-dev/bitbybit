@@ -190,6 +190,36 @@ export namespace Line {
          */
         lines?: LinePointsDto[];
     }
+    export class LineLineIntersectionDto {
+        constructor(line1?: LinePointsDto, line2?: LinePointsDto, tolerance?: number) {
+            if (line1 !== undefined) { this.line1 = line1; }
+            if (line2 !== undefined) { this.line2 = line2; }
+            if (tolerance !== undefined) { this.tolerance = tolerance; }
+        }
+        /**
+         * First line
+         * @default undefined
+         */
+        line1?: LinePointsDto;
+        /**
+         * Second line
+         * @default undefined
+         */
+        line2?: LinePointsDto;
+        /**
+         * Set to false if you want to check for infinite lines
+         * @default true
+         */ 
+        checkSegmentsOnly? = true;
+        /**
+         * Tolerance for intersection
+         * @default 0.01
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.1
+         */
+        tolerance?: number;
+    }
     export class PointOnLineDto {
         constructor(line?: LinePointsDto, param?: number) {
             if (line !== undefined) { this.line = line; }

@@ -35,6 +35,7 @@ export class OCCTFace {
         return this.och.facesService.createFaceFromWiresOnFace(inputs);
     }
 
+
     faceFromSurface(inputs: Inputs.OCCT.ShapeWithToleranceDto<Geom_Surface>) {
         return this.och.facesService.faceFromSurface(inputs);
     }
@@ -77,6 +78,14 @@ export class OCCTFace {
 
     subdivideToRectangleHoles(inputs: Inputs.OCCT.FaceSubdivideToRectangleHolesDto<TopoDS_Face>): TopoDS_Face[] {
         return this.och.facesService.subdivideToRectangleHoles(inputs);
+    }
+
+    subdivideToHexagonWires(inputs: Inputs.OCCT.FaceSubdivideToHexagonWiresDto<TopoDS_Face>): TopoDS_Wire[] {
+        return this.och.facesService.subdivideToHexagonWires(inputs);
+    }
+
+    subdivideToHexagonHoles(inputs: Inputs.OCCT.FaceSubdivideToHexagonHolesDto<TopoDS_Face>): TopoDS_Face[] {
+        return this.och.facesService.subdivideToHexagonHoles(inputs);
     }
 
     subdivideToNormals(inputs: Inputs.OCCT.FaceSubdivisionDto<TopoDS_Face>): Base.Point3[] {
@@ -129,6 +138,11 @@ export class OCCTFace {
 
     createCircleFace(inputs: Inputs.OCCT.CircleDto): TopoDS_Face {
         return this.och.entitiesService.createCircle(inputs.radius, inputs.center, inputs.direction, Inputs.OCCT.typeSpecificityEnum.face) as TopoDS_Face;
+    }
+
+    hexagonsInGrid(inputs: Inputs.OCCT.HexagonsInGridDto): TopoDS_Face[] {
+        const hexagonWires = this.och.wiresService.hexagonsInGrid(inputs);
+        return this.och.facesService.createFacesFromWires({ shapes: hexagonWires, planar: true });
     }
 
     createEllipseFace(inputs: Inputs.OCCT.EllipseDto): TopoDS_Face {
