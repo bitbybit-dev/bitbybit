@@ -693,189 +693,6 @@ export class FacesService {
         return wires;
     }
 
-    subdivideToHexagonWires(inputs: Inputs.OCCT.FaceSubdivideToHexagonWiresDto<TopoDS_Face>): TopoDS_Wire[] {
-        if (inputs.shape === undefined) {
-            throw (Error(("Face not defined")));
-        }
-        const shapesToDelete = [];
-        const face = inputs.shape;
-        const handle = this.occ.BRep_Tool.Surface_2(face);
-        const surface = handle.get();
-        const { uMin, uMax, vMin, vMax } = this.getUVBounds(face);
-
-        const paramsU = [];
-        const stepU = (1 - inputs.offsetFromBorderU * 2) / inputs.nrHexagonsU;
-        const halfStepU = stepU / 2;
-
-        for (let i = 0; i < inputs.nrHexagonsU; i++) {
-            const pU = stepU * i + halfStepU + inputs.offsetFromBorderU;
-            paramsU.push(pU);
-        }
-
-        const paramsV = [];
-        const stepV = (1 - inputs.offsetFromBorderV * 2) / inputs.nrHexagonsV;
-        const halfStepV = stepV / 2;
-
-        for (let i = 0; i < inputs.nrHexagonsV; i++) {
-            const pV = stepV * i + halfStepV + inputs.offsetFromBorderV;
-            paramsV.push(pV);
-        }
-
-        // figure out actual parametric scale
-        const line1 = this.wiresService.createLineWire({
-            start: [0, 0, 0],
-            end: [1, 0, 0],
-        });
-        const line2 = this.wiresService.createLineWire({
-            start: [0, 0, 0],
-            end: [0, 0, 1],
-        });
-
-        const placedLine1 = this.wiresService.placeWire(line1, surface);
-        const placedLine2 = this.wiresService.placeWire(line2, surface);
-        const scaleX = this.wiresService.getWireLength({ shape: placedLine1 });
-        const scaleZ = this.wiresService.getWireLength({ shape: placedLine2 });
-
-        const scaleU = (uMax - uMin);
-        const scaleV = (vMax - vMin);
-
-        const width = scaleV * (1 / scaleX) * (1 - inputs.offsetFromBorderV * 2);
-        const height = scaleU * (1 / scaleZ) * (1 - inputs.offsetFromBorderU * 2);
-
-        const widthWithoutOffset = scaleV * (1 / scaleX);
-        const heightWithoutOffset = scaleU * (1 / scaleZ);
-
-        const translateWidth = (widthWithoutOffset - width) / 2;
-        const translateHeight = (heightWithoutOffset - height) / 2;
-
-        const hex = this.point.hexGridScaledToFit({
-            width,
-            height,
-            nrHexagonsInHeight: inputs.nrHexagonsU,
-            nrHexagonsInWidth: inputs.nrHexagonsV,
-            centerGrid: false,
-            pointsOnGround: true,
-            extendTop: inputs.extendUUp,
-            extendBottom: inputs.extendUBottom,
-            extendLeft: inputs.extendVBottom,
-            extendRight: inputs.extendVUp,
-        });
-
-        const hexWires = hex.hexagons.map(hex => {
-            return this.wiresService.createPolygonWire({
-                points: hex
-            });
-        });
-
-        const translation = [vMin + translateWidth, 0, uMin + translateHeight] as Base.Vector3;
-        const hexWiresTranslated = hexWires.map(h => {
-            return this.transformsService.translate({
-                shape: h,
-                translation
-            });
-        });
-
-        const hexCenters = this.point.translatePoints({
-            points: hex.centers,
-            translation
-        });
-
-        const wires = [];
-
-        let currentScalePatternUIndex = 0;
-        let currentScalePatternVIndex = 0;
-        let currentInclusionPatternIndex = 0;
-        let currentFilletPatternIndex = 0;
-
-        // potentially each rectangle can have unique fillets and scale factors due to patterns applied
-        // we can though optimise this by using cached rectangles to speed up the algorithm
-
-        for (let i = 0; i < paramsU.length; i++) {
-            for (let j = 0; j < paramsV.length; j++) {
-
-                let scaleFromPatternU = 1;
-                if (inputs.scalePatternU && inputs.scalePatternU.length > 0) {
-                    scaleFromPatternU = inputs.scalePatternU[currentScalePatternUIndex];
-                    currentScalePatternUIndex++;
-                    if (currentScalePatternUIndex >= inputs.scalePatternU.length) {
-                        currentScalePatternUIndex = 0;
-                    }
-                }
-
-                let scaleFromPatternV = 1;
-                if (inputs.scalePatternV && inputs.scalePatternV.length > 0) {
-                    scaleFromPatternV = inputs.scalePatternV[currentScalePatternVIndex];
-                    currentScalePatternVIndex++;
-                    if (currentScalePatternVIndex >= inputs.scalePatternV.length) {
-                        currentScalePatternVIndex = 0;
-                    }
-                }
-                let include = true;
-                if (inputs.inclusionPattern && inputs.inclusionPattern.length > 0) {
-                    include = inputs.inclusionPattern[currentInclusionPatternIndex];
-                    currentInclusionPatternIndex++;
-                    if (currentInclusionPatternIndex >= inputs.inclusionPattern.length) {
-                        currentInclusionPatternIndex = 0;
-                    }
-                }
-
-                let fillet = 0;
-                if (inputs.filletPattern && inputs.filletPattern.length > 0) {
-                    fillet = inputs.filletPattern[currentFilletPatternIndex];
-                    currentFilletPatternIndex++;
-                    if (currentFilletPatternIndex >= inputs.filletPattern.length) {
-                        currentFilletPatternIndex = 0;
-                    }
-                }
-
-                if (include) {
-                    fillet = hex.maxFilletRadius * fillet;
-
-                    const hexagon = hexWiresTranslated[i * paramsV.length + j];
-                    const hexagonCenter = hexCenters[i * paramsV.length + j];
-
-                    if (fillet > 0) {
-                        const filletRectangle = this.filletsService.fillet2d({
-                            shape: hexagon,
-                            radius: fillet,
-                        });
-
-                        const scaleVec2 = [scaleFromPatternV, 1, scaleFromPatternU] as Base.Vector3;
-                        let hexScaled = filletRectangle;
-                        if (scaleFromPatternU !== 1 || scaleFromPatternV !== 1) {
-                            hexScaled = this.transformsService.scale3d({
-                                shape: filletRectangle,
-                                center: hexagonCenter,
-                                scale: scaleVec2,
-                            });
-                        }
-
-                        const placedRec = this.wiresService.placeWire(hexScaled, surface);
-                        wires.push(placedRec);
-                    } else {
-
-                        const scaleVec2 = [scaleFromPatternV, 1, scaleFromPatternU] as Base.Vector3;
-                        let hexScaled = hexagon;
-                        if (scaleFromPatternU !== 1 || scaleFromPatternV !== 1) {
-                            hexScaled = this.transformsService.scale3d({
-                                shape: hexagon,
-                                center: hexagonCenter,
-                                scale: scaleVec2,
-                            });
-                        }
-                       
-                        const placedRec = this.wiresService.placeWire(hexScaled, surface);
-                        wires.push(placedRec);
-                    }
-                }
-            }
-        }
-
-        // shapesToDelete.forEach(s => s.delete());
-
-        return wires;
-    }
-
     subdivideToRectangleHoles(inputs: Inputs.OCCT.FaceSubdivideToRectangleHolesDto<TopoDS_Face>): TopoDS_Face[] {
         // default should be smaller then 1 as that can't punch holes or create faces nicely.
         if (inputs.scalePatternU === undefined) {
@@ -885,6 +702,211 @@ export class FacesService {
             inputs.scalePatternV = [0.5];
         }
         const wires = this.subdivideToRectangleWires(inputs);
+        const faceWires = this.shapeGettersService.getWires({ shape: inputs.shape });
+        const wireLengths = this.wiresService.getWiresLengths({ shapes: faceWires });
+        const longestFaceWire = faceWires[wireLengths.indexOf(Math.max(...wireLengths))];
+
+        const revWires = wires.map(wire => { return this.wiresService.reversedWire({ shape: wire }); });
+        const listOfWires = [longestFaceWire, ...revWires];
+        const newFace = this.createFaceFromWiresOnFace({ wires: listOfWires, face: inputs.shape, inside: true });
+
+        // check if the normals are the same, if not reverse the face
+        const normalOriginal = this.faceNormalOnUV({ shape: inputs.shape, paramU: 0, paramV: 0 });
+        const normalNew = this.faceNormalOnUV({ shape: newFace, paramU: 0, paramV: 0 });
+
+        let shouldReverse = false;
+        if (this.vectorService.angleBetweenVectors(normalOriginal, normalNew) > 1e-7) {
+            shouldReverse = true;
+            newFace.Reverse();
+        }
+
+        let faces = [];
+        if (inputs.holesToFaces) {
+            faces = wires.map(wire => {
+                return this.createFaceFromWireOnFace({ wire, face: inputs.shape, inside: true });
+            });
+            if (shouldReverse) {
+                faces.forEach(f => f.Reverse());
+            }
+        }
+
+        wires.forEach(w => w.delete());
+        longestFaceWire.delete();
+        revWires.forEach(w => w.delete());
+
+        return [newFace, ...faces];
+    }
+
+
+    subdivideToHexagonWires(inputs: Inputs.OCCT.FaceSubdivideToHexagonWiresDto<TopoDS_Face>): TopoDS_Wire[] {
+        if (inputs.shape === undefined) {
+            throw new Error("Face not defined");
+        }
+        const shapesToDelete: TopoDS_Shape[] = [];
+        const face = inputs.shape;
+        const handle = this.occ.BRep_Tool.Surface_2(face);
+        const surface = handle.get();
+        const { uMin, uMax, vMin, vMax } = this.getUVBounds(face);
+
+        // Calculate parametric range
+        const scaleU = uMax - uMin;
+        const scaleV = vMax - vMin;
+
+        if (scaleU <= 0 || scaleV <= 0) {
+            console.warn("Face has zero or negative parametric range. Skipping.");
+            return [];
+        }
+
+        // Calculate target parametric dimensions and origin for the grid
+        const gridHeightU = scaleU * (1 - inputs.offsetFromBorderU * 2);
+        const gridWidthV = scaleV * (1 - inputs.offsetFromBorderV * 2);
+
+        const gridOriginU = uMin + scaleU * inputs.offsetFromBorderU;
+        const gridOriginV = vMin + scaleV * inputs.offsetFromBorderV;
+
+        if (gridHeightU <= 0 || gridWidthV <= 0) {
+            console.warn("Grid dimensions are zero or negative after applying offset. Skipping.");
+            return [];
+        }
+
+        // Generate hexagon grid in local 2D space (assuming X maps to V, Z maps to U)
+        const hex = this.point.hexGridScaledToFit({
+            width: gridWidthV,
+            height: gridHeightU,
+            nrHexagonsInHeight: inputs.nrHexagonsU,
+            nrHexagonsInWidth: inputs.nrHexagonsV,
+            centerGrid: false,
+            pointsOnGround: true,
+            flatTop: inputs.flatU,
+            extendTop: inputs.extendUUp,
+            extendBottom: inputs.extendUBottom,
+            extendLeft: inputs.extendVBottom,
+            extendRight: inputs.extendVUp,
+        });
+
+        // Create wires in local 2D space
+        const localHexWires = hex.hexagons.map(hexPoints => {
+            return this.wiresService.createPolygonWire({
+                points: hexPoints
+            });
+        });
+        shapesToDelete.push(...localHexWires);
+
+        // Define the translation vector to map local grid origin to parametric grid origin
+        const uvTranslation = [gridOriginV, 0, gridOriginU] as Base.Vector3;
+
+        // Translate wires to parametric UV space
+        const uvHexWires = localHexWires.map(h => {
+            return this.transformsService.translate({
+                shape: h,
+                translation: uvTranslation
+            });
+        });
+        shapesToDelete.push(...uvHexWires);
+
+        // Translate centers to parametric UV space
+        const uvHexCenters = this.point.translatePoints({
+            points: hex.centers,
+            translation: uvTranslation
+        });
+
+        const finalPlacedWires = [];
+
+        let currentScalePatternUIndex = 0;
+        let currentScalePatternVIndex = 0;
+        let currentInclusionPatternIndex = 0;
+        let currentFilletPatternIndex = 0;
+
+        // Ensure we have enough hexagons generated for the loop counts
+        const totalHexagons = inputs.nrHexagonsU * inputs.nrHexagonsV;
+        if (uvHexWires.length !== totalHexagons || uvHexCenters.length !== totalHexagons) {
+            console.error(`Generated ${uvHexWires.length} hexagons, but expected ${totalHexagons}. Check hexGridScaledToFit logic.`);
+            return [];
+        }
+
+        // Process each hexagon (scale, fillet, place)
+        for (let i = 0; i < inputs.nrHexagonsU; i++) {
+            for (let j = 0; j < inputs.nrHexagonsV; j++) {
+                const hexIndex = i * inputs.nrHexagonsV + j;
+
+                // Get scale/inclusion/fillet values from patterns
+                let scaleFromPatternU = 1;
+                if (inputs.scalePatternU?.length > 0) {
+                    scaleFromPatternU = inputs.scalePatternU[currentScalePatternUIndex % inputs.scalePatternU.length];
+                    currentScalePatternUIndex++;
+                }
+
+                let scaleFromPatternV = 1;
+                if (inputs.scalePatternV?.length > 0) {
+                    scaleFromPatternV = inputs.scalePatternV[currentScalePatternVIndex % inputs.scalePatternV.length];
+                    currentScalePatternVIndex++;
+                }
+
+                let include = true;
+                if (inputs.inclusionPattern?.length > 0) {
+                    include = inputs.inclusionPattern[currentInclusionPatternIndex % inputs.inclusionPattern.length];
+                    currentInclusionPatternIndex++;
+                }
+
+                let filletFactor = 0;
+                if (inputs.filletPattern?.length > 0) {
+                    filletFactor = inputs.filletPattern[currentFilletPatternIndex % inputs.filletPattern.length];
+                    currentFilletPatternIndex++;
+                }
+
+                if (include) {
+                    const uvHexagon = uvHexWires[hexIndex];
+                    const uvCenter = uvHexCenters[hexIndex];
+
+                    let shapeToScale = uvHexagon;
+                    // Apply Fillet (using the factor)
+                    const filletRadius = hex.maxFilletRadius * filletFactor;
+                    if (filletRadius > 1e-6) {
+                        const filletedHex = this.filletsService.fillet2d({
+                            shape: uvHexagon,
+                            radius: filletRadius,
+                        });
+                        shapesToDelete.push(filletedHex);
+                        shapeToScale = filletedHex;
+                    }
+
+                    // Apply Scaling (around the correct UV center)
+                    let shapeToPlace = shapeToScale;
+                    // Scaling vector maps to V
+                    const scaleVec = [scaleFromPatternV, 1, scaleFromPatternU] as Base.Vector3;
+                    if (Math.abs(scaleFromPatternU - 1.0) > 1e-6 || Math.abs(scaleFromPatternV - 1.0) > 1e-6) {
+                        const scaledHex = this.transformsService.scale3d({
+                            shape: shapeToScale,
+                            center: uvCenter,
+                            scale: scaleVec,
+                        });
+                        shapesToDelete.push(scaledHex);
+                        shapeToPlace = scaledHex;
+                    }
+
+                    // Place the final processed wire onto the surface
+                    const placedWire = this.wiresService.placeWire(shapeToPlace, surface);
+                    finalPlacedWires.push(placedWire);
+
+                }
+            }
+        }
+
+        shapesToDelete.forEach(s => {
+            s.delete();
+        });
+       
+        return finalPlacedWires;
+    }
+
+    subdivideToHexagonHoles(inputs: Inputs.OCCT.FaceSubdivideToHexagonHolesDto<TopoDS_Face>): TopoDS_Wire[] {
+        if (inputs.scalePatternU === undefined) {
+            inputs.scalePatternU = [0.5];
+        }
+        if (inputs.scalePatternV === undefined) {
+            inputs.scalePatternV = [0.5];
+        }
+        const wires = this.subdivideToHexagonWires(inputs);
         const faceWires = this.shapeGettersService.getWires({ shape: inputs.shape });
         const wireLengths = this.wiresService.getWiresLengths({ shapes: faceWires });
         const longestFaceWire = faceWires[wireLengths.indexOf(Math.max(...wireLengths))];

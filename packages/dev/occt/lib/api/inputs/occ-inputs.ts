@@ -1124,10 +1124,11 @@ export namespace OCCT {
         /**
           * Provide options without default values
           */
-        constructor(shape?: T, nrHexagonsU?: number, nrHexagonsV?: number, scalePatternU?: number[], scalePatternV?: number[], filletPattern?: number[], inclusionPattern?: boolean[], offsetFromBorderU?: number, offsetFromBorderV?: number, extendUUp?: boolean, extendUBottom?: boolean, extendVUp?: boolean, extendVBottom?: boolean) {
+        constructor(shape?: T, nrHexagonsU?: number, nrHexagonsV?: number, flatU?: boolean, scalePatternU?: number[], scalePatternV?: number[], filletPattern?: number[], inclusionPattern?: boolean[], offsetFromBorderU?: number, offsetFromBorderV?: number, extendUUp?: boolean, extendUBottom?: boolean, extendVUp?: boolean, extendVBottom?: boolean) {
             if (shape !== undefined) { this.shape = shape; }
             if (nrHexagonsU !== undefined) { this.nrHexagonsU = nrHexagonsU; }
             if (nrHexagonsV !== undefined) { this.nrHexagonsU = nrHexagonsV; }
+            if (flatU !== undefined) { this.flatU = flatU; }
             if (scalePatternU !== undefined) { this.scalePatternU = scalePatternU; }
             if (scalePatternV !== undefined) { this.scalePatternV = scalePatternV; }
             if (filletPattern !== undefined) { this.filletPattern = filletPattern; }
@@ -1160,6 +1161,11 @@ export namespace OCCT {
          * @step 1
          */
         nrHexagonsV? = 10;
+        // /**
+        //  * If true, we will create hexagons with flat tops on U direction
+        //  * @default false
+        //  */
+        flatU = false;
         /**
          * Hexagon scale pattern on u direction - numbers between 0 and 1, if 1 or undefined is used, no scaling is applied
          * @default undefined
@@ -1226,6 +1232,102 @@ export namespace OCCT {
          * @default false
          */
         extendVBottom? = false;
+    }
+
+    export class FaceSubdivideToHexagonHolesDto<T> {
+        /**
+          * Provide options without default values
+          */
+        constructor(shape?: T, nrHexagonsU?: number, nrHexagonsV?: number, flatU?: boolean, holesToFaces?: boolean, scalePatternU?: number[], scalePatternV?: number[], filletPattern?: number[], inclusionPattern?: boolean[], offsetFromBorderU?: number, offsetFromBorderV?: number) {
+            if (shape !== undefined) { this.shape = shape; }
+            if (nrHexagonsU !== undefined) { this.nrHexagonsU = nrHexagonsU; }
+            if (nrHexagonsV !== undefined) { this.nrHexagonsU = nrHexagonsV; }
+            if (flatU !== undefined) { this.flatU = flatU; }
+            if (holesToFaces !== undefined) { this.holesToFaces = holesToFaces; }
+            if (scalePatternU !== undefined) { this.scalePatternU = scalePatternU; }
+            if (scalePatternV !== undefined) { this.scalePatternV = scalePatternV; }
+            if (filletPattern !== undefined) { this.filletPattern = filletPattern; }
+            if (inclusionPattern !== undefined) { this.inclusionPattern = inclusionPattern; }
+            if (offsetFromBorderU !== undefined) { this.offsetFromBorderU = offsetFromBorderU; }
+            if (offsetFromBorderV !== undefined) { this.offsetFromBorderV = offsetFromBorderV; }
+        }
+        /**
+         * Openascade Face
+         * @default undefined
+         */
+        shape?: T;
+        /**
+         * Number of hexagons on U direction
+         * @default 10
+         * @minimum 1
+         * @maximum Infinity
+         * @step 1
+         */
+        nrHexagonsU? = 10;
+        /**
+         * Number of hexagons on V direction
+         * @default 10
+         * @minimum 1
+         * @maximum Infinity
+         * @step 1
+         */
+        nrHexagonsV? = 10;
+        // /**
+        //  * If true, we will create hexagons with flat tops on U direction
+        //  * @default false
+        //  */
+        flatU = false;
+        /**
+         * If true, we will also create holes as faces
+         * @default false
+         */
+        holesToFaces? = false;
+        /**
+         * Hexagon scale pattern on u direction - numbers between 0 and 1, if 1 or undefined is used, no scaling is applied
+         * @default undefined
+         * @optional true
+         */
+        scalePatternU?: number[];
+        /**
+         * Hexagon scale pattern on v direction - numbers between 0 and 1, if 1 or undefined is used, no scaling is applied
+         * @default undefined
+         * @optional true
+         */
+        scalePatternV?: number[];
+        /**
+         * Hexagon fillet scale pattern - numbers between 0 and 1, if 0 is used, no fillet is applied, 
+         * if 1 is used, the fillet will be exactly half of the length of the shortest segment of the hexagon
+         * @default undefined
+         * @optional true
+         */
+        filletPattern?: number[];
+        /**
+         * Hexagon inclusion pattern - true means that the hexagon will be included, 
+         * false means that the hexagon will be removed from the face
+         * @default undefined
+         * @optional true
+         */
+        inclusionPattern?: boolean[];
+        /**
+         * If offset on U is bigger then 0 we will use a smaller space for hexagons to be placed. This means that even hexagon of U param 1 will be offset from the face border
+         * That is often required to create a pattern that is not too close to the face border
+         * It should not be bigger then half of the total width of the face as that will create problems
+         * @default 0
+         * @minimum 0
+         * @maximum 0.5
+         * @step 0.01
+         */
+        offsetFromBorderU? = 0;
+        /**
+         * If offset on V is bigger then 0 we will use a smaller space for hexagons to be placed. This means that even hexagon of V param 1 will be offset from the face border
+         * That is often required to create a pattern that is not too close to the face border
+         * It should not be bigger then half of the total width of the face as that will create problems
+         * @default 0
+         * @minimum 0
+         * @maximum 0.5
+         * @step 0.01
+         */
+        offsetFromBorderV? = 0;
     }
 
     export class FaceSubdivideToRectangleHolesDto<T> {

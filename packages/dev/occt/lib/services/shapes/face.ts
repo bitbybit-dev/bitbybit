@@ -84,6 +84,10 @@ export class OCCTFace {
         return this.och.facesService.subdivideToHexagonWires(inputs);
     }
 
+    subdivideToHexagonHoles(inputs: Inputs.OCCT.FaceSubdivideToHexagonHolesDto<TopoDS_Face>): TopoDS_Face[] {
+        return this.och.facesService.subdivideToHexagonHoles(inputs);
+    }
+
     subdivideToNormals(inputs: Inputs.OCCT.FaceSubdivisionDto<TopoDS_Face>): Base.Point3[] {
         return this.och.facesService.subdivideToNormals(inputs);
     }

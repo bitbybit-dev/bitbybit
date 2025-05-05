@@ -297,6 +297,18 @@ export class OCCTFace {
     }
 
     /**
+     * Subdivides a face to hexagon holes
+     * @param inputs Face and options for subdivision
+     * @returns faces
+     * @group patterns
+     * @shortname hexagon holes on face
+     * @drawable true
+     */
+    subdivideToHexagonHoles(inputs: Inputs.OCCT.FaceSubdivideToHexagonHolesDto<Inputs.OCCT.TopoDSFacePointer>): Promise<Inputs.OCCT.TopoDSFacePointer[]> {
+        return this.occWorkerManager.genericCallToWorkerPromise("shapes.face.subdivideToHexagonHoles", inputs);
+    }
+
+    /**
      * Subdivides a face to point grid with shifts and removals on nth uv rows or columns
      * @param inputs Face and params for subdivision
      * @returns points
