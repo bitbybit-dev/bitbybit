@@ -5293,5 +5293,19 @@
     "flatU": "plano U",
     "bitbybit.occt.shapes.face.subdivideToHexagonHoles": "subdividir em furos hexagonais",
     "subdivideToHexagonHoles": "subdividir em furos hexagonais",
-    "bitbybit.occt.shapes.face.subdivideToHexagonHoles_description": "Subdivide uma face em furos hexagonais"
+    "bitbybit.occt.shapes.face.subdivideToHexagonHoles_description": "Subdivide uma face em furos hexagonais",
+    "bitbybit.verb.curve.convertLinesToNurbsCurves": "converter linhas para curvas NURBS",
+    "bitbybit.verb.curve.convertLinesToNurbsCurves_description": "Converte linhas em curvas NURBS. Retorna um array de objetos verbnurbs Line.",
+    "bitbybit.verb.curve.convertLineToNurbsCurve": "converter linha para curva NURBS",
+    "convertLineToNurbsCurve": "converter linha para curva NURBS",
+    "bitbybit.verb.curve.convertLineToNurbsCurve_description": "Converte linha em curva NURBS. Retorna o objeto verbnurbs Line.",
+    "Base.Line3": "Base.Line3",
+    "bitbybit.verb.curve.convertPolylineToNurbsCurve": "converter polilinha para curva NURBS",
+    "convertPolylineToNurbsCurve": "converter polilinha para curva NURBS",
+    "bitbybit.verb.curve.convertPolylineToNurbsCurve_description": "Converte uma polilinha em uma curva NURBS. Retorna o objeto verbnurbs NurbsCurve.",
+    "Base.Polyline3": "Base.Polyline3",
+    "bitbybit.verb.curve.convertPolylinesToNurbsCurves": "converter polilinhas para curvas NURBS",
+    "convertPolylinesToNurbsCurves": "converter polilinhas para curvas NURBS",
+    "bitbybit.verb.curve.convertPolylinesToNurbsCurves_description": "Converte polilinhas em curvas NURBS. Retorna os objetos verbnurbs NurbsCurve.",
+    "Base.Polyline3[]": "Base.Polyline3[]"
 }

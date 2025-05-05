@@ -5293,5 +5293,19 @@
     "flatU": "datar U",
     "bitbybit.occt.shapes.face.subdivideToHexagonHoles": "bagi menjadi lubang heksagon",
     "subdivideToHexagonHoles": "bagi menjadi lubang heksagon",
-    "bitbybit.occt.shapes.face.subdivideToHexagonHoles_description": "Membagi permukaan menjadi lubang heksagon"
+    "bitbybit.occt.shapes.face.subdivideToHexagonHoles_description": "Membagi permukaan menjadi lubang heksagon",
+    "bitbybit.verb.curve.convertLinesToNurbsCurves": "konversi garis ke kurva NURBS",
+    "bitbybit.verb.curve.convertLinesToNurbsCurves_description": "Mengonversi garis menjadi kurva NURBS. Mengembalikan array objek verbnurbs Line.",
+    "bitbybit.verb.curve.convertLineToNurbsCurve": "konversi garis ke kurva NURBS",
+    "convertLineToNurbsCurve": "konversi garis ke kurva NURBS",
+    "bitbybit.verb.curve.convertLineToNurbsCurve_description": "Mengonversi garis menjadi kurva NURBS. Mengembalikan objek verbnurbs Line.",
+    "Base.Line3": "Base.Line3",
+    "bitbybit.verb.curve.convertPolylineToNurbsCurve": "konversi poliline ke kurva NURBS",
+    "convertPolylineToNurbsCurve": "konversi poliline ke kurva NURBS",
+    "bitbybit.verb.curve.convertPolylineToNurbsCurve_description": "Mengonversi poliline menjadi kurva NURBS. Mengembalikan objek verbnurbs NurbsCurve.",
+    "Base.Polyline3": "Base.Polyline3",
+    "bitbybit.verb.curve.convertPolylinesToNurbsCurves": "konversi poliline ke kurva NURBS",
+    "convertPolylinesToNurbsCurves": "konversi poliline ke kurva NURBS",
+    "bitbybit.verb.curve.convertPolylinesToNurbsCurves_description": "Mengonversi poliline menjadi kurva NURBS. Mengembalikan objek verbnurbs NurbsCurve.",
+    "Base.Polyline3[]": "Base.Polyline3[]"
 }

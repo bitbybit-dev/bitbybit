@@ -5293,5 +5293,19 @@
     "flatU": "समतल U",
     "bitbybit.occt.shapes.face.subdivideToHexagonHoles": "षट्कोण छेदों में उप-विभाजित करें",
     "subdivideToHexagonHoles": "षट्कोण छेदों में उप-विभाजित करें",
-    "bitbybit.occt.shapes.face.subdivideToHexagonHoles_description": "एक फलक को षट्कोण छेदों में उप-विभाजित करता है"
+    "bitbybit.occt.shapes.face.subdivideToHexagonHoles_description": "एक फलक को षट्कोण छेदों में उप-विभाजित करता है",
+    "bitbybit.verb.curve.convertLinesToNurbsCurves": "रेखाओं को NURBS वक्रों में बदलें",
+    "bitbybit.verb.curve.convertLinesToNurbsCurves_description": "रेखाओं को NURBS वक्रों में परिवर्तित करता है। verbnurbs Line ऑब्जेक्ट्स का ऐरे लौटाता है।",
+    "bitbybit.verb.curve.convertLineToNurbsCurve": "रेखा को NURBS वक्र में बदलें",
+    "convertLineToNurbsCurve": "रेखा को NURBS वक्र में बदलें",
+    "bitbybit.verb.curve.convertLineToNurbsCurve_description": "रेखा को NURBS वक्र में परिवर्तित करता है। verbnurbs Line ऑब्जेक्ट लौटाता है।",
+    "Base.Line3": "Base.Line3",
+    "bitbybit.verb.curve.convertPolylineToNurbsCurve": "पॉलीलाइन को NURBS वक्र में बदलें",
+    "convertPolylineToNurbsCurve": "पॉलीलाइन को NURBS वक्र में बदलें",
+    "bitbybit.verb.curve.convertPolylineToNurbsCurve_description": "एक पॉलीलाइन को NURBS वक्र में परिवर्तित करता है। verbnurbs NurbsCurve ऑब्जेक्ट लौटाता है।",
+    "Base.Polyline3": "Base.Polyline3",
+    "bitbybit.verb.curve.convertPolylinesToNurbsCurves": "पॉलीलाइनों को NURBS वक्रों में बदलें",
+    "convertPolylinesToNurbsCurves": "पॉलीलाइनों को NURBS वक्रों में बदलें",
+    "bitbybit.verb.curve.convertPolylinesToNurbsCurves_description": "पॉलीलाइनों को NURBS वक्रों में परिवर्तित करता है। verbnurbs NurbsCurve ऑब्जेक्ट्स लौटाता है।",
+    "Base.Polyline3[]": "Base.Polyline3[]"
 }

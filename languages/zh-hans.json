@@ -5293,5 +5293,19 @@
     "flatU": "平坦 U",
     "bitbybit.occt.shapes.face.subdivideToHexagonHoles": "细分为六边形孔洞",
     "subdivideToHexagonHoles": "细分为六边形孔洞",
-    "bitbybit.occt.shapes.face.subdivideToHexagonHoles_description": "将面细分为六边形孔洞"
+    "bitbybit.occt.shapes.face.subdivideToHexagonHoles_description": "将面细分为六边形孔洞",
+    "bitbybit.verb.curve.convertLinesToNurbsCurves": "将直线转换为 NURBS 曲线",
+    "bitbybit.verb.curve.convertLinesToNurbsCurves_description": "将直线转换为 NURBS 曲线。返回 verbnurbs Line 对象的数组。",
+    "bitbybit.verb.curve.convertLineToNurbsCurve": "将直线转换为 NURBS 曲线",
+    "convertLineToNurbsCurve": "将直线转换为 NURBS 曲线",
+    "bitbybit.verb.curve.convertLineToNurbsCurve_description": "将直线转换为 NURBS 曲线。返回 verbnurbs Line 对象。",
+    "Base.Line3": "Base.Line3",
+    "bitbybit.verb.curve.convertPolylineToNurbsCurve": "将多段线转换为 NURBS 曲线",
+    "convertPolylineToNurbsCurve": "将多段线转换为 NURBS 曲线",
+    "bitbybit.verb.curve.convertPolylineToNurbsCurve_description": "将多段线转换为 NURBS 曲线。返回 verbnurbs NurbsCurve 对象。",
+    "Base.Polyline3": "Base.Polyline3",
+    "bitbybit.verb.curve.convertPolylinesToNurbsCurves": "将多段线转换为 NURBS 曲线",
+    "convertPolylinesToNurbsCurves": "将多段线转换为 NURBS 曲线",
+    "bitbybit.verb.curve.convertPolylinesToNurbsCurves_description": "将多段线转换为 NURBS 曲线。返回 verbnurbs NurbsCurve 对象。",
+    "Base.Polyline3[]": "Base.Polyline3[]"
 }

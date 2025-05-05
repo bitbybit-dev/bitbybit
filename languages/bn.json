@@ -5293,5 +5293,19 @@
     "flatU": "সমতল U",
     "bitbybit.occt.shapes.face.subdivideToHexagonHoles": "ষড়ভুজ গর্তে উপবিভক্ত করুন",
     "subdivideToHexagonHoles": "ষড়ভুজ গর্তে উপবিভক্ত করুন",
-    "bitbybit.occt.shapes.face.subdivideToHexagonHoles_description": "একটি মুখকে ষড়ভুজ গর্তে উপবিভক্ত করে"
+    "bitbybit.occt.shapes.face.subdivideToHexagonHoles_description": "একটি মুখকে ষড়ভুজ গর্তে উপবিভক্ত করে",
+    "bitbybit.verb.curve.convertLinesToNurbsCurves": "রেখাগুলোকে NURBS বক্ররেখায় রূপান্তর করুন",
+    "bitbybit.verb.curve.convertLinesToNurbsCurves_description": "রেখাগুলোকে NURBS বক্ররেখায় রূপান্তর করে। verbnurbs Line অবজেক্টের একটি অ্যারে প্রদান করে।",
+    "bitbybit.verb.curve.convertLineToNurbsCurve": "রেখাকে NURBS বক্ররেখায় রূপান্তর করুন",
+    "convertLineToNurbsCurve": "রেখাকে NURBS বক্ররেখায় রূপান্তর করুন",
+    "bitbybit.verb.curve.convertLineToNurbsCurve_description": "রেখাকে NURBS বক্ররেখায় রূপান্তর করে। verbnurbs Line অবজেক্ট প্রদান করে।",
+    "Base.Line3": "Base.Line3",
+    "bitbybit.verb.curve.convertPolylineToNurbsCurve": "পলিলাইনকে NURBS বক্ররেখায় রূপান্তর করুন",
+    "convertPolylineToNurbsCurve": "পলিলাইনকে NURBS বক্ররেখায় রূপান্তর করুন",
+    "bitbybit.verb.curve.convertPolylineToNurbsCurve_description": "একটি পলিলাইনকে NURBS বক্ররেখায় রূপান্তর করে। verbnurbs NurbsCurve অবজেক্ট প্রদান করে।",
+    "Base.Polyline3": "Base.Polyline3",
+    "bitbybit.verb.curve.convertPolylinesToNurbsCurves": "পলিলাইনগুলোকে NURBS বক্ররেখায় রূপান্তর করুন",
+    "convertPolylinesToNurbsCurves": "পলিলাইনগুলোকে NURBS বক্ররেখায় রূপান্তর করুন",
+    "bitbybit.verb.curve.convertPolylinesToNurbsCurves_description": "পলিলাইনগুলোকে NURBS বক্ররেখায় রূপান্তর করে। verbnurbs NurbsCurve অবজেক্টগুলো প্রদান করে।",
+    "Base.Polyline3[]": "Base.Polyline3[]"
 }

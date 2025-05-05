@@ -5293,5 +5293,19 @@
     "flatU": "مسطح U",
     "bitbybit.occt.shapes.face.subdivideToHexagonHoles": "تقسيم إلى ثقوب سداسية",
     "subdivideToHexagonHoles": "تقسيم إلى ثقوب سداسية",
-    "bitbybit.occt.shapes.face.subdivideToHexagonHoles_description": "يقسم السطح إلى ثقوب سداسية"
+    "bitbybit.occt.shapes.face.subdivideToHexagonHoles_description": "يقسم السطح إلى ثقوب سداسية",
+    "bitbybit.verb.curve.convertLinesToNurbsCurves": "تحويل الخطوط إلى منحنيات NURBS",
+    "bitbybit.verb.curve.convertLinesToNurbsCurves_description": "تحويل الخطوط إلى منحنيات NURBS. إرجاع مصفوفة من كائنات verbnurbs Line.",
+    "bitbybit.verb.curve.convertLineToNurbsCurve": "تحويل الخط إلى منحنى NURBS",
+    "convertLineToNurbsCurve": "تحويل الخط إلى منحنى NURBS",
+    "bitbybit.verb.curve.convertLineToNurbsCurve_description": "تحويل الخط إلى منحنى NURBS. إرجاع كائن verbnurbs Line.",
+    "Base.Line3": "Base.Line3",
+    "bitbybit.verb.curve.convertPolylineToNurbsCurve": "تحويل الخط المتعدد إلى منحنى NURBS",
+    "convertPolylineToNurbsCurve": "تحويل الخط المتعدد إلى منحنى NURBS",
+    "bitbybit.verb.curve.convertPolylineToNurbsCurve_description": "تحويل خط متعدد إلى منحنى NURBS. إرجاع كائن verbnurbs NurbsCurve.",
+    "Base.Polyline3": "Base.Polyline3",
+    "bitbybit.verb.curve.convertPolylinesToNurbsCurves": "تحويل الخطوط المتعددة إلى منحنيات NURBS",
+    "convertPolylinesToNurbsCurves": "تحويل الخطوط المتعددة إلى منحنيات NURBS",
+    "bitbybit.verb.curve.convertPolylinesToNurbsCurves_description": "تحويل خطوط متعددة إلى منحنيات NURBS. إرجاع كائنات verbnurbs NurbsCurve.",
+    "Base.Polyline3[]": "Base.Polyline3[]"
 }

@@ -5293,5 +5293,19 @@
     "flatU": "плоский U",
     "bitbybit.occt.shapes.face.subdivideToHexagonHoles": "разделить на шестиугольные отверстия",
     "subdivideToHexagonHoles": "разделить на шестиугольные отверстия",
-    "bitbybit.occt.shapes.face.subdivideToHexagonHoles_description": "Разделяет грань на шестиугольные отверстия"
+    "bitbybit.occt.shapes.face.subdivideToHexagonHoles_description": "Разделяет грань на шестиугольные отверстия",
+    "bitbybit.verb.curve.convertLinesToNurbsCurves": "конвертировать линии в NURBS кривые",
+    "bitbybit.verb.curve.convertLinesToNurbsCurves_description": "Конвертирует линии в NURBS кривые. Возвращает массив объектов verbnurbs Line.",
+    "bitbybit.verb.curve.convertLineToNurbsCurve": "конвертировать линию в NURBS кривую",
+    "convertLineToNurbsCurve": "конвертировать линию в NURBS кривую",
+    "bitbybit.verb.curve.convertLineToNurbsCurve_description": "Конвертирует линию в NURBS кривую. Возвращает объект verbnurbs Line.",
+    "Base.Line3": "Base.Line3",
+    "bitbybit.verb.curve.convertPolylineToNurbsCurve": "конвертировать полилинию в NURBS кривую",
+    "convertPolylineToNurbsCurve": "конвертировать полилинию в NURBS кривую",
+    "bitbybit.verb.curve.convertPolylineToNurbsCurve_description": "Конвертирует полилинию в NURBS кривую. Возвращает объект verbnurbs NurbsCurve.",
+    "Base.Polyline3": "Base.Polyline3",
+    "bitbybit.verb.curve.convertPolylinesToNurbsCurves": "конвертировать полилинии в NURBS кривые",
+    "convertPolylinesToNurbsCurves": "конвертировать полилинии в NURBS кривые",
+    "bitbybit.verb.curve.convertPolylinesToNurbsCurves_description": "Конвертирует полилинии в NURBS кривые. Возвращает объекты verbnurbs NurbsCurve.",
+    "Base.Polyline3[]": "Base.Polyline3[]"
 }

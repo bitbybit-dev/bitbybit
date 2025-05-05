@@ -5293,5 +5293,19 @@
     "flatU": "flaches U",
     "bitbybit.occt.shapes.face.subdivideToHexagonHoles": "in Sechseck-Löcher unterteilen",
     "subdivideToHexagonHoles": "in Sechseck-Löcher unterteilen",
-    "bitbybit.occt.shapes.face.subdivideToHexagonHoles_description": "Unterteilt eine Fläche in Sechseck-Löcher"
+    "bitbybit.occt.shapes.face.subdivideToHexagonHoles_description": "Unterteilt eine Fläche in Sechseck-Löcher",
+    "bitbybit.verb.curve.convertLinesToNurbsCurves": "Linien in NURBS-Kurven konvertieren",
+    "bitbybit.verb.curve.convertLinesToNurbsCurves_description": "Konvertiert Linien in NURBS-Kurven. Gibt ein Array von verbnurbs Line-Objekten zurück.",
+    "bitbybit.verb.curve.convertLineToNurbsCurve": "Linie in NURBS-Kurve konvertieren",
+    "convertLineToNurbsCurve": "Linie in NURBS-Kurve konvertieren",
+    "bitbybit.verb.curve.convertLineToNurbsCurve_description": "Konvertiert eine Linie in eine NURBS-Kurve. Gibt das verbnurbs Line-Objekt zurück.",
+    "Base.Line3": "Base.Line3",
+    "bitbybit.verb.curve.convertPolylineToNurbsCurve": "Polylinie in NURBS-Kurve konvertieren",
+    "convertPolylineToNurbsCurve": "Polylinie in NURBS-Kurve konvertieren",
+    "bitbybit.verb.curve.convertPolylineToNurbsCurve_description": "Konvertiert eine Polylinie in eine NURBS-Kurve. Gibt das verbnurbs NurbsCurve-Objekt zurück.",
+    "Base.Polyline3": "Base.Polyline3",
+    "bitbybit.verb.curve.convertPolylinesToNurbsCurves": "Polylinien in NURBS-Kurven konvertieren",
+    "convertPolylinesToNurbsCurves": "Polylinien in NURBS-Kurven konvertieren",
+    "bitbybit.verb.curve.convertPolylinesToNurbsCurves_description": "Konvertiert Polylinien in NURBS-Kurven. Gibt die verbnurbs NurbsCurve-Objekte zurück.",
+    "Base.Polyline3[]": "Base.Polyline3[]"
 }

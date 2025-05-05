@@ -5293,5 +5293,19 @@
     "flatU": "plokščias U",
     "bitbybit.occt.shapes.face.subdivideToHexagonHoles": "suskirstyti į šešiakampes skyles",
     "subdivideToHexagonHoles": "suskirstyti į šešiakampes skyles",
-    "bitbybit.occt.shapes.face.subdivideToHexagonHoles_description": "Suskirsto paviršių į šešiakampes skyles"
+    "bitbybit.occt.shapes.face.subdivideToHexagonHoles_description": "Suskirsto paviršių į šešiakampes skyles",
+    "bitbybit.verb.curve.convertLinesToNurbsCurves": "konvertuoti linijas į NURBS kreives",
+    "bitbybit.verb.curve.convertLinesToNurbsCurves_description": "Konvertuoja linijas į NURBS kreives. Grąžina verbnurbs Line objektų masyvą.",
+    "bitbybit.verb.curve.convertLineToNurbsCurve": "konvertuoti liniją į NURBS kreivę",
+    "convertLineToNurbsCurve": "konvertuoti liniją į NURBS kreivę",
+    "bitbybit.verb.curve.convertLineToNurbsCurve_description": "Konvertuoja liniją į NURBS kreivę. Grąžina verbnurbs Line objektą.",
+    "Base.Line3": "Base.Line3",
+    "bitbybit.verb.curve.convertPolylineToNurbsCurve": "konvertuoti poliliniją į NURBS kreivę",
+    "convertPolylineToNurbsCurve": "konvertuoti poliliniją į NURBS kreivę",
+    "bitbybit.verb.curve.convertPolylineToNurbsCurve_description": "Konvertuoja poliliniją į NURBS kreivę. Grąžina verbnurbs NurbsCurve objektą.",
+    "Base.Polyline3": "Base.Polyline3",
+    "bitbybit.verb.curve.convertPolylinesToNurbsCurves": "konvertuoti polilinijas į NURBS kreives",
+    "convertPolylinesToNurbsCurves": "konvertuoti polilinijas į NURBS kreives",
+    "bitbybit.verb.curve.convertPolylinesToNurbsCurves_description": "Konvertuoja polilinijas į NURBS kreives. Grąžina verbnurbs NurbsCurve objektus.",
+    "Base.Polyline3[]": "Base.Polyline3[]"
 }
