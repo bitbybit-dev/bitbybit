@@ -1,4 +1,4 @@
-import { GeometryHelper } from "@bitbybit-dev/base";
+import { GeometryHelper, Lists, Point, Transforms, Vector } from "@bitbybit-dev/base";
 import { MathBitByBit } from "@bitbybit-dev/base";
 import { JSCADExpansions } from "./services/jscad-expansions";
 import { JSCADBooleans } from "./services/jscad-booleans";
@@ -28,10 +28,15 @@ export class Jscad {
     public shapes: JSCADShapes;
     public text: JSCADText;
     public colors: JSCADColors;
+    private point: Point;
 
     constructor(jscad: typeof JSCAD) {
         const geometryHelper = new GeometryHelper();
         const math = new MathBitByBit();
+        const vector = new Vector(math, geometryHelper);
+        const transforms = new Transforms(vector, math);
+        const lists = new Lists();
+        this.point = new Point(geometryHelper, transforms, vector, lists);
         this.booleans = new JSCADBooleans(jscad);
         this.expansions = new JSCADExpansions(jscad);
         this.extrusions = new JSCADExtrusions(jscad, geometryHelper, math);
@@ -45,14 +50,14 @@ export class Jscad {
     }
 
     toPolygonPoints(inputs: Inputs.JSCAD.MeshDto): Base.Mesh3 {
-        const mesh = this.shapeToMesh(inputs);
 
-        // --- Input Validation ---
-        if (!mesh || !mesh.positions || !mesh.indices) {
+        const meshData = this.shapeToMesh({ mesh: inputs.mesh });
+
+        if (!meshData || !meshData.positions || !meshData.indices) {
             throw new Error("Invalid input: 'data', 'data.positions', and 'data.indices' must be provided.");
         }
 
-        const { positions, indices } = mesh;
+        const { positions, indices } = meshData;
 
         if (positions.length % 3 !== 0) {
             throw new Error(`Invalid input: 'positions' array length (${positions.length}) must be a multiple of 3.`);
@@ -63,51 +68,57 @@ export class Jscad {
         }
 
         if (positions.length === 0) {
-            // No vertices, therefore no polygons
             return [];
         }
         if (indices.length === 0) {
-            // Vertices exist, but no triangles defined
             return [];
         }
 
-        // Note: We are intentionally ignoring data.normals and data.transforms based on the requirement.
-        // If transforms needed to be applied, it would happen here before extracting points.
 
         const polygons: Base.Mesh3 = [];
         const numVertices = positions.length / 3;
 
         // --- Triangle Reconstruction ---
         for (let i = 0; i < indices.length; i += 3) {
-            // Get the indices for the 3 vertices of the current triangle
             const index1 = indices[i];
             const index2 = indices[i + 1];
             const index3 = indices[i + 2];
 
-            // --- Index Bounds Validation ---
             if (index1 >= numVertices || index2 >= numVertices || index3 >= numVertices ||
-                index1 < 0 || index2 < 0 || index3 < 0) { // Check for negative indices too
+                index1 < 0 || index2 < 0 || index3 < 0) {
                 console.error(`Invalid vertex index found in 'indices' array at triangle starting at index ${i}. Max vertex index is ${numVertices - 1}. Indices: ${index1}, ${index2}, ${index3}. Skipping triangle.`);
-                // Optionally throw an error instead of skipping:
-                // throw new Error(`Invalid vertex index encountered: ${index1}, ${index2}, or ${index3}. Max index is ${numVertices - 1}.`);
-                continue; // Skip this triangle if an index is out of bounds
+                continue;
             }
 
-            // Calculate the starting offset in the 'positions' array for each vertex
-            // Each vertex position takes up 3 slots in the array (x, y, z).
             const offset1 = index1 * 3;
             const offset2 = index2 * 3;
             const offset3 = index3 * 3;
 
-            // Extract the [x, y, z] coordinates for each vertex
             const point1: Base.Point3 = [positions[offset1], positions[offset1 + 1], positions[offset1 + 2]];
             const point2: Base.Point3 = [positions[offset2], positions[offset2 + 1], positions[offset2 + 2]];
             const point3: Base.Point3 = [positions[offset3], positions[offset3 + 1], positions[offset3 + 2]];
 
-            // Create the triangle array in the desired format [[x,y,z], [x,y,z], [x,y,z]]
-            const triangle: Base.Triangle3 = [point1, point2, point3];
+            // We must bake the transformations as JSCAD uses those extensively
+            const transformation = inputs.mesh.transforms;
+            let transformedPoints = [point1, point2, point3];
+            if (this.getArrayDepth(transformation) === 2) {
+                transformation.forEach(transform => {
+                    transformedPoints = this.point.transformPoints({ points: transformedPoints, transformation: [transform] });
+                });
+            }
+            else if (this.getArrayDepth(transformation) === 3) {
+                transformation.forEach(transforms => {
+                    transforms.forEach(mat => {
+                        transformedPoints = this.point.transformPoints({ points: transformedPoints, transformation: [mat] });
+                    });
+                });
+            }
+            else {
+                transformedPoints = this.point.transformPoints({ points: transformedPoints, transformation: [transformation] });
+            }
 
-            // Add the reconstructed triangle to the list
+            const triangle: Base.Triangle3 = transformedPoints as Base.Triangle3;
+
             polygons.push(triangle);
         }
 
