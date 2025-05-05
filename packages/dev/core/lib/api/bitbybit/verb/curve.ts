@@ -43,6 +43,46 @@ export class VerbCurve {
     }
 
     /**
+     * Converts lines to NURBS curves
+     * Returns array of the verbnurbs Line objects
+     * @param inputs Lines to be transformed to curves
+     * @returns Verb nurbs curves
+     */
+    convertLinesToNurbsCurves(inputs: Inputs.Verb.LinesDto): any[] {
+        return inputs.lines.map(line => new this.context.verb.geom.Line(line.start, line.end));
+    }
+
+    /**
+     * Converts line to NURBS curve
+     * Returns the verbnurbs Line object
+     * @param inputs Line to be transformed to curve
+     * @returns Verb nurbs curves
+     */
+    convertLineToNurbsCurve(inputs: Inputs.Verb.LineDto): any {
+        return new this.context.verb.geom.Line(inputs.line.start, inputs.line.end);
+    }
+
+    /**
+     * Converts a polyline to a NURBS curve
+     * Returns the verbnurbs NurbsCurve object
+     * @param inputs Polyline to be transformed to curve
+     * @returns Verb nurbs curve
+     */
+    convertPolylineToNurbsCurve(inputs: Inputs.Verb.PolylineDto): any {
+        return this.context.verb.geom.NurbsCurve.byPoints(inputs.polyline.points, 1);
+    }
+
+    /**
+     * Converts a polylines to a NURBS curves
+     * Returns the verbnurbs NurbsCurve objects
+     * @param inputs Polylines to be transformed to curves
+     * @returns Verb nurbs curves
+     */
+    convertPolylinesToNurbsCurves(inputs: Inputs.Verb.PolylinesDto): any[] {
+        return inputs.polylines.map(polyline => this.convertPolylineToNurbsCurve({ polyline }));
+    }
+
+    /**
      * Creates a Bezier Nurbs curve by providing control points and weights
      * @param inputs Control points
      * @returns Bezier Nurbs curve
