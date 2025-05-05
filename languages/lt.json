@@ -5289,5 +5289,9 @@
     "bitbybit.jscad.toPolygonPoints_description": "Paverčia jscad formą į daugiakampio taškų rinkinį, reprezentuojantį tinklą",
     "conversions": "konvertavimai",
     "bitbybit.manifold.toPolygonPoints": "į daugiakampio taškus",
-    "bitbybit.manifold.toPolygonPoints_description": "Paverčia manifold formą į daugiakampio taškų rinkinį, reprezentuojantį tinklą."
+    "bitbybit.manifold.toPolygonPoints_description": "Paverčia manifold formą į daugiakampio taškų rinkinį, reprezentuojantį tinklą.",
+    "flatU": "plokščias U",
+    "bitbybit.occt.shapes.face.subdivideToHexagonHoles": "suskirstyti į šešiakampes skyles",
+    "subdivideToHexagonHoles": "suskirstyti į šešiakampes skyles",
+    "bitbybit.occt.shapes.face.subdivideToHexagonHoles_description": "Suskirsto paviršių į šešiakampes skyles"
 }

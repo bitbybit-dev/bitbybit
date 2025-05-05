@@ -5289,5 +5289,9 @@
     "bitbybit.jscad.toPolygonPoints_description": "Преобразует форму jscad в набор точек полигонов, представляющих сетку",
     "conversions": "преобразования",
     "bitbybit.manifold.toPolygonPoints": "в точки полигона",
-    "bitbybit.manifold.toPolygonPoints_description": "Преобразует форму manifold в набор точек полигонов, представляющих сетку."
+    "bitbybit.manifold.toPolygonPoints_description": "Преобразует форму manifold в набор точек полигонов, представляющих сетку.",
+    "flatU": "плоский U",
+    "bitbybit.occt.shapes.face.subdivideToHexagonHoles": "разделить на шестиугольные отверстия",
+    "subdivideToHexagonHoles": "разделить на шестиугольные отверстия",
+    "bitbybit.occt.shapes.face.subdivideToHexagonHoles_description": "Разделяет грань на шестиугольные отверстия"
 }

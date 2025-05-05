@@ -5289,5 +5289,9 @@
     "bitbybit.jscad.toPolygonPoints_description": "Перетворює фігуру jscad на колекцію точок полігону, що представляють сітку",
     "conversions": "перетворення",
     "bitbybit.manifold.toPolygonPoints": "в точки полігону",
-    "bitbybit.manifold.toPolygonPoints_description": "Перетворює фігуру manifold на колекцію точок полігону, що представляють сітку."
+    "bitbybit.manifold.toPolygonPoints_description": "Перетворює фігуру manifold на колекцію точок полігону, що представляють сітку.",
+    "flatU": "плаский U",
+    "bitbybit.occt.shapes.face.subdivideToHexagonHoles": "розділити на шестикутні отвори",
+    "subdivideToHexagonHoles": "розділити на шестикутні отвори",
+    "bitbybit.occt.shapes.face.subdivideToHexagonHoles_description": "Розділяє грань на шестикутні отвори"
 }

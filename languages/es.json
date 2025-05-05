@@ -5289,5 +5289,9 @@
     "bitbybit.jscad.toPolygonPoints_description": "Convierte la forma jscad en una colección de puntos de polígono que representan la malla",
     "conversions": "conversiones",
     "bitbybit.manifold.toPolygonPoints": "a puntos de polígono",
-    "bitbybit.manifold.toPolygonPoints_description": "Convierte la forma manifold en una colección de puntos de polígono que representan la malla."
+    "bitbybit.manifold.toPolygonPoints_description": "Convierte la forma manifold en una colección de puntos de polígono que representan la malla.",
+    "flatU": "plano U",
+    "bitbybit.occt.shapes.face.subdivideToHexagonHoles": "subdividir en agujeros hexagonales",
+    "subdivideToHexagonHoles": "subdividir en agujeros hexagonales",
+    "bitbybit.occt.shapes.face.subdivideToHexagonHoles_description": "Subdivide una cara en agujeros hexagonales"
 }

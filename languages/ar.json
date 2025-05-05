@@ -5289,5 +5289,9 @@
     "bitbybit.jscad.toPolygonPoints_description": "تحويل شكل jscad إلى مجموعة من نقاط المضلع التي تمثل الشبكة",
     "conversions": "تحويلات",
     "bitbybit.manifold.toPolygonPoints": "إلى نقاط مضلع",
-    "bitbybit.manifold.toPolygonPoints_description": "تحويل شكل manifold إلى مجموعة من نقاط المضلع التي تمثل الشبكة."
+    "bitbybit.manifold.toPolygonPoints_description": "تحويل شكل manifold إلى مجموعة من نقاط المضلع التي تمثل الشبكة.",
+    "flatU": "مسطح U",
+    "bitbybit.occt.shapes.face.subdivideToHexagonHoles": "تقسيم إلى ثقوب سداسية",
+    "subdivideToHexagonHoles": "تقسيم إلى ثقوب سداسية",
+    "bitbybit.occt.shapes.face.subdivideToHexagonHoles_description": "يقسم السطح إلى ثقوب سداسية"
 }

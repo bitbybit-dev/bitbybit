@@ -5289,5 +5289,9 @@
     "bitbybit.jscad.toPolygonPoints_description": "jscad আকারকে মেশের প্রতিনিধিত্বকারী বহুভুজ বিন্দুর সংগ্রহে পরিণত করে",
     "conversions": "রূপান্তর",
     "bitbybit.manifold.toPolygonPoints": "বহুভুজ বিন্দুতে",
-    "bitbybit.manifold.toPolygonPoints_description": "manifold আকারকে মেশের প্রতিনিধিত্বকারী বহুভুজ বিন্দুর সংগ্রহে পরিণত করে।"
+    "bitbybit.manifold.toPolygonPoints_description": "manifold আকারকে মেশের প্রতিনিধিত্বকারী বহুভুজ বিন্দুর সংগ্রহে পরিণত করে।",
+    "flatU": "সমতল U",
+    "bitbybit.occt.shapes.face.subdivideToHexagonHoles": "ষড়ভুজ গর্তে উপবিভক্ত করুন",
+    "subdivideToHexagonHoles": "ষড়ভুজ গর্তে উপবিভক্ত করুন",
+    "bitbybit.occt.shapes.face.subdivideToHexagonHoles_description": "একটি মুখকে ষড়ভুজ গর্তে উপবিভক্ত করে"
 }

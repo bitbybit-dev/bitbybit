@@ -5289,5 +5289,9 @@
     "bitbybit.jscad.toPolygonPoints_description": "Wandelt eine jscad-Form in eine Sammlung von Polygonpunkten um, die das Netz darstellen",
     "conversions": "Umwandlungen",
     "bitbybit.manifold.toPolygonPoints": "zu Polygonpunkten",
-    "bitbybit.manifold.toPolygonPoints_description": "Wandelt eine Manifold-Form in eine Sammlung von Polygonpunkten um, die das Netz darstellen."
+    "bitbybit.manifold.toPolygonPoints_description": "Wandelt eine Manifold-Form in eine Sammlung von Polygonpunkten um, die das Netz darstellen.",
+    "flatU": "flaches U",
+    "bitbybit.occt.shapes.face.subdivideToHexagonHoles": "in Sechseck-Löcher unterteilen",
+    "subdivideToHexagonHoles": "in Sechseck-Löcher unterteilen",
+    "bitbybit.occt.shapes.face.subdivideToHexagonHoles_description": "Unterteilt eine Fläche in Sechseck-Löcher"
 }

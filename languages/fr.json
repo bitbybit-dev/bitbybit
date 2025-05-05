@@ -5289,5 +5289,9 @@
     "bitbybit.jscad.toPolygonPoints_description": "Transforme la forme jscad en une collection de points de polygone représentant le maillage",
     "conversions": "conversions",
     "bitbybit.manifold.toPolygonPoints": "vers points de polygone",
-    "bitbybit.manifold.toPolygonPoints_description": "Transforme la forme manifold en une collection de points de polygone représentant le maillage."
+    "bitbybit.manifold.toPolygonPoints_description": "Transforme la forme manifold en une collection de points de polygone représentant le maillage.",
+    "flatU": "plat U",
+    "bitbybit.occt.shapes.face.subdivideToHexagonHoles": "subdiviser en trous hexagonaux",
+    "subdivideToHexagonHoles": "subdiviser en trous hexagonaux",
+    "bitbybit.occt.shapes.face.subdivideToHexagonHoles_description": "Subdivise une face en trous hexagonaux"
 }

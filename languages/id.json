@@ -5289,5 +5289,9 @@
     "bitbybit.jscad.toPolygonPoints_description": "Mengubah bentuk jscad menjadi kumpulan titik poligon yang mewakili mesh",
     "conversions": "konversi",
     "bitbybit.manifold.toPolygonPoints": "ke titik poligon",
-    "bitbybit.manifold.toPolygonPoints_description": "Mengubah bentuk manifold menjadi kumpulan titik poligon yang mewakili mesh."
+    "bitbybit.manifold.toPolygonPoints_description": "Mengubah bentuk manifold menjadi kumpulan titik poligon yang mewakili mesh.",
+    "flatU": "datar U",
+    "bitbybit.occt.shapes.face.subdivideToHexagonHoles": "bagi menjadi lubang heksagon",
+    "subdivideToHexagonHoles": "bagi menjadi lubang heksagon",
+    "bitbybit.occt.shapes.face.subdivideToHexagonHoles_description": "Membagi permukaan menjadi lubang heksagon"
 }

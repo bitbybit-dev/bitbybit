@@ -5289,5 +5289,9 @@
     "bitbybit.jscad.toPolygonPoints_description": "jscad आकृति को मेश का प्रतिनिधित्व करने वाले बहुभुज बिंदुओं के संग्रह में बदलता है",
     "conversions": "रूपांतरण",
     "bitbybit.manifold.toPolygonPoints": "बहुभुज बिंदुओं में",
-    "bitbybit.manifold.toPolygonPoints_description": "मैनिफोल्ड आकृति को मेश का प्रतिनिधित्व करने वाले बहुभुज बिंदुओं के संग्रह में बदलता है।"
+    "bitbybit.manifold.toPolygonPoints_description": "मैनिफोल्ड आकृति को मेश का प्रतिनिधित्व करने वाले बहुभुज बिंदुओं के संग्रह में बदलता है।",
+    "flatU": "समतल U",
+    "bitbybit.occt.shapes.face.subdivideToHexagonHoles": "षट्कोण छेदों में उप-विभाजित करें",
+    "subdivideToHexagonHoles": "षट्कोण छेदों में उप-विभाजित करें",
+    "bitbybit.occt.shapes.face.subdivideToHexagonHoles_description": "एक फलक को षट्कोण छेदों में उप-विभाजित करता है"
 }

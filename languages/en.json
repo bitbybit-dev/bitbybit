@@ -5289,5 +5289,9 @@
     "bitbybit.jscad.toPolygonPoints_description": "Turns jscad shape into a collection of polygon points representing the mesh",
     "conversions": "conversions",
     "bitbybit.manifold.toPolygonPoints": "to polygon points",
-    "bitbybit.manifold.toPolygonPoints_description": "Turns manifold shape into a collection of polygon points representing the mesh."
+    "bitbybit.manifold.toPolygonPoints_description": "Turns manifold shape into a collection of polygon points representing the mesh.",
+    "flatU": "flat u",
+    "bitbybit.occt.shapes.face.subdivideToHexagonHoles": "subdivide to hexagon holes",
+    "subdivideToHexagonHoles": "subdivide to hexagon holes",
+    "bitbybit.occt.shapes.face.subdivideToHexagonHoles_description": "Subdivides a face to hexagon holes"
 }

@@ -5289,5 +5289,9 @@
     "bitbybit.jscad.toPolygonPoints_description": "将 jscad 形状转换为表示网格的多边形点集合",
     "conversions": "转换",
     "bitbybit.manifold.toPolygonPoints": "转为多边形点",
-    "bitbybit.manifold.toPolygonPoints_description": "将 manifold 形状转换为表示网格的多边形点集合。"
+    "bitbybit.manifold.toPolygonPoints_description": "将 manifold 形状转换为表示网格的多边形点集合。",
+    "flatU": "平坦 U",
+    "bitbybit.occt.shapes.face.subdivideToHexagonHoles": "细分为六边形孔洞",
+    "subdivideToHexagonHoles": "细分为六边形孔洞",
+    "bitbybit.occt.shapes.face.subdivideToHexagonHoles_description": "将面细分为六边形孔洞"
 }

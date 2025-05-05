@@ -5289,5 +5289,9 @@
     "bitbybit.jscad.toPolygonPoints_description": "Transforma a forma jscad numa coleção de pontos de polígono representando a malha",
     "conversions": "conversões",
     "bitbybit.manifold.toPolygonPoints": "para pontos de polígono",
-    "bitbybit.manifold.toPolygonPoints_description": "Transforma a forma manifold numa coleção de pontos de polígono representando a malha."
+    "bitbybit.manifold.toPolygonPoints_description": "Transforma a forma manifold numa coleção de pontos de polígono representando a malha.",
+    "flatU": "plano U",
+    "bitbybit.occt.shapes.face.subdivideToHexagonHoles": "subdividir em furos hexagonais",
+    "subdivideToHexagonHoles": "subdividir em furos hexagonais",
+    "bitbybit.occt.shapes.face.subdivideToHexagonHoles_description": "Subdivide uma face em furos hexagonais"
 }
