@@ -12,7 +12,7 @@ export class DrawCore {
     }
 
     detectLine(entity: any): boolean {
-        return entity.start && entity.end && Array.isArray(entity.start) && Array.isArray(entity.end);
+        return (entity.start && entity.end && Array.isArray(entity.start) && Array.isArray(entity.end)) || (Array.isArray(entity) && entity.length === 2 && this.checkIfElementsInArrayAreNumbers(entity[0]) && entity[0].length === 3 && this.checkIfElementsInArrayAreNumbers(entity[1]) && entity[1].length === 3);
     }
 
     detectLines(entity: any): boolean {

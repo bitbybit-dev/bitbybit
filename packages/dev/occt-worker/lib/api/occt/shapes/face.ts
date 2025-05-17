@@ -9,6 +9,30 @@ export class OCCTFace {
     }
 
     /**
+     * Creates face from triangle definition
+     * @param inputs Triangle
+     * @returns OpenCascade face
+     * @group from base
+     * @shortname face from triangle
+     * @drawable true
+     */
+    fromBaseTriangle(inputs: Inputs.OCCT.TriangleBaseDto): Promise<Inputs.OCCT.TopoDSFacePointer> {
+        return this.occWorkerManager.genericCallToWorkerPromise("shapes.face.fromBaseTriangle", inputs);
+    }
+
+    /**
+     * Creates faces from mesh definition
+     * @param inputs Mesh
+     * @returns OpenCascade faces
+     * @group from base
+     * @shortname faces from mesh
+     * @drawable true
+     */
+    fromBaseMesh(inputs: Inputs.OCCT.MeshBaseDto): Promise<Inputs.OCCT.TopoDSFacePointer[]> {
+        return this.occWorkerManager.genericCallToWorkerPromise("shapes.face.fromBaseMesh", inputs);
+    }
+
+    /**
      * Creates a faces from wires on face
      * @param inputs OpenCascade wires and guiding face
      * @returns OpenCascade faces

@@ -55,7 +55,7 @@ export class Draw extends DrawCore {
     drawAny(inputs: Inputs.Draw.DrawAny<THREEJS.Group>): THREEJS.Group {
         let result;
         const entity = inputs.entity;
-        if (!inputs.group) {
+        if (!inputs.group && !(inputs.entity instanceof THREEJS.Group)) {
             if (this.detectLine(entity)) {
                 result = this.handleLine(inputs);
             } else if (this.detectPoint(entity)) {
@@ -172,10 +172,16 @@ export class Draw extends DrawCore {
 
     private handleLine(inputs: Inputs.Draw.DrawAny<THREEJS.Group>): THREEJS.Group {
         return this.handle(inputs, this.defaultPolylineOptions, (options) => {
-            const line = inputs.entity as Inputs.Base.Line3;
+            const line = inputs.entity as Inputs.Base.Line3 | Inputs.Base.Segment3;
+            const pts: Inputs.Base.Point3[] = [];
+            if (line && line["start"]) {
+                pts.push((line as Inputs.Base.Line3).start, (line as Inputs.Base.Line3).end);
+            } else {
+                pts.push(...line as Inputs.Base.Segment3);
+            }
             return this.drawHelper.drawPolylinesWithColours({
                 polylinesMesh: inputs.group,
-                polylines: [{ points: [line.start, line.end] }],
+                polylines: [{ points: pts }],
                 ...options as Inputs.Draw.DrawBasicGeometryOptions
             });
         }, Inputs.Draw.drawingTypes.line);
@@ -233,10 +239,20 @@ export class Draw extends DrawCore {
 
     private handleLines(inputs: Inputs.Draw.DrawAny<THREEJS.Group>): THREEJS.Group {
         return this.handle(inputs, this.defaultPolylineOptions, (options) => {
-            const lines = inputs.entity as Inputs.Base.Line3[];
+            const lines = inputs.entity as Inputs.Base.Line3[] | Inputs.Base.Segment3[];
+            const pts: Inputs.Base.Point3[][] = [];
+            if (lines && lines[0] && lines[0]["start"]) {
+                lines.forEach(e => {
+                    pts.push([e.start, e.end]);
+                });
+            } else {
+                lines.forEach(line => {
+                    pts.push(line as Inputs.Base.Segment3);
+                });
+            }
             return this.drawHelper.drawPolylinesWithColours({
                 polylinesMesh: inputs.group,
-                polylines: lines.map(e => ({ points: [e.start, e.end] })),
+                polylines: pts.map(e => ({ points: [...e] })),
                 ...options as Inputs.Draw.DrawBasicGeometryOptions
             });
         }, Inputs.Draw.drawingTypes.lines);

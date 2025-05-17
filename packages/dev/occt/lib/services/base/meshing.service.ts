@@ -1,4 +1,3 @@
-import { MeshBitByBit } from "@bitbybit-dev/base";
 import {
     Handle_Poly_Triangulation,
     OpenCascadeInstance,
@@ -10,6 +9,7 @@ import { FacesService } from "./faces.service";
 import { ShapeGettersService } from "./shape-getters";
 import { TransformsService } from "./transforms.service";
 import { WiresService } from "./wires.service";
+import { BaseBitByBit } from "../../base";
 
 export class MeshingService {
 
@@ -20,7 +20,7 @@ export class MeshingService {
         public readonly edgesService: EdgesService,
         public facesService: FacesService,
         public readonly wiresService: WiresService,
-        public readonly mesh: MeshBitByBit
+        public readonly base: BaseBitByBit
     ) { }
 
     shapeFacesToPolygonPoints(inputs: Inputs.OCCT.ShapeFacesToPolygonPointsDto<TopoDS_Shape>): Inputs.Base.Point3[][] {
@@ -230,7 +230,7 @@ export class MeshingService {
         const mesh1 = this.shapeFacesToPolygonPoints({ shape: shape1, precision: inputs.precision1, adjustYtoZ: false, reversedPoints: false }) as Inputs.Base.Mesh3;
         const mesh2 = this.shapeFacesToPolygonPoints({ shape: shape2, precision: inputs.precision2, adjustYtoZ: false, reversedPoints: false }) as Inputs.Base.Mesh3;
 
-        const res = this.mesh.meshMeshIntersectionPolylines({
+        const res = this.base.mesh.meshMeshIntersectionPolylines({
             mesh1, mesh2
         });
         const wires = [];
@@ -260,7 +260,7 @@ export class MeshingService {
         const mesh1 = this.shapeFacesToPolygonPoints({ shape: shape1, precision: inputs.precision1, adjustYtoZ: false, reversedPoints: false }) as Inputs.Base.Mesh3;
         const mesh2 = this.shapeFacesToPolygonPoints({ shape: shape2, precision: inputs.precision2, adjustYtoZ: false, reversedPoints: false }) as Inputs.Base.Mesh3;
 
-        return this.mesh.meshMeshIntersectionPoints({ mesh1, mesh2 });
+        return this.base.mesh.meshMeshIntersectionPoints({ mesh1, mesh2 });
     }
 
     meshMeshIntersectionOfShapesWires(inputs: Inputs.OCCT.MeshMeshesIntersectionOfShapesDto<TopoDS_Shape>): TopoDS_Wire[] {

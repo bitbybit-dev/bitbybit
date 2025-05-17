@@ -11,6 +11,23 @@ export class OCCTFace {
     ) {
     }
 
+    fromBaseTriangle(inputs: Inputs.OCCT.TriangleBaseDto) {
+        const wire = this.och.wiresService.createPolygonWire({ points: inputs.triangle });
+        return this.createFaceFromWire({ shape: wire, planar: true });
+    }
+
+    fromBaseMesh(inputs: Inputs.OCCT.MeshBaseDto) {
+        const faces = [];
+        inputs.mesh.forEach((triangle) => {
+            try {
+                faces.push(this.fromBaseTriangle({ triangle }));
+            } catch (e) {
+                console.warn("Failed to make face for triangle", triangle);
+            }
+        });
+        return faces.flat();
+    }
+
     createFaceFromWire(inputs: Inputs.OCCT.FaceFromWireDto<TopoDS_Wire>): TopoDS_Face {
         return this.och.facesService.createFaceFromWire(inputs);
     }

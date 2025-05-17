@@ -10,6 +10,57 @@ export class OCCTEdge {
     ) {
     }
 
+    fromBaseLine(inputs: Inputs.OCCT.LineBaseDto) {
+        return this.line(inputs.line);
+    }
+
+    fromBaseLines(inputs: Inputs.OCCT.LinesBaseDto) {
+        return inputs.lines.map(line => this.line(line));
+    }
+
+    fromBaseSegment(inputs: Inputs.OCCT.SegmentBaseDto) {
+        return this.line({ start: inputs.segment[0], end: inputs.segment[1] });
+    }
+
+    fromBaseSegments(inputs: Inputs.OCCT.SegmentsBaseDto) {
+        return inputs.segments.map(segment => this.line({ start: segment[0], end: segment[1] }));
+    }
+
+    fromPoints(inputs: Inputs.OCCT.PointsDto) {
+        const edges = [];
+        for (let i = 0; i < inputs.points.length - 1; i++) {
+            const start = inputs.points[i];
+            const end = inputs.points[i + 1];
+            edges.push(this.line({ start, end }));
+        }
+        return edges;
+    }
+
+    fromBasePolyline(inputs: Inputs.OCCT.PolylineBaseDto) {
+        const points = inputs.polyline.points;
+        if (inputs.polyline.isClosed) {
+            points.push(points[0]);
+        }
+        return this.fromPoints({ points });
+    }
+
+    fromBaseTriangle(inputs: Inputs.OCCT.TriangleBaseDto) {
+        const points = inputs.triangle;
+        return this.fromBasePolyline({ polyline: { points, isClosed: true }});
+    }
+
+    fromBaseMesh(inputs: Inputs.OCCT.MeshBaseDto) {
+        const edges = [];
+        inputs.mesh.forEach((triangle) => {
+            try {
+                edges.push(this.fromBaseTriangle({ triangle }));
+            } catch (e) {
+                console.warn("Failed to make edges for triangle", triangle);
+            }
+        });
+        return edges.flat();
+    }
+
     makeEdgeFromGeom2dCurveAndSurface(inputs: Inputs.OCCT.CurveAndSurfaceDto<Geom2d_Curve, Geom_Surface>) {
         return this.och.edgesService.makeEdgeFromGeom2dCurveAndSurface(inputs);
     }
@@ -73,7 +124,7 @@ export class OCCTEdge {
     pointOnEdgeAtParam(inputs: Inputs.OCCT.DataOnGeometryAtParamDto<TopoDS_Edge>): Inputs.Base.Point3 {
         return this.och.edgesService.pointOnEdgeAtParam(inputs);
     }
-    
+
     pointsOnEdgesAtParam(inputs: Inputs.OCCT.DataOnGeometryesAtParamDto<TopoDS_Edge>): Inputs.Base.Point3[] {
         return inputs.shapes.map((shape) => this.och.edgesService.pointOnEdgeAtParam({ shape, param: inputs.param }));
     }
@@ -134,11 +185,11 @@ export class OCCTEdge {
         return inputs.shapes.map(shape => this.divideEdgeByEqualDistanceToPoints({ shape, nrOfDivisions: inputs.nrOfDivisions, removeEndPoint: inputs.removeEndPoint, removeStartPoint: inputs.removeStartPoint }));
     }
 
-    isEdgeLinear(inputs: Inputs.OCCT.ShapeDto<TopoDS_Shape>){
+    isEdgeLinear(inputs: Inputs.OCCT.ShapeDto<TopoDS_Shape>) {
         return this.och.edgesService.isEdgeLinear(inputs);
     }
 
-    isEdgeCircular(inputs: Inputs.OCCT.ShapeDto<TopoDS_Shape>){
+    isEdgeCircular(inputs: Inputs.OCCT.ShapeDto<TopoDS_Shape>) {
         return this.och.edgesService.isEdgeCircular(inputs);
     }
 

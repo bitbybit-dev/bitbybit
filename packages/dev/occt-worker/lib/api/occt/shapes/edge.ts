@@ -9,6 +9,102 @@ export class OCCTEdge {
     ) {
     }
 
+   /**
+     * Creates linear edge from base line format {start: Point3, end: Point3}
+     * @param inputs base line
+     * @returns OpenCascade edge
+     * @group from base
+     * @shortname edge from base line
+     * @drawable true
+     */
+    fromBaseLine(inputs: Inputs.OCCT.LineBaseDto): Promise<Inputs.OCCT.TopoDSEdgePointer> {
+        return this.occWorkerManager.genericCallToWorkerPromise("shapes.edge.fromBaseLine", inputs);
+    }
+
+    /**
+     * Creates linear edges from base lines format {start: Point3, end: Point3}[]
+     * @param inputs base lines
+     * @returns OpenCascade edges
+     * @group from base
+     * @shortname edges from base lines
+     * @drawable true
+     */
+    fromBaseLines(inputs: Inputs.OCCT.LineBaseDto): Promise<Inputs.OCCT.TopoDSEdgePointer[]> {
+        return this.occWorkerManager.genericCallToWorkerPromise("shapes.edge.fromBaseLines", inputs);
+    }
+
+    /**
+     * Creates linear edge from base segment format [Point3, Point3]
+     * @param inputs base segment
+     * @returns OpenCascade edge
+     * @group from base
+     * @shortname edge from base segment
+     * @drawable true
+     */
+    fromBaseSegment(inputs: Inputs.OCCT.SegmentBaseDto): Promise<Inputs.OCCT.TopoDSEdgePointer> {
+        return this.occWorkerManager.genericCallToWorkerPromise("shapes.edge.fromBaseSegment", inputs);
+    }
+  
+    /**
+     * Creates linear edge from base segments format [Point3, Point3][]
+     * @param inputs base segments
+     * @returns OpenCascade edges
+     * @group from base
+     * @shortname edges from base segments
+     * @drawable true
+     */
+    fromBaseSegments(inputs: Inputs.OCCT.SegmentsBaseDto): Promise<Inputs.OCCT.TopoDSEdgePointer[]> {
+        return this.occWorkerManager.genericCallToWorkerPromise("shapes.edge.fromBaseSegments", inputs);
+    }
+
+    /**
+     * Creates linear edges from collection of points
+     * @param inputs Points
+     * @returns OpenCascade edges
+     * @group from base
+     * @shortname edges from points
+     * @drawable true
+     */
+    fromPoints(inputs: Inputs.OCCT.PointsDto) : Promise<Inputs.OCCT.TopoDSEdgePointer[]> {
+        return this.occWorkerManager.genericCallToWorkerPromise("shapes.edge.fromPoints", inputs);
+    }
+
+    /**
+     * Creates linear edges from polyline definition
+     * @param inputs Polyline
+     * @returns OpenCascade edges
+     * @group from base
+     * @shortname edges from polyline
+     * @drawable true
+     */
+    fromBasePolyline(inputs: Inputs.OCCT.PolylineBaseDto) : Promise<Inputs.OCCT.TopoDSEdgePointer[]> {
+        return this.occWorkerManager.genericCallToWorkerPromise("shapes.edge.fromBasePolyline", inputs);
+    }
+
+    /**
+     * Creates linear edges from triangle definition
+     * @param inputs Triangle
+     * @returns OpenCascade edges
+     * @group from base
+     * @shortname edges from triangle
+     * @drawable true
+     */
+    fromBaseTriangle(inputs: Inputs.OCCT.TriangleBaseDto) : Promise<Inputs.OCCT.TopoDSEdgePointer[]> {
+        return this.occWorkerManager.genericCallToWorkerPromise("shapes.edge.fromBaseTriangle", inputs);
+    }
+
+    /**
+     * Creates linear edges from mesh definition
+     * @param inputs Mesh
+     * @returns OpenCascade edges
+     * @group from base
+     * @shortname edges from mesh
+     * @drawable true
+     */
+    fromBaseMesh(inputs: Inputs.OCCT.MeshBaseDto) : Promise<Inputs.OCCT.TopoDSEdgePointer[]> {
+        return this.occWorkerManager.genericCallToWorkerPromise("shapes.edge.fromBaseMesh", inputs);
+    }
+
     /**
      * Creates linear edge between two points
      * @param inputs Two points between which edge should be created

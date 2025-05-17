@@ -92,6 +92,7 @@ export class Polyline {
     create(inputs: Inputs.Polyline.PolylineCreateDto): Inputs.Polyline.PolylinePropertiesDto {
         return {
             points: inputs.points,
+            isClosed: inputs.isClosed ?? false,
         };
     }
 

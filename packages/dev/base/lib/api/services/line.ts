@@ -113,6 +113,21 @@ export class Line {
     }
 
     /**
+     * Create the segment
+     * @param inputs start and end points of the segment
+     * @returns segment
+     * @group create
+     * @shortname segment
+     * @drawable true
+     */
+    createSegment(inputs: Inputs.Line.LinePointsDto): Inputs.Base.Segment3 {
+        return [
+            inputs.start,
+            inputs.end,
+        ];
+    }
+
+    /**
      * Gets the point on the line segment at a given param
      * @param inputs line
      * @returns point on line

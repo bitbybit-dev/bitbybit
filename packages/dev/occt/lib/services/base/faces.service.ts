@@ -11,7 +11,7 @@ import { ConverterService } from "./converter.service";
 import { FilletsService } from "./fillets.service";
 import { TransformsService } from "./transforms.service";
 import { VectorHelperService } from "../../api";
-import { Point } from "@bitbybit-dev/base";
+import { BaseBitByBit } from "../../base";
 
 export class FacesService {
 
@@ -26,7 +26,7 @@ export class FacesService {
         private readonly wiresService: WiresService,
         private readonly transformsService: TransformsService,
         private readonly vectorService: VectorHelperService,
-        private readonly point: Point,
+        private readonly base: BaseBitByBit,
         public filletsService: FilletsService,
     ) { }
 
@@ -770,7 +770,7 @@ export class FacesService {
         }
 
         // Generate hexagon grid in local 2D space (assuming X maps to V, Z maps to U)
-        const hex = this.point.hexGridScaledToFit({
+        const hex = this.base.point.hexGridScaledToFit({
             width: gridWidthV,
             height: gridHeightU,
             nrHexagonsInHeight: inputs.nrHexagonsU,
@@ -805,7 +805,7 @@ export class FacesService {
         shapesToDelete.push(...uvHexWires);
 
         // Translate centers to parametric UV space
-        const uvHexCenters = this.point.translatePoints({
+        const uvHexCenters = this.base.point.translatePoints({
             points: hex.centers,
             translation: uvTranslation
         });

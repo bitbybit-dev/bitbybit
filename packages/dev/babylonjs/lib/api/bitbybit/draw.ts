@@ -163,7 +163,7 @@ export class Draw extends DrawCore {
     drawAny(inputs: Inputs.Draw.DrawAny): BABYLON.Mesh {
         let result;
         const entity = inputs.entity;
-        if (!inputs.babylonMesh) {
+        if (!inputs.babylonMesh && !(entity instanceof BABYLON.Mesh)) {
             if (this.detectLine(entity)) {
                 result = this.handleLine(inputs);
             } else if (this.detectPoint(entity)) {
@@ -409,10 +409,20 @@ export class Draw extends DrawCore {
         if (!inputs.options && inputs.babylonMesh && inputs.babylonMesh.metadata.options) {
             options = inputs.babylonMesh.metadata.options;
         }
-        const lines = inputs.entity as Inputs.Base.Line3[];
+        const lines = inputs.entity as Inputs.Base.Line3[] | Inputs.Base.Segment3[];
+        const pts: Inputs.Base.Point3[][] = [];
+        if (lines && lines[0] && lines[0]["start"]) {
+            lines.forEach(e => {
+                pts.push([e.start, e.end]);
+            });
+        } else {
+            lines.forEach(line => {
+                pts.push(line as Inputs.Base.Segment3);
+            });
+        }
         const result = this.drawHelper.drawPolylinesWithColours({
             polylinesMesh: inputs.babylonMesh as BABYLON.GreasedLineMesh,
-            polylines: lines.map(e => ({ points: [e.start, e.end] })),
+            polylines: pts.map(e => ({ points: [...e] })),
             ...options as Inputs.Draw.DrawBasicGeometryOptions
         });
         this.applyGlobalSettingsAndMetadataAndShadowCasting(Inputs.Draw.drawingTypes.lines, options, result);
@@ -508,10 +518,16 @@ export class Draw extends DrawCore {
         if (!inputs.options && inputs.babylonMesh && inputs.babylonMesh.metadata.options) {
             options = inputs.babylonMesh.metadata.options;
         }
-        const line = inputs.entity as Inputs.Base.Line3;
+        const line = inputs.entity as Inputs.Base.Line3 | Inputs.Base.Segment3;
+        const pts: Inputs.Base.Point3[] = [];
+        if (line && line["start"]) {
+            pts.push((line as Inputs.Base.Line3).start, (line as Inputs.Base.Line3).end);
+        } else {
+            pts.push(...line as Inputs.Base.Segment3);
+        }
         const result = this.drawHelper.drawPolylinesWithColours({
             polylinesMesh: inputs.babylonMesh as BABYLON.GreasedLineMesh,
-            polylines: [{ points: [line.start, line.end] }],
+            polylines: [{ points: pts }],
             ...options as Inputs.Draw.DrawBasicGeometryOptions
         });
         this.applyGlobalSettingsAndMetadataAndShadowCasting(Inputs.Draw.drawingTypes.line, options, result);
