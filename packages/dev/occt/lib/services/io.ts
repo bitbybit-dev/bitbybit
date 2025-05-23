@@ -15,10 +15,14 @@ export class OCCTIO {
         let adjustedShape;
         if (inputs.adjustYtoZ) {
             const rotatedShape = this.och.transformsService.rotate({ shape: inputs.shape, axis: [1, 0, 0], angle: -90 });
-            adjustedShape = this.och.transformsService.mirrorAlongNormal(
-                { shape: rotatedShape, origin: [0, 0, 0], normal: [0, 0, 1] }
-            );
-            rotatedShape.delete();
+            if (inputs.fromRightHanded) {
+                adjustedShape = rotatedShape;
+            } else {
+                adjustedShape = this.och.transformsService.mirrorAlongNormal(
+                    { shape: rotatedShape, origin: [0, 0, 0], normal: [0, 0, 1] }
+                );
+                rotatedShape.delete();
+            }
         }
         const fileName = "x";
         const writer = new this.occ.STEPControl_Writer_1();
@@ -115,7 +119,7 @@ export class OCCTIO {
         if (incrementalMeshBuilder) {
             incrementalMeshBuilder.Delete();
         }
-        
+
         return result;
     }
 

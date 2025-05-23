@@ -5509,6 +5509,12 @@ export namespace OCCT {
          */
         adjustYtoZ = false;
         /**
+         * Will assume that the shape is created in right handed coordinate system environment
+         * and will compensate by not mirroring the shape along z axis
+         * @default false
+         */
+        fromRightHanded? = false;
+        /**
          * Will attempt to downlaod the file if that is possible
          * @default true
          */

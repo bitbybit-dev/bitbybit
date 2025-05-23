@@ -56,7 +56,7 @@ export class OccHelper {
         public readonly shapesHelperService: ShapesHelperService,
         public readonly occ: OpenCascadeInstance,
     ) {
-
+        this.base = new BaseBitByBit();
         this.occRefReturns = new OCCReferencedReturns(occ);
         this.iteratorService = new IteratorService(occ);
         this.enumService = new EnumService(occ);

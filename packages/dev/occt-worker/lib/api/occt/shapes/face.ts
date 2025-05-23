@@ -40,7 +40,7 @@ export class OCCTFace {
      * @shortname faces from wires on face
      * @drawable true
      */
-    createFacesFromWiresOnFace(inputs: Inputs.OCCT.FacesFromWiresOnFaceDto<Inputs.OCCT.TopoDSWirePointer, Inputs.OCCT.TopoDSFacePointer>): Promise<Inputs.OCCT.TopoDSFacePointer> {
+    createFacesFromWiresOnFace(inputs: Inputs.OCCT.FacesFromWiresOnFaceDto<Inputs.OCCT.TopoDSWirePointer, Inputs.OCCT.TopoDSFacePointer>): Promise<Inputs.OCCT.TopoDSFacePointer[]> {
         return this.occWorkerManager.genericCallToWorkerPromise("shapes.face.createFacesFromWiresOnFace", inputs);
     }
 
