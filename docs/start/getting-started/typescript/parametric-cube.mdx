@@ -1,0 +1,114 @@
+---
+sidebar_position: 3
+title: Creating a Parametric Cube in TypeScript
+sidebar_label: Parametric Cube Tutorial
+description: Learn to create a parametric 3D cube using OpenCascade (OCCT) and TypeScript in the Bitbybit environment.
+slug: /tutorials/parametric-cube-bitbybit # Adjust as needed
+tags: [getting-started, typescript, occt]
+---
+
+import BitByBitRenderCanvas from '@site/src/components/BitByBitRenderCanvas'; 
+
+In this short tutorial, we'll create a 3D cube using the powerful OpenCascade Technology (OCCT) kernel, which is integrated into Bitbybit. The cool part? We'll control its size using a variable in TypeScript. This simple example demonstrates how you can use code to create dynamic, parametric relationships with 3D geometry.
+
+## What You'll Learn
+
+*   How to use the Bitbybit TypeScript editor.
+*   How to define and use variables to control geometry.
+*   The basics of creating a solid shape (a cube) using OCCT functions.
+*   How to draw your 3D shapes onto the screen.
+
+## 1. Start The Application
+
+First, let's open the Bitbybit online application.
+
+:::tip Open the Editor
+Navigate to: [https://bitbybit.dev/app?editor=typescript](https://bitbybit.dev/app?editor=typescript)
+:::
+
+This will open a new, empty TypeScript workspace. For this tutorial, you can also directly use the embedded editor example provided below.
+
+## 2. Understanding the Script
+
+The script shown in the editor below is fairly straightforward, but let's break it down step-by-step. Feel free to click the **Run** button (usually a play icon ▶️) in the embedded editor to see the result before we dive deeper.
+
+
+<BitByBitRenderCanvas
+  requireManualStart={true}
+  script={{"script":"const start = async () => {\n    const size = 10;\n    const cubeOptions = new Bit.Inputs.OCCT.CubeDto();\n    cubeOptions.size = size;\n    const cube = await bitbybit.occt.shapes.solid.createCube(cubeOptions);\n\n    bitbybit.draw.drawAnyAsync({\n        entity: cube\n    });\n}\n\nstart();\n","version":"0.20.3","type":"typescript"}}
+  title="Draw the grid"
+  description="Draws the grid mesh with lines in 3D space."
+/>
+
+Let's go through the code:
+
+1.  **The `async start` Function:**
+    ```typescript
+    const start = async () => {
+        // ... code inside the function ...
+    };
+    start(); // Call the function to execute it
+    ```
+    The script begins by defining an `async` function called `start`. This is a common pattern in Bitbybit scripts.
+    *   **`async`**: This keyword allows us to use the `await` keyword inside the function. `await` is used for operations that might take some time to complete (like drawing complex 3D objects) without freezing the rest of the application.
+    *   **`const start = () => { ... };`**: This defines an arrow function and assigns it to a constant named `start`.
+    *   **`start();`**: After defining the function, we immediately call it to execute the code within its body.
+
+2.  **Defining the Cube's Size:**
+    ```typescript
+    // Inside the start function:
+    const size = 10; // Try changing this value!
+    ```
+    Inside the `start` function, we declare a constant named `size` and set its value to `10`. This variable will control the dimensions of our cube. This is where the "parametric" aspect comes in – you can change this one value to change the cube.
+
+3.  **Setting Cube Options:**
+    ```typescript
+    // Inside the start function:
+    const cubeOptions = new Bit.Inputs.OCCT.CubeDto();
+    cubeOptions.size = size;
+    ```
+    Here, we prepare the options for creating our cube:
+    *   We create a new instance of `Bit.Inputs.OCCT.CubeDto()`. This object holds various settings for creating OCCT solid shapes.
+    *   We then set the `size` property of `cubeOptions` to the value of our `size` variable.
+
+4.  **Creating the Cube:**
+    ```typescript
+    // Inside the start function:
+    const cube = await bitbybit.occt.shapes.solid.createCube(cubeOptions);
+    ```
+    This line actually creates the 3D cube geometry:
+    *   We call the `bitbybit.occt.shapes.solid.createCube()` function.
+    *   We pass our `cubeOptions` object to it, so it knows what size the cube should be.
+    *   The `await` keyword is used because creating 3D geometry can be an asynchronous operation. The result (the cube geometry) is stored in the `cube` constant.
+
+5.  **Drawing the Cube:**
+    ```typescript
+    // Inside the start function:
+    await bitbybit.draw.drawAnyAsync({ entity: cube });
+    ```
+    Finally, we make the cube visible on the screen:
+    *   We call `bitbybit.draw.drawAnyAsync()`. This is a versatile function in Bitbybit that can draw various types of entities.
+    *   We pass an object with an `entity` property (our `cube`).
+    *   Again, `await` is used as drawing is an asynchronous process. This will render a BabylonJS Mesh (the visual representation) of our cube in the 3D view.
+
+That's it! When you run the script:
+1.  The `size` is defined.
+2.  The cube options are configured with this `size`.
+3.  The OCCT kernel generates the cube geometry.
+4.  The geometry is drawn to the 3D canvas.
+
+After running the script, click the **Swap Canvas** button (usually marked with two arrows 🔁) in the editor to switch to the 3D scene and inspect your cube. Try rotating and zooming to see it from different angles.
+
+## Experiment!
+
+:::tip Try It Yourself
+Go back to the script in the embedded editor (or your own Bitbybit workspace).
+Change the value of the `size` constant:
+```typescript
+const size = 3; // Or any other number
+:::
+Then, click Run again. You'll see the cube instantly update to its new size! This is the power of parametric modeling.
+
+Congratulations!
+You've successfully created a parametric cube using TypeScript and the OpenCascade Technology kernel within Bitbybit. You've learned how to define variables, use them to control geometric properties, and visualize the results.
+This foundational knowledge can be expanded to create much more complex parametric designs!

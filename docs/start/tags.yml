@@ -1,0 +1,60 @@
+getting-started:
+  label: Getting Started
+  permalink: /getting-started
+  description: Getting started with Bitbybit, a platform for building and sharing 3D applications.
+
+rete:
+  label: Rete
+  permalink: /rete
+  description: Rete is a visual-programming environment for building parametric 3D models and applications.
+
+blockly:
+  label: Blockly
+  permalink: /blockly
+  description: Blockly is a visual programming library for building web applications with a block-based interface.
+
+typescript:
+  label: TypeScript
+  permalink: /typescript
+  description: TypeScript is a superset of JavaScript that adds static types, enhancing code quality and maintainability.
+
+monaco:
+  label: Monaco Editor
+  permalink: /monaco-editor
+  description: Monaco Editor is a powerful code editor that provides rich editing features for web applications.
+
+threejs:
+  label: Three.js
+  permalink: /threejs
+  description: Three.js is a JavaScript library that simplifies the creation of 3D graphics in the browser.
+
+babylonjs:
+  label: Babylon.js
+  permalink: /babylonjs
+  description: Babylon.js is a powerful, beautiful, simple, and open game and rendering engine packed into a friendly JavaScript framework.
+
+occt:
+  label: OCCT
+  permalink: /occt
+  description: Open CASCADE Technology (OCCT) is a kernel for 3D CAD, CAM, CAE, and more.
+
+manifold:
+  label: Manifold
+  permalink: /manifold
+  description: Manifold is a geometry kernel for building 3D geometries and applications.
+
+jscad:
+  label: JSCAD
+  permalink: /jscad
+  description: JSCAD is a JavaScript-based CSG modeling kernel for creating 3D models programmatically.
+
+npm-packages:
+  label: NPM Packages
+  permalink: /npm-packages
+  description: NPM packages are reusable Bitbybit code modules that can be shared and used in JavaScript & TypeScript applications.
+
+configurators:
+  label: Configurators
+  permalink: /configurators
+  description: Configurators are 3D applications that allow users to customize and configure products interactively.
+  

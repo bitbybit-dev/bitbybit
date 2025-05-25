@@ -1,0 +1,63 @@
+---
+sidebar_position: 2
+title: Your First 3D "Hello World" with TypeScript
+sidebar_label: Hello World (TypeScript)
+description: Learn how to create your first 3D "Hello World" program using the Bitbybit Monaco programming editor.
+tags: [getting-started, typescript, occt]
+---
+
+import BitByBitRenderCanvas from '@site/src/components/BitByBitRenderCanvas'; 
+
+Let's dive in! A common way to gauge a programming language's simplicity is by seeing how easy it is to display "Hello World!" on the screen. You can explore many variations of this classic task on its [Wikipedia page](https://en.wikipedia.org/wiki/%22Hello,_World!%22_program). In this guide, we'll write a few lines of code to do just that, but with an exciting twist – we'll make it in 3D!
+
+### 1. Start The Editor
+
+First things first, let's open the online editor.
+Navigate to: [https://bitbybit.dev/app?editor=typescript](https://bitbybit.dev/app?editor=typescript)
+This will immediately open a new, empty TypeScript workspace for you to start coding.
+
+### 2. Draw The Grid
+
+We'll begin by setting up a basic structure for our code: an `async start` function. Think of this as a special container for our code. While not strictly needed just for drawing the grid, this `async` function prepares us for more advanced steps later on that require it to work smoothly with other bitbybit.dev features.
+
+Next, we need to tell the program what our grid should look like. We do this by creating `gridOptions`. Then, we'll use the `drawGridMesh` function to actually draw it. The `gridOptions` variable holds all the settings for the grid, like its size and color. Your editor's Intellisense (autocompletion) will show you all the available settings as you type. You can also find a full list in the official documentation.
+
+Check out the script below:
+
+<BitByBitRenderCanvas
+  requireManualStart={true}
+  script={{"script":"const start = async () => {\n    const gridOptions = new Bit.Inputs.Draw.SceneDrawGridMeshDto();\n    bitbybit.draw.drawGridMesh(gridOptions);\n}\n\nstart();\n","version":"0.20.3","type":"typescript"}}
+  title="Draw the grid"
+  description="Draws the grid mesh with lines in 3D space."
+/>
+
+Click the **Run** button in the editor. You should see the grid appear in the 3D view!
+
+To explore the 3D scene, find the **Swap Canvas** button (it usually has two arrows). Click it, and you'll be able to:
+*   **Rotate:** Hold the left mouse button and drag.
+*   **Zoom:** Use your mouse scroll wheel or a two-finger pinch/spread gesture on your trackpad.
+
+When you want to go back to the code, click the same **Swap Canvas** button again.
+Feel free to experiment! Try changing the grid's properties directly in the editor. For example, to make the grid red, add this line *before* `drawGridMesh` is called:
+`gridOptions.mainColor = "#ff0000";`
+
+### 3. Create 3D Text
+
+Great! Now that you've got the grid, let's add our 3D "Hello World" text.
+We'll define options for our 3D text and then create the text shape itself. For this, we'll use the `bitbybit.advanced.text3d.create` function. Interestingly, this function path is the same one you'd use if you were working with the visual Rete or Blockly editors on bitbybit.dev.
+
+The script below shows a working example. We've set the `rotation` to -90 degrees, `originAlignment` to `centerBottom`, and `direction` to `[0, 0, -1]`. These settings make the text stand upright and face the camera. Try changing these values to see what they do!
+
+
+<BitByBitRenderCanvas
+  requireManualStart={true}
+  script={{"script":"const start = async () => {\n    const gridOptions = new Bit.Inputs.Draw.SceneDrawGridMeshDto();\n    bitbybit.draw.drawGridMesh(gridOptions);\n\n    const textOpt = new Bit.Advanced.Text3D.Text3DDto();\n    textOpt.text = \"Hello World!\";\n    textOpt.rotation = -90;\n    textOpt.originAlignment = Bit.Advanced.Text3D.recAlignmentEnum.centerBottom;\n    textOpt.direction = [0, 0, -1];\n    const text3D = await bitbybit.advanced.text3d.create(textOpt);\n\n    bitbybit.draw.drawAnyAsync({\n        entity: text3D\n    });\n}\n\nstart();\n","version":"0.20.3","type":"typescript"}}
+  title="Draw the text & grid"
+  description="Draws the grid mesh with text in 3D space."
+/>
+
+After running this script, you should see your 3D text appearing on the grid. You've now successfully created both a grid and 3D text!
+
+You might be noticing a pattern here: to control how things look or behave, we often create a separate "options" object (like `GridOptions` or `Text3DOptions`). This makes it clear what settings are available for each specific function. All these properties are detailed in the documentation. If you've ever used the Rete or Blockly visual programming tools on the platform, these options directly match the inputs you'd see on the visual blocks.
+
+Don't forget, your editor's Intellisense (autocompletion) is a great helper for discovering which options class you need for different functions.
