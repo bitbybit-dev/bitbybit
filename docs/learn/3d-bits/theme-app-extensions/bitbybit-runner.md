@@ -1,4 +1,5 @@
 ---
+sidebar_position: 2
 title: "BITBYBIT RUNNER Block for Shopify's '3D Bits' App"
 sidebar_label: BITBYBIT RUNNER
 description: Learn how to use the BITBYBIT RUNNER theme app extension block in Shopify's "3D Bits" app to integrate parametric 3D models and interactive scripts from Bitbybit into your product pages.
