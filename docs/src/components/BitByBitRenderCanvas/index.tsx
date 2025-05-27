@@ -21,14 +21,14 @@ interface PostMessageData {
 }
 
 interface Props {
-    script: ScriptProp;
+    script?: ScriptProp;
     title?: string;
     description?: string;
     iframeUrl?: string;
     requireManualStart?: boolean;
     backgroundImageUrl?: string;
     height?: string;
-    style?: CSSProperties; 
+    style?: CSSProperties;
     className?: string;
     showScriptPreviewInitially?: boolean;
 }
@@ -54,7 +54,7 @@ const BitByBitRenderCanvas: React.FC<Props> = React.memo(({
     iframeUrl: baseUrl = "https://s.bitbybit.dev",
     requireManualStart = false,
     backgroundImageUrl = "https://bitbybit.dev/assets/landscape.jpeg",
-    height = "700px",
+    height = "600px",
     style: customCanvasContainerStyle = {},
     className: customCanvasContainerClassName,
     showScriptPreviewInitially = true,
@@ -69,35 +69,60 @@ const BitByBitRenderCanvas: React.FC<Props> = React.memo(({
 
     const fullIframeUrl = React.useMemo(() => {
         if (!scriptProp || !scriptProp.type) return baseUrl;
-        try { const url = new URL(baseUrl); url.searchParams.set("editor", scriptProp.type); return url.toString(); }
-        catch (e) { console.error("Invalid iframeUrl:", baseUrl, e); return baseUrl; }
+        try {
+            const url = new URL(baseUrl);
+            url.searchParams.set("editor", scriptProp.type);
+            return url.toString();
+        }
+        catch (e) {
+            console.error("Invalid iframeUrl:", baseUrl, e);
+            return baseUrl;
+        }
     }, [baseUrl, scriptProp]);
 
-    const dataToPost = React.useMemo<PostMessageData | null>(() => { 
+    const dataToPost = React.useMemo<PostMessageData | null>(() => {
         if (!scriptProp || !scriptProp.script) return null;
-        try { const stringifiedFullScriptProp = JSON.stringify(scriptProp); return { script: { script: stringifiedFullScriptProp, type: scriptProp.type }, type: "openScript" as const }; }
-        catch (error) { console.error("Error stringifying scriptProp:", error, scriptProp); return null; }
+        try {
+            const stringifiedFullScriptProp = JSON.stringify(scriptProp);
+            return { script: { script: stringifiedFullScriptProp, type: scriptProp.type }, type: "openScript" as const };
+        }
+        catch (error) {
+            console.error("Error stringifying scriptProp:", error, scriptProp);
+            return null;
+        }
     }, [scriptProp]);
 
     const postMessageToIframe = useCallback((message: PostMessageData) => {
         if (iframeRef.current?.contentWindow && fullIframeUrl) {
-            try { const targetOrigin = new URL(fullIframeUrl).origin; iframeRef.current.contentWindow.postMessage(message, targetOrigin); }
-            catch (error) { console.error("Error posting message:", error, fullIframeUrl); }
+            try {
+                const targetOrigin = new URL(fullIframeUrl).origin;
+                iframeRef.current.contentWindow.postMessage(message, targetOrigin);
+            }
+            catch (error) {
+                console.error("Error posting message:", error, fullIframeUrl);
+            }
         }
     }, [fullIframeUrl]);
 
-    useEffect(() => { 
+    useEffect(() => {
         if (!loadIframe || !fullIframeUrl) return;
         const handleMessage = (event: MessageEvent<IframeReadyMessage>) => {
-            try { const expectedOrigin = new URL(fullIframeUrl).origin; if (event.origin === expectedOrigin && event.data?.status === "initialised") setIsIframeReady(true); }
-            catch (error) { console.error("Error in handleMessage:", error, fullIframeUrl); }
+            try {
+                const expectedOrigin = new URL(fullIframeUrl).origin;
+                if (event.origin === expectedOrigin && event.data?.status === "initialised") setIsIframeReady(true);
+            }
+            catch (error) {
+                console.error("Error in handleMessage:", error, fullIframeUrl);
+            }
         };
         window.addEventListener("message", handleMessage);
         return () => window.removeEventListener("message", handleMessage);
     }, [fullIframeUrl, loadIframe]);
 
     useEffect(() => {
-        if (loadIframe && isIframeReady && dataToPost) postMessageToIframe(dataToPost);
+        if (loadIframe && isIframeReady && dataToPost) {
+            postMessageToIframe(dataToPost);
+        }
     }, [loadIframe, isIframeReady, dataToPost, postMessageToIframe]);
 
     const handleStartScript = useCallback(() => setLoadIframe(true), []);
@@ -123,23 +148,39 @@ const BitByBitRenderCanvas: React.FC<Props> = React.memo(({
     }, []);
 
     const getScriptLanguage = useCallback(() => {
-        switch (scriptProp.type) { case "rete": return "json"; case "typescript": return "typescript"; case "blockly": return "xml"; default: return "text"; }
-    }, [scriptProp.type]);
+        if (!scriptProp || !scriptProp.type) {
+            return "text";
+        }
+        switch (scriptProp.type) {
+            case "rete": return "json";
+            case "typescript": return "typescript";
+            case "blockly": return "xml";
+            default: return "text";
+        }
+    }, [scriptProp?.type]);
 
     const formattedScriptForPreview = React.useMemo(() => {
         if (!scriptProp || !scriptProp.script) return "";
-        if (scriptProp.type === "rete") { try { return JSON.stringify(JSON.parse(scriptProp.script), null, 2); } catch (e) { console.warn("Could not parse Rete script:", e); return scriptProp.script; } }
+        if (scriptProp.type === "rete") {
+            try {
+                return JSON.stringify(JSON.parse(scriptProp.script), null, 2);
+            } catch (e) {
+                console.warn("Could not parse Rete script:", e);
+                return scriptProp.script;
+            }
+        }
         return scriptProp.script;
     }, [scriptProp]);
 
 
-    const canvasContainerActualStyle: CSSProperties = React.useMemo(() => ({ 
+    const canvasContainerActualStyle: CSSProperties = React.useMemo(() => ({
         position: "relative", width: "100%", height: height,
-        overflow: "hidden", 
+        overflow: "hidden",
+        marginBottom: "20px",
         backgroundColor: "var(--ifm-background-color, #ffffff)",
     }), [height]);
 
-    const preStartOverlayStyle: CSSProperties = React.useMemo(() => ({ 
+    const preStartOverlayStyle: CSSProperties = React.useMemo(() => ({
         width: "100%", height: "100%", display: "flex", flexDirection: "column",
         justifyContent: "center", alignItems: "center",
         backgroundImage: `url(${backgroundImageUrl})`, backgroundSize: "cover",
@@ -160,7 +201,7 @@ const BitByBitRenderCanvas: React.FC<Props> = React.memo(({
     const iframeWrapperStyle: CSSProperties = { width: "100%", height: "100%", position: "relative" };
     const iframeStyle: CSSProperties = { width: "100%", height: "100%", border: "none" };
 
-const scriptPreviewSectionStyle: CSSProperties = {
+    const scriptPreviewSectionStyle: CSSProperties = {
         marginTop: "20px",
         marginBottom: "20px",
         padding: "10px",
@@ -170,9 +211,9 @@ const scriptPreviewSectionStyle: CSSProperties = {
         maxHeight: "500px",
         overflowY: "auto",
     };
-   
-    if (!scriptProp || !scriptProp.script) {
-        return <Admonition type="danger" title="Component Configuration Error">The 'script' prop or its 'script' content is missing.</Admonition>;
+
+    if (scriptProp && !scriptProp.script) {
+        return <Admonition type="danger" title="Component Configuration Error">The 'script.script' content is missing from the provided 'script' prop.</Admonition>;
     }
 
     return (
@@ -182,7 +223,7 @@ const scriptPreviewSectionStyle: CSSProperties = {
                 style={{ ...canvasContainerActualStyle, ...customCanvasContainerStyle }}
                 className={`bitbybit-canvas-container ${customCanvasContainerClassName || ""}`}
             >
-                 {!loadIframe && requireManualStart ? (
+                {!loadIframe && requireManualStart ? (
                     <div style={preStartOverlayStyle}>
                         <a href="https://bitbybit.dev" target="_blank" rel="noopener noreferrer">
                             <img src={BITBYBIT_LOGO_URL_MANUAL_START} alt="Bitbybit Platform" style={bitbybitLogoManualStartStyle} />
@@ -191,10 +232,12 @@ const scriptPreviewSectionStyle: CSSProperties = {
                         <button onClick={handleStartScript} style={startButtonStyle}>
                             Start Script
                         </button>
-                        <div style={scriptTypeIndicatorManualStartStyle}>
-                            <img src={SCRIPT_TYPE_LOGOS[scriptProp.type]} alt={`${scriptProp.type} logo`} style={scriptTypeLogoStyle} />
-                            <span>{scriptProp.type.charAt(0).toUpperCase() + scriptProp.type.slice(1)}</span>
-                        </div>
+                        {scriptProp && scriptProp.type && (
+                            <div style={scriptTypeIndicatorManualStartStyle}>
+                                <img src={SCRIPT_TYPE_LOGOS[scriptProp.type]} alt={`${scriptProp.type} logo`} style={scriptTypeLogoStyle} />
+                                <span>{scriptProp.type.charAt(0).toUpperCase() + scriptProp.type.slice(1)}</span>
+                            </div>
+                        )}
                     </div>
                 ) : null}
 
@@ -217,7 +260,7 @@ const scriptPreviewSectionStyle: CSSProperties = {
                         </div>
                         <iframe
                             ref={iframeRef}
-                            title={`BitByBit ${scriptProp.type} Editor - ${title}`}
+                            title={scriptProp && scriptProp.type ? `BitByBit ${scriptProp.type} Editor - ${title}` : `BitByBit Content - ${title}`}
                             id={`bitbybit-iframe-${uniqueId}`}
                             src={fullIframeUrl}
                             sandbox="allow-scripts allow-same-origin allow-downloads allow-forms allow-popups"

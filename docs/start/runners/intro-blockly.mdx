@@ -1,0 +1,147 @@
+---
+sidebar_position: 3
+title: Introduction to Bitbybit Runner with Blockly
+sidebar_label: Runner with Blockly
+description: Learn how to create a 3D website using Bitbybit Runner by integrating a visual program built with the Blockly editor into a StackBlitz project.
+tags: [getting-started, runners, blockly]
+---
+
+import BitByBitRenderCanvas from '@site/src/components/BitByBitRenderCanvas';
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+# Introduction to Bitbybit Runner with Blockly: Your First 3D Website
+
+## Make Your Own 3D Website with Blockly
+
+Creating your own 3D websites and configurators can be challenging. At Bitbybit, we aim to simplify this process and make it cost-effective with our low-code solutions. In this tutorial, Matas Ubarevicius demonstrates how to build a visual program using the **Blockly editor** on our web CAD platform and then integrate it to run on a third-party coding environment, specifically [StackBlitz](https://stackblitz.com/).
+
+We will code a simple visual program in Blockly that creates a 3D cube. The outcome of this script will be exactly the same as in the previous Rete example. We'll use the same simple website setup on [StackBlitz](https://stackblitz.com/edit/introduction-to-bitbybit-runner-tutorial-with-blockly) that we established in the prior tutorial.
+
+The use of a simple OCCT cube geometry is intentional. The main goal here is to illustrate how you can integrate visual programming created with Blockly into your JavaScript web development workflows using the Bitbybit Runner.
+
+<div class="responsive-video-container">
+  <iframe 
+    width="560" 
+    height="315" 
+    src="https://www.youtube.com/embed/NVT-17RTwUo" 
+    title="Introduction To Bitbybit Runner With Blockly" 
+    frameborder="0" 
+    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+    allowfullscreen>
+  </iframe>
+</div>
+
+## Final Result & Code
+
+You can either check out the live demo of this [StackBlitz project](https://stackblitz.com/edit/introduction-to-bitbybit-runner-tutorial-with-blockly) or use the code snippets below to recreate it on your own website.
+
+<div className="stackblitz-embed-container">
+  <iframe
+    src="https://stackblitz.com/edit/introduction-to-bitbybit-runner-tutorial-with-blockly?ctl=1&embed=1&file=src%2Fmain.ts&theme=dark"
+    style={{
+      width: '100%',
+      height: '700px',
+      border: '0',
+      borderRadius: '4px',
+      overflow: 'hidden',
+    }}
+    title="Introduction to Bitbybit runner tutorial with Blockly"
+    allow="accelerometer; ambient-light-sensor; camera; encrypted-media; geolocation; gyroscope; hid; microphone; midi; payment; usb; vr; xr-spatial-tracking"
+    sandbox="allow-forms allow-modals allow-popups allow-presentation allow-same-origin allow-scripts"
+  ></iframe>
+</div>
+
+### Blockly Script (The Visual Program)
+
+The following Bitbybit Blockly script is the visual program we'll be creating. The JavaScript code used in the StackBlitz example is what gets generated when you use the "Export to Runner" feature from this script.
+
+<BitByBitRenderCanvas
+  requireManualStart={true}
+  script={{"script":"<xml xmlns=\"https://developers.google.com/blockly/xml\"><variables><variable id=\"_DJUCx+SE9SH3xGN1yo-\">size</variable><variable id=\"K],h0m5CA/p:@(d}jL)q\">cubeMesh</variable></variables><block type=\"variables_set\" id=\"TpuuxC2nOh~F5q=5c4{i\" x=\"-16\" y=\"-206\"><field name=\"VAR\" id=\"_DJUCx+SE9SH3xGN1yo-\">size</field><value name=\"VALUE\"><block type=\"bitbybit.runner.getRunnerInputValue\" id=\"T}wb0d1H1WU4~rHqU6Z8\"><value name=\"Property\"><block type=\"text\" id=\"))|_yz$OaS^UU8kI5r!$\"><field name=\"TEXT\">size</field></block></value></block></value><next><block type=\"controls_if\" id=\"gBOREBm4^D%21f7g2GAr\"><value name=\"IF0\"><block type=\"logic_negate\" id=\"a!54OP*F+/vyHMT(6!p]\"><value name=\"BOOL\"><block type=\"variables_get\" id=\"U=1tRyc6cG3CN^7f:1E+\"><field name=\"VAR\" id=\"_DJUCx+SE9SH3xGN1yo-\">size</field></block></value></block></value><statement name=\"DO0\"><block type=\"variables_set\" id=\"!XXE^VXr*QcV3b?1sX8e\"><field name=\"VAR\" id=\"_DJUCx+SE9SH3xGN1yo-\">size</field><value name=\"VALUE\"><block type=\"math_number\" id=\"*!g;!/N-XM^`?17ANEcw\"><field name=\"NUM\">1</field></block></value></block></statement><next><block type=\"variables_set\" id=\"glmyDYydQL2=ex8bMhvA\"><field name=\"VAR\" id=\"K],h0m5CA/p:@(d}jL)q\">cubeMesh</field><value name=\"VALUE\"><block type=\"base_time_await_return\" id=\"H9k.WKw7O5?dsysdzRg?\"><value name=\"Promise\"><block type=\"bitbybit.draw.drawAnyAsync\" id=\"3n^@/8zZXkRWbQFt?[(m\"><value name=\"Entity\"><block type=\"bitbybit.occt.fillets.filletEdges\" id=\"6-?FxF/TH`00-Uh|_T12\"><value name=\"Shape\"><block type=\"bitbybit.occt.shapes.solid.createCube\" id=\"NjKMI;:*GYJ2).3M?yj6\"><value name=\"Size\"><block type=\"variables_get\" id=\"#GiqH1I-B|FAwr$O]yuQ\"><field name=\"VAR\" id=\"_DJUCx+SE9SH3xGN1yo-\">size</field></block></value><value name=\"Center\"><block type=\"bitbybit.point.pointXYZ\" id=\"..HOv-y|X^q[[1Ktwe5h\"><value name=\"X\"><block type=\"math_number\" id=\"1k7i]oML(;2VOAJbhqad\"><field name=\"NUM\">0</field></block></value><value name=\"Y\"><block type=\"math_number\" id=\"T4v#wdY({5vgxbLkK,3V\"><field name=\"NUM\">0</field></block></value><value name=\"Z\"><block type=\"math_number\" id=\",U4KG,+W|/G8$!Z*7WNe\"><field name=\"NUM\">0</field></block></value></block></value></block></value><value name=\"Radius\"><block type=\"math_number\" id=\"T4X)S])jP[|ZQX$Ghya4\"><field name=\"NUM\">0.4</field></block></value></block></value><value name=\"Options\"><block type=\"bitbybit.draw.optionsOcctShapeSimple\" id=\"D6NqR%pIp.xzBt?@?tV4\"><value name=\"Precision\"><block type=\"math_number\" id=\"+gI|`k);rE#Q5p/2)9aE\"><field name=\"NUM\">0.005</field></block></value><value name=\"DrawFaces\"><block type=\"logic_boolean\" id=\"6v},po.Bo3pTR=AliWmO\"><field name=\"BOOL\">TRUE</field></block></value><value name=\"FaceColour\"><block type=\"colour_picker\" id=\"-9c[v3QN;=c):0z_,nQv\"><field name=\"COLOUR\">#000099</field></block></value><value name=\"DrawEdges\"><block type=\"logic_boolean\" id=\"yKIqn0u8[sSMp}7/)/R}\"><field name=\"BOOL\">TRUE</field></block></value><value name=\"EdgeColour\"><block type=\"colour_picker\" id=\"XDSFsc*R[}bp:+5axLbf\"><field name=\"COLOUR\">#ffffff</field></block></value><value name=\"EdgeWidth\"><block type=\"math_number\" id=\"*g6LsjH2*-fg=lAr9Gx*\"><field name=\"NUM\">1</field></block></value></block></value></block></value></block></value><next><block type=\"bitbybit.runner.setRunnerResultValue\" id=\"#sP(;i?@t;x-M0rw:m)B\"><value name=\"Value\"><block type=\"variables_get\" id=\"{BLbxT(e#=Ta`*:wPXW,\"><field name=\"VAR\" id=\"K],h0m5CA/p:@(d}jL)q\">cubeMesh</field></block></value><value name=\"Property\"><block type=\"text\" id=\",@UKLQBJ|:iH-=2p|4tW\"><field name=\"TEXT\">cubeMesh</field></block></value></block></next></block></next></block></next></block></xml>","version":"0.20.3","type":"blockly"}}
+  title="Bitbybit Blockly Editor - Simple Cube for Runner Tutorial"
+  description="Draws 3D Cube and controls its size via inputs coming from external executing program"
+/>
+
+### Complete Code for Your Website
+
+Below are the `index.html` and `script.js` files you would use on StackBlitz or your own website. The `index.html` remains largely the same as the Rete example, with the primary difference being the `script.js` content which will now execute the code exported from Blockly.
+
+<Tabs groupId="html-js-blockly-runner-example">
+  <TabItem value="html" label="index.html" default>
+
+    ```html
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Home</title>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width" />
+        <link rel="stylesheet" href="styles.css" />
+        <script src="https://cdn.jsdelivr.net/gh/bitbybit-dev/bitbybit-assets@0.20.2/runner/bitbybit-runner-babylonjs.js"></script>
+        <script type="module" src="script.js"></script>
+    </head>
+    <body>
+        <div class="myCanvasZone">
+        <canvas id="myCanvas"></canvas>
+        </div>
+        <label for="size">Size</label>
+        <input
+        id="size"
+        type="number"
+        value="1"
+        min="1"
+        max="10"
+        step="1"
+        onchange="changeSize(+event.target.value)"
+        />
+    </body>
+</html>
+
+    ```
+
+  </TabItem>
+  <TabItem value="js" label="script.js">
+
+    ```javascript
+const runner = window.bitbybitRunner.getRunnerInstance();
+
+setTimeout(async () => {
+        const runnerOptions = {
+            canvasId: 'myCanvas',
+            canvasZoneClass: 'myCanvasZone',
+            enablePhysics: false,
+            enableOCCT: true,
+            enableJSCAD: false,
+            enableKeyEventListeners: false,
+            backgroundColor: '#0000ff',
+            loadFonts: [],
+        };
+
+        await runner.run(runnerOptions);
+        changeSize(1);
+}, 0);
+
+let previousMesh;
+
+async function changeSize(size) {
+        const res = await runner.executeScript(getInlineScript(), { size });
+        if (previousMesh) {
+            previousMesh.dispose();
+        }
+        previousMesh = res.cubeMesh;
+}
+
+window.changeSize = changeSize;
+
+function getInlineScript() {
+        return '{"type":"blockly","version":"0.15.13","script":"async function(e,r,t,n,s){var c,o;(c=(()=>{const r={property:\\"size\\"};e.HS.handleBlock(e.blocklyWorkspace,\\"T}wb0d1H1WU4~rHqU6Z8\\",r);try{return s.getBitbybitRunnerInputs()[r.property]}catch(e){errorHandle(e,\\"T}wb0d1H1WU4~rHqU6Z8\\")}})())||(c=1),o=await(()=>{let t={promise:(()=>{const t={entity:(()=>{const t={shape:(()=>{const t={size:c,center:(()=>{const t={x:0,y:0,z:0};e.HS.handleBlock(e.blocklyWorkspace,\\"..HOv-y|X^q[[1Ktwe5h\\",t);try{return r.point.pointXYZ(t)}catch(e){errorHandle(e,\\"..HOv-y|X^q[[1Ktwe5h\\")}})()};return async function(){return await e.HS.inputAwaiter(t,e.blocklyWorkspace,\\"NjKMI;:*GYJ2).3M?yj6\\"),e.HS.handleBlock(e.blocklyWorkspace,\\"NjKMI;:*GYJ2).3M?yj6\\",t),e.HS.startedAsyncTask(e.blocklyWorkspace,\\"NjKMI;:*GYJ2).3M?yj6\\",\\"#ddddff\\"),r.occt.shapes.solid.createCube(t).then((r=>(e.HS.finishedAsyncTask(e.blocklyWorkspace,\\"NjKMI;:*GYJ2).3M?yj6\\"),r)),(e=>{errorHandle(e.substring?e.substring(0,1e3):e,\\"NjKMI;:*GYJ2).3M?yj6\\")}))}()})(),radius:.4};return async function(){return await e.HS.inputAwaiter(t,e.blocklyWorkspace,\\"6-?FxF/TH`00-Uh|_T12\\"),e.HS.handleBlock(e.blocklyWorkspace,\\"6-?FxF/TH`00-Uh|_T12\\",t),e.HS.startedAsyncTask(e.blocklyWorkspace,\\"6-?FxF/TH`00-Uh|_T12\\",\\"#ddddff\\"),r.occt.fillets.filletEdges(t).then((r=>(e.HS.finishedAsyncTask(e.blocklyWorkspace,\\"6-?FxF/TH`00-Uh|_T12\\"),r)),(e=>{errorHandle(e.substring?e.substring(0,1e3):e,\\"6-?FxF/TH`00-Uh|_T12\\")}))}()})(),options:(()=>{const t={precision:.005,drawFaces:!0,faceColour:\\"#000099\\",drawEdges:!0,edgeColour:\\"#ffffff\\",edgeWidth:1};e.HS.handleBlock(e.blocklyWorkspace,\\"D6NqR%pIp.xzBt?@?tV4\\",t);try{return r.draw.optionsOcctShapeSimple(t)}catch(e){errorHandle(e,\\"D6NqR%pIp.xzBt?@?tV4\\")}})()};return async function(){return await e.HS.inputAwaiter(t,e.blocklyWorkspace,\\"3n^@/8zZXkRWbQFt?[(m\\"),e.HS.handleBlock(e.blocklyWorkspace,\\"3n^@/8zZXkRWbQFt?[(m\\",t),e.HS.startedAsyncTask(e.blocklyWorkspace,\\"3n^@/8zZXkRWbQFt?[(m\\",\\"#ddddff\\"),r.draw.drawAnyAsync(t).then((r=>(e.HS.finishedAsyncTask(e.blocklyWorkspace,\\"3n^@/8zZXkRWbQFt?[(m\\"),r)),(e=>{errorHandle(e.substring?e.substring(0,1e3):e,\\"3n^@/8zZXkRWbQFt?[(m\\")}))}()})()}.promise;return Array.isArray(t)&&(t=Promise.all(t)),t})(),(()=>{const r={property:\\"cubeMesh\\",value:o};e.HS.handleBlock(e.blocklyWorkspace,\\"#sP(;i?@t;x-M0rw:m)B\\",r);try{s.setBitbybitRunnerResultValue(r.property,r.value)}catch(e){errorHandle(e,\\"#sP(;i?@t;x-M0rw:m)B\\")}})()}(BitByBit,bitbybit,bitbybitRunnerResult,bitbybitRunnerInputs,Bit);"}';
+}
+    ```
+
+  </TabItem>
+</Tabs>
+
+---
+
+This tutorial demonstrates the power and flexibility of using Blockly with the Bitbybit Runner. By exporting your visual Blockly programs, you can easily integrate complex 3D logic and CAD operations into standard web applications, creating interactive and dynamic user experiences with minimal traditional coding.

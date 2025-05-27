@@ -1,6 +1,6 @@
 {
-  "label": "NPM Packages",
-  "position": 5,
+  "label": "Local",
+  "position": 2,
   "link": {
     "type": "generated-index"
   }

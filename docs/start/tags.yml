@@ -57,4 +57,29 @@ configurators:
   label: Configurators
   permalink: /configurators
   description: Configurators are 3D applications that allow users to customize and configure products interactively.
-  
+
+github:
+  label: GitHub
+  permalink: /github
+  description: GitHub is a platform for version control and collaboration, allowing developers to work together on projects.
+
+projects:
+  label: Projects
+  permalink: /projects
+  description: Category that discusses how to manage projects inside Bitbybit
+
+scripts:
+  label: Scripts
+  permalink: /scripts
+  description: Category that discusses how to manage script inside Bitbybit projects
+
+
+assets:
+  label: Assets
+  permalink: /assets
+  description: Assets are usually files that you can upload to Bitbybit and use in your projects, such as images, 3D models, and other media.
+
+runners:
+  label: Runners
+  permalink: /runners
+  description: The Runner is a tool for executing scripts and automating tasks in Bitbybit projects.

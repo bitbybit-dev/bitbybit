@@ -541,7 +541,7 @@ You can explore and interact with a live example of this setup on StackBlitz:
     src="https://stackblitz.com/edit/threejs-bitbybit-setup-with-all-kernels?ctl=1&embed=1&file=src%2Fmain.ts&theme=dark"
     style={{
       width: '100%',
-      height: '700px', // Adjust height as needed
+      height: '700px',
       border: '0',
       borderRadius: '4px',
       overflow: 'hidden',

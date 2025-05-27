@@ -5,19 +5,19 @@ import type * as Preset from "@docusaurus/preset-classic";
 // This runs in Node.js - Don't use client-side code here (browser APIs, JSX...)
 
 const config: Config = {
-    title: "Bitbybit Docs",
-    tagline: "We Democratize CAD Algorithms",
+    title: "Learn Bitbybit",
+    tagline: "Understand How To Use The Platform",
     favicon: "img/logo-gold-small.png",
 
     // Set the production url of your site here
-    url: "https://bitbybit.dev",
+    url: "https://learn.bitbybit.dev",
     // Set the /<baseUrl>/ pathname under which your site is served
     // For GitHub pages deployment, it is often '/<projectName>/'
     baseUrl: "/",
 
     // GitHub pages deployment config.
     // If you aren't using GitHub pages, you don't need these.
-    organizationName: "bitbybit.dev", // Usually your GitHub org/user name.
+    organizationName: "Bit by bit developers", // Usually your GitHub org/user name.
     projectName: "bitbybit", // Usually your repo name.
 
     onBrokenLinks: "throw",
@@ -70,7 +70,7 @@ const config: Config = {
         // Replace with your project's social card
         image: "img/docusaurus-social-card.jpg",
         navbar: {
-            title: "Bitbybit Start",
+            title: "Learn",
             logo: {
                 alt: "Bitbybit Logo",
                 src: "img/logo-gold-small.png",
@@ -83,6 +83,13 @@ const config: Config = {
                     label: "Start",
                 },
                 { to: "/blog", label: "Blog", position: "left" },
+                {
+                    href: "https://bitbybit.dev/auth/pick-plan",
+                    label: "Support the Mission",
+                    position: "right", // Or 'left' if you prefer
+                    className: "navbar__button--support", // Custom class for styling
+                    "aria-label": "Support the Project Mission", // For accessibility
+                },
                 {
                     href: "https://github.com/bitbybit-dev/bitbybit",
                     label: "GitHub",

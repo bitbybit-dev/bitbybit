@@ -1,0 +1,151 @@
+---
+sidebar_position: 2
+title: Introduction to Bitbybit Runner - Your First 3D Website
+sidebar_label: Runner with Rete
+description: Learn how to create a simple 3D website using Bitbybit Runner & Rete editor, controlling a 3D cube's size with a UI input on StackBlitz.
+tags: [getting-started, runners, rete]
+---
+
+import BitByBitRenderCanvas from '@site/src/components/BitByBitRenderCanvas';
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+# Introduction To Bitbybit Runner: Your First 3D Website
+
+## Make Your Own 3D Website
+
+If you're looking for ways to create your own interactive 3D website, you're in the right place! This tutorial introduces you to **`bitbybit-runner.js`**, a powerful JavaScript library that hosts robust CAD (Computer-Aided Design) algorithms naturally embedded within the Babylon.js game engine.
+
+We will guide you through:
+1.  Coding a simple visual script in Bitbybit to create a 3D cube.
+2.  Setting up a very basic website on [StackBlitz](https://stackblitz.com) (a free online IDE).
+3.  Including the `bitbybit-runner-babylonjs.js` file from our CDN.
+4.  Writing simple HTML and JavaScript to integrate your visual programming script into this website.
+5.  Controlling the cube's size property dynamically through a UI input element on your website.
+
+<div class="responsive-video-container">
+  <iframe 
+    width="560" 
+    height="315" 
+    src="https://www.youtube.com/embed/HtrgvYZK06w" 
+    title="Introduction To Bitbybit Runner" 
+    frameborder="0" 
+    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+    allowfullscreen>
+  </iframe>
+</div>
+
+## Final Result & Code
+
+You can either check this live demo of the completed [StackBlitz project](https://stackblitz.com/edit/introduction-to-bitbybit-runner-tutorial) or use the code snippets below to recreate it on your own website.
+
+<div className="stackblitz-embed-container">
+  <iframe
+    src="https://stackblitz.com/edit/introduction-to-bitbybit-runner-tutorial?ctl=1&embed=1&file=src%2Fmain.ts&theme=dark"
+    style={{
+      width: '100%',
+      height: '700px',
+      border: '0',
+      borderRadius: '4px',
+      overflow: 'hidden',
+    }}
+    title="Introduction to Bitbybit runner tutorial with Rete"
+    allow="accelerometer; ambient-light-sensor; camera; encrypted-media; geolocation; gyroscope; hid; microphone; midi; payment; usb; vr; xr-spatial-tracking"
+    sandbox="allow-forms allow-modals allow-popups allow-presentation allow-same-origin allow-scripts"
+  ></iframe>
+</div>
+
+### Rete Script (The Visual Program)
+
+The following Bitbybit Rete script is the visual program we'll be creating. The JavaScript code used in the StackBlitz example is what gets generated when you use the "Export to Runner" feature from this script.
+
+<BitByBitRenderCanvas
+  requireManualStart={true}
+  script={{"script":"{\"id\":\"rete-v2-json\",\"nodes\":{\"45909d014224403a\":{\"id\":\"45909d014224403a\",\"name\":\"bitbybit.runner.getRunnerInputValue\",\"customName\":\"get runner input value\",\"data\":{\"property\":\"size\"},\"inputs\":{},\"position\":[-521.6513277440567,906.7005999247051]},\"5ade90b2e39fbbd6\":{\"id\":\"5ade90b2e39fbbd6\",\"name\":\"bitbybit.occt.shapes.solid.createCube\",\"customName\":\"cube\",\"async\":true,\"drawable\":true,\"data\":{\"genericNodeData\":{\"hide\":true,\"oneOnOne\":false,\"flatten\":0,\"forceExecution\":false},\"size\":1,\"center\":[0,0,0],\"originOnCenter\":true},\"inputs\":{\"size\":{\"connections\":[{\"node\":\"45909d014224403a\",\"output\":\"result\",\"data\":{}}]}},\"position\":[-123.37365841813889,871.1855234207264]},\"4d7550cb4d269c13\":{\"id\":\"4d7550cb4d269c13\",\"name\":\"bitbybit.occt.fillets.filletEdges\",\"customName\":\"fillet edges\",\"async\":true,\"drawable\":true,\"data\":{\"genericNodeData\":{\"hide\":true,\"oneOnOne\":false,\"flatten\":0,\"forceExecution\":false},\"radius\":0.4},\"inputs\":{\"shape\":{\"connections\":[{\"node\":\"5ade90b2e39fbbd6\",\"output\":\"result\",\"data\":{}}]}},\"position\":[253.82842989423855,894.432642393281]},\"43f7daeee3510bb5\":{\"id\":\"43f7daeee3510bb5\",\"name\":\"bitbybit.draw.drawAnyAsync\",\"customName\":\"draw async\",\"async\":true,\"drawable\":true,\"data\":{\"genericNodeData\":{\"hide\":false,\"oneOnOne\":false,\"flatten\":0,\"forceExecution\":false}},\"inputs\":{\"entity\":{\"connections\":[{\"node\":\"4d7550cb4d269c13\",\"output\":\"result\",\"data\":{}}]},\"options\":{\"connections\":[{\"node\":\"f20336603c0fe064\",\"output\":\"result\",\"data\":{}}]}},\"position\":[773.9966577904605,976.0937521830105]},\"f20336603c0fe064\":{\"id\":\"f20336603c0fe064\",\"name\":\"bitbybit.draw.optionsOcctShapeSimple\",\"customName\":\"occt shape simple\",\"async\":false,\"drawable\":false,\"data\":{\"genericNodeData\":{\"hide\":false,\"oneOnOne\":false,\"flatten\":0,\"forceExecution\":false},\"precision\":0.005,\"drawFaces\":true,\"faceColour\":\"#0400ff\",\"drawEdges\":true,\"edgeColour\":\"#ffffff\",\"edgeWidth\":1},\"inputs\":{},\"position\":[232.13661076142694,1322.8535815563612]},\"0c165e235980b047\":{\"id\":\"0c165e235980b047\",\"name\":\"bitbybit.runner.setRunnerResultValue\",\"customName\":\"set runner result value\",\"data\":{\"property\":\"cubeMesh\"},\"inputs\":{\"value\":{\"connections\":[{\"node\":\"43f7daeee3510bb5\",\"output\":\"result\",\"data\":{}}]}},\"position\":[1219.2348134976,988.4699420445694]}}}","version":"0.20.3","type":"rete"}}
+  title="Bitbybit Rete Editor - Simple Cube for Runner Tutorial"
+  description="Draws 3D Cube and controls its size via inputs coming from external executing program"
+/>
+
+### Complete Code for Your Website
+
+Below are the `index.html` and `script.js` files you would use on StackBlitz or your own website.
+
+<Tabs groupId="html-js-runner-example">
+  <TabItem value="html" label="index.html" default>
+
+    ```html
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <title>Home</title>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width" />
+        <link rel="stylesheet" href="styles.css" />
+        <script src="https://cdn.jsdelivr.net/gh/bitbybit-dev/bitbybit-assets@0.20.3/runner/bitbybit-runner-babylonjs.js"></script>
+        <script type="module" src="script.js"></script>
+    </head>
+    <body>
+        <div class="myCanvasZone">
+        <canvas id="myCanvas"></canvas>
+        </div>
+        <label for="size">Size</label>
+        <input
+        id="size"
+        type="number"
+        value="1"
+        min="1"
+        max="10"
+        step="1"
+        onchange="changeSize(event.target.value)"
+        />
+    </body>
+    </html>
+
+    ```
+  </TabItem>
+  <TabItem value="js" label="script.js">
+
+    ```javascript
+const runner = window.bitbybitRunner.getRunnerInstance();
+
+setTimeout(async () => {
+        const runnerOptions = {
+            canvasId: 'myCanvas',
+            canvasZoneClass: 'myCanvasZone',
+            enablePhysics: false,
+            enableOCCT: true,
+            enableJSCAD: false,
+            enableManifold: false,
+            enableKeyEventListeners: false,
+            backgroundColor: '#0000ff',
+            loadFonts: [],
+        };
+
+        await runner.run(runnerOptions);
+        changeSize(1);
+}, 0);
+
+let previousMesh;
+
+async function changeSize(size) {
+        const res = await runner.executeScript(getInlineScript(), { size });
+        if (previousMesh) {
+            previousMesh.dispose();
+        }
+        previousMesh = res.cubeMesh;
+}
+
+window.changeSize = changeSize;
+
+function getInlineScript() {
+        return '{"type":"rete","version":"0.15.13","script":"(async function (BitByBit, bitbybit, bitbybitRunnerResult, bitbybitRunnerInputs, Bit) { const dataVarIDf383aaf1893995c7 = {property: [\\"size\\"]};let inputsVarIDf383aaf1893995c7 = {};inputsVarIDf383aaf1893995c7 = {...dataVarIDf383aaf1893995c7, ...inputsVarIDf383aaf1893995c7};const resultf383aaf1893995c7 = [{result: [bitbybitRunnerInputs[inputsVarIDf383aaf1893995c7.property[0]]]}];const dataVarIDcaa28d38f452b168 = {precision: [0.01], drawFaces: [true], faceColour: [\\"#1e00ff\\"], drawEdges: [true], edgeColour: [\\"#ffffff\\"], edgeWidth: [2]};let inputsVarIDcaa28d38f452b168 = {};inputsVarIDcaa28d38f452b168 = {...dataVarIDcaa28d38f452b168, ...inputsVarIDcaa28d38f452b168};const generatedVarIDcaa28d38f452b168 = BitByBit.HS.executeBasedOnType(inputsVarIDcaa28d38f452b168, false, (data) => bitbybit.draw.optionsOcctShapeSimple(data));const resultcaa28d38f452b168 = [{result: generatedVarIDcaa28d38f452b168, transformers: []}];const dataVarIDa9c61a71827d3e38 = {size: [1], center: [[0,0,0]]};let inputsVarIDa9c61a71827d3e38 = {};inputsVarIDa9c61a71827d3e38.size = resultf383aaf1893995c7;BitByBit.HS.updateListInputs(inputsVarIDa9c61a71827d3e38);inputsVarIDa9c61a71827d3e38 = {...dataVarIDa9c61a71827d3e38, ...inputsVarIDa9c61a71827d3e38};const generatedVarIDa9c61a71827d3e38 = await BitByBit.HS.executeBasedOnTypeAsync(inputsVarIDa9c61a71827d3e38, false, (data) => bitbybit.occt.shapes.solid.createCube(data));const resulta9c61a71827d3e38 = [{result: generatedVarIDa9c61a71827d3e38, transformers: []}]; const dataVarIDcd4c1f4de5199424 = {shape: [undefined], radius: [0.4], radiusList: [undefined], indexes: [undefined]};let inputsVarIDcd4c1f4de5199424 = {};inputsVarIDcd4c1f4de5199424.shape = resulta9c61a71827d3e38;BitByBit.HS.updateListInputs(inputsVarIDcd4c1f4de5199424);inputsVarIDcd4c1f4de5199424 = {...dataVarIDcd4c1f4de5199424, ...inputsVarIDcd4c1f4de5199424};const generatedVarIDcd4c1f4de5199424 = await BitByBit.HS.executeBasedOnTypeAsync(inputsVarIDcd4c1f4de5199424, false, (data) => bitbybit.occt.fillets.filletEdges(data));const resultcd4c1f4de5199424 = [{result: generatedVarIDcd4c1f4de5199424, transformers: []}]; const dataVarIDf2f8b4cf1de9ac4c = {entity: [undefined], options: [undefined], babylonMesh: [undefined]};let inputsVarIDf2f8b4cf1de9ac4c = {};inputsVarIDf2f8b4cf1de9ac4c.options = resultcaa28d38f452b168;inputsVarIDf2f8b4cf1de9ac4c.entity = resultcd4c1f4de5199424;BitByBit.HS.updateListInputs(inputsVarIDf2f8b4cf1de9ac4c);inputsVarIDf2f8b4cf1de9ac4c = {...dataVarIDf2f8b4cf1de9ac4c, ...inputsVarIDf2f8b4cf1de9ac4c};const generatedVarIDf2f8b4cf1de9ac4c = await BitByBit.HS.executeBasedOnTypeAsync(inputsVarIDf2f8b4cf1de9ac4c, false, (data) => bitbybit.draw.drawAnyAsync(data));const resultf2f8b4cf1de9ac4c = [{result: generatedVarIDf2f8b4cf1de9ac4c, transformers: []}]; const dataVarID613de15ba24c56db = {property: [\\"cubeMesh\\"]};let inputsVarID613de15ba24c56db = {};inputsVarID613de15ba24c56db.value = resultf2f8b4cf1de9ac4c;BitByBit.HS.updateListInputs(inputsVarID613de15ba24c56db);inputsVarID613de15ba24c56db = {...dataVarID613de15ba24c56db, ...inputsVarID613de15ba24c56db};setBitbybitRunnerResultValue(inputsVarID613de15ba24c56db.property[0], inputsVarID613de15ba24c56db.value[0]);  })(BitByBit, bitbybit, bitbybitRunnerResult, bitbybitRunnerInputs, Bit);"}';
+}
+
+    ```
+
+  </TabItem>
+</Tabs>
+
+---
+
+By following this tutorial and exploring the code, you'll get a hands-on understanding of how to leverage Bitbybit Runner to bring dynamic, parametrically controlled 3D content to your own web projects.

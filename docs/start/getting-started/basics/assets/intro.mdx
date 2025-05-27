@@ -1,0 +1,65 @@
+---
+sidebar_position: 1
+title: Working with Assets in Bitbybit
+sidebar_label: Assets Overview
+description: Learn about using assets (3D models, images, etc.) in Bitbybit, how to upload them to cloud or local storage, and their availability within your projects.
+tags: [getting-started, assets]
+---
+
+# Working with Assets in Bitbybit
+
+## What You Will Learn
+
+The Bitbybit platform allows you to upload your own assets (like 3D models, images, and other files) and use them within your scripts. All of our editors (TypeScript, Blockly, Rete) provide ways to access your uploaded assets. However, the specific methods for parsing and utilizing these assets within a script might vary in complexity depending on the editor you choose.
+
+This section will guide you through:
+*   Understanding what constitutes an asset.
+*   The different ways you can upload assets.
+*   How assets are made available within your projects and scripts.
+
+## What is an Asset?
+
+The simplest way to think about an asset is as a **file**. These files can contain various types of data, such as:
+*   3D models (e.g., `.glb`, `.gltf`, `.step`, `.stl`)
+*   Images (e.g., `.jpg`, `.png`)
+*   Sounds and Videos (support may vary)
+*   Text files (e.g., `.txt`, `.csv`)
+*   Data files (e.g., `.json`)
+
+While our 3D platform primarily focuses on 3D model assets, we also support other common file types.
+
+**As of this writing, here is a list of supported file extensions:**
+`.txt`, `.bitbybit`, `.ply`, `.splat`, `.csv`, `.step`, `.stp`, `.iges`, `.igs`, `.stl`, `.glb`, `.gltf`, `.babylon`, `.jpg`, `.jpeg`, `.png`, `.json`
+
+## Ways of Uploading Assets
+
+We offer two primary methods for uploading your assets:
+
+1.  **Cloud Storage:**
+    *   **Account-Based:** Assets uploaded to cloud storage are linked to your Bitbybit account.
+    *   **Cross-Device Access:** You can access these assets from any device where you are logged into your account.
+    *   **Subscription Required:** Using cloud storage for assets requires a subscription to one of our plans.
+    *   **Limits:** There are storage limits associated with cloud storage, depending on your subscription plan. You can find more details in our [Pick a Plan](https://bitbybit.dev/auth/pick-plan) section.
+
+2.  **Local Browser Storage:**
+    *   **Browser-Specific:** Assets uploaded to local storage are stored within your specific web browser's storage.
+    *   **Single Browser Access:** You can only access these assets from that particular browser on that particular device. They are not synced across devices or browsers.
+    *   **No Account Needed:** Local storage can be used without a Bitbybit account for quick, temporary asset use.
+    *   **No Special File Size Limits (Platform-Side):** Since it uses your own computer's/browser's memory, Bitbybit doesn't impose special file size limits, though your browser might have its own constraints.
+
+**Important Considerations for Cloud Assets:**
+*   According to our [Terms and Conditions](https://bitbybit.dev/terms-and-conditions), cloud assets should be used purely for making your 3D experiences on Bitbybit more engaging and interactive.
+*   You must have the legal right to use any assets you upload.
+*   If you make a Project public, any cloud assets associated with that project may also become accessible to anyone on the web. Please review our terms carefully.
+
+## Asset Availability Within Projects and Scripts
+
+*   **Local Assets:**
+    *   Are generally available **across all your projects** *within the same browser* where they were uploaded.
+
+*   **Cloud Assets:**
+    *   Are available **only within the specific Project to which you uploaded them.**
+    *   If you want to use the same cloud asset in multiple projects, you will need to upload it separately to each project.
+    *   However, a project can contain multiple scripts. All scripts within a single project can access the same cloud assets that are linked to that project.
+
+Understanding these distinctions will help you manage your assets effectively as you build your creations on Bitbybit.
