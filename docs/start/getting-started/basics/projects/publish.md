@@ -45,7 +45,7 @@ When you're working in one of our editors (TypeScript, Blockly, or Rete) and fee
 
 3.  **Choose Visibility Options & Publish:**
     A "Publish Project" dialog will open. Here, you'll be presented with several **Visibility options** for your project.
-    *   You can learn more about these options in detail on our [Projects Overview page](start/getting-started/basics/projects/intro).
+    *   You can learn more about these options in detail on our [Projects Overview page](/start/getting-started/basics/projects/intro).
 
     The dialog will look something like this:
 

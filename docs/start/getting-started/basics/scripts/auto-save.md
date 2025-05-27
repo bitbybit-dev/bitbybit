@@ -16,7 +16,7 @@ The auto save feature in Bitbybit is designed to help protect your work by perio
 *   **You must be signed up and logged into the Bitbybit platform.**
 *   You must be working on a **Script that is part of a Project** you have created.
 
-Only when these conditions are met does our system have a specific entity in our database to associate your work with and update automatically. If you are working on a [local, unsaved script](/start/general/create-script#how-to-create-a-new-local-script-unsaved), you **must manually save your work to a file** if you wish to preserve it.
+Only when these conditions are met does our system have a specific entity in our database to associate your work with and update automatically. If you are working on a [local, unsaved script](/start/getting-started/basics/scripts/auto-save), you **must manually save your work to a file** if you wish to preserve it.
 
 ## IMPORTANT: Auto Save Does NOT Record Version History
 
