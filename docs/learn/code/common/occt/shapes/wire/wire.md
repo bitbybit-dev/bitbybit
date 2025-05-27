@@ -1,7 +1,7 @@
 ---
 sidebar_position: 3
 title: "Working with Wires in OCCT"
-sidebar_label: OCCT Wire
+sidebar_label: Intro Wires
 description: Learn about OCCT wires, how to create them from edges or points (polylines, splines, Bezier curves), their role in constructing faces, and how faces can have multiple wires (e.g., for holes).
 tags: [occt]
 ---
