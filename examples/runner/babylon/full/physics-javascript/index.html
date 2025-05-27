@@ -1,0 +1,548 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <title>Runner BabylonJS Coding Example - Bit By Bit Developers</title>
+    <base href="/">
+    <link rel="icon" type="image/x-icon" href="https://bitbybit.dev/assets/favicon.png">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description"
+        content="This example shows how you can write actual bitbybit javascript code by using the bitbybit-runner. Example creates 3D CAD model of the slide, enables physics and creates basic UI. Users can run the Havok physics simulation.">
+    <script src="https://cdn.jsdelivr.net/gh/bitbybit-dev/bitbybit-assets@0.20.3/runner/bitbybit-runner-babylonjs.js"></script>
+    <script>
+        // Timeout is needed for HTML to have time to finish rendering. This also makes sure that myCanvas actually can be found
+        setTimeout(async () => {
+            const runnerOptions = {
+                canvasId: 'myCanvas',
+                canvasZoneClass: 'myCanvasZone',
+                enablePhysics: true,
+                enableOCCT: true,
+                enableJSCAD: false,
+                enableManifold: false,
+                enableKeyEventListeners: false,
+                loadFonts: ['Roboto'],
+            };
+
+            const runner = window.bitbybitRunner.getRunnerInstance();
+            const { bitbybit, Bit, BABYLON, GUI } = await runner.run(
+                runnerOptions
+            );
+
+            BABYLON.GUI = GUI;
+
+            const points = [
+                [0, 42, -20],
+                [-10, 40, -10],
+                [0, 35, 0],
+                [0, 32, 10],
+                [20, 30, 16],
+                [40, 27, 40],
+                [-20, 24, 16],
+                [-20, 20, -16],
+                [10, 15, 16],
+                [-10, 10, 16],
+                [-10, 5, -16],
+                [-25, 0, -26],
+            ];
+            const scene = bitbybit.babylon.scene.getScene();
+            const cam = scene.activeCamera;
+            cam.position = new BABYLON.Vector3(20, 50, 50);
+            cam.target = new BABYLON.Vector3(0, 20, 0);
+            cam.panningSensibility = 40;
+            const model = {
+                dashboard: undefined,
+                nrBalls: 25,
+                sphereMeshes: [],
+                sphereAggregates: [],
+                pointsForSpheres: undefined,
+                sphereBase: undefined,
+                wireForSpherePositions: undefined,
+            };
+            const guiControlNames = {
+                button: 'RunSimButton',
+                nrBallsHeader: 'NrBallsHeader',
+                nrBallsSlider: 'NrBallsSlider',
+                loadingIndicator: 'LoadingHeader',
+            };
+            const start = async () => {
+                createGUI();
+                showLoadingIndicator();
+                const bawlMesh = await createBawl(50, 4, [0, 10, 0]);
+                const bawlMeshCollision = bawlMesh.getChildMeshes()[0];
+                const res = await createSlide(points);
+                const slideMeshCollision = res.slide.getChildMeshes()[0];
+                model.sphereBase = await createCompleteSphereMesh();
+                bitbybit.babylon.scene.enablePhysics({
+                    vector: [0, -9.81, 0],
+                });
+                new BABYLON.PhysicsAggregate(
+                    slideMeshCollision,
+                    BABYLON.PhysicsShapeType.MESH,
+                    { mesh: slideMeshCollision, mass: 0, restitution: 0.75 }
+                );
+                new BABYLON.PhysicsAggregate(
+                    bawlMeshCollision,
+                    BABYLON.PhysicsShapeType.MESH,
+                    { mesh: bawlMeshCollision, mass: 0, restitution: 0.75 }
+                );
+
+                prepareEnvironment();
+                hideLoadingIndicator();
+            };
+            start();
+            async function startSimulation() {
+                if (model.sphereMeshes && model.sphereMeshes.length) {
+                    model.sphereMeshes.forEach((m) => m.dispose());
+                    model.sphereMeshes = [];
+                }
+                if (model.sphereAggregates && model.sphereAggregates.length) {
+                    model.sphereAggregates.forEach((a) => a.dispose());
+                    model.sphereAggregates = [];
+                }
+                const radius = 1;
+                model.sphereBase.scaling = new BABYLON.Vector3(radius, radius, radius);
+                const points = await getPointsForSpheres();
+                points.forEach((pt) => {
+                    const sphere = model.sphereBase.clone(`${pt}`);
+                    sphere.getChildMeshes().forEach((m) => (m.isVisible = true));
+                    sphere.position = new BABYLON.Vector3(pt[0], pt[1], pt[2]);
+                    const sphereAggregate = new BABYLON.PhysicsAggregate(
+                        sphere,
+                        BABYLON.PhysicsShapeType.SPHERE,
+                        { radius, mass: 0.1, restitution: 0.75 }
+                    );
+                    model.sphereMeshes.push(sphere);
+                    const shadowGenerators = scene.metadata?.shadowGenerators;
+                    if (shadowGenerators && shadowGenerators.length) {
+                        shadowGenerators.forEach((sg) => {
+                            sg.addShadowCaster(sphere);
+                        });
+                    }
+                    model.sphereAggregates.push(sphereAggregate);
+                });
+            }
+            function prepareEnvironment() {
+                const dirLightOpt = new Bit.Inputs.BabylonScene.DirectionalLightDto();
+                dirLightOpt.direction = [20, -50, -20];
+                dirLightOpt.intensity = 4;
+                dirLightOpt.shadowGeneratorMapSize = 4056;
+                bitbybit.babylon.scene.drawDirectionalLight(dirLightOpt);
+                const skyboxOpt = new Bit.Inputs.BabylonScene.SkyboxDto();
+                skyboxOpt.skybox = Bit.Inputs.Base.skyboxEnum.clearSky;
+                bitbybit.babylon.scene.enableSkybox(skyboxOpt);
+            }
+            async function createSlide(points) {
+                const wir1 = await bitbybit.occt.shapes.wire.createPolylineWire({
+                    points,
+                });
+                const depth = 1;
+                const offsetSteps = 1.1;
+                const wire1 = await bitbybit.occt.fillets.fillet3DWire({
+                    shape: wir1,
+                    radius: 5,
+                    direction: [0, 100, 0],
+                });
+                const wire2 = await bitbybit.occt.operations.offset3DWire({
+                    shape: wire1,
+                    offset: offsetSteps,
+                    direction: [0, 1, 0],
+                });
+                const wire3 = await bitbybit.occt.operations.offset3DWire({
+                    shape: wire1,
+                    offset: 2 * offsetSteps,
+                    direction: [0, 20, 0],
+                });
+                const wire4 = await bitbybit.occt.operations.offset3DWire({
+                    shape: wire1,
+                    offset: 3 * offsetSteps,
+                    direction: [0, 20, 0],
+                });
+                const wire5 = await bitbybit.occt.operations.offset3DWire({
+                    shape: wire1,
+                    offset: 4 * offsetSteps,
+                    direction: [0, 20, 0],
+                });
+                const wireT1 = await bitbybit.occt.transforms.translate({
+                    shape: wire1,
+                    translation: [0, -depth, 0],
+                });
+                const wireT3 = await bitbybit.occt.transforms.translate({
+                    shape: wire3,
+                    translation: [0, -depth * 2, 0],
+                });
+                const wireT5 = await bitbybit.occt.transforms.translate({
+                    shape: wire5,
+                    translation: [0, -depth, 0],
+                });
+                model.wireForSpherePositions = await bitbybit.occt.transforms.translate({
+                    shape: wireT3,
+                    translation: [0, depth * 5, 0],
+                });
+                const loft = await bitbybit.occt.operations.loft({
+                    shapes: [wireT1, wire2, wireT3, wire4, wireT5],
+                    makeSolid: false,
+                });
+                const loftThick = await bitbybit.occt.operations.makeThickSolidSimple({
+                    shape: loft,
+                    offset: -0.1,
+                });
+                const opt2 = new Bit.Inputs.Draw.DrawOcctShapeOptions();
+                opt2.precision = 0.01;
+                opt2.faceColour = '#5555ff';
+                const slide = await bitbybit.draw.drawAnyAsync({
+                    entity: loftThick,
+                    options: opt2,
+                });
+                await bitbybit.occt.deleteShapes({
+                    shapes: [
+                        wir1,
+                        wire1,
+                        wire2,
+                        wire3,
+                        wire4,
+                        wire5,
+                        wireT1,
+                        wireT3,
+                        wireT5,
+                        loft,
+                        loftThick,
+                    ],
+                });
+                return { slide };
+            }
+            async function getPointsForSpheres() {
+                const optionsDivision = new Bit.Inputs.OCCT.DivideDto(
+                    model.wireForSpherePositions
+                );
+                optionsDivision.nrOfDivisions = model.nrBalls * 2;
+                const pointsForSpheres =
+                    await bitbybit.occt.shapes.wire.divideWireByEqualDistanceToPoints(
+                        optionsDivision
+                    );
+                const half = Math.ceil(pointsForSpheres.length / 2);
+                return pointsForSpheres.slice(1, half);
+            }
+            async function createCompleteSphereMesh() {
+                const res1 = await createSphere(0.25, 1.8, 1, 0.1);
+                const res2 = await createSphere(0.5, 1.5, 0.9, 0.15);
+                const res3 = await createSphere(0.5, 1.55, 0.75, 0.15);
+                const compound = await bitbybit.occt.shapes.compound.makeCompound({
+                    shapes: [res1.sphere, res2.sphere, res3.sphere],
+                });
+                const drawOptions = new Bit.Inputs.Draw.DrawOcctShapeOptions();
+                drawOptions.faceColour = '#0000ff';
+                drawOptions.edgeWidth = 1;
+                drawOptions.drawEdges = false;
+                drawOptions.precision = 0.05;
+                const sphereMesh = await bitbybit.draw.drawAnyAsync({
+                    entity: compound,
+                    options: drawOptions,
+                });
+                const mat = sphereMesh.getChildMeshes()[0].material;
+                mat.metallic = 0.9;
+                mat.roughness = 0.1;
+                sphereMesh.getChildMeshes().forEach((m) => (m.isVisible = false));
+                await bitbybit.occt.deleteShapes({
+                    shapes: [
+                        res1.sphere,
+                        res2.sphere,
+                        res3.sphere,
+                        compound,
+                        ...res1.shapesToDelete,
+                        ...res2.shapesToDelete,
+                        ...res3.shapesToDelete,
+                    ],
+                });
+                return sphereMesh;
+            }
+            async function createSphere(
+                starInnerRadius,
+                starOuterRadius,
+                sphereRadius,
+                thickness
+            ) {
+                const star = await bitbybit.occt.shapes.wire.createStarWire({
+                    direction: [1, 0, 0],
+                    center: [5, 0, 0],
+                    innerRadius: starInnerRadius,
+                    outerRadius: starOuterRadius,
+                    numRays: 8,
+                    half: false,
+                });
+                const sphere = await bitbybit.occt.shapes.solid.createSphere({
+                    radius: sphereRadius,
+                    center: [0, 0, 0],
+                });
+                const fillet = await bitbybit.occt.fillets.fillet2d({
+                    shape: star,
+                    radius: 0.05,
+                });
+                const projection = await bitbybit.occt.shapes.wire.project({
+                    wire: fillet,
+                    shape: sphere,
+                    direction: [1, 0, 0],
+                });
+                const split = await bitbybit.occt.operations.splitShapeWithShapes({
+                    shape: sphere,
+                    shapes: [projection],
+                });
+                const faces = await bitbybit.occt.shapes.face.getFaces({
+                    shape: split[0],
+                });
+                const face = faces[7];
+                const thicken = await bitbybit.occt.operations.makeThickSolidSimple({
+                    shape: face,
+                    offset: -thickness,
+                });
+                bitbybit.occt.deleteShapes({
+                    shapes: [fillet],
+                });
+                return {
+                    sphere: thicken,
+                    shapesToDelete: [star, sphere, fillet, projection, split[0], ...faces],
+                };
+            }
+            async function createBawl(radius, thickness, center) {
+                const sphere = await bitbybit.occt.shapes.solid.createSphere({
+                    radius,
+                    center: center,
+                });
+                const sphere2 = await bitbybit.occt.shapes.solid.createSphere({
+                    radius: radius - thickness,
+                    center: center,
+                });
+                const box = await bitbybit.occt.shapes.solid.createCube({
+                    size: radius * 2,
+                    center: [center[0], center[1] + radius, center[2]],
+                });
+                const halfSphere = await bitbybit.occt.booleans.difference({
+                    shape: sphere,
+                    shapes: [box, sphere2],
+                    keepEdges: false,
+                });
+                const drawOpt = new Bit.Inputs.Draw.DrawOcctShapeOptions();
+                drawOpt.faceColour = '#2222ff';
+                drawOpt.edgeColour = '#000000';
+                return bitbybit.draw.drawAnyAsync({
+                    entity: halfSphere,
+                    options: drawOpt,
+                });
+            }
+            function createGUI() {
+                model.dashboard =
+                    BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI('UI');
+                var panel = new BABYLON.GUI.StackPanel();
+                panel.width = '700px';
+                panel.background = '#00000055';
+                panel.paddingLeftInPixels = 40;
+                panel.paddingTopInPixels = 40;
+                panel.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
+                panel.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_TOP;
+                panel.adaptHeightToChildren = true;
+                model.dashboard.addControl(panel);
+                var header1 = new BABYLON.GUI.TextBlock('Header');
+                header1.text = '3D Slide Example';
+                header1.height = '80px';
+                header1.color = '#f0b89d';
+                header1.fontSize = '40px';
+                panel.addControl(header1);
+                var header = new BABYLON.GUI.TextBlock(guiControlNames.loadingIndicator);
+                header.paddingTopInPixels = 10;
+                header.text = 'Loading...';
+                header.height = '60px';
+                header.color = 'white';
+                header.fontSize = '30px';
+                panel.addControl(header);
+                const labelSlider = 'Number Of Balls:';
+                createSliderWithLabel(
+                    panel,
+                    guiControlNames.nrBallsSlider,
+                    guiControlNames.nrBallsHeader,
+                    labelSlider,
+                    25,
+                    10,
+                    50,
+                    1,
+                    (slider, header) => {
+                        header.text = labelSlider + ' ' + slider.value;
+                        model.nrBalls = slider.value;
+                    }
+                );
+                var button1 = BABYLON.GUI.Button.CreateSimpleButton(
+                    guiControlNames.button,
+                    'Run Simulation!'
+                );
+                button1.width = '350px';
+                button1.thickness = 0;
+                button1.height = '120px';
+                button1.paddingTop = 30;
+                button1.color = 'white';
+                button1.fontSize = 30;
+                button1.cornerRadius = 10;
+                button1.background = 'black';
+                button1.onPointerUpObservable.add(() => {
+                    startSimulation();
+                });
+                panel.addControl(button1);
+                var header2 = new BABYLON.GUI.TextBlock('bitbybit.dev');
+                header2.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_BOTTOM;
+                header2.text = 'bitbybit.dev';
+                header2.height = '120px';
+                header2.color = '#f0b89d';
+                header2.fontSize = '40px';
+                panel.addControl(header2);
+            }
+            function createSliderWithLabel(
+                panel,
+                nameSlider,
+                nameHeader,
+                label,
+                defaultVal,
+                min,
+                max,
+                step,
+                funcToRun
+            ) {
+                var header = new BABYLON.GUI.TextBlock(nameHeader);
+                header.paddingTopInPixels = 10;
+                header.text = label + ' ' + defaultVal;
+                header.height = '60px';
+                header.color = 'white';
+                header.fontSize = '30px';
+                panel.addControl(header);
+                var slider = new BABYLON.GUI.Slider(nameSlider);
+                slider.thumbColor = '#f0b89d';
+                slider.isThumbCircle = true;
+                slider.borderColor = '#f0b89d';
+                slider.minimum = min;
+                slider.maximum = max;
+                slider.step = step;
+                slider.value = defaultVal;
+                slider.paddingLeftInPixels = 10;
+                slider.paddingRightInPixels = 10;
+                slider.isVertical = false;
+                slider.alpha = 1;
+                slider.height = '25px';
+                slider.onPointerUpObservable.add(() => {
+                    funcToRun(slider, header);
+                });
+                panel.addControl(slider);
+            }
+            function showLoadingIndicator() {
+                if (model.dashboard) {
+                    const loadingIndicator = model.dashboard.getControlByName(
+                        guiControlNames.loadingIndicator
+                    );
+                    const button = model.dashboard.getControlByName(guiControlNames.button);
+                    const ballsSlider = model.dashboard.getControlByName(
+                        guiControlNames.nrBallsSlider
+                    );
+                    const ballsHeader = model.dashboard.getControlByName(
+                        guiControlNames.nrBallsHeader
+                    );
+                    loadingIndicator.isVisible = true;
+                    button.isVisible = false;
+                    ballsSlider.isVisible = false;
+                    ballsHeader.isVisible = false;
+                }
+            }
+            function hideLoadingIndicator() {
+                if (model.dashboard) {
+                    const loadingIndicator = model.dashboard.getControlByName(
+                        guiControlNames.loadingIndicator
+                    );
+                    const button = model.dashboard.getControlByName(guiControlNames.button);
+                    const ballsSlider = model.dashboard.getControlByName(
+                        guiControlNames.nrBallsSlider
+                    );
+                    const ballsHeader = model.dashboard.getControlByName(
+                        guiControlNames.nrBallsHeader
+                    );
+                    loadingIndicator.isVisible = false;
+                    button.isVisible = true;
+                    ballsSlider.isVisible = true;
+                    ballsHeader.isVisible = true;
+                }
+            }
+        }, 0);
+    </script>
+    <style>
+        body {
+            margin: 0;
+            background-color: #1a1c1f;
+            color: white;
+            font-weight: 400;
+            font-family: 'IBM Plex Sans';
+            width: 100%;
+            height: 100%;
+        }
+
+        .example {
+            margin-top: 50px;
+            margin-bottom: 50px;
+            margin-left: 300px;
+            margin-right: 300px;
+        }
+
+        @media(max-width:1400px) {
+            .example {
+                margin-left: 100px;
+                margin-right: 100px;
+            }
+        }
+
+        @media(max-width:769px) {
+            .example {
+                margin-left: 20px;
+                margin-right: 20px;
+            }
+        }
+
+        #myCanvas {
+            display: block;
+            outline: none;
+            border: 1px solid white;
+            border-radius: 5px;
+            width: 100%;
+        }
+
+        .logo {
+            margin-bottom: 20px;
+        }
+
+        .logo img {
+            width: 50px;
+            height: 50px;
+        }
+
+        .myCanvasZone {
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+
+        a {
+            color: white;
+            vertical-align: middle;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="example">
+        <a class="logo" href="https://bitbybit.dev" target="_blank" rel="noopener noreferrer">
+            <img alt="Logo of Bit by bit developers company" src="https://bitbybit.dev/assets/logo-gold-small.png" />
+            <div>bitbybit.dev</div>
+        </a>
+        <h1>Runner Example - JavaScript Coding</h1>
+        <div class="myCanvasZone">
+            <canvas id="myCanvas"></canvas>
+        </div>
+        <a href="https://bitbybit.dev/projects/public/UwnghvO89ocgFv5U3P4m/script/sWwcLOMIjUpdigPv315i/script-3d-slide-with-physics-in-project-3d-slide-from-wire-offsets-by-author-matas"
+            target="_blank" rel="noopener noreferrer">
+            This example is based on the project that was coded in TypeScript on bitbybit.dev Monaco editor.
+        </a>
+    </div>
+</body>
+
+</html>

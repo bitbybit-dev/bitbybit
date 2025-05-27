@@ -1,0 +1,135 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>THREEJS Examples - Cup - BITBYBIT.DEV</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <script defer="defer" src="../cupthree.0.20.3.bundle.js"></script>
+    <style>
+        body {
+            background-color: rgb(26, 28, 31);
+            margin: 0px;
+            color: #ffffff;
+        }
+
+        a {
+            color: #f0cebb;
+        }
+
+        a:visited {
+            color: #f0cebb;
+        }
+
+        #three-canvas {
+            display: block;
+            overflow-y: hidden;
+            overflow-x: hidden;
+            width: 100%;
+            height: 100%;
+        }
+
+        .logo {
+            padding: 20px;
+            background-color: rgb(26, 28, 31, 0.8);
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 12px;
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+        }
+
+        .logo img {
+            margin-bottom: 5px;
+        }
+
+        .lds-ellipsis {
+            z-index: 2;
+            top: calc(50% - 32px);
+            left: calc(50% - 32px);
+            display: inline-block;
+            position: absolute;
+            width: 64px;
+            height: 64px;
+        }
+
+        .lds-ellipsis div {
+            position: absolute;
+            top: 27px;
+            width: 11px;
+            height: 11px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.8);
+            animation-timing-function: cubic-bezier(0, 1, 1, 0);
+        }
+
+        .lds-ellipsis div:nth-child(1) {
+            left: 6px;
+            animation: lds-ellipsis1 0.6s infinite;
+        }
+
+        .lds-ellipsis div:nth-child(2) {
+            left: 6px;
+            animation: lds-ellipsis2 0.6s infinite;
+        }
+
+        .lds-ellipsis div:nth-child(3) {
+            left: 26px;
+            animation: lds-ellipsis2 0.6s infinite;
+        }
+
+        .lds-ellipsis div:nth-child(4) {
+            left: 45px;
+            animation: lds-ellipsis3 0.6s infinite;
+        }
+
+        @keyframes lds-ellipsis1 {
+            0% {
+                transform: scale(0);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        @keyframes lds-ellipsis3 {
+            0% {
+                transform: scale(1);
+            }
+
+            100% {
+                transform: scale(0);
+            }
+        }
+
+        @keyframes lds-ellipsis2 {
+            0% {
+                transform: translate(0, 0);
+            }
+
+            100% {
+                transform: translate(19px, 0);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="logo">
+        <a href="/">
+            <img src="https://bitbybit.dev/assets/logo-gold-small.png" width="50px" height="50px" />
+        </a>
+        <div>Made with <a href="https://bitbybit.dev">bitbybit.dev</a> & <a href="https://threejs.org">threejs.org</a>
+        </div>
+        <div>Source code on <a
+                href="https://github.com/bitbybit-dev/app-examples/blob/main/webpack/threejs/src/code/cup.ts">github</a>
+        </div>
+        <div>Npm package <a href="https://www.npmjs.com/package/@bitbybit-dev/threejs">bitbybit-dev/threejs</a>
+        </div>
+    </div>
+    <canvas id="three-canvas">
+    </canvas>
+</body>
+
+</html>

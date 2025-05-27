@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <title>Bitbybit Runner BABYLONJS Lite Coding Example - Initiate Scene & Camera Outside Runner</title>
+    <base href="/">
+    <link rel="icon" type="image/x-icon" href="https://bitbybit.dev/assets/favicon.png">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description"
+        content="This example shows how to import Lite version of bitbybit runner for babylonjs and initiate scene outside the runner. This lite version requires BABYLONJS to be loaded separately. Lite version of bitbybit-dev bundle is smaller.">
+    <script src="https://cdn.babylonjs.com/babylon.js"></script>
+    <script src="https://cdn.babylonjs.com/materialsLibrary/babylonjs.materials.min.js"></script>
+    <script src="https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js"></script>
+    <script src="https://cdn.babylonjs.com/serializers/babylonjs.serializers.min.js"></script>
+    <script src="https://cdn.babylonjs.com/gui/babylon.gui.min.js"></script>
+    <script type="module">
+        window.GUI = window.BABYLON.GUI;
+    </script>
+    <script defer src="https://cdn.jsdelivr.net/gh/bitbybit-dev/bitbybit-assets@0.20.3/runner/bitbybit-runner-lite-babylonjs.js"></script>
+    <script type="module">
+        const canvas = document.getElementById("myCanvas");
+        canvas.addEventListener("wheel", evt => evt.preventDefault());
+        const engine = new BABYLON.Engine(canvas, true);
+        engine.setHardwareScalingLevel(0.5);
+        const scene = new BABYLON.Scene(engine);
+        scene.clearColor = BABYLON.Color4.FromHexString("#1a1c1f");
+        new BABYLON.TransformNode("root", scene);
+        const camera = new BABYLON.ArcRotateCamera("Camera", 0, 10, 10, new BABYLON.Vector3(0, 0, 0), scene);
+        camera.setPosition(new BABYLON.Vector3(10, 5, 10));
+        camera.setTarget(new BABYLON.Vector3(0, 5, 0));
+        camera.attachControl(canvas, true);
+        camera.lowerRadiusLimit = 0;
+        camera.minZ = 0;
+        const light = new BABYLON.HemisphericLight("HemiLight", new BABYLON.Vector3(0, 1, 0), scene);
+        light.intensityMode = BABYLON.Light.INTENSITYMODE_ILLUMINANCE;
+        light.intensity = 1;
+
+        const runnerOptions = {
+            canvasZoneClass: 'myCanvasZone',
+            enableOCCT: true,
+            enableJSCAD: false,
+            enableManifold: false,
+            loadFonts: ['Roboto'],
+            externalBabylonJSSettings: {
+                scene,
+            }
+        };
+
+        const runner = window.bitbybitRunner.getRunnerInstance();
+        const { bitbybit, Bit } = await runner.run(
+            runnerOptions
+        );
+
+        const model = {
+            uRec: 16,
+            vRec: 16,
+            rounding: 0.5,
+            drawEdges: true,
+            drawFaces: true,
+            color: '#6600ff'
+        }
+        const curvePts = [[[-10, 0, -10], [0, 3, -10], [10, -1, -10], [20, 2, -10]], [[-10, -5, 0], [0, -3, 0], [10, 1, 0], [20, -2, 0]], [[-10, 0, 10], [0, 3, 10], [10, -1, 10], [20, 2, 10]]];
+
+        const wirePromises = curvePts.map((pts) => {
+            return bitbybit.occt.shapes.wire.interpolatePoints({ points: pts, periodic: false, tolerance: 1e-7 });
+        });
+
+        const wires = await Promise.all(wirePromises);
+        const loft = await bitbybit.occt.operations.loft({ shapes: wires, makeSolid: false });
+        const translated = await bitbybit.occt.transforms.translate({ shape: loft, translation: [0, 10, 0] });
+        const faces = await bitbybit.occt.shapes.face.getFaces({ shape: translated });
+
+        const subdivideOptions = new Bit.Inputs.OCCT.FaceSubdivideToRectangleHolesDto(faces[0]);
+        subdivideOptions.nrRectanglesU = model.vRec;
+        subdivideOptions.nrRectanglesV = model.uRec;
+        subdivideOptions.scalePatternU = [0.9, 0.5, 0.7];
+        subdivideOptions.scalePatternV = [0.9, 0.5, 0.7];
+        subdivideOptions.filletPattern = [model.rounding];
+        subdivideOptions.inclusionPattern = [false, true, true, true, true];
+        subdivideOptions.offsetFromBorderU = 0.01;
+        subdivideOptions.offsetFromBorderV = 0.01;
+
+        const withHoles = await bitbybit.occt.shapes.face.subdivideToRectangleHoles(subdivideOptions);
+        const finalShape = await bitbybit.occt.operations.makeThickSolidSimple({ shape: withHoles[0], offset: 0.5 });
+
+        const options = new Bit.Inputs.Draw.DrawOcctShapeOptions();
+        options.precision = 0.02;
+        options.drawEdges = model.drawEdges;
+        options.drawFaces = model.drawFaces;
+        options.drawVertices = false;
+        options.edgeColour = "#000000";
+
+        const group = await bitbybit.draw.drawAnyAsync({ entity: finalShape, options });
+
+    </script>
+    <style>
+        body {
+            margin: 0;
+            background-color: #1a1c1f;
+            color: white;
+            font-weight: 400;
+            font-family: 'IBM Plex Sans';
+            width: 100%;
+            height: 100%;
+        }
+
+        .example {
+            margin-top: 50px;
+            margin-bottom: 50px;
+            margin-left: 300px;
+            margin-right: 300px;
+        }
+
+        @media(max-width:1400px) {
+            .example {
+                margin-left: 100px;
+                margin-right: 100px;
+            }
+        }
+
+        @media(max-width:769px) {
+            .example {
+                margin-left: 20px;
+                margin-right: 20px;
+            }
+        }
+
+        #myCanvas {
+            display: block;
+            outline: none;
+            border: 1px solid white;
+            border-radius: 5px;
+            width: 100%;
+        }
+
+        .logo {
+            margin-bottom: 20px;
+        }
+
+        .logo img {
+            width: 50px;
+            height: 50px;
+        }
+
+        .myCanvasZone {
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+
+        a {
+            color: white;
+            vertical-align: middle;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="example">
+        <a class="logo" href="https://bitbybit.dev" target="_blank" rel="noopener noreferrer">
+            <img alt="Logo of Bit by bit developers company" src="https://bitbybit.dev/assets/logo-gold-small.png" />
+            <div>bitbybit.dev</div>
+        </a>
+        <h1>Bitbybit Runner BABYLONJS Lite Coding Example - Initiate Scene & Camera Outside Runner</h1>
+        <div class="myCanvasZone">
+            <canvas id="myCanvas"></canvas>
+        </div>
+        <p>
+            This example shows how to import Lite version of bitbybit runner for babylonjs and initiate scene outside
+            the runner. This lite version requires BABYLONJS to be loaded separately. Lite version of
+            bitbybit-dev bundle is smaller.
+        </p>
+    </div>
+</body>
+
+</html>

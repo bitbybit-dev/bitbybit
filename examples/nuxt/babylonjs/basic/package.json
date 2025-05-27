@@ -1,0 +1,21 @@
+{
+  "name": "nuxt-bitbybit",
+  "private": false,
+  "type": "module",
+  "license": "MIT",
+  "scripts": {
+    "build": "nuxt build",
+    "dev": "nuxt dev",
+    "generate": "nuxt generate",
+    "preview": "nuxt preview",
+    "postinstall": "nuxt prepare"
+  },
+  "dependencies": {
+    "@bitbybit-dev/babylonjs": "0.20.3",
+    "@pinia/nuxt": "^0.5.4",
+    "nuxt": "^3.13.0",
+    "pinia": "^2.2.2",
+    "vue": "latest",
+    "vue-router": "latest"
+  }
+}

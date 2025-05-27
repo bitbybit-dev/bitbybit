@@ -1,0 +1,17 @@
+/* To learn more about this file see: https://angular.io/config/tsconfig. */
+{
+    "extends": "./tsconfig.json",
+    "compilerOptions": {
+        "sourceMap": true,
+        "outDir": "../../out-tsc/worker",
+        "lib": [
+            "es2018",
+            "webworker"
+        ],
+        "types": [],
+        "skipLibCheck": true
+    },
+    "include": [
+        "src/**/*.worker.ts"
+    ]
+}
