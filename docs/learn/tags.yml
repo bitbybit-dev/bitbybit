@@ -102,3 +102,13 @@ draw:
   label: Draw
   permalink: /draw
   description: Explains Bitbybit coding category called "draw"
+
+shopify:
+  label: Shopify
+  permalink: /shopify
+  description: Shopify is an e-commerce platform that allows you to create and manage online stores.
+
+3d-bits:
+  label: 3D Bits
+  permalink: /3d-bits
+  description: 3D Bits is application that Bitbybit has developed for Shopify merchants - it can be installed on their webshops.

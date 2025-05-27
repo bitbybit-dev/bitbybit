@@ -86,7 +86,7 @@ const config: Config = {
                     label: "Learn",
                 },
                 { to: "/learn/code/intro", label: "Code", position: "left" },
-                { to: "/3d-bits", label: "3D Bits", position: "left" },
+                { to: "/learn/3d-bits/intro", label: "3D Bits", position: "left" },
 
                 { to: "/blog", label: "Blog", position: "left" },
                 {
