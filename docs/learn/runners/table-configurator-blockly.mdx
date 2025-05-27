@@ -1,0 +1,197 @@
+---
+sidebar_position: 6
+title: Building a 3D Table Configurator with Blockly & Bitbybit Runner
+sidebar_label: 3D Table Configurator (Blockly)
+description: Learn to build a simple 3D table configurator using the Blockly visual editor on Bitbybit and then deploy it as an interactive website on StackBlitz using Bitbybit Runner.
+tags: [getting-started, runners, blockly]
+---
+
+import BitByBitRenderCanvas from '@site/src/components/BitByBitRenderCanvas';
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+# Building a 3D Table Configurator with Blockly & Bitbybit Runner
+
+## What You Will Learn
+
+In this tutorial, we will guide you through coding a very simple **3D table configurator** using the **Blockly visual editor** on the Bitbybit web CAD platform. After creating the visual script, we will export its logic and execute it on a separate, static website hosted on [StackBlitz](https://stackblitz.com).
+
+Matas Ubarevicius will demonstrate setting up the basic HTML, CSS, and JavaScript for this project without relying on any third-party UI frameworks. This approach will show you how you can leverage the pure web platform to create interactive 3D experiences powered by your Bitbybit visual scripts created with Blockly.
+
+<div class="responsive-video-container">
+  <iframe 
+    width="560" 
+    height="315" 
+    src="https://www.youtube.com/embed/i_-ksEaY4Tg" 
+    title="3D Table Configurator Tutorial with Blockly and Bitbybit Runner" 
+    frameborder="0" 
+    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+    allowfullscreen>
+  </iframe>
+</div>
+
+## Final Result & Code
+
+You can either visit the live demo [StackBlitz project](https://stackblitz.com/edit/bitbybit-runner-building-3d-table-configurator-blockly) to see the final result live, or use the code snippets below to recreate it on your own website.
+
+<div className="stackblitz-embed-container">
+  <iframe
+    src="https://stackblitz.com/edit/bitbybit-runner-building-3d-table-configurator-blockly?ctl=1&embed=1&file=src%2Fmain.ts&theme=dark"
+    style={{
+      width: '100%',
+      height: '700px',
+      border: '0',
+      borderRadius: '4px',
+      overflow: 'hidden',
+    }}
+    title="3D Table Configurator Tutorial with Blockly and Bitbybit Runner"
+    allow="accelerometer; ambient-light-sensor; camera; encrypted-media; geolocation; gyroscope; hid; microphone; midi; payment; usb; vr; xr-spatial-tracking"
+    sandbox="allow-forms allow-modals allow-popups allow-presentation allow-same-origin allow-scripts"
+  ></iframe>
+</div>
+
+### Blockly Script (The Visual Program)
+
+The following Bitbybit Blockly script is the visual program that defines the logic for our 3D table configurator. The JavaScript code used in the StackBlitz example is what gets generated when you use the "Export to Runner" feature from this Blockly script.
+
+<BitByBitRenderCanvas
+  requireManualStart={true}
+  script={{"script":"<xml xmlns=\"https://developers.google.com/blockly/xml\"><variables><variable id=\"qFEKnxGfWaVz;DDuJ65:\">width</variable><variable id=\"42D!CKIZS$a9{@[%hnEX\">length</variable><variable id=\"%$wn0ZTd}pjEu}P!J@Jx\">legHeight</variable><variable id=\"[L8unU,RQ3nSRt_KH!?[\">height</variable><variable id=\"$zXlqw0![6p{oh@5iUa{\">halfLegheight</variable><variable id=\"vnw6#7.a[!A@qbul^6Wj\">thickness</variable><variable id=\"+=DILVHQ~.g.Q`8:dzf4\">halfThickness</variable><variable id=\"KwdU~jKMCQ+NS$QI[y$a\">widthOffset</variable><variable id=\"VsV)^qM]L%,4qFCoYohu\">lengthOffset</variable><variable id=\"ew8KHV6D/fTmtNnLDc1a\">legShape</variable><variable id=\"]7AG0~;L$cC;1CplUq;A\">compoundShape</variable><variable id=\"^XQc:TupwpB}REMB.?B:\">table</variable></variables><block type=\"procedures_callnoreturn\" id=\")qY8(?aa**}=nn4U.*N.\" x=\"-64\" y=\"829\"><mutation name=\"setupParams\"></mutation><next><block type=\"bitbybit.babylon.scene.enableSkybox\" id=\"9;RhsqBwF[,!}jbY3s**\"><value name=\"Skybox\"><block type=\"bitbybit.babylon.enums.skyboxEnum\" id=\"a/J0jndc!e~YjnxMKOBM\"><field name=\"bitbybit.babylon.enums.skyboxEnum\">'clearSky'</field></block></value><value name=\"Size\"><block type=\"math_number\" id=\"Ld$.W]Dmsu~)GDrn]C7m\"><field name=\"NUM\">1000</field></block></value><value name=\"Blur\"><block type=\"math_number\" id=\"o=Nq?R.$42{_d)U#wFb.\"><field name=\"NUM\">0.1</field></block></value><value name=\"EnvironmentIntensity\"><block type=\"math_number\" id=\"E5`8kNV,$K6fm^T`Zx?g\"><field name=\"NUM\">0.7</field></block></value><next><block type=\"bitbybit.babylon.scene.drawDirectionalLightNoReturn\" id=\"{[b@-dl=AJIaLEcb60MQ\"><value name=\"Direction\"><block type=\"bitbybit.vector.vectorXYZ\" id=\"!7ul03{)E|rxKvW:_t_|\"><value name=\"X\"><block type=\"math_number\" id=\"m@%b[Kh}bzHFr{bloWo/\"><field name=\"NUM\">-100</field></block></value><value name=\"Y\"><block type=\"math_number\" id=\"KKQF)dZP)`.Ez9F;H~-T\"><field name=\"NUM\">-100</field></block></value><value name=\"Z\"><block type=\"math_number\" id=\"aqB*`djq9mnuW2dJr}4)\"><field name=\"NUM\">-100</field></block></value></block></value><value name=\"Intensity\"><block type=\"math_number\" id=\"a8^oPI{sr#}+9MnFHY%:\"><field name=\"NUM\">3</field></block></value><value name=\"Diffuse\"><block type=\"colour_picker\" id=\"B_[Ewlr~jOurXZSs^!75\"><field name=\"COLOUR\">#ffffff</field></block></value><value name=\"Specular\"><block type=\"colour_picker\" id=\"|TF=.PwXkS}!_(q!~%DW\"><field name=\"COLOUR\">#ffffff</field></block></value><value name=\"ShadowGeneratorMapSize\"><block type=\"math_number\" id=\"kFpXa4tJZ.*.TlOGOtj+\"><field name=\"NUM\">1024</field></block></value><value name=\"EnableShadows\"><block type=\"logic_boolean\" id=\"i/4#N0mj7k3bOMOHP6~W\"><field name=\"BOOL\">TRUE</field></block></value><value name=\"ShadowDarkness\"><block type=\"math_number\" id=\"7cduy*@Z0YGn,4#$pq#E\"><field name=\"NUM\">0</field></block></value><next><block type=\"variables_set\" id=\"CvGpI_C]HT?YL%YjL|;(\"><field name=\"VAR\" id=\"%$wn0ZTd}pjEu}P!J@Jx\">legHeight</field><value name=\"VALUE\"><block type=\"math_arithmetic\" id=\"J@GihxlZk}e?+r=I5T}I\"><field name=\"OP\">MINUS</field><value name=\"A\"><block type=\"variables_get\" id=\"SF!`^CE376zZc(7V3Nwj\"><field name=\"VAR\" id=\"[L8unU,RQ3nSRt_KH!?[\">height</field></block></value><value name=\"B\"><block type=\"variables_get\" id=\"{XixEo$Y{}fOq.sIc{oa\"><field name=\"VAR\" id=\"vnw6#7.a[!A@qbul^6Wj\">thickness</field></block></value></block></value><next><block type=\"variables_set\" id=\"g{zbyXYXw3iX,WwKTPil\"><field name=\"VAR\" id=\"$zXlqw0![6p{oh@5iUa{\">halfLegheight</field><value name=\"VALUE\"><block type=\"math_arithmetic\" id=\";*rOBj:4suDB4j.Mjd{Z\"><field name=\"OP\">DIVIDE</field><value name=\"A\"><block type=\"variables_get\" id=\"(02{dSsC~ms:d=faEQ-L\"><field name=\"VAR\" id=\"%$wn0ZTd}pjEu}P!J@Jx\">legHeight</field></block></value><value name=\"B\"><block type=\"math_number\" id=\"$]03(Wed*ZU%U1m@.G{T\"><field name=\"NUM\">2</field></block></value></block></value><next><block type=\"variables_set\" id=\"b{|H_C@tBCNVaibW-FN/\"><field name=\"VAR\" id=\"+=DILVHQ~.g.Q`8:dzf4\">halfThickness</field><value name=\"VALUE\"><block type=\"math_arithmetic\" id=\"sql,tLMr;mscudU{F/1{\"><field name=\"OP\">DIVIDE</field><value name=\"A\"><block type=\"variables_get\" id=\"99[=3frCp!;tnd4EUXyu\"><field name=\"VAR\" id=\"vnw6#7.a[!A@qbul^6Wj\">thickness</field></block></value><value name=\"B\"><block type=\"math_number\" id=\"7?IFd|sX@Z}itUOdu_OR\"><field name=\"NUM\">2</field></block></value></block></value><next><block type=\"variables_set\" id=\"puh#!j6BsA@R7}o64sT7\"><field name=\"VAR\" id=\"KwdU~jKMCQ+NS$QI[y$a\">widthOffset</field><value name=\"VALUE\"><block type=\"math_arithmetic\" id=\"/`m.PNa={Dst}0j_}[PP\"><field name=\"OP\">MINUS</field><value name=\"A\"><block type=\"math_arithmetic\" id=\"E}.fv2x8OXy]A55G35i?\"><field name=\"OP\">DIVIDE</field><value name=\"A\"><block type=\"variables_get\" id=\"tHD*CkQ|?n]8IzR~?aO3\"><field name=\"VAR\" id=\"qFEKnxGfWaVz;DDuJ65:\">width</field></block></value><value name=\"B\"><block type=\"math_number\" id=\")Me13vM#M[n(N2$~i-!m\"><field name=\"NUM\">2</field></block></value></block></value><value name=\"B\"><block type=\"variables_get\" id=\"^oi:v(T/dMfcw@ra3}{X\"><field name=\"VAR\" id=\"+=DILVHQ~.g.Q`8:dzf4\">halfThickness</field></block></value></block></value><next><block type=\"variables_set\" id=\"e.E0e)]tCU^a~vTw=*D9\"><field name=\"VAR\" id=\"VsV)^qM]L%,4qFCoYohu\">lengthOffset</field><value name=\"VALUE\"><block type=\"math_arithmetic\" id=\"4.-3xHe-acvy!(Z)hWEW\"><field name=\"OP\">MINUS</field><value name=\"A\"><block type=\"math_arithmetic\" id=\"GmGB,P{=.ye_unQ%`c%7\"><field name=\"OP\">DIVIDE</field><value name=\"A\"><block type=\"variables_get\" id=\"ttp`lR=/vQt=c-w(81,@\"><field name=\"VAR\" id=\"42D!CKIZS$a9{@[%hnEX\">length</field></block></value><value name=\"B\"><block type=\"math_number\" id=\"!lzIJCU)3T7`ocmQX_v-\"><field name=\"NUM\">2</field></block></value></block></value><value name=\"B\"><block type=\"variables_get\" id=\"?f%,{cx4=$^Go|zQe8@i\"><field name=\"VAR\" id=\"+=DILVHQ~.g.Q`8:dzf4\">halfThickness</field></block></value></block></value><next><block type=\"variables_set\" id=\"rQ]w;NeIGzLR+UoJbU:1\"><field name=\"VAR\" id=\"ew8KHV6D/fTmtNnLDc1a\">legShape</field><value name=\"VALUE\"><block type=\"bitbybit.occt.shapes.solid.createBox\" id=\"8RNRy..emBU8_B3KFd0;\"><value name=\"Width\"><block type=\"variables_get\" id=\"`6sbBLVI3A+?sQY(@D[Q\"><field name=\"VAR\" id=\"vnw6#7.a[!A@qbul^6Wj\">thickness</field></block></value><value name=\"Length\"><block type=\"variables_get\" id=\"Q%y[s_k8UDz74*d(#6eC\"><field name=\"VAR\" id=\"vnw6#7.a[!A@qbul^6Wj\">thickness</field></block></value><value name=\"Height\"><block type=\"variables_get\" id=\"gs,Orh0+KbimJiGJXCI%\"><field name=\"VAR\" id=\"%$wn0ZTd}pjEu}P!J@Jx\">legHeight</field></block></value><value name=\"Center\"><block type=\"bitbybit.point.pointXYZ\" id=\"dxg[toUrT*v:+AP]d/H?\"><value name=\"X\"><block type=\"math_number\" id=\"CP_6r--3e^D`y~jufZV]\"><field name=\"NUM\">0</field></block></value><value name=\"Y\"><block type=\"math_number\" id=\"5VNWSJ5!c2`la9ez[N+|\"><field name=\"NUM\">0</field></block></value><value name=\"Z\"><block type=\"math_number\" id=\"AU)@Ic(xg]oJh$c6l=.e\"><field name=\"NUM\">0</field></block></value></block></value></block></value><next><block type=\"variables_set\" id=\"gL0$/~an=f)S/)Wj9Stf\"><field name=\"VAR\" id=\"]7AG0~;L$cC;1CplUq;A\">compoundShape</field><value name=\"VALUE\"><block type=\"bitbybit.occt.shapes.compound.makeCompound\" id=\"m`h?x^VKesu,Fo_]wTKM\"><value name=\"Shapes\"><block type=\"lists_create_with\" id=\".(y%GBJ`q6ig^uPRC@zc\"><mutation items=\"6\"></mutation><value name=\"ADD0\"><block type=\"bitbybit.occt.shapes.solid.createBox\" id=\"c:r6|OA^Gq1ei=d*N]RK\"><value name=\"Width\"><block type=\"variables_get\" id=\"VBb1CU)qgCzZbKuV;#ZA\"><field name=\"VAR\" id=\"qFEKnxGfWaVz;DDuJ65:\">width</field></block></value><value name=\"Length\"><block type=\"variables_get\" id=\"{Cqy!UwirD3;Cv)5d)Y6\"><field name=\"VAR\" id=\"42D!CKIZS$a9{@[%hnEX\">length</field></block></value><value name=\"Height\"><block type=\"variables_get\" id=\"PKDJN)cO%zJf;P8yFeW0\"><field name=\"VAR\" id=\"vnw6#7.a[!A@qbul^6Wj\">thickness</field></block></value><value name=\"Center\"><block type=\"bitbybit.point.pointXYZ\" id=\"oh2fO|gul7:I}lpy;WT%\"><value name=\"X\"><block type=\"math_number\" id=\"+h?2x4L[ZCk.(,R-Ot{L\"><field name=\"NUM\">0</field></block></value><value name=\"Y\"><block type=\"math_arithmetic\" id=\"2!|nlqg]T(e{4BjgpF}+\"><field name=\"OP\">MINUS</field><value name=\"A\"><block type=\"variables_get\" id=\"u/n8QVI6eD`/=qh=(-{R\"><field name=\"VAR\" id=\"[L8unU,RQ3nSRt_KH!?[\">height</field></block></value><value name=\"B\"><block type=\"variables_get\" id=\"-aXrk6(vE1_UzP3?eLw1\"><field name=\"VAR\" id=\"+=DILVHQ~.g.Q`8:dzf4\">halfThickness</field></block></value></block></value><value name=\"Z\"><block type=\"math_number\" id=\"jv3;gqM+HR~QeKU?z_c[\"><field name=\"NUM\">0</field></block></value></block></value></block></value><value name=\"ADD1\"><block type=\"bitbybit.occt.transforms.translate\" id=\"w(0J6zA)Vk=@+b^7.%FD\"><value name=\"Shape\"><block type=\"variables_get\" id=\"1k5PpO0j=2RzOPb;1}7*\"><field name=\"VAR\" id=\"ew8KHV6D/fTmtNnLDc1a\">legShape</field></block></value><value name=\"Translation\"><block type=\"bitbybit.point.pointXYZ\" id=\"9Q8@!v({?D%cmR_hWSt5\"><value name=\"X\"><block type=\"variables_get\" id=\"S^`j-`-t~:%Tl_{*._eh\"><field name=\"VAR\" id=\"KwdU~jKMCQ+NS$QI[y$a\">widthOffset</field></block></value><value name=\"Y\"><block type=\"variables_get\" id=\"{jpvcD;?;9G24,LGdQj/\"><field name=\"VAR\" id=\"$zXlqw0![6p{oh@5iUa{\">halfLegheight</field></block></value><value name=\"Z\"><block type=\"variables_get\" id=\"S21$o+Ng?hPk=6{he7}|\"><field name=\"VAR\" id=\"VsV)^qM]L%,4qFCoYohu\">lengthOffset</field></block></value></block></value></block></value><value name=\"ADD2\"><block type=\"bitbybit.occt.transforms.translate\" id=\"B:BWiRk?snzLlG~$4mS!\"><value name=\"Shape\"><block type=\"variables_get\" id=\"k]~flA$Ip3`6KUz07cjV\"><field name=\"VAR\" id=\"ew8KHV6D/fTmtNnLDc1a\">legShape</field></block></value><value name=\"Translation\"><block type=\"bitbybit.point.pointXYZ\" id=\"Jq}lWz6M)zk*}:e`zG7P\"><value name=\"X\"><block type=\"math_single\" id=\"?E4W].(xLPIZ_^koL1yi\"><field name=\"OP\">NEG</field><value name=\"NUM\"><block type=\"variables_get\" id=\"3j)d]w7#NDEGtz^N15jC\"><field name=\"VAR\" id=\"KwdU~jKMCQ+NS$QI[y$a\">widthOffset</field></block></value></block></value><value name=\"Y\"><block type=\"variables_get\" id=\"*%}6JEujhaW818nnSa:7\"><field name=\"VAR\" id=\"$zXlqw0![6p{oh@5iUa{\">halfLegheight</field></block></value><value name=\"Z\"><block type=\"variables_get\" id=\"w:)Fok6RTl!Pav`.eUYx\"><field name=\"VAR\" id=\"VsV)^qM]L%,4qFCoYohu\">lengthOffset</field></block></value></block></value></block></value><value name=\"ADD3\"><block type=\"bitbybit.occt.transforms.translate\" id=\"u%iUbaefB{u{BupM_jPx\"><value name=\"Shape\"><block type=\"variables_get\" id=\"({OYx^Y:E{?NZLZc?f?`\"><field name=\"VAR\" id=\"ew8KHV6D/fTmtNnLDc1a\">legShape</field></block></value><value name=\"Translation\"><block type=\"bitbybit.point.pointXYZ\" id=\",]00E]4a|okH9[YJ,Hd*\"><value name=\"X\"><block type=\"variables_get\" id=\"#FaA.s]c6s+H=8^G,us{\"><field name=\"VAR\" id=\"KwdU~jKMCQ+NS$QI[y$a\">widthOffset</field></block></value><value name=\"Y\"><block type=\"variables_get\" id=\"bHJ-3Q!mFqYJ+L4n@{PD\"><field name=\"VAR\" id=\"$zXlqw0![6p{oh@5iUa{\">halfLegheight</field></block></value><value name=\"Z\"><block type=\"math_single\" id=\"N[pt~uGK+1~;3]HeXBKj\"><field name=\"OP\">NEG</field><value name=\"NUM\"><block type=\"variables_get\" id=\"+_RW|TlWnaA5`l44=lK,\"><field name=\"VAR\" id=\"VsV)^qM]L%,4qFCoYohu\">lengthOffset</field></block></value></block></value></block></value></block></value><value name=\"ADD4\"><block type=\"bitbybit.occt.transforms.translate\" id=\";6M~xu/B-t=+6pAMoHn!\"><value name=\"Shape\"><block type=\"variables_get\" id=\"6.wle-0%Rd`^cs|KS)Cb\"><field name=\"VAR\" id=\"ew8KHV6D/fTmtNnLDc1a\">legShape</field></block></value><value name=\"Translation\"><block type=\"bitbybit.point.pointXYZ\" id=\";SD;M*CzF]b{W9cvUrw.\"><value name=\"X\"><block type=\"math_single\" id=\"2r-v^dQC7hNQ`/`Y2kx?\"><field name=\"OP\">NEG</field><value name=\"NUM\"><block type=\"variables_get\" id=\"h%*H{CqIx/X4Ct+1|+/(\"><field name=\"VAR\" id=\"KwdU~jKMCQ+NS$QI[y$a\">widthOffset</field></block></value></block></value><value name=\"Y\"><block type=\"variables_get\" id=\"]}DO4^nZ:M1Ws`25V_NT\"><field name=\"VAR\" id=\"$zXlqw0![6p{oh@5iUa{\">halfLegheight</field></block></value><value name=\"Z\"><block type=\"math_single\" id=\"tF!d%X7w4rJU!}9mW|:#\"><field name=\"OP\">NEG</field><value name=\"NUM\"><block type=\"variables_get\" id=\"~CCJzGY;+KqSL{?RE`n%\"><field name=\"VAR\" id=\"VsV)^qM]L%,4qFCoYohu\">lengthOffset</field></block></value></block></value></block></value></block></value><value name=\"ADD5\"><block type=\"bitbybit.occt.shapes.face.createCircleFace\" id=\"~LYI=/U2NV(X{?7H@}dH\"><value name=\"Radius\"><block type=\"math_number\" id=\")T;+{YO5q2!1^#uPyif=\"><field name=\"NUM\">2</field></block></value><value name=\"Center\"><block type=\"bitbybit.point.pointXYZ\" id=\"_`usIB0$WWd`7F(eK`%j\"><value name=\"X\"><block type=\"math_number\" id=\"Ltfk[IXu/hV]Ic]},^$-\"><field name=\"NUM\">0</field></block></value><value name=\"Y\"><block type=\"math_number\" id=\"M4^s?5T)r7i5}[x_m1X)\"><field name=\"NUM\">0</field></block></value><value name=\"Z\"><block type=\"math_number\" id=\",~iA,f}@;fK|hrMuSMfp\"><field name=\"NUM\">0</field></block></value></block></value><value name=\"Direction\"><block type=\"bitbybit.vector.vectorXYZ\" id=\"Ba3CWT`|ju!%8j(atgeo\"><value name=\"X\"><block type=\"math_number\" id=\"_IZbIKuoPdZ7_*iY+{CS\"><field name=\"NUM\">0</field></block></value><value name=\"Y\"><block type=\"math_number\" id=\"WRi.^gLXSoYcrU))_#lk\"><field name=\"NUM\">1</field></block></value><value name=\"Z\"><block type=\"math_number\" id=\"{Du=sGyTK6VxAyh;;X@g\"><field name=\"NUM\">0</field></block></value></block></value></block></value></block></value></block></value><next><block type=\"variables_set\" id=\"%*`2NfF;l!!tta,z/vkj\"><field name=\"VAR\" id=\"^XQc:TupwpB}REMB.?B:\">table</field><value name=\"VALUE\"><block type=\"base_time_await_return\" id=\"0rpKd*{DWZ0+*]Jb1*x~\"><value name=\"Promise\"><block type=\"bitbybit.draw.drawAnyAsync\" id=\"!bPf323Us:qK~#J#nu_|\"><value name=\"Entity\"><block type=\"variables_get\" id=\"oM!_$/WGd+Z0Bj$w@lf$\"><field name=\"VAR\" id=\"]7AG0~;L$cC;1CplUq;A\">compoundShape</field></block></value><value name=\"Options\"><block type=\"bitbybit.draw.optionsOcctShapeSimple\" id=\"glRbb$9x]0z|mN%BL]t}\"><value name=\"Precision\"><block type=\"math_number\" id=\"XoaO5*NfD|1I6IV6rb3p\"><field name=\"NUM\">0.01</field></block></value><value name=\"DrawFaces\"><block type=\"logic_boolean\" id=\"gbn#dD%:lFsc?/ubvS^a\"><field name=\"BOOL\">TRUE</field></block></value><value name=\"FaceColour\"><block type=\"colour_picker\" id=\"Ynh/~Vn~cd3:I(U|!]Ce\"><field name=\"COLOUR\">#999999</field></block></value><value name=\"DrawEdges\"><block type=\"logic_boolean\" id=\"]ivJ^7L}.J5onH1C1BO=\"><field name=\"BOOL\">TRUE</field></block></value><value name=\"EdgeColour\"><block type=\"colour_picker\" id=\"FG{R$d[Q`}cG*p}NtF|D\"><field name=\"COLOUR\">#ffffff</field></block></value><value name=\"EdgeWidth\"><block type=\"math_number\" id=\";R6):MZHhBVo#uwema$6\"><field name=\"NUM\">1</field></block></value></block></value></block></value></block></value><next><block type=\"bitbybit.runner.setRunnerResultValue\" id=\"JEic2[BK%J3Vb_!QY~lF\"><value name=\"Value\"><block type=\"variables_get\" id=\"|`_EnM2468;.R=*NZVdo\"><field name=\"VAR\" id=\"^XQc:TupwpB}REMB.?B:\">table</field></block></value><value name=\"Property\"><block type=\"text\" id=\"w5zktk0Pw]OqIc6n(f4r\"><field name=\"TEXT\">table</field></block></value></block></next></block></next></block></next></block></next></block></next></block></next></block></next></block></next></block></next></block></next></block></next></block><block type=\"procedures_defnoreturn\" id=\";,[TF{Aceq|R]*/]KOwz\" x=\"1645\" y=\"918\"><field name=\"NAME\">setupParams</field><comment pinned=\"false\" h=\"80\" w=\"160\">Describe this function...</comment><statement name=\"STACK\"><block type=\"variables_set\" id=\"`gcspYSHL(KMI00v;6y(\"><field name=\"VAR\" id=\"qFEKnxGfWaVz;DDuJ65:\">width</field><value name=\"VALUE\"><block type=\"bitbybit.runner.getRunnerInputValue\" id=\"#NbGE|3bv2C@.$SI-H{|\"><value name=\"Property\"><block type=\"text\" id=\"!(mr?Vm9qM,4L}~T:I0$\"><field name=\"TEXT\">width</field></block></value></block></value><next><block type=\"variables_set\" id=\"InEnh}P]2jc7zMu4x,?R\"><field name=\"VAR\" id=\"42D!CKIZS$a9{@[%hnEX\">length</field><value name=\"VALUE\"><block type=\"bitbybit.runner.getRunnerInputValue\" id=\"S{jMIIo:J`iK]^J!=?Gg\"><value name=\"Property\"><block type=\"text\" id=\";9yJ(hoOtZ67FoGmjXvt\"><field name=\"TEXT\">length</field></block></value></block></value><next><block type=\"variables_set\" id=\"rJ5Z!USUN])wbKy-HY@n\"><field name=\"VAR\" id=\"[L8unU,RQ3nSRt_KH!?[\">height</field><value name=\"VALUE\"><block type=\"bitbybit.runner.getRunnerInputValue\" id=\"*A+C4*x]q|dA(crX6;X-\"><value name=\"Property\"><block type=\"text\" id=\"[!Q][=TUm6}Qvo+*aHwC\"><field name=\"TEXT\">height</field></block></value></block></value><next><block type=\"variables_set\" id=\"%-6W/u1?xmiay$RL;0f2\"><field name=\"VAR\" id=\"vnw6#7.a[!A@qbul^6Wj\">thickness</field><value name=\"VALUE\"><block type=\"bitbybit.runner.getRunnerInputValue\" id=\"1-)l_`)G8HCySvY_-jQ)\"><value name=\"Property\"><block type=\"text\" id=\"7k_Fd#g}fl.W2j3lReTz\"><field name=\"TEXT\">thickness</field></block></value></block></value><next><block type=\"controls_if\" id=\"jfNz;TZT@:.MS;/,+9eX\"><value name=\"IF0\"><block type=\"logic_negate\" id=\"Y{cgwutP+{4JKfT0l%NN\"><value name=\"BOOL\"><block type=\"variables_get\" id=\"pof{)ysVguei]6opWdDT\"><field name=\"VAR\" id=\"qFEKnxGfWaVz;DDuJ65:\">width</field></block></value></block></value><statement name=\"DO0\"><block type=\"variables_set\" id=\"TNn,m=Y([T#m=`+[JTTi\"><field name=\"VAR\" id=\"qFEKnxGfWaVz;DDuJ65:\">width</field><value name=\"VALUE\"><block type=\"math_number\" id=\"IMv,=6+^`s*Jyj;u1Stt\"><field name=\"NUM\">1</field></block></value></block></statement><next><block type=\"controls_if\" id=\"zA91HokQ$TU$gIO3XEbQ\"><value name=\"IF0\"><block type=\"logic_negate\" id=\"*fdD.XM|0X7YatV0|lZ,\"><value name=\"BOOL\"><block type=\"variables_get\" id=\".UZ#q/?ia,_G`~/`v,m1\"><field name=\"VAR\" id=\"42D!CKIZS$a9{@[%hnEX\">length</field></block></value></block></value><statement name=\"DO0\"><block type=\"variables_set\" id=\"J!o9;y_IQS=}I4q]M)b]\"><field name=\"VAR\" id=\"42D!CKIZS$a9{@[%hnEX\">length</field><value name=\"VALUE\"><block type=\"math_number\" id=\"I5y}m],GELflgY,Q@gPW\"><field name=\"NUM\">1</field></block></value></block></statement><next><block type=\"controls_if\" id=\"8SzP[;(/sx^?=k%]Q#is\"><value name=\"IF0\"><block type=\"logic_negate\" id=\"]VZ#BUJ=Gdv_A*Y72tC4\"><value name=\"BOOL\"><block type=\"variables_get\" id=\"1vWvoF2*+ZfDkLqoTr9Y\"><field name=\"VAR\" id=\"[L8unU,RQ3nSRt_KH!?[\">height</field></block></value></block></value><statement name=\"DO0\"><block type=\"variables_set\" id=\"U|X$yx+Q[wtOQP$X*#dG\"><field name=\"VAR\" id=\"[L8unU,RQ3nSRt_KH!?[\">height</field><value name=\"VALUE\"><block type=\"math_number\" id=\"hoj*A}TpD=b`*C6i^/:O\"><field name=\"NUM\">0.5</field></block></value></block></statement><next><block type=\"controls_if\" id=\"eYjcV]ei7h_MF*|7s,pf\"><value name=\"IF0\"><block type=\"logic_negate\" id=\"xC9XSv9H]ScbrMu,pU}i\"><value name=\"BOOL\"><block type=\"variables_get\" id=\"i6MpiCc,3AjJ%4RmAaPz\"><field name=\"VAR\" id=\"vnw6#7.a[!A@qbul^6Wj\">thickness</field></block></value></block></value><statement name=\"DO0\"><block type=\"variables_set\" id=\":a2x1$R,Mpi`}@Ii|!O-\"><field name=\"VAR\" id=\"vnw6#7.a[!A@qbul^6Wj\">thickness</field><value name=\"VALUE\"><block type=\"math_number\" id=\"]g,?i65I{jr-QGzHK(8A\"><field name=\"NUM\">0.05</field></block></value></block></statement></block></next></block></next></block></next></block></next></block></next></block></next></block></next></block></statement></block></xml>","version":"0.20.3","type":"blockly"}}
+  title="Bitbybit Blockly Editor - Simple Cube for Runner Tutorial"
+  description="Draws 3D Table and controls its size via inputs coming from external executing program"
+/>
+
+### Complete Code for Your Website
+
+Below are the `index.html` and `script.js` files you would use on StackBlitz or your own website to run the 3D table configurator. The `index.html` is identical to the Rete table configurator example, as the UI controls are the same. The difference lies in the `script.js` which will execute the code exported from Blockly.
+
+<Tabs groupId="html-js-blockly-table-configurator-example">
+  <TabItem value="html" label="index.html" default>
+
+    ```html
+    <!DOCTYPE html>
+        <html lang="en">
+        <head>
+            <title>Home</title>
+            <meta charset="UTF-8" />
+            <meta name="viewport" content="width=device-width" />
+            <link rel="stylesheet" href="styles.css" />
+            <script src="https://cdn.jsdelivr.net/gh/bitbybit-dev/bitbybit-assets@0.20.2/runner/bitbybit-runner-babylonjs.js"></script>
+            <script type="module" src="script.js"></script>
+        </head>
+        <body>
+            <h1>3D Table Configurator</h1>
+            <div class="myCanvasZone">
+            <canvas id="myCanvas"></canvas>
+            </div>
+            <div>
+            <input
+                id="width"
+                type="range"
+                value="1"
+                min="0.3"
+                max="3"
+                step="0.1"
+                onchange="changeModel(+event.target.value, 'width')"
+            />
+            <label for="width">Width</label>
+            </div>
+            <div>
+            <input
+                id="length"
+                type="range"
+                value="1"
+                min="0.3"
+                max="3"
+                step="0.1"
+                onchange="changeModel(+event.target.value, 'length')"
+            />
+            <label for="length">Length</label>
+            </div>
+            <div>
+            <input
+                id="height"
+                type="range"
+                value="0.5"
+                min="0.3"
+                max="1.5"
+                step="0.1"
+                onchange="changeModel(+event.target.value, 'height')"
+            />
+            <label for="height">Height</label>
+            </div>
+            <div>
+            <input
+                id="thickness"
+                type="range"
+                value="0.05"
+                min="0.01"
+                max="0.25"
+                step="0.01"
+                onchange="changeModel(+event.target.value, 'thickness')"
+            />
+            <label for="thickness">Thickness</label>
+            </div>
+        </body>
+    </html>
+    ```
+    **Note:** Remember to replace `<version-number>` in the `bitbybit-runner-babylonjs.js` script tag with an actual version number (e.g., `0.25.0`). Check [Bitbybit GitHub Releases](https://github.com/bitbybit-dev/bitbybit/releases) for the latest version.
+
+  </TabItem>
+  <TabItem value="js" label="script.js">
+
+    ```javascript
+    const runner = window.bitbybitRunner.getRunnerInstance();
+
+    const model = {
+        width: 1,
+        length: 1,
+        height: 0.5,
+        thickness: 0.05,
+    };
+
+    setTimeout(async () => {
+    const runnerOptions = {
+        canvasId: 'myCanvas',
+        canvasZoneClass: 'myCanvasZone',
+        enablePhysics: false,
+        enableOCCT: true,
+        enableJSCAD: false,
+        enableKeyEventListeners: false,
+        backgroundColor: '#0000ff',
+        loadFonts: [],
+    };
+
+    await runner.run(runnerOptions);
+    changeModel();
+    }, 0);
+
+    let previousMesh;
+
+    async function changeModel(value, name) {
+        if (value === undefined || model[name] !== value) {
+            if (value !== undefined) {
+                model[name] = value;
+            }
+            const res = await runner.executeScript(getInlineScript(), model);
+
+            if (previousMesh) {
+                previousMesh.dispose();
+            }
+            previousMesh = res.table;
+        }
+    }
+
+    window.changeModel = changeModel;
+
+    function getInlineScript() {
+        return '{\"type\":\"rete\",\"version\":\"0.15.13\",\"script\":\"async function(e,t,s,r,n){let a={};a={property:[\\"width\\"],...a};const o=[{result:[r[a.property[0]]]}];let i={};i={property:[\\"length\\"],...i};const u=[{result:[r[i.property[0]]]}];let l={};l={property:[\\"height\\"],...l};const c=[{result:[r[l.property[0]]]}];let p={};p={property:[\\"thickness\\"],...p};const d=[{result:[r[p.property[0]]]}];let f={};f={precision:[.01],drawFaces:[!0],faceColour:[\\"#7984b9\\"],drawEdges:[!0],edgeColour:[\\"#ffffff\\"],edgeWidth:[1],...f};const y=[{result:e.HS.executeBasedOnType(f,!1,(e=>t.draw.optionsOcctShapeSimple(e))),transformers:[]}];let h={};h={skybox:[\\"clearSky\\"],size:[1e3],blur:[.1],environmentIntensity:[.7],...h};e.HS.executeBasedOnType(h,!1,(e=>t.babylon.scene.enableSkybox(e)));let S={};S={radius:[2],center:[[0,0,0]],direction:[[0,1,0]],...S};const H=[{result:await e.HS.executeBasedOnTypeAsync(S,!1,(e=>t.occt.shapes.face.createCircleFace(e))),transformers:[]}];let m={};m={direction:[[-100,-100,-100]],intensity:[3],diffuse:[\\"#ffffff\\"],specular:[\\"#ffffff\\"],shadowGeneratorMapSize:[1024],enableShadows:[!0],shadowDarkness:[0],...m};e.HS.executeBasedOnType(m,!1,(e=>t.babylon.scene.drawDirectionalLight(e)));const v={value1:[void 0],value2:[void 0]};let w={};w.value1=o,w.value2=[{result:[.7],transformers:[]}],e.HS.updateListInputs(w),w={...v,...w};const O=[{result:e.HS.executeBasedOnType(w,!1,(e=>t.logic.firstDefinedValueGate(e))),transformers:[]}],B={value1:[void 0],value2:[void 0]};let x={};x.value1=u,x.value2=[{result:[1.4],transformers:[]}],e.HS.updateListInputs(x),x={...B,...x};const b=[{result:e.HS.executeBasedOnType(x,!1,(e=>t.logic.firstDefinedValueGate(e))),transformers:[]}],L={value1:[void 0],value2:[void 0]};let g={};g.value1=c,g.value2=[{result:[.6],transformers:[]}],e.HS.updateListInputs(g),g={...L,...g};const I=[{result:e.HS.executeBasedOnType(g,!1,(e=>t.logic.firstDefinedValueGate(e))),transformers:[]}],T={value1:[void 0],value2:[void 0]};let A={};A.value1=d,A.value2=[{result:[.1],transformers:[]}],e.HS.updateListInputs(A),A={...T,...A};const k=[{result:e.HS.executeBasedOnType(A,!1,(e=>t.logic.firstDefinedValueGate(e))),transformers:[]}];let D={};D.first=I,D.second=k,e.HS.updateListInputs(D),D={first:[1],second:[1],operation:[\\"subtract\\"],...D};const N=[{result:e.HS.executeBasedOnType(D,!1,(e=>t.math.twoNrOperation(e))),transformers:[]}];let R={};R.first=k,e.HS.updateListInputs(R),R={first:[1],second:[2],operation:[\\"divide\\"],...R};const C=[{result:e.HS.executeBasedOnType(R,!1,(e=>t.math.twoNrOperation(e))),transformers:[]}];let E={};E.first=O,E.second=k,e.HS.updateListInputs(E),E={first:[1],second:[2],operation:[\\"subtract\\"],...E};const G=[{result:e.HS.executeBasedOnType(E,!1,(e=>t.math.twoNrOperation(e))),transformers:[]}];let V={};V.second=k,V.first=b,e.HS.updateListInputs(V),V={first:[1],second:[2],operation:[\\"subtract\\"],...V};const z=[{result:e.HS.executeBasedOnType(V,!1,(e=>t.math.twoNrOperation(e))),transformers:[]}];let F={};F.first=N,e.HS.updateListInputs(F),F={first:[1],second:[2],operation:[\\"divide\\"],...F};const M=[{result:e.HS.executeBasedOnType(F,!1,(e=>t.math.twoNrOperation(e))),transformers:[]}];let W={};W.first=I,W.second=C,e.HS.updateListInputs(W),W={first:[1],second:[1],operation:[\\"subtract\\"],...W};const X=[{result:e.HS.executeBasedOnType(W,!1,(e=>t.math.twoNrOperation(e))),transformers:[]}];let Y={};Y.width=G,Y.length=z,e.HS.updateListInputs(Y),Y={width:[1],length:[2],center:[[0,0,0]],direction:[[0,1,0]],...Y};const Z=[{result:await e.HS.executeBasedOnTypeAsync(Y,!1,(e=>t.occt.shapes.wire.createRectangleWire(e))),transformers:[]}];let P={};P.y=X,e.HS.updateListInputs(P),P={x:[0],y:[0],z:[0],...P};const j=[{result:e.HS.executeBasedOnType(P,!1,(e=>t.vector.vectorXYZ(e))),transformers:[]}];let q={};q.y=M,e.HS.updateListInputs(q),q={x:[0],y:[0],z:[0],...q};const J=[{result:e.HS.executeBasedOnType(q,!1,(e=>t.vector.vectorXYZ(e))),transformers:[]}],K={shape:[void 0]};let Q={};Q.shape=Z,e.HS.updateListInputs(Q),Q={...K,...Q};const U=[{result:await e.HS.executeBasedOnTypeAsync(Q,!1,(e=>t.occt.shapes.edge.getCornerPointsOfEdgesForShape(e))),transformers:[]}];let $={};$.width=k,$.length=k,$.height=N,$.center=J,e.HS.updateListInputs($),$={width:[1],length:[2],height:[3],center:[[0,0,0]],...$};const _=[{result:await e.HS.executeBasedOnTypeAsync($,!1,(e=>t.occt.shapes.solid.createBox(e))),transformers:[]}];let ee={};ee.width=O,ee.length=b,ee.height=k,ee.center=j,e.HS.updateListInputs(ee),ee={width:[1],length:[2],height:[3],center:[[0,0,0]],...ee};const te=[{result:await e.HS.executeBasedOnTypeAsync(ee,!1,(e=>t.occt.shapes.solid.createBox(e))),transformers:[]}];let se={};se.list=U,e.HS.updateListInputs(se),se={nrLevels:[1],...se};const re=[];for(let e=0;e<se.nrLevels;e++)re.push({type:\\"flat\\"});const ne=[{result:se.list,transformers:re}],ae={shape:[void 0],translation:[[0,0,0]]};let oe={};oe.shape=_,oe.translation=ne,e.HS.updateListInputs(oe),oe={...ae,...oe};const ie=[{result:await e.HS.executeBasedOnTypeAsync(oe,!1,(e=>t.occt.transforms.translate(e))),transformers:[]}];let ue={};ue.listElements=[te[0],ie[0],H[0]],e.HS.updateListInputs(ue),ue={...ue};const le=[{result:[ue.listElements?ue.listElements:[]]}],ce={shapes:[void 0]};let pe={};pe.shapes=le,e.HS.updateListInputs(pe),pe={...ce,...pe};const de=[{result:await e.HS.executeBasedOnTypeAsync(pe,!1,(e=>t.occt.shapes.compound.makeCompound(e))),transformers:[]}],fe={entity:[void 0],options:[void 0],babylonMesh:[void 0]};let ye={};ye.options=y,ye.entity=de,e.HS.updateListInputs(ye),ye={...fe,...ye};const he=[{result:await e.HS.executeBasedOnTypeAsync(ye,!1,(e=>t.draw.drawAnyAsync(e))),transformers:[]}];let Se={};Se.value=he,e.HS.updateListInputs(Se),Se={property:[\\"table\\"],...Se},setBitbybitRunnerResultValue(Se.property[0],Se.value[0])}(BitByBit,bitbybit,bitbybitRunnerResult,bitbybitRunnerInputs,Bit);\"}';
+    }
+    ```
+
+  </TabItem>
+</Tabs>
+
+---
+
+This tutorial demonstrates how the visual, block-based approach of Blockly, when combined with the Bitbybit Runner, can be a powerful and accessible way to create interactive 3D web applications. By exporting your Blockly programs, you can easily integrate sophisticated 3D modeling and CAD operations into standard web projects, allowing users to customize and interact with designs through a simple web interface.

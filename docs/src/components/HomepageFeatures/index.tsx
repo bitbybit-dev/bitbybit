@@ -15,7 +15,6 @@ export default function HomepageFeatures(): ReactNode {
     <section className={styles.features}>
       <div className="container">
         <div className="row">
-            Hello World
         </div>
       </div>
     </section>

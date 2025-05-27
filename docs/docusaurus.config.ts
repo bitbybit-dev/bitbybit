@@ -5,8 +5,8 @@ import type * as Preset from "@docusaurus/preset-classic";
 // This runs in Node.js - Don't use client-side code here (browser APIs, JSX...)
 
 const config: Config = {
-    title: "Learn Bitbybit",
-    tagline: "Understand How To Use The Platform",
+    title: "Bitbybit",
+    tagline: "Learn How To Use The Platform",
     favicon: "img/logo-gold-small.png",
 
     // Set the production url of your site here
@@ -36,11 +36,9 @@ const config: Config = {
             "classic",
             {
                 docs: {
-                    path: "start",
-                    routeBasePath: "start",
+                    path: "learn",
+                    routeBasePath: "learn",
                     sidebarPath: "./sidebars.ts",
-                    // Please change this to your repo.
-                    // Remove this to remove the "edit this page" links.
                     editUrl:
                         "https://github.com/bitbybit-dev/bitbybit/docs",
                 },
@@ -69,8 +67,13 @@ const config: Config = {
     themeConfig: {
         // Replace with your project's social card
         image: "img/docusaurus-social-card.jpg",
+        colorMode: {
+            defaultMode: "dark",
+            disableSwitch: false,
+            respectPrefersColorScheme: false,
+        },
         navbar: {
-            title: "Learn",
+            title: "Bitbybit",
             logo: {
                 alt: "Bitbybit Logo",
                 src: "img/logo-gold-small.png",
@@ -80,8 +83,11 @@ const config: Config = {
                     type: "docSidebar",
                     sidebarId: "tutorialSidebar",
                     position: "left",
-                    label: "Start",
+                    label: "Learn",
                 },
+                { to: "/learn/code/intro", label: "Code", position: "left" },
+                { to: "/3d-bits", label: "3D Bits", position: "left" },
+
                 { to: "/blog", label: "Blog", position: "left" },
                 {
                     href: "https://bitbybit.dev/auth/pick-plan",
@@ -100,11 +106,15 @@ const config: Config = {
         footer: {
             links: [
                 {
-                    title: "Start",
+                    title: "Main",
                     items: [
                         {
-                            label: "Start",
-                            to: "/start/intro",
+                            label: "Learn",
+                            to: "/learn/intro",
+                        }, 
+                        {
+                            label: "Code",
+                            to: "/learn/code/intro",
                         },
                     ],
                 },

@@ -27,7 +27,7 @@ export default function Home(): ReactNode {
   return (
     <Layout
       title={`${siteConfig.title}`}
-      description="Documentation of bitbybit.dev platform for creating 3D CAD models on the web.">
+      description="Documentation of Bitbybit platform for creating 3D CAD models on the web.">
       <HomepageHeader />
       <main>
         <HomepageFeatures />

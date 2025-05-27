@@ -51,7 +51,7 @@ const BitByBitRenderCanvas: React.FC<Props> = React.memo(({
     script: scriptProp,
     title = "Interactive Script",
     description,
-    iframeUrl: baseUrl = "https://s.bitbybit.dev",
+    iframeUrl: baseUrl = "http://localhost:4202",
     requireManualStart = false,
     backgroundImageUrl = "https://bitbybit.dev/assets/landscape.jpeg",
     height = "600px",

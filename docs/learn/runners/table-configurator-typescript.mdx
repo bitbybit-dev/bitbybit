@@ -1,0 +1,203 @@
+---
+sidebar_position: 7
+title: Building a 3D Table Configurator with TypeScript & Bitbybit Runner
+sidebar_label: 3D Table Configurator (TS)
+description: Learn to build a 3D table configurator by exporting TypeScript code from Bitbybit and integrating it into a web application on StackBlitz using Bitbybit Runner.
+tags: [getting-started, runners, typescript]
+---
+
+import BitByBitRenderCanvas from '@site/src/components/BitByBitRenderCanvas';
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+# Building a 3D Table Configurator with TypeScript & Bitbybit Runner
+
+## What You Will Learn
+
+In this tutorial, you will learn how to create an interactive 3D website by leveraging JavaScript, HTML, CSS, and code exported from our **TypeScript web CAD editor** on Bitbybit.
+
+We will guide you through setting up the logic for a **3D table model configurator**, introducing some basic 3D programming concepts along the way. This project will utilize:
+*   **OpenCascade Technology (OCCT)** geometry kernel algorithms for creating the table's parametric shapes.
+*   **BabylonJS game engine** for rendering the 3D scene, all facilitated through the `bitbybit-runner.js` library.
+*   We'll also set up a skybox and a directional light to cast shadows, enhancing the visual realism.
+
+This free lecture is designed for a wide audience, from beginners looking to dive into parametric design and 3D web development, to experts wanting to integrate our open-source technologies into their own products and applications.
+
+<div class="responsive-video-container">
+  <iframe 
+    width="560" 
+    height="315" 
+    src="https://www.youtube.com/embed/Gzs0Bw5dM1M" 
+    title="3D Table Configurator Tutorial with TypeScript and Bitbybit Runner" 
+    frameborder="0" 
+    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+    allowfullscreen>
+  </iframe>
+</div>
+
+## Final Result & Code
+
+You can either check the live demo of [StackBlitz project](https://stackblitz.com/edit/bitbybit-runner-building-3d-table-configurator-ts) or use the code snippets below to recreate it on your own website.
+
+<div className="stackblitz-embed-container">
+  <iframe
+    src="https://stackblitz.com/edit/bitbybit-runner-building-3d-table-configurator-rete?ctl=1&embed=1&file=src%2Fmain.ts&theme=dark"
+    style={{
+      width: '100%',
+      height: '700px',
+      border: '0',
+      borderRadius: '4px',
+      overflow: 'hidden',
+    }}
+    title="3D Table Configurator Tutorial with TypeScript and Bitbybit Runner"
+    allow="accelerometer; ambient-light-sensor; camera; encrypted-media; geolocation; gyroscope; hid; microphone; midi; payment; usb; vr; xr-spatial-tracking"
+    sandbox="allow-forms allow-modals allow-popups allow-presentation allow-same-origin allow-scripts"
+  ></iframe>
+</div>
+
+### TypeScript Code (The Program)
+
+The following Bitbybit TypeScript script is the program that defines the logic for our 3D table configurator. The JavaScript code used in the StackBlitz example is what gets generated (or is very similar to what you'd write directly after transpilation) when you use the "Export to Runner" feature from this TypeScript script.
+
+<BitByBitRenderCanvas
+  requireManualStart={true}
+  script={{"script":"type Inputs = {\n    width: number;\n    length: number;\n    height: number;\n    thickness: number;\n};\n\nconst defaultValues: Inputs = {\n    width: 1,\n    length: 1,\n    height: 0.5,\n    thickness: 0.05,\n};\n\nBit.mockBitbybitRunnerInputs(defaultValues);\nconst inputs: Inputs = Bit.getBitbybitRunnerInputs();\n\nconst { solid, compound, face } = bitbybit.occt.shapes;\n\nconst legHeight = inputs.height - inputs.thickness;\nconst halfLegHeight = legHeight / 2;\nconst halfThickness = inputs.thickness / 2;\nconst widthOffset = inputs.width / 2 - halfThickness;\nconst lengthOffset = inputs.length / 2 - halfThickness;\n\n\nconst start = async () => {\n\n    const skyboxOptions = new Bit.Inputs.BabylonScene.SkyboxDto();\n    skyboxOptions.skybox = Bit.Inputs.Base.skyboxEnum.clearSky;\n    bitbybit.babylon.scene.enableSkybox(skyboxOptions);\n\n    const lightOptions = new Bit.Inputs.BabylonScene.DirectionalLightDto();\n    lightOptions.intensity = 3;\n    bitbybit.babylon.scene.drawDirectionalLight(lightOptions);\n\n    const tableTopShape = await solid.createBox({\n        width: inputs.width,\n        length: inputs.length,\n        height: inputs.thickness,\n        center: [0, inputs.height - halfThickness, 0],\n    });\n\n    const leg1Shape = await solid.createBox({\n        width: inputs.thickness,\n        length: inputs.thickness,\n        height: legHeight,\n        center: [widthOffset, halfLegHeight, lengthOffset],\n    });\n    const leg2Shape = await solid.createBox({\n        width: inputs.thickness,\n        length: inputs.thickness,\n        height: legHeight,\n        center: [-widthOffset, halfLegHeight, lengthOffset],\n    });\n    const leg3Shape = await solid.createBox({\n        width: inputs.thickness,\n        length: inputs.thickness,\n        height: legHeight,\n        center: [widthOffset, halfLegHeight, -lengthOffset],\n    });\n    const leg4Shape = await solid.createBox({\n        width: inputs.thickness,\n        length: inputs.thickness,\n        height: legHeight,\n        center: [-widthOffset, halfLegHeight, -lengthOffset],\n    });\n\n    const groundShape = await face.createCircleFace({\n        radius: 2,\n        center: [0, 0, 0],\n        direction: [0, 1, 0]\n    });\n\n    const compoundShape = await compound.makeCompound({\n        shapes: [tableTopShape, leg1Shape, leg2Shape, leg3Shape, leg4Shape, groundShape],\n    });\n\n    const drawOptions = new Bit.Inputs.Draw.DrawOcctShapeSimpleOptions();\n    drawOptions.faceColour = \"#555577\";\n    drawOptions.edgeWidth = 1;\n    const table = await bitbybit.draw.drawAnyAsync({ entity: compoundShape, options: drawOptions });\n    return { table };\n}\n\nconst runnerOutput = start();\nBit.setBitbybitRunnerResult(runnerOutput);\n","version":"0.20.3","type":"typescript"}}
+  title="Bitbybit TypeScript Editor - 3D Table Configurator"
+  description="Draws 3D Table and controls its size via inputs coming from external executing program"
+/>
+
+### Complete Code for Your Website
+
+Below are the `index.html` and `script.js` files you would use on StackBlitz or your own website to run the 3D table configurator. The `index.html` is identical to the previous table configurator examples, as the UI controls are the same. The primary difference lies in the `script.js` content, which will now execute the logic adapted from or exported from the TypeScript editor.
+
+<Tabs groupId="html-js-typescript-table-configurator-example">
+  <TabItem value="html" label="index.html" default>
+
+    ```html
+    <!DOCTYPE html>
+    <html lang="en">
+        <head>
+            <title>Home</title>
+            <meta charset="UTF-8" />
+            <meta name="viewport" content="width=device-width" />
+            <link rel="stylesheet" href="styles.css" />
+            <script src="https://cdn.jsdelivr.net/gh/bitbybit-dev/bitbybit-assets@0.15.14.1/runner/bitbybit-runner.js"></script>
+            <script type="module" src="script.js"></script>
+        </head>
+        <body>
+            <h1>3D Table Configurator</h1>
+            <div class="myCanvasZone">
+            <canvas id="myCanvas"></canvas>
+            </div>
+            <div>
+            <input
+                id="width"
+                type="range"
+                value="1"
+                min="0.3"
+                max="3"
+                step="0.1"
+                onchange="changeModel(+event.target.value, 'width')"
+            />
+            <label for="width">Width</label>
+            </div>
+            <div>
+            <input
+                id="length"
+                type="range"
+                value="1"
+                min="0.3"
+                max="3"
+                step="0.1"
+                onchange="changeModel(+event.target.value, 'length')"
+            />
+            <label for="length">Length</label>
+            </div>
+            <div>
+            <input
+                id="height"
+                type="range"
+                value="0.5"
+                min="0.3"
+                max="1.5"
+                step="0.1"
+                onchange="changeModel(+event.target.value, 'height')"
+            />
+            <label for="height">Height</label>
+            </div>
+            <div>
+            <input
+                id="thickness"
+                type="range"
+                value="0.05"
+                min="0.01"
+                max="0.25"
+                step="0.01"
+                onchange="changeModel(+event.target.value, 'thickness')"
+            />
+            <label for="thickness">Thickness</label>
+            </div>
+        </body>
+    </html>
+
+    ```
+    **Note:** Remember to replace `<version-number>` in the `bitbybit-runner-babylonjs.js` script tag with an actual version number (e.g., `0.25.0`). Check [Bitbybit GitHub Releases](https://github.com/bitbybit-dev/bitbybit/releases) for the latest version.
+
+  </TabItem>
+  <TabItem value="js" label="script.js">
+
+```javascript
+    const runner = window.bitbybitRunner.getRunnerInstance();
+
+    const model = {
+        width: 1,
+        length: 1,
+        height: 0.5,
+        thickness: 0.05,
+    };
+
+    setTimeout(async () => {
+        const runnerOptions = {
+            canvasId: 'myCanvas',
+            canvasZoneClass: 'myCanvasZone',
+            enablePhysics: false,
+            enableOCCT: true,
+            enableJSCAD: false,
+            enableKeyEventListeners: false,
+            backgroundColor: '#0000ff',
+            loadFonts: [],
+        };
+
+        await runner.run(runnerOptions);
+        changeModel();
+    }, 0);
+
+    let previousMesh;
+
+    async function changeModel(value, name) {
+    if (value === undefined || model[name] !== value) {
+        if (value !== undefined) {
+            model[name] = value;
+        }
+        const res = await runner.executeScript(getInlineScript(), model);
+
+        if (previousMesh) {
+            previousMesh.dispose();
+        }
+        previousMesh = res.table;
+    }
+    }
+
+    window.changeModel = changeModel;
+
+    function getInlineScript() {
+        return '{"type":"rete","version":"0.15.13","script":"async function(e,t,s,r,n){let a={};a={property:[\\"width\\"],...a};const o=[{result:[r[a.property[0]]]}];let i={};i={property:[\\"length\\"],...i};const u=[{result:[r[i.property[0]]]}];let l={};l={property:[\\"height\\"],...l};const c=[{result:[r[l.property[0]]]}];let p={};p={property:[\\"thickness\\"],...p};const d=[{result:[r[p.property[0]]]}];let f={};f={precision:[.01],drawFaces:[!0],faceColour:[\\"#7984b9\\"],drawEdges:[!0],edgeColour:[\\"#ffffff\\"],edgeWidth:[1],...f};const y=[{result:e.HS.executeBasedOnType(f,!1,(e=>t.draw.optionsOcctShapeSimple(e))),transformers:[]}];let h={};h={skybox:[\\"clearSky\\"],size:[1e3],blur:[.1],environmentIntensity:[.7],...h};e.HS.executeBasedOnType(h,!1,(e=>t.babylon.scene.enableSkybox(e)));let S={};S={radius:[2],center:[[0,0,0]],direction:[[0,1,0]],...S};const H=[{result:await e.HS.executeBasedOnTypeAsync(S,!1,(e=>t.occt.shapes.face.createCircleFace(e))),transformers:[]}];let m={};m={direction:[[-100,-100,-100]],intensity:[3],diffuse:[\\"#ffffff\\"],specular:[\\"#ffffff\\"],shadowGeneratorMapSize:[1024],enableShadows:[!0],shadowDarkness:[0],...m};e.HS.executeBasedOnType(m,!1,(e=>t.babylon.scene.drawDirectionalLight(e)));const v={value1:[void 0],value2:[void 0]};let w={};w.value1=o,w.value2=[{result:[.7],transformers:[]}],e.HS.updateListInputs(w),w={...v,...w};const O=[{result:e.HS.executeBasedOnType(w,!1,(e=>t.logic.firstDefinedValueGate(e))),transformers:[]}],B={value1:[void 0],value2:[void 0]};let x={};x.value1=u,x.value2=[{result:[1.4],transformers:[]}],e.HS.updateListInputs(x),x={...B,...x};const b=[{result:e.HS.executeBasedOnType(x,!1,(e=>t.logic.firstDefinedValueGate(e))),transformers:[]}],L={value1:[void 0],value2:[void 0]};let g={};g.value1=c,g.value2=[{result:[.6],transformers:[]}],e.HS.updateListInputs(g),g={...L,...g};const I=[{result:e.HS.executeBasedOnType(g,!1,(e=>t.logic.firstDefinedValueGate(e))),transformers:[]}],T={value1:[void 0],value2:[void 0]};let A={};A.value1=d,A.value2=[{result:[.1],transformers:[]}],e.HS.updateListInputs(A),A={...T,...A};const k=[{result:e.HS.executeBasedOnType(A,!1,(e=>t.logic.firstDefinedValueGate(e))),transformers:[]}];let D={};D.first=I,D.second=k,e.HS.updateListInputs(D),D={first:[1],second:[1],operation:[\\"subtract\\"],...D};const N=[{result:e.HS.executeBasedOnType(D,!1,(e=>t.math.twoNrOperation(e))),transformers:[]}];let R={};R.first=k,e.HS.updateListInputs(R),R={first:[1],second:[2],operation:[\\"divide\\"],...R};const C=[{result:e.HS.executeBasedOnType(R,!1,(e=>t.math.twoNrOperation(e))),transformers:[]}];let E={};E.first=O,E.second=k,e.HS.updateListInputs(E),E={first:[1],second:[2],operation:[\\"subtract\\"],...E};const G=[{result:e.HS.executeBasedOnType(E,!1,(e=>t.math.twoNrOperation(e))),transformers:[]}];let V={};V.second=k,V.first=b,e.HS.updateListInputs(V),V={first:[1],second:[2],operation:[\\"subtract\\"],...V};const z=[{result:e.HS.executeBasedOnType(V,!1,(e=>t.math.twoNrOperation(e))),transformers:[]}];let F={};F.first=N,e.HS.updateListInputs(F),F={first:[1],second:[2],operation:[\\"divide\\"],...F};const M=[{result:e.HS.executeBasedOnType(F,!1,(e=>t.math.twoNrOperation(e))),transformers:[]}];let W={};W.first=I,W.second=C,e.HS.updateListInputs(W),W={first:[1],second:[1],operation:[\\"subtract\\"],...W};const X=[{result:e.HS.executeBasedOnType(W,!1,(e=>t.math.twoNrOperation(e))),transformers:[]}];let Y={};Y.width=G,Y.length=z,e.HS.updateListInputs(Y),Y={width:[1],length:[2],center:[[0,0,0]],direction:[[0,1,0]],...Y};const Z=[{result:await e.HS.executeBasedOnTypeAsync(Y,!1,(e=>t.occt.shapes.wire.createRectangleWire(e))),transformers:[]}];let P={};P.y=X,e.HS.updateListInputs(P),P={x:[0],y:[0],z:[0],...P};const j=[{result:e.HS.executeBasedOnType(P,!1,(e=>t.vector.vectorXYZ(e))),transformers:[]}];let q={};q.y=M,e.HS.updateListInputs(q),q={x:[0],y:[0],z:[0],...q};const J=[{result:e.HS.executeBasedOnType(q,!1,(e=>t.vector.vectorXYZ(e))),transformers:[]}],K={shape:[void 0]};let Q={};Q.shape=Z,e.HS.updateListInputs(Q),Q={...K,...Q};const U=[{result:await e.HS.executeBasedOnTypeAsync(Q,!1,(e=>t.occt.shapes.edge.getCornerPointsOfEdgesForShape(e))),transformers:[]}];let $={};$.width=k,$.length=k,$.height=N,$.center=J,e.HS.updateListInputs($),$={width:[1],length:[2],height:[3],center:[[0,0,0]],...$};const _=[{result:await e.HS.executeBasedOnTypeAsync($,!1,(e=>t.occt.shapes.solid.createBox(e))),transformers:[]}];let ee={};ee.width=O,ee.length=b,ee.height=k,ee.center=j,e.HS.updateListInputs(ee),ee={width:[1],length:[2],height:[3],center:[[0,0,0]],...ee};const te=[{result:await e.HS.executeBasedOnTypeAsync(ee,!1,(e=>t.occt.shapes.solid.createBox(e))),transformers:[]}];let se={};se.list=U,e.HS.updateListInputs(se),se={nrLevels:[1],...se};const re=[];for(let e=0;e<se.nrLevels;e++)re.push({type:\\"flat\\"});const ne=[{result:se.list,transformers:re}],ae={shape:[void 0],translation:[[0,0,0]]};let oe={};oe.shape=_,oe.translation=ne,e.HS.updateListInputs(oe),oe={...ae,...oe};const ie=[{result:await e.HS.executeBasedOnTypeAsync(oe,!1,(e=>t.occt.transforms.translate(e))),transformers:[]}];let ue={};ue.listElements=[te[0],ie[0],H[0]],e.HS.updateListInputs(ue),ue={...ue};const le=[{result:[ue.listElements?ue.listElements:[]]}],ce={shapes:[void 0]};let pe={};pe.shapes=le,e.HS.updateListInputs(pe),pe={...ce,...pe};const de=[{result:await e.HS.executeBasedOnTypeAsync(pe,!1,(e=>t.occt.shapes.compound.makeCompound(e))),transformers:[]}],fe={entity:[void 0],options:[void 0],babylonMesh:[void 0]};let ye={};ye.options=y,ye.entity=de,e.HS.updateListInputs(ye),ye={...fe,...ye};const he=[{result:await e.HS.executeBasedOnTypeAsync(ye,!1,(e=>t.draw.drawAnyAsync(e))),transformers:[]}];let Se={};Se.value=he,e.HS.updateListInputs(Se),Se={property:[\\"table\\"],...Se},setBitbybitRunnerResultValue(Se.property[0],Se.value[0])}(BitByBit,bitbybit,bitbybitRunnerResult,bitbybitRunnerInputs,Bit);"}';
+    }
+    ```
+
+  </TabItem>
+</Tabs>
+
+---
+
+This tutorial highlights the capabilities of using TypeScript for creating complex 3D parametric models and interactive configurators. By leveraging Bitbybit's TypeScript environment and the Bitbybit Runner, developers can build sophisticated web applications that integrate advanced CAD functionalities with the rendering power of BabylonJS, all controlled through a familiar and powerful programming language.
