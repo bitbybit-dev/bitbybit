@@ -63,7 +63,6 @@ const config: Config = {
             } as Preset.Options,
         ],
     ],
-
     themeConfig: {
         // Replace with your project's social card
         image: "img/docusaurus-social-card.jpg",
@@ -111,7 +110,7 @@ const config: Config = {
                         {
                             label: "Learn",
                             to: "/learn/intro",
-                        }, 
+                        },
                         {
                             label: "Code",
                             to: "/learn/code/intro",
