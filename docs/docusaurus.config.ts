@@ -86,8 +86,8 @@ const config: Config = {
                 },
                 { to: "/learn/code/intro", label: "Code", position: "left" },
                 { to: "/learn/3d-bits/intro", label: "3D Bits", position: "left" },
-
                 { to: "/blog", label: "Blog", position: "left" },
+                { to: "https://bitbybit.dev", label: "Home", position: "left" },
                 {
                     href: "https://bitbybit.dev/auth/pick-plan",
                     label: "Support the Mission",
