@@ -54,3 +54,7 @@
     height: 100%;
     border: 0;
 }
+
+.category-icon-small {
+    width: 100px;
+}

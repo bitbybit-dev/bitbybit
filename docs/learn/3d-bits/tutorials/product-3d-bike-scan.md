@@ -16,7 +16,7 @@ We will cover:
 *   **3D Scanning the Bike:** Tips and considerations for capturing the bike.
 *   **Editing and Processing the Scan:** Basic steps to refine the raw 3D scan data.
 *   **Uploading to Shopify CDN:** How to get your processed 3D model onto Shopify's Content Delivery Network.
-*   **Exposing as a Product with "3D Bits":** Using our "3D Bits" app (likely the [BITBYBIT VIEWER block](/shopify/3d-bits-app/bitbybit-viewer)) to display the 3D scan on your product page.
+*   **Exposing as a Product with "3D Bits":** Using our "3D Bits" app (likely the [BITBYBIT VIEWER block](/learn/3d-bits/theme-app-extensions/bitbybit-viewer)) to display the 3D scan on your product page.
 
 By the end of this tutorial, you'll be able to showcase a detailed, interactive 3D model of a bike (or similar product) in your Shopify store.
 

@@ -11,7 +11,7 @@ tags: [shopify, 3d-bits]
 
 ## What's Inside This Tutorial?
 
-The **BITBYBIT PREVIEW** theme app extension block, part of our "3D Bits" Shopify app, allows you to embed **publicly available Bitbybit projects** directly onto your Shopify product pages. While these embedded 3D experiences generally cannot be configured by Shopify product variants in the same dynamic way as with the [RUNNER](/shopify/3d-bits-app/bitbybit-runner) or [VIEWER](/shopify/3d-bits-app/bitbybit-viewer) (with Scene Config JSON) blocks, they are excellent for showcasing rich, unique, and interactive 3D product presentations, including those featuring **3D scanned products**.
+The **BITBYBIT PREVIEW** theme app extension block, part of our "3D Bits" Shopify app, allows you to embed **publicly available Bitbybit projects** directly onto your Shopify product pages. While these embedded 3D experiences generally cannot be configured by Shopify product variants in the same dynamic way as with the [RUNNER](/learn/3d-bits/theme-app-extensions/bitbybit-runner) or [VIEWER](/learn/3d-bits/theme-app-extensions/bitbybit-viewer) (with Scene Config JSON) blocks, they are excellent for showcasing rich, unique, and interactive 3D product presentations, including those featuring **3D scanned products**.
 
 This tutorial, led by Matas Ubarevičius, will guide you through:
 *   Setting up a Shopify product template to use the BITBYBIT PREVIEW block.
