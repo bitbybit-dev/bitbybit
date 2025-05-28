@@ -1,11 +1,14 @@
 # Bitbybit Monorepo
 
-<img src="https://app.bitbybit.dev/assets/git-cover.png" alt="Picture showing bitbybit.dev platform">
-
-This git repo contains multiple bitbybit packages and contains code for 3D algorithms of Bit By Bit Developers platform which are open-sourced under MIT license. 
+This git repo contains multiple bitbybit packages and contains code for core 3D algorithms of Bitbybit platform which are open-sourced under MIT license.
 
 # [FULL PLATFORM AT BITBYBIT.DEV](https://bitbybit.dev)   
 # [LEARN BITBYBIT](https://learn.bitbybit.dev)   
+
+Essential introduction by Matas   
+[![Introduction by Matas Ubarevicius](https://img.youtube.com/vi/noc6Rg6tMe0/maxresdefault.jpg)](https://www.youtube.com/watch?v=noc6Rg6tMe0)
+
+<img src="https://app.bitbybit.dev/assets/git-cover.png" alt="Picture showing bitbybit.dev platform">
 
 ## SUPPORT THE MISSION
 Best way to support us - [Silver or Gold plan subscription](https://bitbybit.dev/auth/pick-plan)    
