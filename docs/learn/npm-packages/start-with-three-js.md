@@ -156,7 +156,7 @@ const init = async () => {
         // This CDN link provides a hosted version.
         // For production, you might want to host this yourself.
         locateFile: () => {
-        return 'https://cdn.jsdelivr.net/gh/bitbybit-dev/bitbybit-assets@0.20.3/wasm/manifold.cc2ddd38.wasm';
+        return 'https://cdn.jsdelivr.net/gh/bitbybit-dev/bitbybit-assets@0.20.4/wasm/manifold.cc2ddd38.wasm';
         },
     });
     wasm.setup(); // Additional setup step for Manifold

@@ -1,5 +1,5 @@
 const path = require('path');
-const version = "0.20.3";
+const version = "0.20.4";
 const CopyPlugin = require("copy-webpack-plugin");
 
 module.exports = {

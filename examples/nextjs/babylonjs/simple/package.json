@@ -9,7 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@bitbybit-dev/babylonjs": "0.20.3",
+    "@bitbybit-dev/babylonjs": "0.20.4",
     "react": "19.0.0-rc-69d4b800-20241021",
     "react-dom": "19.0.0-rc-69d4b800-20241021",
     "next": "15.0.1",

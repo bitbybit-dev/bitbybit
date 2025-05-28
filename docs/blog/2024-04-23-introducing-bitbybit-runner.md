@@ -148,4 +148,4 @@ First, you must include the `BITBYBIT-RUNNER.JS` script on your website. This si
 
 The JavaScript file is hosted on the JSDelivr CDN and can be included on your website by adding this script tag to your HTML (usually in the `<head>` or before the closing `</body>` tag):
 ```html
-<script src="https://cdn.jsdelivr.net/gh/bitbybit-dev/bitbybit-assets@0.20.3/runner/bitbybit-runner-babylonjs.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/bitbybit-dev/bitbybit-assets@0.20.4/runner/bitbybit-runner-babylonjs.js"></script>
