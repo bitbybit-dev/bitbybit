@@ -1,0 +1,52 @@
+@import 'https://fonts.googleapis.com/icon?family=Material+Icons';
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@200;300&display=swap');
+
+/* Customize website's scrollbar like Mac OS
+Not supports in Firefox and IE */
+
+/* total width */
+.scrolling::-webkit-scrollbar {
+    background-color: rgba(0, 0, 0, 0);
+    width: 4px;
+    pointer-events: all;
+}
+
+/* background of the scrollbar except button or resizer */
+.scrolling::-webkit-scrollbar-track {
+    background-color: rgba(0, 0, 0, 0);
+}
+
+.scrolling::-webkit-scrollbar-track:hover {
+    background-color: rgba(0, 0, 0, 0);
+}
+
+/* scrollbar itself */
+.scrolling::-webkit-scrollbar-thumb {
+    background-color: rgba(0, 0, 0, 0);
+    border-radius: 16px;
+    border: 1px solid #000;
+}
+
+.scrolling::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(0, 0, 0, 0);
+}
+
+/* set button(top and bottom of the scrollbar) */
+.scrolling::-webkit-scrollbar-button {
+    display: none
+}
+
+iframe {
+    margin-left: auto;
+    margin-right: auto;
+    width: 50%;
+    height: 500px;
+}
+
+img {
+    width: 600px;
+}
+
+a {
+    display: block;
+}

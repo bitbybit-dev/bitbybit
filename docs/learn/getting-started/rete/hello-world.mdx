@@ -1,0 +1,128 @@
+---
+sidebar_position: 2
+title: Your First 3D "Hello World" with Rete
+sidebar_label: Hello World (Rete)
+description: Learn how to create your first 3D "Hello World" program using the Bitbybit Rete visual programming editor.
+tags: [getting-started, rete, occt]
+---
+
+import Admonition from '@theme/Admonition';
+import BitByBitRenderCanvas from '@site/src/components/BitByBitRenderCanvas'; 
+
+# Your First 3D "Hello World" Program
+
+Let's get started! The complexity of a programming language or environment is often judged by how easy it is to display a "Hello World" message. You can explore variations of this classic program on <a href="https://en.wikipedia.org/wiki/%22Hello,_World!%22_program" target="_blank" rel="noopener noreferrer">Wikipedia</a>.
+
+In this lesson, we'll compose a few blocks of code to make that happen, but in 3D! Exciting, isn't it?
+
+## 1. Start The Editor
+
+First, open our Rete editor in your browser by navigating to:
+
+[https://bitbybit.dev/app?editor=rete](https://bitbybit.dev/app?editor=rete)
+
+This will immediately start an empty Rete workspace.
+
+## 2. Draw The Grid
+
+Once the editor is open, let's add a grid to our 3D scene.
+
+*   **Method 1: Using the Menu**
+    1.  Find the "Draw" category (it has a paintbrush icon) in the component navigation menu on the top left side.
+    2.  Locate the component named "Draw Grid Mesh" (e.g., "draw grid").
+    3.  Click on it to add it to your canvas.
+
+*   **Method 2: Using Search**
+    1.  Right-click anywhere on the empty Rete canvas.
+    2.  A search toolbar will appear. Type `draw.drawGridMesh` (or "draw grid").
+    3.  Click on the component that appears in the search results to add it to the canvas.
+
+If you've done it correctly, your canvas should have the "Draw Grid Mesh" component. It might look something like the setup in this interactive example:
+
+<BitByBitRenderCanvas
+  requireManualStart={true}
+  script={{"script":"{\"id\":\"rete-v2-json\",\"nodes\":{\"df305fed9ea77c8d\":{\"id\":\"df305fed9ea77c8d\",\"name\":\"bitbybit.draw.drawGridMesh\",\"customName\":\"draw grid mesh\",\"async\":false,\"drawable\":false,\"data\":{\"genericNodeData\":{\"hide\":false,\"oneOnOne\":false,\"flatten\":0,\"forceExecution\":false},\"width\":400,\"height\":400,\"subdivisions\":10,\"majorUnitFrequency\":10,\"minorUnitVisibility\":0.45,\"gridRatio\":0.5,\"opacity\":0.5,\"backFaceCulling\":false,\"mainColor\":\"#ffffff\",\"secondaryColor\":\"#ffffff\"},\"inputs\":{},\"position\":[-400.6905614674473,578.1887540275295]}}}","version":"0.20.4","type":"rete"}}
+  title="Draw the grid"
+  description="Draws the grid mesh with lines in 3D space."
+/>
+
+<Admonition type="tip" title="Running & Interacting with the Scene">
+
+-   **Run Button:** The first time you open a script or add the initial components, you might need to hit the "Run" button (it usually looks like a play icon `▶️` or `>`) to see the 3D output.
+
+-   **Reactive Updates:** After the initial run, Rete is reactive! Any changes you make to components (like modifying parameters or connecting nodes) will automatically update the 3D scene. This automatic update behavior is why an initial run might be needed for scripts opened from our platform, to prevent computationally intensive scripts from executing immediately upon loading.
+
+-   **Swap Canvas:** Find the "Swap Canvas" button (often depicted with two arrows `⇄`). Clicking this will switch you to the 3D view.
+    -   Rotate the view: Left mouse button + drag.
+    -   Zoom: Mouse scroll wheel or two-finger pinch/spread on a trackpad.
+
+-   **Return to Script:** Click the same "Swap Canvas" button to return to the Rete node editor.
+
+Feel free to experiment with the component parameters directly in the interactive example above or in your own editor.
+</Admonition>
+
+## 3. Create 3D Text
+
+Now, let's add our "Hello World!" message as 3D text.
+
+1.  Find the "Advanced" component category in the menu ( illustrated with a glasses icon 👓).
+2.  Navigate to the "Text3D" subcategory (or search for "Create 3D Text").
+3.  Find the component called "Create 3D Text" (or `text.create3dText`) and click to add it to your canvas.
+
+You should now have two components on your canvas: the grid and the 3D text component. We need to adjust some properties of the text component:
+
+*   **Text:** Change from the default (e.g., "bitbybit.dev") to `Hello World!`
+*   **Origin - Alignment:** Change from `leftBottom` to `centerBottom`.
+*   **Rotation (X-axis):** Change from `0` to `-90` (this will make the text stand up).
+
+The setup should resemble this:
+
+<BitByBitRenderCanvas
+  requireManualStart={true}
+  script={{"script":"{\"id\":\"rete-v2-json\",\"nodes\":{\"1a02a99db90131bb\":{\"id\":\"1a02a99db90131bb\",\"name\":\"bitbybit.draw.drawGridMesh\",\"customName\":\"draw grid mesh\",\"async\":false,\"drawable\":false,\"data\":{\"genericNodeData\":{\"hide\":false,\"oneOnOne\":false,\"flatten\":0,\"forceExecution\":false},\"width\":400,\"height\":400,\"subdivisions\":10,\"majorUnitFrequency\":10,\"minorUnitVisibility\":0.45,\"gridRatio\":0.5,\"opacity\":0.5,\"backFaceCulling\":false,\"mainColor\":\"#ffffff\",\"secondaryColor\":\"#ffffff\"},\"inputs\":{},\"position\":[-793.935317338753,491.5445031728417]},\"d9bea5cd9c7cd297\":{\"id\":\"d9bea5cd9c7cd297\",\"name\":\"bitbybit.advanced.text3d.create\",\"customName\":\"text 3d\",\"async\":true,\"drawable\":true,\"data\":{\"genericNodeData\":{\"hide\":false,\"oneOnOne\":false,\"flatten\":0,\"forceExecution\":false},\"text\":\"Hello World!\",\"fontType\":\"Roboto\",\"fontVariant\":\"Regular\",\"fontSize\":1.5,\"height\":0.2,\"rotation\":-90,\"origin\":[0,0,0],\"direction\":[0,1,0],\"originAlignment\":\"centerBottom\"},\"inputs\":{},\"position\":[-373.6703147577027,518.1197108385275]}}}","version":"0.20.4","type":"rete"}}
+  title="Draw 3D Text"
+  description="Draws the grid mesh with 3D text in space."
+/>
+
+After these changes, you've created a grid and a 3D text object. Currently, these two components are unrelated. That's perfectly fine in Rete; not all components need to be connected. However, in the next step, we'll make our first connection!
+
+## 4. Create Connections to Orient the Text
+
+Currently, our 3D text is created, but it might not be facing the camera as we'd like. We want to orient it so it's clearly visible. To do this, we'll use a "Vector XYZ" component to define a direction.
+
+1.  **Find the "Vector XYZ" component:**
+    *   Right-click on the Rete canvas.
+    *   In the search bar, type `vectorXYZ` (or `vector.createXYZ`).
+    *   Click the component that appears to add it to your canvas.
+
+2.  **Modify the "Vector XYZ" component:**
+    *   Change the **Z** value from `0` to `-1`. This creates a vector pointing generally towards where a default camera might be looking from.
+
+3.  **Make the Connection:**
+    *   Click on the small rectangular output socket on the right side of the "Vector XYZ" component.
+    *   While holding the mouse button down, drag the wire (connection line) that appears towards the "Create 3D Text" component.
+    *   Connect this wire to the input socket labeled "Direction" (indicating the text's orientation vector) on the "Create 3D Text" component.
+
+Congratulations! You've just made your first connection between Rete components! This connection tells the 3D text component to use the vector we defined as its orientation.
+
+Here's the final result you should aim for:
+
+<BitByBitRenderCanvas
+  requireManualStart={true}
+  script={{"script":"{\"id\":\"rete-v2-json\",\"nodes\":{\"12cab9d89a5c3f8e\":{\"id\":\"12cab9d89a5c3f8e\",\"name\":\"bitbybit.advanced.text3d.create\",\"customName\":\"text 3d\",\"async\":true,\"drawable\":true,\"data\":{\"genericNodeData\":{\"hide\":false,\"oneOnOne\":false,\"flatten\":0,\"forceExecution\":false},\"text\":\"Hello World!\",\"fontType\":\"Roboto\",\"fontVariant\":\"BoldItalic\",\"fontSize\":1.5,\"height\":0.2,\"rotation\":-90,\"origin\":[0,0,0],\"direction\":[0,1,0],\"originAlignment\":\"centerBottom\"},\"inputs\":{\"direction\":{\"connections\":[{\"node\":\"216fbf247683d006\",\"output\":\"result\",\"data\":{}}]}},\"position\":[-118.32328092665267,512.2891804137076]},\"216fbf247683d006\":{\"id\":\"216fbf247683d006\",\"name\":\"bitbybit.vector.vectorXYZ\",\"customName\":\"vector xyz\",\"async\":false,\"drawable\":true,\"data\":{\"genericNodeData\":{\"hide\":true,\"oneOnOne\":false,\"flatten\":0,\"forceExecution\":false},\"x\":0,\"y\":0,\"z\":-1},\"inputs\":{},\"position\":[-528.9235197482346,740.9153014587314]},\"ea5f89eacd1330cb\":{\"id\":\"ea5f89eacd1330cb\",\"name\":\"bitbybit.draw.drawGridMesh\",\"customName\":\"draw grid mesh\",\"async\":false,\"drawable\":false,\"data\":{\"genericNodeData\":{\"hide\":false,\"oneOnOne\":false,\"flatten\":0,\"forceExecution\":false},\"width\":400,\"height\":400,\"subdivisions\":10,\"majorUnitFrequency\":10,\"minorUnitVisibility\":0.45,\"gridRatio\":0.5,\"opacity\":0.5,\"backFaceCulling\":false,\"mainColor\":\"#ffffff\",\"secondaryColor\":\"#ffffff\"},\"inputs\":{},\"position\":[-904.865004838753,469.7241906728417]}}}","version":"0.20.4","type":"rete"}}
+  title="Draw Oriented Text"
+  description="Draws the grid mesh with 3D text in space with good default orientation towards the camera."
+/>
+
+## Summary
+
+In this short tutorial, we've learned how to:
+
+*   Open the Rete editor.
+*   Add components to the canvas using both the menu and search.
+*   Understand the initial "Run" behavior and subsequent reactive updates.
+*   Swap between the Rete editor and the 3D view.
+*   Change default input parameters of components.
+*   Establish our first connection (wire) between nodes to pass data.
+
+If you've signed up for our platform, you might notice that this script produces a result similar to the default Rete script provided when you create a new project. Now you have a much better understanding of how it works!

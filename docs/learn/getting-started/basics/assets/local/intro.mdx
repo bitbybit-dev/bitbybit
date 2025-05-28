@@ -1,0 +1,45 @@
+---
+sidebar_position: 1
+title: Using Local Assets in Bitbybit
+sidebar_label: Local Assets
+description: Learn how to upload and use local assets (stored in your browser) within your Bitbybit scripts, and understand their limitations and use cases.
+tags: [getting-started, assets]
+---
+
+# Using Local Assets (Stored in Your Browser)
+
+## When to Use Local Assets
+
+If you prefer not to use our cloud services for storing your assets, or if you want to keep certain files entirely on your own machine for privacy or testing, Bitbybit offers a **local asset** feature. This allows you to upload assets directly to your web browser's local storage. Once uploaded, you can import and use these assets in your scripts.
+
+**Key Characteristics and Considerations for Local Assets:**
+
+*   **Browser-Specific:** Local assets are stored within the specific browser you used to upload them. They are **not** shared across different browsers (e.g., Chrome vs. Firefox) or different devices.
+*   **Sharing Limitations:**
+    *   If your script relies on local assets and you [export the script to a file](/learn/getting-started/basics/scripts/save-to-file) to share with others, those users will **not** automatically have the asset. You would need to provide them with the asset file separately, and they would have to upload it as a local asset in their own browser.
+*   **Persistence (Within the Same Browser):** Local assets generally persist within your browser even after you close and reopen the browser window. However, clearing your browser's cache or site data could potentially remove them.
+*   **No Account Needed:** You can use the local asset feature without needing a Bitbybit account.
+
+This tutorial will guide you through using local assets in your Bitbybit projects.
+
+## Learn Through Examples
+
+We'll demonstrate how to use local assets with a few practical examples. You'll download sample asset files, upload them to Bitbybit as local assets, and then use specific Input/Output (IO) components within our Rete, Blockly, and Monaco (TypeScript) editors to draw these assets as visible BabylonJS meshes.
+
+Each example will focus on a different common file type so you can see the process in action.
+
+**Tutorials in this Section:**
+
+1.  **Uploading Local Assets:**
+    *   First, learn the general process of uploading an asset to your browser's local storage within Bitbybit.
+    *   ➡️ [Uploading Local Assets Guide](/learn/getting-started/basics/assets/local/uploading)
+
+2.  **Using a Local glTF File (Gaming Standard):**
+    *   Learn how to work with `.gltf` or `.glb` files, a common standard in the gaming and real-time 3D industry.
+    *   ➡️ [Local glTF Asset Tutorial](/learn/getting-started/basics/assets/local/gltf)
+
+3.  **Using a Local STEP File (CAD Standard):**
+    *   Learn how to work with `.step` or `.stp` files, a widely used format in the CAD (Computer-Aided Design) industry.
+    *   ➡️ [Local STEP Asset Tutorial](/learn/getting-started/basics/assets/local/step)
+
+By following these examples, you'll gain a solid understanding of how to manage and utilize local assets for your Bitbybit creations.

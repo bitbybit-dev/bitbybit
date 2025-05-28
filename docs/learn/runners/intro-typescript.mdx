@@ -1,0 +1,146 @@
+---
+sidebar_position: 4
+title: Introduction to Bitbybit Runner with TypeScript
+sidebar_label: Runner with TypeScript
+description: Learn how to create a 3D website using Bitbybit Runner by integrating a TypeScript program built with Bitbybit into a StackBlitz project.
+tags: [getting-started, runners, typescript]
+---
+
+import BitByBitRenderCanvas from '@site/src/components/BitByBitRenderCanvas';
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+# Introduction to Bitbybit Runner with TypeScript: Your First 3D Website
+
+## Make Your Own 3D Website with TypeScript
+
+TypeScript is a powerful programming language that enables the expression of complex ideas in a concise and type-safe manner. In this tutorial, Matas Ubarevičius demonstrates building a simple 3D cube using **TypeScript** with the Bitbybit libraries and then integrating this code into a web application using the `bitbybit-runner.js` library.
+
+The focus is on a simple OCCT cube geometry. The primary goal is to illustrate how you can integrate your 3D TypeScript code, developed with Bitbybit, into standard JavaScript web development workflows, leveraging the Bitbybit Runner for execution.
+
+<div class="responsive-video-container">
+  <iframe 
+    width="560" 
+    height="315" 
+    src="https://www.youtube.com/embed/7WyI4EtnlKY" 
+    title="Introduction To Bitbybit Runner With TypeScript" 
+    frameborder="0" 
+    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+    allowfullscreen>
+  </iframe>
+</div>
+
+## Final Result & Code
+
+You can either check live demo of the completed [StackBlitz project](https://stackblitz.com/edit/introduction-to-bitbybit-runner-tutorial-with-typescript) or use the code snippets below to recreate it on your own website.
+
+<div className="stackblitz-embed-container">
+  <iframe
+    src="https://stackblitz.com/edit/introduction-to-bitbybit-runner-tutorial-with-typescript?ctl=1&embed=1&file=src%2Fmain.ts&theme=dark"
+    style={{
+      width: '100%',
+      height: '700px',
+      border: '0',
+      borderRadius: '4px',
+      overflow: 'hidden',
+    }}
+    title="Introduction to Bitbybit runner tutorial with TypeScript"
+    allow="accelerometer; ambient-light-sensor; camera; encrypted-media; geolocation; gyroscope; hid; microphone; midi; payment; usb; vr; xr-spatial-tracking"
+    sandbox="allow-forms allow-modals allow-popups allow-presentation allow-same-origin allow-scripts"
+  ></iframe>
+</div>
+
+### TypeScript Code (The Program)
+
+The following is the Bitbybit TypeScript script we'll be creating. The JavaScript code used in the StackBlitz example is what gets generated (or is very similar to what you'd write directly) when you use the "Export to Runner" feature from this TypeScript script, or adapt it for the runner environment.
+
+<BitByBitRenderCanvas
+  requireManualStart={true}
+  script={{"script":"type Inputs = {\n    size: number;\n}\n\nBit.mockBitbybitRunnerInputs({ size: 1 });\nconst inputs: Inputs = Bit.getBitbybitRunnerInputs();\n\nconst { occt } = bitbybit;\n\nconst start = async () => {\n    const cube = await occt.shapes.solid.createCube({\n        size: inputs.size,\n        center: [0, 0, 0],\n    });\n    const filletCube = await occt.fillets.filletEdges({\n        shape: cube,\n        radius: 0.4\n    });\n    const drawOptions = new Bit.Inputs.Draw.DrawOcctShapeSimpleOptions();\n    drawOptions.faceColour = \"#0000ff\";\n    drawOptions.edgeWidth = 1;\n    drawOptions.precision = 0.005;\n    const cubeMesh = await bitbybit.draw.drawAnyAsync({\n        entity: filletCube,\n        options: drawOptions,\n    });\n    return { cubeMesh };\n}\n\nconst runnerOutput = start();\nBit.setBitbybitRunnerResult(runnerOutput);\n","version":"0.20.4","type":"typescript"}}
+  title="Bitbybit TypeScript Editor - Simple Cube for Runner Tutorial"
+  description="Draws 3D Cube and controls its size via inputs coming from external executing program"
+/>
+
+### Complete Code for Your Website
+
+Below are the `index.html` and `script.js` files you would use on StackBlitz or your own website. The `index.html` remains largely the same as the previous examples, with the primary difference being the `script.js` content, which will now execute the code adapted from or exported from the TypeScript editor.
+
+<Tabs groupId="html-js-typescript-runner-example">
+  <TabItem value="html" label="index.html" default>
+
+    ```html
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Home</title>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width" />
+        <link rel="stylesheet" href="styles.css" />
+        <script src="https://cdn.jsdelivr.net/gh/bitbybit-dev/bitbybit-assets@0.20.4/runner/bitbybit-runner-babylonjs.js"></script>
+        <script type="module" src="script.js"></script>
+    </head>
+    <body>
+        <div class="myCanvasZone">
+        <canvas id="myCanvas"></canvas>
+        </div>
+        <label for="size">Size</label>
+        <input
+        id="size"
+        type="number"
+        value="1"
+        min="1"
+        max="10"
+        step="1"
+        onchange="changeSize(+event.target.value)"
+        />
+    </body>
+</html>
+
+    ```
+
+  </TabItem>
+  <TabItem value="js" label="script.js">
+
+    ```javascript
+const runner = window.bitbybitRunner.getRunnerInstance();
+
+setTimeout(async () => {
+        const runnerOptions = {
+            canvasId: 'myCanvas',
+            canvasZoneClass: 'myCanvasZone',
+            enablePhysics: false,
+            enableOCCT: true,
+            enableJSCAD: false,
+            enableKeyEventListeners: false,
+            backgroundColor: '#0000ff',
+            loadFonts: [],
+        };
+
+        await runner.run(runnerOptions);
+        changeSize(1);
+}, 0);
+
+let previousMesh;
+
+async function changeSize(size) {
+        const res = await runner.executeScript(getInlineScript(), { size });
+        if (previousMesh) {
+            previousMesh.dispose();
+        }
+        previousMesh = res.cubeMesh;
+}
+
+window.changeSize = changeSize;
+
+function getInlineScript() {
+        return '{"type":"typescript","version":"0.15.13","script":"async function(t,e,i,n,s){s.mockBitbybitRunnerInputs({size:1});const a=s.getBitbybitRunnerInputs(),{occt:b}=e,u=(async()=>{const t=await b.shapes.solid.createCube({size:a.size,center:[0,0,0]}),i=await b.fillets.filletEdges({shape:t,radius:.4}),n=new s.Inputs.Draw.DrawOcctShapeSimpleOptions;n.faceColour=\\"#0000ff\\",n.edgeWidth=1,n.precision=.005;return{cubeMesh:await e.draw.drawAnyAsync({entity:i,options:n})}})();s.setBitbybitRunnerResult(u)}(BitByBit,bitbybit,bitbybitRunnerResult,bitbybitRunnerInputs,Bit);"}';
+}
+
+    ```
+
+  </TabItem>
+</Tabs>
+
+---
+
+This tutorial showcases how TypeScript, combined with Bitbybit's libraries and the Bitbybit Runner, provides a robust and flexible environment for developing sophisticated 3D web applications. By exporting or adapting your TypeScript logic, you can integrate complex 3D operations and CAD functionalities into any standard web project.

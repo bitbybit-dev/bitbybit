@@ -1,0 +1,596 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <title>3D Print Logo Of THREEJS - Runner Example</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <link rel="canonical" href="https://app-store.bitbybit.dev/threejs-logo-3d-print">
+    <link rel="icon" type="image/x-icon" href="https://bitbybit.dev/assets/favicon.png">
+    <meta name="description"
+        content="This configurator allows you to create 3D printable version of ThreeJS logo and shows how to import Lite version of bitbybit runner for threejs and initiate scene outside the runner context. This lite version requires THREEJS to be loaded separately. Lite version of bitbybit-dev bundle is smaller.">
+    <meta property="og:title" content="3D Print Logo Of THREEJS - Runner Example">
+    <meta property="og:description"
+        content="This configurator allows you to create 3D printable version of ThreeJS logo and shows how to import Lite version of bitbybit runner for threejs and initiate scene outside the runner context. This lite version requires THREEJS to be loaded separately. Lite version of bitbybit-dev bundle is smaller.">
+    <meta property="og:image"
+        content="https://app.bitbybit.dev/assets/blog/updated-bitbybit-runners/threejs-logo-3d-print-bitbybit-dev-runner.jpeg">
+    <meta property="og:image:width" content="1024">
+    <meta property="og:image:height" content="1024">
+    <meta property="og:url" content="https://app-store.bitbybit.dev/threejs-logo-3d-print">
+    <meta name="twitter:title" content="3D Print Logo Of THREEJS - Runner Example">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:site" content="@bitbybit_dev">
+    <meta name="twitter:description"
+        content="This configurator allows you to create 3D printable version of ThreeJS logo and shows how to import Lite version of bitbybit runner for threejs and initiate scene outside the runner context. This lite version requires THREEJS to be loaded separately. Lite version of bitbybit-dev bundle is smaller.">
+    <meta name="twitter:image:src"
+        content="https://app.bitbybit.dev/assets/blog/updated-bitbybit-runners/threejs-logo-3d-print-bitbybit-dev-runner.jpeg">
+    <meta name="twitter:alt" content="3D Print Logo Of THREEJS - Runner Example">
+    <script type="importmap">
+            {
+              "imports": {
+                "three": "https://cdn.jsdelivr.net/npm/three@v0.176.0/build/three.module.js",
+                "three/addons/controls/OrbitControls": "https://cdn.jsdelivr.net/npm/three@v0.176.0/examples/jsm/controls/OrbitControls.min.js"
+              }
+            }
+          </script>
+    <script type="module">
+        import * as THREEJS from 'three';
+        import { OrbitControls } from 'three/addons/controls/OrbitControls';
+        window.THREEJS = THREEJS;
+        window.OrbitControls = OrbitControls;
+    </script>
+    <script defer
+        src="https://cdn.jsdelivr.net/gh/bitbybit-dev/bitbybit-assets@0.20.4/runner/bitbybit-runner-lite-threejs.js"></script>
+
+    <script type="module">
+        import GUI from 'https://cdn.jsdelivr.net/npm/lil-gui@0.20/+esm';
+
+
+        const current = {
+            group: undefined,
+            gui: undefined,
+        };
+
+        let finalShape = undefined;
+        let shapesToClean = [];
+
+        const domNode = document.getElementById('myCanvas');
+
+        const camera = new THREEJS.PerspectiveCamera(70, domNode.clientWidth / domNode.clientHeight, 0.01, 1000);
+        const scene = new THREEJS.Scene();
+        const light1 = new THREEJS.HemisphereLight(0xffffff, 0x000000, 10);
+        scene.add(light1);
+        const light2 = new THREEJS.HemisphereLight(0xffffff, 0x000000, 10);
+        light2.position.y = -1;
+        scene.add(light2);
+
+        const renderer = new THREEJS.WebGLRenderer({ antialias: true, canvas: domNode });
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(window.devicePixelRatio);
+
+        const controls = new OrbitControls(camera, renderer.domElement);
+        camera.position.set(0, 20, 0);
+        controls.update();
+        controls.target = new THREEJS.Vector3(0, 0, 0);
+        controls.enableDamping = true;
+        controls.dampingFactor = 0.1
+        controls.zoomSpeed = 1;
+
+        renderer.shadowMap.enabled = true;
+
+        const onWindowResize = () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        }
+        window.addEventListener("resize", onWindowResize, false);
+
+        renderer.setClearColor(new THREEJS.Color(0x1a1c1f), 0);
+
+        function adjustShadowSettings(light) {
+            light.castShadow = true;
+            light.shadow.camera.near = 0;
+            light.shadow.camera.far = 1000;
+            const dist = 8;
+            light.shadow.camera.right = dist;
+            light.shadow.camera.left = - dist;
+            light.shadow.camera.top = dist;
+            light.shadow.camera.bottom = - dist;
+            light.shadow.mapSize.width = 3000;
+            light.shadow.mapSize.height = 3000;
+
+        }
+        const dirLight1 = new THREEJS.DirectionalLight(0xffeeff, 50);
+        dirLight1.position.set(35, 12, -15);
+        const dirLight2 = new THREEJS.DirectionalLight(0xffeeff, 50);
+        dirLight2.position.set(35, -12, -15);
+
+        adjustShadowSettings(dirLight1);
+        adjustShadowSettings(dirLight2);
+
+        scene.add(dirLight1);
+        scene.add(dirLight2);
+
+        const animation = (time) => {
+            renderer.render(scene, camera);
+            controls.update();
+        }
+        renderer.setAnimationLoop(animation);
+
+        const runnerOptions = {
+            enableOCCT: true,
+            enableJSCAD: false,
+            enableManifold: false,
+            loadFonts: [],
+            externalThreeJSSettings: {
+                scene,
+                camera,
+                renderer,
+            }
+        };
+
+        const runner = window.bitbybitRunner.getRunnerInstance();
+        const { bitbybit, Bit } = await runner.run(
+            runnerOptions
+        );
+
+
+        const downloadStep = async () => {
+            if (bitbybit && finalShape) {
+                await bitbybit.occt.io.saveShapeSTEP({
+                    shape: finalShape,
+                    fileName: 'threejs.stp',
+                    adjustYtoZ: true,
+                    tryDownload: true
+                });
+            }
+        }
+
+        const downloadSTL = async () => {
+            if (bitbybit && finalShape) {
+                await bitbybit.occt.io.saveShapeStl({
+                    shape: finalShape,
+                    fileName: 'threejs.stl',
+                    precision: 0.01,
+                    adjustYtoZ: true,
+                    tryDownload: true
+                });
+            }
+        }
+
+        const goToAppStore = () => {
+            window.open("https://app-store.bitbybit.dev");
+        }
+
+        const updateShape = async () => {
+            showSpinner();
+            disableGUI();
+            await createShape(bitbybit, scene);
+            enableGUI();
+            hideSpinner();
+        }
+
+        const model = {
+            scale1: 0.4,
+            scale2: 0.1,
+            heightBase: 0.1,
+            heightMid1: 0.2,
+            heightMid2: 0.4,
+            downloadSTL,
+            downloadStep,
+            goToAppStore
+        }
+
+        const createShape = async () => {
+
+            if (shapesToClean.length > 0) {
+                await bitbybit.occt.deleteShapes({ shapes: shapesToClean });
+                shapesToClean = [];
+            }
+
+            const triangleFrame1 = await bitbybit.occt.shapes.wire.createNGonWire({
+                nrCorners: 3,
+                radius: 9,
+                center: [0, 0, 0],
+                direction: [0, 1, 0]
+            });
+
+            const triangleFrame2 = await bitbybit.occt.shapes.wire.createNGonWire({
+                nrCorners: 3,
+                radius: 6,
+                center: [0, 0, 0],
+                direction: [0, 1, 0]
+            });
+
+            const shape1 = await createTriangle1(model.heightBase, model.scale1, model.heightMid1);
+            const shape2 = await createTriangle1(model.heightBase, model.scale2, model.heightMid2);
+
+            shapesToClean.push(shape1, shape2);
+
+            const shape2Rot = await bitbybit.occt.transforms.rotate({
+                shape: shape2,
+                angle: 180,
+                axis: [0, 1, 0],
+            });
+            shapesToClean.push(shape2Rot);
+
+            const points1 = await bitbybit.occt.shapes.wire.divideWireByEqualDistanceToPoints({
+                shape: triangleFrame1,
+                nrOfDivisions: 9,
+                removeStartPoint: true,
+                removeEndPoint: false,
+            });
+
+            points1.push([0, 0, 0]);
+
+            const points2 = await bitbybit.occt.shapes.wire.divideWireByEqualDistanceToPoints({
+                shape: triangleFrame2,
+                nrOfDivisions: 6,
+                removeStartPoint: true,
+                removeEndPoint: false,
+            });
+
+            const triangles1 = await bitbybit.occt.transforms.translateShapes({
+                shapes: points1.map(() => shape1),
+                translations: points1
+            });
+            shapesToClean.push(...triangles1);
+
+            const triangles2 = await bitbybit.occt.transforms.translateShapes({
+                shapes: points2.map(() => shape2Rot),
+                translations: points2
+            });
+            shapesToClean.push(...triangles2);
+
+            const triangleBase = await bitbybit.occt.shapes.wire.createNGonWire({
+                nrCorners: 3,
+                radius: 12,
+                center: [0, -model.heightBase, 0],
+                direction: [0, 1, 0]
+            });
+            shapesToClean.push(triangleBase);
+
+            const extrusion = await bitbybit.occt.operations.extrude({
+                shape: triangleBase,
+                direction: [0, model.heightBase * 2, 0]
+            });
+            shapesToClean.push(extrusion);
+
+            const shell = await bitbybit.occt.shapes.shell.sewFaces({
+                shapes: [extrusion, ...triangles1, ...triangles2],
+                tolerance: 1e-7
+            });
+            shapesToClean.push(shell);
+
+            finalShape = await bitbybit.occt.shapes.solid.fromClosedShell({
+                shape: shell,
+            });
+            shapesToClean.push(finalShape);
+
+            const solidRot = await bitbybit.occt.transforms.rotate({
+                shape: finalShape,
+                angle: 15,
+                axis: [0, 1, 0],
+            });
+            shapesToClean.push(solidRot);
+
+            const options = new Bit.Inputs.Draw.DrawOcctShapeOptions();
+            options.edgeColour = "#000000";
+            options.edgeWidth = 6;
+            const material = new THREEJS.MeshPhysicalMaterial({ color: 0x7f7f7f });
+            material.polygonOffset = true;
+            material.polygonOffsetFactor = 2;
+            material.shininess = 1;
+            material.metalness = 0.4;
+            material.roughness = 0.2;
+            options.faceMaterial = material;
+            const group = await bitbybit.draw.drawAnyAsync({
+                entity: solidRot,
+                options
+            });
+            group.children[0].children.forEach((child) => {
+                child.castShadow = true;
+                child.receiveShadow = true;
+            });
+
+            current.group?.traverse((obj) => {
+                scene?.remove(obj);
+            });
+
+
+            current.group = group;
+        }
+
+        const start = async () => {
+            createGui();
+            createShape();
+        }
+
+        async function createTriangle1(heightBase, scale, heightMid) {
+            let useScale = scale;
+            if (scale === 0) {
+                useScale = 0.0001;
+            }
+            const midScale = (1 - useScale) / 2 + useScale;
+            const triangleBaseOne = await bitbybit.occt.shapes.wire.createNGonWire({
+                nrCorners: 3,
+                radius: 3,
+                center: [0, heightBase, 0],
+                direction: [0, 1, 0]
+            });
+            shapesToClean.push(triangleBaseOne);
+
+            const triangleMidOne = await bitbybit.occt.shapes.wire.createNGonWire({
+                nrCorners: 3,
+                radius: 3 * midScale,
+                center: [0, heightMid, 0],
+                direction: [0, 1, 0]
+            });
+            shapesToClean.push(triangleMidOne);
+
+            const triangleCoreOne = await bitbybit.occt.shapes.wire.createNGonWire({
+                nrCorners: 3,
+                radius: 3 * useScale,
+                center: [0, 0, 0],
+                direction: [0, 1, 0]
+            });
+            shapesToClean.push(triangleCoreOne);
+
+            const triangleBaseDown = await bitbybit.occt.shapes.wire.createNGonWire({
+                nrCorners: 3,
+                radius: 3,
+                center: [0, -heightBase, 0],
+                direction: [0, 1, 0]
+            });
+            shapesToClean.push(triangleBaseDown);
+
+            const triangleMidDown = await bitbybit.occt.shapes.wire.createNGonWire({
+                nrCorners: 3,
+                radius: 3 * midScale,
+                center: [0, -heightMid, 0],
+                direction: [0, 1, 0]
+            });
+            shapesToClean.push(triangleMidDown);
+
+            const loftOptions = new Bit.Inputs.OCCT.LoftAdvancedDto();
+            loftOptions.straight = true;
+            loftOptions.shapes = [triangleBaseDown, triangleMidDown, triangleCoreOne, triangleMidOne, triangleBaseOne];
+
+            return bitbybit.occt.operations.loftAdvanced(loftOptions);
+        }
+
+        start();
+
+
+        function disableGUI() {
+            const lilGui = document.getElementsByClassName('lil-gui')[0];
+            lilGui.style.pointerEvents = "none";
+            lilGui.style.opacity = "0.5";
+        }
+
+        function enableGUI() {
+            const lilGui = document.getElementsByClassName('lil-gui')[0];
+            lilGui.style.pointerEvents = "all";
+            lilGui.style.opacity = "1";
+        }
+
+        function createGui() {
+            const gui = new GUI();
+            current.gui = gui;
+            gui.$title.innerHTML = "3D Print THREEJS Christmas Toy";
+
+            gui
+                .add(model, "scale1", 0, 0.9, 0.01)
+                .name("Scale 1")
+                .onFinishChange((value) => {
+                    model.scale1 = value;
+                    updateShape();
+                });
+
+            gui
+                .add(model, "scale2", 0, 0.9, 0.01)
+                .name("Scale 2")
+                .onFinishChange((value) => {
+                    model.scale2 = value;
+                    updateShape();
+                });
+
+            gui
+                .add(model, "heightBase", 0.05, 2, 0.01)
+                .name("Base Height")
+                .onFinishChange((value) => {
+                    model.heightBase = value;
+                    updateShape();
+                });
+
+            gui
+                .add(model, "heightMid1", 0.05, 1, 0.01)
+                .name("Height Middle 1")
+                .onFinishChange((value) => {
+                    model.heightMid1 = value;
+                    updateShape();
+                });
+
+            gui
+                .add(model, "heightMid2", 0.05, 1, 0.01)
+                .name("Height Middle 2")
+                .onFinishChange((value) => {
+                    model.heightMid2 = value;
+                    updateShape();
+                });
+
+            gui.add(model, "downloadSTL").name("Download STL");
+            gui.add(model, "downloadStep").name("Download STEP");
+            gui.add(model, "goToAppStore").name("App Store");
+        }
+
+        function showSpinner() {
+            const element = document.createElement('div');
+            element.id = "spinner";
+            element.className = "lds-ellipsis";
+            element.innerHTML = `
+            <div></div>
+            <div></div>
+            <div></div>
+        `;
+
+            document.body.appendChild(
+                element
+            );
+        }
+
+        function hideSpinner() {
+            const el = document.getElementById('spinner');
+            if (el) {
+                el.remove();
+            }
+        }
+
+    </script>
+    <style>
+        body {
+            background-color: rgb(26, 28, 31);
+            margin: 0px;
+            color: #ffffff;
+            overflow-y: hidden;
+            overflow-x: hidden;
+        }
+
+        a {
+            color: #f0cebb;
+        }
+
+        a:visited {
+            color: #f0cebb;
+        }
+
+        #myCanvas {
+            display: block;
+            overflow-y: hidden;
+            overflow-x: hidden;
+            width: 100%;
+            height: 100vh;
+        }
+
+        .logo {
+            padding: 20px;
+            background-color: rgb(26, 28, 31, 0.8);
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 12px;
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+        }
+
+        .logo img {
+            margin-bottom: 5px;
+        }
+
+        .lds-ellipsis {
+            z-index: 2;
+            top: calc(50% - 32px);
+            left: calc(50% - 32px);
+            display: inline-block;
+            position: absolute;
+            width: 64px;
+            height: 64px;
+        }
+
+        .lds-ellipsis div {
+            position: absolute;
+            top: 27px;
+            width: 11px;
+            height: 11px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.8);
+            animation-timing-function: cubic-bezier(0, 1, 1, 0);
+        }
+
+        .lds-ellipsis div:nth-child(1) {
+            left: 6px;
+            animation: lds-ellipsis1 0.6s infinite;
+        }
+
+        .lds-ellipsis div:nth-child(2) {
+            left: 6px;
+            animation: lds-ellipsis2 0.6s infinite;
+        }
+
+        .lds-ellipsis div:nth-child(3) {
+            left: 26px;
+            animation: lds-ellipsis2 0.6s infinite;
+        }
+
+        .lds-ellipsis div:nth-child(4) {
+            left: 45px;
+            animation: lds-ellipsis3 0.6s infinite;
+        }
+
+        @keyframes lds-ellipsis1 {
+            0% {
+                transform: scale(0);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        @keyframes lds-ellipsis3 {
+            0% {
+                transform: scale(1);
+            }
+
+            100% {
+                transform: scale(0);
+            }
+        }
+
+        @keyframes lds-ellipsis2 {
+            0% {
+                transform: translate(0, 0);
+            }
+
+            100% {
+                transform: translate(19px, 0);
+            }
+        }
+
+        .bottom-img {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 1920px;
+            z-index: -1;
+            overflow-y: hidden;
+            overflow-x: hidden;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="logo">
+        <a href="/">
+            <img src="https://bitbybit.dev/assets/logo-gold-small.png" width="50px" height="50px" />
+        </a>
+        <div>Made with <a target="_blank" href="https://bitbybit.dev">bitbybit.dev</a> & <a target="_blank"
+                href="https://threejs.org">threejs.org</a>
+        </div>
+        <div>Source code on <a
+                href="https://github.com/bitbybit-dev/app-examples/blob/main/runner/threejs/lite/threejs-logo/index.html">github</a>
+        </div>
+        <div>Code on <a target="_blank" href="https://codepen.io/matas-bitbybit-dev/pen/yyBebgr">CodePen</a>
+            <a target="_blank"
+                href="https://stackblitz.com/edit/stackblitz-starters-fhck8j?file=script.js">StackBlitz</a> <a
+                target="_blank" href="https://jsfiddle.net/matas_bitbybitdev/qmyLhre3/5/">JSFiddle</a>
+        </div>
+
+        <div>Powered by bitbybit runner for ThreeJS
+        </div>
+    </div>
+    <canvas id="myCanvas"></canvas>
+    <img class="bottom-img" src="https://app.bitbybit.dev/assets/homepage/lg/parametric-design-bottom.png" />
+</body>
+
+</html>

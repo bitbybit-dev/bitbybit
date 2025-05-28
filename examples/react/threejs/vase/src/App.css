@@ -1,0 +1,148 @@
+@import 'https://fonts.googleapis.com/icon?family=Material+Icons';
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@200;300&display=swap');
+
+.App {
+    font-size: 12px;
+}
+
+.hideMenu {
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+}
+
+.imageback {
+    position: absolute;
+    z-index: -1;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+}
+
+.hidden {
+    display: none;
+}
+
+.explanation {
+    position: absolute;
+    max-height: 65vh;
+    overflow-y: hidden;
+    pointer-events: all;
+    border-radius: 3px;
+    left: 40px;
+    top: 20px;
+    padding: 30px;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    color: white;
+    background-color: rgba(255, 255, 255, 0.05);
+    width: 250px;
+}
+
+.download {
+    display: block;
+    margin-right: 10px !important;
+}
+
+.all-pointer-events {
+    pointer-events: all;
+}
+
+.title {
+    margin-top: 10px;
+}
+
+a {
+    color: wheat;
+    text-decoration: none;
+}
+
+a:hover {
+    color: rgb(205, 184, 145);
+}
+
+.explanation p {
+    padding-right: 20px;
+    padding-left: 20px;
+}
+
+.heart {
+    display: inline-block;
+    margin-left: 20px;
+    vertical-align: middle;
+    font-size: 40px;
+    margin-top: -65px;
+    margin-right: 15px;
+
+}
+
+
+.lds-ellipsis {
+    z-index: 2;
+    top: calc(50% - 32px);
+    left: calc(50% - 32px);
+    display: inline-block;
+    position: absolute;
+    width: 64px;
+    height: 64px;
+}
+
+.lds-ellipsis div {
+    position: absolute;
+    top: 27px;
+    width: 11px;
+    height: 11px;
+    border-radius: 50%;
+    background: rgba(219, 177, 153, 0.8);
+    animation-timing-function: cubic-bezier(0, 1, 1, 0);
+}
+
+.lds-ellipsis div:nth-child(1) {
+    left: 6px;
+    animation: lds-ellipsis1 0.6s infinite;
+}
+
+.lds-ellipsis div:nth-child(2) {
+    left: 6px;
+    animation: lds-ellipsis2 0.6s infinite;
+}
+
+.lds-ellipsis div:nth-child(3) {
+    left: 26px;
+    animation: lds-ellipsis2 0.6s infinite;
+}
+
+.lds-ellipsis div:nth-child(4) {
+    left: 45px;
+    animation: lds-ellipsis3 0.6s infinite;
+}
+
+@keyframes lds-ellipsis1 {
+    0% {
+        transform: scale(0);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
+@keyframes lds-ellipsis3 {
+    0% {
+        transform: scale(1);
+    }
+
+    100% {
+        transform: scale(0);
+    }
+}
+
+@keyframes lds-ellipsis2 {
+    0% {
+        transform: translate(0, 0);
+    }
+
+    100% {
+        transform: translate(19px, 0);
+    }
+}

@@ -1,0 +1,89 @@
+<div class="main">
+    <div [ngClass]="{'hidden': !this.showSpinner}" class="lds-ripple">
+        <div></div>
+        <div></div>
+    </div>
+    <canvas [ngClass]="{'opaque': !this.bitbybitInitialised}" id="renderCanvas" class="example-sidenav-content">
+    </canvas>
+</div>
+<div class="content">
+
+    <div class="explanation">
+        <h1>LAPTOP HOLDER</h1>
+        <h2>Configurator</h2>
+        <div class="scrolling">
+            <p>
+                <img width="100%" src="assets/lapholders1.jpeg" />
+            </p>
+            <p>
+                The application allows you to configure custom multi slot laptop holder. Choose how many laptops you
+                want and adjust the basic dimensions. Save your file and use it for 3D printing.
+            </p>
+            <p>
+                This application also serves as an example which demonstrates possibilities to integrate Bit by bit
+                developers
+                platform in
+                your own websites, configurators or webshops. We have recently released our core algorithms as an <a
+                    href="https://www.npmjs.com/package/@bitbybit-dev/core" target="_blank">npm package</a>.
+                If you are the beginner you can use our <a href="https://bitbybit.dev" target="_blank">bitbybit.dev</a>
+                platform to learn to use the API and construct parametric geometries.
+                If you are professional, consider exploring our <a href="docs.bitbybit.dev" target="_blank">bitbybit.dev
+                    API</a>.
+            </p>
+            <p>
+                By downloading STEP file you can easily 3D print it. To understand how to do that and learn how the
+                script works you can enroll in this free course on our school at <a
+                    href="https://school.bitbybit.dev/p/programming-vertical-laptop-holder-in-typescript"
+                    target="_blank">school.bitbybit.dev</a>
+            </p>
+        </div>
+    </div>
+    <div class="space"></div>
+    <div class="interaction" [ngClass]="{'opaque': !this.bitbybitInitialised}">
+        <div>
+            <ng-container *ngFor="let laptop of laptops; let i = index">
+                <div>
+                    Laptop Nr. {{i + 1}}
+                    <button class="delete" color="primary" mat-flat-button (click)="remove(laptop)" aria-label="Delete">
+                        <mat-icon>delete</mat-icon>
+                    </button>
+                </div>
+                <div class="input">
+                    <mat-form-field class="example-full-width" appearance="fill">
+                        <mat-label>Width</mat-label>
+                        <input (blur)="render()" type="number" matInput #message maxlength="10"
+                            [(ngModel)]="laptop.width">
+                    </mat-form-field>
+                </div>
+                <div class="input">
+                    <mat-form-field appearance="fill">
+                        <mat-label>Length</mat-label>
+                        <input (blur)="render()" type="number" matInput #message maxlength="10"
+                            [(ngModel)]="laptop.length">
+                    </mat-form-field>
+                </div>
+                <div class="input">
+                    <mat-form-field class="example-full-width" appearance="fill">
+                        <mat-label>Height</mat-label>
+                        <input (blur)="render()" type="number" matInput #message maxlength="10"
+                            [(ngModel)]="laptop.height">
+                    </mat-form-field>
+                </div>
+            </ng-container>
+        </div>
+        <br>
+        <div>
+            <button mat-raised-button color="primary" (click)="add()" aria-label="Example icon button with a menu icon">
+                Add Laptop
+            </button>
+            <button class="download" mat-raised-button color="primary" (click)="downloadStep()"
+                aria-label="Example icon button with a menu icon">
+                Download STEP
+            </button>
+            <button class="download" mat-raised-button color="primary" (click)="downloadStl()"
+                aria-label="Example icon button with a menu icon">
+                Download STL
+            </button>
+        </div>
+    </div>
+</div>

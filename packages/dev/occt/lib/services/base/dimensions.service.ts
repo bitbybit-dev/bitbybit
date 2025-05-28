@@ -7,16 +7,14 @@ import * as Inputs from "../../api/inputs/inputs";
 import { TransformsService } from "./transforms.service";
 import { ConverterService } from "./converter.service";
 import { WiresService } from "./wires.service";
-import { MathBitByBit, Point, Vector } from "@bitbybit-dev/base";
+import { BaseBitByBit } from "../../base";
 import { EdgesService } from "./edges.service";
 import { EntitiesService } from "./entities.service";
 
 export class DimensionsService {
 
     constructor(
-        private readonly math: MathBitByBit,
-        private readonly vector: Vector,
-        private readonly point: Point,
+        private readonly base: BaseBitByBit,
         private readonly transformsService: TransformsService,
         private readonly converterService: ConverterService,
         private readonly entitiesService: EntitiesService,
@@ -39,7 +37,7 @@ export class DimensionsService {
             translation: inputs.direction,
         });
 
-        const translatedPts = this.point.translatePoints({
+        const translatedPts = this.base.point.translatePoints({
             points: [inputs.start, inputs.end],
             translation: inputs.direction,
         });
@@ -62,7 +60,7 @@ export class DimensionsService {
         });
 
         const midPt = this.wiresService.midPointOnWire({ shape: translatedLine });
-        const length = this.point.distance({
+        const length = this.base.point.distance({
             startPoint: inputs.start,
             endPoint: inputs.end,
         });
@@ -77,14 +75,14 @@ export class DimensionsService {
         const txt = this.wiresService.textWiresWithData(txtOpt);
 
         // get the up vector for the dimension plane
-        const normalThreePoints = this.point.normalFromThreePoints({
+        const normalThreePoints = this.base.point.normalFromThreePoints({
             point1: inputs.start,
             point2: inputs.end,
             point3: midPt,
             reverseNormal: true,
         });
 
-        const dirStartEnd = this.vector.sub({
+        const dirStartEnd = this.base.vector.sub({
             first: inputs.end,
             second: inputs.start,
         }) as Inputs.Base.Vector3;
@@ -109,10 +107,10 @@ export class DimensionsService {
 
         shapesToDelete.push(rotated);
 
-        const normDir = this.vector.normalized({ vector: inputs.direction });
-        const offsetLabelVec = this.vector.mul({ vector: normDir, scalar: inputs.labelOffset });
+        const normDir = this.base.vector.normalized({ vector: inputs.direction });
+        const offsetLabelVec = this.base.vector.mul({ vector: normDir, scalar: inputs.labelOffset });
 
-        const addToDir = this.vector.add({
+        const addToDir = this.base.vector.add({
             first: midPt,
             second: offsetLabelVec,
         }) as Inputs.Base.Vector3;
@@ -137,9 +135,9 @@ export class DimensionsService {
     simpleAngularDimension(inputs: Inputs.OCCT.SimpleAngularDimensionDto): TopoDS_Compound {
         const shapesToDelete: TopoDS_Shape[] = [];
 
-        const normDir1 = this.vector.normalized({ vector: inputs.direction1 });
-        const endVec = this.vector.mul({ vector: normDir1, scalar: inputs.radius }) as Inputs.Base.Point3;
-        const endPt = this.point.translatePoints({
+        const normDir1 = this.base.vector.normalized({ vector: inputs.direction1 });
+        const endVec = this.base.vector.mul({ vector: normDir1, scalar: inputs.radius }) as Inputs.Base.Point3;
+        const endPt = this.base.point.translatePoints({
             points: [endVec],
             translation: inputs.center,
         })[0];
@@ -151,9 +149,9 @@ export class DimensionsService {
             extensionEnd: inputs.extraSize,
         });
 
-        const normDir2 = this.vector.normalized({ vector: inputs.direction2 });
-        const endVec2 = this.vector.mul({ vector: normDir2, scalar: inputs.radius }) as Inputs.Base.Point3;
-        const endPt2 = this.point.translatePoints({
+        const normDir2 = this.base.vector.normalized({ vector: inputs.direction2 });
+        const endVec2 = this.base.vector.mul({ vector: normDir2, scalar: inputs.radius }) as Inputs.Base.Point3;
+        const endPt2 = this.base.point.translatePoints({
             points: [endVec2],
             translation: inputs.center,
         })[0];
@@ -164,14 +162,14 @@ export class DimensionsService {
             extensionEnd: inputs.extraSize,
         });
 
-        const normalThreePoints = this.point.normalFromThreePoints({
+        const normalThreePoints = this.base.point.normalFromThreePoints({
             point1: inputs.center,
             point2: endPt,
             point3: endPt2,
             reverseNormal: true,
         });
 
-        const normalThreePointsRev = this.point.normalFromThreePoints({
+        const normalThreePointsRev = this.base.point.normalFromThreePoints({
             point1: inputs.center,
             point2: endPt,
             point3: endPt2,
@@ -190,13 +188,13 @@ export class DimensionsService {
         const wireArc = this.wiresService.createWireFromEdge({ shape: arc });
 
         const midPt = this.wiresService.midPointOnWire({ shape: wireArc });
-        let angle = this.vector.angleBetween({
+        let angle = this.base.vector.angleBetween({
             first: inputs.direction1,
             second: inputs.direction2,
         }) as number;
 
         if (inputs.radians) {
-            angle = this.math.degToRad({ number: angle });
+            angle = this.base.math.degToRad({ number: angle });
         }
 
         const txtOpt = new Inputs.OCCT.TextWiresDto();
@@ -207,11 +205,11 @@ export class DimensionsService {
         txtOpt.centerOnOrigin = true;
         const txt = this.wiresService.textWiresWithData(txtOpt);
 
-        const vectorToMid = this.vector.sub({
+        const vectorToMid = this.base.vector.sub({
             first: midPt,
             second: inputs.center,
         }) as Inputs.Base.Vector3;
-        const normVecToMid = this.vector.normalized({ vector: vectorToMid }) as Inputs.Base.Vector3;
+        const normVecToMid = this.base.vector.normalized({ vector: vectorToMid }) as Inputs.Base.Vector3;
 
         const alignedLabelTxtToDir = this.transformsService.alignNormAndAxis({
             shape: txt.compound,
@@ -223,8 +221,8 @@ export class DimensionsService {
             toAx: normVecToMid,
         });
         shapesToDelete.push(...txt.shapes.map((s) => s.shape));
-        const offsetLabelVec = this.vector.mul({ vector: normVecToMid, scalar: inputs.labelOffset });
-        const addToDir = this.vector.add({
+        const offsetLabelVec = this.base.vector.mul({ vector: normVecToMid, scalar: inputs.labelOffset });
+        const addToDir = this.base.vector.add({
             first: midPt,
             second: offsetLabelVec,
         }) as Inputs.Base.Vector3;
@@ -262,11 +260,11 @@ export class DimensionsService {
         const text = this.wiresService.textWiresWithData(txtOpt);
 
         const textWidth = text.data.width;
-        const dirNorm = this.vector.normalized({ vector: inputs.direction });
-        const offsetLabelVec = this.vector.mul({ vector: dirNorm, scalar: textWidth / 2 + inputs.labelOffset });
+        const dirNorm = this.base.vector.normalized({ vector: inputs.direction });
+        const offsetLabelVec = this.base.vector.mul({ vector: dirNorm, scalar: textWidth / 2 + inputs.labelOffset });
         // const translateTxtVec = this.vector.add({ first: inputs.direction, second: offsetLabelVec }) as Inputs.Base.Vector3;
 
-        const endPtLabelLine = this.point.translatePoints({
+        const endPtLabelLine = this.base.point.translatePoints({
             points: [inputs.endPoint],
             translation: inputs.direction,
         })[0];
@@ -278,7 +276,7 @@ export class DimensionsService {
             extensionEnd: 0,
         });
 
-        const normalThreePoints = this.point.normalFromThreePoints({
+        const normalThreePoints = this.base.point.normalFromThreePoints({
             point1: inputs.startPoint,
             point2: inputs.endPoint,
             point3: endPtLabelLine,
@@ -304,7 +302,7 @@ export class DimensionsService {
 
         shapesToDelete.push(rotated);
 
-        const addToDir = this.vector.add({
+        const addToDir = this.base.vector.add({
             first: endPtLabelLine,
             second: offsetLabelVec,
         }) as Inputs.Base.Vector3;

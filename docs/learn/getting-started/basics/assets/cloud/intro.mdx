@@ -1,0 +1,55 @@
+---
+sidebar_position: 1
+title: Using Cloud Assets in Bitbybit
+sidebar_label: Cloud Assets
+description: Explore the use cases for cloud assets in Bitbybit, including importing 3D models and other file types, and important considerations for sharing and access control.
+tags: [getting-started, assets]
+---
+
+# Using Cloud Assets (Stored on Bitbybit Servers)
+
+## When to Use Cloud Assets
+
+If you work with 3D models or other assets created in external software packages, Bitbybit's **cloud asset** feature allows you to upload these files to our servers. This makes them accessible from any browser where you're logged into your account and integrates them directly with your Bitbybit projects.
+
+**Common Use Cases for Cloud Assets:**
+
+*   **Importing Existing 3D Models:** Bring your 3D models (e.g., from Blender, SketchUp, SolidWorks) into Bitbybit to use in your scripts.
+*   **Cross-Device Access:** Access your uploaded assets from any computer or browser simply by logging into your Bitbybit account.
+*   **Public Portfolio:** When you publish projects containing cloud assets, these assets (and the project) become accessible to everyone on the internet. This can be a great way to build a public portfolio of your 3D work directly on our platform.
+*   **Integrating with Parametric Models:** Combine your imported 3D models with parametrically generated geometry created within Bitbybit, all in a single environment.
+*   **Game Development:** For advanced users creating games on our platform, cloud assets can serve as your game asset library (characters, props, environments), which you can load dynamically as your game logic dictates.
+*   **Data Visualization & More:** While 3D models are a primary focus, you can also upload other file types as cloud assets:
+    *   **Data Files:** Import data in `.json` or `.csv` format and parse it within your scripts to create dynamic data visualizations.
+    *   **Texture Images:** Upload image files (e.g., `.jpg`, `.png`) to use as textures for materials in your 3D scenes.
+
+This section will guide you through understanding and utilizing cloud assets.
+
+## Important Things to Know About Cloud Assets
+
+### Access Control and Sharing
+Understanding access control for your cloud assets is crucial:
+*   **Public Projects = Public Assets:** If you publish a Project as "Public," any cloud assets associated with that project also become publicly accessible. This means anyone on the internet could potentially find and download these assets.
+*   **Protecting Private Assets:** If you want to keep your assets private, **do not publish the project they belong to as "Public."** Publishing a project containing sensitive or private assets can inadvertently expose their download URLs.
+*   **Right to Share:** If you choose to make your projects (and thus their assets) public, ensure you have the legal right to share those assets. If you are unsure about the licensing or ownership of an asset, do not upload it to our platform or publish it.
+
+Please review our [Terms and Conditions](https://bitbybit.dev/terms-and-conditions) for detailed information on asset usage and sharing.
+
+### Advice for 3D Designers and Architects
+
+*   **Recommended Format for Web: glTF/GLB:**
+    While Bitbybit supports importing CAD files like STEP, if you are importing complex 3D models (especially those with materials and textures) for web display, we generally recommend exporting them to **glTF (`.gltf`) or GLB (`.glb`) format** from your original design software.
+    *   **Optimized for Web:** glTF is a format specifically designed for efficient transmission and loading of 3D scenes and models on the web.
+    *   **Faster Loading:** It typically loads faster than raw CAD files. As CAD files, such as STEP need meshing to be applied.
+    *   **Material & Texture Support:** glTF is excellent at preserving materials, textures, and PBR (Physically Based Rendering) properties, meaning your model should look very similar to how it appeared in your CAD software, or even better when enhanced with Bitbybit's lighting and rendering.
+    *   **GLB (Binary glTF):** The `.glb` format is even more optimized as it packages all data (JSON, binary geometry, textures) into a single binary file, usually resulting in a smaller file size.
+    *   You can further enhance the look of your imported models by creating skyboxes, lights, and shadows within your Bitbybit scripts.
+
+*   **BIM Models (IFC):**
+    We understand that glTF may not always be the first choice for certain industries. As of this writing, we do not yet have direct support for importing BIM (Building Information Modeling) specific file formats like IFC. Converting IFC to glTF or another supported format might be necessary.
+
+*   **STEP or IGES Considerations:**
+    Importing `.step` or `.iges` files can be beneficial for their precision and potentially smaller file sizes for raw geometry.
+    *   **Downside:** A current limitation is that we generally do not support importing material information directly from STEP/IGES files. You would need to create and assign materials to the imported geometric entities using Bitbybit's tools after import.
+
+Choosing the right format and understanding these considerations will help you achieve the best results when working with cloud assets on our platform.

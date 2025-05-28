@@ -13,18 +13,16 @@ import { GeomService } from "./geom.service";
 import { TransformsService } from "./transforms.service";
 import { ConverterService } from "./converter.service";
 import { EnumService } from "./enum.service";
-import { Point, TextBitByBit, Vector } from "@bitbybit-dev/base";
 import { TextWiresDataDto, ObjectDefinition } from "../../api/models/bucket";
 import { OperationsService } from "./operations.service";
 import { FilletsService } from "./fillets.service";
-
+import { BaseBitByBit } from "../../base";
 export class WiresService {
 
     constructor(
         private readonly occ: OpenCascadeInstance,
         private readonly occRefReturns: OCCReferencedReturns,
-        private readonly vector: Vector,
-        private readonly point: Point,
+        private readonly base: BaseBitByBit,
         private readonly shapesHelperService: ShapesHelperService,
         private readonly shapeGettersService: ShapeGettersService,
         private readonly transformsService: TransformsService,
@@ -33,7 +31,6 @@ export class WiresService {
         private readonly converterService: ConverterService,
         private readonly geomService: GeomService,
         private readonly edgesService: EdgesService,
-        private readonly textService: TextBitByBit,
         public filletsService: FilletsService,
         public operationsService: OperationsService,
     ) { }
@@ -320,11 +317,11 @@ export class WiresService {
     }
 
     createLineWireWithExtensions(inputs: Inputs.OCCT.LineWithExtensionsDto): TopoDS_Wire {
-        const direction = this.vector.normalized({ vector: this.vector.sub({ first: inputs.end, second: inputs.start }) });
-        const scaledVecStart = this.vector.mul({ vector: direction, scalar: -inputs.extensionStart });
-        const scaledVecEnd = this.vector.mul({ vector: direction, scalar: inputs.extensionEnd });
-        const start = this.vector.add({ first: inputs.start, second: scaledVecStart }) as Base.Point3;
-        const end = this.vector.add({ first: inputs.end, second: scaledVecEnd }) as Base.Point3;
+        const direction = this.base.vector.normalized({ vector: this.base.vector.sub({ first: inputs.end, second: inputs.start }) });
+        const scaledVecStart = this.base.vector.mul({ vector: direction, scalar: -inputs.extensionStart });
+        const scaledVecEnd = this.base.vector.mul({ vector: direction, scalar: inputs.extensionEnd });
+        const start = this.base.vector.add({ first: inputs.start, second: scaledVecStart }) as Base.Point3;
+        const end = this.base.vector.add({ first: inputs.end, second: scaledVecEnd }) as Base.Point3;
         return this.createLineWire({ start, end });
     }
 
@@ -512,7 +509,7 @@ export class WiresService {
         const endPointOnWire = this.endPointOnWire({ shape: inputs.shape });
 
         // This is needed to make follow up algorithm to work properly on open wires
-        const wireIsClosed = this.vector.vectorsTheSame({ vec1: endPointOnWire, vec2: startPointOnWire, tolerance });
+        const wireIsClosed = this.base.vector.vectorsTheSame({ vec1: endPointOnWire, vec2: startPointOnWire, tolerance });
         return wireIsClosed;
     }
 
@@ -751,7 +748,7 @@ export class WiresService {
     }
 
     hexagonsInGrid(inputs: Inputs.OCCT.HexagonsInGridDto): TopoDS_Wire[] {
-        const hex = this.point.hexGridScaledToFit({ ...inputs, centerGrid: true, pointsOnGround: true });
+        const hex = this.base.point.hexGridScaledToFit({ ...inputs, centerGrid: true, pointsOnGround: true });
         const wires = hex.hexagons.map(hex => {
             return this.createPolygonWire({ points: hex });
         });
@@ -978,7 +975,7 @@ export class WiresService {
     }
 
     textWires(inputs: Inputs.OCCT.TextWiresDto): TopoDS_Wire[] {
-        const lines = this.textService.vectorText(inputs);
+        const lines = this.base.textService.vectorText(inputs);
         const wires: TopoDS_Wire[] = [];
         lines.forEach((line) => {
             line.chars.forEach((char) => {
@@ -994,7 +991,7 @@ export class WiresService {
     }
 
     textWiresWithData(inputs: Inputs.OCCT.TextWiresDto): ObjectDefinition<TextWiresDataDto<string>, TopoDS_Shape> {
-        const lines = this.textService.vectorText(inputs);
+        const lines = this.base.textService.vectorText(inputs);
         const wires: TopoDS_Wire[] = [];
 
         const characterCompounds: { id: string, shape: TopoDS_Compound }[] = [];

@@ -9,6 +9,102 @@ export class OCCTWire {
     }
 
     /**
+      * Creates linear wire from base line format {start: Point3, end: Point3}
+      * @param inputs base line
+      * @returns OpenCascade wire
+      * @group from base
+      * @shortname wire from base line
+      * @drawable true
+      */
+    fromBaseLine(inputs: Inputs.OCCT.LineBaseDto): Promise<Inputs.OCCT.TopoDSWirePointer> {
+        return this.occWorkerManager.genericCallToWorkerPromise("shapes.wire.fromBaseLine", inputs);
+    }
+
+    /**
+     * Creates linear wires from base lines format {start: Point3, end: Point3}[]
+     * @param inputs base lines
+     * @returns OpenCascade wires
+     * @group from base
+     * @shortname wires from base lines
+     * @drawable true
+     */
+    fromBaseLines(inputs: Inputs.OCCT.LineBaseDto): Promise<Inputs.OCCT.TopoDSWirePointer[]> {
+        return this.occWorkerManager.genericCallToWorkerPromise("shapes.wire.fromBaseLines", inputs);
+    }
+
+    /**
+     * Creates linear wire from base segment format [Point3, Point3]
+     * @param inputs base segment
+     * @returns OpenCascade wire
+     * @group from base
+     * @shortname wire from base segment
+     * @drawable true
+     */
+    fromBaseSegment(inputs: Inputs.OCCT.SegmentBaseDto): Promise<Inputs.OCCT.TopoDSWirePointer> {
+        return this.occWorkerManager.genericCallToWorkerPromise("shapes.wire.fromBaseSegment", inputs);
+    }
+
+    /**
+     * Creates linear wires from base segments format [Point3, Point3][]
+     * @param inputs base segments
+     * @returns OpenCascade wires
+     * @group from base
+     * @shortname wires from base segments
+     * @drawable true
+     */
+    fromBaseSegments(inputs: Inputs.OCCT.SegmentsBaseDto): Promise<Inputs.OCCT.TopoDSWirePointer[]> {
+        return this.occWorkerManager.genericCallToWorkerPromise("shapes.wire.fromBaseSegments", inputs);
+    }
+
+    /**
+     * Creates wire from collection of points
+     * @param inputs Points
+     * @returns OpenCascade wire
+     * @group from base
+     * @shortname wire from points
+     * @drawable true
+     */
+    fromPoints(inputs: Inputs.OCCT.PointsDto): Promise<Inputs.OCCT.TopoDSWirePointer> {
+        return this.occWorkerManager.genericCallToWorkerPromise("shapes.wire.fromPoints", inputs);
+    }
+
+    /**
+     * Creates wire from polyline definition
+     * @param inputs Polyline
+     * @returns OpenCascade wire
+     * @group from base
+     * @shortname wire from polyline
+     * @drawable true
+     */
+    fromBasePolyline(inputs: Inputs.OCCT.PolylineBaseDto): Promise<Inputs.OCCT.TopoDSWirePointer> {
+        return this.occWorkerManager.genericCallToWorkerPromise("shapes.wire.fromBasePolyline", inputs);
+    }
+
+    /**
+     * Creates wire from triangle definition
+     * @param inputs Triangle
+     * @returns OpenCascade wire
+     * @group from base
+     * @shortname wire from triangle
+     * @drawable true
+     */
+    fromBaseTriangle(inputs: Inputs.OCCT.TriangleBaseDto): Promise<Inputs.OCCT.TopoDSWirePointer> {
+        return this.occWorkerManager.genericCallToWorkerPromise("shapes.wire.fromBaseTriangle", inputs);
+    }
+
+    /**
+     * Creates wires from mesh definition
+     * @param inputs Mesh
+     * @returns OpenCascade wires
+     * @group from base
+     * @shortname wires from mesh
+     * @drawable true
+     */
+    fromBaseMesh(inputs: Inputs.OCCT.MeshBaseDto): Promise<Inputs.OCCT.TopoDSWirePointer[]> {
+        return this.occWorkerManager.genericCallToWorkerPromise("shapes.wire.fromBaseMesh", inputs);
+    }
+
+    /**
      * Creates OpenCascade Polygon wire
      * @param inputs Polygon points
      * @returns OpenCascade polygon wire shape

@@ -1,0 +1,81 @@
+---
+sidebar_position: 3
+title: Creating a Parametric Cube with Rete
+sidebar_label: Parametric Cube (Rete)
+description: Learn how to create a parametric cube using the Bitbybit Rete visual programming editor, OpenCascade (OCCT), and a number slider.
+tags: [getting-started, rete, occt]
+---
+
+import BitByBitRenderCanvas from '@site/src/components/BitByBitRenderCanvas';
+import Admonition from '@theme/Admonition';
+
+# Parametric Cube with Rete
+
+When building scripts in Rete, a key concept is controlling the variable parameters of components using the output from other components. In this short tutorial, we'll create a cube and use a number slider component to dynamically control its size.
+
+## 1. Start The Application
+
+First, open our Rete editor in your browser by navigating to:
+<a href="https://bitbybit.dev/app?editor=rete" target="_blank" rel="noopener noreferrer">https://bitbybit.dev/app?editor=rete</a>
+
+This will immediately start an empty Rete workspace.
+
+## 2. Create The Cube (OCCT)
+
+We'll use the OpenCascade Technology (OCCT) geometry kernel to create our cube. OCCT is the most advanced geometry kernel exposed on our platform.
+
+1.  **Find the Cube Component:**
+    *   In the Rete component menu (on the top of the canvas), navigate through the categories:
+        **"occt"** -> **"shapes"** -> **"solid"** -> **"primitives"**
+    *   Find the component named **"cube"**.
+    *   Click on it to add it to the Rete canvas.
+
+    <Admonition type="info" title="Understanding Component Subtitles">
+      Notice that the component might have a subtitle link, such as `occt.shapes.solid.createCube`. This path reflects the actual function name being called from the underlying Bitbybit library.
+      <ul>
+        <li>Clicking this link (if available on the component) would typically redirect you to the relevant documentation page for this function at <a href="https://docs.bitbybit.dev" target="_blank" rel="noopener noreferrer">https://docs.bitbybit.dev</a>.</li>
+        <li>If you were writing TypeScript code in our Monaco editor, the equivalent function call would be something like: `bitbybit.occt.shapes.solid.createCube(inputs);`.</li>
+      </ul>
+      This naming convention also makes it easier to find components using the search functionality in Rete.
+    </Admonition>
+
+    After adding the cube component, your canvas might look similar to the setup in this interactive example. You should see a cube in the 3D preview.
+
+
+<BitByBitRenderCanvas
+  requireManualStart={true}
+  script={{"script":"{\"id\":\"rete-v2-json\",\"nodes\":{\"9a36dedc225d569e\":{\"id\":\"9a36dedc225d569e\",\"name\":\"bitbybit.occt.shapes.solid.createCube\",\"customName\":\"cube\",\"async\":true,\"drawable\":true,\"data\":{\"genericNodeData\":{\"hide\":false,\"oneOnOne\":false,\"flatten\":0,\"forceExecution\":false},\"size\":1,\"center\":[0,0,0],\"originOnCenter\":true},\"inputs\":{},\"position\":[-479.5100485061723,779.4407810991236]}}}","version":"0.20.4","type":"rete"}}
+  title="Create the OCCT cube"
+  description="Creates very simple OCCT cube in 3D spaces."
+/>
+
+    Currently, you can control the size of the cube using the default numeric input field directly on the "Cube" component. Feel free to change this value and observe how the Rete editor reacts and updates the 3D view.
+
+## 3. Add a Number Slider and Connect It
+
+Now, let's introduce a more interactive way to control the cube's size using a number slider.
+
+1.  **Find the Number Slider Component:**
+    *   Navigate to the component category **"math"**.
+    *   Find the subcategory **"create"** (or similar).
+    *   Click on the **"number slider"** component to add it to your canvas.
+
+2.  **Connect the Slider to the Cube:**
+    *   You'll see a small rectangular "output socket" on the right side of the "number slider" component.
+    *   Click and drag from this output socket. A wire (connection line) will appear.
+    *   Drag this wire to the "cube" component and connect it to the input socket labeled **"size"** (or a similar parameter controlling the cube's dimensions).
+
+If you've connected them correctly, your setup should resemble the following interactive example:
+
+<BitByBitRenderCanvas
+  requireManualStart={true}
+  script={{"script":"{\"id\":\"rete-v2-json\",\"nodes\":{\"eea0f918d9367507\":{\"id\":\"eea0f918d9367507\",\"name\":\"bitbybit.occt.shapes.solid.createCube\",\"customName\":\"cube\",\"async\":true,\"drawable\":true,\"data\":{\"genericNodeData\":{\"hide\":false,\"oneOnOne\":false,\"flatten\":0,\"forceExecution\":false},\"size\":1,\"center\":[0,0,0],\"originOnCenter\":true},\"inputs\":{\"size\":{\"connections\":[{\"node\":\"12bfe26dd2bd975d\",\"output\":\"result\",\"data\":{}}]}},\"position\":[-248.34218975770273,825.5007104111836]},\"12bfe26dd2bd975d\":{\"id\":\"12bfe26dd2bd975d\",\"name\":\"bitbybit.math.numberSlider\",\"customName\":\"number slider\",\"data\":{\"options\":{\"min\":0.1,\"max\":10,\"step\":0.1,\"width\":350},\"number\":9.3},\"inputs\":{},\"position\":[-870.8538818359375,757.2155456542969]}}}","version":"0.20.4","type":"rete"}}
+  title="Number slider and cube"
+  description="Creates component for number slider and connects its output to size of cube."
+/>
+
+## Experiment
+
+Now, try dragging the handle on the "number slider" component. You should see the cube in the 3D preview change its size automatically and interactively as you adjust the slider.
+
+This demonstrates the power of Rete's visual programming paradigm: easily connecting data outputs from one node (the slider's value) to the inputs of another node (the cube's size) to create dynamic and parametric relationships. Feel free to experiment further by changing the slider's range or connecting other components.

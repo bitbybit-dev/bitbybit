@@ -1,0 +1,100 @@
+<html>
+
+<head>
+    <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
+    <script type="module">
+        window.THREEJS = window.THREE;
+    </script>
+    <script defer src="https://cdn.jsdelivr.net/gh/bitbybit-dev/bitbybit-assets@0.20.4/runner/bitbybit-runner-lite-threejs.js"></script>
+</head>
+
+<body>
+    <a-scene>
+        <script type="module">
+            AFRAME.registerComponent('bitbybit-box', {
+                schema: {
+                    width: { type: 'number', default: 1 },
+                    length: { type: 'number', default: 1 },
+                    height: { type: 'number', default: 1 },
+                    fillet: { type: 'number', default: 0.2 },
+                    position: { type: 'vec3', default: { x: 0, y: 0, z: 0 } },
+                },
+
+                drawnMesh: undefined,
+                shapes: [],
+
+                update: function (oldData) {
+                    var data = this.data;
+
+                    const bitbybit = window.bitbybit;
+                    const Bit = window.Bit;
+                    if (Bit && bitbybit) {
+                        if (this.drawnMesh) {
+                            this.drawnMesh.dispose();
+                        }
+                        const s = async () => {
+                            if (this.shapes && this.shapes.length > 0) {
+                                await bitbybit.occt.deleteShapes({ shapes: this.shapes });
+                            }
+
+                            const options = new Bit.Inputs.OCCT.BoxDto();
+                            options.width = data.width;
+                            options.length = data.length;
+                            options.height = data.height;
+                            options.center = [data.position.x, data.position.y, data.position.z];
+
+                            const box = await bitbybit.occt.shapes.solid.createBox(options);
+                            const filletShape = await bitbybit.occt.fillets.filletEdges({
+                                shape: box,
+                                radius: data.fillet,
+                            });
+
+                            this.shapes.push(filletShape);
+
+                            this.drawnMesh = await bitbybit.draw.drawAnyAsync({
+                                entity: filletShape
+                            });
+                        }
+                        s();
+                    }
+                }
+            });
+
+            const aframeScene = document.querySelector('a-scene').object3D;
+            const runnerOptions = {
+                canvasZoneClass: 'myCanvasZone',
+                enableOCCT: true,
+                enableJSCAD: false,
+                enableManifold: false,
+                loadFonts: ['Roboto'],
+                externalThreeJSSettings: {
+                    scene: aframeScene,
+                    camera: AFRAME.systems.camera,
+                }
+            };
+
+            const runner = window.bitbybitRunner.getRunnerInstance();
+            const { bitbybit, Bit, camera, scene, renderer } = await runner.run(
+                runnerOptions
+            );
+            window.bitbybit = bitbybit;
+            window.Bit = Bit;
+
+            const bitbybitElements = Array.from(document.getElementsByClassName("bitbybit-component"));
+
+            bitbybitElements.forEach((element) => {
+                Object.keys(element.components).forEach((component) => {
+                    element.components[component].update();
+                });
+            });
+        </script>
+        <a-box position="-1 0.5 -3" rotation="0 45 0" color="#4CC3D9"></a-box>
+        <a-sphere position="0 1.25 -5" radius="1.25" color="#EF2D5E"></a-sphere>
+        <a-cylinder position="1 0.75 -3" radius="0.5" height="1.5" color="#FFC65D"></a-cylinder>
+        <a-entity id="bitbybit-box" bitbybit-box="width: 5; length: 5; height: 1; fillet: 0.2; position: 0 -0.5 -4"
+            class="bitbybit-component"></a-entity>
+        <a-sky color="#1a1c1f"></a-sky>
+    </a-scene>
+</body>
+
+</html>

@@ -1,0 +1,29 @@
+bitbybit:
+  label: Bitbybit
+  permalink: /bitbybit
+  description: Blogs about Bitbybit
+
+cloud:
+  label: Cloud
+  permalink: /cloud
+  description: Blogs about Cloud
+
+ai:
+  label: AI
+  permalink: /ai
+  description: Blogs about Artificial Intelligence
+
+cad:
+  label: CAD
+  permalink: /cad
+  description: Blogs about Computer-Aided Design
+
+xr:
+  label: XR
+  permalink: /xr
+  description: Blogs about Extended Reality
+
+vr:
+  label: VR
+  permalink: /vr
+  description: Blogs about Virtual Reality

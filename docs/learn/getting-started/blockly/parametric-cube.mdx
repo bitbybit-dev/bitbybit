@@ -1,0 +1,85 @@
+---
+sidebar_position: 3
+title: Creating a Parametric Cube with Blockly
+sidebar_label: Parametric Cube (Blockly)
+description: Learn how to create a parametric cube using the Bitbybit Blockly editor, OpenCascade (OCCT), and variables.
+tags: [getting-started, blockly, occt]
+---
+
+import BitByBitRenderCanvas from '@site/src/components/BitByBitRenderCanvas';
+import Admonition from '@theme/Admonition';
+
+# Parametric Cube with Blockly
+
+In this short tutorial, we'll create a cube using the OpenCascade (OCCT) geometry kernel and control its size with a variable. This is a simple example, but it effectively demonstrates how Blockly can be used to create variables and establish parametric relationships in your 3D designs.
+
+## 1. Start The Application
+
+First, open our Blockly editor in your browser by navigating to:
+<a href="https://bitbybit.dev/app?editor=blockly" target="_blank" rel="noopener noreferrer">https://bitbybit.dev/app?editor=blockly</a>
+
+This will immediately start an empty Blockly workspace. While you can use the embedded example editors directly in this tutorial, it's good practice to try finding the components yourself by following the described paths in the Blockly toolbox.
+
+## 2. Adding and Connecting Components
+
+Let's start by adding the necessary blocks to our workspace.
+
+### Add the Drawing Block
+
+We need a block to draw our 3D shapes onto the canvas.
+
+1.  In the Blockly toolbox (on the left), find the **"draw"** category.
+2.  Expand it, then find the **"draw async"** subcategory.
+3.  Drag the block named **`draw any async no return`** (or similar, representing drawing without expecting a return value) onto your workspace.
+
+### Add the Cube Creation Block (OCCT)
+
+Next, we'll add a block to create a cube using the OCCT kernel.
+
+1.  In the Blockly toolbox, find the **"occt"** category.
+2.  Expand it, then navigate to **"shapes"** -> **"solid"** -> **"primitives"**.
+3.  Drag the block named **`cube`** (or similar) from this category.
+4.  Connect this `cube` block to the input slot labeled **"entity"** on the `draw any async no return` block.
+
+<Admonition type="note" title="Run the Script">
+  At this point, you can click the "Run" button (often a play icon ▶️) in the Blockly interface. You should see a cube with a default size (e.g., 1 unit) appear in the 3D preview area.
+</Admonition>
+
+### Create and Use a Variable for Size
+
+Now, let's make the cube's size parametric using a variable.
+
+1.  **Create a Variable:**
+    *   In the Blockly toolbox, find the **"variables"** category.
+    *   Click on "Create variable...".
+    *   A dialog will pop up. Enter the name `size` for your variable and click "Create".
+
+2.  **Set the Variable's Value:**
+    *   After creating the variable, the "variables" category in the toolbox will now contain blocks related to your `size` variable.
+    *   Drag the **`set size to`** block onto your workspace.
+    *   From the **"math"** category in the toolbox, drag a **number block** (it usually shows `0` by default) and connect it to the empty slot in the `set size to` block. You can change this number later to control the cube's size.
+
+3.  **Use the Variable in the Cube:**
+    *   Go back to the **"variables"** category in the toolbox.
+    *   Drag the block that simply says **`size`** (this block represents the *value* of the variable).
+    *   Connect this `size` variable block to the input slot labeled **"size"** on your `cube` block.
+
+Your Blockly workspace should now look something like this interactive example:
+
+
+<BitByBitRenderCanvas
+  requireManualStart={true}
+  script={{"script":"<xml xmlns=\"https://developers.google.com/blockly/xml\"><variables><variable id=\"jVWX.QGY%cHn[hzK+n%A\">size</variable></variables><block type=\"variables_set\" id=\",0sefL+dW}xV5n^$j+AV\" x=\"-689\" y=\"-1055\"><field name=\"VAR\" id=\"jVWX.QGY%cHn[hzK+n%A\">size</field><value name=\"VALUE\"><block type=\"math_number\" id=\"V^t{t:]qg=9tg8,9LcC8\"><field name=\"NUM\">3</field></block></value><next><block type=\"bitbybit.draw.drawAnyAsyncNoReturn\" id=\"$2#tlK1lUC`%0`Yy=Na.\"><value name=\"Entity\"><block type=\"bitbybit.occt.shapes.solid.createCube\" id=\"KSbGrF@x?4}%ch#4CC?N\"><value name=\"Size\"><block type=\"variables_get\" id=\"FoIWtg5M|v!ht|=%;aq;\"><field name=\"VAR\" id=\"jVWX.QGY%cHn[hzK+n%A\">size</field></block></value><value name=\"Center\"><block type=\"bitbybit.point.pointXYZ\" id=\"jxe4^~!Dm|=.jsOXT%CQ\"><value name=\"X\"><block type=\"math_number\" id=\"oSJ:g{kkIk/r{Yt$BW:`\"><field name=\"NUM\">0</field></block></value><value name=\"Y\"><block type=\"math_number\" id=\"sFs?IY5vqosq~TV(Inzo\"><field name=\"NUM\">0</field></block></value><value name=\"Z\"><block type=\"math_number\" id=\"_-4Thhl)EZH2~HQVQ%]X\"><field name=\"NUM\">0</field></block></value></block></value></block></value></block></next></block></xml>","version":"0.20.4","type":"blockly"}}
+  title="Parametric cube example"
+  description="Draws the parametrically controlled cube."
+/>
+
+## Experiment and Understand
+
+Now that your setup is complete:
+
+*   Try changing the number connected to the `set size to` block (e.g., to `5`, `10`, or any other value).
+*   Run the script again.
+*   Observe how the cube in the 3D preview changes its size based on the value you set for the `size` variable.
+
+This demonstrates a fundamental programming concept: using variables to store information (the desired size) and then passing that information to other parts of your program (the `cube` block) to control their behavior. While simple, this is the basis of creating powerful parametric models where a few key variables can drive complex geometric changes.

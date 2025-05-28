@@ -10,6 +10,64 @@ export class OCCTWire {
     ) {
     }
 
+    fromBaseLine(inputs: Inputs.OCCT.LineBaseDto) {
+        return this.createLineWire(inputs.line);
+    }
+
+    fromBaseLines(inputs: Inputs.OCCT.LinesBaseDto) {
+        return inputs.lines.map(line => this.createLineWire(line));
+    }
+
+    fromBaseSegment(inputs: Inputs.OCCT.SegmentBaseDto) {
+        return this.createLineWire({ start: inputs.segment[0], end: inputs.segment[1] });
+    }
+
+    fromBaseSegments(inputs: Inputs.OCCT.SegmentsBaseDto) {
+        return inputs.segments.map(segment => this.createLineWire({ start: segment[0], end: segment[1] }));
+    }
+
+    fromPoints(inputs: Inputs.OCCT.PointsDto) {
+        let wire;
+        if (inputs.points.length > 1) {
+            const start = inputs.points[0];
+            const end = inputs.points[1];
+            if (this.och.base.point.twoPointsAlmostEqual({ point1: start, point2: end })) {
+                wire = this.createPolygonWire({ points: inputs.points });
+            } else {
+                wire = this.createPolylineWire({ points: inputs.points });
+            }
+        }
+        return wire;
+    }
+
+    fromBasePolyline(inputs: Inputs.OCCT.PolylineBaseDto) {
+        let wire;
+        const points = inputs.polyline.points;
+        if (inputs.polyline.isClosed) {
+            wire = this.createPolygonWire({ points: inputs.polyline.points });
+        } else {
+            wire = this.createPolylineWire({ points: inputs.polyline.points });
+        }
+        return wire;
+    }
+
+    fromBaseTriangle(inputs: Inputs.OCCT.TriangleBaseDto) {
+        const points = inputs.triangle;
+        return this.fromBasePolyline({ polyline: { points, isClosed: true } });
+    }
+
+    fromBaseMesh(inputs: Inputs.OCCT.MeshBaseDto) {
+        const wires = [];
+        inputs.mesh.forEach((triangle) => {
+            try {
+                wires.push(this.fromBaseTriangle({ triangle }));
+            } catch (e) {
+                console.warn("Failed to make wire for triangle", triangle);
+            }
+        });
+        return wires.flat();
+    }
+
     createPolygonWire(inputs: Inputs.OCCT.PolygonDto): TopoDS_Wire {
         return this.och.wiresService.createPolygonWire(inputs);
     }

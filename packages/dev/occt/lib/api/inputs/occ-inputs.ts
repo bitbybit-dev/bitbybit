@@ -1753,6 +1753,86 @@ export namespace OCCT {
          */
         points: Base.Point3[];
     }
+    export class PolylineBaseDto {
+        constructor(polyline?: Base.Polyline3) {
+            if (polyline !== undefined) { this.polyline = polyline; }
+        }
+        /**
+         * Polyline
+         * @default undefined
+         */
+        polyline: Base.Polyline3;
+    }
+    export class PolylinesBaseDto {
+        constructor(polylines?: Base.Polyline3[]) {
+            if (polylines !== undefined) { this.polylines = polylines; }
+        }
+        /**
+         * Polylines
+         * @default undefined
+         */
+        polylines: Base.Polyline3[];
+    }
+    export class LineBaseDto {
+        constructor(line?: Base.Line3) {
+            if (line !== undefined) { this.line = line; }
+        }
+        /**
+         * Line
+         * @default undefined
+         */
+        line: Base.Line3;
+    }
+    export class LinesBaseDto {
+        constructor(lines?: Base.Line3[]) {
+            if (lines !== undefined) { this.lines = lines; }
+        }
+        /**
+         * Lines
+         * @default undefined
+         */
+        lines: Base.Line3[];
+    }
+    export class SegmentBaseDto {
+        constructor(segment?: Base.Segment3) {
+            if (segment !== undefined) { this.segment = segment; }
+        }
+        /**
+         * Segment
+         * @default undefined
+         */
+        segment: Base.Segment3;
+    }
+    export class SegmentsBaseDto {
+        constructor(segments?: Base.Segment3[]) {
+            if (segments !== undefined) { this.segments = segments; }
+        }
+        /**
+         * Segments
+         * @default undefined
+         */
+        segments: Base.Segment3[];
+    }
+    export class TriangleBaseDto {
+        constructor(triangle?: Base.Triangle3) {
+            if (triangle !== undefined) { this.triangle = triangle; }
+        }
+        /**
+         * Triangle
+         * @default undefined
+         */
+        triangle: Base.Triangle3;
+    }
+    export class MeshBaseDto {
+        constructor(mesh?: Base.Mesh3) {
+            if (mesh !== undefined) { this.mesh = mesh; }
+        }
+        /**
+         * Mesh
+         * @default undefined
+         */
+        mesh: Base.Mesh3;
+    }
     export class PolylinesDto {
         constructor(polylines?: PolylineDto[], returnCompound?: boolean) {
             if (polylines !== undefined) { this.polylines = polylines; }
@@ -5428,6 +5508,12 @@ export namespace OCCT {
          * @default false
          */
         adjustYtoZ = false;
+        /**
+         * Will assume that the shape is created in right handed coordinate system environment
+         * and will compensate by not mirroring the shape along z axis
+         * @default false
+         */
+        fromRightHanded? = false;
         /**
          * Will attempt to downlaod the file if that is possible
          * @default true

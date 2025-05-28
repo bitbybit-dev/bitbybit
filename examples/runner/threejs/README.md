@@ -1,0 +1,1 @@
+THREEJS runner has two flavors - Lite and Full. Lite version is smaller in size and requires window.THREEJS dependency to be present. Full runner bundles ThreeJS in the same file.
