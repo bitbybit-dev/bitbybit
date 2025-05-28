@@ -40,7 +40,7 @@ Programming 3D geometry with TypeScript via the Monaco editor offers the **highe
 
 While you can theoretically build substantial projects directly within our web-based Monaco editor, it's important to consider maintainability and debugging for very large or complex endeavors.
 
-*   **For Large-Scale Development:** If you are planning a significant project, we strongly advise using our **[NPM packages](../../category/npm-packages)**. This allows you to set up your own local development environment (using tools like VS Code, WebStorm, etc.), leverage version control (like Git), and build more robust, maintainable, and scalable applications.
+*   **For Large-Scale Development:** If you are planning a significant project, we strongly advise using our **[NPM packages](/learn/npm-packages/intro)**. This allows you to set up your own local development environment (using tools like VS Code, WebStorm, etc.), leverage version control (like Git), and build more robust, maintainable, and scalable applications.
 *   **Web Editor Suitability:** Our web editor is excellent for learning, prototyping, smaller projects, and sharing interactive examples.
 
 Ultimately, the choice of tool depends on your project's scope, your experience level, and your development preferences.

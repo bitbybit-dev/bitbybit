@@ -11,7 +11,7 @@ tags: [getting-started, scripts, projects]
 
 ## How to Locate Your Saved Cloud Scripts
 
-Since your cloud scripts are always part of a [project](/learn/category/projects), you'll typically find them by navigating through your projects. This section explains the primary ways to access your scripts.
+Since your cloud scripts are always part of a [project](/learn/getting-started/basics/projects/intro), you'll typically find them by navigating through your projects. This section explains the primary ways to access your scripts.
 
 ### Method 1: Using the "My Projects" Dashboard
 

@@ -10,7 +10,7 @@ tags: [getting-started, scripts]
 
 ## Why Do We Need Scripts?
 
-Scripts are the fundamental building blocks of your [projects](/learn/category/projects) in Bitbybit. They contain the actual code (TypeScript) or visual programming logic (Blockly/Rete) that brings your 3D ideas to life. When you create your first project, an initial script is automatically created for you. While you can delete this script, a project without any scripts isn't very useful!
+Scripts are the fundamental building blocks of your [projects](/learn/getting-started/basics/projects/intro) in Bitbybit. They contain the actual code (TypeScript) or visual programming logic (Blockly/Rete) that brings your 3D ideas to life. When you create your first project, an initial script is automatically created for you. While you can delete this script, a project without any scripts isn't very useful!
 
 ## Cloud Scripts vs. Local Scripts: What's the Difference?
 

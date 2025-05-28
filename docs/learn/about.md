@@ -89,7 +89,7 @@ Our online school is dedicated to teaching programming, mathematics, virtual rea
 Beyond our hosted platform, we empower developers to take our core technology into their own hands.
 
 *   **Open-Source NPM Packages:** We provide a suite of MIT-licensed NPM packages that expose our underlying geometry kernels (OCCT, JSCAD, Manifold) and rendering integrations (e.g., for Three.js, BabylonJS). This allows you to build completely custom 3D applications, tools, or embed specific functionalities into your existing websites.
-    *   Learn more: [**Our NPM Packages**](./category/npm-packages) {/* Link to your NPM packages page */}
+    *   Learn more: [**Our NPM Packages**](/learn/npm-packages/intro) {/* Link to your NPM packages page */}
 *   **Runners:** For even simpler integration of pre-built Bitbybit scripts or functionalities into web pages, we offer runners that can execute these scripts within a defined context on your site.
 
 This extensibility ensures that Bitbybit can be a foundational layer for a wide array of web-based 3D solutions, from educational tools in **STEM classrooms** to bespoke configurators on e-commerce sites.

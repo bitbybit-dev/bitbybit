@@ -33,7 +33,7 @@ Visit the [**3D Models**](https://bitbybit.dev/3d-models) section of our platfor
 
 Welcome aboard! We recommend the following path:
 
-1.  Start with our [**Getting Started**](./category/getting-started) guide. This will cover the basics.
+1.  Start with our [**Getting Started**](/learn/getting-started/overview) guide. This will cover the basics.
 2.  Once you've completed that, try building something cool using our editors!
 3.  For more in-depth learning, explore the courses in our [**School**](https://bitbybit.dev/school).
 4.  Curious about why this platform exists? Read our [**About**](./about) section.
@@ -60,7 +60,7 @@ This platform is a great place to teach 3D computational design, mathematics, ge
   <ul>
     <li>They <strong>must remember to manually export and import their scripts</strong> to avoid losing their work, as cloud saving is not available without an account.</li>
     <li>Sharing projects is not possible without an account.</li>
-    <li>They will need to host any third-party assets locally in their browsers, as cloud asset features are unavailable. Learn how in the <a href="./category/getting-started/general/assets/local">Local Assets</a> section of the Getting Started guide.</li>
+    <li>They will need to host any third-party assets locally in their browsers, as cloud asset features are unavailable. Learn how in the <a href="/learn/getting-started/basics/assets/local/intro">Local Assets</a> section of the Getting Started guide.</li>
   </ul>
 </Admonition>
 
@@ -75,5 +75,5 @@ To get started:
 *   Consider our course: [**Introduction To Programming 3D In TypeScript**](https://bitbybit.dev/school/courses/introduction-to-programming-3d-in-typescript).
 *   Or, if you're familiar with BabylonJS: [**Bitbybit For BabylonJS Developers**](https://bitbybit.dev/school/courses/bitbybit-for-babylonjs-developers).
     These courses explore how our algorithms can create 3D CAD applications.
-*   We also offer [**NPM packages**](./category/npm-packages) that you can incorporate into your own websites.
+*   We also offer [**NPM packages**](/learn/npm-packages/intro) that you can incorporate into your own websites.
     *   *Note: These packages do not include our proprietary advanced algorithms or the models available in the 3D Models section.*

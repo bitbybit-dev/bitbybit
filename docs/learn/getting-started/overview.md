@@ -99,7 +99,7 @@ These allow you to leverage our CAD capabilities within your preferred 3D render
   <p>The packages offer the core engine, empowering you to build your own UIs and applications on top.</p>
 </Admonition>
 
-For a comprehensive list of available NPM packages and more detailed guides, please visit our [**NPM Packages documentation page**](../category/npm-packages).
+For a comprehensive list of available NPM packages and more detailed guides, please visit our [**NPM Packages documentation page**](/learn/npm-packages/intro).
 
 ## API Documentation
 
