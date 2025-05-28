@@ -417,6 +417,7 @@ describe("Draw unit tests", () => {
             expect(lineSegments1.geometry.attributes.position.array.toString()).toEqual("1,-3,3,0,-3,4,0,-3,4,3,4,5,3,4,5,1,-3,3,1,-3,3,0,-3,4,0,-3,4,3,4,5");
         });
 
+        // TODO enable when fixed
         it.skip("should update a polyline via draw any with options", () => {
             const options = {
                 ...new Inputs.Draw.DrawBasicGeometryOptions(),
