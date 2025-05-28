@@ -6,7 +6,7 @@ This git repo contains multiple bitbybit packages and contains code for core 3D 
 # [LEARN BITBYBIT](https://learn.bitbybit.dev)   
 
 Essential introduction by Matas   
-[![Introduction by Matas Ubarevicius](https://img.youtube.com/vi/noc6Rg6tMe0/0maxresdefault.jpg)](https://www.youtube.com/watch?v=noc6Rg6tMe0)
+[![Introduction by Matas Ubarevicius](https://img.youtube.com/vi/noc6Rg6tMe0/maxresdefault.jpg)](https://www.youtube.com/watch?v=noc6Rg6tMe0)
 
 <img src="https://app.bitbybit.dev/assets/git-cover.png" alt="Picture showing bitbybit.dev platform">
 
