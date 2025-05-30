@@ -3,7 +3,7 @@ sidebar_position: 1
 title: "Introduction to Babylon.js"
 sidebar_label: "Babylon.js Overview"
 description: "An overview of Babylon.js, a powerful and easy-to-use WebGL-based 3D game engine, and its integration with Bitbybit."
-tags: [babylonjs, webgl, 3d graphics, game engine, typescript, microsoft, bitbybit integration]
+tags: [npm-packages, babylonjs]
 ---
 
 import Admonition from '@theme/Admonition';
