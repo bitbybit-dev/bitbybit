@@ -1,3 +1,6 @@
+import type { BitByBitBase, Inputs } from "@bitbybit-dev/babylonjs";
+import type { Scene } from "@babylonjs/core";
+
 export type Model = {
   uHex: number;
   vHex: number;
@@ -17,8 +20,32 @@ export type Model = {
   color2: string;
   finalPrecision: number;
   rotationEnabled: boolean;
-  downloadSTL?: () => void;
-  downloadStep?: () => void;
-  downloadGLB?: () => void;
+  downloadSTL?: (scene: Scene) => void;
+  downloadStep?: (
+    bitbybit: BitByBitBase,
+    finalShape: Inputs.OCCT.TopoDSShapePointer | undefined
+  ) => void;
+  downloadGLB?: (scene: Scene) => void;
   update?: () => void;
 };
+
+export const model = {
+  uHex: 3,
+  vHex: 12,
+  height: 15,
+  ellipse1MinRad: 15,
+  ellipse1MaxRad: 15,
+  ellipse2MinRad: 25,
+  ellipse2MaxRad: 30,
+  ellipse2RotX: 15,
+  ellipse2RotY: 15,
+  ellipse3MinRad: 45,
+  ellipse3MaxRad: 90,
+  ellipse3YRot: 45,
+  finalPrecision: 0.05,
+  drawEdges: false,
+  drawFaces: true,
+  rotationEnabled: false,
+  color1: "#b3ccff",
+  color2: "#ffffff",
+} as Model;

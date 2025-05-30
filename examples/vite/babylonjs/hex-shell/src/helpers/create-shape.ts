@@ -1,13 +1,13 @@
-import type { BitByBitBase } from '@bitbybit-dev/babylonjs';
+import type { BitByBitBase } from "@bitbybit-dev/babylonjs";
 import {
   Color3,
   Mesh,
   PBRMetallicRoughnessMaterial,
   Scene,
-} from '@babylonjs/core';
-import { Inputs } from '@bitbybit-dev/babylonjs';
-import type { Current } from './models/current';
-import type { Model } from './models/model';
+} from "@babylonjs/core";
+import { Inputs } from "@bitbybit-dev/babylonjs";
+import type { Current } from "../models/current";
+import type { Model } from "../models/model";
 
 export const createShapeLod2 = async (
   bitbybit: BitByBitBase | undefined,
@@ -296,10 +296,10 @@ export const createShapeLod2 = async (
     options.drawFaces = model.drawFaces;
     options.drawVertices = false;
     options.edgeWidth = 20;
-    options.edgeColour = '#000000';
+    options.edgeColour = "#000000";
 
     const mat = new PBRMetallicRoughnessMaterial(
-      'mat1',
+      "mat1",
       bitbybit.context.scene
     );
     mat.baseColor = Color3.FromHexString(model.color1);
@@ -313,7 +313,7 @@ export const createShapeLod2 = async (
     );
 
     const mat2 = new PBRMetallicRoughnessMaterial(
-      'mat2',
+      "mat2",
       bitbybit.context.scene
     );
     mat2.baseColor = Color3.FromHexString(model.color2);
@@ -329,10 +329,10 @@ export const createShapeLod2 = async (
     const groups1 = await Promise.all(groups1Promises);
     const groups2 = await Promise.all(groups2Promises);
 
-    const group1 = new Mesh('group1', bitbybit.context.scene);
+    const group1 = new Mesh("group1", bitbybit.context.scene);
     groups1.forEach((g) => (g.parent = group1));
 
-    const group2 = new Mesh('group2', bitbybit.context.scene);
+    const group2 = new Mesh("group2", bitbybit.context.scene);
     groups2.forEach((g) => (g.parent = group2));
 
     current.group1 = group1;
@@ -420,9 +420,9 @@ export const createShapeLod1 = async (
     options.drawVertices = false;
     options.edgeWidth = 30;
 
-    options.edgeColour = '#ff00ff';
+    options.edgeColour = "#ff00ff";
 
-    const mat = new PBRMetallicRoughnessMaterial('mat', bitbybit.context.scene);
+    const mat = new PBRMetallicRoughnessMaterial("mat", bitbybit.context.scene);
     mat.baseColor = Color3.FromHexString(model.color1);
     mat.zOffset = 2;
     mat.backFaceCulling = false;
@@ -433,7 +433,7 @@ export const createShapeLod1 = async (
     });
 
     const mat2 = new PBRMetallicRoughnessMaterial(
-      'mat2',
+      "mat2",
       bitbybit.context.scene
     );
     mat2.baseColor = Color3.FromHexString(model.color2);
@@ -446,7 +446,7 @@ export const createShapeLod1 = async (
     });
 
     const dimOpt = new Inputs.Draw.DrawOcctShapeOptions();
-    dimOpt.edgeColour = '#000000';
+    dimOpt.edgeColour = "#000000";
     dimOpt.edgeWidth = 20;
     dimOpt.drawFaces = false;
     const dimensionsGroup = await bitbybit.draw.drawAnyAsync({
@@ -457,10 +457,10 @@ export const createShapeLod1 = async (
 
     // just to match chunked data structure of LOD2
 
-    const group1 = new Mesh('group1', bitbybit.context.scene);
+    const group1 = new Mesh("group1", bitbybit.context.scene);
     grp1.parent = group1;
 
-    const group2 = new Mesh('group2', bitbybit.context.scene);
+    const group2 = new Mesh("group2", bitbybit.context.scene);
     grp2.parent = group2;
 
     current.group1 = group1;
@@ -550,7 +550,7 @@ async function createDimensions(
   linearOptions.labelSize = 3;
   linearOptions.labelOffset = 3;
   linearOptions.crossingSize = 1;
-  linearOptions.labelSuffix = '(m)';
+  linearOptions.labelSuffix = "(m)";
   const dimLength = await dimensions.simpleLinearLengthDimension(linearOptions);
   shapesToClean.push(dimLength);
 
