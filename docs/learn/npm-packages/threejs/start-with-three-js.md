@@ -1,7 +1,7 @@
 ---
 sidebar_position: 2
 title: Using Bitbybit with Three.js
-sidebar_label: Three.js Integration
+sidebar_label: Three.js Starter Template
 description: Learn how to set up and use the @bitbybit-dev/threejs package with Vite to create 3D CAD applications, and control which geometry kernels (OCCT, JSCAD, Manifold) are initialized.
 tags: [npm-packages, threejs, occt, manifold, jscad]
 ---

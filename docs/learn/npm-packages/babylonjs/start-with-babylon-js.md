@@ -1,7 +1,7 @@
 ---
-sidebar_position: 3
+sidebar_position: 2
 title: Using Bitbybit with Babylon.js
-sidebar_label: Babylon.js Integration
+sidebar_label: Babylon.js Starter Template
 description: Learn how to set up and use the @bitbybit-dev/babylonjs package with Vite to create 3D CAD applications, and control which geometry kernels (OCCT, JSCAD, Manifold) are initialized.
 tags: [npm-packages, babylonjs, occt, manifold, jscad]
 ---
@@ -36,8 +36,8 @@ cd my-bitbybit-babylonjs-app`}
 Next, install the Bitbybit Babylon.js package and its necessary worker dependencies:
 
 <CodeBlock language="bash">
-{`npm install @bitbybit-dev/babylonjs @babylonjs/core
-# or: yarn add @bitbybit-dev/babylonjs @babylonjs/core`}
+{`npm install @bitbybit-dev/babylonjs
+# or: yarn add @bitbybit-dev/babylonjs`}
 </CodeBlock>
 
 <Admonition type="info" title="Why these packages?">
