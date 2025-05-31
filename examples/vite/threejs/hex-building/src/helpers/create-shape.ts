@@ -1,8 +1,7 @@
-import type { BitByBitBase } from '@bitbybit-dev/threejs';
-import { Color, MeshPhongMaterial, Scene } from 'three';
-import { Inputs } from '@bitbybit-dev/threejs';
-import type { Current } from './models/current';
-import type { Model } from './models/model';
+import type { BitByBitBase } from "@bitbybit-dev/threejs";
+import { Inputs } from "@bitbybit-dev/threejs";
+import { Color, MeshPhongMaterial, Scene } from "three";
+import type { Current, Model } from "../models";
 
 export const createShape = async (
   bitbybit: BitByBitBase | undefined,
@@ -115,14 +114,14 @@ export const createShape = async (
 
     const roof = await createHexagonsRoof(
       faceRoof,
-      model.uRec,
-      model.vRec,
+      model.uHex,
+      model.vHex,
       bitbybit
     );
     const wall = await createHexagonsWalls(
       faceWall,
-      model.uRec,
-      Math.ceil(model.vRec / 2),
+      model.uHex,
+      Math.ceil(model.vHex / 2),
       bitbybit
     );
     const wallExtrude = await operations.extrude({
@@ -160,7 +159,7 @@ export const createShape = async (
     options.precision = 0.19;
     options.drawEdges = model.drawEdges;
     options.drawFaces = model.drawFaces;
-    options.edgeColour = '#000000';
+    options.edgeColour = "#000000";
 
     const mat1 = new MeshPhongMaterial({ color: new Color(model.color) });
     mat1.polygonOffset = true;
@@ -173,7 +172,7 @@ export const createShape = async (
       options,
     });
 
-    const mat2 = new MeshPhongMaterial({ color: new Color(0x010012) });
+    const mat2 = new MeshPhongMaterial({ color: new Color(0x0000ff) });
     mat2.polygonOffset = true;
     mat2.polygonOffsetFactor = 1;
     mat2.side = 2;
@@ -184,7 +183,7 @@ export const createShape = async (
       options,
     });
 
-    const mat3 = new MeshPhongMaterial({ color: new Color(0x010010) });
+    const mat3 = new MeshPhongMaterial({ color: new Color(0x3300ff) });
     mat3.polygonOffset = true;
     mat3.polygonOffsetFactor = 1;
     mat3.side = 2;
