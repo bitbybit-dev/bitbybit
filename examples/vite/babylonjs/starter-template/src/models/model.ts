@@ -1,0 +1,24 @@
+export type Model = {
+  uHex: number;
+  vHex: number;
+  height: number;
+  ellipse1MinRad: number;
+  ellipse1MaxRad: number;
+  ellipse2MinRad: number;
+  ellipse2MaxRad: number;
+  ellipse2RotX: number;
+  ellipse2RotY: number;
+  ellipse3MinRad: number;
+  ellipse3MaxRad: number;
+  ellipse3YRot: number;
+  drawEdges: boolean;
+  drawFaces: boolean;
+  color1: string;
+  color2: string;
+  finalPrecision: number;
+  rotationEnabled: boolean;
+  downloadSTL?: () => void;
+  downloadStep?: () => void;
+  downloadGLB?: () => void;
+  update?: () => void;
+};

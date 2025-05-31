@@ -22,6 +22,8 @@ The `@bitbybit-dev/threejs` package conveniently includes `three` as a dependenc
 *   Node.js and npm (or yarn) installed.
 *   A basic understanding of TypeScript and Three.js.
 
+## [Example on Bitbybit Github Repo](https://github.com/bitbybit-dev/bitbybit/tree/master/examples/vite/threejs/starter-template)
+
 ## 1. Project Setup with Vite
 
 First, create a new Vite project with a TypeScript template:

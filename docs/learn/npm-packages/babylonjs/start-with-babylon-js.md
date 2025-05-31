@@ -22,6 +22,8 @@ The `@bitbybit-dev/babylonjs` package conveniently includes `@babylonjs/core` as
 *   Node.js and npm (or yarn) installed.
 *   A basic understanding of TypeScript and Babylon.js.
 
+## [Example on Bitbybit Github Repo](https://github.com/bitbybit-dev/bitbybit/tree/master/examples/vite/babylonjs/starter-template)
+
 ## 1. Project Setup with Vite
 
 First, create a new Vite project with a TypeScript template:
