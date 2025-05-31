@@ -1,6 +1,6 @@
 # Bitbybit Monorepo
 
-This git repo contains multiple bitbybit packages and contains code for core 3D algorithms of Bitbybit platform which are open-sourced under MIT license.
+This git repo contains multiple bitbybit packages and code for core 3D algorithms of Bitbybit platform which are open-sourced under MIT license.
 
 # [FULL PLATFORM AT BITBYBIT.DEV](https://bitbybit.dev)   
 # [LEARN BITBYBIT](https://learn.bitbybit.dev)   

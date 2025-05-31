@@ -60,7 +60,7 @@ We've developed and launched three different types of examples to demonstrate a 
 When you only need to run a script created in Bitbybit.dev without much external interaction, this is a good starting point. There are several ways to load the exported script file into your website, but perhaps the simplest is to just copy and paste its content and assign it to a variable or return it from a function.
 
 We've provided this example on three popular external coding sites:
-*   [StackBlitz Example](https://stackblitz.com/edit/stackblitz-starters-f6d3a2?file=script.js)
+*   [StackBlitz Example](https://stackblitz.com/edit/bitbybit-dev-runner-example-inline-string-embed-from-ret?file=script.js)
 *   [JSFiddle Example](https://jsfiddle.net/matas_bitbybitdev/sa5jroqn/11/)
 *   [CodePen Example](https://codepen.io/matas-bitbybit-dev/pen/XWQoxmX)
 
@@ -98,7 +98,7 @@ While this example is basic, it includes all the essential elements of a 3D conf
 *   Demonstration of how you can provide inputs to your exported Rete script and read outputs from it.
 
 Check out the examples:
-*   [StackBlitz Example](https://stackblitz.com/edit/stackblitz-starters-ohhh1g?file=script.js)
+*   [StackBlitz Example](https://stackblitz.com/edit/bitbybit-dev-runner-example-io-from-rete-editor?file=index.html,script.js)
 *   [JSFiddle Example](https://jsfiddle.net/matas_bitbybitdev/z1pku4gj/3/)
 *   [CodePen Example](https://codepen.io/matas-bitbybit-dev/pen/KKYbJdj)
 

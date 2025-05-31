@@ -10,9 +10,35 @@ import Admonition from '@theme/Admonition';
 
 # Welcome! 🎉
 
-We're thrilled you're interested in using our platform! These "Start" pages are designed to help you quickly get up to speed and begin creating amazing 3D experiences.
+We're thrilled you're interested in using our platform! This site is designed to help you quickly get up to speed and begin creating amazing 3D experiences.
+
+In this essential introduction to Bitbybit video Matas Ubarevičius explains the fundamental ideas of the platform - if you haven't watched it yet - it's highly recommended.
+<div class="responsive-video-container">
+  <iframe 
+    width="560" 
+    height="315" 
+    src="https://www.youtube.com/embed/noc6Rg6tMe0" 
+    title="Essential Introduction To BITBYBIT That Explains You The Most Important Aspects Of The 3D Platform" 
+    frameborder="0" 
+    allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+    allowfullscreen>
+  </iframe>
+</div>
 
 Let's find the best starting point for you:
+
+### Are you a programmer?
+
+If you're a professional programmer, you can jump right into our [**TypeScript Monaco editor**](https://bitbybit.dev/app?editor=typescript). Find the [**API Docs here**](https://docs.bitbybit.dev).
+
+To get started:
+
+*   We offer [**NPM packages**](/learn/npm-packages/intro) that you can incorporate into your own websites.
+    *   *Note: These packages do not include our proprietary advanced algorithms or the models available in the 3D Models section.*
+*   Check out how to set up our algorithms with [**Three.JS**](/learn/npm-packages/threejs/intro) or [**Babylon.JS**](/learn/npm-packages/babylonjs/intro). We include some complete powerful demos with explanations.
+*   Also consider our course: [**Introduction To Programming 3D In TypeScript**](https://bitbybit.dev/school/courses/introduction-to-programming-3d-in-typescript).
+*   Or, if you're familiar with BabylonJS: [**Bitbybit For BabylonJS Developers**](https://bitbybit.dev/school/courses/bitbybit-for-babylonjs-developers).
+    These courses explore how our algorithms can create 3D CAD applications.
 
 ### Are you looking for ready-made 3D models?
 
@@ -65,15 +91,3 @@ This platform is a great place to teach 3D computational design, mathematics, ge
 </Admonition>
 
 If you're familiar with our tools and interested in becoming a teacher in our School to share your knowledge, please reach out to us at [info@bitbybit.dev](mailto:info@bitbybit.dev).
-
-### Are you a programmer?
-
-If you're a professional programmer, you can jump right into our **TypeScript Monaco editor**.
-
-To get started:
-
-*   Consider our course: [**Introduction To Programming 3D In TypeScript**](https://bitbybit.dev/school/courses/introduction-to-programming-3d-in-typescript).
-*   Or, if you're familiar with BabylonJS: [**Bitbybit For BabylonJS Developers**](https://bitbybit.dev/school/courses/bitbybit-for-babylonjs-developers).
-    These courses explore how our algorithms can create 3D CAD applications.
-*   We also offer [**NPM packages**](/learn/npm-packages/intro) that you can incorporate into your own websites.
-    *   *Note: These packages do not include our proprietary advanced algorithms or the models available in the 3D Models section.*

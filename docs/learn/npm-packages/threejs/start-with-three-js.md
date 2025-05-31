@@ -1,7 +1,7 @@
 ---
 sidebar_position: 2
 title: Using Bitbybit with Three.js
-sidebar_label: Three.js Integration
+sidebar_label: Three.js Starter Template
 description: Learn how to set up and use the @bitbybit-dev/threejs package with Vite to create 3D CAD applications, and control which geometry kernels (OCCT, JSCAD, Manifold) are initialized.
 tags: [npm-packages, threejs, occt, manifold, jscad]
 ---
@@ -206,7 +206,7 @@ import {
     Vector3,
     WebGLRenderer,
 } from 'three';
-import { first } from 'rxjs';
+import { first, firstValueFrom, tap } from 'rxjs';
 
 // Define an interface for kernel options
 interface KernelOptions {
@@ -294,91 +294,121 @@ function initThreeJS() {
 
 // --- 5. Bitbybit Kernel Initialization Logic ---
 async function initWithKernels(
-  scene: Scene,
-  bitbybit: BitByBitBase,
-  options: KernelOptions
-): Promise<{ message: string }> { // Added explicit return type for clarity
-  return new Promise(async (resolve) => {
+    scene: Scene,
+    bitbybit: BitByBitBase,
+    options: KernelOptions
+): Promise<{ message: string }> {
     let occtWorkerInstance: Worker | undefined;
     let jscadWorkerInstance: Worker | undefined;
     let manifoldWorkerInstance: Worker | undefined;
 
-    // Conditionally create worker instances based on options
+    // 1. Conditionally create worker instances
     if (options.enableOCCT) {
-      occtWorkerInstance = new Worker(
+        occtWorkerInstance = new Worker(
         new URL('./workers/occt.worker.ts', import.meta.url),
         { name: 'OCC_WORKER', type: 'module' }
-      );
+        );
     }
     if (options.enableJSCAD) {
-      jscadWorkerInstance = new Worker(
+        jscadWorkerInstance = new Worker(
         new URL('./workers/jscad.worker.ts', import.meta.url),
         { name: 'JSCAD_WORKER', type: 'module' }
-      );
+        );
     }
     if (options.enableManifold) {
-      manifoldWorkerInstance = new Worker(
+        manifoldWorkerInstance = new Worker(
         new URL('./workers/manifold.worker.ts', import.meta.url),
         { name: 'MANIFOLD_WORKER', type: 'module' }
-      );
+        );
     }
 
-    // Initialize Bitbybit with the (potentially undefined) worker instances
+    // 2. Initialize Bitbybit
     await bitbybit.init(
-      scene,
-      occtWorkerInstance,
-      jscadWorkerInstance,
-      manifoldWorkerInstance
+        scene,
+        occtWorkerInstance,
+        jscadWorkerInstance,
+        manifoldWorkerInstance
     );
 
-    // Logic to wait for selected kernels to be initialized
-    let nrResolved = 0;
-    let resolutionsNeeded = 0;
+    // 3. Collect promises for kernel initializations
+    const initializationPromises: Promise<void>[] = [];
+    let anyKernelSelectedForInit = false;
 
-    const checkIfAllInitialized = () => {
-      if (nrResolved === resolutionsNeeded) {
-        console.log('Selected kernels initialized:', options);
-        resolve({ message: 'Selected kernels initialized successfully.' });
-      }
+    if (options.enableOCCT) {
+        anyKernelSelectedForInit = true;
+        if (bitbybit.occtWorkerManager) {
+        initializationPromises.push(
+            firstValueFrom(
+            bitbybit.occtWorkerManager.occWorkerState$.pipe(
+                first((s) => s.state === OccStateEnum.initialised),
+                tap(() => console.log('OCCT Initialized'))
+            )
+            ).then(() => {}) // Ensure the promise resolves to void for Promise.all
+        );
+        } else {
+        console.warn(
+            'OCCT enabled in options, but occtWorkerManager not found after init.'
+        );
+        }
+    }
+
+    if (options.enableJSCAD) {
+        anyKernelSelectedForInit = true;
+        if (bitbybit.jscadWorkerManager) {
+        initializationPromises.push(
+            firstValueFrom(
+            bitbybit.jscadWorkerManager.jscadWorkerState$.pipe(
+                first((s) => s.state === JscadStateEnum.initialised),
+                tap(() => console.log('JSCAD Initialized'))
+            )
+            ).then(() => {})
+        );
+        } else {
+        console.warn(
+            'JSCAD enabled in options, but jscadWorkerManager not found after init.'
+        );
+        }
+    }
+
+    if (options.enableManifold) {
+        anyKernelSelectedForInit = true;
+        if (bitbybit.manifoldWorkerManager) {
+        initializationPromises.push(
+            firstValueFrom(
+            bitbybit.manifoldWorkerManager.manifoldWorkerState$.pipe(
+                first((s) => s.state === ManifoldStateEnum.initialised),
+                tap(() => console.log('Manifold Initialized'))
+            )
+            ).then(() => {})
+        );
+        } else {
+        console.warn(
+            'Manifold enabled in options, but manifoldWorkerManager not found after init.'
+        );
+        }
+    }
+
+    // 4. Wait for selected & available kernels or handle no selection/availability
+    if (!anyKernelSelectedForInit) {
+        console.log('No kernels selected for initialization.');
+        return { message: 'No kernels selected for initialization.' };
+    }
+
+    if (initializationPromises.length === 0) {
+        // Kernels were selected, but none were awaitable (e.g., managers missing for all selected)
+        console.log(
+        'Kernels were selected, but none had managers available for awaiting initialization.'
+        );
+        return {
+        message: 'Selected kernels were not awaitable for initialization state.',
+        };
+    }
+
+    await Promise.all(initializationPromises);
+    console.log('Selected and awaitable kernels initialized:', options);
+    return {
+        message: 'Selected and awaitable kernels initialized successfully.',
     };
-
-    if (options.enableOCCT && bitbybit.occtWorkerManager) {
-      resolutionsNeeded++;
-      bitbybit.occtWorkerManager.occWorkerState$
-        .pipe(first((s) => s.state === OccStateEnum.initialised))
-        .subscribe(() => {
-          console.log('OCCT Initialized');
-          nrResolved++;
-          checkIfAllInitialized();
-        });
-    }
-    if (options.enableJSCAD && bitbybit.jscadWorkerManager) {
-      resolutionsNeeded++;
-      bitbybit.jscadWorkerManager.jscadWorkerState$
-        .pipe(first((s) => s.state === JscadStateEnum.initialised))
-        .subscribe(() => {
-          console.log('JSCAD Initialized');
-          nrResolved++;
-          checkIfAllInitialized();
-        });
-    }
-    if (options.enableManifold && bitbybit.manifoldWorkerManager) {
-      resolutionsNeeded++;
-      bitbybit.manifoldWorkerManager.manifoldWorkerState$
-        .pipe(first((s) => s.state === ManifoldStateEnum.initialised))
-        .subscribe(() => {
-          console.log('Manifold Initialized');
-          nrResolved++;
-          checkIfAllInitialized();
-        });
-    }
-
-    // If no kernels were selected to be enabled
-    if (resolutionsNeeded === 0) {
-      console.log('No kernels selected for initialization.');
-      resolve({ message: 'No kernels selected for initialization.' });
-    }
-  });
 }
 
 // --- 6. Geometry Creation Functions (Examples) ---

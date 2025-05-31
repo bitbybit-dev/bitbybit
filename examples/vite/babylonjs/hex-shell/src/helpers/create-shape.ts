@@ -1,8 +1,13 @@
-import type { BitByBitBase } from '@bitbybit-dev/threejs';
-import { Color, DoubleSide, Group, MeshPhongMaterial, Scene } from 'three';
-import { Inputs } from '@bitbybit-dev/threejs';
-import type { Current } from './models/current';
-import type { Model } from './models/model';
+import type { BitByBitBase } from "@bitbybit-dev/babylonjs";
+import {
+  Color3,
+  Mesh,
+  PBRMetallicRoughnessMaterial,
+  Scene,
+} from "@babylonjs/core";
+import { Inputs } from "@bitbybit-dev/babylonjs";
+import type { Current } from "../models/current";
+import type { Model } from "../models/model";
 
 export const createShapeLod2 = async (
   bitbybit: BitByBitBase | undefined,
@@ -291,12 +296,15 @@ export const createShapeLod2 = async (
     options.drawFaces = model.drawFaces;
     options.drawVertices = false;
     options.edgeWidth = 20;
-    options.edgeColour = '#000000';
+    options.edgeColour = "#000000";
 
-    const mat = new MeshPhongMaterial({ color: new Color(model.color1) });
+    const mat = new PBRMetallicRoughnessMaterial(
+      "mat1",
+      bitbybit.context.scene
+    );
+    mat.baseColor = Color3.FromHexString(model.color1);
     if (model.drawEdges) {
-      mat.polygonOffset = true;
-      mat.polygonOffsetFactor = 1;
+      mat.zOffset = 2;
     }
     options.faceMaterial = mat;
 
@@ -304,10 +312,13 @@ export const createShapeLod2 = async (
       bitbybit.draw.drawAnyAsync({ entity: comp, options })
     );
 
-    const mat2 = new MeshPhongMaterial({ color: new Color(model.color2) });
+    const mat2 = new PBRMetallicRoughnessMaterial(
+      "mat2",
+      bitbybit.context.scene
+    );
+    mat2.baseColor = Color3.FromHexString(model.color2);
     if (model.drawEdges) {
-      mat2.polygonOffset = true;
-      mat2.polygonOffsetFactor = 1;
+      mat2.zOffset = 2;
     }
     options.faceMaterial = mat2;
 
@@ -318,27 +329,11 @@ export const createShapeLod2 = async (
     const groups1 = await Promise.all(groups1Promises);
     const groups2 = await Promise.all(groups2Promises);
 
-    const group1 = new Group();
-    group1.add(...groups1);
-    scene.add(group1);
+    const group1 = new Mesh("group1", bitbybit.context.scene);
+    groups1.forEach((g) => (g.parent = group1));
 
-    const group2 = new Group();
-    group2.add(...groups2);
-    scene.add(group2);
-
-    groups1.forEach((group) => {
-      group.children[0].children.forEach((child) => {
-        child.castShadow = true;
-        child.receiveShadow = true;
-      });
-    });
-
-    groups2.forEach((group) => {
-      group.children[0].children.forEach((child) => {
-        child.castShadow = true;
-        child.receiveShadow = true;
-      });
-    });
+    const group2 = new Mesh("group2", bitbybit.context.scene);
+    groups2.forEach((g) => (g.parent = group2));
 
     current.group1 = group1;
     current.group2 = group2;
@@ -412,7 +407,7 @@ export const createShapeLod1 = async (
       bitbybit,
       model,
       faceBase,
-      [w1, w2, w3],
+      [w2],
       shapesToClean
     );
 
@@ -423,63 +418,54 @@ export const createShapeLod1 = async (
     options.drawEdges = true;
     options.drawFaces = true;
     options.drawVertices = false;
-    options.edgeWidth = 20;
+    options.edgeWidth = 30;
 
-    options.edgeColour = '#ffffff';
+    options.edgeColour = "#ff00ff";
 
-    const mat = new MeshPhongMaterial({ color: new Color(model.color1) });
-    mat.polygonOffset = true;
-    mat.polygonOffsetFactor = 1;
-    mat.transparent = true;
-    mat.opacity = 0.5;
-    mat.side = DoubleSide;
+    const mat = new PBRMetallicRoughnessMaterial("mat", bitbybit.context.scene);
+    mat.baseColor = Color3.FromHexString(model.color1);
+    mat.zOffset = 2;
+    mat.backFaceCulling = false;
     options.faceMaterial = mat;
     const grp1 = await bitbybit.draw.drawAnyAsync({
       entity: firstGroup,
       options,
     });
 
-    const mat2 = new MeshPhongMaterial({ color: new Color(model.color2) });
-    mat2.polygonOffset = true;
-    mat2.polygonOffsetFactor = 1;
-    mat2.transparent = true;
-    mat2.opacity = 0.5;
-    mat2.side = DoubleSide;
+    const mat2 = new PBRMetallicRoughnessMaterial(
+      "mat2",
+      bitbybit.context.scene
+    );
+    mat2.baseColor = Color3.FromHexString(model.color2);
+    mat2.zOffset = 2;
+    mat2.backFaceCulling = false;
     options.faceMaterial = mat2;
     const grp2 = await bitbybit.draw.drawAnyAsync({
       entity: secondGroup,
       options,
     });
 
-    grp1.children[0].children.forEach((child) => {
-      child.castShadow = true;
-      child.receiveShadow = true;
-    });
-
-    grp2.children[0].children.forEach((child) => {
-      child.castShadow = true;
-      child.receiveShadow = true;
-    });
-
     const dimOpt = new Inputs.Draw.DrawOcctShapeOptions();
-    dimOpt.edgeColour = '#aaaaff';
+    dimOpt.edgeColour = "#000000";
+    dimOpt.edgeWidth = 20;
     dimOpt.drawFaces = false;
     const dimensionsGroup = await bitbybit.draw.drawAnyAsync({
       entity: dimensions,
       options: dimOpt,
     });
-    dimensionsGroup.position.y = 0.02;
+    // dimensionsGroup.position.y = 0.05;
 
     // just to match chunked data structure of LOD2
-    const group1 = new Group();
-    group1.add(grp1);
-    scene.add(group1);
-    const group2 = new Group();
-    group2.add(grp2);
-    scene.add(group2);
+
+    const group1 = new Mesh("group1", bitbybit.context.scene);
+    grp1.parent = group1;
+
+    const group2 = new Mesh("group2", bitbybit.context.scene);
+    grp2.parent = group2;
 
     current.group1 = group1;
     current.group2 = group2;
+
     current.dimensions = dimensionsGroup;
 
     const finalShape = await bitbybit.occt.shapes.compound.makeCompound({
@@ -560,16 +546,16 @@ async function createDimensions(
 
   linearOptions.start = [-model.ellipse3MaxRad, 0.01, 0];
   linearOptions.end = [model.ellipse3MaxRad, 0.01, 0];
-  linearOptions.direction = [0, 0, -model.ellipse3MinRad * 1.2];
+  linearOptions.direction = [0, 0, model.ellipse3MinRad * 1.2];
   linearOptions.labelSize = 3;
   linearOptions.labelOffset = 3;
   linearOptions.crossingSize = 1;
-  linearOptions.labelSuffix = '(m)';
+  linearOptions.labelSuffix = "(m)";
   const dimLength = await dimensions.simpleLinearLengthDimension(linearOptions);
   shapesToClean.push(dimLength);
 
-  linearOptions.start = [0, 0.01, model.ellipse3MinRad];
-  linearOptions.end = [0, 0.01, -model.ellipse3MinRad];
+  linearOptions.start = [0, 0.01, -model.ellipse3MinRad];
+  linearOptions.end = [0, 0.01, model.ellipse3MinRad];
   linearOptions.direction = [-model.ellipse3MaxRad * 1.2, 0, 0];
   const dimWidth = await dimensions.simpleLinearLengthDimension(linearOptions);
   shapesToClean.push(dimWidth);
@@ -595,8 +581,8 @@ async function createDimensions(
 
   const pinOpt = new Inputs.OCCT.PinWithLabelDto();
   pinOpt.startPoint = [0, 0, 0];
-  pinOpt.endPoint = [0, model.height * 2, -model.ellipse2MaxRad / 2];
-  pinOpt.direction = [0, 0, -4];
+  pinOpt.endPoint = [0, model.height * 2, model.ellipse2MaxRad / 2];
+  pinOpt.direction = [0, 0, 4];
   pinOpt.label = `Nr Hexagons ${model.uHex * model.vHex}`;
   pinOpt.labelSize = 2;
   pinOpt.labelOffset = 3;
