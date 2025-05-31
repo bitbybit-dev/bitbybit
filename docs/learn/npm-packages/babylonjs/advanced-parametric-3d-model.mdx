@@ -1,8 +1,8 @@
 ---
 sidebar_position: 3
-title: "Advanced Parametric 3D Model with Babylon.js & Bitbybit"
-sidebar_label: "Parametric Model (Advanced)"
-description: "Learn how to build an advanced, interactive parametric 3D model using Bitbybit with Babylon.js, OCCT, and a GUI for real-time control."
+title: "Advanced Parametric 3D Model with BabylonJS & Bitbybit"
+sidebar_label: "Parametric Model (BabylonJS)"
+description: "Learn how to build an advanced, interactive parametric 3D model using Bitbybit with BabylonJS, OCCT, and a GUI for real-time control."
 tags: [npm-packages, babylonjs]
 ---
 
@@ -11,9 +11,9 @@ import TabItem from '@theme/TabItem';
 import CodeBlock from '@theme/CodeBlock';
 import Admonition from '@theme/Admonition';
 
-# Advanced Parametric 3D Model with Babylon.js & Bitbybit
+# Advanced Parametric 3D Model with BabylonJS & Bitbybit
 
-This tutorial explores a more advanced example of creating an interactive, parametric 3D model using Bitbybit's Babylon.js integration. We'll build a configurable 3D shape whose geometry is driven by parameters controlled via a GUI (Graphical User Interface), leveraging the OpenCascade (OCCT) kernel for robust CAD operations.
+This tutorial explores building a sophisticated, interactive parametric 3D model utilizing Bitbybit's robust integration with the BabylonJS rendering engine. We will construct a configurable "Hex Shell" 3D shape, where its geometry is dynamically controlled by parameters from a `lil-gui` interface. The underlying complex CAD operations will be handled by the OpenCascade (OCCT) kernel, accessed via Bitbybit.
 
 You can see what the results of this app look like (rendered in Unreal Engine):
 <div class="responsive-video-container">
@@ -28,20 +28,21 @@ You can see what the results of this app look like (rendered in Unreal Engine):
   </iframe>
 </div>
 
-This example demonstrates:
-*   Setting up a Babylon.js scene.
-*   Initializing Bitbybit with specific geometry kernels (OCCT in this case).
-*   Creating parametric geometry using Bitbybit's OCCT API.
-*   Using `lil-gui` to create a simple UI for controlling model parameters.
-*   Dynamically updating the 3D model in response to UI changes.
-*   Implementing Level of Detail (LOD) for shape generation (a simpler version for quick updates, a more detailed one for finalization).
-*   Handling 3D model exports (STEP, STL, GLB).
+Through this example, you will learn to:
+
+*   Set up a BabylonJS scene and rendering engine.
+*   Initialize Bitbybit with specific geometry kernels (OCCT in this case) for a BabylonJS environment.
+*   Create intricate parametric geometry using Bitbybit's OCCT API.
+*   Employ `lil-gui` to generate a user interface for real-time control over model parameters.
+*   Dynamically update the 3D model in the BabylonJS scene as UI parameters change.
+*   Implement a Level of Detail (LOD) strategy for efficient shape generation during interaction and finalization.
+*   Integrate functionality to export the 3D model in common formats like STEP, STL, and GLB.
 
 We are providing a higher level explanations of the codebase below, but for working reference always check this live example on StackBlitz, which, as platform evolves could change slightly.
 
 <div className="stackblitz-embed-container">
   <iframe
-    src="https://stackblitz.com/edit/hex-shell-threejs-bitbybit-for-docs?ctl=1&embed=1&file=src%2Fmain.ts&theme=dark"
+    src="https://stackblitz.com/edit/hex-shell-babylonjs-bitbybit-for-docs?ctl=1&embed=1&file=src%2Fmain.ts&theme=dark"
     style={{
       width: '100%',
       height: '700px',
@@ -57,322 +58,346 @@ We are providing a higher level explanations of the codebase below, but for work
 
 ## Project Structure Overview
 
-This project is typically structured with:
-*   `index.html`: The main HTML file to host the canvas and load scripts.
-*   `style.css`: For basic styling of the page and UI elements like a loading spinner.
-*   `src/main.ts`: The main entry point of our application, orchestrating scene setup, Bitbybit initialization, GUI, and geometry updates.
-*   `src/models/`: A directory to define data structures for our model parameters (`model.ts`), kernel initialization options (`kernel-options.ts`), and current scene state (`current.ts`).
-*   `src/helpers/`: A directory for utility functions, broken down by responsibility:
-    *   `init-threejs.ts`: Sets up the Babylon.js scene, camera, renderer, lights, and ground.
-    *   `init-kernels.ts`: Handles the initialization of selected Bitbybit geometry kernels.
-    *   `create-shape.ts`: Contains the core logic for generating the parametric 3D geometry using OCCT. This is where the detailed CAD operations happen.
-    *   `create-gui.ts`: Sets up the `lil-gui` panel and links its controls to the model parameters and update functions.
-    *   `downloads.ts`: Implements functions for exporting the model to various file formats.
-    *   `gui-helper.ts`: Provides utility functions for managing the GUI state (e.g., showing/hiding a spinner, disabling/enabling GUI).
-*   `src/workers/`: Directory containing the individual worker files for each geometry kernel (e.g., `occt.worker.ts`).
+A well-organized project structure is key for managing more complex applications. This example typically involves:
 
-<Admonition type="info" title="Worker Setup">
-  For a detailed explanation of how to set up the Web Worker files (`occt.worker.ts`, `jscad.worker.ts`, `manifold.worker.ts`), please refer to our [**Three.js Integration Starter Tutorial**](./start-with-three-js). This current tutorial focuses on the application logic built upon that foundation.
+*   `index.html`: The entry point for the browser, hosting the canvas and loading our scripts.
+*   `style.css`: Contains basic CSS for page layout, canvas presentation, and UI elements such as a loading spinner.
+*   `src/main.ts`: The primary TypeScript file that orchestrates the entire application, from scene setup and Bitbybit initialization to GUI interactions and geometry updates.
+*   `src/models/`: A directory to define the data structures (TypeScript interfaces/types and initial values) for:
+    *   `model.ts`: Parameters controlling the 3D shape's geometry.
+    *   `kernel-options.ts`: Configuration for enabling Bitbybit geometry kernels.
+    *   `current.ts`: References to current scene objects (meshes, lights, GUI instance).
+*   `src/helpers/`: This directory houses utility functions, each with a distinct responsibility:
+    *   `init-babylonjs.ts`: Responsible for setting up the BabylonJS `Engine`, `Scene`, `Camera`, default lighting, and a ground plane.
+    *   `init-kernels.ts`: Manages the initialization of the selected Bitbybit geometry kernels (e.g., OCCT).
+    *   `create-shape.ts`: The core of the geometric logic, containing the functions that use Bitbybit's OCCT API to generate the parametric "Hex Shell" model.
+    *   `create-gui.ts`: Configures the `lil-gui` panel, linking its controls to the parameters in `model.ts` and connecting them to the geometry update functions.
+    *   `downloads.ts`: Implements the logic for exporting the generated 3D model to STEP, STL, and GLB file formats.
+    *   `gui-helper.ts`: Provides simple utility functions for managing the GUI's visual state (e.g., showing/hiding a loading spinner, enabling/disabling GUI controls).
+*   `src/workers/`: This directory would contain the individual Web Worker files for each geometry kernel Bitbybit uses (e.g., `occt.worker.ts`).
+
+<Admonition type="info" title="Web Worker Setup">
+  For a detailed explanation on setting up the Web Worker files (e.g., `occt.worker.ts`), which are essential for running geometry kernels in a separate thread, please refer to our [**BabylonJS Integration Starter Tutorial**](./start-with-babylon-js) or a general guide on using workers with Bitbybit. This tutorial assumes that foundation is in place and focuses on the application logic.
 </Admonition>
 
 ## 1. HTML Setup (`index.html`)
 
-The HTML file is straightforward, providing the basic structure for our 3D application.
+The `index.html` file provides the basic webpage structure.
 
 <CodeBlock language="html" title="index.html">
 {`<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Bitbybit & ThreeJS All Kernels Example</title>
-  </head>
-  <body>
-    <a
-      class="logo"
-      href="https://bitbybit.dev"
-      target="_blank"
-      rel="noopener noreferrer"
-    >
-      <img
-        alt="Logo of Bit by bit developers company"
-        src="https://bitbybit.dev/assets/logo-gold-small.png"
-      />
-      <div>bitbybit.dev</div>
-      <br />
-      <div>support the mission - subscribe</div>
-    </a>
-    <canvas id="three-canvas"></canvas>
-    <script type="module" src="/src/main.ts"></script>
-  </body>
+    <head>
+        <meta charset="UTF-8" />
+        <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Bitbybit & BabylonJS Hex Shell Example</title>
+    </head>
+    <body>
+        <a
+        class="logo"
+        href="https://bitbybit.dev"
+        target="_blank"
+        rel="noopener noreferrer"
+        >
+        <img
+            alt="Logo of Bit by bit developers company"
+            src="https://bitbybit.dev/assets/logo-gold-small.png"
+        />
+        <div>bitbybit.dev</div>
+        <br />
+        <div>support the mission - subscribe</div>
+        </a>
+        <canvas id="babylon-canvas"></canvas>
+        <script type="module" src="/src/main.ts"></script>
+    </body>
 </html>`}
 </CodeBlock>
 
 **Key elements:**
-*   A `<canvas id="three-canvas">` element where the Three.js scene will be rendered.
-*   A script tag to load our main application logic from `src/main.ts`.
-*   A simple Bitbybit logo link.
+*   A `<canvas id="babylon-canvas">` element: This is where BabylonJS will render the 3D scene.
+*   A `<script>` tag: Loads the main application logic from `src/main.ts`.
 
 ## 2. Main Application Logic (`src/main.ts`)
 
-This is the heart of our application, orchestrating all the major components.
+This file is the central coordinator for our application, bringing together the BabylonJS scene, Bitbybit's functionalities, the GUI, and the dynamic update logic.
 
 <CodeBlock language="typescript" title="src/main.ts">
 {`import './style.css';
-import { BitByBitBase, Inputs } from '@bitbybit-dev/threejs';
+import { BitByBitBase, Inputs } from '@bitbybit-dev/babylonjs';
 import { model, type KernelOptions, current } from './models';
 import {
-  initKernels,
-  initThreeJS,
-  createGui,
-  createShapeLod1,
-  createShapeLod2,
-  createDirLightsAndGround,
-  disableGUI,
-  enableGUI,
-  hideSpinner,
-  showSpinner,
-  downloadGLB,
-  downloadSTL,
-  downloadStep,
+    initKernels,
+    initBabylonJS,
+    createGui,
+    createShapeLod1,
+    createShapeLod2,
+    createDirLightsAndGround,
+    disableGUI,
+    enableGUI,
+    hideSpinner,
+    showSpinner,
+    downloadGLB,
+    downloadSTL,
+    downloadStep,
 } from './helpers';
 
-// Configure which geometry kernels to enable
+// Configuration for enabling Bitbybit geometry kernels
 const kernelOptions: KernelOptions = {
-  enableOCCT: true, // We'll use OCCT for this parametric model
-  enableJSCAD: false,
-  enableManifold: false,
+    enableOCCT: true, // This example primarily uses OCCT for its CAD operations
+    enableJSCAD: false,
+    enableManifold: false,
 };
 
-// Start the application
+// Application entry point
 start();
 
 async function start() {
-  // 1. Initialize the Three.js scene, camera, renderer, and basic lights/ground
-  const { scene } = initThreeJS();
-  createDirLightsAndGround(scene, current); // 'current' stores references to scene objects
+    // 1. Initialize the BabylonJS Engine and Scene
+    const { scene, engine } = initBabylonJS();
 
-  // 2. Initialize Bitbybit with the Three.js scene and selected kernels
-  const bitbybit = new BitByBitBase();
-  await initKernels(scene, bitbybit, kernelOptions);
+    // 2. Initialize BitByBitBase for BabylonJS
+    const bitbybit = new BitByBitBase();
+    // Provide the BabylonJS context to the Bitbybit library.
+    // This allows Bitbybit to create and manage BabylonJS-specific objects.
+    bitbybit.context.scene = scene;
+    bitbybit.context.engine = engine;
 
-  // Variables to hold the OCCT shape representation and shapes to clean up
-  let finalShape: Inputs.OCCT.TopoDSShapePointer | undefined;
-  let shapesToClean: Inputs.OCCT.TopoDSShapePointer[] = []; // Important for memory management
+    // Add default lighting and a ground plane to the scene
+    createDirLightsAndGround(bitbybit, current);
 
-  // 3. Connect download functions to the model object (used by GUI)
-  model.downloadStep = () => downloadStep(bitbybit, finalShape);
-  model.downloadGLB = () => downloadGLB(scene);
-  model.downloadSTL = () => downloadSTL(scene);
+    // Initialize the selected Bitbybit geometry kernels (OCCT in this case)
+    await initKernels(scene, bitbybit, kernelOptions);
 
-  // 4. Create the GUI panel and link it to model parameters and the updateShape function
-  createGui(current, model, updateShape);
+    // Variables to store the final OCCT shape and intermediate shapes for cleanup
+    let finalShape: Inputs.OCCT.TopoDSShapePointer | undefined;
+    let shapesToClean: Inputs.OCCT.TopoDSShapePointer[] = []; // Crucial for OCCT memory management
 
-  // 5. Basic animation setup for rotating the model
-  const rotationSpeed = 0.0005;
-  const rotateGroup = () => {
-    if (
-      model.rotationEnabled &&
-      current.group1 && // Assumes group1, group2, dimensions are populated by createShape...
-      current.group2 &&
-      current.dimensions
-    ) {
-      current.group1.rotation.y -= rotationSpeed;
-      current.group2.rotation.y -= rotationSpeed;
-      current.dimensions.rotation.y -= rotationSpeed;
+    // 3. Connect download functions to the model object (for GUI buttons)
+    model.downloadStep = () => downloadStep(bitbybit, finalShape);
+    model.downloadGLB = () => downloadGLB(bitbybit);
+    model.downloadSTL = () => downloadSTL(bitbybit, finalShape);
+
+    // 4. Create the GUI panel and link its controls
+    createGui(current, model, updateShape);
+
+    // 5. Setup a simple rotation animation for the generated groups
+    const rotationSpeed = 0.0005;
+    const rotateGroup = () => {
+        if (
+        model.rotationEnabled &&
+        current.group1 && // 'current' holds references to BabylonJS Meshes/TransformNodes
+        current.group2 &&
+        current.dimensions
+        ) {
+        current.group1.rotation.y -= rotationSpeed;
+        current.group2.rotation.y -= rotationSpeed;
+        current.dimensions.rotation.y -= rotationSpeed;
+        }
+    };
+
+    // Register the rotation function with BabylonJS's before render observable
+    scene.onBeforeRenderObservable.add(() => rotateGroup());
+
+    // Start BabylonJS's main render loop
+    engine.runRenderLoop(() => {
+        scene.render(true, false); // Render the scene on each frame
+    });
+
+    // 6. Generate and draw the initial 3D model (using Level of Detail 1 for faster preview)
+    finalShape = await createShapeLod1(
+        bitbybit,
+        scene,
+        model,      // Contains current parameters from the GUI/defaults
+        shapesToClean, // Array for OCCT shapes that need explicit cleanup
+        current       // Stores references to created BabylonJS meshes/groups
+    );
+
+    // 7. Define the function to update the shape when GUI parameters change
+    async function updateShape(finish: boolean) {
+        disableGUI(); // Temporarily disable GUI during processing
+        showSpinner();  // Show a loading indicator
+
+        // Dispose of previously created BabylonJS Meshes to clear the scene
+        // The second parameter 'true' ensures child meshes are also disposed.
+        current.group1?.dispose(false, true);
+        current.group2?.dispose(false, true);
+        current.dimensions?.dispose(false, true);
+        // Note: OCCT shapes are managed and cleaned up within the createShapeLod1/2 functions
+        // using the 'shapesToClean' array.
+
+        if (finish) { // 'finish' is true if the "Finalize" GUI button is pressed
+        // Generate the shape with higher detail (LOD2)
+        finalShape = await createShapeLod2(
+            bitbybit, scene, model, shapesToClean, current
+        );
+        } else { // Default update (e.g., when a slider is dragged)
+        // Generate the shape with lower detail for faster interactive feedback (LOD1)
+        finalShape = await createShapeLod1(
+            bitbybit, scene, model, shapesToClean, current
+        );
+        }
+
+        hideSpinner(); // Hide loading indicator
+        enableGUI();   // Re-enable GUI
     }
-  };
-
-  // Hook into Three.js render loop for animation
-  scene.onBeforeRender = () => {
-    rotateGroup();
-  };
-
-  // 6. Initial shape creation (Level of Detail 1 - faster preview)
-  finalShape = await createShapeLod1(
-    bitbybit,
-    scene,
-    model,      // Current model parameters
-    shapesToClean, // Array to track OCCT shapes for later cleanup
-    current       // Object to store references to current Three.js groups
-  );
-
-  // 7. Function to update the shape when GUI parameters change
-  async function updateShape(finish: boolean) {
-    disableGUI(); // Prevent further interaction during update
-    showSpinner();  // Indicate processing
-
-    // Remove previous Three.js groups from the scene
-    current.group1?.traverse((obj) => scene?.remove(obj));
-    current.group2?.traverse((obj) => scene?.remove(obj));
-    current.dimensions?.traverse((obj) => scene?.remove(obj));
-    // Note: OCCT shapes are cleaned up within createShapeLod1/2 via shapesToClean
-
-    if (finish) { // 'finish' is true when "Finalize" button in GUI is clicked
-      finalShape = await createShapeLod2( // Higher detail
-        bitbybit, scene, model, shapesToClean, current
-      );
-    } else { // Default update (e.g., from slider drag)
-      finalShape = await createShapeLod1( // Lower detail for speed
-        bitbybit, scene, model, shapesToClean, current
-      );
-    }
-
-    hideSpinner();
-    enableGUI(); // Re-enable GUI
-  }
 }
 `}
 </CodeBlock>
 
 **Explanation of `main.ts`:**
 
-1.  **Imports:** Pulls in necessary Bitbybit modules, data models, and helper functions.
-2.  **`kernelOptions`:** Configures which Bitbybit geometry kernels (OCCT, JSCAD, Manifold) will be initialized. For this example, only OCCT is enabled as it's used for the parametric modeling.
-3.  **`start()` function:** The main asynchronous function that orchestrates the application.
-    *   **`initThreeJS()` & `createDirLightsAndGround()`:** Sets up the basic Three.js environment.
-    *   **`BitByBitBase` & `initKernels()`:** Initializes the Bitbybit library, linking it to the Three.js scene and loading the configured OCCT kernel worker.
-    *   **`finalShape` & `shapesToClean`:** `finalShape` will hold a reference to the main OCCT geometry. `shapesToClean` is crucial for managing memory in OCCT by keeping track of intermediate shapes that need to be explicitly deleted after they are no
-        longer needed.
-    *   **Download Functions:** Attaches download helper functions to the `model` object. These will be triggered by buttons in the GUI.
-    *   **`createGui()`:** Initializes the `lil-gui` panel, connecting its controls to the properties defined in `model.ts` and providing the `updateShape` function as a callback when parameters change.
-    *   **Rotation Logic:** Sets up a simple animation to rotate the generated 3D groups if `model.rotationEnabled` is true.
-    *   **Initial Shape Creation:** Calls `createShapeLod1` to generate and draw the initial 3D model with a lower level of detail for faster startup.
-    *   **`updateShape(finish: boolean)` function:**
-        *   This function is called by the GUI when a parameter changes.
-        *   It disables the GUI and shows a spinner to indicate processing.
-        *   It removes the previously rendered Three.js `Group` objects (`current.group1`, `current.group2`, `current.dimensions`) from the scene.
-        *   Crucially, the `createShapeLod1` and `createShapeLod2` functions are responsible for cleaning up OCCT shapes using the `shapesToClean` array.
-        *   It then calls either `createShapeLod1` (for quick updates, e.g., during slider dragging) or `createShapeLod2` (for a more detailed final version when a "Finalize" button is clicked).
-        *   Finally, it hides the spinner and re-enables the GUI.
+1.  **Imports:** Includes `BitByBitBase` and `Inputs` from `@bitbybit-dev/babylonjs`, along with local models and helper functions.
+2.  **`kernelOptions`:** Specifies that only the OCCT kernel should be enabled and initialized for this particular application, as it's the one used for the Hex Shell's CAD operations.
+3.  **`start()` function (Main Application Flow):**
+    *   **BabylonJS Setup:** `initBabylonJS()` initializes the BabylonJS `Engine` and `Scene`.
+    *   **Bitbybit Initialization:** An instance of `BitByBitBase` is created. Crucially, `bitbybit.context.scene` and `bitbybit.context.engine` are assigned the BabylonJS scene and engine instances. This step is vital for the `@bitbybit-dev/babylonjs` integration package to correctly interact with the BabylonJS environment (e.g., for creating materials, adding meshes to the scene).
+    *   **Scene Elements:** `createDirLightsAndGround()` adds basic lighting and a ground plane using Bitbybit's BabylonJS helpers.
+    *   **Kernel Initialization:** `initKernels()` ensures the OCCT worker is started and ready.
+    *   **Shape Management:** `finalShape` will store the primary OCCT geometry. `shapesToClean` is an array used to track intermediate OCCT shapes created during geometry generation; these need to be explicitly deleted using `bitbybit.occt.deleteShapes()` to manage memory effectively, especially with complex CAD operations.
+    *   **Download Functions:** The `downloadStep`, `downloadGLB`, and `downloadSTL` functions (from `helpers/downloads.ts`) are attached to the `model` object so they can be easily triggered by GUI buttons.
+    *   **GUI Creation:** `createGui()` sets up the `lil-gui` panel, linking its controls to the parameters defined in `model.ts`. Changes in the GUI will trigger the `updateShape` function.
+    *   **Animation:** A simple `rotateGroup` function is defined and added to BabylonJS's `scene.onBeforeRenderObservable` to animate parts of the model if `model.rotationEnabled` is true.
+    *   **Render Loop:** `engine.runRenderLoop()` starts BabylonJS's continuous rendering process.
+    *   **Initial Shape:** `createShapeLod1()` is called to generate and display the initial version of the Hex Shell model using a lower level of detail for quicker startup.
+    *   **`updateShape(finish: boolean)` function:** This is the core of the dynamic updates.
+        *   It's triggered by GUI interactions.
+        *   It disables the GUI and shows a spinner.
+        *   It disposes of previous BabylonJS meshes using `mesh.dispose(false, true)` to clear the old geometry from the scene.
+        *   It then calls either `createShapeLod1` (for faster, interactive previews) or `createShapeLod2` (for a more detailed, finalized version) based on the `finish` flag.
+        *   After regeneration, it hides the spinner and re-enables the GUI.
 
 ## 3. Helper Functions (`src/helpers/`)
 
-The `helpers` directory modularizes different aspects of the application.
+Helper functions promote modularity and code organization.
 
-### `init-threejs.ts` & `init-kernels.ts`
+### `init-babylonjs.ts` & `init-kernels.ts`
 
-*   **`initThreeJS()`:** Contains standard Three.js setup for scene, camera, WebGL renderer, basic lighting (HemisphereLight, DirectionalLights), a ground plane, and OrbitControls for camera manipulation. It also sets up the animation loop.
-*   **`createDirLightsAndGround()`:** A helper to specifically add directional lights (for shadows) and a ground plane to the scene.
-*   **`initKernels()`:** This function is responsible for:
-    1.  Conditionally creating Web Worker instances for each kernel specified in `kernelOptions`.
-    2.  Calling `bitbybit.init(...)` to link Bitbybit with the Three.js scene and these worker instances.
-    3.  Asynchronously waiting for each selected and available kernel to report that it has been fully initialized before resolving. This ensures kernels are ready before use.
+*   **`initBabylonJS()`:** This module is responsible for all the initial BabylonJS setup. It:
+    *   Gets the `<canvas>` element.
+    *   Creates the BabylonJS `Engine`.
+    *   Creates the `Scene` and sets basic properties like clear color.
+    *   Sets up an `ArcRotateCamera` for user navigation.
+    *   Adds a `HemisphericLight` for ambient illumination.
+    *   Initializes the render loop via `engine.runRenderLoop()`.
+    *   Handles window resize events to keep the rendering correct.
+*   **`createDirLightsAndGround()`:** This helper specifically adds directional lights (important for casting shadows and defining highlights) and a ground mesh (e.g., a cylinder or plane) to the BabylonJS scene. It might use Bitbybit's BabylonJS API helpers for convenience.
+*   **`initKernels()`:** This function's role is identical regardless of the rendering engine. It:
+    1.  Looks at the `kernelOptions` (from `main.ts`).
+    2.  For each enabled kernel, it creates a new `Worker` instance, pointing to the respective worker script (e.g., `../workers/occt.worker.ts`).
+    3.  Calls `await bitbybit.init(...)`, passing the BabylonJS `scene` and the worker instances.
+    4.  It then patiently waits for each selected and available kernel to confirm its full initialization by observing their state streams (e.g., `bitbybit.occtWorkerManager.occWorkerState$`). The function only resolves after all required kernels are ready for use.
 
-<CodeBlock language="typescript" title="src/helpers/init-kernels.ts (Simplified Structure)">
-{`// ... imports ...
-export async function initKernels(
-  scene: Scene,
-  bitbybit: BitByBitBase,
-  options: KernelOptions
-): Promise<{ message: string }> {
-  // 1. Conditionally create worker instances based on options
-  //    (e.g., new Worker(new URL('../workers/occt.worker.ts', import.meta.url), ...))
-  // 2. Initialize Bitbybit with scene and worker instances
-  //    await bitbybit.init(scene, occtWorker, jscadWorker, manifoldWorker);
-  // 3. Collect and await promises for kernel initializations
-  //    (e.g., using firstValueFrom on bitbybit.occtWorkerManager.occWorkerState$)
-  // 4. Resolve once selected kernels are ready
-  return { message: "Kernels initialized" };
-}`}
-</CodeBlock>
+### `create-shape.ts` (Core OCCT Geometry Logic)
 
-### `create-shape.ts` (Core Geometry Logic)
+This file is where the detailed CAD work for the "Hex Shell" happens, using Bitbybit's OCCT API. Its structure typically involves:
 
-This is the most complex file, containing the specific OCCT operations to generate the parametric shape. It typically includes:
+*   **LOD Functions:** `createShapeLod1` for a faster, simplified version and `createShapeLod2` for the full-detail version.
+*   **OCCT Memory Management:** A crucial aspect. Before generating new OCCT geometry, it calls `await bitbybit.occt.deleteShapes({ shapes: shapesToClean })` to free memory from shapes created in the previous update. Any new intermediate OCCT shapes created during the current generation are added to the `shapesToClean` array.
+*   **Parametric Geometry Creation:**
+    *   Uses `model` parameters (e.g., `model.uHex`, `model.height`) to drive the dimensions and features.
+    *   Employs a sequence of OCCT operations via `bitbybit.occt.*` (e.g., `shapes.wire.createEllipseWire`, `transforms.rotate`, `operations.loft`, `operations.offset`, `shapes.face.subdivideToHexagonWires`, `shapes.compound.makeCompound`).
+    *   The example creates a base lofted surface, then subdivides it into hexagonal wire patterns on several offset surfaces, and finally creates solids by lofting between these patterns.
+*   **Dimensioning (Optional but present in example):** The code also includes logic to create OCCT 3D dimension entities (lines, angles, labels) using `bitbybit.occt.dimensions.*` functions, which are then compounded with the main shape.
+*   **Drawing with BabylonJS Integration:**
+    *   After OCCT shapes are generated, `bitbybit.draw.drawAnyAsync({ entity: occtShape, options: drawOptions })` is called. The `@bitbybit-dev/babylonjs` version of this function converts the OCCT shape data into BabylonJS `Mesh` objects.
+    *   It creates and applies BabylonJS materials (e.g., `PBRMetallicRoughnessMaterial` from `@babylonjs/core`) to these meshes.
+    *   The resulting meshes are often parented to BabylonJS `Mesh` objects (acting as groups, stored in `current.group1`, `current.group2`) for organization and collective transformations (like rotation).
 
-*   Functions like `createShapeLod1` (Level of Detail 1 - faster, less detailed) and `createShapeLod2` (Level of Detail 2 - slower, more detailed).
-*   **Memory Management:** Before creating new OCCT geometry, it calls `bitbybit.occt.deleteShapes({ shapes: shapesToClean })` to free memory used by previous intermediate OCCT shapes. New intermediate shapes created are added to `shapesToClean`.
-*   **Geometric Operations:** Uses various functions from `bitbybit.occt.shapes`, `bitbybit.occt.operations`, `bitbybit.occt.transforms`, etc., to:
-    *   Create primitive wires (e.g., ellipses using `wire.createEllipseWire`).
-    *   Transform these wires (rotate, translate).
-    *   Loft surfaces between wires (`operations.loft`).
-    *   Offset faces (`operations.offset`).
-    *   Subdivide faces into patterns (e.g., `face.subdivideToHexagonWires`).
-    *   Create solids from these operations.
-    *   Create compound shapes.
-*   **Dimensioning (Optional):** The example includes logic to create OCCT dimension entities (`dimensions.simpleLinearLengthDimension`, `dimensions.simpleAngularDimension`) which are then also drawn.
-*   **Drawing:**
-    *   It uses `bitbybit.draw.drawAnyAsync({ entity: occtShape, options: drawOptions })` to convert the final OCCT shapes into Three.js meshes and add them to the scene.
-    *   It often creates separate Three.js `Group` objects for different parts of the model (e.g., `current.group1`, `current.group2`) for easier management and independent animation.
-    *   Materials (`MeshPhongMaterial`) are created and applied.
-
-<Admonition type="info" title="OCCT Operations">
-  The specific OCCT functions used (like `loft`, `offset`, `subdivideToHexagonWires`, `makeCompound`) are powerful CAD operations. Understanding their parameters and behavior is key to creating complex parametric models with OCCT. Refer to the Bitbybit API documentation for details on each.
+<Admonition type="info" title="OCCT Operations Deep Dive">
+  The specific sequence of OCCT operations in `create-shape.ts` (lofting, offsetting, subdividing, compounding) is tailored to generate the intricate "Hex Shell" design. To understand each step in detail, you would refer to the Bitbybit API documentation for the corresponding OCCT functions.
 </Admonition>
 
-### `create-gui.ts`
+### `create-gui.ts` (BabylonJS Context)
 
-This file uses the `lil-gui` library to create a user interface panel.
+This sets up the `lil-gui` panel. Its operation is very similar across different rendering engines, but material updates are engine-specific.
 
-<CodeBlock language="typescript" title="src/helpers/create-gui.ts (Simplified Structure)">
-{`import GUI from 'lil-gui';
-// ... other imports ...
-export const createGui = (
-  current: Current,
-  model: Model,
-  updateShape: (finish: boolean) => void
-) => {
-  model.update = () => updateShape(true); // Link "Finalize" button to LOD2 update
-  const gui = new GUI();
-  current.gui = gui; // Store reference to GUI
-
-  // Add controls for each parameter in the 'model' object
-  gui.add(model, 'uHex', 1, 14, 1).name('Hexagons U').onFinishChange(() => updateShape(false));
-  // ... more gui.add() calls for vHex, height, colors, etc. ...
-  // .onFinishChange(() => updateShape(false)) calls LOD1 update for sliders
-  // .onChange(...) for color pickers to update material colors directly
-
-  gui.add(model, 'update').name('Finalize'); // Button to trigger LOD2 update
-  gui.add(model, 'downloadSTL').name('Download STL');
-  // ... download buttons ...
-};`}
+<CodeBlock language="typescript" title="src/helpers/create-gui.ts (Key BabylonJS Material Update)">
+{`// ... (other GUI setup) ...
+gui
+  .addColor(model, 'color1')
+  .name('Color 1')
+  .onChange((value: string) => {
+    // Iterate through meshes in the group and update their material
+    current.group1?.getChildren().forEach((node) => { // A group node
+      node.getChildMeshes().forEach(mesh => { // Get actual meshes
+        if (mesh.material && mesh.material instanceof PBRMetallicRoughnessMaterial) {
+          const mat = mesh.material as PBRMetallicRoughnessMaterial;
+          mat.baseColor = Color3.FromHexString(value); // BabylonJS Color3
+        }
+      });
+    });
+  });
+// Similar logic for 'color2' and current.group2
+`}
 </CodeBlock>
 
-*   It creates a new `GUI` instance.
-*   For each parameter in the `model` object (defined in `models/model.ts`), it adds a corresponding control (slider, color picker, checkbox).
-*   `onFinishChange` (for sliders) or `onChange` (for continuous updates like color pickers) callbacks are used to:
-    *   Update the `model` object with the new parameter value.
-    *   Call the `updateShape(false)` function (from `main.ts`) to regenerate the geometry with LOD1 (quick preview).
-*   A "Finalize" button calls `updateShape(true)` to generate the high-detail LOD2 version.
-*   Buttons are added to trigger the download functions.
+*   When a color control in the GUI changes, the callback iterates through the child meshes of the relevant group (`current.group1` or `current.group2`).
+*   It accesses the mesh's `material` property.
+*   It updates the material's `baseColor` (assuming `PBRMetallicRoughnessMaterial`) using BabylonJS's `Color3.FromHexString()`.
 
-### `downloads.ts`
+### `downloads.ts` (BabylonJS Context)
 
-Contains functions to export the generated 3D model:
-*   `downloadStep()`: Uses `bitbybit.occt.io.saveShapeSTEP()` to save the `finalShape` (the OCCT compound) as a STEP file. It includes a mirroring transformation, which might be necessary due to coordinate system differences.
-*   `downloadSTL()`: Uses `THREE.STLExporter` to export the entire Three.js scene as an STL file.
-*   `downloadGLB()`: Uses `THREE.GLTFExporter` to export the Three.js scene as a GLB (binary GLTF) file.
+This module handles file exports:
+
+*   **`downloadStep()`:** Uses `bitbybit.occt.io.saveShapeSTEP()` to save the `finalShape` (the OCCT compound object) as a STEP file. This is an OCCT-level operation.
+*   **`downloadSTL()`:** Your example uses `bitbybit.occt.io.saveShapeStl()` to export the `finalShape` from OCCT directly as an STL. This is efficient for CAD-derived STL.
+*   **`downloadGLB()`:** This uses `bitbybit.babylon.io.exportGLB()`. This function is specific to the `@bitbybit-dev/babylonjs` package and exports the current state of the BabylonJS scene (or selected parts of it) to a GLB file.
 
 ### `gui-helper.ts`
 
-Simple utility functions to manage the UI during processing:
-*   `disableGUI()` / `enableGUI()`: Make the `lil-gui` panel non-interactive and visually dimmed during updates.
-*   `showSpinner()` / `hideSpinner()`: Display or hide a simple CSS-based loading spinner overlay.
+These DOM manipulation utilities (disable/enable GUI, show/hide spinner) are generic.
 
 ## 4. Data Models (`src/models/`)
 
-*   **`current.ts`:** Defines a `Current` type and an instance to hold references to currently active Three.js objects (like `Group`s for different model parts, lights, ground) and the `lil-gui` instance. This helps in easily accessing and manipulating these objects from different parts of the code.
-*   **`kernel-options.ts`:** Defines the `KernelOptions` interface used in `main.ts` to specify which geometry kernels (OCCT, JSCAD, Manifold) should be initialized by Bitbybit.
-*   **`model.ts`:** Defines the `Model` type and a default `model` object. This object holds all the parameters that control the geometry of the 3D shape (e.g., `uHex`, `vHex`, `height`, colors, precision). The `lil-gui` directly manipulates this object. It also includes optional function signatures for `update` and download methods, which are later assigned in `main.ts` and `create-gui.ts`.
+*   **`kernel-options.ts`:** Defines the `KernelOptions` interface (same as before).
+*   **`model.ts`:** Defines the `Model` type for geometric parameters and an initial `model` object (same structure as before).
+*   **`current.ts`:** This is where BabylonJS types become apparent. The `Current` type now holds references to BabylonJS objects:
+
+<CodeBlock language="typescript" title="src/models/current.ts (BabylonJS types)">
+{`import { DirectionalLight, Mesh } from '@babylonjs/core'; // BabylonJS specific imports
+import { GUI } from 'lil-gui';
+
+export type Current = {
+    group1: Mesh | undefined; // BabylonJS Mesh (can act as a group/parent)
+    group2: Mesh | undefined; // BabylonJS Mesh
+    dimensions: Mesh | undefined; // BabylonJS Mesh for dimensions
+    light1: DirectionalLight | undefined; // BabylonJS Light
+    ground: Mesh | undefined; // BabylonJS Mesh for the ground
+    gui: GUI | undefined;
+};
+
+export const current: Current = { /* ... initial undefined values ... */ };
+`}
+</CodeBlock>
 
 ## 5. Styles (`style.css`)
 
-The `style.css` file provides basic styling:
-*   Resets body margin and sets a background color.
-*   Styles for the Bitbybit logo link.
-*   CSS for the `lds-ellipsis` loading spinner animation.
+The CSS primarily styles the page layout, logo, and the loading spinner. A key selector is for the canvas:
+
+<CodeBlock language="css" title="style.css (Canvas Style)">
+{`/* ... other styles ... */
+#babylon-canvas { /* Targets the canvas ID used in index.html */
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    position: absolute; /* Often used for full-viewport canvas */
+    outline: none;
+}
+/* ... spinner styles ... */
+`}
+</CodeBlock>
 
 ## Conclusion
 
-This advanced example showcases a more complete workflow for creating parametric and interactive 3D applications with Bitbybit and Three.js. Key takeaways include:
+This advanced tutorial has demonstrated how to construct a complex, parametric 3D model using Bitbybit's OCCT capabilities and render it interactively with BabylonJS. You've seen how to:
 
-*   **Modular Code Structure:** Separating concerns into helper functions and data models makes the project more manageable.
-*   **Parametric Control:** Using a data model (`model.ts`) and a GUI (`lil-gui`) to drive geometry changes.
-*   **Level of Detail (LOD):** Implementing different detail levels for shape generation (`createShapeLod1` vs. `createShapeLod2`) can significantly improve performance during interactive adjustments.
-*   **OCCT Memory Management:** The practice of tracking and deleting intermediate OCCT shapes (`shapesToClean`) is crucial for preventing memory leaks in complex CAD operations.
-*   **Kernel Initialization:** Selectively initializing only the necessary geometry kernels.
-*   **Export Functionality:** Integrating common 3D file export options.
+*   Structure a project with separate modules for different functionalities.
+*   Initialize and use Bitbybit within a BabylonJS engine and scene context.
+*   Implement parametric geometry generation that responds to GUI controls.
+*   Manage different Levels of Detail (LOD) for performance.
+*   Handle OCCT memory by cleaning up intermediate shapes.
+*   Dispose of BabylonJS meshes before redrawing to update the scene.
+*   Integrate export functionalities for common 3D file formats.
 
-By understanding these components and their interactions, you can build sophisticated and highly configurable 3D experiences on the web.
+This robust approach allows for the creation of highly interactive and detailed 3D web applications, leveraging the strengths of both Bitbybit's CAD engine and BabylonJS's rendering power.
