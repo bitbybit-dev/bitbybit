@@ -1,0 +1,20 @@
+{
+  "name": "vite-typescript-starter",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@bitbybit-dev/babylonjs": "0.20.4",
+    "lil-gui": "0.20.0"
+  },
+  "devDependencies": {
+    "typescript": "~5.8.3",
+    "vite": "^6.3.2",
+    "@types/three": "0.176.0"
+  }
+}
