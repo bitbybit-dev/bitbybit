@@ -264,7 +264,7 @@ const BitByBitRenderCanvas: React.FC<Props> = React.memo(({
                             id={`bitbybit-iframe-${uniqueId}`}
                             src={fullIframeUrl}
                             sandbox="allow-scripts allow-same-origin allow-downloads allow-forms allow-popups"
-                            allow="camera; microphone; clipboard-write; xr-spatial-tracking; fullscreen"
+                            allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; camera; microphone; xr-spatial-tracking; fullscreen"
                             style={{ ...iframeStyle, paddingTop: "40px" }}
                         />
                     </div>

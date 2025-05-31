@@ -6,6 +6,7 @@ description: Learn how to set up and use the @bitbybit-dev/threejs package with 
 tags: [npm-packages, threejs, occt, manifold, jscad]
 ---
 
+import BitByBitRenderCanvas from '@site/src/components/BitByBitRenderCanvas';
 import Admonition from '@theme/Admonition';
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
@@ -567,23 +568,11 @@ Check your browser's developer console for logs indicating the initialization st
 ## Live Demo (StackBlitz)
 
 You can explore and interact with a live example of this setup on StackBlitz:
-
-<div className="stackblitz-embed-container">
-  <iframe
-    src="https://stackblitz.com/edit/threejs-bitbybit-setup-with-all-kernels?ctl=1&embed=1&file=src%2Fmain.ts&theme=dark"
-    style={{
-      width: '100%',
-      height: '700px',
-      border: '0',
-      borderRadius: '4px',
-      overflow: 'hidden',
-    }}
-    title="Bitbybit & Three.js - All Kernels Setup"
-    allow="accelerometer; ambient-light-sensor; camera; encrypted-media; geolocation; gyroscope; hid; microphone; midi; payment; usb; vr; xr-spatial-tracking"
-    sandbox="allow-forms allow-modals allow-popups allow-presentation allow-same-origin allow-scripts"
-  ></iframe>
-</div>
-
+<BitByBitRenderCanvas
+  requireManualStart={true}
+  iframeUrl="https://stackblitz.com/edit/threejs-bitbybit-setup-with-all-kernels?embed=1&file=src%2Fmain.ts&theme=dark"
+  title="StackBlitz - Bitbybit & Three.js - All Kernels Setup"
+/>
 
 ## Key Takeaways
 
