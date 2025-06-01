@@ -51,7 +51,13 @@ You'll typically find these packages within a `packages/dev` directory in the mo
 ### 2. The Documentation Site (Docusaurus)
 This very documentation site is built using **Docusaurus** and its source files (Markdown, React components, configuration) reside directly within the `bitbybit` monorepo, in a `docs/` directory. This colocation makes it easier to keep documentation in sync with code changes.
 
-### 3. Architectural Philosophy
+
+### 3. Example Applications
+We’ve built a variety of example apps that integrate our NPM packages under `examples/` folder. These apps are set up using popular frameworks such as React, Angular, Nuxt, Next.js, and others. We even include a few examples that run Bitbybit within a Node.js backend environment.
+
+It’s important to note that the latest and most up-to-date apps are located in the `examples/vite` folder. This folder contains projects used as live demos on StackBlitz and integrated directly into this documentation site.
+
+### 4. Architectural Philosophy
 As you explore the codebase, particularly the algorithmic packages, you'll notice a consistent and somewhat strict architectural style. This is intentional and crucial for a key goal of Bitbybit: **to seamlessly support higher-level visual programming editors** (like those based on Rete.js or Blockly).
 
 These architectural rules ensure:
@@ -60,6 +66,12 @@ These architectural rules ensure:
     *   **Type Safety for Visual Editors:** TypeScript's type information is leveraged to provide rich feedback within the visual editors.
 
 Understanding this underlying principle is key to understanding the "why" behind some of the code structure.
+
+## What's NOT Inside the Monorepo?
+
+While this monorepo hosts all of the open-source components of Bitbybit, it does not include any proprietary source code. We do not open-source the source code for our higher-level visual programming editors, advanced algorithms, or the main website.
+
+The Bitbybit platform also includes proprietary 3D configurators and closed-source applications. Additionally, the 3D Bits application for Shopify is not open-sourced.
 
 ## How to Engage with the Monorepo
 

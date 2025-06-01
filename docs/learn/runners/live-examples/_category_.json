@@ -1,4 +1,10 @@
 {
-  "label": "Live Examples",
-  "position": 2
+    "label": "Live Examples",
+    "position": 2,
+    "link": {
+        "type": "generated-index",
+        "title": "Experience Live Runner Examples",
+        "description": "To help you understand how Runners work, we’ve created several practical examples in this section. We typically present the code within the Bitbybit editors, followed by how it appears and runs in a third-party environment—StackBlitz—where Bitbybit Runners are used.",
+        "slug": "/runners/live-examples"
+    }
 }

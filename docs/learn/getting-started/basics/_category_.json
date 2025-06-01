@@ -1,4 +1,10 @@
 {
-  "label": "Basics",
-  "position": 6
+    "label": "Basics",
+    "position": 6,
+    "link": {
+        "type": "generated-index",
+        "title": "Basic Introduction Tutorials to Bitbybit",
+        "description": "We have developed a series of tutorials to help you learn the fundamentals of our platform. These tutorials cover how to run your scripts, handle errors, and understand how drawing works—one of the core concepts of Bitbybit. You’ll also learn how to create projects and scripts, upload assets, and much more.",
+        "slug": "/getting-started/basics"
+    }
 }

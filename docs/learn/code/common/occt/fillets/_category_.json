@@ -1,4 +1,10 @@
 {
-  "label": "Fillets",
-  "position": 3
+    "label": "Fillets",
+    "position": 3,
+    "link": {
+        "type": "generated-index",
+        "title": "OCCT Fillets & Chamfers",
+        "description": "In CAD, it’s common to round the corners of shapes—whether in 2D or 3D. Learn how to create fillets and chamfers using the OCCT library in Bitbybit.",
+        "slug": "/code/common/occt/fillets"
+    }
 }

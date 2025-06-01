@@ -1,4 +1,10 @@
 {
-  "label": "Shapes",
-  "position": 2
+    "label": "Shapes",
+    "position": 2,
+    "link": {
+        "type": "generated-index",
+        "title": "Bitbybit OCCT Library Shapes",
+        "description": "Learn how to use various shape types via Bitbybit's OCCT category of algorithms.",
+        "slug": "/code/common/occt/shapes"
+    }
 }

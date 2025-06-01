@@ -1,4 +1,10 @@
 {
-  "label": "Cloud",
-  "position": 3
+    "label": "Cloud",
+    "position": 3,
+    "link": {
+        "type": "generated-index",
+        "title": "Managing Cloud Assets",
+        "description": "Learn how to manage cloud assets in Bitbybit, including uploading, downloading, and organizing your files.",
+        "slug": "/getting-started/basics/assets/cloud"
+    }
 }

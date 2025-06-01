@@ -1,4 +1,10 @@
 {
-  "label": "TypeScript",
-  "position": 5
+    "label": "TypeScript",
+    "position": 5,
+    "link": {
+        "type": "generated-index",
+        "title": "Getting Started With Bitbybit Monaco Editor For TypeScript",
+        "description": "Learn how to use the Bitbybit Monaco Editor to write TypeScript programs. This guide will help you understand the basics of Monaco - how to write code & create parametric 3D models.",
+        "slug": "/getting-started/typescript"
+    }
 }

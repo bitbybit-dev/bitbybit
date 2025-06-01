@@ -1,4 +1,10 @@
 {
-  "label": "Occt",
-  "position": 1
+    "label": "Occt",
+    "position": 1,
+    "link": {
+        "type": "generated-index",
+        "title": "Bitbybit OCCT Library",
+        "description": "Learn how to use our library, built on the OCCT (Open CASCADE Technology) kernel, for advanced geometric modeling. Our algorithms leverage this powerful foundation to enable the creation and manipulation of a wide range of BRep shapes, including edges, wires, faces, shells, solids, and more.",
+        "slug": "/code/common/occt"
+    }
 }

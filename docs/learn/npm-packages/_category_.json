@@ -1,4 +1,10 @@
 {
-  "label": "NPM Packages",
-  "position": 6
+    "label": "NPM Packages",
+    "position": 6,
+    "link": {
+        "type": "generated-index",
+        "title": "Bitbybit NPM Packages",
+        "description": "This category is essential for developers looking to integrate Bitbybit's NPM packages into their projects. It provides comprehensive guides on how to install, configure, and utilize these packages effectively. We use various live demo's to guide you through the process and showcase the capabilities of the platform.",
+        "slug": "/npm-packages"
+    }
 }

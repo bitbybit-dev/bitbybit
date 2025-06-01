@@ -1,4 +1,10 @@
 {
-  "label": "Theme App Extensions",
-  "position": 3
+    "label": "Theme App Extensions",
+    "position": 3,
+    "link": {
+        "type": "generated-index",
+        "title": "Theme App Extensions of 3D Bits Shopify App",
+        "description": "Learn how to use theme app extensions called PREVIEW, VIEWER & RUNNER in the 3D Bits Shopify App to enhance your store's 3D product experience.",
+        "slug": "/3d-bits/theme-app-extensions"
+    }
 }

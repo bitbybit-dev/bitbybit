@@ -1,4 +1,10 @@
 {
-  "label": "Tutorials",
-  "position": 4
+    "label": "Tutorials",
+    "position": 4,
+    "link": {
+        "type": "generated-index",
+        "title": "Tutorials for 3D Bits Shopify App",
+        "description": "Here you will find various tutorials on how to install & set up the app with 3D Bits metafields. Also we explain in practical YouTube video tutorials how to use the 3D Bits Shopify App to create and manage 3D products for your store. You can watch these tutorials free of charge even if you did not purchase our app.",
+        "slug": "/3d-bits/tutorials"
+    }
 }

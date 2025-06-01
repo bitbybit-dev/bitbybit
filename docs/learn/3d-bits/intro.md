@@ -2,7 +2,7 @@
 sidebar_position: 1
 title: "3D Bits: Enhance Your Shopify Store with 3D Product Visualization"
 sidebar_label: Intro
-description: Discover "3D Bits," our Shopify app designed to bring interactive 3D product configurators and visualization to your e-commerce store.
+description: Discover "3D Bits" our Shopify app designed to bring interactive 3D product configurators and visualization to your e-commerce store.
 tags: [shopify, 3d-bits]
 ---
 
@@ -10,7 +10,7 @@ tags: [shopify, 3d-bits]
 
 ## Revolutionizing 3D E-Commerce on Shopify
 
-We are thrilled to announce the development of **"3D Bits,"** our dedicated Shopify app designed to bring powerful, interactive 3D product visualization and customization to your e-commerce store. This solution helps your customers visualize custom products in 3D, leading to a more engaging and informative shopping experience.
+We are thrilled to announce the development of **"3D Bits"** our dedicated Shopify app designed to bring powerful, interactive 3D product visualization and customization to your e-commerce store. This solution helps your customers visualize custom products in 3D, leading to a more engaging and informative shopping experience.
 
 **Experience it Yourself:**
 *   Check out our **[Demo Store](https://bitbybit-dev-3d-configurators.myshopify.com)**.
@@ -39,4 +39,4 @@ Shopify stands as one of the largest and most popular e-commerce platforms globa
 *   **Flexibility and Customization:** The platform is highly flexible, allowing for extensive customization to meet diverse business needs.
 *   **Vibrant Ecosystem:** A large app store and developer community foster innovation and integration.
 
-We believe Shopify represents a bright future for e-commerce, and we are excited to contribute to this ecosystem with "3D Bits," helping merchants elevate their product presentation and customer engagement through immersive 3D experiences.
+We believe Shopify represents a bright future for e-commerce, and we are excited to contribute to this ecosystem with "3D Bits" helping merchants elevate their product presentation and customer engagement through immersive 3D experiences.

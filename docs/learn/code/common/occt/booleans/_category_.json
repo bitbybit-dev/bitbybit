@@ -1,4 +1,10 @@
 {
-  "label": "Booleans",
-  "position": 3
+    "label": "Booleans",
+    "position": 3,
+    "link": {
+        "type": "generated-index",
+        "title": "OCCT Boolean Operations",
+        "description": "Boolean operations are essential for creating complex 3D models. These tutorials will guide you through performing boolean operations, such as Union, Difference & Intersection using the OCCT library.",
+        "slug": "/code/common/occt/booleans"
+    }
 }
