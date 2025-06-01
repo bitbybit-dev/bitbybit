@@ -1,4 +1,10 @@
 {
-  "label": "Common",
-  "position": 2
+    "label": "Common",
+    "position": 2,
+    "link": {
+        "type": "generated-index",
+        "title": "Common Code Tutorials",
+        "description": "Learn how to use common code libraries and tools in Bitbybit, including our base algorithms, OCCT, Monaco, JSCAD geometry kernels and more.",
+        "slug": "/code/common"
+    }
 }

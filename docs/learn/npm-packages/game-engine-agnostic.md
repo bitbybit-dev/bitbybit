@@ -2,7 +2,7 @@
 sidebar_position: 2
 title: "Bitbybit's Engine-Agnostic Architecture"
 sidebar_label: "Engine Agnosticism"
-description: "Learn about Bitbybit's core architecture, designed to be game engine agnostic, its base layer of fundamental algorithms, and its current integrations with Three.js and BabylonJS."
+description: "Learn about Bitbybit's core architecture, designed to be game engine agnostic, its base layer of fundamental algorithms, and its current integrations with ThreeJS and BabylonJS."
 tags: [threejs, babylonjs, npm-packages]
 ---
 
@@ -43,9 +43,9 @@ Bitbybit's architecture can be visualized as a layered system:
     *   Orchestration of asynchronous operations, often running kernels in Web Workers for performance.
     This core engine produces geometric data (like vertices, faces, normals) that is ready to be rendered but doesn't handle the rendering itself.
 
-4.  **Rendering Engine Integration Layers (e.g., for Three.js, BabylonJS):** This is where the connection to specific 3D rendering engines happens. These layers:
+4.  **Rendering Engine Integration Layers (e.g., for ThreeJS, BabylonJS):** This is where the connection to specific 3D rendering engines happens. These layers:
     *   Take the geometric data output by the Bitbybit Core.
-    *   Translate it into the specific mesh formats, materials, and scene graph structures required by the chosen engine (e.g., `THREE.Mesh` for Three.js, `BABYLON.Mesh` for BabylonJS).
+    *   Translate it into the specific mesh formats, materials, and scene graph structures required by the chosen engine (e.g., `THREE.Mesh` for ThreeJS, `BABYLON.Mesh` for BabylonJS).
     *   Crucially, they implement engine-specific drawing functions like `drawAnyAsync`. This function is responsible for taking a generic geometric entity (from OCCT, JSCAD, or even simple base geometry) and creating the appropriate, renderable mesh object for that particular game engine.
     *   Handle the rendering of these objects onto the screen using the engine's capabilities.
 
@@ -56,18 +56,18 @@ As of now, Bitbybit provides official integration layers for two of the most pop
 
 ### 1. [ThreeJS](https://threejs.org/) Integration ([`@bitbybit-dev/threejs`](https://www.npmjs.com/package/@bitbybit-dev/threejs))
 
-*   **Overview:** Three.js stands as one of the - if not the - most **popular and widely adopted** WebGL libraries for creating and displaying animated 3D computer graphics directly in a web browser. It's renowned for its lightweight nature, versatility, and extensive capabilities.
-*   **Community and Ecosystem:** Three.js boasts a **large, active, and vibrant community** of developers. This translates into:
+*   **Overview:** ThreeJS stands as one of the - if not the - most **popular and widely adopted** WebGL libraries for creating and displaying animated 3D computer graphics directly in a web browser. It's renowned for its lightweight nature, versatility, and extensive capabilities.
+*   **Community and Ecosystem:** ThreeJS boasts a **large, active, and vibrant community** of developers. This translates into:
     *   A vast number of **open-source projects, examples, and tutorials** available online, making it easy to learn and find solutions.
-    *   A rich **ecosystem of additional libraries and tools** built on top of or alongside Three.js, extending its functionality for specific needs like physics, post-processing effects, UI integrations, and more.
-*   **Bitbybit Integration:** Our `@bitbybit-dev/threejs` NPM package provides the necessary tools, including its version of `drawAnyAsync`, to take the geometric output from Bitbybit's core and render it efficiently within a Three.js scene. It handles the creation of `THREE.BufferGeometry`, `THREE.Mesh` and `THREE.Group`, and other Three.js specific objects from the kernel-generated data.
-*   **Use Cases:** Ideal for developers already familiar with the Three.js ecosystem, those looking for a flexible and well-documented rendering library with a massive amount of community support, or projects that can benefit from its extensive array of third-party extensions.
+    *   A rich **ecosystem of additional libraries and tools** built on top of or alongside ThreeJS, extending its functionality for specific needs like physics, post-processing effects, UI integrations, and more.
+*   **Bitbybit Integration:** Our `@bitbybit-dev/threejs` NPM package provides the necessary tools, including its version of `drawAnyAsync`, to take the geometric output from Bitbybit's core and render it efficiently within a ThreeJS scene. It handles the creation of `THREE.BufferGeometry`, `THREE.Mesh` and `THREE.Group`, and other ThreeJS specific objects from the kernel-generated data.
+*   **Use Cases:** Ideal for developers already familiar with the ThreeJS ecosystem, those looking for a flexible and well-documented rendering library with a massive amount of community support, or projects that can benefit from its extensive array of third-party extensions.
 
 ### 2. [BabylonJS](https://babylonjs.com/) Integration ([`@bitbybit-dev/babylonjs`](https://www.npmjs.com/package/@bitbybit-dev/babylonjs))
 
 *   **Overview:** BabylonJS is a powerful, free, and open-source 3D engine known for its comprehensive feature set, ease of use, and excellent performance. It is written in TypeScript, developed and maintained by Microsoft and a strong community, and prides itself on a **strong backward compatibility promise**, ensuring that code written for older versions generally continues to work with newer releases.
 *   **Community and Ecosystem:** BabylonJS is backed by a highly active and supportive community, with a particularly vibrant official forum where developers of all levels can ask questions, share projects, and get direct assistance from both community members and the core BabylonJS team. This enthusiastic community also contributes to a growing number of external tools, extensions, and a wealth of learning resources, ensuring that users are well-supported in their development journey.
-*   **Bitbybit Integration:** Our `@bitbybit-dev/babylonjs` NPM package serves the same purpose as the Three.js integration but targets the BabylonJS engine. Its implementation of `drawAnyAsync` translates Bitbybit's core geometric data into `BABYLON.Mesh` objects and integrates them into a BabylonJS scene.
+*   **Bitbybit Integration:** Our `@bitbybit-dev/babylonjs` NPM package serves the same purpose as the ThreeJS integration but targets the BabylonJS engine. Its implementation of `drawAnyAsync` translates Bitbybit's core geometric data into `BABYLON.Mesh` objects and integrates them into a BabylonJS scene.
 *   **Use Cases:** A great choice for projects requiring a rich set of out-of-the-box features, physics integration, advanced rendering effects, or for developers who appreciate the stability and robust tooling offered by a TypeScript-first engine with strong corporate backing and community support.
 
 ## Using the Integrations via NPM Packages

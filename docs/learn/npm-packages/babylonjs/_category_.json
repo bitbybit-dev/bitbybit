@@ -1,4 +1,10 @@
 {
-  "label": "BabylonJS",
-  "position": 3
+    "label": "BabylonJS",
+    "position": 3,
+    "link": {
+        "type": "generated-index",
+        "title": "Integrate Bitbybit with BabylonJS",
+        "description": "Learn how to integrate Bitbybit with BabylonJS to create interactive 3D experiences, CAD apps, 3D configurators or other procedural web applications.",
+        "slug": "/npm-packages/babylonjs"
+    }
 }

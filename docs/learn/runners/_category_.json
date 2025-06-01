@@ -1,4 +1,10 @@
 {
-  "label": "Runners",
-  "position": 5
+    "label": "Runners",
+    "position": 5,
+    "link": {
+        "type": "generated-index",
+        "title": "Bitbybit Runners",
+        "description": "Execute 3D Scripts From Visual Programming Editors Anywhere on the Web. Use runners for straightforward Bitbybit integration inside third-party contexts.",
+        "slug": "/runners"
+    }
 }

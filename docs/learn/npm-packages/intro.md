@@ -39,7 +39,7 @@ Allows users of the [BabylonJS](https://babylonjs.com) game engine to use our co
 -   [NPM Package](https://www.npmjs.com/package/@bitbybit-dev/threejs)
 -   [GitHub Source](https://github.com/bitbybit-dev/bitbybit/tree/master/packages/dev/threejs)
 
-Enables users of the [Three.js](https://threejs.org) library to utilize our core 3D CAD algorithms. Similar to the BabylonJS package, it assists in building 3D applications by providing algorithms for constructing meshes from OpenCascade or JSCAD geometry.
+Enables users of the [ThreeJS](https://threejs.org) library to utilize our core 3D CAD algorithms. Similar to the BabylonJS package, it assists in building 3D applications by providing algorithms for constructing meshes from OpenCascade or JSCAD geometry.
 
 ---
 

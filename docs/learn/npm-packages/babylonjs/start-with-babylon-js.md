@@ -1,26 +1,29 @@
 ---
 sidebar_position: 2
-title: Using Bitbybit with Babylon.js
-sidebar_label: Babylon.js Starter Template
+title: Using Bitbybit with BabylonJS
+sidebar_label: BabylonJS Starter Template
 description: Learn how to set up and use the @bitbybit-dev/babylonjs package with Vite to create 3D CAD applications, and control which geometry kernels (OCCT, JSCAD, Manifold) are initialized.
 tags: [npm-packages, babylonjs, occt, manifold, jscad]
 ---
 
+import BitByBitRenderCanvas from '@site/src/components/BitByBitRenderCanvas';
 import Admonition from '@theme/Admonition';
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 import CodeBlock from '@theme/CodeBlock';
 
-# Using Bitbybit with Babylon.js
+# Using Bitbybit with BabylonJS
 
-This guide will walk you through setting up and using the `@bitbybit-dev/babylonjs` package to integrate Bitbybit's 3D CAD functionalities into your Babylon.js applications. We'll use Vite as our build tool, which simplifies the setup process.
+This guide will walk you through setting up and using the `@bitbybit-dev/babylonjs` package to integrate Bitbybit's 3D CAD functionalities into your BabylonJS applications. We'll use Vite as our build tool, which simplifies the setup process.
 
 The `@bitbybit-dev/babylonjs` package conveniently includes `@babylonjs/core` as a dependency, so you don't need to install it separately.
 
 ## Prerequisites
 
 *   Node.js and npm (or yarn) installed.
-*   A basic understanding of TypeScript and Babylon.js.
+*   A basic understanding of TypeScript and BabylonJS.
+
+## [Example on Bitbybit Github Repo](https://github.com/bitbybit-dev/bitbybit/tree/master/examples/vite/babylonjs/starter-template)
 
 ## 1. Project Setup with Vite
 
@@ -33,7 +36,7 @@ First, create a new Vite project with a TypeScript template:
 cd my-bitbybit-babylonjs-app`}
 </CodeBlock>
 
-Next, install the Bitbybit Babylon.js package and its necessary worker dependencies:
+Next, install the Bitbybit BabylonJS package and its necessary worker dependencies:
 
 <CodeBlock language="bash">
 {`npm install @bitbybit-dev/babylonjs
@@ -42,7 +45,7 @@ Next, install the Bitbybit Babylon.js package and its necessary worker dependenc
 
 <Admonition type="info" title="Why these packages?">
   <ul>
-    <li><code>@bitbybit-dev/babylonjs</code>: The main library for integrating Bitbybit with Babylon.js. It also installs these main packages listed below.</li>
+    <li><code>@bitbybit-dev/babylonjs</code>: The main library for integrating Bitbybit with BabylonJS. It also installs these main packages listed below.</li>
     <li><code>@babylonjs/core</code>: Provides the main 3D engine to be used with this demo.</li>
     <li><code>@bitbybit-dev/core</code>: Collects all kernel web worker libraries into a coherent Bitbybit base. It also includes some higher-level functionality.</li>
     <li><code>@bitbybit-dev/occt-worker</code>: Provides the OpenCascade (OCCT) geometry kernel running in a Web Worker.</li>
@@ -57,7 +60,7 @@ Next, install the Bitbybit Babylon.js package and its necessary worker dependenc
 
 ## 2. HTML Structure
 
-Modify your `index.html` file in the project root to include a `<canvas>` element where the Babylon.js scene will be rendered:
+Modify your `index.html` file in the project root to include a `<canvas>` element where the BabylonJS scene will be rendered:
 
 <CodeBlock language="html" title="index.html">
 {`<!DOCTYPE html>
@@ -217,10 +220,10 @@ interface KernelOptions {
 start();
 
 async function start() {
-    // Initialize basic Babylon.js scene
+    // Initialize basic BabylonJS scene
     const { scene, engine } = initBabylonJS();
 
-    // Create an instance of BitByBitBase for Babylon.js
+    // Create an instance of BitByBitBase for BabylonJS
     const bitbybit = new BitByBitBase();
 
     // --- 2. Configure and Initialize Kernels ---
@@ -244,7 +247,7 @@ async function start() {
         await createJSCADGeometry(bitbybit, '#0000ff'); // Blue
     }
 
-    // Start the Babylon.js render loop
+    // Start the BabylonJS render loop
     engine.runRenderLoop(() => {
         if (scene.activeCamera) { // Ensure camera is ready
             scene.render();
@@ -252,7 +255,7 @@ async function start() {
     });
 }
 
-// --- 4. Babylon.js Scene Initialization ---
+// --- 4. BabylonJS Scene Initialization ---
 function initBabylonJS() {
     const canvas = document.getElementById('babylon-canvas') as HTMLCanvasElement;
     const engine = new Engine(canvas, true, {
@@ -410,7 +413,7 @@ async function initWithKernels(
 // --- 6. Geometry Creation Functions (Examples) ---
 // These functions demonstrate using Bitbybit's core geometry API.
 // You use Inputs DTOs to define geometry parameters.
-// bitbybit.draw.drawAnyAsync() from @bitbybit-dev/babylonjs handles rendering into the Babylon.js scene.
+// bitbybit.draw.drawAnyAsync() from @bitbybit-dev/babylonjs handles rendering into the BabylonJS scene.
 
 async function createOCCTGeometry(bitbybit: BitByBitBase, color: string) {
     console.log('Creating OCCT geometry...');
@@ -499,21 +502,21 @@ async function createJSCADGeometry(bitbybit: BitByBitBase, color: string) {
 1.  **Imports:**
     *   `BitByBitBase` and `Inputs`: Core components from `@bitbybit-dev/babylonjs`. `Inputs` provides DTOs (Data Transfer Objects) for specifying parameters for geometry operations.
     *   `...StateEnum`: Enums used to check the initialization state of each kernel worker.
-    *   Standard Babylon.js modules for scene setup: `Engine`, `Scene`, `ArcRotateCamera`, `Vector3`, `HemisphericLight`, `Color4`.
+    *   Standard BabylonJS modules for scene setup: `Engine`, `Scene`, `ArcRotateCamera`, `Vector3`, `HemisphericLight`, `Color4`.
     *   `first` from `rxjs`: Used to easily subscribe to the first emission of a kernel's state.
 
 2.  **`KernelOptions` Interface:** Defines the structure for selecting which kernels to initialize.
 
 3.  **`start()` function (Main Entry Point):**
-    *   Calls `initBabylonJS()` to set up the basic Babylon.js `Engine`, `Scene`, `Camera`, and `Light`.
+    *   Calls `initBabylonJS()` to set up the basic BabylonJS `Engine`, `Scene`, `Camera`, and `Light`.
     *   Creates an instance of `BitByBitBase` from the `@bitbybit-dev/babylonjs` package.
     *   **`kernelOptions`**: This object is key. By setting `enableOCCT`, `enableJSCAD`, and `enableManifold` to `true` or `false`, you control which kernels Bitbybit attempts to initialize. This allows for optimizing load times and resource usage if not all kernels are needed.
-    *   Calls `initWithKernels()` to initialize Bitbybit with the selected kernels, passing the Babylon.js `scene`.
+    *   Calls `initWithKernels()` to initialize Bitbybit with the selected kernels, passing the BabylonJS `scene`.
     *   Conditionally calls geometry creation functions (`createOCCTGeometry`, `createManifoldGeometry`, `createJSCADGeometry`) based on which kernels were enabled and successfully initialized.
-    *   Starts the Babylon.js render loop using `engine.runRenderLoop(...)`.
+    *   Starts the BabylonJS render loop using `engine.runRenderLoop(...)`.
 
 4.  **`initBabylonJS()` function:**
-    *   Standard Babylon.js boilerplate: sets up the `Engine` attached to the canvas.
+    *   Standard BabylonJS boilerplate: sets up the `Engine` attached to the canvas.
     *   Creates a `Scene` and sets its clear color (background).
     *   Creates an `ArcRotateCamera` for user interaction and attaches its controls to the canvas.
     *   Adds a `HemisphericLight` to illuminate the scene.
@@ -522,14 +525,14 @@ async function createJSCADGeometry(bitbybit: BitByBitBase, color: string) {
 5.  **`initWithKernels()` function:**
     *   This is the core of Bitbybit's initialization.
     *   It conditionally creates `Worker` instances for OCCT, JSCAD, and Manifold based on the `options` passed in. The `new URL('./workers/worker-name.worker.ts', import.meta.url)` syntax is Vite's way of correctly bundling and referencing web worker files.
-    *   Calls `await bitbybit.init(scene, occtWorkerInstance, jscadWorkerInstance, manifoldWorkerInstance)`. The `@bitbybit-dev/babylonjs` package's `BitByBitBase` is designed to work with a Babylon.js `Scene` object and can handle `undefined` for worker instances it shouldn't initialize.
+    *   Calls `await bitbybit.init(scene, occtWorkerInstance, jscadWorkerInstance, manifoldWorkerInstance)`. The `@bitbybit-dev/babylonjs` package's `BitByBitBase` is designed to work with a BabylonJS `Scene` object and can handle `undefined` for worker instances it shouldn't initialize.
     *   It then uses RxJS `pipe(first(...))` to subscribe to the state observables of each enabled kernel (`occWorkerState$`, `jscadWorkerState$`, `manifoldWorkerState$`).
     *   The `Promise` resolves only after all *selected and enabled* kernels have emitted an `initialised` state. This ensures that you don't try to use a kernel before it's ready.
 
 6.  **Geometry Creation Functions (`createOCCTGeometry`, `createManifoldGeometry`, `createJSCADGeometry`):**
     *   These are example functions illustrating how to use Bitbybit's core geometry API (e.g., `bitbybit.occt.*`, `bitbybit.manifold.*`, `bitbybit.jscad.*`).
     *   **`Inputs` DTOs**: You'll notice the use of `Inputs.OCCT.CubeDto()`, `Inputs.Manifold.SphereDto()`, etc. These objects are used to pass parameters to Bitbybit's geometry creation and modification functions. They provide type safety and often mirror the inputs you'd find in a visual programming environment. Intellisense (auto-completion in your IDE) will be very helpful here.
-    *   **Drawing**: After creating a geometric entity, `bitbybit.draw.drawAnyAsync()` (from `@bitbybit-dev/babylonjs`) is used to render it into the Babylon.js scene. Different kernels might have slightly different drawing option DTOs (e.g., `DrawOcctShapeOptions`, `DrawManifoldOrCrossSectionOptions`, `DrawBasicGeometryOptions`), but `drawAnyAsync` handles many common cases.
+    *   **Drawing**: After creating a geometric entity, `bitbybit.draw.drawAnyAsync()` (from `@bitbybit-dev/babylonjs`) is used to render it into the BabylonJS scene. Different kernels might have slightly different drawing option DTOs (e.g., `DrawOcctShapeOptions`, `DrawManifoldOrCrossSectionOptions`, `DrawBasicGeometryOptions`), but `drawAnyAsync` handles many common cases.
 
 ## 5. Basic Styling (Optional)
 
@@ -546,7 +549,7 @@ Create an `src/style.css` file if you haven't already:
     display: block;
     width: 100vw;
     height: 100vh;
-    touch-action: none; /* Recommended for Babylon.js pointer events */
+    touch-action: none; /* Recommended for BabylonJS pointer events */
 }`}
 </CodeBlock>
 
@@ -557,7 +560,7 @@ Create an `src/style.css` file if you haven't already:
 # or: yarn dev`}
 </CodeBlock>
 
-Vite will start a development server. You should see a browser window open with your Babylon.js scene. If all kernels were enabled, you'll see three distinct shapes:
+Vite will start a development server. You should see a browser window open with your BabylonJS scene. If all kernels were enabled, you'll see three distinct shapes:
 *   A red, filleted cube (OCCT) at the origin.
 *   A green, subtracted shape (Manifold) positioned below the OCCT shape.
 *   A blue, unioned sphere shape (JSCAD) positioned above the OCCT shape.
@@ -569,22 +572,11 @@ Check your browser's developer console for logs indicating the initialization st
 
 You can explore and interact with a live example of this setup on StackBlitz.
 
-<div className="stackblitz-embed-container">
-  <iframe
-    src="https://stackblitz.com/edit/babylonjs-bitbybit-setup-with-all-kernels?ctl=1&embed=1&file=src%2Fmain.ts&theme=dark"
-    style={{
-      width: '100%',
-      height: '700px',
-      border: '0',
-      borderRadius: '4px',
-      overflow: 'hidden',
-    }}
-    title="Bitbybit & Babylon.js - All Kernels Setup"
-    allow="accelerometer; ambient-light-sensor; camera; encrypted-media; geolocation; gyroscope; hid; microphone; midi; payment; usb; vr; xr-spatial-tracking"
-    sandbox="allow-forms allow-modals allow-popups allow-presentation allow-same-origin allow-scripts"
-  ></iframe>
-</div>
-
+<BitByBitRenderCanvas
+  requireManualStart={true}
+  iframeUrl="https://stackblitz.com/edit/babylonjs-bitbybit-setup-with-all-kernels?embed=1&file=src%2Fmain.ts&theme=dark"
+  title="StackBlitz - Bitbybit & BabylonJS - All Kernels Setup"
+/>
 
 ## Key Takeaways
 
@@ -593,6 +585,6 @@ You can explore and interact with a live example of this setup on StackBlitz.
 *   **Asynchronous Operations:** Most Bitbybit operations are `async` because they communicate with Web Workers, ensuring the main thread remains responsive.
 *   **`Inputs` DTOs:** Use these typed objects to configure geometry operations, promoting code clarity and type safety.
 *   **Separate Worker Files:** Each geometry kernel runs in its own dedicated worker, maximizing performance for computationally intensive tasks.
-*   **Modular Design:** The `@bitbybit-dev/babylonjs` package seamlessly integrates Bitbybit's powerful geometry kernels and functionalities with your Babylon.js applications.
+*   **Modular Design:** The `@bitbybit-dev/babylonjs` package seamlessly integrates Bitbybit's powerful geometry kernels and functionalities with your BabylonJS applications.
 
-This setup provides a robust foundation for building sophisticated 3D CAD applications in the browser with Bitbybit and Babylon.js.
+This setup provides a robust foundation for building sophisticated 3D CAD applications in the browser with Bitbybit and BabylonJS.

@@ -1,4 +1,10 @@
 {
-  "label": "Code",
-  "position": 4
+    "label": "Code",
+    "position": 4,
+    "link": {
+        "type": "generated-index",
+        "title": "Learn to Code in Bitbybit",
+        "description": "Learn how to code in Bitbybit through live examples, code snippets, and more. These tutorials cover a range of Bitbybit algorithms. We typically demonstrate each algorithm using all three editors—Rete, Blockly, and TypeScript—to show that the same results can be achieved regardless of the editor used. This highlights the power of Bitbybit’s encapsulated, highly portable core layer, which is consistently used across the entire platform.",
+        "slug": "/code"
+    }
 }

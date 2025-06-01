@@ -1,4 +1,10 @@
 {
-  "label": "Draw",
-  "position": 1
+    "label": "Draw",
+    "position": 1,
+    "link": {
+        "type": "generated-index",
+        "title": "Drawing in Bitbybit",
+        "description": "Learn how to use the drawing capabilities in Bitbybit, including creating and manipulating shapes, lines, and other graphical elements.",
+        "slug": "/code/common/draw"
+    }
 }

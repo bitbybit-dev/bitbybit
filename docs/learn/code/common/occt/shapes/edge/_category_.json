@@ -1,4 +1,10 @@
 {
-  "label": "Edge",
-  "position": 2
+    "label": "Edge",
+    "position": 2,
+    "link": {
+        "type": "generated-index",
+        "title": "Edges",
+        "description": "Edges are one of the most fundamental pieces of geometry that you can create inside OCCT kernel. These tutorials will help you understand how to create and manipulate edges in your 3D models.",
+        "slug": "/code/common/occt/shapes/edge"
+    }
 }

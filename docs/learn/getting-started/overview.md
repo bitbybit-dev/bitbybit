@@ -84,12 +84,12 @@ These allow you to leverage our CAD capabilities within your preferred 3D render
 
 **Key Features & Benefits:**
 *   **Flexibility:** Build custom 3D tools, viewers, or applications tailored to your specific needs.
-*   **Integration:** Seamlessly incorporate our computational geometry capabilities into your existing JavaScript or TypeScript projects using either Three.js or BabylonJS.
+*   **Integration:** Seamlessly incorporate our computational geometry capabilities into your existing JavaScript or TypeScript projects using either ThreeJS or BabylonJS.
 *   **Community & Control:** Leverage the power of open-source, contribute, or fork as needed.
 *   **MIT Licensed:** All our core NPM packages are licensed under the permissive MIT license, granting you broad freedom to use, modify, and distribute your projects.
 
 <Admonition type="info" title="What's Included (and Not Included)">
-  <p>Our NPM packages provide the foundational geometric algorithms and data structures that power our platform, along with rendering integrations for Three.js and Babylon.js.</p>
+  <p>Our NPM packages provide the foundational geometric algorithms and data structures that power our platform, along with rendering integrations for ThreeJS and BabylonJS.</p>
   <p>They generally **do not** include:</p>
   <ul>
     <li>The pre-built 3D Model Configurators (those are part of our online platform services).</li>

@@ -1,4 +1,10 @@
 {
-  "label": "Blockly",
-  "position": 5
+    "label": "Blockly",
+    "position": 5,
+    "link": {
+        "type": "generated-index",
+        "title": "Getting Started With Bitbybit Blockly Editor",
+        "description": "Learn how to use the Bitbybit Blockly Editor to create and run scripts. This guide will help you understand the basics of Blockly, how to compose blocks in order to create 3D objects & how to manage your scripts effectively.",
+        "slug": "/getting-started/blockly"
+    }
 }
