@@ -6,6 +6,7 @@ description: "Learn how to build an advanced, interactive parametric 3D model us
 tags: [npm-packages, threejs]
 ---
 
+import BitByBitRenderCanvas from '@site/src/components/BitByBitRenderCanvas';
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 import CodeBlock from '@theme/CodeBlock';
@@ -39,21 +40,12 @@ This example demonstrates:
 
 We are providing a higher level explanations of the codebase below, but for working reference always check this live example on StackBlitz, which, as platform evolves could change slightly.
 
-<div className="stackblitz-embed-container">
-  <iframe
-    src="https://stackblitz.com/edit/hex-shell-threejs-bitbybit-for-docs?ctl=1&embed=1&file=src%2Fmain.ts&theme=dark"
-    style={{
-      width: '100%',
-      height: '700px',
-      border: '0',
-      borderRadius: '4px',
-      overflow: 'hidden',
-    }}
-    title="Advanced Parametric 3D Model with Three.js & Bitbybit"
-    allow="accelerometer; ambient-light-sensor; camera; encrypted-media; geolocation; gyroscope; hid; microphone; midi; payment; usb; vr; xr-spatial-tracking"
-    sandbox="allow-forms allow-modals allow-popups allow-presentation allow-same-origin allow-scripts"
-  ></iframe>
-</div>
+<BitByBitRenderCanvas
+  requireManualStart={true}
+  iframeUrl="https://stackblitz.com/edit/hex-shell-threejs-bitbybit-for-docs?embed=1&file=src%2Fmain.ts&theme=dark"
+  title="StackBlitz - Advanced Parametric 3D Model with Three.js & Bitbybit"
+/>
+
 
 ### Find the source code on [Bitbybit GitHub Examples](https://github.com/bitbybit-dev/bitbybit/tree/master/examples/vite/threejs/hex-shell)
 

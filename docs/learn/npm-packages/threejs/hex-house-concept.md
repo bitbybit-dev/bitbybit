@@ -48,8 +48,8 @@ This example will demonstrate how to:
 <Admonition type="info" title="Prerequisites & Further Details">
   <p>This tutorial focuses on the core application logic for generating the Hex House with Three.js. For a detailed explanation of:</p>
   <ul>
-    <li>Setting up Web Worker files (e.g., <code>occt.worker.ts</code>), please refer to our <a href="./threejs-integration">Three.js Integration Starter Tutorial</a>.</li>
-    <li>The general project structure (models, downloads, other helpers like <code>init-threejs.ts</code>, <code>init-kernels.ts</code>, etc.), you can refer to the <a href="./parametric-model-threejs">previous Advanced Parametric Model (Three.js) tutorial</a> which shares a similar foundational setup.</li>
+    <li>Setting up Web Worker files (e.g., <code>occt.worker.ts</code>), please refer to our <a href="./start-with-three-js">Three.js Integration Starter Tutorial</a>.</li>
+    <li>The general project structure (models, downloads, other helpers like <code>init-threejs.ts</code>, <code>init-kernels.ts</code>, etc.), you can refer to the <a href="./advanced-parametric-3d-model">previous Advanced Parametric Model (Three.js) tutorial</a> which shares a similar foundational setup.</li>
   </ul>
   <p>Here, we'll concentrate on the essential files and logic that bring the Hex House concept to life: <code>main.ts</code>, <code>create-gui.ts</code>, and particularly <code>create-shape.ts</code>.</p>
 </Admonition>
@@ -97,94 +97,94 @@ This file coordinates the setup and dynamic updates of our Hex House within the 
 {`import './style.css';
 import { BitByBitBase, Inputs } from '@bitbybit-dev/threejs'; // Three.js integration
 import { model, type KernelOptions, current } from './models';
-import { /* Assuming these are correctly imported from your helpers index */
-  initKernels, initThreeJS, createGui, createShape,
-  createDirLightsAndGround, disableGUI, enableGUI, hideSpinner, showSpinner,
-  downloadGLB, downloadSTL, downloadStep,
+import {
+    initKernels, initThreeJS, createGui, createShape,
+    createDirLightsAndGround, disableGUI, enableGUI, hideSpinner, showSpinner,
+    downloadGLB, downloadSTL, downloadStep,
 } from './helpers';
 
 // Configure which geometry kernels to enable
 const kernelOptions: KernelOptions = {
-  enableOCCT: true, // This example relies heavily on OCCT for its CAD operations
-  enableJSCAD: false,
-  enableManifold: false,
+    enableOCCT: true, // This example relies heavily on OCCT for its CAD operations
+    enableJSCAD: false,
+    enableManifold: false,
 };
 
 // Application entry point
 start();
 
 async function start() {
-  // 1. Initialize the Three.js scene, camera, and renderer
-  const { scene } = initThreeJS(); // From helpers/init-threejs.ts
-  // Add default lighting and a ground plane
-  createDirLightsAndGround(scene, current); // From helpers/init-threejs.ts
+    // 1. Initialize the Three.js scene, camera, and renderer
+    const { scene } = initThreeJS(); // From helpers/init-threejs.ts
+    // Add default lighting and a ground plane
+    createDirLightsAndGround(scene, current); // From helpers/init-threejs.ts
 
-  // 2. Initialize Bitbybit, linking it to the Three.js scene and selected kernels
-  const bitbybit = new BitByBitBase();
-  await initKernels(scene, bitbybit, kernelOptions); // From helpers/init-kernels.ts
+    // 2. Initialize Bitbybit, linking it to the Three.js scene and selected kernels
+    const bitbybit = new BitByBitBase();
+    await initKernels(scene, bitbybit, kernelOptions); // From helpers/init-kernels.ts
 
-  // Variables to hold the OCCT shape representation and shapes to clean up
-  let finalShape: Inputs.OCCT.TopoDSShapePointer | undefined;
-  let shapesToClean: Inputs.OCCT.TopoDSShapePointer[] = []; // For OCCT memory management
+    // Variables to hold the OCCT shape representation and shapes to clean up
+    let finalShape: Inputs.OCCT.TopoDSShapePointer | undefined;
+    let shapesToClean: Inputs.OCCT.TopoDSShapePointer[] = []; // For OCCT memory management
 
-  // 3. Connect download functions to the model object (used by GUI)
-  model.downloadStep = () => downloadStep(bitbybit, finalShape);
-  model.downloadGLB = () => downloadGLB(scene); // GLB export from Three.js scene
-  model.downloadSTL = () => downloadSTL(scene); // STL export from Three.js scene (can also be from OCCT)
+    // 3. Connect download functions to the model object (used by GUI)
+    model.downloadStep = () => downloadStep(bitbybit, finalShape);
+    model.downloadGLB = () => downloadGLB(scene); // GLB export from Three.js scene
+    model.downloadSTL = () => downloadSTL(scene); // STL export from Three.js scene (can also be from OCCT)
 
-  // 4. Create the GUI panel and link it to model parameters and the updateShape function
-  createGui(current, model, updateShape); // From helpers/create-gui.ts
+    // 4. Create the GUI panel and link it to model parameters and the updateShape function
+    createGui(current, model, updateShape); // From helpers/create-gui.ts
 
-  // 5. Basic animation setup for rotating the model groups
-  const rotationSpeed = 0.0005;
-  const rotateGroup = () => {
-    if (model.rotationEnabled && current.groups && current.groups.length > 0) {
-      current.groups.forEach((g) => {
-        if (g) g.rotation.y -= rotationSpeed; // Rotate each Three.js Group
-      });
-    }
-  };
+    // 5. Basic animation setup for rotating the model groups
+    const rotationSpeed = 0.0005;
+    const rotateGroup = () => {
+        if (model.rotationEnabled && current.groups && current.groups.length > 0) {
+        current.groups.forEach((g) => {
+            if (g) g.rotation.y -= rotationSpeed; // Rotate each Three.js Group
+        });
+        }
+    };
 
-  // Hook into Three.js render loop (via onBeforeRender) for animation
-  scene.onBeforeRender = () => {
-    rotateGroup();
-  };
+    // Hook into Three.js render loop (via onBeforeRender) for animation
+    scene.onBeforeRender = () => {
+        rotateGroup();
+    };
 
-  // 6. Initial shape creation
-  finalShape = await createShape( // From helpers/create-shape.ts
-    bitbybit,
-    scene,
-    model,      // Current model parameters from models/model.ts
-    shapesToClean, // Array to track OCCT shapes for cleanup
-    current       // Object to store references to current Three.js Groups
-  );
-
-  // 7. Function to update the shape when GUI parameters change
-  async function updateShape() {
-    disableGUI(); // Prevent further interaction during update
-    showSpinner();  // Indicate processing
-
-    // Remove previous Three.js groups from the scene
-    current.groups?.forEach((g) => {
-      g.traverse((obj) => { // Traverse to remove all children
-        scene?.remove(obj);
-        // Note: Proper disposal of geometries and materials might be needed here
-        // if not handled by a higher-level dispose of the group's children.
-        // For simplicity, this example focuses on removing from scene.
-      });
-      scene?.remove(g); // Remove the group itself
-    });
-    current.groups = []; // Reset the groups array
-
-    // Re-create the shape with new parameters
-    // The createShape function handles OCCT cleanup via shapesToClean
-    finalShape = await createShape(
-      bitbybit, scene, model, shapesToClean, current
+    // 6. Initial shape creation
+    finalShape = await createShape( // From helpers/create-shape.ts
+        bitbybit,
+        scene,
+        model,      // Current model parameters from models/model.ts
+        shapesToClean, // Array to track OCCT shapes for cleanup
+        current       // Object to store references to current Three.js Groups
     );
 
-    hideSpinner();
-    enableGUI(); // Re-enable GUI
-  }
+    // 7. Function to update the shape when GUI parameters change
+    async function updateShape() {
+        disableGUI(); // Prevent further interaction during update
+        showSpinner();  // Indicate processing
+
+        // Remove previous Three.js groups from the scene
+        current.groups?.forEach((g) => {
+        g.traverse((obj) => { // Traverse to remove all children
+            scene?.remove(obj);
+            // Note: Proper disposal of geometries and materials might be needed here
+            // if not handled by a higher-level dispose of the group's children.
+            // For simplicity, this example focuses on removing from scene.
+        });
+        scene?.remove(g); // Remove the group itself
+        });
+        current.groups = []; // Reset the groups array
+
+        // Re-create the shape with new parameters
+        // The createShape function handles OCCT cleanup via shapesToClean
+        finalShape = await createShape(
+        bitbybit, scene, model, shapesToClean, current
+        );
+
+        hideSpinner();
+        enableGUI(); // Re-enable GUI
+    }
 }`}
 </CodeBlock>
 
@@ -211,50 +211,48 @@ import type { Current, Model } from '../models';
 import type { Mesh, MeshPhongMaterial } from 'three'; // Three.js types
 
 export const createGui = (
-  current: Current,
-  model: Model,
-  updateShape: () => void // No 'lod' parameter needed if createShape doesn't differentiate LODs
+    current: Current,
+    model: Model,
+  updateShape: () => void 
 ) => {
-  // model.update = () => updateShape(); // 'update' on model is not used in main.ts
-  const gui = new GUI();
-  current.gui = gui; // Store reference to the GUI instance
-  gui.$title.innerHTML = 'Hex House Controls'; // More descriptive title
+    const gui = new GUI();
+    current.gui = gui; // Store reference to the GUI instance
+    gui.$title.innerHTML = 'Patterns'; // descriptive title
 
-  // Add controls for uHex, vHex (number of hexagons)
-  gui.add(model, 'uHex', 5, 81, 4).name('Hexagons U (Width)')
-    .onFinishChange((value: number) => { model.uHex = value; updateShape(); });
-  gui.add(model, 'vHex', 5, 12, 1).name('Hexagons V (Segments)')
-    .onFinishChange((value: number) => { model.vHex = value; updateShape(); });
+    // Add controls for uHex, vHex (number of hexagons)
+    gui.add(model, 'uHex', 5, 81, 4).name('Hexagons U')
+        .onFinishChange((value: number) => { model.uHex = value; updateShape(); });
+    gui.add(model, 'vHex', 5, 12, 1).name('Hexagons V')
+        .onFinishChange((value: number) => { model.vHex = value; updateShape(); });
 
-  // Controls for drawing edges and faces
-  gui.add(model, 'drawEdges').name('Draw Edges').onFinishChange(() => updateShape());
-  gui.add(model, 'drawFaces').name('Draw Faces').onFinishChange(() => updateShape());
+    // Controls for drawing edges and faces
+    gui.add(model, 'drawEdges').name('Draw Edges').onFinishChange(() => updateShape());
+    gui.add(model, 'drawFaces').name('Draw Faces').onFinishChange(() => updateShape());
 
-  // Color control for the main shell material
-  gui.addColor(model, 'color').name('Shell Color')
-    .onChange((hexColor: string) => {
-      if (current.groups && current.groups.length > 0) {
-        // Assuming the first group contains the primary colored meshes
-        // This might need adjustment based on how createShape organizes meshes
-        const mainGroupContents = current.groups[0]?.children[0]?.children as Mesh[];
-        if (mainGroupContents) {
-          mainGroupContents.forEach(childMesh => {
-            if (childMesh.material && (childMesh.material as MeshPhongMaterial).color) {
-              (childMesh.material as MeshPhongMaterial).color.setHex(parseInt(hexColor.replace('#', '0x')));
+    // Color control for the main shell material
+    gui.addColor(model, 'color').name('Shell Color')
+        .onChange((hexColor: string) => {
+        if (current.groups && current.groups.length > 0) {
+            // The first group contains the primary colored meshes of faces
+            const mainGroupContents = current.groups[0]?.children[0]?.children as Mesh[];
+            if (mainGroupContents) {
+            mainGroupContents.forEach(childMesh => {
+                if (childMesh.material && (childMesh.material as MeshPhongMaterial).color) {
+                (childMesh.material as MeshPhongMaterial).color.setHex(parseInt(hexColor.replace('#', '0x')));
+                }
+            });
             }
-          });
+            // If ground color should also change, handle it separately:
+            // if (current.ground && (current.ground.material as MeshPhongMaterial).color) {
+            //   (current.ground.material as MeshPhongMaterial).color.setHex(parseInt(hexColor.replace('#', '0x')));
+            // }
         }
-        // If ground color should also change, handle it separately:
-        // if (current.ground && (current.ground.material as MeshPhongMaterial).color) {
-        //   (current.ground.material as MeshPhongMaterial).color.setHex(parseInt(hexColor.replace('#', '0x')));
-        // }
-      }
     });
 
-  // Download buttons
-  gui.add(model, 'downloadSTL').name('Download STL');
-  gui.add(model, 'downloadStep').name('Download STEP');
-  gui.add(model, 'downloadGLB').name('Download GLTF'); // Note: original code has 'downloadGLB', changed in main.ts to downloadGLTF
+    // Download buttons
+    gui.add(model, 'downloadSTL').name('Download STL');
+    gui.add(model, 'downloadStep').name('Download STEP');
+    gui.add(model, 'downloadGLB').name('Download GLTF');
 };`}
 </CodeBlock>
 
@@ -274,288 +272,283 @@ This is the heart of the parametric model, where complex CAD operations using Bi
 <CodeBlock language="typescript" title="src/helpers/create-shape.ts (with comments)">
 {`import type { BitByBitBase } from '@bitbybit-dev/threejs';
 import { Inputs } from '@bitbybit-dev/threejs';
-import { Color, MeshPhongMaterial, Scene, Group } from 'three'; // Added Group
+import { Color, MeshPhongMaterial, Scene, Group } from 'three';
 import type { Current, Model } from '../models';
 
 // Main function to create the entire Hex House shape
 export const createShape = async (
-  bitbybit: BitByBitBase | undefined,
-  scene: Scene | undefined,
-  model: Model, // Contains parameters from the GUI (uHex, vHex, color, etc.)
-  shapesToClean: Inputs.OCCT.TopoDSShapePointer[], // Array to manage OCCT memory
-  current: Current // Stores references to current Three.js objects (groups)
+    bitbybit: BitByBitBase | undefined,
+    scene: Scene | undefined,
+    model: Model, // Contains parameters from the GUI (uHex, vHex, color, etc.)
+    shapesToClean: Inputs.OCCT.TopoDSShapePointer[], // Array to manage OCCT memory
+    current: Current // Stores references to current Three.js objects (groups)
 ) => {
-  if (scene && bitbybit) {
-    // 1. OCCT Memory Management: Clean up shapes from the previous generation
-    if (shapesToClean.length > 0) {
-      await bitbybit.occt.deleteShapes({ shapes: shapesToClean });
+    if (scene && bitbybit) {
+        // 1. OCCT Memory Management: Clean up shapes from the previous generation
+        if (shapesToClean.length > 0) {
+        await bitbybit.occt.deleteShapes({ shapes: shapesToClean });
+        }
+    
+        shapesToClean = []; // Reset the array for the new generation
+
+        type Point3 = Inputs.Base.Point3; // Alias for convenience
+
+        // Define sets of points that will guide the creation of NURBS curves
+        const sd = { // sd  stands for 'shape data'
+        groundCrv: [ [-15, 0.1, -4.5], [0, 0.1, -3.5], [13, 0.1, -4.5], ] as Point3[],
+        groundMid: [ [-16, 0.1, 0], [14, 0.1, 0], ] as Point3[],
+        firstCrv:  [ [-12, 0, -5], [-7, 0, -2], [0, 0, -4], [2, 0, -3], [12, 0, -3], ] as Point3[],
+        secondCrv: [ [-14, 2, -8], [-7, 1.3, -3], [0, 1.8, -5.8], [2, 2, -5], [14, 1.5, -4], ] as Point3[],
+        midCrv:    [ [-18, 4, 0], [-7, 5, 0], [0, 3.7, 0], [2, 3.7, 0], [12, 8, 0], ] as Point3[],
+        };
+
+        // Destructure OCCT modules for easier access
+        const { shapes, transforms, operations } = bitbybit.occt;
+        const { face } = shapes; // Specifically the face module
+
+        // 2. Create Base Curves using Interpolation
+        const intOptions = new Inputs.OCCT.InterpolationDto(); // Options for interpolation
+
+        intOptions.points = sd.groundCrv;
+        const groundCrv = await shapes.wire.interpolatePoints(intOptions);
+        shapesToClean.push(groundCrv); // Add to cleanup list
+
+        // Mirror one of the ground curves to create symmetry
+        const mirrorOptions = new Inputs.OCCT.MirrorAlongNormalDto<Inputs.OCCT.TopoDSShapePointer>();
+        mirrorOptions.normal = [0, 0, 1]; // Mirror across the XY plane (normal is Z-axis)
+        mirrorOptions.shape = groundCrv;
+        const groundCrvMir = await transforms.mirrorAlongNormal(mirrorOptions);
+        shapesToClean.push(groundCrvMir);
+
+        // Create other guide curves similarly
+        intOptions.points = sd.groundMid;
+        const groundMid = await shapes.wire.interpolatePoints(intOptions);
+        shapesToClean.push(groundMid);
+
+        intOptions.points = sd.firstCrv;
+        const firstCrv = await shapes.wire.interpolatePoints(intOptions);
+        mirrorOptions.shape = firstCrv;
+        const firstCrvMir = await transforms.mirrorAlongNormal(mirrorOptions);
+        shapesToClean.push(firstCrv, firstCrvMir);
+
+        intOptions.points = sd.secondCrv;
+        const secondCrv = await shapes.wire.interpolatePoints(intOptions);
+        mirrorOptions.shape = secondCrv;
+        const secondCrvMir = await transforms.mirrorAlongNormal(mirrorOptions);
+        shapesToClean.push(secondCrv, secondCrvMir);
+
+        intOptions.points = sd.midCrv;
+        const midCrv = await shapes.wire.interpolatePoints(intOptions);
+        shapesToClean.push(midCrv);
+
+        // 3. Create the Main Lofted Surface (Shell of the House)
+        // Lofting creates a surface by skinning through a series of profile curves.
+        const loftOptions = new Inputs.OCCT.LoftAdvancedDto<Inputs.OCCT.TopoDSWirePointer>();
+        loftOptions.shapes = [ // Order of wires is important for lofting
+        midCrv, secondCrv, firstCrv, groundCrv, groundMid,
+        groundCrvMir, firstCrvMir, secondCrvMir, midCrv, // Close the loop
+        ];
+        loftOptions.straight = true; // Use straight sections between profiles
+        const loft = await operations.loftAdvanced(loftOptions);
+        shapesToClean.push(loft);
+
+        // 4. Extract Specific Faces from the Lofted Surface
+        // The loft operation results in a shell made of multiple faces.
+        // We extract the "roof" and "wall" faces for further processing.
+        const faceRoof = await face.getFace({ shape: loft, index: 0 }); // Index might vary
+        const faceWall = await face.getFace({ shape: loft, index: 1 }); // Index might vary
+        shapesToClean.push(faceRoof, faceWall);
+
+        // 5. Generate Hexagonal Patterns on Roof and Walls using helper functions
+        // These functions encapsulate the complex logic of subdividing faces and creating hex structures.
+        const roofHexCompounds = await createHexagonsRoof(faceRoof, model.uHex, model.vHex, bitbybit);
+        shapesToClean.push(...roofHexCompounds); // Add all returned OCCT shapes
+
+        const wallHexShape = await createHexagonsWalls(faceWall, model.uHex, Math.ceil(model.vHex / 2), bitbybit);
+        shapesToClean.push(wallHexShape);
+
+        // Extrude the wall pattern to give it thickness
+        const wallExtrude = await operations.extrude({ shape: wallHexShape, direction: [0, 0, -0.2] });
+        shapesToClean.push(wallExtrude);
+
+        // 6. Mirror Roof and Wall Components for Symmetry
+        const mirroredRoofPromises = roofHexCompounds.map((r) => {
+        mirrorOptions.shape = r; // Reuse mirrorOptions, just update the shape
+        return transforms.mirrorAlongNormal(mirrorOptions);
+        });
+        const mirroredRoofCompounds = await Promise.all(mirroredRoofPromises);
+        shapesToClean.push(...mirroredRoofCompounds);
+
+        mirrorOptions.shape = wallExtrude;
+        const mirroredWall = await transforms.mirrorAlongNormal(mirrorOptions);
+        shapesToClean.push(mirroredWall);
+
+        // 7. Combine All OCCT Parts into a Final Compound Shape (for STEP export primarily)
+        const allPartsForFinalCompound = [
+        ...roofHexCompounds, ...mirroredRoofCompounds,
+        wallExtrude, mirroredWall,
+        ];
+        const finalOcctShape = await shapes.compound.makeCompound({ shapes: allPartsForFinalCompound });
+        shapesToClean.push(finalOcctShape);
+
+        // Create sub-compounds for applying different materials/grouping in Three.js
+        // This helps in applying different colors or managing parts of the model.
+        const compRoof1 = await shapes.compound.makeCompound({ shapes: [roofHexCompounds[0], mirroredRoofCompounds[0], wallExtrude, mirroredWall] });
+        const compRoof2 = await shapes.compound.makeCompound({ shapes: [roofHexCompounds[1], mirroredRoofCompounds[1]] });
+        const compRoof3 = await shapes.compound.makeCompound({ shapes: [roofHexCompounds[2], mirroredRoofCompounds[2]] });
+        shapesToClean.push(compRoof1, compRoof2, compRoof3); // Also track these for cleanup
+
+        // 8. Drawing the OCCT Shapes into Three.js Scene
+        const drawOptions = new Inputs.Draw.DrawOcctShapeOptions();
+        drawOptions.precision = 0.19; // Tessellation precision for converting OCCT to mesh
+        drawOptions.drawEdges = model.drawEdges;
+        drawOptions.drawFaces = model.drawFaces;
+        drawOptions.edgeColour = '#000000';
+
+        // Material for the first group of roof/wall elements
+        const mat1 = new MeshPhongMaterial({ color: new Color(model.color) });
+        if(model.drawEdges) { // Offset to prevent z-fighting between faces and edges
+            mat1.polygonOffset = true;
+            mat1.polygonOffsetFactor = 1;
+        }
+        mat1.side = 2; // THREE.DoubleSide, render both sides of faces
+        drawOptions.faceMaterial = mat1;
+        const groupMesh1 = await bitbybit.draw.drawAnyAsync({ entity: compRoof1, options: drawOptions });
+
+        // Material for the second group (can be different)
+        const mat2 = new MeshPhongMaterial({ color: new Color(0x0000ff) }); // Example: Blue
+        if(model.drawEdges) { mat2.polygonOffset = true; mat2.polygonOffsetFactor = 1; }
+        mat2.side = 2;
+        drawOptions.faceMaterial = mat2;
+        const groupMesh2 = await bitbybit.draw.drawAnyAsync({ entity: compRoof2, options: drawOptions });
+
+        // Material for the third group
+        const mat3 = new MeshPhongMaterial({ color: new Color(0x3300ff) }); // Example: Darker Blue
+        if(model.drawEdges) { mat3.polygonOffset = true; mat3.polygonOffsetFactor = 1; }
+        mat3.side = 2;
+        drawOptions.faceMaterial = mat3;
+        const groupMesh3 = await bitbybit.draw.drawAnyAsync({ entity: compRoof3, options: drawOptions });
+
+        // Store references to the Three.js groups for rotation and disposal
+        current.groups = [groupMesh1, groupMesh2, groupMesh3];
+
+        // Apply shadow casting/receiving to all children meshes within the groups
+        current.groups.forEach((group) => {
+        group.children[0].children.forEach((child) => { // Assuming structure from drawAnyAsync
+            child.castShadow = true;
+            child.receiveShadow = true;
+        });
+        });
+
+        return finalOcctShape; // Return the main OCCT compound
     }
-    // Double check, sometimes needed for complex asynchronous operations
-    if (shapesToClean.length > 0) {
-      await bitbybit.occt.deleteShapes({ shapes: shapesToClean });
-    }
-    shapesToClean = []; // Reset the array for the new generation
-
-    type Point3 = Inputs.Base.Point3; // Alias for convenience
-
-    // Define sets of points that will guide the creation of NURBS curves
-    const sd = { // sd likely stands for 'shape data' or 'spline data'
-      groundCrv: [ [-15, 0.1, -4.5], [0, 0.1, -3.5], [13, 0.1, -4.5], ] as Point3[],
-      groundMid: [ [-16, 0.1, 0], [14, 0.1, 0], ] as Point3[],
-      firstCrv:  [ [-12, 0, -5], [-7, 0, -2], [0, 0, -4], [2, 0, -3], [12, 0, -3], ] as Point3[],
-      secondCrv: [ [-14, 2, -8], [-7, 1.3, -3], [0, 1.8, -5.8], [2, 2, -5], [14, 1.5, -4], ] as Point3[],
-      midCrv:    [ [-18, 4, 0], [-7, 5, 0], [0, 3.7, 0], [2, 3.7, 0], [12, 8, 0], ] as Point3[],
-    };
-
-    // Destructure OCCT modules for easier access
-    const { shapes, transforms, operations } = bitbybit.occt;
-    const { face } = shapes; // Specifically the face module
-
-    // 2. Create Base Curves using Interpolation
-    const intOptions = new Inputs.OCCT.InterpolationDto(); // Options for interpolation
-
-    intOptions.points = sd.groundCrv;
-    const groundCrv = await shapes.wire.interpolatePoints(intOptions);
-    shapesToClean.push(groundCrv); // Add to cleanup list
-
-    // Mirror one of the ground curves to create symmetry
-    const mirrorOptions = new Inputs.OCCT.MirrorAlongNormalDto<Inputs.OCCT.TopoDSShapePointer>();
-    mirrorOptions.normal = [0, 0, 1]; // Mirror across the XY plane (normal is Z-axis)
-    mirrorOptions.shape = groundCrv;
-    const groundCrvMir = await transforms.mirrorAlongNormal(mirrorOptions);
-    shapesToClean.push(groundCrvMir);
-
-    // Create other guide curves similarly
-    intOptions.points = sd.groundMid;
-    const groundMid = await shapes.wire.interpolatePoints(intOptions);
-    shapesToClean.push(groundMid);
-
-    intOptions.points = sd.firstCrv;
-    const firstCrv = await shapes.wire.interpolatePoints(intOptions);
-    mirrorOptions.shape = firstCrv;
-    const firstCrvMir = await transforms.mirrorAlongNormal(mirrorOptions);
-    shapesToClean.push(firstCrv, firstCrvMir);
-
-    intOptions.points = sd.secondCrv;
-    const secondCrv = await shapes.wire.interpolatePoints(intOptions);
-    mirrorOptions.shape = secondCrv;
-    const secondCrvMir = await transforms.mirrorAlongNormal(mirrorOptions);
-    shapesToClean.push(secondCrv, secondCrvMir);
-
-    intOptions.points = sd.midCrv;
-    const midCrv = await shapes.wire.interpolatePoints(intOptions);
-    shapesToClean.push(midCrv);
-
-    // 3. Create the Main Lofted Surface (Shell of the House)
-    // Lofting creates a surface by skinning through a series of profile curves.
-    const loftOptions = new Inputs.OCCT.LoftAdvancedDto<Inputs.OCCT.TopoDSWirePointer>();
-    loftOptions.shapes = [ // Order of wires is important for lofting
-      midCrv, secondCrv, firstCrv, groundCrv, groundMid,
-      groundCrvMir, firstCrvMir, secondCrvMir, midCrv, // Close the loop
-    ];
-    loftOptions.straight = true; // Use straight sections between profiles
-    const loft = await operations.loftAdvanced(loftOptions);
-    shapesToClean.push(loft);
-
-    // 4. Extract Specific Faces from the Lofted Surface
-    // The loft operation results in a shell made of multiple faces.
-    // We extract the "roof" and "wall" faces for further processing.
-    const faceRoof = await face.getFace({ shape: loft, index: 0 }); // Index might vary
-    const faceWall = await face.getFace({ shape: loft, index: 1 }); // Index might vary
-    shapesToClean.push(faceRoof, faceWall);
-
-    // 5. Generate Hexagonal Patterns on Roof and Walls using helper functions
-    // These functions encapsulate the complex logic of subdividing faces and creating hex structures.
-    const roofHexCompounds = await createHexagonsRoof(faceRoof, model.uHex, model.vHex, bitbybit);
-    shapesToClean.push(...roofHexCompounds); // Add all returned OCCT shapes
-
-    const wallHexShape = await createHexagonsWalls(faceWall, model.uHex, Math.ceil(model.vHex / 2), bitbybit);
-    shapesToClean.push(wallHexShape);
-
-    // Extrude the wall pattern to give it thickness
-    const wallExtrude = await operations.extrude({ shape: wallHexShape, direction: [0, 0, -0.2] });
-    shapesToClean.push(wallExtrude);
-
-    // 6. Mirror Roof and Wall Components for Symmetry
-    const mirroredRoofPromises = roofHexCompounds.map((r) => {
-      mirrorOptions.shape = r; // Reuse mirrorOptions, just update the shape
-      return transforms.mirrorAlongNormal(mirrorOptions);
-    });
-    const mirroredRoofCompounds = await Promise.all(mirroredRoofPromises);
-    shapesToClean.push(...mirroredRoofCompounds);
-
-    mirrorOptions.shape = wallExtrude;
-    const mirroredWall = await transforms.mirrorAlongNormal(mirrorOptions);
-    shapesToClean.push(mirroredWall);
-
-    // 7. Combine All OCCT Parts into a Final Compound Shape (for STEP export primarily)
-    const allPartsForFinalCompound = [
-      ...roofHexCompounds, ...mirroredRoofCompounds,
-      wallExtrude, mirroredWall,
-    ];
-    const finalOcctShape = await shapes.compound.makeCompound({ shapes: allPartsForFinalCompound });
-    shapesToClean.push(finalOcctShape);
-
-    // Create sub-compounds for applying different materials/grouping in Three.js
-    // This helps in applying different colors or managing parts of the model.
-    const compRoof1 = await shapes.compound.makeCompound({ shapes: [roofHexCompounds[0], mirroredRoofCompounds[0], wallExtrude, mirroredWall] });
-    const compRoof2 = await shapes.compound.makeCompound({ shapes: [roofHexCompounds[1], mirroredRoofCompounds[1]] });
-    const compRoof3 = await shapes.compound.makeCompound({ shapes: [roofHexCompounds[2], mirroredRoofCompounds[2]] });
-    shapesToClean.push(compRoof1, compRoof2, compRoof3); // Also track these for cleanup
-
-    // 8. Drawing the OCCT Shapes into Three.js Scene
-    const drawOptions = new Inputs.Draw.DrawOcctShapeOptions();
-    drawOptions.precision = 0.19; // Tessellation precision for converting OCCT to mesh
-    drawOptions.drawEdges = model.drawEdges;
-    drawOptions.drawFaces = model.drawFaces;
-    drawOptions.edgeColour = '#000000';
-
-    // Material for the first group of roof/wall elements
-    const mat1 = new MeshPhongMaterial({ color: new Color(model.color) });
-    if(model.drawEdges) { // Offset to prevent z-fighting between faces and edges
-        mat1.polygonOffset = true;
-        mat1.polygonOffsetFactor = 1;
-    }
-    mat1.side = 2; // THREE.DoubleSide, render both sides of faces
-    drawOptions.faceMaterial = mat1;
-    const groupMesh1 = await bitbybit.draw.drawAnyAsync({ entity: compRoof1, options: drawOptions });
-
-    // Material for the second group (can be different)
-    const mat2 = new MeshPhongMaterial({ color: new Color(0x0000ff) }); // Example: Blue
-    if(model.drawEdges) { mat2.polygonOffset = true; mat2.polygonOffsetFactor = 1; }
-    mat2.side = 2;
-    drawOptions.faceMaterial = mat2;
-    const groupMesh2 = await bitbybit.draw.drawAnyAsync({ entity: compRoof2, options: drawOptions });
-
-    // Material for the third group
-    const mat3 = new MeshPhongMaterial({ color: new Color(0x3300ff) }); // Example: Darker Blue
-    if(model.drawEdges) { mat3.polygonOffset = true; mat3.polygonOffsetFactor = 1; }
-    mat3.side = 2;
-    drawOptions.faceMaterial = mat3;
-    const groupMesh3 = await bitbybit.draw.drawAnyAsync({ entity: compRoof3, options: drawOptions });
-
-    // Store references to the Three.js groups for rotation and disposal
-    current.groups = [groupMesh1, groupMesh2, groupMesh3];
-
-    // Apply shadow casting/receiving to all children meshes within the groups
-    current.groups.forEach((group) => {
-      group.children[0].children.forEach((child) => { // Assuming structure from drawAnyAsync
-        child.castShadow = true;
-        child.receiveShadow = true;
-      });
-    });
-
-    return finalOcctShape; // Return the main OCCT compound
-  }
-  return undefined; // Fallback
+    return undefined; // Fallback
 };
 
 // Helper function to create hexagonal patterns for the walls
 async function createHexagonsWalls(
-  faceToSubdivide: Inputs.OCCT.TopoDSFacePointer,
-  nrHexagonsU: number,
-  nrHexagonsV: number,
-  bitbybit: BitByBitBase
+    faceToSubdivide: Inputs.OCCT.TopoDSFacePointer,
+    nrHexagonsU: number,
+    nrHexagonsV: number,
+    bitbybit: BitByBitBase
 ): Promise<Inputs.OCCT.TopoDSShapePointer> { // Return type for clarity
-  const { shapes } = bitbybit.occt;
-  const { face } = shapes;
+    const { shapes } = bitbybit.occt;
+    const { face } = shapes;
 
-  const hexSubdivisionOptions = new Inputs.OCCT.FaceSubdivideToHexagonHolesDto<Inputs.OCCT.TopoDSFacePointer>();
-  hexSubdivisionOptions.shape = faceToSubdivide;
-  hexSubdivisionOptions.nrHexagonsU = nrHexagonsU;
-  hexSubdivisionOptions.nrHexagonsV = nrHexagonsV;
-  // Patterns define how hexagons scale along U and V directions of the face
-  hexSubdivisionOptions.scalePatternU = [0.8, 0.5, 0.5, 0.3];
-  hexSubdivisionOptions.scalePatternV = [0.8, 0.5, 0.5, 0.3];
-  hexSubdivisionOptions.offsetFromBorderV = 0.1; // Keep hexagons away from V borders
-  hexSubdivisionOptions.flatU = false; // Allow curvature in U direction
-  hexSubdivisionOptions.inclusionPattern = [true, true, true, false]; // Which hexagons in a repeating pattern to keep
-  
-  // This directly creates a face with hexagonal holes
-  const subdividedFaces = await face.subdivideToHexagonHoles(hexSubdivisionOptions);
-  return subdividedFaces[0]; // Assuming it returns an array of faces, take the first
+    const hexSubdivisionOptions = new Inputs.OCCT.FaceSubdivideToHexagonHolesDto<Inputs.OCCT.TopoDSFacePointer>();
+    hexSubdivisionOptions.shape = faceToSubdivide;
+    hexSubdivisionOptions.nrHexagonsU = nrHexagonsU;
+    hexSubdivisionOptions.nrHexagonsV = nrHexagonsV;
+    // Patterns define how hexagons scale along U and V directions of the face
+    hexSubdivisionOptions.scalePatternU = [0.8, 0.5, 0.5, 0.3];
+    hexSubdivisionOptions.scalePatternV = [0.8, 0.5, 0.5, 0.3];
+    hexSubdivisionOptions.offsetFromBorderV = 0.1; // Keep hexagons away from V borders
+    hexSubdivisionOptions.flatU = false;
+    hexSubdivisionOptions.inclusionPattern = [true, true, true, false]; // Which hexagons in a repeating pattern to keep
+    
+    // This directly creates a face with hexagonal holes
+    const subdividedFaces = await face.subdivideToHexagonHoles(hexSubdivisionOptions);
+    return subdividedFaces[0]; // Assuming it returns an array of faces, take the first
 }
 
 // Helper function to create hexagonal panels for the roof
 async function createHexagonsRoof(
-  faceToSubdivide: Inputs.OCCT.TopoDSFacePointer,
-  nrHexagonsU: number,
-  nrHexagonsV: number,
-  bitbybit: BitByBitBase
+    faceToSubdivide: Inputs.OCCT.TopoDSFacePointer,
+    nrHexagonsU: number,
+    nrHexagonsV: number,
+    bitbybit: BitByBitBase
 ): Promise<Inputs.OCCT.TopoDSShapePointer[]> { // Returns array of OCCT compounds
-  const { shapes, operations } = bitbybit.occt;
-  const { face, wire } = shapes;
+    const { shapes, operations } = bitbybit.occt;
+    const { face, wire } = shapes;
 
-  // First, create outer hexagonal wires on the face
-  const hexWiresOptionsOuter = new Inputs.OCCT.FaceSubdivideToHexagonWiresDto<Inputs.OCCT.TopoDSFacePointer>();
-  hexWiresOptionsOuter.shape = faceToSubdivide;
-  hexWiresOptionsOuter.nrHexagonsU = nrHexagonsU;
-  hexWiresOptionsOuter.nrHexagonsV = nrHexagonsV;
-  hexWiresOptionsOuter.scalePatternU = [0.8, 0.5, 0.1, 0.1, 0.1]; // Varying scales
-  hexWiresOptionsOuter.scalePatternV = [0.8, 0.5, 0.1, 0.1, 0.1];
-  hexWiresOptionsOuter.flatU = false;
-  hexWiresOptionsOuter.inclusionPattern = [true, true, true, false];
-  const outerHexWires = await face.subdivideToHexagonWires(hexWiresOptionsOuter);
+    // First, create outer hexagonal wires on the face
+    const hexWiresOptionsOuter = new Inputs.OCCT.FaceSubdivideToHexagonWiresDto<Inputs.OCCT.TopoDSFacePointer>();
+    hexWiresOptionsOuter.shape = faceToSubdivide;
+    hexWiresOptionsOuter.nrHexagonsU = nrHexagonsU;
+    hexWiresOptionsOuter.nrHexagonsV = nrHexagonsV;
+    hexWiresOptionsOuter.scalePatternU = [0.8, 0.5, 0.1, 0.1, 0.1]; // Varying scales
+    hexWiresOptionsOuter.scalePatternV = [0.8, 0.5, 0.1, 0.1, 0.1];
+    hexWiresOptionsOuter.flatU = false;
+    hexWiresOptionsOuter.inclusionPattern = [true, true, true, false];
+    const outerHexWires = await face.subdivideToHexagonWires(hexWiresOptionsOuter);
 
-  // Second, create inner hexagonal wires (for thickness, or could be just scaled versions)
-  const hexWiresOptionsInner = new Inputs.OCCT.FaceSubdivideToHexagonWiresDto<Inputs.OCCT.TopoDSFacePointer>();
-  hexWiresOptionsInner.shape = faceToSubdivide;
-  hexWiresOptionsInner.flatU = false;
-  hexWiresOptionsInner.nrHexagonsU = nrHexagonsU;
-  hexWiresOptionsInner.nrHexagonsV = nrHexagonsV;
-  hexWiresOptionsInner.inclusionPattern = [true, true, true, false]; // Same inclusion
-  // (Inner wires might use different scaling or be derived from outer wires via offset if thickness is uniform)
-  // For this example, it seems it generates another set of wires, perhaps slightly smaller or at a different position.
-  // The original code uses sub2 (outerHexWires from a new call) and revSub (reversed innerHexWires).
-  const innerHexWiresRaw = await face.subdivideToHexagonWires(hexWiresOptionsInner); // This might be sub2 in original
-  const innerHexWiresReversed = await Promise.all(outerHexWires.map((s) => wire.reversedWire({ shape: s }))); // This might be revSub in original
+    // Second, create inner hexagonal wires (for scaled versions)
+    const hexWiresOptionsInner = new Inputs.OCCT.FaceSubdivideToHexagonWiresDto<Inputs.OCCT.TopoDSFacePointer>();
+    hexWiresOptionsInner.shape = faceToSubdivide;
+    hexWiresOptionsInner.flatU = false;
+    hexWiresOptionsInner.nrHexagonsU = nrHexagonsU;
+    hexWiresOptionsInner.nrHexagonsV = nrHexagonsV;
+    hexWiresOptionsInner.inclusionPattern = [true, true, true, false]; // Same inclusion
 
-  // Create faces between pairs of inner and outer wires to form panels
-  const panelFacePromises = innerHexWiresReversed.map((reversedInnerWire, index) => {
-    const outerWire = innerHexWiresRaw[index]; // Assuming innerHexWiresRaw is sub2
-    return face.createFaceFromWires({ shapes: [outerWire, reversedInnerWire], planar: false });
-  });
-  const panelFaces = await Promise.all(panelFacePromises);
+    const innerHexWiresRaw = await face.subdivideToHexagonWires(hexWiresOptionsInner); // This might be sub2 in original
+    const innerHexWiresReversed = await Promise.all(outerHexWires.map((s) => wire.reversedWire({ shape: s }))); // This might be revSub in original
 
-  // Give thickness to these panel faces based on a height pattern
-  const heightPattern = [0.11, 0.1, 0.1];
-  let heightPatternIndex = 0;
+    // Create faces between pairs of inner and outer wires to form panels
+    const panelFacePromises = innerHexWiresReversed.map((reversedInnerWire, index) => {
+        const outerWire = innerHexWiresRaw[index]; // Assuming innerHexWiresRaw is sub2
+        return face.createFaceFromWires({ shapes: [outerWire, reversedInnerWire], planar: false });
+    });
+    const panelFaces = await Promise.all(panelFacePromises);
 
-  const groupPromises: [
-      Promise<Inputs.OCCT.TopoDSShapePointer>[],
-      Promise<Inputs.OCCT.TopoDSShapePointer>[],
-      Promise<Inputs.OCCT.TopoDSShapePointer>[]
-  ] = [[], [], []];
+    // Give thickness to these panel faces based on a height pattern
+    const heightPattern = [0.11, 0.1, 0.1];
+    let heightPatternIndex = 0;
+
+    const groupPromises: [
+        Promise<Inputs.OCCT.TopoDSShapePointer>[],
+        Promise<Inputs.OCCT.TopoDSShapePointer>[],
+        Promise<Inputs.OCCT.TopoDSShapePointer>[]
+    ] = [[], [], []];
 
 
-  panelFaces.forEach((panelFace) => {
-    const currentHeight = heightPattern[heightPatternIndex];
-    // Cycle through the height pattern
-    heightPatternIndex = (heightPatternIndex + 1) % heightPattern.length;
-    
-    const thickSolidPromise = operations.makeThickSolidSimple({
-      shape: panelFace,
-      offset: currentHeight, // Apply thickness
+    panelFaces.forEach((panelFace) => {
+        const currentHeight = heightPattern[heightPatternIndex];
+        // Cycle through the height pattern
+        heightPatternIndex = (heightPatternIndex + 1) % heightPattern.length;
+        
+        const thickSolidPromise = operations.makeThickSolidSimple({
+        shape: panelFace,
+        offset: currentHeight, // Apply thickness
+        });
+
+        // Distribute into groups based on height pattern index for different materials/compounds
+        if (heightPatternIndex === 0) groupPromises[0].push(thickSolidPromise);
+        else if (heightPatternIndex === 1) groupPromises[1].push(thickSolidPromise);
+        else groupPromises[2].push(thickSolidPromise);
     });
 
-    // Distribute into groups based on height pattern index for different materials/compounds
-    if (heightPatternIndex === 0) groupPromises[0].push(thickSolidPromise);
-    else if (heightPatternIndex === 1) groupPromises[1].push(thickSolidPromise);
-    else groupPromises[2].push(thickSolidPromise);
-  });
+    const [thickSolidsGroup1, thickSolidsGroup2, thickSolidsGroup3] = await Promise.all([
+        Promise.all(groupPromises[0]),
+        Promise.all(groupPromises[1]),
+        Promise.all(groupPromises[2]),
+    ]);
 
-  const [thickSolidsGroup1, thickSolidsGroup2, thickSolidsGroup3] = await Promise.all([
-    Promise.all(groupPromises[0]),
-    Promise.all(groupPromises[1]),
-    Promise.all(groupPromises[2]),
-  ]);
+    // Combine solids in each group into a single compound for easier management/drawing
+    const compound1 = await shapes.compound.makeCompound({ shapes: thickSolidsGroup1 });
+    const compound2 = await shapes.compound.makeCompound({ shapes: thickSolidsGroup2 });
+    const compound3 = await shapes.compound.makeCompound({ shapes: thickSolidsGroup3 });
 
-  // Combine solids in each group into a single compound for easier management/drawing
-  const compound1 = await shapes.compound.makeCompound({ shapes: thickSolidsGroup1 });
-  const compound2 = await shapes.compound.makeCompound({ shapes: thickSolidsGroup2 });
-  const compound3 = await shapes.compound.makeCompound({ shapes: thickSolidsGroup3 });
-
-  return [compound1, compound2, compound3]; // Return array of compounds
+    return [compound1, compound2, compound3]; // Return array of compounds
 }`}
 </CodeBlock>
 
@@ -584,11 +577,11 @@ The CSS (`style.css`) provides basic page styling, positions the logo, and inclu
 
 <CodeBlock language="css" title="style.css">
 {`body {
-  margin: 0px;
-  overflow: hidden;
+    margin: 0px;
+    overflow: hidden;
 }
 #three-canvas { /* Targets the canvas ID */
-  /* Styles to make canvas fill screen or desired area */
+    /* Styles to make canvas fill screen or desired area */
 }
 a.logo { /* Styles for the logo link */ }
 .lds-ellipsis { /* Styles for spinner */ }
