@@ -1,7 +1,7 @@
 ---
 sidebar_position: 2
-title: Using Bitbybit with Three.js
-sidebar_label: Three.js Starter Template
+title: Using Bitbybit with ThreeJS
+sidebar_label: ThreeJS Starter Template
 description: Learn how to set up and use the @bitbybit-dev/threejs package with Vite to create 3D CAD applications, and control which geometry kernels (OCCT, JSCAD, Manifold) are initialized.
 tags: [npm-packages, threejs, occt, manifold, jscad]
 ---
@@ -12,16 +12,16 @@ import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 import CodeBlock from '@theme/CodeBlock';
 
-# Using Bitbybit with Three.js
+# Using Bitbybit with ThreeJS
 
-This guide will walk you through setting up and using the `@bitbybit-dev/threejs` package to integrate Bitbybit's 3D CAD functionalities into your Three.js applications. We'll use Vite as our build tool, which simplifies the setup process.
+This guide will walk you through setting up and using the `@bitbybit-dev/threejs` package to integrate Bitbybit's 3D CAD functionalities into your ThreeJS applications. We'll use Vite as our build tool, which simplifies the setup process.
 
 The `@bitbybit-dev/threejs` package conveniently includes `three` as a dependency, so you don't need to install it separately.
 
 ## Prerequisites
 
 *   Node.js and npm (or yarn) installed.
-*   A basic understanding of TypeScript and Three.js.
+*   A basic understanding of TypeScript and ThreeJS.
 
 ## [Example on Bitbybit Github Repo](https://github.com/bitbybit-dev/bitbybit/tree/master/examples/vite/threejs/starter-template)
 
@@ -36,7 +36,7 @@ First, create a new Vite project with a TypeScript template:
 cd my-bitbybit-threejs-app`}
 </CodeBlock>
 
-Next, install the Bitbybit Three.js package and its necessary worker dependencies:
+Next, install the Bitbybit ThreeJS package and its necessary worker dependencies:
 
 <CodeBlock language="bash">
 {`npm install @bitbybit-dev/threejs
@@ -45,7 +45,7 @@ Next, install the Bitbybit Three.js package and its necessary worker dependencie
 
 <Admonition type="info" title="Why these packages?">
   <ul>
-    <li><code>@bitbybit-dev/threejs</code>: The main library for integrating Bitbybit with Three.js. It also installs these main packages listed below.</li>
+    <li><code>@bitbybit-dev/threejs</code>: The main library for integrating Bitbybit with ThreeJS. It also installs these main packages listed below.</li>
     <li><code>three</code>: Provides main game engine to be used with this demo.</li>
     <li><code>@bitbybit-dev/core</code>: Collects all kernel web worker libraries into coherent bitbybit base. It also includes some higher level functionality.</li>
     <li><code>@bitbybit-dev/occt-worker</code>: Provides the OpenCascade (OCCT) geometry kernel running in a Web Worker.</li>
@@ -60,7 +60,7 @@ Next, install the Bitbybit Three.js package and its necessary worker dependencie
 
 ## 2. HTML Structure
 
-Modify your `index.html` file in the project root to include a `<canvas>` element where the Three.js scene will be rendered:
+Modify your `index.html` file in the project root to include a `<canvas>` element where the ThreeJS scene will be rendered:
 
 <CodeBlock language="html" title="index.html">
 {`<!DOCTYPE html>
@@ -222,10 +222,10 @@ interface KernelOptions {
 start();
 
 async function start() {
-    // Initialize basic Three.js scene
+    // Initialize basic ThreeJS scene
     const { scene } = initThreeJS();
 
-    // Create an instance of BitByBitBase for Three.js
+    // Create an instance of BitByBitBase for ThreeJS
     const bitbybit = new BitByBitBase();
 
     // --- 2. Configure and Initialize Kernels ---
@@ -250,7 +250,7 @@ async function start() {
     }
 }
 
-// --- 4. Three.js Scene Initialization ---
+// --- 4. ThreeJS Scene Initialization ---
 function initThreeJS() {
     const domNode = document.getElementById('three-canvas') as HTMLCanvasElement;
 
@@ -503,20 +503,20 @@ async function createJSCADGeometry(bitbybit: BitByBitBase, color: string) {
 1.  **Imports:**
     *   `BitByBitBase` and `Inputs`: Core components from `@bitbybit-dev/threejs`. `Inputs` provides DTOs (Data Transfer Objects) for specifying parameters for geometry operations.
     *   `...StateEnum`: Enums used to check the initialization state of each kernel worker.
-    *   Standard Three.js modules for scene setup.
+    *   Standard ThreeJS modules for scene setup.
     *   `first` from `rxjs`: Used to easily subscribe to the first emission of a kernel's state.
 
 2.  **`KernelOptions` Interface:** Defines the structure for selecting which kernels to initialize.
 
 3.  **`start()` function (Main Entry Point):**
-    *   Calls `initThreeJS()` to set up the basic Three.js scene, camera, renderer, and controls.
+    *   Calls `initThreeJS()` to set up the basic ThreeJS scene, camera, renderer, and controls.
     *   Creates an instance of `BitByBitBase`.
     *   **`kernelOptions`**: This object is key. By setting `enableOCCT`, `enableJSCAD`, and `enableManifold` to `true` or `false`, you control which kernels Bitbybit attempts to initialize. This allows for optimizing load times and resource usage if not all kernels are needed.
     *   Calls `initWithKernels()` to initialize Bitbybit with the selected kernels.
     *   Conditionally calls geometry creation functions (`createOCCTGeometry`, `createManifoldGeometry`, `createJSCADGeometry`) based on which kernels were enabled and successfully initialized.
 
 4.  **`initThreeJS()` function:**
-    *   Standard Three.js boilerplate: sets up the `Scene`, `PerspectiveCamera`, `WebGLRenderer`, `HemisphereLight`, and `OrbitControls`.
+    *   Standard ThreeJS boilerplate: sets up the `Scene`, `PerspectiveCamera`, `WebGLRenderer`, `HemisphereLight`, and `OrbitControls`.
     *   Includes a window resize listener and an animation loop.
 
 5.  **`initWithKernels()` function:**
@@ -530,7 +530,7 @@ async function createJSCADGeometry(bitbybit: BitByBitBase, color: string) {
     *   These are example functions demonstrating how to use the APIs for each kernel.
     *   **`Inputs` DTOs**: You'll notice the use of `Inputs.OCCT.CubeDto()`, `Inputs.Manifold.SphereDto()`, etc. These objects are used to pass parameters to Bitbybit's geometry creation and modification functions. They provide type safety and often mirror the inputs you'd find in a visual programming environment. Intellisense (auto-completion in your IDE) will be very helpful here.
     *   **API Structure**: Operations are typically namespaced under `bitbybit.occt.*`, `bitbybit.manifold.*`, and `bitbybit.jscad.*`.
-    *   **Drawing**: After creating a geometric entity, `bitbybit.draw.drawAnyAsync()` is used to render it into the Three.js scene. Different kernels might have slightly different drawing option DTOs (e.g., `DrawOcctShapeOptions`, `DrawManifoldOrCrossSectionOptions`, `DrawBasicGeometryOptions`).
+    *   **Drawing**: After creating a geometric entity, `bitbybit.draw.drawAnyAsync()` is used to render it into the ThreeJS scene. Different kernels might have slightly different drawing option DTOs (e.g., `DrawOcctShapeOptions`, `DrawManifoldOrCrossSectionOptions`, `DrawBasicGeometryOptions`).
 
 ## 5. Basic Styling (Optional)
 
@@ -557,7 +557,7 @@ Create an `src/style.css` file if you haven't already:
 # or: yarn dev`}
 </CodeBlock>
 
-Vite will start a development server, and you should see a browser window open with your Three.js scene. If all kernels were enabled, you'll see three distinct shapes:
+Vite will start a development server, and you should see a browser window open with your ThreeJS scene. If all kernels were enabled, you'll see three distinct shapes:
 *   A red, filleted cube (OCCT) at the origin.
 *   A green, subtracted shape (Manifold) positioned below the OCCT shape.
 *   A blue, unioned sphere shape (JSCAD) positioned above the OCCT shape.
@@ -571,7 +571,7 @@ You can explore and interact with a live example of this setup on StackBlitz:
 <BitByBitRenderCanvas
   requireManualStart={true}
   iframeUrl="https://stackblitz.com/edit/threejs-bitbybit-setup-with-all-kernels?embed=1&file=src%2Fmain.ts&theme=dark"
-  title="StackBlitz - Bitbybit & Three.js - All Kernels Setup"
+  title="StackBlitz - Bitbybit & ThreeJS - All Kernels Setup"
 />
 
 ## Key Takeaways
@@ -581,6 +581,6 @@ You can explore and interact with a live example of this setup on StackBlitz:
 *   **Asynchronous Operations:** Most Bitbybit operations are `async` because they communicate with Web Workers.
 *   **`Inputs` DTOs:** Use these typed objects to configure geometry operations.
 *   **Separate Worker Files:** Each kernel runs in its own dedicated worker.
-*   **Modular Design:** The `@bitbybit-dev/threejs` package neatly integrates these complex components for use with Three.js.
+*   **Modular Design:** The `@bitbybit-dev/threejs` package neatly integrates these complex components for use with ThreeJS.
 
-This setup provides a robust foundation for building sophisticated 3D CAD applications in the browser with Bitbybit and Three.js.
+This setup provides a robust foundation for building sophisticated 3D CAD applications in the browser with Bitbybit and ThreeJS.

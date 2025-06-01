@@ -1,8 +1,8 @@
 ---
 sidebar_position: 3
-title: "Parametric Hex House Concept with Three.js & Bitbybit"
-sidebar_label: "Hex House (Three.js)"
-description: "Explore how to construct a parametric 'Hex House' architectural concept using Bitbybit with Three.js, OCCT, and a dynamic GUI for customization."
+title: "Parametric Hex House Concept with ThreeJS & Bitbybit"
+sidebar_label: "Hex House (ThreeJS)"
+description: "Explore how to construct a parametric 'Hex House' architectural concept using Bitbybit with ThreeJS, OCCT, and a dynamic GUI for customization."
 tags: [npm-packages, threejs]
 ---
 
@@ -12,9 +12,9 @@ import TabItem from '@theme/TabItem';
 import CodeBlock from '@theme/CodeBlock';
 import Admonition from '@theme/Admonition';
 
-# Parametric Hex House Concept with Three.js & Bitbybit
+# Parametric Hex House Concept with ThreeJS & Bitbybit
 
-This tutorial guides you through creating a "Hex House," an architectural concept featuring a distinctive hexagonal shell structure. We'll use Bitbybit's Three.js integration, leveraging the OpenCascade (OCCT) kernel for advanced CAD operations, and `lil-gui` for a user interface that allows real-time parameter adjustments.
+This tutorial guides you through creating a "Hex House," an architectural concept featuring a distinctive hexagonal shell structure. We'll use Bitbybit's ThreeJS integration, leveraging the OpenCascade (OCCT) kernel for advanced CAD operations, and `lil-gui` for a user interface that allows real-time parameter adjustments.
 
 
 In this related video tutorial you can see how the results of this app look like (rendered in Unreal Engine).
@@ -38,18 +38,18 @@ In this related video tutorial you can see how the results of this app look like
 
 This example will demonstrate how to:
 
-*   Set up a Three.js environment for 3D rendering.
-*   Initialize Bitbybit with the OCCT geometry kernel within this Three.js context.
+*   Set up a ThreeJS environment for 3D rendering.
+*   Initialize Bitbybit with the OCCT geometry kernel within this ThreeJS context.
 *   Construct complex parametric geometry using Bitbybit's OCCT API, focusing on techniques like lofting, surface subdivision into hexagonal patterns, and creating compound shapes.
 *   Create a GUI with `lil-gui` to control the Hex House's parameters.
-*   Dynamically update the 3D model in the Three.js scene based on these GUI inputs.
+*   Dynamically update the 3D model in the ThreeJS scene based on these GUI inputs.
 *   Manage and export the generated 3D model.
 
 <Admonition type="info" title="Prerequisites & Further Details">
-  <p>This tutorial focuses on the core application logic for generating the Hex House with Three.js. For a detailed explanation of:</p>
+  <p>This tutorial focuses on the core application logic for generating the Hex House with ThreeJS. For a detailed explanation of:</p>
   <ul>
-    <li>Setting up Web Worker files (e.g., <code>occt.worker.ts</code>), please refer to our <a href="./start-with-three-js">Three.js Integration Starter Tutorial</a>.</li>
-    <li>The general project structure (models, downloads, other helpers like <code>init-threejs.ts</code>, <code>init-kernels.ts</code>, etc.), you can refer to the <a href="./advanced-parametric-3d-model">previous Advanced Parametric Model (Three.js) tutorial</a> which shares a similar foundational setup.</li>
+    <li>Setting up Web Worker files (e.g., <code>occt.worker.ts</code>), please refer to our <a href="./start-with-three-js">ThreeJS Integration Starter Tutorial</a>.</li>
+    <li>The general project structure (models, downloads, other helpers like <code>init-threejs.ts</code>, <code>init-kernels.ts</code>, etc.), you can refer to the <a href="./advanced-parametric-3d-model">previous Advanced Parametric Model (ThreeJS) tutorial</a> which shares a similar foundational setup.</li>
   </ul>
   <p>Here, we'll concentrate on the essential files and logic that bring the Hex House concept to life: <code>main.ts</code>, <code>create-gui.ts</code>, and particularly <code>create-shape.ts</code>.</p>
 </Admonition>
@@ -64,7 +64,7 @@ We are providing a higher level explanations of the codebase below, but for work
 
 ## 1. HTML Foundation (`index.html`)
 
-The `index.html` file is the standard entry point, providing a canvas for Three.js.
+The `index.html` file is the standard entry point, providing a canvas for ThreeJS.
 
 <CodeBlock language="html" title="index.html">
 {`<!DOCTYPE html>
@@ -81,21 +81,21 @@ The `index.html` file is the standard entry point, providing a canvas for Three.
       <div>bitbybit.dev</div><br />
       <div>support the mission - subscribe</div>
     </a>
-    <canvas id="three-canvas"></canvas> {/* Canvas for Three.js rendering */}
+    <canvas id="three-canvas"></canvas> {/* Canvas for ThreeJS rendering */}
     <script type="module" src="/src/main.ts"></script>
   </body>
 </html>`}
 </CodeBlock>
 
-*   Key element: `<canvas id="three-canvas"></canvas>` for Three.js rendering.
+*   Key element: `<canvas id="three-canvas"></canvas>` for ThreeJS rendering.
 
 ## 2. Main Application Orchestration (`src/main.ts`)
 
-This file coordinates the setup and dynamic updates of our Hex House within the Three.js environment.
+This file coordinates the setup and dynamic updates of our Hex House within the ThreeJS environment.
 
 <CodeBlock language="typescript" title="src/main.ts">
 {`import './style.css';
-import { BitByBitBase, Inputs } from '@bitbybit-dev/threejs'; // Three.js integration
+import { BitByBitBase, Inputs } from '@bitbybit-dev/threejs'; // ThreeJS integration
 import { model, type KernelOptions, current } from './models';
 import {
     initKernels, initThreeJS, createGui, createShape,
@@ -114,12 +114,12 @@ const kernelOptions: KernelOptions = {
 start();
 
 async function start() {
-    // 1. Initialize the Three.js scene, camera, and renderer
+    // 1. Initialize the ThreeJS scene, camera, and renderer
     const { scene } = initThreeJS(); // From helpers/init-threejs.ts
     // Add default lighting and a ground plane
     createDirLightsAndGround(scene, current); // From helpers/init-threejs.ts
 
-    // 2. Initialize Bitbybit, linking it to the Three.js scene and selected kernels
+    // 2. Initialize Bitbybit, linking it to the ThreeJS scene and selected kernels
     const bitbybit = new BitByBitBase();
     await initKernels(scene, bitbybit, kernelOptions); // From helpers/init-kernels.ts
 
@@ -129,8 +129,8 @@ async function start() {
 
     // 3. Connect download functions to the model object (used by GUI)
     model.downloadStep = () => downloadStep(bitbybit, finalShape);
-    model.downloadGLB = () => downloadGLB(scene); // GLB export from Three.js scene
-    model.downloadSTL = () => downloadSTL(scene); // STL export from Three.js scene (can also be from OCCT)
+    model.downloadGLB = () => downloadGLB(scene); // GLB export from ThreeJS scene
+    model.downloadSTL = () => downloadSTL(scene); // STL export from ThreeJS scene (can also be from OCCT)
 
     // 4. Create the GUI panel and link it to model parameters and the updateShape function
     createGui(current, model, updateShape); // From helpers/create-gui.ts
@@ -140,12 +140,12 @@ async function start() {
     const rotateGroup = () => {
         if (model.rotationEnabled && current.groups && current.groups.length > 0) {
         current.groups.forEach((g) => {
-            if (g) g.rotation.y -= rotationSpeed; // Rotate each Three.js Group
+            if (g) g.rotation.y -= rotationSpeed; // Rotate each ThreeJS Group
         });
         }
     };
 
-    // Hook into Three.js render loop (via onBeforeRender) for animation
+    // Hook into ThreeJS render loop (via onBeforeRender) for animation
     scene.onBeforeRender = () => {
         rotateGroup();
     };
@@ -156,7 +156,7 @@ async function start() {
         scene,
         model,      // Current model parameters from models/model.ts
         shapesToClean, // Array to track OCCT shapes for cleanup
-        current       // Object to store references to current Three.js Groups
+        current       // Object to store references to current ThreeJS Groups
     );
 
     // 7. Function to update the shape when GUI parameters change
@@ -164,7 +164,7 @@ async function start() {
         disableGUI(); // Prevent further interaction during update
         showSpinner();  // Indicate processing
 
-        // Remove previous Three.js groups from the scene
+        // Remove previous ThreeJS groups from the scene
         current.groups?.forEach((g) => {
         g.traverse((obj) => { // Traverse to remove all children
             scene?.remove(obj);
@@ -189,17 +189,17 @@ async function start() {
 </CodeBlock>
 
 **Core Logic in `main.ts`:**
-1.  Initializes the Three.js scene using `initThreeJS()` and adds lighting/ground via `createDirLightsAndGround()`.
-2.  Initializes `BitByBitBase` for Three.js and then the OCCT kernel using `initKernels()`.
+1.  Initializes the ThreeJS scene using `initThreeJS()` and adds lighting/ground via `createDirLightsAndGround()`.
+2.  Initializes `BitByBitBase` for ThreeJS and then the OCCT kernel using `initKernels()`.
 3.  Sets up download functions and the `lil-gui` interface through `createGui()`. Changes in the GUI trigger `updateShape`.
-4.  A simple `rotateGroup` animation is tied to Three.js's `scene.onBeforeRender`.
+4.  A simple `rotateGroup` animation is tied to ThreeJS's `scene.onBeforeRender`.
 5.  The `updateShape` function is central to interactivity:
-    *   It disposes of previous Three.js `Group` objects by traversing and removing them from the scene to clear old geometry.
+    *   It disposes of previous ThreeJS `Group` objects by traversing and removing them from the scene to clear old geometry.
     *   It then calls `createShape` again with the potentially modified `model` parameters. The `createShape` function itself is responsible for managing the cleanup of intermediate OCCT shapes using the `shapesToClean` array.
 
 ## 3. Essential Helper Functions (`src/helpers/`)
 
-We'll focus on the provided `create-gui.ts` and `create-shape.ts`. For `init-threejs.ts` and `init-kernels.ts`, their roles are analogous to those described in the "Advanced Parametric Model (Three.js)" tutorial (setting up the Three.js environment and initializing Bitbybit kernels, respectively).
+We'll focus on the provided `create-gui.ts` and `create-shape.ts`. For `init-threejs.ts` and `init-kernels.ts`, their roles are analogous to those described in the "Advanced Parametric Model (ThreeJS)" tutorial (setting up the ThreeJS environment and initializing Bitbybit kernels, respectively).
 
 ### Creating the GUI (`create-gui.ts`)
 
@@ -208,7 +208,7 @@ This file uses `lil-gui` to build the user interface for controlling the Hex Hou
 <CodeBlock language="typescript" title="src/helpers/create-gui.ts">
 {`import GUI from 'lil-gui';
 import type { Current, Model } from '../models';
-import type { Mesh, MeshPhongMaterial } from 'three'; // Three.js types
+import type { Mesh, MeshPhongMaterial } from 'three'; // ThreeJS types
 
 export const createGui = (
     current: Current,
@@ -262,7 +262,7 @@ export const createGui = (
 *   Each control's `onFinishChange` (for sliders/checkboxes) or `onChange` (for the color picker) callback:
     1.  Updates the corresponding property in the `model` object.
     2.  Calls the `updateShape` function (passed from `main.ts`) to trigger a regeneration of the geometry.
-*   For color changes, it iterates through the meshes assumed to be part of the main shell (in `current.groups[0]`) and updates their `MeshPhongMaterial` color using Three.js's `material.color.setHex()`.
+*   For color changes, it iterates through the meshes assumed to be part of the main shell (in `current.groups[0]`) and updates their `MeshPhongMaterial` color using ThreeJS's `material.color.setHex()`.
 *   Adds buttons to trigger download functions (defined in `main.ts` and `helpers/downloads.ts`).
 
 ### Generating the Hex House Geometry (`create-shape.ts`)
@@ -281,7 +281,7 @@ export const createShape = async (
     scene: Scene | undefined,
     model: Model, // Contains parameters from the GUI (uHex, vHex, color, etc.)
     shapesToClean: Inputs.OCCT.TopoDSShapePointer[], // Array to manage OCCT memory
-    current: Current // Stores references to current Three.js objects (groups)
+    current: Current // Stores references to current ThreeJS objects (groups)
 ) => {
     if (scene && bitbybit) {
         // 1. OCCT Memory Management: Clean up shapes from the previous generation
@@ -391,14 +391,14 @@ export const createShape = async (
         const finalOcctShape = await shapes.compound.makeCompound({ shapes: allPartsForFinalCompound });
         shapesToClean.push(finalOcctShape);
 
-        // Create sub-compounds for applying different materials/grouping in Three.js
+        // Create sub-compounds for applying different materials/grouping in ThreeJS
         // This helps in applying different colors or managing parts of the model.
         const compRoof1 = await shapes.compound.makeCompound({ shapes: [roofHexCompounds[0], mirroredRoofCompounds[0], wallExtrude, mirroredWall] });
         const compRoof2 = await shapes.compound.makeCompound({ shapes: [roofHexCompounds[1], mirroredRoofCompounds[1]] });
         const compRoof3 = await shapes.compound.makeCompound({ shapes: [roofHexCompounds[2], mirroredRoofCompounds[2]] });
         shapesToClean.push(compRoof1, compRoof2, compRoof3); // Also track these for cleanup
 
-        // 8. Drawing the OCCT Shapes into Three.js Scene
+        // 8. Drawing the OCCT Shapes into ThreeJS Scene
         const drawOptions = new Inputs.Draw.DrawOcctShapeOptions();
         drawOptions.precision = 0.19; // Tessellation precision for converting OCCT to mesh
         drawOptions.drawEdges = model.drawEdges;
@@ -429,7 +429,7 @@ export const createShape = async (
         drawOptions.faceMaterial = mat3;
         const groupMesh3 = await bitbybit.draw.drawAnyAsync({ entity: compRoof3, options: drawOptions });
 
-        // Store references to the Three.js groups for rotation and disposal
+        // Store references to the ThreeJS groups for rotation and disposal
         current.groups = [groupMesh1, groupMesh2, groupMesh3];
 
         // Apply shadow casting/receiving to all children meshes within the groups
@@ -563,11 +563,11 @@ async function createHexagonsRoof(
     *   **`createHexagonsWalls(face, uHex, vHex, bitbybit)`:** This asynchronous helper function takes an OCCT face and subdivides it into a pattern of hexagonal *holes* using `face.subdivideToHexagonHoles()`. This OCCT function is powerful for creating perforated surfaces directly. The resulting perforated face is then given thickness by `operations.extrude()`.
     *   **`createHexagonsRoof(face, uHex, vHex, bitbybit)`:** This helper is more complex. It subdivides the roof face into hexagonal *wires* using `face.subdivideToHexagonWires()`. It generates two sets of these wires (likely an inner and outer boundary for each hexagonal cell). Then, for each pair of wires, it creates an OCCT face using `face.createFaceFromWires()`. Finally, these individual hexagonal faces are extruded into thin solids using `operations.makeThickSolidSimple()`, with varying heights based on a `heightPattern` to create an undulating roof texture. These solids are then grouped into three separate OCCT compounds.
 *   **Mirroring and Compounding:** The generated roof compounds and the extruded wall shape are mirrored. All these components are then combined into a single `finalOcctShape` using `shapes.compound.makeCompound()`. This `finalOcctShape` is primarily useful for CAD-native exports like STEP. For rendering with different materials, sub-compounds (`compRoof1`, `compRoof2`, `compRoof3`) are also created from specific parts. All these compounds are added to `shapesToClean`.
-*   **Drawing to Three.js Scene:**
+*   **Drawing to ThreeJS Scene:**
     *   `Inputs.Draw.DrawOcctShapeOptions` are configured to control how OCCT shapes are tessellated into meshes (e.g., `precision`) and how they appear (e.g., `drawEdges`, `edgeColour`).
-    *   Three.js `MeshPhongMaterial` instances are created, with their `color` set from `model.color` (or other predefined colors). Properties like `polygonOffset` are used if edges are drawn to prevent z-fighting. `side = 2` (THREE.DoubleSide) ensures faces are visible from both sides.
-    *   `bitbybit.draw.drawAnyAsync()` is called for each OCCT sub-compound (e.g., `compRoof1`). This function, specific to the `@bitbybit-dev/threejs` integration, handles the conversion of OCCT geometry into Three.js `BufferGeometry` and creates `THREE.Mesh` objects with the specified material.
-    *   The resulting Three.js `Group` objects (which `drawAnyAsync` returns) are stored in `current.groups`. This array is used in `main.ts` for rotation and for disposing of the Three.js objects when the model updates.
+    *   ThreeJS `MeshPhongMaterial` instances are created, with their `color` set from `model.color` (or other predefined colors). Properties like `polygonOffset` are used if edges are drawn to prevent z-fighting. `side = 2` (THREE.DoubleSide) ensures faces are visible from both sides.
+    *   `bitbybit.draw.drawAnyAsync()` is called for each OCCT sub-compound (e.g., `compRoof1`). This function, specific to the `@bitbybit-dev/threejs` integration, handles the conversion of OCCT geometry into ThreeJS `BufferGeometry` and creates `THREE.Mesh` objects with the specified material.
+    *   The resulting ThreeJS `Group` objects (which `drawAnyAsync` returns) are stored in `current.groups`. This array is used in `main.ts` for rotation and for disposing of the ThreeJS objects when the model updates.
     *   Shadow properties (`castShadow`, `receiveShadow`) are enabled on the child meshes within these groups.
 *   **Return Value:** The function returns the `finalOcctShape` (the main OCCT compound).
 
@@ -591,12 +591,12 @@ a.logo { /* Styles for the logo link */ }
 
 ## Conclusion
 
-This Hex House tutorial demonstrates how to combine the parametric power of Bitbybit's OCCT integration with the rendering capabilities of Three.js to create complex and interactive 3D architectural concepts. Key takeaways include:
+This Hex House tutorial demonstrates how to combine the parametric power of Bitbybit's OCCT integration with the rendering capabilities of ThreeJS to create complex and interactive 3D architectural concepts. Key takeaways include:
 
-*   **Modular Design:** Structuring the application into `main.ts` for orchestration and helper files for specific tasks (Three.js setup, GUI, shape creation, downloads).
+*   **Modular Design:** Structuring the application into `main.ts` for orchestration and helper files for specific tasks (ThreeJS setup, GUI, shape creation, downloads).
 *   **Parametric CAD with OCCT:** Utilizing advanced OCCT operations like interpolation, lofting, face subdivision (to holes or wires), extrusion, and compounding through Bitbybit's API.
 *   **OCCT Memory Management:** The critical importance of tracking intermediate OCCT shapes in `shapesToClean` and using `bitbybit.occt.deleteShapes()` to prevent memory leaks.
-*   **Dynamic Updates:** Efficiently updating the Three.js scene by disposing of old Three.js groups and redrawing new ones based on GUI-driven parameter changes.
-*   **Three.js Integration:** Using `bitbybit.draw.drawAnyAsync()` to convert OCCT geometry into Three.js meshes and applying Three.js materials.
+*   **Dynamic Updates:** Efficiently updating the ThreeJS scene by disposing of old ThreeJS groups and redrawing new ones based on GUI-driven parameter changes.
+*   **ThreeJS Integration:** Using `bitbybit.draw.drawAnyAsync()` to convert OCCT geometry into ThreeJS meshes and applying ThreeJS materials.
 
 This example serves as a blueprint for developing sophisticated web-based 3D applications where detailed geometric control and user interactivity are paramount.

@@ -1,29 +1,29 @@
 ---
 sidebar_position: 1
-title: "Introduction to Three.js"
-sidebar_label: "Three.js Overview"
-description: "An overview of Three.js, a powerful JavaScript library for creating and displaying 3D graphics in web browsers, and how it's integrated with Bitbybit."
+title: "Introduction to ThreeJS"
+sidebar_label: "ThreeJS Overview"
+description: "An overview of ThreeJS, a powerful JavaScript library for creating and displaying 3D graphics in web browsers, and how it's integrated with Bitbybit."
 tags: [npm-packages, threejs]
 ---
 
 import Admonition from '@theme/Admonition';
 
-# Introduction to Three.js: Powering 3D on the Web
+# Introduction to ThreeJS: Powering 3D on the Web
 
-Three.js is a cross-browser JavaScript library used to create and display animated 3D computer graphics in a web browser using WebGL. If you're looking to bring interactive 3D experiences to your web projects, Three.js is one of the most popular and powerful tools available.
+ThreeJS is a cross-browser JavaScript library used to create and display animated 3D computer graphics in a web browser using WebGL. If you're looking to bring interactive 3D experiences to your web projects, ThreeJS is one of the most popular and powerful tools available.
 
-**Visit the official Three.js homepage:** <a href="https://threejs.org/" target="_blank" rel="noopener noreferrer">threejs.org</a>
+**Visit the official ThreeJS homepage:** <a href="https://threejs.org/" target="_blank" rel="noopener noreferrer">threejs.org</a>
 
 <img 
   src="https://bitbybit.dev/assets/threejs-logo.png" 
   width="150"
-  alt="Three.js Logo" 
-  title="Three.js Logo" />
+  alt="ThreeJS Logo" 
+  title="ThreeJS Logo" />
 
 
-## What is Three.js Capable Of?
+## What is ThreeJS Capable Of?
 
-At its core, Three.js provides a high-level abstraction over WebGL (Web Graphics Library), which is a low-level JavaScript API for rendering 2D and 3D graphics within any compatible web browser without the use of plug-ins. This abstraction makes it significantly easier to work with 3D graphics on the web.
+At its core, ThreeJS provides a high-level abstraction over WebGL (Web Graphics Library), which is a low-level JavaScript API for rendering 2D and 3D graphics within any compatible web browser without the use of plug-ins. This abstraction makes it significantly easier to work with 3D graphics on the web.
 
 Key capabilities and features include:
 
@@ -40,50 +40,50 @@ Key capabilities and features include:
 *   **Renderers:** Primarily uses a WebGL renderer, but also has experimental support for other renderers like WebGPU (via compute Piplelines) and CSS3DRenderer.
 *   **Extensibility:** Designed to be modular, allowing developers to easily extend its functionality.
 
-## Why is Three.js So Popular?
+## Why is ThreeJS So Popular?
 
-Three.js has gained immense popularity for several reasons:
+ThreeJS has gained immense popularity for several reasons:
 
 *   **Accessibility:** It significantly lowers the barrier to entry for WebGL development.
 *   **Large and Active Community:** A vast and vibrant community means:
     *   Abundant tutorials, articles, and examples.
     *   Quick help and support through forums and Q&A sites.
-    *   A wealth of open-source projects built with Three.js.
-*   **Extensive Ecosystem:** Numerous third-party libraries, tools, and extensions are available to augment Three.js capabilities (e.g., physics engines, UI libraries, advanced controls).
+    *   A wealth of open-source projects built with ThreeJS.
+*   **Extensive Ecosystem:** Numerous third-party libraries, tools, and extensions are available to augment ThreeJS capabilities (e.g., physics engines, UI libraries, advanced controls).
 *   **Flexibility:** It's a library, not a restrictive framework, giving developers a lot of control over their application structure.
-*   **Performance:** While WebGL itself can be complex to optimize, Three.js provides many tools and best practices to achieve good performance.
+*   **Performance:** While WebGL itself can be complex to optimize, ThreeJS provides many tools and best practices to achieve good performance.
 
 ## Learning Resources & Community
 
-If you're interested in diving deeper into Three.js, here are some valuable resources:
+If you're interested in diving deeper into ThreeJS, here are some valuable resources:
 
-*   **Official Documentation:** <a href="https://threejs.org/docs/" target="_blank" rel="noopener noreferrer">Three.js Documentation</a> - The primary source for API references and guides.
-*   **Official Examples:** <a href="https://threejs.org/examples/" target="_blank" rel="noopener noreferrer">Three.js Examples</a> - A huge collection of live examples showcasing various features.
-*   **Three.js Journey:** <a href="https://threejs-journey.com/" target="_blank" rel="noopener noreferrer">Three.js Journey</a> - A highly recommended, comprehensive course by Bruno Simon.
-*   **Discover Three.js:** <a href="https://discoverthreejs.com/" target="_blank" rel="noopener noreferrer">Discover Three.js (Book)</a> - A detailed online book.
-*   **Three.js Forum (Official):** <a href="https://discourse.threejs.org/" target="_blank" rel="noopener noreferrer">discourse.threejs.org</a> - The best place to ask questions and engage with the community.
-*   **Stack Overflow:** Many Three.js questions are asked and answered on <a href="https://stackoverflow.com/questions/tagged/three.js" target="_blank" rel="noopener noreferrer">Stack Overflow (tagged 'three.js')</a>.
+*   **Official Documentation:** <a href="https://threejs.org/docs/" target="_blank" rel="noopener noreferrer">ThreeJS Documentation</a> - The primary source for API references and guides.
+*   **Official Examples:** <a href="https://threejs.org/examples/" target="_blank" rel="noopener noreferrer">ThreeJS Examples</a> - A huge collection of live examples showcasing various features.
+*   **ThreeJS Journey:** <a href="https://threejs-journey.com/" target="_blank" rel="noopener noreferrer">ThreeJS Journey</a> - A highly recommended, comprehensive course by Bruno Simon.
+*   **Discover ThreeJS:** <a href="https://discoverthreejs.com/" target="_blank" rel="noopener noreferrer">Discover ThreeJS (Book)</a> - A detailed online book.
+*   **ThreeJS Forum (Official):** <a href="https://discourse.threejs.org/" target="_blank" rel="noopener noreferrer">discourse.threejs.org</a> - The best place to ask questions and engage with the community.
+*   **Stack Overflow:** Many ThreeJS questions are asked and answered on <a href="https://stackoverflow.com/questions/tagged/three.js" target="_blank" rel="noopener noreferrer">Stack Overflow (tagged 'three.js')</a>.
 *   **GitHub Repository:** <a href="https://github.com/mrdoob/three.js/" target="_blank" rel="noopener noreferrer">mrdoob/three.js</a> - Explore the source code and contribute.
 
-## How Bitbybit Uses Three.js
+## How Bitbybit Uses ThreeJS
 
 Bitbybit's core architecture is designed to be game engine agnostic, meaning its fundamental geometry processing and CAD algorithms are independent of any specific rendering engine. However, to display 3D content in a web browser, a rendering engine is essential.
 
-Three.js is one of the rendering engines for which Bitbybit provides an official integration layer.
+ThreeJS is one of the rendering engines for which Bitbybit provides an official integration layer.
 
-*   **Integration Package:** We offer the <a href="https://www.npmjs.com/package/@bitbybit-dev/threejs" target="_blank" rel="noopener noreferrer">`@bitbybit-dev/threejs`</a> NPM package. This package acts as a bridge, taking the geometric data generated by Bitbybit's core (which might originate from OCCT, JSCAD, or other kernels) and translating it into Three.js specific objects like `THREE.Group`, `THREE.Mesh`, `THREE.BufferGeometry`, and `THREE.Material`.
-*   **Drawing Logic:** Functions within this package, notably `drawAnyAsync`, are responsible for efficiently creating and rendering these Three.js objects within your Three.js scene.
+*   **Integration Package:** We offer the <a href="https://www.npmjs.com/package/@bitbybit-dev/threejs" target="_blank" rel="noopener noreferrer">`@bitbybit-dev/threejs`</a> NPM package. This package acts as a bridge, taking the geometric data generated by Bitbybit's core (which might originate from OCCT, JSCAD, or other kernels) and translating it into ThreeJS specific objects like `THREE.Group`, `THREE.Mesh`, `THREE.BufferGeometry`, and `THREE.Material`.
+*   **Drawing Logic:** Functions within this package, notably `drawAnyAsync`, are responsible for efficiently creating and rendering these ThreeJS objects within your ThreeJS scene.
 
 <Admonition type="info" title="ThreeJS is not used on our visual programming editors">
     ThreeJS support is only offered via our npm package. Due to historical reasons for our visual programming editors we use BabylonJS game engine - another great open-source WebGL engine.
 </Admonition>
 
-By using `@bitbybit-dev/threejs`, developers can leverage Bitbybit's powerful CAD and computational geometry features while working within the familiar and extensive Three.js ecosystem.
+By using `@bitbybit-dev/threejs`, developers can leverage Bitbybit's powerful CAD and computational geometry features while working within the familiar and extensive ThreeJS ecosystem.
 
-**Source Code for Bitbybit's Three.js Integration:**
-You can find the source code for our Three.js integration package in our main GitHub repository, typically within a path like:
+**Source Code for Bitbybit's ThreeJS Integration:**
+You can find the source code for our ThreeJS integration package in our main GitHub repository, typically within a path like:
 <a href="https://github.com/bitbybit-dev/bitbybit/tree/master/packages/dev/threejs" target="_blank" rel="noopener noreferrer">bitbybit-dev/bitbybit/tree/master/packages/dev/threejs</a>
 
 ---
 
-Whether you're building complex CAD tools, interactive product configurators, data visualizations, or artistic 3D experiences, understanding Three.js can significantly enhance your capabilities as a web developer. Bitbybit's integration aims to make it easier to combine powerful geometry generation with this versatile rendering library.
+Whether you're building complex CAD tools, interactive product configurators, data visualizations, or artistic 3D experiences, understanding ThreeJS can significantly enhance your capabilities as a web developer. Bitbybit's integration aims to make it easier to combine powerful geometry generation with this versatile rendering library.

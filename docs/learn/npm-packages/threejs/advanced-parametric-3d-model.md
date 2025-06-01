@@ -1,8 +1,8 @@
 ---
 sidebar_position: 3
-title: "Advanced Parametric 3D Model with Three.js & Bitbybit"
-sidebar_label: "Parametric Model (Advanced)"
-description: "Learn how to build an advanced, interactive parametric 3D model using Bitbybit with Three.js, OCCT, and a GUI for real-time control."
+title: "Advanced Parametric 3D Model with ThreeJS & Bitbybit"
+sidebar_label: "Parametric Model (ThreeJS)"
+description: "Learn how to build an advanced, interactive parametric 3D model using Bitbybit with ThreeJS, OCCT, and a GUI for real-time control."
 tags: [npm-packages, threejs]
 ---
 
@@ -12,9 +12,9 @@ import TabItem from '@theme/TabItem';
 import CodeBlock from '@theme/CodeBlock';
 import Admonition from '@theme/Admonition';
 
-# Advanced Parametric 3D Model with Three.js & Bitbybit
+# Advanced Parametric 3D Model with ThreeJS & Bitbybit
 
-This tutorial explores a more advanced example of creating an interactive, parametric 3D model using Bitbybit's Three.js integration. We'll build a configurable 3D shape whose geometry is driven by parameters controlled via a GUI (Graphical User Interface), leveraging the OpenCascade (OCCT) kernel for robust CAD operations.
+This tutorial explores a more advanced example of creating an interactive, parametric 3D model using Bitbybit's ThreeJS integration. We'll build a configurable 3D shape whose geometry is driven by parameters controlled via a GUI (Graphical User Interface), leveraging the OpenCascade (OCCT) kernel for robust CAD operations.
 
 You can see what the results of this app look like (rendered in Unreal Engine):
 <div class="responsive-video-container">
@@ -30,7 +30,7 @@ You can see what the results of this app look like (rendered in Unreal Engine):
 </div>
 
 This example demonstrates:
-*   Setting up a Three.js scene.
+*   Setting up a ThreeJS scene.
 *   Initializing Bitbybit with specific geometry kernels (OCCT in this case).
 *   Creating parametric geometry using Bitbybit's OCCT API.
 *   Using `lil-gui` to create a simple UI for controlling model parameters.
@@ -43,7 +43,7 @@ We are providing a higher level explanations of the codebase below, but for work
 <BitByBitRenderCanvas
   requireManualStart={true}
   iframeUrl="https://stackblitz.com/edit/hex-shell-threejs-bitbybit-for-docs?embed=1&file=src%2Fmain.ts&theme=dark"
-  title="StackBlitz - Advanced Parametric 3D Model with Three.js & Bitbybit"
+  title="StackBlitz - Advanced Parametric 3D Model with ThreeJS & Bitbybit"
 />
 
 
@@ -57,7 +57,7 @@ This project is typically structured with:
 *   `src/main.ts`: The main entry point of our application, orchestrating scene setup, Bitbybit initialization, GUI, and geometry updates.
 *   `src/models/`: A directory to define data structures for our model parameters (`model.ts`), kernel initialization options (`kernel-options.ts`), and current scene state (`current.ts`).
 *   `src/helpers/`: A directory for utility functions, broken down by responsibility:
-    *   `init-threejs.ts`: Sets up the Three.js scene, camera, renderer, lights, and ground.
+    *   `init-threejs.ts`: Sets up the ThreeJS scene, camera, renderer, lights, and ground.
     *   `init-kernels.ts`: Handles the initialization of selected Bitbybit geometry kernels.
     *   `create-shape.ts`: Contains the core logic for generating the parametric 3D geometry using OCCT. This is where the detailed CAD operations happen.
     *   `create-gui.ts`: Sets up the `lil-gui` panel and links its controls to the model parameters and update functions.
@@ -66,7 +66,7 @@ This project is typically structured with:
 *   `src/workers/`: Directory containing the individual worker files for each geometry kernel (e.g., `occt.worker.ts`).
 
 <Admonition type="info" title="Worker Setup">
-  For a detailed explanation of how to set up the Web Worker files (`occt.worker.ts`, `jscad.worker.ts`, `manifold.worker.ts`), please refer to our [**Three.js Integration Starter Tutorial**](./start-with-three-js). This current tutorial focuses on the application logic built upon that foundation.
+  For a detailed explanation of how to set up the Web Worker files (`occt.worker.ts`, `jscad.worker.ts`, `manifold.worker.ts`), please refer to our [**ThreeJS Integration Starter Tutorial**](./start-with-three-js). This current tutorial focuses on the application logic built upon that foundation.
 </Admonition>
 
 ## 1. HTML Setup (`index.html`)
@@ -104,7 +104,7 @@ The HTML file is straightforward, providing the basic structure for our 3D appli
 </CodeBlock>
 
 **Key elements:**
-*   A `<canvas id="three-canvas">` element where the Three.js scene will be rendered.
+*   A `<canvas id="three-canvas">` element where the ThreeJS scene will be rendered.
 *   A script tag to load our main application logic from `src/main.ts`.
 *   A simple Bitbybit logo link.
 
@@ -143,11 +143,11 @@ const kernelOptions: KernelOptions = {
 start();
 
 async function start() {
-  // 1. Initialize the Three.js scene, camera, renderer, and basic lights/ground
+  // 1. Initialize the ThreeJS scene, camera, renderer, and basic lights/ground
   const { scene } = initThreeJS();
   createDirLightsAndGround(scene, current); // 'current' stores references to scene objects
 
-  // 2. Initialize Bitbybit with the Three.js scene and selected kernels
+  // 2. Initialize Bitbybit with the ThreeJS scene and selected kernels
   const bitbybit = new BitByBitBase();
   await initKernels(scene, bitbybit, kernelOptions);
 
@@ -178,7 +178,7 @@ async function start() {
     }
   };
 
-  // Hook into Three.js render loop for animation
+  // Hook into ThreeJS render loop for animation
   scene.onBeforeRender = () => {
     rotateGroup();
   };
@@ -189,7 +189,7 @@ async function start() {
     scene,
     model,      // Current model parameters
     shapesToClean, // Array to track OCCT shapes for later cleanup
-    current       // Object to store references to current Three.js groups
+    current       // Object to store references to current ThreeJS groups
   );
 
   // 7. Function to update the shape when GUI parameters change
@@ -197,7 +197,7 @@ async function start() {
     disableGUI(); // Prevent further interaction during update
     showSpinner();  // Indicate processing
 
-    // Remove previous Three.js groups from the scene
+    // Remove previous ThreeJS groups from the scene
     current.group1?.traverse((obj) => scene?.remove(obj));
     current.group2?.traverse((obj) => scene?.remove(obj));
     current.dimensions?.traverse((obj) => scene?.remove(obj));
@@ -225,8 +225,8 @@ async function start() {
 1.  **Imports:** Pulls in necessary Bitbybit modules, data models, and helper functions.
 2.  **`kernelOptions`:** Configures which Bitbybit geometry kernels (OCCT, JSCAD, Manifold) will be initialized. For this example, only OCCT is enabled as it's used for the parametric modeling.
 3.  **`start()` function:** The main asynchronous function that orchestrates the application.
-    *   **`initThreeJS()` & `createDirLightsAndGround()`:** Sets up the basic Three.js environment.
-    *   **`BitByBitBase` & `initKernels()`:** Initializes the Bitbybit library, linking it to the Three.js scene and loading the configured OCCT kernel worker.
+    *   **`initThreeJS()` & `createDirLightsAndGround()`:** Sets up the basic ThreeJS environment.
+    *   **`BitByBitBase` & `initKernels()`:** Initializes the Bitbybit library, linking it to the ThreeJS scene and loading the configured OCCT kernel worker.
     *   **`finalShape` & `shapesToClean`:** `finalShape` will hold a reference to the main OCCT geometry. `shapesToClean` is crucial for managing memory in OCCT by keeping track of intermediate shapes that need to be explicitly deleted after they are no
         longer needed.
     *   **Download Functions:** Attaches download helper functions to the `model` object. These will be triggered by buttons in the GUI.
@@ -236,7 +236,7 @@ async function start() {
     *   **`updateShape(finish: boolean)` function:**
         *   This function is called by the GUI when a parameter changes.
         *   It disables the GUI and shows a spinner to indicate processing.
-        *   It removes the previously rendered Three.js `Group` objects (`current.group1`, `current.group2`, `current.dimensions`) from the scene.
+        *   It removes the previously rendered ThreeJS `Group` objects (`current.group1`, `current.group2`, `current.dimensions`) from the scene.
         *   Crucially, the `createShapeLod1` and `createShapeLod2` functions are responsible for cleaning up OCCT shapes using the `shapesToClean` array.
         *   It then calls either `createShapeLod1` (for quick updates, e.g., during slider dragging) or `createShapeLod2` (for a more detailed final version when a "Finalize" button is clicked).
         *   Finally, it hides the spinner and re-enables the GUI.
@@ -247,11 +247,11 @@ The `helpers` directory modularizes different aspects of the application.
 
 ### `init-threejs.ts` & `init-kernels.ts`
 
-*   **`initThreeJS()`:** Contains standard Three.js setup for scene, camera, WebGL renderer, basic lighting (HemisphereLight, DirectionalLights), a ground plane, and OrbitControls for camera manipulation. It also sets up the animation loop.
+*   **`initThreeJS()`:** Contains standard ThreeJS setup for scene, camera, WebGL renderer, basic lighting (HemisphereLight, DirectionalLights), a ground plane, and OrbitControls for camera manipulation. It also sets up the animation loop.
 *   **`createDirLightsAndGround()`:** A helper to specifically add directional lights (for shadows) and a ground plane to the scene.
 *   **`initKernels()`:** This function is responsible for:
     1.  Conditionally creating Web Worker instances for each kernel specified in `kernelOptions`.
-    2.  Calling `bitbybit.init(...)` to link Bitbybit with the Three.js scene and these worker instances.
+    2.  Calling `bitbybit.init(...)` to link Bitbybit with the ThreeJS scene and these worker instances.
     3.  Asynchronously waiting for each selected and available kernel to report that it has been fully initialized before resolving. This ensures kernels are ready before use.
 
 <CodeBlock language="typescript" title="src/helpers/init-kernels.ts (Simplified Structure)">
@@ -288,8 +288,8 @@ This is the most complex file, containing the specific OCCT operations to genera
     *   Create compound shapes.
 *   **Dimensioning (Optional):** The example includes logic to create OCCT dimension entities (`dimensions.simpleLinearLengthDimension`, `dimensions.simpleAngularDimension`) which are then also drawn.
 *   **Drawing:**
-    *   It uses `bitbybit.draw.drawAnyAsync({ entity: occtShape, options: drawOptions })` to convert the final OCCT shapes into Three.js meshes and add them to the scene.
-    *   It often creates separate Three.js `Group` objects for different parts of the model (e.g., `current.group1`, `current.group2`) for easier management and independent animation.
+    *   It uses `bitbybit.draw.drawAnyAsync({ entity: occtShape, options: drawOptions })` to convert the final OCCT shapes into ThreeJS meshes and add them to the scene.
+    *   It often creates separate ThreeJS `Group` objects for different parts of the model (e.g., `current.group1`, `current.group2`) for easier management and independent animation.
     *   Materials (`MeshPhongMaterial`) are created and applied.
 
 <Admonition type="info" title="OCCT Operations">
@@ -336,8 +336,8 @@ export const createGui = (
 
 Contains functions to export the generated 3D model:
 *   `downloadStep()`: Uses `bitbybit.occt.io.saveShapeSTEP()` to save the `finalShape` (the OCCT compound) as a STEP file. It includes a mirroring transformation, which might be necessary due to coordinate system differences.
-*   `downloadSTL()`: Uses `THREE.STLExporter` to export the entire Three.js scene as an STL file.
-*   `downloadGLB()`: Uses `THREE.GLTFExporter` to export the Three.js scene as a GLB (binary GLTF) file.
+*   `downloadSTL()`: Uses `THREE.STLExporter` to export the entire ThreeJS scene as an STL file.
+*   `downloadGLB()`: Uses `THREE.GLTFExporter` to export the ThreeJS scene as a GLB (binary GLTF) file.
 
 ### `gui-helper.ts`
 
@@ -347,7 +347,7 @@ Simple utility functions to manage the UI during processing:
 
 ## 4. Data Models (`src/models/`)
 
-*   **`current.ts`:** Defines a `Current` type and an instance to hold references to currently active Three.js objects (like `Group`s for different model parts, lights, ground) and the `lil-gui` instance. This helps in easily accessing and manipulating these objects from different parts of the code.
+*   **`current.ts`:** Defines a `Current` type and an instance to hold references to currently active ThreeJS objects (like `Group`s for different model parts, lights, ground) and the `lil-gui` instance. This helps in easily accessing and manipulating these objects from different parts of the code.
 *   **`kernel-options.ts`:** Defines the `KernelOptions` interface used in `main.ts` to specify which geometry kernels (OCCT, JSCAD, Manifold) should be initialized by Bitbybit.
 *   **`model.ts`:** Defines the `Model` type and a default `model` object. This object holds all the parameters that control the geometry of the 3D shape (e.g., `uHex`, `vHex`, `height`, colors, precision). The `lil-gui` directly manipulates this object. It also includes optional function signatures for `update` and download methods, which are later assigned in `main.ts` and `create-gui.ts`.
 
@@ -360,7 +360,7 @@ The `style.css` file provides basic styling:
 
 ## Conclusion
 
-This advanced example showcases a more complete workflow for creating parametric and interactive 3D applications with Bitbybit and Three.js. Key takeaways include:
+This advanced example showcases a more complete workflow for creating parametric and interactive 3D applications with Bitbybit and ThreeJS. Key takeaways include:
 
 *   **Modular Code Structure:** Separating concerns into helper functions and data models makes the project more manageable.
 *   **Parametric Control:** Using a data model (`model.ts`) and a GUI (`lil-gui`) to drive geometry changes.

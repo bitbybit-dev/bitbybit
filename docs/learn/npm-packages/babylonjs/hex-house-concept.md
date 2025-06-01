@@ -30,7 +30,7 @@ In this related video tutorial you can see how the results of this app look like
 </div>
 
 <Admonition type="info" title="Note on video tutorial">
-  <p>This tutorial originally used the Three.js game engine, but rest assured—the geometry creation logic maps directly (1:1) to what we've built in Babylon.js. See the StackBlitz example below for reference.</p>
+  <p>This tutorial originally used the ThreeJS game engine, but rest assured—the geometry creation logic maps directly (1:1) to what we've built in BabylonJS. See the StackBlitz example below for reference.</p>
   <p>
   While the original tutorial was based on a somewhat outdated app structure, we've provided a more modern and well-organized version here. You can also use this scaffold as a starting point for your own projects.
   </p>
