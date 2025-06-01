@@ -3,6 +3,10 @@
   align-items: center;
   padding: 2rem 0;
   width: 100%;
+  background-image: url('https://app.bitbybit.dev/assets/homepage/lg/where-code-meets-design-lg.webp');
+  background-position: center; /* Center the image */
+  background-repeat: no-repeat; /* Do not repeat the image */
+  background-size: cover; /* Resize the background image to cover the entire container */
 }
 
 .featureSvg {
