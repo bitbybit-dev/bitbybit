@@ -59,3 +59,23 @@
   margin-top: auto;
   text-decoration: none !important;
 }
+
+.discord {
+    margin-bottom: 20px;
+}
+
+.discordText {
+    display: flex;
+    vertical-align: middle;
+    margin-top: auto;
+    margin-bottom: auto;
+    font-weight: bold;;
+}
+
+.centerText {
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+    display: flex;
+    justify-content: center;
+}

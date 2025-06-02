@@ -114,6 +114,13 @@ const config: Config = {
                     "aria-label": "Support the Project Mission", // For accessibility
                 },
                 {
+                    href: "https://bitbybit.dev/auth/sign-up",
+                    label: "Sign Up",
+                    position: "right",
+                    className: "navbar__button--support",
+                    "aria-label": "Sign Up to Bitbybit.dev",
+                },
+                {
                     href: "https://github.com/bitbybit-dev/bitbybit",
                     label: "GitHub",
                     position: "right",

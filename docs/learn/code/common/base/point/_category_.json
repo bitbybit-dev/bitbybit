@@ -1,0 +1,10 @@
+{
+    "label": "Point",
+    "position": 4,
+    "link": {
+        "type": "generated-index",
+        "title": "Point Algorithms in Bitbybit",
+        "description": "Introduction to point algorithms in Bitbybit, including point creation, manipulation and analysis. Learn how to use these algorithms to work with points in 2D and 3D space.",
+        "slug": "/code/common/base/point"
+    }
+}

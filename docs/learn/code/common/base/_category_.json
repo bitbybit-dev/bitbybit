@@ -1,0 +1,10 @@
+{
+    "label": "Base",
+    "position": 1,
+    "link": {
+        "type": "generated-index",
+        "title": "Base Algorithms in Bitbybit",
+        "description": "Base algorithms in Bitbybit provide foundational algorithms & object types, such as vectors, matrixes, points, lines, polylines, triangles and meshes. Learn how to use these algorithms to create complex shapes, grids and designs.",
+        "slug": "/code/common/base"
+    }
+}

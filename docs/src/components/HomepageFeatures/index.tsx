@@ -53,15 +53,15 @@ const FeatureList: FeatureItem[] = [
         link: "/learn/npm-packages/intro",
         description: (
             <>
-               Integrating with Three.JS, Babylon.JS or other web technologies? Our npm packages provide seamless integration with popular 3D libraries, enabling you to create rich, interactive 3D experiences on the web.
+                Integrating with ThreeJS, BabylonJS or other web technologies? Our npm packages provide seamless integration with popular 3D libraries, enabling you to create rich, interactive 3D experiences on the web.
             </>
         ),
-    },{
+    }, {
         title: "Run Visual Scripts On Your Website",
         link: "/learn/runners/intro",
         description: (
             <>
-               Use our runners to execute visual scripts on your website. This allows you to create dynamic, interactive 3D experiences without needing extensive coding knowledge.
+                Use our runners to execute visual scripts on your website. This allows you to create dynamic, interactive 3D experiences without needing extensive coding knowledge.
             </>
         ),
     },
@@ -89,6 +89,17 @@ export default function HomepageFeatures(): ReactNode {
     return (
         <section className={styles.features}>
             <div className="container">
+                <div className="row">
+                    <div className="col">
+                        <div className={`${styles.centerText} ${styles.discord}` }>
+                            <a  href="https://discord.gg/GSe3VMe" title="Discord" target="_blank">
+                                <img alt="Discord social network" width="40" src="https://bitbybit.dev/assets/social/logo-discord.svg" />
+                                <span className={styles.discordText}>JOIN US ON DISCORD!</span>
+                            </a>
+                        </div>
+
+                    </div>
+                </div>
                 <div className="row">
                     {FeatureList.map((props, idx) => (
                         <Feature key={idx} {...props} />

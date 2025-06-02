@@ -38,6 +38,21 @@ occt:
   permalink: /occt
   description: Open CASCADE Technology (OCCT) is a kernel for 3D CAD, CAM, CAE, and more.
 
+vector:
+  label: Vector
+  permalink: /vector
+  description: Vector is a category in Bitbybit that deals with vectors and operations on vectors.
+
+point:
+  label: Point
+  permalink: /point
+  description: Point is a category in Bitbybit that deals with points and operations on points.
+
+math:
+  label: Math
+  permalink: /math
+  description: Math is a category in Bitbybit that deals with mathematical operations and functions.
+
 manifold:
   label: Manifold
   permalink: /manifold
