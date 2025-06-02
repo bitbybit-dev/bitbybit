@@ -6,13 +6,13 @@ description: Learn about the Point class in Bitbybit. Understand how to create, 
 tags: [code, point]
 ---
 
-[View Full Source & Details on GitHub](https://github.com/bitbybit-dev/bitbybit/blob/master/packages/dev/base/lib/api/services/point.ts)
-
 <img 
   src="https://s.bitbybit.dev/assets/icons/white/point-icon.svg" 
   alt="Vector category icon" 
   title="Vector category icon"
   width="100" /> 
+
+[View Full Source & Details on GitHub](https://github.com/bitbybit-dev/bitbybit/blob/master/packages/dev/base/lib/api/services/point.ts)
 
 The `Point` class in Bitbybit provides essential tools for working with points in 3D space.
 
@@ -26,7 +26,7 @@ This simplicity makes it easy to define locations and work with geometric data.
 
 ## Core Capabilities of the Point Class
 
-The `Point` class is all about defining locations and manipulating them. Here's an overview of what it helps you do. For the nitty-gritty details of each function, including specific input parameters, please check the [full Point API documentation](https://docs.bitbybit.dev/classes/Bit.Point-1.html) or the GitHub source linked above.
+The `Point` class is all about defining locations and manipulating them. Here's an overview of what it helps you do. For the nitty-gritty details of each function, including specific input parameters, please check the [full Point API documentation](https://docs.bitbybit.dev/classes/Bit.Point.html) or the GitHub source linked above.
 
 ### 1. Creating Points & Point Patterns
 
@@ -76,19 +76,3 @@ Get information about your points and their relationships:
 
 *   **Removing Duplicates:** Clean up lists of points by removing consecutive identical points, considering a tolerance (`removeConsecutiveDuplicates()`).
 *   **Sorting:** Sort a list of points, primarily by X, then Y, then Z coordinates (`sortPoints()`).
-
-## How to Use
-
-Interacting with `Point` class methods typically involves providing an "inputs" object that contains the necessary data, like the point(s) themselves and any parameters for the operation.
-
-```typescript
-// Conceptual TypeScript example for translating a point
-const myPoint = [10, 20, 0];
-const translationVector = [5, 0, 5];
-
-const movedPoint = bitbybit.point.translatePoints({
-    points: [myPoint],
-    translation: translationVector
-});
-// movedPoint would be [[15, 20, 5]]
-```

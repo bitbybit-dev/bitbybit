@@ -53,6 +53,46 @@ math:
   permalink: /math
   description: Math is a category in Bitbybit that deals with mathematical operations and functions.
 
+color:
+  label: Color
+  permalink: /color
+  description: Color is a category in Bitbybit that deals with colors and color operations.
+
+logic:
+  label: Logic
+  permalink: /logic
+  description: Logic is a category in Bitbybit that deals with logical operations and boolean algebra.
+
+mesh:
+  label: Mesh
+  permalink: /mesh
+  description: Mesh is a category in Bitbybit that deals with 3D meshes and operations on meshes.
+
+lists:
+  label: Lists
+  permalink: /lists
+  description: Lists is a category in Bitbybit that deals with lists and operations on lists.
+
+text:
+  label: Text
+  permalink: /text
+  description: Text is a category in Bitbybit that deals with text manipulation and operations.
+
+dates:
+  label: Dates
+  permalink: /dates
+  description: Dates is a category in Bitbybit that deals with date and time operations.
+
+line:
+  label: Line
+  permalink: /line
+  description: Line is a category in Bitbybit that deals with lines and operations on lines.
+
+polyline:
+  label: Polyline
+  permalink: /polyline
+  description: Polyline is a category in Bitbybit that deals with polylines and operations on polylines.
+
 manifold:
   label: Manifold
   permalink: /manifold
@@ -87,7 +127,6 @@ scripts:
   label: Scripts
   permalink: /scripts
   description: Category that discusses how to manage script inside Bitbybit projects
-
 
 assets:
   label: Assets

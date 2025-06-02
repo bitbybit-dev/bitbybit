@@ -32,7 +32,7 @@ This straightforward representation makes it easy to pass vector data around and
 
 ## What Can You Do With the Vector Class?
 
-The `Vector` class helps you perform a wide range of operations. Here's a look at the main categories of features it supports. For the exact input parameters, default values, and more advanced functions, please consult the detailed [Vector API Documentation](https://docs.bitbybit.dev/classes/Bit.Vector-1.html) (or the GitHub source linked above).
+The `Vector` class helps you perform a wide range of operations. Here's a look at the main categories of features it supports. For the exact input parameters, default values, and more advanced functions, please consult the detailed [Vector API Documentation](https://docs.bitbybit.dev/classes/Bit.Vector.html) (or the GitHub source linked above).
 
 ### 1. Creating Vectors and Number Sequences
 
@@ -82,16 +82,3 @@ Manage collections of vectors:
 
 *   **Point on Ray (`onRay()`):** Given a starting point, a direction vector, and a distance, find the coordinates of the point along that ray.
 *   **Boolean List Check (`all()`):** Check if a list of boolean values are all `true`.
-
-## How to Use
-
-Typically, you'll interact with these methods by providing an "inputs" object. For example, to add two vectors:
-
-```typescript
-// In TypeScript (conceptual)
-const vec1 = [1, 2, 3];
-const vec2 = [4, 5, 6];
-
-const sumVector = bitbybit.vector.add({ first: vec1, second: vec2 });
-// sumVector will be [5, 7, 9]
-```

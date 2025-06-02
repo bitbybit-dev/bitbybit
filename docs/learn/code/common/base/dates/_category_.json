@@ -1,0 +1,10 @@
+{
+    "label": "Dates",
+    "position": 2,
+    "link": {
+        "type": "generated-index",
+        "title": "Dates in Bitbybit",
+        "description": "Introduction to dates in Bitbybit.",
+        "slug": "/code/common/base/dates"
+    }
+}
