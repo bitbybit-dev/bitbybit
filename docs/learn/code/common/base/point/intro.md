@@ -7,10 +7,10 @@ tags: [code, point]
 ---
 
 <img 
+  class="category-icon-small" 
   src="https://s.bitbybit.dev/assets/icons/white/point-icon.svg" 
   alt="Vector category icon" 
-  title="Vector category icon"
-  width="100" /> 
+  title="Vector category icon" /> 
 
 [View Full Source & Details on GitHub](https://github.com/bitbybit-dev/bitbybit/blob/master/packages/dev/base/lib/api/services/point.ts)
 

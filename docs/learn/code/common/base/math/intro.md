@@ -7,10 +7,10 @@ tags: [code, math]
 ---
 
 <img 
+  class="category-icon-small" 
   src="https://s.bitbybit.dev/assets/icons/white/math-icon.svg" 
   alt="Math category icon" 
-  title="Math category icon"
-  width="100" /> 
+  title="Math category icon" /> 
 
 [View Full Source & Details on GitHub](https://github.com/bitbybit-dev/bitbybit/blob/master/packages/dev/base/lib/api/services/math.ts)
 

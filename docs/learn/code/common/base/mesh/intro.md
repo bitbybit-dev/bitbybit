@@ -5,6 +5,12 @@ description: An overview of the MeshBitByBit class, providing utility functions 
 tags: [code, mesh]
 ---
 
+<img 
+  class="category-icon-small" 
+  src="https://s.bitbybit.dev/assets/icons/white/mesh-icon.svg" 
+  alt="Mesh category icon" 
+  title="Mesh category icon"/> 
+
 [View Full Source & Details on GitHub](https://github.com/bitbybit-dev/bitbybit/blob/master/packages/dev/base/lib/api/services/mesh.ts) <!-- Assuming this will be the correct path -->
 
 The `MeshBitByBit` class (often referred to as `Mesh` or `Mesh Utilities` in context) offers a set of specialized tools for working directly with the fundamental components of meshes, primarily triangles and planes. These functions can be useful for lower-level geometric analysis and operations that go beyond standard CAD modeling features.

@@ -7,10 +7,10 @@ tags: [code, lists]
 ---
 
 <img 
+  class="category-icon-small" 
   src="https://s.bitbybit.dev/assets/icons/white/lists-icon.svg" 
   alt="Lists category icon" 
-  title="Lists category icon"
-  width="100" /> 
+  title="Lists category icon" /> 
 
 [View Full Source & Details on GitHub](https://github.com/bitbybit-dev/bitbybit/blob/master/packages/dev/base/lib/api/services/lists.ts)
 

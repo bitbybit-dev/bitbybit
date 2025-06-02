@@ -6,10 +6,10 @@ tags: [code, logic]
 ---
 
 <img 
+  class="category-icon-small" 
   src="https://s.bitbybit.dev/assets/icons/white/logic-icon.svg" 
   alt="Logic category icon" 
-  title="Logic category icon"
-  width="100" /> 
+  title="Logic category icon" /> 
 
 [View Full Source & Details on GitHub](https://github.com/bitbybit-dev/bitbybit/blob/master/packages/dev/base/lib/api/services/logic.ts)
 

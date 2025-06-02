@@ -6,10 +6,10 @@ tags: [code, text]
 ---
 
 <img 
+  class="category-icon-small" 
   src="https://s.bitbybit.dev/assets/icons/white/text-icon.svg" 
   alt="Text category icon" 
-  title="Text category icon"
-  width="100" /> 
+  title="Text category icon" /> 
 
 [View Full Source & Details on GitHub](https://github.com/bitbybit-dev/bitbybit/blob/master/packages/dev/base/lib/api/services/text.ts)
 

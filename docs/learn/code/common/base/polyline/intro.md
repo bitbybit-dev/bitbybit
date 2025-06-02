@@ -6,10 +6,10 @@ tags: [code, polyline]
 ---
 
 <img 
+  class="category-icon-small" 
   src="https://s.bitbybit.dev/assets/icons/white/polyline-icon.svg" 
   alt="Polyline category icon" 
-  title="Polyline category icon"
-  width="100" /> 
+  title="Polyline category icon" /> 
 
 [View Full Source & Details on GitHub](https://github.com/bitbybit-dev/bitbybit/blob/master/packages/dev/base/lib/api/services/polyline.ts)
 

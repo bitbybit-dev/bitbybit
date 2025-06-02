@@ -7,10 +7,10 @@ tags: [code, color]
 ---
 
 <img 
+  class="category-icon-small" 
   src="https://s.bitbybit.dev/assets/icons/white/color-icon.svg" 
   alt="Color category icon" 
-  title="Color category icon"
-  width="100" /> 
+  title="Color category icon" /> 
 
 [View Full Source & Details on GitHub](https://github.com/bitbybit-dev/bitbybit/blob/master/packages/dev/base/lib/api/services/color.ts)
 

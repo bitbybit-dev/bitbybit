@@ -13,10 +13,10 @@ import BitByBitRenderCanvas from '@site/src/components/BitByBitRenderCanvas';
 # Vector Span and Easing for Point Generation
 
 <img 
+  class="category-icon-small" 
   src="https://s.bitbybit.dev/assets/icons/white/vector-icon.svg" 
   alt="Vector category icon" 
-  title="Vector category icon"
-  width="100" /> 
+  title="Vector category icon" /> 
   
 This tutorial demonstrates how to use the `vector.span()` and `vector.spanEaseItems()` methods in Bitbybit to generate sequences of numbers. We'll then combine these sequences to create 3D vectors (points) and visualize them in the 3D canvas. This is a common technique for creating controlled distributions of objects or defining paths.
 

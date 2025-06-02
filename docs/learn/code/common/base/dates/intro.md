@@ -7,10 +7,10 @@ tags: [code, dates]
 ---
 
 <img 
+  class="category-icon-small" 
   src="https://s.bitbybit.dev/assets/icons/white/dates-icon.svg" 
   alt="Dates category icon" 
-  title="Dates category icon"
-  width="100" /> 
+  title="Dates category icon" /> 
 
 [View Full Source & Details on GitHub](https://github.com/bitbybit-dev/bitbybit/blob/master/packages/dev/base/lib/api/services/dates.ts)
 

@@ -6,10 +6,10 @@ tags: [code, line]
 ---
 
 <img 
+  class="category-icon-small" 
   src="https://s.bitbybit.dev/assets/icons/white/line-icon.svg" 
   alt="Line category icon" 
-  title="Line category icon"
-  width="100" /> 
+  title="Line category icon" /> 
 
 [View Full Source & Details on GitHub](https://github.com/bitbybit-dev/bitbybit/blob/master/packages/dev/base/lib/api/services/line.ts)
 

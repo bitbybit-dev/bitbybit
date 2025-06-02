@@ -147,10 +147,16 @@ development:
   label: Development
   permalink: /development
   description: Development refers to the process of creating and maintaining Bitbybit projects, including coding, testing, and deployment.
+
 code:
   label: Code
   permalink: /code
   description: Code examples and snippets for Bit by Bit projects.
+
+base:
+  label: Base
+  permalink: /base
+  description: Base is a category in Bitbybit that provides foundational components such as math, vector, point, color and other.
 
 draw:
   label: Draw
