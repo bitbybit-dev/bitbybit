@@ -61,6 +61,8 @@ We are providing a higher level explanations of the codebase below, but for work
   title="StackBlitz - Hex House Concept 3D"
 />
 
+### Find the source code on [Bitbybit GitHub Examples](https://github.com/bitbybit-dev/bitbybit/tree/master/examples/vite/babylonjs/hex-house-concept)
+
 ## 1. HTML Foundation (`index.html`)
 
 The `index.html` file is the standard entry point, providing a canvas for BabylonJS.

@@ -1,0 +1,9 @@
+{
+    "label": "Mesh",
+    "link": {
+        "type": "generated-index",
+        "title": "Meshes in Bitbybit",
+        "description": "Introduction to meshes in Bitbybit.",
+        "slug": "/code/common/base/mesh"
+    }
+}

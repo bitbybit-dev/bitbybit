@@ -8,6 +8,7 @@ tags: [getting-started, runners]
 
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
+import BitByBitRenderCanvas from '@site/src/components/BitByBitRenderCanvas';
 
 # Bitbybit Runner: Execute 3D Scripts From Visual Programming Editors Anywhere on the Web
 
@@ -149,22 +150,11 @@ A 3D model configurator for creating a customizable ThreeJS logo, ready for 3D p
     *   [JSFiddle Example](https://jsfiddle.net/matas_bitbybitdev/qmyLhre3/5/)
 *   **Source Code:** [GitHub Source](https://github.com/bitbybit-dev/app-examples/blob/main/runner/threejs/lite/threejs-logo/index.html)
 
-
-<div className="stackblitz-embed-container">
-  <iframe
-    src="https://stackblitz.com/edit/stackblitz-starters-fhck8j?ctl=1&embed=1&file=src%2Fmain.ts&theme=dark"
-    style={{
-      width: '100%',
-      height: '700px',
-      border: '0',
-      borderRadius: '4px',
-      overflow: 'hidden',
-    }}
-    title="Introduction to Bitbybit runner starter"
-    allow="accelerometer; ambient-light-sensor; camera; encrypted-media; geolocation; gyroscope; hid; microphone; midi; payment; usb; vr; xr-spatial-tracking"
-    sandbox="allow-forms allow-modals allow-popups allow-presentation allow-same-origin allow-scripts"
-  ></iframe>
-</div>
+<BitByBitRenderCanvas
+  requireManualStart={true}
+  iframeUrl="https://stackblitz.com/edit/stackblitz-starters-fhck8j?embed=1&file=src%2Fmain.ts&theme=dark"
+  title="StackBlitz - Bitbybit Runner Starter"
+/>
 
 <Tabs groupId="html-js-example">
 <TabItem value="js" label="script.js">

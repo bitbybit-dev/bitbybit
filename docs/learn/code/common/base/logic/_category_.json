@@ -1,0 +1,10 @@
+{
+    "label": "Logic",
+    "position": 2,
+    "link": {
+        "type": "generated-index",
+        "title": "Logic in Bitbybit",
+        "description": "Introduction to logic in Bitbybit.",
+        "slug": "/code/common/base/logic"
+    }
+}

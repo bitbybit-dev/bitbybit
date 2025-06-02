@@ -1,0 +1,9 @@
+{
+    "label": "Vector",
+    "link": {
+        "type": "generated-index",
+        "title": "Vector Algorithms in Bitbybit",
+        "description": "Introduction to vector algorithms in Bitbybit, including vector addition, subtraction and other operations. Learn how to use these algorithms to manipulate and analyze vector data.",
+        "slug": "/code/common/base/vector"
+    }
+}

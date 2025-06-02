@@ -9,10 +9,10 @@ tags: [code, draw]
 # The "Draw" Category: Making Geometry Visible
 
 <img 
+  class="category-icon-small" 
   src="https://s.bitbybit.dev/assets/icons/white/draw-icon.svg" 
   alt="Draw category icon with a paintbrush" 
-  title="Draw category icon"
-  width="100" /> 
+  title="Draw category icon"/> 
 
 ## How Drawing Works in Bitbybit
 

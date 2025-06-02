@@ -51,22 +51,11 @@ To see how all these pieces (HTML, Runner Library, and your exported script logi
 
 By exploring the StackBlitz demo, you can gain confidence in how to take your visual programs from the Bitbybit editor and bring them to life anywhere on the web.
 
-<div className="stackblitz-embed-container">
-  <iframe
-    src="https://stackblitz.com/edit/bitbybit-dev-runner-example-inline-string-embed-from-ret?ctl=1&embed=1&file=script.js&theme=dark"
-    style={{
-      width: '100%',
-      height: '700px',
-      border: '0',
-      borderRadius: '4px',
-      overflow: 'hidden',
-    }}
-    title="Running Exported Visual Scripts Inside Your Websites"
-    allow="accelerometer; ambient-light-sensor; camera; encrypted-media; geolocation; gyroscope; hid; microphone; midi; payment; usb; vr; xr-spatial-tracking"
-    sandbox="allow-forms allow-modals allow-popups allow-presentation allow-same-origin allow-scripts"
-  ></iframe>
-</div>
-
+<BitByBitRenderCanvas
+  requireManualStart={true}
+  iframeUrl="https://stackblitz.com/edit/bitbybit-dev-runner-example-inline-string-embed-from-ret?embed=1&file=script.js&theme=dark"
+  title="StackBlitz - Running Visual Scripts Inside Your Websites"
+/>
 
 ## Setting up Your HTML Page
 

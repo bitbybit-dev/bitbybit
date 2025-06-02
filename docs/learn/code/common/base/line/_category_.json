@@ -1,0 +1,10 @@
+{
+    "label": "Line",
+    "position": 2,
+    "link": {
+        "type": "generated-index",
+        "title": "Lines in Bitbybit",
+        "description": "Introduction to lines in Bitbybit.",
+        "slug": "/code/common/base/line"
+    }
+}

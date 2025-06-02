@@ -46,8 +46,8 @@ We are providing a higher level explanations of the codebase below, but for work
   title="StackBlitz - Advanced Parametric 3D Model with ThreeJS & Bitbybit"
 />
 
+### Find the source code on [Bitbybit GitHub Examples](https://github.com/bitbybit-dev/bitbybit/tree/master/examples/vite/threejs/hex-house-concept)
 
-### Find the source code on [Bitbybit GitHub Examples](https://github.com/bitbybit-dev/bitbybit/tree/master/examples/vite/threejs/hex-shell)
 
 ## Project Structure Overview
 

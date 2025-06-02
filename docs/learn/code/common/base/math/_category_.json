@@ -1,0 +1,9 @@
+{
+    "label": "Math",
+    "link": {
+        "type": "generated-index",
+        "title": "Math Algorithms in Bitbybit",
+        "description": "Introduction to math algorithms in Bitbybit.",
+        "slug": "/code/common/base/math"
+    }
+}

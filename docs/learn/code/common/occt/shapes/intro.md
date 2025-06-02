@@ -12,7 +12,6 @@ tags: [occt]
   class="category-icon-small" 
   src="https://s.bitbybit.dev/assets/icons/white/occt-icon.svg" 
   alt="OCCT category icon with a stylized logo representation" 
-  width="100"
   title="OCCT category icon" />
 
 ## Introduction to OCCT Shape Hierarchy

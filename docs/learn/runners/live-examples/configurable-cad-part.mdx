@@ -55,21 +55,11 @@ Before diving into the code, let's see the final result in action with a live St
 *   **Input/Output Flow:** You can observe how changes made via HTML controls are passed to the Rete script, and how the script's output (the 3D meshes) is used to update the scene.
 *   **Practical Use Case:** This example is a simplified version of what you might build for a product configurator or an interactive educational tool.
 
-<div className="stackblitz-embed-container">
-  <iframe
-    src="https://stackblitz.com/edit/bitbybit-dev-runner-example-io-from-rete-editor?ctl=1&embed=1&file=script.js&theme=dark"
-    style={{
-      width: '100%',
-      height: '700px',
-      border: '0',
-      borderRadius: '4px',
-      overflow: 'hidden',
-    }}
-    title="Bitbybit Runner: Interactive Rete Script with Inputs/Outputs"
-    allow="accelerometer; ambient-light-sensor; camera; encrypted-media; geolocation; gyroscope; hid; microphone; midi; payment; usb; vr; xr-spatial-tracking"
-    sandbox="allow-forms allow-modals allow-popups allow-presentation allow-same-origin allow-scripts"
-  ></iframe>
-</div>
+<BitByBitRenderCanvas
+  requireManualStart={true}
+  iframeUrl="https://stackblitz.com/edit/bitbybit-dev-runner-example-io-from-rete-editor?embed=1&file=script.js&theme=dark"
+  title="StackBlitz - Interactive Rete Script with IO"
+/>
 
 ## Setting up Your HTML Page with Controls
 
