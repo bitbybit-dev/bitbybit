@@ -172,3 +172,13 @@ shopify:
   label: 3D Bits
   permalink: /3d-bits
   description: 3D Bits is application that Bitbybit has developed for Shopify merchants - it can be installed on their webshops.
+
+open-source:
+  label: Open Source
+  permalink: /open-source
+  description: Open source refers to software whose source code is available for anyone to view, use, modify, and distribute.
+
+licensing:
+  label: Licensing
+  permalink: /licensing
+  description: Licensing refers to the legal permissions and restrictions associated with using, modifying, and distributing software.
