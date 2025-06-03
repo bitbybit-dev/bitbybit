@@ -3,7 +3,7 @@ sidebar_position: 2
 title: Color Usage Examples
 sidebar_label: Color Usage Examples
 description: Learn how to use colors and apply them to 3D geometry in Bitbybit with examples in Rete, Blockly, and TypeScript.
-tags: [code, color]
+tags: [code, color, rete, blockly, typescript]
 ---
 
 import Tabs from '@theme/Tabs';

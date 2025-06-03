@@ -1,4 +1,5 @@
 ---
+sidebar_position: 1
 title: Text in Bitbybit
 sidebar_label: Texts in Bitbybit
 description: An overview of the Text class in Bitbybit, explaining how to create, manipulate, and convert text, including generating vector text for 3D.
