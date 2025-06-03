@@ -12,6 +12,12 @@ import BitByBitRenderCanvas from '@site/src/components/BitByBitRenderCanvas';
 
 # Applying Colors to 3D Geometry
 
+<img 
+  class="category-icon-small" 
+  src="https://s.bitbybit.dev/assets/icons/white/color-icon.svg" 
+  alt="Color category icon" 
+  title="Color category icon" /> 
+
 Colors are essential for visualizing and differentiating objects in your 3D scenes. This tutorial demonstrates how to:
 
 1.  **Create colors:** Using different methods from the `Color` class.
