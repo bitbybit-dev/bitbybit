@@ -3,7 +3,7 @@ sidebar_position: 2
 title: Color Usage Examples
 sidebar_label: Color Usage Examples
 description: Learn how to use colors and apply them to 3D geometry in Bitbybit with examples in Rete, Blockly, and TypeScript.
-tags: [code, color]
+tags: [code, color, rete, blockly, typescript]
 ---
 
 import Tabs from '@theme/Tabs';
@@ -11,6 +11,12 @@ import TabItem from '@theme/TabItem';
 import BitByBitRenderCanvas from '@site/src/components/BitByBitRenderCanvas';
 
 # Applying Colors to 3D Geometry
+
+<img 
+  class="category-icon-small" 
+  src="https://s.bitbybit.dev/assets/icons/white/color-icon.svg" 
+  alt="Color category icon" 
+  title="Color category icon" /> 
 
 Colors are essential for visualizing and differentiating objects in your 3D scenes. This tutorial demonstrates how to:
 

@@ -3,7 +3,7 @@ sidebar_position: 2
 title: Vector Span and Ease Examples
 sidebar_label: Span and Ease Examples
 description: Learn how to use vector span and easing functions to create interesting point distributions for drawing in Bitbybit, with examples in Rete, Blockly, and TypeScript.
-tags: [code, vector]
+tags: [code, vector, rete, blockly, typescript]
 ---
 
 import Tabs from '@theme/Tabs';
