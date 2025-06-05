@@ -1,0 +1,10 @@
+{
+    "label": "Model Context Protocol (MCP)",
+    "position": 10,
+    "link": {
+        "type": "generated-index",
+        "title": "Model Context Protocol (MCP)",
+        "description": "Learn about the Model Context Protocol (MCP), a powerful way for integrating AI models with Bitbybit. This protocol allows you to define and manage the context in which AI models operate, enhancing their effectiveness in various applications.",
+        "slug": "/using-ai-with-bitbybit/mcp"
+    }
+}
