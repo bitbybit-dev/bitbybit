@@ -57,13 +57,13 @@ By understanding extrusion, you gain a powerful tool for your 3D modeling toolki
 
 ## Extruding a Face
 
-In addition to extruding wires (which typically create shells or open-ended shapes), you can also extrude faces. A face in this context is a bounded 2D surface, often created from one or more closed wires. When a face is extruded, the operation effectively sweeps this surface along the extrusion vector, creating a closed volumetric body, or a solid.
+In addition to extruding wires (which typically create shells or open-ended shapes), you can also extrude faces. A face in this context is a bounded surface, often created from one or more closed wires. When a face is extruded, the operation effectively sweeps this surface along the extrusion vector, creating a closed volumetric body, or a solid.
 
 This is a crucial distinction:
 *   **Wire Extrusion**: Generally results in a shell (a collection of connected faces without volume, like a pipe).
 *   **Face Extrusion**: Results in a solid (a shape with enclosed volume, like a solid bar).
 
-In the following examples, we first construct a complex wire, then create a planar face from this wire, and finally extrude this face to produce a solid 3D object. This demonstrates a common workflow: defining a 2D profile as a face and then giving it depth to create a solid part.
+In the following examples, we first construct a complex wire, then create a planar face from this wire, and finally extrude this face to produce a solid 3D object. This demonstrates a common workflow: defining a profile as a face and then giving it depth to create a solid part.
 
 <Tabs>
 <TabItem value="rete" label="Rete">
