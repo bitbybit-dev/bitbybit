@@ -1,5 +1,5 @@
 ---
-sidebar_position: 2
+sidebar_position: 1
 title: Creating a Simple Loft
 sidebar_label: Simple Loft Tutorial
 description: Learn how to create a surface by lofting between several wire shapes.

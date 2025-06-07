@@ -3257,7 +3257,7 @@ export namespace OCCT {
         returnCompound = false;
     }
     export class DivideDto<T> {
-        constructor(shape: T, nrOfDivisions?: number, removeStartPoint?: boolean, removeEndPoint?: boolean) {
+        constructor(shape?: T, nrOfDivisions?: number, removeStartPoint?: boolean, removeEndPoint?: boolean) {
             if (shape !== undefined) { this.shape = shape; }
             if (nrOfDivisions !== undefined) { this.nrOfDivisions = nrOfDivisions; }
             if (removeStartPoint !== undefined) { this.removeStartPoint = removeStartPoint; }
@@ -3267,7 +3267,7 @@ export namespace OCCT {
          * Shape representing a wire
          * @default undefined
          */
-        shape: T;
+        shape?: T;
         /**
          * The number of divisions that will be performed on the curve
          * @default 10
@@ -3275,17 +3275,17 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 1
          */
-        nrOfDivisions = 10;
+        nrOfDivisions? = 10;
         /**
          * Indicates if algorithm should remove start point
          * @default false
          */
-        removeStartPoint = false;
+        removeStartPoint? = false;
         /**
          * Indicates if algorithm should remove end point
          * @default false
          */
-        removeEndPoint = false;
+        removeEndPoint? = false;
     }
 
     export class ProjectWireDto<T, U> {

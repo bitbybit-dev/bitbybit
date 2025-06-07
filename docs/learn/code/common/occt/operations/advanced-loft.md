@@ -1,6 +1,6 @@
 ---
 sidebar_position: 2
-title: Creating a Advanded Loft
+title: Creating Advanded Loft
 sidebar_label: Advanced Loft Tutorial
 description: Learn how to create a surface by lofting between several wire shapes and use various advanced options that help you make more intricate shapes.
 tags: [code, occt, rete, blockly, typescript]
