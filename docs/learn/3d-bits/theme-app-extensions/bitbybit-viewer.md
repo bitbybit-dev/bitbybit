@@ -1,7 +1,7 @@
 ---
 sidebar_position: 3
 title: "BITBYBIT VIEWER Block for Shopify's '3D Bits' App"
-sidebar_label: BITBYBIT VIEWER
+sidebar_label: BITBYBIT VIEWER (BASIC)
 description: Learn how to use the BITBYBIT VIEWER theme app extension block in Shopify's "3D Bits" app to display static 3D models and configure complex scenes on your product pages without coding.
 tags: [shopify, 3d-bits]
 ---
