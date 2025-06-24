@@ -1,7 +1,7 @@
 ---
 sidebar_position: 2
 title: "3D Bits Shopify App - FAQ"
-sidebar_label: "3D Bits FAQ"
+sidebar_label: "FAQ"
 description: "Frequently asked questions about using the 3D Bits app to integrate 3D models and product configurators into your Shopify store."
 tags: [shopify, 3d-bits]
 ---

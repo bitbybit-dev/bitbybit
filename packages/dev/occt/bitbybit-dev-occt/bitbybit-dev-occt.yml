@@ -3,6 +3,7 @@
     bindings:
       - symbol: Adaptor3d_Curve
       - symbol: Adaptor3d_Surface
+      - symbol: AppStd_Application
       - symbol: Approx_ParametrizationType
       - symbol: BOPAlgo_Algo
       - symbol: BOPAlgo_ArgumentAnalyzer
@@ -121,7 +122,12 @@
       - symbol: BRep_Tool
       - symbol: BitByBitDev
       - symbol: Bnd_Box
+      - symbol: CDF_Application
+      - symbol: CDF_Directory
+      - symbol: CDM_Application
       - symbol: CDM_Document
+      - symbol: CDM_MetaData
+      - symbol: CDM_ReferenceIterator
       - symbol: ChFi2d
       - symbol: ChFi2d_AnaFilletAlgo
       - symbol: ChFi2d_Builder
@@ -217,6 +223,7 @@
       - symbol: Geom_Plane
       - symbol: Geom_Surface
       - symbol: Geom_TrimmedCurve
+      - symbol: Handle_CDM_Document
       - symbol: Handle_Geom2d_BSplineCurve
       - symbol: Handle_Geom2d_BezierCurve
       - symbol: Handle_Geom2d_BoundedCurve
@@ -240,10 +247,15 @@
       - symbol: Handle_Law_Function
       - symbol: Handle_Poly_PolygonOnTriangulation
       - symbol: Handle_Poly_Triangulation
+      - symbol: Handle_Standard_Type
+      - symbol: Handle_TCollection_HAsciiString
       - symbol: Handle_TDF_Attribute
+      - symbol: Handle_TDocStd_Application
       - symbol: Handle_TDocStd_Document
       - symbol: Handle_XCAFApp_Application
+      - symbol: Handle_XCAFDoc_ColorTool
       - symbol: Handle_XCAFDoc_DocumentTool
+      - symbol: Handle_XCAFDoc_MaterialTool
       - symbol: Handle_XCAFDoc_ShapeTool
       - symbol: Handle_XCAFDoc_VisMaterial
       - symbol: Handle_XCAFDoc_VisMaterialTool
@@ -269,6 +281,7 @@
       - symbol: Quantity_ColorRGBA
       - symbol: RWGltf_CafWriter
       - symbol: RWMesh_TriangulationSource
+      - symbol: STEPCAFControl_Reader
       - symbol: STEPControl_Reader
       - symbol: STEPControl_StepModelType
       - symbol: STEPControl_Writer
@@ -281,8 +294,10 @@
       - symbol: ShapeFix_Solid
       - symbol: ShapeFix_Wire
       - symbol: ShapeUpgrade_UnifySameDomain
+      - symbol: Standard_ExtString
       - symbol: Standard_GUID
       - symbol: Standard_Transient
+      - symbol: Standard_Type
       - symbol: StdPrs_ToolTriangulatedShape
       - symbol: StlAPI
       - symbol: StlAPI_Reader
@@ -298,14 +313,22 @@
       - symbol: TColgp_Array2OfPnt
       - symbol: TCollection_AsciiString
       - symbol: TCollection_ExtendedString
+      - symbol: TCollection_HAsciiString
       - symbol: TDF_Attribute
       - symbol: TDF_Label
       - symbol: TDF_LabelSequence
       - symbol: TDataStd
       - symbol: TDataStd_GenericEmpty
       - symbol: TDataStd_GenericExtString
+      - symbol: TDataStd_Integer
       - symbol: TDataStd_Name
+      - symbol: TDataStd_Real
+      - symbol: TDocStd_Application
       - symbol: TDocStd_Document
+      - symbol: TDocStd_Modified
+      - symbol: TDocStd_Owner
+      - symbol: TDocStd_XLink
+      - symbol: TDocStd_XLinkTool
       - symbol: TNaming_NamedShape
       - symbol: TopAbs_Orientation
       - symbol: TopAbs_ShapeEnum
@@ -333,9 +356,11 @@
       - symbol: TopoDS_Wire
       - symbol: XCAFApp_Application
       - symbol: XCAFDoc_ColorTool
+      - symbol: XCAFDoc_ColorType
       - symbol: XCAFDoc_DocumentTool
       - symbol: XCAFDoc_Location
       - symbol: XCAFDoc_Material
+      - symbol: XCAFDoc_MaterialTool
       - symbol: XCAFDoc_ShapeTool
       - symbol: XCAFDoc_VisMaterial
       - symbol: XCAFDoc_VisMaterialPBR

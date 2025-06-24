@@ -52,7 +52,7 @@ npm run dev # Your app runs, for example, on localhost:4242
 - Build your application into a single JavaScript file.
 - Serve this static file locally (e.g., via `npm run watch`).
 - This mode allows you to test production-like behavior while retaining the ability to make quick changes, as the file rebuilds live upon modification.
-- Update the "Public Script URL" metafield in Shopify to point to your local server's static file (e.g., `https://localhost:4173/assets/index-stable.js`).
+- Update the "Public Script URL" metafield in Shopify to point to your local server's static file (e.g., `https://localhost:4242/assets/index-stable.js`).
 
 ```bash
 npm run watch # Builds and serves the static file locally, rebuilding on changes.
@@ -96,16 +96,16 @@ While our templates and primary recommendations focus on TypeScript and leading 
 To ensure quality, maintainability, and a smooth development experience, we offer an opinionated solution:
 
 ### What We Strongly Recommend
-✅ **TypeScript**: For its robust type safety, improved code clarity, and enhanced developer productivity.
-✅ **Unit Tests**: Essential for building reliable, high-quality applications and preventing regressions.
-✅ **Vite Bundler**: For its lightning-fast development server and optimized production builds.
-✅ **Our Templates**: Following our provided templates ensures a consistent project structure and easier updates.
+✅ **TypeScript**: For its robust type safety, improved code clarity, and enhanced developer productivity.   
+✅ **Unit Tests**: Essential for building reliable, high-quality applications and preventing regressions.   
+✅ **Vite Bundler**: For its lightning-fast development server and optimized production builds.   
+✅ **Our Templates**: Following our provided templates ensures a consistent project structure and easier updates.   
 
 ### Freedom to Customize (with Caveats)
-While we advocate for our recommended stack, we understand the need for flexibility:
-❓ **JavaScript instead of TypeScript**: Possible, but you lose the benefits of static typing.
-❓ **Alternative Bundlers (e.g., Webpack)**: May work, but are not officially supported and may require custom configuration.
-❓ **Custom Project Structures**: You can adapt the structure, but significant deviations might complicate compatibility with future updates to our `bits-pro` package or templates.
+While we advocate for our recommended stack, we understand the need for flexibility:   
+❓ **JavaScript instead of TypeScript**: Possible, but you lose the benefits of static typing.   
+❓ **Alternative Bundlers (e.g., Webpack)**: May work, but are not officially supported and may require custom configuration.   
+❓ **Custom Project Structures**: You can adapt the structure, but significant deviations might complicate compatibility with future updates to our `bits-pro` package or templates.   
 
 :::warning Customization Considerations
 Deviating significantly from our recommended approach and templates is done at your own discretion. While we aim for broad compatibility, we cannot guarantee that highly customized setups will remain fully compatible with all future updates.
@@ -114,9 +114,13 @@ Deviating significantly from our recommended approach and templates is done at y
 ## Jumpstart Your Project: Available Templates
 
 To get you started quickly, we provide access to our private GitHub repository containing production-ready templates:
-- **React + Three.js (React Three Fiber)**: Ideal for crafting highly interactive 3D experiences.
-- **Vanilla TypeScript + Three.js**: A lightweight option for efficient 2D or 3D applications.
-- **Vanilla TypeScript + Babylon.js**: Perfect for building detailed 3D product configurators.
+- **Vanilla TypeScript + React Three Fiber**
+- **Vanilla TypeScript + Three.js**
+- **Vanilla TypeScript + Babylon.js**
+- **Vanilla TypeScript + PlayCanvas**
+- **Vanilla TypeScript + Bitbybit CAD & Three.js**
+- **Vanilla TypeScript + Bitbybit CAD & Babylon.js**
+
 *(More templates focusing on other technologies may be added over time.)*
 
 ## Crafting Your User Interface: Guidelines and Best Practices
@@ -139,7 +143,7 @@ The BITBYBIT APPS block utilizes Shopify metafields to manage its behavior, part
 
 | Metafield           | Purpose                                      | Example Value(s)                                                                                                                               | Behavior Notes                                                                 |
 |---------------------|----------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------|
-| `Public Script URL` | Points to your app's main JavaScript file. | **Development (Preview Mode):** `https://localhost:4173/assets/index-stable.js`<br/>**Production:** `https://cdn.shopify.com/s/files/1/xxx/index-<hash>.js?version=<version>` | If this metafield is empty, the block defaults to attempting to embed from `https://localhost:4242` (Local Development Mode). |
+| `Public Script URL` | Points to your app's main JavaScript file. | **Development (Preview Mode):** `https://localhost:4242/assets/index-stable.js`<br/>**Production:** `https://cdn.shopify.com/s/files/1/xxx/index-<hash>.js?version=<version>` | If this metafield is empty, the block defaults to attempting to embed from `https://localhost:4242` (Local Development Mode). |
 
 ## Important Note: Pricing and Backend Logic
 

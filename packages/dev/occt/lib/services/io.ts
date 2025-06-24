@@ -183,4 +183,60 @@ export class OCCTIO {
         }
         return undefined;
     }
+
+    // TODO WIP! This function parses the contents of a `.STEP` file as an assembly
+    // and returns the assembly structure. It's not finished yet and needs a lot of work.
+    private parseStepAssembly(inputs: Inputs.OCCT.LoadStepOrIgesDto) {
+        const fileName = inputs.fileName;
+        const fileText = inputs.filetext;
+        
+        // Write file to virtual filesystem
+        this.occ.FS.createDataFile("/", "step_file.step", fileText as string, true, true, true);
+        
+        try {
+            // Create XCAF application and document
+            const app = this.occ.XCAFApp_Application.GetApplication();
+            const format = new this.occ.TCollection_ExtendedString_2("MDTV-XCAF", true);
+            const docHandle = new this.occ.Handle_TDocStd_Document_1();
+            app.get().NewDocument_2(format, docHandle);
+            const doc = docHandle.get();
+
+            // Use STEPCAFControl_Reader to read with full XCAF support
+            const reader = new this.occ.STEPCAFControl_Reader_1();
+            reader.SetColorMode(true);    // Enable color reading
+            reader.SetNameMode(true);     // Enable name reading  
+            reader.SetLayerMode(true);    // Enable layer reading
+            reader.SetPropsMode(true);    // Enable properties reading
+            
+            // Read the file
+            const readResult = reader.ReadFile("step_file.step");
+            
+            if (readResult === this.occ.IFSelect_ReturnStatus.IFSelect_RetDone) {
+                // Transfer to XCAF document
+                const messageProgress = new this.occ.Message_ProgressRange_1();
+                const transferResult = reader.Transfer_1(docHandle, messageProgress);
+                messageProgress.delete();
+                
+                if (transferResult) {
+                    // Parse using the improved assembly parser
+                    // const assemblyStructure = this.ioAssembly.parseXCAFDocument(doc);
+                    
+                    // Clean up
+                    reader.delete();
+                    format.delete();
+                    docHandle.delete();
+                    this.occ.FS.unlink("/step_file.step");
+                    
+                    return {};
+                } else {
+                    throw new Error("Failed to transfer STEP data to XCAF document");
+                }
+            } else {
+                throw new Error("Failed to read STEP file");
+            }
+        } catch (error) {
+            this.occ.FS.unlink("/step_file.step");
+            throw error;
+        }
+    }
 }
