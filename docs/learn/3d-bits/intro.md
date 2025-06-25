@@ -1,5 +1,5 @@
 ---
-sidebar_position: 1
+sidebar_position: 0
 title: "3D Bits: Enhance Your Shopify Store with 3D Product Visualization"
 sidebar_label: Intro
 description: Discover "3D Bits" our Shopify app designed to bring interactive 3D product configurators and visualization to your e-commerce store.

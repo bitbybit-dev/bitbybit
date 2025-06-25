@@ -136,7 +136,7 @@ Shopify offers three variant types with many options out of the box, which cover
 
 **Yes, if you or your team can write JavaScript or TypeScript.**
 
-This is where the **BITBYBIT RUNNER** theme extension block truly shines. It acts as a bridge:
+This is where our **Pro** plan really shines, but you can also use the **BITBYBIT RUNNER** theme extension block. It acts as a bridge:
 1.  You develop your complex configuration logic, part-swapping rules, and geometric manipulations as a script (e.g., using Rete, Blockly, or TypeScript on `bitbybit.dev` and then exporting it, or writing it directly for the runner).
 2.  The Runner block executes this script within your Shopify theme.
 3.  Your script can then interact with the 3D scene, listen to Shopify variant changes (or other custom UI elements you add to the page), and update the 3D model accordingly.
@@ -154,9 +154,9 @@ This is where the **BITBYBIT RUNNER** theme extension block truly shines. It act
 
 ### Does 3D Bits offer fancy UI controls for product pages (like custom sliders, color swatches, etc.)?
 
-**Nope. 3D Bits is not here to reinvent the dropdown or the color swatch.**
+**In general - no. 3D Bits is not here to reinvent the dropdown or the color swatch.**
 
-There are many excellent Shopify apps and theme development techniques dedicated to creating sophisticated UI controls for product options.
+There are many excellent Shopify apps and theme development techniques dedicated to creating sophisticated UI controls for product options. Having said that Pro plan does have the ability to use frameworks such as React, Angular or others to create UI elements. However keep in mind that we do not offer any special technologies to alter the prices. If you need such functionality you'll need to build it yourself.
 
 3D Bits focuses on the 3D visualization. It's designed to **listen** to what options are already selected on your product page (whether through standard Shopify variants or custom UI controls you've implemented) and then **update the 3D scene accordingly**:
 *   Show the correct 3D model or parts.
