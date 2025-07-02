@@ -180,7 +180,6 @@ export class BabylonIO {
         return Promise.resolve({});
     }
 
-
     private async loadAsset(meshNames: any, rootUrl: string, fileOrName: string | File, importHidden: boolean): Promise<BABYLON.Mesh> {
         const res = await BABYLON.SceneLoader.ImportMeshAsync("", rootUrl, fileOrName, this.context.scene);
         const sgs = this.context.scene.metadata.shadowGenerators as BABYLON.ShadowGenerator[];
@@ -217,9 +216,8 @@ export class BabylonIO {
                 }
             });
         }
-        res.meshes.forEach(mesh => {
-            mesh.parent = container;
-        });
+        const root = res.meshes.find(m => m.name === "__root__");
+        root.parent = container;
         return container;
     }
 
