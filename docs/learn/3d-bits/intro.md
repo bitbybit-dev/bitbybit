@@ -32,6 +32,31 @@ Traditional online stores use static images, but modern shoppers want to see pro
   </iframe>
 </div>
 
+## What Our Customers Say
+
+<div class="testimonials-section">
+
+<div class="testimonial-item">
+
+### "An outstanding app for 3D configuration and beyond! It's intuitive, fully customizable, and backed by exceptional support from Matas. You can seamlessly integrate 3D models into Shopify product media and dynamically reflect different variants — from accessories to color changes and more. A definite must-have!"
+
+**Nicolas Quendez, Co-Founder & CEO**  
+[![Kahe E-Nautic](https://ik.imagekit.io/bitbybit/app/assets/start/shopify/kahe-enautic.webp)](https://kahe-nautic.com/)
+
+</div>
+
+<div class="testimonial-item">
+
+### "I wasn't expecting to be this impressed. This guy delivers real value with authenticity, quality, and professionalism. Every interaction we've had has been smooth, straightforward, and reliable. What you see is exactly what you get, just solid, well-executed work with no unnecessary noise. This is the kind of service I'd recommend without hesitation. I'll definitely continue working with Matas."
+
+**Francesco, Founder & CEO**  
+[![Ironside Armour](https://ik.imagekit.io/bitbybit/app/assets/start/shopify/ironside-armour.webp)](https://ironsidearmour.com)
+
+</div>
+
+</div>
+
+
 ## How Does 3D Bits Work?
 
 3D Bits is built on the [bitbybit.dev](https://bitbybit.dev) platform, which provides powerful 3D and CAD tools for both beginners and professionals. You can:

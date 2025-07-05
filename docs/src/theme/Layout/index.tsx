@@ -11,12 +11,24 @@ export default function LayoutWrapper(props: Props): ReactNode {
 
     const [trackingInitialized, setTrackingInitialized] = useState(false);
 
+    // Check if running in iframe
+    const isInIframe = ExecutionEnvironment.canUseDOM && window.parent !== window;
+
     // Check if cookies are disabled via query parameter
-    const isCookieDisabled = ExecutionEnvironment.canUseDOM && 
+    const isCookieDisabledByQuery = ExecutionEnvironment.canUseDOM && 
         new URLSearchParams(window.location.search).get("cookies") === "disabled";
 
+    // Set decline cookie if disabled by query parameter (but not in iframe)
+    if (isCookieDisabledByQuery && ExecutionEnvironment.canUseDOM && !isInIframe) {
+        Cookies.set("bitbybit-docs-cookie-consent", "false", { expires: 365 });
+    }
+
+    // Check if cookies are disabled (by query, iframe, or previous decline)
+    const cookieConsent = Cookies.get("bitbybit-docs-cookie-consent");
+    const isCookieDisabled = isCookieDisabledByQuery || cookieConsent === "false" || isInIframe;
+
     const initializeGATracking = () => {
-        if (ExecutionEnvironment.canUseDOM && !window.gtag) {
+        if (ExecutionEnvironment.canUseDOM && !window.gtag && !isCookieDisabled) {
             const script = document.createElement("script");
             script.src = `https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`;
             script.async = true;
@@ -35,8 +47,6 @@ export default function LayoutWrapper(props: Props): ReactNode {
         }
     };
 
-    const cookieConsent = Cookies.get("bitbybit-docs-cookie-consent");
-
     if (cookieConsent === "true" && trackingInitialized === false && !isCookieDisabled) {
         initializeGATracking();
         setTrackingInitialized(true);
@@ -45,7 +55,7 @@ export default function LayoutWrapper(props: Props): ReactNode {
     return (
         <>
             <Layout {...props} />
-            {!isCookieDisabled && (
+            {!isCookieDisabled && !cookieConsent && (
                 <CookieConsent
                     location="bottom"
                     buttonText="ACCEPT COOKIES ❤️"
