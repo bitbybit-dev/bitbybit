@@ -17,7 +17,7 @@ If your brand already designs and manufactures physical goods, there’s a good 
 
 # What Formats Merchants Usually Have
 
-If you do manage to get existing 3D models, they’ll most likely come in formats such as **STEP (ISO 10303)**, **IGES**, or other proprietary CAD formats. These are common in professional design workflows because they use something called **BRep** - short for Boundary Representation - to store geometry. Usually people use software packages such as SolidWorks, Fusion 360, Catia, Rhino, OpenCascade and similar modeling software packages to create these assets.  
+If you do manage to get existing 3D models, they’ll most likely come in formats such as **STEP (ISO 10303)**, **IGES**, or other proprietary CAD formats. These are common in professional design workflows because they use something called **BRep** - short for Boundary Representation - to store geometry. Usually people use software packages such as FreeCAD, SolidWorks, Fusion 360, Catia, Rhino, OpenCascade and similar modeling software packages to create these assets.  
 
 BRep is very different from polygonal meshes. Instead of a collection of triangles, vertices, and indices, a BRep model is a precise mathematical description: NURBS curves, faces, shells, and solids define the surfaces and edges of the object. This is great for manufacturing and engineering, but to use these models on the web, you’ll need to **triangulate** them into formats like GLTF, OBJ, FBX, 3MF, or STL.
 
