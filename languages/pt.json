@@ -5356,5 +5356,19 @@
     "bitbybit.occt.shapes.face.fromBaseTriangle_description": "Cria face a partir da definição de triângulo",
     "bitbybit.occt.shapes.face.fromBaseMesh": "faces da malha de base",
     "bitbybit.occt.shapes.face.fromBaseMesh_description": "Cria faces a partir da definição de malha",
-    "fromRightHanded": "de destro"
+    "fromRightHanded": "de destro",
+      "bitbybit.advanced.text3d.createWithUrl": "texto com url",
+    "createWithUrl": "texto com url",
+    "bitbybit.advanced.text3d.createWithUrl_description": "Cria um texto 3D com um URL de fonte. Isso é útil quando você deseja usar uma fonte personalizada que não está incluída na biblioteca. A fonte será carregada a partir do URL fornecido e usada para gerar o texto 3D. Certifique-se de que as fontes não contenham autointerseção e outros caracteres ruins - esse é um problema comum com fontes personalizadas. Os formatos de fonte suportados são: ttf, otf, woff. Observe que o Woff2 não é suportado pelo opentype.js, pois é um formato compactado.",
+    "fontUrl": "url da fonte",
+    "bitbybit.advanced.text3d.createTextOnFaceUrl": "texto na face url",
+    "createTextOnFaceUrl": "texto na face url",
+    "bitbybit.advanced.text3d.createTextOnFaceUrl_description": "Cria um texto 3D na face usando um URL de fonte. Isso é útil quando você deseja usar uma fonte personalizada que não está incluída na biblioteca. A fonte será carregada a partir do URL fornecido e usada para gerar o texto 3D. Certifique-se de que as fontes não contenham autointerseção e outros caracteres ruins - esse é um problema comum com fontes personalizadas. Os formatos de fonte suportados são: ttf, otf, woff. Observe que o Woff2 não é suportado pelo opentype.js, pois é um formato compactado.",
+    "bitbybit.advanced.text3d.createTextsOnFaceUrl": "textos na face url",
+    "createTextsOnFaceUrl": "textos na face url",
+    "bitbybit.advanced.text3d.createTextsOnFaceUrl_description": "Cria textos 3D na face a partir de várias definições de URL. Isso é útil quando você deseja usar uma fonte personalizada que não está incluída na biblioteca. A fonte será carregada a partir do URL fornecido e usada para gerar o texto 3D. Certifique-se de que as fontes não contenham autointerseção e outros caracteres ruins - esse é um problema comum com fontes personalizadas. Os formatos de fonte suportados são: ttf, otf, woff. Observe que o Woff2 não é suportado pelo opentype.js, pois é um formato compactado.",
+    "Text3DFaceDefinitionUrlDto[]": "Text3DFaceDefinitionUrlDto[]",
+    "bitbybit.advanced.text3d.definition3dTextOnFaceUrl": "definição de texto 3d na face url",
+    "definition3dTextOnFaceUrl": "definição de texto 3d na face url",
+    "bitbybit.advanced.text3d.definition3dTextOnFaceUrl_description": "Cria um texto 3D que será usado na definição de URL da face. Isso é útil quando você deseja usar uma fonte personalizada que não está incluída na biblioteca. A fonte será carregada a partir do URL fornecido e usada para gerar o texto 3D. Certifique-se de que as fontes não contenham autointerseção e outros caracteres ruins - esse é um problema comum com fontes personalizadas. Os formatos de fonte suportados são: ttf, otf, woff. Observe que o Woff2 não é suportado pelo opentype.js, pois é um formato compactado."
 }
