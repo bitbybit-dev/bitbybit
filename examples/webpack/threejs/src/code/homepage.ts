@@ -81,7 +81,7 @@ function component() {
             spiralOptions.factor = 1;
             const spiralPoints = bitbybit.point.spiral(spiralOptions);
 
-            // TODO - FIXED BUG v0.20.4
+            // TODO - FIXED BUG
             // There's missing dependency in the line class
             (bitbybit.line as any).point = bitbybit.point;
             
