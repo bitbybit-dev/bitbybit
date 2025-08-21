@@ -182,3 +182,8 @@ licensing:
   label: Licensing
   permalink: /licensing
   description: Licensing refers to the legal permissions and restrictions associated with using, modifying, and distributing software.
+
+ai:
+  label: AI
+  permalink: /ai
+  description: AI refers to artificial intelligence technologies and applications, including machine learning and natural language processing.

@@ -1,0 +1,10 @@
+{
+    "label": "Operations",
+    "position": 5,
+    "link": {
+        "type": "generated-index",
+        "title": "OCCT Operations",
+        "description": "There are quite a few operations that can be performed on OCCT shapes. This section will cover the most common ones, such as extrusions, lofts, and more.",
+        "slug": "/code/common/occt/operations"
+    }
+}

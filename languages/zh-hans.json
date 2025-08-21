@@ -5356,5 +5356,19 @@
     "bitbybit.occt.shapes.face.fromBaseTriangle_description": "从三角形定义创建面",
     "bitbybit.occt.shapes.face.fromBaseMesh": "从基础网格创建多个面",
     "bitbybit.occt.shapes.face.fromBaseMesh_description": "从网格定义创建面",
-    "fromRightHanded": "从右手坐标系"
+    "fromRightHanded": "从右手坐标系",
+    "bitbybit.advanced.text3d.createWithUrl": "带url的文本",
+    "createWithUrl": "带url的文本",
+    "bitbybit.advanced.text3d.createWithUrl_description": "使用字体URL创建一个3D文本。当您想使用库中未包含的自定义字体时，这很有用。字体将从提供的URL加载，并用于生成3D文本。确保字体不包含自相交和其他错误字符——这是自定义字体的常见问题。支持的字体格式有：ttf、otf、woff。请注意，opentype.js不支持Woff2，因为它是一种压缩格式。",
+    "fontUrl": "字体url",
+    "bitbybit.advanced.text3d.createTextOnFaceUrl": "面上的文本url",
+    "createTextOnFaceUrl": "面上的文本url",
+    "bitbybit.advanced.text3d.createTextOnFaceUrl_description": "使用字体URL在面上创建一个3D文本。当您想使用库中未包含的自定义字体时，这很有用。字体将从提供的URL加载，并用于生成3D文本。确保字体不包含自相交和其他错误字符——这是自定义字体的常见问题。支持的字体格式有：ttf、otf、woff。请注意，opentype.js不支持Woff2，因为它是一种压缩格式。",
+    "bitbybit.advanced.text3d.createTextsOnFaceUrl": "面上的多个文本url",
+    "createTextsOnFaceUrl": "面上的多个文本url",
+    "bitbybit.advanced.text3d.createTextsOnFaceUrl_description": "从多个url定义在面上创建3D文本。当您想使用库中未包含的自定义字体时，这很有用。字体将从提供的URL加载，并用于生成3D文本。确保字体不包含自相交和其他错误字符——这是自定义字体的常见问题。支持的字体格式有：ttf、otf、woff。请注意，opentype.js不支持Woff2，因为它是一种压缩格式。",
+    "Text3DFaceDefinitionUrlDto[]": "Text3DFaceDefinitionUrlDto[]",
+    "bitbybit.advanced.text3d.definition3dTextOnFaceUrl": "面上3d文本的定义url",
+    "definition3dTextOnFaceUrl": "面上3d文本的定义url",
+    "bitbybit.advanced.text3d.definition3dTextOnFaceUrl_description": "创建将用于面上url定义的3D文本。当您想使用库中未包含的自定义字体时，这很有用。字体将从提供的URL加载，并用于生成3D文本。确保字体不包含自相交和其他错误字符——这是自定义字体的常见问题。支持的字体格式有：ttf、otf、woff。请注意，opentype.js不支持Woff2，因为它是一种压缩格式。"
 }

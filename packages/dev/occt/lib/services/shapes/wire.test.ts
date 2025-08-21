@@ -8,6 +8,7 @@ import * as Inputs from "../../api/inputs/inputs";
 import { OCCTFace } from "./face";
 import { OCCTShape } from "./shape";
 import { OCCTBooleans } from "../booleans";
+import { OCCTFillets } from "../fillets";
 
 describe("OCCT wire unit tests", () => {
     let occt: OpenCascadeInstance;
@@ -15,6 +16,7 @@ describe("OCCT wire unit tests", () => {
     let edge: OCCTEdge;
     let face: OCCTFace;
     let booleans: OCCTBooleans;
+    let fillets: OCCTFillets;
     let shape: OCCTShape;
     let occHelper: OccHelper;
 
@@ -28,6 +30,7 @@ describe("OCCT wire unit tests", () => {
         face = new OCCTFace(occt, occHelper);
         shape = new OCCTShape(occt, occHelper);
         booleans = new OCCTBooleans(occt, occHelper);
+        fillets = new OCCTFillets(occt, occHelper);
     });
 
     it("should create a circle edge of the right radius and it will mach the length", async () => {
@@ -1097,6 +1100,30 @@ describe("OCCT wire unit tests", () => {
         expect(split.length).toBe(10);
         const segmentLengths = split.map((s) => wire.getWireLength({ shape: s }));
         expect(segmentLengths).toEqual([0.6283185307179586, 0.6283185307179586, 0.6283185307179588, 0.6283185307179584, 0.6283185307179586, 0.6283185307179586, 0.6283185307179595, 0.6283185307179577, 0.6283185307179586, 0.6283185307179586]);
+    });
+
+    // TODO this test is failing because theres a bug in splitting on points method
+    xit("should split filleted triangle by points", () => {
+        const triangle = wire.createPolygonWire({
+            points: [
+                [-0.5, 0, -0.28867513459],
+                [0.5, 0, -0.28867513459],
+                [0, 0, 0.57735026919]
+            ],
+        });
+        const filletTriangle = fillets.fillet2d({ shape: triangle, radius: 0.1 });
+        const pts = wire.divideWireByEqualDistanceToPoints({
+            shape: filletTriangle,
+            removeEndPoint: true,
+            removeStartPoint: false,
+            nrOfDivisions: 6
+        });
+        const split = wire.splitOnPoints({ shape: filletTriangle, points: pts });
+        expect(split.length).toBe(6);
+        const segmentLengths = split.map((s) => wire.getWireLength({ shape: s }));
+        segmentLengths.forEach(len => {
+            expect(len).toBeCloseTo(0.431514);
+        });
     });
 
     it("should split square wire by points", () => {

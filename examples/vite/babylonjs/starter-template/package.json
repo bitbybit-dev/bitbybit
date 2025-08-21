@@ -9,11 +9,11 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@bitbybit-dev/babylonjs": "0.20.4"
+    "@bitbybit-dev/babylonjs": "0.20.5"
   },
   "devDependencies": {
     "typescript": "~5.8.3",
     "vite": "^6.3.2",
-    "@types/three": "0.176.0"
+    "@types/three": "0.179.0"
   }
 }

@@ -47,10 +47,7 @@ While visual components cover a vast range of functionalities, there are times w
 3.  **Prototype and Extend:**
     *   If you find yourself repeatedly writing the same custom script, it might be a candidate for a new, reusable Rete component. The script editor is a great place to prototype this logic. If the idea proves to be generic and useful, we might even incorporate it as a new official component in a future release.
 
-4.  **Debug and Understand:**
-    *   Sometimes, seeing the underlying data or a snippet of code can help you understand why a visual graph isn't behaving as expected. The JSON editor can be useful for inspecting the raw structure of your Rete graph.
-
-5.  **Overcome Limitations and Avoid Getting Stuck:**
+4.  **Overcome Limitations and Avoid Getting Stuck:**
     *   One of the most powerful aspects of this hybrid approach is that you're rarely truly "stuck." If a visual approach hits a wall, you have an alternative. This flexibility is crucial for more complex projects and continuous development.
 
 ## A Pathway for Growth: From Explorer to Developer

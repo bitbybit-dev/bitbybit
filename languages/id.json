@@ -5356,5 +5356,19 @@
     "bitbybit.occt.shapes.face.fromBaseTriangle_description": "Membuat muka dari definisi segitiga",
     "bitbybit.occt.shapes.face.fromBaseMesh": "muka dari mesh dasar",
     "bitbybit.occt.shapes.face.fromBaseMesh_description": "Membuat muka dari definisi mesh",
-    "fromRightHanded": "dari tangan kanan"
+    "fromRightHanded": "dari tangan kanan",
+    "bitbybit.advanced.text3d.createWithUrl": "teks dengan url",
+    "createWithUrl": "teks dengan url",
+    "bitbybit.advanced.text3d.createWithUrl_description": "Membuat teks 3d dengan URL font. Ini berguna ketika Anda ingin menggunakan font kustom yang tidak termasuk dalam pustaka. Font akan dimuat dari URL yang disediakan dan digunakan untuk menghasilkan teks 3d. Pastikan font tidak mengandung perpotongan sendiri dan karakter buruk lainnya - ini adalah masalah umum dengan font kustom. Format font yang didukung adalah: ttf, otf, woff. Harap dicatat bahwa Woff2 tidak didukung oleh opentype.js karena merupakan format terkompresi.",
+    "fontUrl": "url font",
+    "bitbybit.advanced.text3d.createTextOnFaceUrl": "teks pada wajah url",
+    "createTextOnFaceUrl": "teks pada wajah url",
+    "bitbybit.advanced.text3d.createTextOnFaceUrl_description": "Membuat teks 3d pada wajah menggunakan URL font. Ini berguna ketika Anda ingin menggunakan font kustom yang tidak termasuk dalam pustaka. Font akan dimuat dari URL yang disediakan dan digunakan untuk menghasilkan teks 3d. Pastikan font tidak mengandung perpotongan sendiri dan karakter buruk lainnya - ini adalah masalah umum dengan font kustom. Format font yang didukung adalah: ttf, otf, woff. Harap dicatat bahwa Woff2 tidak didukung oleh opentype.js karena merupakan format terkompresi.",
+    "bitbybit.advanced.text3d.createTextsOnFaceUrl": "teks pada wajah url",
+    "createTextsOnFaceUrl": "teks pada wajah url",
+    "bitbybit.advanced.text3d.createTextsOnFaceUrl_description": "Membuat teks 3d pada wajah dari beberapa definisi url. Ini berguna ketika Anda ingin menggunakan font kustom yang tidak termasuk dalam pustaka. Font akan dimuat dari URL yang disediakan dan digunakan untuk menghasilkan teks 3d. Pastikan font tidak mengandung perpotongan sendiri dan karakter buruk lainnya - ini adalah masalah umum dengan font kustom. Format font yang didukung adalah: ttf, otf, woff. Harap dicatat bahwa Woff2 tidak didukung oleh opentype.js karena merupakan format terkompresi.",
+    "Text3DFaceDefinitionUrlDto[]": "Text3DFaceDefinitionUrlDto[]",
+    "bitbybit.advanced.text3d.definition3dTextOnFaceUrl": "definisi teks 3d pada wajah url",
+    "definition3dTextOnFaceUrl": "definisi teks 3d pada wajah url",
+    "bitbybit.advanced.text3d.definition3dTextOnFaceUrl_description": "Membuat teks 3d yang akan digunakan pada definisi url wajah. Ini berguna ketika Anda ingin menggunakan font kustom yang tidak termasuk dalam pustaka. Font akan dimuat dari URL yang disediakan dan digunakan untuk menghasilkan teks 3d. Pastikan font tidak mengandung perpotongan sendiri dan karakter buruk lainnya - ini adalah masalah umum dengan font kustom. Format font yang didukung adalah: ttf, otf, woff. Harap dicatat bahwa Woff2 tidak didukung oleh opentype.js karena merupakan format terkompresi."
 }

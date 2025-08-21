@@ -5356,5 +5356,19 @@
     "bitbybit.occt.shapes.face.fromBaseTriangle_description": "Erstellt Fläche aus der Dreiecksdefinition",
     "bitbybit.occt.shapes.face.fromBaseMesh": "Flächen von Basisnetz",
     "bitbybit.occt.shapes.face.fromBaseMesh_description": "Erstellt Flächen aus der Netzdefinition",
-    "fromRightHanded": "von rechtshändig"
+    "fromRightHanded": "von rechtshändig",
+    "bitbybit.advanced.text3d.createWithUrl": "Text mit URL",
+    "createWithUrl": "Text mit URL",
+    "bitbybit.advanced.text3d.createWithUrl_description": "Erstellt einen 3D-Text mit einer Schriftart-URL. Dies ist nützlich, wenn Sie eine benutzerdefinierte Schriftart verwenden möchten, die nicht in der Bibliothek enthalten ist. Die Schriftart wird von der angegebenen URL geladen und zur Erzeugung des 3D-Textes verwendet. Stellen Sie sicher, dass Schriftarten keine Selbstüberschneidungen und andere fehlerhafte Zeichen enthalten - das ist ein häufiges Problem bei benutzerdefinierten Schriftarten. Unterstützte Schriftartformate sind: ttf, otf, woff. Bitte beachten Sie, dass Woff2 von opentype.js nicht unterstützt wird, da es sich um ein komprimiertes Format handelt.",
+    "fontUrl": "Schriftart-URL",
+    "bitbybit.advanced.text3d.createTextOnFaceUrl": "Text auf Fläche URL",
+    "createTextOnFaceUrl": "Text auf Fläche URL",
+    "bitbybit.advanced.text3d.createTextOnFaceUrl_description": "Erstellt einen 3D-Text auf der Fläche unter Verwendung einer Schriftart-URL. Dies ist nützlich, wenn Sie eine benutzerdefinierte Schriftart verwenden möchten, die nicht in der Bibliothek enthalten ist. Die Schriftart wird von der angegebenen URL geladen und zur Erzeugung des 3D-Textes verwendet. Stellen Sie sicher, dass Schriftarten keine Selbstüberschneidungen und andere fehlerhafte Zeichen enthalten - das ist ein häufiges Problem bei benutzerdefinierten Schriftarten. Unterstützte Schriftartformate sind: ttf, otf, woff. Bitte beachten Sie, dass Woff2 von opentype.js nicht unterstützt wird, da es sich um ein komprimiertes Format handelt.",
+    "bitbybit.advanced.text3d.createTextsOnFaceUrl": "Texte auf Fläche URL",
+    "createTextsOnFaceUrl": "Texte auf Fläche URL",
+    "bitbybit.advanced.text3d.createTextsOnFaceUrl_description": "Erstellt 3D-Texte auf der Fläche aus mehreren URL-Definitionen. Dies ist nützlich, wenn Sie eine benutzerdefinierte Schriftart verwenden möchten, die nicht in der Bibliothek enthalten ist. Die Schriftart wird von der angegebenen URL geladen und zur Erzeugung des 3D-Textes verwendet. Stellen Sie sicher, dass Schriftarten keine Selbstüberschneidungen und andere fehlerhafte Zeichen enthalten - das ist ein häufiges Problem bei benutzerdefinierten Schriftarten. Unterstützte Schriftartformate sind: ttf, otf, woff. Bitte beachten Sie, dass Woff2 von opentype.js nicht unterstützt wird, da es sich um ein komprimiertes Format handelt.",
+    "Text3DFaceDefinitionUrlDto[]": "Text3DFaceDefinitionUrlDto[]",
+    "bitbybit.advanced.text3d.definition3dTextOnFaceUrl": "Definition 3D-Text auf Fläche URL",
+    "definition3dTextOnFaceUrl": "Definition 3D-Text auf Fläche URL",
+    "bitbybit.advanced.text3d.definition3dTextOnFaceUrl_description": "Erstellt 3D-Text, der in der Flächen-URL-Definition verwendet wird. Dies ist nützlich, wenn Sie eine benutzerdefinierte Schriftart verwenden möchten, die nicht in der Bibliothek enthalten ist. Die Schriftart wird von der angegebenen URL geladen und zur Erzeugung des 3D-Textes verwendet. Stellen Sie sicher, dass Schriftarten keine Selbstüberschneidungen und andere fehlerhafte Zeichen enthalten - das ist ein häufiges Problem bei benutzerdefinierten Schriftarten. Unterstützte Schriftartformate sind: ttf, otf, woff. Bitte beachten Sie, dass Woff2 von opentype.js nicht unterstützt wird, da es sich um ein komprimiertes Format handelt."
 }

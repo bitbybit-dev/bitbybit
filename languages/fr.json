@@ -5356,5 +5356,19 @@
     "bitbybit.occt.shapes.face.fromBaseTriangle_description": "Crée une face à partir de la définition du triangle",
     "bitbybit.occt.shapes.face.fromBaseMesh": "faces depuis maillage de base",
     "bitbybit.occt.shapes.face.fromBaseMesh_description": "Crée des faces à partir de la définition du maillage",
-    "fromRightHanded": "depuis droitier"
+    "fromRightHanded": "depuis droitier",
+      "bitbybit.advanced.text3d.createWithUrl": "texte avec url",
+    "createWithUrl": "texte avec url",
+    "bitbybit.advanced.text3d.createWithUrl_description": "Crée un texte 3D avec une URL de police. Ceci est utile lorsque vous souhaitez utiliser une police personnalisée qui n'est pas incluse dans la bibliothèque. La police sera chargée à partir de l'URL fournie et utilisée pour générer le texte 3D. Assurez-vous que les polices ne contiennent pas d'auto-intersection et d'autres mauvais caractères - c'est un problème courant avec les polices personnalisées. Les formats de police pris en charge sont : ttf, otf, woff. Veuillez noter que Woff2 n'est pas pris en charge par opentype.js car il s'agit d'un format compressé.",
+    "fontUrl": "url de la police",
+    "bitbybit.advanced.text3d.createTextOnFaceUrl": "texte sur face url",
+    "createTextOnFaceUrl": "texte sur face url",
+    "bitbybit.advanced.text3d.createTextOnFaceUrl_description": "Crée un texte 3D sur la face à l'aide d'une URL de police. Ceci est utile lorsque vous souhaitez utiliser une police personnalisée qui n'est pas incluse dans la bibliothèque. La police sera chargée à partir de l'URL fournie et utilisée pour générer le texte 3D. Assurez-vous que les polices ne contiennent pas d'auto-intersection et d'autres mauvais caractères - c'est un problème courant avec les polices personnalisées. Les formats de police pris en charge sont : ttf, otf, woff. Veuillez noter que Woff2 n'est pas pris en charge par opentype.js car il s'agit d'un format compressé.",
+    "bitbybit.advanced.text3d.createTextsOnFaceUrl": "textes sur face url",
+    "createTextsOnFaceUrl": "textes sur face url",
+    "bitbybit.advanced.text3d.createTextsOnFaceUrl_description": "Crée des textes 3D sur la face à partir de plusieurs définitions d'URL. Ceci est utile lorsque vous souhaitez utiliser une police personnalisée qui n'est pas incluse dans la bibliothèque. La police sera chargée à partir de l'URL fournie et utilisée pour générer le texte 3D. Assurez-vous que les polices ne contiennent pas d'auto-intersection et d'autres mauvais caractères - c'est un problème courant avec les polices personnalisées. Les formats de police pris en charge sont : ttf, otf, woff. Veuillez noter que Woff2 n'est pas pris en charge par opentype.js car il s'agit d'un format compressé.",
+    "Text3DFaceDefinitionUrlDto[]": "Text3DFaceDefinitionUrlDto[]",
+    "bitbybit.advanced.text3d.definition3dTextOnFaceUrl": "définition texte 3d sur face url",
+    "definition3dTextOnFaceUrl": "définition texte 3d sur face url",
+    "bitbybit.advanced.text3d.definition3dTextOnFaceUrl_description": "Crée un texte 3D qui sera utilisé dans la définition de l'URL de la face. Ceci est utile lorsque vous souhaitez utiliser une police personnalisée qui n'est pas incluse dans la bibliothèque. La police sera chargée à partir de l'URL fournie et utilisée pour générer le texte 3D. Assurez-vous que les polices ne contiennent pas d'auto-intersection et d'autres mauvais caractères - c'est un problème courant avec les polices personnalisées. Les formats de police pris en charge sont : ttf, otf, woff. Veuillez noter que Woff2 n'est pas pris en charge par opentype.js car il s'agit d'un format compressé."
 }

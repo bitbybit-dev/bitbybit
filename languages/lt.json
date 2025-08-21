@@ -5356,5 +5356,19 @@
     "bitbybit.occt.shapes.face.fromBaseTriangle_description": "Sukuria paviršių iš trikampio apibrėžimo",
     "bitbybit.occt.shapes.face.fromBaseMesh": "paviršiai iš bazinio tinklo",
     "bitbybit.occt.shapes.face.fromBaseMesh_description": "Sukuria paviršius iš tinklo apibrėžimo",
-    "fromRightHanded": "iš dešiniarankio"
+    "fromRightHanded": "iš dešiniarankio",
+     "bitbybit.advanced.text3d.createWithUrl": "tekstas su url",
+    "createWithUrl": "tekstas su url",
+    "bitbybit.advanced.text3d.createWithUrl_description": "Sukuria 3d tekstą su šrifto URL. Tai naudinga, kai norite naudoti pasirinktinį šriftą, kuris nėra įtrauktas į biblioteką. Šriftas bus įkeltas iš pateikto URL ir naudojamas 3d tekstui generuoti. Įsitikinkite, kad šriftuose nėra savęs susikirtimų ir kitų blogų simbolių - tai yra dažna problema su pasirinktiniais šriftais. Palaikomi šriftų formatai: ttf, otf, woff. Atkreipkite dėmesį, kad Woff2 nepalaiko opentype.js, nes tai yra suspaustas formatas.",
+    "fontUrl": "šrifto url",
+    "bitbybit.advanced.text3d.createTextOnFaceUrl": "tekstas ant paviršiaus url",
+    "createTextOnFaceUrl": "tekstas ant paviršiaus url",
+    "bitbybit.advanced.text3d.createTextOnFaceUrl_description": "Sukuria 3d tekstą ant paviršiaus naudojant šrifto URL. Tai naudinga, kai norite naudoti pasirinktinį šriftą, kuris nėra įtrauktas į biblioteką. Šriftas bus įkeltas iš pateikto URL ir naudojamas 3d tekstui generuoti. Įsitikinkite, kad šriftuose nėra savęs susikirtimų ir kitų blogų simbolių - tai yra dažna problema su pasirinktiniais šriftais. Palaikomi šriftų formatai: ttf, otf, woff. Atkreipkite dėmesį, kad Woff2 nepalaiko opentype.js, nes tai yra suspaustas formatas.",
+    "bitbybit.advanced.text3d.createTextsOnFaceUrl": "tekstai ant paviršiaus url",
+    "createTextsOnFaceUrl": "tekstai ant paviršiaus url",
+    "bitbybit.advanced.text3d.createTextsOnFaceUrl_description": "Sukuria 3d tekstus ant paviršiaus iš kelių URL apibrėžimų. Tai naudinga, kai norite naudoti pasirinktinį šriftą, kuris nėra įtrauktas į biblioteką. Šriftas bus įkeltas iš pateikto URL ir naudojamas 3d tekstui generuoti. Įsitikinkite, kad šriftuose nėra savęs susikirtimų ir kitų blogų simbolių - tai yra dažna problema su pasirinktiniais šriftais. Palaikomi šriftų formatai: ttf, otf, woff. Atkreipkite dėmesį, kad Woff2 nepalaiko opentype.js, nes tai yra suspaustas formatas.",
+    "Text3DFaceDefinitionUrlDto[]": "Text3DFaceDefinitionUrlDto[]",
+    "bitbybit.advanced.text3d.definition3dTextOnFaceUrl": "3d teksto apibrėžimas ant paviršiaus url",
+    "definition3dTextOnFaceUrl": "3d teksto apibrėžimas ant paviršiaus url",
+    "bitbybit.advanced.text3d.definition3dTextOnFaceUrl_description": "Sukuria 3d tekstą, kuris bus naudojamas paviršiaus URL apibrėžime. Tai naudinga, kai norite naudoti pasirinktinį šriftą, kuris nėra įtrauktas į biblioteką. Šriftas bus įkeltas iš pateikto URL ir naudojamas 3d tekstui generuoti. Įsitikinkite, kad šriftuose nėra savęs susikirtimų ir kitų blogų simbolių - tai yra dažna problema su pasirinktiniais šriftais. Palaikomi šriftų formatai: ttf, otf, woff. Atkreipkite dėmesį, kad Woff2 nepalaiko opentype.js, nes tai yra suspaustas formatas."
 }

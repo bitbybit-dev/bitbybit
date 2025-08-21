@@ -30,23 +30,6 @@ const config: Config = {
         defaultLocale: "en",
         locales: ["en"],
     },
-    plugins: [
-        [
-            "@docusaurus/plugin-client-redirects",
-            {
-                redirects: [
-                    {
-                        from: "/learn/npm-packages/start-with-three-js",
-                        to: "/learn/npm-packages/threejs/start-with-three-js",
-                    },
-                    {
-                        from: "/learn/npm-packages/start-with-babylon-js",
-                        to: "/learn/npm-packages/babylonjs/start-with-babylon-js",
-                    },
-                ],
-            }
-        ],
-    ],
     presets: [
         [
             "classic",

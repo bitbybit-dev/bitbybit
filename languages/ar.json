@@ -5356,5 +5356,19 @@
     "bitbybit.occt.shapes.face.fromBaseTriangle_description": "ينشئ وجهًا من تعريف المثلث",
     "bitbybit.occt.shapes.face.fromBaseMesh": "وجوه من الشبكة الأساسية",
     "bitbybit.occt.shapes.face.fromBaseMesh_description": "ينشئ وجوهًا من تعريف الشبكة",
-    "fromRightHanded": "من اليد اليمنى"
+    "fromRightHanded": "من اليد اليمنى",
+    "bitbybit.advanced.text3d.createWithUrl": "نص مع رابط",
+    "createWithUrl": "نص مع رابط",
+    "bitbybit.advanced.text3d.createWithUrl_description": "ينشئ نصًا ثلاثي الأبعاد باستخدام رابط URL للخط. هذا مفيد عندما تريد استخدام خط مخصص غير مدرج في المكتبة. سيتم تحميل الخط من الرابط المقدم واستخدامه لإنشاء النص ثلاثي الأبعاد. تأكد من أن الخطوط لا تحتوي على تقاطع ذاتي وأحرف سيئة أخرى - هذه مشكلة شائعة في الخطوط المخصصة. تنسيقات الخطوط المدعومة هي: ttf، otf، woff. يرجى ملاحظة أن Woff2 غير مدعوم بواسطة opentype.js لأنه تنسيق مضغوط.",
+    "fontUrl": "رابط الخط",
+    "bitbybit.advanced.text3d.createTextOnFaceUrl": "نص على وجه مع رابط",
+    "createTextOnFaceUrl": "نص على وجه مع رابط",
+    "bitbybit.advanced.text3d.createTextOnFaceUrl_description": "ينشئ نصًا ثلاثي الأبعاد على الوجه باستخدام رابط URL للخط. هذا مفيد عندما تريد استخدام خط مخصص غير مدرج في المكتبة. سيتم تحميل الخط من الرابط المقدم واستخدامه لإنشاء النص ثلاثي الأبعاد. تأكد من أن الخطوط لا تحتوي على تقاطع ذاتي وأحرف سيئة أخرى - هذه مشكلة شائعة في الخطوط المخصصة. تنسيقات الخطوط المدعومة هي: ttf، otf، woff. يرجى ملاحظة أن Woff2 غير مدعوم بواسطة opentype.js لأنه تنسيق مضغوط.",
+    "bitbybit.advanced.text3d.createTextsOnFaceUrl": "نصوص على وجه مع رابط",
+    "createTextsOnFaceUrl": "نصوص على وجه مع رابط",
+    "bitbybit.advanced.text3d.createTextsOnFaceUrl_description": "ينشئ نصوصًا ثلاثية الأبعاد على الوجه من تعريفات روابط متعددة. هذا مفيد عندما تريد استخدام خط مخصص غير مدرج في المكتبة. سيتم تحميل الخط من الرابط المقدم واستخدامه لإنشاء النص ثلاثي الأبعاد. تأكد من أن الخطوط لا تحتوي على تقاطع ذاتي وأحرف سيئة أخرى - هذه مشكلة شائعة في الخطوط المخصصة. تنسيقات الخطوط المدعومة هي: ttf، otf، woff. يرجى ملاحظة أن Woff2 غير مدعوم بواسطة opentype.js لأنه تنسيق مضغوط.",
+    "Text3DFaceDefinitionUrlDto[]": "Text3DFaceDefinitionUrlDto[]",
+    "bitbybit.advanced.text3d.definition3dTextOnFaceUrl": "تعريف نص ثلاثي الأبعاد على وجه مع رابط",
+    "definition3dTextOnFaceUrl": "تعريف نص ثلاثي الأبعاد على وجه مع رابط",
+    "bitbybit.advanced.text3d.definition3dTextOnFaceUrl_description": "ينشئ نصًا ثلاثي الأبعاد سيتم استخدامه في تعريف رابط الوجه. هذا مفيد عندما تريد استخدام خط مخصص غير مدرج في المكتبة. سيتم تحميل الخط من الرابط المقدم واستخدامه لإنشاء النص ثلاثي الأبعاد. تأكد من أن الخطوط لا تحتوي على تقاطع ذاتي وأحرف سيئة أخرى - هذه مشكلة شائعة في الخطوط المخصصة. تنسيقات الخطوط المدعومة هي: ttf، otf، woff. يرجى ملاحظة أن Woff2 غير مدعوم بواسطة opentype.js لأنه تنسيق مضغوط."
 }

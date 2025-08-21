@@ -5356,5 +5356,19 @@
     "bitbybit.occt.shapes.face.fromBaseTriangle_description": "Creates face from triangle definition",
     "bitbybit.occt.shapes.face.fromBaseMesh": "faces from base mesh",
     "bitbybit.occt.shapes.face.fromBaseMesh_description": "Creates faces from mesh definition",
-    "fromRightHanded": "from right handed"
+    "fromRightHanded": "from right handed",
+    "bitbybit.advanced.text3d.createWithUrl": "text with url",
+    "createWithUrl": "text with url",
+    "bitbybit.advanced.text3d.createWithUrl_description": "Creates a 3d text with a font URL. This is useful when you want to use a custom font that is not included in the library. The font will be loaded from the provided URL and used to generate the 3d text. Make sure that fonts do not contain self intersection and other bad characters - that is common issue with custom fonts. Font formats supported are: ttf, otf, woff. Please note that Woff2 is not supported by opentype.js as it is a compressed format.",
+    "fontUrl": "font url",
+    "bitbybit.advanced.text3d.createTextOnFaceUrl": "text on face url",
+    "createTextOnFaceUrl": "text on face url",
+    "bitbybit.advanced.text3d.createTextOnFaceUrl_description": "Creates a 3d text on the face using a font URL. This is useful when you want to use a custom font that is not included in the library. The font will be loaded from the provided URL and used to generate the 3d text. Make sure that fonts do not contain self intersection and other bad characters - that is common issue with custom fonts. Font formats supported are: ttf, otf, woff. Please note that Woff2 is not supported by opentype.js as it is a compressed format.",
+    "bitbybit.advanced.text3d.createTextsOnFaceUrl": "texts on face url",
+    "createTextsOnFaceUrl": "texts on face url",
+    "bitbybit.advanced.text3d.createTextsOnFaceUrl_description": "Creates 3d texts on the face from multiple url definitions. This is useful when you want to use a custom font that is not included in the library. The font will be loaded from the provided URL and used to generate the 3d text. Make sure that fonts do not contain self intersection and other bad characters - that is common issue with custom fonts. Font formats supported are: ttf, otf, woff. Please note that Woff2 is not supported by opentype.js as it is a compressed format.",
+    "Text3DFaceDefinitionUrlDto[]": "Text3DFaceDefinitionUrlDto[]",
+    "bitbybit.advanced.text3d.definition3dTextOnFaceUrl": "definition 3d text on face url",
+    "definition3dTextOnFaceUrl": "definition 3d text on face url",
+    "bitbybit.advanced.text3d.definition3dTextOnFaceUrl_description": "Creates 3d text that will be used on the face url definition. This is useful when you want to use a custom font that is not included in the library. The font will be loaded from the provided URL and used to generate the 3d text. Make sure that fonts do not contain self intersection and other bad characters - that is common issue with custom fonts. Font formats supported are: ttf, otf, woff. Please note that Woff2 is not supported by opentype.js as it is a compressed format."
 }
