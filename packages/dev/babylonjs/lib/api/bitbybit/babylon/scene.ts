@@ -333,22 +333,49 @@ export class BabylonScene {
      * @shortname skybox
      */
     enableSkybox(inputs: Inputs.BabylonScene.SkyboxDto): void {
-        let texture: BABYLON.CubeTexture;
-        if (inputs.skybox === Inputs.Base.skyboxEnum.default) {
-            texture = new BABYLON.CubeTexture("https://cdn.jsdelivr.net/gh/bitbybit-dev/bitbybit-assets@0.20.5/textures/skybox/default_skybox/skybox", this.context.scene);
-        } else if (inputs.skybox === Inputs.Base.skyboxEnum.greyGradient) {
-            texture = new BABYLON.CubeTexture("https://cdn.jsdelivr.net/gh/bitbybit-dev/bitbybit-assets@0.20.5/textures/skybox/grey_gradient/skybox", this.context.scene);
-        } else if (inputs.skybox === Inputs.Base.skyboxEnum.clearSky) {
-            texture = BABYLON.CubeTexture.CreateFromPrefilteredData("https://cdn.jsdelivr.net/gh/bitbybit-dev/bitbybit-assets@0.20.5/textures/skybox/clear_sky/environment.env",
-                this.context.scene, false, false);
-        } else if (inputs.skybox === Inputs.Base.skyboxEnum.city) {
-            texture = BABYLON.CubeTexture.CreateFromPrefilteredData("https://cdn.jsdelivr.net/gh/bitbybit-dev/bitbybit-assets@0.20.5/textures/skybox/city/environmentSpecular.env",
-                this.context.scene, false, false);
+
+        let texture: BABYLON.CubeTexture | BABYLON.HDRCubeTexture;
+
+        if (inputs.skybox === "custom" && inputs.textureUrl) {
+            // Handle custom HDR/EXR textures
+            const textureUrl = inputs.textureUrl;
+            const textureSize = inputs.textureSize || 512; // Default size
+
+            // Better URL parsing to handle query strings
+            const urlPath = textureUrl.split("?")[0].toLowerCase();
+
+            if (urlPath.endsWith(".hdr")) {
+                // Use HDRCubeTexture for .hdr files
+                if (inputs.hdrTexture) {
+                    texture = new BABYLON.HDRCubeTexture(textureUrl, this.context.scene, textureSize, false, true, false, true);
+                }
+            } else if (urlPath.endsWith(".env")) {
+                texture = BABYLON.CubeTexture.CreateFromPrefilteredData(inputs.textureUrl,
+                    this.context.scene, false, false);
+            } else {
+                // Fallback to CubeTexture for other formats
+                texture = new BABYLON.CubeTexture(textureUrl, this.context.scene);
+            }
+        } else {
+            if (inputs.skybox === Inputs.Base.skyboxEnum.default) {
+                texture = new BABYLON.CubeTexture("https://cdn.jsdelivr.net/gh/bitbybit-dev/bitbybit-assets@0.20.5/textures/skybox/default_skybox/skybox", this.context.scene);
+            } else if (inputs.skybox === Inputs.Base.skyboxEnum.greyGradient) {
+                texture = new BABYLON.CubeTexture("https://cdn.jsdelivr.net/gh/bitbybit-dev/bitbybit-assets@0.20.5/textures/skybox/grey_gradient/skybox", this.context.scene);
+            } else if (inputs.skybox === Inputs.Base.skyboxEnum.clearSky) {
+                texture = BABYLON.CubeTexture.CreateFromPrefilteredData("https://cdn.jsdelivr.net/gh/bitbybit-dev/bitbybit-assets@0.20.5/textures/skybox/clear_sky/environment.env",
+                    this.context.scene, false, false);
+            } else if (inputs.skybox === Inputs.Base.skyboxEnum.city) {
+                texture = BABYLON.CubeTexture.CreateFromPrefilteredData("https://cdn.jsdelivr.net/gh/bitbybit-dev/bitbybit-assets@0.20.5/textures/skybox/city/environmentSpecular.env",
+                    this.context.scene, false, false);
+            }
         }
 
         this.context.scene.getMeshByName("bitbybit-hdrSkyBox")?.dispose(false, true);
         const skybox = this.context.scene.createDefaultSkybox(texture, true, inputs.size, inputs.blur, true);
         skybox.name = "bitbybit-hdrSkyBox";
+        if (inputs.hideSkybox) {
+            skybox.isVisible = false;
+        }
         this.context.scene.environmentIntensity = inputs.environmentIntensity;
     }
 

@@ -401,11 +401,15 @@ export namespace BabylonScene {
         wheelPrecision = 3;
     }
     export class SkyboxDto {
-        constructor(skybox?: Base.skyboxEnum, size?: number, blur?: number, environmentIntensity?: number) {
+        constructor(skybox?: Base.skyboxEnum, size?: number, blur?: number, environmentIntensity?: number, hideSkybox?: boolean, textureUrl?: string, textureSize?: number, hdrTexture?: boolean,) {
             if (skybox !== undefined) { this.skybox = skybox; }
             if (size !== undefined) { this.size = size; }
             if (blur !== undefined) { this.blur = blur; }
             if (environmentIntensity !== undefined) { this.environmentIntensity = environmentIntensity; }
+            if (hideSkybox !== undefined) { this.hideSkybox = hideSkybox; }
+            if (textureUrl !== undefined) { this.textureUrl = textureUrl; }
+            if (textureSize !== undefined) { this.textureSize = textureSize; }
+            if (hdrTexture !== undefined) { this.hdrTexture = hdrTexture; }
         }
         /**
          * Skybox type
@@ -436,6 +440,29 @@ export namespace BabylonScene {
          * @step 0.1
          */
         environmentIntensity = 0.7;
+        /**
+         * Hides the skybox mesh but keeps the environment texture
+         * @default false
+         */
+        hideSkybox?: boolean = false;
+        /**
+         * Skybox texture URL - only needed if skybox type is set to custom
+         * @default undefined
+         * @optional true
+         */
+        textureUrl?: string;
+        /**
+         * Skybox HDR texture URL - only needed if skybox type is set to custom and the texture is in .hdr format
+         * @default true
+         * @optional true
+         */
+        hdrTexture?: boolean = true;
+        /**
+         * Skybox texture size (only applies to custom URL texture)
+         * @default 512
+         * @optional true
+         */
+        textureSize?: number = 512;
     }
 
     export class PointerDto {
