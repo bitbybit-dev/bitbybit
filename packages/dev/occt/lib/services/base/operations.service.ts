@@ -417,6 +417,11 @@ export class OperationsService {
     }
 
     rotatedExtrude(inputs: Inputs.OCCT.RotationExtrudeDto<TopoDS_Shape>) {
+        // Get the bounding box of the input shape to determine its current position
+        const bbox = this.boundingBoxOfShape({ shape: inputs.shape });
+        const shapeStartY = bbox.min[1]; // Y coordinate of the bottom of the shape
+        const shapeEndY = shapeStartY + inputs.height; // Target Y coordinate after extrusion
+
         const translatedShape = this.transformsService.translate({
             translation: [0, inputs.height, 0],
             shape: inputs.shape,
@@ -428,11 +433,11 @@ export class OperationsService {
                 shape: translatedShape
             });
 
-        // Define the straight spine going up the middle of the sweep
+        // Define the straight spine going from the shape's current position
         const spineWire = this.wiresService.createBSpline({
             points: [
-                [0, 0, 0],
-                [0, inputs.height, 0]
+                [0, shapeStartY, 0],
+                [0, shapeEndY, 0]
             ],
             closed: false,
         });
@@ -444,7 +449,7 @@ export class OperationsService {
             const alpha = i / steps;
             aspinePoints.push([
                 20 * Math.sin(alpha * inputs.angle * 0.0174533),
-                inputs.height * alpha,
+                shapeStartY + (inputs.height * alpha),
                 20 * Math.cos(alpha * inputs.angle * 0.0174533),
             ]);
         }
