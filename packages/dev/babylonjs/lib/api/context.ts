@@ -8,7 +8,7 @@ export class Context extends ContextBase {
     scene: BABYLON.Scene;
     engine: BABYLON.Engine | BABYLON.WebGPUEngine;
     havokPlugin: BABYLON.HavokPlugin;
-   
+
     getSamplingMode(samplingMode: Inputs.BabylonTexture.samplingModeEnum): number {
         switch (samplingMode) {
             case Inputs.BabylonTexture.samplingModeEnum.nearest:

@@ -8,7 +8,8 @@ import { JSCADWorkerManager } from "@bitbybit-dev/jscad-worker";
 import { ManifoldWorkerManager } from "@bitbybit-dev/manifold-worker";
 import { OCCTWorkerManager } from "@bitbybit-dev/occt-worker";
 import * as THREEJS from "three";
-import * as BufferGeometryUtils from "three/examples/jsm/utils/BufferGeometryUtils";
+import { mergeGeometries } from "three/examples/jsm/utils/BufferGeometryUtils.js";
+
 export class DrawHelper extends DrawHelperCore {
 
     private usedMaterials: {
@@ -398,7 +399,7 @@ export class DrawHelper extends DrawHelperCore {
                 geometry.setIndex(new THREEJS.BufferAttribute(Uint32Array.from(mesh.indices), 1));
                 geometries.push(geometry);
             });
-            const geometry = BufferGeometryUtils.mergeGeometries(geometries, false);
+            const geometry = mergeGeometries(geometries, false);
             return geometry;
         };
 

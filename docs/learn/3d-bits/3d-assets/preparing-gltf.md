@@ -27,6 +27,20 @@ Not all CAD or BRep editors can export directly to GLTF. In many cases, you’ll
 
 When you do triangulate, you’ll usually be able to choose how dense the mesh will be. This is a crucial decision: fewer triangles mean the GPU can render your model much faster. The goal is to create low-poly models that still look good. Don’t expect a browser to smoothly handle millions of triangles - especially on older devices. Even high-end GPUs will struggle if you push them too far. Designing a configurator is a lot like designing a video game: performance matters just as much as visual quality. We go deeper into this mindset in [Configurators Are Games](./configurators-are-games.md).
 
+## Video Tutorial: STEP TO GLTF
+
+<div class="responsive-video-container">
+  <iframe 
+    width="560" 
+    height="315" 
+    src="https://www.youtube.com/embed/7mqd2FLlpcU" 
+    title="From STEP to GLTF - Convert PRO CAD 3D Models For 3D Bits Shopify App" 
+    frameborder="0" 
+    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+    allowfullscreen>
+  </iframe>
+</div>
+
 # Editing Triangulated Models
 
 Once you have a triangulated model, you’ll probably need to make adjustments. We recommend Blender for this. It’s free, open source, and maintained by some of the most experienced 3D professionals in the industry. Of course, it’s not the only option - commercial tools like 3ds Max can also handle triangulated models perfectly well.

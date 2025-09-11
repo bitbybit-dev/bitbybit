@@ -401,11 +401,12 @@ export namespace BabylonScene {
         wheelPrecision = 3;
     }
     export class SkyboxDto {
-        constructor(skybox?: Base.skyboxEnum, size?: number, blur?: number, environmentIntensity?: number) {
+        constructor(skybox?: Base.skyboxEnum, size?: number, blur?: number, environmentIntensity?: number, hideSkybox?: boolean) {
             if (skybox !== undefined) { this.skybox = skybox; }
             if (size !== undefined) { this.size = size; }
             if (blur !== undefined) { this.blur = blur; }
             if (environmentIntensity !== undefined) { this.environmentIntensity = environmentIntensity; }
+            if (hideSkybox !== undefined) { this.hideSkybox = hideSkybox; }
         }
         /**
          * Skybox type
@@ -436,6 +437,63 @@ export namespace BabylonScene {
          * @step 0.1
          */
         environmentIntensity = 0.7;
+        /**
+         * Hides the skybox mesh but keeps the environment texture
+         * @default false
+         */
+        hideSkybox?: boolean = false;
+    }
+
+    export class SkyboxCustomTextureDto {
+        constructor(textureUrl?: string, textureSize?: number, size?: number, blur?: number, environmentIntensity?: number, hideSkybox?: boolean) {
+            if (textureUrl !== undefined) { this.textureUrl = textureUrl; }
+            if (textureSize !== undefined) { this.textureSize = textureSize; }
+            if (size !== undefined) { this.size = size; }
+            if (blur !== undefined) { this.blur = blur; }
+            if (environmentIntensity !== undefined) { this.environmentIntensity = environmentIntensity; }
+            if (hideSkybox !== undefined) { this.hideSkybox = hideSkybox; }
+        } 
+        /**
+         * Skybox texture URL pointing to .hdr, .env or root of the cubemap images
+         * @default undefined
+         * @optional true
+         */
+        textureUrl?: string;
+        /**
+         * Skybox texture size (only applies to custom URL texture)
+         * @default 512
+         * @optional true
+         */
+        textureSize?: number = 512;
+        /**
+         * Skybox size
+         * @default 1000
+         * @minimum 0
+         * @maximum Infinity
+         * @step 10
+         */
+        size = 1000;
+        /**
+         * Identifies if skybox texture should affect scene environment
+         * @default 0.1
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.1
+         */
+        blur = 0.1;
+        /**
+         * Identifies if skybox texture should affect scene environment
+         * @default 0.7
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.1
+         */
+        environmentIntensity = 0.7;
+        /**
+         * Hides the skybox mesh but keeps the environment texture
+         * @default false
+         */
+        hideSkybox?: boolean = false;
     }
 
     export class PointerDto {

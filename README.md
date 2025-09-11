@@ -12,15 +12,18 @@ Essential introduction by Matas
 
 ## SUPPORT THE MISSION
 Best way to support us - [Silver or Gold plan subscription](https://bitbybit.dev/auth/pick-plan)    
-Buy unique products from our [Crafts shop](https://crafts.bitbybit.dev) all designed with Bitbybit algorithms       
 Check out [3D Bits app for Shopify](https://apps.shopify.com/3d-bits-1) also used in our Crafts shop   
+Buy unique products from our [Crafts shop](https://crafts.bitbybit.dev) all designed with Bitbybit algorithms       
 
 Your contributions allow this project to exist.
 
-## HISTORY
-
-This library was previously UI dependant and was heaviy intertwined with BabylonJS game engine. It is now decoupled from our editors to ensure protection of our corporate identity and cloud services. BabylonJS layer is now also separated into special package @bitbybit-dev/babylonjs - this will cause the breaking change in v0.18.0. If you are using the version prior to v0.18.0 and depend on the @bitbybit-dev/core package, please consider updating to use @bitbybit-dev/babylonjs NPM package. @bitbybit-dev/core is now game engine independent layer.
-
+## Important Topics
+[Getting Started With Bitbybit Platform](https://learn.bitbybit.dev/learn/getting-started/overview)
+[Integrate With ThreeJS](https://learn.bitbybit.dev/learn/npm-packages/threejs)
+[Integrate With BabylonJS](https://learn.bitbybit.dev/learn/npm-packages/babylonjs)
+[Bitbybit Runners](https://learn.bitbybit.dev/learn/runners)
+[Bitbybit Blog](https://learn.bitbybit.dev/blog)
+[3D Bits App For Shopify](https://learn.bitbybit.dev/learn/3d-bits/intro)
 
 ## Github
 https://github.com/bitbybit-dev/bitbybit  

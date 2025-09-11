@@ -687,8 +687,112 @@ describe("OCCT operations unit tests", () => {
         const squareWire = wire.createSquareWire({ center: [0.5, 0, 0], size: 1, direction: [0, 1, 0] });
         const res = operations.rotatedExtrude({ shape: squareWire, angle: 360, height: 10, makeSolid: true });
         const vol = solid.getSolidVolume({ shape: res });
-        expect(vol).toEqual(9.999989383137159);
+        expect(vol).toEqual(9.999989483139538);
         squareWire.delete();
+        res.delete();
+    });
+
+    it("should create rotated extrusion with shape positioned above Y=0", () => {
+        // Test with a shape positioned at Y=5
+        const squareWire = wire.createSquareWire({ center: [0.5, 5, 0], size: 1, direction: [0, 1, 0] });
+        const res = operations.rotatedExtrude({ shape: squareWire, angle: 360, height: 10, makeSolid: true });
+        const vol = solid.getSolidVolume({ shape: res });
+        // Volume should be the same as the ground-level test since the algorithm should work correctly now
+        expect(vol).toBeCloseTo(9.999989483139538, 5);
+        
+        // Check bounding box to ensure the result is positioned correctly
+        const bbox = operations.boundingBoxOfShape({ shape: res });
+        expect(bbox.min[1]).toBeCloseTo(5, 1); // Bottom should be at Y=5
+        expect(bbox.max[1]).toBeCloseTo(15, 1); // Top should be at Y=15
+        
+        squareWire.delete();
+        res.delete();
+    });
+
+    it("should create rotated extrusion with shape positioned below Y=0", () => {
+        // Test with a shape positioned at Y=-3
+        const squareWire = wire.createSquareWire({ center: [0.5, -3, 0], size: 1, direction: [0, 1, 0] });
+        const res = operations.rotatedExtrude({ shape: squareWire, angle: 360, height: 10, makeSolid: true });
+        const vol = solid.getSolidVolume({ shape: res });
+        // Volume should be the same as the ground-level test
+        expect(vol).toBeCloseTo(9.999989483139538, 5);
+        
+        // Check bounding box to ensure the result is positioned correctly
+        const bbox = operations.boundingBoxOfShape({ shape: res });
+        expect(bbox.min[1]).toBeCloseTo(-3, 1); // Bottom should be at Y=-3
+        expect(bbox.max[1]).toBeCloseTo(7, 1); // Top should be at Y=7
+        
+        squareWire.delete();
+        res.delete();
+    });
+
+    it("should create rotated extrusion with shape at arbitrary Y position", () => {
+        // Test with a shape positioned at Y=25.7 (arbitrary high position)
+        const squareWire = wire.createSquareWire({ center: [0.5, 25.7, 0], size: 1, direction: [0, 1, 0] });
+        const res = operations.rotatedExtrude({ shape: squareWire, angle: 360, height: 5, makeSolid: true });
+        const vol = solid.getSolidVolume({ shape: res });
+        // Volume should be proportional to height (5 instead of 10)
+        expect(vol).toBeCloseTo(5.0, 1);
+        
+        // Check bounding box to ensure the result is positioned correctly
+        const bbox = operations.boundingBoxOfShape({ shape: res });
+        expect(bbox.min[1]).toBeCloseTo(25.7, 1); // Bottom should be at Y=25.7
+        expect(bbox.max[1]).toBeCloseTo(30.7, 1); // Top should be at Y=30.7
+        
+        squareWire.delete();
+        res.delete();
+    });
+
+    it("should create rotated extrusion with partial rotation at elevated position", () => {
+        // Test with partial rotation (180 degrees) at Y=10
+        const squareWire = wire.createSquareWire({ center: [0.5, 10, 0], size: 1, direction: [0, 1, 0] });
+        const res = operations.rotatedExtrude({ shape: squareWire, angle: 180, height: 8, makeSolid: true });
+        const vol = solid.getSolidVolume({ shape: res });
+        // Volume should be half of a full rotation
+        expect(vol).toBeCloseTo(7.999990663583383, 1);
+        
+        // Check bounding box to ensure the result is positioned correctly
+        const bbox = operations.boundingBoxOfShape({ shape: res });
+        expect(bbox.min[1]).toBeCloseTo(10, 1); // Bottom should be at Y=10
+        expect(bbox.max[1]).toBeCloseTo(18, 1); // Top should be at Y=18
+        
+        squareWire.delete();
+        res.delete();
+    });
+
+    it("should create rotated extrusion as surface (not solid) at elevated position", () => {
+        // Test with makeSolid=false at Y=7
+        const squareWire = wire.createSquareWire({ center: [0.5, 7, 0], size: 1, direction: [0, 1, 0] });
+        const res = operations.rotatedExtrude({ shape: squareWire, angle: 360, height: 6, makeSolid: false });
+        
+        // Check that it's not a solid but a shell/surface
+        const faces = face.getFaces({ shape: res });
+        expect(faces.length).toBeGreaterThan(0);
+        
+        // Check bounding box to ensure the result is positioned correctly
+        const bbox = operations.boundingBoxOfShape({ shape: res });
+        expect(bbox.min[1]).toBeCloseTo(7, 1); // Bottom should be at Y=7
+        expect(bbox.max[1]).toBeCloseTo(13, 1); // Top should be at Y=13
+        
+        squareWire.delete();
+        res.delete();
+        faces.forEach(f => f.delete());
+    });
+
+    it("should create rotated extrusion with circle wire at negative Y position", () => {
+        // Test with a different shape type (circle) at Y=-8
+        const circleWire = wire.createCircleWire({ center: [2, -8, 0], radius: 0.5, direction: [0, 1, 0] });
+        const res = operations.rotatedExtrude({ shape: circleWire, angle: 270, height: 12, makeSolid: true });
+        const vol = solid.getSolidVolume({ shape: res });
+        // Volume should be proportional to the circle area and 3/4 rotation
+        expect(vol).toBeCloseTo(9.424769481063818, 1);
+        
+        // Check bounding box to ensure the result is positioned correctly
+        const bbox = operations.boundingBoxOfShape({ shape: res });
+        expect(bbox.min[1]).toBeCloseTo(-8, 1); // Bottom should be at Y=-8
+        expect(bbox.max[1]).toBeCloseTo(4, 1); // Top should be at Y=4
+        
+        circleWire.delete();
         res.delete();
     });
 

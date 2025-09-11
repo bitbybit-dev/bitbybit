@@ -333,23 +333,52 @@ export class BabylonScene {
      * @shortname skybox
      */
     enableSkybox(inputs: Inputs.BabylonScene.SkyboxDto): void {
-        let texture: BABYLON.CubeTexture;
+
+        let texture: BABYLON.CubeTexture | BABYLON.HDRCubeTexture;
+
         if (inputs.skybox === Inputs.Base.skyboxEnum.default) {
-            texture = new BABYLON.CubeTexture("https://cdn.jsdelivr.net/gh/bitbybit-dev/bitbybit-assets@0.20.5/textures/skybox/default_skybox/skybox", this.context.scene);
+            texture = new BABYLON.CubeTexture("https://cdn.jsdelivr.net/gh/bitbybit-dev/bitbybit-assets@0.20.6/textures/skybox/default_skybox/skybox", this.context.scene);
         } else if (inputs.skybox === Inputs.Base.skyboxEnum.greyGradient) {
-            texture = new BABYLON.CubeTexture("https://cdn.jsdelivr.net/gh/bitbybit-dev/bitbybit-assets@0.20.5/textures/skybox/grey_gradient/skybox", this.context.scene);
+            texture = new BABYLON.CubeTexture("https://cdn.jsdelivr.net/gh/bitbybit-dev/bitbybit-assets@0.20.6/textures/skybox/grey_gradient/skybox", this.context.scene);
         } else if (inputs.skybox === Inputs.Base.skyboxEnum.clearSky) {
-            texture = BABYLON.CubeTexture.CreateFromPrefilteredData("https://cdn.jsdelivr.net/gh/bitbybit-dev/bitbybit-assets@0.20.5/textures/skybox/clear_sky/environment.env",
+            texture = BABYLON.CubeTexture.CreateFromPrefilteredData("https://cdn.jsdelivr.net/gh/bitbybit-dev/bitbybit-assets@0.20.6/textures/skybox/clear_sky/environment.env",
                 this.context.scene, false, false);
         } else if (inputs.skybox === Inputs.Base.skyboxEnum.city) {
-            texture = BABYLON.CubeTexture.CreateFromPrefilteredData("https://cdn.jsdelivr.net/gh/bitbybit-dev/bitbybit-assets@0.20.5/textures/skybox/city/environmentSpecular.env",
+            texture = BABYLON.CubeTexture.CreateFromPrefilteredData("https://cdn.jsdelivr.net/gh/bitbybit-dev/bitbybit-assets@0.20.6/textures/skybox/city/environmentSpecular.env",
                 this.context.scene, false, false);
         }
 
-        this.context.scene.getMeshByName("bitbybit-hdrSkyBox")?.dispose(false, true);
-        const skybox = this.context.scene.createDefaultSkybox(texture, true, inputs.size, inputs.blur, true);
-        skybox.name = "bitbybit-hdrSkyBox";
-        this.context.scene.environmentIntensity = inputs.environmentIntensity;
+        this.createSkyboxMesh(texture, inputs.size, inputs.blur, inputs.hideSkybox, inputs.environmentIntensity);
+    }
+
+    /**
+     * Enables skybox with custom texture
+     * @param inputs Skybox configuration
+     * @group environment
+     * @shortname skybox
+     */
+    enableSkyboxCustomTexture(inputs: Inputs.BabylonScene.SkyboxCustomTextureDto): void {
+        if (inputs.textureUrl) {
+            let texture: BABYLON.CubeTexture | BABYLON.HDRCubeTexture;
+            const textureUrl = inputs.textureUrl;
+            const textureSize = inputs.textureSize || 512; // Default size
+
+            // Better URL parsing to handle query strings
+            const urlPath = textureUrl.split("?")[0].toLowerCase();
+
+            if (urlPath.endsWith(".hdr")) {
+                // Use HDRCubeTexture for .hdr files
+                texture = new BABYLON.HDRCubeTexture(textureUrl, this.context.scene, textureSize, false, true, false, true);
+            } else if (urlPath.endsWith(".env")) {
+                texture = BABYLON.CubeTexture.CreateFromPrefilteredData(inputs.textureUrl,
+                    this.context.scene, false, false);
+            } else {
+                // Fallback to CubeTexture for other formats
+                texture = new BABYLON.CubeTexture(textureUrl, this.context.scene);
+            }
+
+            this.createSkyboxMesh(texture, inputs.size, inputs.blur, inputs.hideSkybox, inputs.environmentIntensity);
+        }
     }
 
     /**
@@ -425,4 +454,15 @@ export class BabylonScene {
         }
         return angle;
     }
+
+    private createSkyboxMesh(texture: BABYLON.BaseTexture, size: number, blur: number, hideSkybox: boolean, environmentIntensity: number) {
+        this.context.scene.getMeshByName("bitbybit-hdrSkyBox")?.dispose(false, true);
+        const skybox = this.context.scene.createDefaultSkybox(texture, true, size, blur, true);
+        skybox.name = "bitbybit-hdrSkyBox";
+        if (hideSkybox) {
+            skybox.isVisible = false;
+        }
+        this.context.scene.environmentIntensity = environmentIntensity;
+    }
+
 }
