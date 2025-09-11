@@ -1,6 +1,6 @@
-import express, { Express, Request, Response } from 'express';
-import dotenv from 'dotenv';
-import { BitByBitBase } from './bitbybit';
+import express, { Express, Request, Response } from "express";
+import dotenv from "dotenv";
+import { BitByBitBase } from "./bitbybit";
 
 const bitbybit = new BitByBitBase();
 
@@ -16,7 +16,7 @@ const app: Express = express();
 const port = process.env.PORT;
 
 
-app.get('/', (req: Request, res: Response) => {
+app.get("/", (req: Request, res: Response) => {
     if (bitbybit) {
         const cube = bitbybit.occt?.shapes.solid.createCube({ size: 3, center: [0, 0, 0] });
         const stepTXT = bitbybit.occt?.io.saveShapeSTEP({
@@ -27,7 +27,7 @@ app.get('/', (req: Request, res: Response) => {
         });
         res.send(`${stepTXT}`);
     } else {
-        res.send('OCC not initialised');
+        res.send("OCC not initialised");
     }
 });
 

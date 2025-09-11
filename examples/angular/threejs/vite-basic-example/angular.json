@@ -14,7 +14,8 @@
                             "extractLicenses": false,
                             "namedChunks": true,
                             "optimization": false,
-                            "sourceMap": true
+                            "sourceMap": true,
+                            "externalDependencies": []
                         },
                         "production": {
                             "aot": true,
@@ -37,7 +38,13 @@
                         "styles": [
                             "src/global_styles.css"
                         ],
-                        "tsConfig": "tsconfig.app.json"
+                        "tsConfig": "tsconfig.app.json",
+                        "externalDependencies": [
+                            "fs",
+                            "module",
+                            "path",
+                            "crypto"
+                        ]
                     }
                 },
                 "serve": {
