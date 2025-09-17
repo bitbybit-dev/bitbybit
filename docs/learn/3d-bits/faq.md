@@ -24,7 +24,7 @@ As 3D Bits makes its way into Shopify stores, we’ve started getting some recur
 **Yes, absolutely!** If you can click buttons and copy-paste, you’re good to go for basic 3D model display.
 
 **Here's the simple process:**
-1.  Install 3D Bits app, subscribe to Annual Base plan to begin your trial and pin the app.
+1.  Install 3D Bits app, subscribe to Base plan to begin your trial and pin the app.
 2.  Go to Metafields sections within the app admin page and hit create button.
 3.  Upload your 3D models to Shopify via **Content > Files**.
 4.  Copy the link to your uploaded 3D model.
@@ -76,7 +76,7 @@ For more complex configurators (e.g., where parts change dynamically beyond pre-
 You have a couple of flexible paths, depending on your needs and your team's skills:
 
 - **Want to do it yourself?**  
-  Our Base plan includes No-Code and Low-Code editors, so you can create 3D product experiences and even basic configurators without writing any code. If you’re comfortable with simple setup steps, you can get started on your own.
+  Our plans include No-Code and Low-Code editors, so you can create 3D product experiences and even basic configurators without writing any code. If you’re comfortable with simple setup steps, you can get started on your own.
 
 - **Have a developer team?**  
   If your developers are comfortable with coding, they’ll get the most out of our Pro plan. It unlocks advanced features and tools designed for building fully custom 3D experiences.  
@@ -92,6 +92,7 @@ While you *could* build your own 3D integration from scratch (handling WebGL vie
 
 **3D Bits takes care of the essentials:**
 *   Simple 3D model embedding.
+*   No-Code solutions that your clients will appreciate.
 *   Seamless Shopify metafield integration for 3D assets.
 *   Easy mapping between product variants and 3D models.
 *   The Runner block, which lets you run your own JavaScript/TypeScript to control the 3D scene and respond to store events.
@@ -154,7 +155,7 @@ This is where our **Pro** plan really shines, but you can also use the **BITBYBI
 
 ### Does 3D Bits offer fancy UI controls for product pages (like custom sliders, color swatches, etc.)?
 
-**In general - no. 3D Bits is not here to reinvent the dropdown or the color swatch.**
+**In general - no. 3D Bits is not here to reinvent the dropdown or the color swatch. But we do provide fancy 3D linked UI elements that improve product experience, such as points of interest - when users click on them camera flies to pre-defined position in fluid cinematic motion.**
 
 There are many excellent Shopify apps and theme development techniques dedicated to creating sophisticated UI controls for product options. Having said that Pro plan does have the ability to use frameworks such as React, Angular or others to create UI elements. However keep in mind that we do not offer any special technologies to alter the prices. If you need such functionality you'll need to build it yourself.
 

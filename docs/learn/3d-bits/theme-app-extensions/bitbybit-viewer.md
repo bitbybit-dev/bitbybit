@@ -1,16 +1,16 @@
 ---
-sidebar_position: 3
+sidebar_position: 1
 title: "BITBYBIT VIEWER Block for Shopify's '3D Bits' App"
-sidebar_label: BITBYBIT VIEWER (BASIC)
+sidebar_label: BITBYBIT VIEWER
 description: Learn how to use the BITBYBIT VIEWER theme app extension block in Shopify's "3D Bits" app to display static 3D models and configure complex scenes on your product pages without coding.
 tags: [shopify, 3d-bits]
 ---
 
-# The "BITBYBIT VIEWER" Block for Shopify
+# The "BITBYBIT VIEWER" Block for Shopify (No-Code)
 
-The **BITBYBIT VIEWER** is a theme app extension block provided by our "3D Bits" Shopify app. It offers the simplest way to present static 3D models on your product pages **without needing to interact with the Bitbybit editors or write any code.**
+The **BITBYBIT VIEWER** is a theme app extension block provided by `3D Bits` app for Shopify. It offers the simplest way to create 3D model configurators from static assets on your product pages **without needing to interact with the Bitbybit coding editors.**
 
-You can upload your 3D models to the Shopify CDN or any other publicly accessible cloud storage, and then use the URL of the file to display it directly on your product page using this block. For more advanced scenarios, the VIEWER block also allows you to load and configure multiple 3D models at once using a special JSON configuration, which can be easily created with our new **Viewer Editor tool**.
+You can upload your 3D models to the Shopify CDN or any other publicly accessible cloud storage, and then use the URL of the file to display it directly on your product page using this block. For more advanced scenarios, the VIEWER block also allows you to load and configure multiple 3D models at once using a special JSON configuration, which can be easily created with our new **Viewer Editor tool**. These files can be linked to product options, such as size or color. You can also parse files such as GLTF to use material variants.
 
 ![A Shopify product page showcasing a 3D model using the BITBYBIT VIEWER block.](https://ik.imagekit.io/bitbybit/app/assets/start/shopify/bitbybit-viewer-theme-app-extension-block-shopify-3d-bits.jpeg "Demo store product using the BITBYBIT VIEWER block")
 *Demo store product that uses the BITBYBIT VIEWER block.*
@@ -54,14 +54,15 @@ Currently, the BITBYBIT VIEWER block supports the following 3D model formats:
 
     After completing these steps and previewing your product page, you should see the 3D model displayed.
 
-## Building More Complex 3D Experiences with Scene Config JSON
+## Building More Complex 3D Experiences with Viewer Editor
 
 Sometimes, simply loading a single 3D model isn't enough. You might want to:
 *   Customize camera settings (initial position, target, field of view).
 *   Set up specific lighting (types, intensity, color, position).
 *   Enable a skybox for realistic environment reflections.
 *   Load multiple 3D models into the same scene.
-*   Even make different models or their properties react to changing Shopify product variants (e.g., show a red chair model when the "Red" variant is selected, and a blue one for "Blue").
+*   Make different 3D models or their properties react to changing Shopify product variants (e.g., show a red chair model when the "Red" variant is selected, and a blue one for "Blue").
+*   Define points of interest
 
 This is where the **Scene Config JSON** functionality comes in. We have recently released a new **Viewer Editor tool** within the "3D Bits" app that allows you to create this JSON configuration through a simple, visual user interface. With this editor, you can load multiple 3D models, adjust camera settings, enable skyboxes, configure lighting, add shadows, and more, all without writing code.
 
@@ -100,6 +101,10 @@ Here's a glimpse of how the Viewer Editor looks within the "3D Bits" app environ
     **Example Output with Scene Config JSON:**
     ![A Shopify product page showing a 3D model of vases rendered with custom lighting and shadows, configured via Scene Config JSON using the BITBYBIT VIEWER block.](https://ik.imagekit.io/bitbybit/app/assets/start/shopify/product-page-viewer-serenity-swirl-shopify.jpeg "Product page using VIEWER block and Scene Config JSON")
     *Demo store product that uses the BITBYBIT VIEWER block and Scene Configuration metafield.*
+
+### What if JSON is too large for the metafield?
+
+Save your JSON configurator as a file, upload it to Shopify CDN as a file. Copy URL and paste it into the metafield, this will inform 3D Bits app to load the contents of the file.
 
 ### Editing the Scene Config JSON
 

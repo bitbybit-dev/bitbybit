@@ -1,7 +1,7 @@
 ---
 sidebar_position: 4
 title: "BITBYBIT APPS Block for Shopify's '3D Bits' App"
-sidebar_label: BITBYBIT APPS (PRO)
+sidebar_label: BITBYBIT APPS
 description: Learn how to use the BITBYBIT APPS theme app extension block to develop and deploy professional 3D & 2D product presentations on Shopify
 tags: [shopify, 3d-bits, typescript]
 ---
@@ -173,7 +173,7 @@ It's crucial to understand what this setup provides and its inherent limitations
 ### What This Setup Does NOT Provide Out-of-the-Box:
 ❌ **Server-Side Rendering (SSR)**: Applications are client-side rendered.   
 ❌ **Backend API Solutions**: No built-in backend for custom server logic or databases.   
-❌ **Direct Shopify Admin API Integration**: While technically possible to call Shopify APIs from the frontend with    appropriate authentication, our templates don't include examples for this, and it requires careful security consideration.   
+❌ **Direct Shopify Admin API Integration**: While technically possible to call Shopify APIs from the frontend with appropriate authentication, our templates don't include examples for this, and it requires careful security consideration.   
 ❌ **Database or Persistence Layer**: User-specific data persistence needs a separate backend solution.   
 ❌ **Built-in Secure Pricing Validation**: Price calculations affecting the cart must be validated server-side.   
 
@@ -185,7 +185,7 @@ If your project demands features like Server-Side Rendering, custom backend APIs
 Embark on your journey to creating stunning product experiences.
 
 ### Prerequisites
-- An active **Annual Pro subscription** to the "3D Bits" Shopify app.
+- An active **Pro subscription** to the "3D Bits" Shopify app.
 - **Access tokens** to our private GitHub repository (provided with the Pro plan).
 - Solid knowledge of **TypeScript** and modern web development principles.
 - A good understanding of Shopify theme structure and development concepts.
@@ -215,4 +215,4 @@ Embark on your journey to creating stunning product experiences.
 
 ---
 
-*The BITBYBIT APPS block and associated professional development features are available exclusively with the Annual Pro subscription plan for "3D Bits".*
+*The BITBYBIT APPS block and associated professional development features are available exclusively with the Pro subscription plan for "3D Bits".*
