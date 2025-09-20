@@ -6445,7 +6445,7 @@ export namespace OCCT {
         direction: Base.Vector3 = [0, 1, 0];
     }
     export class SimpleLinearLengthDimensionDto {
-        constructor(start?: Base.Point3, end?: Base.Point3, direction?: Base.Vector3, offsetFromPoints?: number, crossingSize?: number, labelSuffix?: string, labelSize?: number, labelOffset?: number) {
+        constructor(start?: Base.Point3, end?: Base.Point3, direction?: Base.Vector3, offsetFromPoints?: number, crossingSize?: number, labelSuffix?: string, labelSize?: number, labelOffset?: number, labelRotation?: number) {
             if (start !== undefined) { this.start = start; }
             if (end !== undefined) { this.end = end; }
             if (direction !== undefined) { this.direction = direction; }
@@ -6454,6 +6454,7 @@ export namespace OCCT {
             if (labelSuffix !== undefined) { this.labelSuffix = labelSuffix; }
             if (labelSize !== undefined) { this.labelSize = labelSize; }
             if (labelOffset !== undefined) { this.labelOffset = labelOffset; }
+            if (labelRotation !== undefined) { this.labelRotation = labelRotation; }
         }
         /**
          * The start point for dimension
@@ -6515,6 +6516,14 @@ export namespace OCCT {
          * @step 0.1
          */
         labelOffset? = 0.3;
+        /**
+         * The dimension label rotation
+         * @default 0
+         * @minimum -360
+         * @maximum 360
+         * @step 1
+         */
+        labelRotation? = 0;
     }
     export class SimpleAngularDimensionDto {
         constructor(direction1?: Base.Point3, direction2?: Base.Point3, center?: Base.Point3, radius?: number, offsetFromCenter?: number, crossingSize?: number, radians?: boolean, labelSuffix?: string, labelSize?: number, labelOffset?: number) {
