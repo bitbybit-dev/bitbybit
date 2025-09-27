@@ -12,6 +12,66 @@ export namespace Base {
         exponentialSquared = "exponentialSquared",
         linear = "linear",
     }
+    export enum gradientDirectionEnum {
+        toTop = "to top",
+        toTopRight = "to top right",
+        toRight = "to right",
+        toBottomRight = "to bottom right",
+        toBottom = "to bottom",
+        toBottomLeft = "to bottom left",
+        toLeft = "to left",
+        toTopLeft = "to top left",
+        deg0 = "0deg",
+        deg45 = "45deg",
+        deg90 = "90deg",
+        deg135 = "135deg",
+        deg180 = "180deg",
+        deg225 = "225deg",
+        deg270 = "270deg",
+        deg315 = "315deg",
+    }
+    export enum gradientPositionEnum {
+        center = "center",
+        top = "top",
+        topLeft = "top left",
+        topRight = "top right",
+        bottom = "bottom",
+        bottomLeft = "bottom left",
+        bottomRight = "bottom right",
+        left = "left",
+        right = "right",
+        centerTop = "50% 0%",
+        centerBottom = "50% 100%",
+        leftCenter = "0% 50%",
+        rightCenter = "100% 50%",
+    }
+    export enum gradientShapeEnum {
+        circle = "circle",
+        ellipse = "ellipse",
+    }
+    export enum backgroundRepeatEnum {
+        repeat = "repeat",
+        repeatX = "repeat-x",
+        repeatY = "repeat-y",
+        noRepeat = "no-repeat",
+        space = "space",
+        round = "round",
+    }
+    export enum backgroundSizeEnum {
+        auto = "auto",
+        cover = "cover",
+        contain = "contain",
+    }
+    export enum backgroundAttachmentEnum {
+        scroll = "scroll",
+        fixed = "fixed",
+        local = "local",
+    }
+    export enum backgroundOriginClipEnum {
+        paddingBox = "padding-box",
+        borderBox = "border-box",
+        contentBox = "content-box",
+    }
     // Can't use BabylonJS types here as that crashes worker, which tries to include them
     export type Color = string;
     export type ColorRGB = { r: number, g: number, b: number };

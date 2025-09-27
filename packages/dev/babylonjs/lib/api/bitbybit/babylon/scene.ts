@@ -1,4 +1,3 @@
-
 import { Context } from "../../context";
 import * as BABYLON from "@babylonjs/core";
 import * as GUI from "@babylonjs/gui";
@@ -30,16 +29,6 @@ export class BabylonScene {
         scene.metadata = { shadowGenerators: [] };
         new BABYLON.TransformNode("root", this.context.scene);
         return this.context.scene = inputs.scene;
-    }
-
-    /**
-     * Changes the scene background colour for 3D space
-     * @param inputs Describes the colour of the scene background
-     * @group environment
-     * @shortname colour
-     */
-    backgroundColour(inputs: Inputs.BabylonScene.SceneBackgroundColourDto): void {
-        this.context.scene.clearColor = BABYLON.Color4.FromColor3(BABYLON.Color3.FromHexString(inputs.colour));
     }
 
     /**
@@ -445,6 +434,161 @@ export class BabylonScene {
      */
     enablePhysics(inputs: Inputs.BabylonScene.EnablePhysicsDto) {
         this.context.scene.enablePhysics(new BABYLON.Vector3(inputs.vector[0], inputs.vector[1], inputs.vector[2]), this.context.havokPlugin);
+    }
+
+    /**
+     * Changes the scene background to a css background image for 3D space
+     * @param inputs Describes the css of the scene background or image
+     * @group background
+     * @shortname css background image
+     */
+    canvasCSSBackgroundImage(inputs: Inputs.BabylonScene.SceneCanvasCSSBackgroundImageDto): { backgroundImage: string } {
+        this.context.scene.clearColor = new BABYLON.Color4(0, 0, 0, 0);
+        const canvas = this.context.scene.getEngine().getRenderingCanvas();
+        const styleObject = { backgroundImage: inputs.cssBackgroundImage };
+        if (canvas) {
+            canvas.style.backgroundImage = inputs.cssBackgroundImage;
+        }
+        return styleObject;
+    }
+
+    /**
+     * Creates a two-color linear gradient background for 3D space
+     * @param inputs Describes the two-color linear gradient parameters
+     * @group background
+     * @shortname two color linear gradient
+     */
+    twoColorLinearGradient(inputs: Inputs.BabylonScene.SceneTwoColorLinearGradientDto): { backgroundImage: string } {
+        this.context.scene.clearColor = new BABYLON.Color4(0, 0, 0, 0);
+        const canvas = this.context.scene.getEngine().getRenderingCanvas();
+        const gradient = `linear-gradient(${inputs.direction}, ${inputs.colorFrom} ${inputs.stopFrom}%, ${inputs.colorTo} ${inputs.stopTo}%)`;
+        const styleObject = { backgroundImage: gradient };
+        if (canvas) {
+            canvas.style.backgroundImage = gradient;
+        }
+        return styleObject;
+    }
+
+    /**
+     * Creates a two-color radial gradient background for 3D space
+     * @param inputs Describes the two-color radial gradient parameters
+     * @group background
+     * @shortname two color radial gradient
+     */
+    twoColorRadialGradient(inputs: Inputs.BabylonScene.SceneTwoColorRadialGradientDto): { backgroundImage: string } {
+        this.context.scene.clearColor = new BABYLON.Color4(0, 0, 0, 0);
+        const canvas = this.context.scene.getEngine().getRenderingCanvas();
+        const gradient = `radial-gradient(${inputs.shape} at ${inputs.position}, ${inputs.colorFrom} ${inputs.stopFrom}%, ${inputs.colorTo} ${inputs.stopTo}%)`;
+        const styleObject = { backgroundImage: gradient };
+        if (canvas) {
+            canvas.style.backgroundImage = gradient;
+        }
+        return styleObject;
+    }
+
+    /**
+     * Creates a multi-color linear gradient background for 3D space
+     * @param inputs Describes the multi-color linear gradient parameters
+     * @group background
+     * @shortname multi color linear gradient
+     */
+    multiColorLinearGradient(inputs: Inputs.BabylonScene.SceneMultiColorLinearGradientDto): { backgroundImage: string } | { error: string } {
+        this.context.scene.clearColor = new BABYLON.Color4(0, 0, 0, 0);
+        const canvas = this.context.scene.getEngine().getRenderingCanvas();
+        if (inputs.colors.length !== inputs.stops.length) {
+            const errorObj = { error: "Colors and stops arrays must have the same length" };
+            console.warn(errorObj.error);
+            return errorObj;
+        }
+        const colorStops = inputs.colors.map((color, index) => `${color} ${inputs.stops[index]}%`).join(", ");
+        const gradient = `linear-gradient(${inputs.direction}, ${colorStops})`;
+        const styleObject = { backgroundImage: gradient };
+        if (canvas) {
+            canvas.style.backgroundImage = gradient;
+        }
+        return styleObject;
+    }
+
+    /**
+     * Creates a multi-color radial gradient background for 3D space
+     * @param inputs Describes the multi-color radial gradient parameters
+     * @group background
+     * @shortname multi color radial gradient
+     */
+    multiColorRadialGradient(inputs: Inputs.BabylonScene.SceneMultiColorRadialGradientDto): { backgroundImage: string } | { error: string } {
+        this.context.scene.clearColor = new BABYLON.Color4(0, 0, 0, 0);
+        const canvas = this.context.scene.getEngine().getRenderingCanvas();
+        if (inputs.colors.length !== inputs.stops.length) {
+            const errorObj = { error: "Colors and stops arrays must have the same length" };
+            console.warn(errorObj.error);
+            return errorObj;
+        }
+        const colorStops = inputs.colors.map((color, index) => `${color} ${inputs.stops[index]}%`).join(", ");
+        const gradient = `radial-gradient(${inputs.shape} at ${inputs.position}, ${colorStops})`;
+        const styleObject = { backgroundImage: gradient };
+        if (canvas) {
+            canvas.style.backgroundImage = gradient;
+        }
+        return styleObject;
+    }
+
+    /**
+     * Sets a background image with various customization options for 3D space
+     * @param inputs Describes the background image parameters
+     * @group background
+     * @shortname background image
+     */
+    canvasBackgroundImage(inputs: Inputs.BabylonScene.SceneCanvasBackgroundImageDto): {
+        backgroundImage: string;
+        backgroundRepeat: string;
+        backgroundSize: string;
+        backgroundPosition: string;
+        backgroundAttachment: string;
+        backgroundOrigin: string;
+        backgroundClip: string;
+    } {
+        this.context.scene.clearColor = new BABYLON.Color4(0, 0, 0, 0);
+        const canvas = this.context.scene.getEngine().getRenderingCanvas();
+        const styleObject = {
+            backgroundImage: `url(${inputs.imageUrl})`,
+            backgroundRepeat: inputs.repeat,
+            backgroundSize: inputs.size,
+            backgroundPosition: inputs.position,
+            backgroundAttachment: inputs.attachment,
+            backgroundOrigin: inputs.origin,
+            backgroundClip: inputs.clip
+        };
+        if (canvas) {
+            canvas.style.backgroundImage = styleObject.backgroundImage;
+            canvas.style.backgroundRepeat = styleObject.backgroundRepeat;
+            canvas.style.backgroundSize = styleObject.backgroundSize;
+            canvas.style.backgroundPosition = styleObject.backgroundPosition;
+            canvas.style.backgroundAttachment = styleObject.backgroundAttachment;
+            canvas.style.backgroundOrigin = styleObject.backgroundOrigin;
+            canvas.style.backgroundClip = styleObject.backgroundClip;
+        }
+        return styleObject;
+    }
+
+    /**
+     * Changes the scene background colour for 3D space
+     * @param inputs Describes the colour of the scene background
+     * @group background
+     * @shortname colour
+     */
+    backgroundColour(inputs: Inputs.BabylonScene.SceneBackgroundColourDto): void {
+        this.context.scene.clearColor = BABYLON.Color4.FromColor3(BABYLON.Color3.FromHexString(inputs.colour));
+        const canvas = this.context.scene.getEngine().getRenderingCanvas();
+        if (canvas) {
+            // Reset all background properties to ensure no conflicts with gradients/images
+            canvas.style.backgroundImage = "none";
+            canvas.style.backgroundRepeat = "repeat";
+            canvas.style.backgroundSize = "auto";
+            canvas.style.backgroundPosition = "0% 0%";
+            canvas.style.backgroundAttachment = "scroll";
+            canvas.style.backgroundOrigin = "padding-box";
+            canvas.style.backgroundClip = "border-box";
+        }
     }
 
     private getRadians(degrees: number): number {
