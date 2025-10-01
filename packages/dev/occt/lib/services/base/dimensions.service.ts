@@ -89,7 +89,7 @@ export class DimensionsService {
 
         const rotated = this.transformsService.rotate({
             shape: txt.compound,
-            angle: -90,
+            angle: -90 + (inputs.labelRotation || 0),
             axis: [0, 1, 0],
         });
 

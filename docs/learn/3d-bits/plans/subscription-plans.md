@@ -10,88 +10,86 @@ tags: [shopify, 3d-bits]
 
 ## Plan Comparison
 
-| Feature | Annual Base | Annual Pro |
-|---------|-------------|------------|
-| **Price** | 142$ yearly | 900$ yearly |
-| **Trial** | 14 days | 21 days |
-| **Target Audience** | Store owners, small teams | Professional development teams |
-| **Setup Complexity** | Easy, no coding required (optional scripting) | Advanced, requires development skills |
-| **Custom Development** | Optional | Mandatory |
+| Feature | Base | Standard | Pro |
+|---------|-------------|------------|------------|
+| **Annual Price** | **$142** / year | **$530** / year | **$900** / year |
+| **Monthly Price** | **$25** / month | **$75** / month | **$120** / month |
+| **Savings - Annual** | **<span style={{color: "lightgreen"}}>53%</span>**  | **<span style={{color: "lightgreen"}}>41%</span>** | **<span style={{color: "lightgreen"}}>38%</span>** |
+| **Trial** | 7 days | 14 days | 21 days |
+| **Target Audience** | Beginners setting up shops | Merchants running existing business | Pro 3D development teams |
+| **Theme App Extensions** | VIEWER, RUNNER, PREVIEW | VIEWER, RUNNER, PREVIEW | VIEWER, RUNNER, PREVIEW, APPS |
+| **Nr Products** | Unlimited | Unlimited | Unlimited |
+| **Support** | Fundamental | Standard | Premium |
+| **How We Help** | We help mostly by providing links to documentation and tutorials | We actively guide your team by explaining how to set 3D products | We become part of your team and help set up first no-code configurator with your 3D assets |
 
-## Annual Base Plan
 
-Perfect for store owners who want to add 3D capabilities to their products without complex development work.
+## Plan Differences Per Shopify Theme App Extension
 
-### Core 3D Features
-- ✅ Add 3D models to unlimited products
-- ✅ Upload and display 3D files (GLTF format)
-- ✅ Show realistic 3D product scans (Splat format)
-- ✅ Let customers customize products in 3D
-- ✅ Mobile-friendly 3D viewing
-- ✅ Fast loading and smooth performance
+### BITBYBIT VIEWER (No-Code)
 
-### Product Configurators
-- ✅ Create simple product configurators without coding
-- ✅ Build configurators with [bitbybit.dev](https://bitbybit.dev) visual programming tools
-- ✅ Build advanced configurators with dedicated [bitbybit.dev](https://bitbybit.dev) TypeScript editor
-- ✅ Create interactive 3D experiences
-- ✅ Add realistic physics to product demos
-- ✅ Design parametric and custom shapes
+BITBYBIT VIEWER theme app extension supports building 3D configurators without writing code. It provides advanced editor user friendly editor that helps you load 3D models, configure loading indicators, scene, lights, camera settings and link 3D models or materials to product options.
 
-### User Experience
-- ✅ View products in full screen mode
-- ✅ Show loading animations during processing
-- ✅ Connect with pricing and UI apps
+| Feature | Base | Standard | Pro |
+|---------|-------------|------------|------------|
+| **Nr 3D Models** | Unlimited | Unlimited | Unlimited |
+| **3D Model Variants** | ✅ | ✅ | ✅ |
+| **Skybox** | ✅ | ✅ | ✅ |
+| **Camera Settings** | ✅ | ✅ | ✅ |
+| **Background Color** | ✅ | ✅ | ✅ |
+| **Loading Progress Indicator** | ✅ | ✅ | ✅ |
+| **Custom Loading Logo** | ✅ | ✅ | ✅ |
+| **Directional Lights** | ✅ | ✅ | ✅ |
+| **File Size Validations** | ✅ | ✅ | ✅ |
+| **GLTF (File Format)** | ✅ | ✅ | ✅ |
+| **3DGS (File Format 3D Scans)** | ✅ | ✅ | ✅ |
+| **KHR Material Variants (GLTF)** | ✅ | ✅ | ✅ |
+| **GLTF Parsing** | ✅ | ✅ | ✅ |
+| **GLTF Node Variants** | ✅ | ✅ | ✅ |
+| **Points of interest** | x | ✅ | ✅ |
+| **Points of interest variants** | x | ✅ | ✅ |
 
-:::tip Who is this for?
-Annual Base is ideal for merchants who want to enhance their product pages with 3D models and simple configurators without needing a development team.
-:::
+Features in `Standard` and `Pro` plans are expected to grow, so remember to check this list for potential updates in the future.
 
-## Annual Pro Plan
+[Learn More](/learn/3d-bits/theme-app-extensions/bitbybit-viewer)
 
-Designed for professional development teams who need complete control and advanced customization capabilities.
+### BITBYBIT RUNNER (Low-Code & Pro-Code)
 
-### Everything in Annual Base, Plus:
+BITBYBIT RUNNER theme app extension supports building 3D configurators by composing visual scripts or writing short TypeScript programs.
 
-### Professional Development Tools
-- ✅ Develop professional Single Page Applications (SPA) for product pages
-- ✅ Embed SPA apps to product page via Theme App Extension block
-- ✅ Use ThreeJS, BabylonJS, PlayCanvas or other web 3D engines
-- ✅ Write custom Vite based TypeScript apps for 3D & 2D product presentations
+| Feature | Base | Standard | Pro |
+|---------|-------------|------------|------------|
+| **Bitbybit Rete Editor** | ✅ | ✅ | ✅ |
+| **Bitbybit Blockly Editor** | ✅ | ✅ | ✅ |
+| **Bitbybit TypeScript Editor (Monaco)** | ✅ | ✅ | ✅ |
 
-### Development Workflow
-- ✅ Use the tools & editors that your team loves - VSCode, GitHub, etc.
-- ✅ Ensure quality of your apps via unit tests
-- ✅ Use configured local host development environment
-- ✅ Emulate production environment in preview mode
-- ✅ Easily embed build output via single JavaScript file to product page
+[Learn More](/learn/3d-bits/theme-app-extensions/bitbybit-runner)
 
-### Exclusive Access
-- ✅ Access & clone opinionated example templates from our private GitHub repository
-- ✅ Access private `bits-pro` NPM package allowing communication between product page inputs & your app logic
+### BITBYBIT APPS (Pro-Code)
 
-:::warning Development Skills Required
-Annual Pro requires technical expertise in JavaScript/TypeScript, 3D web development, and modern web development workflows. This plan is designed for development teams, not end users.
-:::
+BITBYBIT APPS theme app extension supports building 3D configurators by writing full 3D SPA applications in the editors that your team prefers.
 
-## Getting Started
+| Feature | Base | Standard | Pro |
+|---------|-------------|------------|------------|
+| **Vite template examples** | x | x | ✅ |
+| **Bits-pro NPM package** | x | x | ✅ |
+| **Supports local dev environment** | x | x | ✅ |
+| **Unit Tests** | x | x | ✅ |
+| **Git** | x | x | ✅ |
+| **BabylonJS game engine** | x | x | ✅ |
+| **ThreeJS game engine** | x | x | ✅ |
+| **PlayCanvas game engine** | x | x | ✅ |
 
-### Annual Base
-1. Subscribe to the plan
-2. Start adding 3D models immediately
-3. Use our visual tools to create configurators
-4. Publish to your store
+[Learn More](/learn/3d-bits/theme-app-extensions/bitbybit-apps)
 
-### Annual Pro
-1. Subscribe to the plan
-2. **Wait 24 hours** for access tokens to be sent to your email
-3. Access our private GitHub repository and NPM package
-4. Follow our [BITBYBIT APPS Pro guide](/learn/3d-bits/theme-app-extensions/bitbybit-apps)
-5. Start developing custom 3D applications
+### BITBYBIT PREVIEW (Low-Code & Pro-Code)
 
-:::info Access Token Delivery
-Pro plan subscribers will receive access tokens within 24 hours of subscription. If you don't receive them, contact us at [info@bitbybit.dev](mailto:info@bitbybit.dev) and we'll extend your trial period by 3 days.
-:::
+BITBYBIT PREVIEW theme app extension allows you to embed published bitbybit.dev scripts as your products.
+
+| Feature | Base | Standard | Pro |
+|---------|-------------|------------|------------|
+| **Embed public Bitbybit scripts** | ✅ | ✅ | ✅ |
+
+[Learn More](/learn/3d-bits/theme-app-extensions/bitbybit-preview)
 
 ## Support
 

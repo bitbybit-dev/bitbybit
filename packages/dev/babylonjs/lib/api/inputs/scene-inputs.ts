@@ -542,4 +542,204 @@ export namespace BabylonScene {
          */
         end: number;
     }
+    export class SceneCanvasCSSBackgroundImageDto {
+        /**
+         * Provide options without default values
+         */
+        constructor(cssBackgroundImage?: string) {
+            if (cssBackgroundImage !== undefined) { this.cssBackgroundImage = cssBackgroundImage; }
+        }
+        /**
+         * CSS background image string
+         * @default linear-gradient(to top, #1a1c1f 0%, #93aacd 100%)
+         */
+        cssBackgroundImage = "linear-gradient(to top, #1a1c1f 0%, #93aacd 100%)";
+    }
+
+    export class SceneTwoColorLinearGradientDto {
+        constructor(colorFrom?: Base.Color, colorTo?: Base.Color, direction?: Base.gradientDirectionEnum, stopFrom?: number, stopTo?: number) {
+            if (colorFrom !== undefined) { this.colorFrom = colorFrom; }
+            if (colorTo !== undefined) { this.colorTo = colorTo; }
+            if (direction !== undefined) { this.direction = direction; }
+            if (stopFrom !== undefined) { this.stopFrom = stopFrom; }
+            if (stopTo !== undefined) { this.stopTo = stopTo; }
+        }
+        /**
+         * Starting color in hex format
+         * @default #1a1c1f
+         */
+        colorFrom: Base.Color = "#1a1c1f";
+        /**
+         * Ending color in hex format
+         * @default #93aacd
+         */
+        colorTo: Base.Color = "#93aacd";
+        /**
+         * Gradient direction
+         * @default toBottom
+         */
+        direction: Base.gradientDirectionEnum = Base.gradientDirectionEnum.toBottom;
+        /**
+         * Starting color stop percentage
+         * @default 0
+         * @minimum 0
+         * @maximum 100
+         * @step 1
+         */
+        stopFrom = 0;
+        /**
+         * Ending color stop percentage
+         * @default 100
+         * @minimum 0
+         * @maximum 100
+         * @step 1
+         */
+        stopTo = 100;
+    }
+
+    export class SceneTwoColorRadialGradientDto {
+        constructor(colorFrom?: Base.Color, colorTo?: Base.Color, position?: Base.gradientPositionEnum, stopFrom?: number, stopTo?: number, shape?: Base.gradientShapeEnum) {
+            if (colorFrom !== undefined) { this.colorFrom = colorFrom; }
+            if (colorTo !== undefined) { this.colorTo = colorTo; }
+            if (position !== undefined) { this.position = position; }
+            if (stopFrom !== undefined) { this.stopFrom = stopFrom; }
+            if (stopTo !== undefined) { this.stopTo = stopTo; }
+            if (shape !== undefined) { this.shape = shape; }
+        }
+        /**
+         * Starting color in hex format
+         * @default #1a1c1f
+         */
+        colorFrom: Base.Color = "#1a1c1f";
+        /**
+         * Ending color in hex format
+         * @default #93aacd
+         */
+        colorTo: Base.Color = "#93aacd";
+        /**
+         * Gradient position
+         * @default center
+         */
+        position: Base.gradientPositionEnum = Base.gradientPositionEnum.center;
+        /**
+         * Starting color stop percentage
+         * @default 0
+         * @minimum 0
+         * @maximum 100
+         * @step 1
+         */
+        stopFrom = 0;
+        /**
+         * Ending color stop percentage
+         * @default 100
+         * @minimum 0
+         * @maximum 100
+         * @step 1
+         */
+        stopTo = 100;
+        /**
+         * Gradient shape
+         * @default circle
+         */
+        shape: Base.gradientShapeEnum = Base.gradientShapeEnum.circle;
+    }
+
+    export class SceneMultiColorLinearGradientDto {
+        constructor(colors?: Base.Color[], stops?: number[], direction?: Base.gradientDirectionEnum) {
+            if (colors !== undefined) { this.colors = colors; }
+            if (stops !== undefined) { this.stops = stops; }
+            if (direction !== undefined) { this.direction = direction; }
+        }
+        /**
+         * Array of colors in hex format
+         * @default ["#1a1c1f", "#93aacd"]
+         */
+        colors: Base.Color[] = ["#1a1c1f", "#93aacd"];
+        /**
+         * Array of stop percentages for each color
+         * @default [0, 100]
+         */
+        stops: number[] = [0, 100];
+        /**
+         * Gradient direction
+         * @default toTop
+         */
+        direction: Base.gradientDirectionEnum = Base.gradientDirectionEnum.toTop;
+    }
+
+    export class SceneMultiColorRadialGradientDto {
+        constructor(colors?: Base.Color[], stops?: number[], position?: Base.gradientPositionEnum, shape?: Base.gradientShapeEnum) {
+            if (colors !== undefined) { this.colors = colors; }
+            if (stops !== undefined) { this.stops = stops; }
+            if (position !== undefined) { this.position = position; }
+            if (shape !== undefined) { this.shape = shape; }
+        }
+        /**
+         * Array of colors in hex format
+         * @default ["#1a1c1f", "#93aacd"]
+         */
+        colors: Base.Color[] = ["#1a1c1f", "#93aacd"];
+        /**
+         * Array of stop percentages for each color
+         * @default [0, 100]
+         */
+        stops: number[] = [0, 100];
+        /**
+         * Gradient position
+         * @default center
+         */
+        position: Base.gradientPositionEnum = Base.gradientPositionEnum.center;
+        /**
+         * Gradient shape
+         * @default circle
+         */
+        shape: Base.gradientShapeEnum = Base.gradientShapeEnum.circle;
+    }
+
+    export class SceneCanvasBackgroundImageDto {
+        constructor(imageUrl?: string, repeat?: Base.backgroundRepeatEnum, size?: Base.backgroundSizeEnum, position?: Base.gradientPositionEnum, attachment?: Base.backgroundAttachmentEnum, origin?: Base.backgroundOriginClipEnum, clip?: Base.backgroundOriginClipEnum) {
+            if (imageUrl !== undefined) { this.imageUrl = imageUrl; }
+            if (repeat !== undefined) { this.repeat = repeat; }
+            if (size !== undefined) { this.size = size; }
+            if (position !== undefined) { this.position = position; }
+            if (attachment !== undefined) { this.attachment = attachment; }
+            if (origin !== undefined) { this.origin = origin; }
+            if (clip !== undefined) { this.clip = clip; }
+        }
+        /**
+         * URL of the background image
+         * @default undefined
+         */
+        imageUrl?: string;
+        /**
+         * How the background image should repeat
+         * @default noRepeat
+         */
+        repeat: Base.backgroundRepeatEnum = Base.backgroundRepeatEnum.noRepeat;
+        /**
+         * Size of the background image (enum values or specific values like '100px 50px')
+         * @default cover
+         */
+        size: Base.backgroundSizeEnum = Base.backgroundSizeEnum.cover;
+        /**
+         * Position of the background image (enum values or specific values like '50% 50%')
+         * @default center
+         */
+        position: Base.gradientPositionEnum = Base.gradientPositionEnum.center;
+        /**
+         * Background attachment
+         * @default scroll
+         */
+        attachment: Base.backgroundAttachmentEnum = Base.backgroundAttachmentEnum.scroll;
+        /**
+         * Background origin
+         * @default paddingBox
+         */
+        origin: Base.backgroundOriginClipEnum = Base.backgroundOriginClipEnum.paddingBox;
+        /**
+         * Background clip
+         * @default borderBox
+         */
+        clip: Base.backgroundOriginClipEnum = Base.backgroundOriginClipEnum.borderBox;
+    }
 }

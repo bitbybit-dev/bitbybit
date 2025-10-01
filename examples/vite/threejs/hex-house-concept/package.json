@@ -9,7 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@bitbybit-dev/threejs": "0.20.6",
+    "@bitbybit-dev/threejs": "0.20.7",
     "lil-gui": "0.20.0"
   },
   "devDependencies": {

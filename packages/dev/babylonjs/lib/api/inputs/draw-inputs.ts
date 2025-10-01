@@ -7,8 +7,8 @@ import { Base } from "./base-inputs";
 export namespace Draw {
 
     export type DrawOptions = DrawBasicGeometryOptions | DrawManifoldOrCrossSectionOptions | DrawOcctShapeOptions | DrawOcctShapeSimpleOptions | DrawOcctShapeMaterialOptions | DrawNodeOptions;
-    export type Entity = Base.Point3 | Base.Vector3 | Base.Line3 | Base.Polyline3 | Base.VerbCurve | Base.VerbSurface | Inputs.OCCT.TopoDSShapePointer | Inputs.Tag.TagDto | { type: string, name: string } |
-        Base.Point3[] | Base.Vector3[] | Base.Line3[] | Base.Polyline3[] | Base.VerbCurve[] | Base.VerbSurface[] | Inputs.OCCT.TopoDSShapePointer[] | Inputs.Tag.TagDto[] | { type: string[], name: string };
+    export type Entity = Base.Point3 | Base.Vector3 | Base.Line3 | Base.Polyline3 | Base.VerbCurve | Base.VerbSurface | Inputs.OCCT.TopoDSShapePointer | Inputs.Tag.TagDto | { type: string, name?: string, entityName?: string } |
+        Base.Point3[] | Base.Vector3[] | Base.Line3[] | Base.Polyline3[] | Base.VerbCurve[] | Base.VerbSurface[] | Inputs.OCCT.TopoDSShapePointer[] | Inputs.Tag.TagDto[] | { type: string[], name?: string, entityName?: string };
 
     export class DrawAny {
         constructor(entity?: Entity, options?: DrawOptions, babylonMesh?: BABYLON.Mesh | BABYLON.LinesMesh) {
