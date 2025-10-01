@@ -54,7 +54,7 @@
     "types": "./index.d.ts",
     "type": "module",
     "dependencies": {
-        "three": "0.179.1",
+        "three": "0.180.0",
         "@bitbybit-dev/core": "0.20.6"
     },
     "devDependencies": {
