@@ -1,0 +1,10 @@
+{
+    "label": "Modeling",
+    "position": 6,
+    "link": {
+        "type": "generated-index",
+        "title": "Common OCCT Modeling Techniques",
+        "description": "This category goes beyond basic operations and discusses some common challenges in parametric 3D modeling.",
+        "slug": "/code/common/occt/modeling"
+    }
+}

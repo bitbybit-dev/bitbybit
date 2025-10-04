@@ -1,0 +1,10 @@
+{
+    "label": "Dimensions",
+    "position": 7,
+    "link": {
+        "type": "generated-index",
+        "title": "Dimensions",
+        "description": "Learn how to create and manage dimensions in 3D models using the OCCT library.",
+        "slug": "/code/common/occt/dimensions"
+    }
+}

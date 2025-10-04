@@ -5789,7 +5789,7 @@ export namespace OCCT {
         inside = true;
     }
     export class SewDto<T> {
-        constructor(shapes: T[], tolerance?: number) {
+        constructor(shapes?: T[], tolerance?: number) {
             if (shapes !== undefined) { this.shapes = shapes; }
             if (tolerance !== undefined) { this.tolerance = tolerance; }
         }
