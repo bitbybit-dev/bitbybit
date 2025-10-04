@@ -62,44 +62,10 @@ The power of parametric grid creation lies in understanding how to systematicall
 
 **Wire Orientation**: Each hole is reversed to ensure proper orientation when combined with the outer boundary. This maintains the hollow structure throughout the grid.
 
-## Customization and Variations
+## Applications and Design Considerations
 
-The parametric approach makes it easy to create variations:
+The parametric approach demonstrated here makes hollow grids incredibly versatile. You can easily customize hole shapes from circles to squares or hexagons, adjust grid patterns for rectangular layouts, or modify boundary shapes to fit specific requirements.
 
-- **Hole Shape**: Change from circles to squares, hexagons, or custom shapes
-- **Grid Pattern**: Modify spacing, create rectangular instead of square grids, or implement offset patterns
-- **Boundary Shape**: Use different outer boundaries like rectangles, circles, or complex custom shapes
-- **Scale Control**: Adjust overall size, hole density, or individual hole sizes independently
+These techniques are particularly valuable in HVAC systems where precise airflow patterns are critical, architectural projects requiring decorative perforated screens, and industrial applications like filtration systems or acoustic panels. The ability to quickly adjust parameters means you can optimize designs for different performance requirements while maintaining consistency.
 
-## Practical Applications
-
-Hollow grids have numerous real-world applications across multiple industries:
-
-**HVAC and Ventilation**
-Perforated panels for air intake and exhaust systems require precise hole patterns to achieve specific airflow characteristics. The parametric approach allows engineers to quickly test different configurations and optimize for performance.
-
-**Architectural Design**
-Decorative screens, facade elements, and privacy panels often use regular perforation patterns. These grids can create interesting light and shadow effects while maintaining structural integrity.
-
-**Industrial Filtration**
-Filter elements, strainers, and separation screens require carefully designed hole patterns. The ability to easily adjust hole size and spacing makes it simple to meet specific filtration requirements.
-
-**Acoustic Engineering**
-Perforated panels for sound absorption and control use precise hole patterns to achieve desired acoustic properties. Different grid configurations can target specific frequency ranges.
-
-**Electronics and Technology**
-Speaker grilles, ventilation panels for electronics enclosures, and heat dissipation elements all benefit from optimized perforation patterns that balance functionality with aesthetics.
-
-## Advanced Considerations
-
-When working with hollow grids, consider these important factors:
-
-**Material Efficiency**: The ratio of open area to solid material affects both performance and structural strength. Grid parameters should balance functional requirements with material usage.
-
-**Manufacturing Constraints**: Different production methods (laser cutting, punching, machining) have specific limitations on minimum hole sizes, spacing, and edge distances that should inform your design parameters.
-
-**Structural Analysis**: Regular perforation patterns create stress concentrations that may require analysis for load-bearing applications. The parametric approach makes it easy to test different configurations.
-
-**Performance Optimization**: For functional applications like ventilation or filtration, the grid pattern directly affects performance metrics like pressure drop, flow rate, and efficiency.
-
-The parametric hollow grid technique demonstrated here provides a foundation for creating sophisticated perforated designs that can be easily adapted to meet specific requirements while maintaining design consistency and manufacturability.
+When implementing these patterns in real projects, consider the balance between open area and structural strength, manufacturing constraints of your chosen production method, and how the perforation pattern affects the functional performance of your design. The parametric foundation provided here scales effectively from simple prototypes to complex industrial applications.

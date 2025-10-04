@@ -77,58 +77,10 @@ For hexagonal patterns, scale patterns work differently than rectangular grids:
 - **Gentle variations**: `[0.9, 0.95, 0.9]` create subtle size variations without disrupting the natural flow
 - **Gradient effects**: `[1.0, 0.8, 0.6, 0.8, 1.0]` can create interesting radial or linear transitions
 
-## Advanced Hexagonal Design Techniques
+## Design Considerations and Applications
 
-### Creating Natural Flow Patterns
+Hexagonal patterns offer unique advantages through their natural efficiency. You can create organic flow patterns using gentle scale variations like `[0.95, 0.9, 0.85, 0.9, 0.95]` or breathing effects with `[0.7, 0.85, 1.0, 0.85, 0.7]`. The six-sided geometry naturally distributes loads more evenly than rectangular patterns while providing maximum area coverage with minimum material usage.
 
-Hexagonal patterns excel at creating organic, flowing designs:
+These patterns excel in aerospace applications for lightweight structural panels, architectural facades that combine aesthetics with efficiency, and biomedical devices that mimic natural cellular structures. The `flatU` parameter controls orientation - use `false` for pointy-top hexagons in structural applications or `true` for flat-top configurations when visual appeal is the priority.
 
-```javascript
-// Gentle size variation mimicking natural growth
-const organicPattern = [0.95, 0.9, 0.85, 0.9, 0.95];
-
-// Breathing pattern for dynamic facades
-const breathingPattern = [0.7, 0.85, 1.0, 0.85, 0.7];
-
-// Honeycomb density variation
-const densityPattern = [1.0, 0.8, 0.6, 0.4, 0.6, 0.8, 1.0];
-```
-
-### Structural Optimization
-
-Hexagonal patterns provide superior structural properties:
-
-**Load Distribution**: The six-sided geometry distributes forces more evenly than rectangular patterns
-**Material Efficiency**: Hexagons provide maximum area coverage with minimum perimeter
-**Buckling Resistance**: The geometry naturally resists deformation under load
-**Torsional Strength**: Multiple load paths provide excellent resistance to twisting forces
-
-## Biomimetic Applications
-
-### Nature-Inspired Design
-
-**Honeycomb Structures**: Direct biomimicry of bee honeycomb for lightweight panels and cores
-**Crystal Patterns**: Mimicking natural crystal formations for architectural facades
-**Cellular Structures**: Replicating biological cell arrangements for medical applications
-**Efficiency Patterns**: Following natural optimization principles for maximum performance
-
-### Structural Biomimicry
-
-**Lightweight Cores**: Honeycomb cores for composite panels in aerospace and automotive
-**Energy Absorption**: Hexagonal patterns for crash structures and impact protection
-**Heat Dissipation**: Natural convection patterns for thermal management
-**Acoustic Control**: Bio-inspired sound absorption and diffusion patterns
-
-## Applications and Next Steps
-
-The `subdivideToHexagonHoles` function excels in numerous cutting-edge applications:
-
-- **Aerospace**: Lightweight structural panels with optimal strength-to-weight ratios
-- **Architecture**: Biomimetic facades that combine aesthetics with structural efficiency
-- **Automotive**: Impact-absorbing structures and lightweight body panels
-- **Medical Devices**: Biocompatible implants that mimic natural bone structure
-- **Electronics**: Heat dissipation panels and electromagnetic shielding
-
-Hexagonal patterns represent the pinnacle of natural efficiency. Start with uniform patterns to understand the basic behavior, then experiment with orientation (flatU parameter) and gentle scale variations. The inherent efficiency of hexagonal packing means that even simple patterns often produce sophisticated results.
-
-Combine hexagonal subdivision with fillets for rounded corners, boolean operations for complex cutouts, and material analysis tools to optimize your designs for specific performance requirements. The mathematical perfection of hexagonal geometry ensures your designs will have both natural beauty and superior functional properties.
+Start with uniform scaling patterns to understand the basic behavior, then experiment with gentle variations. The mathematical perfection of hexagonal geometry means even simple patterns often produce sophisticated results that balance natural beauty with superior functional performance.

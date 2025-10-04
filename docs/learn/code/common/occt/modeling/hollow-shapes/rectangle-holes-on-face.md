@@ -77,40 +77,10 @@ The pattern repeats across the grid, so if you have 10 divisions and a 3-element
 - `false`: Returns wire boundaries (useful for creating faces with holes)
 - `true`: Returns individual face elements (useful for separate processing of each hole)
 
-## Advanced Pattern Creation Techniques
+## Pattern Creation and Applications
 
-### Creating Gradient Effects
+You can create sophisticated visual effects using carefully designed scale patterns. Try fade effects with `[0.2, 0.4, 0.6, 0.8, 1.0, 0.8, 0.6, 0.4, 0.2]`, alternating patterns like `[1.0, 0.3, 1.0, 0.3]`, or exponential growth with `[0.1, 0.2, 0.4, 0.8, 1.0]`. The patterns repeat across the grid, so a 3-element pattern on 10 divisions will cycle through the values continuously.
 
-You can create sophisticated visual effects by carefully designing your scale patterns:
+This function excels in architectural applications for facade panels and decorative screens, manufacturing contexts like sheet metal fabrication, and engineering applications including filtration systems and acoustic panels. The `holesToFaces` parameter controls whether you get wire boundaries for creating faces with holes or individual face elements for separate processing.
 
-```javascript
-// Fade from center to edges
-const fadePattern = [0.2, 0.4, 0.6, 0.8, 1.0, 0.8, 0.6, 0.4, 0.2];
-
-// Alternating large and small
-const alternatingPattern = [1.0, 0.3, 1.0, 0.3];
-
-// Exponential growth
-const exponentialPattern = [0.1, 0.2, 0.4, 0.8, 1.0];
-```
-
-### Combining with Other Operations
-
-The subdivided patterns work excellently with other OCCT operations:
-
-**Fillets**: Apply 2D fillets to the wires before creating faces for rounded hole corners
-**Boolean Operations**: Use the holes as cutting tools for more complex geometries
-**Array Operations**: Combine multiple subdivided faces to create larger patterns
-**Transformations**: Rotate or scale the entire pattern for dynamic effects
-
-## Applications and Next Steps
-
-The `subdivideToRectangleHoles` function excels in numerous applications:
-
-- **Architecture**: Facade panels, privacy screens, and decorative elements
-- **Manufacturing**: Sheet metal fabrication, injection molding, and 3D printing
-- **Engineering**: Filtration systems, heat exchangers, and acoustic panels
-
-For optimal results, start with simple uniform patterns before experimenting with complex scale arrays. The function transforms hundreds of individual operations into a single, parametric call, making it invaluable for creating sophisticated perforated designs.
-
-Combine this technique with fillets, boolean operations, and transformations to create even more complex geometric patterns. The parametric nature ensures your designs remain flexible and easily adjustable for different manufacturing requirements.
+Start with simple uniform patterns before experimenting with complex scale arrays. The parametric nature transforms hundreds of individual operations into a single call, making it invaluable for creating sophisticated perforated designs that remain flexible and easily adjustable for different requirements.
