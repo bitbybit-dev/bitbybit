@@ -1,5 +1,5 @@
 ---
-sidebar_position: 2
+sidebar_position: 3
 title: Hexagons Grid
 sidebar_label: Hexagons Grid
 description: Learn how to create wire based hexagon grids
