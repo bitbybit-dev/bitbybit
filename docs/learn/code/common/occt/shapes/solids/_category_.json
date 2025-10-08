@@ -1,0 +1,10 @@
+{
+    "label": "Solids",
+    "position": 5,
+    "link": {
+        "type": "generated-index",
+        "title": "Solids",
+        "description": "Solids are three-dimensional shapes that have a definite volume and shape. These tutorials will help you understand how to create and manipulate solid shapes in your 3D models.",
+        "slug": "/code/common/occt/shapes/solids"
+    }
+}
