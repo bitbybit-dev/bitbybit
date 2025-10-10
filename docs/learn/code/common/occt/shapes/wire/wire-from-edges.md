@@ -1,5 +1,5 @@
 ---
-sidebar_position: 4
+sidebar_position: 5
 title: Wire From Edges
 sidebar_label: Wire From Edges
 description: Learn how to create wires by combining multiple edges
