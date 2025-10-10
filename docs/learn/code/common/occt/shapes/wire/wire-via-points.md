@@ -1,5 +1,5 @@
 ---
-sidebar_position: 2
+sidebar_position: 3
 title: Wire Via Points
 sidebar_label: Wire Via Points
 description: Learn how to create various wires passing via or being controlled by collections of points

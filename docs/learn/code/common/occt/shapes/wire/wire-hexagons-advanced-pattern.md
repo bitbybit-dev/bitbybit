@@ -1,5 +1,5 @@
 ---
-sidebar_position: 4
+sidebar_position: 6
 title: Hexagons Advanced Pattern
 sidebar_label: Hexagons Advanced Pattern
 description: Learn how to use advanced hexagon pattern parameters to create intricate designs.
