@@ -1,0 +1,10 @@
+{
+    "label": "Parametric Art",
+    "position": 2,
+    "link": {
+        "type": "generated-index",
+        "title": "Parametric Art",
+        "description": "Explore the world of parametric art and learn how to create stunning designs using algorithms.",
+        "slug": "/code/common/occt/modeling/parametric-art"
+    }
+}
