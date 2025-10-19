@@ -1,0 +1,10 @@
+{
+    "label": "Face",
+    "position": 4,
+    "link": {
+        "type": "generated-index",
+        "title": "Faces",
+        "description": "Faces are one of the most fundamental pieces of geometry that you can create inside OCCT kernel. These tutorials will help you understand how to create and manipulate faces in your 3D models.",
+        "slug": "/code/common/occt/shapes/face"
+    }
+}
