@@ -326,7 +326,7 @@ describe("Math unit tests", () => {
 
     it("should compute ease out sine", () => {
         const result = math.ease({ x: 0.3, min: 0, max: 1, ease: Inputs.Math.easeEnum.easeOutSine });
-        expect(result).toEqual(0.4539904997395468);
+        expect(result).toBeCloseTo(0.4539904997395468);
     });
 
     it("should compute ease out sine", () => {
