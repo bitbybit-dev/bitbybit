@@ -87,5 +87,59 @@ Bit By Bit Developers company will keep these core algorithms that you can find 
 ## About Bit By Bit Developers platform
 Bit By Bit Developers web platform allows creators to program geometry through simple visual programming language or choose monaco typescript editor with full intellisense of bitbybit API. This cloud platform can fulfil many practical, educational and artistic needs of its users. Through familiar programming interface used in tools such as Scratch and Blockly.Games we expose powerful 3D algorithms that make it easier to implement various parametric tasks. Our goal is to make it very simple for users to share their ideas and designs. We want to encourage everyone to engage in the future of this tool.
 
+# Development Setup
+
+## First Time Setup and Testing
+
+For first-time developers working on this project, follow these steps to set up the development environment and run all unit tests:
+
+### Prerequisites
+- Node.js (v16 or higher recommended)
+- npm (comes with Node.js)
+- Git
+
+### Quick Start
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/bitbybit-dev/bitbybit.git
+   cd bitbybit
+   ```
+
+2. Run the complete first-time setup (this will install all dependencies, build all packages, and run all unit tests):
+   ```bash
+   npm run first-time-setup
+   ```
+
+### Available Commands
+
+- `npm run first-time-setup` - Complete setup for new developers (installs dependencies, builds packages, runs tests)
+- `npm run setup` - Install dependencies and build all packages without running tests
+- `npm run setup-and-test` - Install dependencies, build packages, and run all unit tests
+- `npm run test` - Run all unit tests (requires packages to be built first)
+- `npm run ci-packages` - Install dependencies for all packages
+- `npm run build-packages` - Build all packages
+- `npm run rebuild-all-packages` - Clean and rebuild all packages
+
+### Cross-Platform Compatibility
+All commands are now cross-platform compatible and work on Windows, macOS, and Linux. The project uses:
+- `rimraf` for cross-platform file deletion
+- Standard npm scripts for package management
+
+### Running Individual Package Tests
+You can also run tests for individual packages:
+- `npm run test-base` - Test base package
+- `npm run test-occt` - Test OCCT package  
+- `npm run test-core` - Test core package
+- `npm run test-jscad` - Test JSCAD package
+- `npm run test-manifold` - Test Manifold package
+- `npm run test-threejs` - Test ThreeJS package
+
+### Troubleshooting
+If you encounter issues during setup:
+1. Make sure you have Node.js v16+ installed
+2. Clear npm cache: `npm cache clean --force`
+3. Delete node_modules and package-lock.json, then run `npm install`
+4. If on Windows, make sure to run commands in a proper terminal (Command Prompt, PowerShell, or WSL)
+
 ## Major Dependencies
 BabylonJS, ThreeJS, OpenCascade, Manifold, JSCAD, Verbnurbs

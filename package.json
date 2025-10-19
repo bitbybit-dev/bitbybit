@@ -15,16 +15,16 @@
         "ci-manifold-worker": "cd packages/dev/manifold-worker && npm ci",
         "ci-manifold": "cd packages/dev/manifold && npm ci",
         "ci-packages": "npm run ci-base && npm run ci-core && npm run ci-threejs && npm run ci-babylonjs && npm run ci-occt-worker && npm run ci-occt && npm run ci-jscad-worker && npm run ci-jscad && npm run ci-manifold-worker && npm run ci-manifold",
-        "rm-dist-base-if-exists": "rm -rf packages/dev/base/dist || true",
-        "rm-dist-core-if-exists": "rm -rf packages/dev/core/dist || true",
-        "rm-dist-threejs-if-exists": "rm -rf packages/dev/threejs/dist || true",
-        "rm-dist-babylonjs-if-exists": "rm -rf packages/dev/babylonjs/dist || true",
-        "rm-dist-occt-worker-if-exists": "rm -rf packages/dev/occt-worker/dist || true",
-        "rm-dist-occt-if-exists": "rm -rf packages/dev/occt/dist || true",
-        "rm-dist-jscad-worker-if-exists": "rm -rf packages/dev/jscad-worker/dist || true",
-        "rm-dist-jscad-if-exists": "rm -rf packages/dev/jscad/dist || true",
-        "rm-dist-manifold-worker-if-exists": "rm -rf packages/dev/manifold-worker/dist || true",
-        "rm-dist-manifold-if-exists": "rm -rf packages/dev/manifold/dist || true",
+        "rm-dist-base-if-exists": "rimraf packages/dev/base/dist",
+        "rm-dist-core-if-exists": "rimraf packages/dev/core/dist",
+        "rm-dist-threejs-if-exists": "rimraf packages/dev/threejs/dist",
+        "rm-dist-babylonjs-if-exists": "rimraf packages/dev/babylonjs/dist",
+        "rm-dist-occt-worker-if-exists": "rimraf packages/dev/occt-worker/dist",
+        "rm-dist-occt-if-exists": "rimraf packages/dev/occt/dist",
+        "rm-dist-jscad-worker-if-exists": "rimraf packages/dev/jscad-worker/dist",
+        "rm-dist-jscad-if-exists": "rimraf packages/dev/jscad/dist",
+        "rm-dist-manifold-worker-if-exists": "rimraf packages/dev/manifold-worker/dist",
+        "rm-dist-manifold-if-exists": "rimraf packages/dev/manifold/dist",
         "rm-dist-packages": "npm run rm-dist-base-if-exists && npm run rm-dist-core-if-exists && npm run rm-dist-threejs-if-exists && npm run rm-dist-babylonjs-if-exists && npm run rm-dist-occt-worker-if-exists && npm run rm-dist-occt-if-exists && npm run rm-dist-jscad-worker-if-exists && npm run rm-dist-jscad-if-exists && npm run rm-dist-manifold-worker-if-exists && npm run rm-dist-manifold-if-exists",
         "build-base": "cd packages/dev/base && npm run build-p",
         "build-core": "cd packages/dev/core && npm run build-p",
@@ -45,7 +45,10 @@
         "test-jscad": "cd packages/dev/jscad && npm run test-c",
         "test-manifold": "cd packages/dev/manifold && npm run test-c",
         "test-threejs": "cd packages/dev/threejs && npm run test-c",
-        "test": "npm run test-occt && npm run test-base && npm run test-core && npm run test-jscad && npm run test-manifold && npm run test-threejs"
+        "test": "npm run test-occt && npm run test-base && npm run test-core && npm run test-jscad && npm run test-manifold && npm run test-threejs",
+        "setup": "npm run install-rebuild-all-packages",
+        "setup-and-test": "npm run setup && npm run test",
+        "first-time-setup": "npm install && npm run setup-and-test"
     },
     "repository": {
         "type": "git",
@@ -70,6 +73,7 @@
     },
     "homepage": "https://bitbybit.dev",
     "devDependencies": {
-        "typescript": "^4.3.5"
+        "typescript": "^4.3.5",
+        "rimraf": "^5.0.5"
     }
 }
