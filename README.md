@@ -89,6 +89,10 @@ Bit By Bit Developers web platform allows creators to program geometry through s
 
 # Development Setup
 
+## Contributions
+
+If you're interested in contributing please check our [Contribution guidelines](https://github.com/bitbybit-dev/bitbybit/blob/master/CONTRIBUTING.md) & [code of conduct](https://github.com/bitbybit-dev/bitbybit/blob/master/CODE_OF_CONDUCT.md)
+
 ## First Time Setup and Testing
 
 For first-time developers working on this project, follow these steps to set up the development environment and run all unit tests:
@@ -120,11 +124,6 @@ For first-time developers working on this project, follow these steps to set up 
 - `npm run build-packages` - Build all packages
 - `npm run rebuild-all-packages` - Clean and rebuild all packages
 
-### Cross-Platform Compatibility
-All commands are now cross-platform compatible and work on Windows, macOS, and Linux. The project uses:
-- `rimraf` for cross-platform file deletion
-- Standard npm scripts for package management
-
 ### Running Individual Package Tests
 You can also run tests for individual packages:
 - `npm run test-base` - Test base package
@@ -139,7 +138,6 @@ If you encounter issues during setup:
 1. Make sure you have Node.js v16+ installed
 2. Clear npm cache: `npm cache clean --force`
 3. Delete node_modules and package-lock.json, then run `npm install`
-4. If on Windows, make sure to run commands in a proper terminal (Command Prompt, PowerShell, or WSL)
 
 ## Major Dependencies
 BabylonJS, ThreeJS, OpenCascade, Manifold, JSCAD, Verbnurbs
