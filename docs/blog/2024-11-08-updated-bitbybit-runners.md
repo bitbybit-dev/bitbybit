@@ -121,7 +121,7 @@ We are serving the Bitbybit Runners from the **JSDelivr CDN**. You can include t
     <script src="https://cdn.jsdelivr.net/gh/bitbybit-dev/bitbybit-assets@<version-number-of-bitbybit>/runner/bitbybit-runner-lite-threejs.js"></script>
     ```
 
-**Note:** You should replace `<version-number-of-bitbybit>` with an actual version number (e.g., `0.20.7`). You can find all the official versions of Bitbybit.dev here:
+**Note:** You should replace `<version-number-of-bitbybit>` with an actual version number (e.g., `0.20.8`). You can find all the official versions of Bitbybit.dev here:
 ➡️ **[Bitbybit.dev GitHub Releases](https://github.com/bitbybit-dev/bitbybit/releases)**
 
 ### Examples of the Runners
