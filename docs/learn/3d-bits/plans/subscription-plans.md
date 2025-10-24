@@ -6,7 +6,7 @@ description: 3D Bits app for shopify includes 2 plan offerings - one is meant fo
 tags: [shopify, 3d-bits]
 ---
 
-3D Bits offers two comprehensive subscription plans designed to meet different business needs. Whether you're just getting started with 3D commerce or need advanced development capabilities, we have the right plan for you.
+3D Bits offers three comprehensive subscription plans designed to meet different business needs. Whether you're just getting started with 3D commerce or need advanced development capabilities, we have the right plan for you.
 
 ## Plan Comparison
 
@@ -47,6 +47,12 @@ BITBYBIT VIEWER theme app extension supports building 3D configurators without w
 | **GLTF Node Variants** | ✅ | ✅ | ✅ |
 | **Points of interest** | x | ✅ | ✅ |
 | **Points of interest variants** | x | ✅ | ✅ |
+| **Linear Dimensions** | x | ✅ | ✅ |
+| **Angular Dimensions** | x | ✅ | ✅ |
+| **Radial Dimensions** | x | ✅ | ✅ |
+| **Diametral Dimensions** | x | ✅ | ✅ |
+| **Ordinal Dimensions** | x | ✅ | ✅ |
+
 
 Features in `Standard` and `Pro` plans are expected to grow, so remember to check this list for potential updates in the future.
 

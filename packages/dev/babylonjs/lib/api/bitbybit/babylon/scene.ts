@@ -458,7 +458,7 @@ export class BabylonScene {
      * @group background
      * @shortname two color linear gradient
      */
-    twoColorLinearGradient(inputs: Inputs.BabylonScene.SceneTwoColorLinearGradientDto): { backgroundImage: string } {
+    twoColorLinearGradientBackground(inputs: Inputs.BabylonScene.SceneTwoColorLinearGradientDto): { backgroundImage: string } {
         this.context.scene.clearColor = new BABYLON.Color4(0, 0, 0, 0);
         const canvas = this.context.scene.getEngine().getRenderingCanvas();
         const gradient = `linear-gradient(${inputs.direction}, ${inputs.colorFrom} ${inputs.stopFrom}%, ${inputs.colorTo} ${inputs.stopTo}%)`;
@@ -475,7 +475,7 @@ export class BabylonScene {
      * @group background
      * @shortname two color radial gradient
      */
-    twoColorRadialGradient(inputs: Inputs.BabylonScene.SceneTwoColorRadialGradientDto): { backgroundImage: string } {
+    twoColorRadialGradientBackground(inputs: Inputs.BabylonScene.SceneTwoColorRadialGradientDto): { backgroundImage: string } {
         this.context.scene.clearColor = new BABYLON.Color4(0, 0, 0, 0);
         const canvas = this.context.scene.getEngine().getRenderingCanvas();
         const gradient = `radial-gradient(${inputs.shape} at ${inputs.position}, ${inputs.colorFrom} ${inputs.stopFrom}%, ${inputs.colorTo} ${inputs.stopTo}%)`;
@@ -492,7 +492,7 @@ export class BabylonScene {
      * @group background
      * @shortname multi color linear gradient
      */
-    multiColorLinearGradient(inputs: Inputs.BabylonScene.SceneMultiColorLinearGradientDto): { backgroundImage: string } | { error: string } {
+    multiColorLinearGradientBackground(inputs: Inputs.BabylonScene.SceneMultiColorLinearGradientDto): { backgroundImage: string } | { error: string } {
         this.context.scene.clearColor = new BABYLON.Color4(0, 0, 0, 0);
         const canvas = this.context.scene.getEngine().getRenderingCanvas();
         if (inputs.colors.length !== inputs.stops.length) {
@@ -515,7 +515,7 @@ export class BabylonScene {
      * @group background
      * @shortname multi color radial gradient
      */
-    multiColorRadialGradient(inputs: Inputs.BabylonScene.SceneMultiColorRadialGradientDto): { backgroundImage: string } | { error: string } {
+    multiColorRadialGradientBackground(inputs: Inputs.BabylonScene.SceneMultiColorRadialGradientDto): { backgroundImage: string } | { error: string } {
         this.context.scene.clearColor = new BABYLON.Color4(0, 0, 0, 0);
         const canvas = this.context.scene.getEngine().getRenderingCanvas();
         if (inputs.colors.length !== inputs.stops.length) {
