@@ -9,7 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@bitbybit-dev/threejs": "0.20.7"
+    "@bitbybit-dev/threejs": "0.20.8"
   },
   "devDependencies": {
     "typescript": "~5.8.3",

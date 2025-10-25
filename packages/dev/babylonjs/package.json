@@ -1,6 +1,6 @@
 {
   "name": "@bitbybit-dev/babylonjs",
-  "version": "0.20.7",
+  "version": "0.20.8",
   "description": "Bit By Bit Developers BABYLONJS CAD Library to Program Geometry",
   "main": "index.js",
   "repository": {
@@ -54,16 +54,17 @@
   "types": "./index.d.ts",
   "type": "module",
   "dependencies": {
-    "@babylonjs/core": "8.29.1",
-    "@babylonjs/gui": "8.29.1",
-    "@babylonjs/loaders": "8.29.1",
-    "@babylonjs/materials": "8.29.1",
-    "@babylonjs/serializers": "8.29.1",
+    "@babylonjs/core": "8.33.2",
+    "@babylonjs/gui": "8.33.2",
+    "@babylonjs/loaders": "8.33.2",
+    "@babylonjs/materials": "8.33.2",
+    "@babylonjs/serializers": "8.33.2",
     "@babylonjs/havok": "1.3.10",
-    "@bitbybit-dev/core": "0.20.7",
+    "@bitbybit-dev/core": "0.20.8",
     "earcut": "2.2.3"
   },
   "devDependencies": {
+    "shx":"0.4.0",
     "sass": "1.57.1",
     "@testing-library/jest-dom": "5.14.1",
     "mvdir": "1.0.21",

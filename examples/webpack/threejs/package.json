@@ -12,7 +12,7 @@
     "author": "",
     "license": "ISC",
     "dependencies": {
-        "@bitbybit-dev/threejs": "0.20.7",
+        "@bitbybit-dev/threejs": "0.20.8",
         "lil-gui": "0.20.0"
     },
     "devDependencies": {

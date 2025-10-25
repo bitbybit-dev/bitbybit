@@ -1,6 +1,6 @@
 {
   "name": "@bitbybit-dev/jscad-worker",
-  "version": "0.20.7",
+  "version": "0.20.8",
   "description": "Bit By Bit Developers JSCAD Based CAD Library to Program Geometry Via WebWorker",
   "main": "index.js",
   "repository": {
@@ -60,10 +60,11 @@
   "types": "./index.d.ts",
   "type": "module",
   "dependencies": {
-    "@bitbybit-dev/jscad": "0.20.7",
+    "@bitbybit-dev/jscad": "0.20.8",
     "rxjs": "7.5.5"
   },
   "devDependencies": {
+    "shx":"0.4.0",
     "sass": "1.57.1",
     "@testing-library/jest-dom": "5.14.1",
     "mvdir": "1.0.21",

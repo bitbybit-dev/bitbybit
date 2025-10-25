@@ -1,6 +1,6 @@
 {
   "name": "@bitbybit-dev/base",
-  "version": "0.20.7",
+  "version": "0.20.8",
   "description": "Bit By Bit Developers Base CAD Library to Program Geometry",
   "main": "index.js",
   "repository": {
@@ -59,6 +59,7 @@
   "type": "module",
   "dependencies": {},
   "devDependencies": {
+    "shx":"0.4.0",
     "sass": "1.57.1",
     "@testing-library/jest-dom": "5.14.1",
     "mvdir": "1.0.21",
