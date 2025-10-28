@@ -1,0 +1,10 @@
+{
+    "label": "For Developers",
+    "position": 8,
+    "link": {
+        "type": "generated-index",
+        "title": "For Developers",
+        "description": "Learn about the integration best practices and implementation details for the 3D Bits Shopify App. This section is more technical and is meant mostly for developers of third party apps or custom UI solutions.",
+        "slug": "/3d-bits/for-developers"
+    }
+}
