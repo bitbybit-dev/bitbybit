@@ -22,6 +22,7 @@ import { SolidsService } from "./services/base/solids.service";
 import { DimensionsService } from "./services/base/dimensions.service";
 import { MeshingService } from "./services/base/meshing.service";
 import { BaseBitByBit } from "./base";
+import { DxfService } from "./services/base/dxf.service";
 
 export class OccHelper {
 
@@ -49,6 +50,7 @@ export class OccHelper {
     public readonly meshingService: MeshingService;
 
     public readonly dimensionsService: DimensionsService;
+    public readonly dxfService: DxfService;
 
 
     constructor(
@@ -72,7 +74,7 @@ export class OccHelper {
             this.iteratorService, this.converterService, this.enumService, this.geomService, this.transformsService, this.vecHelper);
 
         this.wiresService = new WiresService(occ, this.occRefReturns, this.base, this.shapesHelperService, this.shapeGettersService, this.transformsService,
-            this.enumService, this.entitiesService, this.converterService, this.geomService, this.edgesService, this.filletsService, this.operationsService);
+            this.enumService, this.entitiesService, this.converterService, this.geomService, this.edgesService, this.vecHelper, this.filletsService, this.operationsService);
 
         this.dimensionsService = new DimensionsService(this.base, this.transformsService,
             this.converterService, this.entitiesService, this.edgesService, this.wiresService);
@@ -102,6 +104,9 @@ export class OccHelper {
         this.wiresService.filletsService = this.filletsService;
         // cross reference
         this.facesService.filletsService = this.filletsService;
+
+        this.dxfService = new DxfService(this.base, this.shapeGettersService, this.edgesService, this.wiresService);
+
     }
 
     surfaceFromFace(inputs: Inputs.OCCT.ShapeDto<TopoDS_Face>) {

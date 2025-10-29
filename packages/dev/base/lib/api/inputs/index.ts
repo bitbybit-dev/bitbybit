@@ -11,3 +11,4 @@ export * from "./dates-inputs";
 export * from "./line-inputs";
 export * from "./polyline-inputs";
 export * from "./mesh-inputs";
+export * from "./io-inputs";

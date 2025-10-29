@@ -216,49 +216,9 @@ export class EdgesService {
         } else {
             edges = this.shapeGettersService.getEdges({ shape: inputs.shape });
         }
-        const allEdgePoints: Base.Point3[][] = [];
-        // collect original start points to adjust edge directions later
-        const edgeStartPoints = edges.map(e => {
-            return this.startPointOnEdge({ shape: e });
-        });
-        // this messes up directions as curve that is being built picks up some default direction
-        edges.forEach((myEdge) => {
-            const edgePoints: Base.Point3[] = [];
-            const aLocation = new this.occ.TopLoc_Location_1();
-            const adaptorCurve = new this.occ.BRepAdaptor_Curve_2(myEdge);
-            const tangDef = new this.occ.GCPnts_TangentialDeflection_2(
-                adaptorCurve,
-                inputs.angularDeflection,
-                inputs.curvatureDeflection,
-                inputs.minimumOfPoints,
-                inputs.uTolerance,
-                inputs.minimumLength
-            );
-            const nrPoints = tangDef.NbPoints();
-            const tangDefValues = [];
-            for (let j = 0; j < nrPoints; j++) {
-                const tangDefVal = tangDef.Value(j + 1);
-
-                edgePoints.push([
-                    tangDefVal.X(),
-                    tangDefVal.Y(),
-                    tangDefVal.Z()
-                ] as Base.Point3);
-                tangDefValues.push(tangDefVal);
-            }
-            allEdgePoints.push(edgePoints);
-            tangDefValues.forEach(v => v.delete());
-            aLocation.delete();
-            adaptorCurve.delete();
-            tangDef.delete();
-        });
-        // this fixes the directions of the point arrays based on original start points
-        allEdgePoints.forEach((ep, index) => {
-            const distBetweenStarts = this.vecHelper.distanceBetweenPoints(ep[0], edgeStartPoints[index]);
-            const distBetweenStartAndEnd = this.vecHelper.distanceBetweenPoints(edgeStartPoints[index], ep[ep.length - 1]);
-            if (distBetweenStartAndEnd < distBetweenStarts) {
-                ep.reverse();
-            }
+        // Reuse edgeToPoints for each edge to ensure consistent direction handling
+        const allEdgePoints: Base.Point3[][] = edges.map(edge => {
+            return this.edgeToPoints({ ...inputs, shape: edge });
         });
         return allEdgePoints;
     }
@@ -279,6 +239,54 @@ export class EdgesService {
         const pt = this.geomService.pointOnCurveAtParam({ shape: curve, param: 1 });
         curve.delete();
         return pt;
+    }
+
+    edgeToPoints(inputs: Inputs.OCCT.EdgesToPointsDto<TopoDS_Edge>): Inputs.Base.Point3[] {
+        const edgePoints: Base.Point3[] = [];
+        const aLocation = new this.occ.TopLoc_Location_1();
+        const adaptorCurve = new this.occ.BRepAdaptor_Curve_2(inputs.shape);
+        const tangDef = new this.occ.GCPnts_TangentialDeflection_2(
+            adaptorCurve,
+            inputs.angularDeflection,
+            inputs.curvatureDeflection,
+            inputs.minimumOfPoints,
+            inputs.uTolerance,
+            inputs.minimumLength
+        );
+        const nrPoints = tangDef.NbPoints();
+        const tangDefValues = [];
+        for (let j = 0; j < nrPoints; j++) {
+            const tangDefVal = tangDef.Value(j + 1);
+            edgePoints.push([
+                tangDefVal.X(),
+                tangDefVal.Y(),
+                tangDefVal.Z()
+            ] as Base.Point3);
+            tangDefValues.push(tangDefVal);
+        }
+        tangDefValues.forEach(v => v.delete());
+        aLocation.delete();
+        adaptorCurve.delete();
+        tangDef.delete();
+        
+        // Ensure tessellation matches edge direction
+        // The tessellation might be in reverse order relative to the edge's start->end direction
+        if (edgePoints.length > 1) {
+            const edgeStart = this.startPointOnEdge({ shape: inputs.shape });
+            const tessStart = edgePoints[0];
+            const tessEnd = edgePoints[edgePoints.length - 1];
+            
+            // Check if first tessellation point is closer to edge start or end
+            const distStartToStart = this.vecHelper.distanceBetweenPoints(tessStart, edgeStart);
+            const distEndToStart = this.vecHelper.distanceBetweenPoints(tessEnd, edgeStart);
+            
+            // If the last tessellation point is closer to the edge start, the array is reversed
+            if (distEndToStart < distStartToStart) {
+                edgePoints.reverse();
+            }
+        }
+        
+        return edgePoints;
     }
 
     makeEdgeFromGeom2dCurveAndSurfaceBounded(inputs: Inputs.OCCT.CurveAndSurfaceDto<Geom2d_Curve, Geom_Surface>, umin: number, umax: number): TopoDS_Edge {

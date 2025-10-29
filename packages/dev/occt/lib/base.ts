@@ -1,4 +1,10 @@
-import { TextBitByBit, Point, GeometryHelper, Transforms, Vector, MathBitByBit, MeshBitByBit, Polyline, Line, Lists } from "@bitbybit-dev/base";
+import {
+    TextBitByBit,
+    Point, GeometryHelper,
+    Transforms, Vector, MathBitByBit,
+    MeshBitByBit, Polyline,
+    Line, Lists, IoBitByBit
+} from "@bitbybit-dev/base";
 
 export class BaseBitByBit {
 
@@ -12,7 +18,7 @@ export class BaseBitByBit {
     readonly polyline: Polyline;
     readonly mesh: MeshBitByBit;
     readonly textService: TextBitByBit;
-
+    readonly io: IoBitByBit;
 
     constructor() {
         this.geometryHelper = new GeometryHelper();
@@ -25,6 +31,7 @@ export class BaseBitByBit {
         this.polyline = new Polyline(this.vector, this.point, this.line, this.geometryHelper);
         this.textService = new TextBitByBit(this.point);
         this.mesh = new MeshBitByBit(this.vector, this.polyline);
+        this.io = new IoBitByBit();
     }
 
 }
