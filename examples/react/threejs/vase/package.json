@@ -4,7 +4,7 @@
     "private": true,
     "homepage": "https://app-store.bitbybit.dev/bitbybit-threejs",
     "dependencies": {
-        "@bitbybit-dev/threejs": "0.20.8",
+        "@bitbybit-dev/threejs": "0.20.9",
         "@testing-library/jest-dom": "5.16.5",
         "@testing-library/react": "14.0.0",
         "@testing-library/user-event": "14.4.3",
