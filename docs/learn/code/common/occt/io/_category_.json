@@ -1,0 +1,10 @@
+{
+    "label": "IO",
+    "position": 7,
+    "link": {
+        "type": "generated-index",
+        "title": "Inputs & Outputs",
+        "description": "Learn how to export and import various file formats, such as STEP, IGES, DXF & STL through OCCT kernel.",
+        "slug": "/code/common/occt/io"
+    }
+}
