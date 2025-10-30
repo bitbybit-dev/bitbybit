@@ -17,6 +17,7 @@ import { TextWiresDataDto, ObjectDefinition } from "../../api/models/bucket";
 import { OperationsService } from "./operations.service";
 import { FilletsService } from "./fillets.service";
 import { BaseBitByBit } from "../../base";
+import { VectorHelperService } from "../../api/vector-helper.service";
 export class WiresService {
 
     constructor(
@@ -31,6 +32,7 @@ export class WiresService {
         private readonly converterService: ConverterService,
         private readonly geomService: GeomService,
         private readonly edgesService: EdgesService,
+        private readonly vecHelper: VectorHelperService,
         public filletsService: FilletsService,
         public operationsService: OperationsService,
     ) { }
@@ -1056,4 +1058,15 @@ export class WiresService {
         return res;
     }
 
+    wiresToPoints(inputs: Inputs.OCCT.WiresToPointsDto<TopoDS_Shape>): Inputs.Base.Point3[][] {
+        const wires = this.shapeGettersService.getWires({ shape: inputs.shape });
+        const allWirePoints = [];
+        wires.forEach(w => {
+            const edgePoints = this.edgesService.edgesToPoints({ ...inputs, shape: w });
+            const flatPoints = edgePoints.flat();
+            const dupsRemoved = this.vecHelper.removeConsecutiveDuplicates(flatPoints, false);
+            allWirePoints.push(dupsRemoved);
+        });
+        return allWirePoints;
+    }
 }

@@ -1,6 +1,7 @@
 import { IGESControl_Reader_1, OpenCascadeInstance, STEPControl_Reader_1, STEPControl_StepModelType, TopoDS_Shape } from "../../bitbybit-dev-occt/bitbybit-dev-occt";
 import { OccHelper } from "../occ-helper";
 import * as Inputs from "../api/inputs/inputs";
+import { IO } from "@bitbybit-dev/base/lib/api/inputs";
 
 export class OCCTIO {
 
@@ -189,10 +190,10 @@ export class OCCTIO {
     private parseStepAssembly(inputs: Inputs.OCCT.LoadStepOrIgesDto) {
         const fileName = inputs.fileName;
         const fileText = inputs.filetext;
-        
+
         // Write file to virtual filesystem
         this.occ.FS.createDataFile("/", "step_file.step", fileText as string, true, true, true);
-        
+
         try {
             // Create XCAF application and document
             const app = this.occ.XCAFApp_Application.GetApplication();
@@ -207,26 +208,26 @@ export class OCCTIO {
             reader.SetNameMode(true);     // Enable name reading  
             reader.SetLayerMode(true);    // Enable layer reading
             reader.SetPropsMode(true);    // Enable properties reading
-            
+
             // Read the file
             const readResult = reader.ReadFile("step_file.step");
-            
+
             if (readResult === this.occ.IFSelect_ReturnStatus.IFSelect_RetDone) {
                 // Transfer to XCAF document
                 const messageProgress = new this.occ.Message_ProgressRange_1();
                 const transferResult = reader.Transfer_1(docHandle, messageProgress);
                 messageProgress.delete();
-                
+
                 if (transferResult) {
                     // Parse using the improved assembly parser
                     // const assemblyStructure = this.ioAssembly.parseXCAFDocument(doc);
-                    
+
                     // Clean up
                     reader.delete();
                     format.delete();
                     docHandle.delete();
                     this.occ.FS.unlink("/step_file.step");
-                    
+
                     return {};
                 } else {
                     throw new Error("Failed to transfer STEP data to XCAF document");
@@ -238,5 +239,17 @@ export class OCCTIO {
             this.occ.FS.unlink("/step_file.step");
             throw error;
         }
+    }
+    
+    shapeToDxfPaths(inputs: Inputs.OCCT.ShapeToDxfPathsDto<TopoDS_Shape>): IO.DxfPathDto[] {
+        return this.och.dxfService.shapeToDxfPaths(inputs);
+    }
+
+    dxfPathsWithLayer(inputs: Inputs.OCCT.DxfPathsWithLayerDto): IO.DxfPathsPartDto {
+        return this.och.dxfService.dxfPathsWithLayer(inputs);
+    }
+
+    dxfCreate(inputs: Inputs.OCCT.DxfPathsPartsListDto): string {
+        return this.och.dxfService.dxfCreate(inputs);
     }
 }

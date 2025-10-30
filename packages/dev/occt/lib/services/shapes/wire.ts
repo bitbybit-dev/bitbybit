@@ -382,15 +382,7 @@ export class OCCTWire {
     }
 
     wiresToPoints(inputs: Inputs.OCCT.WiresToPointsDto<TopoDS_Shape>): Inputs.Base.Point3[][] {
-        const wires = this.getWires({ shape: inputs.shape });
-        const allWirePoints = [];
-        wires.forEach(w => {
-            const edgePoints = this.och.edgesService.edgesToPoints({ ...inputs, shape: w });
-            const flatPoints = edgePoints.flat();
-            const dupsRemoved = this.och.vecHelper.removeConsecutiveDuplicates(flatPoints, false);
-            allWirePoints.push(dupsRemoved);
-        });
-        return allWirePoints;
+        return this.och.wiresService.wiresToPoints(inputs);
     }
 
     projectWires(inputs: Inputs.OCCT.ProjectWiresDto<TopoDS_Wire, TopoDS_Shape>): TopoDS_Compound[] {

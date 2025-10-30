@@ -72,6 +72,15 @@ export namespace Base {
         borderBox = "border-box",
         contentBox = "content-box",
     }
+    export enum verticalAlignmentEnum {
+        top = "top",
+        middle = "middle",
+        bottom = "bottom",
+    }
+    export enum topBottomEnum {
+        top = "top",
+        bottom = "bottom",
+    }
     // Can't use BabylonJS types here as that crashes worker, which tries to include them
     export type Color = string;
     export type ColorRGB = { r: number, g: number, b: number };

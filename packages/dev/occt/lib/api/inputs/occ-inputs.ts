@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-namespace */
 import { Base } from "./inputs";
+import { IO } from "@bitbybit-dev/base/lib/api/inputs/io-inputs";
 
 export namespace OCCT {
 
@@ -5515,7 +5516,7 @@ export namespace OCCT {
          */
         fromRightHanded? = false;
         /**
-         * Will attempt to downlaod the file if that is possible
+         * Will attempt to download the file if that is possible, keep in mind that you might need to implement this yourself. In bitbybit this is handled by worker layers which only run in browsers.
          * @default true
          */
         tryDownload? = true;
@@ -5550,7 +5551,7 @@ export namespace OCCT {
          */
         adjustYtoZ = false;
         /**
-         * Try download the file if that is possible
+         * Will attempt to download the file if that is possible, keep in mind that you might need to implement this yourself. In bitbybit this is handled by worker layers which only run in browsers.
          * @default true
          */
         tryDownload? = true;
@@ -5559,6 +5560,175 @@ export namespace OCCT {
          * @default true
          */
         binary? = true;
+    }
+
+    export class ShapeToDxfPathsDto<T> {
+        constructor(shape?: T, angularDeflection?: number, curvatureDeflection?: number, minimumOfPoints?: number, uTolerance?: number, minimumLength?: number) {
+            if (shape !== undefined) { this.shape = shape; }
+            if (angularDeflection !== undefined) { this.angularDeflection = angularDeflection; }
+            if (curvatureDeflection !== undefined) { this.curvatureDeflection = curvatureDeflection; }
+            if (minimumOfPoints !== undefined) { this.minimumOfPoints = minimumOfPoints; }
+            if (uTolerance !== undefined) { this.uTolerance = uTolerance; }
+            if (minimumLength !== undefined) { this.minimumLength = minimumLength; }
+        }
+        /**
+         * Shape to convert to DXF paths
+         * @default undefined
+         */
+        shape: T;
+        /**
+         * The angular deflection for curve tessellation
+         * @default 0.1
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.01
+         */
+        angularDeflection = 0.1;
+        /**
+         * The curvature deflection for curve tessellation
+         * @default 0.1
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.001
+         */
+        curvatureDeflection = 0.1;
+        /**
+         * Minimum of points for curve tessellation
+         * @default 2
+         * @minimum 0
+         * @maximum Infinity
+         * @step 1
+         */
+        minimumOfPoints = 2;
+        /**
+         * U tolerance for curve tessellation
+         * @default 1.0e-9
+         * @minimum 0
+         * @maximum Infinity
+         * @step 1.0e-9
+         */
+        uTolerance = 1.0e-9;
+        /**
+         * Minimum length for curve tessellation
+         * @default 1.0e-7
+         * @minimum 0
+         * @maximum Infinity
+         * @step 1.0e-7
+         */
+        minimumLength = 1.0e-7;
+    }
+
+    export class DxfPathsWithLayerDto {
+        constructor(paths?: IO.DxfPathDto[], layer?: string, color?: Base.Color) {
+            if (paths !== undefined) { this.paths = paths; }
+            if (layer !== undefined) { this.layer = layer; }
+            if (color !== undefined) { this.color = color; }
+        }
+        /**
+         * Array of DXF paths (output from shapeToDxfPaths)
+         * @default undefined
+         */
+        paths: IO.DxfPathDto[];
+        /**
+         * Layer name for these paths
+         * @default Default
+         */
+        layer = "Default";
+        /**
+         * Color for these paths
+         * @default #000000
+         */
+        color: Base.Color = "#000000";
+    }
+
+    export class DxfPathsPartsListDto {
+        constructor(pathsParts?: IO.DxfPathsPartDto[], tryDownload?: boolean) {
+            if (pathsParts !== undefined) { this.pathsParts = pathsParts; }
+            if (tryDownload !== undefined) { this.tryDownload = tryDownload; }
+        }
+        /**
+         * Array of DXF paths parts (output from dxfPathsWithLayer)
+         * @default undefined
+         */
+        pathsParts: IO.DxfPathsPartDto[];
+        /**
+         * File name
+         * @default bitbybit-dev.dxf
+         */
+        fileName? = "bitbybit-dev.dxf";
+        /**
+         * Will attempt to download the file if that is possible, keep in mind that you might need to implement this yourself. In bitbybit this is handled by worker layers which only run in browsers.
+         * @default true
+         */
+        tryDownload? = true;
+    }
+
+    export class SaveDxfDto<T> {
+        constructor(shape?: T, fileName?: string, tryDownload?: boolean, angularDeflection?: number, curvatureDeflection?: number, minimumOfPoints?: number, uTolerance?: number, minimumLength?: number) {
+            if (shape !== undefined) { this.shape = shape; }
+            if (fileName !== undefined) { this.fileName = fileName; }
+            if (tryDownload !== undefined) { this.tryDownload = tryDownload; }
+            if (angularDeflection !== undefined) { this.angularDeflection = angularDeflection; }
+            if (curvatureDeflection !== undefined) { this.curvatureDeflection = curvatureDeflection; }
+            if (minimumOfPoints !== undefined) { this.minimumOfPoints = minimumOfPoints; }
+            if (uTolerance !== undefined) { this.uTolerance = uTolerance; }
+            if (minimumLength !== undefined) { this.minimumLength = minimumLength; }
+        }
+        /**
+         * Shape to save
+         * @default undefined
+         */
+        shape: T;
+        /**
+         * File name
+         * @default shape.dxf
+         */
+        fileName = "shape.dxf";
+        /**
+         * Will attempt to download the file if that is possible, keep in mind that you might need to implement this yourself. In bitbybit this is handled by worker layers which only run in browsers.
+         * @default true
+         */
+        tryDownload? = true;
+        /**
+         * The angular deflection
+         * @default 0.1
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.01
+         */
+        angularDeflection = 0.1;
+        /**
+         * The curvature deflection
+         * @default 0.1
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.001
+         */
+        curvatureDeflection = 0.1;
+        /**
+         * Minimum of points
+         * @default 2
+         * @minimum 0
+         * @maximum Infinity
+         * @step 1
+         */
+        minimumOfPoints = 2;
+        /**
+         * U tolerance
+         * @default 1.0e-9
+         * @minimum 0
+         * @maximum Infinity
+         * @step 1.0e-9
+         */
+        uTolerance = 1.0e-9;
+        /**
+         * Minimum length
+         * @default 1.0e-7
+         * @minimum 0
+         * @maximum Infinity
+         * @step 1.0e-7
+         */
+        minimumLength = 1.0e-7;
     }
     export class ImportStepIgesFromTextDto {
         constructor(text?: string, fileType?: fileTypeEnum, adjustZtoY?: boolean) {

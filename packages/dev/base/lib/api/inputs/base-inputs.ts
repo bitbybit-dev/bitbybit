@@ -26,17 +26,17 @@ export namespace Base {
     export type TransformMatrix = [number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number];
     export type TransformMatrixes = TransformMatrix[];
     export enum horizontalAlignEnum {
-        /**
-         * Aligns to the left
-         */
         left = "left",
-        /**
-         * Aligns to the center
-         */
         center = "center",
-        /**
-         * Aligns to the right
-         */
         right = "right",
+    }
+    export enum verticalAlignmentEnum {
+        top = "top",
+        middle = "middle",
+        bottom = "bottom",
+    }
+    export enum topBottomEnum {
+        top = "top",
+        bottom = "bottom",
     }
 }
