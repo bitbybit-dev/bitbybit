@@ -31,7 +31,6 @@ export class FilletsService {
 
     filletEdges(inputs: Inputs.OCCT.FilletDto<TopoDS_Shape>) {
 
-
         if (!inputs.indexes || (inputs.indexes.length && inputs.indexes.length === 0)) {
             if (inputs.radius === undefined) {
                 throw (Error("Radius not defined"));

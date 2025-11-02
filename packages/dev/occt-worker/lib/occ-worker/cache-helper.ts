@@ -133,9 +133,51 @@ export class CacheHelper {
         }
         return toReturn;
     }
-    /** Returns the cached object if it exists, or null otherwise. */
+    /** Returns the cached object if it exists and is valid, or null otherwise. */
     checkCache(hash): any {
-        return this.argCache[hash] || null;
+        const cachedShape = this.argCache[hash];
+        if (!cachedShape) {
+            return null;
+        }
+        
+        // Check if the cached shape is still valid (not deleted)
+        if (this.isOCCTObject(cachedShape)) {
+            // Handle arrays of OCCT objects
+            if (Array.isArray(cachedShape)) {
+                // Check if any shape in the array has been deleted
+                for (const shape of cachedShape) {
+                    try {
+                        if (shape.IsNull && shape.IsNull()) {
+                            // One of the shapes is null, invalidate entire cache entry
+                            delete this.argCache[hash];
+                            return null;
+                        }
+                    } catch (e) {
+                        // If calling IsNull() throws an error, the object has been deleted
+                        delete this.argCache[hash];
+                        return null;
+                    }
+                }
+            } else {
+                // Handle single OCCT object
+                try {
+                    // Check if the shape has been deleted by checking if IsNull() can be called
+                    // and if the shape is null or invalid
+                    if (cachedShape.IsNull && cachedShape.IsNull()) {
+                        // Shape is null, remove from cache and return null
+                        delete this.argCache[hash];
+                        return null;
+                    }
+                } catch (e) {
+                    // If calling IsNull() throws an error, the object has been deleted
+                    // Remove from cache and return null
+                    delete this.argCache[hash];
+                    return null;
+                }
+            }
+        }
+        
+        return cachedShape;
     }
     /** Adds this `shape` to the cache, indexable by `hash`. */
     addToCache(hash, shape): any {
