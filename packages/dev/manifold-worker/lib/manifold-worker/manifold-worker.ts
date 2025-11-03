@@ -48,13 +48,29 @@ export const onMessageInput = (d: DataInput, postMessage) => {
             Object.keys(d.action.inputs).forEach(key => {
                 const val = d.action.inputs[key];
                 if (val && val.type && val.type === "manifold-shape" && val.hash) {
-                    d.action.inputs[key] = cacheHelper.checkCache(d.action.inputs[key].hash);
+                    const cachedManifold = cacheHelper.checkCache(d.action.inputs[key].hash);
+                    if (!cachedManifold) {
+                        throw new Error(`Manifold with hash ${d.action.inputs[key].hash} not found in cache. The cache may have been cleaned. Please regenerate the manifold.`);
+                    }
+                    d.action.inputs[key] = cachedManifold;
                 }
                 if (val && Array.isArray(val) && val.length > 0) {
                     if ((val[0].type && val[0].type === "manifold-shape" && val[0].hash)) {
-                        d.action.inputs[key] = d.action.inputs[key].map(manifold => cacheHelper.checkCache(manifold.hash));
+                        d.action.inputs[key] = d.action.inputs[key].map(manifold => {
+                            const cachedManifold = cacheHelper.checkCache(manifold.hash);
+                            if (!cachedManifold) {
+                                throw new Error(`Manifold with hash ${manifold.hash} not found in cache. The cache may have been cleaned. Please regenerate the manifold.`);
+                            }
+                            return cachedManifold;
+                        });
                     } else if ((Array.isArray(val[0]) && val[0][0].type && val[0][0].type === "manifold-shape" && val[0][0].hash)) {
-                        d.action.inputs[key] = d.action.inputs[key].map(manifolds => manifolds.map(manifold => cacheHelper.checkCache(manifold.hash)));
+                        d.action.inputs[key] = d.action.inputs[key].map(manifolds => manifolds.map(manifold => {
+                            const cachedManifold = cacheHelper.checkCache(manifold.hash);
+                            if (!cachedManifold) {
+                                throw new Error(`Manifold with hash ${manifold.hash} not found in cache. The cache may have been cleaned. Please regenerate the manifold.`);
+                            }
+                            return cachedManifold;
+                        }));
                     }
                 }
             });
@@ -95,11 +111,19 @@ export const onMessageInput = (d: DataInput, postMessage) => {
             }
         }
         if (d.action.functionName === "manifoldToMesh") {
-            d.action.inputs.manifold = cacheHelper.checkCache(d.action.inputs.manifold.hash);
+            const cachedManifold = cacheHelper.checkCache(d.action.inputs.manifold.hash);
+            if (!cachedManifold) {
+                throw new Error(`Manifold with hash ${d.action.inputs.manifold.hash} not found in cache. The cache may have been cleaned. Please regenerate the manifold.`);
+            }
+            d.action.inputs.manifold = cachedManifold;
             result = manifold.decomposeManifoldOrCrossSection(d.action.inputs);
         }
         if (d.action.functionName === "manifoldToMeshPointer") {
-            d.action.inputs.manifold = cacheHelper.checkCache(d.action.inputs.manifold.hash);
+            const cachedManifold = cacheHelper.checkCache(d.action.inputs.manifold.hash);
+            if (!cachedManifold) {
+                throw new Error(`Manifold with hash ${d.action.inputs.manifold.hash} not found in cache. The cache may have been cleaned. Please regenerate the manifold.`);
+            }
+            d.action.inputs.manifold = cachedManifold;
             const r = manifold.manifold.manifoldToMesh(d.action.inputs);
             const hash = cacheHelper.computeHash(d.action);
             cacheHelper.addToCache(hash, r);
@@ -107,7 +131,13 @@ export const onMessageInput = (d: DataInput, postMessage) => {
         }
         if (d.action.functionName === "manifoldsToMeshes") {
             if (d.action.inputs.manifolds && d.action.inputs.manifolds.length > 0) {
-                d.action.inputs.manifolds = d.action.inputs.manifolds.map(manifold => cacheHelper.checkCache(manifold.hash));
+                d.action.inputs.manifolds = d.action.inputs.manifolds.map(manifold => {
+                    const cachedManifold = cacheHelper.checkCache(manifold.hash);
+                    if (!cachedManifold) {
+                        throw new Error(`Manifold with hash ${manifold.hash} not found in cache. The cache may have been cleaned. Please regenerate the manifold.`);
+                    }
+                    return cachedManifold;
+                });
             } else {
                 throw new Error("No manifolds detected");
             }
