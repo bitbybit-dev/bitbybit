@@ -1,0 +1,53 @@
+{
+    "name": "bitbybit-examples",
+    "version": "0.20.10",
+    "description": "Monorepo for browser CAD which holds bitbybit.dev npm packages",
+    "main": "index.js",
+    "scripts": {
+        "ci-angular-babylonjs-laptop-holder": "cd angular/babylonjs/laptop-holder && npm install",
+        "ci-angular-threejs-simple-viewer": "cd angular/threejs/simple && npm install",
+        "ci-angular-three-vite-basic-example": "cd angular/threejs/vite-basic-example && npm install",
+        "ci-nextjs-babylonjs-simple": "cd nextjs/babylonjs/simple && npm install",
+        "ci-node-basic": "cd node/basic && npm install",
+        "ci-node-express-app": "cd node/express-app && npm install",
+        "ci-nuxt-babylonjs-basic": "cd nuxt/babylonjs/basic && npm install",
+        "ci-react-babylonjs-cup": "cd react/babylonjs/cup && npm install",
+        "ci-react-babylonjs-laptop-holder": "cd react/babylonjs/laptop-holder && npm install",
+        "ci-react-threejs-vase": "cd react/threejs/vase && npm install",
+        "ci-vite-babylonjs-hex-house-concept": "cd vite/babylonjs/hex-house-concept && npm install",
+        "ci-vite-babylonjs-hex-shell": "cd vite/babylonjs/hex-shell && npm install",
+        "ci-vite-babylonjs-starter-template": "cd vite/babylonjs/starter-template && npm install",
+        "ci-vite-threejs-cup": "cd vite/threejs/cup && npm install",
+        "ci-vite-threejs-hex-house-concept": "cd vite/threejs/hex-house-concept && npm install",
+        "ci-vite-threejs-hex-shell": "cd vite/threejs/hex-shell && npm install",
+        "ci-vite-threejs-starter-template": "cd vite/threejs/starter-template && npm install",
+        "ci-webpack-threejs": "cd webpack/threejs && npm install",
+        "ci-packages": "npm run ci-angular-babylonjs-laptop-holder && npm run ci-angular-threejs-simple-viewer && npm run ci-angular-three-vite-basic-example && npm run ci-nextjs-babylonjs-simple && npm run ci-node-basic && npm run ci-node-express-app && npm run ci-nuxt-babylonjs-basic && npm run ci-react-babylonjs-cup && npm run ci-react-babylonjs-laptop-holder && npm run ci-react-threejs-vase && npm run ci-vite-babylonjs-hex-house-concept && npm run ci-vite-babylonjs-hex-shell &&  npm run ci-vite-babylonjs-starter-template && npm run ci-vite-threejs-cup && npm run ci-vite-threejs-hex-house-concept && npm run ci-vite-threejs-hex-shell && npm run ci-vite-threejs-starter-template && npm run ci-webpack-threejs"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/bitbybit-dev/bitbybit.git"
+    },
+    "keywords": [
+        "CAD",
+        "3D",
+        "Geometry",
+        "OCCT",
+        "JSCAD",
+        "Manifold",
+        "ThreeJS",
+        "BabylonJS",
+        "Automotive",
+        "AEC"
+    ],
+    "author": "Bit By Bit Developers",
+    "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/bitbybit-dev/bitbybit/issues"
+    },
+    "homepage": "https://bitbybit.dev",
+    "devDependencies": {
+        "shx": "^0.4.0",
+        "typescript": "^4.3.5"
+    }
+}

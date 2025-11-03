@@ -62,13 +62,29 @@ export const onMessageInput = (d: DataInput, postMessage) => {
             Object.keys(d.action.inputs).forEach(key => {
                 const val = d.action.inputs[key];
                 if (val && val.type && val.type === "occ-shape" && val.hash) {
-                    d.action.inputs[key] = cacheHelper.checkCache(d.action.inputs[key].hash);
+                    const cachedShape = cacheHelper.checkCache(d.action.inputs[key].hash);
+                    if (!cachedShape) {
+                        throw new Error(`Shape with hash ${d.action.inputs[key].hash} not found in cache. The cache may have been cleaned. Please regenerate the shape.`);
+                    }
+                    d.action.inputs[key] = cachedShape;
                 }
                 if (val && Array.isArray(val) && val.length > 0) {
                     if ((val[0].type && val[0].type === "occ-shape" && val[0].hash)) {
-                        d.action.inputs[key] = d.action.inputs[key].map(shape => cacheHelper.checkCache(shape.hash));
+                        d.action.inputs[key] = d.action.inputs[key].map(shape => {
+                            const cachedShape = cacheHelper.checkCache(shape.hash);
+                            if (!cachedShape) {
+                                throw new Error(`Shape with hash ${shape.hash} not found in cache. The cache may have been cleaned. Please regenerate the shape.`);
+                            }
+                            return cachedShape;
+                        });
                     } else if ((Array.isArray(val[0]) && val[0][0].type && val[0][0].type === "occ-shape" && val[0][0].hash)) {
-                        d.action.inputs[key] = d.action.inputs[key].map(shapes => shapes.map(shape => cacheHelper.checkCache(shape.hash)));
+                        d.action.inputs[key] = d.action.inputs[key].map(shapes => shapes.map(shape => {
+                            const cachedShape = cacheHelper.checkCache(shape.hash);
+                            if (!cachedShape) {
+                                throw new Error(`Shape with hash ${shape.hash} not found in cache. The cache may have been cleaned. Please regenerate the shape.`);
+                            }
+                            return cachedShape;
+                        }));
                     }
                 }
             });
@@ -101,7 +117,11 @@ export const onMessageInput = (d: DataInput, postMessage) => {
             }
         }
         if (d.action.functionName === "saveShapeSTEP") {
-            d.action.inputs.shape = cacheHelper.checkCache(d.action.inputs.shape.hash);
+            const cachedShape = cacheHelper.checkCache(d.action.inputs.shape.hash);
+            if (!cachedShape) {
+                throw new Error(`Shape with hash ${d.action.inputs.shape.hash} not found in cache. The cache may have been cleaned. Please regenerate the shape.`);
+            }
+            d.action.inputs.shape = cachedShape;
             result = openCascade.io.saveShapeSTEP(d.action.inputs);
         }
         if (d.action.functionName === "addOc") {
@@ -114,12 +134,22 @@ export const onMessageInput = (d: DataInput, postMessage) => {
             }
         }
         if (d.action.functionName === "shapeToMesh") {
-            d.action.inputs.shape = cacheHelper.checkCache(d.action.inputs.shape.hash);
+            const cachedShape = cacheHelper.checkCache(d.action.inputs.shape.hash);
+            if (!cachedShape) {
+                throw new Error(`Shape with hash ${d.action.inputs.shape.hash} not found in cache. The cache may have been cleaned. Please regenerate the shape.`);
+            }
+            d.action.inputs.shape = cachedShape;
             result = openCascade.shapeToMesh(d.action.inputs);
         }
         if (d.action.functionName === "shapesToMeshes") {
             if (d.action.inputs.shapes && d.action.inputs.shapes.length > 0) {
-                d.action.inputs.shapes = d.action.inputs.shapes.map(shape => cacheHelper.checkCache(shape.hash));
+                d.action.inputs.shapes = d.action.inputs.shapes.map(shape => {
+                    const cachedShape = cacheHelper.checkCache(shape.hash);
+                    if (!cachedShape) {
+                        throw new Error(`Shape with hash ${shape.hash} not found in cache. The cache may have been cleaned. Please regenerate the shape.`);
+                    }
+                    return cachedShape;
+                });
             } else {
                 throw new Error("No shapes detected");
             }

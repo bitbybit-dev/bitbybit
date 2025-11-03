@@ -182,7 +182,10 @@ export const simplex = {
     8731: [24, 2, 21, 5, 21, 4, 19, 5, 18, 6, 17, 6, 16, 5, 15, 3, 15, 2, 16, undefined, 8, 12, 10, 8, 12, 0, undefined, 12, 0, 14, 21, undefined, 14, 21, 24, 21],
     
     // 8732: ∜ (fourth root) - with 4 indicator same size as 3
-    8732: [24, 5, 21, 3, 18, 6, 18, undefined, 5, 21, 5, 15, undefined, 8, 12, 10, 8, 12, 0, undefined, 12, 0, 14, 21, undefined, 14, 21, 24, 21]
+    8732: [24, 5, 21, 3, 18, 6, 18, undefined, 5, 21, 5, 15, undefined, 8, 12, 10, 8, 12, 0, undefined, 12, 0, 14, 21, undefined, 14, 21, 24, 21],
+    
+    // 8960: ⌀ (diameter symbol) - circle with diagonal slash
+    8960: [22, 9, 21, 7, 20, 5, 18, 4, 16, 3, 13, 3, 8, 4, 5, 5, 3, 7, 1, 9, 0, 13, 0, 15, 1, 17, 3, 18, 5, 19, 8, 19, 13, 18, 16, 17, 18, 15, 20, 13, 21, 9, 21, undefined, 6, 3, 16, 18]
 };
 
 export const defaultsVectorParams = {

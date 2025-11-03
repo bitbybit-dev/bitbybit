@@ -235,22 +235,87 @@ export class WiresService {
     createLPolygonWire(inputs: Inputs.OCCT.LPolygonDto) {
         let points: Base.Point3[];
         switch (inputs.align) {
-            case Inputs.OCCT.directionEnum.outside:
-                points = this.shapesHelperService.polygonL(inputs.widthFirst, inputs.lengthFirst, inputs.widthSecond, inputs.lengthSecond);
-                break;
-            case Inputs.OCCT.directionEnum.inside:
-                points = this.shapesHelperService.polygonLInverted(inputs.widthFirst, inputs.lengthFirst, inputs.widthSecond, inputs.lengthSecond);
-                break;
-            case Inputs.OCCT.directionEnum.middle:
-                points = this.shapesHelperService.polygonLMiddle(inputs.widthFirst, inputs.lengthFirst, inputs.widthSecond, inputs.lengthSecond);
-                break;
-            default:
-                points = this.shapesHelperService.polygonL(inputs.widthFirst, inputs.lengthFirst, inputs.widthSecond, inputs.lengthSecond);
+        case Inputs.OCCT.directionEnum.outside:
+            points = this.shapesHelperService.polygonL(inputs.widthFirst, inputs.lengthFirst, inputs.widthSecond, inputs.lengthSecond);
+            break;
+        case Inputs.OCCT.directionEnum.inside:
+            points = this.shapesHelperService.polygonLInverted(inputs.widthFirst, inputs.lengthFirst, inputs.widthSecond, inputs.lengthSecond);
+            break;
+        case Inputs.OCCT.directionEnum.middle:
+            points = this.shapesHelperService.polygonLMiddle(inputs.widthFirst, inputs.lengthFirst, inputs.widthSecond, inputs.lengthSecond);
+            break;
+        default:
+            points = this.shapesHelperService.polygonL(inputs.widthFirst, inputs.lengthFirst, inputs.widthSecond, inputs.lengthSecond);
         }
         const wire = this.createPolygonWire({
             points
         });
 
+        const rotated = this.transformsService.rotate({ shape: wire, angle: inputs.rotation, axis: [0, 1, 0] });
+        const aligned = this.transformsService.alignAndTranslate({ shape: rotated, direction: inputs.direction, center: inputs.center });
+        wire.delete();
+        rotated.delete();
+        return aligned;
+    }
+
+    createIBeamProfileWire(inputs: Inputs.OCCT.IBeamProfileDto) {
+        const points = this.shapesHelperService.beamIProfile(
+            inputs.width,
+            inputs.height,
+            inputs.webThickness,
+            inputs.flangeThickness,
+            inputs.alignment
+        );
+        const wire = this.createPolygonWire({ points });
+        const rotated = this.transformsService.rotate({ shape: wire, angle: inputs.rotation, axis: [0, 1, 0] });
+        const aligned = this.transformsService.alignAndTranslate({ shape: rotated, direction: inputs.direction, center: inputs.center });
+        wire.delete();
+        rotated.delete();
+        return aligned;
+    }
+
+    createHBeamProfileWire(inputs: Inputs.OCCT.HBeamProfileDto) {
+        const points = this.shapesHelperService.beamHProfile(
+            inputs.width,
+            inputs.height,
+            inputs.webThickness,
+            inputs.flangeThickness,
+            inputs.alignment
+        );
+        const wire = this.createPolygonWire({ points });
+        const rotated = this.transformsService.rotate({ shape: wire, angle: inputs.rotation, axis: [0, 1, 0] });
+        const aligned = this.transformsService.alignAndTranslate({ shape: rotated, direction: inputs.direction, center: inputs.center });
+        wire.delete();
+        rotated.delete();
+        return aligned;
+    }
+
+    createTBeamProfileWire(inputs: Inputs.OCCT.TBeamProfileDto) {
+        const points = this.shapesHelperService.beamTProfile(
+            inputs.width,
+            inputs.height,
+            inputs.webThickness,
+            inputs.flangeThickness,
+            inputs.alignment
+        );
+        const wire = this.createPolygonWire({ points });
+        const rotated = this.transformsService.rotate({ shape: wire, angle: inputs.rotation, axis: [0, 1, 0] });
+        const aligned = this.transformsService.alignAndTranslate({ shape: rotated, direction: inputs.direction, center: inputs.center });
+        wire.delete();
+        rotated.delete();
+        return aligned;
+    }
+
+    createUBeamProfileWire(inputs: Inputs.OCCT.UBeamProfileDto) {
+        const points = this.shapesHelperService.beamUProfile(
+            inputs.width,
+            inputs.height,
+            inputs.webThickness,
+            inputs.flangeThickness,
+            inputs.flangeWidth,
+            inputs.alignment
+        );
+        const wire = this.createPolygonWire({ points });
         const rotated = this.transformsService.rotate({ shape: wire, angle: inputs.rotation, axis: [0, 1, 0] });
         const aligned = this.transformsService.alignAndTranslate({ shape: rotated, direction: inputs.direction, center: inputs.center });
         wire.delete();

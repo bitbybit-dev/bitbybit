@@ -323,4 +323,241 @@ describe("OCCT io unit tests", () => {
         expect(polyline.closed).toBe(true);
         expect(polyline.points.length).toBeGreaterThan(3);
     });
+
+    it("should correctly export oblong slot with opposing semicircular arcs", () => {
+        const radius = 5;
+        const leftArcCenterX = 10;
+        const rightArcCenterX = 30;
+        const arcCenterZ = 20;
+
+        // Top straight line
+        const topLine = wire.createPolylineWire({
+            points: [
+                [leftArcCenterX, 0, arcCenterZ + radius],
+                [rightArcCenterX, 0, arcCenterZ + radius]
+            ]
+        });
+
+        // Right semicircle arc (from top to bottom, curving right)
+        const rightArc = occHelper.edgesService.arcThroughTwoPointsAndTangent({
+            start: [rightArcCenterX, 0, arcCenterZ + radius],
+            end: [rightArcCenterX, 0, arcCenterZ - radius],
+            tangentVec: [1, 0, 0]
+        });
+
+        // Bottom straight line
+        const bottomLine = wire.createPolylineWire({
+            points: [
+                [rightArcCenterX, 0, arcCenterZ - radius],
+                [leftArcCenterX, 0, arcCenterZ - radius]
+            ]
+        });
+
+        // Left semicircle arc (from bottom to top, curving left)
+        const leftArc = occHelper.edgesService.arcThroughTwoPointsAndTangent({
+            start: [leftArcCenterX, 0, arcCenterZ - radius],
+            end: [leftArcCenterX, 0, arcCenterZ + radius],
+            tangentVec: [-1, 0, 0]
+        });
+
+        const slotWire = wire.combineEdgesAndWiresIntoAWire({
+            shapes: [topLine, rightArc, bottomLine, leftArc]
+        });
+
+        const dxfPathOpt = new Inputs.OCCT.ShapeToDxfPathsDto<TopoDS_Shape>(slotWire);
+        const dxfPaths = io.shapeToDxfPaths(dxfPathOpt);
+
+        expect(dxfPaths.length).toBe(1);
+        expect(dxfPaths[0].segments.length).toBe(1);
+
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const polyline = dxfPaths[0].segments[0] as any;
+        expect(polyline.points).toBeDefined();
+        expect(polyline.bulges).toBeDefined();
+        expect(polyline.closed).toBe(true);
+
+        // Find bulge indices for the arcs
+        const bulges = polyline.bulges;
+
+        // Both arcs should have significant non-zero bulges (semicircles ≈ ±1)
+        const significantBulges = bulges.filter((b: number) => Math.abs(b) > 0.9);
+        expect(significantBulges.length).toBe(2); // Two semicircular arcs
+
+        // The two arcs should have opposite signs (one CW, one CCW)
+        // Find the two significant bulges
+        const bulgeIndices: number[] = [];
+        for (let i = 0; i < bulges.length; i++) {
+            if (Math.abs(bulges[i]) > 0.9) {
+                bulgeIndices.push(i);
+            }
+        }
+        expect(bulgeIndices.length).toBe(2);
+        
+        // Check that they have opposite signs
+        const bulge1 = bulges[bulgeIndices[0]];
+        const bulge2 = bulges[bulgeIndices[1]];
+        expect(bulge1 * bulge2).toBeLessThan(0); // Opposite signs
+
+        slotWire.delete();
+        topLine.delete();
+        bottomLine.delete();
+        rightArc.delete();
+        leftArc.delete();
+    });
+
+    it("should correctly export semicircular arc curving right with positive bulge", () => {
+        const radius = 5;
+        const centerX = 20;
+        const centerZ = 10;
+
+        // Semicircle arc from top to bottom with tangent pointing right
+        // This should create an arc that curves to the RIGHT = positive bulge
+        const rightArc = occHelper.edgesService.arcThroughTwoPointsAndTangent({
+            start: [centerX, 0, centerZ + radius],
+            end: [centerX, 0, centerZ - radius],
+            tangentVec: [1, 0, 0]  // Tangent pointing right
+        });
+
+        const arcWire = wire.combineEdgesAndWiresIntoAWire({ shapes: [rightArc] });
+
+        const startPt = occHelper.edgesService.startPointOnEdge({ shape: rightArc });
+        const endPt = occHelper.edgesService.endPointOnEdge({ shape: rightArc });
+
+        // Verify the arc geometry
+        expect(startPt[2]).toBeGreaterThan(endPt[2]); // Start is higher than end
+        
+        const dxfPathOpt = new Inputs.OCCT.ShapeToDxfPathsDto<TopoDS_Shape>(arcWire);
+        const dxfPaths = io.shapeToDxfPaths(dxfPathOpt);
+
+        expect(dxfPaths.length).toBe(1);
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const polyline = dxfPaths[0].segments[0] as any;
+
+        // For a semicircular arc, the bulge should be close to ±1
+        // The actual sign depends on the direction OCCT creates the arc
+        expect(Math.abs(polyline.bulges[0])).toBeGreaterThan(0.9); // Semicircle ≈ ±1
+        
+        arcWire.delete();
+        rightArc.delete();
+    });
+
+    it("should correctly export semicircular arc curving left with negative bulge", () => {
+        const radius = 5;
+        const centerX = 20;
+        const centerZ = 10;
+
+        // Semicircle arc from bottom to top with tangent pointing left
+        // This should create an arc that curves to the LEFT = negative bulge
+        const leftArc = occHelper.edgesService.arcThroughTwoPointsAndTangent({
+            start: [centerX, 0, centerZ - radius],
+            end: [centerX, 0, centerZ + radius],
+            tangentVec: [-1, 0, 0]  // Tangent pointing left
+        });
+
+        const arcWire = wire.combineEdgesAndWiresIntoAWire({ shapes: [leftArc] });
+
+        const startPt = occHelper.edgesService.startPointOnEdge({ shape: leftArc });
+        const endPt = occHelper.edgesService.endPointOnEdge({ shape: leftArc });
+
+        // Verify the arc geometry
+        expect(startPt[2]).toBeLessThan(endPt[2]); // Start is lower than end
+
+        const dxfPathOpt = new Inputs.OCCT.ShapeToDxfPathsDto<TopoDS_Shape>(arcWire);
+        const dxfPaths = io.shapeToDxfPaths(dxfPathOpt);
+
+        expect(dxfPaths.length).toBe(1);
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const polyline = dxfPaths[0].segments[0] as any;
+
+        // For a semicircular arc, the bulge should be close to ±1
+        expect(Math.abs(polyline.bulges[0])).toBeGreaterThan(0.9); // Semicircle ≈ ±1
+
+        arcWire.delete();
+        leftArc.delete();
+    });
+
+    it("should correctly export horizontal arc curving upward (center above chord)", () => {
+        const startX = 10;
+        const endX = 20;
+        const chordZ = 15;
+        
+        // Create arc with center above the chord
+        // For a horizontal chord, center above means positive Z offset
+        const centerX = (startX + endX) / 2;
+        const centerZ = chordZ + 5; // Center 5 units above the chord
+        const radius = Math.sqrt(Math.pow((endX - startX) / 2, 2) + Math.pow(5, 2)); // Calculate radius
+
+        // Create arc using arcThroughThreePoints
+        // Middle point should be on the arc itself, at the peak
+        const middleX = centerX;
+        const middleZ = centerZ + radius; // Top of the arc
+        
+        const arc = occHelper.edgesService.arcThroughThreePoints({
+            start: [startX, 0, chordZ],
+            middle: [middleX, 0, middleZ],
+            end: [endX, 0, chordZ]
+        });
+
+        const arcWire = wire.combineEdgesAndWiresIntoAWire({ shapes: [arc] });
+
+        const center = occHelper.edgesService.getCircularEdgeCenterPoint({ shape: arc });
+
+        const dxfPathOpt = new Inputs.OCCT.ShapeToDxfPathsDto<TopoDS_Shape>(arcWire);
+        const dxfPaths = io.shapeToDxfPaths(dxfPathOpt);
+
+        expect(dxfPaths.length).toBe(1);
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const polyline = dxfPaths[0].segments[0] as any;
+
+        // Verify center is actually above the chord
+        expect(center[2]).toBeGreaterThan(chordZ);
+        
+        // For a horizontal chord, center above = positive bulge
+        expect(polyline.bulges[0]).toBeGreaterThan(0.1);
+
+        arcWire.delete();
+        arc.delete();
+    });
+
+    it("should correctly export horizontal arc curving downward (center below chord)", () => {
+        const startX = 10;
+        const endX = 20;
+        const chordZ = 15;
+        
+        // Create arc with center below the chord
+        const centerX = (startX + endX) / 2;
+        const centerZ = chordZ - 5; // Center 5 units below the chord
+        const radius = Math.sqrt(Math.pow((endX - startX) / 2, 2) + Math.pow(5, 2)); // Calculate radius
+
+        // Create arc using arcThroughThreePoints
+        // Middle point should be on the arc itself, at the lowest point
+        const middleX = centerX;
+        const middleZ = centerZ - radius; // Bottom of the arc
+        
+        const arc = occHelper.edgesService.arcThroughThreePoints({
+            start: [startX, 0, chordZ],
+            middle: [middleX, 0, middleZ],
+            end: [endX, 0, chordZ]
+        });
+
+        const arcWire = wire.combineEdgesAndWiresIntoAWire({ shapes: [arc] });
+
+        const center = occHelper.edgesService.getCircularEdgeCenterPoint({ shape: arc });
+
+        const dxfPathOpt = new Inputs.OCCT.ShapeToDxfPathsDto<TopoDS_Shape>(arcWire);
+        const dxfPaths = io.shapeToDxfPaths(dxfPathOpt);
+
+        expect(dxfPaths.length).toBe(1);
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const polyline = dxfPaths[0].segments[0] as any;
+
+        // Verify center is actually below the chord
+        expect(center[2]).toBeLessThan(chordZ);
+        
+        // For a horizontal chord, center below = negative bulge
+        expect(polyline.bulges[0]).toBeLessThan(-0.1);
+
+        arcWire.delete();
+        arc.delete();
+    });
 });

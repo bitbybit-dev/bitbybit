@@ -1975,6 +1975,409 @@ export namespace OCCT {
          */
         direction: Base.Vector3 = [0, 1, 0];
     }
+    export class IBeamProfileDto {
+        constructor(width?: number, height?: number, webThickness?: number, flangeThickness?: number, alignment?: Base.basicAlignmentEnum, rotation?: number, center?: Base.Point3, direction?: Base.Vector3) {
+            if (width !== undefined) { this.width = width; }
+            if (height !== undefined) { this.height = height; }
+            if (webThickness !== undefined) { this.webThickness = webThickness; }
+            if (flangeThickness !== undefined) { this.flangeThickness = flangeThickness; }
+            if (alignment !== undefined) { this.alignment = alignment; }
+            if (rotation !== undefined) { this.rotation = rotation; }
+            if (center !== undefined) { this.center = center; }
+            if (direction !== undefined) { this.direction = direction; }
+        }
+        /**
+         * Width of the I-beam (flange width)
+         * @default 2
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.1
+         */
+        width = 2;
+        /**
+         * Height of the I-beam
+         * @default 3
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.1
+         */
+        height = 3;
+        /**
+         * Thickness of the web (vertical part)
+         * @default 0.2
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.01
+         */
+        webThickness = 0.2;
+        /**
+         * Thickness of the flanges (horizontal parts)
+         * @default 0.3
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.01
+         */
+        flangeThickness = 0.3;
+        /**
+         * Alignment of the profile origin
+         * @default midMid
+         */
+        alignment = Base.basicAlignmentEnum.midMid;
+        /**
+         * Rotation of the I-beam profile in degrees
+         * @default 0
+         * @minimum 0
+         * @maximum Infinity
+         * @step 15
+         */
+        rotation = 0;
+        /**
+         * Center of the I-beam profile
+         * @default [0, 0, 0]
+         */
+        center: Base.Point3 = [0, 0, 0];
+        /**
+         * Direction of the I-beam profile
+         * @default [0, 1, 0]
+         */
+        direction: Base.Vector3 = [0, 1, 0];
+    }
+    export class HBeamProfileDto {
+        constructor(width?: number, height?: number, webThickness?: number, flangeThickness?: number, alignment?: Base.basicAlignmentEnum, rotation?: number, center?: Base.Point3, direction?: Base.Vector3) {
+            if (width !== undefined) { this.width = width; }
+            if (height !== undefined) { this.height = height; }
+            if (webThickness !== undefined) { this.webThickness = webThickness; }
+            if (flangeThickness !== undefined) { this.flangeThickness = flangeThickness; }
+            if (alignment !== undefined) { this.alignment = alignment; }
+            if (rotation !== undefined) { this.rotation = rotation; }
+            if (center !== undefined) { this.center = center; }
+            if (direction !== undefined) { this.direction = direction; }
+        }
+        /**
+         * Width of the H-beam (flange width)
+         * @default 2
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.1
+         */
+        width = 2;
+        /**
+         * Height of the H-beam
+         * @default 3
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.1
+         */
+        height = 3;
+        /**
+         * Thickness of the web (vertical part)
+         * @default 0.2
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.01
+         */
+        webThickness = 0.2;
+        /**
+         * Thickness of the flanges (horizontal parts)
+         * @default 0.3
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.01
+         */
+        flangeThickness = 0.3;
+        /**
+         * Alignment of the profile origin
+         * @default midMid
+         */
+        alignment = Base.basicAlignmentEnum.midMid;
+        /**
+         * Rotation of the H-beam profile in degrees
+         * @default 0
+         * @minimum 0
+         * @maximum Infinity
+         * @step 15
+         */
+        rotation = 0;
+        /**
+         * Center of the H-beam profile
+         * @default [0, 0, 0]
+         */
+        center: Base.Point3 = [0, 0, 0];
+        /**
+         * Direction of the H-beam profile
+         * @default [0, 1, 0]
+         */
+        direction: Base.Vector3 = [0, 1, 0];
+    }
+    export class TBeamProfileDto {
+        constructor(width?: number, height?: number, webThickness?: number, flangeThickness?: number, alignment?: Base.basicAlignmentEnum, rotation?: number, center?: Base.Point3, direction?: Base.Vector3) {
+            if (width !== undefined) { this.width = width; }
+            if (height !== undefined) { this.height = height; }
+            if (webThickness !== undefined) { this.webThickness = webThickness; }
+            if (flangeThickness !== undefined) { this.flangeThickness = flangeThickness; }
+            if (alignment !== undefined) { this.alignment = alignment; }
+            if (rotation !== undefined) { this.rotation = rotation; }
+            if (center !== undefined) { this.center = center; }
+            if (direction !== undefined) { this.direction = direction; }
+        }
+        /**
+         * Width of the T-beam (flange width)
+         * @default 2
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.1
+         */
+        width = 2;
+        /**
+         * Height of the T-beam
+         * @default 2
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.1
+         */
+        height = 2;
+        /**
+         * Thickness of the web (vertical part)
+         * @default 0.2
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.01
+         */
+        webThickness = 0.2;
+        /**
+         * Thickness of the flange (horizontal part)
+         * @default 0.3
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.01
+         */
+        flangeThickness = 0.3;
+        /**
+         * Alignment of the profile origin
+         * @default midMid
+         */
+        alignment = Base.basicAlignmentEnum.midMid;
+        /**
+         * Rotation of the T-beam profile in degrees
+         * @default 0
+         * @minimum 0
+         * @maximum Infinity
+         * @step 15
+         */
+        rotation = 0;
+        /**
+         * Center of the T-beam profile
+         * @default [0, 0, 0]
+         */
+        center: Base.Point3 = [0, 0, 0];
+        /**
+         * Direction of the T-beam profile
+         * @default [0, 1, 0]
+         */
+        direction: Base.Vector3 = [0, 1, 0];
+    }
+    export class UBeamProfileDto {
+        constructor(width?: number, height?: number, webThickness?: number, flangeThickness?: number, flangeWidth?: number, alignment?: Base.basicAlignmentEnum, rotation?: number, center?: Base.Point3, direction?: Base.Vector3) {
+            if (width !== undefined) { this.width = width; }
+            if (height !== undefined) { this.height = height; }
+            if (webThickness !== undefined) { this.webThickness = webThickness; }
+            if (flangeThickness !== undefined) { this.flangeThickness = flangeThickness; }
+            if (flangeWidth !== undefined) { this.flangeWidth = flangeWidth; }
+            if (alignment !== undefined) { this.alignment = alignment; }
+            if (rotation !== undefined) { this.rotation = rotation; }
+            if (center !== undefined) { this.center = center; }
+            if (direction !== undefined) { this.direction = direction; }
+        }
+        /**
+         * Overall width of the U-beam
+         * @default 2
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.1
+         */
+        width = 2;
+        /**
+         * Height of the U-beam
+         * @default 3
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.1
+         */
+        height = 3;
+        /**
+         * Thickness of the web (back part)
+         * @default 0.2
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.01
+         */
+        webThickness = 0.2;
+        /**
+         * Thickness of the flanges (side parts)
+         * @default 0.3
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.01
+         */
+        flangeThickness = 0.3;
+        /**
+         * Width of the flanges (how far they extend inward)
+         * @default 0.5
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.1
+         */
+        flangeWidth = 0.5;
+        /**
+         * Alignment of the profile origin
+         * @default midMid
+         */
+        alignment = Base.basicAlignmentEnum.midMid;
+        /**
+         * Rotation of the U-beam profile in degrees
+         * @default 0
+         * @minimum 0
+         * @maximum Infinity
+         * @step 15
+         */
+        rotation = 0;
+        /**
+         * Center of the U-beam profile
+         * @default [0, 0, 0]
+         */
+        center: Base.Point3 = [0, 0, 0];
+        /**
+         * Direction of the U-beam profile
+         * @default [0, 1, 0]
+         */
+        direction: Base.Vector3 = [0, 1, 0];
+    }
+    export class ExtrudedSolidDto {
+        constructor(extrusionLengthFront?: number, extrusionLengthBack?: number, center?: Base.Point3, direction?: Base.Vector3) {
+            if (extrusionLengthFront !== undefined) { this.extrusionLengthFront = extrusionLengthFront; }
+            if (extrusionLengthBack !== undefined) { this.extrusionLengthBack = extrusionLengthBack; }
+            if (center !== undefined) { this.center = center; }
+            if (direction !== undefined) { this.direction = direction; }
+        }
+        /**
+         * Extrusion length in the forward direction
+         * @default 1
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.1
+         */
+        extrusionLengthFront = 1;
+        /**
+         * Extrusion length in the backward direction
+         * @default 0
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.1
+         */
+        extrusionLengthBack = 0;
+        /**
+         * Center of the solid
+         * @default [0, 0, 0]
+         */
+        center: Base.Point3 = [0, 0, 0];
+        /**
+         * Direction of extrusion
+         * @default [0, 1, 0]
+         */
+        direction: Base.Vector3 = [0, 1, 0];
+    }
+    export class IBeamProfileSolidDto extends IBeamProfileDto {
+        constructor(width?: number, height?: number, webThickness?: number, flangeThickness?: number, alignment?: Base.basicAlignmentEnum, rotation?: number, center?: Base.Point3, direction?: Base.Vector3, extrusionLengthFront?: number, extrusionLengthBack?: number) {
+            super(width, height, webThickness, flangeThickness, alignment, rotation, center, direction);
+            if (extrusionLengthFront !== undefined) { this.extrusionLengthFront = extrusionLengthFront; }
+            if (extrusionLengthBack !== undefined) { this.extrusionLengthBack = extrusionLengthBack; }
+        }
+        /**
+         * Extrusion length in the forward direction
+         * @default 1
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.1
+         */
+        extrusionLengthFront = 1;
+        /**
+         * Extrusion length in the backward direction
+         * @default 0
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.1
+         */
+        extrusionLengthBack = 0;
+    }
+    export class HBeamProfileSolidDto extends HBeamProfileDto {
+        constructor(width?: number, height?: number, webThickness?: number, flangeThickness?: number, alignment?: Base.basicAlignmentEnum, rotation?: number, center?: Base.Point3, direction?: Base.Vector3, extrusionLengthFront?: number, extrusionLengthBack?: number) {
+            super(width, height, webThickness, flangeThickness, alignment, rotation, center, direction);
+            if (extrusionLengthFront !== undefined) { this.extrusionLengthFront = extrusionLengthFront; }
+            if (extrusionLengthBack !== undefined) { this.extrusionLengthBack = extrusionLengthBack; }
+        }
+        /**
+         * Extrusion length in the forward direction
+         * @default 1
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.1
+         */
+        extrusionLengthFront = 1;
+        /**
+         * Extrusion length in the backward direction
+         * @default 0
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.1
+         */
+        extrusionLengthBack = 0;
+    }
+    export class TBeamProfileSolidDto extends TBeamProfileDto {
+        constructor(width?: number, height?: number, webThickness?: number, flangeThickness?: number, alignment?: Base.basicAlignmentEnum, rotation?: number, center?: Base.Point3, direction?: Base.Vector3, extrusionLengthFront?: number, extrusionLengthBack?: number) {
+            super(width, height, webThickness, flangeThickness, alignment, rotation, center, direction);
+            if (extrusionLengthFront !== undefined) { this.extrusionLengthFront = extrusionLengthFront; }
+            if (extrusionLengthBack !== undefined) { this.extrusionLengthBack = extrusionLengthBack; }
+        }
+        /**
+         * Extrusion length in the forward direction
+         * @default 1
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.1
+         */
+        extrusionLengthFront = 1;
+        /**
+         * Extrusion length in the backward direction
+         * @default 0
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.1
+         */
+        extrusionLengthBack = 0;
+    }
+    export class UBeamProfileSolidDto extends UBeamProfileDto {
+        constructor(width?: number, height?: number, webThickness?: number, flangeThickness?: number, flangeWidth?: number, alignment?: Base.basicAlignmentEnum, rotation?: number, center?: Base.Point3, direction?: Base.Vector3, extrusionLengthFront?: number, extrusionLengthBack?: number) {
+            super(width, height, webThickness, flangeThickness, flangeWidth, alignment, rotation, center, direction);
+            if (extrusionLengthFront !== undefined) { this.extrusionLengthFront = extrusionLengthFront; }
+            if (extrusionLengthBack !== undefined) { this.extrusionLengthBack = extrusionLengthBack; }
+        }
+        /**
+         * Extrusion length in the forward direction
+         * @default 1
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.1
+         */
+        extrusionLengthFront = 1;
+        /**
+         * Extrusion length in the backward direction
+         * @default 0
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.1
+         */
+        extrusionLengthBack = 0;
+    }
     export class BoxDto {
         constructor(width?: number, length?: number, height?: number, center?: Base.Point3, originOnCenter?: boolean) {
             if (width !== undefined) { this.width = width; }
@@ -6837,5 +7240,143 @@ export namespace OCCT {
          * @step 0.1
          */
         labelSize? = 0.1;
+    }
+    export class StarSolidDto extends StarDto {
+        constructor(outerRadius?: number, innerRadius?: number, numRays?: number, center?: Base.Point3, direction?: Base.Vector3, offsetOuterEdges?: number, half?: boolean, extrusionLengthFront?: number, extrusionLengthBack?: number) {
+            super(outerRadius, innerRadius, numRays, center, direction, offsetOuterEdges, half);
+            if (extrusionLengthFront !== undefined) { this.extrusionLengthFront = extrusionLengthFront; }
+            if (extrusionLengthBack !== undefined) { this.extrusionLengthBack = extrusionLengthBack; }
+        }
+        /**
+         * Extrusion length in the forward direction
+         * @default 1
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.1
+         */
+        extrusionLengthFront = 1;
+        /**
+         * Extrusion length in the backward direction
+         * @default 0
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.1
+         */
+        extrusionLengthBack = 0;
+    }
+    export class NGonSolidDto extends NGonWireDto {
+        constructor(center?: Base.Point3, direction?: Base.Vector3, nrCorners?: number, radius?: number, extrusionLengthFront?: number, extrusionLengthBack?: number) {
+            super(center, direction, nrCorners, radius);
+            if (extrusionLengthFront !== undefined) { this.extrusionLengthFront = extrusionLengthFront; }
+            if (extrusionLengthBack !== undefined) { this.extrusionLengthBack = extrusionLengthBack; }
+        }
+        /**
+         * Extrusion length in the forward direction
+         * @default 1
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.1
+         */
+        extrusionLengthFront = 1;
+        /**
+         * Extrusion length in the backward direction
+         * @default 0
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.1
+         */
+        extrusionLengthBack = 0;
+    }
+    export class ParallelogramSolidDto extends ParallelogramDto {
+        constructor(center?: Base.Point3, direction?: Base.Vector3, aroundCenter?: boolean, width?: number, height?: number, angle?: number, extrusionLengthFront?: number, extrusionLengthBack?: number) {
+            super(center, direction, aroundCenter, width, height, angle);
+            if (extrusionLengthFront !== undefined) { this.extrusionLengthFront = extrusionLengthFront; }
+            if (extrusionLengthBack !== undefined) { this.extrusionLengthBack = extrusionLengthBack; }
+        }
+        /**
+         * Extrusion length in the forward direction
+         * @default 1
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.1
+         */
+        extrusionLengthFront = 1;
+        /**
+         * Extrusion length in the backward direction
+         * @default 0
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.1
+         */
+        extrusionLengthBack = 0;
+    }
+    export class HeartSolidDto extends Heart2DDto {
+        constructor(center?: Base.Point3, direction?: Base.Vector3, rotation?: number, sizeApprox?: number, extrusionLengthFront?: number, extrusionLengthBack?: number) {
+            super(center, direction, rotation, sizeApprox);
+            if (extrusionLengthFront !== undefined) { this.extrusionLengthFront = extrusionLengthFront; }
+            if (extrusionLengthBack !== undefined) { this.extrusionLengthBack = extrusionLengthBack; }
+        }
+        /**
+         * Extrusion length in the forward direction
+         * @default 1
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.1
+         */
+        extrusionLengthFront = 1;
+        /**
+         * Extrusion length in the backward direction
+         * @default 0
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.1
+         */
+        extrusionLengthBack = 0;
+    }
+    export class ChristmasTreeSolidDto extends ChristmasTreeDto {
+        constructor(height?: number, innerDist?: number, outerDist?: number, nrSkirts?: number, trunkHeight?: number, trunkWidth?: number, half?: boolean, rotation?: number, origin?: Base.Point3, direction?: Base.Vector3, extrusionLengthFront?: number, extrusionLengthBack?: number) {
+            super(height, innerDist, outerDist, nrSkirts, trunkHeight, trunkWidth, half, rotation, origin, direction);
+            if (extrusionLengthFront !== undefined) { this.extrusionLengthFront = extrusionLengthFront; }
+            if (extrusionLengthBack !== undefined) { this.extrusionLengthBack = extrusionLengthBack; }
+        }
+        /**
+         * Extrusion length in the forward direction
+         * @default 1
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.1
+         */
+        extrusionLengthFront = 1;
+        /**
+         * Extrusion length in the backward direction
+         * @default 0
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.1
+         */
+        extrusionLengthBack = 0;
+    }
+    export class LPolygonSolidDto extends LPolygonDto {
+        constructor(widthFirst?: number, lengthFirst?: number, widthSecond?: number, lengthSecond?: number, align?: directionEnum, rotation?: number, center?: Base.Point3, direction?: Base.Vector3, extrusionLengthFront?: number, extrusionLengthBack?: number) {
+            super(widthFirst, lengthFirst, widthSecond, lengthSecond, align, rotation, center, direction);
+            if (extrusionLengthFront !== undefined) { this.extrusionLengthFront = extrusionLengthFront; }
+            if (extrusionLengthBack !== undefined) { this.extrusionLengthBack = extrusionLengthBack; }
+        }
+        /**
+         * Extrusion length in the forward direction
+         * @default 1
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.1
+         */
+        extrusionLengthFront = 1;
+        /**
+         * Extrusion length in the backward direction
+         * @default 0
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.1
+         */
+        extrusionLengthBack = 0;
     }
 }

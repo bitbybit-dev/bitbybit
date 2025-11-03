@@ -39,4 +39,15 @@ export namespace Base {
         top = "top",
         bottom = "bottom",
     }
+    export enum basicAlignmentEnum {
+        topLeft = "topLeft",
+        topMid = "topMid",
+        topRight = "topRight",
+        midLeft = "midLeft",
+        midMid = "midMid",
+        midRight = "midRight",
+        bottomLeft = "bottomLeft",
+        bottomMid = "bottomMid",
+        bottomRight = "bottomRight"
+    }
 }

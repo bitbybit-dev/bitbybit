@@ -671,6 +671,54 @@ export class OCCTWire {
     }
 
     /**
+     * Creates OpenCascade I-beam profile wire
+     * @param inputs I-beam profile parameters
+     * @returns OpenCascade I-beam profile wire
+     * @group beam profiles
+     * @shortname I-beam profile
+     * @drawable true
+     */
+    createIBeamProfileWire(inputs: Inputs.OCCT.IBeamProfileDto): Promise<Inputs.OCCT.TopoDSWirePointer> {
+        return this.occWorkerManager.genericCallToWorkerPromise("shapes.wire.createIBeamProfileWire", inputs);
+    }
+
+    /**
+     * Creates OpenCascade H-beam profile wire
+     * @param inputs H-beam profile parameters
+     * @returns OpenCascade H-beam profile wire
+     * @group beam profiles
+     * @shortname H-beam profile
+     * @drawable true
+     */
+    createHBeamProfileWire(inputs: Inputs.OCCT.HBeamProfileDto): Promise<Inputs.OCCT.TopoDSWirePointer> {
+        return this.occWorkerManager.genericCallToWorkerPromise("shapes.wire.createHBeamProfileWire", inputs);
+    }
+
+    /**
+     * Creates OpenCascade T-beam profile wire
+     * @param inputs T-beam profile parameters
+     * @returns OpenCascade T-beam profile wire
+     * @group beam profiles
+     * @shortname T-beam profile
+     * @drawable true
+     */
+    createTBeamProfileWire(inputs: Inputs.OCCT.TBeamProfileDto): Promise<Inputs.OCCT.TopoDSWirePointer> {
+        return this.occWorkerManager.genericCallToWorkerPromise("shapes.wire.createTBeamProfileWire", inputs);
+    }
+
+    /**
+     * Creates OpenCascade U-beam profile wire
+     * @param inputs U-beam profile parameters
+     * @returns OpenCascade U-beam profile wire
+     * @group beam profiles
+     * @shortname U-beam profile
+     * @drawable true
+     */
+    createUBeamProfileWire(inputs: Inputs.OCCT.UBeamProfileDto): Promise<Inputs.OCCT.TopoDSWirePointer> {
+        return this.occWorkerManager.genericCallToWorkerPromise("shapes.wire.createUBeamProfileWire", inputs);
+    }
+
+    /**
      * Creates OpenCascade ellipse wire
      * @param inputs Ellipse parameters
      * @returns OpenCascade ellipse wire

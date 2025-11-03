@@ -151,6 +151,10 @@ export class DxfService {
                 
                 points.push([startPt[0], startPt[2]]);
                 
+                // DXF bulge is the tangent of 1/4 of the included angle
+                // Positive bulge = arc curves to the left when traveling from start to end
+                // Negative bulge = arc curves to the right when traveling from start to end
+                
                 // Calculate the included angle
                 const startAngle = Math.atan2(startPt[2] - center[2], startPt[0] - center[0]);
                 const endAngle = Math.atan2(endPt[2] - center[2], endPt[0] - center[0]);
@@ -161,8 +165,42 @@ export class DxfService {
                 while (includedAngle > Math.PI) includedAngle -= 2 * Math.PI;
                 while (includedAngle < -Math.PI) includedAngle += 2 * Math.PI;
                 
-                // Bulge = tan(included_angle / 4)
-                const bulge = Math.tan(includedAngle / 4);
+                // Determine the sign by checking which side of the chord the center is on
+                // Using 2D cross product in the XZ plane (bird's eye view, Y removed)
+                const dx = endPt[0] - startPt[0];
+                const dz = endPt[2] - startPt[2];
+                
+                // Vector from start point to center
+                const centerDx = center[0] - startPt[0];
+                const centerDz = center[2] - startPt[2];
+                
+                // Cross product in 2D: determines which side of the chord vector the center is on
+                // Positive = center is to the left of chord (when facing from start to end)
+                // Negative = center is to the right of chord
+                const crossProduct = dx * centerDz - dz * centerDx;
+                
+                // Bulge formula: sign * tan(|includedAngle| / 4)
+                const absIncludedAngle = Math.abs(includedAngle);
+                
+                let sign: number;
+                if (Math.abs(crossProduct) < 1e-10) {
+                    // Degenerate case: center is on the chord line
+                    // Sample a point on the arc at the midpoint angle to determine which side
+                    const midAngle = (startAngle + endAngle) / 2;
+                    const radius = this.edgesService.getCircularEdgeRadius({ shape: currentEdge });
+                    const midPt = [
+                        center[0] + radius * Math.cos(midAngle),
+                        center[2] + radius * Math.sin(midAngle)
+                    ];
+                    
+                    // Check which side of the chord this midpoint is on
+                    const midCrossProduct = dx * (midPt[1] - startPt[2]) - dz * (midPt[0] - startPt[0]);
+                    sign = Math.sign(midCrossProduct);
+                } else {
+                    sign = Math.sign(crossProduct);
+                }
+                
+                const bulge = sign * Math.tan(absIncludedAngle / 4);
                 bulges.push(bulge);
             } else {
                 // Complex edge: tessellate and add points with bulge 0

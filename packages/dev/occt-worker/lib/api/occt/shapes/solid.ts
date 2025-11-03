@@ -106,6 +106,126 @@ export class OCCTSolid {
     }
 
     /**
+     * Creates OpenCascade star solid
+     * @param inputs Star solid parameters
+     * @returns OpenCascade star solid
+     * @group primitives
+     * @shortname star
+     * @drawable true
+     */
+    createStarSolid(inputs: Inputs.OCCT.StarSolidDto): Promise<Inputs.OCCT.TopoDSSolidPointer> {
+        return this.occWorkerManager.genericCallToWorkerPromise("shapes.solid.createStarSolid", inputs);
+    }
+
+    /**
+     * Creates OpenCascade n-gon solid
+     * @param inputs N-gon solid parameters
+     * @returns OpenCascade n-gon solid
+     * @group primitives
+     * @shortname n-gon
+     * @drawable true
+     */
+    createNGonSolid(inputs: Inputs.OCCT.NGonSolidDto): Promise<Inputs.OCCT.TopoDSSolidPointer> {
+        return this.occWorkerManager.genericCallToWorkerPromise("shapes.solid.createNGonSolid", inputs);
+    }
+
+    /**
+     * Creates OpenCascade parallelogram solid
+     * @param inputs Parallelogram solid parameters
+     * @returns OpenCascade parallelogram solid
+     * @group primitives
+     * @shortname parallelogram
+     * @drawable true
+     */
+    createParallelogramSolid(inputs: Inputs.OCCT.ParallelogramSolidDto): Promise<Inputs.OCCT.TopoDSSolidPointer> {
+        return this.occWorkerManager.genericCallToWorkerPromise("shapes.solid.createParallelogramSolid", inputs);
+    }
+
+    /**
+     * Creates OpenCascade heart solid
+     * @param inputs Heart solid parameters
+     * @returns OpenCascade heart solid
+     * @group primitives
+     * @shortname heart
+     * @drawable true
+     */
+    createHeartSolid(inputs: Inputs.OCCT.HeartSolidDto): Promise<Inputs.OCCT.TopoDSSolidPointer> {
+        return this.occWorkerManager.genericCallToWorkerPromise("shapes.solid.createHeartSolid", inputs);
+    }
+
+    /**
+     * Creates OpenCascade christmas tree solid
+     * @param inputs Christmas tree solid parameters
+     * @returns OpenCascade christmas tree solid
+     * @group primitives
+     * @shortname christmas tree
+     * @drawable true
+     */
+    createChristmasTreeSolid(inputs: Inputs.OCCT.ChristmasTreeSolidDto): Promise<Inputs.OCCT.TopoDSSolidPointer> {
+        return this.occWorkerManager.genericCallToWorkerPromise("shapes.solid.createChristmasTreeSolid", inputs);
+    }
+
+    /**
+     * Creates OpenCascade L-polygon solid
+     * @param inputs L-polygon solid parameters
+     * @returns OpenCascade L-polygon solid
+     * @group primitives
+     * @shortname L-polygon
+     * @drawable true
+     */
+    createLPolygonSolid(inputs: Inputs.OCCT.LPolygonSolidDto): Promise<Inputs.OCCT.TopoDSSolidPointer> {
+        return this.occWorkerManager.genericCallToWorkerPromise("shapes.solid.createLPolygonSolid", inputs);
+    }
+
+    /**
+     * Creates OpenCascade I-beam profile solid
+     * @param inputs I-beam profile solid parameters
+     * @returns OpenCascade I-beam profile solid
+     * @group beam
+     * @shortname I-beam profile
+     * @drawable true
+     */
+    createIBeamProfileSolid(inputs: Inputs.OCCT.IBeamProfileSolidDto): Promise<Inputs.OCCT.TopoDSSolidPointer> {
+        return this.occWorkerManager.genericCallToWorkerPromise("shapes.solid.createIBeamProfileSolid", inputs);
+    }
+
+    /**
+     * Creates OpenCascade H-beam profile solid
+     * @param inputs H-beam profile solid parameters
+     * @returns OpenCascade H-beam profile solid
+     * @group beam
+     * @shortname H-beam profile
+     * @drawable true
+     */
+    createHBeamProfileSolid(inputs: Inputs.OCCT.HBeamProfileSolidDto): Promise<Inputs.OCCT.TopoDSSolidPointer> {
+        return this.occWorkerManager.genericCallToWorkerPromise("shapes.solid.createHBeamProfileSolid", inputs);
+    }
+
+    /**
+     * Creates OpenCascade T-beam profile solid
+     * @param inputs T-beam profile solid parameters
+     * @returns OpenCascade T-beam profile solid
+     * @group beam
+     * @shortname T-beam profile
+     * @drawable true
+     */
+    createTBeamProfileSolid(inputs: Inputs.OCCT.TBeamProfileSolidDto): Promise<Inputs.OCCT.TopoDSSolidPointer> {
+        return this.occWorkerManager.genericCallToWorkerPromise("shapes.solid.createTBeamProfileSolid", inputs);
+    }
+
+    /**
+     * Creates OpenCascade U-beam profile solid
+     * @param inputs U-beam profile solid parameters
+     * @returns OpenCascade U-beam profile solid
+     * @group beam
+     * @shortname U-beam profile
+     * @drawable true
+     */
+    createUBeamProfileSolid(inputs: Inputs.OCCT.UBeamProfileSolidDto): Promise<Inputs.OCCT.TopoDSSolidPointer> {
+        return this.occWorkerManager.genericCallToWorkerPromise("shapes.solid.createUBeamProfileSolid", inputs);
+    }
+
+    /**
      * Get solid surface area
      * @param inputs Closed solid shape
      * @returns Surface area
