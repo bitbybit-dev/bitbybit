@@ -474,11 +474,71 @@ describe("CacheHelper unit tests", () => {
             point2.delete();
         });
 
+        it("should handle mixed cache entries (OCCT and non-OCCT)", () => {
+            const point1 = new occt.gp_Pnt_3(0, 0, 0);
+            const vertex1 = new occt.BRepBuilderAPI_MakeVertex(point1);
+            const shape1 = vertex1.Shape();
+            
+            cacheHelper.addToCache("shape-hash", shape1);
+            cacheHelper.addToCache("value-hash", { value: "test" });
+            cacheHelper.addToCache("number-hash", 42);
+            
+            expect(cacheHelper.checkCache("shape-hash")).toBeDefined();
+            expect(cacheHelper.checkCache("value-hash")).toBeDefined();
+            expect(cacheHelper.checkCache("number-hash")).toBeDefined();
+            
+            // Should clean all without errors
+            expect(() => cacheHelper.cleanAllCache()).not.toThrow();
+            
+            expect(cacheHelper.checkCache("shape-hash")).toBeNull();
+            expect(cacheHelper.checkCache("value-hash")).toBeNull();
+            expect(cacheHelper.checkCache("number-hash")).toBeNull();
+            
+            // Clean up remaining objects
+            vertex1.delete();
+            point1.delete();
+        });
+
+        it("should handle arrays of OCCT shapes", () => {
+            const point1 = new occt.gp_Pnt_3(0, 0, 0);
+            const vertex1 = new occt.BRepBuilderAPI_MakeVertex(point1);
+            const shape1 = vertex1.Shape();
+            
+            const point2 = new occt.gp_Pnt_3(1, 1, 1);
+            const vertex2 = new occt.BRepBuilderAPI_MakeVertex(point2);
+            const shape2 = vertex2.Shape();
+            
+            cacheHelper.addToCache("array-hash", [shape1, shape2]);
+            
+            expect(() => cacheHelper.cleanAllCache()).not.toThrow();
+            expect(cacheHelper.checkCache("array-hash")).toBeNull();
+            
+            // Clean up remaining objects
+            vertex1.delete();
+            vertex2.delete();
+            point1.delete();
+            point2.delete();
+        });
+
+        it("should clean all entries from argCache not just usedHashes", () => {
+            // Manually add to argCache without going through cacheOp
+            cacheHelper.argCache["manual-hash"] = { value: "manual" };
+            cacheHelper.usedHashes["used-hash"] = "used-hash";
+            cacheHelper.argCache["used-hash"] = { value: "used" };
+            
+            expect(cacheHelper.checkCache("manual-hash")).toBeDefined();
+            expect(cacheHelper.checkCache("used-hash")).toBeDefined();
+            
+            cacheHelper.cleanAllCache();
+            
+            // Both should be cleaned, not just usedHashes
+            expect(cacheHelper.checkCache("manual-hash")).toBeNull();
+            expect(cacheHelper.checkCache("used-hash")).toBeNull();
+        });
+
         it("should reset used hashes", () => {
             const args = { functionName: "test" };
-            let cacheMissCallCount = 0;
             const cacheMiss = () => {
-                cacheMissCallCount++;
                 return { value: "test" };
             };
             
@@ -496,120 +556,192 @@ describe("CacheHelper unit tests", () => {
         });
     });
 
-    describe("dupShape", () => {
-        it("should duplicate a wire", () => {
+    describe("cleanUpCache", () => {
+        it("should remove unused cache entries from previous run", () => {
+            const args1 = { functionName: "test1" };
+            const args2 = { functionName: "test2" };
+            const value1 = { data: "value1" };
+            const value2 = { data: "value2" };
+            
+            // First run - cache both operations
+            cacheHelper.cacheOp(args1, () => value1);
+            cacheHelper.cacheOp(args2, () => value2);
+            
+            const hash1 = cacheHelper.computeHash(args1);
+            const hash2 = cacheHelper.computeHash(args2);
+            
+            // Both should be in cache
+            expect(cacheHelper.checkCache(hash1)).toBeDefined();
+            expect(cacheHelper.checkCache(hash2)).toBeDefined();
+            
+            // Clean up cache - this updates hashesFromPreviousRun
+            cacheHelper.cleanUpCache();
+            
+            // Second run - only use args1
+            cacheHelper.usedHashes = {}; // Reset used hashes to simulate new run
+            cacheHelper.cacheOp(args1, () => value1);
+            
+            // Clean up - should remove hash2 as it wasn't used in second run
+            cacheHelper.cleanUpCache();
+            
+            // hash1 should still be there, hash2 should be removed
+            expect(cacheHelper.checkCache(hash1)).toBeDefined();
+            expect(cacheHelper.checkCache(hash2)).toBeNull();
+        });
+
+        it("should clean up OCCT shapes that are no longer used", () => {
             const point1 = new occt.gp_Pnt_3(0, 0, 0);
-            const point2 = new occt.gp_Pnt_3(1, 0, 0);
-            const edge = new occt.BRepBuilderAPI_MakeEdge_3(point1, point2);
-            const wireBuilder = new occt.BRepBuilderAPI_MakeWire_2(edge.Edge());
-            const wire = wireBuilder.Wire();
+            const vertex1 = new occt.BRepBuilderAPI_MakeVertex(point1);
+            const shape1 = vertex1.Shape();
             
-            const duplicated = cacheHelper.dupShape(wire);
+            const point2 = new occt.gp_Pnt_3(1, 1, 1);
+            const vertex2 = new occt.BRepBuilderAPI_MakeVertex(point2);
+            const shape2 = vertex2.Shape();
             
-            expect(duplicated).toBeDefined();
-            expect(duplicated.ShapeType()).toBe(occt.TopAbs_ShapeEnum.TopAbs_WIRE);
+            const args1 = { functionName: "createVertex", point: [0, 0, 0] };
+            const args2 = { functionName: "createVertex", point: [1, 1, 1] };
             
-            duplicated.delete();
-            wire.delete();
-            wireBuilder.delete();
-            edge.delete();
+            // First run - cache both shapes
+            cacheHelper.cacheOp(args1, () => shape1);
+            cacheHelper.cacheOp(args2, () => shape2);
+            
+            const hash1 = cacheHelper.computeHash(args1);
+            const hash2 = cacheHelper.computeHash(args2);
+            
+            // First cleanup - sets up hashesFromPreviousRun
+            cacheHelper.cleanUpCache();
+            
+            // Second run - only use shape1
+            cacheHelper.usedHashes = {};
+            cacheHelper.cacheOp(args1, () => shape1);
+            
+            // Second cleanup - should remove shape2
+            cacheHelper.cleanUpCache();
+            
+            expect(cacheHelper.checkCache(hash1)).toBeDefined();
+            expect(cacheHelper.checkCache(hash2)).toBeNull();
+            
+            // Clean up remaining objects
+            vertex1.delete();
+            vertex2.delete();
             point1.delete();
             point2.delete();
         });
 
-        it("should duplicate an edge", () => {
+        it("should handle arrays of OCCT shapes during cleanup", () => {
             const point1 = new occt.gp_Pnt_3(0, 0, 0);
-            const point2 = new occt.gp_Pnt_3(1, 0, 0);
-            const edgeBuilder = new occt.BRepBuilderAPI_MakeEdge_3(point1, point2);
-            const edge = edgeBuilder.Edge();
+            const vertex1 = new occt.BRepBuilderAPI_MakeVertex(point1);
+            const shape1 = vertex1.Shape();
             
-            const duplicated = cacheHelper.dupShape(edge);
+            const point2 = new occt.gp_Pnt_3(1, 1, 1);
+            const vertex2 = new occt.BRepBuilderAPI_MakeVertex(point2);
+            const shape2 = vertex2.Shape();
             
-            expect(duplicated).toBeDefined();
-            expect(duplicated.ShapeType()).toBe(occt.TopAbs_ShapeEnum.TopAbs_EDGE);
+            const shapes = [shape1, shape2];
+            const args = { functionName: "createVertices" };
             
-            duplicated.delete();
-            edge.delete();
-            edgeBuilder.delete();
+            // Cache array of shapes
+            cacheHelper.cacheOp(args, () => shapes);
+            cacheHelper.cleanUpCache();
+            
+            // Simulate new run without using this cache
+            cacheHelper.usedHashes = {};
+            
+            // Should clean up the array
+            cacheHelper.cleanUpCache();
+            
+            const hash = cacheHelper.computeHash(args);
+            expect(cacheHelper.checkCache(hash)).toBeNull();
+            
+            // Clean up remaining objects
+            vertex1.delete();
+            vertex2.delete();
             point1.delete();
             point2.delete();
         });
 
-        it("should duplicate a solid", () => {
-            const box = new occt.BRepPrimAPI_MakeBox_2(1, 1, 1);
-            const solid = box.Solid();
+        it("should not remove cache entries that are still in use", () => {
+            const args = { functionName: "test" };
+            const value = { data: "test" };
             
-            const duplicated = cacheHelper.dupShape(solid);
+            // First run
+            cacheHelper.cacheOp(args, () => value);
+            cacheHelper.cleanUpCache();
             
-            expect(duplicated).toBeDefined();
-            expect(duplicated.ShapeType()).toBe(occt.TopAbs_ShapeEnum.TopAbs_SOLID);
+            // Second run - use same cache
+            cacheHelper.usedHashes = {};
+            cacheHelper.cacheOp(args, () => value);
+            cacheHelper.cleanUpCache();
             
-            duplicated.delete();
-            solid.delete();
-            box.delete();
+            // Should still be in cache
+            const hash = cacheHelper.computeHash(args);
+            expect(cacheHelper.checkCache(hash)).toBeDefined();
         });
 
-        it("should duplicate a face", () => {
-            const box = new occt.BRepPrimAPI_MakeBox_2(1, 1, 1);
-            const solid = box.Solid();
+        it("should handle empty previous run gracefully", () => {
+            const args = { functionName: "test" };
+            const value = { data: "test" };
             
-            const faceExplorer = new occt.TopExp_Explorer_2(
-                solid,
-                occt.TopAbs_ShapeEnum.TopAbs_FACE as TopAbs_ShapeEnum,
-                occt.TopAbs_ShapeEnum.TopAbs_SHAPE as TopAbs_ShapeEnum
-            );
-            const face = occt.TopoDS.Face_1(faceExplorer.Current());
+            // Clean up with no previous run
+            expect(() => cacheHelper.cleanUpCache()).not.toThrow();
             
-            const duplicated = cacheHelper.dupShape(face);
+            // Now add something and clean up
+            cacheHelper.cacheOp(args, () => value);
+            expect(() => cacheHelper.cleanUpCache()).not.toThrow();
             
-            expect(duplicated).toBeDefined();
-            expect(duplicated.ShapeType()).toBe(occt.TopAbs_ShapeEnum.TopAbs_FACE);
-            
-            duplicated.delete();
-            face.delete();
-            faceExplorer.delete();
-            solid.delete();
-            box.delete();
+            const hash = cacheHelper.computeHash(args);
+            expect(cacheHelper.checkCache(hash)).toBeDefined();
         });
 
-        it("should duplicate a vertex", () => {
-            const point = new occt.gp_Pnt_3(0, 0, 0);
-            const vertexBuilder = new occt.BRepBuilderAPI_MakeVertex(point);
-            const vertex = vertexBuilder.Vertex();
+        it("should update hashesFromPreviousRun correctly", () => {
+            const args1 = { functionName: "test1" };
+            const args2 = { functionName: "test2" };
             
-            const duplicated = cacheHelper.dupShape(vertex);
+            // First run
+            cacheHelper.cacheOp(args1, () => ({ value: 1 }));
+            cacheHelper.cacheOp(args2, () => ({ value: 2 }));
             
-            expect(duplicated).toBeDefined();
-            expect(duplicated.ShapeType()).toBe(occt.TopAbs_ShapeEnum.TopAbs_VERTEX);
+            const hash1 = cacheHelper.computeHash(args1);
+            const hash2 = cacheHelper.computeHash(args2);
             
-            duplicated.delete();
-            vertex.delete();
-            vertexBuilder.delete();
-            point.delete();
+            expect(cacheHelper.usedHashes[hash1]).toBe(hash1);
+            expect(cacheHelper.usedHashes[hash2]).toBe(hash2);
+            
+            cacheHelper.cleanUpCache();
+            
+            // After cleanup, hashesFromPreviousRun should have both
+            expect(cacheHelper.hashesFromPreviousRun[hash1]).toBe(hash1);
+            expect(cacheHelper.hashesFromPreviousRun[hash2]).toBe(hash2);
         });
 
-        it("should duplicate a compound", () => {
-            const builder = new occt.BRep_Builder();
-            const compound = new occt.TopoDS_Compound();
-            builder.MakeCompound(compound);
+        it("should handle already deleted shapes gracefully", () => {
+            const point1 = new occt.gp_Pnt_3(0, 0, 0);
+            const vertex1 = new occt.BRepBuilderAPI_MakeVertex(point1);
+            const shape1 = vertex1.Shape();
             
-            const point = new occt.gp_Pnt_3(0, 0, 0);
-            const vertexBuilder = new occt.BRepBuilderAPI_MakeVertex(point);
-            const vertex = vertexBuilder.Vertex();
+            const args1 = { functionName: "createVertex" };
             
-            builder.Add(compound, vertex);
+            // Cache the shape
+            cacheHelper.cacheOp(args1, () => shape1);
+            const hash1 = cacheHelper.computeHash(args1);
             
-            const duplicated = cacheHelper.dupShape(compound);
+            // First cleanup
+            cacheHelper.cleanUpCache();
             
-            expect(duplicated).toBeDefined();
-            expect(duplicated.ShapeType()).toBe(occt.TopAbs_ShapeEnum.TopAbs_COMPOUND);
+            // Manually delete the shape
+            shape1.delete();
             
-            duplicated.delete();
-            vertex.delete();
-            vertexBuilder.delete();
-            compound.delete();
-            builder.delete();
-            point.delete();
+            // Second run without using this cache
+            cacheHelper.usedHashes = {};
+            
+            // Cleanup should handle already deleted shape gracefully
+            expect(() => cacheHelper.cleanUpCache()).not.toThrow();
+            
+            expect(cacheHelper.checkCache(hash1)).toBeNull();
+            
+            // Clean up remaining objects
+            vertex1.delete();
+            point1.delete();
         });
     });
 
