@@ -225,6 +225,126 @@ export class OCCTFace {
     }
 
     /**
+     * Creates OpenCascade L-polygon face
+     * @param inputs L-polygon parameters
+     * @returns OpenCascade L-polygon face
+     * @group primitives
+     * @shortname L-polygon
+     * @drawable true
+     */
+    createLPolygonFace(inputs: Inputs.OCCT.LPolygonDto): Promise<Inputs.OCCT.TopoDSFacePointer> {
+        return this.occWorkerManager.genericCallToWorkerPromise("shapes.face.createLPolygonFace", inputs);
+    }
+
+    /**
+     * Creates OpenCascade star face
+     * @param inputs Star parameters
+     * @returns OpenCascade star face
+     * @group primitives
+     * @shortname star
+     * @drawable true
+     */
+    createStarFace(inputs: Inputs.OCCT.StarDto): Promise<Inputs.OCCT.TopoDSFacePointer> {
+        return this.occWorkerManager.genericCallToWorkerPromise("shapes.face.createStarFace", inputs);
+    }
+
+    /**
+     * Creates OpenCascade christmas tree face
+     * @param inputs Christmas tree parameters
+     * @returns OpenCascade christmas tree face
+     * @group primitives
+     * @shortname christmas tree
+     * @drawable true
+     */
+    createChristmasTreeFace(inputs: Inputs.OCCT.ChristmasTreeDto): Promise<Inputs.OCCT.TopoDSFacePointer> {
+        return this.occWorkerManager.genericCallToWorkerPromise("shapes.face.createChristmasTreeFace", inputs);
+    }
+
+    /**
+     * Creates OpenCascade parallelogram face
+     * @param inputs Parallelogram parameters
+     * @returns OpenCascade parallelogram face
+     * @group primitives
+     * @shortname parallelogram
+     * @drawable true
+     */
+    createParallelogramFace(inputs: Inputs.OCCT.ParallelogramDto): Promise<Inputs.OCCT.TopoDSFacePointer> {
+        return this.occWorkerManager.genericCallToWorkerPromise("shapes.face.createParallelogramFace", inputs);
+    }
+
+    /**
+     * Creates OpenCascade heart face
+     * @param inputs Heart parameters
+     * @returns OpenCascade heart face
+     * @group primitives
+     * @shortname heart
+     * @drawable true
+     */
+    createHeartFace(inputs: Inputs.OCCT.Heart2DDto): Promise<Inputs.OCCT.TopoDSFacePointer> {
+        return this.occWorkerManager.genericCallToWorkerPromise("shapes.face.createHeartFace", inputs);
+    }
+
+    /**
+     * Creates OpenCascade n-gon face
+     * @param inputs N-gon parameters
+     * @returns OpenCascade n-gon face
+     * @group primitives
+     * @shortname n-gon
+     * @drawable true
+     */
+    createNGonFace(inputs: Inputs.OCCT.NGonWireDto): Promise<Inputs.OCCT.TopoDSFacePointer> {
+        return this.occWorkerManager.genericCallToWorkerPromise("shapes.face.createNGonFace", inputs);
+    }
+
+    /**
+     * Creates OpenCascade I-beam profile face
+     * @param inputs I-beam profile parameters
+     * @returns OpenCascade I-beam profile face
+     * @group beam profiles
+     * @shortname I-beam profile
+     * @drawable true
+     */
+    createIBeamProfileFace(inputs: Inputs.OCCT.IBeamProfileDto): Promise<Inputs.OCCT.TopoDSFacePointer> {
+        return this.occWorkerManager.genericCallToWorkerPromise("shapes.face.createIBeamProfileFace", inputs);
+    }
+
+    /**
+     * Creates OpenCascade H-beam profile face
+     * @param inputs H-beam profile parameters
+     * @returns OpenCascade H-beam profile face
+     * @group beam profiles
+     * @shortname H-beam profile
+     * @drawable true
+     */
+    createHBeamProfileFace(inputs: Inputs.OCCT.HBeamProfileDto): Promise<Inputs.OCCT.TopoDSFacePointer> {
+        return this.occWorkerManager.genericCallToWorkerPromise("shapes.face.createHBeamProfileFace", inputs);
+    }
+
+    /**
+     * Creates OpenCascade T-beam profile face
+     * @param inputs T-beam profile parameters
+     * @returns OpenCascade T-beam profile face
+     * @group beam profiles
+     * @shortname T-beam profile
+     * @drawable true
+     */
+    createTBeamProfileFace(inputs: Inputs.OCCT.TBeamProfileDto): Promise<Inputs.OCCT.TopoDSFacePointer> {
+        return this.occWorkerManager.genericCallToWorkerPromise("shapes.face.createTBeamProfileFace", inputs);
+    }
+
+    /**
+     * Creates OpenCascade U-beam profile face
+     * @param inputs U-beam profile parameters
+     * @returns OpenCascade U-beam profile face
+     * @group beam profiles
+     * @shortname U-beam profile
+     * @drawable true
+     */
+    createUBeamProfileFace(inputs: Inputs.OCCT.UBeamProfileDto): Promise<Inputs.OCCT.TopoDSFacePointer> {
+        return this.occWorkerManager.genericCallToWorkerPromise("shapes.face.createUBeamProfileFace", inputs);
+    }
+
+    /**
      * Gets the face by providing an index from the shape
      * @param inputs Shape
      * @returns OpenCascade face

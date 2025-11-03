@@ -136,6 +136,146 @@ export class ShapesHelperService {
             [lengthFirst, 0, widthFirst / 2],
         ];
     }
+
+    beamIProfile(width: number, height: number, webThickness: number, flangeThickness: number, alignment: Base.basicAlignmentEnum): Base.Point3[] {
+        // Create I-beam profile centered at origin
+        const halfWidth = width / 2;
+        const halfHeight = height / 2;
+        const halfWeb = webThickness / 2;
+
+        // Points for I-beam (clockwise from top-left)
+        const points: Base.Point3[] = [
+            [-halfWidth, 0, halfHeight],
+            [halfWidth, 0, halfHeight],
+            [halfWidth, 0, halfHeight - flangeThickness],
+            [halfWeb, 0, halfHeight - flangeThickness],
+            [halfWeb, 0, -halfHeight + flangeThickness],
+            [halfWidth, 0, -halfHeight + flangeThickness],
+            [halfWidth, 0, -halfHeight],
+            [-halfWidth, 0, -halfHeight],
+            [-halfWidth, 0, -halfHeight + flangeThickness],
+            [-halfWeb, 0, -halfHeight + flangeThickness],
+            [-halfWeb, 0, halfHeight - flangeThickness],
+            [-halfWidth, 0, halfHeight - flangeThickness],
+        ];
+
+        return this.applyBeamAlignment(points, width, height, alignment);
+    }
+
+    beamHProfile(width: number, height: number, webThickness: number, flangeThickness: number, alignment: Base.basicAlignmentEnum): Base.Point3[] {
+        // H-beam is I-beam rotated 90 degrees (width and height swapped)
+        // Create H-beam profile centered at origin (rotated I-beam)
+        const halfWidth = width / 2;
+        const halfHeight = height / 2;
+        const halfWeb = webThickness / 2;
+
+        // Points for H-beam (I-beam rotated 90 degrees, clockwise from top-left)
+        const points: Base.Point3[] = [
+            [-halfWidth, 0, halfHeight],
+            [-halfWidth + flangeThickness, 0, halfHeight],
+            [-halfWidth + flangeThickness, 0, halfWeb],
+            [halfWidth - flangeThickness, 0, halfWeb],
+            [halfWidth - flangeThickness, 0, halfHeight],
+            [halfWidth, 0, halfHeight],
+            [halfWidth, 0, -halfHeight],
+            [halfWidth - flangeThickness, 0, -halfHeight],
+            [halfWidth - flangeThickness, 0, -halfWeb],
+            [-halfWidth + flangeThickness, 0, -halfWeb],
+            [-halfWidth + flangeThickness, 0, -halfHeight],
+            [-halfWidth, 0, -halfHeight],
+        ];
+
+        return this.applyBeamAlignment(points, width, height, alignment);
+    }
+
+    beamTProfile(width: number, height: number, webThickness: number, flangeThickness: number, alignment: Base.basicAlignmentEnum): Base.Point3[] {
+        // Create T-beam profile centered at origin
+        const halfWidth = width / 2;
+        const halfHeight = height / 2;
+        const halfWeb = webThickness / 2;
+
+        // Points for T-beam (clockwise from top-left)
+        const points: Base.Point3[] = [
+            [-halfWidth, 0, halfHeight],
+            [halfWidth, 0, halfHeight],
+            [halfWidth, 0, halfHeight - flangeThickness],
+            [halfWeb, 0, halfHeight - flangeThickness],
+            [halfWeb, 0, -halfHeight],
+            [-halfWeb, 0, -halfHeight],
+            [-halfWeb, 0, halfHeight - flangeThickness],
+            [-halfWidth, 0, halfHeight - flangeThickness],
+        ];
+
+        return this.applyBeamAlignment(points, width, height, alignment);
+    }
+
+    beamUProfile(width: number, height: number, webThickness: number, flangeThickness: number, flangeWidth: number, alignment: Base.basicAlignmentEnum): Base.Point3[] {
+        // Create U-beam profile centered at origin (opening upward - rotated 180 degrees from previous)
+        const halfWidth = width / 2;
+        const halfHeight = height / 2;
+
+        // Points for U-beam (clockwise from top-left outside, opening upward)
+        const points: Base.Point3[] = [
+            [-halfWidth, 0, halfHeight],
+            [-halfWidth + flangeThickness, 0, halfHeight],
+            [-halfWidth + flangeThickness, 0, -halfHeight + flangeWidth],
+            [halfWidth - webThickness, 0, -halfHeight + flangeWidth],
+            [halfWidth - webThickness, 0, halfHeight],
+            [halfWidth, 0, halfHeight],
+            [halfWidth, 0, -halfHeight],
+            [-halfWidth, 0, -halfHeight],
+        ];
+
+        return this.applyBeamAlignment(points, width, height, alignment);
+    }
+
+    private applyBeamAlignment(points: Base.Point3[], width: number, height: number, alignment: Base.basicAlignmentEnum): Base.Point3[] {
+        // Alignment logic: the specified corner/edge of the shape is placed at the origin
+        // For example, topLeft means the top-left corner of the shape is at (0,0)
+        let offsetX = 0;
+        let offsetZ = 0;
+        
+        switch (alignment) {
+        case Base.basicAlignmentEnum.topLeft:
+            offsetX = width / 2;
+            offsetZ = -height / 2;
+            break;
+        case Base.basicAlignmentEnum.topMid:
+            offsetX = 0;
+            offsetZ = -height / 2;
+            break;
+        case Base.basicAlignmentEnum.topRight:
+            offsetX = -width / 2;
+            offsetZ = -height / 2;
+            break;
+        case Base.basicAlignmentEnum.midLeft:
+            offsetX = width / 2;
+            offsetZ = 0;
+            break;
+        case Base.basicAlignmentEnum.midMid:
+            offsetX = 0;
+            offsetZ = 0;
+            break;
+        case Base.basicAlignmentEnum.midRight:
+            offsetX = -width / 2;
+            offsetZ = 0;
+            break;
+        case Base.basicAlignmentEnum.bottomLeft:
+            offsetX = width / 2;
+            offsetZ = height / 2;
+            break;
+        case Base.basicAlignmentEnum.bottomMid:
+            offsetX = 0;
+            offsetZ = height / 2;
+            break;
+        case Base.basicAlignmentEnum.bottomRight:
+            offsetX = -width / 2;
+            offsetZ = height / 2;
+            break;
+        }
+        
+        return points.map(pt => [pt[0] + offsetX, pt[1], pt[2] + offsetZ] as Base.Point3);
+    }
 }
 
 

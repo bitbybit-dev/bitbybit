@@ -174,6 +174,56 @@ export class OCCTFace {
         return this.och.facesService.createRectangleFace(inputs);
     }
 
+    createLPolygonFace(inputs: Inputs.OCCT.LPolygonDto): TopoDS_Face {
+        const wire = this.och.wiresService.createLPolygonWire(inputs);
+        return this.createFaceFromWire({ shape: wire, planar: true });
+    }
+
+    createIBeamProfileFace(inputs: Inputs.OCCT.IBeamProfileDto): TopoDS_Face {
+        const wire = this.och.wiresService.createIBeamProfileWire(inputs);
+        return this.createFaceFromWire({ shape: wire, planar: true });
+    }
+
+    createHBeamProfileFace(inputs: Inputs.OCCT.HBeamProfileDto): TopoDS_Face {
+        const wire = this.och.wiresService.createHBeamProfileWire(inputs);
+        return this.createFaceFromWire({ shape: wire, planar: true });
+    }
+
+    createTBeamProfileFace(inputs: Inputs.OCCT.TBeamProfileDto): TopoDS_Face {
+        const wire = this.och.wiresService.createTBeamProfileWire(inputs);
+        return this.createFaceFromWire({ shape: wire, planar: true });
+    }
+
+    createUBeamProfileFace(inputs: Inputs.OCCT.UBeamProfileDto): TopoDS_Face {
+        const wire = this.och.wiresService.createUBeamProfileWire(inputs);
+        return this.createFaceFromWire({ shape: wire, planar: true });
+    }
+
+    createStarFace(inputs: Inputs.OCCT.StarDto): TopoDS_Face {
+        const wire = this.och.wiresService.createStarWire(inputs);
+        return this.createFaceFromWire({ shape: wire, planar: true });
+    }
+
+    createChristmasTreeFace(inputs: Inputs.OCCT.ChristmasTreeDto): TopoDS_Face {
+        const wire = this.och.wiresService.createChristmasTreeWire(inputs);
+        return this.createFaceFromWire({ shape: wire, planar: true });
+    }
+
+    createParallelogramFace(inputs: Inputs.OCCT.ParallelogramDto): TopoDS_Face {
+        const wire = this.och.wiresService.createParallelogramWire(inputs);
+        return this.createFaceFromWire({ shape: wire, planar: true });
+    }
+
+    createHeartFace(inputs: Inputs.OCCT.Heart2DDto): TopoDS_Face {
+        const wire = this.och.wiresService.createHeartWire(inputs);
+        return this.createFaceFromWire({ shape: wire, planar: true });
+    }
+
+    createNGonFace(inputs: Inputs.OCCT.NGonWireDto): TopoDS_Face {
+        const wire = this.och.wiresService.createNGonWire(inputs);
+        return this.createFaceFromWire({ shape: wire, planar: true });
+    }
+
     createFaceFromMultipleCircleTanWireCollections(inputs: Inputs.OCCT.FaceFromMultipleCircleTanWireCollectionsDto<TopoDS_Wire>): TopoDS_Shape {
         return this.och.facesService.createFaceFromMultipleCircleTanWireCollections(inputs);
     }

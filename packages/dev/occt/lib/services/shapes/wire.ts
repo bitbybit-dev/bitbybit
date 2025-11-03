@@ -303,6 +303,22 @@ export class OCCTWire {
         return this.och.wiresService.createLPolygonWire(inputs);
     }
 
+    createIBeamProfileWire(inputs: Inputs.OCCT.IBeamProfileDto): TopoDS_Wire {
+        return this.och.wiresService.createIBeamProfileWire(inputs);
+    }
+
+    createHBeamProfileWire(inputs: Inputs.OCCT.HBeamProfileDto): TopoDS_Wire {
+        return this.och.wiresService.createHBeamProfileWire(inputs);
+    }
+
+    createTBeamProfileWire(inputs: Inputs.OCCT.TBeamProfileDto): TopoDS_Wire {
+        return this.och.wiresService.createTBeamProfileWire(inputs);
+    }
+
+    createUBeamProfileWire(inputs: Inputs.OCCT.UBeamProfileDto): TopoDS_Wire {
+        return this.och.wiresService.createUBeamProfileWire(inputs);
+    }
+
     getWire(inputs: Inputs.OCCT.ShapeIndexDto<TopoDS_Shape>): TopoDS_Wire {
         return this.och.shapeGettersService.getWire(inputs);
     }

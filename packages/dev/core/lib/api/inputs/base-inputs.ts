@@ -26,6 +26,17 @@ export namespace Base {
         top = "top",
         bottom = "bottom",
     }
+    export enum basicAlignmentEnum {
+        topLeft = "topLeft",
+        topMid = "topMid",
+        topRight = "topRight",
+        midLeft = "midLeft",
+        midMid = "midMid",
+        midRight = "midRight",
+        bottomLeft = "bottomLeft",
+        bottomMid = "bottomMid",
+        bottomRight = "bottomRight"
+    }
     // Can't use BabylonJS types here as that crashes worker, which tries to include them
     export type Color = string;
     export type ColorRGB = { r: number, g: number, b: number };
