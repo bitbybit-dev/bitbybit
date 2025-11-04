@@ -7,7 +7,7 @@ import Module from 'manifold-3d';
 const init = async () => {
   const wasm = await Module({
     locateFile: () => {
-      return 'https://cdn.jsdelivr.net/gh/bitbybit-dev/bitbybit-assets@0.20.10/wasm/manifold.cc2ddd38.wasm';
+      return 'https://cdn.jsdelivr.net/gh/bitbybit-dev/bitbybit-assets@0.20.11/wasm/manifold.cc2ddd38.wasm';
     },
   });
   wasm.setup();
