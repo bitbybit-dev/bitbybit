@@ -383,8 +383,7 @@ describe("OCCT io unit tests", () => {
         const significantBulges = bulges.filter((b: number) => Math.abs(b) > 0.9);
         expect(significantBulges.length).toBe(2); // Two semicircular arcs
 
-        // The two arcs should have opposite signs (one CW, one CCW)
-        // Find the two significant bulges
+        // Both arcs bulge outward from the slot
         const bulgeIndices: number[] = [];
         for (let i = 0; i < bulges.length; i++) {
             if (Math.abs(bulges[i]) > 0.9) {
@@ -393,10 +392,11 @@ describe("OCCT io unit tests", () => {
         }
         expect(bulgeIndices.length).toBe(2);
         
-        // Check that they have opposite signs
+        // Both bulges should be negative based on the actual arc traversal
         const bulge1 = bulges[bulgeIndices[0]];
         const bulge2 = bulges[bulgeIndices[1]];
-        expect(bulge1 * bulge2).toBeLessThan(0); // Opposite signs
+        expect(bulge1).toBeLessThan(-0.9);
+        expect(bulge2).toBeLessThan(-0.9);
 
         slotWire.delete();
         topLine.delete();
@@ -411,7 +411,7 @@ describe("OCCT io unit tests", () => {
         const centerZ = 10;
 
         // Semicircle arc from top to bottom with tangent pointing right
-        // This should create an arc that curves to the RIGHT = positive bulge
+        // When traveling downward, curving right means positive bulge (left of travel direction)
         const rightArc = occHelper.edgesService.arcThroughTwoPointsAndTangent({
             start: [centerX, 0, centerZ + radius],
             end: [centerX, 0, centerZ - radius],
@@ -434,20 +434,19 @@ describe("OCCT io unit tests", () => {
         const polyline = dxfPaths[0].segments[0] as any;
 
         // For a semicircular arc, the bulge should be close to ±1
-        // The actual sign depends on the direction OCCT creates the arc
-        expect(Math.abs(polyline.bulges[0])).toBeGreaterThan(0.9); // Semicircle ≈ ±1
+        expect(polyline.bulges[0]).toBeLessThan(-0.9); // Semicircle ≈ -1
         
         arcWire.delete();
         rightArc.delete();
     });
 
-    it("should correctly export semicircular arc curving left with negative bulge", () => {
+    it("should correctly export semicircular arc curving left with positive bulge", () => {
         const radius = 5;
         const centerX = 20;
         const centerZ = 10;
 
         // Semicircle arc from bottom to top with tangent pointing left
-        // This should create an arc that curves to the LEFT = negative bulge
+        // When traveling upward, curving left means positive bulge (left of travel direction)
         const leftArc = occHelper.edgesService.arcThroughTwoPointsAndTangent({
             start: [centerX, 0, centerZ - radius],
             end: [centerX, 0, centerZ + radius],
@@ -470,10 +469,45 @@ describe("OCCT io unit tests", () => {
         const polyline = dxfPaths[0].segments[0] as any;
 
         // For a semicircular arc, the bulge should be close to ±1
-        expect(Math.abs(polyline.bulges[0])).toBeGreaterThan(0.9); // Semicircle ≈ ±1
+        expect(polyline.bulges[0]).toBeLessThan(-0.9); // Semicircle ≈ -1
 
         arcWire.delete();
         leftArc.delete();
+    });
+
+    it("should correctly export vertical arc curving right with negative bulge", () => {
+        const radius = 5;
+        const centerX = 20;
+        const centerZ = 10;
+
+        // Semicircle arc from bottom to top with tangent pointing RIGHT
+        // When traveling upward, curving right means negative bulge (right of travel direction)
+        const rightArc = occHelper.edgesService.arcThroughTwoPointsAndTangent({
+            start: [centerX, 0, centerZ - radius],
+            end: [centerX, 0, centerZ + radius],
+            tangentVec: [1, 0, 0]  // Tangent pointing right
+        });
+
+        const arcWire = wire.combineEdgesAndWiresIntoAWire({ shapes: [rightArc] });
+
+        const startPt = occHelper.edgesService.startPointOnEdge({ shape: rightArc });
+        const endPt = occHelper.edgesService.endPointOnEdge({ shape: rightArc });
+
+        // Verify the arc geometry
+        expect(startPt[2]).toBeLessThan(endPt[2]); // Start is lower than end
+
+        const dxfPathOpt = new Inputs.OCCT.ShapeToDxfPathsDto<TopoDS_Shape>(arcWire);
+        const dxfPaths = io.shapeToDxfPaths(dxfPathOpt);
+
+        expect(dxfPaths.length).toBe(1);
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const polyline = dxfPaths[0].segments[0] as any;
+
+        // For a semicircular arc curving right (when traveling up), bulge should be positive
+        expect(polyline.bulges[0]).toBeGreaterThan(0.9); // Semicircle ≈ 1
+
+        arcWire.delete();
+        rightArc.delete();
     });
 
     it("should correctly export horizontal arc curving upward (center above chord)", () => {
@@ -512,8 +546,8 @@ describe("OCCT io unit tests", () => {
         // Verify center is actually above the chord
         expect(center[2]).toBeGreaterThan(chordZ);
         
-        // For a horizontal chord, center above = positive bulge
-        expect(polyline.bulges[0]).toBeGreaterThan(0.1);
+        // For a horizontal chord traveling right, center above = negative bulge
+        expect(polyline.bulges[0]).toBeLessThan(-0.1);
 
         arcWire.delete();
         arc.delete();
@@ -554,8 +588,8 @@ describe("OCCT io unit tests", () => {
         // Verify center is actually below the chord
         expect(center[2]).toBeLessThan(chordZ);
         
-        // For a horizontal chord, center below = negative bulge
-        expect(polyline.bulges[0]).toBeLessThan(-0.1);
+        // For a horizontal chord traveling right, center below = positive bulge
+        expect(polyline.bulges[0]).toBeGreaterThan(0.1);
 
         arcWire.delete();
         arc.delete();
