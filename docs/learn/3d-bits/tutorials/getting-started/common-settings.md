@@ -111,8 +111,9 @@ These settings are shared by VIEWER, RUNNER, and APPS blocks:
 
 ### Runner and Apps Blocks Only
 
-This setting is specific to RUNNER and APPS blocks:
+These settings are specific to RUNNER and APPS blocks:
 
+- [Public Script URL](#public-script-url)
 - [Disable Inputs When Computing](#disable-inputs-when-computing)
 
 ## Setting Details
@@ -360,6 +361,58 @@ Background settings are applied in this priority order (highest to lowest):
 3. This block setting
 
 If you're using Scene JSON Configuration with skybox or advanced backgrounds, this setting will be ignored.
+
+---
+
+### Public Script URL
+
+**Available in:** RUNNER, APPS  
+**Default:** Empty
+
+Controls which script or application the block loads from an external source. This setting enables different workflows depending on the block type.
+
+**For RUNNER Block:**
+Loads parametric scripts created in bitbybit.dev editors (Blockly, Rete, or Monaco). When empty, uses [Inline Script](../bitbybit-runner/settings#inline-script) instead.
+
+**For APPS Block:**
+Controls the three-mode development workflow (Local Development, Preview, Production). When empty, defaults to `https://localhost:4242` for local development.
+
+**Format:**
+
+Provide a fully qualified URL to your file:
+```
+https://example.com/scripts/my-file.txt
+https://localhost:4242/assets/index-stable.js
+https://cdn.shopify.com/s/files/1/xxx/index-hash.js
+```
+
+**File Requirements:**
+- **Publicly accessible** (no authentication required)
+- **CORS-enabled** if hosted on different domain
+- **RUNNER**: text/plain format with exported script from bitbybit.dev
+- **APPS**: ES6 module JavaScript file compiled with Vite
+
+**Hosting Options:**
+- **Shopify CDN** - Upload via Content → Files (recommended for production)
+- **Local Development** - localhost:4242 (APPS only)
+- **Cloud Storage** - AWS S3, Google Cloud Storage, etc.
+- **CDN Services** - Cloudflare, jsDelivr
+- **Your Own Server** - Any HTTPS server with CORS headers
+
+**CORS Requirements:**
+
+If hosting on a different domain, ensure proper CORS headers:
+```
+Access-Control-Allow-Origin: *
+Access-Control-Allow-Methods: GET, OPTIONS
+Access-Control-Allow-Headers: Content-Type
+```
+
+**Block-Specific Usage:**
+
+For detailed usage instructions specific to each block, see:
+- **RUNNER**: [Public Script URL setting](../bitbybit-runner/settings#public-script-url) - Script loading and priority
+- **APPS**: [Public Script URL setting](../bitbybit-apps/settings#public-script-url) - Development modes and workflow
 
 ---
 

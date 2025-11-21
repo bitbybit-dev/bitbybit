@@ -41,7 +41,7 @@ All editors are accessible through the **3D Bits admin dashboard** in your Shopi
 
 ### Script Configuration
 - [Inline Script](#inline-script)
-- [Public Script URL](#public-script-url)
+- [Public Script URL](#public-script-url) - [See full documentation](../getting-started/common-settings#public-script-url)
 - [Execute JavaScript](#execute-javascript)
 
 ### Geometry Kernel Options
@@ -121,48 +121,34 @@ Consider using a [Public Script URL](#public-script-url) if:
 
 ### Public Script URL
 
-The Public Script URL setting allows you to load your parametric script from an external file hosted publicly on the web.
-
-#### Format
-
-Provide a fully qualified URL to your script file:
-```
-https://example.com/scripts/my-configurator.txt
-```
-
-:::warning File Requirements
-The URL must point to:
-- A **publicly accessible** file (no authentication required)
-- Content in **text/plain** format
-- A script exported using "Export to Runner" from [bitbybit.dev](https://bitbybit.dev) editors
+:::info Common Setting
+This setting is shared between RUNNER and APPS blocks. See [Public Script URL in Common Settings](../getting-started/common-settings#public-script-url) for general information about URL requirements, hosting options, and CORS configuration.
 :::
 
-#### CORS Considerations
+The Public Script URL setting allows you to load your parametric script from an external file hosted publicly on the web.
 
-If hosting on a different domain than your Shopify store, ensure the server returns appropriate CORS headers:
-```
-Access-Control-Allow-Origin: *
-```
+#### RUNNER-Specific Behavior
 
-#### When to Use
+**Script Priority:**
+If an [Inline Script](#inline-script) is provided, it takes precedence and this URL will be ignored.
 
-Use Public Script URL when:
+**When to Use Public Script URL:**
 - You have a centralized script management system
 - The same script is used across multiple Shopify stores
 - You want to update scripts without modifying the metafield values in product page (keep in mind asset may be cached)
 - Your script is too large for comfortable inline embedding
 
-:::info Script Priority
-If an [Inline Script](#inline-script) is provided, it takes precedence and this URL will be ignored.
-:::
+**File Format:**
+The URL must point to a script exported using "Export to Runner" from [bitbybit.dev](https://bitbybit.dev) editors in text/plain format.
 
-#### Hosting Options
-
-You can host your script file on:
-- **Shopify CDN** - Upload as a theme asset
-- **GitHub Pages** - Use raw file URLs
+**Recommended Hosting:**
+- **Shopify CDN** - Upload as a theme asset for best reliability
+- **GitHub Pages** - Use raw file URLs for version control
 - **Cloud storage** - Google Cloud Storage, AWS S3, etc.
-- **Your own server** - Any web server with CORS enabled
+
+:::tip
+For most use cases, [Inline Script](#inline-script) is recommended as it's faster (no external HTTP request) and more reliable (no dependency on external hosting).
+:::
 
 ---
 

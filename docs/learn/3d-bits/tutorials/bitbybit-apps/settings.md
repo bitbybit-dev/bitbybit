@@ -76,7 +76,7 @@ BITBYBIT APPS is designed exclusively for **frontend SPA development**. Any logi
 ## Available Settings
 
 ### Product-Specific Settings
-- [Public Script URL](#public-script-url)
+- [Public Script URL](#public-script-url) - [See full documentation](../getting-started/common-settings#public-script-url)
 
 ### Global Settings
 - [Show Spinner](#show-spinner)
@@ -112,9 +112,13 @@ Therefore, [Public Script URL](#public-script-url) usually remains **global** (s
 
 ## Public Script URL
 
+:::info Common Setting
+This setting is shared between RUNNER and APPS blocks. See [Public Script URL in Common Settings](../getting-started/common-settings#public-script-url) for general information about URL requirements, hosting options, and CORS configuration.
+:::
+
 The Public Script URL setting controls which JavaScript application the block loads, enabling the three-mode development workflow.
 
-### Three Development Modes
+### APPS-Specific: Three Development Modes
 
 The BITBYBIT APPS block supports three distinct modes:
 
@@ -200,40 +204,9 @@ Your Vite config must output:
 
 Our templates include the correct configuration. Custom setups should follow similar patterns.
 
-### Hosting Your Application
-
-**Recommended: Shopify CDN (Production)**
-- Upload via Content → Files in Shopify Admin
-- Automatic CDN distribution
-- No CORS issues
-- Free hosting included
-- Best performance for customers
-
-**Local Development/Preview**
-- Run Vite dev server on localhost:4242
-- No external hosting needed
-- HTTPS certificate required (handled by Vite)
-
-**Alternative Hosting Options** (less common):
-- **Cloud Storage**: AWS S3 + CloudFront, Google Cloud Storage
-- **CDN Services**: Cloudflare, jsDelivr
-- **Your Own Server**: Any HTTPS server with CORS headers
-
-:::warning Using Alternative Hosting
-If hosting outside Shopify, ensure proper CORS headers are configured. Shopify CDN is recommended for the simplest, most reliable setup.
+:::tip Hosting Options
+For hosting options and CORS requirements, see [Public Script URL in Common Settings](../getting-started/common-settings#public-script-url). For APPS, Shopify CDN is recommended for production, and localhost:4242 for development/preview.
 :::
-
-### CORS Requirements
-
-If your application is hosted on a different domain than your Shopify store, the server must return appropriate CORS headers:
-
-```
-Access-Control-Allow-Origin: *
-Access-Control-Allow-Methods: GET, OPTIONS
-Access-Control-Allow-Headers: Content-Type
-```
-
-Most CDN services handle this automatically.
 
 ### Application Structure with bits-pro
 
