@@ -1,0 +1,10 @@
+{
+    "label": "Bitbybit Viewer",
+    "position": 1,
+    "link": {
+        "type": "generated-index",
+        "title": "Tutorials for Bitbybit Viewer",
+        "description": "Learn how to use the Bitbybit Viewer theme app extension block with the Editor in the 3D Bits Shopify App to build No-Code 3D configurators and enhance the 3D product viewing experience for your store.",
+        "slug": "/3d-bits/tutorials/bitbybit-viewer"
+    }
+}

@@ -187,3 +187,8 @@ ai:
   label: AI
   permalink: /ai
   description: AI refers to artificial intelligence technologies and applications, including machine learning and natural language processing.
+
+viewer-editor:
+ label: Viewer Editor
+ permalink: /viewer-editor
+ description: Viewer Editor is powerful No-Code eCommerce solution

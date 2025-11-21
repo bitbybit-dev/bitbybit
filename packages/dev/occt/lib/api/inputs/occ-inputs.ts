@@ -128,7 +128,14 @@ export namespace OCCT {
         isGuideACWithContact = "isGuideACWithContact",
         isGuidePlanWithContact = "isGuidePlanWithContact",
         isDiscreteTrihedron = "isDiscreteTrihedron",
-
+    }
+    export enum colorFormatEnum {
+        aci = "aci",
+        truecolor = "truecolor",
+    }
+    export enum acadVersionEnum {
+        AC1009 = "AC1009",
+        AC1015 = "AC1015",
     }
     export class DecomposedMeshDto {
         constructor(faceList?: DecomposedFaceDto[], edgeList?: DecomposedEdgeDto[]) {
@@ -6045,8 +6052,10 @@ export namespace OCCT {
     }
 
     export class DxfPathsPartsListDto {
-        constructor(pathsParts?: IO.DxfPathsPartDto[], tryDownload?: boolean) {
+        constructor(pathsParts?: IO.DxfPathsPartDto[], colorFormat?: colorFormatEnum, acadVersion?: acadVersionEnum, tryDownload?: boolean) {
             if (pathsParts !== undefined) { this.pathsParts = pathsParts; }
+            if (colorFormat !== undefined) { this.colorFormat = colorFormat; }
+            if (acadVersion !== undefined) { this.acadVersion = acadVersion; }
             if (tryDownload !== undefined) { this.tryDownload = tryDownload; }
         }
         /**
@@ -6054,6 +6063,16 @@ export namespace OCCT {
          * @default undefined
          */
         pathsParts: IO.DxfPathsPartDto[];
+        /**
+         * Color format to use in the DXF file
+         * @default aci
+         */
+        colorFormat: colorFormatEnum = colorFormatEnum.aci;
+        /**
+         * AutoCAD version format for DXF file
+         * @default AC1009
+         */
+        acadVersion: acadVersionEnum = acadVersionEnum.AC1009;
         /**
          * File name
          * @default bitbybit-dev.dxf

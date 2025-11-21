@@ -28,7 +28,7 @@ The BITBYBIT RUNNER block allows Shopify merchants to present parametric 3D mode
 
 ## How Does the BITBYBIT RUNNER Block Work?
 
-While we offer several [tutorials to guide you through the specifics](/learn/3d-bits/tutorials/intro), the core principle is straightforward:
+While we offer several [tutorials to guide you through the specifics](/learn/3d-bits/tutorials/videos-tutorials/intro), the core principle is straightforward:
 
 1.  **Create Your Script:** Design and code your parametric 3D model or interactive experience using one of the editors (Rete, Blockly, or TypeScript) on the [bitbybit.dev](https://bitbybit.dev) platform.
 2.  **Export Your Script:** Use the "Export to Runner" feature within the Bitbybit editor to generate JavaScript code from your visual or TypeScript program.
@@ -37,4 +37,4 @@ While we offer several [tutorials to guide you through the specifics](/learn/3d-
 
 This process allows merchants to first define their adaptable 3D designs on Bitbybit, choosing from low-code visual programming editors or our TypeScript IDE. Then, they can bring this dynamic logic into their Shopify store via the "3D Bits" app, creating truly interactive product customization experiences for their customers.
 
-For more detailed instructions and examples, please follow the tutorials available on our [Shopify Start Pages](/learn/3d-bits/tutorials/intro).
+For more detailed instructions and examples, please follow the tutorials available on our [Shopify Start Pages](/learn/3d-bits/tutorials/videos-tutorials/intro).

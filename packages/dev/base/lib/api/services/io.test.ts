@@ -88,7 +88,7 @@ describe("IO unit tests", () => {
 
     describe("DxfCreate - Basic Entities", () => {
         
-        it("should generate a basic DXF with single line", () => {
+        it("should generate a basic DXF with single line in AC1009 format by default", () => {
             const lineSegment = new Inputs.IO.DxfLineSegmentDto([0, 0], [10, 10]);
             const path = new Inputs.IO.DxfPathDto([lineSegment]);
             const part = new Inputs.IO.DxfPathsPartDto("0", "#000000", [path]);
@@ -99,14 +99,30 @@ describe("IO unit tests", () => {
             expect(typeof result).toBe("string");
             expect(result.length).toBeGreaterThan(0);
             expect(result).toContain("0\nSECTION\n2\nHEADER");
-            expect(result).toContain("$ACADVER\n1\nAC1015");
-            expect(result).toContain("$LASTSAVEDBY\n1\nbitbybit.dev");
+            expect(result).toContain("$ACADVER\n1\nAC1009");
+            expect(result).toContain("$DWGCODEPAGE\n3\nascii");
             expect(result).toContain("0\nSECTION\n2\nTABLES");
+            expect(result).toContain("0\nSECTION\n2\nBLOCKS");
             expect(result).toContain("0\nSECTION\n2\nENTITIES");
             expect(result).toContain("0\nLINE");
             expect(result).toContain("0\nEOF");
-            expect(result).toContain("10\n0\n20\n0");
-            expect(result).toContain("11\n10\n21\n10");
+            expect(result).toContain("10\n0.000000\n20\n0.000000");
+            expect(result).toContain("11\n10.000000\n21\n10.000000");
+        });
+
+        it("should generate DXF with AC1015 format when specified", () => {
+            const lineSegment = new Inputs.IO.DxfLineSegmentDto([0, 0], [10, 10]);
+            const path = new Inputs.IO.DxfPathDto([lineSegment]);
+            const part = new Inputs.IO.DxfPathsPartDto("0", "#000000", [path]);
+            const model = new Inputs.IO.DxfModelDto([part], "aci", "AC1015");
+
+            const result = io.dxf.dxfCreate(model);
+
+            expect(result).toContain("$ACADVER\n1\nAC1015");
+            expect(result).toContain("$LASTSAVEDBY\n1\nbitbybit.dev");
+            expect(result).toContain("$DWGCODEPAGE\n3\nANSI_1252");
+            expect(result).toContain("100\nAcDbEntity");
+            expect(result).toContain("100\nAcDbLine");
         });
 
         it("should generate DXF with circle", () => {
@@ -119,8 +135,8 @@ describe("IO unit tests", () => {
 
             expect(result).toContain("0\nCIRCLE");
             expect(result).toContain("8\nCircles");
-            expect(result).toContain("10\n50\n20\n50");
-            expect(result).toContain("40\n25");
+            expect(result).toContain("10\n50.000000\n20\n50.000000");
+            expect(result).toContain("40\n25.000000");
         });
 
         it("should generate DXF with arc", () => {
@@ -133,10 +149,10 @@ describe("IO unit tests", () => {
 
             expect(result).toContain("0\nARC");
             expect(result).toContain("8\nArcs");
-            expect(result).toContain("10\n100\n20\n100");
-            expect(result).toContain("40\n50");
-            expect(result).toContain("50\n0");
-            expect(result).toContain("51\n90");
+            expect(result).toContain("10\n100.000000\n20\n100.000000");
+            expect(result).toContain("40\n50.000000");
+            expect(result).toContain("50\n0.000000");
+            expect(result).toContain("51\n90.000000");
         });
 
         it("should generate DXF with closed polyline", () => {
@@ -370,11 +386,11 @@ describe("IO unit tests", () => {
             expect(result).toContain("62\n5");
         });
 
-        it("should convert hex color #FF0000 to true color format", () => {
+        it("should convert hex color #FF0000 to true color format when specified", () => {
             const circle = new Inputs.IO.DxfCircleSegmentDto([10, 10], 5);
             const path = new Inputs.IO.DxfPathDto([circle]);
             const part = new Inputs.IO.DxfPathsPartDto("HexColor", "#FF0000", [path]);
-            const model = new Inputs.IO.DxfModelDto([part]);
+            const model = new Inputs.IO.DxfModelDto([part], "truecolor");
 
             const result = io.dxf.dxfCreate(model);
 
@@ -383,11 +399,11 @@ describe("IO unit tests", () => {
             expect(result).toContain("420\n16711680"); // #FF0000 = 16711680 in decimal
         });
 
-        it("should convert hex color #FF0000 to true color format in line", () => {
+        it("should convert hex color #FF0000 to true color format in line when specified", () => {
             const line = new Inputs.IO.DxfLineSegmentDto([0, 0], [10, 10]);
             const path = new Inputs.IO.DxfPathDto([line]);
             const part = new Inputs.IO.DxfPathsPartDto("LayerHex", "#FF0000", [path]);
-            const model = new Inputs.IO.DxfModelDto([part]);
+            const model = new Inputs.IO.DxfModelDto([part], "truecolor");
 
             const result = io.dxf.dxfCreate(model);
             // Should convert #FF0000 to true color format
@@ -395,30 +411,27 @@ describe("IO unit tests", () => {
             expect(result).toContain("420\n16711680");
         });
 
-        it("should convert hex color #00FF00 to true color format", () => {
+        it("should convert hex color #FF0000 to ACI color format", () => {
             const line = new Inputs.IO.DxfLineSegmentDto([0, 0], [10, 10]);
             const path = new Inputs.IO.DxfPathDto([line]);
-            const part = new Inputs.IO.DxfPathsPartDto("LayerHex", "#00FF00", [path]);
+            const part = new Inputs.IO.DxfPathsPartDto("LayerHex", "#FF0000", [path]);
             const model = new Inputs.IO.DxfModelDto([part]);
 
             const result = io.dxf.dxfCreate(model);
-            // Should convert #00FF00 to true color format
-            expect(result).toContain("62\n256");
-            expect(result).toContain("420\n65280"); // #00FF00 = 65280 in decimal
+            // Should convert #FF0000 to nearest ACI color (1 = red)
+            expect(result).toContain("62\n1");
         });
 
-        it("should convert hex color #0000FF to true color format", () => {
+        it("should convert hex color #0000FF to ACI color format", () => {
             const line = new Inputs.IO.DxfLineSegmentDto([0, 0], [10, 10]);
             const path = new Inputs.IO.DxfPathDto([line]);
             const part = new Inputs.IO.DxfPathsPartDto("LayerHex", "#0000FF", [path]);
             const model = new Inputs.IO.DxfModelDto([part]);
 
             const result = io.dxf.dxfCreate(model);
-            // Should convert #0000FF to true color format
-            expect(result).toContain("62\n256");
-            expect(result).toContain("420\n255"); // #0000FF = 255 in decimal
+            // Should convert #0000FF to nearest ACI color (5 = blue)
+            expect(result).toContain("62\n5");
         });
-
         it("should handle invalid color by using default ACI 7", () => {
             const line = new Inputs.IO.DxfLineSegmentDto([0, 0], [10, 10]);
             const path = new Inputs.IO.DxfPathDto([line]);
@@ -461,8 +474,8 @@ describe("IO unit tests", () => {
 
             const result = io.dxf.dxfCreate(model);
 
-            expect(result).toContain("10\n1.5\n20\n2.7");
-            expect(result).toContain("11\n3.14159\n21\n2.71828");
+            expect(result).toContain("10\n1.500000\n20\n2.700000");
+            expect(result).toContain("11\n3.141590\n21\n2.718280");
         });
 
         it("should handle negative coordinates", () => {
@@ -473,8 +486,8 @@ describe("IO unit tests", () => {
 
             const result = io.dxf.dxfCreate(model);
 
-            expect(result).toContain("10\n-10\n20\n-5");
-            expect(result).toContain("11\n10\n21\n5");
+            expect(result).toContain("10\n-10.000000\n20\n-5.000000");
+            expect(result).toContain("11\n10.000000\n21\n5.000000");
         });
     });
 
@@ -489,7 +502,7 @@ describe("IO unit tests", () => {
 
             const result = io.dxf.dxfCreate(model);
 
-            expect(result).toContain("70\n1");
+            expect(result).toContain("70\n9"); // 9 = closed (1) + planar (8)
         });
 
         it("should generate spline with degree 2", () => {
@@ -530,6 +543,7 @@ describe("IO unit tests", () => {
             const sections = [
                 "0\nSECTION\n2\nHEADER",
                 "0\nSECTION\n2\nTABLES",
+                "0\nSECTION\n2\nBLOCKS",
                 "0\nSECTION\n2\nENTITIES",
                 "0\nEOF"
             ];
@@ -538,12 +552,29 @@ describe("IO unit tests", () => {
                 expect(result).toContain(section);
             });
 
-            expect(result).toContain("$LASTSAVEDBY\n1\nbitbybit.dev");
+            // AC1009 format (default) does not include $LASTSAVEDBY
+            expect(result).toContain("0\nTABLE\n2\nLTYPE"); // Line type table
             expect(result).toContain("0\nTABLE\n2\nLAYER");
+            expect(result).toContain("0\nTABLE\n2\nSTYLE"); // Text style table
+            expect(result).toContain("0\nTABLE\n2\nVPORT"); // AC1009 includes VPORT
             expect(result).toContain("2\nWALLS");
             expect(result).toContain("0\nLINE");
             expect(result).toContain("8\nWALLS");
             expect(result).toContain("62\n1");
+        });
+
+        it("should produce AC1015 structure with $LASTSAVEDBY when specified", () => {
+            const lineSegment = new Inputs.IO.DxfLineSegmentDto([0, 0], [100, 100]);
+            const path = new Inputs.IO.DxfPathDto([lineSegment]);
+            const part = new Inputs.IO.DxfPathsPartDto("WALLS", "#FF0000", [path]);
+            const model = new Inputs.IO.DxfModelDto([part], "aci", "AC1015");
+
+            const result = io.dxf.dxfCreate(model);
+
+            expect(result).toContain("$ACADVER\n1\nAC1015");
+            expect(result).toContain("$LASTSAVEDBY\n1\nbitbybit.dev");
+            // AC1015 should not have VPORT table
+            expect(result).not.toContain("0\nTABLE\n2\nVPORT");
         });
     });
 });

@@ -10,7 +10,7 @@ tags: [shopify, 3d-bits]
 
 The **BITBYBIT VIEWER** is a theme app extension block provided by `3D Bits` app for Shopify. It offers the simplest way to create 3D model configurators from static assets on your product pages **without needing to interact with the Bitbybit coding editors.**
 
-You can upload your 3D models to the Shopify CDN or any other publicly accessible cloud storage, and then use the URL of the file to display it directly on your product page using this block. For more advanced scenarios, the VIEWER block also allows you to load and configure multiple 3D models at once using a special JSON configuration, which can be easily created with our new **Viewer Editor tool**. These files can be linked to product options, such as size or color. You can also parse files such as GLTF to use material variants.
+You can upload your 3D models to the Shopify CDN or any other publicly accessible cloud storage, and then use the URL of the file to display it directly on your product page using this block. For more advanced scenarios, the VIEWER block also allows you to load and configure multiple 3D models at once using a special JSON configuration, which can be easily created with our new **Viewer Editor** tool. These files can be linked to product options, such as size or color. You can also parse files such as GLTF to use material variants or assign variants to individual transform nodes & meshes.
 
 ![A Shopify product page showcasing a 3D model using the BITBYBIT VIEWER block.](https://ik.imagekit.io/bitbybit/app/assets/start/shopify/bitbybit-viewer-theme-app-extension-block-shopify-3d-bits.jpeg "Demo store product using the BITBYBIT VIEWER block")
 *Demo store product that uses the BITBYBIT VIEWER block.*
@@ -110,7 +110,7 @@ Save your JSON configurator as a file, upload it to Shopify CDN as a file. Copy 
 
 While our Viewer Editor is the recommended way to create and manage the Scene Config JSON, you can also edit the JSON directly using any text editor. For a better editing experience with features like syntax highlighting and autocompletion (intellisense), we provide a JSON schema.
 
-*   **JSON Schema:** You can find the schema [here](https://ik.imagekit.io/bitbybit/app/assets/start/shopify/viewer-scene-config-schema-0-20-9.json). (Note: This schema link points to version `0.20.11`. The schema may be updated in the future, so ensure you refer to the latest version compatible with your "3D Bits" app version.)
+*   **JSON Schema:** You can find the schema [here](https://app-store.bitbybit.dev/files/ecommerce/viewer-editor/viewer-scene-schema-v0.20.11.json). (Note: This schema link points to version `0.20.11`. The schema may be updated in the future, so ensure you refer to the latest version compatible with your "3D Bits" app version.)
     Many modern code editors (like VS Code) can use this schema to provide validation and autocompletion as you edit the JSON.
 
 ## Video Tutorial: BITBYBIT VIEWER Block Setup

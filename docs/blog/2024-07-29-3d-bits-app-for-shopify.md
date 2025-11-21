@@ -119,7 +119,7 @@ The app essentially provides a window into the 3D world, seamlessly integrated. 
 
 We offer a wealth of tutorials and documentation that teach you everything from computational design principles on Bitbybit.dev to setting up and optimizing your 3D products with the 3D Bits Shopify app.
 
-➡️ **[Visit the Getting Started Guide For 3D Bits App](/learn/3d-bits/tutorials/set-up)**
+➡️ **[Visit the Getting Started Guide For 3D Bits App](/learn/3d-bits/tutorials/videos-tutorials/set-up)**
 
 ![The 3D Bits app is an integral part of the broader Bitbybit.dev platform, connecting powerful design tools with e-commerce.](https://ik.imagekit.io/bitbybit/app/assets/blog/3d-bits-app-for-shopify/3d-bits-app-is-part-of-the-bitbybit-dev-platform-small.jpeg "3D Bits app is part of the bitbybit.dev platform")
 

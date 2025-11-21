@@ -9,9 +9,9 @@ image: https://ik.imagekit.io/bitbybit/app/assets/start/shopify/preparing-gltf-a
 
 # Where to Start
 
-The first step in preparing 3D assets for your configurator is having 3D models of your products.  
+The first step in preparing 3D assets for your configurator is having 3D models of your products. Before you begin, make sure you understand the security implications and public accessibility of 3D assets by reading [Your Assets & Security](../tutorials/getting-started/your-assets.md).
 
-If your brand already designs and manufactures physical goods, there’s a good chance you already have detailed, good-looking 3D models on hand. Resellers can often get these from manufacturers - many keep accurate CAD files of their products for engineering or marketing purposes. Not all manufacturers will share them, though, so sometimes you’ll need to commission a 3D artist or designer to create them from scratch in professional CAD software. Some AI tools also exist, which can create 3D assets from 2D images, but in many cases they are not optimised for speed or quality, this may however change in the near future.
+If your brand already designs and manufactures physical goods, there's a good chance you already have detailed, good-looking 3D models on hand. Resellers can often get these from manufacturers - many keep accurate CAD files of their products for engineering or marketing purposes. Not all manufacturers will share them, though, so sometimes you'll need to commission a 3D artist or designer to create them from scratch in professional CAD software.
 
 ![Preparing GLTF Assets](https://ik.imagekit.io/bitbybit/app/assets/start/shopify/preparing-gltf-assets/preparing-gltf-assets-for-3d-bits-app-for-shopify.jpeg "Learn How to prepare GLTF assets")
 
@@ -88,7 +88,28 @@ The good news is that GLTF files compress very well. You should always export to
 
 ![Blender Compression Options](https://ik.imagekit.io/bitbybit/app/assets/start/shopify/preparing-gltf-assets/blender-compress.jpeg "Blender Compression Options")
 
-For even more options, try the free [Khronos GLTF Compressor](https://github.khronos.org/glTF-Compressor-Release/) and enable **Draco compression**. 3D Bits can decompress Draco-compressed files without issue. This tool can also compress textures and save them in formats like KTX.
+## Shopify's glTF Compressor
+
+If you're hosting on Shopify's CDN, we strongly recommend using [Shopify's glTF Compressor](https://gltf-compressor.com/). This open-source tool was built specifically with Shopify's infrastructure in mind and helps ensure your files will be compatible with their upload process.
+
+Here's the issue: when you upload a GLTF file to Shopify, their system processes it before storing it on the CDN. Some compression algorithms and GLTF standards that work perfectly fine elsewhere can cause Shopify's upload process to fail. Files that can't be processed won't be accepted. In some cases, incompatible files might still work in 3D Bits if you host them elsewhere, but sometimes they'll break in the app as well.
+
+Shopify's compressor is designed to help you answer one critical question: **How much can I compress the textures before the model starts looking noticeably bad?**
+
+The tool exposes all textures in your GLTF file and lets you adjust:
+- **Image format** (JPEG, PNG, WebP)
+- **Resolution**
+- **Quality**
+
+All changes happen in real time, so you can see the effects immediately. You can quickly compare the original model with the compressed version by holding and releasing the **C** key on your keyboard. This makes it easy to find the sweet spot between file size and visual quality.
+
+Additionally, the tool offers mesh and animation optimization options that can be applied on export.
+
+If you're certain your file is valid but Shopify won't accept it during upload, you'll likely need to find your own hosting provider or set up your own CDN. But for most users, sticking with Shopify's compressor will save a lot of headaches.
+
+## Alternative: Khronos glTF Compressor
+
+For even more compression options or if you're hosting outside Shopify, try the free [Khronos GLTF Compressor](https://github.khronos.org/glTF-Compressor-Release/) and enable **Draco compression**. 3D Bits can decompress Draco-compressed files without issue. This tool can also compress textures and save them in formats like KTX.
 
 Khronos compressor tool also will show you the split screen view of original vs compressed file with a nice separator line - it makes it super easy to compare before and after quality of the model.
 

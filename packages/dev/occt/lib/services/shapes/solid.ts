@@ -104,24 +104,49 @@ export class OCCTSolid {
     }
 
     private extrudeFaceToSolid(face: TopoDS_Shape, direction: Base.Vector3, lengthFront: number, lengthBack: number): TopoDS_Solid {
-        // Normalize direction
-        const length = Math.sqrt(direction[0] ** 2 + direction[1] ** 2 + direction[2] ** 2);
-        const normalizedDir: Base.Vector3 = [
-            direction[0] / length,
-            direction[1] / length,
-            direction[2] / length
-        ];
+        // Check if both lengths are 0
+        if (lengthFront === 0 && lengthBack === 0) {
+            face.delete();
+            throw new Error("Cannot create solid: both extrusionLengthFront and extrusionLengthBack are 0");
+        }
 
-        // Create forward extrusion
-        const frontVec = new this.occ.gp_Vec_4(
-            normalizedDir[0] * lengthFront,
-            normalizedDir[1] * lengthFront,
-            normalizedDir[2] * lengthFront
-        );
-        const frontPrism = new this.occ.BRepPrimAPI_MakePrism_1(face, frontVec, false, true);
-        let result = frontPrism.Shape();
-        frontPrism.delete();
-        frontVec.delete();
+        // Get the face normal to determine actual extrusion direction
+        const faceCasted = this.occ.TopoDS.Face_1(face);
+        
+        // Use face service methods to get UV bounds and normal at center
+        const uMin = this.och.facesService.getUMinBound({ shape: faceCasted });
+        const uMax = this.och.facesService.getUMaxBound({ shape: faceCasted });
+        const vMin = this.och.facesService.getVMinBound({ shape: faceCasted });
+        const vMax = this.och.facesService.getVMaxBound({ shape: faceCasted });
+        
+        const uMid = (uMin + uMax) / 2;
+        const vMid = (vMin + vMax) / 2;
+        
+        // Normalize to 0-1 range for normalOnUV method
+        const paramU = (uMid - uMin) / (uMax - uMin);
+        const paramV = (vMid - vMin) / (vMax - vMin);
+        
+        // Get face normal at the center using face service
+        const normalizedDir = this.och.facesService.normalOnUV({ 
+            shape: faceCasted, 
+            paramU, 
+            paramV 
+        });
+
+        let result: TopoDS_Shape;
+
+        // Create forward extrusion if lengthFront > 0
+        if (lengthFront > 0) {
+            const frontVec = new this.occ.gp_Vec_4(
+                normalizedDir[0] * lengthFront,
+                normalizedDir[1] * lengthFront,
+                normalizedDir[2] * lengthFront
+            );
+            const frontPrism = new this.occ.BRepPrimAPI_MakePrism_1(face, frontVec, false, true);
+            result = frontPrism.Shape();
+            frontPrism.delete();
+            frontVec.delete();
+        }
 
         // If there's backward extrusion, add it
         if (lengthBack > 0) {
@@ -135,11 +160,16 @@ export class OCCTSolid {
             backPrism.delete();
             backVec.delete();
 
-            // Fuse the two solids
-            const fused = this.och.booleansService.union({ shapes: [result, backShape], keepEdges: false });
-            result.delete();
-            backShape.delete();
-            result = fused;
+            // If we have a forward extrusion, fuse them
+            if (lengthFront > 0) {
+                const fused = this.och.booleansService.union({ shapes: [result, backShape], keepEdges: false });
+                result.delete();
+                backShape.delete();
+                result = fused;
+            } else {
+                // Only backward extrusion exists
+                result = backShape;
+            }
         }
 
         face.delete();
