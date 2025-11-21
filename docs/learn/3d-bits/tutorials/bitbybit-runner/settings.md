@@ -54,22 +54,22 @@ All editors are accessible through the **3D Bits admin dashboard** in your Shopi
 - [Enable Key Event Listeners](#enable-key-event-listeners)
 - [Fonts to Include](#fonts-to-include)
 
-### Visual Configuration
-- [Runner CDN Link](#runner-cdn-link)
-- [Camera Position](#camera-position)
-- [Camera Target](#camera-target)
-- [Background Color](#background-color)
+### Common Settings (Viewer & Runner)
+- [Camera Position](#camera-position) - [See full documentation](../getting-started/common-settings#camera-position)
+- [Camera Target](#camera-target) - [See full documentation](../getting-started/common-settings#camera-target)
+- [Background Color](#background-color) - [See full documentation](../getting-started/common-settings#background-color)
+- [Runner CDN Link](../getting-started/common-settings#runner-cdn-link)
 
-### Global Settings
-- [Show Spinner](#show-spinner)
-- [Receive Input Names As Variants](#receive-input-names-as-variants)
-- [Input Collection Mode](#input-collection-mode)
-- [Enable Debug Mode](#enable-debug-mode)
-- [Disable Inputs When Computing](#disable-inputs-when-computing)
-- [Try to Prepend](#try-to-prepend)
-- [Prepend With Query Selector](#prepend-with-query-selector)
-- [Remove Children Before Prepend](#remove-children-before-prepend)
-- [Show Fullscreen Button](#show-fullscreen-button)
+### Common Settings (All Blocks)
+- [Show Spinner](../getting-started/common-settings#show-spinner)
+- [Receive Input Names As Variants](../getting-started/common-settings#receive-input-names-as-variants)
+- [Input Collection Mode](../getting-started/common-settings#input-collection-mode)
+- [Enable Debug Mode](../getting-started/common-settings#enable-debug-mode)
+- [Disable Inputs When Computing](../getting-started/common-settings#disable-inputs-when-computing)
+- [Try to Prepend](../getting-started/common-settings#try-to-prepend)
+- [Prepend With Query Selector](../getting-started/common-settings#prepend-with-query-selector)
+- [Remove Children Before Prepend](../getting-started/common-settings#remove-children-before-prepend)
+- [Show Fullscreen Button](../getting-started/common-settings#show-fullscreen-button)
 
 ## Script Configuration Settings
 
@@ -572,96 +572,29 @@ This is a common setting shared across multiple blocks. See the [Common Settings
 
 ### Camera Position
 
-**Default:** `[30, 10, 30]`
+This is a common setting shared with the VIEWER block. See the [Common Settings: Camera Position](../getting-started/common-settings#camera-position) documentation for detailed information.
 
-Camera Position defines where the 3D camera is located in the scene's coordinate system.
-
-#### Format
-
-Provide a vector3 array in the format `[x, y, z]`:
-- **x** - Left/Right position (negative = left, positive = right)
-- **y** - Up/Down position (negative = down, positive = up)
-- **z** - Forward/Backward position (negative = backward, positive = forward)
-
-#### Default for Runner
-
-The default `[30, 10, 30]` is further back than the VIEWER default `[3, 1, 3]` because parametric geometry often spans a larger area.
-
-#### Examples
-
-```json
-[30, 10, 30]   // Default: Far view for large generated geometry
-[10, 5, 10]    // Closer view for smaller objects
-[0, 20, 0]     // Top-down view directly above
-[-15, 10, 15]  // View from the left side
-```
-
-#### Dynamic Camera Control
-
-Your parametric scripts can also control the camera programmatically through both **Low-Code** (Blockly/Rete) and **Pro-Code** (TypeScript in Monaco editor). This allows you to:
-- Adjust camera position based on generated geometry size
-- Create animated camera movements
-- Define custom camera behaviors per variant
+:::tip RUNNER-Specific Default
+For the RUNNER block, the default camera position is `[30, 10, 30]` - further back than the VIEWER default because parametric geometry often spans a larger area.
+:::
 
 ---
 
 ### Camera Target
 
-**Default:** `[0, 15, 0]`
+This is a common setting shared with the VIEWER block. See the [Common Settings: Camera Target](../getting-started/common-settings#camera-target) documentation for detailed information.
 
-Camera Target defines the point in 3D space that the camera looks at.
-
-#### Format
-
-Provide a vector3 array in the format `[x, y, z]`:
-```json
-[0, 15, 0]     // Looking 15 units up from origin (default)
-[0, 0, 0]      // Looking at the origin
-[10, 5, 10]    // Looking at a custom point
-```
-
-#### Default for Runner
-
-The default `[0, 15, 0]` targets a point elevated from the origin, suitable for typical parametric objects that extend vertically.
-
-#### How It Works
-
-Combined with [Camera Position](#camera-position), this defines the viewing angle:
-- **Camera Position** = Where the camera is located
-- **Camera Target** = What the camera looks at
-
-#### Dynamic Control
-
-Like camera position, your scripts can control the camera target programmatically to automatically frame generated geometry.
+:::tip RUNNER-Specific Default
+For the RUNNER block, the default camera target is `[0, 15, 0]` - targeting a point elevated from the origin, suitable for typical parametric objects that extend vertically.
+:::
 
 ---
 
 ### Background Color
 
-**Default:** `#ffffff` (white)
+This is a common setting shared with the VIEWER block. See the [Common Settings: Background Color](../getting-started/common-settings#background-color) documentation for detailed information.
 
-Canvas background color for the 3D viewer.
-
-#### Format
-
-Provide a hex color code:
-```
-#ffffff  // White (default)
-#f0f0f0  // Light gray
-#2c3e50  // Dark blue-gray
-#000000  // Black
-```
-
-#### When to Change
-
-Match your theme's color scheme:
-- **Light themes** - Use white or light gray backgrounds
-- **Dark themes** - Use dark gray or black backgrounds
-- **Brand colors** - Use subtle brand-aligned colors
-
-:::tip
-Neutral backgrounds (white, light gray) work best for showcasing parametric geometry, as they don't distract from the 3D content.
-:::
+---
 
 ## Global Settings
 

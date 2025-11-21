@@ -19,20 +19,22 @@ You'll find the BITBYBIT VIEWER settings in your theme editor after adding the b
 ### Product-Specific Settings
 - [Model URL](#model-url)
 - [Scene JSON Configuration](#scene-json-configuration)
-- [Camera Position](#camera-position)
-- [Camera Target](#camera-target)
-- [Background Color](#background-color)
 
-### Global Settings
-- [Runner CDN Link](#runner-cdn-link)
-- [Show Spinner](#show-spinner)
-- [Receive Input Names As Variants](#receive-input-names-as-variants)
-- [Input Collection Mode](#input-collection-mode)
-- [Enable Debug Mode](#enable-debug-mode)
-- [Try to Prepend](#try-to-prepend)
-- [Prepend With Query Selector](#prepend-with-query-selector)
-- [Remove Children Before Prepend](#remove-children-before-prepend)
-- [Show Fullscreen Button](#show-fullscreen-button)
+### Common Settings (Viewer & Runner)
+- [Camera Position](#camera-position) - [See full documentation](../getting-started/common-settings#camera-position)
+- [Camera Target](#camera-target) - [See full documentation](../getting-started/common-settings#camera-target)
+- [Background Color](#background-color) - [See full documentation](../getting-started/common-settings#background-color)
+- [Runner CDN Link](../getting-started/common-settings#runner-cdn-link)
+
+### Common Settings (All Blocks)
+- [Show Spinner](../getting-started/common-settings#show-spinner)
+- [Receive Input Names As Variants](../getting-started/common-settings#receive-input-names-as-variants)
+- [Input Collection Mode](../getting-started/common-settings#input-collection-mode)
+- [Enable Debug Mode](../getting-started/common-settings#enable-debug-mode)
+- [Try to Prepend](../getting-started/common-settings#try-to-prepend)
+- [Prepend With Query Selector](../getting-started/common-settings#prepend-with-query-selector)
+- [Remove Children Before Prepend](../getting-started/common-settings#remove-children-before-prepend)
+- [Show Fullscreen Button](../getting-started/common-settings#show-fullscreen-button)
 
 ## Dynamic vs. Global Settings
 
@@ -208,128 +210,27 @@ The system automatically detects if you're providing a URL (starting with `http:
 
 ## Camera Position
 
-**Default:** `[3, 1, 3]`
+This is a common setting shared with the RUNNER block. See the [Common Settings: Camera Position](../getting-started/common-settings#camera-position) documentation for detailed information.
 
-Camera Position defines where the 3D camera is located in the scene's coordinate system. This determines the initial viewing angle of your model.
-
-:::warning Scene Configuration Override
-If you're using [Scene JSON Configuration](#scene-json-configuration), spinner settings defined in the scene config will take precedence over this setting. You can create and manage scene configurations using the [Viewer Editor](/learn/getting-started/viewer-editor/intro).
-:::
-
-### Format
-
-Provide a vector3 array in the format `[x, y, z]`:
-- **x** - Left/Right position (negative = left, positive = right)
-- **y** - Up/Down position (negative = down, positive = up)
-- **z** - Forward/Backward position (negative = backward, positive = forward)
-
-### Examples
-
-```json
-[3, 1, 3]     // Default: Viewing from front-right, slightly elevated
-[0, 2, 5]     // Directly in front, higher up
-[-2, 1, -2]   // Behind and to the left
-[10, 0, 0]    // Far to the right, at ground level
-```
-
-### Finding the Right Position
-
-1. Start with the default values
-2. Adjust based on your model's size and orientation
-3. Combine with [Camera Target](#camera-target) to frame your model perfectly
-
-:::tip
-Larger values move the camera further from the origin (0, 0, 0). If your model appears too small or too large, adjust the distance by scaling all three values proportionally.
+:::tip VIEWER-Specific Default
+For the VIEWER block, the default camera position is `[3, 1, 3]` - a closer view suitable for pre-made 3D models.
 :::
 
 ---
 
 ## Camera Target
 
-**Default:** `[0, 0, 0]`
+This is a common setting shared with the RUNNER block. See the [Common Settings: Camera Target](../getting-started/common-settings#camera-target) documentation for detailed information.
 
-Camera Target defines the point in 3D space that the camera looks at. This is sometimes called the "look at" point.
-
-:::warning Scene Configuration Override
-If you're using [Scene JSON Configuration](#scene-json-configuration), camera settings defined in the scene config will take precedence over this setting. You can create and manage scene configurations using the [Viewer Editor](/learn/getting-started/viewer-editor/intro).
-:::
-
-### Format
-
-Provide a vector3 array in the format `[x, y, z]`:
-```json
-[0, 0, 0]     // Looking at the origin (default)
-[0, 1, 0]     // Looking 1 unit up from the origin
-[2, 0.5, 1]   // Looking at a custom point
-```
-
-### How It Works
-
-The camera will always point toward this target position. Combined with [Camera Position](#camera-position), this defines the viewing angle:
-- **Camera Position** = Where the camera is
-- **Camera Target** = What the camera looks at
-
-### Example Setup
-
-For a product sitting on a table:
-```json
-// Camera Position
-[3, 2, 3]     // Camera positioned above and to the side
-
-// Camera Target
-[0, 0.5, 0]   // Looking at the center of the product
-```
-
-:::info
-If your model isn't centered at the origin, adjust the camera target to point at your model's center. You can find the model's center coordinates by loading it in a 3D software like Blender.
+:::tip VIEWER-Specific Default
+For the VIEWER block, the default camera target is `[0, 0, 0]` - looking at the origin where models are typically centered.
 :::
 
 ---
 
 ## Background Color
 
-**Default:** `#ffffff` (white)
-
-Sets the background color of the 3D canvas. This creates the environment color behind your 3D model.
-
-:::warning Scene Configuration Override
-This setting is disabled if you're using [Scene JSON Configuration](#scene-json-configuration). Scene configurations support advanced backgrounds including:
-- Solid colors
-- Linear gradients
-- Radial gradients
-- Background images
-- Skyboxes (HDR environments)
-
-You can configure these advanced backgrounds using the [Viewer Editor](/learn/getting-started/viewer-editor/intro).
-:::
-
-### Usage
-
-Provide any valid CSS color by using a color picker.
-
-### Best Practices
-
-Choose a background color that:
-- Matches your theme's design
-- Provides good contrast with your 3D model
-- Complements your product photography style
-
-:::warning Priority Order
-Background settings are applied in this priority order (highest to lowest):
-1. Scene JSON Configuration (skybox or advancedBackground)
-2. Scene JSON Configuration (backgroundColor)
-3. This block setting
-
-If you're using Scene JSON Configuration with skybox or advanced backgrounds, this setting will be ignored.
-:::
-
-### Examples
-
-```
-#ffffff   // Clean white background
-#f5f5f5   // Subtle gray
-#000000   // Dramatic black background
-```
+This is a common setting shared with the RUNNER block. See the [Common Settings: Background Color](../getting-started/common-settings#background-color) documentation for detailed information.
 
 ---
 

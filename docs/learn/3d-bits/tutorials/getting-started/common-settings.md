@@ -34,8 +34,8 @@ Some settings can be **dynamically linked to product metafields**, allowing you 
 - Scene configurations differ between products
 
 **Which settings can be product-specific depends on the block:**
-- **VIEWER**: Model URL, Scene Configuration, Camera Position/Target, Background Color
-- **RUNNER**: Script URL, Camera Position/Target, Background Color (optional - most use global scripts)
+- **VIEWER**: Model URL, Scene Configuration, [Camera Position](#camera-position), [Camera Target](#camera-target), [Background Color](#background-color)
+- **RUNNER**: Script URL, [Camera Position](#camera-position), [Camera Target](#camera-target), [Background Color](#background-color) (these are optional - most use global settings)
 - **PREVIEW**: iframe URL parameters (if your project supports them)
 - **APPS**: Configuration URLs or parameters supported by your app
 
@@ -43,6 +43,9 @@ Some settings can be **dynamically linked to product metafields**, allowing you 
 
 Most settings remain **global** - configured once in the theme editor and applied to all products:
 - [Runner CDN Link](#runner-cdn-link)
+- [Camera Position](#camera-position) (optional - can be product-specific for VIEWER/RUNNER)
+- [Camera Target](#camera-target) (optional - can be product-specific for VIEWER/RUNNER)
+- [Background Color](#background-color) (optional - can be product-specific for VIEWER/RUNNER)
 - [Try to Prepend](#try-to-prepend)
 - [Prepend With Query Selector](#prepend-with-query-selector)
 - [Remove Children Before Prepend](#remove-children-before-prepend)
@@ -93,6 +96,9 @@ These settings are available in all four blocks:
 These settings are shared by VIEWER and RUNNER blocks:
 
 - [Runner CDN Link](#runner-cdn-link)
+- [Camera Position](#camera-position)
+- [Camera Target](#camera-target)
+- [Background Color](#background-color)
 
 ### Viewer, Runner, and Apps Blocks
 
@@ -188,6 +194,172 @@ Check the [runner docs](https://learn.bitbybit.dev/learn/runners/intro) to learn
 
 Visit [Find Release Info on our GitHub](https://github.com/bitbybit-dev/bitbybit/releases) to know which runner version is the latest.
 :::
+
+---
+
+### Camera Position
+
+**Available in:** VIEWER, RUNNER  
+**Default:** `[3, 1, 3]` (VIEWER), `[30, 10, 30]` (RUNNER)
+
+Camera Position defines where the 3D camera is located in the scene's coordinate system. This determines the initial viewing angle of your content.
+
+:::warning Scene Configuration Override
+For the VIEWER block, if you're using Scene JSON Configuration, camera settings defined in the scene config will take precedence over this setting. You can create and manage scene configurations using the [Viewer Editor](/learn/getting-started/viewer-editor/intro).
+:::
+
+**Format:**
+
+Provide a vector3 array in the format `[x, y, z]`:
+- **x** - Left/Right position (negative = left, positive = right)
+- **y** - Up/Down position (negative = down, positive = up)
+- **z** - Forward/Backward position (negative = backward, positive = forward)
+
+**Default Values Explained:**
+
+- **VIEWER** `[3, 1, 3]`: Closer view suitable for pre-made 3D models
+- **RUNNER** `[30, 10, 30]`: Further back because parametric geometry often spans a larger area
+
+**Examples:**
+
+```json
+[3, 1, 3]      // Close view for product models
+[30, 10, 30]   // Far view for large generated geometry
+[0, 2, 5]      // Directly in front, elevated
+[-2, 1, -2]    // Behind and to the left
+[0, 20, 0]     // Top-down view directly above
+```
+
+**Finding the Right Position:**
+
+1. Start with the default values for your block type
+2. Adjust based on your content's size and orientation
+3. Combine with [Camera Target](#camera-target) to frame your content perfectly
+
+:::tip
+Larger values move the camera further from the origin (0, 0, 0). If your content appears too small or too large, adjust the distance by scaling all three values proportionally.
+:::
+
+**Dynamic Camera Control (RUNNER only):**
+
+In the RUNNER block, your parametric scripts can also control the camera programmatically through both **Low-Code** (Blockly/Rete) and **Pro-Code** (TypeScript in Monaco editor). This allows you to:
+- Adjust camera position based on generated geometry size
+- Create animated camera movements
+- Define custom camera behaviors per variant
+
+---
+
+### Camera Target
+
+**Available in:** VIEWER, RUNNER  
+**Default:** `[0, 0, 0]` (VIEWER), `[0, 15, 0]` (RUNNER)
+
+Camera Target defines the point in 3D space that the camera looks at. This is sometimes called the "look at" point.
+
+:::warning Scene Configuration Override
+For the VIEWER block, if you're using Scene JSON Configuration, camera settings defined in the scene config will take precedence over this setting. You can create and manage scene configurations using the [Viewer Editor](/learn/getting-started/viewer-editor/intro).
+:::
+
+**Format:**
+
+Provide a vector3 array in the format `[x, y, z]`:
+```json
+[0, 0, 0]      // Looking at the origin (VIEWER default)
+[0, 15, 0]     // Looking 15 units up from origin (RUNNER default)
+[0, 1, 0]      // Looking 1 unit up from the origin
+[2, 0.5, 1]    // Looking at a custom point
+```
+
+**How It Works:**
+
+The camera will always point toward this target position. Combined with [Camera Position](#camera-position), this defines the viewing angle:
+- **Camera Position** = Where the camera is located
+- **Camera Target** = What the camera looks at
+
+**Default Values Explained:**
+
+- **VIEWER** `[0, 0, 0]`: Looking at the origin where models are typically centered
+- **RUNNER** `[0, 15, 0]`: Targets a point elevated from the origin, suitable for typical parametric objects that extend vertically
+
+**Example Setup:**
+
+For a product sitting on a table:
+```json
+// Camera Position
+[3, 2, 3]     // Camera positioned above and to the side
+
+// Camera Target
+[0, 0.5, 0]   // Looking at the center of the product
+```
+
+:::info
+If your model isn't centered at the origin, adjust the camera target to point at your content's center. You can find the center coordinates by loading it in 3D software like Blender.
+:::
+
+**Dynamic Control (RUNNER only):**
+
+Like camera position, your parametric scripts can control the camera target programmatically to automatically frame generated geometry.
+
+---
+
+### Background Color
+
+**Available in:** VIEWER, RUNNER  
+**Default:** `#ffffff` (white)
+
+Sets the background color of the 3D canvas. This creates the environment color behind your 3D content.
+
+:::warning Scene Configuration Override
+For the VIEWER block, this setting is disabled if you're using Scene JSON Configuration. Scene configurations support advanced backgrounds including:
+- Solid colors
+- Linear gradients
+- Radial gradients
+- Background images
+- Skyboxes (HDR environments)
+
+You can configure these advanced backgrounds using the [Viewer Editor](/learn/getting-started/viewer-editor/intro).
+:::
+
+**Usage:**
+
+Provide any valid CSS color by using a color picker.
+
+**Examples:**
+
+```
+#ffffff   // Clean white background
+#f5f5f5   // Subtle gray
+#f0f0f0   // Light gray
+#2c3e50   // Dark blue-gray
+#000000   // Dramatic black background
+```
+
+**Best Practices:**
+
+Choose a background color that:
+- Matches your theme's design
+- Provides good contrast with your 3D content
+- Complements your product photography style
+
+**When to Change:**
+
+Match your theme's color scheme:
+- **Light themes** - Use white or light gray backgrounds
+- **Dark themes** - Use dark gray or black backgrounds
+- **Brand colors** - Use subtle brand-aligned colors
+
+:::tip
+Neutral backgrounds (white, light gray) work best for showcasing 3D content, as they don't distract from the models or generated geometry.
+:::
+
+**Priority Order (VIEWER only):**
+
+Background settings are applied in this priority order (highest to lowest):
+1. Scene JSON Configuration (skybox or advancedBackground)
+2. Scene JSON Configuration (backgroundColor)
+3. This block setting
+
+If you're using Scene JSON Configuration with skybox or advanced backgrounds, this setting will be ignored.
 
 ---
 
