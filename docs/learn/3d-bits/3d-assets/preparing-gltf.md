@@ -122,7 +122,7 @@ Khronos compressor tool also will show you the split screen view of original vs 
 
 Once your file is ready, upload it to Shopify. Go to **Content → Files**, drag and drop your GLTF or GLB, and copy its URL if you want to use it in 3D Bits. Using Shopify’s CDN ensures your file is cached on servers close to your customers. If someone in Germany loads your product page, Shopify will serve the file from a nearby server, cutting down load times.
 
-Shopify has a 20 MB file size limit, but that’s rarely an issue with well-optimized assets. If your model is bigger than that, you can split it into multiple files - 3D Bits can load several at once. If you decide to use your own CDN instead, make sure the files are publicly accessible.
+If your model is bigger than what can be uploaded to Shopify, you can split it into multiple files - 3D Bits can load several at once. If you decide to use your own CDN instead, make sure the files are publicly accessible.
 
 # Reusing Parts with Instancing
 
@@ -136,6 +136,12 @@ GLTF files need to be valid to be properly loaded into any 3D software, 3D Bits 
 
 ![BabylonJS Sandbox](https://ik.imagekit.io/bitbybit/app/assets/start/shopify/preparing-gltf-assets/babylonjs-sandbox.jpeg "BabylonJS Sandbox can be used to test loading your compressed 3D assets, inspect contents")
 *BabylonJS Sandbox can be used to test loading your compressed 3D assets, inspect contents.*
+
+:::caution Mobile Phone Considerations
+While well-prepared 3D GLTF files run fine on most mobile phones, it's important to take precautions. When preparing 3D models and including them in your webshops, make sure you test the page on the most popular mobile devices too. Large asset files combined with high-resolution shadows may crash mobile phone browsers. Safari browsers on iPhone are the most susceptible to crashes when Random Access Memory (RAM) limits are exceeded. Apple has set a low threshold for websites running on iPhone, and whenever that memory limit is hit, the website will experience something called an "unexpected reload". If you're not careful with your assets, skybox textures, or shadow resolutions, you run the risk of experiencing this error. Desktop browsers, iPads, and Android phones will probably not experience these issues, but we advise you to make the experience lightweight for everyone.
+
+If you're using BITBYBIT VIEWER with Viewer Editor, the 3D Bits app on Shopify also takes precautions on iOS Safari browsers. Whenever we detect that your models exceed a 70 MB limit, we stop the scene from rendering and provide an explanation of why this happens (this is subject to change in the future). This safeguard exists because loading extremely large assets (100+ MB) on high-traffic pages like homepages without proper testing can crash the browsing experience for iPhone users, potentially affecting sales and customer experience. To prevent such scenarios, we've implemented automatic size checks that disable rendering of oversized assets in iPhone Safari browsers until they're properly optimized.
+:::
 
 # Wrapping Up
 

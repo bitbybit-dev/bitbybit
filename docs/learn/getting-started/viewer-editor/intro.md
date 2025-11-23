@@ -1,5 +1,5 @@
 ---
-sidebar_position: 1
+sidebar_position: 0
 title: Introduction to Viewer Editor
 sidebar_label: Viewer Editor Overview
 description: Learn about Viewer Editor, a powerful no-code 3D eCommerce solution for building interactive 3D product configurators and custom scenes using GLTF and 3DGS assets.
@@ -11,6 +11,18 @@ tags: [getting-started, viewer-editor, shopify]
 Viewer Editor is a powerful no-code 3D eCommerce solution that enables you to build interactive 3D product configurators and custom 3D scenes using your ready made assets such as GLTF and 3DGS. Create sophisticated product visualizations without writing a single line of code.
 
 ![Viewer Editor Screenshot](/img/getting-started/viewer-editor/viewer-editor.jpg)
+
+<details>
+<summary>Credits</summary>
+
+3D Model: watch 3D asset was started from ["Chronograph Watch Mudmaster"](https://skfb.ly/oAsPA) by graphiccompressor, licensed under [Creative Commons Attribution](http://creativecommons.org/licenses/by/4.0/).
+
+- © 2025, Darmstadt Graphics Group GmbH. CC BY 4.0 International - Eric Chadwick for Model and textures
+- © 2015, Khronos Group. Khronos Trademark or Logo - Non-copyrightable logo for Khronos logo
+- © 2017, Khronos Group. Khronos Trademark or Logo - Non-copyrightable logo for 3D Commerce logo
+- © 2020, Darmstadt Graphics Group GmbH. LicenseRef-LegalMark-DGG - Copyrightable logo for DGG logo
+
+</details>     
 
 ## Availability
 
@@ -105,3 +117,4 @@ Learn how to build an interactive 3D chair configurator using the Viewer Editor 
 
 - [BITBYBIT VIEWER Block](../../3d-bits/theme-app-extensions/bitbybit-viewer.md) - Overview of the viewer block
 - [Block Settings](../../3d-bits/tutorials/bitbybit-viewer/settings) - Detailed explanation of all viewer settings which accept Viewer Editor integration
+- [3D Bits App](../../3d-bits/intro) - Main 3D Bits app documentation

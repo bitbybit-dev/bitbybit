@@ -129,11 +129,11 @@ export namespace OCCT {
         isGuidePlanWithContact = "isGuidePlanWithContact",
         isDiscreteTrihedron = "isDiscreteTrihedron",
     }
-    export enum colorFormatEnum {
+    export enum dxfColorFormatEnum {
         aci = "aci",
         truecolor = "truecolor",
     }
-    export enum acadVersionEnum {
+    export enum dxfAcadVersionEnum {
         AC1009 = "AC1009",
         AC1015 = "AC1015",
     }
@@ -6052,7 +6052,7 @@ export namespace OCCT {
     }
 
     export class DxfPathsPartsListDto {
-        constructor(pathsParts?: IO.DxfPathsPartDto[], colorFormat?: colorFormatEnum, acadVersion?: acadVersionEnum, tryDownload?: boolean) {
+        constructor(pathsParts?: IO.DxfPathsPartDto[], colorFormat?: dxfColorFormatEnum, acadVersion?: dxfAcadVersionEnum, tryDownload?: boolean) {
             if (pathsParts !== undefined) { this.pathsParts = pathsParts; }
             if (colorFormat !== undefined) { this.colorFormat = colorFormat; }
             if (acadVersion !== undefined) { this.acadVersion = acadVersion; }
@@ -6067,12 +6067,12 @@ export namespace OCCT {
          * Color format to use in the DXF file
          * @default aci
          */
-        colorFormat: colorFormatEnum = colorFormatEnum.aci;
+        colorFormat: dxfColorFormatEnum = dxfColorFormatEnum.aci;
         /**
          * AutoCAD version format for DXF file
          * @default AC1009
          */
-        acadVersion: acadVersionEnum = acadVersionEnum.AC1009;
+        acadVersion: dxfAcadVersionEnum = dxfAcadVersionEnum.AC1009;
         /**
          * File name
          * @default bitbybit-dev.dxf
