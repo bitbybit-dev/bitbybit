@@ -13,6 +13,7 @@ These apps are only necessary when:
 - The default Shopify variant system cannot address your configuration needs
 - You require advanced conditional logic or dynamic pricing
 - You need more sophisticated option management
+- You do not have access to professional developers who could program these product option forms
 
 ## Important Disclaimers
 

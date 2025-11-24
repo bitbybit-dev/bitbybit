@@ -22,6 +22,82 @@ export class DimensionsService {
         private readonly wiresService: WiresService
     ) { }
 
+    private createArrow(inputs: {
+        tipPoint: Inputs.Base.Point3,
+        direction: Inputs.Base.Vector3,
+        normal: Inputs.Base.Vector3,
+        size: number,
+        angle: number,
+        flipped: boolean
+    }): TopoDS_Compound {
+        const shapesToDelete: TopoDS_Shape[] = [];
+        
+        // Normalize the direction vector (should point away from tip when not flipped)
+        const dir = this.base.vector.normalized({ vector: inputs.direction });
+        
+        // Determine arrow direction based on flip
+        const arrowDir = inputs.flipped 
+            ? dir 
+            : this.base.vector.mul({ vector: dir, scalar: -1 }) as Inputs.Base.Vector3;
+        
+        // Calculate the perpendicular vector in the plane
+        const perpendicular = this.base.vector.cross({
+            first: arrowDir as Inputs.Base.Vector3,
+            second: inputs.normal
+        }) as Inputs.Base.Vector3;
+        const perpNorm = this.base.vector.normalized({ vector: perpendicular });
+        
+        // Calculate half angle in radians
+        const halfAngleRad = (inputs.angle / 2) * Math.PI / 180;
+        
+        // Calculate arrow line endpoints
+        const baseLength = inputs.size * Math.cos(halfAngleRad);
+        const sideOffset = inputs.size * Math.sin(halfAngleRad);
+        
+        // Base point for both arrow lines
+        const baseVec = this.base.vector.mul({ vector: arrowDir, scalar: baseLength }) as Inputs.Base.Vector3;
+        const basePoint = this.base.point.translatePoints({
+            points: [inputs.tipPoint],
+            translation: baseVec
+        })[0];
+        
+        // Calculate the two arrow line endpoints
+        const sideVec1 = this.base.vector.mul({ vector: perpNorm, scalar: sideOffset }) as Inputs.Base.Vector3;
+        const sideVec2 = this.base.vector.mul({ vector: perpNorm, scalar: -sideOffset }) as Inputs.Base.Vector3;
+        
+        const endPoint1 = this.base.point.translatePoints({
+            points: [basePoint],
+            translation: sideVec1
+        })[0];
+        
+        const endPoint2 = this.base.point.translatePoints({
+            points: [basePoint],
+            translation: sideVec2
+        })[0];
+        
+        // Create the two arrow lines
+        const line1 = this.wiresService.createLineWireWithExtensions({
+            start: inputs.tipPoint,
+            end: endPoint1,
+            extensionStart: 0,
+            extensionEnd: 0
+        });
+        
+        const line2 = this.wiresService.createLineWireWithExtensions({
+            start: inputs.tipPoint,
+            end: endPoint2,
+            extensionStart: 0,
+            extensionEnd: 0
+        });
+        
+        const result = this.converterService.makeCompound({ shapes: [line1, line2] });
+        
+        // Cleanup
+        shapesToDelete.forEach(shape => shape.delete());
+        
+        return result;
+    }
+
     simpleLinearLengthDimension(inputs: Inputs.OCCT.SimpleLinearLengthDimensionDto): TopoDS_Compound {
         const shapesToDelete: TopoDS_Shape[] = [];
         const lineBetweenPoints = this.wiresService.createLineWireWithExtensions({
@@ -122,7 +198,35 @@ export class DimensionsService {
 
         shapesToDelete.push(alignedLabelTxtToDir);
 
-        const res = this.converterService.makeCompound({ shapes: [translatedLine, startLineToTranslatedPoint, endLineToTranslatedPoint, labelTransformed] });
+        const shapesToInclude: TopoDS_Shape[] = [translatedLine, startLineToTranslatedPoint, endLineToTranslatedPoint, labelTransformed];
+
+        // Add arrows if enabled
+        if (inputs.endType === Inputs.OCCT.dimensionEndTypeEnum.arrow) {
+            // Arrow at start point - points outward by default
+            const startArrow = this.createArrow({
+                tipPoint: translatedStartPt,
+                direction: dirStartEnd,
+                normal: normalThreePoints,
+                size: inputs.arrowSize,
+                angle: inputs.arrowAngle,
+                flipped: !inputs.arrowsFlipped
+            });
+            shapesToInclude.push(startArrow);
+
+            // Arrow at end point (direction is reversed) - points outward by default
+            const endArrowDir = this.base.vector.mul({ vector: dirStartEnd, scalar: -1 }) as Inputs.Base.Vector3;
+            const endArrow = this.createArrow({
+                tipPoint: translatedEndPt,
+                direction: endArrowDir,
+                normal: normalThreePoints,
+                size: inputs.arrowSize,
+                angle: inputs.arrowAngle,
+                flipped: !inputs.arrowsFlipped
+            });
+            shapesToInclude.push(endArrow);
+        }
+
+        const res = this.converterService.makeCompound({ shapes: shapesToInclude });
 
         // delete shapes
         shapesToDelete.forEach((shape) => {
@@ -232,7 +336,60 @@ export class DimensionsService {
         });
         shapesToDelete.push(alignedLabelTxtToDir);
 
-        const res = this.converterService.makeCompound({ shapes: [line1WithExt, line2WithExt, wireArc, labelTransformed] });
+        const shapesToInclude: TopoDS_Shape[] = [line1WithExt, line2WithExt, wireArc, labelTransformed];
+
+        // Add arrows if enabled
+        if (inputs.endType === Inputs.OCCT.dimensionEndTypeEnum.arrow) {
+            // Get points on the arc at the start and end for arrow placement
+            const arcStartPoint = this.edgesService.pointOnEdgeAtParam({
+                shape: arc,
+                param: 0
+            });
+            const arcEndPoint = this.edgesService.pointOnEdgeAtParam({
+                shape: arc,
+                param: 1
+            });
+
+            // Get tangent directions at arc endpoints for arrow placement
+            const arcStartTangent = this.edgesService.tangentOnEdgeAtParam({
+                shape: arc,
+                param: 0
+            });
+            const arcEndTangent = this.edgesService.tangentOnEdgeAtParam({
+                shape: arc,
+                param: 1
+            });
+
+            // Arrow at first direction point (start of arc) - points outward by default
+            const startArrow = this.createArrow({
+                tipPoint: arcStartPoint,
+                direction: arcStartTangent,
+                normal: normalThreePoints,
+                size: inputs.arrowSize,
+                angle: inputs.arrowAngle,
+                flipped: !inputs.arrowsFlipped
+            });
+            shapesToInclude.push(startArrow);
+
+            // Reverse the end tangent so both arrows point outward along the arc by default
+            const reversedEndTangent = this.base.vector.mul({ 
+                vector: arcEndTangent, 
+                scalar: -1 
+            }) as Inputs.Base.Vector3;
+
+            // Arrow at second direction point (end of arc) - points outward by default
+            const endArrow = this.createArrow({
+                tipPoint: arcEndPoint,
+                direction: reversedEndTangent,
+                normal: normalThreePoints,
+                size: inputs.arrowSize,
+                angle: inputs.arrowAngle,
+                flipped: !inputs.arrowsFlipped
+            });
+            shapesToInclude.push(endArrow);
+        }
+
+        const res = this.converterService.makeCompound({ shapes: shapesToInclude });
 
         // delete shapes
         shapesToDelete.forEach((shape) => {
@@ -313,7 +470,29 @@ export class DimensionsService {
         });
         shapesToDelete.push(alignedLabelTxtToDir);
 
-        const res = this.converterService.makeCompound({ shapes: [pinLine, labelTransformed, lineBeneathLabel] });
+        const shapesToInclude: TopoDS_Shape[] = [pinLine, labelTransformed, lineBeneathLabel];
+
+        // Add arrow if enabled
+        if (inputs.endType === Inputs.OCCT.dimensionEndTypeEnum.arrow) {
+            // Calculate the direction from start to end for the pin
+            const pinDirection = this.base.vector.sub({
+                first: inputs.endPoint,
+                second: inputs.startPoint,
+            }) as Inputs.Base.Vector3;
+
+            // Arrow at the start point (default orientation is flipped, then apply user flip)
+            const arrow = this.createArrow({
+                tipPoint: inputs.startPoint,
+                direction: pinDirection,
+                normal: normalThreePoints,
+                size: inputs.arrowSize,
+                angle: inputs.arrowAngle,
+                flipped: !inputs.arrowsFlipped
+            });
+            shapesToInclude.push(arrow);
+        }
+
+        const res = this.converterService.makeCompound({ shapes: shapesToInclude });
 
         // delete shapes
         shapesToDelete.forEach((shape) => {
