@@ -110,7 +110,7 @@ Save your JSON configurator as a file, upload it to Shopify CDN as a file. Copy 
 
 While our Viewer Editor is the recommended way to create and manage the Scene Config JSON, you can also edit the JSON directly using any text editor. For a better editing experience with features like syntax highlighting and autocompletion (intellisense), we provide a JSON schema.
 
-*   **JSON Schema:** You can find the schema [here](https://app-store.bitbybit.dev/files/ecommerce/viewer-editor/viewer-scene-schema-v0.20.11.json). (Note: This schema link points to version `0.20.11`. The schema may be updated in the future, so ensure you refer to the latest version compatible with your "3D Bits" app version.)
+*   **JSON Schema:** You can find the schema [here](https://app-store.bitbybit.dev/files/ecommerce/viewer-editor/viewer-scene-schema-v0.20.12.json). (Note: This schema link points to version `0.20.12`. The schema may be updated in the future, so ensure you refer to the latest version compatible with your "3D Bits" app version.)
     Many modern code editors (like VS Code) can use this schema to provide validation and autocompletion as you edit the JSON.
 
 ## Video Tutorial: BITBYBIT VIEWER Block Setup

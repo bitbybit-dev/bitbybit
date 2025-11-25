@@ -121,7 +121,7 @@ These settings are specific to RUNNER and APPS blocks:
 ### Runner CDN Link
 
 **Available in:** VIEWER, RUNNER  
-**Default:** `https://cdn.jsdelivr.net/gh/bitbybit-dev/bitbybit-assets@0.20.11/runner/bitbybit-runner-babylonjs.js`
+**Default:** `https://cdn.jsdelivr.net/gh/bitbybit-dev/bitbybit-assets@0.20.12/runner/bitbybit-runner-babylonjs.js`
 
 Specifies which version of the Bitbybit runner library to use. The runner is the core engine that loads and renders 3D content in your browser.
 
@@ -173,7 +173,7 @@ The URL follows this pattern:
 https://cdn.jsdelivr.net/gh/bitbybit-dev/bitbybit-assets@{VERSION}/runner/bitbybit-runner-babylonjs.js
 ```
 
-Replace `{VERSION}` with the desired version number (e.g., `0.20.11`).
+Replace `{VERSION}` with the desired version number (e.g., `0.20.12`).
 
 **Self-Hosting on Shopify CDN:**
 

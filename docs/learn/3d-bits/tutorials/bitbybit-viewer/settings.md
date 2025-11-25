@@ -203,7 +203,7 @@ The system automatically detects if you're providing a URL (starting with `http:
 - For complex configurations, use a URL to an external JSON file - it keeps your theme settings cleaner and makes updates easier
 - Use the Viewer Editor to generate valid configurations
 - Test your scene configuration thoroughly before going live
-- The scene configuration follows a [JSON schema](https://app-store.bitbybit.dev/files/ecommerce/viewer-editor/viewer-scene-schema-v0.20.11.json) that defines all available options
+- The scene configuration follows a [JSON schema](https://app-store.bitbybit.dev/files/ecommerce/viewer-editor/viewer-scene-schema-v0.20.12.json) that defines all available options
 :::
 
 ---
