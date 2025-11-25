@@ -114,11 +114,29 @@ While we recommend the schema below for consistency across integrations, we unde
 
 ### Event Name
 
-Use the exact namespace:
+We suggest using this event name, but you could create your own namespace. We understand that you might not want to have references to a single app in your codebase.
 
 ```javascript
 3dbits.productOptions.changed
 ```
+
+Alternative:
+
+```javascript
+yourApp.productOptions.changed
+```
+
+**If you use `3dbits.productOptions.changed`:**
+- We can detect this automatically
+- Users won't need to manually select your app from our Input Collection Mode dropdown
+- The integration will work out of the box
+
+**If you choose your own event name:**
+- Please [contact us](#contact-information) with your event name
+- We'll add support for your specific event
+- Users will need to select your app from the Input Collection Mode dropdown
+
+This way we'll know which event to listen to when users configure your app for input collection.
 
 ### Event Data Structure (TypeScript)
 
