@@ -27,7 +27,9 @@ tags: [shopify, 3d-bits]
 
 ### BITBYBIT VIEWER (No-Code)
 
-BITBYBIT VIEWER theme app extension supports building 3D configurators without writing code. It provides advanced editor user friendly editor that helps you load 3D models, configure loading indicators, scene, lights, camera settings and link 3D models or materials to product options.
+The BITBYBIT VIEWER theme app extension allows you to build powerful, interactive 3D configurators without writing a single line of code via powerful [Viewer Editor](../../getting-started//viewer-editor/intro.md) application. 
+
+It includes an intuitive editor that lets you easily load 3D models, customize loading indicators, adjust scene settings, lighting, and camera angles, and link 3D models or materials directly to your Shopify product options. With the Basic Plan, you can parse GLTF file structures to connect different parts of your 3D model to Shopify variants. The system also detects material variants exported from Blender, allowing you to link them seamlessly to product options. The Standard Plan expands these capabilities by adding advanced features such as 3D points of interest - when you click on them camera will move in fluid cinematic motion to designated viewing position and angle. We also support multiple dimension types—including linear, angular, radial, diametral, and ordinal—automatic bounding box dimensions, and support for gradient and image backgrounds. Across all plans, you can use unlimited 3D models with full access to features like camera settings, directional lights, file size validation, GLTF and 3DGS scan formats, and customizable loading elements, making BITBYBIT VIEWER a complete no-code solution for 3D product visualization on Shopify.
 
 | Feature | Base | Standard | Pro |
 |---------|-------------|------------|------------|
@@ -41,17 +43,21 @@ BITBYBIT VIEWER theme app extension supports building 3D configurators without w
 | **Directional Lights** | ✅ | ✅ | ✅ |
 | **File Size Validations** | ✅ | ✅ | ✅ |
 | **GLTF (File Format)** | ✅ | ✅ | ✅ |
-| **3DGS (File Format 3D Scans)** | ✅ | ✅ | ✅ |
+| **SPLAT & PLY (File Format 3DGS Scans)** | ✅ | ✅ | ✅ |
 | **KHR Material Variants (GLTF)** | ✅ | ✅ | ✅ |
 | **GLTF Parsing** | ✅ | ✅ | ✅ |
 | **GLTF Node Variants** | ✅ | ✅ | ✅ |
 | **Points of interest** | x | ✅ | ✅ |
-| **Points of interest variants** | x | ✅ | ✅ |
+| **Points of interest Variants** | x | ✅ | ✅ |
 | **Linear Dimensions** | x | ✅ | ✅ |
 | **Angular Dimensions** | x | ✅ | ✅ |
 | **Radial Dimensions** | x | ✅ | ✅ |
 | **Diametral Dimensions** | x | ✅ | ✅ |
 | **Ordinal Dimensions** | x | ✅ | ✅ |
+| **Automatic Bounding Box Dimensions** | x | ✅ | ✅ |
+| **Dimension Variants** | x | ✅ | ✅ |
+| **Gradient Background** | x | ✅ | ✅ |
+| **Image Background** | x | ✅ | ✅ |
 
 
 Features in `Standard` and `Pro` plans are expected to grow, so remember to check this list for potential updates in the future.

@@ -179,14 +179,30 @@ export namespace IO {
      * Main DXF model containing all path parts
      */
     export class DxfModelDto {
-        constructor(dxfPathsParts?: DxfPathsPartDto[]) {
+        constructor(dxfPathsParts?: DxfPathsPartDto[], colorFormat?: "aci" | "truecolor", acadVersion?: "AC1009" | "AC1015") {
             if (dxfPathsParts !== undefined) { this.dxfPathsParts = dxfPathsParts; }
+            if (colorFormat !== undefined) { this.colorFormat = colorFormat; }
+            if (acadVersion !== undefined) { this.acadVersion = acadVersion; }
         }
         /**
          * Array of path parts, each containing paths with segments
          * @default undefined
          */
         dxfPathsParts: DxfPathsPartDto[];
+        /**
+         * Color format to use in the DXF file
+         * - "aci": AutoCAD Color Index (1-255) - Better compatibility with older CAD software like Design CAD 3D Max
+         * - "truecolor": 24-bit RGB true color - Full color spectrum, requires newer CAD software
+         * @default aci
+         */
+        colorFormat?: "aci" | "truecolor" = "aci";
+        /**
+         * AutoCAD version format for DXF file
+         * - "AC1009": AutoCAD R12/R11 - Maximum compatibility with older CAD software (e.g., Design CAD 3D Max)
+         * - "AC1015": AutoCAD 2000 - Modern format with extended features
+         * @default AC1009
+         */
+        acadVersion?: "AC1009" | "AC1015" = "AC1009";
     }
 
 }

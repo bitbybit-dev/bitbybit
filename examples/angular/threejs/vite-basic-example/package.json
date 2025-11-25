@@ -14,7 +14,7 @@
         "@angular/forms": "^20.0.0",
         "@angular/platform-browser": "^20.0.0",
         "@angular/router": "^20.0.0",
-        "@bitbybit-dev/threejs": "0.20.11",
+        "@bitbybit-dev/threejs": "0.20.12",
         "rxjs": "7.5.5",
         "tslib": "^2.5.0",
         "zone.js": "~0.15.0"
@@ -24,6 +24,6 @@
         "@angular/cli": "^20.0.0",
         "@angular/compiler-cli": "^20.0.0",
         "typescript": "^5.8.2",
-        "@types/three": "0.180.0"
+        "@types/three": "0.181.0"
     }
 }

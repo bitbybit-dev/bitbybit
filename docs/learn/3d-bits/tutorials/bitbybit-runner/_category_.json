@@ -1,0 +1,10 @@
+{
+    "label": "Bitbybit Runner",
+    "position": 2,
+    "link": {
+        "type": "generated-index",
+        "title": "Tutorials for Bitbybit Runner",
+        "description": "Learn how to use the Bitbybit Runner theme app extension block and use it in combination with our Low-Code (Rete & Blockly) or Pro-Code (TypeScript) editors.",
+        "slug": "/3d-bits/tutorials/bitbybit-runner"
+    }
+}

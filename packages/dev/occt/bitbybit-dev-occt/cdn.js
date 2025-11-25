@@ -1,8 +1,9 @@
 import ocFullJS from "./bitbybit-dev-occt.js";
+import { GlobalCDNProvider } from "@bitbybit-dev/base";
 
 const initOpenCascade = ({
   mainJS = ocFullJS,
-  mainWasm = "https://cdn.jsdelivr.net/gh/bitbybit-dev/bitbybit-assets@0.20.11/wasm/bitbybit-dev-occt.f151efeb.wasm",
+  mainWasm = GlobalCDNProvider.BITBYBIT_CDN_URL + "/wasm/bitbybit-dev-occt.f151efeb.wasm",
   worker = undefined,
   libs = [],
   module = {},

@@ -1,0 +1,10 @@
+{
+    "label": "Video Tutorials",
+    "position": 6,
+    "link": {
+        "type": "generated-index",
+        "title": "Video tutorials for 3D Bits",
+        "description": "These tutorials provide video explanations of many of the features of 3D Bits.",
+        "slug": "/3d-bits/tutorials/video-tutorials"
+    }
+}

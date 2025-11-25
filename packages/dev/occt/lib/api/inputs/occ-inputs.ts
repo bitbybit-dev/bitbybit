@@ -128,7 +128,18 @@ export namespace OCCT {
         isGuideACWithContact = "isGuideACWithContact",
         isGuidePlanWithContact = "isGuidePlanWithContact",
         isDiscreteTrihedron = "isDiscreteTrihedron",
-
+    }
+    export enum dxfColorFormatEnum {
+        aci = "aci",
+        truecolor = "truecolor",
+    }
+    export enum dxfAcadVersionEnum {
+        AC1009 = "AC1009",
+        AC1015 = "AC1015",
+    }
+    export enum dimensionEndTypeEnum {
+        none = "none",
+        arrow = "arrow",
     }
     export class DecomposedMeshDto {
         constructor(faceList?: DecomposedFaceDto[], edgeList?: DecomposedEdgeDto[]) {
@@ -6045,8 +6056,10 @@ export namespace OCCT {
     }
 
     export class DxfPathsPartsListDto {
-        constructor(pathsParts?: IO.DxfPathsPartDto[], tryDownload?: boolean) {
+        constructor(pathsParts?: IO.DxfPathsPartDto[], colorFormat?: dxfColorFormatEnum, acadVersion?: dxfAcadVersionEnum, tryDownload?: boolean) {
             if (pathsParts !== undefined) { this.pathsParts = pathsParts; }
+            if (colorFormat !== undefined) { this.colorFormat = colorFormat; }
+            if (acadVersion !== undefined) { this.acadVersion = acadVersion; }
             if (tryDownload !== undefined) { this.tryDownload = tryDownload; }
         }
         /**
@@ -6054,6 +6067,16 @@ export namespace OCCT {
          * @default undefined
          */
         pathsParts: IO.DxfPathsPartDto[];
+        /**
+         * Color format to use in the DXF file
+         * @default aci
+         */
+        colorFormat: dxfColorFormatEnum = dxfColorFormatEnum.aci;
+        /**
+         * AutoCAD version format for DXF file
+         * @default AC1009
+         */
+        acadVersion: dxfAcadVersionEnum = dxfAcadVersionEnum.AC1009;
         /**
          * File name
          * @default bitbybit-dev.dxf
@@ -7018,7 +7041,7 @@ export namespace OCCT {
         direction: Base.Vector3 = [0, 1, 0];
     }
     export class SimpleLinearLengthDimensionDto {
-        constructor(start?: Base.Point3, end?: Base.Point3, direction?: Base.Vector3, offsetFromPoints?: number, crossingSize?: number, labelSuffix?: string, labelSize?: number, labelOffset?: number, labelRotation?: number) {
+        constructor(start?: Base.Point3, end?: Base.Point3, direction?: Base.Vector3, offsetFromPoints?: number, crossingSize?: number, labelSuffix?: string, labelSize?: number, labelOffset?: number, labelRotation?: number, arrowType?: dimensionEndTypeEnum, arrowSize?: number, arrowAngle?: number, arrowsFlipped?: boolean) {
             if (start !== undefined) { this.start = start; }
             if (end !== undefined) { this.end = end; }
             if (direction !== undefined) { this.direction = direction; }
@@ -7028,6 +7051,10 @@ export namespace OCCT {
             if (labelSize !== undefined) { this.labelSize = labelSize; }
             if (labelOffset !== undefined) { this.labelOffset = labelOffset; }
             if (labelRotation !== undefined) { this.labelRotation = labelRotation; }
+            if (arrowType !== undefined) { this.endType = arrowType; }
+            if (arrowSize !== undefined) { this.arrowSize = arrowSize; }
+            if (arrowAngle !== undefined) { this.arrowAngle = arrowAngle; }
+            if (arrowsFlipped !== undefined) { this.arrowsFlipped = arrowsFlipped; }
         }
         /**
          * The start point for dimension
@@ -7097,9 +7124,35 @@ export namespace OCCT {
          * @step 1
          */
         labelRotation? = 0;
+        /**
+         * End type for dimension
+         * @default none
+         */
+        endType? = dimensionEndTypeEnum.none;
+        /**
+         * The size/length of dimension arrows
+         * @default 0.3
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.1
+         */
+        arrowSize? = 0.3;
+        /**
+         * The total angle between arrow lines (max 90 degrees)
+         * @default 30
+         * @minimum 0
+         * @maximum 90
+         * @step 1
+         */
+        arrowAngle? = 30;
+        /**
+         * Flip arrows to point outward instead of inward
+         * @default false
+         */
+        arrowsFlipped? = false;
     }
     export class SimpleAngularDimensionDto {
-        constructor(direction1?: Base.Point3, direction2?: Base.Point3, center?: Base.Point3, radius?: number, offsetFromCenter?: number, crossingSize?: number, radians?: boolean, labelSuffix?: string, labelSize?: number, labelOffset?: number) {
+        constructor(direction1?: Base.Point3, direction2?: Base.Point3, center?: Base.Point3, radius?: number, offsetFromCenter?: number, crossingSize?: number, radians?: boolean, labelSuffix?: string, labelSize?: number, labelOffset?: number, endType?: dimensionEndTypeEnum, arrowSize?: number, arrowAngle?: number, arrowsFlipped?: boolean) {
             if (direction1 !== undefined) { this.direction1 = direction1; }
             if (direction2 !== undefined) { this.direction2 = direction2; }
             if (center !== undefined) { this.center = center; }
@@ -7110,6 +7163,10 @@ export namespace OCCT {
             if (labelSuffix !== undefined) { this.labelSuffix = labelSuffix; }
             if (labelSize !== undefined) { this.labelSize = labelSize; }
             if (labelOffset !== undefined) { this.labelOffset = labelOffset; }
+            if (endType !== undefined) { this.endType = endType; }
+            if (arrowSize !== undefined) { this.arrowSize = arrowSize; }
+            if (arrowAngle !== undefined) { this.arrowAngle = arrowAngle; }
+            if (arrowsFlipped !== undefined) { this.arrowsFlipped = arrowsFlipped; }
         }
 
         /**
@@ -7185,9 +7242,35 @@ export namespace OCCT {
          * @default false
          */
         radians = false;
+        /**
+         * End type for dimension
+         * @default none
+         */
+        endType? = dimensionEndTypeEnum.none;
+        /**
+         * The size/length of dimension arrows
+         * @default 0.3
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.1
+         */
+        arrowSize? = 0.3;
+        /**
+         * The total angle between arrow lines (max 90 degrees)
+         * @default 30
+         * @minimum 0
+         * @maximum 90
+         * @step 1
+         */
+        arrowAngle? = 30;
+        /**
+         * Flip arrows to point outward instead of inward
+         * @default false
+         */
+        arrowsFlipped? = false;
     }
     export class PinWithLabelDto {
-        constructor(startPoint?: Base.Point3, endPoint?: Base.Point3, direction?: Base.Vector3, offsetFromStart?: number, label?: string, labelOffset?: number, labelSize?: number) {
+        constructor(startPoint?: Base.Point3, endPoint?: Base.Point3, direction?: Base.Vector3, offsetFromStart?: number, label?: string, labelOffset?: number, labelSize?: number, endType?: dimensionEndTypeEnum, arrowSize?: number, arrowAngle?: number, arrowsFlipped?: boolean) {
             if (startPoint !== undefined) { this.startPoint = startPoint; }
             if (endPoint !== undefined) { this.endPoint = endPoint; }
             if (direction !== undefined) { this.direction = direction; }
@@ -7195,6 +7278,10 @@ export namespace OCCT {
             if (label !== undefined) { this.label = label; }
             if (labelOffset !== undefined) { this.labelOffset = labelOffset; }
             if (labelSize !== undefined) { this.labelSize = labelSize; }
+            if (endType !== undefined) { this.endType = endType; }
+            if (arrowSize !== undefined) { this.arrowSize = arrowSize; }
+            if (arrowAngle !== undefined) { this.arrowAngle = arrowAngle; }
+            if (arrowsFlipped !== undefined) { this.arrowsFlipped = arrowsFlipped; }
         }
         /**
          * The start point for dimension
@@ -7240,6 +7327,32 @@ export namespace OCCT {
          * @step 0.1
          */
         labelSize? = 0.1;
+        /**
+         * End type for dimension
+         * @default none
+         */
+        endType? = dimensionEndTypeEnum.none;
+        /**
+         * The size/length of dimension arrows
+         * @default 0.3
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.1
+         */
+        arrowSize? = 0.3;
+        /**
+         * The total angle between arrow lines (max 90 degrees)
+         * @default 30
+         * @minimum 0
+         * @maximum 90
+         * @step 1
+         */
+        arrowAngle? = 30;
+        /**
+         * Flip arrows to point outward instead of inward
+         * @default false
+         */
+        arrowsFlipped? = false;
     }
     export class StarSolidDto extends StarDto {
         constructor(outerRadius?: number, innerRadius?: number, numRays?: number, center?: Base.Point3, direction?: Base.Vector3, offsetOuterEdges?: number, half?: boolean, extrusionLengthFront?: number, extrusionLengthBack?: number) {

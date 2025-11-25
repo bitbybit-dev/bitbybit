@@ -1,0 +1,10 @@
+{
+    "label": "Bitbybit Apps",
+    "position": 3,
+    "link": {
+        "type": "generated-index",
+        "title": "Tutorials for Bitbybit Apps",
+        "description": "Learn how to use the Bitbybit Apps theme app extension block with published bitbybit.dev projects.",
+        "slug": "/3d-bits/tutorials/bitbybit-apps"
+    }
+}

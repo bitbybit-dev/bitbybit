@@ -102,9 +102,11 @@ export class DxfService {
      * Takes multiple outputs from dxfPathsWithLayer and creates final DXF
      */
     dxfCreate(inputs: Inputs.OCCT.DxfPathsPartsListDto): string {
-        const model: IO.DxfModelDto = {
-            dxfPathsParts: inputs.pathsParts
-        };
+        const model = {
+            dxfPathsParts: inputs.pathsParts,
+            colorFormat: inputs.colorFormat as "aci" | "truecolor",
+            acadVersion: inputs.acadVersion as "AC1009" | "AC1015"
+        } as IO.DxfModelDto;
         const dxfContent = this.base.io.dxf.dxfCreate(model);
         return dxfContent;
     }

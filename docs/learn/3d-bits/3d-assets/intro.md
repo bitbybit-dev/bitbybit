@@ -25,6 +25,8 @@ For 3D scans, **Splat files** offer an alternative to traditional 3D models. The
 * Use lightweight, lower-poly models that abstract production-grade CAD designs.
 * Avoid uploading detailed production models directly.
 
+**Important:** Read the complete [Your Assets & Security](../tutorials/getting-started/your-assets.md) guide to fully understand asset security implications, intellectual property considerations, and best practices before uploading any 3D models.
+
 ### Rights and Permissions
 Ensure you have the rights to use all parts of your 3D models, including meshes, textures, and other assets. The **3D Bits** app renders the assets you provide, but you are responsible for their legality and compliance.
 

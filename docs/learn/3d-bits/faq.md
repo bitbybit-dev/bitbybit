@@ -51,8 +51,8 @@ The **BITBYBIT VIEWER** block (used within the Viewer Editor) lets you match sta
   As technical founders, our initial inclination was to build in complex parametric logic for everything. However, we quickly realized that many merchants simply want to achieve straightforward visual changes based on standard Shopify variants – like showing the blue chair when "Blue" is selected. And that's perfectly fine and often all that's needed! 3D Bits handles this simple variant swapping effectively.
 </Admonition>
 
-- Have GLTF files ready? Check this tutorial: [No-Code GLTF Configurators with BITBYBIT VIEWER Editor on Shopify](/learn/3d-bits/tutorials/viewer-no-code-gltf-configurators)
-- Want to use 3D scans (Gaussian splatting)? [No-Code Gaussian Splat Configurators with BITBYBIT VIEWER Editor on Shopify](/learn/3d-bits/tutorials/viewer-no-code-3d-scan-configurators)
+- Have GLTF files ready? Check this tutorial: [No-Code GLTF Configurators with BITBYBIT VIEWER Editor on Shopify](/learn/3d-bits/tutorials/videos-tutorials/viewer-no-code-gltf-configurators)
+- Want to use 3D scans (Gaussian splatting)? [No-Code Gaussian Splat Configurators with BITBYBIT VIEWER Editor on Shopify](/learn/3d-bits/tutorials/videos-tutorials/viewer-no-code-3d-scan-configurators)
 
 For more complex configurators (e.g., where parts change dynamically beyond pre-set variants, or intricate rules are needed), you'd likely need to explore options involving some level of scripting, as discussed in later questions.
 

@@ -21,8 +21,8 @@ describe("DxfGenerator unit tests", () => {
 
             expect(result).toContain("0\nLINE");
             expect(result).toContain("8\nLayer1");
-            expect(result).toContain("10\n0\n20\n0"); // Start point
-            expect(result).toContain("11\n10\n21\n10"); // End point
+            expect(result).toContain("10\n0.000000\n20\n0.000000"); // Start point
+            expect(result).toContain("11\n10.000000\n21\n10.000000"); // End point
         });
 
         it("should generate multiple LINE entities in a single path", () => {
@@ -51,8 +51,8 @@ describe("DxfGenerator unit tests", () => {
 
             expect(result).toContain("0\nCIRCLE");
             expect(result).toContain("8\nCircles");
-            expect(result).toContain("10\n50\n20\n50"); // Center point
-            expect(result).toContain("40\n25"); // Radius
+            expect(result).toContain("10\n50.000000\n20\n50.000000"); // Center point
+            expect(result).toContain("40\n25.000000"); // Radius
         });
 
         it("should generate multiple circles", () => {
@@ -67,9 +67,9 @@ describe("DxfGenerator unit tests", () => {
 
             const circleMatches = result.match(/0\nCIRCLE/g);
             expect(circleMatches).toHaveLength(3);
-            expect(result).toContain("40\n5");
-            expect(result).toContain("40\n10");
-            expect(result).toContain("40\n7.5");
+            expect(result).toContain("40\n5.000000");
+            expect(result).toContain("40\n10.000000");
+            expect(result).toContain("40\n7.500000");
         });
     });
 
@@ -85,10 +85,10 @@ describe("DxfGenerator unit tests", () => {
 
             expect(result).toContain("0\nARC");
             expect(result).toContain("8\nArcs");
-            expect(result).toContain("10\n100\n20\n100"); // Center point
-            expect(result).toContain("40\n50"); // Radius
-            expect(result).toContain("50\n0"); // Start angle
-            expect(result).toContain("51\n90"); // End angle
+            expect(result).toContain("10\n100.000000\n20\n100.000000"); // Center point
+            expect(result).toContain("40\n50.000000"); // Radius
+            expect(result).toContain("50\n0.000000"); // Start angle
+            expect(result).toContain("51\n90.000000"); // End angle
         });
 
         it("should generate arc with 180 degree sweep", () => {
@@ -99,8 +99,8 @@ describe("DxfGenerator unit tests", () => {
 
             const result = generator.generateDxf(model);
 
-            expect(result).toContain("50\n45");
-            expect(result).toContain("51\n225");
+            expect(result).toContain("50\n45.000000");
+            expect(result).toContain("51\n225.000000");
         });
 
         it("should generate multiple arcs", () => {
@@ -326,7 +326,7 @@ describe("DxfGenerator unit tests", () => {
 
     describe("DXF Structure and Format", () => {
         
-        it("should generate valid DXF structure with all sections", () => {
+        it("should generate valid DXF structure with AC1009 format by default", () => {
             const line = new Inputs.IO.DxfLineSegmentDto([0, 0], [10, 10]);
             const path = new Inputs.IO.DxfPathDto([line]);
             const part = new Inputs.IO.DxfPathsPartDto("0", "#000000", [path]);
@@ -335,11 +335,62 @@ describe("DxfGenerator unit tests", () => {
             const result = generator.generateDxf(model);
 
             expect(result).toContain("0\nSECTION\n2\nHEADER");
+            expect(result).toContain("$ACADVER\n1\nAC1009");
+            expect(result).toContain("$DWGCODEPAGE\n3\nascii");
+            expect(result).toContain("0\nSECTION\n2\nTABLES");
+            expect(result).toContain("0\nTABLE\n2\nVPORT"); // AC1009 includes VPORT
+            expect(result).toContain("0\nTABLE\n2\nVIEW"); // AC1009 includes VIEW
+            expect(result).toContain("0\nTABLE\n2\nUCS"); // AC1009 includes UCS
+            expect(result).toContain("0\nTABLE\n2\nAPPID"); // AC1009 includes APPID
+            expect(result).toContain("0\nSECTION\n2\nENTITIES");
+            expect(result).toContain("0\nEOF");
+        });
+
+        it("should generate valid DXF structure with AC1015 format when specified", () => {
+            const line = new Inputs.IO.DxfLineSegmentDto([0, 0], [10, 10]);
+            const path = new Inputs.IO.DxfPathDto([line]);
+            const part = new Inputs.IO.DxfPathsPartDto("0", "#000000", [path]);
+            const model = new Inputs.IO.DxfModelDto([part], "aci", "AC1015");
+
+            const result = generator.generateDxf(model);
+
+            expect(result).toContain("0\nSECTION\n2\nHEADER");
             expect(result).toContain("$ACADVER\n1\nAC1015");
             expect(result).toContain("$LASTSAVEDBY\n1\nbitbybit.dev");
+            expect(result).toContain("$DWGCODEPAGE\n3\nANSI_1252");
             expect(result).toContain("0\nSECTION\n2\nTABLES");
             expect(result).toContain("0\nSECTION\n2\nENTITIES");
             expect(result).toContain("0\nEOF");
+            // AC1015 should not have VPORT table
+            expect(result).not.toContain("0\nTABLE\n2\nVPORT");
+        });
+
+        it("should generate AC1009 entities without AcDb subclass markers", () => {
+            const line = new Inputs.IO.DxfLineSegmentDto([0, 0], [10, 10]);
+            const path = new Inputs.IO.DxfPathDto([line]);
+            const part = new Inputs.IO.DxfPathsPartDto("TestLayer", "1", [path]);
+            const model = new Inputs.IO.DxfModelDto([part], "aci", "AC1009");
+
+            const result = generator.generateDxf(model);
+
+            // AC1009 should not have AcDb subclass markers
+            expect(result).not.toContain("100\nAcDbEntity");
+            expect(result).not.toContain("100\nAcDbLine");
+            // Should have layer directly after entity type
+            expect(result).toContain("0\nLINE\n8\nTestLayer");
+        });
+
+        it("should generate AC1015 entities with AcDb subclass markers", () => {
+            const line = new Inputs.IO.DxfLineSegmentDto([0, 0], [10, 10]);
+            const path = new Inputs.IO.DxfPathDto([line]);
+            const part = new Inputs.IO.DxfPathsPartDto("TestLayer", "1", [path]);
+            const model = new Inputs.IO.DxfModelDto([part], "aci", "AC1015");
+
+            const result = generator.generateDxf(model);
+
+            // AC1015 should have AcDb subclass markers
+            expect(result).toContain("100\nAcDbEntity");
+            expect(result).toContain("100\nAcDbLine");
         });
 
         it("should generate unique entity handles", () => {
@@ -380,9 +431,81 @@ describe("DxfGenerator unit tests", () => {
         });
     });
 
+    describe("Format Version Control", () => {
+        
+        it("should default to AC1009 for maximum compatibility", () => {
+            const line = new Inputs.IO.DxfLineSegmentDto([0, 0], [10, 10]);
+            const path = new Inputs.IO.DxfPathDto([line]);
+            const part = new Inputs.IO.DxfPathsPartDto("0", "#000000", [path]);
+            const model = new Inputs.IO.DxfModelDto([part]);
+
+            const result = generator.generateDxf(model);
+
+            expect(result).toContain("$ACADVER\n1\nAC1009");
+        });
+
+        it("should use AC1015 when explicitly specified", () => {
+            const line = new Inputs.IO.DxfLineSegmentDto([0, 0], [10, 10]);
+            const path = new Inputs.IO.DxfPathDto([line]);
+            const part = new Inputs.IO.DxfPathsPartDto("0", "#000000", [path]);
+            const model = new Inputs.IO.DxfModelDto([part], "aci", "AC1015");
+
+            const result = generator.generateDxf(model);
+
+            expect(result).toContain("$ACADVER\n1\nAC1015");
+        });
+
+        it("should generate simpler entities in AC1009 format", () => {
+            const arc = new Inputs.IO.DxfArcSegmentDto([10, 10], 5, 0, 90);
+            const path = new Inputs.IO.DxfPathDto([arc]);
+            const part = new Inputs.IO.DxfPathsPartDto("0", "1", [path]);
+            const model = new Inputs.IO.DxfModelDto([part], "aci", "AC1009");
+
+            const result = generator.generateDxf(model);
+
+            // AC1009 arcs should have simpler structure
+            const entitiesSection = result.split("SECTION\n2\nENTITIES")[1]?.split("ENDSEC")[0];
+            expect(entitiesSection).toContain("0\nARC\n8\n0");
+            expect(entitiesSection).toContain("6\n "); // Empty linetype field for AC1009
+        });
+
+        it("should generate more complex entities in AC1015 format", () => {
+            const arc = new Inputs.IO.DxfArcSegmentDto([10, 10], 5, 0, 90);
+            const path = new Inputs.IO.DxfPathDto([arc]);
+            const part = new Inputs.IO.DxfPathsPartDto("0", "1", [path]);
+            const model = new Inputs.IO.DxfModelDto([part], "aci", "AC1015");
+
+            const result = generator.generateDxf(model);
+
+            // AC1015 should have entity handles and subclass markers
+            expect(result).toContain("5\n"); // Handle code
+            expect(result).toContain("100\nAcDbEntity");
+            expect(result).toContain("100\nAcDbCircle");
+            expect(result).toContain("100\nAcDbArc");
+        });
+
+        it("should handle mixed entity types in AC1009", () => {
+            const line = new Inputs.IO.DxfLineSegmentDto([0, 0], [10, 10]);
+            const circle = new Inputs.IO.DxfCircleSegmentDto([20, 20], 5);
+            const arc = new Inputs.IO.DxfArcSegmentDto([30, 30], 5, 0, 180);
+            const path = new Inputs.IO.DxfPathDto([line, circle, arc]);
+            const part = new Inputs.IO.DxfPathsPartDto("0", "7", [path]);
+            const model = new Inputs.IO.DxfModelDto([part], "aci", "AC1009");
+
+            const result = generator.generateDxf(model);
+
+            expect(result).toContain("0\nLINE");
+            expect(result).toContain("0\nCIRCLE");
+            expect(result).toContain("0\nARC");
+            // All entities should be in simple format
+            const entitiesSection = result.split("SECTION\n2\nENTITIES")[1]?.split("ENDSEC")[0];
+            expect(entitiesSection).not.toContain("100\nAcDbEntity");
+        });
+    });
+
     describe("Color Handling", () => {
         
-        it("should apply color to entities", () => {
+        it("should apply ACI color to entities", () => {
             const line = new Inputs.IO.DxfLineSegmentDto([0, 0], [10, 10]);
             const path = new Inputs.IO.DxfPathDto([line]);
             const part = new Inputs.IO.DxfPathsPartDto("ColorLayer", "5", [path]);
@@ -393,11 +516,23 @@ describe("DxfGenerator unit tests", () => {
             expect(result).toContain("62\n5");
         });
 
-        it("should convert hex color to true color format", () => {
+        it("should convert hex color to ACI format by default", () => {
             const circle = new Inputs.IO.DxfCircleSegmentDto([10, 10], 5);
             const path = new Inputs.IO.DxfPathDto([circle]);
             const part = new Inputs.IO.DxfPathsPartDto("HexColor", "#FF0000", [path]);
             const model = new Inputs.IO.DxfModelDto([part]);
+
+            const result = generator.generateDxf(model);
+
+            // Should use ACI color format by default (better compatibility)
+            expect(result).toContain("62\n1"); // Red = ACI 1
+        });
+
+        it("should convert hex color to true color format when specified", () => {
+            const circle = new Inputs.IO.DxfCircleSegmentDto([10, 10], 5);
+            const path = new Inputs.IO.DxfPathDto([circle]);
+            const part = new Inputs.IO.DxfPathsPartDto("HexColor", "#FF0000", [path]);
+            const model = new Inputs.IO.DxfModelDto([part], "truecolor");
 
             const result = generator.generateDxf(model);
 

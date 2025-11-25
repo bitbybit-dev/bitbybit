@@ -1,0 +1,83 @@
+---
+sidebar_position: 12
+title: "Tutorial: Building a 3D Laptop Holder Configurator for Shopify (TypeScript)"
+sidebar_label: Product - Laptop Holder (TS)
+description: Learn to create a 3D laptop holder configurator for Shopify using TypeScript on Bitbybit, driven by multiple product variants and integrated with the "3D Bits" app.
+tags: [shopify, 3d-bits]
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+import BitByBitRenderCanvas from '@site/src/components/BitByBitRenderCanvas';
+
+# Tutorial: Building a 3D Laptop Holder Configurator for Shopify (TypeScript)
+
+## What You Will Learn: Multi-Variant 3D Configuration
+
+This tutorial demonstrates how to create a more complex **3D configurable product**—a laptop holder—and drive its appearance and features using **three distinct sets of Shopify product variants**. The core logic for the laptop holder will be developed using **TypeScript** on the Bitbybit platform.
+
+You will learn how to:
+*   Structure a TypeScript script on Bitbybit to create a parametric 3D laptop holder.
+*   Define multiple product variants in Shopify (e.g., Laptop Type, Number of Laptops, Color).
+*   Export your TypeScript logic using the "Export to Runner" feature.
+*   Integrate this script into your Shopify product page using the "3D Bits" app (via [BITBYBIT RUNNER](/learn/3d-bits/theme-app-extensions/bitbybit-runner)).
+*   Ensure your 3D model dynamically updates based on the customer's selection of these multiple variants.
+
+**View the Demo:**
+*   Check out the live example on our [Demo Store: Laptop Holder Product Page](https://bitbybit-dev-3d-configurators.myshopify.com/products/laptop-holder).
+*   Demo store password: `3d-bits-demo`
+
+![A screenshot of the 3D parametric laptop holder model as it appears in the Shopify store.](https://ik.imagekit.io/bitbybit/app/assets/start/shopify/3dlaptopholder.jpeg "3D Laptop Holder Screenshot")
+*3D Laptop Holder Configurator Example*
+
+## Video Tutorial: Building the Laptop Holder Configurator
+
+<div class="responsive-video-container">
+  <iframe 
+    width="560" 
+    height="315" 
+    src="https://www.youtube.com/embed/_7CGezCqYrU?si=YRz9PerG67N3k_Xp" 
+    title="Building a 3D Laptop Holder Product Configurator for Shopify with TypeScript" 
+    frameborder="0" 
+    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+    allowfullscreen>
+  </iframe>
+</div>
+
+## Setting Up the Laptop Holder Product Variants in Shopify
+
+For this configurator, you will need to define the following product variants in your Shopify admin:
+
+*   **Laptop Type**
+    *   Values: `MacBook Pro 16`, `MacBook Pro 14`, `MacBook Air`
+*   **Number Laptops** (or "Capacity")
+    *   Values: `1`, `2`, `3`
+*   **Color**
+    *   Values: `Black`, `Blue` (or any other colors you wish to offer)
+
+Your Bitbybit TypeScript script will be designed to read these variant selections and adjust the 3D model accordingly.
+
+## The Bitbybit TypeScript Script
+
+To save you time and provide a starting point, here is the embedded Bitbybit TypeScript script used in this tutorial for the parametric laptop holder. You can explore it here and then use the "Export to Runner" feature in the Bitbybit editor to get the JavaScript code for your Shopify `BITBYBIT RUNNER` block.
+
+<BitByBitRenderCanvas
+  requireManualStart={true}
+  script={{"script":"Bit.mockBitbybitRunnerInputs({\n    \"Laptop Type\": \"MacBook Pro 16\",\n    \"Number Laptops\": \"3\",\n    \"Color\": \"Black\",\n});\nconst inputs = Bit.getBitbybitRunnerInputs();\n\nconst laptops: Laptop[] = []\n\nlet laptop: Laptop;\n\nswitch (inputs[\"Laptop Type\"]) {\n    case \"MacBook Pro 16\":\n        laptop = {\n            length: 1.63,\n            width: 35.8,\n            height: 24.6\n        };\n        break;\n    case \"MacBook Pro 14\":\n        laptop = {\n            length: 1.57,\n            width: 31.3,\n            height: 22.2\n        }\n        break;\n    case \"MacBook Air\":\n        laptop = {\n            length: 1.2,\n            width: 30.5,\n            height: 21.6\n        }\n        break;\n    default:\n        break;\n}\n\nlet flipColor = false;\nswitch (inputs[\"Color\"]) {\n    case \"Blue\":\n        flipColor = true;\n        break;\n    default:\n        break;\n}\n\nconsole.log(\"laptop \", laptop);\n\nconst nrLaptops = +inputs[\"Number Laptops\"];\n\nfor (let i = 0; i < nrLaptops; i++) {\n    laptops.push({ ...laptop });\n}\n\nconst whiteColor = \"#ffffff\";\nconst holderColor = \"#333333\";\n\nconst laptopLiftedHeight = 3;\nconst distanceBetweenLaptops = 1.7;\nconst exportSTEP = false;\n\nbitbybit.babylon.scene.backgroundColour({ colour: \"#bbbbbb\" });\n\nconst pointLightConf = new Bit.Inputs.BabylonScene.PointLightDto();\npointLightConf.position = [-15, 20, -5];\npointLightConf.intensity = 8000;\npointLightConf.diffuse = \"#3333ff\";\npointLightConf.radius = 0;\nbitbybit.babylon.scene.drawPointLight(pointLightConf);\n\nconst controlPoints = [\n    [-12.5, 0, 0],\n    [-8, 13, 0],\n    [-4, 11, 0],\n    [-2, 6, 0],\n    [2, 6, 0],\n    [4, 14, 0],\n    [8, 17, 0],\n    [12.5, 0, 0]\n] as Bit.Inputs.Base.Point3[];\n\nlet laptopStand;\nlet laptopStandMesh;\n\nconst laptopsFilletsMesh = [];\n\nasync function start() {\n    const ground = await bitbybit.occt.shapes.face.createCircleFace({ center: [0, 0, 0], direction: [0, 1, 0], radius: 75, });\n    const groundOptions = new Bit.Inputs.Draw.DrawOcctShapeOptions();\n    groundOptions.faceColour = whiteColor;\n    groundOptions.drawEdges = false;\n    await bitbybit.draw.drawAnyAsync({ entity: ground, options: groundOptions });\n\n    const renderLaptops = async (laptops) => {\n\n        laptops.forEach(laptop => {\n            laptop.center = [0, laptop.height / 2 + laptopLiftedHeight, 0] as Bit.Inputs.Base.Point3;\n        });\n\n        let laptopFillets = [];\n        let totalDistance = 0;\n        let previousLaptopLength = 0;\n\n        laptops.forEach(async (laptop, index) => {\n            totalDistance += distanceBetweenLaptops + laptop.length / 2 + previousLaptopLength / 2;\n            previousLaptopLength = laptop.length;\n            laptop.center[2] = totalDistance;\n            const laptopBaseModel = await bitbybit.occt.shapes.solid.createBox({\n                width: laptop.width,\n                length: laptop.length,\n                height: laptop.height,\n                center: laptop.center\n            });\n            const laptopFillet = await bitbybit.occt.fillets.filletEdges({ shape: laptopBaseModel, indexes: undefined, radius: 0.2 });\n            laptopFillets.push(laptopFillet);\n\n            const laptopVisModel = await bitbybit.occt.shapes.solid.createBox({\n                width: laptop.width,\n                length: laptop.length - 0.01,\n                height: laptop.height,\n                center: laptop.center\n            });\n            const laptopVisFillet = await bitbybit.occt.fillets.filletEdges({ shape: laptopVisModel, indexes: undefined, radius: 0.2 });\n            laptopFillets.push(laptopFillet);\n\n            const di = new Bit.Inputs.Draw.DrawOcctShapeOptions();\n\n            di.faceOpacity = 0.2;\n            di.edgeWidth = 5;\n            di.edgeOpacity = 0.6;\n            di.edgeColour = whiteColor;\n            di.faceColour = whiteColor;\n            const laptopFilletMesh = await bitbybit.draw.drawAnyAsync({ entity: laptopVisFillet, options: di });\n            laptopsFilletsMesh.push(laptopFilletMesh);\n        })\n\n        const polygonWire = await bitbybit.occt.shapes.wire.createPolygonWire({\n            points: controlPoints\n        });\n        const extrusion = await bitbybit.occt.operations.extrude({\n            shape: polygonWire, direction: [0, 0, totalDistance += distanceBetweenLaptops + previousLaptopLength / 2]\n        });\n        const laptopStandFillet = await bitbybit.occt.fillets.filletEdges({ shape: extrusion, indexes: undefined, radius: 1 });\n        const laptopStandThick = await bitbybit.occt.operations.makeThickSolidSimple({ shape: laptopStandFillet, offset: -0.5 });\n\n        laptopStand = await bitbybit.occt.booleans.difference({ shape: laptopStandThick, shapes: laptopFillets, keepEdges: false });\n        const li = new Bit.Inputs.OCCT.DrawShapeDto(laptopStand);\n        li.faceOpacity = 1;\n        if (flipColor) {\n            li.faceColour = \"#0000ff\";\n            li.edgeColour = whiteColor;\n        } else {\n            li.faceColour = holderColor;\n            li.edgeColour = whiteColor;\n        }\n        li.edgeWidth = 5;\n        laptopStandMesh = await bitbybit.draw.drawAnyAsync({ entity: laptopStand, options: li });\n        const laptopsMeshes = await Promise.all(laptopsFilletsMesh);\n        return [laptopStandMesh, ...laptopsMeshes];\n    }\n\n    const meshes = await renderLaptops(laptops);\n    return { meshes };\n}\n\nclass Laptop {\n    width: number;\n    length: number;\n    height: number;\n    center?: Bit.Inputs.Base.Point3;\n}\n\nBit.setBitbybitRunnerResult(start());","version":"0.20.12","type":"typescript"}}
+  title="Bitbybit Rete Editor - 3D Laptop Holder"
+  description="3D Laptop holder configurator"
+/>
+
+## Why TypeScript for This Example?
+
+You might notice this example opts for TypeScript rather than one of our visual editors like Rete or Blockly.
+**TypeScript** offers the most robust and flexible environment for creating complex configurators because:
+*   **Full Language Power:** You can leverage the full capabilities of the TypeScript programming language, including complex logic, data structures, and software design patterns.
+*   **Direct BabylonJS Access:** It provides direct access to all features of the underlying BabylonJS game engine core, allowing for highly customized rendering, animations, and interactions.
+*   **Scalability:** For intricate products with many parameters and conditional behaviors, TypeScript often provides a more scalable and maintainable solution.
+
+This example showcases how TypeScript can be effectively integrated into Shopify as a configurable 3D product using the Bitbybit Runner.
+
+---
+
+By following this tutorial, you'll gain insight into building sophisticated 3D product configurators driven by multiple Shopify variants, utilizing the power of TypeScript and the Bitbybit platform. Remember to adapt the provided `index.html` and `script.js` (from previous tutorials) by replacing the placeholder exported script function with the actual JavaScript code generated from your TypeScript laptop holder script.
