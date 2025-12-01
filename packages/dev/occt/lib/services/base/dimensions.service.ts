@@ -22,6 +22,60 @@ export class DimensionsService {
         private readonly wiresService: WiresService
     ) { }
 
+    /**
+     * Evaluates a mathematical expression or template string with a given value
+     * @param expression The expression to evaluate (can contain 'val' placeholder)
+     * @param value The numeric value to substitute for 'val'
+     * @param decimalPlaces Number of decimal places to format the result
+     * @returns The evaluated expression as a formatted string
+     */
+    private evaluateExpression(expression: string, value: number, decimalPlaces: number): string {
+        try {
+            // Replace 'val' with the actual value in the expression
+            const evaluatedExpression = expression.replace(/val/g, value.toString());
+            
+            // Simple math expression evaluation (supports +, -, *, /, parentheses)
+            // Only allow safe mathematical operations
+            const safeExpression = evaluatedExpression.replace(/[^0-9+\-*/.() ]/g, "");
+            if (safeExpression !== evaluatedExpression) {
+                // If expression contains non-math characters, treat it as a template
+                // For template strings, we still want to format numbers with decimal places
+                const formattedValue = value.toFixed(decimalPlaces);
+                return expression.replace(/val/g, formattedValue);
+            }
+            
+            // Evaluate mathematical expression and apply decimal places
+            const result = Function("\"use strict\"; return (" + safeExpression + ")")();
+            return result.toFixed(decimalPlaces);
+        } catch (error) {
+            // If evaluation fails, return the original value formatted
+            return value.toFixed(decimalPlaces);
+        }
+    }
+
+    /**
+     * Formats dimension label text with optional expression evaluation
+     * @param value The numeric value to display
+     * @param labelOverwrite Optional expression to evaluate instead of raw value
+     * @param decimalPlaces Number of decimal places for formatting
+     * @param labelSuffix Suffix to append to the text
+     * @returns Formatted dimension label text
+     */
+    private formatDimensionLabel(
+        value: number,
+        labelOverwrite: string | undefined,
+        decimalPlaces: number,
+        labelSuffix: string
+    ): string {
+        let result: string;
+        if (labelOverwrite) {
+            result = this.evaluateExpression(labelOverwrite, value, decimalPlaces);
+        } else {
+            result = value.toFixed(decimalPlaces);
+        }
+        return result + " " + labelSuffix;
+    }
+
     private createArrow(inputs: {
         tipPoint: Inputs.Base.Point3,
         direction: Inputs.Base.Vector3,
@@ -141,8 +195,15 @@ export class DimensionsService {
             endPoint: inputs.end,
         });
 
+        const labelText = this.formatDimensionLabel(
+            length,
+            inputs.labelOverwrite,
+            inputs.decimalPlaces,
+            inputs.labelSuffix
+        );
+
         const txtOpt = new Inputs.OCCT.TextWiresDto();
-        txtOpt.text = length.toFixed(inputs.decimalPlaces) + " " + inputs.labelSuffix;
+        txtOpt.text = labelText;
         txtOpt.xOffset = 0;
         txtOpt.yOffset = 0;
         txtOpt.height = inputs.labelSize;
@@ -324,8 +385,15 @@ export class DimensionsService {
             angle = this.base.math.degToRad({ number: angle });
         }
 
+        const labelText = this.formatDimensionLabel(
+            angle,
+            inputs.labelOverwrite,
+            inputs.decimalPlaces,
+            inputs.labelSuffix
+        );
+
         const txtOpt = new Inputs.OCCT.TextWiresDto();
-        txtOpt.text = angle.toFixed(inputs.decimalPlaces) + " " + inputs.labelSuffix;
+        txtOpt.text = labelText;
         txtOpt.xOffset = 0;
         txtOpt.yOffset = 0;
         txtOpt.height = inputs.labelSize;
