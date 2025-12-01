@@ -163,16 +163,39 @@ export class DimensionsService {
             second: inputs.start,
         }) as Inputs.Base.Vector3;
 
-        const rotated = this.transformsService.rotate({
+        let currentShape = this.transformsService.rotate({
             shape: txt.compound,
             angle: -90 + (inputs.labelRotation || 0),
             axis: [0, 1, 0],
         });
 
         shapesToDelete.push(...txt.shapes.map((s) => s.shape));
+        let previousShape = currentShape;
+
+        // Apply horizontal flip if requested
+        if (inputs.labelFlipHorizontal) {
+            currentShape = this.transformsService.scale3d({
+                shape: currentShape,
+                scale: [-1, 1, 1],
+                center: [0, 0, 0]
+            });
+            shapesToDelete.push(previousShape);
+            previousShape = currentShape;
+        }
+
+        // Apply vertical flip if requested
+        if (inputs.labelFlipVertical) {
+            currentShape = this.transformsService.scale3d({
+                shape: currentShape,
+                scale: [1, 1, -1],
+                center: [0, 0, 0]
+            });
+            shapesToDelete.push(previousShape);
+            previousShape = currentShape;
+        }
 
         const alignedLabelTxtToDir = this.transformsService.alignNormAndAxis({
-            shape: rotated,
+            shape: currentShape,
             fromOrigin: [0, 0, 0],
             fromNorm: [0, 1, 0],
             fromAx: [0, 0, 1],
@@ -181,7 +204,7 @@ export class DimensionsService {
             toAx: dirStartEnd,
         });
 
-        shapesToDelete.push(rotated);
+        shapesToDelete.push(previousShape);
 
         const normDir = this.base.vector.normalized({ vector: inputs.direction });
         const offsetLabelVec = this.base.vector.mul({ vector: normDir, scalar: inputs.labelOffset });
@@ -315,8 +338,39 @@ export class DimensionsService {
         }) as Inputs.Base.Vector3;
         const normVecToMid = this.base.vector.normalized({ vector: vectorToMid }) as Inputs.Base.Vector3;
 
-        const alignedLabelTxtToDir = this.transformsService.alignNormAndAxis({
+        let currentShape = this.transformsService.rotate({
             shape: txt.compound,
+            angle: inputs.labelRotation || 0,
+            axis: [0, 1, 0],
+        });
+
+        shapesToDelete.push(...txt.shapes.map((s) => s.shape));
+        let previousShape = currentShape;
+
+        // Apply horizontal flip if requested
+        if (inputs.labelFlipHorizontal) {
+            currentShape = this.transformsService.scale3d({
+                shape: currentShape,
+                scale: [-1, 1, 1],
+                center: [0, 0, 0]
+            });
+            shapesToDelete.push(previousShape);
+            previousShape = currentShape;
+        }
+
+        // Apply vertical flip if requested
+        if (inputs.labelFlipVertical) {
+            currentShape = this.transformsService.scale3d({
+                shape: currentShape,
+                scale: [1, 1, -1],
+                center: [0, 0, 0]
+            });
+            shapesToDelete.push(previousShape);
+            previousShape = currentShape;
+        }
+
+        const alignedLabelTxtToDir = this.transformsService.alignNormAndAxis({
+            shape: currentShape,
             fromOrigin: [0, 0, 0],
             fromNorm: [0, 1, 0],
             fromAx: [0, 0, 1],
@@ -324,7 +378,7 @@ export class DimensionsService {
             toNorm: normalThreePoints,
             toAx: normVecToMid,
         });
-        shapesToDelete.push(...txt.shapes.map((s) => s.shape));
+        shapesToDelete.push(previousShape);
         const offsetLabelVec = this.base.vector.mul({ vector: normVecToMid, scalar: inputs.labelOffset });
         const addToDir = this.base.vector.add({
             first: midPt,
@@ -439,16 +493,39 @@ export class DimensionsService {
             point3: endPtLabelLine,
             reverseNormal: false,
         });
-        const rotated = this.transformsService.rotate({
+        let currentShape = this.transformsService.rotate({
             shape: text.compound,
-            angle: -90,
+            angle: -90 + (inputs.labelRotation || 0),
             axis: [0, 1, 0],
         });
 
         const shapesToDelete = text.shapes.map((s) => s.shape);
+        let previousShape = currentShape;
+
+        // Apply horizontal flip if requested
+        if (inputs.labelFlipHorizontal) {
+            currentShape = this.transformsService.scale3d({
+                shape: currentShape,
+                scale: [-1, 1, 1],
+                center: [0, 0, 0]
+            });
+            shapesToDelete.push(previousShape);
+            previousShape = currentShape;
+        }
+
+        // Apply vertical flip if requested
+        if (inputs.labelFlipVertical) {
+            currentShape = this.transformsService.scale3d({
+                shape: currentShape,
+                scale: [1, 1, -1],
+                center: [0, 0, 0]
+            });
+            shapesToDelete.push(previousShape);
+            previousShape = currentShape;
+        }
 
         const alignedLabelTxtToDir = this.transformsService.alignNormAndAxis({
-            shape: rotated,
+            shape: currentShape,
             fromOrigin: [0, 0, 0],
             fromNorm: [0, 1, 0],
             fromAx: [0, 0, 1],
@@ -456,8 +533,8 @@ export class DimensionsService {
             toNorm: normalThreePoints,
             toAx: dirNorm as Inputs.Base.Vector3,
         });
-
-        shapesToDelete.push(rotated);
+        
+        shapesToDelete.push(previousShape);
 
         const addToDir = this.base.vector.add({
             first: endPtLabelLine,

@@ -240,7 +240,7 @@ export class Draw extends DrawCore {
                 },
                 this.context.scene,
             );
-
+            ground.isPickable = false;
             ground.material = groundMaterial;
             return ground;
         } catch (e) {
