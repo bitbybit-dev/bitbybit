@@ -4,5 +4,6 @@ export * from "./face";
 export * from "./shapes";
 export * from "./shell";
 export * from "./solid";
+export * from "./vertex";
 export * from "./wire";
 export * from "./shapes";
