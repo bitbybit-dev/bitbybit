@@ -103,7 +103,9 @@ export class BabylonScene {
             shadowGenerator.contactHardeningLightSizeUVRatio = inputs.shadowContactHardeningLightSizeUVRatio;
             shadowGenerator.bias = inputs.shadowBias;
             shadowGenerator.normalBias = inputs.shadowNormalBias;
-            shadowGenerator.getShadowMap().refreshRate = inputs.shadowRefreshRate;
+            if (inputs.shadowRefreshRate !== undefined) {
+                shadowGenerator.getShadowMap().refreshRate = inputs.shadowRefreshRate;
+            }
             light.shadowMaxZ = inputs.shadowMaxZ;
             light.shadowMinZ = inputs.shadowMinZ;
             this.context.scene.metadata.shadowGenerators.push(shadowGenerator);
@@ -170,7 +172,9 @@ export class BabylonScene {
             shadowGenerator.contactHardeningLightSizeUVRatio = inputs.shadowContactHardeningLightSizeUVRatio;
             shadowGenerator.bias = inputs.shadowBias;
             shadowGenerator.normalBias = inputs.shadowNormalBias;
-            shadowGenerator.getShadowMap().refreshRate = inputs.shadowRefreshRate;
+            if (inputs.shadowRefreshRate !== undefined) {
+                shadowGenerator.getShadowMap().refreshRate = inputs.shadowRefreshRate;
+            }
 
             light.shadowMaxZ = inputs.shadowMaxZ;
             light.shadowMinZ = inputs.shadowMinZ;
