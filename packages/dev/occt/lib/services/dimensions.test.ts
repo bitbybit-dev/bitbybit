@@ -3,6 +3,7 @@ import * as Inputs from "../api/inputs/inputs";
 import { ShapesHelperService } from "../api/shapes-helper.service";
 import { VectorHelperService } from "../api/vector-helper.service";
 import { OccHelper } from "../occ-helper";
+import { OCCTDimensions } from "./dimensions";
 import { OCCTCompound, OCCTVertex } from "./shapes";
 
 /**
@@ -22,6 +23,7 @@ describe("OCCT dimensions unit tests", () => {
     let occHelper: OccHelper;
     let compound: OCCTCompound;
     let vertex: OCCTVertex;
+    let dimensions: OCCTDimensions;
 
     beforeAll(async () => {
         occt = await initOpenCascade();
@@ -30,6 +32,7 @@ describe("OCCT dimensions unit tests", () => {
         occHelper = new OccHelper(vec, s, occt);
         compound = new OCCTCompound(occt, occHelper);
         vertex = new OCCTVertex(occt, occHelper);
+        dimensions = new OCCTDimensions(occt, occHelper);
     });
 
     describe("simpleLinearLengthDimension", () => {
@@ -40,7 +43,7 @@ describe("OCCT dimensions unit tests", () => {
             inputs.direction = [0, 2, 0];
             inputs.labelSuffix = "mm";
 
-            const result = occHelper.dimensionsService.simpleLinearLengthDimension(inputs);
+            const result = dimensions.simpleLinearLengthDimension(inputs);
 
             expect(result).toBeDefined();
             expect(result.IsNull()).toBe(false);
@@ -84,7 +87,7 @@ describe("OCCT dimensions unit tests", () => {
             inputs.decimalPlaces = 2;
             inputs.labelSuffix = "mm";
 
-            const result = occHelper.dimensionsService.simpleLinearLengthDimension(inputs);
+            const result = dimensions.simpleLinearLengthDimension(inputs);
             const vertexPoints = occHelper.shapeGettersService.getVertices({ shape: result });
 
             // These tests are not great, but they fixate on verifying the dimension was created and has expected complexity
@@ -103,7 +106,7 @@ describe("OCCT dimensions unit tests", () => {
             inputs.decimalPlaces = 1;
             inputs.labelSuffix = "cm";
 
-            const result = occHelper.dimensionsService.simpleLinearLengthDimension(inputs);
+            const result = dimensions.simpleLinearLengthDimension(inputs);
             const vertexPoints = occHelper.shapeGettersService.getVertices({ shape: result });
             expect(vertexPoints.length).toEqual(282);
             expect(result).toBeDefined();
@@ -120,7 +123,7 @@ describe("OCCT dimensions unit tests", () => {
             inputs.arrowAngle = 45;
             inputs.arrowsFlipped = false;
 
-            const result = occHelper.dimensionsService.simpleLinearLengthDimension(inputs);
+            const result = dimensions.simpleLinearLengthDimension(inputs);
 
             expect(result).toBeDefined();
             expect(result.IsNull()).toBe(false);
@@ -163,7 +166,7 @@ describe("OCCT dimensions unit tests", () => {
             inputs.arrowAngle = 30;
             inputs.arrowsFlipped = true;
 
-            const result = occHelper.dimensionsService.simpleLinearLengthDimension(inputs);
+            const result = dimensions.simpleLinearLengthDimension(inputs);
 
             expect(result).toBeDefined();
             expect(result.IsNull()).toBe(false);
@@ -177,7 +180,7 @@ describe("OCCT dimensions unit tests", () => {
             inputs.crossingSize = 0.5;
             inputs.offsetFromPoints = 0.2;
 
-            const result = occHelper.dimensionsService.simpleLinearLengthDimension(inputs);
+            const result = dimensions.simpleLinearLengthDimension(inputs);
 
             expect(result).toBeDefined();
             expect(result.IsNull()).toBe(false);
@@ -191,7 +194,7 @@ describe("OCCT dimensions unit tests", () => {
             inputs.labelRotation = 45;
             inputs.labelSize = 0.2;
 
-            const result = occHelper.dimensionsService.simpleLinearLengthDimension(inputs);
+            const result = dimensions.simpleLinearLengthDimension(inputs);
             const vertexPoints2 = occHelper.shapeGettersService.getVertices({ shape: result });
             expect(vertexPoints2.length).toBe(204);
             expect(result).toBeDefined();
@@ -205,7 +208,7 @@ describe("OCCT dimensions unit tests", () => {
             inputs.direction = [0, 2, 0];
             inputs.labelFlipHorizontal = true;
 
-            const result = occHelper.dimensionsService.simpleLinearLengthDimension(inputs);
+            const result = dimensions.simpleLinearLengthDimension(inputs);
             const vertexPoints2 = occHelper.shapeGettersService.getVertices({ shape: result }).map(v => vertex.vertexToPoint({ shape: v }));
             expect(vertexPoints2.length).toBe(204);
             expect(result).toBeDefined();
@@ -219,7 +222,7 @@ describe("OCCT dimensions unit tests", () => {
             inputs.direction = [0, 2, 0];
             inputs.labelFlipVertical = true;
 
-            const result = occHelper.dimensionsService.simpleLinearLengthDimension(inputs);
+            const result = dimensions.simpleLinearLengthDimension(inputs);
             const vertexPoints2 = occHelper.shapeGettersService.getVertices({ shape: result });
             expect(vertexPoints2.length).toBe(204);
             expect(result).toBeDefined();
@@ -234,7 +237,7 @@ describe("OCCT dimensions unit tests", () => {
             inputs.labelFlipHorizontal = true;
             inputs.labelFlipVertical = true;
 
-            const result = occHelper.dimensionsService.simpleLinearLengthDimension(inputs);
+            const result = dimensions.simpleLinearLengthDimension(inputs);
             const vertexPoints2 = occHelper.shapeGettersService.getVertices({ shape: result });
             expect(vertexPoints2.length).toBe(204);
             expect(result).toBeDefined();
@@ -248,7 +251,7 @@ describe("OCCT dimensions unit tests", () => {
             inputs.direction = [0, 3, 0];
             inputs.labelOffset = 1.0;
 
-            const result = occHelper.dimensionsService.simpleLinearLengthDimension(inputs);
+            const result = dimensions.simpleLinearLengthDimension(inputs);
             const vertexPoints2 = occHelper.shapeGettersService.getVertices({ shape: result });
             expect(vertexPoints2.length).toBe(198);
             expect(result).toBeDefined();
@@ -262,7 +265,7 @@ describe("OCCT dimensions unit tests", () => {
             inputs.direction = [0, 1, 0];
             inputs.decimalPlaces = 4;
 
-            const result = occHelper.dimensionsService.simpleLinearLengthDimension(inputs);
+            const result = dimensions.simpleLinearLengthDimension(inputs);
             const vertexPoints2 = occHelper.shapeGettersService.getVertices({ shape: result }).map(v => vertex.vertexToPoint({ shape: v }));
             expect(vertexPoints2.length).toBe(192);
             expect(result).toBeDefined();
@@ -276,7 +279,7 @@ describe("OCCT dimensions unit tests", () => {
             inputs.direction = [0, 0, 2];
             inputs.labelSuffix = "units";
 
-            const result = occHelper.dimensionsService.simpleLinearLengthDimension(inputs);
+            const result = dimensions.simpleLinearLengthDimension(inputs);
             const vertexPoints2 = occHelper.shapeGettersService.getVertices({ shape: result });
             expect(vertexPoints2.length).toBe(184);
             expect(result).toBeDefined();
@@ -315,7 +318,7 @@ describe("OCCT dimensions unit tests", () => {
             inputs.radius = 3;
             inputs.labelSuffix = "°";
 
-            const result = occHelper.dimensionsService.simpleAngularDimension(inputs);
+            const result = dimensions.simpleAngularDimension(inputs);
 
             expect(result).toBeDefined();
             expect(result.IsNull()).toBe(false);
@@ -351,7 +354,7 @@ describe("OCCT dimensions unit tests", () => {
             inputs.radians = true;
             inputs.labelSuffix = "rad";
 
-            const result = occHelper.dimensionsService.simpleAngularDimension(inputs);
+            const result = dimensions.simpleAngularDimension(inputs);
             const vertices = occHelper.shapeGettersService.getVertices({ shape: result });
 
             expect(vertices.length).toBe(122);
@@ -369,7 +372,7 @@ describe("OCCT dimensions unit tests", () => {
             inputs.arrowSize = 0.4;
             inputs.arrowAngle = 35;
 
-            const result = occHelper.dimensionsService.simpleAngularDimension(inputs);
+            const result = dimensions.simpleAngularDimension(inputs);
 
             expect(result).toBeDefined();
             expect(result.IsNull()).toBe(false);
@@ -404,7 +407,7 @@ describe("OCCT dimensions unit tests", () => {
             inputs.endType = Inputs.OCCT.dimensionEndTypeEnum.arrow;
             inputs.arrowsFlipped = true;
 
-            const result = occHelper.dimensionsService.simpleAngularDimension(inputs);
+            const result = dimensions.simpleAngularDimension(inputs);
             const vertices = occHelper.shapeGettersService.getVertices({ shape: result });
             expect(vertices.length).toBe(296);
             expect(result).toBeDefined();
@@ -419,7 +422,7 @@ describe("OCCT dimensions unit tests", () => {
             inputs.radius = 6;
             inputs.offsetFromCenter = 1.0;
 
-            const result = occHelper.dimensionsService.simpleAngularDimension(inputs);
+            const result = dimensions.simpleAngularDimension(inputs);
             const vertices = occHelper.shapeGettersService.getVertices({ shape: result });
             expect(vertices.length).toBe(288);
 
@@ -435,7 +438,7 @@ describe("OCCT dimensions unit tests", () => {
             inputs.radius = 4;
             inputs.extraSize = 0.8;
 
-            const result = occHelper.dimensionsService.simpleAngularDimension(inputs);
+            const result = dimensions.simpleAngularDimension(inputs);
             const vertices = occHelper.shapeGettersService.getVertices({ shape: result });
             expect(vertices.length).toBe(288);
 
@@ -451,7 +454,7 @@ describe("OCCT dimensions unit tests", () => {
             inputs.radius = 3;
             inputs.labelRotation = 30;
 
-            const result = occHelper.dimensionsService.simpleAngularDimension(inputs);
+            const result = dimensions.simpleAngularDimension(inputs);
             const vertices = occHelper.shapeGettersService.getVertices({ shape: result });
             expect(vertices.length).toBe(250);
 
@@ -468,7 +471,7 @@ describe("OCCT dimensions unit tests", () => {
             inputs.labelFlipHorizontal = true;
             inputs.labelFlipVertical = true;
 
-            const result = occHelper.dimensionsService.simpleAngularDimension(inputs);
+            const result = dimensions.simpleAngularDimension(inputs);
             const vertices = occHelper.shapeGettersService.getVertices({ shape: result });
             expect(vertices.length).toBe(288);
 
@@ -485,7 +488,7 @@ describe("OCCT dimensions unit tests", () => {
             inputs.labelOverwrite = "Angle: val";
             inputs.decimalPlaces = 1;
 
-            const result = occHelper.dimensionsService.simpleAngularDimension(inputs);
+            const result = dimensions.simpleAngularDimension(inputs);
             const vertices = occHelper.shapeGettersService.getVertices({ shape: result });
             expect(vertices.length).toBe(364);
 
@@ -501,7 +504,7 @@ describe("OCCT dimensions unit tests", () => {
             inputs.radius = 4;
             inputs.labelOffset = 0.8;
 
-            const result = occHelper.dimensionsService.simpleAngularDimension(inputs);
+            const result = dimensions.simpleAngularDimension(inputs);
             const vertices = occHelper.shapeGettersService.getVertices({ shape: result });
             expect(vertices.length).toBe(288);
             expect(result).toBeDefined();
@@ -515,7 +518,7 @@ describe("OCCT dimensions unit tests", () => {
             inputs.direction2 = [0, 0, 1];
             inputs.radius = 3;
 
-            const result = occHelper.dimensionsService.simpleAngularDimension(inputs);
+            const result = dimensions.simpleAngularDimension(inputs);
 
             expect(result).toBeDefined();
             expect(result.IsNull()).toBe(false);
@@ -555,7 +558,7 @@ describe("OCCT dimensions unit tests", () => {
             inputs.radius = 3;
             inputs.decimalPlaces = 1;
 
-            const result = occHelper.dimensionsService.simpleAngularDimension(inputs);
+            const result = dimensions.simpleAngularDimension(inputs);
             const vertices = occHelper.shapeGettersService.getVertices({ shape: result });
             expect(vertices.length).toBe(236);
             expect(result).toBeDefined();
@@ -571,7 +574,7 @@ describe("OCCT dimensions unit tests", () => {
             inputs.direction = [2, 0, 0];
             inputs.label = "Point A";
 
-            const result = occHelper.dimensionsService.pinWithLabel(inputs);
+            const result = dimensions.pinWithLabel(inputs);
 
 
             expect(result).toBeDefined();
@@ -619,7 +622,7 @@ describe("OCCT dimensions unit tests", () => {
             inputs.arrowSize = 0.3;
             inputs.arrowAngle = 40;
 
-            const result = occHelper.dimensionsService.pinWithLabel(inputs);
+            const result = dimensions.pinWithLabel(inputs);
 
             expect(result).toBeDefined();
             expect(result.IsNull()).toBe(false);
@@ -653,7 +656,7 @@ describe("OCCT dimensions unit tests", () => {
             inputs.endType = Inputs.OCCT.dimensionEndTypeEnum.arrow;
             inputs.arrowsFlipped = true;
 
-            const result = occHelper.dimensionsService.pinWithLabel(inputs);
+            const result = dimensions.pinWithLabel(inputs);
             const vertices = occHelper.shapeGettersService.getVertices({ shape: result });
 
             expect(vertices.length).toBe(94);
@@ -669,7 +672,7 @@ describe("OCCT dimensions unit tests", () => {
             inputs.label = "Custom";
             inputs.labelOffset = 0.6;
 
-            const result = occHelper.dimensionsService.pinWithLabel(inputs);
+            const result = dimensions.pinWithLabel(inputs);
             const vertices = occHelper.shapeGettersService.getVertices({ shape: result });
 
             expect(vertices.length).toBe(152);
@@ -685,7 +688,7 @@ describe("OCCT dimensions unit tests", () => {
             inputs.label = "Large Text";
             inputs.labelSize = 0.3;
 
-            const result = occHelper.dimensionsService.pinWithLabel(inputs);
+            const result = dimensions.pinWithLabel(inputs);
             const vertices = occHelper.shapeGettersService.getVertices({ shape: result });
 
             expect(vertices.length).toBe(166);
@@ -701,7 +704,7 @@ describe("OCCT dimensions unit tests", () => {
             inputs.label = "Offset";
             inputs.offsetFromStart = 0.5;
 
-            const result = occHelper.dimensionsService.pinWithLabel(inputs);
+            const result = dimensions.pinWithLabel(inputs);
             const vertices = occHelper.shapeGettersService.getVertices({ shape: result });
 
             expect(vertices.length).toBe(138);
@@ -717,7 +720,7 @@ describe("OCCT dimensions unit tests", () => {
             inputs.label = "Rotated";
             inputs.labelRotation = 45;
 
-            const result = occHelper.dimensionsService.pinWithLabel(inputs);
+            const result = dimensions.pinWithLabel(inputs);
             const vertices = occHelper.shapeGettersService.getVertices({ shape: result });
 
             expect(vertices.length).toBe(166);
@@ -733,7 +736,7 @@ describe("OCCT dimensions unit tests", () => {
             inputs.label = "Flipped H";
             inputs.labelFlipHorizontal = true;
 
-            const result = occHelper.dimensionsService.pinWithLabel(inputs);
+            const result = dimensions.pinWithLabel(inputs);
             const vertices = occHelper.shapeGettersService.getVertices({ shape: result });
 
             expect(vertices.length).toBe(144);
@@ -749,7 +752,7 @@ describe("OCCT dimensions unit tests", () => {
             inputs.label = "Flipped V";
             inputs.labelFlipVertical = true;
 
-            const result = occHelper.dimensionsService.pinWithLabel(inputs);
+            const result = dimensions.pinWithLabel(inputs);
             const vertices = occHelper.shapeGettersService.getVertices({ shape: result });
 
             expect(vertices.length).toBe(142);
@@ -766,7 +769,7 @@ describe("OCCT dimensions unit tests", () => {
             inputs.labelFlipHorizontal = true;
             inputs.labelFlipVertical = true;
 
-            const result = occHelper.dimensionsService.pinWithLabel(inputs);
+            const result = dimensions.pinWithLabel(inputs);
             const vertices = occHelper.shapeGettersService.getVertices({ shape: result });
 
             expect(vertices.length).toBe(174);
@@ -781,7 +784,7 @@ describe("OCCT dimensions unit tests", () => {
             inputs.direction = [0, 0, 2];
             inputs.label = "3D Pin";
 
-            const result = occHelper.dimensionsService.pinWithLabel(inputs);
+            const result = dimensions.pinWithLabel(inputs);
 
             expect(result).toBeDefined();
             expect(result.IsNull()).toBe(false);
@@ -829,7 +832,7 @@ describe("OCCT dimensions unit tests", () => {
             inputs.arrowAngle = 35;
             inputs.labelRotation = 20;
 
-            const result = occHelper.dimensionsService.pinWithLabel(inputs);
+            const result = dimensions.pinWithLabel(inputs);
 
             expect(result).toBeDefined();
             expect(result.IsNull()).toBe(false);
@@ -846,7 +849,7 @@ describe("OCCT dimensions unit tests", () => {
             inputs.decimalPlaces = 3;
             inputs.labelSuffix = "m";
 
-            const result = occHelper.dimensionsService.simpleLinearLengthDimension(inputs);
+            const result = dimensions.simpleLinearLengthDimension(inputs);
             const vertices = occHelper.shapeGettersService.getVertices({ shape: result });
             expect(vertices.length).toBe(142);
             expect(result).toBeDefined();
@@ -862,7 +865,7 @@ describe("OCCT dimensions unit tests", () => {
             inputs.decimalPlaces = 1;
             inputs.labelSuffix = "units";
 
-            const result = occHelper.dimensionsService.simpleLinearLengthDimension(inputs);
+            const result = dimensions.simpleLinearLengthDimension(inputs);
             const vertices = occHelper.shapeGettersService.getVertices({ shape: result });
 
             expect(vertices.length).toBe(184);
@@ -879,7 +882,7 @@ describe("OCCT dimensions unit tests", () => {
             inputs.decimalPlaces = 2;
             inputs.labelSuffix = "mm";
 
-            const result = occHelper.dimensionsService.simpleLinearLengthDimension(inputs);
+            const result = dimensions.simpleLinearLengthDimension(inputs);
             const vertices = occHelper.shapeGettersService.getVertices({ shape: result });
 
             expect(vertices.length).toBe(568);
@@ -897,7 +900,7 @@ describe("OCCT dimensions unit tests", () => {
             inputs.direction = [0, 0.1, 0];
             inputs.decimalPlaces = 5;
 
-            const result = occHelper.dimensionsService.simpleLinearLengthDimension(inputs);
+            const result = dimensions.simpleLinearLengthDimension(inputs);
             const vertices = occHelper.shapeGettersService.getVertices({ shape: result });
 
             expect(vertices.length).toBe(268);
@@ -911,7 +914,7 @@ describe("OCCT dimensions unit tests", () => {
             inputs.end = [10000, 0, 0];
             inputs.direction = [0, 100, 0];
 
-            const result = occHelper.dimensionsService.simpleLinearLengthDimension(inputs);
+            const result = dimensions.simpleLinearLengthDimension(inputs);
             const vertices = occHelper.shapeGettersService.getVertices({ shape: result });
 
             expect(vertices.length).toBe(300);
@@ -927,7 +930,7 @@ describe("OCCT dimensions unit tests", () => {
             inputs.endType = Inputs.OCCT.dimensionEndTypeEnum.arrow;
             inputs.arrowAngle = 5;
 
-            const result = occHelper.dimensionsService.simpleLinearLengthDimension(inputs);
+            const result = dimensions.simpleLinearLengthDimension(inputs);
             const vertices = occHelper.shapeGettersService.getVertices({ shape: result });
 
             expect(vertices.length).toBe(212);
@@ -943,7 +946,7 @@ describe("OCCT dimensions unit tests", () => {
             inputs.endType = Inputs.OCCT.dimensionEndTypeEnum.arrow;
             inputs.arrowAngle = 90;
 
-            const result = occHelper.dimensionsService.simpleLinearLengthDimension(inputs);
+            const result = dimensions.simpleLinearLengthDimension(inputs);
             const vertices = occHelper.shapeGettersService.getVertices({ shape: result });
 
             expect(vertices.length).toBe(212);
