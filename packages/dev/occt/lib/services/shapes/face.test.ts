@@ -5,7 +5,7 @@ import { VectorHelperService } from "../../api/vector-helper.service";
 import { ShapesHelperService } from "../../api/shapes-helper.service";
 import { OCCTFace } from "./face";
 import { OCCTGeom } from "../geom/geom";
-import { OCCT } from "../../api/inputs";
+import { Base, OCCT } from "../../api/inputs";
 
 describe("OCCT face unit tests", () => {
     let occt: OpenCascadeInstance;
@@ -1292,6 +1292,344 @@ describe("OCCT face unit tests", () => {
         };
     });
 
+    describe("Face creation methods", () => {
+        it("should create L-polygon face with default parameters", () => {
+            const f = face.createLPolygonFace({
+                widthFirst: 2,
+                lengthFirst: 3,
+                widthSecond: 1,
+                lengthSecond: 2,
+                align: OCCT.directionEnum.outside,
+                rotation: 0,
+                center: [0, 0, 0],
+                direction: [0, 1, 0]
+            });
+            const area = face.getFaceArea({ shape: f });
+            expect(f.ShapeType()).toBe(occt.TopAbs_ShapeEnum.TopAbs_FACE);
+            expect(area).toBeCloseTo(10);
+            f.delete();
+        });
+
+        it("should create L-polygon face with different alignment", () => {
+            const f = face.createLPolygonFace({
+                widthFirst: 3,
+                lengthFirst: 4,
+                widthSecond: 1.5,
+                lengthSecond: 3,
+                align: OCCT.directionEnum.inside,
+                rotation: 0,
+                center: [0, 0, 0],
+                direction: [0, 1, 0]
+            });
+            const area = face.getFaceArea({ shape: f });
+            expect(f.ShapeType()).toBe(occt.TopAbs_ShapeEnum.TopAbs_FACE);
+            expect(area).toBeCloseTo(11.9999975);
+            f.delete();
+        });
+
+        it("should create I-beam profile face with default parameters", () => {
+            const f = face.createIBeamProfileFace({
+                width: 2,
+                height: 3,
+                webThickness: 0.2,
+                flangeThickness: 0.3,
+                alignment: Base.basicAlignmentEnum.midMid,
+                rotation: 0,
+                center: [0, 0, 0],
+                direction: [0, 1, 0]
+            });
+            const area = face.getFaceArea({ shape: f });
+            expect(f.ShapeType()).toBe(occt.TopAbs_ShapeEnum.TopAbs_FACE);
+            expect(area).toBeCloseTo(1.68);
+            f.delete();
+        });
+
+        it("should create I-beam profile face with custom dimensions", () => {
+            const f = face.createIBeamProfileFace({
+                width: 4,
+                height: 5,
+                webThickness: 0.5,
+                flangeThickness: 0.8,
+                alignment: Base.basicAlignmentEnum.midMid,
+                rotation: 0,
+                center: [0, 0, 0],
+                direction: [0, 1, 0]
+            });
+            const area = face.getFaceArea({ shape: f });
+            expect(f.ShapeType()).toBe(occt.TopAbs_ShapeEnum.TopAbs_FACE);
+            expect(area).toBeCloseTo(8.099);
+            f.delete();
+        });
+
+        it("should create H-beam profile face with default parameters", () => {
+            const f = face.createHBeamProfileFace({
+                width: 2,
+                height: 3,
+                webThickness: 0.2,
+                flangeThickness: 0.3,
+                alignment: Base.basicAlignmentEnum.midMid,
+                rotation: 0,
+                center: [0, 0, 0],
+                direction: [0, 1, 0]
+            });
+            const area = face.getFaceArea({ shape: f });
+            expect(f.ShapeType()).toBe(occt.TopAbs_ShapeEnum.TopAbs_FACE);
+            expect(area).toBeCloseTo(2.08);
+            f.delete();
+        });
+
+        it("should create H-beam profile face with larger dimensions", () => {
+            const f = face.createHBeamProfileFace({
+                width: 3,
+                height: 4,
+                webThickness: 0.3,
+                flangeThickness: 0.5,
+                alignment: Base.basicAlignmentEnum.midMid,
+                rotation: 0,
+                center: [0, 0, 0],
+                direction: [0, 1, 0]
+            });
+            const area = face.getFaceArea({ shape: f });
+            expect(f.ShapeType()).toBe(occt.TopAbs_ShapeEnum.TopAbs_FACE);
+            expect(area).toBeCloseTo(4.60);
+            f.delete();
+        });
+
+        it("should create T-beam profile face with default parameters", () => {
+            const f = face.createTBeamProfileFace({
+                width: 2,
+                height: 2,
+                webThickness: 0.2,
+                flangeThickness: 0.3,
+                alignment: Base.basicAlignmentEnum.midMid,
+                rotation: 0,
+                center: [0, 0, 0],
+                direction: [0, 1, 0]
+            });
+            const area = face.getFaceArea({ shape: f });
+            expect(f.ShapeType()).toBe(occt.TopAbs_ShapeEnum.TopAbs_FACE);
+            expect(area).toBeCloseTo(0.94);
+            f.delete();
+        });
+
+        it("should create T-beam profile face with custom dimensions", () => {
+            const f = face.createTBeamProfileFace({
+                width: 3,
+                height: 3,
+                webThickness: 0.4,
+                flangeThickness: 0.5,
+                alignment: Base.basicAlignmentEnum.midMid,
+                rotation: 0,
+                center: [0, 0, 0],
+                direction: [0, 1, 0]
+            });
+            const area = face.getFaceArea({ shape: f });
+            expect(f.ShapeType()).toBe(occt.TopAbs_ShapeEnum.TopAbs_FACE);
+            expect(area).toBeCloseTo(2.5);
+            f.delete();
+        });
+
+        it("should create U-beam profile face with default parameters", () => {
+            const f = face.createUBeamProfileFace({
+                width: 2,
+                height: 3,
+                webThickness: 0.2,
+                flangeThickness: 0.3,
+                flangeWidth: 0.5,
+                alignment: Base.basicAlignmentEnum.midMid,
+                rotation: 0,
+                center: [0, 0, 0],
+                direction: [0, 1, 0]
+            });
+            const area = face.getFaceArea({ shape: f });
+            expect(f.ShapeType()).toBe(occt.TopAbs_ShapeEnum.TopAbs_FACE);
+            expect(area).toBeCloseTo(2.25);
+            f.delete();
+        });
+
+        it("should create U-beam profile face with larger dimensions", () => {
+            const f = face.createUBeamProfileFace({
+                width: 4,
+                height: 5,
+                webThickness: 0.4,
+                flangeThickness: 0.6,
+                flangeWidth: 1,
+                alignment: Base.basicAlignmentEnum.midMid,
+                rotation: 0,
+                center: [0, 0, 0],
+                direction: [0, 1, 0]
+            });
+            const area = face.getFaceArea({ shape: f });
+            expect(f.ShapeType()).toBe(occt.TopAbs_ShapeEnum.TopAbs_FACE);
+            expect(area).toBeCloseTo(7.999);
+            f.delete();
+        });
+
+        it("should create star face with default parameters", () => {
+            const f = face.createStarFace({
+                outerRadius: 2,
+                innerRadius: 1,
+                numRays: 5,
+                center: [0, 0, 0],
+                direction: [0, 1, 0],
+                offsetOuterEdges: 0,
+                half: false
+            });
+            const area = face.getFaceArea({ shape: f });
+            expect(f.ShapeType()).toBe(occt.TopAbs_ShapeEnum.TopAbs_FACE);
+            expect(area).toBeCloseTo(5.877852522924732);
+            f.delete();
+        });
+
+        it("should create star face with 7 rays", () => {
+            const f = face.createStarFace({
+                outerRadius: 3,
+                innerRadius: 1.5,
+                numRays: 7,
+                center: [0, 0, 0],
+                direction: [0, 1, 0],
+                offsetOuterEdges: 0,
+                half: false
+            });
+            const area = face.getFaceArea({ shape: f });
+            expect(f.ShapeType()).toBe(occt.TopAbs_ShapeEnum.TopAbs_FACE);
+            expect(area).toBeCloseTo(13.667337782203083);
+            f.delete();
+        });
+
+        it("should create christmas tree face with default parameters", () => {
+            const f = face.createChristmasTreeFace({
+                height: 6,
+                innerDist: 1.5,
+                outerDist: 3,
+                nrSkirts: 5,
+                trunkHeight: 1,
+                trunkWidth: 1,
+                half: false,
+                rotation: 0,
+                origin: [0, 0, 0],
+                direction: [0, 1, 0]
+            });
+            const area = face.getFaceArea({ shape: f });
+            expect(f.ShapeType()).toBe(occt.TopAbs_ShapeEnum.TopAbs_FACE);
+            expect(area).toBeCloseTo(15.688);
+            f.delete();
+        });
+
+        it("should create christmas tree face with custom dimensions", () => {
+            const f = face.createChristmasTreeFace({
+                height: 10,
+                innerDist: 2,
+                outerDist: 5,
+                nrSkirts: 7,
+                trunkHeight: 2,
+                trunkWidth: 1.5,
+                half: false,
+                rotation: 0,
+                origin: [0, 0, 0],
+                direction: [0, 1, 0]
+            });
+            const area = face.getFaceArea({ shape: f });
+            expect(f.ShapeType()).toBe(occt.TopAbs_ShapeEnum.TopAbs_FACE);
+            expect(area).toBeCloseTo(40.75510204081631);
+            f.delete();
+        });
+
+        it("should create parallelogram face with default parameters", () => {
+            const f = face.createParallelogramFace({
+                center: [0, 0, 0],
+                direction: [0, 1, 0],
+                aroundCenter: true,
+                width: 2,
+                height: 1,
+                angle: 15
+            });
+            const area = face.getFaceArea({ shape: f });
+            expect(f.ShapeType()).toBe(occt.TopAbs_ShapeEnum.TopAbs_FACE);
+            expect(area).toBeCloseTo(2);
+            f.delete();
+        });
+
+        it("should create parallelogram face with different angle", () => {
+            const f = face.createParallelogramFace({
+                center: [0, 0, 0],
+                direction: [0, 1, 0],
+                aroundCenter: true,
+                width: 4,
+                height: 2,
+                angle: 30
+            });
+            const area = face.getFaceArea({ shape: f });
+            expect(f.ShapeType()).toBe(occt.TopAbs_ShapeEnum.TopAbs_FACE);
+            expect(area).toBeCloseTo(8);
+            f.delete();
+        });
+
+        it("should create heart face with default parameters", () => {
+            const f = face.createHeartFace({
+                center: [0, 0, 0],
+                direction: [0, 1, 0],
+                rotation: 0,
+                sizeApprox: 2
+            });
+            const area = face.getFaceArea({ shape: f });
+            expect(f.ShapeType()).toBe(occt.TopAbs_ShapeEnum.TopAbs_FACE);
+            expect(area).toBeCloseTo(2.7330366007628006);
+            f.delete();
+        });
+
+        it("should create heart face with larger size", () => {
+            const f = face.createHeartFace({
+                center: [0, 0, 0],
+                direction: [0, 1, 0],
+                rotation: 0,
+                sizeApprox: 4
+            });
+            const area = face.getFaceArea({ shape: f });
+            expect(f.ShapeType()).toBe(occt.TopAbs_ShapeEnum.TopAbs_FACE);
+            expect(area).toBeCloseTo(10.932146403051203);
+            f.delete();
+        });
+
+        it("should create n-gon face with 6 corners (hexagon)", () => {
+            const f = face.createNGonFace({
+                center: [0, 0, 0],
+                direction: [0, 1, 0],
+                nrCorners: 6,
+                radius: 1
+            });
+            const area = face.getFaceArea({ shape: f });
+            expect(f.ShapeType()).toBe(occt.TopAbs_ShapeEnum.TopAbs_FACE);
+            expect(area).toBeCloseTo(2.598076211353316);
+            f.delete();
+        });
+
+        it("should create n-gon face with 8 corners (octagon)", () => {
+            const f = face.createNGonFace({
+                center: [0, 0, 0],
+                direction: [0, 1, 0],
+                nrCorners: 8,
+                radius: 2
+            });
+            const area = face.getFaceArea({ shape: f });
+            expect(f.ShapeType()).toBe(occt.TopAbs_ShapeEnum.TopAbs_FACE);
+            expect(area).toBeCloseTo(11.31370849898476);
+            f.delete();
+        });
+
+        it("should create n-gon face with 3 corners (triangle)", () => {
+            const f = face.createNGonFace({
+                center: [0, 0, 0],
+                direction: [0, 1, 0],
+                nrCorners: 3,
+                radius: 1.5
+            });
+            const area = face.getFaceArea({ shape: f });
+            expect(f.ShapeType()).toBe(occt.TopAbs_ShapeEnum.TopAbs_FACE);
+            expect(area).toBeCloseTo(2.9276442447299863);
+            f.delete();
+        });
+    });
 
 
 });

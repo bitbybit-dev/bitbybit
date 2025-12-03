@@ -2,7 +2,7 @@ ubarevicius:
   name: Matas Ubarevičius
   title: Founder
   url: https://www.linkedin.com/in/matas-ubarevicius/
-  image_url: https://media.licdn.com/dms/image/v2/D4D03AQG-ryTDnp5Gmg/profile-displayphoto-scale_200_200/B4DZj7zQkTGkAY-/0/1756571175899?e=1762387200&v=beta&t=r2guT1tJv3FiumJwYF0-bmiTsKTun5Aw0JCzDM2lY_I
+  image_url: /img/matas-ubarevicius.jpeg
   page:
     # customize the url of the author page at /blog/authors/<permalink>
     permalink: '/all-matas-ubarevicius-articles'

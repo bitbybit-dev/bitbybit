@@ -7041,7 +7041,7 @@ export namespace OCCT {
         direction: Base.Vector3 = [0, 1, 0];
     }
     export class SimpleLinearLengthDimensionDto {
-        constructor(start?: Base.Point3, end?: Base.Point3, direction?: Base.Vector3, offsetFromPoints?: number, crossingSize?: number, labelSuffix?: string, labelSize?: number, labelOffset?: number, labelRotation?: number, arrowType?: dimensionEndTypeEnum, arrowSize?: number, arrowAngle?: number, arrowsFlipped?: boolean) {
+        constructor(start?: Base.Point3, end?: Base.Point3, direction?: Base.Vector3, offsetFromPoints?: number, crossingSize?: number, labelSuffix?: string, labelSize?: number, labelOffset?: number, labelRotation?: number, arrowType?: dimensionEndTypeEnum, arrowSize?: number, arrowAngle?: number, arrowsFlipped?: boolean, labelFlipHorizontal?: boolean, labelFlipVertical?: boolean, labelOverwrite?: string) {
             if (start !== undefined) { this.start = start; }
             if (end !== undefined) { this.end = end; }
             if (direction !== undefined) { this.direction = direction; }
@@ -7055,6 +7055,9 @@ export namespace OCCT {
             if (arrowSize !== undefined) { this.arrowSize = arrowSize; }
             if (arrowAngle !== undefined) { this.arrowAngle = arrowAngle; }
             if (arrowsFlipped !== undefined) { this.arrowsFlipped = arrowsFlipped; }
+            if (labelFlipHorizontal !== undefined) { this.labelFlipHorizontal = labelFlipHorizontal; }
+            if (labelFlipVertical !== undefined) { this.labelFlipVertical = labelFlipVertical; }
+            if (labelOverwrite !== undefined) { this.labelOverwrite = labelOverwrite; }
         }
         /**
          * The start point for dimension
@@ -7150,9 +7153,25 @@ export namespace OCCT {
          * @default false
          */
         arrowsFlipped? = false;
+        /**
+         * Flip label horizontally
+         * @default false
+         */
+        labelFlipHorizontal? = false;
+        /**
+         * Flip label vertically
+         * @default false
+         */
+        labelFlipVertical? = false;
+        /**
+         * Override label text with custom expression (supports 'val' for computed value, e.g., '100*val', 'Length: val mm')
+         * @default 1*val
+         * @optional true
+         */
+        labelOverwrite? = "1*val";
     }
     export class SimpleAngularDimensionDto {
-        constructor(direction1?: Base.Point3, direction2?: Base.Point3, center?: Base.Point3, radius?: number, offsetFromCenter?: number, crossingSize?: number, radians?: boolean, labelSuffix?: string, labelSize?: number, labelOffset?: number, endType?: dimensionEndTypeEnum, arrowSize?: number, arrowAngle?: number, arrowsFlipped?: boolean) {
+        constructor(direction1?: Base.Point3, direction2?: Base.Point3, center?: Base.Point3, radius?: number, offsetFromCenter?: number, crossingSize?: number, radians?: boolean, labelSuffix?: string, labelSize?: number, labelOffset?: number, endType?: dimensionEndTypeEnum, arrowSize?: number, arrowAngle?: number, arrowsFlipped?: boolean, labelRotation?: number, labelFlipHorizontal?: boolean, labelFlipVertical?: boolean, labelOverwrite?: string) {
             if (direction1 !== undefined) { this.direction1 = direction1; }
             if (direction2 !== undefined) { this.direction2 = direction2; }
             if (center !== undefined) { this.center = center; }
@@ -7167,6 +7186,10 @@ export namespace OCCT {
             if (arrowSize !== undefined) { this.arrowSize = arrowSize; }
             if (arrowAngle !== undefined) { this.arrowAngle = arrowAngle; }
             if (arrowsFlipped !== undefined) { this.arrowsFlipped = arrowsFlipped; }
+            if (labelRotation !== undefined) { this.labelRotation = labelRotation; }
+            if (labelFlipHorizontal !== undefined) { this.labelFlipHorizontal = labelFlipHorizontal; }
+            if (labelFlipVertical !== undefined) { this.labelFlipVertical = labelFlipVertical; }
+            if (labelOverwrite !== undefined) { this.labelOverwrite = labelOverwrite; }
         }
 
         /**
@@ -7268,9 +7291,33 @@ export namespace OCCT {
          * @default false
          */
         arrowsFlipped? = false;
+        /**
+         * Additional rotation angle for the label in degrees
+         * @default 0
+         * @minimum -360
+         * @maximum 360
+         * @step 1
+         */
+        labelRotation? = 0;
+        /**
+         * Flip label horizontally
+         * @default false
+         */
+        labelFlipHorizontal? = false;
+        /**
+         * Flip label vertically
+         * @default false
+         */
+        labelFlipVertical? = false;
+        /**
+         * Override label text with custom expression (supports 'val' for computed value, e.g., '100*val', 'Angle: val deg')
+         * @default 1*val
+         * @optional true
+         */
+        labelOverwrite? = "1*val";
     }
     export class PinWithLabelDto {
-        constructor(startPoint?: Base.Point3, endPoint?: Base.Point3, direction?: Base.Vector3, offsetFromStart?: number, label?: string, labelOffset?: number, labelSize?: number, endType?: dimensionEndTypeEnum, arrowSize?: number, arrowAngle?: number, arrowsFlipped?: boolean) {
+        constructor(startPoint?: Base.Point3, endPoint?: Base.Point3, direction?: Base.Vector3, offsetFromStart?: number, label?: string, labelOffset?: number, labelSize?: number, endType?: dimensionEndTypeEnum, arrowSize?: number, arrowAngle?: number, arrowsFlipped?: boolean, labelRotation?: number, labelFlipHorizontal?: boolean, labelFlipVertical?: boolean) {
             if (startPoint !== undefined) { this.startPoint = startPoint; }
             if (endPoint !== undefined) { this.endPoint = endPoint; }
             if (direction !== undefined) { this.direction = direction; }
@@ -7282,6 +7329,9 @@ export namespace OCCT {
             if (arrowSize !== undefined) { this.arrowSize = arrowSize; }
             if (arrowAngle !== undefined) { this.arrowAngle = arrowAngle; }
             if (arrowsFlipped !== undefined) { this.arrowsFlipped = arrowsFlipped; }
+            if (labelRotation !== undefined) { this.labelRotation = labelRotation; }
+            if (labelFlipHorizontal !== undefined) { this.labelFlipHorizontal = labelFlipHorizontal; }
+            if (labelFlipVertical !== undefined) { this.labelFlipVertical = labelFlipVertical; }
         }
         /**
          * The start point for dimension
@@ -7353,6 +7403,24 @@ export namespace OCCT {
          * @default false
          */
         arrowsFlipped? = false;
+        /**
+         * Additional rotation angle for the label in degrees
+         * @default 0
+         * @minimum -360
+         * @maximum 360
+         * @step 1
+         */
+        labelRotation? = 0;
+        /**
+         * Flip label horizontally
+         * @default false
+         */
+        labelFlipHorizontal? = false;
+        /**
+         * Flip label vertically
+         * @default false
+         */
+        labelFlipVertical? = false;
     }
     export class StarSolidDto extends StarDto {
         constructor(outerRadius?: number, innerRadius?: number, numRays?: number, center?: Base.Point3, direction?: Base.Vector3, offsetOuterEdges?: number, half?: boolean, extrusionLengthFront?: number, extrusionLengthBack?: number) {

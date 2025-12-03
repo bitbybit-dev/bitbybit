@@ -914,6 +914,259 @@ describe("OCCT operations unit tests", () => {
         res.delete();
     });
 
+    describe("Bounding box operations", () => {
+        it("should get bounding box properties of a box shape", () => {
+            const box = occHelper.entitiesService.bRepPrimAPIMakeBox(2, 3, 4, [0, 0, 0]);
+            const bbox = operations.boundingBoxOfShape({ shape: box });
+            
+            expect(bbox.min[0]).toBeCloseTo(-1, 5);
+            expect(bbox.min[1]).toBeCloseTo(-2, 5);
+            expect(bbox.min[2]).toBeCloseTo(-1.5, 5);
+            expect(bbox.max[0]).toBeCloseTo(1, 5);
+            expect(bbox.max[1]).toBeCloseTo(2, 5);
+            expect(bbox.max[2]).toBeCloseTo(1.5, 5);
+            expect(bbox.center[0]).toBeCloseTo(0, 5);
+            expect(bbox.center[1]).toBeCloseTo(0, 5);
+            expect(bbox.center[2]).toBeCloseTo(0, 5);
+            expect(bbox.size[0]).toBeCloseTo(2, 5);
+            expect(bbox.size[1]).toBeCloseTo(4, 5);
+            expect(bbox.size[2]).toBeCloseTo(3, 5);
+            
+            box.delete();
+        });
+
+        it("should get bounding box min point of a sphere", () => {
+            const sphere = occHelper.entitiesService.bRepPrimAPIMakeSphere([0, 0, 0], [0, 1, 0], 2);
+            const min = operations.boundingBoxMinOfShape({ shape: sphere });
+            
+            expect(min[0]).toBeCloseTo(-2, 5);
+            expect(min[1]).toBeCloseTo(-2, 5);
+            expect(min[2]).toBeCloseTo(-2, 5);
+            
+            sphere.delete();
+        });
+
+        it("should get bounding box max point of a sphere", () => {
+            const sphere = occHelper.entitiesService.bRepPrimAPIMakeSphere([5, 10, -3], [0, 1, 0], 1.5);
+            const max = operations.boundingBoxMaxOfShape({ shape: sphere });
+            
+            expect(max[0]).toBeCloseTo(6.5, 5);
+            expect(max[1]).toBeCloseTo(11.5, 5);
+            expect(max[2]).toBeCloseTo(-1.5, 5);
+            
+            sphere.delete();
+        });
+
+        it("should get bounding box center of a cylinder", () => {
+            const cyl = occHelper.entitiesService.bRepPrimAPIMakeCylinder([0, 0, 0], [0, 1, 0], 2, 10, 360);
+            const center = operations.boundingBoxCenterOfShape({ shape: cyl });
+            
+            expect(center[0]).toBeCloseTo(0, 5);
+            expect(center[1]).toBeCloseTo(5, 5);
+            expect(center[2]).toBeCloseTo(0, 5);
+            
+            cyl.delete();
+        });
+
+        it("should get bounding box size of a cube", () => {
+            const box = occHelper.entitiesService.bRepPrimAPIMakeBox(5, 5, 5, [0, 0, 0]);
+            const size = operations.boundingBoxSizeOfShape({ shape: box });
+            
+            expect(size[0]).toBeCloseTo(5, 5);
+            expect(size[1]).toBeCloseTo(5, 5);
+            expect(size[2]).toBeCloseTo(5, 5);
+            
+            box.delete();
+        });
+
+        it("should create a bounding box shape from a complex wire", () => {
+            const points = [
+                [0, 0, 0],
+                [5, 10, 3],
+                [-2, 5, 8],
+                [3, -1, 2]
+            ] as Inputs.Base.Point3[];
+            const polyWire = wire.createPolylineWire({ points });
+            
+            const bboxShape = operations.boundingBoxShapeOfShape({ shape: polyWire });
+            const volume = solid.getSolidVolume({ shape: bboxShape });
+            const bbox = operations.boundingBoxOfShape({ shape: polyWire });
+            
+            // Volume should be width * height * depth
+            const expectedVolume = bbox.size[0] * bbox.size[1] * bbox.size[2];
+            expect(volume).toBeCloseTo(expectedVolume, 5);
+            
+            polyWire.delete();
+            bboxShape.delete();
+        });
+
+        it("should get bounding box of compound shape with multiple solids", () => {
+            const box1 = occHelper.entitiesService.bRepPrimAPIMakeBox(1, 1, 1, [0, 0, 0]);
+            const box2 = occHelper.entitiesService.bRepPrimAPIMakeBox(1, 1, 1, [5, 5, 5]);
+            const compound = occHelper.converterService.makeCompound({ shapes: [box1, box2] });
+            
+            const bbox = operations.boundingBoxOfShape({ shape: compound });
+
+            expect(bbox.min[0]).toBeCloseTo(-0.5, 4);
+            expect(bbox.min[1]).toBeCloseTo(-0.5, 4);
+            expect(bbox.min[2]).toBeCloseTo(-0.5, 4);
+            expect(bbox.max[0]).toBeCloseTo(5.5, 4);
+            expect(bbox.max[1]).toBeCloseTo(5.5, 4);
+            expect(bbox.max[2]).toBeCloseTo(5.5, 4);
+            expect(bbox.size[0]).toBeCloseTo(6, 4);
+            expect(bbox.size[1]).toBeCloseTo(6, 4);
+            expect(bbox.size[2]).toBeCloseTo(6, 4);
+            
+            box1.delete();
+            box2.delete();
+            compound.delete();
+        });
+
+        it("should get bounding box of extruded wire", () => {
+            const circleWire = wire.createCircleWire({ center: [3, 0, 0], radius: 1, direction: [0, 1, 0] });
+            const extruded = operations.extrude({ shape: circleWire, direction: [0, 5, 0] });
+            
+            const bbox = operations.boundingBoxOfShape({ shape: extruded });
+            
+            expect(bbox.min[0]).toBeCloseTo(2, 5);
+            expect(bbox.min[1]).toBeCloseTo(0, 5);
+            expect(bbox.min[2]).toBeCloseTo(-1, 5);
+            expect(bbox.max[0]).toBeCloseTo(4, 5);
+            expect(bbox.max[1]).toBeCloseTo(5, 5);
+            expect(bbox.max[2]).toBeCloseTo(1, 5);
+            
+            circleWire.delete();
+            extruded.delete();
+        });
+
+        it("should get bounding box of revolved shape", () => {
+            const squareFace = face.createSquareFace({ center: [5, 0, 0], size: 2, direction: [0, 1, 0] });
+            const revolved = operations.revolve({ shape: squareFace, direction: [0, 1, 0], angle: 180, copy: false });
+            
+            const bbox = operations.boundingBoxOfShape({ shape: revolved });
+
+            expect(bbox.min[0]).toBeCloseTo(-6, 0);
+            expect(bbox.min[1]).toBeCloseTo(0, 5);
+            expect(bbox.min[2]).toBeCloseTo(-6, 0);
+            expect(bbox.max[0]).toBeCloseTo(6, 0);
+            expect(bbox.max[1]).toBeCloseTo(0, 5);
+            expect(bbox.max[2]).toBeCloseTo(1, 0);
+            
+            squareFace.delete();
+            revolved.delete();
+        });
+    });
+
+    describe("Bounding sphere operations", () => {
+        it("should get bounding sphere properties of a box", () => {
+            const box = occHelper.entitiesService.bRepPrimAPIMakeBox(2, 2, 2, [0, 0, 0]);
+            const bsphere = operations.boundingSphereOfShape({ shape: box });
+            
+            // Box is centered at [0,0,0], bounding sphere center is at bbox center
+            expect(bsphere.center[0]).toBeCloseTo(0, 5);
+            expect(bsphere.center[1]).toBeCloseTo(0, 5);
+            expect(bsphere.center[2]).toBeCloseTo(0, 5);
+            expect(bsphere.radius).toBeCloseTo(Math.sqrt(3), 5);
+            
+            box.delete();
+        });
+
+        it("should get bounding sphere center of a sphere", () => {
+            const sphere = occHelper.entitiesService.bRepPrimAPIMakeSphere([3, 4, 5], [0, 1, 0], 2);
+            const center = operations.boundingSphereCenterOfShape({ shape: sphere });
+            
+            expect(center[0]).toBeCloseTo(3, 5);
+            expect(center[1]).toBeCloseTo(4, 5);
+            expect(center[2]).toBeCloseTo(5, 5);
+            
+            sphere.delete();
+        });
+
+        it("should get bounding sphere radius of a cylinder", () => {
+            const cyl = occHelper.entitiesService.bRepPrimAPIMakeCylinder([0, 0, 0], [0, 1, 0], 3, 8, 360);
+            const radius = operations.boundingSphereRadiusOfShape({ shape: cyl });
+            
+            // For a cylinder with radius 3 and height 8, the bounding sphere radius is
+            // the distance from center (0, 4, 0) to corner (3, 8, 0) or (3, 0, 0)
+            // = sqrt(3^2 + 4^2 + 3^2) = sqrt(34) ≈ 5.83
+            expect(radius).toBeCloseTo(Math.sqrt(34), 2);
+            
+            cyl.delete();
+        });
+
+        it("should create a bounding sphere shape from a torus-like shape", () => {
+            const circle = face.createCircleFace({ center: [5, 0, 0], radius: 1, direction: [0, 1, 0] });
+            const torus = operations.revolve({ shape: circle, direction: [0, 1, 0], angle: 360, copy: false });
+            
+            const bsphereShape = operations.boundingSphereShapeOfShape({ shape: torus });
+            const bsphere = operations.boundingSphereOfShape({ shape: torus });
+            
+            // Get the volume of the bounding sphere
+            const volume = solid.getSolidVolume({ shape: bsphereShape });
+            const expectedVolume = (4 / 3) * Math.PI * Math.pow(bsphere.radius, 3);
+            
+            expect(volume).toBeCloseTo(expectedVolume, 2);
+            
+            circle.delete();
+            torus.delete();
+            bsphereShape.delete();
+        });
+
+        it("should get bounding sphere of compound with multiple shapes", () => {
+            const sphere1 = occHelper.entitiesService.bRepPrimAPIMakeSphere([0, 0, 0], [0, 1, 0], 1);
+            const sphere2 = occHelper.entitiesService.bRepPrimAPIMakeSphere([10, 0, 0], [0, 1, 0], 1);
+            const compound = occHelper.converterService.makeCompound({ shapes: [sphere1, sphere2] });
+            
+            const bsphere = operations.boundingSphereOfShape({ shape: compound });
+            
+            // Center should be at midpoint of bounding box
+            expect(bsphere.center[0]).toBeCloseTo(5, 5);
+            expect(bsphere.center[1]).toBeCloseTo(0, 5);
+            expect(bsphere.center[2]).toBeCloseTo(0, 5);
+
+            expect(bsphere.radius).toBeCloseTo(Math.sqrt(38), 2);
+            
+            sphere1.delete();
+            sphere2.delete();
+            compound.delete();
+        });
+
+        it("should get bounding sphere for a wire", () => {
+            const points = [
+                [0, 0, 0],
+                [10, 0, 0],
+                [10, 10, 0],
+                [0, 10, 0]
+            ] as Inputs.Base.Point3[];
+            const squareWire = wire.createPolylineWire({ points });
+            
+            const bsphere = operations.boundingSphereOfShape({ shape: squareWire });
+            
+            expect(bsphere.center).toEqual([5, 5, 0]);
+            expect(bsphere.radius).toBeCloseTo(Math.sqrt(50), 5);
+            
+            squareWire.delete();
+        });
+
+        it("should compare bounding box and bounding sphere volumes", () => {
+            const box = occHelper.entitiesService.bRepPrimAPIMakeBox(4, 4, 4, [-2, -2, -2]);
+            
+            const bboxShape = operations.boundingBoxShapeOfShape({ shape: box });
+            const bsphereShape = operations.boundingSphereShapeOfShape({ shape: box });
+            
+            const bboxVolume = solid.getSolidVolume({ shape: bboxShape });
+            const bsphereVolume = solid.getSolidVolume({ shape: bsphereShape });
+            
+            // Bounding sphere should always have larger volume than bounding box for a cube
+            expect(bsphereVolume).toBeGreaterThan(bboxVolume);
+            expect(bboxVolume).toBeCloseTo(64, 4);
+            
+            box.delete();
+            bboxShape.delete();
+            bsphereShape.delete();
+        });
+    });
+
 
 });
 

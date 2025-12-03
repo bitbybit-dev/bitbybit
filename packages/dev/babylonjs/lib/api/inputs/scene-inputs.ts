@@ -41,7 +41,7 @@ export namespace BabylonScene {
         vector: Base.Vector3 = [0, -9.81, 0];
     }
     export class PointLightDto {
-        constructor(position?: Base.Point3, intensity?: number, diffuse?: Base.Color, specular?: Base.Color, radius?: number, shadowGeneratorMapSize?: number, enableShadows?: boolean, shadowDarkness?: number, shadowUsePercentageCloserFiltering?: boolean, shadowContactHardeningLightSizeUVRatio?: number, shadowBias?: number, shadowNormalBias?: number, shadowMaxZ?: number, shadowMinZ?: number) {
+        constructor(position?: Base.Point3, intensity?: number, diffuse?: Base.Color, specular?: Base.Color, radius?: number, shadowGeneratorMapSize?: number, enableShadows?: boolean, shadowDarkness?: number, shadowUsePercentageCloserFiltering?: boolean, shadowContactHardeningLightSizeUVRatio?: number, shadowBias?: number, shadowNormalBias?: number, shadowMaxZ?: number, shadowMinZ?: number, shadowRefreshRate?: number) {
             if (position !== undefined) { this.position = position; }
             if (intensity !== undefined) { this.intensity = intensity; }
             if (diffuse !== undefined) { this.diffuse = diffuse; }
@@ -56,6 +56,7 @@ export namespace BabylonScene {
             if (shadowNormalBias !== undefined) { this.shadowNormalBias = shadowNormalBias; }
             if (shadowMaxZ !== undefined) { this.shadowMaxZ = shadowMaxZ; }
             if (shadowMinZ !== undefined) { this.shadowMinZ = shadowMinZ; }
+            if (shadowRefreshRate !== undefined) { this.shadowRefreshRate = shadowRefreshRate; }
         }
         /**
          * Position of the point light
@@ -155,6 +156,14 @@ export namespace BabylonScene {
         * @step 50
         */
         shadowMinZ = 0.1;
+        /**
+         * Shadow refresh rate
+         * @default 1
+         * @minimum 0
+         * @maximum Infinity
+         * @step 1
+         */
+        shadowRefreshRate = 1;
     }
     export class ActiveCameraDto {
         constructor(camera?: BABYLON.Camera) {
@@ -176,7 +185,7 @@ export namespace BabylonScene {
         use = true;
     }
     export class DirectionalLightDto {
-        constructor(direction?: Base.Vector3, intensity?: number, diffuse?: Base.Color, specular?: Base.Color, shadowGeneratorMapSize?: number, enableShadows?: boolean, shadowDarkness?: number, shadowUsePercentageCloserFiltering?: boolean, shadowContactHardeningLightSizeUVRatio?: number, shadowBias?: number, shadowNormalBias?: number, shadowMaxZ?: number, shadowMinZ?: number) {
+        constructor(direction?: Base.Vector3, intensity?: number, diffuse?: Base.Color, specular?: Base.Color, shadowGeneratorMapSize?: number, enableShadows?: boolean, shadowDarkness?: number, shadowUsePercentageCloserFiltering?: boolean, shadowContactHardeningLightSizeUVRatio?: number, shadowBias?: number, shadowNormalBias?: number, shadowMaxZ?: number, shadowMinZ?: number, shadowRefreshRate?: number) {
             if (direction !== undefined) { this.direction = direction; }
             if (intensity !== undefined) { this.intensity = intensity; }
             if (diffuse !== undefined) { this.diffuse = diffuse; }
@@ -190,6 +199,7 @@ export namespace BabylonScene {
             if (shadowNormalBias !== undefined) { this.shadowNormalBias = shadowNormalBias; }
             if (shadowMaxZ !== undefined) { this.shadowMaxZ = shadowMaxZ; }
             if (shadowMinZ !== undefined) { this.shadowMinZ = shadowMinZ; }
+            if (shadowRefreshRate !== undefined) { this.shadowRefreshRate = shadowRefreshRate; }
         }
         /**
          * Direction of the directional light
@@ -280,6 +290,14 @@ export namespace BabylonScene {
         * @step 50
         */
         shadowMinZ = 0;
+        /**
+         * Shadow refresh rate
+         * @default 1
+         * @minimum 0
+         * @maximum Infinity
+         * @step 1
+         */
+        shadowRefreshRate = 1;
     }
     export class CameraConfigurationDto {
         constructor(position?: Base.Point3, lookAt?: Base.Point3, lowerRadiusLimit?: number, upperRadiusLimit?: number, lowerAlphaLimit?: number, upperAlphaLimit?: number, lowerBetaLimit?: number, upperBetaLimit?: number, angularSensibilityX?: number, angularSensibilityY?: number, maxZ?: number, panningSensibility?: number, wheelPrecision?: number) {

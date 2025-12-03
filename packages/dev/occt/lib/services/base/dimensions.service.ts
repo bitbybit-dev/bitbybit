@@ -22,6 +22,60 @@ export class DimensionsService {
         private readonly wiresService: WiresService
     ) { }
 
+    /**
+     * Evaluates a mathematical expression or template string with a given value
+     * @param expression The expression to evaluate (can contain 'val' placeholder)
+     * @param value The numeric value to substitute for 'val'
+     * @param decimalPlaces Number of decimal places to format the result
+     * @returns The evaluated expression as a formatted string
+     */
+    private evaluateExpression(expression: string, value: number, decimalPlaces: number): string {
+        try {
+            // Replace 'val' with the actual value in the expression
+            const evaluatedExpression = expression.replace(/val/g, value.toString());
+            
+            // Simple math expression evaluation (supports +, -, *, /, parentheses)
+            // Only allow safe mathematical operations
+            const safeExpression = evaluatedExpression.replace(/[^0-9+\-*/.() ]/g, "");
+            if (safeExpression !== evaluatedExpression) {
+                // If expression contains non-math characters, treat it as a template
+                // For template strings, we still want to format numbers with decimal places
+                const formattedValue = value.toFixed(decimalPlaces);
+                return expression.replace(/val/g, formattedValue);
+            }
+            
+            // Evaluate mathematical expression and apply decimal places
+            const result = Function("\"use strict\"; return (" + safeExpression + ")")();
+            return result.toFixed(decimalPlaces);
+        } catch (error) {
+            // If evaluation fails, return the original value formatted
+            return value.toFixed(decimalPlaces);
+        }
+    }
+
+    /**
+     * Formats dimension label text with optional expression evaluation
+     * @param value The numeric value to display
+     * @param labelOverwrite Optional expression to evaluate instead of raw value
+     * @param decimalPlaces Number of decimal places for formatting
+     * @param labelSuffix Suffix to append to the text
+     * @returns Formatted dimension label text
+     */
+    private formatDimensionLabel(
+        value: number,
+        labelOverwrite: string | undefined,
+        decimalPlaces: number,
+        labelSuffix: string
+    ): string {
+        let result: string;
+        if (labelOverwrite) {
+            result = this.evaluateExpression(labelOverwrite, value, decimalPlaces);
+        } else {
+            result = value.toFixed(decimalPlaces);
+        }
+        return result + " " + labelSuffix;
+    }
+
     private createArrow(inputs: {
         tipPoint: Inputs.Base.Point3,
         direction: Inputs.Base.Vector3,
@@ -141,8 +195,15 @@ export class DimensionsService {
             endPoint: inputs.end,
         });
 
+        const labelText = this.formatDimensionLabel(
+            length,
+            inputs.labelOverwrite,
+            inputs.decimalPlaces,
+            inputs.labelSuffix
+        );
+
         const txtOpt = new Inputs.OCCT.TextWiresDto();
-        txtOpt.text = length.toFixed(inputs.decimalPlaces) + " " + inputs.labelSuffix;
+        txtOpt.text = labelText;
         txtOpt.xOffset = 0;
         txtOpt.yOffset = 0;
         txtOpt.height = inputs.labelSize;
@@ -163,16 +224,39 @@ export class DimensionsService {
             second: inputs.start,
         }) as Inputs.Base.Vector3;
 
-        const rotated = this.transformsService.rotate({
+        let currentShape = this.transformsService.rotate({
             shape: txt.compound,
             angle: -90 + (inputs.labelRotation || 0),
             axis: [0, 1, 0],
         });
 
         shapesToDelete.push(...txt.shapes.map((s) => s.shape));
+        let previousShape = currentShape;
+
+        // Apply horizontal flip if requested
+        if (inputs.labelFlipHorizontal) {
+            currentShape = this.transformsService.scale3d({
+                shape: currentShape,
+                scale: [-1, 1, 1],
+                center: [0, 0, 0]
+            });
+            shapesToDelete.push(previousShape);
+            previousShape = currentShape;
+        }
+
+        // Apply vertical flip if requested
+        if (inputs.labelFlipVertical) {
+            currentShape = this.transformsService.scale3d({
+                shape: currentShape,
+                scale: [1, 1, -1],
+                center: [0, 0, 0]
+            });
+            shapesToDelete.push(previousShape);
+            previousShape = currentShape;
+        }
 
         const alignedLabelTxtToDir = this.transformsService.alignNormAndAxis({
-            shape: rotated,
+            shape: currentShape,
             fromOrigin: [0, 0, 0],
             fromNorm: [0, 1, 0],
             fromAx: [0, 0, 1],
@@ -181,7 +265,7 @@ export class DimensionsService {
             toAx: dirStartEnd,
         });
 
-        shapesToDelete.push(rotated);
+        shapesToDelete.push(previousShape);
 
         const normDir = this.base.vector.normalized({ vector: inputs.direction });
         const offsetLabelVec = this.base.vector.mul({ vector: normDir, scalar: inputs.labelOffset });
@@ -301,8 +385,15 @@ export class DimensionsService {
             angle = this.base.math.degToRad({ number: angle });
         }
 
+        const labelText = this.formatDimensionLabel(
+            angle,
+            inputs.labelOverwrite,
+            inputs.decimalPlaces,
+            inputs.labelSuffix
+        );
+
         const txtOpt = new Inputs.OCCT.TextWiresDto();
-        txtOpt.text = angle.toFixed(inputs.decimalPlaces) + " " + inputs.labelSuffix;
+        txtOpt.text = labelText;
         txtOpt.xOffset = 0;
         txtOpt.yOffset = 0;
         txtOpt.height = inputs.labelSize;
@@ -315,8 +406,39 @@ export class DimensionsService {
         }) as Inputs.Base.Vector3;
         const normVecToMid = this.base.vector.normalized({ vector: vectorToMid }) as Inputs.Base.Vector3;
 
-        const alignedLabelTxtToDir = this.transformsService.alignNormAndAxis({
+        let currentShape = this.transformsService.rotate({
             shape: txt.compound,
+            angle: inputs.labelRotation || 0,
+            axis: [0, 1, 0],
+        });
+
+        shapesToDelete.push(...txt.shapes.map((s) => s.shape));
+        let previousShape = currentShape;
+
+        // Apply horizontal flip if requested
+        if (inputs.labelFlipHorizontal) {
+            currentShape = this.transformsService.scale3d({
+                shape: currentShape,
+                scale: [-1, 1, 1],
+                center: [0, 0, 0]
+            });
+            shapesToDelete.push(previousShape);
+            previousShape = currentShape;
+        }
+
+        // Apply vertical flip if requested
+        if (inputs.labelFlipVertical) {
+            currentShape = this.transformsService.scale3d({
+                shape: currentShape,
+                scale: [1, 1, -1],
+                center: [0, 0, 0]
+            });
+            shapesToDelete.push(previousShape);
+            previousShape = currentShape;
+        }
+
+        const alignedLabelTxtToDir = this.transformsService.alignNormAndAxis({
+            shape: currentShape,
             fromOrigin: [0, 0, 0],
             fromNorm: [0, 1, 0],
             fromAx: [0, 0, 1],
@@ -324,7 +446,7 @@ export class DimensionsService {
             toNorm: normalThreePoints,
             toAx: normVecToMid,
         });
-        shapesToDelete.push(...txt.shapes.map((s) => s.shape));
+        shapesToDelete.push(previousShape);
         const offsetLabelVec = this.base.vector.mul({ vector: normVecToMid, scalar: inputs.labelOffset });
         const addToDir = this.base.vector.add({
             first: midPt,
@@ -439,16 +561,39 @@ export class DimensionsService {
             point3: endPtLabelLine,
             reverseNormal: false,
         });
-        const rotated = this.transformsService.rotate({
+        let currentShape = this.transformsService.rotate({
             shape: text.compound,
-            angle: -90,
+            angle: -90 + (inputs.labelRotation || 0),
             axis: [0, 1, 0],
         });
 
         const shapesToDelete = text.shapes.map((s) => s.shape);
+        let previousShape = currentShape;
+
+        // Apply horizontal flip if requested
+        if (inputs.labelFlipHorizontal) {
+            currentShape = this.transformsService.scale3d({
+                shape: currentShape,
+                scale: [-1, 1, 1],
+                center: [0, 0, 0]
+            });
+            shapesToDelete.push(previousShape);
+            previousShape = currentShape;
+        }
+
+        // Apply vertical flip if requested
+        if (inputs.labelFlipVertical) {
+            currentShape = this.transformsService.scale3d({
+                shape: currentShape,
+                scale: [1, 1, -1],
+                center: [0, 0, 0]
+            });
+            shapesToDelete.push(previousShape);
+            previousShape = currentShape;
+        }
 
         const alignedLabelTxtToDir = this.transformsService.alignNormAndAxis({
-            shape: rotated,
+            shape: currentShape,
             fromOrigin: [0, 0, 0],
             fromNorm: [0, 1, 0],
             fromAx: [0, 0, 1],
@@ -456,8 +601,8 @@ export class DimensionsService {
             toNorm: normalThreePoints,
             toAx: dirNorm as Inputs.Base.Vector3,
         });
-
-        shapesToDelete.push(rotated);
+        
+        shapesToDelete.push(previousShape);
 
         const addToDir = this.base.vector.add({
             first: endPtLabelLine,
