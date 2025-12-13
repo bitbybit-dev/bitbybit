@@ -797,3 +797,13 @@ product-options:
  label: Product Options
  permalink: /product-options
  description: Product options and configurations.
+
+cdn:
+ label: CDN
+ permalink: /cdn
+ description: Content Delivery Network and caching.
+
+hosting:
+ label: Hosting
+ permalink: /hosting
+ description: Web hosting and server management.
