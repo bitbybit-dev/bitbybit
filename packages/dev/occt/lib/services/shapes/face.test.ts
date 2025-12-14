@@ -1626,10 +1626,419 @@ describe("OCCT face unit tests", () => {
             });
             const area = face.getFaceArea({ shape: f });
             expect(f.ShapeType()).toBe(occt.TopAbs_ShapeEnum.TopAbs_FACE);
-            expect(area).toBeCloseTo(2.9276442447299863);
+            expect(area).toBeCloseTo(2.927644244729986);
             f.delete();
         });
     });
 
+    describe("Face from base triangle and mesh", () => {
+        it("should create face from base triangle", () => {
+            const dto = new OCCT.TriangleBaseDto([[0, 0, 0], [2, 0, 0], [1, 2, 0]]);
+            const f = face.fromBaseTriangle(dto);
+            const area = face.getFaceArea({ shape: f });
+            expect(f.ShapeType()).toBe(occt.TopAbs_ShapeEnum.TopAbs_FACE);
+            expect(area).toBeCloseTo(2);
+            f.delete();
+        });
+
+        it("should create face from base triangle with different orientation", () => {
+            const dto = new OCCT.TriangleBaseDto([[0, 0, 0], [3, 0, 0], [3, 4, 0]]);
+            const f = face.fromBaseTriangle(dto);
+            const area = face.getFaceArea({ shape: f });
+            expect(f.ShapeType()).toBe(occt.TopAbs_ShapeEnum.TopAbs_FACE);
+            expect(area).toBeCloseTo(6);
+            f.delete();
+        });
+
+        it("should create faces from base mesh with single triangle", () => {
+            const dto = new OCCT.MeshBaseDto([[[0, 0, 0], [2, 0, 0], [1, 2, 0]]]);
+            const faces = face.fromBaseMesh(dto);
+            expect(faces.length).toBe(1);
+            const area = face.getFaceArea({ shape: faces[0] });
+            expect(area).toBeCloseTo(2);
+            faces.forEach(f => f.delete());
+        });
+
+        it("should create faces from base mesh with multiple triangles", () => {
+            const dto = new OCCT.MeshBaseDto([
+                [[0, 0, 0], [2, 0, 0], [1, 2, 0]],
+                [[0, 0, 0], [1, 2, 0], [-1, 2, 0]],
+                [[5, 0, 0], [7, 0, 0], [6, 3, 0]]
+            ]);
+            const faces = face.fromBaseMesh(dto);
+            expect(faces.length).toBe(3);
+            const area1 = face.getFaceArea({ shape: faces[0] });
+            const area2 = face.getFaceArea({ shape: faces[1] });
+            const area3 = face.getFaceArea({ shape: faces[2] });
+            expect(area1).toBeCloseTo(2);
+            expect(area2).toBeCloseTo(2);
+            expect(area3).toBeCloseTo(3);
+            faces.forEach(f => f.delete());
+        });
+    });
+
+    describe("Face from wire on face methods", () => {
+        it("should create face from wire on face", () => {
+            const baseFace = face.createRectangleFace({ width: 10, length: 10, center: [0, 0, 0], direction: [0, 0, 1] });
+            const circleWire = wire.createCircleWire({ radius: 2, center: [0, 0, 0], direction: [0, 0, 1] });
+            const dto = new OCCT.FaceFromWireOnFaceDto(circleWire, baseFace, true);
+            const f = face.createFaceFromWireOnFace(dto);
+            const area = face.getFaceArea({ shape: f });
+            expect(f.ShapeType()).toBe(occt.TopAbs_ShapeEnum.TopAbs_FACE);
+            expect(area).toBeCloseTo(Math.PI * 4);
+            baseFace.delete();
+            circleWire.delete();
+            f.delete();
+        });
+
+        it("should create faces from wires on face", () => {
+            const baseFace = face.createRectangleFace({ width: 10, length: 10, center: [0, 0, 0], direction: [0, 0, 1] });
+            const circleWire1 = wire.createCircleWire({ radius: 1, center: [-2, -2, 0], direction: [0, 0, 1] });
+            const circleWire2 = wire.createCircleWire({ radius: 1.5, center: [2, 2, 0], direction: [0, 0, 1] });
+            const dto = new OCCT.FacesFromWiresOnFaceDto([circleWire1, circleWire2], baseFace, true);
+            const faces = face.createFacesFromWiresOnFace(dto);
+            expect(faces.length).toBe(2);
+            const area1 = face.getFaceArea({ shape: faces[0] });
+            const area2 = face.getFaceArea({ shape: faces[1] });
+            expect(area1).toBeCloseTo(Math.PI);
+            expect(area2).toBeCloseTo(Math.PI * 2.25);
+            baseFace.delete();
+            circleWire1.delete();
+            circleWire2.delete();
+            faces.forEach(f => f.delete());
+        });
+
+        it("should create face from multiple wires on face", () => {
+            const baseFace = face.createRectangleFace({ width: 10, length: 10, center: [0, 0, 0], direction: [0, 0, 1] });
+            const outerWire = wire.createCircleWire({ radius: 3, center: [0, 0, 0], direction: [0, 0, 1] });
+            const innerWire = wire.createCircleWire({ radius: 1, center: [0, 0, 0], direction: [0, 0, 1] });
+            const dto = new OCCT.FaceFromWiresOnFaceDto([outerWire, innerWire], baseFace, true);
+            const f = face.createFaceFromWiresOnFace(dto);
+            const area = face.getFaceArea({ shape: f });
+            expect(f.ShapeType()).toBe(occt.TopAbs_ShapeEnum.TopAbs_FACE);
+            // Combined area of both circles: π*3² + π*1² = 9π + π = 10π
+            expect(area).toBeCloseTo(Math.PI * 10);
+            baseFace.delete();
+            outerWire.delete();
+            innerWire.delete();
+            f.delete();
+        });
+
+        it("should create face from wires on face with rectangular boundary", () => {
+            const baseFace = face.createRectangleFace({ width: 10, length: 10, center: [0, 0, 0], direction: [0, 0, 1] });
+            const rectWire = wire.createRectangleWire({ width: 4, length: 2, center: [0, 0, 0], direction: [0, 0, 1] });
+            const dto = new OCCT.FaceFromWiresOnFaceDto([rectWire], baseFace, true);
+            const f = face.createFaceFromWiresOnFace(dto);
+            const area = face.getFaceArea({ shape: f });
+            expect(f.ShapeType()).toBe(occt.TopAbs_ShapeEnum.TopAbs_FACE);
+            expect(area).toBeCloseTo(8);
+            baseFace.delete();
+            rectWire.delete();
+            f.delete();
+        });
+    });
+
+    describe("Face subdivision to wires", () => {
+        it("should subdivide face to wires along U", () => {
+            const f = face.createRectangleFace({ width: 4, length: 2, center: [0, 0, 0], direction: [0, 0, 1] });
+            const dto = new OCCT.FaceSubdivisionToWiresDto(f, 5, true, false, false, false);
+            const wires = face.subdivideToWires(dto);
+            expect(wires.length).toBe(6);
+            wires.forEach(w => {
+                expect(w.ShapeType()).toBe(occt.TopAbs_ShapeEnum.TopAbs_WIRE);
+                const length = wire.getWireLength({ shape: w });
+                expect(length).toBeCloseTo(4);
+                w.delete();
+            });
+            f.delete();
+        });
+
+        it("should subdivide face to wires along V", () => {
+            const f = face.createRectangleFace({ width: 4, length: 2, center: [0, 0, 0], direction: [0, 0, 1] });
+            const dto = new OCCT.FaceSubdivisionToWiresDto(f, 4, false, false, false, false);
+            const wires = face.subdivideToWires(dto);
+            expect(wires.length).toBe(5);
+            wires.forEach(w => {
+                expect(w.ShapeType()).toBe(occt.TopAbs_ShapeEnum.TopAbs_WIRE);
+                const length = wire.getWireLength({ shape: w });
+                expect(length).toBeCloseTo(2);
+                w.delete();
+            });
+            f.delete();
+        });
+
+        it("should subdivide face to wires with start and end removed", () => {
+            const f = face.createRectangleFace({ width: 4, length: 2, center: [0, 0, 0], direction: [0, 0, 1] });
+            const dto = new OCCT.FaceSubdivisionToWiresDto(f, 6, true, false, true, true);
+            const wires = face.subdivideToWires(dto);
+            expect(wires.length).toBe(5);
+            wires.forEach(w => {
+                const length = wire.getWireLength({ shape: w });
+                expect(length).toBeCloseTo(4);
+                w.delete();
+            });
+            f.delete();
+        });
+    });
+
+    describe("Face subdivision to rectangle wires and holes", () => {
+        it("should subdivide face to rectangle wires", () => {
+            const f = face.createRectangleFace({ width: 10, length: 10, center: [0, 0, 0], direction: [0, 0, 1] });
+            const dto = new OCCT.FaceSubdivideToRectangleWiresDto(f, 3, 3);
+            const wires = face.subdivideToRectangleWires(dto);
+            expect(wires.length).toBe(30);
+            wires.forEach(w => {
+                expect(w.ShapeType()).toBe(occt.TopAbs_ShapeEnum.TopAbs_WIRE);
+                const length = wire.getWireLength({ shape: w });
+                expect(length).toBeCloseTo(8.666666666666666);
+                w.delete();
+            });
+            f.delete();
+        });
+
+        it("should subdivide face to rectangle wires with scale pattern", () => {
+            const f = face.createRectangleFace({ width: 10, length: 10, center: [0, 0, 0], direction: [0, 0, 1] });
+            const dto = new OCCT.FaceSubdivideToRectangleWiresDto(f, 2, 2, [0.8, 0.6], [0.9, 0.7]);
+            const wires = face.subdivideToRectangleWires(dto);
+            expect(wires.length).toBe(20);
+            wires.forEach((w, i) => {
+                const length = wire.getWireLength({ shape: w });
+                if (i % 2 === 0) {
+                    expect(length).toBeCloseTo(9.8);
+                } else {
+                    expect(length).toBeCloseTo(7.4);
+                }
+                w.delete();
+            });
+            f.delete();
+        });
+
+        it("should subdivide face to rectangle holes", () => {
+            const f = face.createRectangleFace({ width: 10, length: 10, center: [0, 0, 0], direction: [0, 0, 1] });
+            const dto = new OCCT.FaceSubdivideToRectangleHolesDto(f, 2, 2, [0.5], [0.5]);
+            const faces = face.subdivideToRectangleHoles(dto);
+            expect(faces.length).toBe(1);
+            faces.forEach(fc => fc.delete());
+            f.delete();
+        });
+
+        it("should subdivide face to rectangle holes with holesToFaces", () => {
+            const f = face.createRectangleFace({ width: 10, length: 10, center: [0, 0, 0], direction: [0, 0, 1] });
+            const dto = new OCCT.FaceSubdivideToRectangleHolesDto(f, 2, 2, [0.5], [0.5], undefined, undefined, true);
+            const faces = face.subdivideToRectangleHoles(dto);
+            expect(faces.length).toBe(21);
+            faces.forEach(fc => fc.delete());
+            f.delete();
+        });
+    });
+
+    describe("Face subdivision to hexagon wires and holes", () => {
+        it("should subdivide face to hexagon wires", () => {
+            const f = face.createRectangleFace({ width: 10, length: 10, center: [0, 0, 0], direction: [0, 0, 1] });
+            const dto = new OCCT.FaceSubdivideToHexagonWiresDto(f, 3, 3);
+            const wires = face.subdivideToHexagonWires(dto);
+            expect(wires.length).toBe(30);
+            wires.forEach(w => {
+                expect(w.ShapeType()).toBe(occt.TopAbs_ShapeEnum.TopAbs_WIRE);
+                const length = wire.getWireLength({ shape: w });
+                expect(length).toBeCloseTo(8.430363180804955);
+                w.delete();
+            });
+            f.delete();
+        });
+
+        it("should subdivide face to hexagon wires with flat U", () => {
+            const f = face.createRectangleFace({ width: 10, length: 10, center: [0, 0, 0], direction: [0, 0, 1] });
+            const dto = new OCCT.FaceSubdivideToHexagonWiresDto(f, 2, 2, true);
+            const wires = face.subdivideToHexagonWires(dto);
+            expect(wires.length).toBe(20);
+            wires.forEach(w => {
+                const length = wire.getWireLength({ shape: w });
+                expect(length).toBeCloseTo(9.393712757732946);
+                w.delete();
+            });
+            f.delete();
+        });
+
+        it("should subdivide face to hexagon holes", () => {
+            const f = face.createRectangleFace({ width: 10, length: 10, center: [0, 0, 0], direction: [0, 0, 1] });
+            const dto = new OCCT.FaceSubdivideToHexagonHolesDto(f, 2, 2);
+            const faces = face.subdivideToHexagonHoles(dto);
+            expect(faces.length).toBe(1);
+            const area = face.getFaceArea({ shape: faces[0] });
+            expect(area).toBeCloseTo(79.59183673469393);
+            faces.forEach(fc => fc.delete());
+            f.delete();
+        });
+
+        it("should subdivide face to hexagon holes with holesToFaces", () => {
+            const f = face.createRectangleFace({ width: 10, length: 10, center: [0, 0, 0], direction: [0, 0, 1] });
+            const dto = new OCCT.FaceSubdivideToHexagonHolesDto(f, 2, 2, false, true);
+            const faces = face.subdivideToHexagonHoles(dto);
+            expect(faces.length).toBe(21);
+            faces.forEach((fc, i) => {
+                const area = face.getFaceArea({ shape: fc });
+                if (i === 0) {
+                    expect(area).toBeCloseTo(79.59183673469393);
+                } else {
+                    expect(area).toBeCloseTo(1.0204081632653064);
+                }
+                fc.delete();
+            });
+            f.delete();
+        });
+    });
+
+    describe("Wire along param methods", () => {
+        it("should create wire along U param", () => {
+            const f = face.createRectangleFace({ width: 4, length: 2, center: [0, 0, 0], direction: [0, 0, 1] });
+            const dto = new OCCT.WireAlongParamDto(f, true, 0.5);
+            const w = face.wireAlongParam(dto);
+            expect(w.ShapeType()).toBe(occt.TopAbs_ShapeEnum.TopAbs_WIRE);
+            const length = wire.getWireLength({ shape: w });
+            expect(length).toBeCloseTo(4);
+            f.delete();
+            w.delete();
+        });
+
+        it("should create wire along V param", () => {
+            const f = face.createRectangleFace({ width: 4, length: 2, center: [0, 0, 0], direction: [0, 0, 1] });
+            const dto = new OCCT.WireAlongParamDto(f, false, 0.5);
+            const w = face.wireAlongParam(dto);
+            expect(w.ShapeType()).toBe(occt.TopAbs_ShapeEnum.TopAbs_WIRE);
+            const length = wire.getWireLength({ shape: w });
+            expect(length).toBeCloseTo(2);
+            f.delete();
+            w.delete();
+        });
+
+        it("should create wires along multiple U params", () => {
+            const f = face.createRectangleFace({ width: 4, length: 2, center: [0, 0, 0], direction: [0, 0, 1] });
+            const dto = new OCCT.WiresAlongParamsDto(f, true, [0.25, 0.5, 0.75]);
+            const wires = face.wiresAlongParams(dto);
+            expect(wires.length).toBe(3);
+            wires.forEach(w => {
+                expect(w.ShapeType()).toBe(occt.TopAbs_ShapeEnum.TopAbs_WIRE);
+                const length = wire.getWireLength({ shape: w });
+                expect(length).toBeCloseTo(4);
+                w.delete();
+            });
+            f.delete();
+        });
+
+        it("should create wires along multiple V params", () => {
+            const f = face.createRectangleFace({ width: 4, length: 2, center: [0, 0, 0], direction: [0, 0, 1] });
+            const dto = new OCCT.WiresAlongParamsDto(f, false, [0.2, 0.8]);
+            const wires = face.wiresAlongParams(dto);
+            expect(wires.length).toBe(2);
+            wires.forEach(w => {
+                const length = wire.getWireLength({ shape: w });
+                expect(length).toBeCloseTo(2);
+                w.delete();
+            });
+            f.delete();
+        });
+    });
+
+    describe("Hexagons in grid", () => {
+        it("should create hexagons in grid", () => {
+            const dto = new OCCT.HexagonsInGridDto(5, 5, 3, 3);
+            const hexFaces = face.hexagonsInGrid(dto);
+            expect(hexFaces.length).toBe(9);
+            hexFaces.forEach(f => {
+                expect(f.ShapeType()).toBe(occt.TopAbs_ShapeEnum.TopAbs_FACE);
+                const area = face.getFaceArea({ shape: f });
+                expect(area).toBeCloseTo(2.142857142857143);
+                f.delete();
+            });
+        });
+
+        it("should create hexagons in grid with flat top", () => {
+            const dto = new OCCT.HexagonsInGridDto(6, 6, 2, 2, true);
+            const hexFaces = face.hexagonsInGrid(dto);
+            expect(hexFaces.length).toBe(4);
+            hexFaces.forEach(f => {
+                const area = face.getFaceArea({ shape: f });
+                expect(area).toBeCloseTo(6.171428571428569);
+                f.delete();
+            });
+        });
+
+        it("should create hexagons in grid with extensions", () => {
+            const dto = new OCCT.HexagonsInGridDto(8, 8, 3, 3, false, true, true, true, true);
+            const hexFaces = face.hexagonsInGrid(dto);
+            expect(hexFaces.length).toBe(9);
+            hexFaces.forEach(f => {
+                const area = face.getFaceArea({ shape: f });
+                expect(area).toBeCloseTo(9.599999999999998);
+                f.delete();
+            });
+        });
+    });
+
+    describe("Filter faces points", () => {
+        it("should filter points for multiple faces returning flat array", () => {
+            const f1 = face.createRectangleFace({ width: 2, length: 2, center: [0, 0, 0], direction: [0, 0, 1] });
+            const f2 = face.createRectangleFace({ width: 2, length: 2, center: [5, 0, 0], direction: [0, 0, 1] });
+            const dto = new OCCT.FilterFacesPointsDto(
+                [f1, f2],
+                [[0, 0, 0], [0.5, 0.5, 0], [5, 0, 0], [5.5, 0.5, 0], [10, 10, 0]],
+                1e-4,
+                false,
+                0.1,
+                true,
+                true,
+                false,
+                false,
+                true
+            );
+            const filteredPoints = face.filterFacesPoints(dto);
+            expect(Array.isArray(filteredPoints)).toBe(true);
+            expect((filteredPoints as number[][]).length).toBe(4);
+            f1.delete();
+            f2.delete();
+        });
+
+        it("should filter points for multiple faces returning nested array", () => {
+            const f1 = face.createRectangleFace({ width: 2, length: 2, center: [0, 0, 0], direction: [0, 0, 1] });
+            const f2 = face.createRectangleFace({ width: 2, length: 2, center: [5, 0, 0], direction: [0, 0, 1] });
+            const dto = new OCCT.FilterFacesPointsDto(
+                [f1, f2],
+                [[0, 0, 0], [0.5, 0.5, 0], [5, 0, 0], [5.5, 0.5, 0], [10, 10, 0]],
+                1e-4,
+                false,
+                0.1,
+                true,
+                true,
+                false,
+                false,
+                false
+            );
+            const filteredPoints = face.filterFacesPoints(dto);
+            expect(Array.isArray(filteredPoints)).toBe(true);
+            expect((filteredPoints as number[][][]).length).toBe(2);
+            f1.delete();
+            f2.delete();
+        });
+
+        it("should return empty array when no points match", () => {
+            const f1 = face.createRectangleFace({ width: 2, length: 2, center: [0, 0, 0], direction: [0, 0, 1] });
+            const dto = new OCCT.FilterFacesPointsDto(
+                [f1],
+                [[100, 100, 0], [200, 200, 0]],
+                1e-4,
+                false,
+                0.1,
+                true,
+                true,
+                false,
+                false,
+                true
+            );
+            const filteredPoints = face.filterFacesPoints(dto);
+            expect((filteredPoints as number[][]).length).toBe(0);
+            f1.delete();
+        });
+    });
 
 });
