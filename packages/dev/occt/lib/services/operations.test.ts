@@ -5,6 +5,7 @@ import { VectorHelperService } from "../api/vector-helper.service";
 import { OccHelper } from "../occ-helper";
 import { OCCTOperations } from "./operations";
 import { OCCTEdge, OCCTFace, OCCTShell, OCCTSolid, OCCTWire } from "./shapes";
+import { OCCTTransforms } from "./transforms";
 
 describe("OCCT operations unit tests", () => {
     let occt: OpenCascadeInstance;
@@ -15,6 +16,7 @@ describe("OCCT operations unit tests", () => {
     let face: OCCTFace;
     let solid: OCCTSolid;
     let shell: OCCTShell;
+    let transforms: OCCTTransforms;
 
     beforeAll(async () => {
         occt = await initOpenCascade();
@@ -27,6 +29,7 @@ describe("OCCT operations unit tests", () => {
         operations = new OCCTOperations(occt, occHelper);
         solid = new OCCTSolid(occt, occHelper);
         shell = new OCCTShell(occt, occHelper);
+        transforms = new OCCTTransforms(occt, occHelper);
     });
 
     it("should get two closest points between two shapes", async () => {
@@ -652,6 +655,126 @@ describe("OCCT operations unit tests", () => {
         offsetRes.delete();
     });
 
+    describe("offsetAdv", () => {
+        it("should offset a square wire with arc join type", () => {
+            const squareWire = wire.createSquareWire({ size: 2, center: [0, 0, 0], direction: [0, 1, 0] });
+            const offsetRes = operations.offsetAdv({
+                shape: squareWire,
+                distance: 0.2,
+                tolerance: 1e-7,
+                joinType: Inputs.OCCT.joinTypeEnum.arc,
+                removeIntEdges: false
+            });
+            const length = wire.getWireLength({ shape: offsetRes as TopoDS_Wire });
+            // Original perimeter is 8, offset by 0.2 outward adds arc corners
+            expect(length).toBeGreaterThan(8);
+            squareWire.delete();
+            offsetRes.delete();
+        });
+
+        it("should offset a square wire with intersection join type", () => {
+            const squareWire = wire.createSquareWire({ size: 2, center: [0, 0, 0], direction: [0, 1, 0] });
+            const offsetRes = operations.offsetAdv({
+                shape: squareWire,
+                distance: 0.2,
+                tolerance: 1e-7,
+                joinType: Inputs.OCCT.joinTypeEnum.intersection,
+                removeIntEdges: false
+            });
+            const length = wire.getWireLength({ shape: offsetRes as TopoDS_Wire });
+            // Intersection join type preserves sharp corners, so perimeter scales linearly
+            expect(length).toBeCloseTo(9.6, 1);
+            squareWire.delete();
+            offsetRes.delete();
+        });
+
+        it("should offset a square wire to negative direction", () => {
+            const squareWire = wire.createSquareWire({ size: 2, center: [0, 0, 0], direction: [0, 1, 0] });
+            const offsetRes = operations.offsetAdv({
+                shape: squareWire,
+                distance: -0.2,
+                tolerance: 1e-7,
+                joinType: Inputs.OCCT.joinTypeEnum.arc,
+                removeIntEdges: false
+            });
+            const length = wire.getWireLength({ shape: offsetRes as TopoDS_Wire });
+            // Inward offset reduces perimeter
+            expect(length).toBeLessThan(8);
+            squareWire.delete();
+            offsetRes.delete();
+        });
+
+        it("should offset a sphere with arc join type", () => {
+            const sphere = occHelper.entitiesService.bRepPrimAPIMakeSphere([0, 0, 0], [0, 1, 0], 1);
+            const offsetRes = operations.offsetAdv({
+                shape: sphere,
+                distance: 0.1,
+                tolerance: 1e-7,
+                joinType: Inputs.OCCT.joinTypeEnum.arc,
+                removeIntEdges: false
+            });
+            const faceAreaOriginal = face.getFaceArea({ shape: sphere });
+            const faceArea = face.getFaceArea({ shape: offsetRes });
+            expect(faceArea).toBeGreaterThan(faceAreaOriginal);
+            sphere.delete();
+            offsetRes.delete();
+        });
+
+        it("should offset a circle wire using a face reference", () => {
+            const circleWire = wire.createCircleWire({ center: [0, 0, 0], radius: 1, direction: [0, 1, 0] });
+            const f = face.createFaceFromWire({ shape: circleWire, planar: true });
+            const fRev = transforms.mirrorAlongNormal({ shape: f, origin: [0, 0, 0], normal: [1, 0, 0] });
+            const offsetRes = operations.offsetAdv({
+                shape: circleWire,
+                face: fRev as TopoDS_Face,
+                distance: 0.2,
+                tolerance: 1e-7,
+                joinType: Inputs.OCCT.joinTypeEnum.arc,
+                removeIntEdges: false
+            });
+            const wires = wire.getWires({ shape: offsetRes });
+            const length = wire.getWireLength({ shape: wires[0] });
+            // Original circumference is 2*PI*1 ≈ 6.28, offset outward by 0.2 gives 2*PI*1.2 ≈ 7.54
+            expect(length).toBeCloseTo(2 * Math.PI * 1.2, 1);
+            circleWire.delete();
+            f.delete();
+            fRev.delete();
+            offsetRes.delete();
+            wires.forEach(w => w.delete());
+        });
+
+        it("should return original shape when distance is zero", () => {
+            const squareWire = wire.createSquareWire({ size: 2, center: [0, 0, 0], direction: [0, 1, 0] });
+            const offsetRes = operations.offsetAdv({
+                shape: squareWire,
+                distance: 0,
+                tolerance: 1e-7,
+                joinType: Inputs.OCCT.joinTypeEnum.arc,
+                removeIntEdges: false
+            });
+            // When distance is 0, it should return the original shape
+            expect(offsetRes).toBe(squareWire);
+            squareWire.delete();
+        });
+
+        it("should offset a box solid", () => {
+            const box = occHelper.entitiesService.bRepPrimAPIMakeBox(2, 2, 2, [0, 0, 0]);
+            const offsetRes = operations.offsetAdv({
+                shape: box,
+                distance: 0.1,
+                tolerance: 1e-7,
+                joinType: Inputs.OCCT.joinTypeEnum.arc,
+                removeIntEdges: false
+            });
+            const volumeOriginal = solid.getSolidVolume({ shape: box });
+            const volumeOffset = solid.getSolidVolume({ shape: offsetRes });
+            // Offset outward should increase volume
+            expect(volumeOffset).toBeGreaterThan(volumeOriginal);
+            box.delete();
+            offsetRes.delete();
+        });
+    });
+
     it("should extrude multiple shapes", () => {
         const squareFace = face.createSquareFace({ center: [0, 0, 3], size: 1, direction: [0, 0, 1] });
         const circleFace = face.createCircleFace({ center: [0, 0, 0], radius: 1, direction: [0, 0, 1] });
@@ -912,6 +1035,93 @@ describe("OCCT operations unit tests", () => {
         sew.delete();
         boxFaces.forEach(f => f.delete());
         res.delete();
+    });
+
+    describe("splitShapeWithShapes", () => {
+        it("should split a face with a wire", () => {
+            const squareFace = face.createSquareFace({ size: 4, center: [0, 0, 0], direction: [0, 1, 0] });
+            const circleWire = wire.createCircleWire({ center: [0, 0, 0], radius: 1, direction: [0, 1, 0] });
+            const splitDto = new Inputs.OCCT.SplitDto(squareFace as TopoDS_Shape, [circleWire as TopoDS_Shape]);
+            const results = operations.splitShapeWithShapes(splitDto);
+            // Split should return multiple shapes (the face pieces)
+            expect(results.length).toBe(3);
+            squareFace.delete();
+            circleWire.delete();
+            results.forEach(s => s.delete());
+        });
+
+        it("should split a face with multiple wires", () => {
+            const squareFace = face.createSquareFace({ size: 6, center: [0, 0, 0], direction: [0, 1, 0] });
+            const circleWire1 = wire.createCircleWire({ center: [-1, 0, 0], radius: 0.5, direction: [0, 1, 0] });
+            const circleWire2 = wire.createCircleWire({ center: [1, 0, 0], radius: 0.5, direction: [0, 1, 0] });
+            const splitDto = new Inputs.OCCT.SplitDto(squareFace as TopoDS_Shape, [circleWire1 as TopoDS_Shape, circleWire2 as TopoDS_Shape]);
+            const results = operations.splitShapeWithShapes(splitDto);
+            // Split with 2 wires should return more pieces
+            expect(results.length).toBe(5);
+            squareFace.delete();
+            circleWire1.delete();
+            circleWire2.delete();
+            results.forEach(s => s.delete());
+        });
+
+        it("should return results when splitting shapes", () => {
+            const squareFace = face.createSquareFace({ size: 4, center: [0, 0, 0], direction: [0, 1, 0] });
+            const lineWire = wire.createLineWire({ start: [-3, 0, 0], end: [3, 0, 0] });
+            const splitDto = new Inputs.OCCT.SplitDto(squareFace as TopoDS_Shape, [lineWire as TopoDS_Shape]);
+            const results = operations.splitShapeWithShapes(splitDto);
+            expect(results.length).toBe(3);
+            squareFace.delete();
+            lineWire.delete();
+            results.forEach(s => s.delete());
+        });
+    });
+
+    describe("makeThickSolidByJoin", () => {
+        it("should make thick solid from a solid by removing a face", () => {
+            const box = occHelper.entitiesService.bRepPrimAPIMakeBox(2, 2, 2, [0, 0, 0]);
+            const boxFaces = face.getFaces({ shape: box });
+            const topFace = boxFaces[boxFaces.length - 1]; // Get top face to remove
+            const thickDto = new Inputs.OCCT.ThickSolidByJoinDto(box, [topFace as TopoDS_Shape], 0.2, 1e-3);
+            const result = operations.makeThickSolidByJoin(thickDto);
+            const vol = solid.getSolidVolume({ shape: result });
+            // Original box is 8, thick solid should be larger due to offset
+            expect(vol).toBeCloseTo(4.519409997776157);
+            box.delete();
+            boxFaces.forEach(f => f.delete());
+            result.delete();
+        });
+
+        it("should make thick solid with arc join type", () => {
+            const box = occHelper.entitiesService.bRepPrimAPIMakeBox(2, 2, 2, [0, 0, 0]);
+            const boxFaces = face.getFaces({ shape: box });
+            const topFace = boxFaces[boxFaces.length - 1]; // Get top face to remove
+            const thickDto = new Inputs.OCCT.ThickSolidByJoinDto(
+                box, [topFace as TopoDS_Shape], 0.3, 1e-3, false, false, Inputs.OCCT.joinTypeEnum.arc, false
+            );
+            const resultArc = operations.makeThickSolidByJoin(thickDto);
+            const volArc = solid.getSolidVolume({ shape: resultArc });
+            expect(volArc).toBeCloseTo(7.187522023473766);
+
+            box.delete();
+            boxFaces.forEach(f => f.delete());
+            resultArc.delete();
+        });
+
+        it("should make thick solid with intersection join type", () => {
+            const box = occHelper.entitiesService.bRepPrimAPIMakeBox(2, 2, 2, [0, 0, 0]);
+            const boxFaces = face.getFaces({ shape: box });
+            const topFace = boxFaces[boxFaces.length - 1]; // Get top face to remove
+            const thickDto = new Inputs.OCCT.ThickSolidByJoinDto(
+                box, [topFace as TopoDS_Shape], 0.3, 1e-3, false, false, Inputs.OCCT.joinTypeEnum.intersection, false
+            );
+            const resultIntersection = operations.makeThickSolidByJoin(thickDto);
+            const volIntersection = solid.getSolidVolume({ shape: resultIntersection });
+            expect(volIntersection).toBeCloseTo(7.547999999999998);
+
+            box.delete();
+            boxFaces.forEach(f => f.delete());
+            resultIntersection.delete();
+        });
     });
 
     describe("Bounding box operations", () => {

@@ -728,7 +728,10 @@ describe("OCCT io unit tests", () => {
     });
 
     it("should return undefined for unsupported file extension", () => {
+        const consoleSpy = jest.spyOn(console, "error").mockImplementation(() => {});
         const result = io.loadSTEPorIGES({ filetext: "some content", fileName: "file.obj", adjustZtoY: false });
         expect(result).toBeUndefined();
+        expect(consoleSpy).toHaveBeenCalledWith("opencascade can't parse this extension! (yet)");
+        consoleSpy.mockRestore();
     });
 });
