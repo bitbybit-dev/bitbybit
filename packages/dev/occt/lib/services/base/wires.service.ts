@@ -582,10 +582,11 @@ export class WiresService {
 
     splitOnPoints(inputs: Inputs.OCCT.SplitWireOnPointsDto<TopoDS_Wire>): TopoDS_Wire[] {
         const wire = inputs.shape;
-        const splitPoints = inputs.points;
+        // Remove duplicate points to avoid incorrect behavior
+        const splitPoints = this.vecHelper.removeAllDuplicateVectors(inputs.points, 1e-7);
 
-        // 1. Get the list of edges from the wire
-        const edges = this.shapeGettersService.getEdges({ shape: wire });
+        // 1. Get the list of edges from the wire in correct order along the wire
+        const edges = this.edgesService.getEdgesAlongWire({ shape: wire });
         if (edges.length === 0) return [];
 
         // 2. Collect split locations as {edgeIndex, parameter}
@@ -611,7 +612,7 @@ export class WiresService {
                 const firstVal = first.current;
                 const lastVal = last.current;
 
-                const gpPnt = this.entitiesService.gpPnt(pt);
+                const gpPnt = this.entitiesService.gpPnt(pt as Base.Point3);
                 const projector = new this.occ.GeomAPI_ProjectPointOnCurve_2(gpPnt, curve);
                 if (projector.NbPoints() > 0) {
                     const param = projector.LowerDistanceParameter();

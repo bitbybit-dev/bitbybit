@@ -1103,7 +1103,7 @@ describe("OCCT wire unit tests", () => {
     });
 
     // TODO this test is failing because theres a bug in splitting on points method
-    xit("should split filleted triangle by points", () => {
+    it("should split filleted triangle by points", () => {
         const triangle = wire.createPolygonWire({
             points: [
                 [-0.5, 0, -0.28867513459],
@@ -1123,6 +1123,301 @@ describe("OCCT wire unit tests", () => {
         const segmentLengths = split.map((s) => wire.getWireLength({ shape: s }));
         segmentLengths.forEach(len => {
             expect(len).toBeCloseTo(0.431514);
+        });
+    });
+
+    it("should split filleted square by points", () => {
+        const square = wire.createSquareWire({
+            size: 2,
+            center: [0, 0, 0],
+            direction: [0, 1, 0]
+        });
+        const filletedSquare = fillets.fillet2d({ shape: square, radius: 0.2 });
+        const pts = wire.divideWireByEqualDistanceToPoints({
+            shape: filletedSquare,
+            removeEndPoint: true,
+            removeStartPoint: false,
+            nrOfDivisions: 8
+        });
+        const split = wire.splitOnPoints({ shape: filletedSquare, points: pts });
+        expect(split.length).toBe(8);
+        const segmentLengths = split.map((s) => wire.getWireLength({ shape: s }));
+        const totalLength = segmentLengths.reduce((a, b) => a + b, 0);
+        const expectedTotalLength = wire.getWireLength({ shape: filletedSquare });
+        // Verify total length is preserved
+        expect(totalLength).toBeCloseTo(expectedTotalLength, 2);
+    });
+
+    it("should split filleted rectangle by points with many divisions", () => {
+        const rectangle = wire.createRectangleWire({
+            width: 3,
+            length: 2,
+            center: [0, 0, 0],
+            direction: [0, 1, 0]
+        });
+        const filletedRect = fillets.fillet2d({ shape: rectangle, radius: 0.3 });
+        const pts = wire.divideWireByEqualDistanceToPoints({
+            shape: filletedRect,
+            removeEndPoint: true,
+            removeStartPoint: false,
+            nrOfDivisions: 20
+        });
+        const split = wire.splitOnPoints({ shape: filletedRect, points: pts });
+        expect(split.length).toBe(20);
+        const segmentLengths = split.map((s) => wire.getWireLength({ shape: s }));
+        const totalLength = segmentLengths.reduce((a, b) => a + b, 0);
+        const expectedTotalLength = wire.getWireLength({ shape: filletedRect });
+        // Verify total length is preserved
+        expect(totalLength).toBeCloseTo(expectedTotalLength, 2);
+    });
+
+    it("should split ellipse wire by points", () => {
+        const ellipse = wire.createEllipseWire({
+            radiusMajor: 2,
+            radiusMinor: 1,
+            center: [0, 0, 0],
+            direction: [0, 1, 0]
+        });
+        const pts = wire.divideWireByEqualDistanceToPoints({
+            shape: ellipse,
+            removeEndPoint: true,
+            removeStartPoint: false,
+            nrOfDivisions: 12
+        });
+        const split = wire.splitOnPoints({ shape: ellipse, points: pts });
+        expect(split.length).toBe(12);
+        const segmentLengths = split.map((s) => wire.getWireLength({ shape: s }));
+        const totalLength = segmentLengths.reduce((a, b) => a + b, 0);
+        const expectedTotalLength = wire.getWireLength({ shape: ellipse });
+        // Verify total length is preserved (tolerance for curve parameterization differences)
+        expect(totalLength).toBeCloseTo(expectedTotalLength, 1);
+    });
+
+    it("should split bspline wire by points", () => {
+        const bspline = wire.createBSpline({
+            points: [[0, 0, 0], [1, 2, 0], [2, 0, 0], [3, 2, 0], [4, 0, 0]],
+            closed: false
+        });
+        const pts = wire.divideWireByEqualDistanceToPoints({
+            shape: bspline,
+            removeEndPoint: true,
+            removeStartPoint: false,
+            nrOfDivisions: 15
+        });
+        const split = wire.splitOnPoints({ shape: bspline, points: pts });
+        expect(split.length).toBe(15);
+        const segmentLengths = split.map((s) => wire.getWireLength({ shape: s }));
+        const totalLength = segmentLengths.reduce((a, b) => a + b, 0);
+        const expectedTotalLength = wire.getWireLength({ shape: bspline });
+        // Verify total length is preserved (small tolerance for curve reconstruction differences)
+        expect(totalLength).toBeCloseTo(expectedTotalLength, 0);
+    });
+
+    it("should split closed bspline wire by points", () => {
+        const bspline = wire.createBSpline({
+            points: [[0, 0, 0], [1, 2, 0], [2, 0, 0], [3, 2, 0], [2, 3, 0], [0, 2, 0]],
+            closed: true
+        });
+        const pts = wire.divideWireByEqualDistanceToPoints({
+            shape: bspline,
+            removeEndPoint: true,
+            removeStartPoint: false,
+            nrOfDivisions: 10
+        });
+        const split = wire.splitOnPoints({ shape: bspline, points: pts });
+        expect(split.length).toBe(10);
+        const segmentLengths = split.map((s) => wire.getWireLength({ shape: s }));
+        const totalLength = segmentLengths.reduce((a, b) => a + b, 0);
+        const expectedTotalLength = wire.getWireLength({ shape: bspline });
+        // Verify total length is preserved for closed bspline (small tolerance for curve reconstruction)
+        expect(totalLength).toBeCloseTo(expectedTotalLength, 0);
+    });
+
+    it("should split bezier wire by points", () => {
+        const bezier = wire.createBezier({
+            points: [[0, 0, 0], [1, 3, 0], [2, -1, 0], [3, 2, 0]],
+            closed: false
+        });
+        const pts = wire.divideWireByEqualDistanceToPoints({
+            shape: bezier,
+            removeEndPoint: true,
+            removeStartPoint: false,
+            nrOfDivisions: 8
+        });
+        const split = wire.splitOnPoints({ shape: bezier, points: pts });
+        expect(split.length).toBe(8);
+        const segmentLengths = split.map((s) => wire.getWireLength({ shape: s }));
+        const expectedLength = wire.getWireLength({ shape: bezier }) / 8;
+        // Allow slightly looser tolerance for bezier curve parameterization
+        segmentLengths.forEach(len => {
+            expect(len).toBeCloseTo(expectedLength, 3);
+        });
+    });
+
+    it("should split filleted pentagon (ngon) by points", () => {
+        const pentagon = wire.createNGonWire({
+            nrCorners: 5,
+            radius: 2,
+            center: [0, 0, 0],
+            direction: [0, 1, 0]
+        });
+        const filletedPentagon = fillets.fillet2d({ shape: pentagon, radius: 0.2 });
+        const pts = wire.divideWireByEqualDistanceToPoints({
+            shape: filletedPentagon,
+            removeEndPoint: true,
+            removeStartPoint: false,
+            nrOfDivisions: 10
+        });
+        const split = wire.splitOnPoints({ shape: filletedPentagon, points: pts });
+        expect(split.length).toBe(10);
+        const segmentLengths = split.map((s) => wire.getWireLength({ shape: s }));
+        const totalLength = segmentLengths.reduce((a, b) => a + b, 0);
+        const expectedTotalLength = wire.getWireLength({ shape: filletedPentagon });
+        // Verify total length is preserved
+        expect(totalLength).toBeCloseTo(expectedTotalLength, 2);
+    });
+
+    it("should split filleted hexagon by points with odd number of divisions", () => {
+        const hexagon = wire.createNGonWire({
+            nrCorners: 6,
+            radius: 1.5,
+            center: [0, 0, 0],
+            direction: [0, 1, 0]
+        });
+        const filletedHexagon = fillets.fillet2d({ shape: hexagon, radius: 0.15 });
+        const pts = wire.divideWireByEqualDistanceToPoints({
+            shape: filletedHexagon,
+            removeEndPoint: true,
+            removeStartPoint: false,
+            nrOfDivisions: 7
+        });
+        const split = wire.splitOnPoints({ shape: filletedHexagon, points: pts });
+        expect(split.length).toBe(7);
+        const segmentLengths = split.map((s) => wire.getWireLength({ shape: s }));
+        const expectedLength = wire.getWireLength({ shape: filletedHexagon }) / 7;
+        segmentLengths.forEach(len => {
+            expect(len).toBeCloseTo(expectedLength, 4);
+        });
+    });
+
+    it("should split L-polygon wire by points", () => {
+        const lPolygon = wire.createLPolygonWire({
+            widthFirst: 2,
+            lengthFirst: 3,
+            widthSecond: 1,
+            lengthSecond: 1.5,
+            align: Inputs.OCCT.directionEnum.outside,
+            rotation: 0,
+            center: [0, 0, 0],
+            direction: [0, 1, 0]
+        });
+        const pts = wire.divideWireByEqualDistanceToPoints({
+            shape: lPolygon,
+            removeEndPoint: true,
+            removeStartPoint: false,
+            nrOfDivisions: 12
+        });
+        const split = wire.splitOnPoints({ shape: lPolygon, points: pts });
+        expect(split.length).toBe(12);
+        const segmentLengths = split.map((s) => wire.getWireLength({ shape: s }));
+        const expectedLength = wire.getWireLength({ shape: lPolygon }) / 12;
+        segmentLengths.forEach(len => {
+            expect(len).toBeCloseTo(expectedLength, 4);
+        });
+    });
+
+    it("should split parallelogram wire by points", () => {
+        const parallelogram = wire.createParallelogramWire({
+            width: 3,
+            height: 2,
+            angle: 30,
+            aroundCenter: true,
+            center: [0, 0, 0],
+            direction: [0, 1, 0]
+        });
+        const pts = wire.divideWireByEqualDistanceToPoints({
+            shape: parallelogram,
+            removeEndPoint: true,
+            removeStartPoint: false,
+            nrOfDivisions: 8
+        });
+        const split = wire.splitOnPoints({ shape: parallelogram, points: pts });
+        expect(split.length).toBe(8);
+        const segmentLengths = split.map((s) => wire.getWireLength({ shape: s }));
+        const expectedLength = wire.getWireLength({ shape: parallelogram }) / 8;
+        segmentLengths.forEach(len => {
+            expect(len).toBeCloseTo(expectedLength, 4);
+        });
+    });
+
+    it("should split combined wire with mixed edge types by points", () => {
+        // Create a wire that combines straight edges and a curved edge
+        const line1 = wire.createLineWire({ start: [0, 0, 0], end: [2, 0, 0] });
+        const arc = edge.arcThroughThreePoints({ start: [2, 0, 0], middle: [2.5, 0, 0.5], end: [2, 0, 1] });
+        const arcWire = wire.createWireFromEdge({ shape: arc });
+        const line2 = wire.createLineWire({ start: [2, 0, 1], end: [0, 0, 1] });
+        const combinedWire = wire.combineEdgesAndWiresIntoAWire({ shapes: [line1, arcWire, line2] });
+        
+        const pts = wire.divideWireByEqualDistanceToPoints({
+            shape: combinedWire,
+            removeEndPoint: true,
+            removeStartPoint: false,
+            nrOfDivisions: 10
+        });
+        const split = wire.splitOnPoints({ shape: combinedWire, points: pts });
+        expect(split.length).toBe(10);
+        const segmentLengths = split.map((s) => wire.getWireLength({ shape: s }));
+        const expectedLength = wire.getWireLength({ shape: combinedWire }) / 10;
+        segmentLengths.forEach(len => {
+            expect(len).toBeCloseTo(expectedLength, 4);
+        });
+    });
+
+    it("should split filleted L-polygon wire by points", () => {
+        const lPolygon = wire.createLPolygonWire({
+            widthFirst: 2,
+            lengthFirst: 3,
+            widthSecond: 1,
+            lengthSecond: 1.5,
+            align: Inputs.OCCT.directionEnum.middle,
+            rotation: 0,
+            center: [0, 0, 0],
+            direction: [0, 1, 0]
+        });
+        const filletedL = fillets.fillet2d({ shape: lPolygon, radius: 0.15 });
+        const pts = wire.divideWireByEqualDistanceToPoints({
+            shape: filletedL,
+            removeEndPoint: true,
+            removeStartPoint: false,
+            nrOfDivisions: 16
+        });
+        const split = wire.splitOnPoints({ shape: filletedL, points: pts });
+        expect(split.length).toBe(16);
+        const segmentLengths = split.map((s) => wire.getWireLength({ shape: s }));
+        const expectedLength = wire.getWireLength({ shape: filletedL }) / 16;
+        segmentLengths.forEach(len => {
+            expect(len).toBeCloseTo(expectedLength, 4);
+        });
+    });
+
+    it("should split periodic interpolated wire by points", () => {
+        const periodicWire = wire.interpolatePoints({
+            points: [[0, 0, 0], [2, 1, 0], [3, 0, 0], [2, -1, 0]],
+            periodic: true,
+            tolerance: 1e-7
+        });
+        const pts = wire.divideWireByEqualDistanceToPoints({
+            shape: periodicWire,
+            removeEndPoint: true,
+            removeStartPoint: false,
+            nrOfDivisions: 12
+        });
+        const split = wire.splitOnPoints({ shape: periodicWire, points: pts });
+        expect(split.length).toBe(12);
+        const segmentLengths = split.map((s) => wire.getWireLength({ shape: s }));
+        const expectedLength = wire.getWireLength({ shape: periodicWire }) / 12;
+        segmentLengths.forEach(len => {
+            expect(len).toBeCloseTo(expectedLength, 4);
         });
     });
 
