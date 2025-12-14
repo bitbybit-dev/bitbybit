@@ -283,7 +283,8 @@ describe("OCCT io unit tests", () => {
         expect(pathsWithLayer.layer).toBe("TestLayer");
         expect(pathsWithLayer.color).toBe("#FF0000");
 
-        const dxfContent = io.dxfCreate({ pathsParts: [pathsWithLayer] });
+        const dxfDto = new Inputs.OCCT.DxfPathsPartsListDto([pathsWithLayer]);
+        const dxfContent = io.dxfCreate(dxfDto);
         expect(dxfContent).toContain("TestLayer");
         expect(dxfContent).toContain("LWPOLYLINE");
     });
@@ -593,5 +594,141 @@ describe("OCCT io unit tests", () => {
 
         arcWire.delete();
         arc.delete();
+    });
+
+    it("should save cube shape as STL file", () => {
+        const cube = solid.createCube({ size: 10, center: [0, 0, 0] });
+        const dto = new Inputs.OCCT.SaveStlDto(cube, "cube.stl", 0.01, false);
+        const stl = io.saveShapeStl(dto);
+        
+        // STL file should contain proper header and facet definitions
+        expect(stl).toContain("solid");
+        expect(stl).toContain("facet normal");
+        expect(stl).toContain("outer loop");
+        expect(stl).toContain("vertex");
+        expect(stl).toContain("endloop");
+        expect(stl).toContain("endfacet");
+        expect(stl).toContain("endsolid");
+        
+        cube.delete();
+    });
+
+    it("should save cylinder shape as STL file", () => {
+        const cylinder = solid.createCylinder({ radius: 5, height: 10, direction: [0, 1, 0], center: [0, 0, 0] });
+        const dto = new Inputs.OCCT.SaveStlDto(cylinder, "cylinder.stl", 0.1, false);
+        const stl = io.saveShapeStl(dto);
+        
+        expect(stl).toContain("solid");
+        expect(stl).toContain("facet normal");
+        expect(stl).toContain("endsolid");
+        
+        // Count the number of facets (triangles)
+        const facetCount = (stl.match(/facet normal/g) || []).length;
+        expect(facetCount).toBeGreaterThan(10);
+        
+        cylinder.delete();
+    });
+
+    it("should save cone shape as STL file with Y to Z adjustment", () => {
+        const cone = solid.createCone({ radius1: 10, radius2: 5, height: 20, angle: 360, direction: [0, 1, 0], center: [0, 0, 0] });
+        const dto = new Inputs.OCCT.SaveStlDto(cone, "cone.stl", 0.1, true);
+        const stl = io.saveShapeStl(dto);
+        
+        expect(stl).toContain("solid");
+        expect(stl).toContain("facet normal");
+        expect(stl).toContain("endsolid");
+        
+        cone.delete();
+    });
+
+    it("should save sphere shape as STL file with higher precision", () => {
+        const sphere = solid.createSphere({ radius: 5, center: [0, 0, 0] });
+        const dtoLowRes = new Inputs.OCCT.SaveStlDto(sphere, "sphere.stl", 1, false);
+        const stlLowRes = io.saveShapeStl(dtoLowRes);
+        
+        const dtoHighRes = new Inputs.OCCT.SaveStlDto(sphere, "sphere.stl", 0.01, false);
+        const stlHighRes = io.saveShapeStl(dtoHighRes);
+        
+        // Higher precision should result in more facets
+        const facetCountLow = (stlLowRes.match(/facet normal/g) || []).length;
+        const facetCountHigh = (stlHighRes.match(/facet normal/g) || []).length;
+        
+        expect(facetCountHigh).toBeGreaterThan(facetCountLow);
+        
+        sphere.delete();
+    });
+
+    it("should save box shape as STL file and contain valid vertex coordinates", () => {
+        const box = solid.createBox({ width: 4, length: 6, height: 8, center: [0, 0, 0] });
+        const dto = new Inputs.OCCT.SaveStlDto(box, "box.stl", 0.01, false);
+        const stl = io.saveShapeStl(dto);
+        
+        // A box should have 12 triangular facets (2 per face, 6 faces)
+        const facetCount = (stl.match(/facet normal/g) || []).length;
+        expect(facetCount).toBe(12);
+        
+        // Check that vertex coordinates are present
+        const vertexMatches = stl.match(/vertex\s+[-\d.e+]+\s+[-\d.e+]+\s+[-\d.e+]+/g);
+        expect(vertexMatches).not.toBeNull();
+        expect(vertexMatches).toHaveLength(36); // 12 facets * 3 vertices each
+        
+        box.delete();
+    });
+
+    it("should load shape from STEP file with .stp extension", () => {
+        const cube = solid.createCube({ size: 5, center: [0, 0, 0] });
+        const stepText = io.saveShapeSTEP({ shape: cube, adjustYtoZ: false, fileName: "cube.stp" });
+        const loaded = io.loadSTEPorIGES({ filetext: stepText, fileName: "cube.stp", adjustZtoY: false });
+
+        const volumeOriginal = solid.getSolidVolume({ shape: cube });
+        const volumeLoaded = solid.getSolidVolume({ shape: loaded });
+        expect(volumeOriginal).toBeCloseTo(volumeLoaded);
+        
+        cube.delete();
+        loaded.delete();
+    });
+
+    it("should load shape from STEP file with adjustZtoY enabled", () => {
+        const cylinder = solid.createCylinder({ radius: 3, height: 10, direction: [0, 1, 0], center: [0, 0, 0] });
+        const stepText = io.saveShapeSTEP({ shape: cylinder, adjustYtoZ: true, fileName: "cylinder.step" });
+        const loaded = io.loadSTEPorIGES({ filetext: stepText, fileName: "cylinder.step", adjustZtoY: true });
+
+        const volumeOriginal = solid.getSolidVolume({ shape: cylinder });
+        const volumeLoaded = solid.getSolidVolume({ shape: loaded });
+        expect(volumeOriginal).toBeCloseTo(volumeLoaded);
+        
+        cylinder.delete();
+        loaded.delete();
+    });
+
+    it("should load sphere shape from STEP file and preserve volume", () => {
+        const sphere = solid.createSphere({ radius: 7, center: [0, 0, 0] });
+        const stepText = io.saveShapeSTEP({ shape: sphere, adjustYtoZ: false, fileName: "sphere.step" });
+        const loaded = io.loadSTEPorIGES({ filetext: stepText, fileName: "sphere.step", adjustZtoY: false });
+
+        const volumeOriginal = solid.getSolidVolume({ shape: sphere });
+        const volumeLoaded = solid.getSolidVolume({ shape: loaded });
+        expect(volumeOriginal).toBeCloseTo(volumeLoaded);
+        
+        sphere.delete();
+        loaded.delete();
+    });
+
+    it("should load box shape from STEP file and preserve volume", () => {
+        const box = solid.createBox({ width: 4, length: 6, height: 8, center: [0, 0, 0] });
+        const stepText = io.saveShapeSTEP({ shape: box, adjustYtoZ: false, fileName: "box.step" });
+        const loaded = io.loadSTEPorIGES({ filetext: stepText, fileName: "box.step", adjustZtoY: false });
+
+        const volumeOriginal = solid.getSolidVolume({ shape: box });
+        const volumeLoaded = solid.getSolidVolume({ shape: loaded });
+        expect(volumeOriginal).toBeCloseTo(volumeLoaded);
+        
+        box.delete();
+        loaded.delete();
+    });
+
+    it("should return undefined for unsupported file extension", () => {
+        const result = io.loadSTEPorIGES({ filetext: "some content", fileName: "file.obj", adjustZtoY: false });
+        expect(result).toBeUndefined();
     });
 });
