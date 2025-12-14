@@ -71,7 +71,8 @@
             "lib/occ-service.ts",
             "lib/api/shapes-helper.service.ts",
             "lib/api/vector-helper.service.ts",
-            "!**/index.ts"
+            "!**/index.ts",
+            "!**/io-assembly.ts"
         ]
     }
 }
