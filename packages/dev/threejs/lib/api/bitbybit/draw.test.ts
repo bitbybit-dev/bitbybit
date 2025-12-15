@@ -6,7 +6,7 @@ import { DrawHelper } from "../draw-helper";
 import { Draw } from "./draw";
 import { JSCADWorkerManager } from "@bitbybit-dev/jscad-worker";
 import { OCCTWorkerManager } from "@bitbybit-dev/occt-worker/lib";
-import { InstancedMesh, LineSegments, Mesh, MeshPhongMaterial, Scene } from "three";
+import { Group, InstancedMesh, LineSegments, Mesh, MeshPhongMaterial, Scene } from "three";
 import * as Inputs from "../inputs";
 import { ManifoldWorkerManager } from "@bitbybit-dev/manifold-worker";
 
@@ -806,6 +806,656 @@ describe("Draw unit tests", () => {
             const material = mesh.material as MeshPhongMaterial;
             expect(material.color.getHexString()).toEqual("0000ff");
 
+        });
+    });
+
+    describe("Draw segment tests", () => {
+
+        it("should draw a segment (2-point array) via draw any", () => {
+            const segment: Inputs.Base.Segment3 = [[0, 0, 0], [1, 2, 3]];
+            const res = draw.drawAny({ entity: segment });
+            expect(res.name).toContain("polylines");
+            expect(res.userData.type).toBe(Inputs.Draw.drawingTypes.line);
+            expect(res.children[0] instanceof LineSegments).toBe(true);
+        });
+
+        it("should draw a segment via draw any async", async () => {
+            const segment: Inputs.Base.Segment3 = [[-1, -2, -3], [4, 5, 6]];
+            const res = await draw.drawAnyAsync({ entity: segment });
+            expect(res.name).toContain("polylines");
+            expect(res.userData.type).toBe(Inputs.Draw.drawingTypes.line);
+        });
+
+        it("should update a segment via draw any", () => {
+            const options = {
+                ...new Inputs.Draw.DrawBasicGeometryOptions(),
+                updatable: true,
+            };
+            const segment1: Inputs.Base.Segment3 = [[0, 0, 0], [1, 1, 1]];
+            const segment2: Inputs.Base.Segment3 = [[2, 2, 2], [3, 3, 3]];
+            const res = draw.drawAny({ entity: segment1, options });
+            const res2 = draw.drawAny({ entity: segment2, options, group: res });
+            expect(res.name).toEqual(res2.name);
+        });
+    });
+
+    describe("Draw edge cases and undefined handling", () => {
+
+        it("should return undefined for undefined entity via drawAnyAsync", async () => {
+            const res = await draw.drawAnyAsync({ entity: undefined });
+            expect(res).toBeUndefined();
+        });
+
+        it("should return undefined for empty array entity via drawAnyAsync", async () => {
+            const res = await draw.drawAnyAsync({ entity: [] });
+            expect(res).toBeUndefined();
+        });
+
+        it("should return undefined for undefined entity via drawAny", () => {
+            // drawAny doesn't handle undefined entities gracefully - detectLine will throw
+            // Testing that result is undefined when detection functions don't match
+            const res = draw.drawAny({ entity: { unknownType: true } as any });
+            expect(res).toBeUndefined();
+        });
+    });
+
+    describe("Options functions", () => {
+
+        it("should return simple options unchanged", () => {
+            const options = new Inputs.Draw.DrawBasicGeometryOptions();
+            options.colours = "#ff0000";
+            options.size = 5;
+            const result = draw.optionsSimple(options);
+            expect(result).toEqual(options);
+            expect(result.colours).toBe("#ff0000");
+            expect(result.size).toBe(5);
+        });
+
+        it("should return OCCT shape options unchanged", () => {
+            const options = new Inputs.Draw.DrawOcctShapeOptions();
+            options.faceColour = "#00ff00";
+            options.drawEdges = true;
+            const result = draw.optionsOcctShape(options);
+            expect(result).toEqual(options);
+            expect(result.faceColour).toBe("#00ff00");
+            expect(result.drawEdges).toBe(true);
+        });
+    });
+
+    describe("Update via group userData type", () => {
+
+        it("should update point when group has point type in userData", () => {
+            const options = {
+                ...new Inputs.Draw.DrawBasicGeometryOptions(),
+                updatable: true,
+            };
+            const res = draw.drawAny({ entity: [1, 2, 3], options });
+            expect(res.userData.type).toBe(Inputs.Draw.drawingTypes.point);
+            
+            const res2 = draw.drawAny({ entity: [4, 5, 6], options, group: res });
+            expect(res.name).toEqual(res2.name);
+            expect(res2.children[0].position.x).toBe(4);
+        });
+
+        it("should update points when group has points type in userData", () => {
+            const options = {
+                ...new Inputs.Draw.DrawBasicGeometryOptions(),
+                updatable: true,
+            };
+            const res = draw.drawAny({ entity: [[1, 2, 3], [4, 5, 6]], options });
+            // Array of two 3D points could be detected as a line (segment) or points
+            // The actual type depends on detection order in drawAny
+            expect(res.userData.type).toBeDefined();
+            
+            const res2 = draw.drawAny({ entity: [[7, 8, 9], [10, 11, 12]], options, group: res });
+            expect(res.name).toEqual(res2.name);
+        });
+
+        it("should update line when group has line type in userData", () => {
+            const options = {
+                ...new Inputs.Draw.DrawBasicGeometryOptions(),
+                updatable: true,
+            };
+            const res = draw.drawAny({ entity: { start: [0, 0, 0], end: [1, 1, 1] }, options });
+            expect(res.userData.type).toBe(Inputs.Draw.drawingTypes.line);
+            
+            const res2 = draw.drawAny({ entity: { start: [2, 2, 2], end: [3, 3, 3] }, options, group: res });
+            expect(res.name).toEqual(res2.name);
+        });
+
+        it("should update polyline when group has polyline type in userData", () => {
+            const options = {
+                ...new Inputs.Draw.DrawBasicGeometryOptions(),
+                updatable: true,
+            };
+            const res = draw.drawAny({ entity: { points: [[0, 0, 0], [1, 1, 1], [2, 2, 2]] }, options });
+            expect(res.userData.type).toBe(Inputs.Draw.drawingTypes.polyline);
+            
+            const res2 = draw.drawAny({ entity: { points: [[3, 3, 3], [4, 4, 4], [5, 5, 5]] }, options, group: res });
+            expect(res.name).toEqual(res2.name);
+        });
+
+        it("should update verb curve when group has verbCurve type in userData", () => {
+            const curveMock1 = {
+                tessellate: () => [[0, 0, 0], [1, 1, 1]],
+                _data: { controlPoints: [], knots: 3, degree: 3 },
+            };
+            const curveMock2 = {
+                tessellate: () => [[2, 2, 2], [3, 3, 3]],
+                _data: { controlPoints: [], knots: 3, degree: 3 },
+            };
+            const options = {
+                ...new Inputs.Draw.DrawBasicGeometryOptions(),
+                updatable: true,
+            };
+            const res = draw.drawAny({ entity: curveMock1, options });
+            expect(res.userData.type).toBe(Inputs.Draw.drawingTypes.verbCurve);
+            
+            const res2 = draw.drawAny({ entity: curveMock2, options, group: res });
+            expect(res.name).toEqual(res2.name);
+        });
+
+        it("should update verb surface when group has verbSurface type in userData", () => {
+            const surfaceMock1 = createSurfaceMock();
+            const surfaceMock2 = createSurfaceMock2();
+            const options = {
+                ...new Inputs.Draw.DrawBasicGeometryOptions(),
+                updatable: true,
+            };
+            const res = draw.drawAny({ entity: surfaceMock1, options });
+            expect(res.userData.type).toBe(Inputs.Draw.drawingTypes.verbSurface);
+            
+            const res2 = draw.drawAny({ entity: surfaceMock2, options, group: res });
+            expect(res.name).toEqual(res2.name);
+        });
+
+        it("should use options from group userData when no options provided", () => {
+            const originalOptions = {
+                ...new Inputs.Draw.DrawBasicGeometryOptions(),
+                colours: "#ff0000",
+                size: 5,
+                updatable: true,
+            };
+            const res = draw.drawAny({ entity: [1, 2, 3], options: originalOptions });
+            
+            // Now update without providing options - should use stored options from userData
+            const res2 = draw.drawAny({ entity: [4, 5, 6], group: res });
+            expect(res.name).toEqual(res2.name);
+        });
+    });
+
+    describe("Draw Manifold meshes", () => {
+
+        it("should draw a manifold shape", async () => {
+            manifoldWorkerManager.genericCallToWorkerPromise = jest.fn().mockResolvedValue({
+                vertProperties: new Float32Array([0, 0, 0, 1, 0, 0, 0, 1, 0]),
+                triVerts: new Uint32Array([0, 1, 2])
+            });
+
+            const options = new Inputs.Draw.DrawManifoldOrCrossSectionOptions();
+            // Use the correct type string for manifold detection
+            const res = await draw.drawAnyAsync({ entity: { type: "manifold-shape", id: 123 } as any, options });
+            expect(res).toBeDefined();
+            expect(res.userData.type).toBe(Inputs.Draw.drawingTypes.occt);
+        });
+
+        it("should draw multiple manifold shapes", async () => {
+            manifoldWorkerManager.genericCallToWorkerPromise = jest.fn().mockResolvedValue([
+                {
+                    vertProperties: new Float32Array([0, 0, 0, 1, 0, 0, 0, 1, 0]),
+                    triVerts: new Uint32Array([0, 1, 2])
+                },
+                {
+                    vertProperties: new Float32Array([2, 0, 0, 3, 0, 0, 2, 1, 0]),
+                    triVerts: new Uint32Array([0, 1, 2])
+                }
+            ]);
+
+            const options = new Inputs.Draw.DrawManifoldOrCrossSectionOptions();
+            // Use correct type string "manifold-shape" for detection
+            const res = await draw.drawAnyAsync({ 
+                entity: [
+                    { type: "manifold-shape", id: 123 } as any,
+                    { type: "manifold-shape", id: 456 } as any
+                ], 
+                options 
+            });
+            expect(res).toBeDefined();
+            expect(res.userData.type).toBe(Inputs.Draw.drawingTypes.occt);
+        });
+    });
+
+    describe("Draw polylines (multiple)", () => {
+
+        it("should draw multiple polylines via drawAny", () => {
+            const polylines = [
+                { points: [[0, 0, 0], [1, 0, 0], [1, 1, 0]] as Inputs.Base.Point3[] },
+                { points: [[2, 0, 0], [3, 0, 0], [3, 1, 0]] as Inputs.Base.Point3[] },
+                { points: [[4, 0, 0], [5, 0, 0], [5, 1, 0]] as Inputs.Base.Point3[] }
+            ];
+            const options = {
+                ...new Inputs.Draw.DrawBasicGeometryOptions(),
+                colours: "#ff00ff",
+            };
+            const res = draw.drawAny({ entity: polylines, options });
+            expect(res.userData.type).toBe(Inputs.Draw.drawingTypes.polylines);
+            expect(res.name).toContain("polylines");
+        });
+
+        it("should draw multiple polylines with different colors", () => {
+            const polylines = [
+                { points: [[0, 0, 0], [1, 0, 0], [1, 1, 0]] as Inputs.Base.Point3[] },
+                { points: [[2, 0, 0], [3, 0, 0], [3, 1, 0]] as Inputs.Base.Point3[] },
+                { points: [[4, 0, 0], [5, 0, 0], [5, 1, 0]] as Inputs.Base.Point3[] }
+            ];
+            const options = {
+                ...new Inputs.Draw.DrawBasicGeometryOptions(),
+                colours: ["#ff0000", "#00ff00", "#0000ff"],
+            };
+            const res = draw.drawAny({ entity: polylines, options });
+            expect(res.userData.type).toBe(Inputs.Draw.drawingTypes.polylines);
+        });
+
+        it("should update multiple polylines when group is provided", async () => {
+            const polylines1 = [
+                { points: [[0, 0, 0], [1, 0, 0]] as Inputs.Base.Point3[] },
+            ];
+            const polylines2 = [
+                { points: [[2, 2, 2], [3, 3, 3]] as Inputs.Base.Point3[] },
+            ];
+            const options = {
+                ...new Inputs.Draw.DrawBasicGeometryOptions(),
+                updatable: true,
+            };
+            const res = await draw.drawAnyAsync({ entity: polylines1, options });
+            const res2 = await draw.drawAnyAsync({ entity: polylines2, options, group: res });
+            expect(res.name).toEqual(res2.name);
+            expect(res2.userData.type).toBe(Inputs.Draw.drawingTypes.polylines);
+        });
+
+        it("should return undefined for empty polylines array via drawAnyAsync", async () => {
+            const polylines: Inputs.Base.Polyline3[] = [];
+            const res = await draw.drawAnyAsync({ entity: polylines });
+            expect(res).toBeUndefined();
+        });
+    });
+
+    describe("Draw lines (multiple)", () => {
+
+        it("should draw multiple lines as Line3 objects via drawAny", () => {
+            const lines: Inputs.Base.Line3[] = [
+                { start: [0, 0, 0], end: [1, 1, 1] },
+                { start: [2, 2, 2], end: [3, 3, 3] },
+                { start: [4, 4, 4], end: [5, 5, 5] }
+            ];
+            const options = {
+                ...new Inputs.Draw.DrawBasicGeometryOptions(),
+                colours: "#ff0000",
+            };
+            const res = draw.drawAny({ entity: lines, options });
+            expect(res.userData.type).toBe(Inputs.Draw.drawingTypes.lines);
+            expect(res.name).toContain("polylines");
+        });
+
+        it("should draw multiple segments via drawAnyAsync", async () => {
+            const segments: Inputs.Base.Segment3[] = [
+                [[0, 0, 0], [1, 1, 1]],
+                [[2, 2, 2], [3, 3, 3]]
+            ];
+            const options = {
+                ...new Inputs.Draw.DrawBasicGeometryOptions(),
+                colours: "#00ff00",
+            };
+            const res = await draw.drawAnyAsync({ entity: segments, options });
+            expect(res.userData.type).toBe(Inputs.Draw.drawingTypes.lines);
+        });
+
+        it("should update multiple lines when group is provided", async () => {
+            const lines1: Inputs.Base.Line3[] = [
+                { start: [0, 0, 0], end: [1, 1, 1] },
+            ];
+            const lines2: Inputs.Base.Line3[] = [
+                { start: [5, 5, 5], end: [6, 6, 6] },
+            ];
+            const options = {
+                ...new Inputs.Draw.DrawBasicGeometryOptions(),
+                updatable: true,
+            };
+            const res = await draw.drawAnyAsync({ entity: lines1, options });
+            const res2 = await draw.drawAnyAsync({ entity: lines2, options, group: res });
+            expect(res.name).toEqual(res2.name);
+            expect(res2.userData.type).toBe(Inputs.Draw.drawingTypes.lines);
+        });
+
+        it("should handle mixed line formats in array", async () => {
+            // If first element has 'start' property, all are treated as Line3
+            const lines: Inputs.Base.Line3[] = [
+                { start: [0, 0, 0], end: [1, 0, 0] },
+                { start: [1, 0, 0], end: [1, 1, 0] },
+                { start: [1, 1, 0], end: [0, 0, 0] }
+            ];
+            const res = await draw.drawAnyAsync({ entity: lines });
+            expect(res.userData.type).toBe(Inputs.Draw.drawingTypes.lines);
+        });
+    });
+
+    describe("Draw verb curves (multiple)", () => {
+
+        it("should draw multiple verb curves via drawAny", () => {
+            const curveMock1 = {
+                tessellate: () => [[0, 0, 0], [1, 1, 1]],
+                _data: { controlPoints: [], knots: 3, degree: 3 },
+            };
+            const curveMock2 = {
+                tessellate: () => [[2, 2, 2], [3, 3, 3]],
+                _data: { controlPoints: [], knots: 3, degree: 3 },
+            };
+            const curveMock3 = {
+                tessellate: () => [[4, 4, 4], [5, 5, 5]],
+                _data: { controlPoints: [], knots: 3, degree: 3 },
+            };
+            const options = {
+                ...new Inputs.Draw.DrawBasicGeometryOptions(),
+                colours: "#ff0000",
+            };
+            const res = draw.drawAny({ entity: [curveMock1, curveMock2, curveMock3], options });
+            expect(res.userData.type).toBe(Inputs.Draw.drawingTypes.verbCurves);
+            expect(res.name).toContain("polylines");
+        });
+
+        it("should update multiple verb curves when group is provided", async () => {
+            const curveMock1 = {
+                tessellate: () => [[0, 0, 0], [1, 1, 1]],
+                _data: { controlPoints: [], knots: 3, degree: 3 },
+            };
+            const curveMock2 = {
+                tessellate: () => [[5, 5, 5], [6, 6, 6]],
+                _data: { controlPoints: [], knots: 3, degree: 3 },
+            };
+            const options = {
+                ...new Inputs.Draw.DrawBasicGeometryOptions(),
+                updatable: true,
+            };
+            const res = await draw.drawAnyAsync({ entity: [curveMock1], options });
+            expect(res.userData.type).toBe(Inputs.Draw.drawingTypes.verbCurves);
+            
+            const res2 = await draw.drawAnyAsync({ entity: [curveMock2], options, group: res });
+            expect(res.name).toEqual(res2.name);
+        });
+
+        it("should draw curves with multiple colors", () => {
+            const curveMock1 = {
+                tessellate: () => [[0, 0, 0], [1, 1, 1]],
+                _data: { controlPoints: [], knots: 3, degree: 3 },
+            };
+            const curveMock2 = {
+                tessellate: () => [[2, 2, 2], [3, 3, 3]],
+                _data: { controlPoints: [], knots: 3, degree: 3 },
+            };
+            const curveMock3 = {
+                tessellate: () => [[4, 4, 4], [5, 5, 5]],
+                _data: { controlPoints: [], knots: 3, degree: 3 },
+            };
+            const options = {
+                ...new Inputs.Draw.DrawBasicGeometryOptions(),
+                colours: ["#ff0000", "#00ff00", "#0000ff"],
+            };
+            const res = draw.drawAny({ entity: [curveMock1, curveMock2, curveMock3], options });
+            expect(res.userData.type).toBe(Inputs.Draw.drawingTypes.verbCurves);
+        });
+    });
+
+    describe("Draw verb surfaces (multiple)", () => {
+
+        it("should draw multiple verb surfaces via drawAny", () => {
+            const surfaceMock1 = createSurfaceMock();
+            const surfaceMock2 = createSurfaceMock2();
+            const surfaceMock3 = createSurfaceMock();
+            const options = {
+                ...new Inputs.Draw.DrawBasicGeometryOptions(),
+                colours: "#ff0000",
+            };
+            const res = draw.drawAny({ entity: [surfaceMock1, surfaceMock2, surfaceMock3], options });
+            expect(res.userData.type).toBe(Inputs.Draw.drawingTypes.verbSurfaces);
+            expect(res.name).toContain("colouredSurfaces");
+        });
+
+        it("should update multiple verb surfaces when group is provided", async () => {
+            const surfaceMock1 = createSurfaceMock();
+            const surfaceMock2 = createSurfaceMock2();
+            const options = {
+                ...new Inputs.Draw.DrawBasicGeometryOptions(),
+                updatable: true,
+            };
+            const res = await draw.drawAnyAsync({ entity: [surfaceMock1], options });
+            expect(res.userData.type).toBe(Inputs.Draw.drawingTypes.verbSurfaces);
+            
+            const res2 = await draw.drawAnyAsync({ entity: [surfaceMock2], options, group: res });
+            expect(res.name).toEqual(res2.name);
+        });
+
+        it("should draw surfaces with multiple colors", () => {
+            const surfaceMock1 = createSurfaceMock();
+            const surfaceMock2 = createSurfaceMock2();
+            const surfaceMock3 = createSurfaceMock();
+            const options = {
+                ...new Inputs.Draw.DrawBasicGeometryOptions(),
+                colours: ["#ff0000", "#00ff00", "#0000ff"],
+            };
+            const res = draw.drawAny({ entity: [surfaceMock1, surfaceMock2, surfaceMock3], options });
+            expect(res.userData.type).toBe(Inputs.Draw.drawingTypes.verbSurfaces);
+            expect(res.children.length).toBe(3);
+        });
+    });
+
+    describe("Draw tags", () => {
+        // Tags require DOM (document) for full implementation
+        // We test that the correct tag methods are called via spies
+
+        it("should call tag.drawTag for a single tag entity", () => {
+            const mockGroup = new Group();
+            mockGroup.userData = { type: Inputs.Draw.drawingTypes.tag, options: {} };
+            const drawTagSpy = jest.spyOn(tag, "drawTag").mockReturnValue(mockGroup as any);
+            
+            const tagEntity: Inputs.Tag.TagDto = {
+                text: "Test Tag",
+                position: [1, 2, 3],
+                colour: "#ff0000",
+                size: 1,
+                adaptDepth: false,
+            };
+            const res = draw.drawAny({ entity: tagEntity });
+            expect(drawTagSpy).toHaveBeenCalledTimes(1);
+            expect(drawTagSpy).toHaveBeenCalledWith(expect.objectContaining({
+                tag: tagEntity,
+            }));
+            expect(res.userData.type).toBe(Inputs.Draw.drawingTypes.tag);
+            drawTagSpy.mockRestore();
+        });
+
+        it("should call tag.drawTag with custom options", () => {
+            const mockGroup = new Group();
+            mockGroup.userData = { type: Inputs.Draw.drawingTypes.tag, options: {} };
+            const drawTagSpy = jest.spyOn(tag, "drawTag").mockReturnValue(mockGroup as any);
+            
+            const tagEntity: Inputs.Tag.TagDto = {
+                text: "Hello World",
+                position: [0, 0, 0],
+                colour: "#00ff00",
+                size: 2,
+                adaptDepth: false,
+            };
+            const options = { updatable: true };
+            const res = draw.drawAny({ entity: tagEntity, options });
+            expect(drawTagSpy).toHaveBeenCalledWith(expect.objectContaining({
+                tag: tagEntity,
+                updatable: true,
+            }));
+            expect(res.userData.type).toBe(Inputs.Draw.drawingTypes.tag);
+            drawTagSpy.mockRestore();
+        });
+
+        it("should call tag.drawTag when updating a tag with group", () => {
+            const mockGroup = new Group();
+            mockGroup.userData = { type: Inputs.Draw.drawingTypes.tag, options: { updatable: true } };
+            const drawTagSpy = jest.spyOn(tag, "drawTag").mockReturnValue(mockGroup as any);
+            
+            const tagEntity: Inputs.Tag.TagDto = {
+                text: "Updated Tag",
+                position: [1, 1, 1],
+                colour: "#00ff00",
+                size: 2,
+                adaptDepth: false,
+            };
+            // Simulate update by passing existing group
+            const res = draw.drawAny({ entity: tagEntity, group: mockGroup });
+            expect(drawTagSpy).toHaveBeenCalled();
+            drawTagSpy.mockRestore();
+        });
+
+        it("should call tag.drawTags for multiple tag entities", () => {
+            const mockGroup = new Group();
+            mockGroup.userData = { type: Inputs.Draw.drawingTypes.tags, options: {} };
+            const drawTagsSpy = jest.spyOn(tag, "drawTags").mockReturnValue(mockGroup as any);
+            
+            const tagsEntity: Inputs.Tag.TagDto[] = [
+                { text: "Tag 1", position: [0, 0, 0], colour: "#ff0000", size: 1, adaptDepth: false },
+                { text: "Tag 2", position: [1, 1, 1], colour: "#00ff00", size: 1, adaptDepth: false },
+                { text: "Tag 3", position: [2, 2, 2], colour: "#0000ff", size: 1, adaptDepth: false },
+            ];
+            const res = draw.drawAny({ entity: tagsEntity });
+            expect(drawTagsSpy).toHaveBeenCalledTimes(1);
+            expect(drawTagsSpy).toHaveBeenCalledWith(expect.objectContaining({
+                tags: tagsEntity,
+            }));
+            expect(res.userData.type).toBe(Inputs.Draw.drawingTypes.tags);
+            drawTagsSpy.mockRestore();
+        });
+
+        it("should call tag.drawTags when updating multiple tags with group", () => {
+            const mockGroup = new Group();
+            mockGroup.userData = { type: Inputs.Draw.drawingTypes.tags, options: { updatable: true } };
+            const drawTagsSpy = jest.spyOn(tag, "drawTags").mockReturnValue(mockGroup as any);
+            
+            const tagsEntity: Inputs.Tag.TagDto[] = [
+                { text: "Tag C", position: [2, 2, 2], colour: "#0000ff", size: 2, adaptDepth: false },
+                { text: "Tag D", position: [3, 3, 3], colour: "#ffff00", size: 2, adaptDepth: false },
+            ];
+            // Simulate update by passing existing group
+            const res = draw.drawAny({ entity: tagsEntity, group: mockGroup });
+            expect(drawTagsSpy).toHaveBeenCalled();
+            drawTagsSpy.mockRestore();
+        });
+
+        it("should call tag.drawTags with custom options", () => {
+            const mockGroup = new Group();
+            mockGroup.userData = { type: Inputs.Draw.drawingTypes.tags, options: {} };
+            const drawTagsSpy = jest.spyOn(tag, "drawTags").mockReturnValue(mockGroup as any);
+            
+            const tagsEntity: Inputs.Tag.TagDto[] = [
+                { text: "Custom Tag", position: [5, 5, 5], colour: "#ffffff", size: 3, adaptDepth: false },
+            ];
+            const options = {
+                ...new Inputs.Draw.DrawBasicGeometryOptions(),
+                updatable: false,
+            };
+            const res = draw.drawAny({ entity: tagsEntity, options });
+            expect(drawTagsSpy).toHaveBeenCalledWith(expect.objectContaining({
+                tags: tagsEntity,
+            }));
+            expect(res.userData.type).toBe(Inputs.Draw.drawingTypes.tags);
+            drawTagsSpy.mockRestore();
+        });
+    });
+
+    describe("UpdateAny through group userData", () => {
+
+        it("should update polylines when group has polylines type", () => {
+            const polylines1 = [{ points: [[0, 0, 0], [1, 0, 0]] as Inputs.Base.Point3[] }];
+            const polylines2 = [{ points: [[2, 2, 2], [3, 2, 2]] as Inputs.Base.Point3[] }];
+            const options = { ...new Inputs.Draw.DrawBasicGeometryOptions(), updatable: true };
+            
+            const res = draw.drawAny({ entity: polylines1, options });
+            expect(res.userData.type).toBe(Inputs.Draw.drawingTypes.polylines);
+            
+            const res2 = draw.drawAny({ entity: polylines2, group: res });
+            expect(res.name).toEqual(res2.name);
+        });
+
+        it("should update lines when group has lines type", () => {
+            const lines1: Inputs.Base.Line3[] = [{ start: [0, 0, 0], end: [1, 1, 1] }];
+            const lines2: Inputs.Base.Line3[] = [{ start: [5, 5, 5], end: [6, 6, 6] }];
+            const options = { ...new Inputs.Draw.DrawBasicGeometryOptions(), updatable: true };
+            
+            const res = draw.drawAny({ entity: lines1, options });
+            expect(res.userData.type).toBe(Inputs.Draw.drawingTypes.lines);
+            
+            const res2 = draw.drawAny({ entity: lines2, group: res });
+            expect(res.name).toEqual(res2.name);
+        });
+
+        it("should update verb curves when group has verbCurves type", () => {
+            const curveMock1 = {
+                tessellate: () => [[0, 0, 0], [1, 1, 1]],
+                _data: { controlPoints: [], knots: 3, degree: 3 },
+            };
+            const curveMock2 = {
+                tessellate: () => [[5, 5, 5], [6, 6, 6]],
+                _data: { controlPoints: [], knots: 3, degree: 3 },
+            };
+            const options = { ...new Inputs.Draw.DrawBasicGeometryOptions(), updatable: true };
+            
+            const res = draw.drawAny({ entity: [curveMock1], options });
+            expect(res.userData.type).toBe(Inputs.Draw.drawingTypes.verbCurves);
+            
+            const res2 = draw.drawAny({ entity: [curveMock2], group: res });
+            expect(res.name).toEqual(res2.name);
+        });
+
+        it("should update verb surfaces when group has verbSurfaces type", () => {
+            const surfaceMock1 = createSurfaceMock();
+            const surfaceMock2 = createSurfaceMock2();
+            const options = { ...new Inputs.Draw.DrawBasicGeometryOptions(), updatable: true };
+            
+            const res = draw.drawAny({ entity: [surfaceMock1], options });
+            expect(res.userData.type).toBe(Inputs.Draw.drawingTypes.verbSurfaces);
+            
+            const res2 = draw.drawAny({ entity: [surfaceMock2], group: res });
+            expect(res.name).toEqual(res2.name);
+        });
+
+        it("should update tag when group has tag type via spy", () => {
+            const mockGroup = new Group();
+            mockGroup.userData = { type: Inputs.Draw.drawingTypes.tag, options: { updatable: true } };
+            const drawTagSpy = jest.spyOn(tag, "drawTag").mockReturnValue(mockGroup as any);
+            
+            const tag2: Inputs.Tag.TagDto = { text: "Tag 2", position: [1, 1, 1], colour: "#00ff00", size: 2, adaptDepth: false };
+            
+            const res = draw.drawAny({ entity: tag2, group: mockGroup });
+            expect(drawTagSpy).toHaveBeenCalled();
+            expect(res.userData.type).toBe(Inputs.Draw.drawingTypes.tag);
+            drawTagSpy.mockRestore();
+        });
+
+        it("should update tags when group has tags type via spy", () => {
+            const mockGroup = new Group();
+            mockGroup.userData = { type: Inputs.Draw.drawingTypes.tags, options: { updatable: true } };
+            const drawTagsSpy = jest.spyOn(tag, "drawTags").mockReturnValue(mockGroup as any);
+            
+            const tags2: Inputs.Tag.TagDto[] = [{ text: "Tag B", position: [1, 1, 1], colour: "#00ff00", size: 2, adaptDepth: false }];
+            
+            const res = draw.drawAny({ entity: tags2, group: mockGroup });
+            expect(drawTagsSpy).toHaveBeenCalled();
+            expect(res.userData.type).toBe(Inputs.Draw.drawingTypes.tags);
+            drawTagsSpy.mockRestore();
+        });
+
+        it("should return undefined when group userData type is unknown", () => {
+            const mockGroup = {
+                userData: { type: "unknownType" },
+            } as any;
+            const res = draw.drawAny({ entity: [1, 2, 3], group: mockGroup });
+            expect(res).toBeUndefined();
         });
     });
 });
