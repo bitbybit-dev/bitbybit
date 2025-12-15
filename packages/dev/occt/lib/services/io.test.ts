@@ -64,6 +64,60 @@ describe("OCCT io unit tests", () => {
         cone.delete();
     });
 
+    it("should save shape as step file with adjustYtoZ and fromRightHanded (no mirroring)", () => {
+        const box = solid.createBox({ width: 4, length: 6, height: 8, center: [0, 0, 0] });
+        
+        // Save with fromRightHanded=true (skips mirroring)
+        const stepRightHanded = io.saveShapeSTEP({ 
+            shape: box, 
+            adjustYtoZ: true, 
+            fromRightHanded: true, 
+            fileName: "box.step" 
+        });
+        
+        // Save with fromRightHanded=false (default, applies mirroring)
+        const stepLeftHanded = io.saveShapeSTEP({ 
+            shape: box, 
+            adjustYtoZ: true, 
+            fromRightHanded: false, 
+            fileName: "box.step" 
+        });
+        
+        // Both should be valid STEP files
+        expect(stepRightHanded).toContain("ISO-10303-21;");
+        expect(stepRightHanded).toContain("END-ISO-10303-21;");
+        expect(stepLeftHanded).toContain("ISO-10303-21;");
+        expect(stepLeftHanded).toContain("END-ISO-10303-21;");
+        
+        // The content should differ because mirroring changes the geometry
+        expect(stepRightHanded).not.toEqual(stepLeftHanded);
+        
+        box.delete();
+    });
+
+    it("should save shape as step file with fromRightHanded true and preserve roundtrip", () => {
+        const cylinder = solid.createCylinder({ radius: 5, height: 10, direction: [0, 1, 0], center: [0, 0, 0] });
+        
+        const stepText = io.saveShapeSTEP({ 
+            shape: cylinder, 
+            adjustYtoZ: true, 
+            fromRightHanded: true, 
+            fileName: "cylinder.step" 
+        });
+        
+        // Load it back (adjustZtoY should reverse the rotation)
+        const loaded = io.loadSTEPorIGES({ filetext: stepText, fileName: "cylinder.step", adjustZtoY: true });
+        
+        const volumeOriginal = solid.getSolidVolume({ shape: cylinder });
+        const volumeLoaded = solid.getSolidVolume({ shape: loaded });
+        
+        // Volume should be preserved
+        expect(volumeOriginal).toBeCloseTo(volumeLoaded);
+        
+        cylinder.delete();
+        loaded.delete();
+    });
+
     it("should load cube shape from step file", () => {
         const cube = solid.createCube({ size: 10, center: [0, 0, 0] });
         const stepText = io.saveShapeSTEP({ shape: cube, adjustYtoZ: false, fileName: "cube.step" });

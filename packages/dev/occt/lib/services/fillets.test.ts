@@ -769,4 +769,12 @@ describe("OCCT fillets unit tests", () => {
         const wireLength = occHelper.wiresService.getWireLength({ shape: filletRes });
         expect(wireLength).toBeCloseTo(1.3424777993634651);
     });
+
+    it("should fillet two edges into a wire with explicit solution parameter", () => {
+        const edge1 = edge.line({ start: [0, 0, 0], end: [1, 0, 0] });
+        const edge2 = edge.line({ start: [1, 0, 0], end: [1, 1, 0] });
+        const filletRes = fillets.filletTwoEdgesInPlaneIntoAWire({ edge1, edge2, radius: 0.2, planeDirection: [0, 0, 1], planeOrigin: [1, 0, 0], solution: 0 });
+        const wireLength = occHelper.wiresService.getWireLength({ shape: filletRes });
+        expect(wireLength).toBeCloseTo(1.9141592620724523);
+    });
 });
