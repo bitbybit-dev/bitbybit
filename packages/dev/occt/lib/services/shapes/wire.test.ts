@@ -536,20 +536,20 @@ describe("OCCT wire unit tests", () => {
         // Create a closed polygon (rectangle)
         const points = [[0, 0, 0], [10, 0, 0], [10, 0, 5], [0, 0, 5]] as Inputs.Base.Point3[];
         const w = wire.createPolygonWire({ points });
-        
+
         const startPt = wire.startPointOnWire({ shape: w });
         const endPt = wire.endPointOnWire({ shape: w });
-        
+
         // For a closed polygon, start and end should be the same
         expect(startPt[0]).toBeCloseTo(endPt[0], 5);
         expect(startPt[1]).toBeCloseTo(endPt[1], 5);
         expect(startPt[2]).toBeCloseTo(endPt[2], 5);
-        
+
         // Use reversedWireFromReversedEdges for closed wires to maintain start point
         const w2 = wire.reversedWireFromReversedEdges({ shape: w });
-        
+
         const startPtRev = wire.startPointOnWire({ shape: w2 });
-        
+
         // For a reversed closed polygon using reversedWireFromReversedEdges, 
         // the start point should be the same as the original
         // User expectation: forward, left, back, right becomes left, forward, right, back
@@ -557,7 +557,7 @@ describe("OCCT wire unit tests", () => {
         expect(startPtRev[0]).toBeCloseTo(startPt[0], 5);
         expect(startPtRev[1]).toBeCloseTo(startPt[1], 5);
         expect(startPtRev[2]).toBeCloseTo(startPt[2], 5);
-        
+
         w.delete();
         w2.delete();
     });
@@ -566,22 +566,22 @@ describe("OCCT wire unit tests", () => {
         // Create a closed polygon (rectangle)
         const points = [[0, 0, 0], [10, 0, 0], [10, 0, 5], [0, 0, 5]] as Inputs.Base.Point3[];
         const w = wire.createPolygonWire({ points });
-        
+
         const allEdges = edge.getEdgesAlongWire({ shape: w });
         const firstEdgeStart = edge.startPointOnEdge({ shape: allEdges[0] });
-        
+
         // Use reversedWireFromReversedEdges for closed wires
         const w2 = wire.reversedWireFromReversedEdges({ shape: w });
-        
+
         const allEdgesRev = edge.getEdgesAlongWire({ shape: w2 });
         const firstEdgeRevStart = edge.startPointOnEdge({ shape: allEdgesRev[0] });
-        
+
         // For a reversed wire using reversedWireFromReversedEdges, 
         // the first edge's start should be the original first edge's start
         expect(firstEdgeRevStart[0]).toBeCloseTo(firstEdgeStart[0], 5);
         expect(firstEdgeRevStart[1]).toBeCloseTo(firstEdgeStart[1], 5);
         expect(firstEdgeRevStart[2]).toBeCloseTo(firstEdgeStart[2], 5);
-        
+
         allEdges.forEach(e => e.delete());
         allEdgesRev.forEach(e => e.delete());
         w.delete();
@@ -591,19 +591,19 @@ describe("OCCT wire unit tests", () => {
     it("should reverse closed rectangle wire and maintain start point using reversedWireFromReversedEdges", async () => {
         // Create a closed rectangle wire
         const w = wire.createRectangleWire({ width: 10, length: 5, center: [5, 0, 2.5], direction: [0, 1, 0] });
-        
+
         const startPt = wire.startPointOnWire({ shape: w });
-        
+
         // Use reversedWireFromReversedEdges for closed wires
         const w2 = wire.reversedWireFromReversedEdges({ shape: w });
-        
+
         const startPtRev = wire.startPointOnWire({ shape: w2 });
-        
+
         // The reversed wire should have the same start point as the original
         expect(startPtRev[0]).toBeCloseTo(startPt[0], 5);
         expect(startPtRev[1]).toBeCloseTo(startPt[1], 5);
         expect(startPtRev[2]).toBeCloseTo(startPt[2], 5);
-        
+
         w.delete();
         w2.delete();
     });
@@ -1433,7 +1433,7 @@ describe("OCCT wire unit tests", () => {
         const arcWire = wire.createWireFromEdge({ shape: arc });
         const line2 = wire.createLineWire({ start: [2, 0, 1], end: [0, 0, 1] });
         const combinedWire = wire.combineEdgesAndWiresIntoAWire({ shapes: [line1, arcWire, line2] });
-        
+
         const pts = wire.divideWireByEqualDistanceToPoints({
             shape: combinedWire,
             removeEndPoint: true,
@@ -2089,4 +2089,545 @@ describe("OCCT wire unit tests", () => {
         expect(length).toEqual(lengthExp);
         w.delete();
     };
+
+    describe("fromBaseLine", () => {
+        it("should create wire fromBaseLine with basic line", () => {
+            const line: Inputs.Base.Line3 = { start: [0, 0, 0], end: [3, 0, 0] };
+            const w = wire.fromBaseLine({ line });
+            const length = wire.getWireLength({ shape: w });
+            expect(length).toBe(3);
+            w.delete();
+        });
+
+        it("should create wire fromBaseLine with diagonal line", () => {
+            const line: Inputs.Base.Line3 = { start: [0, 0, 0], end: [3, 4, 0] };
+            const w = wire.fromBaseLine({ line });
+            const length = wire.getWireLength({ shape: w });
+            expect(length).toBe(5); // 3-4-5 triangle
+            w.delete();
+        });
+
+        it("should create wire fromBaseLine with 3D diagonal line", () => {
+            const line: Inputs.Base.Line3 = { start: [1, 2, 3], end: [4, 6, 3] };
+            const w = wire.fromBaseLine({ line });
+            const length = wire.getWireLength({ shape: w });
+            expect(length).toBe(5); // sqrt(9 + 16 + 0) = 5
+            w.delete();
+        });
+    });
+
+    describe("fromBaseLines", () => {
+        it("should create wires fromBaseLines with multiple lines", () => {
+            const lines: Inputs.Base.Line3[] = [
+                { start: [0, 0, 0], end: [1, 0, 0] },
+                { start: [0, 0, 0], end: [0, 2, 0] },
+                { start: [0, 0, 0], end: [0, 0, 3] },
+            ];
+            const wires = wire.fromBaseLines({ lines });
+            expect(wires.length).toBe(3);
+            const lengths = wires.map(w => wire.getWireLength({ shape: w }));
+            expect(lengths[0]).toBe(1);
+            expect(lengths[1]).toBe(2);
+            expect(lengths[2]).toBe(3);
+            wires.forEach(w => w.delete());
+        });
+
+        it("should create empty array fromBaseLines with empty input", () => {
+            const wires = wire.fromBaseLines({ lines: [] });
+            expect(wires.length).toBe(0);
+        });
+    });
+
+    describe("fromBaseSegment", () => {
+        it("should create wire fromBaseSegment with basic segment", () => {
+            const segment: Inputs.Base.Segment3 = [[0, 0, 0], [5, 0, 0]];
+            const w = wire.fromBaseSegment({ segment });
+            const length = wire.getWireLength({ shape: w });
+            expect(length).toBe(5);
+            w.delete();
+        });
+
+        it("should create wire fromBaseSegment with 3D segment", () => {
+            const segment: Inputs.Base.Segment3 = [[1, 1, 1], [4, 5, 1]];
+            const w = wire.fromBaseSegment({ segment });
+            const length = wire.getWireLength({ shape: w });
+            expect(length).toBe(5); // sqrt(9 + 16 + 0) = 5
+            w.delete();
+        });
+    });
+
+    describe("fromBaseSegments", () => {
+        it("should create wires fromBaseSegments with multiple segments", () => {
+            const segments: Inputs.Base.Segment3[] = [
+                [[0, 0, 0], [2, 0, 0]],
+                [[0, 0, 0], [0, 3, 0]],
+                [[0, 0, 0], [0, 0, 4]],
+            ];
+            const wires = wire.fromBaseSegments({ segments });
+            expect(wires.length).toBe(3);
+            const lengths = wires.map(w => wire.getWireLength({ shape: w }));
+            expect(lengths[0]).toBe(2);
+            expect(lengths[1]).toBe(3);
+            expect(lengths[2]).toBe(4);
+            wires.forEach(w => w.delete());
+        });
+
+        it("should create empty array fromBaseSegments with empty input", () => {
+            const wires = wire.fromBaseSegments({ segments: [] });
+            expect(wires.length).toBe(0);
+        });
+    });
+
+    describe("fromPoints", () => {
+        it("should create polyline wire fromPoints for non-closed points", () => {
+            const points: Inputs.Base.Point3[] = [
+                [0, 0, 0],
+                [1, 0, 0],
+                [1, 1, 0],
+            ];
+            const w = wire.fromPoints({ points });
+            const length = wire.getWireLength({ shape: w });
+            expect(length).toBe(2); // 1 + 1 = 2
+            w.delete();
+        });
+
+        it("should return undefined fromPoints with only one point", () => {
+            const points: Inputs.Base.Point3[] = [
+                [0, 0, 0],
+            ];
+            const w = wire.fromPoints({ points });
+            expect(w).toBeUndefined();
+        });
+
+        it("should create square-like polyline fromPoints", () => {
+            const points: Inputs.Base.Point3[] = [
+                [0, 0, 0],
+                [2, 0, 0],
+                [2, 2, 0],
+                [0, 2, 0],
+            ];
+            const w = wire.fromPoints({ points });
+            const length = wire.getWireLength({ shape: w });
+            expect(length).toBe(6); // 2 + 2 + 2 = 6 (open polyline, 3 segments)
+            w.delete();
+        });
+    });
+
+    describe("fromBasePolyline", () => {
+        it("should create open polyline wire fromBasePolyline", () => {
+            const polyline: Inputs.Base.Polyline3 = {
+                points: [
+                    [0, 0, 0],
+                    [3, 0, 0],
+                    [3, 4, 0],
+                ],
+                isClosed: false
+            };
+            const w = wire.fromBasePolyline({ polyline });
+            const length = wire.getWireLength({ shape: w });
+            expect(length).toBe(7); // 3 + 4 = 7
+            w.delete();
+        });
+
+        it("should create closed polygon wire fromBasePolyline", () => {
+            const polyline: Inputs.Base.Polyline3 = {
+                points: [
+                    [0, 0, 0],
+                    [3, 0, 0],
+                    [3, 4, 0],
+                ],
+                isClosed: true
+            };
+            const w = wire.fromBasePolyline({ polyline });
+            const length = wire.getWireLength({ shape: w });
+            expect(length).toBe(12); // 3 + 4 + 5 = 12 (closed triangle)
+            w.delete();
+        });
+
+        it("should create closed square wire fromBasePolyline", () => {
+            const polyline: Inputs.Base.Polyline3 = {
+                points: [
+                    [0, 0, 0],
+                    [2, 0, 0],
+                    [2, 2, 0],
+                    [0, 2, 0],
+                ],
+                isClosed: true
+            };
+            const w = wire.fromBasePolyline({ polyline });
+            const length = wire.getWireLength({ shape: w });
+            expect(length).toBe(8); // 2 + 2 + 2 + 2 = 8
+            w.delete();
+        });
+    });
+
+    describe("fromBaseTriangle", () => {
+        it("should create triangle wire fromBaseTriangle", () => {
+            const triangle: Inputs.Base.Triangle3 = [
+                [0, 0, 0],
+                [3, 0, 0],
+                [0, 4, 0],
+            ];
+            const w = wire.fromBaseTriangle({ triangle });
+            const length = wire.getWireLength({ shape: w });
+            expect(length).toBe(12); // 3 + 4 + 5 = 12
+            w.delete();
+        });
+
+        it("should create equilateral triangle wire fromBaseTriangle", () => {
+            const s = 2;
+            const h = s * Math.sqrt(3) / 2;
+            const triangle: Inputs.Base.Triangle3 = [
+                [0, 0, 0],
+                [s, 0, 0],
+                [s / 2, 0, h],
+            ];
+            const w = wire.fromBaseTriangle({ triangle });
+            const length = wire.getWireLength({ shape: w });
+            expect(length).toBeCloseTo(6, 10); // 3 sides of length 2
+            w.delete();
+        });
+    });
+
+    describe("fromBaseMesh", () => {
+        it("should create triangle wires fromBaseMesh", () => {
+            const mesh: Inputs.Base.Mesh3 = [
+                [[0, 0, 0], [3, 0, 0], [0, 4, 0]], // 3-4-5 triangle
+                [[0, 0, 0], [1, 0, 0], [0, 1, 0]], // 1-1-sqrt(2) triangle
+            ];
+            const wires = wire.fromBaseMesh({ mesh });
+            expect(wires.length).toBe(2);
+            const lengths = wires.map(w => wire.getWireLength({ shape: w }));
+            expect(lengths[0]).toBe(12); // 3 + 4 + 5
+            expect(lengths[1]).toBeCloseTo(2 + Math.sqrt(2), 10); // 1 + 1 + sqrt(2)
+            wires.forEach(w => w.delete());
+        });
+
+        it("should create empty array fromBaseMesh with empty mesh", () => {
+            const wires = wire.fromBaseMesh({ mesh: [] });
+            expect(wires.length).toBe(0);
+        });
+    });
+
+    describe("createLineWireWithExtensions", () => {
+        it("should create line wire with extensions at both ends", () => {
+            const w = wire.createLineWireWithExtensions({
+                start: [0, 0, 0],
+                end: [0, 1, 0],
+                extensionStart: 0.5,
+                extensionEnd: 0.5
+            });
+            const length = wire.getWireLength({ shape: w });
+            expect(length).toBe(2); // 1 + 0.5 + 0.5 = 2
+            w.delete();
+        });
+
+        it("should create line wire with extension at start only", () => {
+            const w = wire.createLineWireWithExtensions({
+                start: [0, 0, 0],
+                end: [0, 2, 0],
+                extensionStart: 1,
+                extensionEnd: 0
+            });
+            const length = wire.getWireLength({ shape: w });
+            expect(length).toBe(3); // 2 + 1 + 0 = 3
+            w.delete();
+        });
+
+        it("should create line wire with extension at end only", () => {
+            const w = wire.createLineWireWithExtensions({
+                start: [0, 0, 0],
+                end: [5, 0, 0],
+                extensionStart: 0,
+                extensionEnd: 2
+            });
+            const length = wire.getWireLength({ shape: w });
+            expect(length).toBe(7); // 5 + 0 + 2 = 7
+            w.delete();
+        });
+
+        it("should create line wire with negative extensions (shortening)", () => {
+            const w = wire.createLineWireWithExtensions({
+                start: [0, 0, 0],
+                end: [0, 10, 0],
+                extensionStart: -1,
+                extensionEnd: -1
+            });
+            const length = wire.getWireLength({ shape: w });
+            expect(length).toBe(8); // 10 - 1 - 1 = 8
+            w.delete();
+        });
+    });
+
+    describe("hexagonsInGrid", () => {
+        it("should create hexagons in a grid", () => {
+            const wires = wire.hexagonsInGrid({
+                width: 5,
+                height: 5,
+                nrHexagonsInWidth: 2,
+                nrHexagonsInHeight: 2,
+            });
+            expect(wires.length).toBe(4); // 2x2 grid
+            // Each hexagon is closed and has 6 sides
+            const allClosed = wires.every(w => occHelper.wiresService.isWireClosed({ shape: w }));
+            expect(allClosed).toBe(true);
+            wires.forEach(w => {
+                const length = wire.getWireLength({ shape: w });
+                expect(length).toBeCloseTo(7.772757295452931);
+            });
+            wires.forEach(w => w.delete());
+        });
+
+        it("should create hexagons in a grid with flat top", () => {
+            const wires = wire.hexagonsInGrid({
+                width: 6,
+                height: 6,
+                nrHexagonsInWidth: 3,
+                nrHexagonsInHeight: 3,
+                flatTop: true,
+            });
+            expect(wires.length).toBe(9); // 3x3 grid
+            wires.forEach(w => {
+                const length = wire.getWireLength({ shape: w });
+                expect(length).toBeCloseTo(6.58510478253727);
+            });
+            wires.forEach(w => w.delete());
+        });
+
+        it("should create single hexagon", () => {
+            const wires = wire.hexagonsInGrid({
+                width: 2,
+                height: 2,
+                nrHexagonsInWidth: 1,
+                nrHexagonsInHeight: 1,
+            });
+
+            expect(wires.length).toBe(1);
+            const length = wire.getWireLength({ shape: wires[0] });
+            expect(length).toBeCloseTo(6.472135954999578);
+            const isClosed = occHelper.wiresService.isWireClosed({ shape: wires[0] });
+            expect(isClosed).toBe(true);
+            wires.forEach(w => w.delete());
+        });
+    });
+
+    describe("midPointOnWire", () => {
+        it("should get midpoint on a straight line wire", () => {
+            const w = wire.createLineWire({ start: [0, 0, 0], end: [10, 0, 0] });
+            const midPt = wire.midPointOnWire({ shape: w });
+            expect(midPt[0]).toBeCloseTo(5, 10);
+            expect(midPt[1]).toBeCloseTo(0, 10);
+            expect(midPt[2]).toBeCloseTo(0, 10);
+            w.delete();
+        });
+
+        it("should get midpoint on a 3D line wire", () => {
+            const w = wire.createLineWire({ start: [0, 0, 0], end: [4, 6, 8] });
+            const midPt = wire.midPointOnWire({ shape: w });
+            expect(midPt[0]).toBeCloseTo(2, 10);
+            expect(midPt[1]).toBeCloseTo(3, 10);
+            expect(midPt[2]).toBeCloseTo(4, 10);
+            w.delete();
+        });
+
+        it("should get midpoint on a polyline wire", () => {
+            // Create L-shaped polyline: (0,0,0) -> (4,0,0) -> (4,4,0)
+            // Total length = 8, midpoint at length 4 should be at (4, 0, 0)
+            const w = wire.createPolylineWire({
+                points: [[0, 0, 0], [4, 0, 0], [4, 4, 0]]
+            });
+            const midPt = wire.midPointOnWire({ shape: w });
+            expect(midPt[0]).toBeCloseTo(4, 10);
+            expect(midPt[1]).toBeCloseTo(0, 10);
+            expect(midPt[2]).toBeCloseTo(0, 10);
+            w.delete();
+        });
+    });
+
+    describe("textWires", () => {
+        it("should create text wires for simple text", () => {
+            const dto = new Inputs.OCCT.TextWiresDto("A", 0, 0, 1);
+            const wires = wire.textWires(dto);
+            expect(wires.length).toBe(3);
+            // Letter "A" should produce wires
+            wires.forEach((w: TopoDS_Wire) => w.delete());
+        });
+
+        it("should create text wires for multiple characters", () => {
+            const dto = new Inputs.OCCT.TextWiresDto("Hi", 0, 0, 1);
+            const wires = wire.textWires(dto);
+            expect(wires.length).toBe(5); // Multiple characters produce multiple wires
+            wires.forEach((w: TopoDS_Wire) => w.delete());
+        });
+
+        it("should create text wires with custom height", () => {
+            const dto1 = new Inputs.OCCT.TextWiresDto("X", 0, 0, 1);
+            const dto2 = new Inputs.OCCT.TextWiresDto("X", 0, 0, 2);
+            const wires1 = wire.textWires(dto1);
+            const wires2 = wire.textWires(dto2);
+
+            // With height doubled, wire lengths should roughly double
+            const totalLength1 = wires1.reduce((sum: number, w: TopoDS_Wire) => sum + wire.getWireLength({ shape: w }), 0);
+            const totalLength2 = wires2.reduce((sum: number, w: TopoDS_Wire) => sum + wire.getWireLength({ shape: w }), 0);
+
+            expect(totalLength2).toBeGreaterThan(totalLength1);
+            wires1.forEach((w: TopoDS_Wire) => w.delete());
+            wires2.forEach((w: TopoDS_Wire) => w.delete());
+        });
+    });
+
+    describe("textWiresWithData", () => {
+        it("should create text wires with data for simple text", () => {
+            const dto = new Inputs.OCCT.TextWiresDto("A", 0, 0, 1);
+            const result = wire.textWiresWithData(dto);
+            expect(result).toBeDefined();
+            expect(result.data).toBeDefined();
+            expect(result.compound).toBeDefined();
+            result.compound.delete();
+        });
+
+        it("should create text wires with data containing correct structure", () => {
+            const dto = new Inputs.OCCT.TextWiresDto("AB", 0, 0, 1);
+            const result = wire.textWiresWithData(dto);
+            expect(result.data).toBeDefined();
+            expect(result.data.width).toBeGreaterThan(0);
+            expect(result.data.height).toBeGreaterThan(0);
+            // Data should contain information about the text layout
+            result.compound.delete();
+        });
+    });
+
+    describe("createIBeamProfileWire", () => {
+        it("should create I-beam profile wire with default values", () => {
+            const dto = new Inputs.OCCT.IBeamProfileDto(2, 3, 0.2, 0.3);
+            const w = wire.createIBeamProfileWire(dto);
+            const length = wire.getWireLength({ shape: w });
+            // I-beam profile perimeter: complex calculation based on geometry
+            // Outer perimeter: 2*width + 2*height = 2*2 + 2*3 = 10
+            // Inner cuts: depends on web and flange thickness
+            // Expected value will need to be determined empirically
+            expect(length).toBeCloseTo(13.6);
+            const isClosed = occHelper.wiresService.isWireClosed({ shape: w });
+            expect(isClosed).toBe(true);
+            w.delete();
+        });
+
+        it("should create I-beam profile wire with custom dimensions", () => {
+            const dto = new Inputs.OCCT.IBeamProfileDto(4, 6, 0.4, 0.6);
+            const w = wire.createIBeamProfileWire(dto);
+            const length = wire.getWireLength({ shape: w });
+            // For I-beam: perimeter includes outer edges and inner edges
+            // Total should be > simple rectangle perimeter
+            expect(length).toBeCloseTo(27.2); // Should be more than rectangle
+            w.delete();
+        });
+    });
+
+    describe("createHBeamProfileWire", () => {
+        it("should create H-beam profile wire with default values", () => {
+            const dto = new Inputs.OCCT.HBeamProfileDto(2, 3, 0.2, 0.3);
+            const w = wire.createHBeamProfileWire(dto);
+            const length = wire.getWireLength({ shape: w });
+            expect(length).toBeCloseTo(15.6);
+            const isClosed = occHelper.wiresService.isWireClosed({ shape: w });
+            expect(isClosed).toBe(true);
+            w.delete();
+        });
+
+        it("should create H-beam profile wire with custom dimensions", () => {
+            const dto = new Inputs.OCCT.HBeamProfileDto(3, 4, 0.3, 0.4);
+            const w = wire.createHBeamProfileWire(dto);
+            const length = wire.getWireLength({ shape: w });
+            expect(length).toBeCloseTo(21.4);
+            w.delete();
+        });
+    });
+
+    describe("createTBeamProfileWire", () => {
+        it("should create T-beam profile wire with default values", () => {
+            const dto = new Inputs.OCCT.TBeamProfileDto(2, 2, 0.2, 0.3);
+            const w = wire.createTBeamProfileWire(dto);
+            const length = wire.getWireLength({ shape: w });
+            expect(length).toBeCloseTo(8);
+            const isClosed = occHelper.wiresService.isWireClosed({ shape: w });
+            expect(isClosed).toBe(true);
+            w.delete();
+        });
+
+        it("should create T-beam profile wire with custom dimensions", () => {
+            const dto = new Inputs.OCCT.TBeamProfileDto(3, 3, 0.3, 0.5);
+            const w = wire.createTBeamProfileWire(dto);
+            const length = wire.getWireLength({ shape: w });
+            expect(length).toBeCloseTo(12);
+            w.delete();
+        });
+    });
+
+    describe("createUBeamProfileWire", () => {
+        it("should create U-beam profile wire with default values", () => {
+            const dto = new Inputs.OCCT.UBeamProfileDto(2, 3, 0.2, 0.3, 0.5);
+            const w = wire.createUBeamProfileWire(dto);
+            const length = wire.getWireLength({ shape: w });
+            expect(length).toBeCloseTo(15);
+            const isClosed = occHelper.wiresService.isWireClosed({ shape: w });
+            expect(isClosed).toBe(true);
+            w.delete();
+        });
+
+        it("should create U-beam profile wire with custom dimensions", () => {
+            const dto = new Inputs.OCCT.UBeamProfileDto(4, 5, 0.4, 0.5, 1);
+            const w = wire.createUBeamProfileWire(dto);
+            const length = wire.getWireLength({ shape: w });
+            expect(length).toBeCloseTo(26);
+            w.delete();
+        });
+    });
+
+    describe("isWireClosed", () => {
+        it("should return true for closed circle wire", () => {
+            const w = wire.createCircleWire({ radius: 2, center: [0, 0, 0], direction: [0, 1, 0] });
+            const isClosed = wire.isWireClosed({ shape: w });
+            expect(isClosed).toBe(true);
+            w.delete();
+        });
+
+        it("should return true for closed polygon wire", () => {
+            const w = wire.createPolygonWire({
+                points: [[0, 0, 0], [1, 0, 0], [1, 1, 0], [0, 1, 0]]
+            });
+            const isClosed = wire.isWireClosed({ shape: w });
+            expect(isClosed).toBe(true);
+            w.delete();
+        });
+
+        it("should return false for open line wire", () => {
+            const w = wire.createLineWire({ start: [0, 0, 0], end: [1, 0, 0] });
+            const isClosed = wire.isWireClosed({ shape: w });
+            expect(isClosed).toBe(false);
+            w.delete();
+        });
+
+        it("should return false for open polyline wire", () => {
+            const w = wire.createPolylineWire({
+                points: [[0, 0, 0], [1, 0, 0], [1, 1, 0]]
+            });
+            const isClosed = wire.isWireClosed({ shape: w });
+            expect(isClosed).toBe(false);
+            w.delete();
+        });
+
+        it("should return true for closed square wire", () => {
+            const w = wire.createSquareWire({ size: 2, center: [0, 0, 0], direction: [0, 1, 0] });
+            const isClosed = wire.isWireClosed({ shape: w });
+            expect(isClosed).toBe(true);
+            w.delete();
+        });
+
+        it("should return true for closed rectangle wire", () => {
+            const w = wire.createRectangleWire({ width: 3, length: 4, center: [0, 0, 0], direction: [0, 1, 0] });
+            const isClosed = wire.isWireClosed({ shape: w });
+            expect(isClosed).toBe(true);
+            w.delete();
+        });
+    });
 });
