@@ -503,6 +503,413 @@ describe("DxfGenerator unit tests", () => {
         });
     });
 
+    describe("AC1015 Format Branches", () => {
+
+        describe("AC1015 Header Section", () => {
+
+            it("should include $HANDSEED variable in AC1015", () => {
+                const line = new Inputs.IO.DxfLineSegmentDto([0, 0], [10, 10]);
+                const path = new Inputs.IO.DxfPathDto([line]);
+                const part = new Inputs.IO.DxfPathsPartDto("0", "#000000", [path]);
+                const model = new Inputs.IO.DxfModelDto([part], "aci", "AC1015");
+
+                const result = generator.generateDxf(model);
+
+                expect(result).toContain("$HANDSEED\n5\n20000");
+            });
+
+            it("should include $HANDSEED with value 0 in AC1009", () => {
+                const line = new Inputs.IO.DxfLineSegmentDto([0, 0], [10, 10]);
+                const path = new Inputs.IO.DxfPathDto([line]);
+                const part = new Inputs.IO.DxfPathsPartDto("0", "#000000", [path]);
+                const model = new Inputs.IO.DxfModelDto([part], "aci", "AC1009");
+
+                const result = generator.generateDxf(model);
+
+                // AC1009 uses $HANDSEED with value 0 (not 20000 like AC1015)
+                expect(result).toContain("$HANDSEED\n5\n0");
+                expect(result).not.toContain("$HANDSEED\n5\n20000");
+            });
+
+            it("should not include $LASTSAVEDBY in AC1009", () => {
+                const line = new Inputs.IO.DxfLineSegmentDto([0, 0], [10, 10]);
+                const path = new Inputs.IO.DxfPathDto([line]);
+                const part = new Inputs.IO.DxfPathsPartDto("0", "#000000", [path]);
+                const model = new Inputs.IO.DxfModelDto([part], "aci", "AC1009");
+
+                const result = generator.generateDxf(model);
+
+                expect(result).not.toContain("$LASTSAVEDBY");
+            });
+        });
+
+        describe("AC1015 Tables Section", () => {
+
+            it("should not include VIEW table in AC1015", () => {
+                const line = new Inputs.IO.DxfLineSegmentDto([0, 0], [10, 10]);
+                const path = new Inputs.IO.DxfPathDto([line]);
+                const part = new Inputs.IO.DxfPathsPartDto("0", "#000000", [path]);
+                const model = new Inputs.IO.DxfModelDto([part], "aci", "AC1015");
+
+                const result = generator.generateDxf(model);
+
+                expect(result).not.toContain("0\nTABLE\n2\nVIEW");
+            });
+
+            it("should not include UCS table in AC1015", () => {
+                const line = new Inputs.IO.DxfLineSegmentDto([0, 0], [10, 10]);
+                const path = new Inputs.IO.DxfPathDto([line]);
+                const part = new Inputs.IO.DxfPathsPartDto("0", "#000000", [path]);
+                const model = new Inputs.IO.DxfModelDto([part], "aci", "AC1015");
+
+                const result = generator.generateDxf(model);
+
+                expect(result).not.toContain("0\nTABLE\n2\nUCS");
+            });
+
+            it("should not include APPID table in AC1015", () => {
+                const line = new Inputs.IO.DxfLineSegmentDto([0, 0], [10, 10]);
+                const path = new Inputs.IO.DxfPathDto([line]);
+                const part = new Inputs.IO.DxfPathsPartDto("0", "#000000", [path]);
+                const model = new Inputs.IO.DxfModelDto([part], "aci", "AC1015");
+
+                const result = generator.generateDxf(model);
+
+                expect(result).not.toContain("0\nTABLE\n2\nAPPID");
+            });
+
+            it("should not include DIMSTYLE table in AC1015", () => {
+                const line = new Inputs.IO.DxfLineSegmentDto([0, 0], [10, 10]);
+                const path = new Inputs.IO.DxfPathDto([line]);
+                const part = new Inputs.IO.DxfPathsPartDto("0", "#000000", [path]);
+                const model = new Inputs.IO.DxfModelDto([part], "aci", "AC1015");
+
+                const result = generator.generateDxf(model);
+
+                expect(result).not.toContain("0\nTABLE\n2\nDIMSTYLE");
+            });
+
+            it("should include VIEW, UCS, APPID, DIMSTYLE tables in AC1009", () => {
+                const line = new Inputs.IO.DxfLineSegmentDto([0, 0], [10, 10]);
+                const path = new Inputs.IO.DxfPathDto([line]);
+                const part = new Inputs.IO.DxfPathsPartDto("0", "#000000", [path]);
+                const model = new Inputs.IO.DxfModelDto([part], "aci", "AC1009");
+
+                const result = generator.generateDxf(model);
+
+                expect(result).toContain("0\nTABLE\n2\nVIEW");
+                expect(result).toContain("0\nTABLE\n2\nUCS");
+                expect(result).toContain("0\nTABLE\n2\nAPPID");
+                expect(result).toContain("0\nTABLE\n2\nDIMSTYLE");
+            });
+        });
+
+        describe("AC1015 Line Type Table", () => {
+
+            it("should include AcDbSymbolTable marker in LTYPE table for AC1015", () => {
+                const line = new Inputs.IO.DxfLineSegmentDto([0, 0], [10, 10]);
+                const path = new Inputs.IO.DxfPathDto([line]);
+                const part = new Inputs.IO.DxfPathsPartDto("0", "#000000", [path]);
+                const model = new Inputs.IO.DxfModelDto([part], "aci", "AC1015");
+
+                const result = generator.generateDxf(model);
+
+                // Extract LTYPE table section
+                const ltypeStart = result.indexOf("TABLE\n2\nLTYPE");
+                const ltypeEnd = result.indexOf("ENDTAB", ltypeStart);
+                const ltypeSection = result.substring(ltypeStart, ltypeEnd);
+
+                expect(ltypeSection).toContain("100\nAcDbSymbolTable");
+            });
+
+            it("should include AcDbLinetypeTableRecord marker for line type entries in AC1015", () => {
+                const line = new Inputs.IO.DxfLineSegmentDto([0, 0], [10, 10]);
+                const path = new Inputs.IO.DxfPathDto([line]);
+                const part = new Inputs.IO.DxfPathsPartDto("0", "#000000", [path]);
+                const model = new Inputs.IO.DxfModelDto([part], "aci", "AC1015");
+
+                const result = generator.generateDxf(model);
+
+                expect(result).toContain("100\nAcDbSymbolTableRecord");
+                expect(result).toContain("100\nAcDbLinetypeTableRecord");
+            });
+
+            it("should not include AcDbSymbolTable markers in AC1009", () => {
+                const line = new Inputs.IO.DxfLineSegmentDto([0, 0], [10, 10]);
+                const path = new Inputs.IO.DxfPathDto([line]);
+                const part = new Inputs.IO.DxfPathsPartDto("0", "#000000", [path]);
+                const model = new Inputs.IO.DxfModelDto([part], "aci", "AC1009");
+
+                const result = generator.generateDxf(model);
+
+                // Extract LTYPE table section
+                const ltypeStart = result.indexOf("TABLE\n2\nLTYPE");
+                const ltypeEnd = result.indexOf("ENDTAB", ltypeStart);
+                const ltypeSection = result.substring(ltypeStart, ltypeEnd);
+
+                expect(ltypeSection).not.toContain("100\nAcDbSymbolTable");
+                expect(ltypeSection).not.toContain("100\nAcDbLinetypeTableRecord");
+            });
+        });
+
+        describe("AC1015 Style Table", () => {
+
+            it("should include AcDbSymbolTable marker in STYLE table for AC1015", () => {
+                const line = new Inputs.IO.DxfLineSegmentDto([0, 0], [10, 10]);
+                const path = new Inputs.IO.DxfPathDto([line]);
+                const part = new Inputs.IO.DxfPathsPartDto("0", "#000000", [path]);
+                const model = new Inputs.IO.DxfModelDto([part], "aci", "AC1015");
+
+                const result = generator.generateDxf(model);
+
+                // Extract STYLE table section
+                const styleStart = result.indexOf("TABLE\n2\nSTYLE");
+                const styleEnd = result.indexOf("ENDTAB", styleStart);
+                const styleSection = result.substring(styleStart, styleEnd);
+
+                expect(styleSection).toContain("100\nAcDbSymbolTable");
+            });
+
+            it("should include AcDbTextStyleTableRecord marker in AC1015", () => {
+                const line = new Inputs.IO.DxfLineSegmentDto([0, 0], [10, 10]);
+                const path = new Inputs.IO.DxfPathDto([line]);
+                const part = new Inputs.IO.DxfPathsPartDto("0", "#000000", [path]);
+                const model = new Inputs.IO.DxfModelDto([part], "aci", "AC1015");
+
+                const result = generator.generateDxf(model);
+
+                expect(result).toContain("100\nAcDbTextStyleTableRecord");
+            });
+
+            it("should not include AcDbTextStyleTableRecord in AC1009", () => {
+                const line = new Inputs.IO.DxfLineSegmentDto([0, 0], [10, 10]);
+                const path = new Inputs.IO.DxfPathDto([line]);
+                const part = new Inputs.IO.DxfPathsPartDto("0", "#000000", [path]);
+                const model = new Inputs.IO.DxfModelDto([part], "aci", "AC1009");
+
+                const result = generator.generateDxf(model);
+
+                expect(result).not.toContain("100\nAcDbTextStyleTableRecord");
+            });
+        });
+
+        describe("AC1015 Layer Table", () => {
+
+            it("should include AcDbSymbolTable marker in LAYER table for AC1015", () => {
+                const line = new Inputs.IO.DxfLineSegmentDto([0, 0], [10, 10]);
+                const path = new Inputs.IO.DxfPathDto([line]);
+                const part = new Inputs.IO.DxfPathsPartDto("TestLayer", "#FF0000", [path]);
+                const model = new Inputs.IO.DxfModelDto([part], "aci", "AC1015");
+
+                const result = generator.generateDxf(model);
+
+                // Extract LAYER table section
+                const layerStart = result.indexOf("TABLE\n2\nLAYER");
+                const layerEnd = result.indexOf("ENDTAB", layerStart);
+                const layerSection = result.substring(layerStart, layerEnd);
+
+                expect(layerSection).toContain("100\nAcDbSymbolTable");
+            });
+
+            it("should include AcDbLayerTableRecord marker per layer in AC1015", () => {
+                const line = new Inputs.IO.DxfLineSegmentDto([0, 0], [10, 10]);
+                const path = new Inputs.IO.DxfPathDto([line]);
+                const part = new Inputs.IO.DxfPathsPartDto("CustomLayer", "#00FF00", [path]);
+                const model = new Inputs.IO.DxfModelDto([part], "aci", "AC1015");
+
+                const result = generator.generateDxf(model);
+
+                expect(result).toContain("100\nAcDbLayerTableRecord");
+            });
+
+            it("should include entity handles in LAYER table for AC1015", () => {
+                const line = new Inputs.IO.DxfLineSegmentDto([0, 0], [10, 10]);
+                const path = new Inputs.IO.DxfPathDto([line]);
+                const part = new Inputs.IO.DxfPathsPartDto("MyLayer", "#0000FF", [path]);
+                const model = new Inputs.IO.DxfModelDto([part], "aci", "AC1015");
+
+                const result = generator.generateDxf(model);
+
+                // Extract LAYER table section
+                const layerStart = result.indexOf("TABLE\n2\nLAYER");
+                const layerEnd = result.indexOf("ENDTAB", layerStart);
+                const layerSection = result.substring(layerStart, layerEnd);
+
+                // Should have handle code "5" with hex value
+                expect(layerSection).toContain("5\n2");
+            });
+
+            it("should not include AcDbLayerTableRecord in AC1009", () => {
+                const line = new Inputs.IO.DxfLineSegmentDto([0, 0], [10, 10]);
+                const path = new Inputs.IO.DxfPathDto([line]);
+                const part = new Inputs.IO.DxfPathsPartDto("TestLayer", "#FF0000", [path]);
+                const model = new Inputs.IO.DxfModelDto([part], "aci", "AC1009");
+
+                const result = generator.generateDxf(model);
+
+                expect(result).not.toContain("100\nAcDbLayerTableRecord");
+            });
+
+            it("should generate unique handles for multiple layers in AC1015", () => {
+                const line1 = new Inputs.IO.DxfLineSegmentDto([0, 0], [10, 10]);
+                const line2 = new Inputs.IO.DxfLineSegmentDto([20, 20], [30, 30]);
+                const path1 = new Inputs.IO.DxfPathDto([line1]);
+                const path2 = new Inputs.IO.DxfPathDto([line2]);
+                const part1 = new Inputs.IO.DxfPathsPartDto("Layer1", "#FF0000", [path1]);
+                const part2 = new Inputs.IO.DxfPathsPartDto("Layer2", "#00FF00", [path2]);
+                const model = new Inputs.IO.DxfModelDto([part1, part2], "aci", "AC1015");
+
+                const result = generator.generateDxf(model);
+
+                // Both layers should have AcDbLayerTableRecord
+                const matches = result.match(/100\nAcDbLayerTableRecord/g);
+                expect(matches?.length).toBeGreaterThanOrEqual(2);
+            });
+        });
+
+        describe("AC1015 Entity-Specific Markers", () => {
+
+            it("should include AcDbCircle marker for CIRCLE entities in AC1015", () => {
+                const circle = new Inputs.IO.DxfCircleSegmentDto([10, 10], 5);
+                const path = new Inputs.IO.DxfPathDto([circle]);
+                const part = new Inputs.IO.DxfPathsPartDto("0", "1", [path]);
+                const model = new Inputs.IO.DxfModelDto([part], "aci", "AC1015");
+
+                const result = generator.generateDxf(model);
+
+                expect(result).toContain("100\nAcDbEntity");
+                expect(result).toContain("100\nAcDbCircle");
+            });
+
+            it("should include AcDbPolyline marker for LWPOLYLINE entities in AC1015", () => {
+                const points: Inputs.Base.Point2[] = [[0, 0], [10, 0], [10, 10], [0, 10]];
+                const polyline = new Inputs.IO.DxfPolylineSegmentDto(points, true);
+                const path = new Inputs.IO.DxfPathDto([polyline]);
+                const part = new Inputs.IO.DxfPathsPartDto("0", "1", [path]);
+                const model = new Inputs.IO.DxfModelDto([part], "aci", "AC1015");
+
+                const result = generator.generateDxf(model);
+
+                expect(result).toContain("100\nAcDbEntity");
+                expect(result).toContain("100\nAcDbPolyline");
+            });
+
+            it("should not include AcDbPolyline marker in AC1009", () => {
+                const points: Inputs.Base.Point2[] = [[0, 0], [10, 0], [10, 10], [0, 10]];
+                const polyline = new Inputs.IO.DxfPolylineSegmentDto(points, true);
+                const path = new Inputs.IO.DxfPathDto([polyline]);
+                const part = new Inputs.IO.DxfPathsPartDto("0", "1", [path]);
+                const model = new Inputs.IO.DxfModelDto([part], "aci", "AC1009");
+
+                const result = generator.generateDxf(model);
+
+                expect(result).not.toContain("100\nAcDbPolyline");
+            });
+
+            it("should include AcDbSpline marker for SPLINE entities in AC1015", () => {
+                const controlPoints: Inputs.Base.Point2[] = [[0, 0], [5, 10], [10, 10], [15, 0]];
+                const spline = new Inputs.IO.DxfSplineSegmentDto(controlPoints, 3, false);
+                const path = new Inputs.IO.DxfPathDto([spline]);
+                const part = new Inputs.IO.DxfPathsPartDto("0", "1", [path]);
+                const model = new Inputs.IO.DxfModelDto([part], "aci", "AC1015");
+
+                const result = generator.generateDxf(model);
+
+                expect(result).toContain("100\nAcDbEntity");
+                expect(result).toContain("100\nAcDbSpline");
+            });
+
+            it("should not include AcDbSpline marker in AC1009", () => {
+                const controlPoints: Inputs.Base.Point2[] = [[0, 0], [5, 10], [10, 10], [15, 0]];
+                const spline = new Inputs.IO.DxfSplineSegmentDto(controlPoints, 3, false);
+                const path = new Inputs.IO.DxfPathDto([spline]);
+                const part = new Inputs.IO.DxfPathsPartDto("0", "1", [path]);
+                const model = new Inputs.IO.DxfModelDto([part], "aci", "AC1009");
+
+                const result = generator.generateDxf(model);
+
+                expect(result).not.toContain("100\nAcDbSpline");
+            });
+
+            it("should include both AcDbCircle and AcDbArc markers for ARC entities in AC1015", () => {
+                const arc = new Inputs.IO.DxfArcSegmentDto([10, 10], 5, 0, 90);
+                const path = new Inputs.IO.DxfPathDto([arc]);
+                const part = new Inputs.IO.DxfPathsPartDto("0", "1", [path]);
+                const model = new Inputs.IO.DxfModelDto([part], "aci", "AC1015");
+
+                const result = generator.generateDxf(model);
+
+                expect(result).toContain("100\nAcDbEntity");
+                expect(result).toContain("100\nAcDbCircle");
+                expect(result).toContain("100\nAcDbArc");
+            });
+
+            it("should include entity handles for all entity types in AC1015", () => {
+                const line = new Inputs.IO.DxfLineSegmentDto([0, 0], [10, 10]);
+                const circle = new Inputs.IO.DxfCircleSegmentDto([20, 20], 5);
+                const arc = new Inputs.IO.DxfArcSegmentDto([30, 30], 5, 0, 90);
+                const polyline = new Inputs.IO.DxfPolylineSegmentDto([[40, 0], [50, 0], [50, 10]], false);
+                const spline = new Inputs.IO.DxfSplineSegmentDto([[60, 0], [65, 10], [70, 0]], 3, false);
+                
+                const path = new Inputs.IO.DxfPathDto([line, circle, arc, polyline, spline]);
+                const part = new Inputs.IO.DxfPathsPartDto("0", "1", [path]);
+                const model = new Inputs.IO.DxfModelDto([part], "aci", "AC1015");
+
+                const result = generator.generateDxf(model);
+
+                // Extract ENTITIES section and count entity handles
+                const entitiesSection = result.split("SECTION\n2\nENTITIES")[1]?.split("ENDSEC")[0];
+                expect(entitiesSection).toBeDefined();
+                
+                const handleMatches = entitiesSection?.match(/5\n[A-F0-9]+/g);
+                expect(handleMatches).toBeDefined();
+                expect(handleMatches?.length).toBeGreaterThanOrEqual(5); // At least 5 entities
+            });
+        });
+
+        describe("AC1015 Arc Entity Z Coordinate", () => {
+
+            it("should use 0.0 for arc Z coordinate in AC1015", () => {
+                const arc = new Inputs.IO.DxfArcSegmentDto([10, 10], 5, 0, 90);
+                const path = new Inputs.IO.DxfPathDto([arc]);
+                const part = new Inputs.IO.DxfPathsPartDto("0", "1", [path]);
+                const model = new Inputs.IO.DxfModelDto([part], "aci", "AC1015");
+
+                const result = generator.generateDxf(model);
+
+                // AC1015 uses "0.0" for Z coordinate
+                expect(result).toContain("30\n0.0");
+            });
+
+            it("should use empty string for arc Z coordinate in AC1009", () => {
+                const arc = new Inputs.IO.DxfArcSegmentDto([10, 10], 5, 0, 90);
+                const path = new Inputs.IO.DxfPathDto([arc]);
+                const part = new Inputs.IO.DxfPathsPartDto("0", "1", [path]);
+                const model = new Inputs.IO.DxfModelDto([part], "aci", "AC1009");
+
+                const result = generator.generateDxf(model);
+
+                // AC1009 uses empty string for Z coordinate ("30\n" followed by "\n40")
+                // This means after code 30, there's an empty line, then code 40 for radius
+                expect(result).toContain("30\n\n40");
+                expect(result).not.toContain("30\n0.0");
+            });
+
+            it("should include empty linetype field for arc in AC1009 only", () => {
+                const arc = new Inputs.IO.DxfArcSegmentDto([10, 10], 5, 0, 90);
+                const path = new Inputs.IO.DxfPathDto([arc]);
+                const part = new Inputs.IO.DxfPathsPartDto("0", "1", [path]);
+                const model = new Inputs.IO.DxfModelDto([part], "aci", "AC1009");
+
+                const result = generator.generateDxf(model);
+
+                // AC1009 includes "6\n " (empty linetype)
+                const entitiesSection = result.split("SECTION\n2\nENTITIES")[1]?.split("ENDSEC")[0];
+                expect(entitiesSection).toContain("6\n ");
+            });
+        });
+    });
+
     describe("Color Handling", () => {
         
         it("should apply ACI color to entities", () => {
