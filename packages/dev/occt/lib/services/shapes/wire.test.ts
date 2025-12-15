@@ -532,6 +532,82 @@ describe("OCCT wire unit tests", () => {
         w2.delete();
     });
 
+    it("should reverse closed polygon wire and have same start point using reversedWireFromReversedEdges", async () => {
+        // Create a closed polygon (rectangle)
+        const points = [[0, 0, 0], [10, 0, 0], [10, 0, 5], [0, 0, 5]] as Inputs.Base.Point3[];
+        const w = wire.createPolygonWire({ points });
+        
+        const startPt = wire.startPointOnWire({ shape: w });
+        const endPt = wire.endPointOnWire({ shape: w });
+        
+        // For a closed polygon, start and end should be the same
+        expect(startPt[0]).toBeCloseTo(endPt[0], 5);
+        expect(startPt[1]).toBeCloseTo(endPt[1], 5);
+        expect(startPt[2]).toBeCloseTo(endPt[2], 5);
+        
+        // Use reversedWireFromReversedEdges for closed wires to maintain start point
+        const w2 = wire.reversedWireFromReversedEdges({ shape: w });
+        
+        const startPtRev = wire.startPointOnWire({ shape: w2 });
+        
+        // For a reversed closed polygon using reversedWireFromReversedEdges, 
+        // the start point should be the same as the original
+        // User expectation: forward, left, back, right becomes left, forward, right, back
+        // Same start/end point but opposite traversal direction
+        expect(startPtRev[0]).toBeCloseTo(startPt[0], 5);
+        expect(startPtRev[1]).toBeCloseTo(startPt[1], 5);
+        expect(startPtRev[2]).toBeCloseTo(startPt[2], 5);
+        
+        w.delete();
+        w2.delete();
+    });
+
+    it("should reverse closed polygon wire edges and have correct edge directions using reversedWireFromReversedEdges", async () => {
+        // Create a closed polygon (rectangle)
+        const points = [[0, 0, 0], [10, 0, 0], [10, 0, 5], [0, 0, 5]] as Inputs.Base.Point3[];
+        const w = wire.createPolygonWire({ points });
+        
+        const allEdges = edge.getEdgesAlongWire({ shape: w });
+        const firstEdgeStart = edge.startPointOnEdge({ shape: allEdges[0] });
+        
+        // Use reversedWireFromReversedEdges for closed wires
+        const w2 = wire.reversedWireFromReversedEdges({ shape: w });
+        
+        const allEdgesRev = edge.getEdgesAlongWire({ shape: w2 });
+        const firstEdgeRevStart = edge.startPointOnEdge({ shape: allEdgesRev[0] });
+        
+        // For a reversed wire using reversedWireFromReversedEdges, 
+        // the first edge's start should be the original first edge's start
+        expect(firstEdgeRevStart[0]).toBeCloseTo(firstEdgeStart[0], 5);
+        expect(firstEdgeRevStart[1]).toBeCloseTo(firstEdgeStart[1], 5);
+        expect(firstEdgeRevStart[2]).toBeCloseTo(firstEdgeStart[2], 5);
+        
+        allEdges.forEach(e => e.delete());
+        allEdgesRev.forEach(e => e.delete());
+        w.delete();
+        w2.delete();
+    });
+
+    it("should reverse closed rectangle wire and maintain start point using reversedWireFromReversedEdges", async () => {
+        // Create a closed rectangle wire
+        const w = wire.createRectangleWire({ width: 10, length: 5, center: [5, 0, 2.5], direction: [0, 1, 0] });
+        
+        const startPt = wire.startPointOnWire({ shape: w });
+        
+        // Use reversedWireFromReversedEdges for closed wires
+        const w2 = wire.reversedWireFromReversedEdges({ shape: w });
+        
+        const startPtRev = wire.startPointOnWire({ shape: w2 });
+        
+        // The reversed wire should have the same start point as the original
+        expect(startPtRev[0]).toBeCloseTo(startPt[0], 5);
+        expect(startPtRev[1]).toBeCloseTo(startPt[1], 5);
+        expect(startPtRev[2]).toBeCloseTo(startPt[2], 5);
+        
+        w.delete();
+        w2.delete();
+    });
+
     it("should get wire of a box at specific index", async () => {
         const b = occHelper.entitiesService.bRepPrimAPIMakeBox(3, 4, 5, [0, 0, 0]);
         const w = wire.getWire({ shape: b, index: 2 });
