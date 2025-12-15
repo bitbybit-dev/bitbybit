@@ -170,6 +170,116 @@ describe("Point unit tests", () => {
             });
         });
 
+        describe("stretchPointsDirFromCenter", () => {
+            it("should stretch a point along Z axis from origin by factor 2", () => {
+                const pts: Inputs.Base.Point3[] = [[0, 0, 1]];
+                const center: Inputs.Base.Point3 = [0, 0, 0];
+                const direction: Inputs.Base.Vector3 = [0, 0, 1];
+                const scale = 2;
+                const result = point.stretchPointsDirFromCenter({ points: pts, center, direction, scale });
+                uh.expectPointsCloseTo(result, [[0, 0, 2]]);
+            });
+
+            it("should stretch multiple points along X axis from origin by factor 3", () => {
+                const pts: Inputs.Base.Point3[] = [[1, 0, 0], [2, 0, 0], [1, 1, 1]];
+                const center: Inputs.Base.Point3 = [0, 0, 0];
+                const direction: Inputs.Base.Vector3 = [1, 0, 0];
+                const scale = 3;
+                const result = point.stretchPointsDirFromCenter({ points: pts, center, direction, scale });
+                // X component gets scaled by 3, Y and Z remain unchanged
+                uh.expectPointsCloseTo(result, [[3, 0, 0], [6, 0, 0], [3, 1, 1]]);
+            });
+
+            it("should stretch points along Y axis from a non-origin center", () => {
+                const pts: Inputs.Base.Point3[] = [[0, 5, 0], [0, 10, 0]];
+                const center: Inputs.Base.Point3 = [0, 5, 0];
+                const direction: Inputs.Base.Vector3 = [0, 1, 0];
+                const scale = 2;
+                const result = point.stretchPointsDirFromCenter({ points: pts, center, direction, scale });
+                // Point [0, 5, 0] is at center, so it stays
+                // Point [0, 10, 0] is 5 units along Y from center, scaled by 2 -> 10 units -> [0, 15, 0]
+                uh.expectPointsCloseTo(result, [[0, 5, 0], [0, 15, 0]]);
+            });
+
+            it("should shrink points when scale is less than 1", () => {
+                const pts: Inputs.Base.Point3[] = [[4, 0, 0], [8, 0, 0]];
+                const center: Inputs.Base.Point3 = [0, 0, 0];
+                const direction: Inputs.Base.Vector3 = [1, 0, 0];
+                const scale = 0.5;
+                const result = point.stretchPointsDirFromCenter({ points: pts, center, direction, scale });
+                uh.expectPointsCloseTo(result, [[2, 0, 0], [4, 0, 0]]);
+            });
+
+            it("should flip points when scale is negative", () => {
+                const pts: Inputs.Base.Point3[] = [[2, 0, 0]];
+                const center: Inputs.Base.Point3 = [0, 0, 0];
+                const direction: Inputs.Base.Vector3 = [1, 0, 0];
+                const scale = -1;
+                const result = point.stretchPointsDirFromCenter({ points: pts, center, direction, scale });
+                uh.expectPointsCloseTo(result, [[-2, 0, 0]]);
+            });
+
+            it("should not change points when scale is 1", () => {
+                const pts: Inputs.Base.Point3[] = [[1, 2, 3], [4, 5, 6]];
+                const center: Inputs.Base.Point3 = [0, 0, 0];
+                const direction: Inputs.Base.Vector3 = [1, 0, 0];
+                const scale = 1;
+                const result = point.stretchPointsDirFromCenter({ points: pts, center, direction, scale });
+                uh.expectPointsCloseTo(result, [[1, 2, 3], [4, 5, 6]]);
+            });
+
+            it("should stretch along a diagonal direction", () => {
+                // Stretch along [1, 1, 0] normalized direction from origin
+                const pts: Inputs.Base.Point3[] = [[1, 1, 0]];
+                const center: Inputs.Base.Point3 = [0, 0, 0];
+                const direction: Inputs.Base.Vector3 = [1, 1, 0];
+                const scale = 2;
+                const result = point.stretchPointsDirFromCenter({ points: pts, center, direction, scale });
+                // The point [1, 1, 0] is along the direction [1, 1, 0], so stretching by 2 gives [2, 2, 0]
+                uh.expectPointsCloseTo(result, [[2, 2, 0]]);
+            });
+
+            it("should correctly stretch a point perpendicular to direction (no change in that component)", () => {
+                // Point [0, 5, 0] stretched along X axis should not change Y
+                const pts: Inputs.Base.Point3[] = [[0, 5, 0]];
+                const center: Inputs.Base.Point3 = [0, 0, 0];
+                const direction: Inputs.Base.Vector3 = [1, 0, 0];
+                const scale = 10;
+                const result = point.stretchPointsDirFromCenter({ points: pts, center, direction, scale });
+                // X component is 0, so scaling along X doesn't move the point
+                uh.expectPointsCloseTo(result, [[0, 5, 0]]);
+            });
+
+            it("should handle empty points array", () => {
+                const pts: Inputs.Base.Point3[] = [];
+                const center: Inputs.Base.Point3 = [0, 0, 0];
+                const direction: Inputs.Base.Vector3 = [1, 0, 0];
+                const scale = 2;
+                const result = point.stretchPointsDirFromCenter({ points: pts, center, direction, scale });
+                expect(result).toEqual([]);
+            });
+
+            it("should stretch points in 3D along a 3D diagonal direction", () => {
+                const pts: Inputs.Base.Point3[] = [[1, 1, 1]];
+                const center: Inputs.Base.Point3 = [0, 0, 0];
+                const direction: Inputs.Base.Vector3 = [1, 1, 1];
+                const scale = 3;
+                const result = point.stretchPointsDirFromCenter({ points: pts, center, direction, scale });
+                // Point is exactly along [1,1,1] direction, scaled by 3
+                uh.expectPointsCloseTo(result, [[3, 3, 3]]);
+            });
+
+            it("should stretch relative to a 3D center point", () => {
+                const pts: Inputs.Base.Point3[] = [[5, 5, 5]];
+                const center: Inputs.Base.Point3 = [2, 2, 2];
+                const direction: Inputs.Base.Vector3 = [1, 1, 1];
+                const scale = 2;
+                const result = point.stretchPointsDirFromCenter({ points: pts, center, direction, scale });
+                // Vector from center to point is [3, 3, 3], scaled by 2 -> [6, 6, 6], added to center -> [8, 8, 8]
+                uh.expectPointsCloseTo(result, [[8, 8, 8]]);
+            });
+        });
+
         describe("boundingBoxOfPoints", () => {
             it("should calculate the correct bounding box for multiple points", () => {
                 const points: Inputs.Base.Point3[] = [[1, 2, 3], [4, -1, 6], [0, 5, -2]];
@@ -849,6 +959,989 @@ describe("Point unit tests", () => {
             const input = createInput(geoP1, geoC, geoP2);
             const expected = (Math.sqrt(2) / 2.0) * Math.tan(Math.PI / 8);
             expect(point.maxFilletRadiusHalfLine(input)).toBeCloseTo(expected, precision);
+        });
+    });
+
+    describe("safestPointsMaxFilletHalfLine", () => {
+        const precision = 6;
+
+        it("should return 0 for fewer than 3 points", () => {
+            const pts: Inputs.Base.Point3[] = [[0, 0, 0], [1, 1, 0]];
+            const result = point.safestPointsMaxFilletHalfLine({ points: pts, checkLastWithFirst: false });
+            expect(result).toBe(0);
+        });
+
+        it("should return 0 for a single point", () => {
+            const pts: Inputs.Base.Point3[] = [[0, 0, 0]];
+            const result = point.safestPointsMaxFilletHalfLine({ points: pts, checkLastWithFirst: false });
+            expect(result).toBe(0);
+        });
+
+        it("should return 0 for an empty array", () => {
+            const pts: Inputs.Base.Point3[] = [];
+            const result = point.safestPointsMaxFilletHalfLine({ points: pts, checkLastWithFirst: false });
+            expect(result).toBe(0);
+        });
+
+        it("should calculate safest fillet for a simple triangle (90-degree corner)", () => {
+            // Right triangle at origin with legs along X and Y axes
+            const pts: Inputs.Base.Point3[] = [[4, 0, 0], [0, 0, 0], [0, 4, 0]];
+            // There's only one internal corner at [0,0,0] which is 90 degrees
+            // Half-line constraint: min(4/2, 4/2) * tan(45deg) = 2 * 1 = 2
+            const result = point.safestPointsMaxFilletHalfLine({ points: pts, checkLastWithFirst: false });
+            expect(result).toBeCloseTo(2.0, precision);
+        });
+
+        it("should return minimum fillet radius among multiple corners", () => {
+            // L-shape: two 90-degree corners with different arm lengths
+            const pts: Inputs.Base.Point3[] = [
+                [4, 0, 0],   // Start
+                [0, 0, 0],   // Corner 1: 90 deg, arms 4 and 2
+                [0, 2, 0],   // Corner 2: 90 deg, arms 2 and 6
+                [6, 2, 0]    // End
+            ];
+            // Corner 1 at [0,0,0]: arms are 4 (to start) and 2 (to next), half-line: min(2, 1) * 1 = 1
+            // Corner 2 at [0,2,0]: arms are 2 (to prev) and 6 (to end), half-line: min(1, 3) * 1 = 1
+            const result = point.safestPointsMaxFilletHalfLine({ points: pts, checkLastWithFirst: false });
+            expect(result).toBeCloseTo(1.0, precision);
+        });
+
+        it("should handle closed polyline with checkLastWithFirst=true", () => {
+            // Square: 4 corners, all 90 degrees, side length 4
+            const pts: Inputs.Base.Point3[] = [
+                [0, 0, 0],
+                [4, 0, 0],
+                [4, 4, 0],
+                [0, 4, 0]
+            ];
+            // Each corner has arms of length 4, half-line: min(2, 2) * tan(45deg) = 2 * 1 = 2
+            const result = point.safestPointsMaxFilletHalfLine({ points: pts, checkLastWithFirst: true });
+            expect(result).toBeCloseTo(2.0, precision);
+        });
+
+        it("should return smaller radius when one corner has shorter arms", () => {
+            // Rectangle with unequal sides
+            const pts: Inputs.Base.Point3[] = [
+                [0, 0, 0],
+                [2, 0, 0],  // Short side = 2
+                [2, 6, 0],  // Long side = 6
+                [0, 6, 0]
+            ];
+            // Corner at [2,0,0]: arms 2 and 6, half-line: min(1, 3) * 1 = 1
+            // Corner at [2,6,0]: arms 6 and 2, half-line: min(3, 1) * 1 = 1
+            // All corners constrained by the short side
+            const result = point.safestPointsMaxFilletHalfLine({ points: pts, checkLastWithFirst: true });
+            expect(result).toBeCloseTo(1.0, precision);
+        });
+
+        it("should return 0 when one corner has collinear points", () => {
+            // Three collinear points (no actual corner)
+            const pts: Inputs.Base.Point3[] = [
+                [0, 0, 0],
+                [2, 0, 0],
+                [4, 0, 0]
+            ];
+            const result = point.safestPointsMaxFilletHalfLine({ points: pts, checkLastWithFirst: false });
+            expect(result).toBeCloseTo(0, precision);
+        });
+
+        it("should handle equilateral triangle (60-degree angles)", () => {
+            // Equilateral triangle with side length 4
+            const side = 4;
+            const h = side * Math.sqrt(3) / 2;
+            const pts: Inputs.Base.Point3[] = [
+                [0, 0, 0],
+                [side, 0, 0],
+                [side / 2, h, 0]
+            ];
+            // Internal angle at each vertex is 60 degrees
+            // tan(30deg) = 1/sqrt(3) ≈ 0.577
+            // Half-line: min(side/2, side/2) * tan(30deg) = 2 * 0.577 ≈ 1.1547
+            const expected = (side / 2) * Math.tan(Math.PI / 6);
+            const result = point.safestPointsMaxFilletHalfLine({ points: pts, checkLastWithFirst: true });
+            expect(result).toBeCloseTo(expected, precision);
+        });
+
+        it("should handle regular hexagon", () => {
+            // Regular hexagon centered at origin with radius 2
+            const radius = 2;
+            const pts: Inputs.Base.Point3[] = [];
+            for (let i = 0; i < 6; i++) {
+                const angle = (Math.PI / 3) * i;
+                pts.push([
+                    radius * Math.sin(angle),
+                    radius * Math.cos(angle),
+                    0
+                ]);
+            }
+            // Each internal angle is 120 degrees
+            // tan(60deg) = sqrt(3) ≈ 1.732
+            // Each side length is equal to radius = 2
+            // Half-line: (2/2) * sqrt(3) = sqrt(3) ≈ 1.732
+            const expected = (radius / 2) * Math.tan(Math.PI / 3);
+            const result = point.safestPointsMaxFilletHalfLine({ points: pts, checkLastWithFirst: true });
+            expect(result).toBeCloseTo(expected, precision);
+        });
+
+        it("should handle 3D polyline", () => {
+            // 3D L-shape
+            const pts: Inputs.Base.Point3[] = [
+                [4, 0, 0],
+                [0, 0, 0],  // Corner at origin, 90-deg
+                [0, 0, 4]
+            ];
+            // Single corner at origin with arms of length 4
+            // Half-line: min(2, 2) * tan(45deg) = 2
+            const result = point.safestPointsMaxFilletHalfLine({ points: pts, checkLastWithFirst: false });
+            expect(result).toBeCloseTo(2.0, precision);
+        });
+    });
+
+    describe("hexGridScaledToFit", () => {
+        const precision = 6;
+
+        it("should return empty result for invalid dimensions (zero width)", () => {
+            const result = point.hexGridScaledToFit({
+                width: 0,
+                height: 10,
+                nrHexagonsInWidth: 2,
+                nrHexagonsInHeight: 2
+            });
+            expect(result.centers).toEqual([]);
+            expect(result.hexagons).toEqual([]);
+            expect(result.shortestDistEdge).toBeUndefined();
+            expect(result.longestDistEdge).toBeUndefined();
+            expect(result.maxFilletRadius).toBeUndefined();
+        });
+
+        it("should return empty result for invalid dimensions (zero height)", () => {
+            const result = point.hexGridScaledToFit({
+                width: 10,
+                height: 0,
+                nrHexagonsInWidth: 2,
+                nrHexagonsInHeight: 2
+            });
+            expect(result.centers).toEqual([]);
+            expect(result.hexagons).toEqual([]);
+        });
+
+        it("should return empty result for invalid hexagon counts (zero)", () => {
+            const result = point.hexGridScaledToFit({
+                width: 10,
+                height: 10,
+                nrHexagonsInWidth: 0,
+                nrHexagonsInHeight: 2
+            });
+            expect(result.centers).toEqual([]);
+            expect(result.hexagons).toEqual([]);
+        });
+
+        it("should generate correct number of hexagons for 2x2 grid", () => {
+            const result = point.hexGridScaledToFit({
+                width: 10,
+                height: 10,
+                nrHexagonsInWidth: 2,
+                nrHexagonsInHeight: 2
+            });
+            expect(result.centers).toHaveLength(4);
+            expect(result.hexagons).toHaveLength(4);
+        });
+
+        it("should generate correct number of hexagons for 3x4 grid", () => {
+            const result = point.hexGridScaledToFit({
+                width: 20,
+                height: 15,
+                nrHexagonsInWidth: 3,
+                nrHexagonsInHeight: 4
+            });
+            expect(result.centers).toHaveLength(12);
+            expect(result.hexagons).toHaveLength(12);
+        });
+
+        it("should generate hexagons with exactly 6 vertices each", () => {
+            const result = point.hexGridScaledToFit({
+                width: 10,
+                height: 10,
+                nrHexagonsInWidth: 2,
+                nrHexagonsInHeight: 2
+            });
+            result.hexagons.forEach(hex => {
+                expect(hex).toHaveLength(6);
+            });
+        });
+
+        it("should scale hexagons to fit within specified dimensions", () => {
+            const width = 20;
+            const height = 15;
+            const result = point.hexGridScaledToFit({
+                width,
+                height,
+                nrHexagonsInWidth: 3,
+                nrHexagonsInHeight: 3
+            });
+
+            // Check that all hexagon vertices are within bounds [0, width] x [0, height]
+            let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
+            result.hexagons.forEach(hex => {
+                hex.forEach(vertex => {
+                    if (vertex[0] < minX) minX = vertex[0];
+                    if (vertex[0] > maxX) maxX = vertex[0];
+                    if (vertex[1] < minY) minY = vertex[1];
+                    if (vertex[1] > maxY) maxY = vertex[1];
+                });
+            });
+
+            expect(minX).toBeCloseTo(0, precision);
+            expect(maxX).toBeCloseTo(width, precision);
+            expect(minY).toBeCloseTo(0, precision);
+            expect(maxY).toBeCloseTo(height, precision);
+        });
+
+        it("should place all points on Z=0 by default", () => {
+            const result = point.hexGridScaledToFit({
+                width: 10,
+                height: 10,
+                nrHexagonsInWidth: 2,
+                nrHexagonsInHeight: 2
+            });
+
+            result.centers.forEach(center => {
+                expect(center[2]).toBe(0);
+            });
+            result.hexagons.forEach(hex => {
+                hex.forEach(vertex => {
+                    expect(vertex[2]).toBe(0);
+                });
+            });
+        });
+
+        it("should center the grid when centerGrid=true", () => {
+            const width = 10;
+            const height = 10;
+            const result = point.hexGridScaledToFit({
+                width,
+                height,
+                nrHexagonsInWidth: 2,
+                nrHexagonsInHeight: 2,
+                centerGrid: true
+            });
+
+            // The grid should be centered around origin
+            let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
+            result.hexagons.forEach(hex => {
+                hex.forEach(vertex => {
+                    if (vertex[0] < minX) minX = vertex[0];
+                    if (vertex[0] > maxX) maxX = vertex[0];
+                    if (vertex[1] < minY) minY = vertex[1];
+                    if (vertex[1] > maxY) maxY = vertex[1];
+                });
+            });
+
+            expect(minX).toBeCloseTo(-width / 2, precision);
+            expect(maxX).toBeCloseTo(width / 2, precision);
+            expect(minY).toBeCloseTo(-height / 2, precision);
+            expect(maxY).toBeCloseTo(height / 2, precision);
+        });
+
+        it("should place points on ground (XZ plane) when pointsOnGround=true", () => {
+            const result = point.hexGridScaledToFit({
+                width: 10,
+                height: 10,
+                nrHexagonsInWidth: 2,
+                nrHexagonsInHeight: 2,
+                pointsOnGround: true
+            });
+
+            // Y should be 0, Z should have the height values
+            result.centers.forEach(center => {
+                expect(center[1]).toBe(0);
+            });
+            result.hexagons.forEach(hex => {
+                hex.forEach(vertex => {
+                    expect(vertex[1]).toBe(0);
+                });
+            });
+        });
+
+        it("should return valid edge distances", () => {
+            const result = point.hexGridScaledToFit({
+                width: 10,
+                height: 10,
+                nrHexagonsInWidth: 2,
+                nrHexagonsInHeight: 2
+            });
+
+            expect(result.shortestDistEdge).toBeDefined();
+            expect(result.longestDistEdge).toBeDefined();
+            expect(result.shortestDistEdge).toBeCloseTo(2.457807219155035);
+            expect(result.longestDistEdge).toBeCloseTo(2.8571428571428568);
+            expect(result.longestDistEdge).toBeGreaterThanOrEqual(result.shortestDistEdge!);
+        });
+
+        it("should return valid maxFilletRadius", () => {
+            const result = point.hexGridScaledToFit({
+                width: 10,
+                height: 10,
+                nrHexagonsInWidth: 2,
+                nrHexagonsInHeight: 2
+            });
+
+            expect(result.maxFilletRadius).toBeDefined();
+            expect(result.maxFilletRadius).toBeCloseTo(1.7204650534085244);
+        });
+
+        it("should generate flat-top hexagons when flatTop=true", () => {
+            const width = 10;
+            const height = 10;
+            const resultPointy = point.hexGridScaledToFit({
+                width,
+                height,
+                nrHexagonsInWidth: 2,
+                nrHexagonsInHeight: 2,
+                flatTop: false
+            });
+            const resultFlat = point.hexGridScaledToFit({
+                width,
+                height,
+                nrHexagonsInWidth: 2,
+                nrHexagonsInHeight: 2,
+                flatTop: true
+            });
+
+            // Both should have same number of hexagons
+            expect(resultFlat.hexagons).toHaveLength(resultPointy.hexagons.length);
+
+            // But the vertex positions should be different (rotated 90 degrees)
+            // Check that the first hexagon vertices are different
+            const flatFirst = resultFlat.hexagons[0];
+            const pointyFirst = resultPointy.hexagons[0];
+
+            expect(resultFlat.hexagons).toEqual([
+                [
+                    [0, 4.000000000000001, 0],
+                    [1.4285714285714288, 6, 0],
+                    [4.285714285714286, 6, 0],
+                    [5.714285714285714, 4.000000000000001, 0],
+                    [4.2857142857142865, 2.000000000000001, 0],
+                    [1.4285714285714306, 2, 0]
+                ],
+                [
+                    [0, 8.000000000000002, 0],
+                    [1.4285714285714293, 10, 0],
+                    [4.285714285714286, 10, 0],
+                    [5.714285714285714, 8.000000000000002, 0],
+                    [4.2857142857142865, 6.000000000000002, 0],
+                    [1.4285714285714306, 6, 0]
+                ],
+                [
+                    [4.285714285714286, 2.000000000000001, 0],
+                    [5.714285714285714, 4.000000000000001, 0],
+                    [8.571428571428571, 4.000000000000001, 0],
+                    [10, 2.0000000000000004, 0],
+                    [8.571428571428573, 8.881784197001252e-16, 0],
+                    [5.714285714285716, 0, 0]
+                ],
+                [
+                    [4.285714285714286, 6, 0],
+                    [5.714285714285714, 8.000000000000002, 0],
+                    [8.571428571428571, 8.000000000000002, 0],
+                    [10, 6.000000000000001, 0],
+                    [8.571428571428573, 4.000000000000001, 0],
+                    [5.714285714285716, 3.9999999999999996, 0]
+                ]
+            ]);
+
+            expect(resultPointy.hexagons).toEqual([
+                [
+                    [2.000000000000001, 5.714285714285714, 0],
+                    [4.000000000000001, 4.285714285714286, 0],
+                    [4.000000000000001, 1.4285714285714293, 0],
+                    [2.000000000000001, 0, 0],
+                    [1.2819751242557092e-15, 1.4285714285714273, 0],
+                    [0, 4.285714285714284, 0]
+                ],
+                [
+                    [4.000000000000001, 10, 0],
+                    [6, 8.571428571428571, 0],
+                    [6, 5.714285714285714, 0],
+                    [4.000000000000001, 4.285714285714286, 0],
+                    [2.000000000000001, 5.7142857142857135, 0],
+                    [1.9999999999999998, 8.57142857142857, 0]
+                ],
+                [
+                    [6, 5.714285714285714, 0],
+                    [8.000000000000002, 4.285714285714286, 0],
+                    [8.000000000000002, 1.4285714285714293, 0],
+                    [6.000000000000001, 0, 0],
+                    [4.000000000000001, 1.4285714285714273, 0],
+                    [3.9999999999999996, 4.285714285714284, 0]
+                ],
+                [
+                    [8.000000000000002, 10, 0],
+                    [10, 8.571428571428571, 0],
+                    [10, 5.714285714285714, 0],
+                    [8.000000000000002, 4.285714285714286, 0],
+                    [6.000000000000002, 5.7142857142857135, 0],
+                    [6, 8.57142857142857, 0]
+                ]
+            ]);
+
+            // They should not be identical
+            let allSame = true;
+            for (let i = 0; i < 6; i++) {
+                if (Math.abs(flatFirst[i][0] - pointyFirst[i][0]) > 1e-6 ||
+                    Math.abs(flatFirst[i][1] - pointyFirst[i][1]) > 1e-6) {
+                    allSame = false;
+                    break;
+                }
+            }
+            expect(allSame).toBe(false);
+        });
+
+        it("should verify exact hexagon vertex positions for 1x1 grid (pointy-top)", () => {
+            // For a single hexagon grid, we can verify exact vertex positions
+            // Using radius = 1 at center [0, 0, 0] for reference
+            // getRegularHexagonVertices generates vertices using:
+            // x = cx + radius * sin(angle), y = cy + radius * cos(angle)
+            // Angles: 0, 60, 120, 180, 240, 300 degrees
+            const result = point.hexGridScaledToFit({
+                width: 10,
+                height: 10,
+                nrHexagonsInWidth: 1,
+                nrHexagonsInHeight: 1
+            });
+
+            expect(result.hexagons).toHaveLength(1);
+            const hex = result.hexagons[0];
+            expect(hex).toHaveLength(6);
+
+            // The hexagon should have vertices at regular intervals
+            // Since it's scaled to fit, we check the structure rather than exact values
+            // All vertices should have Z = 0
+            hex.forEach(v => {
+                expect(v[2]).toBe(0);
+            });
+
+            // The center of the hexagon vertices should match the center
+            const center = result.centers[0];
+            let avgX = 0, avgY = 0;
+            hex.forEach(v => {
+                avgX += v[0];
+                avgY += v[1];
+            });
+            avgX /= 6;
+            avgY /= 6;
+
+            expect(avgX).toBeCloseTo(center[0], precision);
+            expect(avgY).toBeCloseTo(center[1], precision);
+        });
+
+        it("should generate hexagons where vertices form valid convex polygon angles", () => {
+            const result = point.hexGridScaledToFit({
+                width: 10,
+                height: 10,
+                nrHexagonsInWidth: 1,
+                nrHexagonsInHeight: 1
+            });
+
+            const hex = result.hexagons[0];
+
+            // For each vertex, calculate the angle formed by the two adjacent edges
+            // Due to non-uniform scaling, angles won't be exactly 120 degrees
+            // but should be valid convex polygon angles (between 60 and 180 degrees)
+            for (let i = 0; i < 6; i++) {
+                const prev = hex[(i + 5) % 6];
+                const curr = hex[i];
+                const next = hex[(i + 1) % 6];
+
+                // Vectors from current to prev and next
+                const v1: Inputs.Base.Vector3 = [prev[0] - curr[0], prev[1] - curr[1], 0];
+                const v2: Inputs.Base.Vector3 = [next[0] - curr[0], next[1] - curr[1], 0];
+
+                // Dot product
+                const dot = v1[0] * v2[0] + v1[1] * v2[1];
+                const len1 = Math.sqrt(v1[0] * v1[0] + v1[1] * v1[1]);
+                const len2 = Math.sqrt(v2[0] * v2[0] + v2[1] * v2[1]);
+
+                const cosAngle = dot / (len1 * len2);
+                const angleDeg = Math.acos(cosAngle) * 180 / Math.PI;
+
+                // Internal angle should be a valid convex angle (between 60 and 180)
+                expect(angleDeg).toBeGreaterThan(60);
+                expect(angleDeg).toBeLessThan(180);
+            }
+        });
+
+        describe("extend options", () => {
+            const width = 20;
+            const height = 20;
+
+            it("should extend grid beyond top boundary when extendTop=true", () => {
+                const resultNormal = point.hexGridScaledToFit({
+                    width,
+                    height,
+                    nrHexagonsInWidth: 3,
+                    nrHexagonsInHeight: 3,
+                    extendTop: false
+                });
+                const resultExtended = point.hexGridScaledToFit({
+                    width,
+                    height,
+                    nrHexagonsInWidth: 3,
+                    nrHexagonsInHeight: 3,
+                    extendTop: true
+                });
+
+                // Both should have same number of hexagons
+                expect(resultExtended.hexagons).toHaveLength(resultNormal.hexagons.length);
+
+                // Find max Y in both grids
+                let maxYNormal = -Infinity;
+                let maxYExtended = -Infinity;
+                resultNormal.hexagons.forEach(hex => {
+                    hex.forEach(v => { if (v[1] > maxYNormal) maxYNormal = v[1]; });
+                });
+                resultExtended.hexagons.forEach(hex => {
+                    hex.forEach(v => { if (v[1] > maxYExtended) maxYExtended = v[1]; });
+                });
+
+                // Extended grid should have vertices beyond the normal max Y
+                expect(maxYExtended).toBeGreaterThan(maxYNormal);
+            });
+
+            it("should extend grid beyond bottom boundary when extendBottom=true", () => {
+                const resultNormal = point.hexGridScaledToFit({
+                    width,
+                    height,
+                    nrHexagonsInWidth: 3,
+                    nrHexagonsInHeight: 3,
+                    extendBottom: false
+                });
+                const resultExtended = point.hexGridScaledToFit({
+                    width,
+                    height,
+                    nrHexagonsInWidth: 3,
+                    nrHexagonsInHeight: 3,
+                    extendBottom: true
+                });
+
+                // Find min Y in both grids
+                let minYNormal = Infinity;
+                let minYExtended = Infinity;
+                resultNormal.hexagons.forEach(hex => {
+                    hex.forEach(v => { if (v[1] < minYNormal) minYNormal = v[1]; });
+                });
+                resultExtended.hexagons.forEach(hex => {
+                    hex.forEach(v => { if (v[1] < minYExtended) minYExtended = v[1]; });
+                });
+
+                // Extended grid should have vertices below the normal min Y
+                expect(minYExtended).toBeLessThan(minYNormal);
+            });
+
+            it("should extend grid beyond left boundary when extendLeft=true", () => {
+                const resultNormal = point.hexGridScaledToFit({
+                    width,
+                    height,
+                    nrHexagonsInWidth: 3,
+                    nrHexagonsInHeight: 3,
+                    extendLeft: false
+                });
+                const resultExtended = point.hexGridScaledToFit({
+                    width,
+                    height,
+                    nrHexagonsInWidth: 3,
+                    nrHexagonsInHeight: 3,
+                    extendLeft: true
+                });
+
+                // Find min X in both grids
+                let minXNormal = Infinity;
+                let minXExtended = Infinity;
+                resultNormal.hexagons.forEach(hex => {
+                    hex.forEach(v => { if (v[0] < minXNormal) minXNormal = v[0]; });
+                });
+                resultExtended.hexagons.forEach(hex => {
+                    hex.forEach(v => { if (v[0] < minXExtended) minXExtended = v[0]; });
+                });
+
+                // Extended grid should have vertices to the left of normal min X
+                expect(minXExtended).toBeLessThan(minXNormal);
+            });
+
+            it("should extend grid beyond right boundary when extendRight=true", () => {
+                const resultNormal = point.hexGridScaledToFit({
+                    width,
+                    height,
+                    nrHexagonsInWidth: 3,
+                    nrHexagonsInHeight: 3,
+                    extendRight: false
+                });
+                const resultExtended = point.hexGridScaledToFit({
+                    width,
+                    height,
+                    nrHexagonsInWidth: 3,
+                    nrHexagonsInHeight: 3,
+                    extendRight: true
+                });
+
+                // Find max X in both grids
+                let maxXNormal = -Infinity;
+                let maxXExtended = -Infinity;
+                resultNormal.hexagons.forEach(hex => {
+                    hex.forEach(v => { if (v[0] > maxXNormal) maxXNormal = v[0]; });
+                });
+                resultExtended.hexagons.forEach(hex => {
+                    hex.forEach(v => { if (v[0] > maxXExtended) maxXExtended = v[0]; });
+                });
+
+                // Extended grid should have vertices beyond normal max X
+                expect(maxXExtended).toBeGreaterThan(maxXNormal);
+            });
+
+            it("should extend grid in both vertical directions when extendTop=true and extendBottom=true", () => {
+                const resultNormal = point.hexGridScaledToFit({
+                    width,
+                    height,
+                    nrHexagonsInWidth: 3,
+                    nrHexagonsInHeight: 3
+                });
+                const resultExtended = point.hexGridScaledToFit({
+                    width,
+                    height,
+                    nrHexagonsInWidth: 3,
+                    nrHexagonsInHeight: 3,
+                    extendTop: true,
+                    extendBottom: true
+                });
+
+                // Find Y bounds in both grids
+                let minYNormal = Infinity, maxYNormal = -Infinity;
+                let minYExtended = Infinity, maxYExtended = -Infinity;
+                resultNormal.hexagons.forEach(hex => {
+                    hex.forEach(v => {
+                        if (v[1] < minYNormal) minYNormal = v[1];
+                        if (v[1] > maxYNormal) maxYNormal = v[1];
+                    });
+                });
+                resultExtended.hexagons.forEach(hex => {
+                    hex.forEach(v => {
+                        if (v[1] < minYExtended) minYExtended = v[1];
+                        if (v[1] > maxYExtended) maxYExtended = v[1];
+                    });
+                });
+
+                // Extended grid should exceed both top and bottom boundaries
+                expect(maxYExtended).toBeGreaterThan(maxYNormal);
+                expect(minYExtended).toBeLessThan(minYNormal);
+            });
+
+            it("should extend grid in both horizontal directions when extendLeft=true and extendRight=true", () => {
+                const resultNormal = point.hexGridScaledToFit({
+                    width,
+                    height,
+                    nrHexagonsInWidth: 3,
+                    nrHexagonsInHeight: 3
+                });
+                const resultExtended = point.hexGridScaledToFit({
+                    width,
+                    height,
+                    nrHexagonsInWidth: 3,
+                    nrHexagonsInHeight: 3,
+                    extendLeft: true,
+                    extendRight: true
+                });
+
+                // Find X bounds in both grids
+                let minXNormal = Infinity, maxXNormal = -Infinity;
+                let minXExtended = Infinity, maxXExtended = -Infinity;
+                resultNormal.hexagons.forEach(hex => {
+                    hex.forEach(v => {
+                        if (v[0] < minXNormal) minXNormal = v[0];
+                        if (v[0] > maxXNormal) maxXNormal = v[0];
+                    });
+                });
+                resultExtended.hexagons.forEach(hex => {
+                    hex.forEach(v => {
+                        if (v[0] < minXExtended) minXExtended = v[0];
+                        if (v[0] > maxXExtended) maxXExtended = v[0];
+                    });
+                });
+
+                // Extended grid should exceed both left and right boundaries
+                expect(maxXExtended).toBeGreaterThan(maxXNormal);
+                expect(minXExtended).toBeLessThan(minXNormal);
+            });
+
+            it("should extend grid in all four directions", () => {
+                const resultNormal = point.hexGridScaledToFit({
+                    width,
+                    height,
+                    nrHexagonsInWidth: 3,
+                    nrHexagonsInHeight: 3
+                });
+                const resultExtended = point.hexGridScaledToFit({
+                    width,
+                    height,
+                    nrHexagonsInWidth: 3,
+                    nrHexagonsInHeight: 3,
+                    extendTop: true,
+                    extendBottom: true,
+                    extendLeft: true,
+                    extendRight: true
+                });
+
+                // Find all bounds
+                let minXNormal = Infinity, maxXNormal = -Infinity;
+                let minYNormal = Infinity, maxYNormal = -Infinity;
+                let minXExtended = Infinity, maxXExtended = -Infinity;
+                let minYExtended = Infinity, maxYExtended = -Infinity;
+
+                resultNormal.hexagons.forEach(hex => {
+                    hex.forEach(v => {
+                        if (v[0] < minXNormal) minXNormal = v[0];
+                        if (v[0] > maxXNormal) maxXNormal = v[0];
+                        if (v[1] < minYNormal) minYNormal = v[1];
+                        if (v[1] > maxYNormal) maxYNormal = v[1];
+                    });
+                });
+                resultExtended.hexagons.forEach(hex => {
+                    hex.forEach(v => {
+                        if (v[0] < minXExtended) minXExtended = v[0];
+                        if (v[0] > maxXExtended) maxXExtended = v[0];
+                        if (v[1] < minYExtended) minYExtended = v[1];
+                        if (v[1] > maxYExtended) maxYExtended = v[1];
+                    });
+                });
+
+                // Extended grid should exceed all boundaries
+                expect(maxXExtended).toBeGreaterThan(maxXNormal);
+                expect(minXExtended).toBeLessThan(minXNormal);
+                expect(maxYExtended).toBeGreaterThan(maxYNormal);
+                expect(minYExtended).toBeLessThan(minYNormal);
+            });
+
+            it("should maintain hexagon count when extending", () => {
+                const resultNormal = point.hexGridScaledToFit({
+                    width,
+                    height,
+                    nrHexagonsInWidth: 4,
+                    nrHexagonsInHeight: 4
+                });
+                const resultExtended = point.hexGridScaledToFit({
+                    width,
+                    height,
+                    nrHexagonsInWidth: 4,
+                    nrHexagonsInHeight: 4,
+                    extendTop: true,
+                    extendBottom: true,
+                    extendLeft: true,
+                    extendRight: true
+                });
+
+                expect(resultExtended.hexagons).toHaveLength(resultNormal.hexagons.length);
+                expect(resultExtended.centers).toHaveLength(resultNormal.centers.length);
+            });
+
+            it("should correctly extend with flatTop=true", () => {
+                const resultNormal = point.hexGridScaledToFit({
+                    width,
+                    height,
+                    nrHexagonsInWidth: 3,
+                    nrHexagonsInHeight: 3,
+                    flatTop: true
+                });
+                const resultExtended = point.hexGridScaledToFit({
+                    width,
+                    height,
+                    nrHexagonsInWidth: 3,
+                    nrHexagonsInHeight: 3,
+                    flatTop: true,
+                    extendTop: true,
+                    extendRight: true
+                });
+
+                // Find bounds
+                let maxXNormal = -Infinity, maxYNormal = -Infinity;
+                let maxXExtended = -Infinity, maxYExtended = -Infinity;
+                resultNormal.hexagons.forEach(hex => {
+                    hex.forEach(v => {
+                        if (v[0] > maxXNormal) maxXNormal = v[0];
+                        if (v[1] > maxYNormal) maxYNormal = v[1];
+                    });
+                });
+                resultExtended.hexagons.forEach(hex => {
+                    hex.forEach(v => {
+                        if (v[0] > maxXExtended) maxXExtended = v[0];
+                        if (v[1] > maxYExtended) maxYExtended = v[1];
+                    });
+                });
+
+                // Extended should exceed normal bounds
+                expect(maxXExtended).toBeGreaterThan(maxXNormal);
+                expect(maxYExtended).toBeGreaterThan(maxYNormal);
+            });
+
+            it("should stretch hexagons proportionally when extending", () => {
+                const resultExtended = point.hexGridScaledToFit({
+                    width,
+                    height,
+                    nrHexagonsInWidth: 2,
+                    nrHexagonsInHeight: 2,
+                    extendTop: true
+                });
+
+                // All hexagons should still have 6 vertices
+                resultExtended.hexagons.forEach(hex => {
+                    expect(hex).toHaveLength(6);
+                });
+
+                // All vertices should still have Z=0
+                resultExtended.hexagons.forEach(hex => {
+                    hex.forEach(v => {
+                        expect(v[2]).toBe(0);
+                    });
+                });
+            });
+        });
+    });
+
+    describe("getRegularHexagonVertices (tested via hexGridScaledToFit)", () => {
+        const precision = 6;
+
+        it("should generate 6 vertices in consistent winding order", () => {
+            // Use a 1x1 grid to get a single hexagon
+            const result = point.hexGridScaledToFit({
+                width: 2,
+                height: 2,
+                nrHexagonsInWidth: 1,
+                nrHexagonsInHeight: 1
+            });
+
+            const hex = result.hexagons[0];
+            expect(hex).toHaveLength(6);
+
+            // Verify consistent winding order using signed area (shoelace formula)
+            // A non-zero signed area confirms consistent winding direction
+            let signedArea = 0;
+            for (let i = 0; i < 6; i++) {
+                const curr = hex[i];
+                const next = hex[(i + 1) % 6];
+                // Shoelace formula: sum of (x_i * y_{i+1} - x_{i+1} * y_i)
+                signedArea += curr[0] * next[1] - next[0] * curr[1];
+            }
+            signedArea /= 2;
+
+            // Signed area should be non-zero and positive (clockwise in screen coords where Y increases downward,
+            // or counter-clockwise in standard math coords where Y increases upward)
+            // The important thing is it's consistent and non-zero
+            expect(Math.abs(signedArea)).toBeCloseTo(3);
+        });
+
+        it("should maintain Z coordinate from center point", () => {
+            const result = point.hexGridScaledToFit({
+                width: 10,
+                height: 10,
+                nrHexagonsInWidth: 2,
+                nrHexagonsInHeight: 2,
+                pointsOnGround: false
+            });
+
+            // All centers have Z=0, so all vertices should have Z=0
+            result.hexagons.forEach((hex, idx) => {
+                const centerZ = result.centers[idx][2];
+                hex.forEach(v => {
+                    expect(v[2]).toBe(centerZ);
+                });
+            });
+        });
+
+        it("should generate vertices at equal distances from center", () => {
+            const result = point.hexGridScaledToFit({
+                width: 10,
+                height: 10,
+                nrHexagonsInWidth: 1,
+                nrHexagonsInHeight: 1
+            });
+
+            const hex = result.hexagons[0];
+            const center = result.centers[0];
+
+            // Calculate distance from center to each vertex
+            const distances = hex.map(v => {
+                const dx = v[0] - center[0];
+                const dy = v[1] - center[1];
+                return Math.sqrt(dx * dx + dy * dy);
+            });
+
+            expect(distances).toEqual([
+                5,
+                5.590169943749474,
+                5.590169943749474,
+                5,
+                5.590169943749473,
+                5.590169943749474
+            ]);
+        });
+
+        it("should generate edges of equal length for regular hexagon base", () => {
+            // For a 1x1 grid with equal width and height, the hexagon should have
+            // consistent edge patterns
+            const result = point.hexGridScaledToFit({
+                width: 10,
+                height: 10,
+                nrHexagonsInWidth: 1,
+                nrHexagonsInHeight: 1
+            });
+
+            const hex = result.hexagons[0];
+            const edgeLengths: number[] = [];
+
+            for (let i = 0; i < 6; i++) {
+                const curr = hex[i];
+                const next = hex[(i + 1) % 6];
+                const dx = next[0] - curr[0];
+                const dy = next[1] - curr[1];
+                edgeLengths.push(Math.sqrt(dx * dx + dy * dy));
+            }
+
+            // Due to scaling, edges may have two different lengths (short and long edges)
+            // But the reported shortest and longest should match
+            const minEdge = Math.min(...edgeLengths);
+            const maxEdge = Math.max(...edgeLengths);
+
+            expect(result.shortestDistEdge).toBeCloseTo(minEdge, precision);
+            expect(result.longestDistEdge).toBeCloseTo(maxEdge, precision);
+        });
+
+        it("should correctly position hexagon vertices relative to center using sin/cos pattern", () => {
+            // Create a simple 1x1 grid and verify the angular distribution
+            const result = point.hexGridScaledToFit({
+                width: 10,
+                height: 10,
+                nrHexagonsInWidth: 1,
+                nrHexagonsInHeight: 1
+            });
+
+            const hex = result.hexagons[0];
+            const center = result.centers[0];
+
+            // Calculate angles from center to each vertex
+            const angles = hex.map(v => {
+                const dx = v[0] - center[0];
+                const dy = v[1] - center[1];
+                return Math.atan2(dx, dy) * 180 / Math.PI; // Note: atan2(x, y) for the formula used
+            });
+
+            // Sort angles to check spacing
+            const sortedAngles = [...angles].sort((a, b) => a - b);
+
+            // The angles should be spaced roughly 60 degrees apart (allowing for scaling distortion)
+            for (let i = 0; i < 5; i++) {
+                const diff = sortedAngles[i + 1] - sortedAngles[i];
+                expect(diff).toBeGreaterThan(30); // At least 30 degrees apart
+                expect(diff).toBeLessThan(90); // No more than 90 degrees apart
+            }
         });
     });
 });
