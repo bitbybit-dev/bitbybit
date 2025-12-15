@@ -3,7 +3,7 @@ sidebar_position: 10
 title: Hosting Bitbybit Assets on Your Own CDN
 sidebar_label: Self-Hosting Assets
 description: Learn how to host Bitbybit assets on your own CDN infrastructure for improved reliability, performance, and control.
-tags: [cdn, hosting, infrastructure, deployment, performance, assets]
+tags: [cdn, hosting, deployment, performance, assets]
 ---
 
 import Admonition from '@theme/Admonition';

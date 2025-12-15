@@ -1,23 +1,602 @@
 /**
- * CSS files with the .module.css suffix will be treated as CSS modules
- * and scoped locally.
+ * Bitbybit Learning Portal - Homepage Styles
  */
 
-.heroBanner {
-  padding: 4rem 0;
+/* ===== HERO SECTION ===== */
+.heroSection {
+  position: relative;
+  min-height: 90vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background: linear-gradient(135deg, #1a1c1f 0%, #2a2d32 50%, #1a1c1f 100%);
+}
+
+.heroBackground {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 0;
+}
+
+.heroGrid {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: 
+    linear-gradient(rgba(240, 206, 187, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(240, 206, 187, 0.03) 1px, transparent 1px);
+  background-size: 60px 60px;
+  animation: gridMove 20s linear infinite;
+}
+
+@keyframes gridMove {
+  0% { transform: translate(0, 0); }
+  100% { transform: translate(60px, 60px); }
+}
+
+.heroContent {
+  position: relative;
+  z-index: 1;
   text-align: center;
+  max-width: 900px;
+  padding: 2rem;
+}
+
+.heroLogo {
+  margin-bottom: 1.5rem;
+}
+
+.heroLogo img {
+  width: 80px;
+  height: 80px;
+  animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+}
+
+.heroTitle {
+  font-size: 3.5rem;
+  font-weight: 800;
+  margin-bottom: 1.5rem;
+  color: #ffffff;
+  line-height: 1.2;
+}
+
+.highlight {
+  color: #f0cebb;
+  position: relative;
+}
+
+.highlight::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #f0cebb, #dc966e);
+  border-radius: 2px;
+}
+
+.heroSubtitle {
+  font-size: 1.3rem;
+  color: rgba(255, 255, 255, 0.8);
+  margin-bottom: 2.5rem;
+  line-height: 1.6;
+}
+
+.heroButtons {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-bottom: 3rem;
+}
+
+.primaryButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1rem 2rem;
+  background: linear-gradient(135deg, #f0cebb 0%, #dc966e 100%);
+  color: #1a1c1f;
+  font-weight: 700;
+  font-size: 1.1rem;
+  border-radius: 50px;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 20px rgba(240, 206, 187, 0.3);
+}
+
+.primaryButton:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px rgba(240, 206, 187, 0.4);
+  color: #1a1c1f;
+  text-decoration: none;
+}
+
+.secondaryButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1rem 2rem;
+  background: transparent;
+  color: #f0cebb;
+  font-weight: 600;
+  font-size: 1.1rem;
+  border: 2px solid #f0cebb;
+  border-radius: 50px;
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+.secondaryButton:hover {
+  background: rgba(240, 206, 187, 0.1);
+  color: #f0cebb;
+  text-decoration: none;
+}
+
+.heroStats {
+  display: flex;
+  justify-content: center;
+  gap: 3rem;
+  padding-top: 2rem;
+  border-top: 1px solid rgba(240, 206, 187, 0.2);
+}
+
+.stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.statNumber {
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: #f0cebb;
+}
+
+.statLabel {
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.6);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* ===== SECTION HEADERS ===== */
+.sectionHeader {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.sectionHeader h2 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  color: #ffffff;
+}
+
+.sectionHeader p {
+  font-size: 1.2rem;
+  color: rgba(255, 255, 255, 0.7);
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+/* ===== LEARNING PATHS SECTION ===== */
+.learningPaths {
+  padding: 5rem 0;
+  background: #1a1c1f;
+}
+
+.pathsGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2rem;
+}
+
+.pathCard {
+  background: linear-gradient(145deg, #2a2d32 0%, #1f2124 100%);
+  border: 1px solid rgba(240, 206, 187, 0.1);
+  border-radius: 16px;
+  padding: 2rem;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+}
+
+.pathCard:hover {
+  transform: translateY(-8px);
+  border-color: rgba(240, 206, 187, 0.3);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+  text-decoration: none;
+}
+
+.pathIcon {
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.pathCard h3 {
+  color: #ffffff;
+  font-size: 1.5rem;
+  margin-bottom: 0.25rem;
+}
+
+.pathSubtitle {
+  color: #f0cebb;
+  font-size: 0.9rem;
+  font-weight: 500;
+  margin-bottom: 1rem;
+}
+
+.pathCard p {
+  color: rgba(255, 255, 255, 0.7);
+  line-height: 1.6;
+  margin-bottom: 1.5rem;
+  flex-grow: 1;
+}
+
+.pathFeatures {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 1.5rem 0;
+}
+
+.pathFeatures li {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.9rem;
+  padding: 0.25rem 0;
+}
+
+.pathCta {
+  color: #f0cebb;
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+/* ===== BUILD SECTION ===== */
+.buildSection {
+  padding: 5rem 0;
+  background: linear-gradient(180deg, #1f2124 0%, #1a1c1f 100%);
+}
+
+.buildGrid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 1.5rem;
+}
+
+.buildCard {
+  background: rgba(240, 206, 187, 0.05);
+  border: 1px solid rgba(240, 206, 187, 0.1);
+  border-radius: 12px;
+  padding: 1.5rem;
+  text-align: center;
+  transition: all 0.3s ease;
+}
+
+.buildCard:hover {
+  background: rgba(240, 206, 187, 0.1);
+  border-color: rgba(240, 206, 187, 0.2);
+  transform: translateY(-4px);
+}
+
+.buildIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 0.75rem;
+}
+
+.buildCard h4 {
+  color: #ffffff;
+  font-size: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.buildCard p {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.8rem;
+  margin: 0;
+}
+
+/* ===== TECHNOLOGIES SECTION ===== */
+.techSection {
+  padding: 5rem 0;
+  background: #1a1c1f;
+}
+
+.techGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.5rem;
+}
+
+.techCard {
+  background: #2a2d32;
+  border-radius: 12px;
+  padding: 1.5rem;
+  text-decoration: none;
+  transition: all 0.3s ease;
   position: relative;
   overflow: hidden;
 }
 
-@media screen and (max-width: 996px) {
-  .heroBanner {
-    padding: 2rem;
+.techCard:hover {
+  transform: translateY(-4px);
+  text-decoration: none;
+}
+
+.techBorder {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  border-top-width: 3px;
+  border-top-style: solid;
+}
+
+.techCard h3 {
+  font-size: 1.3rem;
+  margin-bottom: 0.75rem;
+  margin-top: 0.5rem;
+}
+
+.techCard p {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.95rem;
+  line-height: 1.5;
+  margin-bottom: 1rem;
+}
+
+.techLink {
+  color: #f0cebb;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+/* ===== COMMUNITY SECTION ===== */
+.communitySection {
+  padding: 5rem 0;
+  background: linear-gradient(180deg, #1f2124 0%, #1a1c1f 100%);
+}
+
+.communityContent {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4rem;
+  align-items: center;
+}
+
+.communityText h2 {
+  color: #ffffff;
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+}
+
+.communityText p {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 1.1rem;
+  line-height: 1.6;
+  margin-bottom: 2rem;
+}
+
+.communityButtons {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.discordButton, .githubButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.875rem 1.5rem;
+  border-radius: 8px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+.discordButton {
+  background: #5865F2;
+  color: #ffffff;
+}
+
+.discordButton:hover {
+  background: #4752C4;
+  color: #ffffff;
+  text-decoration: none;
+}
+
+.discordButton img {
+  width: 24px;
+  height: 24px;
+}
+
+.githubButton {
+  background: #333;
+  color: #ffffff;
+}
+
+.githubButton:hover {
+  background: #444;
+  color: #ffffff;
+  text-decoration: none;
+}
+
+.communityLinks {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.communityLink {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.25rem;
+  background: rgba(240, 206, 187, 0.05);
+  border: 1px solid rgba(240, 206, 187, 0.1);
+  border-radius: 12px;
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+.communityLink:hover {
+  background: rgba(240, 206, 187, 0.1);
+  border-color: rgba(240, 206, 187, 0.2);
+  text-decoration: none;
+}
+
+.communityLink svg {
+  flex-shrink: 0;
+}
+
+.communityLink h4 {
+  color: #ffffff;
+  margin: 0 0 0.25rem 0;
+  font-size: 1.1rem;
+}
+
+.communityLink p {
+  color: rgba(255, 255, 255, 0.6);
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+/* ===== CTA SECTION ===== */
+.ctaSection {
+  padding: 5rem 0;
+  background: linear-gradient(135deg, rgba(240, 206, 187, 0.1) 0%, rgba(220, 150, 110, 0.05) 100%);
+  border-top: 1px solid rgba(240, 206, 187, 0.1);
+}
+
+.ctaContent {
+  text-align: center;
+}
+
+.ctaContent h2 {
+  color: #ffffff;
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+}
+
+.ctaContent p {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 1.2rem;
+  margin-bottom: 2rem;
+}
+
+.ctaButtons {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.outlineButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1rem 1.5rem;
+  background: transparent;
+  color: #f0cebb;
+  font-weight: 600;
+  border: 2px solid rgba(240, 206, 187, 0.3);
+  border-radius: 50px;
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+.outlineButton:hover {
+  border-color: #f0cebb;
+  background: rgba(240, 206, 187, 0.1);
+  color: #f0cebb;
+  text-decoration: none;
+}
+
+/* ===== RESPONSIVE ===== */
+@media screen and (max-width: 1200px) {
+  .buildGrid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  
+  .techGrid {
+    grid-template-columns: repeat(2, 1fr);
   }
 }
 
-.buttons {
-  display: flex;
-  align-items: center;
-  justify-content: center;
+@media screen and (max-width: 996px) {
+  .heroTitle {
+    font-size: 2.5rem;
+  }
+  
+  .heroSubtitle {
+    font-size: 1.1rem;
+  }
+  
+  .pathsGrid {
+    grid-template-columns: 1fr;
+  }
+  
+  .communityContent {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+  
+  .heroStats {
+    gap: 2rem;
+  }
+  
+  .statNumber {
+    font-size: 2rem;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .heroSection {
+    min-height: auto;
+    padding: 4rem 0;
+  }
+  
+  .heroTitle {
+    font-size: 2rem;
+  }
+  
+  .buildGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .techGrid {
+    grid-template-columns: 1fr;
+  }
+  
+  .heroStats {
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+  
+  .ctaButtons {
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .sectionHeader h2 {
+    font-size: 2rem;
+  }
 }

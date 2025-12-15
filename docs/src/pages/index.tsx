@@ -1,35 +1,310 @@
-import type {ReactNode} from "react";
-import clsx from "clsx";
+import type { ReactNode } from "react";
 import useDocusaurusContext from "@docusaurus/useDocusaurusContext";
 import Layout from "@theme/Layout";
-import HomepageFeatures from "@site/src/components/HomepageFeatures";
+import Link from "@docusaurus/Link";
 import Heading from "@theme/Heading";
+import {
+  RocketIcon,
+  ArtIcon,
+  CodeIcon,
+  CadIcon,
+  PrinterIcon,
+  GamepadIcon,
+  SofaIcon,
+  BuildingIcon,
+  TargetIcon,
+  OpenSourceIcon,
+  BookIcon,
+  RingIcon,
+  BlocksIcon,
+  UserPlusIcon,
+  MonacoIcon,
+} from "@site/src/components/Icons";
 
 import styles from "./index.module.css";
 
-function HomepageHeader() {
-  const {siteConfig} = useDocusaurusContext();
+// Learning Path Data
+const learningPaths = [
+  {
+    title: "Visual Programming",
+    subtitle: "No coding required",
+    description: "Create 3D models using intuitive node-based editors like Rete and Blockly. Perfect for designers and beginners.",
+    IconComponent: ArtIcon,
+    link: "/learn/getting-started/overview",
+    features: ["Drag & drop nodes", "Real-time preview", "Export ready models"],
+  },
+  {
+    title: "TypeScript & JavaScript",
+    subtitle: "Full programmatic control",
+    description: "Write code in our Monaco editor with full TypeScript support, autocomplete, and access to the complete API.",
+    IconComponent: CodeIcon,
+    link: "/learn/code/intro",
+    features: ["Type-safe API", "Monaco editor", "NPM packages"],
+  },
+  {
+    title: "CAD Kernels",
+    subtitle: "Industrial-grade geometry",
+    description: "Leverage powerful CAD kernels like OpenCascade (OCCT), JSCAD, and Manifold for precise 3D modeling.",
+    IconComponent: CadIcon,
+    link: "/learn/code/common/occt/what-is-occt",
+    features: ["Boolean operations", "Fillets & chamfers", "STEP/IGES export"],
+  },
+];
+
+// Technology Cards Data
+const technologies = [
+  {
+    name: "Three.js",
+    description: "Integrate Bitbybit's CAD capabilities with the popular Three.js rendering engine.",
+    link: "/learn/npm-packages/threejs",
+    color: "#049EF4",
+  },
+  {
+    name: "Babylon.js",
+    description: "Build powerful 3D experiences combining Bitbybit geometry with Babylon.js features.",
+    link: "/learn/npm-packages/babylonjs",
+    color: "#BB464B",
+  },
+  {
+    name: "Shopify 3D Bits",
+    description: "Add interactive 3D product configurators to your Shopify store with our app.",
+    link: "/learn/3d-bits/intro",
+    color: "#96BF48",
+  },
+  {
+    name: "Script Runners",
+    description: "Execute visual scripts directly on your website without writing code.",
+    link: "/learn/runners/intro",
+    color: "#f0cebb",
+  },
+];
+
+// What You Can Build Data
+const buildExamples = [
+    { IconComponent: SofaIcon, title: "Furniture", desc: "Customizable tables, chairs, and decor" },
+    { IconComponent: PrinterIcon, title: "3D Printing", desc: "Print-ready models with proper manifolds" },
+    { IconComponent: CadIcon, title: "Engineering", desc: "Mechanical parts and assemblies" },
+    { IconComponent: GamepadIcon, title: "Game Assets", desc: "Procedural 3D models for games" },
+  { IconComponent: BuildingIcon, title: "Architecture", desc: "Parametric buildings, facades, and structures" },
+  { IconComponent: RingIcon, title: "Jewelry", desc: "Intricate rings, pendants, and accessories" },
+];
+
+function HeroSection() {
   return (
-    <header className={clsx("hero hero--primary", styles.heroBanner)}>
-      <div className="container">
-        <Heading as="h1" className="hero__title">
-          {siteConfig.title}
+    <header className={styles.heroSection}>
+      <div className={styles.heroBackground}>
+        <div className={styles.heroGrid}></div>
+      </div>
+      <div className={styles.heroContent}>
+        <div className={styles.heroLogo}>
+          <img src="/img/logo-gold-small.png" alt="Bitbybit Logo" />
+        </div>
+        <Heading as="h1" className={styles.heroTitle}>
+          Master <span className={styles.highlight}>3D CAD</span> on the Web
         </Heading>
-        <p className="hero__subtitle">{siteConfig.tagline}</p>
+        <p className={styles.heroSubtitle}>
+          Learn to create stunning parametric 3D models using visual programming or code.
+          <br />
+          From beginners to professionals — your journey to 3D mastery starts here.
+        </p>
+        <div className={styles.heroButtons}>
+          <Link className={styles.primaryButton} to="/learn/getting-started/overview">
+            <RocketIcon size={20} color="#1a1c1f" /> Start Learning
+          </Link>
+          <Link className={styles.secondaryButton} to="https://bitbybit.dev/auth/pick-plan">
+            <UserPlusIcon size={20} /> Sign Up / Subscribe
+          </Link>
+        </div>
+        <div className={styles.heroStats}>
+          <div className={styles.stat}>
+            <span className={styles.statNumber}>3</span>
+            <span className={styles.statLabel}>CAD Kernels</span>
+          </div>
+          <div className={styles.stat}>
+            <span className={styles.statNumber}>1000+</span>
+            <span className={styles.statLabel}>API Functions</span>
+          </div>
+          <div className={styles.stat}>
+            <span className={styles.statNumber}>3</span>
+            <span className={styles.statLabel}>Editor Modes</span>
+          </div>
+        </div>
       </div>
     </header>
   );
 }
 
+function LearningPathsSection() {
+  return (
+    <section className={styles.learningPaths}>
+      <div className="container">
+        <div className={styles.sectionHeader}>
+          <Heading as="h2">Choose Your Learning Path</Heading>
+          <p>Whether you prefer visual tools or writing code, we've got you covered.</p>
+        </div>
+        <div className={styles.pathsGrid}>
+          {learningPaths.map((path, idx) => (
+            <Link to={path.link} key={idx} className={styles.pathCard}>
+              <div className={styles.pathIcon}>
+                <path.IconComponent size={56} />
+              </div>
+              <h3>{path.title}</h3>
+              <span className={styles.pathSubtitle}>{path.subtitle}</span>
+              <p>{path.description}</p>
+              <ul className={styles.pathFeatures}>
+                {path.features.map((feature, i) => (
+                  <li key={i}>✓ {feature}</li>
+                ))}
+              </ul>
+              <span className={styles.pathCta}>Explore →</span>
+            </Link>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function WhatYouCanBuildSection() {
+  return (
+    <section className={styles.buildSection}>
+      <div className="container">
+        <div className={styles.sectionHeader}>
+          <Heading as="h2">What You Can Build</Heading>
+          <p>From artistic creations to engineering precision — the possibilities are endless.</p>
+        </div>
+        <div className={styles.buildGrid}>
+          {buildExamples.map((item, idx) => (
+            <div key={idx} className={styles.buildCard}>
+              <div className={styles.buildIcon}>
+                <item.IconComponent size={40} />
+              </div>
+              <h4>{item.title}</h4>
+              <p>{item.desc}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function TechnologiesSection() {
+  return (
+    <section className={styles.techSection}>
+      <div className="container">
+        <div className={styles.sectionHeader}>
+          <Heading as="h2">Integrate With Your Stack</Heading>
+          <p>Bitbybit works seamlessly with popular web technologies and platforms.</p>
+        </div>
+        <div className={styles.techGrid}>
+          {technologies.map((tech, idx) => (
+            <Link to={tech.link} key={idx} className={styles.techCard}>
+              <div className={styles.techBorder} style={{ borderColor: tech.color }}></div>
+              <h3 style={{ color: tech.color }}>{tech.name}</h3>
+              <p>{tech.description}</p>
+              <span className={styles.techLink}>Learn more →</span>
+            </Link>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function CommunitySection() {
+  return (
+    <section className={styles.communitySection}>
+      <div className="container">
+        <div className={styles.communityContent}>
+          <div className={styles.communityText}>
+            <Heading as="h2">Join Our Community</Heading>
+            <p>
+              Connect with fellow creators, get help, share your projects, and stay updated
+              with the latest features and tutorials.
+            </p>
+            <div className={styles.communityButtons}>
+              <a href="https://discord.gg/GSe3VMe" target="_blank" className={styles.discordButton}>
+                <img src="https://bitbybit.dev/assets/social/logo-discord.svg" alt="Discord" />
+                Join Discord
+              </a>
+              <a href="https://github.com/bitbybit-dev/bitbybit" target="_blank" className={styles.githubButton}>
+                <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
+                  <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z" />
+                </svg>
+                Star on GitHub
+              </a>
+            </div>
+          </div>
+          <div className={styles.communityLinks}>
+            <Link to="/blog" className={styles.communityLink}>
+              <BookIcon size={40} />
+              <div>
+                <h4>Blog</h4>
+                <p>Latest news and tutorials</p>
+              </div>
+            </Link>
+            <Link to="/learn/github" className={styles.communityLink}>
+              <OpenSourceIcon size={40} />
+              <div>
+                <h4>Open Source</h4>
+                <p>Explore our GitHub repos</p>
+              </div>
+            </Link>
+            <a href="https://bitbybit.dev/auth/pick-plan" className={styles.communityLink}>
+              <RocketIcon size={40} />
+              <div>
+                <h4>Support Us</h4>
+                <p>Help fund development</p>
+              </div>
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function CTASection() {
+  return (
+    <section className={styles.ctaSection}>
+      <div className="container">
+        <div className={styles.ctaContent}>
+          <Heading as="h2">Ready to Create Something Amazing?</Heading>
+          <p>Start building 3D models today — no installation required.</p>
+          <div className={styles.ctaButtons}>
+            <Link className={styles.primaryButton} to="/learn/getting-started/overview">
+              <BookIcon size={20} color="#1a1c1f" /> Browse Tutorials
+            </Link>
+            <Link className={styles.outlineButton} to="https://bitbybit.dev/app?editor=rete">
+              <TargetIcon size={20} /> Open Rete Editor
+            </Link>
+            <Link className={styles.outlineButton} to="https://bitbybit.dev/app?editor=blockly">
+              <BlocksIcon size={20} /> Open Blockly Editor
+            </Link>
+            <Link className={styles.outlineButton} to="https://bitbybit.dev/app?editor=monaco">
+              <MonacoIcon size={20} /> Open Monaco Editor
+            </Link>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
 export default function Home(): ReactNode {
-  const {siteConfig} = useDocusaurusContext();
+  const { siteConfig } = useDocusaurusContext();
   return (
     <Layout
-      title={`${siteConfig.title}`}
-      description="Documentation of Bitbybit platform for creating 3D CAD models on the web.">
-      <HomepageHeader />
+      title={`Learn ${siteConfig.title}`}
+      description="Master 3D CAD modeling on the web with Bitbybit. Learn visual programming, TypeScript, and CAD kernels like OpenCascade.">
+      <HeroSection />
       <main>
-        <HomepageFeatures />
+        <LearningPathsSection />
+        <WhatYouCanBuildSection />
+        <TechnologiesSection />
+        <CommunitySection />
+        <CTASection />
       </main>
     </Layout>
   );
