@@ -284,7 +284,6 @@ describe("Mesh unit tests", () => {
             const result = meshBitByBit.meshMeshIntersectionPoints({ mesh1: cube1Tris, mesh2: cube2Tris });
             // Should return 4 polylines worth of points (same as polylines count)
             expect(result.length).toBe(4);
-            console.log(result);
             expect(result).toEqual([
                 [
                     [1, -0.5, -1],
