@@ -308,3 +308,46 @@ export const MonacoIcon: React.FC<IconProps> = ({ size = defaultSize, color = de
     <path d="M12 44V44.1" stroke={color} strokeWidth="2" strokeLinecap="round" opacity="0.5"/>
   </svg>
 );
+
+export const ShopifyBagIcon: React.FC<IconProps> = ({ size = defaultSize, color = defaultColor, className }) => (
+  <svg width={size} height={size} viewBox="0 0 64 64" fill="none" className={className}>
+    {/* Shopping bag */}
+    <path d="M16 20L20 52H44L48 20H16Z" stroke={color} strokeWidth="2.5" strokeLinejoin="round"/>
+    {/* Handles */}
+    <path d="M24 20V16C24 12 28 8 32 8C36 8 40 12 40 16V20" stroke={color} strokeWidth="2.5" strokeLinecap="round"/>
+    {/* 3D cube inside bag */}
+    <path d="M32 28L40 32V40L32 44L24 40V32L32 28Z" stroke={color} strokeWidth="2" strokeLinejoin="round"/>
+    <path d="M32 28V36" stroke={color} strokeWidth="1.5"/>
+    <path d="M24 32L32 36L40 32" stroke={color} strokeWidth="1.5"/>
+    <circle cx="32" cy="36" r="2" fill={color}/>
+  </svg>
+);
+
+export const NoCodeIcon: React.FC<IconProps> = ({ size = defaultSize, color = defaultColor, className }) => (
+  <svg width={size} height={size} viewBox="0 0 64 64" fill="none" className={className}>
+    {/* Canvas/screen */}
+    <rect x="10" y="12" width="44" height="36" rx="4" stroke={color} strokeWidth="2.5"/>
+    {/* Control panel on right */}
+    <path d="M40 12V48" stroke={color} strokeWidth="2"/>
+    {/* Sliders */}
+    <path d="M44 20H50" stroke={color} strokeWidth="2" strokeLinecap="round"/>
+    <circle cx="46" cy="20" r="2" fill={color}/>
+    <path d="M44 28H50" stroke={color} strokeWidth="2" strokeLinecap="round"/>
+    <circle cx="48" cy="28" r="2" fill={color}/>
+    <path d="M44 36H50" stroke={color} strokeWidth="2" strokeLinecap="round"/>
+    <circle cx="45" cy="36" r="2" fill={color}/>
+    {/* 3D object preview */}
+    <path d="M25 22L33 26V34L25 38L17 34V26L25 22Z" stroke={color} strokeWidth="2" strokeLinejoin="round"/>
+    <path d="M25 22V30" stroke={color} strokeWidth="1.5"/>
+    <path d="M17 26L25 30L33 26" stroke={color} strokeWidth="1.5"/>
+    {/* Drag handle */}
+    <circle cx="25" cy="42" r="3" stroke={color} strokeWidth="2"/>
+    <path d="M18 42H22" stroke={color} strokeWidth="2" strokeLinecap="round"/>
+    <path d="M28 42H32" stroke={color} strokeWidth="2" strokeLinecap="round"/>
+    {/* Stand */}
+    <path d="M24 48V54" stroke={color} strokeWidth="2.5"/>
+    <path d="M40 48V54" stroke={color} strokeWidth="2.5"/>
+    <path d="M18 54H46" stroke={color} strokeWidth="2.5" strokeLinecap="round"/>
+  </svg>
+);
+

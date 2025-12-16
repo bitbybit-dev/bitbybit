@@ -19,6 +19,8 @@ import {
   BlocksIcon,
   UserPlusIcon,
   MonacoIcon,
+  ShopifyBagIcon,
+  NoCodeIcon,
 } from "@site/src/components/Icons";
 
 import styles from "./index.module.css";
@@ -94,16 +96,54 @@ function HeroSection() {
     <header className={styles.heroSection}>
       <div className={styles.heroBackground}>
         <div className={styles.heroGrid}></div>
+        {/* Floating Particles */}
+        <div className={styles.heroParticles}>
+          <div className={`${styles.heroParticle} ${styles.heroParticle1}`}></div>
+          <div className={`${styles.heroParticle} ${styles.heroParticle2}`}></div>
+          <div className={`${styles.heroParticle} ${styles.heroParticle3}`}></div>
+          <div className={`${styles.heroParticle} ${styles.heroParticle4}`}></div>
+          <div className={`${styles.heroParticle} ${styles.heroParticle5}`}></div>
+          <div className={`${styles.heroParticle} ${styles.heroParticle6}`}></div>
+        </div>
+        {/* Geometric Shapes */}
+        <svg className={`${styles.heroGeometric} ${styles.heroGeo1}`} viewBox="0 0 100 100" fill="none">
+          <polygon points="50,5 95,27.5 95,72.5 50,95 5,72.5 5,27.5" stroke="#F0CEBB" strokeWidth="1.5" fill="none"/>
+        </svg>
+        <svg className={`${styles.heroGeometric} ${styles.heroGeo2}`} viewBox="0 0 100 100" fill="none">
+          <circle cx="50" cy="50" r="40" stroke="#F0CEBB" strokeWidth="1" fill="none"/>
+          <circle cx="50" cy="50" r="25" stroke="#F0CEBB" strokeWidth="0.5" fill="none"/>
+        </svg>
+        <svg className={`${styles.heroGeometric} ${styles.heroGeo3}`} viewBox="0 0 100 100" fill="none">
+          <polygon points="50,10 90,80 10,80" stroke="#F0CEBB" strokeWidth="1" fill="none"/>
+        </svg>
       </div>
       <div className={styles.heroContent}>
-        <div className={styles.heroLogo}>
-          <img src="/img/logo-gold-small.png" alt="Bitbybit Logo" />
+        {/* Logo with 3D Particles */}
+        <div className={styles.heroLogoContainer}>
+          <div className={styles.logoParticles}>
+            <span className={`${styles.logoParticle} ${styles.logoP1}`}></span>
+            <span className={`${styles.logoParticle} ${styles.logoP2}`}></span>
+            <span className={`${styles.logoParticle} ${styles.logoP3}`}></span>
+            <span className={`${styles.logoParticle} ${styles.logoP4}`}></span>
+            <span className={`${styles.logoParticle} ${styles.logoP5}`}></span>
+            <span className={`${styles.logoParticle} ${styles.logoP6}`}></span>
+          </div>
+          <div className={styles.heroLogoMain}>
+            <div className={styles.heroLogo}>
+              <img src="/img/logo-gold-small.png" alt="Bitbybit Logo" />
+            </div>
+          </div>
+        </div>
+        {/* Badge */}
+        <div className={styles.heroBadge}>
+          <span className={styles.badgeIcon}>✦</span>
+          <span>Learning Platform</span>
         </div>
         <Heading as="h1" className={styles.heroTitle}>
           Master <span className={styles.highlight}>3D CAD</span> on the Web
         </Heading>
         <p className={styles.heroSubtitle}>
-          Learn to create stunning parametric 3D models using visual programming or code.
+          Learn to create stunning parametric 3D models using visual programming or code. Understand how to use our E-Commerce solutions.
           <br />
           From beginners to professionals — your journey to 3D mastery starts here.
         </p>
@@ -146,7 +186,10 @@ function LearningPathsSection() {
           {learningPaths.map((path, idx) => (
             <Link to={path.link} key={idx} className={styles.pathCard}>
               <div className={styles.pathIcon}>
-                <path.IconComponent size={56} />
+                <div className={styles.pathIconGlow}></div>
+                <div className={styles.pathIconSvg}>
+                  <path.IconComponent size={56} />
+                </div>
               </div>
               <h3>{path.title}</h3>
               <span className={styles.pathSubtitle}>{path.subtitle}</span>
@@ -265,6 +308,51 @@ function CommunitySection() {
   );
 }
 
+function ShopifyBitsSection() {
+  return (
+    <section className={styles.shopifyBitsSection}>
+      <div className="container">
+        <div className={styles.sectionHeader}>
+          <Heading as="h2">3D Bits for Shopify</Heading>
+          <p>
+            Add interactive 3D product configurators to your Shopify store — documentation and tutorials available here.
+          </p>
+        </div>
+        <div className={styles.shopifyBitsGrid}>
+          <Link to="/learn/3d-bits/intro" className={styles.shopifyBitsCard}>
+            <div className={styles.shopifyBitsCardGlow}></div>
+            <div className={styles.shopifyBitsIcon}>
+              <div className={styles.shopifyBitsIconGlow}></div>
+              <div className={styles.shopifyBitsIconSvg}>
+                <ShopifyBagIcon size={64} color="#96BF48" />
+              </div>
+            </div>
+            <h3>3D Bits App Documentation</h3>
+            <p>
+              Learn how to install, configure, and use the 3D Bits app to display interactive 3D models and configurators on your Shopify product pages.
+            </p>
+            <span className={styles.shopifyBitsCta}>Read the Docs →</span>
+          </Link>
+          <Link to="/learn/getting-started/viewer-editor/intro" className={styles.shopifyBitsCard}>
+            <div className={styles.shopifyBitsCardGlow}></div>
+            <div className={styles.shopifyBitsIcon}>
+              <div className={styles.shopifyBitsIconGlow}></div>
+              <div className={styles.shopifyBitsIconSvg}>
+                <NoCodeIcon size={64} color="#f0cebb" />
+              </div>
+            </div>
+            <h3>No-Code Viewer Editor</h3>
+            <p>
+              Create stunning 3D configurators without writing any code. Use our visual editor to design product experiences with drag-and-drop simplicity.
+            </p>
+            <span className={styles.shopifyBitsCta}>Start Creating →</span>
+          </Link>
+        </div>
+      </div>
+    </section>
+  );
+}
+
 function CTASection() {
   return (
     <section className={styles.ctaSection}>
@@ -303,6 +391,7 @@ export default function Home(): ReactNode {
         <LearningPathsSection />
         <WhatYouCanBuildSection />
         <TechnologiesSection />
+        <ShopifyBitsSection />
         <CommunitySection />
         <CTASection />
       </main>

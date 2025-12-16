@@ -1,16 +1,27 @@
 /**
  * Bitbybit Learning Portal - Homepage Styles
+ * Matching the premium look of the main site
  */
+
+/* ===== CSS VARIABLES ===== */
+:root {
+  --primary-gold: #F0CEBB;
+  --primary-gold-light: #fff6f3;
+  --primary-gold-dark: #d6b39f;
+  --bg-dark: #1a1c1f;
+  --bg-darker: #121315;
+  --glow-gold: rgba(240, 206, 187, 0.3);
+}
 
 /* ===== HERO SECTION ===== */
 .heroSection {
   position: relative;
-  min-height: 90vh;
+  min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
   overflow: hidden;
-  background: linear-gradient(135deg, #1a1c1f 0%, #2a2d32 50%, #1a1c1f 100%);
+  background: linear-gradient(180deg, #1a1c1f 0%, #121315 100%);
 }
 
 .heroBackground {
@@ -24,55 +35,252 @@
 
 .heroGrid {
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  top: -60px;
+  left: -60px;
+  right: -60px;
+  bottom: -60px;
   background-image: 
     linear-gradient(rgba(240, 206, 187, 0.03) 1px, transparent 1px),
     linear-gradient(90deg, rgba(240, 206, 187, 0.03) 1px, transparent 1px);
   background-size: 60px 60px;
-  animation: gridMove 20s linear infinite;
+  animation: gridMove 30s ease-in-out infinite;
 }
 
 @keyframes gridMove {
-  0% { transform: translate(0, 0); }
-  100% { transform: translate(60px, 60px); }
+  0%, 100% { transform: translate(0, 0); }
+  50% { transform: translate(30px, 30px); }
+}
+
+/* Hero Particles */
+.heroParticles {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.heroParticle {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  background: #F0CEBB;
+  border-radius: 50%;
+  opacity: 0.6;
+}
+
+.heroParticle1 { top: 20%; left: 10%; animation: particleFloat 8s ease-in-out infinite; }
+.heroParticle2 { top: 60%; left: 85%; animation: particleFloat 10s ease-in-out infinite 1s; width: 4px; height: 4px; }
+.heroParticle3 { top: 80%; left: 20%; animation: particleFloat 12s ease-in-out infinite 2s; width: 5px; height: 5px; }
+.heroParticle4 { top: 30%; left: 70%; animation: particleFloat 9s ease-in-out infinite 0.5s; width: 4px; height: 4px; }
+.heroParticle5 { top: 50%; left: 40%; animation: particleFloat 11s ease-in-out infinite 1.5s; width: 3px; height: 3px; }
+.heroParticle6 { top: 15%; left: 60%; animation: particleFloat 7s ease-in-out infinite 3s; width: 5px; height: 5px; }
+
+@keyframes particleFloat {
+  0%, 100% { transform: translateY(0) translateX(0); opacity: 0.6; }
+  25% { transform: translateY(-30px) translateX(10px); opacity: 0.8; }
+  50% { transform: translateY(-15px) translateX(-5px); opacity: 0.4; }
+  75% { transform: translateY(-25px) translateX(15px); opacity: 0.7; }
+}
+
+/* Hero Geometric Shapes */
+.heroGeometric {
+  position: absolute;
+  z-index: 1;
+  opacity: 0.15;
+  pointer-events: none;
+}
+
+.heroGeo1 {
+  top: 10%;
+  left: 5%;
+  width: 120px;
+  height: 120px;
+  animation: float 12s ease-in-out infinite;
+}
+
+.heroGeo2 {
+  bottom: 15%;
+  right: 8%;
+  width: 100px;
+  height: 100px;
+  animation: floatReverse 10s ease-in-out infinite;
+}
+
+.heroGeo3 {
+  top: 50%;
+  right: 15%;
+  width: 80px;
+  height: 80px;
+  animation: float 14s ease-in-out infinite 2s;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-20px) rotate(5deg); }
+}
+
+@keyframes floatReverse {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(20px) rotate(-5deg); }
 }
 
 .heroContent {
   position: relative;
-  z-index: 1;
+  z-index: 2;
   text-align: center;
   max-width: 900px;
   padding: 2rem;
 }
 
+/* Logo with 3D Particles */
+.heroLogoContainer {
+  position: relative;
+  width: 90px;
+  height: 90px;
+  margin: 0 auto 30px;
+  perspective: 500px;
+}
+
+.heroLogoMain {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: logoFloat 5s ease-in-out infinite;
+}
+
+@keyframes logoFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+
 .heroLogo {
-  margin-bottom: 1.5rem;
+  margin-bottom: 0;
 }
 
 .heroLogo img {
-  width: 80px;
-  height: 80px;
-  animation: float 3s ease-in-out infinite;
+  width: 90px;
+  height: 90px;
+  border-radius: 6px;
+  transition: all 0.4s ease;
 }
 
-@keyframes float {
-  0%, 100% { transform: translateY(0px); }
-  50% { transform: translateY(-10px); }
+.heroLogo img:hover {
+  filter: drop-shadow(0 0 12px rgba(240, 206, 187, 0.25)) drop-shadow(0 0 24px rgba(240, 206, 187, 0.15));
+  transform: scale(1.03);
+}
+
+.logoParticles {
+  position: absolute;
+  inset: -60px;
+  transform-style: preserve-3d;
+  pointer-events: none;
+}
+
+.logoParticle {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  background: #F0CEBB;
+  border-radius: 50%;
+  opacity: 0.7;
+}
+
+.logoP1 { top: 20%; left: 10%; animation: fly3d1 8s ease-in-out infinite; }
+.logoP2 { top: 10%; right: 15%; width: 3px; height: 3px; animation: fly3d2 10s ease-in-out infinite 0.5s; }
+.logoP3 { bottom: 15%; left: 20%; width: 5px; height: 5px; animation: fly3d3 9s ease-in-out infinite 1s; }
+.logoP4 { bottom: 25%; right: 10%; width: 3px; height: 3px; animation: fly3d4 11s ease-in-out infinite 0.3s; }
+.logoP5 { top: 50%; left: 5%; width: 2px; height: 2px; animation: fly3d5 7s ease-in-out infinite 1.5s; }
+.logoP6 { top: 40%; right: 5%; width: 4px; height: 4px; animation: fly3d6 12s ease-in-out infinite 0.8s; }
+
+@keyframes fly3d1 {
+  0%, 100% { transform: translate3d(0, 0, 0) scale(1); opacity: 0.7; }
+  25% { transform: translate3d(15px, -20px, 30px) scale(1.2); opacity: 0.9; }
+  50% { transform: translate3d(-10px, -35px, 50px) scale(0.8); opacity: 0.5; }
+  75% { transform: translate3d(20px, -15px, 20px) scale(1.1); opacity: 0.8; }
+}
+
+@keyframes fly3d2 {
+  0%, 100% { transform: translate3d(0, 0, 0) scale(1); opacity: 0.6; }
+  33% { transform: translate3d(-20px, 15px, 40px) scale(1.3); opacity: 0.9; }
+  66% { transform: translate3d(10px, -25px, 25px) scale(0.7); opacity: 0.5; }
+}
+
+@keyframes fly3d3 {
+  0%, 100% { transform: translate3d(0, 0, 0) scale(1); opacity: 0.8; }
+  20% { transform: translate3d(25px, 10px, 35px) scale(0.9); opacity: 0.6; }
+  50% { transform: translate3d(-15px, 30px, 60px) scale(1.4); opacity: 1; }
+  80% { transform: translate3d(10px, 5px, 20px) scale(1.1); opacity: 0.7; }
+}
+
+@keyframes fly3d4 {
+  0%, 100% { transform: translate3d(0, 0, 0) scale(1); opacity: 0.7; }
+  40% { transform: translate3d(-25px, -10px, 45px) scale(1.2); opacity: 0.9; }
+  70% { transform: translate3d(15px, 20px, 30px) scale(0.8); opacity: 0.5; }
+}
+
+@keyframes fly3d5 {
+  0%, 100% { transform: translate3d(0, 0, 0) scale(1); opacity: 0.5; }
+  30% { transform: translate3d(20px, -30px, 25px) scale(1.5); opacity: 0.9; }
+  60% { transform: translate3d(-10px, -15px, 50px) scale(0.8); opacity: 0.6; }
+}
+
+@keyframes fly3d6 {
+  0%, 100% { transform: translate3d(0, 0, 0) scale(1); opacity: 0.6; }
+  25% { transform: translate3d(-30px, 20px, 35px) scale(1.1); opacity: 0.8; }
+  50% { transform: translate3d(-15px, -25px, 55px) scale(1.3); opacity: 1; }
+  75% { transform: translate3d(10px, 10px, 20px) scale(0.9); opacity: 0.5; }
+}
+
+/* Hero Badge */
+.heroBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(240, 206, 187, 0.1);
+  border: 1px solid rgba(240, 206, 187, 0.3);
+  border-radius: 30px;
+  padding: 8px 20px;
+  margin-bottom: 30px;
+  font-size: 14px;
+  color: #F0CEBB;
+  backdrop-filter: blur(10px);
+  animation: fadeInUp 0.8s ease-out;
+}
+
+.badgeIcon {
+  font-size: 16px;
+  animation: sparkle 2s ease-in-out infinite;
+}
+
+@keyframes sparkle {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.6; transform: scale(1.2); }
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 .heroTitle {
-  font-size: 3.5rem;
-  font-weight: 800;
-  margin-bottom: 1.5rem;
+  font-size: clamp(36px, 8vw, 72px);
+  font-weight: 300;
+  margin-bottom: 20px;
   color: #ffffff;
-  line-height: 1.2;
+  line-height: 1.1;
+  letter-spacing: 4px;
+  animation: fadeInUp 0.8s ease-out 0.2s backwards;
 }
 
 .highlight {
-  color: #f0cebb;
+  background: linear-gradient(135deg, #d6b39f, #F0CEBB, #fff6f3);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
   position: relative;
 }
 
@@ -83,74 +291,104 @@
   left: 0;
   right: 0;
   height: 4px;
-  background: linear-gradient(90deg, #f0cebb, #dc966e);
+  background: linear-gradient(90deg, #F0CEBB, #fff6f3);
   border-radius: 2px;
+  transform: scaleX(0);
+  animation: underlineExpand 0.8s ease-out 1s forwards;
+}
+
+@keyframes underlineExpand {
+  to { transform: scaleX(1); }
 }
 
 .heroSubtitle {
-  font-size: 1.3rem;
+  font-size: clamp(16px, 2.5vw, 22px);
   color: rgba(255, 255, 255, 0.8);
   margin-bottom: 2.5rem;
   line-height: 1.6;
+  animation: fadeInUp 0.8s ease-out 0.4s backwards;
 }
 
 .heroButtons {
   display: flex;
-  gap: 1rem;
+  gap: 20px;
   justify-content: center;
   flex-wrap: wrap;
-  margin-bottom: 3rem;
+  margin-bottom: 50px;
+  animation: fadeInUp 0.8s ease-out 0.6s backwards;
 }
 
 .primaryButton {
   display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
-  padding: 1rem 2rem;
-  background: linear-gradient(135deg, #f0cebb 0%, #dc966e 100%);
+  gap: 12px;
+  background: linear-gradient(135deg, #d6b39f, #F0CEBB, #fff6f3);
   color: #1a1c1f;
-  font-weight: 700;
-  font-size: 1.1rem;
+  padding: 16px 36px;
   border-radius: 50px;
+  font-size: 16px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
   text-decoration: none;
-  transition: all 0.3s ease;
+  transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   box-shadow: 0 4px 20px rgba(240, 206, 187, 0.3);
+  position: relative;
+  overflow: hidden;
+}
+
+.primaryButton::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+  transition: left 0.5s ease;
 }
 
 .primaryButton:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 30px rgba(240, 206, 187, 0.4);
+  transform: translateY(-4px);
+  box-shadow: 0 8px 30px rgba(240, 206, 187, 0.5);
   color: #1a1c1f;
   text-decoration: none;
+}
+
+.primaryButton:hover::before {
+  left: 100%;
 }
 
 .secondaryButton {
   display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
-  padding: 1rem 2rem;
-  background: transparent;
-  color: #f0cebb;
-  font-weight: 600;
-  font-size: 1.1rem;
-  border: 2px solid #f0cebb;
+  gap: 12px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 2px solid rgba(240, 206, 187, 0.4);
+  color: #F0CEBB;
+  padding: 14px 32px;
   border-radius: 50px;
+  font-size: 16px;
+  font-weight: 500;
   text-decoration: none;
   transition: all 0.3s ease;
 }
 
 .secondaryButton:hover {
-  background: rgba(240, 206, 187, 0.1);
-  color: #f0cebb;
+  background: rgba(240, 206, 187, 0.15);
+  border-color: rgba(240, 206, 187, 0.6);
+  color: #F0CEBB;
   text-decoration: none;
+  transform: translateY(-2px);
 }
 
 .heroStats {
   display: flex;
   justify-content: center;
-  gap: 3rem;
-  padding-top: 2rem;
-  border-top: 1px solid rgba(240, 206, 187, 0.2);
+  gap: 60px;
+  padding-top: 40px;
+  border-top: 1px solid rgba(240, 206, 187, 0.15);
+  animation: fadeInUp 0.8s ease-out 0.8s backwards;
 }
 
 .stat {
@@ -160,16 +398,18 @@
 }
 
 .statNumber {
-  font-size: 2.5rem;
-  font-weight: 800;
-  color: #f0cebb;
+  font-size: clamp(28px, 4vw, 42px);
+  font-weight: 300;
+  color: #F0CEBB;
+  letter-spacing: 2px;
 }
 
 .statLabel {
-  font-size: 0.9rem;
-  color: rgba(255, 255, 255, 0.6);
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.5);
   text-transform: uppercase;
-  letter-spacing: 1px;
+  letter-spacing: 2px;
+  margin-top: 8px;
 }
 
 /* ===== SECTION HEADERS ===== */
@@ -201,50 +441,132 @@
 .pathsGrid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 2rem;
+  gap: 24px;
 }
 
 .pathCard {
-  background: linear-gradient(145deg, #2a2d32 0%, #1f2124 100%);
-  border: 1px solid rgba(240, 206, 187, 0.1);
-  border-radius: 16px;
-  padding: 2rem;
+  background: linear-gradient(145deg, rgba(30, 33, 38, 0.95) 0%, rgba(22, 24, 28, 0.98) 100%);
+  border: 1px solid rgba(240, 206, 187, 0.12);
+  border-radius: 20px;
+  padding: 32px 28px;
   text-decoration: none;
-  transition: all 0.3s ease;
+  transition: all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   display: flex;
   flex-direction: column;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Subtle gradient overlay */
+.pathCard::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 100%;
+  background: radial-gradient(ellipse at top center, rgba(240, 206, 187, 0.04) 0%, transparent 60%);
+  opacity: 0;
+  transition: opacity 0.5s ease;
+  pointer-events: none;
+}
+
+/* Bottom shimmer line */
+.pathCard::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #F0CEBB, #fff6f3, #F0CEBB, transparent);
+  transition: width 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
 .pathCard:hover {
-  transform: translateY(-8px);
-  border-color: rgba(240, 206, 187, 0.3);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+  transform: translateY(-12px) scale(1.02);
+  border-color: rgba(240, 206, 187, 0.35);
+  box-shadow: 
+    0 25px 50px rgba(0, 0, 0, 0.4),
+    0 0 40px rgba(240, 206, 187, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
   text-decoration: none;
 }
 
+.pathCard:hover::before {
+  opacity: 1;
+}
+
+.pathCard:hover::after {
+  width: 100%;
+}
+
 .pathIcon {
-  margin-bottom: 1rem;
+  position: relative;
+  width: 72px;
+  height: 72px;
+  margin-bottom: 24px;
   display: flex;
   align-items: center;
-  justify-content: flex-start;
+  justify-content: center;
+}
+
+.pathIconGlow {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0.8);
+  width: 80px;
+  height: 80px;
+  background: radial-gradient(circle, rgba(240, 206, 187, 0.15) 0%, transparent 70%);
+  border-radius: 50%;
+  opacity: 0;
+  transition: all 0.5s ease;
+  pointer-events: none;
+}
+
+.pathCard:hover .pathIconGlow {
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1.2);
+}
+
+.pathIconSvg {
+  position: relative;
+  z-index: 1;
+  transition: all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.pathCard:hover .pathIconSvg {
+  transform: scale(1.15);
+  filter: drop-shadow(0 0 12px rgba(240, 206, 187, 0.4));
 }
 
 .pathCard h3 {
-  color: #ffffff;
-  font-size: 1.5rem;
-  margin-bottom: 0.25rem;
+  color: rgba(240, 206, 187, 0.9);
+  font-size: 1.25rem;
+  font-weight: 600;
+  letter-spacing: 1px;
+  margin-bottom: 0.5rem;
+  transition: color 0.3s ease;
+}
+
+.pathCard:hover h3 {
+  color: #F0CEBB;
 }
 
 .pathSubtitle {
-  color: #f0cebb;
-  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.85rem;
   font-weight: 500;
   margin-bottom: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
 }
 
 .pathCard p {
-  color: rgba(255, 255, 255, 0.7);
-  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.6);
+  line-height: 1.7;
+  font-size: 14px;
   margin-bottom: 1.5rem;
   flex-grow: 1;
 }
@@ -256,15 +578,26 @@
 }
 
 .pathFeatures li {
-  color: rgba(255, 255, 255, 0.6);
-  font-size: 0.9rem;
-  padding: 0.25rem 0;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.85rem;
+  padding: 0.35rem 0;
+  transition: color 0.3s ease;
+}
+
+.pathCard:hover .pathFeatures li {
+  color: rgba(255, 255, 255, 0.7);
 }
 
 .pathCta {
-  color: #f0cebb;
+  color: #F0CEBB;
   font-weight: 600;
-  font-size: 1rem;
+  font-size: 0.95rem;
+  letter-spacing: 0.5px;
+  transition: all 0.3s ease;
+}
+
+.pathCard:hover .pathCta {
+  letter-spacing: 2px;
 }
 
 /* ===== BUILD SECTION ===== */
@@ -367,6 +700,164 @@
   color: #f0cebb;
   font-size: 0.9rem;
   font-weight: 500;
+}
+
+/* ===== SHOPIFY BITS SECTION ===== */
+.shopifyBitsSection {
+  padding: 5rem 0;
+  background: linear-gradient(180deg, #1a1c1f 0%, #1f2124 50%, #1a1c1f 100%);
+  position: relative;
+}
+
+.shopifyBitsGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 32px;
+}
+
+.shopifyBitsCard {
+  background: linear-gradient(145deg, rgba(30, 33, 38, 0.95) 0%, rgba(22, 24, 28, 0.98) 100%);
+  border: 1px solid rgba(240, 206, 187, 0.12);
+  border-radius: 20px;
+  padding: 40px 32px;
+  text-decoration: none;
+  transition: all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.shopifyBitsCard::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 100%;
+  background: radial-gradient(ellipse at top center, rgba(240, 206, 187, 0.04) 0%, transparent 60%);
+  opacity: 0;
+  transition: opacity 0.5s ease;
+  pointer-events: none;
+}
+
+.shopifyBitsCard::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  height: 3px;
+  background: linear-gradient(90deg, transparent, #96BF48, #f0cebb, #96BF48, transparent);
+  transition: width 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.shopifyBitsCard:hover {
+  transform: translateY(-12px) scale(1.02);
+  border-color: rgba(240, 206, 187, 0.35);
+  box-shadow: 
+    0 25px 50px rgba(0, 0, 0, 0.4),
+    0 0 40px rgba(240, 206, 187, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  text-decoration: none;
+}
+
+.shopifyBitsCard:hover::before {
+  opacity: 1;
+}
+
+.shopifyBitsCard:hover::after {
+  width: 100%;
+}
+
+.shopifyBitsCardGlow {
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(150, 191, 72, 0.05) 0%, transparent 50%);
+  opacity: 0;
+  transition: opacity 0.5s ease;
+  pointer-events: none;
+}
+
+.shopifyBitsCard:hover .shopifyBitsCardGlow {
+  opacity: 1;
+}
+
+.shopifyBitsIcon {
+  position: relative;
+  width: 80px;
+  height: 80px;
+  margin-bottom: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.shopifyBitsIconGlow {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0.8);
+  width: 100px;
+  height: 100px;
+  background: radial-gradient(circle, rgba(150, 191, 72, 0.2) 0%, transparent 70%);
+  border-radius: 50%;
+  opacity: 0;
+  transition: all 0.5s ease;
+  pointer-events: none;
+}
+
+.shopifyBitsCard:hover .shopifyBitsIconGlow {
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1.3);
+}
+
+.shopifyBitsIconSvg {
+  position: relative;
+  z-index: 1;
+  transition: all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.shopifyBitsCard:hover .shopifyBitsIconSvg {
+  transform: scale(1.1);
+  filter: drop-shadow(0 0 15px rgba(150, 191, 72, 0.4));
+}
+
+.shopifyBitsCard h3 {
+  color: #ffffff;
+  font-size: 1.4rem;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  margin-bottom: 12px;
+  transition: color 0.3s ease;
+}
+
+.shopifyBitsCard:hover h3 {
+  color: #F0CEBB;
+}
+
+.shopifyBitsCard p {
+  color: rgba(255, 255, 255, 0.6);
+  line-height: 1.7;
+  font-size: 15px;
+  margin-bottom: 24px;
+  flex-grow: 1;
+}
+
+.shopifyBitsCta {
+  color: #96BF48;
+  font-weight: 600;
+  font-size: 1rem;
+  letter-spacing: 0.5px;
+  transition: all 0.3s ease;
+}
+
+.shopifyBitsCard:hover .shopifyBitsCta {
+  letter-spacing: 2px;
+  color: #a8d454;
 }
 
 /* ===== COMMUNITY SECTION ===== */
@@ -539,11 +1030,15 @@
   .techGrid {
     grid-template-columns: repeat(2, 1fr);
   }
+  
+  .heroStats {
+    gap: 40px;
+  }
 }
 
 @media screen and (max-width: 996px) {
   .heroTitle {
-    font-size: 2.5rem;
+    font-size: clamp(32px, 6vw, 48px);
   }
   
   .heroSubtitle {
@@ -560,22 +1055,46 @@
   }
   
   .heroStats {
-    gap: 2rem;
+    gap: 30px;
   }
   
   .statNumber {
-    font-size: 2rem;
+    font-size: 28px;
+  }
+  
+  .heroGeometric {
+    display: none;
+  }
+  
+  .shopifyBitsGrid {
+    grid-template-columns: 1fr;
   }
 }
 
 @media screen and (max-width: 768px) {
   .heroSection {
     min-height: auto;
-    padding: 4rem 0;
+    padding: 6rem 1rem 4rem;
   }
   
   .heroTitle {
-    font-size: 2rem;
+    font-size: clamp(28px, 7vw, 36px);
+    letter-spacing: 2px;
+  }
+  
+  .heroLogoContainer {
+    width: 70px;
+    height: 70px;
+    margin-bottom: 25px;
+  }
+  
+  .heroLogo img {
+    width: 70px;
+    height: 70px;
+  }
+  
+  .logoParticles {
+    inset: -40px;
   }
   
   .buildGrid {
@@ -598,5 +1117,16 @@
   
   .sectionHeader h2 {
     font-size: 2rem;
+  }
+  
+  .primaryButton,
+  .secondaryButton {
+    padding: 14px 28px;
+    font-size: 14px;
+  }
+  
+  .heroBadge {
+    font-size: 12px;
+    padding: 6px 16px;
   }
 }
