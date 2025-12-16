@@ -351,3 +351,60 @@ export const NoCodeIcon: React.FC<IconProps> = ({ size = defaultSize, color = de
   </svg>
 );
 
+export const ReteEditorIcon: React.FC<IconProps> = ({ size = defaultSize, color = "currentColor", className }) => (
+  <svg width={size} height={size} viewBox="0 0 64 64" fill="none" className={className}>
+    {/* Top Left Node */}
+    <rect x="2" y="4" width="18" height="16" rx="2" stroke={color} strokeWidth="1.5" fill="none"/>
+    <circle cx="20" cy="12" r="2.5" fill={color}/>
+    <line x1="5" y1="12" x2="14" y2="12" stroke={color} strokeWidth="1" opacity="0.5"/>
+    
+    {/* Bottom Left Node */}
+    <rect x="2" y="44" width="18" height="16" rx="2" stroke={color} strokeWidth="1.5" fill="none"/>
+    <circle cx="20" cy="52" r="2.5" fill={color}/>
+    <line x1="5" y1="52" x2="14" y2="52" stroke={color} strokeWidth="1" opacity="0.5"/>
+    
+    {/* Right Node (receives both inputs) */}
+    <rect x="42" y="18" width="20" height="28" rx="2" stroke={color} strokeWidth="1.5" fill="none"/>
+    <circle cx="42" cy="26" r="2.5" fill={color}/>
+    <circle cx="42" cy="38" r="2.5" fill={color}/>
+    <line x1="46" y1="32" x2="56" y2="32" stroke={color} strokeWidth="1" opacity="0.5"/>
+    
+    {/* Bezier Wires - two outputs to two inputs on one node */}
+    <path d="M20 12 C 32 12, 30 26, 42 26" stroke={color} strokeWidth="1.5" fill="none"/>
+    <path d="M20 52 C 32 52, 30 38, 42 38" stroke={color} strokeWidth="1.5" fill="none"/>
+  </svg>
+);
+
+export const BlocklyEditorIcon: React.FC<IconProps> = ({ size = defaultSize, color = "currentColor", className }) => (
+  <svg width={size} height={size} viewBox="0 0 64 64" fill="none" className={className}>
+    <rect x="8" y="8" width="20" height="14" rx="3" stroke={color} strokeWidth="2" fill="none"/>
+    <rect x="8" y="26" width="28" height="14" rx="3" stroke={color} strokeWidth="2" fill="none"/>
+    <rect x="8" y="44" width="24" height="14" rx="3" stroke={color} strokeWidth="2" fill="none"/>
+    <path d="M28 15h8" stroke={color} strokeWidth="2" strokeLinecap="round"/>
+    <path d="M36 33h12" stroke={color} strokeWidth="2" strokeLinecap="round"/>
+    <path d="M32 51h16" stroke={color} strokeWidth="2" strokeLinecap="round"/>
+    <circle cx="40" cy="15" r="4" stroke={color} strokeWidth="2" fill="none"/>
+    <circle cx="52" cy="33" r="4" stroke={color} strokeWidth="2" fill="none"/>
+    <circle cx="52" cy="51" r="4" stroke={color} strokeWidth="2" fill="none"/>
+  </svg>
+);
+
+export const TypeScriptEditorIcon: React.FC<IconProps> = ({ size = defaultSize, color = "currentColor", className }) => (
+  <svg width={size} height={size} viewBox="0 0 64 64" fill="none" className={className}>
+    {/* Code editor window */}
+    <rect x="4" y="4" width="56" height="36" rx="3" stroke={color} strokeWidth="1.5" fill="none"/>
+    <line x1="4" y1="12" x2="60" y2="12" stroke={color} strokeWidth="1.5"/>
+    <circle cx="10" cy="8" r="1.5" fill={color} opacity="0.6"/>
+    <circle cx="16" cy="8" r="1.5" fill={color} opacity="0.6"/>
+    <circle cx="22" cy="8" r="1.5" fill={color} opacity="0.6"/>
+    
+    {/* Code lines */}
+    <path d="M10 18h20" stroke={color} strokeWidth="1.5" strokeLinecap="round" opacity="0.7"/>
+    <path d="M10 24h28" stroke={color} strokeWidth="1.5" strokeLinecap="round" opacity="0.5"/>
+    <path d="M10 30h16" stroke={color} strokeWidth="1.5" strokeLinecap="round" opacity="0.7"/>
+    
+    {/* TS Badge - larger and more prominent */}
+    <rect x="32" y="44" width="28" height="18" rx="3" stroke={color} strokeWidth="1.5" fill={color} fillOpacity="0.15"/>
+    <text x="37" y="57" fontFamily="Arial, sans-serif" fontSize="12" fontWeight="bold" fill={color}>TS</text>
+  </svg>
+);

@@ -21,6 +21,9 @@ import {
   MonacoIcon,
   ShopifyBagIcon,
   NoCodeIcon,
+  ReteEditorIcon,
+  BlocklyEditorIcon,
+  TypeScriptEditorIcon,
 } from "@site/src/components/Icons";
 
 import styles from "./index.module.css";
@@ -357,23 +360,84 @@ function CTASection() {
   return (
     <section className={styles.ctaSection}>
       <div className="container">
-        <div className={styles.ctaContent}>
+        <div className={styles.sectionHeader}>
           <Heading as="h2">Ready to Create Something Amazing?</Heading>
-          <p>Start building 3D models today — no installation required.</p>
-          <div className={styles.ctaButtons}>
-            <Link className={styles.primaryButton} to="/learn/getting-started/overview">
-              <BookIcon size={20} color="#1a1c1f" /> Browse Tutorials
-            </Link>
-            <Link className={styles.outlineButton} to="https://bitbybit.dev/app?editor=rete">
-              <TargetIcon size={20} /> Open Rete Editor
-            </Link>
-            <Link className={styles.outlineButton} to="https://bitbybit.dev/app?editor=blockly">
-              <BlocksIcon size={20} /> Open Blockly Editor
-            </Link>
-            <Link className={styles.outlineButton} to="https://bitbybit.dev/app?editor=monaco">
-              <MonacoIcon size={20} /> Open Monaco Editor
-            </Link>
-          </div>
+          <p>Start building 3D models today — no installation required. Launch any editor directly.</p>
+        </div>
+        <div className={styles.ctaHeader}>
+          <Link className={styles.primaryButton} to="/learn/getting-started/overview">
+            <BookIcon size={20} color="#1a1c1f" /> Browse Tutorials
+          </Link>
+        </div>
+        <div className={styles.editorCardsGrid}>
+          {/* Rete Editor Card */}
+          <a href="https://bitbybit.dev/app?editor=rete" className={`${styles.editorCard} ${styles.editorCardRete}`}>
+            <div className={styles.editorCardGlow}></div>
+            <div className={styles.editorCardContent}>
+              <div className={styles.editorIconWrapper}>
+                <ReteEditorIcon size={56} />
+              </div>
+              <h3 className={styles.editorTitle}>Rete Editor</h3>
+              <p className={styles.editorDescription}>Wire-based visual programming with connected nodes</p>
+              <div className={styles.editorTags}>
+                <span className={styles.editorTag}>Visual</span>
+                <span className={styles.editorTag}>Node-Based</span>
+              </div>
+              <div className={styles.editorLaunchBtn}>
+                <span>Launch Editor</span>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M5 12h14M12 5l7 7-7 7"/>
+                </svg>
+              </div>
+            </div>
+            <div className={styles.editorCardShine}></div>
+          </a>
+          
+          {/* Blockly Editor Card */}
+          <a href="https://bitbybit.dev/app?editor=blockly" className={`${styles.editorCard} ${styles.editorCardBlockly}`}>
+            <div className={styles.editorCardGlow}></div>
+            <div className={styles.editorCardContent}>
+              <div className={styles.editorIconWrapper}>
+                <BlocklyEditorIcon size={56} />
+              </div>
+              <h3 className={styles.editorTitle}>Blockly Editor</h3>
+              <p className={styles.editorDescription}>Snap-together blocks for intuitive programming</p>
+              <div className={styles.editorTags}>
+                <span className={styles.editorTag}>Beginner Friendly</span>
+                <span className={styles.editorTag}>Blocks</span>
+              </div>
+              <div className={styles.editorLaunchBtn}>
+                <span>Launch Editor</span>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M5 12h14M12 5l7 7-7 7"/>
+                </svg>
+              </div>
+            </div>
+            <div className={styles.editorCardShine}></div>
+          </a>
+          
+          {/* TypeScript Editor Card */}
+          <a href="https://bitbybit.dev/app?editor=typescript" className={`${styles.editorCard} ${styles.editorCardTypescript}`}>
+            <div className={styles.editorCardGlow}></div>
+            <div className={styles.editorCardContent}>
+              <div className={styles.editorIconWrapper}>
+                <TypeScriptEditorIcon size={56} />
+              </div>
+              <h3 className={styles.editorTitle}>TypeScript Editor</h3>
+              <p className={styles.editorDescription}>Full code control with Monaco editor & IntelliSense</p>
+              <div className={styles.editorTags}>
+                <span className={styles.editorTag}>Pro</span>
+                <span className={styles.editorTag}>Full Control</span>
+              </div>
+              <div className={styles.editorLaunchBtn}>
+                <span>Launch Editor</span>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M5 12h14M12 5l7 7-7 7"/>
+                </svg>
+              </div>
+            </div>
+            <div className={styles.editorCardShine}></div>
+          </a>
         </div>
       </div>
     </section>

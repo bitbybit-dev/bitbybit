@@ -970,34 +970,188 @@
   font-size: 0.9rem;
 }
 
-/* ===== CTA SECTION ===== */
+/* ===== CTA / EDITOR LAUNCH SECTION ===== */
 .ctaSection {
-  padding: 5rem 0;
+  padding: 5rem 0 6rem;
   background: linear-gradient(135deg, rgba(240, 206, 187, 0.1) 0%, rgba(220, 150, 110, 0.05) 100%);
   border-top: 1px solid rgba(240, 206, 187, 0.1);
 }
 
-.ctaContent {
+.ctaFooter {
+  text-align: center;
+  margin-top: 3rem;
+}
+
+.ctaHeader {
+  text-align: center;
+  margin-bottom: 2.5rem;
+}
+
+/* Editor Cards Grid */
+.editorCardsGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.editorCard {
+  position: relative;
+  background: linear-gradient(135deg, rgba(26, 28, 31, 0.95) 0%, rgba(35, 40, 48, 0.9) 100%);
+  border: 1px solid rgba(240, 206, 187, 0.2);
+  border-radius: 24px;
+  padding: 40px 30px;
+  text-decoration: none;
+  color: white;
+  overflow: hidden;
+  transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   text-align: center;
 }
 
-.ctaContent h2 {
-  color: #ffffff;
-  font-size: 2.5rem;
-  margin-bottom: 1rem;
+.editorCard:hover {
+  transform: translateY(-12px);
+  border-color: #F0CEBB;
+  text-decoration: none;
 }
 
-.ctaContent p {
-  color: rgba(255, 255, 255, 0.7);
-  font-size: 1.2rem;
-  margin-bottom: 2rem;
+.editorCard:hover .editorCardGlow {
+  opacity: 1;
 }
 
-.ctaButtons {
+.editorCard:hover .editorIconWrapper {
+  transform: scale(1.15);
+  background: #F0CEBB;
+  color: #1a1c1f;
+}
+
+.editorCard:hover .editorIconWrapper svg {
+  color: #1a1c1f;
+}
+
+.editorCard:hover .editorLaunchBtn {
+  background: #F0CEBB;
+  color: #1a1c1f;
+}
+
+.editorCard:hover .editorLaunchBtn svg {
+  transform: translateX(5px);
+}
+
+.editorCard:hover .editorCardShine {
+  transform: translateX(100%);
+}
+
+.editorCardGlow {
+  position: absolute;
+  inset: -2px;
+  background: linear-gradient(135deg, #F0CEBB, transparent 50%, #d6b39f);
+  border-radius: 26px;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  z-index: -1;
+  filter: blur(15px);
+}
+
+.editorCardContent {
+  position: relative;
+  z-index: 2;
+}
+
+.editorCardShine {
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+  transition: transform 0.6s ease;
+  z-index: 1;
+}
+
+.editorIconWrapper {
+  width: 80px;
+  height: 80px;
+  margin: 0 auto 25px;
+  background: rgba(240, 206, 187, 0.15);
+  border-radius: 20px;
   display: flex;
-  gap: 1rem;
+  align-items: center;
+  justify-content: center;
+  color: #F0CEBB;
+  transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.editorIconWrapper svg {
+  color: inherit;
+  transition: color 0.4s ease;
+}
+
+.editorTitle {
+  font-size: 22px;
+  font-weight: 600;
+  margin-bottom: 12px;
+  letter-spacing: 1px;
+  color: white;
+}
+
+.editorDescription {
+  font-size: 15px;
+  color: rgba(255, 255, 255, 0.7);
+  line-height: 1.6;
+  margin-bottom: 20px;
+}
+
+.editorTags {
+  display: flex;
+  gap: 8px;
   justify-content: center;
   flex-wrap: wrap;
+  margin-bottom: 25px;
+}
+
+.editorTag {
+  background: rgba(240, 206, 187, 0.1);
+  border: 1px solid rgba(240, 206, 187, 0.2);
+  border-radius: 20px;
+  padding: 6px 14px;
+  font-size: 12px;
+  color: #F0CEBB;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.editorLaunchBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(240, 206, 187, 0.15);
+  border: 1px solid #F0CEBB;
+  border-radius: 30px;
+  padding: 12px 28px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #F0CEBB;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  transition: all 0.3s ease;
+}
+
+.editorLaunchBtn svg {
+  transition: transform 0.3s ease;
+}
+
+/* Card-specific hover colors */
+.editorCardRete:hover {
+  box-shadow: 0 20px 50px rgba(240, 206, 187, 0.2);
+}
+
+.editorCardBlockly:hover {
+  box-shadow: 0 20px 50px rgba(240, 206, 187, 0.2);
+}
+
+.editorCardTypescript:hover {
+  box-shadow: 0 20px 50px rgba(240, 206, 187, 0.2);
 }
 
 .outlineButton {
@@ -1069,6 +1223,15 @@
   .shopifyBitsGrid {
     grid-template-columns: 1fr;
   }
+  
+  .editorCardsGrid {
+    grid-template-columns: 1fr;
+    max-width: 400px;
+  }
+  
+  .editorCard {
+    padding: 30px 24px;
+  }
 }
 
 @media screen and (max-width: 768px) {
@@ -1110,11 +1273,6 @@
     gap: 1.5rem;
   }
   
-  .ctaButtons {
-    flex-direction: column;
-    align-items: center;
-  }
-  
   .sectionHeader h2 {
     font-size: 2rem;
   }
@@ -1128,5 +1286,18 @@
   .heroBadge {
     font-size: 12px;
     padding: 6px 16px;
+  }
+  
+  .editorIconWrapper {
+    width: 64px;
+    height: 64px;
+  }
+  
+  .editorTitle {
+    font-size: 18px;
+  }
+  
+  .editorDescription {
+    font-size: 14px;
   }
 }
