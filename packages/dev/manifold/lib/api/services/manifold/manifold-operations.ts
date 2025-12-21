@@ -78,4 +78,12 @@ export class ManifoldOperations {
     smoothByNormals(inputs: Inputs.Manifold.ManifoldSmoothByNormalsDto<Manifold3D.Manifold>): Manifold3D.Manifold {
         return inputs.manifold.smoothByNormals(inputs.normalIdx);
     }
+
+    simplify(inputs: Inputs.Manifold.ManifoldSimplifyDto<Manifold3D.Manifold>): Manifold3D.Manifold {
+        return inputs.manifold.simplify(inputs.tolerance);
+    }
+
+    setProperties(inputs: Inputs.Manifold.ManifoldSetPropertiesDto<Manifold3D.Manifold>): Manifold3D.Manifold {
+        return inputs.manifold.setProperties(inputs.numProp, inputs.propFunc);
+    }
 }

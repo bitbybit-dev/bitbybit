@@ -132,5 +132,20 @@ export class ManifoldTransforms {
         return this.manifoldWorkerManager.genericCallToWorkerPromise("manifold.transforms.transforms", inputs);
     }
 
+    /**
+     * Move the vertices of this Manifold (creating a new one) according to any
+     * arbitrary input function. It is easy to create a function that warps a
+     * geometrically valid object into one which overlaps, but that is not checked
+     * here, so it is up to the user to choose their function with discretion.
+     * @param inputs manifold and warp function
+     * @returns Warped manifold shape
+     * @group transforms
+     * @shortname warp
+     * @drawable true
+     */
+    async warp(inputs: Inputs.Manifold.ManifoldWarpDto<Inputs.Manifold.ManifoldPointer>): Promise<Inputs.Manifold.ManifoldPointer> {
+        return this.manifoldWorkerManager.genericCallToWorkerPromise("manifold.transforms.warp", inputs);
+    }
+
 
 }

@@ -62,4 +62,8 @@ export class ManifoldEvaluate {
         return inputs.manifold.originalID();
     }
 
+    status(inputs: Inputs.Manifold.ManifoldDto<Manifold3D.Manifold>): string {
+        return inputs.manifold.status();
+    }
+
 }

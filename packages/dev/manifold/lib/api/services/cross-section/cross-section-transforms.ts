@@ -37,4 +37,8 @@ export class CrossSectionTransforms {
         return inputs.crossSection.transform(inputs.transform);
     }
 
+    warp(inputs: Inputs.Manifold.CrossSectionWarpDto<Manifold3D.CrossSection>): Manifold3D.CrossSection {
+        return inputs.crossSection.warp(inputs.warpFunc);
+    }
+
 }

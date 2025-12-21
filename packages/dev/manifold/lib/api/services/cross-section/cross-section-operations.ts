@@ -27,7 +27,7 @@ export class CrossSectionOperations {
     }
 
     offset(inputs: Inputs.Manifold.OffsetDto<Manifold3D.CrossSection>): Manifold3D.CrossSection {
-        return inputs.crossSection.offset(inputs.delta, inputs.joinType, inputs.miterLimit, inputs.circularSegments);
+        return inputs.crossSection.offset(inputs.delta, inputs.joinType as Manifold3D.JoinType, inputs.miterLimit, inputs.circularSegments);
     }
 
     simplify(inputs: Inputs.Manifold.SimplifyDto<Manifold3D.CrossSection>): Manifold3D.CrossSection {

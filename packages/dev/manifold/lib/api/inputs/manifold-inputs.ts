@@ -16,7 +16,8 @@ export namespace Manifold {
     export enum manifoldJoinTypeEnum {
         square = "Square",
         round = "Round",
-        miter = "Miter"
+        miter = "Miter",
+        bevel = "Bevel"
     }
     export class DecomposedManifoldMeshDto {
         numProp: number;
@@ -527,6 +528,51 @@ export namespace Manifold {
          */
         normalIdx = 0;
     }
+    export class ManifoldSimplifyDto<T> {
+        constructor(manifold?: T, tolerance?: number) {
+            if (manifold !== undefined) { this.manifold = manifold; }
+            if (tolerance !== undefined) { this.tolerance = tolerance; }
+        }
+        /**
+         * Manifold shape
+         */
+        manifold: T;
+        /**
+         * The maximum distance between the original and simplified meshes. 
+         * If not given or is less than the current tolerance, the current tolerance is used.
+         * The result will contain a subset of the original verts and all surfaces will have moved by less than tolerance.
+         * @default undefined
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.001
+         */
+        tolerance?: number;
+    }
+    export class ManifoldSetPropertiesDto<T> {
+        constructor(manifold?: T, numProp?: number, propFunc?: (newProp: number[], position: Base.Vector3, oldProp: number[]) => void) {
+            if (manifold !== undefined) { this.manifold = manifold; }
+            if (numProp !== undefined) { this.numProp = numProp; }
+            if (propFunc !== undefined) { this.propFunc = propFunc; }
+        }
+        /**
+         * Manifold shape
+         */
+        manifold: T;
+        /**
+         * The new number of properties per vertex
+         * @default 3
+         * @minimum 3
+         * @maximum Infinity
+         * @step 1
+         */
+        numProp = 3;
+        /**
+         * A function that modifies the properties of a given vertex.
+         * Note: undefined behavior will result if you read past the number of input properties or write past the number of output properties.
+         * @default undefined
+         */
+        propFunc: (newProp: number[], position: Base.Vector3, oldProp: number[]) => void;
+    }
     export class ManifoldSmoothOutDto<T> {
         constructor(manifold?: T, minSharpAngle?: number, minSmoothness?: number) {
             if (manifold !== undefined) { this.manifold = manifold; }
@@ -978,6 +1024,21 @@ export namespace Manifold {
          */
         transform: Base.TransformMatrix3x3;
     }
+    export class CrossSectionWarpDto<T> {
+        constructor(crossSection?: T, warpFunc?: (vert: Base.Vector2) => void) {
+            if (crossSection !== undefined) { this.crossSection = crossSection; }
+            if (warpFunc !== undefined) { this.warpFunc = warpFunc; }
+        }
+        /**
+         * Cross section
+         */
+        crossSection: T;
+        /**
+         * A function that modifies a given vertex position
+         * @default undefined
+         */
+        warpFunc: (vert: Base.Vector2) => void;
+    }
     export class MirrorDto<T> {
         constructor(manifold?: T, normal?: Base.Vector3) {
             if (manifold !== undefined) { this.manifold = manifold; }
@@ -1170,6 +1231,21 @@ export namespace Manifold {
          * @default undefined
          */
         transforms: Base.TransformMatrixes;
+    }
+    export class ManifoldWarpDto<T> {
+        constructor(manifold?: T, warpFunc?: (vert: Base.Vector3) => void) {
+            if (manifold !== undefined) { this.manifold = manifold; }
+            if (warpFunc !== undefined) { this.warpFunc = warpFunc; }
+        }
+        /**
+         * Manifold shape
+         */
+        manifold: T;
+        /**
+         * A function that modifies a given vertex position
+         * @default undefined
+         */
+        warpFunc: (vert: Base.Vector3) => void;
     }
     export class TwoCrossSectionsDto<T> {
         constructor(crossSection1?: T, crossSection2?: T) {

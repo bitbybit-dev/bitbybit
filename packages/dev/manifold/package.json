@@ -58,7 +58,7 @@
   "types": "./index.d.ts",
   "type": "module",
   "dependencies": {
-    "manifold-3d": "3.0.0"
+    "manifold-3d": "3.3.2"
   },
   "devDependencies": {
     "shx":"0.4.0",

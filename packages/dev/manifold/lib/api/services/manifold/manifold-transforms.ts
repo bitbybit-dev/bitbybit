@@ -61,4 +61,8 @@ export class ManifoldTransforms {
         });
         return res;
     }
+
+    warp(inputs: Inputs.Manifold.ManifoldWarpDto<Manifold3D.Manifold>): Manifold3D.Manifold {
+        return inputs.manifold.warp(inputs.warpFunc);
+    }
 }
