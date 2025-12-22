@@ -246,7 +246,7 @@ export class TextBitByBit {
 
     /**
      * Pads text from the start to reach target length.
-     * Example: text='5', length=3, padString='0' → '005'
+     * Example: text='x', length=3, padString='a' → 'aax'
      * @param inputs a text, target length and pad string
      * @returns padded text
      * @group transform
@@ -259,7 +259,7 @@ export class TextBitByBit {
 
     /**
      * Pads text from the end to reach target length.
-     * Example: text='5', length=3, padString='0' → '500'
+     * Example: text='x', length=3, padString='a' → 'xaa'
      * @param inputs a text, target length and pad string
      * @returns padded text
      * @group transform

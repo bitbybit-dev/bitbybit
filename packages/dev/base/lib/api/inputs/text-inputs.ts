@@ -182,9 +182,9 @@ export namespace Text {
         }
         /**
          * Text to pad
-         * @default 5
+         * @default x
          */
-        text = "5";
+        text = "x";
         /**
          * Target length
          * @default 3
@@ -195,9 +195,9 @@ export namespace Text {
         length = 3;
         /**
          * String to pad with
-         * @default 0
+         * @default a
          */
-        padString = "0";
+        padString = "a";
     }
 
     export class TextRepeatDto {
