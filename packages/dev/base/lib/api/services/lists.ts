@@ -710,7 +710,7 @@ export class Lists {
 
     /**
      * Removes duplicate items from the list using strict equality comparison (works with any type).
-     * Example: From ["a", "b", "c", "a", "d", "b"], returns ["a", "b", "c", "d"]
+     * Example: From ['a', 'b', 'c', 'a', 'd', 'b'], returns ['a', 'b', 'c', 'd']
      * @param inputs a list
      * @returns list with unique items
      * @group remove
@@ -887,7 +887,7 @@ export class Lists {
 
     /**
      * Sorts text strings alphabetically in ascending (A to Z) or descending (Z to A) order.
-     * Example: ["dog", "apple", "cat", "banana"] ascending returns ["apple", "banana", "cat", "dog"]
+     * Example: ['dog', 'apple', 'cat', 'banana'] ascending returns ['apple', 'banana', 'cat', 'dog']
      * @param inputs a list of texts to sort and an option for ascending or descending order
      * @returns list
      * @group sorting

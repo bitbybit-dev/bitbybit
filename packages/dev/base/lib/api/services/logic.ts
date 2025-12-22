@@ -155,7 +155,7 @@ export class Logic {
 
     /**
      * Compares two values using various operators (==, !=, ===, !==, <, <=, >, >=).
-     * Example: 5 > 3 → true, "hello" === "world" → false
+     * Example: 5 > 3 → true, 'hello' === 'world' → false
      * @param inputs two values to be compared
      * @returns Result of the comparison
      * @group operations

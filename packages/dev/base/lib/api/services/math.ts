@@ -238,7 +238,7 @@ export class MathBitByBit {
 
     /**
      * Formats a number as a string with a fixed number of decimal places (always shows trailing zeros).
-     * Example: 3.14159 with 2 decimals → "3.14", 5 with 3 decimals → "5.000"
+     * Example: 3.14159 with 2 decimals → '3.14', 5 with 3 decimals → '5.000'
      * @param inputs a number to be rounded to decimal places
      * @returns number
      * @group operations

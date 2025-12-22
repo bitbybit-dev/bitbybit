@@ -8,7 +8,7 @@ export class Color {
 
     /**
      * Creates and returns a hex color string (pass-through for color input).
-     * Example: "#FF5733" → "#FF5733"
+     * Example: '#FF5733' → '#FF5733'
      * @param inputs Color hex
      * @returns color string
      * @group create
@@ -21,7 +21,7 @@ export class Color {
 
     /**
      * Converts hex color to RGB object with r, g, b values (0-255 range).
-     * Example: "#FF5733" → {r: 255, g: 87, b: 51}
+     * Example: '#FF5733' → {r: 255, g: 87, b: 51}
      * @param inputs Color hex
      * @returns rgb color
      * @group convert
@@ -39,8 +39,8 @@ export class Color {
 
     /**
      * Converts RGB values to hex color string (supports custom min/max ranges, auto-remaps to 0-255).
-     * Example: r=255, g=87, b=51 with range [0,255] → "#ff5733"
-     * Example: r=1, g=0.5, b=0.2 with range [0,1] → "#ff7f33"
+     * Example: r=255, g=87, b=51 with range [0,255] → '#ff5733'
+     * Example: r=1, g=0.5, b=0.2 with range [0,1] → '#ff7f33'
      * @param inputs Color hext
      * @returns hex color
      * @group convert
@@ -68,7 +68,7 @@ export class Color {
 
     /**
      * Converts RGB object to hex color string (supports custom min/max ranges).
-     * Example: {r: 1, g: 0.5, b: 0.2} with range [0,1] → "#ff7f33"
+     * Example: {r: 1, g: 0.5, b: 0.2} with range [0,1] → '#ff7f33'
      * @param inputs Color hext
      * @returns hex color string
      * @group convert
@@ -81,8 +81,8 @@ export class Color {
 
     /**
      * Converts hex color to RGB and remaps values to a custom range.
-     * Example: "#FF5733" mapped to [0,1] → {r: 1, g: 0.341, b: 0.2}
-     * Example: "#FF5733" mapped to [0,100] → {r: 100, g: 34.1, b: 20}
+     * Example: '#FF5733' mapped to [0,1] → {r: 1, g: 0.341, b: 0.2}
+     * Example: '#FF5733' mapped to [0,100] → {r: 100, g: 34.1, b: 20}
      * @param inputs Color hext
      * @returns rgb color
      * @group convert
@@ -100,7 +100,7 @@ export class Color {
 
     /**
      * Extracts the red channel value from hex color (can be mapped to custom range).
-     * Example: "#FF5733" with range [0,1] → 1
+     * Example: '#FF5733' with range [0,1] → 1
      * @param inputs Color hext
      * @returns rgb color
      * @group hex to
@@ -114,7 +114,7 @@ export class Color {
 
     /**
      * Extracts the green channel value from hex color (can be mapped to custom range).
-     * Example: "#FF5733" with range [0,1] → 0.341
+     * Example: '#FF5733' with range [0,1] → 0.341
      * @param inputs Color hext
      * @returns rgb color
      * @group hex to
@@ -128,7 +128,7 @@ export class Color {
 
     /**
      * Extracts the blue channel value from hex color (can be mapped to custom range).
-     * Example: "#FF5733" with range [0,1] → 0.2
+     * Example: '#FF5733' with range [0,1] → 0.2
      * @param inputs Color hext
      * @returns blue param
      * @group hex to
@@ -181,8 +181,8 @@ export class Color {
 
     /**
      * Inverts a hex color (flips RGB channels: 255-r, 255-g, 255-b).
-     * With blackAndWhite=true → returns "#000000" or "#ffffff" based on brightness.
-     * Example: "#FF5733" → "#00a8cc", "#FF5733" with blackAndWhite=true → "#ffffff"
+     * With blackAndWhite=true → returns '#000000' or '#ffffff' based on brightness.
+     * Example: '#FF5733' → '#00a8cc', '#FF5733' with blackAndWhite=true → '#ffffff'
      * @param inputs hex color and black and white option
      * @returns inverted color
      * @group hex to

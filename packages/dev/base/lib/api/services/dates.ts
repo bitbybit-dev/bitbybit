@@ -7,7 +7,7 @@ export class Dates {
 
     /**
      * Converts date to human-readable date string (excludes time).
-     * Example: Date(2024,0,15,14,30) → "Mon Jan 15 2024"
+     * Example: Date(2024,0,15,14,30) → 'Mon Jan 15 2024'
      * @param inputs a date
      * @returns date as string
      * @group convert
@@ -20,7 +20,7 @@ export class Dates {
 
     /**
      * Converts date to ISO 8601 format string (standard format for APIs and data interchange).
-     * Example: Date(2024,0,15,14,30,45) → "2024-01-15T14:30:45.000Z"
+     * Example: Date(2024,0,15,14,30,45) → '2024-01-15T14:30:45.000Z'
      * @param inputs a date
      * @returns date as string
      * @group convert
@@ -33,7 +33,7 @@ export class Dates {
 
     /**
      * Converts date to JSON-compatible string (same as ISO format, used in JSON.stringify).
-     * Example: Date(2024,0,15,14,30) → "2024-01-15T14:30:00.000Z"
+     * Example: Date(2024,0,15,14,30) → '2024-01-15T14:30:00.000Z'
      * @param inputs a date
      * @returns date as string
      * @group convert
@@ -46,7 +46,7 @@ export class Dates {
 
     /**
      * Converts date to full locale-specific string (includes date, time, and timezone).
-     * Example: Date(2024,0,15,14,30) → "Mon Jan 15 2024 14:30:00 GMT+0000"
+     * Example: Date(2024,0,15,14,30) → 'Mon Jan 15 2024 14:30:00 GMT+0000'
      * @param inputs a date
      * @returns date as string
      * @group convert
@@ -59,7 +59,7 @@ export class Dates {
 
     /**
      * Converts date to time string (excludes date, includes timezone).
-     * Example: Date(2024,0,15,14,30,45) → "14:30:45 GMT+0000"
+     * Example: Date(2024,0,15,14,30,45) → '14:30:45 GMT+0000'
      * @param inputs a date
      * @returns time as string
      * @group convert
@@ -72,7 +72,7 @@ export class Dates {
 
     /**
      * Converts date to UTC string format (Universal Coordinated Time, no timezone offset).
-     * Example: Date(2024,0,15,14,30) → "Mon, 15 Jan 2024 14:30:00 GMT"
+     * Example: Date(2024,0,15,14,30) → 'Mon, 15 Jan 2024 14:30:00 GMT'
      * @param inputs a date
      * @returns date as utc string
      * @group convert
@@ -85,7 +85,7 @@ export class Dates {
 
     /**
      * Returns the current date and time at the moment of execution.
-     * Example: calling now() → Date object representing current moment (e.g., "2024-01-15T14:30:45")
+     * Example: calling now() → Date object representing current moment (e.g., '2024-01-15T14:30:45')
      * @returns date
      * @group create
      * @shortname now
@@ -138,7 +138,7 @@ export class Dates {
 
     /**
      * Parses a date string and returns Unix timestamp (milliseconds since Jan 1, 1970 UTC).
-     * Example: dateString="2024-01-15" → 1705276800000
+     * Example: dateString='2024-01-15' → 1705276800000
      * @param inputs a date string
      * @returns the number of milliseconds between that date and midnight, January 1, 1970.
      * @group parse
