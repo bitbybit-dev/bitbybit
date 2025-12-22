@@ -7,6 +7,7 @@ import {
     OCCTW,
     Asset,
     JSONBitByBit,
+    CSVBitByBit,
 } from "@bitbybit-dev/core";
 import { JSCAD } from "@bitbybit-dev/jscad-worker";
 import { ManifoldBitByBit } from "@bitbybit-dev/manifold-worker";
@@ -38,6 +39,7 @@ export class BitByBitBase {
     public logic: Logic;
     public lists: Lists;
     public json: JSONBitByBit;
+    public csv: CSVBitByBit;
     public vector: Vector;
     public three: ThreeJS;
     public point: Point;
@@ -84,6 +86,7 @@ export class BitByBitBase {
         this.asset = new Asset();
         this.logic = new Logic();
         this.json = new JSONBitByBit(this.context);
+        this.csv = new CSVBitByBit();
         this.text = new TextBitByBit(this.point);
         this.dates = new Dates();
         this.mesh = new MeshBitByBit(this.vector, this.polyline);

@@ -582,4 +582,17 @@ export class Vector {
     length(inputs: Inputs.Vector.Vector3Dto): number {
         return Math.sqrt(this.lengthSq(inputs));
     }
+
+    /**
+     * Converts an array of stringified numbers to actual numbers.
+     * Example: ['1', '2.5', '3'] → [1, 2.5, 3], ['10', '-5', '0.1'] → [10, -5, 0.1]
+     * @param inputs Array of stringified numbers
+     * @returns Array of numbers
+     * @group create
+     * @shortname parse numbers
+     * @drawable false
+     */
+    parseNumbers(inputs: Inputs.Vector.VectorStringDto): number[] {
+        return inputs.vector.map(v => parseFloat(v));
+    }
 }

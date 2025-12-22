@@ -356,5 +356,46 @@ describe("Vector unit tests", () => {
         const res = vector.sum({ vector: [1, 2, 3] });
         expect(res).toEqual(6);
     });
+
+    it("should parse stringified numbers to numbers", () => {
+        const res = vector.parseNumbers({ vector: ["1", "2", "3"] });
+        expect(res).toEqual([1, 2, 3]);
+    });
+
+    it("should parse stringified decimal numbers to numbers", () => {
+        const res = vector.parseNumbers({ vector: ["1.5", "2.75", "3.333"] });
+        expect(res).toEqual([1.5, 2.75, 3.333]);
+    });
+
+    it("should parse stringified negative numbers to numbers", () => {
+        const res = vector.parseNumbers({ vector: ["-1", "-2.5", "3"] });
+        expect(res).toEqual([-1, -2.5, 3]);
+    });
+
+    it("should parse stringified zero to number", () => {
+        const res = vector.parseNumbers({ vector: ["0", "0.0", "-0"] });
+        expect(res).toEqual([0, 0, 0]);
+    });
+
+    it("should parse stringified large numbers to numbers", () => {
+        const res = vector.parseNumbers({ vector: ["1000000", "1e6", "1.5e3"] });
+        expect(res).toEqual([1000000, 1000000, 1500]);
+    });
+
+    it("should handle empty array when parsing numbers", () => {
+        const res = vector.parseNumbers({ vector: [] });
+        expect(res).toEqual([]);
+    });
+
+    it("should return NaN for invalid stringified numbers", () => {
+        const res = vector.parseNumbers({ vector: ["abc", "xyz"] });
+        expect(res[0]).toBeNaN();
+        expect(res[1]).toBeNaN();
+    });
+
+    it("should parse mixed valid and whitespace stringified numbers", () => {
+        const res = vector.parseNumbers({ vector: [" 1 ", "  2.5", "3  "] });
+        expect(res).toEqual([1, 2.5, 3]);
+    });
 });
 
