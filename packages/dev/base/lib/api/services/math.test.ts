@@ -618,5 +618,280 @@ describe("Math unit tests", () => {
         const result = math.ease({ x: 0.99, min: 0, max: 1, ease: Inputs.Math.easeEnum.easeInOutBounce });
         expect(result).toEqual(0.9946375000000001);
     });
+
+    it("should round to 3 decimals and keep non-zero trailing digits", () => {
+        const result = math.roundAndRemoveTrailingZeros({ number: 1.32156, decimalPlaces: 3 });
+        expect(result).toEqual(1.322);
+    });
+
+    it("should round to 3 decimals and remove trailing zeros", () => {
+        const result = math.roundAndRemoveTrailingZeros({ number: 1.320000001, decimalPlaces: 3 });
+        expect(result).toEqual(1.32);
+    });
+
+    it("should round 1.000 to 1 without decimals", () => {
+        const result = math.roundAndRemoveTrailingZeros({ number: 1.000, decimalPlaces: 3 });
+        expect(result).toEqual(1);
+    });
+
+    it("should round 1.0000001 to 1 with 3 decimals", () => {
+        const result = math.roundAndRemoveTrailingZeros({ number: 1.0000001, decimalPlaces: 3 });
+        expect(result).toEqual(1);
+    });
+
+    it("should round 5.12 to 5.12 with 3 decimals", () => {
+        const result = math.roundAndRemoveTrailingZeros({ number: 5.12, decimalPlaces: 3 });
+        expect(result).toEqual(5.12);
+    });
+
+    it("should round 5.1 to 5.1 with 3 decimals", () => {
+        const result = math.roundAndRemoveTrailingZeros({ number: 5.1, decimalPlaces: 3 });
+        expect(result).toEqual(5.1);
+    });
+
+    it("should round 3.14159 to 3.14 with 2 decimals", () => {
+        const result = math.roundAndRemoveTrailingZeros({ number: 3.14159, decimalPlaces: 2 });
+        expect(result).toEqual(3.14);
+    });
+
+    it("should round 10.00000001 to 10 with 2 decimals", () => {
+        const result = math.roundAndRemoveTrailingZeros({ number: 10.00000001, decimalPlaces: 2 });
+        expect(result).toEqual(10);
+    });
+
+    it("should round 0.505 to 0.51 with 2 decimals", () => {
+        const result = math.roundAndRemoveTrailingZeros({ number: 0.505, decimalPlaces: 2 });
+        expect(result).toEqual(0.51);
+    });
+
+    it("should round 0.500 to 0.5 with 2 decimals", () => {
+        const result = math.roundAndRemoveTrailingZeros({ number: 0.500, decimalPlaces: 2 });
+        expect(result).toEqual(0.5);
+    });
+
+    it("should round 2.9999 to 3 with 3 decimals", () => {
+        const result = math.roundAndRemoveTrailingZeros({ number: 2.9999, decimalPlaces: 3 });
+        expect(result).toEqual(3);
+    });
+
+    it("should round negative -1.320000001 to -1.32 with 3 decimals", () => {
+        const result = math.roundAndRemoveTrailingZeros({ number: -1.320000001, decimalPlaces: 3 });
+        expect(result).toEqual(-1.32);
+    });
+
+    it("should round negative -5.12789 to -5.128 with 3 decimals", () => {
+        const result = math.roundAndRemoveTrailingZeros({ number: -5.12789, decimalPlaces: 3 });
+        expect(result).toEqual(-5.128);
+    });
+
+    it("should handle 0 decimal places", () => {
+        const result = math.roundAndRemoveTrailingZeros({ number: 5.6789, decimalPlaces: 0 });
+        expect(result).toEqual(6);
+    });
+
+    it("should handle 5 decimal places with trailing zeros", () => {
+        const result = math.roundAndRemoveTrailingZeros({ number: 1.123450000, decimalPlaces: 5 });
+        expect(result).toEqual(1.12345);
+    });
+
+    it("should clamp value within range", () => {
+        const result = math.clamp({ number: 1.5, min: 0, max: 3 });
+        expect(result).toEqual(1.5);
+    });
+
+    it("should clamp value above max to max", () => {
+        const result = math.clamp({ number: 5, min: 0, max: 3 });
+        expect(result).toEqual(3);
+    });
+
+    it("should clamp value below min to min", () => {
+        const result = math.clamp({ number: -1, min: 0, max: 3 });
+        expect(result).toEqual(0);
+    });
+
+    it("should clamp negative values", () => {
+        const result = math.clamp({ number: -5, min: -10, max: -2 });
+        expect(result).toEqual(-5);
+    });
+
+    it("should lerp at t=0.5", () => {
+        const result = math.lerp({ start: 0, end: 10, t: 0.5 });
+        expect(result).toEqual(5);
+    });
+
+    it("should lerp at t=0", () => {
+        const result = math.lerp({ start: 0, end: 10, t: 0 });
+        expect(result).toEqual(0);
+    });
+
+    it("should lerp at t=1", () => {
+        const result = math.lerp({ start: 0, end: 10, t: 1 });
+        expect(result).toEqual(10);
+    });
+
+    it("should lerp at t=0.25", () => {
+        const result = math.lerp({ start: 0, end: 10, t: 0.25 });
+        expect(result).toEqual(2.5);
+    });
+
+    it("should lerp with negative values", () => {
+        const result = math.lerp({ start: -10, end: 10, t: 0.5 });
+        expect(result).toEqual(0);
+    });
+
+    it("should inverse lerp at midpoint", () => {
+        const result = math.inverseLerp({ start: 0, end: 10, value: 5 });
+        expect(result).toEqual(0.5);
+    });
+
+    it("should inverse lerp at start", () => {
+        const result = math.inverseLerp({ start: 0, end: 10, value: 0 });
+        expect(result).toEqual(0);
+    });
+
+    it("should inverse lerp at end", () => {
+        const result = math.inverseLerp({ start: 0, end: 10, value: 10 });
+        expect(result).toEqual(1);
+    });
+
+    it("should inverse lerp at 0.25", () => {
+        const result = math.inverseLerp({ start: 0, end: 10, value: 2.5 });
+        expect(result).toEqual(0.25);
+    });
+
+    it("should inverse lerp with same start and end return 0", () => {
+        const result = math.inverseLerp({ start: 5, end: 5, value: 5 });
+        expect(result).toEqual(0);
+    });
+
+    it("should smoothstep at 0", () => {
+        const result = math.smoothstep({ number: 0 });
+        expect(result).toEqual(0);
+    });
+
+    it("should smoothstep at 1", () => {
+        const result = math.smoothstep({ number: 1 });
+        expect(result).toEqual(1);
+    });
+
+    it("should smoothstep at 0.5", () => {
+        const result = math.smoothstep({ number: 0.5 });
+        expect(result).toEqual(0.5);
+    });
+
+    it("should smoothstep clamp below 0", () => {
+        const result = math.smoothstep({ number: -0.5 });
+        expect(result).toEqual(0);
+    });
+
+    it("should smoothstep clamp above 1", () => {
+        const result = math.smoothstep({ number: 1.5 });
+        expect(result).toEqual(1);
+    });
+
+    it("should return sign of positive number", () => {
+        const result = math.sign({ number: 5 });
+        expect(result).toEqual(1);
+    });
+
+    it("should return sign of negative number", () => {
+        const result = math.sign({ number: -3.14 });
+        expect(result).toEqual(-1);
+    });
+
+    it("should return sign of zero", () => {
+        const result = math.sign({ number: 0 });
+        expect(result).toEqual(0);
+    });
+
+    it("should return fractional part of positive number", () => {
+        const result = math.fract({ number: 3.14 });
+        expect(result).toBeCloseTo(0.14, 5);
+    });
+
+    it("should return fractional part of negative number", () => {
+        const result = math.fract({ number: -2.3 });
+        expect(result).toBeCloseTo(0.7, 5);
+    });
+
+    it("should return fractional part of integer", () => {
+        const result = math.fract({ number: 5 });
+        expect(result).toEqual(0);
+    });
+
+    it("should wrap value above max", () => {
+        const result = math.wrap({ number: 1.5, min: 0, max: 1 });
+        expect(result).toBeCloseTo(0.5, 5);
+    });
+
+    it("should wrap value below min", () => {
+        const result = math.wrap({ number: -0.3, min: 0, max: 1 });
+        expect(result).toBeCloseTo(0.7, 5);
+    });
+
+    it("should wrap angle 370 to 10 degrees", () => {
+        const result = math.wrap({ number: 370, min: 0, max: 360 });
+        expect(result).toBeCloseTo(10, 5);
+    });
+
+    it("should wrap value within range", () => {
+        const result = math.wrap({ number: 0.5, min: 0, max: 1 });
+        expect(result).toBeCloseTo(0.5, 5);
+    });
+
+    it("should handle wrap with zero range", () => {
+        const result = math.wrap({ number: 5, min: 1, max: 1 });
+        expect(result).toEqual(1);
+    });
+
+    it("should ping pong at 0.5", () => {
+        const result = math.pingPong({ t: 0.5, length: 1 });
+        expect(result).toEqual(0.5);
+    });
+
+    it("should ping pong at 1.5", () => {
+        const result = math.pingPong({ t: 1.5, length: 1 });
+        expect(result).toEqual(0.5);
+    });
+
+    it("should ping pong at 2.5", () => {
+        const result = math.pingPong({ t: 2.5, length: 1 });
+        expect(result).toEqual(0.5);
+    });
+
+    it("should ping pong at 1", () => {
+        const result = math.pingPong({ t: 1, length: 1 });
+        expect(result).toEqual(1);
+    });
+
+    it("should ping pong with negative t", () => {
+        const result = math.pingPong({ t: -0.5, length: 1 });
+        expect(result).toEqual(0.5);
+    });
+
+    it("should move towards target within delta", () => {
+        const result = math.moveTowards({ current: 0, target: 10, maxDelta: 3 });
+        expect(result).toEqual(3);
+    });
+
+    it("should move towards target and reach it", () => {
+        const result = math.moveTowards({ current: 8, target: 10, maxDelta: 3 });
+        expect(result).toEqual(10);
+    });
+
+    it("should move towards negative target", () => {
+        const result = math.moveTowards({ current: 0, target: -10, maxDelta: 3 });
+        expect(result).toEqual(-3);
+    });
+
+    it("should not overshoot target", () => {
+        const result = math.moveTowards({ current: 9.5, target: 10, maxDelta: 1 });
+        expect(result).toEqual(10);
+    });
+
+    it("should move backwards towards target", () => {
+        const result = math.moveTowards({ current: 10, target: 0, maxDelta: 2 });
+        expect(result).toEqual(8);
+    });
 });
 

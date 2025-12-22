@@ -9,7 +9,8 @@ export class MeshBitByBit {
     constructor(private readonly vector: Vector, private readonly polyline: Polyline) { }
 
     /**
-     * Computes the signed distance from a point to a plane.
+     * Calculates signed distance from a point to a plane (positive=above plane, negative=below).
+     * Example: point=[0,5,0], plane={normal:[0,1,0], d:0} → 5 (point is 5 units above XZ plane)
      * @param inputs a point and a plane
      * @returns signed distance
      * @group base
@@ -21,7 +22,9 @@ export class MeshBitByBit {
     }
 
     /**
-     * Calculates the triangle plane from triangle.
+     * Calculates plane equation from triangle vertices (normal vector and distance from origin).
+     * Returns undefined if triangle is degenerate (zero area, collinear points).
+     * Example: triangle=[[0,0,0], [1,0,0], [0,1,0]] → {normal:[0,0,1], d:0} (XY plane)
      * @param inputs triangle and tolerance
      * @returns triangle plane
      * @group traingle
@@ -46,7 +49,9 @@ export class MeshBitByBit {
     }
 
     /**
-     * Calculates the intersection of two triangles.
+     * Calculates intersection segment of two triangles (line segment where they cross).
+     * Returns undefined if triangles don't intersect, are parallel, or are coplanar.
+     * Example: triangle1=[[0,0,0], [2,0,0], [1,2,0]], triangle2=[[1,-1,1], [1,1,1], [1,1,-1]] → [[1,0,0], [1,1,0]]
      * @param inputs first triangle, second triangle, and tolerance
      * @returns intersection segment or undefined if no intersection
      * @group traingle
@@ -199,7 +204,9 @@ export class MeshBitByBit {
     }
 
     /**
-     * Computes the intersection segments of two meshes.
+     * Calculates all intersection segments between two triangle meshes (pairwise triangle tests).
+     * Returns array of line segments where mesh surfaces intersect.
+     * Example: cube mesh intersecting with sphere mesh → multiple segments forming intersection curve
      * @param inputs first mesh, second mesh, and tolerance
      * @returns array of intersection segments
      * @group mesh
@@ -228,7 +235,9 @@ export class MeshBitByBit {
     }
 
     /**
-     * Computes the intersection polylines of two meshes.
+     * Calculates intersection polylines between two meshes by sorting segments into connected paths.
+     * Segments are joined end-to-end to form continuous or closed curves.
+     * Example: cube-sphere intersection → closed polyline loops where surfaces meet
      * @param inputs first mesh, second mesh, and tolerance
      * @returns array of intersection polylines
      * @group mesh
@@ -241,7 +250,9 @@ export class MeshBitByBit {
     }
 
     /**
-     * Computes the intersection points of two meshes.
+     * Calculates intersection points between two meshes as point arrays (one array per polyline).
+     * Closed polylines have first point duplicated at end.
+     * Example: cube-sphere intersection → arrays of points defining intersection curves
      * @param inputs first mesh, second mesh, and tolerance
      * @returns array of intersection points
      * @group mesh

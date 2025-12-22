@@ -11,7 +11,8 @@ export class TextBitByBit {
     }
 
     /**
-     * Creates a text
+     * Creates and returns a text string (pass-through for text input).
+     * Example: text="Hello World" → "Hello World"
      * @param inputs a text
      * @returns text
      * @group create
@@ -23,7 +24,8 @@ export class TextBitByBit {
     }
 
     /**
-    * Split the text to multiple pieces by a separator
+    * Splits text into multiple pieces using a separator string.
+    * Example: text="apple,banana,cherry", separator="," → ["apple", "banana", "cherry"]
     * @param inputs a text
     * @returns text
     * @group transform
@@ -35,7 +37,8 @@ export class TextBitByBit {
     }
 
     /**
-    * Replace all occurrences of a text by another text
+    * Replaces all occurrences of a search string with a replacement string.
+    * Example: text="hello hello", search="hello", replaceWith="hi" → "hi hi"
     * @param inputs a text
     * @returns text
     * @group transform
@@ -47,7 +50,8 @@ export class TextBitByBit {
     }
 
     /**
-    * Join multiple items by a separator into text
+    * Joins multiple items into a single text string using a separator.
+    * Example: list=["apple", "banana", "cherry"], separator=", " → "apple, banana, cherry"
     * @param inputs a list of items
     * @returns text
     * @group transform
@@ -83,7 +87,8 @@ export class TextBitByBit {
     }
 
     /**
-     * Format a text with values
+     * Formats text with placeholder values using {0}, {1}, etc. syntax.
+     * Example: text="Point: ({0}, {1})", values=[10, 5] → "Point: (10, 5)"
      * @param inputs a text and values
      * @returns formatted text
      * @group transform
@@ -97,7 +102,9 @@ export class TextBitByBit {
     }
 
     /**
-     * Creates a vector segments for character and includes width and height information
+     * Converts a character to vector paths (polylines) with width and height data for rendering.
+     * Uses simplex stroke font to generate 2D line segments representing the character shape.
+     * Example: char="A", height=10 → {width:8, height:10, paths:[[points forming A shape]]}
      * @param inputs a text
      * @returns width, height and segments as json
      * @group vector
@@ -136,7 +143,9 @@ export class TextBitByBit {
     }
 
     /**
-     * Creates a vector text lines for a given text and includes width and height information
+     * Converts multi-line text to vector paths (polylines) with alignment and spacing controls.
+     * Supports line breaks, letter spacing, line spacing, horizontal alignment, and origin centering.
+     * Example: text="Hello\nWorld", height=10, align=center → [{line1 chars}, {line2 chars}]
      * @param inputs a text as string
      * @returns segments
      * @group vector

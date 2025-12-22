@@ -12,7 +12,8 @@ export class Line {
     constructor(private readonly vector: Vector, private readonly point: Point, private readonly geometryHelper: GeometryHelper) { }
 
     /**
-     * Gets the start point of the line
+     * Extracts start point from a line.
+     * Example: line={start:[0,0,0], end:[10,5,0]} → [0,0,0]
      * @param inputs a line
      * @returns start point
      * @group get
@@ -24,7 +25,8 @@ export class Line {
     }
 
     /**
-     * Gets the end point of the line
+     * Extracts end point from a line.
+     * Example: line={start:[0,0,0], end:[10,5,0]} → [10,5,0]
      * @param inputs a line
      * @returns end point
      * @group get
@@ -36,7 +38,8 @@ export class Line {
     }
 
     /**
-     * Gets the length of the line
+     * Calculates length (distance) of a line segment.
+     * Example: line={start:[0,0,0], end:[3,4,0]} → 5 (using Pythagorean theorem)
      * @param inputs a line
      * @returns line length
      * @group get
@@ -48,7 +51,8 @@ export class Line {
     }
 
     /**
-     * Reverse the endpoints of the line
+     * Reverses line direction by swapping start and end points.
+     * Example: line={start:[0,0,0], end:[10,5,0]} → {start:[10,5,0], end:[0,0,0]}
      * @param inputs a line
      * @returns reversed line
      * @group operations
@@ -60,7 +64,8 @@ export class Line {
     }
 
     /**
-     * Transform the line
+     * Applies transformation matrix to line (rotates, scales, or translates both endpoints).
+     * Example: line={start:[0,0,0], end:[10,0,0]} with translation [5,5,0] → {start:[5,5,0], end:[15,5,0]}
      * @param inputs a line
      * @returns transformed line
      * @group transforms
@@ -78,7 +83,8 @@ export class Line {
     }
 
     /**
-     * Transforms the lines with multiple transform for each line
+     * Applies multiple transformations to multiple lines (one transform per line).
+     * Example: 3 lines with 3 different translation matrices → each line moved independently
      * @param inputs lines
      * @returns transformed lines
      * @group transforms
@@ -98,7 +104,8 @@ export class Line {
     }
 
     /**
-     * Create the line
+     * Creates a line from two points (line object with start and end properties).
+     * Example: start=[0,0,0], end=[10,5,0] → {start:[0,0,0], end:[10,5,0]}
      * @param inputs start and end points of the line
      * @returns line
      * @group create
@@ -113,7 +120,8 @@ export class Line {
     }
 
     /**
-     * Create the segment
+     * Creates a segment from two points (array format: [start, end]).
+     * Example: start=[0,0,0], end=[10,5,0] → [[0,0,0], [10,5,0]]
      * @param inputs start and end points of the segment
      * @returns segment
      * @group create
@@ -128,7 +136,8 @@ export class Line {
     }
 
     /**
-     * Gets the point on the line segment at a given param
+     * Calculates point at parameter t along line segment (0=start, 1=end, linear interpolation).
+     * Example: line={start:[0,0,0], end:[10,0,0]}, param=0.5 → [5,0,0] (midpoint)
      * @param inputs line
      * @returns point on line
      * @group get
@@ -149,7 +158,8 @@ export class Line {
     }
 
     /**
-     * Create the lines segments between all of the points in a list
+     * Creates line segments connecting consecutive points in a list (forms a polyline path).
+     * Example: points=[[0,0,0], [5,0,0], [5,5,0]] → 2 lines: [0→5] and [5→5,5]
      * @param inputs points
      * @returns lines
      * @group create
@@ -167,7 +177,9 @@ export class Line {
     }
 
     /**
-     * Create the lines between start and end points
+     * Creates lines by pairing corresponding start and end points from two arrays.
+     * Filters out zero-length lines.
+     * Example: starts=[[0,0,0], [5,0,0]], ends=[[0,5,0], [5,5,0]] → 2 lines connecting paired points
      * @param inputs start points and end points
      * @returns lines
      * @group create
@@ -181,7 +193,8 @@ export class Line {
     }
 
     /**
-     * Convert the line to segment
+     * Converts line object to segment array format.
+     * Example: {start:[0,0,0], end:[10,5,0]} → [[0,0,0], [10,5,0]]
      * @param inputs line
      * @returns segment
      * @group convert
@@ -193,7 +206,8 @@ export class Line {
     }
 
     /**
-     * Converts the lines to segments
+     * Converts multiple line objects to segment array format (batch conversion).
+     * Example: 3 line objects → 3 segment arrays [[start1, end1], [start2, end2], ...]
      * @param inputs lines
      * @returns segments
      * @group convert
@@ -205,7 +219,8 @@ export class Line {
     }
 
     /**
-     * Converts the segment to line
+     * Converts segment array to line object format.
+     * Example: [[0,0,0], [10,5,0]] → {start:[0,0,0], end:[10,5,0]}
      * @param inputs segment
      * @returns line
      * @group convert
@@ -217,7 +232,8 @@ export class Line {
     }
 
     /**
-     * Converts the segments to lines
+     * Converts multiple segment arrays to line object format (batch conversion).
+     * Example: 3 segment arrays → 3 line objects with start/end properties
      * @param inputs segments
      * @returns lines
      * @group convert
@@ -229,7 +245,9 @@ export class Line {
     }
 
     /**
-     * If two lines intersect return the intersection point
+     * Calculates intersection point of two lines (or segments if checkSegmentsOnly=true).
+     * Returns undefined if lines are parallel, skew, or segments don't overlap.
+     * Example: line1={start:[0,0,0], end:[10,0,0]}, line2={start:[5,-5,0], end:[5,5,0]} → [5,0,0]
      * @param inputs line1 and line2
      * @returns intersection point or undefined if no intersection
      * @group intersection

@@ -13,7 +13,8 @@ export class Polyline {
     constructor(private readonly vector: Vector, private readonly point: Point, private readonly line: Line, private readonly geometryHelper: GeometryHelper) { }
 
     /**
-     * Gets the length of the polyline
+     * Calculates total length of polyline by summing distances between consecutive points.
+     * Example: points=[[0,0,0], [3,0,0], [3,4,0]] → 3 + 4 = 7
      * @param inputs a polyline
      * @returns length
      * @group get
@@ -31,7 +32,8 @@ export class Polyline {
     }
 
     /**
-     * Gets the number of points in the polyline
+     * Counts number of points in polyline.
+     * Example: polyline with points=[[0,0,0], [1,0,0], [1,1,0]] → 3
      * @param inputs a polyline
      * @returns nr of points
      * @group get
@@ -43,7 +45,8 @@ export class Polyline {
     }
 
     /**
-     * Gets the points of the polyline
+     * Extracts points array from polyline object.
+     * Example: polyline={points:[[0,0,0], [1,0,0]]} → [[0,0,0], [1,0,0]]
      * @param inputs a polyline
      * @returns points
      * @group get
@@ -55,7 +58,8 @@ export class Polyline {
     }
 
     /**
-     * Reverse the points of the polyline
+     * Reverses point order of polyline (flips direction).
+     * Example: points=[[0,0,0], [1,0,0], [2,0,0]] → [[2,0,0], [1,0,0], [0,0,0]]
      * @param inputs a polyline
      * @returns reversed polyline
      * @group convert
@@ -67,7 +71,8 @@ export class Polyline {
     }
 
     /**
-     * Transform the polyline
+     * Applies transformation matrix to all points in polyline (rotates, scales, or translates).
+     * Example: polyline with 4 points, translation [5,0,0] → all points moved +5 in X direction
      * @param inputs a polyline
      * @returns transformed polyline
      * @group transforms
@@ -82,7 +87,8 @@ export class Polyline {
     }
 
     /**
-     * Create the polyline
+     * Creates a polyline from points array with optional isClosed flag.
+     * Example: points=[[0,0,0], [1,0,0], [1,1,0]], isClosed=true → {points:..., isClosed:true}
      * @param inputs points and info if its closed
      * @returns polyline
      * @group create
@@ -97,7 +103,9 @@ export class Polyline {
     }
 
     /**
-     * Create the lines from the polyline
+     * Converts polyline to line segments (each segment as line object with start/end).
+     * Closed polylines include closing segment.
+     * Example: 3 points → 2 or 3 lines (depending on isClosed)
      * @param inputs polyline
      * @returns lines
      * @group convert
@@ -113,7 +121,9 @@ export class Polyline {
     }
 
     /**
-     * Create the segments from the polyline
+     * Converts polyline to segment arrays (each segment as [point1, point2]).
+     * Closed polylines include closing segment if endpoints differ.
+     * Example: 4 points, closed → 4 segments connecting all points in a loop
      * @param inputs polyline
      * @returns segments
      * @group convert
@@ -147,7 +157,9 @@ export class Polyline {
     }
 
     /**
-     * Finds the points of self intersection of the polyline
+     * Finds points where polyline crosses itself (self-intersection points).
+     * Skips adjacent segments and deduplicates close points.
+     * Example: figure-8 shaped polyline → returns center crossing point
      * @param inputs points of self intersection
      * @returns polyline
      * @group intersections
@@ -207,7 +219,9 @@ export class Polyline {
     }
 
     /**
-     * Finds the intersection points between two polylines
+     * Finds intersection points between two polylines (all segment-segment crossings).
+     * Tests all segment pairs and deduplicates close points.
+     * Example: crossing polylines forming an X → returns center intersection point
      * @param inputs two polylines and tolerance
      * @returns points
      * @group intersection
@@ -255,7 +269,9 @@ export class Polyline {
     }
 
     /**
-     * Create the polylines from segments that are potentially connected but scrambled randomly
+     * Sorts scrambled segments into connected polylines by matching endpoints.
+     * Uses spatial hashing for efficient connection finding.
+     * Example: 10 random segments that form 2 connected paths → 2 polylines
      * @param inputs segments
      * @returns polylines
      * @group sort

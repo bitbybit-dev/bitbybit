@@ -14,7 +14,9 @@ export class Transforms {
     constructor(private readonly vector: Vector, private readonly math: MathBitByBit) { }
 
     /**
-     * Creates a rotation transformations around the center and an axis
+     * Creates rotation transformations around a center point and custom axis.
+     * Combines translation to origin, axis rotation, then translation back.
+     * Example: center=[5,0,0], axis=[0,1,0], angle=90° → rotates around vertical axis through point [5,0,0]
      * @param inputs Rotation around center with an axis information
      * @returns array of transformations
      * @group rotation
@@ -33,7 +35,8 @@ export class Transforms {
     }
 
     /**
-     * Creates a rotation transformations around the center and an X axis
+     * Creates rotation transformations around a center point along the X axis.
+     * Example: center=[5,5,5], angle=90° → rotates 90° around X axis through point [5,5,5]
      * @param inputs Rotation around center with an X axis information
      * @returns array of transformations
      * @group rotation
@@ -49,7 +52,8 @@ export class Transforms {
     }
 
     /**
-     * Creates a rotation transformations around the center and an Y axis
+     * Creates rotation transformations around a center point along the Y axis.
+     * Example: center=[0,0,0], angle=45° → rotates 45° around Y axis through origin
      * @param inputs Rotation around center with an Y axis information
      * @returns array of transformations
      * @group rotation
@@ -65,7 +69,8 @@ export class Transforms {
     }
 
     /**
-     * Creates a rotation transformations around the center and an Z axis
+     * Creates rotation transformations around a center point along the Z axis.
+     * Example: center=[10,10,0], angle=180° → rotates 180° around Z axis through point [10,10,0]
      * @param inputs Rotation around center with an Z axis information
      * @returns array of transformations
      * @group rotation
@@ -81,7 +86,9 @@ export class Transforms {
     }
 
     /**
-     * Creates a rotation transformations with yaw pitch and roll
+     * Creates rotation transformations using yaw-pitch-roll (Euler angles) around a center point.
+     * Yaw → Y axis rotation, Pitch → X axis rotation, Roll → Z axis rotation.
+     * Example: center=[0,0,0], yaw=90°, pitch=0°, roll=0° → rotates 90° around Y axis
      * @param inputs Yaw pitch roll rotation information
      * @returns array of transformations
      * @group rotation
@@ -100,10 +107,11 @@ export class Transforms {
     }
 
     /**
-     * Scale transformation around center and xyz directions
+     * Creates non-uniform scale transformation around a center point (different scale per axis).
+     * Example: center=[5,5,5], scaleXyz=[2,1,0.5] → doubles X, keeps Y, halves Z around point [5,5,5]
      * @param inputs Scale center xyz trnansformation
      * @returns array of transformations
-     * @group rotation
+     * @group scale
      * @shortname center xyz
      * @drawable false
      */
@@ -116,7 +124,8 @@ export class Transforms {
     }
 
     /**
-     * Creates the scale transformation in x, y and z directions
+     * Creates non-uniform scale transformation from origin (different scale per axis).
+     * Example: scaleXyz=[2,3,1] → doubles X, triples Y, keeps Z unchanged
      * @param inputs Scale XYZ number array information
      * @returns transformation
      * @group scale
@@ -128,9 +137,9 @@ export class Transforms {
     }
 
     /**
-     * Creates a stretch transformation along a specific direction, relative to a center point.
-     * This scales points along the given direction vector while leaving points in the
-     * plane perpendicular to the direction (passing through the center) unchanged.
+     * Creates directional stretch transformation that scales along a specific direction from a center point.
+     * Points move only along the direction vector; perpendicular plane remains unchanged.
+     * Example: center=[0,0,0], direction=[1,0,0], scale=2 → stretches 2× along X axis only
      * @param inputs Defines the center, direction, and scale factor for the stretch.
      * @returns Array of transformations: [Translate To Origin, Stretch, Translate Back].
      * @group scale
@@ -146,7 +155,8 @@ export class Transforms {
     }
 
     /**
-     * Creates uniform scale transformation
+     * Creates uniform scale transformation from origin (same scale on all axes).
+     * Example: scale=2 → doubles size in all directions (X, Y, Z)
      * @param inputs Scale Dto
      * @returns transformation
      * @group scale
@@ -158,7 +168,8 @@ export class Transforms {
     }
 
     /**
-     * Creates uniform scale transformation from the center
+     * Creates uniform scale transformation around a center point (same scale on all axes).
+     * Example: center=[5,5,5], scale=0.5 → halves size in all directions around point [5,5,5]
      * @param inputs Scale Dto with center point information
      * @returns array of transformations
      * @group scale
@@ -174,7 +185,8 @@ export class Transforms {
     }
 
     /**
-     * Creates the translation transformation
+     * Creates translation transformation (moves objects in space).
+     * Example: translation=[10,5,0] → moves object 10 units in X, 5 in Y, 0 in Z
      * @param inputs Translation information
      * @returns transformation
      * @group translation
@@ -186,7 +198,8 @@ export class Transforms {
     }
 
     /**
-    * Creates the translation transformation
+    * Creates multiple translation transformations (batch move operations).
+    * Example: translations=[[1,0,0], [0,2,0]] → generates two transforms: move +X, move +Y
     * @param inputs Translation information
     * @returns transformation
      * @group translations
@@ -198,7 +211,8 @@ export class Transforms {
     }
 
     /**
-     * Creates the identity transformation
+     * Creates identity transformation matrix (no transformation - leaves objects unchanged).
+     * Returns 4×4 matrix: [1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1]
      * @returns transformation
      * @group identity
      * @shortname identity

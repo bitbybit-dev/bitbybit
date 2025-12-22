@@ -8,7 +8,8 @@ import * as Inputs from "../inputs";
  */
 export class Lists {
     /**
-     * Gets an item from the list by using a 0 based index
+     * Gets an item from the list at a specific position using zero-based indexing.
+     * Example: From [10, 20, 30, 40], getting index 2 returns 30
      * @param inputs a list and an index
      * @returns item
      * @group get
@@ -28,9 +29,54 @@ export class Lists {
         return result;
     }
 
+    /**
+     * Gets the first item from the list.
+     * Example: From [10, 20, 30, 40], returns 10
+     * @param inputs a list
+     * @returns first item
+     * @group get
+     * @shortname first item
+     * @drawable false
+     */
+    getFirstItem<T>(inputs: Inputs.Lists.ListCloneDto<T>): T {
+        if (inputs.list.length === 0) {
+            throw new Error("List is empty");
+        }
+        let result;
+        if (inputs.clone) {
+            result = structuredClone(inputs.list[0]);
+        } else {
+            result = inputs.list[0];
+        }
+        return result;
+    }
 
     /**
-     * Gets items randomly by using a threshold
+     * Gets the last item from the list.
+     * Example: From [10, 20, 30, 40], returns 40
+     * @param inputs a list
+     * @returns last item
+     * @group get
+     * @shortname last item
+     * @drawable false
+     */
+    getLastItem<T>(inputs: Inputs.Lists.ListCloneDto<T>): T {
+        if (inputs.list.length === 0) {
+            throw new Error("List is empty");
+        }
+        let result;
+        if (inputs.clone) {
+            result = structuredClone(inputs.list[inputs.list.length - 1]);
+        } else {
+            result = inputs.list[inputs.list.length - 1];
+        }
+        return result;
+    }
+
+
+    /**
+     * Randomly keeps items from the list based on a probability threshold (0 to 1).
+     * Example: From [1, 2, 3, 4, 5] with threshold 0.5, might return [1, 3, 5] (50% chance for each item)
      * @param inputs a list and a threshold for randomization of items to remove
      * @returns list with remaining items
      * @group get
@@ -52,7 +98,8 @@ export class Lists {
     }
 
     /**
-       * Gets a sub list between start and end indexes
+       * Extracts a portion of the list between start and end positions (end is exclusive).
+       * Example: From [10, 20, 30, 40, 50] with start=1 and end=4, returns [20, 30, 40]
        * @param inputs a list and start and end indexes
        * @returns sub list
        * @group get
@@ -70,7 +117,9 @@ export class Lists {
     }
 
     /**
-     * Gets nth item in the list
+     * Gets every nth item from the list, starting from an optional offset position.
+     * Example: From [0, 1, 2, 3, 4, 5, 6, 7, 8] with nth=3 and offset=0, returns [0, 3, 6]
+     * Example: From [0, 1, 2, 3, 4, 5, 6, 7, 8] with nth=2 and offset=1, returns [1, 3, 5, 7]
      * @param inputs a list and index
      * @returns list with filtered items
      * @group get
@@ -91,7 +140,8 @@ export class Lists {
         return result;
     }
     /**
-     * Gets elements by pattern
+     * Filters items from the list using a repeating true/false pattern.
+     * Example: From [0, 1, 2, 3, 4, 5] with pattern [true, true, false], returns [0, 1, 3, 4] (keeps items where pattern is true)
      * @param inputs a list and index
      * @returns list with filtered items
      * @group get
@@ -129,7 +179,8 @@ export class Lists {
     }
 
     /**
-     * Merge elements of lists on a given level and flatten output if needed
+     * Merges elements from multiple lists at a specific nesting level, grouping elements by position.
+     * Example: From [[0, 1, 2], [3, 4, 5]] at level 0, returns [[0, 3], [1, 4], [2, 5]]
      * @param inputs lists, level and flatten data
      * @returns list with merged lists and flattened lists
      * @group get
@@ -180,7 +231,8 @@ export class Lists {
     }
 
     /**
-     * Gets the longest list length from the list of lists
+     * Finds the length of the longest list among multiple lists.
+     * Example: From [[1, 2], [3, 4, 5, 6], [7]], returns 4 (length of [3, 4, 5, 6])
      * @param inputs a list of lists
      * @returns number of max length
      * @group get
@@ -203,7 +255,8 @@ export class Lists {
     }
 
     /**
-     * Reverse the list
+     * Reverses the order of items in the list.
+     * Example: From [1, 2, 3, 4, 5], returns [5, 4, 3, 2, 1]
      * @param inputs a list and an index
      * @returns item
      * @group edit
@@ -219,7 +272,29 @@ export class Lists {
     }
 
     /**
-     * Flip 2d lists - every nth element of each list will form a separate list
+     * Randomly rearranges all items in the list (using Fisher-Yates algorithm).
+     * Example: From [1, 2, 3, 4, 5], might return [3, 1, 5, 2, 4] (order varies each time)
+     * @param inputs a list
+     * @returns shuffled list
+     * @group edit
+     * @shortname shuffle
+     * @drawable false
+     */
+    shuffle<T>(inputs: Inputs.Lists.ListCloneDto<T>): T[] {
+        let res = inputs.list;
+        if (inputs.clone) {
+            res = structuredClone(inputs.list);
+        }
+        for (let i = res.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [res[i], res[j]] = [res[j], res[i]];
+        }
+        return res;
+    }
+
+    /**
+     * Transposes a 2D list by swapping rows and columns (all sublists must be equal length).
+     * Example: From [[0, 1, 2], [3, 4, 5]], returns [[0, 3], [1, 4], [2, 5]]
      * @param inputs a list of lists to flip
      * @returns item
      * @group edit
@@ -254,7 +329,9 @@ export class Lists {
     }
 
     /**
-     * Group in lists of n elements
+     * Splits the list into smaller lists of n elements each.
+     * Example: From [0, 1, 2, 3, 4, 5, 6, 7, 8] with n=3, returns [[0, 1, 2], [3, 4, 5], [6, 7, 8]]
+     * Example: From [0, 1, 2, 3, 4] with n=2 and keepRemainder=true, returns [[0, 1], [2, 3], [4]]
      * @param inputs a list
      * @returns items grouped in lists of n elements
      * @group edit
@@ -283,7 +360,34 @@ export class Lists {
     }
 
     /**
-     * Get the depth of the list
+     * Checks whether the list contains a specific item.
+     * Example: List [10, 20, 30, 40] with item 30 returns true, with item 50 returns false
+     * @param inputs a list and an item
+     * @returns true if item is in list
+     * @group get
+     * @shortname contains item
+     * @drawable false
+     */
+    includes<T>(inputs: Inputs.Lists.IncludesDto<T>): boolean {
+        return inputs.list.includes(inputs.item);
+    }
+
+    /**
+     * Finds the position (index) of the first occurrence of an item in the list.
+     * Example: In [10, 20, 30, 20, 40], finding 20 returns 1 (first occurrence), finding 50 returns -1 (not found)
+     * @param inputs a list and an item
+     * @returns index of the item or -1 if not found
+     * @group get
+     * @shortname find index
+     * @drawable false
+     */
+    findIndex<T>(inputs: Inputs.Lists.IncludesDto<T>): number {
+        return inputs.list.indexOf(inputs.item);
+    }
+
+    /**
+     * Determines the maximum nesting level (depth) of a list structure.
+     * Example: [1, 2, 3] has depth 1, [[1, 2], [3, 4]] has depth 2, [[[1]]] has depth 3
      * @param inputs a list
      * @returns number of depth
      * @group get
@@ -313,7 +417,8 @@ export class Lists {
     }
 
     /**
-     * Gets the length of the list
+     * Returns the number of items in the list.
+     * Example: [10, 20, 30, 40, 50] returns 5, [] returns 0
      * @param inputs a length list
      * @returns a number
      * @group get
@@ -325,7 +430,8 @@ export class Lists {
     }
 
     /**
-     * Add item to the list
+     * Inserts an item at a specific position in the list.
+     * Example: In [10, 20, 30, 40], adding 99 at index 2 gives [10, 20, 99, 30, 40]
      * @param inputs a list, item and an index
      * @returns list with added item
      * @group add
@@ -344,7 +450,8 @@ export class Lists {
     }
 
     /**
-     * Adds item to the list of provided indexes
+     * Inserts the same item at multiple specified positions in the list.
+     * Example: In [10, 20, 30], adding 99 at indexes [0, 2] gives [99, 10, 20, 99, 30]
      * @param inputs a list, item and an indexes
      * @returns list with added item
      * @group add
@@ -369,7 +476,8 @@ export class Lists {
     }
 
     /**
-     * Adds items to the list of provided indexes matching 1:1, first item will go to first index provided, etc.
+     * Inserts multiple items at corresponding positions (first item at first index, second item at second index, etc.).
+     * Example: In [10, 20, 30], adding items [88, 99] at indexes [1, 2] gives [10, 88, 20, 99, 30]
      * @param inputs a list, items and an indexes
      * @returns list with added items
      * @group add
@@ -402,7 +510,8 @@ export class Lists {
     }
 
     /**
-     * Remove item from the list
+     * Removes the item at a specific position in the list.
+     * Example: From [10, 20, 30, 40, 50], removing index 2 gives [10, 20, 40, 50]
      * @param inputs a list and index
      * @returns list with removed item
      * @group remove
@@ -421,7 +530,69 @@ export class Lists {
     }
 
     /**
-     * Remove items from the list of provided indexes
+     * Removes the first item from the list.
+     * Example: From [10, 20, 30, 40], returns [20, 30, 40]
+     * @param inputs a list
+     * @returns list with first item removed
+     * @group remove
+     * @shortname remove first item
+     * @drawable false
+     */
+    removeFirstItem<T>(inputs: Inputs.Lists.ListCloneDto<T>): T[] {
+        let res = inputs.list;
+        if (inputs.clone) {
+            res = structuredClone(inputs.list);
+        }
+        if (res.length > 0) {
+            res.shift();
+        }
+        return res;
+    }
+
+    /**
+     * Removes the last item from the list.
+     * Example: From [10, 20, 30, 40], returns [10, 20, 30]
+     * @param inputs a list
+     * @returns list with last item removed
+     * @group remove
+     * @shortname remove last item
+     * @drawable false
+     */
+    removeLastItem<T>(inputs: Inputs.Lists.ListCloneDto<T>): T[] {
+        let res = inputs.list;
+        if (inputs.clone) {
+            res = structuredClone(inputs.list);
+        }
+        if (res.length > 0) {
+            res.pop();
+        }
+        return res;
+    }
+
+    /**
+     * Removes an item counting from the end of the list (index 0 = last item, 1 = second-to-last, etc.).
+     * Example: From [10, 20, 30, 40, 50], removing index 1 from end gives [10, 20, 30, 50] (removes 40)
+     * @param inputs a list and index from end
+     * @returns list with removed item
+     * @group remove
+     * @shortname remove item from end
+     * @drawable false
+     */
+    removeItemAtIndexFromEnd<T>(inputs: Inputs.Lists.RemoveItemAtIndexDto<T>): T[] {
+        let res = inputs.list;
+        if (inputs.clone) {
+            res = structuredClone(inputs.list);
+        }
+        if (inputs.index >= 0 && inputs.index < res.length) {
+            const actualIndex = res.length - 1 - inputs.index;
+            res.splice(actualIndex, 1);
+        }
+        return res;
+    }
+
+    /**
+     * Removes items at multiple specified positions from the list.
+     * Example: From [10, 20, 30, 40, 50], removing indexes [1, 3] gives [10, 30, 50]
      * @param inputs a list and indexes
      * @returns list with removed items
      * @group remove
@@ -444,7 +615,8 @@ export class Lists {
     }
 
     /**
-     * Remove all items from the list
+     * Clears all items from the list, resulting in an empty list.
+     * Example: From [10, 20, 30, 40], returns []
      * @param inputs a list
      * @returns The length is set to 0 and same array memory object is returned
      * @group remove
@@ -457,7 +629,8 @@ export class Lists {
     }
 
     /**
-     * Remove item from the list
+     * Removes every nth item from the list, starting from an optional offset position.
+     * Example: From [0, 1, 2, 3, 4, 5, 6, 7, 8] with nth=3 and offset=0, returns [1, 2, 4, 5, 7, 8] (removes 0, 3, 6)
      * @param inputs a list and index
      * @returns list with removed item
      * @group remove
@@ -479,7 +652,8 @@ export class Lists {
     }
 
     /**
-     * Removes items randomly by using a threshold
+     * Randomly removes items from the list based on a probability threshold (0 to 1).
+     * Example: From [1, 2, 3, 4, 5] with threshold 0.5, might return [2, 4] (50% chance to remove each item)
      * @param inputs a list and a threshold for randomization of items to remove
      * @returns list with removed items
      * @group remove
@@ -501,11 +675,12 @@ export class Lists {
     }
 
     /**
-     * remove duplicate numbers from the list
+     * Removes duplicate numbers from the list, keeping only the first occurrence of each value.
+     * Example: From [1, 2, 3, 2, 4, 3, 5], returns [1, 2, 3, 4, 5]
      * @param inputs a list of numbers
      * @returns list with unique numbers
      * @group remove
-     * @shortname remove duplicates
+     * @shortname remove duplicate numbers
      * @drawable false
      */
     removeDuplicateNumbers(inputs: Inputs.Lists.RemoveDuplicatesDto<number>): number[] {
@@ -517,7 +692,8 @@ export class Lists {
     }
 
     /**
-     * remove duplicate numbers from the list with tolerance
+     * Removes duplicate numbers that are within a specified tolerance range of each other.
+     * Example: From [1.0, 1.001, 2.0, 2.002, 3.0] with tolerance 0.01, returns [1.0, 2.0, 3.0]
      * @param inputs a list of numbers and the tolerance
      * @returns list with unique numbers
      * @group remove
@@ -533,7 +709,25 @@ export class Lists {
     }
 
     /**
-     * Add item to the end of the list
+     * Removes duplicate items from the list using strict equality comparison (works with any type).
+     * Example: From ["a", "b", "c", "a", "d", "b"], returns ["a", "b", "c", "d"]
+     * @param inputs a list
+     * @returns list with unique items
+     * @group remove
+     * @shortname remove duplicates
+     * @drawable false
+     */
+    removeDuplicates<T>(inputs: Inputs.Lists.RemoveDuplicatesDto<T>): T[] {
+        let res = inputs.list;
+        if (inputs.clone) {
+            res = structuredClone(inputs.list);
+        }
+        return res.filter((value, index, self) => self.indexOf(value) === index);
+    }
+
+    /**
+     * Appends an item to the end of the list.
+     * Example: To [10, 20, 30], adding 40 gives [10, 20, 30, 40]
      * @param inputs a list and an item
      * @returns list with added item
      * @group add
@@ -550,7 +744,8 @@ export class Lists {
     }
 
     /**
-     * Add item to the beginning of the list
+     * Adds an item to the beginning of the list.
+     * Example: To [10, 20, 30], prepending 5 gives [5, 10, 20, 30]
      * @param inputs a list and an item
      * @returns list with added item
      * @group add
@@ -567,7 +762,8 @@ export class Lists {
     }
 
     /**
-     * Add item to the beginning or the end of the list
+     * Adds an item either at the beginning or end of the list based on the position parameter.
+     * Example: To [10, 20, 30], adding 5 at 'first' gives [5, 10, 20, 30], at 'last' gives [10, 20, 30, 5]
      * @param inputs a list, item and an option for first or last position
      * @returns list with added item
      * @group add
@@ -588,7 +784,31 @@ export class Lists {
     }
 
     /**
-     * Creates an empty list
+     * Combines multiple lists into a single list by joining them end-to-end.
+     * Example: From [[1, 2], [3, 4], [5, 6]], returns [1, 2, 3, 4, 5, 6]
+     * @param inputs lists to concatenate
+     * @returns concatenated list
+     * @group add
+     * @shortname concatenate lists
+     * @drawable false
+     */
+    concatenate<T>(inputs: Inputs.Lists.ConcatenateDto<T>): T[] {
+        let result = [];
+        if (inputs.clone) {
+            inputs.lists.forEach(list => {
+                result = result.concat(structuredClone(list));
+            });
+        } else {
+            inputs.lists.forEach(list => {
+                result = result.concat(list);
+            });
+        }
+        return result;
+    }
+
+    /**
+     * Creates a new empty list with no items.
+     * Example: Returns []
      * @returns an empty array list
      * @group create
      * @shortname empty list
@@ -599,7 +819,8 @@ export class Lists {
     }
 
     /**
-     * Repeat the item and add it in the new list
+     * Creates a new list by repeating an item a specified number of times.
+     * Example: Repeating 5 three times returns [5, 5, 5]
      * @param inputs an item to multiply
      * @returns list
      * @group create
@@ -615,7 +836,8 @@ export class Lists {
     }
 
     /**
-     * Repeat the list items by adding them in the new list till the certain length of the list is reached
+     * Repeats a pattern of items cyclically until reaching a target list length.
+     * Example: Pattern [1, 2, 3] with length 7 returns [1, 2, 3, 1, 2, 3, 1]
      * @param inputs a list to multiply and a length limit
      * @returns list
      * @group create
@@ -643,7 +865,8 @@ export class Lists {
     }
 
     /**
-     * Sort the list of numbers in ascending or descending order
+     * Sorts numbers in ascending (lowest to highest) or descending (highest to lowest) order.
+     * Example: [5, 2, 8, 1, 9] ascending returns [1, 2, 5, 8, 9], descending returns [9, 8, 5, 2, 1]
      * @param inputs a list of numbers to sort and an option for ascending or descending order
      * @returns list
      * @group sorting
@@ -663,7 +886,8 @@ export class Lists {
     }
 
     /**
-     * Sort the list of texts in ascending or descending order alphabetically
+     * Sorts text strings alphabetically in ascending (A to Z) or descending (Z to A) order.
+     * Example: ["dog", "apple", "cat", "banana"] ascending returns ["apple", "banana", "cat", "dog"]
      * @param inputs a list of texts to sort and an option for ascending or descending order
      * @returns list
      * @group sorting
@@ -683,7 +907,8 @@ export class Lists {
     }
 
     /**
-     * Sort by numeric JSON property value
+     * Sorts objects by comparing numeric values of a specified property.
+     * Example: [{age: 30}, {age: 20}, {age: 25}] sorted by 'age' ascending returns [{age: 20}, {age: 25}, {age: 30}]
      * @param inputs a list to sort, a property to sort by and an option for ascending or descending order
      * @returns list
      * @group sorting
@@ -700,6 +925,36 @@ export class Lists {
         } else {
             return res.sort((a, b) => b[inputs.property] - a[inputs.property]);
         }
+    }
+
+    /**
+     * Combines multiple lists by alternating elements from each list (first from list1, first from list2, second from list1, etc.).
+     * Example: From [[0, 1, 2], [3, 4, 5]], returns [0, 3, 1, 4, 2, 5]
+     * @param inputs Lists to interleave
+     * @returns Flattened interleaved list
+     * @group transform
+     * @shortname interleave lists
+     * @drawable false
+     */
+    interleave<T>(inputs: Inputs.Lists.InterleaveDto<T>): T[] {
+        const lists = inputs.clone ? structuredClone(inputs.lists) : inputs.lists;
+        
+        if (!lists || lists.length === 0) {
+            throw new Error("Lists array is empty or does not exist");
+        }
+        
+        const result: T[] = [];
+        const maxLength = Math.max(...lists.map(list => list.length));
+        
+        for (let i = 0; i < maxLength; i++) {
+            for (const list of lists) {
+                if (i < list.length) {
+                    result.push(list[i]);
+                }
+            }
+        }
+        
+        return result;
     }
 
 }
