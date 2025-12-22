@@ -107,6 +107,182 @@ export namespace Text {
          */
         values = ["World"];
     }
+
+    export class TextSearchDto {
+        constructor(text?: string, search?: string) {
+            if (text !== undefined) { this.text = text; }
+            if (search !== undefined) { this.search = search; }
+        }
+        /**
+         * Text to search in
+         * @default hello world
+         */
+        text = "hello world";
+        /**
+         * Text to search for
+         * @default world
+         */
+        search = "world";
+    }
+
+    export class TextSubstringDto {
+        constructor(text?: string, start?: number, end?: number) {
+            if (text !== undefined) { this.text = text; }
+            if (start !== undefined) { this.start = start; }
+            if (end !== undefined) { this.end = end; }
+        }
+        /**
+         * Text to extract from
+         * @default hello world
+         */
+        text = "hello world";
+        /**
+         * Start index
+         * @default 0
+         * @minimum 0
+         * @maximum Infinity
+         * @step 1
+         */
+        start = 0;
+        /**
+         * End index
+         * @default 5
+         * @minimum 0
+         * @maximum Infinity
+         * @step 1
+         */
+        end?: number = 5;
+    }
+
+    export class TextIndexDto {
+        constructor(text?: string, index?: number) {
+            if (text !== undefined) { this.text = text; }
+            if (index !== undefined) { this.index = index; }
+        }
+        /**
+         * Text to get character from
+         * @default hello
+         */
+        text = "hello";
+        /**
+         * Index of character
+         * @default 0
+         * @minimum 0
+         * @maximum Infinity
+         * @step 1
+         */
+        index = 0;
+    }
+
+    export class TextPadDto {
+        constructor(text?: string, length?: number, padString?: string) {
+            if (text !== undefined) { this.text = text; }
+            if (length !== undefined) { this.length = length; }
+            if (padString !== undefined) { this.padString = padString; }
+        }
+        /**
+         * Text to pad
+         * @default 5
+         */
+        text = "5";
+        /**
+         * Target length
+         * @default 3
+         * @minimum 0
+         * @maximum Infinity
+         * @step 1
+         */
+        length = 3;
+        /**
+         * String to pad with
+         * @default 0
+         */
+        padString = "0";
+    }
+
+    export class TextRepeatDto {
+        constructor(text?: string, count?: number) {
+            if (text !== undefined) { this.text = text; }
+            if (count !== undefined) { this.count = count; }
+        }
+        /**
+         * Text to repeat
+         * @default ha
+         */
+        text = "ha";
+        /**
+         * Number of repetitions
+         * @default 3
+         * @minimum 0
+         * @maximum Infinity
+         * @step 1
+         */
+        count = 3;
+    }
+
+    export class TextConcatDto {
+        constructor(texts?: string[]) {
+            if (texts !== undefined) { this.texts = texts; }
+        }
+        /**
+         * Texts to concatenate
+         * @default ["hello", " ", "world"]
+         */
+        texts = ["hello", " ", "world"];
+    }
+
+    export class TextRegexDto {
+        constructor(text?: string, pattern?: string, flags?: string) {
+            if (text !== undefined) { this.text = text; }
+            if (pattern !== undefined) { this.pattern = pattern; }
+            if (flags !== undefined) { this.flags = flags; }
+        }
+        /**
+         * Text to search in
+         * @default hello123world
+         */
+        text = "hello123world";
+        /**
+         * Regular expression pattern
+         * @default [0-9]+
+         */
+        pattern = "[0-9]+";
+        /**
+         * Regular expression flags (g, i, m, s, u, y)
+         * @default g
+         */
+        flags = "g";
+    }
+
+    export class TextRegexReplaceDto {
+        constructor(text?: string, pattern?: string, flags?: string, replaceWith?: string) {
+            if (text !== undefined) { this.text = text; }
+            if (pattern !== undefined) { this.pattern = pattern; }
+            if (flags !== undefined) { this.flags = flags; }
+            if (replaceWith !== undefined) { this.replaceWith = replaceWith; }
+        }
+        /**
+         * Text to search in
+         * @default hello123world456
+         */
+        text = "hello123world456";
+        /**
+         * Regular expression pattern
+         * @default [0-9]+
+         */
+        pattern = "[0-9]+";
+        /**
+         * Regular expression flags (g, i, m, s, u, y)
+         * @default g
+         */
+        flags = "g";
+        /**
+         * Text to replace matches with
+         * @default X
+         */
+        replaceWith = "X";
+    }
+
     export class VectorCharDto {
         constructor(char?: string, xOffset?: number, yOffset?: number, height?: number, extrudeOffset?: number) {
             if (char !== undefined) { this.char = char; }

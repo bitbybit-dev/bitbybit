@@ -129,6 +129,168 @@ describe("Text unit tests", () => {
         expect(result).toEqual("Hello World, Matas");
     });
 
+    describe("String Query Methods", () => {
+        it("should check if text includes search string", () => {
+            expect(text.includes({ text: "hello world", search: "world" })).toBe(true);
+            expect(text.includes({ text: "hello world", search: "foo" })).toBe(false);
+        });
+
+        it("should check if text starts with search string", () => {
+            expect(text.startsWith({ text: "hello world", search: "hello" })).toBe(true);
+            expect(text.startsWith({ text: "hello world", search: "world" })).toBe(false);
+        });
+
+        it("should check if text ends with search string", () => {
+            expect(text.endsWith({ text: "hello world", search: "world" })).toBe(true);
+            expect(text.endsWith({ text: "hello world", search: "hello" })).toBe(false);
+        });
+
+        it("should find index of first occurrence", () => {
+            expect(text.indexOf({ text: "hello world", search: "world" })).toBe(6);
+            expect(text.indexOf({ text: "hello world", search: "foo" })).toBe(-1);
+        });
+
+        it("should find index of last occurrence", () => {
+            expect(text.lastIndexOf({ text: "hello world hello", search: "hello" })).toBe(12);
+            expect(text.lastIndexOf({ text: "hello world", search: "foo" })).toBe(-1);
+        });
+
+        it("should get character at index", () => {
+            expect(text.charAt({ text: "hello", index: 1 })).toBe("e");
+            expect(text.charAt({ text: "hello", index: 0 })).toBe("h");
+            expect(text.charAt({ text: "hello", index: 10 })).toBe("");
+        });
+
+        it("should return text length", () => {
+            expect(text.length({ text: "hello" })).toBe(5);
+            expect(text.length({ text: "" })).toBe(0);
+            expect(text.length({ text: "hello world" })).toBe(11);
+        });
+
+        it("should check if text is empty", () => {
+            expect(text.isEmpty({ text: "" })).toBe(true);
+            expect(text.isEmpty({ text: "   " })).toBe(true);
+            expect(text.isEmpty({ text: "hello" })).toBe(false);
+            expect(text.isEmpty({ text: " hello " })).toBe(false);
+        });
+    });
+
+    describe("String Transformation Methods", () => {
+        it("should extract substring", () => {
+            expect(text.substring({ text: "hello world", start: 0, end: 5 })).toBe("hello");
+            expect(text.substring({ text: "hello world", start: 6, end: 11 })).toBe("world");
+            expect(text.substring({ text: "hello world", start: 6 })).toBe("world");
+        });
+
+        it("should slice text", () => {
+            expect(text.slice({ text: "hello world", start: 0, end: 5 })).toBe("hello");
+            expect(text.slice({ text: "hello world", start: -5 })).toBe("world");
+            expect(text.slice({ text: "hello world", start: 6 })).toBe("world");
+        });
+
+        it("should trim whitespace", () => {
+            expect(text.trim({ text: "  hello  " })).toBe("hello");
+            expect(text.trim({ text: "hello" })).toBe("hello");
+        });
+
+        it("should trim start whitespace", () => {
+            expect(text.trimStart({ text: "  hello  " })).toBe("hello  ");
+            expect(text.trimStart({ text: "hello" })).toBe("hello");
+        });
+
+        it("should trim end whitespace", () => {
+            expect(text.trimEnd({ text: "  hello  " })).toBe("  hello");
+            expect(text.trimEnd({ text: "hello" })).toBe("hello");
+        });
+
+        it("should pad start", () => {
+            expect(text.padStart({ text: "5", length: 3, padString: "0" })).toBe("005");
+            expect(text.padStart({ text: "hello", length: 10, padString: "*" })).toBe("*****hello");
+            expect(text.padStart({ text: "hello", length: 3, padString: "*" })).toBe("hello");
+        });
+
+        it("should pad end", () => {
+            expect(text.padEnd({ text: "5", length: 3, padString: "0" })).toBe("500");
+            expect(text.padEnd({ text: "hello", length: 10, padString: "*" })).toBe("hello*****");
+            expect(text.padEnd({ text: "hello", length: 3, padString: "*" })).toBe("hello");
+        });
+
+        it("should convert to uppercase", () => {
+            expect(text.toUpperCase({ text: "hello" })).toBe("HELLO");
+            expect(text.toUpperCase({ text: "Hello World" })).toBe("HELLO WORLD");
+        });
+
+        it("should convert to lowercase", () => {
+            expect(text.toLowerCase({ text: "HELLO" })).toBe("hello");
+            expect(text.toLowerCase({ text: "Hello World" })).toBe("hello world");
+        });
+
+        it("should capitalize first character", () => {
+            expect(text.toUpperCaseFirst({ text: "hello world" })).toBe("Hello world");
+            expect(text.toUpperCaseFirst({ text: "HELLO" })).toBe("HELLO");
+            expect(text.toUpperCaseFirst({ text: "" })).toBe("");
+        });
+
+        it("should lowercase first character", () => {
+            expect(text.toLowerCaseFirst({ text: "Hello World" })).toBe("hello World");
+            expect(text.toLowerCaseFirst({ text: "hello" })).toBe("hello");
+            expect(text.toLowerCaseFirst({ text: "" })).toBe("");
+        });
+
+        it("should repeat text", () => {
+            expect(text.repeat({ text: "ha", count: 3 })).toBe("hahaha");
+            expect(text.repeat({ text: "x", count: 0 })).toBe("");
+            expect(text.repeat({ text: "abc", count: 2 })).toBe("abcabc");
+        });
+
+        it("should reverse text", () => {
+            expect(text.reverse({ text: "hello" })).toBe("olleh");
+            expect(text.reverse({ text: "12345" })).toBe("54321");
+            expect(text.reverse({ text: "" })).toBe("");
+        });
+
+        it("should concatenate texts", () => {
+            expect(text.concat({ texts: ["hello", " ", "world"] })).toBe("hello world");
+            expect(text.concat({ texts: ["a", "b", "c"] })).toBe("abc");
+            expect(text.concat({ texts: [] })).toBe("");
+        });
+    });
+
+    describe("Regex Methods", () => {
+        it("should test regex pattern", () => {
+            expect(text.regexTest({ text: "hello123", pattern: "[0-9]+", flags: "" })).toBe(true);
+            expect(text.regexTest({ text: "hello", pattern: "[0-9]+", flags: "" })).toBe(false);
+            expect(text.regexTest({ text: "HELLO", pattern: "hello", flags: "i" })).toBe(true);
+        });
+
+        it("should match regex pattern", () => {
+            const result = text.regexMatch({ text: "hello123world456", pattern: "[0-9]+", flags: "g" });
+            expect(result).toEqual(["123", "456"]);
+
+            const singleResult = text.regexMatch({ text: "hello123", pattern: "[0-9]+", flags: "" });
+            expect(singleResult).toEqual(["123"]);
+
+            const noMatch = text.regexMatch({ text: "hello", pattern: "[0-9]+", flags: "" });
+            expect(noMatch).toBeNull();
+        });
+
+        it("should replace using regex", () => {
+            expect(text.regexReplace({ text: "hello123world456", pattern: "[0-9]+", flags: "g", replaceWith: "X" })).toBe("helloXworldX");
+            expect(text.regexReplace({ text: "Hello World", pattern: "hello", flags: "i", replaceWith: "Hi" })).toBe("Hi World");
+            expect(text.regexReplace({ text: "hello", pattern: "[0-9]+", flags: "g", replaceWith: "X" })).toBe("hello");
+        });
+
+        it("should search using regex", () => {
+            expect(text.regexSearch({ text: "hello123", pattern: "[0-9]+", flags: "" })).toBe(5);
+            expect(text.regexSearch({ text: "hello", pattern: "[0-9]+", flags: "" })).toBe(-1);
+        });
+
+        it("should split using regex", () => {
+            expect(text.regexSplit({ text: "a1b2c3", pattern: "[0-9]+", flags: "" })).toEqual(["a", "b", "c", ""]);
+            expect(text.regexSplit({ text: "hello, world; test", pattern: "[,;]\\s*", flags: "" })).toEqual(["hello", "world", "test"]);
+        });
+    });
+
 
     describe("vectorChar", () => {
 
