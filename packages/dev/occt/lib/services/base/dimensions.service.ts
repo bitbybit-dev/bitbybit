@@ -27,9 +27,10 @@ export class DimensionsService {
      * @param expression The expression to evaluate (can contain 'val' placeholder)
      * @param value The numeric value to substitute for 'val'
      * @param decimalPlaces Number of decimal places to format the result
+     * @param removeTrailingZeros Whether to remove trailing zeros from the result
      * @returns The evaluated expression as a formatted string
      */
-    private evaluateExpression(expression: string, value: number, decimalPlaces: number): string {
+    private evaluateExpression(expression: string, value: number, decimalPlaces: number, removeTrailingZeros = false): string {
         try {
             // Replace 'val' with the actual value in the expression
             const evaluatedExpression = expression.replace(/val/g, value.toString());
@@ -40,16 +41,22 @@ export class DimensionsService {
             if (safeExpression !== evaluatedExpression) {
                 // If expression contains non-math characters, treat it as a template
                 // For template strings, we still want to format numbers with decimal places
-                const formattedValue = value.toFixed(decimalPlaces);
+                const formattedValue = removeTrailingZeros 
+                    ? this.base.math.roundAndRemoveTrailingZeros({ number: value, decimalPlaces }).toString()
+                    : value.toFixed(decimalPlaces);
                 return expression.replace(/val/g, formattedValue);
             }
             
             // Evaluate mathematical expression and apply decimal places
             const result = Function("\"use strict\"; return (" + safeExpression + ")")();
-            return result.toFixed(decimalPlaces);
+            return removeTrailingZeros
+                ? this.base.math.roundAndRemoveTrailingZeros({ number: result, decimalPlaces }).toString()
+                : result.toFixed(decimalPlaces);
         } catch (error) {
             // If evaluation fails, return the original value formatted
-            return value.toFixed(decimalPlaces);
+            return removeTrailingZeros
+                ? this.base.math.roundAndRemoveTrailingZeros({ number: value, decimalPlaces }).toString()
+                : value.toFixed(decimalPlaces);
         }
     }
 
@@ -59,19 +66,25 @@ export class DimensionsService {
      * @param labelOverwrite Optional expression to evaluate instead of raw value
      * @param decimalPlaces Number of decimal places for formatting
      * @param labelSuffix Suffix to append to the text
+     * @param removeTrailingZeros Whether to remove trailing zeros from the result
      * @returns Formatted dimension label text
      */
     private formatDimensionLabel(
         value: number,
         labelOverwrite: string | undefined,
         decimalPlaces: number,
-        labelSuffix: string
+        labelSuffix: string,
+        removeTrailingZeros = false
     ): string {
         let result: string;
         if (labelOverwrite) {
-            result = this.evaluateExpression(labelOverwrite, value, decimalPlaces);
+            result = this.evaluateExpression(labelOverwrite, value, decimalPlaces, removeTrailingZeros);
         } else {
-            result = value.toFixed(decimalPlaces);
+            if (removeTrailingZeros) {
+                result = this.base.math.roundAndRemoveTrailingZeros({ number: value, decimalPlaces }).toString();
+            } else {
+                result = value.toFixed(decimalPlaces);
+            }
         }
         return result + " " + labelSuffix;
     }
@@ -199,7 +212,8 @@ export class DimensionsService {
             length,
             inputs.labelOverwrite,
             inputs.decimalPlaces,
-            inputs.labelSuffix
+            inputs.labelSuffix,
+            inputs.removeTrailingZeros
         );
 
         const txtOpt = new Inputs.OCCT.TextWiresDto();
@@ -389,7 +403,8 @@ export class DimensionsService {
             angle,
             inputs.labelOverwrite,
             inputs.decimalPlaces,
-            inputs.labelSuffix
+            inputs.labelSuffix,
+            inputs.removeTrailingZeros
         );
 
         const txtOpt = new Inputs.OCCT.TextWiresDto();
