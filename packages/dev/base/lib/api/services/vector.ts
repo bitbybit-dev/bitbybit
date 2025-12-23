@@ -13,7 +13,8 @@ export class Vector {
     constructor(private readonly math: MathBitByBit, private readonly geometryHelper: GeometryHelper) { }
 
     /**
-     * Removes all duplicate vectors from the input array
+     * Removes all duplicate vectors from the input array (keeps only unique vectors).
+     * Example: [[1,2,3], [4,5,6], [1,2,3], [7,8,9]] → [[1,2,3], [4,5,6], [7,8,9]]
      * @param inputs Contains vectors and a tolerance value
      * @returns Array of vectors without duplicates
      * @group remove
@@ -25,7 +26,8 @@ export class Vector {
     }
 
     /**
-     * Removes consecutive duplicate vectors from the input array
+     * Removes consecutive duplicate vectors from the input array (only removes duplicates that appear next to each other).
+     * Example: [[1,2], [1,2], [3,4], [1,2]] → [[1,2], [3,4], [1,2]] (only removed consecutive duplicate)
      * @param inputs Contains vectors and a tolerance value
      * @returns Array of vectors without duplicates
      * @group remove
@@ -37,7 +39,8 @@ export class Vector {
     }
 
     /**
-     * Checks if two vectors are the same within a given tolerance
+     * Checks if two vectors are the same within a given tolerance (accounts for floating point precision).
+     * Example: [1,2,3] vs [1.0001,2.0001,3.0001] with tolerance 0.001 → true
      * @param inputs Contains two vectors and a tolerance value
      * @returns Boolean indicating if vectors are the same
      * @group validate
@@ -49,7 +52,8 @@ export class Vector {
     }
 
     /**
-     * Measures the angle between two vectors in degrees
+     * Measures the angle between two vectors in degrees (always returns positive angle 0-180°).
+     * Example: [1,0,0] and [0,1,0] → 90° (perpendicular vectors)
      * @param inputs Contains two vectors represented as number arrays
      * @group angles
      * @shortname angle
@@ -63,7 +67,8 @@ export class Vector {
     }
 
     /**
-     * Measures the normalized 2d angle between two vectors in degrees
+     * Measures the normalized 2D angle between two vectors in degrees (considers direction, can be negative).
+     * Example: [1,0] to [0,1] → 90°, [0,1] to [1,0] → -90°
      * @param inputs Contains two vectors represented as number arrays
      * @returns Number in degrees
      * @group angles
@@ -78,7 +83,8 @@ export class Vector {
     }
 
     /**
-     * Measures a positive angle between two vectors given the reference vector in degrees
+     * Measures a positive angle between two vectors given the reference vector in degrees (always 0-360°).
+     * Example: converts negative signed angles to positive by adding 360° when needed
      * @param inputs Contains information of two vectors and a reference vector
      * @returns Number in degrees
      * @group angles
@@ -91,7 +97,8 @@ export class Vector {
     }
 
     /**
-     * Adds all vector xyz values together and create a new vector
+     * Adds all vector xyz values together element-wise and creates a new vector.
+     * Example: [[1,2,3], [4,5,6], [7,8,9]] → [12,15,18] (sums each column)
      * @param inputs Vectors to be added
      * @returns New vector that has xyz values as sums of all the vectors
      * @group sum
@@ -111,7 +118,8 @@ export class Vector {
     }
 
     /**
-     * Adds two vectors together
+     * Adds two vectors together element-wise.
+     * Example: [1,2,3] + [4,5,6] → [5,7,9]
      * @param inputs Two vectors to be added
      * @returns Number array representing vector
      * @group sum
@@ -127,7 +135,8 @@ export class Vector {
     }
 
     /**
-     * Checks if the boolean array contains only true values, if there's a single false it will return false.
+     * Checks if the boolean array contains only true values, returns false if there's a single false.
+     * Example: [true, true, true] → true, [true, false, true] → false
      * @param inputs Vectors to be checked
      * @returns Boolean indicating if vector contains only true values
      * @group sum
@@ -139,10 +148,11 @@ export class Vector {
     }
 
     /**
-     * Cross two vectors
+     * Computes the cross product of two 3D vectors (perpendicular vector to both inputs).
+     * Example: [1,0,0] × [0,1,0] → [0,0,1] (right-hand rule)
      * @param inputs Two vectors to be crossed
      * @group base
-     * @shortname all
+     * @shortname cross
      * @returns Crossed vector
      * @drawable false
      */
@@ -155,7 +165,8 @@ export class Vector {
     }
 
     /**
-     * Squared distance between two vectors
+     * Calculates squared distance between two vectors (faster than distance, avoids sqrt).
+     * Example: [0,0,0] to [3,4,0] → 25 (distance 5 squared)
      * @param inputs Two vectors
      * @returns Number representing squared distance between two vectors
      * @group distance
@@ -171,7 +182,8 @@ export class Vector {
     }
 
     /**
-     * Distance between two vectors
+     * Calculates the Euclidean distance between two vectors.
+     * Example: [0,0,0] to [3,4,0] → 5, [1,1] to [4,5] → 5
      * @param inputs Two vectors
      * @returns Number representing distance between two vectors
      * @group distance
@@ -183,7 +195,8 @@ export class Vector {
     }
 
     /**
-     * Divide the vector by a scalar value
+     * Divides each element of the vector by a scalar value.
+     * Example: [10,20,30] ÷ 2 → [5,10,15]
      * @param inputs Contains vector and a scalar
      * @returns Vector that is a result of division by a scalar
      * @group base
@@ -199,7 +212,8 @@ export class Vector {
     }
 
     /**
-     * Computes the domain between minimum and maximum values of the vector
+     * Computes the domain (range) between minimum and maximum values of the vector.
+     * Example: [1,3,5,9] → 8 (difference between last and first: 9-1)
      * @param inputs Vector information
      * @returns Number representing distance between two vectors
      * @group base
@@ -211,7 +225,8 @@ export class Vector {
     }
 
     /**
-     * Dot product between two vectors
+     * Calculates the dot product between two vectors (measures similarity/projection).
+     * Example: [1,2,3] • [4,5,6] → 32 (1×4 + 2×5 + 3×6), perpendicular vectors → 0
      * @param inputs Two vectors
      * @returns Number representing dot product of the vector
      * @group base
@@ -227,7 +242,8 @@ export class Vector {
     }
 
     /**
-     * Checks if vector is finite for each number and returns a boolean array
+     * Checks if each element in the vector is finite and returns a boolean array.
+     * Example: [1, 2, Infinity, 3] → [true, true, false, true]
      * @param inputs Vector with possibly infinite values
      * @returns Vector array that contains boolean values for each number in the input
      * vector that identifies if value is finite (true) or infinite (false)
@@ -240,7 +256,8 @@ export class Vector {
     }
 
     /**
-     * Checks if the vector is zero length
+     * Checks if the vector has zero length (all elements are zero).
+     * Example: [0,0,0] → true, [0,0,0.001] → false
      * @param inputs Vector to be checked
      * @returns Boolean that identifies if vector is zero length
      * @group validate
@@ -252,7 +269,8 @@ export class Vector {
     }
 
     /**
-     * Finds in between vector between two vectors by providing a fracture
+     * Finds an interpolated vector between two vectors using a fraction (linear interpolation).
+     * Example: [0,0,0] to [10,10,10] at 0.5 → [5,5,5], fraction=0 → first, fraction=1 → second
      * @param inputs Information for finding vector between two vectors using a fraction
      * @returns Vector that is in between two vectors
      * @group distance
@@ -269,7 +287,8 @@ export class Vector {
     }
 
     /**
-     * Finds the maximum value in the vector
+     * Finds the maximum (largest) value in the vector.
+     * Example: [3, 7, 2, 9, 1] → 9
      * @param inputs Vector to be checked
      * @returns Largest number in the vector
      * @group extract
@@ -281,7 +300,8 @@ export class Vector {
     }
 
     /**
-     * Finds the minimum value in the vector
+     * Finds the minimum (smallest) value in the vector.
+     * Example: [3, 7, 2, 9, 1] → 1
      * @param inputs Vector to be checked
      * @returns Lowest number in the vector
      * @group extract
@@ -293,7 +313,8 @@ export class Vector {
     }
 
     /**
-     * Multiple vector with the scalar
+     * Multiplies each element of the vector by a scalar value.
+     * Example: [2,3,4] × 5 → [10,15,20]
      * @param inputs Vector with a scalar
      * @returns Vector that results from multiplication
      * @group base
@@ -309,7 +330,8 @@ export class Vector {
     }
 
     /**
-     * Negates the vector
+     * Negates the vector (flips the sign of each element).
+     * Example: [5,-3,2] → [-5,3,-2]
      * @param inputs Vector to negate
      * @returns Negative vector
      * @group base
@@ -325,7 +347,8 @@ export class Vector {
     }
 
     /**
-     * Compute squared norm
+     * Computes the squared norm (squared magnitude/length) of the vector.
+     * Example: [3,4,0] → 25 (length 5 squared)
      * @param inputs Vector for squared norm
      * @returns Number that is squared norm
      * @group base
@@ -337,7 +360,8 @@ export class Vector {
     }
 
     /**
-     * Norm of the vector
+     * Calculates the norm (magnitude/length) of the vector.
+     * Example: [3,4,0] → 5, [1,0,0] → 1
      * @param inputs Vector to compute the norm
      * @returns Number that is norm of the vector
      * @group base
@@ -350,7 +374,8 @@ export class Vector {
     }
 
     /**
-     * Normalize the vector into a unit vector, that has a length of 1
+     * Normalizes the vector into a unit vector that has a length of 1 (maintains direction, scales magnitude to 1).
+     * Example: [3,4,0] → [0.6,0.8,0], [10,0,0] → [1,0,0]
      * @param inputs Vector to normalize
      * @returns Unit vector that has length of 1
      * @group base
@@ -366,7 +391,8 @@ export class Vector {
     }
 
     /**
-     * Finds a point coordinates on the given distance ray that spans between the point along the direction vector
+     * Finds a point on a ray at a given distance from the origin along the direction vector.
+     * Example: Point [0,0,0] + direction [1,0,0] at distance 5 → [5,0,0]
      * @param inputs Provide a point, vector and a distance for finding a point
      * @returns Vector representing point on the ray
      * @group base
@@ -378,7 +404,8 @@ export class Vector {
     }
 
     /**
-     * Create a xyz vector
+     * Creates a 3D vector from x, y, z coordinates.
+     * Example: x=1, y=2, z=3 → [1,2,3]
      * @param inputs Vector coordinates
      * @returns Create a vector of xyz values
      * @group create
@@ -390,7 +417,8 @@ export class Vector {
     }
 
     /**
-     * Create 2d xy vector
+     * Creates a 2D vector from x, y coordinates.
+     * Example: x=3, y=4 → [3,4]
      * @param inputs Vector coordinates
      * @returns Create a vector of xy values
      * @group create
@@ -402,7 +430,8 @@ export class Vector {
     }
 
     /**
-     * Creates a vector of integers between 0 and maximum ceiling integer
+     * Creates a vector of integers from 0 to max (exclusive).
+     * Example: max=5 → [0,1,2,3,4], max=3 → [0,1,2]
      * @param inputs Max value for the range
      * @returns Vector containing items from 0 to max
      * @group create
@@ -418,7 +447,8 @@ export class Vector {
     }
 
     /**
-     * Computes signed angle between two vectors and a reference. This will always return a smaller angle between two possible angles.
+     * Computes signed angle between two vectors using a reference vector (determines rotation direction).
+     * Example: Returns positive or negative angle depending on rotation direction relative to reference
      * @param inputs Contains information of two vectors and a reference vector
      * @returns Signed angle in degrees
      * @group angles
@@ -440,7 +470,8 @@ export class Vector {
     }
 
     /**
-     * Creates a vector that contains numbers spanning between minimum and maximum values at a given step
+     * Creates a vector containing numbers from min to max at a given step increment.
+     * Example: min=0, max=10, step=2 → [0,2,4,6,8,10]
      * @param inputs Span information containing min, max and step values
      * @returns Vector containing number between min, max and increasing at a given step
      * @group create
@@ -456,7 +487,8 @@ export class Vector {
     }
 
     /**
-     * Creates a vector that contains numbers spanning between minimum and maximum values at a given ease function
+     * Creates a vector with numbers from min to max using an easing function for non-linear distribution.
+     * Example: min=0, max=100, nrItems=5, ease='easeInQuad' → creates accelerating intervals
      * @param inputs Span information containing min, max and ease function
      * @returns Vector containing numbers between min, max and increasing in non-linear steps defined by nr of items in the vector and type
      * @group create
@@ -476,7 +508,8 @@ export class Vector {
     }
 
     /**
-     * Creates a vector that contains numbers spanning between minimum and maximum values by giving nr of items
+     * Creates a vector with evenly spaced numbers from min to max with a specified number of items.
+     * Example: min=0, max=10, nrItems=5 → [0, 2.5, 5, 7.5, 10]
      * @param inputs Span information containing min, max and step values
      * @returns Vector containing number between min, max by giving nr of items
      * @group create
@@ -494,7 +527,8 @@ export class Vector {
     }
 
     /**
-     * Subtract two vectors
+     * Subtracts the second vector from the first element-wise.
+     * Example: [10,20,30] - [1,2,3] → [9,18,27]
      * @param inputs Two vectors
      * @returns Vector that result by subtraction two vectors
      * @group base
@@ -510,7 +544,8 @@ export class Vector {
     }
 
     /**
-     * Sums the values of the vector
+     * Sums all values in the vector and returns a single number.
+     * Example: [1,2,3,4] → 10, [5,10,15] → 30
      * @param inputs Vector to sum
      * @returns Number that results by adding up all values in the vector
      * @group base
@@ -522,7 +557,8 @@ export class Vector {
     }
 
     /**
-     * Computes the squared length of the vector
+     * Computes the squared length (squared magnitude) of a 3D vector.
+     * Example: [3,4,0] → 25 (length 5 squared)
      * @param inputs Vector to compute the length
      * @returns Number that is squared length of the vector
      * @group base
@@ -535,7 +571,8 @@ export class Vector {
     }
 
     /**
-     * Computes the length of the vector
+     * Computes the length (magnitude) of a 3D vector.
+     * Example: [3,4,0] → 5, [1,0,0] → 1
      * @param inputs Vector to compute the length
      * @returns Number that is length of the vector
      * @group base
@@ -544,5 +581,18 @@ export class Vector {
      */
     length(inputs: Inputs.Vector.Vector3Dto): number {
         return Math.sqrt(this.lengthSq(inputs));
+    }
+
+    /**
+     * Converts an array of stringified numbers to actual numbers.
+     * Example: ['1', '2.5', '3'] → [1, 2.5, 3], ['10', '-5', '0.1'] → [10, -5, 0.1]
+     * @param inputs Array of stringified numbers
+     * @returns Array of numbers
+     * @group create
+     * @shortname parse numbers
+     * @drawable false
+     */
+    parseNumbers(inputs: Inputs.Vector.VectorStringDto): number[] {
+        return inputs.vector.map(v => parseFloat(v));
     }
 }

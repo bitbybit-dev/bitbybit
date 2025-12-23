@@ -6,7 +6,8 @@ import * as Inputs from "../inputs";
 export class Dates {
 
     /**
-     * Returns a date as a string value.
+     * Converts date to human-readable date string (excludes time).
+     * Example: Date(2024,0,15,14,30) → 'Mon Jan 15 2024'
      * @param inputs a date
      * @returns date as string
      * @group convert
@@ -18,7 +19,8 @@ export class Dates {
     }
 
     /**
-     * Returns a date as a string value in ISO format.
+     * Converts date to ISO 8601 format string (standard format for APIs and data interchange).
+     * Example: Date(2024,0,15,14,30,45) → '2024-01-15T14:30:45.000Z'
      * @param inputs a date
      * @returns date as string
      * @group convert
@@ -30,7 +32,8 @@ export class Dates {
     }
 
     /**
-     * Returns a date as a string value in JSON format.
+     * Converts date to JSON-compatible string (same as ISO format, used in JSON.stringify).
+     * Example: Date(2024,0,15,14,30) → '2024-01-15T14:30:00.000Z'
      * @param inputs a date
      * @returns date as string
      * @group convert
@@ -42,7 +45,8 @@ export class Dates {
     }
 
     /**
-     * Returns a string representation of a date. The format of the string depends on the locale.
+     * Converts date to full locale-specific string (includes date, time, and timezone).
+     * Example: Date(2024,0,15,14,30) → 'Mon Jan 15 2024 14:30:00 GMT+0000'
      * @param inputs a date
      * @returns date as string
      * @group convert
@@ -54,7 +58,8 @@ export class Dates {
     }
 
     /**
-     * Returns a time as a string value.
+     * Converts date to time string (excludes date, includes timezone).
+     * Example: Date(2024,0,15,14,30,45) → '14:30:45 GMT+0000'
      * @param inputs a date
      * @returns time as string
      * @group convert
@@ -66,7 +71,8 @@ export class Dates {
     }
 
     /**
-     * Returns a date converted to a string using Universal Coordinated Time (UTC).
+     * Converts date to UTC string format (Universal Coordinated Time, no timezone offset).
+     * Example: Date(2024,0,15,14,30) → 'Mon, 15 Jan 2024 14:30:00 GMT'
      * @param inputs a date
      * @returns date as utc string
      * @group convert
@@ -78,7 +84,8 @@ export class Dates {
     }
 
     /**
-     * Returns the current date and time.
+     * Returns the current date and time at the moment of execution.
+     * Example: calling now() → Date object representing current moment (e.g., '2024-01-15T14:30:45')
      * @returns date
      * @group create
      * @shortname now
@@ -89,7 +96,9 @@ export class Dates {
     }
 
     /**
-     * Creates a new date object using the provided date params.
+     * Creates a new date from individual components using local time.
+     * Month is 0-indexed: 0=January, 11=December.
+     * Example: year=2024, month=0, day=15, hours=14, minutes=30 → Date(Jan 15, 2024 14:30)
      * @param inputs a date
      * @returns date
      * @group create
@@ -101,7 +110,9 @@ export class Dates {
     }
 
     /**
-     * Returns the number of milliseconds between midnight, January 1, 1970 Universal Coordinated Time (UTC) (or GMT) and the specified date.
+     * Creates a new date from individual components using UTC (ignores timezone).
+     * Returns milliseconds since Unix epoch (Jan 1, 1970 00:00:00 UTC).
+     * Example: year=2024, month=0, day=15 → Date representing Jan 15, 2024 00:00 UTC
      * @param inputs a date
      * @returns date
      * @group create
@@ -113,7 +124,8 @@ export class Dates {
     }
 
     /**
-     * Creates a new date object using the provided unix time stamp.
+     * Creates a date from Unix timestamp (milliseconds since Jan 1, 1970 UTC).
+     * Example: unixTimeStamp=1705329000000 → Date(Jan 15, 2024 14:30:00)
      * @param inputs a unix time stamp
      * @returns date
      * @group create
@@ -125,7 +137,8 @@ export class Dates {
     }
 
     /**
-     * Parses a string containing a date, and returns the number of milliseconds between that date and midnight, January 1, 1970.
+     * Parses a date string and returns Unix timestamp (milliseconds since Jan 1, 1970 UTC).
+     * Example: dateString='2024-01-15' → 1705276800000
      * @param inputs a date string
      * @returns the number of milliseconds between that date and midnight, January 1, 1970.
      * @group parse
@@ -137,7 +150,8 @@ export class Dates {
     }
 
     /**
-     * Gets the day-of-the-month, using local time.
+     * Extracts day of the month from date (1-31) using local time.
+     * Example: Date(2024,0,15) → 15
      * @returns date
      * @group get
      * @shortname get date of month
@@ -148,7 +162,8 @@ export class Dates {
     }
 
     /**
-     * Gets the day of the week, using local time.
+     * Extracts day of the week from date (0=Sunday, 6=Saturday) using local time.
+     * Example: Date(2024,0,15) → 1 (Monday)
      * @returns day
      * @group get
      * @shortname get weekday
@@ -159,7 +174,8 @@ export class Dates {
     }
 
     /**
-     * Gets the year, using local time.
+     * Extracts full year from date using local time.
+     * Example: Date(2024,0,15) → 2024
      * @returns year
      * @group get
      * @shortname get year
@@ -170,7 +186,8 @@ export class Dates {
     }
 
     /**
-     * Gets the month, using local time.
+     * Extracts month from date (0=January, 11=December) using local time.
+     * Example: Date(2024,0,15) → 0 (January)
      * @returns month
      * @group get
      * @shortname get month
@@ -181,7 +198,8 @@ export class Dates {
     }
 
     /**
-     * Gets the hours in a date, using local time.
+     * Extracts hours from date (0-23) using local time.
+     * Example: Date(2024,0,15,14,30) → 14
      * @returns hours
      * @group get
      * @shortname get hours
@@ -192,7 +210,8 @@ export class Dates {
     }
 
     /**
-     * Gets the minutes of a Date object, using local time.
+     * Extracts minutes from date (0-59) using local time.
+     * Example: Date(2024,0,15,14,30) → 30
      * @returns minutes
      * @group get
      * @shortname get minutes
@@ -203,7 +222,8 @@ export class Dates {
     }
 
     /**
-     * Gets the seconds of a Date object, using local time.
+     * Extracts seconds from date (0-59) using local time.
+     * Example: Date(2024,0,15,14,30,45) → 45
      * @returns seconds
      * @group get
      * @shortname get seconds
@@ -214,7 +234,8 @@ export class Dates {
     }
 
     /**
-     * Gets the milliseconds of a Date, using local time.
+     * Extracts milliseconds from date (0-999) using local time.
+     * Example: Date(2024,0,15,14,30,45,123) → 123
      * @returns milliseconds
      * @group get
      * @shortname get milliseconds
@@ -225,7 +246,8 @@ export class Dates {
     }
 
     /**
-     * Returns the stored time value in milliseconds since midnight, January 1, 1970 UTC.
+     * Converts date to Unix timestamp (milliseconds since Jan 1, 1970 UTC).
+     * Example: Date(2024,0,15,14,30) → 1705329000000
      * @returns time
      * @group get
      * @shortname get time
@@ -236,7 +258,8 @@ export class Dates {
     }
 
     /**
-     * Gets the year using Universal Coordinated Time (UTC).
+     * Extracts full year from date using UTC (ignores timezone).
+     * Example: Date(2024,0,15) → 2024
      * @returns year
      * @group get
      * @shortname get utc year
@@ -247,7 +270,8 @@ export class Dates {
     }
 
     /**
-     * Gets the month of a Date object using Universal Coordinated Time (UTC).
+     * Extracts month from date (0=January, 11=December) using UTC.
+     * Example: Date.UTC(2024,0,15) → 0 (January)
      * @returns month
      * @group get
      * @shortname get utc month
@@ -258,7 +282,8 @@ export class Dates {
     }
 
     /**
-     * Gets the day-of-the-month, using Universal Coordinated Time (UTC).
+     * Extracts day of the month from date (1-31) using UTC.
+     * Example: Date.UTC(2024,0,15) → 15
      * @returns day
      * @group get
      * @shortname get utc day
@@ -269,7 +294,8 @@ export class Dates {
     }
 
     /**
-     * Gets the hours value in a Date object using Universal Coordinated Time (UTC).
+     * Extracts hours from date (0-23) using UTC.
+     * Example: Date.UTC(2024,0,15,14) → 14
      * @returns hours
      * @group get
      * @shortname get utc hours
@@ -280,7 +306,8 @@ export class Dates {
     }
 
     /**
-     * Gets the minutes of a Date object using Universal Coordinated Time (UTC).
+     * Extracts minutes from date (0-59) using UTC.
+     * Example: Date.UTC(2024,0,15,14,30) → 30
      * @returns minutes
      * @group get
      * @shortname get utc minutes
@@ -291,7 +318,8 @@ export class Dates {
     }
 
     /**
-     * Gets the seconds of a Date object using Universal Coordinated Time (UTC).
+     * Extracts seconds from date (0-59) using UTC.
+     * Example: Date.UTC(2024,0,15,14,30,45) → 45
      * @returns seconds
      * @group get
      * @shortname get utc seconds
@@ -302,7 +330,8 @@ export class Dates {
     }
 
     /**
-     * Gets the milliseconds of a Date object using Universal Coordinated Time (UTC).
+     * Extracts milliseconds from date (0-999) using UTC.
+     * Example: Date.UTC(2024,0,15,14,30,45,123) → 123
      * @returns milliseconds
      * @group get
      * @shortname get utc milliseconds
@@ -313,7 +342,8 @@ export class Dates {
     }
 
     /**
-     * Sets the year of the Date object using local time.
+     * Creates new date with modified year (returns new date, original unchanged).
+     * Example: Date(2024,0,15) with year=2025 → Date(2025,0,15)
      * @param inputs a date and the year
      * @returns date
      * @group set
@@ -327,7 +357,8 @@ export class Dates {
     }
 
     /**
-     * Sets the month value in the Date object using local time.
+     * Creates new date with modified month (0=January, 11=December, returns new date).
+     * Example: Date(2024,0,15) with month=5 → Date(2024,5,15) (June 15)
      * @param inputs a date and the month
      * @returns date
      * @group set
@@ -341,7 +372,8 @@ export class Dates {
     }
 
     /**
-     * Sets the numeric day-of-the-month value of the Date object using local time.
+     * Creates new date with modified day of month (1-31, returns new date).
+     * Example: Date(2024,0,15) with day=20 → Date(2024,0,20)
      * @param inputs a date and the day
      * @returns date
      * @group set

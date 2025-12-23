@@ -1,0 +1,10 @@
+{
+    "label": "Festive Decor",
+    "position": 1,
+    "link": {
+        "type": "generated-index",
+        "title": "Festive Decor",
+        "description": "Learn how to model festive 3D printable decorations using OCCT.",
+        "slug": "/code/common/occt/modeling/festive-decor"
+    }
+}

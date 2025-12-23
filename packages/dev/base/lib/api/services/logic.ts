@@ -6,7 +6,8 @@ import * as Inputs from "../inputs";
 export class Logic {
 
     /**
-     * Creates a boolean value - true or false
+     * Creates and returns a boolean value (pass-through for boolean input).
+     * Example: true → true, false → false
      * @param inputs a true or false boolean
      * @returns boolean
      * @group create
@@ -18,7 +19,8 @@ export class Logic {
     }
 
     /**
-     * Creates a random boolean list of predefined length
+     * Generates a random boolean list where each value has a threshold chance of being true.
+     * Example: length=5, threshold=0.7 → might produce [true, true, false, true, true]
      * @param inputs a length and a threshold for randomization of true values
      * @returns booleans
      * @group create
@@ -34,10 +36,10 @@ export class Logic {
     }
 
     /**
-     * Creates a random boolean list of true and false values based on a list of numbers. 
-     * All values between true threshold will be true, all values above false threshold will be false, 
-     * and the rest will be distributed between true and false based on the number of levels in a gradient pattern.
-     * That means that the closer the number gets to the false threshold the bigger the chance will be to get random false value.
+     * Converts numbers to booleans using two thresholds with gradient randomization between them.
+     * Values below trueThreshold → always true, above falseThreshold → always false.
+     * Between thresholds → probability gradient (closer to false threshold = higher chance of false).
+     * Example: [0.1, 0.4, 0.6, 0.9] with thresholds [0.3, 0.7] → [true, gradient, gradient, false]
      * @param inputs a length and a threshold for randomization of true values
      * @returns booleans
      * @group create
@@ -68,7 +70,9 @@ export class Logic {
     }
 
     /**
-     * Creates a boolean list based on a list of numbers and a threshold.
+     * Converts numbers to booleans based on a threshold (below threshold → true, above → false).
+     * Can be inverted to flip the logic.
+     * Example: [0.3, 0.7, 0.5] with threshold=0.6 → [true, false, true]
      * @param inputs a length and a threshold for randomization of true values
      * @returns booleans
      * @group create
@@ -91,7 +95,9 @@ export class Logic {
     }
 
     /**
-     * Creates a boolean list based on a list of numbers and a gap thresholds. Gap thresholds are pairs of numbers that define a range of numbers that will be true.
+     * Converts numbers to booleans using multiple range thresholds (gaps define true ranges).
+     * Values within any gap range → true, outside all gaps → false. Can be inverted.
+     * Example: [0.2, 0.5, 0.8] with gaps [[0.3, 0.6], [0.7, 0.9]] → [false, true, true]
      * @param inputs a length and a threshold for randomization of true values
      * @returns booleans
      * @group create
@@ -122,7 +128,8 @@ export class Logic {
     }
 
     /**
-     * Apply not operator on the boolean
+     * Applies NOT operator to flip a boolean value.
+     * Example: true → false, false → true
      * @param inputs a true or false boolean
      * @returns boolean
      * @group edit
@@ -134,7 +141,8 @@ export class Logic {
     }
 
     /**
-     * Apply not operator on a list of booleans
+     * Applies NOT operator to flip all boolean values in a list.
+     * Example: [true, false, true] → [false, true, false]
      * @param inputs a list of true or false booleans
      * @returns booleans
      * @group edit
@@ -146,7 +154,8 @@ export class Logic {
     }
 
     /**
-     * Does comparison between first and second values
+     * Compares two values using various operators (==, !=, ===, !==, <, <=, >, >=).
+     * Example: 5 > 3 → true, 'hello' === 'world' → false
      * @param inputs two values to be compared
      * @returns Result of the comparison
      * @group operations
@@ -177,7 +186,8 @@ export class Logic {
     }
 
     /**
-     * Transmits a value if boolean provided is true and undefined if boolean provided is false
+     * Conditionally passes a value through if boolean is true, otherwise returns undefined.
+     * Example: value=42, boolean=true → 42, value=42, boolean=false → undefined
      * @param inputs a value and a boolean value
      * @returns value or undefined
      * @group operations
@@ -189,7 +199,8 @@ export class Logic {
     }
 
     /**
-     * Returns first defined value out of two
+     * Returns the first defined (non-undefined) value from two options (fallback pattern).
+     * Example: value1=42, value2=10 → 42, value1=undefined, value2=10 → 10
      * @param inputs two values
      * @returns value or undefined
      * @group operations

@@ -9,12 +9,12 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@bitbybit-dev/threejs": "0.20.13",
+    "@bitbybit-dev/threejs": "0.20.14",
     "lil-gui": "0.20.0"
   },
   "devDependencies": {
     "typescript": "~5.8.3",
     "vite": "^6.3.2",
-    "@types/three": "0.181.0"
+    "@types/three": "0.182.0"
   }
 }

@@ -1,5 +1,5 @@
 import { MathBitByBit, Logic, Lists, TextBitByBit, Vector, Point, Transforms, Color, GeometryHelper, Line, Polyline } from "@bitbybit-dev/base";
-import { JSONBitByBit, Verb } from "@bitbybit-dev/core";
+import { JSONBitByBit, CSVBitByBit, Verb } from "@bitbybit-dev/core";
 import { Jscad } from "@bitbybit-dev/jscad";
 import { ManifoldService } from "@bitbybit-dev/manifold";
 import { OCCTService, OccHelper, VectorHelperService, ShapesHelperService } from "@bitbybit-dev/occt";
@@ -13,6 +13,7 @@ export class BitByBitBase {
     public logic: Logic;
     public lists: Lists;
     public json: JSONBitByBit;
+    public csv: CSVBitByBit;
     public vector: Vector;
     public point: Point;
     public line: Line;
@@ -35,7 +36,7 @@ export class BitByBitBase {
         this.jscad = new Jscad(jscad);
         const wasm = await Module({
             locateFile: () => {
-                return "./manifold-3-0-0.wasm";
+                return "./manifold-3-3-2.wasm";
             },
         });
         wasm.setup();
@@ -57,6 +58,7 @@ export class BitByBitBase {
         this.occt = new OCCTService(occ, occHelper);
         this.logic = new Logic();
         this.json = new JSONBitByBit({ jsonpath: JSONPath } as any);
+        this.csv = new CSVBitByBit();
         this.text = new TextBitByBit(this.point);
     }
 }

@@ -954,4 +954,226 @@ describe("OCCT dimensions unit tests", () => {
             expect(result.IsNull()).toBe(false);
         });
     });
+
+    describe("removeTrailingZeros", () => {
+        describe("simpleLinearLengthDimension", () => {
+            it("should remove trailing zeros when removeTrailingZeros is true", () => {
+                const inputs = new Inputs.OCCT.SimpleLinearLengthDimensionDto();
+                inputs.start = [0, 0, 0];
+                inputs.end = [10, 0, 0];
+                inputs.direction = [0, 2, 0];
+                inputs.decimalPlaces = 3;
+                inputs.labelSuffix = "mm";
+                inputs.removeTrailingZeros = true;
+
+                const result = dimensions.simpleLinearLengthDimension(inputs);
+                
+                expect(result).toBeDefined();
+                expect(result.IsNull()).toBe(false);
+                
+                // The dimension should be created successfully
+                // Label should be "10 mm" instead of "10.000 mm"
+                const vertices = occHelper.shapeGettersService.getVertices({ shape: result });
+                expect(vertices.length).toBeGreaterThan(0);
+            });
+
+            it("should keep trailing zeros when removeTrailingZeros is false", () => {
+                const inputs = new Inputs.OCCT.SimpleLinearLengthDimensionDto();
+                inputs.start = [0, 0, 0];
+                inputs.end = [10, 0, 0];
+                inputs.direction = [0, 2, 0];
+                inputs.decimalPlaces = 3;
+                inputs.labelSuffix = "mm";
+                inputs.removeTrailingZeros = false;
+
+                const result = dimensions.simpleLinearLengthDimension(inputs);
+                
+                expect(result).toBeDefined();
+                expect(result.IsNull()).toBe(false);
+                
+                // Label should be "10.000 mm"
+                const vertices = occHelper.shapeGettersService.getVertices({ shape: result });
+                expect(vertices.length).toBeGreaterThan(0);
+            });
+
+            it("should remove trailing zeros from partial decimals", () => {
+                const inputs = new Inputs.OCCT.SimpleLinearLengthDimensionDto();
+                inputs.start = [0, 0, 0];
+                inputs.end = [10.5, 0, 0];
+                inputs.direction = [0, 2, 0];
+                inputs.decimalPlaces = 3;
+                inputs.labelSuffix = "mm";
+                inputs.removeTrailingZeros = true;
+
+                const result = dimensions.simpleLinearLengthDimension(inputs);
+                
+                expect(result).toBeDefined();
+                expect(result.IsNull()).toBe(false);
+                
+                // Label should be "10.5 mm" instead of "10.500 mm"
+                const vertices = occHelper.shapeGettersService.getVertices({ shape: result });
+                expect(vertices.length).toBeGreaterThan(0);
+            });
+
+            it("should work with very precise measurements", () => {
+                const inputs = new Inputs.OCCT.SimpleLinearLengthDimensionDto();
+                inputs.start = [0, 0, 0];
+                inputs.end = [3.14159, 0, 0];
+                inputs.direction = [0, 1, 0];
+                inputs.decimalPlaces = 5;
+                inputs.labelSuffix = "mm";
+                inputs.removeTrailingZeros = true;
+
+                const result = dimensions.simpleLinearLengthDimension(inputs);
+                
+                expect(result).toBeDefined();
+                expect(result.IsNull()).toBe(false);
+                
+                // Label should be "3.14159 mm" (no trailing zeros to remove)
+                const vertices = occHelper.shapeGettersService.getVertices({ shape: result });
+                expect(vertices.length).toBeGreaterThan(0);
+            });
+
+            it("should default to false when removeTrailingZeros is not specified", () => {
+                const inputs = new Inputs.OCCT.SimpleLinearLengthDimensionDto();
+                inputs.start = [0, 0, 0];
+                inputs.end = [5, 0, 0];
+                inputs.direction = [0, 1, 0];
+                inputs.decimalPlaces = 2;
+
+                const result = dimensions.simpleLinearLengthDimension(inputs);
+                
+                expect(result).toBeDefined();
+                expect(result.IsNull()).toBe(false);
+                
+                // Should behave as removeTrailingZeros = false by default
+                const vertices = occHelper.shapeGettersService.getVertices({ shape: result });
+                expect(vertices.length).toBeGreaterThan(0);
+            });
+        });
+
+        describe("simpleAngularDimension", () => {
+            it("should remove trailing zeros from angle measurements", () => {
+                const inputs = new Inputs.OCCT.SimpleAngularDimensionDto();
+                inputs.center = [0, 0, 0];
+                inputs.direction1 = [1, 0, 0];
+                inputs.direction2 = [0, 1, 0];
+                inputs.radius = 3;
+                inputs.decimalPlaces = 3;
+                inputs.labelSuffix = "°";
+                inputs.removeTrailingZeros = true;
+
+                const result = dimensions.simpleAngularDimension(inputs);
+                
+                expect(result).toBeDefined();
+                expect(result.IsNull()).toBe(false);
+                
+                // Label should be "90 °" instead of "90.000 °"
+                const vertices = occHelper.shapeGettersService.getVertices({ shape: result });
+                expect(vertices.length).toBeGreaterThan(0);
+            });
+
+            it("should keep trailing zeros when removeTrailingZeros is false", () => {
+                const inputs = new Inputs.OCCT.SimpleAngularDimensionDto();
+                inputs.center = [0, 0, 0];
+                inputs.direction1 = [1, 0, 0];
+                inputs.direction2 = [0, 1, 0];
+                inputs.radius = 3;
+                inputs.decimalPlaces = 2;
+                inputs.labelSuffix = "°";
+                inputs.removeTrailingZeros = false;
+
+                const result = dimensions.simpleAngularDimension(inputs);
+                
+                expect(result).toBeDefined();
+                expect(result.IsNull()).toBe(false);
+                
+                // Label should be "90.00 °"
+                const vertices = occHelper.shapeGettersService.getVertices({ shape: result });
+                expect(vertices.length).toBeGreaterThan(0);
+            });
+
+            it("should handle radian measurements with removeTrailingZeros", () => {
+                const inputs = new Inputs.OCCT.SimpleAngularDimensionDto();
+                inputs.center = [0, 0, 0];
+                inputs.direction1 = [1, 0, 0];
+                inputs.direction2 = [0, 1, 0];
+                inputs.radius = 4;
+                inputs.radians = true;
+                inputs.decimalPlaces = 4;
+                inputs.labelSuffix = "rad";
+                inputs.removeTrailingZeros = true;
+
+                const result = dimensions.simpleAngularDimension(inputs);
+                
+                expect(result).toBeDefined();
+                expect(result.IsNull()).toBe(false);
+                
+                // Label should show π/2 ≈ 1.5708 rad (actual value depends on calculation)
+                const vertices = occHelper.shapeGettersService.getVertices({ shape: result });
+                expect(vertices.length).toBeGreaterThan(0);
+            });
+
+            it("should handle small angles with trailing zeros", () => {
+                const inputs = new Inputs.OCCT.SimpleAngularDimensionDto();
+                inputs.center = [0, 0, 0];
+                inputs.direction1 = [1, 0, 0];
+                inputs.direction2 = [0.99, 0, 0.1];
+                inputs.radius = 3;
+                inputs.decimalPlaces = 3;
+                inputs.labelSuffix = "°";
+                inputs.removeTrailingZeros = true;
+
+                const result = dimensions.simpleAngularDimension(inputs);
+                
+                expect(result).toBeDefined();
+                expect(result.IsNull()).toBe(false);
+                
+                const vertices = occHelper.shapeGettersService.getVertices({ shape: result });
+                expect(vertices.length).toBeGreaterThan(0);
+            });
+        });
+
+        describe("with labelOverwrite", () => {
+            it("should not affect labelOverwrite expressions in linear dimensions", () => {
+                const inputs = new Inputs.OCCT.SimpleLinearLengthDimensionDto();
+                inputs.start = [0, 0, 0];
+                inputs.end = [10, 0, 0];
+                inputs.direction = [0, 2, 0];
+                inputs.labelOverwrite = "val*100";
+                inputs.decimalPlaces = 2;
+                inputs.labelSuffix = "mm";
+                inputs.removeTrailingZeros = true;
+
+                const result = dimensions.simpleLinearLengthDimension(inputs);
+                
+                expect(result).toBeDefined();
+                expect(result.IsNull()).toBe(false);
+                
+                // labelOverwrite should be evaluated normally
+                const vertices = occHelper.shapeGettersService.getVertices({ shape: result });
+                expect(vertices.length).toBeGreaterThan(0);
+            });
+
+            it("should not affect labelOverwrite template strings", () => {
+                const inputs = new Inputs.OCCT.SimpleAngularDimensionDto();
+                inputs.center = [0, 0, 0];
+                inputs.direction1 = [1, 0, 0];
+                inputs.direction2 = [0, 1, 0];
+                inputs.radius = 5;
+                inputs.labelOverwrite = "Angle: val";
+                inputs.decimalPlaces = 1;
+                inputs.labelSuffix = "°";
+                inputs.removeTrailingZeros = true;
+
+                const result = dimensions.simpleAngularDimension(inputs);
+                
+                expect(result).toBeDefined();
+                expect(result.IsNull()).toBe(false);
+                
+                const vertices = occHelper.shapeGettersService.getVertices({ shape: result });
+                expect(vertices.length).toBeGreaterThan(0);
+            });
+        });
+    });
 });

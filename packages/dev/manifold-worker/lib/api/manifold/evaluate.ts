@@ -170,13 +170,28 @@ export class ManifoldEvaluate {
      * by product manifolds. If this manifold is a product, this
      * returns -1.
      * @param inputs manifold
-     * @returns original ID of manifold
+     * @returns original id of manifold
      * @group basic
      * @shortname original id
      * @drawable false
      */
     async originalID(inputs: Inputs.Manifold.ManifoldDto<Inputs.Manifold.ManifoldPointer>): Promise<number> {
         return this.manifoldWorkerManager.genericCallToWorkerPromise("manifold.evaluate.originalID", inputs);
+    }
+
+    /**
+     * Returns the reason for an input Mesh producing an empty Manifold. This
+     * Status will carry on through operations like NaN propogation, ensuring an
+     * errored mesh doesn't get mysteriously lost. Empty meshes may still show
+     * NoError, for instance the intersection of non-overlapping meshes.
+     * @param inputs manifold
+     * @returns error status string (NoError, NotManifold, InvalidConstruction, etc.)
+     * @group basic
+     * @shortname status
+     * @drawable false
+     */
+    async status(inputs: Inputs.Manifold.ManifoldDto<Inputs.Manifold.ManifoldPointer>): Promise<string> {
+        return this.manifoldWorkerManager.genericCallToWorkerPromise("manifold.evaluate.status", inputs);
     }
 
 }

@@ -158,6 +158,78 @@ describe("OCCT fillets unit tests", () => {
         result.delete();
     });
 
+    it("should fillet multiple 3D wires with the same radius", () => {
+        const starOpt1 = new Inputs.OCCT.StarDto(10, 6, 7, [0, 0, 0], [0, 1, 0], 3);
+        const starOpt2 = new Inputs.OCCT.StarDto(8, 5, 6, [20, 0, 0], [0, 1, 0], 2);
+        const star1 = wire.createStarWire(starOpt1);
+        const star2 = wire.createStarWire(starOpt2);
+
+        const filletOptions = new Inputs.OCCT.Fillet3DWiresDto<TopoDS_Wire>(
+            [star1, star2],
+            0.3,
+            [0, 1, 0],
+        );
+        const results = fillets.fillet3DWires(filletOptions);
+
+        expect(results.length).toBe(2);
+
+        const edges1 = occHelper.edgesService.getEdgesAlongWire({ shape: results[0] });
+        const edges2 = occHelper.edgesService.getEdgesAlongWire({ shape: results[1] });
+
+        // All edges should be filleted, so we expect more edges than original
+        expect(edges1.length).toBe(28);
+        expect(edges2.length).toBe(24);
+
+        // Some edges should be short fillet arcs
+        const edgeLengths1 = edges1.map(e => occHelper.edgesService.getEdgeLength({ shape: e }));
+        const edgeLengths2 = edges2.map(e => occHelper.edgesService.getEdgeLength({ shape: e }));
+        const hasShortEdges1 = edgeLengths1.some(length => length < 1);
+        const hasShortEdges2 = edgeLengths2.some(length => length < 1);
+        expect(hasShortEdges1).toBe(true);
+        expect(hasShortEdges2).toBe(true);
+
+        star1.delete();
+        star2.delete();
+        edges1.forEach(e => e.delete());
+        edges2.forEach(e => e.delete());
+        results.forEach(r => r.delete());
+    });
+
+    it("should fillet multiple 3D wires with indexes", () => {
+        const starOpt1 = new Inputs.OCCT.StarDto(10, 6, 7, [0, 0, 0], [0, 1, 0], 3);
+        const starOpt2 = new Inputs.OCCT.StarDto(8, 5, 6, [20, 0, 0], [0, 1, 0], 2);
+        const star1 = wire.createStarWire(starOpt1);
+        const star2 = wire.createStarWire(starOpt2);
+
+        const filletOptions = new Inputs.OCCT.Fillet3DWiresDto<TopoDS_Wire>(
+            [star1, star2],
+            undefined,
+            [0, 1, 0],
+            [0.2, 0.4, 0.3],
+            [1, 3, 5],
+        );
+        const results = fillets.fillet3DWires(filletOptions);
+
+        expect(results.length).toBe(2);
+
+        const edges1 = occHelper.edgesService.getEdgesAlongWire({ shape: results[0] });
+        const edges2 = occHelper.edgesService.getEdgesAlongWire({ shape: results[1] });
+
+        // Check that fillets were applied
+        const edgeLengths1 = edges1.map(e => occHelper.edgesService.getEdgeLength({ shape: e }));
+        const edgeLengths2 = edges2.map(e => occHelper.edgesService.getEdgeLength({ shape: e }));
+        const hasShortEdges1 = edgeLengths1.some(length => length < 1);
+        const hasShortEdges2 = edgeLengths2.some(length => length < 1);
+        expect(hasShortEdges1).toBe(true);
+        expect(hasShortEdges2).toBe(true);
+
+        star1.delete();
+        star2.delete();
+        edges1.forEach(e => e.delete());
+        edges2.forEach(e => e.delete());
+        results.forEach(r => r.delete());
+    });
+
     it("should fillet closed 2D wire on various corners", () => {
         const starOpt = new Inputs.OCCT.StarDto(10, 6, 7, [0, 0, 0], [0, 1, 0], 0);
         const star = wire.createStarWire(starOpt);
@@ -230,6 +302,76 @@ describe("OCCT fillets unit tests", () => {
         star.delete();
         edges.forEach(e => e.delete());
         result.delete();
+    });
+
+    it("should fillet multiple 2D wires with the same radius", () => {
+        const starOpt1 = new Inputs.OCCT.StarDto(10, 6, 7, [0, 0, 0], [0, 1, 0], 0);
+        const starOpt2 = new Inputs.OCCT.StarDto(8, 5, 6, [20, 0, 0], [0, 1, 0], 0);
+        const star1 = wire.createStarWire(starOpt1);
+        const star2 = wire.createStarWire(starOpt2);
+
+        const filletOptions = new Inputs.OCCT.FilletShapesDto<TopoDS_Wire>(
+            [star1, star2],
+            0.3,
+        );
+        const results = fillets.fillet2dShapes(filletOptions);
+
+        expect(results.length).toBe(2);
+
+        const edges1 = occHelper.shapeGettersService.getEdges({ shape: results[0] });
+        const edges2 = occHelper.shapeGettersService.getEdges({ shape: results[1] });
+
+        // All edges should be filleted, so we expect more edges than original
+        expect(edges1.length).toBe(28);
+        expect(edges2.length).toBe(24);
+
+        // Some edges should be short fillet arcs
+        const edgeLengths1 = edges1.map(e => occHelper.edgesService.getEdgeLength({ shape: e }));
+        const edgeLengths2 = edges2.map(e => occHelper.edgesService.getEdgeLength({ shape: e }));
+        const hasShortEdges1 = edgeLengths1.some(length => length < 1);
+        const hasShortEdges2 = edgeLengths2.some(length => length < 1);
+        expect(hasShortEdges1).toBe(true);
+        expect(hasShortEdges2).toBe(true);
+
+        star1.delete();
+        star2.delete();
+        edges1.forEach(e => e.delete());
+        edges2.forEach(e => e.delete());
+        results.forEach(r => r.delete());
+    });
+
+    it("should fillet multiple 2D wires with indexes and radius list", () => {
+        const starOpt1 = new Inputs.OCCT.StarDto(10, 6, 7, [0, 0, 0], [0, 1, 0], 0);
+        const starOpt2 = new Inputs.OCCT.StarDto(8, 5, 6, [20, 0, 0], [0, 1, 0], 0);
+        const star1 = wire.createStarWire(starOpt1);
+        const star2 = wire.createStarWire(starOpt2);
+
+        const filletOptions = new Inputs.OCCT.FilletShapesDto<TopoDS_Wire>(
+            [star1, star2],
+            undefined,
+            [0.2, 0.4, 0.3],
+            [1, 3, 5],
+        );
+        const results = fillets.fillet2dShapes(filletOptions);
+
+        expect(results.length).toBe(2);
+
+        const edges1 = occHelper.shapeGettersService.getEdges({ shape: results[0] });
+        const edges2 = occHelper.shapeGettersService.getEdges({ shape: results[1] });
+
+        // Check that fillets were applied
+        const edgeLengths1 = edges1.map(e => occHelper.edgesService.getEdgeLength({ shape: e }));
+        const edgeLengths2 = edges2.map(e => occHelper.edgesService.getEdgeLength({ shape: e }));
+        const hasShortEdges1 = edgeLengths1.some(length => length < 1);
+        const hasShortEdges2 = edgeLengths2.some(length => length < 1);
+        expect(hasShortEdges1).toBe(true);
+        expect(hasShortEdges2).toBe(true);
+
+        star1.delete();
+        star2.delete();
+        edges1.forEach(e => e.delete());
+        edges2.forEach(e => e.delete());
+        results.forEach(r => r.delete());
     });
 
     it("should fillet a single edge on the solid", () => {
@@ -626,5 +768,13 @@ describe("OCCT fillets unit tests", () => {
         const filletRes = fillets.filletTwoEdgesInPlaneIntoAWire({ edge1, edge2, radius: 0.2, planeDirection: [0, 0, 1], planeOrigin: [0, 0, 0] });
         const wireLength = occHelper.wiresService.getWireLength({ shape: filletRes });
         expect(wireLength).toBeCloseTo(1.3424777993634651);
+    });
+
+    it("should fillet two edges into a wire with explicit solution parameter", () => {
+        const edge1 = edge.line({ start: [0, 0, 0], end: [1, 0, 0] });
+        const edge2 = edge.line({ start: [1, 0, 0], end: [1, 1, 0] });
+        const filletRes = fillets.filletTwoEdgesInPlaneIntoAWire({ edge1, edge2, radius: 0.2, planeDirection: [0, 0, 1], planeOrigin: [1, 0, 0], solution: 0 });
+        const wireLength = occHelper.wiresService.getWireLength({ shape: filletRes });
+        expect(wireLength).toBeCloseTo(1.9141592620724523);
     });
 });

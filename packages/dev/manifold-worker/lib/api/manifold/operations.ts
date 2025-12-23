@@ -251,4 +251,35 @@ export class ManifoldOperations {
         return this.manifoldWorkerManager.genericCallToWorkerPromise("manifold.operations.smoothByNormals", inputs);
     }
 
+    /**
+     * Return a copy of the manifold simplified to the given tolerance, but with
+     * its actual tolerance value unchanged. The result will contain a subset of
+     * the original verts and all surfaces will have moved by less than tolerance.
+     * @param inputs manifold and tolerance
+     * @returns simplified manifold
+     * @group adjustments
+     * @shortname simplify
+     * @drawable true
+     */
+    async simplify(inputs: Inputs.Manifold.ManifoldSimplifyDto<Inputs.Manifold.ManifoldPointer>): Promise<Inputs.Manifold.ManifoldPointer> {
+        return this.manifoldWorkerManager.genericCallToWorkerPromise("manifold.operations.simplify", inputs);
+    }
+
+    /**
+     * Create a new copy of this manifold with updated vertex properties by
+     * supplying a function that takes the existing position and properties as
+     * input. You may specify any number of output properties, allowing creation
+     * and removal of channels. Note: undefined behavior will result if you read
+     * past the number of input properties or write past the number of output
+     * properties.
+     * @param inputs manifold, numProp and property function
+     * @returns manifold with updated properties
+     * @group adjustments
+     * @shortname set properties
+     * @drawable true
+     */
+    async setProperties(inputs: Inputs.Manifold.ManifoldSetPropertiesDto<Inputs.Manifold.ManifoldPointer>): Promise<Inputs.Manifold.ManifoldPointer> {
+        return this.manifoldWorkerManager.genericCallToWorkerPromise("manifold.operations.setProperties", inputs);
+    }
+
 }

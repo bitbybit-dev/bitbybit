@@ -4,7 +4,7 @@
     "link": {
         "type": "generated-index",
         "title": "Hollow Shapes",
-        "description": "While using boolean operations to cut out holes might be straightforward, there are several nuances to consider.",
+        "description": "How to create hollow shapes without using boolean operations while addressing common challenges.",
         "slug": "/code/common/occt/modeling/hollow-shapes"
     }
 }

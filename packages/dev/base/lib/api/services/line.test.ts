@@ -145,6 +145,87 @@ describe("Line unit tests", () => {
             });
         });
 
+        describe("createSegment", () => {
+            it("should create a segment from start and end points", () => {
+                const startP: Inputs.Base.Point3 = [1, 2, 3];
+                const endP: Inputs.Base.Point3 = [4, 5, 6];
+                const result = line.createSegment({ start: startP, end: endP });
+                expect(result).toEqual([[1, 2, 3], [4, 5, 6]]);
+            });
+
+            it("should return an array with exactly two points", () => {
+                const startP: Inputs.Base.Point3 = [0, 0, 0];
+                const endP: Inputs.Base.Point3 = [10, 20, 30];
+                const result = line.createSegment({ start: startP, end: endP });
+                expect(result.length).toBe(2);
+                expect(result[0]).toEqual([0, 0, 0]);
+                expect(result[1]).toEqual([10, 20, 30]);
+            });
+
+            it("should handle negative coordinates", () => {
+                const startP: Inputs.Base.Point3 = [-5, -10, -15];
+                const endP: Inputs.Base.Point3 = [-1, -2, -3];
+                const result = line.createSegment({ start: startP, end: endP });
+                expect(result).toEqual([[-5, -10, -15], [-1, -2, -3]]);
+            });
+
+            it("should handle zero-length segment (same start and end)", () => {
+                const startP: Inputs.Base.Point3 = [7, 7, 7];
+                const endP: Inputs.Base.Point3 = [7, 7, 7];
+                const result = line.createSegment({ start: startP, end: endP });
+                expect(result).toEqual([[7, 7, 7], [7, 7, 7]]);
+            });
+
+            it("should handle floating point coordinates", () => {
+                const startP: Inputs.Base.Point3 = [1.5, 2.75, 3.125];
+                const endP: Inputs.Base.Point3 = [4.875, 5.0625, 6.03125];
+                const result = line.createSegment({ start: startP, end: endP });
+                expect(result).toEqual([[1.5, 2.75, 3.125], [4.875, 5.0625, 6.03125]]);
+            });
+
+            it("should handle very large coordinates", () => {
+                const startP: Inputs.Base.Point3 = [1e10, 2e10, 3e10];
+                const endP: Inputs.Base.Point3 = [4e10, 5e10, 6e10];
+                const result = line.createSegment({ start: startP, end: endP });
+                expect(result).toEqual([[1e10, 2e10, 3e10], [4e10, 5e10, 6e10]]);
+            });
+
+            it("should handle very small coordinates", () => {
+                const startP: Inputs.Base.Point3 = [1e-10, 2e-10, 3e-10];
+                const endP: Inputs.Base.Point3 = [4e-10, 5e-10, 6e-10];
+                const result = line.createSegment({ start: startP, end: endP });
+                expect(result).toEqual([[1e-10, 2e-10, 3e-10], [4e-10, 5e-10, 6e-10]]);
+            });
+
+            it("should create segment along X axis only", () => {
+                const startP: Inputs.Base.Point3 = [0, 0, 0];
+                const endP: Inputs.Base.Point3 = [100, 0, 0];
+                const result = line.createSegment({ start: startP, end: endP });
+                expect(result).toEqual([[0, 0, 0], [100, 0, 0]]);
+            });
+
+            it("should create segment along Y axis only", () => {
+                const startP: Inputs.Base.Point3 = [0, 0, 0];
+                const endP: Inputs.Base.Point3 = [0, 100, 0];
+                const result = line.createSegment({ start: startP, end: endP });
+                expect(result).toEqual([[0, 0, 0], [0, 100, 0]]);
+            });
+
+            it("should create segment along Z axis only", () => {
+                const startP: Inputs.Base.Point3 = [0, 0, 0];
+                const endP: Inputs.Base.Point3 = [0, 0, 100];
+                const result = line.createSegment({ start: startP, end: endP });
+                expect(result).toEqual([[0, 0, 0], [0, 0, 100]]);
+            });
+
+            it("should create diagonal segment in 3D space", () => {
+                const startP: Inputs.Base.Point3 = [1, 1, 1];
+                const endP: Inputs.Base.Point3 = [2, 2, 2];
+                const result = line.createSegment({ start: startP, end: endP });
+                expect(result).toEqual([[1, 1, 1], [2, 2, 2]]);
+            });
+        });
+
         describe("getPointOnLine", () => {
             const testLine: Inputs.Base.Line3 = { start: [0, 0, 0], end: [10, 20, -30] };
 

@@ -7041,7 +7041,7 @@ export namespace OCCT {
         direction: Base.Vector3 = [0, 1, 0];
     }
     export class SimpleLinearLengthDimensionDto {
-        constructor(start?: Base.Point3, end?: Base.Point3, direction?: Base.Vector3, offsetFromPoints?: number, crossingSize?: number, labelSuffix?: string, labelSize?: number, labelOffset?: number, labelRotation?: number, arrowType?: dimensionEndTypeEnum, arrowSize?: number, arrowAngle?: number, arrowsFlipped?: boolean, labelFlipHorizontal?: boolean, labelFlipVertical?: boolean, labelOverwrite?: string) {
+        constructor(start?: Base.Point3, end?: Base.Point3, direction?: Base.Vector3, offsetFromPoints?: number, crossingSize?: number, labelSuffix?: string, labelSize?: number, labelOffset?: number, labelRotation?: number, arrowType?: dimensionEndTypeEnum, arrowSize?: number, arrowAngle?: number, arrowsFlipped?: boolean, labelFlipHorizontal?: boolean, labelFlipVertical?: boolean, labelOverwrite?: string, removeTrailingZeros?: boolean) {
             if (start !== undefined) { this.start = start; }
             if (end !== undefined) { this.end = end; }
             if (direction !== undefined) { this.direction = direction; }
@@ -7058,6 +7058,7 @@ export namespace OCCT {
             if (labelFlipHorizontal !== undefined) { this.labelFlipHorizontal = labelFlipHorizontal; }
             if (labelFlipVertical !== undefined) { this.labelFlipVertical = labelFlipVertical; }
             if (labelOverwrite !== undefined) { this.labelOverwrite = labelOverwrite; }
+            if (removeTrailingZeros !== undefined) { this.removeTrailingZeros = removeTrailingZeros; }
         }
         /**
          * The start point for dimension
@@ -7169,9 +7170,14 @@ export namespace OCCT {
          * @optional true
          */
         labelOverwrite? = "1*val";
+        /**
+         * Remove trailing zeros from decimal places
+         * @default false
+         */
+        removeTrailingZeros? = false;
     }
     export class SimpleAngularDimensionDto {
-        constructor(direction1?: Base.Point3, direction2?: Base.Point3, center?: Base.Point3, radius?: number, offsetFromCenter?: number, crossingSize?: number, radians?: boolean, labelSuffix?: string, labelSize?: number, labelOffset?: number, endType?: dimensionEndTypeEnum, arrowSize?: number, arrowAngle?: number, arrowsFlipped?: boolean, labelRotation?: number, labelFlipHorizontal?: boolean, labelFlipVertical?: boolean, labelOverwrite?: string) {
+        constructor(direction1?: Base.Point3, direction2?: Base.Point3, center?: Base.Point3, radius?: number, offsetFromCenter?: number, crossingSize?: number, radians?: boolean, labelSuffix?: string, labelSize?: number, labelOffset?: number, endType?: dimensionEndTypeEnum, arrowSize?: number, arrowAngle?: number, arrowsFlipped?: boolean, labelRotation?: number, labelFlipHorizontal?: boolean, labelFlipVertical?: boolean, labelOverwrite?: string, removeTrailingZeros?: boolean) {
             if (direction1 !== undefined) { this.direction1 = direction1; }
             if (direction2 !== undefined) { this.direction2 = direction2; }
             if (center !== undefined) { this.center = center; }
@@ -7190,6 +7196,7 @@ export namespace OCCT {
             if (labelFlipHorizontal !== undefined) { this.labelFlipHorizontal = labelFlipHorizontal; }
             if (labelFlipVertical !== undefined) { this.labelFlipVertical = labelFlipVertical; }
             if (labelOverwrite !== undefined) { this.labelOverwrite = labelOverwrite; }
+            if (removeTrailingZeros !== undefined) { this.removeTrailingZeros = removeTrailingZeros; }
         }
 
         /**
@@ -7315,6 +7322,11 @@ export namespace OCCT {
          * @optional true
          */
         labelOverwrite? = "1*val";
+        /**
+         * Remove trailing zeros from decimal places
+         * @default false
+         */
+        removeTrailingZeros? = false;
     }
     export class PinWithLabelDto {
         constructor(startPoint?: Base.Point3, endPoint?: Base.Point3, direction?: Base.Vector3, offsetFromStart?: number, label?: string, labelOffset?: number, labelSize?: number, endType?: dimensionEndTypeEnum, arrowSize?: number, arrowAngle?: number, arrowsFlipped?: boolean, labelRotation?: number, labelFlipHorizontal?: boolean, labelFlipVertical?: boolean) {

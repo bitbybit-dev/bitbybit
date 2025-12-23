@@ -1259,4 +1259,310 @@ describe("OCCT edge unit tests", () => {
         circle.delete();
         edges.forEach(e => e.delete());
     };
+
+    // fromBaseLine tests
+    it("should create an edge from base line", async () => {
+        const line: Inputs.Base.Line3 = { start: [0, 0, 0], end: [1, 1, 1] };
+        const e = edge.fromBaseLine({ line });
+        const length = edge.getEdgeLength({ shape: e });
+        expect(length).toBeCloseTo(Math.sqrt(3), closeToNr);
+        e.delete();
+    });
+
+    // fromBaseLines tests
+    it("should create edges from base lines", async () => {
+        const lines: Inputs.Base.Line3[] = [
+            { start: [0, 0, 0], end: [1, 0, 0] },
+            { start: [0, 0, 0], end: [0, 2, 0] },
+            { start: [0, 0, 0], end: [0, 0, 3] }
+        ];
+        const edges = edge.fromBaseLines({ lines });
+        expect(edges.length).toBe(3);
+        const lengths = edge.getEdgesLengths({ shapes: edges });
+        expect(lengths[0]).toBeCloseTo(1, closeToNr);
+        expect(lengths[1]).toBeCloseTo(2, closeToNr);
+        expect(lengths[2]).toBeCloseTo(3, closeToNr);
+        edges.forEach(e => e.delete());
+    });
+
+    // fromBaseSegment tests
+    it("should create an edge from base segment", async () => {
+        const segment: Inputs.Base.Segment3 = [[0, 0, 0], [2, 2, 2]];
+        const e = edge.fromBaseSegment({ segment });
+        const length = edge.getEdgeLength({ shape: e });
+        expect(length).toBeCloseTo(Math.sqrt(12), closeToNr);
+        e.delete();
+    });
+
+    // fromBaseSegments tests
+    it("should create edges from base segments", async () => {
+        const segments: Inputs.Base.Segment3[] = [
+            [[0, 0, 0], [1, 0, 0]],
+            [[0, 0, 0], [0, 2, 0]],
+            [[0, 0, 0], [0, 0, 3]]
+        ];
+        const edges = edge.fromBaseSegments({ segments });
+        expect(edges.length).toBe(3);
+        const lengths = edge.getEdgesLengths({ shapes: edges });
+        expect(lengths[0]).toBeCloseTo(1, closeToNr);
+        expect(lengths[1]).toBeCloseTo(2, closeToNr);
+        expect(lengths[2]).toBeCloseTo(3, closeToNr);
+        edges.forEach(e => e.delete());
+    });
+
+    // fromPoints tests
+    it("should create edges from points", async () => {
+        const points: Inputs.Base.Point3[] = [
+            [0, 0, 0],
+            [1, 0, 0],
+            [1, 1, 0],
+            [0, 1, 0]
+        ];
+        const edges = edge.fromPoints({ points });
+        expect(edges.length).toBe(3);
+        const lengths = edge.getEdgesLengths({ shapes: edges });
+        expect(lengths[0]).toBeCloseTo(1, closeToNr);
+        expect(lengths[1]).toBeCloseTo(1, closeToNr);
+        expect(lengths[2]).toBeCloseTo(1, closeToNr);
+        edges.forEach(e => e.delete());
+    });
+
+    it("should create no edges from single point", async () => {
+        const points: Inputs.Base.Point3[] = [[0, 0, 0]];
+        const edges = edge.fromPoints({ points });
+        expect(edges.length).toBe(0);
+    });
+
+    // fromBasePolyline tests
+    it("should create edges from open polyline", async () => {
+        const polyline: Inputs.Base.Polyline3 = {
+            points: [[0, 0, 0], [1, 0, 0], [1, 1, 0], [0, 1, 0]],
+            isClosed: false
+        };
+        const edges = edge.fromBasePolyline({ polyline });
+        expect(edges.length).toBe(3);
+        edges.forEach(e => e.delete());
+    });
+
+    it("should create edges from closed polyline", async () => {
+        const polyline: Inputs.Base.Polyline3 = {
+            points: [[0, 0, 0], [1, 0, 0], [1, 1, 0], [0, 1, 0]],
+            isClosed: true
+        };
+        const edges = edge.fromBasePolyline({ polyline });
+        expect(edges.length).toBe(4);
+        const totalLength = edge.getEdgesLengths({ shapes: edges }).reduce((a, b) => a + b, 0);
+        expect(totalLength).toBeCloseTo(4, closeToNr);
+        edges.forEach(e => e.delete());
+    });
+
+    // fromBaseTriangle tests
+    it("should create edges from triangle", async () => {
+        const triangle: Inputs.Base.Triangle3 = [
+            [0, 0, 0],
+            [1, 0, 0],
+            [0.5, 1, 0]
+        ];
+        const edges = edge.fromBaseTriangle({ triangle });
+        expect(edges.length).toBe(3);
+        edges.forEach(e => e.delete());
+    });
+
+    // fromBaseMesh tests
+    it("should create edges from mesh", async () => {
+        const mesh: Inputs.Base.Mesh3 = [
+            [[0, 0, 0], [1, 0, 0], [0.5, 1, 0]],
+            [[1, 0, 0], [2, 0, 0], [1.5, 1, 0]]
+        ];
+        const edges = edge.fromBaseMesh({ mesh });
+        expect(edges.length).toBe(6); // 2 triangles * 3 edges each
+        edges.forEach(e => e.delete());
+    });
+
+    // pointsOnEdgesAtParam tests
+    it("should get points on multiple edges at param", async () => {
+        const e1 = edge.line({ start: [0, 0, 0], end: [2, 0, 0] });
+        const e2 = edge.line({ start: [0, 0, 0], end: [0, 4, 0] });
+        const e3 = edge.line({ start: [0, 0, 0], end: [0, 0, 6] });
+        const points = edge.pointsOnEdgesAtParam({ shapes: [e1, e2, e3], param: 0.5 });
+        expect(points.length).toBe(3);
+        expect(points[0][0]).toBeCloseTo(1, closeToNr);
+        expect(points[1][1]).toBeCloseTo(2, closeToNr);
+        expect(points[2][2]).toBeCloseTo(3, closeToNr);
+        e1.delete();
+        e2.delete();
+        e3.delete();
+    });
+
+    // tangentsOnEdgesAtParam tests
+    it("should get tangents on multiple edges at param", async () => {
+        const e1 = edge.line({ start: [0, 0, 0], end: [2, 0, 0] });
+        const e2 = edge.line({ start: [0, 0, 0], end: [0, 4, 0] });
+        const tangents = edge.tangentsOnEdgesAtParam({ shapes: [e1, e2], param: 0.5 });
+        expect(tangents.length).toBe(2);
+        // Tangent on a line points in direction of the line (normalized unit vectors)
+        expect(tangents[0][0]).toBeCloseTo(1, closeToNr);
+        expect(tangents[0][1]).toBeCloseTo(0, closeToNr);
+        expect(tangents[0][2]).toBeCloseTo(0, closeToNr);
+        expect(tangents[1][0]).toBeCloseTo(0, closeToNr);
+        expect(tangents[1][1]).toBeCloseTo(1, closeToNr);
+        expect(tangents[1][2]).toBeCloseTo(0, closeToNr);
+        e1.delete();
+        e2.delete();
+    });
+
+    // startPointsOnEdges tests
+    it("should get start points on multiple edges", async () => {
+        const e1 = edge.line({ start: [1, 2, 3], end: [4, 5, 6] });
+        const e2 = edge.line({ start: [7, 8, 9], end: [10, 11, 12] });
+        const startPoints = edge.startPointsOnEdges({ shapes: [e1, e2] });
+        expect(startPoints.length).toBe(2);
+        expect(startPoints[0]).toEqual([1, 2, 3]);
+        expect(startPoints[1]).toEqual([7, 8, 9]);
+        e1.delete();
+        e2.delete();
+    });
+
+    // endPointsOnEdges tests
+    it("should get end points on multiple edges", async () => {
+        const e1 = edge.line({ start: [1, 2, 3], end: [4, 5, 6] });
+        const e2 = edge.line({ start: [7, 8, 9], end: [10, 11, 12] });
+        const endPoints = edge.endPointsOnEdges({ shapes: [e1, e2] });
+        expect(endPoints.length).toBe(2);
+        expect(endPoints[0]).toEqual([4, 5, 6]);
+        expect(endPoints[1]).toEqual([10, 11, 12]);
+        e1.delete();
+        e2.delete();
+    });
+
+    // pointsOnEdgesAtLength tests
+    it("should get points on multiple edges at length", async () => {
+        const e1 = edge.line({ start: [0, 0, 0], end: [4, 0, 0] });
+        const e2 = edge.line({ start: [0, 0, 0], end: [0, 4, 0] });
+        const points = edge.pointsOnEdgesAtLength({ shapes: [e1, e2], length: 2 });
+        expect(points.length).toBe(2);
+        expect(points[0][0]).toBeCloseTo(2, closeToNr);
+        expect(points[0][1]).toBeCloseTo(0, closeToNr);
+        expect(points[1][0]).toBeCloseTo(0, closeToNr);
+        expect(points[1][1]).toBeCloseTo(2, closeToNr);
+        e1.delete();
+        e2.delete();
+    });
+
+    // tangentsOnEdgesAtLength tests
+    it("should get tangents on multiple edges at length", async () => {
+        const e1 = edge.line({ start: [0, 0, 0], end: [4, 0, 0] });
+        const e2 = edge.line({ start: [0, 0, 0], end: [0, 4, 0] });
+        const tangents = edge.tangentsOnEdgesAtLength({ shapes: [e1, e2], length: 1 });
+        expect(tangents.length).toBe(2);
+        expect(tangents[0][0]).toBeCloseTo(4, closeToNr);
+        expect(tangents[0][1]).toBeCloseTo(0, closeToNr);
+        expect(tangents[1][0]).toBeCloseTo(0, closeToNr);
+        expect(tangents[1][1]).toBeCloseTo(4, closeToNr);
+        e1.delete();
+        e2.delete();
+    });
+
+    // divideEdgesByParamsToPoints tests
+    it("should divide multiple edges by params to points", async () => {
+        const e1 = edge.createCircleEdge({ radius: 1, center: [0, 0, 0], direction: [0, 1, 0] });
+        const e2 = edge.createCircleEdge({ radius: 2, center: [0, 0, 0], direction: [0, 1, 0] });
+        const pointsArrays = edge.divideEdgesByParamsToPoints({
+            shapes: [e1, e2],
+            nrOfDivisions: 4,
+            removeEndPoint: false,
+            removeStartPoint: false
+        });
+        expect(pointsArrays.length).toBe(2);
+        expect(pointsArrays[0].length).toBe(5);
+        expect(pointsArrays[1].length).toBe(5);
+        e1.delete();
+        e2.delete();
+    });
+
+    // divideEdgesByEqualDistanceToPoints tests
+    it("should divide multiple edges by equal distance to points", async () => {
+        const e1 = edge.createCircleEdge({ radius: 1, center: [0, 0, 0], direction: [0, 1, 0] });
+        const e2 = edge.createCircleEdge({ radius: 2, center: [0, 0, 0], direction: [0, 1, 0] });
+        const pointsArrays = edge.divideEdgesByEqualDistanceToPoints({
+            shapes: [e1, e2],
+            nrOfDivisions: 4,
+            removeEndPoint: false,
+            removeStartPoint: false
+        });
+        expect(pointsArrays.length).toBe(2);
+        expect(pointsArrays[0].length).toBe(5);
+        expect(pointsArrays[1].length).toBe(5);
+        e1.delete();
+        e2.delete();
+    });
+
+    // isEdgeLinear tests
+    it("should return true for linear edge", async () => {
+        const e = edge.line({ start: [0, 0, 0], end: [1, 1, 1] });
+        const isLinear = edge.isEdgeLinear({ shape: e });
+        expect(isLinear).toBe(true);
+        e.delete();
+    });
+
+    it("should return false for circular edge when checking if linear", async () => {
+        const e = edge.createCircleEdge({ radius: 1, center: [0, 0, 0], direction: [0, 1, 0] });
+        const isLinear = edge.isEdgeLinear({ shape: e });
+        expect(isLinear).toBe(false);
+        e.delete();
+    });
+
+    it("should return false for arc edge when checking if linear", async () => {
+        const e = edge.arcThroughThreePoints({ start: [0, 0, 0], middle: [1, 1, 0], end: [2, 0, 0] });
+        const isLinear = edge.isEdgeLinear({ shape: e });
+        expect(isLinear).toBe(false);
+        e.delete();
+    });
+
+    // isEdgeCircular tests
+    it("should return true for circular edge", async () => {
+        const e = edge.createCircleEdge({ radius: 1, center: [0, 0, 0], direction: [0, 1, 0] });
+        const isCircular = edge.isEdgeCircular({ shape: e });
+        expect(isCircular).toBe(true);
+        e.delete();
+    });
+
+    it("should return true for arc edge when checking if circular", async () => {
+        const e = edge.arcThroughThreePoints({ start: [0, 0, 0], middle: [1, 1, 0], end: [2, 0, 0] });
+        const isCircular = edge.isEdgeCircular({ shape: e });
+        expect(isCircular).toBe(true);
+        e.delete();
+    });
+
+    it("should return false for linear edge when checking if circular", async () => {
+        const e = edge.line({ start: [0, 0, 0], end: [1, 1, 1] });
+        const isCircular = edge.isEdgeCircular({ shape: e });
+        expect(isCircular).toBe(false);
+        e.delete();
+    });
+
+    // getEdgeLengthsOfShape tests
+    it("should get edge lengths of a box shape", async () => {
+        const box = occHelper.entitiesService.bRepPrimAPIMakeBox(2, 3, 4, [0, 0, 0]);
+        const lengths = edge.getEdgeLengthsOfShape({ shape: box });
+        expect(lengths.length).toBe(12);
+        // Box has 4 edges of each dimension
+        const sortedLengths = lengths.sort((a, b) => a - b);
+        expect(sortedLengths[0]).toBeCloseTo(2, closeToNr);
+        expect(sortedLengths[4]).toBeCloseTo(3, closeToNr);
+        expect(sortedLengths[8]).toBeCloseTo(4, closeToNr);
+        box.delete();
+    });
+
+    it("should get edge lengths of a cylinder shape", async () => {
+        const cylinder = occHelper.entitiesService.bRepPrimAPIMakeCylinder([0, 0, 0], [0, 1, 0], 1, 2, Math.PI * 2);
+        const lengths = edge.getEdgeLengthsOfShape({ shape: cylinder });
+        expect(lengths.length).toBe(3);
+        // Cylinder has 2 circular edges and 1 linear edge (seam)
+        const sortedLengths = lengths.sort((a, b) => a - b);
+        expect(sortedLengths[0]).toBeCloseTo(2, closeToNr); // height
+        expect(sortedLengths[1]).toBeCloseTo(2 * Math.PI, closeToNr); // circumference
+        expect(sortedLengths[2]).toBeCloseTo(2 * Math.PI, closeToNr); // circumference
+        cylinder.delete();
+    });
 });

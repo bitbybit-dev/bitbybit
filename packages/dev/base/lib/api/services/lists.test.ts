@@ -608,5 +608,226 @@ describe("Lists unit tests", () => {
         expect(result).toEqual([{ prop: 3 }, { prop: 2 }, { prop: 1 }]);
     });
 
+    it("should get first item from the list", () => {
+        const result = lists.getFirstItem({ list: [0, 1, 2, 3, 4] });
+        expect(result).toEqual(0);
+    });
+
+    it("should get first item from the list and clone", () => {
+        const result = lists.getFirstItem({ list: [0, 1, 2, 3, 4], clone: true });
+        expect(result).toEqual(0);
+    });
+
+    it("should throw error when getting first item from empty list", () => {
+        expect(() => lists.getFirstItem({ list: [] })).toThrowError("List is empty");
+    });
+
+    it("should get last item from the list", () => {
+        const result = lists.getLastItem({ list: [0, 1, 2, 3, 4] });
+        expect(result).toEqual(4);
+    });
+
+    it("should get last item from the list and clone", () => {
+        const result = lists.getLastItem({ list: [0, 1, 2, 3, 4], clone: true });
+        expect(result).toEqual(4);
+    });
+
+    it("should throw error when getting last item from empty list", () => {
+        expect(() => lists.getLastItem({ list: [] })).toThrowError("List is empty");
+    });
+
+    it("should remove first item from the list", () => {
+        const result = lists.removeFirstItem({ list: [0, 1, 2, 3, 4] });
+        expect(result).toEqual([1, 2, 3, 4]);
+    });
+
+    it("should remove first item from the list and clone", () => {
+        const result = lists.removeFirstItem({ list: [0, 1, 2, 3, 4], clone: true });
+        expect(result).toEqual([1, 2, 3, 4]);
+    });
+
+    it("should not remove first item from empty list", () => {
+        const result = lists.removeFirstItem({ list: [] });
+        expect(result).toEqual([]);
+    });
+
+    it("should remove last item from the list", () => {
+        const result = lists.removeLastItem({ list: [0, 1, 2, 3, 4] });
+        expect(result).toEqual([0, 1, 2, 3]);
+    });
+
+    it("should remove last item from the list and clone", () => {
+        const result = lists.removeLastItem({ list: [0, 1, 2, 3, 4], clone: true });
+        expect(result).toEqual([0, 1, 2, 3]);
+    });
+
+    it("should not remove last item from empty list", () => {
+        const result = lists.removeLastItem({ list: [] });
+        expect(result).toEqual([]);
+    });
+
+    it("should remove item at index from end (0 means last)", () => {
+        const result = lists.removeItemAtIndexFromEnd({ list: [0, 1, 2, 3, 4], index: 0 });
+        expect(result).toEqual([0, 1, 2, 3]);
+    });
+
+    it("should remove item at index from end (1 means second to last)", () => {
+        const result = lists.removeItemAtIndexFromEnd({ list: [0, 1, 2, 3, 4], index: 1 });
+        expect(result).toEqual([0, 1, 2, 4]);
+    });
+
+    it("should remove item at index from end (4 means first)", () => {
+        const result = lists.removeItemAtIndexFromEnd({ list: [0, 1, 2, 3, 4], index: 4 });
+        expect(result).toEqual([1, 2, 3, 4]);
+    });
+
+    it("should remove item at index from end and clone", () => {
+        const result = lists.removeItemAtIndexFromEnd({ list: [0, 1, 2, 3, 4], index: 2, clone: true });
+        expect(result).toEqual([0, 1, 3, 4]);
+    });
+
+    it("should not remove item at out of bounds index from end", () => {
+        const result = lists.removeItemAtIndexFromEnd({ list: [0, 1, 2, 3, 4], index: 5 });
+        expect(result).toEqual([0, 1, 2, 3, 4]);
+    });
+
+    it("should not remove item at negative index from end", () => {
+        const result = lists.removeItemAtIndexFromEnd({ list: [0, 1, 2, 3, 4], index: -1 });
+        expect(result).toEqual([0, 1, 2, 3, 4]);
+    });
+
+    it("should shuffle the list", () => {
+        const result = lists.shuffle({ list: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9] });
+        expect(result.length).toBe(10);
+        expect(result).toContain(0);
+        expect(result).toContain(9);
+    });
+
+    it("should shuffle the list and clone", () => {
+        const result = lists.shuffle({ list: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9], clone: true });
+        expect(result.length).toBe(10);
+        expect(result).toContain(0);
+        expect(result).toContain(9);
+    });
+
+    it("should shuffle empty list", () => {
+        const result = lists.shuffle({ list: [] });
+        expect(result).toEqual([]);
+    });
+
+    it("should remove duplicates from generic list", () => {
+        const result = lists.removeDuplicates({ list: ["a", "b", "c", "a", "d", "b", "e"] });
+        expect(result).toEqual(["a", "b", "c", "d", "e"]);
+    });
+
+    it("should remove duplicates from generic list and clone", () => {
+        const result = lists.removeDuplicates({ list: ["a", "b", "c", "a", "d", "b", "e"], clone: true });
+        expect(result).toEqual(["a", "b", "c", "d", "e"]);
+    });
+
+    it("should remove duplicates from number list", () => {
+        const result = lists.removeDuplicates({ list: [1, 2, 3, 1, 4, 2, 5] });
+        expect(result).toEqual([1, 2, 3, 4, 5]);
+    });
+
+    it("should concatenate multiple lists", () => {
+        const result = lists.concatenate({ lists: [[0, 1, 2], [3, 4, 5], [6, 7, 8]] });
+        expect(result).toEqual([0, 1, 2, 3, 4, 5, 6, 7, 8]);
+    });
+
+    it("should concatenate multiple lists and clone", () => {
+        const result = lists.concatenate({ lists: [[0, 1, 2], [3, 4, 5], [6, 7, 8]], clone: true });
+        expect(result).toEqual([0, 1, 2, 3, 4, 5, 6, 7, 8]);
+    });
+
+    it("should concatenate empty lists", () => {
+        const result = lists.concatenate({ lists: [[], [], []] });
+        expect(result).toEqual([]);
+    });
+
+    it("should concatenate single list", () => {
+        const result = lists.concatenate({ lists: [[0, 1, 2]] });
+        expect(result).toEqual([0, 1, 2]);
+    });
+
+    it("should check if list includes an item", () => {
+        const result = lists.includes({ list: [0, 1, 2, 3, 4], item: 2 });
+        expect(result).toBe(true);
+    });
+
+    it("should check if list does not include an item", () => {
+        const result = lists.includes({ list: [0, 1, 2, 3, 4], item: 5 });
+        expect(result).toBe(false);
+    });
+
+    it("should check if list includes string item", () => {
+        const result = lists.includes({ list: ["a", "b", "c"], item: "b" });
+        expect(result).toBe(true);
+    });
+
+    it("should find index of an item in the list", () => {
+        const result = lists.findIndex({ list: [0, 1, 2, 3, 4], item: 2 });
+        expect(result).toBe(2);
+    });
+
+    it("should return -1 when item is not found", () => {
+        const result = lists.findIndex({ list: [0, 1, 2, 3, 4], item: 5 });
+        expect(result).toBe(-1);
+    });
+
+    it("should find index of first occurrence", () => {
+        const result = lists.findIndex({ list: [0, 1, 2, 3, 2, 4], item: 2 });
+        expect(result).toBe(2);
+    });
+
+    it("should find index of string item", () => {
+        const result = lists.findIndex({ list: ["a", "b", "c"], item: "c" });
+        expect(result).toBe(2);
+    });
+
+    it("should interleave two lists", () => {
+        const result = lists.interleave({ lists: [[0, 1, 2], [3, 4, 5]] });
+        expect(result).toEqual([0, 3, 1, 4, 2, 5]);
+    });
+
+    it("should interleave two lists and clone", () => {
+        const result = lists.interleave({ lists: [[0, 1, 2], [3, 4, 5]], clone: true });
+        expect(result).toEqual([0, 3, 1, 4, 2, 5]);
+    });
+
+    it("should interleave three lists", () => {
+        const result = lists.interleave({ lists: [[0, 1], [2, 3], [4, 5]] });
+        expect(result).toEqual([0, 2, 4, 1, 3, 5]);
+    });
+
+    it("should interleave lists with different lengths", () => {
+        const result = lists.interleave({ lists: [[0, 1, 2], [3, 4]] });
+        expect(result).toEqual([0, 3, 1, 4, 2]);
+    });
+
+    it("should interleave lists with different lengths (first shorter)", () => {
+        const result = lists.interleave({ lists: [[0, 1], [2, 3, 4, 5]] });
+        expect(result).toEqual([0, 2, 1, 3, 4, 5]);
+    });
+
+    it("should interleave single list", () => {
+        const result = lists.interleave({ lists: [[0, 1, 2]] });
+        expect(result).toEqual([0, 1, 2]);
+    });
+
+    it("should interleave empty lists", () => {
+        const result = lists.interleave({ lists: [[], []] });
+        expect(result).toEqual([]);
+    });
+
+    it("should throw error when interleaving with no lists", () => {
+        expect(() => lists.interleave({ lists: [] })).toThrowError("Lists array is empty or does not exist");
+    });
+
+    it("should interleave string lists", () => {
+        const result = lists.interleave({ lists: [["a", "b"], ["c", "d"]] });
+        expect(result).toEqual(["a", "c", "b", "d"]);
+    });
+
 });
 

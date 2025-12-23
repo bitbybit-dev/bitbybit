@@ -574,4 +574,52 @@ export namespace Lists {
          */
         clone? = true;
     }
+    export class ConcatenateDto<T> {
+        constructor(lists?: T[][], clone?: boolean) {
+            if (lists !== undefined) { this.lists = lists; }
+            if (clone !== undefined) { this.clone = clone; }
+        }
+        /**
+         * The lists to concatenate
+         * @default undefined
+         */
+        lists: T[][];
+        /**
+         * Tries to make structured clone of the incoming list data in the component, sometimes it may not be possible due to circular structures or other types of error
+         * @default true
+         */
+        clone? = true;
+    }
+    export class IncludesDto<T> {
+        constructor(list?: T[], item?: T) {
+            if (list !== undefined) { this.list = list; }
+            if (item !== undefined) { this.item = item; }
+        }
+        /**
+         * The list to check
+         * @default undefined
+         */
+        list: T[];
+        /**
+         * The item to look for
+         * @default undefined
+         */
+        item: T;
+    }
+    export class InterleaveDto<T> {
+        constructor(lists?: T[][], clone?: boolean) {
+            if (lists !== undefined) { this.lists = lists; }
+            if (clone !== undefined) { this.clone = clone; }
+        }
+        /**
+         * The lists to interleave
+         * @default undefined
+         */
+        lists: T[][];
+        /**
+         * Tries to make structured clone of the incoming list data in the component, sometimes it may not be possible due to circular structures or other types of error
+         * @default true
+         */
+        clone? = true;
+    }
 }

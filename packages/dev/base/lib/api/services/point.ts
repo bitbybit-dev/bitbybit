@@ -16,7 +16,8 @@ export class Point {
     constructor(private readonly geometryHelper: GeometryHelper, private readonly transforms: Transforms, private readonly vector: Vector, private readonly lists: Lists) { }
 
     /**
-     * Transforms the single point
+     * Applies transformation matrix to a single point (rotates, scales, or translates).
+     * Example: point=[0,0,0] with translation [5,5,0] → [5,5,0]
      * @param inputs Contains a point and the transformations to apply
      * @returns Transformed point
      * @group transforms
@@ -31,7 +32,8 @@ export class Point {
     }
 
     /**
-     * Transforms multiple points
+     * Applies same transformation matrix to multiple points (batch transform).
+     * Example: 5 points with rotation 90° → all 5 points rotated together
      * @param inputs Contains points and the transformations to apply
      * @returns Transformed points
      * @group transforms
@@ -43,7 +45,9 @@ export class Point {
     }
 
     /**
-     * Transforms multiple points by multiple transformations
+     * Applies different transformation matrices to corresponding points (one transform per point).
+     * Arrays must have equal length.
+     * Example: 3 points with 3 different translations → each point moved independently
      * @param inputs Contains points and the transformations to apply
      * @returns Transformed points
      * @group transforms
@@ -60,7 +64,8 @@ export class Point {
     }
 
     /**
-     * Translate multiple points
+     * Moves multiple points by a translation vector (same offset for all points).
+     * Example: points=[[0,0,0], [1,0,0]], translation=[5,5,0] → [[5,5,0], [6,5,0]]
      * @param inputs Contains points and the translation vector
      * @returns Translated points
      * @group transforms
@@ -73,7 +78,9 @@ export class Point {
     }
 
     /**
-     * Translate multiple points
+     * Moves multiple points by corresponding translation vectors (one vector per point).
+     * Arrays must have equal length.
+     * Example: 3 points with 3 different vectors → each point moved by its corresponding vector
      * @param inputs Contains points and the translation vector
      * @returns Translated points
      * @group transforms
@@ -91,7 +98,8 @@ export class Point {
     }
 
     /**
-     * Translate multiple points by x, y, z values provided
+     * Moves multiple points by separate X, Y, Z values (convenience method for translation).
+     * Example: points=[[0,0,0]], x=10, y=5, z=0 → [[10,5,0]]
      * @param inputs Contains points and the translation in x y and z
      * @returns Translated points
      * @group transforms
@@ -104,7 +112,8 @@ export class Point {
     }
 
     /**
-     * Scale multiple points by providing center point and x, y, z scale factors
+     * Scales multiple points around a center point with different factors per axis.
+     * Example: points=[[10,0,0]], center=[5,0,0], scaleXyz=[2,1,1] → [[15,0,0]] (doubles X distance from center)
      * @param inputs Contains points, center point and scale factors
      * @returns Scaled points
      * @group transforms
@@ -117,7 +126,8 @@ export class Point {
     }
 
     /**
-     * Stretch multiple points by providing center point, direction and uniform scale factor
+     * Stretches multiple points along a direction from a center point (directional scaling).
+     * Example: points=[[10,0,0]], center=[0,0,0], direction=[1,0,0], scale=2 → [[20,0,0]]
      * @param inputs Contains points, center point, direction and scale factor
      * @returns Stretched points
      * @group transforms
@@ -130,7 +140,8 @@ export class Point {
     }
 
     /**
-     * Rotate multiple points by providing center point, axis and degrees of rotation
+     * Rotates multiple points around a center point along a custom axis.
+     * Example: points=[[10,0,0]], center=[0,0,0], axis=[0,1,0], angle=90° → [[0,0,-10]]
      * @param inputs Contains points, axis, center point and angle of rotation
      * @returns Rotated points
      * @group transforms
@@ -143,7 +154,8 @@ export class Point {
     }
 
     /**
-     * Gets a bounding box of the points
+     * Calculates axis-aligned bounding box containing all points (min, max, center, width, height, length).
+     * Example: points=[[0,0,0], [10,5,3]] → {min:[0,0,0], max:[10,5,3], center:[5,2.5,1.5], width:10, height:5, length:3}
      * @param inputs Points
      * @returns Bounding box of points
      * @group extract
@@ -182,7 +194,8 @@ export class Point {
     }
 
     /**
-     * Measures the closest distance between a point and a collection of points
+     * Calculates distance to the nearest point in a collection.
+     * Example: point=[0,0,0], points=[[5,0,0], [10,0,0], [3,0,0]] → 3 (distance to [3,0,0])
      * @param inputs Point from which to measure and points to measure the distance against
      * @returns Distance to closest point
      * @group extract
@@ -194,7 +207,8 @@ export class Point {
     }
 
     /**
-     * Finds the closest point index between a point and a collection of points. Caution, index is not 0 based, it starts with 1.
+     * Finds array index of the nearest point in a collection (1-based index, not 0-based).
+     * Example: point=[0,0,0], points=[[5,0,0], [10,0,0], [3,0,0]] → 3 (index of [3,0,0])
      * @param inputs Point from which to find the index in a collection of points
      * @returns Closest point index
      * @group extract
@@ -206,7 +220,8 @@ export class Point {
     }
 
     /**
-     * Finds the closest point in a collection
+     * Finds the nearest point in a collection to a reference point.
+     * Example: point=[0,0,0], points=[[5,0,0], [10,0,0], [3,0,0]] → [3,0,0]
      * @param inputs Point and points collection to find the closest point in
      * @returns Closest point
      * @group extract
@@ -218,7 +233,8 @@ export class Point {
     }
 
     /**
-     * Finds the distance between two points
+     * Calculates Euclidean distance between two points.
+     * Example: start=[0,0,0], end=[3,4,0] → 5 (using Pythagorean theorem: √(3²+4²))
      * @param inputs Coordinates of start and end points
      * @returns Distance
      * @group measure
@@ -233,7 +249,8 @@ export class Point {
     }
 
     /**
-     * Finds the distances between the start point and multiple end points
+     * Calculates distances from a start point to multiple end points.
+     * Example: start=[0,0,0], endPoints=[[3,0,0], [0,4,0], [5,0,0]] → [3, 4, 5]
      * @param inputs Coordinates of start and end points
      * @returns Distances
      * @group measure
@@ -247,7 +264,8 @@ export class Point {
     }
 
     /**
-     * Multiply point by a specified amount
+     * Duplicates a point N times (creates array with N copies of the same point).
+     * Example: point=[5,5,0], amountOfPoints=3 → [[5,5,0], [5,5,0], [5,5,0]]
      * @param inputs The point to be multiplied and the amount of points to create
      * @returns Distance
      * @group transforms
@@ -263,7 +281,8 @@ export class Point {
     }
 
     /**
-     * Get x coordinate of the point
+     * Extracts X coordinate from a point.
+     * Example: point=[5,10,3] → 5
      * @param inputs The point
      * @returns X coordinate
      * @group get
@@ -275,7 +294,8 @@ export class Point {
     }
 
     /**
-     * Get y coordinate of the point
+     * Extracts Y coordinate from a point.
+     * Example: point=[5,10,3] → 10
      * @param inputs The point
      * @returns Y coordinate
      * @group get
@@ -287,7 +307,8 @@ export class Point {
     }
 
     /**
-     * Get z coordinate of the point
+     * Extracts Z coordinate from a point.
+     * Example: point=[5,10,3] → 3
      * @param inputs The point
      * @returns Z coordinate
      * @group get
@@ -299,7 +320,8 @@ export class Point {
     }
 
     /**
-     * Get average point of points
+     * Calculates centroid (average position) of multiple points.
+     * Example: points=[[0,0,0], [10,0,0], [10,10,0]] → [6.67,3.33,0]
      * @param inputs The points
      * @returns point
      * @group extract
@@ -325,7 +347,8 @@ export class Point {
     }
 
     /**
-     * Creates the xyz point
+     * Creates a 3D point from X, Y, Z coordinates.
+     * Example: x=10, y=5, z=3 → [10,5,3]
      * @param inputs xyz information
      * @returns point 3d
      * @group create
@@ -337,7 +360,8 @@ export class Point {
     }
 
     /**
-     * Creates the xy point
+     * Creates a 2D point from X, Y coordinates.
+     * Example: x=10, y=5 → [10,5]
      * @param inputs xy information
      * @returns point 3d
      * @group create
@@ -349,7 +373,9 @@ export class Point {
     }
 
     /**
-     * Creates the spiral out of multiple points
+     * Creates logarithmic spiral points using golden angle or custom widening factor.
+     * Generates natural spiral patterns common in nature (sunflower, nautilus shell).
+     * Example: numberPoints=100, radius=10, phi=1.618 → 100 points forming outward spiral
      * @param inputs Spiral information
      * @returns Specified number of points in the array along the spiral
      * @group create
@@ -371,8 +397,9 @@ export class Point {
     }
 
     /**
-     * Creates a flat point grid on XY plane. This grid contains center points for hexagons of the given radius.
-     * Be aware that we control only the nr of hexagons to be made and not the length and width of the grid.
+     * Creates hexagonal grid center points on XY plane (honeycomb pattern).
+     * Grid size controlled by number of hexagons, not width/height.
+     * Example: radiusHexagon=1, nrHexagonsX=3, nrHexagonsY=3 → 9 hex centers in grid pattern
      * @param inputs Information about hexagon and the grid
      * @returns Points in the array on the grid
      * @group create
@@ -409,9 +436,9 @@ export class Point {
     }
 
     /**
-     * Creates a pointy-top or flat-top hexagon grid, scaling hexagons to fit specified dimensions exactly.
-     * Returns both center points and the vertices of each (potentially scaled) hexagon.
-     * Hexagons are ordered column-first, then row-first.
+     * Creates hexagonal grid scaled to fit within specified width/height bounds (auto-calculates hex size).
+     * Returns center points and hex vertices. Supports pointy-top or flat-top orientation.
+     * Example: width=10, height=10, nrHexagonsInHeight=3 → hex grid filling 10×10 area with 3 rows
      * @param inputs Information about the desired grid dimensions and hexagon counts.
      * @returns An object containing the array of center points and an array of hexagon vertex arrays.
      * @group create
@@ -954,7 +981,8 @@ export class Point {
     }
 
     /**
-     * Removes consecutive duplicates from the point array with tolerance
+     * Removes consecutive duplicate points from array within tolerance.
+     * Example: [[0,0,0], [0,0,0], [1,0,0], [1,0,0], [2,0,0]] → [[0,0,0], [1,0,0], [2,0,0]]
      * @param inputs points, tolerance and check first and last
      * @returns Points in the array without consecutive duplicates
      * @group clean
@@ -966,7 +994,8 @@ export class Point {
     }
 
     /**
-     * Creates a normal vector from 3 points
+     * Calculates normal vector from three points using cross product (perpendicular to plane).
+     * Example: p1=[0,0,0], p2=[1,0,0], p3=[0,1,0] → [0,0,1] (pointing up from XY plane)
      * @param inputs Three points and the reverse normal flag
      * @returns Normal vector
      * @group create
@@ -1033,7 +1062,8 @@ export class Point {
     }
 
     /**
-     * Checks if two points are almost equal
+     * Checks if two points are approximately equal within tolerance (distance-based comparison).
+     * Example: point1=[1.0000001, 2.0, 3.0], point2=[1.0, 2.0, 3.0], tolerance=1e-6 → true
      * @param inputs Two points and the tolerance
      * @returns true if the points are almost equal
      * @group measure
@@ -1048,7 +1078,8 @@ export class Point {
     }
 
     /**
-     * Sorts points lexicographically (X, then Y, then Z) 
+     * Sorts points lexicographically (by X, then Y, then Z coordinates).
+     * Example: [[5,0,0], [1,0,0], [3,0,0]] → [[1,0,0], [3,0,0], [5,0,0]]
      * @param inputs points
      * @returns sorted points
      * @group sort

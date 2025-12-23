@@ -95,4 +95,19 @@ export class CrossSectionTransforms {
         return this.manifoldWorkerManager.genericCallToWorkerPromise("crossSection.transforms.transform", inputs);
     }
 
+    /**
+     * Move the vertices of this CrossSection (creating a new one) according to
+     * any arbitrary input function, followed by a union operation (with a
+     * Positive fill rule) that ensures any introduced intersections are not
+     * included in the result.
+     * @param inputs cross section and warp function
+     * @returns Warped cross section shape
+     * @group transforms
+     * @shortname warp
+     * @drawable true
+     */
+    async warp(inputs: Inputs.Manifold.CrossSectionWarpDto<Inputs.Manifold.CrossSectionPointer>): Promise<Inputs.Manifold.CrossSectionPointer> {
+        return this.manifoldWorkerManager.genericCallToWorkerPromise("crossSection.transforms.warp", inputs);
+    }
+
 }

@@ -1,6 +1,6 @@
 {
     "name": "@bitbybit-dev/occt",
-    "version": "0.20.13",
+    "version": "0.20.14",
     "description": "Bit By Bit Developers CAD algorithms using OpenCascade Technology kernel. Run in Node and in Browser.",
     "main": "index.js",
     "repository": {
@@ -35,7 +35,7 @@
     "types": "./index.d.ts",
     "type": "module",
     "dependencies": {
-        "@bitbybit-dev/base": "0.20.13"
+        "@bitbybit-dev/base": "0.20.14"
     },
     "devDependencies": {
         "shx":"0.4.0",
@@ -71,7 +71,8 @@
             "lib/occ-service.ts",
             "lib/api/shapes-helper.service.ts",
             "lib/api/vector-helper.service.ts",
-            "!**/index.ts"
+            "!**/index.ts",
+            "!**/io-assembly.ts"
         ]
     }
 }

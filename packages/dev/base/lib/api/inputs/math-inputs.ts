@@ -352,4 +352,181 @@ export namespace Math {
          */
         decimalPlaces = 2;
     }
+    export class ClampDto {
+        constructor(number?: number, min?: number, max?: number) {
+            if (number !== undefined) { this.number = number; }
+            if (min !== undefined) { this.min = min; }
+            if (max !== undefined) { this.max = max; }
+        }
+        /**
+         * Number to clamp
+         * @default 0.5
+         * @minimum -Infinity
+         * @maximum Infinity
+         * @step 0.1
+         */
+        number = 0.5;
+        /**
+         * Minimum value
+         * @default 0
+         * @minimum -Infinity
+         * @maximum Infinity
+         * @step 0.1
+         */
+        min = 0;
+        /**
+         * Maximum value
+         * @default 1
+         * @minimum -Infinity
+         * @maximum Infinity
+         * @step 0.1
+         */
+        max = 1;
+    }
+    export class LerpDto {
+        constructor(start?: number, end?: number, t?: number) {
+            if (start !== undefined) { this.start = start; }
+            if (end !== undefined) { this.end = end; }
+            if (t !== undefined) { this.t = t; }
+        }
+        /**
+         * Start value
+         * @default 0
+         * @minimum -Infinity
+         * @maximum Infinity
+         * @step 0.1
+         */
+        start = 0;
+        /**
+         * End value
+         * @default 1
+         * @minimum -Infinity
+         * @maximum Infinity
+         * @step 0.1
+         */
+        end = 1;
+        /**
+         * Interpolation value (0-1)
+         * @default 0.5
+         * @minimum -Infinity
+         * @maximum Infinity
+         * @step 0.01
+         */
+        t = 0.5;
+    }
+    export class InverseLerpDto {
+        constructor(start?: number, end?: number, value?: number) {
+            if (start !== undefined) { this.start = start; }
+            if (end !== undefined) { this.end = end; }
+            if (value !== undefined) { this.value = value; }
+        }
+        /**
+         * Start value
+         * @default 0
+         * @minimum -Infinity
+         * @maximum Infinity
+         * @step 0.1
+         */
+        start = 0;
+        /**
+         * End value
+         * @default 1
+         * @minimum -Infinity
+         * @maximum Infinity
+         * @step 0.1
+         */
+        end = 1;
+        /**
+         * Value to find t for
+         * @default 0.5
+         * @minimum -Infinity
+         * @maximum Infinity
+         * @step 0.1
+         */
+        value = 0.5;
+    }
+    export class WrapDto {
+        constructor(number?: number, min?: number, max?: number) {
+            if (number !== undefined) { this.number = number; }
+            if (min !== undefined) { this.min = min; }
+            if (max !== undefined) { this.max = max; }
+        }
+        /**
+         * Number to wrap
+         * @default 1.5
+         * @minimum -Infinity
+         * @maximum Infinity
+         * @step 0.1
+         */
+        number = 1.5;
+        /**
+         * Minimum value
+         * @default 0
+         * @minimum -Infinity
+         * @maximum Infinity
+         * @step 0.1
+         */
+        min = 0;
+        /**
+         * Maximum value
+         * @default 1
+         * @minimum -Infinity
+         * @maximum Infinity
+         * @step 0.1
+         */
+        max = 1;
+    }
+    export class PingPongDto {
+        constructor(t?: number, length?: number) {
+            if (t !== undefined) { this.t = t; }
+            if (length !== undefined) { this.length = length; }
+        }
+        /**
+         * Time value
+         * @default 0.5
+         * @minimum -Infinity
+         * @maximum Infinity
+         * @step 0.1
+         */
+        t = 0.5;
+        /**
+         * Length of ping pong
+         * @default 1
+         * @minimum -Infinity
+         * @maximum Infinity
+         * @step 0.1
+         */
+        length = 1;
+    }
+    export class MoveTowardsDto {
+        constructor(current?: number, target?: number, maxDelta?: number) {
+            if (current !== undefined) { this.current = current; }
+            if (target !== undefined) { this.target = target; }
+            if (maxDelta !== undefined) { this.maxDelta = maxDelta; }
+        }
+        /**
+         * Current value
+         * @default 0
+         * @minimum -Infinity
+         * @maximum Infinity
+         * @step 0.1
+         */
+        current = 0;
+        /**
+         * Target value
+         * @default 1
+         * @minimum -Infinity
+         * @maximum Infinity
+         * @step 0.1
+         */
+        target = 1;
+        /**
+         * Maximum change amount
+         * @default 0.1
+         * @minimum -Infinity
+         * @maximum Infinity
+         * @step 0.01
+         */
+        maxDelta = 0.1;
+    }
 }

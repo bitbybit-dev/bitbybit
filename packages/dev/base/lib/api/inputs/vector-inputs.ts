@@ -106,6 +106,16 @@ export namespace Vector {
          */
         vector: number[];
     }
+    export class VectorStringDto {
+        constructor(vector?: string[]) {
+            if (vector !== undefined) { this.vector = vector; }
+        }
+        /**
+         * Vector array of stringified numbers
+         * @default undefined
+         */
+        vector: string[];
+    }
     export class Vector3Dto {
         constructor(vector?: Base.Vector3) {
             if (vector !== undefined) { this.vector = vector; }

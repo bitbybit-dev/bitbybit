@@ -1,6 +1,21 @@
 
 import { PrintSaveInterface } from "../models/print-save.model";
 
+export interface PreviewDataInterface {
+    data: any;
+    viewMode?: "data" | "schema" | "metadata";
+    hidden?: boolean;
+}
+
+export interface PreviewCSVInterface {
+    data: string | any[][];
+    columnSeparator?: string;
+    rowSeparator?: string;
+    startRow?: number;
+    maxRows?: number;
+    hidden?: boolean;
+}
+
 export class ContextBase {
     blocklyWorkspace: any;
     verb: any;
@@ -10,6 +25,8 @@ export class ContextBase {
 
     promptPrintSave: (prompt: PrintSaveInterface) => void;
     promptPrint: (prompt: PrintSaveInterface) => void;
+    promptPreviewData: (data: PreviewDataInterface) => void;
+    promptPreviewCSV: (data: PreviewCSVInterface) => void;
 
     rerenderScene: () => void;
     tolerance = 0.00001;

@@ -11,7 +11,8 @@ export class TextBitByBit {
     }
 
     /**
-     * Creates a text
+     * Creates and returns a text string (pass-through for text input).
+     * Example: text='Hello World' → 'Hello World'
      * @param inputs a text
      * @returns text
      * @group create
@@ -23,7 +24,8 @@ export class TextBitByBit {
     }
 
     /**
-    * Split the text to multiple pieces by a separator
+    * Splits text into multiple pieces using a separator string.
+    * Example: text='apple,banana,cherry', separator=',' → ['apple', 'banana', 'cherry']
     * @param inputs a text
     * @returns text
     * @group transform
@@ -35,7 +37,8 @@ export class TextBitByBit {
     }
 
     /**
-    * Replace all occurrences of a text by another text
+    * Replaces all occurrences of a search string with a replacement string.
+    * Example: text='hello hello', search='hello', replaceWith='hi' → 'hi hi'
     * @param inputs a text
     * @returns text
     * @group transform
@@ -47,7 +50,8 @@ export class TextBitByBit {
     }
 
     /**
-    * Join multiple items by a separator into text
+    * Joins multiple items into a single text string using a separator.
+    * Example: list=['apple', 'banana', 'cherry'], separator=', ' → 'apple, banana, cherry'
     * @param inputs a list of items
     * @returns text
     * @group transform
@@ -83,7 +87,8 @@ export class TextBitByBit {
     }
 
     /**
-     * Format a text with values
+     * Formats text with placeholder values using {0}, {1}, etc. syntax.
+     * Example: text='Point: ({0}, {1})', values=[10, 5] → 'Point: (10, 5)'
      * @param inputs a text and values
      * @returns formatted text
      * @group transform
@@ -97,7 +102,368 @@ export class TextBitByBit {
     }
 
     /**
-     * Creates a vector segments for character and includes width and height information
+     * Checks if text contains a search string.
+     * Example: text='hello world', search='world' → true
+     * @param inputs a text and search string
+     * @returns boolean
+     * @group query
+     * @shortname includes
+     * @drawable false
+     */
+    includes(inputs: Inputs.Text.TextSearchDto): boolean {
+        return inputs.text.includes(inputs.search);
+    }
+
+    /**
+     * Checks if text starts with a search string.
+     * Example: text='hello world', search='hello' → true
+     * @param inputs a text and search string
+     * @returns boolean
+     * @group query
+     * @shortname starts with
+     * @drawable false
+     */
+    startsWith(inputs: Inputs.Text.TextSearchDto): boolean {
+        return inputs.text.startsWith(inputs.search);
+    }
+
+    /**
+     * Checks if text ends with a search string.
+     * Example: text='hello world', search='world' → true
+     * @param inputs a text and search string
+     * @returns boolean
+     * @group query
+     * @shortname ends with
+     * @drawable false
+     */
+    endsWith(inputs: Inputs.Text.TextSearchDto): boolean {
+        return inputs.text.endsWith(inputs.search);
+    }
+
+    /**
+     * Returns the index of the first occurrence of a search string.
+     * Example: text='hello world', search='world' → 6
+     * @param inputs a text and search string
+     * @returns index or -1 if not found
+     * @group query
+     * @shortname index of
+     * @drawable false
+     */
+    indexOf(inputs: Inputs.Text.TextSearchDto): number {
+        return inputs.text.indexOf(inputs.search);
+    }
+
+    /**
+     * Returns the index of the last occurrence of a search string.
+     * Example: text='hello world hello', search='hello' → 12
+     * @param inputs a text and search string
+     * @returns index or -1 if not found
+     * @group query
+     * @shortname last index of
+     * @drawable false
+     */
+    lastIndexOf(inputs: Inputs.Text.TextSearchDto): number {
+        return inputs.text.lastIndexOf(inputs.search);
+    }
+
+    /**
+     * Extracts a section of text between two indices.
+     * Example: text='hello world', start=0, end=5 → 'hello'
+     * @param inputs a text, start and end indices
+     * @returns extracted text
+     * @group transform
+     * @shortname substring
+     * @drawable false
+     */
+    substring(inputs: Inputs.Text.TextSubstringDto): string {
+        return inputs.text.substring(inputs.start, inputs.end);
+    }
+
+    /**
+     * Extracts a section of text and returns a new string.
+     * Example: text='hello world', start=0, end=5 → 'hello'
+     * @param inputs a text, start and end indices
+     * @returns extracted text
+     * @group transform
+     * @shortname slice
+     * @drawable false
+     */
+    slice(inputs: Inputs.Text.TextSubstringDto): string {
+        return inputs.text.slice(inputs.start, inputs.end);
+    }
+
+    /**
+     * Returns the character at the specified index.
+     * Example: text='hello', index=1 → 'e'
+     * @param inputs a text and index
+     * @returns character
+     * @group query
+     * @shortname char at
+     * @drawable false
+     */
+    charAt(inputs: Inputs.Text.TextIndexDto): string {
+        return inputs.text.charAt(inputs.index);
+    }
+
+    /**
+     * Removes whitespace from both ends of text.
+     * Example: text='  hello  ' → 'hello'
+     * @param inputs a text
+     * @returns trimmed text
+     * @group transform
+     * @shortname trim
+     * @drawable false
+     */
+    trim(inputs: Inputs.Text.TextDto): string {
+        return inputs.text.trim();
+    }
+
+    /**
+     * Removes whitespace from the start of text.
+     * Example: text='  hello  ' → 'hello  '
+     * @param inputs a text
+     * @returns trimmed text
+     * @group transform
+     * @shortname trim start
+     * @drawable false
+     */
+    trimStart(inputs: Inputs.Text.TextDto): string {
+        return inputs.text.trimStart();
+    }
+
+    /**
+     * Removes whitespace from the end of text.
+     * Example: text='  hello  ' → '  hello'
+     * @param inputs a text
+     * @returns trimmed text
+     * @group transform
+     * @shortname trim end
+     * @drawable false
+     */
+    trimEnd(inputs: Inputs.Text.TextDto): string {
+        return inputs.text.trimEnd();
+    }
+
+    /**
+     * Pads text from the start to reach target length.
+     * Example: text='x', length=3, padString='a' → 'aax'
+     * @param inputs a text, target length and pad string
+     * @returns padded text
+     * @group transform
+     * @shortname pad start
+     * @drawable false
+     */
+    padStart(inputs: Inputs.Text.TextPadDto): string {
+        return inputs.text.padStart(inputs.length, inputs.padString);
+    }
+
+    /**
+     * Pads text from the end to reach target length.
+     * Example: text='x', length=3, padString='a' → 'xaa'
+     * @param inputs a text, target length and pad string
+     * @returns padded text
+     * @group transform
+     * @shortname pad end
+     * @drawable false
+     */
+    padEnd(inputs: Inputs.Text.TextPadDto): string {
+        return inputs.text.padEnd(inputs.length, inputs.padString);
+    }
+
+    /**
+     * Converts text to uppercase.
+     * Example: text='hello' → 'HELLO'
+     * @param inputs a text
+     * @returns uppercase text
+     * @group transform
+     * @shortname to upper case
+     * @drawable false
+     */
+    toUpperCase(inputs: Inputs.Text.TextDto): string {
+        return inputs.text.toUpperCase();
+    }
+
+    /**
+     * Converts text to lowercase.
+     * Example: text='HELLO' → 'hello'
+     * @param inputs a text
+     * @returns lowercase text
+     * @group transform
+     * @shortname to lower case
+     * @drawable false
+     */
+    toLowerCase(inputs: Inputs.Text.TextDto): string {
+        return inputs.text.toLowerCase();
+    }
+
+    /**
+     * Capitalizes the first character of text.
+     * Example: text='hello world' → 'Hello world'
+     * @param inputs a text
+     * @returns text with first character uppercase
+     * @group transform
+     * @shortname capitalize first
+     * @drawable false
+     */
+    toUpperCaseFirst(inputs: Inputs.Text.TextDto): string {
+        if (!inputs.text) return inputs.text;
+        return inputs.text.charAt(0).toUpperCase() + inputs.text.slice(1);
+    }
+
+    /**
+     * Lowercases the first character of text.
+     * Example: text='Hello World' → 'hello World'
+     * @param inputs a text
+     * @returns text with first character lowercase
+     * @group transform
+     * @shortname uncapitalize first
+     * @drawable false
+     */
+    toLowerCaseFirst(inputs: Inputs.Text.TextDto): string {
+        if (!inputs.text) return inputs.text;
+        return inputs.text.charAt(0).toLowerCase() + inputs.text.slice(1);
+    }
+
+    /**
+     * Repeats text a specified number of times.
+     * Example: text='ha', count=3 → 'hahaha'
+     * @param inputs a text and count
+     * @returns repeated text
+     * @group transform
+     * @shortname repeat
+     * @drawable false
+     */
+    repeat(inputs: Inputs.Text.TextRepeatDto): string {
+        return inputs.text.repeat(inputs.count);
+    }
+
+    /**
+     * Reverses the characters in text.
+     * Example: text='hello' → 'olleh'
+     * @param inputs a text
+     * @returns reversed text
+     * @group transform
+     * @shortname reverse
+     * @drawable false
+     */
+    reverse(inputs: Inputs.Text.TextDto): string {
+        return inputs.text.split("").reverse().join("");
+    }
+
+    /**
+     * Returns the length of text.
+     * Example: text='hello' → 5
+     * @param inputs a text
+     * @returns length
+     * @group query
+     * @shortname length
+     * @drawable false
+     */
+    length(inputs: Inputs.Text.TextDto): number {
+        return inputs.text.length;
+    }
+
+    /**
+     * Checks if text is empty or only whitespace.
+     * Example: text='   ' → true
+     * @param inputs a text
+     * @returns boolean
+     * @group query
+     * @shortname is empty
+     * @drawable false
+     */
+    isEmpty(inputs: Inputs.Text.TextDto): boolean {
+        return !inputs.text || inputs.text.trim().length === 0;
+    }
+
+    /**
+     * Concatenates multiple text strings.
+     * Example: texts=['hello', ' ', 'world'] → 'hello world'
+     * @param inputs array of texts
+     * @returns concatenated text
+     * @group transform
+     * @shortname concat
+     * @drawable false
+     */
+    concat(inputs: Inputs.Text.TextConcatDto): string {
+        return inputs.texts.join("");
+    }
+
+    /**
+     * Tests if text matches a regular expression pattern.
+     * Example: text='hello123', pattern='[0-9]+' → true
+     * @param inputs a text and regex pattern
+     * @returns boolean
+     * @group regex
+     * @shortname test regex
+     * @drawable false
+     */
+    regexTest(inputs: Inputs.Text.TextRegexDto): boolean {
+        const regex = new RegExp(inputs.pattern, inputs.flags);
+        return regex.test(inputs.text);
+    }
+
+    /**
+     * Matches text against a regular expression and returns matches.
+     * Example: text='hello123world456', pattern='[0-9]+', flags='g' → ['123', '456']
+     * @param inputs a text and regex pattern
+     * @returns array of matches or null
+     * @group regex
+     * @shortname regex match
+     * @drawable false
+     */
+    regexMatch(inputs: Inputs.Text.TextRegexDto): string[] | null {
+        const regex = new RegExp(inputs.pattern, inputs.flags);
+        const result = inputs.text.match(regex);
+        return result ? Array.from(result) : null;
+    }
+
+    /**
+     * Replaces text matching a regular expression pattern.
+     * Example: text='hello123world456', pattern='[0-9]+', flags='g', replaceWith='X' → 'helloXworldX'
+     * @param inputs a text, regex pattern, and replacement
+     * @returns text with replacements
+     * @group regex
+     * @shortname regex replace
+     * @drawable false
+     */
+    regexReplace(inputs: Inputs.Text.TextRegexReplaceDto): string {
+        const regex = new RegExp(inputs.pattern, inputs.flags);
+        return inputs.text.replace(regex, inputs.replaceWith);
+    }
+
+    /**
+     * Searches text for a regular expression pattern and returns the index.
+     * Example: text='hello123', pattern='[0-9]+' → 5
+     * @param inputs a text and regex pattern
+     * @returns index or -1 if not found
+     * @group regex
+     * @shortname regex search
+     * @drawable false
+     */
+    regexSearch(inputs: Inputs.Text.TextRegexDto): number {
+        const regex = new RegExp(inputs.pattern, inputs.flags);
+        return inputs.text.search(regex);
+    }
+
+    /**
+     * Splits text using a regular expression pattern.
+     * Example: text='a1b2c3', pattern='[0-9]+' → ['a', 'b', 'c']
+     * @param inputs a text and regex pattern
+     * @returns array of split strings
+     * @group regex
+     * @shortname regex split
+     * @drawable false
+     */
+    regexSplit(inputs: Inputs.Text.TextRegexDto): string[] {
+        const regex = new RegExp(inputs.pattern, inputs.flags);
+        return inputs.text.split(regex);
+    }
+
+    /**
+     * Converts a character to vector paths (polylines) with width and height data for rendering.
+     * Uses simplex stroke font to generate 2D line segments representing the character shape.
+     * Example: char='A', height=10 → {width:8, height:10, paths:[[points forming A shape]]}
      * @param inputs a text
      * @returns width, height and segments as json
      * @group vector
@@ -136,7 +502,9 @@ export class TextBitByBit {
     }
 
     /**
-     * Creates a vector text lines for a given text and includes width and height information
+     * Converts multi-line text to vector paths (polylines) with alignment and spacing controls.
+     * Supports line breaks, letter spacing, line spacing, horizontal alignment, and origin centering.
+     * Example: text='Hello\nWorld', height=10, align=center → [{line1 chars}, {line2 chars}]
      * @param inputs a text as string
      * @returns segments
      * @group vector
