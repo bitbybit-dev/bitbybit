@@ -79,4 +79,32 @@ export namespace Asset {
          */
         hidden = false;
     }
+    export class DownloadDto {
+        constructor(fileName?: string, content?: string | Blob, extension?: string, contentType?: string) {
+            if (fileName !== undefined) { this.fileName = fileName; }
+            if (content !== undefined) { this.content = content; }
+            if (extension !== undefined) { this.extension = extension; }
+            if (contentType !== undefined) { this.contentType = contentType; }
+        }
+        /**
+         * The file name for the downloaded file
+         * @default undefined
+         */
+        fileName: string;
+        /**
+         * The content to download (string or Blob)
+         * @default undefined
+         */
+        content: string | Blob;
+        /**
+         * The file extension (without dot)
+         * @default txt
+         */
+        extension = "txt";
+        /**
+         * The content type for the file
+         * @default text/plain
+         */
+        contentType = "text/plain";
+    }
 }

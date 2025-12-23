@@ -20,6 +20,18 @@ export class Asset {
     }
 
     /**
+     * Gets the text from asset file stored in your browser.
+     * @param inputs asset name to get from project assets
+     * @returns Text of asset
+     * @group get
+     * @shortname text file
+     */
+    async getTextFile(inputs: Inputs.Asset.GetAssetDto): Promise<string> {
+        const file = await this.assetManager.getAsset(inputs.fileName);
+        return await file.text();
+    }
+
+    /**
      * Gets the local asset file stored in your browser.
      * @param inputs asset name to get from local assets
      * @returns Blob of asset
@@ -28,6 +40,22 @@ export class Asset {
      */
     getLocalFile(inputs: Inputs.Asset.GetAssetDto): Promise<File | File[]> {
         return this.assetManager.getLocalAsset(inputs.fileName);
+    }
+
+    /**
+     * Gets the text from asset file stored in your browser.
+     * @param inputs asset name to get from local assets
+     * @returns Text of asset or array of texts
+     * @group get
+     * @shortname local text file
+     */
+    async getLocalTextFile(inputs: Inputs.Asset.GetAssetDto): Promise<string | string[]> {
+        const files = await this.getLocalFile(inputs);
+        if (Array.isArray(files)) {
+            return await Promise.all(files.map(f => f.text()));
+        } else {
+            return await files.text();
+        }
     }
 
     /**
@@ -99,6 +127,24 @@ export class Asset {
      */
     createObjectURLs(inputs: Inputs.Asset.FilesDto): string[] {
         return inputs.files.map(f => URL.createObjectURL(f));
+    }
+
+    /**
+     * Downloads a file with the given content, extension, and content type.
+     * @param inputs file name, content, extension, and content type
+     * @group download
+     * @shortname download file
+     */
+    download(inputs: Inputs.Asset.DownloadDto): void {
+        let blob: Blob;
+        
+        if (typeof inputs.content === "string") {
+            blob = new Blob([inputs.content], { type: inputs.contentType });
+        } else {
+            blob = inputs.content;
+        }
+        
+        this.assetManager.downloadFile(blob, inputs.fileName, inputs.extension, inputs.contentType);
     }
 
 }
