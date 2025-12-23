@@ -1,6 +1,6 @@
 {
   "name": "@bitbybit-dev/manifold",
-  "version": "0.20.13",
+  "version": "0.20.14",
   "description": "Bit By Bit Developers Manifold based CAD Library to Program Geometry",
   "main": "index.js",
   "repository": {

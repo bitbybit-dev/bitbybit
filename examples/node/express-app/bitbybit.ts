@@ -36,7 +36,7 @@ export class BitByBitBase {
         this.jscad = new Jscad(jscad);
         const wasm = await Module({
             locateFile: () => {
-                return "./manifold-3-0-0.wasm";
+                return "./manifold-3-3-2.wasm";
             },
         });
         wasm.setup();

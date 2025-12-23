@@ -1,5 +1,5 @@
 const path = require('path');
-const version = "0.20.13";
+const version = "0.20.14";
 const CopyPlugin = require("copy-webpack-plugin");
 
 module.exports = {
@@ -44,7 +44,7 @@ module.exports = {
                 type: "javascript/auto",
                 loader: "file-loader",
                 options: {
-                    name: "static/js/[name]-3-0-0.wasm",
+                    name: "static/js/[name]-3-3-2.wasm",
                 },
             },
             {

@@ -4,7 +4,7 @@
     "private": true,
     "homepage": "https://app-store.bitbybit.dev/cup",
     "dependencies": {
-        "@bitbybit-dev/babylonjs": "0.20.13",
+        "@bitbybit-dev/babylonjs": "0.20.14",
         "@emotion/react": "11.9.0",
         "@emotion/styled": "11.8.1",
         "web-ifc": "0.0.68",
