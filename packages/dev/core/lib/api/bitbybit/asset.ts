@@ -20,7 +20,7 @@ export class Asset {
     }
 
     /**
-     * Gets the text from asset file stored in your browser.
+     * Gets the text from asset file stored in your cloud account.
      * @param inputs asset name to get from project assets
      * @returns Text of asset
      * @group get
