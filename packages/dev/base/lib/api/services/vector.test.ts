@@ -374,7 +374,7 @@ describe("Vector unit tests", () => {
 
     it("should parse stringified zero to number", () => {
         const res = vector.parseNumbers({ vector: ["0", "0.0", "-0"] });
-        expect(res).toEqual([0, 0, 0]);
+        expect(res).toEqual([0, 0, -0]);
     });
 
     it("should parse stringified large numbers to numbers", () => {
