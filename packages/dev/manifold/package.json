@@ -58,7 +58,8 @@
   "types": "./index.d.ts",
   "type": "module",
   "dependencies": {
-    "manifold-3d": "3.3.2"
+    "manifold-3d": "3.3.2",
+    "@bitbybit-dev/base": "0.20.14"
   },
   "devDependencies": {
     "shx":"0.4.0",

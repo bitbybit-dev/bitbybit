@@ -173,6 +173,60 @@ export namespace Manifold {
          */
         polygonPoints?: Base.Point3[][];
     }
+    export class CrossSectionFromPolygonPointsDto {
+        constructor(points?: Base.Point3[], fillRule?: fillRuleEnum, removeDuplicates?: boolean, tolerance?: number) {
+            if (points !== undefined) { this.points = points; }
+            if (fillRule !== undefined) { this.fillRule = fillRule; }
+            if (removeDuplicates !== undefined) { this.removeDuplicates = removeDuplicates; }
+            if (tolerance !== undefined) { this.tolerance = tolerance; }
+        }
+        /**
+         * Points describing a single polygon
+         */
+        points: Base.Point3[];
+        /**
+         * Fill rule for polygon interpretation
+         * @default positive
+         */
+        fillRule?: fillRuleEnum = fillRuleEnum.positive;
+        /**
+         * Remove consecutive duplicate points before creating polygon
+         * @default false
+         */
+        removeDuplicates?: boolean = false;
+        /**
+         * Tolerance for duplicate removal
+         * @default 1e-7
+         */
+        tolerance?: number = 1e-7;
+    }
+    export class CrossSectionFromPolygonsPointsDto {
+        constructor(polygonPoints?: Base.Point3[][], fillRule?: fillRuleEnum, removeDuplicates?: boolean, tolerance?: number) {
+            if (polygonPoints !== undefined) { this.polygonPoints = polygonPoints; }
+            if (fillRule !== undefined) { this.fillRule = fillRule; }
+            if (removeDuplicates !== undefined) { this.removeDuplicates = removeDuplicates; }
+            if (tolerance !== undefined) { this.tolerance = tolerance; }
+        }
+        /**
+         * Points describing multiple polygons
+         */
+        polygonPoints: Base.Point3[][];
+        /**
+         * Fill rule for polygon interpretation
+         * @default positive
+         */
+        fillRule?: fillRuleEnum = fillRuleEnum.positive;
+        /**
+         * Remove consecutive duplicate points before creating polygons
+         * @default false
+         */
+        removeDuplicates?: boolean = false;
+        /**
+         * Tolerance for duplicate removal
+         * @default 1e-7
+         */
+        tolerance?: number = 1e-7;
+    }
     export class CubeDto {
         constructor(center?: boolean, size?: number) {
             if (center !== undefined) { this.center = center; }

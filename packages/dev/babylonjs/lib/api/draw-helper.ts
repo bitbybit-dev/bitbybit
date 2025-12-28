@@ -283,7 +283,7 @@ export class DrawHelper extends DrawHelperCore {
     drawPolyline(mesh: BABYLON.GreasedLineMesh,
         pointsToDraw: number[][],
         updatable: boolean, size: number, opacity: number, colours: string | string[]): BABYLON.GreasedLineMesh {
-        mesh = this.drawPolylines(mesh, [pointsToDraw], updatable, size, opacity, colours);
+        mesh = this.drawPolylines(mesh, [pointsToDraw], updatable, size, opacity, colours, 1e-7, true);
         return mesh;
     }
 
@@ -315,19 +315,29 @@ export class DrawHelper extends DrawHelperCore {
             inputs.updatable,
             inputs.size,
             inputs.opacity,
-            colours
+            colours,
+            1e-7,
+            true
         );
     }
 
     drawPolylines(
         mesh: BABYLON.GreasedLineMesh, polylinePoints: number[][][], updatable: boolean,
-        size: number, opacity: number, colours: string | string[]
+        size: number, opacity: number, colours: string | string[], tolerance = 1e-7, segmentize = false
     ): BABYLON.GreasedLineMesh | undefined {
         const linesForRender: number[][] = [];
         if (polylinePoints && polylinePoints.length > 0) {
             polylinePoints.forEach(polyline => {
                 const points = polyline.map(p => p.length === 2 ? [p[0], p[1], 0] : p);
-                linesForRender.push(points.flat());
+                if (segmentize) {
+                    // This is quite expensive operation, so only do it if requested on certain specific methods where polyline greased lines will render badly without it.
+                    const segmentedPoints = this.segmentizePolylinePoints(points, tolerance);
+                    if (segmentedPoints.length >= 2) {
+                        linesForRender.push(segmentedPoints.flat());
+                    }
+                } else {
+                    linesForRender.push(points.flat());
+                }
             });
             const width = size / 100;
             const color = Array.isArray(colours) ? BABYLON.Color3.FromHexString(colours[0]) : BABYLON.Color3.FromHexString(colours);
@@ -371,6 +381,75 @@ export class DrawHelper extends DrawHelperCore {
         (result.material as BABYLON.PBRMaterial).albedoColor = color;
         result.material.alpha = visibility;
         return result as BABYLON.GreasedLineMesh;
+    }
+
+    private segmentizePolylinePoints(points: number[][], tolerance: number): number[][] {
+        if (!points || points.length === 0) {
+            return [];
+        }
+
+        // First, remove consecutive duplicate points
+        const uniquePoints: number[][] = [];
+        let prevPoint: number[] | null = null;
+
+        for (const point of points) {
+            if (prevPoint === null || !this.arePointsEqual(prevPoint, point, tolerance)) {
+                uniquePoints.push(point);
+                prevPoint = point;
+            }
+        }
+
+        // For greased lines to render well, we need at least 2 distinct points
+        if (uniquePoints.length < 2) {
+            return uniquePoints;
+        }
+
+        // Check if the input is already segmented (each segment's end matches next segment's start)
+        const isAlreadySegmented = this.isSegmentedPolyline(uniquePoints, tolerance);
+
+        if (isAlreadySegmented) {
+            return uniquePoints;
+        }
+
+        // Convert flat point list to segmented format for greased lines
+        // Each segment needs: [start, end] where end of segment N = start of segment N+1
+        const segmentedPoints: number[][] = [];
+        for (let i = 0; i < uniquePoints.length - 1; i++) {
+            segmentedPoints.push(uniquePoints[i]);
+            segmentedPoints.push(uniquePoints[i + 1]);
+        }
+
+        return segmentedPoints;
+    }
+
+    private isSegmentedPolyline(points: number[][], tolerance: number): boolean {
+        // A segmented polyline has pairs of points where:
+        // points[1] == points[2], points[3] == points[4], etc.
+        // i.e., end of each segment matches start of next segment
+        if (points.length < 4) {
+            return false;
+        }
+
+        // Check if odd-indexed points match even-indexed points that follow
+        // e.g., points[1] should equal points[2], points[3] should equal points[4]
+        for (let i = 1; i < points.length - 1; i += 2) {
+            if (!this.arePointsEqual(points[i], points[i + 1], tolerance)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private arePointsEqual(p1: number[], p2: number[], tolerance: number): boolean {
+        if (p1.length !== p2.length) {
+            return false;
+        }
+        for (let i = 0; i < p1.length; i++) {
+            if (Math.abs(p1[i] - p2[i]) > tolerance) {
+                return false;
+            }
+        }
+        return true;
     }
 
     localAxes(size: number, scene: BABYLON.Scene, colorXHex: string, colorYHex: string, colorZHex: string): BABYLON.Mesh {
@@ -767,7 +846,7 @@ export class DrawHelper extends DrawHelperCore {
                 return texts;
             });
             const textPolylines = await Promise.all(promises);
-            const edgeMesh = this.drawPolylines(null, textPolylines.flat(), false, 0.2, 1, inputs.edgeIndexColour);
+            const edgeMesh = this.drawPolylines(null, textPolylines.flat(), false, 2, 1, inputs.edgeIndexColour, 1e-7, true);
             edgeMesh.parent = shapeMesh;
             edgeMesh.material.zOffset = -2;
         }
@@ -797,7 +876,7 @@ export class DrawHelper extends DrawHelperCore {
             });
             const textPolylines = await Promise.all(promises);
 
-            const faceMesh = this.drawPolylines(null, textPolylines.flat(), false, 0.2, 1, inputs.faceIndexColour);
+            const faceMesh = this.drawPolylines(null, textPolylines.flat(), false, 2, 1, inputs.faceIndexColour, 1e-7, true);
             faceMesh.parent = shapeMesh;
             if (inputs.drawEdges) {
                 faceMesh.material.zOffset = -2;
