@@ -2,6 +2,7 @@
 
 import * as Inputs from "./inputs";
 import { Base } from "./base-inputs";
+import * as pc from "playcanvas";
 
 // tslint:disable-next-line: no-namespace
 export namespace Draw {
@@ -9,6 +10,35 @@ export namespace Draw {
     export type DrawOptions = DrawOcctShapeOptions | DrawBasicGeometryOptions | DrawManifoldOrCrossSectionOptions;
     export type Entity = Base.Point3 | Base.Vector3 | Base.Line3 | Base.Polyline3 | Base.VerbCurve | Base.VerbSurface | Inputs.OCCT.TopoDSShapePointer | Inputs.Tag.TagDto |
         Base.Point3[] | Base.Vector3[] | Base.Line3[] | Base.Polyline3[] | Base.VerbCurve[] | Base.VerbSurface[] | Inputs.OCCT.TopoDSShapePointer[] | Inputs.Tag.TagDto[];
+
+    /**
+     * Metadata stored on drawn entities to track their type and options for updates
+     */
+    export interface BitByBitMeta {
+        type: drawingTypes;
+        options: DrawOptions;
+    }
+
+    /**
+     * Extended pc.Entity with BitByBit metadata for type-safe access to drawing metadata
+     */
+    export interface BitByBitEntity extends pc.Entity {
+        bitbybitMeta?: BitByBitMeta;
+    }
+
+    /**
+     * User data stored on polyline entities to track line lengths for update optimization
+     */
+    export interface PolylineUserData {
+        linesForRenderLengths: string;
+    }
+
+    /**
+     * Extended pc.Entity with user data for polyline tracking
+     */
+    export interface PolylineEntity extends pc.Entity {
+        bitbybitMeta?: PolylineUserData;
+    }
 
     export class DrawAny<U> {
         constructor(entity?: Entity, options?: DrawOptions) {

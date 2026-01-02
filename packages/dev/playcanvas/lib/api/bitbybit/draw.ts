@@ -5,6 +5,9 @@ import { Base } from "@bitbybit-dev/core/lib/api/inputs/base-inputs";
 import { Context } from "../context";
 import { DrawHelper } from "../draw-helper";
 
+// Type alias for entity with bitbybitMeta property
+type BitByBitEntity = Inputs.Draw.BitByBitEntity;
+
 export class Draw extends DrawCore {
     private defaultBasicOptions = new Inputs.Draw.DrawBasicGeometryOptions();
     private defaultPolylineOptions: Inputs.Draw.DrawBasicGeometryOptions = {
@@ -124,7 +127,7 @@ export class Draw extends DrawCore {
         return this.handleAsync(inputs, this.defaultPolylineOptions, (options) => {
             return this.drawHelper.drawSolidOrPolygonMeshes({
                 jscadMesh: inputs.group,
-                meshes: inputs.entity as any[],
+                meshes: inputs.entity as Inputs.JSCAD.JSCADEntity[],
                 ...options as Inputs.Draw.DrawBasicGeometryOptions
             });
         }, Inputs.Draw.drawingTypes.jscadMeshes);
@@ -201,8 +204,8 @@ export class Draw extends DrawCore {
         return this.handle(inputs, this.defaultPolylineOptions, (options) => {
             return this.drawHelper.drawPolylineClose({
                 polylineMesh: inputs.group,
-                polyline: inputs.entity,
-                ...options
+                polyline: inputs.entity as Inputs.Base.Polyline3,
+                ...options as Inputs.Draw.DrawBasicGeometryOptions
             });
         }, Inputs.Draw.drawingTypes.polyline);
     }
@@ -288,41 +291,53 @@ export class Draw extends DrawCore {
         }, Inputs.Draw.drawingTypes.verbSurfaces);
     }
 
-    private handleTag(inputs: Inputs.Draw.DrawAny<pc.Entity>) {
-        const options = inputs.options ? inputs.options : {
-            updatable: false,
-        };
+    private handleTag(inputs: Inputs.Draw.DrawAny<pc.Entity>): BitByBitEntity {
+        const options: Inputs.Draw.DrawBasicGeometryOptions = inputs.options 
+            ? inputs.options as Inputs.Draw.DrawBasicGeometryOptions
+            : { ...this.defaultBasicOptions, updatable: false };
+        
+        // Tag API has a different type signature - tagVariable is typed as TagDto but in practice
+        // it can be the previously created entity for updates
         const result = this.tag.drawTag({
-            tagVariable: inputs.group as any,
+            tagVariable: inputs.group as unknown as Inputs.Tag.TagDto,
             tag: inputs.entity as Inputs.Tag.TagDto,
-            ...options as Inputs.Draw.DrawBasicGeometryOptions
+            ...options
         });
-        if (result) {
-            (result as any).bitbybitMeta = { type: Inputs.Draw.drawingTypes.tag, options };
+        
+        // Cast result to BitByBitEntity since we're attaching metadata
+        const bitByBitResult = result as unknown as BitByBitEntity;
+        if (bitByBitResult) {
+            bitByBitResult.bitbybitMeta = { type: Inputs.Draw.drawingTypes.tag, options };
         }
-        return result;
+        return bitByBitResult;
     }
 
-    private handleTags(inputs: Inputs.Draw.DrawAny<pc.Entity>) {
-        const options = inputs.options ? inputs.options : {
-            updatable: false,
-        };
+    private handleTags(inputs: Inputs.Draw.DrawAny<pc.Entity>): BitByBitEntity {
+        const options: Inputs.Draw.DrawBasicGeometryOptions = inputs.options 
+            ? inputs.options as Inputs.Draw.DrawBasicGeometryOptions 
+            : { ...this.defaultBasicOptions, updatable: false };
+        
+        // Tag API has a different type signature - tagsVariable is typed as TagDto[] but in practice
+        // it can be the previously created entity for updates
         const result = this.tag.drawTags({
-            tagsVariable: inputs.group as any,
+            tagsVariable: inputs.group as unknown as Inputs.Tag.TagDto[],
             tags: inputs.entity as Inputs.Tag.TagDto[],
-            ...options as Inputs.Draw.DrawBasicGeometryOptions
+            ...options
         });
 
-        if (result) {
-            (result as any).bitbybitMeta = { type: Inputs.Draw.drawingTypes.tags, options };
+        // Cast result to BitByBitEntity since we're attaching metadata
+        const bitByBitResult = result as unknown as BitByBitEntity;
+        if (bitByBitResult) {
+            bitByBitResult.bitbybitMeta = { type: Inputs.Draw.drawingTypes.tags, options };
         }
-        return result;
+        return bitByBitResult;
     }
 
     private updateAny(inputs: Inputs.Draw.DrawAny<pc.Entity>): pc.Entity {
         let result;
-        if (inputs.group && (inputs.group as any).bitbybitMeta) {
-            const type = (inputs.group as any).bitbybitMeta.type as Inputs.Draw.drawingTypes;
+        const group = inputs.group as BitByBitEntity;
+        if (group && group.bitbybitMeta) {
+            const type = group.bitbybitMeta.type as Inputs.Draw.drawingTypes;
             switch (type) {
                 case Inputs.Draw.drawingTypes.point:
                     result = this.handlePoint(inputs);
@@ -367,20 +382,22 @@ export class Draw extends DrawCore {
         return result;
     }
 
-    private handle(inputs: Inputs.Draw.DrawAny<pc.Entity>, defaultOptions: Inputs.Draw.DrawOptions, action: (inputs) => pc.Entity, type: Inputs.Draw.drawingTypes): pc.Entity {
+    private handle(inputs: Inputs.Draw.DrawAny<pc.Entity>, defaultOptions: Inputs.Draw.DrawOptions, action: (options: Inputs.Draw.DrawOptions) => pc.Entity, type: Inputs.Draw.drawingTypes): pc.Entity {
+        const group = inputs.group as BitByBitEntity;
         let options = inputs.options ? inputs.options : defaultOptions;
-        if (!inputs.options && inputs.group && (inputs.group as any).bitbybitMeta?.options) {
-            options = (inputs.group as any).bitbybitMeta.options;
+        if (!inputs.options && group && group.bitbybitMeta?.options) {
+            options = group.bitbybitMeta.options;
         }
         const result = action(options);
         this.applyGlobalSettingsAndMetadataAndShadowCasting(type, options, result);
         return result;
     }
 
-    private async handleAsync(inputs: Inputs.Draw.DrawAny<pc.Entity>, defaultOptions: Inputs.Draw.DrawOptions, action: (inputs) => Promise<pc.Entity>, type: Inputs.Draw.drawingTypes): Promise<pc.Entity> {
+    private async handleAsync(inputs: Inputs.Draw.DrawAny<pc.Entity>, defaultOptions: Inputs.Draw.DrawOptions, action: (options: Inputs.Draw.DrawOptions) => Promise<pc.Entity>, type: Inputs.Draw.drawingTypes): Promise<pc.Entity> {
+        const group = inputs.group as BitByBitEntity;
         let options = inputs.options ? inputs.options : defaultOptions;
-        if (!inputs.options && inputs.group && (inputs.group as any).bitbybitMeta?.options) {
-            options = (inputs.group as any).bitbybitMeta.options;
+        if (!inputs.options && group && group.bitbybitMeta?.options) {
+            options = group.bitbybitMeta.options;
         }
         const result = action(options);
         return result.then(r => {
@@ -391,8 +408,9 @@ export class Draw extends DrawCore {
 
     private applyGlobalSettingsAndMetadataAndShadowCasting(type: Inputs.Draw.drawingTypes, options: Inputs.Draw.DrawOptions, result: pc.Entity | undefined) {
         if (result) {
-            const typemeta = { type, options };
-            (result as any).bitbybitMeta = (result as any).bitbybitMeta ? { ...(result as any).bitbybitMeta, ...typemeta } : typemeta;
+            const bitByBitResult = result as BitByBitEntity;
+            const typemeta: Inputs.Draw.BitByBitMeta = { type, options };
+            bitByBitResult.bitbybitMeta = bitByBitResult.bitbybitMeta ? { ...bitByBitResult.bitbybitMeta, ...typemeta } : typemeta;
         }
     }
 }

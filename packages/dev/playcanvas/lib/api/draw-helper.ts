@@ -9,6 +9,9 @@ import { ManifoldWorkerManager } from "@bitbybit-dev/manifold-worker";
 import { OCCTWorkerManager } from "@bitbybit-dev/occt-worker";
 import * as pc from "playcanvas";
 
+// Type alias for polyline entities with user data
+type PolylineEntity = Inputs.Draw.PolylineEntity;
+
 export class DrawHelper extends DrawHelperCore {
 
     private usedMaterials: {
@@ -322,7 +325,7 @@ export class DrawHelper extends DrawHelperCore {
     }
 
     private createPointSpheresMesh(
-        meshName: string, positions: Inputs.Base.Point3[], colors: string[], opacity: number, size: number, updatable: boolean): pc.Entity {
+        meshName: string, positions: Inputs.Base.Point3[], colors: string[], opacity: number, size: number, _updatable: boolean): pc.Entity {
         const positionsModel = positions.map((pos, index) => {
             return {
                 position: pos,
@@ -762,10 +765,11 @@ export class DrawHelper extends DrawHelperCore {
                 }
             });
 
-            let lines: pc.Entity;
+            let lines: PolylineEntity;
             if (existingEntity && updatable) {
+                const polylineEntity = existingEntity as PolylineEntity;
                 // Check if polyline lengths match - if they do, update; if not, create new
-                if ((existingEntity as any).userData?.linesForRenderLengths === polylinesPoints.map(l => l.length).toString()) {
+                if (polylineEntity.bitbybitMeta?.linesForRenderLengths === polylinesPoints.map(l => l.length).toString()) {
                     const renderComponent = existingEntity.render;
                     if (renderComponent && renderComponent.meshInstances.length > 0) {
                         const mesh = renderComponent.meshInstances[0].mesh;
@@ -774,13 +778,13 @@ export class DrawHelper extends DrawHelperCore {
                         return existingEntity;
                     }
                 } else {
-                    lines = this.createLineEntity(linePositions, colours, size);
-                    (lines as any).userData = { linesForRenderLengths: polylinesPoints.map(l => l.length).toString() };
+                    lines = this.createLineEntity(linePositions, colours, size) as PolylineEntity;
+                    lines.bitbybitMeta = { linesForRenderLengths: polylinesPoints.map(l => l.length).toString() };
                     return lines;
                 }
             } else {
-                lines = this.createLineEntity(linePositions, colours, size);
-                (lines as any).userData = { linesForRenderLengths: polylinesPoints.map(l => l.length).toString() };
+                lines = this.createLineEntity(linePositions, colours, size) as PolylineEntity;
+                lines.bitbybitMeta = { linesForRenderLengths: polylinesPoints.map(l => l.length).toString() };
                 return lines;
             }
         } else {
@@ -788,7 +792,7 @@ export class DrawHelper extends DrawHelperCore {
         }
     }
 
-    private createLineEntity(linePositions: number[], colours: string | string[], size: number): pc.Entity {
+    private createLineEntity(linePositions: number[], colours: string | string[], _size: number): pc.Entity {
         const color = Array.isArray(colours) ? this.hexToColor(colours[0]) : this.hexToColor(colours);
 
         const mesh = new pc.Mesh(this.context.app.graphicsDevice);
@@ -980,7 +984,7 @@ export class DrawHelper extends DrawHelperCore {
     }
 
     // sometimes we must delete face material property for the web worker not to complain about complex (circular) objects and use cloned object later
-    private deleteFaceMaterialForWorker(inputs: any) {
+    private deleteFaceMaterialForWorker<T extends { faceMaterial?: pc.StandardMaterial }>(inputs: T): T {
         const options = { ...inputs };
         if (inputs.faceMaterial) {
             delete inputs.faceMaterial;
