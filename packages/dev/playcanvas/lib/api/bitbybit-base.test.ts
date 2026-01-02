@@ -1,5 +1,6 @@
 jest.mock("playcanvas", () => {
     const actual = jest.requireActual("playcanvas");
+    
     const mockNode = {
         scene: {
             layers: {
@@ -10,6 +11,10 @@ jest.mock("playcanvas", () => {
             }
         }
     };
+    
+    // Use the centralized MockEntity from playcanvas.mock.ts
+    const { MockEntity } = jest.requireActual("./__mocks__/playcanvas.mock");
+    
     return {
         ...actual,
         Mesh: class MockMesh extends actual.Mesh {
@@ -21,27 +26,7 @@ jest.mock("playcanvas", () => {
                 return this;
             }
         },
-        Entity: class MockEntity extends actual.Entity {
-            constructor(name?: string) {
-                super(name);
-            }
-            addComponent(type: string, data: any) {
-                const mockComponent = { type, ...data };
-                return mockComponent;
-            }
-            setLocalPosition(x: number, y: number, z: number) {
-                // Mock implementation
-                if (this.localPosition) {
-                    this.localPosition.set(x, y, z);
-                }
-            }
-            addChild(entity: any) {
-                // Mock implementation - use the actual parent class method
-                if (super.addChild) {
-                    super.addChild(entity);
-                }
-            }
-        },
+        Entity: MockEntity,
         MeshInstance: jest.fn((mesh, material, node = mockNode) => ({
             mesh,
             material,

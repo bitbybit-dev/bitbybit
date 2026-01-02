@@ -1,5 +1,6 @@
 jest.mock("playcanvas", () => {
     const actual = jest.requireActual("playcanvas");
+    
     const mockNode = {
         scene: {
             layers: {
@@ -10,10 +11,14 @@ jest.mock("playcanvas", () => {
             }
         }
     };
+    
+    // Use the centralized MockEntity from playcanvas.mock.ts
+    const { MockEntity } = jest.requireActual("./__mocks__/playcanvas.mock");
+    
     return {
         ...actual,
         Mesh: class MockMesh extends actual.Mesh {
-            constructor(graphicsDevice?) {
+            constructor(graphicsDevice?: any) {
                 const mockDevice = graphicsDevice || { vram: { vb: 0, ib: 0, tex: 0, total: 0 } };
                 super(mockDevice);
             }
@@ -21,27 +26,7 @@ jest.mock("playcanvas", () => {
                 return this;
             }
         },
-        Entity: class MockEntity extends actual.Entity {
-            constructor(name?: string) {
-                super(name);
-            }
-            addComponent(type: string, data) {
-                const mockComponent = { type, ...data };
-                return mockComponent;
-            }
-            setLocalPosition(x: number, y: number, z: number) {
-                // Mock implementation
-                if (this.localPosition) {
-                    this.localPosition.set(x, y, z);
-                }
-            }
-            addChild(entity: any) {
-                // Mock implementation - use the actual parent class method
-                if (super.addChild) {
-                    super.addChild(entity);
-                }
-            }
-        },
+        Entity: MockEntity,
         MeshInstance: jest.fn((mesh, material, node = mockNode) => ({
             mesh,
             material,
@@ -49,6 +34,8 @@ jest.mock("playcanvas", () => {
         }))
     };
 });
+
+import { createDrawHelperMocks } from "./__mocks__/test-helpers";
 
 import { DrawHelper } from "./draw-helper";
 import { Context } from "./context";
@@ -71,49 +58,14 @@ describe("DrawHelper unit tests", () => {
     let mockScene: pc.Entity;
 
     beforeEach(() => {
-        mockScene = new pc.Entity("root");
-        mockContext = {
-            scene: mockScene,
-            app: {
-                graphicsDevice: {
-                    vram: { vb: 0, ib: 0, tex: 0, total: 0 }
-                },
-                systems: {}
-            } as unknown as pc.AppBase
-        } as Context;
-
-        mockSolidText = {
-            createVectorText: jest.fn().mockResolvedValue([])
-        } as unknown as JSCADText;
-
-        mockVector = {
-            add: jest.fn().mockReturnValue([0, 0, 0])
-        } as unknown as Vector;
-
-        mockJscadWorkerManager = {
-            genericCallToWorkerPromise: jest.fn().mockResolvedValue({
-                positions: [],
-                normals: [],
-                indices: [],
-                transforms: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]
-            })
-        } as unknown as JSCADWorkerManager;
-
-        mockManifoldWorkerManager = {
-            genericCallToWorkerPromise: jest.fn().mockResolvedValue({
-                positions: [],
-                normals: [],
-                indices: []
-            })
-        } as unknown as ManifoldWorkerManager;
-
-        mockOccWorkerManager = {
-            genericCallToWorkerPromise: jest.fn().mockResolvedValue({
-                faceList: [],
-                edgeList: [],
-                pointsList: []
-            })
-        } as unknown as OCCTWorkerManager;
+        const mocks = createDrawHelperMocks();
+        mockContext = mocks.mockContext;
+        mockSolidText = mocks.mockSolidText;
+        mockVector = mocks.mockVector;
+        mockJscadWorkerManager = mocks.mockJscadWorkerManager;
+        mockManifoldWorkerManager = mocks.mockManifoldWorkerManager;
+        mockOccWorkerManager = mocks.mockOccWorkerManager;
+        mockScene = mocks.mockScene;
 
         drawHelper = new DrawHelper(
             mockContext,

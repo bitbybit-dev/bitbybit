@@ -4,7 +4,6 @@
 jest.mock("playcanvas", () => {
     const actual = jest.requireActual("playcanvas");
     
-    // Create a minimal mock node with scene
     const mockNode = {
         scene: {
             layers: {
@@ -20,24 +19,20 @@ jest.mock("playcanvas", () => {
         ...actual,
         Mesh: class MockMesh extends actual.Mesh {
             update() {
-                // Mock implementation - don't actually create WebGL buffers
                 return this;
             }
         },
         Entity: class MockEntity extends actual.Entity {
             addComponent(type: string, data?: any) {
-                // Mock implementation - don't actually add component to systems
                 this[type] = data || {};
                 return this[type];
             }
         },
-        MeshInstance: jest.fn((mesh: any, material: any, node: any = mockNode) => {
-            return {
-                mesh,
-                material,
-                node
-            };
-        })
+        MeshInstance: jest.fn((mesh: any, material: any, node: any = mockNode) => ({
+            mesh,
+            material,
+            node
+        }))
     };
 });
 

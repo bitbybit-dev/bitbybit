@@ -1,15 +1,13 @@
 import { PlayCanvasCamera } from "./camera";
 import { Context } from "../../context";
+import { createSimpleMockContext } from "../../__mocks__/test-helpers";
 
 describe("PlayCanvasCamera unit tests", () => {
     let camera: PlayCanvasCamera;
     let mockContext: Context;
 
     beforeEach(() => {
-        mockContext = {
-            app: null,
-            scene: null,
-        } as Context;
+        mockContext = createSimpleMockContext();
 
         camera = new PlayCanvasCamera(mockContext);
     });

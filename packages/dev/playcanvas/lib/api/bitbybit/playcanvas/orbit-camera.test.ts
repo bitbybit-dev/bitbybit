@@ -4,183 +4,49 @@ import { PlayCanvasOrbitCamera } from "./orbit-camera";
 import { Context } from "../../context";
 import * as Inputs from "../../inputs/inputs";
 import * as pc from "playcanvas";
+import { createOrbitCameraMocks } from "../../__mocks__/test-helpers";
 
 // Mock the entire playcanvas module
 jest.mock("playcanvas", () => {
-    class MockVec2 {
-        x: number;
-        y: number;
-        constructor(x = 0, y = 0) {
-            this.x = x;
-            this.y = y;
-        }
-        set(x: number, y: number) {
-            this.x = x;
-            this.y = y;
-        }
-    }
-
-    class MockVec3 {
-        x: number;
-        y: number;
-        z: number;
-        constructor(x = 0, y = 0, z = 0) {
-            this.x = x;
-            this.y = y;
-            this.z = z;
-        }
-        set(x: number, y: number, z: number) {
-            this.x = x;
-            this.y = y;
-            this.z = z;
-        }
-        copy(other: MockVec3) {
-            this.x = other.x;
-            this.y = other.y;
-            this.z = other.z;
-            return this;
-        }
-        sub(other: MockVec3) {
-            this.x -= other.x;
-            this.y -= other.y;
-            this.z -= other.z;
-            return this;
-        }
-        add(other: MockVec3) {
-            this.x += other.x;
-            this.y += other.y;
-            this.z += other.z;
-            return this;
-        }
-        mulScalar(scalar: number) {
-            this.x *= scalar;
-            this.y *= scalar;
-            this.z *= scalar;
-            return this;
-        }
-        length() {
-            return Math.sqrt(this.x * this.x + this.y * this.y + this.z * this.z);
-        }
-        normalize() {
-            const len = this.length();
-            if (len > 0) {
-                this.x /= len;
-                this.y /= len;
-                this.z /= len;
-            }
-            return this;
-        }
-        lerp(from: MockVec3, to: MockVec3, t: number) {
-            this.x = from.x + (to.x - from.x) * t;
-            this.y = from.y + (to.y - from.y) * t;
-            this.z = from.z + (to.z - from.z) * t;
-            return this;
-        }
-    }
-
-    class MockQuat {
-        x: number;
-        y: number;
-        z: number;
-        w: number;
-        constructor(x = 0, y = 0, z = 0, w = 1) {
-            this.x = x;
-            this.y = y;
-            this.z = z;
-            this.w = w;
-        }
-        setFromEulerAngles(x: number, y: number, z: number) {
-            return this;
-        }
-        transformVector(vec: MockVec3, out?: MockVec3) {
-            const result = out || vec;
-            return result;
-        }
-        mul2(a: MockQuat, b: MockQuat) {
-            // Simplified quaternion multiplication for testing
-            this.x = a.w * b.x + a.x * b.w + a.y * b.z - a.z * b.y;
-            this.y = a.w * b.y + a.y * b.w + a.z * b.x - a.x * b.z;
-            this.z = a.w * b.z + a.z * b.w + a.x * b.y - a.y * b.x;
-            this.w = a.w * b.w - a.x * b.x - a.y * b.y - a.z * b.z;
-            return this;
-        }
-    }
-
-    class MockBoundingBox {
-        center = new MockVec3();
-        halfExtents = new MockVec3();
-        add() { }
-        compute() { }
-    }
-
-    class MockColor {
-        r: number;
-        g: number;
-        b: number;
-        constructor(r = 0, g = 0, b = 0) {
-            this.r = r;
-            this.g = g;
-            this.b = b;
-        }
-    }
-
-    class MockCameraComponent {
-        fov = 45;
-        farClip = 10000;
-        nearClip = 0.1;
-    }
-
-    class MockEntity {
-        camera: MockCameraComponent | null = null;
-        name = "TestEntity";
-        parent: MockEntity | null = null;
-        children: MockEntity[] = [];
-        _position = new MockVec3();
-        _rotation = new MockQuat();
-        
-        getPosition() { return this._position; }
-        getRotation() { return this._rotation; }
-        setPosition(x: number | MockVec3, y?: number, z?: number) {
-            if (typeof x === "number" && y !== undefined && z !== undefined) {
-                this._position.set(x, y, z);
-            } else if (x instanceof MockVec3) {
-                this._position.copy(x);
+    const actual = jest.requireActual("playcanvas");
+    
+    const mockNode = {
+        scene: {
+            layers: {
+                getLayerById: jest.fn(() => ({
+                    addMeshInstances: jest.fn(),
+                    removeMeshInstances: jest.fn()
+                }))
             }
         }
-        setRotation(quat: MockQuat) {
-            this._rotation = quat;
-        }
-        setLocalPosition(x: number | MockVec3, y?: number, z?: number) {
-            this.setPosition(x as any, y, z);
-        }
-        setLocalRotation(quat: MockQuat) {
-            this.setRotation(quat);
-        }
-        lookAt(target: MockVec3) { }
-        findByName() { return null; }
-        findOne() { return null; }
-        addChild(entity: MockEntity) { 
-            entity.parent = this;
-            this.children.push(entity); 
-        }
-        addComponent(type: string, options?: any) {
-            if (type === "camera") {
-                this.camera = new MockCameraComponent();
-                if (options) {
-                    Object.assign(this.camera, options);
-                }
-            }
-        }
-    }
-
+    };
+    
+    // Use the centralized mocks from playcanvas.mock.ts
+    const { MockVec2, MockVec3, MockQuat, MockBoundingBox, MockColor, MockGraphNode, MockEntity } = jest.requireActual("../../__mocks__/playcanvas.mock");
+    
     return {
+        ...actual,
         Vec2: MockVec2,
         Vec3: MockVec3,
         Quat: MockQuat,
         BoundingBox: MockBoundingBox,
         Entity: MockEntity,
         Color: MockColor,
-        GraphNode: class MockGraphNode { },
+        GraphNode: MockGraphNode,
+        Mesh: class MockMesh extends actual.Mesh {
+            constructor(graphicsDevice?: any) {
+                const mockDevice = graphicsDevice || { vram: { vb: 0, ib: 0, tex: 0, total: 0 } };
+                super(mockDevice);
+            }
+            update() {
+                return this;
+            }
+        },
+        MeshInstance: jest.fn((mesh: any, material: any, node: any = mockNode) => ({
+            mesh,
+            material,
+            node
+        })),
         math: {
             lerp: (a: number, b: number, t: number) => {
                 return a + (b - a) * t;
@@ -199,55 +65,16 @@ jest.mock("playcanvas", () => {
     };
 });
 
-class MockScene {
-    _children: any[] = [];
-    findOne(callback: (node: any) => boolean) {
-        return null;
-    }
-    addChild(entity: any) {
-        this._children.push(entity);
-    }
-}
-
-class MockMouse {
-    on = jest.fn();
-    off = jest.fn();
-    disableContextMenu = jest.fn();
-}
-
-class MockTouch {
-    on = jest.fn();
-    off = jest.fn();
-}
-
-class MockApp {
-    root: any;
-    mouse = new MockMouse();
-    touch = new MockTouch();
-    on = jest.fn();
-    off = jest.fn();
-
-    constructor() {
-        // Use the imported mocked Entity class
-        this.root = new pc.Entity("root");
-    }
-}
-
 describe("PlayCanvasOrbitCamera unit tests", () => {
     let orbitCamera: PlayCanvasOrbitCamera;
     let mockContext: Context;
-    let mockApp: MockApp;
-    let mockScene: MockScene;
+    let mockApp: any;
+    let mockScene: any;
 
     beforeEach(() => {
-        // Mock window object
-        (global as any).window = {
-            addEventListener: jest.fn(),
-            removeEventListener: jest.fn(),
-        };
-
-        mockApp = new MockApp();
-        mockScene = new MockScene();
+        const mocks = createOrbitCameraMocks();
+        mockApp = mocks.mockApp;
+        mockScene = mocks.mockScene;
         mockContext = {
             app: mockApp as any,
             scene: mockScene as any,
