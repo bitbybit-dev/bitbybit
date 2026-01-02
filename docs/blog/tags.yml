@@ -27,3 +27,23 @@ vr:
   label: VR
   permalink: /vr
   description: Blogs about Virtual Reality
+
+3d-bits:
+  label: 3D Bits
+  permalink: /3d-bits
+  description: Blog posts about 3D Bits app for Shopify and its use cases
+
+shopify:
+  label: Shopify
+  permalink: /shopify
+  description: Blogs about Shopify integrations via 3D Bits app
+
+case-study:
+  label: Case Study
+  permalink: /case-study
+  description: Case studies related to Bitbybit, 3D Bits and Shopify
+
+fitness-equipment:
+  label: Fitness Equipment
+  permalink: /fitness-equipment
+  description: Blogs about fitness equipment industry and 3D visualization
