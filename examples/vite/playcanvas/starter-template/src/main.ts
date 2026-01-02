@@ -41,7 +41,7 @@ async function start() {
     cameraOptions.yaw = 27;
     cameraOptions.frameOnStart = false;
     cameraOptions.inertiaFactor = 0.2;
-    cameraOptions.distanceSensitivity = 2;
+    cameraOptions.distanceSensitivity = 0.3;
     cameraOptions.focusEntity = camera;
     bitbybit.playcanvas.camera.orbitCamera.create(cameraOptions);
 
@@ -55,6 +55,9 @@ async function start() {
     if (kernelOptions.enableJSCAD) {
         await createJSCADGeometry(bitbybit, "#0000ff"); // Blue
     }
+
+    // --- 4. Create Drawing Examples (Lines, Points, Curves, etc.) ---
+    await createDrawingExamples(bitbybit);
 }
 
 // --- 4. PlayCanvas Scene Initialization ---
@@ -319,4 +322,195 @@ async function createJSCADGeometry(bitbybit: BitByBitBase, color: string) {
         options: drawOptions,
     });
     console.log("JSCAD geometry created and drawn.");
+}
+
+// --- 7. Drawing Examples Function ---
+async function createDrawingExamples(bitbybit: BitByBitBase) {
+    console.log("Creating drawing examples...");
+
+    // Example 1: Draw a single point
+    const point = [60, 0, 0] as Inputs.Base.Point3;
+    const pointDrawOptions = new Inputs.Draw.DrawBasicGeometryOptions();
+    pointDrawOptions.colours = "#ffff00"; // Yellow
+    pointDrawOptions.size = 2;
+    await bitbybit.draw.drawAnyAsync({
+        entity: point,
+        options: pointDrawOptions,
+    });
+    console.log("Single point drawn.");
+
+    // Example 2: Draw multiple points
+    const points = [
+        [60, 5, 0],
+        [60, 10, 0],
+        [60, 15, 0],
+        [60, 20, 0],
+    ] as Inputs.Base.Point3[];
+    const pointsDrawOptions = new Inputs.Draw.DrawBasicGeometryOptions();
+    pointsDrawOptions.colours = ["#ff00ff", "#ff00ff", "#ff00ff", "#ff00ff"]; // Magenta
+    pointsDrawOptions.size = 1.5;
+    await bitbybit.draw.drawAnyAsync({
+        entity: points,
+        options: pointsDrawOptions,
+    });
+    console.log("Multiple points drawn.");
+
+    // Example 3: Draw a single polyline
+    const polyline = {
+        points: [
+            [70, -10, 0],
+            [70, 0, 10],
+            [80, 0, 10],
+            [80, -10, 0],
+        ],
+    } as Inputs.Base.Polyline3;
+    const polylineDrawOptions = new Inputs.Draw.DrawBasicGeometryOptions();
+    polylineDrawOptions.colours = "#00ffff"; // Cyan
+    polylineDrawOptions.size = 3;
+    await bitbybit.draw.drawAnyAsync({
+        entity: polyline,
+        options: polylineDrawOptions,
+    });
+    console.log("Polyline drawn.");
+
+    // Example 4: Draw multiple polylines with different colors
+    const polylines = [
+        {
+            points: [
+                [90, -10, 0],
+                [90, 0, 0],
+                [100, 0, 0],
+            ],
+        },
+        {
+            points: [
+                [90, -10, 5],
+                [90, 0, 5],
+                [100, 0, 5],
+            ],
+        },
+        {
+            points: [
+                [90, -10, 10],
+                [90, 0, 10],
+                [100, 0, 10],
+            ],
+        },
+    ];
+    const polylinesDrawOptions = new Inputs.Draw.DrawBasicGeometryOptions();
+    polylinesDrawOptions.colours = ["#ff0000", "#00ff00", "#0000ff"]; // RGB
+    polylinesDrawOptions.size = 2;
+    await bitbybit.draw.drawAnyAsync({
+        entity: polylines as Inputs.Base.Polyline3[],
+        options: polylinesDrawOptions,
+    });
+    console.log("Multiple polylines drawn.");
+
+    // Example 5: Draw line segments (polylines with 2 points each)
+    const segments = [
+        {
+            points: [
+                [60, -20, 0],
+                [70, -20, 0],
+            ],
+        },
+        {
+            points: [
+                [65, -25, 0],
+                [65, -15, 0],
+            ],
+        },
+        {
+            points: [
+                [60, -20, -5],
+                [70, -20, 5],
+            ],
+        },
+    ];
+    const segmentsDrawOptions = new Inputs.Draw.DrawBasicGeometryOptions();
+    segmentsDrawOptions.colours = ["#ffff00", "#ff00ff", "#00ffff"]; // Yellow, Magenta, Cyan
+    segmentsDrawOptions.size = 2.5;
+    await bitbybit.draw.drawAnyAsync({
+        entity: segments as Inputs.Base.Polyline3[],
+        options: segmentsDrawOptions,
+    });
+    console.log("Line segments drawn.");
+
+    // Example 6: Draw a Verb NURBS curve
+    // Create a simple NURBS curve through control points
+    const controlPoints = [
+        [-60, -10, 0],
+        [-50, 0, 5],
+        [-40, -5, 10],
+        [-30, 10, 5],
+        [-20, 0, 0],
+    ] as Inputs.Base.Point3[];
+    
+    // Create a NURBS curve (degree 3)
+    const curve = bitbybit.verb.curve.createCurveByPoints({
+        points: controlPoints,
+        degree: 3,
+    });
+    
+    const curveDrawOptions = new Inputs.Draw.DrawBasicGeometryOptions();
+    curveDrawOptions.colours = "#ff8800"; // Orange
+    curveDrawOptions.size = 3;
+    await bitbybit.draw.drawAnyAsync({
+        entity: curve,
+        options: curveDrawOptions,
+    });
+    console.log("Verb curve drawn.");
+
+    // Example 7: Draw a Verb NURBS surface by lofting curves
+    // Create curves that will be lofted to form a surface
+    const curve1Points = [
+        [-60, 20, -5],
+        [-50, 20, 0],
+        [-40, 20, -5],
+    ] as Inputs.Base.Point3[];
+    
+    const curve2Points = [
+        [-60, 30, 0],
+        [-50, 30, 5],
+        [-40, 30, 0],
+    ] as Inputs.Base.Point3[];
+    
+    const curve3Points = [
+        [-60, 40, -5],
+        [-50, 40, 0],
+        [-40, 40, -5],
+    ] as Inputs.Base.Point3[];
+    
+    // Create the curves
+    const curve1 = bitbybit.verb.curve.createCurveByPoints({
+        points: curve1Points,
+        degree: 2,
+    });
+    
+    const curve2 = bitbybit.verb.curve.createCurveByPoints({
+        points: curve2Points,
+        degree: 2,
+    });
+    
+    const curve3 = bitbybit.verb.curve.createCurveByPoints({
+        points: curve3Points,
+        degree: 2,
+    });
+    
+    // Loft the curves to create a surface
+    const surface = bitbybit.verb.surface.createSurfaceByLoftingCurves({
+        curves: [curve1, curve2, curve3],
+        degreeV: 2,
+    });
+    
+    const surfaceDrawOptions = new Inputs.Draw.DrawBasicGeometryOptions();
+    surfaceDrawOptions.colours = "#8800ff"; // Purple
+    surfaceDrawOptions.opacity = 0.8;
+    await bitbybit.draw.drawAnyAsync({
+        entity: surface,
+        options: surfaceDrawOptions,
+    });
+    console.log("Verb surface drawn.");
+
+    console.log("All drawing examples completed.");
 }

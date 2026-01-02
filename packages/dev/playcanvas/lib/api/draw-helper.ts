@@ -8,18 +8,19 @@ import { JSCADWorkerManager } from "@bitbybit-dev/jscad-worker";
 import { ManifoldWorkerManager } from "@bitbybit-dev/manifold-worker";
 import { OCCTWorkerManager } from "@bitbybit-dev/occt-worker";
 import * as pc from "playcanvas";
+import { DEFAULT_COLORS, CACHE_CONFIG } from "./constants";
 
 // Type alias for polyline entities with user data
 type PolylineEntity = Inputs.Draw.PolylineEntity;
 
 export class DrawHelper extends DrawHelperCore {
 
-    private usedMaterials: {
-        hex: string,
-        alpha: number,
-        zOffset: number,
-        material: pc.StandardMaterial
-    }[] = [];
+    // Map-based material cache for better performance
+    private readonly materialCache = new Map<string, pc.StandardMaterial>();
+    
+    // Entity ID generation
+    private entityIdCounter = 0;
+    private readonly instanceId = `pc-${Date.now()}`;
 
     constructor(
         private readonly context: Context,
@@ -32,95 +33,134 @@ export class DrawHelper extends DrawHelperCore {
         super(vector);
     }
 
+
+    /**
+     * Check if DrawHelper has been disposed
+     * @returns True if disposed, false otherwise
+     */
+    public isDisposed(): boolean {
+        return this.materialCache.size === 0;
+    }
+
     async drawManifoldsOrCrossSections(inputs: Inputs.Manifold.DrawManifoldsOrCrossSectionsDto<Inputs.Manifold.ManifoldPointer | Inputs.Manifold.CrossSectionPointer, pc.StandardMaterial>): Promise<pc.Entity> {
-        const options = this.deleteFaceMaterialForWorker(inputs);
-        const decomposedMesh: Inputs.Manifold.DecomposedManifoldMeshDto[] = await this.manifoldWorkerManager.genericCallToWorkerPromise("decomposeManifoldsOrCrossSections", inputs);
-        const meshes = decomposedMesh.map(dec => this.handleDecomposedManifold(dec, options)).filter(s => s !== undefined);
-        const manifoldMeshContainer = new pc.Entity("manifoldMeshContainer-" + Math.random());
-        meshes.forEach(mesh => {
-            manifoldMeshContainer.addChild(mesh);
-        });
-        this.context.scene.addChild(manifoldMeshContainer);
-        return manifoldMeshContainer;
+        try {
+            const options = this.deleteFaceMaterialForWorker(inputs);
+            const decomposedMesh: Inputs.Manifold.DecomposedManifoldMeshDto[] = await this.manifoldWorkerManager.genericCallToWorkerPromise("decomposeManifoldsOrCrossSections", inputs);
+            const meshes = decomposedMesh.map(dec => this.handleDecomposedManifold(dec, options)).filter(s => s !== undefined);
+            const containerId = this.generateEntityId("manifoldMeshContainer");
+            const manifoldMeshContainer = new pc.Entity(containerId);
+            meshes.forEach(mesh => {
+                manifoldMeshContainer.addChild(mesh);
+            });
+            this.context.scene.addChild(manifoldMeshContainer);
+            return manifoldMeshContainer;
+        } catch (error) {
+            console.error("Error drawing manifolds or cross sections:", error);
+            throw new Error(`Failed to draw manifolds or cross sections: ${error instanceof Error ? error.message : String(error)}`);
+        }
     }
 
     async drawManifoldOrCrossSection(inputs: Inputs.Manifold.DrawManifoldOrCrossSectionDto<Inputs.Manifold.ManifoldPointer | Inputs.Manifold.CrossSectionPointer, pc.StandardMaterial>): Promise<pc.Entity> {
-        const options = this.deleteFaceMaterialForWorker(inputs);
-        const decomposedMesh: Inputs.Manifold.DecomposedManifoldMeshDto = await this.manifoldWorkerManager.genericCallToWorkerPromise("decomposeManifoldOrCrossSection", inputs);
-        return this.handleDecomposedManifold(decomposedMesh, options);
+        try {
+            const options = this.deleteFaceMaterialForWorker(inputs);
+            const decomposedMesh: Inputs.Manifold.DecomposedManifoldMeshDto = await this.manifoldWorkerManager.genericCallToWorkerPromise("decomposeManifoldOrCrossSection", inputs);
+            return this.handleDecomposedManifold(decomposedMesh, options);
+        } catch (error) {
+            console.error("Error drawing manifold or cross section:", error);
+            throw new Error(`Failed to draw manifold or cross section: ${error instanceof Error ? error.message : String(error)}`);
+        }
     }
 
     async drawShape(inputs: Inputs.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer>): Promise<pc.Entity> {
-        const options = this.deleteFaceMaterialForWorker(inputs);
-        const decomposedMesh: Inputs.OCCT.DecomposedMeshDto = await this.occWorkerManager.genericCallToWorkerPromise("shapeToMesh", inputs);
-        return this.handleDecomposedMesh(inputs, decomposedMesh, options);
+        try {
+            const options = this.deleteFaceMaterialForWorker(inputs);
+            const decomposedMesh: Inputs.OCCT.DecomposedMeshDto = await this.occWorkerManager.genericCallToWorkerPromise("shapeToMesh", inputs);
+            return this.handleDecomposedMesh(inputs, decomposedMesh, options);
+        } catch (error) {
+            console.error("Error drawing OCCT shape:", error);
+            throw new Error(`Failed to draw OCCT shape: ${error instanceof Error ? error.message : String(error)}`);
+        }
     }
 
     async drawShapes(inputs: Inputs.OCCT.DrawShapesDto<Inputs.OCCT.TopoDSShapePointer>): Promise<pc.Entity> {
-        const options = this.deleteFaceMaterialForWorker(inputs);
-        const meshes: Inputs.OCCT.DecomposedMeshDto[] = await this.occWorkerManager.genericCallToWorkerPromise("shapesToMeshes", inputs);
-        const meshesSolved = await Promise.all(meshes.map(async decomposedMesh => this.handleDecomposedMesh(inputs, decomposedMesh, options)));
-        const shapesMeshContainer = new pc.Entity("shapesMeshContainer-" + Math.random());
-        this.context.scene.addChild(shapesMeshContainer);
-        meshesSolved.forEach(mesh => {
-            shapesMeshContainer.addChild(mesh);
-        });
-        return shapesMeshContainer;
+        try {
+            const options = this.deleteFaceMaterialForWorker(inputs);
+            const meshes: Inputs.OCCT.DecomposedMeshDto[] = await this.occWorkerManager.genericCallToWorkerPromise("shapesToMeshes", inputs);
+            const meshesSolved = await Promise.all(meshes.map(async decomposedMesh => this.handleDecomposedMesh(inputs, decomposedMesh, options)));
+            const containerId = this.generateEntityId("shapesMeshContainer");
+            const shapesMeshContainer = new pc.Entity(containerId);
+            this.context.scene.addChild(shapesMeshContainer);
+            meshesSolved.forEach(mesh => {
+                shapesMeshContainer.addChild(mesh);
+            });
+            return shapesMeshContainer;
+        } catch (error) {
+            console.error("Error drawing OCCT shapes:", error);
+            throw new Error(`Failed to draw OCCT shapes: ${error instanceof Error ? error.message : String(error)}`);
+        }
     }
 
     async drawSolidOrPolygonMesh(inputs: Inputs.JSCAD.DrawSolidMeshDto<pc.Entity>): Promise<pc.Entity> {
-        const res: {
-            positions: number[],
-            normals: number[],
-            indices: number[],
-            transforms: [],
-        } = await this.jscadWorkerManager.genericCallToWorkerPromise("shapeToMesh", inputs);
-        let meshToUpdate: pc.Entity;
-        if (inputs.jscadMesh && inputs.updatable) {
-            meshToUpdate = inputs.jscadMesh;
-        } else {
-            meshToUpdate = new pc.Entity(`jscadMesh-${Math.random()}`);
-            this.context.scene.addChild(meshToUpdate);
+        try {
+            const res: {
+                positions: number[],
+                normals: number[],
+                indices: number[],
+                transforms: [],
+            } = await this.jscadWorkerManager.genericCallToWorkerPromise("shapeToMesh", inputs);
+            
+            let meshToUpdate: pc.Entity;
+            if (inputs.jscadMesh && inputs.updatable) {
+                meshToUpdate = inputs.jscadMesh;
+            } else {
+                meshToUpdate = new pc.Entity(this.generateEntityId("jscadMesh"));
+                this.context.scene.addChild(meshToUpdate);
+            }
+            
+            let colour;
+            if (inputs.mesh.color && inputs.mesh.color.length > 0) {
+                // if jscad geometry is colorized and color is baked on geometry it will be used over anything that set in the draw options
+                const c = inputs.mesh.color;
+                colour = this.normalizeColor(c, DEFAULT_COLORS.DEFAULT);
+            } else {
+                colour = Array.isArray(inputs.colours) ? inputs.colours[0] : inputs.colours;
+            }
+            
+            const s = this.makeMesh({ ...inputs, colour }, meshToUpdate, res);
+            inputs.jscadMesh = s;
+            return s;
+        } catch (error) {
+            console.error("Error drawing JSCAD solid or polygon mesh:", error);
+            throw new Error(`Failed to draw JSCAD mesh: ${error instanceof Error ? error.message : String(error)}`);
         }
-        let colour;
-        if (inputs.mesh.color && inputs.mesh.color.length > 0) {
-            // if jscad geometry is colorized and color is baked on geometry it will be used over anything that set in the draw options
-            const c = inputs.mesh.color;
-            colour = this.colorToHex(c[0], c[1], c[2]);
-        } else {
-            colour = Array.isArray(inputs.colours) ? inputs.colours[0] : inputs.colours;
-        }
-        const s = this.makeMesh({ ...inputs, colour }, meshToUpdate, res);
-        inputs.jscadMesh = s;
-        return s;
     }
 
     async drawSolidOrPolygonMeshes(inputs: Inputs.JSCAD.DrawSolidMeshesDto<pc.Entity>): Promise<pc.Entity> {
-        return this.jscadWorkerManager.genericCallToWorkerPromise("shapesToMeshes", inputs).then((res: {
-            positions: number[],
-            normals: number[],
-            indices: number[],
-            transforms: [],
-            color?: number[]
-        }[]) => {
+        try {
+            const res: {
+                positions: number[],
+                normals: number[],
+                indices: number[],
+                transforms: [],
+                color?: number[]
+            }[] = await this.jscadWorkerManager.genericCallToWorkerPromise("shapesToMeshes", inputs);
 
             let localOrigin: pc.Entity;
             if (inputs.jscadMesh && inputs.updatable) {
                 localOrigin = inputs.jscadMesh;
                 this.clearEntity(localOrigin);
             } else {
-                localOrigin = new pc.Entity(`jscadMeshes-${Math.random()}`);
+                localOrigin = new pc.Entity(this.generateEntityId("jscadMeshes"));
             }
 
             const colourIsArrayAndMatches = Array.isArray(inputs.colours) && inputs.colours.length === res.length;
             const colorsAreArrays = Array.isArray(inputs.colours);
 
-            res.map((r, index) => {
-                const meshToUpdate = new pc.Entity(`jscadMeshes-${Math.random()}`);
+            res.forEach((r, index) => {
+                const meshToUpdate = new pc.Entity(this.generateEntityId("jscadMesh", localOrigin.name));
                 let colour;
                 if (r.color) {
-                    const c = r.color;
-                    colour = this.colorToHex(c[0], c[1], c[2]);
+                    colour = this.normalizeColor(r.color, DEFAULT_COLORS.DEFAULT);
                 } else if (colourIsArrayAndMatches) {
                     colour = inputs.colours[index];
                 } else if (colorsAreArrays) {
@@ -131,61 +171,43 @@ export class DrawHelper extends DrawHelperCore {
                 const m = this.makeMesh({ ...inputs, colour }, meshToUpdate, r);
                 localOrigin.addChild(m);
             });
+            
             this.context.scene.addChild(localOrigin);
             inputs.jscadMesh = localOrigin;
             return localOrigin;
-        });
+        } catch (error) {
+            console.error("Error drawing JSCAD solid or polygon meshes:", error);
+            throw new Error(`Failed to draw JSCAD meshes: ${error instanceof Error ? error.message : String(error)}`);
+        }
     }
 
+    /**
+     * Draw multiple polylines with individual colors
+     * @param inputs - Polyline drawing inputs
+     * @returns Entity containing all polylines
+     */
     drawPolylinesWithColours(inputs: Inputs.Polyline.DrawPolylinesDto<pc.Entity>): pc.Entity {
-        let colours = inputs.colours;
-        const points = inputs.polylines.map((s, index) => {
-            const pts = s.points;
-            //handle jscad
-            if (s.isClosed) {
-                pts.push(pts[0]);
-            }
-            // sometimes polylines can have assigned colors in case of jscad for example. Such colour will overwrite the default provided colour for that polyline.
-            if (s.color) {
-                if (!Array.isArray(colours)) {
-                    colours = [];
-                }
-                if (Array.isArray(s.color)) {
-                    colours[index] = this.colorToHex(s.color[0], s.color[1], s.color[2]);
-                } else {
-                    colours[index] = s.color;
-                }
-            }
-            return pts;
-        });
-
-        let existingMesh: pc.Entity | undefined;
-        if (inputs.polylinesMesh && inputs.updatable) {
-            existingMesh = inputs.polylinesMesh.children[0] as pc.Entity;
-        }
-        const polylines = this.drawPolylines(
+        // Normalize inputs
+        const colors = this.normalizePolylineColors(inputs.polylines, inputs.colours);
+        const processedPoints = this.processPolylinePoints(inputs.polylines);
+        
+        // Determine if we should update existing mesh
+        const existingMesh = (inputs.updatable && inputs.polylinesMesh) 
+            ? inputs.polylinesMesh.children[0] as pc.Entity
+            : undefined;
+        
+        // Draw the polylines
+        const polylineEntity = this.drawPolylines(
             existingMesh,
-            points,
+            processedPoints,
             inputs.updatable,
             inputs.size,
             inputs.opacity,
-            colours
+            colors
         );
-        if (inputs.polylinesMesh && inputs.updatable) {
-            if (inputs.polylinesMesh.children[0].name !== polylines.name) {
-                const group = new pc.Entity(`polylines-${Math.random()}`);
-                group.addChild(polylines);
-                this.context.scene.addChild(group);
-                return group;
-            } else {
-                return inputs.polylinesMesh;
-            }
-        } else {
-            const group = new pc.Entity(`polylines-${Math.random()}`);
-            group.addChild(polylines);
-            this.context.scene.addChild(group);
-            return group;
-        }
+        
+        // Wrap in container group
+        return this.wrapPolylineInGroup(polylineEntity, inputs.polylinesMesh, inputs.updatable);
     }
 
     drawPoint(inputs: Inputs.Point.DrawPointDto<pc.Entity>): pc.Entity {
@@ -201,7 +223,7 @@ export class DrawHelper extends DrawHelperCore {
             this.updatePointsInstances(inputs.pointMesh, vectorPoints);
         } else {
             inputs.pointMesh = this.createPointSpheresMesh(
-                `pointMesh-${Math.random()}`, vectorPoints, colorsHex, inputs.opacity, inputs.size, inputs.updatable
+                this.generateEntityId("pointMesh"), vectorPoints, colorsHex, inputs.opacity, inputs.size
             );
         }
         return inputs.pointMesh;
@@ -227,7 +249,7 @@ export class DrawHelper extends DrawHelperCore {
         updatable: boolean, size: number, opacity: number, colours: string | string[]): pc.Entity {
         const polylines = this.drawPolylines(mesh, [pointsToDraw], updatable, size, opacity, colours);
         if (!mesh) {
-            mesh = new pc.Entity(`polyline-${Math.random()}`);
+            mesh = new pc.Entity(this.generateEntityId("polyline"));
             mesh.addChild(polylines);
             this.context.scene.addChild(mesh);
         }
@@ -264,12 +286,12 @@ export class DrawHelper extends DrawHelperCore {
             } else {
                 inputs.pointsMesh.destroy();
                 inputs.pointsMesh = this.createPointSpheresMesh(
-                    `pointsMesh-${Math.random()}`, vectorPoints, coloursHex, inputs.opacity, inputs.size, inputs.updatable
+                    this.generateEntityId("pointsMesh"), vectorPoints, coloursHex, inputs.opacity, inputs.size
                 );
             }
         } else {
             inputs.pointsMesh = this.createPointSpheresMesh(
-                `pointsMesh-${Math.random()}`, vectorPoints, coloursHex, inputs.opacity, inputs.size, inputs.updatable
+                this.generateEntityId("pointsMesh"), vectorPoints, coloursHex, inputs.opacity, inputs.size
             );
         }
         return inputs.pointsMesh;
@@ -293,7 +315,7 @@ export class DrawHelper extends DrawHelperCore {
         if (inputs.surfacesMesh && inputs.updatable) {
             this.clearEntity(inputs.surfacesMesh);
         } else {
-            inputs.surfacesMesh = new pc.Entity(`colouredSurfaces-${Math.random()}`);
+            inputs.surfacesMesh = new pc.Entity(this.generateEntityId("colouredSurfaces"));
             this.context.scene.addChild(inputs.surfacesMesh);
         }
 
@@ -322,50 +344,6 @@ export class DrawHelper extends DrawHelperCore {
         }
 
         return inputs.surfacesMesh;
-    }
-
-    private createPointSpheresMesh(
-        meshName: string, positions: Inputs.Base.Point3[], colors: string[], opacity: number, size: number, _updatable: boolean): pc.Entity {
-        const positionsModel = positions.map((pos, index) => {
-            return {
-                position: pos,
-                color: colors[index],
-                index
-            };
-        });
-
-        const colorSet = Array.from(new Set(colors));
-        const materialSet = colorSet.map((colour) => {
-            const mat = new pc.StandardMaterial();
-            mat.name = `mat-${Math.random()}`;
-            mat.opacity = opacity;
-            mat.emissive = this.hexToColor(colour);
-            mat.diffuse = this.hexToColor(colour);
-            mat.useLighting = false;
-            mat.update();
-            const positionsFiltered = positionsModel.filter(s => s.color === colour);
-
-            return { hex: colorSet, material: mat, positions: positionsFiltered };
-        });
-
-        const pointsGroup = new pc.Entity(meshName);
-        this.context.scene.addChild(pointsGroup);
-        
-        materialSet.forEach(ms => {
-            
-            ms.positions.forEach((pos, index) => {
-                const sphereEntity = new pc.Entity(`point-${index}-${Math.random()}`);
-                sphereEntity.addComponent("render", {
-                    type: "sphere",
-                    material: ms.material
-                });
-                sphereEntity.setLocalScale(size * 2, size * 2, size * 2);
-                sphereEntity.setLocalPosition(pos.position[0], pos.position[1], pos.position[2]);
-                pointsGroup.addChild(sphereEntity);
-            });
-        });
-
-        return pointsGroup;
     }
 
     createOrUpdateSurfacesMesh(
@@ -414,19 +392,19 @@ export class DrawHelper extends DrawHelperCore {
             this.clearEntity(group);
             const mesh = createMesh();
             const meshInstance = new pc.MeshInstance(mesh, material);
-            const entity = new pc.Entity(`surface-child-${Math.random()}`);
+            const entity = new pc.Entity(this.generateEntityId("surfaceChild"));
             entity.addComponent("render", {
                 meshInstances: [meshInstance]
             });
             group.addChild(entity);
         } else {
-            group = new pc.Entity(`surface-${Math.random()}`);
+            group = new pc.Entity(this.generateEntityId("surface"));
             if (addToScene) {
                 this.context.scene.addChild(group);
             }
             const mesh = createMesh();
             const meshInstance = new pc.MeshInstance(mesh, material);
-            const entity = new pc.Entity(`surface-child-${Math.random()}`);
+            const entity = new pc.Entity(this.generateEntityId("surfaceChild"));
             entity.addComponent("render", {
                 meshInstances: [meshInstance]
             });
@@ -452,14 +430,17 @@ export class DrawHelper extends DrawHelperCore {
             countIndices = this.parseFaces(faceIndices, meshData, meshDataConverted, countIndices);
         });
 
-        const pbr = new pc.StandardMaterial();
-        pbr.name = `pbr-${Math.random()}`;
-
-        pbr.diffuse = this.hexToColor(Array.isArray(inputs.colours) ? inputs.colours[0] : inputs.colours);
-        pbr.metalness = 0.5;
-        pbr.gloss = 0.3;
-        pbr.opacity = inputs.opacity;
-        pbr.update();
+        const color = Array.isArray(inputs.colours) ? inputs.colours[0] : inputs.colours;
+        const pbr = this.getOrCreateMaterial(color, inputs.opacity, 0, () => {
+            const material = new pc.StandardMaterial();
+            material.name = this.generateEntityId("pbrSurface");
+            material.diffuse = this.hexToColor(color);
+            material.metalness = 0.5;
+            material.gloss = 0.3;
+            material.opacity = inputs.opacity;
+            material.update();
+            return material;
+        });
 
         return this.createOrUpdateSurfacesMesh(
             [meshDataConverted],
@@ -488,13 +469,16 @@ export class DrawHelper extends DrawHelperCore {
     }
 
     private makeMesh(inputs: { updatable: boolean, opacity: number, colour: string, hidden: boolean }, meshToUpdate: pc.Entity, res: { positions: number[]; normals: number[]; indices: number[]; transforms: []; }): pc.Entity {
-        const pbr = new pc.StandardMaterial();
-        pbr.name = `jscadMaterial-${Math.random()}`;
-        pbr.diffuse = this.hexToColor(inputs.colour);
-        pbr.metalness = 0.4;
-        pbr.gloss = 0.4;
-        pbr.opacity = inputs.opacity;
-        pbr.update();
+        const pbr = this.getOrCreateMaterial(inputs.colour, inputs.opacity, 0, () => {
+            const material = new pc.StandardMaterial();
+            material.name = this.generateEntityId("jscadMaterial");
+            material.diffuse = this.hexToColor(inputs.colour);
+            material.metalness = 0.4;
+            material.gloss = 0.4;
+            material.opacity = inputs.opacity;
+            material.update();
+            return material;
+        });
 
         this.createMesh(res.positions, res.indices, res.normals, meshToUpdate, res.transforms, inputs.updatable, pbr);
         if (inputs.hidden) {
@@ -523,7 +507,7 @@ export class DrawHelper extends DrawHelperCore {
         const meshInstance = new pc.MeshInstance(mesh, material);
         this.clearEntity(jscadMesh);
         
-        const entity = new pc.Entity(`jscadMeshChild-${Math.random()}`);
+        const entity = new pc.Entity(this.generateEntityId("jscadMeshChild"));
         entity.addComponent("render", {
             meshInstances: [meshInstance]
         });
@@ -616,7 +600,7 @@ export class DrawHelper extends DrawHelperCore {
     }
 
     private async handleDecomposedMesh(inputs: Inputs.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer>, decomposedMesh: Inputs.OCCT.DecomposedMeshDto, options: Inputs.Draw.DrawOcctShapeOptions): Promise<pc.Entity> {
-        const shapeGroup = new pc.Entity("brepMesh-" + Math.random());
+        const shapeGroup = new pc.Entity(this.generateEntityId("brepMesh"));
         this.context.scene.addChild(shapeGroup);
 
         if (inputs.drawFaces && decomposedMesh && decomposedMesh.faceList && decomposedMesh.faceList.length) {
@@ -630,12 +614,9 @@ export class DrawHelper extends DrawHelperCore {
                 const alpha = inputs.faceOpacity;
                 const zOffset = inputs.drawEdges ? 2 : 0;
                 const slopeOffset = inputs.drawEdges ? 2 : 0;
-                const materialCached = this.usedMaterials.find(s => s.hex === hex && s.alpha === alpha && s.zOffset === zOffset);
-                if (materialCached) {
-                    pbr = materialCached.material;
-                } else {
+                
+                pbr = this.getOrCreateMaterial(hex, alpha, zOffset, () => {
                     const pbmat = new pc.StandardMaterial();
-
                     pbmat.diffuse = this.hexToColor(hex);
                     pbmat.metalness = 0.4;
                     pbmat.gloss = 0.2;
@@ -644,15 +625,8 @@ export class DrawHelper extends DrawHelperCore {
                     pbmat.depthBias = zOffset;
                     pbmat.slopeDepthBias = slopeOffset;
                     pbmat.update();
-                    
-                    this.usedMaterials.push({
-                        hex,
-                        alpha: alpha,
-                        zOffset: zOffset,
-                        material: pbmat
-                    });
-                    pbr = pbmat;
-                }
+                    return pbmat;
+                });
             }
 
             const meshData = decomposedMesh.faceList.map(face => {
@@ -750,63 +724,170 @@ export class DrawHelper extends DrawHelperCore {
         return shapeGroup;
     }
 
-    private drawPolylines(existingEntity: pc.Entity | undefined, polylinesPoints: Inputs.Base.Vector3[][], updatable: boolean,
-        size: number, opacity: number, colours: string | string[]): pc.Entity {
-        if (polylinesPoints && polylinesPoints.length > 0) {
-            const linePositions: number[] = [];
+    /**
+     * Compute a signature string representing polyline structure
+     * This is used to determine if existing geometry can be updated
+     * @param polylinePoints - Array of polylines
+     * @returns Signature string
+     */
+    private computePolylineSignature(polylinePoints: Inputs.Base.Vector3[][]): string {
+        return polylinePoints.map(line => line.length).join(",");
+    }
 
-            polylinesPoints.forEach(pts => {
-                for (let i = 0; i < pts.length - 1; i++) {
-                    const c = pts[i];
-                    const n = pts[i + 1];
+    /**
+     * Check if a polyline entity can be updated with new point data
+     * @param entity - Entity to check
+     * @param polylinePoints - New polyline points
+     * @param updatable - Whether updates are allowed
+     * @returns True if entity can be updated
+     */
+    private canUpdatePolylineEntity(
+        entity: pc.Entity | undefined, 
+        polylinePoints: Inputs.Base.Vector3[][],
+        updatable: boolean
+    ): entity is PolylineEntity {
+        if (!entity || !updatable) {
+            return false;
+        }
+        
+        const polylineEntity = entity as PolylineEntity;
+        const newSignature = this.computePolylineSignature(polylinePoints);
+        const oldSignature = polylineEntity.bitbybitMeta?.linesForRenderLengths;
+        
+        return oldSignature === newSignature;
+    }
 
-                    linePositions.push(c[0], c[1], c[2]);
-                    linePositions.push(n[0], n[1], n[2]);
-                }
-            });
-
-            let lines: PolylineEntity;
-            if (existingEntity && updatable) {
-                const polylineEntity = existingEntity as PolylineEntity;
-                // Check if polyline lengths match - if they do, update; if not, create new
-                if (polylineEntity.bitbybitMeta?.linesForRenderLengths === polylinesPoints.map(l => l.length).toString()) {
-                    const renderComponent = existingEntity.render;
-                    if (renderComponent && renderComponent.meshInstances.length > 0) {
-                        const mesh = renderComponent.meshInstances[0].mesh;
-                        mesh.setPositions(linePositions);
-                        mesh.update(pc.PRIMITIVE_LINES);
-                        return existingEntity;
-                    }
-                } else {
-                    lines = this.createLineEntity(linePositions, colours, size) as PolylineEntity;
-                    lines.bitbybitMeta = { linesForRenderLengths: polylinesPoints.map(l => l.length).toString() };
-                    return lines;
-                }
-            } else {
-                lines = this.createLineEntity(linePositions, colours, size) as PolylineEntity;
-                lines.bitbybitMeta = { linesForRenderLengths: polylinesPoints.map(l => l.length).toString() };
-                return lines;
-            }
-        } else {
-            return undefined;
+    /**
+     * Update an existing polyline entity with new position data
+     * @param entity - Entity to update
+     * @param linePositions - New line positions
+     * @returns True if update succeeded, false otherwise
+     */
+    private updatePolylineEntityPositions(
+        entity: pc.Entity, 
+        linePositions: number[]
+    ): boolean {
+        const renderComponent = entity.render;
+        if (!renderComponent?.meshInstances?.[0]?.mesh) {
+            console.warn("Cannot update polyline: missing render component or mesh");
+            return false;
+        }
+        
+        try {
+            const mesh = renderComponent.meshInstances[0].mesh;
+            mesh.setPositions(linePositions);
+            mesh.update(pc.PRIMITIVE_LINES);
+            return true;
+        } catch (error) {
+            console.error("Error updating polyline positions:", error);
+            return false;
         }
     }
 
-    private createLineEntity(linePositions: number[], colours: string | string[], _size: number): pc.Entity {
+    /**
+     * Compute line positions array from polyline points
+     * @param polylinesPoints - Array of polylines
+     * @returns Flat array of line positions
+     */
+    private computeLinePositions(polylinesPoints: Inputs.Base.Vector3[][]): number[] {
+        const linePositions: number[] = [];
+        
+        for (const points of polylinesPoints) {
+            for (let i = 0; i < points.length - 1; i++) {
+                const current = points[i];
+                const next = points[i + 1];
+                
+                linePositions.push(current[0], current[1], current[2]);
+                linePositions.push(next[0], next[1], next[2]);
+            }
+        }
+        
+        return linePositions;
+    }
+
+    /**
+     * Create a new polyline entity with metadata
+     * @param linePositions - Line positions array
+     * @param colours - Colors for the lines
+     * @param size - Line width
+     * @param polylinePoints - Original polyline points for signature
+     * @returns New polyline entity with metadata
+     */
+    private createPolylineEntityWithMetadata(
+        linePositions: number[],
+        colours: string | string[],
+        size: number,
+        polylinePoints: Inputs.Base.Vector3[][]
+    ): PolylineEntity {
+        const entity = this.createLineEntity(linePositions, colours) as PolylineEntity;
+        entity.bitbybitMeta = {
+            linesForRenderLengths: this.computePolylineSignature(polylinePoints)
+        };
+        return entity;
+    }
+
+    /**
+     * Draw multiple polylines using PlayCanvas line primitives
+     * @param existingEntity - Optional existing entity to update
+     * @param polylinesPoints - Array of polylines
+     * @param updatable - Whether to attempt updates
+     * @param size - Line width
+     * @param opacity - Line opacity
+     * @param colours - Line colors
+     * @returns Entity containing rendered polylines, or undefined
+     */
+    private drawPolylines(
+        existingEntity: pc.Entity | undefined, 
+        polylinesPoints: Inputs.Base.Vector3[][], 
+        updatable: boolean,
+        size: number, 
+        opacity: number, 
+        colours: string | string[]
+    ): pc.Entity {
+        // Validate input
+        if (!polylinesPoints || polylinesPoints.length === 0) {
+            return undefined;
+        }
+        
+        const linePositions = this.computeLinePositions(polylinesPoints);
+        
+        // Try to update existing entity
+        if (this.canUpdatePolylineEntity(existingEntity, polylinesPoints, updatable)) {
+            if (this.updatePolylineEntityPositions(existingEntity, linePositions)) {
+                return existingEntity;
+            }
+            // Update failed, fall through to create new
+            console.warn("Polyline update failed, creating new entity");
+        }
+        
+        // Create new entity
+        return this.createPolylineEntityWithMetadata(
+            linePositions, 
+            colours, 
+            size, 
+            polylinesPoints
+        );
+    }
+
+    private createLineEntity(linePositions: number[], colours: string | string[]): pc.Entity {
         const color = Array.isArray(colours) ? this.hexToColor(colours[0]) : this.hexToColor(colours);
 
         const mesh = new pc.Mesh(this.context.app.graphicsDevice);
         mesh.setPositions(linePositions);
         mesh.update(pc.PRIMITIVE_LINES);
 
-        const material = new pc.StandardMaterial();
-        material.emissive = color;
-        material.diffuse = color;
-        material.useLighting = false;
-        material.update();
+        const hexColor = this.colorToHex(color.r * 255, color.g * 255, color.b * 255);
+        const material = this.getOrCreateMaterial(hexColor, 1.0, 0, () => {
+            const mat = new pc.StandardMaterial();
+            mat.emissive = color;
+            mat.diffuse = color;
+            mat.useLighting = false;
+            mat.update();
+            return mat;
+        });
 
         const meshInstance = new pc.MeshInstance(mesh, material);
-        const lineEntity = new pc.Entity("lines-" + Math.random());
+        const lineEntity = new pc.Entity(this.generateEntityId("lines"));
         lineEntity.addComponent("render", {
             meshInstances: [meshInstance]
         });
@@ -901,24 +982,26 @@ export class DrawHelper extends DrawHelperCore {
                 mesh.setNormals(normals);
                 mesh.update(pc.PRIMITIVE_TRIANGLES);
 
-                const group = new pc.Entity(`manifoldMesh-${Math.random()}`);
+                const group = new pc.Entity(this.generateEntityId("manifoldMesh"));
 
                 let material: pc.StandardMaterial;
                 if (options.faceMaterial === undefined) {
-                    material = new pc.StandardMaterial();
-                    material.name = `pbr-${Math.random()}`;
-
-                    material.diffuse = this.hexToColor(options.faceColour);
-                    material.metalness = 0.5;
-                    material.gloss = 0.3;
-                    material.opacity = options.faceOpacity;
-                    material.update();
+                    material = this.getOrCreateMaterial(options.faceColour, options.faceOpacity, 0, () => {
+                        const mat = new pc.StandardMaterial();
+                        mat.name = this.generateEntityId("pbrManifold");
+                        mat.diffuse = this.hexToColor(options.faceColour);
+                        mat.metalness = 0.5;
+                        mat.gloss = 0.3;
+                        mat.opacity = options.faceOpacity;
+                        mat.update();
+                        return mat;
+                    });
                 } else {
                     material = options.faceMaterial;
                 }
 
                 const meshInstance = new pc.MeshInstance(mesh, material);
-                const childEntity = new pc.Entity(`manifoldMeshChild-${Math.random()}`);
+                const childEntity = new pc.Entity(this.generateEntityId("manifoldMeshChild"));
                 childEntity.addComponent("render", {
                     meshInstances: [meshInstance]
                 });
@@ -933,7 +1016,7 @@ export class DrawHelper extends DrawHelperCore {
             const decompsoedPolygons = decomposedManifold as Inputs.Base.Vector2[][];
             if (decompsoedPolygons.length > 0) {
 
-                const group = new pc.Entity(`manifoldCrossSection-${Math.random()}`);
+                const group = new pc.Entity(this.generateEntityId("manifoldCrossSection"));
                 const polylines = decompsoedPolygons.map(polygon => ({
                     points: polygon.map(p => [p[0], p[1], 0] as Inputs.Base.Point3),
                     isClosed: true
@@ -991,4 +1074,244 @@ export class DrawHelper extends DrawHelperCore {
         }
         return options;
     }
+
+    /**
+     * Generate a unique entity ID with semantic naming
+     * @param type - The type of entity (e.g., 'manifoldMeshContainer', 'jscadMesh')
+     * @param parentId - Optional parent ID for hierarchical naming
+     * @returns Unique entity ID string
+     */
+    private generateEntityId(type: string, parentId?: string): string {
+        const id = `${this.instanceId}-${type}-${++this.entityIdCounter}`;
+        return parentId ? `${parentId}/${id}` : id;
+    }
+
+    /**
+     * Generate a unique key for material caching
+     * Uses fixed decimal precision to handle floating-point comparison
+     * @param hex - Hex color string
+     * @param alpha - Alpha value (0-1)
+     * @param zOffset - Z-offset value for depth bias
+     * @returns Unique cache key
+     */
+    private getMaterialKey(hex: string, alpha: number, zOffset: number): string {
+        const normalizedAlpha = alpha.toFixed(CACHE_CONFIG.ALPHA_PRECISION);
+        return `${hex}-${normalizedAlpha}-${zOffset}`;
+    }
+
+    /**
+     * Get or create a cached material with the specified properties
+     * Implements LRU-like eviction when cache is full
+     * @param hex - Hex color string
+     * @param alpha - Alpha value (0-1)
+     * @param zOffset - Z-offset value
+     * @param createFn - Function to create new material if not cached
+     * @returns Cached or newly created material
+     */
+    private getOrCreateMaterial(
+        hex: string,
+        alpha: number,
+        zOffset: number,
+        createFn: () => pc.StandardMaterial
+    ): pc.StandardMaterial {
+        const key = this.getMaterialKey(hex, alpha, zOffset);
+
+        // Check cache first
+        const cached = this.materialCache.get(key);
+        if (cached) {
+            return cached;
+        }
+
+        // Evict oldest if at capacity (simple FIFO)
+        if (this.materialCache.size >= CACHE_CONFIG.MAX_MATERIALS) {
+            const firstKey = this.materialCache.keys().next().value;
+            const material = this.materialCache.get(firstKey);
+            if (material && material.destroy) {
+                material.destroy();
+            }
+            this.materialCache.delete(firstKey);
+            console.warn(`Material cache full, evicted: ${firstKey}`);
+        }
+
+        // Create new material
+        const material = createFn();
+        this.materialCache.set(key, material);
+        return material;
+    }
+
+    /**
+     * Normalize color input to hex string with validation
+     * @param color - Color as number array, hex string, or undefined
+     * @param fallback - Fallback color if input is invalid
+     * @returns Normalized hex color string
+     */
+    private normalizeColor(color: number[] | string | undefined, fallback: string): string {
+        if (!color) {
+            return fallback;
+        }
+
+        if (Array.isArray(color)) {
+            if (color.length < 3) {
+                console.warn(`Invalid color array length: ${color.length}, expected at least 3. Using fallback: ${fallback}`);
+                return fallback;
+            }
+            return this.colorToHex(color[0], color[1], color[2]);
+        }
+
+        if (typeof color === "string") {
+            // Validate hex format
+            if (!/^#[0-9A-F]{6}$/i.test(color)) {
+                console.warn(`Invalid hex color: ${color}. Using fallback: ${fallback}`);
+                return fallback;
+            }
+            return color;
+        }
+
+        console.warn(`Unknown color format: ${typeof color}. Using fallback: ${fallback}`);
+        return fallback;
+    }
+
+    /**
+     * Cleanup method to dispose of cached materials and prevent memory leaks
+     * Should be called when the DrawHelper instance is no longer needed
+     */
+    public dispose(): void {
+        // Dispose cached materials
+        this.materialCache.forEach((material, key) => {
+            try {
+                if (material.destroy) {
+                    material.destroy();
+                }
+            } catch (error) {
+                console.warn(`Error disposing material ${key}:`, error);
+            }
+        });
+        this.materialCache.clear();
+
+        // Reset counters
+        this.entityIdCounter = 0;
+
+        console.log("DrawHelper disposed successfully");
+    }
+
+    /**
+     * Normalize polyline colors from multiple sources into a consistent array
+     * @param polylines - Array of polylines with potential embedded colors
+     * @param inputColors - Input colors (single or array)
+     * @returns Array of normalized hex color strings
+     */
+    private normalizePolylineColors(
+        polylines: Inputs.Polyline.PolylinePropertiesDto[], 
+        inputColors: string | string[]
+    ): string[] {
+        const defaultColor = Array.isArray(inputColors) ? inputColors[0] : inputColors;
+        
+        return polylines.map((polyline, index) => {
+            // Priority 1: Polyline-specific color
+            if (polyline.color) {
+                const color = typeof polyline.color === "string" ? polyline.color : polyline.color.join(",");
+                return this.normalizeColor(color, defaultColor);
+            }
+            
+            // Priority 2: Array of colors
+            if (Array.isArray(inputColors)) {
+                const colorIndex = Math.min(index, inputColors.length - 1);
+                return inputColors[colorIndex];
+            }
+            
+            // Priority 3: Single color for all
+            return inputColors as string;
+        });
+    }
+
+    /**
+     * Process polyline points, handling closed polylines
+     * @param polylines - Array of polylines
+     * @returns Array of processed point arrays
+     */
+    private processPolylinePoints(polylines: Inputs.Polyline.PolylinePropertiesDto[]): Inputs.Base.Point3[][] {
+        return polylines.map(polyline => {
+            const points = polyline.points ? [...polyline.points] : []; // Don't mutate input
+            
+            if (polyline.isClosed && points.length > 0) {
+                points.push(points[0]);
+            }
+            
+            return points;
+        });
+    }
+
+    /**
+     * Wrap a polyline entity in a group container
+     * @param polylineEntity - The polyline entity to wrap
+     * @param existingGroup - Optional existing group for updates
+     * @param updatable - Whether this is an update operation
+     * @returns Group entity containing the polyline
+     */
+    private wrapPolylineInGroup(
+        polylineEntity: pc.Entity, 
+        existingGroup?: pc.Entity,
+        updatable?: boolean
+    ): pc.Entity {
+        // If updating and names match, return existing group
+        if (existingGroup && updatable && existingGroup.children[0]?.name === polylineEntity.name) {
+            return existingGroup;
+        }
+        
+        // Create new group
+        const groupId = this.generateEntityId("polylinesGroup");
+        const group = new pc.Entity(groupId);
+        group.addChild(polylineEntity);
+        this.context.scene.addChild(group);
+        
+        return group;
+    }
+
+    private createPointSpheresMesh(
+        meshName: string, positions: Inputs.Base.Point3[], colors: string[], opacity: number, size: number): pc.Entity {
+        const positionsModel = positions.map((pos, index) => {
+            return {
+                position: pos,
+                color: colors[index],
+                index
+            };
+        });
+
+        const colorSet = Array.from(new Set(colors));
+        const materialSet = colorSet.map((colour) => {
+            const mat = this.getOrCreateMaterial(colour, opacity, 0, () => {
+                const material = new pc.StandardMaterial();
+                material.name = this.generateEntityId("mat");
+                material.opacity = opacity;
+                material.emissive = this.hexToColor(colour);
+                material.diffuse = this.hexToColor(colour);
+                material.useLighting = false;
+                material.update();
+                return material;
+            });
+            const positionsFiltered = positionsModel.filter(s => s.color === colour);
+
+            return { hex: colorSet, material: mat, positions: positionsFiltered };
+        });
+
+        const pointsGroup = new pc.Entity(meshName);
+        this.context.scene.addChild(pointsGroup);
+        
+        materialSet.forEach(ms => {
+            
+            ms.positions.forEach((pos, index) => {
+                const sphereEntity = new pc.Entity(this.generateEntityId(`point-${index}`, meshName));
+                sphereEntity.addComponent("render", {
+                    type: "sphere",
+                    material: ms.material
+                });
+                sphereEntity.setLocalScale(size * 2, size * 2, size * 2);
+                sphereEntity.setLocalPosition(pos.position[0], pos.position[1], pos.position[2]);
+                pointsGroup.addChild(sphereEntity);
+            });
+        });
+
+        return pointsGroup;
+    }
+
 }
